@@ -39,8 +39,8 @@ Porting note (Yury Kudryashov): I disabled some of these notations because I fai
 work with Lean 4.
 
 * `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
-* `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely `[a ∘
-  Fin.succAbove i, b ∘ Fin.succAbove i]`;
+* `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely
+  `[a ∘ Fin.succAbove i, b ∘ Fin.succAbove i]`;
 * `e i` : `i`-th basis vector `Pi.single i 1`;
 * `frontFace i`, `backFace i`: embeddings `ℝⁿ → ℝⁿ⁺¹` corresponding to the front face
   `{x | x i = b i}` and back face `{x | x i = a i}` of the box `[a, b]`, respectively.
@@ -255,9 +255,9 @@ local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
-`f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
+`f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `fun x ↦ ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
 where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the sum of
-integrals of `f` over the faces of `[a, b]`, taken with appropriat signs.
+integrals of `f` over the faces of `[a, b]`, taken with appropriate signs.
 
 Moreover, the same is true if the function is not differentiable at countably many
 points of the interior of `[a, b]`.

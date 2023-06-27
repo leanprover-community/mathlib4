@@ -9,7 +9,7 @@ Authors: Justus Springer
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Basic
-import Mathlib.Algebra.Category.Mon.FilteredColimits
+import Mathlib.Algebra.Category.MonCat.FilteredColimits
 
 /-!
 # The forgetful functor from (commutative) (additive) groups preserves filtered colimits.
@@ -36,9 +36,8 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-open CategoryTheory.IsFiltered renaming max → max'
+open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
--- avoid name collision with `_root_.max`.
 namespace GroupCat.FilteredColimits
 
 section
@@ -47,7 +46,7 @@ open MonCat.FilteredColimits (colimit_one_eq colimit_mul_mk_eq)
 
 -- We use parameters here, mainly so we can have the abbreviations `G` and `G.mk` below, without
 -- passing around `F` all the time.
-variable {J : Type v}[SmallCategory J] [IsFiltered J] (F : J ⥤ GroupCat.{max v u})
+variable {J : Type v} [SmallCategory J] [IsFiltered J] (F : J ⥤ GroupCat.{max v u})
 
 /-- The colimit of `F ⋙ forget₂ Group Mon` in the category `Mon`.
 In the following, we will show that this has the structure of a group.
@@ -184,7 +183,8 @@ set_option linter.uppercaseLean3 false in
 @[to_additive forget₂AddMonPreservesFilteredColimits]
 noncomputable instance forget₂MonPreservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ GroupCat.{u} MonCat.{u}) where
-      preserves_filtered_colimits := fun x hx1 _ => letI : Category.{u, u} x := hx1
+      preserves_filtered_colimits x hx1 _ :=
+      letI : Category.{u, u} x := hx1
       ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit.{u, u} _)⟩
 set_option linter.uppercaseLean3 false in
@@ -250,8 +250,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι :=
-    {
-      (GroupCat.FilteredColimits.colimitCocone
+    { (GroupCat.FilteredColimits.colimitCocone
           (F ⋙ forget₂ CommGroupCat GroupCat.{max v u})).ι with }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.filtered_colimits.colimit_cocone CommGroupCat.FilteredColimits.colimitCocone
@@ -280,12 +279,13 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 noncomputable instance forget₂GroupPreservesFilteredColimits :
-    PreservesFilteredColimits (forget₂ CommGroupCat GroupCat.{u})
-    where preserves_filtered_colimits J hJ1 _ := letI : Category J := hJ1
-  { preservesColimit := fun {F} =>
-      preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
-        (GroupCat.FilteredColimits.colimitCoconeIsColimit.{u, u}
-          (F ⋙ forget₂ CommGroupCat GroupCat.{u})) }
+    PreservesFilteredColimits (forget₂ CommGroupCat GroupCat.{u}) where
+  preserves_filtered_colimits J hJ1 _ :=
+    letI : Category J := hJ1
+    { preservesColimit := fun {F} =>
+        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+          (GroupCat.FilteredColimits.colimitCoconeIsColimit.{u, u}
+            (F ⋙ forget₂ CommGroupCat GroupCat.{u})) }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.filtered_colimits.forget₂_Group_preserves_filtered_colimits CommGroupCat.FilteredColimits.forget₂GroupPreservesFilteredColimits
 set_option linter.uppercaseLean3 false in

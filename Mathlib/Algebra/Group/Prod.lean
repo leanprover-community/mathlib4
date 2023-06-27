@@ -22,7 +22,7 @@ trivial `simp` lemmas, and define the following operations on `MonoidHom`s:
   as `MonoidHom`s;
 * `inl M N : M →* M × N`, `inr M N : N →* M × N`: inclusions of first/second monoid
   into the product;
-* `f.prod g : `M →* N × P`: sends `x` to `(f x, g x)`;
+* `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
 * `f.coprod g : M × N →* P`: sends `(x, y)` to `f x * g y`;
 * `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
@@ -592,7 +592,7 @@ variable {M' : Type _} {N' : Type _} [MulOneClass M'] [MulOneClass N'] [MulOneCl
   (f : M →* M') (g : N →* N')
 
 /-- `prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddHonoidHom`"]
+@[to_additive prodMap "`prod.map` as an `AddMonoidHom`."]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 #align monoid_hom.prod_map MonoidHom.prodMap

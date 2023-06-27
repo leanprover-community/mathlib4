@@ -111,7 +111,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
   induction' h with l₁ l₂ y _ IH l₁ l₂ y h IH
   · exact hx
   · exact (IH hx).duplicate_cons _
-  · rw [duplicate_cons_iff] at hx⊢
+  · rw [duplicate_cons_iff] at hx ⊢
     rcases hx with (⟨rfl, hx⟩ | hx)
     · simp [h.subset hx]
     · simp [IH hx]

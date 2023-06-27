@@ -198,7 +198,7 @@ theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
 theorem arrow_stable (f : Y ⟶ X) (S : Sieve X) (h : J.Covers S f) {Z : C} (g : Z ⟶ Y) :
     J.Covers S (g ≫ f) := by
-  rw [covers_iff] at h⊢
+  rw [covers_iff] at h ⊢
   simp [h, Sieve.pullback_comp]
 #align category_theory.grothendieck_topology.arrow_stable CategoryTheory.GrothendieckTopology.arrow_stable
 
@@ -230,7 +230,7 @@ def trivial : GrothendieckTopology C where
   sieves X := {⊤}
   top_mem' X := rfl
   pullback_stable' X Y S f hf := by
-    rw [Set.mem_singleton_iff] at hf⊢
+    rw [Set.mem_singleton_iff] at hf ⊢
     simp [hf]
   transitive' X S hS R hR := by
     rw [Set.mem_singleton_iff, ← Sieve.id_mem_iff_eq_top] at hS
@@ -363,7 +363,7 @@ def dense : GrothendieckTopology C
     exact ⟨W, h ≫ g, by simpa using H₄⟩
 #align category_theory.grothendieck_topology.dense CategoryTheory.GrothendieckTopology.dense
 
-theorem dense_covering : S ∈ dense X ↔ ∀ {Y} (f : Y ⟶ X), ∃ (Z : _)(g : Z ⟶ Y), S (g ≫ f) :=
+theorem dense_covering : S ∈ dense X ↔ ∀ {Y} (f : Y ⟶ X), ∃ (Z : _) (g : Z ⟶ Y), S (g ≫ f) :=
   Iff.rfl
 #align category_theory.grothendieck_topology.dense_covering CategoryTheory.GrothendieckTopology.dense_covering
 
@@ -373,7 +373,7 @@ NB. Any category with pullbacks obviously satisfies the right Ore condition, see
 `right_ore_of_pullbacks`.
 -/
 def RightOreCondition (C : Type u) [Category.{v} C] : Prop :=
-  ∀ {X Y Z : C} (yx : Y ⟶ X) (zx : Z ⟶ X), ∃ (W : _)(wy : W ⟶ Y)(wz : W ⟶ Z), wy ≫ yx = wz ≫ zx
+  ∀ {X Y Z : C} (yx : Y ⟶ X) (zx : Z ⟶ X), ∃ (W : _) (wy : W ⟶ Y) (wz : W ⟶ Z), wy ≫ yx = wz ≫ zx
 #align category_theory.grothendieck_topology.right_ore_condition CategoryTheory.GrothendieckTopology.RightOreCondition
 
 theorem right_ore_of_pullbacks [Limits.HasPullbacks C] : RightOreCondition C := fun _ _ =>
@@ -387,7 +387,7 @@ See https://ncatlab.org/nlab/show/atomic+site, or [MM92] Chapter III, Section 2,
 -/
 def atomic (hro : RightOreCondition C) : GrothendieckTopology C
     where
-  sieves X S := ∃ (Y : _)(f : Y ⟶ X), S f
+  sieves X S := ∃ (Y : _) (f : Y ⟶ X), S f
   top_mem' X := ⟨_, 𝟙 _, ⟨⟩⟩
   pullback_stable' := by
     rintro X Y S h ⟨Z, f, hf⟩
@@ -518,7 +518,7 @@ structure Relation (S : J.Cover X) where
 
 attribute [reassoc] Relation.w
 
-/-- Map a `Arrow` along a refinement `S ⟶ T`. -/
+/-- Map an `Arrow` along a refinement `S ⟶ T`. -/
 @[simps]
 def Arrow.map {S T : J.Cover X} (I : S.Arrow) (f : S ⟶ T) : T.Arrow :=
   ⟨I.Y, I.f, f.le _ I.hf⟩

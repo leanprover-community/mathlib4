@@ -217,7 +217,7 @@ protected theorem IsSuccLimit.isMin (h : IsSuccLimit a) : IsMin a := fun b hb =>
   revert h
   refine' Succ.rec (fun _ => le_rfl) (fun c _ H hc => _) hb
   have := hc.isMax.succ_eq
-  rw [this] at hc⊢
+  rw [this] at hc ⊢
   exact H hc
 #align order.is_succ_limit.is_min Order.IsSuccLimit.isMin
 

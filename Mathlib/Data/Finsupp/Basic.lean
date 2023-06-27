@@ -179,7 +179,7 @@ section ZeroHom
 
 variable [Zero M] [Zero N] [Zero P]
 
-/-- Composition with a fixed zero-preserving homomorphism is itself an zero-preserving homomorphism
+/-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
 on functions. -/
 @[simps]
 def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (α →₀ M) (α →₀ N)
@@ -628,16 +628,10 @@ def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β
 theorem mapDomain.addMonoidHom_comp_mapRange [AddCommMonoid N] (f : α → β) (g : M →+ N) :
     (mapDomain.addMonoidHom f).comp (mapRange.addMonoidHom g) =
       (mapRange.addMonoidHom g).comp (mapDomain.addMonoidHom f) := by
-  apply Finsupp.addHom_ext'
-  intro x
-  apply AddMonoidHom.ext
-  intro x_1
-  apply Finsupp.ext
-  intro a
+  ext
   simp only [AddMonoidHom.coe_comp, Finsupp.mapRange_single, Finsupp.mapDomain.addMonoidHom_apply,
     Finsupp.singleAddHom_apply, eq_self_iff_true, Function.comp_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.addMonoidHom_apply]
-  -- porting note: this is ugly, just expanded the Lean 3 proof; `ext` didn't work in the same way
 #align finsupp.map_domain.add_monoid_hom_comp_map_range Finsupp.mapDomain.addMonoidHom_comp_mapRange
 
 /-- When `g` preserves addition, `mapRange` and `mapDomain` commute. -/
@@ -1000,8 +994,8 @@ theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
   ht2 ▸ by
     classical
-      rw [single_apply] at ht2⊢
-      split_ifs  at ht2⊢
+      rw [single_apply] at ht2 ⊢
+      split_ifs at ht2 ⊢
       · exact Finset.mem_singleton_self _
       · exact (t ht2.symm).elim
 #align finsupp.frange_single Finsupp.frange_single

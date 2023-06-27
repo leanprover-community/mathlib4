@@ -61,7 +61,7 @@ structure with an isomorphic one; one way around this is to isolate a predicate 
 a structure up to isomorphism, and reason about things that satisfy the predicate.
 
 A previous version of this file used a fully bundled type of ring localization maps,
-then used a type synonym `f.codomain` for `f : :ocalizationMap M S` to instantiate the
+then used a type synonym `f.codomain` for `f : LocalizationMap M S` to instantiate the
 `R`-algebra structure on `S`. This results in defining ad-hoc copies for everything already
 defined on `S`. By making `IsLocalization` a predicate on the `algebraMap R S`,
 we can ensure the localization map commutes nicely with other `algebraMap`s.
@@ -100,7 +100,7 @@ variable [Algebra R S] {P : Type _} [CommSemiring P]
 /-- The typeclass `IsLocalization (M : Submodule R) S` where `S` is an `R`-algebra
 expresses that `S` is isomorphic to the localization of `R` at `M`. -/
 class IsLocalization : Prop where
---Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
+  --Porting note: add ' to fields, and made new versions of these with either `S` or `M` explicit.
   /-- Everything in the image of `algebraMap` is a unit -/
   map_units' : ∀ y : M, IsUnit (algebraMap R S y)
   /-- the `algebraMap` is surjective -/
@@ -298,7 +298,7 @@ theorem mk'_add_eq_iff_add_mul_eq_mul {x} {y : M} {z₁ z₂} :
 
 variable (M)
 
-theorem mk'_surjective (z : S) : ∃ (x : _)(y : M), mk' S x y = z :=
+theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
   let ⟨r, hr⟩ := IsLocalization.surj _ z
   ⟨r.1, r.2, (eq_mk'_iff_mul_eq.2 hr).symm⟩
 #align is_localization.mk'_surjective IsLocalization.mk'_surjective
@@ -789,7 +789,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M y
     refine' ⟨⟨h x, _, _, s.prop, rfl⟩, _⟩
-    dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e⊢
+    dsimp only [RingHom.algebraMap_toAlgebra, RingHom.comp_apply] at e ⊢
     convert e <;> exact h.symm_apply_apply _
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
@@ -864,7 +864,7 @@ protected irreducible_def add (z w : Localization M) : Localization M :=
     @fun a a' b b' c c' d d' h1 h2 =>
     mk_eq_mk_iff.2
       (by
-        rw [r_eq_r'] at h1 h2⊢
+        rw [r_eq_r'] at h1 h2 ⊢
         cases' h1 with t₅ ht₅
         cases' h2 with t₆ ht₆
         use t₅ * t₆
@@ -1100,7 +1100,7 @@ protected irreducible_def neg (z : Localization M) : Localization M :=
   Localization.liftOn z (fun a b => mk (-a) b) @fun a b c d h =>
     mk_eq_mk_iff.2
       (by
-        rw [r_eq_r'] at h⊢
+        rw [r_eq_r'] at h ⊢
         cases' h with t ht
         use t
         rw [mul_neg, mul_neg, ht]
