@@ -28,6 +28,10 @@ The following commented-out definitions only made sense for the mathlib3 datatyp
 datatype in lean4/std4/mathlib4; `array` was length-indexed and therefore more similar to `Vector`,
 which may be reimplemented in terms of `Array` internally anyway in the future.
 
+However, we have tried to align `array` with `Array` where possible nonetheless, and therefore we
+introduce the "right" equivalence for `Array` (`arrayEquivList`) and align the instances
+`array.encodable`, `array.countable` with `Array.encodable`, `Array.countable` respectively.
+
 -/
 
 namespace Equiv
@@ -73,7 +77,6 @@ instance : IsLawfulTraversable (Array' n) :=
 end Array'
 
 /-- If `α` is encodable, then so is `Array α`. -/
-
 instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
   Encodable.ofEquiv _ (Equiv.arrayEquivList _)
 #align array.encodable Array.encodable
