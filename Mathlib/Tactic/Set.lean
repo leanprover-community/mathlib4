@@ -56,7 +56,9 @@ elab_rules : tactic
       evalTactic (← `(tactic| try rewrite [show $(← Term.exprToSyntax vale) = $a from rfl] at *))
     match h, rev with
     | some h, some none =>
-      evalTactic (← `(tactic| have%$tk $h : $a = ($val : $(← Term.exprToSyntax ty)) := rfl))
+      evalTactic (← `(tactic| have%$tk
+        $h : $a = ($(← Term.exprToSyntax vale) : $(← Term.exprToSyntax ty)) := rfl))
     | some h, some (some _) =>
-      evalTactic (← `(tactic| have%$tk $h : ($val : $(← Term.exprToSyntax ty)) = $a := rfl))
+      evalTactic (← `(tactic| have%$tk
+        $h : ($(← Term.exprToSyntax vale) : $(← Term.exprToSyntax ty)) = $a := rfl))
     | _, _ => pure ()
