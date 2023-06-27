@@ -398,7 +398,7 @@ theorem IsAffineOpen.mapRestrictBasicOpen {X : Scheme} (r : X.presheaf.obj (op �
   exact hU.basicOpenIsAffine _
 #align algebraic_geometry.is_affine_open.map_restrict_basic_open AlgebraicGeometry.IsAffineOpen.mapRestrictBasicOpen
 
-theorem Scheme.map_prime_Spectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
+theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
     (f : Scheme.Γ.obj (op X)) :
     (Opens.map X.isoSpec.hom.1.base).obj (PrimeSpectrum.basicOpen f) = X.basicOpen f := by
   rw [← basicOpen_eq_of_affine]
@@ -409,14 +409,16 @@ theorem Scheme.map_prime_Spectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
           ((X.presheaf.map (eqToHom <| by congr)) f)))
   . congr
     · rw [← IsIso.inv_eq_inv, IsIso.inv_inv, IsIso.Iso.inv_inv, NatIso.app_hom]
-      erw [← ΓSpec.adjunction_unit_app_app_top]
+      -- Porting note : added this `change` to prevent timeout
+      change SpecΓIdentity.hom.app (X.presheaf.obj <| op ⊤) = _
+      rw [← ΓSpec.adjunction_unit_app_app_top X]
       rfl
     · rw [eqToHom_map]; rfl
   · dsimp; congr
     refine' (Scheme.preimage_basicOpen _ _).trans _
     -- Porting note : changed `rw` to `erw`
     erw [IsIso.inv_hom_id_apply, Scheme.basicOpen_res_eq]
-#align algebraic_geometry.Scheme.map_prime_spectrum_basic_open_of_affine AlgebraicGeometry.Scheme.map_prime_Spectrum_basicOpen_of_affine
+#align algebraic_geometry.Scheme.map_prime_spectrum_basic_open_of_affine AlgebraicGeometry.Scheme.map_PrimeSpectrum_basicOpen_of_affine
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : X.presheaf.obj (op ⊤) → Opens X)) := by
