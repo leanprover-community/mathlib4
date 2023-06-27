@@ -8,8 +8,8 @@ Authors: Violeta Hernández Palacios
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Game.Ordinal
-import Mathbin.SetTheory.Ordinal.NaturalOps
+import Mathlib.SetTheory.Game.Ordinal
+import Mathlib.SetTheory.Ordinal.NaturalOps
 
 /-!
 # Birthdays of games
@@ -64,8 +64,7 @@ theorem birthday_moveRight_lt {x : PGame} (i : x.RightMoves) :
 theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
     o < x.birthday ↔
       (∃ i : x.LeftMoves, o ≤ (x.moveLeft i).birthday) ∨
-        ∃ i : x.RightMoves, o ≤ (x.moveRight i).birthday :=
-  by
+        ∃ i : x.RightMoves, o ≤ (x.moveRight i).birthday := by
   constructor
   · rw [birthday_def]
     intro h
@@ -80,8 +79,7 @@ theorem lt_birthday_iff {x : PGame} {o : Ordinal} :
 #align pgame.lt_birthday_iff PGame.lt_birthday_iff
 
 theorem Relabelling.birthday_congr : ∀ {x y : PGame.{u}}, x ≡r y → birthday x = birthday y
-  | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, r =>
-    by
+  | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, r => by
     unfold birthday
     congr 1
     all_goals
@@ -121,8 +119,7 @@ theorem neg_birthday : ∀ x : PGame, (-x).birthday = x.birthday
 #align pgame.neg_birthday PGame.neg_birthday
 
 @[simp]
-theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o :=
-  by
+theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
   rw [to_pgame_def, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
@@ -147,8 +144,7 @@ theorem neg_birthday_le : -x.birthday.toPGame ≤ x := by
 
 @[simp]
 theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.birthday
-  | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ =>
-    by
+  | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩ => by
     rw [birthday_def, nadd_def]
     simp only [birthday_add, lsub_sum, mk_add_move_left_inl, move_left_mk, mk_add_move_left_inr,
       mk_add_move_right_inl, move_right_mk, mk_add_move_right_inr]
