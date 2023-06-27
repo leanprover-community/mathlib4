@@ -161,7 +161,7 @@ theorem add_self : G + G ≈ 0 :=
   Equiv.trans (add_congr_left (neg_equiv_self G)) (add_left_neg_equiv G)
 #align pgame.impartial.add_self PGame.Impartial.add_self
 
--- Porting note: Changed `-⟦G⟧` to `-(⟦G⟧ : Quotient setoid)`
+-- Porting note: Changed `⟦G⟧` to `(⟦G⟧ : Quotient setoid)`
 @[simp]
 theorem mk'_add_self : (⟦G⟧ : Quotient setoid) + ⟦G⟧ = 0 :=
   Quot.sound (add_self G)
