@@ -370,8 +370,8 @@ def qrSign (m n : ℕ) : ℤ :=
 namespace qrSign
 
 /-- We can express `qr_sign m n` as a power of `-1` when `m` and `n` are odd. -/
-theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) : qrSign m n = (-1) ^ (m / 2 * (n / 2)) :=
-  by
+theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
+    qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
   rw [qrSign, pow_mul, ← χ₄_eq_neg_one_pow (odd_iff.mp hm)]
   cases' odd_mod_four_iff.mp (odd_iff.mp hm) with h h
   · rw [χ₄_nat_one_mod_four h, jacobiSym.one_left, one_pow]
