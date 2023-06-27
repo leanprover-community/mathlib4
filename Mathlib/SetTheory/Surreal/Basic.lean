@@ -251,7 +251,7 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
       · rintro (jx | jy)
         · apply (ox.moveRight jx).add oy
         · apply ox.add (oy.moveRight jy)⟩
-termination_by _ ox oy => by rename_i x y; exact (x, y) -- Porting note: Added `termination_by`
+termination_by _ x y _ _ => (x, y) -- Porting note: Added `termination_by`
 decreasing_by pgame_wf_tac
 #align pgame.numeric.add PGame.Numeric.add
 
