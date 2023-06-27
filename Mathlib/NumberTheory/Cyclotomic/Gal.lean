@@ -35,7 +35,7 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
 
 * We currently can get away with the fact that the power of a primitive root is a primitive root,
   but the correct long-term solution for computing other explicit Galois groups is creating
-  `power_basis.map_conjugate`; but figuring out the exact correct assumptions + proof for this is
+  `PowerBasis.map_conjugate`; but figuring out the exact correct assumptions + proof for this is
   mathematically nontrivial. (Current thoughts: the correct condition is that the annihilating
   ideal of both elements is equal. This may not hold in an ID, and definitely holds in an ICD.)
 

@@ -554,7 +554,7 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 
 noncomputable section
 
-/-- Auxiliary lemma for `to_Module_monoid_algebra`. -/
+/-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
 theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (V W : Type _)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
@@ -571,7 +571,7 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (
 set_option linter.uppercaseLean3 false in
 #align Rep.to_Module_monoid_algebra_map_aux Rep.to_Module_monoidAlgebra_map_aux
 
-/-- Auxiliary definition for `to_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
     ModuleCat.of (MonoidAlgebra k G) V.ρ.asModule ⟶ ModuleCat.of (MonoidAlgebra k G) W.ρ.asModule :=
   { f.hom with
@@ -607,7 +607,7 @@ theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
 set_option linter.uppercaseLean3 false in
 #align Rep.of_Module_monoid_algebra_obj_ρ Rep.ofModuleMonoidAlgebra_obj_ρ
 
-/-- Auxiliary definition for `equivalence_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
@@ -616,7 +616,7 @@ def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso_add_equiv Rep.counitIsoAddEquiv
 
-/-- Auxiliary definition for `equivalence_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
   refine' V.ρ.asModuleEquiv.symm.trans _

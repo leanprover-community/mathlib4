@@ -88,7 +88,7 @@ open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 namespace MeasureTheory
 
-section LimsupClosedLeAndLeLiminfOpen
+section LimsupClosedLEAndLELiminfOpen
 
 /-! ### Portmanteau: limsup condition for closed sets iff liminf condition for open sets
 
@@ -190,7 +190,7 @@ theorem limsup_measure_closed_le_iff_liminf_measure_open_ge {ι : Type _} {L : F
       F_closed.measurableSet (h (Fᶜ) (isOpen_compl_iff.mpr F_closed))
 #align measure_theory.limsup_measure_closed_le_iff_liminf_measure_open_ge MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge
 
-end LimsupClosedLeAndLeLiminfOpen
+end LimsupClosedLEAndLELiminfOpen
 
 -- section
 section TendstoOfNullFrontier
@@ -258,7 +258,7 @@ theorem tendsto_measure_of_null_frontier {ι : Type _} {L : Filter ι} {μ : Mea
 end TendstoOfNullFrontier
 
 --section
-section ConvergenceImpliesLimsupClosedLe
+section ConvergenceImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: weak convergence implies a limsup condition for closed sets
 
@@ -427,10 +427,10 @@ theorem ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto {Ω ι : 
   exact (ENNReal.tendsto_toNNReal (measure_ne_top (↑μ) E)).comp key
 #align measure_theory.probability_measure.tendsto_measure_of_null_frontier_of_tendsto MeasureTheory.ProbabilityMeasure.tendsto_measure_of_null_frontier_of_tendsto
 
-end ConvergenceImpliesLimsupClosedLe
+end ConvergenceImpliesLimsupClosedLE
 
 --section
-section LimitBorelImpliesLimsupClosedLe
+section LimitBorelImpliesLimsupClosedLE
 
 /-! ### Portmanteau implication: limit condition for Borel sets implies limsup for closed sets
 
@@ -465,7 +465,7 @@ theorem exists_null_frontiers_thickening (μ : Measure Ω) [SigmaFinite μ] (s :
   · exact fun n => ⟨(obs n).choose_spec.1.1, (obs n).choose_spec.2⟩
 #align measure_theory.exists_null_frontiers_thickening MeasureTheory.exists_null_frontiers_thickening
 
-end LimitBorelImpliesLimsupClosedLe
+end LimitBorelImpliesLimsupClosedLE
 
 --section
 end MeasureTheory
