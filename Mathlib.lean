@@ -1849,6 +1849,7 @@ import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Geometry.Manifold.Metrizable
+import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.Sheaf.Basic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
