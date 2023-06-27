@@ -506,7 +506,7 @@ theorem lf_mk_of_le {x yl yr} {yL : yl → PGame} (yR) {i} : x ≤ yL i → x �
   @lf_of_le_moveLeft x (mk _ _ _ _) i
 #align pgame.lf_mk_of_le PGame.lf_mk_of_le
 
-/- We prove that `x ≤ y → y ≤ z ← x ≤ z` inductively, by also simultaneously proving its cyclic
+/- We prove that `x ≤ y → y ≤ z → x ≤ z` inductively, by also simultaneously proving its cyclic
 reorderings. This auxiliary lemma is used during said induction. -/
 private theorem le_trans_aux {x y z : PGame}
     (h₁ : ∀ {i}, y ≤ z → z ≤ x.moveLeft i → y ≤ x.moveLeft i)
