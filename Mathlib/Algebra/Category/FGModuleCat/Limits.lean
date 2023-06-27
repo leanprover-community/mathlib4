@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.FgModule.Basic
-import Mathlib.Algebra.Category.Module.Limits
-import Mathlib.Algebra.Category.Module.Products
-import Mathlib.Algebra.Category.Module.EpiMono
+import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Limits
+import Mathlib.Algebra.Category.ModuleCat.Products
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
@@ -80,4 +80,3 @@ instance : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k))
     where PreservesFiniteLimits J _ _ := inferInstance
 
 end FGModuleCat
-
