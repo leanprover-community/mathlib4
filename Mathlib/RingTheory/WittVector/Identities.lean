@@ -72,9 +72,9 @@ theorem coeff_p_pow [CharP R p] (i : ℕ) : (p ^ i : 𝕎 R).coeff i = 1 := by
 
 theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : (p ^ i : 𝕎 R).coeff j = 0 := by
   induction' i with i hi generalizing j
-  · rw [pow_zero, one_coeff_eq_of_pos]
+  · rw [pow_zero, Nat.cast_one, one_coeff_eq_of_pos]
     exact Nat.pos_of_ne_zero hj
-  · rw [pow_succ', ← frobenius_verschiebung, coeff_frobenius_char_p]
+  · rw [pow_succ', Nat.cast_mul, ← frobenius_verschiebung, coeff_frobenius_charP]
     cases j
     · rw [verschiebung_coeff_zero, zero_pow]
       exact Nat.Prime.pos hp.out
