@@ -41,7 +41,6 @@ stalks, such as the Weierstrass preparation theorem.
 
 -/
 
-
 open scoped Manifold Topology Filter
 open Function Set Filter Complex
 
@@ -49,7 +48,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 variable {F : Type _} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
-variable {H : Type _} [TopologicalSpace H] (I : ModelWithCorners ℂ E H) [I.Boundaryless]
+variable {H : Type _} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 
 variable {M : Type _} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
@@ -80,6 +79,10 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
   · exact congr_arg f (extChartAt_to_inv _ _).symm
   · simpa only [IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
 
+/-!
+### Functions holomorphic on a set
+-/
+
 namespace MDifferentiableOn
 
 /-- **Maximum modulus principle** on a connected set. Let `U` be a (pre)connected open set in a
@@ -96,7 +99,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDifferentiableAt I 𝓘(ℂ, F) f y :=
       (eventually_mem_nhds.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
-    exact (Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax I hd hm).mono fun _ ↦
+    exact (Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax hd hm).mono fun _ ↦
       (Eq.trans · hx.2)
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩
   set W := U ∩ {z | ‖f z‖ = ‖f c‖}ᶜ
@@ -111,38 +114,67 @@ that `‖f x‖` takes its maximum value on `U` at `c ∈ U`. Then `f x = f c` f
 
 TODO: change assumption from `IsMaxOn` to `IsLocalMax`. -/
 theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M → F} {U : Set M}
-    {c : M} (hc : IsPreconnected U) (ho : IsOpen U) (hd : MDifferentiableOn I 𝓘(ℂ, F) f U)
+    {c : M} (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hc : IsPreconnected U) (ho : IsOpen U)
     (hcU : c ∈ U) (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const M (f c)) U := fun x hx =>
-  have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn I hc ho hcU hm hx
+  have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm hx
   -- TODO: Add `MDifferentiableOn.add` etc; does it mean importing `Manifold.Algebra.Monoid`?
   have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · + f c) U := fun x hx ↦
     ⟨(hd x hx).1.add continuousWithinAt_const, (hd x hx).2.add_const _⟩
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=
-    hd'.norm_eqOn_of_isPreconnected_of_isMaxOn I hc ho hcU hm.norm_add_self hx
+    hd'.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm.norm_add_self hx
   eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]
 
+/-- If a function `f : M → F` from a complex manifold to a complex normed space is holomorphic on a
+(pre)connected compact open set, then it is a constant on this set. -/
+theorem apply_eq_of_isPreconnected_isCompact_isOpen {f : M → F} {U : Set M} {a b : M}
+     (hd : MDifferentiableOn I 𝓘(ℂ, F) f U) (hpc : IsPreconnected U) (hc : IsCompact U)
+     (ho : IsOpen U) (ha : a ∈ U) (hb : b ∈ U) : f a = f b := by
+  refine ?_
+  -- Subtract `f b` to avoid the assumption `[StrictConvexSpace ℝ F]`
+  wlog hb₀ : f b = 0 generalizing f
+  · have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · - f b) U := fun x hx ↦
+      ⟨(hd x hx).1.sub continuousWithinAt_const, (hd x hx).2.sub_const _⟩
+    simpa [sub_eq_zero] using this hd' (sub_self _)
+  rcases hc.exists_isMaxOn ⟨a, ha⟩ hd.continuousOn.norm with ⟨c, hcU, hc⟩
+  have : ∀ x ∈ U, ‖f x‖ = ‖f c‖ :=
+    norm_eqOn_of_isPreconnected_of_isMaxOn hd hpc ho hcU hc
+  rw [hb₀, ← norm_eq_zero, this a ha, ← this b hb, hb₀, norm_zero]
+
 end MDifferentiableOn
+
+/-!
+### Functions holomorphic on the whole manifold
+
+Porting note: lemmas in this section were generalized from `𝓘(ℂ, E)` to an unspecified boundaryless
+model so that it works, e.g., on a product of two manifolds without a boundary. This can break
+`apply MDifferentiable.apply_eq_of_compactSpace`, use
+`apply MDifferentiable.apply_eq_of_compactSpace (I := I)` instead or dot notation on an existing
+`MDifferentiable` hypothesis.
+-/
 
 namespace MDifferentiable
 
 /-- A holomorphic function on a compact complex manifold is locally constant. -/
 protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(ℂ, F) f) :
-    IsLocallyConstant f := by
+    IsLocallyConstant f :=
+  haveI : LocallyConnectedSpace H := I.toHomeomorph.locallyConnectedSpace
   haveI : LocallyConnectedSpace M := ChartedSpace.locallyConnectedSpace H M
+  IsLocallyConstant.of_constant_on_preconnected_clopens fun _ hpc hclo _a ha _b hb ↦
+    hf.mdifferentiableOn.apply_eq_of_isPreconnected_isCompact_isOpen hpc
+      hclo.isClosed.isCompact hclo.isOpen hb ha
 #align mdifferentiable.is_locally_constant MDifferentiable.isLocallyConstant
 
 /-- A holomorphic function on a compact connected complex manifold is constant. -/
 theorem apply_eq_of_compactSpace [PreconnectedSpace M] {f : M → F}
-    (hf : MDifferentiable 𝓘(ℂ, E) 𝓘(ℂ, F) f) (a b : M) : f a = f b :=
+    (hf : MDifferentiable I 𝓘(ℂ, F) f) (a b : M) : f a = f b :=
   hf.isLocallyConstant.apply_eq_of_preconnectedSpace _ _
 #align mdifferentiable.apply_eq_of_compact_space MDifferentiable.apply_eq_of_compactSpace
 
 /-- A holomorphic function on a compact connected complex manifold is the constant function `f ≡ v`,
 for some value `v`. -/
 theorem exists_eq_const_of_compactSpace [PreconnectedSpace M] {f : M → F}
-    (hf : MDifferentiable 𝓘(ℂ, E) 𝓘(ℂ, F) f) : ∃ v : F, f = Function.const M v :=
+    (hf : MDifferentiable I 𝓘(ℂ, F) f) : ∃ v : F, f = Function.const M v :=
   hf.isLocallyConstant.exists_eq_const
 #align mdifferentiable.exists_eq_const_of_compact_space MDifferentiable.exists_eq_const_of_compactSpace
 
 end MDifferentiable
-
