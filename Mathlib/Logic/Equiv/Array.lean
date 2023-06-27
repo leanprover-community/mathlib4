@@ -51,11 +51,8 @@ namespace Equiv
 #noalign equiv.vector_equiv_array
 
 /-- The natural equivalence between arrays and lists. -/
-def arrayEquivList (α : Type _) : Array α ≃ List α where
-  toFun := Array.toList
-  invFun := List.toArray
-  left_inv a := Array.toList_eq a ▸ Array.toArray_data a
-  right_inv l := Array.toList_eq (l.toArray) ▸ Array.data_toArray l
+def arrayEquivList (α : Type _) : Array α ≃ List α :=
+  ⟨Array.data, Array.mk, fun _ => rfl, fun _ => rfl⟩
 
 end Equiv
 
