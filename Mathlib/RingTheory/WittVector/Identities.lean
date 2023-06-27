@@ -11,6 +11,7 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.WittVector.Frobenius
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.MulP
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 ## Identities between operations on the ring of Witt vectors
@@ -175,14 +176,14 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
     (verschiebung^[i]) x * (verschiebung^[j]) y =
       (verschiebung^[i + j]) ((frobenius^[j]) x * (frobenius^[i]) y) := by
   calc
-    _ = (verschiebung^[i]) (x * (frobenius^[i]) ((verschiebung^[j]) y)) := _
-    _ = (verschiebung^[i]) (x * (verschiebung^[j]) ((frobenius^[i]) y)) := _
-    _ = (verschiebung^[i]) ((verschiebung^[j]) ((frobenius^[i]) y) * x) := _
-    _ = (verschiebung^[i]) ((verschiebung^[j]) ((frobenius^[i]) y * (frobenius^[j]) x)) := _
-    _ = (verschiebung^[i + j]) ((frobenius^[i]) y * (frobenius^[j]) x) := _
-    _ = _ := _
+    _ = (verschiebung^[i]) (x * (frobenius^[i]) ((verschiebung^[j]) y)) := ?_
+    _ = (verschiebung^[i]) (x * (verschiebung^[j]) ((frobenius^[i]) y)) := ?_
+    _ = (verschiebung^[i]) ((verschiebung^[j]) ((frobenius^[i]) y) * x) := ?_
+    _ = (verschiebung^[i]) ((verschiebung^[j]) ((frobenius^[i]) y * (frobenius^[j]) x)) := ?_
+    _ = (verschiebung^[i + j]) ((frobenius^[i]) y * (frobenius^[j]) x) := ?_
+    _ = _ := ?_
   · apply iterate_verschiebung_mul_left
-  · rw [verschiebung_frobenius_comm.iterate_iterate] <;> infer_instance
+  · rw [verschiebung_frobenius_comm.iterate_iterate]
   · rw [mul_comm]
   · rw [iterate_verschiebung_mul_left]
   · rw [iterate_add_apply]
@@ -203,12 +204,12 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     ((verschiebung^[i]) x * (verschiebung^[j]) y).coeff (i + j) =
       x.coeff 0 ^ p ^ j * y.coeff 0 ^ p ^ i := by
   calc
-    _ = ((verschiebung^[i + j]) ((frobenius^[j]) x * (frobenius^[i]) y)).coeff (i + j) := _
-    _ = ((frobenius^[j]) x * (frobenius^[i]) y).coeff 0 := _
-    _ = ((frobenius^[j]) x).coeff 0 * ((frobenius^[i]) y).coeff 0 := _
-    _ = _ := _
+    _ = ((verschiebung^[i + j]) ((frobenius^[j]) x * (frobenius^[i]) y)).coeff (i + j) := ?_
+    _ = ((frobenius^[j]) x * (frobenius^[i]) y).coeff 0 := ?_
+    _ = ((frobenius^[j]) x).coeff 0 * ((frobenius^[i]) y).coeff 0 := ?_
+    _ = _ := ?_
   · rw [iterate_verschiebung_mul]
-  · convert iterate_verschiebung_coeff _ _ _ using 2
+  · convert iterate_verschiebung_coeff (p := p) (R := R) _ _ _ using 2
     rw [zero_add]
   · apply mul_coeff_zero
   · simp only [iterate_frobenius_coeff]
