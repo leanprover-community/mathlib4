@@ -71,7 +71,7 @@ of a specified module (or the current module if `none` is specified).
 -/
 def redundantImports (n? : Option Name := none) : CoreM NameSet := do
   let env ← getEnv
-  let imports := env.importsOf (n?.getD ((← getEnv).header.mainModule))
+  let imports := env.importsOf (n?.getD (env.header.mainModule))
   return findRedundantImports env imports
 
 /--
