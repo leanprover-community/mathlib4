@@ -630,24 +630,50 @@ theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
   rw [eqToHom_trans]
 #align algebraic_geometry.is_affine_open.is_localization_stalk_aux AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux
 
-set_option maxHeartbeats 1000000 in
-theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
-    (x : U) : IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
+set_option maxHeartbeats 1643256 in
+theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
+    (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
+    hU.fromSpec.val.c.app (op U) ≫ (Scheme.Spec.obj <| op (X.presheaf.obj <| op U)).presheaf.germ
+      (U := (Opens.map hU.fromSpec.val.base).obj U) ⟨y, hy⟩ =
+    StructureSheaf.toStalk (X.presheaf.obj <| op U) y := by
   haveI : IsAffine _ := hU
-  haveI : Nonempty U := ⟨x⟩
-  rcases x with ⟨x, hx⟩
-  let y := hU.primeIdealOf ⟨x, hx⟩
-  have : hU.fromSpec.val.base y = x := hU.fromSpec_primeIdealOf ⟨x, hx⟩
-  -- Porting note : this is painful now, need to provide explicit instance
-  change @IsLocalization (M := y.asIdeal.primeCompl) (S := X.presheaf.stalk x) _ _
-    (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨x, hx⟩)
-  clear_value y
-  subst this
-  -- Porting note : this is painful now, need to provide explicit instance
+  -- haveI : Nonempty U := ⟨hU.fromSpec.1.base y⟩
+  delta IsAffineOpen.fromSpec Scheme.isoSpec StructureSheaf.toStalk
+  simp only [Scheme.comp_val_c_app, Category.assoc]
+  dsimp only [Functor.op, asIso_inv, unop_op]
+  erw [IsAffineOpen.isLocalization_stalk_aux]
+  simp only [Category.assoc]
+  conv_lhs => rw [← Category.assoc]
+  erw [← X.presheaf.map_comp, Spec_Γ_naturality_assoc]
+  congr 1
+  simp only [← Category.assoc]
+  convert
+    (Spec.structureSheaf (X.presheaf.obj <| op U)).presheaf.germ_res
+      (U := (Opens.map hU.fromSpec.val.base).obj U) (homOfLE le_top) ⟨y, hy⟩ using 2
+  rw [Category.assoc]
+  erw [NatTrans.naturality]
+  rw [← LocallyRingedSpace.Γ_map_op, ← LocallyRingedSpace.Γ.map_comp_assoc, ← op_comp]
+  erw [← Scheme.Spec.map_comp]
+  rw [← op_comp, ← X.presheaf.map_comp]
+  convert_to LocallyRingedSpace.Γ.map (Quiver.Hom.op <| Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op) ≫ _ = _
+  simp only [CategoryTheory.Functor.map_id, op_id]
+  erw [CategoryTheory.Functor.map_id]
+  rw [Category.id_comp]
+  rfl
+
+set_option maxHeartbeats 420000 in
+theorem IsAffineOpen.isLocalization_stalk' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
+    (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
+  haveI : IsAffine _ := hU
+  -- haveI : Nonempty U := ⟨hU.fromSpec.1.base y⟩
+  @IsLocalization.AtPrime
+    (R := X.presheaf.obj <| op U)
+    (S := X.presheaf.stalk <| hU.fromSpec.1.base y) _ _
+    ((TopCat.Presheaf.algebra_section_stalk X.presheaf _)) y.asIdeal _ := by
   apply
     (@IsLocalization.isLocalization_iff_of_ringEquiv (R := X.presheaf.obj <| op U)
       (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
-      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hx⟩) _ _
+      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hy⟩) _ _
       (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
   -- Porting note : need to know what the ring is and after convert, instead of equality
   -- we get an `iff`.
@@ -656,33 +682,21 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   rw [iff_iff_eq]
   congr 2
   rw [RingHom.algebraMap_toAlgebra]
-  refine' (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hx⟩).trans _
-  sorry
-  -- delta IsAffineOpen.fromSpec Scheme.isoSpec StructureSheaf.toStalk
-  -- simp only [Scheme.comp_val_c_app, Category.assoc]
-  -- dsimp only [Functor.op, asIso_inv, unop_op]
-  -- erw [IsAffineOpen.isLocalization_stalk_aux]
-  -- simp only [Category.assoc]
-  -- conv_lhs => rw [← Category.assoc]
-  -- erw [← X.presheaf.map_comp, Spec_Γ_naturality_assoc]
-  -- congr 1
-  -- simp only [← Category.assoc]
-  -- trans _ ≫ (Spec.structureSheaf (X.presheaf.obj <| op U)).presheaf.germ ⟨_, _⟩
-  -- · rfl
-  -- convert
-  --   (Spec.structureSheaf (X.presheaf.obj <| op U)).presheaf.germ_res (homOfLE le_top) ⟨_, _⟩ using 2
-  -- rw [Category.assoc]
-  -- erw [NatTrans.naturality]
-  -- rw [← LocallyRingedSpace.Γ_map_op, ← LocallyRingedSpace.Γ.map_comp_assoc, ← op_comp]
-  -- erw [← Scheme.Spec.map_comp]
-  -- rw [← op_comp, ← X.presheaf.map_comp]
-  -- trans
-  --   LocallyRingedSpace.Γ.map (Quiver.Hom.op <| Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op) ≫ _
-  -- · congr
-  -- simp only [CategoryTheory.Functor.map_id, op_id]
-  -- erw [CategoryTheory.Functor.map_id]
-  -- rw [Category.id_comp]
-  -- rfl
+  refine' (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hy⟩).trans _
+  apply hU.isLocalization_stalk_aux' y hy
+
+-- Porting note : I have splitted this into two lemmas
+theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
+    (x : U) : IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
+  rcases x with ⟨x, hx⟩
+  let y := hU.primeIdealOf ⟨x, hx⟩
+  have : hU.fromSpec.val.base y = x := hU.fromSpec_primeIdealOf ⟨x, hx⟩
+  -- Porting note : this is painful now, need to provide explicit instance
+  change @IsLocalization (M := y.asIdeal.primeCompl) (S := X.presheaf.stalk x) _ _
+    (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨x, hx⟩)
+  clear_value y
+  subst this
+  convert hU.isLocalization_stalk' y hx
 #align algebraic_geometry.is_affine_open.is_localization_stalk AlgebraicGeometry.IsAffineOpen.isLocalization_stalk
 
 /-- The basic open set of a section `f` on an an affine open as an `X.affine_opens`. -/
@@ -692,7 +706,11 @@ def Scheme.affineBasicOpen (X : Scheme) {U : X.affineOpens} (f : X.presheaf.obj 
   ⟨X.basicOpen f, U.prop.basicOpenIsAffine f⟩
 #align algebraic_geometry.Scheme.affine_basic_open AlgebraicGeometry.Scheme.affineBasicOpen
 
-@[simp]
+-- Porting note : linter complains that LHS is not in simp-normal-form. However, the error provided
+-- by linter seems to tell me that left hand side should be changed in to something exactly the same
+-- as before. I am not sure if this is caused by LHS being written with all explicit argument,
+-- I am not sure if this is intentional or not.
+@[simp, nolint simpNF]
 theorem IsAffineOpen.basicOpen_fromSpec_app {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) :
     @Scheme.basicOpen (Scheme.Spec.obj <| op (X.presheaf.obj <| op U))
