@@ -74,7 +74,6 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
   obtain (rfl : m = n) | (h3 : m < n) := h1.m_le_n.eq_or_lt
   · have h4 : m = 1 := h1.eq_imp_1
     exact absurd h4.symm h2.ne
-  -- Porting note: Original proof used `refine_struct { n_range := h1.m_range .. }`
   exact
     { n_range := h1.m_range
       m_range := by

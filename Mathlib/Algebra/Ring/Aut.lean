@@ -81,30 +81,24 @@ instance : Inhabited (RingAut R) :=
   ⟨1⟩
 
 /-- Monoid homomorphism from ring automorphisms to additive automorphisms. -/
-def toAddAut : RingAut R →* AddAut R :=
+def toAddAut : RingAut R →* AddAut R := by
+  refine'
   { toFun := RingEquiv.toAddEquiv
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
-  -- Porting note: old proof was
-  --`by refine_struct { toFun := RingEquiv.toAddEquiv } <;> intros <;> rfl`
+    .. } <;> (intros; rfl)
 #align ring_aut.to_add_aut RingAut.toAddAut
 
 /-- Monoid homomorphism from ring automorphisms to multiplicative automorphisms. -/
-def toMulAut : RingAut R →* MulAut R :=
+def toMulAut : RingAut R →* MulAut R := by
+  refine'
   { toFun := RingEquiv.toMulEquiv
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
-  --Porting note: old proof was
-  --=`by refine_struct { toFun := RingEquiv.toMulEquiv } <;> intros <;> rfl`
+    .. } <;> (intros; rfl)
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R :=
+def toPerm : RingAut R →* Equiv.Perm R :=by
+  refine'
   { toFun := RingEquiv.toEquiv
-    map_one' := rfl
-    map_mul' := fun _ _ => rfl }
-  -- Porting note: old proof was
-  --`by refine_struct { toFun := RingEquiv.toEquiv } <;> intros <;> rfl`
+    .. } <;> (intros; rfl)
 #align ring_aut.to_perm RingAut.toPerm
 
 end mul_add
