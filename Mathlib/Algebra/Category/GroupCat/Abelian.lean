@@ -97,7 +97,7 @@ theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ext x
     exact h (AddMonoidHom.mem_range.mpr ⟨x, rfl⟩)
   · rintro h _ ⟨x, rfl⟩
-    exact AddMonoidHom.congr_fun h x
+    exact FunLike.congr_fun h x
 
 
 
