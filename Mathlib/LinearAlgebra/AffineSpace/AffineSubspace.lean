@@ -521,6 +521,21 @@ theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P
 
 end AffineSubspace
 
+namespace Submodule
+
+variable {k V : Type _} [Ring k] [AddCommGroup V] [Module k V]
+
+@[simp]
+theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
+    x ∈ p.toAffineSubspace ↔ x ∈ p :=
+  Iff.rfl
+
+@[simp]
+theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
+  ext x; simp [← s.toAffineSubspace.vadd_mem_iff_mem_direction _ s.zero_mem]
+
+end Submodule
+
 theorem AffineMap.lineMap_mem {k V P : Type _} [Ring k] [AddCommGroup V] [Module k V]
     [AddTorsor V P] {Q : AffineSubspace k P} {p₀ p₁ : P} (c : k) (h₀ : p₀ ∈ Q) (h₁ : p₁ ∈ Q) :
     AffineMap.lineMap p₀ p₁ c ∈ Q := by

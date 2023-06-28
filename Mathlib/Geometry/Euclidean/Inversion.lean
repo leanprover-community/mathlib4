@@ -9,6 +9,7 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Geometry.Euclidean.PerpendicularBisector
 
 /-!
 # Inversion in an affine space
@@ -27,7 +28,7 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 noncomputable section
 
-open Metric Real Function AffineMap
+open Metric Real Function AffineMap Set
 
 namespace EuclideanGeometry
 
@@ -61,6 +62,9 @@ theorem inversion_vsub_center (c : P) (R : ℝ) (x : P) :
 @[simp]
 theorem inversion_self (c : P) (R : ℝ) : inversion c R c = c := by simp [inversion]
 #align euclidean_geometry.inversion_self EuclideanGeometry.inversion_self
+
+@[simp]
+theorem inversion_zero_radius (c x : P) : inversion c 0 x = c := by simp [inversion]
 
 @[simp]
 theorem inversion_dist_center (c x : P) : inversion c (dist x c) x = x := by
@@ -116,8 +120,20 @@ theorem inversion_bijective (c : P) {R : ℝ} (hR : R ≠ 0) : Bijective (invers
   (inversion_involutive c hR).bijective
 #align euclidean_geometry.inversion_bijective EuclideanGeometry.inversion_bijective
 
+theorem inversion_eq_center (hR : R ≠ 0) : inversion c R x = c ↔ x = c :=
+  (inversion_injective c hR).eq_iff' <| inversion_self _ _
+
+@[simp]
+theorem inversion_eq_center' : inversion c R x = c ↔ x = c ∨ R = 0 := by
+  by_cases hR : R = 0 <;> simp [inversion_eq_center, hR]
+
 /-!
-### Ptolemy's inequality
+### Similarity of triangles
+
+If inversion with center `O` sends `A` to `A'` and `B` to `B'`, then the triangle `OB'A'` is similar
+to the triangle `OAB` with coefficient `R ^ 2 / (|OA|*|OB|)` and the triangle `OA'B` is similar to
+the triangle `OAB'` with coefficient `|OB|/|OA|`. We formulate these statements in terms of ratios
+of the lengths of their sides.
 -/
 
 /-- Distance between the images of two points under an inversion. -/
@@ -128,6 +144,19 @@ theorem dist_inversion_inversion (hx : x ≠ c) (hy : y ≠ c) (R : ℝ) :
   simpa only [dist_vsub_cancel_right] using
     dist_div_norm_sq_smul (vsub_ne_zero.2 hx) (vsub_ne_zero.2 hy) R
 #align euclidean_geometry.dist_inversion_inversion EuclideanGeometry.dist_inversion_inversion
+
+theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
+    dist (inversion c R x) y * dist x c = dist x (inversion c R y) * dist y c := by
+  rcases eq_or_ne R 0 with rfl | hR; · simp [dist_comm, mul_comm]
+  have hy' : inversion c R y ≠ c := by simp [*]
+  conv in dist _ y => rw [← inversion_inversion c hR y]
+  rw [dist_inversion_inversion hx hy', dist_inversion_center]
+  have : dist x c ≠ 0 := dist_ne_zero.2 hx
+  field_simp; ring
+
+/-!
+### Ptolemy's inequality
+-/
 
 /-- **Ptolemy's inequality**: in a quadrangle `ABCD`, `|AC| * |BD| ≤ |AB| * |CD| + |BC| * |AD|`. If
 `ABCD` is a convex cyclic polygon, then this inequality becomes an equality, see
@@ -156,9 +185,15 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
 ### Images of spheres and hyperplanes
 -/
 
-theorem image_inversion_sphere_of_ne (h : dist x c ≠ r) :
-    inversion c R '' sphere x r =
-      letI k := R ^ 2 / ((dist x c) ^ 2 - r ^ 2); sphere (lineMap c x k) (r * k) := by
-  refine ?_
+theorem 
+
+-- dist (inversion c R x) (inversion c R y) = R ^ 2 / (dist x c * dist y c) * dist x y
+theorem inner_inversion_of_dist_eq_dist_center (hR : R ≠ 0) (hx : x ≠ c) (hy : y ≠ c)
+    (h : dist y x = dist x c) :
+    False := by
+  have : dist (inversion c R y) (inversion c R x) = dist (inversion c R y) c
+  · rw [dist_inversion_inversion, dist_inversion_center, h]
+    
+
 
 end EuclideanGeometry
