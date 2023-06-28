@@ -1178,7 +1178,7 @@ instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
   NonUnitalSubalgebra.center.instNonUnitalCommSemiring
 
 instance instNonUnitalCommRing {A : Type _} [NonUnitalRing A] [StarRing A] [Module R A]
-    [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : NonUnitalCommRing (center R A) :=
+    [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
   NonUnitalSubalgebra.center.instNonUnitalCommRing
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
