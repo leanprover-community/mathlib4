@@ -182,7 +182,7 @@ set_option linter.uppercaseLean3 false in
 #align modular_form.SL_slash ModularForm.SL_slash
 
 /-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
-@[simp]
+-- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) := by
   have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := by
     simp only [Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix,
@@ -228,12 +228,13 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
 #align modular_form.mul_slash ModularForm.mul_slash
 
 set_option maxHeartbeats 1000000 in
-@[simp]
+-- @[simp] -- Porting note: simpNF says LHS simplifies to something more complex
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A :=
   calc
     (f * g) ∣[k1 + k2] (A : GL(2, ℝ)⁺) =
-        ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := mul_slash _ _ _ _ _
+        ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
+      apply mul_slash
     _ = (1 : ℝ) • f ∣[k1] A * g ∣[k2] A := by
       simp only [Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix,
         Matrix.SpecialLinearGroup.det_coe]
