@@ -31,28 +31,28 @@ number field, infinite places
 
 variable (K : Type _) [Field K]
 
-open scoped NumberField
-
 namespace NumberField.canonicalEmbedding
+
+open NumberField
 
 /-- The canonical embedding of a number field `K` of degree `n` into `ℂ^n`. -/
 def _root_.NumberField.canonicalEmbedding : K →+* ((K →+* ℂ) → ℂ) := Pi.ringHom fun φ => φ
 
-lemma _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
+theorem _root_.NumberField.canonicalEmbedding_injective [NumberField K] :
     Function.Injective (NumberField.canonicalEmbedding K) := RingHom.injective _
 
 variable {K}
 
 @[simp]
-lemma apply_at (φ : K →+* ℂ) (x : K) :
+theorem apply_at (φ : K →+* ℂ) (x : K) :
     (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
-lemma nnnorm_eq [NumberField K] (x : K) :
+theorem nnnorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ =
       Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
-lemma norm_le_iff [NumberField K] (x : K) (r : ℝ) :
+theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
   · obtain ⟨φ : K →+* ℂ⟩ := (inferInstance : Nonempty _)
@@ -69,7 +69,7 @@ variable (K)
 def integerLattice : Subring ((K →+* ℂ) → ℂ) :=
   (RingHom.range (algebraMap (𝓞 K) K)).map (canonicalEmbedding K)
 
-lemma integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
+theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     ((integerLattice K : Set ((K →+* ℂ) → ℂ)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | _ := lt_or_le r 0
   · simp [Metric.closedBall_eq_empty.2 hr]
@@ -86,7 +86,7 @@ lemma integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
 open Module Fintype FiniteDimensional
 
 /-- A `ℂ`-basis of `ℂ^n` that is also a `ℤ`-basis of the `integerLattice`. -/
-noncomputable def lattice_basis [NumberField K] :
+noncomputable def latticeBasis [NumberField K] :
     Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℂ ((K →+* ℂ) → ℂ) := by
   classical
   -- Let `B` be the canonical basis of `(K →+* ℂ) → ℂ`. We prove that the determinant of
@@ -113,5 +113,21 @@ noncomputable def lattice_basis [NumberField K] :
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]
     exact (Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two ℚ ℂ
       (fun i => integralBasis K (e i)) RingHom.equivRatAlgHom).symm
+
+@[simp]
+theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
+    latticeBasis K i = (canonicalEmbedding K) (integralBasis K i) := by
+  simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
+    Function.comp_apply, Equiv.apply_symm_apply]
+
+theorem mem_span_latticeBasis [NumberField K] (x : K) :
+    canonicalEmbedding K x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ 𝓞 K := by
+  rw [← mem_span_integralBasis, show Set.range (latticeBasis K) =
+      (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
+    rw [← Set.range_comp]
+    exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+  refine Submodule.apply_mem_span_image_iff_mem_span ?_
+  change Function.Injective (canonicalEmbedding K)
+  exact RingHom.injective _
 
 end NumberField.canonicalEmbedding
