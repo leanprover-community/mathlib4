@@ -154,8 +154,8 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
 | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
 lemma Multiset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Multiset α) :
-  insert a s = Multiset.cons a s :=
-by ext; simp
+    insert a s = Multiset.cons a s := by 
+  ext; simp
 
 /-- Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
 
