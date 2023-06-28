@@ -159,6 +159,20 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X
 
 end Monoid
 
+section Group
+
+variable [Group M] [MulAction M X] [ContinuousSMul M X]
+
+@[to_additive]
+instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X where
+  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
+
+@[to_additive]
+instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X where
+  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
+
+end Group
+
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
