@@ -134,7 +134,8 @@ partial def List.proveNilOrCons {α : Q(Type u)} :
       (q($pf ▸ List.map_nil) : Q(List.map $f $xxs = [])))
     | .cons x xs pf => pure <| (.cons q($f $x) q(List.map $f $xs)
       (q($pf ▸ List.map_cons $f $x $xs) : Q(List.map $f $xxs = $f $x :: List.map $f $xs)))
-  | (_, fn, args) => throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
+  | (_, fn, args) =>
+    throwError "List.proveNilOrCons: unsupported List expression {s} ({fn}, {args})"
 
 /-- This represents the result of trying to determine whether the given expression
 `s : Q(Multiset $α)` is either empty or consists of an element inserted into a strict subset. -/
@@ -272,7 +273,8 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} :
       have _instFT : Q(Fintype $α) := instFT
       let res ← Finset.proveEmptyOrCons elems
       pure <| res.eq_trans (q(Finset.univ_eq_elems $elems $complete) : Q(Finset.univ = $elems))
-    | e => throwError "Finset.proveEmptyOrCons: could not determine elements of Fintype instance {e}"
+    | e =>
+      throwError "Finset.proveEmptyOrCons: could not determine elements of Fintype instance {e}"
   | (fn, args) =>
     throwError "Finset.proveEmptyOrCons: unsupported finset expression {s} ({fn}, {args})"
 
