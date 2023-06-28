@@ -11,6 +11,7 @@ Authors: Simon Hudon
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.ProdSigma
+import Mathlib.Data.List.Pi
 
 /-!
 Type class for finitely enumerable types. The property is stronger
@@ -210,63 +211,35 @@ instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map (Equiv).symm.toEmbedding
   complete := by intros ; simp
 
-/-- For `Pi.cons x xs y f` create a function where every `i ∈ xs` is mapped to `f i` and
-`x` is mapped to `y`  -/
-def Pi.cons [DecidableEq α] (x : α) (xs : List α) (y : β x) (f : ∀ a, a ∈ xs → β a) :
-    ∀ a, a ∈ (x :: xs : List α) → β a
-  | b, h => if h' : b = x then cast (by rw [h']) y else f b (List.mem_of_ne_of_mem h' h)
-#align fin_enum.pi.cons FinEnum.Pi.cons
+end FinEnum
 
-/-- Given `f` a function whose domain is `x :: xs`, produce a function whose domain
-is restricted to `xs`.  -/
-def Pi.tail {x : α} {xs : List α} (f : ∀ a, a ∈ (x :: xs : List α) → β a) : ∀ a, a ∈ xs → β a
-  | a, h => f a (List.mem_cons_of_mem _ h)
-#align fin_enum.pi.tail FinEnum.Pi.tail
+namespace List
+variable {α : Type _} [FinEnum α] {β : α → Type _} [∀ a, FinEnum (β a)]
+open FinEnum
 
-/-- `pi xs f` creates the list of functions `g` such that, for `x ∈ xs`, `g x ∈ f x` -/
-def pi {β : α → Type max u v} [DecidableEq α] :
-    ∀ xs : List α, (∀ a, List (β a)) → List (∀ a, a ∈ xs → β a)
-  | [], _ => [fun x h => (List.not_mem_nil x h).elim]
-  | x :: xs, fs => FinEnum.Pi.cons x xs <$> fs x <*> pi xs fs
-#align fin_enum.pi FinEnum.pi
-
-theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
-    (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) := by
-  induction' xs with xs_hd xs_tl xs_ih <;> simp [pi, -List.map_eq_map, monad_norm, functor_norm]
-  · ext a ⟨⟩
-  · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
-    constructor
-    exact ⟨_, rfl⟩
-    exists Pi.tail f
-    constructor
-    · apply xs_ih
-    · ext x h
-      simp [Pi.cons]
-      split_ifs
-      · subst x
-        rfl
-      · rfl
-#align fin_enum.mem_pi FinEnum.mem_pi
+theorem mem_pi_toList (xs : List α)
+    (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) :=
+  (mem_pi _ _).mpr fun _ _ ↦ mem_toList _
+#align fin_enum.mem_pi List.mem_pi_toList
 
 /-- enumerate all functions whose domain and range are finitely enumerable -/
-def pi.enum (β : α → Type (max u v)) [FinEnum α] [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
-  (pi.{u, v} (toList α) fun x => toList (β x)).map (fun f x => f x (mem_toList _))
-#align fin_enum.pi.enum FinEnum.pi.enum
+def Pi.enum (β : α → Type _) [∀ a, FinEnum (β a)] : List (∀ a, β a) :=
+  (pi (toList α) fun x => toList (β x)).map (fun f x => f x (mem_toList _))
+#align fin_enum.pi.enum List.Pi.enum
 
-theorem pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
-    f ∈ pi.enum.{u, v} β := by simp [pi.enum] ; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
-#align fin_enum.pi.mem_enum FinEnum.pi.mem_enum
+theorem Pi.mem_enum (f : ∀ a, β a) :
+    f ∈ Pi.enum β := by simp [Pi.enum] ; refine' ⟨fun a _ => f a, mem_pi_toList _ _, rfl⟩
+#align fin_enum.pi.mem_enum List.Pi.mem_enum
 
-instance pi.finEnum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] :
-    FinEnum (∀ a, β a) :=
-  ofList (pi.enum.{u, v} _) fun _ => pi.mem_enum _
-#align fin_enum.pi.fin_enum FinEnum.pi.finEnum
+instance Pi.finEnum : FinEnum (∀ a, β a) :=
+  ofList (Pi.enum _) fun _ => Pi.mem_enum _
+#align fin_enum.pi.fin_enum List.Pi.finEnum
 
 instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum (α hp)] :
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then
     ofList ((toList (α hp)).map fun x _ => x) (by intro x ; simp ; exact ⟨x hp, rfl⟩)
   else ofList [fun hp' => (hp hp').elim] (by intro ; simp ; ext hp' ; cases hp hp')
-#align fin_enum.pfun_fin_enum FinEnum.pfunFinEnum
+#align fin_enum.pfun_fin_enum List.pfunFinEnum
 
-end FinEnum
+end List
