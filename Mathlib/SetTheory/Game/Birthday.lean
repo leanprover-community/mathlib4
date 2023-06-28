@@ -20,11 +20,11 @@ prove the basic properties about these.
 
 # Main declarations
 
-- `pgame.birthday`: The birthday of a pre-game.
+- `PGame.birthday`: The birthday of a pre-game.
 
 # Todo
 
-- Define the birthdays of `game`s and `surreal`s.
+- Define the birthdays of `Game`s and `Surreal`s.
 - Characterize the birthdays of basic arithmetical operations.
 -/
 
@@ -48,8 +48,8 @@ noncomputable def birthday : PGame.{u} → Ordinal.{u}
 theorem birthday_def (x : PGame) :
     birthday x =
       max (lsub.{u, u} fun i => birthday (x.moveLeft i))
-        (lsub.{u, u} fun i => birthday (x.moveRight i)) :=
-  by cases x; rw [birthday]; rfl
+        (lsub.{u, u} fun i => birthday (x.moveRight i)) := by
+  cases x; rw [birthday]; rfl
 #align pgame.birthday_def PGame.birthday_def
 
 theorem birthday_moveLeft_lt {x : PGame} (i : x.LeftMoves) : (x.moveLeft i).birthday < x.birthday :=
@@ -124,8 +124,7 @@ theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
   rw [toPGame_def, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
   -- nth_rw 1 [← lsub_typein o]
-  conv_rhs =>
-    rw [← lsub_typein o]
+  conv_rhs => rw [← lsub_typein o]
   congr with x
   exact IH _ (typein_lt_self x)
 #align pgame.to_pgame_birthday PGame.toPGame_birthday
