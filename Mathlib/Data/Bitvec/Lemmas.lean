@@ -137,8 +137,9 @@ theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   apply Subtype.ext
   dsimp [Bitvec.toNat, bitsToNat, Vector.reverse, toList]
   rw [← List.length_reverse] at h
-  rw [← List.reverse_reverse xs, List.foldl_reverse]
-  generalize xs.reverse = ys at h ⊢; clear xs
+  rw [List.foldl_reverse, ←Vector.toList]
+  generalize xs.reverse = ys at h⊢;
+  clear xs
   induction' ys with ys_head ys_tail ys_ih generalizing n
   · cases h
     simp [Bitvec.ofNat]
@@ -422,14 +423,9 @@ theorem get_map₂ : get (Vector.map₂ f v₁ v₂) i = f (get v₁ i) (get v�
   simp only [get, Vector.get_map₂]
 
 @[simp]
-theorem get_replicate_val_eq_val : get (Vector.replicate n val) i = val := by
-  induction n
-  case zero =>
-    exact Fin.elim0 i
-  case succ n ih =>
-    cases i using Fin.cases
-    case H0 => rfl
-    case Hs => apply ih
+theorem get_replicate (val : Bool) :
+    get (Vector.replicate n val) i = val :=
+  Vector.get_replicate ..
 
 
 
