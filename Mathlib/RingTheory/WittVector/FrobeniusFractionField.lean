@@ -169,7 +169,9 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
   have := solution_spec p a₁ a₂
   rw [h, zero_pow] at this
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
-  · linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
+  · -- Porting note: was
+    -- linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
+    exact tsub_pos_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_nonzero WittVector.RecursionBase.solution_nonzero
 
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
@@ -180,8 +182,8 @@ theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎
   conv_lhs =>
     congr
     congr
-    skip
-    rw [hq]
+    · skip
+    · rw [hq]
   rw [pow_succ', hq', this]
   field_simp [ha₁, mul_comm]
 #align witt_vector.recursion_base.solution_spec' WittVector.RecursionBase.solution_spec'
@@ -201,7 +203,7 @@ variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
 noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
-  | n + 1 => succNthVal p n a₁ a₂ (fun i => frobenius_rotation_coeff i.val) ha₁ ha₂
+  | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂
 decreasing_by apply Fin.is_lt
 #align witt_vector.frobenius_rotation_coeff WittVector.frobeniusRotationCoeff
 
@@ -209,40 +211,41 @@ decreasing_by apply Fin.is_lt
 equation `frobenius (frobenius_rotation a₁ a₂) * a₁ = (frobenius_rotation a₁ a₂) * a₂`.
 -/
 def frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : 𝕎 k :=
-  WittVector.mk' p (frobeniusRotationCoeff p ha₁ ha₂)
+  WittVector.mk p (frobeniusRotationCoeff p ha₁ ha₂)
 #align witt_vector.frobenius_rotation WittVector.frobeniusRotation
 
 theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobeniusRotation p ha₁ ha₂ ≠ 0 := by
   intro h
   apply solution_nonzero p ha₁ ha₂
-  simpa [← h, frobenius_rotation, frobenius_rotation_coeff] using WittVector.zero_coeff p k 0
+  simpa [← h, frobeniusRotation, frobeniusRotationCoeff] using WittVector.zero_coeff p k 0
 #align witt_vector.frobenius_rotation_nonzero WittVector.frobeniusRotation_nonzero
 
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
-  induction' n with n ih
-  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobenius_rotation,
-      frobenius_rotation_coeff]
+  -- Porting note: was `induction' n with n ih`
+  cases' n with n
+  · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
+      frobeniusRotationCoeff, Nat.zero_eq]
     apply solution_spec' _ ha₁
-  · simp only [nth_remainder_spec, WittVector.coeff_frobenius_charP, frobenius_rotation_coeff,
-      frobenius_rotation, Fin.val_eq_coe]
+  · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP, frobeniusRotationCoeff,
+      frobeniusRotation]
     have :=
-      succ_nth_val_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobenius_rotation_coeff p ha₁ ha₂ i.val)
+      succNthVal_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobeniusRotationCoeff p ha₁ ha₂ i.val)
         ha₁ ha₂
-    simp only [frobenius_rotation_coeff, Fin.val_eq_coe, Fin.val_zero] at this
-    convert this using 4
+    simp only [frobeniusRotationCoeff, Fin.val_zero] at this
+    convert this using 3
     apply TruncatedWittVector.ext
     intro i
-    simp only [Fin.val_eq_coe, WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]
+    simp only [WittVector.coeff_truncateFun, WittVector.coeff_frobenius_charP]
     rfl
 #align witt_vector.frobenius_frobenius_rotation WittVector.frobenius_frobeniusRotation
 
 local notation "φ" => IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
 
 theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
-    (hq' : q'.coeff 0 ≠ 0) (hq : ↑p ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
+    (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
     IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
           (algebraMap (𝕎 k) (FractionRing (𝕎 k)) b) *
