@@ -42,8 +42,8 @@ equivalence to an inner-product space.
 - `tendsto_integral_exp_smul_cocompact` : for `V` a finite-dimensional real vector space (endowed
   with its unique Hausdorff topological vector space structure), and `W` the dual of `V`, the
   function `λ w : W, ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
-- `real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
-- `real.zero_at_infty_fourier_integral` and `real.zero_at_infty_vector_fourier_integral`:
+- `Real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
+- `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
   reformulations explicitly using the Fourier integral.
 -/
 
@@ -256,7 +256,7 @@ theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
   tendsto_integral_exp_inner_smul_cocompact f
 #align real.tendsto_integral_exp_smul_cocompact Real.tendsto_integral_exp_smul_cocompact
 
-/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `real.fourier_integral`. -/
+/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `Real.fourierIntegral`. -/
 theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
   tendsto_integral_exp_inner_smul_cocompact f
 #align real.zero_at_infty_fourier_integral Real.zero_at_infty_fourierIntegral
@@ -304,7 +304,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   -- various equivs derived from A
   let Aₘ : MeasurableEquiv V V' := A.toHomeomorph.toMeasurableEquiv
   -- isomorphism between duals derived from A -- need to do continuity as a separate step in order
-  -- to apply `linear_map.continuous_of_finite_dimensional`.
+  -- to apply `LinearMap.continuous_of_finiteDimensional`.
   let Adualₗ : (V →L[ℝ] ℝ) ≃ₗ[ℝ] V' →L[ℝ] ℝ :=
     { toFun := fun t => t.comp A.symm.toContinuousLinearMap
       invFun := fun t => t.comp A.toContinuousLinearMap
@@ -347,7 +347,7 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
   · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
 #align tendsto_integral_exp_smul_cocompact tendsto_integral_exp_smul_cocompact
 
-/-- The Riemann-Lebesgue lemma, formulated in terms of `vector_fourier.fourier_integral` (with the
+/-- The Riemann-Lebesgue lemma, formulated in terms of `VectorFourier.fourierIntegral` (with the
 pairing in the definition of `fourier_integral` taken to be the canonical pairing between `V` and
 its dual space). -/
 theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaarMeasure] :
