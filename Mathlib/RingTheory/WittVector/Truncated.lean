@@ -219,7 +219,7 @@ theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := 
 end TruncatedWittVector
 
 /-- A macro tactic used to prove that `truncateFun` respects ring operations. -/
-macro (name := wtf_tac) "wtf_tac" : tactic =>
+macro (name := witt_truncate_fun_tac) "witt_truncate_fun_tac" : tactic =>
   `(tactic|
     { show _ = WittVector.truncateFun n _
       apply TruncatedWittVector.out_injective
@@ -255,31 +255,35 @@ variable {p R}
 
 @[simp]
 theorem truncateFun_add (x y : 𝕎 R) :
-    truncateFun n (x + y) = truncateFun n x + truncateFun n y := by wtf_tac
+    truncateFun n (x + y) = truncateFun n x + truncateFun n y := by
+  witt_truncate_fun_tac
 #align witt_vector.truncate_fun_add WittVector.truncateFun_add
 
 @[simp]
 theorem truncateFun_mul (x y : 𝕎 R) :
-    truncateFun n (x * y) = truncateFun n x * truncateFun n y := by wtf_tac
+    truncateFun n (x * y) = truncateFun n x * truncateFun n y := by
+witt_truncate_fun_tac
 #align witt_vector.truncate_fun_mul WittVector.truncateFun_mul
 
-theorem truncateFun_neg (x : 𝕎 R) : truncateFun n (-x) = -truncateFun n x := by wtf_tac
+theorem truncateFun_neg (x : 𝕎 R) : truncateFun n (-x) = -truncateFun n x := by
+  witt_truncate_fun_tac
 #align witt_vector.truncate_fun_neg WittVector.truncateFun_neg
 
 theorem truncateFun_sub (x y : 𝕎 R) :
-    truncateFun n (x - y) = truncateFun n x - truncateFun n y := by wtf_tac
+    truncateFun n (x - y) = truncateFun n x - truncateFun n y := by
+  witt_truncate_fun_tac
 #align witt_vector.truncate_fun_sub WittVector.truncateFun_sub
 
 theorem truncateFun_nsmul (x : 𝕎 R) (m : ℕ) : truncateFun n (m • x) = m • truncateFun n x := by
-  wtf_tac
+  witt_truncate_fun_tac
 #align witt_vector.truncate_fun_nsmul WittVector.truncateFun_nsmul
 
 theorem truncateFun_zsmul (x : 𝕎 R) (m : ℤ) : truncateFun n (m • x) = m • truncateFun n x := by
-  wtf_tac
+  witt_truncate_fun_tac
 #align witt_vector.truncate_fun_zsmul WittVector.truncateFun_zsmul
 
 theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncateFun n x ^ m := by
-  wtf_tac
+  witt_truncate_fun_tac
 #align witt_vector.truncate_fun_pow WittVector.truncateFun_pow
 
 theorem truncateFun_nat_cast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
