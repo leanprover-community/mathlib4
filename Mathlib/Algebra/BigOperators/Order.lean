@@ -486,7 +486,7 @@ theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i �
       exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
     _ ≤ ∏ j in t, f j := by
       apply prod_le_prod_of_subset_of_one_le'
-      · simp [Finset.insert_subset, h, ht]
+      · simp [Finset.insert_subset_iff, h, ht]
       · intro x hx h'x
         simp only [mem_insert, not_or] at h'x
         exact hle x hx h'x.2
