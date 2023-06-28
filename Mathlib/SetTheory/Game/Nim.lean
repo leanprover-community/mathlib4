@@ -231,13 +231,15 @@ theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := 
 @[simp]
 theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 0) ↔ o₁ = o₂ := by
   constructor
-  · refine' not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff _).2 _
+  · refine' not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 _
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le, nim_def o₂]
     refine' ⟨toLeftMovesAdd (Sum.inr _), _⟩
     · exact (Ordinal.principalSegOut h).top
-    · simpa using (Impartial.add_self (nim o₁)).2
+    · -- Porting note: squeezed simp
+      simpa only [Ordinal.typein_top, Ordinal.type_lt, PGame.add_moveLeft_inr, PGame.moveLeft_mk]
+        using (Impartial.add_self (nim o₁)).2
   · rintro rfl
     exact Impartial.add_self (nim o₁)
 #align pgame.nim_add_equiv_zero_iff PGame.nim_add_equiv_zero_iff
@@ -278,7 +280,8 @@ theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (gr
       rw [nim_add_fuzzy_zero_iff]
       intro heq
       rw [eq_comm, grundyValue_eq_mex_left G] at heq
-      have h := Ordinal.ne_mex _
+      -- Porting note: added universe annotation, argument
+      have h := Ordinal.ne_mex.{u, u} (fun i ↦ grundyValue (moveLeft G i))
       rw [heq] at h
       exact (h i₁).irrefl
     · intro i₂
