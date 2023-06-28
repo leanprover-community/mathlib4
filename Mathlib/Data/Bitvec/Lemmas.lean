@@ -415,12 +415,12 @@ def ofVector : Vector Bool n → Bitvec n := id
 
 
 @[simp]
-theorem get_map : get (Vector.map f v) i = f (get v i) := by
-  simp only [get, Vector.get_map]
+theorem get_map : get (Vector.map f v) i = f (get v i) :=
+  Vector.get_map ..
 
 @[simp]
-theorem get_map₂ : get (Vector.map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
-  simp only [get, Vector.get_map₂]
+theorem get_map₂ : get (Vector.map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) :=
+  Vector.get_map₂ ..
 
 @[simp]
 theorem get_replicate (val : Bool) :
