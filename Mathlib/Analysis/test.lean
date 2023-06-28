@@ -1,12 +1,10 @@
-import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Rewrites
 
 axiom K : Type
-@[instance] axiom K.field : Field K
+@[instance] axiom K.ring : Ring K
 
 def foo : K → K := sorry
 
-def bar : K := sorry
-
-example : foo x = 1 ↔ ∃ k : ℤ, x = 2 * bar * k + bar / 2 := by
+example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
   rw?
