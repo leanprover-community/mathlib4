@@ -684,15 +684,15 @@ lemma uniform_equicontinuous_iff_exists_continuous_seminorm {κ : Type _}
     have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
         (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
-    refine ⟨⨆ k, (q i).comp (f k), seminorm.continuous' _, le_csupr bdd⟩
+    refine ⟨⨆ k, (q i).comp (f k), Seminorm.continuous' zero_lt_one ?_, le_ciSup bdd⟩
     filter_upwards [this] with x hx
-    rw [closed_ball_supr bdd _ one_pos, mem_Inter]
-    exact fun k ↦ (mem_closed_ball_zero _).mpr (hx k)
+    rw [closedBall_iSup bdd _ one_pos, mem_iInter]
+    exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
     -- Works in trivially normed fields too
   . intro ⟨p, hp, hfp⟩
-    have hp' : filter.tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-    refine uniform_equicontinuous_of_equicontinuous_at_zero f
-      (metric.equicontinuous_at_of_continuity_modulus p hp' _ <| eventually_of_forall fun x k ↦ _)
+    have hp' : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+    refine uniformEquicontinuous_of_equicontinuousAt_zero f
+      (Metric.equicontinuousAt_of_continuity_modulus p hp' _ <| eventually_of_forall fun x k ↦ ?_)
     change q i (f k 0 - f k x) ≤ p x
     rw [map_zero, zero_sub, map_neg_eq_map, ← comp_apply]
     exact hfp k x

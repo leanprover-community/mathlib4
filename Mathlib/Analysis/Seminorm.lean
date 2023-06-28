@@ -603,6 +603,10 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
         le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq (mem_image_of_mem _ i.2) x⟩ ⟨p, hp⟩⟩⟩
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
+protected theorem bddAbove_range_iff {p : ι → Seminorm 𝕜 E} :
+  BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) :=
+by rw [Seminorm.bddAbove_iff, ← range_comp, bddAbove_range_pi]; rfl
+
 protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
     ↑(sSup s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
   Seminorm.coe_sSup_eq' (Seminorm.bddAbove_iff.mp hs)
@@ -614,6 +618,14 @@ protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : B
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
 #align seminorm.coe_supr_eq Seminorm.coe_iSup_eq
 
+protected lemma sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : E} :
+  (sSup s) x = ⨆ p : s, (p : E → ℝ) x :=
+by rw [Seminorm.coe_sSup_eq hp, iSup_apply]
+
+protected lemma iSup_apply {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) {x : E} :
+  (⨆ i, p i) x = ⨆ i, p i x :=
+by rw [Seminorm.coe_iSup_eq hp, iSup_apply]
+
 private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
   refine' ⟨fun p hp x => _, fun p hp x => _⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
@@ -621,6 +633,11 @@ private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbov
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
+
+protected lemma sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
+  ext
+  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
+  rfl
 
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
@@ -953,6 +970,15 @@ section NormedField
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
   {r : ℝ} {x : E}
 
+lemma closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
+    (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
+  cases isEmpty_or_nonempty ι
+  . rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
+    exact closedBall_bot _ hr
+  . ext x
+    have := Seminorm.bddAbove_range_iff.mp hp (x - e)
+    simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
+
 theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     p.ball 0 (‖k‖ * r) ⊆ k • p.ball 0 r := by
   rcases eq_or_ne k 0 with (rfl | hk)
@@ -1284,6 +1310,28 @@ lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
   exact hf y (fun k hk ↦ (le_finset_sup_apply hk).trans_lt hlt) i hi (hiy ▸ hle)
 
 end ShellLemmas
+
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+lemma bddAbove_of_absorbent {p : ι → Seminorm 𝕜 E} {s : Set E} (hs : Absorbent 𝕜 s)
+    (h : ∀ x ∈ s, BddAbove (range fun i ↦ p i x)) :
+    BddAbove (range p) := by
+  rw [Seminorm.bddAbove_range_iff]
+  intro x
+  rcases hs x with ⟨r, hr, hrx⟩
+  rcases exists_lt_norm 𝕜 r with ⟨k, hk⟩
+  have hk0 : k ≠ 0 := norm_pos_iff.mp (hr.trans hk)
+  have : k⁻¹ • x ∈ s := by
+    rw [← mem_smul_set_iff_inv_smul_mem₀ hk0]
+    exact hrx k hk.le
+  rcases h (k⁻¹ • x) this with ⟨M, hM⟩
+  refine ⟨‖k‖ * M, forall_range_iff.mpr fun i ↦ ?_⟩
+  have := (forall_range_iff.mp hM) i
+  rwa [map_smul_eq_mul, norm_inv, inv_mul_le_iff (hr.trans hk)] at this
+
+end NontriviallyNormedField
 
 end Seminorm
 
