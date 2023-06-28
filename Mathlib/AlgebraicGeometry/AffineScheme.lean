@@ -630,6 +630,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
   rw [eqToHom_trans]
 #align algebraic_geometry.is_affine_open.is_localization_stalk_aux AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux
 
+set_option maxHeartbeats 0 in
 theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (x : U) : IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   haveI : IsAffine _ := hU
@@ -637,33 +638,38 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   rcases x with ⟨x, hx⟩
   let y := hU.primeIdealOf ⟨x, hx⟩
   have : hU.fromSpec.val.base y = x := hU.fromSpec_primeIdealOf ⟨x, hx⟩
-  have a1 : Algebra (X.presheaf.obj <| op U) (X.presheaf.stalk x) :=
-    TopCat.presheaf.stalk.algebra_section_stalk X.presheaf ⟨x, hx⟩
-  change IsLocalization y.asIdeal.primeCompl _
-  dsimp [IsLocalization.AtPrime]
+  -- Porting note : this is painful now, need to provide explicit instance
+  change @IsLocalization (M := y.asIdeal.primeCompl) (S := X.presheaf.stalk x) _ _
+    (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨x, hx⟩)
+  clear_value y
   subst this
-  dsimp
+  -- Porting note : this is painful now, need to provide explicit instance
   apply
-    (IsLocalization.isLocalization_iff_of_ringEquiv _
-        (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
-  convert StructureSheaf.is_localization.to_stalk _ _ using 1
-  delta StructureSheaf.stalkAlgebra
-  congr 1
+    (@IsLocalization.isLocalization_iff_of_ringEquiv (R := X.presheaf.obj <| op U)
+      (S := X.presheaf.stalk (hU.fromSpec.1.base y)) _ y.asIdeal.primeCompl _
+      (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.1.base y, hx⟩) _ _
+      (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
+  -- Porting note : need to know what the ring is and after convert, instead of equality
+  -- we get an `iff`.
+  convert StructureSheaf.IsLocalization.to_stalk (X.presheaf.obj <| op U) y using 1
+  delta IsLocalization.AtPrime StructureSheaf.stalkAlgebra
+  rw [iff_iff_eq]
+  congr 2
   rw [RingHom.algebraMap_toAlgebra]
-  refine' (PresheafedSpace.stalk_map_germ hU.from_Spec.1 _ ⟨_, _⟩).trans _
-  delta is_affine_open.from_Spec Scheme.iso_Spec structure_sheaf.to_stalk
+  refine' (PresheafedSpace.stalkMap_germ hU.fromSpec.1 _ ⟨_, hx⟩).trans _
+  delta IsAffineOpen.fromSpec Scheme.isoSpec StructureSheaf.toStalk
   simp only [Scheme.comp_val_c_app, Category.assoc]
   dsimp only [Functor.op, asIso_inv, unop_op]
   erw [IsAffineOpen.isLocalization_stalk_aux]
   simp only [Category.assoc]
   conv_lhs => rw [← Category.assoc]
-  erw [← X.presheaf.map_comp, SpecΓ_naturality_assoc]
+  erw [← X.presheaf.map_comp, Spec_Γ_naturality_assoc]
   congr 1
   simp only [← Category.assoc]
-  trans _ ≫ (StructureSheaf (X.presheaf.obj <| op U)).presheaf.germ ⟨_, _⟩
+  trans _ ≫ (Spec.structureSheaf (X.presheaf.obj <| op U)).presheaf.germ ⟨_, _⟩
   · rfl
   convert
-    (StructureSheaf (X.presheaf.obj <| op U)).presheaf.germ_res (homOfLE le_top) ⟨_, _⟩ using 2
+    (Spec.structureSheaf (X.presheaf.obj <| op U)).presheaf.germ_res (homOfLE le_top) ⟨_, _⟩ using 2
   rw [Category.assoc]
   erw [NatTrans.naturality]
   rw [← LocallyRingedSpace.Γ_map_op, ← LocallyRingedSpace.Γ.map_comp_assoc, ← op_comp]
