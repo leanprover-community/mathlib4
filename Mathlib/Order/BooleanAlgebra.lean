@@ -841,11 +841,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
--- Porting note: when `refine_struct` is ported this can be by:
--- refine_struct { PUnit.biheytingAlgebra with } <;>
---   intros <;> first |trivial|exact Subsingleton.elim _ _
-instance PUnit.booleanAlgebra : BooleanAlgebra PUnit :=
+instance PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
+  refine'
   { PUnit.biheytingAlgebra with
-    le_sup_inf := by intros; trivial
-    inf_compl_le_bot := by intros; trivial
-    top_le_sup_compl := by intros; trivial }
+    .. } <;> (intros; trivial)
