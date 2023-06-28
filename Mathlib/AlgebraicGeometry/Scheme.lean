@@ -155,6 +155,12 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
   rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
 
+-- Porting note : in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
+-- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
+lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
+    X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
+  rw [eqToHom_op, eqToHom_map]
+
 instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=
   forgetToLocallyRingedSpace.map_isIso f
