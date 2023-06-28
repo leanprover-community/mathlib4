@@ -8,10 +8,10 @@ Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Domain
-import Mathbin.RingTheory.WittVector.MulCoeff
-import Mathbin.RingTheory.DiscreteValuationRing.Basic
-import Mathbin.Tactic.LinearCombination
+import Mathlib.RingTheory.WittVector.Domain
+import Mathlib.RingTheory.WittVector.MulCoeff
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.Tactic.LinearCombination
 
 /-!
 
@@ -92,8 +92,7 @@ section Field
 
 variable {k : Type _} [Field k] [CharP k p]
 
-theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUnit x :=
-  by
+theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUnit x := by
   let y : kˣ := Units.mk0 (x.coeff 0) hx
   have hy : x.coeff 0 = y := rfl
   exact (mk_unit hy).IsUnit
@@ -101,8 +100,7 @@ theorem isUnit_of_coeff_zero_ne_zero (x : 𝕎 k) (hx : x.coeff 0 ≠ 0) : IsUni
 
 variable (p)
 
-theorem irreducible : Irreducible (p : 𝕎 k) :=
-  by
+theorem irreducible : Irreducible (p : 𝕎 k) := by
   have hp : ¬IsUnit (p : 𝕎 k) := by
     intro hp
     simpa only [constant_coeff_apply, coeff_p_zero, not_isUnit_zero] using
@@ -128,8 +126,7 @@ section PerfectRing
 variable {k : Type _} [CommRing k] [CharP k p] [PerfectRing k p]
 
 theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
-    ∃ (m : ℕ) (b : 𝕎 k), b.coeff 0 ≠ 0 ∧ a = p ^ m * b :=
-  by
+    ∃ (m : ℕ) (b : 𝕎 k), b.coeff 0 ≠ 0 ∧ a = p ^ m * b := by
   obtain ⟨m, c, hc, hcm⟩ := WittVector.verschiebung_nonzero ha
   obtain ⟨b, rfl⟩ := (frobenius_bijective p k).Surjective.iterate m c
   rw [WittVector.iterate_frobenius_coeff] at hc 
