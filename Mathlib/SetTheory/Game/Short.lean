@@ -32,21 +32,21 @@ namespace PGame
 
 /-- A short game is a game with a finite set of moves at every turn. -/
 inductive Short : PGame.{u} → Type (u + 1)
-  |
-  mk :
-    ∀ {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} (sL : ∀ i : α, short (L i))
-      (sR : ∀ j : β, short (R j)) [Fintype α] [Fintype β], short ⟨α, β, L, R⟩
+  | mk :
+    ∀ {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} (_ : ∀ i : α, Short (L i))
+      (_ : ∀ j : β, Short (R j)) [Fintype α] [Fintype β], Short ⟨α, β, L, R⟩
 #align pgame.short PGame.Short
 
 instance subsingleton_short : ∀ x : PGame, Subsingleton (Short x)
   | mk xl xr xL xR =>
     ⟨fun a b => by
       cases a; cases b
-      congr
-      · funext
+      congr!
+      · funext x
         apply @Subsingleton.elim _ (subsingleton_short (xL x))
-      · funext
+      · funext x
         apply @Subsingleton.elim _ (subsingleton_short (xR x))⟩
+termination_by subsingleton_short x => x
 decreasing_by pgame_wf_tac
 #align pgame.subsingleton_short PGame.subsingleton_short
 
@@ -54,10 +54,10 @@ decreasing_by pgame_wf_tac
 def Short.mk' {x : PGame} [Fintype x.LeftMoves] [Fintype x.RightMoves]
     (sL : ∀ i : x.LeftMoves, Short (x.moveLeft i))
     (sR : ∀ j : x.RightMoves, Short (x.moveRight j)) : Short x := by
-  (cases x; dsimp at *) <;> exact short.mk sL sR
+  (cases x; dsimp at *) <;> exact Short.mk sL sR
 #align pgame.short.mk' PGame.Short.mk'
 
-attribute [class] short
+attribute [class] Short
 
 /-- Extracting the `fintype` instance for the indexing type for Left's moves in a short game.
 This is an unindexed typeclass, so it can't be made a global instance.
@@ -66,10 +66,10 @@ def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [
     Fintype α := by cases' S with _ _ _ _ _ _ F _; exact F
 #align pgame.fintype_left PGame.fintypeLeft
 
-attribute [local instance] fintype_left
+attribute [local instance] fintypeLeft
 
-instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by cases x; dsimp;
-  infer_instance
+instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by
+  cases x; dsimp; infer_instance
 #align pgame.fintype_left_moves PGame.fintypeLeftMoves
 
 /-- Extracting the `fintype` instance for the indexing type for Right's moves in a short game.
@@ -79,10 +79,10 @@ def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} 
     Fintype β := by cases' S with _ _ _ _ _ _ _ F; exact F
 #align pgame.fintype_right PGame.fintypeRight
 
-attribute [local instance] fintype_right
+attribute [local instance] fintypeRight
 
-instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves := by cases x; dsimp;
-  infer_instance
+instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves := by
+  cases x; dsimp; infer_instance
 #align pgame.fintype_right_moves PGame.fintypeRightMoves
 
 instance moveLeftShort (x : PGame) [S : Short x] (i : x.LeftMoves) : Short (x.moveLeft i) := by
@@ -97,7 +97,7 @@ def moveLeftShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (i : xl) : Short
   cases' S with _ _ _ _ L _ _ _; apply L
 #align pgame.move_left_short' PGame.moveLeftShort'
 
-attribute [local instance] move_left_short'
+attribute [local instance] moveLeftShort'
 
 instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.moveRight j) := by
   cases' S with _ _ _ _ _ R _ _; apply R
@@ -111,7 +111,7 @@ def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Shor
   cases' S with _ _ _ _ _ R _ _; apply R
 #align pgame.move_right_short' PGame.moveRightShort'
 
-attribute [local instance] move_right_short'
+attribute [local instance] moveRightShort'
 
 theorem short_birthday : ∀ (x : PGame.{u}) [Short x], x.birthday < Ordinal.omega
   | ⟨xl, xr, xL, xR⟩, hs => by
@@ -128,6 +128,7 @@ theorem short_birthday : ∀ (x : PGame.{u}) [Short x], x.birthday < Ordinal.ome
       apply short_birthday _
     · exact move_left_short' xL xR i
     · exact move_right_short' xL xR i
+termination_by short_birthday x _ => x
 #align pgame.short_birthday PGame.short_birthday
 
 /-- This leads to infinite loops if made into an instance. -/
@@ -274,4 +275,3 @@ example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 -- example : (0 : pgame) ≤ 0 := dec_trivial
 -- example : (1 : pgame) ≤ 1 := dec_trivial
 end PGame
-
