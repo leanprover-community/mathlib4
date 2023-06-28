@@ -2065,7 +2065,7 @@ instance ConnectedComponents.t2 [T2Space α] [CompactSpace α] : T2Space (Connec
       exact fun Z => Z.2.1.2
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
-    set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (H : i ∈ fin_a), i
+    set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun Z _ => Z.2.1.connectedComponent_subset Z.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩
