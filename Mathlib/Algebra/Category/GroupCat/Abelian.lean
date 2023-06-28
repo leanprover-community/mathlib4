@@ -31,7 +31,7 @@ namespace AddCommGroupCat
 
 section
 
-variable {X Y : AddCommGroupCat.{u}} (f : X ⟶ Y)
+variable {X Y : ModuleCat ℤ } (f : X ⟶ Y)
 
 /-- In the category of abelian groups, every monomorphism is normal. -/
 def normalMono (_ : Mono f) : NormalMono f :=
@@ -63,11 +63,13 @@ instance : Abelian AddCommGroupCat.{u} where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
-variable {A B C : AddCommGroupCat.{u}} (f : A ⟶ B) (g : B ⟶ C)
 
-theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Exact f g ↔ f.range = g.ker := by
-  rw [Abelian.exact_iff' f g (ModuleCat.kernelIsLimit _) (ModuleCat.cokernelIsColimit _)]
+theorem exact_iff {X Y Z : ModuleCat ℤ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Exact f g ↔ g.ker = f.range := by
+  rw [Abelian.exact_iff' f g _ _]
+  rotate_left 4
+
+  exact ModuleCat.cokernelIsColimit (R := ℤ) ( M := X) (N := Y) f
   split
   · rintro ⟨hfg, h⟩
     ext x
@@ -88,6 +90,9 @@ theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
       simpa only [comp_apply, add_subgroup.coe_subtype, add_subgroup.coe_mk
         QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_zero_iff, h] using hx
 
+instance : HasLimits (ModuleCat ℤ) := by infer_instance
+instance : HasColimits (ModuleCat ℤ) := by sorry
+
 theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
   rw [exact_iff, le_antisymm_iff]
@@ -100,22 +105,20 @@ theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     exact FunLike.congr_fun h x
 
 
-
-
 -- Axiom AB5 for `AddCommGroup`
 theorem exact_colim_of_exact_of_is_filtered
-  (F G H : J ⥤ AddCommGroupCat.{u}) (η : F ⟶ G) (γ : G ⟶ H) :
+  (F G H : J ⥤ ModuleCat ℤ) (η : F ⟶ G) (γ : G ⟶ H) :
   (∀ j, Exact (η.app j) (γ.app j)) → Exact (Limits.colimMap η) (Limits.colimMap γ) := by
   intros h
-  rw [AddCommGroupCat.exact_iff']
+  rw [CategoryTheory.Abelian.exact_iff_image_eq_kernel]
   constructor
   · refine colimit.hom_ext  (fun j => ?_)
     simp [reassoc_of% (h j).1]
-  · rintro x (hx : _ = _)
-    obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep _ x
+  · rintro x (hx :  _ = _)
+    obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep _ (x)
     erw [← comp_apply, Limits.colimit.ι_desc] at hx
     dsimp at hx
-    rw [comp_apply] at hx,
+    rw [comp_apply] at hx
     have : (0 : Limits.colimit H) = Limits.colimit.ι H j 0 := by
       simp
     rw [this] at hx
@@ -127,5 +130,8 @@ theorem exact_colim_of_exact_of_is_filtered
     erw [← comp_apply, Limits.colimit.ι_map, comp_apply, ht, ← comp_apply]
     congr' 1
     simp
-
+  · sorry
+  · sorry
+  · sorry
+  · sorry
 end AddCommGroupCat
