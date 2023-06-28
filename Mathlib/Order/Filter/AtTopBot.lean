@@ -1947,6 +1947,25 @@ theorem exists_le_mul_self (a : R) : ∃ x ≥ 0, a ≤ x * x :=
 
 end
 
+theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type _} [Preorder ι] {s : ι → Set α}
+    [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋃ i, s i)]
+    (hs : Monotone s) (f g : (a : α) → β a) (a : α) :
+    ∀ᶠ i in atTop, (s i).piecewise f g a = (⋃ i, s i).piecewise f g a := by
+  rcases em (∃ i, a ∈ s i) with ⟨i, hi⟩ | ha
+  · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
+    simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
+  · refine eventually_of_forall fun i ↦ ?_
+    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha]
+
+theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type _} [Preorder ι] {s : ι → Set α}
+    [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]
+    (hs : Antitone s) (f g : (a : α) → β a) (a : α) :
+    ∀ᶠ i in atTop, (s i).piecewise f g a = (⋂ i, s i).piecewise f g a := by
+  classical
+  convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
+  · convert congr_fun (Set.piecewise_compl (s _) g f) a
+  · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
+
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. Then the filters
 `atTop.map (fun s ↦ ∏ i in s, f (g i))` and `atTop.map (fun s ↦ ∏ i in s, f i)` coincide.
