@@ -31,9 +31,6 @@ variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}
 
 section
 
-/-! Some results about an open set containing the product of two sets in a topological group. -/
-
-
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 /-- Every separated topological group in which there exists a compact set with nonempty interior

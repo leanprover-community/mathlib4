@@ -558,6 +558,7 @@ import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Complex.Schwarz
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.ConstantSpeed
 import Mathlib.Analysis.Convex.Basic
@@ -2757,6 +2758,7 @@ import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
 import Mathlib.RingTheory.WittVector.Teichmuller
+import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittAttributes
 import Mathlib.RingTheory.WittVector.WittPolynomial
@@ -2769,6 +2771,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Game.Basic
+import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
 import Mathlib.SetTheory.Game.Ordinal
 import Mathlib.SetTheory.Game.PGame
