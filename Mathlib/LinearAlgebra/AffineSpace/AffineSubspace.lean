@@ -1649,14 +1649,16 @@ theorem comap_top {f : P₁ →ᵃ[k] P₂} : (⊤ : AffineSubspace k P₂).coma
   exact preimage_univ (f := f)
 #align affine_subspace.comap_top AffineSubspace.comap_top
 
+@[simp] theorem comap_bot (f : P₁ →ᵃ[k] P₂) : comap f ⊥ = ⊥ := rfl
+
 @[simp]
 theorem comap_id (s : AffineSubspace k P₁) : s.comap (AffineMap.id k P₁) = s :=
-  coe_injective rfl
+  rfl
 #align affine_subspace.comap_id AffineSubspace.comap_id
 
 theorem comap_comap (s : AffineSubspace k P₃) (f : P₁ →ᵃ[k] P₂) (g : P₂ →ᵃ[k] P₃) :
     (s.comap g).comap f = s.comap (g.comp f) :=
-  coe_injective rfl
+  rfl
 #align affine_subspace.comap_comap AffineSubspace.comap_comap
 
 -- lemmas about map and comap derived from the galois connection
