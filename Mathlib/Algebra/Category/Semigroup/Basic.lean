@@ -18,13 +18,13 @@ import Mathlib.CategoryTheory.Elementwise
 # Category instances for has_mul, has_add, semigroup and add_semigroup
 
 We introduce the bundled categories:
-* `Magma`
-* `AddMagma`
-* `Semigroup`
-* `AddSemigroup`
+* `MagmaCat`
+* `AddMagmaCat`
+* `SemigroupCat`
+* `AddSemigroupCat`
 along with the relevant forgetful functors between them.
 
-This closely follows `algebra.category.Mon.basic`.
+This closely follows `Mathlib.Algebra.Category.MonCat.Basic`.
 
 ## TODO
 
@@ -40,82 +40,98 @@ open CategoryTheory
 
 /-- The category of magmas and magma morphisms. -/
 @[to_additive]
-def Magma : Type (u + 1) :=
+def MagmaCat : Type (u + 1) :=
   Bundled Mul
-#align Magma Magma
-#align AddMagma AddMagma
+#align Magma MagmaCat
+#align AddMagma AddMagmaCat
 
 /-- The category of additive magmas and additive magma morphisms. -/
-add_decl_doc AddMagma
+add_decl_doc AddMagmaCat
 
-namespace Magma
+namespace MagmaCat
 
 @[to_additive]
 instance bundledHom : BundledHom @MulHom :=
   ⟨@MulHom.toFun, @MulHom.id, @MulHom.comp,
     --Porting note : was `@MulHom.coe_inj` which is deprecated
     by intros; apply @FunLike.coe_injective, by aesop_cat, by aesop_cat⟩
-#align Magma.bundled_hom Magma.bundledHom
-#align AddMagma.bundled_hom AddMagma.bundledHom
+#align Magma.bundled_hom MagmaCat.bundledHom
+#align AddMagma.bundled_hom AddMagmaCat.bundledHom
 
 -- Porting note: deriving failed for `ConcreteCategory`,
 -- "default handlers have not been implemented yet"
-deriving instance LargeCategory for Magma
-instance concreteCategory : ConcreteCategory Magma := BundledHom.concreteCategory MulHom
+-- https://github.com/leanprover-community/mathlib4/issues/5020
+deriving instance LargeCategory for MagmaCat
+instance instConcreteCategory : ConcreteCategory MagmaCat := BundledHom.concreteCategory MulHom
 
-attribute [to_additive] instMagmaLargeCategory Magma.concreteCategory
+attribute [to_additive] instMagmaCatLargeCategory instConcreteCategory
 
 @[to_additive]
-instance : CoeSort Magma (Type _) :=
-  Bundled.coeSort
+instance : CoeSort MagmaCat (Type _) where
+  coe X := X.α
 
-/-- Construct a bundled `Magma` from the underlying type and typeclass. -/
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : MagmaCat) where ⊢
+  (forget MagmaCat).obj R ≟ R
+unif_hint _root_.AddMagmaCat.forget_obj_eq_coe (R : AddMagmaCat) where ⊢
+  (forget AddMagmaCat).obj R ≟ R
+
 @[to_additive]
-def of (M : Type u) [Mul M] : Magma :=
+instance (X : MagmaCat) : Mul X := X.str
+
+@[to_additive]
+instance instMulHomClass (X Y : MagmaCat) : MulHomClass (X ⟶ Y) X Y :=
+  inferInstanceAs <| MulHomClass (X →ₙ* Y) X Y
+
+/-- Construct a bundled `MagmaCat` from the underlying type and typeclass. -/
+@[to_additive]
+def of (M : Type u) [Mul M] : MagmaCat :=
   Bundled.of M
-#align Magma.of Magma.of
-#align AddMagma.of AddMagma.of
+#align Magma.of MagmaCat.of
+#align AddMagma.of AddMagmaCat.of
 
-/-- Construct a bundled `AddMagma` from the underlying type and typeclass. -/
-add_decl_doc AddMagma.of
+/-- Construct a bundled `AddMagmaCat` from the underlying type and typeclass. -/
+add_decl_doc AddMagmaCat.of
 
-/-- Typecheck a `MulHom` as a morphism in `Magma`. -/
+@[to_additive (attr := simp)]
+theorem coe_of (R : Type u) [Mul R] : (MagmaCat.of R : Type u) = R :=
+  rfl
+#align Magma.coe_of MagmaCat.coe_of
+#align AddMagma.coe_of AddMagmaCat.coe_of
+
+@[to_additive (attr := simp)]
+lemma MulEquiv_coe_eq {X Y : Type _} [Mul X] [Mul Y] (e : X ≃* Y) :
+    (@FunLike.coe (MagmaCat.of X ⟶ MagmaCat.of Y) _ (fun _ => (forget MagmaCat).obj _)
+      ConcreteCategory.funLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+  rfl
+
+/-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
 @[to_additive]
-def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
-  f
-#align Magma.of_hom Magma.ofHom
-#align AddMagma.of_hom AddMagma.ofHom
+def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
+#align Magma.of_hom MagmaCat.ofHom
+#align AddMagma.of_hom AddMagmaCat.ofHom
 
-/-- Typecheck a `AddHom` as a morphism in `AddMagma`. -/
-add_decl_doc AddMagma.ofHom
+/-- Typecheck a `AddHom` as a morphism in `AddMagmaCat`. -/
+add_decl_doc AddMagmaCat.ofHom
 
--- Porting note: added these two instances as it wasn't able to find them.
-instance {X : Type u} [h : Mul X] : Mul (of X) := h
-instance {X Y : Type u} [Mul X] [Mul Y] :
-    CoeFun (of X ⟶ of Y) (fun _ => X → Y) :=
-  ⟨MulHom.toFun⟩
+-- FIXME remove
+-- -- Porting note: added these two instances as it wasn't able to find them.
+-- instance {X : Type u} [h : Mul X] : Mul (of X) := h
+-- instance {X Y : Type u} [Mul X] [Mul Y] :
+--     CoeFun (of X ⟶ of Y) (fun _ => X → Y) :=
+--   ⟨MulHom.toFun⟩
 
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
-#align Magma.of_hom_apply Magma.ofHom_apply
-#align AddMagma.of_hom_apply AddMagma.ofHom_apply
+#align Magma.of_hom_apply MagmaCat.ofHom_apply
+#align AddMagma.of_hom_apply AddMagmaCat.ofHom_apply
 
 @[to_additive]
-instance : Inhabited Magma :=
-  ⟨Magma.of PEmpty⟩
+instance : Inhabited MagmaCat :=
+  ⟨MagmaCat.of PEmpty⟩
 
-@[to_additive]
-instance (M : Magma) : Mul M :=
-  M.str
-
-@[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Mul R] : (Magma.of R : Type u) = R :=
-  rfl
-#align Magma.coe_of Magma.coe_of
-#align AddMagma.coe_of AddMagma.coe_of
-
-end Magma
+end MagmaCat
 
 /-- The category of semigroups and semigroup morphisms. -/
 @[to_additive]
@@ -132,44 +148,65 @@ namespace SemigroupCat
 @[to_additive]
 instance : BundledHom.ParentProjection @Semigroup.toMul := ⟨⟩
 
+deriving instance LargeCategory for SemigroupCat
+
 -- Porting note: deriving failed for `ConcreteCategory`,
 -- "default handlers have not been implemented yet"
--- (also, the hack is weird, why does it work?)
-deriving instance LargeCategory for SemigroupCat
-instance concreteCategory : ConcreteCategory SemigroupCat :=
+-- https://github.com/leanprover-community/mathlib4/issues/5020
+instance instConcreteCategory : ConcreteCategory SemigroupCat :=
   BundledHom.concreteCategory (fun _ _ => _)
 
-attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.concreteCategory
+attribute [to_additive] instSemigroupCatLargeCategory SemigroupCat.instConcreteCategory
 
 @[to_additive]
-instance : CoeSort SemigroupCat (Type _) :=
-  Bundled.coeSort
+instance : CoeSort SemigroupCat (Type _) where
+  coe X := X.α
 
-/-- Construct a bundled `Semigroup` from the underlying type and typeclass. -/
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : SemigroupCat) where ⊢
+  (forget SemigroupCat).obj R ≟ R
+unif_hint _root_.AddSemigroupCat.forget_obj_eq_coe (R : AddSemigroupCat) where ⊢
+  (forget AddSemigroupCat).obj R ≟ R
+
+@[to_additive]
+instance (X : SemigroupCat) : Semigroup X := X.str
+
+@[to_additive]
+instance instMulHomClass (X Y : SemigroupCat) : MulHomClass (X ⟶ Y) X Y :=
+  inferInstanceAs <| MulHomClass (X →ₙ* Y) X Y
+
+/-- Construct a bundled `SemigroupCat` from the underlying type and typeclass. -/
 @[to_additive]
 def of (M : Type u) [Semigroup M] : SemigroupCat :=
   Bundled.of M
 #align Semigroup.of SemigroupCat.of
 #align AddSemigroup.of AddSemigroupCat.of
 
-/-- Construct a bundled `AddSemigroup` from the underlying type and typeclass. -/
+/-- Construct a bundled `AddSemigroupCat` from the underlying type and typeclass. -/
 add_decl_doc AddSemigroupCat.of
 
-/-- Typecheck a `mul_hom` as a morphism in `Semigroup`. -/
+@[to_additive (attr := simp)]
+theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
+  rfl
+#align Semigroup.coe_of SemigroupCat.coe_of
+#align AddSemigroup.coe_of AddSemigroupCat.coe_of
+
+/-- Typecheck a `MulHom` as a morphism in `SemigroupCat`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
   f
 #align Semigroup.of_hom SemigroupCat.ofHom
 #align AddSemigroup.of_hom AddSemigroupCat.ofHom
 
-/-- Typecheck a `add_hom` as a morphism in `AddSemigroup`. -/
+/-- Typecheck a `AddHom` as a morphism in `AddSemigroupCat`. -/
 add_decl_doc AddSemigroupCat.ofHom
 
--- Porting note: added these two instances as it wasn't able to find them.
-instance {X : Type u} [h : Semigroup X] : Semigroup (of X) := h
-instance {X Y : Type u} [Semigroup X] [Semigroup Y] :
-    CoeFun (of X ⟶ of Y) (fun _ => X → Y) :=
-  ⟨MulHom.toFun⟩
+-- FIXME remove
+-- -- Porting note: added these two instances as it wasn't able to find them.
+-- instance {X : Type u} [h : Semigroup X] : Semigroup (of X) := h
+-- instance {X Y : Type u} [Semigroup X] [Semigroup Y] :
+--     CoeFun (of X ⟶ of Y) (fun _ => X → Y) :=
+--   ⟨MulHom.toFun⟩
 
 @[to_additive (attr := simp)]
 theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
@@ -183,20 +220,10 @@ instance : Inhabited SemigroupCat :=
   ⟨SemigroupCat.of PEmpty⟩
 
 @[to_additive]
-instance (M : SemigroupCat) : Semigroup M :=
-  M.str
-
-@[to_additive (attr := simp)]
-theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
-  rfl
-#align Semigroup.coe_of SemigroupCat.coe_of
-#align AddSemigroup.coe_of AddSemigroupCat.coe_of
-
-@[to_additive]
-instance hasForgetToMagma : HasForget₂ SemigroupCat Magma :=
+instance hasForgetToMagmaCat : HasForget₂ SemigroupCat MagmaCat :=
   BundledHom.forget₂ _ _
-#align Semigroup.has_forget_to_Magma SemigroupCat.hasForgetToMagma
-#align AddSemigroup.has_forget_to_AddMagma AddSemigroupCat.hasForgetToAddMagma
+#align Semigroup.has_forget_to_Magma SemigroupCat.hasForgetToMagmaCat
+#align AddSemigroup.has_forget_to_AddMagma AddSemigroupCat.hasForgetToAddMagmaCat
 
 end SemigroupCat
 
@@ -206,22 +233,27 @@ section
 
 variable [Mul X] [Mul Y]
 
-/-- Build an isomorphism in the category `Magma` from a `mul_equiv` between `has_mul`s. -/
+/-- Build an isomorphism in the category `MagmaCat` from a `MulEquiv` between `Mul`s. -/
 @[to_additive (attr := simps)
-      "Build an isomorphism in the category `AddMagma` from\nan `add_equiv` between `has_add`s."]
-def MulEquiv.toMagmaIso (e : X ≃* Y) : Magma.of X ≅ Magma.of Y where
+      "Build an isomorphism in the category `AddMagmaCat` from\nan `AddEquiv` between `Add`s."]
+def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y where
   hom := e.toMulHom
   inv := e.symm.toMulHom
   -- Porting note: both used to be proven automatically
   hom_inv_id := by
-    aesop_cat_nonterminal
+    ext
+    -- TODO, ugh, things are not set up right. We have RingEquiv.toRingHom_eq_coe,
+    -- but not MulEquiv.toMulHom_eq_coe
+    simp only [MulEquiv.toMulHom_eq_coe, comp_apply, MagmaCat.MulEquiv_coe_eq,
+      MulEquiv.symm_apply_apply, id_apply]
+    simp
     sorry
     done
   inv_hom_id := by
     aesop_cat_nonterminal
     sorry
-#align mul_equiv.to_Magma_iso MulEquiv.toMagmaIso
-#align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaIso
+#align mul_equiv.to_Magma_iso MulEquiv.toMagmaCatIso
+#align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaCatIso
 
 end
 
@@ -254,14 +286,14 @@ namespace CategoryTheory.Iso
 /-- Build a `mul_equiv` from an isomorphism in the category `Magma`. -/
 @[to_additive
       "Build an `add_equiv` from an isomorphism in the category\n`AddMagma`."]
-def magmaIsoToMulEquiv {X Y : Magma} (i : X ≅ Y) : X ≃* Y where
+def magmaCatIsoToMulEquiv {X Y : MagmaCat} (i : X ≅ Y) : X ≃* Y where
   toFun := i.hom -- Porting note: TODO/HERE: that's again Quiver `⟶` vs. Function `→`
   invFun := i.inv
   left_inv x := by simp
   right_inv y := by simp
   map_mul' := by simp
-#align category_theory.iso.Magma_iso_to_mul_equiv CategoryTheory.Iso.magmaIsoToMulEquiv
-#align category_theory.iso.AddMagma_iso_to_add_equiv CategoryTheory.Iso.addMagmaIsoToAddEquiv
+#align category_theory.iso.Magma_iso_to_mul_equiv CategoryTheory.Iso.magmaCatIsoToMulEquiv
+#align category_theory.iso.AddMagma_iso_to_add_equiv CategoryTheory.Iso.addMagmaCatIsoToAddEquiv
 
 /-- Build a `mul_equiv` from an isomorphism in the category `Semigroup`. -/
 @[to_additive
@@ -282,17 +314,9 @@ in `Magma` -/
 @[to_additive
     "additive equivalences between `has_add`s are the same
     as (isomorphic to) isomorphisms in `AddMagma`"]
-def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] : X ≃* Y ≅ Magma.of X ≅ Magma.of Y where
-  hom e := e.toMagmaIso
-  inv i := i.magmaIsoToMulEquiv
-  -- Porting note: both used to be proven automatically
-  hom_inv_id := by
-    aesop_cat_nonterminal
-    sorry
-    done
-  inv_hom_id := by
-    aesop_cat_nonterminal
-    sorry
+def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] : X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
+  hom e := e.toMagmaCatIso
+  inv i := i.magmaCatIsoToMulEquiv
 #align mul_equiv_iso_Magma_iso mulEquivIsoMagmaIso
 #align add_equiv_iso_AddMagma_iso addEquivIsoAddMagmaIso
 
@@ -305,26 +329,18 @@ def mulEquivIsoSemigroupCatIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     X ≃* Y ≅ SemigroupCat.of X ≅ SemigroupCat.of Y where
   hom e := e.toSemigroupCatIso
   inv i := i.semigroupCatIsoToMulEquiv
-  -- Porting note: both used to be proven automatically
-  hom_inv_id := by
-    aesop_cat_nonterminal
-    sorry
-    done
-  inv_hom_id := by
-    aesop_cat_nonterminal
-    sorry
 #align mul_equiv_iso_Semigroup_iso mulEquivIsoSemigroupCatIso
 #align add_equiv_iso_AddSemigroup_iso addEquivIsoAddSemigroupCatIso
 
 @[to_additive]
-instance Magma.forgetReflectsIsos : ReflectsIsomorphisms (forget Magma.{u}) where
+instance MagmaCat.forgetReflectsIsos : ReflectsIsomorphisms (forget MagmaCat.{u}) where
   reflects {X Y} f _ := by
     skip
-    let i := asIso ((forget Magma).map f)
+    let i := asIso ((forget MagmaCat).map f)
     let e : X ≃* Y := { f, i.toEquiv with }
-    exact ⟨(IsIso.of_iso e.toMagmaIso).1⟩
-#align Magma.forget_reflects_isos Magma.forgetReflectsIsos
-#align AddMagma.forget_reflects_isos AddMagma.forgetReflectsIsos
+    exact ⟨(IsIso.of_iso e.toMagmaCatIso).1⟩
+#align Magma.forget_reflects_isos MagmaCat.forgetReflectsIsos
+#align AddMagma.forget_reflects_isos AddMagmaCat.forgetReflectsIsos
 
 @[to_additive]
 instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget SemigroupCat.{u}) where
@@ -342,4 +358,4 @@ we automatically obtain that the `forget₂` functors between our concrete categ
 reflect isomorphisms.
 -/
 
-example : ReflectsIsomorphisms (forget₂ SemigroupCat Magma) := by infer_instance
+example : ReflectsIsomorphisms (forget₂ SemigroupCat MagmaCat) := inferInstance
