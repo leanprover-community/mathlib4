@@ -362,7 +362,7 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     (finite_lt_nat N).eventually_all.2 fun b _hb => eventually_imp_distrib_left.2 (this b)
   rcases(this.and (eventually_ge_atTop n)).exists with ⟨m, hm, hnm⟩
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
-  lift b to ℕ using zero_le_one.trans hb.le; norm_cast  at hb ; push_cast at hne hlt
+  lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb ; push_cast at hne hlt
   cases' le_or_lt N b with h h
   · refine' (hN b h a hne).not_lt (hlt.trans_le _)
     replace hb : (1 : ℝ) < b := Nat.one_lt_cast.2 hb

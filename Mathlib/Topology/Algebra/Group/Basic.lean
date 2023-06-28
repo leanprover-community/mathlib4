@@ -739,8 +739,8 @@ theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h
 theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H]
     [TopologicalGroup H] {f : G →* H} (hf : Continuous f) (hf' : DenseRange f) {s : Subgroup G}
     (hs : s.topologicalClosure = ⊤) : (s.map f).topologicalClosure = ⊤ := by
-  rw [SetLike.ext'_iff] at hs⊢
-  simp only [Subgroup.topologicalClosure_coe, Subgroup.coe_top, ← dense_iff_closure_eq] at hs⊢
+  rw [SetLike.ext'_iff] at hs ⊢
+  simp only [Subgroup.topologicalClosure_coe, Subgroup.coe_top, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image hf hs
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup
@@ -1393,18 +1393,6 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
 #align is_open.closure_sub IsOpen.closure_sub
 
 end TopologicalGroup
-
-/-- additive group with a neighbourhood around 0.
-Only used to construct a topology and uniform space.
-
-This is currently only available for commutative groups, but it can be extended to
-non-commutative groups too.
--/
-class AddGroupWithZeroNhd (G : Type u) extends AddCommGroup G where
-  z : Filter G
-  zero_z : pure 0 ≤ z
-  sub_z : Tendsto (fun p : G × G => p.1 - p.2) (Z ×ˢ Z) Z
-#align add_group_with_zero_nhd AddGroupWithZeroNhd
 
 section FilterMul
 

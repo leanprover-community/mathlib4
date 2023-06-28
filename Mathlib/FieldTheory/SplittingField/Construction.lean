@@ -411,7 +411,8 @@ end Polynomial
 
 section Normal
 
-instance [Field F] (p : F[X]) : Normal F p.SplittingField :=
+instance Polynomial.SplittingField.instNormal [Field F] (p : F[X]) : Normal F p.SplittingField :=
   Normal.of_isSplittingField p
+#align polynomial.splitting_field.normal Polynomial.SplittingField.instNormal
 
 end Normal
