@@ -151,7 +151,8 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     erw [lsub_sum, lsub_sum]
     simp only [lsub_sum, mk_add_moveLeft_inl, moveLeft_mk, mk_add_moveLeft_inr,
       mk_add_moveRight_inl, moveRight_mk, mk_add_moveRight_inr]
-    -- Porting note: `simp only [birthday_add]` caused problems in `birthday_add`. Use a workaround.
+    -- Porting note: Originally `simp only [birthday_add]`, but this causes an error in
+    -- `termination_by`. Use a workaround.
     conv_lhs => left; left; right; intro a; rw [birthday_add (xL a) ⟨yl, yr, yL, yR⟩]
     conv_lhs => left; right; right; intro b; rw [birthday_add ⟨xl, xr, xL, xR⟩ (yL b)]
     conv_lhs => right; left; right; intro a; rw [birthday_add (xR a) ⟨yl, yr, yL, yR⟩]
