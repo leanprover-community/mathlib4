@@ -259,7 +259,7 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
   by_cases hy' : y ∈ interior s
   · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
-  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset.2 ⟨hc, union_subset _ _⟩)
+  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset_iff.2 ⟨hc, union_subset _ _⟩)
   exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
 #align convex.strict_convex' Convex.strictConvex'

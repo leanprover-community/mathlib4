@@ -1620,7 +1620,7 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
   rw [Finset.ssubset_iff]
   use w
   constructor
-  · rw [Finset.insert_subset]
+  · rw [Finset.insert_subset_iff]
     constructor
     · simpa
     · rw [neighborFinset, Set.toFinset_subset_toFinset]

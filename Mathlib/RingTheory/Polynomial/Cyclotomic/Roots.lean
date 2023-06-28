@@ -94,7 +94,7 @@ private theorem isRoot_cyclotomic_iff' {n : ℕ} {K : Type _} [Field K] {μ : K}
   have key : i < n := (Nat.le_of_dvd ho hio).trans_lt ((Nat.le_of_dvd hnpos hμn).lt_of_ne hnμ)
   have key' : i ∣ n := hio.trans hμn
   rw [← Polynomial.dvd_iff_isRoot] at hμ hiμ
-  have hni : {i, n} ⊆ n.divisors := by simpa [Finset.insert_subset, key'] using hnpos.ne'
+  have hni : {i, n} ⊆ n.divisors := by simpa [Finset.insert_subset_iff, key'] using hnpos.ne'
   obtain ⟨k, hk⟩ := hiμ
   obtain ⟨j, hj⟩ := hμ
   have := prod_cyclotomic_eq_X_pow_sub_one hnpos K

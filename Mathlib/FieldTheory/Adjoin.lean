@@ -397,7 +397,7 @@ theorem adjoin_insert_adjoin (x : E) :
     adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
   le_antisymm
     (adjoin_le_iff.mpr
-      (Set.insert_subset.mpr
+      (Set.insert_subset_iff.mpr
         ⟨subset_adjoin _ _ (Set.mem_insert _ _),
           adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
     (adjoin.mono _ _ _ (Set.insert_subset_insert (subset_adjoin _ _)))

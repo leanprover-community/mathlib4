@@ -321,7 +321,8 @@ theorem isIntegral_of_mem_of_FG (S : Subalgebra R A) (HS : S.toSubmodule.FG) (x 
     constructor <;> intro hz
     · exact
         (span_le.2
-          (Set.insert_subset.2 ⟨(Algebra.adjoin S₀ (y : Set A)).one_mem, Algebra.subset_adjoin⟩)) hz
+          (Set.insert_subset_iff.2
+            ⟨(Algebra.adjoin S₀ (y : Set A)).one_mem, Algebra.subset_adjoin⟩)) hz
     · rw [Subalgebra.mem_toSubmodule, Algebra.mem_adjoin_iff] at hz
       suffices Subring.closure (Set.range (algebraMap (↥S₀) A) ∪ ↑y) ≤ S₁ by exact this hz
       refine' Subring.closure_le.2 (Set.union_subset _ fun t ht => subset_span <| Or.inr ht)
@@ -719,7 +720,8 @@ theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ nat
     apply Nat.le_pred_of_lt
     rw [lt_iff_le_and_ne]
     exact ⟨le_natDegree_of_ne_zero h₁, h₂⟩
-#align normalize_scale_roots_coeff_mul_leading_coeff_pow normalizeScaleRoots_coeff_mul_leadingCoeff_pow
+#align normalize_scale_roots_coeff_mul_leading_coeff_pow
+  normalizeScaleRoots_coeff_mul_leadingCoeff_pow
 
 theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
     p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
@@ -1063,7 +1065,8 @@ theorem RingHom.isIntegralElem_of_isIntegralElem_comp {x : T} (h : (g.comp f).Is
     g.IsIntegralElem x :=
   let ⟨p, ⟨hp, hp'⟩⟩ := h
   ⟨p.map f, hp.map f, by rwa [← eval₂_map] at hp'⟩
-#align ring_hom.is_integral_elem_of_is_integral_elem_comp RingHom.isIntegralElem_of_isIntegralElem_comp
+#align ring_hom.is_integral_elem_of_is_integral_elem_comp
+  RingHom.isIntegralElem_of_isIntegralElem_comp
 
 theorem RingHom.isIntegral_tower_top_of_isIntegral (h : (g.comp f).IsIntegral) : g.IsIntegral :=
   fun x => RingHom.isIntegralElem_of_isIntegralElem_comp f g (h x)

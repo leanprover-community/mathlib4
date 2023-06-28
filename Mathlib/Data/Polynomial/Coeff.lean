@@ -197,7 +197,7 @@ open Finset
 theorem support_binomial {k m : ℕ} (hkm : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     support (C x * X ^ k + C y * X ^ m) = {k, m} := by
   apply subset_antisymm (support_binomial' k m x y)
-  simp_rw [insert_subset, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
+  simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm, if_neg hkm.symm, mul_zero, zero_add,
     add_zero, Ne.def, hx, hy]
 #align polynomial.support_binomial Polynomial.support_binomial
@@ -206,7 +206,7 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
     (hy : y ≠ 0) (hz : z ≠ 0) :
     support (C x * X ^ k + C y * X ^ m + C z * X ^ n) = {k, m, n} := by
   apply subset_antisymm (support_trinomial' k m n x y z)
-  simp_rw [insert_subset, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
+  simp_rw [insert_subset_iff, singleton_subset_iff, mem_support_iff, coeff_add, coeff_C_mul,
     coeff_X_pow_self, mul_one, coeff_X_pow, if_neg hkm.ne, if_neg hkm.ne', if_neg hmn.ne,
     if_neg hmn.ne', if_neg (hkm.trans hmn).ne, if_neg (hkm.trans hmn).ne', mul_zero, add_zero,
     zero_add, Ne.def, hx, hy, hz]

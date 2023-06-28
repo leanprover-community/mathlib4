@@ -207,7 +207,7 @@ theorem WellFounded.isSupFiniteCompact (h : WellFounded ((· > ·) : α → α �
   refine' ⟨t, ht₁, (sSup_le _ _ fun y hy => _).antisymm _⟩
   · classical
     rw [eq_of_le_of_not_lt (Finset.sup_mono (t.subset_insert y))
-        (hm _ ⟨insert y t, by simp [Set.insert_subset, hy, ht₁]⟩)]
+        (hm _ ⟨insert y t, by simp [Set.insert_subset_iff, hy, ht₁]⟩)]
     simp
   · rw [Finset.sup_id_eq_sSup]
     exact sSup_le_sSup ht₁
@@ -436,7 +436,7 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
       have h' := (h (insert a t) ?_ (t.mem_insert_self a)).eq_bot
       · rwa [Finset.coe_insert, Set.insert_diff_self_of_not_mem] at h'
         exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
-      · rw [Finset.coe_insert, Set.insert_subset]
+      · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
 

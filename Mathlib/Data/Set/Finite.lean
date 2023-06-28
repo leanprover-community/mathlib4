@@ -1162,7 +1162,7 @@ theorem Finite.induction_on' {C : Set α → Prop} {S : Set α} (h : S.Finite) (
     (H1 : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → C s → C (insert a s)) : C S := by
   refine' @Set.Finite.induction_on α (fun s => s ⊆ S → C s) S h (fun _ => H0) _ Subset.rfl
   intro a s has _ hCs haS
-  rw [insert_subset] at haS
+  rw [insert_subset_iff] at haS
   exact H1 haS.1 haS.2 has (hCs haS.2)
 #align set.finite.induction_on' Set.Finite.induction_on'
 
