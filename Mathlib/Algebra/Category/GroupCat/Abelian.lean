@@ -91,8 +91,8 @@ theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
   rw [exact_iff, le_antisymm_iff]
-  refine and_congr _ Iff.rfl
-  split
+  refine' and_congr _ Iff.rfl
+  constructor
   · intro h
     ext x
     exact h (AddMonoidHom.mem_range.mpr ⟨x, rfl⟩)
