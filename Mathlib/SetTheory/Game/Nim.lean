@@ -344,13 +344,16 @@ theorem grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyVal
 
 theorem grundyValue_eq_mex_right :
     ∀ (G : PGame) [G.Impartial],
-      grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i)
-  | ⟨l, r, L, R⟩ => by
-    rw [← grundyValue_neg, grundyValue_eq_mex_left]
-    congr
-    ext i
-    haveI : (R i).Impartial := @impartial.move_right_impartial ⟨l, r, L, R⟩ _ i
-    apply grundy_value_neg
+      grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) := by
+  -- Porting note: was
+  -- | ⟨l, r, L, R⟩ => by
+  -- but this lost track of the `Impartial` instance
+  rintro ⟨l, r, L, R⟩ _
+  rw [← grundyValue_neg, grundyValue_eq_mex_left]
+  congr
+  ext i
+  haveI : (R i).Impartial := @Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ i
+  apply grundyValue_neg
 #align pgame.grundy_value_eq_mex_right PGame.grundyValue_eq_mex_right
 
 -- Todo: this actually generalizes to all ordinals, by defining `ordinal.lxor` as the pairwise
