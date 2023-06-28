@@ -19,13 +19,13 @@ Rewrite applications of `map` in terms of `mapAccumr` with `Unit` state
 -/
 section Norm
 
-  theorem map_to_mapAccumr (xs : Vector α n) (f : α → β) :
-      map f xs = (mapAccumr (fun x _ => (⟨⟩, f x)) xs ()).snd := by
-    induction xs using revInductionOn <;> simp_all
+theorem map_to_mapAccumr (xs : Vector α n) (f : α → β) :
+    map f xs = (mapAccumr (fun x _ => (⟨⟩, f x)) xs ()).snd := by
+  induction xs using revInductionOn <;> simp_all
 
-  theorem map₂_to_mapAccumr₂ (xs : Vector α n) (ys : Vector β n) (f : α → β → γ) :
-      map₂ f xs ys = (mapAccumr₂ (fun x y _ => (⟨⟩, f x y)) xs ys ()).snd := by
-    induction xs, ys using revInductionOn₂ <;> simp_all
+theorem map₂_to_mapAccumr₂ (xs : Vector α n) (ys : Vector β n) (f : α → β → γ) :
+    map₂ f xs ys = (mapAccumr₂ (fun x y _ => (⟨⟩, f x y)) xs ys ()).snd := by
+  induction xs, ys using revInductionOn₂ <;> simp_all
 
 end Norm
 
@@ -293,6 +293,42 @@ theorem mapAccumr₂_unused_input_right [Inhabited β]
     simp[h x y s, ih]
 
 end RedundantState
+
+
+/-!
+## Commutativity
+-/
+section Comm
+variable (xs ys : Vector α n)
+
+theorem map₂_comm (f : α → α → β) (comm : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁) :
+    map₂ f xs ys = map₂ f ys xs := by
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all
+
+theorem mapAccumr₂_comm (f : α → α → σ → σ × γ) (comm : ∀ a₁ a₂ s, f a₁ a₂ s = f a₂ a₁ s) :
+    mapAccumr₂ f xs ys s = mapAccumr₂ f ys xs s := by
+  induction xs, ys using Vector.inductionOn₂ generalizing s <;> simp_all
+
+end Comm
+
+
+
+/-!
+## Argument Flipping
+-/
+section Flip
+variable (xs : Vector α n) (ys : Vector β n)
+
+theorem map₂_flip (f : α → β → γ) :
+    map₂ f xs ys = map₂ (flip f) ys xs := by
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+
+
+theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
+    mapAccumr₂ f xs ys s = mapAccumr₂ (flip f) ys xs s := by
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
+
+end Flip
 
 
 end Vector
