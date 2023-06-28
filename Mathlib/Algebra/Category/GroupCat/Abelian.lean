@@ -63,6 +63,40 @@ instance : Abelian AddCommGroupCat.{u} where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
+theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Exact f g ↔ f.range = g.ker := by
+  rw [Abelian.exact_iff' f g (ModuleCat.kernelIsLimit _) (ModuleCat.cokernelIsColimit _)]
+  split
+  · rintro ⟨hfg, h⟩
+    ext x
+    split
+    · rintro ⟨x, rfl⟩
+      exact AddMonoidHom.congr_fun hfg x
+    · intro hx
+      rw [← QuotientAddGroup.eq_zero_iff]
+      exact AddMonoidHom.congr_fun h ⟨x, hx⟩
+  · intro h
+    split
+    · ext x
+      show f x ∈ g.ker
+      rw [←h]
+      simp only [AddMonoidHom.mem_range, exists_apply_eq_apply]
+    · ext ⟨x, hx⟩
+      dsimp [kernel_cone, cokernel_cocone]
+      simpa only [comp_apply, add_subgroup.coe_subtype, add_subgroup.coe_mk
+        QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_zero_iff, h] using hx
+
+theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
+  rw [exact_iff, le_antisymm_iff]
+  refine and_congr _ Iff.rfl
+  split
+  · intro h
+    ext x
+    exact h (AddMonoidHom.mem_range.mpr ⟨x, rfl⟩)
+  · rintro h _ ⟨x, rfl⟩
+    exact AddMonoidHom.congr_fun h x
+
 -- Axiom AB5 for `AddCommGroup`
 theorem exact_colim_of_exact_of_is_filtered
   (F G H : J ⥤ AddCommGroupCat.{u}) (η : F ⟶ G) (γ : G ⟶ H) :
