@@ -13,8 +13,8 @@ import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols
 
-We extend the `tactic.interactive.norm_num` tactic so that it can be used to provably compute
-the value of the Jacobi symbol `J(a | b)` or the Legendre symbol `legendre_sym p a` when
+We extend the `norm_num` tactic so that it can be used to provably compute
+the value of the Jacobi symbol `J(a | b)` or the Legendre symbol `legendreSym p a` when
 the arguments are numerals.
 
 ## Implementation notes
@@ -28,7 +28,7 @@ of the gcd of `a` and `b`. More precisely, the computation is done in the follow
 
 * Use `J(a | b) = J(a % b | b)` to reduce to the case that `a` is a natural number.
   We define a version of the Jacobi symbol restricted to natural numbers for use in
-  the following steps; see `norm_num.jacobi_sym_nat`. (But we'll continue to write `J(a | b)`
+  the following steps; see `NormNum.jacobiSymNat`. (But we'll continue to write `J(a | b)`
   in this description.)
 
 * Remove powers of two from `b`. This is done via `J(2a | 2b) = 0` and
@@ -44,8 +44,8 @@ of the gcd of `a` and `b`. More precisely, the computation is done in the follow
   of `a` and `b` mod 4. We are then back in the previous case.
 
 We provide customized versions of these results for the various reduction steps,
-where we encode the residue classes mod 2, mod 4, or mod 8 by using terms like
-`bit1 (bit0 a)`. In this way, the only divisions we have to compute and prove
+where we encode the residue classes mod 2, mod 4, or mod 8 by using hypotheses like
+`a % n = b`. In this way, the only divisions we have to compute and prove
 are the ones occurring in the use of QR above.
 -/
 
@@ -62,35 +62,33 @@ def jacobiSymNat (a b : ℕ) : ℤ :=
 /-!
 ### API Lemmas
 
-We repeat part of the API for `jacobi_sym` with `norm_num.jacobi_sym_nat` and without implicit
+We repeat part of the API for `jacobiSym` with `NormNum.jacobiSymNat` and without implicit
 arguments, in a form that is suitable for constructing proofs in `norm_num`.
 -/
 
 
 /-- Base cases: `b = 0`, `b = 1`, `a = 0`, `a = 1`. -/
 theorem jacobiSymNat.zero_right (a : ℕ) : jacobiSymNat a 0 = 1 := by
-  rwa [jacobi_sym_nat, jacobiSym.zero_right]
+  rw [jacobiSymNat, jacobiSym.zero_right]
 #align norm_num.jacobi_sym_nat.zero_right NormNum.jacobiSymNat.zero_right
 
 theorem jacobiSymNat.one_right (a : ℕ) : jacobiSymNat a 1 = 1 := by
-  rwa [jacobi_sym_nat, jacobiSym.one_right]
+  rw [jacobiSymNat, jacobiSym.one_right]
 #align norm_num.jacobi_sym_nat.one_right NormNum.jacobiSymNat.one_right
 
-theorem jacobiSymNat.zero_left_even (b : ℕ) (hb : b ≠ 0) : jacobiSymNat 0 (bit0 b) = 0 := by
-  rw [jacobi_sym_nat, Nat.cast_zero, jacobiSym.zero_left (Nat.one_lt_bit0 hb)]
-#align norm_num.jacobi_sym_nat.zero_left_even NormNum.jacobiSymNat.zero_left_even
+theorem jacobiSymNat.zero_left (b : ℕ) (hb : b / 2 ≠ 0) : jacobiSymNat 0 b = 0 := by
+  rw [jacobiSymNat, Nat.cast_zero, jacobiSym.zero_left ?_]
+  · calc
+      1 < 2 * 1       := by decide
+      _ ≤ 2 * (b / 2) := Nat.mul_le_mul_of_nonneg_left (Nat.succ_le.mpr (Nat.pos_of_ne_zero hb))
+      _ ≤ b           := Nat.mul_div_le b 2
+#align norm_num.jacobi_sym_nat.zero_left_even NormNum.jacobiSymNat.zero_left
+#align norm_num.jacobi_sym_nat.zero_left_odd NormNum.jacobiSymNat.zero_left
 
-theorem jacobiSymNat.zero_left_odd (b : ℕ) (hb : b ≠ 0) : jacobiSymNat 0 (bit1 b) = 0 := by
-  rw [jacobi_sym_nat, Nat.cast_zero, jacobiSym.zero_left (Nat.one_lt_bit1 hb)]
-#align norm_num.jacobi_sym_nat.zero_left_odd NormNum.jacobiSymNat.zero_left_odd
-
-theorem jacobiSymNat.one_left_even (b : ℕ) : jacobiSymNat 1 (bit0 b) = 1 := by
-  rw [jacobi_sym_nat, Nat.cast_one, jacobiSym.one_left]
-#align norm_num.jacobi_sym_nat.one_left_even NormNum.jacobiSymNat.one_left_even
-
-theorem jacobiSymNat.one_left_odd (b : ℕ) : jacobiSymNat 1 (bit1 b) = 1 := by
-  rw [jacobi_sym_nat, Nat.cast_one, jacobiSym.one_left]
-#align norm_num.jacobi_sym_nat.one_left_odd NormNum.jacobiSymNat.one_left_odd
+theorem jacobiSymNat.one_left (b : ℕ) : jacobiSymNat 1 b = 1 := by
+  rw [jacobiSymNat, Nat.cast_one, jacobiSym.one_left]
+#align norm_num.jacobi_sym_nat.one_left_even NormNum.jacobiSymNat.one_left
+#align norm_num.jacobi_sym_nat.one_left_odd NormNum.jacobiSymNat.one_left
 
 /-- Turn a Legendre symbol into a Jacobi symbol. -/
 theorem LegendreSym.to_jacobiSym (p : ℕ) (pp : Fact p.Prime) (a r : ℤ) (hr : jacobiSym a p = r) :
@@ -100,35 +98,37 @@ theorem LegendreSym.to_jacobiSym (p : ℕ) (pp : Fact p.Prime) (a r : ℤ) (hr :
 /-- The value depends only on the residue class of `a` mod `b`. -/
 theorem JacobiSym.mod_left (a : ℤ) (b ab' : ℕ) (ab r b' : ℤ) (hb' : (b : ℤ) = b')
     (hab : a % b' = ab) (h : (ab' : ℤ) = ab) (hr : jacobiSymNat ab' b = r) : jacobiSym a b = r := by
-  rw [← hr, jacobi_sym_nat, jacobiSym.mod_left, hb', hab, ← h]
+  rw [← hr, jacobiSymNat, jacobiSym.mod_left, hb', hab, ← h]
 #align norm_num.jacobi_sym.mod_left NormNum.JacobiSym.mod_left
 
 theorem jacobiSymNat.mod_left (a b ab : ℕ) (r : ℤ) (hab : a % b = ab) (hr : jacobiSymNat ab b = r) :
     jacobiSymNat a b = r := by
-  rw [← hr, jacobi_sym_nat, jacobi_sym_nat, _root_.jacobi_sym.mod_left a b, ← hab]; rfl
+  rw [← hr, jacobiSymNat, jacobiSymNat, _root_.jacobiSym.mod_left a b, ← hab]; rfl
 #align norm_num.jacobi_sym_nat.mod_left NormNum.jacobiSymNat.mod_left
 
-/-- The symbol vanishes when both entries are even (and `b ≠ 0`). -/
-theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : b ≠ 0) : jacobiSymNat (bit0 a) (bit0 b) = 0 := by
-  refine' jacobi_sym.eq_zero_iff.mpr ⟨Nat.bit0_ne_zero hb₀, fun hf => _⟩
-  have h : 2 ∣ (bit0 a).gcd (bit0 b) := Nat.dvd_gcd two_dvd_bit0 two_dvd_bit0
-  change 2 ∣ (bit0 a : ℤ).gcd (bit0 b) at h 
-  rw [← Nat.cast_bit0, ← Nat.cast_bit0, hf, ← even_iff_two_dvd] at h 
+/-- The symbol vanishes when both entries are even (and `b / 2 ≠ 0`). -/
+theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : b / 2 ≠ 0) (ha : a % 2 = 0) (hb₁ : b % 2 = 0) :
+    jacobiSymNat a b = 0 := by
+  refine' jacobiSym.eq_zero_iff.mpr
+    ⟨ne_of_gt ((Nat.pos_of_ne_zero hb₀).trans_le (Nat.div_le_self b 2)), fun hf => _⟩
+  have h : 2 ∣ a.gcd b := Nat.dvd_gcd (Nat.dvd_of_mod_eq_zero ha) (Nat.dvd_of_mod_eq_zero hb₁)
+  change 2 ∣ (a : ℤ).gcd b at h
+  rw [hf, ← even_iff_two_dvd] at h
   exact Nat.not_even_one h
 #align norm_num.jacobi_sym_nat.even_even NormNum.jacobiSymNat.even_even
 
 /-- When `a` is odd and `b` is even, we can replace `b` by `b / 2`. -/
-theorem jacobiSymNat.odd_even (a b : ℕ) (r : ℤ) (hr : jacobiSymNat (bit1 a) b = r) :
-    jacobiSymNat (bit1 a) (bit0 b) = r := by
-  have ha : legendreSym 2 (bit1 a) = 1 := by
-    simp only [legendreSym, quadraticChar_apply, quadraticCharFun_one, Int.cast_bit1,
-      CharTwo.bit1_eq_one, Pi.one_apply]
-  cases' eq_or_ne b 0 with hb hb
-  · rw [← hr, hb, jacobi_sym_nat.zero_right]
-  · haveI : NeZero b := ⟨hb⟩
-    -- for `jacobi_sym.mul_right`
-    rwa [bit0_eq_two_mul b, jacobi_sym_nat, jacobiSym.mul_right, ←
-      _root_.legendre_sym.to_jacobi_sym, Nat.cast_bit1, ha, one_mul]
+theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 2 = 0) (hc : b / 2 = c)
+    (hr : jacobiSymNat a c = r) :
+    jacobiSymNat a b = r := by
+  have ha' : legendreSym 2 a = 1 := by
+    simp only [legendreSym.mod 2 a, Int.ofNat_mod_ofNat, ha]
+  rcases eq_or_ne c 0 with (rfl | hc')
+  · rw [← hr, Nat.eq_zero_of_dvd_of_div_eq_zero (Nat.dvd_of_mod_eq_zero hb) hc]
+  · haveI : NeZero c := ⟨hc'⟩
+    -- for `jacobiSym.mul_right`
+    rwa [← Nat.mod_add_div b 2, hb, hc, Nat.zero_add, jacobiSymNat, jacobiSym.mul_right,
+      ← jacobiSym.legendreSym.to_jacobiSym, ha', one_mul]
 #align norm_num.jacobi_sym_nat.odd_even NormNum.jacobiSymNat.odd_even
 
 /-- If `a` is divisible by `4` and `b` is odd, then we can remove the factor `4` from `a`. -/
@@ -535,4 +535,3 @@ end NormNum
 end Tactic
 
 end Tactic
-
