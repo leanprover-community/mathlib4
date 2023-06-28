@@ -228,14 +228,16 @@ theorem ι_isoCarrier_inv (i : D.J) :
         D.isoCarrier.inv =
       (D.ι i).1.base := by
   delta isoCarrier
-  simp only [Functor.mapIso_inv, Iso.trans_inv, Iso.trans_assoc, GlueData.ι_gluedIso_inv_assoc,
-    Functor.mapIso_trans, Category.assoc]
-  iterate 3 erw [← comp_base]
-  simp_rw [← category.assoc]
-  rw [D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_iso_PresheafedSpace_inv i]
-  erw [D.toLocallyRingedSpaceGlueData.ι_iso_SheafedSpace_inv i]
-  change (_ ≫ D.iso_LocallyRingedSpace.inv).1.base = _
-  rw [D.ι_iso_LocallyRingedSpace_inv i]
+  simp only [Functor.mapIso_inv]
+  sorry
+  -- simp only [Functor.mapIso_inv, Iso.trans_inv, Iso.trans_assoc, GlueData.ι_gluedIso_inv_assoc,
+  --   Functor.mapIso_trans, Category.assoc]
+  -- iterate 3 erw [← comp_base]
+  -- simp_rw [← category.assoc]
+  -- rw [D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
+  -- erw [D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
+  -- change (_ ≫ D.iso_LocallyRingedSpace.inv).1.base = _
+  -- rw [D.ι_isoLocallyRingedSpace_inv i]
 #align algebraic_geometry.Scheme.glue_data.ι_iso_carrier_inv AlgebraicGeometry.Scheme.GlueData.ι_isoCarrier_inv
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
