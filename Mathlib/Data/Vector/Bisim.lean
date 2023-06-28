@@ -24,13 +24,13 @@ instance : CoeFun (Bisim f₁ f₂) (fun _ => σ₁ → σ₂ → Prop) where
   coe R := R.1
 
 theorem mapAccumr_bisim (xs : Vector α n) (f₁ : α → σ₁ → σ₁ × β) (f₂ : α → σ₂ → σ₂ × β) (s₁ : σ₁)
-    (s₂ : σ₂) (R : Bisim f₁ f₂) (h₀ : R s₁ s₂):
+    (s₂ : σ₂) (h : ∃(R : Bisim f₁ f₂), R s₁ s₂):
     (mapAccumr f₁ xs s₁).2 = (mapAccumr f₂ xs s₂).2 := by
+  rcases h with ⟨⟨R, hR⟩, h₀⟩
   induction xs using Vector.revInductionOn generalizing s₁ s₂
   . rfl
   next xs x ih =>
     simp
-    rcases R with ⟨R, hR⟩
     rcases (hR x h₀) with ⟨hR, _⟩
     congr 1
     apply ih _ _ hR
@@ -77,10 +77,14 @@ def Bisim.equal : Bisim f₁ f₂ := ⟨
     . specialize hEq (nil.snoc a)
       simp only [mapAccumr_snoc] at hEq
       exact (snoc.inj hEq).1
-
-
-
 ⟩
+
+theorem mapAccumr_bisim_complete :
+    (∀ {n} (xs : Vector α n), (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd)
+    → ∃(R : Bisim f₁ f₂), R s₁ s₂ := by
+  intro eq
+  use Bisim.equal f₁ f₂
+  exact eq
 
 
 
