@@ -82,7 +82,7 @@ instance hasLimit' (F : J ⥤ Type v) : HasLimit F :=
 
 -- This instance is not necessary, and indeed unhelpful:
 -- if it has higher priority than the instance for `TypeMax.{w, v}`,
--- or has than same priority and is defined later,
+-- or has the same priority and is defined later,
 -- then it blocks successful typeclass search with universe unification errors.
 instance : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) :=
   Types.hasLimitsOfSize.{w, v}
