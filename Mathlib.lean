@@ -2759,6 +2759,7 @@ import Mathlib.RingTheory.WittVector.Defs
 import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 import Mathlib.RingTheory.WittVector.Domain
 import Mathlib.RingTheory.WittVector.Frobenius
+import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 import Mathlib.RingTheory.WittVector.Identities
 import Mathlib.RingTheory.WittVector.InitTail
 import Mathlib.RingTheory.WittVector.IsPoly
