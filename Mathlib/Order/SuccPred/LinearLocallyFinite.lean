@@ -80,7 +80,7 @@ theorem le_succFn (i : ι) : i ≤ succFn i := by
 
 theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi i) k) :
     IsGLB (Set.Ioc i j) k := by
-  simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h⊢
+  simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h ⊢
   refine' ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x _⟩
   intro y hy
   cases' le_or_lt y j with h_le h_lt

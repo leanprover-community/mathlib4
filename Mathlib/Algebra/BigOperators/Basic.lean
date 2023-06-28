@@ -812,7 +812,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : (∏ x in s, f x) = f a * f b := by
   haveI := Classical.decEq α; let s' := ({a, b} : Finset α)
   have hu : s' ⊆ s := by
-    refine' insert_subset.mpr _
+    refine' insert_subset_iff.mpr _
     apply And.intro ha
     apply singleton_subset_iff.mpr hb
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
@@ -1686,7 +1686,7 @@ theorem prod_ite_one {f : α → Prop} [DecidablePred f] (hf : (s : Set α).Pair
   · obtain ⟨i, hi, hfi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hfi]
     exact fun j hj h => if_neg fun hfj => (hf hj hi h).le_bot ⟨hfj, hfi⟩
-  · push_neg  at h
+  · push_neg at h
     rw [prod_eq_one]
     exact fun i hi => if_neg (h i hi)
 #align finset.prod_ite_one Finset.prod_ite_one
@@ -1913,7 +1913,7 @@ theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
   · apply prod_eq_one
     intro i hi
     rw [if_pos (h i hi)]
-  · push_neg  at h
+  · push_neg at h
     rcases h with ⟨i, hi, hq⟩
     apply prod_eq_zero hi
     rw [if_neg hq]

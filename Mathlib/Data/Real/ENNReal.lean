@@ -157,11 +157,11 @@ instance canLift : CanLift ℝ≥0∞ ℝ≥0 some (· ≠ ∞) := WithTop.canLi
 theorem range_coe' : range some = Iio ∞ := WithTop.range_coe
 theorem range_coe : range some = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
-/-- `to_nnreal x` returns `x` if it is real, otherwise 0. -/
+/-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
 protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
-/-- `to_real x` returns `x` if it is real, `0` otherwise. -/
+/-- `toReal x` returns `x` if it is real, `0` otherwise. -/
 protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
@@ -1609,6 +1609,8 @@ theorem div_le_of_le_mul (h : a ≤ b * c) : a / c ≤ b := by
 theorem div_le_of_le_mul' (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 #align ennreal.div_le_of_le_mul' ENNReal.div_le_of_le_mul'
+
+protected theorem div_self_le_one : a / a ≤ 1 := div_le_of_le_mul <| by rw [one_mul]
 
 theorem mul_le_of_le_div (h : a ≤ b / c) : a * c ≤ b := by
   rw [← inv_inv c]

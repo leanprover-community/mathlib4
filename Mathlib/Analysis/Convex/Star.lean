@@ -130,7 +130,7 @@ theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
 theorem starConvex_iUnion {ι : Sort _} {s : ι → Set E} (hs : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋃ i, s i) := by
   rintro y hy a b ha hb hab
-  rw [mem_iUnion] at hy⊢
+  rw [mem_iUnion] at hy ⊢
   obtain ⟨i, hy⟩ := hy
   exact ⟨i, hs i hy ha hb hab⟩
 #align star_convex_Union starConvex_iUnion

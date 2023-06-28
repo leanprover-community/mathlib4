@@ -146,10 +146,18 @@ theorem log_le_log (h : 0 < x) (h₁ : 0 < y) : log x ≤ log y ↔ x ≤ y := b
   rw [← exp_le_exp, exp_log h, exp_log h₁]
 #align real.log_le_log Real.log_le_log
 
+@[gcongr]
 theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
   intro h
   rwa [← exp_lt_exp, exp_log hx, exp_log (lt_trans hx h)]
 #align real.log_lt_log Real.log_lt_log
+
+@[gcongr]
+theorem log_le_log' (hx : 0 < x) : x ≤ y → log x ≤ log y := by
+  intro hxy
+  cases hxy.eq_or_lt with
+  | inl h_eq => simp [h_eq]
+  | inr hlt => exact le_of_lt <| log_lt_log hx hlt
 
 theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
   rw [← exp_lt_exp, exp_log hx, exp_log hy]

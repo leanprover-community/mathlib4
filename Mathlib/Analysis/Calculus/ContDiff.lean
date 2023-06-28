@@ -506,7 +506,7 @@ product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor s
 theorem HasFTaylorSeriesUpToOn.prod (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
-  set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun i : Fin m => E) F G
+  set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
@@ -584,7 +584,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     (hg : ContDiffOn 𝕜 n g t) (hf : ContDiffOn 𝕜 n f s) (st : s ⊆ f ⁻¹' t) :
     ContDiffOn 𝕜 n (g ∘ f) s := by
   induction' n using ENat.nat_induction with n IH Itop generalizing Eu Fu Gu
-  · rw [contDiffOn_zero] at hf hg⊢
+  · rw [contDiffOn_zero] at hf hg ⊢
     exact ContinuousOn.comp hg hf st
   · rw [contDiffOn_succ_iff_hasFDerivWithinAt] at hg ⊢
     intro x hx
