@@ -72,18 +72,9 @@ The group law on this set is then uniquely determined by these constructions.
 elliptic curve, rational point, group law
 -/
 
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-private unsafe def map_simp : tactic Unit :=
-  sorry
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-private unsafe def eval_simp : tactic Unit :=
-  sorry
-
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-private unsafe def C_simp : tactic Unit :=
-  sorry
+-- Porting note: copied from `Weierstass`
+local macro "map_simp" : tactic =>
+  `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
 private unsafe def derivative_simp : tactic Unit :=
@@ -94,6 +85,15 @@ universe u v w
 namespace WeierstrassCurve
 
 open CoordinateRing Ideal Polynomial
+
+-- Porting note: copied from `Weierstass` and added `eval_neg`
+--  and moved here because it needs `open Polynomial`
+local macro "eval_simp" : tactic =>
+  `(tactic| simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, eval_pow, eval_neg])
+
+-- Porting note: copied from `Weierstass` and moved here because it needs `open Polynomial`
+local macro "C_simp" : tactic =>
+  `(tactic| simp only [C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
 
 open scoped nonZeroDivisors Polynomial PolynomialPolynomial
 
@@ -116,33 +116,33 @@ This depends on `W`, and has argument order: $x_1$, $y_1$. -/
 @[simp]
 def negY : R :=
   -y₁ - W.a₁ * x₁ - W.a₃
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.neg_Y WeierstrassCurve.negY
 
-theorem negY_negY : W.negY x₁ (W.negY x₁ y₁) = y₁ := by simp only [neg_Y]; ring1
+theorem negY_negY : W.negY x₁ (W.negY x₁ y₁) = y₁ := by simp only [negY]; ring1
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.neg_Y_neg_Y WeierstrassCurve.negY_negY
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2652570801.map_simp -/
 theorem baseChange_negY :
-    (W.base_change A).negY (algebraMap R A x₁) (algebraMap R A y₁) =
-      algebraMap R A (W.negY x₁ y₁) :=
-  by simp only [neg_Y];
-  run_tac
-    map_simp;
+    (W.baseChange A).negY (algebraMap R A x₁) (algebraMap R A y₁) =
+      algebraMap R A (W.negY x₁ y₁) := by
+  simp only [negY]
+  map_simp
   rfl
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_neg_Y WeierstrassCurve.baseChange_negY
 
 theorem baseChange_negY_of_baseChange (x₁ y₁ : A) :
-    (W.base_change B).negY (algebraMap A B x₁) (algebraMap A B y₁) =
-      algebraMap A B ((W.base_change A).negY x₁ y₁) :=
-  by rw [← base_change_neg_Y, base_change_base_change]
+    (W.baseChange B).negY (algebraMap A B x₁) (algebraMap A B y₁) =
+      algebraMap A B ((W.baseChange A).negY x₁ y₁) :=
+  by rw [← baseChange_negY, baseChange_baseChange]
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_neg_Y_of_base_change WeierstrassCurve.baseChange_negY_of_baseChange
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
 @[simp]
 theorem eval_negPolynomial : (W.negPolynomial.eval <| C y₁).eval x₁ = W.negY x₁ y₁ := by
-  rw [neg_Y, sub_sub, neg_polynomial];
-  run_tac
-    eval_simp
+  rw [negY, sub_sub, negPolynomial]
+  eval_simp
 #align weierstrass_curve.eval_neg_polynomial WeierstrassCurve.eval_negPolynomial
 
 /-- The polynomial $L(X - x_1) + y_1$ associated to the line $Y = L(X - x_1) + y_1$,
@@ -153,14 +153,13 @@ noncomputable def linePolynomial : R[X] :=
   C L * (X - C x₁) + C y₁
 #align weierstrass_curve.line_polynomial WeierstrassCurve.linePolynomial
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.1008755739.C_simp -/
 theorem xYIdeal_eq₁ : XYIdeal W x₁ (C y₁) = XYIdeal W x₁ (linePolynomial x₁ y₁ L) := by
-  simp only [XY_ideal, X_class, Y_class, line_polynomial]
+  simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_mul_right <| AdjoinRoot.mk _ <| C <| C <| -L, ← _root_.map_mul, ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
-  run_tac
-    C_simp
-  ring1
+  C_simp
+  ring
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.XY_ideal_eq₁ WeierstrassCurve.xYIdeal_eq₁
 
 /-- The polynomial obtained by substituting the line $Y = L*(X - x_1) + y_1$, with a slope of $L$
@@ -170,44 +169,41 @@ precisely $x_1$, $x_2$, and the $X$-coordinate of the addition of $(x_1, y_1)$ a
 
 This depends on `W`, and has argument order: $x_1$, $y_1$, $L$. -/
 noncomputable def addPolynomial : R[X] :=
-  W.Polynomial.eval <| linePolynomial x₁ y₁ L
+  W.polynomial.eval <| linePolynomial x₁ y₁ L
 #align weierstrass_curve.add_polynomial WeierstrassCurve.addPolynomial
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.1008755739.C_simp -/
-theorem c_addPolynomial :
+-- Porting note: here and elsewhere used `C_addPolynomial` instead of `c_addPolynomial`
+theorem C_addPolynomial :
     C (W.addPolynomial x₁ y₁ L) =
       (Y - C (linePolynomial x₁ y₁ L)) * (W.negPolynomial - C (linePolynomial x₁ y₁ L)) +
-        W.Polynomial := by
-  rw [add_polynomial, line_polynomial, WeierstrassCurve.polynomial, neg_polynomial];
-  run_tac
-    eval_simp
-  run_tac
-    C_simp;
-  ring1
-#align weierstrass_curve.C_add_polynomial WeierstrassCurve.c_addPolynomial
+        W.polynomial := by
+  rw [addPolynomial, linePolynomial, WeierstrassCurve.polynomial, negPolynomial]
+  eval_simp
+  C_simp
+  ring
+set_option linter.uppercaseLean3 false in
+#align weierstrass_curve.C_add_polynomial WeierstrassCurve.C_addPolynomial
 
-theorem CoordinateRing.c_addPolynomial :
-    AdjoinRoot.mk W.Polynomial (C (W.addPolynomial x₁ y₁ L)) =
-      AdjoinRoot.mk W.Polynomial
+theorem CoordinateRing.C_addPolynomial :
+    AdjoinRoot.mk W.polynomial (C (W.addPolynomial x₁ y₁ L)) =
+      AdjoinRoot.mk W.polynomial
         ((Y - C (linePolynomial x₁ y₁ L)) * (W.negPolynomial - C (linePolynomial x₁ y₁ L))) :=
-  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [C_add_polynomial, add_sub_cancel', mul_one]⟩
-#align weierstrass_curve.coordinate_ring.C_add_polynomial WeierstrassCurve.CoordinateRing.c_addPolynomial
+  AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [WeierstrassCurve.C_addPolynomial, add_sub_cancel', mul_one]⟩
+set_option linter.uppercaseLean3 false in
+#align weierstrass_curve.coordinate_ring.C_add_polynomial WeierstrassCurve.CoordinateRing.C_addPolynomial
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.1008755739.C_simp -/
 theorem addPolynomial_eq :
     W.addPolynomial x₁ y₁ L =
       -Cubic.toPoly
           ⟨1, -L ^ 2 - W.a₁ * L + W.a₂,
             2 * x₁ * L ^ 2 + (W.a₁ * x₁ - 2 * y₁ - W.a₃) * L + (-W.a₁ * y₁ + W.a₄),
             -x₁ ^ 2 * L ^ 2 + (2 * x₁ * y₁ + W.a₃ * x₁) * L - (y₁ ^ 2 + W.a₃ * y₁ - W.a₆)⟩ := by
-  rw [add_polynomial, line_polynomial, WeierstrassCurve.polynomial, Cubic.toPoly];
-  run_tac
-    eval_simp
-  run_tac
-    C_simp;
-  ring1
+  rw [addPolynomial, linePolynomial, WeierstrassCurve.polynomial, Cubic.toPoly]
+  eval_simp
+  C_simp
+  -- Porting note: `ring` and `ring1` do not work
+  ring_nf
+  rfl
 #align weierstrass_curve.add_polynomial_eq WeierstrassCurve.addPolynomial_eq
 
 /-- The $X$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
@@ -217,22 +213,23 @@ This depends on `W`, and has argument order: $x_1$, $x_2$, $L$. -/
 @[simp]
 def addX : R :=
   L ^ 2 + W.a₁ * L - W.a₂ - x₁ - x₂
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.add_X WeierstrassCurve.addX
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2652570801.map_simp -/
 theorem baseChange_addX :
-    (W.base_change A).addX (algebraMap R A x₁) (algebraMap R A x₂) (algebraMap R A L) =
-      algebraMap R A (W.addX x₁ x₂ L) :=
-  by simp only [add_X];
-  run_tac
-    map_simp;
+    (W.baseChange A).addX (algebraMap R A x₁) (algebraMap R A x₂) (algebraMap R A L) =
+      algebraMap R A (W.addX x₁ x₂ L) := by
+  simp only [addX]
+  map_simp
   rfl
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_X WeierstrassCurve.baseChange_addX
 
 theorem baseChange_addX_of_baseChange (x₁ x₂ L : A) :
-    (W.base_change B).addX (algebraMap A B x₁) (algebraMap A B x₂) (algebraMap A B L) =
-      algebraMap A B ((W.base_change A).addX x₁ x₂ L) :=
-  by rw [← base_change_add_X, base_change_base_change]
+    (W.baseChange B).addX (algebraMap A B x₁) (algebraMap A B x₂) (algebraMap A B L) =
+      algebraMap A B ((W.baseChange A).addX x₁ x₂ L) :=
+  by rw [← baseChange_addX, baseChange_baseChange]
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_X_of_base_change WeierstrassCurve.baseChange_addX_of_baseChange
 
 /-- The $Y$-coordinate, before applying the final negation, of the addition of two affine points
@@ -242,23 +239,23 @@ This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
 @[simp]
 def addY' : R :=
   L * (W.addX x₁ x₂ L - x₁) + y₁
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.add_Y' WeierstrassCurve.addY'
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2652570801.map_simp -/
 theorem baseChange_addY' :
-    (W.base_change A).addY' (algebraMap R A x₁) (algebraMap R A x₂) (algebraMap R A y₁)
-        (algebraMap R A L) =
-      algebraMap R A (W.addY' x₁ x₂ y₁ L) :=
-  by simp only [add_Y', base_change_add_X];
-  run_tac
-    map_simp
+    (W.baseChange A).addY' (algebraMap R A x₁) (algebraMap R A x₂) (algebraMap R A y₁)
+        (algebraMap R A L) = algebraMap R A (W.addY' x₁ x₂ y₁ L) := by
+  simp only [addY', baseChange_addX]
+  map_simp
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y' WeierstrassCurve.baseChange_addY'
 
 theorem baseChange_addY'_of_baseChange (x₁ x₂ y₁ L : A) :
-    (W.base_change B).addY' (algebraMap A B x₁) (algebraMap A B x₂) (algebraMap A B y₁)
+    (W.baseChange B).addY' (algebraMap A B x₁) (algebraMap A B x₂) (algebraMap A B y₁)
         (algebraMap A B L) =
-      algebraMap A B ((W.base_change A).addY' x₁ x₂ y₁ L) :=
-  by rw [← base_change_add_Y', base_change_base_change]
+      algebraMap A B ((W.baseChange A).addY' x₁ x₂ y₁ L) := by
+  rw [← baseChange_addY', baseChange_baseChange]
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y'_of_base_change WeierstrassCurve.baseChange_addY'_of_baseChange
 
 /-- The $Y$-coordinate of the addition of two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`,
@@ -268,37 +265,47 @@ This depends on `W`, and has argument order: $x_1$, $x_2$, $y_1$, $L$. -/
 @[simp]
 def addY : R :=
   W.negY (W.addX x₁ x₂ L) (W.addY' x₁ x₂ y₁ L)
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.add_Y WeierstrassCurve.addY
 
 theorem baseChange_addY :
-    (W.base_change A).addY (algebraMap R A x₁) (algebraMap R A x₂) (algebraMap R A y₁)
-        (algebraMap R A L) =
-      algebraMap R A (W.addY x₁ x₂ y₁ L) :=
-  by simp only [add_Y, base_change_add_Y', base_change_add_X, base_change_neg_Y]
+    (W.baseChange A).addY (algebraMap R A x₁) (algebraMap R A x₂) (algebraMap R A y₁)
+        (algebraMap R A L) = algebraMap R A (W.addY x₁ x₂ y₁ L) := by
+  simp only [addY, baseChange_addY', baseChange_addX, baseChange_negY]
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y WeierstrassCurve.baseChange_addY
 
 theorem baseChange_addY_of_baseChange (x₁ x₂ y₁ L : A) :
-    (W.base_change B).addY (algebraMap A B x₁) (algebraMap A B x₂) (algebraMap A B y₁)
-        (algebraMap A B L) =
-      algebraMap A B ((W.base_change A).addY x₁ x₂ y₁ L) :=
-  by rw [← base_change_add_Y, base_change_base_change]
+    (W.baseChange B).addY (algebraMap A B x₁) (algebraMap A B x₂) (algebraMap A B y₁)
+        (algebraMap A B L) = algebraMap A B ((W.baseChange A).addY x₁ x₂ y₁ L) := by
+  rw [← baseChange_addY, baseChange_baseChange]
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.base_change_add_Y_of_base_change WeierstrassCurve.baseChange_addY_of_baseChange
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.1008755739.C_simp -/
-theorem xYIdeal_add_eq :
+-- Porting note: change name to `XYIdeal_add_eq` instead of `xYIdeal_add_eq`
+set_option maxHeartbeats 300000 in
+theorem XYIdeal_add_eq :
     XYIdeal W (W.addX x₁ x₂ L) (C (W.addY x₁ x₂ y₁ L)) =
-      span {AdjoinRoot.mk W.Polynomial <| W.negPolynomial - C (linePolynomial x₁ y₁ L)} ⊔
+      span {AdjoinRoot.mk W.polynomial <| W.negPolynomial - C (linePolynomial x₁ y₁ L)} ⊔
         XIdeal W (W.addX x₁ x₂ L) := by
-  simp only [XY_ideal, X_ideal, X_class, Y_class, add_Y, add_Y', neg_Y, neg_polynomial,
-    line_polynomial]
-  conv_rhs => rw [sub_sub, ← neg_add', map_neg, span_singleton_neg, sup_comm, ← span_insert]
-  rw [← span_pair_add_mul_right <| AdjoinRoot.mk _ <| C <| C <| W.a₁ + L, ← _root_.map_mul, ←
-    map_add]
+  simp only [XYIdeal, XIdeal, XClass, YClass, addY, addY', negY, negPolynomial, linePolynomial]
+  -- Porting note: original proof
+  --  conv_rhs => rw [sub_sub, ← neg_add', map_neg, span_singleton_neg, sup_comm, ← span_insert]
+  -- but using a `conv` here times out the rest of the proof
+  have : span {(AdjoinRoot.mk (W.polynomial))
+      (-Y - (C (C W.a₁ * Y + C W.a₃ : R[X]) : R[X][Y])
+      - (C (C L * (Y - C x₁) + C y₁ : R[X]) : R[X][Y]))} ⊔
+      span {CoordinateRing.mk W (C (Y - (C (addX W x₁ x₂ L) : R[X])) : R[X][Y])} =
+      span {CoordinateRing.mk W (C (Y - (C (addX W x₁ x₂ L) : R[X])) : R[X][Y]),
+      (AdjoinRoot.mk (WeierstrassCurve.polynomial W))
+      (Y + (C (C W.a₁ * Y + C W.a₃) + C (C L * (Y - C x₁) + C y₁)))} := by
+    rw [sub_sub, ← neg_add', map_neg, span_singleton_neg, sup_comm, ← span_insert]
+  rw [this, ← span_pair_add_mul_right <| AdjoinRoot.mk _ <| C <| C <| W.a₁ + L, ← _root_.map_mul,
+    ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
-  run_tac
-    C_simp
-  ring1
-#align weierstrass_curve.XY_ideal_add_eq WeierstrassCurve.xYIdeal_add_eq
+  C_simp
+  ring
+#align weierstrass_curve.XY_ideal_add_eq WeierstrassCurve.XYIdeal_add_eq
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
 theorem equation_add_iff :
@@ -308,6 +315,8 @@ theorem equation_add_iff :
   run_tac
     eval_simp
 #align weierstrass_curve.equation_add_iff WeierstrassCurve.equation_add_iff
+
+#exit
 
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
 /- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
@@ -514,7 +523,7 @@ theorem baseChange_slope_of_baseChange {R : Type u} [CommRing R] (W : Weierstras
 #align weierstrass_curve.base_change_slope_of_base_change WeierstrassCurve.baseChange_slope_of_baseChange
 
 theorem Y_eq_of_X_eq (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
-  rw [equation_iff] at h₁' h₂' 
+  rw [equation_iff] at h₁' h₂'
   rw [← sub_eq_zero, ← @sub_eq_zero _ _ y₁, ← mul_eq_zero, neg_Y]
   linear_combination (norm := (rw [hx]; ring1)) h₁' - h₂'
 #align weierstrass_curve.Y_eq_of_X_eq WeierstrassCurve.Y_eq_of_X_eq
@@ -551,9 +560,9 @@ theorem addPolynomial_slope (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
   rw [add_polynomial_eq, neg_inj, Cubic.prod_X_sub_C_eq, Cubic.toPoly_injective]
   by_cases hx : x₁ = x₂
   · rcases hx, Y_eq_of_Y_ne h₁' h₂' hx (hxy hx) with ⟨rfl, rfl⟩
-    rw [equation_iff] at h₁' h₂' 
+    rw [equation_iff] at h₁' h₂'
     rw [slope_of_Y_ne rfl <| hxy rfl]
-    rw [neg_Y, ← sub_ne_zero] at hxy 
+    rw [neg_Y, ← sub_ne_zero] at hxy
     ext
     · rfl
     · simp only [add_X]
@@ -561,9 +570,9 @@ theorem addPolynomial_slope (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) :
     · field_simp [hxy rfl]
       ring1
     · linear_combination (norm := (field_simp [hxy rfl]; ring1)) -h₁'
-  · rw [equation_iff] at h₁' h₂' 
+  · rw [equation_iff] at h₁' h₂'
     rw [slope_of_X_ne hx]
-    rw [← sub_eq_zero] at hx 
+    rw [← sub_eq_zero] at hx
     ext
     · rfl
     · simp only [add_X]
@@ -905,9 +914,9 @@ theorem add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
       by_cases hx : x₁ = x₂
       · by_cases hy : y₁ = W.neg_Y x₂ y₂
         · exact ⟨hx, hy⟩
-        · rw [some_add_some_of_Y_ne hx hy] at h 
+        · rw [some_add_some_of_Y_ne hx hy] at h
           contradiction
-      · rw [some_add_some_of_X_ne hx] at h 
+      · rw [some_add_some_of_X_ne hx] at h
         contradiction
     · exact fun ⟨hx, hy⟩ => some_add_some_of_Y_eq hx hy
 #align weierstrass_curve.point.add_eq_zero WeierstrassCurve.Point.add_eq_zero
@@ -1043,4 +1052,3 @@ def mk {x y : R} (h : E.equation x y) : E.Point :=
 end Point
 
 end EllipticCurve
-
