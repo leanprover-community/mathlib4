@@ -38,15 +38,15 @@ section Fold
 section Unary
 variable (xs : Vector α n) (f₁ : β → σ₁ → σ₁ × γ) (f₂ : α → σ₂ → σ₂ × β)
 
-protected abbrev mapAccumr_mapAccumr.g (x : α) (s : σ₁ × σ₂) :=
-  let r₂ := f₂ x s.snd
-  let r₁ := f₁ r₂.snd s.fst
-  ((r₁.fst, r₂.fst), r₁.snd)
-
 @[simp]
-theorem mapAccumr_mapAccumr : (mapAccumr f₁ (mapAccumr f₂ xs s₂).snd s₁)
-                              = let m := (mapAccumr (mapAccumr_mapAccumr.g f₁ f₂) xs (s₁, s₂))
-                                (m.fst.fst, m.snd) := by
+theorem mapAccumr_mapAccumr :
+    mapAccumr f₁ (mapAccumr f₂ xs s₂).snd s₁
+    = let m := (mapAccumr (fun x s =>
+        let r₂ := f₂ x s.snd
+        let r₁ := f₁ r₂.snd s.fst
+        ((r₁.fst, r₂.fst), r₁.snd)
+      ) xs (s₁, s₂))
+      (m.fst.fst, m.snd) := by
   induction xs using Vector.revInductionOn generalizing s₁ s₂ <;> simp_all
 
 
@@ -73,17 +73,15 @@ end Unary
 
 section Binary
 variable (xs : Vector α n) (ys : Vector β n)
-variable (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ)
-
-protected abbrev mapAccumr₂_mapAccumr_left.g (x : α) (y : β) (s : σ₁ × σ₂) :=
-  let r₂ := f₂ x s.snd
-  let r₁ := f₁ r₂.snd y s.fst
-  ((r₁.fst, r₂.fst), r₁.snd)
 
 @[simp]
-theorem mapAccumr₂_mapAccumr_left :
+theorem mapAccumr₂_mapAccumr_left (f₁ : γ → β → σ₁ → σ₁ × ζ) (f₂ : α → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr f₂ xs s₂).snd ys s₁)
-    = let m := (mapAccumr₂ (mapAccumr₂_mapAccumr_left.g f₁ f₂) xs ys (s₁, s₂))
+    = let m := (mapAccumr₂ (fun x y s =>
+          let r₂ := f₂ x s.snd
+          let r₁ := f₁ r₂.snd y s.fst
+          ((r₁.fst, r₂.fst), r₁.snd)
+        ) xs ys (s₁, s₂))
       (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
@@ -94,17 +92,14 @@ theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
 
 
 
-variable (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ)
-
-protected abbrev mapAccumr₂_mapAccumr_right.g (x : α) (y : β) (s : σ₁ × σ₂) :=
-  let r₂ := f₂ y s.snd
-  let r₁ := f₁ x r₂.snd s.fst
-  ((r₁.fst, r₂.fst), r₁.snd)
-
 @[simp]
-theorem mapAccumr₂_mapAccumr_right :
+theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr f₂ ys s₂).snd s₁)
-    = let m := (mapAccumr₂ (mapAccumr₂_mapAccumr_right.g f₁ f₂) xs ys (s₁, s₂))
+    = let m := (mapAccumr₂ (fun x y s =>
+          let r₂ := f₂ y s.snd
+          let r₁ := f₁ x r₂.snd s.fst
+          ((r₁.fst, r₂.fst), r₁.snd)
+        ) xs ys (s₁, s₂))
       (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
@@ -114,17 +109,15 @@ theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 
-variable (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ)
-
-protected abbrev mapAccumr_mapAccumr₂.g (x : α) (y : β) (s : σ₁ × σ₂) :=
-  let r₂ := f₂ x y s.snd
-  let r₁ := f₁ r₂.snd s.fst
-  ((r₁.fst, r₂.fst), r₁.snd)
 
 @[simp]
-theorem mapAccumr_mapAccumr₂ :
+theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr f₁ (mapAccumr₂ f₂ xs ys s₂).snd s₁)
-    = let m := mapAccumr₂ (mapAccumr_mapAccumr₂.g f₁ f₂) xs ys (s₁, s₂);
+    = let m := mapAccumr₂ (fun x y s =>
+          let r₂ := f₂ x y s.snd
+          let r₁ := f₁ r₂.snd s.fst
+          ((r₁.fst, r₂.fst), r₁.snd)
+        ) xs ys (s₁, s₂);
       (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
@@ -134,8 +127,7 @@ theorem map_map₂ (f₁ : γ → ζ) (f₂ : α → β → γ) :
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ)
-                                        (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd xs s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
