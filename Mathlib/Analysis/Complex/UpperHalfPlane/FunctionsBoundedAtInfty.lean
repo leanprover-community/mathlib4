@@ -15,7 +15,7 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 /-!
 # Bounded at infinity
 
-For complex valued functions on the upper half plane, this file defines the filter `at_im_infty`
+For complex valued functions on the upper half plane, this file defines the filter `atImInfty`
 required for defining when functions are bounded at infinity and zero at infinity.
 Both of which are relevant for defining modular forms.
 
@@ -40,7 +40,7 @@ theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im �
 #align upper_half_plane.at_im_infty_basis UpperHalfPlane.atImInfty_basis
 
 theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S := by
-  simp only [at_im_infty, Filter.mem_comap', Filter.mem_atTop_sets, ge_iff_le, Set.mem_setOf_eq,
+  simp only [atImInfty, Filter.mem_comap', Filter.mem_atTop_sets, ge_iff_le, Set.mem_setOf_eq,
     UpperHalfPlane.coe_im]
   refine' ⟨fun ⟨a, h⟩ => ⟨a, fun z hz => h (im z) hz rfl⟩, _⟩
   rintro ⟨A, h⟩
@@ -48,12 +48,12 @@ theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : �
   rwa [hx]
 #align upper_half_plane.at_im_infty_mem UpperHalfPlane.atImInfty_mem
 
-/-- A function ` f : ℍ → α` is bounded at infinity if it is bounded along `at_im_infty`. -/
+/-- A function ` f : ℍ → α` is bounded at infinity if it is bounded along `atImInfty`. -/
 def IsBoundedAtImInfty {α : Type _} [Norm α] (f : ℍ → α) : Prop :=
   BoundedAtFilter atImInfty f
 #align upper_half_plane.is_bounded_at_im_infty UpperHalfPlane.IsBoundedAtImInfty
 
-/-- A function ` f : ℍ → α` is zero at infinity it is zero along `at_im_infty`. -/
+/-- A function ` f : ℍ → α` is zero at infinity it is zero along `atImInfty`. -/
 def IsZeroAtImInfty {α : Type _} [Zero α] [TopologicalSpace α] (f : ℍ → α) : Prop :=
   ZeroAtFilter atImInfty f
 #align upper_half_plane.is_zero_at_im_infty UpperHalfPlane.IsZeroAtImInfty
@@ -68,32 +68,32 @@ def zeroAtImInftySubmodule (α : Type _) [NormedField α] : Submodule α (ℍ �
   zeroAtFilterSubmodule atImInfty
 #align upper_half_plane.zero_at_im_infty_submodule UpperHalfPlane.zeroAtImInftySubmodule
 
-/-- ubalgebra of functions that are bounded at infinity. -/
+/-- Subalgebra of functions that are bounded at infinity. -/
 def boundedAtImInftySubalgebra (α : Type _) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra atImInfty
 #align upper_half_plane.bounded_at_im_infty_subalgebra UpperHalfPlane.boundedAtImInftySubalgebra
 
-theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
+nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
     (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
   simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
 #align upper_half_plane.is_bounded_at_im_infty.mul UpperHalfPlane.IsBoundedAtImInfty.mul
 
 theorem bounded_mem (f : ℍ → ℂ) :
     IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ M := by
-  simp [is_bounded_at_im_infty, bounded_at_filter, Asymptotics.isBigO_iff, Filter.Eventually,
-    at_im_infty_mem]
+  simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
+    atImInfty_mem]
 #align upper_half_plane.bounded_mem UpperHalfPlane.bounded_mem
 
 theorem zero_at_im_infty (f : ℍ → ℂ) :
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε := by
-  rw [is_zero_at_im_infty, zero_at_filter, tendsto_iff_forall_eventually_mem]
+  rw [IsZeroAtImInfty, ZeroAtFilter, tendsto_iff_forall_eventually_mem]
   constructor
-  · simp_rw [Filter.Eventually, at_im_infty_mem]
+  · simp_rw [Filter.Eventually, atImInfty_mem]
     intro h ε hε
     simpa using h (Metric.closedBall (0 : ℂ) ε) (Metric.closedBall_mem_nhds (0 : ℂ) hε)
   · simp_rw [Metric.mem_nhds_iff]
     intro h s hs
-    simp_rw [Filter.Eventually, at_im_infty_mem]
+    simp_rw [Filter.Eventually, atImInfty_mem]
     obtain ⟨ε, h1, h2⟩ := hs
     have h11 : 0 < ε / 2 := by linarith
     obtain ⟨A, hA⟩ := h (ε / 2) h11
@@ -108,4 +108,3 @@ theorem zero_at_im_infty (f : ℍ → ℂ) :
 #align upper_half_plane.zero_at_im_infty UpperHalfPlane.zero_at_im_infty
 
 end UpperHalfPlane
-
