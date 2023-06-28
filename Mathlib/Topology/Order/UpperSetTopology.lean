@@ -108,6 +108,17 @@ instance : Preorder (WithUpperSetTopology α) :=
 
 instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
 
+theorem ofUpperSet_rel_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
+  Iff.rfl
+
+def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α := {
+  toFun := ofUpperSet,
+  invFun := toUpperSet,
+  left_inv := toUpperSet_ofUpperSet,
+  right_inv := ofUpperSet_toUpperSet,
+  map_rel_iff' := ofUpperSet_rel_iff
+}
+
 end WithUpperSetTopology
 
 /--
