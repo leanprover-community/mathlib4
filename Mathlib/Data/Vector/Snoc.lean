@@ -81,9 +81,9 @@ namespace Vector
       This can be used as `induction v using Vector.revInductionOn`. -/
   @[elab_as_elim]
   def revInductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
-                      (nil : C nil)
-                      (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x))
-                      : C v :=
+      (nil : C nil)
+      (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C xs → C (xs.snoc x)) :
+      C v :=
     cast (by simp) <| inductionOn
       (C := fun v => C v.reverse)
       v.reverse
@@ -94,12 +94,11 @@ namespace Vector
       `w : Vector β n`. -/
   @[elab_as_elim]
   def revInductionOn₂ {C : ∀ {n : ℕ}, Vector α n → Vector β n → Sort _} {n : ℕ}
-                      (v : Vector α n)
-                      (w : Vector β n)
-                      (nil : C nil nil)
-                      (snoc : ∀ {n : ℕ} (xs : Vector α n) (ys : Vector β n) (x : α) (y : β),
-                              C xs ys → C (xs.snoc x) (ys.snoc y))
-                      : C v w :=
+      (v : Vector α n) (w : Vector β n)
+      (nil : C nil nil)
+      (snoc : ∀ {n : ℕ} (xs : Vector α n) (ys : Vector β n) (x : α) (y : β),
+        C xs ys → C (xs.snoc x) (ys.snoc y)) :
+      C v w :=
     cast (by simp) <| inductionOn₂
       (C := fun v w => C v.reverse w.reverse)
       v.reverse
@@ -112,9 +111,9 @@ namespace Vector
       separately -/
   @[elab_as_elim]
   def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
-                    (nil : C nil)
-                    (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x))
-                      : C v :=
+      (nil : C nil)
+      (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
+      C v :=
     revInductionOn v nil fun xs x _ => snoc xs x
   end Induction
 
@@ -137,10 +136,11 @@ namespace Vector
     rfl
 
   @[simp]
-  theorem mapAccumr_snoc :  mapAccumr f (xs.snoc x) s
-                            = let q := f x s
-                              let r := mapAccumr f xs q.1
-                              (r.1, r.2.snoc q.2) := by
+  theorem mapAccumr_snoc :
+      mapAccumr f (xs.snoc x) s
+      = let q := f x s
+        let r := mapAccumr f xs q.1
+        (r.1, r.2.snoc q.2) := by
     induction xs using Vector.inductionOn
     . rfl
     . simp[*]
@@ -157,10 +157,10 @@ namespace Vector
 
   @[simp]
   theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) :
-    mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
-        = let q := f x y c
-          let r := mapAccumr₂ f xs ys q.1
-          (r.1, r.2.snoc q.2) := by
+      mapAccumr₂ f (xs.snoc x) (ys.snoc y) c
+      = let q := f x y c
+        let r := mapAccumr₂ f xs ys q.1
+        (r.1, r.2.snoc q.2) := by
     induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
   end Simp
