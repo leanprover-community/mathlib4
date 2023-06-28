@@ -48,7 +48,7 @@ theorem reverse_snoc : reverse (xs.snoc x) = x ::ᵥ (reverse xs) := by
   cases xs
   simp only [reverse, snoc, cons, toList_mk]
   congr
-  simp[toList, (·++·), Vector.append, Append.append]
+  simp [toList, (·++·), Vector.append, Append.append]
   rfl
 
 
@@ -58,9 +58,9 @@ theorem replicate_succ_to_snoc (val : α) :
   induction n
   case zero => rfl
   case succ n ih =>
-    rw[replicate_succ]
+    rw [replicate_succ]
     conv => {
-      rhs; rw[replicate_succ]
+      rhs; rw [replicate_succ]
     }
     rw[snoc_cons, ih]
 
@@ -115,17 +115,16 @@ def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
     C v :=
   revInductionOn v nil fun xs x _ => snoc xs x
+  
 end Induction
-
-
 
 /-!
 ## More simplification lemmas
 -/
 
 section Simp
-  variable (xs : Vector α n)
 
+variable (xs : Vector α n)
 
 @[simp]
 theorem map_snoc : map f (xs.snoc x) = (map f xs).snoc (f x) := by
