@@ -1354,11 +1354,11 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
       by_contra' H
-      exact False.elim (lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h'))
+      exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
     · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
       by_contra' H
-      exact False.elim (lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h'))
+      exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
   · rw [H]
@@ -2206,7 +2206,7 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
   · cases' hab.lt_or_lt with hab hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
-      simp only [insert_subset, singleton_subset_iff]
+      simp only [insert_subset_iff, singleton_subset_iff]
       exact ⟨(isGLB_Ioo hab).mem_closure hab', (isLUB_Ioo hab).mem_closure hab'⟩
     · rw [Icc_eq_empty_of_lt hab]
       exact empty_subset _

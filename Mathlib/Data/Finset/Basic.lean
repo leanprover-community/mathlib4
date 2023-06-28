@@ -810,7 +810,8 @@ theorem eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ (s : Set α).Non
 theorem Nonempty.exists_eq_singleton_or_nontrivial :
     s.Nonempty → (∃ a, s = {a}) ∨ (s : Set α).Nontrivial := fun ⟨a, ha⟩ =>
   (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
-#align finset.nonempty.exists_eq_singleton_or_nontrivial Finset.Nonempty.exists_eq_singleton_or_nontrivial
+#align finset.nonempty.exists_eq_singleton_or_nontrivial
+  Finset.Nonempty.exists_eq_singleton_or_nontrivial
 
 instance [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
@@ -1163,15 +1164,18 @@ theorem ne_insert_of_not_mem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ in
   simp [h]
 #align finset.ne_insert_of_not_mem Finset.ne_insert_of_not_mem
 
-theorem insert_subset : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
+theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
   simp only [subset_iff, mem_insert, forall_eq, or_imp, forall_and]
-#align finset.insert_subset Finset.insert_subset
+#align finset.insert_subset Finset.insert_subset_iff
+
+theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
+  insert_subset_iff.mpr ⟨ha,hs⟩
 
 theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
 #align finset.subset_insert Finset.subset_insert
 
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t :=
-  insert_subset.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
+  insert_subset_iff.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
 #align finset.insert_subset_insert Finset.insert_subset_insert
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
@@ -1236,7 +1240,7 @@ theorem induction_on' {α : Type _} {p : Finset α → Prop} [DecidableEq α] (S
     (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → p s → p (insert a s)) : p S :=
   @Finset.induction_on α (fun T => T ⊆ S → p T) _ S (fun _ => h₁)
     (fun _ _ has hqs hs =>
-      let ⟨hS, sS⟩ := Finset.insert_subset.1 hs
+      let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
       h₂ hS sS has (hqs sS))
     (Finset.Subset.refl S)
 #align finset.induction_on' Finset.induction_on'
@@ -1545,7 +1549,7 @@ theorem _root_.Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type
       obtain ⟨j, hbj⟩ : ∃ j, b ∈ f j := by simpa [Set.mem_iUnion₂] using hbtc (t.mem_insert_self b)
       rcases h j i with ⟨k, hk, hk'⟩
       use k
-      rw [coe_insert, Set.insert_subset]
+      rw [coe_insert, Set.insert_subset_iff]
       exact ⟨hk hbj, _root_.trans hti hk'⟩
 #align directed.exists_mem_subset_of_finset_subset_bUnion Directed.exists_mem_subset_of_finset_subset_biUnion
 

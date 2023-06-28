@@ -157,8 +157,6 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra' h
-  -- Porting note: `push_neg` doesn't do its job
-  simp only [not_exists, not_and] at h
   suffices Set.univ = (C : Set V) by exact dis ⟨hK.choose_spec, this ▸ Set.mem_univ hK.some⟩
   symm
   rw [Set.eq_univ_iff_forall]

@@ -155,9 +155,9 @@ theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
 @[gcongr]
 theorem log_le_log' (hx : 0 < x) : x ≤ y → log x ≤ log y := by
   intro hxy
-  by_cases h_eq : x = y
-  case pos => simp [h_eq]
-  case neg => exact le_of_lt <| log_lt_log hx <| lt_of_le_of_ne hxy h_eq
+  cases hxy.eq_or_lt with
+  | inl h_eq => simp [h_eq]
+  | inr hlt => exact le_of_lt <| log_lt_log hx hlt
 
 theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
   rw [← exp_lt_exp, exp_log hx, exp_log hy]
