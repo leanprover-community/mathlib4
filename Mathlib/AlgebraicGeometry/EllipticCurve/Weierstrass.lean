@@ -39,7 +39,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.baseChange`: the Weierstrass curve base changed over an algebra.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
  * `WeierstrassCurve.polynomial`: the polynomial associated to a Weierstrass curve.
- * `WeierstrassCurve.equation`: the Weirstrass equation of a Weierstrass curve.
+ * `WeierstrassCurve.equation`: the Weierstrass equation of a Weierstrass curve.
  * `WeierstrassCurve.nonsingular`: the nonsingular condition at a point on a Weierstrass curve.
  * `WeierstrassCurve.CoordinateRing`: the coordinate ring of a Weierstrass curve.
  * `WeierstrassCurve.FunctionField`: the function field of a Weierstrass curve.
