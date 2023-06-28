@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Basic
-import Mathbin.SetTheory.Cardinal.Cofinality
-import Mathbin.SetTheory.Game.Birthday
+import Mathlib.Data.Fintype.Basic
+import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Game.Birthday
 
 /-!
 # Short games
@@ -216,8 +216,7 @@ We build `decidable (x ≤ y)` and `decidable (x ⧏ y)` in a simultaneous induc
 Instances for the two projections separately are provided below.
 -/
 def leLfDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
-  | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty =>
-    by
+  | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     skip
     constructor
     · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
