@@ -2362,6 +2362,7 @@ import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
 import Mathlib.NumberTheory.LegendreSymbol.GaussSum
 import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 import Mathlib.NumberTheory.LegendreSymbol.MulCharacter
+import Mathlib.NumberTheory.LegendreSymbol.NormNum
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.GaussSum
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
