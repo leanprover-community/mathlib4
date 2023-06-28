@@ -21,17 +21,17 @@ We also define predicates about affine schemes and affine open sets.
 
 ## Main definitions
 
-* `algebraic_geometry.AffineScheme`: The category of affine schemes.
-* `algebraic_geometry.is_affine`: A scheme is affine if the canonical map `X ⟶ Spec Γ(X)` is an
+* `AlgebraicGeometry.AffineScheme`: The category of affine schemes.
+* `AlgebraicGeometry.IsAffine`: A scheme is affine if the canonical map `X ⟶ Spec Γ(X)` is an
   isomorphism.
-* `algebraic_geometry.Scheme.iso_Spec`: The canonical isomorphism `X ≅ Spec Γ(X)` for an affine
+* `AlgebraicGeometry.Scheme.isoSpec`: The canonical isomorphism `X ≅ Spec Γ(X)` for an affine
   scheme.
-* `algebraic_geometry.AffineScheme.equiv_CommRing`: The equivalence of categories
+* `AlgebraicGeometry.AffineScheme.equivCommRingCat`: The equivalence of categories
   `AffineScheme ≌ CommRingᵒᵖ` given by `AffineScheme.Spec : CommRingᵒᵖ ⥤ AffineScheme` and
-  `AffineScheme.Γ : AffineSchemeᵒᵖ ⥤ CommRing`.
-* `algebraic_geometry.is_affine_open`: An open subset of a scheme is affine if the open subscheme is
+  `AffineScheme.Γ : AffineSchemeᵒᵖ ⥤ CommRingCat`.
+* `AlgebraicGeometry.IsAffineOpen`: An open subset of a scheme is affine if the open subscheme is
   affine.
-* `algebraic_geometry.is_affine_open.from_Spec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
+* `AlgebraicGeometry.IsAffineOpen.fromSpec`: The immersion `Spec 𝒪ₓ(U) ⟶ X` for an affine `U`.
 
 -/
 
