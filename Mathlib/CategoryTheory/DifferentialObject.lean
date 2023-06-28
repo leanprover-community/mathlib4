@@ -51,7 +51,7 @@ structure DifferentialObject where
 set_option linter.uppercaseLean3 false in
 #align category_theory.differential_object.X CategoryTheory.DifferentialObject.obj
 
-attribute [simp] DifferentialObject.d_squared
+attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
 variable {C}
 
