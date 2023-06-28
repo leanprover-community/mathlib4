@@ -217,13 +217,13 @@ theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ
   -/
 @[simp]
 theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
-                              (h : ∀ x s, let s' := (f x (s, s)).fst; s'.fst = s'.snd)
-                            : mapAccumr f xs (s, s) = (
-                                let m := mapAccumr (fun x s => let r := f x (s, s);
-                                                              (r.fst.fst, r.snd)
-                                                    ) xs s
-                                ((m.fst, m.fst), m.snd)
-                              ) := by
+    (h : ∀ x s, let s' := (f x (s, s)).fst; s'.fst = s'.snd) :
+    mapAccumr f xs (s, s)
+    = let m := mapAccumr (fun x s =>
+          let r := f x (s, s);
+          (r.fst.fst, r.snd)
+        ) xs s
+      ((m.fst, m.fst), m.snd) := by
   clear ys
   induction xs using Vector.revInductionOn generalizing s
   case nil => rfl
@@ -239,13 +239,13 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
   -/
 @[simp]
 theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ) × γ)
-                              (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd)
-                            : mapAccumr₂ f xs ys (s, s) = (
-                                let m := mapAccumr₂ (fun x y s => let r := f x y (s, s);
-                                                                  (r.fst.fst, r.snd)
-                                                    ) xs ys s
-                                ((m.fst, m.fst), m.snd)
-                              ) := by
+    (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd) :
+    mapAccumr₂ f xs ys (s, s) =
+      let m := mapAccumr₂ (fun x y s =>
+        let r := f x y (s, s);
+        (r.fst.fst, r.snd)
+      ) xs ys s
+      ((m.fst, m.fst), m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s
   case nil => rfl
   case snoc xs ys x y ih =>
@@ -261,9 +261,8 @@ theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ)
   `xs : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`
 -/
 @[simp]
-theorem mapAccumr₂_unused_input_left  [Inhabited α]
-                                      (f : α → β → σ → σ × γ)
-                                      (h : ∀ a b s, f Inhabited.default b s = f a b s) :
+theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → σ × γ)
+    (h : ∀ a b s, f Inhabited.default b s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun b s => f Inhabited.default b s) ys s := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s
   case nil => rfl
@@ -275,9 +274,8 @@ theorem mapAccumr₂_unused_input_left  [Inhabited α]
   `ys : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`
 -/
 @[simp]
-theorem mapAccumr₂_unused_input_right [Inhabited β]
-                                      (f : α → β → σ → σ × γ)
-                                      (h : ∀ a b s, f a Inhabited.default s = f a b s) :
+theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ → σ × γ)
+    (h : ∀ a b s, f a Inhabited.default s = f a b s) :
     mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a Inhabited.default s) xs s := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s
   case nil => rfl
