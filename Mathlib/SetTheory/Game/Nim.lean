@@ -371,8 +371,8 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
     (Ordinal.le_mex_of_forall fun ou hu => ?_)
   -- The Grundy value `Nat.lxor' n m` can't be reached by left moves.
   · apply leftMoves_add_cases i <;>
-      · -- A left move leaves us with a Grundy value of `Nat.lxor' k m` for `k < n`, or `Nat.lxor' n k`
-        -- for `k < m`.
+      · -- A left move leaves us with a Grundy value of `Nat.lxor' k m` for `k < n`, or
+        -- `Nat.lxor' n k` for `k < m`.
         refine' fun a => leftMovesNimRecOn a fun ok hk => _
         obtain ⟨k, rfl⟩ := Ordinal.lt_omega.1 (hk.trans (Ordinal.nat_lt_omega _))
         simp only [add_moveLeft_inl, add_moveLeft_inr, moveLeft_nim', Equiv.symm_apply_apply]
