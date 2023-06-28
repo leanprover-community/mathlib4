@@ -49,9 +49,9 @@ end ite
 
 /-- The `positivity` extension which identifies expressions of the form `ite p a b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
-@[positivity ite _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
-  let .app (.app (.app f (p : Q(Prop))) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
-    | throwError "not ite"
+@[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app (.app (.app (f : Q(Prop → $α → $α)) (p : Q(Prop))) _) (a : Q($α))) (b : Q($α))
+    ← withReducible (whnf e) | throwError "not ite"
   let ra ← core zα pα a; let rb ← core zα pα b
   let _a ← synthInstanceQ (q(Preorder $α) : Q(Type u))
   let _b ← synthInstanceQ (q(Decidable $p) : Q(Type))
