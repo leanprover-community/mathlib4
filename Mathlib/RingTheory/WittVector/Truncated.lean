@@ -482,7 +482,7 @@ to a ring hom `S → 𝕎 R`.
 
 `lift` defines the universal property of `𝕎 R` as the inverse limit of `TruncatedWittVector n`.
 -/
-def lift : S →+* 𝕎 R := by -- Porting note: was `refine_struct`
+def lift : S →+* 𝕎 R := by
   refine' { toFun := liftFun f
             map_zero' := _
             map_one' := _
