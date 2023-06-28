@@ -340,7 +340,11 @@ theorem tendsto_integral_exp_smul_cocompact (μ : Measure V) [μ.IsAddHaarMeasur
       Adual.toHomeomorph.toCocompactMap.cocompact_tendsto' with w
   rw [Function.comp_apply, integral_map_equiv]
   congr 1 with v : 1
-  congr <;> exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
+  congr
+  · -- Porting note: added `congr_arg`
+    apply congr_arg w
+    exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
+  · exact (ContinuousLinearEquiv.symm_apply_apply A v).symm
 #align tendsto_integral_exp_smul_cocompact tendsto_integral_exp_smul_cocompact
 
 /-- The Riemann-Lebesgue lemma, formulated in terms of `vector_fourier.fourier_integral` (with the
@@ -349,7 +353,7 @@ its dual space). -/
 theorem Real.zero_at_infty_vector_fourierIntegral (μ : Measure V) [μ.IsAddHaarMeasure] :
     Tendsto (VectorFourier.fourierIntegral e μ (topDualPairing ℝ V).flip f) (cocompact (V →L[ℝ] ℝ))
       (𝓝 0) :=
-  tendsto_integral_exp_smul_cocompact f μ
+  _root_.tendsto_integral_exp_smul_cocompact f μ
 #align real.zero_at_infty_vector_fourier_integral Real.zero_at_infty_vector_fourierIntegral
 
 end NoInnerProduct
