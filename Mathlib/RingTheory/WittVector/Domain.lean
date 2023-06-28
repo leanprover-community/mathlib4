@@ -8,7 +8,7 @@ Authors: Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Identities
+import Mathlib.RingTheory.WittVector.Identities
 
 /-!
 
@@ -71,8 +71,7 @@ theorem shift_coeff (x : 𝕎 R) (n k : ℕ) : (x.shift n).coeff k = x.coeff (n 
 variable [hp : Fact p.Prime] [CommRing R]
 
 theorem verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i = 0) :
-    verschiebung (x.shift k.succ) = x.shift k :=
-  by
+    verschiebung (x.shift k.succ) = x.shift k := by
   ext ⟨j⟩
   · rw [verschiebung_coeff_zero, shift_coeff, h]
     apply Nat.lt_succ_self
@@ -82,8 +81,7 @@ theorem verschiebung_shift (x : 𝕎 R) (k : ℕ) (h : ∀ i < k + 1, x.coeff i 
 #align witt_vector.verschiebung_shift WittVector.verschiebung_shift
 
 theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i = 0) :
-    x = (verschiebung^[n]) (x.shift n) :=
-  by
+    x = (verschiebung^[n]) (x.shift n) := by
   induction' n with k ih
   · cases x <;> simp [shift]
   · dsimp; rw [verschiebung_shift]
@@ -92,8 +90,7 @@ theorem eq_iterate_verschiebung {x : 𝕎 R} {n : ℕ} (h : ∀ i < n, x.coeff i
 #align witt_vector.eq_iterate_verschiebung WittVector.eq_iterate_verschiebung
 
 theorem verschiebung_nonzero {x : 𝕎 R} (hx : x ≠ 0) :
-    ∃ n : ℕ, ∃ x' : 𝕎 R, x'.coeff 0 ≠ 0 ∧ x = (verschiebung^[n]) x' :=
-  by
+    ∃ n : ℕ, ∃ x' : 𝕎 R, x'.coeff 0 ≠ 0 ∧ x = (verschiebung^[n]) x' := by
   have hex : ∃ k : ℕ, x.coeff k ≠ 0 := by
     by_contra' hall
     apply hx
