@@ -55,7 +55,7 @@ structure WittVector (p : ℕ) (R : Type _) where mk' ::
 #align witt_vector WittVector
 
 -- Porting note: added to make the `p` argument explicit
-def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R): WittVector p R := mk' coeff
+def WittVector.mk (p : ℕ) {R : Type _} (coeff : ℕ → R) : WittVector p R := mk' coeff
 
 variable {p : ℕ}
 
@@ -68,7 +68,7 @@ local notation "𝕎" => WittVector p
 -- type as `\bbW`
 namespace WittVector
 
-variable (p) {R : Type _}
+variable {R : Type _}
 
 /-- Construct a Witt vector `mk p x : 𝕎 R` from a sequence `x` of elements of `R`. -/
 add_decl_doc WittVector.mk
@@ -88,8 +88,10 @@ theorem ext {x y : 𝕎 R} (h : ∀ n, x.coeff n = y.coeff n) : x = y := by
 #align witt_vector.ext WittVector.ext
 
 theorem ext_iff {x y : 𝕎 R} : x = y ↔ ∀ n, x.coeff n = y.coeff n :=
-  ⟨fun h n => by rw [h], ext p⟩
+  ⟨fun h n => by rw [h], ext⟩
 #align witt_vector.ext_iff WittVector.ext_iff
+
+variable (p)
 
 theorem coeff_mk (x : ℕ → R) : (mk p x).coeff = x :=
   rfl

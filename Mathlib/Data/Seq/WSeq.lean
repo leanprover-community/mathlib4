@@ -1445,7 +1445,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this;
       try cases this; try contradiction
     substs b' ss
-    simp at m⊢
+    simp at m ⊢
     cases' o with e IH
     · simp [e]
     cases' m with e m
@@ -1466,7 +1466,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       simp at m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
-    · simp at m IH⊢
+    · simp at m IH ⊢
       apply IH _ _ rfl m
 #align stream.wseq.exists_of_mem_join Stream'.WSeq.exists_of_mem_join
 
@@ -1817,10 +1817,10 @@ instance monad : Monad WSeq where
   this type of construction.
 
 instance lawfulMonad : LawfulMonad WSeq :=
-{ id_map := @map_id,
-  bind_pure_comp := @bind_ret,
-  pure_bind := @ret_bind,
-  bind_assoc := @bind_assoc }
+  { id_map := @map_id,
+    bind_pure_comp := @bind_ret,
+    pure_bind := @ret_bind,
+    bind_assoc := @bind_assoc }
 -/
 end WSeq
 

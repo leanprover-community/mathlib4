@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 
 ! This file was ported from Lean 3 source module measure_theory.function.l1_space
-! leanprover-community/mathlib commit 13b0d72fd8533ba459ac66e9a885e35ffabb32b2
+! leanprover-community/mathlib commit ccdbfb6e5614667af5aa3ab2d50885e0ef44a46f
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -329,7 +329,7 @@ theorem tendsto_lintegral_norm_of_dominated_convergence {F : ℕ → α → β} 
     aestronglyMeasurable_of_tendsto_ae _ F_measurable h_lim
   let b a := 2 * ENNReal.ofReal (bound a)
   /- `‖F n a‖ ≤ bound a` and `F n a --> f a` implies `‖f a‖ ≤ bound a`, and thus by the
-    triangle inequality, have `‖F n a - f a‖ ≤ 2 * (bound a). -/
+    triangle inequality, have `‖F n a - f a‖ ≤ 2 * (bound a)`. -/
   have hb : ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a - f a‖ ≤ b a := by
     intro n
     filter_upwards [all_ae_ofReal_F_le_bound h_bound n,
@@ -495,6 +495,7 @@ theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
 #align measure_theory.integrable_const_iff MeasureTheory.integrable_const_iff
 
+@[simp]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
 #align measure_theory.integrable_const MeasureTheory.integrable_const
@@ -520,13 +521,13 @@ theorem Integrable.mono_measure {f : α → β} (h : Integrable f ν) (hμ : μ 
 
 theorem Integrable.of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → β} (hf : Integrable f μ) : Integrable f μ' := by
-  rw [← memℒp_one_iff_integrable] at hf⊢
+  rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.of_measure_le_smul c hc hμ'_le
 #align measure_theory.integrable.of_measure_le_smul MeasureTheory.Integrable.of_measure_le_smul
 
 theorem Integrable.add_measure {f : α → β} (hμ : Integrable f μ) (hν : Integrable f ν) :
     Integrable f (μ + ν) := by
-  simp_rw [← memℒp_one_iff_integrable] at hμ hν⊢
+  simp_rw [← memℒp_one_iff_integrable] at hμ hν ⊢
   refine' ⟨hμ.aestronglyMeasurable.add_measure hν.aestronglyMeasurable, _⟩
   rw [snorm_one_add_measure, ENNReal.add_lt_top]
   exact ⟨hμ.snorm_lt_top, hν.snorm_lt_top⟩
@@ -695,19 +696,19 @@ theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun
 
 theorem Integrable.inf {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊓ g) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hg⊢
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
   exact hf.inf hg
 #align measure_theory.integrable.inf MeasureTheory.Integrable.inf
 
 theorem Integrable.sup {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊔ g) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hg⊢
+  rw [← memℒp_one_iff_integrable] at hf hg ⊢
   exact hf.sup hg
 #align measure_theory.integrable.sup MeasureTheory.Integrable.sup
 
 theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf : Integrable f μ) :
     Integrable (fun a => |f a|) μ := by
-  rw [← memℒp_one_iff_integrable] at hf⊢
+  rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.abs
 #align measure_theory.integrable.abs MeasureTheory.Integrable.abs
 

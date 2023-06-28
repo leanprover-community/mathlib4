@@ -153,7 +153,7 @@ def Cospherical (ps : Set P) : Prop :=
 
 /-- The definition of `Cospherical`. -/
 theorem cospherical_def (ps : Set P) :
-    Cospherical ps ↔ ∃ (center : P)(radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
+    Cospherical ps ↔ ∃ (center : P) (radius : ℝ), ∀ p ∈ ps, dist p center = radius :=
   Iff.rfl
 #align euclidean_geometry.cospherical_def EuclideanGeometry.cospherical_def
 
@@ -281,7 +281,7 @@ theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical
     (h₁ : p₁ ∈ s) (h₂ : p₂ ∈ s) (h₃ : p₃ ∈ s) (h₁₂ : p₁ ≠ p₂) (h₁₃ : p₁ ≠ p₃) (h₂₃ : p₂ ≠ p₃) :
     AffineIndependent ℝ ![p₁, p₂, p₃] := by
   refine' hs.affineIndependent _ _
-  · simp [h₁, h₂, h₃, Set.insert_subset]
+  · simp [h₁, h₂, h₃, Set.insert_subset_iff]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
     simp [h₁₂, h₁₃, h₂₃, Function.Injective]
 #align euclidean_geometry.cospherical.affine_independent_of_mem_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_mem_of_ne

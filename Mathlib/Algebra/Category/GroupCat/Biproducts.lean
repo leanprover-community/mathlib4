@@ -95,7 +95,7 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → AddCommGroupCat.{max w u})
 
-/-- The map from an arbitrary cone over a indexed family of abelian groups
+/-- The map from an arbitrary cone over an indexed family of abelian groups
 to the cartesian product of those groups.
 -/
 @[simps]

@@ -192,8 +192,8 @@ noncomputable def inverse : ShrinkHoms C ⥤ C
 @[simps!]
 noncomputable def equivalence : C ≌ ShrinkHoms C :=
   Equivalence.mk (functor C) (inverse C)
-    (NatIso.ofComponents (fun X => Iso.refl X) <| by simp)
-    (NatIso.ofComponents (fun X => Iso.refl X) <| by simp)
+    (NatIso.ofComponents fun X => Iso.refl X)
+    (NatIso.ofComponents fun X => Iso.refl X)
 #align category_theory.shrink_homs.equivalence CategoryTheory.ShrinkHoms.equivalence
 
 end ShrinkHoms

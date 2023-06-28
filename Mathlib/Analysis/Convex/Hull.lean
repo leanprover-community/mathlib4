@@ -135,7 +135,7 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
-  rw [insert_subset, singleton_subset_iff]
+  rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
 

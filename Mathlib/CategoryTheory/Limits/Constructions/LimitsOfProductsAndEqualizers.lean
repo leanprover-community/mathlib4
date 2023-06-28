@@ -154,8 +154,7 @@ theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts 
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/- Porting note: original file have noncomputable theory which made everything after
-noncomputable. Removed this and made whatever necessary noncomputable -/
+/- Porting note: Removed this and made whatever necessary noncomputable -/
 -- noncomputable section
 
 section

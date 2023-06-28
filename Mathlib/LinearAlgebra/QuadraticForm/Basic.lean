@@ -21,7 +21,7 @@ A quadratic form on a ring `R` is a map `Q : M → R` such that:
 * `QuadraticForm.map_smul`: `Q (a • x) = a * a * Q x`
 * `QuadraticForm.polar_add_left`, `QuadraticForm.polar_add_right`,
   `QuadraticForm.polar_smul_left`, `QuadraticForm.polar_smul_right`:
-  the map `QuadraticForm.polar Q := λ x y, Q (x + y) - Q x - Q y` is bilinear.
+  the map `QuadraticForm.polar Q := fun x y ↦ Q (x + y) - Q x - Q y` is bilinear.
 
 This notion generalizes to semirings using the approach in [izhakian2016][] which requires that
 there be a (possibly non-unique) companion bilinear form `B` such that
@@ -978,7 +978,7 @@ variable {n : Type w} [Fintype n] [DecidableEq n]
 
 variable [CommRing R₁] [AddCommMonoid M] [Module R₁ M]
 
-/-- `M.toQuadraticForm'` is the map `λ x, col x ⬝ M ⬝ row x` as a quadratic form. -/
+/-- `M.toQuadraticForm'` is the map `fun x ↦ col x ⬝ M ⬝ row x` as a quadratic form. -/
 def Matrix.toQuadraticForm' (M : Matrix n n R₁) : QuadraticForm R₁ (n → R₁) :=
   M.toBilin'.toQuadraticForm
 #align matrix.to_quadratic_form' Matrix.toQuadraticForm'
@@ -998,7 +998,7 @@ theorem QuadraticForm.toMatrix'_smul (a : R₁) (Q : QuadraticForm R₁ (n → R
 #align quadratic_form.to_matrix'_smul QuadraticForm.toMatrix'_smul
 
 theorem QuadraticForm.isSymm_toMatrix' (Q : QuadraticForm R₁ (n → R₁)) : Q.toMatrix'.IsSymm := by
-  ext (i j)
+  ext i j
   rw [toMatrix', Matrix.transpose_apply, BilinForm.toMatrix'_apply, BilinForm.toMatrix'_apply,
     associated_isSymm]
 #align quadratic_form.is_symm_to_matrix' QuadraticForm.isSymm_toMatrix'
