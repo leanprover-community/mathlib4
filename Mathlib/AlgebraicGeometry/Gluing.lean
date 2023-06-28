@@ -252,8 +252,8 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
       (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.ι_eq_iff_rel
         i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
-  simp_rw [← comp_apply, D.ι_isoCarrier_inv]
-  sorry
+  · simp_rw [← comp_apply, ← D.ι_isoCarrier_inv]; rfl
+  · infer_instance
 #align algebraic_geometry.Scheme.glue_data.ι_eq_iff AlgebraicGeometry.Scheme.GlueData.ι_eq_iff
 
 theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).1.base ⁻¹' U) := by
@@ -261,7 +261,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
   rw [TopCat.GlueData.isOpen_iff]
   apply forall_congr'
   intro i
-  erw [← Set.preimage_comp, ← coe_comp, ι_isoCarrier_inv]
+  erw [← Set.preimage_comp, ← ι_isoCarrier_inv]
   rfl
 #align algebraic_geometry.Scheme.glue_data.is_open_iff AlgebraicGeometry.Scheme.GlueData.isOpen_iff
 
@@ -423,8 +423,8 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 
 theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base := by
-  refine openEmbedding_of_continuous_injective_open (by continuity) 𝒰.fromGlued_injective
-    𝒰.fromGlued_open_map
+  refine openEmbedding_of_continuous_injective_open
+    (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
   -- exact map_continuous (fromGlued 𝒰).val.base
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_embedding AlgebraicGeometry.Scheme.OpenCover.fromGlued_openEmbedding
 
