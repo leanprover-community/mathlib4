@@ -116,8 +116,10 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
     simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
       smul_eq_mul, mul_comm r]
 #align inhomogeneous_cochains.d InhomogeneousCochains.d
+variable (M N : ModuleCat k)
 
 variable [Group G] (n) (A : Rep k G)
+
 set_option maxHeartbeats 1600000 in
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
@@ -128,12 +130,12 @@ theorem d_eq :
         (linearYonedaObjResolution A).d n (n + 1) ≫
           (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
   ext f g
-  sorry
- /- simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+/- Porting note: broken proof was
+  simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
     diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
-    Resolution.d_of (Fin.partialProd g), LinearMap.map_sum, ←
-    Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
+    Resolution.d_of (Fin.partialProd g), LinearMap.map_sum,
+    ←Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
   simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul, Fin.succAbove_zero,
     diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1)), Function.comp_apply,
     Fin.partialProd_succ, Fin.castSucc_zero, Fin.partialProd_zero, one_mul]
@@ -143,10 +145,26 @@ theorem d_eq :
     have := Fin.partialProd_right_inv g (Fin.castSucc x)
     simp only [mul_inv_rev, Fin.castSucc_fin_succ] at *
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
-  ·
-    exact
-      Finset.sum_congr rfl fun j hj => by
-        rw [diagonalHomEquiv_symm_partial_prod_succ, Fin.val_succ]-/
+  · exact Finset.sum_congr rfl fun j hj => by
+      rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
+  change d n A f g = diagonalHomEquiv (n + 1) A
+    ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
+  rw [diagonalHomEquiv_apply]
+  change d n A f g = ((diagonalHomEquiv n A).symm f).hom
+    (((resolution k G).d (n + 1) n).hom (Finsupp.single (Fin.partialProd g) 1))
+  rw [Resolution.d_eq]
+  erw [Resolution.d_of (Fin.partialProd g)]
+  rw [LinearMap.map_sum]
+  simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
+  rw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
+    Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
+  simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
+    Fin.partialProd_zero, one_mul]
+  rcongr x
+  · have := Fin.partialProd_right_inv g (Fin.castSucc x)
+    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
+    rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
+  · rw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
 #align inhomogeneous_cochains.d_eq InhomogeneousCochains.d_eq
 
 end InhomogeneousCochains
