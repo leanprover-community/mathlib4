@@ -317,3 +317,21 @@ theorem Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ 
 #align filter.tendsto.midpoint Filter.Tendsto.midpoint
 
 end
+
+section Pointwise
+
+open Pointwise
+
+theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed s)
+    (ht : IsCompact t) : IsClosed (s +ᵥ t) := by
+  -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
+  -- but we don't yet have a nice way to state it.
+  refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
+  choose! a v hav using husv
+  rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
+  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
+  convert (hav (φ n)).1 using 1
+  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+
+end Pointwise
