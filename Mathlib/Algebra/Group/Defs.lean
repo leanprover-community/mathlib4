@@ -243,11 +243,43 @@ end IsRightCancelMul
 
 end Mul
 
+/-
+There are several important design decisions to mention here.
+
+1. We don't phrase the power operation in semigroups in terms of `PNat := {x : ℕ // 0 < x}` because
+  this would require making a portion of the order hierarchy a dependency of this file.
+2. We enforce the `n ≠ 0` requirement in `Semigroup.ppow` because a semigroup may be empty.
+  While we *could* just provide a junk value (e.g., `id`) when `n = 0`, we would lose the
+  extensionality of `Semigroup` as depending only on `Mul`.
+-/
+
+-- use `x * ppowRec n x` and not `ppowRec n x * x` in the definition to make sure that
+-- definitional unfolding of `ppowRec` is blocked, to avoid deep recursion issues.
+/-- The fundamental power operation in a semigroup. `ppowRec n a = a*a*...*a` n times.
+Use instead `a ^ n`,  which has better definitional behavior. -/
+def ppowRec [Mul M] : ∀ n : ℕ, n ≠ 0 → M → M
+  | 0, h, _ => (h rfl).elim
+  | 1, _, a => a
+  | n + 2, _, a => a * ppowRec (n + 1) n.succ_ne_zero a
+
+/-- The fundamental scalar multipication in an additive semigroup. `psmulRec n a = a+a+...+a` n
+times.  Use instead `a ^ n`,  which has better definitional behavior. -/
+def psmulRec [Add M] : ∀ n : ℕ, n ≠ 0 → M → M
+  | 0, h, _ => (h rfl).elim
+  | 1, _, a => a
+  | n + 2, _, a => a + psmulRec (n + 1) n.succ_ne_zero a
+
+attribute [to_additive existing] ppowRec
+
 /-- A semigroup is a type with an associative `(*)`. -/
 @[ext]
 class Semigroup (G : Type u) extends Mul G where
   /-- Multiplication is associative -/
   mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
+  ppow : ∀ n : ℕ, n ≠ 0 → G → G := ppowRec
+  ppow_one : ∀ g, ppow 1 Nat.one_ne_zero g = g := by intros; rfl
+  ppow_succ : ∀ g n, ppow (n + 2) (n + 1).succ_ne_zero g = g * ppow (n + 1) n.succ_ne_zero g :=
+    by intros; rfl
 #align semigroup Semigroup
 #align semigroup.ext Semigroup.ext
 #align semigroup.ext_iff Semigroup.ext_iff
@@ -257,6 +289,10 @@ class Semigroup (G : Type u) extends Mul G where
 class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
   add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+  psmul : ∀ n : ℕ, n ≠ 0 → G → G := psmulRec
+  psmul_one : ∀ g, psmul 1 Nat.one_ne_zero g = g := by intros; rfl
+  psmul_succ : ∀ g n, psmul (n + 2) (n + 1).succ_ne_zero g = g + psmul (n + 1) n.succ_ne_zero g :=
+    by intros; rfl
 #align add_semigroup AddSemigroup
 #align add_semigroup.ext AddSemigroup.ext
 #align add_semigroup.ext_iff AddSemigroup.ext_iff

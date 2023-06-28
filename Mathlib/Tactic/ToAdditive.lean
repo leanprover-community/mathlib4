@@ -721,6 +721,7 @@ def nameDict : String → List String
   | "finprod"     => ["finsum"]
   | "pow"         => ["nsmul"]
   | "npow"        => ["nsmul"]
+  | "ppow"        => ["psmul"]
   | "zpow"        => ["zsmul"]
   | "monoid"      => ["add", "Monoid"]
   | "submonoid"   => ["add", "Submonoid"]
