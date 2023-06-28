@@ -494,8 +494,8 @@ def basicOpenSectionsToAffine {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
       (eqToHom <| (hU.opens_map_fromSpec_basicOpen f).symm).op
 #align algebraic_geometry.basic_open_sections_to_affine AlgebraicGeometry.basicOpenSectionsToAffine
 
-instance basicOpenSectionsToAffine_isIso {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) (f : X.presheaf.obj (op U)) :
-    IsIso (basicOpenSectionsToAffine hU f) := by
+instance basicOpenSectionsToAffine_isIso {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
+    (f : X.presheaf.obj (op U)) : IsIso (basicOpenSectionsToAffine hU f) := by
   delta basicOpenSectionsToAffine
   apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
   · apply PresheafedSpace.IsOpenImmersion.isIso_of_subset
@@ -637,7 +637,6 @@ theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : 
       (U := (Opens.map hU.fromSpec.val.base).obj U) ⟨y, hy⟩ =
     StructureSheaf.toStalk (X.presheaf.obj <| op U) y := by
   haveI : IsAffine _ := hU
-  -- haveI : Nonempty U := ⟨hU.fromSpec.1.base y⟩
   delta IsAffineOpen.fromSpec Scheme.isoSpec StructureSheaf.toStalk
   simp only [Scheme.comp_val_c_app, Category.assoc]
   dsimp only [Functor.op, asIso_inv, unop_op]
@@ -655,7 +654,8 @@ theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : 
   rw [← LocallyRingedSpace.Γ_map_op, ← LocallyRingedSpace.Γ.map_comp_assoc, ← op_comp]
   erw [← Scheme.Spec.map_comp]
   rw [← op_comp, ← X.presheaf.map_comp]
-  convert_to LocallyRingedSpace.Γ.map (Quiver.Hom.op <| Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op) ≫ _ = _
+  convert_to LocallyRingedSpace.Γ.map
+    (Quiver.Hom.op <| Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op) ≫ _ = _
   simp only [CategoryTheory.Functor.map_id, op_id]
   erw [CategoryTheory.Functor.map_id]
   rw [Category.id_comp]
@@ -796,8 +796,8 @@ theorem of_affine_open_cover {X : Scheme} (V : X.affineOpens) (S : Set X.affineO
         (∀ f : s, P (X.affineBasicOpen f.1)) → P U)
     (hS : (⋃ i : S, i : Set X) = Set.univ) (hS' : ∀ U : S, P U) : P V := by
   classical
-  have : ∀ (x : V.1), ∃ f : X.presheaf.obj <| op V.1, ↑x ∈ X.basicOpen f ∧ P (X.affineBasicOpen f) :=
-    by
+  have : ∀ (x : V.1), ∃ f : X.presheaf.obj <| op V.1,
+      ↑x ∈ X.basicOpen f ∧ P (X.affineBasicOpen f) := by
     intro x
     have : ↑x ∈ (Set.univ : Set X) := trivial
     rw [← hS] at this
