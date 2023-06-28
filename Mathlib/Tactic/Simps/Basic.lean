@@ -267,11 +267,11 @@ syntax simpsRule.erase := "-" ident
 /-- Syntax for making a projection default in `initialize_simps_projections`. -/
 syntax simpsRule.add := "+" ident
 /-- Syntax for making a projection prefix. -/
-syntax simpsRule.prefix := &"as_prefix" ident
+syntax simpsRule.prefix := &"as_prefix " ident
 /-- Syntax for a single rule in `initialize_simps_projections`. -/
 syntax simpsRule := simpsRule.prefix <|> simpsRule.rename <|> simpsRule.erase <|> simpsRule.add
 /-- Syntax for `initialize_simps_projections`. -/
-syntax simpsProj := (ppSpace ident (" (" simpsRule,+ ")")?)
+syntax simpsProj := ppSpace ident (" (" simpsRule,+ ")")?
 
 /--
 This command specifies custom names and custom projections for the simp attribute `simpsAttr`.
@@ -431,7 +431,7 @@ inductive ProjectionRule where
     which is used to declare hover information. -/
   | rename (oldName : Name) (oldStx : Syntax) (newName : Name) (newStx : Syntax) :
       ProjectionRule
-  /-- A adding rule `+fieldName` -/
+  /-- An adding rule `+fieldName` -/
   | add : Name → Syntax → ProjectionRule
   /-- A hiding rule `-fieldName` -/
   | erase : Name → Syntax → ProjectionRule
@@ -585,7 +585,7 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
     }custom projection)."
   pure projs
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
   Generates the default projection, and looks for a custom projection declared by the user,
   and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
@@ -681,7 +681,7 @@ def findAutomaticProjectionsAux (str : Name) (proj : ParsedProjectionData) (args
       return (projExpr, projName)
   return none
 
-/-- Auxilliary function for `getRawProjections`.
+/-- Auxiliary function for `getRawProjections`.
 Find custom projections, automatically found by simps.
 These come from `FunLike` and `SetLike` instances. -/
 def findAutomaticProjections (str : Name) (projs : Array ParsedProjectionData) :
@@ -798,21 +798,21 @@ composite of multiple projections).
 /-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
   or `as_prefix <name>`.-/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
-| `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
-| `(simpsRule| - $id)         => return .erase id.getId id.raw
-| `(simpsRule| + $id)         => return .add id.getId id.raw
-| `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
-| _                           => Elab.throwUnsupportedSyntax
+  | `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
+  | `(simpsRule| - $id)         => return .erase id.getId id.raw
+  | `(simpsRule| + $id)         => return .add id.getId id.raw
+  | `(simpsRule| as_prefix $id) => return .prefix id.getId id.raw
+  | _                           => Elab.throwUnsupportedSyntax
 
 /-- Function elaborating `initialize_simps_projections`. -/
 @[command_elab «initialize_simps_projections»] def elabInitializeSimpsProjections : CommandElab
-| stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
-  let stxs := stxs.getD <| .mk #[]
-  let rules ← stxs.getElems.raw.mapM elabSimpsRule
-  let nm ← resolveGlobalConstNoOverload id
-  _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
-  _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
-| _ => throwUnsupportedSyntax
+  | stx@`(initialize_simps_projections $[?%$trc]? $id $[($stxs,*)]?) => do
+    let stxs := stxs.getD <| .mk #[]
+    let rules ← stxs.getElems.raw.mapM elabSimpsRule
+    let nm ← resolveGlobalConstNoOverload id
+    _ ← liftTermElabM <| addTermInfo id.raw <| ← mkConstWithLevelParams nm
+    _ ← liftCoreM <| getRawProjections stx nm true rules trc.isSome
+  | _ => throwUnsupportedSyntax
 
 /-- Configuration options for `@[simps]` -/
 structure Config where
@@ -834,7 +834,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd, `Opposite]
+  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   deriving Inhabited

@@ -367,8 +367,8 @@ theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense 
         have hg₁ : p (preimage Prod.swap s₁) t ∈ g :=
           mem_lift (symm_le_uniformity hs₁) <| @mem_lift' α α f _ t ht
         have hg₂ : p s₂ t ∈ g := mem_lift hs₂ <| @mem_lift' α α f _ t ht
-        have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ᶠ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
-        (g ×ᶠ g).sets_of_superset hg fun ⟨a, b⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
+        have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ˢ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
+        (g ×ˢ g).sets_of_superset hg fun ⟨a, b⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
           have : (c₁, c₂) ∈ t ×ˢ t := ⟨c₁t, c₂t⟩
           comp_s₁ <| prod_mk_mem_compRel hc₁ <| comp_s₂ <| prod_mk_mem_compRel (prod_t this) hc₂⟩
     have : Cauchy (Filter.comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
@@ -390,7 +390,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
     with ⟨c, cs, hfc, hct⟩
   refine' ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => _⟩
-  have := hct (mem_image_of_mem f h); simp at this⊢
+  have := hct (mem_image_of_mem f h); simp at this ⊢
   rcases this with ⟨z, zc, zt⟩
   rcases cs zc with ⟨y, -, rfl⟩
   exact ⟨y, zc, ts zt⟩

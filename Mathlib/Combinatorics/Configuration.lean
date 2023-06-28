@@ -28,10 +28,10 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.pointCount`: The number of lines through a given line.
 
 ## Main statements
-* `Configuration.HasLines.card_le`: `has_lines` implies `|P| ≤ |L|`.
-* `Configuration.HasPoints.card_le`: `has_points` implies `|L| ≤ |P|`.
-* `Configuration.HasLines.hasPoints`: `has_lines` and `|P| = |L|` implies `has_points`.
-* `Configuration.HasPoints.hasLines`: `has_points` and `|P| = |L|` implies `has_lines`.
+* `Configuration.HasLines.card_le`: `HasLines` implies `|P| ≤ |L|`.
+* `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
+* `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.
+* `Configuration.HasPoints.hasLines`: `HasPoints` and `|P| = |L|` implies `HasLines`.
 Together, these four statements say that any two of the following properties imply the third:
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
@@ -160,9 +160,9 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
     by_cases hs₃ : sᶜ.card = 0
     · rw [hs₃, le_zero_iff]
       rw [Finset.card_compl, tsub_eq_zero_iff_le, LE.le.le_iff_eq (Finset.card_le_univ _), eq_comm,
-        Finset.card_eq_iff_eq_univ] at hs₃⊢
+        Finset.card_eq_iff_eq_univ] at hs₃ ⊢
       rw [hs₃]
-      rw [Finset.eq_univ_iff_forall] at hs₃⊢
+      rw [Finset.eq_univ_iff_forall] at hs₃ ⊢
       exact fun p =>
         Exists.elim (exists_line p)-- If `s = univ`, then show `s.bUnion t = univ`
         fun l hl => Finset.mem_biUnion.mpr ⟨l, Finset.mem_univ l, Set.mem_toFinset.mpr hl⟩
@@ -371,7 +371,7 @@ variable (P L)
   and which has three points in general position. -/
 class ProjectivePlane extends HasPoints P L, HasLines P L where
   exists_config :
-    ∃ (p₁ p₂ p₃ : P)(l₁ l₂ l₃ : L),
+    ∃ (p₁ p₂ p₃ : P) (l₁ l₂ l₃ : L),
       p₁ ∉ l₂ ∧ p₁ ∉ l₃ ∧ p₂ ∉ l₁ ∧ p₂ ∈ l₂ ∧ p₂ ∈ l₃ ∧ p₃ ∉ l₁ ∧ p₃ ∈ l₂ ∧ p₃ ∉ l₃
 #align configuration.projective_plane Configuration.ProjectivePlane
 

@@ -9,7 +9,6 @@ import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.Set
 import Qq
 
 /-!
@@ -52,7 +51,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let ctx ← read
     let usedTheorems := (← get).usedTheorems
 
-    -- Port note: mathlib3's analagous field_simp discharger `field_simp.ne_zero`
+    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
     -- does not explicitly call `simp` recursively like this. It's unclear to me
     -- whether this is because
     --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
@@ -119,7 +118,7 @@ example (a b c d x y : ℂ) (hx : x ≠ 0) (hy : y ≠ 0) :
 Moreover, the `field_simp` tactic can also take care of inverses of units in
 a general (commutative) monoid/ring and partial division `/ₚ`, see `Algebra.Group.Units`
 for the definition. Analogue to the case above, the lemma `one_divp` is removed from the simpset
-as this works against the algorithm. If you have objects with a `IsUnit x` instance like
+as this works against the algorithm. If you have objects with an `IsUnit x` instance like
 `(x : R) (hx : IsUnit x)`, you should lift them with
 `lift x to Rˣ using id hx, rw [IsUnit.unit_of_val_units] clear hx`
 before using `field_simp`.
@@ -130,7 +129,7 @@ The tactics are not related: `cancel_denoms` will only handle numeric denominato
 entirely remove (numeric) division from the expression by multiplying by a factor.
 -/
 syntax (name := fieldSimp) "field_simp" (config)? (discharger)? (&" only")?
-  (simpArgs)? (ppSpace location)? : tactic
+  (simpArgs)? (location)? : tactic
 
 elab_rules : tactic
 | `(tactic| field_simp $[$cfg:config]? $[$dis:discharger]? $[only%$only?]?

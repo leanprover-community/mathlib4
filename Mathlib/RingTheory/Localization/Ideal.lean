@@ -28,7 +28,7 @@ variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemir
 
 variable [Algebra R S] [IsLocalization M S]
 
-/-- Explicit characterization of the ideal given by `Ideal.map (algebra_map R S) I`.
+/-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
 In practice, this ideal differs only in that the carrier set is defined explicitly.
 This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
@@ -70,7 +70,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
 theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
-    rw [← hx] at hJ⊢
+    rw [← hx] at hJ ⊢
     exact
       Ideal.mul_mem_right _ _
         (Ideal.mem_map_of_mem _

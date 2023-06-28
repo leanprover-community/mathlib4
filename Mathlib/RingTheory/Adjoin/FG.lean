@@ -91,8 +91,8 @@ variable {R : Type u} {A : Type v} {B : Type w}
 
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
-/-- A subalgebra `S` is finitely generated if there exists `t : finset A` such that
-`algebra.adjoin R t = S`. -/
+/-- A subalgebra `S` is finitely generated if there exists `t : Finset A` such that
+`Algebra.adjoin R t = S`. -/
 def FG (S : Subalgebra R A) : Prop :=
   ∃ t : Finset A, Algebra.adjoin R ↑t = S
 #align subalgebra.fg Subalgebra.FG

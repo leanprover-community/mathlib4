@@ -50,7 +50,7 @@ theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
   refine' ConnectedComponent.ind₂ _
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
-  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h⊢
+  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
 #align simple_graph.component_compl.supp_injective SimpleGraph.ComponentCompl.supp_injective
 
@@ -118,7 +118,7 @@ protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
 #align simple_graph.component_compl.nonempty SimpleGraph.ComponentCompl.nonempty
 
 protected theorem exists_eq_mk (C : G.ComponentCompl K) :
-    ∃ (v : _)(h : v ∉ K), G.componentComplMk h = C :=
+    ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 #align simple_graph.component_compl.exists_eq_mk SimpleGraph.ComponentCompl.exists_eq_mk
 
@@ -157,8 +157,6 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra' h
-  -- Porting note: `push_neg` doesn't do its job
-  simp only [not_exists, not_and] at h
   suffices Set.univ = (C : Set V) by exact dis ⟨hK.choose_spec, this ▸ Set.mem_univ hK.some⟩
   symm
   rw [Set.eq_univ_iff_forall]
@@ -282,7 +280,7 @@ theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentCom
     Set.mem_range, componentComplFunctor_map]
   exact
     ⟨fun h Lop KL => h Lop.unop (le_of_op_hom KL), fun h L KL =>
-      h (Opposite.op L) (opHomOfLe KL)⟩
+      h (Opposite.op L) (opHomOfLE KL)⟩
 #align simple_graph.infinite_iff_in_eventual_range SimpleGraph.infinite_iff_in_eventualRange
 
 end Ends

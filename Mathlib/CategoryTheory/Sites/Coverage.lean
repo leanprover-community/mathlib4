@@ -186,7 +186,7 @@ inductive saturate (K : Coverage C) : (X : C) → Sieve X → Prop where
 
 lemma eq_top_pullback {X Y : C} {S T : Sieve X} (h : S ≤ T) (f : Y ⟶ X) (hf : S f) :
     T.pullback f = ⊤ := by
-  ext Z ; intro g
+  ext Z g
   simp only [Sieve.pullback_apply, Sieve.top_apply, iff_true]
   apply h
   apply S.downward_closed
@@ -292,7 +292,7 @@ namespace Presieve
 /--
 The main theorem of this file: Given a coverage `K` on `C`,
 a `Type _`-valued presheaf on `C` is a sheaf for `K` if and only if it is a sheaf for
-the assocaited Grothendieck topology.
+the associated Grothendieck topology.
 -/
 theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
     Presieve.IsSheaf (toGrothendieck _ K) P ↔

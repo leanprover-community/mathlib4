@@ -45,7 +45,7 @@ obligations in inductive proofs relying on this relation.
 
 ## Order properties
 
-Pregames have both a `≤` and a `<` relation, satisfying the usual properties of a `preorder`. The
+Pregames have both a `≤` and a `<` relation, satisfying the usual properties of a `Preorder`. The
 relation `0 < x` means that `x` can always be won by Left, while `0 ≤ x` means that `x` can be won
 by Left as the second player.
 
@@ -60,7 +60,7 @@ Statements like `zero_le_lf`, `zero_lf_le`, etc. unfold these definitions. The t
 The theorems `zero_le`, `zero_lf`, etc. also take into account that `0` has no moves.
 
 Later, games will be defined as the quotient by the `≈` relation; that is to say, the
-`antisymmetrization` of `PGame`.
+`Antisymmetrization` of `PGame`.
 
 ## Algebraic structures
 
@@ -100,6 +100,9 @@ An interested reader may like to formalise some of the material from
 
 open Function Relation
 
+-- This is file, we'd like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 /-! ### Pre-game moves -/
 
 
@@ -113,9 +116,7 @@ open Function Relation
 inductive PGame : Type (u + 1)
   | mk : ∀ α β : Type u, (α → PGame) → (β → PGame) → PGame
 #align pgame PGame
-
--- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
-noncomputable section
+compile_inductive% PGame
 
 namespace PGame
 
@@ -292,9 +293,10 @@ Discharges proof obligations of the form `⊢ Subsequent ..` arising in terminat
 of definitions using well-founded recursion on `PGame`.
 -/
 macro "pgame_wf_tac" : tactic =>
-  `(tactic| solve_by_elim (config := {maxDepth := 6 }) [PSigma.Lex.left, PSigma.Lex.right,
-  Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
-  Subsequent.trans] )
+  `(tactic| solve_by_elim (config := { maxDepth := 8 })
+    [Prod.Lex.left, Prod.Lex.right, PSigma.Lex.left, PSigma.Lex.right,
+    Subsequent.moveLeft, Subsequent.moveRight, Subsequent.mk_left, Subsequent.mk_right,
+    Subsequent.trans] )
 
 -- Register some consequences of pgame_wf_tac as simp-lemmas for convenience
 -- (which are applied by default for WF goals)
@@ -422,7 +424,7 @@ theorem Lf.not_ge {x y : PGame} : x ⧏ y → ¬y ≤ x :=
 
 /-- Definition of `x ≤ y` on pre-games, in terms of `⧏`.
 
-The ordering here is chosen so that `and.left` refer to moves by Left, and `and.right` refer to
+The ordering here is chosen so that `And.left` refer to moves by Left, and `And.right` refer to
 moves by Right. -/
 theorem le_iff_forall_lf {x y : PGame} :
     x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
@@ -504,7 +506,7 @@ theorem lf_mk_of_le {x yl yr} {yL : yl → PGame} (yR) {i} : x ≤ yL i → x �
   @lf_of_le_moveLeft x (mk _ _ _ _) i
 #align pgame.lf_mk_of_le PGame.lf_mk_of_le
 
-/- We prove that `x ≤ y → y ≤ z ← x ≤ z` inductively, by also simultaneously proving its cyclic
+/- We prove that `x ≤ y → y ≤ z → x ≤ z` inductively, by also simultaneously proving its cyclic
 reorderings. This auxiliary lemma is used during said induction. -/
 private theorem le_trans_aux {x y z : PGame}
     (h₁ : ∀ {i}, y ≤ z → z ≤ x.moveLeft i → y ≤ x.moveLeft i)
@@ -558,7 +560,7 @@ instance : IsIrrefl _ (· ⧏ ·) :=
 
 @[trans]
 theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏ z := by
-  rw [← PGame.not_le] at h₂⊢
+  rw [← PGame.not_le] at h₂ ⊢
   exact fun h₃ => h₂ (h₃.trans h₁)
 #align pgame.lf_of_le_of_lf PGame.lf_of_le_of_lf
 
@@ -567,7 +569,7 @@ instance : Trans (· ≤ ·) (· ⧏ ·) (· ⧏ ·) := ⟨lf_of_le_of_lf⟩
 
 @[trans]
 theorem lf_of_lf_of_le {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≤ z) : x ⧏ z := by
-  rw [← PGame.not_le] at h₁⊢
+  rw [← PGame.not_le] at h₁ ⊢
   exact fun h₃ => h₁ (h₂.trans h₃)
 #align pgame.lf_of_lf_of_le PGame.lf_of_lf_of_le
 
@@ -612,7 +614,7 @@ theorem mk_lf {xl xr} (xL : xl → PGame) (xR : xr → PGame) (j) : mk xl xr xL 
   @lf_moveRight (mk _ _ _ _) j
 #align pgame.mk_lf PGame.mk_lf
 
-/-- This special case of `pgame.le_of_forall_lf` is useful when dealing with surreals, where `<` is
+/-- This special case of `PGame.le_of_forall_lf` is useful when dealing with surreals, where `<` is
 preferred over `⧏`. -/
 theorem le_of_forall_lt {x y : PGame} (h₁ : ∀ i, x.moveLeft i < y) (h₂ : ∀ j, x < y.moveRight j) :
     x ≤ y :=
@@ -735,13 +737,19 @@ def Equiv (x y : PGame) : Prop :=
   x ≤ y ∧ y ≤ x
 #align pgame.equiv PGame.Equiv
 
-@[inherit_doc]
-scoped infixl:0 " ≈ " => PGame.Equiv
+-- Porting note: deleted the scoped notation due to notation overloading with the setoid
+-- instance and this causes the the PGame.equiv docstring to not show up on hover.
 
 instance : IsEquiv _ PGame.Equiv where
   refl _ := ⟨le_rfl, le_rfl⟩
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
+
+-- Porting note: moved the setoid instance from Basic.lean to here
+
+instance setoid : Setoid PGame :=
+  ⟨Equiv, refl, symm, Trans.trans⟩
+#align pgame.setoid PGame.setoid
 
 theorem Equiv.le {x y : PGame} (h : x ≈ y) : x ≤ y :=
   h.1
@@ -801,7 +809,7 @@ theorem le_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y�
 #align pgame.le_congr_imp PGame.le_congr_imp
 
 theorem le_congr {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ ≤ y₁ ↔ x₂ ≤ y₂ :=
-  ⟨le_congr_imp hx hy, le_congr_imp hx.symm hy.symm⟩
+  ⟨le_congr_imp hx hy, le_congr_imp (Equiv.symm hx) (Equiv.symm hy)⟩
 #align pgame.le_congr PGame.le_congr
 
 theorem le_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ ≤ y ↔ x₂ ≤ y :=
@@ -835,7 +843,7 @@ theorem lf_of_lf_of_equiv {x y z : PGame} (h₁ : x ⧏ y) (h₂ : y ≈ z) : x 
 
 @[trans]
 theorem lf_of_equiv_of_lf {x y z : PGame} (h₁ : x ≈ y) : y ⧏ z → x ⧏ z :=
-  lf_congr_imp h₁.symm equiv_rfl
+  lf_congr_imp (Equiv.symm h₁) equiv_rfl
 #align pgame.lf_of_equiv_of_lf PGame.lf_of_equiv_of_lf
 
 @[trans]
@@ -853,7 +861,7 @@ theorem lt_congr_imp {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y�
 #align pgame.lt_congr_imp PGame.lt_congr_imp
 
 theorem lt_congr {x₁ y₁ x₂ y₂ : PGame} (hx : x₁ ≈ x₂) (hy : y₁ ≈ y₂) : x₁ < y₁ ↔ x₂ < y₂ :=
-  ⟨lt_congr_imp hx hy, lt_congr_imp hx.symm hy.symm⟩
+  ⟨lt_congr_imp hx hy, lt_congr_imp (Equiv.symm hx) (Equiv.symm hy)⟩
 #align pgame.lt_congr PGame.lt_congr
 
 theorem lt_congr_left {x₁ x₂ y : PGame} (hx : x₁ ≈ x₂) : x₁ < y ↔ x₂ < y :=
@@ -874,15 +882,17 @@ theorem lf_or_equiv_or_gf (x y : PGame) : x ⧏ y ∨ (x ≈ y) ∨ y ⧏ x := b
   · right
     cases' lt_or_equiv_of_le (PGame.not_lf.1 h) with h' h'
     · exact Or.inr h'.lf
-    · exact Or.inl h'.symm
+    · exact Or.inl (Equiv.symm h')
 #align pgame.lf_or_equiv_or_gf PGame.lf_or_equiv_or_gf
 
 theorem equiv_congr_left {y₁ y₂ : PGame} : (y₁ ≈ y₂) ↔ ∀ x₁, (x₁ ≈ y₁) ↔ (x₁ ≈ y₂) :=
-  ⟨fun h _ => ⟨fun h' => h'.trans h, fun h' => h'.trans h.symm⟩, fun h => (h y₁).1 <| equiv_rfl⟩
+  ⟨fun h _ => ⟨fun h' => Equiv.trans h' h, fun h' => Equiv.trans h' (Equiv.symm h)⟩,
+   fun h => (h y₁).1 <| equiv_rfl⟩
 #align pgame.equiv_congr_left PGame.equiv_congr_left
 
 theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x₁ ≈ y₁) ↔ (x₂ ≈ y₁) :=
-  ⟨fun h _ => ⟨fun h' => h.symm.trans h', fun h' => h.trans h'⟩, fun h => (h x₂).2 <| equiv_rfl⟩
+  ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
+   fun h => (h x₂).2 <| equiv_rfl⟩
 #align pgame.equiv_congr_right PGame.equiv_congr_right
 
 theorem equiv_of_mk_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
@@ -1303,7 +1313,7 @@ theorem moveRight_neg_symm' {x : PGame} (i) : x.moveRight i = -(-x).moveLeft (to
   by simp
 #align pgame.move_right_neg_symm' PGame.moveRight_neg_symm'
 
-/-- If `x` has the same moves as `y`, then `-x` has the sames moves as `-y`. -/
+/-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
 def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
     ⟨R, L, fun j => (hR j).negCongr, fun i => (hL i).negCongr⟩
@@ -1336,6 +1346,7 @@ theorem neg_lt_neg_iff {x y : PGame} : -y < -x ↔ x < y := by
 
 @[simp]
 theorem neg_equiv_neg_iff {x y : PGame} : (-x ≈ -y) ↔ (x ≈ y) := by
+  show Equiv (-x) (-y) ↔ Equiv x y
   rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
 #align pgame.neg_equiv_neg_iff PGame.neg_equiv_neg_iff
 
@@ -1735,7 +1746,7 @@ instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   suffices z + x ≤ y + x → z ≤ y by
-    rw [← PGame.not_le] at h⊢
+    rw [← PGame.not_le] at h ⊢
     exact mt this h
   fun w =>
   calc

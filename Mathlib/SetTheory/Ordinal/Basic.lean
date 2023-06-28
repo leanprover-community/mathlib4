@@ -32,7 +32,7 @@ initial segment (or, equivalently, in any way). This total order is well founded
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
   `Ordinal.lift.initialSeg`.
-  For a version regiserting that it is a principal segment embedding if `u < v`, see
+  For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.lift.principalSeg`.
 * `Ordinal.omega` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
   `Ordinal.omega.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
@@ -1225,7 +1225,7 @@ noncomputable def enumIsoOut (o : Ordinal) : Set.Iio o ≃o o.out.α
     apply enum_le_enum'
 #align ordinal.enum_iso_out Ordinal.enumIsoOut
 
-/-- `o.out.α` is an `order_bot` whenever `0 < o`. -/
+/-- `o.out.α` is an `OrderBot` whenever `0 < o`. -/
 def outOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.out.α where
   bot_le := enum_zero_le' ho
 #align ordinal.out_order_bot_of_pos Ordinal.outOrderBotOfPos
@@ -1267,7 +1267,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine' fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · rw [← lift_id (type s)] at h⊢
+    · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
       exists a
@@ -1346,7 +1346,7 @@ theorem ord_eq_Inf (α : Type u) : ord (#α) = ⨅ r : { r // IsWellOrder α r }
   rfl
 #align cardinal.ord_eq_Inf Cardinal.ord_eq_Inf
 
-theorem ord_eq (α) : ∃ (r : α → α → Prop)(wo : IsWellOrder α r), ord (#α) = @type α r wo :=
+theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord (#α) = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 #align cardinal.ord_eq Cardinal.ord_eq

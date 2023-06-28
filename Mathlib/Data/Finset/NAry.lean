@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.n_ary
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
+! leanprover-community/mathlib commit eba7871095e834365616b5e43c8c7bb0b37058d0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -40,7 +40,7 @@ variable [DecidableEq α'] [DecidableEq β'] [DecidableEq γ] [DecidableEq γ'] 
 /-- The image of a binary function `f : α → β → γ` as a function `Finset α → Finset β → Finset γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def image₂ (f : α → β → γ) (s : Finset α) (t : Finset β) : Finset γ :=
-  (s ×ᶠ t).image <| uncurry f
+  (s ×ˢ t).image <| uncurry f
 #align finset.image₂ Finset.image₂
 
 @[simp]
@@ -235,7 +235,7 @@ theorem image₂_congr' (h : ∀ a b, f a b = f' a b) : image₂ f s t = image�
 #align finset.image₂_congr' Finset.image₂_congr'
 
 theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
-    ∃ (s' : Finset α)(t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
+    ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ image₂ f s' t' := by
   apply @Finset.induction_on' γ _ _ u
   · use ∅; use ∅; simp only [coe_empty];
     exact ⟨Set.empty_subset _, Set.empty_subset _, empty_subset _⟩
@@ -244,10 +244,10 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
   haveI := Classical.decEq α
   haveI := Classical.decEq β
   refine' ⟨insert x s', insert y t', _⟩
-  simp_rw [coe_insert, Set.insert_subset]
+  simp_rw [coe_insert, Set.insert_subset_iff]
   exact
     ⟨⟨hx, hs⟩, ⟨hy, hs'⟩,
-      insert_subset.2
+      insert_subset_iff.2
         ⟨mem_image₂.2 ⟨x, y, mem_insert_self _ _, mem_insert_self _ _, ha⟩,
           h.trans <| image₂_subset (subset_insert _ _) <| subset_insert _ _⟩⟩
 #align finset.subset_image₂ Finset.subset_image₂
@@ -333,18 +333,18 @@ theorem image₂_image_right (f : α → γ → δ) (g : β → γ) :
 
 @[simp]
 theorem image₂_mk_eq_product [DecidableEq α] [DecidableEq β] (s : Finset α) (t : Finset β) :
-    image₂ Prod.mk s t = s ×ᶠ t := by ext; simp [Prod.ext_iff]
+    image₂ Prod.mk s t = s ×ˢ t := by ext; simp [Prod.ext_iff]
 #align finset.image₂_mk_eq_product Finset.image₂_mk_eq_product
 
 @[simp]
 theorem image₂_curry (f : α × β → γ) (s : Finset α) (t : Finset β) :
-    image₂ (curry f) s t = (s ×ᶠ t).image f := by
+    image₂ (curry f) s t = (s ×ˢ t).image f := by
   classical rw [← image₂_mk_eq_product, image_image₂]; dsimp [curry]
 #align finset.image₂_curry Finset.image₂_curry
 
 @[simp]
 theorem image_uncurry_product (f : α → β → γ) (s : Finset α) (t : Finset β) :
-    (s ×ᶠ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
+    (s ×ˢ t).image (uncurry f) = image₂ f s t := by rw [← image₂_curry, curry_uncurry]
 #align finset.image_uncurry_product Finset.image_uncurry_product
 
 theorem image₂_swap (f : α → β → γ) (s : Finset α) (t : Finset β) :
@@ -517,6 +517,36 @@ theorem image₂_left_identity {f : α → γ → γ} {a : α} (h : ∀ b, f a b
 theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a b = a) (s : Finset γ) :
     image₂ f s {b} = s := by rw [image₂_singleton_right, funext h, image_id']
 #align finset.image₂_right_identity Finset.image₂_right_identity
+
+/-- If each partial application of `f` is injective, and images of `s` under those partial
+applications are disjoint (but not necessarily distinct!), then the size of `t` divides the size of
+`finset.image₂ f s t`. -/
+theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
+    (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : t.card ∣ (image₂ f s t).card := by
+  classical
+  induction' s using Finset.induction with a s _ ih
+  · simp
+  specialize ih (forall_of_forall_insert hf)
+    (hs.subset <| Set.image_subset _ <| coe_subset.2 <| subset_insert _ _)
+  rw [image₂_insert_left]
+  by_cases h : Disjoint (image (f a) t) (image₂ f s t)
+  · rw [card_union_eq h]
+    exact (card_image_of_injective _ <| hf _ <| mem_insert_self _ _).symm.dvd.add ih
+  simp_rw [← biUnion_image_left, disjoint_biUnion_right, not_forall] at h
+  obtain ⟨b, hb, h⟩ := h
+  rwa [union_eq_right_iff_subset.2]
+  exact (hs.eq (Set.mem_image_of_mem _ <| mem_insert_self _ _)
+      (Set.mem_image_of_mem _ <| mem_insert_of_mem hb) h).trans_subset
+    (image_subset_image₂_right hb)
+#align finset.card_dvd_card_image₂_right Finset.card_dvd_card_image₂_right
+
+/-- If each partial application of `f` is injective, and images of `t` under those partial
+applications are disjoint (but not necessarily distinct!), then the size of `s` divides the size of
+`finset.image₂ f s t`. -/
+theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
+    (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
+    s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht
+#align finset.card_dvd_card_image₂_left Finset.card_dvd_card_image₂_left
 
 variable [DecidableEq α] [DecidableEq β]
 

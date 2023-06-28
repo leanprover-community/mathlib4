@@ -36,7 +36,7 @@ namespace MeasureTheory
 variable {α : Type _} [MeasurableSpace α] {μ ν : Measure α}
 
 /-- **Hahn decomposition theorem** -/
-theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
+theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s,
       MeasurableSet s ∧
         (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧ ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by

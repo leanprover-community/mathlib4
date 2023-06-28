@@ -91,6 +91,9 @@ ring subexpressions of type `ℕ`.
 -/
 def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
+-- In this file, we would like to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
@@ -119,8 +122,8 @@ inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) �
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   | const (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
-  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is a `ExBase`
-  and `e` is a `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
+  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
   | mul {α : Q(Type u)} {sα : Q(CommSemiring $α)} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
@@ -249,14 +252,14 @@ def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (
 section
 variable {sα}
 
-/-- Embed an exponent (a `ExBase, ExProd` pair) as a `ExProd` by multiplying by 1. -/
+/-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
   ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
 
-/-- Get the leading coefficient of a `ExProd`. -/
+/-- Get the leading coefficient of an `ExProd`. -/
 def ExProd.coeff : ExProd sα e → ℚ
   | .const q _ => q
   | .mul _ _ v => v.coeff
@@ -291,7 +294,7 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-    let res ← NormNum.evalAdd.core q($a + $b) _ _ ra rb
+    let res ← NormNum.evalAdd.core q($a + $b) q(Add.add) _ _ ra rb
     match res with
     | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
     | rc =>
@@ -384,7 +387,8 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
       ⟨a, .const za ha, (q(mul_one $a) : Expr)⟩
     else
       let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-      let rc := (NormNum.evalMul.core q($a * $b) _ _ q(CommSemiring.toSemiring) ra rb).get!
+      let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
+        q(CommSemiring.toSemiring) ra rb).get!
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
       let ⟨c, pc⟩ :=  rc.toRawEq
       ⟨c, .const zc hc, pc⟩
@@ -540,7 +544,8 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let ⟨m1, _⟩ := ExProd.mkNegNat sα rα 1
     let rm := Result.isNegNat rα lit (q(IsInt.of_raw $α (.negOfNat $lit)) : Expr)
     let ra := Result.ofRawRat za a ha
-    let rb := (NormNum.evalMul.core q($m1 * $a) _ _ q(CommSemiring.toSemiring) rm ra).get!
+    let rb := (NormNum.evalMul.core q($m1 * $a) q(HMul.hMul) _ _
+      q(CommSemiring.toSemiring) rm ra).get!
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
     let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=  rb.toRawEq
     ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
@@ -711,7 +716,7 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       let ra := Result.ofRawRat za a ha
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
-      let rc ← NormNum.evalPow.core q($a ^ $b) _ b lit rb q(CommSemiring.toSemiring) ra
+      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) _ b lit rb q(CommSemiring.toSemiring) ra
       let ⟨zc, hc⟩ ← rc.toRatNZ
       let ⟨c, pc⟩ := rc.toRawEq
       some ⟨c, .const zc hc, pc⟩

@@ -57,7 +57,7 @@ that are prime and do not contain the irrelevant ideal. -/
 structure ProjectiveSpectrum where
   asHomogeneousIdeal : HomogeneousIdeal 𝒜
   isPrime : asHomogeneousIdeal.toIdeal.IsPrime
-  not_irrelevant_le : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ as_homogeneous_ideal
+  not_irrelevant_le : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ asHomogeneousIdeal
 #align projective_spectrum ProjectiveSpectrum
 
 attribute [instance] ProjectiveSpectrum.isPrime
@@ -97,7 +97,7 @@ At a point `x` (a homogeneous prime ideal) the function (i.e., element) `f` take
 quotient ring `A` modulo the prime ideal `x`. In this manner, `vanishingIdeal t` is exactly the
 ideal of `A` consisting of all "functions" that vanish on all of `t`. -/
 def vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) : HomogeneousIdeal 𝒜 :=
-  ⨅ (x : ProjectiveSpectrum 𝒜) (_h : x ∈ t), x.asHomogeneousIdeal
+  ⨅ (x : ProjectiveSpectrum 𝒜) (_ : x ∈ t), x.asHomogeneousIdeal
 #align projective_spectrum.vanishing_ideal ProjectiveSpectrum.vanishingIdeal
 
 theorem coe_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜)) :

@@ -15,7 +15,7 @@ import Mathlib.Data.Set.Finite
 # Hall's Marriage Theorem for finite index types
 
 This module proves the basic form of Hall's theorem.
-In constrast to the theorem described in `Combinatorics.Hall.Basic`, this
+In contrast to the theorem described in `Combinatorics.Hall.Basic`, this
 version requires that the indexed family `t : ι → Finset α` have `ι` be finite.
 The `Combinatorics.Hall.Basic` module applies a compactness argument to this version
 to remove the `Finite` constraint on `ι`.
@@ -241,7 +241,7 @@ theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).ca
       exact ih _ (Nat.lt_succ_of_le hι') ht' _ rfl
     by_cases h : ∀ s : Finset ι, s.Nonempty → s ≠ univ → s.card < (s.biUnion t).card
     · refine' hall_hard_inductive_step_A hn ht (@fun ι' => ih' ι') h
-    · push_neg  at h
+    · push_neg at h
       rcases h with ⟨s, sne, snu, sle⟩
       exact hall_hard_inductive_step_B hn ht (@fun ι' => ih' ι')
         s sne snu (Nat.le_antisymm (ht _) sle)

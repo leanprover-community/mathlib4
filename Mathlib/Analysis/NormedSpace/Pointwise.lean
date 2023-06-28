@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.normed_space.pointwise
-! leanprover-community/mathlib commit 832a8ba8f10f11fea99367c469ff802e69a5b8ec
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -65,7 +65,7 @@ theorem infEdist_smul₀ {c : 𝕜} (hc : c ≠ 0) (s : Set E) (x : E) :
   simp_rw [EMetric.infEdist]
   have : Function.Surjective ((c • ·) : E → E) :=
     Function.RightInverse.surjective (smul_inv_smul₀ hc)
-  trans ⨅ (y) (_H : y ∈ s), ‖c‖₊ • edist x y
+  trans ⨅ (y) (_ : y ∈ s), ‖c‖₊ • edist x y
   · refine' (this.iInf_congr _ fun y => _).symm
     simp_rw [smul_mem_smul_set_iff₀ hc, edist_smul₀]
   · have : (‖c‖₊ : ENNReal) ≠ 0 := by simp [hc]
@@ -432,13 +432,13 @@ theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
   · exact smul_sphere' hc x r
 #align smul_sphere smul_sphere
 
-/-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `λ y, x + r • y`. -/
+/-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `fun y ↦ x + r • y`. -/
 theorem affinity_unitBall {r : ℝ} (hr : 0 < r) (x : E) : x +ᵥ r • ball (0 : E) 1 = ball x r := by
   rw [smul_unitBall_of_pos hr, vadd_ball_zero]
 #align affinity_unit_ball affinity_unitBall
 
 /-- Any closed ball `Metric.closedBall x r`, `0 ≤ r` is the image of the unit closed ball under
-`λ y, x + r • y`. -/
+`fun y ↦ x + r • y`. -/
 theorem affinity_unitClosedBall {r : ℝ} (hr : 0 ≤ r) (x : E) :
     x +ᵥ r • closedBall (0 : E) 1 = closedBall x r := by
   rw [smul_closedUnitBall, Real.norm_of_nonneg hr, vadd_closedBall_zero]

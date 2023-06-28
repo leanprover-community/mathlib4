@@ -62,10 +62,10 @@ theorem gameAdd_iff {rα rβ} {x y : α × β} :
     GameAdd rα rβ x y ↔ rα x.1 y.1 ∧ x.2 = y.2 ∨ rβ x.2 y.2 ∧ x.1 = y.1 := by
   constructor
   · rintro (@⟨a₁, a₂, b, h⟩ | @⟨a, b₁, b₂, h⟩)
-    exacts[Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
+    exacts [Or.inl ⟨h, rfl⟩, Or.inr ⟨h, rfl⟩]
   · revert x y
     rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ (⟨h, rfl : b₁ = b₂⟩ | ⟨h, rfl : a₁ = a₂⟩)
-    exacts[GameAdd.fst h, GameAdd.snd h]
+    exacts [GameAdd.fst h, GameAdd.snd h]
 #align prod.game_add_iff Prod.gameAdd_iff
 
 theorem gameAdd_mk_iff {rα rβ} {a₁ a₂ : α} {b₁ b₂ : β} :
@@ -106,7 +106,7 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
   induction' hb with b hb ihb
   refine' Acc.intro _ fun h => _
   rintro (⟨ra⟩ | ⟨rb⟩)
-  exacts[iha _ ra (Acc.intro b hb), ihb _ rb]
+  exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 #align acc.prod_game_add Acc.prod_gameAdd
 
 /-- The `Prod.GameAdd` relation on well-founded inputs is well-founded.

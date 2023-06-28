@@ -280,7 +280,7 @@ theorem MonoidHom.coe_finset_prod [MulOneClass β] [CommMonoid γ] (f : α → �
 #align monoid_hom.coe_finset_prod MonoidHom.coe_finset_prod
 #align add_monoid_hom.coe_finset_sum AddMonoidHom.coe_finset_sum
 
--- See also `finset.prod_apply`, with the same conclusion
+-- See also `Finset.prod_apply`, with the same conclusion
 -- but with the weaker hypothesis `f : α → β → γ`.
 @[to_additive (attr := simp)]
 theorem MonoidHom.finset_prod_apply [MulOneClass β] [CommMonoid γ] (f : α → β →* γ) (s : Finset α)
@@ -664,30 +664,30 @@ theorem prod_mul_distrib : (∏ x in s, f x * g x) = (∏ x in s, f x) * ∏ x i
 
 @[to_additive]
 theorem prod_product {s : Finset γ} {t : Finset α} {f : γ × α → β} :
-    (∏ x in s ×ᶠ t, f x) = ∏ x in s, ∏ y in t, f (x, y) :=
-  prod_finset_product (s ×ᶠ t) s (fun _a => t) fun _p => mem_product
+    (∏ x in s ×ˢ t, f x) = ∏ x in s, ∏ y in t, f (x, y) :=
+  prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 #align finset.prod_product Finset.prod_product
 #align finset.sum_product Finset.sum_product
 
 /-- An uncurried version of `Finset.prod_product`. -/
 @[to_additive "An uncurried version of `Finset.sum_product`"]
 theorem prod_product' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
-    (∏ x in s ×ᶠ t, f x.1 x.2) = ∏ x in s, ∏ y in t, f x y :=
+    (∏ x in s ×ˢ t, f x.1 x.2) = ∏ x in s, ∏ y in t, f x y :=
   prod_product
 #align finset.prod_product' Finset.prod_product'
 #align finset.sum_product' Finset.sum_product'
 
 @[to_additive]
 theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β} :
-    (∏ x in s ×ᶠ t, f x) = ∏ y in t, ∏ x in s, f (x, y) :=
-  prod_finset_product_right (s ×ᶠ t) t (fun _a => s) fun _p => mem_product.trans and_comm
+    (∏ x in s ×ˢ t, f x) = ∏ y in t, ∏ x in s, f (x, y) :=
+  prod_finset_product_right (s ×ˢ t) t (fun _a => s) fun _p => mem_product.trans and_comm
 #align finset.prod_product_right Finset.prod_product_right
 #align finset.sum_product_right Finset.sum_product_right
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
 @[to_additive "An uncurried version of `Finset.prod_product_right`"]
 theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
-    (∏ x in s ×ᶠ t, f x.1 x.2) = ∏ y in t, ∏ x in s, f x y :=
+    (∏ x in s ×ˢ t, f x.1 x.2) = ∏ y in t, ∏ x in s, f x y :=
   prod_product_right
 #align finset.prod_product_right' Finset.prod_product_right'
 #align finset.sum_product_right' Finset.sum_product_right'
@@ -761,8 +761,8 @@ theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s,
 #align finset.prod_filter_of_ne Finset.prod_filter_of_ne
 #align finset.sum_filter_of_ne Finset.sum_filter_of_ne
 
--- If we use `[decidable_eq β]` here, some rewrites fail because they find a wrong `decidable`
--- instance first; `{∀ x, decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
+-- If we use `[DecidableEq β]` here, some rewrites fail because they find a wrong `Decidable`
+-- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
 @[to_additive]
 theorem prod_filter_ne_one [∀ x, Decidable (f x ≠ 1)] :
     (∏ x in s.filter fun x => f x ≠ 1, f x) = ∏ x in s, f x :=
@@ -812,7 +812,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : (∏ x in s, f x) = f a * f b := by
   haveI := Classical.decEq α; let s' := ({a, b} : Finset α)
   have hu : s' ⊆ s := by
-    refine' insert_subset.mpr _
+    refine' insert_subset_iff.mpr _
     apply And.intro ha
     apply singleton_subset_iff.mpr hb
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
@@ -1089,7 +1089,7 @@ theorem prod_ite_eq [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 /-- A product taken over a conditional whose condition is an equality test on the index and whose
 alternative is `1` has value either the term at that index or `1`.
 
-The difference with `Finset.prod_ite_eq` is that the arguments to `eq` are swapped. -/
+The difference with `Finset.prod_ite_eq` is that the arguments to `Eq` are swapped. -/
 @[to_additive (attr := simp) "A sum taken over a conditional whose condition is an equality
 test on the index and whose alternative is `0` has value either the term at that index or `0`.
 
@@ -1686,7 +1686,7 @@ theorem prod_ite_one {f : α → Prop} [DecidablePred f] (hf : (s : Set α).Pair
   · obtain ⟨i, hi, hfi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hfi]
     exact fun j hj h => if_neg fun hfj => (hf hj hi h).le_bot ⟨hfj, hfi⟩
-  · push_neg  at h
+  · push_neg at h
     rw [prod_eq_one]
     exact fun i hi => if_neg (h i hi)
 #align finset.prod_ite_one Finset.prod_ite_one
@@ -1913,7 +1913,7 @@ theorem prod_boole {s : Finset α} {p : α → Prop} [DecidablePred p] :
   · apply prod_eq_one
     intro i hi
     rw [if_pos (h i hi)]
-  · push_neg  at h
+  · push_neg at h
     rcases h with ⟨i, hi, hq⟩
     apply prod_eq_zero hi
     rw [if_neg hq]
@@ -2279,7 +2279,7 @@ theorem nat_abs_sum_le {ι : Type _} (s : Finset ι) (f : ι → ℤ) :
       exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)
 #align nat_abs_sum_le nat_abs_sum_le
 
-/-! ### `additive`, `multiplicative` -/
+/-! ### `Additive`, `Multiplicative` -/
 
 
 open Additive Multiplicative

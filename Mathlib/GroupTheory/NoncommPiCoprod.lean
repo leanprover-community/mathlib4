@@ -281,7 +281,7 @@ end FamilyOfGroups
 
 namespace Subgroup
 
--- We have an family of subgroups
+-- We have a family of subgroups
 variable {G : Type _} [Group G]
 
 variable {ι : Type _} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}

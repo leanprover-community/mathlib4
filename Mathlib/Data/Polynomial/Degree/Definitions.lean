@@ -334,7 +334,7 @@ theorem natDegree_monomial [DecidableEq R] (i : ℕ) (r : R) :
 theorem natDegree_monomial_le (a : R) {m : ℕ} : (monomial m a).natDegree ≤ m := by
   rw [Polynomial.natDegree_monomial]
   split_ifs
-  exacts[Nat.zero_le _, rfl.le]
+  exacts [Nat.zero_le _, rfl.le]
 #align polynomial.nat_degree_monomial_le Polynomial.natDegree_monomial_le
 
 theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).natDegree = i :=
@@ -398,7 +398,7 @@ theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : 
     (w : p.natDegree < n) : p.sum f = ∑ a : ℕ in range n, f a (coeff p a) := by
   rcases p with ⟨⟩
   have := supp_subset_range w
-  simp only [Polynomial.sum, support, coeff, natDegree, degree] at this⊢
+  simp only [Polynomial.sum, support, coeff, natDegree, degree] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 #align polynomial.sum_over_range' Polynomial.sum_over_range'
 

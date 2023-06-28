@@ -154,7 +154,7 @@ theorem aeval_wittPolynomial {A : Type _} [CommRing A] [Algebra R A] (f : â„• â†
   simp [wittPolynomial, AlgHom.map_sum, aeval_monomial, Finsupp.prod_single_index]
 #align aeval_witt_polynomial aeval_wittPolynomial
 
-/-- Over the ring `zmod (p^(n+1))`, we produce the `n+1`st Witt polynomial
+/-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
 by expanding the `n`th Witt polynomial by `p`.
 -/
 @[simp]

@@ -26,8 +26,8 @@ projective object.
 epimorphism.
 
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
-`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism `π
-(kernel f) ≫ kernel.ι f`.
+`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism
+`π (kernel f) ≫ kernel.ι f`.
 
 -/
 
@@ -123,16 +123,8 @@ instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Proj
   factors f e epi := ⟨coprod.desc (factorThru (coprod.inl ≫ f) e) (factorThru (coprod.inr ≫ f) e),
     by aesop_cat⟩
 
-section
-
--- porting note: `coprod.hom_ext` and `Sigma.hom_ext` have been added in
---   Limits.Shapes.BinaryProducts and Limits.Shapes.Products
--- attribute [local tidy] tactic.discrete_cases
-
 instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
   factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by aesop_cat⟩
-
-end
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] [Projective Q] :
     Projective (P ⊞ Q) where

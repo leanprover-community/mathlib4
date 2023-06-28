@@ -52,9 +52,9 @@ theorem measurable_of_tendsto_ennreal {f : ℕ → α → ℝ≥0∞} {g : α �
 theorem measurable_of_tendsto_nnreal' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
-  simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf⊢
+  simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf ⊢
   refine' measurable_of_tendsto_ennreal' u hf _
-  rw [tendsto_pi_nhds] at lim⊢
+  rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 #align measurable_of_tendsto_nnreal' measurable_of_tendsto_nnreal'
 
@@ -75,7 +75,7 @@ theorem measurable_of_tendsto_metrizable' {ι} {f : ι → α → β} {g : α �
   have : Measurable fun x => infNndist (g x) s := by
     suffices : Tendsto (fun i x => infNndist (f i x) s) u (𝓝 fun x => infNndist (g x) s)
     exact measurable_of_tendsto_nnreal' u (fun i => (hf i).infNndist) this
-    rw [tendsto_pi_nhds] at lim⊢
+    rw [tendsto_pi_nhds] at lim ⊢
     intro x
     exact ((continuous_infNndist_pt s).tendsto (g x)).comp (lim x)
   have h4s : g ⁻¹' s = (fun x => infNndist (g x) s) ⁻¹' {0} := by
@@ -150,7 +150,7 @@ theorem measurable_of_tendsto_metrizable_ae {μ : Measure α} [μ.IsComplete] {f
 theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty ι] {μ : Measure α}
     {f : ι → α → β} {L : Filter ι} [L.IsCountablyGenerated] (hf : ∀ n, AEMeasurable (f n) μ)
     (h_ae_tendsto : ∀ᵐ x ∂μ, ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l)) :
-    ∃ (f_lim : α → β)(hf_lim_meas : Measurable f_lim),
+    ∃ (f_lim : α → β) (hf_lim_meas : Measurable f_lim),
       ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
   inhabit ι
   rcases eq_or_ne L ⊥ with (rfl | hL)
@@ -161,7 +161,7 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     aeSeq.fun_prop_of_mem_aeSeqSet hf hx
   have h_ae_eq : ∀ᵐ x ∂μ, ∀ n, aeSeq hf p n x = f n x := aeSeq.aeSeq_eq_fun_ae hf h_ae_tendsto
   set f_lim : α → β := fun x => dite (x ∈ aeSeqSet hf p) (fun h => (hp_mem x h).choose)
-    fun h => (⟨f default x⟩ : Nonempty β).some
+    fun _ => (⟨f default x⟩ : Nonempty β).some
   have hf_lim : ∀ x, Tendsto (fun n => aeSeq hf p n x) L (𝓝 (f_lim x)) := by
     intro x
     simp only [aeSeq]

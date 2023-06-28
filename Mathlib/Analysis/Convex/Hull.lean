@@ -44,7 +44,7 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
 def convexHull : ClosureOperator (Set E) :=
-  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t) (Convex 𝕜)
+  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t) (Convex 𝕜)
     (fun _ =>
       Set.subset_iInter fun _ => Set.subset_iInter fun hst => Set.subset_iInter fun _ => hst)
     (fun _ => convex_iInter fun _ => convex_iInter fun _ => convex_iInter id) fun _ t hst ht =>
@@ -62,7 +62,7 @@ theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) :=
 #align convex_convex_hull convex_convexHull
 
 theorem convexHull_eq_iInter : convexHull 𝕜 s =
-    ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t :=
+    ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t :=
   rfl
 #align convex_hull_eq_Inter convexHull_eq_iInter
 
@@ -135,7 +135,7 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
-  rw [insert_subset, singleton_subset_iff]
+  rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
 
