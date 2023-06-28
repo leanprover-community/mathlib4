@@ -361,8 +361,8 @@ theorem grundyValue_eq_mex_right :
 /-- The Grundy value of the sum of two nim games with natural numbers of piles equals their bitwise
 xor. -/
 @[simp]
-theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m) = Nat.lxor' n m :=
-  by
+theorem grundyValue_nim_add_nim (n m : ℕ) :
+    grundyValue (nim.{u} n + nim.{u} m) = Nat.lxor' n m := by
   -- We do strong induction on both variables.
   induction' n using Nat.strong_induction_on with n hn generalizing m
   induction' m using Nat.strong_induction_on with m hm
