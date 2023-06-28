@@ -8,10 +8,10 @@ Authors: Apurva Nakade
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Algebra.Basic
-import Mathbin.SetTheory.Game.Birthday
-import Mathbin.SetTheory.Surreal.Basic
-import Mathbin.RingTheory.Localization.Basic
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.SetTheory.Game.Birthday
+import Mathlib.SetTheory.Surreal.Basic
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Dyadic numbers
@@ -88,8 +88,7 @@ theorem birthday_half : birthday (powHalf 1) = 2 := by rw [birthday_def]; dsimp;
 #align pgame.birthday_half PGame.birthday_half
 
 /-- For all natural numbers `n`, the pre-games `pow_half n` are numeric. -/
-theorem numeric_powHalf (n) : (powHalf n).Numeric :=
-  by
+theorem numeric_powHalf (n) : (powHalf n).Numeric := by
   induction' n with n hn
   · exact numeric_one
   · constructor
@@ -105,8 +104,7 @@ theorem powHalf_succ_le_powHalf (n : ℕ) : powHalf (n + 1) ≤ powHalf n :=
   (powHalf_succ_lt_powHalf n).le
 #align pgame.pow_half_succ_le_pow_half PGame.powHalf_succ_le_powHalf
 
-theorem powHalf_le_one (n : ℕ) : powHalf n ≤ 1 :=
-  by
+theorem powHalf_le_one (n : ℕ) : powHalf n ≤ 1 := by
   induction' n with n hn
   · exact le_rfl
   · exact (pow_half_succ_le_pow_half n).trans hn
@@ -124,8 +122,7 @@ theorem zero_le_powHalf (n : ℕ) : 0 ≤ powHalf n :=
   (powHalf_pos n).le
 #align pgame.zero_le_pow_half PGame.zero_le_powHalf
 
-theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n :=
-  by
+theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n := by
   induction' n using Nat.strong_induction_on with n hn
   · constructor <;> rw [le_iff_forall_lf] <;> constructor
     · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
@@ -188,8 +185,7 @@ theorem double_powHalf_succ_eq_powHalf (n : ℕ) : 2 • powHalf n.succ = powHal
 #align surreal.double_pow_half_succ_eq_pow_half Surreal.double_powHalf_succ_eq_powHalf
 
 @[simp]
-theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 :=
-  by
+theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
   induction' n with n hn
   · simp only [nsmul_one, pow_half_zero, Nat.cast_one, pow_zero]
   ·
@@ -198,8 +194,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 :=
 #align surreal.nsmul_pow_two_pow_half Surreal.nsmul_pow_two_powHalf
 
 @[simp]
-theorem nsmul_pow_two_pow_half' (n k : ℕ) : 2 ^ n • powHalf (n + k) = powHalf k :=
-  by
+theorem nsmul_pow_two_pow_half' (n k : ℕ) : 2 ^ n • powHalf (n + k) = powHalf k := by
   induction' k with k hk
   ·
     simp only [add_zero, Surreal.nsmul_pow_two_powHalf, Nat.zero_eq, eq_self_iff_true,
@@ -232,11 +227,9 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
 #align surreal.dyadic_aux Surreal.dyadic_aux
 
 /-- The additive monoid morphism `dyadic_map` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
-def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal
-    where
+def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
   toFun x :=
-    (Localization.liftOn x fun x y => x • powHalf (Submonoid.log y)) <|
-      by
+    (Localization.liftOn x fun x y => x • powHalf (Submonoid.log y)) <| by
       intro m₁ m₂ n₁ n₂ h₁
       obtain ⟨⟨n₃, y₃, hn₃⟩, h₂⟩ := localization.r_iff_exists.mp h₁
       simp only [Subtype.coe_mk, mul_eq_mul_left_iff] at h₂ 
@@ -254,8 +247,7 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal
         linarith
   map_zero' := Localization.liftOn_zero _ _
   map_add' x y :=
-    Localization.induction_on₂ x y <|
-      by
+    Localization.induction_on₂ x y <| by
       rintro ⟨a, ⟨b, ⟨b', rfl⟩⟩⟩ ⟨c, ⟨d, ⟨d', rfl⟩⟩⟩
       have h₂ : 1 < (2 : ℤ).natAbs := one_lt_two
       have hpow₂ := Submonoid.log_pow_int_eq_self h₂
