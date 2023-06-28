@@ -13,6 +13,7 @@ import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.UpperSetTopology
 import Mathlib.Topology.Order.LowerTopology
+import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Scott topology
@@ -228,6 +229,8 @@ lemma Monotone_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
   rw [continuous_iff_coinduced_le]
   apply Monotone_coinduced hf
 
+
+
 end morphisms
 
 section preorder
@@ -287,6 +290,39 @@ lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
 
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
+
+end preorder
+
+section ut_to_st
+
+variable [Preorder α] [Preorder β]
+
+lemma closure_singleton' {t₁ : TopologicalSpace α} [UpperSetTopology α]
+  {t₂ : TopologicalSpace β} [ScottTopology β] (e : OrderIso α β) (b : β) : closure {b} = Iic b := by
+  rw [← OrderIso.apply_symm_apply e b]
+  rw [← (OrderIso.image_Iic e)]
+  rw [le_antisymm_iff]
+  constructor
+  . apply closure_minimal
+    simp only [OrderIso.apply_symm_apply, OrderIso.image_Iic, singleton_subset_iff, mem_Iic, le_refl]
+    rw [isClosed_iff_lower_and_subset_implies_LUB_mem]
+    constructor
+    . simp only [OrderIso.image_Iic, OrderIso.apply_symm_apply]
+      exact isLowerSet_Iic b
+    . intros d b _ _ d₃ d₄
+      simp at d₄
+      simp only [OrderIso.image_Iic, OrderIso.apply_symm_apply, mem_Iic]
+      exact (isLUB_le_iff d₃).mpr d₄
+  . rw [← UpperSetTopology.closure_singleton]
+    rw [← @image_singleton _ _ e ]
+    apply (image_closure_subset_closure_image (Monotone_continuous (OrderIso.monotone e)))
+
+end ut_to_st
+
+
+section preorder
+
+variable [Preorder α] [TopologicalSpace α] [ScottTopology α]
 
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
