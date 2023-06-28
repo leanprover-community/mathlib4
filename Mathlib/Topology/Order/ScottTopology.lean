@@ -13,7 +13,6 @@ import Mathlib.Topology.Order
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.UpperSetTopology
 import Mathlib.Topology.Order.LowerTopology
-import Mathlib.Tactic.LibrarySearch
 
 /-!
 # Scott topology
