@@ -18,7 +18,8 @@ Notably, these include `pi_gt_sqrtTwoAddSeries` and `pi_lt_sqrtTwoAddSeries`,
 which bound `π` using series;
 numerical bounds on `π` such as `pi_gt_314`and `pi_lt_315` (more precise versions are given, too).
 
-See also `data.real.pi.leibniz` and `data.real.pi.wallis` for infinite formulas for `π`.
+See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.lean` for infinite
+formulas for `π`.
 -/
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220

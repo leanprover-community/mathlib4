@@ -214,7 +214,7 @@ theorem LinearIndependent.map (hv : LinearIndependent R v) {f : M →ₗ[R] M'}
   rw [disjoint_iff_inf_le, ← Set.image_univ, Finsupp.span_image_eq_map_total,
     map_inf_eq_map_inf_comap, map_le_iff_le_comap, comap_bot, Finsupp.supported_univ, top_inf_eq]
       at hf_inj
-  unfold LinearIndependent at hv⊢
+  unfold LinearIndependent at hv ⊢
   rw [hv, le_bot_iff] at hf_inj
   haveI : Inhabited M := ⟨0⟩
   rw [Finsupp.total_comp, @Finsupp.lmapDomain_total _ _ R _ _ _ _ _ _ _ _ _ _ f, LinearMap.ker_comp,
@@ -285,7 +285,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
     (x_ortho : ∀ (c : R) (y : Submodule.span R (Set.range v)), c • x + y = (0 : M) → c = 0) :
     LinearIndependent R (Fin.cons x v : Fin m.succ → M) := by
-  rw [Fintype.linearIndependent_iff] at hli⊢
+  rw [Fintype.linearIndependent_iff] at hli ⊢
   rintro g total_eq j
   simp_rw [Fin.sum_univ_succ, Fin.cons_zero, Fin.cons_succ] at total_eq
   have : g 0 = 0 := by
@@ -521,7 +521,7 @@ theorem LinearIndependent.image {ι} {s : Set ι} {f : ι → M}
 theorem LinearIndependent.group_smul {G : Type _} [hG : Group G] [DistribMulAction G R]
     [DistribMulAction G M] [IsScalarTower G R M] [SMulCommClass G R M] {v : ι → M}
     (hv : LinearIndependent R v) (w : ι → G) : LinearIndependent R (w • v) := by
-  rw [linearIndependent_iff''] at hv⊢
+  rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   refine' (smul_eq_zero_iff_eq (w i)).1 _
   refine' hv s (fun i => w i • g i) (fun i hi => _) _ i
@@ -536,7 +536,7 @@ theorem LinearIndependent.group_smul {G : Type _} [hG : Group G] [DistribMulActi
 -- `Rˣ` on `R` is not commutative.
 theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v) (w : ι → Rˣ) :
     LinearIndependent R (w • v) := by
-  rw [linearIndependent_iff''] at hv⊢
+  rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   rw [← (w i).mul_left_eq_zero]
   refine' hv s (fun i => g i • (w i : R)) (fun i hi => _) _ i
@@ -915,7 +915,7 @@ theorem exists_maximal_independent (s : ι → M) :
     have hfi : f i ≠ 0 := by
       contrapose hIlinind
       refine' linearDependent_comp_subtype.mpr ⟨f, _, sum_f, f_ne⟩
-      simp only [Finsupp.mem_supported, hJ] at supp_f⊢
+      simp only [Finsupp.mem_supported, hJ] at supp_f ⊢
       rintro x hx
       refine' (memJ.mp (supp_f hx)).resolve_left _
       rintro rfl
@@ -1285,7 +1285,7 @@ theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s 
   · refine' ⟨b, bt, sb, fun x xt => _, bi⟩
     by_contra hn
     apply hn
-    rw [← h _ ⟨insert_subset.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
+    rw [← h _ ⟨insert_subset_iff.2 ⟨xt, bt⟩, bi.insert hn⟩ (subset_insert _ _)]
     exact subset_span (mem_insert _ _)
 #align exists_linear_independent_extension exists_linearIndependent_extension
 
@@ -1383,7 +1383,7 @@ theorem exists_of_linearIndependent_of_finite_span {t : Finset V}
           have hb₁ : b₁ ∈ span K (insert b₂ ↑(s' ∪ t)) := by
             exact mem_span_insert_exchange (this hb₂s) hb₂t
           rw [span_insert_eq_span hb₁] at hb₃; simpa using hb₃
-        let ⟨u, hust, hsu, eq⟩ := ih _ (by simp [insert_subset, hb₂s, hs']) hst this
+        let ⟨u, hust, hsu, eq⟩ := ih _ (by simp [insert_subset_iff, hb₂s, hs']) hst this
         -- Porting note: `hb₂t'` → `Finset.card_insert_of_not_mem hb₂t'`
         ⟨u, Subset.trans hust <| union_subset_union (Subset.refl _) (by simp [subset_insert]), hsu,
           by simp [eq, Finset.card_insert_of_not_mem hb₂t', hb₁t, hb₁s']⟩

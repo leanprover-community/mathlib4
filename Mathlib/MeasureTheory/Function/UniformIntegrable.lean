@@ -862,7 +862,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
   obtain ⟨-, hfu, M, hM⟩ := hfu
   obtain ⟨δ, hδpos, hδ⟩ := hfu hε
   obtain ⟨C, hC⟩ : ∃ C : ℝ≥0, ∀ i, μ { x | C ≤ ‖f i x‖₊ } ≤ ENNReal.ofReal δ := by
-    by_contra hcon; push_neg  at hcon
+    by_contra hcon; push_neg at hcon
     choose ℐ hℐ using hcon
     lift δ to ℝ≥0 using hδpos.le
     have : ∀ C : ℝ≥0, C • (δ : ℝ≥0∞) ^ (1 / p.toReal) ≤ snorm (f (ℐ C)) p μ := by

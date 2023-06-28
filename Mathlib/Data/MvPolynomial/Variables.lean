@@ -326,7 +326,7 @@ theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
-  simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx⊢
+  simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
   simpa using Multiset.mem_of_le (degrees_add _ _) hx
 #align mv_polynomial.vars_add_subset MvPolynomial.vars_add_subset
 
@@ -334,7 +334,7 @@ theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
   apply Finset.Subset.antisymm (vars_add_subset p q)
   intro x hx
-  simp only [vars_def, Multiset.disjoint_toFinset] at h hx⊢
+  simp only [vars_def, Multiset.disjoint_toFinset] at h hx ⊢
   rw [degrees_add_of_disjoint h, Multiset.toFinset_union]
   exact hx
 #align mv_polynomial.vars_add_of_disjoint MvPolynomial.vars_add_of_disjoint
@@ -436,7 +436,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
     rw [hsum]
-    simp only [Finset.disjoint_iff_ne] at h⊢
+    simp only [Finset.disjoint_iff_ne] at h ⊢
     intro v hv v2 hv2
     rw [Finset.mem_biUnion] at hv2
     rcases hv2 with ⟨i, his, hi⟩
@@ -887,7 +887,7 @@ theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).vars ⊆ φ.vars.image f := by
   classical
   intro i hi
-  simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi⊢
+  simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
   simpa only [Multiset.mem_map] using degrees_rename _ _ hi
 #align mv_polynomial.vars_rename MvPolynomial.vars_rename
 

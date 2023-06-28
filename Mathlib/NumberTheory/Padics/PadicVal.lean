@@ -421,7 +421,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
     (hn0 : (∑ i in Finset.range n, F i) ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
   induction' n with d hd
   · exact False.elim (hn0 rfl)
-  · rw [Finset.sum_range_succ] at hn0⊢
+  · rw [Finset.sum_range_succ] at hn0 ⊢
     by_cases h : (∑ x : ℕ in Finset.range d, F x) = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
