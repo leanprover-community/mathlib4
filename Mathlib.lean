@@ -2757,6 +2757,7 @@ import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
 import Mathlib.RingTheory.WittVector.Teichmuller
+import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
 import Mathlib.RingTheory.WittVector.WittAttributes
 import Mathlib.RingTheory.WittVector.WittPolynomial
