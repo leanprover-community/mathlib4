@@ -76,7 +76,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 /-- Function whose Mellin transform is `π ^ (-s) * Γ(s) * zeta (2 * s)`, for `1 / 2 < Re s`. -/
 def zetaKernel₁ (t : ℝ) : ℂ :=
-  ∑' n : ℕ, rexp (-π * t * (n + 1) ^ 2)
+  ∑' n : ℕ, rexp (-π * t * ((n : ℝ) + 1) ^ 2)
 #align zeta_kernel₁ zetaKernel₁
 
 /-- Modified zeta kernel, whose Mellin transform is entire. --/
@@ -118,12 +118,12 @@ theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
 
 /-- The sum defining `zeta_kernel₁` is convergent. -/
 theorem summable_exp_neg_pi_mul_nat_sq {t : ℝ} (ht : 0 < t) :
-    Summable fun n : ℕ => rexp (-π * t * (n + 1) ^ 2) := by
+    Summable fun n : ℕ => rexp (-π * t * ((n : ℝ) + 1) ^ 2) := by
   have : 0 < (↑t * I).im := by rwa [ofReal_mul_im, I_im, mul_one]
   convert summable_norm_iff.mpr (hasSum_nat_jacobiTheta this).summable using 1
   ext1 n
   rw [Complex.norm_eq_abs, Complex.abs_exp]
-  rw [show ↑π * I * ((n : ℂ) + 1) ^ 2 * (↑t * I) = ↑(π * t * (n + 1) ^ 2) * I ^ 2 by
+  rw [show ↑π * I * ((n : ℂ) + 1) ^ 2 * (↑t * I) = ((π * t * ((n : ℝ) + 1) ^ 2) : ℝ) * I ^ 2 by
     push_cast ; ring]
   rw [I_sq, mul_neg_one, ← ofReal_neg, ofReal_re, neg_mul, neg_mul]
 #align summable_exp_neg_pi_mul_nat_sq summable_exp_neg_pi_mul_nat_sq
@@ -339,7 +339,7 @@ theorem differentiableAt_completed_zeta {s : ℂ} (hs : s ≠ 0) (hs' : s ≠ 1)
 theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt ℂ riemannZeta s := by
   /- First claim: the result holds at `t` for `t ≠ 0`. Note we will need to use this for the case
     `s = 0` also, as a hypothesis for the removable-singularity criterion. -/
-  have c1 : ∀ (t : ℂ) (ht : t ≠ 0) (ht' : t ≠ 1),
+  have c1 : ∀ (t : ℂ) (_ : t ≠ 0) (_ : t ≠ 1),
       DifferentiableAt ℂ
         (fun u : ℂ => (π : ℂ) ^ (u / 2) * riemannCompletedZeta u / Gamma (u / 2)) t := by
     intro t ht ht'
@@ -358,58 +358,56 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
       · simp_rw [Function.comp_apply, zero_div, cpow_zero]
       · exact continuousAt_id.div continuousAt_const two_ne_zero
     suffices h2 : Tendsto (fun z => riemannCompletedZeta z / Gamma (z / 2)) (𝓝[≠] 0) (𝓝 <| -1 / 2)
-    · convert (h1.mono_left nhdsWithin_le_nhds).mul h2
-      · ext1 x; rw [mul_div]; · simp only [one_mul]
+    · convert (h1.mono_left nhdsWithin_le_nhds).mul h2 using 1
+      · ext1 x; rw [mul_div]
+      · simp only [one_mul]
     suffices h3 :
-      tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2))) (𝓝[≠] 0)
+      Tendsto (fun z => riemannCompletedZeta z * (z / 2) / (z / 2 * Gamma (z / 2))) (𝓝[≠] 0)
         (𝓝 <| -1 / 2)
-    · refine' tendsto.congr' (eventually_eq_of_mem self_mem_nhdsWithin fun z hz => _) h3
+    · refine Tendsto.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun z hz => ?_) h3
       rw [← div_div, mul_div_cancel _ (div_ne_zero hz two_ne_zero)]
-    have h4 : tendsto (fun z : ℂ => z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
-      refine' tendsto_self_mul_Gamma_nhds_zero.comp _
+    have h4 : Tendsto (fun z : ℂ => z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
+      refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
       rw [tendsto_nhdsWithin_iff, (by simp : 𝓝 (0 : ℂ) = 𝓝 (0 / 2))]
       exact
         ⟨(tendsto_id.div_const _).mono_left nhdsWithin_le_nhds,
           eventually_of_mem self_mem_nhdsWithin fun x hx => div_ne_zero hx two_ne_zero⟩
-    suffices tendsto (fun z => riemannCompletedZeta z * z / 2) (𝓝[≠] 0) (𝓝 (-1 / 2 : ℂ)) by
+    suffices Tendsto (fun z => riemannCompletedZeta z * z / 2) (𝓝[≠] 0) (𝓝 (-1 / 2 : ℂ)) by
       have := this.div h4 one_ne_zero
       simp_rw [div_one, mul_div_assoc] at this
       exact this
-    refine' tendsto.div _ tendsto_const_nhds two_ne_zero
+    refine Tendsto.div ?_ tendsto_const_nhds two_ne_zero
     simp_rw [riemannCompletedZeta, add_mul, sub_mul]
     rw [show 𝓝 (-1 : ℂ) = 𝓝 (0 - 1 + 0) by rw [zero_sub, add_zero]]
-    refine' (tendsto.sub _ _).add _
-    · refine' tendsto.mono_left _ nhdsWithin_le_nhds
+    refine (Tendsto.sub ?_ ?_).add ?_
+    · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       have : ContinuousAt riemannCompletedZeta₀ 0 :=
-        differentiable_completed_zeta₀.Continuous.ContinuousAt
-      simpa only [id.def, MulZeroClass.mul_zero] using tendsto.mul this tendsto_id
-    · refine' tendsto_const_nhds.congr' (eventually_eq_of_mem self_mem_nhdsWithin fun t ht => _)
+        differentiable_completed_zeta₀.continuous.continuousAt
+      simpa only [id.def, MulZeroClass.mul_zero] using Tendsto.mul this tendsto_id
+    · refine tendsto_const_nhds.congr' (eventuallyEq_of_mem self_mem_nhdsWithin fun t ht => ?_)
       simp_rw [one_div_mul_cancel ht]
-    · refine' tendsto.mono_left _ nhdsWithin_le_nhds
+    · refine Tendsto.mono_left ?_ nhdsWithin_le_nhds
       suffices ContinuousAt (fun z : ℂ => 1 / (z - 1)) 0 by
-        simpa only [id.def, MulZeroClass.mul_zero] using tendsto.mul this tendsto_id
-      refine' continuous_at_const.div (continuous_at_id.sub continuousAt_const) _
+        simpa only [id.def, MulZeroClass.mul_zero] using Tendsto.mul this tendsto_id
+      refine continuousAt_const.div (continuousAt_id.sub continuousAt_const) ?_
       simpa only [zero_sub] using neg_ne_zero.mpr one_ne_zero
   -- Now the main proof.
   rcases ne_or_eq s 0 with (hs | rfl)
   · -- The easy case: `s ≠ 0`
-    have : {(0 : ℂ)}ᶜ ∈ 𝓝 s := is_open_compl_singleton.mem_nhds hs
-    refine' (c1 s hs hs').congr_of_eventuallyEq (eventually_eq_of_mem this fun x hx => _)
-    unfold riemannZeta
+    have : {(0 : ℂ)}ᶜ ∈ 𝓝 s := isOpen_compl_singleton.mem_nhds hs
+    refine (c1 s hs hs').congr_of_eventuallyEq (eventuallyEq_of_mem this fun x hx => ?_)
+    rw [riemannZeta_def]
     apply Function.update_noteq hx
   · -- The hard case: `s = 0`.
     rw [riemannZeta, ← (lim_eq_iff ⟨-1 / 2, c2⟩).mpr c2]
-    have S_nhds : {(1 : ℂ)}ᶜ ∈ 𝓝 (0 : ℂ) := is_open_compl_singleton.mem_nhds hs'
-    refine'
-      ((Complex.differentiableOn_update_limUnder_of_isLittleO S_nhds
-              (fun t ht => (c1 t ht.2 ht.1).DifferentiableWithinAt) _)
-            0 hs').DifferentiableAt
-        S_nhds
+    have S_nhds : {(1 : ℂ)}ᶜ ∈ 𝓝 (0 : ℂ) := isOpen_compl_singleton.mem_nhds hs'
+    refine ((Complex.differentiableOn_update_limUnder_of_isLittleO S_nhds
+        (fun t ht => (c1 t ht.2 ht.1).differentiableWithinAt) ?_) 0 hs').differentiableAt S_nhds
     simp only [zero_div, div_zero, Complex.Gamma_zero, MulZeroClass.mul_zero, cpow_zero, sub_zero]
     -- Remains to show completed zeta is `o (s ^ (-1))` near 0.
-    refine' (is_O_const_of_tendsto c2 <| one_ne_zero' ℂ).trans_isLittleO _
-    rw [is_o_iff_tendsto']
-    · exact tendsto.congr (fun x => by rw [← one_div, one_div_one_div]) nhdsWithin_le_nhds
+    refine (isBigO_const_of_tendsto c2 <| one_ne_zero' ℂ).trans_isLittleO ?_
+    rw [isLittleO_iff_tendsto']
+    · exact Tendsto.congr (fun x => by rw [← one_div, one_div_one_div]) nhdsWithin_le_nhds
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' => (hx <| inv_eq_zero.mp hx').elim
 #align differentiable_at_riemann_zeta differentiableAt_riemannZeta
 
@@ -428,8 +426,6 @@ def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannCompletedZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)), s.re = 1 / 2
 #align riemann_hypothesis RiemannHypothesis
 
-#exit
-
 /-!
 ## Relating the Mellin transforms of the two zeta kernels
 -/
@@ -437,13 +433,14 @@ def RiemannHypothesis : Prop :=
 
 theorem hasMellin_one_div_sqrt_Ioc {s : ℂ} (hs : 1 / 2 < re s) :
     HasMellin (indicator (Ioc 0 1) (fun t => 1 / ↑(sqrt t) : ℝ → ℂ)) s (1 / (s - 1 / 2)) := by
-  have h1 : eq_on (fun t => 1 / ↑(sqrt t) : ℝ → ℂ) (fun t => ↑t ^ (-1 / 2 : ℂ)) (Ioc 0 1) := by
+  have h1 : EqOn (fun t => 1 / ↑(sqrt t) : ℝ → ℂ) (fun t => (t : ℂ) ^ (-1 / 2 : ℂ)) (Ioc 0 1) := by
     intro t ht
-    simp_rw [neg_div, cpow_neg, ← one_div, sqrt_eq_rpow, of_real_cpow ht.1.le]
-    push_cast
+    simp_rw [neg_div, cpow_neg, ← one_div, sqrt_eq_rpow, ofReal_cpow ht.1.le]
+    norm_num
   simp_rw [indicator_congr h1, (by ring : s - 1 / 2 = s + -1 / 2)]
   convert hasMellin_cpow_Ioc (-1 / 2) _
-  rwa [(by push_cast : (-1 / 2 : ℂ) = (-1 / 2 : ℝ)), of_real_re, neg_div, ← sub_eq_add_neg, sub_pos]
+  rwa [(by norm_num : (-1 / 2 : ℂ) = (-1 / 2 : ℝ)), ofReal_re, neg_div, ← sub_eq_add_neg,
+    sub_pos]
 #align has_mellin_one_div_sqrt_Ioc hasMellin_one_div_sqrt_Ioc
 
 /-- Evaluate the Mellin transform of the "fudge factor" in `zeta_kernel₂` -/
@@ -462,7 +459,7 @@ theorem hasMellin_one_div_sqrt_sub_one_div_two_Ioc {s : ℂ} (hs : 1 / 2 < s.re)
         (Ioc 0 1).indicator (fun t => 1 - 1 / (sqrt t : ℂ)) t / 2
       by ext1 t; simp_rw [div_eq_inv_mul, indicator_mul_right]]
   simp_rw [HasMellin, mellin_div_const, step1.2, sub_div, div_div]
-  refine' ⟨step1.1.div_const _, _⟩
+  refine ⟨step1.1.div_const _, ?_⟩
   rw [mul_comm, sub_mul, div_mul_cancel _ (two_ne_zero' ℂ), mul_comm s 2]
 #align has_mellin_one_div_sqrt_sub_one_div_two_Ioc hasMellin_one_div_sqrt_sub_one_div_two_Ioc
 
@@ -479,7 +476,7 @@ theorem completed_zeta_eq_mellin_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
     riemannCompletedZeta s = mellin zetaKernel₁ (s / 2) := by
   have : 1 / 2 < (s / 2).re := by
     rw [show s / 2 = ↑(2⁻¹ : ℝ) * s by push_cast ; rw [mul_comm]; rfl]
-    rwa [of_real_mul_re, ← div_eq_inv_mul, div_lt_div_right (zero_lt_two' ℝ)]
+    rwa [ofReal_mul_re, ← div_eq_inv_mul, div_lt_div_right (zero_lt_two' ℝ)]
   rw [riemannCompletedZeta, riemannCompletedZeta₀, mellin_zetaKernel₂_eq_of_lt_re this, sub_add,
     sub_sub, ← add_sub]
   conv_rhs => rw [← add_zero (mellin zetaKernel₁ <| s / 2)]
@@ -496,20 +493,20 @@ theorem completed_zeta_eq_mellin_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
 /-- Auxiliary lemma for `mellin_zeta_kernel₁_eq_tsum`, computing the Mellin transform of an
 individual term in the series. -/
 theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) :
-    ∫ t : ℝ in Ioi 0, (t : ℂ) ^ (s - 1) * rexp (-π * t * (n + 1) ^ 2) =
-      ↑π ^ (-s) * Complex.Gamma s * (1 / (n + 1) ^ (2 * s)) := by
-  rw [Complex.Gamma_eq_integral hs, Gamma_integral_eq_mellin]
+    ∫ t : ℝ in Ioi 0, (t : ℂ) ^ (s - 1) * rexp (-π * t * ((n : ℝ) + 1) ^ 2) =
+      (π : ℂ) ^ (-s) * Complex.Gamma s * (1 / ((n : ℂ) + 1) ^ (2 * s)) := by
+  rw [Complex.Gamma_eq_integral hs, GammaIntegral_eq_mellin]
   conv_rhs =>
     congr
     rw [← smul_eq_mul, ← mellin_comp_mul_left _ _ pi_pos]
-  have : 1 / ((n : ℂ) + 1) ^ (2 * s) = ↑(((n : ℝ) + 1) ^ (2 : ℝ)) ^ (-s) := by
-    rw [(by push_cast : (n : ℂ) + 1 = ↑((n : ℝ) + 1)), (by push_cast : 2 * s = ↑(2 : ℝ) * s),
-      cpow_mul_of_real_nonneg, one_div, cpow_neg]
+  have : 1 / ((n : ℂ) + 1) ^ (2 * s) = (((n : ℝ) + 1) ^ (2 : ℝ) : ℂ) ^ (-s) := by
+    rw [(by norm_num : (n : ℂ) + 1 = ↑((n : ℝ) + 1)), (by norm_num : 2 * s = ↑(2 : ℝ) * s),
+      cpow_mul_ofReal_nonneg, one_div, cpow_neg]
     rw [← Nat.cast_succ]
     exact Nat.cast_nonneg _
   conv_rhs => rw [this, mul_comm, ← smul_eq_mul]
   rw [← mellin_comp_mul_right _ _ (show 0 < ((n : ℝ) + 1) ^ (2 : ℝ) by positivity)]
-  refine' set_integral_congr measurableSet_Ioi fun t ht => _
+  refine set_integral_congr measurableSet_Ioi fun t _ => ?_
   simp_rw [smul_eq_mul]
   congr 3
   conv_rhs => rw [← Nat.cast_two, rpow_nat_cast]
@@ -517,51 +514,49 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
 #align integral_cpow_mul_exp_neg_pi_mul_sq integral_cpow_mul_exp_neg_pi_mul_sq
 
 theorem mellin_zetaKernel₁_eq_tsum {s : ℂ} (hs : 1 / 2 < s.re) :
-    mellin zetaKernel₁ s = π ^ (-s) * Gamma s * ∑' n : ℕ, 1 / (n + 1) ^ (2 * s) := by
-  let bd : ℕ → ℝ → ℝ := fun n t => t ^ (s.re - 1) * exp (-π * t * (n + 1) ^ 2)
-  let f : ℕ → ℝ → ℂ := fun n t => t ^ (s - 1) * exp (-π * t * (n + 1) ^ 2)
+    mellin zetaKernel₁ s = (π : ℂ) ^ (-s) * Gamma s * ∑' n : ℕ, 1 / ((n : ℂ) + 1) ^ (2 * s) := by
+  let bd : ℕ → ℝ → ℝ := fun n t => t ^ (s.re - 1) * exp (-π * t * ((n : ℝ) + 1) ^ 2)
+  let f : ℕ → ℝ → ℂ := fun n t => (t : ℂ) ^ (s - 1) * exp (-π * t * ((n : ℝ) + 1) ^ 2)
   have hm : MeasurableSet (Ioi (0 : ℝ)) := measurableSet_Ioi
   have h_norm : ∀ (n : ℕ) {t : ℝ} (ht : 0 < t), ‖f n t‖ = bd n t := by
     intro n t ht
     rw [norm_mul, Complex.norm_eq_abs, Complex.norm_eq_abs, Complex.abs_of_nonneg (exp_pos _).le,
       abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
-  have hf_meas : ∀ n : ℕ, ae_strongly_measurable (f n) (volume.restrict <| Ioi 0) := by
+  have hf_meas : ∀ n : ℕ, AEStronglyMeasurable (f n) (volume.restrict <| Ioi 0) := by
     intro n
-    refine' (ContinuousOn.mul _ _).AEStronglyMeasurable hm
-    ·
-      exact
-        ContinuousAt.continuousOn fun x hx =>
-          continuous_at_of_real_cpow_const _ _ <| Or.inr <| ne_of_gt hx
+    refine (ContinuousOn.mul ?_ ?_).aestronglyMeasurable hm
+    · exact ContinuousAt.continuousOn fun x hx =>
+          continuousAt_ofReal_cpow_const _ _ <| Or.inr <| ne_of_gt hx
     · apply Continuous.continuousOn
-      exact
-        continuous_of_real.comp
+      exact continuous_ofReal.comp
           (continuous_exp.comp ((continuous_const.mul continuous_id').mul continuous_const))
   have h_le : ∀ n : ℕ, ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), ‖f n t‖ ≤ bd n t := fun n =>
     (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => le_of_eq (h_norm n ht))
-  have h_sum0 : ∀ {t : ℝ} (ht : 0 < t), HasSum (fun n => f n t) (t ^ (s - 1) * zetaKernel₁ t) := by
+  have h_sum0 : ∀ {t : ℝ} (_ : 0 < t), HasSum (fun n => f n t)
+      ((t : ℂ) ^ (s - 1) * zetaKernel₁ t) := by
     intro t ht
-    have :=
-      (has_sum_of_real.mpr (summable_exp_neg_pi_mul_nat_sq ht).HasSum).mul_left ((t : ℂ) ^ (s - 1))
-    simpa only [of_real_mul, ← mul_assoc, of_real_bit0, of_real_one, mul_comm _ (2 : ℂ),
-      of_real_sub, of_real_one, of_real_tsum] using this
-  have h_sum' :
-    ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), HasSum (fun n : ℕ => f n t) (t ^ (s - 1) * zetaKernel₁ t) :=
+    rw [zetaKernel₁]
+    convert
+      (hasSum_ofReal.mpr (summable_exp_neg_pi_mul_nat_sq ht).hasSum).mul_left ((t : ℂ) ^ (s - 1))
+    simp only [neg_mul, ofReal_exp, ofReal_neg, ofReal_mul, ofReal_pow, ofReal_add,
+      ofReal_nat_cast, ofReal_one, ofReal_tsum]
+  have h_sum' : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), HasSum (fun n : ℕ => f n t)
+      ((t : ℂ) ^ (s - 1) * zetaKernel₁ t) :=
     (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => h_sum0 ht)
   have h_sum : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0), Summable fun n : ℕ => bd n t := by
-    refine' (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => _)
-    simpa only [fun n => h_norm n ht] using summable_norm_iff.mpr (h_sum0 ht).Summable
-  have h_int : integrable (fun t : ℝ => ∑' n : ℕ, bd n t) (volume.restrict (Ioi 0)) := by
-    refine'
-      integrable_on.congr_fun
+    refine (ae_restrict_iff' hm).mpr (ae_of_all _ fun t ht => ?_)
+    simpa only [fun n => h_norm n ht] using summable_norm_iff.mpr (h_sum0 ht).summable
+  have h_int : Integrable (fun t : ℝ => ∑' n : ℕ, bd n t) (volume.restrict (Ioi 0)) := by
+    refine IntegrableOn.congr_fun
         (mellinConvergent_of_isBigO_rpow_exp pi_pos locally_integrable_zetaKernel₁
-            isBigO_atTop_zetaKernel₁ isBigO_zero_zetaKernel₁ hs).norm
-        (fun t ht => _) hm
-    simp_rw [tsum_mul_left, norm_smul, Complex.norm_eq_abs ((t : ℂ) ^ _),
-      abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
-    rw [zetaKernel₁, ← of_real_tsum, Complex.norm_eq_abs, Complex.abs_of_nonneg]
+            isBigO_atTop_zetaKernel₁ isBigO_zero_zetaKernel₁ hs).norm (fun t ht => ?_) hm
+    rw [tsum_mul_left, norm_smul, Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos ht, sub_re,
+      one_re, zetaKernel₁, ← ofReal_tsum, Complex.norm_eq_abs, Complex.abs_of_nonneg]
     exact tsum_nonneg fun n => (exp_pos _).le
-  simpa only [integral_cpow_mul_exp_neg_pi_mul_sq (one_half_pos.trans hs), tsum_mul_left] using
-    (has_sum_integral_of_dominated_convergence bd hf_meas h_le h_sum h_int h_sum').tsum_eq.symm
+  rw [← tsum_mul_left]
+  simp_rw [← integral_cpow_mul_exp_neg_pi_mul_sq (one_half_pos.trans hs)]
+  rw [← (hasSum_integral_of_dominated_convergence bd hf_meas h_le h_sum h_int h_sum').tsum_eq.symm]
+  rfl
 #align mellin_zeta_kernel₁_eq_tsum mellin_zetaKernel₁_eq_tsum
 
 theorem completed_zeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
