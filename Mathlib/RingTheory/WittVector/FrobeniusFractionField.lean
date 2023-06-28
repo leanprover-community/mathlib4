@@ -86,7 +86,8 @@ theorem succNthDefiningPoly_degree [IsDomain k] (n : ℕ) (a₁ a₂ : 𝕎 k) (
     rw [degree_mul, degree_C]
     · simp only [Nat.cast_withBot, add_zero, degree_X, degree_pow, Nat.smul_one_eq_coe]
     · exact pow_ne_zero _ ha₁
-  have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1))).degree = (p : WithBot ℕ) := by
+  have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1))).degree =
+      (p : WithBot ℕ) := by
     rw [degree_sub_eq_left_of_degree_lt, this]
     rw [this, degree_mul, degree_C, degree_X, add_zero]
     · exact_mod_cast hp.out.one_lt
@@ -249,29 +250,33 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     let b : 𝕎 k := frobeniusRotation p hr' hq'
     IsFractionRing.fieldEquivOfRingEquiv (frobeniusEquiv p k)
           (algebraMap (𝕎 k) (FractionRing (𝕎 k)) b) *
-        Localization.mk (↑p ^ m * r') ⟨↑p ^ n * q', hq⟩ =
-      ↑p ^ (m - n : ℤ) * algebraMap (𝕎 k) (FractionRing (𝕎 k)) b := by
+        Localization.mk ((p : 𝕎 k) ^ m * r') ⟨(p : 𝕎 k) ^ n * q', hq⟩ =
+      (p : Localization (nonZeroDivisors (𝕎 k))) ^ (m - n : ℤ) *
+        algebraMap (𝕎 k) (FractionRing (𝕎 k)) b := by
   intro b
-  have key : WittVector.frobenius b * p ^ m * r' * p ^ n = p ^ m * b * (p ^ n * q') := by
-    have H := congr_arg (fun x : 𝕎 k => x * p ^ m * p ^ n) (frobenius_frobenius_rotation p hr' hq')
+  have key : WittVector.frobenius b * (p : 𝕎 k) ^ m * r' * (p : 𝕎 k) ^ n =
+      (p : 𝕎 k) ^ m * b * ((p : 𝕎 k) ^ n * q') := by
+    have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
+      (frobenius_frobeniusRotation p hr' hq')
     dsimp at H
     refine' (Eq.trans _ H).trans _ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne.def, map_zero] using
-      (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).Ne hq'''
-  rw [zpow_sub₀ (fraction_ring.p_nonzero p k)]
-  field_simp [fraction_ring.p_nonzero p k]
+      (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
+  rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
+  field_simp [FractionRing.p_nonzero p k]
   simp only [IsFractionRing.fieldEquivOfRingEquiv, IsLocalization.ringEquivOfRingEquiv_eq,
     RingEquiv.coe_ofBijective]
   convert congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
-  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, frobenius_equiv_apply]
+  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, frobeniusEquiv_apply]
     ring
   · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast]
 #align witt_vector.exists_frobenius_solution_fraction_ring_aux WittVector.exists_frobenius_solution_fractionRing_aux
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
-    ∃ (b : FractionRing (𝕎 k)) (hb : b ≠ 0) (m : ℤ), φ b * a = p ^ m * b := by
+    ∃ (b : FractionRing (𝕎 k)) (hb : b ≠ 0) (m : ℤ),
+      φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
   refine' Localization.induction_on a _
   rintro ⟨r, q, hq⟩ hrq
@@ -279,13 +284,12 @@ theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha :
   have hr0 : r ≠ 0 := fun h => hrq (by simp [h])
   obtain ⟨m, r', hr', rfl⟩ := exists_eq_pow_p_mul r hr0
   obtain ⟨n, q', hq', rfl⟩ := exists_eq_pow_p_mul q hq0
-  let b := frobenius_rotation p hr' hq'
-  refine' ⟨algebraMap (𝕎 k) _ b, _, m - n, _⟩
-  ·
-    simpa only [map_zero] using
-      (IsFractionRing.injective (WittVector p k) (FractionRing (WittVector p k))).Ne
-        (frobenius_rotation_nonzero p hr' hq')
-  exact exists_frobenius_solution_fraction_ring_aux p m n r' q' hr' hq' hq
+  let b := frobeniusRotation p hr' hq'
+  refine' ⟨algebraMap (𝕎 k) (FractionRing (𝕎 k)) b, _, m - n, _⟩
+  · simpa only [map_zero] using
+      (IsFractionRing.injective (WittVector p k) (FractionRing (WittVector p k))).ne
+        (frobeniusRotation_nonzero p hr' hq')
+  exact exists_frobenius_solution_fractionRing_aux p m n r' q' hr' hq' hq
 #align witt_vector.exists_frobenius_solution_fraction_ring WittVector.exists_frobenius_solution_fractionRing
 
 end IsAlgClosed
