@@ -15,18 +15,18 @@ import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`
 
-The goal of this file is to prove `witt_vector.exists_frobenius_solution_fraction_ring`,
+The goal of this file is to prove `WittVector.exists_frobenius_solution_fractionRing`,
 which says that for an algebraically closed field `k` of characteristic `p` and `a, b` in the
 field of fractions of Witt vectors over `k`,
 there is a solution `b` to the equation `φ b * a = p ^ m * b`, where `φ` is the Frobenius map.
 
 Most of this file builds up the equivalent theorem over `𝕎 k` directly,
 moving to the field of fractions at the end.
-See `witt_vector.frobenius_rotation` and its specification.
+See `WittVector.frobeniusRotation` and its specification.
 
 The construction proceeds by recursively defining a sequence of coefficients as solutions to a
 polynomial equation in `k`. We must define these as generic polynomials using Witt vector API
-(`witt_vector.witt_mul`, `witt_polynomial`) to show that they satisfy the desired equation.
+(`WittVector.wittMul`, `wittPolynomial`) to show that they satisfy the desired equation.
 
 Preliminary work is done in the dependency `ring_theory.witt_vector.mul_coeff`
 to isolate the `n+1`st coefficients of `x` and `y` in the `n+1`st coefficient of `x*y`.
@@ -199,7 +199,7 @@ section IsAlgClosed
 
 variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
 
-/-- Recursively defines the sequence of coefficients for `witt_vector.frobenius_rotation`.
+/-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
 -/
 noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
