@@ -150,8 +150,13 @@ theorem birthday_add : ∀ x y : PGame.{u}, (x + y).birthday = x.birthday ♯ y.
     rw [birthday_def, nadd_def]
     -- Porting note: `simp` doesn't apply
     erw [lsub_sum, lsub_sum]
-    simp only [birthday_add, lsub_sum, mk_add_moveLeft_inl, moveLeft_mk, mk_add_moveLeft_inr,
+    simp only [lsub_sum, mk_add_moveLeft_inl, moveLeft_mk, mk_add_moveLeft_inr,
       mk_add_moveRight_inl, moveRight_mk, mk_add_moveRight_inr]
+    -- Porting note: `simp only [birthday_add]` caused problems in `birthday_add`. Use a workaround.
+    conv_lhs => left; left; right; intro a; rw [birthday_add (xL a) ⟨yl, yr, yL, yR⟩]
+    conv_lhs => left; right; right; intro b; rw [birthday_add ⟨xl, xr, xL, xR⟩ (yL b)]
+    conv_lhs => right; left; right; intro a; rw [birthday_add (xR a) ⟨yl, yr, yL, yR⟩]
+    conv_lhs => right; right; right; intro b; rw [birthday_add ⟨xl, xr, xL, xR⟩ (yR b)]
     rw [max_max_max_comm]
     congr <;> apply le_antisymm
     any_goals
