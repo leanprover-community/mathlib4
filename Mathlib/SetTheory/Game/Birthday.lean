@@ -123,7 +123,7 @@ theorem toPGame_birthday (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
   rw [toPGame_def, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
-  -- nth_rw 1 [← lsub_typein o]
+  -- Porting note: was `nth_rw 1 [← lsub_typein o]`
   conv_rhs => rw [← lsub_typein o]
   congr with x
   exact IH _ (typein_lt_self x)
