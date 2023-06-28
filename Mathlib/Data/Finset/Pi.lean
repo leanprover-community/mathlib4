@@ -51,7 +51,7 @@ theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi 
 @[simp]
 theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
-  Multiset.mem_pi _ _ _
+  Multiset.mem_pi _ _
 #align finset.mem_pi Finset.mem_pi
 
 /-- Given a function `f` defined on a finset `s`, define a new function on the finset `s ∪ {a}`,
@@ -60,7 +60,7 @@ equal to `f` on `s` and sending `a` to a given value `b`. This function is denot
 anyway. -/
 def Pi.cons (s : Finset α) (a : α) (b : δ a) (f : ∀ a, a ∈ s → δ a) (a' : α) (h : a' ∈ insert a s) :
     δ a' :=
-  Multiset.Pi.cons s.1 a b f _ (Multiset.mem_cons.2 <| mem_insert.symm.2 h)
+  Multiset.Pi.cons b f _ (Multiset.mem_cons.2 <| mem_insert.symm.2 h)
 #align finset.pi.cons Finset.Pi.cons
 
 @[simp]
@@ -104,7 +104,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
               ((t a).1.bind fun b =>
                 dedup <|
                   (Multiset.pi s.1 fun a : α => (t a).val).map fun f a' h' =>
-                    Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
+                    Multiset.Pi.cons b f a' (h ▸ h'))))
       _ (insert_val_of_not_mem ha)
   subst s'; rw [pi_cons]
   congr ; funext b
