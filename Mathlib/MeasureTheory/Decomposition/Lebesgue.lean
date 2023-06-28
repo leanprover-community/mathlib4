@@ -561,7 +561,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         ⟨0, 0, zero_mem_measurableLE, by simp⟩ (OrderTop.bddAbove _)
     choose g _ hg₂ f hf₁ hf₂ using h
     -- we set `ξ` to be the supremum of an increasing sequence of functions obtained from above
-    set ξ := ⨆ (n) (k) (_hk : k ≤ n), f k with hξ
+    set ξ := ⨆ (n) (k) (_ : k ≤ n), f k with hξ
     -- we see that `ξ` has the largest integral among all functions in `measurableLE`
     have hξ₁ : sSup (measurableLEEval ν μ) = ∫⁻ a, ξ a ∂ν := by
       have :=
