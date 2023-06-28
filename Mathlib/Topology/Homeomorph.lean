@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 
 ! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -65,6 +65,8 @@ instance : EquivLike (α ≃ₜ β) α β where
   right_inv := fun h => h.right_inv
   coe_injective' := fun _ _ H _ => toEquiv_injective <| FunLike.ext' H
 
+instance : CoeFun (α ≃ₜ β) fun _ ↦ α → β := ⟨FunLike.coe⟩
+
 @[simp]
 theorem homeomorph_mk_coe (a : Equiv α β) (b c) : (Homeomorph.mk a b c : α → β) = a :=
   rfl
@@ -77,19 +79,15 @@ protected def symm (h : α ≃ₜ β) : β ≃ₜ α where
   toEquiv := h.toEquiv.symm
 #align homeomorph.symm Homeomorph.symm
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (h : α ≃ₜ β) : α → β :=
-  h
-#align homeomorph.simps.apply Homeomorph.Simps.apply
+@[simp] theorem symm_symm (h : α ≃ₜ β) : h.symm.symm = h := rfl
+#align homeomorph.symm_symm Homeomorph.symm_symm
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (h : α ≃ₜ β) : β → α :=
   h.symm
 #align homeomorph.simps.symm_apply Homeomorph.Simps.symm_apply
 
-initialize_simps_projections Homeomorph (toEquiv_toFun → apply, toEquiv_invFun → symm_apply,
-  -toEquiv)
+initialize_simps_projections Homeomorph (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem coe_toEquiv (h : α ≃ₜ β) : ⇑h.toEquiv = h :=
@@ -188,7 +186,7 @@ def changeInv (f : α ≃ₜ β) (g : β → α) (hg : Function.RightInverse g f
   { toFun := f
     invFun := g
     left_inv := by convert f.left_inv
-    right_inv := by convert f.right_inv
+    right_inv := by convert f.right_inv using 1
     continuous_toFun := f.continuous
     continuous_invFun := by convert f.symm.continuous }
 #align homeomorph.change_inv Homeomorph.changeInv
@@ -267,6 +265,28 @@ theorem isCompact_image {s : Set α} (h : α ≃ₜ β) : IsCompact (h '' s) ↔
 theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹' s) ↔ IsCompact s := by
   rw [← image_symm]; exact h.symm.isCompact_image
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
+
+@[simp]
+theorem isPreconnected_image {s : Set α} (h : α ≃ₜ β) :
+    IsPreconnected (h '' s) ↔ IsPreconnected s :=
+  ⟨fun hs ↦ by simpa only [image_symm, preimage_image]
+    using hs.image _ h.symm.continuous.continuousOn,
+    fun hs ↦ hs.image _ h.continuous.continuousOn⟩
+
+@[simp]
+theorem isPreconnected_preimage {s : Set β} (h : α ≃ₜ β) :
+    IsPreconnected (h ⁻¹' s) ↔ IsPreconnected s := by
+  rw [← image_symm, isPreconnected_image]
+
+@[simp]
+theorem isConnected_image {s : Set α} (h : α ≃ₜ β) :
+    IsConnected (h '' s) ↔ IsConnected s :=
+  nonempty_image_iff.and h.isPreconnected_image
+
+@[simp]
+theorem isConnected_preimage {s : Set β} (h : α ≃ₜ β) :
+    IsConnected (h ⁻¹' s) ↔ IsConnected s := by
+  rw [← image_symm, isConnected_image]
 
 @[simp]
 theorem comap_cocompact (h : α ≃ₜ β) : comap h (cocompact β) = cocompact α :=
@@ -391,7 +411,18 @@ theorem comap_nhds_eq (h : α ≃ₜ β) (y : β) : comap h (𝓝 y) = 𝓝 (h.s
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 #align homeomorph.comap_nhds_eq Homeomorph.comap_nhds_eq
 
-/-- If an bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
+/-- If the codomain of a homeomorphism is a locally connected space, then the domain is also
+a locally connected space. -/
+theorem locallyConnectedSpace [i : LocallyConnectedSpace β] (h : α ≃ₜ β) :
+    LocallyConnectedSpace α := by
+  have : ∀ x, (𝓝 x).HasBasis (fun s ↦ IsOpen s ∧ h x ∈ s ∧ IsConnected s)
+      (h.symm '' ·) := fun x ↦ by
+    rw [← h.symm_map_nhds_eq]
+    exact (i.1 _).map _
+  refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
+  exact hs.2.2.2.image _ h.symm.continuous.continuousOn
+
+/-- If a bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : α ≃ β) (h₁ : Continuous e) (h₂ : IsOpenMap e) : α ≃ₜ β where
   continuous_toFun := h₁
   continuous_invFun := by
@@ -450,8 +481,7 @@ theorem comp_isOpenMap_iff' (h : α ≃ₜ β) {f : β → γ} : IsOpenMap (f �
 #align homeomorph.comp_is_open_map_iff' Homeomorph.comp_isOpenMap_iff'
 
 /-- If two sets are equal, then they are homeomorphic. -/
-def setCongr {s t : Set α} (h : s = t) : s ≃ₜ t
-    where
+def setCongr {s t : Set α} (h : s = t) : s ≃ₜ t where
   continuous_toFun := continuous_inclusion h.subset
   continuous_invFun := continuous_inclusion h.symm.subset
   toEquiv := Equiv.setCongr h
@@ -512,15 +542,15 @@ def prodAssoc : (α × β) × γ ≃ₜ α × β × γ where
 
 /-- `α × {*}` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false }) apply]
-def prodPunit : α × PUnit ≃ₜ α where
+def prodPUnit : α × PUnit ≃ₜ α where
   toEquiv := Equiv.prodPUnit α
   continuous_toFun := continuous_fst
   continuous_invFun := continuous_id.prod_mk continuous_const
-#align homeomorph.prod_punit Homeomorph.prodPunit
+#align homeomorph.prod_punit Homeomorph.prodPUnit
 
 /-- `{*} × α` is homeomorphic to `α`. -/
 def punitProd : PUnit × α ≃ₜ α :=
-  (prodComm _ _).trans (prodPunit _)
+  (prodComm _ _).trans (prodPUnit _)
 #align homeomorph.punit_prod Homeomorph.punitProd
 
 @[simp] theorem coe_punitProd : ⇑(punitProd α) = Prod.snd := rfl
@@ -590,8 +620,7 @@ end Distrib
 
 /-- If `ι` has a unique element, then `ι → α` is homeomorphic to `α`. -/
 @[simps! (config := { fullyApplied := false })]
-def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α
-    where
+def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) ≃ₜ α where
   toEquiv := Equiv.funUnique ι α
   continuous_toFun := continuous_apply _
   continuous_invFun := continuous_pi fun _ => continuous_id
@@ -599,8 +628,7 @@ def funUnique (ι α : Type _) [Unique ι] [TopologicalSpace α] : (ι → α) �
 
 /-- Homeomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
 @[simps! (config := { fullyApplied := false })]
-def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1
-    where
+def piFinTwo.{u} (α : Fin 2 → Type u) [∀ i, TopologicalSpace (α i)] : (∀ i, α i) ≃ₜ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
@@ -677,6 +705,8 @@ def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
       exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
 
+variable (β)
+
 /-- A product of copies of a topological space can be split as the binary product of one copy and
   the product of all the remaining copies. -/
 @[simps!]
@@ -712,7 +742,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace α] [T2Space β] {f
 /-- Continuous equivalences from a compact space to a T2 space are homeomorphisms.
 
 This is not true when T2 is weakened to T1
-(see `continuous.homeo_of_equiv_compact_to_t2.t1_counterexample`). -/
+(see `Continuous.homeoOfEquivCompactToT2.t1_counterexample`). -/
 @[simps toEquiv] -- porting note: was `@[simps]`
 def homeoOfEquivCompactToT2 [CompactSpace α] [T2Space β] {f : α ≃ β} (hf : Continuous f) : α ≃ₜ β :=
   { f with

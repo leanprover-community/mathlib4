@@ -132,9 +132,7 @@ theorem map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : Lis
 
 theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
-  induction' ts with a ts ih <;> [rfl,
-    · simp [← ih]
-      rfl]
+  induction' ts with a ts ih <;> [rfl; (simp [← ih]; rfl)]
 #align list.map_map_permutations'_aux List.map_map_permutations'Aux
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
@@ -248,7 +246,7 @@ theorem map_permutations (f : α → β) (ts : List α) :
 
 theorem map_permutations' (f : α → β) (ts : List α) :
     map (map f) (permutations' ts) = permutations' (map f ts) := by
-  induction' ts with t ts ih <;> [rfl, simp [← ih, map_bind, ← map_map_permutations'Aux, bind_map]]
+  induction' ts with t ts ih <;> [rfl; simp [← ih, map_bind, ← map_map_permutations'Aux, bind_map]]
 #align list.map_permutations' List.map_permutations'
 
 theorem permutationsAux_append (is is' ts : List α) :

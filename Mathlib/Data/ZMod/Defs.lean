@@ -38,14 +38,14 @@ namespace Fin
 ## Ring structure on `Fin n`
 
 We define a commutative ring structure on `Fin n`.
-Afterwords, when we define `ZMod n` in terms of `Fin n`, we use these definitions
+Afterwards, when we define `ZMod n` in terms of `Fin n`, we use these definitions
 to register the ring structure on `ZMod n` as type class instance.
 -/
 
 
 open Nat.ModEq Int
 
-/-- Multiplicative commutative semigroup structure on `fin n`. -/
+/-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance (n : ℕ) : CommSemigroup (Fin n) :=
   { inferInstanceAs (Mul (Fin n)) with
     mul_assoc := fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
@@ -111,7 +111,7 @@ instance infinite : Infinite (ZMod 0) :=
 theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
   | zero => exact (not_finite (ZMod 0)).elim
-  | succ n => convert Fintype.card_fin (n + 1); apply Subsingleton.elim
+  | succ n => convert Fintype.card_fin (n + 1) using 2
 #align zmod.card ZMod.card
 
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the

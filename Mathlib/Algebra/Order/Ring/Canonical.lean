@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 Ported by: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.order.ring.canonical
-! leanprover-community/mathlib commit a1b3559280c8e09220759127b400d1b02d7ac071
+! leanprover-community/mathlib commit 824f9ae93a4f5174d2ea948e2d75843dd83447bb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Sub.Canonical
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
-# Canoncially ordered rings and semirings.
+# Canonically ordered rings and semirings.
 
 * `CanonicallyOrderedCommSemiring`
   - `CanonicallyOrderedAddMonoid` & multiplication & `*` respects `≤` & no zero divisors
@@ -101,6 +101,11 @@ instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·
   rw [mul_add]
   apply self_le_add_right
 #align canonically_ordered_comm_semiring.to_covariant_mul_le CanonicallyOrderedCommSemiring.toCovariantClassMulLE
+
+-- see Note [lower instance priority]
+instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
+  mul_le_mul_left := fun _ _ => mul_le_mul_left'
+#align canonically_ordered_comm_semiring.to_ordered_comm_monoid CanonicallyOrderedCommSemiring.toOrderedCommMonoid
 
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=

@@ -54,7 +54,7 @@ theorem dvd_or_dvd (hp : Prime p) {a b : α} (h : p ∣ a * b) : p ∣ a ∨ p �
 theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction' n with n ih
   · rw [pow_zero] at h
-    have := isUnit_of_dvd_one  h
+    have := isUnit_of_dvd_one h
     have := not_unit hp
     contradiction
   rw [pow_succ] at h
@@ -86,7 +86,7 @@ theorem comap_prime (hinv : ∀ a, g (f a : β) = a) (hp : Prime (f p)) : Prime 
               simp).imp
           _ _ <;>
       · intro h
-        convert ← map_dvd g h; funext c; rw [hinv, hinv]⟩
+        convert ← map_dvd g h <;> apply hinv⟩
 #align comap_prime comap_prime
 
 theorem MulEquiv.prime_iff (e : α ≃* β) : Prime p ↔ Prime (e p) :=
@@ -152,7 +152,7 @@ theorem prime_pow_succ_dvd_mul {α : Type _} [CancelCommMonoidWithZero α] {p x 
     rw [pow_one]
     rw [pow_one] at hxy
     exact (h.dvd_or_dvd hxy).resolve_right hy
-  rw [pow_succ] at hxy⊢
+  rw [pow_succ] at hxy ⊢
   obtain ⟨x', rfl⟩ := (h.dvd_or_dvd (dvd_of_mul_right_dvd hxy)).resolve_right hy
   rw [mul_assoc] at hxy
   exact mul_dvd_mul_left p (ih ((mul_dvd_mul_iff_left h.ne_zero).mp hxy))
@@ -225,7 +225,7 @@ theorem irreducible_or_factor {α} [Monoid α] (x : α) (h : ¬IsUnit x) :
     Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
   haveI := Classical.dec
   refine' or_iff_not_imp_right.2 fun H => _
-  simp [h, irreducible_iff] at H⊢
+  simp [h, irreducible_iff] at H ⊢
   refine' fun a b h => by_contradiction fun o => _
   simp [not_or] at o
   exact H _ o.1 _ o.2 h.symm
@@ -715,13 +715,13 @@ variable {R : Type _} [CancelCommMonoidWithZero R] [Unique Rˣ] {p₁ p₂ : R} 
 
 theorem eq_of_prime_pow_eq (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁)
     (h : p₁ ^ k₁ = p₂ ^ k₂) : p₁ = p₂ := by
-  rw [← associated_iff_eq] at h⊢
+  rw [← associated_iff_eq] at h ⊢
   apply h.of_pow_associated_of_prime hp₁ hp₂ hk₁
 #align eq_of_prime_pow_eq eq_of_prime_pow_eq
 
 theorem eq_of_prime_pow_eq' (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₂)
     (h : p₁ ^ k₁ = p₂ ^ k₂) : p₁ = p₂ := by
-  rw [← associated_iff_eq] at h⊢
+  rw [← associated_iff_eq] at h ⊢
   apply h.of_pow_associated_of_prime' hp₁ hp₂ hk₁
 #align eq_of_prime_pow_eq' eq_of_prime_pow_eq'
 
@@ -895,7 +895,6 @@ theorem isUnit_mk {a : α} : IsUnit (Associates.mk a) ↔ IsUnit a :=
     IsUnit (Associates.mk a) ↔ a ~ᵤ 1 :=
     by rw [isUnit_iff_eq_one, one_eq_mk_one, mk_eq_mk_iff_associated]
     _ ↔ IsUnit a := associated_one_iff_isUnit
-
 #align associates.is_unit_mk Associates.isUnit_mk
 
 section Order
@@ -926,8 +925,7 @@ end Order
 theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a ∣ b
   | ⟨c', hc'⟩ =>
     let step : ∀ (c : α),
-      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b :=
-    by
+      Associates.mk b = Associates.mk a * Quotient.mk (Associated.setoid α) c → a ∣ b := by
       intro c hc
       let ⟨d, hd⟩ := (Quotient.exact hc).symm
       exact ⟨↑d * c,
@@ -1232,5 +1230,4 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
 
 end CancelCommMonoidWithZero
 
--- Porting note: `assert_not_exists` has not been ported yet.
--- assert_not_exists multiset
+assert_not_exists Multiset

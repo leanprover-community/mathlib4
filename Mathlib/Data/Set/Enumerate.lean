@@ -10,7 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.SwapVar
 
 /-!
 # Set enumeration
@@ -76,7 +75,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
-  /- porting note : The `rcase, on_goal, all_goals` has been used instead of 
+  /- porting note : The `rcase, on_goal, all_goals` has been used instead of
      the not-yet-ported `wlog` -/
   rcases le_total n₁ n₂ with (hn|hn)
   on_goal 2 => swap_var n₁ ↔ n₂, h₁ ↔ h₂

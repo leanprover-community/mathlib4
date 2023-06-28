@@ -49,7 +49,6 @@ theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   simpa only [dedup, forall_mem_ne, not_not] using this
   intros x y z xz
   exact not_and_or.1 <| mt (fun h ↦ h.1.trans h.2) xz
-
 #align list.mem_dedup List.mem_dedup
 
 @[simp]
@@ -93,10 +92,10 @@ theorem dedup_idempotent {l : List α} : dedup (dedup l) = dedup l :=
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
   induction' l₁ with a l₁ IH; · rfl
   simp only [instUnionList, cons_union] at *
-  rw [← IH]
-  show dedup (a :: (l₁ ++ l₂)) = List.insert a (dedup (l₁ ++ l₂))
-  by_cases a ∈ dedup (l₁ ++ l₂) <;> [rw [dedup_cons_of_mem' h, insert_of_mem h],
-    rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]]
+  rw [← IH, cons_append]
+  by_cases h : a ∈ dedup (l₁ ++ l₂)
+  · rw [dedup_cons_of_mem' h, insert_of_mem h]
+  · rw [dedup_cons_of_not_mem' h, insert_of_not_mem h]
 #align list.dedup_append List.dedup_append
 
 theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = [x]
@@ -129,7 +128,7 @@ theorem sum_map_count_dedup_filter_eq_countp (p : α → Bool) (l : List α) :
       · refine' _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h]) _
         simp [hp, count_dedup]
       · refine' _root_.trans (List.sum_eq_zero fun n hn => _) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map'.1 hn
+        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
             and_false, false_and] at ha'

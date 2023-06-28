@@ -129,7 +129,6 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
         (fun a' _ H => by simp only [Multiset.count_singleton, if_false, H.symm, mul_zero]) fun H =>
         by simp only [not_mem_support_iff.1 H, zero_mul]
     _ = f a := by rw [Multiset.count_singleton_self, mul_one]
-
 #align finsupp.count_to_multiset Finsupp.count_toMultiset
 
 @[simp]
@@ -233,6 +232,11 @@ variable (ι)
 theorem lt_wf : WellFounded (@LT.lt (ι →₀ ℕ) _) :=
   Subrelation.wf (sum_id_lt_of_lt _ _) <| InvImage.wf _ Nat.lt_wfRel.2
 #align finsupp.lt_wf Finsupp.lt_wf
+
+-- TODO: generalize to `[WellFoundedRelation α] → WellFoundedRelation (ι →₀ α)`
+instance : WellFoundedRelation (ι →₀ ℕ) where
+  rel := (· < ·)
+  wf := lt_wf _
 
 end Finsupp
 

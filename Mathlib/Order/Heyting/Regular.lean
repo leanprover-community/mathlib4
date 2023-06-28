@@ -13,7 +13,7 @@ import Mathlib.Order.GaloisConnection
 /-!
 # Heyting regular elements
 
-This file defines Heyting regular elements, elements of an Heyting algebra that are their own double
+This file defines Heyting regular elements, elements of a Heyting algebra that are their own double
 complement, and proves that they form a boolean algebra.
 
 From a logic standpoint, this means that we can perform classical logic within intuitionistic logic
@@ -41,7 +41,7 @@ section HasCompl
 
 variable [HasCompl α] {a : α}
 
-/-- An element of an Heyting algebra is regular if its double complement is itself. -/
+/-- An element of a Heyting algebra is regular if its double complement is itself. -/
 def IsRegular (a : α) : Prop :=
   aᶜᶜ = a
 #align heyting.is_regular Heyting.IsRegular
@@ -136,7 +136,7 @@ instance top : Top (Regular α) :=
 instance bot : Bot (Regular α) :=
   ⟨⟨⊥, isRegular_bot⟩⟩
 
-instance hasInf : HasInf (Regular α) :=
+instance inf : Inf (Regular α) :=
   ⟨fun a b => ⟨a ⊓ b, a.2.inf b.2⟩⟩
 
 instance himp : HImp (Regular α) :=

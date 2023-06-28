@@ -136,12 +136,12 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
 
 /-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
-  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_bunionᵢ a.2 b.2⟩⟩
+  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
 #align semiquot.bind Semiquot.bind
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) : b ∈ bind q f ↔ ∃ a ∈ q, b ∈ f a :=
-  by simp_rw [← exists_prop]; exact Set.mem_unionᵢ₂
+  by simp_rw [← exists_prop]; exact Set.mem_iUnion₂
 #align semiquot.mem_bind Semiquot.mem_bind
 
 instance : Monad Semiquot where
@@ -212,7 +212,7 @@ def IsPure (q : Semiquot α) : Prop :=
   ∀ (a) (_ : a ∈ q) (b) (_ : b ∈ q), a = b
 #align semiquot.is_pure Semiquot.IsPure
 
-/-- Extract the value from a `IsPure` semiquotient. -/
+/-- Extract the value from an `IsPure` semiquotient. -/
 def get (q : Semiquot α) (h : q.IsPure) : α :=
   liftOn q id h
 #align semiquot.get Semiquot.get

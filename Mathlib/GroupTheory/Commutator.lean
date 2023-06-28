@@ -109,7 +109,7 @@ theorem commutator_eq_bot_iff_le_centralizer : ⁅H₁, H₂⁆ = ⊥ ↔ H₁ �
 theorem commutator_commutator_eq_bot_of_rotate (h1 : ⁅⁅H₂, H₃⁆, H₁⁆ = ⊥) (h2 : ⁅⁅H₃, H₁⁆, H₂⁆ = ⊥) :
     ⁅⁅H₁, H₂⁆, H₃⁆ = ⊥ := by
   simp_rw [commutator_eq_bot_iff_le_centralizer, commutator_le,
-    mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2⊢
+    mem_centralizer_iff_commutator_eq_one, ← commutatorElement_def] at h1 h2 ⊢
   intro x hx y hy z hz
   trans x * z * ⁅y, ⁅z⁻¹, x⁻¹⁆⁆⁻¹ * z⁻¹ * y * ⁅x⁻¹, ⁅y⁻¹, z⁆⁆⁻¹ * y⁻¹ * x⁻¹
   · group
@@ -224,9 +224,8 @@ theorem commutator_pi_pi_le {η : Type _} {Gs : η → Type _} [∀ i, Group (Gs
 /-- The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 theorem commutator_pi_pi_of_finite {η : Type _} [Finite η] {Gs : η → Type _} [∀ i, Group (Gs i)]
-    (H K : ∀ i, Subgroup (Gs i)) :
-    ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ = Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ :=
-  by
+    (H K : ∀ i, Subgroup (Gs i)) : ⁅Subgroup.pi Set.univ H, Subgroup.pi Set.univ K⁆ =
+    Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by
   classical
     apply le_antisymm (commutator_pi_pi_le H K)
     · rw [pi_le_iff]

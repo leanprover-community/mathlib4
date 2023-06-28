@@ -37,23 +37,23 @@ def Set (α : Type u) := α → Prop
 #align set Set
 
 def setOf {α : Type u} (p : α → Prop) : Set α :=
-p
+  p
 #align set_of setOf
 
 namespace Set
 
 /-- Membership in a set -/
 protected def Mem (a : α) (s : Set α) : Prop :=
-s a
+  s a
 
 instance : Membership α (Set α) :=
-⟨Set.Mem⟩
+  ⟨Set.Mem⟩
 
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
-funext (fun x ↦ propext (h x))
+  funext (fun x ↦ propext (h x))
 
 protected def Subset (s₁ s₂ : Set α) :=
-∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
+  ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
 
 /-- Porting note: we introduce `≤` before `⊆` to help the unifier when applying lattice theorems
 to subset hypotheses. -/
@@ -64,10 +64,10 @@ instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
 instance : EmptyCollection (Set α) :=
-⟨λ _ => False⟩
+  ⟨λ _ => False⟩
 
 open Std.ExtendedBinder in
-syntax "{ " extBinder " | " term " }" : term
+syntax "{" extBinder " | " term "}" : term
 
 macro_rules
   | `({ $x:ident | $p }) => `(setOf fun $x:ident ↦ $p)
@@ -78,57 +78,45 @@ macro_rules
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun $x:ident ↦ $p) => `({ $x:ident | $p })
-  | `($_ fun $x:ident : $ty:term ↦ $p) => `({ $x:ident : $ty:term | $p })
+  | `($_ fun ($x:ident : $ty:term) ↦ $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 open Std.ExtendedBinder in
-macro (priority := low) "{ " t:term " | " bs:extBinders " }" : term =>
-  `({ x | ∃ᵉ $bs:extBinders, $t = x })
+macro (priority := low) "{" t:term " | " bs:extBinders "}" : term =>
+  `({x | ∃ᵉ $bs:extBinders, $t = x})
 
 def univ : Set α := {_a | True}
 #align set.univ Set.univ
 
-protected def insert (a : α) (s : Set α) : Set α :=
-{b | b = a ∨ b ∈ s}
+protected def insert (a : α) (s : Set α) : Set α := {b | b = a ∨ b ∈ s}
 
 instance : Insert α (Set α) := ⟨Set.insert⟩
 
-protected def singleton (a : α) : Set α :=
-{b | b = a}
+protected def singleton (a : α) : Set α := {b | b = a}
 
 instance : Singleton α (Set α) := ⟨Set.singleton⟩
 
-protected def union (s₁ s₂ : Set α) : Set α :=
-{a | a ∈ s₁ ∨ a ∈ s₂}
+protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
-instance : Union (Set α) :=
-⟨Set.union⟩
+instance : Union (Set α) := ⟨Set.union⟩
 
-protected def inter (s₁ s₂ : Set α) : Set α :=
-{a | a ∈ s₁ ∧ a ∈ s₂}
+protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
-instance : Inter (Set α) :=
-⟨Set.inter⟩
+instance : Inter (Set α) := ⟨Set.inter⟩
 
-protected def compl (s : Set α) : Set α :=
-{a | a ∉ s}
+protected def compl (s : Set α) : Set α := {a | a ∉ s}
 
-protected def diff (s t : Set α) : Set α :=
-{a ∈ s | a ∉ t}
+protected def diff (s t : Set α) : Set α := {a ∈ s | a ∉ t}
 
-instance : SDiff (Set α) :=
-⟨Set.diff⟩
+instance : SDiff (Set α) := ⟨Set.diff⟩
 
-def powerset (s : Set α) : Set (Set α) :=
-{t | t ⊆ s}
+def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
 prefix:100 "𝒫" => powerset
 
-def image (f : α → β) (s : Set α) : Set β :=
-  { f a | a ∈ s }
+def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
-instance : Functor Set :=
-{ map := @Set.image }
+instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
   id_map _ := funext fun _ ↦ propext ⟨λ ⟨_, sb, rfl⟩ => sb, λ sb => ⟨_, sb, rfl⟩⟩

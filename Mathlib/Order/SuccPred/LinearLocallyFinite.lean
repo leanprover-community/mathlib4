@@ -80,7 +80,7 @@ theorem le_succFn (i : ι) : i ≤ succFn i := by
 
 theorem isGLB_Ioc_of_isGLB_Ioi {i j k : ι} (hij_lt : i < j) (h : IsGLB (Set.Ioi i) k) :
     IsGLB (Set.Ioc i j) k := by
-  simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h⊢
+  simp_rw [IsGLB, IsGreatest, mem_upperBounds, mem_lowerBounds] at h ⊢
   refine' ⟨fun x hx ↦ h.1 x hx.1, fun x hx ↦ h.2 x _⟩
   intro y hy
   cases' le_or_lt y j with h_le h_lt
@@ -133,7 +133,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
-    cases hij <;> rename_i hij
+    cases' hij with hij hij
     swap
     · refine' ⟨0, _⟩
       simpa only [Function.iterate_zero, id.def] using hij
@@ -160,7 +160,7 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 #align linear_locally_finite_order.is_succ_archimedean LinearLocallyFiniteOrder.isSuccArchimedean
 
-instance (priority := 100) LinearOrder.pred_archimedean_of_succ_archimedean [SuccOrder ι]
+instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [SuccOrder ι]
     [PredOrder ι] [IsSuccArchimedean ι] : IsPredArchimedean ι where
   exists_pred_iterate_of_le := by
     intro i j hij
@@ -180,7 +180,7 @@ instance (priority := 100) LinearOrder.pred_archimedean_of_succ_archimedean [Suc
         exact le_succ _
       · rw [hn_eq]
         exact hn_lt_ne _ (Nat.lt_succ_self n)
-#align linear_order.pred_archimedean_of_succ_archimedean LinearOrder.pred_archimedean_of_succ_archimedean
+#align linear_order.pred_archimedean_of_succ_archimedean LinearOrder.isPredArchimedean_of_isSuccArchimedean
 
 section toZ
 
@@ -268,9 +268,8 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax ((succ^[n]) i0)) :
 
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin ((pred^[n]) i0)) :
     toZ i0 ((pred^[n]) i0) = -n := by
-  cases n
+  cases' n with n n
   · simp only [Nat.zero_eq, Function.iterate_zero, id.def, toZ_of_eq, Nat.cast_zero, neg_zero]
-  rename_i n
   have : (pred^[n.succ]) i0 < i0 := by
     refine' lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn _
     have h_pred_eq_pred : (pred^[n.succ]) i0 = (pred^[0]) i0 := by
@@ -413,10 +412,10 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
   toFun i := (toZ ⊥ i).toNat
   invFun n := (succ^[n]) ⊥
   left_inv i := by
-    simp_rw [if_pos (toZ_nonneg bot_le)]
+    dsimp only
     exact iterate_succ_toZ i bot_le
   right_inv n := by
-    simp_rw [if_pos bot_le]
+    dsimp only
     rw [toZ_iterate_succ]
     exact Int.toNat_coe_nat n
   map_rel_iff' := by

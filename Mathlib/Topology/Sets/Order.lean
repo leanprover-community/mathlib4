@@ -42,7 +42,7 @@ instance : SetLike (ClopenUpperSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 
-initialize_simps_projections ClopenUpperSet (toClopens_carrier → coe)
+initialize_simps_projections ClopenUpperSet (carrier → coe)
 
 theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
@@ -52,7 +52,7 @@ theorem clopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
   s.clopen'
 #align clopen_upper_set.clopen ClopenUpperSet.clopen
 
-/-- Reinterpret a upper clopen as an upper set. -/
+/-- Reinterpret an upper clopen as an upper set. -/
 @[simps]
 def toUpperSet (s : ClopenUpperSet α) : UpperSet α :=
   ⟨s, s.upper⟩
@@ -68,10 +68,10 @@ theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 #align clopen_upper_set.coe_mk ClopenUpperSet.coe_mk
 
-instance : HasSup (ClopenUpperSet α) :=
+instance : Sup (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊔ t.toClopens, s.upper.union t.upper⟩⟩
 
-instance : HasInf (ClopenUpperSet α) :=
+instance : Inf (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊓ t.toClopens, s.upper.inter t.upper⟩⟩
 
 instance : Top (ClopenUpperSet α) :=
@@ -110,4 +110,3 @@ instance : Inhabited (ClopenUpperSet α) :=
   ⟨⊥⟩
 
 end ClopenUpperSet
-

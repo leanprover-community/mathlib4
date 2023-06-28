@@ -10,6 +10,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Invertible
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.
@@ -41,3 +42,7 @@ theorem invOf_lt_zero [Invertible a] : ⅟ a < 0 ↔ a < 0 := by simp only [← 
 theorem invOf_le_one [Invertible a] (h : 1 ≤ a) : ⅟ a ≤ 1 :=
   mul_invOf_self a ▸ le_mul_of_one_le_left (invOf_nonneg.2 <| zero_le_one.trans h) h
 #align inv_of_le_one invOf_le_one
+
+theorem pos_invOf_of_invertible_cast [Nontrivial α] (n : ℕ)
+    [Invertible (n : α)] : 0 < ⅟(n : α) :=
+  invOf_pos.2 <| Nat.cast_pos.2 <| pos_of_invertible_cast (α := α) n

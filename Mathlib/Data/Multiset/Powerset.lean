@@ -125,7 +125,7 @@ theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
 #align multiset.card_powerset Multiset.card_powerset
 
 theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l := by
-  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, mem_map'] at h
+  rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, List.mem_map] at h
   simp only [Prod_map, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists _ _ _ h)
@@ -133,7 +133,7 @@ theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux 
 
 theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux' l)) :
     x.1 + x.2 = ↑l := by
-  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, mem_map'] at h
+  rw [revzip, powersetAux', ← map_reverse, zip_map, ← revzip, List.mem_map] at h
   simp only [Prod_map, Prod.exists] at h
   rcases h with ⟨l₁, l₂, h, rfl, rfl⟩
   exact Quot.sound (revzip_sublists' _ _ _ h)

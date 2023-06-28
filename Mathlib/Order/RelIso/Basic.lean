@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module order.rel_iso.basic
-! leanprover-community/mathlib commit 76171581280d5b5d1e2d1f4f37e5420357bdc636
+! leanprover-community/mathlib commit f29120f82f6e24a6f6579896dfa2de6769fec962
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -111,9 +111,6 @@ instance : RelHomClass (r →r s) r s where
     congr
   map_rel := map_rel'
 
-/-- See Note [custom simps projection] -/
-def Simps.apply (f : r →r s) : α → β := f
-
 initialize_simps_projections RelHom (toFun → apply)
 
 protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
@@ -195,7 +192,6 @@ theorem Surjective.wellFounded_iff {f : α → β} (hf : Surjective f)
     (by
       refine RelHomClass.wellFounded (RelHom.mk ?_ ?_ : s →r r)
       · exact Classical.choose hf.hasRightInverse
-
       intro a b h
       apply o.2
       convert h
@@ -236,26 +232,37 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
+--Porting note: removed
 -- see Note [function coercion]
-instance : CoeFun (r ↪r s) fun _ => α → β :=
-  ⟨fun o => o.toEmbedding⟩
+-- instance : CoeFun (r ↪r s) fun _ => α → β :=
+--   ⟨fun o => o.toEmbedding⟩
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
-  coe := fun x => x
+  coe := fun x => x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
     congr
   map_rel f a b := Iff.mpr (map_rel_iff' f)
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+
+/-- See Note [custom simps projection]. We specify this explicitly because we have a coercion not
+given by the `FunLike` instance. Todo: remove that instance?
+-/
 def Simps.apply (h : r ↪r s) : α → β :=
   h
-#align rel_embedding.simps.apply RelEmbedding.Simps.apply
 
-initialize_simps_projections RelEmbedding (toEmbedding_toFun → apply, -toEmbedding)
+initialize_simps_projections RelEmbedding (toFun → apply)
+
+@[simp]
+theorem coe_toEmbedding : ((f : r ↪r s).toEmbedding : α → β)  = f :=
+  rfl
+#align rel_embedding.coe_fn_to_embedding RelEmbedding.coe_toEmbedding
+
+@[simp]
+theorem coe_toRelHom : ((f : r ↪r s).toRelHom : α → β) = f :=
+  rfl
 
 theorem injective (f : r ↪r s) : Injective f :=
   f.inj'
@@ -269,8 +276,10 @@ theorem map_rel_iff (f : r ↪r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align rel_embedding.map_rel_iff RelEmbedding.map_rel_iff
 
-#noalign coe_fn_mk
-#noalign coe_fn_to_embedding
+@[simp]
+theorem coe_mk : ⇑(⟨f, h⟩ : r ↪r s) = f :=
+  rfl
+#align rel_embedding.coe_fn_mk RelEmbedding.coe_mk
 
 /-- The map `coe_fn : (r ↪r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun f : r ↪r s => (f : α → β) :=
@@ -322,7 +331,7 @@ def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
 #align rel_embedding.preimage RelEmbedding.preimage
 
 theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
-  ext (a b)
+  ext a b
   exact f.map_rel_iff.symm
 #align rel_embedding.eq_preimage RelEmbedding.eq_preimage
 
@@ -391,13 +400,36 @@ protected theorem wellFounded : ∀ (_ : r ↪r s) (_ : WellFounded s), WellFoun
   | f, ⟨H⟩ => ⟨fun _ => f.acc _ (H _)⟩
 #align rel_embedding.well_founded RelEmbedding.wellFounded
 
+protected theorem isWellFounded (f : r ↪r s) [IsWellFounded β s] : IsWellFounded α r :=
+  ⟨f.wellFounded IsWellFounded.wf⟩
+#align rel_embedding.is_well_founded RelEmbedding.isWellFounded
+
 protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrder α r
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 #align rel_embedding.is_well_order RelEmbedding.isWellOrder
 
+end RelEmbedding
+
+instance Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
+    WellFoundedLT (Subtype p) :=
+  (Subtype.relEmbedding (· < ·) p).isWellFounded
+#align subtype.well_founded_lt Subtype.wellFoundedLT
+
+instance Subtype.wellFoundedGT [LT α] [WellFoundedGT α] (p : α → Prop) :
+    WellFoundedGT (Subtype p) :=
+  (Subtype.relEmbedding (· > ·) p).isWellFounded
+#align subtype.well_founded_gt Subtype.wellFoundedGT
+
+/-- `Quotient.mk'` as a relation homomorphism between the relation and the lift of a relation. -/
+@[simps]
+def Quotient.mkRelHom [Setoid α] {r : α → α → Prop}
+    (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : r →r Quotient.lift₂ r H :=
+  ⟨@Quotient.mk' α _, id⟩
+#align quotient.mk_rel_hom Quotient.mkRelHom
+
 /-- `Quotient.out` as a relation embedding between the lift of a relation and the relation. -/
 @[simps!]
-noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α → Prop}
+noncomputable def Quotient.outRelEmbedding [Setoid α] {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) : Quotient.lift₂ r H ↪r r :=
   ⟨Embedding.quotientOut α, by
     refine' @fun x y => Quotient.inductionOn₂ x y fun a b => _
@@ -405,24 +437,63 @@ noncomputable def _root_.Quotient.outRelEmbedding [s : Setoid α] {r : α → α
 #align quotient.out_rel_embedding Quotient.outRelEmbedding
 #align quotient.out_rel_embedding_apply Quotient.outRelEmbedding_apply
 
+/-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
+@[simps]
+noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
+    (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
+    (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
+  { Quotient.outRelEmbedding H with toFun := Quotient.out' }
+#align rel_embedding.quotient.out'_rel_embedding Quotient.out'RelEmbedding
+
+@[simp]
+theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
+    {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :
+    Acc (Quotient.lift₂ r H) ⟦a⟧ ↔ Acc r a := by
+  constructor
+  · exact RelHomClass.acc (Quotient.mkRelHom H) a
+  · intro ac
+    induction' ac with _ _ IH
+    dsimp at IH
+    refine' ⟨_, fun q h => _⟩
+    obtain ⟨a', rfl⟩ := q.exists_rep
+    exact IH a' h
+#align acc_lift₂_iff acc_lift₂_iff
+
+@[simp]
+theorem acc_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} {a} :
+    Acc (fun x y => Quotient.liftOn₂' x y r H) (Quotient.mk'' a : Quotient s) ↔ Acc r a :=
+  acc_lift₂_iff (H := H)
+#align acc_lift_on₂'_iff acc_liftOn₂'_iff
+
 /-- A relation is well founded iff its lift to a quotient is. -/
 @[simp]
-theorem _root_.wellFounded_lift₂_iff [s : Setoid α] {r : α → α → Prop}
+theorem wellFounded_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} :
-    WellFounded (Quotient.lift₂ r H) ↔ WellFounded r :=
-  ⟨fun hr => by
-    suffices ∀ {x : Quotient s} {a : α}, ⟦a⟧ = x → Acc r a by exact ⟨fun a => this rfl⟩
-    · refine' @fun x => @WellFounded.induction _ _ hr
-         (fun y => ∀ (a : α), Quotient.mk s a = y → Acc r a) x _
-      rintro x IH a rfl
-      exact ⟨_, @fun b hb => IH ⟦b⟧ hb _ rfl⟩
-      ,
-    (Quotient.outRelEmbedding H).wellFounded⟩
+    WellFounded (Quotient.lift₂ r H) ↔ WellFounded r := by
+  constructor
+  · exact RelHomClass.wellFounded (Quotient.mkRelHom H)
+  · refine' fun wf => ⟨fun q => _⟩
+    obtain ⟨a, rfl⟩ := q.exists_rep
+    exact acc_lift₂_iff.2 (wf.apply a)
 #align well_founded_lift₂_iff wellFounded_lift₂_iff
 
 alias wellFounded_lift₂_iff ↔ WellFounded.of_quotient_lift₂ WellFounded.quotient_lift₂
+#align well_founded.of_quotient_lift₂ WellFounded.of_quotient_lift₂
+#align well_founded.quotient_lift₂ WellFounded.quotient_lift₂
 
-/-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
+@[simp]
+theorem wellFounded_liftOn₂'_iff {s : Setoid α} {r : α → α → Prop} {H} :
+    (WellFounded fun x y : Quotient s => Quotient.liftOn₂' x y r H) ↔ WellFounded r :=
+  wellFounded_lift₂_iff (H := H)
+#align well_founded_lift_on₂'_iff wellFounded_liftOn₂'_iff
+
+alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFounded.quotient_liftOn₂'
+#align well_founded.of_quotient_lift_on₂' WellFounded.of_quotient_liftOn₂'
+#align well_founded.quotient_lift_on₂' WellFounded.quotient_liftOn₂'
+
+namespace RelEmbedding
+
+/-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
 def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
@@ -447,14 +518,10 @@ def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b
   refine' ⟨⟨f, fun a b e => _⟩, @fun a b => ⟨fun h => _, H _ _⟩⟩
   · refine' ((@trichotomous _ r _ a b).resolve_left _).resolve_right _ <;>
       exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
-
   · refine' (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => _) fun h' => _)
     · subst e
       exact irrefl _ h
-
     · exact asymm (H _ _ h') h
-
-
 #align rel_embedding.of_monotone RelEmbedding.ofMonotone
 
 @[simp]
@@ -522,7 +589,7 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
 #align rel_embedding.sum_lex_map RelEmbedding.sumLexMap
 #align rel_embedding.sum_lex_map_apply RelEmbedding.sumLexMap_apply
 
-/-- `λ b, Prod.mk a b` as a relation embedding. -/
+/-- `fun b ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
@@ -531,7 +598,7 @@ def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.
 #align rel_embedding.prod_lex_mk_left RelEmbedding.prodLexMkLeft
 #align rel_embedding.prod_lex_mk_left_apply RelEmbedding.prodLexMkLeft_apply
 
-/-- `λ a, Prod.mk a b` as a relation embedding. -/
+/-- `fun a ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)
@@ -545,7 +612,7 @@ def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod
 def prodLexMap (f : r ↪r s) (g : t ↪r u) : Prod.Lex r t ↪r Prod.Lex s u where
   toFun := Prod.map f g
   inj' := f.injective.Prod_map g.injective
-  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff]
+  map_rel_iff' := by simp [Prod.lex_def, f.map_rel_iff, g.map_rel_iff, f.inj]
 #align rel_embedding.prod_lex_map RelEmbedding.prodLexMap
 #align rel_embedding.prod_lex_map_apply RelEmbedding.prodLexMap_apply
 
@@ -562,7 +629,7 @@ infixl:25 " ≃r " => RelIso
 
 namespace RelIso
 
-/-- Convert an `RelIso` to a `RelEmbedding`. This function is also available as a coercion
+/-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
@@ -570,22 +637,38 @@ def toRelEmbedding (f : r ≃r s) : r ↪r s :=
 #align rel_iso.to_rel_embedding RelIso.toRelEmbedding
 
 theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
-  | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by
-    congr
+  | ⟨e₁, o₁⟩, ⟨e₂, _⟩, h => by congr
 #align rel_iso.to_equiv_injective RelIso.toEquiv_injective
 
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- see Note [function coercion]
-instance : CoeFun (r ≃r s) fun _ => α → β :=
-  ⟨fun f => f⟩
+-- Porting note: moved to after `RelHomClass` instance and redefined as `FunLike.coe`
+-- instance : CoeFun (r ≃r s) fun _ => α → β :=
+--   ⟨fun f => f⟩
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   coe := fun x => x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
+
+--Porting note: helper instance
+-- see Note [function coercion]
+instance : CoeFun (r ≃r s) fun _ => α → β :=
+  ⟨FunLike.coe⟩
+
+@[simp]
+theorem coe_toRelEmbedding (f : r ≃r s) : (f.toRelEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEmbedding (f : r ≃r s) : (f.toEmbedding : α → β) = f :=
+  rfl
+
+@[simp]
+theorem coe_toEquiv (f : r ≃r s) : (f.toEquiv : α → β) = f :=
+  rfl
 
 theorem map_rel_iff (f : r ≃r s) {a b} : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
@@ -623,17 +706,17 @@ protected def symm (f : r ≃r s) : s ≃r r :=
 #align rel_iso.symm RelIso.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+  because `RelIso` defines custom coercions other than the ones given by `FunLike`. -/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 #align rel_iso.simps.apply RelIso.Simps.apply
 
 /-- See Note [custom simps projection]. -/
-def Simps.symmApply (h : r ≃r s) : β → α :=
+def Simps.symm_apply (h : r ≃r s) : β → α :=
   h.symm
-#align rel_iso.simps.symm_apply RelIso.Simps.symmApply
+#align rel_iso.simps.symm_apply RelIso.Simps.symm_apply
 
-initialize_simps_projections RelIso (toEquiv_toFun → apply, toEquiv_invFun → symmApply, -toEquiv)
+initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
 @[refl, simps! apply]
@@ -671,22 +754,19 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
 
 @[simp]
 protected theorem cast_symm {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
-    (h₂ : HEq r s) :
-    (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
+    (h₂ : HEq r s) : (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
   rfl
 #align rel_iso.cast_symm RelIso.cast_symm
 
 @[simp]
 protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = α := rfl)
-    (h₂ : HEq r r := HEq.rfl) :
-    RelIso.cast h₁ h₂ = RelIso.refl r :=
+    (h₂ : HEq r r := HEq.rfl) : RelIso.cast h₁ h₂ = RelIso.refl r :=
   rfl
 #align rel_iso.cast_refl RelIso.cast_refl
 
 @[simp]
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
-    {t : γ → γ → Prop} (h₁ : α = β)
-    (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
+    {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : HEq r s) (h₂' : HEq s t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
   ext fun x => by subst h₁; rfl
 #align rel_iso.cast_trans RelIso.cast_trans
@@ -711,12 +791,12 @@ theorem symm_apply_apply (e : r ≃r s) (x : α) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 #align rel_iso.symm_apply_apply RelIso.symm_apply_apply
 
-theorem rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y :=
-  by rw [← e.map_rel_iff, e.apply_symm_apply]
+theorem rel_symm_apply (e : r ≃r s) {x y} : r x (e.symm y) ↔ s (e x) y := by
+  rw [← e.map_rel_iff, e.apply_symm_apply]
 #align rel_iso.rel_symm_apply RelIso.rel_symm_apply
 
-theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) :=
-  by rw [← e.map_rel_iff, e.apply_symm_apply]
+theorem symm_apply_rel (e : r ≃r s) {x y} : r (e.symm x) y ↔ s x (e y) := by
+  rw [← e.map_rel_iff, e.apply_symm_apply]
 #align rel_iso.symm_apply_rel RelIso.symm_apply_rel
 
 protected theorem bijective (e : r ≃r s) : Bijective e :=
@@ -771,7 +851,8 @@ lexicographic orders on the product.
 -/
 def prodLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Prod.Lex r₁ r₂ ≃r Prod.Lex s₁ s₂ :=
-  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff]⟩
+  ⟨Equiv.prodCongr e₁.toEquiv e₂.toEquiv, by simp [Prod.lex_def, e₁.map_rel_iff, e₂.map_rel_iff,
+    e₁.injective.eq_iff]⟩
 #align rel_iso.prod_lex_congr RelIso.prodLexCongr
 
 /-- Two relations on empty types are isomorphic. -/

@@ -41,7 +41,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
   DistribMulAction M R where
   /-- Multipliying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
-  /-- Scalara multiplication distributes across multiplication -/
+  /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
 #align mul_semiring_action MulSemiringAction
 
@@ -74,7 +74,7 @@ theorem toRingHom_injective [MulSemiringAction M R] [FaithfulSMul M R] :
 def MulSemiringAction.toRingEquiv [MulSemiringAction G R] (x : G) : R ≃+* R :=
   { DistribMulAction.toAddEquiv R x, MulSemiringAction.toRingHom G R x with }
 #align mul_semiring_action.to_ring_equiv MulSemiringAction.toRingEquiv
-#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symmApply
+#align mul_semiring_action.to_ring_equiv_symm_apply MulSemiringAction.toRingEquiv_symm_apply
 #align mul_semiring_action.to_ring_equiv_apply MulSemiringAction.toRingEquiv_apply
 
 section

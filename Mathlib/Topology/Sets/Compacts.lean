@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 
 ! This file was ported from Lean 3 source module topology.sets.compacts
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
+! leanprover-community/mathlib commit 8c1b484d6a214e059531e22f1be9898ed6c1fd47
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -29,7 +29,7 @@ For a topological space `α`,
 
 open Set
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β γ : Type _} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 namespace TopologicalSpace
 
@@ -76,10 +76,10 @@ theorem carrier_eq_coe (s : Compacts α) : s.carrier = s :=
   rfl
 #align topological_space.compacts.carrier_eq_coe TopologicalSpace.Compacts.carrier_eq_coe
 
-instance : HasSup (Compacts α) :=
+instance : Sup (Compacts α) :=
   ⟨fun s t => ⟨s ∪ t, s.isCompact.union t.isCompact⟩⟩
 
-instance [T2Space α] : HasInf (Compacts α) :=
+instance [T2Space α] : Inf (Compacts α) :=
   ⟨fun s t => ⟨s ∩ t, s.isCompact.inter t.isCompact⟩⟩
 
 instance [CompactSpace α] : Top (Compacts α) :=
@@ -136,13 +136,23 @@ protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compac
   ⟨f '' K.1, K.2.image hf⟩
 #align topological_space.compacts.map TopologicalSpace.Compacts.map
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (s : Compacts α) : (s.map f hf : Set β) = f '' s :=
   rfl
 #align topological_space.compacts.coe_map TopologicalSpace.Compacts.coe_map
 
-/-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
 @[simp]
+theorem map_id (K : Compacts α) : K.map id continuous_id = K :=
+  Compacts.ext <| Set.image_id _
+#align topological_space.compacts.map_id TopologicalSpace.Compacts.map_id
+
+theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g) (K : Compacts α) :
+    K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf :=
+  Compacts.ext <| Set.image_comp _ _ _
+#align topological_space.compacts.map_comp TopologicalSpace.Compacts.map_comp
+
+/-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
+@[simps]
 protected def equiv (f : α ≃ₜ β) : Compacts α ≃ Compacts β where
   toFun := Compacts.map f f.continuous
   invFun := Compacts.map _ f.symm.continuous
@@ -154,10 +164,28 @@ protected def equiv (f : α ≃ₜ β) : Compacts α ≃ Compacts β where
     simp only [coe_map, ← image_comp, f.self_comp_symm, image_id]
 #align topological_space.compacts.equiv TopologicalSpace.Compacts.equiv
 
+@[simp]
+theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
+  Equiv.ext map_id
+#align topological_space.compacts.equiv_refl TopologicalSpace.Compacts.equiv_refl
+
+@[simp]
+theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
+    Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
+  -- porting note: can no longer write `map_comp _ _ _ _` and unify
+  Equiv.ext <| map_comp g f g.continuous f.continuous
+#align topological_space.compacts.equiv_trans TopologicalSpace.Compacts.equiv_trans
+
+@[simp]
+theorem equiv_symm (f : α ≃ₜ β) : Compacts.equiv f.symm = (Compacts.equiv f).symm :=
+  rfl
+#align topological_space.compacts.equiv_symm TopologicalSpace.Compacts.equiv_symm
+
 /-- The image of a compact set under a homeomorphism can also be expressed as a preimage. -/
-theorem equiv_to_fun_val (f : α ≃ₜ β) (K : Compacts α) : (Compacts.equiv f K).1 = f.symm ⁻¹' K.1 :=
-  congr_fun (image_eq_preimage_of_inverse f.left_inv f.right_inv) K.1
-#align topological_space.compacts.equiv_to_fun_val TopologicalSpace.Compacts.equiv_to_fun_val
+theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
+    (Compacts.equiv f K : Set β) = f.symm ⁻¹' (K : Set α) :=
+  f.toEquiv.image_eq_preimage K
+#align topological_space.compacts.coe_equiv_apply_eq_preimage TopologicalSpace.Compacts.coe_equiv_apply_eq_preimage
 
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/
@@ -167,7 +195,8 @@ protected def prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) whe
 #align topological_space.compacts.prod TopologicalSpace.Compacts.prod
 
 @[simp]
-theorem coe_prod (K : Compacts α) (L : Compacts β) : (K.prod L : Set (α × β)) = K ×ˢ L :=
+theorem coe_prod (K : Compacts α) (L : Compacts β) :
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.compacts.coe_prod TopologicalSpace.Compacts.coe_prod
 
@@ -194,7 +223,7 @@ instance : SetLike (NonemptyCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
-initialize_simps_projections NonemptyCompacts (toCompacts_carrier → coe)
+initialize_simps_projections NonemptyCompacts (carrier → coe)
 
 protected theorem isCompact (s : NonemptyCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -227,7 +256,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 @[simp] -- porting note: new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
-instance : HasSup (NonemptyCompacts α) :=
+instance : Sup (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono <| subset_union_left _ _⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
@@ -272,7 +301,7 @@ protected def prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) : Nonempt
 
 @[simp]
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
-    (K.prod L : Set (α × β)) = K ×ˢ L :=
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.nonempty_compacts.coe_prod TopologicalSpace.NonemptyCompacts.coe_prod
 
@@ -298,7 +327,7 @@ instance : SetLike (PositiveCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
-initialize_simps_projections PositiveCompacts (toCompacts_carrier → coe)
+initialize_simps_projections PositiveCompacts (carrier → coe)
 
 protected theorem isCompact (s : PositiveCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -336,7 +365,7 @@ theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :=
   rfl
 
-instance : HasSup (PositiveCompacts α) :=
+instance : Sup (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
       s.interior_nonempty.mono <| interior_mono <| subset_union_left _ _⟩⟩
@@ -359,6 +388,31 @@ theorem coe_sup (s t : PositiveCompacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪
 theorem coe_top [CompactSpace α] [Nonempty α] : (↑(⊤ : PositiveCompacts α) : Set α) = univ :=
   rfl
 #align topological_space.positive_compacts.coe_top TopologicalSpace.PositiveCompacts.coe_top
+
+/-- The image of a positive compact set under a continuous open map. -/
+protected def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (K : PositiveCompacts α) :
+    PositiveCompacts β :=
+  { Compacts.map f hf K.toCompacts with
+    interior_nonempty' :=
+      (K.interior_nonempty'.image _).mono (hf'.image_interior_subset K.toCompacts) }
+#align topological_space.positive_compacts.map TopologicalSpace.PositiveCompacts.map
+
+@[simp, norm_cast]
+theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : PositiveCompacts α) :
+    (s.map f hf hf' : Set β) = f '' s :=
+  rfl
+#align topological_space.positive_compacts.coe_map TopologicalSpace.PositiveCompacts.coe_map
+
+@[simp]
+theorem map_id (K : PositiveCompacts α) : K.map id continuous_id IsOpenMap.id = K :=
+  PositiveCompacts.ext <| Set.image_id _
+#align topological_space.positive_compacts.map_id TopologicalSpace.PositiveCompacts.map_id
+
+theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g) (hf' : IsOpenMap f)
+    (hg' : IsOpenMap g) (K : PositiveCompacts α) :
+    K.map (f ∘ g) (hf.comp hg) (hf'.comp hg') = (K.map g hg hg').map f hf hf' :=
+  PositiveCompacts.ext <| Set.image_comp _ _ _
+#align topological_space.positive_compacts.map_comp TopologicalSpace.PositiveCompacts.map_comp
 
 theorem _root_.exists_positiveCompacts_subset [LocallyCompactSpace α] {U : Set α} (ho : IsOpen U)
     (hn : U.Nonempty) : ∃ K : PositiveCompacts α, ↑K ⊆ U :=
@@ -387,7 +441,7 @@ protected def prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
 
 @[simp]
 theorem coe_prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
-    (K.prod L : Set (α × β)) = K ×ˢ L :=
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.positive_compacts.coe_prod TopologicalSpace.PositiveCompacts.coe_prod
 
@@ -413,7 +467,7 @@ instance : SetLike (CompactOpens α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
-initialize_simps_projections CompactOpens (toCompacts_carrier → coe)
+initialize_simps_projections CompactOpens (carrier → coe)
 
 protected theorem isCompact (s : CompactOpens α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -444,10 +498,10 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.compact_opens.coe_mk TopologicalSpace.CompactOpens.coe_mk
 
-instance : HasSup (CompactOpens α) :=
+instance : Sup (CompactOpens α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.isOpen.union t.isOpen⟩⟩
 
-instance [QuasiSeparatedSpace α] : HasInf (CompactOpens α) :=
+instance [QuasiSeparatedSpace α] : Inf (CompactOpens α) :=
   ⟨fun U V =>
     ⟨⟨(U : Set α) ∩ (V : Set α),
         QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩,
@@ -524,11 +578,22 @@ def map (f : α → β) (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpen
   ⟨s.toCompacts.map f hf, hf' _ s.isOpen⟩
 #align topological_space.compact_opens.map TopologicalSpace.CompactOpens.map
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map {f : α → β} (hf : Continuous f) (hf' : IsOpenMap f) (s : CompactOpens α) :
     (s.map f hf hf' : Set β) = f '' s :=
   rfl
 #align topological_space.compact_opens.coe_map TopologicalSpace.CompactOpens.coe_map
+
+@[simp]
+theorem map_id (K : CompactOpens α) : K.map id continuous_id IsOpenMap.id = K :=
+  CompactOpens.ext <| Set.image_id _
+#align topological_space.compact_opens.map_id TopologicalSpace.CompactOpens.map_id
+
+theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g) (hf' : IsOpenMap f)
+    (hg' : IsOpenMap g) (K : CompactOpens α) :
+    K.map (f ∘ g) (hf.comp hg) (hf'.comp hg') = (K.map g hg hg').map f hf hf' :=
+  CompactOpens.ext <| Set.image_comp _ _ _
+#align topological_space.compact_opens.map_comp TopologicalSpace.CompactOpens.map_comp
 
 /-- The product of two `TopologicalSpace.CompactOpens`, as a `TopologicalSpace.CompactOpens` in the
 product space. -/
@@ -537,7 +602,8 @@ protected def prod (K : CompactOpens α) (L : CompactOpens β) : CompactOpens (�
 #align topological_space.compact_opens.prod TopologicalSpace.CompactOpens.prod
 
 @[simp]
-theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) : (K.prod L : Set (α × β)) = K ×ˢ L :=
+theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) :
+    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 #align topological_space.compact_opens.coe_prod TopologicalSpace.CompactOpens.coe_prod
 

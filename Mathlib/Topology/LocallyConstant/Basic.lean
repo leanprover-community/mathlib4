@@ -13,6 +13,7 @@ import Mathlib.Topology.Connected
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally constant functions
@@ -50,33 +51,19 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  apply_rules [tfae_of_cycle, Chain.cons, Chain.nil]
-  · exact fun h x => (h {f x}).mem_nhds rfl
-  · exact fun h x => isOpen_iff_mem_nhds.2 fun y (hy : f y = f x) => hy ▸ h _
-  · intro h y
-    rcases em (y ∈ range f) with (⟨x, rfl⟩ | hy)
-    · exact h x
-    · simp only [preimage_eq_empty (disjoint_singleton_left.2 hy), isOpen_empty]
+  tfae_have 1 → 4; exact fun h y => h {y}
+  tfae_have 4 → 3; exact fun h x => h (f x)
+  tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 2 → 5
   · intro h x
-    rcases mem_nhds_iff.1 ((h (f x)).mem_nhds rfl) with ⟨U, hUf, hU, hx⟩
-    exact ⟨U, hU, hx, hUf⟩
-  · refine fun h s => isOpen_iff_forall_mem_open.2 fun x hx => ?_
-    rcases h x with ⟨U, hUo, hxU, hUf⟩
-    exact ⟨U, fun z hz => mem_preimage.2 <| (hUf z hz).symm ▸ hx, hUo, hxU⟩
-  -- porting note: todo: use `tfae_have`/`tfae_finish`; auto translated code below
-  -- tfae_have 1 → 4; exact fun h y => h {y}
-  -- tfae_have 4 → 3; exact fun h x => h (f x)
-  -- tfae_have 3 → 2; exact fun h x => IsOpen.mem_nhds (h x) rfl
-  -- tfae_have 2 → 5
-  -- · intro h x
-  --   rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
-  --   exact ⟨U, hU, hx, Eq⟩
-  -- tfae_have 5 → 1
-  -- · intro h s
-  --   refine' isOpen_iff_forall_mem_open.2 fun x hx => _
-  --   rcases h x with ⟨U, hU, hxU, eq⟩
-  --   exact ⟨U, fun x' hx' => mem_preimage.2 <| (Eq x' hx').symm ▸ hx, hU, hxU⟩
-  -- tfae_finish
+    rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
+    exact ⟨U, hU, hx, eq⟩
+  tfae_have 5 → 1
+  · intro h s
+    refine' isOpen_iff_forall_mem_open.2 fun x hx => _
+    rcases h x with ⟨U, hU, hxU, eq⟩
+    exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
+  tfae_finish
 #align is_locally_constant.tfae IsLocallyConstant.tfae
 
 @[nontriviality]
@@ -241,12 +228,17 @@ theorem of_constant_on_connected_components [LocallyConnectedSpace X] {f : X →
     ⟨connectedComponent x, isOpen_connectedComponent, mem_connectedComponent, h x⟩
 #align is_locally_constant.of_constant_on_connected_components IsLocallyConstant.of_constant_on_connected_components
 
+theorem of_constant_on_connected_clopens [LocallyConnectedSpace X] {f : X → Y}
+    (h : ∀ U : Set X, IsConnected U → IsClopen U → ∀ x ∈ U, ∀ y ∈ U, f y = f x) :
+    IsLocallyConstant f :=
+  of_constant_on_connected_components fun x =>
+    h (connectedComponent x) isConnected_connectedComponent isClopen_connectedComponent x
+      mem_connectedComponent
+
 theorem of_constant_on_preconnected_clopens [LocallyConnectedSpace X] {f : X → Y}
     (h : ∀ U : Set X, IsPreconnected U → IsClopen U → ∀ x ∈ U, ∀ y ∈ U, f y = f x) :
     IsLocallyConstant f :=
-  of_constant_on_connected_components fun x =>
-    h (connectedComponent x) isPreconnected_connectedComponent isClopen_connectedComponent x
-      mem_connectedComponent
+  of_constant_on_connected_clopens fun U hU ↦ h U hU.isPreconnected
 #align is_locally_constant.of_constant_on_preconnected_clopens IsLocallyConstant.of_constant_on_preconnected_clopens
 
 end IsLocallyConstant
@@ -288,7 +280,7 @@ theorem congr_fun {f g : LocallyConstant X Y} (h : f = g) (x : X) : f x = g x :=
 #align locally_constant.congr_fun LocallyConstant.congr_fun
 
 theorem congr_arg (f : LocallyConstant X Y) {x y : X} (h : x = y) : f x = f y :=
-  FunLike.congr_arg f h 
+  FunLike.congr_arg f h
 #align locally_constant.congr_arg LocallyConstant.congr_arg
 
 theorem coe_injective : @Function.Injective (LocallyConstant X Y) (X → Y) (↑) := fun _ _ =>
@@ -324,7 +316,7 @@ protected theorem continuous : Continuous f :=
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
--- porting note: became a syntatic `rfl`
+-- porting note: became a syntactic `rfl`
 #noalign locally_constant.to_continuous_map_eq_coe
 
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
@@ -448,7 +440,7 @@ def unflip {X α β : Type _} [Finite α] [TopologicalSpace X] (f : α → Local
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
-    exact isOpen_interᵢ fun a => (f a).isLocallyConstant _
+    exact isOpen_iInter fun a => (f a).isLocallyConstant _
 #align locally_constant.unflip LocallyConstant.unflip
 
 @[simp]
@@ -567,7 +559,7 @@ theorem mulIndicator_apply_eq_if (hU : IsClopen U) :
 variable {a}
 
 @[to_additive]
-theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU a = f a := 
+theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU a = f a :=
   Set.mulIndicator_of_mem h _
 #align locally_constant.mul_indicator_of_mem LocallyConstant.mulIndicator_of_mem
 #align locally_constant.indicator_of_mem LocallyConstant.indicator_of_mem

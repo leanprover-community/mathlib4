@@ -14,7 +14,6 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Prime
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Periodic points
@@ -235,9 +234,11 @@ theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x 
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m ((f^[n]) x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
-  convert (hm.apply_iterate ((n / r + 1) * r - n)).eq
   suffices n ≤ (n / r + 1) * r by
-    rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
+    -- porting note: convert used to unfold IsPeriodicPt
+    change _ = _
+    convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
+      rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [add_mul, one_mul]
   exact (Nat.lt_div_mul_add hr).le
 #align function.is_periodic_pt_of_mem_periodic_pts_of_is_periodic_pt_iterate Function.isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate
@@ -248,13 +249,13 @@ theorem bUnion_ptsOfPeriod : (⋃ n > 0, ptsOfPeriod f n) = periodicPts f :=
   Set.ext fun x => by simp [mem_periodicPts]
 #align function.bUnion_pts_of_period Function.bUnion_ptsOfPeriod
 
-theorem unionᵢ_pNat_ptsOfPeriod : (⋃ n : ℕ+, ptsOfPeriod f n) = periodicPts f :=
-  supᵢ_subtype.trans <| bUnion_ptsOfPeriod f
-#align function.Union_pnat_pts_of_period Function.unionᵢ_pNat_ptsOfPeriod
+theorem iUnion_pNat_ptsOfPeriod : (⋃ n : ℕ+, ptsOfPeriod f n) = periodicPts f :=
+  iSup_subtype.trans <| bUnion_ptsOfPeriod f
+#align function.Union_pnat_pts_of_period Function.iUnion_pNat_ptsOfPeriod
 
 theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
-  unionᵢ_pNat_ptsOfPeriod f ▸
-    bijOn_unionᵢ_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
+  iUnion_pNat_ptsOfPeriod f ▸
+    bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
 #align function.bij_on_periodic_pts Function.bijOn_periodicPts
 
 variable {f}
@@ -369,7 +370,7 @@ theorem minimalPeriod_id : minimalPeriod id x = 1 :=
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 #align function.minimal_period_id Function.minimalPeriod_id
 
-theorem is_fixed_point_iff_minimalPeriod_eq_one : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
+theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
   refine' ⟨fun h => _, fun h => _⟩
   · rw [← iterate_one f]
     refine' Function.IsPeriodicPt.isFixedPt _
@@ -378,7 +379,7 @@ theorem is_fixed_point_iff_minimalPeriod_eq_one : minimalPeriod f x = 1 ↔ IsFi
   · exact
       ((h.isPeriodicPt 1).minimalPeriod_le Nat.one_pos).antisymm
         (Nat.succ_le_of_lt ((h.isPeriodicPt 1).minimalPeriod_pos Nat.one_pos))
-#align function.is_fixed_point_iff_minimal_period_eq_one Function.is_fixed_point_iff_minimalPeriod_eq_one
+#align function.is_fixed_point_iff_minimal_period_eq_one Function.minimalPeriod_eq_one_iff_isFixedPt
 
 theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
     (hn : n < minimalPeriod f x) : n = 0 :=
@@ -414,7 +415,7 @@ theorem minimalPeriod_eq_minimalPeriod_iff {g : β → β} {y : β} :
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
     (hfix : ¬IsFixedPt f x) : minimalPeriod f x = p :=
   (hp.out.eq_one_or_self_of_dvd _ hper.minimalPeriod_dvd).resolve_left
-    (mt is_fixed_point_iff_minimalPeriod_eq_one.1 hfix)
+    (mt minimalPeriod_eq_one_iff_isFixedPt.1 hfix)
 #align function.minimal_period_eq_prime Function.minimalPeriod_eq_prime
 
 theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPeriodicPt f (p ^ k) x)
@@ -437,7 +438,7 @@ theorem Commute.minimalPeriod_of_comp_dvd_mul {g : α → α} (h : Function.Comm
 theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Function.Commute f g)
     (hco : coprime (minimalPeriod f x) (minimalPeriod g x)) :
     minimalPeriod (f ∘ g) x = minimalPeriod f x * minimalPeriod g x := by
-  apply dvd_antisymm h.minimalPeriod_of_comp_dvd_mul
+  apply h.minimalPeriod_of_comp_dvd_mul.antisymm
   suffices :
     ∀ {f g : α → α},
       Commute f g →
@@ -516,7 +517,7 @@ theorem periodicOrbit_eq_nil_of_not_periodic_pt (h : x ∉ periodicPts f) :
 @[simp]
 theorem mem_periodicOrbit_iff (hx : x ∈ periodicPts f) :
     y ∈ periodicOrbit f x ↔ ∃ n, (f^[n]) x = y := by
-  simp only [periodicOrbit, Cycle.mem_coe_iff, List.mem_map', List.mem_range]
+  simp only [periodicOrbit, Cycle.mem_coe_iff, List.mem_map, List.mem_range]
   use fun ⟨a, _, ha'⟩ => ⟨a, ha'⟩
   rintro ⟨n, rfl⟩
   use n % minimalPeriod f x, mod_lt _ (minimalPeriod_pos_of_mem_periodicPts hx)

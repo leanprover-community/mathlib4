@@ -97,7 +97,7 @@ variable [DecidableEq α]
 @[simp]
 theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) <| fun a s IH ↦ by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     unfold lcm
     rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
     apply lcm_eq_of_associated_left (associated_normalize _)
@@ -200,7 +200,7 @@ variable [DecidableEq α]
 @[simp]
 theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
   Multiset.induction_on s (by simp) <| fun a s IH ↦ by
-    by_cases a ∈ s <;> simp [IH, h]
+    by_cases h : a ∈ s <;> simp [IH, h]
     unfold gcd
     rw [← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
     apply (associated_normalize _).gcd_eq_left
@@ -250,7 +250,7 @@ theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ← gcd_dedup, dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
-      push_neg  at h
+      push_neg at h
       refine' ⟨s.pmap @f fun _ ↦ id, _, extract_gcd' s _ h _⟩ <;>
       · rw [map_pmap]
         conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]

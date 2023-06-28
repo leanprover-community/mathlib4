@@ -36,7 +36,7 @@ the sequence of elements `x : Fin k → ℕ` such that `n = ∑ i, x i`.
 
 ## Implementation notes
 
-While we could implement this by filtering `(Fintype.PiFinset $ λ _, range (n + 1))` or similar,
+While we could implement this by filtering `(Fintype.PiFinset $ fun _ ↦ range (n + 1))` or similar,
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
@@ -91,7 +91,7 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons]
     rw [antidiagonalTuple]  -- porting note: simp_rw doesn't use the equation lemma properly
-    simp_rw [List.mem_bind, List.mem_map',
+    simp_rw [List.mem_bind, List.mem_map,
       List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
       @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),
       ←Prod.mk.inj_iff (a₁ := Prod.fst _), Prod.mk.eta, exists_eq_right]
@@ -111,11 +111,11 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
   · exact List.pairwise_singleton _ _
   · rw [List.Nat.antidiagonal_succ]
     refine' List.Pairwise.cons (fun a ha x hx₁ hx₂ => _) (n_ih.map _ fun a b h x hx₁ hx₂ => _)
-    · rw [List.mem_map'] at hx₁ hx₂ ha
+    · rw [List.mem_map] at hx₁ hx₂ ha
       obtain ⟨⟨a, -, rfl⟩, ⟨x₁, -, rfl⟩, ⟨x₂, -, h⟩⟩ := ha, hx₁, hx₂
       rw [Fin.cons_eq_cons] at h
       injection h.1
-    · rw [List.mem_map'] at hx₁ hx₂
+    · rw [List.mem_map] at hx₁ hx₂
       obtain ⟨⟨x₁, hx₁, rfl⟩, ⟨x₂, hx₂, h₁₂⟩⟩ := hx₁, hx₂
       dsimp at h₁₂
       rw [Fin.cons_eq_cons, Nat.succ_inj'] at h₁₂
@@ -126,8 +126,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | 0 => (congr_arg fun x => [x]) <| Subsingleton.elim _ _
-  | k + 1 =>
-    by
+  | k + 1 => by
     rw [antidiagonalTuple, antidiagonal_zero, List.bind_singleton, antidiagonalTuple_zero_right k,
       List.map_singleton]
     exact congr_arg (fun x => [x]) Matrix.cons_zero_zero
@@ -136,8 +135,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.bind_append, List.bind_singleton, antidiagonalTuple_zero_zero,
-    List.map_singleton, List.map_bind]
+    tsub_self, List.bind_append, List.bind_singleton, List.map_bind]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
   simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
@@ -158,9 +156,8 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     ∀ k n, (antidiagonalTuple k n).Pairwise (Pi.Lex (· < ·) @fun _ => (· < ·))
   | 0, 0 => List.pairwise_singleton _ _
   | 0, _ + 1 => List.Pairwise.nil
-  | k + 1, n =>
-    by
-    simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map',
+  | k + 1, n => by
+    simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
     simp only [Fin.pi_lex_lt_cons_cons, eq_self_iff_true, true_and_iff, lt_self_iff_false,
@@ -171,7 +168,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
       exact List.pairwise_singleton _ _
     · rw [antidiagonal_succ, List.pairwise_cons, List.pairwise_map]
       refine' ⟨fun p hp x hx y hy => _, _⟩
-      · rw [List.mem_map', Prod.exists] at hp
+      · rw [List.mem_map, Prod.exists] at hp
         obtain ⟨a, b, _, rfl : (Nat.succ a, b) = p⟩ := hp
         exact Or.inl (Nat.zero_lt_succ _)
       dsimp

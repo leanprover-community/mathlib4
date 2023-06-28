@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.Pairing
 /-!
 # Equivalences involving `ℕ`
 
-This file defines some additional constructive equivalences using `encodable` and the pairing
+This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
 
@@ -63,7 +63,7 @@ def intEquivNat : ℤ ≃ ℕ :=
 def prodEquivOfEquivNat (e : α ≃ ℕ) : α × α ≃ α :=
   calc
     α × α ≃ ℕ × ℕ := prodCongr e e
-    _ ≃ ℕ := mkpairEquiv
+    _ ≃ ℕ := pairEquiv
     _ ≃ α := e.symm
 #align equiv.prod_equiv_of_equiv_nat Equiv.prodEquivOfEquivNat
 

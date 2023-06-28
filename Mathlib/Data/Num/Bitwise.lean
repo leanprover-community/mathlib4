@@ -9,7 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Basic
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
 
 /-!
 # Bitwise operations using binary representation of integers
@@ -103,6 +103,12 @@ def shiftl : PosNum → Nat → PosNum
   | p, 0 => p
   | p, n + 1 => shiftl p.bit0 n
 #align pos_num.shiftl PosNum.shiftl
+
+-- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
+--               This theorem ensures the definition is same to one in Lean3.
+theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), shiftl p n.succ = bit0 (shiftl p n)
+  | _, 0       => rfl
+  | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
 
 /-- Right-shift the binary representation of a `PosNum`. -/
 def shiftr : PosNum → Nat → Num

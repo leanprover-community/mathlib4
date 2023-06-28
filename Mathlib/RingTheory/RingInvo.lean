@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kenny Lau
 
 ! This file was ported from Lean 3 source module ring_theory.ring_invo
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
+! leanprover-community/mathlib commit ec2dfcae3677bcdc0d8e906831b1d251dfcbc0f1
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -35,7 +35,7 @@ variable (R : Type _)
 
 /-- A ring involution -/
 structure RingInvo [Semiring R] extends R ≃+* Rᵐᵒᵖ where
-/-- The requirement that the ring homomorphism is its own inverse -/
+  /-- The requirement that the ring homomorphism is its own inverse -/
   involution' : ∀ x, (toFun (toFun x).unop).unop = x
 #align ring_invo RingInvo
 

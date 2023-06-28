@@ -34,8 +34,7 @@ def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
 #align fintype.pi_finset Fintype.piFinset
 
 @[simp]
-theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a :=
-  by
+theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
   constructor
   · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, exists_prop, mem_univ, exists_imp,
       mem_pi]
@@ -98,9 +97,13 @@ theorem Fintype.piFinset_univ {α : Type _} {β : α → Type _} [DecidableEq α
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
-instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β]
-    [DecidableEq α] [DecidableEq β] : Fintype (α ↪ β) :=
-  Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+-- porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
+-- it makes things a lot harder to work with here. in some ways that was because in Lean3
+-- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
+-- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
+noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
+  Fintype (α ↪ β) :=
+  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]

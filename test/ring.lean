@@ -78,6 +78,12 @@ example (x : ℝ) (hx : x ≠ 0) :
   field_simp
   ring
 
+-- As reported at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20failing.20to.20fully.20normalize
+example (x : ℤ) (h : x - x + x = 0) : x = 0 := by
+  ring_nf at h
+  exact h
+
 -- this proof style is not recommended practice
 example (A B : ℕ) (H : B * A = 2) : A * B = 2 := by ring_nf at H ⊢; exact H
 
@@ -108,3 +114,34 @@ example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
   conv => ring
   trivial
+
+-- check that mdata is consumed
+def f : Nat → Nat := sorry
+
+example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
+  have ha : a + 0 = a := by ring
+  rw [ha] -- goal has mdata
+  ring1
+
+-- check that mdata is consumed by ring_nf
+example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
+  have : 3 = 3 := rfl
+  ring_nf -- reduced to `True` with mdata
+
+-- Powers in the exponent get evaluated correctly
+example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : CommRing (R a b) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+  ring
+example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+  ring
+
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+  ring_nf
+example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+  ring_nf

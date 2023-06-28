@@ -18,24 +18,24 @@ variable [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
 def keys (m : HashMap α β) : List α :=
-m.fold (fun ks k _ => k :: ks) []
+  m.fold (fun ks k _ => k :: ks) []
 
 /-- The list of values in a `HashMap`. -/
 def values (m : HashMap α β) : List β :=
-m.fold (fun vs _ v => v :: vs) []
+  m.fold (fun vs _ v => v :: vs) []
 
 /-- Add a value to a `HashMap α (List β)` viewed as a multimap. -/
 def consVal (self : HashMap α (List β)) (a : α) (b : β) : HashMap α (List β) :=
-match self.find? a with
-| none => self.insert a [b]
-| some L => self.insert a (b::L)
+  match self.find? a with
+  | none => self.insert a [b]
+  | some L => self.insert a (b::L)
 
 end Std.HashMap
 
 namespace Std.RBSet
 
 /-- Insert all elements of a list into an `RBSet`. -/
-def insertList (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
-L.foldl (fun m a => m.insert a) m
+def insertList {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
+  L.foldl (fun m a => m.insert a) m
 
 end Std.RBSet

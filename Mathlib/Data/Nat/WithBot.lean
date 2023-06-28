@@ -11,7 +11,6 @@ Authors: Chris Hughes
 
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Aesop
 
 /-!
 # `WithBot ℕ`
@@ -23,6 +22,10 @@ Lemmas about the type of natural numbers with a bottom element adjoined.
 namespace Nat
 
 namespace WithBot
+
+instance : WellFoundedRelation (WithBot ℕ) where
+  rel := (· < ·)
+  wf := IsWellFounded.wf
 
 theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩

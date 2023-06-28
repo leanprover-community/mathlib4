@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot
 
 ! This file was ported from Lean 3 source module topology.uniform_space.separation
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
+! leanprover-community/mathlib commit 0c1f285a9f6e608ae2bdffa3f993eafb01eba829
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -42,16 +42,16 @@ is equivalent to asking that the uniform structure induced on `s` is separated.
 * `SeparatedSpace X`: a predicate class asserting that `X` is separated
 * `SeparationQuotient X`: the maximal separated quotient of `X`.
 * `SeparationQuotient.lift f`: factors a map `f : X → Y` through the separation quotient of `X`.
-* `separation_quotient.map f`: turns a map `f : X → Y` into a map between the separation quotients
+* `SeparationQuotient.map f`: turns a map `f : X → Y` into a map between the separation quotients
   of `X` and `Y`.
 
 ## Main results
 
 * `separated_iff_t2`: the equivalence between being separated and being Hausdorff for uniform
   spaces.
-* `separation_quotient.uniform_continuous_lift`: factoring a uniformly continuous map through the
+* `SeparationQuotient.uniformContinuous_lift`: factoring a uniformly continuous map through the
   separation quotient gives a uniformly continuous map.
-* `separation_quotient.uniform_continuous_map`: maps induced between separation quotients are
+* `SeparationQuotient.uniformContinuous_map`: maps induced between separation quotients are
   uniformly continuous.
 
 ## Notations
@@ -61,7 +61,7 @@ on a uniform space `X`,
 
 ## Implementation notes
 
-The separation setoid `separation_setoid` is not declared as a global instance.
+The separation setoid `separationSetoid` is not declared as a global instance.
 It is made a local instance while building the theory of `SeparationQuotient`.
 The factored map `SeparationQuotient.lift f` is defined without imposing any condition on
 `f`, but returns junk if `f` is not uniformly continuous (constant junk hence it is always
@@ -113,14 +113,14 @@ theorem Filter.HasBasis.mem_separationRel {ι : Sort _} {p : ι → Prop} {s : �
   h.forall_mem_mem
 #align filter.has_basis.mem_separation_rel Filter.HasBasis.mem_separationRel
 
--- porting note: new lemma
 theorem separationRel_iff_specializes {a b : α} : (a, b) ∈ 𝓢 α ↔ a ⤳ b := by
   simp only [(𝓤 α).basis_sets.mem_separationRel, id, mem_setOf_eq,
     (nhds_basis_uniformity (𝓤 α).basis_sets).specializes_iff]
+#align separation_rel_iff_specializes separationRel_iff_specializes
 
--- porting note: new lemma
 theorem separationRel_iff_inseparable {a b : α} : (a, b) ∈ 𝓢 α ↔ Inseparable a b :=
   separationRel_iff_specializes.trans specializes_iff_inseparable
+#align separation_rel_iff_inseparable separationRel_iff_inseparable
 
 /-- A uniform space is separated if its separation relation is trivial (each point
 is related only to itself). -/
@@ -135,7 +135,7 @@ theorem separatedSpace_iff {α : Type u} [UniformSpace α] : SeparatedSpace α �
 
 theorem separated_def {α : Type u} [UniformSpace α] :
     SeparatedSpace α ↔ ∀ x y, (∀ r ∈ 𝓤 α, (x, y) ∈ r) → x = y := by
-  simp only [separatedSpace_iff, Set.ext_iff, Prod.forall, mem_idRel, separationRel, mem_interₛ]
+  simp only [separatedSpace_iff, Set.ext_iff, Prod.forall, mem_idRel, separationRel, mem_sInter]
   exact forall₂_congr fun _ _ => ⟨Iff.mp, fun h => ⟨h, fun H U hU => H ▸ refl_mem_uniformity hU⟩⟩
 #align separated_def separated_def
 
@@ -179,15 +179,15 @@ theorem separationRel_comap {f : α → β}
     𝓢 α = Prod.map f f ⁻¹' 𝓢 β := by
   subst h
   dsimp [separationRel]
-  simp_rw [uniformity_comap, (Filter.comap_hasBasis (Prod.map f f) (𝓤 β)).interₛ_sets, ←
-    preimage_interᵢ, interₛ_eq_binterᵢ]
+  simp_rw [uniformity_comap, (Filter.comap_hasBasis (Prod.map f f) (𝓤 β)).sInter_sets, ←
+    preimage_iInter, sInter_eq_biInter]
   rfl
 #align separation_rel_comap separationRel_comap
 
 protected theorem Filter.HasBasis.separationRel {ι : Sort _} {p : ι → Prop} {s : ι → Set (α × α)}
-    (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_hi : p i), s i := by
+    (h : HasBasis (𝓤 α) p s) : 𝓢 α = ⋂ (i) (_ : p i), s i := by
   unfold separationRel
-  rw [h.interₛ_sets]
+  rw [h.sInter_sets]
 #align filter.has_basis.separation_rel Filter.HasBasis.separationRel
 
 theorem separationRel_eq_inter_closure : 𝓢 α = ⋂₀ (closure '' (𝓤 α).sets) := by
@@ -196,7 +196,7 @@ theorem separationRel_eq_inter_closure : 𝓢 α = ⋂₀ (closure '' (𝓤 α).
 
 theorem isClosed_separationRel : IsClosed (𝓢 α) := by
   rw [separationRel_eq_inter_closure]
-  apply isClosed_interₛ
+  apply isClosed_sInter
   rintro _ ⟨t, -, rfl⟩
   exact isClosed_closure
 #align is_closed_separation_rel isClosed_separationRel
@@ -265,7 +265,7 @@ instance separationSetoid.uniformSpace {α : Type u} [UniformSpace α] :
   uniformity := map (fun p : α × α => (⟦p.1⟧, ⟦p.2⟧)) (𝓤 α)
   refl := le_trans (by simp [Quotient.exists_rep]) (Filter.map_mono refl_le_uniformity)
   symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
-  comp := fun s hs => by
+  comp s hs := by
     rcases comp_open_symm_mem_uniformity_sets hs with ⟨U, hU, hUo, -, hUs⟩
     refine' mem_of_superset (mem_lift' <| image_mem_map hU) ?_
     simp only [subset_def, Prod.forall, mem_compRel, mem_image, Prod.ext_iff]
@@ -365,6 +365,10 @@ instance : SeparatedSpace (SeparationQuotient α) :=
 
 instance [Inhabited α] : Inhabited (SeparationQuotient α) :=
   inferInstanceAs (Inhabited (Quotient (separationSetoid α)))
+
+lemma mk_eq_mk {x y : α} : (⟦x⟧ : SeparationQuotient α) = ⟦y⟧ ↔ Inseparable x y :=
+  Quotient.eq'.trans separationRel_iff_inseparable
+#align uniform_space.separation_quotient.mk_eq_mk UniformSpace.SeparationQuotient.mk_eq_mk
 
 /-- Factoring functions to a separated space through the separation quotient. -/
 def lift [SeparatedSpace β] (f : α → β) : SeparationQuotient α → β :=

@@ -22,7 +22,7 @@ variable {α : Type _}
 section Sections
 
 /-- The sections of a multiset of multisets `s` consists of all those multisets
-which can be put in bijection with `s`, so each element is an member of the corresponding multiset.
+which can be put in bijection with `s`, so each element is a member of the corresponding multiset.
 -/
 
 def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
@@ -62,9 +62,8 @@ theorem sections_add (s t : Multiset (Multiset α)) :
 theorem mem_sections {s : Multiset (Multiset α)} :
     ∀ {a}, a ∈ Sections s ↔ s.Rel (fun s a => a ∈ s) a := by
   induction s using Multiset.induction_on
-  case h₁ => simp
-  case h₂ a a' ih => simp [ih, rel_cons_left, eq_comm]
-
+  case empty => simp
+  case cons a a' ih => simp [ih, rel_cons_left, eq_comm]
 #align multiset.mem_sections Multiset.mem_sections
 
 theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=

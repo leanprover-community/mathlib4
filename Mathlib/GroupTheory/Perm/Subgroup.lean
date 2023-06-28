@@ -46,8 +46,7 @@ theorem sumCongrHom.card_range {α β : Type _} [Fintype (sumCongrHom α β).ran
 instance sigmaCongrRightHom.decidableMemRange {α : Type _} {β : α → Type _} [DecidableEq α]
     [∀ a, DecidableEq (β a)] [Fintype α] [∀ a, Fintype (β a)] :
     DecidablePred (· ∈ (sigmaCongrRightHom β).range) := fun _ => inferInstance
-#align equiv.perm.sigma_congr_right_hom.decidable_mem_range
-    Equiv.Perm.sigmaCongrRightHom.decidableMemRange
+#align equiv.perm.sigma_congr_right_hom.decidable_mem_range Equiv.Perm.sigmaCongrRightHom.decidableMemRange
 
 @[simp]
 theorem sigmaCongrRightHom.card_range {α : Type _} {β : α → Type _}

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 
 ! This file was ported from Lean 3 source module algebra.periodic
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,7 +14,7 @@ import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Zpowers
+import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.GroupTheory.Submonoid.Membership
 
 /-!
@@ -40,7 +40,7 @@ period, periodic, periodicity, antiperiodic
 
 variable {α β γ : Type _} {f g : α → β} {c c₁ c₂ x : α}
 
-open BigOperators
+open Set BigOperators
 
 namespace Function
 
@@ -285,7 +285,7 @@ theorem Periodic.int_mul_eq [Ring α] (h : Periodic f c) (n : ℤ) : f (n * c) =
 /-- If a function `f` is `periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico 0 c` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico₀ [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
-    (hc : 0 < c) (x) : ∃ y ∈ Set.Ico 0 c, f x = f y :=
+    (hc : 0 < c) (x) : ∃ y ∈ Ico 0 c, f x = f y :=
   let ⟨n, H, _⟩ := existsUnique_zsmul_near_of_pos' hc x
   ⟨x - n • c, H, (h.sub_zsmul_eq n).symm⟩
 #align function.periodic.exists_mem_Ico₀ Function.Periodic.exists_mem_Ico₀
@@ -293,7 +293,7 @@ theorem Periodic.exists_mem_Ico₀ [LinearOrderedAddCommGroup α] [Archimedean �
 /-- If a function `f` is `periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ico a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ico [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
-    (hc : 0 < c) (x a) : ∃ y ∈ Set.Ico a (a + c), f x = f y :=
+    (hc : 0 < c) (x a) : ∃ y ∈ Ico a (a + c), f x = f y :=
   let ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ico hc x a
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 #align function.periodic.exists_mem_Ico Function.Periodic.exists_mem_Ico
@@ -301,18 +301,29 @@ theorem Periodic.exists_mem_Ico [LinearOrderedAddCommGroup α] [Archimedean α] 
 /-- If a function `f` is `periodic` with positive period `c`, then for all `x` there exists some
   `y ∈ Ioc a (a + c)` such that `f x = f y`. -/
 theorem Periodic.exists_mem_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
-    (hc : 0 < c) (x a) : ∃ y ∈ Set.Ioc a (a + c), f x = f y :=
+    (hc : 0 < c) (x a) : ∃ y ∈ Ioc a (a + c), f x = f y :=
   let ⟨n, H, _⟩ := existsUnique_add_zsmul_mem_Ioc hc x a
   ⟨x + n • c, H, (h.zsmul n x).symm⟩
 #align function.periodic.exists_mem_Ioc Function.Periodic.exists_mem_Ioc
 
 theorem Periodic.image_Ioc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
-    (hc : 0 < c) (a : α) : f '' Set.Ioc a (a + c) = Set.range f :=
-  (Set.image_subset_range _ _).antisymm <|
-    Set.range_subset_iff.2 fun x =>
-      let ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
-      ⟨y, hy, hyx.symm⟩
+    (hc : 0 < c) (a : α) : f '' Ioc a (a + c) = range f :=
+  (image_subset_range _ _).antisymm <| range_subset_iff.2 fun x =>
+    let ⟨y, hy, hyx⟩ := h.exists_mem_Ioc hc x a
+    ⟨y, hy, hyx.symm⟩
 #align function.periodic.image_Ioc Function.Periodic.image_Ioc
+
+theorem Periodic.image_Icc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
+    (hc : 0 < c) (a : α) : f '' Icc a (a + c) = range f :=
+  (image_subset_range _ _).antisymm <| h.image_Ioc hc a ▸ image_subset _ Ioc_subset_Icc_self
+
+theorem Periodic.image_uIcc [LinearOrderedAddCommGroup α] [Archimedean α] (h : Periodic f c)
+    (hc : c ≠ 0) (a : α) : f '' uIcc a (a + c) = range f := by
+  cases hc.lt_or_lt with
+  | inl hc =>
+    rw [uIcc_of_ge (add_le_of_nonpos_right hc.le), ← h.neg.image_Icc (neg_pos.2 hc) (a + c),
+      add_neg_cancel_right]
+  | inr hc => rw [uIcc_of_le (le_add_of_nonneg_right hc.le), h.image_Icc hc]
 
 theorem periodic_with_period_zero [AddZeroClass α] (f : α → β) : Periodic f 0 := fun x => by
   rw [add_zero]
@@ -360,7 +371,7 @@ protected theorem Antiperiodic.funext [Add α] [Neg β] (h : Antiperiodic f c) :
 
 protected theorem Antiperiodic.funext' [Add α] [InvolutiveNeg β] (h : Antiperiodic f c) :
     (fun x => -f (x + c)) = f :=
-  (eq_neg_iff_eq_neg.mp h.funext).symm
+  neg_eq_iff_eq_neg.mpr h.funext
 #align function.antiperiodic.funext' Function.Antiperiodic.funext'
 
 /-- If a function is `antiperiodic` with antiperiod `c`, then it is also `periodic` with period
@@ -394,7 +405,7 @@ theorem Antiperiodic.int_odd_mul_antiperiodic [Ring α] [InvolutiveNeg β] (h : 
 #align function.antiperiodic.int_odd_mul_antiperiodic Function.Antiperiodic.int_odd_mul_antiperiodic
 
 theorem Antiperiodic.sub_eq [AddGroup α] [InvolutiveNeg β] (h : Antiperiodic f c) (x : α) :
-    f (x - c) = -f x := by simp only [eq_neg_iff_eq_neg.mp (h (x - c)), sub_add_cancel]
+    f (x - c) = -f x := by simp only [← neg_eq_iff_eq_neg, ← h (x - c), sub_add_cancel]
 #align function.antiperiodic.sub_eq Function.Antiperiodic.sub_eq
 
 theorem Antiperiodic.sub_eq' [AddCommGroup α] [Neg β] (h : Antiperiodic f c) :

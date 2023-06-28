@@ -36,8 +36,8 @@ open Topology
 `⊓:L×L → L` be an infimum. Then `L` is said to have *(jointly) continuous infimum* if the map
 `⊓:L×L → L` is continuous.
 -/
-class ContinuousInf (L : Type _) [TopologicalSpace L] [HasInf L] : Prop where
-  /-- The infinimum is continuous -/
+class ContinuousInf (L : Type _) [TopologicalSpace L] [Inf L] : Prop where
+  /-- The infimum is continuous -/
   continuous_inf : Continuous fun p : L × L => p.1 ⊓ p.2
 #align has_continuous_inf ContinuousInf
 
@@ -45,19 +45,19 @@ class ContinuousInf (L : Type _) [TopologicalSpace L] [HasInf L] : Prop where
 `⊓:L×L → L` be a supremum. Then `L` is said to have *(jointly) continuous supremum* if the map
 `⊓:L×L → L` is continuous.
 -/
-class ContinuousSup (L : Type _) [TopologicalSpace L] [HasSup L] : Prop where
+class ContinuousSup (L : Type _) [TopologicalSpace L] [Sup L] : Prop where
   /-- The supremum is continuous -/
   continuous_sup : Continuous fun p : L × L => p.1 ⊔ p.2
 #align has_continuous_sup ContinuousSup
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousSup (L : Type _) [TopologicalSpace L] [HasInf L]
+instance (priority := 100) OrderDual.continuousSup (L : Type _) [TopologicalSpace L] [Inf L]
     [ContinuousInf L] : ContinuousSup Lᵒᵈ
     where continuous_sup := @ContinuousInf.continuous_inf L _ _ _
 #align order_dual.has_continuous_sup OrderDual.continuousSup
 
 -- see Note [lower instance priority]
-instance (priority := 100) OrderDual.continuousInf (L : Type _) [TopologicalSpace L] [HasSup L]
+instance (priority := 100) OrderDual.continuousInf (L : Type _) [TopologicalSpace L] [Sup L]
     [ContinuousSup L] : ContinuousInf Lᵒᵈ
     where continuous_inf := @ContinuousSup.continuous_sup L _ _ _
 #align order_dual.has_continuous_inf OrderDual.continuousInf
@@ -85,46 +85,46 @@ instance (priority := 100) LinearOrder.topologicalLattice {L : Type _} [Topologi
 variable [TopologicalSpace L] [TopologicalSpace X]
 
 @[continuity]
-theorem continuous_inf [HasInf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
+theorem continuous_inf [Inf L] [ContinuousInf L] : Continuous fun p : L × L => p.1 ⊓ p.2 :=
   ContinuousInf.continuous_inf
 #align continuous_inf continuous_inf
 
 @[continuity]
-theorem Continuous.inf [HasInf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
+theorem Continuous.inf [Inf L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
   continuous_inf.comp (hf.prod_mk hg : _)
 #align continuous.inf Continuous.inf
 
 @[continuity]
-theorem continuous_sup [HasSup L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
+theorem continuous_sup [Sup L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
   ContinuousSup.continuous_sup
 #align continuous_sup continuous_sup
 
 @[continuity]
-theorem Continuous.sup [HasSup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
+theorem Continuous.sup [Sup L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
   continuous_sup.comp (hf.prod_mk hg : _)
 #align continuous.sup Continuous.sup
 
-theorem Filter.Tendsto.sup_right_nhds' {ι β} [TopologicalSpace β] [HasSup β] [ContinuousSup β]
+theorem Filter.Tendsto.sup_right_nhds' {ι β} [TopologicalSpace β] [Sup β] [ContinuousSup β]
     {l : Filter ι} {f g : ι → β} {x y : β} (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊔ g) l (𝓝 (x ⊔ y)) :=
   (continuous_sup.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 #align filter.tendsto.sup_right_nhds' Filter.Tendsto.sup_right_nhds'
 
-theorem Filter.Tendsto.sup_right_nhds {ι β} [TopologicalSpace β] [HasSup β] [ContinuousSup β]
+theorem Filter.Tendsto.sup_right_nhds {ι β} [TopologicalSpace β] [Sup β] [ContinuousSup β]
     {l : Filter ι} {f g : ι → β} {x y : β} (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
   hf.sup_right_nhds' hg
 #align filter.tendsto.sup_right_nhds Filter.Tendsto.sup_right_nhds
 
-theorem Filter.Tendsto.inf_right_nhds' {ι β} [TopologicalSpace β] [HasInf β] [ContinuousInf β]
+theorem Filter.Tendsto.inf_right_nhds' {ι β} [TopologicalSpace β] [Inf β] [ContinuousInf β]
     {l : Filter ι} {f g : ι → β} {x y : β} (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊓ g) l (𝓝 (x ⊓ y)) :=
   (continuous_inf.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
 #align filter.tendsto.inf_right_nhds' Filter.Tendsto.inf_right_nhds'
 
-theorem Filter.Tendsto.inf_right_nhds {ι β} [TopologicalSpace β] [HasInf β] [ContinuousInf β]
+theorem Filter.Tendsto.inf_right_nhds {ι β} [TopologicalSpace β] [Inf β] [ContinuousInf β]
     {l : Filter ι} {f g : ι → β} {x y : β} (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=
   hf.inf_right_nhds' hg

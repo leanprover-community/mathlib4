@@ -16,7 +16,7 @@ import Mathlib.Data.Vector.Basic
 This file contains theorems for membership in a `v.toList` for a vector `v`.
 Having the length available in the type allows some of the lemmas to be
   simpler and more general than the original version for lists.
-In particular we can avoid some assumptions about types being `inhabited`,
+In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
@@ -78,7 +78,7 @@ theorem mem_of_mem_tail (v : Vector α n) (ha : a ∈ v.tail.toList) : a ∈ v.t
 
 theorem mem_map_iff (b : β) (v : Vector α n) (f : α → β) :
     b ∈ (v.map f).toList ↔ ∃ a : α, a ∈ v.toList ∧ f a = b := by
-  rw [Vector.toList_map, List.mem_map']
+  rw [Vector.toList_map, List.mem_map]
 #align vector.mem_map_iff Vector.mem_map_iff
 
 theorem not_mem_map_zero (b : β) (v : Vector α 0) (f : α → β) : b ∉ (v.map f).toList := by

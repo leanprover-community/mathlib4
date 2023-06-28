@@ -75,7 +75,6 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : DenseInducing i) (hs 
   calc
     U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
     _ ⊆ closure (i '' s) := closure_mono (image_subset i sub)
-    
 #align dense_inducing.closure_image_mem_nhds DenseInducing.closure_image_mem_nhds
 
 theorem dense_image (di : DenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
@@ -315,7 +314,7 @@ theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop
       univ = closure (range e) := he.closure_range.symm
       _ ⊆ closure { b | p b } := closure_mono <| range_subset_iff.mpr h
       _ = _ := hp.closure_eq
-      
+
   fun _ => this trivial
 #align is_closed_property isClosed_property
 
@@ -371,7 +370,7 @@ end
 theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [TopologicalSpace β]
     [T3Space β] {ι : Type _} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : DenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
-  rw [Filter.hasBasis_iff] at h⊢
+  rw [Filter.hasBasis_iff] at h ⊢
   intro T
   refine' ⟨fun hT => _, fun hT => _⟩
   · obtain ⟨T', hT₁, hT₂, hT₃⟩ := exists_mem_nhds_isClosed_subset hT
@@ -388,4 +387,3 @@ theorem Filter.HasBasis.hasBasis_of_denseInducing [TopologicalSpace α] [Topolog
     replace h := (h (s i)).mpr ⟨i, hi, Subset.rfl⟩
     exact hf.closure_image_mem_nhds h
 #align filter.has_basis.has_basis_of_dense_inducing Filter.HasBasis.hasBasis_of_denseInducing
-

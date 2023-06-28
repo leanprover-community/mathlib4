@@ -37,7 +37,7 @@ instance : IsEmpty PEmpty :=
 instance : IsEmpty False :=
   ⟨id⟩
 
-instance : IsEmpty (Fin 0) :=
+instance Fin.isEmpty : IsEmpty (Fin 0) :=
   ⟨fun n ↦ Nat.not_lt_zero n.1 n.2⟩
 
 protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=

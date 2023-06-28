@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Tactic.ScopedNS  -- Porting note: `scoped[]`
 
 /-!
 # Kleene Algebras
@@ -62,26 +61,23 @@ variable {α β ι : Type _} {π : ι → Type _}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
-  sup := (· + ·)
-  add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
+  protected sup := (· + ·)
+  protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
     rfl
-  bot : α := 0
-  bot_le : ∀ a, bot ≤ a
+  protected bot : α := 0
+  protected bot_le : ∀ a, bot ≤ a
 #align idem_semiring IdemSemiring
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class KStar (α : Type _) where
-  kstar : α → α
+  protected kstar : α → α
 #align has_kstar KStar
 
 -- mathport name: «expr ∗»
@@ -95,13 +91,12 @@ star) that satisfies the following properties:
 * If `a * c + b ≤ c`, then `a∗ * b ≤ c`
 * If `c * a + b ≤ c`, then `b * a∗ ≤ c`
 -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class KleeneAlgebra (α : Type _) extends IdemSemiring α, KStar α where
-  one_le_kstar : ∀ a : α, 1 ≤ a∗
-  mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
-  kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
-  mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
-  kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
+  protected one_le_kstar : ∀ a : α, 1 ≤ a∗
+  protected mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
+  protected kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
+  protected mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
+  protected kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
 #align kleene_algebra KleeneAlgebra
 
 -- See note [lower instance priority]
@@ -245,7 +240,7 @@ theorem le_kstar : a ≤ a∗ :=
   le_trans (le_mul_of_one_le_left' one_le_kstar) kstar_mul_le_kstar
 #align le_kstar le_kstar
 
--- @[mono] -- Porting note: unknown attribute [mono]
+@[mono]
 theorem kstar_mono : Monotone (KStar.kstar : α → α) :=
   fun _ _ h ↦
     kstar_le_of_mul_le_left one_le_kstar <| kstar_mul_le (h.trans le_kstar) <| mul_kstar_le_kstar
@@ -366,7 +361,7 @@ namespace Function.Injective
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
 @[reducible]
 protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [HasSup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -382,7 +377,7 @@ protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
 @[reducible]
 protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [HasSup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [SMul ℕ β] [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -395,7 +390,7 @@ protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
 @[reducible]
 protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [HasSup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [NatCast β] [Sup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
