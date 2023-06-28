@@ -8,9 +8,9 @@ Authors: Johan Commelin, Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.Truncated
-import Mathbin.RingTheory.WittVector.Identities
-import Mathbin.NumberTheory.Padics.RingHoms
+import Mathlib.RingTheory.WittVector.Truncated
+import Mathlib.RingTheory.WittVector.Identities
+import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
 
@@ -44,8 +44,7 @@ namespace TruncatedWittVector
 variable (p) (n : ℕ) (R : Type _) [CommRing R]
 
 theorem eq_of_le_of_cast_pow_eq_zero [CharP R p] (i : ℕ) (hin : i ≤ n)
-    (hpi : (p ^ i : TruncatedWittVector p n R) = 0) : i = n :=
-  by
+    (hpi : (p ^ i : TruncatedWittVector p n R) = 0) : i = n := by
   contrapose! hpi
   replace hin := lt_of_le_of_ne hin hpi; clear hpi
   have : (↑p ^ i : TruncatedWittVector p n R) = WittVector.truncate n (↑p ^ i) := by
@@ -110,8 +109,7 @@ theorem commutes' {m : ℕ} (hm : n ≤ m) (x : ZMod (p ^ m)) :
 
 theorem commutes_symm' {m : ℕ} (hm : n ≤ m) (x : TruncatedWittVector p m (ZMod p)) :
     (zmodEquivTrunc p n).symm (truncate hm x) =
-      ZMod.castHom (pow_dvd_pow p hm) _ ((zmodEquivTrunc p m).symm x) :=
-  by
+      ZMod.castHom (pow_dvd_pow p hm) _ ((zmodEquivTrunc p m).symm x) := by
   apply (zmod_equiv_trunc p n).Injective
   rw [← commutes']
   simp
@@ -186,8 +184,7 @@ def fromPadicInt : ℤ_[p] →+* 𝕎 (ZMod p) :=
     zmodEquivTrunc_compat _
 #align witt_vector.from_padic_int WittVector.fromPadicInt
 
-theorem toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = RingHom.id ℤ_[p] :=
-  by
+theorem toPadicInt_comp_fromPadicInt : (toPadicInt p).comp (fromPadicInt p) = RingHom.id ℤ_[p] := by
   rw [← PadicInt.toZModPow_eq_iff_ext]
   intro n
   rw [← RingHom.comp_assoc, to_padic_int, PadicInt.lift_spec]
@@ -202,8 +199,7 @@ theorem toPadicInt_comp_fromPadicInt_ext (x) :
 #align witt_vector.to_padic_int_comp_from_padic_int_ext WittVector.toPadicInt_comp_fromPadicInt_ext
 
 theorem fromPadicInt_comp_toPadicInt :
-    (fromPadicInt p).comp (toPadicInt p) = RingHom.id (𝕎 (ZMod p)) :=
-  by
+    (fromPadicInt p).comp (toPadicInt p) = RingHom.id (𝕎 (ZMod p)) := by
   apply WittVector.hom_ext
   intro n
   rw [from_padic_int, ← RingHom.comp_assoc, truncate_comp_lift, RingHom.comp_assoc]
