@@ -22,6 +22,10 @@ We repeatedly use `Finset.proveEmptyOrCons` to try to find a proof that the give
 or that it consists of one element inserted into a strict subset, and evaluate the big operator
 on that subset until the set is completely exhausted.
 
+## See also
+
+ * The `fin_cases` tactic has similar scope: splitting out a finite collection into its elements.
+
 ## Porting notes
 
 This plugin is noticeably less powerful than the equivalent version in Mathlib 3: the design of
