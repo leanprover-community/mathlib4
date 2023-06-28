@@ -833,6 +833,9 @@ theorem Finite.ncard_le_ncard_of_encard_le_encard (ht : t.Finite) (h : s.encard 
   exact ⟨fun ⟨h,h'⟩ ↦ by rwa [←ncard_eq_zero h],
     fun h ↦ (by simp only [h, finite_empty, ncard_empty, and_self])⟩
 
+@[simp] theorem encard_eq_one : s.encard = 1 ↔ ∃ x, s = {x} := by
+  rw [←Nat.cast_one, encard_eq_iff_ncard_eq_of_ne_zero (by simp), ncard_eq_one]
+
 @[simp] theorem encard_empty : (∅ : Set α).encard = 0 := by
   rw [encard_eq_zero]
 
@@ -853,6 +856,10 @@ theorem encard_insert_of_not_mem (h : x ∉ s) : (insert x s).encard = s.encard 
   · rw [hs.encard_eq, (hs.insert _).encard_eq, ncard_insert_of_not_mem h hs, Nat.cast_add,
       Nat.cast_one]
   · rw [hs.encard_eq, (hs.mono (subset_insert _ _)).encard_eq]; rfl
+
+theorem encard_diff_singleton_add_one (h : x ∈ s) : (s \ {x}).encard + 1 = s.encard := by
+  rw [←encard_insert_of_not_mem (_ : x ∉ s \ {x}), insert_diff_singleton, insert_eq_of_mem h]
+  simp only [mem_diff, mem_singleton_iff, not_true, and_false, not_false_eq_true]
 
 theorem encard_eq_ite (s : Set α) [Decidable (s.Finite)] :
     s.encard = if s.Finite then (s.ncard : ℕ∞) else ⊤ := by
