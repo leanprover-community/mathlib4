@@ -432,33 +432,31 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
   constructor
   · rintro ⟨_, ⟨x, rfl⟩, rfl⟩
     refine' ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, _⟩
-    exact congr_arg Opens.carrier (X.map_prime_Spectrum_basic_open_of_affine x)
+    exact congr_arg Opens.carrier (X.map_PrimeSpectrum_basicOpen_of_affine x)
   · rintro ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, rfl⟩
     refine' ⟨_, ⟨x, rfl⟩, _⟩
-    exact congr_arg opens.carrier (X.map_prime_Spectrum_basic_open_of_affine x).symm
+    exact congr_arg Opens.carrier (X.map_PrimeSpectrum_basicOpen_of_affine x).symm
 #align algebraic_geometry.is_basis_basic_open AlgebraicGeometry.isBasis_basicOpen
 
 theorem IsAffineOpen.exists_basicOpen_le {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     {V : Opens X} (x : V) (h : ↑x ∈ U) :
     ∃ f : X.presheaf.obj (op U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
-  haveI : is_affine _ := hU
+  haveI : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂⟩ :=
-    (is_basis_basic_open (X.restrict U.openEmbedding)).exists_subset_of_mem_open _
-      ((opens.map U.inclusion).obj V).IsOpen
-  swap; exact ⟨x, h⟩
+    (isBasis_basicOpen (X.restrict U.openEmbedding)).exists_subset_of_mem_open (x.2 : ⟨x, h⟩ ∈ _)
+      ((Opens.map U.inclusion).obj V).isOpen
   have :
     U.openEmbedding.isOpenMap.functor.obj ((X.restrict U.openEmbedding).basicOpen r) =
-      X.basic_open (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-    refine' (Scheme.image_basic_open (X.ofRestrict U.openEmbedding) r).trans _
-    erw [← Scheme.basic_open_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
+      X.basicOpen (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
+    refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+    erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
     rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
-      op_id, CategoryTheory.Functor.map_id, Scheme.hom.inv_app]
-    erw [PresheafedSpace.is_open_immersion.ofRestrict_inv_app]
+      op_id, CategoryTheory.Functor.map_id, Scheme.Hom.invApp]
+    erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp]
     congr
   use X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r
   rw [← this]
-  exact ⟨set.image_subset_iff.mpr h₂, Set.mem_image_of_mem _ h₁⟩
-  exact x.prop
+  exact ⟨Set.image_subset_iff.mpr h₂, ⟨_, h⟩, h₁, rfl⟩
 #align algebraic_geometry.is_affine_open.exists_basic_open_le AlgebraicGeometry.IsAffineOpen.exists_basicOpen_le
 
 instance {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
@@ -468,17 +466,22 @@ instance {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
 theorem IsAffineOpen.opens_map_fromSpec_basicOpen {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) (f : X.presheaf.obj (op U)) :
     (Opens.map hU.fromSpec.val.base).obj (X.basicOpen f) =
-      RingedSpace.basicOpen _ (SpecΓIdentity.inv.app (X.presheaf.obj <| op U) f) := by
-  erw [LocallyRingedSpace.preimage_basic_open]
+      -- Porting note : need to supply ↓ explicitly
+      RingedSpace.basicOpen (unop <| LocallyRingedSpace.forgetToSheafedSpace.op.obj <|
+        Spec.toLocallyRingedSpace.rightOp.obj <| X.presheaf.obj <| op U)
+      (SpecΓIdentity.inv.app (X.presheaf.obj <| op U) f) := by
+  erw [LocallyRingedSpace.preimage_basicOpen]
   refine'
     Eq.trans _
-      (RingedSpace.basic_open_res_eq
+      (RingedSpace.basicOpen_res_eq
         (Scheme.Spec.obj <| op <| X.presheaf.obj (op U)).toLocallyRingedSpace.toRingedSpace
-        (eqToHom hU.from_Spec_base_preimage).op _)
+        (eqToHom hU.fromSpec_base_preimage).op _)
+  -- Porting note : `congr` does not work
+  refine congr_arg (RingedSpace.basicOpen _ .) ?_
+  -- Porting note : change `rw` to `erw`
+  erw [← comp_apply]
   congr
-  rw [← comp_apply]
-  congr
-  erw [← hU.Spec_Γ_identity_hom_app_from_Spec]
+  erw [← hU.SpecΓIdentity_hom_app_fromSpec]
   rw [Iso.inv_hom_id_app_assoc]
 #align algebraic_geometry.is_affine_open.opens_map_from_Spec_basic_open AlgebraicGeometry.IsAffineOpen.opens_map_fromSpec_basicOpen
 
@@ -496,42 +499,50 @@ def basicOpenSectionsToAffine {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
 
 instance {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) (f : X.presheaf.obj (op U)) :
     IsIso (basicOpenSectionsToAffine hU f) := by
-  delta basic_open_sections_to_affine
-  apply (config := { instances := false }) is_Iso.comp_is_iso
-  · apply PresheafedSpace.is_open_immersion.is_iso_of_subset
-    rw [hU.from_Spec_range]
-    exact RingedSpace.basic_open_le _ _
-  infer_instance
+  delta basicOpenSectionsToAffine
+  apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
+  · apply PresheafedSpace.IsOpenImmersion.isIso_of_subset
+    rw [hU.fromSpec_range]
+    exact RingedSpace.basicOpen_le _ _
 
-theorem is_localization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
+set_option maxHeartbeats 310000 in
+theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (f : X.presheaf.obj (op U)) : IsLocalization.Away f (X.presheaf.obj (op <| X.basicOpen f)) := by
   apply
     (IsLocalization.isLocalization_iff_of_ringEquiv (Submonoid.powers f)
-        (as_iso <|
-            basic_open_sections_to_affine hU f ≫
+        (asIso <|
+            basicOpenSectionsToAffine hU f ≫
               (Scheme.Spec.obj _).presheaf.map
-                (eqToHom (basic_open_eq_of_affine _).symm).op).commRingCatIsoToRingEquiv).mpr
-  convert structure_sheaf.is_localization.to_basic_open _ f
-  change _ ≫ basic_open_sections_to_affine hU f ≫ _ = _
-  delta basic_open_sections_to_affine
-  erw [RingHom.algebraMap_toAlgebra]
-  simp only [Scheme.comp_val_c_app, category.assoc]
-  erw [hU.from_Spec.val.c.naturality_assoc]
-  rw [hU.from_Spec_app_eq]
+                (eqToHom (basicOpen_eq_of_affine _).symm).op).commRingCatIsoToRingEquiv).mpr
+  convert StructureSheaf.IsLocalization.to_basicOpen _ f using 1
+  -- Porting note : more hand holding is required here, the next 4 lines were not necessary
+  delta StructureSheaf.openAlgebra
+  congr 1
+  rw [CommRingCat.ringHom_comp_eq_comp, Iso.commRingIsoToRingEquiv_toRingHom, asIso_hom]
+  dsimp [CommRingCat.ofHom]
+  change X.presheaf.map _ ≫ basicOpenSectionsToAffine hU f ≫ _ = _
+  delta basicOpenSectionsToAffine
+  simp only [Scheme.comp_val_c_app, Category.assoc]
+  -- Porting note : `erw naturality_assoc` for some reason does not work, so changed to a version
+  -- where `naturality` is used, the good thing is that `erw` is changed back to `rw`
+  simp only [←Category.assoc]
+  rw [hU.fromSpec.val.c.naturality, hU.fromSpec_app_eq]
+  -- simp only [Category.assoc]
+  -- rw [hU.fromSpec_app_eq]
   dsimp
-  simp only [category.assoc, ← functor.map_comp, ← op_comp]
-  apply structure_sheaf.to_open_res
-#align algebraic_geometry.is_localization_basic_open AlgebraicGeometry.is_localization_basicOpen
+  simp only [Category.assoc, ← Functor.map_comp, ← op_comp]
+  apply StructureSheaf.toOpen_res
+#align algebraic_geometry.is_localization_basic_open AlgebraicGeometry.isLocalization_basicOpen
 
 instance {X : Scheme} [IsAffine X] (r : X.presheaf.obj (op ⊤)) :
     IsLocalization.Away r (X.presheaf.obj (op <| X.basicOpen r)) :=
-  is_localization_basicOpen (topIsAffineOpen X) r
+  isLocalization_basicOpen (topIsAffineOpen X) r
 
-theorem is_localization_of_eq_basicOpen {X : Scheme} {U V : Opens X} (i : V ⟶ U)
+theorem isLocalization_of_eq_basicOpen {X : Scheme} {U V : Opens X} (i : V ⟶ U)
     (hU : IsAffineOpen U) (r : X.presheaf.obj (op U)) (e : V = X.basicOpen r) :
-    @IsLocalization.Away _ r (X.presheaf.obj (op V)) _ (X.presheaf.map i.op).toAlgebra := by
-  subst e; convert is_localization_basic_open hU r using 3
-#align algebraic_geometry.is_localization_of_eq_basic_open AlgebraicGeometry.is_localization_of_eq_basicOpen
+    @IsLocalization.Away _ _ r (X.presheaf.obj (op V)) _ (X.presheaf.map i.op).toAlgebra := by
+  subst e; convert isLocalization_basicOpen hU r using 3
+#align algebraic_geometry.is_localization_of_eq_basic_open AlgebraicGeometry.isLocalization_of_eq_basicOpen
 
 instance ΓRestrictAlgebra {X : Scheme} {Y : TopCat} {f : Y ⟶ X} (hf : OpenEmbedding f) :
     Algebra (Scheme.Γ.obj (op X)) (Scheme.Γ.obj (op <| X.restrict hf)) :=

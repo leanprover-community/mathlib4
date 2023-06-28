@@ -95,6 +95,15 @@ def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 #align algebraic_geometry.Scheme.forget_to_Top AlgebraicGeometry.Scheme.forgetToTop
 
+-- Porting note : Lean seems not able to find this coercion any more
+instance hasCoeToTopCat : CoeOut Scheme TopCat where
+  coe X := X.carrier
+
+-- Porting note : added this unification hint just in case
+/-- forgetful functor to `TopCat` is the same as coercion -/
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
+  forgetToTop.obj X ≟ (X : TopCat)
+
 @[simp]
 theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
   rfl
