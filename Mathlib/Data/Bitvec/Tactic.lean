@@ -98,9 +98,33 @@ namespace Bitvec.Tactic
     Bitvec.xor
 
   macro "aesop_bitvec" opt:Aesop.tactic_clause* : tactic =>
-    `(tactic| aesop (rule_sets [Mathlib.Data.Bitvec]) $opt*)
+    `(tactic|
+        simp only [
+          (· ^^^ ·), Xor.xor,
+          (· &&& ·), AndOp.and,
+          (· ||| ·), OrOp.or,
+          (· + ·), Add.add,
+          (· - ·), Sub.sub,
+          (· * ·), Mul.mul,
+          (· / ·), Div.div,
+          (~~~ ·)
+        ] <;>
+        aesop (rule_sets [Mathlib.Data.Bitvec]) $opt*
+    )
 
   macro "aesop_bitvec?" opt:Aesop.tactic_clause* : tactic =>
-    `(tactic| aesop? (rule_sets [Mathlib.Data.Bitvec]) $opt*)
+    `(tactic|
+        simp only [
+          (· ^^^ ·), Xor.xor,
+          (· &&& ·), AndOp.and,
+          (· ||| ·), OrOp.or,
+          (· + ·), Add.add,
+          (· - ·), Sub.sub,
+          (· * ·), Mul.mul,
+          (· / ·), Div.div,
+          (~~~ ·)
+        ] <;>
+        aesop? (rule_sets [Mathlib.Data.Bitvec]) $opt*
+      )
 
 end Bitvec.Tactic
