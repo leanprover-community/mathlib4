@@ -51,10 +51,10 @@ end Lean.Environment
 Return the redundant imports (i.e. those transitively implied by another import)
 amongst a candidate list of imports.
 -/
-partial def findRedundantImports (env : Environment) (imports : Array Name) : Array Name :=
+partial def findRedundantImports (env : Environment) (imports : Array Name) : NameSet :=
   let run := visit env.importGraph imports
   let (_, seen) := imports.foldl (fun ⟨v, s⟩ n => run v s n) ({}, {})
-  seen.toArray
+  seen
 where
   visit (Γ) (targets) (visited) (seen) (n) : NameSet × NameSet :=
     if visited.contains n then
@@ -69,7 +69,7 @@ where
 Return the redundant imports (i.e. those transitively implied by another import)
 of a specified module (or the current module if `none` is specified).
 -/
-def redundantImports (n? : Option Name := none) : CoreM (Array Name) := do
+def redundantImports (n? : Option Name := none) : CoreM NameSet := do
   let env ← getEnv
   let imports := env.importsOf (n?.getD ((← getEnv).header.mainModule))
   return findRedundantImports env imports
@@ -110,4 +110,3 @@ elab "#minimize_imports" : command => do
   let imports := (← getEnv).minimalRequiredModules.qsort Name.lt
     |>.toList.map (fun n => "import " ++ n.toString)
   logInfo <| Format.joinSep imports "\n"
-
