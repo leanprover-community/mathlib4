@@ -8,9 +8,9 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.UpperHalfPlane.Basic
-import Mathbin.LinearAlgebra.Matrix.GeneralLinearGroup
-import Mathbin.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
 # Slash actions
@@ -74,8 +74,7 @@ attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.smul_s
 
 /-- Slash_action induced by a monoid homomorphism.-/
 def monoidHomSlashAction {β G H α γ : Type _} [Group G] [AddMonoid α] [SMul γ α] [Group H]
-    [SlashAction β G α γ] (h : H →* G) : SlashAction β H α γ
-    where
+    [SlashAction β G α γ] (h : H →* G) : SlashAction β H α γ where
   map k g := SlashAction.map γ k (h g)
   zero_slash k g := SlashAction.zero_slash k (h g)
   slash_one k a := by simp only [map_one, SlashAction.slash_one]
@@ -131,8 +130,7 @@ private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k]1 = f :=
 variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : α) :
-    (c • f) ∣[k]A = c • f ∣[k]A :=
-  by
+    (c • f) ∣[k]A = c • f ∣[k]A := by
   simp_rw [← smul_one_smul ℂ c f, ← smul_one_smul ℂ c (f ∣[k]A)]
   ext1
   simp_rw [slash]
@@ -143,8 +141,7 @@ private theorem smul_slash (k : ℤ) (A : GL(2, ℝ)⁺) (f : ℍ → ℂ) (c : 
 private theorem zero_slash (k : ℤ) (A : GL(2, ℝ)⁺) : (0 : ℍ → ℂ) ∣[k]A = 0 :=
   funext fun _ => by simp only [slash, Pi.zero_apply, MulZeroClass.zero_mul]
 
-instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ
-    where
+instance : SlashAction ℤ GL(2, ℝ)⁺ (ℍ → ℂ) ℂ where
   map := slash
   zero_slash := zero_slash
   slash_one := slash_one
@@ -182,8 +179,7 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL(2, ℝ)⁺)
 
 /-- The constant function 1 is invariant under any element of `SL(2, ℤ)`. -/
 @[simp]
-theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
-  by
+theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) := by
   have : ((↑ₘ(A : GL(2, ℝ)⁺)).det : ℝ) = 1 := by
     simp only [coe_coe, Matrix.SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix,
       Matrix.SpecialLinearGroup.det_coe]
@@ -196,8 +192,7 @@ theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A =
   if for every matrix `γ ∈ Γ` we have `f(γ • z)= (c*z+d)^k f(z)` where `γ= ![![a, b], ![c, d]]`,
   and it acts on `ℍ` via Möbius transformations. -/
 theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → ℂ) (γ : Γ) (z : ℍ) :
-    (f ∣[k] γ) z = f z ↔ f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z :=
-  by
+    (f ∣[k] γ) z = f z ↔ f (γ • z) = ((↑ₘ[ℤ] γ 1 0 : ℂ) * z + (↑ₘ[ℤ] γ 1 1 : ℂ)) ^ k * f z := by
   simp only [subgroup_slash, slash_def, ModularForm.slash]
   convert inv_mul_eq_iff_eq_mul₀ _ using 2
   · rw [mul_comm]
@@ -209,22 +204,19 @@ theorem slash_action_eq'_iff (k : ℤ) (Γ : Subgroup SL(2, ℤ)) (f : ℍ → �
 #align modular_form.slash_action_eq'_iff ModularForm.slash_action_eq'_iff
 
 theorem mul_slash (k1 k2 : ℤ) (A : GL(2, ℝ)⁺) (f g : ℍ → ℂ) :
-    (f * g) ∣[k1 + k2] A = ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A :=
-  by
+    (f * g) ∣[k1 + k2] A = ((↑ₘA).det : ℝ) • f ∣[k1] A * g ∣[k2] A := by
   ext1
   simp only [slash_def, slash, Matrix.GeneralLinearGroup.coe_det_apply, Subtype.val_eq_coe,
     Pi.mul_apply, Pi.smul_apply, Algebra.smul_mul_assoc, real_smul]
   set d : ℂ := ↑((↑ₘA).det : ℝ)
-  have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) :=
-    by
+  have h1 : d ^ (k1 + k2 - 1) = d * d ^ (k1 - 1) * d ^ (k2 - 1) := by
     have : d ≠ 0 := by
       dsimp [d]
       norm_cast
       exact Matrix.GLPos.det_ne_zero A
     rw [← zpow_one_add₀ this, ← zpow_add₀ this]
     ring
-  have h22 : denom A x ^ (-(k1 + k2)) = denom A x ^ (-k1) * denom A x ^ (-k2) :=
-    by
+  have h22 : denom A x ^ (-(k1 + k2)) = denom A x ^ (-k1) * denom A x ^ (-k2) := by
     rw [Int.neg_add, zpow_add₀]
     exact UpperHalfPlane.denom_ne_zero A x
   rw [h1, h22]
