@@ -89,6 +89,9 @@ theorem ext {S T : StarSubalgebra R A} (h : ∀ x : A, x ∈ S ↔ x ∈ T) : S 
 #align star_subalgebra.ext StarSubalgebra.ext
 
 @[simp]
+lemma coe_mk (S : Subalgebra R A) (h) : ((⟨S, h⟩ : StarSubalgebra R A) : Set A) = S := rfl
+
+@[simp]
 theorem mem_toSubalgebra {S : StarSubalgebra R A} {x} : x ∈ S.toSubalgebra ↔ x ∈ S :=
   Iff.rfl
 #align star_subalgebra.mem_to_subalgebra StarSubalgebra.mem_toSubalgebra
