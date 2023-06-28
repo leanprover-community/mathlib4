@@ -8,6 +8,7 @@ Authors: Scott Morrison, Jireh Loreaux
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.Pointwise
@@ -290,31 +291,27 @@ section Centralizer
 
 variable (R) -- porting note: redundant binder annotation update
 
-theorem _root_.Set.star_mem_centralizer {a : A} {s : Set A} (h : ∀ a : A, a ∈ s → star a ∈ s)
-    (ha : a ∈ Set.centralizer s) : star a ∈ Set.centralizer s := fun y hy => by
-  simpa using congr_arg star (ha _ (h _ hy)).symm
-#align set.star_mem_centralizer Set.star_mem_centralizer
-
 /-- The centralizer, or commutant, of a *-closed set as star subalgebra. -/
-def centralizer (s : Set A) (w : ∀ a : A, a ∈ s → star a ∈ s) : StarSubalgebra R A :=
-  { Subalgebra.centralizer R s with
-    star_mem' := Set.star_mem_centralizer w }
+def centralizer (s : Set A) : StarSubalgebra R A where
+  toSubalgebra := Subalgebra.centralizer R (s ∪ star s)
+  star_mem' := Set.star_mem_centralizer
 #align star_subalgebra.centralizer StarSubalgebra.centralizer
 
-@[simp]
-theorem coe_centralizer (s : Set A) (w : ∀ a : A, a ∈ s → star a ∈ s) :
-    (centralizer R s w : Set A) = s.centralizer :=
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set A) : (centralizer R s : Set A) = (s ∪ star s).centralizer :=
   rfl
 #align star_subalgebra.coe_centralizer StarSubalgebra.coe_centralizer
 
-theorem mem_centralizer_iff {s : Set A} {w} {z : A} :
-    z ∈ centralizer R s w ↔ ∀ g ∈ s, g * z = z * g :=
-  Iff.rfl
+theorem mem_centralizer_iff {s : Set A} {z : A} :
+    z ∈ centralizer R s ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g := by
+  show (∀ g ∈ s ∪ star s, g * z = z * g) ↔ ∀ g ∈ s, g * z = z * g ∧ star g * z = z * star g
+  simp only [Set.mem_union, or_imp, forall_and, and_congr_right_iff]
+  exact fun _ =>
+    ⟨fun hz a ha => hz _ (Set.star_mem_star.mpr ha), fun hz a ha => star_star a ▸ hz _ ha⟩
 #align star_subalgebra.mem_centralizer_iff StarSubalgebra.mem_centralizer_iff
 
-theorem centralizer_le (s t : Set A) (ws : ∀ a : A, a ∈ s → star a ∈ s)
-    (wt : ∀ a : A, a ∈ t → star a ∈ t) (h : s ⊆ t) : centralizer R t wt ≤ centralizer R s ws :=
-  Set.centralizer_subset h
+theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ centralizer R s :=
+  Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 #align star_subalgebra.centralizer_le StarSubalgebra.centralizer_le
 
 end Centralizer
