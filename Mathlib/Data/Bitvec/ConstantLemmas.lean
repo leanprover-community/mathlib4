@@ -8,12 +8,12 @@ namespace Bitvec
 /-- Every bit in `zero` is `0`/`false` -/
 @[simp]
 theorem get_zero_eq_false : get (zero n) i = false :=
-  get_replicate_val_eq_val
+  get_replicate ..
 
 /-- Every bit in `ones` is `1`/`true` -/
 @[simp]
 theorem get_ones_eq_true : get (allOnes n) i = true :=
-  get_replicate_val_eq_val
+  get_replicate ..
 
 
 

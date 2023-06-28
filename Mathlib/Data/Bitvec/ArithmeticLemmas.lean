@@ -126,9 +126,9 @@ theorem add_zero_right : add x 0 = x := by
 --   aesop_bitvec
 
 
-@[simp]
-theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
-  aesop_bitvec
+-- @[simp]
+-- theorem zero_sub_x_eq_neg_x : sub 0 x = neg x := by
+--   aesop_bitvec
 
 @[simp]
 theorem neg_neg_x : neg (neg x) = x := by
