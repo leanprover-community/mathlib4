@@ -8,9 +8,9 @@ import Mathlib.Algebra.Hom.GroupAction
 /-!
 # Action of `Mᵈᵐᵃ` on `α →[N] β` and `A →+[N] B`
 
-In this file we define action of `DomMulAction M = Mᵈᵐᵃ` on `α →[N] β` and on `A →+[N] B`. At the
+In this file we define action of `DomMulAct M = Mᵈᵐᵃ` on `α →[N] β` and on `A →+[N] B`. At the
 time of writing, these homomorphisms are not widely used in the library, so we put these instances
-into a separate file, not with the definition of `DomMulAction`.
+into a separate file, not with the definition of `DomMulAct`.
 
 ## TODO
 
@@ -67,7 +67,7 @@ theorem smul_mulDistribActionHom_apply (c : Mᵈᵐᵃ) (f : A →+[N] B) (a : A
   rfl
 
 @[simp]
-theorem mk_smul_mulDistribActionHom_apply (c : M) (f : A →[N] B) (a : A) :
+theorem mk_smul_mulDistribActionHom_apply (c : M) (f : A →+[N] B) (a : A) :
     (mk c • f) a = f (c • a) := rfl
 
 end SMul
