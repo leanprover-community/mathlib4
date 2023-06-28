@@ -102,7 +102,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
     refine'
       not_disjoint_segment_convexHull_triple hz hu hv
         (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
-    simpa [insert_subset, hp, hq, singleton_subset_iff.2 hzC]
+    simpa [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
   by_contra' h
   suffices h : Disjoint (convexHull 𝕜 (insert c C)) t

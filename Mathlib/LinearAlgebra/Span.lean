@@ -117,7 +117,7 @@ alias Submodule.map_span_le ← _root_.LinearMap.map_span_le
 @[simp]
 theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
   refine' le_antisymm _ (Submodule.span_mono (Set.subset_insert 0 s))
-  rw [span_le, Set.insert_subset]
+  rw [span_le, Set.insert_subset_iff]
   exact ⟨by simp only [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
 #align submodule.span_insert_zero Submodule.span_insert_zero
 
@@ -492,7 +492,7 @@ theorem span_insert (x) (s : Set M) : span R (insert x s) = span R ({x} : Set M)
 #align submodule.span_insert Submodule.span_insert
 
 theorem span_insert_eq_span (h : x ∈ span R s) : span R (insert x s) = span R s :=
-  span_eq_of_le _ (Set.insert_subset.mpr ⟨h, subset_span⟩) (span_mono <| subset_insert _ _)
+  span_eq_of_le _ (Set.insert_subset_iff.mpr ⟨h, subset_span⟩) (span_mono <| subset_insert _ _)
 #align submodule.span_insert_eq_span Submodule.span_insert_eq_span
 
 theorem span_span : span R (span R s : Set M) = span R s :=

@@ -244,10 +244,10 @@ theorem subset_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s t) :
   haveI := Classical.decEq α
   haveI := Classical.decEq β
   refine' ⟨insert x s', insert y t', _⟩
-  simp_rw [coe_insert, Set.insert_subset]
+  simp_rw [coe_insert, Set.insert_subset_iff]
   exact
     ⟨⟨hx, hs⟩, ⟨hy, hs'⟩,
-      insert_subset.2
+      insert_subset_iff.2
         ⟨mem_image₂.2 ⟨x, y, mem_insert_self _ _, mem_insert_self _ _, ha⟩,
           h.trans <| image₂_subset (subset_insert _ _) <| subset_insert _ _⟩⟩
 #align finset.subset_image₂ Finset.subset_image₂
