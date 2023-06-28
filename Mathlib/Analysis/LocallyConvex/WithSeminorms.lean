@@ -10,6 +10,8 @@ Authors: Moritz Doll, Anatole Dedecker
 -/
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.LocallyConvex.Bounded
+import Mathlib.Topology.Algebra.Equicontinuity
+import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 
@@ -53,7 +55,7 @@ seminorm, locally convex
 
 open NormedField Set Seminorm TopologicalSpace Filter
 
-open BigOperators NNReal Pointwise Topology
+open BigOperators NNReal Pointwise Topology Uniformity
 
 variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type _}
 
@@ -659,6 +661,42 @@ theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [Normed
   exact continuous_from_bounded (norm_withSeminorms 𝕝 E) hq f hf
 #align seminorm.cont_normed_space_to_with_seminorms Seminorm.cont_normedSpace_to_withSeminorms
 
+#check uniformContinuous_sInf_rng
+
+lemma uniform_equicontinuous_iff_exists_continuous_seminorm {κ : Type _}
+    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
+    [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    (f : κ → E →ₛₗ[σ₁₂] F) :
+    UniformEquicontinuous ((↑) ∘ f) ↔
+    ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p := by
+  rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng]
+  refine forall_congr' (fun i ↦ ?_)
+  --congrm (∀ i, (_ : Prop))
+  clear hu hq u
+  letI : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
+  constructor
+  . intro H
+    have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
+      filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
+        with x hx k
+      replace hx : q i (f k 0 - f k x) ≤ 1 := (hx k).le
+      rwa [map_zero, zero_sub, map_neg_eq_map] at hx
+    have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
+      Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
+        (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
+    refine ⟨⨆ k, (q i).comp (f k), seminorm.continuous' _, le_csupr bdd⟩
+    filter_upwards [this] with x hx
+    rw [closed_ball_supr bdd _ one_pos, mem_Inter]
+    exact fun k ↦ (mem_closed_ball_zero _).mpr (hx k)
+    -- Works in trivially normed fields too
+  . intro ⟨p, hp, hfp⟩
+    have hp' : filter.tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+    refine uniform_equicontinuous_of_equicontinuous_at_zero f
+      (metric.equicontinuous_at_of_continuity_modulus p hp' _ <| eventually_of_forall fun x k ↦ _)
+    change q i (f k 0 - f k x) ≤ p x
+    rw [map_zero, zero_sub, map_neg_eq_map, ← comp_apply]
+    exact hfp k x
+
 end Seminorm
 
 end continuous_of_bounded
@@ -712,8 +750,7 @@ lemma bound_of_continuous [Nonempty ι] [t : TopologicalSpace E] (hp : WithSemin
   -- Now forget that `E` already had a topology and view it as the (semi)normed space
   -- `(E, s.sup p)`.
   clear hp hq t
-  letI : SeminormedAddCommGroup E :=
-    (s.sup p).toAddGroupSeminorm.toSeminormedAddCommGroup
+  letI : SeminormedAddCommGroup E := (s.sup p).toSeminormedAddCommGroup
   letI : NormedSpace 𝕜 E := { norm_smul_le := fun a b ↦ le_of_eq (map_smul_eq_mul (s.sup p) a b) }
   -- The inclusion `hε` tells us exactly that `q` is *still* continuous for this new topology
   have : Continuous q :=

@@ -1581,6 +1581,24 @@ theorem isGLB_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, 
   @isLUB_pi α (fun a => (π a)ᵒᵈ) _ s f
 #align is_glb_pi isGLB_pi
 
+lemma bddAbove_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} :
+    BddAbove s ↔ ∀ a, BddAbove (Function.eval a '' s) :=
+  ⟨fun ⟨f, hf⟩ a ↦ ⟨f a, ball_image_of_ball fun _ hg ↦ hf hg a⟩,
+    fun h ↦ ⟨fun a ↦ (h a).some, fun _ hg a ↦ (h a).some_mem <| mem_image_of_mem _ hg⟩⟩
+
+lemma bddBelow_pi {π : α → Type _} [∀ a, Preorder (π a)] {s : Set (∀ a, π a)} :
+    BddBelow s ↔ ∀ a, BddBelow (Function.eval a '' s) :=
+  bddAbove_pi (π := fun a ↦ (π a)ᵒᵈ)
+
+lemma bddAbove_range_pi {π : α → Type _} [∀ a, Preorder (π a)] {F : ι → ∀ a, π a} :
+    BddAbove (range F) ↔ ∀ a, BddAbove (range fun i ↦ F i a) := by
+  simp only [bddAbove_pi, ←range_comp]
+  rfl
+
+lemma bddBelow_range_pi {π : α → Type _} [∀ a, Preorder (π a)] {F : ι → ∀ a, π a} :
+    BddBelow (range F) ↔ ∀ a, BddBelow (range fun i ↦ F i a) :=
+  bddAbove_range_pi (π := fun a ↦ (π a)ᵒᵈ)
+
 theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine'
