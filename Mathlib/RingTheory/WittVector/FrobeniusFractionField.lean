@@ -82,16 +82,16 @@ def succNthDefiningPoly (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) 
 theorem succNthDefiningPoly_degree [IsDomain k] (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
     (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) : (succNthDefiningPoly p n a₁ a₂ bs).degree = p :=
   by
-  have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1))).degree = p := by
+  have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1))).degree = (p : WithBot ℕ) := by
     rw [degree_mul, degree_C]
     · simp only [Nat.cast_withBot, add_zero, degree_X, degree_pow, Nat.smul_one_eq_coe]
     · exact pow_ne_zero _ ha₁
-  have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1))).degree = p := by
+  have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1))).degree = (p : WithBot ℕ) := by
     rw [degree_sub_eq_left_of_degree_lt, this]
     rw [this, degree_mul, degree_C, degree_X, add_zero]
     · exact_mod_cast hp.out.one_lt
     · exact pow_ne_zero _ ha₂
-  rw [succ_nth_defining_poly, degree_add_eq_left_of_degree_lt, this]
+  rw [succNthDefiningPoly, degree_add_eq_left_of_degree_lt, this]
   apply lt_of_le_of_lt degree_C_le
   rw [this]
   exact_mod_cast hp.out.pos
@@ -106,8 +106,8 @@ variable {k : Type _} [Field k] [CharP k p] [IsAlgClosed k]
 theorem root_exists (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k) (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ∃ b : k, (succNthDefiningPoly p n a₁ a₂ bs).IsRoot b :=
   IsAlgClosed.exists_root _ <| by
-    simp only [succ_nth_defining_poly_degree p n a₁ a₂ bs ha₁ ha₂, hp.out.ne_zero,
-      WithTop.coe_eq_zero, Ne.def, not_false_iff]
+    simp only [succNthDefiningPoly_degree p n a₁ a₂ bs ha₁ ha₂, ne_eq, Nat.cast_eq_zero,
+      hp.out.ne_zero, not_false_eq_true]
 #align witt_vector.recursion_main.root_exists WittVector.RecursionMain.root_exists
 
 /-- This is the `n+1`st coefficient of our solution, projected from `root_exists`. -/
@@ -131,10 +131,10 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
           a₂.coeff (n + 1) * bs 0 ^ p ^ (n + 1) +
         nthRemainder p n bs (truncateFun (n + 1) a₂) := by
   rw [← sub_eq_zero]
-  have := succ_nth_val_spec p n a₁ a₂ bs ha₁ ha₂
+  have := succNthVal_spec p n a₁ a₂ bs ha₁ ha₂
   simp only [Polynomial.map_add, Polynomial.eval_X, Polynomial.map_pow, Polynomial.eval_C,
-    Polynomial.eval_pow, succ_nth_defining_poly, Polynomial.eval_mul, Polynomial.eval_add,
-    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.def] at this 
+    Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
+    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.def] at this
   convert this using 1
   ring
 #align witt_vector.recursion_main.succ_nth_val_spec' WittVector.RecursionMain.succNthVal_spec'
@@ -148,7 +148,10 @@ namespace RecursionBase
 variable {k : Type _} [Field k] [IsAlgClosed k]
 
 theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
-  IsAlgClosed.exists_pow_nat_eq _ <| by linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
+  IsAlgClosed.exists_pow_nat_eq _ <|
+    -- Porting note: was
+    -- by linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
+    tsub_pos_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_pow WittVector.RecursionBase.solution_pow
 
 /-- The base case (0th coefficient) of our solution vector. -/
@@ -164,7 +167,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
     solution p a₁ a₂ ≠ 0 := by
   intro h
   have := solution_spec p a₁ a₂
-  rw [h, zero_pow] at this 
+  rw [h, zero_pow] at this
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
   · linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
 #align witt_vector.recursion_base.solution_nonzero WittVector.RecursionBase.solution_nonzero
@@ -228,7 +231,7 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
     have :=
       succ_nth_val_spec' p n a₁ a₂ (fun i : Fin (n + 1) => frobenius_rotation_coeff p ha₁ ha₂ i.val)
         ha₁ ha₂
-    simp only [frobenius_rotation_coeff, Fin.val_eq_coe, Fin.val_zero] at this 
+    simp only [frobenius_rotation_coeff, Fin.val_eq_coe, Fin.val_zero] at this
     convert this using 4
     apply TruncatedWittVector.ext
     intro i
@@ -248,7 +251,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
   intro b
   have key : WittVector.frobenius b * p ^ m * r' * p ^ n = p ^ m * b * (p ^ n * q') := by
     have H := congr_arg (fun x : 𝕎 k => x * p ^ m * p ^ n) (frobenius_frobenius_rotation p hr' hq')
-    dsimp at H 
+    dsimp at H
     refine' (Eq.trans _ H).trans _ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
@@ -287,4 +290,3 @@ end IsAlgClosed
 end FrobeniusRotation
 
 end WittVector
-
