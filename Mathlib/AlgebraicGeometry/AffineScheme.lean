@@ -110,13 +110,13 @@ def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
 #align algebraic_geometry.AffineScheme.Spec AlgebraicGeometry.AffineScheme.Spec
 
 -- Porting note : cannot automatically derive
-instance : Full Spec := Full.toEssImage _
+instance Spec_full : Full Spec := Full.toEssImage _
 
 -- Porting note : cannot automatically derive
-instance : Faithful Spec := Faithful.toEssImage _
+instance Spec_faithful : Faithful Spec := Faithful.toEssImage _
 
 -- Porting note : cannot automatically derive
-instance : EssSurj Spec := EssSurj.toEssImage (F := _)
+instance Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
@@ -125,11 +125,11 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
 #align algebraic_geometry.AffineScheme.forget_to_Scheme AlgebraicGeometry.AffineScheme.forgetToScheme
 
 -- Porting note : cannot automatically derive
-instance : Full forgetToScheme :=
+instance forgetToScheme_full : Full forgetToScheme :=
 show Full (Scheme.Spec.essImageInclusion) from inferInstance
 
 -- Porting note : cannot automatically derive
-instance : Faithful forgetToScheme :=
+instance forgetToScheme_faithful : Faithful forgetToScheme :=
 show Faithful (Scheme.Spec.essImageInclusion) from inferInstance
 
 /-- The global section functor of an affine scheme. -/
@@ -147,20 +147,20 @@ instance ΓIsEquiv : IsEquivalence Γ.{u} :=
   Functor.isEquivalenceTrans Γ.{u}.rightOp.op (opOpEquivalence _).functor
 #align algebraic_geometry.AffineScheme.Γ_is_equiv AlgebraicGeometry.AffineScheme.ΓIsEquiv
 
-instance : HasColimits AffineScheme.{u} :=
+instance hasColimits : HasColimits AffineScheme.{u} :=
   haveI := Adjunction.has_limits_of_equivalence.{u} Γ.{u}
   Adjunction.has_colimits_of_equivalence.{u} (opOpEquivalence AffineScheme.{u}).inverse
 
-instance : HasLimits AffineScheme.{u} := by
+instance hasLimits : HasLimits AffineScheme.{u} := by
   haveI := Adjunction.has_colimits_of_equivalence Γ.{u}
   haveI : HasLimits AffineScheme.{u}ᵒᵖᵒᵖ := Limits.hasLimits_op_of_hasColimits
   exact Adjunction.has_limits_of_equivalence (opOpEquivalence AffineScheme.{u}).inverse
 
-noncomputable instance : PreservesLimits Γ.{u}.rightOp :=
+noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp :=
   @Adjunction.isEquivalencePreservesLimits _ _ _ _ Γ.rightOp
     (IsEquivalence.ofEquivalence equivCommRingCat)
 
-noncomputable instance : PreservesLimits forgetToScheme := by
+noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })
     @preservesLimitsOfNatIso _ _ _ _ _ _
       (isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
@@ -423,10 +423,8 @@ theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine (X : Scheme) [IsAffine X]
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : X.presheaf.obj (op ⊤) → Opens X)) := by
   delta Opens.IsBasis
-  convert
-    PrimeSpectrum.isBasis_basic_opens.inducing
-      (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).inducing using
-    1
+  convert PrimeSpectrum.isBasis_basic_opens.inducing
+    (TopCat.homeoOfIso (Scheme.forgetToTop.mapIso X.isoSpec)).inducing using 1
   ext
   simp only [Set.mem_image, exists_exists_eq_and]
   constructor
@@ -459,7 +457,7 @@ theorem IsAffineOpen.exists_basicOpen_le {X : Scheme} {U : Opens X} (hU : IsAffi
   exact ⟨Set.image_subset_iff.mpr h₂, ⟨_, h⟩, h₁, rfl⟩
 #align algebraic_geometry.is_affine_open.exists_basic_open_le AlgebraicGeometry.IsAffineOpen.exists_basicOpen_le
 
-instance {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
+instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : X.presheaf.obj (op U)) :
     Algebra (X.presheaf.obj (op U)) (X.presheaf.obj (op <| X.basicOpen f)) :=
   (X.presheaf.map (homOfLE <| RingedSpace.basicOpen_le _ f : _ ⟶ U).op).toAlgebra
 
@@ -471,11 +469,10 @@ theorem IsAffineOpen.opens_map_fromSpec_basicOpen {X : Scheme} {U : Opens X}
         Spec.toLocallyRingedSpace.rightOp.obj <| X.presheaf.obj <| op U)
       (SpecΓIdentity.inv.app (X.presheaf.obj <| op U) f) := by
   erw [LocallyRingedSpace.preimage_basicOpen]
-  refine'
-    Eq.trans _
-      (RingedSpace.basicOpen_res_eq
-        (Scheme.Spec.obj <| op <| X.presheaf.obj (op U)).toLocallyRingedSpace.toRingedSpace
-        (eqToHom hU.fromSpec_base_preimage).op _)
+  refine' Eq.trans _
+    (RingedSpace.basicOpen_res_eq
+      (Scheme.Spec.obj <| op <| X.presheaf.obj (op U)).toLocallyRingedSpace.toRingedSpace
+      (eqToHom hU.fromSpec_base_preimage).op _)
   -- Porting note : `congr` does not work
   refine congr_arg (RingedSpace.basicOpen _ .) ?_
   -- Porting note : change `rw` to `erw`
@@ -497,7 +494,7 @@ def basicOpenSectionsToAffine {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
       (eqToHom <| (hU.opens_map_fromSpec_basicOpen f).symm).op
 #align algebraic_geometry.basic_open_sections_to_affine AlgebraicGeometry.basicOpenSectionsToAffine
 
-instance {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) (f : X.presheaf.obj (op U)) :
+instance basicOpenSectionsToAffine_isIso {X : Scheme} {U : Opens X} (hU : IsAffineOpen U) (f : X.presheaf.obj (op U)) :
     IsIso (basicOpenSectionsToAffine hU f) := by
   delta basicOpenSectionsToAffine
   apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
@@ -534,7 +531,7 @@ theorem isLocalization_basicOpen {X : Scheme} {U : Opens X} (hU : IsAffineOpen U
   apply StructureSheaf.toOpen_res
 #align algebraic_geometry.is_localization_basic_open AlgebraicGeometry.isLocalization_basicOpen
 
-instance {X : Scheme} [IsAffine X] (r : X.presheaf.obj (op ⊤)) :
+instance isLocalization_away_of_isAffine {X : Scheme} [IsAffine X] (r : X.presheaf.obj (op ⊤)) :
     IsLocalization.Away r (X.presheaf.obj (op <| X.basicOpen r)) :=
   isLocalization_basicOpen (topIsAffineOpen X) r
 
@@ -640,14 +637,17 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   rcases x with ⟨x, hx⟩
   let y := hU.primeIdealOf ⟨x, hx⟩
   have : hU.fromSpec.val.base y = x := hU.fromSpec_primeIdealOf ⟨x, hx⟩
+  have a1 : Algebra (X.presheaf.obj <| op U) (X.presheaf.stalk x) :=
+    TopCat.presheaf.stalk.algebra_section_stalk X.presheaf ⟨x, hx⟩
   change IsLocalization y.asIdeal.primeCompl _
-  clear_value y
+  dsimp [IsLocalization.AtPrime]
   subst this
+  dsimp
   apply
     (IsLocalization.isLocalization_iff_of_ringEquiv _
         (asIso <| PresheafedSpace.stalkMap hU.fromSpec.1 y).commRingCatIsoToRingEquiv).mpr
   convert StructureSheaf.is_localization.to_stalk _ _ using 1
-  delta StructureSheaf.stalk_algebra
+  delta StructureSheaf.stalkAlgebra
   congr 1
   rw [RingHom.algebraMap_toAlgebra]
   refine' (PresheafedSpace.stalk_map_germ hU.from_Spec.1 _ ⟨_, _⟩).trans _
