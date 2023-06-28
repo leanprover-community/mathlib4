@@ -230,14 +230,14 @@ section
 -- the first to `SubMulAction`? and the second to `Submodule.Basic`?
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
 this to manually derive `SMulMemClass` on specific types. -/
-def SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
+def _root_.SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
   [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
   SMulMemClass S M α :=
 { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
-def SMulMemClass.toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+def _root_.SMulMemClass.toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
     Module R' s :=
@@ -635,7 +635,7 @@ theorem top_toNonUnitalSubsemiring : (⊤ : NonUnitalSubalgebra R A).toNonUnital
   rfl
 
 @[simp]
-theorem top_to_subring {R A : Type _} [CommRing R] [NonUnitalRing A] [Module R A]
+theorem top_toSubring {R A : Type _} [CommRing R] [NonUnitalRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] :
     (⊤ : NonUnitalSubalgebra R A).toNonUnitalSubring = ⊤ :=
   rfl
@@ -652,7 +652,7 @@ theorem toNonUnitalSubsemiring_eq_top {S : NonUnitalSubalgebra R A} :
 @[simp]
 theorem to_subring_eq_top {R A : Type _} [CommRing R] [Ring A] [Algebra R A]
     {S : NonUnitalSubalgebra R A} : S.toNonUnitalSubring = ⊤ ↔ S = ⊤ :=
-  NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_to_subring
+  NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
   rw [←SetLike.le_def]
