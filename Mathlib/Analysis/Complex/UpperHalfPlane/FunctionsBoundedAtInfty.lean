@@ -8,9 +8,9 @@ Authors: Chris Birkbeck, David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Submodule.Basic
-import Mathbin.Analysis.Complex.UpperHalfPlane.Basic
-import Mathbin.Order.Filter.ZeroAndBoundedAtFilter
+import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Bounded at infinity
@@ -39,8 +39,7 @@ theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im �
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
 #align upper_half_plane.at_im_infty_basis UpperHalfPlane.atImInfty_basis
 
-theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S :=
-  by
+theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → z ∈ S := by
   simp only [at_im_infty, Filter.mem_comap', Filter.mem_atTop_sets, ge_iff_le, Set.mem_setOf_eq,
     UpperHalfPlane.coe_im]
   refine' ⟨fun ⟨a, h⟩ => ⟨a, fun z hz => h (im z) hz rfl⟩, _⟩
@@ -86,8 +85,7 @@ theorem bounded_mem (f : ℍ → ℂ) :
 #align upper_half_plane.bounded_mem UpperHalfPlane.bounded_mem
 
 theorem zero_at_im_infty (f : ℍ → ℂ) :
-    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
-  by
+    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε := by
   rw [is_zero_at_im_infty, zero_at_filter, tendsto_iff_forall_eventually_mem]
   constructor
   · simp_rw [Filter.Eventually, at_im_infty_mem]
