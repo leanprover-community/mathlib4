@@ -1837,6 +1837,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 import Mathlib.Geometry.Euclidean.Basic
 import Mathlib.Geometry.Euclidean.Circumcenter
 import Mathlib.Geometry.Euclidean.Inversion
+import Mathlib.Geometry.Euclidean.MongePoint
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
@@ -2006,6 +2007,7 @@ import Mathlib.Lean.Expr
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Expr.Traverse
+import Mathlib.Lean.IO.Process
 import Mathlib.Lean.Json
 import Mathlib.Lean.Linter
 import Mathlib.Lean.LocalContext
