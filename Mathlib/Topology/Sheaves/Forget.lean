@@ -48,17 +48,17 @@ namespace SheafCondition
 
 open SheafConditionEqualizerProducts
 
-universe v u₁ u₂
+universe v u₁ u₂ w
 
-variable {C : Type u₁} [Category.{v} C] [HasLimits C]
+variable {C : Type u₁} [Category.{v} C] [HasLimitsOfSize.{w, w} C]
 
-variable {D : Type u₂} [Category.{v} D] [HasLimits D]
+variable {D : Type u₂} [Category.{v} D] [HasLimitsOfSize.{w, w} D]
 
-variable (G : C ⥤ D) [PreservesLimits G]
+variable (G : C ⥤ D) [PreservesLimitsOfSize.{w, w} G]
 
-variable {X : TopCat.{v}} (F : Presheaf C X)
+variable {X : TopCat.{w}} (F : Presheaf C X)
 
-variable {ι : Type v} (U : ι → Opens X)
+variable {ι : Type w} (U : ι → Opens X)
 
 -- Porting note : Lean4 does not support this
 -- attribute [local reducible] diagram left_res right_res
@@ -66,7 +66,7 @@ variable {ι : Type v} (U : ι → Opens X)
 /-- When `G` preserves limits, the sheaf condition diagram for `F` composed with `G` is
 naturally isomorphic to the sheaf condition diagram for `F ⋙ G`.
 -/
-def diagramCompPreservesLimits : diagram F U ⋙ G ≅ diagram.{v} (F ⋙ G) U := by
+def diagramCompPreservesLimits : diagram F U ⋙ G ≅ diagram.{w} (F ⋙ G) U := by
   fapply NatIso.ofComponents
   rintro ⟨j⟩
   exact PreservesProduct.iso _ _
@@ -104,7 +104,7 @@ is the sheaf condition fork for `F ⋙ G`,
 postcomposed with the inverse of the natural isomorphism `diagramCompPreservesLimits`.
 -/
 def mapConeFork :
-    G.mapCone (fork.{v} F U) ≅
+    G.mapCone (fork.{w} F U) ≅
       (Cones.postcompose (diagramCompPreservesLimits G F U).inv).obj (fork (F ⋙ G) U) :=
   Cones.ext (Iso.refl _) fun j => by
     dsimp; simp [diagramCompPreservesLimits]; cases j <;> dsimp
@@ -131,7 +131,7 @@ set_option linter.uppercaseLean3 false in
 
 end SheafCondition
 
-universe v u₁ u₂
+universe v u₁ u₂ w
 
 open SheafCondition SheafConditionEqualizerProducts
 
@@ -141,9 +141,9 @@ variable (G : C ⥤ D)
 
 variable [ReflectsIsomorphisms G]
 
-variable [HasLimits C] [HasLimits D] [PreservesLimits G]
+variable [HasLimitsOfSize.{w, w} C] [HasLimitsOfSize.{w, w} D] [PreservesLimitsOfSize.{w, w} G]
 
-variable {X : TopCat.{v}} (F : Presheaf C X)
+variable {X : TopCat.{w}} (F : Presheaf C X)
 
 /-- If `G : C ⥤ D` is a functor which reflects isomorphisms and preserves limits
 (we assume all limits exist in both `C` and `D`),
@@ -201,7 +201,7 @@ theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F �
       -- image under `G` of the equalizer cone for the sheaf condition diagram.
       let c := fork (F ⋙ G) U
       obtain ⟨hc⟩ := S U
-      let d := G.mapCone (equalizer.fork (leftRes.{v} F U) (rightRes F U))
+      let d := G.mapCone (equalizer.fork (leftRes.{w} F U) (rightRes F U))
       letI := preservesSmallestLimitsOfPreservesLimits G
       have hd : IsLimit d := PreservesLimit.preserves (limit.isLimit _)
       -- Since both of these are limit cones

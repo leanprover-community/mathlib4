@@ -9,6 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Yoneda
+import Mathlib.Data.TypeMax
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Category.TopCommRingCat
 import Mathlib.Topology.ContinuousFunction.Algebra
@@ -31,7 +32,7 @@ We construct some simple examples of presheaves of functions on a topological sp
 -/
 
 
-universe v u
+universe v u w
 
 open CategoryTheory
 
@@ -46,7 +47,7 @@ variable (X : TopCat.{v})
 /-- The presheaf of dependently typed functions on `X`, with fibres given by a type family `T`.
 There is no requirement that the functions are continuous, here.
 -/
-def presheafToTypes (T : X → Type v) : X.Presheaf (Type v) where
+def presheafToTypes (T : X → Type w) : X.Presheaf (TypeMax.{v, w}) where
   obj U := ∀ x : U.unop, T x
   map {U V} i g := fun x : V.unop => g (i.unop x)
   map_id U := by
@@ -57,14 +58,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types TopCat.presheafToTypes
 
 @[simp]
-theorem presheafToTypes_obj {T : X → Type v} {U : (Opens X)ᵒᵖ} :
+theorem presheafToTypes_obj {T : X → Type w} {U : (Opens X)ᵒᵖ} :
     (presheafToTypes X T).obj U = ∀ x : U.unop, T x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Types_obj TopCat.presheafToTypes_obj
 
 @[simp]
-theorem presheafToTypes_map {T : X → Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
+theorem presheafToTypes_map {T : X → Type w} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
     (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -79,7 +80,7 @@ set_option linter.uppercaseLean3 false in
 /-- The presheaf of functions on `X` with values in a type `T`.
 There is no requirement that the functions are continuous, here.
 -/
-def presheafToType (T : Type v) : X.Presheaf (Type v) where
+def presheafToType (T : Type w) : X.Presheaf (TypeMax.{v, w}) where
   obj U := U.unop → T
   map {U V} i g := g ∘ i.unop
   map_id U := by
@@ -90,14 +91,14 @@ set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Type TopCat.presheafToType
 
 @[simp]
-theorem presheafToType_obj {T : Type v} {U : (Opens X)ᵒᵖ} :
+theorem presheafToType_obj {T : Type w} {U : (Opens X)ᵒᵖ} :
     (presheafToType X T).obj U = (U.unop → T) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf_to_Type_obj TopCat.presheafToType_obj
 
 @[simp]
-theorem presheafToType_map {T : Type v} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
+theorem presheafToType_map {T : Type w} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
     (presheafToType X T).map i f = f ∘ i.unop :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -105,6 +106,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The presheaf of continuous functions on `X` with values in fixed target topological space
 `T`. -/
+-- TODO it may prove useful to generalize the universes here,
+-- but the definition would need to change.
 def presheafToTop (T : TopCat.{v}) : X.Presheaf (Type v) :=
   (Opens.toTopCat X).op ⋙ yoneda.obj T
 set_option linter.uppercaseLean3 false in

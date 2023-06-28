@@ -45,9 +45,9 @@ noncomputable section
 open TopCat TopCat.Presheaf TopCat.Presheaf.SheafConditionEqualizerProducts CategoryTheory
   CategoryTheory.Limits TopologicalSpace TopologicalSpace.Opens Opposite
 
-universe u v
+universe u v w
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+variable {C : Type u} [Category.{max w v} C] [ConcreteCategory.{max w v} C]
 
 namespace TopCat
 
@@ -57,7 +57,7 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
-variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type w} (U : ι → Opens X)
 
 /-- A family of sections `sf` is compatible, if the restrictions of `sf i` and `sf j` to `U i ⊓ U j`
 agree, for all `i` and `j`
@@ -84,8 +84,8 @@ We prove this to be equivalent to the usual one below in
 `TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`
 -/
 def IsSheafUniqueGluing : Prop :=
-  ∀ ⦃ι : Type v⦄ (U : ι → Opens X) (sf : ∀ i : ι, F.obj (op (U i))),
-    IsCompatible F U sf → ∃! s : F.obj (op (iSup U)), IsGluing F U sf s
+  ∀ ⦃ι : Type w⦄ (U : ι → Opens X) (sf : ∀ i : ι, F.obj (op (U i))),
+    IsCompatible.{u, v, w} F U sf → ∃! s : F.obj (op (iSup U)), IsGluing.{u, v, w} F U sf s
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unique_gluing TopCat.Presheaf.IsSheafUniqueGluing
 
@@ -93,14 +93,18 @@ end
 
 section TypeValued
 
-variable {X : TopCat.{v}} (F : Presheaf (Type v) X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{w}} (F : Presheaf TypeMax.{w, v} X) {ι : Type w} (U : ι → Opens X)
 
 /-- For presheaves of types, terms of `piOpens F U` are just families of sections.
 -/
 def piOpensIsoSectionsFamily : piOpens F U ≅ ∀ i : ι, F.obj (op (U i)) :=
   Limits.IsLimit.conePointUniqueUpToIso
     (limit.isLimit (Discrete.functor fun i : ι => F.obj (op (U i))))
-    (Types.productLimitCone.{v, v} fun i : ι => F.obj (op (U i))).isLimit
+    -- Porting note: mathlib3 (after #19153) says
+    -- `productLimitCone.{w, max w v}` but Lean4 will not accept this.
+    -- It does accept `productLimitCone.{w, v}`, or just leaving the universe annotations off.
+    -- I guess we could backport.
+    (LimitCone.isLimit (Types.productLimitCone.{w, v} fun i : ι => F.obj (op (U i))))
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pi_opens_iso_sections_family TopCat.Presheaf.piOpensIsoSectionsFamily
 
@@ -111,9 +115,9 @@ theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
     IsCompatible F U ((piOpensIsoSectionsFamily F U).hom sf) ↔
     leftRes F U sf = rightRes F U sf := by
   constructor <;> intro h
-  · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
-    refine Types.limit_ext' _ _ _ fun ⟨i, j⟩ => ?_
-    rw [leftRes, Types.Limit.lift_π_apply', Fan.mk_π_app, rightRes, Types.Limit.lift_π_apply',
+  · -- Porting note : Lean can't use `Types.limit_ext` as an `ext` lemma
+    refine Types.limit_ext _ _ _ fun ⟨i, j⟩ => ?_
+    rw [leftRes, Types.Limit.lift_π_apply, Fan.mk_π_app, rightRes, Types.Limit.lift_π_apply,
       Fan.mk_π_app]
     exact h i j
   · intro i j
@@ -133,9 +137,9 @@ equalizer diagram).
 theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
     IsGluing F U ((piOpensIsoSectionsFamily F U).hom sf) s ↔ res F U s = sf := by
   constructor <;> intro h
-  · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
-    refine Types.limit_ext' _ _ _ fun ⟨i⟩ => ?_
-    rw [res, Types.Limit.lift_π_apply', Fan.mk_π_app]
+  · -- Porting note : Lean can't use `Types.limit_ext` as an `ext` lemma
+    refine Types.limit_ext _ _ _ fun ⟨i⟩ => ?_
+    rw [res, Types.Limit.lift_π_apply, Fan.mk_π_app]
     exact h i
   · intro i
     convert congr_arg (Limits.Pi.π (fun i : ι => F.obj (op (U i))) i) h
@@ -210,9 +214,10 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
-variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
+variable [HasLimitsOfSize.{w, w} C] [ReflectsIsomorphisms (forget C)]
+  [PreservesLimitsOfSize.{w, w} (forget C)]
 
-variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type w} (U : ι → Opens X)
 
 /-- For presheaves valued in a concrete category, whose forgetful functor reflects isomorphisms and
 preserves limits, the sheaf condition in terms of unique gluings is equivalent to the usual one
@@ -238,11 +243,10 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
-variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
+variable [HasLimitsOfSize.{w, w} C] [ReflectsIsomorphisms (CategoryTheory.forget C)]
+variable [PreservesLimitsOfSize.{w, w} (CategoryTheory.forget C)]
 
-variable [PreservesLimits (ConcreteCategory.forget (C := C))]
-
-variable {X : TopCat.{v}} (F : Sheaf C X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{w}} (F : Sheaf C X) {ι : Type w} (U : ι → Opens X)
 
 /-- A more convenient way of obtaining a unique gluing of sections for a sheaf.
 -/
@@ -292,6 +296,8 @@ theorem eq_of_locally_eq (s t : F.1.obj (op (iSup U)))
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq TopCat.Sheaf.eq_of_locally_eq
 
+-- Porting note: after the port, it may be helpful to reorder the universe arguments here
+-- so they can be inferred more easily.
 /-- In this version of the lemma, the inclusion homs `iUV` can be specified directly by the user,
 which can be more convenient in practice.
 -/

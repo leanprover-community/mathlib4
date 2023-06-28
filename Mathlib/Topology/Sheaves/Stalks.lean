@@ -464,7 +464,7 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
   choose V m i₁ i₂ heq using fun x : U => F.presheaf.germ_eq x.1 x.2 x.2 s t (h x)
   -- Since `F` is a sheaf, we can prove the equality locally, if we can show that these
   -- neighborhoods form a cover of `U`.
-  apply F.eq_of_locally_eq' V U i₁
+  apply TopCat.Sheaf.eq_of_locally_eq'.{u, v, v} F V U i₁
   · intro x hxU
     erw [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
@@ -549,11 +549,11 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
     intro x hxU
     erw [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, mV ⟨x, hxU⟩⟩
-  suffices IsCompatible F.val V sf by
+  suffices IsCompatible.{u, v, v} F.val V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.
     obtain ⟨s, s_spec, -⟩ := F.existsUnique_gluing' V U iVU V_cover sf this
     · use s
-      apply G.eq_of_locally_eq' V U iVU V_cover
+      apply TopCat.Sheaf.eq_of_locally_eq'.{u, v, v} G V U iVU V_cover
       intro x
       rw [← comp_apply, ← f.1.naturality, comp_apply, s_spec, heq]
   intro x y
