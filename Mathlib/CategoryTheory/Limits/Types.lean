@@ -93,7 +93,8 @@ instance (priority := 1100) :
   Types.hasLimitsOfSize.{w, v}
 
 -- This needs to have priority higher than the instance for `TypeMax.{w, v}`.
-instance (priority := 1200) : HasLimitsOfSize.{v, v, v, v + 1} (Type v) := Types.hasLimitsOfSize.{v, v}
+instance (priority := 1200) : HasLimitsOfSize.{v, v, v, v + 1} (Type v) :=
+  Types.hasLimitsOfSize.{v, v}
 
 -- Verify that we can find instances, at least when we ask for `TypeMax.{w, v}`:
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
