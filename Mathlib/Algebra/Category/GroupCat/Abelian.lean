@@ -12,8 +12,8 @@ import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.Abelian.Basic
-
 /-!
 # The category of abelian groups is abelian
 -/
@@ -63,6 +63,8 @@ instance : Abelian AddCommGroupCat.{u} where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
+variable {A B C : AddCommGroupCat.{u}} (f : A ⟶ B) (g : B ⟶ C)
+
 theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (ModuleCat.kernelIsLimit _) (ModuleCat.cokernelIsColimit _)]
@@ -97,6 +99,9 @@ theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
   · rintro h _ ⟨x, rfl⟩
     exact AddMonoidHom.congr_fun h x
 
+
+
+
 -- Axiom AB5 for `AddCommGroup`
 theorem exact_colim_of_exact_of_is_filtered
   (F G H : J ⥤ AddCommGroupCat.{u}) (η : F ⟶ G) (γ : G ⟶ H) :
@@ -104,9 +109,10 @@ theorem exact_colim_of_exact_of_is_filtered
   intros h
   rw [AddCommGroupCat.exact_iff']
   constructor
-  · ext1 j, simp [reassoc_of (h j).1]
-  · rintros x (hx : _ = _)
-    obtain ⟨j,y,rfl⟩ := Limits.concrete.colimit_exists_rep _ x
+  · refine colimit.hom_ext  (fun j => ?_)
+    simp [reassoc_of% (h j).1]
+  · rintro x (hx : _ = _)
+    obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep _ x
     erw [← comp_apply, Limits.colimit.ι_desc] at hx
     dsimp at hx
     rw [comp_apply] at hx,
@@ -114,7 +120,7 @@ theorem exact_colim_of_exact_of_is_filtered
       simp
     rw [this] at hx
     clear this
-    obtain ⟨k,e₁,e₂,hk⟩ := Limits.concrete.colimit_exists_of_rep_eq _ _ _ hx
+    obtain ⟨k,e₁,e₂,hk⟩ := Limits.Concrete.colimit_exists_of_rep_eq _ _ _ hx
     simp only [map_zero, ← comp_apply, ← nat_trans.naturality] at hk, rw comp_apply at hk
     obtain ⟨t,ht⟩ := ((AddCommGroupCat.exact_iff' _ _).1 (h k)).2 hk
     use Limits.colimit.ι F k t
