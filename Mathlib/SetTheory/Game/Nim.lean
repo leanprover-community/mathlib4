@@ -24,7 +24,7 @@ where `n` and `m` are natural numbers, then `G + H` has the Grundy value `n xor 
 
 ## Implementation details
 
-The pen-and-paper definition of nim defines the possible moves of `nim o` to be `set.Iio o`.
+The pen-and-paper definition of nim defines the possible moves of `nim o` to be `Set.Iio o`.
 However, this definition does not work for us because it would make the type of nim
 `ordinal.{u} → pgame.{u + 1}`, which would make it impossible for us to state the Sprague-Grundy
 theorem, since that requires the type of `nim` to be `ordinal.{u} → pgame.{u}`. For this reason, we
@@ -357,7 +357,7 @@ theorem grundyValue_eq_mex_right :
 #align pgame.grundy_value_eq_mex_right PGame.grundyValue_eq_mex_right
 
 -- Todo: this actually generalizes to all ordinals, by defining `ordinal.lxor` as the pairwise
--- `nat.lxor` of base `ω` Cantor normal forms.
+-- `Nat.lxor'` of base `ω` Cantor normal forms.
 /-- The Grundy value of the sum of two nim games with natural numbers of piles equals their bitwise
 xor. -/
 @[simp]
@@ -369,9 +369,9 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
   rw [grundyValue_eq_mex_left]
   refine (Ordinal.mex_le_of_ne.{u, u} fun i => ?_).antisymm
     (Ordinal.le_mex_of_forall fun ou hu => ?_)
-  -- The Grundy value `nat.lxor n m` can't be reached by left moves.
+  -- The Grundy value `Nat.lxor' n m` can't be reached by left moves.
   · apply leftMoves_add_cases i <;>
-      · -- A left move leaves us with a Grundy value of `nat.lxor k m` for `k < n`, or `nat.lxor n k`
+      · -- A left move leaves us with a Grundy value of `Nat.lxor' k m` for `k < n`, or `Nat.lxor' n k`
         -- for `k < m`.
         refine' fun a => leftMovesNimRecOn a fun ok hk => _
         obtain ⟨k, rfl⟩ := Ordinal.lt_omega.1 (hk.trans (Ordinal.nat_lt_omega _))
@@ -387,14 +387,14 @@ theorem grundyValue_nim_add_nim (n m : ℕ) :
         | rwa [Nat.lxor'_left_inj] at h
         | rwa [Nat.lxor'_right_inj] at h
   -- Every other smaller Grundy value can be reached by left moves.
-  · -- If `u < nat.lxor m n`, then either `nat.lxor u n < m` or `nat.lxor u m < n`.
+  · -- If `u < Nat.lxor' m n`, then either `Nat.lxor' u n < m` or `Nat.lxor' u m < n`.
     obtain ⟨u, rfl⟩ := Ordinal.lt_omega.1 (hu.trans (Ordinal.nat_lt_omega _))
     replace hu := Ordinal.nat_cast_lt.1 hu
     cases' Nat.lt_lxor'_cases hu with h h
-    -- In the first case, reducing the `m` pile to `nat.lxor u n` gives the desired Grundy value.
+    -- In the first case, reducing the `m` pile to `Nat.lxor' u n` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inl <| toLeftMovesNim ⟨_, Ordinal.nat_cast_lt.2 h⟩), _⟩
       simp [Nat.lxor_cancel_right, hn _ h]
-    -- In the second case, reducing the `n` pile to `nat.lxor u m` gives the desired Grundy value.
+    -- In the second case, reducing the `n` pile to `Nat.lxor' u m` gives the desired Grundy value.
     · refine' ⟨toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, Ordinal.nat_cast_lt.2 h⟩), _⟩
       have : n.lxor' (u.lxor' n) = u; rw [Nat.lxor'_comm u, Nat.lxor'_cancel_left]
       simpa [hm _ h] using this
