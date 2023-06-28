@@ -76,9 +76,6 @@ elliptic curve, rational point, group law
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow])
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-private unsafe def derivative_simp : tactic Unit :=
-  sorry
 
 universe u v w
 
@@ -94,6 +91,11 @@ local macro "eval_simp" : tactic =>
 -- Porting note: copied from `Weierstass` and moved here because it needs `open Polynomial`
 local macro "C_simp" : tactic =>
   `(tactic| simp only [C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
+
+-- Porting note: moved here because it needs `open Polynomial`
+local macro "derivative_simp" : tactic =>
+  `(tactic| simp only [derivative_C, derivative_X, derivative_X_pow, derivative_neg, derivative_add,
+              derivative_sub, derivative_mul, derivative_sq])
 
 open scoped nonZeroDivisors Polynomial PolynomialPolynomial
 
@@ -292,52 +294,42 @@ theorem XYIdeal_add_eq :
   -- Porting note: original proof
   --  conv_rhs => rw [sub_sub, ← neg_add', map_neg, span_singleton_neg, sup_comm, ← span_insert]
   -- but using a `conv` here times out the rest of the proof
-  have : span {(AdjoinRoot.mk (W.polynomial))
+  rw [show span {(AdjoinRoot.mk (W.polynomial))
       (-Y - (C (C W.a₁ * Y + C W.a₃ : R[X]) : R[X][Y])
       - (C (C L * (Y - C x₁) + C y₁ : R[X]) : R[X][Y]))} ⊔
       span {CoordinateRing.mk W (C (Y - (C (addX W x₁ x₂ L) : R[X])) : R[X][Y])} =
       span {CoordinateRing.mk W (C (Y - (C (addX W x₁ x₂ L) : R[X])) : R[X][Y]),
       (AdjoinRoot.mk (WeierstrassCurve.polynomial W))
-      (Y + (C (C W.a₁ * Y + C W.a₃) + C (C L * (Y - C x₁) + C y₁)))} := by
-    rw [sub_sub, ← neg_add', map_neg, span_singleton_neg, sup_comm, ← span_insert]
-  rw [this, ← span_pair_add_mul_right <| AdjoinRoot.mk _ <| C <| C <| W.a₁ + L, ← _root_.map_mul,
+      (Y + (C (C W.a₁ * Y + C W.a₃) + C (C L * (Y - C x₁) + C y₁)))} by
+    rw [sub_sub, ← neg_add', map_neg, span_singleton_neg, sup_comm, ← span_insert]]
+  rw [← span_pair_add_mul_right <| AdjoinRoot.mk _ <| C <| C <| W.a₁ + L, ← _root_.map_mul,
     ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring
+set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.XY_ideal_add_eq WeierstrassCurve.XYIdeal_add_eq
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
 theorem equation_add_iff :
     W.equation (W.addX x₁ x₂ L) (W.addY' x₁ x₂ y₁ L) ↔
       (W.addPolynomial x₁ y₁ L).eval (W.addX x₁ x₂ L) = 0 := by
-  rw [equation, add_Y', add_polynomial, line_polynomial, WeierstrassCurve.polynomial]
-  run_tac
-    eval_simp
+  rw [WeierstrassCurve.equation, addY', addPolynomial, linePolynomial, WeierstrassCurve.polynomial]
+  eval_simp
 #align weierstrass_curve.equation_add_iff WeierstrassCurve.equation_add_iff
 
-#exit
-
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.1686593491.derivative_simp -/
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.2062814307.eval_simp -/
 theorem nonsingular_add_of_eval_derivative_ne_zero
     (hx' : W.equation (W.addX x₁ x₂ L) (W.addY' x₁ x₂ y₁ L))
     (hx : (derivative <| W.addPolynomial x₁ y₁ L).eval (W.addX x₁ x₂ L) ≠ 0) :
     W.nonsingular (W.addX x₁ x₂ L) (W.addY' x₁ x₂ y₁ L) := by
-  rw [nonsingular, and_iff_right hx', add_Y', polynomial_X, polynomial_Y]
-  run_tac
-    eval_simp
+  rw [WeierstrassCurve.nonsingular, and_iff_right hx', addY', WeierstrassCurve.polynomialX,
+    WeierstrassCurve.polynomialY]
+  eval_simp
   contrapose! hx
-  rw [add_polynomial, line_polynomial, WeierstrassCurve.polynomial]
-  run_tac
-    eval_simp
-  run_tac
-    derivative_simp
+  rw [addPolynomial, linePolynomial, WeierstrassCurve.polynomial]
+  eval_simp
+  derivative_simp
   simp only [zero_add, add_zero, sub_zero, MulZeroClass.zero_mul, mul_one]
-  run_tac
-    eval_simp
+  eval_simp
   linear_combination (norm := (norm_num1; ring1)) hx.left + L * hx.right
 #align weierstrass_curve.nonsingular_add_of_eval_derivative_ne_zero WeierstrassCurve.nonsingular_add_of_eval_derivative_ne_zero
 
