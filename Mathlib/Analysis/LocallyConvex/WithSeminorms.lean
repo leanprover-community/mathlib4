@@ -661,8 +661,6 @@ theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [Normed
   exact continuous_from_bounded (norm_withSeminorms 𝕝 E) hq f hf
 #align seminorm.cont_normed_space_to_with_seminorms Seminorm.cont_normedSpace_to_withSeminorms
 
-#check uniformContinuous_sInf_rng
-
 lemma uniform_equicontinuous_iff_exists_continuous_seminorm {κ : Type _}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
     [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
