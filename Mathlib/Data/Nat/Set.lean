@@ -9,6 +9,7 @@ Authors: Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Nat.Basic
 
 /-!
 ### Recursion on the natural numbers and `Set.range`

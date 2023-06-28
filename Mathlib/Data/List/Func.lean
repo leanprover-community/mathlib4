@@ -26,7 +26,7 @@ as a list `m` as an index, and `a` as a new element, the notation is `as {m ↦ 
 So, for example
 `[1, 3, 5] {1 ↦ 9}` would result in `[1, 9, 5]`
 
-This notation is in the locale `list.func`.
+This notation is in the locale `List.Func`.
 -/
 
 

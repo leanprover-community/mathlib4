@@ -401,6 +401,8 @@ theorem leRecOn_self {C : ℕ → Sort u} {n} {h : n ≤ n} {next : ∀ {k}, C k
   cases n <;> unfold leRecOn Eq.recOn
   · simp
   · unfold Or.by_cases
+    -- FIXME I can't work out where this `Nat.add` came from!
+    simp only [add_eq, add_zero]
     rw [dif_neg (Nat.not_succ_le_self _)]
 #align nat.le_rec_on_self Nat.leRecOn_self
 

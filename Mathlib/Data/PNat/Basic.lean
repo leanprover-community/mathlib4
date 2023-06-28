@@ -318,7 +318,7 @@ def caseStrongInductionOn {p : ℕ+ → Sort _} (a : ℕ+) (hz : p 1)
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (lt_succ_iff.2 hm)
 #align pnat.case_strong_induction_on PNat.caseStrongInductionOn
 
-/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
+/-- An induction principle for `ℕ+`: it takes values in `Sort _`, so it applies also to Types,
 not only to `Prop`. -/
 @[elab_as_elim]
 def recOn (n : ℕ+) {p : ℕ+ → Sort _} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by

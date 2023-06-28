@@ -114,7 +114,7 @@ theorem iterate_left {g : ℕ → α → α} (H : ∀ n, Semiconj f (g n) (g <| 
   induction' n with n ihn generalizing k
   · rw [Nat.zero_add]
     exact id_left
-  · rw [Nat.succ_eq_add_one, Nat.add_right_comm, Nat.add_assoc]
+  · rw [Nat.add_right_comm, Nat.add_assoc]
     exact (H k).comp_left (ihn (k + 1))
 #align function.semiconj.iterate_left Function.Semiconj.iterate_left
 
