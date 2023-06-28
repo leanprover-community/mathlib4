@@ -124,25 +124,25 @@ section Quantity
 
 /-! ### Standard quantities -/
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₂` coefficient of a Weierstrass curve. -/
 def b₂ : R :=
   W.a₁ ^ 2 + 4 * W.a₂
 #align weierstrass_curve.b₂ WeierstrassCurve.b₂
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₄` coefficient of a Weierstrass curve. -/
 def b₄ : R :=
   2 * W.a₄ + W.a₁ * W.a₃
 #align weierstrass_curve.b₄ WeierstrassCurve.b₄
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₆` coefficient of a Weierstrass curve. -/
 def b₆ : R :=
   W.a₃ ^ 2 + 4 * W.a₆
 #align weierstrass_curve.b₆ WeierstrassCurve.b₆
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `b₈` coefficient of a Weierstrass curve. -/
 def b₈ : R :=
   W.a₁ ^ 2 * W.a₆ + 4 * W.a₂ * W.a₆ - W.a₁ * W.a₃ * W.a₄ + W.a₂ * W.a₃ ^ 2 - W.a₄ ^ 2
@@ -153,19 +153,19 @@ lemma b_relation : 4 * W.b₈ = W.b₂ * W.b₆ - W.b₄ ^ 2 := by
   ring1
 #align weierstrass_curve.b_relation WeierstrassCurve.b_relation
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₄` coefficient of a Weierstrass curve. -/
 def c₄ : R :=
   W.b₂ ^ 2 - 24 * W.b₄
 #align weierstrass_curve.c₄ WeierstrassCurve.c₄
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The `c₆` coefficient of a Weierstrass curve. -/
 def c₆ : R :=
   -W.b₂ ^ 3 + 36 * W.b₂ * W.b₄ - 216 * W.b₆
 #align weierstrass_curve.c₆ WeierstrassCurve.c₆
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The discriminant `Δ` of a Weierstrass curve. If `R` is a field, then this polynomial vanishes
 if and only if the cubic curve cut out by this equation is singular. Sometimes only defined up to
 sign in the literature; we choose the sign used by the LMFDB. For more discussion, see
@@ -389,13 +389,13 @@ lemma polynomial_ne_zero [Nontrivial R] : W.polynomial ≠ 0 := by
   exact Cubic.ne_zero_of_b_ne_zero one_ne_zero
 #align weierstrass_curve.polynomial_ne_zero WeierstrassCurve.polynomial_ne_zero
 
--- porting note: removed `@[simp]`
+@[simp]
 lemma degree_polynomial [Nontrivial R] : W.polynomial.degree = 2 := by
   rw [polynomial_eq]
   exact Cubic.degree_of_b_ne_zero' one_ne_zero
 #align weierstrass_curve.degree_polynomial WeierstrassCurve.degree_polynomial
 
--- porting note: removed `@[simp]`
+@[simp]
 lemma natDegree_polynomial [Nontrivial R] : W.polynomial.natDegree = 2 := by
   rw [polynomial_eq]
   exact Cubic.natDegree_of_b_ne_zero' one_ne_zero
@@ -406,7 +406,6 @@ lemma monic_polynomial : W.polynomial.Monic := by
   simpa only [polynomial_eq] using Cubic.monic_of_b_eq_one'
 #align weierstrass_curve.monic_polynomial WeierstrassCurve.monic_polynomial
 
--- porting note: replaced two `any_goals` proofs with two pairs of repeated proofs
 lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   by_contra h
   rcases (W.monic_polynomial.not_irreducible_iff_exists_add_mul_eq_coeff W.natDegree_polynomial).mp
@@ -416,13 +415,12 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
-  · rw [degree_add_eq_right_of_degree_lt] <;> simp only [h]
-  · rw [degree_add_eq_right_of_degree_lt] <;> simp only [h]
-  · rw [degree_add_eq_left_of_degree_lt] <;> simp only [h]
-  · rw [degree_add_eq_left_of_degree_lt] <;> simp only [h]
+  -- porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
+  iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h]
+  iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h]
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.irreducible_polynomial
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_polynomial (x y : R) :
     (W.polynomial.eval <| C y).eval x =
       y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
@@ -449,7 +447,7 @@ lemma equation_iff' (x y : R) :
   rw [WeierstrassCurve.equation, eval_polynomial]
 #align weierstrass_curve.equation_iff' WeierstrassCurve.equation_iff'
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 lemma equation_iff (x y : R) :
     W.equation x y ↔ y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆ := by
   rw [equation_iff', sub_eq_zero]
@@ -492,7 +490,7 @@ protected noncomputable def polynomialX : R[X][Y] :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_X WeierstrassCurve.polynomialX
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_polynomialX (x y : R) :
     (W.polynomialX.eval <| C y).eval x = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
   simp only [WeierstrassCurve.polynomialX]
@@ -516,7 +514,7 @@ protected noncomputable def polynomialY : R[X][Y] :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.polynomial_Y WeierstrassCurve.polynomialY
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_polynomialY (x y : R) :
     (W.polynomialY.eval <| C y).eval x = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [WeierstrassCurve.polynomialY]
@@ -545,7 +543,7 @@ lemma nonsingular_iff' (x y : R) :
   rw [WeierstrassCurve.nonsingular, equation_iff', eval_polynomialX, eval_polynomialY]
 #align weierstrass_curve.nonsingular_iff' WeierstrassCurve.nonsingular_iff'
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 lemma nonsingular_iff (x y : R) :
     W.nonsingular x y ↔
       W.equation x y ∧ (W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ ∨ y ≠ -y - W.a₁ * x - W.a₃) := by
@@ -599,7 +597,7 @@ lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.equation x y) (hΔ : W.Δ ≠ 0
 
 /-! ### Ideals in the coordinate ring -/
 
--- porting note: TODO verify that using `abbrev` instead of `def` does not cause an issue, otherwise
+-- porting note: verify that using `abbrev` instead of `def` does not cause an issue, otherwise
 -- define a new `notation`, and verify if the new def-eq cache (lean4#1102) fixed this issue
 /-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`.
 
@@ -643,7 +641,7 @@ instance instIsDomainCoordinateRing_of_Field {F : Type u} [Field F] (W : Weierst
 
 variable (x : R) (y : R[X])
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $X - x$ in $R[W]$ for some $x \in R$. -/
 noncomputable def XClass : W.CoordinateRing :=
   mk W <| C <| X - C x
@@ -656,7 +654,7 @@ lemma XClass_ne_zero [Nontrivial R] : XClass W x ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_class_ne_zero WeierstrassCurve.CoordinateRing.XClass_ne_zero
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The class of the element $Y - y(X)$ in $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YClass : W.CoordinateRing :=
   mk W <| Y - C y
@@ -669,21 +667,21 @@ lemma YClass_ne_zero [Nontrivial R] : YClass W y ≠ 0 :=
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_class_ne_zero WeierstrassCurve.CoordinateRing.YClass_ne_zero
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x \rangle$ of $R[W]$ for some $x \in R$. -/
 noncomputable def XIdeal : Ideal W.CoordinateRing :=
   span {XClass W x}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.X_ideal WeierstrassCurve.CoordinateRing.XIdeal
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle Y - y(X) \rangle$ of $R[W]$ for some $y(X) \in R[X]$. -/
 noncomputable def YIdeal : Ideal W.CoordinateRing :=
   span {YClass W y}
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.coordinate_ring.Y_ideal WeierstrassCurve.CoordinateRing.YIdeal
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The ideal $\langle X - x, Y - y(X) \rangle$ of $R[W]$ for some $x \in R$ and $y(X) \in R[X]$. -/
 noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
   span {XClass W x, YClass W y}
@@ -743,19 +741,19 @@ lemma basis_apply (n : Fin 2) :
   rfl
 #align weierstrass_curve.coordinate_ring.basis_apply WeierstrassCurve.CoordinateRing.basis_apply
 
--- porting note: added `@[simp]`
+-- porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_zero : CoordinateRing.basis W 0 = 1 := by
   simpa only [basis_apply] using pow_zero _
 #align weierstrass_curve.coordinate_ring.basis_zero WeierstrassCurve.CoordinateRing.basis_zero
 
--- porting note: added `@[simp]`
+-- porting note: added `@[simp]` in lieu of `coe_basis`
 @[simp]
 lemma basis_one : CoordinateRing.basis W 1 = mk W Y := by
   simpa only [basis_apply] using pow_one _
 #align weierstrass_curve.coordinate_ring.basis_one WeierstrassCurve.CoordinateRing.basis_one
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` in lieu of `basis_zero` and `basis_one`
 lemma coe_basis : (CoordinateRing.basis W : Fin 2 → W.CoordinateRing) = ![1, mk W Y] := by
   ext n
   fin_cases n
@@ -825,7 +823,6 @@ lemma coe_norm_smul_basis (p q : R[X]) :
     ⟨C q ^ 2, by simp only [norm_smul_basis, WeierstrassCurve.polynomial]; C_simp; ring1⟩
 #align weierstrass_curve.coordinate_ring.coe_norm_smul_basis WeierstrassCurve.CoordinateRing.coe_norm_smul_basis
 
--- porting note: BUG `cases` tactic does not modify assumptions
 lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     (Algebra.norm R[X] <| p • (1 : W.CoordinateRing) + q • mk W Y).degree =
       max (2 • p.degree) (2 • q.degree + 3) := by
@@ -843,12 +840,13 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
     · simpa only [hq, hdp, sub_zero, zero_mul, mul_zero, zero_pow zero_lt_two] using
         (max_bot_right _).symm
     · rw [← not_congr degree_eq_bot] at hp hq
-      rcases hp' : p.degree with _ | dp
-      · exact (hp hp').elim
-      · rw [hp'] at hdp hdpq
-        rcases hq' : q.degree with _ | dq
-        · exact (hq hq').elim
-        · rw [hq'] at hdpq hdq
+      -- porting note: BUG `cases` tactic does not modify assumptions in `hp'` and `hq'`
+      rcases hp' : p.degree with _ | dp -- `hp' : ` should be redundant
+      · exact (hp hp').elim -- `hp'` should be `rfl`
+      · rw [hp'] at hdp hdpq -- line should be redundant
+        rcases hq' : q.degree with _ | dq -- `hq' : ` should be redundant
+        · exact (hq hq').elim -- `hq'` should be `rfl`
+        · rw [hq'] at hdpq hdq -- line should be redundant
           rcases le_or_lt dp (dq + 1) with hpq | hpq
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
@@ -863,13 +861,13 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
 
 variable {W}
 
--- porting note: replaced `dec_trivial` with explicit lemma
 lemma degree_norm_ne_one [IsDomain R] (x : W.CoordinateRing) :
     (Algebra.norm R[X] x).degree ≠ 1 := by
   rcases exists_smul_basis_eq x with ⟨p, q, rfl⟩
   rw [degree_norm_smul_basis]
   rcases p.degree with (_ | _ | _ | _) <;> cases q.degree
   any_goals rintro (_ | _)
+  -- porting note: replaced `dec_trivial` with `(cmp_eq_lt_iff _ _).mp rfl` but cannot be inlined
   apply (lt_max_of_lt_right _).ne'
   exact (cmp_eq_lt_iff _ _).mp rfl
 #align weierstrass_curve.coordinate_ring.degree_norm_ne_one WeierstrassCurve.CoordinateRing.degree_norm_ne_one
@@ -911,7 +909,7 @@ instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve ℚ :=
 
 variable [CommRing R] (E : EllipticCurve R)
 
--- porting note: removed `@[simp]`
+-- porting note: removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
 def j : R :=
   ↑E.Δ'⁻¹ * E.c₄ ^ 3
