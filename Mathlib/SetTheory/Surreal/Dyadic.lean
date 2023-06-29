@@ -20,13 +20,13 @@ of rings with no 2-torsion.
 
 ## Dyadic surreal numbers
 We construct dyadic surreal numbers using the canonical map from ℤ[2 ^ {-1}] to surreals.
-As we currently do not have a ring structure on `surreal` we construct this map explicitly. Once we
+As we currently do not have a ring structure on `Surreal` we construct this map explicitly. Once we
 have the ring structure, this map can be constructed directly by sending `2 ^ {-1}` to `half`.
 
 ## Embeddings
-The above construction gives us an abelian group embedding of ℤ into `surreal`. The goal is to
-extend this to an embedding of dyadic rationals into `surreal` and use Cauchy sequences of dyadic
-rational numbers to construct an ordered field embedding of ℝ into `surreal`.
+The above construction gives us an abelian group embedding of ℤ into `Surreal`. The goal is to
+extend this to an embedding of dyadic rationals into `Surreal` and use Cauchy sequences of dyadic
+rational numbers to construct an ordered field embedding of ℝ into `Surreal`.
 -/
 
 
@@ -34,10 +34,10 @@ universe u
 
 namespace PGame
 
-/-- For a natural number `n`, the pre-game `pow_half (n + 1)` is recursively defined as
-`{0 | pow_half n}`. These are the explicit expressions of powers of `1 / 2`. By definition, we have
-`pow_half 0 = 1` and `pow_half 1 ≈ 1 / 2` and we prove later on that
-`pow_half (n + 1) + pow_half (n + 1) ≈ pow_half n`. -/
+/-- For a natural number `n`, the pre-game `powHalf (n + 1)` is recursively defined as
+`{0 | powHalf n}`. These are the explicit expressions of powers of `1 / 2`. By definition, we have
+`powHalf 0 = 1` and `powHalf 1 ≈ 1 / 2` and we prove later on that
+`powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n`. -/
 def powHalf : ℕ → PGame
   | 0 => 1
   | n + 1 => ⟨PUnit, PUnit, 0, fun _ => powHalf n⟩
@@ -85,7 +85,7 @@ theorem birthday_half : birthday (powHalf 1) = 2 := by
   rw [birthday_def]; dsimp; simpa using Order.le_succ (1 : Ordinal)
 #align pgame.birthday_half PGame.birthday_half
 
-/-- For all natural numbers `n`, the pre-games `pow_half n` are numeric. -/
+/-- For all natural numbers `n`, the pre-games `powHalf n` are numeric. -/
 theorem numeric_powHalf (n) : (powHalf n).Numeric := by
   induction' n with n hn
   · exact numeric_one
@@ -219,7 +219,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
     norm_cast at h₂ ; linarith
 #align surreal.dyadic_aux Surreal.dyadic_aux
 
-/-- The additive monoid morphism `dyadic_map` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
+/-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
 def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
   toFun x :=
     (Localization.liftOn x fun x y => x • powHalf (Submonoid.log y)) <| by
@@ -262,14 +262,19 @@ theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
   by rw [← Localization.mk_eq_mk']; rfl
 #align surreal.dyadic_map_apply Surreal.dyadicMap_apply
 
-@[simp]
+-- @[simp] -- Porting note: simp normal form is `dyadicMap_apply_pow'`
 theorem dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m (Submonoid.pow 2 n)) =
-      m • powHalf n :=
-  by rw [dyadicMap_apply, @Submonoid.log_pow_int_eq_self 2 one_lt_two]
+      m • powHalf n := by
+  rw [dyadicMap_apply, @Submonoid.log_pow_int_eq_self 2 one_lt_two]
 #align surreal.dyadic_map_apply_pow Surreal.dyadicMap_apply_pow
 
-/-- We define dyadic surreals as the range of the map `dyadic_map`. -/
+@[simp]
+theorem dyadicMap_apply_pow' (m : ℤ) (n : ℕ) :
+    m • Surreal.powHalf (Submonoid.log (Submonoid.pow (2 : ℤ) n)) = m • powHalf n := by
+  rw [@Submonoid.log_pow_int_eq_self 2 one_lt_two]
+
+/-- We define dyadic surreals as the range of the map `dyadicMap`. -/
 def dyadic : Set Surreal :=
   Set.range dyadicMap
 #align surreal.dyadic Surreal.dyadic
