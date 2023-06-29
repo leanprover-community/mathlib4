@@ -173,7 +173,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
       HasFDerivAt f (f' x) x)
     (Hi : IntegrableOn (fun z => I • f' z 1 - f' z I) ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
-      I • ∫ y : ℝ in z.im..w.im, f (re w + y * I) -
+      I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
       I • ∫ y : ℝ in z.im..w.im, f (re z + y * I) =
       ∫ x : ℝ in z.re..w.re, ∫ y : ℝ in z.im..w.im, I • f' (x + y * I) 1 - f' (x + y * I) I := by
   set e : (ℝ × ℝ) ≃L[ℝ] ℂ := equivRealProdClm.symm
