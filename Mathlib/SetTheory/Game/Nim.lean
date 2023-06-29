@@ -344,19 +344,18 @@ theorem grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyVal
 
 theorem grundyValue_eq_mex_right :
     ∀ (G : PGame) [G.Impartial],
-      grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) := by
+      grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i)
   -- Porting note: was
-  | ⟨l, r, L, R⟩, _ => by
+   | ⟨l, r, L, R⟩, _ => by
   -- but this lost track of the `Impartial` instance
-  rintro ⟨l, r, L, R⟩ _
-  rw [← grundyValue_neg, grundyValue_eq_mex_left]
-  congr
-  ext i
-  haveI : (R i).Impartial := @Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ i
-  apply grundyValue_neg
+    rw [← grundyValue_neg, grundyValue_eq_mex_left]
+    congr
+    ext i
+    haveI : (R i).Impartial := @Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ i
+    apply grundyValue_neg
 #align pgame.grundy_value_eq_mex_right PGame.grundyValue_eq_mex_right
 
--- Todo: this actually generalizes to all ordinals, by defining `ordinal.lxor` as the pairwise
+-- Todo: this actually generalizes to all ordinals, by defining `Ordinal.lxor` as the pairwise
 -- `Nat.lxor'` of base `ω` Cantor normal forms.
 /-- The Grundy value of the sum of two nim games with natural numbers of piles equals their bitwise
 xor. -/
