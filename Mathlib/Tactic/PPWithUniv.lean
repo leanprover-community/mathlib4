@@ -13,7 +13,7 @@ of universe parameters for the specified definition.  This is helpful for defini
 `Ordinal`, where the universe levels are both relevant and not deducible from the arguments.
 -/
 
-namespace Mathlib.PpWithUniv
+namespace Mathlib.PPWithUniv
 
 open Lean PrettyPrinter Delaborator SubExpr Elab Command
 

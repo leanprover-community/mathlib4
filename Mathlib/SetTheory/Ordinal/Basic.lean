@@ -11,7 +11,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.PpWithUniv
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals

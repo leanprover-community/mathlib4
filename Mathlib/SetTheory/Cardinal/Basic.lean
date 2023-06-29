@@ -17,7 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.PpWithUniv
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Cardinal Numbers
