@@ -1273,7 +1273,7 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace α] {S : Se
   refine' ⟨Uᶜ, Set.compl_subset_comm.mp Uc, Ucne, Uo.isClosed_compl, _⟩
   intro V' V'sub V'ne V'cls
   have : V'ᶜ = U := by
-    refine' h (V'ᶜ) ⟨_, isOpen_compl_iff.mpr V'cls, _⟩ (Set.subset_compl_comm.mp V'sub)
+    refine' h V'ᶜ ⟨_, isOpen_compl_iff.mpr V'cls, _⟩ (Set.subset_compl_comm.mp V'sub)
     exact Set.Subset.trans Uc (Set.subset_compl_comm.mp V'sub)
     simp only [compl_compl, V'ne]
   rw [← this, compl_compl]

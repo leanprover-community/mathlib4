@@ -1995,7 +1995,7 @@ protected theorem measurableSet (hf : AEFinStronglyMeasurable f μ) :
 #align measure_theory.ae_fin_strongly_measurable.measurable_set MeasureTheory.AEFinStronglyMeasurable.measurableSet
 
 theorem ae_eq_zero_compl (hf : AEFinStronglyMeasurable f μ) :
-    f =ᵐ[μ.restrict (hf.sigmaFiniteSetᶜ)] 0 :=
+    f =ᵐ[μ.restrict hf.sigmaFiniteSetᶜ] 0 :=
   hf.exists_set_sigmaFinite.choose_spec.2.1
 #align measure_theory.ae_fin_strongly_measurable.ae_eq_zero_compl MeasureTheory.AEFinStronglyMeasurable.ae_eq_zero_compl
 
