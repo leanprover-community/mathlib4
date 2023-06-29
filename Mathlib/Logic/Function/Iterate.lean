@@ -220,7 +220,7 @@ theorem iterate_comm (f : α → α) (m n : ℕ) : f^[n]^[m] = f^[m]^[n] :=
   (iterate_mul _ _ _).symm.trans (Eq.trans (by rw [Nat.mul_comm]) (iterate_mul _ _ _))
 #align function.iterate_comm Function.iterate_comm
 
-theorem iterate_commute (m n : ℕ) : Commute fun f : α → α ↦ f^[m] fun f ↦ f^[n] :=
+theorem iterate_commute (m n : ℕ) : Commute (fun f : α → α ↦ f^[m]) fun f ↦ f^[n] :=
   fun f ↦ iterate_comm f m n
 #align function.iterate_commute Function.iterate_commute
 
