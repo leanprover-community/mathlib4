@@ -71,7 +71,6 @@ section OrderedRing
 variable {𝕜 : Type _} {E : Type _} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {X : Finset E} {x : E}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A useful way to build exposed sets from intersecting `A` with halfspaces (modelled by an
 inequality with a functional). -/
 def ContinuousLinearMap.toExposed (l : E →L[𝕜] 𝕜) (A : Set E) : Set E :=
@@ -114,7 +113,6 @@ protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B)
     ⟨hBA hx.1, fun y hy => (hw.2 y hy).trans (hx.2 w (hCB hw))⟩⟩
 #align is_exposed.mono IsExposed.mono
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If `B` is a nonempty exposed subset of `A`, then `B` is the intersection of `A` with some closed
 halfspace. The converse is *not* true. It would require that the corresponding open halfspace
 doesn't intersect `A`. -/
@@ -126,7 +124,6 @@ theorem eq_inter_halfspace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Non
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
 #align is_exposed.eq_inter_halfspace' IsExposed.eq_inter_halfspace'
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
 some closed halfspace. The converse is *not* true. It would require that the corresponding open
 halfspace doesn't intersect `A`. -/
@@ -158,18 +155,18 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
       (add_le_add_iff_left (l₁ x)).1 (le_trans (add_le_add (hwB.2 x hxA) (hwC.2 y hy)) (hx w hwB.1))
 #align is_exposed.inter IsExposed.inter
 
-theorem interₛ [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
+theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | @insert C F _ hF' =>
-    rw [Finset.coe_insert, interₛ_insert]
+    rw [Finset.coe_insert, sInter_insert]
     obtain rfl | hFnemp := F.eq_empty_or_nonempty
-    · rw [Finset.coe_empty, interₛ_empty, inter_univ]
+    · rw [Finset.coe_empty, sInter_empty, inter_univ]
       exact hAF C (Finset.mem_singleton_self C)
     · exact (hAF C (Finset.mem_insert_self C F)).inter
         (hF' hFnemp fun B hB => hAF B (Finset.mem_insert_of_mem hB))
-#align is_exposed.sInter IsExposed.interₛ
+#align is_exposed.sInter IsExposed.sInter
 
 theorem inter_left (hC : IsExposed 𝕜 A C) (hCB : C ⊆ B) : IsExposed 𝕜 (A ∩ B) C := by
   rintro ⟨w, hw⟩
@@ -200,8 +197,7 @@ end IsExposed
 
 variable (𝕜)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
-/-- A point is exposed with respect to `A` iff there exists an hyperplane whose intersection with
+/-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
@@ -209,7 +205,6 @@ def Set.exposedPoints (A : Set E) : Set E :=
 
 variable {𝕜}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem exposed_point_def :
     x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=
   Iff.rfl
@@ -257,7 +252,6 @@ protected theorem convex (hAB : IsExposed 𝕜 A B) (hA : Convex 𝕜 A) : Conve
           ⟨mem_univ _, hx₂.2 y hy⟩ ha hb hab).2⟩
 #align is_exposed.convex IsExposed.convex
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 protected theorem isExtreme (hAB : IsExposed 𝕜 A B) : IsExtreme 𝕜 A B := by
   refine' ⟨hAB.subset, fun x₁ hx₁A x₂ hx₂A x hxB hx => _⟩
   obtain ⟨l, rfl⟩ := hAB ⟨x, hxB⟩

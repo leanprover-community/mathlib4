@@ -10,10 +10,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.SimpRw
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants

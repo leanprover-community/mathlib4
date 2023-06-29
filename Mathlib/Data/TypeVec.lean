@@ -11,10 +11,7 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.TypeVec.Attr
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Replace
-import Mathlib.Tactic.SolveByElim
+import Mathlib.Tactic.Common
 
 /-!
 
@@ -255,7 +252,7 @@ theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type _} {ε : TypeV
           (g₀ : last ε → β)
           (g₁ : β → δ) :
    appendFun f₁ g₁ ⊚ splitFun f₀ g₀
-      = splitFun (α':=γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀)
+      = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀)
   :=
   (splitFun_comp _ _ _ _).symm
 #align typevec.append_fun_comp_split_fun TypeVec.appendFun_comp_splitFun
@@ -310,7 +307,7 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
--- Porting note: `simp` attribute `typevec` moved to file `Data/TypeVec/Attr.lean`
+-- Porting note: `simp` attribute `TypeVec` moved to file `Data/TypeVec/Attr.lean`
 
 
 /-- cases distinction for 0-length type vector -/
@@ -411,7 +408,7 @@ section Liftp'
 
 open Nat
 
-/-- `repeat n t` is a `n-length` type vector that contains `n` occurences of `t` -/
+/-- `repeat n t` is a `n-length` type vector that contains `n` occurrences of `t` -/
 def «repeat» : ∀ (n : ℕ), Sort _ → TypeVec n
   | 0, _ => Fin2.elim0
   | Nat.succ i, t => append1 («repeat» i t) t
@@ -668,7 +665,7 @@ theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ dia
 
 theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ β ⟹ _) := by
   intros
-  ext (i a)
+  ext i a
   induction' i with _ _ _ i_ih
   · cases a
     rfl
@@ -678,7 +675,7 @@ theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ �
 theorem append_prod_appendFun {n} {α α' β β' : TypeVec.{u} n} {φ φ' ψ ψ' : Type u}
     {f₀ : α ⟹ α'} {g₀ : β ⟹ β'} {f₁ : φ → φ'} {g₁ : ψ → ψ'} :
     ((f₀ ⊗' g₀) ::: (_root_.Prod.map f₁ g₁)) = ((f₀ ::: f₁) ⊗' (g₀ ::: g₁)) := by
-  ext (i a)
+  ext i a
   cases i
   . cases a
     rfl
@@ -796,7 +793,7 @@ theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagS
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     toSubtype p ⊚ ofSubtype p = id := by
-  ext (i x)
+  ext i x
   induction i <;> dsimp only [id, toSubtype, comp, ofSubtype] at *
   simp [*]
 #align typevec.to_subtype_of_subtype TypeVec.toSubtype_of_subtype
@@ -804,7 +801,7 @@ theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
 @[simp]
 theorem subtypeVal_toSubtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     subtypeVal p ⊚ toSubtype p = fun _ => Subtype.val := by
-  ext (i x)
+  ext i x
   induction i <;> dsimp only [toSubtype, comp, subtypeVal] at *
   simp [*]
 #align typevec.subtype_val_to_subtype TypeVec.subtypeVal_toSubtype
@@ -820,7 +817,7 @@ theorem toSubtype_of_subtype_assoc  {α β : TypeVec n}
 @[simp]
 theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     toSubtype' r ⊚ ofSubtype' r = id := by
-  ext (i x)
+  ext i x
   induction i
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
   <;> simp [Subtype.eta, *]
@@ -828,7 +825,9 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
 
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
-  ext (i x); induction i <;> dsimp only [id, toSubtype', comp, subtypeVal, prod.mk] at *; simp [*]
+  ext i x
+  induction i <;> dsimp only [id, toSubtype', comp, subtypeVal, prod.mk] at *
+  simp [*]
 #align typevec.subtype_val_to_subtype' TypeVec.subtypeVal_toSubtype'
 
 end TypeVec

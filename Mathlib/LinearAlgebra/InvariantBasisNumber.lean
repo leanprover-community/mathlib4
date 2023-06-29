@@ -218,13 +218,12 @@ section
 
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
-set_option synthInstance.etaExperiment true in
 -- Note this includes fields,
 -- and we use this below to show any commutative ring has invariant basis number.
 /-- Any nontrivial noetherian ring satisfies the strong rank condition.
 
 An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for some left-noetherian `R`
-would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPunitOfProdInjective`),
+would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPUnitOfProdInjective`),
 which is not the case!
 -/
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
@@ -241,7 +240,7 @@ instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCond
           (LinearEquiv.funCongrLeft R R e)).toLinearMap
   have i' : Injective f' := i.comp (LinearEquiv.injective _)
   apply @zero_ne_one (Fin (1 + m) → R) _ _
-  apply (IsNoetherian.equivPunitOfProdInjective f' i').injective
+  apply (IsNoetherian.equivPUnitOfProdInjective f' i').injective
   ext
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 
@@ -266,7 +265,6 @@ section
 
 variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι' : Type w}
 
-set_option synthInstance.etaExperiment true in
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
     (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
@@ -279,7 +277,6 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 #noalign induced_map
 -- porting note: `#noalign` since this is marked `private`
 
-set_option synthInstance.etaExperiment true in
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
 private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :

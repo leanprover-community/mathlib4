@@ -83,12 +83,12 @@ def space (K : SimplicialComplex 𝕜 E) : Set E :=
 
 -- Porting note: Expanded `∃ s ∈ K.faces` to get the type to match more closely with Lean 3
 theorem mem_space_iff : x ∈ K.space ↔ ∃ (s : _) (_ : s ∈ K.faces), x ∈ convexHull 𝕜 (s : Set E) :=
-  mem_unionᵢ₂
+  mem_iUnion₂
 #align geometry.simplicial_complex.mem_space_iff Geometry.SimplicialComplex.mem_space_iff
 
--- Porting note: Original proof was `:= subset_bunionᵢ_of_mem hs`
+-- Porting note: Original proof was `:= subset_biUnion_of_mem hs`
 theorem convexHull_subset_space (hs : s ∈ K.faces) : convexHull 𝕜 ↑s ⊆ K.space := by
-  convert subset_bunionᵢ_of_mem hs
+  convert subset_biUnion_of_mem hs
   rfl
 #align geometry.simplicial_complex.convex_hull_subset_space Geometry.SimplicialComplex.convexHull_subset_space
 
@@ -156,13 +156,13 @@ theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 
 theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
-  refine' ⟨fun h => mem_bunionᵢ h <| mem_coe.2 <| mem_singleton_self x, fun h => _⟩
-  obtain ⟨s, hs, hx⟩ := mem_unionᵢ₂.1 h
+  refine' ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => _⟩
+  obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
   exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
 #align geometry.simplicial_complex.vertices_eq Geometry.SimplicialComplex.vertices_eq
 
 theorem vertices_subset_space : K.vertices ⊆ K.space :=
-  vertices_eq.subset.trans <| unionᵢ₂_mono fun x _ => subset_convexHull 𝕜 (x : Set E)
+  vertices_eq.subset.trans <| iUnion₂_mono fun x _ => subset_convexHull 𝕜 (x : Set E)
 #align geometry.simplicial_complex.vertices_subset_space Geometry.SimplicialComplex.vertices_subset_space
 
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
@@ -256,7 +256,7 @@ theorem faces_bot : (⊥ : SimplicialComplex 𝕜 E).faces = ∅ := rfl
 #align geometry.simplicial_complex.faces_bot Geometry.SimplicialComplex.faces_bot
 
 theorem space_bot : (⊥ : SimplicialComplex 𝕜 E).space = ∅ :=
-  Set.bunionᵢ_empty _
+  Set.biUnion_empty _
 #align geometry.simplicial_complex.space_bot Geometry.SimplicialComplex.space_bot
 
 theorem facets_bot : (⊥ : SimplicialComplex 𝕜 E).facets = ∅ :=

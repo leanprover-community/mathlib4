@@ -33,7 +33,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`, such as:
   * The `CompleteLattice` structure.
   * The `conGen_eq` lemma, stating that
-    `ringConGen r = infₛ {s : RingCon M | ∀ x y, r x y → s x y}`.
+    `ringConGen r = sInf {s : RingCon M | ∀ x y, r x y → s x y}`.
 -/
 
 
@@ -79,7 +79,7 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-/-- Every `ring_con` is also an `AddCon` -/
+/-- Every `RingCon` is also an `AddCon` -/
 def toAddCon : AddCon R :=
   { c with }
 #align ring_con.to_add_con RingCon.toAddCon

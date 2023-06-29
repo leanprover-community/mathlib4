@@ -46,7 +46,6 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero {M : Matrix m m R} (hM : Nonde
 
 variable [CommRing A] [IsDomain A]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- If `M` has a nonzero determinant, then `M` as a bilinear form on `n → A` is nondegenerate.
 
 See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDetNeZero`.

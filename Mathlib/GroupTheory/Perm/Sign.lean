@@ -61,7 +61,7 @@ noncomputable instance {α : Type _} [Fintype α] [DecidableEq α] (i j : α) :
 
 theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
     (hy : y ∈ s) : f⁻¹ y ∈ s := by
-  have h0 : ∀ y ∈ s, ∃ (x : _)(hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
+  have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
     Finset.surj_on_of_inj_on_of_card_le (fun x hx => (fun i _ => f i) x hx) (fun a ha => h a ha)
       (fun a₁ a₂ ha₁ ha₂ heq => (Equiv.apply_eq_iff_eq f).mp heq) rfl.ge
   obtain ⟨y2, hy2, heq⟩ := h0 y hy

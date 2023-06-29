@@ -12,7 +12,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Logic.Nontrivial
-import Mathlib.Tactic.Spread
 
 /-!
 # Semirings and rings
@@ -26,8 +25,8 @@ the present file is about their interaction.
 * `Distrib`: Typeclass for distributivity of multiplication over addition.
 * `HasDistribNeg`: Typeclass for commutativity of negation and multiplication. This is useful when
   dealing with multiplicative submonoids which are closed under negation without being closed under
-  addition, for example `units`.
-* `(NonUnital_)(NonAssoc_)(Semi)ring`: Typeclasses for possibly non-unital or non-associative
+  addition, for example `Units`.
+* `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
 
 ## Tags
@@ -43,7 +42,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
 open Function
 
 /-!
-### `distrib` class
+### `Distrib` class
 -/
 
 

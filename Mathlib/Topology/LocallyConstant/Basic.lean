@@ -228,12 +228,17 @@ theorem of_constant_on_connected_components [LocallyConnectedSpace X] {f : X →
     ⟨connectedComponent x, isOpen_connectedComponent, mem_connectedComponent, h x⟩
 #align is_locally_constant.of_constant_on_connected_components IsLocallyConstant.of_constant_on_connected_components
 
+theorem of_constant_on_connected_clopens [LocallyConnectedSpace X] {f : X → Y}
+    (h : ∀ U : Set X, IsConnected U → IsClopen U → ∀ x ∈ U, ∀ y ∈ U, f y = f x) :
+    IsLocallyConstant f :=
+  of_constant_on_connected_components fun x =>
+    h (connectedComponent x) isConnected_connectedComponent isClopen_connectedComponent x
+      mem_connectedComponent
+
 theorem of_constant_on_preconnected_clopens [LocallyConnectedSpace X] {f : X → Y}
     (h : ∀ U : Set X, IsPreconnected U → IsClopen U → ∀ x ∈ U, ∀ y ∈ U, f y = f x) :
     IsLocallyConstant f :=
-  of_constant_on_connected_components fun x =>
-    h (connectedComponent x) isPreconnected_connectedComponent isClopen_connectedComponent x
-      mem_connectedComponent
+  of_constant_on_connected_clopens fun U hU ↦ h U hU.isPreconnected
 #align is_locally_constant.of_constant_on_preconnected_clopens IsLocallyConstant.of_constant_on_preconnected_clopens
 
 end IsLocallyConstant
@@ -311,7 +316,7 @@ protected theorem continuous : Continuous f :=
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
--- porting note: became a syntatic `rfl`
+-- porting note: became a syntactic `rfl`
 #noalign locally_constant.to_continuous_map_eq_coe
 
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
@@ -435,7 +440,7 @@ def unflip {X α β : Type _} [Finite α] [TopologicalSpace X] (f : α → Local
     have : (fun (x : X) (a : α) => f a x) ⁻¹' {g} = ⋂ a : α, f a ⁻¹' {g a} := by
       ext; simp [Function.funext_iff]
     rw [this]
-    exact isOpen_interᵢ fun a => (f a).isLocallyConstant _
+    exact isOpen_iInter fun a => (f a).isLocallyConstant _
 #align locally_constant.unflip LocallyConstant.unflip
 
 @[simp]

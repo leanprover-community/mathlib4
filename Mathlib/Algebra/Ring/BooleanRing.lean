@@ -12,7 +12,6 @@ import Mathlib.Algebra.PUnitInstances
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 import Mathlib.Order.Hom.Lattice
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Boolean rings
@@ -24,7 +23,7 @@ algebras.
 
 * `BooleanRing`: a typeclass for rings where multiplication is idempotent.
 * `BooleanRing.toBooleanAlgebra`: Turn a Boolean ring into a Boolean algebra.
-* `BooleanAlgebra.ToBooleanRing`: Turn a Boolean algebra into a Boolean ring.
+* `BooleanAlgebra.toBooleanRing`: Turn a Boolean algebra into a Boolean ring.
 * `AsBoolAlg`: Type-synonym for the Boolean algebra associated to a Boolean ring.
 * `AsBoolRing`: Type-synonym for the Boolean ring associated to a Boolean algebra.
 
@@ -74,7 +73,6 @@ theorem add_self : a + a = 0 := by
       a + a = (a + a) * (a + a) := by rw [mul_self]
       _ = a * a + a * a + (a * a + a * a) := by rw [add_mul, mul_add]
       _ = a + a + (a + a) := by rw [mul_self]
-
   rwa [self_eq_add_left] at this
 #align add_self add_self
 
@@ -85,14 +83,12 @@ theorem neg_eq : -a = a :=
     -a = -a + 0 := by rw [add_zero]
     _ = -a + -a + a := by rw [← neg_add_self, add_assoc]
     _ = a := by rw [add_self, zero_add]
-
 #align neg_eq neg_eq
 
 theorem add_eq_zero' : a + b = 0 ↔ a = b :=
   calc
     a + b = 0 ↔ a = -b := add_eq_zero_iff_eq_neg
     _ ↔ a = b := by rw [neg_eq]
-
 #align add_eq_zero' add_eq_zero'
 
 -- Porting note: simpNF linter complains. This causes lemmas in other files not to be in simpNF
@@ -104,7 +100,6 @@ theorem mul_add_mul : a * b + b * a = 0 := by
       _ = a * a + a * b + (b * a + b * b) := by rw [add_mul, mul_add, mul_add]
       _ = a + a * b + (b * a + b) := by simp only [mul_self]
       _ = a + b + (a * b + b * a) := by abel
-
   rwa [self_eq_add_right] at this
 #align mul_add_mul mul_add_mul
 
@@ -138,12 +133,12 @@ def AsBoolAlg (α : Type _) :=
   α
 #align as_boolalg AsBoolAlg
 
-/-- The "identity" equivalence between `as_boolalg α` and `α`. -/
+/-- The "identity" equivalence between `AsBoolAlg α` and `α`. -/
 def toBoolAlg : α ≃ AsBoolAlg α :=
   Equiv.refl _
 #align to_boolalg toBoolAlg
 
-/-- The "identity" equivalence between `α` and `as_boolalg α`. -/
+/-- The "identity" equivalence between `α` and `AsBoolAlg α`. -/
 def ofBoolAlg : AsBoolAlg α ≃ α :=
   Equiv.refl _
 #align of_boolalg ofBoolAlg
@@ -347,7 +342,7 @@ theorem toBoolAlg_mul (a b : α) : toBoolAlg (a * b) = toBoolAlg a ⊓ toBoolAlg
   rfl
 #align to_boolalg_mul toBoolAlg_mul
 
--- `to_boolalg_add` simplifies the LHS but this lemma is eligible to `dsimp`
+-- `toBoolAlg_add` simplifies the LHS but this lemma is eligible to `dsimp`
 @[simp, nolint simpNF]
 theorem toBoolAlg_add_add_mul (a b : α) : toBoolAlg (a + b + a * b) = toBoolAlg a ⊔ toBoolAlg b :=
   rfl
@@ -394,12 +389,12 @@ def AsBoolRing (α : Type _) :=
   α
 #align as_boolring AsBoolRing
 
-/-- The "identity" equivalence between `as_boolring α` and `α`. -/
+/-- The "identity" equivalence between `AsBoolRing α` and `α`. -/
 def toBoolRing : α ≃ AsBoolRing α :=
   Equiv.refl _
 #align to_boolring toBoolRing
 
-/-- The "identity" equivalence between `α` and `as_boolring α`. -/
+/-- The "identity" equivalence between `α` and `AsBoolRing α`. -/
 def ofBoolRing : AsBoolRing α ≃ α :=
   Equiv.refl _
 #align of_boolring ofBoolRing
@@ -482,8 +477,7 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 -/
 @[reducible]
 def BooleanAlgebra.toBooleanRing : BooleanRing α :=
-  {
-    GeneralizedBooleanAlgebra.toNonUnitalCommRing with
+  { GeneralizedBooleanAlgebra.toNonUnitalCommRing with
     one := ⊤
     one_mul := fun _ => top_inf_eq
     mul_one := fun _ => inf_top_eq

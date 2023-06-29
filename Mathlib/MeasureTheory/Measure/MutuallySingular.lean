@@ -89,10 +89,10 @@ theorem mono (h : μ₁ ⟂ₘ ν₁) (hμ : μ₂ ≤ μ₁) (hν : ν₂ ≤ �
 theorem sum_left {ι : Type _} [Countable ι] {μ : ι → Measure α} : sum μ ⟂ₘ ν ↔ ∀ i, μ i ⟂ₘ ν := by
   refine' ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => _⟩
   choose s hsm hsμ hsν using H
-  refine' ⟨⋂ i, s i, MeasurableSet.interᵢ hsm, _, _⟩
-  · rw [sum_apply _ (MeasurableSet.interᵢ hsm), ENNReal.tsum_eq_zero]
-    exact fun i => measure_mono_null (interᵢ_subset _ _) (hsμ i)
-  · rwa [compl_interᵢ, measure_unionᵢ_null_iff]
+  refine' ⟨⋂ i, s i, MeasurableSet.iInter hsm, _, _⟩
+  · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
+    exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
+  · rwa [compl_iInter, measure_iUnion_null_iff]
 #align measure_theory.measure.mutually_singular.sum_left MeasureTheory.Measure.MutuallySingular.sum_left
 
 @[simp]

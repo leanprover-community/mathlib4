@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 
 ! This file was ported from Lean 3 source module topology.metric_space.isometric_smul
-! leanprover-community/mathlib commit 832a8ba8f10f11fea99367c469ff802e69a5b8ec
+! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,7 +50,7 @@ class IsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
   protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
 #align has_isometric_smul IsometricSMul
 
--- Porting note: Lean 4 doesn' support `[]` in classes, so make a lemma instead of `export`ing
+-- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
 @[to_additive]
 theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X]
     [IsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=
@@ -82,6 +82,13 @@ theorem edist_smul_left [SMul M X] [IsometricSMul M X] (c : M) (x y : X) :
   isometry_smul X c x y
 #align edist_smul_left edist_smul_left
 #align edist_vadd_left edist_vadd_left
+
+@[to_additive (attr := simp)]
+theorem ediam_smul [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
+    EMetric.diam (c • s) = EMetric.diam s :=
+  (isometry_smul _ _).ediam_image s
+#align ediam_smul ediam_smul
+#align ediam_vadd ediam_vadd
 
 @[to_additive]
 theorem isometry_mul_left [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] (a : M) :
@@ -339,6 +346,13 @@ theorem nndist_smul [PseudoMetricSpace X] [SMul M X] [IsometricSMul M X] (c : M)
   (isometry_smul X c).nndist_eq x y
 #align nndist_smul nndist_smul
 #align nndist_vadd nndist_vadd
+
+@[to_additive (attr := simp)]
+theorem diam_smul [PseudoMetricSpace X] [SMul M X] [IsometricSMul M X] (c : M) (s : Set X) :
+    Metric.diam (c • s) = Metric.diam s :=
+  (isometry_smul _ _).diam_image s
+#align diam_smul diam_smul
+#align diam_vadd diam_vadd
 
 @[to_additive (attr := simp)]
 theorem dist_mul_left [PseudoMetricSpace M] [Mul M] [IsometricSMul M M] (a b c : M) :

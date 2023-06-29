@@ -19,7 +19,6 @@ import Mathlib.LinearAlgebra.Determinant
 
 namespace ContinuousLinearMap
 
-set_option synthInstance.etaExperiment true in
 /-- The determinant of a continuous linear map, mainly as a convenience device to be able to
 write `A.det` instead of `(A : M →ₗ[R] M).det`. -/
 @[reducible]
@@ -32,7 +31,6 @@ end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem det_coe_symm {R : Type _} [Field R] {M : Type _} [TopologicalSpace M] [AddCommGroup M]
     [Module R M] (A : M ≃L[R] M) : (A.symm : M →L[R] M).det = (A : M →L[R] M).det⁻¹ :=

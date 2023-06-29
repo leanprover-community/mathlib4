@@ -95,7 +95,6 @@ theorem le_sup_of_mem_convexHull {s : Finset E} (hf : ConvexOn 𝕜 (convexHull 
     (centerMass_le_sup hw₀ <| by positivity)
 #align le_sup_of_mem_convex_hull le_sup_of_mem_convexHull
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem inf_le_of_mem_convexHull {s : Finset E} (hf : ConcaveOn 𝕜 (convexHull 𝕜 (s : Set E)) f)
     (hx : x ∈ convexHull 𝕜 (s : Set E)) :
     s.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
@@ -139,7 +138,6 @@ theorem ConvexOn.exists_ge_of_mem_convexHull (hf : ConvexOn 𝕜 (convexHull �
   exact ⟨p i, hp i hit, Hi⟩
 #align convex_on.exists_ge_of_mem_convex_hull ConvexOn.exists_ge_of_mem_convexHull
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Minimum principle for concave functions. If a function `f` is concave on the convex hull of `s`,
 then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 theorem ConcaveOn.exists_le_of_mem_convexHull (hf : ConcaveOn 𝕜 (convexHull 𝕜 s) f) {x}

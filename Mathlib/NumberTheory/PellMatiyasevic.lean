@@ -255,7 +255,7 @@ instance dnsq : Zsqrtd.Nonsquare (d a1) :=
     have na : n < a := Nat.mul_self_lt_mul_self_iff.2 (by rw [← this]; exact Nat.lt_succ_self _)
     have : (n + 1) * (n + 1) ≤ n * n + 1 := by rw [this]; exact Nat.mul_self_le_mul_self na
     have : n + n ≤ 0 :=
-      @Nat.le_of_add_le_add_right _ (n * n + 1) _ (by ring_nf  at this⊢; assumption)
+      @Nat.le_of_add_le_add_right _ (n * n + 1) _ (by ring_nf at this ⊢; assumption)
     Nat.ne_of_gt (d_pos a1) <| by
       rwa [Nat.eq_zero_of_le_zero ((Nat.le_add_left _ _).trans this)] at h⟩
 #align pell.dnsq Pell.dnsq
@@ -525,7 +525,7 @@ theorem xy_succ_succ (n) :
   have := pellZd_succ_succ a1 n; unfold pellZd at this
   erw [Zsqrtd.smul_val (2 * a : ℕ)] at this
   injection this with h₁ h₂
-  constructor <;> apply Int.ofNat.inj <;> [simpa using h₁, simpa using h₂]
+  constructor <;> apply Int.ofNat.inj <;> [simpa using h₁; simpa using h₂]
 #align pell.xy_succ_succ Pell.xy_succ_succ
 
 theorem xn_succ_succ (n) : xn a1 (n + 2) + xn a1 n = 2 * a * xn a1 (n + 1) :=
@@ -944,7 +944,7 @@ theorem eq_pow_of_pell_lem {a y k : ℕ} (hy0 : y ≠ 0) (hk0 : k ≠ 0) (hyk : 
 
 theorem eq_pow_of_pell {m n k} :
     n ^ k = m ↔ k = 0 ∧ m = 1 ∨0 < k ∧ (n = 0 ∧ m = 0 ∨
-      0 < n ∧ ∃ (w a t z : ℕ)(a1 : 1 < a), xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
+      0 < n ∧ ∃ (w a t z : ℕ) (a1 : 1 < a), xn a1 k ≡ yn a1 k * (a - n) + m [MOD t] ∧
       2 * a * n = t + (n * n + 1) ∧ m < t ∧
       n ≤ w ∧ k ≤ w ∧ a * a - ((w + 1) * (w + 1) - 1) * (w * z) * (w * z) = 1) := by
   constructor

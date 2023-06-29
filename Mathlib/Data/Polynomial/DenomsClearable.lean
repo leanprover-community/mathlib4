@@ -40,7 +40,7 @@ element `bi = 1 / i b` of `K` such that clearing the denominators of
 the fraction equals `i D`.
 -/
 def DenomsClearable (a b : R) (N : ℕ) (f : R[X]) (i : R →+* K) : Prop :=
-  ∃ (D : R)(bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
+  ∃ (D : R) (bi : K), bi * i b = 1 ∧ i D = i b ^ N * eval (i a * bi) (f.map i)
 #align denoms_clearable DenomsClearable
 
 theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClearable a b N 0 i :=
@@ -86,8 +86,6 @@ end DenomsClearable
 
 open RingHom
 
---Porting note: `etaExperiment` is required to synthesize the `RingHomClass (ℤ →+* K) ℤ K` instance
-set_option synthInstance.etaExperiment true in
 /-- Evaluating a polynomial with integer coefficients at a rational number and clearing
 denominators, yields a number greater than or equal to one.  The target can be any
 `LinearOrderedField K`.

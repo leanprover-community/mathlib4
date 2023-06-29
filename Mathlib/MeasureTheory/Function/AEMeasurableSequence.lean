@@ -130,14 +130,14 @@ theorem aeSeq_n_eq_fun_n_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
   ae_all_iff.mp (aeSeq_eq_fun_ae hf hp) n
 #align ae_seq.ae_seq_n_eq_fun_n_ae aeSeq.aeSeq_n_eq_fun_n_ae
 
-theorem supᵢ [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
+theorem iSup [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : (⨆ n, aeSeq hf p n) =ᵐ[μ] ⨆ n, f n := by
-  simp_rw [Filter.EventuallyEq, ae_iff, supᵢ_apply]
+  simp_rw [Filter.EventuallyEq, ae_iff, iSup_apply]
   have h_ss : aeSeqSet hf p ⊆ { a : α | (⨆ i : ι, aeSeq hf p i a) = ⨆ i : ι, f i a } := by
     intro x hx
     congr
     exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
   exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
-#align ae_seq.supr aeSeq.supᵢ
+#align ae_seq.supr aeSeq.iSup
 
 end aeSeq

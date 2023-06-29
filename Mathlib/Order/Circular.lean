@@ -9,7 +9,6 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Set
 
 /-!
 # Circular order hierarchy

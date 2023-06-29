@@ -170,7 +170,6 @@ variable [AddCommGroup E] [Module 𝕜 E]
 
 variable [AddCommGroup F] [Module 𝕜 F]
 
-set_option synthInstance.etaExperiment true
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 

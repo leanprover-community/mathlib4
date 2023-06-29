@@ -2,6 +2,12 @@
  "packagesDir": "lake-packages",
  "packages":
  [{"git":
+   {"url": "https://github.com/EdAyers/ProofWidgets4",
+    "subDir?": null,
+    "rev": "c43db94a8f495dad37829e9d7ad65483d68c86b8",
+    "name": "proofwidgets",
+    "inputRev?": "v0.0.11"}},
+  {"git":
    {"url": "https://github.com/gebner/quote4",
     "subDir?": null,
     "rev": "c71f94e34c1cda52eef5c93dc9da409ab2727420",
@@ -10,12 +16,12 @@
   {"git":
    {"url": "https://github.com/JLimperg/aesop",
     "subDir?": null,
-    "rev": "cdc00b640d0179910ebaa9c931e3b733a04b881c",
+    "rev": "ca73109cc40837bc61df8024c9016da4b4f99d4c",
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "6006307d2ceb8743fea7e00ba0036af8654d0347",
+    "rev": "e68aa8f5fe47aad78987df45f99094afbcb5e936",
     "name": "std",
     "inputRev?": "main"}}]}

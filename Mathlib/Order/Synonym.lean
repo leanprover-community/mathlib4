@@ -167,7 +167,7 @@ def toLex : α ≃ Lex α :=
   Equiv.refl _
 #align to_lex toLex
 
-/-- `ofLex` is the identity function from the `lex` of a type.  -/
+/-- `ofLex` is the identity function from the `Lex` of a type.  -/
 @[match_pattern]
 def ofLex : Lex α ≃ α :=
   Equiv.refl _

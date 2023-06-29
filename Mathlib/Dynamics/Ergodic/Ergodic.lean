@@ -70,7 +70,7 @@ theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet
 #align pre_ergodic.measure_self_or_compl_eq_zero PreErgodic.measure_self_or_compl_eq_zero
 
 /-- On a probability space, the (pre)ergodicity condition is a zero one law. -/
-theorem prob_eq_zero_or_one [ProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
+theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ s = 1 := by
   simpa [hs] using hf.measure_self_or_compl_eq_zero hs hs'
 #align pre_ergodic.prob_eq_zero_or_one PreErgodic.prob_eq_zero_or_one
@@ -90,7 +90,7 @@ theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf
   ⟨by
     intro s hs₀ hs₁
     replace hs₁ : f ⁻¹' (g ⁻¹' s) = g ⁻¹' s; · rw [← preimage_comp, h_comm, preimage_comp, hs₁]
-    cases' hf.ae_empty_or_univ (hg.measurable hs₀) hs₁ with hs₂ hs₂ <;> [left, right]
+    cases' hf.ae_empty_or_univ (hg.measurable hs₀) hs₁ with hs₂ hs₂ <;> [left; right]
     · simpa only [ae_eq_empty, hg.measure_preimage hs₀] using hs₂
     · simpa only [ae_eq_univ, ← preimage_compl, hg.measure_preimage hs₀.compl] using hs₂⟩
 #align measure_theory.measure_preserving.pre_ergodic_of_pre_ergodic_conjugate MeasureTheory.MeasurePreserving.preErgodic_of_preErgodic_conjugate
@@ -123,7 +123,7 @@ still either almost empty or full. -/
 theorem ae_empty_or_univ' (hf : QuasiErgodic f μ) (hs : MeasurableSet s) (hs' : f ⁻¹' s =ᵐ[μ] s) :
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   obtain ⟨t, h₀, h₁, h₂⟩ := hf.toQuasiMeasurePreserving.exists_preimage_eq_of_preimage_ae hs hs'
-  rcases hf.ae_empty_or_univ h₀ h₂ with (h₃ | h₃) <;> [left, right] <;> exact ae_eq_trans h₁.symm h₃
+  rcases hf.ae_empty_or_univ h₀ h₂ with (h₃ | h₃) <;> [left; right] <;> exact ae_eq_trans h₁.symm h₃
 #align quasi_ergodic.ae_empty_or_univ' QuasiErgodic.ae_empty_or_univ'
 
 end QuasiErgodic
@@ -162,7 +162,7 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet
 
 section IsFiniteMeasure
 
-variable [FiniteMeasure μ]
+variable [IsFiniteMeasure μ]
 
 theorem ae_empty_or_univ_of_preimage_ae_le (hf : Ergodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s ≤ᵐ[μ] s) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=

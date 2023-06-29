@@ -24,7 +24,7 @@ open Lean hiding Rat mkRat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
-syntax (name := norm_num) "norm_num" term,+ : attr
+syntax (name := norm_num) "norm_num " term,+ : attr
 
 namespace Mathlib
 namespace Meta.NormNum
@@ -52,6 +52,10 @@ theorem IsNat.to_raw_eq [AddMonoidWithOne α] : IsNat (a : α) n → a = n.rawCa
   | ⟨e⟩ => e
 
 theorem IsNat.of_raw (α) [AddMonoidWithOne α] (n : ℕ) : IsNat (n.rawCast : α) n := ⟨rfl⟩
+
+@[elab_as_elim]
+theorem isNat.natElim {p : ℕ → Prop} : {n : ℕ} → {n' : ℕ} → IsNat n n' → p n' → p n
+  | _, _, ⟨rfl⟩, h => h
 
 /-- Assert that an element of a ring is equal to the coercion of some integer. -/
 structure IsInt [Ring α] (a : α) (n : ℤ) : Prop where
@@ -92,6 +96,28 @@ theorem IsInt.nonneg_to_eq {α} [Ring α] {n}
 def mkRawIntLit (n : ℤ) : Q(ℤ) :=
   let lit : Q(ℕ) := mkRawNatLit n.natAbs
   if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
+
+/-- Extract the integer from a raw integer literal, as produced by
+`Mathlib.Meta.NormNum.mkRawIntLit`. -/
+def _root_.Lean.Expr.intLit! (e : Expr) : ℤ :=
+  if e.isAppOfArity ``Int.ofNat 1 then
+    e.appArg!.natLit!
+  else if e.isAppOfArity ``Int.negOfNat 1 then
+    .negOfNat e.appArg!.natLit!
+  else
+    panic! "not a raw integer literal"
+
+/-- Extract the raw natlit representing the absolute value of a raw integer literal
+(of the type produced by `Mathlib.Meta.NormNum.mkRawIntLit`) along with an equality proof. -/
+def rawIntLitNatAbs (n : Q(ℤ)) : (m : Q(ℕ)) × Q(Int.natAbs $n = $m) :=
+  if n.isAppOfArity ``Int.ofNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.ofNat $m) = $m) from q(Int.natAbs_ofNat $m)⟩
+  else if n.isAppOfArity ``Int.negOfNat 1 then
+    have m : Q(ℕ) := n.appArg!
+    ⟨m, show Q(Int.natAbs (Int.negOfNat $m) = $m) from q(Int.natAbs_neg $m)⟩
+  else
+    panic! "not a raw integer literal"
 
 /-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
 def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
@@ -306,7 +332,7 @@ def inferCharZeroOfAddMonoidWithOne? {α : Q(Type u)}
 def inferCharZeroOfDivisionRing {α : Q(Type u)}
     (_i : Q(DivisionRing $α) := by with_reducible assumption) : MetaM Q(CharZero $α) :=
   return ← synthInstanceQ (q(CharZero $α) : Q(Prop)) <|>
-    throwError "not a characterstic zero division ring"
+    throwError "not a characteristic zero division ring"
 
 /-- Helper function to synthesize a typed `OfScientific α` expression given `DivisionRing α`. -/
 def inferOfScientific (α : Q(Type u)) : MetaM Q(OfScientific $α) :=
@@ -485,7 +511,7 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
       return { expr := q($n' / $d'), proof? := q(IsRat.nonneg_to_eq $p $pn' $pd') }
 
 /--
-A extension for `norm_num`.
+An extension for `norm_num`.
 -/
 structure NormNumExt where
   /-- The extension should be run in the `pre` phase when used as simp plugin. -/
@@ -607,6 +633,34 @@ def isRatLit (e : Expr) : Option ℚ := do
     pure q
   else
     isIntLit e
+
+/-- Given `Mathlib.Meta.NormNum.Result.isBool p b`, this is the type of `p`.
+  Note that `BoolResult p b` is definitionally equal to `Expr`, and if you write `match b with ...`,
+  then in the `true` branch `BoolResult p true` is reducibly equal to `Q($p)` and
+  in the `false` branch it is reducibly equal to `Q(¬ $p)`. -/
+@[reducible]
+def BoolResult (p : Q(Prop)) (b : Bool) : Type :=
+  Q(Bool.rec (¬ $p) ($p) $b)
+
+/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
+and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
+def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
+  let .isBool b prf ← derive (α := (q(Prop) : Q(Type))) p | failure
+  pure ⟨b, prf⟩
+
+/-- Obtain a `Result` from a `BoolResult`. -/
+def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) :
+  Result q(Prop) :=
+  Result'.isBool b prf
+
+/-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
+and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
+def deriveBoolOfIff (p p' : Q(Prop)) (hp : Q($p ↔ $p')) :
+    MetaM ((b : Bool) × BoolResult p' b) := do
+  let ⟨b, pb⟩ ← deriveBool p
+  match b with
+  | true  => return ⟨true, q(Iff.mp $hp $pb)⟩
+  | false => return ⟨false, q((Iff.not $hp).mp $pb)⟩
 
 /-- Test if an expression represents an explicit number written in normal form. -/
 def isNormalForm : Expr → Bool

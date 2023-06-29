@@ -196,18 +196,18 @@ theorem mem_nilradical : x ∈ nilradical R ↔ IsNilpotent x :=
   Iff.rfl
 #align mem_nilradical mem_nilradical
 
-theorem nilradical_eq_infₛ (R : Type _) [CommSemiring R] :
-    nilradical R = infₛ { J : Ideal R | J.IsPrime } :=
-  (Ideal.radical_eq_infₛ ⊥).trans <| by simp_rw [and_iff_right bot_le]
-#align nilradical_eq_Inf nilradical_eq_infₛ
+theorem nilradical_eq_sInf (R : Type _) [CommSemiring R] :
+    nilradical R = sInf { J : Ideal R | J.IsPrime } :=
+  (Ideal.radical_eq_sInf ⊥).trans <| by simp_rw [and_iff_right bot_le]
+#align nilradical_eq_Inf nilradical_eq_sInf
 
 theorem nilpotent_iff_mem_prime : IsNilpotent x ↔ ∀ J : Ideal R, J.IsPrime → x ∈ J := by
-  rw [← mem_nilradical, nilradical_eq_infₛ, Submodule.mem_infₛ]
+  rw [← mem_nilradical, nilradical_eq_sInf, Submodule.mem_sInf]
   rfl
 #align nilpotent_iff_mem_prime nilpotent_iff_mem_prime
 
 theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :=
-  (nilradical_eq_infₛ R).symm ▸ infₛ_le H
+  (nilradical_eq_sInf R).symm ▸ sInf_le H
 #align nilradical_le_prime nilradical_le_prime
 
 @[simp]
@@ -224,14 +224,14 @@ variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn⊢ <;>
+      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_left_iff LinearMap.isNilpotent_mulLeft_iff
 
 @[simp]
 theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn⊢ <;>
+      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
 

@@ -50,7 +50,7 @@ theorem toMatrix_apply {ι' : Type _} (q : ι' → P) (i : ι') (j : ι) :
 
 @[simp]
 theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := by
-  ext (i j)
+  ext i j
   rw [toMatrix_apply, coord_apply, Matrix.one_eq_pi_single, Pi.single_apply]
 #align affine_basis.to_matrix_self AffineBasis.toMatrix_self
 
@@ -121,7 +121,7 @@ theorem toMatrix_vecMul_coords (x : P) : (b.toMatrix b₂).vecMul (b₂.coords x
 variable [DecidableEq ι]
 
 theorem toMatrix_mul_toMatrix : b.toMatrix b₂ ⬝ b₂.toMatrix b = 1 := by
-  ext (l m)
+  ext l m
   change (b₂.toMatrix b).vecMul (b.coords (b₂ l)) m = _
   rw [toMatrix_vecMul_coords, coords_apply, ← toMatrix_apply, toMatrix_self]
 #align affine_basis.to_matrix_mul_to_matrix AffineBasis.toMatrix_mul_toMatrix
@@ -166,7 +166,6 @@ theorem toMatrix_inv_vecMul_toMatrix (x : P) :
     Matrix.vecMul_one]
 #align affine_basis.to_matrix_inv_vec_mul_to_matrix AffineBasis.toMatrix_inv_vecMul_toMatrix
 
-set_option synthInstance.etaExperiment true in
 /-- If we fix a background affine basis `b`, then for any other basis `b₂`, we can characterise
 the barycentric coordinates provided by `b₂` in terms of determinants relative to `b`. -/
 theorem det_smul_coords_eq_cramer_coords (x : P) :

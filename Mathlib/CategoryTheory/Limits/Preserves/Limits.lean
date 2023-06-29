@@ -89,7 +89,7 @@ def preservesLimitNatIso : lim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ lim :
   NatIso.ofComponents (fun F => preservesLimitIso G F)
     (by
       intro _ _ f
-      apply Limits.limit.hom_ext; intro j
+      apply limit.hom_ext; intro j
       dsimp
       simp only [preservesLimitsIso_hom_π, whiskerRight_app, limMap_π, Category.assoc,
         preservesLimitsIso_hom_π_assoc, ← G.map_comp])
@@ -147,7 +147,7 @@ def preservesColimitNatIso : colim ⋙ G ≅ (whiskeringRight J C D).obj G ⋙ c
     (by
       intro _ _ f
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
-      apply Limits.colimit.hom_ext; intro j
+      apply colimit.hom_ext; intro j
       dsimp
       erw [ι_colimMap_assoc]
       simp only [ι_preservesColimitsIso_inv, whiskerRight_app, Category.assoc,

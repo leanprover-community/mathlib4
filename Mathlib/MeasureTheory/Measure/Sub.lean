@@ -15,12 +15,11 @@ import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 In this file we define `μ - ν` to be the least measure `τ` such that `μ ≤ τ + ν`.
 It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
-Compare with `ENNReal.hasSub`.
+Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`.
 -/
-
 
 open Set
 
@@ -30,21 +29,21 @@ namespace Measure
 
 /-- The measure `μ - ν` is defined to be the least measure `τ` such that `μ ≤ τ + ν`.
 It is the equivalent of `(μ - ν) ⊔ 0` if `μ` and `ν` were signed measures.
-Compare with `ENNReal.hasSub`.
+Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
-noncomputable instance hasSub {α : Type _} [MeasurableSpace α] : Sub (Measure α) :=
-  ⟨fun μ ν => infₛ { τ | μ ≤ τ + ν }⟩
-#align measure_theory.measure.has_sub MeasureTheory.Measure.hasSub
+noncomputable instance instSub {α : Type _} [MeasurableSpace α] : Sub (Measure α) :=
+  ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
+#align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
 variable {α : Type _} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
-theorem sub_def : μ - ν = infₛ { d | μ ≤ d + ν } := rfl
+theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
 #align measure_theory.measure.sub_def MeasureTheory.Measure.sub_def
 
 theorem sub_le_of_le_add {d} (h : μ ≤ d + ν) : μ - ν ≤ d :=
-  infₛ_le h
+  sInf_le h
 #align measure_theory.measure.sub_le_of_le_add MeasureTheory.Measure.sub_le_of_le_add
 
 theorem sub_eq_zero_of_le (h : μ ≤ ν) : μ - ν = 0 :=
@@ -72,14 +71,14 @@ theorem sub_self : μ - μ = 0 :=
 
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/
-theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
+theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
     (μ - ν) s = μ s - ν s := by
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α := MeasureTheory.Measure.ofMeasurable
     (fun (t : Set α) (_ : MeasurableSet t) => μ t - ν t) (by simp)
     (by
       intro g h_meas h_disj; simp only; rw [ENNReal.tsum_sub]
-      repeat' rw [← MeasureTheory.measure_unionᵢ h_disj h_meas]
+      repeat' rw [← MeasureTheory.measure_iUnion h_disj h_meas]
       exacts [MeasureTheory.measure_ne_top _ _, fun i => h₂ _ (h_meas _)])
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
   have h_measure_sub_add : ν + measure_sub = μ := by
@@ -90,9 +89,9 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
   have h_measure_sub_eq : μ - ν = measure_sub := by
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
-    · apply @infₛ_le (Measure α) Measure.instCompleteSemilatticeInf
+    · apply sInf_le
       simp [le_refl, add_comm, h_measure_sub_add]
-    apply @le_infₛ (Measure α) Measure.instCompleteSemilatticeInf
+    apply le_sInf
     intro d h_d
     rw [← h_measure_sub_add, mem_setOf_eq, add_comm d] at h_d
     apply Measure.le_of_add_le_add_left h_d
@@ -100,7 +99,7 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
   apply Measure.ofMeasurable_apply _ h₁
 #align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
-theorem sub_add_cancel_of_le [FiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
+theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
@@ -109,9 +108,9 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
   repeat' rw [sub_def]
   have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, Measure.le_add_right le_rfl⟩
-  rw [restrict_infₛ_eq_infₛ_restrict h_nonempty h_meas_s]
+  rw [restrict_sInf_eq_sInf_restrict h_nonempty h_meas_s]
   apply le_antisymm
-  · refine' infₛ_le_infₛ_of_forall_exists_le _
+  · refine' sInf_le_sInf_of_forall_exists_le _
     intro ν' h_ν'_in
     rw [mem_setOf_eq] at h_ν'_in
     refine' ⟨ν'.restrict s, _, restrict_le_self⟩
@@ -131,7 +130,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
         exact Measure.le_iff'.1 h_mu_le_add_top _
     · ext1 t h_meas_t
       simp [restrict_apply h_meas_t, restrict_apply (h_meas_t.inter h_meas_s), inter_assoc]
-  · refine' infₛ_le_infₛ_of_forall_exists_le _
+  · refine' sInf_le_sInf_of_forall_exists_le _
     refine' ball_image_iff.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
     exact restrict_mono Subset.rfl h_t_in
@@ -142,9 +141,9 @@ theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.r
   rw [← restrict_apply_self, restrict_sub_eq_restrict_sub_restrict, sub_eq_zero_of_le] <;> simp [*]
 #align measure_theory.measure.sub_apply_eq_zero_of_restrict_le_restrict MeasureTheory.Measure.sub_apply_eq_zero_of_restrict_le_restrict
 
-instance finiteMeasure_sub [FiniteMeasure μ] : FiniteMeasure (μ - ν) :=
-  finiteMeasureOfLe μ sub_le
-#align measure_theory.measure.is_finite_measure_sub MeasureTheory.Measure.finiteMeasure_sub
+instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) :=
+  isFiniteMeasure_of_le μ sub_le
+#align measure_theory.measure.is_finite_measure_sub MeasureTheory.Measure.isFiniteMeasure_sub
 
 end Measure
 

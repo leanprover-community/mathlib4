@@ -16,10 +16,10 @@ This file defines what it means for a first-order (sub)structure to be finitely 
 generated, similarly to other finitely-generated objects in the algebra library.
 
 ## Main Definitions
-* `first_order.language.substructure.FG` indicates that a substructure is finitely generated.
-* `first_order.language.Structure.FG` indicates that a structure is finitely generated.
-* `first_order.language.substructure.CG` indicates that a substructure is countably generated.
-* `first_order.language.Structure.CG` indicates that a structure is countably generated.
+* `FirstOrder.Language.Substructure.FG` indicates that a substructure is finitely generated.
+* `FirstOrder.Language.Structure.FG` indicates that a structure is finitely generated.
+* `FirstOrder.Language.Substructure.CG` indicates that a substructure is countably generated.
+* `FirstOrder.Language.Structure.CG` indicates that a structure is countably generated.
 
 
 ## TODO
@@ -28,12 +28,7 @@ this definition of finite generation to define the others.
 
 -/
 
-
-set_option linter.uppercaseLean3 false
-
-open FirstOrder
-
-open Set
+open FirstOrder Set
 
 namespace FirstOrder
 
@@ -58,7 +53,7 @@ theorem fg_def {N : L.Substructure M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ clo
 #align first_order.language.substructure.fg_def FirstOrder.Language.Substructure.fg_def
 
 theorem fg_iff_exists_fin_generating_family {N : L.Substructure M} :
-    N.FG ↔ ∃ (n : ℕ)(s : Fin n → M), closure L (range s) = N := by
+    N.FG ↔ ∃ (n : ℕ) (s : Fin n → M), closure L (range s) = N := by
   rw [fg_def]
   constructor
   · rintro ⟨S, Sfin, hS⟩
@@ -194,6 +189,8 @@ open Substructure
 
 namespace Structure
 
+set_option linter.uppercaseLean3 false
+
 variable (L) (M)
 
 /-- A structure is finitely generated if it is the closure of a finite subset. -/
@@ -212,7 +209,7 @@ theorem fg_def : FG L M ↔ (⊤ : L.Substructure M).FG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 #align first_order.language.Structure.fg_def FirstOrder.Language.Structure.fg_def
 
-/-- An equivalent expression of `Structure.fg` in terms of `set.finite` instead of `finset`. -/
+/-- An equivalent expression of `Structure.FG` in terms of `Set.Finite` instead of `Finset`. -/
 theorem fg_iff : FG L M ↔ ∃ S : Set M, S.Finite ∧ closure L S = (⊤ : L.Substructure M) := by
   rw [fg_def, Substructure.fg_def]
 #align first_order.language.Structure.fg_iff FirstOrder.Language.Structure.fg_iff
@@ -278,6 +275,7 @@ theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Struc
   · have h := h.map S.subtype.toHom
     rw [← Hom.range_eq_map, range_subtype] at h
     exact h
+set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.fg_iff_Structure_fg FirstOrder.Language.Substructure.fg_iff_structure_fg
 
 theorem Equiv.cg_iff {N : Type _} [L.Structure N] (f : M ≃[L] N) :
@@ -294,6 +292,7 @@ theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Struc
   · have h := h.map S.subtype.toHom
     rw [← Hom.range_eq_map, range_subtype] at h
     exact h
+set_option linter.uppercaseLean3 false in
 #align first_order.language.substructure.cg_iff_Structure_cg FirstOrder.Language.Substructure.cg_iff_structure_cg
 
 end Language

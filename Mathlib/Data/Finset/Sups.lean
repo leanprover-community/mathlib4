@@ -183,16 +183,16 @@ theorem subset_sups {s t : Set α} :
 
 variable (s t u)
 
-theorem bunionᵢ_image_sup_left : (s.bunionᵢ fun a => t.image <| (· ⊔ ·) a) = s ⊻ t :=
-  bunionᵢ_image_left
-#align finset.bUnion_image_sup_left Finset.bunionᵢ_image_sup_left
+theorem biUnion_image_sup_left : (s.biUnion fun a => t.image <| (· ⊔ ·) a) = s ⊻ t :=
+  biUnion_image_left
+#align finset.bUnion_image_sup_left Finset.biUnion_image_sup_left
 
-theorem bunionᵢ_image_sup_right : (t.bunionᵢ fun b => s.image fun a => a ⊔ b) = s ⊻ t :=
-  bunionᵢ_image_right
-#align finset.bUnion_image_sup_right Finset.bunionᵢ_image_sup_right
+theorem biUnion_image_sup_right : (t.biUnion fun b => s.image fun a => a ⊔ b) = s ⊻ t :=
+  biUnion_image_right
+#align finset.bUnion_image_sup_right Finset.biUnion_image_sup_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
-theorem image_sup_product (s t : Finset α) : (s ×ᶠ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
+theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 #align finset.image_sup_product Finset.image_sup_product
 
@@ -357,16 +357,16 @@ theorem subset_infs {s t : Set α} :
 
 variable (s t u)
 
-theorem bunionᵢ_image_inf_left : (s.bunionᵢ fun a => t.image <| (· ⊓ ·) a) = s ⊼ t :=
-  bunionᵢ_image_left
-#align finset.bUnion_image_inf_left Finset.bunionᵢ_image_inf_left
+theorem biUnion_image_inf_left : (s.biUnion fun a => t.image <| (· ⊓ ·) a) = s ⊼ t :=
+  biUnion_image_left
+#align finset.bUnion_image_inf_left Finset.biUnion_image_inf_left
 
-theorem bunionᵢ_image_inf_right : (t.bunionᵢ fun b => s.image fun a => a ⊓ b) = s ⊼ t :=
-  bunionᵢ_image_right
-#align finset.bUnion_image_inf_right Finset.bunionᵢ_image_inf_right
+theorem biUnion_image_inf_right : (t.biUnion fun b => s.image fun a => a ⊓ b) = s ⊼ t :=
+  biUnion_image_right
+#align finset.bUnion_image_inf_right Finset.biUnion_image_inf_right
 
 -- Porting note: simpNF linter doesn't like @[simp]
-theorem image_inf_product (s t : Finset α) : (s ×ᶠ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
+theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 #align finset.image_inf_product Finset.image_inf_product
 
@@ -423,7 +423,7 @@ variable [SemilatticeSup α] [OrderBot α] [@DecidableRel α Disjoint] (s s₁ s
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
 -/
 def disjSups : Finset α :=
-  ((s ×ᶠ t).filter fun ab : α × α => Disjoint ab.1 ab.2).image fun ab => ab.1 ⊔ ab.2
+  ((s ×ˢ t).filter fun ab : α × α => Disjoint ab.1 ab.2).image fun ab => ab.1 ⊔ ab.2
 #align finset.disj_sups Finset.disjSups
 
 @[inherit_doc]

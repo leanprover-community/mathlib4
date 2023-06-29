@@ -12,7 +12,6 @@ import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Set
 
 /-!
 # Equivalence of Recursive and Direct Computations of `GCF` Convergents

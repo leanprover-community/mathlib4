@@ -75,7 +75,7 @@ variable (r : α → α → Prop) (s : β → β → Prop)
 instance [IsRefl α r] [IsRefl β s] : IsRefl (Sum α β) (Lex r s) :=
   ⟨by
     rintro (a | a)
-    exacts[Lex.inl (refl _), Lex.inr (refl _)]⟩
+    exacts [Lex.inl (refl _), Lex.inr (refl _)]⟩
 
 instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
   ⟨by rintro _ (⟨h⟩ | ⟨h⟩) <;> exact irrefl _ h⟩
@@ -83,7 +83,7 @@ instance [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (Sum α β) (Lex r s) :=
 instance [IsTrans α r] [IsTrans β s] : IsTrans (Sum α β) (Lex r s) :=
   ⟨by
     rintro _ _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hbc⟩ | ⟨hbc⟩)
-    exacts[.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
+    exacts [.inl (_root_.trans hab hbc), .sep _ _, .inr (_root_.trans hab hbc), .sep _ _]⟩
 
 instance [IsAntisymm α r] [IsAntisymm β s] : IsAntisymm (Sum α β) (Lex r s) :=
   ⟨by rintro _ _ (⟨hab⟩ | ⟨hab⟩) (⟨hba⟩ | ⟨hba⟩) <;> rw [antisymm hab hba]⟩
@@ -302,13 +302,13 @@ namespace Lex
 notation:30 α " ⊕ₗ " β:29 => _root_.Lex (Sum α β)
 
 --TODO: Can we make `inlₗ`, `inrₗ` `local notation`?
-/-- Lexicographical `sum.inl`. Only used for pattern matching. -/
+/-- Lexicographical `Sum.inl`. Only used for pattern matching. -/
 @[match_pattern]
 abbrev _root_.Sum.inlₗ (x : α) : α ⊕ₗ β :=
   toLex (Sum.inl x)
 #align sum.inlₗ Sum.inlₗ
 
-/-- Lexicographical `sum.inr`. Only used for pattern matching. -/
+/-- Lexicographical `Sum.inr`. Only used for pattern matching. -/
 @[match_pattern]
 abbrev _root_.Sum.inrₗ (x : β) : α ⊕ₗ β :=
   toLex (Sum.inr x)
@@ -427,8 +427,8 @@ instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
     le_total := total_of (Lex (· ≤ ·) (· ≤ ·)),
-    decidable_le := instDecidableRelSumLex,
-    decidable_eq := instDecidableEqSum }
+    decidableLE := instDecidableRelSumLex,
+    decidableEq := instDecidableEqSum }
 #align sum.lex.linear_order Sum.Lex.linearOrder
 
 /-- The lexicographical bottom of a sum is the bottom of the left component. -/
@@ -736,7 +736,7 @@ variable [LE α]
 
 namespace WithBot
 
-/-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `unit` and `↑a` to
+/-- `WithBot α` is order-isomorphic to `PUnit ⊕ₗ α`, by sending `⊥` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoPUnitSumLex : WithBot α ≃o PUnit ⊕ₗ α :=
   ⟨(Equiv.optionEquivSumPUnit α).trans <| (Equiv.sumComm _ _).trans toLex, @fun a b => by
@@ -770,7 +770,7 @@ end WithBot
 
 namespace WithTop
 
-/-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `unit` and `↑a` to
+/-- `WithTop α` is order-isomorphic to `α ⊕ₗ PUnit`, by sending `⊤` to `Unit` and `↑a` to
 `a`. -/
 def orderIsoSumLexPUnit : WithTop α ≃o α ⊕ₗ PUnit :=
   ⟨(Equiv.optionEquivSumPUnit α).trans toLex, @fun a b => by

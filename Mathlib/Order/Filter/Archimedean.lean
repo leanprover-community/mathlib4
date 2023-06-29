@@ -10,6 +10,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Tactic.GCongr
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
@@ -98,7 +99,7 @@ theorem tendsto_rat_cast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : �
 theorem atTop_hasAntitoneBasis_of_archimedean [StrictOrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n where
   antitone := fun _ _ h => Ici_subset_Ici.2 (Nat.mono_cast h)
-  mem_iff' _t := ⟨fun ht => infᵢ_sets_induct ht ⟨0, trivial, subset_univ _⟩
+  mem_iff' _t := ⟨fun ht => iInf_sets_induct ht ⟨0, trivial, subset_univ _⟩
       fun {x _ _} h₁ ⟨n, _, hn⟩ =>
         let ⟨m, hm⟩ := exists_nat_ge x
         ⟨max m n, trivial, fun _y hy => ⟨h₁ (hm.trans ((Nat.cast_le.2 (le_max_left _ _)).trans hy)),
@@ -152,9 +153,9 @@ theorem Tendsto.const_mul_atTop' (hr : 0 < r) (hf : Tendsto f l atTop) :
     b ≤ 1 * max b 0 := by
     { rw [one_mul]
       exact le_max_left _ _ }
-    _ ≤ r * n * max b 0 := mul_le_mul_of_nonneg_right hn (le_max_right _ _)
+    _ ≤ r * n * max b 0 := by gcongr
     _ = r * (n * max b 0) := by rw [mul_assoc]
-    _ ≤ r * f x := mul_le_mul_of_nonneg_left hx (le_of_lt hr)
+    _ ≤ r * f x := by gcongr
 #align filter.tendsto.const_mul_at_top' Filter.Tendsto.const_mul_atTop'
 
 /-- If a function tends to infinity along a filter, then this function multiplied by a positive
@@ -171,9 +172,9 @@ theorem Tendsto.atTop_mul_const' (hr : 0 < r) (hf : Tendsto f l atTop) :
     b ≤ max b 0 * 1 := by
     { rw [mul_one]
       exact le_max_left _ _ }
-    _ ≤ max b 0 * (n * r) := mul_le_mul_of_nonneg_left hn' (le_max_right _ _)
+    _ ≤ max b 0 * (n * r) := by gcongr
     _ = max b 0 * n * r := by rw [mul_assoc]
-    _ ≤ f x * r := mul_le_mul_of_nonneg_right hx (le_of_lt hr)
+    _ ≤ f x * r := by gcongr
 #align filter.tendsto.at_top_mul_const' Filter.Tendsto.atTop_mul_const'
 
 end LinearOrderedSemiring
@@ -193,7 +194,7 @@ theorem Tendsto.atTop_mul_neg_const' (hr : r < 0) (hf : Tendsto f l atTop) :
 `LinearOrderedField`s which does not require the `Archimedean` assumption. -/
 theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atBot := by
-  simp only [← tendsto_neg_atTop_iff, ← neg_mul] at hf⊢
+  simp only [← tendsto_neg_atTop_iff, ← neg_mul] at hf ⊢
   exact hf.atTop_mul_const' hr
 #align filter.tendsto.at_bot_mul_const' Filter.Tendsto.atBot_mul_const'
 
@@ -241,7 +242,7 @@ theorem Tendsto.atTop_zsmul_neg_const {f : α → ℤ} (hr : r < 0) (hf : Tendst
 
 theorem Tendsto.atBot_zsmul_const {f : α → ℤ} (hr : 0 < r) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x • r) l atBot := by
-  simp only [← tendsto_neg_atTop_iff, ← neg_zsmul] at hf⊢
+  simp only [← tendsto_neg_atTop_iff, ← neg_zsmul] at hf ⊢
   exact hf.atTop_zsmul_const hr
 #align filter.tendsto.at_bot_zsmul_const Filter.Tendsto.atBot_zsmul_const
 

@@ -15,8 +15,6 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 # Nilpotent elements in quotient rings
 -/
 
--- Porting note: failed to synth RingHomClass (R →+* R ⧸ I) R (R ⧸ I)
-set_option synthInstance.etaExperiment true in
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type _} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
   conv_lhs => rw [← @Ideal.mk_ker R _ I]
@@ -32,20 +30,10 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     {P : ∀ ⦃S : Type _⦄ [CommRing S], ∀ _I : Ideal S, Prop}
     (h₁ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I : Ideal S, I ^ 2 = ⊥ → P I)
     (h₂ : ∀ ⦃S : Type _⦄ [CommRing S], ∀ I J : Ideal S, I ≤ J → P I →
-    -- Porting note: etaExperiment fixes this but times out Zero (Ideal S) in IsNilpotent I
-        P (@Ideal.map S (S ⧸ I) (S →+* S ⧸ I) (_) (_)
-          RingHom.instRingHomClassRingHom (Ideal.Quotient.mk I) J) → P J) :
+      P (J.map (Ideal.Quotient.mk I)) → P J) :
     P I := by
--- Porting note: linarith misbehaving below
-  have bound (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
--- Porting note: failed to synth RingHomClass (R →+* R ⧸ I) R (R ⧸ I)
   obtain ⟨n, hI : I ^ n = ⊥⟩ := hI
-  revert S
-  -- Porting note: lean could previously figure out the motive
-  apply Nat.strong_induction_on n (p := fun n =>
-    ∀ {S : Type u_1} [CommRing S] [Algebra R S] (I : Ideal S), I ^ n = ⊥ → P I)
-  clear n
-  intro n H S _ _ I hI
+  induction' n using Nat.strong_induction_on with n H generalizing S
   by_cases hI' : I = ⊥
   · subst hI'
     apply h₁
@@ -61,20 +49,14 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
     · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one, Nat.succ_eq_add_one]
-      -- Porting note: linarith wants AddGroup (Ideal S) to solve (n:ℕ)+1+1 ≤ 2*(n+1)
-      apply Ideal.pow_le_pow <| bound n
-    · exact le_refl n.succ.succ
+      apply Ideal.pow_le_pow (by linarith)
+    · exact n.succ.lt_succ_self
   · apply h₁
-    -- Porting note: cannot synth RingHomClass and etaExperiment causes linarith to fail in bound
-    rw [← @Ideal.map_pow S (S ⧸ I^2) (S →+* S ⧸ I^2) _ _ RingHom.instRingHomClassRingHom,
-      Ideal.map_quotient_self]
+    rw [← Ideal.map_pow, Ideal.map_quotient_self]
 #align ideal.is_nilpotent.induction_on Ideal.IsNilpotent.induction_on
 
-example (m : ℕ) : m + 1 + 1 ≤ 2 * (m + 1) := by linarith
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type _} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
--- Porting note: cannot synth RingHomClass
-set_option synthInstance.etaExperiment true in
   refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
   apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I
@@ -100,4 +82,3 @@ set_option synthInstance.etaExperiment true in
       ring
     exact isUnit_of_mul_eq_one _ _ this
 #align is_nilpotent.is_unit_quotient_mk_iff IsNilpotent.isUnit_quotient_mk_iff
-

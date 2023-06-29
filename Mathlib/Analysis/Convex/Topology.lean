@@ -25,8 +25,7 @@ We prove the following facts:
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
 
--- Porting note: this does not exist in Lean 4:
---assert_not_exists Norm
+assert_not_exists Norm
 
 open Metric Set Pointwise Convex
 
@@ -65,7 +64,7 @@ theorem bounded_stdSimplex : Metric.Bounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_interᵢ fun i => isClosed_le continuous_const (continuous_apply i))
+    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
       (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
 #align is_closed_std_simplex isClosed_stdSimplex
 
@@ -260,7 +259,7 @@ protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
   by_cases hy' : y ∈ interior s
   · exact hs.openSegment_self_interior_subset_interior hx hy'
   rcases h ⟨hx, hx'⟩ ⟨hy, hy'⟩ hne with ⟨c, hc⟩
-  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset.2 ⟨hc, union_subset _ _⟩)
+  refine' (openSegment_subset_union x y ⟨c, rfl⟩).trans (insert_subset_iff.2 ⟨hc, union_subset _ _⟩)
   exacts [hs.openSegment_self_interior_subset_interior hx hc,
     hs.openSegment_interior_self_subset_interior hc hy]
 #align convex.strict_convex' Convex.strictConvex'

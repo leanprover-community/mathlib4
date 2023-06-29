@@ -32,7 +32,7 @@ open Classical
 
 variable {α : Type _} {β : α → Type _}
 
-/-- `Fix α` provides a `fix` operator to define recursive computatiation
+/-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
 class Fix (α : Type _) where
   /-- `fix f` represents the computation of a fixed point for `f`.-/

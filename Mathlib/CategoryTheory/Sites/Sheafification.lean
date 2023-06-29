@@ -40,7 +40,7 @@ section
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 -- porting note: removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
@@ -55,7 +55,7 @@ namespace Meq
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, P.obj (op I.Y) :=
@@ -148,7 +148,7 @@ namespace Plus
 
 variable [ConcreteCategory.{max v u} D]
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [PreservesLimits (forget D)]
 
@@ -166,14 +166,15 @@ def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : (J.plusObj P)
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
   dsimp [mk, plusObj]
-  simp only [← comp_apply, colimit.ι_pre, ι_colimMap_assoc]
-  simp_rw [comp_apply]
+  rw [← comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
+    comp_apply (x := (Meq.equiv P S).symm x)]
   apply congr_arg
   apply (Meq.equiv P _).injective
   erw [Equiv.apply_symm_apply]
   ext i
-  simp only [diagramPullback_app, Meq.pullback_apply, Meq.equiv_apply, ← comp_apply]
-  erw [Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+  simp only [Functor.op_obj, unop_op, pullback_obj, diagram_obj, Functor.comp_obj,
+    diagramPullback_app, Meq.equiv_apply, Meq.pullback_apply]
+  erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
   cases i; rfl
 #align category_theory.grothendieck_topology.plus.res_mk_eq_mk_pullback CategoryTheory.GrothendieckTopology.Plus.res_mk_eq_mk_pullback
 
@@ -183,7 +184,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X))
   let e : S ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
   delta Cover.toMultiequalizer
-  simp only [comp_apply]
+  erw [comp_apply, comp_apply]
   apply congr_arg
   dsimp [diagram]
   apply Concrete.multiequalizer_ext
@@ -198,22 +199,23 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   dsimp only [toPlus, plusObj]
   delta Cover.toMultiequalizer
   dsimp [mk]
-  simp only [← comp_apply, colimit.ι_pre, ι_colimMap_assoc]
-  simp only [comp_apply]
+  erw [←comp_apply]
+  rw [ι_colimMap_assoc, colimit.ι_pre, comp_apply, comp_apply]
   dsimp only [Functor.op]
   let e : (J.pullback I.f).obj (unop (op S)) ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
-  simp only [comp_apply]
+  erw [comp_apply]
   apply congr_arg
   apply Concrete.multiequalizer_ext
   intro i
   dsimp [diagram]
-  simp only [← comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
-    Meq.equiv_symm_eq_apply]
+  rw [←comp_apply, ←comp_apply, ←comp_apply, Multiequalizer.lift_ι, Multiequalizer.lift_ι,
+    Multiequalizer.lift_ι]
+  erw [Meq.equiv_symm_eq_apply]
   let RR : S.Relation :=
     ⟨_, _, _, i.f, 𝟙 _, I.f, i.f ≫ I.f, I.hf, Sieve.downward_closed _ I.hf _, by simp⟩
   erw [x.condition RR]
-  simp
+  simp only [unop_op, pullback_obj, op_id, Functor.map_id, id_apply]
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_apply CategoryTheory.GrothendieckTopology.Plus.toPlus_apply
 
@@ -225,14 +227,14 @@ theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : P.obj (op X)) :
   apply congr_arg
   apply (Meq.equiv P ⊤).injective
   ext i
-  simp
+  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ←comp_apply, Multiequalizer.lift_ι]
   rfl
 #align category_theory.grothendieck_topology.plus.to_plus_eq_mk CategoryTheory.GrothendieckTopology.Plus.toPlus_eq_mk
 
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
 theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
-    ∃ (S : J.Cover X)(y : Meq P S), x = mk y := by
+    ∃ (S : J.Cover X) (y : Meq P S), x = mk y := by
   obtain ⟨S, y, h⟩ := Concrete.colimit_exists_rep (J.diagram P X) x
   use S.unop, Meq.equiv _ _ y
   rw [← h]
@@ -241,28 +243,29 @@ theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : (J.plusObj P).obj (op X)) :
 #align category_theory.grothendieck_topology.plus.exists_rep CategoryTheory.GrothendieckTopology.Plus.exists_rep
 
 theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P S) (y : Meq P T) :
-    mk x = mk y ↔ ∃ (W : J.Cover X)(h1 : W ⟶ S)(h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
+    mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
     obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
-    apply_fun Multiequalizer.ι (W.unop.index P) I  at hh
+    apply_fun Multiequalizer.ι (W.unop.index P) I at hh
     convert hh
     all_goals
       dsimp [diagram]
-      simp only [← comp_apply, Multiequalizer.lift_ι, Category.comp_id, Meq.equiv_symm_eq_apply]
+      erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
       cases I; rfl
   · rintro ⟨S, h1, h2, e⟩
     apply Concrete.colimit_rep_eq_of_exists
     use op S, h1.op, h2.op
     apply Concrete.multiequalizer_ext
     intro i
-    apply_fun fun ee => ee i  at e
+    apply_fun fun ee => ee i at e
     convert e
     all_goals
       dsimp [diagram]
-      simp only [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+      rw [← comp_apply, Multiequalizer.lift_ι]
+      erw [Meq.equiv_symm_eq_apply]
       cases i; rfl
 #align category_theory.grothendieck_topology.plus.eq_mk_iff_exists CategoryTheory.GrothendieckTopology.Plus.eq_mk_iff_exists
 
@@ -307,18 +310,16 @@ theorem sep {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) (x y : (J.plusObj P).obj
   let IS : S.Arrow := I.fromMiddle
   specialize hh IS
   let IW : (W IS).Arrow := I.toMiddle
-  apply_fun fun e => e IW  at hh
+  apply_fun fun e => e IW at hh
   convert hh using 1
   · let Rx : Sx.Relation :=
       ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ex _ I.hf,
         by simpa only [I.middle_spec] using leOfHom ex _ I.hf, by simp [I.middle_spec]⟩
-    have := x.condition Rx
-    simpa using this
+    simpa [id_apply] using x.condition Rx
   · let Ry : Sy.Relation :=
       ⟨I.Y, I.Y, I.Y, 𝟙 _, 𝟙 _, I.f, I.toMiddleHom ≫ I.fromMiddleHom, leOfHom ey _ I.hf,
         by simpa only [I.middle_spec] using leOfHom ey _ I.hf, by simp [I.middle_spec]⟩
-    have := y.condition Ry
-    simpa using this
+    simpa [id_apply] using y.condition Ry
 #align category_theory.grothendieck_topology.plus.sep CategoryTheory.GrothendieckTopology.Plus.sep
 
 theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
@@ -332,7 +333,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   obtain ⟨W, h1, h2, hh⟩ := h
   apply hsep X W
   intro I
-  apply_fun fun e => e I  at hh
+  apply_fun fun e => e I at hh
   exact hh
 #align category_theory.grothendieck_topology.plus.inj_of_sep CategoryTheory.GrothendieckTopology.Plus.inj_of_sep
 
@@ -379,7 +380,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   choose Z e1 e2 he2 _ _ using fun I : B.Arrow => I.hf
   -- Construct a compatible system of local sections over this large cover, using the chosen
   -- representatives of our local sections.
-  -- The compatilibity here follows from the separatedness assumption.
+  -- The compatibility here follows from the separatedness assumption.
   let w : Meq P B := meqOfSep P hsep X S s T t ht
   -- The associated gluing will be the candidate section.
   use mk w
@@ -432,9 +433,9 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun Meq.equiv _ _  at h
-    apply_fun fun e => e I  at h
-    convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι]
+    apply_fun Meq.equiv _ _ at h
+    apply_fun fun e => e I at h
+    convert h <;> erw [Meq.equiv_apply, ← comp_apply, Multiequalizer.lift_ι] <;> rfl
   · rintro (x : (multiequalizer (S.index _) : D))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t
@@ -442,7 +443,8 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     rw [← ht]
     ext i
     dsimp
-    rw [← comp_apply, Multiequalizer.lift_ι]
+    erw [← comp_apply]
+    rw [Multiequalizer.lift_ι]
     rfl
 #align category_theory.grothendieck_topology.plus.is_sheaf_of_sep CategoryTheory.GrothendieckTopology.Plus.isSheaf_of_sep
 
@@ -513,7 +515,6 @@ theorem sheafification_obj (P : Cᵒᵖ ⥤ D) : (J.sheafification D).obj P = J.
   rfl
 #align category_theory.grothendieck_topology.sheafification_obj CategoryTheory.GrothendieckTopology.sheafification_obj
 
-set_option maxHeartbeats 400000 in
 @[simp]
 theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
     (J.sheafification D).map η = J.sheafifyMap η :=
@@ -669,7 +670,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable
 def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
     J.sheafification D ≅ presheafToSheaf J D ⋙ sheafToPresheaf J D :=
-  NatIso.ofComponents (fun P => Iso.refl _) (by simp)
+  NatIso.ofComponents fun P => Iso.refl _
 
 variable {J D}
 

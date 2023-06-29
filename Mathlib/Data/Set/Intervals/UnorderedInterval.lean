@@ -10,8 +10,6 @@ Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Tauto
 
 /-!
 # Intervals without endpoints ordering
@@ -34,7 +32,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
 make the notation available.
 
 -/
@@ -227,7 +225,7 @@ lemma monotone_or_antitone_iff_uIcc :
     Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
-    exacts[fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
+    exacts [fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩

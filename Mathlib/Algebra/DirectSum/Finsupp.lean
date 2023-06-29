@@ -33,13 +33,9 @@ section finsuppLequivDirectSum
 
 variable (R M) (ι : Type _) [DecidableEq ι]
 
--- Porting note: with etaExperiment no changes required, the statement can be:
--- `(ι →₀ M) ≃ₗ[R] ⨁ i : ι, M`
 /-- The finitely supported functions `ι →₀ M` are in linear equivalence with the direct sum of
 copies of M indexed by ι. -/
-def finsuppLEquivDirectSum : 
-    @LinearEquiv R R _ _ (RingHom.id _) (RingHom.id _) (RingHomInvPair.ids) 
-    (RingHomInvPair.ids) (ι →₀ M) (⨁ _i : ι, M) _ _ _ _ :=
+def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _ : ι, M :=
   haveI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
   finsuppLequivDfinsupp R
 #align finsupp_lequiv_direct_sum finsuppLEquivDirectSum
@@ -58,4 +54,3 @@ theorem finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :
 #align finsupp_lequiv_direct_sum_symm_lof finsuppLEquivDirectSum_symm_lof
 
 end finsuppLequivDirectSum
-

@@ -235,12 +235,6 @@ section Ring
 
 variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
 
-/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
-local instance : Module R A := Algebra.toModule
-
-/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
-local instance : Module A A := Semiring.toModule
-
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by
   letI : Nontrivial A := ⟨⟨x, 0, hx⟩⟩

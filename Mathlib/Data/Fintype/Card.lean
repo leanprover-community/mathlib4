@@ -20,14 +20,14 @@ import Mathlib.Tactic.Positivity
 
 * `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
 * `Fintype.truncEquivFin`: A fintype `α` is computably equivalent to `Fin (card α)`. The
-  `trunc`-free, noncomputable version is `Fintype.equivFin`.
+  `Trunc`-free, noncomputable version is `Fintype.equivFin`.
 * `Fintype.truncEquivOfCardEq` `Fintype.equivOfCardEq`: Two fintypes of same cardinality are
   equivalent. See above.
-* `Fin.equiv_iff_eq`: `fin m ≃ fin n` iff `m = n`.
+* `Fin.equiv_iff_eq`: `Fin m ≃ Fin n` iff `m = n`.
 * `Infinite.natEmbedding`: An embedding of `ℕ` into an infinite type.
 
 We also provide the following versions of the pigeonholes principle.
-* `Fintype.exists_ne_map_eq_of_card_lt` and `isEpty_of_card_lt`: Finitely many pigeons and
+* `Fintype.exists_ne_map_eq_of_card_lt` and `isEmpty_of_card_lt`: Finitely many pigeons and
   pigeonholes. Weak formulation.
 * `Finite.exists_ne_map_eq_of_infinite`: Infinitely many pigeons in finitely many pigeonholes.
   Weak formulation.
@@ -181,7 +181,7 @@ noncomputable def equivFinOfCardEq {n : ℕ} (h : Fintype.card α = n) : α ≃ 
   (truncEquivFinOfCardEq h).out
 #align fintype.equiv_fin_of_card_eq Fintype.equivFinOfCardEq
 
-/-- Two `fintype`s with the same cardinality are (computably) in bijection.
+/-- Two `Fintype`s with the same cardinality are (computably) in bijection.
 
 See `Fintype.equivOfCardEq` for the noncomputable version,
 and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
@@ -950,7 +950,7 @@ open Classical
 
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
-One can obtain the relevant typeclasses via `cases fintype_or_infinite α; resetI`.
+One can obtain the relevant typeclasses via `cases fintypeOrInfinite α; resetI`.
 -/
 noncomputable def fintypeOrInfinite (α : Type _) : PSum (Fintype α) (Infinite α) :=
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
@@ -1106,7 +1106,7 @@ noncomputable def natEmbedding (α : Type _) [Infinite α] : ℕ ↪ α :=
 #align infinite.nat_embedding Infinite.natEmbedding
 
 /-- See `Infinite.exists_superset_card_eq` for a version that, for a `s : Finset α`,
-provides a superset `t : finset α`, `s ⊆ t` such that `t.card` is fixed. -/
+provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
 theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
   ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩
 #align infinite.exists_subset_card_eq Infinite.exists_subset_card_eq
@@ -1171,7 +1171,7 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
     cases nonempty_fintype β
     haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
-      { elems := univ.bunionᵢ fun y : β => (f ⁻¹' {y}).toFinset
+      { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }
     exact key.false
 #align finite.exists_infinite_fiber Finite.exists_infinite_fiber

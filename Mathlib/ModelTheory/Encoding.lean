@@ -127,16 +127,16 @@ theorem card_le : (#L.Term α) ≤ max ℵ₀ (#Sum α (Σi, L.Functions i)) :=
 theorem card_sigma : (#Σn, L.Term (Sum α (Fin n))) = max ℵ₀ (#Sum α (Σi, L.Functions i)) := by
   refine' le_antisymm _ _
   · rw [mk_sigma]
-    refine' (sum_le_supᵢ_lift _).trans _
+    refine' (sum_le_iSup_lift _).trans _
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
-      csupᵢ_le_iff' (bddAbove_range _)]
+      ciSup_le_iff' (bddAbove_range _)]
     · refine' ⟨le_max_left _ _, fun i => card_le.trans _⟩
       refine' max_le (le_max_left _ _) _
       rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift (#α)), lift_add,
         add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast]
       exact add_le_add_right (nat_lt_aleph0 _).le _
     · rw [← one_le_iff_ne_zero]
-      refine' _root_.trans _ (le_csupᵢ (bddAbove_range _) 1)
+      refine' _root_.trans _ (le_ciSup (bddAbove_range _) 1)
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]

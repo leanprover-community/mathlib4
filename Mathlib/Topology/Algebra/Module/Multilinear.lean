@@ -430,9 +430,6 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup M₂]
 
--- Porting note: this requires slightly more time to synthesize an instance.
--- I couldn't see what was wrong with turning on tracing.
-set_option synthInstance.maxHeartbeats 30000 in
 instance : Neg (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨fun f => { -f.toMultilinearMap with cont := f.cont.neg }⟩
 
@@ -469,7 +466,7 @@ theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (
 #align continuous_multilinear_map.map_piecewise_smul ContinuousMultilinearMap.map_piecewise_smul
 
 /-- Multiplicativity of a continuous multilinear map along all coordinates at the same time,
-writing `f (λ i, c i • m i)` as `(∏ i, c i) • f m`. -/
+writing `f (fun i ↦ c i • m i)` as `(∏ i, c i) • f m`. -/
 theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _

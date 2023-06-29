@@ -794,7 +794,7 @@ instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosRefle
   ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
 #align linear_ordered_semiring.to_mul_pos_reflect_lt LinearOrderedSemiring.toMulPosReflectLT
 
-attribute [local instance] LinearOrderedSemiring.decidable_le LinearOrderedSemiring.decidable_lt
+attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
 
 theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nnonneg (hab : 0 ≤ a * b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
@@ -1013,7 +1013,7 @@ section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b c : α}
 
-attribute [local instance] LinearOrderedRing.decidable_le LinearOrderedRing.decidable_lt
+attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
@@ -1033,7 +1033,7 @@ instance (priority := 100) LinearOrderedRing.noZeroDivisors : NoZeroDivisors α 
       intro a b hab
       refine' Decidable.or_iff_not_and_not.2 fun h => _; revert hab
       cases' lt_or_gt_of_ne h.1 with ha ha <;> cases' lt_or_gt_of_ne h.2 with hb hb
-      exacts[(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
+      exacts [(mul_pos_of_neg_of_neg ha hb).ne.symm, (mul_neg_of_neg_of_pos ha hb).ne,
         (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne.symm] }
 #align linear_ordered_ring.no_zero_divisors LinearOrderedRing.noZeroDivisors
 
@@ -1175,7 +1175,7 @@ theorem mul_self_pos {a : α} : 0 < a * a ↔ a ≠ 0 := by
     exact h.false
   · intro h
     cases' h.lt_or_lt with h h
-    exacts[mul_pos_of_neg_of_neg h h, mul_pos h h]
+    exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 #align mul_self_pos mul_self_pos
 
 theorem mul_self_le_mul_self_of_le_of_neg_le {x y : α} (h₁ : x ≤ y) (h₂ : -x ≤ y) : x * x ≤ y * y :=

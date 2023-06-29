@@ -21,8 +21,8 @@ a list using a shape functor:
 
 ```lean
 inductive ListShape (a b : Type)
-| nil : ListShape
-| cons : a -> b -> ListShape
+  | nil : ListShape
+  | cons : a -> b -> ListShape
 ```
 
 This shape can itself be decomposed as a sum of product which are themselves
@@ -44,7 +44,7 @@ And `Multiset` is also a QPF. We can then create a novel data type (for Lean):
 
 ```lean
 inductive Tree (a : Type)
-| node : a -> Multiset Tree -> Tree
+  | node : a -> Multiset Tree -> Tree
 ```
 
 An unordered tree. This is currently not supported by Lean because it nests
@@ -287,4 +287,3 @@ theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := b
 #align mvqpf.liftp_preservation_iff_uniform MvQPF.liftpPreservation_iff_uniform
 
 end MvQPF
-

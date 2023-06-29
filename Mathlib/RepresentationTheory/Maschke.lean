@@ -58,7 +58,6 @@ $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 
 namespace LinearMap
 
-set_option synthInstance.etaExperiment true
 
 -- At first we work with any `[CommRing k]`, and add the assumption that
 -- `[Invertible (Fintype.card G : k)]` when it is required.

@@ -9,7 +9,6 @@ Authors: Yaël Dillies
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Down-compressions

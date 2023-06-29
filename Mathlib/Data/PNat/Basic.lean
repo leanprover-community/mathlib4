@@ -23,6 +23,8 @@ It is defined in `Data.PNat.Defs`, but most of the development is deferred to he
 that `Data.PNat.Defs` can have very few imports.
 -/
 
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
   LinearOrderedCancelCommMonoid, Add, Mul, Distrib for PNat
 
@@ -272,13 +274,8 @@ theorem coe_bit1 (a : ℕ+) : ((bit1 a : ℕ+) : ℕ) = bit1 (a : ℕ) :=
 
 end deprecated
 
--- Porting note:
--- mathlib3 statement was
--- `((m ^ n : ℕ+) : ℕ) = (m : ℕ) ^ n`
--- where the left `^ : ℕ+ → ℕ → ℕ+` was `monoid.has_pow`.
--- Atm writing `m ^ n` means automatically `(↑m) ^ n`.
 @[simp, norm_cast]
-theorem pow_coe (m : ℕ+) (n : ℕ) : ((Pow.pow m n : ℕ+) : ℕ) = (m : ℕ) ^ n :=
+theorem pow_coe (m : ℕ+) (n : ℕ) : (m ^ n : ℕ) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
@@ -342,7 +339,7 @@ theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort _} (p1 hp) :
     @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
   cases' n with n h
-  cases n <;> [exact absurd h (by decide), rfl]
+  cases n <;> [exact absurd h (by decide); rfl]
 #align pnat.rec_on_succ PNat.recOn_succ
 
 theorem modDivAux_spec :
@@ -389,7 +386,7 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note : Specified type of `h₂` explicitely because `rw` could not unify
+        -- Porting note : Specified type of `h₂` explicitly because `rw` could not unify
         -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂

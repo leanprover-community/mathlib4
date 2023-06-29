@@ -18,7 +18,7 @@ out of a category with projective resolutions.
 
 The definition is
 ```
-projective_resolutions C ⋙ F.map_homotopy_category _ ⋙ homotopy_category.homology_functor D _ n
+projectiveResolutions C ⋙ F.mapHomotopyCategory _ ⋙ HomotopyCategory.homologyFunctor D _ n
 ```
 that is, we pick a projective resolution (thought of as an object of the homotopy category),
 we apply `F` objectwise, and compute `n`-th homology.
@@ -46,9 +46,7 @@ provide all the typeclass hypotheses assumed here.
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
@@ -173,7 +171,6 @@ theorem NatTrans.leftDerived_eq {F G : C ⥤ D} [F.Additive] [G.Additive] (α : 
   refine' (Functor.mapHomotopy _ (HomotopyEquiv.homotopyHomInvId _) ).trans _
   apply Homotopy.ofEq
   simp only [Functor.map_id]
-  rfl
 #align category_theory.nat_trans.left_derived_eq CategoryTheory.NatTrans.leftDerived_eq
 
 -- TODO:

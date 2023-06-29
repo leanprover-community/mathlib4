@@ -10,11 +10,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.SolveByElim
-import Mathlib.Tactic.Tauto
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Lift
 
 /-!
 # Basic properties of sets
@@ -70,8 +65,16 @@ set, sets, subset, subsets, union, intersection, insert, singleton, complement, 
 
 -/
 
-/-! ### Set coercion to a type -/
+-- https://github.com/leanprover/lean4/issues/2096
+compile_def% Union.union
+compile_def% Inter.inter
+compile_def% SDiff.sdiff
+compile_def% HasCompl.compl
+compile_def% EmptyCollection.emptyCollection
+compile_def% Insert.insert
+compile_def% Singleton.singleton
 
+/-! ### Set coercion to a type -/
 
 open Function
 
@@ -186,12 +189,12 @@ theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (
 
 -- Porting: removed `simp` because `simp` can prove it
 theorem SetCoe.exists {s : Set α} {p : s → Prop} :
-    (∃ x : s, p x) ↔ ∃ (x : _)(h : x ∈ s), p ⟨x, h⟩ :=
+    (∃ x : s, p x) ↔ ∃ (x : _) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
 #align set_coe.exists SetCoe.exists
 
 theorem SetCoe.exists' {s : Set α} {p : ∀ x, x ∈ s → Prop} :
-    (∃ (x : _)(h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
+    (∃ (x : _) (h : x ∈ s), p x h) ↔ ∃ x : s, p x.1 x.2 :=
   (@SetCoe.exists _ _ fun x => p x.1 x.2).symm
 #align set_coe.exists' SetCoe.exists'
 
@@ -216,12 +219,12 @@ theorem SetCoe.ext_iff {s : Set α} {a b : s} : (↑a : α) = ↑b ↔ a = b :=
 
 end SetCoe
 
-/-- See also `subtype.prop` -/
+/-- See also `Subtype.prop` -/
 theorem Subtype.mem {α : Type _} {s : Set α} (p : s) : (p : α) ∈ s :=
   p.prop
 #align subtype.mem Subtype.mem
 
-/-- Duplicate of `eq.subset'`, which currently has elaboration problems. -/
+/-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
 theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
   fun h₁ _ h₂ => by rw [← h₁] ; exact h₂
 #align eq.subset Eq.subset
@@ -230,8 +233,7 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Sort x} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
 
--- Porting note: remove `noncomputable` later
-noncomputable instance : Inhabited (Set α) :=
+instance : Inhabited (Set α) :=
   ⟨∅⟩
 
 attribute [ext] Set.ext
@@ -542,8 +544,9 @@ theorem Nonempty.to_subtype : s.Nonempty → Nonempty (↥s) :=
 theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x⟩
 #align set.nonempty.to_type Set.Nonempty.to_type
 
-instance [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
+instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
+#align set.univ.nonempty Set.univ.nonempty
 
 theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
   nonempty_subtype.mp ‹_›
@@ -848,7 +851,8 @@ theorem subset_union_of_subset_right {s u : Set α} (h : s ⊆ u) (t : Set α) :
   Subset.trans h (subset_union_right t u)
 #align set.subset_union_of_subset_right Set.subset_union_of_subset_right
 
-theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ⊔ u :=
+-- Porting note: replaced `⊔` in RHS
+theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 #align set.union_congr_left Set.union_congr_left
 
@@ -1149,9 +1153,12 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
 #align set.insert_ne_self Set.insert_ne_self
 
-theorem insert_subset : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
+theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
   simp only [subset_def, mem_insert_iff, or_imp, forall_and, forall_eq]
-#align set.insert_subset Set.insert_subset
+#align set.insert_subset Set.insert_subset_iff
+
+theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
+  insert_subset_iff.mpr ⟨ha, hs⟩
 
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
 #align set.insert_subset_insert Set.insert_subset_insert
@@ -1159,7 +1166,7 @@ theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ 
 theorem insert_subset_insert_iff (ha : a ∉ s) : insert a s ⊆ insert a t ↔ s ⊆ t := by
   refine' ⟨fun h x hx => _, insert_subset_insert⟩
   rcases h (subset_insert _ _ hx) with (rfl | hxt)
-  exacts[(ha hx).elim, hxt]
+  exacts [(ha hx).elim, hxt]
 #align set.insert_subset_insert_iff Set.insert_subset_insert_iff
 
 theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t :=
@@ -1167,7 +1174,7 @@ theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆
 #align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
-  simp only [insert_subset, exists_and_right, ssubset_def, not_subset]
+  simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   simp only [exists_prop, and_comm]
 #align set.ssubset_iff_insert Set.ssubset_iff_insert
 
@@ -1386,8 +1393,8 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
 -- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset, Set.mem_insert_iff, Set.mem_singleton_iff,
-    Set.singleton_subset_iff]
+  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
+    Set.mem_singleton_iff, Set.singleton_subset_iff]
   constructor
   · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
@@ -1557,7 +1564,7 @@ lemma disjoint_of_subset_right (h : t ⊆ u) (d : Disjoint s u) : Disjoint s t :
 #align set.disjoint_of_subset_right Set.disjoint_of_subset_right
 
 lemma disjoint_of_subset (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (h : Disjoint s₂ t₂) : Disjoint s₁ t₁ :=
-h.mono hs ht
+  h.mono hs ht
 #align set.disjoint_of_subset Set.disjoint_of_subset
 
 @[simp]
@@ -1579,9 +1586,10 @@ lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint 
 #align set.disjoint_univ Set.disjoint_univ
 
 lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
+#align set.disjoint_sdiff_left Set.disjoint_sdiff_left
+
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 #align set.disjoint_sdiff_right Set.disjoint_sdiff_right
-#align set.disjoint_sdiff_left Set.disjoint_sdiff_left
 
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut
@@ -1596,7 +1604,7 @@ lemma disjoint_singleton_left : Disjoint {a} s ↔ a ∉ s := by simp [Set.disjo
 
 @[simp]
 lemma disjoint_singleton_right : Disjoint s {a} ↔ a ∉ s :=
-disjoint_comm.trans disjoint_singleton_left
+  disjoint_comm.trans disjoint_singleton_left
 #align set.disjoint_singleton_right Set.disjoint_singleton_right
 
 lemma disjoint_singleton : Disjoint ({a} : Set α) {b} ↔ a ≠ b :=
@@ -2039,7 +2047,7 @@ theorem diff_self_inter {s t : Set α} : s \ (s ∩ t) = s \ t :=
 
 @[simp]
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
-sdiff_eq_self_iff_disjoint.2 $ by simp [h]
+  sdiff_eq_self_iff_disjoint.2 $ by simp [h]
 #align set.diff_singleton_eq_self Set.diff_singleton_eq_self
 
 @[simp]
@@ -2416,7 +2424,7 @@ theorem Subsingleton.coe_sort {s : Set α} : s.Subsingleton → Subsingleton s :
 #align set.subsingleton.coe_sort Set.Subsingleton.coe_sort
 
 /-- The `coe_sort` of a set `s` in a subsingleton type is a subsingleton.
-For the corresponding result for `subtype`, see `subtype.subsingleton`. -/
+For the corresponding result for `Subtype`, see `subtype.subsingleton`. -/
 instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsingleton s := by
   rw [s.subsingleton_coe]
   exact subsingleton_of_subsingleton
@@ -2424,7 +2432,7 @@ instance subsingleton_coe_of_subsingleton [Subsingleton α] {s : Set α} : Subsi
 
 /-! ### Nontrivial -/
 
-/-- A set `s` is `nontrivial` if it has at least two distinct elements. -/
+/-- A set `s` is `Set.Nontrivial` if it has at least two distinct elements. -/
 protected def Nontrivial (s : Set α) : Prop :=
   ∃ (x : α) (_ : x ∈ s) (y : α) (_ : y ∈ s), x ≠ y
 #align set.nontrivial Set.Nontrivial
@@ -2469,7 +2477,7 @@ theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.N
 
 theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
-  ⟨x, y, hxy, insert_subset.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
+  ⟨x, y, hxy, insert_subset_iff.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
 #align set.nontrivial.pair_subset Set.Nontrivial.pair_subset
 
 theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
@@ -2614,20 +2622,20 @@ alias not_nontrivial_iff ↔ _ Subsingleton.not_nontrivial
 alias not_subsingleton_iff ↔ _ Nontrivial.not_subsingleton
 #align set.nontrivial.not_subsingleton Set.Nontrivial.not_subsingleton
 
-protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial :=
-by simp [or_iff_not_imp_right]
+protected lemma subsingleton_or_nontrivial (s : Set α) : s.Subsingleton ∨ s.Nontrivial := by
+  simp [or_iff_not_imp_right]
 #align set.subsingleton_or_nontrivial Set.subsingleton_or_nontrivial
 
-lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial :=
-by rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
+lemma eq_singleton_or_nontrivial (ha : a ∈ s) : s = {a} ∨ s.Nontrivial := by
+  rw [←subsingleton_iff_singleton ha]; exact s.subsingleton_or_nontrivial
 #align set.eq_singleton_or_nontrivial Set.eq_singleton_or_nontrivial
 
 lemma nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} :=
-⟨Nontrivial.ne_singleton, (eq_singleton_or_nontrivial ha).resolve_left⟩
+  ⟨Nontrivial.ne_singleton, (eq_singleton_or_nontrivial ha).resolve_left⟩
 #align set.nontrivial_iff_ne_singleton Set.nontrivial_iff_ne_singleton
 
 lemma Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
-fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
+  fun ⟨a, ha⟩ ↦ (eq_singleton_or_nontrivial ha).imp_left $ Exists.intro a
 #align set.nonempty.exists_eq_singleton_or_nontrivial Set.Nonempty.exists_eq_singleton_or_nontrivial
 
 theorem univ_eq_true_false : univ = ({True, False} : Set Prop) :=

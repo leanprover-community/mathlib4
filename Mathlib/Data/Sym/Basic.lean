@@ -12,7 +12,6 @@ import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.Lift
 
 /-!
 # Symmetric powers
@@ -46,7 +45,7 @@ def Sym (α : Type _) (n : ℕ) :=
 #align sym Sym
 
 --Porting note: new definition
-/-- The canoncial map to `Multiset α` that forgets that `s` has length `n` -/
+/-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type _} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
 
@@ -108,7 +107,7 @@ theorem coe_nil : ↑(@Sym.nil α) = (0 : Multiset α) :=
   rfl
 #align sym.coe_nil Sym.coe_nil
 
-/-- Inserts an element into the term of `sym α n`, increasing the length by one.
+/-- Inserts an element into the term of `Sym α n`, increasing the length by one.
 -/
 @[match_pattern]
 def cons (a : α) (s : Sym α n) : Sym α n.succ :=
@@ -300,7 +299,7 @@ theorem exists_mem (s : Sym α n.succ) : ∃ a, a ∈ s :=
   Multiset.card_pos_iff_exists_mem.1 <| s.2.symm ▸ n.succ_pos
 #align sym.exists_mem Sym.exists_mem
 
-theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α)(s' : Sym α n), s = a ::ₛ s' := by
+theorem exists_eq_cons_of_succ (s : Sym α n.succ) : ∃ (a : α) (s' : Sym α n), s = a ::ₛ s' := by
   obtain ⟨a, ha⟩ := exists_mem s
   classical exact ⟨a, s.erase a ha, (cons_erase ha).symm⟩
 #align sym.exists_eq_cons_of_succ Sym.exists_eq_cons_of_succ
@@ -349,7 +348,7 @@ theorem replicate_right_injective {n : ℕ} (h : n ≠ 0) :
 instance (n : ℕ) [Nontrivial α] : Nontrivial (Sym α (n + 1)) :=
   (replicate_right_injective n.succ_ne_zero).nontrivial
 
-/-- A function `α → β` induces a function `sym α n → sym β n` by applying it to every element of
+/-- A function `α → β` induces a function `Sym α n → Sym β n` by applying it to every element of
 the underlying `n`-tuple. -/
 def map {n : ℕ} (f : α → β) (x : Sym α n) : Sym β n :=
   ⟨x.val.map f, by simpa [Multiset.card_map] using x.property⟩
@@ -361,7 +360,7 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
   Multiset.mem_map
 #align sym.mem_map Sym.mem_map
 
-/-- Note: `sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `sym.map_congr` -/
+/-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type _} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
   ext; simp [Sym.map]; rfl
@@ -491,7 +490,7 @@ theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
   Iff.rfl
 #align sym.mem_cast Sym.mem_cast
 
-/-- Append a pair of `sym` terms. -/
+/-- Append a pair of `Sym` terms. -/
 def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
   ⟨s.1 + s'.1, by rw [map_add, s.2, s'.2]⟩
 #align sym.append Sym.append
@@ -626,7 +625,7 @@ theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h 
 #align sym_option_succ_equiv.encode_of_not_none_mem SymOptionSuccEquiv.encode_of_not_none_mem
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
--- @[simp] Porting note: not a nice simp lemma, applies too often in LEan4
+-- @[simp] Porting note: not a nice simp lemma, applies too often in Lean4
 def decode : Sum (Sym (Option α) n) (Sym α n.succ) → Sym (Option α) n.succ
   | Sum.inl s => none ::ₛ s
   | Sum.inr s => s.map Embedding.some

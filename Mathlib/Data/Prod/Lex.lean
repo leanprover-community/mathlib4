@@ -148,9 +148,9 @@ instance partialOrder (α β : Type _) [PartialOrder α] [PartialOrder β] : Par
 instance linearOrder (α β : Type _) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
   { Prod.Lex.partialOrder α β with
     le_total := total_of (Prod.Lex _ _),
-    decidable_le := Prod.Lex.decidable _ _,
-    decidable_lt := Prod.Lex.decidable _ _,
-    decidable_eq := Lex.decidableEq _ _, }
+    decidableLE := Prod.Lex.decidable _ _,
+    decidableLT := Prod.Lex.decidable _ _,
+    decidableEq := Lex.decidableEq _ _, }
 #align prod.lex.linear_order Prod.Lex.linearOrder
 
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where

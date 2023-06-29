@@ -345,7 +345,6 @@ Special cases of the above when scalar multiplication is actually multiplication
 
 section Mul
 
-set_option synthInstance.etaExperiment true
 
 variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 

@@ -42,7 +42,7 @@ variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
 This is a sufficient condition for the subset itself to form a Lie algebra. -/
 structure LieSubalgebra extends Submodule R L where
-  /-- An Lie subalgebra is closed under Lie bracket. -/
+  /-- A Lie subalgebra is closed under Lie bracket. -/
   lie_mem' : ∀ {x y}, x ∈ carrier → y ∈ carrier → ⁅x, y⁆ ∈ carrier
 #align lie_subalgebra LieSubalgebra
 
@@ -76,7 +76,7 @@ instance : AddSubgroupClass (LieSubalgebra R L) L
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
-instance (L' : LieSubalgebra R L) : LieRing L'
+instance lieRing (L' : LieSubalgebra R L) : LieRing L'
     where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
@@ -119,7 +119,7 @@ instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance (L' : LieSubalgebra R L) : LieAlgebra R L'
+instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L'
     where lie_smul := by
     { intros
       apply SetCoe.ext
@@ -237,7 +237,7 @@ variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieM
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance : LieRingModule L' M where
+instance lieRingModule : LieRingModule L' M where
   bracket x m := ⁅(x : L), m⁆
   add_lie x y m := add_lie (x : L) y m
   lie_add x y m := lie_add (x : L) y m
@@ -252,13 +252,10 @@ variable [Module R M] [LieModule R L M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance : LieModule R L' M
+instance lieModule : LieModule R L' M
     where
   smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
 `L' ⊆ L`. -/
@@ -302,9 +299,6 @@ variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 variable (f : L →ₗ⁅R⁆ L₂)
 
 namespace LieHom
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The range of a morphism of Lie algebras is a Lie subalgebra. -/
 def range : LieSubalgebra R L₂ :=
@@ -382,9 +376,6 @@ theorem incl_range : K.incl.range = K := by
   rw [← coe_to_submodule_eq_iff]
   exact (K : Submodule R L).range_subtype
 #align lie_subalgebra.incl_range LieSubalgebra.incl_range
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- The image of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
 codomain. -/
@@ -486,9 +477,9 @@ instance : Inf (LieSubalgebra R L) :=
 
 instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
-    { infₛ {(s : Submodule R L) | s ∈ S} with
+    { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
-        simp only [Submodule.mem_carrier, mem_interᵢ, Submodule.infₛ_coe, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.sInf_coe, mem_setOf_eq,
           forall_apply_eq_imp_iff₂, exists_imp, and_imp] at hx hy ⊢
         intro K hK
         exact K.lie_mem (hx K hK) (hy K hK) }⟩
@@ -499,33 +490,33 @@ theorem inf_coe : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
 #align lie_subalgebra.inf_coe LieSubalgebra.inf_coe
 
 @[simp]
-theorem infₛ_coe_to_submodule (S : Set (LieSubalgebra R L)) :
-    (↑(infₛ S) : Submodule R L) = infₛ {(s : Submodule R L) | s ∈ S} :=
+theorem sInf_coe_to_submodule (S : Set (LieSubalgebra R L)) :
+    (↑(sInf S) : Submodule R L) = sInf {(s : Submodule R L) | s ∈ S} :=
   rfl
-#align lie_subalgebra.Inf_coe_to_submodule LieSubalgebra.infₛ_coe_to_submodule
+#align lie_subalgebra.Inf_coe_to_submodule LieSubalgebra.sInf_coe_to_submodule
 
 @[simp]
-theorem infₛ_coe (S : Set (LieSubalgebra R L)) : (↑(infₛ S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
-  rw [← coe_to_submodule, infₛ_coe_to_submodule, Submodule.infₛ_coe]
+theorem sInf_coe (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
+  rw [← coe_to_submodule, sInf_coe_to_submodule, Submodule.sInf_coe]
   ext x
   simp
-#align lie_subalgebra.Inf_coe LieSubalgebra.infₛ_coe
+#align lie_subalgebra.Inf_coe LieSubalgebra.sInf_coe
 
-theorem infₛ_glb (S : Set (LieSubalgebra R L)) : IsGLB S (infₛ S) := by
+theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
   have h : ∀ K K' : LieSubalgebra R L, (K : Set L) ≤ K' ↔ K ≤ K' := by
     intros
     exact Iff.rfl
   apply IsGLB.of_image @h
-  simp only [infₛ_coe]
-  exact isGLB_binfᵢ
-#align lie_subalgebra.Inf_glb LieSubalgebra.infₛ_glb
+  simp only [sInf_coe]
+  exact isGLB_biInf
+#align lie_subalgebra.Inf_glb LieSubalgebra.sInf_glb
 
 /-- The set of Lie subalgebras of a Lie algebra form a complete lattice.
 
 We provide explicit values for the fields `bot`, `top`, `inf` to get more convenient definitions
 than we would otherwise obtain from `completeLatticeOfInf`. -/
 instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
-  { completeLatticeOfInf _ infₛ_glb with
+  { completeLatticeOfInf _ sInf_glb with
     bot := ⊥
     bot_le := fun N _ h ↦ by
       rw [mem_bot] at h
@@ -679,15 +670,15 @@ variable (R L) (s : Set L)
 
 /-- The Lie subalgebra of a Lie algebra `L` generated by a subset `s ⊆ L`. -/
 def lieSpan : LieSubalgebra R L :=
-  infₛ { N | s ⊆ N }
+  sInf { N | s ⊆ N }
 #align lie_subalgebra.lie_span LieSubalgebra.lieSpan
 
 variable {R L s}
 
 theorem mem_lieSpan {x : L} : x ∈ lieSpan R L s ↔ ∀ K : LieSubalgebra R L, s ⊆ K → x ∈ K := by
   change x ∈ (lieSpan R L s : Set L) ↔ _
-  erw [infₛ_coe]
-  exact Set.mem_interᵢ₂
+  erw [sInf_coe]
+  exact Set.mem_iInter₂
 #align lie_subalgebra.mem_lie_span LieSubalgebra.mem_lieSpan
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
@@ -755,9 +746,9 @@ theorem span_union (s t : Set L) : lieSpan R L (s ∪ t) = lieSpan R L s ⊔ lie
   (LieSubalgebra.gi R L).gc.l_sup
 #align lie_subalgebra.span_union LieSubalgebra.span_union
 
-theorem span_unionᵢ {ι} (s : ι → Set L) : lieSpan R L (⋃ i, s i) = ⨆ i, lieSpan R L (s i) :=
-  (LieSubalgebra.gi R L).gc.l_supᵢ
-#align lie_subalgebra.span_Union LieSubalgebra.span_unionᵢ
+theorem span_iUnion {ι} (s : ι → Set L) : lieSpan R L (⋃ i, s i) = ⨆ i, lieSpan R L (s i) :=
+  (LieSubalgebra.gi R L).gc.l_iSup
+#align lie_subalgebra.span_Union LieSubalgebra.span_iUnion
 
 end LieSpan
 
@@ -770,9 +761,6 @@ namespace LieEquiv
 variable {R : Type u} {L₁ : Type v} {L₂ : Type w}
 
 variable [CommRing R] [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂]
-
--- Porting note: Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An injective Lie algebra morphism is an equivalence onto its range. -/
 noncomputable def ofInjective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Injective f) : L₁ ≃ₗ⁅R⁆ f.range :=

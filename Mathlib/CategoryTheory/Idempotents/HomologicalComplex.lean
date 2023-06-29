@@ -77,9 +77,7 @@ def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) 
   X n :=
     ⟨P.X.X n, P.p.f n, by
       simpa only [HomologicalComplex.comp_f] using HomologicalComplex.congr_hom P.idem n⟩
-  d i j :=
-    { f := P.p.f i ≫ P.X.d i j
-      comm := by aesop_cat }
+  d i j := { f := P.p.f i ≫ P.X.d i j }
   shape i j hij := by simp only [hom_eq_zero_iff, P.X.shape i j hij, Limits.comp_zero]; aesop_cat
 #align category_theory.idempotents.karoubi_homological_complex_equivalence.functor.obj CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.Functor.obj
 
@@ -88,8 +86,7 @@ on morphisms. -/
 @[simps]
 def map {P Q : Karoubi (HomologicalComplex C c)} (f : P ⟶ Q) : obj P ⟶ obj Q where
   f n :=
-    { f := f.f.f n
-      comm := by simp }
+    { f := f.f.f n }
 #align category_theory.idempotents.karoubi_homological_complex_equivalence.functor.map CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.Functor.map
 
 end Functor
@@ -113,10 +110,7 @@ def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c
       shape := fun i j hij => hom_eq_zero_iff.mp (K.shape i j hij)
       d_comp_d' := fun i j k _ _ => by
         simpa only [comp_f] using hom_eq_zero_iff.mp (K.d_comp_d i j k) }
-  p :=
-    { f := fun n => (K.X n).p
-      comm' := by simp }
-  idem := by aesop_cat
+  p := { f := fun n => (K.X n).p }
 #align category_theory.idempotents.karoubi_homological_complex_equivalence.inverse.obj CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.Inverse.obj
 
 /-- The functor `HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C c)`,
@@ -126,7 +120,6 @@ def map {K L : HomologicalComplex (Karoubi C) c} (f : K ⟶ L) : obj K ⟶ obj L
   f :=
     { f := fun n => (f.f n).f
       comm' := fun i j hij => by simpa only [comp_f] using hom_ext_iff.mp (f.comm' i j hij) }
-  comm := by aesop_cat
 #align category_theory.idempotents.karoubi_homological_complex_equivalence.inverse.map CategoryTheory.Idempotents.KaroubiHomologicalComplexEquivalence.Inverse.map
 
 end Inverse

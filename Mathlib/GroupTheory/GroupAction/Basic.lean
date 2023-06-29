@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 
 ! This file was ported from Lean 3 source module group_theory.group_action.basic
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
+! leanprover-community/mathlib commit d30d31261cdb4d2f5e612eabc3c4bf45556350d5
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -124,11 +124,11 @@ def fixedBy (g : α) : Set β :=
 #align add_action.fixed_by AddAction.fixedBy
 
 @[to_additive]
-theorem fixed_eq_interᵢ_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
+theorem fixed_eq_iInter_fixedBy : fixedPoints α β = ⋂ g : α, fixedBy α β g :=
   Set.ext fun _ =>
-    ⟨fun hx => Set.mem_interᵢ.2 fun g => hx g, fun hx g => (Set.mem_interᵢ.1 hx g : _)⟩
-#align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_interᵢ_fixedBy
-#align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_interᵢ_fixedBy
+    ⟨fun hx => Set.mem_iInter.2 fun g => hx g, fun hx g => (Set.mem_iInter.1 hx g : _)⟩
+#align mul_action.fixed_eq_Inter_fixed_by MulAction.fixed_eq_iInter_fixedBy
+#align add_action.fixed_eq_Inter_fixed_by AddAction.fixed_eq_iInter_fixedBy
 
 variable {α}
 
@@ -281,6 +281,12 @@ def orbitRel : Setoid β where
 
 variable {α} {β}
 
+@[to_additive]
+theorem orbitRel_apply {x y : β} : (orbitRel α β).Rel x y ↔ x ∈ orbit α y :=
+  Iff.rfl
+#align mul_action.orbit_rel_apply MulAction.orbitRel_apply
+#align add_action.orbit_rel_apply AddAction.orbitRel_apply
+
 /-- When you take a set `U` in `β`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `α`. -/
 @[to_additive
@@ -295,10 +301,10 @@ theorem quotient_preimage_image_eq_union_mul (U : Set β) :
   constructor
   · rintro ⟨y, hy, hxy⟩
     obtain ⟨a, rfl⟩ := Quotient.exact hxy
-    rw [Set.mem_unionᵢ]
+    rw [Set.mem_iUnion]
     exact ⟨a⁻¹, a • x, hy, inv_smul_smul a x⟩
   · intro hx
-    rw [Set.mem_unionᵢ] at hx
+    rw [Set.mem_iUnion] at hx
     obtain ⟨a, u, hu₁, hu₂⟩ := hx
     rw [Set.mem_preimage, Set.mem_image_iff_bex]
     refine' ⟨a⁻¹ • x, _, by simp only [Quotient.eq']; use a⁻¹⟩

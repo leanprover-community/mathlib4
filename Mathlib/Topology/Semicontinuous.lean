@@ -327,7 +327,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
-  simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf⊢
+  simp only [← lowerSemicontinuousWithinAt_univ_iff] at hf ⊢
   exact hg.comp_lowerSemicontinuousWithinAt hf gmon
 #align continuous_at.comp_lower_semicontinuous_at ContinuousAt.comp_lowerSemicontinuousAt
 
@@ -550,80 +550,80 @@ section
 
 variable {ι : Sort _} {δ δ' : Type _} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
 
-theorem lowerSemicontinuousWithinAt_csupᵢ {f : ι → α → δ'}
+theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddAbove (range fun i => f i y))
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ i, f i x') s x := by
   cases isEmpty_or_nonempty ι
-  · simpa only [supᵢ_of_empty'] using lowerSemicontinuousWithinAt_const
+  · simpa only [iSup_of_empty'] using lowerSemicontinuousWithinAt_const
   · intro y hy
-    rcases exists_lt_of_lt_csupᵢ hy with ⟨i, hi⟩
-    filter_upwards [h i y hi, bdd]with y hy hy' using hy.trans_le (le_csupᵢ hy' i)
-#align lower_semicontinuous_within_at_csupr lowerSemicontinuousWithinAt_csupᵢ
+    rcases exists_lt_of_lt_ciSup hy with ⟨i, hi⟩
+    filter_upwards [h i y hi, bdd]with y hy hy' using hy.trans_le (le_ciSup hy' i)
+#align lower_semicontinuous_within_at_csupr lowerSemicontinuousWithinAt_ciSup
 
-theorem lowerSemicontinuousWithinAt_supᵢ {f : ι → α → δ}
+theorem lowerSemicontinuousWithinAt_iSup {f : ι → α → δ}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ i, f i x') s x :=
-  lowerSemicontinuousWithinAt_csupᵢ (by simp) h
-#align lower_semicontinuous_within_at_supr lowerSemicontinuousWithinAt_supᵢ
+  lowerSemicontinuousWithinAt_ciSup (by simp) h
+#align lower_semicontinuous_within_at_supr lowerSemicontinuousWithinAt_iSup
 
-theorem lowerSemicontinuousWithinAt_bsupᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem lowerSemicontinuousWithinAt_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousWithinAt (f i hi) s x) :
     LowerSemicontinuousWithinAt (fun x' => ⨆ (i) (hi), f i hi x') s x :=
-  lowerSemicontinuousWithinAt_supᵢ fun i => lowerSemicontinuousWithinAt_supᵢ fun hi => h i hi
-#align lower_semicontinuous_within_at_bsupr lowerSemicontinuousWithinAt_bsupᵢ
+  lowerSemicontinuousWithinAt_iSup fun i => lowerSemicontinuousWithinAt_iSup fun hi => h i hi
+#align lower_semicontinuous_within_at_bsupr lowerSemicontinuousWithinAt_biSup
 
-theorem lowerSemicontinuousAt_csupᵢ {f : ι → α → δ'}
+theorem lowerSemicontinuousAt_ciSup {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝 x, BddAbove (range fun i => f i y)) (h : ∀ i, LowerSemicontinuousAt (f i) x) :
     LowerSemicontinuousAt (fun x' => ⨆ i, f i x') x := by
   simp_rw [← lowerSemicontinuousWithinAt_univ_iff] at *
   rw [← nhdsWithin_univ] at bdd
-  exact lowerSemicontinuousWithinAt_csupᵢ bdd h
-#align lower_semicontinuous_at_csupr lowerSemicontinuousAt_csupᵢ
+  exact lowerSemicontinuousWithinAt_ciSup bdd h
+#align lower_semicontinuous_at_csupr lowerSemicontinuousAt_ciSup
 
-theorem lowerSemicontinuousAt_supᵢ {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousAt (f i) x) :
+theorem lowerSemicontinuousAt_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousAt (f i) x) :
     LowerSemicontinuousAt (fun x' => ⨆ i, f i x') x :=
-  lowerSemicontinuousAt_csupᵢ (by simp) h
-#align lower_semicontinuous_at_supr lowerSemicontinuousAt_supᵢ
+  lowerSemicontinuousAt_ciSup (by simp) h
+#align lower_semicontinuous_at_supr lowerSemicontinuousAt_iSup
 
-theorem lowerSemicontinuousAt_bsupᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem lowerSemicontinuousAt_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousAt (f i hi) x) :
     LowerSemicontinuousAt (fun x' => ⨆ (i) (hi), f i hi x') x :=
-  lowerSemicontinuousAt_supᵢ fun i => lowerSemicontinuousAt_supᵢ fun hi => h i hi
-#align lower_semicontinuous_at_bsupr lowerSemicontinuousAt_bsupᵢ
+  lowerSemicontinuousAt_iSup fun i => lowerSemicontinuousAt_iSup fun hi => h i hi
+#align lower_semicontinuous_at_bsupr lowerSemicontinuousAt_biSup
 
-theorem lowerSemicontinuousOn_csupᵢ {f : ι → α → δ'}
+theorem lowerSemicontinuousOn_ciSup {f : ι → α → δ'}
     (bdd : ∀ x ∈ s, BddAbove (range fun i => f i x)) (h : ∀ i, LowerSemicontinuousOn (f i) s) :
     LowerSemicontinuousOn (fun x' => ⨆ i, f i x') s := fun x hx =>
-  lowerSemicontinuousWithinAt_csupᵢ (eventually_nhdsWithin_of_forall bdd) fun i => h i x hx
-#align lower_semicontinuous_on_csupr lowerSemicontinuousOn_csupᵢ
+  lowerSemicontinuousWithinAt_ciSup (eventually_nhdsWithin_of_forall bdd) fun i => h i x hx
+#align lower_semicontinuous_on_csupr lowerSemicontinuousOn_ciSup
 
-theorem lowerSemicontinuousOn_supᵢ {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousOn (f i) s) :
+theorem lowerSemicontinuousOn_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuousOn (f i) s) :
     LowerSemicontinuousOn (fun x' => ⨆ i, f i x') s :=
-  lowerSemicontinuousOn_csupᵢ (by simp) h
-#align lower_semicontinuous_on_supr lowerSemicontinuousOn_supᵢ
+  lowerSemicontinuousOn_ciSup (by simp) h
+#align lower_semicontinuous_on_supr lowerSemicontinuousOn_iSup
 
-theorem lowerSemicontinuousOn_bsupᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem lowerSemicontinuousOn_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuousOn (f i hi) s) :
     LowerSemicontinuousOn (fun x' => ⨆ (i) (hi), f i hi x') s :=
-  lowerSemicontinuousOn_supᵢ fun i => lowerSemicontinuousOn_supᵢ fun hi => h i hi
-#align lower_semicontinuous_on_bsupr lowerSemicontinuousOn_bsupᵢ
+  lowerSemicontinuousOn_iSup fun i => lowerSemicontinuousOn_iSup fun hi => h i hi
+#align lower_semicontinuous_on_bsupr lowerSemicontinuousOn_biSup
 
-theorem lowerSemicontinuous_csupᵢ {f : ι → α → δ'} (bdd : ∀ x, BddAbove (range fun i => f i x))
+theorem lowerSemicontinuous_ciSup {f : ι → α → δ'} (bdd : ∀ x, BddAbove (range fun i => f i x))
     (h : ∀ i, LowerSemicontinuous (f i)) : LowerSemicontinuous fun x' => ⨆ i, f i x' := fun x =>
-  lowerSemicontinuousAt_csupᵢ (eventually_of_forall bdd) fun i => h i x
-#align lower_semicontinuous_csupr lowerSemicontinuous_csupᵢ
+  lowerSemicontinuousAt_ciSup (eventually_of_forall bdd) fun i => h i x
+#align lower_semicontinuous_csupr lowerSemicontinuous_ciSup
 
-theorem lowerSemicontinuous_supᵢ {f : ι → α → δ} (h : ∀ i, LowerSemicontinuous (f i)) :
+theorem lowerSemicontinuous_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuous (f i)) :
     LowerSemicontinuous fun x' => ⨆ i, f i x' :=
-  lowerSemicontinuous_csupᵢ (by simp) h
-#align lower_semicontinuous_supr lowerSemicontinuous_supᵢ
+  lowerSemicontinuous_ciSup (by simp) h
+#align lower_semicontinuous_supr lowerSemicontinuous_iSup
 
-theorem lowerSemicontinuous_bsupᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem lowerSemicontinuous_biSup {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, LowerSemicontinuous (f i hi)) :
     LowerSemicontinuous fun x' => ⨆ (i) (hi), f i hi x' :=
-  lowerSemicontinuous_supᵢ fun i => lowerSemicontinuous_supᵢ fun hi => h i hi
-#align lower_semicontinuous_bsupr lowerSemicontinuous_bsupᵢ
+  lowerSemicontinuous_iSup fun i => lowerSemicontinuous_iSup fun hi => h i hi
+#align lower_semicontinuous_bsupr lowerSemicontinuous_biSup
 
 end
 
@@ -637,8 +637,8 @@ variable {ι : Type _}
 theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
-  simp_rw [ENNReal.tsum_eq_supᵢ_sum]
-  refine lowerSemicontinuousWithinAt_supᵢ fun b => ?_
+  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  refine lowerSemicontinuousWithinAt_iSup fun b => ?_
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 #align lower_semicontinuous_within_at_tsum lowerSemicontinuousWithinAt_tsum
 
@@ -996,73 +996,73 @@ section
 
 variable {ι : Sort _} {δ δ' : Type _} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
 
-theorem upperSemicontinuousWithinAt_cinfᵢ {f : ι → α → δ'}
+theorem upperSemicontinuousWithinAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddBelow (range fun i => f i y))
     (h : ∀ i, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ i, f i x') s x :=
-  @lowerSemicontinuousWithinAt_csupᵢ α _ x s ι δ'ᵒᵈ _ f bdd h
-#align upper_semicontinuous_within_at_cinfi upperSemicontinuousWithinAt_cinfᵢ
+  @lowerSemicontinuousWithinAt_ciSup α _ x s ι δ'ᵒᵈ _ f bdd h
+#align upper_semicontinuous_within_at_cinfi upperSemicontinuousWithinAt_ciInf
 
-theorem upperSemicontinuousWithinAt_infᵢ {f : ι → α → δ}
+theorem upperSemicontinuousWithinAt_iInf {f : ι → α → δ}
     (h : ∀ i, UpperSemicontinuousWithinAt (f i) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ i, f i x') s x :=
-  @lowerSemicontinuousWithinAt_supᵢ α _ x s ι δᵒᵈ _ f h
-#align upper_semicontinuous_within_at_infi upperSemicontinuousWithinAt_infᵢ
+  @lowerSemicontinuousWithinAt_iSup α _ x s ι δᵒᵈ _ f h
+#align upper_semicontinuous_within_at_infi upperSemicontinuousWithinAt_iInf
 
-theorem upperSemicontinuousWithinAt_binfᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem upperSemicontinuousWithinAt_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousWithinAt (f i hi) s x) :
     UpperSemicontinuousWithinAt (fun x' => ⨅ (i) (hi), f i hi x') s x :=
-  upperSemicontinuousWithinAt_infᵢ fun i => upperSemicontinuousWithinAt_infᵢ fun hi => h i hi
-#align upper_semicontinuous_within_at_binfi upperSemicontinuousWithinAt_binfᵢ
+  upperSemicontinuousWithinAt_iInf fun i => upperSemicontinuousWithinAt_iInf fun hi => h i hi
+#align upper_semicontinuous_within_at_binfi upperSemicontinuousWithinAt_biInf
 
-theorem upperSemicontinuousAt_cinfᵢ {f : ι → α → δ'}
+theorem upperSemicontinuousAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝 x, BddBelow (range fun i => f i y)) (h : ∀ i, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun x' => ⨅ i, f i x') x :=
-  @lowerSemicontinuousAt_csupᵢ α _ x ι δ'ᵒᵈ _ f bdd h
-#align upper_semicontinuous_at_cinfi upperSemicontinuousAt_cinfᵢ
+  @lowerSemicontinuousAt_ciSup α _ x ι δ'ᵒᵈ _ f bdd h
+#align upper_semicontinuous_at_cinfi upperSemicontinuousAt_ciInf
 
-theorem upperSemicontinuousAt_infᵢ {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousAt (f i) x) :
+theorem upperSemicontinuousAt_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun x' => ⨅ i, f i x') x :=
-  @lowerSemicontinuousAt_supᵢ α _ x ι δᵒᵈ _ f h
-#align upper_semicontinuous_at_infi upperSemicontinuousAt_infᵢ
+  @lowerSemicontinuousAt_iSup α _ x ι δᵒᵈ _ f h
+#align upper_semicontinuous_at_infi upperSemicontinuousAt_iInf
 
-theorem upperSemicontinuousAt_binfᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem upperSemicontinuousAt_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousAt (f i hi) x) :
     UpperSemicontinuousAt (fun x' => ⨅ (i) (hi), f i hi x') x :=
-  upperSemicontinuousAt_infᵢ fun i => upperSemicontinuousAt_infᵢ fun hi => h i hi
-#align upper_semicontinuous_at_binfi upperSemicontinuousAt_binfᵢ
+  upperSemicontinuousAt_iInf fun i => upperSemicontinuousAt_iInf fun hi => h i hi
+#align upper_semicontinuous_at_binfi upperSemicontinuousAt_biInf
 
-theorem upperSemicontinuousOn_cinfᵢ {f : ι → α → δ'}
+theorem upperSemicontinuousOn_ciInf {f : ι → α → δ'}
     (bdd : ∀ x ∈ s, BddBelow (range fun i => f i x)) (h : ∀ i, UpperSemicontinuousOn (f i) s) :
     UpperSemicontinuousOn (fun x' => ⨅ i, f i x') s := fun x hx =>
-  upperSemicontinuousWithinAt_cinfᵢ (eventually_nhdsWithin_of_forall bdd) fun i => h i x hx
-#align upper_semicontinuous_on_cinfi upperSemicontinuousOn_cinfᵢ
+  upperSemicontinuousWithinAt_ciInf (eventually_nhdsWithin_of_forall bdd) fun i => h i x hx
+#align upper_semicontinuous_on_cinfi upperSemicontinuousOn_ciInf
 
-theorem upperSemicontinuousOn_infᵢ {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousOn (f i) s) :
+theorem upperSemicontinuousOn_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousOn (f i) s) :
     UpperSemicontinuousOn (fun x' => ⨅ i, f i x') s := fun x hx =>
-  upperSemicontinuousWithinAt_infᵢ fun i => h i x hx
-#align upper_semicontinuous_on_infi upperSemicontinuousOn_infᵢ
+  upperSemicontinuousWithinAt_iInf fun i => h i x hx
+#align upper_semicontinuous_on_infi upperSemicontinuousOn_iInf
 
-theorem upperSemicontinuousOn_binfᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem upperSemicontinuousOn_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuousOn (f i hi) s) :
     UpperSemicontinuousOn (fun x' => ⨅ (i) (hi), f i hi x') s :=
-  upperSemicontinuousOn_infᵢ fun i => upperSemicontinuousOn_infᵢ fun hi => h i hi
-#align upper_semicontinuous_on_binfi upperSemicontinuousOn_binfᵢ
+  upperSemicontinuousOn_iInf fun i => upperSemicontinuousOn_iInf fun hi => h i hi
+#align upper_semicontinuous_on_binfi upperSemicontinuousOn_biInf
 
-theorem upperSemicontinuous_cinfᵢ {f : ι → α → δ'} (bdd : ∀ x, BddBelow (range fun i => f i x))
+theorem upperSemicontinuous_ciInf {f : ι → α → δ'} (bdd : ∀ x, BddBelow (range fun i => f i x))
     (h : ∀ i, UpperSemicontinuous (f i)) : UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x =>
-  upperSemicontinuousAt_cinfᵢ (eventually_of_forall bdd) fun i => h i x
-#align upper_semicontinuous_cinfi upperSemicontinuous_cinfᵢ
+  upperSemicontinuousAt_ciInf (eventually_of_forall bdd) fun i => h i x
+#align upper_semicontinuous_cinfi upperSemicontinuous_ciInf
 
-theorem upperSemicontinuous_infᵢ {f : ι → α → δ} (h : ∀ i, UpperSemicontinuous (f i)) :
-    UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x => upperSemicontinuousAt_infᵢ fun i => h i x
-#align upper_semicontinuous_infi upperSemicontinuous_infᵢ
+theorem upperSemicontinuous_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuous (f i)) :
+    UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x => upperSemicontinuousAt_iInf fun i => h i x
+#align upper_semicontinuous_infi upperSemicontinuous_iInf
 
-theorem upperSemicontinuous_binfᵢ {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
+theorem upperSemicontinuous_biInf {p : ι → Prop} {f : ∀ (i) (_h : p i), α → δ}
     (h : ∀ i hi, UpperSemicontinuous (f i hi)) :
     UpperSemicontinuous fun x' => ⨅ (i) (hi), f i hi x' :=
-  upperSemicontinuous_infᵢ fun i => upperSemicontinuous_infᵢ fun hi => h i hi
-#align upper_semicontinuous_binfi upperSemicontinuous_binfᵢ
+  upperSemicontinuous_iInf fun i => upperSemicontinuous_iInf fun hi => h i hi
+#align upper_semicontinuous_binfi upperSemicontinuous_biInf
 
 end
 

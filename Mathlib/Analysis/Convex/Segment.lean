@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.SMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.Ray
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GCongr
 
 /-!
 # Segments in vector spaces
@@ -24,7 +24,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 ## Notations
 
 We provide the following notation:
-* `[x -[𝕜] y] = segment 𝕜 x y` in locale `convex`
+* `[x -[𝕜] y] = segment 𝕜 x y` in locale `Convex`
 
 ## TODO
 
@@ -113,7 +113,6 @@ section MulActionWithZero
 variable (𝕜)
 variable [MulActionWithZero 𝕜 E]
 
-set_option synthInstance.etaExperiment true
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩
@@ -140,7 +139,7 @@ theorem segment_same (x : E) : [x -[𝕜] x] = {x} :=
 
 theorem insert_endpoints_openSegment (x y : E) :
     insert x (insert y (openSegment 𝕜 x y)) = [x -[𝕜] y] := by
-  simp only [subset_antisymm_iff, insert_subset, left_mem_segment, right_mem_segment,
+  simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
     openSegment_subset_segment, true_and_iff]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   refine' hb.eq_or_gt.imp _ fun hb' => ha.eq_or_gt.imp _ fun ha' => _
@@ -161,7 +160,7 @@ theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z �
 
 theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment 𝕜 x y ⊆ s ↔ [x -[𝕜] y] ⊆ s := by
-  simp only [← insert_endpoints_openSegment, insert_subset, *, true_and_iff]
+  simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and_iff]
 #align open_segment_subset_iff_segment_subset openSegment_subset_iff_segment_subset
 
 end Module
@@ -350,7 +349,7 @@ theorem mem_segment_iff_div :
     use a, b, ha, hb
     simp [*]
   · rintro ⟨a, b, ha, hb, hab, rfl⟩
-    refine' ⟨a / (a + b), b / (a + b), div_nonneg ha hab.le, div_nonneg hb hab.le, _, rfl⟩
+    refine' ⟨a / (a + b), b / (a + b), by positivity, by positivity, _, rfl⟩
     rw [← add_div, div_self hab.ne']
 #align mem_segment_iff_div mem_segment_iff_div
 
@@ -415,7 +414,7 @@ end LinearOrderedField
 /-!
 #### Segments in an ordered space
 
-Relates `segment`, `openSegment` and `set.Icc`, `set.Ico`, `set.Ioc`, `set.Ioo`
+Relates `segment`, `openSegment` and `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`
 -/
 
 
@@ -432,9 +431,9 @@ theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   constructor
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ ≤ a • x + b • y := add_le_add_left (smul_le_smul_of_nonneg h hb) _
+    _ ≤ a • x + b • y := by gcongr
   calc
-    a • x + b • y ≤ a • y + b • y := add_le_add_right (smul_le_smul_of_nonneg h ha) _
+    a • x + b • y ≤ a • y + b • y := by gcongr
     _ = y := Convex.combo_self hab _
 #align segment_subset_Icc segment_subset_Icc
 
@@ -449,9 +448,9 @@ theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y :=
   constructor
   calc
     x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ < a • x + b • y := add_lt_add_left (smul_lt_smul_of_pos h hb) _
+    _ < a • x + b • y := by gcongr
   calc
-    a • x + b • y < a • y + b • y := add_lt_add_right (smul_lt_smul_of_pos h ha) _
+    a • x + b • y < a • y + b • y := by gcongr
     _ = y := Convex.combo_self hab _
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 

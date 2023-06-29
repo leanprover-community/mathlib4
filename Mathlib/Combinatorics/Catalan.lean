@@ -159,14 +159,14 @@ open Tree
   left child in `a` and right child in `b` -/
 @[reducible]
 def pairwiseNode (a b : Finset (Tree Unit)) : Finset (Tree Unit) :=
-  (a ×ᶠ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
+  (a ×ˢ b).map ⟨fun x => x.1 △ x.2, fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ => fun h => by simpa using h⟩
 #align tree.pairwise_node Tree.pairwiseNode
 
 /-- A Finset of all trees with `n` nodes. See `mem_treesOfNodesEq` -/
 def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
-    (Finset.Nat.antidiagonal n).attach.bunionᵢ fun ijh =>
+    (Finset.Nat.antidiagonal n).attach.biUnion fun ijh =>
       -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
       -- have := Nat.lt_succ_of_le (fst_le ijh.2)
       -- have := Nat.lt_succ_of_le (snd_le ijh.2)
@@ -184,7 +184,7 @@ theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNu
 
 theorem treesOfNumNodesEq_succ (n : ℕ) :
     treesOfNumNodesEq (n + 1) =
-      (Nat.antidiagonal n).bunionᵢ fun ij =>
+      (Nat.antidiagonal n).biUnion fun ij =>
         pairwiseNode (treesOfNumNodesEq ij.1) (treesOfNumNodesEq ij.2) := by
   rw [treesOfNumNodesEq]
   ext
@@ -212,7 +212,7 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
   induction' n using Nat.case_strong_induction_on with n ih
   · simp
-  rw [treesOfNumNodesEq_succ, card_bunionᵢ, catalan_succ']
+  rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
   · apply sum_congr rfl
     rintro ⟨i, j⟩ H
     rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]

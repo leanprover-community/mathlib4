@@ -285,12 +285,12 @@ theorem OneOneEquiv.congr_right {α β γ} [Primcodable α] [Primcodable β] [Pr
 #align one_one_equiv.congr_right OneOneEquiv.congr_right
 
 @[simp]
-theorem Ulower.down_computable {α} [Primcodable α] : (Ulower.equiv α).Computable :=
+theorem ULower.down_computable {α} [Primcodable α] : (ULower.equiv α).Computable :=
   ⟨Primrec.ulower_down.to_comp, Primrec.ulower_up.to_comp⟩
-#align ulower.down_computable Ulower.down_computable
+#align ulower.down_computable ULower.down_computable
 
-theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (p ∘ Ulower.up) p :=
-  ManyOneEquiv.of_equiv Ulower.down_computable.symm
+theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (p ∘ ULower.up) p :=
+  ManyOneEquiv.of_equiv ULower.down_computable.symm
 #align many_one_equiv_up manyOneEquiv_up
 
 -- mathport name: «expr ⊕' »
@@ -313,7 +313,7 @@ theorem disjoin_manyOneReducible {α β γ} [Primcodable α] [Primcodable β] [P
   | ⟨f, c₁, h₁⟩, ⟨g, c₂, h₂⟩ =>
     ⟨Sum.elim f g,
       Computable.id.sum_casesOn (c₁.comp Computable.snd).to₂ (c₂.comp Computable.snd).to₂,
-      fun x => by cases x <;> [apply h₁, apply h₂]⟩
+      fun x => by cases x <;> [apply h₁; apply h₂]⟩
 #align disjoin_many_one_reducible disjoin_manyOneReducible
 
 theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ] {p : α → Prop}

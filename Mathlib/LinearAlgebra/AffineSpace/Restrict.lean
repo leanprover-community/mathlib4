@@ -77,7 +77,7 @@ theorem AffineMap.restrict.injective {φ : P₁ →ᵃ[k] P₂} (hφ : Function.
     {E : AffineSubspace k P₁} {F : AffineSubspace k P₂} [Nonempty E] [Nonempty F]
     (hEF : E.map φ ≤ F) : Function.Injective (AffineMap.restrict φ hEF) := by
   intro x y h
-  simp only [Subtype.ext_iff, Subtype.coe_mk, AffineMap.restrict.coe_apply] at h⊢
+  simp only [Subtype.ext_iff, Subtype.coe_mk, AffineMap.restrict.coe_apply] at h ⊢
   exact hφ h
 #align affine_map.restrict.injective AffineMap.restrict.injective
 

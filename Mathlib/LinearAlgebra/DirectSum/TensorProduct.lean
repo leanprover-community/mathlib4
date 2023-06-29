@@ -50,7 +50,6 @@ variable [∀ i₂, AddCommGroup (M₂ i₂)] [AddCommGroup M₂']
 
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- The linear equivalence `(⨁ i₁, M₁ i₁) ⊗ (⨁ i₂, M₂ i₂) ≃ (⨁ i₁, ⨁ i₂, M₁ i₁ ⊗ M₂ i₂)`, i.e.
 "tensor product distributes over direct sum". -/
@@ -92,7 +91,7 @@ protected def directSum :
                   DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))
         (DirectSum.toModule R _ _ fun i => map (DirectSum.lof R _ _ _) (DirectSum.lof R _ _ _)) _
         _ <;>
-    [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
+    [ext ⟨i₁, i₂⟩ x₁ x₂ : 4, ext i₁ i₂ x₁ x₂ : 5]
   repeat'
     first
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
@@ -115,7 +114,7 @@ protected def directSum :
           (N := (⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂)
           (φ := fun i : ι₁ × ι₂ => map (DirectSum.lof R _ M₁ i.1) (DirectSum.lof R _ M₂ i.2))) _
         _ <;>
-    [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
+    [ext ⟨i₁, i₂⟩ x₁ x₂ : 4, ext i₁ i₂ x₁ x₂ : 5]
   repeat'
     first
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
@@ -129,19 +128,19 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
     (lift <|
       DirectSum.toModule R _ _ fun i =>
         (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i => M₁ i ⊗[R] M₂') _)
-    (DirectSum.toModule R _ _ fun i => rtensor _ (DirectSum.lof R ι₁ _ _))
+    (DirectSum.toModule R _ _ fun i => rTensor _ (DirectSum.lof R ι₁ _ _))
     (DirectSum.linearMap_ext R fun i =>
       TensorProduct.ext <|
         LinearMap.ext₂ fun m₁ m₂ => by
           dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
-          simp_rw [DirectSum.toModule_lof, rtensor_tmul, lift.tmul, DirectSum.toModule_lof,
+          simp_rw [DirectSum.toModule_lof, rTensor_tmul, lift.tmul, DirectSum.toModule_lof,
             compr₂_apply, mk_apply])
     (TensorProduct.ext <|
       DirectSum.linearMap_ext R fun i =>
         LinearMap.ext₂ fun m₁ m₂ => by
           dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
           simp_rw [lift.tmul, DirectSum.toModule_lof, compr₂_apply,
-            mk_apply, DirectSum.toModule_lof, rtensor_tmul])
+            mk_apply, DirectSum.toModule_lof, rTensor_tmul])
 #align tensor_product.direct_sum_left TensorProduct.directSumLeft
 
 /-- Tensor products distribute over a direct sum on the right. -/

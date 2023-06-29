@@ -14,7 +14,7 @@ import Mathlib.Algebra.Homology.Single
 /-!
 # Injective resolutions
 
-A injective resolution `I : InjectiveResolution Z` of an object `Z : C` consists of
+An injective resolution `I : InjectiveResolution Z` of an object `Z : C` consists of
 a `ℕ`-indexed cochain complex `I.cocomplex` of injective objects,
 along with a cochain map `I.ι` from cochain complex consisting just of `Z` in degree zero to `C`,
 so that the augmented cochain complex is exact.
@@ -30,9 +30,7 @@ I⁰ ---> I¹ ---> ... ----> Iⁿ ---> ...
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 universe v u
 
@@ -73,7 +71,7 @@ attribute [inherit_doc InjectiveResolution]
 
 attribute [instance] InjectiveResolution.injective InjectiveResolution.mono
 
-/-- An object admits a injective resolution. -/
+/-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where
   out : Nonempty (InjectiveResolution Z)
 #align category_theory.has_injective_resolution CategoryTheory.HasInjectiveResolution
@@ -85,7 +83,7 @@ section
 variable (C)
 
 /-- You will rarely use this typeclass directly: it is implied by the combination
-`[enough_injectives C]` and `[abelian C]`. -/
+`[EnoughInjectives C]` and `[Abelian C]`. -/
 class HasInjectiveResolutions : Prop where
   out : ∀ Z : C, HasInjectiveResolution Z
 #align category_theory.has_injective_resolutions CategoryTheory.HasInjectiveResolutions
@@ -99,7 +97,7 @@ namespace InjectiveResolution
 @[simp]
 theorem ι_f_succ {Z : C} (I : InjectiveResolution Z) (n : ℕ) : I.ι.f (n + 1) = 0 := by
   apply zero_of_source_iso_zero
-  dsimp; rfl
+  rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
@@ -145,4 +143,3 @@ set_option linter.uppercaseLean3 false in
 end InjectiveResolution
 
 end CategoryTheory
-

@@ -11,7 +11,6 @@ Authors: Fox Thomson
 import Mathlib.Data.Fintype.Card
 import Mathlib.Computability.Language
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.WLOG
 
 /-!
 # Deterministic Finite Automata

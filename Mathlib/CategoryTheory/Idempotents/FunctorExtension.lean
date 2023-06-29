@@ -84,7 +84,7 @@ def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
     have h := φ.naturality f.f
     have h' := F.congr_map (comp_p f)
     have h'' := F.congr_map (p_comp f)
-    simp only [hom_ext_iff, Functor.map_comp, comp_f] at h h' h''⊢
+    simp only [hom_ext_iff, Functor.map_comp, comp_f] at h h' h'' ⊢
     slice_rhs 2 3 => rw [← h]
     slice_lhs 1 2 => rw [h']
     slice_rhs 1 2 => rw [h'']
@@ -259,7 +259,6 @@ noncomputable def karoubiUniversal : C ⥤ D ≌ Karoubi C ⥤ D :=
   (karoubiUniversal₂ C D).trans (Equivalence.congrRight (toKaroubi D).asEquivalence.symm)
 #align category_theory.idempotents.karoubi_universal CategoryTheory.Idempotents.karoubiUniversal
 
-set_option maxHeartbeats 400000 in
 theorem karoubiUniversal_functor_eq : (karoubiUniversal C D).functor = functorExtension C D :=
   rfl
 #align category_theory.idempotents.karoubi_universal_functor_eq CategoryTheory.Idempotents.karoubiUniversal_functor_eq

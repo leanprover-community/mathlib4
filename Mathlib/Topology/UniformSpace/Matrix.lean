@@ -28,13 +28,13 @@ instance : UniformSpace (Matrix m n 𝕜) :=
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by
   erw [Pi.uniformity, Pi.uniformity]
-  simp_rw [Filter.comap_infᵢ, Filter.comap_comap]
+  simp_rw [Filter.comap_iInf, Filter.comap_comap]
   rfl
 #align matrix.uniformity Matrix.uniformity
 
 theorem uniformContinuous {β : Type _} [UniformSpace β] {f : β → Matrix m n 𝕜} :
     UniformContinuous f ↔ ∀ i j, UniformContinuous fun x => f x i j := by
-  simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_infᵢ, Filter.tendsto_comap_iff]
+  simp only [UniformContinuous, Matrix.uniformity, Filter.tendsto_iInf, Filter.tendsto_comap_iff]
   apply Iff.intro <;> intro a <;> apply a
 #align matrix.uniform_continuous Matrix.uniformContinuous
 

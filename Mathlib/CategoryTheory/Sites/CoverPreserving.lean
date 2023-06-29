@@ -26,7 +26,7 @@ pushes covering sieves to covering sieves
 if it pushes compatible families of elements to compatible families.
 * `CategoryTheory.pullbackSheaf`: the pullback of a sheaf along a cover-preserving and
 compatible-preserving functor.
-* `category_theory.Sites.pullback`: the induced functor `Sheaf K A ⥤ Sheaf J A` for a
+* `CategoryTheory.Sites.pullback`: the induced functor `Sheaf K A ⥤ Sheaf J A` for a
 cover-preserving and compatible-preserving functor `G : (C, J) ⥤ (D, K)`.
 
 ## Main results
@@ -47,15 +47,8 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
-open CategoryTheory
-
-open Opposite
-
-open CategoryTheory.Presieve.FamilyOfElements
-
-open CategoryTheory.Presieve
-
-open CategoryTheory.Limits
+open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTheory.Presieve
+  CategoryTheory.Limits
 
 namespace CategoryTheory
 
@@ -68,7 +61,7 @@ variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology A}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
-if for all covering sieves `R` in `C`, `R.pushforward_functor G` is a covering sieve in `D`.
+if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
 -- porting note: removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
@@ -79,9 +72,6 @@ structure CoverPreserving (G : C ⥤ D) : Prop where
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
 #align category_theory.id_cover_preserving CategoryTheory.idCoverPreserving
-
--- porting note: this line is not needed as the variables are already explicit
--- variable (J) (K)
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
@@ -95,7 +85,7 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
 `f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂`, `x g₁` and `x g₂` coincide when restricted via `fᵢ`.
 This is actually stronger than merely preserving compatible families because of the definition of
-`functor_pushforward` used.
+`functorPushforward` used.
 -/
 -- porting note: this doesn't work yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
@@ -110,18 +100,15 @@ variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfT
 
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 
--- porting note: commenting out `include`
--- include h hG
-
-/-- `compatible_preserving` functors indeed preserve compatible families. -/
+/-- `CompatiblePreserving` functors indeed preserve compatible families. -/
 theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
     (x.functorPushforward G).Compatible := by
   rintro Z₁ Z₂ W g₁ g₂ f₁' f₂' H₁ H₂ eq
   unfold FamilyOfElements.functorPushforward
   rcases getFunctorPushforwardStructure H₁ with ⟨X₁, f₁, h₁, hf₁, rfl⟩
   rcases getFunctorPushforwardStructure H₂ with ⟨X₂, f₂, h₂, hf₂, rfl⟩
-  suffices : ℱ.val.map (g₁ ≫ h₁).op (x f₁ hf₁) = ℱ.val.map (g₂ ≫ h₂).op (x f₂ hf₂)
-  simpa using this
+  suffices ℱ.val.map (g₁ ≫ h₁).op (x f₁ hf₁) = ℱ.val.map (g₂ ≫ h₂).op (x f₂ hf₂) by
+    simpa using this
   apply hG.Compatible ℱ h _ _ hf₁ hf₂
   simpa using eq
 #align category_theory.presieve.family_of_elements.compatible.functor_pushforward CategoryTheory.Presieve.FamilyOfElements.Compatible.functorPushforward
@@ -135,9 +122,6 @@ theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
   simpa using hG.Compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
 #align category_theory.compatible_preserving.apply_map CategoryTheory.CompatiblePreserving.apply_map
 
--- porting note: commenting out `omit`
--- omit h hG
-
 open Limits.WalkingCospan
 
 theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₁} D]
@@ -149,7 +133,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     (Cones.postcompose (diagramIsoCospan (cospan g₁ g₂ ⋙ G)).inv).obj (PullbackCone.mk f₁ f₂ e)
   /-
     This can then be viewed as a cospan of structured arrows, and we may obtain an arbitrary cone
-    over it since `structured_arrow W u` is cofiltered.
+    over it since `StructuredArrow W u` is cofiltered.
     Then, it suffices to prove that it is compatible when restricted onto `u(c'.X.right)`.
     -/
   let c' := IsCofiltered.cone (StructuredArrowCone.toDiagram c ⋙ StructuredArrow.pre _ _ _)

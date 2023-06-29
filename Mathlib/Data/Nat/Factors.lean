@@ -11,7 +11,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Prime
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Tactic.NthRewrite
 
 /-!
 # Prime numbers
@@ -308,5 +307,4 @@ theorem eq_two_pow_or_exists_odd_prime_and_dvd (n : ℕ) :
 
 end Nat
 
--- Porting note: `assert_not_exists` is not implemented yet.
---assert_not_exists Multiset
+assert_not_exists Multiset

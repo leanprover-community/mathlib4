@@ -12,8 +12,6 @@ import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Images
-import Mathlib.Tactic.RSuffices
-import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 
@@ -63,10 +61,7 @@ abbrev homologyK : A :=
   This is an isomorphism, and it is used in obtaining the API for `homology f g w`
   in the bottom of this file. -/
 abbrev homologyCToK : homologyC f g w ⟶ homologyK f g w :=
-  cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp))
-    (by
-      apply Limits.equalizer.hom_ext
-      simp)
+  cokernel.desc _ (kernel.lift _ (kernel.ι _ ≫ cokernel.π _) (by simp)) (by ext; simp)
 #align category_theory.abelian.homology_c_to_k CategoryTheory.Abelian.homologyCToK
 
 attribute [local instance] Pseudoelement.homToFun Pseudoelement.hasZero
@@ -75,7 +70,7 @@ instance : Mono (homologyCToK f g w) := by
   apply Pseudoelement.mono_of_zero_of_map_zero
   intro a ha
   obtain ⟨a, rfl⟩ := Pseudoelement.pseudo_surjective_of_epi (cokernel.π (kernel.lift g f w)) a
-  apply_fun kernel.ι (cokernel.desc f g w)  at ha
+  apply_fun kernel.ι (cokernel.desc f g w) at ha
   simp only [← Pseudoelement.comp_apply, cokernel.π_desc, kernel.lift_ι,
     Pseudoelement.apply_zero] at ha
   simp only [Pseudoelement.comp_apply] at ha
@@ -171,7 +166,7 @@ theorem hom_from_ext {W : A} (a b : homology f g w ⟶ W)
   apply_fun fun e => (homologyIsoCokernelLift f g w).inv ≫ e
   swap
   · intro i j hh
-    apply_fun fun e => (homologyIsoCokernelLift f g w).hom ≫ e  at hh
+    apply_fun fun e => (homologyIsoCokernelLift f g w).hom ≫ e at hh
     simpa using hh
   simp only [Category.assoc] at h
   exact coequalizer.hom_ext h
@@ -183,7 +178,7 @@ theorem hom_to_ext {W : A} (a b : W ⟶ homology f g w) (h : a ≫ ι f g w = b 
   apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).hom
   swap
   · intro i j hh
-    apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).inv  at hh
+    apply_fun fun e => e ≫ (homologyIsoKernelDesc f g w).inv at hh
     simpa using hh
   simp only [← Category.assoc] at h
   exact equalizer.hom_ext h
@@ -214,7 +209,7 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
   apply_fun fun e => (kernelSubobjectIso _).hom ≫ e
   swap
   · intro i j hh
-    apply_fun fun e => (kernelSubobjectIso _).inv ≫ e  at hh
+    apply_fun fun e => (kernelSubobjectIso _).inv ≫ e at hh
     simpa using hh
   dsimp [map]
   simp only [π'_eq_π_assoc]
@@ -225,7 +220,7 @@ theorem π'_map (α β h) : π' _ _ _ ≫ map w w' α β h =
     (kernelSubobjectIso g).inv ≫ kernelSubobjectMap β =
       kernel.map _ _ β.left β.right β.w.symm ≫ (kernelSubobjectIso _).inv := by
     rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv]
-    refine Limits.equalizer.hom_ext ?_
+    ext
     dsimp
     simp
   rw [this]
@@ -254,8 +249,7 @@ theorem map_eq_desc'_lift_left (α β h) :
   dsimp [π', lift]
   rw [Iso.eq_comp_inv]
   dsimp [homologyIsoKernelDesc]
-  -- Porting note: previously ext
-  apply Limits.equalizer.hom_ext
+  ext
   simp [h]
 #align homology.map_eq_desc'_lift_left homology.map_eq_desc'_lift_left
 
@@ -331,8 +325,6 @@ namespace CategoryTheory.Functor
 variable {ι : Type _} {c : ComplexShape ι} {B : Type _} [Category B] [Abelian B] (F : A ⥤ B)
   [Functor.Additive F] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
--- Porting note: not needed on reenableeta branch
-set_option maxHeartbeats 400000 in
 /-- When `F` is an exact additive functor, `F(Hᵢ(X)) ≅ Hᵢ(F(X))` for `X` a complex. -/
 noncomputable def homologyIso (C : HomologicalComplex A c) (j : ι) :
     F.obj (C.homology j) ≅ ((F.mapHomologicalComplex c).obj C).homology j :=
@@ -350,8 +342,6 @@ noncomputable def homologyIso (C : HomologicalComplex A c) (j : ι) :
         simp [← F.map_comp]))
 #align category_theory.functor.homology_iso CategoryTheory.Functor.homologyIso
 
--- Porting note: not needed on reenableeta branch
-set_option maxHeartbeats 400000 in
 /-- If `F` is an exact additive functor, then `F` commutes with `Hᵢ` (up to natural isomorphism). -/
 noncomputable def homologyFunctorIso (i : ι) :
     homologyFunctor A c i ⋙ F ≅ F.mapHomologicalComplex c ⋙ homologyFunctor B c i :=
@@ -378,4 +368,3 @@ noncomputable def homologyFunctorIso (i : ι) :
 #align category_theory.functor.homology_functor_iso CategoryTheory.Functor.homologyFunctorIso
 
 end CategoryTheory.Functor
-

@@ -136,7 +136,7 @@ theorem compl [Zero α] [One α] (h : IsAdjMatrix A) : IsAdjMatrix A.compl :=
 
 theorem toGraph_compl_eq [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) :
     h.compl.toGraph = h.toGraphᶜ := by
-  ext (v w)
+  ext v w
   cases' h.zero_or_one v w with h h <;> by_cases hvw : v = w <;> simp [Matrix.compl, h, hvw]
 #align matrix.is_adj_matrix.to_graph_compl_eq Matrix.IsAdjMatrix.toGraph_compl_eq
 
@@ -268,7 +268,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
   · obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
   · nth_rw 1 [Nat.succ_eq_one_add]
     simp only [pow_add, pow_one, finsetWalkLength, ih, mul_eq_mul, adjMatrix_mul_apply]
-    rw [Finset.card_bunionᵢ]
+    rw [Finset.card_biUnion]
     · norm_cast
       simp only [Nat.cast_sum, card_map, neighborFinset_def]
       apply Finset.sum_toFinset_eq_subtype
@@ -293,7 +293,7 @@ variable {A : Matrix V V α} (h : IsAdjMatrix A)
 /-- If `A` is qualified as an adjacency matrix,
     then the adjacency matrix of the graph induced by `A` is itself. -/
 theorem adjMatrix_toGraph_eq [DecidableEq α] : h.toGraph.adjMatrix α = A := by
-  ext (i j)
+  ext i j
   obtain h' | h' := h.zero_or_one i j <;> simp [h']
 #align matrix.is_adj_matrix.adj_matrix_to_graph_eq Matrix.IsAdjMatrix.adjMatrix_toGraph_eq
 
