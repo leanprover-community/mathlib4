@@ -519,6 +519,10 @@ theorem not_disjoint_self_iff : ¬Disjoint f f ↔ f.NeBot := by rw [disjoint_se
 theorem bot_sets_eq : (⊥ : Filter α).sets = univ := rfl
 #align filter.bot_sets_eq Filter.bot_sets_eq
 
+/-- Either `f = ⊥` or `Filter.NeBot f`. This is a version of `eq_or_ne` that uses `Filter.NeBot`
+as the second alternative, to be used as an instance. -/
+theorem eq_or_neBot (f : Filter α) : f = ⊥ ∨ NeBot f := (eq_or_ne f ⊥).imp_right NeBot.mk
+
 theorem sup_sets_eq {f g : Filter α} : (f ⊔ g).sets = f.sets ∩ g.sets :=
   (giGenerate α).gc.u_inf
 #align filter.sup_sets_eq Filter.sup_sets_eq
