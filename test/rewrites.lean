@@ -83,6 +83,15 @@ example : ∀ (x y : ℕ), x ≤ y := by
   success_if_fail_with_msg "Could not find any lemmas which can rewrite the goal" rw?
   admit
 
+axiom K : Type
+@[instance] axiom K.ring : Ring K
+
+def foo : K → K := sorry
+
+example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
+  rw? -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
+  admit
+
 lemma six_eq_seven : 6 = 7 := sorry
 
 example : ∀ (x : ℕ), x ≤ 6 := by
