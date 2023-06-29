@@ -26,6 +26,10 @@ def insertIfSpecific [BEq α] (d : DiscrTree α s)
 /--
 Find keys which match the expression, or some subexpression.
 
+Note that repeated subexpressions will be visited each time they appear,
+making this operation potentially very expensive.
+It would be good to solve this problem!
+
 Implementation: we reverse the results from `getMatch`,
 so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
