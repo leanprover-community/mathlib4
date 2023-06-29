@@ -778,20 +778,20 @@ theorem replicate_succ (val : α) :
   rfl
 
 section Append
-  variable (ys : Vector α m)
+variable (ys : Vector α m)
 
-  @[simp]
-  theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
-    rfl
+@[simp]
+theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
+  rfl
 
-  @[simp]
-  theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-      get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
-    rfl
+@[simp]
+theorem get_append_cons_succ {i : Fin (n + m)} {h} :
+    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+  rfl
 
-  @[simp]
-  theorem append_nil : append xs nil = xs := by
-    cases xs; simp [append]
+@[simp]
+theorem append_nil : append xs nil = xs := by
+  cases xs; simp [append]
 
 end Append
 
@@ -813,17 +813,19 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
 
 
 @[simp]
-theorem mapAccumr_cons :  mapAccumr f (x ::ᵥ xs) s
-                          = let r := mapAccumr f xs s
-                            let q := f x r.1
-                            (q.1, q.2 ::ᵥ r.2) :=
+theorem mapAccumr_cons :
+    mapAccumr f (x ::ᵥ xs) s
+    = let r := mapAccumr f xs s
+      let q := f x r.1
+      (q.1, q.2 ::ᵥ r.2) :=
   rfl
 
 @[simp]
-theorem mapAccumr₂_cons : mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
-                          = let r := mapAccumr₂ f xs ys s
-                            let q := f x y r.1
-                            (q.1, q.2 ::ᵥ r.2) :=
+theorem mapAccumr₂_cons :
+    mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
+    = let r := mapAccumr₂ f xs ys s
+      let q := f x y r.1
+      (q.1, q.2 ::ᵥ r.2) :=
   rfl
 
 end Simp
