@@ -1362,8 +1362,6 @@ theorem map_subtype_embedding_Iio : (Iio a).map (Embedding.subtype p) = (Iio a :
   exact Finset.subtype_map_of_mem fun x hx => hp (mem_Iio.1 hx).le a.prop
 #align finset.map_subtype_embedding_Iio Finset.map_subtype_embedding_Iio
 
-
-
 end LocallyFiniteOrderBot
 
 section Finite
