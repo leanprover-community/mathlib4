@@ -19,7 +19,7 @@ inside its field of fractions.
 
 ## Main definitions
  - `toPrincipalIdeal` sends an invertible `x : K` to an invertible fractional ideal
- - `ClassGroup` is the quotient of invertible fractional ideals modulo `to_principal_ideal.range`
+ - `ClassGroup` is the quotient of invertible fractional ideals modulo `toPrincipalIdeal.range`
  - `ClassGroup.mk0` sends a nonzero integral ideal in a Dedekind domain to its class
 
 ## Main results
@@ -388,7 +388,7 @@ theorem ClassGroup.mk0_eq_one_iff [IsDedekindDomain R] {I : Ideal R} (hI : I ∈
 
 /-- The class group of principal ideal domain is finite (in fact a singleton).
 
-See `class_group.fintype_of_admissible` for a finiteness proof that works for rings of integers
+See `ClassGroup.fintypeOfAdmissibleOfFinite` for a finiteness proof that works for rings of integers
 of global fields.
 -/
 noncomputable instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where

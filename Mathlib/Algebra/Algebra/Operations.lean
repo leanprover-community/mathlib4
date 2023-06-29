@@ -81,7 +81,7 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
 instance one : One (Submodule R A) :=
--- porting note: `f.range` notation doesn't work
+  -- porting note: `f.range` notation doesn't work
   ⟨LinearMap.range (Algebra.linearMap R A)⟩
 #align submodule.has_one Submodule.one
 
@@ -289,7 +289,7 @@ theorem map_op_mul :
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
-    rw [Submodule.mem_map_equiv] at hm hn⊢
+    rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
 

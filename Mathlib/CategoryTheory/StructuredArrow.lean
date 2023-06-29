@@ -56,6 +56,7 @@ variable {S S' S'' : D} {Y Y' : C} {T : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : StructuredArrow S T} (f g : X ⟶ Y) (h : f.right = g.right) : f = g :=
   CommaMorphism.ext _ _ (Subsingleton.elim _ _) h
@@ -228,8 +229,6 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
 
 open CategoryTheory.Limits
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- The identity structured arrow is initial. -/
 def mkIdInitial [Full T] [Faithful T] : IsInitial (mk (𝟙 (T.obj Y))) where
   desc c := homMk (T.preimage c.pt.hom)
@@ -276,6 +275,7 @@ def CostructuredArrow (S : C ⥤ D) (T : D) :=
 #align category_theory.costructured_arrow CategoryTheory.CostructuredArrow
 
 instance (S : C ⥤ D) (T : D) : Category (CostructuredArrow S T) := commaCategory
+
 namespace CostructuredArrow
 
 /-- The obvious projection functor from costructured arrows. -/
@@ -288,6 +288,7 @@ variable {T T' T'' : D} {Y Y' : C} {S : C ⥤ D}
 
 -- porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {X Y : CostructuredArrow S T} (f g : X ⟶ Y) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext _ _ h (Subsingleton.elim _ _)
@@ -447,22 +448,19 @@ instance proj_reflectsIsomorphisms : ReflectsIsomorphisms (proj S T) where
     ⟨⟨CostructuredArrow.homMk
         (inv ((proj S T).map f))
         (by rw [Functor.map_inv, IsIso.inv_comp_eq]; simp),
-      by constructor <;> apply Comma.hom_ext <;> dsimp at t ⊢ <;> simp⟩⟩
+      by constructor <;> ext <;> dsimp at t ⊢ <;> simp⟩⟩
 #align category_theory.costructured_arrow.proj_reflects_iso CategoryTheory.CostructuredArrow.proj_reflectsIsomorphisms
 
 open CategoryTheory.Limits
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The identity costructured arrow is terminal. -/
 def mkIdTerminal [Full S] [Faithful S] : IsTerminal (mk (𝟙 (S.obj Y))) where
   lift c := homMk (S.preimage c.pt.hom)
   uniq := by
     rintro c m -
-    apply CommaMorphism.ext
-    · apply S.map_injective
-      simpa only [homMk_left, S.image_preimage, ← w m] using (Category.comp_id _).symm
-    · aesop_cat
+    ext
+    apply S.map_injective
+    simpa only [homMk_left, S.image_preimage, ← w m] using (Category.comp_id _).symm
 #align category_theory.costructured_arrow.mk_id_terminal CategoryTheory.CostructuredArrow.mkIdTerminal
 
 variable {A : Type u₃} [Category.{v₃} A] {B : Type u₄} [Category.{v₄} B]

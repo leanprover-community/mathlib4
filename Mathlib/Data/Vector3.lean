@@ -125,7 +125,7 @@ def consElim {C : Vector3 α (succ n) → Sort u} (H : ∀ (a : α) (t : Vector3
 #align vector3.cons_elim Vector3.consElim
 
 @[simp]
-theorem consElim_cons {C H a t} : @consElim α n C H (a::t) = H a t :=
+theorem consElim_cons {C H a t} : @consElim α n C H (a :: t) = H a t :=
   rfl
 #align vector3.cons_elim_cons Vector3.consElim_cons
 
@@ -282,18 +282,14 @@ theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by
   refine' v.recOn _ _
   · exact ⟨fun _ => Fin2.elim0, fun _ => trivial⟩
-  · simp
-    refine' @fun n a v IH =>
+  · simp only [vectorAllP_cons]
+    refine' fun {n} a v IH =>
       (and_congr_right fun _ => IH).trans
         ⟨fun ⟨pa, h⟩ i => by
           refine' i.cases' _ _
-          exacts[pa, h], fun h => ⟨_, fun i => _⟩⟩
-    · have h0 := h fz
-      simp at h0
-      exact h0
-    · have hs := h (fs i)
-      simp at hs
-      exact hs
+          exacts [pa, h], fun h => ⟨_, fun i => _⟩⟩
+    · simpa using h fz
+    · simpa using h (fs i)
 #align vector_allp_iff_forall vectorAllP_iff_forall
 
 theorem VectorAllP.imp {p q : α → Prop} (h : ∀ x, p x → q x) {v : Vector3 α n}

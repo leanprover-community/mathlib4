@@ -42,7 +42,7 @@ syntax (name := to_additive_reorder) "to_additive_reorder " (num+),+ : attr
 syntax (name := to_additive_change_numeral) "to_additive_change_numeral" (ppSpace num)* : attr
 /-- An `attr := ...` option for `to_additive`. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
-/-- An `reorder := ...` option for `to_additive`. -/
+/-- A `reorder := ...` option for `to_additive`. -/
 syntax toAdditiveReorderOption := &"reorder" " := " (num+),+
 /-- Options to `to_additive`. -/
 syntax toAdditiveParenthesizedOption := "(" toAdditiveAttrOption <|> toAdditiveReorderOption ")"
@@ -58,7 +58,7 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
-  of a lower-case letter followed by a upper-case letter.
+  of a lower-case letter followed by an upper-case letter.
 * If multiple strings have the same prefix, they should be grouped by prefix
 * In this case, the second list should be prefix-free
   (no element can be a prefix of a later element)
@@ -66,9 +66,9 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 Todo: automate the translation from `String` to an element in this `RBMap`
   (but this would require having something similar to the `rb_lmap` from Lean 3). -/
 def endCapitalNames : Lean.RBMap String (List String) compare :=
--- todo: we want something like
--- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
-.ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
+  -- todo: we want something like
+  -- endCapitalNamesOfList ["LE", "LT", "WF", "CoeTC", "CoeT", "CoeHTCT"]
+  .ofList [("LE", [""]), ("LT", [""]), ("WF", [""]), ("Coe", ["TC", "T", "HTCT"])]
 
 /--
 This function takes a String and splits it into separate parts based on the following
@@ -106,7 +106,7 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `reorder` attribute is not given manually -/
 register_option linter.toAdditiveReorder : Bool := {
   defValue := true
   descr := "Linter to check that the reorder attribute is not given manually." }
@@ -118,7 +118,7 @@ register_option linter.existingAttributeWarning : Bool := {
   descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration " ++
     "doesn't have certain attributes" }
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `to_additive` attribute is not given manually -/
 register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++
@@ -328,15 +328,15 @@ def additiveTest (findTranslation? : Name → Option Name)
 
 /-- Swap the first two elements of a list -/
 def _root_.List.swapFirstTwo {α : Type _} : List α → List α
-| []      => []
-| [x]     => [x]
-| x::y::l => y::x::l
+  | []      => []
+  | [x]     => [x]
+  | x::y::l => y::x::l
 
 /-- Change the numeral `nat_lit 1` to the numeral `nat_lit 0`.
 Leave all other expressions unchanged. -/
 def changeNumeral : Expr → Expr
-| .lit (.natVal 1) => mkRawNatLit 0
-| e                => e
+  | .lit (.natVal 1) => mkRawNatLit 0
+  | e                => e
 
 /--
 `applyReplacementFun e` replaces the expression `e` with its additive counterpart.
@@ -431,7 +431,7 @@ where /-- Implementation of `applyReplacementFun`. -/
     | _ => return none
 
 /-- Eta expands `e` at most `n` times.-/
-def etaExpandN (n : Nat) (e : Expr): MetaM Expr := do
+def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
   forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
 
 /-- `e.expand` eta-expands all expressions that have as head a constant `n` in
@@ -523,12 +523,12 @@ The last example may or may not be the equation lemma of a declaration with the 
 attribute. We will only translate it has the `@[to_additive]` attribute.
 -/
 def findAuxDecls (e : Expr) (pre mainModule : Name) : NameSet :=
-let auxLemma := mainModule ++ `_auxLemma
-e.foldConsts ∅ fun n l ↦
-  if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n || n.hasMacroScopes then
-    l.insert n
-  else
-    l
+  let auxLemma := mainModule ++ `_auxLemma
+  e.foldConsts ∅ fun n l ↦
+    if n.getPrefix == pre || n.getPrefix == auxLemma || isPrivateName n || n.hasMacroScopes then
+      l.insert n
+    else
+      l
 
 /-- transform the declaration `src` and all declarations `pre._proof_i` occurring in `src`
 using the transforms dictionary.
@@ -536,7 +536,7 @@ using the transforms dictionary.
 `pre` is the declaration that got the `@[to_additive]` attribute and `tgt_pre` is the target of this
 declaration. -/
 partial def transformDeclAux
-  (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
+    (cfg : Config) (pre tgt_pre : Name) : Name → CoreM Unit := fun src ↦ do
   let env ← getEnv
   trace[to_additive_detail] "visiting {src}"
   -- if we have already translated this declaration, we do nothing.
@@ -708,40 +708,40 @@ capitalization of the input. Input and first element should therefore be lower-c
 2nd element should be capitalized properly.
 -/
 def nameDict : String → List String
-| "one"         => ["zero"]
-| "mul"         => ["add"]
-| "smul"        => ["vadd"]
-| "inv"         => ["neg"]
-| "div"         => ["sub"]
-| "prod"        => ["sum"]
-| "hmul"        => ["hadd"]
-| "hsmul"       => ["hvadd"]
-| "hdiv"        => ["hsub"]
-| "hpow"        => ["hsmul"]
-| "finprod"     => ["finsum"]
-| "pow"         => ["nsmul"]
-| "npow"        => ["nsmul"]
-| "zpow"        => ["zsmul"]
-| "monoid"      => ["add", "Monoid"]
-| "submonoid"   => ["add", "Submonoid"]
-| "group"       => ["add", "Group"]
-| "subgroup"    => ["add", "Subgroup"]
-| "semigroup"   => ["add", "Semigroup"]
-| "magma"       => ["add", "Magma"]
-| "haar"        => ["add", "Haar"]
-| "prehaar"     => ["add", "Prehaar"]
-| "unit"        => ["add", "Unit"]
-| "units"       => ["add", "Units"]
-| "rootable"    => ["divisible"]
-| x             => [x]
+  | "one"         => ["zero"]
+  | "mul"         => ["add"]
+  | "smul"        => ["vadd"]
+  | "inv"         => ["neg"]
+  | "div"         => ["sub"]
+  | "prod"        => ["sum"]
+  | "hmul"        => ["hadd"]
+  | "hsmul"       => ["hvadd"]
+  | "hdiv"        => ["hsub"]
+  | "hpow"        => ["hsmul"]
+  | "finprod"     => ["finsum"]
+  | "pow"         => ["nsmul"]
+  | "npow"        => ["nsmul"]
+  | "zpow"        => ["zsmul"]
+  | "monoid"      => ["add", "Monoid"]
+  | "submonoid"   => ["add", "Submonoid"]
+  | "group"       => ["add", "Group"]
+  | "subgroup"    => ["add", "Subgroup"]
+  | "semigroup"   => ["add", "Semigroup"]
+  | "magma"       => ["add", "Magma"]
+  | "haar"        => ["add", "Haar"]
+  | "prehaar"     => ["add", "Prehaar"]
+  | "unit"        => ["add", "Unit"]
+  | "units"       => ["add", "Units"]
+  | "rootable"    => ["divisible"]
+  | x             => [x]
 
 /--
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
 def applyNameDict : List String → List String
-| x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
-| [] => []
+  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict s
+  | [] => []
 
 /--
 There are a few abbreviations we use. For example "Nonneg" instead of "ZeroLE"
@@ -751,62 +751,62 @@ Todo: A lot of abbreviations here are manual fixes and there might be room to
       improve the naming logic to reduce the size of `fixAbbreviation`.
 -/
 def fixAbbreviation : List String → List String
-| "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
-| "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
-| "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
-| "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
-| "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
-| "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
-| "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
-| "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
-| "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
-| "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
-| "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
-| "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
-| "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
-| "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
-| "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
-| "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
-| "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
-| "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
-| "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
-| "add" :: "Single" :: s            => "single" :: fixAbbreviation s
-| "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
-| "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
-| "add" :: "Support" :: s           => "support" :: fixAbbreviation s
-| "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
-| "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
-| "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
-| "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
-| "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
-| "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
-| "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
-| "is" :: "Square" :: s             => "even" :: fixAbbreviation s
-| "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
--- "Regular" is well-used in mathlib3 with various meanings (e.g. in
--- measure theory) and a direct translation
--- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
-| "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
-| "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
-| "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
-| "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
-| "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
-| "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
--- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
-| "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
-| "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
-| "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
-| "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
-| "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
-| "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
-| "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
-| "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
-| "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
-| "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
-| "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
-| "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
-| x :: s                            => x :: fixAbbreviation s
-| []                                => []
+  | "cancel" :: "Add" :: s            => "addCancel" :: fixAbbreviation s
+  | "Cancel" :: "Add" :: s            => "AddCancel" :: fixAbbreviation s
+  | "left" :: "Cancel" :: "Add" :: s  => "addLeftCancel" :: fixAbbreviation s
+  | "Left" :: "Cancel" :: "Add" :: s  => "AddLeftCancel" :: fixAbbreviation s
+  | "right" :: "Cancel" :: "Add" :: s => "addRightCancel" :: fixAbbreviation s
+  | "Right" :: "Cancel" :: "Add" :: s => "AddRightCancel" :: fixAbbreviation s
+  | "cancel" :: "Comm" :: "Add" :: s  => "addCancelComm" :: fixAbbreviation s
+  | "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
+  | "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
+  | "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
+  | "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
+  | "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
+  | "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
+  | "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
+  | "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
+  | "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
+  | "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
+  | "lt" :: "_" :: "zero" :: s        => "neg" :: fixAbbreviation s
+  | "Add" :: "Single" :: s            => "Single" :: fixAbbreviation s
+  | "add" :: "Single" :: s            => "single" :: fixAbbreviation s
+  | "add" :: "_" :: "single" :: s     => "single" :: fixAbbreviation s
+  | "Add" :: "Support" :: s           => "Support" :: fixAbbreviation s
+  | "add" :: "Support" :: s           => "support" :: fixAbbreviation s
+  | "add" :: "_" :: "support" :: s    => "support" :: fixAbbreviation s
+  | "Add" :: "TSupport" :: s          => "TSupport" :: fixAbbreviation s
+  | "add" :: "TSupport" :: s          => "tsupport" :: fixAbbreviation s
+  | "add" :: "_" :: "tsupport" :: s   => "tsupport" :: fixAbbreviation s
+  | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
+  | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
+  | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
+  | "is" :: "Square" :: s             => "even" :: fixAbbreviation s
+  | "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
+  -- "Regular" is well-used in mathlib3 with various meanings (e.g. in
+  -- measure theory) and a direct translation
+  -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
+  | "is" :: "Regular" :: s            => "isAddRegular" :: fixAbbreviation s
+  | "Is" :: "Regular" :: s            => "IsAddRegular" :: fixAbbreviation s
+  | "is" :: "Left" :: "Regular" :: s  => "isAddLeftRegular" :: fixAbbreviation s
+  | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
+  | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
+  | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
+  | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
+  | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
+  | "Nsmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `Pow`
+  | "ZSmul" :: s                      => "ZSMul" :: fixAbbreviation s -- from `ZPow`
+  | "neg" :: "Fun" :: s               => "invFun" :: fixAbbreviation s
+  | "Neg" :: "Fun" :: s               => "InvFun" :: fixAbbreviation s
+  | "order" :: "Of" :: s              => "addOrderOf" :: fixAbbreviation s
+  | "Order" :: "Of" :: s              => "AddOrderOf" :: fixAbbreviation s
+  | "is"::"Of"::"Fin"::"Order"::s     => "isOfFinAddOrder" :: fixAbbreviation s
+  | "Is"::"Of"::"Fin"::"Order"::s     => "IsOfFinAddOrder" :: fixAbbreviation s
+  | "is" :: "Central" :: "Scalar" :: s  => "isCentralVAdd" :: fixAbbreviation s
+  | "Is" :: "Central" :: "Scalar" :: s  => "IsCentralVAdd" :: fixAbbreviation s
+  | x :: s                            => x :: fixAbbreviation s
+  | []                                => []
 
 /--
 Autogenerate additive name.

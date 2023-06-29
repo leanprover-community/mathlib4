@@ -16,7 +16,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 In this file we
 
-* define a `ConditionallyCcompleteLinearOrderBot` structure on `ℕ`;
+* define a `ConditionallyCompleteLinearOrderBot` structure on `ℕ`;
 * prove a few lemmas about `iSup`/`iInf`/`Set.iUnion`/`Set.iInter` and natural numbers.
 -/
 

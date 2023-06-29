@@ -25,7 +25,7 @@ this is the usual left or right quotient of a group by a subgroup.
 ## Main definitions
 
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
-* `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, ``H \ G / K`.
+* `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
 -- porting note: removed import
 -- import Mathlib.Tactic.Group
@@ -93,7 +93,7 @@ theorem rel_iff {H K : Subgroup G} {x y : G} :
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
@@ -105,7 +105,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
     (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩

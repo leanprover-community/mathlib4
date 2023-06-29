@@ -169,11 +169,8 @@ theorem null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α] 
 theorem exists_mem_forall_mem_nhds_within_pos [TopologicalSpace α] [SecondCountableTopology α]
     (m : OuterMeasure α) {s : Set α} (hs : m s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < m t := by
   contrapose! hs
-  simp only [nonpos_iff_eq_zero, ← exists_prop] at hs
-  apply m.null_of_locally_null s
-  intro x hx
-  specialize hs x hx
-  exact Iff.mp bex_def hs
+  simp only [nonpos_iff_eq_zero] at hs
+  exact m.null_of_locally_null s hs
 #align measure_theory.outer_measure.exists_mem_forall_mem_nhds_within_pos MeasureTheory.OuterMeasure.exists_mem_forall_mem_nhds_within_pos
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
@@ -642,6 +639,7 @@ theorem map_top (f : α → β) : map f ⊤ = restrict (range f) ⊤ :=
       Set.image_eq_empty]
 #align measure_theory.outer_measure.map_top MeasureTheory.OuterMeasure.map_top
 
+@[simp]
 theorem map_top_of_surjective (f : α → β) (hf : Surjective f) : map f ⊤ = ⊤ := by
   rw [map_top, hf.range_eq, restrict_univ]
 #align measure_theory.outer_measure.map_top_of_surjective MeasureTheory.OuterMeasure.map_top_of_surjective
@@ -1501,7 +1499,7 @@ theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f 
 
 theorem inducedOuterMeasure_exists_set {s : Set α} (hs : inducedOuterMeasure m P0 m0 s ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ (t : Set α)(_ht : P t),
+    ∃ (t : Set α) (_ht : P t),
       s ⊆ t ∧ inducedOuterMeasure m P0 m0 t ≤ inducedOuterMeasure m P0 m0 s + ε := by
   have h := ENNReal.lt_add_right hs hε
   conv at h =>
@@ -1689,7 +1687,7 @@ theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t = m.trim s := by
-  simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (st : s ⊆ t) (ht : MeasurableSet t), m t
+  simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (_ : s ⊆ t) (_ : MeasurableSet t), m t
   by_cases hs : ms = ∞
   · simp only [hs]
     simp only [iInf_eq_top] at hs
@@ -1729,7 +1727,7 @@ theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι �
   replace hst := subset_iInter  hst
   replace ht := MeasurableSet.iInter ht
   refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
-  exacts[hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]
+  exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]
 #align measure_theory.outer_measure.exists_measurable_superset_forall_eq_trim MeasureTheory.OuterMeasure.exists_measurable_superset_forall_eq_trim
 
 /-- If `m₁ s = op (m₂ s) (m₃ s)` for all `s`, then the same is true for `m₁.trim`, `m₂.trim`,

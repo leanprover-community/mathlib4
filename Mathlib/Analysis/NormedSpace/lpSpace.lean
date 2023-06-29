@@ -63,7 +63,7 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issu
 
 noncomputable section
 
-open scoped NNReal ENNReal BigOperators
+open scoped NNReal ENNReal BigOperators Function
 
 variable {α : Type _} {E : α → Type _} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
@@ -213,7 +213,6 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg_of_nonneg (norm_nonneg _) p.toReal
       simp only [abs_of_nonneg, this] at hi
       contrapose! hi
-      rw [not_le] at hi
       exact Real.rpow_le_rpow_of_exponent_ge' (norm_nonneg _) hi.le hq.le hpq'
 #align mem_ℓp.of_exponent_ge Memℓp.of_exponent_ge
 
@@ -278,7 +277,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · apply memℓp_gen
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
     simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
-      ← NNReal.mul_rpow] at this⊢
+      ← NNReal.mul_rpow] at this ⊢
     refine' NNReal.summable_of_le _ this
     intro i
     exact NNReal.rpow_le_rpow (nnnorm_smul_le _ _) ENNReal.toReal_nonneg
@@ -324,6 +323,9 @@ def lp (E : α → Type _) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : 
   add_mem' := Memℓp.add
   neg_mem' := Memℓp.neg
 #align lp lp
+
+scoped[lp] notation "ℓ^∞(" ι ", " E ")" => lp (fun i : ι => E) ∞
+scoped[lp] notation "ℓ^∞(" ι ")" => lp (fun i : ι => ℝ) ∞
 
 namespace lp
 
@@ -668,7 +670,8 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     -- TODO: some `IsLUB` API should make it a one-liner from here.
     refine' hcf.right _
     have := hfc.left
-    simp_rw [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff'] at this⊢
+    simp_rw [mem_upperBounds, Set.mem_range,
+      forall_exists_index, forall_apply_eq_imp_iff'] at this ⊢
     intro a
     exact (norm_smul_le _ _).trans (this a)
   · letI inst : NNNorm (lp E p) := ⟨fun f => ⟨‖f‖, norm_nonneg' _⟩⟩
@@ -1084,13 +1087,13 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   have hp₀ : 0 < p := zero_lt_one.trans_le Fact.out
   have hp' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
   have := lp.hasSum_norm hp' f
-  rw [HasSum, Metric.tendsto_nhds] at this⊢
+  rw [HasSum, Metric.tendsto_nhds] at this ⊢
   intro ε hε
   refine' (this _ (Real.rpow_pos_of_pos hε p.toReal)).mono _
   intro s hs
   rw [← Real.rpow_lt_rpow_iff dist_nonneg (le_of_lt hε) hp']
   rw [dist_comm] at hs
-  simp only [dist_eq_norm, Real.norm_eq_abs] at hs⊢
+  simp only [dist_eq_norm, Real.norm_eq_abs] at hs ⊢
   have H : ‖(∑ i in s, lp.single p i (f i : E i)) - f‖ ^ p.toReal =
       ‖f‖ ^ p.toReal - ∑ i in s, ‖f i‖ ^ p.toReal := by
     simpa only [coeFn_neg, Pi.neg_apply, lp.single_neg, Finset.sum_neg_distrib, neg_sub_neg,
@@ -1185,7 +1188,7 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Metric.Bounded (Set.range F
     exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
 #align lp.mem_ℓp_of_tendsto lp.memℓp_of_tendsto
 
-/-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to a element `f` of
+/-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to an element `f` of
 `lp E p`, then it converges to `f` in the `lp E p` topology. -/
 theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp E p}
     (hf : Tendsto (id fun i => F i : ℕ → ∀ a, E a) atTop (𝓝 f)) : Tendsto F atTop (𝓝 f) := by
@@ -1217,3 +1220,41 @@ instance completeSpace : CompleteSpace (lp E p) :=
 end Topology
 
 end lp
+
+section Lipschitz
+
+open ENNReal lp
+
+lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → ℝ) {K : ℝ≥0}
+    (hg : ∀ i, LipschitzWith K (g · i)) (a₀ : α) (hga₀b : Memℓp (g a₀) ∞) (a : α) :
+    Memℓp (g a) ∞ := by
+  rcases hga₀b with ⟨M, hM⟩
+  use ↑K * dist a a₀ + M
+  rintro - ⟨i, rfl⟩
+  calc
+    |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ ↑K * dist a a₀ + M := by
+        gcongr
+        . exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
+        . exact hM ⟨i, rfl⟩
+
+theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι)) (s : Set α) (K : ℝ≥0) :
+    LipschitzOnWith K f s ↔ ∀ i : ι, LipschitzOnWith K (fun a : α ↦ f a i) s := by
+  simp_rw [lipschitzOnWith_iff_dist_le_mul]
+  constructor
+  · intro hfl i x hx y hy
+    calc
+      dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
+      _ ≤ K * dist x y := hfl x hx y hy
+  · intro hgl x hx y hy
+    apply lp.norm_le_of_forall_le; positivity
+    intro i
+    apply hgl i x hx y hy
+
+theorem LipschitzWith.coordinate [PseudoMetricSpace α] {f : α → ℓ^∞(ι)} (K : ℝ≥0) :
+    LipschitzWith K f ↔ ∀ i : ι, LipschitzWith K (fun a : α ↦ f a i) := by
+  simp_rw [← lipschitz_on_univ]
+  apply LipschitzOnWith.coordinate
+
+end Lipschitz

@@ -723,7 +723,7 @@ theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsP
   ⟨Ideal.isPrime_of_prime, Ideal.prime_of_isPrime hP⟩
 #align ideal.prime_iff_is_prime Ideal.prime_iff_isPrime
 
-/-- In a Dedekind domain, the the prime ideals are the zero ideal together with the prime elements
+/-- In a Dedekind domain, the prime ideals are the zero ideal together with the prime elements
 of the monoid with zero `Ideal A`. -/
 theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ Prime P :=
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
@@ -982,20 +982,20 @@ variable [IsDomain R] [IsDedekindDomain R]
 @[ext, nolint unusedArguments]
 structure HeightOneSpectrum where
   asIdeal : Ideal R
-  IsPrime : asIdeal.IsPrime
+  isPrime : asIdeal.IsPrime
   ne_bot : asIdeal ≠ ⊥
 #align is_dedekind_domain.height_one_spectrum IsDedekindDomain.HeightOneSpectrum
 
-attribute [instance] HeightOneSpectrum.IsPrime
+attribute [instance] HeightOneSpectrum.isPrime
 
 variable (v : HeightOneSpectrum R) {R}
 
 namespace HeightOneSpectrum
 
-instance isMaximal : v.asIdeal.IsMaximal := dimensionLEOne v.asIdeal v.ne_bot v.IsPrime
+instance isMaximal : v.asIdeal.IsMaximal := dimensionLEOne v.asIdeal v.ne_bot v.isPrime
 #align is_dedekind_domain.height_one_spectrum.is_maximal IsDedekindDomain.HeightOneSpectrum.isMaximal
 
-theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.IsPrime
+theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 #align is_dedekind_domain.height_one_spectrum.prime IsDedekindDomain.HeightOneSpectrum.prime
 
 theorem irreducible : Irreducible v.asIdeal :=
@@ -1008,7 +1008,7 @@ theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
 
 /-- An equivalence between the height one and maximal spectra for rings of Krull dimension 1. -/
 def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpectrum R where
-  toFun v := ⟨v.asIdeal, dimensionLEOne v.asIdeal v.ne_bot v.IsPrime⟩
+  toFun v := ⟨v.asIdeal, dimensionLEOne v.asIdeal v.ne_bot v.isPrime⟩
   invFun v :=
     ⟨v.asIdeal, v.IsMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.IsMaximal hR⟩
   left_inv := fun ⟨_, _, _⟩ => rfl
