@@ -48,7 +48,7 @@ namespace PGame
 noncomputable def nim : Ordinal.{u} → PGame.{u}
   | o₁ =>
     let f o₂ :=
-      have : Ordinal.typein o₁.out.r o₂ < o₁ := Ordinal.typein_lt_self o₂
+      have _ : Ordinal.typein o₁.out.r o₂ < o₁ := Ordinal.typein_lt_self o₂
       nim (Ordinal.typein o₁.out.r o₂)
     ⟨o₁.out.α, o₁.out.α, f, f⟩
 termination_by nim o => o
