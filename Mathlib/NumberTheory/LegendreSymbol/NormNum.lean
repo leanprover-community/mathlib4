@@ -76,11 +76,13 @@ theorem jacobiSymNat.one_right (a : ℕ) : jacobiSymNat a 1 = 1 := by
   rw [jacobiSymNat, jacobiSym.one_right]
 #align norm_num.jacobi_sym_nat.one_right NormNum.jacobiSymNat.one_right
 
-theorem jacobiSymNat.zero_left (b : ℕ) (hb : b / 2 ≠ 0) : jacobiSymNat 0 b = 0 := by
+theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jacobiSymNat 0 b = 0 := by
   rw [jacobiSymNat, Nat.cast_zero, jacobiSym.zero_left ?_]
   · calc
       1 < 2 * 1       := by decide
-      _ ≤ 2 * (b / 2) := Nat.mul_le_mul_of_nonneg_left (Nat.succ_le.mpr (Nat.pos_of_ne_zero hb))
+      _ ≤ 2 * (b / 2) :=
+        Nat.mul_le_mul_of_nonneg_left
+          (Nat.succ_le.mpr (Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb)))
       _ ≤ b           := Nat.mul_div_le b 2
 #align norm_num.jacobi_sym_nat.zero_left_even NormNum.jacobiSymNat.zero_left
 #align norm_num.jacobi_sym_nat.zero_left_odd NormNum.jacobiSymNat.zero_left
@@ -107,10 +109,11 @@ theorem jacobiSymNat.mod_left (a b ab : ℕ) (r : ℤ) (hab : a % b = ab) (hr : 
 #align norm_num.jacobi_sym_nat.mod_left NormNum.jacobiSymNat.mod_left
 
 /-- The symbol vanishes when both entries are even (and `b / 2 ≠ 0`). -/
-theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : b / 2 ≠ 0) (ha : a % 2 = 0) (hb₁ : b % 2 = 0) :
-    jacobiSymNat a b = 0 := by
+theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : Nat.beq (b / 2) 0 = false) (ha : a % 2 = 0)
+    (hb₁ : b % 2 = 0) : jacobiSymNat a b = 0 := by
   refine' jacobiSym.eq_zero_iff.mpr
-    ⟨ne_of_gt ((Nat.pos_of_ne_zero hb₀).trans_le (Nat.div_le_self b 2)), fun hf => _⟩
+    ⟨ne_of_gt ((Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb₀)).trans_le (Nat.div_le_self b 2)),
+      fun hf => _⟩
   have h : 2 ∣ a.gcd b := Nat.dvd_gcd (Nat.dvd_of_mod_eq_zero ha) (Nat.dvd_of_mod_eq_zero hb₁)
   change 2 ∣ (a : ℤ).gcd b at h
   rw [hf, ← even_iff_two_dvd] at h
@@ -132,94 +135,93 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
 #align norm_num.jacobi_sym_nat.odd_even NormNum.jacobiSymNat.odd_even
 
 /-- If `a` is divisible by `4` and `b` is odd, then we can remove the factor `4` from `a`. -/
-theorem jacobiSymNat.double_even (a b : ℕ) (r : ℤ) (hr : jacobiSymNat a (bit1 b) = r) :
-    jacobiSymNat (bit0 (bit0 a)) (bit1 b) = r := by
-  have : ((2 : ℕ) : ℤ).gcd (bit1 b : ℕ) = 1 := by
-    rw [Int.coe_nat_gcd, Nat.bit1_eq_succ_bit0, bit0_eq_two_mul b, Nat.succ_eq_add_one,
-      Nat.gcd_mul_left_add_right, Nat.gcd_one_right]
-  rwa [bit0_eq_two_mul a, bit0_eq_two_mul (2 * a), ← mul_assoc, ← pow_two, jacobi_sym_nat,
+theorem jacobiSymNat.double_even (a b c : ℕ) (r : ℤ) (ha : a % 4 = 0) (hb : b % 2 = 1)
+    (hc : a / 4 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
+  have : ((2 : ℕ) : ℤ).gcd b = 1 := by
+    rw [Int.coe_nat_gcd, ← Nat.mod_add_div b 2, hb, Nat.gcd_add_mul_left_right, Nat.gcd_one_right]
+  rwa [← Nat.mod_add_div a 4, ha, hc, Nat.zero_add, (by decide : 4 = 2 ^ 2), jacobiSymNat,
     Nat.cast_mul, Nat.cast_pow, jacobiSym.mul_left, jacobiSym.sq_one' this, one_mul]
 #align norm_num.jacobi_sym_nat.double_even NormNum.jacobiSymNat.double_even
 
 /-- If `a` is even and `b` is odd, then we can remove a factor `2` from `a`,
 but we may have to change the sign, depending on `b % 8`.
 We give one version for each of the four odd residue classes mod `8`. -/
-theorem jacobiSymNat.even_odd₁ (a b : ℕ) (r : ℤ) (hr : jacobiSymNat a (bit1 (bit0 (bit0 b))) = r) :
-    jacobiSymNat (bit0 a) (bit1 (bit0 (bit0 b))) = r := by
-  have hb : bit1 (bit0 (bit0 b)) % 8 = 1 := by
-    rw [Nat.bit1_mod_bit0, Nat.bit0_mod_bit0, Nat.bit0_mod_two]
-  rw [jacobi_sym_nat, bit0_eq_two_mul a, Nat.cast_mul, jacobiSym.mul_left, Nat.cast_two,
-    jacobiSym.at_two (odd_bit1 _), ZMod.χ₈_nat_mod_eight, hb]
+theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 1)
+    (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
+  have hb' : Odd b := by
+    rw [← Nat.div_add_mod b 8, hb, Odd]
+    use 4 * (b / 8); rw [← Nat.mul_assoc]; congr
+  rw [jacobiSymNat, ← Nat.mod_add_div a 2, ha, hc, Nat.zero_add, Nat.cast_mul, jacobiSym.mul_left,
+    Nat.cast_two, jacobiSym.at_two hb', ZMod.χ₈_nat_mod_eight, hb]
   norm_num
   exact hr
 #align norm_num.jacobi_sym_nat.even_odd₁ NormNum.jacobiSymNat.even_odd₁
 
-theorem jacobiSymNat.even_odd₇ (a b : ℕ) (r : ℤ) (hr : jacobiSymNat a (bit1 (bit1 (bit1 b))) = r) :
-    jacobiSymNat (bit0 a) (bit1 (bit1 (bit1 b))) = r := by
-  have hb : bit1 (bit1 (bit1 b)) % 8 = 7 := by
-    rw [Nat.bit1_mod_bit0, Nat.bit1_mod_bit0, Nat.bit1_mod_two]
-  rw [jacobi_sym_nat, bit0_eq_two_mul a, Nat.cast_mul, jacobiSym.mul_left, Nat.cast_two,
-    jacobiSym.at_two (odd_bit1 _), ZMod.χ₈_nat_mod_eight, hb]
+theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
+    (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
+  have hb' : Odd b := by
+    rw [← Nat.div_add_mod b 8, hb, Odd]
+    use 4 * (b / 8) + 3; rw [Nat.mul_add, ← Nat.mul_assoc, Nat.add_assoc]; congr
+  rw [jacobiSymNat, ← Nat.mod_add_div a 2, ha, hc, Nat.zero_add, Nat.cast_mul, jacobiSym.mul_left,
+    Nat.cast_two, jacobiSym.at_two hb', ZMod.χ₈_nat_mod_eight, hb,
+    (by decide : ZMod.χ₈ (7 : ℕ) = 1)]
   norm_num
   exact hr
 #align norm_num.jacobi_sym_nat.even_odd₇ NormNum.jacobiSymNat.even_odd₇
 
-theorem jacobiSymNat.even_odd₃ (a b : ℕ) (r : ℤ) (hr : jacobiSymNat a (bit1 (bit1 (bit0 b))) = r) :
-    jacobiSymNat (bit0 a) (bit1 (bit1 (bit0 b))) = -r := by
-  have hb : bit1 (bit1 (bit0 b)) % 8 = 3 := by
-    rw [Nat.bit1_mod_bit0, Nat.bit1_mod_bit0, Nat.bit0_mod_two]
-  rw [jacobi_sym_nat, bit0_eq_two_mul a, Nat.cast_mul, jacobiSym.mul_left, Nat.cast_two,
-    jacobiSym.at_two (odd_bit1 _), ZMod.χ₈_nat_mod_eight, hb]
+theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
+    (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
+  have hb' : Odd b := by
+    rw [← Nat.div_add_mod b 8, hb, Odd]
+    use 4 * (b / 8) + 1; rw [Nat.mul_add, ← Nat.mul_assoc, Nat.add_assoc]; congr
+  rw [jacobiSymNat, ← Nat.mod_add_div a 2, ha, hc, Nat.zero_add, Nat.cast_mul, jacobiSym.mul_left,
+    Nat.cast_two, jacobiSym.at_two hb', ZMod.χ₈_nat_mod_eight, hb,
+    (by decide : ZMod.χ₈ (3 : ℕ) = -1)]
   norm_num
   exact hr
 #align norm_num.jacobi_sym_nat.even_odd₃ NormNum.jacobiSymNat.even_odd₃
 
-theorem jacobiSymNat.even_odd₅ (a b : ℕ) (r : ℤ) (hr : jacobiSymNat a (bit1 (bit0 (bit1 b))) = r) :
-    jacobiSymNat (bit0 a) (bit1 (bit0 (bit1 b))) = -r := by
-  have hb : bit1 (bit0 (bit1 b)) % 8 = 5 := by
-    rw [Nat.bit1_mod_bit0, Nat.bit0_mod_bit0, Nat.bit1_mod_two]
-  rw [jacobi_sym_nat, bit0_eq_two_mul a, Nat.cast_mul, jacobiSym.mul_left, Nat.cast_two,
-    jacobiSym.at_two (odd_bit1 _), ZMod.χ₈_nat_mod_eight, hb]
+theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
+    (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
+  have hb' : Odd b := by
+    rw [← Nat.div_add_mod b 8, hb, Odd]
+    use 4 * (b / 8) + 2; rw [Nat.mul_add, ← Nat.mul_assoc, Nat.add_assoc]; congr
+  rw [jacobiSymNat, ← Nat.mod_add_div a 2, ha, hc, Nat.zero_add, Nat.cast_mul, jacobiSym.mul_left,
+    Nat.cast_two, jacobiSym.at_two hb', ZMod.χ₈_nat_mod_eight, hb,
+    (by decide : ZMod.χ₈ (5 : ℕ) = -1)]
   norm_num
   exact hr
 #align norm_num.jacobi_sym_nat.even_odd₅ NormNum.jacobiSymNat.even_odd₅
 
 /-- Use quadratic reciproity to reduce to smaller `b`. -/
-theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (hr : jacobiSymNat (bit1 b) (bit1 (bit0 a)) = r) :
-    jacobiSymNat (bit1 (bit0 a)) (bit1 b) = r := by
-  have ha : bit1 (bit0 a) % 4 = 1 := by rw [Nat.bit1_mod_bit0, Nat.bit0_mod_two]
-  have hb := Nat.bit1_mod_two
-  rwa [jacobi_sym_nat, jacobiSym.quadratic_reciprocity_one_mod_four ha (nat.odd_iff.mpr hb)]
+theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
+    (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
+  rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_one_mod_four ha (Nat.odd_iff.mpr hb)]
 #align norm_num.jacobi_sym_nat.qr₁ NormNum.jacobiSymNat.qr₁
 
-theorem jacobiSymNat.qr₁_mod (a b ab : ℕ) (r : ℤ) (hab : bit1 b % bit1 (bit0 a) = ab)
-    (hr : jacobiSymNat ab (bit1 (bit0 a)) = r) : jacobiSymNat (bit1 (bit0 a)) (bit1 b) = r :=
-  jacobiSymNat.qr₁ _ _ _ <| jacobiSymNat.mod_left _ _ ab r hab hr
+theorem jacobiSymNat.qr₁_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
+    (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = r :=
+  jacobiSymNat.qr₁ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₁_mod NormNum.jacobiSymNat.qr₁_mod
 
-theorem jacobiSymNat.qr₁' (a b : ℕ) (r : ℤ) (hr : jacobiSymNat (bit1 (bit0 b)) (bit1 a) = r) :
-    jacobiSymNat (bit1 a) (bit1 (bit0 b)) = r := by
-  have hb : bit1 (bit0 b) % 4 = 1 := by rw [Nat.bit1_mod_bit0, Nat.bit0_mod_two]
-  have ha := Nat.bit1_mod_two
-  rwa [jacobi_sym_nat, ← jacobiSym.quadratic_reciprocity_one_mod_four hb (nat.odd_iff.mpr ha)]
+theorem jacobiSymNat.qr₁' (a b : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
+    (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
+  rwa [jacobiSymNat, ← jacobiSym.quadratic_reciprocity_one_mod_four hb (Nat.odd_iff.mpr ha)]
 #align norm_num.jacobi_sym_nat.qr₁' NormNum.jacobiSymNat.qr₁'
 
-theorem jacobiSymNat.qr₁'_mod (a b ab : ℕ) (r : ℤ) (hab : bit1 (bit0 b) % bit1 a = ab)
-    (hr : jacobiSymNat ab (bit1 a) = r) : jacobiSymNat (bit1 a) (bit1 (bit0 b)) = r :=
-  jacobiSymNat.qr₁' _ _ _ <| jacobiSymNat.mod_left _ _ ab r hab hr
+theorem jacobiSymNat.qr₁'_mod (a b ab : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
+    (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = r :=
+  jacobiSymNat.qr₁' _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₁'_mod NormNum.jacobiSymNat.qr₁'_mod
 
-theorem jacobiSymNat.qr₃ (a b : ℕ) (r : ℤ) (hr : jacobiSymNat (bit1 (bit1 b)) (bit1 (bit1 a)) = r) :
-    jacobiSymNat (bit1 (bit1 a)) (bit1 (bit1 b)) = -r := by
-  have hb : bit1 (bit1 b) % 4 = 3 := by rw [Nat.bit1_mod_bit0, Nat.bit1_mod_two]
-  have ha : bit1 (bit1 a) % 4 = 3 := by rw [Nat.bit1_mod_bit0, Nat.bit1_mod_two]
-  rwa [jacobi_sym_nat, jacobiSym.quadratic_reciprocity_three_mod_four ha hb, neg_inj]
+theorem jacobiSymNat.qr₃ (a b : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
+    (hr : jacobiSymNat b a = r) : jacobiSymNat a b = -r := by
+  rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_three_mod_four ha hb, neg_inj]
 #align norm_num.jacobi_sym_nat.qr₃ NormNum.jacobiSymNat.qr₃
 
-theorem jacobiSymNat.qr₃_mod (a b ab : ℕ) (r : ℤ) (hab : bit1 (bit1 b) % bit1 (bit1 a) = ab)
-    (hr : jacobiSymNat ab (bit1 (bit1 a)) = r) :
-    jacobiSymNat (bit1 (bit1 a)) (bit1 (bit1 b)) = -r :=
-  jacobiSymNat.qr₃ _ _ _ <| jacobiSymNat.mod_left _ _ ab r hab hr
+theorem jacobiSymNat.qr₃_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
+    (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = -r :=
+  jacobiSymNat.qr₃ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
 #align norm_num.jacobi_sym_nat.qr₃_mod NormNum.jacobiSymNat.qr₃_mod
 
 end NormNum
@@ -238,158 +240,159 @@ corresponding proof term.
 
 namespace NormNum
 
-open Tactic
+open Lean Elab Tactic Qq Mathlib.Meta.NormNum
 
-/-- This evaluates `r := jacobi_sym_nat a b` recursively using quadratic reciprocity
+/-- This evaluates `r := jacobiSymNat a b` recursively using quadratic reciprocity
 and produces a proof term for the equality, assuming that `a < b` and `b` is odd. -/
-unsafe def prove_jacobi_sym_odd :
-    instance_cache →
-      instance_cache → expr → expr → tactic (instance_cache × instance_cache × expr × expr)
-  | zc, nc, ea, eb => do
-    match match_numeral eb with
-      |
-      match_numeral_result.one =>-- `b = 1`, result is `1`
-          pure
-          (zc, nc, q((1 : ℤ)), q(jacobiSymNat.one_right).mk_app [ea])
-      | match_numeral_result.bit1 eb₁ => do
-        -- `b > 1` (recall that `b` is odd)
-          match match_numeral ea with
-          | match_numeral_result.zero => do
-            let b
-              ←-- `a = 0`, result is `0`
-                eb₁
-            let (nc, phb₀) ← prove_ne nc eb₁ q((0 : ℕ)) b 0
-            -- proof of `b ≠ 0`
-                pure
-                (zc, nc, q((0 : ℤ)), q(jacobiSymNat.zero_left_odd).mk_app [eb₁, phb₀])
-          | match_numeral_result.one => do
-            -- `a = 1`, result is `1`
-                pure
-                (zc, nc, q((1 : ℤ)), q(jacobiSymNat.one_left_odd).mk_app [eb₁])
-          | match_numeral_result.bit0 ea₁ => do
-            -- `a` is even; check if divisible by `4`
-              match match_numeral ea₁ with
-              | match_numeral_result.bit0 ea₂ => do
-                let (zc, nc, er, p) ← prove_jacobi_sym_odd zc nc ea₂ eb
-                -- compute `jacobi_sym_nat (a / 4) b`
-                    pure
-                    (zc, nc, er, q(jacobiSymNat.double_even).mk_app [ea₂, eb₁, er, p])
-              | _ => do
-                let-- reduce to `a / 2`; need to consider `b % 8`
-                  (zc, nc, er, p)
-                  ← prove_jacobi_sym_odd zc nc ea₁ eb
-                -- compute `jacobi_sym_nat (a / 2) b`
-                  match match_numeral eb₁ with
-                  |-- | match_numeral_result.zero := -- `b = 1`, not reached
-                    match_numeral_result.one =>
-                    do
-                    let r
-                      ←-- `b = 3`
-                        er
-                    let (zc, er') ← zc (-r)
-                    pure (zc, nc, er', q(jacobiSymNat.even_odd₃).mk_app [ea₁, q((0 : ℕ)), er, p])
-                  | match_numeral_result.bit0 eb₂ => do
-                    -- `b % 4 = 1`
-                      match match_numeral eb₂ with
-                      |-- | match_numeral_result.zero := -- not reached
-                        match_numeral_result.one =>
-                        do
-                        let r
-                          ←-- `b = 5`
-                            er
-                        let (zc, er') ← zc (-r)
-                        pure
-                            (zc, nc, er', q(jacobiSymNat.even_odd₅).mk_app [ea₁, q((0 : ℕ)), er, p])
-                      | match_numeral_result.bit0 eb₃ => do
-                        -- `b % 8 = 1`
-                            pure
-                            (zc, nc, er, q(jacobiSymNat.even_odd₁).mk_app [ea₁, eb₃, er, p])
-                      | match_numeral_result.bit1 eb₃ => do
-                        let r
-                          ←-- `b % 8 = 5`
-                            er
-                        let (zc, er') ← zc (-r)
-                        pure (zc, nc, er', q(jacobiSymNat.even_odd₅).mk_app [ea₁, eb₃, er, p])
-                      | _ => failed
-                  | match_numeral_result.bit1 eb₂ => do
-                    -- `b % 4 = 3`
-                      match match_numeral eb₂ with
-                      |-- | match_numeral_result.zero := -- not reached
-                        match_numeral_result.one =>
-                        do
-                        -- `b = 7`
-                            pure
-                            (zc, nc, er, q(jacobiSymNat.even_odd₇).mk_app [ea₁, q((0 : ℕ)), er, p])
-                      | match_numeral_result.bit0 eb₃ => do
-                        let r
-                          ←-- `b % 8 = 3`
-                            er
-                        let (zc, er') ← zc (-r)
-                        pure (zc, nc, er', q(jacobiSymNat.even_odd₃).mk_app [ea₁, eb₃, er, p])
-                      | match_numeral_result.bit1 eb₃ => do
-                        -- `b % 8 = 7`
-                            pure
-                            (zc, nc, er, q(jacobiSymNat.even_odd₇).mk_app [ea₁, eb₃, er, p])
-                      | _ => failed
-                  | _ => failed
-          | match_numeral_result.bit1 ea₁ => do
-            let-- `a` is odd
-              -- use Quadratic Reciprocity; look at `a` and `b` mod `4`
-              (nc, bma, phab)
-              ← prove_div_mod nc eb ea tt
-            let-- compute `b % a`
-              (zc, nc, er, p)
-              ← prove_jacobi_sym_odd zc nc bma ea
-            -- compute `jacobi_sym_nat (b % a) a`
-              match match_numeral ea₁ with
-              |-- | match_numeral_result.zero :=  -- `a = 1`, not reached
-                match_numeral_result.one =>
-                do
-                -- `a = 3`; need to consider `b`
-                  match match_numeral eb₁ with
-                  |-- | match_numeral_result.zero := -- `b = 1`, not reached
-                      -- | match_numeral_result.one := -- `b = 3`, not reached, since `a < b`
-                      match_numeral_result.bit0
-                      eb₂ =>
-                    do
-                    -- `b % 4 = 1`
-                        pure
-                        (zc, nc, er, q(jacobiSymNat.qr₁'_mod).mk_app [ea₁, eb₂, bma, er, phab, p])
-                  | match_numeral_result.bit1 eb₂ => do
-                    let r
-                      ←-- `b % 4 = 3`
-                        er
-                    let (zc, er') ← zc (-r)
-                    pure
-                        (zc, nc, er',
-                          q(jacobiSymNat.qr₃_mod).mk_app [q((0 : ℕ)), eb₂, bma, er, phab, p])
-                  | _ => failed
-              | match_numeral_result.bit0 ea₂ => do
-                -- `a % 4 = 1`
-                    pure
-                    (zc, nc, er, q(jacobiSymNat.qr₁_mod).mk_app [ea₂, eb₁, bma, er, phab, p])
-              | match_numeral_result.bit1 ea₂ => do
-                -- `a % 4 = 3`; need to consider `b`
-                  match match_numeral eb₁ with
-                  |-- | match_numeral_result.zero := do -- `b = 1`, not reached
-                      -- | match_numeral_result.one := do -- `b = 3`, not reached, since `a < b`
-                      match_numeral_result.bit0
-                      eb₂ =>
-                    do
-                    -- `b % 4 = 1`
-                        pure
-                        (zc, nc, er, q(jacobiSymNat.qr₁'_mod).mk_app [ea₁, eb₂, bma, er, phab, p])
-                  | match_numeral_result.bit1 eb₂ => do
-                    let r
-                      ←-- `b % 4 = 3`
-                        er
-                    let (zc, er') ← zc (-r)
-                    pure (zc, nc, er', q(jacobiSymNat.qr₃_mod).mk_app [ea₂, eb₂, bma, er, phab, p])
-                  | _ => failed
-              | _ => failed
-          | _ => failed
-      | _ => failed
-#align norm_num.prove_jacobi_sym_odd norm_num.prove_jacobi_sym_odd
+partial def prove_jacobiSym_odd (ea eb : Q(ℕ)) : ((er : Q(ℤ)) × Q(jacobiSymNat $ea $eb = $er)) :=
+  match eb.natLit! with
+  | 1 =>
+    show (er : Q(ℤ)) × Q(jacobiSymNat $ea 1 = $er) from
+      ⟨mkRawIntLit 1, q(jacobiSymNat.one_right $ea)⟩
+  | b =>
+    match ea.natLit! with
+    | 0 =>
+      have hb : Q(Nat.beq ($eb / 2) 0 = false) := (q(Eq.refl false) : Expr)
+      show (er : Q(ℤ)) × Q(jacobiSymNat 0 $eb = $er) from
+        ⟨mkRawIntLit 0, q(jacobiSymNat.zero_left $eb $hb)⟩
+    | 1 =>
+      show (er : Q(ℤ)) × Q(jacobiSymNat 1 $eb = $er) from
+        ⟨mkRawIntLit 1, q(jacobiSymNat.one_left $eb)⟩
+    | a =>
+      match a % 2 with
+      | 0 =>
+        match a % 4 with
+        | 0 =>
+          have ha : Q(Nat.mod $ea 4 = 0) := (q(Eq.refl 0) : Expr)
+          have hb : Q(Nat.mod $eb 2 = 1) := (q(Eq.refl 1) : Expr)
+          have c := a / 4
+          have ec : Q(ℕ) := mkRawNatLit c
+          have hc : Q(Nat.div $ea 4 = $ec) := (q(Eq.refl $ec) : Expr)
+          let ⟨er, p⟩ := prove_jacobiSym_odd ec eb
+          ⟨er, q(jacobiSymNat.double_even $ea $eb $ec $er $ha $hb $hc $p)⟩
+        | _ =>
+          have ha : Q(Nat.mod $ea 2 = 0) := (q(Eq.refl 0) : Expr)
+          have c := a / 2
+          have ec : Q(ℕ) := mkRawNatLit c
+          have hc : Q(Nat.div $ea 2 = $ec) := (q(Eq.refl $ec) : Expr)
+          let ⟨er, p⟩ := prove_jacobiSym_odd ec eb
+          match b % 8 with
+          | 1 =>
+            have hb : Q(Nat.mod $eb 8 = 1) := (q(Eq.refl 1) : Expr)
+            ⟨er, q(jacobiSymNat.even_odd₁ $ea $eb $ec $er $ha $hb $hc $p)⟩
+          | 3 =>
+            have r' := er.intLit!
+            have er' := mkRawIntLit r'
+            have hb : Q(Nat.mod $eb 8 = 3) := (q(Eq.refl 3) : Expr)
+            show (_ : Q(ℤ)) × Q(jacobiSymNat $ea $eb = -$er) from
+            ⟨er', q(jacobiSymNat.even_odd₃ $ea $eb $ec $er $ha $hb $hc $p)⟩
+          | 5 =>
+            have r' := er.intLit!
+            have er' := mkRawIntLit r'
+            have hb : Q(Nat.mod $eb 8 = 5) := (q(Eq.refl 5) : Expr)
+            show (_ : Q(ℤ)) × Q(jacobiSymNat $ea $eb = -$er) from
+            ⟨er', q(jacobiSymNat.even_odd₅ $ea $eb $ec $er $ha $hb $hc $p)⟩
+          | _ =>
+            have hb : Q(Nat.mod $eb 8 = 7) := (q(Eq.refl 7) : Expr)
+            ⟨er, q(jacobiSymNat.even_odd₇ $ea $eb $ec $er $ha $hb $hc $p)⟩
+      | _ => default
+/-
+| zc nc ea eb := do
+  match match_numeral eb with
+  | match_numeral_result.one :=  -- `b = 1`, result is `1`
+    pure (zc, nc, `(1 : ℤ), `(jacobi_sym_nat.one_right).mk_app [ea])
+  | match_numeral_result.bit1 eb₁ := do -- `b > 1` (recall that `b` is odd)
+    match match_numeral ea with
+    | match_numeral_result.zero := do -- `a = 0`, result is `0`
+      b ← eb₁.to_nat,
+      (nc, phb₀) ← prove_ne nc eb₁ `(0 : ℕ) b 0, -- proof of `b ≠ 0`
+      pure (zc, nc, `(0 : ℤ), `(jacobi_sym_nat.zero_left_odd).mk_app [eb₁, phb₀])
+    | match_numeral_result.one := do -- `a = 1`, result is `1`
+      pure (zc, nc, `(1 : ℤ), `(jacobi_sym_nat.one_left_odd).mk_app [eb₁])
+    | match_numeral_result.bit0 ea₁ := do -- `a` is even; check if divisible by `4`
+      match match_numeral ea₁ with
+      | match_numeral_result.bit0 ea₂ := do
+        (zc, nc, er, p) ← prove_jacobi_sym_odd zc nc ea₂ eb, -- compute `jacobi_sym_nat (a / 4) b`
+        pure (zc, nc, er, `(jacobi_sym_nat.double_even).mk_app [ea₂, eb₁, er, p])
+      | _ := do -- reduce to `a / 2`; need to consider `b % 8`
+        (zc, nc, er, p) ← prove_jacobi_sym_odd zc nc ea₁ eb, -- compute `jacobi_sym_nat (a / 2) b`
+        match match_numeral eb₁ with
+        -- | match_numeral_result.zero := -- `b = 1`, not reached
+        | match_numeral_result.one := do -- `b = 3`
+          r ← er.to_int,
+          (zc, er') ← zc.of_int (- r),
+          pure (zc, nc, er', `(jacobi_sym_nat.even_odd₃).mk_app [ea₁, `(0 : ℕ), er, p])
+        | match_numeral_result.bit0 eb₂ := do -- `b % 4 = 1`
+          match match_numeral eb₂ with
+          -- | match_numeral_result.zero := -- not reached
+          | match_numeral_result.one := do -- `b = 5`
+            r ← er.to_int,
+            (zc, er') ← zc.of_int (- r),
+            pure (zc, nc, er', `(jacobi_sym_nat.even_odd₅).mk_app [ea₁, `(0 : ℕ), er, p])
+          | match_numeral_result.bit0 eb₃ := do -- `b % 8 = 1`
+            pure (zc, nc, er, `(jacobi_sym_nat.even_odd₁).mk_app [ea₁, eb₃, er, p])
+          | match_numeral_result.bit1 eb₃ := do -- `b % 8 = 5`
+            r ← er.to_int,
+            (zc, er') ← zc.of_int (- r),
+            pure (zc, nc, er', `(jacobi_sym_nat.even_odd₅).mk_app [ea₁, eb₃, er, p])
+          | _ := failed
+          end
+        | match_numeral_result.bit1 eb₂ := do -- `b % 4 = 3`
+          match match_numeral eb₂ with
+          -- | match_numeral_result.zero := -- not reached
+          | match_numeral_result.one := do -- `b = 7`
+            pure (zc, nc, er, `(jacobi_sym_nat.even_odd₇).mk_app [ea₁, `(0 : ℕ), er, p])
+          | match_numeral_result.bit0 eb₃ := do -- `b % 8 = 3`
+            r ← er.to_int,
+            (zc, er') ← zc.of_int (- r),
+            pure (zc, nc, er', `(jacobi_sym_nat.even_odd₃).mk_app [ea₁, eb₃, er, p])
+          | match_numeral_result.bit1 eb₃ := do -- `b % 8 = 7`
+            pure (zc, nc, er, `(jacobi_sym_nat.even_odd₇).mk_app [ea₁, eb₃, er, p])
+          | _ := failed
+          end
+        | _ := failed
+        end
+      end
+    | match_numeral_result.bit1 ea₁ := do -- `a` is odd
+      -- use Quadratic Reciprocity; look at `a` and `b` mod `4`
+      (nc, bma, phab) ← prove_div_mod nc eb ea tt, -- compute `b % a`
+      (zc, nc, er, p) ← prove_jacobi_sym_odd zc nc bma ea, -- compute `jacobi_sym_nat (b % a) a`
+      match match_numeral ea₁ with
+      -- | match_numeral_result.zero :=  -- `a = 1`, not reached
+      | match_numeral_result.one := do -- `a = 3`; need to consider `b`
+        match match_numeral eb₁ with
+        -- | match_numeral_result.zero := -- `b = 1`, not reached
+        -- | match_numeral_result.one := -- `b = 3`, not reached, since `a < b`
+        | match_numeral_result.bit0 eb₂ := do -- `b % 4 = 1`
+          pure (zc, nc, er, `(jacobi_sym_nat.qr₁'_mod).mk_app [ea₁, eb₂, bma, er, phab, p])
+        | match_numeral_result.bit1 eb₂ := do -- `b % 4 = 3`
+          r ← er.to_int,
+          (zc, er') ← zc.of_int (- r),
+          pure (zc, nc, er', `(jacobi_sym_nat.qr₃_mod).mk_app [`(0 : ℕ), eb₂, bma, er, phab, p])
+        | _ := failed
+        end
+      | match_numeral_result.bit0 ea₂ := do -- `a % 4 = 1`
+        pure (zc, nc, er, `(jacobi_sym_nat.qr₁_mod).mk_app [ea₂, eb₁, bma, er, phab, p])
+      | match_numeral_result.bit1 ea₂ := do -- `a % 4 = 3`; need to consider `b`
+        match match_numeral eb₁ with
+        -- | match_numeral_result.zero := do -- `b = 1`, not reached
+        -- | match_numeral_result.one := do -- `b = 3`, not reached, since `a < b`
+        | match_numeral_result.bit0 eb₂ := do -- `b % 4 = 1`
+          pure (zc, nc, er, `(jacobi_sym_nat.qr₁'_mod).mk_app [ea₁, eb₂, bma, er, phab, p])
+        | match_numeral_result.bit1 eb₂ := do -- `b % 4 = 3`
+          r ← er.to_int,
+          (zc, er') ← zc.of_int (- r),
+          pure (zc, nc, er', `(jacobi_sym_nat.qr₃_mod).mk_app [ea₂, eb₂, bma, er, phab, p])
+        | _ := failed
+        end
+      | _ := failed
+      end
+    | _ := failed
+    end
+  | _ := failed
+  end
+-/
+#align norm_num.prove_jacobi_sym_odd NormNum.prove_jacobiSym_odd
 
 /-- This evaluates `r := jacobi_sym_nat a b` and produces a proof term for the equality
 by removing powers of `2` from `b` and then calling `prove_jacobi_sym_odd`. -/
