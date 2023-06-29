@@ -79,6 +79,21 @@ def Lean.MetavarDecl.formatMVarDecls (decl : MetavarDecl) : MetaM Format := do
   -- a miserable hack to replace the hygienic dagger `✝` with `_hyg` so that it can be pasted.
   return (finf.pretty.replace "✝" "_hyg") ++ f!" := by\n  sorry"
 
+open PrettyPrinter
+-- deriving instance Repr for ContextInfo
+partial
+def rep (i : InfoTree) (n : Nat) : Format := match i with
+| .context (_i : ContextInfo) (t : InfoTree) => rep t n
+| .node (_i : Info) (children : PersistentArray InfoTree) =>
+  Format.join <| PersistentArray.toList <|
+    children.map (fun i => rep i n)
+| .hole (_mvarId : MVarId) => "hole"
+
+instance : Repr InfoTree := ⟨rep⟩
+def getMacroStack : TermElabM MacroStack := return (← read).macroStack
+deriving instance Inhabited for MacroStackElem
+deriving instance Repr for MacroStackElem
+deriving instance Repr for MacroStack
 /--
 `extract_goal` formats the current goal as a stand-alone example.
 
@@ -86,4 +101,16 @@ It tries to produce an output that can be copy-pasted and just work.
 It renames a "hygienic" variable `n✝` to `n_hyg`.
 -/
 elab (name := extractGoal) name:"extract_goal" : tactic => withMainContext do
-  logInfoAt name (f!"example " ++ (← (← getMainDecl).formatMVarDecls))
+  let l ← getMainDecl
+  -- let a <- getRef
+  let a ← getMacroStack
+  logInfo (repr a)
+    -- let a ← getInfoState
+    -- logInfo (repr a.trees[0]!)
+  for f in l.lctx.decls do
+    logInfo f.get!.type
+
+  -- theorem $(l.userName):ident
+  let s : TSyntax `command ← `(command| example : $(← delab l.type) := sorry)
+  Std.Tactic.TryThis.addSuggestion name s (origSpan? := (← getRef))
+  --++ (← (← getMainDecl).formatMVarDecls))
