@@ -464,7 +464,7 @@ instance algebra_section_section_basicOpen {X : Scheme} {U : Opens X} (f : X.pre
 theorem IsAffineOpen.opens_map_fromSpec_basicOpen {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) (f : X.presheaf.obj (op U)) :
     (Opens.map hU.fromSpec.val.base).obj (X.basicOpen f) =
-      -- Porting note : need to supply ↓ explicitly
+      -- Porting note : need to supply first argument in ↓ explicitly
       RingedSpace.basicOpen (unop <| LocallyRingedSpace.forgetToSheafedSpace.op.obj <|
         Spec.toLocallyRingedSpace.rightOp.obj <| X.presheaf.obj <| op U)
       (SpecΓIdentity.inv.app (X.presheaf.obj <| op U) f) := by
