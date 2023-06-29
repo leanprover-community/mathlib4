@@ -820,10 +820,8 @@ theorem isClopenable_iff_measurableSet : IsClopenable s ↔ MeasurableSet s := b
 theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
-  by_cases hl : l.NeBot
-  swap;
-  · rw [not_neBot] at hl
-    simp [hl]
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
   letI := upgradePolishSpace γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
