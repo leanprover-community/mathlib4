@@ -700,21 +700,21 @@ open MulHom
 
 @[to_additive]
 theorem mem_map_equiv {f : M ≃* N} {K : Subsemigroup M} {x : N} :
-    x ∈ K.map f.toMulHom ↔ f.symm x ∈ K :=
+    x ∈ K.map (f : M →ₙ* N) ↔ f.symm x ∈ K :=
   @Set.mem_image_equiv _ _ (K : Set M) f.toEquiv x
 #align subsemigroup.mem_map_equiv Subsemigroup.mem_map_equiv
 #align add_subsemigroup.mem_map_equiv AddSubsemigroup.mem_map_equiv
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Subsemigroup M) :
-    K.map f.toMulHom = K.comap f.symm.toMulHom :=
+    K.map (f : M →ₙ* N) = K.comap (f.symm : N →ₙ* M) :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 #align subsemigroup.map_equiv_eq_comap_symm Subsemigroup.map_equiv_eq_comap_symm
 #align add_subsemigroup.map_equiv_eq_comap_symm AddSubsemigroup.map_equiv_eq_comap_symm
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :
-    K.comap f.toMulHom = K.map f.symm.toMulHom :=
+    K.comap (f : N →ₙ* M) = K.map (f.symm : M →ₙ* N) :=
   (map_equiv_eq_comap_symm f.symm K).symm
 #align subsemigroup.comap_equiv_eq_map_symm Subsemigroup.comap_equiv_eq_map_symm
 #align add_subsemigroup.comap_equiv_eq_map_symm AddSubsemigroup.comap_equiv_eq_map_symm
@@ -996,10 +996,10 @@ See `MulHom.subsemigroupMap` for a variant for `MulHom`s. -/
       "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `AddEquiv`
       between a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
       See `AddHom.addSubsemigroupMap` for a variant for `AddHom`s."]
-def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHom :=
+def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M →ₙ* N) :=
   { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
-    e.toMulHom.subsemigroupMap S,
-    e.toEquiv.image S with
+    (e : M →ₙ* N).subsemigroupMap S,
+    (e : M ≃ N).image S with
     toFun := fun x => ⟨e x, _⟩
     invFun := fun x => ⟨e.symm x, _⟩ }
 #align mul_equiv.subsemigroup_map MulEquiv.subsemigroupMap
