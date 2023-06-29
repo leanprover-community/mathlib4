@@ -1131,10 +1131,6 @@ def sigmaEquivSigmaPi (n : ℕ) :
           intro k hk
           refine' ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => _) k hk
           exact Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
-          --sorry
-          --(forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => by
-           -- sorry
-            --Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
         blocks_sum := by dsimp only [Composition.length]; simp [sum_ofFn] }⟩
   left_inv := by
     -- the fact that we have a left inverse is essentially `join_split_wrt_composition`,
@@ -1146,7 +1142,6 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · conv_rhs =>
         rw [← join_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
-        -- length_map (List.sum (α := List ℕ)) (splitWrtComposition a.blocks b)
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
       · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
@@ -1173,15 +1168,15 @@ def sigmaEquivSigmaPi (n : ℕ) :
       simp only [map_ofFn]
       rfl
     · rw [Fin.heq_fun_iff]
-      · intro i
-        dsimp [Composition.sigmaCompositionAux]
-        rw [get_of_eq (splitWrtComposition_join _ _ _)]
-        · simp only [get_ofFn]
-          rfl
-        · simp only [map_ofFn]
-          congr
-        · simp only [map_ofFn]
-          rfl
+      intro i
+      dsimp [Composition.sigmaCompositionAux]
+      rw [get_of_eq (splitWrtComposition_join _ _ _)]
+      · simp only [get_ofFn]
+        rfl
+      · simp only [map_ofFn]
+        congr
+      · simp only [map_ofFn]
+        rfl
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition
