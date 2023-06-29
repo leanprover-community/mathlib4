@@ -17,14 +17,14 @@ import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 /-!
 # Category of types with a omega complete partial order
 
-In this file, we bundle the class `omega_complete_partial_order` into a
+In this file, we bundle the class `OmegaCompletePartialOrder` into a
 concrete category and prove that continuous functions also form
-a `omega_complete_partial_order`.
+a `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
  * `ωCPO`
-   * an instance of `category` and `concrete_category`
+   * an instance of `Category` and `ConcreteCategory`
 
  -/
 
@@ -115,7 +115,7 @@ instance omegaCompletePartialOrderEqualizer {α β : Type _} [OmegaCompleteParti
 
 namespace HasEqualizers
 
-/-- The equalizer inclusion function as a `continuous_hom`. -/
+/-- The equalizer inclusion function as a `ContinuousHom`. -/
 def equalizerι {α β : Type _} [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
     (f g : α →𝒄 β) : { a : α // f a = g a } →𝒄 α :=
   ContinuousHom.ofMono (OrderHom.Subtype.val _) fun _ => rfl
