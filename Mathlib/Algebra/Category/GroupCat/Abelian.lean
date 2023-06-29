@@ -94,8 +94,8 @@ instance : HasLimits (ModuleCat ℤ) := by infer_instance
 instance : HasColimits (ModuleCat ℤ) := by sorry
 
 theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
-  rw [exact_iff, le_antisymm_iff]
+    Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by sorry
+ /- rw [exact_iff, le_antisymm_iff]
   refine' and_congr _ Iff.rfl
   constructor
   · intro h
@@ -104,34 +104,56 @@ theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
   · rintro h _ ⟨x, rfl⟩
     exact FunLike.congr_fun h x
 
+-/
+
+universe v u'
+variable {A : Type u} {B : Type u'} [Category.{v} A] [Category.{v} B]
+  [Abelian A] [Abelian B] (F G : A ⥤ B) [Functor.Additive F] [Functor.Additive G] (φ : F ⟶ G)
+
+
+def Functor.Exact : Prop :=
+    ∀ ⦃X Y Z : A⦄ (f : X ⟶ Y) (g : Y ⟶ Z),
+    CategoryTheory.Exact f g → CategoryTheory.Exact (F.map f) (F.map g)
+
 
 -- Axiom AB5 for `AddCommGroup`
 theorem exact_colim_of_exact_of_is_filtered
-  (F G H : J ⥤ ModuleCat ℤ) (η : F ⟶ G) (γ : G ⟶ H) :
+  (F G H : J ⥤ AddCommGroupCat.{u}) (η : F ⟶ G) (γ : G ⟶ H) :
   (∀ j, Exact (η.app j) (γ.app j)) → Exact (Limits.colimMap η) (Limits.colimMap γ) := by
   intros h
-  rw [CategoryTheory.Abelian.exact_iff_image_eq_kernel]
+  rw [exact_iff']
   constructor
   · refine colimit.hom_ext  (fun j => ?_)
     simp [reassoc_of% (h j).1]
   · rintro x (hx :  _ = _)
-    obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep _ (x)
+    let (x' : (forget AddCommGroupCat).obj (colimit G)) := x
+    have : PreservesColimit G (forget AddCommGroupCat) := by sorry
+    obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep G x'
     erw [← comp_apply, Limits.colimit.ι_desc] at hx
     dsimp at hx
     rw [comp_apply] at hx
-    have : (0 : Limits.colimit H) = Limits.colimit.ι H j 0 := by
+    have := Limits.colimit.ι H j 0
+    have : ( 0: (@Limits.colimit _ _ (AddCommGroupCat.{u}) _ _ _)) = Limits.colimit.ι H j 0 := by
       simp
     rw [this] at hx
     clear this
+    have : PreservesColimit H (forget AddCommGroupCat) := by sorry
     obtain ⟨k,e₁,e₂,hk⟩ := Limits.Concrete.colimit_exists_of_rep_eq _ _ _ hx
-    simp only [map_zero, ← comp_apply, ← nat_trans.naturality] at hk, rw comp_apply at hk
-    obtain ⟨t,ht⟩ := ((AddCommGroupCat.exact_iff' _ _).1 (h k)).2 hk
+    have : ZeroHomClass (H.obj j ⟶ H.obj k) (H.obj j) (H.obj k) := sorry
+    have hk'' : (H.map e₁) ((γ.app j) y) = (H.map e₂) 0 := by sorry
+    rw [@map_zero (H.obj j) (H.obj k) _ _ _ _ (H.map e₂), ← comp_apply, ← NatTrans.naturality] at hk''
+    rw [comp_apply] at hk
+    let (γ' : (forget AddCommGroupCat).obj (G.obj k)) := G.map e₁ y
+    let  (y'' : (forget AddCommGroupCat).obj (H.obj k)) := (γ.app k) (G.map e₁ y)
+    let  (h' : (forget AddCommGroupCat).obj (H.obj k)) := (H.map e₂) 0
+    have hk' : (G.map e₁ y) ∈ AddMonoidHom.ker (γ.app k) := by
+      rw [AddMonoidHom.mem_ker]
+      convert hk
+
+    obtain ⟨t, ht ⟩ := ((AddCommGroupCat.exact_iff' (η.app k) (γ.app k)).1 (h k)).2 hk'
     use Limits.colimit.ι F k t
     erw [← comp_apply, Limits.colimit.ι_map, comp_apply, ht, ← comp_apply]
-    congr' 1
+    congr 1
     simp
-  · sorry
-  · sorry
-  · sorry
-  · sorry
+
 end AddCommGroupCat
