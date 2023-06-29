@@ -250,7 +250,7 @@ def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
 theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧ y * z = x := by
   constructor
   · intro h
-    obtain ⟨⟨⟨y, hy⟩, ⟨z, hz⟩⟩, rfl⟩ := prod_Nat.dvd_and_dvd_of_dvd_prod h
+    obtain ⟨⟨⟨y, hy⟩, ⟨z, hz⟩⟩, rfl⟩ := prod_dvd_and_dvd_of_dvd_prod h
     exact ⟨y, z, hy, hz, rfl⟩
   · rintro ⟨y, z, hy, hz, rfl⟩
     exact mul_dvd_mul hy hz
