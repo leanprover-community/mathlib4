@@ -29,7 +29,6 @@ as is done for the other algebraic categories.
 Analogous constructions for Noetherian modules.
 -/
 
-
 noncomputable section
 
 universe v u
