@@ -20,8 +20,8 @@
     "name": "aesop",
     "inputRev?": "master"}},
   {"git":
-   {"url": "https://github.com/semorrison/std4",
+   {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "1be29015889d68c1af54808568d21ed8a1d8a15b",
+    "rev": "1ac8198731f37288c834e70654324f30f65c5f4a",
     "name": "std",
-    "inputRev?": "bump-nightly-2023-06-22"}}]}
+    "inputRev?": "main"}}]}
