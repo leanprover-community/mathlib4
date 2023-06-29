@@ -22,6 +22,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "e68aa8f5fe47aad78987df45f99094afbcb5e936",
+    "rev": "4435f13bb4ebabe63cd65c386af63ff2cfbade79",
     "name": "std",
-    "inputRev?": "main"}}]}
+    "inputRev?": "dvdsemired"}}]}
