@@ -9,6 +9,7 @@ Authors: Jean Lo, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
