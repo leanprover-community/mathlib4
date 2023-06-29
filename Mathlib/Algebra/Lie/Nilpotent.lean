@@ -149,7 +149,7 @@ theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries 
 #align lie_module.trivial_iff_lower_central_eq_bot LieModule.trivial_iff_lower_central_eq_bot
 
 theorem iterate_toEndomorphism_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) :
-    toEndomorphism R L M x^[k] m ∈ lowerCentralSeries R L M k := by
+    (toEndomorphism R L M x)^[k] m ∈ lowerCentralSeries R L M k := by
   induction' k with k ih
   · simp only [Nat.zero_eq, Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
   · simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ',

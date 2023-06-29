@@ -1152,7 +1152,7 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inl none, _ => Nat.succ
     | Sum.inl (some a), h =>
       have : a < o := by rw [lt_def, h.1]; apply lt_succ
-      fun i => fastGrowing a^[i] i
+      fun i => (fastGrowing a)^[i] i
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
@@ -1168,7 +1168,7 @@ theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
         x, e ▸ fundamentalSequence_has_prop o with
       | Sum.inl none, _ => Nat.succ
       | Sum.inl (some a), _ =>
-        fun i => fastGrowing a^[i] i
+        fun i => (fastGrowing a)^[i] i
       | Sum.inr f, _ => fun i =>
         fastGrowing (f i) i := by
   subst x
@@ -1181,7 +1181,7 @@ theorem fastGrowing_zero' (o : ONote) (h : fundamentalSequence o = Sum.inl none)
 #align onote.fast_growing_zero' ONote.fastGrowing_zero'
 
 theorem fastGrowing_succ (o) {a} (h : fundamentalSequence o = Sum.inl (some a)) :
-    fastGrowing o = fun i => fastGrowing a^[i] i := by
+    fastGrowing o = fun i => (fastGrowing a)^[i] i := by
   rw [fastGrowing_def h]
 #align onote.fast_growing_succ ONote.fastGrowing_succ
 

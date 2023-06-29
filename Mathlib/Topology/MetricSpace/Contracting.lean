@@ -351,8 +351,8 @@ theorem fixedPoint_lipschitz_in_map {g : α → α} (hg : ContractingWith K g) {
 
 /-- If a map `f` has a contracting iterate `f^[n]`, then the fixed point of `f^[n]` is also a fixed
 point of `f`. -/
-theorem isFixedPt_fixedPoint_iterate {n : ℕ} hf : ContractingWith K f^[n] :
-    IsFixedPt f hf.fixedPoint f^[n] := by
+theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :
+    IsFixedPt f (hf.fixedPoint f^[n]) := by
   set x := hf.fixedPoint f^[n]
   have hx : f^[n] x = x := hf.fixedPoint_isFixedPt
   have := hf.toLipschitzWith.dist_le_mul x (f x)

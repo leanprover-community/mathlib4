@@ -318,7 +318,7 @@ theorem translate_pow (x : ℝ) (n : ℕ) :
 
 @[simp]
 theorem translate_iterate (x : ℝ) (n : ℕ) :
-    translate (Multiplicative.ofAdd x)^[n] = translate (Multiplicative.ofAdd <| ↑n * x) := by
+    (translate (Multiplicative.ofAdd x))^[n] = translate (Multiplicative.ofAdd <| ↑n * x) := by
   rw [← coe_pow, ← Units.val_pow_eq_pow_val, translate_pow]
 #align circle_deg1_lift.translate_iterate CircleDeg1Lift.translate_iterate
 

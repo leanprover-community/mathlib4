@@ -433,7 +433,7 @@ theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, 
 #align set.maps_to.iterate Set.MapsTo.iterate
 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
-    h.restrict f s s^[n] = (h.iterate n).restrict _ _ _ := by
+    (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
   funext x
   rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
   induction' n with n ihn generalizing x

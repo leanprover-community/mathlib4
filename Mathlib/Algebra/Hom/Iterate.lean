@@ -35,7 +35,7 @@ variable {M : Type _} {N : Type _} {G : Type _} {H : Type _}
 
 /-- An auxiliary lemma that can be used to prove `⇑(f ^ n) = ⇑f^[n]`. -/
 theorem hom_coe_pow {F : Type _} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
-    (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = c f^[n]
+    (hmul : ∀ f g, c (f * g) = c f ∘ c g) (f : F) : ∀ n, c (f ^ n) = (c f)^[n]
   | 0 => by
     rw [pow_zero, h1]
     rfl
