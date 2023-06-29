@@ -207,6 +207,7 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
     (D.toLocallyRingedSpaceGlueData.vPullbackConeIsLimit _ _)
 #align algebraic_geometry.Scheme.glue_data.V_pullback_cone_is_limit AlgebraicGeometry.Scheme.GlueData.vPullbackConeIsLimit
 
+-- Porting note: new notation
 local notation "D_" => TopCat.GlueData.toGlueData <|
   D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
 
@@ -382,6 +383,7 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   use e.hom ⟨⟨x, y⟩, h⟩
   simp_rw [← comp_apply]
   constructor
+  -- Porting note: in the two subproofs below, added the `change` lines
   · change (e.hom ≫ _) ⟨(x, y), h⟩ = x
     erw [IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
   · change (e.hom ≫ ((gluedCover 𝒰).toGlueData.t i j ≫
@@ -420,10 +422,10 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.1.base := by
   · exact ⟨hx, 𝒰.Covers x⟩
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_map AlgebraicGeometry.Scheme.OpenCover.fromGlued_open_map
 
-theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base := by
-  refine openEmbedding_of_continuous_injective_open
+theorem fromGlued_openEmbedding : OpenEmbedding 𝒰.fromGlued.1.base :=
+  -- Porting note: the continuity argument used to be `by continuity`
+  openEmbedding_of_continuous_injective_open
     (ContinuousMap.continuous_toFun _) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
-  -- exact map_continuous (fromGlued 𝒰).val.base
 #align algebraic_geometry.Scheme.open_cover.from_glued_open_embedding AlgebraicGeometry.Scheme.OpenCover.fromGlued_openEmbedding
 
 instance : Epi 𝒰.fromGlued.val.base := by
