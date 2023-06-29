@@ -211,7 +211,7 @@ local notation "D_" => TopCat.GlueData.toGlueData <|
   D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
 
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
-underlying spacess -/
+underlying spaces -/
 def isoCarrier :
     D.glued.carrier ≅ (D_).glued := by
   refine (PresheafedSpace.forget _).mapIso ?_ ≪≫
@@ -245,10 +245,10 @@ def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).1.base x = (𝖣.ι j).1.base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
-  refine'
-    Iff.trans _
-      (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.ι_eq_iff_rel
-        i j x y)
+  refine' Iff.trans _
+    (TopCat.GlueData.ι_eq_iff_rel
+      D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
+      i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff]
   · simp_rw [← comp_apply, ← D.ι_isoCarrier_inv]; rfl
   · infer_instance
