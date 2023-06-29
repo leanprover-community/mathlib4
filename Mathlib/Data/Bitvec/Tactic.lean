@@ -1,7 +1,9 @@
+import Mathlib.Data.Bitvec.ConstantLemmas
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bitvec.Ruleset
 import Mathlib.Data.Vector.Snoc
+import Mathlib.Data.Vector.MapLemmas
 import Mathlib.Tactic
 import Aesop
 import Qq
@@ -96,18 +98,51 @@ namespace Bitvec.Tactic
     Bitvec.and
     Bitvec.or
     Bitvec.xor
+    Vector.map₂_comm
+    Vector.mapAccumr₂_comm
+
+  section Desugar
+    variable (x y : Bitvec n)
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_add : x + y = x.add y :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_sub : x - y = x.sub y :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_neg : -x  = Bitvec.neg x :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_not : ~~~x = Bitvec.not x :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_and : x &&& y = x.and y :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_or : x ||| y = x.or y :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_xor : x ^^^ y = x.xor y :=
+      rfl
+
+    @[aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
+    protected theorem desugar_zero : (0 : Bitvec n) = Vector.replicate n false :=
+      rfl
+
+  end Desugar
 
   macro "aesop_bitvec" opt:Aesop.tactic_clause* : tactic =>
     `(tactic|
         simp only [
-          (· ^^^ ·), Xor.xor,
-          (· &&& ·), AndOp.and,
-          (· ||| ·), OrOp.or,
-          (· + ·), Add.add,
-          (· - ·), Sub.sub,
           (· * ·), Mul.mul,
-          (· / ·), Div.div,
-          (~~~ ·)
+          (· / ·), Div.div
         ] <;>
         aesop (rule_sets [Mathlib.Data.Bitvec]) $opt*
     )
@@ -115,14 +150,8 @@ namespace Bitvec.Tactic
   macro "aesop_bitvec?" opt:Aesop.tactic_clause* : tactic =>
     `(tactic|
         simp only [
-          (· ^^^ ·), Xor.xor,
-          (· &&& ·), AndOp.and,
-          (· ||| ·), OrOp.or,
-          (· + ·), Add.add,
-          (· - ·), Sub.sub,
           (· * ·), Mul.mul,
-          (· / ·), Div.div,
-          (~~~ ·)
+          (· / ·), Div.div
         ] <;>
         aesop? (rule_sets [Mathlib.Data.Bitvec]) $opt*
       )

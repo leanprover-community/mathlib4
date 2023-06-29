@@ -192,21 +192,8 @@ theorem toNat_cons (a : Bool) (x : Bitvec n) :
   rcases x with ⟨x, rfl⟩
   exact foldl_addLsb_cons_zero a x
 
-theorem zero_def : (0 : Bitvec n) = ⟨List.replicate n false, (0 : Bitvec n).2⟩  := rfl
 
-@[simp]
-theorem toList_zero : Vector.toList (0 : Bitvec n) = List.replicate n false := rfl
 
-@[simp]
-theorem toNat_zero : ∀ {n : Nat}, (0 : Bitvec n).toNat = 0
-  | 0 => rfl
-  | n+1 => by simpa [Bitvec.toNat, toList_zero, bitsToNat] using @toNat_zero n
-
-@[simp]
-theorem ofNat_zero : Bitvec.ofNat w 0 = 0 := by
-  rw [← toNat_zero, ofNat_toNat]
-
-theorem toList_one {n : ℕ} : (1 : Bitvec (n + 1)).toList = List.replicate n false ++ [true] := rfl
 
 theorem toNat_one : ∀ {n : Nat}, (1 : Bitvec n).toNat = if n = 0 then 0 else 1
   | 0 => rfl
@@ -258,36 +245,6 @@ theorem toNat_adc {n : Nat} {x y : Bitvec n} :
 -- theorem toNat_add {n : Nat} (x y : Bitvec n) : (x + y).toNat = (x.toNat + y.toNat) % 2^n := by
 --   show Bitvec.toNat (x.adc y false).tail = (x.toNat + y.toNat) % 2^n
 --   rw [toNat_tail, toNat_adc, add_tsub_cancel_right]
-
-theorem add_eq_or_of_and_eq_zero_aux₁ : ∀ {x y : List Bool} (_ : x.length = y.length),
-    x.zipWith (. && .) y = List.replicate x.length false →
-    (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).fst = false
-  | [], [], _ => fun _ => rfl
-  | a::x, b::y, h => fun h' => by
-    simp only [List.zipWith, Bool.forall_bool, List.replicate, Nat.add_eq, add_zero,
-      List.cons.injEq, Bool.and_eq_false_eq_eq_false_or_eq_false] at h'
-    have := add_eq_or_of_and_eq_zero_aux₁ (Nat.succ.inj h) h'.2
-    unfold Bitvec.carry at this
-    rcases h'.1 with rfl | rfl <;>
-    simp [List.mapAccumr₂, Bitvec.carry, this]
-
-theorem add_eq_or_of_and_eq_zero_aux₂ : ∀ {x y : List Bool} (_ : x.length = y.length),
-    x.zipWith (. && .) y = List.replicate x.length false →
-    (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).snd =
-    x.zipWith (. || .) y
-  | [], [], _ => fun _ => rfl
-  | a::x, b::y, h => fun h' => by
-    dsimp [List.mapAccumr₂]
-    simp only [List.zipWith, Bool.forall_bool, List.replicate, Nat.add_eq, add_zero,
-      List.cons.injEq, Bool.and_eq_false_eq_eq_false_or_eq_false] at h'
-    rw [add_eq_or_of_and_eq_zero_aux₁ (Nat.succ.inj h) h'.2,
-      add_eq_or_of_and_eq_zero_aux₂ (Nat.succ.inj h) h'.2]
-    rcases h'.1 with rfl | rfl <;>
-    simp [List.mapAccumr₂, Bitvec.carry, Bitvec.xor3]
-
-theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) : x + y = x.or y :=
-  Subtype.ext (add_eq_or_of_and_eq_zero_aux₂ (x.2.trans y.2.symm)
-    (by convert congr_arg Vector.toList hxy; simp))
 
 section get
 

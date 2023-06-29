@@ -195,22 +195,55 @@ variable (xs : Vector α n) (ys : Vector β n)
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
-  for all possible input bits, then the state is redundant and can be optimized out
+  for all possible input bits, then the state is redundant
 -/
 @[simp]
-theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
+theorem mapAccumr_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
   clear ys
   induction xs using revInductionOn <;> simp_all
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
-  for all possible input bits, then the state is redundant and can be optimized out
+  for all possible input bits, then the state is redundant
 -/
 @[simp]
-theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
+theorem mapAccumr₂_constant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
+
+/--
+  If `f` returns the same output for all states, the state is not needed
+-/
+@[simp]
+theorem mapAccumr_unused_state (f : α → σ → σ × β) (h : ∀ x s s', (f x s).2 = (f x s').2 ) :
+    (mapAccumr f xs s).snd = map (fun x => (f x s).2) xs := by
+  clear ys
+  induction xs using revInductionOn generalizing s
+  next => rfl
+  next xs x ih =>
+    simp only [mapAccumr_snoc, map_snoc, ih]
+    congr
+    funext x'
+    rw[h x' (f x s).fst]
+
+/--
+  If `f` returns the same output for all states, the state is not needed
+-/
+@[simp]
+theorem mapAccumr₂_unused_state (f : α → β → σ → σ × γ)
+    (h : ∀ x y s s', (f x y s).2 = (f x y s').2 ) :
+    (mapAccumr₂ f xs ys s).snd = map₂ (fun x y => (f x y s).2) xs ys := by
+  induction xs, ys using revInductionOn₂ generalizing s
+  next => rfl
+  next xs ys x y ih =>
+    simp only [mapAccumr₂_snoc, map₂_snoc, ih]
+    congr
+    funext x' y'
+    rw[h x' y' (f x y s).fst]
+
+
+
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
@@ -331,10 +364,12 @@ end RedundantState
 section Comm
 variable (xs ys : Vector α n)
 
+@[aesop safe]
 theorem map₂_comm (f : α → α → β) (comm : ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁) :
     map₂ f xs ys = map₂ f ys xs := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all
 
+@[aesop safe]
 theorem mapAccumr₂_comm (f : α → α → σ → σ × γ) (comm : ∀ a₁ a₂ s, f a₁ a₂ s = f a₂ a₁ s) :
     mapAccumr₂ f xs ys s = mapAccumr₂ f ys xs s := by
   induction xs, ys using Vector.inductionOn₂ generalizing s <;> simp_all
