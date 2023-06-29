@@ -2368,7 +2368,8 @@ theorem comap_neBot_iff_frequently {f : Filter β} {m : α → β} :
   simp only [comap_neBot_iff, frequently_iff, mem_range, @and_comm (_ ∈ _), exists_exists_eq_and]
 #align filter.comap_ne_bot_iff_frequently Filter.comap_neBot_iff_frequently
 
-theorem comap_neBot_iff_compl_range {f : Filter β} {m : α → β} : NeBot (comap m f) ↔ (range m)ᶜ ∉ f :=
+theorem comap_neBot_iff_compl_range {f : Filter β} {m : α → β} :
+    NeBot (comap m f) ↔ (range m)ᶜ ∉ f :=
   comap_neBot_iff_frequently
 #align filter.comap_ne_bot_iff_compl_range Filter.comap_neBot_iff_compl_range
 

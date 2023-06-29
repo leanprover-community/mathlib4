@@ -128,8 +128,8 @@ theorem isOpen_preimage_ofLower (S : Set α) :
 #align with_lower_topology.is_open_preimage_of_lower WithLowerTopology.isOpen_preimage_ofLower
 
 theorem isOpen_def (T : Set (WithLowerTopology α)) :
-    IsOpen T ↔
-      (generateFrom { s : Set α | ∃ a : α, (Ici a)ᶜ = s }).IsOpen (WithLowerTopology.toLower ⁻¹' T) :=
+    IsOpen T ↔ (generateFrom { s : Set α | ∃ a : α, (Ici a)ᶜ = s }).IsOpen
+    (WithLowerTopology.toLower ⁻¹' T) :=
   Iff.rfl
 #align with_lower_topology.is_open_def WithLowerTopology.isOpen_def
 

@@ -171,7 +171,8 @@ theorem iUnion_disjointed {f : ℕ → Set α} : (⋃ n, disjointed f n) = ⋃ n
   iSup_disjointed f
 #align Union_disjointed iUnion_disjointed
 
-theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) : disjointed f n = f n ∩ ⋂ i < n, (f i)ᶜ :=
+theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
+    disjointed f n = f n ∩ ⋂ i < n, (f i)ᶜ :=
   disjointed_eq_inf_compl f n
 #align disjointed_eq_inter_compl disjointed_eq_inter_compl
 
