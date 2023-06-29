@@ -48,8 +48,10 @@ structure DifferentialObject where
   /-- The differential `d` satisfies that `d² = 0`. -/
   d_squared : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat
 #align category_theory.differential_object CategoryTheory.DifferentialObject
+set_option linter.uppercaseLean3 false in
+#align category_theory.differential_object.X CategoryTheory.DifferentialObject.obj
 
-attribute [simp] DifferentialObject.d_squared
+attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
 variable {C}
 
