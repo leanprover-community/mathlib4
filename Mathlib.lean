@@ -33,6 +33,7 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.BoolRingCat
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Adjunctions
 import Mathlib.Algebra.Category.GroupCat.Basic
