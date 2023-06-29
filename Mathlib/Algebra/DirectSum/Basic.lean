@@ -326,7 +326,7 @@ def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
 @[simp]
 theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaCurry f i j = f ⟨i, j⟩ :=
-  Dfinsupp.sigmaCurry_apply _ i j
+  Dfinsupp.sigmaCurry_apply (δ := δ) _ i j
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
