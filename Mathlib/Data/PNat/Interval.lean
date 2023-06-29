@@ -63,32 +63,36 @@ theorem map_subtype_embedding_Ioo : (Ioo a b).map (Function.Embedding.subtype _)
 @[simp]
 theorem card_Icc : (Icc a b).card = b + 1 - a := by
   rw [← Nat.card_Icc]
-  erw [← Finset.map_subtype_embedding_Icc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  erw [← Finset.map_subtype_embedding_Icc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   rw [card_map]
 #align pnat.card_Icc PNat.card_Icc
 
 @[simp]
 theorem card_Ico : (Ico a b).card = b - a := by
   rw [← Nat.card_Ico]
-  erw [← Finset.map_subtype_embedding_Ico _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  erw [← Finset.map_subtype_embedding_Ico _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   rw  [card_map]
 #align pnat.card_Ico PNat.card_Ico
 
 @[simp]
 theorem card_Ioc : (Ioc a b).card = b - a := by
   rw [← Nat.card_Ioc]
-  erw [← Finset.map_subtype_embedding_Ioc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  erw [← Finset.map_subtype_embedding_Ioc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   rw  [card_map]
 #align pnat.card_Ioc PNat.card_Ioc
 
 @[simp]
 theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
   rw [← Nat.card_Ioo]
-  erw [← Finset.map_subtype_embedding_Ioo _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   -- porting note: I had to change this to `erw` *and* provide the proof, yuck.
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  erw [← Finset.map_subtype_embedding_Ioo _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
   rw  [card_map]
 #align pnat.card_Ioo PNat.card_Ioo
 

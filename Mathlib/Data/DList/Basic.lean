@@ -8,8 +8,7 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Std.Data.DList
-import Mathlib.Mathport.Rename
+import Mathlib.Data.DList.Defs
 
 
 /-!
@@ -21,7 +20,7 @@ A difference list is a function that, given a list, returns the original content
 difference list prepended to the given list. It is useful to represent elements of a given type
 as `a₁ + ... + aₙ` where `+ : α → α → α` is any operation, without actually computing.
 
-This structure supports `O(1)` `append` and `concat` operations on lists, making it
+This structure supports `O(1)` `append` and `push` operations on lists, making it
 useful for append-heavy uses such as logging and pretty printing.
 -/
 
@@ -33,12 +32,6 @@ def DList.join {α : Type _} : List (DList α) → DList α
   | [] => DList.empty
   | x :: xs => x ++ DList.join xs
 #align dlist.join Std.DList.join
-
-/-- Convert a lazily-evaluated `List` to a `DList` -/
--- Ported from Lean 3 core
-def DList.lazy_ofList (l : Thunk (List α)) : DList α :=
-⟨fun xs => l.get ++ xs, fun t => by simp⟩
-#align dlist.lazy_of_list Std.DList.lazy_ofList
 
 @[simp]
 theorem DList_singleton {α : Type _} {a : α} : DList.singleton a = DList.lazy_ofList [a] :=

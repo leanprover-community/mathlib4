@@ -8,8 +8,10 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Control.Lawful
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Control.SimpSet
+import Mathlib.Tactic.Common
 
 /-!
 # Monad
@@ -25,8 +27,8 @@ import Mathlib.Control.SimpSet
 Set of rewrite rules and automation for monads in general and
 `ReaderT`, `StateT`, `ExceptT` and `OptionT` in particular.
 
-The rewrite rules for monads are carefully chosen so that `simp with
-functor_norm` will not introduce monadic vocabulary in a context where
+The rewrite rules for monads are carefully chosen so that `simp with functor_norm`
+will not introduce monadic vocabulary in a context where
 applicatives would do just fine but will handle monadic notation
 already present in an expression.
 
@@ -40,7 +42,7 @@ functor, applicative, monad, simp
 
 -/
 
-attribute [ext] ReaderT.ext StateT.ext ExceptT.ext Option.ext
+attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
 
 attribute [functor_norm] bind_assoc pure_bind bind_pure
 

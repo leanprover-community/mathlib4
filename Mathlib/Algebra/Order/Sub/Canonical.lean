@@ -508,7 +508,7 @@ theorem tsub_min : a - min a b = a - b := by
 #align tsub_min tsub_min
 
 theorem tsub_add_min : a - b + min a b = a := by
-  rw [← tsub_min, tsub_add_cancel_of_le]
+  rw [← tsub_min, @tsub_add_cancel_of_le]
   apply min_le_left
 #align tsub_add_min tsub_add_min
 

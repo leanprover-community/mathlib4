@@ -29,7 +29,7 @@ condition `∀ n g, f₁ (φ g n) = f₂ g * f₁ n * f₂ g⁻¹`
 
 ## Notation
 
-This file introduces the global notation `N ⋊[φ] G` for `semidirect_product N G φ`
+This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N G φ`
 
 ## Tags
 group, semidirect product

@@ -10,7 +10,6 @@ Authors: Johan Commelin, Scott Morrison
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
-import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Shapes of homological complexes
@@ -137,14 +136,14 @@ instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // 
   congr
   exact c.prev_eq rik rjk
 
-/-- An arbitary choice of index `j` such that `Rel i j`, if such exists.
+/-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
 def next (c : ComplexShape ι) (i : ι) : ι :=
   if h : ∃ j, c.Rel i j then h.choose else i
 #align complex_shape.next ComplexShape.next
 
-/-- An arbitary choice of index `i` such that `Rel i j`, if such exists.
+/-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/
 def prev (c : ComplexShape ι) (j : ι) : ι :=
@@ -192,7 +191,7 @@ theorem down'_mk {α : Type _} [AddRightCancelSemigroup α] (a : α) (i j : α) 
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
-@[simps]
+@[simps!]
 def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   up' 1
 #align complex_shape.up ComplexShape.up
@@ -200,7 +199,7 @@ def up (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
-@[simps]
+@[simps!]
 def down (α : Type _) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
   down' 1
 #align complex_shape.down ComplexShape.down

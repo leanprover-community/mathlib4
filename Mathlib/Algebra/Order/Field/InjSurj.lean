@@ -28,7 +28,7 @@ namespace Function
 /-- Pullback a `LinearOrderedSemifield` under an injective map. -/
 @[reducible]
 def Injective.linearOrderedSemifield [LinearOrderedSemifield α] [Zero β] [One β] [Add β] [Mul β]
-    [Pow β ℕ] [SMul ℕ β] [NatCast β] [Inv β] [Div β] [Pow β ℤ] [HasSup β] [HasInf β] (f : β → α)
+    [Pow β ℕ] [SMul ℕ β] [NatCast β] [Inv β] [Div β] [Pow β ℤ] [Sup β] [Inf β] (f : β → α)
     (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
@@ -39,14 +39,13 @@ def Injective.linearOrderedSemifield [LinearOrderedSemifield α] [Zero β] [One 
     hf.semifield f zero one add mul inv div nsmul npow zpow nat_cast with }
 #align function.injective.linear_ordered_semifield Function.Injective.linearOrderedSemifield
 
-set_option maxHeartbeats 3000000
 
 -- See note [reducible non-instances]
 /-- Pullback a `LinearOrderedField` under an injective map. -/
 @[reducible]
 def Injective.linearOrderedField [LinearOrderedField α] [Zero β] [One β] [Add β] [Mul β] [Neg β]
     [Sub β] [Pow β ℕ] [SMul ℕ β] [SMul ℤ β] [SMul ℚ β] [NatCast β] [IntCast β]
-    [RatCast β] [Inv β] [Div β] [Pow β ℤ] [HasSup β] [HasInf β] (f : β → α) (hf : Injective f)
+    [RatCast β] [Inv β] [Div β] [Pow β ℤ] [Sup β] [Inf β] (f : β → α) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) (neg : ∀ x, f (-x) = -f x)
     (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)

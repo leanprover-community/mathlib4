@@ -14,7 +14,7 @@ import Mathlib.Data.PNat.Basic
 /-!
 # Primality and GCD on pnat
 
-This file extends the theory of `ℕ+` with `gcd`, `lcm` and `prime` functions, analogous to those on
+This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, analogous to those on
 `Nat`.
 -/
 
@@ -172,7 +172,6 @@ theorem coprime_coe {m n : ℕ+} : Nat.coprime ↑m ↑n ↔ m.Coprime n := by
   unfold coprime Coprime
   rw [← coe_inj]
   simp
-  rfl
 #align pnat.coprime_coe PNat.coprime_coe
 
 theorem Coprime.mul {k m n : ℕ+} : m.Coprime k → n.Coprime k → (m * n).Coprime k := by

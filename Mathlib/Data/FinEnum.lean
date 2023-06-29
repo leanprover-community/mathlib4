@@ -36,7 +36,7 @@ class FinEnum (α : Sort _) where
   [decEq : DecidableEq α]
 #align fin_enum FinEnum
 
-attribute [instance] FinEnum.decEq
+attribute [instance 100] FinEnum.decEq
 
 namespace FinEnum
 
@@ -79,7 +79,7 @@ theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
-  simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective, apply List.nodup_finRange]
+  simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 #align fin_enum.nodup_to_list FinEnum.nodup_toList
 
 /-- create a `FinEnum` instance using a surjection -/
@@ -148,7 +148,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         apply h
         subst a
         exact hx
-      · simp only [h', mem_union, mem_singleton] at hx⊢
+      · simp only [h', mem_union, mem_singleton] at hx ⊢
         cases' hx with hx hx'
         · exact Or.inl hx
         · exact Or.inr (h _ hx')
@@ -157,7 +157,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp only [and_imp, mem_sdiff, mem_singleton]
       simp only [or_iff_not_imp_left] at h
       exists h
-      by_cases xs_hd ∈ s
+      by_cases h : xs_hd ∈ s
       · have : {xs_hd} ⊆ s
         simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
         simp only [union_sdiff_of_subset this, or_true_iff, Finset.union_sdiff_of_subset,
@@ -233,14 +233,14 @@ def pi {β : α → Type max u v} [DecidableEq α] :
 theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
     (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) := by
   induction' xs with xs_hd xs_tl xs_ih <;> simp [pi, -List.map_eq_map, monad_norm, functor_norm]
-  · ext (a⟨⟩)
+  · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
     exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih
-    · ext (x h)
+    · ext x h
       simp [Pi.cons]
       split_ifs
       · subst x

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.pairwise
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -104,7 +104,7 @@ theorem Pairwise.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l 
 #align list.pairwise.iff List.Pairwise.iff
 
 theorem pairwise_of_forall {l : List α} (H : ∀ x y, R x y) : Pairwise R l := by
-  induction l <;> [exact Pairwise.nil, simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
+  induction l <;> [exact Pairwise.nil; simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
 #align list.pairwise_of_forall List.pairwise_of_forall
 
 theorem Pairwise.and_mem {l : List α} :
@@ -182,7 +182,7 @@ theorem pairwise_middle (s : Symmetric R) {a : α} {l₁ l₂ : List α} :
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by
-    simp only [map, pairwise_cons, mem_map', forall_exists_index, and_imp,
+    simp only [map, pairwise_cons, mem_map, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, pairwise_map]
 #align list.pairwise_map List.pairwise_map'
 
@@ -267,7 +267,7 @@ theorem pairwise_join {L : List (List α)} :
 theorem pairwise_bind {R : β → β → Prop} {l : List α} {f : α → List β} :
     List.Pairwise R (l.bind f) ↔
       (∀ a ∈ l, Pairwise R (f a)) ∧ Pairwise (fun a₁ a₂ => ∀ x ∈ f a₁, ∀ y ∈ f a₂, R x y) l :=
-  by simp [List.bind, List.pairwise_join, List.mem_map', List.pairwise_map]
+  by simp [List.bind, List.pairwise_join, List.mem_map, List.pairwise_map]
 #align list.pairwise_bind List.pairwise_bind
 
 #align list.pairwise_reverse List.pairwise_reverse
@@ -373,13 +373,11 @@ theorem pwFilter_map (f : β → α) :
     ∀ l : List β, pwFilter R (map f l) = map f (pwFilter (fun x y => R (f x) (f y)) l)
   | [] => rfl
   | x :: xs =>
-    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then
-      by
+    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then by
       have h' : ∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun b hb => h _ (by rw [pwFilter_map f xs]; apply mem_map_of_mem _ hb)
       rw [map, pwFilter_cons_of_pos h, pwFilter_cons_of_pos h', pwFilter_map f xs, map]
-    else
-      by
+    else by
       have h' : ¬∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun hh =>
         h fun a ha => by
@@ -393,7 +391,7 @@ theorem pwFilter_map (f : β → α) :
 theorem pwFilter_sublist : ∀ l : List α, pwFilter R l <+ l
   | [] => nil_sublist _
   | x :: l => by
-    by_cases ∀ y ∈ pwFilter R l, R x y
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · rw [pwFilter_cons_of_pos h]
       exact (pwFilter_sublist l).cons_cons _
     · rw [pwFilter_cons_of_neg h]
@@ -407,7 +405,7 @@ theorem pwFilter_subset (l : List α) : pwFilter R l ⊆ l :=
 theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
   | [] => Pairwise.nil
   | x :: l => by
-    by_cases ∀ y ∈ pwFilter R l, R x y
+    by_cases h : ∀ y ∈ pwFilter R l, R x y
     · rw [pwFilter_cons_of_pos h]
       exact pairwise_cons.2 ⟨h, pairwise_pwFilter l⟩
     · rw [pwFilter_cons_of_neg h]
@@ -415,8 +413,7 @@ theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
 #align list.pairwise_pw_filter List.pairwise_pwFilter
 
 theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
-  ⟨fun e => e ▸ pairwise_pwFilter l, fun p =>
-    by
+  ⟨fun e => e ▸ pairwise_pwFilter l, fun p => by
     induction' l with x l IH; · rfl
     cases' pairwise_cons.1 p with al p
     rw [pwFilter_cons_of_pos (BAll.imp_left (pwFilter_subset l) al), IH p]⟩
@@ -438,7 +435,7 @@ theorem forall_mem_pwFilter (neg_trans : ∀ {x y z}, R x z → R x y ∨ R y z)
   ⟨by
     induction' l with x l IH; · exact fun _ _ h => (not_mem_nil _ h).elim
     simp only [forall_mem_cons]
-    by_cases ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
+    by_cases h : ∀ y ∈ pwFilter R l, R x y <;> dsimp at h
     · simp only [pwFilter_cons_of_pos h, forall_mem_cons, and_imp]
       exact fun r H => ⟨r, IH H⟩
     · rw [pwFilter_cons_of_neg h]

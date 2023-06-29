@@ -29,9 +29,9 @@ example (x : ℕ) : True := by
   case soo => guard_hyp h : x = y + 1; trivial
 
 inductive Foo (α β)
-| A (a : α)
-| B (a' : α) (b' : β)
-| C (a'' : α) (b'' : β) (c'' : Foo α β)
+  | A (a : α)
+  | B (a' : α) (b' : β)
+  | C (a'' : α) (b'' : β) (c'' : Foo α β)
 
 example (x : Foo α β) : True := by
   cases' x with a₀ a₁ _ a₂ b₂ c₂
@@ -40,8 +40,8 @@ example (x : Foo α β) : True := by
   · guard_hyp a₂ : α; guard_hyp b₂ : β; guard_hyp c₂ : Foo α β; trivial
 
 inductive Bar : ℕ → Type
-| A (a b : Nat) : Bar 1
-| B (c d : Nat) : Bar (c + 1) → Bar c
+  | A (a b : Nat) : Bar 1
+  | B (c d : Nat) : Bar (c + 1) → Bar c
 
 example (x : Bar 0) : True := by
   cases' x with a b c d h
@@ -97,3 +97,10 @@ example (x : Bar n) : x = x := by
   case A => guard_target = Bar.A a b = Bar.A a b; rfl
   case B => guard_hyp h : Bar (c + 1); guard_hyp ih : h = h
             guard_target = Bar.B c d h = Bar.B c d h; rfl
+
+example (p q : Prop) : (p → ¬ q) → ¬ (p ∧ q) := by
+  intro hpnq hpq
+  apply hpnq
+  cases' hpq with hp hq
+  assumption
+  exact hpq.2

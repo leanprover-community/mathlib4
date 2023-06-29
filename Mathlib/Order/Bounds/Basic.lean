@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 ! This file was ported from Lean 3 source module order.bounds.basic
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 3310acfa9787aa171db6d4cba3945f6f275fe9f2
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -299,6 +299,14 @@ theorem IsGreatest.upperBounds_eq (h : IsGreatest s a) : upperBounds s = Ici a :
   h.isLUB.upperBounds_eq
 #align is_greatest.upper_bounds_eq IsGreatest.upperBounds_eq
 
+-- porting note: new lemma
+theorem IsGreatest.lt_iff (h : IsGreatest s a) : a < b ↔ ∀ x ∈ s, x < b :=
+  ⟨fun hlt _x hx => (h.2 hx).trans_lt hlt, fun h' => h' _ h.1⟩
+
+-- porting note: new lemma
+theorem IsLeast.lt_iff (h : IsLeast s a) : b < a ↔ ∀ x ∈ s, b < x :=
+  h.dual.lt_iff
+
 theorem isLUB_le_iff (h : IsLUB s a) : a ≤ b ↔ b ∈ upperBounds s := by
   rw [h.upperBounds_eq]
   rfl
@@ -348,7 +356,6 @@ theorem IsGreatest.nonempty (h : IsGreatest s a) : s.Nonempty :=
 /-!
 ### Union and intersection
 -/
-
 
 @[simp]
 theorem upperBounds_union : upperBounds (s ∪ t) = upperBounds s ∩ upperBounds t :=
@@ -403,7 +410,7 @@ theorem BddBelow.inter_of_right (h : BddBelow t) : BddBelow (s ∩ t) :=
   h.mono <| inter_subset_right s t
 #align bdd_below.inter_of_right BddBelow.inter_of_right
 
-/-- If `s` and `t` are bounded above sets in a `semilattice_sup`, then so is `s ∪ t`. -/
+/-- If `s` and `t` are bounded above sets in a `SemilatticeSup`, then so is `s ∪ t`. -/
 theorem BddAbove.union [SemilatticeSup γ] {s t : Set γ} :
     BddAbove s → BddAbove t → BddAbove (s ∪ t) := by
   rintro ⟨bs, hs⟩ ⟨bt, ht⟩
@@ -1054,7 +1061,6 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     x ≤ b := hb.1 hx
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
-
 #align le_of_is_lub_le_is_glb le_of_isLUB_le_isGLB
 
 end Preorder
@@ -1273,13 +1279,13 @@ theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowe
 #align monotone.image_lower_bounds_subset_lower_bounds_image Monotone.image_lowerBounds_subset_lowerBounds_image
 
 /-- The image under a monotone function of a set which is bounded above is bounded above. See also
-`bdd_above.image2`. -/
+`BddAbove.image2`. -/
 theorem map_bddAbove : BddAbove s → BddAbove (f '' s)
   | ⟨C, hC⟩ => ⟨f C, Hf.mem_upperBounds_image hC⟩
 #align monotone.map_bdd_above Monotone.map_bddAbove
 
 /-- The image under a monotone function of a set which is bounded below is bounded below. See also
-`bdd_below.image2`. -/
+`BddBelow.image2`. -/
 theorem map_bddBelow : BddBelow s → BddBelow (f '' s)
   | ⟨C, hC⟩ => ⟨f C, Hf.mem_lowerBounds_image hC⟩
 #align monotone.map_bdd_below Monotone.map_bddBelow

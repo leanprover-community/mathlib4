@@ -33,7 +33,7 @@ import Data.Fin.VecNotation
 import Mathlib.Data.Rat.Floor
 
 def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
-⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
+  ⌊q * ((b : ℚ) ^ (n - Int.log b q))⌋₊ % b
 
 #eval digits 10 (1/7) ∘ ((↑) : Fin 8 → ℕ)
 -- ![1, 4, 2, 8, 5, 7, 1, 4]
@@ -142,8 +142,7 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z 
     exact_mod_cast hb.le
 #align int.log_zpow Int.log_zpow
 
--- Porting note: Unknown attribute mono
---@[mono]
+@[mono]
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
   cases' le_or_lt b 1 with hb hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
@@ -273,8 +272,7 @@ theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = 
   rw [← neg_log_inv_eq_clog, ← zpow_neg, log_zpow hb, neg_neg]
 #align int.clog_zpow Int.clog_zpow
 
--- Porting note: Unknown attribute mono
---@[mono]
+@[mono]
 theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
     clog b r₁ ≤ clog b r₂ := by
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]

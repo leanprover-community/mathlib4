@@ -42,6 +42,8 @@ structure TwoPointing (α : Type _) extends α × α where
 #align two_pointing.ext TwoPointing.ext
 #align two_pointing.ext_iff TwoPointing.ext_iff
 
+initialize_simps_projections TwoPointing (+toProd, -fst, -snd)
+
 namespace TwoPointing
 
 variable (p : TwoPointing α) (q : TwoPointing β)

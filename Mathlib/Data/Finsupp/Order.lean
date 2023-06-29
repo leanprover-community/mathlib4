@@ -21,16 +21,15 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
--- porting notes: removed from module documentation becasue it moved to `data.finsupp.multiset`
+-- porting notes: removed from module documentation because it moved to `data.finsupp.multiset`
 -- TODO: move to `Data.Finsupp.Multiset` when that is ported
--- * `finsupp.order_iso_multiset`: The order isomorphism between `ℕ`-valued finitely supported
+-- * `Finsupp.orderIsoMultiset`: The order isomorphism between `ℕ`-valued finitely supported
 --   functions and multisets.
 
 
 noncomputable section
 
--- porting notes: not needed, doesn't exist
---open BigOperators
+open BigOperators
 
 open Finset
 
@@ -57,8 +56,7 @@ theorem le_def {f g : ι →₀ α} : f ≤ g ↔ ∀ i, f i ≤ g i :=
 #align finsupp.le_def Finsupp.le_def
 
 /-- The order on `Finsupp`s over a partial order embeds into the order on functions -/
-def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α)
-    where
+def orderEmbeddingToFun : (ι →₀ α) ↪o (ι → α) where
   toFun f := f
   inj' f g h :=
     Finsupp.ext fun i => by
@@ -166,9 +164,9 @@ theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g
   le_iff' f g <| Subset.refl _
 #align finsupp.le_iff Finsupp.le_iff
 
-instance decidableLe [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
+instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
-#align finsupp.decidable_le Finsupp.decidableLe
+#align finsupp.decidable_le Finsupp.decidableLE
 
 @[simp]
 theorem single_le_iff {i : ι} {x : α} {f : ι →₀ α} : single i x ≤ f ↔ x ≤ f i :=

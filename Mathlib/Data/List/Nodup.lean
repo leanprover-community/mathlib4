@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 
 ! This file was ported from Lean 3 source module data.list.nodup
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
+! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Pairwise
+import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Lists with no duplicates
@@ -87,9 +87,8 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
   ⟨fun d a h => not_nodup_pair a (d.sublist h),
     by
-    induction' l with a l IH <;> intro h; · exact nodup_nil
-    exact
-      (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
+      induction' l with a l IH <;> intro h; · exact nodup_nil
+      exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
         h a <| (singleton_sublist.2 al).cons_cons _⟩
 #align list.nodup_iff_sublist List.nodup_iff_sublist
 
@@ -255,8 +254,8 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
     simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl
-    · apply (d.1 _ h₂ h₃).elim
-    · apply (d.1 _ h₁ h₃.symm).elim
+    · apply (d.1 _ h₂ h₃.symm).elim
+    · apply (d.1 _ h₁ h₃).elim
     · apply ih d.2 h₁ h₂ h₃
 #align list.inj_on_of_nodup_map List.inj_on_of_nodup_map
 
@@ -288,8 +287,8 @@ alias nodup_attach ↔ Nodup.of_attach Nodup.attach
 
 theorem Nodup.pmap {p : α → Prop} {f : ∀ a, p a → β} {l : List α} {H}
     (hf : ∀ a ha b hb, f a ha = f b hb → a = b) (h : Nodup l) : Nodup (pmap f l H) := by
-  rw [pmap_eq_map_attach];
-    exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
+  rw [pmap_eq_map_attach]
+  exact h.attach.map fun ⟨a, ha⟩ ⟨b, hb⟩ h => by congr; exact hf a (H _ ha) b (H _ hb) h
 #align list.nodup.pmap List.Nodup.pmap
 
 theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := by
@@ -304,13 +303,12 @@ theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
 theorem Nodup.erase_eq_filter [DecidableEq α] {l} (d : Nodup l) (a : α) :
     l.erase a = l.filter (· ≠ a) := by
   induction' d with b l m _ IH; · rfl
-  by_cases b = a
+  by_cases h : b = a
   · subst h
-    rw [erase_cons_head, filter_cons_of_neg]
+    rw [erase_cons_head, filter_cons_of_neg _ (by simp)]
     symm
     rw [filter_eq_self]
     simpa [@eq_comm α] using m
-    simp
   · rw [erase_cons_tail _ h, filter_cons_of_pos, IH]
     simp [h]
 #align list.nodup.erase_eq_filter List.Nodup.erase_eq_filter
@@ -341,15 +339,15 @@ theorem nodup_bind {l₁ : List α} {f : α → List β} :
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
   simp only [List.bind, nodup_join, pairwise_map, and_comm, and_left_comm, mem_map, exists_imp,
       and_imp]
-  rw [show (∀ (l : List β) (x : α), l = f x → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
-      from forall_swap.trans <| forall_congr' fun _ => forall_eq]
+  rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
+      from forall_swap.trans <| forall_congr' fun _ => forall_eq']
 #align list.nodup_bind List.nodup_bind
 
 protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l₂.Nodup) :
-    (l₁.product l₂).Nodup :=
+    (l₁ ×ˢ l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => d₂.map <| LeftInverse.injective fun b => (rfl : (a, b).2 = b),
-      d₁.imp @fun a₁ a₂ n x h₁ h₂ => by
+      d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
@@ -359,7 +357,7 @@ theorem Nodup.sigma {σ : α → Type _} {l₂ : ∀ a , List (σ a)} (d₁ : No
     (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_bind.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
-      d₁.imp @fun a₁ a₂ n x h₁ h₂ => by
+      d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
         rcases mem_map.1 h₁ with ⟨b₁, _, rfl⟩
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
@@ -457,13 +455,12 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
   | b::l, n+1, hl => by
-    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos]
+    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos _ (by simp)]
     congr 1
     refine' List.filter_congr' _
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
-    simp
 end List
 
 theorem Option.toList_nodup {α} : ∀ o : Option α, o.toList.Nodup

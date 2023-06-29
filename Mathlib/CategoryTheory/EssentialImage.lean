@@ -22,7 +22,7 @@ functor rather than a subtype, preserving the principle of equivalence. For exam
 define exponential ideals.
 
 The essential image can also be seen as a subcategory of the target category, and witnesses that
-a functor decomposes into a essentially surjective functor and a fully faithful functor.
+a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
 
@@ -56,7 +56,7 @@ def essImage.getIso {Y : D} (h : Y ∈ F.essImage) : F.obj (essImage.witness h) 
   Classical.choice h.choose_spec
 #align category_theory.functor.ess_image.get_iso CategoryTheory.Functor.essImage.getIso
 
-/-- Being in the essential image is a "hygenic" property: it is preserved under isomorphism. -/
+/-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
 theorem essImage.ofIso {Y Y' : D} (h : Y ≅ Y') (hY : Y ∈ essImage F) : Y' ∈ essImage F :=
   hY.imp fun _ => Nonempty.map (· ≪≫ h)
 #align category_theory.functor.ess_image.of_iso CategoryTheory.Functor.essImage.ofIso
@@ -90,7 +90,7 @@ instance : Category (EssImageSubcategory F) :=
   (inferInstance : Category.{v₂} (FullSubcategory _))
 
 /-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/
-@[simps]
+@[simps!]
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   fullSubcategoryInclusion _
 #align category_theory.functor.ess_image_inclusion CategoryTheory.Functor.essImageInclusion
@@ -109,7 +109,7 @@ instance : Faithful (essImageInclusion F) :=
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential
 image of `F`.
 -/
-@[simps]
+@[simps!]
 def toEssImage (F : C ⥤ D) : C ⥤ F.EssImageSubcategory :=
   FullSubcategory.lift _ F (obj_mem_essImage _)
 #align category_theory.functor.to_ess_image CategoryTheory.Functor.toEssImage
@@ -119,7 +119,7 @@ def toEssImage (F : C ⥤ D) : C ⥤ F.EssImageSubcategory :=
 /-- The functor `F` factorises through its essential image, where the first functor is essentially
 surjective and the second is fully faithful.
 -/
-@[simps]
+@[simps!]
 def toEssImageCompEssentialImageInclusion (F : C ⥤ D) : F.toEssImage ⋙ F.essImageInclusion ≅ F :=
   FullSubcategory.lift_comp_inclusion _ _ _
 #align category_theory.functor.to_ess_image_comp_essential_image_inclusion CategoryTheory.Functor.toEssImageCompEssentialImageInclusion

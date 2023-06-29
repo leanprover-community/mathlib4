@@ -49,6 +49,5 @@ instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOr
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
 #align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
--- Porting note: assert_not_exists has not been ported yet.
 -- Guard against import creep.
--- assert_not_exists monoid_hom
+assert_not_exists MonoidHom

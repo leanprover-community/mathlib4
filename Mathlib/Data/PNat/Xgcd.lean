@@ -281,7 +281,7 @@ theorem finish_isReduced : u.finish.IsReduced := by
 #align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_isReduced
 
 theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
-  dsimp [IsSpecial, finish] at hs⊢
+  dsimp [IsSpecial, finish] at hs ⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
   ring
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
@@ -293,7 +293,7 @@ theorem finish_v (hr : u.r = 0) : u.finish.v = u.v := by
   · change (u.wp + 1) * u.b + ((u.wp + 1) * u.qp + u.x) * u.b = u.w * u.a + u.x * u.b
     have : u.wp + 1 = u.w := rfl
     rw [this, ← ha, u.qp_eq hr]
-    ring_nf
+    ring
   · change u.y * u.b + (u.y * u.qp + u.z) * u.b = u.y * u.a + u.z * u.b
     rw [← ha, u.qp_eq hr]
     ring
@@ -316,7 +316,7 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
 #align pnat.xgcd_type.step_wf PNat.XgcdType.step_wf
 
 theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
-  dsimp [IsSpecial, step] at hs⊢
+  dsimp [IsSpecial, step] at hs ⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
   ring
 #align pnat.xgcd_type.step_is_special PNat.XgcdType.step_isSpecial
@@ -392,8 +392,7 @@ theorem reduce_isSpecial' (u : XgcdType) (hs : u.IsSpecial) : u.reduce.IsSpecial
 
 theorem reduce_v : ∀ u : XgcdType, u.reduce.v = u.v
   | u =>
-    dite (u.r = 0) (fun h => by rw [reduce_a h, finish_v u h]) fun h =>
-      by
+    dite (u.r = 0) (fun h => by rw [reduce_a h, finish_v u h]) fun h => by
       have : SizeOf.sizeOf u.step < SizeOf.sizeOf u := u.step_wf h
       rw [reduce_b h, flip_v, reduce_v (step u), step_v u h, Prod.swap_swap]
 #align pnat.xgcd_type.reduce_v PNat.XgcdType.reduce_v
@@ -444,8 +443,7 @@ def gcdB' : ℕ+ :=
   succPNat ((xgcd a b).y + (xgcd a b).zp)
 #align pnat.gcd_b' PNat.gcdB'
 
-theorem gcdA'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b :=
-  by
+theorem gcdA'_coe : (gcdA' a b : ℕ) = gcdW a b + gcdX a b := by
   dsimp [gcdA', gcdX, gcdW, XgcdType.w]
   rw [Nat.succ_eq_add_one, Nat.succ_eq_add_one, add_right_comm]
 #align pnat.gcd_a'_coe PNat.gcdA'_coe
@@ -508,8 +506,7 @@ theorem gcd_props :
   constructor <;> ring
 #align pnat.gcd_props PNat.gcd_props
 
-theorem gcd_eq : gcdD a b = gcd a b :=
-  by
+theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩
   apply dvd_antisymm
   · apply dvd_gcd

@@ -18,5 +18,7 @@ function clone_pull {
 
 ./scripts/make_port_status.py
 
-(cd port-repos/mathlib.wiki && git pull --rebase && cp ../../port_status.yaml mathlib4-port-status.md &&
+(cd port-repos/mathlib.wiki && git pull --rebase &&
+     cp ../../port_status.yaml mathlib4-port-status.md &&
+     cp ../../port_status_new.yaml mathlib4-port-status-yaml.md &&
      git commit -am 'Updated mathlib4 port status (markdown)' && git push)

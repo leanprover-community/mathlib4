@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.prod.basic
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
+! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -12,11 +12,12 @@ import Mathlib.Init.Core
 import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Common
 
 /-!
-# Extra facts about `prod`
+# Extra facts about `Prod`
 
-This file defines `prod.swap : α × β → β × α` and proves various simple lemmas about `prod`.
+This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
 -/
 
 variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
@@ -112,9 +113,10 @@ theorem mk.inj_right {α β : Type _} (b : β) :
 #align prod.mk.inj_right Prod.mk.inj_right
 
 lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+#align prod.mk_inj_left Prod.mk_inj_left
+
 lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 #align prod.mk_inj_right Prod.mk_inj_right
-#align prod.mk_inj_left Prod.mk_inj_left
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
   rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
@@ -256,7 +258,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
   ⟨Lex.refl_right _ _⟩
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
-⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+  ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
@@ -341,3 +343,71 @@ theorem Involutive.Prod_map {f : α → α} {g : β → β} :
 #align function.involutive.prod_map Function.Involutive.Prod_map
 
 end Function
+
+namespace Prod
+
+open Function
+
+@[simp]
+theorem map_injective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
+    Injective (map f g) ↔ Injective f ∧ Injective g :=
+  ⟨fun h =>
+    ⟨fun a₁ a₂ ha => by
+      inhabit β
+      injection
+        @h (a₁, default) (a₂, default) (congr_arg (fun c : γ => Prod.mk c (g default)) ha : _),
+      fun b₁ b₂ hb => by
+      inhabit α
+      injection @h (default, b₁) (default, b₂) (congr_arg (Prod.mk (f default)) hb : _)⟩,
+    fun h => h.1.Prod_map h.2⟩
+#align prod.map_injective Prod.map_injective
+
+@[simp]
+theorem map_surjective [Nonempty γ] [Nonempty δ] {f : α → γ} {g : β → δ} :
+    Surjective (map f g) ↔ Surjective f ∧ Surjective g :=
+  ⟨fun h =>
+    ⟨fun c => by
+      inhabit δ
+      obtain ⟨⟨a, b⟩, h⟩ := h (c, default)
+      exact ⟨a, congr_arg Prod.fst h⟩,
+      fun d => by
+      inhabit γ
+      obtain ⟨⟨a, b⟩, h⟩ := h (default, d)
+      exact ⟨b, congr_arg Prod.snd h⟩⟩,
+    fun h => h.1.Prod_map h.2⟩
+#align prod.map_surjective Prod.map_surjective
+
+@[simp]
+theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ} :
+    Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
+  haveI := Nonempty.map f ‹_›
+  haveI := Nonempty.map g ‹_›
+  exact (map_injective.and map_surjective).trans (and_and_and_comm)
+#align prod.map_bijective Prod.map_bijective
+
+@[simp]
+theorem map_leftInverse [Nonempty β] [Nonempty δ] {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α}
+    {g₂ : δ → γ} : LeftInverse (map f₁ g₁) (map f₂ g₂) ↔ LeftInverse f₁ f₂ ∧ LeftInverse g₁ g₂ :=
+  ⟨fun h =>
+    ⟨fun b => by
+      inhabit δ
+      exact congr_arg Prod.fst (h (b, default)),
+      fun d => by
+      inhabit β
+      exact congr_arg Prod.snd (h (default, d))⟩,
+    fun h => h.1.Prod_map h.2 ⟩
+#align prod.map_left_inverse Prod.map_leftInverse
+
+@[simp]
+theorem map_rightInverse [Nonempty α] [Nonempty γ] {f₁ : α → β} {g₁ : γ → δ} {f₂ : β → α}
+    {g₂ : δ → γ} : RightInverse (map f₁ g₁) (map f₂ g₂) ↔ RightInverse f₁ f₂ ∧ RightInverse g₁ g₂ :=
+  map_leftInverse
+#align prod.map_right_inverse Prod.map_rightInverse
+
+@[simp]
+theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → β} :
+    Involutive (map f g) ↔ Involutive f ∧ Involutive g :=
+  map_leftInverse
+#align prod.map_involutive Prod.map_involutive
+
+end Prod

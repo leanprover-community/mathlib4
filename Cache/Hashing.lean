@@ -12,9 +12,10 @@ namespace Cache.Hashing
 open System IO
 
 structure HashMemo where
-  depsMap : Lean.HashMap FilePath (Array FilePath)
-  cache   : Lean.HashMap FilePath (Option UInt64)
-  hashMap : HashMap
+  rootHash : UInt64
+  depsMap  : Lean.HashMap FilePath (Array FilePath) := {}
+  cache    : Lean.HashMap FilePath (Option UInt64) := {}
+  hashMap  : HashMap := {}
   deriving Inhabited
 
 partial def insertDeps (hashMap : HashMap) (path : FilePath) (hashMemo : HashMemo) : HashMap :=
@@ -33,7 +34,7 @@ def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath)
   for filePath in filePaths do
     if hashMemo.hashMap.contains filePath then
       hashMap := insertDeps hashMap filePath hashMemo
-    else throw $ IO.userError s!"No match for {filePath}"
+    else IO.println s!"{filePath} is not covered by the olean cache."
   return hashMap
 
 /-- We cache the hash of each file and their dependencies for later lookup -/
@@ -48,6 +49,12 @@ def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
       | none => false
   imps.map (mkFilePath · |>.withExtension "lean")
 
+/-- Computes a canonical hash of a file's contents. -/
+def hashFileContents (contents : String) : UInt64 :=
+  -- revert potential file transformation by git's `autocrlf`
+  let contents := contents.replace "\r\n" "\n"
+  hash contents
+
 /--
 Computes the root hash, which mixes the hashes of the content of:
 * `lakefile.lean`
@@ -57,10 +64,8 @@ Computes the root hash, which mixes the hashes of the content of:
 def getRootHash : IO UInt64 := do
   let rootFiles : List FilePath := ["lakefile.lean", "lean-toolchain", "lake-manifest.json"]
   let isMathlibRoot ← isMathlibRoot
-  return hash $ ← rootFiles.mapM fun path => do
-    pure $ ← IO.FS.readFile $ if isMathlibRoot then path else mathlibDepPath / path
-
-initialize rootHash : UInt64 ← getRootHash
+  hash <$> rootFiles.mapM fun path =>
+    hashFileContents <$> IO.FS.readFile (if isMathlibRoot then path else mathlibDepPath / path)
 
 /--
 Computes the hash of a file, which mixes:
@@ -88,16 +93,20 @@ partial def getFileHash (filePath : FilePath) : HashM $ Option UInt64 := do
       | none =>
         set { stt with cache := stt.cache.insert filePath none }
         return none
+    let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
-    let fileHash := hash $ rootHash :: pathHash :: content.hash :: importHashes.toList
+    let fileHash := hash $ rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash
         cache   := stt.cache.insert   filePath (some fileHash)
         depsMap := stt.depsMap.insert filePath fileImports })
 
+/-- Files to start hashing from. -/
+def roots : Array FilePath := #["Mathlib.lean", "MathlibExtras.lean"]
+
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo : IO HashMemo :=
-  return (← StateT.run (getFileHash ⟨"Mathlib.lean"⟩) default).2
+  return (← StateT.run (roots.mapM getFileHash) { rootHash := ← getRootHash }).2
 
 end Cache.Hashing

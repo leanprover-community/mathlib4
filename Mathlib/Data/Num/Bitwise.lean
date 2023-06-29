@@ -9,7 +9,7 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Num.Basic
-import Mathlib.Data.Bitvec.Core
+import Mathlib.Data.Bitvec.Defs
 
 /-!
 # Bitwise operations using binary representation of integers
@@ -103,6 +103,12 @@ def shiftl : PosNum → Nat → PosNum
   | p, 0 => p
   | p, n + 1 => shiftl p.bit0 n
 #align pos_num.shiftl PosNum.shiftl
+
+-- Porting note: `PosNum.shiftl` is defined as tail-recursive in Lean4.
+--               This theorem ensures the definition is same to one in Lean3.
+theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), shiftl p n.succ = bit0 (shiftl p n)
+  | _, 0       => rfl
+  | p, .succ n => shiftl_succ_eq_bit0_shiftl p.bit0 n
 
 /-- Right-shift the binary representation of a `PosNum`. -/
 def shiftr : PosNum → Nat → Num
@@ -235,7 +241,7 @@ namespace NzsNum
 
 -- mathport name: nznum.bit
 @[inherit_doc]
-notation a "::" b => bit a b
+scoped notation a "::" b => bit a b
 
 /-- Sign of a `NzsNum`. -/
 def sign : NzsNum → Bool
@@ -252,7 +258,7 @@ def not : NzsNum → NzsNum
 
 -- mathport name: «expr~ »
 @[inherit_doc]
-prefix:100 "~" => not
+scoped prefix:100 "~" => not
 
 /-- Add an inactive bit at the end of a `NzsNum`. This mimics `PosNum.bit0`. -/
 def bit0 : NzsNum → NzsNum :=
@@ -299,7 +305,7 @@ def not : SNum → SNum
 -- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
 -- mathport name: snum.not
 @[inherit_doc]
-prefix:100 (priority := default + 1) "~" => not
+scoped prefix:100 (priority := default + 1) "~" => not
 
 /-- Add a bit at the end of a `SNum`. This mimics `NzsNum.bit`. -/
 @[match_pattern]
@@ -310,7 +316,7 @@ def bit : Bool → SNum → SNum
 
 -- mathport name: snum.bit
 @[inherit_doc]
-notation a "::" b => bit a b
+scoped notation a "::" b => bit a b
 
 /-- Add an inactive bit at the end of a `SNum`. This mimics `ZNum.bit0`. -/
 def bit0 : SNum → SNum :=

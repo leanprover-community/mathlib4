@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module order.with_bot
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
+! leanprover-community/mathlib commit 0111834459f5d7400215223ea95ae38a1265a907
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Lift
 
 /-!
 # `WithBot`, `WithTop`
@@ -41,10 +40,11 @@ instance [Repr α] : Repr (WithBot α) :=
     | some a => "↑" ++ repr a⟩
 
 /-- The canonical map from `α` into `WithBot α` -/
-@[coe] def some : α → WithBot α :=
+@[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
-instance coeTC : CoeTC α (WithBot α) :=
+-- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
+instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
 instance bot : Bot (WithBot α) :=
@@ -52,6 +52,9 @@ instance bot : Bot (WithBot α) :=
 
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
+  Option.nontrivial
 
 open Function
 
@@ -92,11 +95,9 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
-def recBotCoe {C : WithBot α → Sort _} (h₁ : C ⊥) (h₂ : ∀ a : α, C a) :
-  ∀ n : WithBot α, C n
-| none => h₁
-| Option.some a => h₂ a
-
+def recBotCoe {C : WithBot α → Sort _} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
+  | none => bot
+  | Option.some a => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 @[simp]
@@ -127,10 +128,21 @@ theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
   rfl
 #align with_bot.unbot'_coe WithBot.unbot'_coe
 
-@[norm_cast]
-theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b :=
-  Option.some_inj
+theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
+
+theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
+  induction x using recBotCoe <;> simp [@eq_comm _ d]
+#align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
+
+@[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
+  simp [unbot'_eq_iff]
+#align with_bot.unbot'_eq_self_iff WithBot.unbot'_eq_self_iff
+
+theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
+    unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
+ induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
+#align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
@@ -225,7 +237,7 @@ theorem coe_le_iff : ∀ {x : WithBot α}, (a : WithBot α) ≤ x ↔ ∃ b : α
   | none => iff_of_false (not_coe_le_bot _) <| by simp [none_eq_bot]
 #align with_bot.coe_le_iff WithBot.coe_le_iff
 
-theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a, x = ↑a → a ≤ b
+theorem le_coe_iff : ∀ {x : WithBot α}, x ≤ b ↔ ∀ a : α, x = ↑a → a ≤ b
   | Option.some b => by simp [some_eq_coe, coe_eq_coe]
   | none => by simp [none_eq_bot]
 #align with_bot.le_coe_iff WithBot.le_coe_iff
@@ -277,6 +289,13 @@ theorem lt_coe_iff : ∀ {x : WithBot α}, x < b ↔ ∀ a, x = ↑a → a < b
   | Option.some b => by simp [some_eq_coe, coe_eq_coe, coe_lt_coe]
   | none => by simp [none_eq_bot, bot_lt_coe]
 #align with_bot.lt_coe_iff WithBot.lt_coe_iff
+
+/-- A version of `bot_lt_iff_ne_bot` for `WithBot` that only requires `LT α`, not
+`PartialOrder α`. -/
+protected theorem bot_lt_iff_ne_bot : ∀ {x : WithBot α}, ⊥ < x ↔ x ≠ ⊥
+  | ⊥ => by simpa using not_lt_none ⊥
+  | (x : α) => by simp [bot_lt_coe]
+#align with_bot.bot_lt_iff_ne_bot WithBot.bot_lt_iff_ne_bot
 
 end LT
 
@@ -340,6 +359,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
       ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun _ =>
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_bot.strict_mono_iff WithBot.strictMono_iff
+
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithBot α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
+  strictMono_iff (β := βᵒᵈ)
 
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
@@ -428,6 +451,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
       | (a₁ : α), (a₂ : α), ⊥ => inf_le_right
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
+-- porting note: added, previously this was found via unfolding `WithBot`
+instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) := instDecidableEqOption
+
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
   | none, x => isTrue fun a h => Option.noConfusion h
   | Option.some x, Option.some y =>
@@ -454,36 +480,26 @@ instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) :=
   Lattice.toLinearOrder _
 #align with_bot.linear_order WithBot.linearOrder
 
--- this is not marked simp because the corresponding `WithTop` lemmas are used
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_min [LinearOrder α] (x y : α) : ((min x y : α) : WithBot α) = min (x : WithBot α) y :=
   rfl
 #align with_bot.coe_min WithBot.coe_min
 
--- this is not marked simp because the corresponding `WithTop` lemmas are used
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = max (x : WithBot α) y :=
   rfl
 #align with_bot.coe_max WithBot.coe_max
 
-theorem wellFounded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
+theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
     @WellFounded (WithBot α) (· < ·) :=
-  have acc_bot : Acc ((· < ·) : WithBot α → WithBot α → Prop) ⊥ :=
-    Acc.intro _ fun _ ha => (not_le_of_gt ha bot_le).elim
-  ⟨fun a =>
-    Option.recOn a acc_bot fun a =>
-      Acc.intro _ fun b =>
-        Option.recOn b (fun _ => acc_bot) fun b =>
-          WellFounded.induction h b
-            (show
-              ∀ b : α,
-                (∀ c, c < b → (c : WithBot α) < a → Acc
-                    ((· < ·) : WithBot α → WithBot α → Prop) c) →
-                  (b : WithBot α) < a → Acc ((· < ·) : WithBot α → WithBot α → Prop) b
-              from fun _ ih hba =>
-              Acc.intro _ fun c =>
-                Option.recOn c (fun _ => acc_bot) fun _ hc => ih _
-                  (some_lt_some.1 hc) (lt_trans hc hba))⟩
+  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (fun.)
+  have acc_bot := ⟨_, by simp [not_lt_bot]⟩
+  .intro fun
+    | ⊥ => acc_bot
+    | (a : α) => (h.1 a).rec fun a _ ih =>
+      .intro _ fun
+        | ⊥, _ => acc_bot
+        | (b : α), hlt => ih _ (some_lt_some.1 hlt)
 #align with_bot.well_founded_lt WithBot.wellFounded_lt
 
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) :=
@@ -546,7 +562,7 @@ instance [Repr α] : Repr (WithTop α) :=
     | some a => "↑" ++ repr a⟩
 
 /-- The canonical map from `α` into `WithTop α` -/
-@[coe] def some : α → WithTop α :=
+@[coe, match_pattern] def some : α → WithTop α :=
   Option.some
 
 instance coeTC : CoeTC α (WithTop α) :=
@@ -557,6 +573,9 @@ instance top : Top (WithTop α) :=
 
 instance inhabited : Inhabited (WithTop α) :=
   ⟨⊤⟩
+
+instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
+  Option.nontrivial
 
 protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
   Option.forall
@@ -586,9 +605,9 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim]
-def recTopCoe {C : WithTop α → Sort _} (h₁ : C ⊤) (h₂ : ∀ a : α, C a) : ∀ n : WithTop α, C n
-| none => h₁
-| Option.some a => h₂ a
+def recTopCoe {C : WithTop α → Sort _} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
+  | none => top
+  | Option.some a => coe a
 #align with_top.rec_top_coe WithTop.recTopCoe
 
 @[simp]
@@ -679,10 +698,23 @@ theorem untop'_coe {α} (d x : α) : untop' d x = x :=
   rfl
 #align with_top.untop'_coe WithTop.untop'_coe
 
-@[norm_cast]
+@[simp, norm_cast] -- porting note: added `simp`
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
+
+theorem untop'_eq_iff {d y : α} {x : WithTop α} : untop' d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbot'_eq_iff
+#align with_top.untop'_eq_iff WithTop.untop'_eq_iff
+
+@[simp] theorem untop'_eq_self_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
+  WithBot.unbot'_eq_self_iff
+#align with_top.untop'_eq_self_iff WithTop.untop'_eq_self_iff
+
+theorem untop'_eq_untop'_iff {d : α} {x y : WithTop α} :
+    untop' d x = untop' d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbot'_eq_unbot'_iff
+#align with_top.untop'_eq_untop'_iff WithTop.untop'_eq_untop'_iff
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
@@ -821,7 +853,7 @@ theorem le_coe_iff {x : WithTop α} : x ≤ b ↔ ∃ a : α, x = a ∧ a ≤ b 
   @WithBot.coe_le_iff (αᵒᵈ) _ _ (toDual x)
 #align with_top.le_coe_iff WithTop.le_coe_iff
 
-theorem coe_le_iff {x : WithTop α} : ↑a ≤ x ↔ ∀ b, x = ↑b → a ≤ b :=
+theorem coe_le_iff {x : WithTop α} : ↑a ≤ x ↔ ∀ b : α, x = ↑b → a ≤ b :=
   @WithBot.le_coe_iff (αᵒᵈ) _ _ (toDual x)
 #align with_top.coe_le_iff WithTop.coe_le_iff
 
@@ -1021,8 +1053,8 @@ theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔
   coe_lt_coe
 #align with_top.some_lt_some WithTop.some_lt_some
 
-theorem coe_lt_top (a : α) : (a : WithTop α) < ⊤ :=
-by simp [← toDual_lt_toDual_iff, WithBot.bot_lt_coe]
+theorem coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by
+  simp [← toDual_lt_toDual_iff, WithBot.bot_lt_coe]
 #align with_top.coe_lt_top WithTop.coe_lt_top
 
 @[simp]
@@ -1043,6 +1075,12 @@ theorem lt_iff_exists_coe {a b : WithTop α} : a < b ↔ ∃ p : α, a = p ∧ �
 
 theorem coe_lt_iff {x : WithTop α} : ↑a < x ↔ ∀ b, x = ↑b → a < b := by simp
 #align with_top.coe_lt_iff WithTop.coe_lt_iff
+
+/-- A version of `lt_top_iff_ne_top` for `WithTop` that only requires `LT α`, not
+`PartialOrder α`. -/
+protected theorem lt_top_iff_ne_top {x : WithTop α} : x < ⊤ ↔ x ≠ ⊤ :=
+  @WithBot.bot_lt_iff_ne_bot αᵒᵈ _ x
+#align with_top.lt_top_iff_ne_top WithTop.lt_top_iff_ne_top
 
 end LT
 
@@ -1094,6 +1132,10 @@ theorem strictMono_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
       ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h => (not_top_lt h).elim⟩, fun x =>
         WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 #align with_top.strict_mono_iff WithTop.strictMono_iff
+
+theorem strictAnti_iff [Preorder α] [Preorder β] {f : WithTop α → β} :
+    StrictAnti f ↔ StrictAnti (λ a => f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
+  strictMono_iff (β := βᵒᵈ)
 
 @[simp]
 theorem strictMono_map_iff [Preorder α] [Preorder β] {f : α → β} :
@@ -1163,6 +1205,9 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
       | (a₁ : α), (a₂ : α), ⊤ => le_rfl
       | (a₁ : α), (a₂ : α), (a₃ : α) => coe_le_coe.mpr le_sup_inf }
 
+-- porting note: added, previously this was found via unfolding `WithTop`
+instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) := instDecidableEqOption
+
 instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
     @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
   decidable_of_decidable_of_iff  toDual_le_toDual_iff
@@ -1193,30 +1238,29 @@ theorem coe_max [LinearOrder α] (x y : α) : (↑(max x y) : WithTop α) = max 
   rfl
 #align with_top.coe_max WithTop.coe_max
 
-theorem wellFounded_lt [Preorder α] (h : @WellFounded α (· < ·)) :
+theorem wellFounded_lt [LT α] (h : @WellFounded α (· < ·)) :
     @WellFounded (WithTop α) (· < ·) :=
-  have acc_some : ∀ a : α, Acc ((· < ·) : WithTop α → WithTop α → Prop) (some a) := fun a =>
-    Acc.intro _
-      (WellFounded.induction h a
-        (show
-          ∀ b, (∀ c, c < b → ∀ d : WithTop α, d < some c → Acc (· < ·) d) →
-            ∀ y : WithTop α, y < some b → Acc (· < ·) y
-          from fun _ ih c =>
-          Option.recOn c (fun hc => (not_lt_of_ge le_top hc).elim) fun _ hc =>
-            Acc.intro _ (ih _ (some_lt_some.1 hc))))
-  ⟨fun a =>
-    Option.recOn a (Acc.intro _ fun y => Option.recOn y
-      (fun h => (lt_irrefl _ h).elim) fun _ _ => acc_some _) acc_some⟩
+  have not_top_lt : ∀ a : WithTop α, ¬ ⊤ < a := (fun.)
+  have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
+    (h.1 a).rec fun _ _ ih =>
+      .intro _ fun
+        | (b : α), hlt => ih _ (some_lt_some.1 hlt)
+        | ⊤, hlt => nomatch not_top_lt _ hlt
+  .intro fun
+    | (a : α) => acc_some a
+    | ⊤ => .intro _ fun
+      | (b : α), _ => acc_some b
+      | ⊤, hlt => nomatch not_top_lt _ hlt
 #align with_top.well_founded_lt WithTop.wellFounded_lt
 
 open OrderDual
 
-theorem wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
+theorem wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
     @WellFounded (WithTop α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithTop.toDual a) := WellFounded.apply (WithBot.wellFounded_lt
-      (by convert h)) _
+      (by convert h using 1)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac
@@ -1226,12 +1270,12 @@ theorem wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
     exact ⟨_, fun a' h => IH (WithTop.toDual a') (toDual_lt_toDual.mpr h) _ rfl⟩⟩
 #align with_top.well_founded_gt WithTop.wellFounded_gt
 
-theorem _root_.WithBot.wellFounded_gt [Preorder α] (h : @WellFounded α (· > ·)) :
+theorem _root_.WithBot.wellFounded_gt [LT α] (h : @WellFounded α (· > ·)) :
     @WellFounded (WithBot α) (· > ·) :=
   ⟨fun a => by
     -- ideally, use rel_hom_class.acc, but that is defined later
     have : Acc (· < ·) (WithBot.toDual a) :=
-      WellFounded.apply (WithTop.wellFounded_lt (by convert h)) _
+      WellFounded.apply (WithTop.wellFounded_lt (by convert h using 1)) _
     revert this
     generalize ha : WithBot.toDual a = b
     intro ac

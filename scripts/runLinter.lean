@@ -39,7 +39,7 @@ unsafe def main (args : List String) : IO Unit := do
     Prod.fst <$> (CoreM.toIO · ctx state) do
       let decls ← getDeclsInPackage `Mathlib
       let linters ← getChecks (slow := true) (useOnly := false)
-      let results ← lintCore decls linters
+      let results ← lintCore decls (linters.filter fun l => l.name ≠ "docBlame")
       if update then
         writeJsonFile NoLints nolintsFile <|
           .qsort (lt := fun (a,b) (c,d) => a.lt c || (a == c && b.lt d)) <|
@@ -52,7 +52,7 @@ unsafe def main (args : List String) : IO Unit := do
       if failed then
         let fmtResults ←
           formatLinterResults results decls (groupByFilename := true)
-            "in mathlib" (runSlowLinters := true) .medium linters.size
+            "in mathlib" (runSlowLinters := true) (useErrorFormat := true) .medium linters.size
         IO.print (← fmtResults.toString)
         IO.Process.exit 1
       else

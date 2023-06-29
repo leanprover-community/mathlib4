@@ -26,7 +26,7 @@ latter yet.
 -/
 
 
--- Porting note: global for now: open BigOperators
+open BigOperators
 
 variable {α β : Type _}
 

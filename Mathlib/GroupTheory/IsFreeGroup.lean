@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.FreeGroup
 # Free groups structures on arbitrary types
 
 This file defines a type class for type that are free groups, together with the usual operations.
-The type class can be instantiated by providing an isomorphim to the canonical free group, or by
+The type class can be instantiated by providing an isomorphism to the canonical free group, or by
 proving that the universal property holds.
 
 For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
@@ -65,12 +65,12 @@ variable (G : Type _) [Group G] [IsFreeGroup G]
 def MulEquiv : FreeGroup (Generators G) ≃* G := IsFreeGroup.MulEquiv'
 
 /-- Any free group is isomorphic to "the" free group. -/
-@[simps]
+@[simps!]
 def toFreeGroup : G ≃* FreeGroup (Generators G) :=
   (MulEquiv G).symm
 #align is_free_group.to_free_group IsFreeGroup.toFreeGroup
 #align is_free_group.to_free_group_apply IsFreeGroup.toFreeGroup_apply
-#align is_free_group.to_free_group_symm_apply IsFreeGroup.toFreeGroup_symmApply
+#align is_free_group.to_free_group_symm_apply IsFreeGroup.toFreeGroup_symm_apply
 
 variable {G}
 
@@ -115,7 +115,8 @@ theorem lift_symm_apply (f : G →* H) (a : Generators G) : (lift.symm f) a = f 
   rfl
 #align is_free_group.lift_symm_apply IsFreeGroup.lift_symm_apply
 
-@[ext]
+@[ext 1050] --Porting note: increased priority, but deliberately less than for example
+--`FreeProduct.ext_hom`
 theorem ext_hom ⦃f g : G →* H⦄ (h : ∀ a : Generators G, f (of a) = g (of a)) : f = g :=
   lift.symm.injective (funext h)
 #align is_free_group.ext_hom IsFreeGroup.ext_hom

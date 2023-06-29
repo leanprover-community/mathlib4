@@ -116,7 +116,7 @@ theorem subsingleton_iff : Subsingleton α ↔ ∀ x y : α, x = y :=
 #align subsingleton_iff subsingleton_iff
 
 theorem not_nontrivial_iff_subsingleton : ¬Nontrivial α ↔ Subsingleton α := by
-  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, _root_.not_not]
+  simp only [nontrivial_iff, subsingleton_iff, not_exists, Ne.def, not_not]
 #align not_nontrivial_iff_subsingleton not_nontrivial_iff_subsingleton
 
 theorem not_nontrivial (α) [Subsingleton α] : ¬Nontrivial α :=
@@ -141,14 +141,14 @@ instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, fun .⟩
 
-/-- Pushforward a `nontrivial` instance along an injective function. -/
+/-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
     (hf : Function.Injective f) : Nontrivial β :=
   let ⟨x, y, h⟩ := exists_pair_ne α
   ⟨⟨f x, f y, hf.ne h⟩⟩
 #align function.injective.nontrivial Function.Injective.nontrivial
 
-/-- Pullback a `nontrivial` instance along a surjective function. -/
+/-- Pullback a `Nontrivial` instance along a surjective function. -/
 protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
     (hf : Function.Surjective f) : Nontrivial α := by
   rcases exists_pair_ne β with ⟨x, y, h⟩

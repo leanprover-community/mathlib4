@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.filter.n_ary
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
+! leanprover-community/mathlib commit 78f647f8517f021d839a7553d5dc97e79b508dea
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -64,37 +64,20 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
   ⟨_, _, hs, ht, Subset.rfl⟩
 #align filter.image2_mem_map₂ Filter.image2_mem_map₂
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map (fun p : α × β => m p.1 p.2) (f ×ᶠ g) = map₂ m f g := by
+    Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
   ext s
-  constructor
-  · intro hmem
-    rw [Filter.mem_map_iff_exists_image] at hmem
-    obtain ⟨s', hs', hsub⟩ := hmem
-    rw [Filter.mem_prod_iff] at hs'
-    obtain ⟨t, ht, t', ht', hsub'⟩ := hs'
-    refine' ⟨t, t', ht, ht', _⟩
-    rw [← Set.image_prod]
-    exact subset_trans (Set.image_subset (fun p : α × β => m p.fst p.snd) hsub') hsub
-  · intro hmem
-    rw [mem_map₂_iff] at hmem
-    obtain ⟨t, t', ht, ht', hsub⟩ := hmem
-    rw [← Set.image_prod] at hsub
-    rw [Filter.mem_map_iff_exists_image]
-    exact ⟨t ×ˢ t', Filter.prod_mem_prod ht ht', hsub⟩
+  simp [mem_prod_iff, prod_subset_iff]
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    Filter.map m (f ×ᶠ g) = map₂ (fun a b => m (a, b)) f g := by
-  refine' Eq.trans _ (map_prod_eq_map₂ (curry m) f g)
-  ext
-  simp
+    Filter.map m (f ×ˢ g) = map₂ (fun a b => m (a, b)) f g :=
+  map_prod_eq_map₂ (curry m) f g
 #align filter.map_prod_eq_map₂' Filter.map_prod_eq_map₂'
 
 @[simp]
-theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ᶠ g := by
-  ext ; simp [mem_prod_iff]
+theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
+  simp only [← map_prod_eq_map₂, map_id']
 #align filter.map₂_mk_eq_prod Filter.map₂_mk_eq_prod
 
 -- lemma image2_mem_map₂_iff (hm : injective2 m) : image2 m s t ∈ map₂ m f g ↔ s ∈ f ∧ t ∈ g :=
@@ -279,20 +262,13 @@ theorem map₂_map₂_right (m : α → δ → ε) (n : β → γ → δ) :
 #align filter.map₂_map₂_right Filter.map₂_map₂_right
 
 theorem map_map₂ (m : α → β → γ) (n : γ → δ) :
-    (map₂ m f g).map n = map₂ (fun a b => n (m a b)) f g :=
-  Filter.ext fun u => exists₂_congr fun s t => by rw [← image_subset_iff, image_image2]
+    (map₂ m f g).map n = map₂ (fun a b => n (m a b)) f g := by
+  rw [← map_prod_eq_map₂, ← map_prod_eq_map₂, map_map]; rfl
 #align filter.map_map₂ Filter.map_map₂
 
 theorem map₂_map_left (m : γ → β → δ) (n : α → γ) :
     map₂ m (f.map n) g = map₂ (fun a b => m (n a) b) f g := by
-  ext u
-  constructor
-  · rintro ⟨s, t, hs, ht, hu⟩
-    refine' ⟨_, t, hs, ht, _⟩
-    rw [← image2_image_left]
-    exact (image2_subset_right <| image_preimage_subset _ _).trans hu
-  · rintro ⟨s, t, hs, ht, hu⟩
-    exact ⟨_, t, image_mem_map hs, ht, by rwa [image2_image_left]⟩
+  rw [← map_prod_eq_map₂, ← map_prod_eq_map₂, ← @map_id _ g, prod_map_map_eq, map_map, map_id]; rfl
 #align filter.map₂_map_left Filter.map₂_map_left
 
 theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
@@ -302,14 +278,14 @@ theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
 
 @[simp]
 theorem map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    map₂ (curry m) f g = (f ×ᶠ g).map m := by -- Porting note: `classical` removed.
-      rw [← map₂_mk_eq_prod, map_map₂]
-      rfl
+    map₂ (curry m) f g = (f ×ˢ g).map m :=
+  (map_prod_eq_map₂' _  _ _).symm
 #align filter.map₂_curry Filter.map₂_curry
 
 @[simp]
 theorem map_uncurry_prod (m : α → β → γ) (f : Filter α) (g : Filter β) :
-    (f ×ᶠ g).map (uncurry m) = map₂ m f g := by rw [← map₂_curry, curry_uncurry]
+    (f ×ˢ g).map (uncurry m) = map₂ m f g :=
+  (map₂_curry (uncurry m) f g).symm
 #align filter.map_uncurry_prod Filter.map_uncurry_prod
 
 /-!
@@ -319,7 +295,7 @@ A collection of lemmas to transfer associativity, commutativity, distributivity,
 to the associativity, commutativity, distributivity, ... of `Filter.map₂` of those operations.
 
 The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm mul_comm` proves that
-`map₂ (*) f g = map₂ (*) g f` in a `comm_semigroup`.
+`map₂ (*) f g = map₂ (*) g f` in a `CommSemigroup`.
 -/
 
 

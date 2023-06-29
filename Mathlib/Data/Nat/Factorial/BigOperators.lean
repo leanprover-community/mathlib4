@@ -23,7 +23,7 @@ While in terms of semantics they could be in the `Basic.lean` file, importing
 
 
 open Nat
--- Porting note: notation is currently global `open BigOperators`
+open BigOperators
 
 namespace Nat
 

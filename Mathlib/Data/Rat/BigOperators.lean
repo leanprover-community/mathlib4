@@ -14,8 +14,7 @@ import Mathlib.Algebra.BigOperators.Basic
 /-! # Casting lemmas for rational numbers involving sums and products
 -/
 
--- Porting note: big operators are currently global
---open BigOperators
+open BigOperators
 
 variable {ι α : Type _}
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module algebra.hom.freiman
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -127,10 +127,9 @@ see also Algebra.Hom.Group for similar -/
 @[to_additive (attr := coe)
     " Turn an element of a type `F` satisfying `AddFreimanHomClass F A β n` into an actual
     `AddFreimanHom`. This is declared as the default coercion from `F` to `AddFreimanHom A β n`."]
-def _root_.FreimanHomClass.toFreimanHom [FreimanHomClass F A β n] (f : F) :
-    A →*[n] β where
-   toFun := FunLike.coe f
-   map_prod_eq_map_prod' := FreimanHomClass.map_prod_eq_map_prod' f
+def _root_.FreimanHomClass.toFreimanHom [FreimanHomClass F A β n] (f : F) : A →*[n] β where
+  toFun := FunLike.coe f
+  map_prod_eq_map_prod' := FreimanHomClass.map_prod_eq_map_prod' f
 
 /-- Any type satisfying `SMulHomClass` can be cast into `MulActionHom` via
   `SMulHomClass.toMulActionHom`. -/
@@ -149,9 +148,8 @@ theorem map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset 
 
 @[to_additive]
 theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a ∈ A) (hb : b ∈ A)
-    (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) : f a * f b = f c * f d :=
-  by
-  simp_rw [← prod_pair] at h⊢
+    (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) : f a * f b = f c * f d := by
+  simp_rw [← prod_pair] at h ⊢
   refine' map_prod_eq_map_prod f _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
 #align map_mul_map_eq_map_mul_map map_mul_map_eq_map_mul_map
 #align map_add_map_eq_map_add_map map_add_map_eq_map_add_map
@@ -159,18 +157,17 @@ theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a �
 namespace FreimanHom
 
 @[to_additive]
-instance funLike : FunLike (A →*[n] β) α fun _ => β
-    where
+instance funLike : FunLike (A →*[n] β) α fun _ => β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 #align freiman_hom.fun_like FreimanHom.funLike
 #align add_freiman_hom.fun_like AddFreimanHom.funLike
 
-@[to_additive]
-instance freiman_hom_class : FreimanHomClass (A →*[n] β) A β n
-    where map_prod_eq_map_prod' := map_prod_eq_map_prod'
-#align freiman_hom.freiman_hom_class FreimanHom.freiman_hom_class
-#align add_freiman_hom.freiman_hom_class AddFreimanHom.freiman_hom_class
+@[to_additive addFreimanHomClass]
+instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
+  map_prod_eq_map_prod' := map_prod_eq_map_prod'
+#align freiman_hom.freiman_hom_class FreimanHom.freimanHomClass
+#align add_freiman_hom.freiman_hom_class AddFreimanHom.addFreimanHomClass
 
 -- porting note: not helpful in lean4
 -- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
@@ -185,10 +182,10 @@ initialize_simps_projections FreimanHom (toFun → apply)
 initialize_simps_projections AddFreimanHom (toFun → apply)
 
 @[to_additive (attr := simp)]
-theorem to_fun_eq_coe (f : A →*[n] β) : f.toFun = f :=
+theorem toFun_eq_coe (f : A →*[n] β) : f.toFun = f :=
   rfl
-#align freiman_hom.to_fun_eq_coe FreimanHom.to_fun_eq_coe
-#align add_freiman_hom.to_fun_eq_coe AddFreimanHom.to_fun_eq_coe
+#align freiman_hom.to_fun_eq_coe FreimanHom.toFun_eq_coe
+#align add_freiman_hom.to_fun_eq_coe AddFreimanHom.toFun_eq_coe
 
 @[to_additive (attr := ext)]
 theorem ext ⦃f g : A →*[n] β⦄ (h : ∀ x, f x = g x) : f = g :=
@@ -216,7 +213,7 @@ theorem mk_coe (f : A →*[n] β) (h) : mk f h = f :=
 #align add_freiman_hom.mk_coe AddFreimanHom.mk_coe
 
 /-- The identity map from a commutative monoid to itself. -/
-@[to_additive "The identity map from an additive commutative monoid to itself.", simps]
+@[to_additive (attr := simps) "The identity map from an additive commutative monoid to itself."]
 protected def id (A : Set α) (n : ℕ) : A →*[n] α where
   toFun x := x
   map_prod_eq_map_prod' _ _ _ _ h := by rw [map_id', map_id', h]
@@ -497,8 +494,7 @@ variable [CommMonoid α] [CancelCommMonoid β] {A : Set α} {m n : ℕ}
 theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Multiset α}
     (hsA : ∀ x ∈ s, x ∈ A) (htA : ∀ x ∈ t, x ∈ A)
     (hs : Multiset.card s = m) (ht : Multiset.card t = m)
-    (hst : s.prod = t.prod) (h : m ≤ n) : (s.map f).prod = (t.map f).prod :=
-  by
+    (hst : s.prod = t.prod) (h : m ≤ n) : (s.map f).prod = (t.map f).prod := by
   obtain rfl | hm := m.eq_zero_or_pos
   · rw [card_eq_zero] at hs ht
     rw [hs, ht]
@@ -525,7 +521,6 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
   · rw [_root_.map_add, card_replicate, hs]; simp [h]
   · rw [_root_.map_add, card_replicate, ht]; simp [h]
   · rw [prod_add, prod_add, hst]
-
 #align map_prod_eq_map_prod_of_le map_prod_eq_map_prod_of_le
 #align map_sum_eq_map_sum_of_le map_sum_eq_map_sum_of_le
 
@@ -544,10 +539,9 @@ def FreimanHom.toFreimanHom (h : m ≤ n) (f : A →*[n] β) : A →*[m] β wher
       "An additive `n`-Freiman homomorphism is
       also an additive `m`-Freiman homomorphism for any `m ≤ n`."]
 theorem FreimanHom.FreimanHomClass_of_le [FreimanHomClass F A β n] (h : m ≤ n) :
-    FreimanHomClass F A β m :=
-  {
-    map_prod_eq_map_prod' := fun f _ _ hsA htA hs ht hst =>
-      map_prod_eq_map_prod_of_le f hsA htA hs ht hst h }
+    FreimanHomClass F A β m where
+  map_prod_eq_map_prod' f _ _ hsA htA hs ht hst :=
+    map_prod_eq_map_prod_of_le f hsA htA hs ht hst h
 #align freiman_hom.freiman_hom_class_of_le FreimanHom.FreimanHomClass_of_le
 #align add_freiman_hom.add_freiman_hom_class_of_le AddFreimanHom.addFreimanHomClass_of_le
 
@@ -561,7 +555,7 @@ theorem FreimanHom.toFreimanHom_coe (h : m ≤ n) (f : A →*[n] β) :
 @[to_additive AddFreimanHom.toAddFreimanHom_injective]
 theorem FreimanHom.toFreimanHom_injective (h : m ≤ n) :
     Function.Injective (FreimanHom.toFreimanHom h : (A →*[n] β) → A →*[m] β) := fun f g hfg =>
-  FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg
+  FreimanHom.ext <| by convert FunLike.ext_iff.1 hfg using 0
 #align freiman_hom.to_freiman_hom_injective FreimanHom.toFreimanHom_injective
 #align add_freiman_hom.to_freiman_hom_injective AddFreimanHom.toAddFreimanHom_injective
 

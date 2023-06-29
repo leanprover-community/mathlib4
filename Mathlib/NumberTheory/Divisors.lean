@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 
 ! This file was ported from Lean 3 source module number_theory.divisors
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -19,11 +19,11 @@ This file defines sets of divisors of a natural number. This is particularly use
 for defining Dirichlet convolution.
 
 ## Main Definitions
-Let `n : ℕ`. All of the following definitions are in the `nat` namespace:
+Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
  * `divisors n` is the `Finset` of natural numbers that divide `n`.
  * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
  * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
- * `perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+ * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
 
 ## Implementation details
  * `divisors 0`, `properDivisors 0`, and `divisorsAntidiagonal 0` are defined to be `∅`.
@@ -34,12 +34,7 @@ divisors, perfect numbers
 -/
 
 
-open Classical
-
--- Porting note: Unknown namespace BigOperators
--- open BigOperators
-
-open Finset
+open BigOperators Classical Finset
 
 namespace Nat
 
@@ -59,7 +54,7 @@ def properDivisors : Finset ℕ :=
 /-- `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
   As a special case, `divisorsAntidiagonal 0 = ∅`. -/
 def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
-  Finset.filter (fun x => x.fst * x.snd = n) (Ico 1 (n + 1) ×ᶠ Ico 1 (n + 1))
+  Finset.filter (fun x => x.fst * x.snd = n) (Ico 1 (n + 1) ×ˢ Ico 1 (n + 1))
 #align nat.divisors_antidiagonal Nat.divisorsAntidiagonal
 
 variable {n}
@@ -212,7 +207,7 @@ theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
 @[simp]
 theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
-  simp [Nat.mul_eq_one_iff, Prod.ext_iff]
+  simp [mul_eq_one, Prod.ext_iff]
 #align nat.divisors_antidiagonal_one Nat.divisorsAntidiagonal_one
 
 /- Porting note: simpnf linter; added aux lemma below
@@ -292,9 +287,7 @@ theorem sum_divisors_eq_sum_properDivisors_add_self :
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   · rw [← cons_self_properDivisors hn, Finset.sum_cons, add_comm]
-#align
-  nat.sum_divisors_eq_sum_proper_divisors_add_self
-  Nat.sum_divisors_eq_sum_properDivisors_add_self
+#align nat.sum_divisors_eq_sum_proper_divisors_add_self Nat.sum_divisors_eq_sum_properDivisors_add_self
 
 /-- `n : ℕ` is perfect if and only the sum of the proper divisors of `n` is `n` and `n`
   is positive. -/
@@ -448,7 +441,8 @@ theorem mem_properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) {x : ℕ
 theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     properDivisors (p ^ k) = (Finset.range k).map ⟨Nat.pow p, pow_right_injective pp.two_le⟩ := by
   ext a
-  simp [pp, Nat.lt_succ_iff]
+  simp only [mem_properDivisors, Nat.isUnit_iff, mem_map, mem_range, Function.Embedding.coeFn_mk,
+    pow_eq]
   have := mem_properDivisors_prime_pow pp k (x := a)
   rw [mem_properDivisors] at this
   rw [this]
@@ -499,7 +493,8 @@ theorem prime_divisors_eq_to_filter_divisors_prime (n : ℕ) :
 @[simp]
 theorem image_div_divisors_eq_divisors (n : ℕ) :
     image (fun x : ℕ => n / x) n.divisors = n.divisors := by
-  by_cases hn : n = 0; · simp [hn]
+  by_cases hn : n = 0
+  · simp [hn]
   ext a
   constructor
   · rw [mem_image]
