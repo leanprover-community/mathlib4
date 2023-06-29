@@ -2,6 +2,7 @@ import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
 import Mathlib.Data.Bitvec.ConstantLemmas
 import Mathlib.Data.Bitvec.Tactic
+import Mathlib.Data.Vector.MapLemmas
 
 
 

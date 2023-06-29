@@ -282,6 +282,46 @@ theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ →
   case snoc xs ys x y ih =>
     simp[h x y s, ih]
 
+
+
+/--
+  If `map₂` is given the same vector for both inputs, we can simplify it to `map`
+-/
+@[simp]
+theorem map₂_redundant_input :
+    map₂ f xs xs = map (fun x => f x x) xs := by
+  clear ys
+  induction xs using Vector.inductionOn <;> simp_all
+
+@[simp]
+theorem map₂_unused_input_left [Inhabited α] (h : ∀ a b, f a b = f default b) :
+    map₂ f xs ys = map (fun y => f default y) ys := by
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all
+
+@[simp]
+theorem map₂_unused_input_right [Inhabited β] (h : ∀ a b, f a b = f a default) :
+    map₂ f xs ys = map (fun x => f x default) xs := by
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all
+
+
+
+@[simp]
+theorem map_id_ext (h : ∀ x, f x = x) : map f xs = xs := by
+  clear ys
+  induction xs using Vector.inductionOn <;> simp_all
+
+
+
+@[simp]
+theorem map_const (c : α) : map (fun _ => c) xs = Vector.replicate _ c := by
+  clear ys
+  induction xs using Vector.inductionOn <;> simp_all
+
+@[simp]
+theorem map₂_const (c : α) : map₂ (fun _ _ => c) xs ys = Vector.replicate _ c := by
+  induction xs, ys using Vector.inductionOn₂ <;> simp_all
+
+
 end RedundantState
 
 
