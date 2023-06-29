@@ -45,11 +45,8 @@ instance : QuasiSober X.carrier := by
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).1.base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.open_range
   · rintro ⟨_, i, rfl⟩
-    exact
-      @OpenEmbedding.quasiSober _ _ _
-        (Homeomorph.ofEmbedding _
-              (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding
-        PrimeSpectrum.quasiSober
+    exact @OpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofEmbedding _
+      (X.affineCover.IsOpen i).base_open.toEmbedding).symm.openEmbedding PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.Covers x⟩
 
@@ -312,9 +309,8 @@ instance {R : CommRingCat} [IsDomain R] : IsIntegral (Scheme.Spec.obj <| op R) :
 
 theorem affine_isIntegral_iff (R : CommRingCat) :
     IsIntegral (Scheme.Spec.obj <| op R) ↔ IsDomain R :=
-  ⟨fun h => RingEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj _)
-    (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv,
-    fun h => inferInstance⟩
+  ⟨fun _ => RingEquiv.isDomain ((Scheme.Spec.obj <| op R).presheaf.obj (op ⊤))
+    (asIso <| toSpecΓ R).commRingCatIsoToRingEquiv, fun _ => inferInstance⟩
 #align algebraic_geometry.affine_is_integral_iff AlgebraicGeometry.affine_isIntegral_iff
 
 theorem isIntegralOfIsAffineIsDomain [IsAffine X] [Nonempty X.carrier]
