@@ -109,11 +109,14 @@ instance (i j : 𝖣.J) :
   apply GlueData.f_open
 
 instance (i j : 𝖣.J) :
-    SheafedSpace.IsOpenImmersion (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toGlueData.f i j) := by
+    SheafedSpace.IsOpenImmersion
+      (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toGlueData.f i j) := by
   apply GlueData.f_open
 
 instance (i j : 𝖣.J) :
-    PresheafedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData).toGlueData.f i j) := by
+    PresheafedSpace.IsOpenImmersion
+      (D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toGlueData.f
+        i j) := by
   apply GlueData.f_open
 
 -- Porting note: this was not needed.
@@ -178,10 +181,10 @@ instance ι_isOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
 theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
     ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).1.base y = x :=
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
-
 #align algebraic_geometry.Scheme.glue_data.ι_jointly_surjective AlgebraicGeometry.Scheme.GlueData.ι_jointly_surjective
 
-@[simp, reassoc]
+-- Porting note : promote to higher priority to short circuit simplifier
+@[simp (high), reassoc]
 theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
 #align algebraic_geometry.Scheme.glue_data.glue_condition AlgebraicGeometry.Scheme.GlueData.glue_condition
@@ -204,30 +207,25 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
     (D.toLocallyRingedSpaceGlueData.vPullbackConeIsLimit _ _)
 #align algebraic_geometry.Scheme.glue_data.V_pullback_cone_is_limit AlgebraicGeometry.Scheme.GlueData.vPullbackConeIsLimit
 
--- set_option pp.universes true
-
--- #check PresheafedSpace.forget.{u + 1, u , u}
-
--- #check GlueData.gluedIso
+local notation "D_" => TopCat.GlueData.toGlueData <|
+  D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
 
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
 underlying spacess -/
 def isoCarrier :
-    D.glued.carrier ≅
-      D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.toGlueData.glued := by
-  refine (PresheafedSpace.forget _).mapIso ?_ ≪≫ GlueData.gluedIso _ (PresheafedSpace.forget.{_, _, u} _)
-  refine SheafedSpace.forgetToPresheafedSpace.mapIso ?_ ≪≫ SheafedSpace.GlueData.isoPresheafedSpace _
-  refine LocallyRingedSpace.forgetToSheafedSpace.mapIso ?_ ≪≫ LocallyRingedSpace.GlueData.isoSheafedSpace _
+    D.glued.carrier ≅ (D_).glued := by
+  refine (PresheafedSpace.forget _).mapIso ?_ ≪≫
+    GlueData.gluedIso _ (PresheafedSpace.forget.{_, _, u} _)
+  refine SheafedSpace.forgetToPresheafedSpace.mapIso ?_ ≪≫
+    SheafedSpace.GlueData.isoPresheafedSpace _
+  refine LocallyRingedSpace.forgetToSheafedSpace.mapIso ?_ ≪≫
+    LocallyRingedSpace.GlueData.isoSheafedSpace _
   exact Scheme.GlueData.isoLocallyRingedSpace _
 #align algebraic_geometry.Scheme.glue_data.iso_carrier AlgebraicGeometry.Scheme.GlueData.isoCarrier
 
--- @[simp]
--- set_option maxHeartbeats 0 in
+@[simp]
 theorem ι_isoCarrier_inv (i : D.J) :
-    D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.toGlueData.ι
-          i ≫
-        D.isoCarrier.inv =
-      (D.ι i).1.base := by
+    (D_).ι i ≫ D.isoCarrier.inv = (D.ι i).1.base := by
   delta isoCarrier
   rw [Iso.trans_inv, GlueData.ι_gluedIso_inv_assoc, Functor.mapIso_inv, Iso.trans_inv,
     Functor.mapIso_inv, Iso.trans_inv, SheafedSpace.forgetToPresheafedSpace_map, forget_map,
