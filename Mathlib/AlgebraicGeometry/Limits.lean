@@ -27,6 +27,7 @@ We construct various limits and colimits in the category of schemes.
 
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u
 
@@ -36,7 +37,7 @@ namespace AlgebraicGeometry
 
 /-- `Spec ℤ` is the terminal object in the category of schemes. -/
 noncomputable def specZIsTerminal : IsTerminal (Scheme.Spec.obj (op <| CommRingCat.of ℤ)) :=
-  @IsTerminal.isTerminalObj _ _ Scheme.Spec _ inferInstance
+  @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.zIsInitial)
 #align algebraic_geometry.Spec_Z_is_terminal AlgebraicGeometry.specZIsTerminal
 
@@ -59,14 +60,18 @@ def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
 #align algebraic_geometry.Scheme.empty_to AlgebraicGeometry.Scheme.emptyTo
 
 @[ext]
-theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g := by ext a; exact PEmpty.elim a
+theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=
+  -- Porting note : `ext` regression
+  -- see https://github.com/leanprover-community/mathlib4/issues/5229
+  LocallyRingedSpace.Hom.ext _ _ <| PresheafedSpace.ext _ _ (by ext a; exact PEmpty.elim a) <|
+    NatTrans.ext _ _ <| funext fun a => by aesop_cat
 #align algebraic_geometry.Scheme.empty_ext AlgebraicGeometry.Scheme.empty_ext
 
 theorem Scheme.eq_emptyTo {X : Scheme.{u}} (f : ∅ ⟶ X) : f = Scheme.emptyTo X :=
   Scheme.empty_ext f (Scheme.emptyTo X)
 #align algebraic_geometry.Scheme.eq_empty_to AlgebraicGeometry.Scheme.eq_emptyTo
 
-instance (X : Scheme.{u}) : Unique (∅ ⟶ X) :=
+instance Scheme.hom_unique_of_empty_source (X : Scheme.{u}) : Unique (∅ ⟶ X) :=
   ⟨⟨Scheme.emptyTo _⟩, fun _ => Scheme.empty_ext _ _⟩
 
 /-- The empty scheme is the initial object in the category of schemes. -/
@@ -87,32 +92,35 @@ instance spec_pUnit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUn
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_pUnit_isEmpty
 
 instance (priority := 100) isOpenImmersionCat_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
-    [IsEmpty X.carrier] : IsOpenImmersionCat f := by
-  apply (config := { instances := false }) is_open_immersion.of_stalk_iso
+    [IsEmpty X.carrier] : IsOpenImmersion f := by
+  apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
   · apply openEmbedding_of_continuous_injective_open
-    · continuity
+    -- Porting note : `continuity` failed
+    -- see https://github.com/leanprover-community/mathlib4/issues/5030
+    · exact f.1.base.2
     · rintro (i : X.carrier); exact isEmptyElim i
-    · intro U hU; convert isOpen_empty; ext; apply (iff_false_iff _).mpr
-      exact fun x => isEmptyElim (show X.carrier from x.some)
+    · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
+      exact fun x => isEmptyElim (show X.carrier from x.choose)
   · rintro (i : X.carrier); exact isEmptyElim i
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersionCat_of_isEmpty
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by
   haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
-  have : epi f.1.base := by rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier);
+  have : Epi f.1.base
+  . rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier)
     exact isEmptyElim x
-  apply is_open_immersion.to_iso
+  apply IsOpenImmersion.to_iso
 #align algebraic_geometry.is_iso_of_is_empty AlgebraicGeometry.isIso_of_isEmpty
 
 /-- A scheme is initial if its underlying space is empty . -/
 noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X.carrier] : IsInitial X :=
-  emptyIsInitial.of_iso (asIso <| emptyIsInitial.to _)
+  emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 #align algebraic_geometry.is_initial_of_is_empty AlgebraicGeometry.isInitialOfIsEmpty
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
 noncomputable def specPunitIsInitial : IsInitial (Scheme.Spec.obj (op <| CommRingCat.of PUnit)) :=
-  emptyIsInitial.of_iso (asIso <| emptyIsInitial.to _)
+  emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 #align algebraic_geometry.Spec_punit_is_initial AlgebraicGeometry.specPunitIsInitial
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] : IsAffine X :=
@@ -121,6 +129,8 @@ instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X.carrier] 
 #align algebraic_geometry.is_affine_of_is_empty AlgebraicGeometry.isAffine_of_isEmpty
 
 instance : HasInitial Scheme :=
+  -- Porting note : this instance was not needed
+  haveI : (Y : Scheme) → Unique (Scheme.empty ⟶ Y) := Scheme.hom_unique_of_empty_source
   hasInitial_of_unique Scheme.empty
 
 instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
@@ -128,9 +138,12 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
 #align algebraic_geometry.initial_is_empty AlgebraicGeometry.initial_isEmpty
 
 theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
-  convert range_is_affine_open_of_open_immersion (initial.to X)
+  convert rangeIsAffineOpenOfOpenImmersion (initial.to X)
   ext
-  exact (false_iff_iff _).mpr fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.some)
+  -- Porting note : added this `erw` to turn LHS to `False`
+  erw [Set.mem_empty_iff_false]
+  rw [false_iff_iff]
+  exact fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.choose)
 #align algebraic_geometry.bot_is_affine_open AlgebraicGeometry.bot_isAffineOpen
 
 instance : HasStrictInitialObjects Scheme :=
@@ -139,4 +152,3 @@ instance : HasStrictInitialObjects Scheme :=
 end Initial
 
 end AlgebraicGeometry
-
