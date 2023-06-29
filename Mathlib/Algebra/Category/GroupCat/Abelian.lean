@@ -132,16 +132,19 @@ theorem exact_colim_of_exact_of_is_filtered
     erw [← comp_apply, Limits.colimit.ι_desc] at hx
     dsimp at hx
     rw [comp_apply] at hx
-    have := Limits.colimit.ι H j 0
-    have : ( 0: (@Limits.colimit _ _ (AddCommGroupCat.{u}) _ _ _)) = Limits.colimit.ι H j 0 := by
+    --have := Limits.colimit.ι H j 0
+    have : 0 = Limits.colimit.ι H j 0 := by
       simp
     rw [this] at hx
     clear this
     have : PreservesColimit H (forget AddCommGroupCat) := by sorry
     obtain ⟨k,e₁,e₂,hk⟩ := Limits.Concrete.colimit_exists_of_rep_eq _ _ _ hx
     have : ZeroHomClass (H.obj j ⟶ H.obj k) (H.obj j) (H.obj k) := sorry
-    have hk'' : (H.map e₁) ((γ.app j) y) = (H.map e₂) 0 := by sorry
-    rw [@map_zero (H.obj j) (H.obj k) _ _ _ _ (H.map e₂), ← comp_apply, ← NatTrans.naturality] at hk''
+    --have hk'' : (H.map e₁) ((γ.app j) y) = (H.map e₂) 0 := by sorry
+    let temp : H.obj j →+ H.obj k := H.map e₂
+    change _ = temp 0 at hk
+    rw [temp.map_zero] at hk
+    rw [← comp_apply, ← NatTrans.naturality] at hk
     rw [comp_apply] at hk
     let (γ' : (forget AddCommGroupCat).obj (G.obj k)) := G.map e₁ y
     let  (y'' : (forget AddCommGroupCat).obj (H.obj k)) := (γ.app k) (G.map e₁ y)
