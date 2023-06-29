@@ -20,6 +20,8 @@ variable {ι R S : Type _} {F : Filter ι} [NeBot F]
   [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
   [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
 
+#check Monotone.map_sSup_of_continuousAt'
+
 -- NOTE: The result `Monotone.map_sSup_of_continuousAt'` in the library has a natural version
 -- generalized to *conditionally* complete linear orders. One just needs a hypothesis `BddAbove s`.
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
@@ -28,29 +30,32 @@ theorem Monotone.map_sSup_of_continuousAt'' {f : R → S} {A : Set R} (Cf : Cont
     (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
     f (sSup A) = sSup (f '' A) := by
   --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
-  refine ((@IsLUB.isLUB_of_tendsto R S _ _ _ _ _ _ f A (sSup A) (f (sSup A)) (fun _ _ _ _ xy => Mf xy) ?_ A_nonemp ?_).csSup_eq (Set.nonempty_image_iff.mpr A_nonemp)).symm
+  refine ((@IsLUB.isLUB_of_tendsto R S _ _ _ _ _ _ f A (sSup A) (f (sSup A)) (Mf.monotoneOn _) ?_ A_nonemp ?_).csSup_eq (Set.nonempty_image_iff.mpr A_nonemp)).symm
   · exact isLUB_csSup A_nonemp A_bdd
   · exact tendsto_nhdsWithin_of_tendsto_nhds Cf
 
 theorem Monotone.map_sInf_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sInf A))
     (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
-    f (sInf A) = sInf (f '' A) := by
-  exact @Monotone.map_sSup_of_continuousAt'' Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
+    f (sInf A) = sInf (f '' A) :=
+  @Monotone.map_sSup_of_continuousAt'' Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
 
 theorem Antitone.map_sInf_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sInf A))
     (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
-    f (sInf A) = sSup (f '' A) := by
-  exact @Monotone.map_sInf_of_continuousAt'' R Sᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+    f (sInf A) = sSup (f '' A) :=
+  @Monotone.map_sInf_of_continuousAt'' R Sᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
 
 theorem Antitone.map_sSup_of_continuousAt'' {f : R → S} {A : Set R} (Cf : ContinuousAt f (sSup A))
     (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
-    f (sSup A) = sInf (f '' A) := by
-  exact @Monotone.map_sSup_of_continuousAt'' R Sᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+    f (sSup A) = sInf (f '' A) :=
+  @Monotone.map_sSup_of_continuousAt'' R Sᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+
+#check Filter.IsBounded.isCobounded_flip
 
 -- NOTE: Missing from Mathlib? Probably not, but what is the name...?
 lemma Monotone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f) {u : ι → X}
     (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
     F.IsCoboundedUnder (· ≥ ·) (f ∘ u) := by
+  --refine Filter.IsBounded.isCobounded_flip ?_
   obtain ⟨b, hb⟩ := bdd
   refine ⟨f b, fun y hy ↦ ?_⟩
   have obs : ∀ᶠ _ in map u F, y ≤ f b := by
@@ -75,10 +80,16 @@ lemma Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf :
     F.IsCoboundedUnder (· ≥ ·) (f ∘ u) :=
   @Monotone.isCoboundedUnder_le ι X Yᵒᵈ _ _ f hf u F _ bdd
 
--- NOTE: Missing from Mathlib? What would be a good generality?
+-- NOTE: Missing from Mathlib?
+-- What would be a good generality? (Mixes order and metric, so typeclasses don't readily exist.)
 lemma Filter.isBounded_le_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
     (h : Bornology.IsBounded (Set.range f)) :
     (F.map f).IsBounded (· ≤ ·) := by
+  rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
+  apply isBoundedUnder_of
+  sorry
+
+/-
   rw [Metric.isBounded_iff] at h
   obtain ⟨c, hc⟩ := h
   by_cases hι : Nonempty ι
@@ -93,6 +104,7 @@ lemma Filter.isBounded_le_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ
   · simp only [not_nonempty_iff] at hι
     simp only [filter_eq_bot_of_isEmpty F, map_bot]
     exact Iff.mpr isBounded_bot (by infer_instance)
+ -/
 
 -- NOTE: Missing from Mathlib? What would be a good generality?
 lemma Filter.isBounded_ge_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
@@ -131,6 +143,8 @@ lemma Filter.isBounded_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
   · simp only [not_nonempty_iff] at hι
     simp only [filter_eq_bot_of_isEmpty F, map_bot]
     exact Iff.mpr isBounded_bot (by infer_instance)
+
+#check Antitone.map_limsSup_of_continuousAt
 
 -- NOTE: This was the key lemma to generalize.
 /-- An antitone function between conditionally complete linear ordered spaces sends
@@ -246,6 +260,10 @@ end liminf_lemma
 
 section boundedness_by_norm_bounds
 
+-- TODO: Should use `Metric.Bounded`
+#check Metric.Bounded
+#check Metric.bounded_closedBall
+
 -- NOTE: Can this really be missing from Mathlib?
 lemma Metric.isBounded_closedBall [PseudoMetricSpace X] (z : X) (r : ℝ) :
     Bornology.IsBounded (Metric.closedBall z r) := by
@@ -292,6 +310,8 @@ lemma Integrable.measure_pos_le_norm_lt_top [MeasurableSpace α] {μ : Measure �
     norm_f_aemble (eventually_of_forall (fun x ↦ zero_le _))
   have foo : MeasurableSet {a : α | ENNReal.ofReal t < g a} := by
     sorry
+  -- TODO: Generalize `lintegral_indicator_const` to null-measurable sets so there is no need
+  -- to use g instead of f. (Have already `lintegral_indicator₀` so easy!)
   have aux := @lintegral_indicator_const _ _ μ _ foo (ENNReal.ofReal t)
   have markov := @mul_meas_ge_le_lintegral₀ α _ μ
                   (fun a ↦ ENNReal.ofReal ‖f a‖) norm_f_aemble (ENNReal.ofReal t)
@@ -369,7 +389,6 @@ end layercake_for_integral
 section le_liminf_open_implies_convergence
 
 variable {Ω : Type} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
-
 /-
 -- TODO: Is it possible to add a @[gcongr] attribute to `lintegral_mono`?
 
@@ -379,6 +398,15 @@ lemma foo (μ : Measure Ω) {f g : Ω → ℝ≥0∞} (hfg : f ≤ g) :
     ∫⁻ ω, f ω ∂μ ≤ ∫⁻ ω, g ω ∂μ := by
   gcongr -- gcongr did not make progress
   sorry
+
+-- This would solve it!
+
+lemma MeasureTheory.lintegral_mono'' {α : Type} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} {f g : α → ℝ≥0∞}
+  (hfg : f ≤ g) : lintegral μ f ≤ lintegral μ g := by sorry
+
+#check lintegral_mono''
+
+attribute [gcongr] lintegral_mono'' -- @[gcongr] attribute only applies to lemmas proving x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got ∀ {α : Type u_1} {m : MeasurableSpace α} {μ : MeasureTheory.Measure α} ⦃f g : α → ℝ≥0∞⦄, f ≤ g → ∫⁻ (a : α), f a ∂μ ≤ ∫⁻ (a : α), g a ∂μ
  -/
 
 -- NOTE: I think I will work with real-valued integrals, after all...
