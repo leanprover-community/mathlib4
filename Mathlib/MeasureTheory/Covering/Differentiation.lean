@@ -802,7 +802,7 @@ theorem ae_tendsto_lintegral_div {f : α → ℝ≥0∞} (hf : AEMeasurable f μ
   exact ae_restrict_of_ae hf.ae_eq_mk
 #align vitali_family.ae_tendsto_lintegral_div VitaliFamily.ae_tendsto_lintegral_div
 
-theorem ae_tendsto_lintegral_nnnorm_sub_div' {f : α → E} (hf : Integrable f μ)
+theorem ae_tendsto_lintegral_nnnorm_sub_div' {f : α → E} (hf : LocallyIntegrable f μ)
     (h'f : StronglyMeasurable f) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖₊ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   /- For every `c`, then `(∫⁻ y in a, ‖f y - c‖₊ ∂μ) / μ a` tends almost everywhere to `‖f x - c‖`.
