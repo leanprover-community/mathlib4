@@ -17,8 +17,6 @@ open Std
 variable (m : Type u → Type u) [Monad m] [Alternative m]
   (P V E : Type u) [Ord P] [Zero P] [Add P] [BEq V] [Hashable V]
 
-namespace ListM
-
 namespace AStar
 
 section GraphData
@@ -102,7 +100,7 @@ Record a new path.
 * If this is better than the previous best path:
   * Move the ending vertex up in the priority queue
   * Record it as the new best path
-  * And, if we are searching for optimal solutions,
+  * And, if we are searching for optimal solutions (i.e. paths with shortest length),
     recursively record all paths obtained by adding a previously explored edge to this path.
 -/
 partial def recordPath (Γ : GraphData m P V E) (optimal : Bool) (path : Path P V E) :
@@ -203,6 +201,9 @@ and you will need to test whether `optimal` is suitable for your requirements.)
 
 Returns a monadic lazy list consisting of triples `(priority, vertex, path)`
 for each vertex we explore an edge from. `path` is the best path so far to that vertex.
+
+See also `aStarSearch` which just provides the solution,
+rather than all the partial solutions explored along the way.
 -/
 def aStarSearchPaths (Γ : GraphData m P V E) (optimal : Bool) (v : V) :
     ListM m (P × V × List E) :=
@@ -224,9 +225,16 @@ Perform A^* search on a graph,
 starting at a vertex `src` and ending when reaching a vertex satisfying `goal`.
 
 Note that the `goal` is probably also implicitly described in the `Γ : GraphData m P V E`
-argument, as it produces the heuristic estimates of distance to goal.
+argument, as it must produce the heuristic estimates of distance to goal.
+
+If the option `optimal` is false,
+then we don't update best paths when a shorter path is found to an already visited vertex.
+(See the doc-string for `aStarSearchPaths` for details.)
 
 Returns a list of edges, wrapped in the same monad the graph edges are generated in.
+
+See also `aStarSearchPaths` which iterates through
+all paths explored on the way to finding the solution.
 -/
 def aStarSearch (Γ : GraphData m P V E) (optimal : Bool) (src : V) (goal : V → Bool) :
     m (List E) :=
@@ -236,5 +244,3 @@ aStarSearchPaths Γ optimal src |>.filter (goal ·.2.1) |>.map (·.2.2) |>.head
 -- which are refined when a vertex reaches the head of the queue.
 
 -- PROJECT bidirectional A^* search?
-
-end ListM
