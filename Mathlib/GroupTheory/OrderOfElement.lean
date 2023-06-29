@@ -49,10 +49,10 @@ variable [Monoid G] [AddMonoid A]
 
 section IsOfFinOrder
 
--- porting note: `rw [mul_one]` does not work
+-- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt ((· * ·) x) n 1 ↔ x ^ n = 1 := by
-  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; simp only [mul_one]
+  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; dsimp; rw [mul_one]
 #align is_periodic_pt_mul_iff_pow_eq_one isPeriodicPt_mul_iff_pow_eq_one
 #align is_periodic_pt_add_iff_nsmul_eq_zero isPeriodicPt_add_iff_nsmul_eq_zero
 
@@ -153,12 +153,12 @@ theorem orderOf_pos' (h : IsOfFinOrder x) : 0 < orderOf x :=
 #align order_of_pos' orderOf_pos'
 #align add_order_of_pos' addOrderOf_pos'
 
--- porting note: `rw [mul_one]` does not work
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   -- porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
   refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  rw [orderOf, mul_left_iterate]; simp only [mul_one]
+  -- porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
+  rw [orderOf, mul_left_iterate]; dsimp; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero
 
@@ -516,16 +516,15 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have hs : s ⊆ { y : G | ¬IsOfFinOrder y } := by
     rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))
     apply h
-    rw [isOfFinOrder_iff_pow_eq_one] at contra⊢
+    rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢
     obtain ⟨m, hm, hm'⟩ := contra
     exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩
   suffices s.Infinite by exact this.mono hs
   contrapose! h
   have : ¬Injective fun n : ℕ => x ^ n := by
-    have H := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
-    contrapose! H -- Porting note: `contrapose! this` errored, so renamed `this ↦ H`
-    rw [not_not] at H -- Porting note: why is `contrapose!` not taking care of this?
-    exact Set.injOn_of_injective H _
+    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
+    contrapose! this
+    exact Set.injOn_of_injective this _
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
 #align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder
@@ -690,15 +689,15 @@ variable [LeftCancelMonoid G] [AddLeftCancelMonoid A]
 -- TODO: Use this to show that a finite left cancellative monoid is a group.
 @[to_additive]
 theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
-  have H : (Set.univ : Set G).Finite := Set.univ.toFinite
-  contrapose! H -- Porting note: `contrapose!` doesn't like `this`
-  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder H)
+  have : (Set.univ : Set G).Finite := Set.univ.toFinite
+  contrapose! this
+  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder this)
 #align exists_pow_eq_one exists_pow_eq_one
 #align exists_nsmul_eq_zero exists_nsmul_eq_zero
 
 /-- This is the same as `orderOf_pos'` but with one fewer explicit assumption since this is
   automatic in case of a finite cancellative monoid.-/
-@[to_additive "This is the same as `addOrderOf_pos' but with one fewer explicit
+@[to_additive "This is the same as `addOrderOf_pos'` but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
 theorem orderOf_pos [Finite G] (x : G) : 0 < orderOf x :=
   orderOf_pos' (exists_pow_eq_one x)

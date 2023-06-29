@@ -1652,7 +1652,7 @@ theorem uniformContinuous_inf_dom_left₂ {α β γ} {f : α → β → γ} {ua1
     (h : by haveI := ua1; haveI := ub1; exact UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2;
         exact UniformContinuous fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from ``continuous_inf_dom_left₂`
+  -- proof essentially copied from `continuous_inf_dom_left₂`
   have ha := @UniformContinuous.inf_dom_left _ _ id ua1 ua2 ua1 (@uniformContinuous_id _ (id _))
   have hb := @UniformContinuous.inf_dom_left _ _ id ub1 ub2 ub1 (@uniformContinuous_id _ (id _))
   have h_unif_cont_id :=
@@ -1666,7 +1666,7 @@ theorem uniformContinuous_inf_dom_right₂ {α β γ} {f : α → β → γ} {ua
     (h : by haveI := ua2; haveI := ub2; exact UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2;
         exact UniformContinuous fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from ``continuous_inf_dom_right₂`
+  -- proof essentially copied from `continuous_inf_dom_right₂`
   have ha := @UniformContinuous.inf_dom_right _ _ id ua1 ua2 ua2 (@uniformContinuous_id _ (id _))
   have hb := @UniformContinuous.inf_dom_right _ _ id ub1 ub2 ub2 (@uniformContinuous_id _ (id _))
   have h_unif_cont_id :=
@@ -1680,7 +1680,7 @@ theorem uniformContinuous_sInf_dom₂ {α β γ} {f : α → β → γ} {uas : S
     (ha : ua ∈ uas) (hb : ub ∈ ubs) (hf : UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := sInf uas; haveI := sInf ubs;
         exact @UniformContinuous _ _ _ uc fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from ``continuous_Inf_dom`
+  -- proof essentially copied from `continuous_Inf_dom`
   let _ : UniformSpace (α × β) := instUniformSpaceProd
   have ha := uniformContinuous_sInf_dom ha uniformContinuous_id
   have hb := uniformContinuous_sInf_dom hb uniformContinuous_id
@@ -1843,7 +1843,7 @@ theorem lebesgue_number_lemma {α : Type u} [UniformSpace α] {s : Set α} {ι} 
     apply (𝓤 α).sets_of_superset hm'
     rintro ⟨x, y⟩ hp rfl
     refine' ⟨i, m', hm', fun z hz => h (monotone_id.compRel monotone_const mm' _)⟩
-    dsimp [-mem_compRel] at hz⊢
+    dsimp [-mem_compRel] at hz ⊢
     rw [compRel_assoc]
     exact ⟨y, hp, hz⟩
   have hu₂ : s ⊆ ⋃ n ∈ 𝓤 α, u n := fun x hx => by

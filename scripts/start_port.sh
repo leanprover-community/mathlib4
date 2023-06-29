@@ -19,7 +19,9 @@ mathlib4_path="$1"
 
 case $mathlib4_path in
     Mathlib/*) true ;;
-    *) echo "argument must begin with Mathlib/"
+    Archive/*) true ;;
+    Counterexamples/*) true ;;
+    *) echo "argument must begin with Mathlib/, Archive/, or Counterexamples/"
        exit 1 ;;
 esac
 
@@ -29,7 +31,7 @@ PORT_STATUS_YAML=https://raw.githubusercontent.com/wiki/leanprover-community/mat
 # process path name
 mathlib4_mod=$(basename $(echo "$mathlib4_path" | tr / .) .lean)
 mathlib4_mod_tail=${mathlib4_mod#Mathlib.}
-mathlib3port_url=$MATHLIB3PORT_BASE_URL/Mathbin/${1#Mathlib/}
+mathlib3port_url=$MATHLIB3PORT_BASE_URL/${1/#Mathlib/Mathbin}
 
 # start the port from the latest master
 git fetch
@@ -64,20 +66,28 @@ BASE_COMMIT="$(echo "Initial file copy from mathport" | git commit-tree "$(git w
 
 echo "Applying automated fixes"
 # Apply automated fixes
-(
-    cd $GIT_WORK_TREE;
-    sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
-    sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
 
-    python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
-    mv "$mathlib4_path.tmp" "$mathlib4_path"
+pushd $GIT_WORK_TREE;
+sed -i 's/Mathbin\./Mathlib\./g' "$mathlib4_path"
+sed -i '/^import/{s/[.]Gcd/.GCD/g; s/[.]Modeq/.ModEq/g; s/[.]Nary/.NAry/g; s/[.]Peq/.PEq/g; s/[.]Pfun/.PFun/g; s/[.]Pnat/.PNat/g; s/[.]Smul/.SMul/g; s/[.]Zmod/.ZMod/g; s/[.]Nnreal/.NNReal/g; s/[.]Ennreal/.ENNReal/g}' "$mathlib4_path"
 
-    (echo "import $mathlib4_mod" ; cat Mathlib.lean) | LC_ALL=C sort | uniq > Mathlib.lean.tmp
-    mv -f Mathlib.lean.tmp Mathlib.lean
-)
+python3 "$root_path/scripts/fix-line-breaks.py" "$mathlib4_path" "$mathlib4_path.tmp"
+mv "$mathlib4_path.tmp" "$mathlib4_path"
+
+if [[ "$mathlib4_mod" =~ ^Mathlib. ]]; then
+    which_all=Mathlib
+elif [[ "$mathlib4_mod" =~ ^Counterexamples. ]]; then
+    which_all=Counterexamples
+elif [[ "$mathlib4_mod" =~ ^Archive. ]]; then
+    which_all=Archive
+fi
+(echo "import $mathlib4_mod" ; cat $which_all.lean) | LC_ALL=C sort | uniq > $which_all.lean.tmp
+mv -f $which_all.lean.tmp $which_all.lean
+
+popd
 
 # Commit them
-git update-index --add Mathlib.lean
+git update-index --add $which_all.lean
 git update-index --add "$mathlib4_path"
 BASE_COMMIT="$(git commit-tree "$(git write-tree)" -p "$BASE_COMMIT" << EOF
 automated fixes
@@ -85,7 +95,7 @@ automated fixes
 Mathbin -> Mathlib
 fix certain import statements
 move "by" to end of line
-add import to Mathlib.lean
+add import to $which_all.lean
 EOF
 )"
 

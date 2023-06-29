@@ -432,7 +432,7 @@ instance : PseudoMetricSpace (Hamming β) where
     push_cast
     constructor
     · refine' fun hs => ⟨1, zero_lt_one, fun hab => _⟩
-      rw_mod_cast [hammingDist_lt_one]  at hab
+      rw_mod_cast [hammingDist_lt_one] at hab
       rw [ofHamming_inj, ← mem_idRel] at hab
       exact hs hab
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
