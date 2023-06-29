@@ -1143,7 +1143,7 @@ theorem integral_norm_eq_lintegral_nnnorm {G} [NormedAddCommGroup G] {f : α →
 #align measure_theory.integral_norm_eq_lintegral_nnnorm MeasureTheory.integral_norm_eq_lintegral_nnnorm
 
 theorem ofReal_integral_norm_eq_lintegral_nnnorm {G} [NormedAddCommGroup G] {f : α → G}
-    (hf : Integrable f μ) : ENNReal.ofReal ∫ x, ‖f x‖ ∂μ = ∫⁻ x, ‖f x‖₊ ∂μ := by
+    (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖₊ ∂μ := by
   rw [integral_norm_eq_lintegral_nnnorm hf.aestronglyMeasurable,
     ENNReal.ofReal_toReal (lt_top_iff_ne_top.mp hf.2)]
 #align measure_theory.of_real_integral_norm_eq_lintegral_nnnorm MeasureTheory.ofReal_integral_norm_eq_lintegral_nnnorm
@@ -1173,7 +1173,7 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
 #align measure_theory.lintegral_coe_eq_integral MeasureTheory.lintegral_coe_eq_integral
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
-    ENNReal.ofReal ∫ x, f x ∂μ = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
+    ENNReal.ofReal (∫ x, f x ∂μ) = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
   simp_rw [integral_congr_ae (show f =ᵐ[μ] fun x => ‖f x‖ by
       filter_upwards [f_nn]with x hx
       rw [Real.norm_eq_abs, abs_eq_self.mpr hx]),
