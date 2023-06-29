@@ -118,8 +118,8 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type _} {l : Filter
   refine' (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨_, fun ε hε => _⟩
   · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
     exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
-  · by_cases l.NeBot
-    swap; · simp [not_neBot.1 h]
+  · rcases l.eq_or_neBot with rfl | h
+    · simp
     have hK : 0 ≤ K := by
       rcases (xmem.and (δlim self_mem_nhdsWithin)).exists with ⟨j, hj, h'j⟩
       have : 0 ≤ K * δ j := nonempty_closedBall.1 ⟨x, hj⟩
