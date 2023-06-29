@@ -47,6 +47,21 @@ variable {K}
 theorem apply_at (φ : K →+* ℂ) (x : K) :
     (NumberField.canonicalEmbedding K x) φ = φ x := rfl
 
+open scoped ComplexConjugate
+
+/-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
+that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`.  -/
+theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
+    (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
+    conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
+  refine Submodule.span_induction hx ?_ ?_ (fun _ _ hx hy => ?_) (fun a _ hx => ?_)
+  · rintro _ ⟨x, rfl⟩
+    rw [apply_at, apply_at, ComplexEmbedding.conjugate_coe_eq]
+  · rw [Pi.zero_apply, Pi.zero_apply, map_zero]
+  · rw [Pi.add_apply, Pi.add_apply, map_add, hx, hy]
+  · rw [Pi.smul_apply, Complex.real_smul, map_mul, Complex.conj_ofReal]
+    exact congrArg ((a : ℂ) * ·) hx
+
 theorem nnnorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ =
       Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
