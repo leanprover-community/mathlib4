@@ -11,6 +11,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -153,6 +154,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 #align ordinal Ordinal
+pp_with_univ Ordinal
 
 instance hasWellFoundedOut (o : Ordinal) : WellFoundedRelation o.out.α :=
   ⟨o.out.r, o.out.wo.wf⟩
