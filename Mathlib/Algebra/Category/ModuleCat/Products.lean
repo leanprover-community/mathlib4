@@ -26,7 +26,7 @@ namespace ModuleCat
 
 variable {R : Type u} [Ring R]
 
-variable {ι : Type v} (Z : ι → ModuleCat.{v} R)
+variable {ι : Type v} (Z : ι → ModuleCatMax.{v, w} R)
 
 set_option linter.uppercaseLean3 false
 
