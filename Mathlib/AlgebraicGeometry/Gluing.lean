@@ -206,9 +206,9 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
 
 -- set_option pp.universes true
 
-#check PresheafedSpace.forget.{u + 1, u , u}
+-- #check PresheafedSpace.forget.{u + 1, u , u}
 
-#check GlueData.gluedIso
+-- #check GlueData.gluedIso
 
 /-- The underlying topological space of the glued scheme is isomorphic to the gluing of the
 underlying spacess -/
@@ -221,23 +221,21 @@ def isoCarrier :
   exact Scheme.GlueData.isoLocallyRingedSpace _
 #align algebraic_geometry.Scheme.glue_data.iso_carrier AlgebraicGeometry.Scheme.GlueData.isoCarrier
 
-@[simp]
+-- @[simp]
+-- set_option maxHeartbeats 0 in
 theorem ι_isoCarrier_inv (i : D.J) :
     D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData.toGlueData.ι
           i ≫
         D.isoCarrier.inv =
       (D.ι i).1.base := by
   delta isoCarrier
-  simp only [Functor.mapIso_inv]
-  sorry
-  -- simp only [Functor.mapIso_inv, Iso.trans_inv, Iso.trans_assoc, GlueData.ι_gluedIso_inv_assoc,
-  --   Functor.mapIso_trans, Category.assoc]
-  -- iterate 3 erw [← comp_base]
-  -- simp_rw [← category.assoc]
-  -- rw [D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
-  -- erw [D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
-  -- change (_ ≫ D.iso_LocallyRingedSpace.inv).1.base = _
-  -- rw [D.ι_isoLocallyRingedSpace_inv i]
+  rw [Iso.trans_inv, GlueData.ι_gluedIso_inv_assoc, Functor.mapIso_inv, Iso.trans_inv,
+    Functor.mapIso_inv, Iso.trans_inv, SheafedSpace.forgetToPresheafedSpace_map, forget_map,
+    forget_map, ← comp_base, ← Category.assoc,
+    D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.ι_isoPresheafedSpace_inv i]
+  erw [← Category.assoc, D.toLocallyRingedSpaceGlueData.ι_isoSheafedSpace_inv i]
+  change (_ ≫ D.isoLocallyRingedSpace.inv).1.base = _
+  rw [D.ι_isoLocallyRingedSpace_inv i]
 #align algebraic_geometry.Scheme.glue_data.ι_iso_carrier_inv AlgebraicGeometry.Scheme.GlueData.ι_isoCarrier_inv
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
