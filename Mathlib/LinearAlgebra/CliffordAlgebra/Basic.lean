@@ -16,11 +16,11 @@ import Mathlib.LinearAlgebra.QuadraticForm.Isometry
 # Clifford Algebras
 
 We construct the Clifford algebra of a module `M` over a commutative ring `R`, equipped with
-a quadratic_form `Q`.
+a quadratic form `Q`.
 
 ## Notation
 
-The Clifford algebra of the `R`-module `M` equipped with a quadratic_form `Q` is
+The Clifford algebra of the `R`-module `M` equipped with a quadratic form `Q` is
 an `R`-algebra denoted `CliffordAlgebra Q`.
 
 Given a linear morphism `f : M → A` from a module `M` to another `R`-algebra `A`, such that
@@ -36,8 +36,6 @@ of the Clifford algebra.
 1. `ι_comp_lift` is the fact that the composition of `ι Q` with `lift Q f cond` agrees with `f`.
 2. `lift_unique` ensures the uniqueness of `lift Q f cond` with respect to 1.
 
-Additionally, when `Q = 0` an `AlgEquiv` to the `exterior_algebra` is provided as `as_exterior`.
-
 ## Implementation details
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
@@ -45,7 +43,7 @@ The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, 
    This is the smallest relation which identifies squares of elements of `M` with `Q m`.
 2. The Clifford algebra is the quotient of the tensor algebra by this relation.
 
-This file is almost identical to `linear_algebra/exterior_algebra.lean`.
+This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.lean`.
 -/
 
 
@@ -181,7 +179,7 @@ theorem hom_ext {A : Type _} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and muliplication, then it holds for all of `CliffordAlgebra Q`.
 
-See also the stronger `clifford_algebra.left_induction` and `clifford_algebra.right_induction`.
+See also the stronger `CliffordAlgebra.left_induction` and `CliffordAlgebra.right_induction`.
 -/
 @[elab_as_elim]
 theorem induction {C : CliffordAlgebra Q → Prop}
@@ -220,7 +218,6 @@ theorem ι_mul_ι_add_swap (a b : M) :
       rw [ι_sq_scalar, ι_sq_scalar, ι_sq_scalar]
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← RingHom.map_sub, ← RingHom.map_sub]
     _ = algebraMap R _ (QuadraticForm.polar Q a b) := rfl
-
 #align clifford_algebra.ι_mul_ι_add_swap CliffordAlgebra.ι_mul_ι_add_swap
 
 theorem ι_mul_comm (a b : M) :

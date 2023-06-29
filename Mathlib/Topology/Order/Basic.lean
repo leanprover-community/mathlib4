@@ -2206,7 +2206,7 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
   · cases' hab.lt_or_lt with hab hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
-      simp only [insert_subset, singleton_subset_iff]
+      simp only [insert_subset_iff, singleton_subset_iff]
       exact ⟨(isGLB_Ioo hab).mem_closure hab', (isLUB_Ioo hab).mem_closure hab'⟩
     · rw [Icc_eq_empty_of_lt hab]
       exact empty_subset _
