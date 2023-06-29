@@ -22,6 +22,7 @@ This is a field when the scheme is integral.
   field. This map is injective.
 -/
 
+set_option linter.uppercaseLean3 false
 
 universe u v
 
