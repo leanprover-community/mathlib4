@@ -668,8 +668,8 @@ lemma uniform_equicontinuous_iff_exists_continuous_seminorm {κ : Type _}
     UniformEquicontinuous ((↑) ∘ f) ↔
     ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p := by
   rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng]
+  -- Porting note: should be congrm (∀ i, _)
   refine forall_congr' (fun i ↦ ?_)
-  --congrm (∀ i, (_ : Prop))
   clear hu hq u
   letI : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
   constructor
