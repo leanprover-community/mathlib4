@@ -134,7 +134,7 @@ namespace pdf
 variable {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
 
 theorem lintegral_eq_measure_univ {X : Ω → E} [HasPDF X ℙ μ] :
-    (∫⁻ x, pdf X ℙ μ x ∂μ) = ℙ Set.univ := by
+    ∫⁻ x, pdf X ℙ μ x ∂μ = ℙ Set.univ := by
   rw [← set_lintegral_univ, ← map_eq_set_lintegral_pdf X ℙ μ MeasurableSet.univ,
     Measure.map_apply (HasPDF.measurable X ℙ μ) MeasurableSet.univ, Set.preimage_univ]
 #align measure_theory.pdf.lintegral_eq_measure_univ MeasureTheory.pdf.lintegral_eq_measure_univ
