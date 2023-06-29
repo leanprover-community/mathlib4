@@ -17,6 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Cardinal Numbers
@@ -109,6 +110,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 #align cardinal Cardinal
+pp_with_univ Cardinal
 
 namespace Cardinal
 
