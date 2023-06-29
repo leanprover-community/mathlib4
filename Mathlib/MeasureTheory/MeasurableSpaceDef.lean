@@ -225,14 +225,14 @@ protected theorem MeasurableSet.ite {t s₁ s₂ : Set α} (ht : MeasurableSet t
 theorem MeasurableSet.ite' {s t : Set α} {p : Prop} (hs : p → MeasurableSet s)
     (ht : ¬p → MeasurableSet t) : MeasurableSet (ite p s t) := by
   split_ifs with h
-  exacts[hs h, ht h]
+  exacts [hs h, ht h]
 #align measurable_set.ite' MeasurableSet.ite'
 
 @[simp, measurability]
 protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet s₁)
     (h₂ : MeasurableSet s₂) {i : Bool} : MeasurableSet (cond i s₁ s₂) := by
   cases i
-  exacts[h₂, h₁]
+  exacts [h₂, h₁]
 #align measurable_set.cond MeasurableSet.cond
 
 @[simp, measurability]
@@ -557,7 +557,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[measurability]
+@[aesop safe 50 (rule_sets [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf

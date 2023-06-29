@@ -404,7 +404,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     have l₀ : l none = 0 := by
       rw [← eq_neg_iff_add_eq_zero] at z
       replace z := neg_eq_iff_eq_neg.mpr z
-      apply_fun fun x => b.repr x b'  at z
+      apply_fun fun x => b.repr x b' at z
       simp only [repr_self, LinearEquiv.map_smul, mul_one, Finsupp.single_eq_same, Pi.neg_apply,
         Finsupp.smul_single', LinearEquiv.map_neg, Finsupp.coe_neg] at z
       erw [FunLike.congr_fun (Finsupp.apply_total R (b.repr : M →ₗ[R] ι →₀ R) v l.some) b'] at z
@@ -589,7 +589,7 @@ the cardinality of `ι` is bounded by the cardinality of `w`.
 -/
 theorem Basis.le_span'' {ι : Type _} [Fintype ι] (b : Basis ι R M) {w : Set M} [Fintype w]
     (s : span R w = ⊤) : Fintype.card ι ≤ Fintype.card w := by
-  -- We construct an surjective linear map `(w → R) →ₗ[R] (ι → R)`,
+  -- We construct a surjective linear map `(w → R) →ₗ[R] (ι → R)`,
   -- by expressing a linear combination in `w` as a linear combination in `ι`.
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
@@ -621,7 +621,7 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#r
   haveI := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
-    convert Cardinal.lift_le.{w, v}.2 (basis_le_span' v hJ)
+    convert Cardinal.lift_le.{v}.2 (basis_le_span' v hJ)
     simp
   · let S : J → Set ι := fun j => ↑(v.repr j).support
     let S' : J → Set M := fun j => v '' S j
@@ -750,7 +750,7 @@ theorem linearIndependent_le_basis {ι : Type _} (b : Basis ι R M) {κ : Type _
     haveI : Nontrivial R := nontrivial_of_invariantBasisNumber R
     rw [Fintype.card_congr (Equiv.ofInjective b b.injective)]
     exact linearIndependent_le_span v i (range b) b.span_eq
-  · -- and otherwise we have `linearIndepedent_le_infinite_basis`.
+  · -- and otherwise we have `linearIndependent_le_infinite_basis`.
     exact linearIndependent_le_infinite_basis b v i
 #align linear_independent_le_basis linearIndependent_le_basis
 
@@ -889,7 +889,7 @@ theorem Ideal.rank_eq {R S : Type _} [CommRing R] [StrongRankCondition R] [Ring 
   obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr hI)
   have : LinearIndependent R fun i => b i • a := by
     have hb := b.linearIndependent
-    rw [Fintype.linearIndependent_iff] at hb⊢
+    rw [Fintype.linearIndependent_iff] at hb ⊢
     intro g hg
     apply hb g
     simp only [← smul_assoc, ← Finset.sum_smul, smul_eq_zero] at hg
@@ -1130,7 +1130,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rintro ⟨d, e⟩
     have h := eq₂ d (-e)
     simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, SetLike.mem_coe,
-      Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h⊢
+      Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
     refine' ⟨c, h₁, _⟩
@@ -1272,7 +1272,7 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) :
         rintro rfl
         simp at hw0
       rwa [span_singleton_smul_eq (IsUnit.mk0 _ h0) _]
-    · push_neg  at hw
+    · push_neg at hw
       rw [← Submodule.eq_bot_iff] at hw
       simp [hw]
 #align rank_submodule_le_one_iff' rank_submodule_le_one_iff'

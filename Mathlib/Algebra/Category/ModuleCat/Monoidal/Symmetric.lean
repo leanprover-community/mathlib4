@@ -18,7 +18,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 universe v w x u
 
-open CategoryTheory
+open CategoryTheory MonoidalCategory
 
 namespace ModuleCat
 

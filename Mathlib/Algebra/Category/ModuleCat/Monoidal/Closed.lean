@@ -62,6 +62,8 @@ theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of
 set_option linter.uppercaseLean3 false in
 #align Module.ihom_map_apply ModuleCat.ihom_map_apply
 
+open MonoidalCategory
+
 -- porting note: `CoeFun` was replaced by `FunLike`
 -- I can't seem to express the function coercion here without writing `@FunLike.coe`.
 @[simp]

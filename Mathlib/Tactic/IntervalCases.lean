@@ -32,6 +32,8 @@ where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In t
 -/
 
 set_option linter.unusedVariables false
+-- In this file we would like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
 
 namespace Mathlib.Tactic
 
@@ -382,12 +384,12 @@ elab_rules : tactic
         let (lo, _) ← parseBound ubTy
         let .true ← isDefEq e lo | failure
       catch _ => throwErrorAt ub "expected a term of the form {e} < _ or {e} ≤ _, got {ubTy}"
-      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getLCtx).getFVarIds
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getFVarIdsAt g)
       g.withContext do
       cont xs[0]! xs[1]? subst g e #[subst.apply lb'] #[subst.apply ub'] (mustUseBounds := true)
     | some e, none, none =>
       let e ← Tactic.elabTerm e none
-      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getLCtx).getFVarIds
+      let (subst, xs, g) ← g.generalizeHyp #[{ expr := e, hName? }] (← getFVarIdsAt g)
       let x := xs[0]!
       g.withContext do
       let e := subst.apply e

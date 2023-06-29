@@ -248,7 +248,7 @@ theorem tendsto_approxOn_L1_nnnorm [OpensMeasurableSpace E] {f : β → E} (hf :
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hi₀⊢
+  rw [← memℒp_one_iff_integrable] at hf hi₀ ⊢
   exact memℒp_approxOn fmeas hf h₀ hi₀ n
 #align measure_theory.simple_func.integrable_approx_on MeasureTheory.SimpleFunc.integrable_approxOn
 
@@ -444,6 +444,8 @@ variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p :
 
 variable (E)
 
+-- Porting note: the proofs were rewritten in tactic mode to avoid an
+-- "unknown free variable '_uniq.546677'" error.
 /-- `Lp.simpleFunc` is a subspace of Lp consisting of equivalence classes of an integrable simple
     function. -/
 def simpleFunc : AddSubgroup (Lp E p μ) where

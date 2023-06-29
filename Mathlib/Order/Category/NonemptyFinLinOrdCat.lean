@@ -69,6 +69,7 @@ instance : BundledHom.ParentProjection @NonemptyFinLinOrd.toLinearOrder :=
 
 deriving instance LargeCategory for NonemptyFinLinOrdCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory NonemptyFinLinOrdCat :=
   BundledHom.concreteCategory _
 
@@ -133,8 +134,8 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : NonemptyFinLinOrdCat ≌ NonemptyFinLinOrdCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrdCat.dualEquiv
 
@@ -195,8 +196,8 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [coe_of, FunctorToTypes.map_comp_apply]
-      simp only [forget_map_apply]
+      simp only [coe_of, comp_apply]
+      change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
       · exfalso
@@ -224,7 +225,7 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl

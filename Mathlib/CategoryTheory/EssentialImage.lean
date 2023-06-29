@@ -22,7 +22,7 @@ functor rather than a subtype, preserving the principle of equivalence. For exam
 define exponential ideals.
 
 The essential image can also be seen as a subcategory of the target category, and witnesses that
-a functor decomposes into a essentially surjective functor and a fully faithful functor.
+a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
 
@@ -138,9 +138,8 @@ class EssSurj (F : C ⥤ D) : Prop where
   mem_essImage (Y : D) : Y ∈ F.essImage
 #align category_theory.ess_surj CategoryTheory.EssSurj
 
-instance :
-    EssSurj
-      F.toEssImage where mem_essImage := fun ⟨_, hY⟩ =>
+instance EssSurj.toEssImage : EssSurj F.toEssImage where
+  mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
 variable (F) [EssSurj F]

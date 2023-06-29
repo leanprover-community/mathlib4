@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 
 ! This file was ported from Lean 3 source module data.set.finite
-! leanprover-community/mathlib commit 5bb9fffd23f9f65b367f5d451da18cc60bf47335
+! leanprover-community/mathlib commit 7fdd4f3746cb059edfdb5d52cba98f66fce418c0
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -111,6 +111,19 @@ protected noncomputable def Finite.fintype {s : Set α} (h : s.Finite) : Fintype
 protected noncomputable def Finite.toFinset {s : Set α} (h : s.Finite) : Finset α :=
   @Set.toFinset _ _ h.fintype
 #align set.finite.to_finset Set.Finite.toFinset
+
+theorem Finite.toFinset_eq_toFinset {s : Set α} [Fintype s] (h : s.Finite) :
+    h.toFinset = s.toFinset := by
+  -- porting note: was `rw [Finite.toFinset]; congr`
+  -- in Lean 4, a goal is left after `congr`
+  have : h.fintype = ‹_› := Subsingleton.elim _ _
+  rw [Finite.toFinset, this]
+#align set.finite.to_finset_eq_to_finset Set.Finite.toFinset_eq_toFinset
+
+@[simp]
+theorem toFinite_toFinset (s : Set α) [Fintype s] : s.toFinite.toFinset = s.toFinset :=
+  s.toFinite.toFinset_eq_toFinset
+#align set.to_finite_to_finset Set.toFinite_toFinset
 
 theorem Finite.exists_finset {s : Set α} (h : s.Finite) :
     ∃ s' : Finset α, ∀ a : α, a ∈ s' ↔ a ∈ s := by
@@ -223,11 +236,14 @@ alias Finite.toFinset_ssubset_toFinset ↔ _ toFinset_strictMono
 -- Porting note: attribute [protected] doesn't work
 -- attribute [protected] toFinset_mono toFinset_strictMono
 
-@[simp]
+-- porting note: `simp` can simplify LHS but then it simplifies something
+-- in the generated `Fintype {x | p x}` instance and fails to apply `Set.toFinset_setOf`
+@[simp high]
 protected theorem toFinset_setOf [Fintype α] (p : α → Prop) [DecidablePred p]
     (h : { x | p x }.Finite) : h.toFinset = Finset.univ.filter p := by
   ext
-  simp
+  -- porting note: `simp` doesn't use the `simp` lemma `Set.toFinset_setOf` without the `_`
+  simp [Set.toFinset_setOf _]
 #align set.finite.to_finset_set_of Set.Finite.toFinset_setOf
 
 @[simp]
@@ -266,10 +282,9 @@ protected theorem toFinset_compl [DecidableEq α] [Fintype α] (hs : s.Finite) (
   simp
 #align set.finite.to_finset_compl Set.Finite.toFinset_compl
 
-@[simp]
-protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ := by
-  ext
-  simp
+-- porting note: was `@[simp]`, now `simp` can prove it
+protected theorem toFinset_empty (h : (∅ : Set α).Finite) : h.toFinset = ∅ :=
+  toFinite_toFinset _
 #align set.finite.to_finset_empty Set.Finite.toFinset_empty
 
 protected theorem toFinset_univ [Fintype α] (h : (Set.univ : Set α).Finite) :
@@ -294,7 +309,8 @@ protected theorem toFinset_image [DecidableEq β] (f : α → β) (hs : s.Finite
   simp
 #align set.finite.to_finset_image Set.Finite.toFinset_image
 
-@[simp]
+-- porting note: now `simp` can prove it but it needs the `fintypeRange` instance from the next
+-- section
 protected theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) (h : (range f).Finite) :
     h.toFinset = Finset.univ.image f := by
   ext
@@ -306,8 +322,7 @@ end Finite
 /-! ### Fintype instances
 
 Every instance here should have a corresponding `Set.Finite` constructor in the next section.
- -/
-
+-/
 
 section FintypeInstances
 
@@ -534,10 +549,9 @@ theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
   Set.toFinite _
 #align finset.finite_to_set Finset.finite_toSet
 
-@[simp]
+-- porting note: was @[simp], now `simp` can prove it
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
-  ext
-  rw [Set.Finite.mem_toFinset, mem_coe]
+  rw [toFinite_toFinset, toFinset_coe]
 #align finset.finite_to_set_to_finset Finset.finite_toSet_toFinset
 
 end Finset
@@ -859,7 +873,7 @@ theorem finite_range (f : ι → α) [Finite ι] : (range f).Finite :=
 #align set.finite_range Set.finite_range
 
 theorem Finite.dependent_image {s : Set α} (hs : s.Finite) (F : ∀ i ∈ s, β) :
-    { y : β | ∃ (x : _)(hx : x ∈ s), y = F x hx }.Finite := by
+    { y : β | ∃ (x : _) (hx : x ∈ s), y = F x hx }.Finite := by
   cases hs
   simpa [range, eq_comm] using finite_range fun x : s => F x x.2
 #align set.finite.dependent_image Set.Finite.dependent_image
@@ -1049,10 +1063,10 @@ theorem univ_finite_iff_nonempty_fintype : (univ : Set α).Finite ↔ Nonempty (
   ⟨fun h => ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
 #align set.univ_finite_iff_nonempty_fintype Set.univ_finite_iff_nonempty_fintype
 
-@[simp]
+-- porting note: moved `@[simp]` to `Set.toFinset_singleton` because `simp` can now simplify LHS
 theorem Finite.toFinset_singleton {a : α} (ha : ({a} : Set α).Finite := finite_singleton _) :
     ha.toFinset = {a} :=
-  Finset.ext <| by simp
+  Set.toFinite_toFinset _
 #align set.finite.to_finset_singleton Set.Finite.toFinset_singleton
 
 @[simp]
@@ -1083,7 +1097,7 @@ theorem Finite.fin_embedding {s : Set α} (h : s.Finite) :
 #align set.finite.fin_embedding Set.Finite.fin_embedding
 
 theorem Finite.fin_param {s : Set α} (h : s.Finite) :
-    ∃ (n : ℕ)(f : Fin n → α), Injective f ∧ range f = s :=
+    ∃ (n : ℕ) (f : Fin n → α), Injective f ∧ range f = s :=
   let ⟨n, f, hf⟩ := h.fin_embedding
   ⟨n, f, f.injective, hf⟩
 #align set.finite.fin_param Set.Finite.fin_param
@@ -1148,7 +1162,7 @@ theorem Finite.induction_on' {C : Set α → Prop} {S : Set α} (h : S.Finite) (
     (H1 : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → C s → C (insert a s)) : C S := by
   refine' @Set.Finite.induction_on α (fun s => s ⊆ S → C s) S h (fun _ => H0) _ Subset.rfl
   intro a s has _ hCs haS
-  rw [insert_subset] at haS
+  rw [insert_subset_iff] at haS
   exact H1 haS.1 haS.2 has (hCs haS.2)
 #align set.finite.induction_on' Set.Finite.induction_on'
 
@@ -1394,9 +1408,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have h := not_injective_infinite_finite
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
   contrapose! h
-  --porting note: why do we have `contrapose!` if the `push_neg` behaviour doesn't work?
-  rw [injective_codRestrict, ← injOn_iff_injective]
-  rwa [not_not] at h
+  rwa [injective_codRestrict, ← injOn_iff_injective]
 #align set.not_inj_on_infinite_finite_image Set.not_injOn_infinite_finite_image
 
 /-! ### Order properties -/
@@ -1407,7 +1419,7 @@ variable [Preorder α] [Nonempty α] {s : Set α}
 
 theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
   inhabit α
-  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun n a => (h a).choose
+  set f : ℕ → α := fun n => Nat.recOn n (h default).choose fun _ a => (h a).choose
   have hf : ∀ n, f n ∈ s := by rintro (_ | _) <;> exact (h _).choose_spec.1
   exact infinite_of_injective_forall_mem
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf

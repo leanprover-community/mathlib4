@@ -232,7 +232,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
 
 theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 := by
   rw [Function.Injective] at hv
-  push_neg  at hv
+  push_neg at hv
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 #align alternating_map.map_eq_zero_of_not_injective AlternatingMap.map_eq_zero_of_not_injective
@@ -482,7 +482,7 @@ namespace LinearMap
 
 variable {N₂ : Type _} [AddCommMonoid N₂] [Module R N₂]
 
-/-- Composing a alternating map with a linear map on the left gives again an alternating map. -/
+/-- Composing an alternating map with a linear map on the left gives again an alternating map. -/
 def compAlternatingMap (g : N →ₗ[R] N₂) : AlternatingMap R M N ι →+ AlternatingMap R M N₂ ι where
   toFun f :=
     { g.compMultilinearMap (f : MultilinearMap R (fun _ : ι => M) N) with
@@ -535,7 +535,7 @@ variable {M₂ : Type _} [AddCommMonoid M₂] [Module R M₂]
 
 variable {M₃ : Type _} [AddCommMonoid M₃] [Module R M₃]
 
-/-- Composing a alternating map with the same linear map on each argument gives again an
+/-- Composing an alternating map with the same linear map on each argument gives again an
 alternating map. -/
 def compLinearMap (f : AlternatingMap R M N ι) (g : M₂ →ₗ[R] M) : AlternatingMap R M₂ N ι :=
   { (f : MultilinearMap R (fun _ : ι => M) N).compLinearMap fun _ => g with

@@ -8,7 +8,6 @@ Authors: Sébastien Gouëzel, Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Basic
 
@@ -432,13 +431,13 @@ theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
   · exact smul_sphere' hc x r
 #align smul_sphere smul_sphere
 
-/-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `λ y, x + r • y`. -/
+/-- Any ball `Metric.ball x r`, `0 < r` is the image of the unit ball under `fun y ↦ x + r • y`. -/
 theorem affinity_unitBall {r : ℝ} (hr : 0 < r) (x : E) : x +ᵥ r • ball (0 : E) 1 = ball x r := by
   rw [smul_unitBall_of_pos hr, vadd_ball_zero]
 #align affinity_unit_ball affinity_unitBall
 
 /-- Any closed ball `Metric.closedBall x r`, `0 ≤ r` is the image of the unit closed ball under
-`λ y, x + r • y`. -/
+`fun y ↦ x + r • y`. -/
 theorem affinity_unitClosedBall {r : ℝ} (hr : 0 ≤ r) (x : E) :
     x +ᵥ r • closedBall (0 : E) 1 = closedBall x r := by
   rw [smul_closedUnitBall, Real.norm_of_nonneg hr, vadd_closedBall_zero]

@@ -10,11 +10,11 @@ We check that `bestFirstSearch` can find its way around a wall.
 open Lean ListM
 
 def wall : Int × Int → Bool :=
-fun ⟨x, y⟩ => x ≤ 3 || y ≤ 3 || x ≥ 20 || y ≥ 20 || (x ≥ 6 && y ≥ 6)
+  fun ⟨x, y⟩ => x ≤ 3 || y ≤ 3 || x ≥ 20 || y ≥ 20 || (x ≥ 6 && y ≥ 6)
 
-unsafe def nbhd : Int × Int → ListM MetaM (Int × Int) :=
-fun ⟨x, y⟩ => ListM.ofList
-    ([(x+1,y), (x-1,y), (x,y+1), (x,y-1)].filter wall)
+def nbhd : Int × Int → ListM MetaM (Int × Int) :=
+  fun ⟨x, y⟩ => ListM.ofList
+      ([(x+1,y), (x-1,y), (x,y+1), (x,y-1)].filter wall)
 
 instance : Ord (Int × Int) where
   compare p q :=

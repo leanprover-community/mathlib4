@@ -382,9 +382,8 @@ theorem eq_top_iff_forall_lt (x : PartENat) : x = ⊤ ↔ ∀ n : ℕ, (n : Part
   constructor
   · rintro rfl n
     exact natCast_lt_top _
-  · -- Porting note: was `contrapose!`
-    contrapose
-    rw [←Ne, ne_top_iff, not_forall]
+  · contrapose!
+    rw [ne_top_iff]
     rintro ⟨n, rfl⟩
     exact ⟨n, irrefl _⟩
 #align part_enat.eq_top_iff_forall_lt PartENat.eq_top_iff_forall_lt
@@ -512,6 +511,10 @@ theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x 
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
 #align part_enat.add_one_le_iff_lt PartENat.add_one_le_iff_lt
 
+theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e:= by
+  rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
+#align part_enat.coe_succ_le_succ_iff PartENat.coe_succ_le_iff
+
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
   refine ⟨le_of_lt_add_one, fun h => ?_⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
@@ -521,6 +524,10 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   -- Porting note: was `apply_mod_cast Nat.lt_succ_of_le; apply_mod_cast h`
   norm_cast; apply Nat.lt_succ_of_le; norm_cast at h
 #align part_enat.lt_add_one_iff_lt PartENat.lt_add_one_iff_lt
+
+lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n :=
+by rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
+#align part_enat.lt_coe_succ_iff_le PartENat.lt_coe_succ_iff_le
 
 theorem add_eq_top_iff {a b : PartENat} : a + b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := by
   refine PartENat.casesOn a ?_ ?_
@@ -543,7 +550,7 @@ protected theorem add_left_cancel_iff {a b c : PartENat} (ha : a ≠ ⊤) : a + 
 
 section WithTop
 
-/-- Computably converts an `PartENat` to a `ℕ∞`. -/
+/-- Computably converts a `PartENat` to a `ℕ∞`. -/
 def toWithTop (x : PartENat) [Decidable x.Dom] : ℕ∞ :=
   x.toOption
 #align part_enat.to_with_top PartENat.toWithTop
@@ -792,10 +799,8 @@ theorem lt_find (n : ℕ) (h : ∀ m ≤ n, ¬P m) : (n : PartENat) < find P := 
   rw [find_get]
   have h₂ := @Nat.find_spec P _ h₁
   revert h₂
-  contrapose
-  intro h₂
-  rw [not_lt] at h₂
-  exact h _ h₂
+  contrapose!
+  exact h _
 #align part_enat.lt_find PartENat.lt_find
 
 theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m := by

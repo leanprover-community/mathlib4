@@ -13,6 +13,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
 
 /-!
@@ -88,11 +89,11 @@ section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
   {s : Set M} {a b : M} {c : R}
 
-theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
+@[gcongr] theorem smul_lt_smul_of_pos : a < b → 0 < c → c • a < c • b :=
   OrderedSMul.smul_lt_smul_of_pos
 #align smul_lt_smul_of_pos smul_lt_smul_of_pos
 
-theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
+@[gcongr] theorem smul_le_smul_of_nonneg (h₁ : a ≤ b) (h₂ : 0 ≤ c) : c • a ≤ c • b := by
   rcases h₁.eq_or_lt with (rfl | hab)
   · rfl
   · rcases h₂.eq_or_lt with (rfl | hc)
@@ -182,7 +183,7 @@ instance Nat.orderedSMul [LinearOrderedCancelAddCommMonoid M] : OrderedSMul ℕ 
 instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
   OrderedSMul.mk'' fun n hn => by
     cases n
-    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn⊢
+    · simp only [Int.ofNat_eq_coe, Int.coe_nat_pos, coe_nat_zsmul] at hn ⊢
       exact strictMono_smul_left hn
     · cases (Int.negSucc_not_pos _).1 hn
 #align int.ordered_smul Int.orderedSMul

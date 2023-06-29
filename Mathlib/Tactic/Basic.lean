@@ -134,7 +134,7 @@ elab_rules : tactic
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
         liftMetaTactic fun mvarId ↦ do
           return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
-      (atTarget := evalTactic <| ← `(tactic| show $newType))
+      (atTarget := evalTactic <| ← `(tactic| refine_lift show $newType from ?_))
       (failed := fun _ ↦ throwError "change tactic failed")
 
 /--

@@ -23,7 +23,7 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
   and the composition is bilinear.
 
 See `ring_theory.derivation.lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form an lie algebra over `R`.
+- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
 and `ring_theory.derivation.to_square_zero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
@@ -316,7 +316,7 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A
   map_smul' r D := by ext; rfl
 #align derivation.llcomp Derivation.llcomp
 
-/-- Pushing a derivation foward through a linear equivalence is an equivalence. -/
+/-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
 def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer

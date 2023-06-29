@@ -19,6 +19,8 @@ noncomputable section
 
 namespace CategoryTheory
 
+open MonoidalCategory
+
 variable {C D : Type _} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
 
 variable (F : MonoidalFunctor C D)
