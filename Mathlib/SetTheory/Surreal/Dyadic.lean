@@ -249,8 +249,8 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
         Submonoid.log_mul (Int.pow_right_injective h₂), hpow₂]
       calc
         (2 ^ b' * c + 2 ^ d' * a) • powHalf (b' + d') =
-            (c * 2 ^ b') • powHalf (b' + d') + (a * 2 ^ d') • powHalf (d' + b') :=
-          by simp only [add_smul, mul_comm, add_comm]
+            (c * 2 ^ b') • powHalf (b' + d') + (a * 2 ^ d') • powHalf (d' + b') := by
+          simp only [add_smul, mul_comm, add_comm]
         _ = c • powHalf d' + a • powHalf b' := by simp only [zsmul_pow_two_powHalf]
         _ = a • powHalf b' + c • powHalf d' := add_comm _ _
 #align surreal.dyadic_map Surreal.dyadicMap
@@ -258,8 +258,8 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
 @[simp]
 theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m p) =
-      m • powHalf (Submonoid.log p) :=
-  by rw [← Localization.mk_eq_mk']; rfl
+      m • powHalf (Submonoid.log p) := by
+  rw [← Localization.mk_eq_mk']; rfl
 #align surreal.dyadic_map_apply Surreal.dyadicMap_apply
 
 -- @[simp] -- Porting note: simp normal form is `dyadicMap_apply_pow'`
