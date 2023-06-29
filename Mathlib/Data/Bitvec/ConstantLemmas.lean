@@ -7,7 +7,7 @@ namespace Bitvec
 
 /-- Every bit in `zero` is `0`/`false` -/
 @[simp]
-theorem get_zero_eq_false : get (zero n) i = false :=
+theorem get_zero_eq_false : get (0 : Bitvec n) i = false :=
   get_replicate ..
 
 /-- Every bit in `ones` is `1`/`true` -/
@@ -19,38 +19,26 @@ theorem get_ones_eq_true : get (allOnes n) i = true :=
 
 section NegateConstants
   @[simp]
-  theorem not_zero : not (allOnes n) = zero n := by
+  theorem not_zero : ~~~ (allOnes n) = 0 := by
     ext; simp
 
   @[simp]
-  theorem not_ones : not (zero n) = (allOnes n) := by
+  theorem not_ones : ~~~ (0 : Bitvec n) = (allOnes n) := by
     ext; simp
 end NegateConstants
 
 
 section Zero
   @[simp]
-  theorem ofNat_zero_eq_zero : (Bitvec.ofNat n 0) = zero n := by
-    simp only [OfNat.ofNat, Zero.zero, Bitvec.zero]
-    induction n
-    case zero =>
-      rfl
-    case succ n ih =>
-      show (Bitvec.ofNat n 0).snoc false
-            = (Vector.replicate (n+1) false)
-      rw[Vector.replicate_succ_to_snoc, ih]
+  theorem ofNat_zero_eq_zero : (Bitvec.ofNat n 0) = 0 := by
+    exact ofNat_zero
 
-
-  @[simp]
-  theorem zero_eq_bitvec_zero : 0 = (zero n) :=
+  @[aesop 50%]
+  theorem zero_unfold : (0 : Bitvec (n+1)) = false ::ᵥ 0 := by
     rfl
 
   @[aesop 50%]
-  theorem zero_unfold : (zero (n+1)) = false ::ᵥ 0 := by
-    rfl
-
-  @[aesop 50%]
-  theorem zero_unfold_snoc : (zero (n+1)) = Vector.snoc 0 false := by
+  theorem zero_unfold_snoc : (0 : Bitvec (n+1)) = Vector.snoc 0 false := by
     induction n
     . rfl
     . simp[zero_unfold, *]; congr

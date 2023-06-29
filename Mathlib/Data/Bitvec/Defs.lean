@@ -369,7 +369,7 @@ protected def ofNat : ∀ n : ℕ, Nat → Bitvec n
 /-- Create a bitvector from an `Int`. The ring homomorphism from Int to bitvectors. -/
 protected def ofInt : ∀ n : ℕ, Int → Bitvec n
   | n, Int.ofNat m => Bitvec.ofNat n m
-  | n, Int.negSucc m => (Bitvec.ofNat n m).not
+  | n, Int.negSucc m => ~~~(Bitvec.ofNat n m)
 
 /-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
 def addLsb (r : ℕ) (b : Bool) :=
