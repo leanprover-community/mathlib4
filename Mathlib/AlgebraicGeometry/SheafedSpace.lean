@@ -101,6 +101,7 @@ theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
   PresheafedSpace.ext α β w h
 
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
+@[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
 set_option linter.uppercaseLean3 false in
