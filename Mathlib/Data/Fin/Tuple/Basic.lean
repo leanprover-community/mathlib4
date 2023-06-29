@@ -405,8 +405,8 @@ theorem repeat_succ {α : Type _} (a : Fin n → α) (m : ℕ) :
 #align fin.repeat_succ Fin.repeat_succ
 
 @[simp]
-theorem repeat_add {α : Type _} (a : Fin n → α) (m₁ m₂ : ℕ) :
-    Fin.repeat (m₁ + m₂) a = append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ castIso (add_mul _ _ _) := by
+theorem repeat_add {α : Type _} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m₂) a =
+    append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ castIso (add_mul _ _ _) := by
   generalize_proofs h
   apply funext
   rw [(Fin.castIso h.symm).surjective.forall]

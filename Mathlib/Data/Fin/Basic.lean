@@ -1185,8 +1185,8 @@ theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
   simp
 #align fin.cast_add_cast_add Fin.castAdd_castAdd
 
-/-- The cast of the successor is the successor of the cast. See `Fin.succ_castIso_eq` for rewriting in
-the reverse direction. -/
+/-- The cast of the successor is the successor of the cast.
+See `Fin.succ_castIso_eq` for rewriting in the reverse direction. -/
 @[simp]
 theorem castIso_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
     castIso h i.succ = (castIso (Nat.succ.inj h) i).succ :=
@@ -1455,12 +1455,14 @@ theorem castIso_natAdd_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
 #align fin.cast_nat_add_zero Fin.castIso_natAdd_zero
 
 @[simp]
-theorem castIso_natAdd (n : ℕ) {m : ℕ} (i : Fin m) : castIso (add_comm _ _) (natAdd n i) = addNat n i :=
+theorem castIso_natAdd (n : ℕ) {m : ℕ} (i : Fin m) :
+    castIso (add_comm _ _) (natAdd n i) = addNat n i :=
   ext <| add_comm _ _
 #align fin.cast_nat_add Fin.castIso_natAdd
 
 @[simp]
-theorem castIso_addNat {n : ℕ} (m : ℕ) (i : Fin n) : castIso (add_comm _ _) (addNat m i) = natAdd m i :=
+theorem castIso_addNat {n : ℕ} (m : ℕ) (i : Fin n) :
+    castIso (add_comm _ _) (addNat m i) = natAdd m i :=
   ext <| add_comm _ _
 #align fin.cast_add_nat Fin.castIso_addNat
 
