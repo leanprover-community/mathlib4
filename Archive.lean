@@ -1,3 +1,4 @@
+import Archive.Arithcc
 import Archive.Examples.PropEncodable
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1960Q1
@@ -23,6 +24,7 @@ import Archive.Imo.Imo2011Q5
 import Archive.Imo.Imo2013Q1
 import Archive.Imo.Imo2013Q5
 import Archive.Imo.Imo2019Q1
+import Archive.Imo.Imo2019Q2
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1

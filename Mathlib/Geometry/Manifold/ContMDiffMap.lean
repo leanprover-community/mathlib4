@@ -14,7 +14,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 /-!
 # Smooth bundled map
 
-In this file we define the type `cont_mdiff_map` of `n` times continuously differentiable
+In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
 -/
 
