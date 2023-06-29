@@ -146,8 +146,6 @@ theorem is_lt (a : Fin n) : (a : ℕ) < n :=
   a.2
 #align fin.is_lt Fin.is_lt
 
-protected theorem pos (i : Fin n) : 0 < n :=
-  lt_of_le_of_lt (Nat.zero_le _) i.is_lt
 #align fin.pos Fin.pos
 
 theorem pos_iff_nonempty {n : ℕ} : 0 < n ↔ Nonempty (Fin n) :=
@@ -181,8 +179,6 @@ theorem ext {a b : Fin n} (h : (a : ℕ) = b) : a = b :=
   eq_of_veq h
 #align fin.ext Fin.ext
 
-theorem ext_iff {a b : Fin n} : a = b ↔ (a : ℕ) = b :=
-  Iff.intro (congr_arg _) Fin.eq_of_veq
 #align fin.ext_iff Fin.ext_iff
 
 #align fin.coe_injective Fin.val_injective
@@ -526,9 +522,6 @@ theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDu
   rfl
 #align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_apply
 
-/-- The greatest value of `Fin (n+1)` -/
-def last (n : ℕ) : Fin (n + 1) :=
-  ⟨n, n.lt_succ_self⟩
 #align fin.last Fin.last
 
 @[simp, norm_cast]
@@ -1003,9 +996,6 @@ theorem succ_succ_ne_one (a : Fin n) : Fin.succ (Fin.succ a) ≠ 1 :=
   ne_of_gt (one_lt_succ_succ a)
 #align fin.succ_succ_ne_one Fin.succ_succ_ne_one
 
-/-- `castLT i h` embeds `i` into a `Fin` where `h` proves it belongs into.  -/
-def castLT (i : Fin m) (h : i.1 < n) : Fin n :=
-  ⟨i.1, h⟩
 #align fin.cast_lt Fin.castLT
 
 @[simp]
