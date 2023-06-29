@@ -798,15 +798,14 @@ end
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
   `∫ x, f x = 0` will be parsed incorrectly. -/
 
-
 @[inherit_doc MeasureTheory.integral]
-notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => integral μ r
+notation3:max "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:max => integral μ r
 
 @[inherit_doc MeasureTheory.integral]
 notation3 "∫ "(...)", "r:60:(scoped f => integral volume f) => r
 
 @[inherit_doc MeasureTheory.integral]
-notation3 "∫ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:70 => integral (Measure.restrict μ s) r
+notation3:max "∫ "(...)" in "s", "r:60:(scoped f => f)" ∂"μ:max => integral (Measure.restrict μ s) r
 
 @[inherit_doc MeasureTheory.integral]
 notation3 "∫ "(...)" in "s", "r:60:(scoped f => integral (Measure.restrict volume s) f) => r
@@ -1430,7 +1429,7 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → E) :
 
 theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
-    ∫ a, f a ∂(∑ i in s, μ i) = ∑ i in s, ∫ a, f a ∂μ i := by
+    ∫ a, f a ∂(∑ i in s, μ i) = ∑ i in s, ∫ a, f a ∂(μ i) := by
   induction s using Finset.cons_induction_on with
   | h₁ => simp
   | h₂ h ih =>
@@ -1447,7 +1446,7 @@ theorem nndist_integral_add_measure_le_lintegral (h₁ : Integrable f μ) (h₂ 
 
 theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
     (hf : Integrable f (Measure.sum μ)) :
-    HasSum (fun i => ∫ a, f a ∂μ i) (∫ a, f a ∂Measure.sum μ) := by
+    HasSum (fun i => ∫ a, f a ∂(μ i)) (∫ a, f a ∂(Measure.sum μ)) := by
   have hfi : ∀ i, Integrable f (μ i) := fun i => hf.mono_measure (Measure.le_sum _ _)
   simp only [HasSum, ← integral_finset_sum_measure fun i _ => hfi i]
   refine' Metric.nhds_basis_ball.tendsto_right_iff.mpr fun ε ε0 => _
@@ -1468,7 +1467,7 @@ theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ
 #align measure_theory.has_sum_integral_measure MeasureTheory.hasSum_integral_measure
 
 theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
-    (hf : Integrable f (Measure.sum μ)) : ∫ a, f a ∂Measure.sum μ = ∑' i, ∫ a, f a ∂μ i :=
+    (hf : Integrable f (Measure.sum μ)) : ∫ a, f a ∂(Measure.sum μ) = ∑' i, ∫ a, f a ∂(μ i) :=
   (hasSum_integral_measure hf).tsum_eq.symm
 #align measure_theory.integral_sum_measure MeasureTheory.integral_sum_measure
 
@@ -1505,7 +1504,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AES
 
 @[simp]
 theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
-    ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
+    ∫ x, f x ∂(c • μ) = c.toReal • ∫ x, f x ∂μ := by
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
   · rw [ENNReal.top_toReal, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
@@ -1519,7 +1518,7 @@ theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
 #align measure_theory.integral_smul_measure MeasureTheory.integral_smul_measure
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
-    {f : β → E} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
+    {f : β → E} (hfm : StronglyMeasurable f) : ∫ y, f y ∂(Measure.map φ μ) = ∫ x, f (φ x) ∂μ := by
   by_cases hfi : Integrable f (Measure.map φ μ); swap
   · rw [integral_undef hfi, integral_undef]
     exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)

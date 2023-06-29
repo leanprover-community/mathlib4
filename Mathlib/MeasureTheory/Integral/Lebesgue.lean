@@ -609,7 +609,7 @@ theorem lintegral_smul_measure (c : ℝ≥0∞) (f : α → ℝ≥0∞) : ∫⁻
 
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
-    ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
+    ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂(μ i) := by
   simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum]
   rw [iSup_comm]
   congr ; funext s
@@ -626,7 +626,7 @@ theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0�
 #align measure_theory.lintegral_sum_measure MeasureTheory.lintegral_sum_measure
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
-    HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
+    HasSum (fun i => ∫⁻ a, f a ∂(μ i)) (∫⁻ a, f a ∂Measure.sum μ) :=
   (lintegral_sum_measure f μ).symm ▸ ENNReal.summable.hasSum
 #align measure_theory.has_sum_lintegral_measure MeasureTheory.hasSum_lintegral_measure
 
@@ -638,7 +638,7 @@ theorem lintegral_add_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) (
 
 @[simp]
 theorem lintegral_finset_sum_measure {ι} {m : MeasurableSpace α} (s : Finset ι) (f : α → ℝ≥0∞)
-    (μ : ι → Measure α) : ∫⁻ a, f a ∂(∑ i in s, μ i) = ∑ i in s, ∫⁻ a, f a ∂μ i := by
+    (μ : ι → Measure α) : ∫⁻ a, f a ∂(∑ i in s, μ i) = ∑ i in s, ∫⁻ a, f a ∂(μ i) := by
   rw [← Measure.sum_coe_finset, lintegral_sum_measure, ← Finset.tsum_subtype']
   rfl
 #align measure_theory.lintegral_finset_sum_measure MeasureTheory.lintegral_finset_sum_measure
