@@ -757,24 +757,24 @@ class HasCompl (α : Type _) where
 export HasCompl (compl)
 
 @[inherit_doc]
-postfix:999 "ᶜ" => compl
+postfix:1024 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
 #align Prop.has_compl Prop.hasCompl
 
 instance Pi.hasCompl {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) :=
-  ⟨fun x i ↦ x iᶜ⟩
+  ⟨fun x i ↦ (x i)ᶜ⟩
 #align pi.has_compl Pi.hasCompl
 
 theorem Pi.compl_def {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) :
-    xᶜ = fun i ↦ x iᶜ :=
+    xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 #align pi.compl_def Pi.compl_def
 
 @[simp]
 theorem Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) (i : ι) :
-    (xᶜ) i = x iᶜ :=
+    (xᶜ) i = (x i)ᶜ :=
   rfl
 #align pi.compl_apply Pi.compl_apply
 
