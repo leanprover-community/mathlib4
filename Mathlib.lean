@@ -2897,6 +2897,7 @@ import Mathlib.Tactic.Polyrith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.PpWithUniv
 import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
