@@ -8,11 +8,11 @@ Authors: Simon Hudon
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.OmegaCompletePartialOrder
-import Mathbin.CategoryTheory.Limits.Shapes.Products
-import Mathbin.CategoryTheory.Limits.Shapes.Equalizers
-import Mathbin.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathbin.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 
 /-!
 # Category of types with a omega complete partial order
@@ -42,8 +42,7 @@ namespace ωCPO
 
 open OmegaCompletePartialOrder
 
-instance : BundledHom @ContinuousHom
-    where
+instance : BundledHom @ContinuousHom where
   toFun := @ContinuousHom.Simps.apply
   id := @ContinuousHom.id
   comp := @ContinuousHom.comp
@@ -82,8 +81,7 @@ def product {J : Type v} (f : J → ωCPO.{v}) : Fan f :=
 #align ωCPO.has_products.product ωCPO.HasProducts.product
 
 /-- The pi-type is a limit cone for the product. -/
-def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f)
-    where
+def isProduct (J : Type v) (f : J → ωCPO) : IsLimit (product f) where
   lift s :=
     ⟨⟨fun t j => s.π.app ⟨j⟩ t, fun x y h j => (s.π.app ⟨j⟩).Monotone h⟩, fun x =>
       funext fun j => (s.π.app ⟨j⟩).Continuous x⟩
@@ -103,8 +101,7 @@ end HasProducts
 instance omegaCompletePartialOrderEqualizer {α β : Type _} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f g : α →𝒄 β) :
     OmegaCompletePartialOrder { a : α // f a = g a } :=
-  OmegaCompletePartialOrder.subtype _ fun c hc =>
-    by
+  OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
     congr 1
     ext
@@ -130,8 +127,7 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨{  toFun := fun x => ⟨s.ι x, by apply continuous_hom.congr_fun s.condition⟩
         monotone' := fun x y h => s.ι.Monotone h
-        cont := fun x => Subtype.ext (s.ι.Continuous x) }, by ext; rfl, fun m hm =>
-      by
+        cont := fun x => Subtype.ext (s.ι.Continuous x) }, by ext; rfl, fun m hm => by
       ext
       apply continuous_hom.congr_fun hm⟩
 #align ωCPO.has_equalizers.is_equalizer ωCPO.HasEqualizers.isEqualizer
