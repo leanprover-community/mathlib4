@@ -42,8 +42,8 @@ variable [Semigroup α] {a b c : α}
 
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
     This matches the convention for ordinals. -/
-instance (priority := 100) semigroupDvd : Dvd α :=
-  Dvd.mk fun a b => ∃ c, b = a * c
+instance (priority := 100) semigroupDvd : Dvd α where
+  dvd := divides -- This needs to match the instances for `Dvd Nat` and `Dvd Int`!
 #align semigroup_has_dvd semigroupDvd
 
 -- TODO: this used to not have `c` explicit, but that seems to be important
@@ -71,6 +71,8 @@ theorem dvd_trans : a ∣ b → b ∣ c → a ∣ c
 #align dvd_trans dvd_trans
 
 alias dvd_trans ← Dvd.dvd.trans
+
+theorem dvd_iff : a ∣ b ↔ ∃ c, b = a * c := .rfl
 
 /-- Transitivity of `|` for use in `calc` blocks. -/
 instance : IsTrans α Dvd.dvd :=

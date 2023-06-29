@@ -251,7 +251,7 @@ theorem map_swap_divisorsAntidiagonal :
 @[simp]
 theorem image_fst_divisorsAntidiagonal : (divisorsAntidiagonal n).image Prod.fst = divisors n := by
   ext
-  simp [Dvd.dvd, @eq_comm _ n (_ * _)]
+  simp [dvd_iff, eq_comm]
 #align nat.image_fst_divisors_antidiagonal Nat.image_fst_divisorsAntidiagonal
 
 @[simp]
