@@ -29,7 +29,7 @@ initialize registerTraceClass `tauto
 def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := g.withContext do
   let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
   let h ← fvarId.getDecl
-  let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; whnfR h.type)
+  let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type.cleanupAnnotations)
   let replace (p : Expr) := g.replace h.fvarId p
   match ← instantiateMVarsQ (u := .zero) e with
   | ~q(¬ ($a : Prop) = $b) => do
