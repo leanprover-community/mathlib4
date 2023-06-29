@@ -33,6 +33,7 @@ import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Category.BoolRingCat
 import Mathlib.Algebra.Category.FGModuleCat.Basic
+import Mathlib.Algebra.Category.FGModuleCat.Limits
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.Adjunctions
 import Mathlib.Algebra.Category.GroupCat.Basic
@@ -197,6 +198,7 @@ import Mathlib.Algebra.Hom.Units
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.ComplexShape
+import Mathlib.Algebra.Homology.DifferentialObject
 import Mathlib.Algebra.Homology.Exact
 import Mathlib.Algebra.Homology.Flip
 import Mathlib.Algebra.Homology.Functor
@@ -427,6 +429,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
+import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.RingedSpace
 import Mathlib.AlgebraicGeometry.Scheme
@@ -2789,6 +2792,7 @@ import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
+import Mathlib.SetTheory.Game.Nim
 import Mathlib.SetTheory.Game.Ordinal
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.SetTheory.Lists
@@ -2897,6 +2901,7 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
