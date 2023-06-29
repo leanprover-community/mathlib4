@@ -655,6 +655,7 @@ def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ 
 #align algebraic_geometry.Scheme.pullback.open_cover_of_left_right AlgebraicGeometry.Scheme.Pullback.openCoverOfLeftRight
 
 /-- (Implementation). Use `open_cover_of_base` instead. -/
+@[simps! map]
 def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply (openCoverOfLeft (𝒰.pullbackCover f) f g).bind
   intro i
@@ -670,13 +671,12 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     @openCoverOfIsIso
       (f := (pullbackSymmetry _ _).hom ≫
         (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
-  pick_goal 3
-  -- Porting note : this `IsIso` instance was `inferInstance`
-  . apply IsIso.comp_isIso
   · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
     -- Porting note : `simpa` failed, but this is indeed `rfl`
     rfl
   · simp only [Category.comp_id, Category.id_comp]
+  -- Porting note : this `IsIso` instance was `inferInstance`
+  . apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 
 /-- Given an open cover `{ Zᵢ }` of `Z`, then `X ×[Z] Y` is covered by `Xᵢ ×[Zᵢ] Yᵢ`, where
@@ -684,7 +684,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 @[simps! J obj map]
 def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover (pullback f g) := by
   apply
-    (openCoverOfBase' 𝒰 f g).copy 𝒰.J
+    (openCoverOfBase'.{u, u} 𝒰 f g).copy 𝒰.J
       (fun i =>
         pullback (pullback.snd : pullback f (𝒰.map i) ⟶ _)
           (pullback.snd : pullback g (𝒰.map i) ⟶ _))
@@ -693,14 +693,14 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
           pullback.condition.symm)
       ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
   intro i
-  change _ = _ ≫ _ ≫ _
-  refine' Eq.trans _ (Category.id_comp _).symm
-  apply pullback.hom_ext <;>
-    simp only [Category.comp_id, openCoverOfLeft_map, OpenCover.pullbackCover_map,
-      PullbackCone.mk_π_app_left, openCoverOfIsIso_map, limit.isoLimitCone_inv_π_assoc,
-      Category.assoc, pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd_assoc,
-      pullback.lift_fst, limit.isoLimitCone_inv_π, PullbackCone.mk_π_app_right,
-      pullbackSymmetry_hom_comp_fst_assoc, pullback.lift_snd]
+  -- Porting note : deviated from original proof a bit so that it won't timeout.
+  rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
+  apply pullback.hom_ext <;> dsimp <;>
+  . simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
+      limit.lift_π_assoc, cospan_left, Category.comp_id, limit.isoLimitCone_inv_π,
+      limit.isoLimitCone_inv_π_assoc, pullbackSymmetry_hom_comp_fst_assoc,
+      pullbackSymmetry_hom_comp_snd_assoc]
+    rfl
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base AlgebraicGeometry.Scheme.Pullback.openCoverOfBase
 
 end Pullback
@@ -714,6 +714,7 @@ instance {X Y S X' Y' S' : Scheme} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S') 
     [IsOpenImmersion i₁] [IsOpenImmersion i₂] [Mono i₃] :
     IsOpenImmersion (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂) := by
   rw [pullback_map_eq_pullbackFstFstIso_inv]
-  infer_instance
+  -- Porting note : was automatic
+  exact PresheafedSpace.IsOpenImmersion.comp _ (hg := PresheafedSpace.IsOpenImmersion.comp _ _)
 
 end AlgebraicGeometry
