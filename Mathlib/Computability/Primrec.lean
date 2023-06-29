@@ -900,7 +900,7 @@ private theorem list_foldl' {f : α → List β} {g : α → σ} {h : α → σ 
     to₂ <|
     pair (hh.comp (fst.comp fst) <| pair ((fst.comp snd).comp fst) (fst.comp snd))
       (snd.comp snd)
-  let F := fun (a : α) (n : ℕ) => (G a^[n]) (g a, f a)
+  let F := fun (a : α) (n : ℕ) => G a^[n] (g a, f a)
   have hF : Primrec fun a => (F a (encode (f a))).1 :=
     (fst.comp <|
       nat_iterate (encode_iff.2 hf) (pair hg hf) <|

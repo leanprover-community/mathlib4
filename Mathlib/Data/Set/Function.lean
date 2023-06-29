@@ -427,7 +427,7 @@ theorem MapsTo.comp (h₁ : MapsTo g t p) (h₂ : MapsTo f s t) : MapsTo (g ∘ 
 theorem mapsTo_id (s : Set α) : MapsTo id s s := fun _ => id
 #align set.maps_to_id Set.mapsTo_id
 
-theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, MapsTo (f^[n]) s s
+theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, MapsTo f^[n] s s
   | 0 => fun _ => id
   | n + 1 => (MapsTo.iterate h n).comp h
 #align set.maps_to.iterate Set.MapsTo.iterate
@@ -665,7 +665,7 @@ theorem InjOn.comp (hg : InjOn g t) (hf : InjOn f s) (h : MapsTo f s t) : InjOn 
 #align set.inj_on.comp Set.InjOn.comp
 
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
-  ∀ n, InjOn (f^[n]) s
+  ∀ n, InjOn f^[n] s
 | 0 => injOn_id _
 | (n + 1) => (h.iterate hf n).comp h hf
 #align set.inj_on.iterate Set.InjOn.iterate
@@ -825,7 +825,7 @@ theorem SurjOn.comp (hg : SurjOn g t p) (hf : SurjOn f s t) : SurjOn (g ∘ f) s
   Subset.trans hg <| Subset.trans (image_subset g hf) <| image_comp g f s ▸ Subset.refl _
 #align set.surj_on.comp Set.SurjOn.comp
 
-lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, SurjOn (f^[n]) s s
+lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, SurjOn f^[n] s s
   | 0 => surjOn_id _
   | (n + 1) => (h.iterate n).comp h
 #align set.surj_on.iterate Set.SurjOn.iterate
@@ -977,7 +977,7 @@ theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :
   BijOn.mk (hg.mapsTo.comp hf.mapsTo) (hg.injOn.comp hf.injOn hf.mapsTo) (hg.surjOn.comp hf.surjOn)
 #align set.bij_on.comp Set.BijOn.comp
 
-lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijOn (f^[n]) s s
+lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijOn f^[n] s s
   | 0 => s.bijOn_id
   | (n + 1) => (h.iterate n).comp h
 #align set.bij_on.iterate Set.BijOn.iterate

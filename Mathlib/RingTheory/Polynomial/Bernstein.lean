@@ -150,7 +150,7 @@ theorem derivative_zero (n : ℕ) :
 #align bernstein_polynomial.derivative_zero bernsteinPolynomial.derivative_zero
 
 theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
-    k < ν → ((Polynomial.derivative^[k]) (bernsteinPolynomial R n ν)).eval 0 = 0 := by
+    k < ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 0 = 0 := by
   cases' ν with ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
@@ -169,7 +169,7 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
 
 @[simp]
 theorem iterate_derivative_succ_at_0_eq_zero (n ν : ℕ) :
-    ((Polynomial.derivative^[ν]) (bernsteinPolynomial R n (ν + 1))).eval 0 = 0 :=
+    (Polynomial.derivative^[ν] (bernsteinPolynomial R n (ν + 1))).eval 0 = 0 :=
   iterate_derivative_at_0_eq_zero_of_lt R n (lt_add_one ν)
 #align bernstein_polynomial.iterate_derivative_succ_at_0_eq_zero bernsteinPolynomial.iterate_derivative_succ_at_0_eq_zero
 
@@ -177,7 +177,7 @@ open Polynomial
 
 @[simp]
 theorem iterate_derivative_at_0 (n ν : ℕ) :
-    ((Polynomial.derivative^[ν]) (bernsteinPolynomial R n ν)).eval 0 =
+    (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 =
       (pochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
   by_cases h : ν ≤ n
   · induction' ν with ν ih generalizing n
@@ -200,7 +200,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
 #align bernstein_polynomial.iterate_derivative_at_0 bernsteinPolynomial.iterate_derivative_at_0
 
 theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
-    ((Polynomial.derivative^[ν]) (bernsteinPolynomial R n ν)).eval 0 ≠ 0 := by
+    (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 ≠ 0 := by
   simp only [Int.coe_nat_eq_zero, bernsteinPolynomial.iterate_derivative_at_0, Ne.def,
     Nat.cast_eq_zero]
   simp only [← pochhammer_eval_cast]
@@ -219,7 +219,7 @@ we use the symmetry of the Bernstein polynomials.
 
 
 theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
-    k < n - ν → ((Polynomial.derivative^[k]) (bernsteinPolynomial R n ν)).eval 1 = 0 := by
+    k < n - ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 1 = 0 := by
   intro w
   rw [flip' _ _ _ (tsub_pos_iff_lt.mp (pos_of_gt w)).le]
   simp [Polynomial.eval_comp, iterate_derivative_at_0_eq_zero_of_lt R n w]

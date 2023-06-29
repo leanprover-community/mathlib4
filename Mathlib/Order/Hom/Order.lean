@@ -139,14 +139,14 @@ theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α
   constructor <;> intro h
   · exact h 1 0
   · intro n₁ n₂ a₁ a₂
-    have h' : ∀ n a₁ a₂, (f^[n]) (a₁ ⊔ a₂) ≤ (f^[n]) a₁ ⊔ a₂ := by
+    have h' : ∀ n a₁ a₂, f^[n] (a₁ ⊔ a₂) ≤ f^[n] a₁ ⊔ a₂ := by
       intro n
       induction' n with n ih <;> intro a₁ a₂
       · rfl
       · calc
-          (f^[n + 1]) (a₁ ⊔ a₂) = (f^[n]) (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
-          _ ≤ (f^[n]) (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
-          _ ≤ (f^[n]) (f a₁) ⊔ a₂ := ih _ _
+          (f^[n + 1]) (a₁ ⊔ a₂) = f^[n] (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
+          _ ≤ f^[n] (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
+          _ ≤ f^[n] (f a₁) ⊔ a₂ := ih _ _
           _ = (f^[n + 1]) a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
     calc
       (f^[n₁ + n₂]) (a₁ ⊔ a₂) = (f^[n₁]) ((f^[n₂]) (a₁ ⊔ a₂)) :=

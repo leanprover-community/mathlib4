@@ -107,7 +107,7 @@ theorem MonoidHom.map_pthRoot (x : R) : f (pthRoot R p x) = pthRoot S p (f x) :=
 #align monoid_hom.map_pth_root MonoidHom.map_pthRoot
 
 theorem MonoidHom.map_iterate_pthRoot (x : R) (n : ℕ) :
-    f ((pthRoot R p^[n]) x) = (pthRoot S p^[n]) (f x) :=
+    f (pthRoot R p^[n] x) = pthRoot S p^[n] (f x) :=
   Semiconj.iterate_right f.map_pthRoot n x
 #align monoid_hom.map_iterate_pth_root MonoidHom.map_iterate_pthRoot
 
@@ -116,7 +116,7 @@ theorem RingHom.map_pthRoot (x : R) : g (pthRoot R p x) = pthRoot S p (g x) :=
 #align ring_hom.map_pth_root RingHom.map_pthRoot
 
 theorem RingHom.map_iterate_pthRoot (x : R) (n : ℕ) :
-    g ((pthRoot R p^[n]) x) = (pthRoot S p^[n]) (g x) :=
+    g (pthRoot R p^[n] x) = pthRoot S p^[n] (g x) :=
   g.toMonoidHom.map_iterate_pthRoot x n
 #align ring_hom.map_iterate_pth_root RingHom.map_iterate_pthRoot
 
@@ -323,7 +323,7 @@ theorem mk_zero (n : ℕ) : mk K p (n, 0) = 0 := by
 #align perfect_closure.mk_zero PerfectClosure.mk_zero
 
 -- Porting note: improved proof structure
-theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p^[m]) x = y) :
+theorem R.sound (m n : ℕ) (x y : K) (H : frobenius K p^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
   induction' m with m ih

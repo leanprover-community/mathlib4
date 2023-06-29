@@ -90,7 +90,7 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
 #align has_fpower_series_at.has_fpower_series_dslope_fslope HasFPowerSeriesAt.has_fpower_series_dslope_fslope
 
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt ((swap dslope z₀^[n]) f) ((fslope^[n]) p) z₀ := by
+    HasFPowerSeriesAt (swap dslope z₀^[n] f) (fslope^[n] p) z₀ := by
   induction' n with n ih generalizing f p
   · exact hp
   · simpa using ih (has_fpower_series_dslope_fslope hp)

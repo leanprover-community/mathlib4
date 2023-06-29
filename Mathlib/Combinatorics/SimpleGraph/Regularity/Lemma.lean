@@ -102,7 +102,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     rw [← Fintype.card_pos_iff]
     exact (bound_pos _ _).trans_le hα
   suffices h : ∀ i, ∃ P : Finpartition (univ : Finset α), P.IsEquipartition ∧ t ≤ P.parts.card ∧
-    P.parts.card ≤ (stepBound^[i]) t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G)
+    P.parts.card ≤ stepBound^[i] t ∧ (P.IsUniform G ε ∨ ε ^ 5 / 4 * i ≤ P.energy G)
   -- For `i > 4 / ε ^ 5` we know that the partition we get can't have energy `≥ ε ^ 5 / 4 * i > 1`,
   -- so it must instead be `ε`-uniform and we won.
   · obtain ⟨P, hP₁, hP₂, hP₃, hP₄⟩ := h (⌊4 / ε ^ 5⌋₊ + 1)
