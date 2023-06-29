@@ -13,7 +13,7 @@ This implementation is only intended for use in meta code, rather than algorithm
 Someone might enjoy writing a "mathematical" version.
 -/
 
-open Std
+open Std ListM
 variable (m : Type u → Type u) [Monad m] [Alternative m]
   (P V E : Type u) [Ord P] [Zero P] [Add P] [BEq V] [Hashable V]
 
