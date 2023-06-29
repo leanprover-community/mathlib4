@@ -80,35 +80,19 @@ theorem neg_neg_x : neg (neg x) = x := by
 
 
 
-theorem add_eq_or_of_and_eq_zero_aux₁ : ∀ {x y : List Bool} (_ : x.length = y.length),
-    x.zipWith (. && .) y = List.replicate x.length false →
-    (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).fst = false
-  | [], [], _ => fun _ => rfl
-  | a::x, b::y, h => fun h' => by
-    simp only [List.zipWith, Bool.forall_bool, List.replicate, Nat.add_eq, add_zero,
-      List.cons.injEq, Bool.and_eq_false_eq_eq_false_or_eq_false] at h'
-    have := add_eq_or_of_and_eq_zero_aux₁ (Nat.succ.inj h) h'.2
-    unfold Bitvec.carry at this
-    rcases h'.1 with rfl | rfl <;>
-    simp [List.mapAccumr₂, Bitvec.carry, this]
-
-theorem add_eq_or_of_and_eq_zero_aux₂ : ∀ {x y : List Bool} (_ : x.length = y.length),
-    x.zipWith (. && .) y = List.replicate x.length false →
-    (x.mapAccumr₂ (fun a b c => (Bitvec.carry a b c, Bitvec.xor3 a b c)) y false).snd =
-    x.zipWith (. || .) y
-  | [], [], _ => fun _ => rfl
-  | a::x, b::y, h => fun h' => by
-    dsimp [List.mapAccumr₂]
-    simp only [List.zipWith, Bool.forall_bool, List.replicate, Nat.add_eq, add_zero,
-      List.cons.injEq, Bool.and_eq_false_eq_eq_false_or_eq_false] at h'
-    rw [add_eq_or_of_and_eq_zero_aux₁ (Nat.succ.inj h) h'.2,
-      add_eq_or_of_and_eq_zero_aux₂ (Nat.succ.inj h) h'.2]
-    rcases h'.1 with rfl | rfl <;>
-    simp [List.mapAccumr₂, Bitvec.carry, Bitvec.xor3]
-
-theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x.and y = 0) : x + y = x.or y :=
-  Subtype.ext (add_eq_or_of_and_eq_zero_aux₂ (x.2.trans y.2.symm)
-    (by convert congr_arg Vector.toList hxy;
-        simp[OfNat.ofNat, Zero.zero, Bitvec.zero, Vector.toList, Vector.replicate]))
+theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x &&& y = 0) :
+    x + y = x ||| y := by
+  simp[(· + ·), Add.add, (· ||| ·), OrOp.or, Bitvec.or]
+  simp[add, adc]
+  induction x, y using Vector.revInductionOn₂
+  next => rfl
+  next xs ys x y ih =>
+    simp [(· &&& ·), AndOp.and, Bitvec.and] at hxy
+    rw [Bitvec.zero_unfold_snoc] at hxy
+    rcases (Vector.snoc.inj hxy) with ⟨head, tail⟩
+    specialize ih tail
+    have head : (x = false) ∨ (y = false) := by
+      revert head; simp
+    cases head <;> simp_all[Bitvec.carry]
 
 end Bitvec

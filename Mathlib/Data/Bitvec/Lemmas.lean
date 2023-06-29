@@ -374,23 +374,23 @@ theorem get_replicate (val : Bool) :
   Show how the bitwise operations reduce to Boolean operation on individual bits
 -/
 section Bitwise
-  variable (x y : Bitvec n)
+variable (x y : Bitvec n)
 
-  @[simp]
-  theorem get_or : get (x ||| y) i = (get x i || get y i) := by
-    simp only [(· ||| ·), OrOp.or, Bitvec.or, get_map₂]
+@[simp]
+theorem get_or : get (x ||| y) i = (get x i || get y i) := by
+  simp only [(· ||| ·), OrOp.or, Bitvec.or, get_map₂]
 
-  @[simp]
-  theorem get_and : get (x &&& y) i = (get x i && get y i) := by
-    simp only [(· &&& ·), AndOp.and, Bitvec.and, get_map₂]
+@[simp]
+theorem get_and : get (x &&& y) i = (get x i && get y i) := by
+  simp only [(· &&& ·), AndOp.and, Bitvec.and, get_map₂]
 
-  @[simp]
-  theorem get_xor : get (x ^^^ y) i = xor (get x i) (get y i) := by
-    simp only [(· ^^^ ·), Xor.xor, Bitvec.xor, get_map₂]
+@[simp]
+theorem get_xor : get (x ^^^ y) i = xor (get x i) (get y i) := by
+  simp only [(· ^^^ ·), Xor.xor, Bitvec.xor, get_map₂]
 
-  @[simp]
-  theorem get_not : get (~~~x) i = not (get x i) := by
-    simp only [(~~~ ·), Bitvec.not, get_map]
+@[simp]
+theorem get_not : get (~~~x) i = not (get x i) := by
+  simp only [(~~~ ·), Bitvec.not, get_map]
 end Bitwise
 
 

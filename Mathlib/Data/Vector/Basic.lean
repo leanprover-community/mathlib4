@@ -848,4 +848,20 @@ def foldr (f : α → β → β) (init : β) (xs : Vector α n) : β :=
   xs.toList.foldr f init
 
 
+
+/-- `cons` is injective -/
+theorem cons.inj {xs ys : Vector α n} {x y : α} :
+    x ::ᵥ xs = y ::ᵥ ys → x = y ∧ xs = ys := by
+  rcases xs with ⟨xs, hx⟩
+  rcases ys with ⟨ys, hy⟩
+  simp[cons]
+  intro h
+  have h : x :: xs = y :: ys := Subtype.mk.inj h
+  constructor
+  . apply List.head_eq_of_cons_eq h
+  . congr
+    apply List.tail_eq_of_cons_eq h
+
+
+
 end Vector

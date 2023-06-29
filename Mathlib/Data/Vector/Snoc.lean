@@ -27,7 +27,7 @@ def snoc : Vector α n → α → Vector α (n+1) :=
 ## Simplification lemmas
 -/
 section Simp
-  variable (xs : Vector α n)
+variable (xs : Vector α n)
 
 @[simp]
 theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
@@ -36,6 +36,23 @@ theorem snoc_cons : (x ::ᵥ xs).snoc y = x ::ᵥ (xs.snoc y) :=
 @[simp]
 theorem snoc_nil : (nil.snoc x) = x ::ᵥ nil :=
   rfl
+
+/-- `snoc` is injective -/
+theorem snoc.inj {xs ys : Vector α n} {x y : α} :
+    xs.snoc x = ys.snoc y → x = y ∧ xs = ys := by
+  clear * - xs ys x y
+  intro h
+  induction xs, ys using Vector.inductionOn₂
+  next =>
+    simp_all only [snoc_nil, and_true]
+    apply (cons.inj h).1
+  next x' y' xs ys ih =>
+    simp only [snoc_cons] at h
+    rcases cons.inj h with ⟨⟨⟩, heq⟩
+    rcases ih heq with ⟨⟨⟩, ⟨⟩⟩
+    simp
+
+
 
 @[simp]
 theorem reverse_cons : reverse (x ::ᵥ xs) = (reverse xs).snoc x := by
