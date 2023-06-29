@@ -8,7 +8,7 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.WittVector.FrobeniusFractionField
+import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 
 /-!
 
@@ -192,13 +192,11 @@ end PerfectRing
 admits an isomorphism to one of the standard (indexed by `m : ℤ`) one-dimensional isocrystals. -/
 theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP k p] (V : Type _)
     [AddCommGroup V] [Isocrystal p k V] (h_dim : finrank K(p, k) V = 1) :
-    ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) :=
-  by
+    ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0
   have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).Injective.Ne hx
-  obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x :=
-    by
+  obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
     rw [finrank_eq_one_iff_of_nonzero' x hx] at h_dim 
     obtain ⟨a, ha⟩ := h_dim (Φ(p, k) x)
     refine' ⟨a, _, ha.symm⟩
@@ -209,8 +207,7 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
   replace hmb : φ(p, k) b * a = p ^ m * b := by convert hmb
   use m
   let F₀ : standard_one_dim_isocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
-  let F : standard_one_dim_isocrystal p k m ≃ₗ[K(p, k)] V :=
-    by
+  let F : standard_one_dim_isocrystal p k m ≃ₗ[K(p, k)] V := by
     refine' LinearEquiv.ofBijective F₀ ⟨_, _⟩
     · rw [← LinearMap.ker_eq_bot]
       exact LinearMap.ker_toSpanSingleton K(p, k) V hx
