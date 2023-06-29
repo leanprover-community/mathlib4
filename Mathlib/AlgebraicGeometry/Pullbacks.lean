@@ -312,10 +312,8 @@ def gluedLiftPullbackMap (i j : 𝒰.J) :
   change pullback pullback.fst pullback.fst ⟶ pullback _ _
   refine' (pullbackRightPullbackFstIso _ _ _).hom ≫ _
   refine' pullback.map _ _ _ _ _ (𝟙 _) (𝟙 _) _ _
-  ·
-    exact
-      (pullbackSymmetry _ _).hom ≫
-        pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
+  · exact (pullbackSymmetry _ _).hom ≫
+      pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
   · simpa using pullback.condition
   · simp only [Category.comp_id, Category.id_comp]
 #align algebraic_geometry.Scheme.pullback.glued_lift_pullback_map AlgebraicGeometry.Scheme.Pullback.gluedLiftPullbackMap
@@ -695,12 +693,13 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
   intro i
   change _ = _ ≫ _ ≫ _
   refine' Eq.trans _ (Category.id_comp _).symm
-  apply pullback.hom_ext <;>
-    simp only [Category.comp_id, openCoverOfLeft_map, OpenCover.pullbackCover_map,
-      PullbackCone.mk_π_app_left, openCoverOfIsIso_map, limit.isoLimitCone_inv_π_assoc,
-      Category.assoc, pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd_assoc,
-      pullback.lift_fst, limit.isoLimitCone_inv_π, PullbackCone.mk_π_app_right,
-      pullbackSymmetry_hom_comp_fst_assoc, pullback.lift_snd]
+  sorry
+  apply pullback.hom_ext
+  simp only [Category.comp_id, openCoverOfLeft_map, OpenCover.pullbackCover_map,
+    PullbackCone.mk_π_app_left, openCoverOfIsIso_map, limit.isoLimitCone_inv_π_assoc,
+    Category.assoc, pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd_assoc,
+    pullback.lift_fst, limit.isoLimitCone_inv_π, PullbackCone.mk_π_app_right,
+    pullbackSymmetry_hom_comp_fst_assoc, pullback.lift_snd]
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base AlgebraicGeometry.Scheme.Pullback.openCoverOfBase
 
 end Pullback
