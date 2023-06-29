@@ -14,23 +14,6 @@ import Mathlib.Data.Vector.Snoc
 namespace Vector
 
 /-!
-## Normalization
-Rewrite applications of `map` in terms of `mapAccumr` with `Unit` state
--/
-section Norm
-
-theorem map_to_mapAccumr (xs : Vector α n) (f : α → β) :
-    map f xs = (mapAccumr (fun x _ => (⟨⟩, f x)) xs ()).snd := by
-  induction xs using revInductionOn <;> simp_all
-
-theorem map₂_to_mapAccumr₂ (xs : Vector α n) (ys : Vector β n) (f : α → β → γ) :
-    map₂ f xs ys = (mapAccumr₂ (fun x y _ => (⟨⟩, f x y)) xs ys ()).snd := by
-  induction xs, ys using revInductionOn₂ <;> simp_all
-
-end Norm
-
-
-/-!
 ## Fold nested `mapAccumr`s into one
 -/
 section Fold
@@ -139,7 +122,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_left_right  
+theorem mapAccumr₂_mapAccumr₂_left_right
   (f₁ : γ → β → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ (mapAccumr₂ f₂ xs ys s₂).snd ys s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
