@@ -75,7 +75,7 @@ instance stalk_isReduced_of_reduced [IsReduced X] (x : X.carrier) :
   rw [← map_pow, ← map_zero (X.presheaf.germ ⟨x, hxU⟩)] at e
   obtain ⟨V, hxV, iU, iV, e'⟩ := X.presheaf.germ_eq x hxU hxU _ 0 e
   rw [map_pow, map_zero] at e'
-  replace e' := (IsNilpotent.mk _ _ e').eq_zero
+  replace e' := (IsNilpotent.mk _ _ e').eq_zero (R := X.presheaf.obj <| op V)
   erw [← ConcreteCategory.congr_hom (X.presheaf.germ_res iU ⟨x, hxV⟩) s]
   rw [comp_apply, e', map_zero]
 #align algebraic_geometry.stalk_is_reduced_of_reduced AlgebraicGeometry.stalk_isReduced_of_reduced
