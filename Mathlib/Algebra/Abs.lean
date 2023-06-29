@@ -65,6 +65,16 @@ class NegPart (α : Type _) where
 @[inherit_doc Abs.abs]
 macro atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
+/-- Unexpander for the notation `|a|` for `abs a`.
+Tries to add discretionary parentheses in unparseable cases. -/
+@[app_unexpander Abs.abs]
+def Abs.abs.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $a) =>
+    match a with
+    | `(|$_|) | `(-$_) => `(|($a)|)
+    | _ => `(|$a|)
+  | _ => throw ()
+
 @[inherit_doc]
 postfix:1000 "⁺" => PosPart.pos
 
