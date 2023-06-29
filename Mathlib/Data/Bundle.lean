@@ -56,7 +56,7 @@ def TotalSpace.proj : TotalSpace E → B :=
 #align bundle.total_space.proj Bundle.TotalSpace.proj
 
 /-- The canonical projection defining a bundle. -/
-scoped notation "π" E':max => Bundle.TotalSpace.proj (E := E')
+scoped notation:max "π" E':max => Bundle.TotalSpace.proj (E := E')
 
 /-- Constructor for the total space of a bundle. -/
 @[simp, reducible]
