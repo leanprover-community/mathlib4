@@ -126,8 +126,6 @@ theorem mem_span_latticeBasis [NumberField K] (x : K) :
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]
     exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  refine Submodule.apply_mem_span_image_iff_mem_span ?_
-  change Function.Injective (canonicalEmbedding K)
-  exact RingHom.injective _
+  exact Submodule.apply_mem_span_image_iff_mem_span (canonicalEmbedding_injective K)
 
 end NumberField.canonicalEmbedding
