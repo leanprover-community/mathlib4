@@ -312,10 +312,8 @@ def gluedLiftPullbackMap (i j : 𝒰.J) :
   change pullback pullback.fst pullback.fst ⟶ pullback _ _
   refine' (pullbackRightPullbackFstIso _ _ _).hom ≫ _
   refine' pullback.map _ _ _ _ _ (𝟙 _) (𝟙 _) _ _
-  ·
-    exact
-      (pullbackSymmetry _ _).hom ≫
-        pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
+  · exact (pullbackSymmetry _ _).hom ≫
+      pullback.map _ _ _ _ (𝟙 _) s.snd f (Category.id_comp _).symm s.condition
   · simpa using pullback.condition
   · simp only [Category.comp_id, Category.id_comp]
 #align algebraic_geometry.Scheme.pullback.glued_lift_pullback_map AlgebraicGeometry.Scheme.Pullback.gluedLiftPullbackMap
@@ -416,7 +414,8 @@ def pullbackFstιToV (i j : 𝒰.J) :
 #align algebraic_geometry.Scheme.pullback.pullback_fst_ι_to_V AlgebraicGeometry.Scheme.Pullback.pullbackFstιToV
 
 @[simp, reassoc]
-theorem pullbackFstιToV_fst (i j : 𝒰.J) : pullbackFstιToV 𝒰 f g i j ≫ pullback.fst = pullback.snd := by
+theorem pullbackFstιToV_fst (i j : 𝒰.J) :
+    pullbackFstιToV 𝒰 f g i j ≫ pullback.fst = pullback.snd := by
   delta pullbackFstιToV
   simp only [Iso.trans_hom, pullback.congrHom_hom, Category.assoc, pullback.lift_fst,
     Category.comp_id]
