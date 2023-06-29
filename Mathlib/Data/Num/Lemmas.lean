@@ -13,6 +13,7 @@ import Mathlib.Data.Int.CharZero
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.PSub
 import Mathlib.Data.Nat.Size
+import Mathlib.Data.PNat.Basic
 
 /-!
 # Properties of the binary representation of integers
@@ -130,6 +131,19 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
     (add_to_nat (bit0 (m * p)) m).trans <|
       show (↑(m * p) + ↑(m * p) + ↑m : ℕ) = ↑m * (p + p) + m by rw [mul_to_nat m p, left_distrib]
 #align pos_num.mul_to_nat PosNum.mul_to_nat
+
+@[norm_cast]
+theorem ppowRec_to_nat (m : PosNum) : ∀ n : ℕ, (hn : 0 < n) → ppowRec n hn (m : ℕ) = ppowRec n hn m
+| 0, h => (Nat.not_lt_zero 0 h).elim
+| 1, _ => rfl
+| n + 2, _ => by rw [ppowRec, ppowRec_to_nat m (n + 1)]; norm_cast
+
+@[norm_cast]
+theorem psmulRec_to_nat (m : PosNum) :
+    ∀ n : ℕ, (hn : 0 < n) → psmulRec n hn (m : ℕ) = psmulRec n hn m
+| 0, h => (Nat.not_lt_zero 0 h).elim
+| 1, _ => rfl
+| n + 2, _ => by rw [psmulRec, psmulRec_to_nat m (n + 1)]; norm_cast
 
 theorem to_nat_pos : ∀ n : PosNum, 0 < (n : ℕ)
   | 1 => zero_lt_one
@@ -415,6 +429,7 @@ instance commSemiring : CommSemiring Num := by
       one := 1
       add := (· + ·)
       zero := 0
+      ppow := @ppowRec Num ⟨(· * ·)⟩
       npow := @npowRec Num ⟨1⟩ ⟨(· * ·)⟩, .. } <;>
     try { intros; rfl } <;>
     transfer <;>
@@ -591,8 +606,9 @@ example (n : PosNum) (m : PosNum) : n ≤ n + m := by
   exact Nat.le_add_right _ _
 ```
 -/
+
 scoped macro (name := transfer_rw) "transfer_rw" : tactic => `(tactic|
-    (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat]
+    (repeat first | rw [← to_nat_inj] | rw [← lt_to_nat] | rw [← le_to_nat] | rw [← psmulRec_to_nat]
      repeat first | rw [add_to_nat] | rw [mul_to_nat] | rw [cast_one] | rw [cast_zero]))
 
 /--
@@ -606,14 +622,19 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance addCommSemigroup : AddCommSemigroup PosNum := by
-  refine' { add := (· + ·).. } <;> transfer
+  refine' { add := (· + ·), psmul := @psmulRec PosNum ⟨(· + ·)⟩.. } <;> transfer;
+  convert rfl using 1
+  norm_cast
+
+
 #align pos_num.add_comm_semigroup PosNum.addCommSemigroup
 
 instance commMonoid : CommMonoid PosNum := by
   refine'
     { mul := (· * ·)
       one := (1 : PosNum)
-      npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
+      ppow := @ppowRec PosNum ⟨(· * ·)⟩
+      npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩ ,.. } <;>
   try { intros ; rfl } <;>
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid

@@ -259,7 +259,7 @@ theorem algebraMap₀_mul_algebraMap₀ (r s : R) :
   exact algebraMap₀_mul r (@algebraMap₀ R M _ _ _ s)
 #align tensor_power.algebra_map₀_mul_algebra_map₀ TensorPower.algebraMap₀_mul_algebraMap₀
 
-set_option maxHeartbeats 250000 in
+set_option maxHeartbeats 300000 in
 instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
   { TensorPower.gmonoid with
     mul_zero := fun a => LinearMap.map_zero _
@@ -273,6 +273,7 @@ instance gsemiring : DirectSum.GSemiring fun i => (⨂[R]^i) M :=
 
 example : Semiring (⨁ n : ℕ, (⨂[R]^n) M) := by infer_instance
 
+set_option maxHeartbeats 250000 in
 /-- The tensor powers form a graded algebra.
 
 Note that this instance implies `Algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `DirectSum.Algebra`. -/

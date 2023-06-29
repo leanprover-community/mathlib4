@@ -212,7 +212,9 @@ instance commRing : CommRing ℝ := by
             add := (· + ·)
             neg := @Neg.neg ℝ _
             sub := @Sub.sub ℝ _
+            ppow := @ppowRec ℝ ⟨(· * ·)⟩
             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
+            psmul := @psmulRec ℝ ⟨(· + ·)⟩
             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
             zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
             .. }

@@ -453,6 +453,7 @@ instance : Semiring (A ⊗[R] B) :=
     zero_add := zero_add
     add_zero := add_zero
     add_comm := add_comm
+    psmul_succ := AddSemigroup.psmul_succ
     nsmul_succ := AddMonoid.nsmul_succ
     natCast_succ := AddMonoidWithOne.natCast_succ
     zero_mul := fun a => show mul 0 a = 0 by rw [map_zero, LinearMap.zero_apply]

@@ -418,11 +418,13 @@ variable {R S R'}
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
+set_option maxHeartbeats 350000 in
 instance TensorProduct.isPushout {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (TensorProduct R S T) :=
   ⟨TensorProduct.isBaseChange R T S⟩
 #align tensor_product.is_pushout TensorProduct.isPushout
 
+set_option maxHeartbeats 350000 in
 instance TensorProduct.isPushout' {R S T : Type _} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (TensorProduct R S T) :=
   Algebra.IsPushout.symm inferInstance

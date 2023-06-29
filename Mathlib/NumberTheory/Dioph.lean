@@ -204,6 +204,7 @@ instance : AddCommGroup (Poly α) := by
             zero := 0
             zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩
             nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
+            psmul := @psmulRec _ ⟨(· + ·)⟩
             .. }
   all_goals
     intros
@@ -231,6 +232,7 @@ instance : CommRing (Poly α) := by
               mul := (· * ·)
               one := 1
               npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
+              ppow := @ppowRec _ ⟨(· * ·)⟩
               .. }
   all_goals
     intros

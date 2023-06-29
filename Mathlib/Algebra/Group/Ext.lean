@@ -9,6 +9,7 @@ Authors: Bryan Gin-ge Chen, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.PPow
 
 /-!
 # Extensionality lemmas for monoid and group structures
@@ -28,18 +29,50 @@ monoid, group, extensionality
 
 universe u
 
+variable [Monoid M]
+
+@[to_additive (attr := ext)]
+theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
+  let f := @MulHom.mk _ _ m₁.toMul m₂.toMul id fun _ _ => congr_fun (congr_fun h_mul _) _
+  have : m₁.ppow = m₂.ppow := by
+    ext n hn x
+    exact @map_ppow _ M M m₁ m₂ _ f x ⟨n, hn⟩
+  rcases m₁ with @⟨@⟨_⟩, _⟩
+  rcases m₂ with @⟨@⟨_⟩, _⟩
+  congr
+#align semigroup.ext Semigroup.extₓ
+#noalign semigroup.ext_iff
+#align add_semigroup.ext AddSemigroup.extₓ
+#noalign add_semigroup.ext_iff
+
+@[to_additive]
+theorem CommSemigroup.toSemigroup_injective {M : Type u} [Semigroup M] :
+    Function.Injective (@CommSemigroup.toSemigroup M) := by
+  rintro ⟨⟩ ⟨⟩ h
+  congr
+
+@[to_additive (attr := ext)]
+theorem CommSemigroup.ext {M : Type _} ⦃m₁ m₂ : CommSemigroup M⦄ (h_mul : m₁.mul = m₂.mul) :
+    m₁ = m₂ :=
+  CommSemigroup.toSemigroup_injective <| Semigroup.ext h_mul
+#align comm_semigroup.ext CommSemigroup.extₓ
+#noalign comm_semigroup.ext_iff
+#align add_comm_semigroup.ext AddCommSemigroup.extₓ
+#noalign add_comm_semigroup.ext_iff
+
 @[to_additive (attr := ext)]
 theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) (this)
+  have h₂ : m₁.toSemigroup = m₂.toSemigroup := Semigroup.ext h_mul
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := by
     ext n x
     exact @MonoidHom.map_pow M M m₁ m₂ f x n
-  rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
-  rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
+  rcases m₁ with @⟨_, ⟨_⟩⟩
+  rcases m₂ with @⟨_, ⟨_⟩⟩
   congr
 #align monoid.ext Monoid.ext
 #align add_monoid.ext AddMonoid.ext

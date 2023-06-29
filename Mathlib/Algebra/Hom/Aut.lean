@@ -55,6 +55,7 @@ instance : Group (MulAut M) := by
     one := MulEquiv.refl M
     inv := MulEquiv.symm
     div := fun g h => MulEquiv.trans h.symm g
+    ppow := @ppowRec _ ⟨fun g h => MulEquiv.trans h g⟩
     npow := @npowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩
     zpow := @zpowRec _ ⟨MulEquiv.refl M⟩ ⟨fun g h => MulEquiv.trans h g⟩ ⟨MulEquiv.symm⟩
     .. } <;>
@@ -182,6 +183,7 @@ instance group : Group (AddAut A) := by
     one := AddEquiv.refl A
     inv := AddEquiv.symm
     div := fun g h => AddEquiv.trans h.symm g
+    ppow := @ppowRec _ ⟨fun g h => AddEquiv.trans h g⟩
     npow := @npowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩
     zpow := @zpowRec _ ⟨AddEquiv.refl A⟩ ⟨fun g h => AddEquiv.trans h g⟩ ⟨AddEquiv.symm⟩
     .. } <;>

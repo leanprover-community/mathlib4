@@ -211,7 +211,7 @@ private theorem aux1 {a b c : A} :
   rw [add_lie, add_lie]
   iterate 15 rw [lie_add]
 
-set_option maxHeartbeats 300000 in
+set_option maxHeartbeats 350000 in
 private theorem aux2 {a b c : A} :
     ⁅L a, L (a * a)⁆ + ⁅L a, L (b * b)⁆ + ⁅L a, L (c * c)⁆ +
     ⁅L a, 2 • L (a * b)⁆ + ⁅L a, 2 • L (c * a)⁆ + ⁅L a, 2 • L (b * c)⁆ +
