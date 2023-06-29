@@ -8,8 +8,8 @@ Authors: Xi Wang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Order.Basic
-import Mathbin.Tactic.Basic
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Basic
 
 /-!
 # A compiler for arithmetic expressions
@@ -163,8 +163,7 @@ def outcome : List Instruction → State → State
 /-- A lemma on the concatenation of two programs (3.13). -/
 @[simp]
 theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
-    outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) :=
-  by
+    outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) := by
   revert η
   induction p₁ <;> intros <;> simp
   apply p₁_ih
@@ -236,8 +235,7 @@ protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by 
 #align arithcc.state_eq.refl Arithcc.StateEq.refl
 
 @[symm]
-protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ :=
-  by
+protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
   simp [state_eq]; intros
   constructor <;> try cc
   symm
@@ -246,8 +244,7 @@ protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[
 
 @[trans]
 protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
-    ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₃ → ζ₁ ≃[t] ζ₃ :=
-  by
+    ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₃ → ζ₁ ≃[t] ζ₃ := by
   simp [state_eq]; intros
   constructor <;> try cc
   trans ζ₂ <;> assumption
@@ -256,16 +253,14 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
 /-- Transitivity of chaining `≃[t]` and `≃[t]/ac`. -/
 @[trans]
 protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : State) :
-    ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ :=
-  by
+    ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp [state_eq]; intros
   trans ζ₂ <;> assumption
 #align arithcc.state_eq_state_eq_rs.trans Arithcc.StateEqStateEqRs.trans
 
 /-- Writing the same value to register `t` gives `≃[t + 1]` from `≃[t]`. -/
 theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t] ζ₂) (v : Word) :
-    write t v ζ₁ ≃[t + 1] write t v ζ₂ :=
-  by
+    write t v ζ₁ ≃[t + 1] write t v ζ₂ := by
   simp [state_eq, state_eq_rs] at *
   constructor <;> try cc
   intro _ hr
@@ -279,8 +274,7 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
 
 /-- Writing the same value to any register preserves `≃[t]/ac`. -/
 theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t]/ac ζ₂)
-    (r : Register) (v : Word) : write r v ζ₁ ≃[t]/ac write r v ζ₂ :=
-  by
+    (r : Register) (v : Word) : write r v ζ₁ ≃[t]/ac write r v ζ₂ := by
   simp [state_eq_rs] at *
   intro r' hr'
   specialize h r' hr'
@@ -289,8 +283,7 @@ theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : 
 
 /-- `≃[t + 1]` with writing to register `t` implies `≃[t]`. -/
 theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
-    (h : ζ₁ ≃[t + 1] write t v ζ₂) : ζ₁ ≃[t] ζ₂ :=
-  by
+    (h : ζ₁ ≃[t + 1] write t v ζ₂) : ζ₁ ≃[t] ζ₂ := by
   simp [state_eq, state_eq_rs] at *
   constructor <;> try cc
   intro r hr
@@ -306,8 +299,7 @@ Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit
 theorem compiler_correctness :
     ∀ (map : Identifier → Register) (e : Expr) (ξ : Identifier → Word) (η : State) (t : Register),
       (∀ x, read (loc x map) η = ξ x) →
-        (∀ x, loc x map < t) → outcome (compile map e t) η ≃[t] { η with ac := value e ξ } :=
-  by
+        (∀ x, loc x map < t) → outcome (compile map e t) η ≃[t] { η with ac := value e ξ } := by
   intro _ _ _ _ _ hmap ht
   revert η t
   induction e <;> intros
@@ -336,8 +328,7 @@ theorem compiler_correctness :
       _ = write t ζ₁.ac ζ₁ := by simp [step]
       _ = write t ν₁ ζ₁ := by cc
       _ ≃[t + 1] write t ν₁ { η with ac := ν₁ } := by apply state_eq_implies_write_eq hζ₁
-      _ ≃[t + 1]/ac write t ν₁ η :=
-        by
+      _ ≃[t + 1]/ac write t ν₁ η := by
         apply state_eq_rs_implies_write_eq_rs
         simp [state_eq_rs]
     have hζ₂_ν₂ : read t ζ₂ = ν₁ := by
@@ -347,8 +338,7 @@ theorem compiler_correctness :
     have ht' : ∀ x, loc x map < t + 1 := by
       intros
       apply lt_trans (ht _) (register.lt_succ_self _)
-    have hmap' : ∀ x, read (loc x map) ζ₂ = ξ x :=
-      by
+    have hmap' : ∀ x, read (loc x map) ζ₂ = ξ x := by
       intros
       calc
         read (loc x map) ζ₂ = read (loc x map) (write t ν₁ η) := hζ₂ _ (ht' _)
@@ -360,8 +350,7 @@ theorem compiler_correctness :
       _ ≃[t + 1] { ζ₂ with ac := ν₂ } := by apply e_ih_s₂ <;> assumption
       _ ≃[t + 1] { write t ν₁ η with ac := ν₂ } := by simp [state_eq]; apply hζ₂
     have hζ₃_ν₂ : ζ₃.ac = ν₂ := by finish [state_eq]
-    have hζ₃_ν₁ : read t ζ₃ = ν₁ :=
-      by
+    have hζ₃_ν₁ : read t ζ₃ = ν₁ := by
       simp [state_eq, state_eq_rs] at hζ₃ ⊢
       cases' hζ₃ with _ hζ₃
       specialize hζ₃ t (register.lt_succ_self _)
