@@ -40,8 +40,8 @@ example (p q : Prop) [Decidable p] [Decidable q] :
 example (p : Prop) [Decidable p] (h : (if p then 1 else 2) > 3) : False := by
   split_ifs at h
   cases h
-  · case inl.step h => cases h
-  · case inr h =>
+  · case pos.step h => cases h
+  · case neg h =>
     cases h
     case step h =>
       cases h
