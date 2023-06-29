@@ -212,13 +212,11 @@ theorem toNat_one : ∀ {n : Nat}, (1 : Bitvec n).toNat = if n = 0 then 0 else 1
   | 0 => rfl
   | 1 => rfl
   | n+2 => by
-    have := @toNat_one (n+1)
-    simp only [Bitvec.toNat, Vector.foldl, List.foldl, Nat.add_eq, add_zero, List.append_eq,
-      List.foldl_append, add_eq_zero, and_false, ite_false, toList_one] at *
-    simp only [addLsb, cond_true, add_left_eq_self, add_eq_zero, and_self] at this
-    rw [foldl_addLsb_eq_add_foldl_addLsb_zero]
-    rw [this]
-    simp [addLsb]
+    have ih := @toNat_one (n+1)
+    have n₁ : n + 1 ≠ 0 := by simp;
+    have n₂ : n + 2 ≠ 0 := by simp;
+    simp only [Bitvec.toNat, n₁, n₂, ite_false] at *
+    apply ih
 
 private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.length y),
     List.foldl addLsb (addLsb 0 (List.mapAccumr₂
