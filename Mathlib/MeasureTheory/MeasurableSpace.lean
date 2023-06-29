@@ -603,7 +603,7 @@ theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs 
 
 theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (hs : MeasurableSet s)
     (h₁ : Measurable (s.restrict f)) (h₂ : Measurable (sᶜ.restrict f)) : Measurable f :=
-  measurable_of_measurable_union_cover s (sᶜ) hs hs.compl (union_compl_self s).ge h₁ h₂
+  measurable_of_measurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁ h₂
 #align measurable_of_restrict_of_restrict_compl measurable_of_restrict_of_restrict_compl
 
 theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
@@ -1843,7 +1843,7 @@ instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Pr
 #align measurable_set.subtype.has_compl MeasurableSet.Subtype.instHasCompl
 
 @[simp]
-theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑(sᶜ) = (sᶜ : Set α) :=
+theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑sᶜ = (sᶜ : Set α) :=
   rfl
 #align measurable_set.coe_compl MeasurableSet.coe_compl
 

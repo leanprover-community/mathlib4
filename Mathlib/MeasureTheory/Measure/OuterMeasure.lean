@@ -800,7 +800,7 @@ theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
   refine' (map_ofFunction_le _).antisymm fun s => _
   simp only [ofFunction_apply, map_apply, le_iInf_iff]
   intro t ht
-  refine' iInf_le_of_le (fun n => range fᶜ ∪ f '' t n) (iInf_le_of_le _ _)
+  refine' iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le _ _)
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
     exact image_subset _ ht
   · refine' ENNReal.tsum_le_tsum fun n => le_of_eq _
@@ -957,7 +957,7 @@ theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m (s₁�
 #align measure_theory.outer_measure.is_caratheodory_compl MeasureTheory.OuterMeasure.isCaratheodory_compl
 
 @[simp]
-theorem isCaratheodory_compl_iff : IsCaratheodory m (sᶜ) ↔ IsCaratheodory m s :=
+theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
   ⟨fun h => by simpa using isCaratheodory_compl m h, isCaratheodory_compl m⟩
 #align measure_theory.outer_measure.is_caratheodory_compl_iff MeasureTheory.OuterMeasure.isCaratheodory_compl_iff
 
@@ -1242,7 +1242,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
     map f (⨅ i, comap f (m i)) = ⨅ i, map f (comap f (m i)) := by
   refine' (map_iInf_le _ _).antisymm fun s => _
   simp only [map_apply, comap_apply, iInf_apply, le_iInf_iff]
-  refine' fun t ht => iInf_le_of_le (fun n => f '' t n ∪ range fᶜ) (iInf_le_of_le _ _)
+  refine' fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le _ _)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
     exact image_subset _ ht

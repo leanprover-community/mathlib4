@@ -1010,7 +1010,7 @@ theorem measurable_measure_condCdf (ρ : Measure (α × ℝ)) :
     exact (measurable_condCdf ρ u).ennreal_ofReal
   · intro t ht ht_cd_meas
     have :
-      (fun a => (condCdf ρ a).measure (tᶜ)) =
+      (fun a => (condCdf ρ a).measure tᶜ) =
         (fun a => (condCdf ρ a).measure univ) - fun a => (condCdf ρ a).measure t := by
       ext1 a
       rw [measure_compl ht (measure_ne_top (condCdf ρ a).measure _), Pi.sub_apply]

@@ -774,15 +774,15 @@ theorem Pi.compl_def {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)]
 
 @[simp]
 theorem Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) (i : ι) :
-    (xᶜ) i = (x i)ᶜ :=
+    xᶜ i = (x i)ᶜ :=
   rfl
 #align pi.compl_apply Pi.compl_apply
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α (rᶜ) :=
+instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
   ⟨@irrefl α r _⟩
 #align is_irrefl.compl IsIrrefl.compl
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α (rᶜ) :=
+instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 #align is_refl.compl IsRefl.compl
 
