@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.Pullbacks
-import Mathbin.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.AffineScheme
 
 /-!
 # (Co)Limits of Schemes
@@ -87,8 +87,7 @@ instance spec_pUnit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUn
 #align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_pUnit_isEmpty
 
 instance (priority := 100) isOpenImmersionCat_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
-    [IsEmpty X.carrier] : IsOpenImmersionCat f :=
-  by
+    [IsEmpty X.carrier] : IsOpenImmersionCat f := by
   apply (config := { instances := false }) is_open_immersion.of_stalk_iso
   · apply openEmbedding_of_continuous_injective_open
     · continuity
@@ -99,8 +98,7 @@ instance (priority := 100) isOpenImmersionCat_of_isEmpty {X Y : Scheme} (f : X �
 #align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersionCat_of_isEmpty
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
-    IsIso f :=
-  by
+    IsIso f := by
   haveI : IsEmpty X.carrier := ⟨fun x => isEmptyElim (show Y.carrier from f.1.base x)⟩
   have : epi f.1.base := by rw [TopCat.epi_iff_surjective]; rintro (x : Y.carrier);
     exact isEmptyElim x
@@ -129,8 +127,7 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme).carrier :=
   ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
 #align algebraic_geometry.initial_is_empty AlgebraicGeometry.initial_isEmpty
 
-theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) :=
-  by
+theorem bot_isAffineOpen (X : Scheme) : IsAffineOpen (⊥ : Opens X.carrier) := by
   convert range_is_affine_open_of_open_immersion (initial.to X)
   ext
   exact (false_iff_iff _).mpr fun x => isEmptyElim (show (⊥_ Scheme).carrier from x.some)
