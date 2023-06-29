@@ -275,15 +275,13 @@ partial def proveJacobiSymOdd (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
         | 0 =>
           have ha : Q(Nat.mod $ea 4 = 0) := (q(Eq.refl 0) : Expr)
           have hb : Q(Nat.mod $eb 2 = 1) := (q(Eq.refl 1) : Expr)
-          have c := a / 4
-          have ec : Q(ℕ) := mkRawNatLit c
+          have ec : Q(ℕ) := mkRawNatLit (a / 4)
           have hc : Q(Nat.div $ea 4 = $ec) := (q(Eq.refl $ec) : Expr)
           have ⟨er, p⟩ := proveJacobiSymOdd ec eb
           ⟨er, q(jacobiSymNat.double_even $ea $eb $ec $er $ha $hb $hc $p)⟩
         | _ =>
           have ha : Q(Nat.mod $ea 2 = 0) := (q(Eq.refl 0) : Expr)
-          have c := a / 2
-          have ec : Q(ℕ) := mkRawNatLit c
+          have ec : Q(ℕ) := mkRawNatLit (a / 2)
           have hc : Q(Nat.div $ea 2 = $ec) := (q(Eq.refl $ec) : Expr)
           have ⟨er, p⟩ := proveJacobiSymOdd ec eb
           match b % 8 with
@@ -291,14 +289,12 @@ partial def proveJacobiSymOdd (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
             have hb : Q(Nat.mod $eb 8 = 1) := (q(Eq.refl 1) : Expr)
             ⟨er, q(jacobiSymNat.even_odd₁ $ea $eb $ec $er $ha $hb $hc $p)⟩
           | 3 =>
-            have r' := -er.intLit!
-            have er' := mkRawIntLit r'
+            have er' := mkRawIntLit (-er.intLit!)
             have hb : Q(Nat.mod $eb 8 = 3) := (q(Eq.refl 3) : Expr)
             show (_ : Q(ℤ)) × Q(jacobiSymNat $ea $eb = -$er) from
               ⟨er', q(jacobiSymNat.even_odd₃ $ea $eb $ec $er $ha $hb $hc $p)⟩
           | 5 =>
-            have r' := -er.intLit!
-            have er' := mkRawIntLit r'
+            have er' := mkRawIntLit (-er.intLit!)
             have hb : Q(Nat.mod $eb 8 = 5) := (q(Eq.refl 5) : Expr)
             show (_ : Q(ℤ)) × Q(jacobiSymNat $ea $eb = -$er) from
               ⟨er', q(jacobiSymNat.even_odd₅ $ea $eb $ec $er $ha $hb $hc $p)⟩
@@ -306,8 +302,7 @@ partial def proveJacobiSymOdd (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
             have hb : Q(Nat.mod $eb 8 = 7) := (q(Eq.refl 7) : Expr)
             ⟨er, q(jacobiSymNat.even_odd₇ $ea $eb $ec $er $ha $hb $hc $p)⟩
       | _ =>
-        have ab := b % a
-        have eab : Q(ℕ) := mkRawNatLit ab
+        have eab : Q(ℕ) := mkRawNatLit (b % a)
         have hab : Q(Nat.mod $eb $ea = $eab) := (q(Eq.refl $eab) : Expr)
         have ⟨er, p⟩ := proveJacobiSymOdd eab ea
         match a % 4 with
@@ -322,8 +317,7 @@ partial def proveJacobiSymOdd (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
             have hb : Q(Nat.mod $eb 4 = 1) := (q(Eq.refl 1) : Expr)
             ⟨er, q(jacobiSymNat.qr₁'_mod $ea $eb $eab $er $ha $hb $hab $p)⟩
           | _ =>
-            have r' := -er.intLit!
-            have er' := mkRawIntLit r'
+            have er' := mkRawIntLit (-er.intLit!)
             have ha : Q(Nat.mod $ea 4 = 3) := (q(Eq.refl 3) : Expr)
             have hb : Q(Nat.mod $eb 4 = 3) := (q(Eq.refl 3) : Expr)
             show (_ : Q(ℤ)) × Q(jacobiSymNat $ea $eb = -$er) from
@@ -361,16 +355,14 @@ partial def proveJacobiSymNat (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
         | _ =>
           have ha : Q(Nat.mod $ea 2 = 1) := (q(Eq.refl 1) : Expr)
           have hb : Q(Nat.mod $eb 2 = 0) := (q(Eq.refl 0) : Expr)
-          have c := b / 2
-          have ec : Q(ℕ) := mkRawNatLit c
+          have ec : Q(ℕ) := mkRawNatLit (b / 2)
           have hc : Q(Nat.div $eb 2 = $ec) := (q(Eq.refl $ec) : Expr)
           have ⟨er, p⟩ := proveJacobiSymOdd ea ec
           ⟨er, q(jacobiSymNat.odd_even $ea $eb $ec $er $ha $hb $hc $p)⟩
     | _ =>
       have a := ea.natLit!
       if b ≤ a then
-        have ab := a % b
-        have eab : Q(ℕ) := mkRawNatLit ab
+        have eab : Q(ℕ) := mkRawNatLit (a % b)
         have hab : Q(Nat.mod $ea $eb = $eab) := (q(Eq.refl $eab) : Expr)
         have ⟨er, p⟩ := proveJacobiSymOdd eab eb
         ⟨er, q(jacobiSymNat.mod_left $ea $eb $eab $er $hab $p)⟩
@@ -389,15 +381,12 @@ partial def proveJacobiSym (ea : Q(ℤ)) (eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jaco
     show (er : Q(ℤ)) × Q(jacobiSym $ea 1 = $er) from
       ⟨mkRawIntLit 1, q(jacobiSym.one_right $ea)⟩
   | b =>
-    have b' : ℤ := b
-    have eb' := mkRawIntLit b'
+    have eb' := mkRawIntLit b
     have hb' : Q(($eb : ℤ) = $eb') := (q(Eq.refl $eb') : Expr)
-    have a := ea.intLit!
-    have ab := a % b'
+    have ab := ea.intLit! % b
     have eab := mkRawIntLit ab
     have hab : Q(Int.emod $ea $eb' = $eab) := (q(Eq.refl $eab) : Expr)
-    have ab' := ab.toNat
-    have eab' : Q(ℕ) := mkRawNatLit ab'
+    have eab' : Q(ℕ) := mkRawNatLit ab.toNat
     have hab' : Q(($eab' : ℤ) = $eab) := (q(Eq.refl $eab) : Expr)
     have ⟨er, p⟩ := proveJacobiSymNat eab' eb
     ⟨er, q(JacobiSym.mod_left $ea $eb $eab' $eab $er $eb' $hb' $hab $hab' $p)⟩
@@ -430,9 +419,8 @@ def evalJacobiSym : NormNumExt where
     let ⟨ea, pa⟩ ← deriveInt a
     let ⟨eb, pb⟩ ← deriveNat b
     have ⟨er, pr⟩ := proveJacobiSym ea eb
-    have r := er.intLit!
     have p : Q(IsInt (jacobiSym $a $b) $er) := q(isInt_jacobiSym $pa $pb $pr)
-    return .isInt sℤ er r p
+    return .isInt sℤ er er.intLit! p
 #align tactic.norm_num.eval_jacobi_sym Tactic.NormNum.evalJacobiSym
 
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols on natural numbers. -/
@@ -445,9 +433,8 @@ def evalJacobiSymNat : NormNumExt where
     let ⟨ea, pa⟩ ← deriveNat a
     let ⟨eb, pb⟩ ← deriveNat b
     have ⟨er, pr⟩ := proveJacobiSymNat ea eb
-    have r := er.intLit!
     have p : Q(IsInt (jacobiSymNat $a $b) $er) := q(isInt_jacobiSymNat $pa $pb $pr)
-    return .isInt sℤ er r p
+    return .isInt sℤ er er.intLit! p
 
 /-- This is the `norm_num` plug-in that evaluates Legendre symbols. -/
 @[norm_num legendreSym _ _]
@@ -460,11 +447,10 @@ def evalLegendreSym : NormNumExt where
     let ⟨ea, pa⟩ ← deriveInt a
     let ⟨ep, pp⟩ ← deriveNat p
     have ⟨er, pr⟩ := proveJacobiSym ea ep
-    have r := er.intLit!
     have p' : Q(IsInt (jacobiSym $a $p) $er) := q(isInt_jacobiSym $pa $pp $pr)
     have p : Q(IsInt (legendreSym $p $a) $er) :=
       q(LegendreSym.to_jacobiSym $p $fp $a $er $p')
-    return .isInt sℤ er r p
+    return .isInt sℤ er er.intLit! p
 
 end NormNum
 
