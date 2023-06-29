@@ -274,7 +274,7 @@ theorem exists_cond_kernel (γ : Type _) [MeasurableSpace γ] :
   -- however an issue: that `η` may not be a Markov kernel since its value is only a
   -- probability distribution almost everywhere with respect to `ρ.fst`, not everywhere.
   -- We modify it to obtain a Markov kernel which is almost everywhere equal.
-  let ρ_set := toMeasurable ρ.fst {a | condKernelReal ρ' a (range f) = 1}ᶜᶜ
+  let ρ_set := (toMeasurable ρ.fst {a | condKernelReal ρ' a (range f) = 1}ᶜ)ᶜ
   have hm : MeasurableSet ρ_set := (measurableSet_toMeasurable _ _).compl
   have h_eq_one_of_mem : ∀ a ∈ ρ_set, condKernelReal ρ' a (range f) = 1 := by
     intro a ha

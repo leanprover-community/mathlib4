@@ -553,7 +553,7 @@ theorem hasCondCdf_ae (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] : ∀ᵐ a
 /-- A measurable set of elements of `α` such that `ρ` has a conditional cdf at all
 `a ∈ condCdfSet`. -/
 def condCdfSet (ρ : Measure (α × ℝ)) : Set α :=
-  toMeasurable ρ.fst {b | ¬HasCondCdf ρ b}ᶜ
+  (toMeasurable ρ.fst {b | ¬HasCondCdf ρ b})ᶜ
 #align probability_theory.cond_cdf_set ProbabilityTheory.condCdfSet
 
 theorem measurableSet_condCdfSet (ρ : Measure (α × ℝ)) : MeasurableSet (condCdfSet ρ) :=
