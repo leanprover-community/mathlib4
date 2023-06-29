@@ -8,8 +8,8 @@ Authors: Joseph Myers
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Euclidean.Angle.Sphere
-import Mathbin.Geometry.Euclidean.Sphere.SecondInter
+import Mathlib.Geometry.Euclidean.Angle.Sphere
+import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 
 /-!
 # IMO 2019 Q2
@@ -126,8 +126,7 @@ def symm : Imo2019q2Cfg V Pt where
   q := cfg.P
   p₁ := cfg.q₁
   q₁ := cfg.p₁
-  affineIndependent_ABC :=
-    by
+  affineIndependent_ABC := by
     rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
     convert cfg.affine_independent_ABC using 1
     ext x
@@ -226,8 +225,7 @@ theorem a_ne_a₁ : cfg.A ≠ cfg.a₁ := by
   exact h' cfg.wbtw_B_A₁_C.collinear
 #align imo2019_q2.imo2019q2_cfg.A_ne_A₁ Imo2019Q2.Imo2019q2Cfg.a_ne_a₁
 
-theorem collinear_PAA₁A₂ : Collinear ℝ ({cfg.P, cfg.A, cfg.a₁, cfg.a₂} : Set Pt) :=
-  by
+theorem collinear_PAA₁A₂ : Collinear ℝ ({cfg.P, cfg.A, cfg.a₁, cfg.a₂} : Set Pt) := by
   rw [A₂,
     (cfg.triangle_ABC.circumsphere.second_inter_collinear cfg.A cfg.A₁).collinear_insert_iff_of_ne
       (Set.mem_insert _ _) (Set.mem_insert_of_mem _ (Set.mem_insert _ _)) cfg.A_ne_A₁,
@@ -248,18 +246,15 @@ theorem b₁_ne_c : cfg.b₁ ≠ cfg.C :=
   cfg.symm.a₁_ne_c
 #align imo2019_q2.imo2019q2_cfg.B₁_ne_C Imo2019Q2.Imo2019q2Cfg.b₁_ne_c
 
-theorem q_not_mem_CB : cfg.q ∉ line[ℝ, cfg.C, cfg.b] :=
-  by
+theorem q_not_mem_CB : cfg.q ∉ line[ℝ, cfg.C, cfg.b] := by
   intro hQ
   have hQA₁ : line[ℝ, cfg.Q, cfg.A₁] ≤ line[ℝ, cfg.C, cfg.B] :=
     affineSpan_pair_le_of_mem_of_mem hQ cfg.wbtw_B_A₁_C.symm.mem_affine_span
-  have hQ₁ : cfg.Q₁ ∈ line[ℝ, cfg.C, cfg.B] :=
-    by
+  have hQ₁ : cfg.Q₁ ∈ line[ℝ, cfg.C, cfg.B] := by
     rw [AffineSubspace.le_def'] at hQA₁ 
     exact hQA₁ _ cfg.sbtw_Q_A₁_Q₁.right_mem_affine_span
   have hc : Collinear ℝ ({cfg.C, cfg.Q₁, cfg.Q} : Set Pt) :=
-    haveI hc' : Collinear ℝ ({cfg.B, cfg.C, cfg.Q₁, cfg.Q} : Set Pt) :=
-      by
+    haveI hc' : Collinear ℝ ({cfg.B, cfg.C, cfg.Q₁, cfg.Q} : Set Pt) := by
       rw [Set.insert_comm cfg.B, Set.insert_comm cfg.B, Set.pair_comm, Set.insert_comm cfg.C,
         Set.insert_comm cfg.C]
       exact collinear_insert_insert_of_mem_affineSpan_pair hQ₁ hQ
@@ -312,14 +307,12 @@ theorem a₁_ne_b : cfg.a₁ ≠ cfg.b := by
   intro h
   have hwbtw := cfg.wbtw_A_P_A₁
   rw [h] at hwbtw 
-  have hPQ : line[ℝ, cfg.P, cfg.Q] = line[ℝ, cfg.A, cfg.B] :=
-    by
+  have hPQ : line[ℝ, cfg.P, cfg.Q] = line[ℝ, cfg.A, cfg.B] := by
     rw [AffineSubspace.eq_iff_direction_eq_of_mem (left_mem_affineSpan_pair _ _ _)
         hwbtw.mem_affine_span]
     exact cfg.PQ_parallel_AB.direction_eq
   haveI := some_orientation V
-  have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A :=
-    by
+  have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
     refine' collinear_insert_of_mem_affineSpan_pair _
@@ -327,8 +320,7 @@ theorem a₁_ne_b : cfg.a₁ ≠ cfg.b := by
     exact right_mem_affineSpan_pair _ _ _
   have ha : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.Q₁ cfg.Q := by
     rw [oangle_CQ₁Q_eq_oangle_CBA, haQ]
-  have hn : ¬Collinear ℝ ({cfg.C, cfg.B, cfg.Q} : Set Pt) :=
-    by
+  have hn : ¬Collinear ℝ ({cfg.C, cfg.B, cfg.Q} : Set Pt) := by
     rw [collinear_iff_of_two_zsmul_oangle_eq haQ, Set.pair_comm, Set.insert_comm, Set.pair_comm]
     exact cfg.not_collinear_ABC
   have hc := cospherical_of_two_zsmul_oangle_eq_of_not_collinear ha hn
@@ -354,8 +346,7 @@ theorem sbtw_a_b₁_c : Sbtw ℝ cfg.A cfg.b₁ cfg.C :=
   cfg.symm.sbtw_b_a₁_c
 #align imo2019_q2.imo2019q2_cfg.sbtw_A_B₁_C Imo2019Q2.Imo2019q2Cfg.sbtw_a_b₁_c
 
-theorem sbtw_a_a₁_a₂ : Sbtw ℝ cfg.A cfg.a₁ cfg.a₂ :=
-  by
+theorem sbtw_a_a₁_a₂ : Sbtw ℝ cfg.A cfg.a₁ cfg.a₂ := by
   refine' sphere.sbtw_second_inter cfg.A_mem_circumsphere _
   convert cfg.sbtw_B_A₁_C.dist_lt_max_dist _
   change _ = max (dist (cfg.triangle_ABC.points 1) _) (dist (cfg.triangle_ABC.points 2) _)
@@ -431,8 +422,7 @@ section Oriented
 variable [Module.Oriented ℝ V (Fin 2)]
 
 theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
-    (2 : ℤ) • ∡ cfg.q cfg.P cfg.a₂ = (2 : ℤ) • ∡ cfg.b cfg.A cfg.a₂ :=
-  by
+    (2 : ℤ) • ∡ cfg.q cfg.P cfg.a₂ = (2 : ℤ) • ∡ cfg.b cfg.A cfg.a₂ := by
   refine' two_zsmul_oangle_of_parallel cfg.QP_parallel_BA _
   convert AffineSubspace.Parallel.refl _ using 1
   rw [cfg.collinear_PAA₁A₂.affine_span_eq_of_ne
@@ -450,13 +440,11 @@ end Oriented
 /-! ### More obvious configuration properties -/
 
 
-theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.q, cfg.P, cfg.a₂} : Set Pt) :=
-  by
+theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.q, cfg.P, cfg.a₂} : Set Pt) := by
   haveI := some_orientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
     affineIndependent_iff_not_collinear_set]
-  have h : cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) :=
-    by
+  have h : cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
     refine' cfg.triangle_ABC.circumsphere.cospherical.subset _
     simp [Set.insert_subset_iff, cfg.A_mem_circumsphere, cfg.B_mem_circumsphere,
       cfg.A₂_mem_circumsphere]
@@ -471,8 +459,7 @@ theorem q₁_ne_a₂ : cfg.q₁ ≠ cfg.a₂ := by
   have hA₂ := cfg.sbtw_A_A₁_A₂.right_mem_affine_span
   have hA₂A₁ : line[ℝ, cfg.A₂, cfg.A₁] ≤ line[ℝ, cfg.A, cfg.A₁] :=
     affineSpan_pair_le_of_left_mem hA₂
-  have hQ : cfg.Q ∈ line[ℝ, cfg.A, cfg.A₁] :=
-    by
+  have hQ : cfg.Q ∈ line[ℝ, cfg.A, cfg.A₁] := by
     rw [AffineSubspace.le_def'] at hA₂A₁ 
     exact hA₂A₁ _ h₁.left_mem_affine_span
   exact collinear_triple_of_mem_affineSpan_pair hQ cfg.wbtw_A_P_A₁.mem_affine_span hA₂
@@ -549,8 +536,7 @@ theorem symm_ω_eq_trianglePQB₂_circumsphere : cfg.symm.ω = cfg.trianglePQB�
   rw [ω, symm_triangle_QPA₂]
 #align imo2019_q2.imo2019q2_cfg.symm_ω_eq_triangle_PQB₂_circumsphere Imo2019Q2.Imo2019q2Cfg.symm_ω_eq_trianglePQB₂_circumsphere
 
-theorem symm_ω : cfg.symm.ω = cfg.ω :=
-  by
+theorem symm_ω : cfg.symm.ω = cfg.ω := by
   rw [symm_ω_eq_triangle_PQB₂_circumsphere, ω]
   refine' circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ _ _
   · simp only [triangle_PQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
@@ -596,16 +582,14 @@ end Oriented
 /-! ### Conclusions from that second angle chase -/
 
 
-theorem not_collinear_CA₂A₁ : ¬Collinear ℝ ({cfg.C, cfg.a₂, cfg.a₁} : Set Pt) :=
-  by
+theorem not_collinear_CA₂A₁ : ¬Collinear ℝ ({cfg.C, cfg.a₂, cfg.a₁} : Set Pt) := by
   haveI := some_orientation V
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_CA₂A₁_eq_two_zsmul_oangle_CBA,
     Set.pair_comm, Set.insert_comm, Set.pair_comm]
   exact cfg.not_collinear_ABC
 #align imo2019_q2.imo2019q2_cfg.not_collinear_CA₂A₁ Imo2019Q2.Imo2019q2Cfg.not_collinear_CA₂A₁
 
-theorem cospherical_A₁Q₁CA₂ : Cospherical ({cfg.a₁, cfg.q₁, cfg.C, cfg.a₂} : Set Pt) :=
-  by
+theorem cospherical_A₁Q₁CA₂ : Cospherical ({cfg.a₁, cfg.q₁, cfg.C, cfg.a₂} : Set Pt) := by
   haveI := some_orientation V
   rw [Set.insert_comm cfg.Q₁, Set.insert_comm cfg.A₁, Set.pair_comm, Set.insert_comm cfg.A₁,
     Set.pair_comm]
@@ -651,8 +635,7 @@ theorem q₁_mem_ω : cfg.q₁ ∈ cfg.ω :=
 theorem p₁_mem_ω : cfg.p₁ ∈ cfg.ω := by rw [← symm_ω]; exact cfg.symm.Q₁_mem_ω
 #align imo2019_q2.imo2019q2_cfg.P₁_mem_ω Imo2019Q2.Imo2019q2Cfg.p₁_mem_ω
 
-theorem result : Concyclic ({cfg.P, cfg.q, cfg.p₁, cfg.q₁} : Set Pt) :=
-  by
+theorem result : Concyclic ({cfg.P, cfg.q, cfg.p₁, cfg.q₁} : Set Pt) := by
   refine' ⟨_, coplanar_of_fact_finrank_eq_two _⟩
   rw [cospherical_iff_exists_sphere]
   refine' ⟨cfg.ω, _⟩
