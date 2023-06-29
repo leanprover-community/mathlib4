@@ -543,7 +543,7 @@ variable [hF : NonUnitalStarAlgHomClass F R A B]
 to its range.
 
 This is a computable alternative to `StarAlgEquiv.ofInjective`. -/
-def ofLeftInverse {g : B → A} {f : F} (h : Function.LeftInverse g f) :
+def ofLeftInverse' {g : B → A} {f : F} (h : Function.LeftInverse g f) :
     A ≃⋆ₐ[R] NonUnitalStarAlgHom.range f :=
   { NonUnitalStarAlgHom.rangeRestrict f with
     toFun := NonUnitalStarAlgHom.rangeRestrict f
@@ -553,31 +553,31 @@ def ofLeftInverse {g : B → A} {f : F} (h : Function.LeftInverse g f) :
       Subtype.ext <|
         let ⟨x', hx'⟩ := (NonUnitalStarAlgHom.mem_range f).mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
-#align star_alg_equiv.of_left_inverse StarAlgEquiv.ofLeftInverse
+#align star_alg_equiv.of_left_inverse StarAlgEquiv.ofLeftInverse'
 
 @[simp]
-theorem ofLeftInverse_apply {g : B → A} {f : F} (h : Function.LeftInverse g f) (x : A) :
-    ofLeftInverse h x = f x :=
+theorem ofLeftInverse'_apply {g : B → A} {f : F} (h : Function.LeftInverse g f) (x : A) :
+    ofLeftInverse' h x = f x :=
   rfl
-#align star_alg_equiv.of_left_inverse_apply StarAlgEquiv.ofLeftInverse_apply
+#align star_alg_equiv.of_left_inverse_apply StarAlgEquiv.ofLeftInverse'_apply
 
 @[simp]
-theorem ofLeftInverse_symm_apply {g : B → A} {f : F} (h : Function.LeftInverse g f)
-    (x : NonUnitalStarAlgHom.range f) : (ofLeftInverse h).symm x = g x :=
+theorem ofLeftInverse'_symm_apply {g : B → A} {f : F} (h : Function.LeftInverse g f)
+    (x : NonUnitalStarAlgHom.range f) : (ofLeftInverse' h).symm x = g x :=
   rfl
-#align star_alg_equiv.of_left_inverse_symm_apply StarAlgEquiv.ofLeftInverse_symm_apply
+#align star_alg_equiv.of_left_inverse_symm_apply StarAlgEquiv.ofLeftInverse'_symm_apply
 
 /-- Restrict an injective non-unital star algebra homomorphism to a star algebra isomorphism -/
-noncomputable def ofInjective (f : F) (hf : Function.Injective f) :
+noncomputable def ofInjective' (f : F) (hf : Function.Injective f) :
     A ≃⋆ₐ[R] NonUnitalStarAlgHom.range f :=
-  ofLeftInverse (Classical.choose_spec hf.hasLeftInverse)
-#align star_alg_equiv.of_injective StarAlgEquiv.ofInjective
+  ofLeftInverse' (Classical.choose_spec hf.hasLeftInverse)
+#align star_alg_equiv.of_injective StarAlgEquiv.ofInjective'
 
 @[simp]
-theorem ofInjective_apply (f : F) (hf : Function.Injective f) (x : A) :
-    ofInjective f hf x = f x :=
+theorem ofInjective'_apply (f : F) (hf : Function.Injective f) (x : A) :
+    ofInjective' f hf x = f x :=
   rfl
-#align star_alg_equiv.of_injective_apply StarAlgEquiv.ofInjective_apply
+#align star_alg_equiv.of_injective_apply StarAlgEquiv.ofInjective'_apply
 
 end StarAlgEquiv
 
