@@ -144,10 +144,12 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
         rintro ⟨n⟩
         ext X
         simp [endofunctorMonoidalCategory, h.zero_add_inv_app, ← Functor.map_comp]
+        rfl
       right_unitality := by
         rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.add_zero_inv_app]}⟩
+        simp [endofunctorMonoidalCategory, h.add_zero_inv_app]
+        rfl }⟩
 #align category_theory.has_shift_mk CategoryTheory.hasShiftMk
 
 end
