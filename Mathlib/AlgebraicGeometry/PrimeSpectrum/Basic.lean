@@ -561,11 +561,11 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
-instance [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
+instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
   simpa using Ideal.bot_prime
 
-instance : QuasiSober (PrimeSpectrum R) :=
+instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
