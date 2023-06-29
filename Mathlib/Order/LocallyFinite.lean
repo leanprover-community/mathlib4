@@ -1366,7 +1366,7 @@ end LocallyFiniteOrderBot
 
 section Finite
 
-variable {α : Type _} [Nonempty α] {s : Set α}
+variable {α : Type _} {s : Set α}
 
 theorem finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
     s.Finite ↔ BddAbove s :=
