@@ -53,7 +53,7 @@ seminorm, locally convex
 -/
 
 
-open NormedField Set Seminorm TopologicalSpace Filter
+open NormedField Set Seminorm TopologicalSpace Filter List
 
 open BigOperators NNReal Pointwise Topology Uniformity
 
@@ -178,7 +178,7 @@ theorem basisSets_smul_left (x : 𝕜) (U : Set E) (hU : U ∈ p.basisSets) :
     use (s.sup p).ball 0 (r / ‖x‖)
     exact ⟨p.basisSets_mem s (div_pos hr (norm_pos_iff.mpr h)), Subset.rfl⟩
   refine' ⟨(s.sup p).ball 0 r, p.basisSets_mem s hr, _⟩
-  simp only [not_ne_iff.mp h, subset_def, mem_ball_zero, hr, mem_univ, map_zero, imp_true_iff,
+  simp only [not_ne_iff.mp h, Set.subset_def, mem_ball_zero, hr, mem_univ, map_zero, imp_true_iff,
     preimage_const_of_mem, zero_smul]
 #align seminorm_family.basis_sets_smul_left SeminormFamily.basisSets_smul_left
 
@@ -661,7 +661,50 @@ theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [Normed
   exact continuous_from_bounded (norm_withSeminorms 𝕝 E) hq f hf
 #align seminorm.cont_normed_space_to_with_seminorms Seminorm.cont_normedSpace_to_withSeminorms
 
-lemma uniform_equicontinuous_iff_exists_continuous_seminorm {κ : Type _}
+protected theorem _root_.NormedSpace.uniformEquicontinuous_TFAE {κ F : Type _}
+    [UniformSpace E] [UniformAddGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜₂ F]
+    [ContinuousSMul 𝕜 E] (f : κ → E →ₛₗ[σ₁₂] F) : TFAE
+    [ UniformEquicontinuous ((↑) ∘ f),
+      ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (normSeminorm 𝕜₂ F).comp (f k) ≤ p,
+      BddAbove (range fun k ↦ (normSeminorm 𝕜₂ F).comp (f k)) ∧
+        Continuous (⨆ k, (normSeminorm 𝕜₂ F).comp (f k) : Seminorm 𝕜 E) ] := by
+  tfae_have 1 → 3
+  . intro H
+    have : ∀ᶠ x in 𝓝 0, ∀ k, ‖f k x‖ ≤ 1 := by
+      filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
+        with x hx k
+      replace hx : dist (f k 0) (f k x) ≤ 1 := (hx k).le
+      rwa [map_zero, dist_zero_left] at hx
+    have bdd : BddAbove (range fun k ↦ (normSeminorm 𝕜₂ F).comp (f k)) :=
+      Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
+        (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
+    refine ⟨bdd, Seminorm.continuous' zero_lt_one ?_⟩
+    filter_upwards [this] with x hx
+    rw [closedBall_iSup bdd _ one_pos, mem_iInter]
+    exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
+  tfae_have 3 → 2
+  . exact fun H ↦ ⟨⨆ k, (normSeminorm 𝕜₂ F).comp (f k), H.2, le_ciSup H.1⟩
+  tfae_have 2 → 1
+  . intro ⟨p, hp, hfp⟩
+    have hp' : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+    refine uniformEquicontinuous_of_equicontinuousAt_zero f
+      (Metric.equicontinuousAt_of_continuity_modulus p hp' _ <| eventually_of_forall fun x k ↦ ?_)
+    change dist (f k 0) (f k x) ≤ p x
+    rw [map_zero, dist_zero_left]
+    exact hfp k x
+  tfae_finish
+
+lemma _root_.WithSeminorms.uniformEquicontinuous_TFAE {κ : Type _}
+    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
+    [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    (f : κ → E →ₛₗ[σ₁₂] F) : TFAE
+    [ UniformEquicontinuous ((↑) ∘ f),
+      ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p,
+      ∀ i, BddAbove (range fun k ↦ (q i).comp (f k)) ∧
+        Continuous (⨆ k, (q i).comp (f k) : Seminorm 𝕜 E) ] := by
+  sorry
+
+lemma uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type _}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
     [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
@@ -694,6 +737,15 @@ lemma uniform_equicontinuous_iff_exists_continuous_seminorm {κ : Type _}
     change q i (f k 0 - f k x) ≤ p x
     rw [map_zero, zero_sub, map_neg_eq_map, ← comp_apply]
     exact hfp k x
+
+lemma uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type _}
+    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
+    [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    (f : κ → E →ₛₗ[σ₁₂] F) :
+    UniformEquicontinuous ((↑) ∘ f) ↔ ∀ i,
+    BddAbove (range fun k ↦ (q i).comp (f k)) ∧
+      Continuous (⨆ k, (q i).comp (f k) : Seminorm 𝕜 E) :=
+  (hq.uniformEquicontinuous_TFAE f).out 0 2
 
 end Seminorm
 
