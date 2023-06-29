@@ -97,7 +97,7 @@ theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesA
 #align has_fpower_series_at.has_fpower_series_iterate_dslope_fslope HasFPowerSeriesAt.has_fpower_series_iterate_dslope_fslope
 
 theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
-    ((swap dslope z₀)^[p.order]) f z₀ ≠ 0 := by
+    (swap dslope z₀)^[p.order] f z₀ ≠ 0 := by
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 #align has_fpower_series_at.iterate_dslope_fslope_ne_zero HasFPowerSeriesAt.iterate_dslope_fslope_ne_zero
