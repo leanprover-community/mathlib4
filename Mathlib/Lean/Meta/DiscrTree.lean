@@ -31,7 +31,15 @@ so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
 -/
 partial def getSubexpressionMatches (d : DiscrTree α s) (e : Expr) : MetaM (Array α) := do
-  e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
+  match e with
+  | .bvar _ => return #[]
+  | .forallE _ _ _ _ => forallTelescope e (fun args body => do
+      args.foldlM (fun acc arg => do
+          pure <| acc ++ (← d.getSubexpressionMatches (← inferType arg)))
+        (← d.getSubexpressionMatches body).reverse)
+  | _ =>
+    e.foldlM (fun a f => do pure <| a ++ (← d.getSubexpressionMatches f)) (← d.getMatch e).reverse
+
 variable {m : Type → Type} [Monad m]
 
 /-- Apply a monadic function to the array of values at each node in a `DiscrTree`. -/
