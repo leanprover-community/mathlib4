@@ -57,7 +57,7 @@ This file expands on the development in the core library.
 * `Fin.castAdd m` : embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : embed `Fin n` into `Fin (n+1)`;
 * `Fin.succAbove p` : embed `Fin n` into `Fin (n + 1)` with a hole around `p`;
-* `Fin.addNat m i` : add `m` on `i` on the right, generalizes `Fin.succ`;
+* `Fin.addNatEmb m i` : add `m` on `i` on the right, generalizes `Fin.succ`;
 * `Fin.natAdd n i` adds `n` on `i` on the left;
 
 ### Other casts
@@ -1101,10 +1101,10 @@ theorem castIso_refl (h : n = n := rfl) : castIso h = OrderIso.refl (Fin n) := b
   simp
 #align fin.cast_refl Fin.castIso_refl
 
-theorem castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} :
-    (castLE h' : Fin m → Fin n) = Fin.castIso h :=
+theorem castLEEmb_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} :
+    (castLEEmb h' : Fin m → Fin n) = Fin.castIso h :=
   funext fun _ => by ext; simp
-#align fin.cast_le_of_eq Fin.castLE_of_eq
+#align fin.cast_le_of_eq Fin.castLEEmb_of_eq
 
 /-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
@@ -1121,7 +1121,7 @@ theorem castIso_eq_cast (h : n = m) : (castIso h : Fin n → Fin m) = cast (h �
   simp
 #align fin.cast_eq_cast Fin.castIso_eq_cast
 
-/-- `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAdd` and `Fin.addNat`. -/
+/-- `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAdd` and `Fin.addNatEmb`. -/
 def castAddEmb (m) : Fin n ↪o Fin (n + m) :=
   castLEEmb <| Nat.le_add_right n m
 #align fin.cast_add Fin.castAddEmb
@@ -1202,7 +1202,7 @@ theorem succ_castIso_eq {n' : ℕ} (i : Fin n) (h : n = n') :
 
 /-- `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
 def castSuccEmb : Fin n ↪o Fin (n + 1) :=
-  castAdd 1
+  castAddEmb 1
 #align fin.cast_succ Fin.castSuccEmb
 
 @[simp]
@@ -1318,14 +1318,14 @@ theorem coeSucc_eq_succ {a : Fin n} : (castSuccEmb a) + 1 = a.succ := by
 #align fin.coe_succ_eq_succ Fin.coeSucc_eq_succ
 
 theorem lt_succ {a : Fin n} : castSuccEmb a < a.succ := by
-  rw [castSuccEmb, lt_iff_val_lt_val, coe_castAdd, val_succ]
+  rw [castSuccEmb, lt_iff_val_lt_val, coe_castAddEmb, val_succ]
   exact lt_add_one a.val
 #align fin.lt_succ Fin.lt_succ
 
 @[simp]
 theorem range_castSuccEmb {n : ℕ} : Set.range (castSuccEmb : Fin n → Fin n.succ) =
     ({ i | (i : ℕ) < n } : Set (Fin n.succ)) :=
-  range_castLE le_self_add
+  range_castLEEmb le_self_add
 #align fin.range_cast_succ Fin.range_castSuccEmb
 
 theorem exists_castSuccEmb_eq {n : ℕ} {i : Fin (n + 1)} : (∃ j, castSuccEmb j = i) ↔ i ≠ last n :=
@@ -1342,55 +1342,55 @@ theorem succ_castSuccEmb {n : ℕ} (i : Fin n) : i.castSuccEmb.succ = castSuccEm
   Fin.ext (by simp)
 #align fin.succ_cast_succ Fin.succ_castSuccEmb
 
-/-- `addNat m i` adds `m` to `i`, generalizes `Fin.succ`. -/
-def addNat (m) : Fin n ↪o Fin (n + m) :=
+/-- `addNatEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
+def addNatEmb (m) : Fin n ↪o Fin (n + m) :=
   (OrderEmbedding.ofStrictMono fun i => ⟨(i : ℕ) + m, add_lt_add_right i.2 _⟩) fun i j h =>
     add_lt_add_right (show i.val < j.val from h) _
-#align fin.add_nat Fin.addNat
+#align fin.add_nat Fin.addNatEmb
 
 @[simp]
-theorem coe_addNat (m : ℕ) (i : Fin n) : (addNat m i : ℕ) = i + m :=
+theorem coe_addNatEmb (m : ℕ) (i : Fin n) : (addNatEmb m i : ℕ) = i + m :=
   rfl
-#align fin.coe_add_nat Fin.coe_addNat
+#align fin.coe_add_nat Fin.coe_addNatEmb
 
 @[simp]
-theorem addNat_one {i : Fin n} : addNat 1 i = i.succ := by
+theorem addNatEmb_one {i : Fin n} : addNatEmb 1 i = i.succ := by
   ext
-  rw [coe_addNat, val_succ]
-#align fin.add_nat_one Fin.addNat_one
+  rw [coe_addNatEmb, val_succ]
+#align fin.add_nat_one Fin.addNatEmb_one
 
-theorem le_coe_addNat (m : ℕ) (i : Fin n) : m ≤ addNat m i :=
+theorem le_coe_addNatEmb (m : ℕ) (i : Fin n) : m ≤ addNatEmb m i :=
   Nat.le_add_left _ _
-#align fin.le_coe_add_nat Fin.le_coe_addNat
+#align fin.le_coe_add_nat Fin.le_coe_addNatEmb
 
 @[simp]
-theorem addNat_mk (n i : ℕ) (hi : i < m) : addNat n ⟨i, hi⟩ = ⟨i + n, add_lt_add_right hi n⟩ :=
+theorem addNatEmb_mk (n i : ℕ) (hi : i < m) : addNatEmb n ⟨i, hi⟩ = ⟨i + n, add_lt_add_right hi n⟩ :=
   rfl
-#align fin.add_nat_mk Fin.addNat_mk
+#align fin.add_nat_mk Fin.addNatEmb_mk
 
 @[simp]
-theorem castIso_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
-    castIso h (addNat 0 i) = castIso ((add_zero _).symm.trans h) i :=
+theorem castIso_addNatEmb_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
+    castIso h (addNatEmb 0 i) = castIso ((add_zero _).symm.trans h) i :=
   ext <| add_zero _
-#align fin.cast_add_nat_zero Fin.castIso_addNat_zero
+#align fin.cast_add_nat_zero Fin.castIso_addNatEmb_zero
 
-/-- For rewriting in the reverse direction, see `Fin.castIso_addNat_left`. -/
-theorem addNat_castIso {n n' m : ℕ} (i : Fin n') (h : n' = n) :
-    addNat m (castIso h i) = castIso (congr_arg (. + m) h) (addNat m i) :=
+/-- For rewriting in the reverse direction, see `Fin.castIso_addNatEmb_left`. -/
+theorem addNatEmb_castIso {n n' m : ℕ} (i : Fin n') (h : n' = n) :
+    addNatEmb m (castIso h i) = castIso (congr_arg (. + m) h) (addNatEmb m i) :=
   ext rfl
-#align fin.add_nat_cast Fin.addNat_castIso
+#align fin.add_nat_cast Fin.addNatEmb_castIso
 
-theorem castIso_addNat_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
-    castIso h (addNat m i) = addNat m (castIso (add_right_cancel h) i) := by
+theorem castIso_addNatEmb_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
+    castIso h (addNatEmb m i) = addNatEmb m (castIso (add_right_cancel h) i) := by
   ext
   simp
-#align fin.cast_add_nat_left Fin.castIso_addNat_left
+#align fin.cast_add_nat_left Fin.castIso_addNatEmb_left
 
 @[simp]
-theorem castIso_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
-    castIso h (addNat m' i) = addNat m i :=
+theorem castIso_addNatEmb_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
+    castIso h (addNatEmb m' i) = addNatEmb m i :=
   ext <| (congr_arg ((· + ·) (i : ℕ)) (add_left_cancel h) : _)
-#align fin.cast_add_nat_right Fin.castIso_addNat_right
+#align fin.cast_add_nat_right Fin.castIso_addNatEmb_right
 
 /-- `natAdd n i` adds `n` to `i` "on the left". -/
 def natAdd (n) {m} : Fin m ↪o Fin (n + m) :=
@@ -1461,15 +1461,15 @@ theorem castIso_natAdd_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
 
 @[simp]
 theorem castIso_natAdd (n : ℕ) {m : ℕ} (i : Fin m) :
-    castIso (add_comm _ _) (natAdd n i) = addNat n i :=
+    castIso (add_comm _ _) (natAdd n i) = addNatEmb n i :=
   ext <| add_comm _ _
 #align fin.cast_nat_add Fin.castIso_natAdd
 
 @[simp]
-theorem castIso_addNat {n : ℕ} (m : ℕ) (i : Fin n) :
-    castIso (add_comm _ _) (addNat m i) = natAdd m i :=
+theorem castIso_addNatEmb {n : ℕ} (m : ℕ) (i : Fin n) :
+    castIso (add_comm _ _) (addNatEmb m i) = natAdd m i :=
   ext <| add_comm _ _
-#align fin.cast_add_nat Fin.castIso_addNat
+#align fin.cast_add_nat Fin.castIso_addNatEmb
 
 @[simp]
 theorem natAdd_last {m n : ℕ} : natAdd n (last m) = last (n + m) :=
@@ -1601,19 +1601,19 @@ theorem pred_castSuccEmb_succ (i : Fin n) :
 #align fin.pred_cast_succ_succ Fin.pred_castSuccEmb_succ
 
 @[simp]
-theorem addNat_subNat {i : Fin (n + m)} (h : m ≤ i) : addNat m (subNat m i h) = i :=
+theorem addNatEmb_subNat {i : Fin (n + m)} (h : m ≤ i) : addNatEmb m (subNat m i h) = i :=
   ext <| tsub_add_cancel_of_le h
-#align fin.add_nat_sub_nat Fin.addNat_subNat
+#align fin.add_nat_sub_nat Fin.addNatEmb_subNat
 
 @[simp]
-theorem subNat_addNat (i : Fin n) (m : ℕ) (h : m ≤ addNat m i := le_coe_addNat m i) :
-    subNat m (addNat m i) h = i :=
+theorem subNat_addNatEmb (i : Fin n) (m : ℕ) (h : m ≤ addNatEmb m i := le_coe_addNatEmb m i) :
+    subNat m (addNatEmb m i) h = i :=
   ext <| add_tsub_cancel_right (i : ℕ) m
-#align fin.sub_nat_add_nat Fin.subNat_addNat
+#align fin.sub_nat_add_nat Fin.subNat_addNatEmb
 
 @[simp]
 theorem natAdd_subNat_castIso {i : Fin (n + m)} (h : n ≤ i) :
-    natAdd n (subNat n (castIso (add_comm _ _) i) h) = i := by simp [← castIso_addNat]
+    natAdd n (subNat n (cast (add_comm _ _) i) h) = i := by simp [← castIso_addNatEmb]
 #align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_castIso
 
 end Pred
