@@ -128,6 +128,10 @@ topology.
 -/
 def ScottTopology' : TopologicalSpace α := upperSetTopology' α ⊔ ScottHausdorffTopology
 
+lemma upper_le_Scott : upperSetTopology' α ≤  ScottTopology' := le_sup_left
+
+lemma ScottHausdorff_le_Scott : @ScottHausdorffTopology α ≤  @ScottTopology' α := le_sup_right
+
 end preorder
 
 /--
@@ -305,12 +309,11 @@ lemma closure_singleton (a : α) : closure {a} = Iic a := by
     . exact isLowerSet_Iic a
     . intros d b _ _ d₃ d₄
       exact (isLUB_le_iff d₃).mpr d₄
-  . rw [← OrderIso.apply_symm_apply WithUpperSetTopology.ofUpperSetOrderIso a,
-      ← (OrderIso.image_Iic WithUpperSetTopology.ofUpperSetOrderIso),
-      ← UpperSetTopology.closure_singleton,
-      ← @image_singleton _ _ WithUpperSetTopology.ofUpperSetOrderIso ]
-    apply (image_closure_subset_closure_image
-      (Monotone_continuous WithUpperSetTopology.ofUpperSetOrderIso.monotone))
+  . convert Closure.mono (@upper_le_Scott α _)
+    --rw [←UpperSetTopology.closure_singleton]
+    sorry
+    exact topology_eq α
+
 
 variable [Preorder β] [TopologicalSpace β] [ScottTopology β]
 
@@ -431,3 +434,5 @@ ScottHausdorffTopology ≤  ‹TopologicalSpace α› :=
 lemma ScottHausdorffOpen_implies_LowerOpen {s : Set α} :
   IsOpen (WithLowerTopology.ofLower ⁻¹' s) → ScottHausdorffTopology.IsOpen s :=
   Scott_Hausdorff_le_Lower _
+
+#check IsClosed.mono
