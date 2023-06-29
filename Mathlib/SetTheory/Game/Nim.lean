@@ -18,7 +18,7 @@ import Mathlib.SetTheory.Game.Impartial
 This file contains the definition for nim for any ordinal `o`. In the game of `nim o₁` both players
 may move to `nim o₂` for any `o₂ < o₁`.
 We also define a Grundy value for an impartial game `G` and prove the Sprague-Grundy theorem, that
-`G` is equivalent to `nim (grundy_value G)`.
+`G` is equivalent to `nim (grundyValue G)`.
 Finally, we compute the sum of finite Grundy numbers: if `G` and `H` have Grundy values `n` and `m`,
 where `n` and `m` are natural numbers, then `G + H` has the Grundy value `n xor m`.
 
@@ -346,7 +346,7 @@ theorem grundyValue_eq_mex_right :
     ∀ (G : PGame) [G.Impartial],
       grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) := by
   -- Porting note: was
-  -- | ⟨l, r, L, R⟩ => by
+  | ⟨l, r, L, R⟩, _ => by
   -- but this lost track of the `Impartial` instance
   rintro ⟨l, r, L, R⟩ _
   rw [← grundyValue_neg, grundyValue_eq_mex_left]
