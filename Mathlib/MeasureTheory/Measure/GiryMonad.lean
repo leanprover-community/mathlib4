@@ -127,7 +127,7 @@ theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α
 #align measure_theory.measure.measurable_join MeasureTheory.Measure.measurable_join
 
 theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : Measurable f) :
-    (∫⁻ x, f x ∂join m) = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
+    ∫⁻ x, f x ∂join m = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
   simp_rw [lintegral_eq_iSup_eapprox_lintegral hf, SimpleFunc.lintegral,
     join_apply (SimpleFunc.measurableSet_preimage _ _)]
   suffices
@@ -184,7 +184,7 @@ theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurabl
 #align measure_theory.measure.measurable_bind' MeasureTheory.Measure.measurable_bind'
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)
-    (hf : Measurable f) : (∫⁻ x, f x ∂bind m μ) = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
+    (hf : Measurable f) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
 #align measure_theory.measure.lintegral_bind MeasureTheory.Measure.lintegral_bind
 
