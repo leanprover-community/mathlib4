@@ -173,16 +173,16 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
 instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
   AlgebraicGeometry.SpecIsAffine _
 
-instance [h : IsIntegral X] (x : X.carrier) : IsFractionRing (X.Presheaf.stalk x) X.functionField :=
-  by
-  let U : opens X.carrier :=
-    ⟨Set.range (X.affine_cover.map x).1.base,
-      PresheafedSpace.is_open_immersion.base_open.open_range⟩
-  haveI : Nonempty U := ⟨⟨_, X.affine_cover.covers x⟩⟩
-  have hU : is_affine_open U := range_is_affine_open_of_open_immersion (X.affine_cover.map x)
+instance [h : IsIntegral X] (x : X.carrier) :
+    IsFractionRing (X.presheaf.stalk x) X.functionField := by
+  let U : Opens X.carrier :=
+    ⟨Set.range (X.affineCover.map x).1.base,
+      PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
+  haveI : Nonempty U := ⟨⟨_, X.affineCover.Covers x⟩⟩
+  have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
   exact
     @IsFractionRing.isFractionRing_of_isDomain_of_isLocalization _ _ _ _ _ _ _ _ _ _ _
-      (hU.is_localization_stalk ⟨x, X.affine_cover.covers x⟩)
-      (function_field_is_fraction_ring_of_is_affine_open X U hU)
+      (hU.isLocalization_stalk ⟨x, X.affineCover.Covers x⟩)
+      (functionField_isFractionRing_of_isAffineOpen X U hU)
 
 end AlgebraicGeometry
