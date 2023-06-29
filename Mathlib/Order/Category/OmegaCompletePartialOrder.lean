@@ -122,7 +122,7 @@ def equalizerι {α β : Type _} [OmegaCompletePartialOrder α] [OmegaCompletePa
 #align ωCPO.has_equalizers.equalizer_ι ωCPO.HasEqualizers.equalizerι
 
 /-- A construction of the equalizer fork. -/
--- Porting note: Original def didn't have `.toFun`
+-- Porting note: Changed `{ a // f a = g a }` to `{ a // f.toFun a = g.toFun a }`
 def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
   Fork.ofι (P := ωCPO.of { a // f.toFun a = g.toFun a }) (equalizerι f g)
     (ContinuousHom.ext _ _ fun x => x.2)
@@ -131,7 +131,7 @@ def equalizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : Fork f g :=
 /-- The equalizer fork is a limit. -/
 def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
   Fork.IsLimit.mk' _ fun s =>
-    -- Porting note: Changed `s.ι.toFun x` to `s.ι.toFun x`
+    -- Porting note: Changed `s.ι x` to `s.ι.toFun x`
     ⟨{  toFun := fun x => ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
         monotone' := fun x y h => s.ι.monotone h
         cont := fun x => Subtype.ext (s.ι.continuous x) }, by ext; rfl, fun hm => by
