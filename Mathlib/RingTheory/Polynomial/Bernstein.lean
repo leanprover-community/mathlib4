@@ -227,7 +227,7 @@ theorem iterate_derivative_at_1_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
 
 @[simp]
 theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
-    ((Polynomial.derivative^[n - ν]) (bernsteinPolynomial R n ν)).eval 1 =
+    (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 =
       (-1) ^ (n - ν) * (pochhammer R (n - ν)).eval (ν + 1 : R) := by
   rw [flip' _ _ _ h]
   simp [Polynomial.eval_comp, h]
@@ -239,7 +239,7 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
 #align bernstein_polynomial.iterate_derivative_at_1 bernsteinPolynomial.iterate_derivative_at_1
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
-    ((Polynomial.derivative^[n - ν]) (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by
+    (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by
   rw [bernsteinPolynomial.iterate_derivative_at_1 _ _ _ h, Ne.def, neg_one_pow_mul_eq_zero_iff, ←
     Nat.cast_succ, ← pochhammer_eval_cast, ← Nat.cast_zero, Nat.cast_inj]
   exact (pochhammer_pos _ _ (Nat.succ_pos ν)).ne'
@@ -269,7 +269,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [LinearMap.pow_apply]
       -- The right hand side is nonzero,
       -- so it will suffice to show the left hand side is always zero.
-      suffices ((Polynomial.derivative^[n - k]) p).eval 1 = 0 by
+      suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
       refine span_induction m ?_ ?_ ?_ ?_

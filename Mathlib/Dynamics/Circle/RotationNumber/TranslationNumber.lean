@@ -661,7 +661,7 @@ theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀ CircleDeg1Lift.translationNumber_eq_of_tendsto₀
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => (f^[n + 1]) 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast h)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀' CircleDeg1Lift.translationNumber_eq_of_tendsto₀'
 

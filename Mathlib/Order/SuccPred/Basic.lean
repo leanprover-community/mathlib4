@@ -286,7 +286,7 @@ theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
 theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : succ^[n] a = succ^[m] a)
     (h_lt : n < m) : IsMax (succ^[n] a) := by
   refine' max_of_succ_le (le_trans _ h_eq.symm.le)
-  have : succ (succ^[n] a) = (succ^[n + 1]) a := by rw [Function.iterate_succ', comp]
+  have : succ (succ^[n] a) = succ^[n + 1] a := by rw [Function.iterate_succ', comp]
   rw [this]
   have h_le : n + 1 ≤ m := Nat.succ_le_of_lt h_lt
   exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ a) h_le
@@ -958,16 +958,16 @@ theorem pred_succ [NoMaxOrder α] (a : α) : pred (succ a) = a :=
   Covby.pred_eq (covby_succ _)
 #align order.pred_succ Order.pred_succ
 
-theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax ((succ^[n - 1]) i)) :
+theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[n - 1] i)) :
     pred^[n] (succ^[n] i) = i := by
   induction' n with n hn
   · simp only [Nat.zero_eq, Function.iterate_zero, id.def]
   rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
-  have h_not_max : ¬IsMax ((succ^[n - 1]) i) := by
+  have h_not_max : ¬IsMax (succ^[n - 1] i) := by
     cases' n with n
     · simpa using hin
     rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
-    have h_sub_le : succ^[n] i ≤ (succ^[n.succ]) i := by
+    have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
       rw [Function.iterate_succ']
       exact le_succ _
     refine' fun h_max => hin fun j hj => _
@@ -979,7 +979,7 @@ theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax ((succ^
   exact hn h_not_max
 #align order.pred_succ_iterate_of_not_is_max Order.pred_succ_iterate_of_not_isMax
 
-theorem succ_pred_iterate_of_not_isMin (i : α) (n : ℕ) (hin : ¬IsMin ((pred^[n - 1]) i)) :
+theorem succ_pred_iterate_of_not_isMin (i : α) (n : ℕ) (hin : ¬IsMin (pred^[n - 1] i)) :
     succ^[n] (pred^[n] i) = i :=
   @pred_succ_iterate_of_not_isMax αᵒᵈ _ _ _ i n hin
 #align order.succ_pred_iterate_of_not_is_min Order.succ_pred_iterate_of_not_isMin

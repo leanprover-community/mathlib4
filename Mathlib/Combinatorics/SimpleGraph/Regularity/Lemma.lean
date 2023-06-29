@@ -142,7 +142,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
     rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi
     norm_num at hi
     rwa [le_div_iff' (pow_pos hε _)]
-  have hsize : P.parts.card ≤ (stepBound^[⌊4 / ε ^ 5⌋₊]) t :=
+  have hsize : P.parts.card ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=
     (Nat.mul_le_mul hsize (Nat.pow_le_pow_of_le_right (by norm_num) hsize)).trans hα
