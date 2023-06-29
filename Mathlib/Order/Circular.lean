@@ -425,10 +425,17 @@ def Preorder.toCircularPreorder (α : Type _) [Preorder α] : CircularPreorder �
     · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_le]
-    have := le_trans a b c
-    have := le_trans b c a
-    have := le_trans c a b
-    tauto
+    have h1 := le_trans a b c
+    have h2 := le_trans b c a
+    have h3 := le_trans c a b
+    -- Porting note: was `tauto`, but this is a much faster tactic proof
+    revert h1 h2 h3
+    generalize (a ≤ b) = p1
+    generalize (b ≤ a) = p2
+    generalize (a ≤ c) = p3
+    generalize (c ≤ a) = p4
+    generalize (b ≤ c) = p5
+    by_cases p1 <;> by_cases p2 <;> by_cases p3 <;> by_cases p4 <;> by_cases p5 <;> simp [*]
 #align preorder.to_circular_preorder Preorder.toCircularPreorder
 
 /-- The circular partial order obtained from "looping around" a partial order.
