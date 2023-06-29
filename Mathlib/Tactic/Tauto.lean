@@ -29,9 +29,9 @@ initialize registerTraceClass `tauto
 def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := g.withContext do
   let .fvar fvarId := hypFVar | throwError "not fvar {hypFVar}"
   let h ← fvarId.getDecl
-  let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type.cleanupAnnotations)
+  let e : Q(Prop) ← (do guard <| ← Meta.isProp h.type; pure h.type)
   let replace (p : Expr) := g.replace h.fvarId p
-  match ← instantiateMVarsQ (u := .zero) e with
+  match e with
   | ~q(¬ ($a : Prop) = $b) => do
     let h' : Q(¬$a = $b) := h.toExpr
     replace q(mt Iff.to_eq $h')
@@ -132,7 +132,7 @@ declare_config_elab elabConfig Config
 /-- Matches propositions where we want to apply the `constructor` tactic
 in the core loop of `tauto`. -/
 def coreConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
-  match ← instantiateMVarsQ (u := .zero) e with
+  match e with
   | ~q(_ ∧ _) => pure true
   | ~q(_ ↔ _) => pure true
   | ~q(True) => pure true
@@ -141,7 +141,7 @@ def coreConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
 /-- Matches propositions where we want to apply the `cases` tactic
 in the core loop of `tauto`. -/
 def casesMatcher (e : Q(Prop)) : MetaM Bool :=
-  match ← instantiateMVarsQ (u := .zero) e with
+  match e with
   | ~q(_ ∧ _) => pure true
   | ~q(_ ∨ _) => pure true
   | ~q(Exists _) => pure true
@@ -182,7 +182,7 @@ def tautoCore : TacticM Unit := do
 /-- Matches propositions where we want to apply the `constructor` tactic in the
 finishing stage of `tauto`. -/
 def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
-  match ← instantiateMVarsQ (u := .zero) e with
+  match e with
   | ~q(_ ∧ _) => pure true
   | ~q(_ ↔ _) => pure true
   | ~q(Exists _) => pure true
