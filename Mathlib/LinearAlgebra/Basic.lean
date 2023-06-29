@@ -2387,7 +2387,7 @@ theorem conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
 
 theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := by
-  ext (f x)
+  ext f x
   rfl
 #align linear_equiv.conj_trans LinearEquiv.conj_trans
 

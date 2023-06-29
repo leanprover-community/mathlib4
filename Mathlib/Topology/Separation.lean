@@ -716,9 +716,9 @@ theorem Dense.diff_singleton [T1Space α] {s : Set α} (hs : Dense s) (x : α) [
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Set α} (hs : Dense s)
     (t : Finset α) : Dense (s \ t) := by
-  induction t using Finset.induction_on -- with x s _ ih hd
-  case empty =>  simpa using hs
-  case insert ih =>
+  induction t using Finset.induction_on with
+  | empty =>  simpa using hs
+  | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
 #align dense.diff_finset Dense.diff_finset
@@ -751,11 +751,18 @@ theorem ContinuousAt.eventually_ne [TopologicalSpace β] [T1Space β] {g : α �
   hg1.tendsto.eventually_ne hg2
 #align continuous_at.eventually_ne ContinuousAt.eventually_ne
 
+theorem eventually_ne_nhds [T1Space α] {a b : α} (h : a ≠ b) : ∀ᶠ x in 𝓝 a, x ≠ b :=
+  IsOpen.eventually_mem isOpen_ne h
+
+theorem eventually_ne_nhdsWithin [T1Space α] {a b : α} {s : Set α} (h : a ≠ b) :
+    ∀ᶠ x in 𝓝[s] a, x ≠ b :=
+  Filter.Eventually.filter_mono nhdsWithin_le_nhds <| eventually_ne_nhds h
+
 /-- To prove a function to a `T1Space` is continuous at some point `a`, it suffices to prove that
 `f` admits *some* limit at `a`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace β] [T1Space β] {f : α → β} {a : α} {b : β}
-    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a :=
-  show Tendsto f (𝓝 a) (𝓝 <| f a) by rwa [eq_of_tendsto_nhds h]
+    (h : Tendsto f (𝓝 a) (𝓝 b)) : ContinuousAt f a := by
+  rwa [ContinuousAt, eq_of_tendsto_nhds h]
 #align continuous_at_of_tendsto_nhds continuousAt_of_tendsto_nhds
 
 @[simp]
@@ -1279,7 +1286,7 @@ theorem Bornology.relativelyCompact_eq_inCompact [T2Space α] :
 #align bornology.relatively_compact_eq_in_compact Bornology.relativelyCompact_eq_inCompact
 
 /-- If `V : ι → Set α` is a decreasing family of compact sets then any neighborhood of
-`⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhd_of_compact'` where we
+`⋂ i, V i` contains some `V i`. This is a version of `exists_subset_nhds_of_isCompact'` where we
 don't need to assume each `V i` closed because it follows from compactness since `α` is
 assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space α] {ι : Type _} [Nonempty ι] {V : ι → Set α}
@@ -2058,7 +2065,7 @@ instance ConnectedComponents.t2 [T2Space α] [CompactSpace α] : T2Space (Connec
       exact fun Z => Z.2.1.2
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
-    set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (H : i ∈ fin_a), i
+    set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1
     exact ⟨U, (↑) '' U, hU, ha, subset_iInter₂ fun Z _ => Z.2.1.connectedComponent_subset Z.2.2,
       (connectedComponents_preimage_image U).symm ▸ hU.biUnion_connectedComponent_eq⟩

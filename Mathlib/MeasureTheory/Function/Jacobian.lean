@@ -1234,7 +1234,7 @@ theorem det_one_smulRight {𝕜 : Type _} [NormedField 𝕜] (v : 𝕜) :
 #align measure_theory.det_one_smul_right MeasureTheory.det_one_smulRight
 
 /-- Integrability in the change of variable formula for differentiable functions (one-variable
-version): if a function `f` is injective and differentiable on a measurable set ``s ⊆ ℝ`, then a
+version): if a function `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then a
 function `g : ℝ → F` is integrable on `f '' s` if and only if `|(f' x)| • g ∘ f` is integrable on
 `s`. -/
 theorem integrableOn_image_iff_integrableOn_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}

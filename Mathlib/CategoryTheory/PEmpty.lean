@@ -16,8 +16,6 @@ import Mathlib.CategoryTheory.DiscreteCategory
 Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` for any category `C`.
 -/
 
--- Porting note: this file stressed Lean a good deal despite its length
-
 universe w v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 namespace CategoryTheory

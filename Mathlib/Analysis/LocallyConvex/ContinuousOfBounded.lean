@@ -141,7 +141,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   simp only [id.def, forall_true_left] at h
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
-  -- The sequence `(λ n, n • u n)` converges to `0`
+  -- The sequence `(fun n ↦ n • u n)` converges to `0`
   have h_tendsto : Tendsto (fun n : ℕ => (n : 𝕜) • u n) atTop (𝓝 (0 : E)) := by
     apply bE.tendsto
     intro n
@@ -152,7 +152,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     convert hy
     rw [← hu1, ← mul_smul]
     simp only [h, mul_inv_cancel, Ne.def, Nat.cast_eq_zero, not_false_iff, one_smul]
-  -- The image `(λ n, n • u n)` is von Neumann bounded:
+  -- The image `(fun n ↦ n • u n)` is von Neumann bounded:
   have h_bounded : IsVonNBounded 𝕜 (Set.range fun n : ℕ => (n : 𝕜) • u n) :=
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
   -- Since `range u` is bounded it absorbs `V`
@@ -169,7 +169,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     specialize h' (n : 𝕜') h1 (Set.mem_range_self n)
     simp only [Set.mem_preimage, LinearMap.map_smulₛₗ, map_natCast] at h'
     rcases h' with ⟨y, hy, h'⟩
-    apply_fun fun y : F => (n : 𝕜')⁻¹ • y  at h'
+    apply_fun fun y : F => (n : 𝕜')⁻¹ • y at h'
     simp only [hn', inv_smul_smul₀, Ne.def, Nat.cast_eq_zero, not_false_iff] at h'
     rwa [← h']
   exact hu' n hn' h''

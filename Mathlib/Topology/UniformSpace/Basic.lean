@@ -40,7 +40,7 @@ Each uniform structure on `X` induces a topology on `X` characterized by
 
 > `nhds_eq_comap_uniformity : ∀ {x : X}, 𝓝 x = comap (prod.mk x) (𝓤 X)`
 
-where `prod.mk x : X → X × X := (λ y, (x, y))` is the partial evaluation of the product
+where `prod.mk x : X → X × X := (fun y ↦ (x, y))` is the partial evaluation of the product
 constructor.
 
 The dictionary with metric spaces includes:
@@ -490,13 +490,13 @@ theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β →
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 #align filter.tendsto.uniformity_trans Filter.Tendsto.uniformity_trans
 
-/-- Relation `λ f g, tendsto (λ x, (f x, g x)) l (𝓤 α)` is symmetric -/
+/-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is symmetric. -/
 theorem Filter.Tendsto.uniformity_symm {l : Filter β} {f : β → α × α} (h : Tendsto f l (𝓤 α)) :
     Tendsto (fun x => ((f x).2, (f x).1)) l (𝓤 α) :=
   tendsto_swap_uniformity.comp h
 #align filter.tendsto.uniformity_symm Filter.Tendsto.uniformity_symm
 
-/-- Relation `λ f g, tendsto (λ x, (f x, g x)) l (𝓤 α)` is reflexive. -/
+/-- Relation `fun f g ↦ Tendsto (fun x ↦ (f x, g x)) l (𝓤 α)` is reflexive. -/
 theorem tendsto_diag_uniformity (f : β → α) (l : Filter β) :
     Tendsto (fun x => (f x, f x)) l (𝓤 α) := fun _s hs =>
   mem_map.2 <| univ_mem' fun _ => refl_mem_uniformity hs
@@ -1652,7 +1652,7 @@ theorem uniformContinuous_inf_dom_left₂ {α β γ} {f : α → β → γ} {ua1
     (h : by haveI := ua1; haveI := ub1; exact UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2;
         exact UniformContinuous fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from ``continuous_inf_dom_left₂`
+  -- proof essentially copied from `continuous_inf_dom_left₂`
   have ha := @UniformContinuous.inf_dom_left _ _ id ua1 ua2 ua1 (@uniformContinuous_id _ (id _))
   have hb := @UniformContinuous.inf_dom_left _ _ id ub1 ub2 ub1 (@uniformContinuous_id _ (id _))
   have h_unif_cont_id :=
@@ -1666,7 +1666,7 @@ theorem uniformContinuous_inf_dom_right₂ {α β γ} {f : α → β → γ} {ua
     (h : by haveI := ua2; haveI := ub2; exact UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := ua1 ⊓ ua2; haveI := ub1 ⊓ ub2;
         exact UniformContinuous fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from ``continuous_inf_dom_right₂`
+  -- proof essentially copied from `continuous_inf_dom_right₂`
   have ha := @UniformContinuous.inf_dom_right _ _ id ua1 ua2 ua2 (@uniformContinuous_id _ (id _))
   have hb := @UniformContinuous.inf_dom_right _ _ id ub1 ub2 ub2 (@uniformContinuous_id _ (id _))
   have h_unif_cont_id :=
@@ -1680,7 +1680,7 @@ theorem uniformContinuous_sInf_dom₂ {α β γ} {f : α → β → γ} {uas : S
     (ha : ua ∈ uas) (hb : ub ∈ ubs) (hf : UniformContinuous fun p : α × β => f p.1 p.2) : by
       haveI := sInf uas; haveI := sInf ubs;
         exact @UniformContinuous _ _ _ uc fun p : α × β => f p.1 p.2 := by
-  -- proof essentially copied from ``continuous_Inf_dom`
+  -- proof essentially copied from `continuous_Inf_dom`
   let _ : UniformSpace (α × β) := instUniformSpaceProd
   have ha := uniformContinuous_sInf_dom ha uniformContinuous_id
   have hb := uniformContinuous_sInf_dom hb uniformContinuous_id
@@ -1843,7 +1843,7 @@ theorem lebesgue_number_lemma {α : Type u} [UniformSpace α] {s : Set α} {ι} 
     apply (𝓤 α).sets_of_superset hm'
     rintro ⟨x, y⟩ hp rfl
     refine' ⟨i, m', hm', fun z hz => h (monotone_id.compRel monotone_const mm' _)⟩
-    dsimp [-mem_compRel] at hz⊢
+    dsimp [-mem_compRel] at hz ⊢
     rw [compRel_assoc]
     exact ⟨y, hp, hz⟩
   have hu₂ : s ⊆ ⋃ n ∈ 𝓤 α, u n := fun x hx => by

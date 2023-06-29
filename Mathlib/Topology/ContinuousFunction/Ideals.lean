@@ -45,7 +45,7 @@ herein called `WeakDual.CharacterSpace.homeoEval`.
 * `ContinuousMap.setOfIdeal`: complement of the set on which all functions in the ideal vanish.
 * `ContinuousMap.opensOfIdeal`: `ContinuousMap.setOfIdeal` as a term of `opens X`.
 * `ContinuousMap.idealOpensGI`: The Galois insertion `ContinuousMap.opensOfIdeal` and
-  `λ s, ContinuousMap.idealOfSet ↑s`.
+  `fun s ↦ ContinuousMap.idealOfSet ↑s`.
 * `WeakDual.CharacterSpace.continuousMapEval`: the natural continuous map from a locally compact
   topological space `X` to the `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point
   evaluation at `x`, with modest hypothesis on `𝕜`.
@@ -91,7 +91,7 @@ variable (R)
 which vanish on the complement of `s`. -/
 def idealOfSet (s : Set X) : Ideal C(X, R) where
   carrier := {f : C(X, R) | ∀ x ∈ sᶜ, f x = 0}
-  add_mem' := @fun f g hf hg x hx => by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
+  add_mem' {f g} hf hg x hx := by simp [hf x hx, hg x hx, coe_add, Pi.add_apply, add_zero]
   zero_mem' _ _ := rfl
   smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
@@ -255,7 +255,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
     `↑g` with the natural embedding of `ℝ≥0` into `𝕜` lies in `I`. This follows from compactness of
     `t` and that we can do it in any neighborhood of a point `x ∈ t`. Indeed, since `x ∈ t`, then
-    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `λ y, ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
+    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
   have : ∃ g' : C(X, ℝ≥0), (algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by
@@ -263,7 +263,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     · refine' ⟨0, _, fun x hx => False.elim hx⟩
       convert I.zero_mem
       ext
-      simp only [comp_apply, zero_apply, coe_mk, map_zero]
+      simp only [comp_apply, zero_apply, ContinuousMap.coe_coe, map_zero]
     · rintro s₁ s₂ hs ⟨g, hI, hgt⟩; exact ⟨g, hI, fun x hx => hgt x (hs hx)⟩
     · rintro s₁ s₂ ⟨g₁, hI₁, hgt₁⟩ ⟨g₂, hI₂, hgt₂⟩
       refine' ⟨g₁ + g₂, _, fun x hx => _⟩
@@ -286,7 +286,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
-      simp only [comp_apply, coe_mk, algebraMapClm_toFun, map_pow, mul_apply, star_apply, star_def]
+      simp only [comp_apply, ContinuousMap.coe_coe, coe_mk, algebraMapClm_toFun, map_pow,
+        mul_apply, star_apply, star_def]
       simp only [normSq_eq_def', IsROrC.conj_mul, ofReal_pow]
       rfl
   /- Get the function `g'` which is guaranteed to exist above. By the extreme value theorem and
@@ -302,7 +303,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   refine' ⟨g * g', _, hg, hgc.mono hgc'⟩
   convert I.mul_mem_left ((algebraMapClm ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) hI'
   ext
-  simp only [algebraMapClm_coe, comp_apply, mul_apply, coe_mk, map_mul]
+  simp only [algebraMapClm_coe, comp_apply, mul_apply, ContinuousMap.coe_coe, map_mul]
 #align continuous_map.ideal_of_set_of_ideal_eq_closure ContinuousMap.idealOfSet_ofIdeal_eq_closure
 
 theorem idealOfSet_ofIdeal_isClosed {I : Ideal C(X, 𝕜)} (hI : IsClosed (I : Set C(X, 𝕜))) :
@@ -342,8 +343,8 @@ theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (ide
 
 variable (X)
 
-/-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → opens X` and
-`λ s, ContinuousMap.idealOfSet ↑s`. -/
+/-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → Opens X` and
+`fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
 def idealOpensGI : GaloisInsertion (opensOfIdeal : Ideal C(X, 𝕜) → Opens X) fun s => idealOfSet 𝕜 s
     where
@@ -365,7 +366,6 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   rw [Ideal.isMaximal_def]
   refine' (idealOpensGI X 𝕜).isCoatom_iff (fun I hI => _) s
   rw [← Ideal.isMaximal_def] at hI
-  skip
   exact idealOfSet_ofIdeal_isClosed inferInstance
 #align continuous_map.ideal_of_set_is_maximal_iff ContinuousMap.idealOfSet_isMaximal_iff
 

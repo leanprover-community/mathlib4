@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
+! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -283,8 +283,11 @@ theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
       map (uncurry (· * ·)) (𝓝 (x₀, y₀)) = map (uncurry (· * ·)) (𝓝 x₀ ×ˢ 𝓝 y₀) :=
         by rw [nhds_prod_eq]
       _ = map (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) (𝓝 1 ×ˢ 𝓝 1) :=
-        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
         -- Porting note: `rw` was able to prove this
+        -- Now it fails with `failed to rewrite using equation theorems for 'Function.uncurry'`
+        -- and `failed to rewrite using equation theorems for 'Function.comp'`.
+        -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
+        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
       _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) :=
         by rw [key, ← Filter.map_map]
       _ ≤ map ((fun x : M => x₀ * x) ∘ fun x => x * y₀) (𝓝 1) := map_mono hmul
@@ -870,26 +873,26 @@ namespace ContinuousMap
 variable [Mul X] [ContinuousMul X]
 
 /-- The continuous map `fun y => y * x` -/
-@[to_additive "The continuous map `fun y => y + x"]
+@[to_additive "The continuous map `fun y => y + x`"]
 protected def mulRight (x : X) : C(X, X) :=
   mk _ (continuous_mul_right x)
 #align continuous_map.mul_right ContinuousMap.mulRight
 #align continuous_map.add_right ContinuousMap.addRight
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 #align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
 #align continuous_map.coe_add_right ContinuousMap.coe_addRight
 
 /-- The continuous map `fun y => x * y` -/
-@[to_additive "The continuous map `fun y => x + y"]
+@[to_additive "The continuous map `fun y => x + y`"]
 protected def mulLeft (x : X) : C(X, X) :=
   mk _ (continuous_mul_left x)
 #align continuous_map.mul_left ContinuousMap.mulLeft
 #align continuous_map.add_left ContinuousMap.addLeft
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
 #align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft

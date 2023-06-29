@@ -484,8 +484,8 @@ theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α)
   simp only [Option.mem_def, ENNReal.some_eq_coe]
   constructor <;> intro h <;> rw [← h]; symm
   all_goals
-    set c := ⨆ (k : ℕ) (hk : k ≤ m + 1), f k a with hc
-    set d := f m.succ a ⊔ ⨆ (k : ℕ) (hk : k ≤ m), f k a with hd
+    set c := ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a with hc
+    set d := f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a with hd
     rw [@le_antisymm_iff ℝ≥0∞, hc, hd]
     -- Specifying the type is weirdly necessary
     refine' ⟨_, _⟩
@@ -561,7 +561,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         ⟨0, 0, zero_mem_measurableLE, by simp⟩ (OrderTop.bddAbove _)
     choose g _ hg₂ f hf₁ hf₂ using h
     -- we set `ξ` to be the supremum of an increasing sequence of functions obtained from above
-    set ξ := ⨆ (n) (k) (hk : k ≤ n), f k with hξ
+    set ξ := ⨆ (n) (k) (_ : k ≤ n), f k with hξ
     -- we see that `ξ` has the largest integral among all functions in `measurableLE`
     have hξ₁ : sSup (measurableLEEval ν μ) = ∫⁻ a, ξ a ∂ν := by
       have :=
@@ -984,7 +984,7 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
   haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
   refine' toJordanDecomposition_eq _
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
-  ext i; intro hi
+  ext i hi
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
       toSignedMeasure_apply_measurable hi, add_apply, add_apply, ENNReal.toReal_add,
       ENNReal.toReal_add, add_sub_add_comm, ← toSignedMeasure_apply_measurable hi,
@@ -1226,7 +1226,7 @@ theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrabl
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by
   conv_rhs => rw [← c.toComplexMeasure_to_signedMeasure]
-  ext i : 1; intro hi
+  ext i hi : 1
   rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
   ext
   · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.re_eq_complex_re,

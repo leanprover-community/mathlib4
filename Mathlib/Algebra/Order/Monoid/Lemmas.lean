@@ -1196,7 +1196,7 @@ theorem exists_square_le [CovariantClass α α (· * ·) (· < ·)] (a : α) : �
     rw [mul_one] at this
     exact le_of_lt this
   · use 1
-    push_neg  at h
+    push_neg at h
     rwa [mul_one]
 #align exists_square_le exists_square_le
 

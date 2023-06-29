@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 # The `arctan` function.
 
 Inequalities, derivatives,
-and `real.tan` as a `local_homeomorph` between `(-(π / 2), π / 2)` and the whole line.
+and `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line.
 -/
 
 
@@ -214,7 +214,7 @@ theorem continuousAt_arctan {x : ℝ} : ContinuousAt arctan x :=
   continuous_arctan.continuousAt
 #align real.continuous_at_arctan Real.continuousAt_arctan
 
-/-- `real.tan` as a `local_homeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
+/-- `Real.tan` as a `LocalHomeomorph` between `(-(π / 2), π / 2)` and the whole line. -/
 def tanLocalHomeomorph : LocalHomeomorph ℝ ℝ where
   toFun := tan
   invFun := arctan

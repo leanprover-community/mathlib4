@@ -16,8 +16,8 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 # Concrete categories
 
 A concrete category is a category `C` with a fixed faithful functor
-`forget : C ⥤ Type _`.  We define concrete categories using `class
-concrete_category`.  In particular, we impose no restrictions on the
+`forget : C ⥤ Type _`.  We define concrete categories using `class ConcreteCategory`.
+In particular, we impose no restrictions on the
 carrier type `C`, so `Type` is a concrete category with the identity
 forgetful functor.
 
@@ -107,7 +107,7 @@ def ConcreteCategory.funLike {X Y : C} : FunLike (X ⟶ Y) X (fun _ => Y) where
 attribute [local instance] ConcreteCategory.funLike
 
 /-- In any concrete category, we can test equality of morphisms by pointwise evaluations.-/
-@[ext 900] -- Porting note: lowered priority
+@[ext low] -- Porting note: lowered priority
 theorem ConcreteCategory.hom_ext {X Y : C} (f g : X ⟶ Y) (w : ∀ x : X, f x = g x) : f = g := by
   apply @Faithful.map_injective C _ (Type w) _ (forget C) _ X Y
   dsimp [forget]

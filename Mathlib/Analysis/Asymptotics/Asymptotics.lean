@@ -1404,7 +1404,7 @@ theorem isBigO_iff_isBoundedUnder_le_div (h : ∀ᶠ x in l, g'' x ≠ 0) :
       eventually_congr <| h.mono fun x hx => (div_le_iff <| norm_pos_iff.2 hx).symm
 #align asymptotics.is_O_iff_is_bounded_under_le_div Asymptotics.isBigO_iff_isBoundedUnder_le_div
 
-/-- `(λ x, c) =O[l] f` if and only if `f` is bounded away from zero. -/
+/-- `(fun x ↦ c) =O[l] f` if and only if `f` is bounded away from zero. -/
 theorem isBigO_const_left_iff_pos_le_norm {c : E''} (hc : c ≠ 0) :
     (fun _x => c) =O[l] f' ↔ ∃ b, 0 < b ∧ ∀ᶠ x in l, b ≤ ‖f' x‖ := by
   constructor
@@ -2072,7 +2072,7 @@ theorem IsBigOWith.right_le_sub_of_lt_1 {f₁ f₂ : α → E'} (h : IsBigOWith 
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₂ x - f₁ x :=
   IsBigOWith.of_bound <|
     mem_of_superset h.bound fun x hx => by
-      simp only [mem_setOf_eq] at hx⊢
+      simp only [mem_setOf_eq] at hx ⊢
       rw [mul_comm, one_div, ← div_eq_mul_inv, _root_.le_div_iff, mul_sub, mul_one, mul_comm]
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc

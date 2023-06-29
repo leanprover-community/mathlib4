@@ -35,20 +35,22 @@ open BigOperators
 variable {α : Type _} [DecidableEq α] {s : Finset α} (P : Finpartition s) (G : SimpleGraph α)
   [DecidableRel G.Adj]
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
 namespace Finpartition
 
 /-- The energy of a partition, also known as index. Auxiliary quantity for Szemerédi's regularity
 lemma.  -/
 def energy : ℚ :=
-  ((∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (P.parts.card ^ 2 : ℕ)
+  ((∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (P.parts.card : ℚ) ^ 2
 #align finpartition.energy Finpartition.energy
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
-  refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| Nat.cast_nonneg _
+  refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| sq_nonneg _
 #align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=
-  div_le_of_nonneg_of_le_mul (Nat.cast_nonneg _) zero_le_one <|
+  div_le_of_nonneg_of_le_mul (sq_nonneg _) zero_le_one <|
     calc
       (∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) ≤ P.parts.offDiag.card • (1 : ℚ) :=
         sum_le_card_nsmul _ _ 1 fun uv _ =>
@@ -62,10 +64,9 @@ theorem energy_le_one : P.energy G ≤ 1 :=
 #align finpartition.energy_le_one Finpartition.energy_le_one
 
 @[simp, norm_cast]
-theorem coe_energy {𝕜 : Type _} [LinearOrderedField 𝕜] :
-    (P.energy G : 𝕜) =
-      (∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 : ℚ) / ((↑P.parts.card : ℚ) ^ 2 : ℚ) :=
-  by rw [energy]; norm_cast
+theorem coe_energy {𝕜 : Type _} [LinearOrderedField 𝕜] : (P.energy G : 𝕜) =
+    (∑ uv in P.parts.offDiag, (G.edgeDensity uv.1 uv.2 : 𝕜) ^ 2) / (P.parts.card : 𝕜) ^ 2 := by
+  rw [energy]; norm_cast
 #align finpartition.coe_energy Finpartition.coe_energy
 
 end Finpartition
