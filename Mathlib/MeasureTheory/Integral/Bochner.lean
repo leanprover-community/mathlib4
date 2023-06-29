@@ -1468,7 +1468,7 @@ theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ
 #align measure_theory.has_sum_integral_measure MeasureTheory.hasSum_integral_measure
 
 theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
-    (hf : Integrable f (Measure.sum μ)) : (∫ a, f a ∂Measure.sum μ) = ∑' i, ∫ a, f a ∂μ i :=
+    (hf : Integrable f (Measure.sum μ)) : ∫ a, f a ∂Measure.sum μ = ∑' i, ∫ a, f a ∂μ i :=
   (hasSum_integral_measure hf).tsum_eq.symm
 #align measure_theory.integral_sum_measure MeasureTheory.integral_sum_measure
 
@@ -1505,7 +1505,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AES
 
 @[simp]
 theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
-    (∫ x, f x ∂c • μ) = c.toReal • ∫ x, f x ∂μ := by
+    ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
   · rw [ENNReal.top_toReal, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
@@ -1519,7 +1519,7 @@ theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
 #align measure_theory.integral_smul_measure MeasureTheory.integral_smul_measure
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
-    {f : β → E} (hfm : StronglyMeasurable f) : (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ := by
+    {f : β → E} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
   by_cases hfi : Integrable f (Measure.map φ μ); swap
   · rw [integral_undef hfi, integral_undef]
     exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)
@@ -1541,10 +1541,10 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
 
 theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasurable φ μ) {f : β → E}
     (hfm : AEStronglyMeasurable f (Measure.map φ μ)) :
-    (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ :=
+    ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   let g := hfm.mk f
   calc
-    (∫ y, f y ∂Measure.map φ μ) = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
+    ∫ y, f y ∂Measure.map φ μ = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
     _ = ∫ y, g y ∂Measure.map (hφ.mk φ) μ := by congr 1; exact Measure.map_congr hφ.ae_eq_mk
     _ = ∫ x, g (hφ.mk φ x) ∂μ :=
       (integral_map_of_stronglyMeasurable hφ.measurable_mk hfm.stronglyMeasurable_mk)
@@ -1553,7 +1553,7 @@ theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasura
 #align measure_theory.integral_map MeasureTheory.integral_map
 
 theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f : α → β}
-    (hf : MeasurableEmbedding f) (g : β → E) : (∫ y, g y ∂Measure.map f μ) = ∫ x, g (f x) ∂μ := by
+    (hf : MeasurableEmbedding f) (g : β → E) : ∫ y, g y ∂Measure.map f μ = ∫ x, g (f x) ∂μ := by
   by_cases hgm : AEStronglyMeasurable g (Measure.map f μ)
   · exact MeasureTheory.integral_map hf.measurable.aemeasurable hgm
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
@@ -1562,12 +1562,12 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
 
 theorem _root_.ClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : ClosedEmbedding φ)
-    (f : β → E) : (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ :=
+    (f : β → E) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 #align closed_embedding.integral_map ClosedEmbedding.integral_map
 
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → E) :
-    (∫ y, f y ∂Measure.map e μ) = ∫ x, f (e x) ∂μ :=
+    ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
   e.measurableEmbedding.integral_map f
 #align measure_theory.integral_map_equiv MeasureTheory.integral_map_equiv
 
@@ -1585,25 +1585,25 @@ theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : Measur
 
 @[simp]
 theorem integral_dirac' [MeasurableSpace α] (f : α → E) (a : α) (hfm : StronglyMeasurable f) :
-    (∫ x, f x ∂Measure.dirac a) = f a := by
+    ∫ x, f x ∂Measure.dirac a = f a := by
   borelize E
   calc
-    (∫ x, f x ∂Measure.dirac a) = ∫ _, f a ∂Measure.dirac a :=
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a :=
       integral_congr_ae <| ae_eq_dirac' hfm.measurable
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac' MeasureTheory.integral_dirac'
 
 @[simp]
 theorem integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α) :
-    (∫ x, f x ∂Measure.dirac a) = f a :=
+    ∫ x, f x ∂Measure.dirac a = f a :=
   calc
-    (∫ x, f x ∂Measure.dirac a) = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac MeasureTheory.integral_dirac
 
 theorem set_integral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
     {s : Set α} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    (∫ x in s, f x ∂Measure.dirac a) = if a ∈ s then f a else 0 := by
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac' hs]
   split_ifs
   · exact integral_dirac' _ _ hf
@@ -1612,7 +1612,7 @@ theorem set_integral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : Stro
 
 theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
     (s : Set α) [Decidable (a ∈ s)] :
-    (∫ x in s, f x ∂Measure.dirac a) = if a ∈ s then f a else 0 := by
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac]
   split_ifs
   · exact integral_dirac _ _

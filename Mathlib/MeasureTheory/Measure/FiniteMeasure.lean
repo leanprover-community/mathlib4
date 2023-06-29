@@ -684,7 +684,7 @@ theorem integrable_of_boundedContinuous_to_real (μ : Measure Ω) [IsFiniteMeasu
 
 theorem _root_.BoundedContinuousFunction.integral_eq_integral_nnrealPart_sub (μ : Measure Ω)
     [IsFiniteMeasure μ] (f : Ω →ᵇ ℝ) :
-    (∫ ω, f ω ∂μ) = (∫ ω, (f.nnrealPart ω : ℝ) ∂μ) - ∫ ω, ((-f).nnrealPart ω : ℝ) ∂μ := by
+    ∫ ω, f ω ∂μ = (∫ ω, (f.nnrealPart ω : ℝ) ∂μ) - ∫ ω, ((-f).nnrealPart ω : ℝ) ∂μ := by
   simp only [f.self_eq_nnrealPart_sub_nnrealPart_neg, Pi.sub_apply, integral_sub,
     integrable_of_boundedContinuous_to_nnreal]
   rfl

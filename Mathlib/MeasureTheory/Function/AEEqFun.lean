@@ -850,7 +850,7 @@ theorem lintegral_mk (f : α → ℝ≥0∞) (hf) : (mk f hf : α →ₘ[μ] ℝ
   rfl
 #align measure_theory.ae_eq_fun.lintegral_mk MeasureTheory.AEEqFun.lintegral_mk
 
-theorem lintegral_coeFn (f : α →ₘ[μ] ℝ≥0∞) : (∫⁻ a, f a ∂μ) = f.lintegral := by
+theorem lintegral_coeFn (f : α →ₘ[μ] ℝ≥0∞) : ∫⁻ a, f a ∂μ = f.lintegral := by
   rw [← lintegral_mk, mk_coeFn]
 #align measure_theory.ae_eq_fun.lintegral_coe_fn MeasureTheory.AEEqFun.lintegral_coeFn
 

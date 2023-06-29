@@ -41,7 +41,7 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   exact (exp_pos _).le
 #align integrable_on_exp_Iic integrableOn_exp_Iic
 
-theorem integral_exp_Iic (c : ℝ) : (∫ x : ℝ in Iic c, exp x) = exp c := by
+theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine'
     tendsto_nhds_unique
       (intervalIntegral_tendsto_integral_Iic _ (integrableOn_exp_Iic _) tendsto_id) _
@@ -49,7 +49,7 @@ theorem integral_exp_Iic (c : ℝ) : (∫ x : ℝ in Iic c, exp x) = exp c := by
   exact tendsto_exp_atBot.const_sub _
 #align integral_exp_Iic integral_exp_Iic
 
-theorem integral_exp_Iic_zero : (∫ x : ℝ in Iic 0, exp x) = 1 :=
+theorem integral_exp_Iic_zero : ∫ x : ℝ in Iic 0, exp x = 1 :=
   exp_zero ▸ integral_exp_Iic 0
 #align integral_exp_Iic_zero integral_exp_Iic_zero
 
@@ -77,7 +77,7 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
 #align integrable_on_Ioi_rpow_of_lt integrableOn_Ioi_rpow_of_lt
 
 theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
-    (∫ t : ℝ in Ioi c, t ^ a) = -c ^ (a + 1) / (a + 1) := by
+    ∫ t : ℝ in Ioi c, t ^ a = -c ^ (a + 1) / (a + 1) := by
   have hd : ∀ (x : ℝ) (_ : x ∈ Ici c), HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
     convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
