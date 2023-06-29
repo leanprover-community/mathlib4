@@ -345,9 +345,7 @@ theorem grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyVal
 theorem grundyValue_eq_mex_right :
     ∀ (G : PGame) [G.Impartial],
       grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i)
-  -- Porting note: was
    | ⟨l, r, L, R⟩, _ => by
-  -- but this lost track of the `Impartial` instance
     rw [← grundyValue_neg, grundyValue_eq_mex_left]
     congr
     ext i
