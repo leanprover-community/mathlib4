@@ -168,20 +168,68 @@ end Fold
 
 
 /-!
-## Redundant state or input optimizations
+## Redundant state optimization
 
 The following section are collection of rewrites to simplify, or even get rid, redundant
-accumulation state, or redundant inputs
+accumulation state
 -/
 section RedundantState
-variable (xs : Vector α n) (ys : Vector β n)
+variable {xs : Vector α n} {ys : Vector β n}
+
+
+/--
+  If there is a set of states that is closed under `f`, and such that `f` produces that same output
+  for all states in this set, then the state is not actually needed.
+  Hence, then we can rewrite `mapAccumr` into just `map`
+-/
+theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (h₀ : s₀ ∈ S)
+    (closure : ∀ a s, s ∈ S → (f a s).1 ∈ S)
+    (out : ∀ a s s', s ∈ S → s' ∈ S → (f a s).2 = (f a s').2) :
+    ∃ s_out ∈ S, (mapAccumr f xs s₀) = (s_out, map (f · s₀ |>.snd) xs) := by
+  clear ys
+  induction xs using revInductionOn generalizing s₀
+  next =>
+    use s₀
+    simp[h₀]
+  next xs x ih =>
+    specialize closure x _ h₀
+    specialize @ih (f x s₀).1 closure
+    rcases ih with ⟨s_out, hs, ih⟩
+    use s_out, hs
+    simp[ih]
+    congr
+    funext x'
+    rw [out x' s₀ (f x s₀).1 h₀ closure]
+
+/--
+  If there is a set of states that is closed under `f`, and such that `f` produces that same output
+  for all states in this set, then the state is not actually needed.
+  Hence, then we can rewrite `mapAccumr₂` into just `map₂`
+-/
+theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (S : Set σ) (h₀ : s₀ ∈ S)
+    (closure : ∀ a b s, s ∈ S → (f a b s).1 ∈ S)
+    (out : ∀ a b s s', s ∈ S → s' ∈ S → (f a b s).2 = (f a b s').2) :
+    ∃ s_out ∈ S, (mapAccumr₂ f xs ys s₀) = (s_out, map₂ (f · · s₀ |>.snd) xs ys) := by
+  induction xs, ys using revInductionOn₂ generalizing s₀
+  next =>
+    use s₀
+    simp[h₀]
+  next xs ys x y ih =>
+    specialize closure x y _ h₀
+    specialize @ih (f x y s₀).1 closure
+    rcases ih with ⟨s_out, hs, ih⟩
+    use s_out, hs
+    simp[ih]
+    congr
+    funext x' y'
+    rw [out x' y' s₀ (f x y s₀).1 h₀ closure]
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
   for all possible input bits, then the state is redundant and can be optimized out
 -/
 @[simp]
-theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
+theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ) (h : ∀ a, (f a s).fst = s) :
     mapAccumr f xs s = (s, (map (fun x => (f x s).snd) xs)) := by
   clear ys
   induction xs using revInductionOn <;> simp_all
@@ -191,7 +239,7 @@ theorem mapAccumr_redundant_state (f : α → σ → σ × β) (s : σ) (h : ∀
   for all possible input bits, then the state is redundant and can be optimized out
 -/
 @[simp]
-theorem mapAccumr₂_redundant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
+theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
 
@@ -238,6 +286,15 @@ theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ)
     rcases (f x y (s, s)) with ⟨⟨s₁, s₂⟩, y⟩
     simp_all
 
+end RedundantState
+
+
+
+/-!
+## Unused input optimizations
+-/
+section UnusedInput
+variable {xs : Vector α n} {ys : Vector β n}
 
 /--
   If `f` returns the same output and next state for every value of it's first argument, then
@@ -265,7 +322,8 @@ theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ →
   case snoc xs ys x y ih =>
     simp[h x y s, ih]
 
-end RedundantState
+end UnusedInput
+
 
 
 /-!
