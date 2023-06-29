@@ -1008,58 +1008,58 @@ theorem castLT_mk (i n m : ℕ) (hn : i < n) (hm : i < m) : castLT ⟨i, hn⟩ h
   rfl
 #align fin.cast_lt_mk Fin.castLT_mk
 
-/-- `castLE h i` embeds `i` into a larger `Fin` type.  -/
-def castLE (h : n ≤ m) : Fin n ↪o Fin m :=
+/-- `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
+def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
   (OrderEmbedding.ofStrictMono fun a => castLT a (lt_of_lt_of_le a.2 h)) fun _ _ h => h
-#align fin.cast_le Fin.castLE
+#align fin.cast_le Fin.castLEEmb
 
 @[simp]
-theorem coe_castLE (h : n ≤ m) (i : Fin n) : (castLE h i : ℕ) = i :=
+theorem coe_castLEEmb (h : n ≤ m) (i : Fin n) : (castLEEmb h i : ℕ) = i :=
   rfl
-#align fin.coe_cast_le Fin.coe_castLE
+#align fin.coe_cast_le Fin.coe_castLEEmb
 
 @[simp]
-theorem castLE_mk (i n m : ℕ) (hn : i < n) (h : n ≤ m) :
-    castLE h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h⟩ :=
+theorem castLEEmb_mk (i n m : ℕ) (hn : i < n) (h : n ≤ m) :
+    castLEEmb h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h⟩ :=
   rfl
-#align fin.cast_le_mk Fin.castLE_mk
+#align fin.cast_le_mk Fin.castLEEmb_mk
 
 @[simp]
-theorem castLE_zero {n m : ℕ} (h : n.succ ≤ m.succ) : castLE h 0 = 0 := by simp [eq_iff_veq]
-#align fin.cast_le_zero Fin.castLE_zero
+theorem castLEEmb_zero {n m : ℕ} (h : n.succ ≤ m.succ) : castLEEmb h 0 = 0 := by simp [eq_iff_veq]
+#align fin.cast_le_zero Fin.castLEEmb_zero
 
 @[simp]
-theorem range_castLE {n k : ℕ} (h : n ≤ k) : Set.range (castLE h) = { i : Fin k | (i : ℕ) < n } :=
+theorem range_castLEEmb {n k : ℕ} (h : n ≤ k) : Set.range (castLEEmb h) = { i : Fin k | (i : ℕ) < n } :=
   Set.ext fun x => ⟨fun ⟨y, hy⟩ => hy ▸ y.2, fun hx => ⟨⟨x, hx⟩, Fin.ext rfl⟩⟩
-#align fin.range_cast_le Fin.range_castLE
+#align fin.range_cast_le Fin.range_castLEEmb
 
 @[simp]
-theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
-    ((Equiv.ofInjective _ (castLE h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
-  rw [← coe_castLE]
+theorem coe_of_injective_castLEEmb_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) :
+    ((Equiv.ofInjective _ (castLEEmb h).injective).symm ⟨i, hi⟩ : ℕ) = i := by
+  rw [← coe_castLEEmb]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
-#align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_castLE_symm
+#align fin.coe_of_injective_cast_le_symm Fin.coe_of_injective_castLEEmb_symm
 
 @[simp]
-theorem castLE_succ {m n : ℕ} (h : m + 1 ≤ n + 1) (i : Fin m) :
-    castLE h i.succ = (castLE (Nat.succ_le_succ_iff.mp h) i).succ := by simp [Fin.eq_iff_veq]
-#align fin.cast_le_succ Fin.castLE_succ
+theorem castLEEmb_succ {m n : ℕ} (h : m + 1 ≤ n + 1) (i : Fin m) :
+    castLEEmb h i.succ = (castLEEmb (Nat.succ_le_succ_iff.mp h) i).succ := by simp [Fin.eq_iff_veq]
+#align fin.cast_le_succ Fin.castLEEmb_succ
 
 @[simp]
-theorem castLE_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) (i : Fin k) :
-    Fin.castLE mn (Fin.castLE km i) = Fin.castLE (km.trans mn) i :=
-  Fin.ext (by simp only [coe_castLE])
-#align fin.cast_le_cast_le Fin.castLE_castLE
+theorem castLEEmb_castLEEmb {k m n} (km : k ≤ m) (mn : m ≤ n) (i : Fin k) :
+    Fin.castLEEmb mn (Fin.castLEEmb km i) = Fin.castLEEmb (km.trans mn) i :=
+  Fin.ext (by simp only [coe_castLEEmb])
+#align fin.cast_le_cast_le Fin.castLEEmb_castLEEmb
 
 @[simp]
-theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
-    Fin.castLE mn ∘ Fin.castLE km = Fin.castLE (km.trans mn) :=
-  funext (castLE_castLE km mn)
-#align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
+theorem castLEEmb_comp_castLEEmb {k m n} (km : k ≤ m) (mn : m ≤ n) :
+    Fin.castLEEmb mn ∘ Fin.castLEEmb km = Fin.castLEEmb (km.trans mn) :=
+  funext (castLEEmb_castLEEmb km mn)
+#align fin.cast_le_comp_cast_le Fin.castLEEmb_comp_castLEEmb
 
 /-- `castIso eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
 def castIso (eq : n = m) : Fin n ≃o Fin m where
-  toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
+  toEquiv := ⟨castLEEmb eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
 #align fin.cast Fin.castIso
 
@@ -1121,69 +1121,71 @@ theorem castIso_eq_cast (h : n = m) : (castIso h : Fin n → Fin m) = cast (h �
   simp
 #align fin.cast_eq_cast Fin.castIso_eq_cast
 
-/-- `castAdd m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAdd` and `Fin.addNat`. -/
-def castAdd (m) : Fin n ↪o Fin (n + m) :=
-  castLE <| Nat.le_add_right n m
-#align fin.cast_add Fin.castAdd
+/-- `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAdd` and `Fin.addNat`. -/
+def castAddEmb (m) : Fin n ↪o Fin (n + m) :=
+  castLEEmb <| Nat.le_add_right n m
+#align fin.cast_add Fin.castAddEmb
 
 @[simp]
-theorem coe_castAdd (m : ℕ) (i : Fin n) : (castAdd m i : ℕ) = i :=
+theorem coe_castAddEmb (m : ℕ) (i : Fin n) : (castAddEmb m i : ℕ) = i :=
   rfl
-#align fin.coe_cast_add Fin.coe_castAdd
+#align fin.coe_cast_add Fin.coe_castAddEmb
 
 @[simp]
-theorem castAdd_zero : (castAdd 0 : Fin n → Fin (n + 0)) = castIso rfl := by
+theorem castAddEmb_zero : (castAddEmb 0 : Fin n → Fin (n + 0)) = castIso rfl := by
   ext
   simp only [Nat.add_zero, castIso_refl, OrderIso.refl_apply]
   rfl
-#align fin.cast_add_zero Fin.castAdd_zero
+#align fin.cast_add_zero Fin.castAddEmb_zero
 
-theorem castAdd_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAdd n i : ℕ) < m := by
+theorem castAddEmb_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAddEmb n i : ℕ) < m := by
   simp
-#align fin.cast_add_lt Fin.castAdd_lt
+#align fin.cast_add_lt Fin.castAddEmb_lt
 
 @[simp]
-theorem castAdd_mk (m : ℕ) (i : ℕ) (h : i < n) : castAdd m ⟨i, h⟩ = ⟨i, Nat.lt_add_right i n m h⟩ :=
+theorem castAddEmb_mk (m : ℕ) (i : ℕ) (h : i < n) :
+    castAddEmb m ⟨i, h⟩ = ⟨i, Nat.lt_add_right i n m h⟩ :=
   rfl
-#align fin.cast_add_mk Fin.castAdd_mk
+#align fin.cast_add_mk Fin.castAddEmb_mk
 
 @[simp]
-theorem castAdd_castLT (m : ℕ) (i : Fin (n + m)) (hi : i.val < n) :
-    castAdd m (castLT i hi) = i := by
+theorem castAddEmb_castLT (m : ℕ) (i : Fin (n + m)) (hi : i.val < n) :
+    castAddEmb m (castLT i hi) = i := by
   ext
   simp
-#align fin.cast_add_cast_lt Fin.castAdd_castLT
+#align fin.cast_add_cast_lt Fin.castAddEmb_castLT
 
 @[simp]
-theorem castLT_castAdd (m : ℕ) (i : Fin n) : castLT (castAdd m i) (castAdd_lt m i) = i := by
+theorem castLT_castAddEmb (m : ℕ) (i : Fin n) :
+    castLT (castAddEmb m i) (castAddEmb_lt m i) = i := by
   ext
   simp
-#align fin.cast_lt_cast_add Fin.castLT_castAdd
+#align fin.cast_lt_cast_add Fin.castLT_castAddEmb
 
-/-- For rewriting in the reverse direction, see `Fin.castIso_castAdd_left`. -/
-theorem castAdd_castIso {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (. + m) h) (castAdd m i) :=
+/-- For rewriting in the reverse direction, see `Fin.castIso_castAddEmb_left`. -/
+theorem castAddEmb_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
+    castAddEmb m (Fin.cast h i) = Fin.castIso (congr_arg (. + m) h) (castAddEmb m i) :=
   ext rfl
-#align fin.cast_add_cast Fin.castAdd_castIso
+#align fin.cast_add_cast Fin.castAddEmb_cast
 
-theorem castIso_castAdd_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
-    castIso h (castAdd m i) = castAdd m (castIso (add_right_cancel h) i) := by
+theorem castIso_castAddEmb_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
+    castIso h (castAddEmb m i) = castAddEmb m (castIso (add_right_cancel h) i) := by
   ext
   simp
-#align fin.cast_cast_add_left Fin.castIso_castAdd_left
+#align fin.cast_cast_add_left Fin.castIso_castAddEmb_left
 
 @[simp]
-theorem castIso_castAdd_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
-    castIso h (castAdd m' i) = castAdd m i := by
+theorem castIso_castAddEmb_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
+    castIso h (castAddEmb m' i) = castAddEmb m i := by
   ext
   simp
-#align fin.cast_cast_add_right Fin.castIso_castAdd_right
+#align fin.cast_cast_add_right Fin.castIso_castAddEmb_right
 
-theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
-    castAdd p (castAdd n i) = castIso (add_assoc _ _ _).symm (castAdd (n + p) i) := by
+theorem castAddEmb_castAddEmb {m n p : ℕ} (i : Fin m) :
+    castAddEmb p (castAddEmb n i) = castIso (add_assoc _ _ _).symm (castAddEmb (n + p) i) := by
   ext
   simp
-#align fin.cast_add_cast_add Fin.castAdd_castAdd
+#align fin.cast_add_cast_add Fin.castAddEmb_castAddEmb
 
 /-- The cast of the successor is the successor of the cast.
 See `Fin.succ_castIso_eq` for rewriting in the reverse direction. -/
