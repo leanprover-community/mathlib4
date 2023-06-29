@@ -383,7 +383,7 @@ def bitsToNat (v : List Bool) : Nat :=
 
 /-- Return the natural number encoded by the input bitvector -/
 protected def toNat {n : Nat} (v : Bitvec n) : Nat :=
-  bitsToNat (toList v)
+  v.foldl addLsb 0
 #align bitvec.to_nat Bitvec.toNat
 
 instance (n : ℕ) : Preorder (Bitvec n) :=

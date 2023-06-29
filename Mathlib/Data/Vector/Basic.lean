@@ -828,4 +828,22 @@ theorem mapAccumr₂_cons : mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
 
 end Simp
 
+
+
+
+/--
+  Folds a function over a list from the left:
+  `foldl f z [a, b, c] = f (f (f z a) b) c`
+-/
+def foldl (f : α → β → α) (init : α) (xs : Vector β n) : α :=
+  xs.toList.foldl f init
+
+/--
+  `O(|l|)`. Applies function `f` to all of the elements of the list, from right to left.
+  * `foldr f init [a, b, c] = f a <| f b <| f c <| init`
+-/
+def foldr (f : α → β → β) (init : β) (xs : Vector α n) : β :=
+  xs.toList.foldr f init
+
+
 end Vector
