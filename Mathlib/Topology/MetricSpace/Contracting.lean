@@ -102,9 +102,9 @@ We include more conclusions in this theorem to avoid proving them again later.
 The main API for this theorem are the functions `efixedPoint` and `fixedPoint`,
 and lemmas about these functions. -/
 theorem exists_fixedPoint (hf : ContractingWith K f) (x : α) (hx : edist x (f x) ≠ ∞) :
-    ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ (f^[n]) x) atTop (𝓝 y) ∧
-      ∀ n : ℕ, edist ((f^[n]) x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
-  have : CauchySeq fun n ↦ (f^[n]) x :=
+    ∃ y, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧
+      ∀ n : ℕ, edist (f^[n] x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
+  have : CauchySeq fun n ↦ f^[n] x :=
     cauchySeq_of_edist_le_geometric K (edist x (f x)) (ENNReal.coe_lt_one_iff.2 hf.1) hx
       (hf.toLipschitzWith.edist_iterate_succ_le_geometric x)
   let ⟨y, hy⟩ := cauchySeq_tendsto_of_complete this
@@ -131,13 +131,13 @@ theorem efixedPoint_isFixedPt (hf : ContractingWith K f) {x : α} (hx : edist x 
 #align contracting_with.efixed_point_is_fixed_pt ContractingWith.efixedPoint_isFixedPt
 
 theorem tendsto_iterate_efixedPoint (hf : ContractingWith K f) {x : α} (hx : edist x (f x) ≠ ∞) :
-    Tendsto (fun n ↦ (f^[n]) x) atTop (𝓝 <| efixedPoint f hf x hx) :=
+    Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| efixedPoint f hf x hx) :=
   (Classical.choose_spec <| hf.exists_fixedPoint x hx).2.1
 #align contracting_with.tendsto_iterate_efixed_point ContractingWith.tendsto_iterate_efixedPoint
 
 theorem apriori_edist_iterate_efixedPoint_le (hf : ContractingWith K f) {x : α}
     (hx : edist x (f x) ≠ ∞) (n : ℕ) :
-    edist ((f^[n]) x) (efixedPoint f hf x hx) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
+    edist (f^[n] x) (efixedPoint f hf x hx) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
   (Classical.choose_spec <| hf.exists_fixedPoint x hx).2.2 n
 #align contracting_with.apriori_edist_iterate_efixed_point_le ContractingWith.apriori_edist_iterate_efixedPoint_le
 
@@ -169,8 +169,8 @@ theorem efixedPoint_eq_of_edist_lt_top (hf : ContractingWith K f) {x : α} (hx :
 /-- Banach fixed-point theorem for maps contracting on a complete subset. -/
 theorem exists_fixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
-    ∃ y ∈ s, IsFixedPt f y ∧ Tendsto (fun n ↦ (f^[n]) x) atTop (𝓝 y) ∧
-      ∀ n : ℕ, edist ((f^[n]) x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) := by
+    ∃ y ∈ s, IsFixedPt f y ∧ Tendsto (fun n ↦ f^[n] x) atTop (𝓝 y) ∧
+      ∀ n : ℕ, edist (f^[n] x) y ≤ edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) := by
   haveI := hsc.completeSpace_coe
   rcases hf.exists_fixedPoint ⟨x, hxs⟩ hx with ⟨y, hfy, h_tendsto, hle⟩
   refine' ⟨y, y.2, Subtype.ext_iff_val.1 hfy, _, fun n ↦ _⟩
@@ -209,14 +209,14 @@ theorem efixedPoint_isFixedPt' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f
 
 theorem tendsto_iterate_efixedPoint' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞) :
-    Tendsto (fun n ↦ (f^[n]) x) atTop (𝓝 <| efixedPoint' f hsc hsf hf x hxs hx) :=
+    Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| efixedPoint' f hsc hsf hf x hxs hx) :=
   (Classical.choose_spec <| hf.exists_fixedPoint' hsc hsf hxs hx).2.2.1
 #align contracting_with.tendsto_iterate_efixed_point' ContractingWith.tendsto_iterate_efixedPoint'
 
 theorem apriori_edist_iterate_efixedPoint_le' {s : Set α} (hsc : IsComplete s) (hsf : MapsTo f s s)
     (hf : ContractingWith K <| hsf.restrict f s s) {x : α} (hxs : x ∈ s) (hx : edist x (f x) ≠ ∞)
     (n : ℕ) :
-    edist ((f^[n]) x) (efixedPoint' f hsc hsf hf x hxs hx) ≤
+    edist (f^[n] x) (efixedPoint' f hsc hsf hf x hxs hx) ≤
       edist x (f x) * (K : ℝ≥0∞) ^ n / (1 - K) :=
   (Classical.choose_spec <| hf.exists_fixedPoint' hsc hsf hxs hx).2.2.2 n
 #align contracting_with.apriori_edist_iterate_efixed_point_le' ContractingWith.apriori_edist_iterate_efixedPoint_le'
@@ -326,19 +326,19 @@ theorem dist_fixedPoint_le (x) : dist x (fixedPoint f hf) ≤ dist x (f x) / (1 
 
 /-- Aposteriori estimates on the convergence of iterates to the fixed point. -/
 theorem aposteriori_dist_iterate_fixedPoint_le (x n) :
-    dist ((f^[n]) x) (fixedPoint f hf) ≤ dist ((f^[n]) x) ((f^[n + 1]) x) / (1 - K) := by
+    dist (f^[n] x) (fixedPoint f hf) ≤ dist (f^[n] x) (f^[n + 1] x) / (1 - K) := by
   rw [iterate_succ']
   apply hf.dist_fixedPoint_le
 #align contracting_with.aposteriori_dist_iterate_fixed_point_le ContractingWith.aposteriori_dist_iterate_fixedPoint_le
 
 theorem apriori_dist_iterate_fixedPoint_le (x n) :
-    dist ((f^[n]) x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
+    dist (f^[n] x) (fixedPoint f hf) ≤ dist x (f x) * (K : ℝ) ^ n / (1 - K) :=
   le_trans (hf.aposteriori_dist_iterate_fixedPoint_le x n) <|
     (div_le_div_right hf.one_sub_K_pos).2 <| hf.toLipschitzWith.dist_iterate_succ_le_geometric x n
 #align contracting_with.apriori_dist_iterate_fixed_point_le ContractingWith.apriori_dist_iterate_fixedPoint_le
 
 theorem tendsto_iterate_fixedPoint (x) :
-    Tendsto (fun n ↦ (f^[n]) x) atTop (𝓝 <| fixedPoint f hf) := by
+    Tendsto (fun n ↦ f^[n] x) atTop (𝓝 <| fixedPoint f hf) := by
   convert tendsto_iterate_efixedPoint hf (edist_ne_top x _)
   refine' (fixedPoint_unique _ _).symm
   apply efixedPoint_isFixedPt
@@ -351,10 +351,10 @@ theorem fixedPoint_lipschitz_in_map {g : α → α} (hg : ContractingWith K g) {
 
 /-- If a map `f` has a contracting iterate `f^[n]`, then the fixed point of `f^[n]` is also a fixed
 point of `f`. -/
-theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K (f^[n])) :
-    IsFixedPt f (hf.fixedPoint (f^[n])) := by
-  set x := hf.fixedPoint (f^[n])
-  have hx : (f^[n]) x = x := hf.fixedPoint_isFixedPt
+theorem isFixedPt_fixedPoint_iterate {n : ℕ} (hf : ContractingWith K f^[n]) :
+    IsFixedPt f (hf.fixedPoint f^[n]) := by
+  set x := hf.fixedPoint f^[n]
+  have hx : f^[n] x = x := hf.fixedPoint_isFixedPt
   have := hf.toLipschitzWith.dist_le_mul x (f x)
   rw [← iterate_succ_apply, iterate_succ_apply', hx] at this
   -- Porting note: Originally `contrapose! this`

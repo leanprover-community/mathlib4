@@ -240,10 +240,10 @@ theorem strictMonoOn_Iic_of_lt_succ [SuccOrder α] [IsSuccArchimedean α] {n : �
   · exact hψ _ (lt_of_lt_of_le hxy hy)
   rw [Set.mem_Iic] at *
   simp only [Function.iterate_succ', Function.comp_apply] at ih hxy hy ⊢
-  by_cases hmax : IsMax ((succ^[k]) x)
+  by_cases hmax : IsMax (succ^[k] x)
   · rw [succ_eq_iff_isMax.2 hmax] at hxy ⊢
     exact ih (le_trans (le_succ _) hy) hxy
-  by_cases hmax' : IsMax (succ ((succ^[k]) x))
+  by_cases hmax' : IsMax (succ (succ^[k] x))
   · rw [succ_eq_iff_isMax.2 hmax'] at hxy ⊢
     exact ih (le_trans (le_succ _) hy) hxy
   refine'

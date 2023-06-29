@@ -766,7 +766,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
     a proportion `1/(N+1)` of leftover points. Iterating `F`, one will get larger and larger good
     coverings, missing in the end only a measure-zero set. -/
   choose! F hF using this
-  let u n := (F^[n]) ∅
+  let u n := F^[n] ∅
   have u_succ : ∀ n : ℕ, u n.succ = F (u n) := fun n => by
     simp only [Function.comp_apply, Function.iterate_succ']
   have Pu : ∀ n, P (u n) := by
