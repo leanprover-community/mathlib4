@@ -602,7 +602,7 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
 
 @[to_additive (attr := simp)]
 theorem topEquiv_toMulHom :
-    (topEquiv : _ ≃* M).toMulHom = MulMemClass.subtype (⊤ : Subsemigroup M) :=
+    ((topEquiv : _ ≃* M) : _ →ₙ* M) = MulMemClass.subtype (⊤ : Subsemigroup M) :=
   rfl
 #align subsemigroup.top_equiv_to_mul_hom Subsemigroup.topEquiv_toMulHom
 #align add_subsemigroup.top_equiv_to_add_hom AddSubsemigroup.topEquiv_toAddHom
@@ -720,7 +720,7 @@ theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :
 #align add_subsemigroup.comap_equiv_eq_map_symm AddSubsemigroup.comap_equiv_eq_map_symm
 
 @[to_additive (attr := simp)]
-theorem map_equiv_top (f : M ≃* N) : (⊤ : Subsemigroup M).map f.toMulHom = ⊤ :=
+theorem map_equiv_top (f : M ≃* N) : (⊤ : Subsemigroup M).map (f : M →ₙ* N) = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align subsemigroup.map_equiv_top Subsemigroup.map_equiv_top
 #align add_subsemigroup.map_equiv_top AddSubsemigroup.map_equiv_top
