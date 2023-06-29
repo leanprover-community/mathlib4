@@ -1215,12 +1215,12 @@ theorem integral_smul_const {𝕜 : Type _} [IsROrC 𝕜] [NormedSpace 𝕜 E] (
 #align integral_smul_const integral_smul_const
 
 theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f) (g : α → E) :
-    ∫ a, g a ∂μ.withDensity fun x => f x = ∫ a, f a • g a ∂μ := by
+    ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, f a • g a ∂μ := by
   by_cases hg : Integrable g (μ.withDensity fun x => f x); swap
   · rw [integral_undef hg, integral_undef]
     rwa [← integrable_withDensity_iff_integrable_smul f_meas]
   refine' Integrable.induction
-    (P := fun g => ∫ a, g a ∂μ.withDensity fun x => f x = ∫ a, f a • g a ∂μ) _ _ _ _ hg
+    (P := fun g => ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, f a • g a ∂μ) _ _ _ _ hg
   · intro c s s_meas hs
     rw [integral_indicator s_meas]
     simp_rw [← indicator_smul_apply, integral_indicator s_meas]
@@ -1262,10 +1262,10 @@ theorem integral_withDensity_eq_integral_smul {f : α → ℝ≥0} (f_meas : Mea
 #align integral_with_density_eq_integral_smul integral_withDensity_eq_integral_smul
 
 theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMeasurable f μ) (g : α → E) :
-    ∫ a, g a ∂μ.withDensity fun x => f x = ∫ a, f a • g a ∂μ := by
+    ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, f a • g a ∂μ := by
   let f' := hf.mk _
   calc
-    ∫ a, g a ∂μ.withDensity fun x => f x = ∫ a, g a ∂μ.withDensity fun x => f' x := by
+    ∫ a, g a ∂μ.withDensity (fun x => f x) = ∫ a, g a ∂μ.withDensity fun x => f' x := by
       congr 1
       apply withDensity_congr_ae
       filter_upwards [hf.ae_eq_mk] with x hx
@@ -1279,13 +1279,13 @@ theorem integral_withDensity_eq_integral_smul₀ {f : α → ℝ≥0} (hf : AEMe
 
 theorem set_integral_withDensity_eq_set_integral_smul {f : α → ℝ≥0} (f_meas : Measurable f)
     (g : α → E) {s : Set α} (hs : MeasurableSet s) :
-    ∫ a in s, g a ∂μ.withDensity fun x => f x = ∫ a in s, f a • g a ∂μ := by
+    ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul f_meas]
 #align set_integral_with_density_eq_set_integral_smul set_integral_withDensity_eq_set_integral_smul
 
 theorem set_integral_withDensity_eq_set_integral_smul₀ {f : α → ℝ≥0} {s : Set α}
     (hf : AEMeasurable f (μ.restrict s)) (g : α → E) (hs : MeasurableSet s) :
-    ∫ a in s, g a ∂μ.withDensity fun x => f x = ∫ a in s, f a • g a ∂μ := by
+    ∫ a in s, g a ∂μ.withDensity (fun x => f x) = ∫ a in s, f a • g a ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 #align set_integral_with_density_eq_set_integral_smul₀ set_integral_withDensity_eq_set_integral_smul₀
 
