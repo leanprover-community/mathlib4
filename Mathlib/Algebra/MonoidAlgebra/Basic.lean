@@ -448,7 +448,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
             fun _ _ => rfl)
         _ = ∑ p in s, f p.1 * g p.2 :=
           sum_subset (filter_subset _ _) fun p hps hp => by
-            simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp⊢
+            simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
             · rw [hp hps h1, mul_zero]
@@ -486,7 +486,7 @@ theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
   rw [Finsupp.sum_mapDomain_index]
   · congr
-    ext (a b)
+    ext a b
     rw [Finsupp.sum_mapDomain_index]
     · simp
     · simp [mul_add]
@@ -1557,7 +1557,7 @@ theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
   rw [Finsupp.sum_mapDomain_index]
   · congr
-    ext (a b)
+    ext a b
     rw [Finsupp.sum_mapDomain_index]
     · simp
     · simp [mul_add]

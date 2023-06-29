@@ -362,6 +362,9 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
     (by
       intro G H i
       -- porting note: was `ext` in lean 3
+      -- Now `ext` can't see that `lan` is a colimit.
+      -- Uncertain whether it makes sense to add another `@[ext]` lemma.
+      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply colimit.hom_ext
       intro j
       simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,

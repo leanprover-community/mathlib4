@@ -281,7 +281,7 @@ theorem finish_isReduced : u.finish.IsReduced := by
 #align pnat.xgcd_type.finish_is_reduced PNat.XgcdType.finish_isReduced
 
 theorem finish_isSpecial (hs : u.IsSpecial) : u.finish.IsSpecial := by
-  dsimp [IsSpecial, finish] at hs⊢
+  dsimp [IsSpecial, finish] at hs ⊢
   rw [add_mul _ _ u.y, add_comm _ (u.x * u.y), ← hs]
   ring
 #align pnat.xgcd_type.finish_is_special PNat.XgcdType.finish_isSpecial
@@ -316,7 +316,7 @@ theorem step_wf (hr : u.r ≠ 0) : SizeOf.sizeOf u.step < SizeOf.sizeOf u := by
 #align pnat.xgcd_type.step_wf PNat.XgcdType.step_wf
 
 theorem step_isSpecial (hs : u.IsSpecial) : u.step.IsSpecial := by
-  dsimp [IsSpecial, step] at hs⊢
+  dsimp [IsSpecial, step] at hs ⊢
   rw [mul_add, mul_comm u.y u.x, ← hs]
   ring
 #align pnat.xgcd_type.step_is_special PNat.XgcdType.step_isSpecial

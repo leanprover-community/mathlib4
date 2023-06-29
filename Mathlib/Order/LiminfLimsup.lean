@@ -618,11 +618,15 @@ theorem limsSup_bot : limsSup (⊥ : Filter α) = ⊥ :=
 set_option linter.uppercaseLean3 false in
 #align filter.Limsup_bot Filter.limsSup_bot
 
+@[simp] theorem limsup_bot (f : β → α) : limsup f ⊥ = ⊥ := by simp [limsup]
+
 @[simp]
 theorem limsInf_bot : limsInf (⊥ : Filter α) = ⊤ :=
   top_unique <| le_sSup <| by simp
 set_option linter.uppercaseLean3 false in
 #align filter.Liminf_bot Filter.limsInf_bot
+
+@[simp] theorem liminf_bot (f : β → α) : liminf f ⊥ = ⊤ := by simp [liminf]
 
 @[simp]
 theorem limsSup_top : limsSup (⊤ : Filter α) = ⊤ :=
@@ -1210,7 +1214,7 @@ theorem GaloisConnection.l_limsup_le [ConditionallyCompleteLattice β]
     l (limsup v f) ≤ limsup (fun x => l (v x)) f := by
   refine' le_limsSup_of_le hlv fun c hc => _
   rw [Filter.eventually_map] at hc
-  simp_rw [gc _ _] at hc⊢
+  simp_rw [gc _ _] at hc ⊢
   exact limsSup_le_of_le hv_co hc
 #align galois_connection.l_limsup_le GaloisConnection.l_limsup_le
 

@@ -154,9 +154,9 @@ theorem IsEquivalent.tendsto_nhds {c : β} (huv : u ~[l] v) (hu : Tendsto u l (�
     Tendsto v l (𝓝 c) := by
   by_cases h : c = 0
   · subst c
-    rw [← isLittleO_one_iff ℝ] at hu⊢
+    rw [← isLittleO_one_iff ℝ] at hu ⊢
     simpa using (huv.symm.isLittleO.trans hu).add hu
-  · rw [← isEquivalent_const_iff_tendsto h] at hu⊢
+  · rw [← isEquivalent_const_iff_tendsto h] at hu ⊢
     exact huv.symm.trans hu
 #align asymptotics.is_equivalent.tendsto_nhds Asymptotics.IsEquivalent.tendsto_nhds
 

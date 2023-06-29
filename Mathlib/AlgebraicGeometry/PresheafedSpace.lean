@@ -186,6 +186,10 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.category_of_PresheafedSpaces AlgebraicGeometry.PresheafedSpace.categoryOfPresheafedSpaces
 
+variable {C}
+
+-- Porting note: adding an ext lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 theorem ext {X Y : PresheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=

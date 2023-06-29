@@ -204,8 +204,8 @@ theorem sInter_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀
 #align filter.sInter_mem Filter.sInter_mem
 
 @[simp]
-theorem iInter_mem {β : Type v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f := by
-  simpa using biInter_mem finite_univ
+theorem iInter_mem {β : Sort v} {s : β → Set α} [Finite β] : (⋂ i, s i) ∈ f ↔ ∀ i, s i ∈ f :=
+  (sInter_mem (finite_range _)).trans forall_range_iff
 #align filter.Inter_mem Filter.iInter_mem
 
 theorem exists_mem_subset_iff : (∃ t ∈ f, t ⊆ s) ↔ s ∈ f :=
@@ -518,6 +518,10 @@ theorem not_disjoint_self_iff : ¬Disjoint f f ↔ f.NeBot := by rw [disjoint_se
 
 theorem bot_sets_eq : (⊥ : Filter α).sets = univ := rfl
 #align filter.bot_sets_eq Filter.bot_sets_eq
+
+/-- Either `f = ⊥` or `Filter.NeBot f`. This is a version of `eq_or_ne` that uses `Filter.NeBot`
+as the second alternative, to be used as an instance. -/
+theorem eq_or_neBot (f : Filter α) : f = ⊥ ∨ NeBot f := (eq_or_ne f ⊥).imp_right NeBot.mk
 
 theorem sup_sets_eq {f g : Filter α} : (f ⊔ g).sets = f.sets ∩ g.sets :=
   (giGenerate α).gc.u_inf
@@ -2979,7 +2983,7 @@ theorem tendsto_comap'_iff {m : α → β} {f : Filter α} {g : Filter β} {i : 
 
 theorem Tendsto.of_tendsto_comp {f : α → β} {g : β → γ} {a : Filter α} {b : Filter β} {c : Filter γ}
     (hfg : Tendsto (g ∘ f) a c) (hg : comap g c ≤ b) : Tendsto f a b := by
-  rw [tendsto_iff_comap] at hfg⊢
+  rw [tendsto_iff_comap] at hfg ⊢
   calc
     a ≤ comap (g ∘ f) c := hfg
     _ ≤ comap f b := by simpa [comap_comap] using comap_mono hg

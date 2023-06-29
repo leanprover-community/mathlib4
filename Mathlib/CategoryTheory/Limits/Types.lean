@@ -80,6 +80,30 @@ instance hasLimit (F : J ⥤ TypeMax.{v, u}) : HasLimit F :=
 instance hasLimit' (F : J ⥤ Type v) : HasLimit F :=
   hasLimit.{v, v} F
 
+-- This instance is not necessary, and indeed unhelpful:
+-- if it has higher priority than the instance for `TypeMax.{w, v}`,
+-- or has the same priority and is defined later,
+-- then it blocks successful typeclass search with universe unification errors.
+instance : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) :=
+  Types.hasLimitsOfSize.{w, v}
+
+-- This either needs to have higher priority (safer) or come after the instance for `Type max v w`.
+instance (priority := 1100) :
+    HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) :=
+  Types.hasLimitsOfSize.{w, v}
+
+-- This needs to have priority higher than the instance for `TypeMax.{w, v}`.
+instance (priority := 1200) : HasLimitsOfSize.{v, v, v, v + 1} (Type v) :=
+  Types.hasLimitsOfSize.{v, v}
+
+-- Verify that we can find instances, at least when we ask for `TypeMax.{w, v}`:
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
+example : HasLimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+-- Note however this fails unless we modify the universe unification algorithm:
+-- `stuck at solving universe constraint max (v+1) (w+1) =?= max (w+1) (?u+1)`
+-- example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
+
 /-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
 sections of `F`.
 -/

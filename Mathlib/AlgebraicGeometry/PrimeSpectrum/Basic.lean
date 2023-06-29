@@ -543,7 +543,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
       · simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ←
           Ideal.span_singleton_mul_span_singleton]
         refine' fun h x y h' => h _ _ _
-        rw [← hI.radical_le_iff] at h'⊢
+        rw [← hI.radical_le_iff] at h' ⊢
         simpa only [Ideal.radical_inf, Ideal.radical_mul] using h'
       · simp_rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
         rintro h s t h' ⟨x, hx, hx'⟩ y hy
@@ -561,11 +561,11 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
-instance [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
+instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
   simpa using Ideal.bot_prime
 
-instance : QuasiSober (PrimeSpectrum R) :=
+instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
@@ -898,7 +898,7 @@ theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] 
 end BasicOpen
 
 /-- The prime spectrum of a commutative ring is a compact topological space. -/
-instance : CompactSpace (PrimeSpectrum R) :=
+instance compactSpace : CompactSpace (PrimeSpectrum R) :=
   { isCompact_univ := by
       convert isCompact_basicOpen (1 : R)
       rw [basicOpen_one]

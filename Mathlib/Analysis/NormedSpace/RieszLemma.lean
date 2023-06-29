@@ -9,6 +9,7 @@ Authors: Jean Lo, Yury Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
@@ -76,7 +77,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
 
 /--
 A version of Riesz lemma: given a strict closed subspace `F`, one may find an element of norm `≤ R`
-which is at distance  at least `1` of every element of `F`. Here, `R` is any given constant
+which is at distance at least `1` of every element of `F`. Here, `R` is any given constant
 strictly larger than the norm of an element of norm `> 1`. For a version without an `R`, see
 `riesz_lemma`.
 

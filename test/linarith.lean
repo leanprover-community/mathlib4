@@ -430,18 +430,6 @@ variable {E : Type _} [AddGroup E]
 example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
 
--- -- test that the apply bug doesn't affect linarith preprocessing
-
--- constant α : Type
--- variable [fact false] -- we work in an inconsistent context below
--- def leα : α → α → Prop := λ a b, ∀ c : α, true
-
--- noncomputable instance : linear_ordered_field α :=
--- by refine_struct { le := leα }; exact (fact.out false).elim
-
--- example (a : α) (ha : a < 2) : a ≤ a :=
--- by linarith
-
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
   p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
 by nlinarith

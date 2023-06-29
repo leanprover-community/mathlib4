@@ -197,7 +197,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
         _ = 0 := by rw [hl, g.map_zero]
       · exact Dfinsupp.sum_mapRange_index.linearMap
       · congr
-        ext (μ v)
+        ext μ v
         simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.smul_apply, LinearMap.id_coe,
           id.def, sub_smul, Submodule.subtype_apply, Submodule.coe_sub, Submodule.coe_smul_of_tower,
           LinearMap.sub_apply, mem_eigenspace_iff.1 v.prop, algebraMap_end_apply]

@@ -966,7 +966,7 @@ theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax ((succ^
   have h_not_max : ¬IsMax ((succ^[n - 1]) i) := by
     cases' n with n
     · simpa using hin
-    rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn⊢
+    rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
     have h_sub_le : (succ^[n]) i ≤ (succ^[n.succ]) i := by
       rw [Function.iterate_succ']
       exact le_succ _
@@ -1049,7 +1049,7 @@ instance : SuccOrder (WithTop α) where
     · exact le_top
     dsimp only at h
     rw [some_le_some]
-    split_ifs  at h with hb
+    split_ifs at h with hb
     · rw [hb]
       exact le_top
     · exact le_of_lt_succ (some_lt_some.1 h)
@@ -1246,7 +1246,7 @@ instance : PredOrder (WithBot α) where
     cases' a with a a
     · exact isMin_bot
     dsimp only at ha
-    split_ifs  at ha with ha'
+    split_ifs at ha with ha'
     · exact (not_coe_le_bot _ ha).elim
     · rw [some_eq_coe, coe_le_coe, le_pred_iff_eq_bot] at ha
       exact (ha' ha).elim
@@ -1268,7 +1268,7 @@ instance : PredOrder (WithBot α) where
     · exact bot_le
     dsimp only at h
     rw [some_le_some]
-    split_ifs  at h with ha
+    split_ifs at h with ha
     · rw [ha]
       exact bot_le
     · exact le_of_pred_lt (some_lt_some.1 h)
