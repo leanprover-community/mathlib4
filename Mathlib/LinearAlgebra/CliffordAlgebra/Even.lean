@@ -267,7 +267,7 @@ def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   right_inv _ := even.algHom_ext Q <| EvenHom.ext _ _ <| LinearMap.ext₂ <| even.lift.aux_ι _
 #align clifford_algebra.even.lift CliffordAlgebra.even.lift
 
-@[simp]
+-- @[simp] -- Porting note: simpNF linter times out on this one
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
     even.lift Q f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   even.lift.aux_ι _ _ _
