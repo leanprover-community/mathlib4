@@ -64,7 +64,7 @@ protected theorem comp (hf : IsFixedPt f x) (hg : IsFixedPt g x) : IsFixedPt (f 
 #align function.is_fixed_pt.comp Function.IsFixedPt.comp
 
 /-- If `x` is a fixed point of `f`, then it is a fixed point of `f^[n]`. -/
-protected theorem iterate (hf : IsFixedPt f x) (n : ℕ) : IsFixedPt (f^[n]) x :=
+protected theorem iterate (hf : IsFixedPt f x) (n : ℕ) : IsFixedPt f^[n] x :=
   iterate_fixed hf n
 #align function.is_fixed_pt.iterate Function.IsFixedPt.iterate
 
@@ -96,7 +96,7 @@ protected theorem apply {x : α} (hx : IsFixedPt f x) : IsFixedPt f (f x) := by 
 #align function.is_fixed_pt.apply Function.IsFixedPt.apply
 
 theorem preimage_iterate {s : Set α} (h : IsFixedPt (Set.preimage f) s) (n : ℕ) :
-    IsFixedPt (Set.preimage (f^[n])) s := by
+    IsFixedPt (Set.preimage f^[n]) s := by
   rw [Set.preimage_iterate_eq]
   exact h.iterate n
 #align function.is_fixed_pt.preimage_iterate Function.IsFixedPt.preimage_iterate

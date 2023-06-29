@@ -59,7 +59,7 @@ theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (h
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - derivative p)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]

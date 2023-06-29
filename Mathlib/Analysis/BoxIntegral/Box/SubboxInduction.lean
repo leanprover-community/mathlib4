@@ -132,7 +132,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   replace H_ind := fun J hJ ↦ not_imp_not.2 (H_ind J hJ)
   simp only [exists_imp, not_forall] at H_ind
   choose! s hs using H_ind
-  set J : ℕ → Box ι := fun m ↦ ((fun J ↦ splitCenterBox J (s J))^[m]) I
+  set J : ℕ → Box ι := fun m ↦ (fun J ↦ splitCenterBox J (s J))^[m] I
   have J_succ : ∀ m, J (m + 1) = splitCenterBox (J m) (s <| J m) :=
     fun m ↦ iterate_succ_apply' _ _ _
   -- Now we prove some properties of `J`

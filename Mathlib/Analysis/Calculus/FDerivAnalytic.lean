@@ -191,7 +191,7 @@ theorem AnalyticOn.deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) : AnalyticO
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOn.iterated_deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 ((_root_.deriv^[n]) f) s := by
+    AnalyticOn 𝕜 (_root_.deriv^[n] f) s := by
   induction' n with n IH
   · exact h
   · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv

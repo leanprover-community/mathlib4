@@ -673,7 +673,7 @@ theorem Antitone.comp_monotone (hg : Antitone g) (hf : Monotone f) : Antitone (g
   fun _ _ h ↦ hg (hf h)
 #align antitone.comp_monotone Antitone.comp_monotone
 
-protected theorem Monotone.iterate {f : α → α} (hf : Monotone f) (n : ℕ) : Monotone (f^[n]) :=
+protected theorem Monotone.iterate {f : α → α} (hf : Monotone f) (n : ℕ) : Monotone f^[n] :=
   Nat.recOn n monotone_id fun _ h ↦ h.comp hf
 #align monotone.iterate Monotone.iterate
 
@@ -711,7 +711,7 @@ theorem StrictAnti.comp_strictMono (hg : StrictAnti g) (hf : StrictMono f) : Str
   fun _ _ h ↦ hg (hf h)
 #align strict_anti.comp_strict_mono StrictAnti.comp_strictMono
 
-protected theorem StrictMono.iterate {f : α → α} (hf : StrictMono f) (n : ℕ) : StrictMono (f^[n]) :=
+protected theorem StrictMono.iterate {f : α → α} (hf : StrictMono f) (n : ℕ) : StrictMono f^[n] :=
   Nat.recOn n strictMono_id fun _ h ↦ h.comp hf
 #align strict_mono.iterate StrictMono.iterate
 

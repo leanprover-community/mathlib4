@@ -82,7 +82,7 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
 
 -- PORTING NOTE: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
-    LeftOrdContinuous (f^[n]) :=
+    LeftOrdContinuous f^[n] :=
 by induction n with
 | zero => exact LeftOrdContinuous.id α
 | succ n ihn => exact ihn.comp hf
@@ -191,7 +191,7 @@ theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) : RightOrdC
 #align right_ord_continuous.comp RightOrdContinuous.comp
 
 protected theorem iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
-    RightOrdContinuous (f^[n]) :=
+    RightOrdContinuous f^[n] :=
   hf.orderDual.iterate n
 #align right_ord_continuous.iterate RightOrdContinuous.iterate
 

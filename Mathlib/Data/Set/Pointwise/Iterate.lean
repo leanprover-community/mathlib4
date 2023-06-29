@@ -39,10 +39,10 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type _} [CommGroup G] {n : �
     replace hg : g⁻¹ ^ n ^ j = 1
     · rw [inv_zpow, hg, inv_one]
     simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg
-  rw [(IsFixedPt.preimage_iterate hs j : zpowGroupHom n^[j] ⁻¹' s = s).symm]
+  rw [(IsFixedPt.preimage_iterate hs j : (zpowGroupHom n)^[j] ⁻¹' s = s).symm]
   rintro g' hg' - ⟨y, hy, rfl⟩
-  change (zpowGroupHom n^[j]) (g' * y) ∈ s
-  replace hg' : (zpowGroupHom n^[j]) g' = 1
+  change (zpowGroupHom n)^[j] (g' * y) ∈ s
+  replace hg' : (zpowGroupHom n)^[j] g' = 1
   · simpa [zpowGroupHom]
   rwa [MonoidHom.iterate_map_mul, hg', one_mul]
 #align smul_eq_self_of_preimage_zpow_eq_self smul_eq_self_of_preimage_zpow_eq_self

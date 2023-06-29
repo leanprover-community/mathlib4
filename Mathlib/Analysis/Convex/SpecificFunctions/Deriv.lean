@@ -139,7 +139,7 @@ theorem deriv_sqrt_mul_log' :
 #align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
 
 theorem deriv2_sqrt_mul_log (x : ℝ) :
-    (deriv^[2]) (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
+    deriv^[2] (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   cases' le_or_lt x 0 with hx hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, MulZeroClass.mul_zero, div_zero]

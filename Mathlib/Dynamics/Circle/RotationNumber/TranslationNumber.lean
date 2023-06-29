@@ -318,7 +318,7 @@ theorem translate_pow (x : ℝ) (n : ℕ) :
 
 @[simp]
 theorem translate_iterate (x : ℝ) (n : ℕ) :
-    translate (Multiplicative.ofAdd x)^[n] = translate (Multiplicative.ofAdd <| ↑n * x) := by
+    (translate (Multiplicative.ofAdd x))^[n] = translate (Multiplicative.ofAdd <| ↑n * x) := by
   rw [← coe_pow, ← Units.val_pow_eq_pow_val, translate_pow]
 #align circle_deg1_lift.translate_iterate CircleDeg1Lift.translate_iterate
 
@@ -569,51 +569,51 @@ work for `n = 0`. For `<` and `>` we formulate only `iff` versions.
 
 
 theorem iterate_le_of_map_le_add_int {x : ℝ} {m : ℤ} (h : f x ≤ x + m) (n : ℕ) :
-    (f^[n]) x ≤ x + n * m := by
+    f^[n] x ≤ x + n * m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_le_of_map_le f.monotone (monotone_id.add_const (m : ℝ)) h n
 #align circle_deg1_lift.iterate_le_of_map_le_add_int CircleDeg1Lift.iterate_le_of_map_le_add_int
 
 theorem le_iterate_of_add_int_le_map {x : ℝ} {m : ℤ} (h : x + m ≤ f x) (n : ℕ) :
-    x + n * m ≤ (f^[n]) x := by
+    x + n * m ≤ f^[n] x := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).symm.iterate_le_of_map_le (monotone_id.add_const (m : ℝ)) f.monotone h n
 #align circle_deg1_lift.le_iterate_of_add_int_le_map CircleDeg1Lift.le_iterate_of_add_int_le_map
 
 theorem iterate_eq_of_map_eq_add_int {x : ℝ} {m : ℤ} (h : f x = x + m) (n : ℕ) :
-    (f^[n]) x = x + n * m := by
+    f^[n] x = x + n * m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using (f.commute_add_int m).iterate_eq_of_map_eq n h
 #align circle_deg1_lift.iterate_eq_of_map_eq_add_int CircleDeg1Lift.iterate_eq_of_map_eq_add_int
 
 theorem iterate_pos_le_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    (f^[n]) x ≤ x + n * m ↔ f x ≤ x + m := by
+    f^[n] x ≤ x + n * m ↔ f x ≤ x + m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_pos_le_iff_map_le f.monotone (strictMono_id.add_const (m : ℝ)) hn
 #align circle_deg1_lift.iterate_pos_le_iff CircleDeg1Lift.iterate_pos_le_iff
 
 theorem iterate_pos_lt_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    (f^[n]) x < x + n * m ↔ f x < x + m := by
+    f^[n] x < x + n * m ↔ f x < x + m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_pos_lt_iff_map_lt f.monotone (strictMono_id.add_const (m : ℝ)) hn
 #align circle_deg1_lift.iterate_pos_lt_iff CircleDeg1Lift.iterate_pos_lt_iff
 
 theorem iterate_pos_eq_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    (f^[n]) x = x + n * m ↔ f x = x + m := by
+    f^[n] x = x + n * m ↔ f x = x + m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_pos_eq_iff_map_eq f.monotone (strictMono_id.add_const (m : ℝ)) hn
 #align circle_deg1_lift.iterate_pos_eq_iff CircleDeg1Lift.iterate_pos_eq_iff
 
 theorem le_iterate_pos_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    x + n * m ≤ (f^[n]) x ↔ x + m ≤ f x := by
+    x + n * m ≤ f^[n] x ↔ x + m ≤ f x := by
   simpa only [not_lt] using not_congr (f.iterate_pos_lt_iff hn)
 #align circle_deg1_lift.le_iterate_pos_iff CircleDeg1Lift.le_iterate_pos_iff
 
 theorem lt_iterate_pos_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    x + n * m < (f^[n]) x ↔ x + m < f x := by
+    x + n * m < f^[n] x ↔ x + m < f x := by
   simpa only [not_le] using not_congr (f.iterate_pos_le_iff hn)
 #align circle_deg1_lift.lt_iterate_pos_iff CircleDeg1Lift.lt_iterate_pos_iff
 
-theorem mul_floor_map_zero_le_floor_iterate_zero (n : ℕ) : ↑n * ⌊f 0⌋ ≤ ⌊(f^[n]) 0⌋ := by
+theorem mul_floor_map_zero_le_floor_iterate_zero (n : ℕ) : ↑n * ⌊f 0⌋ ≤ ⌊f^[n] 0⌋ := by
   rw [le_floor, Int.cast_mul, Int.cast_ofNat, ← zero_add ((n : ℝ) * _)]
   apply le_iterate_of_add_int_le_map
   simp [floor_le]
@@ -654,14 +654,14 @@ theorem translationNumber_eq_of_tendsto_aux {τ' : ℝ} (h : Tendsto f.transnumA
 #align circle_deg1_lift.translation_number_eq_of_tendsto_aux CircleDeg1Lift.translationNumber_eq_of_tendsto_aux
 
 theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => (f^[n]) 0 / n) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n] 0 / n) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto_aux <| by
     simpa [(· ∘ ·), transnumAuxSeq_def, coe_pow] using
       h.comp (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀ CircleDeg1Lift.translationNumber_eq_of_tendsto₀
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => (f^[n + 1]) 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast h)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀' CircleDeg1Lift.translationNumber_eq_of_tendsto₀'
 

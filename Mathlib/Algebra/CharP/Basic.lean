@@ -349,7 +349,7 @@ theorem frobenius_def : frobenius R p x = x ^ p :=
   rfl
 #align frobenius_def frobenius_def
 
-theorem iterate_frobenius (n : ℕ) : (frobenius R p^[n]) x = x ^ p ^ n := by
+theorem iterate_frobenius (n : ℕ) : (frobenius R p)^[n] x = x ^ p ^ n := by
   induction n with
   | zero => simp
   | succ n n_ih =>
@@ -373,22 +373,22 @@ theorem RingHom.map_frobenius : g (frobenius R p x) = frobenius S p (g x) :=
 #align ring_hom.map_frobenius RingHom.map_frobenius
 
 theorem MonoidHom.map_iterate_frobenius (n : ℕ) :
-    f ((frobenius R p^[n]) x) = (frobenius S p^[n]) (f x) :=
+    f ((frobenius R p)^[n] x) = (frobenius S p)^[n] (f x) :=
   Function.Semiconj.iterate_right (f.map_frobenius p) n x
 #align monoid_hom.map_iterate_frobenius MonoidHom.map_iterate_frobenius
 
 theorem RingHom.map_iterate_frobenius (n : ℕ) :
-    g ((frobenius R p^[n]) x) = (frobenius S p^[n]) (g x) :=
+    g ((frobenius R p)^[n] x) = (frobenius S p)^[n] (g x) :=
   g.toMonoidHom.map_iterate_frobenius p x n
 #align ring_hom.map_iterate_frobenius RingHom.map_iterate_frobenius
 
 theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [Fact p.Prime] [CharP R p] (n : ℕ) :
-    (f^[n]) (frobenius R p x) = frobenius R p ((f^[n]) x) :=
+    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
   f.iterate_map_pow _ _ _
 #align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
 
 theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [Fact p.Prime] [CharP R p] (n : ℕ) :
-    (f^[n]) (frobenius R p x) = frobenius R p ((f^[n]) x) :=
+    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
   f.iterate_map_pow _ _ _
 #align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
 

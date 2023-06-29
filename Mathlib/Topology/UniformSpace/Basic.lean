@@ -199,7 +199,7 @@ theorem subset_comp_self {s : Set (α × α)} (h : idRel ⊆ s) : s ⊆ s ○ s 
 #align subset_comp_self subset_comp_self
 
 theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ) :
-    t ⊆ ((· ○ ·) s^[n]) t := by
+    t ⊆ (s ○ ·)^[n] t := by
   induction' n with n ihn generalizing t
   exacts [Subset.rfl, (right_subset_compRel h).trans ihn]
 #align subset_iterate_comp_rel subset_iterate_compRel
@@ -463,8 +463,8 @@ theorem comp_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃
 /-- If `s ∈ 𝓤 α`, then for any natural `n`, for a subset `t` of a sufficiently small set in `𝓤 α`,
 we have `t ○ t ○ ... ○ t ⊆ s` (`n` compositions). -/
 theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 α) (n : ℕ) :
-    ∀ᶠ t in (𝓤 α).smallSets, ((· ○ ·) t^[n]) t ⊆ s := by
-  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ ((· ○ ·) t^[n]) t ⊆ s
+    ∀ᶠ t in (𝓤 α).smallSets, (t ○ ·)^[n] t ⊆ s := by
+  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ (t ○ ·)^[n] t ⊆ s
   exact (eventually_and.1 this).2
   induction' n with n ihn generalizing s; · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
