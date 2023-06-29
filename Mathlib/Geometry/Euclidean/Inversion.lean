@@ -28,12 +28,15 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 
 noncomputable section
 
-open Metric Real Function AffineMap Set AffineSubspace
+open Metric Function AffineMap Set AffineSubspace
+open scoped Topology
+
+variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+  [NormedAddTorsor V P]
 
 namespace EuclideanGeometry
 
-variable {V P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P] {a b c d x y z : P} {r R : ℝ}
+variable {a b c d x y z : P} {r R : ℝ}
 
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the
@@ -66,6 +69,11 @@ theorem inversion_self (c : P) (R : ℝ) : inversion c R c = c := by simp [inver
 @[simp]
 theorem inversion_zero_radius (c x : P) : inversion c 0 x = c := by simp [inversion]
 
+theorem inversion_mul (c : P) (a R : ℝ) (x : P) :
+    inversion c (a * R) x = homothety c (a ^ 2) (inversion c R x) := by
+  simp only [inversion_eq_lineMap, ← homothety_eq_lineMap, ← homothety_mul_apply, mul_div_assoc,
+    mul_pow]
+
 @[simp]
 theorem inversion_dist_center (c x : P) : inversion c (dist x c) x = x := by
   rcases eq_or_ne x c with (rfl | hne)
@@ -73,6 +81,10 @@ theorem inversion_dist_center (c x : P) : inversion c (dist x c) x = x := by
   · rw [inversion, div_self, one_pow, one_smul, vsub_vadd]
     rwa [dist_ne_zero]
 #align euclidean_geometry.inversion_dist_center EuclideanGeometry.inversion_dist_center
+
+@[simp]
+theorem inversion_dist_center' (c x : P) : inversion c (dist c x) x = x := by
+  rw [dist_comm, inversion_dist_center]
 
 theorem inversion_of_mem_sphere (h : x ∈ Metric.sphere c R) : inversion c R x = x :=
   h.out ▸ inversion_dist_center c x
@@ -214,13 +226,14 @@ theorem inversion_mem_perpBisector_inversion_iff' (hR : R ≠ 0) (hy : y ≠ c) 
   · simp [*]
   · simp [inversion_mem_perpBisector_inversion_iff hR hx hy, hx]
 
+theorem preimage_inversion_perpBisector_inversion (hR : R ≠ 0) (hy : y ≠ c) :
+    inversion c R ⁻¹' perpBisector c (inversion c R y) = sphere y (dist y c) \ {c} :=
+  Set.ext fun _ ↦ inversion_mem_perpBisector_inversion_iff' hR hy
+
 theorem preimage_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R ⁻¹' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
-  ext x
-  nth_rewrite 1 [← inversion_inversion c hR y]
-  rw [← dist_inversion_center, mem_preimage, SetLike.mem_coe,
-    inversion_mem_perpBisector_inversion_iff' hR, mem_diff, mem_sphere, mem_singleton_iff]
-  simp [*]
+  rw [← dist_inversion_center, ← preimage_inversion_perpBisector_inversion hR,
+    inversion_inversion] <;> simp [*]
 
 theorem image_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
     inversion c R '' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
@@ -240,3 +253,37 @@ theorem image_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
     preimage_inversion_sphere_dist_center hR hy]
 
 end EuclideanGeometry
+
+open EuclideanGeometry
+
+/-!
+### Continuity of inversion
+-/
+
+protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {fR : α → ℝ}
+    (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R)) (hx : Tendsto fx l (𝓝 x))
+    (hne : x ≠ c) :
+    Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=
+  (((hR.div (hx.dist hc) <| dist_ne_zero.2 hne).pow 2).smul (hx.vsub hc)).vadd hc
+
+variable {X : Type _} [TopologicalSpace X] {c x : X → P} {R : X → ℝ} {a₀ : X} {s : Set X}
+
+protected nonrec theorem ContinuousWithinAt.inversion (hc : ContinuousWithinAt c s a₀)
+    (hR : ContinuousWithinAt R s a₀) (hx : ContinuousWithinAt x s a₀) (hne : x a₀ ≠ c a₀) :
+    ContinuousWithinAt (fun a ↦ inversion (c a) (R a) (x a)) s a₀ :=
+  hc.inversion hR hx hne
+
+protected nonrec theorem ContinuousAt.inversion (hc : ContinuousAt c a₀) (hR : ContinuousAt R a₀)
+    (hx : ContinuousAt x a₀) (hne : x a₀ ≠ c a₀) :
+    ContinuousAt (fun a ↦ inversion (c a) (R a) (x a)) a₀ :=
+  hc.inversion hR hx hne
+
+protected theorem ContinuousOn.inversion (hc : ContinuousOn c s) (hR : ContinuousOn R s)
+    (hx : ContinuousOn x s) (hne : ∀ a ∈ s, x a ≠ c a) :
+    ContinuousOn (fun a ↦ inversion (c a) (R a) (x a)) s := fun a ha ↦
+  (hc a ha).inversion (hR a ha) (hx a ha) (hne a ha)
+
+protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (hx : Continuous x)
+    (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
+  continuous_iff_continuousAt.2 fun _ ↦
+    hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)

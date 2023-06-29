@@ -46,6 +46,18 @@ theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=
   inner_eq_zero_symm
 
+theorem mem_perpBisector_iff_inner_pointReflection_vsub_eq_zero :
+    c ∈ perpBisector p₁ p₂ ↔ ⟪Equiv.pointReflection c p₁ -ᵥ p₂, p₂ -ᵥ p₁⟫ = 0 := by
+  rw [mem_perpBisector_iff_inner_eq_zero, Equiv.pointReflection_apply,
+    vsub_midpoint, invOf_eq_inv, ← smul_add, real_inner_smul_left, vadd_vsub_assoc]
+  simp
+
+theorem mem_perpBisector_pointReflection_iff_inner_eq_zero :
+    c ∈ perpBisector p₁ (Equiv.pointReflection p₂ p₁) ↔ ⟪c -ᵥ p₂, p₁ -ᵥ p₂⟫ = 0 := by
+  rw [mem_perpBisector_iff_inner_eq_zero, midpoint_pointReflection_right,
+    Equiv.pointReflection_apply, vadd_vsub_assoc, inner_add_right, add_self_eq_zero,
+    ← neg_eq_zero, ← inner_neg_right, neg_vsub_eq_vsub_rev]
+
 theorem midpoint_mem_perpBisector (p₁ p₂ : P) :
     midpoint ℝ p₁ p₂ ∈ perpBisector p₁ p₂ := by
   simp [mem_perpBisector_iff_inner_eq_zero]
