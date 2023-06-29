@@ -96,7 +96,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
   · exact ⟨dum, hdum₁, (le_initialBound ε l).trans hdum₂.ge,
       hdum₂.le.trans (initialBound_le_bound ε l), (dum.isUniformOne G).mono hε₁⟩
   -- Else, set up the induction on energy. We phrase it through the existence for each `i` of an
-  -- equipartition of size bounded by `stepBound^[i]) (initialBound ε l)` and which is either
+  -- equipartition of size bounded by `stepBound^[i] (initialBound ε l)` and which is either
   -- `ε`-uniform or has energy at least `ε ^ 5 / 4 * i`.
   have : Nonempty α := by
     rw [← Fintype.card_pos_iff]
