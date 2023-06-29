@@ -12,6 +12,7 @@ import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Ruleset
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Vector.Snoc
+import Mathlib.Data.Vector.Fold
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -92,27 +93,24 @@ theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
 #align bitvec.add_lsb_eq_twice_add_one Bitvec.addLsb_eq_twice_add_one
 
 theorem toNat_eq_foldr_reverse {n : ℕ} (v : Bitvec n) :
-    v.toNat = v.reverse.toList.foldr (flip addLsb) 0 := by
-  rw [Vector.toList, Vector.reverse, List.foldr_reverse]
+    v.toNat = v.reverse.foldr (flip addLsb) 0 := by
+  rw [Vector.foldr_reverse]
   rfl
 #align bitvec.to_nat_eq_foldr_reverse Bitvec.toNat_eq_foldr_reverse
 
 theorem toNat_lt {n : ℕ} (v : Bitvec n) : v.toNat < 2 ^ n := by
   suffices : v.toNat + 1 ≤ 2 ^ n; simpa
-  rw[toNat_eq_foldr_reverse]
-  dsimp [Bitvec.toNat, bitsToNat, toList]
+  dsimp [Bitvec.toNat]
   induction v using Vector.revInductionOn
   next => rfl
-  next tail head ih =>
-    simp only [Vector.reverse_snoc, Vector.toList_cons, Nat.pow_succ, flip, List.foldr]
-    generalize Vector.toList (Vector.reverse tail) = tail at *
-    rw [addLsb_eq_twice_add_one]
-    trans 2 * List.foldr (fun (x : Bool) (y : ℕ) => addLsb y x) 0 tail + 2 * 1
+  next n tail head ih =>
+    rw[Vector.foldl_snoc, Nat.pow_succ, addLsb, ←Nat.two_mul]
+    rw [mul_comm _ 2]
+    trans 2 * tail.foldl addLsb 0 + 2 * 1
     · rw [add_assoc]
       apply Nat.add_le_add_left
-      cases head <;> simp only
+      cases head <;> simp[add_assoc, Nat.add_le_add_left]
     · rw [← left_distrib]
-      rw [mul_comm _ 2]
       apply Nat.mul_le_mul_left
       apply ih
 #align bitvec.to_nat_lt Bitvec.toNat_lt
@@ -131,26 +129,12 @@ theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
 #align bitvec.to_bool_add_lsb_mod_two Bitvec.decide_addLsb_mod_two
 
 theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
-  rw[←(@Vector.reverse_reverse _ _ v)]
-  cases' v with xs h
-  -- Porting note: was `ext1`, but that now applies `Vector.ext` rather than `Subtype.ext`.
-  apply Subtype.ext
-  dsimp [Bitvec.toNat, bitsToNat, Vector.reverse, toList]
-  rw [← List.length_reverse] at h
-  rw [List.foldl_reverse, ←Vector.toList]
-  generalize xs.reverse = ys at h⊢;
-  clear xs
-  induction' ys with ys_head ys_tail ys_ih generalizing n
-  · cases h
-    simp [Bitvec.ofNat]
-  · simp only [← Nat.succ_eq_add_one, List.length] at h
-    subst n
-    simp only [Bitvec.ofNat, Vector.toList_cons, Vector.toList_nil, List.reverse_cons,
-                Vector.toList_append, List.foldr]
-    erw [addLsb_div_two, decide_addLsb_mod_two]
+  simp[Bitvec.toNat]
+  induction v using Vector.revInductionOn
+  next => rfl
+  next xs x ih =>
+    simp_all [Bitvec.ofNat, addLsb_div_two, decide_addLsb_mod_two]
     congr
-    apply ys_ih
-    rfl
 #align bitvec.of_nat_to_nat Bitvec.ofNat_toNat
 
 theorem toFin_val {n : ℕ} (v : Bitvec n) : (toFin v : ℕ) = v.toNat := by
@@ -204,7 +188,7 @@ theorem foldl_addLsb_cons_zero (a : Bool) (x : List Bool) :
    _ = _ := by rw [foldl_addLsb_add]
 
 theorem toNat_cons (a : Bool) (x : Bitvec n) :
-    Bitvec.toNat (a::ᵥx) = 2^x.length * cond a 1 0 + x.toNat := by
+    Bitvec.toNat (a ::ᵥ x) = 2^x.length * cond a 1 0 + x.toNat := by
   rcases x with ⟨x, rfl⟩
   exact foldl_addLsb_cons_zero a x
 
@@ -229,10 +213,11 @@ theorem toNat_one : ∀ {n : Nat}, (1 : Bitvec n).toNat = if n = 0 then 0 else 1
   | 1 => rfl
   | n+2 => by
     have := @toNat_one (n+1)
-    simp only [Bitvec.toNat, bitsToNat, List.foldl, Nat.add_eq, add_zero, List.append_eq,
+    simp only [Bitvec.toNat, Vector.foldl, List.foldl, Nat.add_eq, add_zero, List.append_eq,
       List.foldl_append, add_eq_zero, and_false, ite_false, toList_one] at *
     simp only [addLsb, cond_true, add_left_eq_self, add_eq_zero, and_self] at this
-    rw [foldl_addLsb_eq_add_foldl_addLsb_zero, this]
+    rw [foldl_addLsb_eq_add_foldl_addLsb_zero]
+    rw [this]
     simp [addLsb]
 
 private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.length y),
