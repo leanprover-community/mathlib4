@@ -644,7 +644,8 @@ set_option linter.uppercaseLean3 false in
 
 end Concrete
 
-instance (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) : Algebra (F.obj <| op U) (F.stalk x) :=
+instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
+    Algebra (F.obj <| op U) (F.stalk x) :=
   (F.germ x).toAlgebra
 
 @[simp]

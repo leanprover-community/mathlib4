@@ -898,7 +898,7 @@ theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] 
 end BasicOpen
 
 /-- The prime spectrum of a commutative ring is a compact topological space. -/
-instance : CompactSpace (PrimeSpectrum R) :=
+instance compactSpace : CompactSpace (PrimeSpectrum R) :=
   { isCompact_univ := by
       convert isCompact_basicOpen (1 : R)
       rw [basicOpen_one]
