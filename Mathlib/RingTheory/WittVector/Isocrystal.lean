@@ -172,7 +172,7 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5171):
 -- removed @[nolint has_nonempty_instance]
-def StandardOneDimIsocrystal (m : ℤ) : Type _ :=
+def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
 #align witt_vector.standard_one_dim_isocrystal WittVector.StandardOneDimIsocrystal
 
@@ -211,7 +211,7 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
     ∃ m : ℤ, Nonempty (StandardOneDimIsocrystal p k m ≃ᶠⁱ[p, k] V) := by
   haveI : Nontrivial V := FiniteDimensional.nontrivial_of_finrank_eq_succ h_dim
   obtain ⟨x, hx⟩ : ∃ x : V, x ≠ 0 := exists_ne 0
-  have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).Injective.Ne hx
+  have : Φ(p, k) x ≠ 0 := by simpa only [map_zero] using Φ(p, k).injective.ne hx
   obtain ⟨a, ha, hax⟩ : ∃ a : K(p, k), a ≠ 0 ∧ Φ(p, k) x = a • x := by
     rw [finrank_eq_one_iff_of_nonzero' x hx] at h_dim
     obtain ⟨a, ha⟩ := h_dim (Φ(p, k) x)
@@ -220,22 +220,24 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
     apply this
     simp only [← ha, ha', zero_smul]
   obtain ⟨b, hb, m, hmb⟩ := WittVector.exists_frobenius_solution_fractionRing p ha
-  replace hmb : φ(p, k) b * a = p ^ m * b := by convert hmb
+  replace hmb : φ(p, k) b * a = (p : K(p, k)) ^ m * b := by convert hmb
   use m
-  let F₀ : standard_one_dim_isocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
-  let F : standard_one_dim_isocrystal p k m ≃ₗ[K(p, k)] V := by
+  let F₀ : StandardOneDimIsocrystal p k m →ₗ[K(p, k)] V := LinearMap.toSpanSingleton K(p, k) V x
+  let F : StandardOneDimIsocrystal p k m ≃ₗ[K(p, k)] V := by
     refine' LinearEquiv.ofBijective F₀ ⟨_, _⟩
     · rw [← LinearMap.ker_eq_bot]
       exact LinearMap.ker_toSpanSingleton K(p, k) V hx
     · rw [← LinearMap.range_eq_top]
       rw [← (finrank_eq_one_iff_of_nonzero x hx).mp h_dim]
       rw [LinearMap.span_singleton_eq_range]
-  refine' ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, _⟩⟩
+  -- Porting note: `refine'` below gets confused when this is inlined.
+  let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
+  refine' ⟨⟨E, _⟩⟩
   intro c
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
   simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
-    LinearEquiv.map_smulₛₗ, standard_one_dim_isocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
+    LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
   linear_combination φ(p, k) c * hmb
