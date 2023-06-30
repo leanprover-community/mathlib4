@@ -275,24 +275,16 @@ namespace CategoryTheory.Iso
 /-- Build a `mul_equiv` from an isomorphism in the category `Magma`. -/
 @[to_additive
       "Build an `add_equiv` from an isomorphism in the category\n`AddMagma`."]
-def magmaCatIsoToMulEquiv {X Y : MagmaCat} (i : X ≅ Y) : X ≃* Y where
-  toFun := i.hom -- Porting note: TODO/HERE: that's again Quiver `⟶` vs. Function `→`
-  invFun := i.inv
-  left_inv x := by simp
-  right_inv y := by simp
-  map_mul' := by simp
+def magmaCatIsoToMulEquiv {X Y : MagmaCat} (i : X ≅ Y) : X ≃* Y :=
+  MulHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 #align category_theory.iso.Magma_iso_to_mul_equiv CategoryTheory.Iso.magmaCatIsoToMulEquiv
 #align category_theory.iso.AddMagma_iso_to_add_equiv CategoryTheory.Iso.addMagmaCatIsoToAddEquiv
 
 /-- Build a `mul_equiv` from an isomorphism in the category `Semigroup`. -/
 @[to_additive
   "Build an `add_equiv` from an isomorphism in the category\n`AddSemigroup`."]
-def semigroupCatIsoToMulEquiv {X Y : SemigroupCat} (i : X ≅ Y) : X ≃* Y where
-  toFun := i.hom
-  invFun := i.inv
-  left_inv x := by simp
-  right_inv y := by simp
-  map_mul' := by simp
+def semigroupCatIsoToMulEquiv {X Y : SemigroupCat} (i : X ≅ Y) : X ≃* Y :=
+  MulHom.toMulEquiv i.hom i.inv i.hom_inv_id i.inv_hom_id
 #align category_theory.iso.Semigroup_iso_to_mul_equiv CategoryTheory.Iso.semigroupCatIsoToMulEquiv
 #align category_theory.iso.Semigroup_iso_to_add_equiv CategoryTheory.Iso.addSemigroupCatIsoToAddEquiv
 
