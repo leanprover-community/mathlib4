@@ -338,7 +338,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   choose F hFn hFx hFy using this
   let p0 : A := ⟨⟨0, fun _ => 0, fun _ => 0⟩, by simp [hfg]⟩
   -- construct inductively decreasing sequences of cylinders whose images are not separated
-  let p : ℕ → A := fun n => (F^[n]) p0
+  let p : ℕ → A := fun n => F^[n] p0
   have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := by
@@ -820,10 +820,8 @@ theorem isClopenable_iff_measurableSet : IsClopenable s ↔ MeasurableSet s := b
 theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
-  by_cases hl : l.NeBot
-  swap;
-  · rw [not_neBot] at hl
-    simp [hl]
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
   letI := upgradePolishSpace γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
