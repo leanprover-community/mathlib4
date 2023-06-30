@@ -98,8 +98,8 @@ theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
   rfl
 #align proper_cone.to_convex_cone_eq_coe ProperCone.toConvexCone_eq_coe
 
-theorem ext' : Function.Injective (coe : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
-  cases S <;> cases T <;> congr
+theorem ext' : Function.Injective (Coe.coe : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
+  cases S ; cases T ; congr
 #align proper_cone.ext' ProperCone.ext'
 
 -- TODO: add convex_cone_class that extends set_like and replace the below instance
@@ -163,7 +163,7 @@ variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type _} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
-  (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.Nonempty K.IsClosed
+  (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty' K.isClosed
 #align proper_cone.pointed ProperCone.pointed
 
 /-- The closure of image of a proper cone under a continuous `ℝ`-linear map is a proper cone. We
@@ -171,7 +171,7 @@ use continuous maps here so that the adjoint of f is also a map between proper c
 noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone ℝ F where
   toConvexCone := ConvexCone.closure (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K)
   nonempty' :=
-    ⟨0, subset_closure <| SetLike.mem_coe.2 <| ConvexCone.mem_map.2 ⟨0, K.Pointed, map_zero _⟩⟩
+    ⟨0, subset_closure <| SetLike.mem_coe.2 <| ConvexCone.mem_map.2 ⟨0, K.pointed, map_zero _⟩⟩
   is_closed' := isClosed_closure
 #align proper_cone.map ProperCone.map
 
@@ -226,4 +226,3 @@ theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
 end CompleteSpace
 
 end ProperCone
-
