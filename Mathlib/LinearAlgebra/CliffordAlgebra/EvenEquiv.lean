@@ -136,7 +136,6 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    -- simp
     dsimp only [Subalgebra.coe_mul, LinearMap.codRestrict_apply, LinearMap.comp_apply,
       LinearMap.mulLeft_apply, LinearMap.inl_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
