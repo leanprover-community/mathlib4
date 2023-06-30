@@ -689,9 +689,9 @@ variable [LeftCancelMonoid G] [AddLeftCancelMonoid A]
 -- TODO: Use this to show that a finite left cancellative monoid is a group.
 @[to_additive]
 theorem exists_pow_eq_one [Finite G] (x : G) : IsOfFinOrder x := by
-  have H : (Set.univ : Set G).Finite := Set.univ.toFinite
-  contrapose! H -- Porting note: `contrapose!` doesn't like `this`
-  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder H)
+  have : (Set.univ : Set G).Finite := Set.univ.toFinite
+  contrapose! this
+  exact Set.Infinite.mono (Set.subset_univ _) (infinite_not_isOfFinOrder this)
 #align exists_pow_eq_one exists_pow_eq_one
 #align exists_nsmul_eq_zero exists_nsmul_eq_zero
 

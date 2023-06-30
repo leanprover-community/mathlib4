@@ -621,7 +621,7 @@ instance (priority := 900) FiniteDimensional.proper_real (E : Type u) [NormedAdd
 `IsCompact.exists_mem_frontier_infDist_compl_eq_dist`. -/
 theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] {x : E} {s : Set E} (hx : x ∈ s) (hs : s ≠ univ) :
-    ∃ y ∈ frontier s, Metric.infDist x (sᶜ) = dist x y := by
+    ∃ y ∈ frontier s, Metric.infDist x sᶜ = dist x y := by
   rcases Metric.exists_mem_closure_infDist_eq_dist (nonempty_compl.2 hs) x with ⟨y, hys, hyd⟩
   rw [closure_compl] at hys
   refine'
@@ -638,7 +638,7 @@ theorem exists_mem_frontier_infDist_compl_eq_dist {E : Type _} [NormedAddCommGro
 nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type _}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] {x : E} {K : Set E} (hK : IsCompact K)
     (hx : x ∈ K) :
-    ∃ y ∈ frontier K, Metric.infDist x (Kᶜ) = dist x y := by
+    ∃ y ∈ frontier K, Metric.infDist x Kᶜ = dist x y := by
   obtain hx' | hx' : x ∈ interior K ∪ frontier K := by
     rw [← closure_eq_interior_union_frontier]
     exact subset_closure hx

@@ -1153,7 +1153,7 @@ theorem mk_compl_of_infinite {α : Type _} [Infinite α] (s : Set α) (h2 : (#s)
 #align cardinal.mk_compl_of_infinite Cardinal.mk_compl_of_infinite
 
 theorem mk_compl_finset_of_infinite {α : Type _} [Infinite α] (s : Finset α) :
-    (#(↑sᶜ : Set α)) = (#α) := by
+    (#((↑s)ᶜ : Set α)) = (#α) := by
   apply mk_compl_of_infinite
   exact (finset_card_lt_aleph0 s).trans_le (aleph0_le_mk α)
 #align cardinal.mk_compl_finset_of_infinite Cardinal.mk_compl_finset_of_infinite
@@ -1194,7 +1194,7 @@ theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α
 
 
 theorem extend_function {α β : Type _} {s : Set α} (f : s ↪ β)
-    (h : Nonempty ((sᶜ : Set α) ≃ (range fᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
+    (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   intros ; have := h; cases' this with g
   let h : α ≃ β :=
     (Set.sumCompl (s : Set α)).symm.trans

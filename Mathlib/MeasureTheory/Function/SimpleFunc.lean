@@ -252,8 +252,8 @@ theorem piecewise_apply {s : Set α} (hs : MeasurableSet s) (f g : α →ₛ β)
 #align measure_theory.simple_func.piecewise_apply MeasureTheory.SimpleFunc.piecewise_apply
 
 @[simp]
-theorem piecewise_compl {s : Set α} (hs : MeasurableSet (sᶜ)) (f g : α →ₛ β) :
-    piecewise (sᶜ) hs f g = piecewise s hs.of_compl g f :=
+theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
+    piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
   coe_injective <| by simp [hs]; convert Set.piecewise_compl s f g
 #align measure_theory.simple_func.piecewise_compl MeasureTheory.SimpleFunc.piecewise_compl
 
