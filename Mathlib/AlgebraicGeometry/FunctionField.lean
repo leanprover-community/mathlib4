@@ -169,8 +169,6 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   haveI : IsIntegral (X.restrict U.openEmbedding) :=
     @isIntegralOfIsAffineIsDomain _ _ _
       (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
-  have : U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
-    ext1; exact Set.image_univ.trans Subtype.range_coe
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X.carrier, _⟩ using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
