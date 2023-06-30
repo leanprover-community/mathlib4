@@ -120,3 +120,8 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   · rw [← hφ₁ x]
     exact hx.1
 #align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
+
+/-- Gleason's theorem. -/
+protected theorem CompactT2.ExtremallyDisconnected.projective [CompactSpace X] [T2Space X]
+    (h : ExtremallyDisconnected X) : CompactT2.Projective X := by
+  sorry
