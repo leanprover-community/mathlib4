@@ -156,7 +156,7 @@ def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
 @[simp]
 lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
 
-@[simp]
+@[simp, reassoc]
 lemma sheafCompose_comp :
   sheafCompose_map J (η ≫ γ) = sheafCompose_map J η ≫ sheafCompose_map J γ := rfl
 
