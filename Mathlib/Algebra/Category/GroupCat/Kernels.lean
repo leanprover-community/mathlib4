@@ -35,11 +35,7 @@ def cokernelCocone : CokernelCofork f :=
 theorem range_le_ker_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
     f.range ≤ g.ker ↔ g.comp f = 0 := by
     constructor
-    · intro h
-      ext x
-      simp only [AddMonoidHom.coe_comp, Function.comp_apply, AddMonoidHom.zero_apply]
-      refine' h _
-      simp only [mem_range, exists_apply_eq_apply]
+    · exact fun h => ext fun _ => h <| mem_range.mp <| exists_apply_eq_apply _ _
     · rintro h x ⟨x', hx⟩
       have := FunLike.congr_fun h x'
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at this
