@@ -194,7 +194,7 @@ instance [IsIntegral X] (x : X.carrier) :
   -- Porting note: the following two lines were not needed.
   let _hA := Presheaf.algebra_section_stalk X.presheaf x
   have := functionField_isScalarTower X U x
-  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
+  .isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
     (Scheme.functionField X)
 
 end AlgebraicGeometry
