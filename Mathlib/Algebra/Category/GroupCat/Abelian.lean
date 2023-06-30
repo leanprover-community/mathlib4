@@ -53,8 +53,6 @@ instance : Abelian AddCommGroupCat.{u} where
   add_comp := by exact Preadditive.add_comp
   comp_add := by exact Preadditive.comp_add
 
-variable {X Y Z : AddCommGroupCat.{u}}
-
 theorem exact_iff : Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
@@ -70,7 +68,7 @@ lemma exact_of_exact_functor {F G H : J ⥤ AddCommGroupCat.{u}} {η : F ⟶ G} 
     (h : Exact η γ) (j : J) : Exact (η.app j) (γ.app j) := by
   sorry
 
-/-- The category of abelian groups is a Grothendieck category. -/
+/-- The category of abelian groups is an AB5 category. -/
 instance : PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
   apply Functor.preservesFiniteLimitsOfMapExact
   intro F G H η γ h

@@ -1,11 +1,20 @@
+/-
+Copyright (c) 2023 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn
+-/
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-open CategoryTheory Limits QuotientAddGroup WalkingParallelPair
-
-universe u
+/-!
+# The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.
+-/
 
 namespace AddCommGroupCat
+
+open CategoryTheory Limits
+
+universe u
 
 variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
 
@@ -18,8 +27,8 @@ theorem range_le_ker_iff {G H I : AddCommGroupCat.{u}} {f : G ⟶ H} {g : H ⟶ 
 -- TODO: relocate theorem
 theorem ker_le_range_iff {G H I : AddCommGroupCat.{u}} {f : G ⟶ H} {g : H ⟶ I} :
    g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype = 0 :=
-  ⟨fun h => AddMonoidHom.ext fun ⟨_, hx⟩ => (eq_zero_iff _).mpr <| h hx,
-    fun h x hx => (eq_zero_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
+  ⟨fun h => AddMonoidHom.ext fun ⟨_, hx⟩ => (QuotientAddGroup.eq_zero_iff _).mpr <| h hx,
+    fun h x hx => (QuotientAddGroup.eq_zero_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
 
 -- TODO: relocate instance
 instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
@@ -43,17 +52,18 @@ def kernelIsLimit : IsLimit <| kernelCone f :=
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (Z := of $ H ⧸ f.range) (mk' f.range) <| ext fun x =>
-    (eq_zero_iff _).mpr ⟨x, rfl⟩
+  CokernelCofork.ofπ (Z := of $ H ⧸ f.range) (QuotientAddGroup.mk' f.range) <| ext fun x =>
+    (QuotientAddGroup.eq_zero_iff _).mpr ⟨x, rfl⟩
 
 -- TODO: relocate instance
 instance : Epi <| Cofork.π <| cokernelCocone f :=
-  (epi_iff_surjective _).mpr <| mk'_surjective f.range
+  (epi_iff_surjective _).mpr <| QuotientAddGroup.mk'_surjective f.range
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
-    (fun s => lift f.range (Cofork.π s) <| range_le_ker_iff.2 <| CokernelCofork.condition s)
+    (fun s => QuotientAddGroup.lift f.range (Cofork.π s) <| range_le_ker_iff.2 <|
+      CokernelCofork.condition s)
     (fun _ => rfl)
     (fun s m h => (cancel_epi _).1 <| by simpa only [parallelPair_obj_one])
 
