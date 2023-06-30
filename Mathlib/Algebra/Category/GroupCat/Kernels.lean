@@ -13,7 +13,7 @@ namespace AddCommGroupCat
 
 variable {M N : AddCommGroupCat.{u}} (f : M ⟶ N)
 
-instance : HasZeroMorphisms AddCommGroupCat := by sorry
+instance : HasZeroMorphisms AddCommGroupCat := by refine HasZeroMorphisms.mk
 
 
 #check @KernelFork.ofι AddCommGroupCat _ _ M N f
@@ -23,8 +23,9 @@ def kernelCone : KernelFork f :=
   @KernelFork.ofι AddCommGroupCat _ _ M N f (of f.ker) (f.ker.subtype : of f.ker ⟶ M)
    <| by
    ext x
-   cases x
-   sorry
+   simp
+   rcases x with ⟨x, hx⟩
+   exact hx
    --assumption
 
 
