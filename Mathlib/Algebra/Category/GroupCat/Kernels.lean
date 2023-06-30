@@ -9,8 +9,22 @@ namespace AddCommGroupCat
 
 variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
 
+-- TODO: relocate theorem
+theorem range_le_ker_iff {G H I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
+    f.range ≤ g.ker ↔ g.comp f = 0 :=
+  ⟨fun h => AddMonoidHom.ext fun x => h ⟨x, rfl⟩,
+    by rintro h _ ⟨x', rfl⟩; exact FunLike.congr_fun h x'⟩
+
+-- TODO: relocate theorem
+theorem ker_le_range_iff {G H I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
+   g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype = 0 :=
+  ⟨fun h => AddMonoidHom.ext fun ⟨_, hx⟩ => (eq_zero_iff _).mpr <| h hx,
+    fun h x hx => (eq_zero_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
+
+-- TODO: relocate instance
 instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
 
+-- TODO: relocate instance
 instance : AddSubmonoidClass (AddSubgroup G) ((parallelPair f 0).obj WalkingParallelPair.zero) where
   add_mem := fun s {_ _} => AddSubgroup.add_mem s
   zero_mem := AddSubgroup.zero_mem
@@ -34,11 +48,6 @@ def cokernelCocone : CokernelCofork f :=
 
 instance : Epi <| Cofork.π <| cokernelCocone f :=
   (epi_iff_surjective _).mpr <| mk'_surjective f.range
-
-theorem range_le_ker_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
-    f.range ≤ g.ker ↔ g.comp f = 0 :=
-  ⟨fun h => AddMonoidHom.ext fun x => h ⟨x, rfl⟩,
-    by rintro h _ ⟨x', rfl⟩; exact FunLike.congr_fun h x'⟩
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
