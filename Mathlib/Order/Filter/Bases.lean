@@ -683,14 +683,14 @@ theorem inf_principal_neBot_iff {s : Set α} : NeBot (l ⊓ 𝓟 s) ↔ ∀ U �
   l.basis_sets.inf_principal_neBot_iff
 #align filter.inf_principal_ne_bot_iff Filter.inf_principal_neBot_iff
 
-theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f ⊓ 𝓟 (sᶜ) = ⊥ := by
+theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f ⊓ 𝓟 sᶜ = ⊥ := by
   refine' not_iff_not.1 ((inf_principal_neBot_iff.trans _).symm.trans neBot_iff)
   exact
     ⟨fun h hs => by simpa [Set.not_nonempty_empty] using h s hs, fun hs t ht =>
       inter_compl_nonempty_iff.2 fun hts => hs <| mem_of_superset ht hts⟩
 #align filter.mem_iff_inf_principal_compl Filter.mem_iff_inf_principal_compl
 
-theorem not_mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 (sᶜ)) :=
+theorem not_mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
 #align filter.not_mem_iff_inf_principal_compl Filter.not_mem_iff_inf_principal_compl
 
@@ -718,24 +718,24 @@ theorem disjoint_pure_pure {x y : α} : Disjoint (pure x : Filter α) (pure y) �
 #align filter.disjoint_pure_pure Filter.disjoint_pure_pure
 
 @[simp]
-theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : diagonal αᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
+theorem compl_diagonal_mem_prod {l₁ l₂ : Filter α} : (diagonal α)ᶜ ∈ l₁ ×ˢ l₂ ↔ Disjoint l₁ l₂ := by
   simp only [mem_prod_iff, Filter.disjoint_iff, prod_subset_compl_diagonal_iff_disjoint]
 #align filter.compl_diagonal_mem_prod Filter.compl_diagonal_mem_prod
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.disjoint_iff_left (h : l.HasBasis p s) :
-    Disjoint l l' ↔ ∃ i, p i ∧ s iᶜ ∈ l' := by
+    Disjoint l l' ↔ ∃ i, p i ∧ (s i)ᶜ ∈ l' := by
   simp only [h.disjoint_iff l'.basis_sets, id, ← disjoint_principal_left,
     (hasBasis_principal _).disjoint_iff l'.basis_sets, true_and, Unique.exists_iff]
 #align filter.has_basis.disjoint_iff_left Filter.HasBasis.disjoint_iff_leftₓ
 
 -- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`.
 theorem HasBasis.disjoint_iff_right (h : l.HasBasis p s) :
-    Disjoint l' l ↔ ∃ i, p i ∧ s iᶜ ∈ l' :=
+    Disjoint l' l ↔ ∃ i, p i ∧ (s i)ᶜ ∈ l' :=
   disjoint_comm.trans h.disjoint_iff_left
 #align filter.has_basis.disjoint_iff_right Filter.HasBasis.disjoint_iff_rightₓ
 
-theorem le_iff_forall_inf_principal_compl {f g : Filter α} : f ≤ g ↔ ∀ V ∈ g, f ⊓ 𝓟 (Vᶜ) = ⊥ :=
+theorem le_iff_forall_inf_principal_compl {f g : Filter α} : f ≤ g ↔ ∀ V ∈ g, f ⊓ 𝓟 Vᶜ = ⊥ :=
   forall₂_congr fun _ _ => mem_iff_inf_principal_compl
 #align filter.le_iff_forall_inf_principal_compl Filter.le_iff_forall_inf_principal_compl
 

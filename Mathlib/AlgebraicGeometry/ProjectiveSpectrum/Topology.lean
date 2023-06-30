@@ -348,7 +348,7 @@ set_option linter.uppercaseLean3 false in
 #align projective_spectrum.Top ProjectiveSpectrum.top
 
 theorem isOpen_iff (U : Set (ProjectiveSpectrum 𝒜)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus 𝒜 s := by
-  simp only [@eq_comm _ (Uᶜ)] ; rfl
+  simp only [@eq_comm _ Uᶜ] ; rfl
 #align projective_spectrum.is_open_iff ProjectiveSpectrum.isOpen_iff
 
 theorem isClosed_iff_zeroLocus (Z : Set (ProjectiveSpectrum 𝒜)) :
@@ -405,7 +405,7 @@ theorem isOpen_basicOpen {a : A} : IsOpen (basicOpen 𝒜 a : Set (ProjectiveSpe
 
 @[simp]
 theorem basicOpen_eq_zeroLocus_compl (r : A) :
-    (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜)) = zeroLocus 𝒜 {r}ᶜ :=
+    (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜)) = (zeroLocus 𝒜 {r})ᶜ :=
   Set.ext fun x => by simp only [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff] ; rfl
 #align projective_spectrum.basic_open_eq_zero_locus_compl ProjectiveSpectrum.basicOpen_eq_zeroLocus_compl
 
