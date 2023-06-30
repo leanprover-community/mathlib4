@@ -10,7 +10,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.GroupCat.Limits
---import Mathlib.Algebra.Category.GroupCat.Kernels
+import Mathlib.Algebra.Category.GroupCat.Kernels
 import Mathlib.Algebra.Category.GroupCat.Colimits
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.Algebra.Category.ModuleCat.Abelian
