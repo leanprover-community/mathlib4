@@ -333,6 +333,12 @@ instance SemigroupCat.forgetReflectsIsos : ReflectsIsomorphisms (forget Semigrou
 #align Semigroup.forget_reflects_isos SemigroupCat.forgetReflectsIsos
 #align AddSemigroup.forget_reflects_isos AddSemigroupCat.forgetReflectsIsos
 
+-- porting note: this was added in order to ensure that `forget₂ CommMonCat MonCat`
+-- automatically reflects isomorphisms
+-- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
+@[to_additive]
+instance SemigroupCat.forget₂Full : Full (forget₂ SemigroupCat MagmaCat) where preimage f := f
+
 /-!
 Once we've shown that the forgetful functors to type reflect isomorphisms,
 we automatically obtain that the `forget₂` functors between our concrete categories
