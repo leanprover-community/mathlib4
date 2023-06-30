@@ -1055,7 +1055,7 @@ theorem mk_finsupp_lift_of_infinite' (α : Type u) (β : Type v) [Nonempty α] [
     #(α →₀ β) = max (lift.{v} #α) (lift.{u} #β) := by
   cases fintypeOrInfinite α
   · rw [mk_finsupp_lift_of_fintype]
-    have : ℵ₀ ≤ #β.lift := aleph0_le_lift.2 (aleph0_le_mk β)
+    have : ℵ₀ ≤ (#β).lift := aleph0_le_lift.2 (aleph0_le_mk β)
     rw [max_eq_right (le_trans _ this), power_nat_eq this]
     exacts [Fintype.card_pos, lift_le_aleph0.2 (lt_aleph0_of_finite _).le]
   · apply mk_finsupp_lift_of_infinite

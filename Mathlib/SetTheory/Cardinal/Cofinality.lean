@@ -337,7 +337,7 @@ theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
 
 theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → lsub.{u, u} f < c :=
-  lsub_lt_ord_lift (by rwa [#ι.lift_id])
+  lsub_lt_ord_lift (by rwa [(#ι).lift_id])
 #align ordinal.lsub_lt_ord Ordinal.lsub_lt_ord
 
 theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f) :
@@ -349,7 +349,7 @@ theorem cof_sup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, v} f
 
 theorem cof_sup_le {ι} {f : ι → Ordinal} (H : ∀ i, f i < sup.{u, u} f) :
     cof (sup.{u, u} f) ≤ #ι := by
-  rw [← #ι.lift_id]
+  rw [← (#ι).lift_id]
   exact cof_sup_le_lift H
 #align ordinal.cof_sup_le Ordinal.cof_sup_le
 
@@ -360,7 +360,7 @@ theorem sup_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal} (hι : Cardinal.
 
 theorem sup_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → sup.{u, u} f < c :=
-  sup_lt_ord_lift (by rwa [#ι.lift_id])
+  sup_lt_ord_lift (by rwa [(#ι).lift_id])
 #align ordinal.sup_lt_ord Ordinal.sup_lt_ord
 
 theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
@@ -374,7 +374,7 @@ theorem iSup_lt_lift {ι} {f : ι → Cardinal} {c : Cardinal}
 
 theorem iSup_lt {ι} {f : ι → Cardinal} {c : Cardinal} (hι : #ι < c.ord.cof) :
     (∀ i, f i < c) → iSup f < c :=
-  iSup_lt_lift (by rwa [#ι.lift_id])
+  iSup_lt_lift (by rwa [(#ι).lift_id])
 #align ordinal.supr_lt Ordinal.iSup_lt
 
 theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
@@ -391,7 +391,7 @@ theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : �
 
 theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hc' : #ι < cof c)
     (hf : ∀ (i), ∀ b < c, f i b < c) {a} : a < c → nfpFamily.{u, u} f a < c :=
-  nfpFamily_lt_ord_lift hc (by rwa [#ι.lift_id]) hf
+  nfpFamily_lt_ord_lift hc (by rwa [(#ι).lift_id]) hf
 #align ordinal.nfp_family_lt_ord Ordinal.nfpFamily_lt_ord
 
 theorem nfpBFamily_lt_ord_lift {o : Ordinal} {f : ∀ a < o, Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c)
@@ -801,7 +801,7 @@ theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) 
 #align ordinal.unbounded_of_unbounded_Union Ordinal.unbounded_of_unbounded_iUnion
 
 /-- The infinite pigeonhole principle -/
-theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < #β.ord.cof) :
+theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ #β) (h₂ : #α < (#β).ord.cof) :
     ∃ a : α, #(f ⁻¹' {a}) = #β := by
   have : ∃ a, #β ≤ #(f ⁻¹' {a}) := by
     by_contra' h
@@ -895,7 +895,7 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccLimit o) : IsStrongLimit (be
 #align cardinal.is_strong_limit_beth Cardinal.isStrongLimit_beth
 
 theorem mk_bounded_subset {α : Type _} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
-    [IsWellOrder α r] (hr : #α.ord = type r) : #{ s : Set α // Bounded r s } = #α := by
+    [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
     haveI := mk_eq_zero_iff.1 ha
@@ -926,7 +926,7 @@ theorem mk_bounded_subset {α : Type _} (h : ∀ x < #α, (2^x) < #α) {r : α �
 #align cardinal.mk_bounded_subset Cardinal.mk_bounded_subset
 
 theorem mk_subset_mk_lt_cof {α : Type _} (h : ∀ x < #α, (2^x) < #α) :
-    #{ s : Set α // #s < cof #α.ord } = #α := by
+    #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
     simp [fun s => (Cardinal.zero_le s).not_lt]

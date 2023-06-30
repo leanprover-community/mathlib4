@@ -67,7 +67,7 @@ theorem card_functions_sum_skolem₁ :
 
 theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
   rw [card_functions_sum_skolem₁]
-  trans #Σ n, L.BoundedFormula Empty n
+  trans #(Σ n, L.BoundedFormula Empty n)
   · exact
       ⟨⟨Sigma.map Nat.succ fun _ => id,
           Nat.succ_injective.sigma_map fun _ => Function.injective_id⟩⟩
