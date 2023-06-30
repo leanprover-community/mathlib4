@@ -9,6 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Small types
@@ -31,6 +32,8 @@ class Small (α : Type v) : Prop where
   /-- If a type is `Small.{w}`, then there exists an equivalence with some `S : Type w` -/
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
 #align small Small
+
+pp_with_univ Small
 
 /-- Constructor for `Small α` from an explicit witness type and equivalence.
 -/
