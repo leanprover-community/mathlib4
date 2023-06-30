@@ -1,7 +1,7 @@
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-open AddMonoidHom CategoryTheory Limits QuotientAddGroup WalkingParallelPair
+open CategoryTheory Limits QuotientAddGroup WalkingParallelPair
 
 universe u
 
@@ -22,7 +22,7 @@ def kernelCone : KernelFork f :=
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
-    (fun s => codRestrict (Fork.ι s) _ <| fun c => (mem_ker _).2 <|
+    (fun s => AddMonoidHom.codRestrict (Fork.ι s) _ <| fun c => (AddMonoidHom.mem_ker _).2 <|
       FunLike.congr_fun (KernelFork.condition s) c)
     (fun _ => rfl)
     (fun _ _ h => ext $ fun x => Subtype.ext_iff_val.2 $ FunLike.congr_fun h x)
@@ -32,32 +32,19 @@ def cokernelCocone : CokernelCofork f :=
   CokernelCofork.ofπ (Z := of $ H ⧸ f.range) (mk' f.range) <| ext fun x =>
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
+instance : Epi <| Cofork.π <| cokernelCocone f :=
+  (epi_iff_surjective _).mpr <| mk'_surjective f.range
+
 theorem range_le_ker_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
-    f.range ≤ g.ker ↔ g.comp f = 0 := by
-    constructor
-    · exact fun h => ext fun _ => h <| mem_range.mp <| exists_apply_eq_apply _ _
-    · rintro h x ⟨x', hx⟩
-      have := FunLike.congr_fun h x'
-      simp only [AddMonoidHom.coe_comp, Function.comp_apply] at this
-      rw [hx] at this
-      exact this
+    f.range ≤ g.ker ↔ g.comp f = 0 :=
+  ⟨fun h => AddMonoidHom.ext fun x => h ⟨x, rfl⟩,
+    by rintro h _ ⟨x', rfl⟩; exact FunLike.congr_fun h x'⟩
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
     (fun s => lift f.range (Cofork.π s) <| range_le_ker_iff.2 <| CokernelCofork.condition s)
     (fun _ => rfl)
-    (fun s m h => by
-      haveI :Epi (Cofork.π (cokernelCocone f)) := by
-        simp only [parallelPair_obj_one, Functor.const_obj_obj]
-        unfold Cofork.π
-        unfold cokernelCocone
-        simp only [Cofork.ofπ_pt, Cofork.ofπ_ι_app]
-        have : Function.Surjective (QuotientAddGroup.mk' (range f)) := by
-          exact mk'_surjective (range f)
-        exact Iff.mpr (epi_iff_surjective _) this
-      apply (cancel_epi <| Cofork.π (cokernelCocone f)).1
-      aesop_cat
-      )
+    (fun s m h => (cancel_epi _).1 <| by simpa only [parallelPair_obj_one])
 
 end AddCommGroupCat
