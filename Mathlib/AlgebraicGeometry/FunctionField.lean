@@ -17,7 +17,7 @@ We define the function field of an irreducible scheme as the stalk of the generi
 This is a field when the scheme is integral.
 
 ## Main definition
-* `algebraic_geometry.Scheme.function_field`: The function field of an integral scheme.
+* `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
 * `algebraic_geometry.germ_to_function_field`: The canonical map from a component into the function
   field. This map is injective.
 -/
