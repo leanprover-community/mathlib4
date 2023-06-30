@@ -140,13 +140,13 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ discrete_of_t1_of_finite _ ar
   -- Since `fR` is continuous, it is bounded on the interval above.
   obtain ⟨xm, -, hM⟩ : ∃ xm : ℝ, xm ∈ Icc (α - ζ) (α + ζ) ∧
-      IsMaxOn (|fR.derivative.eval ·|) (Icc (α - ζ) (α + ζ)) xm :=
+      IsMaxOn |fR.derivative.eval ·| (Icc (α - ζ) (α + ζ)) xm :=
     IsCompact.exists_isMaxOn isCompact_Icc
       ⟨α, (sub_lt_self α z0).le, (lt_add_of_pos_right α z0).le⟩
       (continuous_abs.comp fR.derivative.continuous_aeval).continuousOn
   -- Use the key lemma `exists_one_le_pow_mul_dist`: we are left to show that ...
   refine'
-    @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ (|fR.derivative.eval xm|) _ z0
+    @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ |fR.derivative.eval xm| _ z0
       (fun y hy => _) fun z a hq => _
   -- 1: the denominators are positive -- essentially by definition;
   · exact fun a => one_le_pow_of_one_le ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg) _

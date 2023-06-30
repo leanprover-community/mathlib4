@@ -298,8 +298,8 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     (fun z hz => hle_b _ _) _ _
   · rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, ?_⟩
-    have : Tendsto (· * -I) (comap (|re ·|) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b))
-        (comap (|im ·|) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)) := by
+    have : Tendsto (· * -I) (comap |re ·| atTop ⊓ 𝓟 (im ⁻¹' Ioo a b))
+        (comap |im ·| atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)) := by
       refine' (tendsto_comap_iff.2 _).inf H.tendsto
       simpa [(· ∘ ·)] using tendsto_comap
     simpa [(· ∘ ·)] using hO.comp_tendsto this
@@ -890,4 +890,3 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
 #align phragmen_lindelof.eq_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay
 
 end PhragmenLindelof
-

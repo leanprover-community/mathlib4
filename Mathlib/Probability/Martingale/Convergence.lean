@@ -96,7 +96,7 @@ as required.
 Implementationwise, we have `tendsto_of_no_upcrossings` which shows that
 a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
 for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
-that the realizations are bounded almost everywhere. Indeed, suppose $(|f_n(\omega)|)$ is not
+that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
 bounded, then either $f_n(\omega) \to \pm \infty$ or one of $\limsup f_n(\omega)$ or
 $\liminf f_n(\omega)$ equals $\pm \infty$ while the other is finite. But the first case
 contradicts $\liminf |f_n(\omega)| < \infty$ while the second case contradicts finite upcrossings.

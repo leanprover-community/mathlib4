@@ -57,7 +57,7 @@ theorem logb_one : logb b 1 = 0 := by simp [logb]
 #align real.logb_one Real.logb_one
 
 @[simp]
-theorem logb_abs (x : ℝ) : logb b (|x|) = logb b x := by rw [logb, logb, log_abs]
+theorem logb_abs (x : ℝ) : logb b |x| = logb b x := by rw [logb, logb, log_abs]
 #align real.logb_abs Real.logb_abs
 
 @[simp]
