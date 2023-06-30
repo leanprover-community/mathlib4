@@ -166,6 +166,43 @@ end Binary
 
 end Fold
 
+/-!
+## Bisimulations
+We can prove two applications of `mapAccumr` equal by providing a bisimulation relation that relates
+the initial states.
+
+That is, by providing a relation `R : σ₁ → σ₁ → Prop` such that `R s₁ s₂` implies that `R` also
+relates any pair of states reachable by applying `f₁` to `s₁` and `f₂` to `s₂`, with any possible
+input values.
+-/
+
+section Bisim
+
+theorem mapAccumr_bisim (xs : Vector α n) (f₁ : α → σ₁ → σ₁ × β) (f₂ : α → σ₂ → σ₂ × β) (s₁ : σ₁)
+    (s₂ : σ₂) (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
+      ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
+    (mapAccumr f₁ xs s₁).2 = (mapAccumr f₂ xs s₂).2 := by
+  rcases h with ⟨R, h₀, hR⟩
+  induction xs using Vector.revInductionOn generalizing s₁ s₂
+  next => rfl
+  next xs x ih =>
+    rcases (hR x h₀) with ⟨hR, _⟩
+    simp only [mapAccumr_snoc, ih _ _ hR]
+    congr 1
+
+theorem mapAccumr₂_bisim (xs : Vector α n) (ys : Vector β n) (f₁ : α → β → σ₁ → σ₁ × γ)
+    (f₂ : α → β → σ₂ → σ₂ × γ) (s₁ : σ₁) (s₂ : σ₂)
+    (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
+      ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
+    (mapAccumr₂ f₁ xs ys s₁).2 = (mapAccumr₂ f₂ xs ys s₂).2 := by
+  rcases h with ⟨R, h₀, hR⟩
+  induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂
+  next => rfl
+  next xs ys x y ih =>
+    rcases (hR x y h₀) with ⟨hR, _⟩
+    simp only [mapAccumr₂_snoc, ih _ _ hR]
+    congr 1
+end Bisim
 
 /-!
 ## Redundant state optimization
@@ -193,10 +230,9 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     simp[h₀]
   next xs x ih =>
     specialize closure x _ h₀
-    specialize @ih (f x s₀).1 closure
-    rcases ih with ⟨s_out, hs, ih⟩
+    rcases @ih (f x s₀).1 closure with ⟨s_out, hs, ih⟩
     use s_out, hs
-    simp[ih]
+    simp only [mapAccumr_snoc, ih, map_snoc]
     congr
     funext x'
     rw [out x' s₀ (f x s₀).1 h₀ closure]
@@ -239,7 +275,8 @@ theorem mapAccumr_eq_map_of_constant_state (f : α → σ → σ × β) (s : σ)
   for all possible input bits, then the state is redundant and can be optimized out
 -/
 @[simp]
-theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ × γ) (s : σ) (h : ∀ a b, (f a b s).fst = s) :
+theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ × γ) (s : σ)
+    (h : ∀ a b, (f a b s).fst = s) :
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
 
