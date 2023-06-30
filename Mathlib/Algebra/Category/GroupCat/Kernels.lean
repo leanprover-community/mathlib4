@@ -33,7 +33,14 @@ def cokernelCocone : CokernelCofork f :=
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
 theorem range_le_ker_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
-    f.range ≤ g.ker ↔ g.comp f = 0 := sorry
+    f.range ≤ g.ker ↔ g.comp f = 0 := by
+    constructor
+    · exact fun h => ext fun _ => h <| mem_range.mp <| exists_apply_eq_apply _ _
+    · rintro h x ⟨x', hx⟩
+      have := FunLike.congr_fun h x'
+      simp only [AddMonoidHom.coe_comp, Function.comp_apply] at this
+      rw [hx] at this
+      exact this
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
