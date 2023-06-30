@@ -1,78 +1,49 @@
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-open CategoryTheory Limits WalkingParallelPair
+open AddMonoidHom CategoryTheory Limits QuotientAddGroup WalkingParallelPair
 
 universe u
 
 namespace AddCommGroupCat
 
-variable {M N : AddCommGroupCat.{u}} (f : M ⟶ N)
+variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
 
 instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
 
-/-- The kernel cone induced by the concrete kernel. -/
-def kernelCone : KernelFork f :=
-  KernelFork.ofι (Z := of f.ker) (f.ker.subtype : of f.ker ⟶ M) <| ext fun x =>
-    Subtype.casesOn x fun _ hx => hx
-
-instance : AddSubmonoidClass (AddSubgroup M) ((parallelPair f 0).obj WalkingParallelPair.zero) where
+instance : AddSubmonoidClass (AddSubgroup G) ((parallelPair f 0).obj WalkingParallelPair.zero) where
   add_mem := fun s {_ _} => AddSubgroup.add_mem s
   zero_mem := AddSubgroup.zero_mem
+
+/-- The kernel cone induced by the concrete kernel. -/
+def kernelCone : KernelFork f :=
+  KernelFork.ofι (Z := of f.ker) f.ker.subtype <| ext fun x => Subtype.casesOn x fun _ hx => hx
 
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
 def kernelIsLimit : IsLimit <| kernelCone f :=
   Fork.IsLimit.mk _
-    (fun s => AddMonoidHom.codRestrict (Fork.ι s) _ <| fun c => (AddMonoidHom.mem_ker _).2 <| by
-      rw [← @Function.comp_apply _ _ _ f _ _, ← coe_comp, Fork.condition]; rfl)
+    (fun s => codRestrict (Fork.ι s) _ <| fun c => (mem_ker _).2 <|
+      FunLike.congr_fun (KernelFork.condition s) c)
     (fun _ => rfl)
     (fun _ _ h => ext $ fun x => Subtype.ext_iff_val.2 $ FunLike.congr_fun h x)
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
-  CokernelCofork.ofπ (Z := of $ N ⧸ f.range) (QuotientAddGroup.mk' f.range) <| ext fun x =>
-    (QuotientAddGroup.eq_zero_iff _).mpr ⟨x, rfl⟩
+  CokernelCofork.ofπ (Z := of $ H ⧸ f.range) (mk' f.range) <| ext fun x =>
+    (eq_zero_iff _).mpr ⟨x, rfl⟩
+
+theorem range_le_ker_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
+    f.range ≤ g.ker ↔ g.comp f = 0 := sorry
 
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
-    (fun s : Cofork f 0 => QuotientAddGroup.lift _ s.π $ by
-      intro x ⟨y, h⟩
-      unfold Cofork.π
-      rw [← h]
-      change (_∘ _) _ = _
-      rw [← coe_comp]
-      simp only [Functor.const_obj_obj, parallelPair_obj_one, Cofork.app_one_eq_π,
-        CokernelCofork.condition, zero_apply]
-      )
-    (fun s => by
-      ext
-      simp only [comp_apply]
-      rfl)
-    (fun s m h => by sorry)
-
-/-
--- We now show this isomorphism commutes with the inclusion of the kernel into the source.
--- TODO: the next two already exist: add `elementwise` to those lemmas in mathlib
-@[simp, elementwise] lemma kernel_iso_ker_inv_kernel_ι :
-  (kernel_iso_ker f).inv ≫ kernel.ι f = f.ker.subtype :=
-kernel_iso_ker_inv_comp_ι _
-@[simp, elementwise] lemma kernel_iso_ker_hom_ker_subtype :
-  (kernel_iso_ker f).hom ≫ f.ker.subtype = kernel.ι f :=
-kernel_iso_ker_hom_comp_subtype _
-/--
-The categorical cokernel of a morphism in `Module`
-agrees with the usual module-theoretical quotient.
--/
-noncomputable def cokernel_iso_range_quotient : cokernel f ≅ of (N ⧸ f.range) :=
-colimit.iso_colimit_cocone ⟨_, cokernel_is_colimit f⟩
--- We now show this isomorphism commutes with the projection of target to the cokernel.
-@[simp, elementwise] lemma cokernel_π_cokernel_iso_range_quotient_hom :
-  cokernel.π f ≫ (cokernel_iso_range_quotient f).hom = quotient_add_group.mk' f.range :=
-by { convert colimit.iso_colimit_cocone_ι_hom _ _; refl, }
-@[simp, elementwise] lemma range_mkq_cokernel_iso_range_quotient_inv :
-  (by exact quotient_add_group.mk' f.range : _) ≫ (cokernel_iso_range_quotient f).inv = cokernel.π f :=
-by { convert colimit.iso_colimit_cocone_ι_inv ⟨_, cokernel_is_colimit f⟩ _; refl, }
--/
+    (fun s => lift f.range (Cofork.π s) <| range_le_ker_iff.2 <| CokernelCofork.condition s)
+    (fun _ => rfl)
+    (fun _ _ h => by
+      ext x
+      simp
+      rw [QuotientAddGroup.lift]
+      sorry)
 
 end AddCommGroupCat
