@@ -175,7 +175,7 @@ theorem abs_nonneg (a : α) : 0 ≤ |a| :=
 #align abs_nonneg abs_nonneg
 
 @[simp]
-theorem abs_abs (a : α) : ||a|| = |a| :=
+theorem abs_abs (a : α) : |(|a|)| = |a| :=
   abs_of_nonneg <| abs_nonneg a
 #align abs_abs abs_abs
 
