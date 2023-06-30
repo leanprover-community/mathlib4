@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Category.GroupCat.Basic
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
@@ -14,46 +13,51 @@ instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
-  KernelFork.ofι (Z := of f.ker) (f.ker.subtype : of f.ker ⟶ M) <|
-    ext fun x ↦ Subtype.casesOn x fun _ hx => hx
+  KernelFork.ofι (Z := of f.ker) (f.ker.subtype : of f.ker ⟶ M) <| ext fun x =>
+    Subtype.casesOn x fun _ hx => hx
 
 instance : AddSubmonoidClass (AddSubgroup M) ((parallelPair f 0).obj WalkingParallelPair.zero) where
   add_mem := fun s {_ _} => AddSubgroup.add_mem s
   zero_mem := AddSubgroup.zero_mem
 
 /-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
-def kernel_is_limit : IsLimit <| kernelCone f :=
-  Fork.IsLimit.mk (kernelCone f)
-    (fun s : Fork f 0 =>
-      AddMonoidHom.codRestrict (Fork.ι s) f.ker <| fun c => (AddMonoidHom.mem_ker _).2 <| by
-        rw [← @Function.comp_apply _ _ _ f _ _, ← coe_comp, Fork.condition]
-        rfl)
+def kernelIsLimit : IsLimit <| kernelCone f :=
+  Fork.IsLimit.mk _
+    (fun s => AddMonoidHom.codRestrict (Fork.ι s) _ <| fun c => (AddMonoidHom.mem_ker _).2 <| by
+      rw [← @Function.comp_apply _ _ _ f _ _, ← coe_comp, Fork.condition]; rfl)
     (fun _ => rfl)
     (fun _ _ h => ext $ fun x => Subtype.ext_iff_val.2 $ FunLike.congr_fun h x)
 
-/-
 /-- The cokernel cocone induced by the projection onto the quotient. -/
-def cokernel_cocone : cokernel_cofork f :=
-@cokernel_cofork.of_π AddCommGroup _ _ M N f (of $ N ⧸ f.range) (quotient_add_group.mk' f.range) $
-by { ext1, simp only [comp_apply, quotient_add_group.mk'_apply, zero_apply,
-  quotient_add_group.eq_zero_iff, add_monoid_hom.mem_range, exists_apply_eq_apply], }
+def cokernelCocone : CokernelCofork f :=
+  CokernelCofork.ofπ (Z := of $ N ⧸ f.range) (QuotientAddGroup.mk' f.range) <| ext fun x =>
+    (QuotientAddGroup.eq_zero_iff _).mpr ⟨x, rfl⟩
+
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
-def cokernel_is_colimit : is_colimit (cokernel_cocone f) :=
-cofork.is_colimit.mk _
-  (λ s : cofork f 0, quotient_add_group.lift _ s.π $
-  by { rintro _ ⟨x, rfl⟩, have := add_monoid_hom.congr_fun s.condition x,
-    simpa only [comp_apply, zero_apply, map_zero] using this, })
-  (λ s, by { ext, simp only [comp_apply], refl })
-  (λ s m h,
-  begin
-    let g : N ⟶ (of $ N ⧸ f.range) := (quotient_add_group.mk' f.range),
-    haveI : epi g := (epi_iff_range_eq_top _).mpr _,
-    swap, { ext ⟨x⟩, simp only [add_monoid_hom.mem_range, quotient_add_group.mk'_apply,
-      add_subgroup.mem_top, iff_true], exact ⟨x, rfl⟩ },
-    apply (cancel_epi g).1,
-    convert h,
-    ext, refl,
-  end)
+def cokernelIsColimit : IsColimit <| cokernelCocone f :=
+  Cofork.IsColimit.mk _
+    (fun s : Cofork f 0 => QuotientAddGroup.lift _ s.π $ by
+      rintro _ ⟨x, rfl⟩
+      have := FunLike.congr_fun s.condition
+      simpa only [comp_apply, zero_apply, map_zero] using this)
+    (fun s => by
+      ext
+      simp only [comp_apply]
+      rfl)
+    (fun s m h => by
+      let g : N ⟶ (of $ N ⧸ f.range) := QuotientAddGroup.mk' f.range
+      haveI : epi g := (epi_iff_range_eq_top _).mpr _
+      swap
+      · ext ⟨x⟩
+        simp only [AddMonoidHom.mem_range, QuotientAddGroup.mk'_apply,
+          add_subgroup.mem_top, iff_true]
+        exact ⟨x, rfl⟩
+      apply (cancel_epi g).1
+      convert h
+      ext
+      rfl)
+
+/-
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
 -- TODO: the next two already exist: add `elementwise` to those lemmas in mathlib
 @[simp, elementwise] lemma kernel_iso_ker_inv_kernel_ι :
@@ -76,4 +80,5 @@ by { convert colimit.iso_colimit_cocone_ι_hom _ _; refl, }
   (by exact quotient_add_group.mk' f.range : _) ≫ (cokernel_iso_range_quotient f).inv = cokernel.π f :=
 by { convert colimit.iso_colimit_cocone_ι_inv ⟨_, cokernel_is_colimit f⟩ _; refl, }
 -/
+
 end AddCommGroupCat
