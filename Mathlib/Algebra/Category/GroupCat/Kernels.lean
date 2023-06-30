@@ -40,10 +40,17 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
     (fun s => lift f.range (Cofork.π s) <| range_le_ker_iff.2 <| CokernelCofork.condition s)
     (fun _ => rfl)
-    (fun _ _ h => by
-      ext x
-      simp
-      rw [QuotientAddGroup.lift]
-      sorry)
+    (fun s m h => by
+      haveI :Epi (Cofork.π (cokernelCocone f)) := by
+        simp only [parallelPair_obj_one, Functor.const_obj_obj]
+        unfold Cofork.π
+        unfold cokernelCocone
+        simp only [Cofork.ofπ_pt, Cofork.ofπ_ι_app]
+        have : Function.Surjective (QuotientAddGroup.mk' (range f)) := by
+          exact mk'_surjective (range f)
+        exact Iff.mpr (epi_iff_surjective _) this
+      apply (cancel_epi <| Cofork.π (cokernelCocone f)).1
+      aesop_cat
+      )
 
 end AddCommGroupCat
