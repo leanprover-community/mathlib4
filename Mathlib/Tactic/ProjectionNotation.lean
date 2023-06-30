@@ -8,14 +8,14 @@ import Lean.Elab.AuxDef
 import Std.Lean.Command
 
 /-!
-# Commands for configuring projection notation
+# Pretty printing projection notation
 
-This module contains a command, `pp_extended_field_notation` (with a corresponding `@[pp_dot]`
-attribute to conveniently run it), that can be used to configure functions to pretty print
+This module contains the `@[pp_dot]` attribute, which is used to configure functions to pretty print
 using projection notation (i.e., like `x.f y` rather than `C.f x y`).
 
 This module also contains a delaborator for collapsing chains of ancestor projections.
-For example, to turn `x.toFoo.toBar` into `x.toBar`.
+For example, to turn `x.toFoo.toBar` into `x.toBar`. The `pp_dot` attribute works together
+with this attribute to completely collapse such chains.
 -/
 
 namespace Mathlib.ProjectionNotation
@@ -66,14 +66,46 @@ partial def delabProjectionApp' : Delab := whenPPOption getPPCollapseStructurePr
     let appStx ← delab
     `($(appStx).$(mkIdent f):ident)
 
+
+/-- Given a function `f` that is either a true projection or a generalized projection
+(i.e., a function that works using extended field notation, a.k.a. "dot notation"), generates
+an `app_unexpander` for it to get it to pretty print using dot notation.
+
+See also the docstring of the `pp_dot` attribute. -/
+def mkExtendedFieldNotationUnexpander (f : Name) : CommandElabM Unit := do
+  let .str A projName := f | throwError "Projection name must end in a string component."
+  if let some _ := getStructureInfo? (← getEnv) A then
+    -- If this is for a structure, then generate an extra `.toA` remover.
+    -- It's easier to handle the two cases completely separately than to try to merge them.
+    let .str _ A' := A | throwError "{A} must end in a string component"
+    let toA : Name := .str .anonymous ("to" ++ A')
+    elabCommand <| ← `(command|
+      @[app_unexpander $(mkIdent f)]
+      aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
+        -- Having a zero-argument pattern prevents unnecessary parenthesization in output
+        | `($$_ $$(x).$(mkIdent toA))
+        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
+        | `($$_ $$(x).$(mkIdent toA) $$args*)
+        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
+        | _ => throw ())
+  else
+    elabCommand <| ← `(command|
+      @[app_unexpander $(mkIdent f)]
+      aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
+        -- Having this zero-argument pattern prevents unnecessary parenthesization in output
+        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
+        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
+        | _ => throw ())
+
 /--
-Defines an `app_unexpander` for the given function to support a basic form of projection
-notation. It is *only* for functions whose first explicit argument is the receiver
-of the generalized field notation. That is to say, it is only meant for transforming
-`C.f c x y z ...` to `c.f x y z ...` for `c : C`.
+Adding the `@[pp_dot]` attribute defines an `app_unexpander` for the given function to
+support pretty printing the function using extended field notation ("dot notation").
+This particular attribute is *only* for functions whose first explicit argument is the
+receiver of the generalized field notation. That is to say, it is only meant for
+transforming `C.f c x y z ...` to `c.f x y z ...` for `c : C`.
 
 It can be used to help get projection notation to work for function-valued structure fields,
-since the default projection delaborator cannot handle excess arguments.
+since the built-in projection delaborator cannot handle excess arguments.
 
 Example for generalized field notation:
 ```
@@ -85,16 +117,13 @@ def A.foo (a : A) (m : Nat) : Nat := a.n + m
 ```
 Now, `A.foo x m` pretty prints as `x.foo m`. If `A` is a structure, it also adds a rule that
 `A.foo x.toA m` pretty prints as `x.foo m`. This rule is meant to combine with
-the projection collapse delaborator, so that `A.foo x.toB.toA m` also will
-pretty print as `x.foo m`.
+the projection collapse delaborator defined in this module, where together `A.foo x.toB.toA m`
+will pretty print as `x.foo m`.
 
-Since this last rule is a purely syntactic transformation,
+Since the mentioned rule is a purely syntactic transformation,
 it might lead to output that does not round trip, though this can only occur if
 there exists an `A`-valued `toA` function that is not a parent projection that
 happens to be pretty printable using dot notation.
-
-The `@[pp_dot]` attribute on a declaration `f` is equivalent to running the command
-`pp_extended_field_notation f`.
 
 Here is an example to illustrate the round tripping issue:
 ```lean
@@ -124,34 +153,6 @@ attribute [pp_dot] B.toA
 To avoid this, don't use `pp_dot` for coercion functions
 such as `B.toA`.
 -/
-elab (name := ppDotCmd) "pp_extended_field_notation " f:Term.ident : command => do
-  let f ← liftTermElabM <| Elab.resolveGlobalConstNoOverloadWithInfo f
-  let .str A projName := f |
-    throwError "Projection name must end in a string component."
-  if let some _ := getStructureInfo? (← getEnv) A then
-    -- If this is for a structure, then generate an extra `.toA` remover.
-    -- It's easier to handle the two cases completely separately than to try to merge them.
-    let .str _ A' := A | throwError "{A} must end in a string component"
-    let toA : Name := .str .anonymous ("to" ++ A')
-    elabCommand <| ← `(command|
-      @[app_unexpander $(mkIdent f)]
-      aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
-        -- Having a zero-argument pattern prevents unnecessary parenthesization in output
-        | `($$_ $$(x).$(mkIdent toA))
-        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-        | `($$_ $$(x).$(mkIdent toA) $$args*)
-        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
-        | _ => throw ())
-  else
-    elabCommand <| ← `(command|
-      @[app_unexpander $(mkIdent f)]
-      aux_def $(mkIdent <| Name.str f "unexpander") : Lean.PrettyPrinter.Unexpander := fun
-        -- Having this zero-argument pattern prevents unnecessary parenthesization in output
-        | `($$_ $$x) => set_option hygiene false in `($$(x).$(mkIdent projName))
-        | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
-        | _ => throw ())
-
-@[inherit_doc ppDotCmd]
 syntax (name := ppDotAttr) "pp_dot" : attr
 
 initialize registerBuiltinAttribute {
@@ -161,9 +162,8 @@ initialize registerBuiltinAttribute {
   add := fun src ref kind => match ref with
   | `(attr| pp_dot) => do
     if (kind != AttributeKind.global) then
-      throwError "`pp_dot` currently only supports being a global attribute"
-    liftCommandElabM <| withRef ref do
-      elabCommand <| ← `(pp_extended_field_notation $(mkIdent src))
+      throwError "`pp_dot` can only be used as a global attribute"
+    liftCommandElabM <| withRef ref <| mkExtendedFieldNotationUnexpander src
   | _ => throwUnsupportedSyntax }
 
 end Mathlib.ProjectionNotation
