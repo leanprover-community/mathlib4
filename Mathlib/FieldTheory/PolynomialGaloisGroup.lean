@@ -17,7 +17,7 @@ import Mathlib.GroupTheory.Perm.Cycle.Type
 
 In this file, we introduce the Galois group of a polynomial `p` over a field `F`,
 defined as the automorphism group of its splitting field. We also provide
-some results about some extension `E` above `p.splitting_field`, and some specific
+some results about some extension `E` above `p.SplittingField`, and some specific
 results about the Galois groups of ℚ-polynomials with specific numbers of non-real roots.
 
 ## Main definitions

@@ -310,7 +310,7 @@ theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R']
 
 variable {C : Type v} [CommRing C]
 
-section ZmodCharDef
+section ZModCharDef
 
 open Multiplicative
 
@@ -335,7 +335,7 @@ theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ)
   rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_nat_cast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
 
-end ZmodCharDef
+end ZModCharDef
 
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :

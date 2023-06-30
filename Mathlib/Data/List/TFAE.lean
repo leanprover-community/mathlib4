@@ -72,4 +72,11 @@ theorem TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = s
   h _ (List.get?_mem h₁) _ (List.get?_mem h₂)
 #align list.tfae.out List.TFAE.out
 
+theorem forall_TFAE {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+    (l.map (fun p ↦ ∀ a, p a)).TFAE := by
+  simp_rw [TFAE, List.forall_mem_map_iff]
+  intros p₁ hp₁ p₂ hp₂
+  exact forall_congr' fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
+    (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)
+
 end List

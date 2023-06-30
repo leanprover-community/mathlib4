@@ -54,6 +54,9 @@ protected lemma nonempty (h : EventuallyConst f l) : Nonempty β := nonempty_of_
 protected lemma const (c : β) : EventuallyConst (fun _ ↦ c) l :=
   ⟨c, eventually_of_forall fun _ ↦ rfl⟩
 
+protected lemma congr (h : EventuallyConst f l) (hg : f =ᶠ[l] g) : EventuallyConst g l :=
+  let ⟨c, hc⟩ := h; ⟨c, hg.symm.trans hc⟩
+
 @[nontriviality]
 lemma of_unique [Unique β] : EventuallyConst f l :=
   ⟨default, eventually_of_forall fun _ ↦ Unique.uniq _ _⟩
@@ -108,6 +111,10 @@ lemma of_mulIndicator_const [One β] {s : Set α} {c : β} (hc : c ≠ 1)
     simpa [hc] using ne_of_eq_of_ne hx hd₁
 
 end EventuallyConst
+
+theorem EventuallyEq.eventuallyConst_iff (h : f =ᶠ[l] g) :
+    EventuallyConst f l ↔ EventuallyConst g l :=
+  ⟨(.congr · h), (.congr · h.symm)⟩
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) := by

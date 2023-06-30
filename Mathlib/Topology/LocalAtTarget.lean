@@ -102,7 +102,7 @@ theorem isOpen_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
 
 theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsClosed s ↔ ∀ i, IsClosed ((↑) ⁻¹' s : Set (U i)) := by
-  simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU (sᶜ)
+  simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU sᶜ
 #align is_closed_iff_coe_preimage_of_supr_eq_top isClosed_iff_coe_preimage_of_iSup_eq_top
 
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
