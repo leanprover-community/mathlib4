@@ -2026,7 +2026,7 @@ theorem prod_subtype_mul_prod_subtype {α β : Type _} [Fintype α] [CommMonoid 
     ((∏ i : { x // p x }, f i) * ∏ i : { x // ¬p x }, f i) = ∏ i, f i := by
   classical
     let s := { x | p x }.toFinset
-    rw [← Finset.prod_subtype s, ← Finset.prod_subtype (sᶜ)]
+    rw [← Finset.prod_subtype s, ← Finset.prod_subtype sᶜ]
     · exact Finset.prod_mul_prod_compl _ _
     · simp
     · simp

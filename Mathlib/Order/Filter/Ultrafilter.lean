@@ -502,7 +502,7 @@ theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ 
 alias compl_mem_hyperfilter_of_finite ← _root_.Set.Finite.compl_mem_hyperfilter
 #align set.finite.compl_mem_hyperfilter Set.Finite.compl_mem_hyperfilter
 
-theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite (sᶜ)) : s ∈ hyperfilter α :=
+theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite sᶜ) : s ∈ hyperfilter α :=
   compl_compl s ▸ hf.compl_mem_hyperfilter
 #align filter.mem_hyperfilter_of_finite_compl Filter.mem_hyperfilter_of_finite_compl
 

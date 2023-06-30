@@ -907,7 +907,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
     rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
     rintro S π _hπ
     simp_rw [Set.indicator_const_preimage_eq_union]
-    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s iᶜ) ∅) fun i _hi => _
+    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => _
     have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
       measurableSet_generateFrom (Set.mem_singleton _)
     refine'

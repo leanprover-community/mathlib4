@@ -103,11 +103,11 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
   -- Porting note: Added proof of uc
-  have uc : (iUnion fun i => Option.elim' (sᶜ) u i) = univ := by
+  have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
     · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
-      apply union_subset_union_right (sᶜ) us
-  rcases precise_refinement (Option.elim' (sᶜ) u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
+      apply union_subset_union_right sᶜ us
+  rcases precise_refinement (Option.elim' sᶜ u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
       uc with
     ⟨v, vo, vc, vf, vu⟩
   refine' ⟨v ∘ some, fun i ↦ vo _, _, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
@@ -216,7 +216,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
       fun n ↦ ((K.isCompact _).diff isOpen_interior).inter_right hs
     -- Next we choose a finite covering `B (c n i) (r n i)` of each
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
-    have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), K nᶜ ∈ 𝓝 (x : X) :=
+    have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
       fun n x ↦ IsOpen.mem_nhds (K.isClosed n).isOpen_compl
         fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
     -- Porting note: Commented out `haveI` for now.
@@ -306,7 +306,7 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
     choose u v hu hv hxu htv huv using SetCoe.forall'.1 H
     rcases precise_refinement_set hs u hu fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, hxu _⟩ with
       ⟨u', hu'o, hcov', hu'fin, hsub⟩
-    refine' ⟨⋃ i, u' i, closure (⋃ i, u' i)ᶜ, isOpen_iUnion hu'o, isClosed_closure.isOpen_compl,
+    refine' ⟨⋃ i, u' i, (closure (⋃ i, u' i))ᶜ, isOpen_iUnion hu'o, isClosed_closure.isOpen_compl,
       hcov', _, disjoint_compl_right.mono le_rfl (compl_le_compl subset_closure)⟩
     rw [hu'fin.closure_iUnion, compl_iUnion, subset_iInter_iff]
     refine' fun i x hxt hxu ↦

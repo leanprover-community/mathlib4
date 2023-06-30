@@ -338,7 +338,7 @@ instance : BooleanAlgebra (Clopens α) :=
 @[simp] theorem coe_sdiff (s t : Clopens α) : (↑(s \ t) : Set α) = ↑s \ ↑t := rfl
 #align topological_space.clopens.coe_sdiff TopologicalSpace.Clopens.coe_sdiff
 
-@[simp] theorem coe_compl (s : Clopens α) : (↑(sᶜ) : Set α) = ↑sᶜ := rfl
+@[simp] theorem coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 #align topological_space.clopens.coe_compl TopologicalSpace.Clopens.coe_compl
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩

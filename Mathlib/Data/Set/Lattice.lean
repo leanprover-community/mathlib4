@@ -487,34 +487,34 @@ lemma iInter_eq_const (hf : ∀ i, f i = s) : (⋂ i, f i) = s :=
 end Nonempty
 
 @[simp]
-theorem compl_iUnion (s : ι → Set β) : (⋃ i, s i)ᶜ = ⋂ i, s iᶜ :=
+theorem compl_iUnion (s : ι → Set β) : (⋃ i, s i)ᶜ = ⋂ i, (s i)ᶜ :=
   compl_iSup
 #align set.compl_Union Set.compl_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem compl_iUnion₂ (s : ∀ i, κ i → Set α) : (⋃ (i) (j), s i j)ᶜ = ⋂ (i) (j), s i jᶜ := by
+theorem compl_iUnion₂ (s : ∀ i, κ i → Set α) : (⋃ (i) (j), s i j)ᶜ = ⋂ (i) (j), (s i j)ᶜ := by
   simp_rw [compl_iUnion]
 #align set.compl_Union₂ Set.compl_iUnion₂
 
 @[simp]
-theorem compl_iInter (s : ι → Set β) : (⋂ i, s i)ᶜ = ⋃ i, s iᶜ :=
+theorem compl_iInter (s : ι → Set β) : (⋂ i, s i)ᶜ = ⋃ i, (s i)ᶜ :=
   compl_iInf
 #align set.compl_Inter Set.compl_iInter
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-theorem compl_iInter₂ (s : ∀ i, κ i → Set α) : (⋂ (i) (j), s i j)ᶜ = ⋃ (i) (j), s i jᶜ := by
+theorem compl_iInter₂ (s : ∀ i, κ i → Set α) : (⋂ (i) (j), s i j)ᶜ = ⋃ (i) (j), (s i j)ᶜ := by
   simp_rw [compl_iInter]
 #align set.compl_Inter₂ Set.compl_iInter₂
 
 -- classical -- complete_boolean_algebra
-theorem iUnion_eq_compl_iInter_compl (s : ι → Set β) : (⋃ i, s i) = (⋂ i, s iᶜ)ᶜ := by
+theorem iUnion_eq_compl_iInter_compl (s : ι → Set β) : (⋃ i, s i) = (⋂ i, (s i)ᶜ)ᶜ := by
   simp only [compl_iInter, compl_compl]
 #align set.Union_eq_compl_Inter_compl Set.iUnion_eq_compl_iInter_compl
 
 -- classical -- complete_boolean_algebra
-theorem iInter_eq_compl_iUnion_compl (s : ι → Set β) : (⋂ i, s i) = (⋃ i, s iᶜ)ᶜ := by
+theorem iInter_eq_compl_iUnion_compl (s : ι → Set β) : (⋂ i, s i) = (⋃ i, (s i)ᶜ)ᶜ := by
   simp only [compl_iUnion, compl_compl]
 #align set.Inter_eq_compl_Union_compl Set.iInter_eq_compl_iUnion_compl
 

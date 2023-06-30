@@ -651,12 +651,12 @@ theorem sup_himp_left (hs : s.Nonempty) (f : ι → α) (a : α) :
 #align finset.sup_himp_left Finset.sup_himp_left
 
 @[simp]
-protected theorem compl_sup (s : Finset ι) (f : ι → α) : s.sup fᶜ = s.inf fun i => f iᶜ :=
+protected theorem compl_sup (s : Finset ι) (f : ι → α) : (s.sup f)ᶜ = s.inf fun i => (f i)ᶜ :=
   map_finset_sup (OrderIso.compl α) _ _
 #align finset.compl_sup Finset.compl_sup
 
 @[simp]
-protected theorem compl_inf (s : Finset ι) (f : ι → α) : s.inf fᶜ = s.sup fun i => f iᶜ :=
+protected theorem compl_inf (s : Finset ι) (f : ι → α) : (s.inf f)ᶜ = s.sup fun i => (f i)ᶜ :=
   map_finset_inf (OrderIso.compl α) _ _
 #align finset.compl_inf Finset.compl_inf
 
