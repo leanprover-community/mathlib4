@@ -8,11 +8,11 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Nat.Prime
-import Mathbin.Data.Rat.Defs
-import Mathbin.Order.WellFounded
-import Mathbin.Tactic.Linarith.Default
-import Mathbin.Tactic.Wlog
+import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Rat.Defs
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Linarith.Default
+import Mathlib.Tactic.Wlog
 
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping
@@ -77,8 +77,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
             ¬base x y →
               H x y →
                 ∀ y', y' * y' - B x * y' + C x = 0 → y' = B x - y → y' * y = C x → 0 ≤ y' ∧ y' ≤ x)
-    (H_base : ∀ {x y}, H x y → base x y → claim) : claim :=
-  by
+    (H_base : ∀ {x y}, H x y → base x y → claim) : claim := by
   -- First of all, we may assume that x ≤ y.
   -- We justify this using H_symm.
   wlog hxy : x ≤ y
@@ -132,8 +131,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [Set.nonempty_iff_ne_empty]
   intro exceptional_empty
   -- Observe that S is nonempty.
-  have S_nonempty : S.nonempty :=
-    by
+  have S_nonempty : S.nonempty := by
     -- It contains the image of p.
     use p.2
     apply Set.mem_image_of_mem
@@ -210,8 +208,7 @@ open imo1988_q6
 /-- Question 6 of IMO1988. If a and b are two natural numbers
 such that a*b+1 divides a^2 + b^2, show that their quotient is a perfect square.-/
 theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
-    ∃ d, d ^ 2 = (a ^ 2 + b ^ 2) / (a * b + 1) :=
-  by
+    ∃ d, d ^ 2 = (a ^ 2 + b ^ 2) / (a * b + 1) := by
   rcases h with ⟨k, hk⟩
   rw [hk, Nat.mul_div_cancel_left _ (Nat.succ_pos (a * b))]
   simp only [sq] at hk 
@@ -248,13 +245,11 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     intro x y hx x_lt_y hxky h z h_root hV₁ hV₀
     constructor
     · dsimp [-sub_eq_add_neg] at *
-      have hpos : z * z + x * x > 0 :=
-        by
+      have hpos : z * z + x * x > 0 := by
         apply add_pos_of_nonneg_of_pos
         · apply mul_self_nonneg
         · apply mul_pos <;> exact_mod_cast hx
-      have hzx : z * z + x * x = (z * x + 1) * k :=
-        by
+      have hzx : z * z + x * x = (z * x + 1) * k := by
         rw [← sub_eq_zero, ← h_root]
         ring
       rw [hzx] at hpos 
@@ -274,8 +269,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
 The following example illustrates the use of constant descent Vieta jumping
 in the presence of a non-trivial base case.
 -/
-example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 2 + 1 :=
-  by
+example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 2 + 1 := by
   rcases h with ⟨k, hk⟩
   suffices k = 3 by simp_all; ring
   simp only [sq] at hk 
