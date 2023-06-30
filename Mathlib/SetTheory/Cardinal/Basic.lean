@@ -158,7 +158,7 @@ theorem mk_out (c : Cardinal) : #c.out = c :=
 #align cardinal.mk_out Cardinal.mk_out
 
 /-- The representative of the cardinal of a type is equivalent to the original type. -/
-def outMkEquiv {α : Type v} : #α.out ≃ α :=
+def outMkEquiv {α : Type v} : (#α).out ≃ α :=
   Nonempty.some <| Cardinal.eq.mp (by simp)
 #align cardinal.out_mk_equiv Cardinal.outMkEquiv
 
