@@ -76,7 +76,7 @@ def Abs.abs.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 @[inherit_doc]
-postfix:1000 "⁺" => PosPart.pos
+postfix:max "⁺" => PosPart.pos
 
 @[inherit_doc]
-postfix:1000 "⁻" => NegPart.neg
+postfix:max "⁻" => NegPart.neg
