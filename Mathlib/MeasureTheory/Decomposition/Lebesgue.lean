@@ -363,7 +363,7 @@ theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf
   refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite hf (measurable_rnDeriv μ ν) _
   intro a ha _
   calc
-    (∫⁻ x : α in a, f x ∂ν) = ν.withDensity f a := (withDensity_apply f ha).symm
+    ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
     _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv hf hs hadd]
     _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
