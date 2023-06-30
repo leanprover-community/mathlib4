@@ -295,7 +295,8 @@ in `Magma` -/
 @[to_additive
     "additive equivalences between `has_add`s are the same
     as (isomorphic to) isomorphisms in `AddMagma`"]
-def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] : X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
+def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
+    X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
   hom e := e.toMagmaCatIso
   inv i := i.magmaCatIsoToMulEquiv
 #align mul_equiv_iso_Magma_iso mulEquivIsoMagmaIso
