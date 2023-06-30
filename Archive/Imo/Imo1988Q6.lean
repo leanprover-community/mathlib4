@@ -51,7 +51,7 @@ with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` w
 For reasons of usability, the hyperbola `H` is implemented as an arbitrary predicate.
 (In question 6 of IMO1988, where this proof technique was first developped,
 the predicate `claim` would be `∃ (d : ℕ), d ^ 2 = k` for some natural number `k`,
-and the predicate `H` would be `λ a b, a * a + b * b = (a * b + 1) * k`.)
+and the predicate `H` would be `fun a b ↦ a * a + b * b = (a * b + 1) * k`.)
 
 To ensure that the predicate `H` actually describes a hyperbola,
 the user must provide arguments `B` and `C` that are used as coefficients for a quadratic equation.
@@ -64,7 +64,7 @@ In the descent step `H_desc` this will give the user the additional assumption t
 the point `(x,y)` does not lie in this base locus.
 The user must provide a proof that the proposition `claim` is true
 if there exists an integral point `(x,y)` on the hyperbola `H` that lies in the base locus.
-If such a base locus is not necessary, once can simply let it be `λ x y, false`.
+If such a base locus is not necessary, once can simply let it be `fun x y ↦ False`.
 -/
 theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → ℕ → Prop} (h₀ : H x y)
     (B : ℕ → ℤ) (C : ℕ → ℤ) (base : ℕ → ℕ → Prop)
@@ -157,7 +157,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [H_quad] at h_quad
   -- We find the other root of the equation, and Vieta's formulas.
   rcases vieta_formula_quadratic h_quad with ⟨c, h_root, hV₁, hV₂⟩
-  -- No we rewrite Vietas formulas a bit, and apply the descent step.
+  -- Now we rewrite Vietas formulas a bit, and apply the descent step.
   replace hV₁ : c = B mx - my := eq_sub_of_add_eq' hV₁
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
@@ -192,15 +192,15 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     contrapose! hm_B₂
     subst c
     simp [hV₁]
+    -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
 #align imo1988_q6.constant_descent_vieta_jumping Imo1988Q6.constant_descent_vieta_jumping
 
--- Hence p' = (c, m_x) lies on the upper branch, and we are done.
 end Imo1988Q6
 
 open Imo1988Q6
 
 /-- Question 6 of IMO1988. If a and b are two natural numbers
-such that a*b+1 divides a^2 + b^2, show that their quotient is a perfect square.-/
+such that a*b+1 divides a^2 + b^2, show that their quotient is a perfect square. -/
 theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     ∃ d, d ^ 2 = (a ^ 2 + b ^ 2) / (a * b + 1) := by
   rcases h with ⟨k, hk⟩
@@ -214,7 +214,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
-  ·-- Show that the solution set is symmetric in a and b.
+  · -- Show that the solution set is symmetric in a and b.
     intro x y
     simp [add_comm (x * x), mul_comm x]
   · -- Show that the claim is true if b = 0.
@@ -252,7 +252,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
       calc
         z * y > x * x := by apply mul_lt_mul' <;> linarith
         _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
-  ·-- There is no base case in this application of Vieta jumping.
+  · -- There is no base case in this application of Vieta jumping.
     simp
 #align imo1988_q6 imo1988_q6
 
@@ -272,9 +272,9 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
     simp; ring
-  ·-- Show that the solution set is symmetric in a and b.
+  · -- Show that the solution set is symmetric in a and b.
     intro x y; ring_nf -- Porting note: Originally, `cc` solved the entire goal
-  ·-- Show that the claim is true if b = 0.
+  · -- Show that the claim is true if b = 0.
     simp
   · -- Show that the claim is true if a = b.
     intro x hx
