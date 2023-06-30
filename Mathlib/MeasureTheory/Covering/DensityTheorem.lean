@@ -156,24 +156,23 @@ theorem ae_tendsto_measure_inter_div (S : Set α) (K : ℝ) : ∀ᵐ x ∂μ.res
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
-theorem ae_tendsto_average_norm_sub {f : α → E} (hf : Integrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
+theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
     ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
       (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
       Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), ‖f y - f x‖ ∂μ) l (𝓝 0) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average_norm_sub hf] with x hx ι l w δ δlim
     xmem using hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
-#align is_unif_loc_doubling_measure.ae_tendsto_average_norm_sub IsUnifLocDoublingMeasure.ae_tendsto_average_norm_sub
+
+variable [NormedSpace ℝ E] [CompleteSpace E]
 
 /-- A version of **Lebesgue differentiation theorem** for a sequence of closed balls whose
 centers are not required to be fixed. -/
-theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E} (hf : Integrable f μ)
-    (K : ℝ) : ∀ᵐ x ∂μ,
+theorem ae_tendsto_average {f : α → E} (hf : LocallyIntegrable f μ) (K : ℝ) : ∀ᵐ x ∂μ,
       ∀ {ι : Type _} {l : Filter ι} (w : ι → α) (δ : ι → ℝ) (δlim : Tendsto δ l (𝓝[>] 0))
         (xmem : ∀ᶠ j in l, x ∈ closedBall (w j) (K * δ j)),
         Tendsto (fun j => ⨍ y in closedBall (w j) (δ j), f y ∂μ) l (𝓝 (f x)) := by
   filter_upwards [(vitaliFamily μ K).ae_tendsto_average hf] with x hx ι l w δ δlim xmem using
     hx.comp (tendsto_closedBall_filterAt μ _ _ δlim xmem)
-#align is_unif_loc_doubling_measure.ae_tendsto_average IsUnifLocDoublingMeasure.ae_tendsto_average
 
 end Applications
 
