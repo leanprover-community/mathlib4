@@ -19,7 +19,7 @@ import Mathlib.ModelTheory.ElementaryMaps
 ## Main Results
 * `FirstOrder.Language.exists_elementarySubstructure_card_eq` is the Downward Löwenheim–Skolem
   theorem: If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
-  `max (# s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
+  `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.
 
 ## TODO
@@ -129,13 +129,13 @@ variable {M}
 
 /-- The Downward Löwenheim–Skolem theorem :
   If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
-  `max (# s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
+  `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.  -/
 theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (h1 : ℵ₀ ≤ κ)
-    (h2 : Cardinal.lift.{w'} (#s) ≤ Cardinal.lift.{w} κ)
+    (h2 : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} κ)
     (h3 : Cardinal.lift.{w'} L.card ≤ Cardinal.lift.{max u v} κ)
-    (h4 : Cardinal.lift.{w} κ ≤ Cardinal.lift.{w'} (#M)) :
-    ∃ S : L.ElementarySubstructure M, s ⊆ S ∧ Cardinal.lift.{w'} (#S) = Cardinal.lift.{w} κ := by
+    (h4 : Cardinal.lift.{w} κ ≤ Cardinal.lift.{w'} #M) :
+    ∃ S : L.ElementarySubstructure M, s ⊆ S ∧ Cardinal.lift.{w'} #S = Cardinal.lift.{w} κ := by
   obtain ⟨s', hs'⟩ := Cardinal.le_mk_iff_exists_set.1 h4
   rw [← aleph0_le_lift.{_, w}] at h1
   rw [← hs'] at h1 h2 ⊢

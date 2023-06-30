@@ -709,7 +709,7 @@ variable {H : ι → Type _} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
 
 -- We need many groups or one group with many elements
-variable (hcard : 3 ≤ (#ι) ∨ ∃ i, 3 ≤ #(H i))
+variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type _} [MulAction G α]
