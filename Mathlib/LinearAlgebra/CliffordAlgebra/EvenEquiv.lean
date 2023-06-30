@@ -15,25 +15,25 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
 /-!
 # Isomorphisms with the even subalgebra of a Clifford algebra
 
-This file provides some notable isomorphisms regarding the even subalgebra, `clifford_algebra.even`.
+This file provides some notable isomorphisms regarding the even subalgebra, `CliffordAlgebra.even`.
 
 ## Main definitions
 
-* `clifford_algebra.equiv_even`: Every Clifford algebra is isomorphic as an algebra to the even
+* `CliffordAlgebra.equivEven`: Every Clifford algebra is isomorphic as an algebra to the even
   subalgebra of a Clifford algebra with one more dimension.
   * `clifford_algebra.even_equiv.Q'`: The quadratic form used by this "one-up" algebra.
-  * `clifford_algebra.to_even`: The simp-normal form of the forward direction of this isomorphism.
-  * `clifford_algebra.of_even`: The simp-normal form of the reverse direction of this isomorphism.
+  * `CliffordAlgebra.toEven`: The simp-normal form of the forward direction of this isomorphism.
+  * `CliffordAlgebra.ofEven`: The simp-normal form of the reverse direction of this isomorphism.
 
-* `clifford_algebra.even_equiv_even_neg`: Every even subalgebra is isomorphic to the even subalgebra
+* `CliffordAlgebra.evenEquivEvenNeg`: Every even subalgebra is isomorphic to the even subalgebra
   of the Clifford algebra with negated quadratic form.
-  * `clifford_algebra.even_to_neg`: The simp-normal form of each direction of this isomorphism.
+  * `CliffordAlgebra.evenToNeg`: The simp-normal form of each direction of this isomorphism.
 
 ## Main results
 
-* `clifford_algebra.coe_to_even_reverse_involute`: the behavior of `clifford_algebra.to_even` on the
-  "Clifford conjugate", that is `clifford_algebra.reverse` composed with
-  `clifford_algebra.involute`.
+* `CliffordAlgebra.coe_toEven_reverse_involute`: the behavior of `CliffordAlgebra.toEven` on the
+  "Clifford conjugate", that is `CliffordAlgebra.reverse` composed with
+  `CliffordAlgebra.involute`.
 -/
 
 
@@ -43,7 +43,7 @@ variable {R M : Type _} [CommRing R] [AddCommGroup M] [Module R M]
 
 variable (Q : QuadraticForm R M)
 
-/-! ### Constructions needed for `clifford_algebra.equiv_even` -/
+/-! ### Constructions needed for `CliffordAlgebra.equivEven` -/
 
 
 namespace EquivEven
@@ -244,10 +244,10 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   case h_add x y hx hy => simp only [map_add, Subalgebra.coe_add, hx, hy]
 #align clifford_algebra.coe_to_even_reverse_involute CliffordAlgebra.coe_toEven_reverse_involute
 
-/-! ### Constructions needed for `clifford_algebra.even_equiv_even_neg` -/
+/-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
 
-/-- One direction of `clifford_algebra.even_equiv_even_neg` -/
+/-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q
