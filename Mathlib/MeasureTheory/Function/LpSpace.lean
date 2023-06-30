@@ -860,7 +860,7 @@ def compMeasurePreserving (f : α → β) (hf : MeasurePreserving f μ μb) :
   map_add' := by rintro ⟨⟨_⟩, _⟩ ⟨⟨_⟩, _⟩; rfl
 
 @[simp]
-theorem compMeasurePresving_val (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
+theorem compMeasurePreserving_val (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
     (compMeasurePreserving f hf g).1 = g.1.compMeasurePreserving f hf :=
   rfl
 
