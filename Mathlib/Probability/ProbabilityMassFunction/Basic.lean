@@ -68,7 +68,7 @@ theorem hasSum_coe_one (p : Pmf α) : HasSum p 1 :=
 #align pmf.has_sum_coe_one Pmf.hasSum_coe_one
 
 @[simp]
-theorem tsum_coe (p : Pmf α) : (∑' a, p a) = 1 :=
+theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 :=
   p.hasSum_coe_one.tsum_eq
 #align pmf.tsum_coe Pmf.tsum_coe
 

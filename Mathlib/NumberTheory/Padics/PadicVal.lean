@@ -422,7 +422,7 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
   induction' n with d hd
   · exact False.elim (hn0 rfl)
   · rw [Finset.sum_range_succ] at hn0 ⊢
-    by_cases h : (∑ x : ℕ in Finset.range d, F x) = 0
+    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
