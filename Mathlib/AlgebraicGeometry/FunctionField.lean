@@ -84,15 +84,15 @@ theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : Opens X.carrier
 theorem genericPoint_eq_of_isOpenImmersionCat {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
-  apply ((genericPoint_spec _).eq _).symm
-  show T0Space Y.carrier; · infer_instance
-  convert (genericPoint_spec X.carrier).image (show Continuous f.1.base by continuity)
+  apply ((genericPoint_spec Y).eq _).symm
+  -- Porting note: the continuity argument used to be `by continuity`
+  convert (genericPoint_spec X.carrier).image
+    (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
   convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.open_range _
   rw [Set.univ_inter, Set.image_univ]
-  apply (config := { instances := false }) PreirreducibleSpace.isPreirreducible_univ
-  show PreirreducibleSpace Y.carrier; · infer_instance
+  apply PreirreducibleSpace.isPreirreducible_univ (α := Y.carrier)
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
 #align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersionCat
 
@@ -118,13 +118,18 @@ noncomputable instance (R : CommRingCat) [IsDomain R] :
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Scheme.Spec.obj <| op R).carrier = (⟨0, Ideal.bot_prime⟩ : PrimeSpectrum R) := by
   apply (genericPoint_spec (Scheme.Spec.obj <| op R).carrier).eq
-  simp [isGenericPoint_def, ← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure]
+  rw [isGenericPoint_def]
+  rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, PrimeSpectrum.vanishingIdeal_singleton]
+  rw [Set.top_eq_univ, ← PrimeSpectrum.zeroLocus_singleton_zero]
+  rfl
 #align algebraic_geometry.generic_point_eq_bot_of_affine AlgebraicGeometry.genericPoint_eq_bot_of_affine
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Scheme.Spec.obj <| op R).functionField := by
-  convert StructureSheaf.IsLocalization.to_stalk R _
+  convert StructureSheaf.IsLocalization.to_stalk R (genericPoint _)
   delta IsFractionRing IsLocalization.AtPrime
+  -- Porting note: `congr` does not work for `Iff`
+  apply Eq.to_iff
   congr 1
   rw [genericPoint_eq_bot_of_affine]
   ext
@@ -163,7 +168,7 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   haveI : IsIntegral (X.restrict U.openEmbedding) :=
     @isIntegralOfIsAffineIsDomain _ _ _
       (by dsimp; rw [Opens.openEmbedding_obj_top]; infer_instance)
-  have e : U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
+  have : U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
     ext1; exact Set.image_univ.trans Subtype.range_coe
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X.carrier, _⟩ using 1
