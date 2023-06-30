@@ -237,7 +237,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
       refine'
         ⟨interior (K (K'.find x + 3)),
           IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), _⟩
-      have : (⋃ k ≤ K'.find x + 2, range <| Sigma.mk k : Set (Σn, T' n)).Finite :=
+      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σn, T' n)).Finite :=
         (finite_le_nat _).biUnion fun k _ ↦ finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩

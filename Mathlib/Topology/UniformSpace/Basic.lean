@@ -149,7 +149,7 @@ def compRel (r₁ r₂ : Set (α × α)) :=
 #align comp_rel compRel
 
 @[inherit_doc]
-scoped[Uniformity] infixl:55 " ○ " => compRel
+scoped[Uniformity] infixl:62 " ○ " => compRel
 open Uniformity
 
 @[simp]
