@@ -226,7 +226,7 @@ theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :
 #align set.Union_neg Set.iUnion_neg
 
 @[to_additive (attr := simp)]
-theorem compl_inv : (sᶜ)⁻¹ = s⁻¹ᶜ :=
+theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 #align set.compl_inv Set.compl_inv
 #align set.compl_neg Set.compl_neg

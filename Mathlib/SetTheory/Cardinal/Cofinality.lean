@@ -128,7 +128,7 @@ def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ (#S) = c }.Nonempty :=
-  @Order.cof_nonempty α _ (IsRefl.swap (rᶜ))
+  @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 #align strict_order.cof_nonempty StrictOrder.cof_nonempty
 
 /-! ### Cofinality of ordinals -/
