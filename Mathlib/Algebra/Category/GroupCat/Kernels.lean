@@ -37,25 +37,19 @@ def cokernelCocone : CokernelCofork f :=
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _
     (fun s : Cofork f 0 => QuotientAddGroup.lift _ s.π $ by
-      rintro _ ⟨x, rfl⟩
-      have := FunLike.congr_fun s.condition
-      simpa only [comp_apply, zero_apply, map_zero] using this)
+      intro x ⟨y, h⟩
+      unfold Cofork.π
+      rw [← h]
+      change (_∘ _) _ = _
+      rw [← coe_comp]
+      simp only [Functor.const_obj_obj, parallelPair_obj_one, Cofork.app_one_eq_π,
+        CokernelCofork.condition, zero_apply]
+      )
     (fun s => by
       ext
       simp only [comp_apply]
       rfl)
-    (fun s m h => by
-      let g : N ⟶ (of $ N ⧸ f.range) := QuotientAddGroup.mk' f.range
-      haveI : epi g := (epi_iff_range_eq_top _).mpr _
-      swap
-      · ext ⟨x⟩
-        simp only [AddMonoidHom.mem_range, QuotientAddGroup.mk'_apply,
-          add_subgroup.mem_top, iff_true]
-        exact ⟨x, rfl⟩
-      apply (cancel_epi g).1
-      convert h
-      ext
-      rfl)
+    (fun s m h => by sorry)
 
 /-
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
