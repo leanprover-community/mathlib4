@@ -637,7 +637,7 @@ theorem universallyIsLocalAtTarget (P : MorphismProperty Scheme)
 theorem universallyIsLocalAtTargetOfMorphismRestrict (P : MorphismProperty Scheme)
     (hP₁ : P.RespectsIso)
     (hP₂ :
-      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier) (hU : iSup U = ⊤),
+      ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Opens Y.carrier) (_ : iSup U = ⊤),
         (∀ i, P (f ∣_ U i)) → P f) :
     PropertyIsLocalAtTarget P.universally :=
   universallyIsLocalAtTarget P
@@ -650,8 +650,8 @@ theorem universallyIsLocalAtTargetOfMorphismRestrict (P : MorphismProperty Schem
 
 /-- `topologically P` holds for a morphism if the underlying topological map satisfies `P`. -/
 def MorphismProperty.topologically
-    (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (f : α → β), Prop) :
-    MorphismProperty Scheme.{u} := fun X Y f => P f.1.base
+    (P : ∀ {α β : Type u} [TopologicalSpace α] [TopologicalSpace β] (_ : α → β), Prop) :
+    MorphismProperty Scheme.{u} := fun _ _ f => P f.1.base
 #align algebraic_geometry.morphism_property.topologically AlgebraicGeometry.MorphismProperty.topologically
 
 end AlgebraicGeometry
