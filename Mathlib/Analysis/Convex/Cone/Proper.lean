@@ -220,7 +220,7 @@ variable {E : Type _} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Complete
 @[simp]
 theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
   ProperCone.ext' <|
-    (K : ConvexCone ℝ E).innerDualCone_of_innerDualCone_eq_self K.Nonempty K.IsClosed
+    (K : ConvexCone ℝ E).innerDualCone_of_innerDualCone_eq_self K.nonempty' K.isClosed
 #align proper_cone.dual_dual ProperCone.dual_dual
 
 end CompleteSpace
