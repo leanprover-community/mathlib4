@@ -68,7 +68,8 @@ instance : Abelian AddCommGroupCat.{u} where
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
 
-theorem exact_iff : Exact f g ↔ f.range = g.ker := by
+theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
     ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
