@@ -9,6 +9,7 @@ Authors: Markus Himmel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Colimits
+import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.Algebra.Category.GroupCat.Kernels
 import Mathlib.Algebra.Category.GroupCat.Limits
 import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
@@ -28,9 +29,7 @@ noncomputable section
 
 namespace AddCommGroupCat
 
-section
-
-variable {X Y : AddCommGroupCat.{u}} (f : X ⟶ Y)
+variable {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- In the category of abelian groups, every monomorphism is normal. -/
 def normalMono (_ : Mono f) : NormalMono f :=
@@ -46,8 +45,6 @@ def normalEpi (_ : Epi f) : NormalEpi f :=
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.normal_epi AddCommGroupCat.normalEpi
 
-end
-
 /-- The category of abelian groups is abelian. -/
 instance : Abelian AddCommGroupCat.{u} where
   has_finite_products := ⟨HasFiniteProducts.out⟩
@@ -56,34 +53,34 @@ instance : Abelian AddCommGroupCat.{u} where
   add_comp := by exact Preadditive.add_comp
   comp_add := by exact Preadditive.comp_add
 
-variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
+variable {X Y Z : AddCommGroupCat.{u}}
 
-theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Exact f g ↔ f.range = g.ker := by
+theorem exact_iff : Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
     ⟨fun h => le_antisymm (range_le_ker_iff.mpr h.left) (ker_le_range_iff.mpr h.right),
       fun h => ⟨range_le_ker_iff.mp <| le_of_eq h, ker_le_range_iff.mp <| le_of_eq h.symm⟩⟩
 
-theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
+theorem exact_iff' : Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
   rw [exact_iff, le_antisymm_iff]
   exact and_congr ⟨fun h => ext fun x => h (AddMonoidHom.mem_range.mpr ⟨x, rfl⟩),
     by rintro h _ ⟨x, rfl⟩; exact FunLike.congr_fun h x⟩ Iff.rfl
 
-variable {J : Type u} [SmallCategory J] [IsFiltered J]
+lemma exact_of_exact_functor {F G H : J ⥤ AddCommGroupCat.{u}} {η : F ⟶ G} {γ : G ⟶ H}
+    (h : Exact η γ) (j : J) : Exact (η.app j) (γ.app j) := by
+  sorry
 
--- Axiom AB5 for `AddCommGroup`
-theorem exact_colim_of_exact_of_is_filtered
-  (F G H : J ⥤ AddCommGroupCat.{u}) (η : F ⟶ G) (γ : G ⟶ H) :
-  (∀ j, Exact (η.app j) (γ.app j)) → Exact (Limits.colimMap η) (Limits.colimMap γ) := by
-  intros h
+/-- The category of abelian groups is a Grothendieck category. -/
+instance : PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
+  apply Functor.preservesFiniteLimitsOfMapExact
+  intro F G H η γ h
+  replace h := exact_of_exact_functor h
   rw [exact_iff']
   constructor
   · refine colimit.hom_ext  (fun j => ?_)
     simp [reassoc_of% (h j).1]
   · rintro x (hx :  _ = _)
-    let (x' : (forget AddCommGroupCat).obj (colimit G)) := x
+    let x' : (forget AddCommGroupCat).obj (colimit G) := x
     obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep G x'
     erw [← comp_apply, Limits.colimit.ι_desc] at hx
     dsimp at hx
@@ -101,7 +98,7 @@ theorem exact_colim_of_exact_of_is_filtered
     have hk' : (G.map e₁ y) ∈ AddMonoidHom.ker (γ.app k) := by
       rw [AddMonoidHom.mem_ker]
       convert hk
-    obtain ⟨t, ht ⟩ := ((AddCommGroupCat.exact_iff' (η.app k) (γ.app k)).1 (h k)).2 hk'
+    obtain ⟨t, ht⟩ := ((AddCommGroupCat.exact_iff' (η.app k) (γ.app k)).1 (h k)).2 hk'
     use Limits.colimit.ι F k t
     erw [← comp_apply, Limits.colimit.ι_map, comp_apply, ht, ← comp_apply]
     congr 1

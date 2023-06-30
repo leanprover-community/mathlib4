@@ -10,13 +10,13 @@ namespace AddCommGroupCat
 variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
 
 -- TODO: relocate theorem
-theorem range_le_ker_iff {G H I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
+theorem range_le_ker_iff {G H I : AddCommGroupCat.{u}} {f : G ⟶ H} {g : H ⟶ I} :
     f.range ≤ g.ker ↔ g.comp f = 0 :=
   ⟨fun h => AddMonoidHom.ext fun x => h ⟨x, rfl⟩,
     by rintro h _ ⟨x', rfl⟩; exact FunLike.congr_fun h x'⟩
 
 -- TODO: relocate theorem
-theorem ker_le_range_iff {G H I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
+theorem ker_le_range_iff {G H I : AddCommGroupCat.{u}} {f : G ⟶ H} {g : H ⟶ I} :
    g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype = 0 :=
   ⟨fun h => AddMonoidHom.ext fun ⟨_, hx⟩ => (eq_zero_iff _).mpr <| h hx,
     fun h x hx => (eq_zero_iff _).mp <| by exact FunLike.congr_fun h ⟨x, hx⟩⟩
@@ -46,6 +46,7 @@ def cokernelCocone : CokernelCofork f :=
   CokernelCofork.ofπ (Z := of $ H ⧸ f.range) (mk' f.range) <| ext fun x =>
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
+-- TODO: relocate instance
 instance : Epi <| Cofork.π <| cokernelCocone f :=
   (epi_iff_surjective _).mpr <| mk'_surjective f.range
 
