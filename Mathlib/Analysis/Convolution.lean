@@ -15,6 +15,9 @@ import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Group.Prod
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.MeasureTheory.Covering.Differentiation
+import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 
 /-!
 # Convolution of functions
@@ -1028,6 +1031,26 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
+theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
+    (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0)) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
+    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀)
+    l (𝓝 (g x₀)) := by
+  have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) := sorry
+  let T := Besicovitch.vitaliFamily μ
+  filter_upwards [T.ae_tendsto_average_norm_sub hg] with x₀ h₀
+  have Z := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
+  simp only [Function.comp] at Z
+  change Tendsto (fun i ↦ ∫ (y : G), (φ i).normed μ y • g (x₀ - y) ∂μ) l (𝓝 (g x₀))
+
+
+  -- apply tendsto_integral_smul_of_tendsto_average_norm_sub Z
+
+
+#exit
+
+Tendsto (fun i ↦ ∫ (y : G), ?m.1816847 i y • g y ∂μ) l (𝓝 (g x₀))
+with
+  Tendsto (fun i ↦ (fun x ↦ ContDiffBump.normed (φ i) μ x) ⋆[lsmul ℝ ℝ, x₀] g) l (𝓝 (g x₀))
 end ContDiffBump
 
 end Measurability
