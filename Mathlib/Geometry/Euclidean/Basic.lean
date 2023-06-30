@@ -9,7 +9,7 @@ Authors: Joseph Myers, Manuel Candales
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Geometry.Euclidean.PerpendicularBisector
+import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
