@@ -8,10 +8,10 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RepresentationTheory.Rep
-import Mathbin.Algebra.Category.FgModule.Limits
-import Mathbin.CategoryTheory.Preadditive.Schur
-import Mathbin.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Rep
+import Mathlib.Algebra.Category.FgModule.Limits
+import Mathlib.CategoryTheory.Preadditive.Schur
+import Mathlib.RepresentationTheory.Basic
 
 /-!
 # `fdRep k G` is the category of finite dimensional `k`-linear representations of `G`.
@@ -84,8 +84,7 @@ def isoToLinearEquiv {V W : FdRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
 #align fdRep.iso_to_linear_equiv FdRep.isoToLinearEquiv
 
 theorem Iso.conj_ρ {V W : FdRep k G} (i : V ≅ W) (g : G) :
-    W.ρ g = (FdRep.isoToLinearEquiv i).conj (V.ρ g) :=
-  by
+    W.ρ g = (FdRep.isoToLinearEquiv i).conj (V.ρ g) := by
   rw [FdRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, iso.conj_apply]
   rw [iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
   exact (i.hom.comm g).symm
@@ -177,8 +176,7 @@ noncomputable def dualTensorIsoLinHomAux :
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dual_tensor_hom_equiv k V W` of vector spaces induces an isomorphism of representations. -/
-noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) :=
-  by
+noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) := by
   apply Action.mkIso (dual_tensor_iso_lin_hom_aux ρV W)
   convert dual_tensor_hom_comm ρV W.ρ
 #align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
