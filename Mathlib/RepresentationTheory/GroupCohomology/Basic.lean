@@ -116,7 +116,6 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
     simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
       smul_eq_mul, mul_comm r]
 #align inhomogeneous_cochains.d InhomogeneousCochains.d
-variable (M N : ModuleCat k)
 
 variable [Group G] (n) (A : Rep k G)
 
@@ -149,10 +148,8 @@ theorem d_eq :
       rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  rw [diagonalHomEquiv_apply]
-  change d n A f g = ((diagonalHomEquiv n A).symm f).hom
-    (((resolution k G).d (n + 1) n).hom (Finsupp.single (Fin.partialProd g) 1))
-  rw [Resolution.d_eq]
+  rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
+    Resolution.d_eq]
   erw [Resolution.d_of (Fin.partialProd g)]
   rw [LinearMap.map_sum]
   simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
@@ -174,20 +171,32 @@ namespace GroupCohomology
 variable [Group G] (n) (A : Rep k G)
 
 open InhomogeneousCochains
-set_option maxHeartbeats 1600000 in
+
+set_option maxHeartbeats 6400000 in
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => InhomogeneousCochains.d n A) fun n => by
-    sorry
-    /-ext x y
+/- Porting note: broken proof was
+    ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
     simp only [ModuleCat.coe_comp, Function.comp_apply] at this
     simp only [ModuleCat.coe_comp, Function.comp_apply, d_eq, LinearEquiv.toModuleIso_hom,
       LinearEquiv.toModuleIso_inv, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, this,
-      LinearMap.zero_apply, map_zero, Pi.zero_apply]-/
+      LinearMap.zero_apply, map_zero, Pi.zero_apply] -/
+    ext x
+    have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
+    simp only [ModuleCat.comp_def, LinearMap.comp_apply] at this
+    dsimp only
+    simp only [d_eq, LinearEquiv.toModuleIso_inv, LinearEquiv.toModuleIso_hom, ModuleCat.coe_comp,
+      Function.comp_apply]
+    /- Porting note: I can see I need to rewrite `LinearEquiv.coe_coe` twice to at
+      least reduce the need for `symm_apply_apply` to be an `erw`. However, even `erw` refuses to
+      rewrite the second `coe_coe`... -/
+    erw [LinearEquiv.symm_apply_apply, this]
+    exact map_zero _
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
