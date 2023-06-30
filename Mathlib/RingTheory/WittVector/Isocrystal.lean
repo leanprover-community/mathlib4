@@ -198,7 +198,10 @@ instance (m : ℤ) : Isocrystal p k (StandardOneDimIsocrystal p k m) where
 
 @[simp]
 theorem StandardOneDimIsocrystal.frobenius_apply (m : ℤ) (x : StandardOneDimIsocrystal p k m) :
-    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x :=
+    Φ(p, k) x = (p : K(p, k)) ^ m • φ(p, k) x := by
+  -- Porting note: was just `rfl`
+  erw [smul_eq_mul]
+  simp only [map_zpow₀, map_natCast]
   rfl
 #align witt_vector.standard_one_dim_isocrystal.frobenius_apply WittVector.StandardOneDimIsocrystal.frobenius_apply
 
@@ -233,13 +236,22 @@ theorem isocrystal_classification (k : Type _) [Field k] [IsAlgClosed k] [CharP 
   -- Porting note: `refine'` below gets confused when this is inlined.
   let E := (LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F
   refine' ⟨⟨E, _⟩⟩
+  simp only
   intro c
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
     LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
+  -- Porting note: was
+  -- simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
+  --   LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
+  rw [LinearEquiv.ofBijective_apply, LinearEquiv.ofBijective_apply]
+  erw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
   simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
     LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
+  -- Porting note: added the next two lines
+  erw [smul_eq_mul]
+  simp only [map_zpow₀, map_natCast]
   linear_combination φ(p, k) c * hmb
 #align witt_vector.isocrystal_classification WittVector.isocrystal_classification
 
