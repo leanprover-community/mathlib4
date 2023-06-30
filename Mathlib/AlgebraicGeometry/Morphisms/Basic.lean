@@ -157,10 +157,14 @@ theorem targetAffineLocally_respectsIso {P : AffineTargetMorphismProperty}
   then `P` holds for `f`.
 -/
 structure AffineTargetMorphismProperty.IsLocal (P : AffineTargetMorphismProperty) : Prop where
+  /-- `P` as a morphism property respects isomorphisms -/
   RespectsIso : P.toProperty.RespectsIso
+  /-- `P` is stable under restriction to basic open set of global sections. -/
   toBasicOpen :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj <| op ⊤),
       P f → @P _ _ (f ∣_ Y.basicOpen r) ((topIsAffineOpen Y).basicOpenIsAffine _)
+  /-- `P` for `f` if `P` holds for `f` restricted to basic sets of a spanning set of the global
+    sections -/
   ofBasicOpenCover :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset (Y.presheaf.obj <| op ⊤))
       (_ : Ideal.span (s : Set (Y.presheaf.obj <| op ⊤)) = ⊤),
@@ -340,8 +344,11 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_target_iff {P : AffineTarget
 3. If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.
 -/
 structure PropertyIsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
+  /-- `P` respects isomorphisms. -/
   RespectsIso : P.RespectsIso
+  /-- If `P` holds for `f : X ⟶ Y`, then `P` holds for `f ∣_ U` for any `U`. -/
   restrict : ∀ {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier), P f → P (f ∣_ U)
+  /-- If `P` holds for `f ∣_ U` for an open cover `U` of `Y`, then `P` holds for `f`.  -/
   of_openCover :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
       (∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i)) → P f
