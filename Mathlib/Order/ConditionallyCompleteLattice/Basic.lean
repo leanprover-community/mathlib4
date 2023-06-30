@@ -121,7 +121,7 @@ theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove 
 -- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iSup [Preorder α] [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
-    ↑⨆ i, f i = (⨆ i, f i : WithTop α) := by
+    ↑(⨆ i, f i = (⨆ i, f i : WithTop α) := by
     rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
 #align with_top.coe_supr WithTop.coe_iSup
 
@@ -144,7 +144,7 @@ theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) :
 
 @[norm_cast]
 theorem WithBot.coe_iSup [Nonempty ι] [SupSet α] (f : ι → α) :
-    ↑⨆ i, f i = (⨆ i, f i : WithBot α) :=
+    ↑(⨆ i, f i) = (⨆ i, f i : WithBot α) :=
   @WithTop.coe_iInf αᵒᵈ _ _ _ _
 #align with_bot.coe_supr WithBot.coe_iSup
 
@@ -156,7 +156,7 @@ theorem WithBot.coe_sInf' [Preorder α] [InfSet α] {s : Set α} (hs : BddBelow 
 
 @[norm_cast]
 theorem WithBot.coe_iInf [Preorder α] [InfSet α] (f : ι → α) (h : BddBelow (Set.range f)) :
-    ↑⨅ i, f i = (⨅ i, f i : WithBot α) :=
+    ↑(⨅ i, f i) = (⨅ i, f i : WithBot α) :=
   @WithTop.coe_iSup αᵒᵈ _ _ _ _ h
 #align with_bot.coe_infi WithBot.coe_iInf
 

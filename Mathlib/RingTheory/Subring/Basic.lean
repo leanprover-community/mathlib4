@@ -733,7 +733,7 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 #align subring.mem_Inf Subring.mem_sInf
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → Subring R} : (↑⨅ i, S i : Set R) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort _} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align subring.coe_infi Subring.coe_iInf
 

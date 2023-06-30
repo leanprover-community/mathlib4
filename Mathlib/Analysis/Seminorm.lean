@@ -609,7 +609,7 @@ protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
 #align seminorm.coe_Sup_eq Seminorm.coe_sSup_eq
 
 protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) :
-    ↑⨆ i, p i = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
+    ↑(⨆ i, p i) = ⨆ i, ((p i : Seminorm 𝕜 E) : E → ℝ) := by
   rw [← sSup_range, Seminorm.coe_sSup_eq hp]
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
 #align seminorm.coe_supr_eq Seminorm.coe_iSup_eq
