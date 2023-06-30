@@ -1960,7 +1960,7 @@ variable {E : Type _} [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurabl
 theorem univ_le_of_forall_fin_meas_le {μ : Measure α} (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
     (C : ℝ≥0∞) {f : Set α → ℝ≥0∞} (hf : ∀ s, MeasurableSet[m] s → μ s ≠ ∞ → f s ≤ C)
     (h_F_lim :
-      ∀ S : ℕ → Set α, (∀ n, MeasurableSet[m] (S n)) → Monotone S → f ⋃ n, S n ≤ ⨆ n, f (S n)) :
+      ∀ S : ℕ → Set α, (∀ n, MeasurableSet[m] (S n)) → Monotone S → f (⋃ n, S n) ≤ ⨆ n, f (S n)) :
     f univ ≤ C := by
   let S := @spanningSets _ m (μ.trim hm) _
   have hS_mono : Monotone S := @monotone_spanningSets _ m (μ.trim hm) _
