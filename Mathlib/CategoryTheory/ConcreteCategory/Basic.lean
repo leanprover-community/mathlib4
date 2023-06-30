@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 
 ! This file was ported from Lean 3 source module category_theory.concrete_category.basic
-! leanprover-community/mathlib commit 05b820ec79b3c98a7dbf1cb32e181584166da2ca
+! leanprover-community/mathlib commit 311ef8c4b4ae2804ea76b8a611bc5ea1d9c16872
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
