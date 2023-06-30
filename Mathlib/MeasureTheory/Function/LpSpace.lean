@@ -1437,7 +1437,7 @@ theorem ae_tendsto_of_cauchy_snorm' [CompleteSpace E] {f : ℕ → α → E} {p 
       atTop.Tendsto (fun n => ∑ i in Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by
     refine' h_summable.mono fun x hx => _
     let hx_sum := hx.hasSum.tendsto_sum_nat
-    exact ⟨∑' i, f (i + 1) x - f i x, hx_sum⟩
+    exact ⟨∑' i, (f (i + 1) x - f i x), hx_sum⟩
   refine' h.mono fun x hx => _
   cases' hx with l hx
   have h_rw_sum :
