@@ -53,39 +53,41 @@ section Scripts
 
 open System
 
-def getCurrentPackage : ScriptM Package := do
-  let ws ← Lake.getWorkspace
-  let [pkg] := ws.packageList.filter (·.dir = ⟨"."⟩) | throw <| IO.userError "Current package not found."
-  return pkg
-
-def importsForLib (lib : Name) : IO String := do
-  let dir ← FilePath.walkDir lib.toString >>= Array.filterM (not <$> ·.isDir)
-  let filePathToImport : FilePath → String := fun fp ↦ fp.toString.takeWhile (· != FilePath.extSeparator) |>.map <|
-    fun c ↦ if c = FilePath.pathSeparator then '.' else c
-  let imports := dir.foldl (init := "") <| fun s f ↦ s ++ s!"import {filePathToImport f}\n"
+def importsForLib (dir : FilePath) (root : Name) : IO String := do
+  let files ← FilePath.walkDir (dir / root.toString) >>= Array.filterM (not <$> ·.isDir)
+  let filePathToImport (fp : FilePath) : String := fp.toString
+    |>.drop dir.toString.length.succ
+    |>.takeWhile (· != FilePath.extSeparator)
+    |>.map <| fun c ↦ if c = FilePath.pathSeparator then '.' else c
+  let imports := files.foldl (init := "") <| fun s f ↦
+    s ++ s!"import {filePathToImport f}\n"
   return imports
 
 script import_all do
-  let pkg ← getCurrentPackage
+  let pkg ← Workspace.root <$> getWorkspace
   IO.println s!"Creating imports for package {pkg.name} ...\n"
-  for (lib, _) in pkg.leanLibConfigs do
-    let fileName : FilePath := lib.toString ++ ".lean"
-    let imports ← importsForLib lib
-    IO.FS.writeFile fileName imports
-    IO.println s!"Created imports file for {lib} library."
+  for lib in pkg.leanLibs do
+    for root in lib.config.roots do
+      let dir := lib.srcDir.normalize
+      let fileName : FilePath := dir / (root.toString ++ ".lean")
+      let imports ← importsForLib dir root
+      IO.FS.writeFile fileName imports
+      IO.println s!"Created imports file {fileName} for {root} library."
   return 0
 
 script import_all? do
-  let pkg ← getCurrentPackage
+  let pkg ← Workspace.root <$> getWorkspace
   IO.println s!"Checking imports for package {pkg.name} ...\n"
-  for (lib, _) in pkg.leanLibConfigs do
-    let fileName : FilePath := lib.toString ++ ".lean"
-    let allImports ← importsForLib lib
-    let existingImports ← IO.FS.readFile fileName
-    unless existingImports = allImports do
-      IO.eprintln s!"Invalid import list for {lib} library."
-      IO.eprintln s!"Try running `lake run import_all`."
-      return 1
+  for lib in pkg.leanLibs do
+    for root in lib.config.roots do
+      let dir := lib.srcDir.normalize
+      let fileName : FilePath := dir / (root.toString ++ ".lean")
+      let allImports ← importsForLib dir root
+      let existingImports ← IO.FS.readFile fileName
+      unless existingImports == allImports do
+        IO.eprintln s!"Invalid import list for {root} library."
+        IO.eprintln s!"Try running `lake run mkImports`."
+        return 1
   IO.println s!"The imports for package {pkg.name} are up to date."
   return 0
 
