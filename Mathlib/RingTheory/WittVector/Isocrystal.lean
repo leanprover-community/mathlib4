@@ -15,7 +15,7 @@ import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 ## F-isocrystals over a perfect field
 
 When `k` is an integral domain, so is `𝕎 k`, and we can consider its field of fractions `K(p, k)`.
-The endomorphism `witt_vector.frobenius` lifts to `φ : K(p, k) → K(p, k)`; if `k` is perfect, `φ` is
+The endomorphism `WittVector.frobenius` lifts to `φ : K(p, k) → K(p, k)`; if `k` is perfect, `φ` is
 an automorphism.
 
 Let `k` be a perfect integral domain. Let `V` be a vector space over `K(p,k)`.
@@ -31,21 +31,21 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Main declarations
 
-* `witt_vector.isocrystal`: a vector space over the field `K(p, k)` additionally equipped with a
+* `WittVector.Isocrystal`: a vector space over the field `K(p, k)` additionally equipped with a
   Frobenius-linear automorphism.
-* `witt_vector.isocrystal_classification`: a one-dimensional isocrystal admits an isomorphism to one
+* `WittVector.isocrystal_classification`: a one-dimensional isocrystal admits an isomorphism to one
   of the standard one-dimensional isocrystals.
 
 ## Notation
 
 This file introduces notation in the locale `isocrystal`.
-* `K(p, k)`: `fraction_ring (witt_vector p k)`
-* `φ(p, k)`: `witt_vector.fraction_ring.frobenius_ring_hom p k`
-* `M →ᶠˡ[p, k] M₂`: `linear_map (witt_vector.fraction_ring.frobenius_ring_hom p k) M M₂`
-* `M ≃ᶠˡ[p, k] M₂`: `linear_equiv (witt_vector.fraction_ring.frobenius_ring_hom p k) M M₂`
-* `Φ(p, k)`: `witt_vector.isocrystal.frobenius p k`
-* `M →ᶠⁱ[p, k] M₂`: `witt_vector.isocrystal_hom p k M M₂`
-* `M ≃ᶠⁱ[p, k] M₂`: `witt_vector.isocrystal_equiv p k M M₂`
+* `K(p, k)`: `FractionRing (WittVector p k)`
+* `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
+* `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
+* `M ≃ᶠˡ[p, k] M₂`: `LinearEquiv (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
+* `Φ(p, k)`: `WittVector.Isocrystal.frobenius p k`
+* `M →ᶠⁱ[p, k] M₂`: `WittVector.IsocrystalHom p k M M₂`
+* `M ≃ᶠⁱ[p, k] M₂`: `WittVector.IsocrystalEquiv p k M M₂`
 
 ## References
 
