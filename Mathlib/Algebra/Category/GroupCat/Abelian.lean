@@ -67,6 +67,10 @@ instance : Abelian AddCommGroupCat.{u} where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
+variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
+
+def ker_le_range_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
+   g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype  = 0 := by sorry
 
 theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Exact f g ↔ f.range = g.ker := by
