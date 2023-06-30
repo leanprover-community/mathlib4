@@ -870,7 +870,7 @@ protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = �
   | ⟨a, ha⟩ => top_unique <| ha ▸ ENNReal.le_tsum a
 #align ennreal.tsum_eq_top_of_eq_top ENNReal.tsum_eq_top_of_eq_top
 
-protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : (∑' i, a i) ≠ ∞) (j : α) :
+protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞) (j : α) :
     a j < ∞ := by
   contrapose! tsum_ne_top with h
   exact ENNReal.tsum_eq_top_of_eq_top ⟨j, top_unique h⟩
@@ -893,7 +893,7 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type _} [Infinite α] {c : ℝ≥0∞
   simpa [hc] using le_of_tendsto' A B
 #align ennreal.tsum_const_eq_top_of_ne_zero ENNReal.tsum_const_eq_top_of_ne_zero
 
-protected theorem ne_top_of_tsum_ne_top (h : (∑' a, f a) ≠ ∞) (a : α) : f a ≠ ∞ := fun ha =>
+protected theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a ≠ ∞ := fun ha =>
   h <| ENNReal.tsum_eq_top_of_eq_top ⟨a, ha⟩
 #align ennreal.ne_top_of_tsum_ne_top ENNReal.ne_top_of_tsum_ne_top
 
@@ -935,17 +935,17 @@ theorem tendsto_nat_tsum (f : ℕ → ℝ≥0∞) :
   exact ENNReal.summable.hasSum
 #align ennreal.tendsto_nat_tsum ENNReal.tendsto_nat_tsum
 
-theorem toNNReal_apply_of_tsum_ne_top {α : Type _} {f : α → ℝ≥0∞} (hf : (∑' i, f i) ≠ ∞) (x : α) :
+theorem toNNReal_apply_of_tsum_ne_top {α : Type _} {f : α → ℝ≥0∞} (hf : ∑' i, f i ≠ ∞) (x : α) :
     (((ENNReal.toNNReal ∘ f) x : ℝ≥0) : ℝ≥0∞) = f x :=
   coe_toNNReal <| ENNReal.ne_top_of_tsum_ne_top hf _
 #align ennreal.to_nnreal_apply_of_tsum_ne_top ENNReal.toNNReal_apply_of_tsum_ne_top
 
-theorem summable_toNNReal_of_tsum_ne_top {α : Type _} {f : α → ℝ≥0∞} (hf : (∑' i, f i) ≠ ∞) :
+theorem summable_toNNReal_of_tsum_ne_top {α : Type _} {f : α → ℝ≥0∞} (hf : ∑' i, f i ≠ ∞) :
     Summable (ENNReal.toNNReal ∘ f) := by
   simpa only [← tsum_coe_ne_top_iff_summable, toNNReal_apply_of_tsum_ne_top hf] using hf
 #align ennreal.summable_to_nnreal_of_tsum_ne_top ENNReal.summable_toNNReal_of_tsum_ne_top
 
-theorem tendsto_cofinite_zero_of_tsum_ne_top {α} {f : α → ℝ≥0∞} (hf : (∑' x, f x) ≠ ∞) :
+theorem tendsto_cofinite_zero_of_tsum_ne_top {α} {f : α → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto f cofinite (𝓝 0) := by
   have f_ne_top : ∀ n, f n ≠ ∞ := ENNReal.ne_top_of_tsum_ne_top hf
   have h_f_coe : f = fun n => ((f n).toNNReal : ENNReal) :=
@@ -954,7 +954,7 @@ theorem tendsto_cofinite_zero_of_tsum_ne_top {α} {f : α → ℝ≥0∞} (hf : 
   exact NNReal.tendsto_cofinite_zero_of_summable (summable_toNNReal_of_tsum_ne_top hf)
 #align ennreal.tendsto_cofinite_zero_of_tsum_ne_top ENNReal.tendsto_cofinite_zero_of_tsum_ne_top
 
-theorem tendsto_atTop_zero_of_tsum_ne_top {f : ℕ → ℝ≥0∞} (hf : (∑' x, f x) ≠ ∞) :
+theorem tendsto_atTop_zero_of_tsum_ne_top {f : ℕ → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto f atTop (𝓝 0) := by
   rw [← Nat.cofinite_eq_atTop]
   exact tendsto_cofinite_zero_of_tsum_ne_top hf
@@ -962,7 +962,7 @@ theorem tendsto_atTop_zero_of_tsum_ne_top {f : ℕ → ℝ≥0∞} (hf : (∑' x
 
 /-- The sum over the complement of a finset tends to `0` when the finset grows to cover the whole
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
-theorem tendsto_tsum_compl_atTop_zero {α : Type _} {f : α → ℝ≥0∞} (hf : (∑' x, f x) ≠ ∞) :
+theorem tendsto_tsum_compl_atTop_zero {α : Type _} {f : α → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   convert ENNReal.tendsto_coe.2 (NNReal.tendsto_tsum_compl_atTop_zero f)
@@ -1080,14 +1080,14 @@ theorem tsum_coe_eq_top_iff_not_summable_coe {f : α → ℝ≥0} :
   tsum_coe_ne_top_iff_summable_coe.not_right
 #align ennreal.tsum_coe_eq_top_iff_not_summable_coe ENNReal.tsum_coe_eq_top_iff_not_summable_coe
 
-theorem hasSum_toReal {f : α → ℝ≥0∞} (hsum : (∑' x, f x) ≠ ∞) :
+theorem hasSum_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) :
     HasSum (fun x => (f x).toReal) (∑' x, (f x).toReal) := by
   lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hsum
   simp only [coe_toReal, ← NNReal.coe_tsum, NNReal.hasSum_coe]
   exact (tsum_coe_ne_top_iff_summable.1 hsum).hasSum
 #align ennreal.has_sum_to_real ENNReal.hasSum_toReal
 
-theorem summable_toReal {f : α → ℝ≥0∞} (hsum : (∑' x, f x) ≠ ∞) : Summable fun x => (f x).toReal :=
+theorem summable_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) : Summable fun x => (f x).toReal :=
   (hasSum_toReal hsum).summable
 #align ennreal.summable_to_real ENNReal.summable_toReal
 
@@ -1249,7 +1249,7 @@ theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
   simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
 #align ennreal.tsum_to_real_eq ENNReal.tsum_toReal_eq
 
-theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : (∑' i, f i) ≠ ∞) :
+theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf

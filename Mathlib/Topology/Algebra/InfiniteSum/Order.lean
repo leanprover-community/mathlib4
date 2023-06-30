@@ -214,7 +214,7 @@ theorem tsum_eq_zero_iff (hf : Summable f) : ∑' i, f i = 0 ↔ ∀ x, f x = 0 
   rw [← hasSum_zero_iff, hf.hasSum_iff]
 #align tsum_eq_zero_iff tsum_eq_zero_iff
 
-theorem tsum_ne_zero_iff (hf : Summable f) : (∑' i, f i) ≠ 0 ↔ ∃ x, f x ≠ 0 := by
+theorem tsum_ne_zero_iff (hf : Summable f) : ∑' i, f i ≠ 0 ↔ ∃ x, f x ≠ 0 := by
   rw [Ne.def, tsum_eq_zero_iff hf, not_forall]
 #align tsum_ne_zero_iff tsum_ne_zero_iff
 

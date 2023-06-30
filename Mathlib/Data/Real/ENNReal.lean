@@ -1248,7 +1248,7 @@ theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ x in s, f x
   WithTop.sum_eq_top_iff
 #align ennreal.sum_eq_top_iff ENNReal.sum_eq_top_iff
 
-theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : (∑ x in s, f x) ≠ ∞) {a : α}
+theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x in s, f x ≠ ∞) {a : α}
     (ha : a ∈ s) : f a < ∞ :=
   sum_lt_top_iff.1 h.lt_top a ha
 #align ennreal.lt_top_of_sum_ne_top ENNReal.lt_top_of_sum_ne_top

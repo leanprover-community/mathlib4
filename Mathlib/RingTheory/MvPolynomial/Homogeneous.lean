@@ -166,7 +166,7 @@ namespace IsHomogeneous
 
 variable [CommSemiring R] {φ ψ : MvPolynomial σ R} {m n : ℕ}
 
-theorem coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : (∑ i in d.support, d i) ≠ n) :
+theorem coeff_eq_zero (hφ : IsHomogeneous φ n) (d : σ →₀ ℕ) (hd : ∑ i in d.support, d i ≠ n) :
     coeff d φ = 0 := by
   have aux := mt (@hφ d) hd
   classical
@@ -290,7 +290,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_polynomial.homogeneous_component_C_mul MvPolynomial.homogeneousComponent_C_mul
 
 theorem homogeneousComponent_eq_zero'
-    (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → (∑ i in d.support, d i) ≠ n) :
+    (h : ∀ d : σ →₀ ℕ, d ∈ φ.support → ∑ i in d.support, d i ≠ n) :
     homogeneousComponent n φ = 0 := by
   rw [homogeneousComponent_apply, sum_eq_zero]
   intro d hd; rw [mem_filter] at hd

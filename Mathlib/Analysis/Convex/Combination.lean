@@ -59,7 +59,7 @@ theorem Finset.centerMass_pair (hne : i ≠ j) :
 
 variable {w}
 
-theorem Finset.centerMass_insert (ha : i ∉ t) (hw : (∑ j in t, w j) ≠ 0) :
+theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j in t, w j ≠ 0) :
     (insert i t).centerMass w z =
       (w i / (w i + ∑ j in t, w j)) • z i +
         ((∑ j in t, w j) / (w i + ∑ j in t, w j)) • t.centerMass w z := by

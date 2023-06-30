@@ -541,7 +541,7 @@ theorem geom_sum_pos_iff [LinearOrderedRing α] (hn : n ≠ 0) :
 #align geom_sum_pos_iff geom_sum_pos_iff
 
 theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
-    (∑ i in range n, x ^ i) ≠ 0 := by
+    ∑ i in range n, x ^ i ≠ 0 := by
   obtain _ | _ | n := n
   · cases hn rfl
   · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, range_one, sum_singleton, pow_zero, ne_eq,

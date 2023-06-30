@@ -72,11 +72,11 @@ theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 :=
   p.hasSum_coe_one.tsum_eq
 #align pmf.tsum_coe Pmf.tsum_coe
 
-theorem tsum_coe_ne_top (p : Pmf α) : (∑' a, p a) ≠ ∞ :=
+theorem tsum_coe_ne_top (p : Pmf α) : ∑' a, p a ≠ ∞ :=
   p.tsum_coe.symm ▸ ENNReal.one_ne_top
 #align pmf.tsum_coe_ne_top Pmf.tsum_coe_ne_top
 
-theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : (∑' a, s.indicator p a) ≠ ∞ :=
+theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : ∑' a, s.indicator p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt
     (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
       ENNReal.summable)

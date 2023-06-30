@@ -660,7 +660,7 @@ theorem finprod_mem_of_eqOn_one (hf : s.EqOn f 1) : ∏ᶠ i ∈ s, f i = 1 := b
 @[to_additive
       "If the product of `f i` over `i ∈ s` is not equal to `0`, then there is some `x ∈ s`
       such that `f x ≠ 0`."]
-theorem exists_ne_one_of_finprod_mem_ne_one (h : (∏ᶠ i ∈ s, f i) ≠ 1) : ∃ x ∈ s, f x ≠ 1 := by
+theorem exists_ne_one_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : ∃ x ∈ s, f x ≠ 1 := by
   by_contra' h'
   exact h (finprod_mem_of_eqOn_one h')
 #align exists_ne_one_of_finprod_mem_ne_one exists_ne_one_of_finprod_mem_ne_one
@@ -752,7 +752,7 @@ theorem finprod_mem_empty : (∏ᶠ i ∈ (∅ : Set α), f i) = 1 := by simp
 
 /-- A set `s` is nonempty if the product of some function over `s` is not equal to `1`. -/
 @[to_additive "A set `s` is nonempty if the sum of some function over `s` is not equal to `0`."]
-theorem nonempty_of_finprod_mem_ne_one (h : (∏ᶠ i ∈ s, f i) ≠ 1) : s.Nonempty :=
+theorem nonempty_of_finprod_mem_ne_one (h : ∏ᶠ i ∈ s, f i ≠ 1) : s.Nonempty :=
   nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ finprod_mem_empty
 #align nonempty_of_finprod_mem_ne_one nonempty_of_finprod_mem_ne_one
 #align nonempty_of_finsum_mem_ne_zero nonempty_of_finsum_mem_ne_zero

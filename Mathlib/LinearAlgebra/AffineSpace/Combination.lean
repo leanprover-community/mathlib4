@@ -1019,7 +1019,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     (h : ∑ i in s, w i = 1) (p : ι → P) :
     s.affineCombination k p w ∈ affineSpan k (Set.range p) := by
   classical
-    have hnz : (∑ i in s, w i) ≠ 0 := h.symm ▸ one_ne_zero
+    have hnz : ∑ i in s, w i ≠ 0 := h.symm ▸ one_ne_zero
     have hn : s.Nonempty := Finset.nonempty_of_sum_ne_zero hnz
     cases' hn with i1 hi1
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1

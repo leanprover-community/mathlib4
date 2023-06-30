@@ -257,7 +257,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
     intro h_top_rpow_sum _
     -- show hypotheses needed to put the `.toNNReal` inside the sums.
     have h_top : ∀ a : ι, a ∈ s → w a * z a ≠ ⊤ :=
-      haveI h_top_sum : (∑ i : ι in s, w i * z i) ≠ ⊤ := by
+      haveI h_top_sum : ∑ i : ι in s, w i * z i ≠ ⊤ := by
         intro h
         rw [h, top_rpow_of_pos hp_pos] at h_top_rpow_sum
         exact h_top_rpow_sum rfl
