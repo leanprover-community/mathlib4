@@ -363,7 +363,7 @@ nonrec def domDomCongr {ι' : Type _} (e : ι ≃ ι')
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
 multilinear maps. In case of normed spaces, this is a linear isometric equivalence, see
-`continuous.multilinear_map.dom_dom_congrₗᵢ`. -/
+`ContinuousMultilinearMap.domDomCongrₗᵢ`. -/
 @[simps]
 def domDomCongrEquiv {ι' : Type _} (e : ι ≃ ι') :
     ContinuousMultilinearMap R (fun _ : ι => M₂) M₃ ≃

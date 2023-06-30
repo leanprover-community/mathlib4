@@ -514,11 +514,11 @@ theorem norm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton �
 @[simp]
 theorem norm_ofSubsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
     ‖ofSubsingleton 𝕜 G i'‖ = 1 := by
-  apply le_antisymm (norm_of_subsingleton_le 𝕜 G i')
+  apply le_antisymm (norm_ofSubsingleton_le 𝕜 G i')
   obtain ⟨g, hg⟩ := exists_ne (0 : G)
   rw [← norm_ne_zero_iff] at hg
-  have := (of_subsingleton 𝕜 G i').ratio_le_op_norm fun _ => g
-  rwa [Fintype.prod_subsingleton _ i', of_subsingleton_apply, div_self hg] at this
+  have := (ofSubsingleton 𝕜 G i').ratio_le_op_norm fun _ => g
+  rwa [Fintype.prod_subsingleton _ i', ofSubsingleton_apply, div_self hg] at this
 #align continuous_multilinear_map.norm_of_subsingleton ContinuousMultilinearMap.norm_ofSubsingleton
 
 theorem nnnorm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖₊ ≤ 1 :=
@@ -601,7 +601,7 @@ theorem norm_restrictScalars : ‖f.restrictScalars 𝕜'‖ = ‖f‖ := rfl
 
 variable (𝕜')
 
-/-- `continuous_multilinear_map.restrict_scalars` as a `linear_isometry`. -/
+/-- `ContinuousMultilinearMap.restrictScalars` as a `LinearIsometry`. -/
 def restrictScalarsₗᵢ : ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] ContinuousMultilinearMap 𝕜' E G where
   toFun := restrictScalars 𝕜'
   map_add' _ _ := rfl
@@ -1762,7 +1762,7 @@ variable (𝕜 G G')
 theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :
     ‖@domDomCongr 𝕜 ι G G' _ _ _ _ _ _ _ ι' σ f‖ = ‖f‖ := by
   simp only [norm_def, LinearEquiv.coe_mk, ← σ.prod_comp,
-    (σ.arrow_congr (Equiv.refl G)).Surjective.forall, dom_dom_congr_apply, Equiv.arrowCongr_apply,
+    (σ.arrowCongr (Equiv.refl G)).surjective.forall, domDomCongr_apply, Equiv.arrowCongr_apply,
     Equiv.coe_refl, comp.left_id, comp_app, Equiv.symm_apply_apply, id]
 #align continuous_multilinear_map.norm_dom_dom_congr ContinuousMultilinearMap.norm_domDomCongr
 
