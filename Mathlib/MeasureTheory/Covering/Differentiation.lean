@@ -957,7 +957,10 @@ end
 
 end VitaliFamily
 
-theorem glouglou [NormedSpace ℝ E] [CompleteSpace E]
+/-- If the average of a function `f` along a sequence of sets `aₙ` converges to `c` (formally, we
+require that `⨍ y in a i, ‖f y - c‖ ∂μ` tends to `0`), then the integral of `gₙ • f` also tends to
+`c` if `gₙ` is supported in `aₙ`, has integral one and supremum bounded by `K/μ aₙ`. -/
+theorem tendsto_integral_smul_of_tendsto_average_norm_sub [NormedSpace ℝ E] [CompleteSpace E]
     {ι : Type _} {a : ι → Set α} {l : Filter ι} {f : α → E} {c : E} {g : ι → α → ℝ} {K : ℝ}
     (hf : Tendsto (fun i ↦ ⨍ y in a i, ‖f y - c‖ ∂μ) l (𝓝 0))
     (f_int : ∀ᶠ i in l, IntegrableOn f (a i) μ)
@@ -965,6 +968,16 @@ theorem glouglou [NormedSpace ℝ E] [CompleteSpace E]
     (g_supp : ∀ᶠ i in l, Function.support (g i) ⊆ a i)
     (g_bound : ∀ᶠ i in l, ∀ x, |g i x| ≤ K / (μ (a i)).toReal) :
     Tendsto (fun i ↦ ∫ y, g i y • f y ∂μ) l (𝓝 c) := by
+
+  have L0 : Tendsto (fun i ↦ ∫ y, ‖g i y‖ * ‖f y - c‖ ∂μ) l (𝓝 0) := by
+    -- have Z := set_integral_eq_integral_of_forall_compl_eq_zero
+    have Z := hf.const_mul K
+    simp only [mul_zero] at Z
+    refine' squeeze_zero_norm (fun n ↦ _) Z
+
+
+#exit
+
   have g_int : ∀ᶠ i in l, Integrable (g i) μ := by
     filter_upwards [(tendsto_order.1 hg).1 _ zero_lt_one] with i hi
     contrapose hi
