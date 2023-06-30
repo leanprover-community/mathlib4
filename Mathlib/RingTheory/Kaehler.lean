@@ -34,7 +34,7 @@ import Mathlib.RingTheory.IsTensorProduct
 
 ## Future project
 
-- Define a `IsKaehlerDifferential` predicate.
+- Define the `IsKaehlerDifferential` predicate.
 -/
 
 
