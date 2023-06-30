@@ -65,7 +65,7 @@ theorem card_functions_sum_skolem₁ :
       (Sigma.mk.inj_iff.1 xy).1)
 #align first_order.language.card_functions_sum_skolem₁ FirstOrder.Language.card_functions_sum_skolem₁
 
-theorem card_functions_sum_skolem₁_le : #(Σn, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
+theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
   rw [card_functions_sum_skolem₁]
   trans #Σ n, L.BoundedFormula Empty n
   · exact
