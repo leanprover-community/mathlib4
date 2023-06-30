@@ -852,7 +852,7 @@ def Scheme.OpenCover.pullbackCover {X : Scheme} (𝒰 : X.OpenCover) {W : Scheme
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
 theorem Scheme.OpenCover.iUnion_range {X : Scheme} (𝒰 : X.OpenCover) :
-    (⋃ i, Set.range (𝒰.map i).1.base) = Set.univ := by
+    ⋃ i, Set.range (𝒰.map i).1.base = Set.univ := by
   rw [Set.eq_univ_iff_forall]
   intro x
   rw [Set.mem_iUnion]
@@ -860,7 +860,7 @@ theorem Scheme.OpenCover.iUnion_range {X : Scheme} (𝒰 : X.OpenCover) :
 #align algebraic_geometry.Scheme.open_cover.Union_range AlgebraicGeometry.Scheme.OpenCover.iUnion_range
 
 theorem Scheme.OpenCover.iSup_opensRange {X : Scheme} (𝒰 : X.OpenCover) :
-    (⨆ i, Scheme.Hom.opensRange (𝒰.map i)) = ⊤ :=
+    ⨆ i, Scheme.Hom.opensRange (𝒰.map i) = ⊤ :=
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 #align algebraic_geometry.Scheme.open_cover.supr_opens_range AlgebraicGeometry.Scheme.OpenCover.iSup_opensRange
 
@@ -897,7 +897,7 @@ def Scheme.OpenCover.inter {X : Scheme.{u}} (𝒰₁ : Scheme.OpenCover.{v₁} X
 /-- If `U` is a family of open sets that covers `X`, then `X.restrict U` forms an `X.open_cover`. -/
 @[simps! J obj map]
 def Scheme.openCoverOfSuprEqTop {s : Type _} (X : Scheme) (U : s → Opens X)
-    (hU : (⨆ i, U i) = ⊤) : X.OpenCover where
+    (hU : ⨆ i, U i = ⊤) : X.OpenCover where
   J := s
   obj i := X.restrict (U i).openEmbedding
   map i := X.ofRestrict (U i).openEmbedding

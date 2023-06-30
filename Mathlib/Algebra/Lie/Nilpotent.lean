@@ -222,7 +222,7 @@ theorem nilpotent_endo_of_nilpotent_module [hM : IsNilpotent R L M] :
 This result will be used downstream to show that weight spaces are Lie submodules, at which time
 it will be possible to state it in the language of weight spaces. -/
 theorem iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L M] :
-    (⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace 0) = ⊤ := by
+    ⨅ x : L, (toEndomorphism R L M x).maximalGeneralizedEigenspace 0 = ⊤ := by
   ext m
   simp only [Module.End.mem_maximalGeneralizedEigenspace, Submodule.mem_top, sub_zero, iff_true_iff,
     zero_smul, Submodule.mem_iInf]
@@ -535,7 +535,7 @@ theorem LieAlgebra.nilpotent_ad_of_nilpotent_algebra [IsNilpotent R L] :
 
 /-- See also `LieAlgebra.zero_rootSpace_eq_top_of_nilpotent`. -/
 theorem LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent [IsNilpotent R L] :
-    (⨅ x : L, (ad R L x).maximalGeneralizedEigenspace 0) = ⊤ :=
+    ⨅ x : L, (ad R L x).maximalGeneralizedEigenspace 0 = ⊤ :=
   LieModule.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent R L L
 #align lie_algebra.infi_max_gen_zero_eigenspace_eq_top_of_nilpotent LieAlgebra.iInf_max_gen_zero_eigenspace_eq_top_of_nilpotent
 

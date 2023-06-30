@@ -903,7 +903,7 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SigmaFinite μ
     rcases (mem_image _ _ _).1 hx with ⟨⟨p, q⟩, _, rfl⟩
     exact vg _ (hr _ hx)
   · have :
-      (⋃ (x : α) (_ : x ∈ t), closedBall x (r x)) =
+      ⋃ (x : α) (_ : x ∈ t), closedBall x (r x) =
         ⋃ (p : α × ℝ) (_ : p ∈ (fun x => (x, r x)) '' t), closedBall p.1 p.2 :=
       by conv_rhs => rw [biUnion_image]
     rw [this, im_t]

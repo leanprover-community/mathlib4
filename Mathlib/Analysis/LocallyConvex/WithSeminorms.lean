@@ -74,7 +74,7 @@ namespace SeminormFamily
 
 /-- The sets of a filter basis for the neighborhood filter of 0. -/
 def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
-  ⋃ (s : Finset ι) (r) (_ : 0 < r), singleton <| ball (s.sup p) (0 : E) r
+  ⋃ (s : Finset ι) (r) (_ : 0 < r), singleton (ball (s.sup p) (0 : E) r)
 #align seminorm_family.basis_sets SeminormFamily.basisSets
 
 variable (p : SeminormFamily 𝕜 E ι)

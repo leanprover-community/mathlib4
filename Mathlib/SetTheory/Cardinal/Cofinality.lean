@@ -1039,7 +1039,7 @@ then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`.
 -/
 theorem le_range_of_union_finset_eq_top {α β : Type _} [Infinite β] (f : α → Finset β)
-    (w : (⋃ a, (f a : Set β)) = ⊤) : (#β) ≤ (#range f) := by
+    (w : ⋃ a, (f a : Set β) = ⊤) : (#β) ≤ (#range f) := by
   have k : _root_.Infinite (range f) := by
     rw [infinite_coe_iff]
     apply mt (union_finset_finite_of_range_finite f)

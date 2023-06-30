@@ -101,7 +101,7 @@ theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
   have C : ℵ₀ ≤ max (#s) 2 ^ aleph0.{u} := A.trans B
   have J : (#⋃ j : Iio i, generateMeasurableRec s j.1) ≤ max (#s) 2 ^ aleph0.{u} := by
     refine (mk_iUnion_le _).trans ?_
-    have D : (⨆ j : Iio i, #generateMeasurableRec s j) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
+    have D : ⨆ j : Iio i, (#generateMeasurableRec s j) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
     apply (mul_le_mul' ((mk_subtype_le _).trans (aleph 1).mk_ord_out.le) D).trans
     rw [mul_eq_max A C]
     exact max_le B le_rfl

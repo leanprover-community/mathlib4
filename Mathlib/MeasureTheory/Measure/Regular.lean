@@ -454,7 +454,7 @@ theorem isCompact_isClosed {X : Type _} [TopologicalSpace X] [SigmaCompactSpace 
   intro F hF r hr
   set B : ℕ → Set X := compactCovering X
   have hBc : ∀ n, IsCompact (F ∩ B n) := fun n => (isCompact_compactCovering X n).inter_left hF
-  have hBU : (⋃ n, F ∩ B n) = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
+  have hBU : ⋃ n, F ∩ B n = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
   have : μ F = ⨆ n, μ (F ∩ B n) := by
     rw [← measure_iUnion_eq_iSup, hBU]
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)

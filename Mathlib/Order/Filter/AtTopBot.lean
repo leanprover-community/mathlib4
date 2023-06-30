@@ -351,12 +351,12 @@ theorem Frequently.forall_exists_of_atBot [SemilatticeInf α] [Nonempty α] {p :
 #align filter.frequently.forall_exists_of_at_bot Filter.Frequently.forall_exists_of_atBot
 
 theorem map_atTop_eq [Nonempty α] [SemilatticeSup α] {f : α → β} :
-    atTop.map f = ⨅ a, 𝓟 <| f '' { a' | a ≤ a' } :=
+    atTop.map f = ⨅ a, 𝓟 (f '' { a' | a ≤ a' }) :=
   (atTop_basis.map f).eq_iInf
 #align filter.map_at_top_eq Filter.map_atTop_eq
 
 theorem map_atBot_eq [Nonempty α] [SemilatticeInf α] {f : α → β} :
-    atBot.map f = ⨅ a, 𝓟 <| f '' { a' | a' ≤ a } :=
+    atBot.map f = ⨅ a, 𝓟 (f '' { a' | a' ≤ a }) :=
   @map_atTop_eq αᵒᵈ _ _ _ _
 #align filter.map_at_bot_eq Filter.map_atBot_eq
 
