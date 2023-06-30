@@ -661,7 +661,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           rw [← mem_cylinder_iff_eq]
           apply cylinder_anti x _ A.some_mem.2
           apply firstDiff_le_longestPrefix hs xs ys
-        rw [fs y ys] at hfxfy⊢
+        rw [fs y ys] at hfxfy ⊢
         rwa [← fx, I2, ← mem_cylinder_iff_eq, mem_cylinder_iff_le_firstDiff hfxfy] at I
       -- case where `y ∉ s`
       · have Ax : (s ∩ cylinder x (longestPrefix x s)).Nonempty :=
@@ -684,7 +684,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           congr
         -- case where the common prefix to `x` and `s` is long, as well as the common prefix to
         -- `y` and `s`. Then all points remain in the same cylinders.
-        · push_neg  at H
+        · push_neg at H
           have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
             rw [← mem_cylinder_iff_eq]
             exact cylinder_anti x H.1 Ax.some_mem.2
@@ -911,14 +911,14 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         calc
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i in K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
-                ∑' i : ↑((K : Set ι)ᶜ), min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
+                ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
             (sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i in K, dist (x i) (y i)) +
-                ∑' i : ↑((K : Set ι)ᶜ), ((1 / 2) ^ encode (i : ι) : ℝ) := by
+                ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
             refine' add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) _
             refine' tsum_le_tsum (fun i => min_le_left _ _) _ _
-            · apply Summable.subtype (dist_summable x y) ((↑K : Set ι)ᶜ)
-            · apply Summable.subtype summable_geometric_two_encode ((↑K : Set ι)ᶜ)
+            · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
+            · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i in K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le

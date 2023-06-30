@@ -160,8 +160,8 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
   -- Porting note: 2 placeholders are added to prevent timeout.
   refine'
     (Disjoint.mono
-      (lsingle_range_le_ker_lapply s (sᶜ) _)
-      (lsingle_range_le_ker_lapply t (tᶜ) _))
+      (lsingle_range_le_ker_lapply s sᶜ _)
+      (lsingle_range_le_ker_lapply t tᶜ _))
       _
   · apply disjoint_compl_right
   · apply disjoint_compl_right
@@ -254,7 +254,7 @@ end
 
 theorem restrictDom_comp_subtype (s : Set α) :
     (restrictDom M R s).comp (Submodule.subtype _) = LinearMap.id := by
-  ext (l a)
+  ext l a
   by_cases h : a ∈ s <;> simp [h]
   exact ((mem_supported' R l.1).1 l.2 a h).symm
 #align finsupp.restrict_dom_comp_subtype Finsupp.restrictDom_comp_subtype
@@ -1187,8 +1187,6 @@ theorem mem_span_set {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔
       ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r => r • mi) = m := by
   conv_lhs => rw [← Set.image_id s]
-  -- Porting note: `simp_rw [← exists_prop]` is not necessary because of the
-  --               new definition of `∃ x, p x`.
   exact Finsupp.mem_span_image_iff_total R (v := _root_.id (α := M))
 #align mem_span_set mem_span_set
 

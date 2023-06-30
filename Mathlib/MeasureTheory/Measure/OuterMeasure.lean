@@ -169,11 +169,8 @@ theorem null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α] 
 theorem exists_mem_forall_mem_nhds_within_pos [TopologicalSpace α] [SecondCountableTopology α]
     (m : OuterMeasure α) {s : Set α} (hs : m s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < m t := by
   contrapose! hs
-  simp only [nonpos_iff_eq_zero, ← exists_prop] at hs
-  apply m.null_of_locally_null s
-  intro x hx
-  specialize hs x hx
-  exact Iff.mp bex_def hs
+  simp only [nonpos_iff_eq_zero] at hs
+  exact m.null_of_locally_null s hs
 #align measure_theory.outer_measure.exists_mem_forall_mem_nhds_within_pos MeasureTheory.OuterMeasure.exists_mem_forall_mem_nhds_within_pos
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
@@ -642,6 +639,7 @@ theorem map_top (f : α → β) : map f ⊤ = restrict (range f) ⊤ :=
       Set.image_eq_empty]
 #align measure_theory.outer_measure.map_top MeasureTheory.OuterMeasure.map_top
 
+@[simp]
 theorem map_top_of_surjective (f : α → β) (hf : Surjective f) : map f ⊤ = ⊤ := by
   rw [map_top, hf.range_eq, restrict_univ]
 #align measure_theory.outer_measure.map_top_of_surjective MeasureTheory.OuterMeasure.map_top_of_surjective
@@ -802,7 +800,7 @@ theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
   refine' (map_ofFunction_le _).antisymm fun s => _
   simp only [ofFunction_apply, map_apply, le_iInf_iff]
   intro t ht
-  refine' iInf_le_of_le (fun n => range fᶜ ∪ f '' t n) (iInf_le_of_le _ _)
+  refine' iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le _ _)
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
     exact image_subset _ ht
   · refine' ENNReal.tsum_le_tsum fun n => le_of_eq _
@@ -954,12 +952,12 @@ theorem isCaratheodory_iff_le' {s : Set α} :
 theorem isCaratheodory_empty : IsCaratheodory m ∅ := by simp [IsCaratheodory, m.empty, diff_empty]
 #align measure_theory.outer_measure.is_caratheodory_empty MeasureTheory.OuterMeasure.isCaratheodory_empty
 
-theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m (s₁ᶜ) := by
+theorem isCaratheodory_compl : IsCaratheodory m s₁ → IsCaratheodory m s₁ᶜ := by
   simp [IsCaratheodory, diff_eq, add_comm]
 #align measure_theory.outer_measure.is_caratheodory_compl MeasureTheory.OuterMeasure.isCaratheodory_compl
 
 @[simp]
-theorem isCaratheodory_compl_iff : IsCaratheodory m (sᶜ) ↔ IsCaratheodory m s :=
+theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s :=
   ⟨fun h => by simpa using isCaratheodory_compl m h, isCaratheodory_compl m⟩
 #align measure_theory.outer_measure.is_caratheodory_compl_iff MeasureTheory.OuterMeasure.isCaratheodory_compl_iff
 
@@ -1244,7 +1242,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
     map f (⨅ i, comap f (m i)) = ⨅ i, map f (comap f (m i)) := by
   refine' (map_iInf_le _ _).antisymm fun s => _
   simp only [map_apply, comap_apply, iInf_apply, le_iInf_iff]
-  refine' fun t ht => iInf_le_of_le (fun n => f '' t n ∪ range fᶜ) (iInf_le_of_le _ _)
+  refine' fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le _ _)
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
     exact image_subset _ ht
@@ -1689,7 +1687,7 @@ theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t = m.trim s := by
-  simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (st : s ⊆ t) (ht : MeasurableSet t), m t
+  simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (_ : s ⊆ t) (_ : MeasurableSet t), m t
   by_cases hs : ms = ∞
   · simp only [hs]
     simp only [iInf_eq_top] at hs

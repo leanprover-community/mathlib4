@@ -289,7 +289,7 @@ theorem map_op_mul :
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
-    rw [Submodule.mem_map_equiv] at hm hn⊢
+    rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
 

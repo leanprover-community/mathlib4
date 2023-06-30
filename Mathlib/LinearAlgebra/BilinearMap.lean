@@ -363,7 +363,7 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
     f₁.compl₁₂ g g' = f₂.compl₁₂ g g' ↔ f₁ = f₂ := by
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
-    ext (x y)
+    ext x y
     cases' hₗ x with x' hx
     subst hx
     cases' hᵣ y with y' hy

@@ -962,7 +962,7 @@ theorem continuous_totalSpaceMk (b : B) :
 #align vector_prebundle.continuous_total_space_mk VectorPrebundle.continuous_totalSpaceMk
 
 /-- Make a `FiberBundle` from a `VectorPrebundle`; auxiliary construction for
-`VectorPrebundle.to_vectorBundle`. -/
+`VectorPrebundle.toVectorBundle`. -/
 def toFiberBundle : @FiberBundle B F _ _ _ a.totalSpaceTopology _ :=
   a.toFiberPrebundle.toFiberBundle
 #align vector_prebundle.to_fiber_bundle VectorPrebundle.toFiberBundle
@@ -973,8 +973,7 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `VectorPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
-theorem to_vectorBundle :
-    @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
+theorem toVectorBundle : @VectorBundle R _ F E _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle
   { trivialization_linear' := by
       rintro _ ⟨e, he, rfl⟩
@@ -990,7 +989,7 @@ theorem to_vectorBundle :
       rw [a.coordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
         Trivialization.coordChangeL_apply]
       exacts [rfl, hb] }
-#align vector_prebundle.to_vector_bundle VectorPrebundle.to_vectorBundle
+#align vector_prebundle.to_vector_bundle VectorPrebundle.toVectorBundle
 
 end VectorPrebundle
 
@@ -1034,7 +1033,7 @@ def inCoordinates (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL
     ϕ.comp <| (trivializationAt F E x₀).symmL 𝕜₁ x
 #align continuous_linear_map.in_coordinates ContinuousLinearMap.inCoordinates
 
-variable {F}
+variable {F F'}
 
 /-- Rewrite `ContinuousLinearMap.inCoordinates` using continuous linear equivalences. -/
 theorem inCoordinates_eq (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y)

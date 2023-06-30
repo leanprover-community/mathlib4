@@ -131,6 +131,18 @@ protected def xor : Bitvec n → Bitvec n → Bitvec n :=
   map₂ xor
 #align bitvec.xor Bitvec.xor
 
+instance : Complement (Bitvec n) :=
+⟨Bitvec.not⟩
+
+instance : AndOp (Bitvec n) :=
+⟨Bitvec.and⟩
+
+instance : OrOp (Bitvec n) :=
+⟨Bitvec.or⟩
+
+instance : Xor (Bitvec n) :=
+⟨Bitvec.xor⟩
+
 end Bitwise
 
 /-! ### Arithmetic operators -/
@@ -343,3 +355,11 @@ instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
 
 instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
   decEq _ _
+
+instance {n} : HShiftLeft (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.shl⟩
+
+instance {n} : HShiftRight (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.ushr⟩
+
+instance {n} : ShiftLeft (Bitvec n) := ⟨fun x y => x <<< y.toNat⟩
+
+instance {n} : ShiftRight (Bitvec n) := ⟨fun x y => x >>> y.toNat⟩

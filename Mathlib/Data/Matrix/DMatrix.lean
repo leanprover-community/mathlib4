@@ -166,10 +166,7 @@ instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (DMatrix m n α) 
 #align dmatrix.subsingleton_of_empty_left DMatrix.subsingleton_of_empty_left
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (DMatrix m n α) :=
-  ⟨fun M N => by
-    ext i
-    intro j
-    exact isEmptyElim j⟩
+  ⟨fun M N => by ext i j; exact isEmptyElim j⟩
 #align dmatrix.subsingleton_of_empty_right DMatrix.subsingleton_of_empty_right
 
 end DMatrix
@@ -189,4 +186,3 @@ theorem AddMonoidHom.mapDMatrix_apply [∀ i j, AddMonoid (α i j)] {β : m → 
     [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) (M : DMatrix m n α) :
     AddMonoidHom.mapDMatrix f M = M.map fun i j => @f i j := rfl
 #align add_monoid_hom.map_dmatrix_apply AddMonoidHom.mapDMatrix_apply
-
