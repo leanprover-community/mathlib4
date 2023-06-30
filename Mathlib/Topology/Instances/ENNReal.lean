@@ -975,20 +975,20 @@ protected theorem tsum_apply {ι α : Type _} {f : ι → α → ℝ≥0∞} {x 
   tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
 #align ennreal.tsum_apply ENNReal.tsum_apply
 
-theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : (∑' i, g i) ≠ ∞) (h₂ : g ≤ f) :
-    ∑' i, f i - g i = (∑' i, f i) - ∑' i, g i :=
+theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
+    ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
   have : ∀ i, f i - g i + g i = f i := fun i => tsub_add_cancel_of_le (h₂ i)
   ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← ENNReal.tsum_add, this]
 #align ennreal.tsum_sub ENNReal.tsum_sub
 
 theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
-    (∑' x, g (f x)) ≤ ∑' y, g y :=
+    ∑' x, g (f x) ≤ ∑' y, g y :=
   tsum_le_tsum_of_inj f hf (fun _ _ => zero_le _) (fun _ => le_rfl) ENNReal.summable
     ENNReal.summable
 
 theorem tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : β → ℝ≥0∞) :
     ∑' y, g y ≤ ∑' x, g (f x) :=
-  calc (∑' y, g y) = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
+  calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
   _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) _
 
 theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
@@ -998,13 +998,13 @@ theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
 
 theorem tsum_iUnion_le_tsum {ι : Type _} (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑' i, ∑' x : t i, f x :=
-  calc (∑' x : ⋃ i, t i, f x) ≤ ∑' x : Σ i, t i, f x.2 :=
+  calc ∑' x : ⋃ i, t i, f x ≤ ∑' x : Σ i, t i, f x.2 :=
     tsum_le_tsum_comp_of_surjective (sigmaToiUnion_surjective t) _
   _ = ∑' i, ∑' x : t i, f x := ENNReal.tsum_sigma' _
 
 theorem tsum_biUnion_le_tsum {ι : Type _} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
-  calc (∑' x : ⋃ i ∈ s, t i, f x) = ∑' x : ⋃ i : s,  t i, f x := tsum_congr_subtype _ <| by simp
+  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s,  t i, f x := tsum_congr_subtype _ <| by simp
   _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
 
 theorem tsum_biUnion_le {ι : Type _} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
@@ -1019,8 +1019,8 @@ theorem tsum_iUnion_le {ι : Type _} [Fintype ι] (f : α → ℝ≥0∞) (t : �
 #align ennreal.tsum_Union_le ENNReal.tsum_iUnion_le
 
 theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
-    (∑' x : ↑(s ∪ t), f x) ≤ (∑' x : s, f x) + ∑' x : t, f x :=
-  calc (∑' x : ↑(s ∪ t), f x) = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_subtype _ union_eq_iUnion
+    ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
+  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_subtype _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
 #align ennreal.tsum_union_le ENNReal.tsum_union_le
 
@@ -1030,14 +1030,14 @@ theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
 #align ennreal.tsum_eq_add_tsum_ite ENNReal.tsum_eq_add_tsum_ite
 
 theorem tsum_add_one_eq_top {f : ℕ → ℝ≥0∞} (hf : ∑' n, f n = ∞) (hf0 : f 0 ≠ ∞) :
-    (∑' n, f (n + 1)) = ∞ := by
+    ∑' n, f (n + 1) = ∞ := by
   rw [tsum_eq_zero_add' ENNReal.summable, add_eq_top] at hf
   exact hf.resolve_left hf0
 #align ennreal.tsum_add_one_eq_top ENNReal.tsum_add_one_eq_top
 
 /-- A sum of extended nonnegative reals which is finite can have only finitely many terms
 above any positive threshold.-/
-theorem finite_const_le_of_tsum_ne_top {ι : Type _} {a : ι → ℝ≥0∞} (tsum_ne_top : (∑' i, a i) ≠ ∞)
+theorem finite_const_le_of_tsum_ne_top {ι : Type _} {a : ι → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞)
     {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) : { i : ι | ε ≤ a i }.Finite := by
   by_contra h
   have := Infinite.to_subtype h

@@ -189,7 +189,7 @@ theorem Commute.mul_geom_sum₂ [Ring α] {x y : α} (h : Commute x y) (n : ℕ)
 #align commute.mul_geom_sum₂ Commute.mul_geom_sum₂
 
 theorem geom_sum₂_mul [CommRing α] (x y : α) (n : ℕ) :
-    ∑ i in range n, x ^ i * y ^ (n - 1 - i)) * (x - y = x ^ n - y ^ n :=
+    (∑ i in range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n :=
   (Commute.all x y).geom_sum₂_mul n
 #align geom_sum₂_mul geom_sum₂_mul
 
@@ -216,7 +216,7 @@ theorem Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y �
   exact_mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 #align odd.nat_add_dvd_pow_add_pow Odd.nat_add_dvd_pow_add_pow
 
-theorem geom_sum_mul [Ring α] (x : α) (n : ℕ) : ∑ i in range n, x ^ i) * (x - 1 = x ^ n - 1 := by
+theorem geom_sum_mul [Ring α] (x : α) (n : ℕ) : (∑ i in range n, x ^ i) * (x - 1) = x ^ n - 1 := by
   have := (Commute.one_right x).geom_sum₂_mul n
   rw [one_pow, geom_sum₂_with_one] at this
   exact this
@@ -227,7 +227,7 @@ theorem mul_geom_sum [Ring α] (x : α) (n : ℕ) : ((x - 1) * ∑ i in range n,
 #align mul_geom_sum mul_geom_sum
 
 theorem geom_sum_mul_neg [Ring α] (x : α) (n : ℕ) :
-    ∑ i in range n, x ^ i) * (1 - x = 1 - x ^ n := by
+    (∑ i in range n, x ^ i) * (1 - x) = 1 - x ^ n := by
   have := congr_arg Neg.neg (geom_sum_mul x n)
   rw [neg_sub, ← mul_neg, neg_sub] at this
   exact this
