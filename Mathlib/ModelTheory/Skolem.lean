@@ -51,7 +51,7 @@ def skolem₁ : Language :=
 variable {L}
 
 theorem card_functions_sum_skolem₁ :
-    (#Σ n, (L.sum L.skolem₁).Functions n) = (#Σ n, L.BoundedFormula Empty (n + 1)) := by
+    #(Σ n, (L.sum L.skolem₁).Functions n) = #(Σ n, L.BoundedFormula Empty (n + 1)) := by
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
@@ -65,7 +65,7 @@ theorem card_functions_sum_skolem₁ :
       (Sigma.mk.inj_iff.1 xy).1)
 #align first_order.language.card_functions_sum_skolem₁ FirstOrder.Language.card_functions_sum_skolem₁
 
-theorem card_functions_sum_skolem₁_le : (#Σn, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
+theorem card_functions_sum_skolem₁_le : #(Σn, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
   rw [card_functions_sum_skolem₁]
   trans #Σ n, L.BoundedFormula Empty n
   · exact

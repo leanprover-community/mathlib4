@@ -617,7 +617,7 @@ theorem basis_le_span' {ι : Type _} (b : Basis ι R M) {w : Set M} [Fintype w] 
 /-- If `R` satisfies the rank condition,
 then the cardinality of any basis is bounded by the cardinality of any spanning set.
 -/
-theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#range v) ≤ (#J) := by
+theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : #(range v) ≤ (#J) := by
   haveI := nontrivial_of_invariantBasisNumber R
   cases fintypeOrInfinite J
   · rw [← Cardinal.lift_le, Cardinal.mk_range_eq_of_injective v.injective, Cardinal.mk_fintype J]
@@ -637,7 +637,7 @@ theorem Basis.le_span {J : Set M} (v : Basis ι R M) (hJ : span R J = ⊤) : (#r
         rcases mem_iUnion.1 (this (Finset.mem_singleton_self _)) with ⟨j, hj⟩
         exact mem_iUnion.2 ⟨j, (mem_image _ _ _).2 ⟨i, hj, rfl⟩⟩
     refine' le_of_not_lt fun IJ => _
-    suffices (#⋃ j, S' j) < (#range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
+    suffices #(⋃ j, S' j) < #(range v) by exact not_le_of_lt this ⟨Set.embeddingOfSubset _ _ hs⟩
     refine' lt_of_le_of_lt (le_trans Cardinal.mk_iUnion_le_sum_mk
       (Cardinal.sum_le_sum _ (fun _ => ℵ₀) _)) _
     · exact fun j => (Cardinal.lt_aleph0_of_finite _).le
@@ -795,7 +795,7 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : (#ι) = Module.ran
     apply linearIndependent_le_basis v _ li
 #align basis.mk_eq_rank'' Basis.mk_eq_rank''
 
-theorem Basis.mk_range_eq_rank (v : Basis ι R M) : (#range v) = Module.rank R M :=
+theorem Basis.mk_range_eq_rank (v : Basis ι R M) : #(range v) = Module.rank R M :=
   v.reindexRange.mk_eq_rank''
 #align basis.mk_range_eq_rank Basis.mk_range_eq_rank
 
@@ -857,7 +857,7 @@ theorem Basis.finite_index_of_rank_lt_aleph0 {ι : Type _} {s : Set ι} (b : Bas
 #align basis.finite_index_of_rank_lt_aleph_0 Basis.finite_index_of_rank_lt_aleph0
 
 theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
-    Module.rank R ↑(span R (range v)) = (#range v) := by
+    Module.rank R ↑(span R (range v)) = #(range v) := by
   haveI := nontrivial_of_invariantBasisNumber R
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]

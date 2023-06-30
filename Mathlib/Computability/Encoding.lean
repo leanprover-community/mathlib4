@@ -243,7 +243,7 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
 theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
-    Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} (#List e.Γ) :=
+    Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} #(List e.Γ) :=
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
 #align computability.encoding.card_le_card_list Computability.Encoding.card_le_card_list
 

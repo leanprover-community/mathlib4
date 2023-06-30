@@ -120,11 +120,11 @@ theorem listEncode_injective :
   Term.encoding.encode_injective
 #align first_order.language.term.list_encode_injective FirstOrder.Language.Term.listEncode_injective
 
-theorem card_le : (#L.Term α) ≤ max ℵ₀ (#Sum α (Σi, L.Functions i)) :=
+theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
   lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
 #align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
-theorem card_sigma : (#Σn, L.Term (Sum α (Fin n))) = max ℵ₀ (#Sum α (Σi, L.Functions i)) := by
+theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
   refine' le_antisymm _ _
   · rw [mk_sigma]
     refine' (sum_le_iSup_lift _).trans _
@@ -311,7 +311,7 @@ theorem listEncode_sigma_injective :
   BoundedFormula.encoding.encode_injective
 #align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.BoundedFormula.listEncode_sigma_injective
 
-theorem card_le : (#Σn, L.BoundedFormula α n) ≤
+theorem card_le : #(Σn, L.BoundedFormula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} (#α) + Cardinal.lift.{u'} L.card) := by
   refine' lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans _)
   rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,

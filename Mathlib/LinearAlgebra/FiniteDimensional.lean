@@ -1546,8 +1546,8 @@ theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K
   let s := Basis.ofVectorSpaceIndex K V
   let hs := Basis.ofVectorSpace K V
   calc
-    (#V) = (#s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
-    _ = (#s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
+    (#V) = #(s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
+    _ = #(s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 

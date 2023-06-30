@@ -92,16 +92,16 @@ theorem generateMeasurableRec_subset (s : Set (Set α)) {i j : ω₁} (h : i ≤
 /-- At each step of the inductive construction, the cardinality bound `≤ (max (#s) 2) ^ ℵ₀` holds.
 -/
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : ω₁) :
-    (#generateMeasurableRec s i) ≤ max (#s) 2 ^ aleph0.{u} := by
+    #(generateMeasurableRec s i) ≤ max (#s) 2 ^ aleph0.{u} := by
   apply (aleph 1).ord.out.wo.wf.induction i
   intro i IH
   have A := aleph0_le_aleph 1
   have B : aleph 1 ≤ max (#s) 2 ^ aleph0.{u} :=
     aleph_one_le_continuum.trans (power_le_power_right (le_max_right _ _))
   have C : ℵ₀ ≤ max (#s) 2 ^ aleph0.{u} := A.trans B
-  have J : (#⋃ j : Iio i, generateMeasurableRec s j.1) ≤ max (#s) 2 ^ aleph0.{u} := by
+  have J : #(⋃ j : Iio i, generateMeasurableRec s j.1) ≤ max (#s) 2 ^ aleph0.{u} := by
     refine (mk_iUnion_le _).trans ?_
-    have D : (⨆ j : Iio i, #generateMeasurableRec s j) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
+    have D : (⨆ j : Iio i, #(generateMeasurableRec s j)) ≤ _ := ciSup_le' fun ⟨j, hj⟩ => IH j hj
     apply (mul_le_mul' ((mk_subtype_le _).trans (aleph 1).mk_ord_out.le) D).trans
     rw [mul_eq_max A C]
     exact max_le B le_rfl

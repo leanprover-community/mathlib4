@@ -275,7 +275,7 @@ theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o
       let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
       ⟨b, bs, br⟩
   · rcases cof_eq r with ⟨S, H, e'⟩
-    have : (#ULift.down.{u, v} ⁻¹' S) ≤ Cardinal.lift.{u, v} (#S) :=
+    have : #(ULift.down.{u, v} ⁻¹' S) ≤ Cardinal.lift.{u, v} (#S) :=
       ⟨⟨fun ⟨⟨x⟩, h⟩ => ⟨⟨x, h⟩⟩, fun ⟨⟨x⟩, h₁⟩ ⟨⟨y⟩, h₂⟩ e => by
           simp at e; congr⟩⟩
     rw [e'] at this
@@ -802,8 +802,8 @@ theorem unbounded_of_unbounded_iUnion {α β : Type u} (r : α → α → Prop) 
 
 /-- The infinite pigeonhole principle -/
 theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ (#β)) (h₂ : (#α) < (#β).ord.cof) :
-    ∃ a : α, (#f ⁻¹' {a}) = (#β) := by
-  have : ∃ a, (#β) ≤ (#f ⁻¹' {a}) := by
+    ∃ a : α, #(f ⁻¹' {a}) = (#β) := by
+  have : ∃ a, (#β) ≤ #(f ⁻¹' {a}) := by
     by_contra' h
     apply mk_univ.not_lt
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
@@ -818,7 +818,7 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
 
 /-- Pigeonhole principle for a cardinality below the cardinality of the domain -/
 theorem infinite_pigeonhole_card {β α : Type u} (f : β → α) (θ : Cardinal) (hθ : θ ≤ (#β))
-    (h₁ : ℵ₀ ≤ θ) (h₂ : (#α) < θ.ord.cof) : ∃ a : α, θ ≤ (#f ⁻¹' {a}) := by
+    (h₁ : ℵ₀ ≤ θ) (h₂ : (#α) < θ.ord.cof) : ∃ a : α, θ ≤ #(f ⁻¹' {a}) := by
   rcases le_mk_iff_exists_set.1 hθ with ⟨s, rfl⟩
   cases' infinite_pigeonhole (f ∘ Subtype.val : s → α) h₁ h₂ with a ha
   use a; rw [← ha, @preimage_comp _ _ _ Subtype.val f]
@@ -1017,7 +1017,7 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (aleph (succ o)) := by
 has a fiber with cardinality strictly great than the codomain.
 -/
 theorem infinite_pigeonhole_card_lt {β α : Type u} (f : β → α) (w : (#α) < (#β)) (w' : ℵ₀ ≤ (#α)) :
-    ∃ a : α, (#α) < (#f ⁻¹' {a}) := by
+    ∃ a : α, (#α) < #(f ⁻¹' {a}) := by
   simp_rw [← succ_le_iff]
   exact
     Ordinal.infinite_pigeonhole_card f (succ (#α)) (succ_le_of_lt w) (w'.trans (lt_succ _).le)
@@ -1039,7 +1039,7 @@ then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`.
 -/
 theorem le_range_of_union_finset_eq_top {α β : Type _} [Infinite β] (f : α → Finset β)
-    (w : (⋃ a, (f a : Set β)) = ⊤) : (#β) ≤ (#range f) := by
+    (w : (⋃ a, (f a : Set β)) = ⊤) : (#β) ≤ #(range f) := by
   have k : _root_.Infinite (range f) := by
     rw [infinite_coe_iff]
     apply mt (union_finset_finite_of_range_finite f)
