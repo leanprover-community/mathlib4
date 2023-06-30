@@ -169,11 +169,8 @@ theorem null_of_locally_null [TopologicalSpace α] [SecondCountableTopology α] 
 theorem exists_mem_forall_mem_nhds_within_pos [TopologicalSpace α] [SecondCountableTopology α]
     (m : OuterMeasure α) {s : Set α} (hs : m s ≠ 0) : ∃ x ∈ s, ∀ t ∈ 𝓝[s] x, 0 < m t := by
   contrapose! hs
-  simp only [nonpos_iff_eq_zero, ← exists_prop] at hs
-  apply m.null_of_locally_null s
-  intro x hx
-  specialize hs x hx
-  exact Iff.mp bex_def hs
+  simp only [nonpos_iff_eq_zero] at hs
+  exact m.null_of_locally_null s hs
 #align measure_theory.outer_measure.exists_mem_forall_mem_nhds_within_pos MeasureTheory.OuterMeasure.exists_mem_forall_mem_nhds_within_pos
 
 /-- If `s : ι → Set α` is a sequence of sets, `S = ⋃ n, s n`, and `m (S \ s n)` tends to zero along
@@ -1690,7 +1687,7 @@ theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t = m.trim s := by
-  simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (st : s ⊆ t) (ht : MeasurableSet t), m t
+  simp only [trim_eq_iInf]; set ms := ⨅ (t : Set α) (_ : s ⊆ t) (_ : MeasurableSet t), m t
   by_cases hs : ms = ∞
   · simp only [hs]
     simp only [iInf_eq_top] at hs

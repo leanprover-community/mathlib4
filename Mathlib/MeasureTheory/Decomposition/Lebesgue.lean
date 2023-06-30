@@ -363,7 +363,7 @@ theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf
   refine' ae_eq_of_forall_set_lintegral_eq_of_sigmaFinite hf (measurable_rnDeriv μ ν) _
   intro a ha _
   calc
-    (∫⁻ x : α in a, f x ∂ν) = ν.withDensity f a := (withDensity_apply f ha).symm
+    ∫⁻ x : α in a, f x ∂ν = ν.withDensity f a := (withDensity_apply f ha).symm
     _ = ν.withDensity (μ.rnDeriv ν) a := by rw [eq_withDensity_rnDeriv hf hs hadd]
     _ = ∫⁻ x : α in a, μ.rnDeriv ν x ∂ν := withDensity_apply _ ha
 #align measure_theory.measure.eq_rn_deriv MeasureTheory.Measure.eq_rnDeriv
@@ -484,8 +484,8 @@ theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α)
   simp only [Option.mem_def, ENNReal.some_eq_coe]
   constructor <;> intro h <;> rw [← h]; symm
   all_goals
-    set c := ⨆ (k : ℕ) (hk : k ≤ m + 1), f k a with hc
-    set d := f m.succ a ⊔ ⨆ (k : ℕ) (hk : k ≤ m), f k a with hd
+    set c := ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a with hc
+    set d := f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a with hd
     rw [@le_antisymm_iff ℝ≥0∞, hc, hd]
     -- Specifying the type is weirdly necessary
     refine' ⟨_, _⟩
@@ -561,7 +561,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
         ⟨0, 0, zero_mem_measurableLE, by simp⟩ (OrderTop.bddAbove _)
     choose g _ hg₂ f hf₁ hf₂ using h
     -- we set `ξ` to be the supremum of an increasing sequence of functions obtained from above
-    set ξ := ⨆ (n) (k) (hk : k ≤ n), f k with hξ
+    set ξ := ⨆ (n) (k) (_ : k ≤ n), f k with hξ
     -- we see that `ξ` has the largest integral among all functions in `measurableLE`
     have hξ₁ : sSup (measurableLEEval ν μ) = ∫⁻ a, ξ a ∂ν := by
       have :=

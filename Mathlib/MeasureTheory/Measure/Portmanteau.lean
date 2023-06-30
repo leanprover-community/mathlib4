@@ -102,17 +102,14 @@ Either of these will later be shown to be equivalent to the weak convergence of 
 of measures.
 -/
 
-
 variable {Ω : Type _} [MeasurableSpace Ω]
 
 theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :
     μ (Eᶜ) ≤ L.liminf fun i => μs i (Eᶜ) := by
-  by_cases L_bot : L = ⊥
-  · simp only [L_bot, le_top,
-      show liminf (fun i => μs i (Eᶜ)) ⊥ = ⊤ by simp only [liminf, Filter.map_bot, limsInf_bot]]
-  have : L.NeBot := { ne' := L_bot }
+  rcases L.eq_or_neBot with rfl | hne
+  · simp only [liminf_bot, le_top]
   have meas_Ec : μ (Eᶜ) = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
   have meas_i_Ec : ∀ i, μs i (Eᶜ) = 1 - μs i E := by
@@ -139,10 +136,8 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type _} {L : Filter �
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : μ E ≤ L.liminf fun i => μs i E) :
     (L.limsup fun i => μs i (Eᶜ)) ≤ μ (Eᶜ) := by
-  by_cases L_bot : L = ⊥
-  · simp only [L_bot, bot_le,
-      show limsup (fun i => μs i (Eᶜ)) ⊥ = ⊥ by simp only [limsup, Filter.map_bot, limsSup_bot]]
-  have : L.NeBot := { ne' := L_bot }
+  rcases L.eq_or_neBot with rfl | hne
+  · simp only [limsup_bot, bot_le]
   have meas_Ec : μ (Eᶜ) = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
   have meas_i_Ec : ∀ i, μs i (Eᶜ) = 1 - μs i E := by
@@ -341,8 +336,8 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} {L : 
     [MeasurableSpace Ω] [PseudoEMetricSpace Ω] [OpensMeasurableSpace Ω] {μ : FiniteMeasure Ω}
     {μs : ι → FiniteMeasure Ω} (μs_lim : Tendsto μs L (𝓝 μ)) {F : Set Ω} (F_closed : IsClosed F) :
     (L.limsup fun i => (μs i : Measure Ω) F) ≤ (μ : Measure Ω) F := by
-  by_cases L = ⊥
-  · simp only [h, limsup, Filter.map_bot, limsSup_bot, ENNReal.bot_eq_zero, zero_le]
+  rcases L.eq_or_neBot with rfl | hne
+  · simp only [limsup_bot, bot_le]
   apply ENNReal.le_of_forall_pos_le_add
   intro ε ε_pos _
   let δs := fun n : ℕ => (1 : ℝ) / (n + 1)
@@ -367,7 +362,6 @@ theorem FiniteMeasure.limsup_measure_closed_le_of_tendsto {Ω ι : Type _} {L : 
   have ev_near' := Eventually.mono ev_near fun n => le_trans
     (measure_le_lintegral_thickenedIndicator (μs n : Measure Ω) F_closed.measurableSet (δs_pos M))
   apply (Filter.limsup_le_limsup ev_near').trans
-  have : NeBot L := ⟨h⟩
   rw [limsup_const]
   apply le_trans (add_le_add (hM M rfl.le).le (le_refl (ε / 2 : ℝ≥0∞)))
   simp only [add_assoc, ENNReal.add_halves, le_refl]
