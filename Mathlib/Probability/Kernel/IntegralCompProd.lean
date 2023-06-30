@@ -16,9 +16,9 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 We prove properties of the composition-product of two kernels. If `κ` is an s-finite kernel from
 `α` to `β` and `η` is an s-finite kernel from `α × β` to `γ`, we can form their composition-product
-`κ ⊗ₖ η : kernel α (β × γ)`. We proved in `probability.kernel.lintegral_comp_prod` that it verifies
-`∫⁻ bc, f bc ∂((κ ⊗ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`. In this file, we prove the
-same equality for the Bochner integral.
+`κ ⊗ₖ η : kernel α (β × γ)`. We proved in `ProbabilityTheory.kernel.lintegral_compProd` that it
+verifies `∫⁻ bc, f bc ∂((κ ⊗ₖ η) a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`. In this file, we
+prove the same equality for the Bochner integral.
 
 ## Main statements
 
@@ -27,7 +27,8 @@ same equality for the Bochner integral.
 
 ## Implementation details
 
-This file is to a large extent a copy of part of `measure_theory.constructions.prod`. The product of
+This file is to a large extent a copy of part of
+`Mathlib/MeasureTheory/Constructions/Prod/Basic.lean`. The product of
 two measures is a particular case of composition-product of kernels and it turns out that once the
 measurablity of the Lebesgue integral of a kernel is proved, almost all proofs about integrals
 against products of measures extend with minimal modifications to the composition-product of two
@@ -52,8 +53,8 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
   let t := toMeasurable ((κ ⊗ₖ η) a) s
   simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
   calc
-    ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a ≤
-        ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
+    ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a
+    _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
       refine' lintegral_mono_ae _
       filter_upwards [ae_kernel_lt_top a h2s] with b hb
       rw [ofReal_toReal hb.ne]

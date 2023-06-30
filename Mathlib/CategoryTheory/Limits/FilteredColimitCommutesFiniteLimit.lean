@@ -39,10 +39,10 @@ namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 
-/-- `(G ⋙ lim).obj S` = `limit (G.obj S)` definitionally, so this
+/-- `(G ⋙ lim).obj j` = `limit (G.obj j)` definitionally, so this
 is just a variant of `limit_ext'`. -/
-@[ext] lemma comp_lim_obj_ext {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj S) (w : ∀ (j : K),
-    limit.π (G.obj S) j x = limit.π (G.obj S) j y) : x = y :=
+@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj j)
+    (w : ∀ (k : K), limit.π (G.obj j) k x = limit.π (G.obj j) k y) : x = y :=
   limit_ext' _ x y w
 
 variable (F : J × K ⥤ Type v)
@@ -110,7 +110,7 @@ theorem colimitLimitToLimitColimit_injective :
               Finset.mem_image, heq_iff_eq]
             refine' ⟨j, _⟩
             simp only [heq_iff_eq] ))
-    have gH : 
+    have gH :
       ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr

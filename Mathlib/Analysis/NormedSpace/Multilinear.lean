@@ -270,7 +270,7 @@ theorem restr_norm_le {k n : ℕ} (f : (MultilinearMap 𝕜 (fun _ : Fin n => G)
   rw [mul_right_comm, mul_assoc]
   convert H _ using 2
   simp only [apply_dite norm, Fintype.prod_dite, prod_const ‖z‖, Finset.card_univ,
-    Fintype.card_of_subtype (sᶜ) fun _ => mem_compl, card_compl, Fintype.card_fin, hk, mk_coe, ←
+    Fintype.card_of_subtype sᶜ fun _ => mem_compl, card_compl, Fintype.card_fin, hk, mk_coe, ←
     (s.orderIsoOfFin hk).symm.bijective.prod_comp fun x => ‖v x‖]
   convert rfl
 #align multilinear_map.restr_norm_le MultilinearMap.restr_norm_le

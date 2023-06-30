@@ -1093,7 +1093,10 @@ open FiniteDimensional
 
 variable {V₁ : Type _} [AddCommGroup V₁] [Module K V₁]
 
-instance [H : FiniteDimensional K V] : FiniteDimensional K (Module.Dual K V) := by infer_instance
+instance instModuleDualFiniteDimensional [H : FiniteDimensional K V] :
+    FiniteDimensional K (Module.Dual K V) := by
+  infer_instance
+#align subspace.module.dual.finite_dimensional Subspace.instModuleDualFiniteDimensional
 
 variable [FiniteDimensional K V] [FiniteDimensional K V₁]
 

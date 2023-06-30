@@ -300,7 +300,7 @@ theorem ofBoolAlg_inf (a b : AsBoolAlg α) : ofBoolAlg (a ⊓ b) = ofBoolAlg a *
 #align of_boolalg_inf ofBoolAlg_inf
 
 @[simp]
-theorem ofBoolAlg_compl (a : AsBoolAlg α) : ofBoolAlg (aᶜ) = 1 + ofBoolAlg a :=
+theorem ofBoolAlg_compl (a : AsBoolAlg α) : ofBoolAlg aᶜ = 1 + ofBoolAlg a :=
   rfl
 #align of_boolalg_compl ofBoolAlg_compl
 

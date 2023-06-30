@@ -21,7 +21,7 @@ Given a Dedekind domain `R` of Krull dimension 1 and a maximal ideal `v` of `R`,
 We prove several properties of this valuation, including the existence of uniformizers.
 
 We define the completion of `K` with respect to the `v`-adic valuation, denoted
-`v.adic_completion`,and its ring of integers, denoted `v.adic_completion_integers`.
+`v.adicCompletion`, and its ring of integers, denoted `v.adicCompletionIntegers`.
 
 ## Main definitions
  - `IsDedekindDomain.HeightOneSpectrum.intValuation v` is the `v`-adic valuation on `R`.
@@ -29,7 +29,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
  - `IsDedekindDomain.HeightOneSpectrum.adicCompletion v` is the completion of `K` with respect
     to its `v`-adic valuation.
  - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
-    `v.adic_completion`.
+    `v.adicCompletion`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_le_one` : The `v`-adic valuation on `R` is
@@ -76,7 +76,7 @@ namespace IsDedekindDomain.HeightOneSpectrum
 
 
 /-- The additive `v`-adic valuation of `r ∈ R` is the exponent of `v` in the factorization of the
-ideal `(r)`, if `r` is nonzero, or infinity, if `r = 0`. `int_valuation_def` is the corresponding
+ideal `(r)`, if `r` is nonzero, or infinity, if `r = 0`. `intValuationDef` is the corresponding
 multiplicative valuation. -/
 def intValuationDef (r : R) : ℤₘ₀ :=
   if r = 0 then 0
@@ -318,8 +318,8 @@ theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uni
 /-! ### Completions with respect to adic valuations
 
 Given a Dedekind domain `R` with field of fractions `K` and a maximal ideal `v` of `R`, we define
-the completion of `K` with respect to its `v`-adic valuation, denoted `v.adic_completion`, and its
-ring of integers, denoted `v.adic_completion_integers`. -/
+the completion of `K` with respect to its `v`-adic valuation, denoted `v.adicCompletion`, and its
+ring of integers, denoted `v.adicCompletionIntegers`. -/
 
 
 variable {K}
@@ -409,10 +409,10 @@ theorem coe_smul_adicCompletion (r : R) (x : K) :
 instance : Algebra K (v.adicCompletion K) :=
   @UniformSpace.Completion.algebra' K _ v.adicValued.toUniformSpace _ _
 
-theorem algebraMap_adic_completion' :
+theorem algebraMap_adicCompletion' :
     ⇑(algebraMap R <| v.adicCompletion K) = (↑) ∘ algebraMap R K :=
   rfl
-#align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion' IsDedekindDomain.HeightOneSpectrum.algebraMap_adic_completion'
+#align is_dedekind_domain.height_one_spectrum.algebra_map_adic_completion' IsDedekindDomain.HeightOneSpectrum.algebraMap_adicCompletion'
 
 theorem algebraMap_adicCompletion :
     ⇑(algebraMap K <| v.adicCompletion K) = ((↑) : K → adicCompletion K v) :=
@@ -483,10 +483,10 @@ instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
     exact
       IsFractionRing.injective R K (UniformSpace.Completion.coe_injective K (Subtype.ext_iff.mp hc))
 
-instance AdicCompletion.is_scalar_tower' :
+instance AdicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
   smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc
-#align is_dedekind_domain.height_one_spectrum.adic_completion.is_scalar_tower' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.is_scalar_tower'
+#align is_dedekind_domain.height_one_spectrum.adic_completion.is_scalar_tower' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.instIsScalarTower'
 
 end AlgebraInstances
 
