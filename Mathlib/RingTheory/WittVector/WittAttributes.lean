@@ -13,6 +13,3 @@ from the files that actually use the attribute, most likely the `WittVector` fil
 
 /-- A stub attribute for `is_poly`. -/
 register_label_attr is_poly
-
-/-- Simplification rules for ghost equations. -/
-register_simp_attr ghost_simps

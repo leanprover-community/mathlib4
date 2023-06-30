@@ -114,11 +114,6 @@ class Inv (α : Type u) where
 @[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
 
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
-
 section Mul
 
 variable [Mul G]

@@ -8,9 +8,9 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Control.SimpSet
 import Mathlib.Init.Control.Combinators
 import Mathlib.Tactic.CasesM
+import Mathlib.Tactic.SimpSet
 
 /-!
 Extends the theory on functors, applicatives and monads.

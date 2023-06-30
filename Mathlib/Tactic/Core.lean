@@ -5,6 +5,7 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
 import Std.Tactic.Simpa
 import Mathlib.Lean.Expr
+import Mathlib.Tactic.SimpSet
 
 /-!
 #
@@ -14,6 +15,8 @@ Generally useful tactics.
 -/
 
 open Lean.Elab.Tactic
+
+attribute [nontriviality] eq_iff_true_of_subsingleton
 
 namespace Lean
 

@@ -10,7 +10,6 @@ Authors: Simon Hudon
 -/
 import Mathlib.Init.Control.Lawful
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Control.SimpSet
 import Mathlib.Tactic.Common
 
 /-!
