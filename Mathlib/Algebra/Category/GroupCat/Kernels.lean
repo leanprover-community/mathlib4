@@ -13,7 +13,7 @@ namespace AddCommGroupCat
 
 variable {M N : AddCommGroupCat.{u}} (f : M ⟶ N)
 
-instance : HasZeroMorphisms AddCommGroupCat := by refine HasZeroMorphisms.mk
+instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
 
 
 #check @KernelFork.ofι AddCommGroupCat _ _ M N f
@@ -23,14 +23,12 @@ def kernelCone : KernelFork f :=
   @KernelFork.ofι AddCommGroupCat _ _ M N f (of f.ker) (f.ker.subtype : of f.ker ⟶ M)
    <| by
    ext x
-   simp
-   rcases x with ⟨x, hx⟩
-   exact hx
-   --assumption
+   cases x
+   assumption
 
 
 instance : AddSubmonoidClass (AddSubgroup M) ((parallelPair f 0).obj WalkingParallelPair.zero) :=
-by sorry
+by simp
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernel_is_limit : IsLimit (kernelCone f) :=
