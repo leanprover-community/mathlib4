@@ -1,11 +1,8 @@
-
-import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.Basic
+import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
-open CategoryTheory
-open CategoryTheory.Limits
-open CategoryTheory.Limits.WalkingParallelPair
+open CategoryTheory Limits WalkingParallelPair
 
 universe u
 
@@ -13,22 +10,16 @@ namespace AddCommGroupCat
 
 variable {M N : AddCommGroupCat.{u}} (f : M ⟶ N)
 
-instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
-
-
-#check @KernelFork.ofι AddCommGroupCat _ _ M N f
+instance : HasZeroMorphisms AddCommGroupCat := by refine HasZeroMorphisms.mk
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
-  @KernelFork.ofι AddCommGroupCat _ _ M N f (of f.ker) (f.ker.subtype : of f.ker ⟶ M)
-   <| by
-   ext x
-   cases x
-   assumption
+  KernelFork.ofι (Z := of f.ker) (f.ker.subtype : of f.ker ⟶ M) <|
+    ext fun x ↦ Subtype.casesOn x fun _ hx => hx
 
-
-instance : AddSubmonoidClass (AddSubgroup M) ((parallelPair f 0).obj WalkingParallelPair.zero) :=
-by simp
+instance : AddSubmonoidClass (AddSubgroup M) ((parallelPair f 0).obj WalkingParallelPair.zero) where
+  add_mem := by exact fun {s} {a b} a_1 a_2 ↦ AddSubgroup.add_mem s a_1 a_2
+  zero_mem := by exact fun s ↦ AddSubgroup.zero_mem s
 
 /-- The kernel of a linear map is a kernel in the categorical sense. -/
 def kernel_is_limit : IsLimit (kernelCone f) :=
@@ -61,7 +52,6 @@ def cokernel_cocone : cokernel_cofork f :=
 @cokernel_cofork.of_π AddCommGroup _ _ M N f (of $ N ⧸ f.range) (quotient_add_group.mk' f.range) $
 by { ext1, simp only [comp_apply, quotient_add_group.mk'_apply, zero_apply,
   quotient_add_group.eq_zero_iff, add_monoid_hom.mem_range, exists_apply_eq_apply], }
-
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernel_is_colimit : is_colimit (cokernel_cocone f) :=
 cofork.is_colimit.mk _
@@ -79,32 +69,24 @@ cofork.is_colimit.mk _
     convert h,
     ext, refl,
   end)
-
 -- We now show this isomorphism commutes with the inclusion of the kernel into the source.
-
 -- TODO: the next two already exist: add `elementwise` to those lemmas in mathlib
-
 @[simp, elementwise] lemma kernel_iso_ker_inv_kernel_ι :
   (kernel_iso_ker f).inv ≫ kernel.ι f = f.ker.subtype :=
 kernel_iso_ker_inv_comp_ι _
-
 @[simp, elementwise] lemma kernel_iso_ker_hom_ker_subtype :
   (kernel_iso_ker f).hom ≫ f.ker.subtype = kernel.ι f :=
 kernel_iso_ker_hom_comp_subtype _
-
 /--
 The categorical cokernel of a morphism in `Module`
 agrees with the usual module-theoretical quotient.
 -/
 noncomputable def cokernel_iso_range_quotient : cokernel f ≅ of (N ⧸ f.range) :=
 colimit.iso_colimit_cocone ⟨_, cokernel_is_colimit f⟩
-
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
-
 @[simp, elementwise] lemma cokernel_π_cokernel_iso_range_quotient_hom :
   cokernel.π f ≫ (cokernel_iso_range_quotient f).hom = quotient_add_group.mk' f.range :=
 by { convert colimit.iso_colimit_cocone_ι_hom _ _; refl, }
-
 @[simp, elementwise] lemma range_mkq_cokernel_iso_range_quotient_inv :
   (by exact quotient_add_group.mk' f.range : _) ≫ (cokernel_iso_range_quotient f).inv = cokernel.π f :=
 by { convert colimit.iso_colimit_cocone_ι_inv ⟨_, cokernel_is_colimit f⟩ _; refl, }
