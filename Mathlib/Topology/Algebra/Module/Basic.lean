@@ -1302,7 +1302,7 @@ theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) =
   ext fun _c => rfl
 #align continuous_linear_map.proj_pi ContinuousLinearMap.proj_pi
 
-theorem iInf_ker_proj : ⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i) = ⊥ :=
+theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
   LinearMap.iInf_ker_proj
 #align continuous_linear_map.infi_ker_proj ContinuousLinearMap.iInf_ker_proj
 

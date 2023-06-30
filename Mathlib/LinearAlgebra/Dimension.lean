@@ -108,7 +108,7 @@ The definition is marked as protected to avoid conflicts with `_root_.rank`,
 the rank of a linear map.
 -/
 protected irreducible_def Module.rank : Cardinal :=
-  ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, #ι.1
+  ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
 #align module.rank Module.rank
 
 end
