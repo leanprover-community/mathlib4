@@ -8,24 +8,19 @@ Authors: Markus Himmel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
-import Mathlib.Algebra.Category.GroupCat.Limits
-import Mathlib.Algebra.Category.GroupCat.Kernels
 import Mathlib.Algebra.Category.GroupCat.Colimits
-import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.Algebra.Category.GroupCat.Kernels
+import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Algebra.Category.GroupCat.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 
 /-!
 # The category of abelian groups is abelian
 -/
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u
 
@@ -55,57 +50,28 @@ end
 
 /-- The category of abelian groups is abelian. -/
 instance : Abelian AddCommGroupCat.{u} where
-  has_finite_products := ⟨by infer_instance⟩
+  has_finite_products := ⟨HasFiniteProducts.out⟩
   normalMonoOfMono := normalMono
   normalEpiOfEpi := normalEpi
-  add_comp := by
-    intros
-    simp only [Preadditive.add_comp]
-  comp_add := by
-    intros
-    simp only [Preadditive.comp_add]
-
-variable {J : Type u} [SmallCategory J] [IsFiltered J]
+  add_comp := by exact Preadditive.add_comp
+  comp_add := by exact Preadditive.comp_add
 
 variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
-
-def ker_le_range_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
-   g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype  = 0 := by
-  constructor
-  · intro h
-    aesop_cat
-  · intro h
-    sorry
 
 theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
-    ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
-      ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
-
+    ⟨fun h => le_antisymm (range_le_ker_iff.mpr h.left) (ker_le_range_iff.mpr h.right),
+      fun h => ⟨range_le_ker_iff.mp <| le_of_eq h, ker_le_range_iff.mp <| le_of_eq h.symm⟩⟩
 
 theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Exact f g ↔ (f ≫ g = 0 ∧ g.ker ≤ f.range) := by
+    Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
   rw [exact_iff, le_antisymm_iff]
-  refine' and_congr _ Iff.rfl
-  constructor
-  · intro h
-    ext x
-    exact h <| AddMonoidHom.mem_range.mpr ⟨x, rfl⟩
-  · rintro h x'
-    rintro ⟨x, rfl⟩
-    exact FunLike.congr_fun h x
+  exact and_congr ⟨fun h => ext fun x => h (AddMonoidHom.mem_range.mpr ⟨x, rfl⟩),
+    by rintro h _ ⟨x, rfl⟩; exact FunLike.congr_fun h x⟩ Iff.rfl
 
-universe v u'
-variable {A : Type u} {B : Type u'} [Category.{v} A] [Category.{v} B]
-  [Abelian A] [Abelian B] (F G : A ⥤ B) [Functor.Additive F] [Functor.Additive G] (φ : F ⟶ G)
-
-
-def Functor.Exact : Prop :=
-    ∀ ⦃X Y Z : A⦄ (f : X ⟶ Y) (g : Y ⟶ Z),
-    CategoryTheory.Exact f g → CategoryTheory.Exact (F.map f) (F.map g)
-
+variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
 -- Axiom AB5 for `AddCommGroup`
 theorem exact_colim_of_exact_of_is_filtered
@@ -140,4 +106,5 @@ theorem exact_colim_of_exact_of_is_filtered
     erw [← comp_apply, Limits.colimit.ι_map, comp_apply, ht, ← comp_apply]
     congr 1
     simp
+
 end AddCommGroupCat
