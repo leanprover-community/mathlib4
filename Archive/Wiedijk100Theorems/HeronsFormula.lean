@@ -32,7 +32,7 @@ local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue 
 
 namespace Theorems100
 
-local notation "√" => Real.sqrt
+local notation:max "√" => Real.sqrt
 
 variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
