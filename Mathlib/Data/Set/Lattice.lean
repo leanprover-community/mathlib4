@@ -28,7 +28,7 @@ for `Set α`, and some more set constructions.
   `⋃₀ s = ⋃ x ∈ s, x`.
 * `Set.completeBooleanAlgebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
   `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
-* `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
+* `Set.kernImage`: For a function `f : α → β`, `s.kernImage f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
   of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
@@ -185,6 +185,20 @@ instance : CompleteBooleanAlgebra (Set α) :=
     iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
     inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
 
+section kernImage
+
+/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
+def kernImage (f : α → β) (s : Set α) : Set β :=
+  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
+#align set.kern_image Set.kernImage
+
+lemma kernImage_eq_compl (s : Set α) : s.kernImage m = (m '' sᶜ)ᶜ := by
+  ext x
+  simp only [kernImage, mem_setOf_eq, mem_compl_iff, mem_image, not_exists, not_and]
+  exact forall_congr' (fun _ ↦ not_imp_not.symm)
+
+end kernImage
+
 section GaloisConnection
 
 variable {f : α → β}
@@ -192,11 +206,6 @@ variable {f : α → β}
 protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fun _ _ =>
   image_subset_iff
 #align set.image_preimage Set.image_preimage
-
-/-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
-def kernImage (f : α → β) (s : Set α) : Set β :=
-  { y | ∀ ⦃x⦄, f x = y → x ∈ s }
-#align set.kern_image Set.kernImage
 
 protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun a _ =>
   ⟨fun h _ hx y hy =>
