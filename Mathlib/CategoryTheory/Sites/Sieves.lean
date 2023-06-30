@@ -251,7 +251,7 @@ structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   downward_closed : ∀ {Y Z f} (_ : arrows f) (g : Z ⟶ Y), arrows (g ≫ f)
 #align category_theory.sieve CategoryTheory.Sieve
 
-pp_extended_field_notation Sieve.arrows
+attribute [pp_dot] Sieve.arrows
 
 namespace Sieve
 

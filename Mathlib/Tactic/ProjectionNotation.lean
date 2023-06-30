@@ -3,24 +3,24 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-
 import Lean
 import Lean.Elab.AuxDef
+import Std.Lean.Command
 
 /-!
 # Commands for configuring projection notation
 
-This module contains some relatively simple commands that can be used
-to configure functions to pretty print with projection
-notation (i.e., like `x.f y` rather than `C.f x y`).
+This module contains a command, `pp_extended_field_notation` (with a corresponding `@[pp_dot]`
+attribute to conveniently run it), that can be used to configure functions to pretty print
+using projection notation (i.e., like `x.f y` rather than `C.f x y`).
 
-One of these commands is for collapsing chains of ancestor projections.
+This module also contains a delaborator for collapsing chains of ancestor projections.
 For example, to turn `x.toFoo.toBar` into `x.toBar`.
 -/
 
 namespace Mathlib.ProjectionNotation
 
-open Lean Parser Term
+open Lean Parser Elab Term
 open PrettyPrinter.Delaborator SubExpr
 open Lean.Elab.Command
 
@@ -80,9 +80,8 @@ Example for generalized field notation:
 structure A where
   n : Nat
 
+@[pp_dot]
 def A.foo (a : A) (m : Nat) : Nat := a.n + m
-
-pp_extended_field_notation A.foo
 ```
 Now, `A.foo x m` pretty prints as `x.foo m`. If `A` is a structure, it also adds a rule that
 `A.foo x.toA m` pretty prints as `x.foo m`. This rule is meant to combine with
@@ -94,15 +93,17 @@ it might lead to output that does not round trip, though this can only occur if
 there exists an `A`-valued `toA` function that is not a parent projection that
 happens to be pretty printable using dot notation.
 
+The `@[pp_dot]` attribute on a declaration `f` is equivalent to running the command
+`pp_extended_field_notation f`.
+
 Here is an example to illustrate the round tripping issue:
 ```lean
 import Mathlib.Tactic.ProjectionNotation
 
 structure A where n : Int
 
+@[pp_dot]
 def A.inc (a : A) (k : Int) : Int := a.n + k
-
-pp_extended_field_notation A.inc
 
 structure B where n : Nat
 
@@ -113,17 +114,17 @@ variable (b : B)
 #check A.inc b.toA 1
 -- (B.toA b).inc 1 : Int
 
-pp_extended_field_notation B.toA
+attribute [pp_dot] B.toA
 #check A.inc b.toA 1
 -- b.inc 1 : Int
 
 #check b.inc 1
 -- invalid field 'inc', the environment does not contain 'B.inc'
 ```
-To avoid this, don't use `pp_extended_field_notation` for coercion functions
+To avoid this, don't use `pp_dot` for coercion functions
 such as `B.toA`.
 -/
-elab "pp_extended_field_notation " f:Term.ident : command => do
+elab (name := ppDotCmd) "pp_extended_field_notation " f:Term.ident : command => do
   let f ← liftTermElabM <| Elab.resolveGlobalConstNoOverloadWithInfo f
   let .str A projName := f |
     throwError "Projection name must end in a string component."
@@ -150,4 +151,19 @@ elab "pp_extended_field_notation " f:Term.ident : command => do
         | `($$_ $$x $$args*) => set_option hygiene false in `($$(x).$(mkIdent projName) $$args*)
         | _ => throw ())
 
-namespace Mathlib.ProjectionNotation
+@[inherit_doc ppDotCmd]
+syntax (name := ppDotAttr) "pp_dot" : attr
+
+initialize registerBuiltinAttribute {
+  name := `ppDotAttr
+  descr := ""
+  applicationTime := .afterCompilation
+  add := fun src ref kind => match ref with
+  | `(attr| pp_dot) => do
+    if (kind != AttributeKind.global) then
+      throwError "`pp_dot` currently only supports being a global attribute"
+    liftCommandElabM <| withRef ref do
+      elabCommand <| ← `(pp_extended_field_notation $(mkIdent src))
+  | _ => throwUnsupportedSyntax }
+
+end Mathlib.ProjectionNotation
