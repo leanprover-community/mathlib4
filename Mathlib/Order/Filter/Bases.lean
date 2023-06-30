@@ -1146,12 +1146,12 @@ instance coprod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCounta
 end IsCountablyGenerated
 
 theorem isCountablyGenerated_seq [Countable β] (x : β → Set α) :
-    IsCountablyGenerated (⨅ i, 𝓟 <| x i) := by
+    IsCountablyGenerated (⨅ i, 𝓟 (x i)) := by
   use range x, countable_range x
   rw [generate_eq_biInf, iInf_range]
 #align filter.is_countably_generated_seq Filter.isCountablyGenerated_seq
 
-theorem isCountablyGenerated_of_seq {f : Filter α} (h : ∃ x : ℕ → Set α, f = ⨅ i, 𝓟 <| x i) :
+theorem isCountablyGenerated_of_seq {f : Filter α} (h : ∃ x : ℕ → Set α, f = ⨅ i, 𝓟 (x i)) :
     f.IsCountablyGenerated := by
   rcases h with ⟨x, rfl⟩
   apply isCountablyGenerated_seq
