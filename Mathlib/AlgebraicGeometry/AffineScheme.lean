@@ -261,7 +261,6 @@ theorem IsAffineOpen.imageIsOpenImmersion {X Y : Scheme} {U : Opens X} (hU : IsA
   exact Set.image_eq_range _ _
 #align algebraic_geometry.is_affine_open.image_is_open_immersion AlgebraicGeometry.IsAffineOpen.imageIsOpenImmersion
 
-set_option maxHeartbeats 0 in
 theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     (U : Opens X) : IsAffineOpen (H.openFunctor.obj U) ↔ IsAffineOpen U := by
   -- Porting note : add this instance explicitly
@@ -364,7 +363,7 @@ theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffine
     exact Scheme.basicOpen_le _ _
   rw [Scheme.Hom.opensRange_coe, Scheme.comp_val_base, ← this, coe_comp, Set.range_comp]
   -- Porting note : `congr 1` did not work
-  apply congr_arg (_ '' .)
+  apply congr_arg (_ '' ·)
   refine' (Opens.coe_inj.mpr <| Scheme.preimage_basicOpen hU.fromSpec f).trans _
   refine' Eq.trans _ (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
   congr 1
@@ -474,7 +473,7 @@ theorem IsAffineOpen.opens_map_fromSpec_basicOpen {X : Scheme} {U : Opens X}
       (Scheme.Spec.obj <| op <| X.presheaf.obj (op U)).toLocallyRingedSpace.toRingedSpace
       (eqToHom hU.fromSpec_base_preimage).op _)
   -- Porting note : `congr` does not work
-  refine congr_arg (RingedSpace.basicOpen _ .) ?_
+  refine congr_arg (RingedSpace.basicOpen _ ·) ?_
   -- Porting note : change `rw` to `erw`
   erw [← comp_apply]
   congr
@@ -699,7 +698,7 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   convert hU.isLocalization_stalk' y hx
 #align algebraic_geometry.is_affine_open.is_localization_stalk AlgebraicGeometry.IsAffineOpen.isLocalization_stalk
 
-/-- The basic open set of a section `f` on an an affine open as an `X.affine_opens`. -/
+/-- The basic open set of a section `f` on an an affine open as an `X.affineOpens`. -/
 @[simps]
 def Scheme.affineBasicOpen (X : Scheme) {U : X.affineOpens} (f : X.presheaf.obj <| op U) :
     X.affineOpens :=
@@ -758,7 +757,7 @@ theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
     -- Porting note : need an extra rewrite here, after simp, it is in `↔` form
     rw [iff_iff_eq]
     congr 3
-    · refine congr_arg (Set.iUnion .) ?_
+    · refine congr_arg (Set.iUnion ·) ?_
       ext1 x
       exact congr_arg Opens.carrier (hU.fromSpec_map_basicOpen _)
     · exact congr_arg Opens.carrier hU.fromSpec_base_preimage
