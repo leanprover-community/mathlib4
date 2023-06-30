@@ -205,7 +205,7 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) :
-    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : (⨆ n, ℱ n) ≤ m0),
+    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   rw [@ae_iff _ (⨆ n, ℱ n) _ _, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
@@ -224,7 +224,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     rw [limitProcess, dif_pos this]
     exact (Classical.choose_spec this).2
   set g' : Ω → ℝ := fun ω => if h : ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) then h.choose else 0
-  have hle : (⨆ n, ℱ n) ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
     simp_rw [dif_pos hω]
@@ -375,7 +375,7 @@ This martingale also converges to `g` in L¹ and this result is provided by
 theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g|ℱ n]) x) atTop (𝓝 (g x)) := by
-  have hle : (⨆ n, ℱ n) ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hunif : UniformIntegrable (fun n => μ[g|ℱ n]) 1 μ :=
     hg.uniformIntegrable_condexp_filtration
   obtain ⟨R, hR⟩ := hunif.2.2

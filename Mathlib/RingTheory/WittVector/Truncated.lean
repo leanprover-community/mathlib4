@@ -430,7 +430,7 @@ theorem card {R : Type _} [Fintype R] :
 
 end Fintype
 
-theorem iInf_ker_truncate : (⨅ i : ℕ, RingHom.ker (@WittVector.truncate p _ i R _)) = ⊥ := by
+theorem iInf_ker_truncate : ⨅ i : ℕ, RingHom.ker (@WittVector.truncate p _ i R _) = ⊥ := by
   rw [Submodule.eq_bot_iff]
   intro x hx
   ext

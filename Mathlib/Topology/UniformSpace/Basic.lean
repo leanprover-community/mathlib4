@@ -149,7 +149,7 @@ def compRel (r₁ r₂ : Set (α × α)) :=
 #align comp_rel compRel
 
 @[inherit_doc]
-scoped[Uniformity] infixl:55 " ○ " => compRel
+scoped[Uniformity] infixl:62 " ○ " => compRel
 open Uniformity
 
 @[simp]
@@ -922,7 +922,7 @@ theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
 #align nhds_le_uniformity nhds_le_uniformity
 
 /-- Entourages are neighborhoods of the diagonal. -/
-theorem iSup_nhds_le_uniformity : (⨆ x : α, 𝓝 (x, x)) ≤ 𝓤 α :=
+theorem iSup_nhds_le_uniformity : ⨆ x : α, 𝓝 (x, x) ≤ 𝓤 α :=
   iSup_le nhds_le_uniformity
 #align supr_nhds_le_uniformity iSup_nhds_le_uniformity
 
@@ -1019,7 +1019,7 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
-    (⋃ x ∈ s, ball x U) = univ := by
+    ⋃ x ∈ s, ball x U = univ := by
   refine' iUnion₂_eq_univ_iff.2 fun y => _
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
@@ -1173,7 +1173,7 @@ instance : InfSet (UniformSpace α) :=
 
 protected theorem UniformSpace.sInf_le {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : t ∈ tt) : sInf tt ≤ t :=
-  show (⨅ u ∈ tt, 𝓤[u]) ≤ 𝓤[t] from iInf₂_le t h
+  show ⨅ u ∈ tt, 𝓤[u] ≤ 𝓤[t] from iInf₂_le t h
 
 protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=

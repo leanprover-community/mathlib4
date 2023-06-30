@@ -738,8 +738,8 @@ theorem IsAffineOpen.fromSpec_map_basicOpen {X : Scheme} {U : Opens X} (hU : IsA
 
 theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) (s : Set (X.presheaf.obj <| op U)) :
-    (⨆ f : s, X.basicOpen (f : X.presheaf.obj <| op U)) = U ↔ Ideal.span s = ⊤ := by
-  trans (⋃ i : s, (PrimeSpectrum.basicOpen i.1).1) = Set.univ
+    ⨆ f : s, X.basicOpen (f : X.presheaf.obj <| op U) = U ↔ Ideal.span s = ⊤ := by
+  trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
   trans
     hU.fromSpec.1.base ⁻¹' (⨆ f : s, X.basicOpen (f : X.presheaf.obj <| op U)).1 =
       hU.fromSpec.1.base ⁻¹' U.1

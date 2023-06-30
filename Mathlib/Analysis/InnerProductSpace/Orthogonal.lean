@@ -178,12 +178,12 @@ theorem inf_orthogonal (K₁ K₂ : Submodule 𝕜 E) : K₁ᗮ ⊓ K₂ᗮ = (K
 
 /-- The inf of an indexed family of orthogonal subspaces equals the
 subspace orthogonal to the sup. -/
-theorem iInf_orthogonal {ι : Type _} (K : ι → Submodule 𝕜 E) : (⨅ i, (K i)ᗮ) = (iSup K)ᗮ :=
+theorem iInf_orthogonal {ι : Type _} (K : ι → Submodule 𝕜 E) : ⨅ i, (K i)ᗮ = (iSup K)ᗮ :=
   (orthogonal_gc 𝕜 E).l_iSup.symm
 #align submodule.infi_orthogonal Submodule.iInf_orthogonal
 
 /-- The inf of a set of orthogonal subspaces equals the subspace orthogonal to the sup. -/
-theorem sInf_orthogonal (s : Set <| Submodule 𝕜 E) : (⨅ K ∈ s, Kᗮ) = (sSup s)ᗮ :=
+theorem sInf_orthogonal (s : Set <| Submodule 𝕜 E) : ⨅ K ∈ s, Kᗮ = (sSup s)ᗮ :=
   (orthogonal_gc 𝕜 E).l_sSup.symm
 #align submodule.Inf_orthogonal Submodule.sInf_orthogonal
 

@@ -1244,7 +1244,7 @@ instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → Intermediate
     {s : Finset ι} [h : ∀ i, FiniteDimensional K (f i)] :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i
-  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+  have : ⨆ i ∈ s, f i = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite
@@ -1256,7 +1256,7 @@ theorem finiteDimensional_iSup_of_finset' {ι : Type _} {f : ι → Intermediate
     {s : Finset ι} (h : ∀ i, i ∈ s → FiniteDimensional K (f i)) :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i i.2
-  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+  have : ⨆ i ∈ s, f i = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite

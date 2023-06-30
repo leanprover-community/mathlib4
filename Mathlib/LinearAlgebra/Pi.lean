@@ -298,19 +298,19 @@ theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q 
 #align submodule.pi_mono Submodule.pi_mono
 
 theorem biInf_comap_proj :
-    (⨅ i ∈ I, comap (proj i : ((i : ι) →  φ i) →ₗ[R] φ i) (p i)) = pi I p := by
+    ⨅ i ∈ I, comap (proj i : ((i : ι) →  φ i) →ₗ[R] φ i) (p i) = pi I p := by
   ext x
   simp
 #align submodule.binfi_comap_proj Submodule.biInf_comap_proj
 
 theorem iInf_comap_proj :
-    (⨅ i, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i)) = pi Set.univ p := by
+    ⨅ i, comap (proj i : ((i : ι) → φ i) →ₗ[R] φ i) (p i) = pi Set.univ p := by
   ext x
   simp
 #align submodule.infi_comap_proj Submodule.iInf_comap_proj
 
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
-    (⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i)) = pi Set.univ p := by
+    ⨆ i, map (LinearMap.single i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
   refine' (iSup_le fun i => _).antisymm _
   · rintro _ ⟨x, hx : x ∈ p i, rfl⟩ j -

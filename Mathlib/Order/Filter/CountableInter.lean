@@ -75,19 +75,19 @@ theorem eventually_countable_ball {ι : Type _} {S : Set ι} (hS : S.Countable)
 #align eventually_countable_ball eventually_countable_ball
 
 theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
-    (⋃ i, s i) ≤ᶠ[l] ⋃ i, t i :=
+    ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 #align eventually_le.countable_Union EventuallyLE.countable_iUnion
 
 theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
-    (⋃ i, s i) =ᶠ[l] ⋃ i, t i :=
+    ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
   (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
     (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
 #align eventually_eq.countable_Union EventuallyEq.countable_iUnion
 
 theorem EventuallyLE.countable_bUnion {ι : Type _} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    (⋃ i ∈ S, s i ‹_›) ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
+    ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
   haveI := hS.toEncodable
   exact EventuallyLE.countable_iUnion fun i => h i i.2
@@ -95,26 +95,26 @@ theorem EventuallyLE.countable_bUnion {ι : Type _} {S : Set ι} (hS : S.Countab
 
 theorem EventuallyEq.countable_bUnion {ι : Type _} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    (⋃ i ∈ S, s i ‹_›) =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
+    ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
   (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).symm.le)
 #align eventually_eq.countable_bUnion EventuallyEq.countable_bUnion
 
 theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
-    (⋂ i, s i) ≤ᶠ[l] ⋂ i, t i :=
+    ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 #align eventually_le.countable_Inter EventuallyLE.countable_iInter
 
 theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
-    (⋂ i, s i) =ᶠ[l] ⋂ i, t i :=
+    ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
   (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
     (EventuallyLE.countable_iInter fun i => (h i).symm.le)
 #align eventually_eq.countable_Inter EventuallyEq.countable_iInter
 
 theorem EventuallyLE.countable_bInter {ι : Type _} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    (⋂ i ∈ S, s i ‹_›) ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
+    ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
   haveI := hS.toEncodable
   exact EventuallyLE.countable_iInter fun i => h i i.2
@@ -122,7 +122,7 @@ theorem EventuallyLE.countable_bInter {ι : Type _} {S : Set ι} (hS : S.Countab
 
 theorem EventuallyEq.countable_bInter {ι : Type _} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    (⋂ i ∈ S, s i ‹_›) =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
+    ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
   (EventuallyLE.countable_bInter hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.countable_bInter hS fun i hi => (h i hi).symm.le)
 #align eventually_eq.countable_bInter EventuallyEq.countable_bInter

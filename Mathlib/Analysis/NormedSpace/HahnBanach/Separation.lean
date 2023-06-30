@@ -206,7 +206,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
 
 /-- A closed convex set is the intersection of the halfspaces containing it. -/
 theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
-    (⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y }) = s := by
+    ⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y } = s := by
   rw [Set.iInter_setOf]
   refine' Set.Subset.antisymm (fun x hx => _) fun x hx l => ⟨x, hx, le_rfl⟩
   by_contra h

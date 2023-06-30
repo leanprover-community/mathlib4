@@ -171,7 +171,7 @@ theorem coe_iInf {ι} (s : ι → Closeds α) : ((⨅ i, s i : Closeds α) : Set
 #align topological_space.closeds.coe_infi TopologicalSpace.Closeds.coe_iInf
 
 theorem iInf_def {ι} (s : ι → Closeds α) :
-    (⨅ i, s i) = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
+    ⨅ i, s i = ⟨⋂ i, s i, isClosed_iInter fun i => (s i).2⟩ := by ext1; simp
 #align topological_space.closeds.infi_def TopologicalSpace.Closeds.iInf_def
 
 @[simp]

@@ -261,7 +261,7 @@ theorem nhds_of_ne_top (xt : x ≠ ⊤) : 𝓝 x = ⨅ ε > 0, 𝓟 (Icc (x - ε
   (hasBasis_nhds_of_ne_top xt).eq_biInf
 #align ennreal.nhds_of_ne_top ENNReal.nhds_of_ne_top
 
-theorem biInf_le_nhds : ∀ x : ℝ≥0∞, (⨅ ε > 0, 𝓟 (Icc (x - ε) (x + ε))) ≤ 𝓝 x
+theorem biInf_le_nhds : ∀ x : ℝ≥0∞, ⨅ ε > 0, 𝓟 (Icc (x - ε) (x + ε)) ≤ 𝓝 x
   | ⊤ => iInf₂_le_of_le 1 one_pos <| by
     simpa only [← coe_one, top_sub_coe, top_add, Icc_self, principal_singleton] using pure_le_nhds _
   | (x : ℝ≥0) => (nhds_of_ne_top coe_ne_top).ge
@@ -483,9 +483,9 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ 
   exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| eventually_of_forall h)
 #align ennreal.le_of_forall_lt_one_mul_le ENNReal.le_of_forall_lt_one_mul_le
 
-theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ⊤ → (⨅ i, f i) = 0 → ∃ i, f i = 0)
-    (h0 : a = 0 → Nonempty ι) : (⨅ i, a * f i) = a * ⨅ i, f i := by
-  by_cases H : a = ⊤ ∧ (⨅ i, f i) = 0
+theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ⊤ → ⨅ i, f i = 0 → ∃ i, f i = 0)
+    (h0 : a = 0 → Nonempty ι) : ⨅ i, a * f i = a * ⨅ i, f i := by
+  by_cases H : a = ⊤ ∧ ⨅ i, f i = 0
   · rcases h H.1 H.2 with ⟨i, hi⟩
     rw [H.2, mul_zero, ← bot_eq_zero, iInf_eq_bot]
     exact fun b hb => ⟨i, by rwa [hi, mul_zero, ← bot_eq_zero]⟩
@@ -498,17 +498,17 @@ theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = �
 #align ennreal.infi_mul_left' ENNReal.iInf_mul_left'
 
 theorem iInf_mul_left {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
-    (h : a = ⊤ → (⨅ i, f i) = 0 → ∃ i, f i = 0) : (⨅ i, a * f i) = a * ⨅ i, f i :=
+    (h : a = ⊤ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, a * f i = a * ⨅ i, f i :=
   iInf_mul_left' h fun _ => ‹Nonempty ι›
 #align ennreal.infi_mul_left ENNReal.iInf_mul_left
 
-theorem iInf_mul_right' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ⊤ → (⨅ i, f i) = 0 → ∃ i, f i = 0)
-    (h0 : a = 0 → Nonempty ι) : (⨅ i, f i * a) = (⨅ i, f i) * a := by
+theorem iInf_mul_right' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ⊤ → ⨅ i, f i = 0 → ∃ i, f i = 0)
+    (h0 : a = 0 → Nonempty ι) : ⨅ i, f i * a = (⨅ i, f i) * a := by
   simpa only [mul_comm a] using iInf_mul_left' h h0
 #align ennreal.infi_mul_right' ENNReal.iInf_mul_right'
 
 theorem iInf_mul_right {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
-    (h : a = ⊤ → (⨅ i, f i) = 0 → ∃ i, f i = 0) : (⨅ i, f i * a) = (⨅ i, f i) * a :=
+    (h : a = ⊤ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, f i * a = (⨅ i, f i) * a :=
   iInf_mul_right' h fun _ => ‹Nonempty ι›
 #align ennreal.infi_mul_right ENNReal.iInf_mul_right
 
@@ -797,7 +797,7 @@ protected theorem tsum_eq_iSup_sum' {ι : Type _} (s : ι → Finset α) (hs : �
     (∑' a, f a) = ⨆ i, ∑ a in s i, f a := by
   rw [ENNReal.tsum_eq_iSup_sum]
   symm
-  change (⨆ i : ι, (fun t : Finset α => ∑ a in t, f a) (s i)) = ⨆ s : Finset α, ∑ a in s, f a
+  change ⨆ i : ι, (fun t : Finset α => ∑ a in t, f a) (s i) = ⨆ s : Finset α, ∑ a in s, f a
   exact (Finset.sum_mono_set f).iSup_comp_eq hs
 #align ennreal.tsum_eq_supr_sum' ENNReal.tsum_eq_iSup_sum'
 

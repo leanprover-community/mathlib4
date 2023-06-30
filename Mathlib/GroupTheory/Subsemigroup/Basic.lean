@@ -457,7 +457,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Subsemigroup M) {m : M} :
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort _} (p : ι → Subsemigroup M) :
-    (⨆ i, p i) = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
+    ⨆ i, p i = Subsemigroup.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Subsemigroup.closure_iUnion, Subsemigroup.closure_eq]
 #align subsemigroup.supr_eq_closure Subsemigroup.iSup_eq_closure
 #align add_subsemigroup.supr_eq_closure AddSubsemigroup.iSup_eq_closure
