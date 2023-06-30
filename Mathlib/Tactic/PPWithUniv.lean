@@ -4,18 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
 import Lean
+import Std.Lean.Command
 
 /-!
-# Command to pretty-print universe level parameters by default
+# Attribute to pretty-print universe level parameters by default
 
-This module contains the `pp_with_univ` command, which enables pretty-printing
-of universe parameters for the specified definition.  This is helpful for definitions like
+This module contains the `pp_with_univ` attribute, which enables pretty-printing
+of universe parameters for the associated declaration.  This is helpful for definitions like
 `Ordinal`, where the universe levels are both relevant and not deducible from the arguments.
 -/
 
 namespace Mathlib.PPWithUniv
 
-open Lean PrettyPrinter Delaborator SubExpr Elab Command
+open Lean Parser PrettyPrinter Delaborator SubExpr Elab Command
 
 /--
 Delaborator that prints the current application with universe parameters on the head symbol,
@@ -31,10 +32,19 @@ def delabWithUniv : Delab :=
     delabAppImplicit <|> delabAppExplicit
 
 /--
-`pp_with_univ Ordinal` instructs the pretty-printer to
+`attribute [pp_with_univ] Ordinal` instructs the pretty-printer to
 print `Ordinal.{u}` with universe parameters by default
 (unless `pp.universes` is explicitly set to `false`).
 -/
-elab "pp_with_univ " id:ident : command => do
-  let id ← resolveGlobalConstNoOverloadWithInfo id
-  elabCommand <| ← `(@[delab $(mkIdent <| `app ++ id)] def delab := delabWithUniv)
+syntax (name := ppWithUnivAttr) "pp_with_univ" : attr
+
+initialize registerBuiltinAttribute {
+  name := `ppWithUnivAttr
+  descr := ""
+  applicationTime := .afterCompilation
+  add := fun src ref kind => match ref with
+  | `(attr| pp_with_univ) => do
+    liftCommandElabM <| withRef ref do
+      let attr ← Elab.elabAttr <| ← `(Term.attrInstance| delab $(mkIdent <| `app ++ src))
+      liftTermElabM <| Term.applyAttributes ``delabWithUniv #[{attr with kind}]
+  | _ => throwUnsupportedSyntax }

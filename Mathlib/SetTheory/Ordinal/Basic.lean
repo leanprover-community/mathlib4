@@ -151,10 +151,10 @@ instance Ordinal.isEquivalent : Setoid WellOrder
 #align ordinal.is_equivalent Ordinal.isEquivalent
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
+@[pp_with_univ]
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 #align ordinal Ordinal
-pp_with_univ Ordinal
 
 instance hasWellFoundedOut (o : Ordinal) : WellFoundedRelation o.out.α :=
   ⟨o.out.r, o.out.wo.wf⟩
