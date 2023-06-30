@@ -13,7 +13,7 @@ import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.Data.List.TFAE
 
-/-!  h y y y y y y j
+/-!
 # Properties of morphisms between Schemes
 
 We provide the basic framework for talking about properties of morphisms between Schemes.
