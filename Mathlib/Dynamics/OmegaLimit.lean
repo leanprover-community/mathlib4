@@ -241,7 +241,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   let k := closure (image2 ϕ v s)
   have hk : IsCompact (k \ n) :=
     IsCompact.diff (isCompact_of_isClosed_subset hc₁ isClosed_closure hv₂) hn₁
-  let j u := closure (image2 ϕ (u ∩ v) s)ᶜ
+  let j u := (closure (image2 ϕ (u ∩ v) s))ᶜ
   have hj₁ : ∀ u ∈ f, IsOpen (j u) := fun _ _ ↦ isOpen_compl_iff.mpr isClosed_closure
   have hj₂ : k \ n ⊆ ⋃ u ∈ f, j u := by
     have : (⋃ u ∈ f, j u) = ⋃ u : (↥f.sets), j u := biUnion_eq_iUnion _ _
@@ -253,14 +253,14 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
   rcases hk.elim_finite_subcover_image hj₁ hj₂ with ⟨g, hg₁ : ∀ u ∈ g, u ∈ f, hg₂, hg₃⟩
   let w := (⋂ u ∈ g, u) ∩ v
   have hw₂ : w ∈ f := by simpa [*]
-  have hw₃ : k \ n ⊆ closure (image2 ϕ w s)ᶜ := by
+  have hw₃ : k \ n ⊆ (closure (image2 ϕ w s))ᶜ := by
     apply Subset.trans hg₃
     simp only [iUnion_subset_iff, compl_subset_compl]
     intros u hu
     mono
     refine' iInter_subset_of_subset u (iInter_subset_of_subset hu _)
     all_goals exact Subset.rfl
-  have hw₄ : kᶜ ⊆ closure (image2 ϕ w s)ᶜ := by
+  have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
     simp only [compl_subset_compl]
     exact closure_mono (image2_subset (inter_subset_right _ _) Subset.rfl)
   have hnc : nᶜ ⊆ k \ n ∪ kᶜ := by rw [union_comm, ← inter_subset, diff_eq, inter_comm]

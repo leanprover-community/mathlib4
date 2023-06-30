@@ -55,7 +55,7 @@ theorem ContinuousLinearMap.dslope_comp {F : Type _} [NormedAddCommGroup F] [Nor
   · simpa only [dslope_of_ne _ hne] using f.toLinearMap.slope_comp g a b
 #align continuous_linear_map.dslope_comp ContinuousLinearMap.dslope_comp
 
-theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) ({a}ᶜ) := fun _ =>
+theorem eqOn_dslope_slope (f : 𝕜 → E) (a : 𝕜) : EqOn (dslope f a) (slope f a) {a}ᶜ := fun _ =>
   dslope_of_ne f
 #align eq_on_dslope_slope eqOn_dslope_slope
 
@@ -78,7 +78,7 @@ theorem dslope_sub_smul_of_ne (f : 𝕜 → E) (h : b ≠ a) :
 #align dslope_sub_smul_of_ne dslope_sub_smul_of_ne
 
 theorem eqOn_dslope_sub_smul (f : 𝕜 → E) (a : 𝕜) :
-    EqOn (dslope (fun x => (x - a) • f x) a) f ({a}ᶜ) := fun _ => dslope_sub_smul_of_ne f
+    EqOn (dslope (fun x => (x - a) • f x) a) f {a}ᶜ := fun _ => dslope_sub_smul_of_ne f
 #align eq_on_dslope_sub_smul eqOn_dslope_sub_smul
 
 theorem dslope_sub_smul [DecidableEq 𝕜] (f : 𝕜 → E) (a : 𝕜) :

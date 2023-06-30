@@ -152,7 +152,7 @@ theorem cond_mul_eq_inter [IsFiniteMeasure μ] (hms : MeasurableSet s) (hcs : μ
 
 /-- A version of the law of total probability. -/
 theorem cond_add_cond_compl_eq [IsFiniteMeasure μ] (hms : MeasurableSet s) (hcs : μ s ≠ 0)
-    (hcs' : μ (sᶜ) ≠ 0) : μ[t|s] * μ s + μ[t|sᶜ] * μ (sᶜ) = μ t := by
+    (hcs' : μ sᶜ ≠ 0) : μ[t|s] * μ s + μ[t|sᶜ] * μ sᶜ = μ t := by
   rw [cond_mul_eq_inter μ hms hcs, cond_mul_eq_inter μ hms.compl hcs', Set.inter_comm _ t,
     Set.inter_comm _ t]
   exact measure_inter_add_diff t hms

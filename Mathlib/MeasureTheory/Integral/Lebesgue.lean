@@ -292,7 +292,7 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
   rcases exists_measurable_superset_of_null h with ⟨t, hts, ht, ht0⟩
   have : ∀ᵐ x ∂μ, x ∉ t := measure_zero_iff_ae_nmem.1 ht0
   rw [lintegral, lintegral]
-  refine' iSup_le fun s => iSup_le fun hfs => le_iSup_of_le (s.restrict (tᶜ)) <| le_iSup_of_le _ _
+  refine' iSup_le fun s => iSup_le fun hfs => le_iSup_of_le (s.restrict tᶜ) <| le_iSup_of_le _ _
   · intro a
     by_cases h : a ∈ t <;> simp [h, restrict_apply s ht.compl, ht.compl]
     exact le_trans (hfs a) (_root_.by_contradiction fun hnfg => h (hts hnfg))
@@ -1812,7 +1812,7 @@ theorem lintegral_withDensity_eq_lintegral_mul₀' {μ : Measure α} {f : α →
         filter_upwards [Z]
         intro x hx
         simp only [hx, Pi.mul_apply]
-      · have M : MeasurableSet ({ x : α | f' x ≠ 0 }ᶜ) :=
+      · have M : MeasurableSet { x : α | f' x ≠ 0 }ᶜ :=
           (hf.measurable_mk (measurableSet_singleton 0).compl).compl
         filter_upwards [ae_restrict_mem M]
         intro x hx

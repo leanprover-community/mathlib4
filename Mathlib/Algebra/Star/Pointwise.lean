@@ -94,7 +94,7 @@ theorem iUnion_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)�
 #align set.Union_star Set.iUnion_star
 
 @[simp]
-theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
+theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
 @[simp]

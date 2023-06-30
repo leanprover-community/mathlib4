@@ -96,7 +96,7 @@ theorem differentiableWithinAt_arcsin_Ici {x : ℝ} :
 theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
   refine' ⟨fun h => _, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
-  rw [← neg_neg x, ← image_neg_Ici] at h 
+  rw [← neg_neg x, ← image_neg_Ici] at h
   have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
   simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
 #align real.differentiable_within_at_arcsin_Iic Real.differentiableWithinAt_arcsin_Iic
@@ -113,16 +113,16 @@ theorem deriv_arcsin : deriv arcsin = fun x => 1 / sqrt (1 - x ^ 2) := by
   by_cases h : x ≠ -1 ∧ x ≠ 1
   · exact (hasDerivAt_arcsin h.1 h.2).deriv
   · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_arcsin.1 h)]
-    simp only [not_and_or, Ne.def, Classical.not_not] at h 
+    simp only [not_and_or, Ne.def, Classical.not_not] at h
     rcases h with (rfl | rfl) <;> simp
 #align real.deriv_arcsin Real.deriv_arcsin
 
-theorem differentiableOn_arcsin : DifferentiableOn ℝ arcsin ({-1, 1}ᶜ) := fun _x hx =>
+theorem differentiableOn_arcsin : DifferentiableOn ℝ arcsin {-1, 1}ᶜ := fun _x hx =>
   (differentiableAt_arcsin.2
       ⟨fun h => hx (Or.inl h), fun h => hx (Or.inr h)⟩).differentiableWithinAt
 #align real.differentiable_on_arcsin Real.differentiableOn_arcsin
 
-theorem contDiffOn_arcsin {n : ℕ∞} : ContDiffOn ℝ n arcsin ({-1, 1}ᶜ) := fun _x hx =>
+theorem contDiffOn_arcsin {n : ℕ∞} : ContDiffOn ℝ n arcsin {-1, 1}ᶜ := fun _x hx =>
   (contDiffAt_arcsin (mt Or.inl hx) (mt Or.inr hx)).contDiffWithinAt
 #align real.cont_diff_on_arcsin Real.contDiffOn_arcsin
 
@@ -180,11 +180,11 @@ theorem deriv_arccos : deriv arccos = fun x => -(1 / sqrt (1 - x ^ 2)) :=
   funext fun x => (deriv_const_sub _).trans <| by simp only [deriv_arcsin]
 #align real.deriv_arccos Real.deriv_arccos
 
-theorem differentiableOn_arccos : DifferentiableOn ℝ arccos ({-1, 1}ᶜ) :=
+theorem differentiableOn_arccos : DifferentiableOn ℝ arccos {-1, 1}ᶜ :=
   differentiableOn_arcsin.const_sub _
 #align real.differentiable_on_arccos Real.differentiableOn_arccos
 
-theorem contDiffOn_arccos {n : ℕ∞} : ContDiffOn ℝ n arccos ({-1, 1}ᶜ) :=
+theorem contDiffOn_arccos {n : ℕ∞} : ContDiffOn ℝ n arccos {-1, 1}ᶜ :=
   contDiffOn_const.sub contDiffOn_arcsin
 #align real.cont_diff_on_arccos Real.contDiffOn_arccos
 

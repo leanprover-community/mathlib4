@@ -94,7 +94,7 @@ end PrimePair
 -/
 @[mk_iff]
 class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
-  compl_filter : IsPFilter ((I : Set P)ᶜ)
+  compl_filter : IsPFilter (I : Set P)ᶜ
 #align order.ideal.is_prime Order.Ideal.IsPrime
 
 section Preorder
@@ -220,7 +220,7 @@ variable [Preorder P]
 -/
 @[mk_iff]
 class IsPrime (F : PFilter P) : Prop where
-  compl_ideal : IsIdeal ((F : Set P)ᶜ)
+  compl_ideal : IsIdeal (F : Set P)ᶜ
 #align order.pfilter.is_prime Order.PFilter.IsPrime
 
 /-- Create an element of type `Order.Ideal.PrimePair` from a filter satisfying the predicate

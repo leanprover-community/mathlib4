@@ -143,13 +143,13 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       obtain ⟨p, hl⟩ := exists_point l
       rw [Finset.card_singleton, Finset.singleton_biUnion, Nat.one_le_iff_ne_zero]
       exact Finset.card_ne_zero_of_mem (Set.mem_toFinset.mpr hl)
-    suffices s.biUnion tᶜ.card ≤ sᶜ.card by
+    suffices (s.biUnion t)ᶜ.card ≤ sᶜ.card by
       -- Rephrase in terms of complements (uses `h`)
       rw [Finset.card_compl, Finset.card_compl, tsub_le_iff_left] at this
       replace := h.trans this
       rwa [← add_tsub_assoc_of_le s.card_le_univ, le_tsub_iff_left (le_add_left s.card_le_univ),
         add_le_add_iff_right] at this
-    have hs₂ : s.biUnion tᶜ.card ≤ 1 := by
+    have hs₂ : (s.biUnion t)ᶜ.card ≤ 1 := by
       -- At most one line through two points of `s`
       refine' Finset.card_le_one_iff.mpr @fun p₁ p₂ hp₁ hp₂ => _
       simp_rw [Finset.mem_compl, Finset.mem_biUnion, exists_prop, not_exists, not_and,

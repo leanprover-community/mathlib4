@@ -205,7 +205,7 @@ theorem ofReal_set_integral_one {α : Type _} {_ : MeasurableSpace α} (μ : Mea
 #align measure_theory.of_real_set_integral_one MeasureTheory.ofReal_set_integral_one
 
 theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf : IntegrableOn f s μ)
-    (hg : IntegrableOn g (sᶜ) μ) :
+    (hg : IntegrableOn g sᶜ μ) :
     ∫ x, s.piecewise f g x ∂μ = (∫ x in s, f x ∂μ) + ∫ x in sᶜ, g x ∂μ := by
   rw [← Set.indicator_add_compl_eq_piecewise,
     integral_add' (hf.integrable_indicator hs) (hg.integrable_indicator hs.compl),

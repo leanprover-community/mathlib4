@@ -454,7 +454,7 @@ theorem IsPreconnected.subset_clopen {s t : Set α} (hs : IsPreconnected s) (ht 
 contained in `u`, then the whole set `s` is contained in `u`. -/
 theorem IsPreconnected.subset_of_closure_inter_subset (hs : IsPreconnected s) (hu : IsOpen u)
     (h'u : (s ∩ u).Nonempty) (h : closure u ∩ s ⊆ u) : s ⊆ u := by
-  have A : s ⊆ u ∪ closure uᶜ := by
+  have A : s ⊆ u ∪ (closure u)ᶜ := by
     intro x hx
     by_cases xu : x ∈ u
     · exact Or.inl xu
@@ -1292,7 +1292,7 @@ theorem isTotallyDisconnected_of_clopen_set {X : Type _} [TopologicalSpace X]
   rcases h_contra with ⟨x, hx, y, hy, hxy⟩
   obtain ⟨U, h_clopen, hxU, hyU⟩ := hX hxy
   specialize
-    hS U (Uᶜ) h_clopen.1 h_clopen.compl.1 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
+    hS U Uᶜ h_clopen.1 h_clopen.compl.1 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
   rw [inter_compl_self, Set.inter_empty] at hS
   exact Set.not_nonempty_empty hS
 #align is_totally_disconnected_of_clopen_set isTotallyDisconnected_of_clopen_set

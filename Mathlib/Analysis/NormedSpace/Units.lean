@@ -96,7 +96,7 @@ namespace nonunits
 
 /-- The `nonunits` in a complete normed ring are contained in the complement of the ball of radius
 `1` centered at `1 : R`. -/
-theorem subset_compl_ball : nonunits R ⊆ Metric.ball (1 : R) 1ᶜ := fun x hx h₁ ↦ hx <|
+theorem subset_compl_ball : nonunits R ⊆ (Metric.ball (1 : R) 1)ᶜ := fun x hx h₁ ↦ hx <|
   sub_sub_self 1 x ▸ (Units.oneSub (1 - x) (by rwa [mem_ball_iff_norm'] at h₁)).isUnit
 #align nonunits.subset_compl_ball nonunits.subset_compl_ball
 

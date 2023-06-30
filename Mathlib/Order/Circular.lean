@@ -369,13 +369,13 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
   btw_rfl_right
 #align set.right_mem_cIcc Set.right_mem_cIcc
 
-theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a := by
+theorem compl_cIcc {a b : α} : (cIcc a b)ᶜ = cIoo b a := by
   ext
   rw [Set.mem_cIoo, sbtw_iff_not_btw]
   rfl
 #align set.compl_cIcc Set.compl_cIcc
 
-theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a := by
+theorem compl_cIoo {a b : α} : (cIoo a b)ᶜ = cIcc b a := by
   ext
   rw [Set.mem_cIcc, btw_iff_not_sbtw]
   rfl
