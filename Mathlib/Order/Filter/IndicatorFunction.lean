@@ -91,7 +91,7 @@ theorem Antitone.tendsto_mulIndicator {ι} [Preorder ι] [One β] (s : ι → Se
 
 @[to_additive]
 theorem mulIndicator_biUnion_finset_eventuallyEq {ι} [One β] (s : ι → Set α) (f : α → β) (a : α) :
-    (fun n : Finset ι => mulIndicator (⋃ i ∈ n, s i) f a) =ᶠ[atTop]
+    (fun n : Finset ι => mulIndicator ⋃ i ∈ n, s i) f a =ᶠ[atTop]
       fun _ ↦ mulIndicator (iUnion s) f a := by
   rw [iUnion_eq_iUnion_finset s]
   apply Monotone.mulIndicator_eventuallyEq_iUnion
