@@ -630,7 +630,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
   rw [eqToHom_trans]
 #align algebraic_geometry.is_affine_open.is_localization_stalk_aux AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux
 
-set_option maxHeartbeats 1643256 in
+set_option maxHeartbeats 3200000 in
 theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
     hU.fromSpec.val.c.app (op U) ≫ (Scheme.Spec.obj <| op (X.presheaf.obj <| op U)).presheaf.germ
@@ -661,7 +661,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : 
   rw [Category.id_comp]
   rfl
 
-set_option maxHeartbeats 420000 in
+set_option maxHeartbeats 800000 in
 theorem IsAffineOpen.isLocalization_stalk' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
   haveI : IsAffine _ := hU
