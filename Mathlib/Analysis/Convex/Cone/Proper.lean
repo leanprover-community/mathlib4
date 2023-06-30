@@ -189,7 +189,7 @@ theorem mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
 
 @[simp]
 theorem map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K :=
-  ProperCone.ext' <| by simpa using IsClosed.closure_eq K.is_closed
+  ProperCone.ext' <| by simpa using IsClosed.closure_eq K.isClosed
 #align proper_cone.map_id ProperCone.map_id
 
 /-- The inner dual cone of a proper cone is a proper cone. -/
