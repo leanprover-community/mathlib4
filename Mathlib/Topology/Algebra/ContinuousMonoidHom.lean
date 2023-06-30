@@ -32,8 +32,8 @@ variable (F A B C D E : Type _) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [Com
 
 /-- The type of continuous additive monoid homomorphisms from `A` to `B`.
 
-When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHom A B)`,
-you should parametrize over `(F : Type*) [ContinuousAddMonoidHomClass F A B] (f : F)`.
+When possible, instead of parameterizing results over `(f : ContinuousAddMonoidHom A B)`,
+you should parameterize over `(F : Type*) [ContinuousAddMonoidHomClass F A B] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
 structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
@@ -44,8 +44,8 @@ structure ContinuousAddMonoidHom (A B : Type _) [AddMonoid A] [AddMonoid B] [Top
 
 /-- The type of continuous monoid homomorphisms from `A` to `B`.
 
-When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A B)`,
-you should parametrize over `(F : Type*) [ContinuousMonoidHomClass F A B] (f : F)`.
+When possible, instead of parameterizing results over `(f : ContinuousMonoidHom A B)`,
+you should parameterize over `(F : Type*) [ContinuousMonoidHomClass F A B] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
 @[to_additive "The type of continuous additive monoid homomorphisms from `A` to `B`."]

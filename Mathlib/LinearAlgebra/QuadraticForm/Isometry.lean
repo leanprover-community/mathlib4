@@ -21,7 +21,7 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
 ## Main results
 
 * `equivalent_weighted_sum_squares`: in finite dimensions, any quadratic form is equivalent to a
-  parametrization of `QuadraticForm.weightedSumSquares`.
+  parameterization of `QuadraticForm.weightedSumSquares`.
 -/
 
 

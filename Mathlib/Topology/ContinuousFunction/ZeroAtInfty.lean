@@ -38,8 +38,8 @@ open Filter Metric
 /-- `C₀(α, β)` is the type of continuous functions `α → β` which vanish at infinity from a
 topological space to a metric space with a zero element.
 
-When possible, instead of parametrizing results over `(f : C₀(α, β))`,
-you should parametrize over `(F : Type _) [ZeroAtInftyContinuousMapClass F α β] (f : F)`.
+When possible, instead of parameterizing results over `(f : C₀(α, β))`,
+you should parameterize over `(F : Type _) [ZeroAtInftyContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ZeroAtInftyContinuousMapClass`. -/
 structure ZeroAtInftyContinuousMap (α : Type u) (β : Type v) [TopologicalSpace α] [Zero β]

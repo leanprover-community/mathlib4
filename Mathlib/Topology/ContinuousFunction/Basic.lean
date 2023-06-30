@@ -25,8 +25,8 @@ open Function
 
 /-- The type of continuous maps from `α` to `β`.
 
-When possible, instead of parametrizing results over `(f : C(α, β))`,
-you should parametrize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
+When possible, instead of parameterizing results over `(f : C(α, β))`,
+you should parameterize over `{F : Type*} [ContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMapClass`. -/
 structure ContinuousMap (α β : Type _) [TopologicalSpace α] [TopologicalSpace β] where

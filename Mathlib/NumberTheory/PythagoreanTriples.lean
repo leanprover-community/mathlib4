@@ -20,7 +20,7 @@ import Mathlib.Data.ZMod.Basic
 
 The main result is the classification of Pythagorean triples. The final result is for general
 Pythagorean triples. It follows from the more interesting relatively prime case. We use the
-"rational parametrization of the circle" method for the proof. The parametrization maps the point
+"rational parameterization of the circle" method for the proof. The parameterization maps the point
 `(x / z, y / z)` to the slope of the line through `(-1 , 0)` and `(x / z, y / z)`. This quickly
 shows that `(x / z, y / z) = (2 * m * n / (m ^ 2 + n ^ 2), (m ^ 2 - n ^ 2) / (m ^ 2 + n ^ 2))` where
 `m / n` is the slope. In order to identify numerators and denominators we now need results showing
@@ -268,9 +268,9 @@ end PythagoreanTriple
 section circleEquivGen
 
 /-!
-### A parametrization of the unit circle
+### A parameterization of the unit circle
 
-For the classification of Pythagorean triples, we will use a parametrization of the unit circle.
+For the classification of Pythagorean triples, we will use a parameterization of the unit circle.
 -/
 
 

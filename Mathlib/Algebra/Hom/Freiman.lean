@@ -34,7 +34,7 @@ They are of interest in additive combinatorics.
 ## Implementation notes
 
 In the context of combinatorics, we are interested in Freiman homomorphisms over sets which are not
-necessarily closed under addition/multiplication. This means we must parametrize them with a set in
+necessarily closed under addition/multiplication. This means we must parameterize them with a set in
 an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 
 ## References

@@ -58,8 +58,8 @@ variable {F α β γ : Type _}
 /-- Bundled non-unital semiring homomorphisms `α →ₙ+* β`; use this for bundled non-unital ring
 homomorphisms too.
 
-When possible, instead of parametrizing results over `(f : α →ₙ+* β)`,
-you should parametrize over `(F : Type _) [NonUnitalRingHomClass F α β] (f : F)`.
+When possible, instead of parameterizing results over `(f : α →ₙ+* β)`,
+you should parameterize over `(F : Type _) [NonUnitalRingHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `NonUnitalRingHomClass`. -/
 structure NonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring α]

@@ -117,7 +117,7 @@ theorem exists_disjoint_covering_ae :
   v.covering s (fun x => v.setsAt x ∩ f x) (fun _ _ => inter_subset_left _ _) h
 #align vitali_family.fine_subfamily_on.exists_disjoint_covering_ae VitaliFamily.FineSubfamilyOn.exists_disjoint_covering_ae
 
-/-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
+/-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parameterizing a disjoint
 covering of almost every `s`. -/
 protected def index : Set (α × Set α) :=
   h.exists_disjoint_covering_ae.choose

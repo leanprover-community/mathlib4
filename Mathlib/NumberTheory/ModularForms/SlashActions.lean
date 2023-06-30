@@ -16,7 +16,7 @@ import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 # Slash actions
 
 This file defines a class of slash actions, which are families of right actions of a given group
-parametrized by some Type. This is modeled on the slash action of `GLPos (Fin 2) ℝ` on the space
+parameterized by some Type. This is modeled on the slash action of `GLPos (Fin 2) ℝ` on the space
 of modular forms.
 
 ## Notation

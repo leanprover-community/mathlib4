@@ -83,7 +83,7 @@ open scoped Real NNReal Interval Pointwise Topology
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 
 /-!
-### `circleMap`, a parametrization of a circle
+### `circleMap`, a parameterization of a circle
 -/
 
 

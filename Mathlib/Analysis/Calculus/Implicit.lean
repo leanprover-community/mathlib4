@@ -78,7 +78,7 @@ We also prove a formula for $$\frac{\partial\varphi}{\partial z}.$$
 
 Though this statement is almost symmetric with respect to `F`, `G`, we interpret it in the following
 way. Consider a family of surfaces `{x | f x = y}`, `y ∈ 𝓝 (f a)`. Each of these surfaces is
-parametrized by `φ y`.
+parameterized by `φ y`.
 
 There are many ways to choose a (differentiable) function `φ` such that `f (φ y z) = y` but the
 extra condition `g (φ y z) = z` allows a user to select one of these functions. If we imagine

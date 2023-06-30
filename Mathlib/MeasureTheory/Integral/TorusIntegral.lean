@@ -77,7 +77,7 @@ local macro:arg t:term:max noWs "¹" : term => `(Fin 1 → $t)
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 /-!
-### `torusMap`, a parametrization of a torus
+### `torusMap`, a parameterization of a torus
 -/
 
 /-- The n dimensional exponential map $θ_i ↦ c + R e^{θ_i*I}, θ ∈ ℝⁿ$ representing

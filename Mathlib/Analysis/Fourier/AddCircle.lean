@@ -148,7 +148,7 @@ open AddCircle
 
 section Monomials
 
-/-- The family of exponential monomials `fun x => exp (2 π i n x / T)`, parametrized by `n : ℤ` and
+/-- The family of exponential monomials `fun x => exp (2 π i n x / T)`, parameterized by `n : ℤ` and
 considered as bundled continuous maps from `ℝ / ℤ • T` to `ℂ`. -/
 def fourier (n : ℤ) : C(AddCircle T, ℂ) where
   toFun x := toCircle (n • x)
@@ -294,7 +294,7 @@ theorem span_fourier_closure_eq_top : (span ℂ (range <| @fourier T)).topologic
   exact congr_arg Subalgebra.toSubmodule fourierSubalgebra_closure_eq_top
 #align span_fourier_closure_eq_top span_fourier_closure_eq_top
 
-/-- The family of monomials `fourier n`, parametrized by `n : ℤ` and considered as
+/-- The family of monomials `fourier n`, parameterized by `n : ℤ` and considered as
 elements of the `Lp` space of functions `AddCircle T → ℂ`. -/
 abbrev fourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : ℤ) : Lp ℂ p (@haarAddCircle T hT) :=
   toLp (E := ℂ) p haarAddCircle ℂ (fourier n)

@@ -60,7 +60,7 @@ and consequences are derived.
   `Filter.HasBasis.tendsto_iff` : restate `tendsto f l l'` in terms of bases.
 
 * `is_countably_generated_iff_exists_antitone_basis` : proves a filter is countably generated if and
-  only if it admits a basis parametrized by a decreasing sequence of sets indexed by `ℕ`.
+  only if it admits a basis parameterized by a decreasing sequence of sets indexed by `ℕ`.
 
 * `tendsto_iff_seq_tendsto ` : an abstract version of "sequentially continuous implies continuous".
 

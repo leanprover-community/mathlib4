@@ -1290,7 +1290,7 @@ theorem strictConcaveOn_univ_of_deriv2_neg {f : ℝ → ℝ} (hf : Continuous f)
 theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → E →L[ℝ] ℝ}
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hs : Convex ℝ s) (xs : x ∈ s) (ys : y ∈ s) :
     ∃ z ∈ segment ℝ x y, f y - f x = f' z (y - x) := by
-  -- Use `g = AffineMap.lineMap x y` to parametrize the segment
+  -- Use `g = AffineMap.lineMap x y` to parameterize the segment
   set g : ℝ → E := fun t => AffineMap.lineMap x y t
   set I := Icc (0 : ℝ) 1
   have hsub : Ioo (0 : ℝ) 1 ⊆ I := Ioo_subset_Icc_self

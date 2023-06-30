@@ -41,7 +41,7 @@ theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ 
 of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
 is a basis of the filter `f.lift g`.
 
-This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
+This basis is parameterized by `i : ι` and `x : β i`, so in order to formulate this fact using
 `Filter.HasBasis` one has to use `Σ i, β i` as the index type, see `Filter.HasBasis.lift`.
 This lemma states the corresponding `mem_iff` statement without using a sigma type. -/
 theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
@@ -60,7 +60,7 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
 of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
 is a basis of the filter `f.lift g`.
 
-This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
+This basis is parameterized by `i : ι` and `x : β i`, so in order to formulate this fact using
 `has_basis` one has to use `Σ i, β i` as the index type. See also `Filter.HasBasis.mem_lift_iff`
 for the corresponding `mem_iff` statement formulated without using a sigma type. -/
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)

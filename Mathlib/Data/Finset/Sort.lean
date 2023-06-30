@@ -230,7 +230,7 @@ theorem orderEmbOfFin_unique' {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fi
   RelEmbedding.ext <| Function.funext_iff.1 <| orderEmbOfFin_unique h hfs f.strictMono
 #align finset.order_emb_of_fin_unique' Finset.orderEmbOfFin_unique'
 
-/-- Two parametrizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
+/-- Two parameterizations `orderEmbOfFin` of the same set take the same value on `i` and `j` if
 and only if `i = j`. Since they can be defined on a priori not defeq types `Fin k` and `Fin l`
 (although necessarily `k = l`), the conclusion is rather written `(i : ℕ) = (j : ℕ)`. -/
 @[simp]

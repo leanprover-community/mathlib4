@@ -37,8 +37,8 @@ variable {F : Type _} {α : Type u} {β : Type v} {γ : Type w}
 /-- `α →ᵇ β` is the type of bounded continuous functions `α → β` from a topological space to a
 metric space.
 
-When possible, instead of parametrizing results over `(f : α →ᵇ β)`,
-you should parametrize over `(F : Type _) [BoundedContinuousMapClass F α β] (f : F)`.
+When possible, instead of parameterizing results over `(f : α →ᵇ β)`,
+you should parameterize over `(F : Type _) [BoundedContinuousMapClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `BoundedContinuousMapClass`. -/
 structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpace α]

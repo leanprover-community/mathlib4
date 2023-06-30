@@ -80,8 +80,8 @@ section Zero
 
 /-- `ZeroHom M N` is the type of functions `M → N` that preserve zero.
 
-When possible, instead of parametrizing results over `(f : ZeroHom M N)`,
-you should parametrize over `(F : Type _) [ZeroHomClass F M N] (f : F)`.
+When possible, instead of parameterizing results over `(f : ZeroHom M N)`,
+you should parameterize over `(F : Type _) [ZeroHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to also extend `ZeroHomClass`.
 -/
@@ -127,8 +127,8 @@ section Add
 
 /-- `AddHom M N` is the type of functions `M → N` that preserve addition.
 
-When possible, instead of parametrizing results over `(f : AddHom M N)`,
-you should parametrize over `(F : Type _) [AddHomClass F M N] (f : F)`.
+When possible, instead of parameterizing results over `(f : AddHom M N)`,
+you should parameterize over `(F : Type _) [AddHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddHomClass`.
 -/
@@ -157,8 +157,8 @@ section add_zero
 
 `AddMonoidHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →+ N)`,
-you should parametrize over `(F : Type _) [AddMonoidHomClass F M N] (f : F)`.
+When possible, instead of parameterizing results over `(f : M →+ N)`,
+you should parameterize over `(F : Type _) [AddMonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `AddMonoidHomClass`.
 -/
@@ -190,8 +190,8 @@ variable [One M] [One N]
 
 /-- `OneHom M N` is the type of functions `M → N` that preserve one.
 
-When possible, instead of parametrizing results over `(f : OneHom M N)`,
-you should parametrize over `(F : Type _) [OneHomClass F M N] (f : F)`.
+When possible, instead of parameterizing results over `(f : OneHom M N)`,
+you should parameterize over `(F : Type _) [OneHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to also extend `OneHomClass`.
 -/
@@ -275,8 +275,8 @@ variable [Mul M] [Mul N]
 stands for "non-unital" because it is intended to match the notation for `NonUnitalAlgHom` and
 `NonUnitalRingHom`, so a `MulHom` is a non-unital monoid hom.
 
-When possible, instead of parametrizing results over `(f : M →ₙ* N)`,
-you should parametrize over `(F : Type _) [MulHomClass F M N] (f : F)`.
+When possible, instead of parameterizing results over `(f : M →ₙ* N)`,
+you should parameterize over `(F : Type _) [MulHomClass F M N] (f : F)`.
 When you extend this structure, make sure to extend `MulHomClass`.
 -/
 @[to_additive]
@@ -345,7 +345,7 @@ variable [MulOneClass M] [MulOneClass N]
 /-- `M →* N` is the type of functions `M → N` that preserve the `Monoid` structure.
 `MonoidHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →+ N)`,
+When possible, instead of parameterizing results over `(f : M →+ N)`,
 you should parameterize over `(F : Type _) [MonoidHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidHomClass`.
@@ -479,8 +479,8 @@ the `MonoidWithZero` structure.
 
 `MonoidWithZeroHom` is also used for group homomorphisms.
 
-When possible, instead of parametrizing results over `(f : M →*₀ N)`,
-you should parametrize over `(F : Type _) [MonoidWithZeroHomClass F M N] (f : F)`.
+When possible, instead of parameterizing results over `(f : M →*₀ N)`,
+you should parameterize over `(F : Type _) [MonoidWithZeroHomClass F M N] (f : F)`.
 
 When you extend this structure, make sure to extend `MonoidWithZeroHomClass`.
 -/

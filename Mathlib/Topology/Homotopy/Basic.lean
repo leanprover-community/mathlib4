@@ -72,8 +72,8 @@ namespace ContinuousMap
 
 /-- `ContinuousMap.Homotopy f₀ f₁` is the type of homotopies from `f₀` to `f₁`.
 
-When possible, instead of parametrizing results over `(f : Homotopy f₀ f₁)`,
-you should parametrize over `{F : Type*} [HomotopyLike F f₀ f₁] (f : F)`.
+When possible, instead of parameterizing results over `(f : Homotopy f₀ f₁)`,
+you should parameterize over `{F : Type*} [HomotopyLike F f₀ f₁] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMap.HomotopyLike`. -/
 structure Homotopy (f₀ f₁ : C(X, Y)) extends C(I × X, Y) where
