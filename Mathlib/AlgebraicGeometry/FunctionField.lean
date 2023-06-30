@@ -81,7 +81,7 @@ theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : Opens X.carrier
   germ_injective_of_isIntegral _ _
 #align algebraic_geometry.Scheme.germ_to_function_field_injective AlgebraicGeometry.Scheme.germToFunctionField_injective
 
-theorem genericPoint_eq_of_isOpenImmersionCat {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
+theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
@@ -94,7 +94,7 @@ theorem genericPoint_eq_of_isOpenImmersionCat {X Y : Scheme} (f : X ⟶ Y) [H : 
   rw [Set.univ_inter, Set.image_univ]
   apply PreirreducibleSpace.isPreirreducible_univ (α := Y.carrier)
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
-#align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersionCat
+#align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X.carrier] (x : X.carrier) :
     Algebra (X.presheaf.stalk x) X.functionField := by
@@ -141,6 +141,11 @@ instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
   isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
 
+-- TODO: move to Mathlib.AlgebraicGeometry.Scheme
+lemma Scheme.comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
+  simp
+
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
@@ -151,13 +156,14 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   have e : U.openEmbedding.isOpenMap.functor.obj ⊤ = U := by
     ext1; exact Set.image_univ.trans Subtype.range_coe
   delta IsAffineOpen.primeIdealOf
-  rw [← Scheme.comp_val_base_apply]
+  erw [← Scheme.comp_val_base_apply]
   convert
-    generic_point_eq_of_is_open_immersion
-      ((X.restrict U.open_embedding).isoSpec.Hom ≫
-        Scheme.Spec.map (X.presheaf.map (eq_to_hom e).op).op)
-  ext1
-  exact (generic_point_eq_of_is_open_immersion (X.of_restrict U.open_embedding)).symm
+    genericPoint_eq_of_isOpenImmersion
+      ((X.restrict U.openEmbedding).isoSpec.hom ≫
+        Scheme.Spec.map (X.presheaf.map (eqToHom e).op).op)
+  -- Porting note: this was `ext1`
+  apply Subtype.ext
+  exact (genericPoint_eq_of_isOpenImmersion (X.ofRestrict U.openEmbedding)).symm
 #align algebraic_geometry.is_affine_open.prime_ideal_of_generic_point AlgebraicGeometry.IsAffineOpen.primeIdealOf_genericPoint
 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X.carrier)
