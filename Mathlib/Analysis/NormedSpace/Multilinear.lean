@@ -1023,6 +1023,7 @@ theorem _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_apply (g : G 
   rfl
 #align continuous_linear_equiv.comp_continuous_multilinear_mapL_apply ContinuousLinearEquiv.compContinuousMultilinearMapL_apply
 
+set_option maxHeartbeats 250000 in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]
@@ -1757,10 +1758,9 @@ namespace ContinuousMultilinearMap
 
 variable (𝕜 G G')
 
--- fails to unify without `@`; TODO: try again in Lean 4
 @[simp]
 theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :
-    ‖@domDomCongr 𝕜 ι G G' _ _ _ _ _ _ _ ι' σ f‖ = ‖f‖ := by
+    ‖domDomCongr σ f‖ = ‖f‖ := by
   simp only [norm_def, LinearEquiv.coe_mk, ← σ.prod_comp,
     (σ.arrowCongr (Equiv.refl G)).surjective.forall, domDomCongr_apply, Equiv.arrowCongr_apply,
     Equiv.coe_refl, comp.left_id, comp_apply, Equiv.symm_apply_apply, id]
