@@ -10,8 +10,8 @@ Automation to construct `traversable` instances
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Tactic.Basic
-import Mathbin.Control.Traversable.Lemmas
+import Mathlib.Tactic.Basic
+import Mathlib.Control.Traversable.Lemmas
 
 namespace Tactic.Interactive
 
