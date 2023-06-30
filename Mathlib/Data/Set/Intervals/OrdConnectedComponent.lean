@@ -168,7 +168,7 @@ belong both to some `Set.ordConnectedComponent tᶜ x`, `x ∈ s`, and to some
 `Set.ordConnectedComponent sᶜ x`, `x ∈ t`. In the case of two disjoint closed sets, this is the
 union of all open intervals $(a, b)$ such that their endpoints belong to different sets. -/
 def ordSeparatingSet (s t : Set α) : Set α :=
-  (⋃ x ∈ s, ordConnectedComponent (tᶜ) x) ∩ ⋃ x ∈ t, ordConnectedComponent (sᶜ) x
+  (⋃ x ∈ s, ordConnectedComponent tᶜ x) ∩ ⋃ x ∈ t, ordConnectedComponent sᶜ x
 #align set.ord_separating_set Set.ordSeparatingSet
 
 theorem ordSeparatingSet_comm (s t : Set α) : ordSeparatingSet s t = ordSeparatingSet t s :=

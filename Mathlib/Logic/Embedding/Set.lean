@@ -52,7 +52,7 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
-def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range fᶜ) where
+def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
   left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def] ; rfl

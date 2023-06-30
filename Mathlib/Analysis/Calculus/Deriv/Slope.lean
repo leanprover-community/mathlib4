@@ -59,17 +59,17 @@ variable {L L₁ L₂ : Filter 𝕜}
 definition with a limit. In this version we have to take the limit along the subset `-{x}`,
 because for `y=x` the slope equals zero due to the convention `0⁻¹=0`. -/
 theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
-    HasDerivAtFilter f f' x L ↔ Tendsto (slope f x) (L ⊓ 𝓟 ({x}ᶜ)) (𝓝 f') :=
+    HasDerivAtFilter f f' x L ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
   calc HasDerivAtFilter f f' x L
     ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') L (𝓝 0) := by
         simp only [hasDerivAtFilter_iff_tendsto, ← norm_inv, ← norm_smul,
           ← tendsto_zero_iff_norm_tendsto_zero, slope_def_module, smul_sub]
-  _ ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') (L ⊓ 𝓟 ({x}ᶜ)) (𝓝 0) :=
+  _ ↔ Tendsto (fun y ↦ slope f x y - (y - x)⁻¹ • (y - x) • f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) :=
         .symm <| tendsto_inf_principal_nhds_iff_of_forall_eq <| by simp
-  _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 ({x}ᶜ)) (𝓝 0) := tendsto_congr' <| by
+  _ ↔ Tendsto (fun y ↦ slope f x y - f') (L ⊓ 𝓟 {x}ᶜ) (𝓝 0) := tendsto_congr' <| by
         refine (EqOn.eventuallyEq fun y hy ↦ ?_).filter_mono inf_le_right
         rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
-  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 ({x}ᶜ)) (𝓝 f') :=
+  _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
         by rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
 #align has_deriv_at_filter_iff_tendsto_slope hasDerivAtFilter_iff_tendsto_slope
 

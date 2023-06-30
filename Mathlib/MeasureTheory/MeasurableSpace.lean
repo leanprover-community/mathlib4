@@ -301,7 +301,7 @@ end TypeclassMeasurableSpace
 variable {m : MeasurableSpace α}
 
 @[measurability]
-theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurable (f^[n])
+theorem Measurable.iterate {f : α → α} (hf : Measurable f) : ∀ n, Measurable f^[n]
   | 0 => measurable_id
   | n + 1 => (Measurable.iterate hf n).comp hf
 #align measurable.iterate Measurable.iterate
@@ -603,7 +603,7 @@ theorem measurable_of_measurable_union_cover {f : α → β} (s t : Set α) (hs 
 
 theorem measurable_of_restrict_of_restrict_compl {f : α → β} {s : Set α} (hs : MeasurableSet s)
     (h₁ : Measurable (s.restrict f)) (h₂ : Measurable (sᶜ.restrict f)) : Measurable f :=
-  measurable_of_measurable_union_cover s (sᶜ) hs hs.compl (union_compl_self s).ge h₁ h₂
+  measurable_of_measurable_union_cover s sᶜ hs hs.compl (union_compl_self s).ge h₁ h₂
 #align measurable_of_restrict_of_restrict_compl measurable_of_restrict_of_restrict_compl
 
 theorem Measurable.dite [∀ x, Decidable (x ∈ s)] {f : s → β} (hf : Measurable f)
@@ -1600,7 +1600,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     exact (hg.equivImage _).symm
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
     compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
-  let X : ℕ → Set α := fun n => (F^[n]) univ
+  let X : ℕ → Set α := fun n => F^[n] univ
   refine' ⟨iInter X, _, _⟩
   · apply MeasurableSet.iInter
     intro n
@@ -1843,7 +1843,7 @@ instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Pr
 #align measurable_set.subtype.has_compl MeasurableSet.Subtype.instHasCompl
 
 @[simp]
-theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑(sᶜ) = (sᶜ : Set α) :=
+theorem coe_compl (s : Subtype (MeasurableSet : Set α → Prop)) : ↑sᶜ = (sᶜ : Set α) :=
   rfl
 #align measurable_set.coe_compl MeasurableSet.coe_compl
 
