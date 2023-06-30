@@ -170,7 +170,7 @@ theorem geom_sum_mul_add [Semiring α] (x : α) (n : ℕ) :
 #align geom_sum_mul_add geom_sum_mul_add
 
 protected theorem Commute.geom_sum₂_mul [Ring α] {x y : α} (h : Commute x y) (n : ℕ) :
-    ∑ i in range n, x ^ i * y ^ (n - 1 - i)) * (x - y = x ^ n - y ^ n := by
+    (∑ i in range n, x ^ i * y ^ (n - 1 - i)) * (x - y) = x ^ n - y ^ n := by
   have := (h.sub_left (Commute.refl y)).geom_sum₂_mul_add n
   rw [sub_add_cancel] at this
   rw [← this, add_sub_cancel]

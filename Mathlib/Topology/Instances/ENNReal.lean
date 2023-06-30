@@ -819,11 +819,11 @@ protected theorem tsum_prod' {f : α × β → ℝ≥0∞} : ∑' p : α × β, 
   tsum_prod' ENNReal.summable fun _ => ENNReal.summable
 #align ennreal.tsum_prod' ENNReal.tsum_prod'
 
-protected theorem tsum_comm {f : α → β → ℝ≥0∞} : (∑' a, ∑' b, f a b) = ∑' b, ∑' a, f a b :=
+protected theorem tsum_comm {f : α → β → ℝ≥0∞} : ∑' a, ∑' b, f a b = ∑' b, ∑' a, f a b :=
   tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable
 #align ennreal.tsum_comm ENNReal.tsum_comm
 
-protected theorem tsum_add : ∑' a, f a + g a = (∑' a, f a) + ∑' a, g a :=
+protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
   tsum_add ENNReal.summable ENNReal.summable
 #align ennreal.tsum_add ENNReal.tsum_add
 
@@ -917,7 +917,7 @@ protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
 #align ennreal.tsum_const_smul ENNReal.tsum_const_smul
 
 @[simp]
-theorem tsum_iSup_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : ∑' b : α, ⨆ _ : a = b, f b = f a :=
+theorem tsum_iSup_eq {α : Type _} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _ : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
 #align ennreal.tsum_supr_eq ENNReal.tsum_iSup_eq
 
