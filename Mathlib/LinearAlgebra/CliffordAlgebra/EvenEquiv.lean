@@ -124,6 +124,10 @@ end EquivEven
 
 open EquivEven
 
+-- Porting FIXME: the `dsimp only` here take a very long time,
+-- and even if you wait for it it hasn't reached the desired state,
+-- and `rw [← mul_assoc]` fails.
+
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
@@ -132,10 +136,10 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    simp
-    -- dsimp only [Subalgebra.coe_mul, LinearMap.codRestrict_apply, LinearMap.comp_apply,
-    --   LinearMap.mulLeft_apply, LinearMap.inl_apply, Subalgebra.coe_algebraMap]
-    -- rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
+    -- simp
+    dsimp only [Subalgebra.coe_mul, LinearMap.codRestrict_apply, LinearMap.comp_apply,
+      LinearMap.mulLeft_apply, LinearMap.inl_apply, Subalgebra.coe_algebraMap]
+    rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
 @[simp]
