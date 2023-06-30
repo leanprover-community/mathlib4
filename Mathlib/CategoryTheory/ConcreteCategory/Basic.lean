@@ -41,7 +41,7 @@ related work.
 -/
 
 
-universe w w' v v' u
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
@@ -68,13 +68,13 @@ attribute [instance] ConcreteCategory.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/
 @[reducible]
-def forget (C : Type v) [Category C] [ConcreteCategory.{u} C] : C ⥤ Type u :=
+def forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Type w :=
   ConcreteCategory.forget
 #align category_theory.forget CategoryTheory.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
 @[reducible]
-instance ConcreteCategory.types : ConcreteCategory (Type u) where
+instance ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
   forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
@@ -86,8 +86,8 @@ You can use it on particular examples as:
 instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
 ```
 -/
-def ConcreteCategory.hasCoeToSort (C : Type v) [Category C] [ConcreteCategory C] :
-    CoeSort C (Type u) where
+def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
+    CoeSort C (Type w) where
   coe := fun X => (forget C).obj X
 #align category_theory.concrete_category.has_coe_to_sort CategoryTheory.ConcreteCategory.hasCoeToSort
 
@@ -95,7 +95,7 @@ section
 
 attribute [local instance] ConcreteCategory.hasCoeToSort
 
-variable {C : Type v} [Category C] [ConcreteCategory.{w} C]
+variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
