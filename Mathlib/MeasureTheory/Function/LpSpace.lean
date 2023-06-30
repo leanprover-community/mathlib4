@@ -839,6 +839,56 @@ theorem Memℒp.norm_rpow {f : α → E} (hf : Memℒp f p μ) (hp_ne_zero : p �
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 #align measure_theory.mem_ℒp.norm_rpow MeasureTheory.Memℒp.norm_rpow
 
+theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type _} [MeasurableSpace β]
+    {μb : MeasureTheory.Measure β} {g : β →ₘ[μb] E} (hg : g ∈ Lp E p μb) {f : α → β}
+    (hf : MeasurePreserving f μ μb) :
+    g.compMeasurePreserving f hf ∈ Lp E p μ := by
+  rw [Lp.mem_Lp_iff_snorm_lt_top] at hg ⊢
+  rwa [snorm_compMeasurePreserving]
+
+namespace Lp
+
+/-! ### Composition with a measure preserving function -/
+
+variable {β : Type _} [MeasurableSpace β] {μb : MeasureTheory.Measure β} {f : α → β}
+
+/-- Composition of an `L^p` function with a measure preserving function is an `L^p` function. -/
+def compMeasurePreserving (f : α → β) (hf : MeasurePreserving f μ μb) :
+    Lp E p μb →+ Lp E p μ where
+  toFun g := ⟨g.1.compMeasurePreserving f hf, g.1.compMeasurePreserving_mem_Lp g.2 hf⟩
+  map_zero' := rfl
+  map_add' := by rintro ⟨⟨_⟩, _⟩ ⟨⟨_⟩, _⟩; rfl
+
+@[simp]
+theorem compMeasurePreserving_val (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
+    (compMeasurePreserving f hf g).1 = g.1.compMeasurePreserving f hf :=
+  rfl
+
+theorem coeFn_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
+    compMeasurePreserving f hf g =ᵐ[μ] g ∘ f :=
+  g.1.coeFn_compMeasurePreserving hf
+
+@[simp]
+theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ μb) :
+    ‖compMeasurePreserving f hf g‖ = ‖g‖ :=
+  congr_arg ENNReal.toReal <| g.1.snorm_compMeasurePreserving hf
+
+variable (𝕜 : Type _) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+
+@[simps]
+def compMeasurePreservingₗ (f : α → β) (hf : MeasurePreserving f μ μb) :
+    Lp E p μb →ₗ[𝕜] Lp E p μ where
+  __ := compMeasurePreserving f hf
+  map_smul' c g := by rcases g with ⟨⟨_⟩, _⟩; rfl
+
+@[simps!]
+def compMeasurePreservingₗᵢ [Fact (1 ≤ p)] (f : α → β) (hf : MeasurePreserving f μ μb) :
+    Lp E p μb →ₗᵢ[𝕜] Lp E p μ where
+  toLinearMap := compMeasurePreservingₗ 𝕜 f hf
+  norm_map' := (norm_compMeasurePreserving · hf)
+
+end Lp
+
 end MeasureTheory
 
 open MeasureTheory

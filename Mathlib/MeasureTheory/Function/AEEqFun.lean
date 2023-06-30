@@ -206,6 +206,71 @@ theorem induction_on₃ {α' β' : Type _} [MeasurableSpace α'] [TopologicalSpa
   induction_on f fun f hf => induction_on₂ f' f'' <| H f hf
 #align measure_theory.ae_eq_fun.induction_on₃ MeasureTheory.AEEqFun.induction_on₃
 
+/-!
+### Composition of an a.e. equal function with a (quasi) measure preserving function
+-/
+
+section compQuasiMeasurePreserving
+
+variable [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
+
+open MeasureTheory.Measure (QuasiMeasurePreserving)
+
+/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+
+See also `AEEqFun.compMeasurePreserving`. -/
+def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
+    α →ₘ[μ] γ :=
+  Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) <| fun _ _ h ↦
+    mk_eq_mk.2 <| h.comp_tendsto hf.tendsto_ae
+
+@[simp]
+theorem compQuasiMeasurePreserving_mk {g : β → γ} (hg : AEStronglyMeasurable g ν)
+    (hf : QuasiMeasurePreserving f μ ν) :
+    (mk g hg).compQuasiMeasurePreserving f hf = mk (g ∘ f) (hg.comp_quasiMeasurePreserving hf) :=
+  rfl
+
+theorem compQuasiMeasurePreserving_eq_mk (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν) :
+    g.compQuasiMeasurePreserving f hf =
+      mk (g ∘ f) (g.aestronglyMeasurable.comp_quasiMeasurePreserving hf) := by
+  rw [← compQuasiMeasurePreserving_mk g.aestronglyMeasurable hf, mk_coeFn]
+
+theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν) :
+    g.compQuasiMeasurePreserving f hf =ᵐ[μ] g ∘ f := by
+  rw [compQuasiMeasurePreserving_eq_mk]
+  apply coeFn_mk
+
+end compQuasiMeasurePreserving
+
+section compMeasurePreserving
+
+variable [MeasurableSpace β] {ν : MeasureTheory.Measure β}
+
+/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+
+This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
+definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas.  -/
+def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePreserving f μ ν) : α →ₘ[μ] γ :=
+  g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
+
+@[simp]
+theorem compMeasurePreserving_mk {g : β → γ} (hg : AEStronglyMeasurable g ν)
+    (hf : MeasurePreserving f μ ν) :
+    (mk g hg).compMeasurePreserving f hf =
+      mk (g ∘ f) (hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving) :=
+  rfl
+
+theorem compMeasurePreserving_eq_mk (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
+    g.compMeasurePreserving f hf =
+      mk (g ∘ f) (g.aestronglyMeasurable.comp_quasiMeasurePreserving hf.quasiMeasurePreserving) :=
+  g.compQuasiMeasurePreserving_eq_mk _
+
+theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν) :
+    g.compMeasurePreserving f hf =ᵐ[μ] g ∘ f :=
+  g.coeFn_compQuasiMeasurePreserving _
+
+end compMeasurePreserving
+
 /-- Given a continuous function `g : β → γ`, and an almost everywhere equal function `[f] : α →ₘ β`,
     return the equivalence class of `g ∘ f`, i.e., the almost everywhere equal function
     `[g ∘ f] : α →ₘ γ`. -/
