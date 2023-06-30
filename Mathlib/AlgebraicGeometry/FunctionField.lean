@@ -18,7 +18,7 @@ This is a field when the scheme is integral.
 
 ## Main definition
 * `AlgebraicGeometry.Scheme.functionField`: The function field of an integral scheme.
-* `algebraic_geometry.germ_to_function_field`: The canonical map from a component into the function
+* `Algebraic_geometry.germToFunctionField`: The canonical map from a component into the function
   field. This map is injective.
 -/
 
@@ -185,14 +185,15 @@ instance [IsIntegral X] (x : X.carrier) :
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
-  have hmemU : x ∈ U := X.affineCover.Covers x
-  have : Nonempty U := ⟨⟨_, hmemU⟩⟩
   have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
-  let _hA := Presheaf.algebra_section_stalk X.presheaf ⟨x, hmemU⟩
-  let M := (hU.primeIdealOf ⟨x, hmemU⟩).asIdeal.primeCompl
-  have := hU.isLocalization_stalk ⟨x, hmemU⟩
+  let x : U := ⟨x, X.affineCover.Covers x⟩
+  have : Nonempty U := ⟨x⟩
+  let M := (hU.primeIdealOf x).asIdeal.primeCompl
+  have := hU.isLocalization_stalk x
   have := functionField_isFractionRing_of_isAffineOpen X U hU
-  have := functionField_isScalarTower X U ⟨x, X.affineCover.Covers x⟩
+  -- Porting note: the following two lines were not needed.
+  let _hA := Presheaf.algebra_section_stalk X.presheaf x
+  have := functionField_isScalarTower X U x
   IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
     (Scheme.functionField X)
 
