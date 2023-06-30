@@ -8,11 +8,11 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Limits.Connected
-import Mathbin.CategoryTheory.Limits.Constructions.Over.Products
-import Mathbin.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathbin.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathbin.CategoryTheory.Limits.Constructions.Equalizers
+import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 
 /-!
 # Limits in the over category
@@ -34,23 +34,20 @@ variable {X : C}
 namespace CategoryTheory.Over
 
 /-- Make sure we can derive pullbacks in `over B`. -/
-instance {B : C} [HasPullbacks C] : HasPullbacks (Over B) :=
-  by
+instance {B : C} [HasPullbacks C] : HasPullbacks (Over B) := by
   letI : has_limits_of_shape (ULiftHom.{v} (ULift.{v} walking_cospan)) C :=
     has_limits_of_shape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
   letI : category (ULiftHom.{v} (ULift.{v} walking_cospan)) := inferInstance
   exact has_limits_of_shape_of_equivalence (ULiftHomULiftCategory.equiv.{v, v} _).symm
 
 /-- Make sure we can derive equalizers in `over B`. -/
-instance {B : C} [HasEqualizers C] : HasEqualizers (Over B) :=
-  by
+instance {B : C} [HasEqualizers C] : HasEqualizers (Over B) := by
   letI : has_limits_of_shape (ULiftHom.{v} (ULift.{v} walking_parallel_pair)) C :=
     has_limits_of_shape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
   letI : category (ULiftHom.{v} (ULift.{v} walking_parallel_pair)) := inferInstance
   exact has_limits_of_shape_of_equivalence (ULiftHomULiftCategory.equiv.{v, v} _).symm
 
-instance hasFiniteLimits {B : C} [HasFiniteWidePullbacks C] : HasFiniteLimits (Over B) :=
-  by
+instance hasFiniteLimits {B : C} [HasFiniteWidePullbacks C] : HasFiniteLimits (Over B) := by
   apply @has_finite_limits_of_has_equalizers_and_finite_products _ _ _ _
   · exact construct_products.over_finite_products_of_finite_wide_pullbacks
   · apply @has_equalizers_of_has_pullbacks_and_binary_products _ _ _ _
@@ -59,8 +56,7 @@ instance hasFiniteLimits {B : C} [HasFiniteWidePullbacks C] : HasFiniteLimits (O
     · infer_instance
 #align category_theory.over.has_finite_limits CategoryTheory.Over.hasFiniteLimits
 
-instance has_limits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w} (Over B) :=
-  by
+instance has_limits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w} (Over B) := by
   apply @has_limits_of_has_equalizers_and_products _ _ _ _
   · exact construct_products.over_products_of_wide_pullbacks
   · apply @has_equalizers_of_has_pullbacks_and_binary_products _ _ _ _
