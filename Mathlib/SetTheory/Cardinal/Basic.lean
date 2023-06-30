@@ -2141,7 +2141,7 @@ theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : (#⋃₀ A) ≤ (#A) * �
 #align cardinal.mk_sUnion_le Cardinal.mk_sUnion_le
 
 theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
-    (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, #A x.1 := by
+    (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, (#A x.1) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le
 #align cardinal.mk_bUnion_le Cardinal.mk_biUnion_le
