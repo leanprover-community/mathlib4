@@ -205,10 +205,10 @@ instance semiring {R : Type _} [Semiring R] [TopologicalSpace R] [ChartedSpace H
     [SmoothRing I' R] : Semiring C^∞⟮I, N; I', R⟯ :=
   { SmoothMap.addCommMonoid,
     SmoothMap.monoid with
-    left_distrib := fun a b c => by ext <;> exact left_distrib _ _ _
-    right_distrib := fun a b c => by ext <;> exact right_distrib _ _ _
-    zero_mul := fun a => by ext <;> exact MulZeroClass.zero_mul _
-    mul_zero := fun a => by ext <;> exact MulZeroClass.mul_zero _ }
+    left_distrib := fun a b c => by ext; exact left_distrib _ _ _
+    right_distrib := fun a b c => by ext; exact right_distrib _ _ _
+    zero_mul := fun a => by ext; exact MulZeroClass.zero_mul _
+    mul_zero := fun a => by ext; exact MulZeroClass.mul_zero _ }
 #align smooth_map.semiring SmoothMap.semiring
 
 instance ring {R : Type _} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [SmoothRing I' R] :
@@ -244,14 +244,14 @@ def restrictRingHom (R : Type _) [Ring R] [TopologicalSpace R] [ChartedSpace H' 
     toFun := fun f => ⟨f ∘ Set.inclusion h, f.smooth.comp (smooth_inclusion h)⟩ }
 #align smooth_map.restrict_ring_hom SmoothMap.restrictRingHom
 
-variable {I N I' N'}
+variable {I I'}
 
 /-- Coercion to a function as a `ring_hom`. -/
 @[simps]
 def coeFnRingHom {R : Type _} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
     [SmoothRing I' R] : C^∞⟮I, N; I', R⟯ →+* N → R :=
   { (coeFnMonoidHom : C^∞⟮I, N; I', R⟯ →* _), (coeFnAddMonoidHom : C^∞⟮I, N; I', R⟯ →+ _) with
-    toFun := coeFn }
+    toFun := (↑) }
 #align smooth_map.coe_fn_ring_hom SmoothMap.coeFnRingHom
 
 /-- `function.eval` as a `ring_hom` on the ring of smooth functions. -/
@@ -274,7 +274,7 @@ field `𝕜` inherit a vector space structure.
 
 instance hasSmul {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^∞⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun r f => ⟨r • f, smooth_const.smul f.smooth⟩⟩
+  ⟨fun r f => ⟨r • ⇑f, smooth_const.smul f.smooth⟩⟩
 #align smooth_map.has_smul SmoothMap.hasSmul
 
 @[simp]
@@ -298,10 +298,8 @@ instance module {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
 @[simps]
 def coeFnLinearMap {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     C^∞⟮I, N; 𝓘(𝕜, V), V⟯ →ₗ[𝕜] N → V :=
-  {
-    (coeFnAddMonoidHom : C^∞⟮I, N; 𝓘(𝕜, V), V⟯ →+
-        _) with
-    toFun := coeFn
+  { (coeFnAddMonoidHom : C^∞⟮I, N; 𝓘(𝕜, V), V⟯ →+ _) with
+    toFun := (↑)
     map_smul' := coe_smul }
 #align smooth_map.coe_fn_linear_map SmoothMap.coeFnLinearMap
 
@@ -320,28 +318,28 @@ inherit an algebra structure.
 variable {A : Type _} [NormedRing A] [NormedAlgebra 𝕜 A] [SmoothRing 𝓘(𝕜, A) A]
 
 /-- Smooth constant functions as a `ring_hom`. -/
-def c : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
-  toFun := fun c : 𝕜 => ⟨fun x => (algebraMap 𝕜 A) c, smooth_const⟩
-  map_one' := by ext x <;> exact (algebraMap 𝕜 A).map_one
-  map_mul' c₁ c₂ := by ext x <;> exact (algebraMap 𝕜 A).map_mul _ _
-  map_zero' := by ext x <;> exact (algebraMap 𝕜 A).map_zero
-  map_add' c₁ c₂ := by ext x <;> exact (algebraMap 𝕜 A).map_add _ _
-#align smooth_map.C SmoothMap.c
+def C : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
+  toFun := fun c : 𝕜 => ⟨fun _ => (algebraMap 𝕜 A) c, smooth_const⟩
+  map_one' := by ext; exact (algebraMap 𝕜 A).map_one
+  map_mul' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_mul _ _
+  map_zero' := by ext; exact (algebraMap 𝕜 A).map_zero
+  map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
+set_option linter.uppercaseLean3 false in
+#align smooth_map.C SmoothMap.C
 
 instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ :=
-  {
-    SmoothMap.semiring with
+  { --SmoothMap.semiring with -- Porting note: Commented this out.
     smul := fun r f => ⟨r • f, smooth_const.smul f.smooth⟩
-    toRingHom := SmoothMap.c
-    commutes' := fun c f => by ext x <;> exact Algebra.commutes' _ _
-    smul_def' := fun c f => by ext x <;> exact Algebra.smul_def' _ _ }
+    toRingHom := SmoothMap.C
+    commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
+    smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _ }
 #align smooth_map.algebra SmoothMap.algebra
 
 /-- Coercion to a function as an `alg_hom`. -/
 @[simps]
 def coeFnAlgHom : C^∞⟮I, N; 𝓘(𝕜, A), A⟯ →ₐ[𝕜] N → A where
-  toFun := coeFn
-  commutes' r := rfl
+  toFun := (↑)
+  commutes' _ := rfl
   -- `..(smooth_map.coe_fn_ring_hom : C^∞⟮I, N; 𝓘(𝕜, A), A⟯ →+* _)` times out for some reason
   map_zero' := SmoothMap.coe_zero
   map_one' := SmoothMap.coe_one
@@ -386,4 +384,3 @@ instance module' {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
 end ModuleOverContinuousFunctions
 
 end SmoothMap
-
