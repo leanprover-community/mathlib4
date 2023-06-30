@@ -765,7 +765,7 @@ theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s,
 -- instance first; `{∀ x, Decidable (f x ≠ 1)}` doesn't work with `rw ← prod_filter_ne_one`
 @[to_additive]
 theorem prod_filter_ne_one [∀ x, Decidable (f x ≠ 1)] :
-    ∏ x in s.filter (fun x => f x ≠ 1, f x) = ∏ x in s, f x :=
+    ∏ x in s.filter fun x => f x ≠ 1, f x = ∏ x in s, f x :=
   prod_filter_of_ne fun _ _ => id
 #align finset.prod_filter_ne_one Finset.prod_filter_ne_one
 #align finset.sum_filter_ne_zero Finset.sum_filter_ne_zero

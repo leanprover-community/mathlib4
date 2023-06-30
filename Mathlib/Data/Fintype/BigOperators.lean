@@ -55,7 +55,7 @@ variable {ι : Type _} [DecidableEq ι] [Fintype ι]
 
 @[to_additive]
 theorem prod_extend_by_one [CommMonoid α] (s : Finset ι) (f : ι → α) :
-    ∏ i, if i ∈ s then f i else 1 = ∏ i in s, f i := by
+    ∏ i, (if i ∈ s then f i else 1) = ∏ i in s, f i := by
   rw [← prod_filter, filter_mem_eq_inter, univ_inter]
 #align fintype.prod_extend_by_one Fintype.prod_extend_by_one
 #align fintype.sum_extend_by_zero Fintype.sum_extend_by_zero

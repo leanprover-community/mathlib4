@@ -533,7 +533,7 @@ theorem tsum_tsum_eq_single (f : β → γ → α) (b : β) (c : γ) (hfb : ∀ 
 
 @[simp]
 theorem tsum_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
-    ∑' b', if b' = b then a else 0 = a :=
+    ∑' b', (if b' = b then a else 0) = a :=
   (hasSum_ite_eq b a).tsum_eq
 #align tsum_ite_eq tsum_ite_eq
 
