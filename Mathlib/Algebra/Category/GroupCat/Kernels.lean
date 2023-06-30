@@ -36,11 +36,13 @@ theorem range_le_ker_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I}
     f.range ≤ g.ker ↔ g.comp f = 0 := by
     constructor
     · intro h
-      aesop_cat
-    · intro h x hx
-      cases' hx with x' hx
+      ext x
+      simp only [AddMonoidHom.coe_comp, Function.comp_apply, AddMonoidHom.zero_apply]
+      refine' h _
+      simp only [mem_range, exists_apply_eq_apply]
+    · rintro h x ⟨x', hx⟩
       have := FunLike.congr_fun h x'
-      simp at this
+      simp only [AddMonoidHom.coe_comp, Function.comp_apply] at this
       rw [hx] at this
       exact this
 
