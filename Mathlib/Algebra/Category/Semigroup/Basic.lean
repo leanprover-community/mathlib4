@@ -191,6 +191,12 @@ theorem coe_of (R : Type u) [Semigroup R] : (SemigroupCat.of R : Type u) = R :=
 #align Semigroup.coe_of SemigroupCat.coe_of
 #align AddSemigroup.coe_of AddSemigroupCat.coe_of
 
+@[to_additive (attr := simp)]
+lemma MulEquiv_coe_eq {X Y : Type _} [Semigroup X] [Semigroup Y] (e : X ≃* Y) :
+    (@FunLike.coe (SemigroupCat.of X ⟶ SemigroupCat.of Y) _ (fun _ => (forget SemigroupCat).obj _)
+      ConcreteCategory.funLike (e : X →ₙ* Y) : X → Y) = ↑e :=
+  rfl
+
 /-- Typecheck a `MulHom` as a morphism in `SemigroupCat`. -/
 @[to_additive]
 def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
@@ -239,19 +245,10 @@ variable [Mul X] [Mul Y]
 def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y where
   hom := e.toMulHom
   inv := e.symm.toMulHom
-  -- Porting note: both used to be proven automatically
   hom_inv_id := by
     ext
-    -- TODO, ugh, things are not set up right. We have RingEquiv.toRingHom_eq_coe,
-    -- but not MulEquiv.toMulHom_eq_coe
-    simp only [MulEquiv.toMulHom_eq_coe, comp_apply, MagmaCat.MulEquiv_coe_eq,
-      MulEquiv.symm_apply_apply, id_apply]
-    simp
-    sorry
-    done
-  inv_hom_id := by
-    aesop_cat_nonterminal
-    sorry
+    simp_rw [comp_apply, toMulHom_eq_coe, MagmaCat.MulEquiv_coe_eq, symm_apply_apply, id_apply]
+
 #align mul_equiv.to_Magma_iso MulEquiv.toMagmaCatIso
 #align add_equiv.to_AddMagma_iso AddEquiv.toAddMagmaCatIso
 
@@ -268,14 +265,6 @@ variable [Semigroup X] [Semigroup Y]
 def MulEquiv.toSemigroupCatIso (e : X ≃* Y) : SemigroupCat.of X ≅ SemigroupCat.of Y where
   hom := e.toMulHom
   inv := e.symm.toMulHom
-  -- Porting note: both used to be proven automatically
-  hom_inv_id := by
-    aesop_cat_nonterminal
-    sorry
-    done
-  inv_hom_id := by
-    aesop_cat_nonterminal
-    sorry
 #align mul_equiv.to_Semigroup_iso MulEquiv.toSemigroupCatIso
 #align add_equiv.to_AddSemigroup_iso AddEquiv.toAddSemigroupCatIso
 
