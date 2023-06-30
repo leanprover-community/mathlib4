@@ -149,10 +149,10 @@ theorem _root_.Polynomial.IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hu
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
-  { refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
+  . refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
     have h := (mul_coeff_zero P Q).symm
-    rwa [hQ, coeff_one_zero] at h }
-  { intros n hn
+    rwa [hQ, coeff_one_zero] at h
+  . intros n hn
     rw [nilpotent_iff_mem_prime]
     intros I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
@@ -163,7 +163,7 @@ theorem _root_.Polynomial.IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hu
       rw [hPQ.1]
       exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
     rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
-    exact hcoeff }
+    exact hcoeff
 
 /-- Let `P` be a polynomial over `R`. `P` is a unit if and only if all its coefficients are
 nilpotent, except its constant term which is a unit. -/
