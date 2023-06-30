@@ -121,7 +121,7 @@ theorem WithTop.coe_sSup' [Preorder α] [SupSet α] {s : Set α} (hs : BddAbove 
 -- does not need `rfl`.
 @[norm_cast]
 theorem WithTop.coe_iSup [Preorder α] [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
-    ↑(⨆ i, f i = (⨆ i, f i : WithTop α) := by
+    ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
     rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp]; rfl
 #align with_top.coe_supr WithTop.coe_iSup
 
