@@ -141,11 +141,6 @@ instance {X : Scheme} [IsIntegral X] {U : Opens X.carrier} [hU : Nonempty U] :
   haveI : Nonempty (X.restrict U.openEmbedding).carrier := hU
   isIntegralOfOpenImmersion (X.ofRestrict U.openEmbedding)
 
--- TODO: move to Mathlib.AlgebraicGeometry.Scheme
-lemma Scheme.comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
-  simp
-
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : Opens X.carrier}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
@@ -185,16 +180,20 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
 instance (x : X.carrier) : IsAffine (X.affineCover.obj x) :=
   AlgebraicGeometry.SpecIsAffine _
 
-instance [h : IsIntegral X] (x : X.carrier) :
-    IsFractionRing (X.presheaf.stalk x) X.functionField := by
+instance [IsIntegral X] (x : X.carrier) :
+    IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
       PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
-  haveI : Nonempty U := ⟨⟨_, X.affineCover.Covers x⟩⟩
+  have hmemU : x ∈ U := X.affineCover.Covers x
+  have : Nonempty U := ⟨⟨_, hmemU⟩⟩
   have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
-  exact
-    @IsFractionRing.isFractionRing_of_isDomain_of_isLocalization _ _ _ _ _ _ _ _ _ _ _
-      (hU.isLocalization_stalk ⟨x, X.affineCover.Covers x⟩)
-      (functionField_isFractionRing_of_isAffineOpen X U hU)
+  let _hA := Presheaf.algebra_section_stalk X.presheaf ⟨x, hmemU⟩
+  let M := (hU.primeIdealOf ⟨x, hmemU⟩).asIdeal.primeCompl
+  have := hU.isLocalization_stalk ⟨x, hmemU⟩
+  have := functionField_isFractionRing_of_isAffineOpen X U hU
+  have := functionField_isScalarTower X U ⟨x, X.affineCover.Covers x⟩
+  IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M ↑(Presheaf.stalk X.presheaf x)
+    (Scheme.functionField X)
 
 end AlgebraicGeometry
