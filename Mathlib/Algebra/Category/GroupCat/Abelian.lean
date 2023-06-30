@@ -15,6 +15,7 @@ import Mathlib.Algebra.Category.GroupCat.Colimits
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 
 /-!
@@ -67,31 +68,12 @@ instance : Abelian AddCommGroupCat.{u} where
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
 
-theorem exact_iff {X Y Z : AddCommGroupCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    Exact f g ↔ f.range = g.ker := by
-  rw [Abelian.exact_iff' f g (limit.isLimit _) (colimit.isColimit _)]
-  constructor
-  · rintro ⟨hfg, h⟩
-    ext x
-    constructor
-    · rintro ⟨x, rfl⟩
-      exact FunLike.congr_fun hfg x
-    · intro hx
-      rw [← QuotientAddGroup.eq_zero_iff]
-      simp at h
-      exact FunLike.congr_fun h ⟨x, hx⟩
-  · intro h
-    constructor
-    · ext x
-      show f x ∈ g.ker
-      rw [←h]
-      simp only [AddMonoidHom.mem_range, exists_apply_eq_apply]
-    · ext x
-      --ext ⟨x, hx⟩
-      --dsimp [kernel_cone, cokernel_cocone]
-      simp only [comp_apply, QuotientAddGroup.mk'_apply, QuotientAddGroup.eq_zero_iff, h]
+theorem exact_iff : Exact f g ↔ f.range = g.ker := by
+  rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
+  exact
+    ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
+      ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
 
-      -- using hx
 
 
 theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
