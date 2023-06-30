@@ -229,33 +229,6 @@ lemma Metric.bounded_range_of_forall_norm_le [NormedAddGroup E]
   intro x ⟨i, hi⟩
   simpa only [← hi, Metric.closedBall, dist_zero_right, Set.mem_setOf_eq, ge_iff_le] using h i
 
-/-
--- NOTE: Can this really be missing from Mathlib?
-lemma Metric.isBounded_closedBall [PseudoMetricSpace X] (z : X) (r : ℝ) :
-    Bornology.IsBounded (Metric.closedBall z r) := by
-  rw [Metric.isBounded_iff]
-  use 2 * r
-  intro x hx y hy
-  simp only [closedBall, Set.mem_setOf_eq] at hx hy
-  calc  dist x y
-    _ ≤ dist x z + dist z y     := dist_triangle x z y
-    _ = dist x z + dist y z     := by rw [dist_comm z y]
-    _ ≤ r + r                   := by gcongr
-    _ = 2 * r                   := by ring
-
--- NOTE: Can this really be missing from Mathlib?
-lemma Metric.isBounded_ball [PseudoMetricSpace X] (z : X) (r : ℝ) :
-    Bornology.IsBounded (Metric.ball z r) :=
-  (Metric.isBounded_closedBall z r).subset ball_subset_closedBall
-
--- NOTE: Should this be in Mathlib?
-lemma isBounded_range_of_forall_norm_le [NormedAddGroup E] (f : ι → E) (c : ℝ) (h : ∀ i, ‖f i‖ ≤ c) :
-    Bornology.IsBounded (Set.range f) := by
-  apply (Metric.isBounded_closedBall 0 c).subset
-  intro x ⟨i, hi⟩
-  simpa only [← hi, Metric.closedBall, dist_zero_right, Set.mem_setOf_eq, gt_iff_lt] using h i
- -/
-
 end boundedness_by_norm_bounds
 
 
@@ -437,17 +410,6 @@ lemma bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
     Metric.Bounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
   apply Metric.bounded_range_of_forall_norm_le _ ‖f‖
   exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
-
-/-
--- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
--- TODO: Should this be generalized to functions with values in Banach spaces?
-lemma isBounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure'
-    (μs : ι → Measure Ω) [∀ i, IsProbabilityMeasure (μs i)] (f : Ω →ᵇ ℝ) :
-    Bornology.IsBounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
-  --apply isBounded_range_of_forall_norm_le _ ‖f‖
-  --exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
-  sorry
- -/
 
 lemma main_thing'
     {μ : Measure Ω} [IsProbabilityMeasure μ]
