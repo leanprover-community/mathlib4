@@ -8,7 +8,7 @@ Authors: Apurva Nakade
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Convex.Cone.Dual
+import Mathlib.Analysis.Convex.Cone.Dual
 
 /-!
 # Proper cones
@@ -48,8 +48,7 @@ variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [
 
 /-- The closure of a convex cone inside a topological space as a convex cone. This
 construction is mainly used for defining maps between proper cones. -/
-protected def closure (K : ConvexCone 𝕜 E) : ConvexCone 𝕜 E
-    where
+protected def closure (K : ConvexCone 𝕜 E) : ConvexCone 𝕜 E where
   carrier := closure ↑K
   smul_mem' c hc _ h₁ :=
     map_mem_closure (continuous_id'.const_smul c) h₁ fun _ h₂ => K.smul_mem hc h₂
@@ -104,8 +103,7 @@ theorem ext' : Function.Injective (coe : ProperCone 𝕜 E → ConvexCone 𝕜 E
 #align proper_cone.ext' ProperCone.ext'
 
 -- TODO: add convex_cone_class that extends set_like and replace the below instance
-instance : SetLike (ProperCone 𝕜 E) E
-    where
+instance : SetLike (ProperCone 𝕜 E) E where
   coe K := K.carrier
   coe_injective' _ _ h := ProperCone.ext' (SetLike.coe_injective h)
 
@@ -170,8 +168,7 @@ protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointe
 
 /-- The closure of image of a proper cone under a continuous `ℝ`-linear map is a proper cone. We
 use continuous maps here so that the adjoint of f is also a map between proper cones. -/
-noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone ℝ F
-    where
+noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone ℝ F where
   toConvexCone := ConvexCone.closure (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K)
   nonempty' :=
     ⟨0, subset_closure <| SetLike.mem_coe.2 <| ConvexCone.mem_map.2 ⟨0, K.Pointed, map_zero _⟩⟩
@@ -196,8 +193,7 @@ theorem map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K
 #align proper_cone.map_id ProperCone.map_id
 
 /-- The inner dual cone of a proper cone is a proper cone. -/
-def dual (K : ProperCone ℝ E) : ProperCone ℝ E
-    where
+def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
   toConvexCone := (K : Set E).innerDualCone
   nonempty' := ⟨0, pointed_innerDualCone _⟩
   is_closed' := isClosed_innerDualCone _
