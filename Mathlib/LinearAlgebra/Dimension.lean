@@ -108,7 +108,7 @@ The definition is marked as protected to avoid conflicts with `_root_.rank`,
 the rank of a linear map.
 -/
 protected irreducible_def Module.rank : Cardinal :=
-  ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, #ι.1
+  ⨆ ι : { s : Set V // LinearIndependent K ((↑) : s → V) }, (#ι.1)
 #align module.rank Module.rank
 
 end
@@ -358,7 +358,7 @@ then the union of the supports of `x ∈ s` (when written out in the basis `b`) 
 -/
 theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b : Basis ι R M)
     {κ : Type w'} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) :
-    (⋃ k, ((b.repr (v k)).support : Set ι)) = Set.univ := by
+    ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
   simp only [← Ne.def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,

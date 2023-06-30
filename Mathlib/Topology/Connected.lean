@@ -1016,7 +1016,7 @@ theorem connectedComponent_subset_iInter_clopen {x : α} :
 
 /-- A clopen set is the union of its connected components. -/
 theorem IsClopen.biUnion_connectedComponent_eq {Z : Set α} (h : IsClopen Z) :
-    (⋃ x ∈ Z, connectedComponent x) = Z :=
+    ⋃ x ∈ Z, connectedComponent x = Z :=
   Subset.antisymm (iUnion₂_subset fun _ => h.connectedComponent_subset) fun _ h =>
     mem_iUnion₂_of_mem h mem_connectedComponent
 #align is_clopen.bUnion_connected_component_eq IsClopen.biUnion_connectedComponent_eq
