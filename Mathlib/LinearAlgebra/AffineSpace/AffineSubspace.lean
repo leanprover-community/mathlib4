@@ -760,6 +760,7 @@ theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
 variable {P}
 
 /-- All points are in `⊤`. -/
+@[simp]
 theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
   Set.mem_univ p
 #align affine_subspace.mem_top AffineSubspace.mem_top

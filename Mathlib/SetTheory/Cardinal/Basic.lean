@@ -17,6 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Cardinal Numbers
@@ -109,6 +110,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 #align cardinal Cardinal
+pp_with_univ Cardinal
 
 namespace Cardinal
 
@@ -677,10 +679,10 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α (range fᶜ : Set β) ≃ β :=
+        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
-        ⟨#↥(range fᶜ), mk_congr this.symm⟩
+        ⟨#↥(range f)ᶜ, mk_congr this.symm⟩
     le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by

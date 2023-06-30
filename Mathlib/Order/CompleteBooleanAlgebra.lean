@@ -323,28 +323,28 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] {a b : α} {s : Set α} {f : ι → α}
 
-theorem compl_iInf : iInf fᶜ = ⨆ i, f iᶜ :=
+theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
     (compl_le_of_compl_le <| le_iInf fun i => compl_le_of_compl_le <|
       le_iSup (HasCompl.compl ∘ f) i)
     (iSup_le fun _ => compl_le_compl <| iInf_le _ _)
 #align compl_infi compl_iInf
 
-theorem compl_iSup : iSup fᶜ = ⨅ i, f iᶜ :=
+theorem compl_iSup : (iSup f)ᶜ = ⨅ i, (f i)ᶜ :=
   compl_injective (by simp [compl_iInf])
 #align compl_supr compl_iSup
 
-theorem compl_sInf : sInf sᶜ = ⨆ i ∈ s, iᶜ := by simp only [sInf_eq_iInf, compl_iInf]
+theorem compl_sInf : (sInf s)ᶜ = ⨆ i ∈ s, iᶜ := by simp only [sInf_eq_iInf, compl_iInf]
 #align compl_Inf compl_sInf
 
-theorem compl_sSup : sSup sᶜ = ⨅ i ∈ s, iᶜ := by simp only [sSup_eq_iSup, compl_iSup]
+theorem compl_sSup : (sSup s)ᶜ = ⨅ i ∈ s, iᶜ := by simp only [sSup_eq_iSup, compl_iSup]
 #align compl_Sup compl_sSup
 
-theorem compl_sInf' : sInf sᶜ = sSup (HasCompl.compl '' s) :=
+theorem compl_sInf' : (sInf s)ᶜ = sSup (HasCompl.compl '' s) :=
   compl_sInf.trans sSup_image.symm
 #align compl_Inf' compl_sInf'
 
-theorem compl_sSup' : sSup sᶜ = sInf (HasCompl.compl '' s) :=
+theorem compl_sSup' : (sSup s)ᶜ = sInf (HasCompl.compl '' s) :=
   compl_sSup.trans sInf_image.symm
 #align compl_Sup' compl_sSup'
 
@@ -404,7 +404,7 @@ protected def Function.Injective.completeBooleanAlgebra [Sup α] [Inf α] [SupSe
     (hf : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
     (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
-    (map_compl : ∀ a, f (aᶜ) = f aᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteBooleanAlgebra α :=
   { hf.completeDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot,
     hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff with }
