@@ -82,67 +82,40 @@ lemma Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf :
 
 -- NOTE: Missing from Mathlib?
 -- What would be a good generality? (Mixes order and metric, so typeclasses don't readily exist.)
+lemma Filter.isBounded_le_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
+    (h : Metric.Bounded (Set.range f)) :
+    (F.map f).IsBounded (· ≤ ·) := by
+  sorry
+  --rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
+  --obtain ⟨c, hc⟩ := h.2
+  --apply isBoundedUnder_of
+  --use c
+  --simpa [mem_upperBounds] using hc
+
+lemma Filter.isBounded_ge_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
+    (h : Metric.Bounded (Set.range f)) :
+    (F.map f).IsBounded (· ≥ ·) := by sorry
+
+-- NOTE: Missing from Mathlib?
+-- What would be a good generality? (Mixes order and metric, so typeclasses don't readily exist.)
 lemma Filter.isBounded_le_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
     (h : Bornology.IsBounded (Set.range f)) :
     (F.map f).IsBounded (· ≤ ·) := by
   rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
+  obtain ⟨c, hc⟩ := h.2
   apply isBoundedUnder_of
-  sorry
-
-/-
-  rw [Metric.isBounded_iff] at h
-  obtain ⟨c, hc⟩ := h
-  by_cases hι : Nonempty ι
-  · obtain ⟨j⟩ := hι
-    use f j + c
-    simp only [eventually_map]
-    apply eventually_of_forall
-    intro i
-    have obs := hc (Set.mem_range_self j) (Set.mem_range_self i)
-    rw [Real.dist_eq, abs_le] at obs
-    linarith [obs]
-  · simp only [not_nonempty_iff] at hι
-    simp only [filter_eq_bot_of_isEmpty F, map_bot]
-    exact Iff.mpr isBounded_bot (by infer_instance)
- -/
+  use c
+  simpa [mem_upperBounds] using hc
 
 -- NOTE: Missing from Mathlib? What would be a good generality?
 lemma Filter.isBounded_ge_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
     (h : Bornology.IsBounded (Set.range f)) :
     (F.map f).IsBounded (· ≥ ·) := by
-  rw [Metric.isBounded_iff] at h
-  obtain ⟨c, hc⟩ := h
-  by_cases hι : Nonempty ι
-  · obtain ⟨j⟩ := hι
-    use f j - c
-    simp only [eventually_map]
-    apply eventually_of_forall
-    intro i
-    have obs := hc (Set.mem_range_self j) (Set.mem_range_self i)
-    rw [Real.dist_eq, abs_le] at obs
-    linarith [obs]
-  · simp only [not_nonempty_iff] at hι
-    simp only [filter_eq_bot_of_isEmpty F, map_bot]
-    exact Iff.mpr isBounded_bot (by infer_instance)
-
--- NOTE: Missing from Mathlib? What would be a good generality?
-lemma Filter.isBounded_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
-    (F.map f).IsBounded (· ≤ ·) := by
-  rw [Metric.isBounded_iff] at h
-  obtain ⟨c, hc⟩ := h
-  by_cases hι : Nonempty ι
-  · obtain ⟨j⟩ := hι
-    use f j + c
-    simp only [eventually_map]
-    apply eventually_of_forall
-    intro i
-    have obs := hc (Set.mem_range_self j) (Set.mem_range_self i)
-    rw [Real.dist_eq, abs_le] at obs
-    linarith [obs]
-  · simp only [not_nonempty_iff] at hι
-    simp only [filter_eq_bot_of_isEmpty F, map_bot]
-    exact Iff.mpr isBounded_bot (by infer_instance)
+  rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
+  obtain ⟨c, hc⟩ := h.1
+  apply isBoundedUnder_of
+  use c
+  simpa [mem_lowerBounds] using hc
 
 #check Antitone.map_limsSup_of_continuousAt
 
@@ -263,7 +236,17 @@ section boundedness_by_norm_bounds
 -- TODO: Should use `Metric.Bounded`
 #check Metric.Bounded
 #check Metric.bounded_closedBall
+#check Metric.bounded_ball
 
+-- NOTE: Should this be in Mathlib?
+lemma Metric.bounded_range_of_forall_norm_le [NormedAddGroup E]
+    (f : ι → E) (c : ℝ) (h : ∀ i, ‖f i‖ ≤ c) :
+    Metric.Bounded (Set.range f) := by
+  apply Metric.Bounded.mono _ (@Metric.bounded_closedBall _ _ 0 c)
+  intro x ⟨i, hi⟩
+  simpa only [← hi, Metric.closedBall, dist_zero_right, Set.mem_setOf_eq, ge_iff_le] using h i
+
+/-
 -- NOTE: Can this really be missing from Mathlib?
 lemma Metric.isBounded_closedBall [PseudoMetricSpace X] (z : X) (r : ℝ) :
     Bornology.IsBounded (Metric.closedBall z r) := by
@@ -288,6 +271,7 @@ lemma isBounded_range_of_forall_norm_le [NormedAddGroup E] (f : ι → E) (c : �
   apply (Metric.isBounded_closedBall 0 c).subset
   intro x ⟨i, hi⟩
   simpa only [← hi, Metric.closedBall, dist_zero_right, Set.mem_setOf_eq, gt_iff_lt] using h i
+ -/
 
 end boundedness_by_norm_bounds
 
@@ -465,11 +449,22 @@ lemma BoundedContinuousFunction.norm_integral_le_norm_of_isProbabilityMeasure
 
 -- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
 -- TODO: Should this be generalized to functions with values in Banach spaces?
-lemma isBounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
+lemma bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
+    (μs : ι → Measure Ω) [∀ i, IsProbabilityMeasure (μs i)] (f : Ω →ᵇ ℝ) :
+    Metric.Bounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
+  apply Metric.bounded_range_of_forall_norm_le _ ‖f‖
+  exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
+
+/-
+-- NOTE: Maybe there should be a file for lemmas about integrals of `BoundedContinuousFunction`s?
+-- TODO: Should this be generalized to functions with values in Banach spaces?
+lemma isBounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure'
     (μs : ι → Measure Ω) [∀ i, IsProbabilityMeasure (μs i)] (f : Ω →ᵇ ℝ) :
     Bornology.IsBounded (Set.range (fun i ↦ ∫ x, (f x) ∂ (μs i))) := by
-  apply isBounded_range_of_forall_norm_le _ ‖f‖
-  exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
+  --apply isBounded_range_of_forall_norm_le _ ‖f‖
+  --exact fun i ↦ f.norm_integral_le_norm_of_isProbabilityMeasure (μs i)
+  sorry
+ -/
 
 lemma main_thing'
     {μ : Measure Ω} [IsProbabilityMeasure μ]
@@ -543,13 +538,13 @@ lemma reduction_to_liminf {ι : Type} {L : Filter ι} [NeBot L]
     (h : ∀ f : Ω →ᵇ ℝ, 0 ≤ f → ∫ x, (f x) ∂μ ≤ L.liminf (fun i ↦ ∫ x, (f x) ∂ (μs i)))
     (f : Ω →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, (f x) ∂ (μs i)) L (𝓝 (∫ x, (f x) ∂μ)) := by
-  have obs := isBounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure μs f
+  have obs := bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure μs f
   have bdd_above : IsBoundedUnder (· ≤ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) := by
-    apply isBounded_le_map_of_isBounded_range
-    apply isBounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
+    apply isBounded_le_map_of_bounded_range
+    apply bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
   have bdd_below : IsBoundedUnder (· ≥ ·) L (fun i ↦ ∫ (x : Ω), f x ∂μs i) := by
-    apply isBounded_ge_map_of_isBounded_range
-    apply isBounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
+    apply isBounded_ge_map_of_bounded_range
+    apply bounded_range_integral_boundedContinuousFunction_of_isProbabilityMeasure
   apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, (f x) ∂ (μs i)) (∫ x, (f x) ∂μ)
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key
@@ -562,8 +557,8 @@ lemma reduction_to_liminf {ι : Type} {L : Filter ι} [NeBot L]
     simp only [measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul] at key
     have := liminf_const_sub L (fun i ↦ ∫ x, (f x) ∂ (μs i)) ‖f‖ bdd_above bdd_below
     rwa [this, sub_le_sub_iff_left] at key
-  · exact L.isBounded_le_map_of_isBounded_range obs
-  · exact L.isBounded_ge_map_of_isBounded_range obs
+  · exact L.isBounded_le_map_of_bounded_range obs
+  · exact L.isBounded_ge_map_of_bounded_range obs
 
 /-- A characterization of weak convergence of probability measures by the condition that the
 integrals of every continuous bounded nonnegative function converge to the integral of the function
