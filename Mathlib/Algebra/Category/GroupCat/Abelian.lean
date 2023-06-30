@@ -70,7 +70,12 @@ variable {J : Type u} [SmallCategory J] [IsFiltered J]
 variable {G H : AddCommGroupCat.{u}} (f : G ⟶ H)
 
 def ker_le_range_iff {I : AddCommGroupCat.{u}} {f : G →+ H} {g : H →+ I} :
-   g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype  = 0 := by sorry
+   g.ker ≤ f.range ↔ (QuotientAddGroup.mk' f.range).comp g.ker.subtype  = 0 := by
+  constructor
+  · intro h
+    aesop_cat
+  · intro h
+    sorry
 
 theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     Exact f g ↔ f.range = g.ker := by
@@ -78,7 +83,6 @@ theorem exact_iff {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
   exact
     ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
       ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
-
 
 
 theorem exact_iff' {X Y Z : AddCommGroupCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
