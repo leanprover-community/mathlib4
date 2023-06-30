@@ -10,7 +10,7 @@ namespace AddCommGroupCat
 
 variable {M N : AddCommGroupCat.{u}} (f : M ⟶ N)
 
-instance : HasZeroMorphisms AddCommGroupCat := by refine HasZeroMorphisms.mk
+instance : HasZeroMorphisms AddCommGroupCat := HasZeroMorphisms.mk
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
@@ -18,33 +18,18 @@ def kernelCone : KernelFork f :=
     ext fun x ↦ Subtype.casesOn x fun _ hx => hx
 
 instance : AddSubmonoidClass (AddSubgroup M) ((parallelPair f 0).obj WalkingParallelPair.zero) where
-  add_mem := by exact fun {s} {a b} a_1 a_2 ↦ AddSubgroup.add_mem s a_1 a_2
-  zero_mem := by exact fun s ↦ AddSubgroup.zero_mem s
+  add_mem := fun s {_ _} => AddSubgroup.add_mem s
+  zero_mem := AddSubgroup.zero_mem
 
-/-- The kernel of a linear map is a kernel in the categorical sense. -/
-def kernel_is_limit : IsLimit (kernelCone f) :=
-Fork.IsLimit.mk _
+/-- The kernel of a group homomorphism is a kernel in the categorical sense. -/
+def kernel_is_limit : IsLimit <| kernelCone f :=
+  Fork.IsLimit.mk (kernelCone f)
     (fun s : Fork f 0 =>
-      AddMonoidHom.codRestrict  (Fork.ι s) (f.ker) <| fun c =>
-        (AddMonoidHom.mem_ker _).2 <| by
-          rw [← @Function.comp_apply _ _ _ f (Fork.ι s) c, ← coe_comp, Fork.condition]
-          --rw [HasZeroMorphisms.comp_zero (Fork.ι s) N]
-          rfl)
-  (fun s : Fork f 0 => AddMonoidHom.codRestrict (Fork.ι s) f.ker <|
-    fun c => (AddMonoidHom.mem_ker _).2 <|
-    by
-      rw [←@Function.comp_apply _ _ _ f s.ι c, ←coe_comp, Fork.condition]
-      --rw [HasZeroMorphisms.comp_zero (Fork.ι s) N]
-      rfl )
-  (fun s => by
-    ext
-    simp only [comp_apply, AddMonoidHom.codRestrict_apply]
-    rfl )
-  (fun s m h => AddMonoidHom.ext $ fun x => Subtype.ext_iff_val.2 $
-    have h₁ : (m ≫ (kernel_cone f).π.app zero).to_fun = (s.π.app zero).to_fun := by
-      congr
-      exact h
-    by convert @congr_fun _ _ _ _ h₁ x )
+      AddMonoidHom.codRestrict (Fork.ι s) f.ker <| fun c => (AddMonoidHom.mem_ker _).2 <| by
+        rw [← @Function.comp_apply _ _ _ f _ _, ← coe_comp, Fork.condition]
+        rfl)
+    (fun _ => rfl)
+    (fun _ _ h => ext $ fun x => Subtype.ext_iff_val.2 $ FunLike.congr_fun h x)
 
 /-
 /-- The cokernel cocone induced by the projection onto the quotient. -/
