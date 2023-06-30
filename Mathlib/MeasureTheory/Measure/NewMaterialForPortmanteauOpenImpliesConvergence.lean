@@ -85,33 +85,16 @@ lemma Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf :
 lemma Filter.isBounded_le_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
     (h : Metric.Bounded (Set.range f)) :
     (F.map f).IsBounded (· ≤ ·) := by
-  sorry
-  --rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
-  --obtain ⟨c, hc⟩ := h.2
-  --apply isBoundedUnder_of
-  --use c
-  --simpa [mem_upperBounds] using hc
-
-lemma Filter.isBounded_ge_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
-    (h : Metric.Bounded (Set.range f)) :
-    (F.map f).IsBounded (· ≥ ·) := by sorry
-
--- NOTE: Missing from Mathlib?
--- What would be a good generality? (Mixes order and metric, so typeclasses don't readily exist.)
-lemma Filter.isBounded_le_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
-    (F.map f).IsBounded (· ≤ ·) := by
-  rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
+  rw [Real.bounded_iff_bddBelow_bddAbove] at h
   obtain ⟨c, hc⟩ := h.2
   apply isBoundedUnder_of
   use c
   simpa [mem_upperBounds] using hc
 
--- NOTE: Missing from Mathlib? What would be a good generality?
-lemma Filter.isBounded_ge_map_of_isBounded_range (F : Filter ι) {f : ι → ℝ}
-    (h : Bornology.IsBounded (Set.range f)) :
+lemma Filter.isBounded_ge_map_of_bounded_range (F : Filter ι) {f : ι → ℝ}
+    (h : Metric.Bounded (Set.range f)) :
     (F.map f).IsBounded (· ≥ ·) := by
-  rw [← Metric.bounded_iff_isBounded, Real.bounded_iff_bddBelow_bddAbove] at h
+  rw [Real.bounded_iff_bddBelow_bddAbove] at h
   obtain ⟨c, hc⟩ := h.1
   apply isBoundedUnder_of
   use c
