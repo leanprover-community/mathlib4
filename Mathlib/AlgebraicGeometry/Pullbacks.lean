@@ -595,7 +595,8 @@ instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) : HasPullback f g :=
 instance : HasPullbacks Scheme :=
   hasPullbacks_of_hasLimit_cospan _
 
-instance {X Y Z : Scheme} (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
+instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [IsAffine X] [IsAffine Y] [IsAffine Z] :
     IsAffine (pullback f g) :=
   isAffineOfIso
     (pullback.map f g (Spec.map (Γ.map f.op).op) (Spec.map (Γ.map g.op).op)
@@ -708,7 +709,8 @@ end AlgebraicGeometry.Scheme
 
 namespace AlgebraicGeometry
 
-instance {X Y S X' Y' S' : Scheme} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S') (g' : Y' ⟶ S')
+instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
+    (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S') (g' : Y' ⟶ S')
     (i₁ : X ⟶ X') (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f') (e₂ : g ≫ i₃ = i₂ ≫ g')
     [IsOpenImmersion i₁] [IsOpenImmersion i₂] [Mono i₃] :
     IsOpenImmersion (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂) := by
