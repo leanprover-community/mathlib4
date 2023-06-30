@@ -70,23 +70,18 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     (B : ℕ → ℤ) (C : ℕ → ℤ) (base : ℕ → ℕ → Prop)
     (H_quad : ∀ {x y}, H x y ↔ (y : ℤ) * y - B x * y + C x = 0) (H_symm : ∀ {x y}, H x y ↔ H y x)
     (H_zero : ∀ {x}, H x 0 → claim) (H_diag : ∀ {x}, H x x → claim)
-    (H_desc :
-      ∀ {x y},
-        0 < x →
-          x < y →
-            ¬base x y →
-              H x y →
-                ∀ y', y' * y' - B x * y' + C x = 0 → y' = B x - y → y' * y = C x → 0 ≤ y' ∧ y' ≤ x)
+    (H_desc : ∀ {x y}, 0 < x → x < y → ¬base x y → H x y →
+      ∀ y', y' * y' - B x * y' + C x = 0 → y' = B x - y → y' * y = C x → 0 ≤ y' ∧ y' ≤ x)
     (H_base : ∀ {x y}, H x y → base x y → claim) : claim := by
   -- First of all, we may assume that x ≤ y.
   -- We justify this using H_symm.
   wlog hxy : x ≤ y
-  · rw [H_symm] at h₀ ; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_le hxy); assumption'
+  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_le hxy); assumption'
   -- In fact, we can easily deal with the case x = y.
-  by_cases x_eq_y : x = y;
+  by_cases x_eq_y : x = y
   · subst x_eq_y; exact H_diag h₀
   -- Hence we may assume that x < y.
-  replace hxy : x < y := lt_of_le_of_ne hxy x_eq_y;
+  replace hxy : x < y := lt_of_le_of_ne hxy x_eq_y
   clear x_eq_y
   -- Consider the upper branch of the hyperbola defined by H.
   let upper_branch : Set (ℕ × ℕ) := {p | H p.1 p.2 ∧ p.1 < p.2}
@@ -111,7 +106,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     rcases hb with (_ | rfl | rfl | hB | hB)
     -- The first three cases are rather easy to solve.
     · solve_by_elim
-    · rw [H_symm] at hH ; solve_by_elim
+    · rw [H_symm] at hH; solve_by_elim
     · solve_by_elim
     -- The final two cases are very similar.
     all_goals
@@ -120,7 +115,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       -- We find the other root of the equation, and Vieta's formulas.
       rcases vieta_formula_quadratic hH with ⟨c, h_root, hV₁, hV₂⟩
       -- By substitutions we find that b = 0 or b = a.
-      simp_rw [hB, add_right_eq_self, add_right_inj] at hV₁
+      simp only [hB, add_right_eq_self, add_right_inj] at hV₁
       subst hV₁
       rw [← Int.ofNat_zero] at *
       rw [← H_quad] at h_root
@@ -150,15 +145,15 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rcases m_mem with ⟨⟨mx, my⟩, ⟨⟨hHm, mx_lt_my⟩, h_base⟩, m_eq⟩
   -- This means that m_y = m,
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
-  simp only at hHm mx_lt_my m_eq
+  simp only at mx_lt_my hHm m_eq
   simp only [hHm, Set.mem_setOf_eq, true_and] at h_base
-  push_neg at h_base hHm
+  push_neg at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.
   rcases h_base with ⟨h_base, hmx, hm_diag, hm_B₁, hm_B₂⟩
   replace hmx : 0 < mx := pos_iff_ne_zero.mpr hmx
   -- Consider the quadratic equation that (m_x, m_y) satisfies.
-  have h_quad := hHm;
+  have h_quad := hHm
   rw [H_quad] at h_quad
   -- We find the other root of the equation, and Vieta's formulas.
   rcases vieta_formula_quadratic h_quad with ⟨c, h_root, hV₁, hV₂⟩
@@ -175,8 +170,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   let p' : ℕ × ℕ := ⟨c, mx⟩
   use p'
   -- The second condition is rather easy to check, so we do that first.
-  constructor;
-  swap
+  constructor; swap
   · rwa [m_eq] at mx_lt_my
   -- Now we need to show that p' projects onto S. In other words, that c ∈ S.
   -- We do that, by showing that it lies in the upper branch
@@ -195,7 +189,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       exact_mod_cast c_lt
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
-    contrapose! hm_B₂;
+    contrapose! hm_B₂
     subst c
     simp [hV₁]
 #align imo1988_q6.constant_descent_vieta_jumping Imo1988Q6.constant_descent_vieta_jumping
@@ -219,10 +213,9 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     intro x y; dsimp only
     rw [← Int.coe_nat_inj', ← sub_eq_zero]
     apply eq_iff_eq_cancel_right.2
-    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_one]
-    ring
+    simp; ring
   ·-- Show that the solution set is symmetric in a and b.
-    intro x y;
+    intro x y
     simp [add_comm (x * x), mul_comm x]
   · -- Show that the claim is true if b = 0.
     suffices ∀ a, a * a = k → ∃ d, d * d = k by simpa
@@ -280,7 +273,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     apply eq_iff_eq_cancel_right.2
     simp; ring
   ·-- Show that the solution set is symmetric in a and b.
-    intro x y; ring -- Porting note: Originally, `cc` solved the entire goal
+    intro x y; ring_nf -- Porting note: Originally, `cc` solved the entire goal
   ·-- Show that the claim is true if b = 0.
     simp
   · -- Show that the claim is true if a = b.
