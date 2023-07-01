@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.LocalAtTarget
-import Mathbin.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.Topology.LocalAtTarget
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
 
@@ -47,14 +47,12 @@ theorem isOpenImmersionCat_stableUnderComposition :
   infer_instance
 #align algebraic_geometry.is_open_immersion_stable_under_composition AlgebraicGeometry.isOpenImmersionCat_stableUnderComposition
 
-theorem isOpenImmersionCat_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersionCat :=
-  by
+theorem isOpenImmersionCat_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersionCat := by
   apply is_open_immersion_stable_under_composition.respects_iso
   intro _ _ _; infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersionCat_respectsIso
 
-theorem isOpenImmersionCat_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersionCat :=
-  by
+theorem isOpenImmersionCat_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersionCat := by
   constructor
   · exact is_open_immersion_respects_iso
   · intros; infer_instance
