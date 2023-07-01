@@ -1197,6 +1197,16 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     apply sum_eq_iff_sum_smul_moebius_eq.mpr _ n hn
     intro _ _; rfl
 
+theorem sum_eq_iff_sum_smul_moebius_eq_on' [AddCommGroup R] {f g : ℕ → R}
+    (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) (hs₀ : 0 ∉ s) :
+    (∀ n ∈ s, (∑ i in n.divisors, f i) = g n) ↔
+     ∀ n ∈ s, (∑ x in n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+  have : ∀ P : ℕ → Prop, ((∀ n ∈ s, P n) ↔ (∀ n > 0, n ∈ s → P n)) := fun P ↦ by
+    refine' forall_congr' (fun n ↦ ⟨fun h _ ↦ h, fun h hn ↦ h _ hn⟩)
+    contrapose! hs₀
+    simpa [nonpos_iff_eq_zero.mp hs₀] using hn
+  simpa only [this] using sum_eq_iff_sum_smul_moebius_eq_on s hs
+
 /-- Möbius inversion for functions to a `Ring`, where the equalities only hold on a well-behaved
 set. -/
 theorem sum_eq_iff_sum_mul_moebius_eq_on [Ring R] {f g : ℕ → R}
