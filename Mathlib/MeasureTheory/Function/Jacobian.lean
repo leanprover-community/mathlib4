@@ -312,7 +312,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       Tendsto (fun ε => μ (closedBall 0 ε + A '' closedBall 0 1)) (𝓝[>] 0)
         (𝓝 (d * μ (closedBall 0 1))) := by
       convert L1
-      exact (add_haar_image_continuousLinearMap _ _ _).symm
+      exact (addHaar_image_continuousLinearMap _ _ _).symm
     have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) :=
       (ENNReal.mul_lt_mul_right (measure_closedBall_pos μ _ zero_lt_one).ne'
             measure_closedBall_lt_top.ne).2
@@ -351,11 +351,11 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       μ (f '' (s ∩ closedBall x r)) ≤ μ ({f x} + r • (A '' closedBall 0 1 + closedBall 0 ε)) :=
         measure_mono K
       _ = ENNReal.ofReal (r ^ finrank ℝ E) * μ (A '' closedBall 0 1 + closedBall 0 ε) := by
-        simp only [abs_of_nonneg r0, add_haar_smul, image_add_left, abs_pow, singleton_add,
+        simp only [abs_of_nonneg r0, addHaar_smul, image_add_left, abs_pow, singleton_add,
           measure_preimage_add]
       _ ≤ ENNReal.ofReal (r ^ finrank ℝ E) * (m * μ (closedBall 0 1)) := by
         rw [add_comm]; exact mul_le_mul_left' hε.le _
-      _ = m * μ (closedBall x r) := by simp only [add_haar_closedBall' μ _ r0]; ring
+      _ = m * μ (closedBall x r) := by simp only [addHaar_closedBall' μ _ r0]; ring
   -- covering `s` by closed balls with total measure very close to `μ s`, one deduces that the
   -- measure of `f '' s` is at most `m * (μ s + a)` for any positive `a`.
   have J : ∀ᶠ a in 𝓝[>] (0 : ℝ≥0∞), μ (f '' s) ≤ m * (μ s + a) := by

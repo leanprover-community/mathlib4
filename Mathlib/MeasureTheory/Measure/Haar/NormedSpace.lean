@@ -82,7 +82,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
         (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv
             f).symm
       _ = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
-        simp only [map_add_haar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
+        simp only [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]
 #align measure_theory.measure.integral_comp_smul MeasureTheory.Measure.integral_comp_smul
 
 /-- The integral of `f (R • x)` with respect to an additive Haar measure is a multiple of the
@@ -148,7 +148,7 @@ theorem integrable_comp_smul_iff {E : Type _} [NormedAddCommGroup E] [NormedSpac
   intro g hg S hS
   let t := ((Homeomorph.smul (isUnit_iff_ne_zero.2 hS).unit).toMeasurableEquiv : E ≃ᵐ E)
   refine' (integrable_map_equiv t g).mp (_ : Integrable g (map (S • ·) μ))
-  rwa [map_add_haar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
+  rwa [map_addHaar_smul μ hS, integrable_smul_measure _ ENNReal.ofReal_ne_top]
   simpa only [Ne.def, ENNReal.ofReal_eq_zero, not_le, abs_pos] using inv_ne_zero (pow_ne_zero _ hS)
 #align measure_theory.integrable_comp_smul_iff MeasureTheory.integrable_comp_smul_iff
 

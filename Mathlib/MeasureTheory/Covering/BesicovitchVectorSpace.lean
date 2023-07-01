@@ -172,7 +172,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
       (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) * μ (ball 0 1) = μ A := by
         rw [hA, measure_biUnion_finset D fun c _ => measurableSet_ball]
         have I : 0 < δ := by norm_num [δ]
-        simp only [div_pow, μ.add_haar_ball_of_pos _ I]
+        simp only [div_pow, μ.addHaar_ball_of_pos _ I]
         simp only [one_div, one_pow, Finset.sum_const, nsmul_eq_mul, mul_assoc]
       _ ≤ μ (ball (0 : E) ρ) := (measure_mono A_subset)
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
