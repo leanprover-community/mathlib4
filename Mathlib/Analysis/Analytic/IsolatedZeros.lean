@@ -90,20 +90,20 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
 #align has_fpower_series_at.has_fpower_series_dslope_fslope HasFPowerSeriesAt.has_fpower_series_dslope_fslope
 
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt ((swap dslope z₀^[n]) f) ((fslope^[n]) p) z₀ := by
+    HasFPowerSeriesAt ((swap dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
   induction' n with n ih generalizing f p
   · exact hp
   · simpa using ih (has_fpower_series_dslope_fslope hp)
 #align has_fpower_series_at.has_fpower_series_iterate_dslope_fslope HasFPowerSeriesAt.has_fpower_series_iterate_dslope_fslope
 
 theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
-    (swap dslope z₀^[p.order]) f z₀ ≠ 0 := by
+    (swap dslope z₀)^[p.order] f z₀ ≠ 0 := by
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 #align has_fpower_series_at.iterate_dslope_fslope_ne_zero HasFPowerSeriesAt.iterate_dslope_fslope_ne_zero
 
 theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀^[p.order]) f z := by
+    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
   have hq := hasFPowerSeriesAt_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
   filter_upwards [hq, hasFPowerSeriesAt_iff'.mp hp] with x hx1 hx2
   have : ∀ k < p.order, p.coeff k = 0 := fun k hk => by

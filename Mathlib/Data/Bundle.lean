@@ -55,10 +55,8 @@ def TotalSpace.proj : TotalSpace E → B :=
   Sigma.fst
 #align bundle.total_space.proj Bundle.TotalSpace.proj
 
--- this notation won't be used in the pretty-printer
-set_option quotPrecheck false in
 /-- The canonical projection defining a bundle. -/
-scoped notation "π" E => @Bundle.TotalSpace.proj _ E
+scoped notation:max "π" E':max => Bundle.TotalSpace.proj (E := E')
 
 /-- Constructor for the total space of a bundle. -/
 @[simp, reducible]

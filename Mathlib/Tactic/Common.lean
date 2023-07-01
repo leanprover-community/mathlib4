@@ -42,6 +42,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs
@@ -105,6 +106,8 @@ import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
+import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.Imports
 import Mathlib.Util.WhatsNew
