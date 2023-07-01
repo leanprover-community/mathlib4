@@ -87,7 +87,7 @@ and obviates the hassle of `AddSubmonoid.closure_induction` when creating those 
 If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 `StarOrderedRing.ofNonnegIff` for a more convenient version.
 
-Porting note: droped an unneeded assumption `h_add : ∀ {x y}, x ≤ y → ∀ z, z + x ≤ z + y`
+Porting note: dropped an unneeded assumption `h_add : ∀ {x y}, x ≤ y → ∀ z, z + x ≤ z + y`
  -/
 @[reducible]
 def ofLeIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
