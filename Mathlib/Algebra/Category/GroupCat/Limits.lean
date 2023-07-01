@@ -67,8 +67,8 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
-    Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
+noncomputable instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
+    Group (Types.TypeMax.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
   infer_instance
 set_option linter.uppercaseLean3 false in
@@ -92,7 +92,7 @@ noncomputable instance Forget₂.createsLimit (F : J ⥤ GroupCatMax.{v, u}) :
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{max v u} MonCat.{max v u}))
     fun c' t =>
     { liftedCone :=
-        { pt := GroupCat.of (Types.limitCone (F ⋙ forget GroupCatMax)).pt
+        { pt := GroupCat.of (Types.TypeMax.limitCone (F ⋙ forget GroupCatMax)).pt
           π :=
             { app := MonCat.limitπMonoidHom (F ⋙ forget₂ GroupCatMax MonCatMax)
               naturality :=
@@ -241,7 +241,7 @@ set_option linter.uppercaseLean3 false in
 
 @[to_additive]
 noncomputable instance limitCommGroup (F : J ⥤ CommGroupCat.{max v u}) :
-    CommGroup (Types.limitCone.{v, u} (F ⋙ forget CommGroupCatMax.{v, u})).pt :=
+    CommGroup (Types.TypeMax.limitCone.{v, u} (F ⋙ forget CommGroupCatMax.{v, u})).pt :=
   @Subgroup.toCommGroup (∀ j, F.obj j) _
     (GroupCat.sectionsSubgroup.{v, max v u}
       (F ⋙ forget₂ CommGroupCatMax.{v, u} GroupCatMax.{v, u}))
@@ -265,7 +265,7 @@ noncomputable instance Forget₂.createsLimit (F : J ⥤ CommGroupCatMax.{v, u})
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone :=
-        { pt := CommGroupCat.of (Types.limitCone.{v, u} (F ⋙ forget CommGroupCat)).pt
+        { pt := CommGroupCat.of (Types.TypeMax.limitCone.{v, u} (F ⋙ forget CommGroupCat)).pt
           π :=
             { app := MonCat.limitπMonoidHom
                 (F ⋙ forget₂ CommGroupCat GroupCat.{max v u} ⋙ forget₂ GroupCat MonCat.{max v u})

@@ -63,20 +63,20 @@ set_option linter.uppercaseLean3 false in
 #align SemiRing.sections_subsemiring SemiRingCat.sectionsSubsemiring
 
 instance limitSemiring (F : J ⥤ SemiRingCatMax.{v, u}) :
-    Semiring (Types.limitCone.{v, u} (F ⋙ forget SemiRingCat.{max v u})).pt :=
+    Semiring (Types.TypeMax.limitCone.{v, u} (F ⋙ forget SemiRingCat.{max v u})).pt :=
   (sectionsSubsemiring F).toSemiring
 set_option linter.uppercaseLean3 false in
 #align SemiRing.limit_semiring SemiRingCat.limitSemiring
 
 /-- `limit.π (F ⋙ forget SemiRingCat) j` as a `RingHom`. -/
 def limitπRingHom (F : J ⥤ SemiRingCatMax.{v, u}) (j) :
-    (Types.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
+    (Types.TypeMax.limitCone.{v, u} (F ⋙ forget SemiRingCat)).pt →+* (F ⋙ forget SemiRingCat).obj j :=
   -- Porting note : if `f` and `g` were inlined, it does not compile
   letI f : J ⥤ AddMonCat.{max v u} := F ⋙ forget₂ SemiRingCatMax.{v, u} AddCommMonCat.{max v u} ⋙
     forget₂ AddCommMonCat AddMonCat
   { AddMonCat.limitπAddMonoidHom f j,
     MonCat.limitπMonoidHom (F ⋙ forget₂ SemiRingCat MonCat.{max v u}) j with
-    toFun := (Types.limitCone (F ⋙ forget SemiRingCat)).π.app j }
+    toFun := (Types.TypeMax.limitCone (F ⋙ forget SemiRingCat)).π.app j }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.limit_π_ring_hom SemiRingCat.limitπRingHom
 
@@ -89,11 +89,11 @@ namespace HasLimits
 (Internal use only; use the limits API.)
 -/
 def limitCone (F : J ⥤ SemiRingCatMax.{v, u}) : Cone F where
-  pt := SemiRingCat.of (Types.limitCone (F ⋙ forget _)).pt
+  pt := SemiRingCat.of (Types.TypeMax.limitCone (F ⋙ forget _)).pt
   π :=
     { app := limitπRingHom.{v, u} F
       naturality := fun {_ _} f => RingHom.coe_inj
-        ((Types.limitCone (F ⋙ forget _)).π.naturality f) }
+        ((Types.TypeMax.limitCone (F ⋙ forget _)).π.naturality f) }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.has_limits.limit_cone SemiRingCat.HasLimits.limitCone
 
@@ -101,7 +101,7 @@ set_option linter.uppercaseLean3 false in
 (Internal use only; use the limits API.)
 -/
 def limitConeIsLimit (F : J ⥤ SemiRingCatMax.{v, u}) : IsLimit (limitCone F) := by
-  refine IsLimit.ofFaithful (forget SemiRingCatMax.{v, u}) (Types.limitConeIsLimit.{v, u} _)
+  refine IsLimit.ofFaithful (forget SemiRingCatMax.{v, u}) (Types.TypeMax.limitConeIsLimit.{v, u} _)
     (fun s : Cone F => ofHom ⟨⟨⟨_, Subtype.ext <| funext fun j => by exact (s.π.app j).map_one⟩,
       fun x y => Subtype.ext <| funext fun j => by exact (s.π.app j).map_mul x y⟩,
       Subtype.ext <| funext fun j => by exact (s.π.app j).map_zero,
@@ -184,7 +184,7 @@ instance forgetPreservesLimitsOfSize :
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
-          (Types.limitConeIsLimit.{v, u} (F ⋙ forget _)) }
+          (Types.TypeMax.limitConeIsLimit.{v, u} (F ⋙ forget _)) }
 set_option linter.uppercaseLean3 false in
 #align SemiRing.forget_preserves_limits_of_size SemiRingCat.forgetPreservesLimitsOfSize
 
@@ -212,7 +212,7 @@ set_option linter.uppercaseLean3 false in
 #align CommSemiRing.comm_semiring_obj CommSemiRingCat.commSemiringObj
 
 instance limitCommSemiring (F : J ⥤ CommSemiRingCatMax.{v, u}) :
-    CommSemiring (Types.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{max v u})).pt :=
+    CommSemiring (Types.TypeMax.limitCone.{v, u} (F ⋙ forget CommSemiRingCat.{max v u})).pt :=
   @Subsemiring.toCommSemiring (∀ j, F.obj j) _
     (SemiRingCat.sectionsSubsemiring.{v, u} (F ⋙ forget₂ CommSemiRingCat SemiRingCat.{max v u}))
 set_option linter.uppercaseLean3 false in
@@ -235,7 +235,7 @@ instance (F : J ⥤ CommSemiRingCatMax.{v, u}) :
     (forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}
   let c : Cone F :=
-    { pt := CommSemiRingCat.of (Types.limitCone (F ⋙ forget _)).pt
+    { pt := CommSemiRingCat.of (Types.TypeMax.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
             (F ⋙ forget₂ CommSemiRingCatMax.{v, u} SemiRingCatMax.{v, u}) j
@@ -309,7 +309,7 @@ instance forgetPreservesLimitsOfSize :
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
-          (Types.limitConeIsLimit.{v, u} _) }
+          (Types.TypeMax.limitConeIsLimit.{v, u} _) }
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.forget_preserves_limits_of_size CommSemiRingCat.forgetPreservesLimitsOfSize
 
@@ -349,7 +349,7 @@ set_option linter.uppercaseLean3 false in
 #align Ring.sections_subring RingCat.sectionsSubring
 
 instance limitRing (F : J ⥤ RingCatMax.{v, u}) :
-    Ring.{max v u} (Types.limitCone.{v, u} (F ⋙ forget RingCatMax.{v, u})).pt :=
+    Ring.{max v u} (Types.TypeMax.limitCone.{v, u} (F ⋙ forget RingCatMax.{v, u})).pt :=
   (sectionsSubring F).toRing
 set_option linter.uppercaseLean3 false in
 #align Ring.limit_ring RingCat.limitRing
@@ -364,7 +364,7 @@ instance (F : J ⥤ RingCatMax.{v, u}) :
   letI : ReflectsIsomorphisms (forget₂ RingCatMax SemiRingCatMax) :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   letI c : Cone F :=
-  { pt := RingCat.of (Types.limitCone (F ⋙ forget _)).pt
+  { pt := RingCat.of (Types.TypeMax.limitCone (F ⋙ forget _)).pt
     π :=
       { app := fun x => SemiRingCat.ofHom _
         naturality := (SemiRingCat.HasLimits.limitCone
@@ -456,7 +456,7 @@ instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize.{v, v} (forget Ring
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v, u} F)
-          (Types.limitConeIsLimit.{v, u} _) }
+          (Types.TypeMax.limitConeIsLimit.{v, u} _) }
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_preserves_limits_of_size RingCat.forgetPreservesLimitsOfSize
 
@@ -484,7 +484,7 @@ set_option linter.uppercaseLean3 false in
 #align CommRing.comm_ring_obj CommRingCat.commRingObj
 
 instance limitCommRing (F : J ⥤ CommRingCatMax.{v, u}) :
-    CommRing.{max v u} (Types.limitCone.{v, u} (F ⋙ forget CommRingCatMax.{v, u})).pt :=
+    CommRing.{max v u} (Types.TypeMax.limitCone.{v, u} (F ⋙ forget CommRingCatMax.{v, u})).pt :=
   @Subring.toCommRing (∀ j, F.obj j) _
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{max v u}))
 set_option linter.uppercaseLean3 false in
@@ -508,7 +508,7 @@ instance (F : J ⥤ CommRingCatMax.{v, u}) :
     letI : ReflectsIsomorphisms (forget₂ CommRingCatMax.{v, u} RingCatMax.{v, u}) :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
     letI c : Cone F :=
-    { pt := CommRingCat.of (Types.limitCone (F ⋙ forget _)).pt
+    { pt := CommRingCat.of (Types.TypeMax.limitCone (F ⋙ forget _)).pt
       π :=
         { app := fun x => ofHom <|
               SemiRingCat.limitπRingHom.{v, u}
@@ -617,7 +617,7 @@ instance forgetPreservesLimitsOfSize :
   preservesLimitsOfShape {_ _} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone.{v, v} (limitConeIsLimit.{v, u} F)
-          (Types.limitConeIsLimit.{v, u} _) }
+          (Types.TypeMax.limitConeIsLimit.{v, u} _) }
 set_option linter.uppercaseLean3 false in
 #align CommRing.forget_preserves_limits_of_size CommRingCat.forgetPreservesLimitsOfSize
 

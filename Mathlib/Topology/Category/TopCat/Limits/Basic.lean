@@ -73,13 +73,14 @@ Generally you should just use `limit.cone F`, unless you need the actual definit
 -/
 def limitConeInfi (F : J ⥤ TopCatMax.{v, u}) : Cone F where
   pt :=
-    ⟨(Types.limitCone.{v,u} (F ⋙ forget)).pt,
-      ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
+    ⟨(Types.TypeMax.limitCone.{v,u} (F ⋙ forget)).pt,
+      ⨅ j, (F.obj j).str.induced ((Types.TypeMax.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
   π :=
     { app := fun j =>
-        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (iInf_le _ _)⟩
+        ⟨(Types.TypeMax.limitCone.{v,u} (F ⋙ forget)).π.app j,
+         continuous_iff_le_induced.mpr (iInf_le _ _)⟩
       naturality := fun _ _ f =>
-        ContinuousMap.coe_injective ((Types.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
+        ContinuousMap.coe_injective ((Types.TypeMax.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
 #align Top.limit_cone_infi TopCat.limitConeInfi
 
 /-- The chosen cone `TopCat.limitCone F` for a functor `F : J ⥤ TopCat` is a limit cone.
@@ -110,7 +111,7 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 (which is in terms of `Types.limitConeIsLimit`).
 -/
 def limitConeInfiIsLimit (F : J ⥤ TopCatMax.{v, u}) : IsLimit (limitConeInfi.{v,u} F) := by
-  refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} (F ⋙ forget))
+  refine IsLimit.ofFaithful forget (Types.TypeMax.limitConeIsLimit.{v,u} (F ⋙ forget))
     -- Porting note: previously could infer all ?_ except continuity
     (fun s => ⟨fun v => ⟨ fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
@@ -142,7 +143,7 @@ instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
-          (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
+          (Types.TypeMax.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 #align Top.forget_preserves_limits_of_size TopCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits forget :=

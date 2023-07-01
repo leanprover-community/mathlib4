@@ -11,6 +11,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+-- import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
@@ -56,6 +57,12 @@ HasLimitsOfShape.has_limit (Discrete.functor f)
 instance (priority := high) {β : Type v} (f : β → Type v) : HasProduct f :=
 HasLimitsOfShape.has_limit (Discrete.functor f)
 
+instance : HasProducts.{v₁, v₁, v₁ + 1} (Type v₁) :=
+  -- FIXME?!
+  -- This doesn't work by `inferInstance`,
+  -- despite `#synth HasProducts.{v₁, v₁, v₁ + 1} (Type v₁)` succeeding!
+  (fun _ ↦ hasLimitsOfShapeOfHasLimits.{v₁, v₁, v₁, v₁ + 1})
+
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type v} (f : β → TypeMax.{v, u}) {P : TypeMax.{v, u}}
@@ -77,7 +84,7 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
 @[simp 1001]
 theorem pi_map_π_apply {β : Type v} {f g : β → TypeMax.{v, u}} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : (∏ g) → g b) (Pi.map α x) = α b ((Pi.π f b : (∏ f) → f b) x) :=
-  Limit.map_π_apply _ _ _
+  Limit.map_π_apply.{v, max v u} _ _ _
 #align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
@@ -549,6 +556,10 @@ end Cofork
 
 section Pullback
 
+instance : HasPullbacks.{u} (Type u) :=
+  -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
+  hasPullbacks_of_hasWidePullbacks.{u} (Type u)
+
 open CategoryTheory.Limits.WalkingPair
 
 open CategoryTheory.Limits.WalkingCospan
@@ -631,5 +642,13 @@ theorem pullbackIsoPullback_inv_snd :
 #align category_theory.limits.types.pullback_iso_pullback_inv_snd CategoryTheory.Limits.Types.pullbackIsoPullback_inv_snd
 
 end Pullback
+
+section Pushout
+
+instance : HasPushouts.{u} (Type u) :=
+  -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
+  hasPushouts_of_hasWidePushouts.{u} (Type u)
+
+end Pushout
 
 end CategoryTheory.Limits.Types

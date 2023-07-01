@@ -37,10 +37,15 @@ variable {J : Type v} [SmallCategory J]
 /-! We now provide two distinct implementations in the category of types.
 
 The first, in the `CategoryTheory.Limits.Types.UnivLE` namespace,
-assumes `UnivLE.{v, u}` and construct `v`-small limits in `Type u`.
+assumes `UnivLE.{v, u}` and constructs `v`-small limits in `Type u`.
 
 The second, in the `CategoryTheory.Limits.Types.TypeMax` namespace
-constructs limits for functions `F : J ⥤ TypeMax.{v, u}`, for `J : Type v`.
+constructs limits for functors `F : J ⥤ TypeMax.{v, u}`, for `J : Type v`.
+This construction is slightly nicer, as the limit is definitionally just `F.sections`,
+rather than `Shrink F.sections`, which makes an arbitrary choice of `u`-small representative.
+
+Hopefully we might be able to entirely remove the `TypeMax` constructions,
+but for now they are useful glue for the later parts of the library.
 -/
 
 namespace UnivLE
@@ -58,7 +63,6 @@ noncomputable def limitCone (F : J ⥤ Type u) : Cone F where
       naturality := fun j j' f => by
         funext x
         simp }
-#align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.UnivLE.limitCone
 
 @[ext]
 lemma limitCone_pt_ext (F : J ⥤ Type u) {x y : (limitCone F).pt}
@@ -76,9 +80,41 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u
   uniq := fun _ _ w => by
     ext x j
     simpa using congr_fun (w j) x
-#align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.UnivLE.limitConeIsLimit
 
 end UnivLE
+
+namespace TypeMax
+
+/-- (internal implementation) the limit cone of a functor,
+implemented as flat sections of a pi type
+-/
+@[simps]
+noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
+  pt := F.sections
+  π :=
+    { app := fun j u => u.val j
+      naturality := fun j j' f => by
+        funext x
+        simp }
+#align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.TypeMax.limitCone
+
+--attribute [local elab_without_expected_type] congr_fun
+
+/-- (internal implementation) the fact that the proposed limit cone is the limit -/
+@[simps]
+noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCone.{v, u} F) where
+  lift s v :=
+    { val := fun j => s.π.app j v
+      property := fun f => congr_fun (Cone.w s f) _ }
+  uniq := fun _ _ w => by
+    funext x
+    apply Subtype.ext
+    funext j
+    exact congr_fun (w j) x
+#align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.TypeMax.limitConeIsLimit
+
+end TypeMax
+
 
 /-!
 The results in this section have a `UnivLE.{v, u}` hypothesis,
