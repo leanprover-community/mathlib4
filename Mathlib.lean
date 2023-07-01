@@ -69,6 +69,7 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
+import Mathlib.Algebra.Category.MonCat.Adjunctions
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Colimits
 import Mathlib.Algebra.Category.MonCat.FilteredColimits
@@ -1860,6 +1861,7 @@ import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 import Mathlib.Geometry.Euclidean.Triangle
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Algebra.Monoid
+import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 import Mathlib.Geometry.Manifold.Algebra.Structures
 import Mathlib.Geometry.Manifold.BumpFunction
 import Mathlib.Geometry.Manifold.ChartedSpace
@@ -1867,6 +1869,7 @@ import Mathlib.Geometry.Manifold.Complex
 import Mathlib.Geometry.Manifold.ConformalGroupoid
 import Mathlib.Geometry.Manifold.ContMDiff
 import Mathlib.Geometry.Manifold.ContMDiffMap
+import Mathlib.Geometry.Manifold.DerivationBundle
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
@@ -2206,7 +2209,9 @@ import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
+import Mathlib.Logic.Small.Ring
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
@@ -2711,6 +2716,7 @@ import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.Norm
