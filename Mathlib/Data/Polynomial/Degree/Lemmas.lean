@@ -355,7 +355,7 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
 
 @[simp]
 theorem natDegree_iterate_comp (k : ℕ) :
-    ((p.comp^[k]) q).natDegree = p.natDegree ^ k * q.natDegree := by
+    (p.comp^[k] q).natDegree = p.natDegree ^ k * q.natDegree := by
   induction' k with k IH
   · simp
   · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]

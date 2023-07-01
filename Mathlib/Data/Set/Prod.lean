@@ -513,7 +513,7 @@ theorem diagonal_subset_iff {s} : diagonal α ⊆ s ↔ ∀ x, (x, x) ∈ s := b
 #align set.diagonal_subset_iff Set.diagonal_subset_iff
 
 @[simp]
-theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ diagonal αᶜ ↔ Disjoint s t :=
+theorem prod_subset_compl_diagonal_iff_disjoint : s ×ˢ t ⊆ (diagonal α)ᶜ ↔ Disjoint s t :=
   prod_subset_iff.trans disjoint_iff_forall_ne.symm
 #align set.prod_subset_compl_diagonal_iff_disjoint Set.prod_subset_compl_diagonal_iff_disjoint
 
@@ -590,7 +590,7 @@ theorem offDiag_singleton (a : α) : ({a} : Set α).offDiag = ∅ := by simp
 #align set.off_diag_singleton Set.offDiag_singleton
 
 @[simp]
-theorem offDiag_univ : (univ : Set α).offDiag = diagonal αᶜ :=
+theorem offDiag_univ : (univ : Set α).offDiag = (diagonal α)ᶜ :=
   ext <| by simp
 #align set.off_diag_univ Set.offDiag_univ
 
@@ -792,7 +792,7 @@ theorem union_pi : (s₁ ∪ s₂).pi t = s₁.pi t ∩ s₂.pi t := by
 #align set.union_pi Set.union_pi
 
 @[simp]
-theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi (sᶜ) t = pi univ t := by
+theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by
   rw [← union_pi, union_compl_self]
 #align set.pi_inter_compl Set.pi_inter_compl
 
@@ -815,7 +815,7 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
 
 theorem univ_pi_update [DecidableEq ι] {β : ∀ _, Type _} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
-    (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi ({i}ᶜ) fun j => t j (f j) :=
+    (pi univ fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ pi {i}ᶜ fun j => t j (f j) :=
   by rw [compl_eq_univ_diff, ← pi_update_of_mem (mem_univ _)]
 #align set.univ_pi_update Set.univ_pi_update
 

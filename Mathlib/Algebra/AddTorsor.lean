@@ -449,6 +449,22 @@ theorem pointReflection_apply (x y : P) : pointReflection x y = x -ᵥ y +ᵥ x 
 #align equiv.point_reflection_apply Equiv.pointReflection_apply
 
 @[simp]
+theorem pointReflection_vsub_left (x y : P) : pointReflection x y -ᵥ x = x -ᵥ y :=
+  vadd_vsub ..
+
+@[simp]
+theorem left_vsub_pointReflection (x y : P) : x -ᵥ pointReflection x y = y -ᵥ x :=
+  neg_injective <| by simp
+
+@[simp]
+theorem pointReflection_vsub_right (x y : P) : pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
+  simp [pointReflection, two_nsmul, vadd_vsub_assoc]
+
+@[simp]
+theorem right_vsub_pointReflection (x y : P) : y -ᵥ pointReflection x y = 2 • (y -ᵥ x) :=
+  neg_injective <| by simp [← neg_nsmul]
+
+@[simp]
 theorem pointReflection_symm (x : P) : (pointReflection x).symm = pointReflection x :=
   ext <| by simp [pointReflection]
 #align equiv.point_reflection_symm Equiv.pointReflection_symm
