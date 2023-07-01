@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Game.State
+import Mathlib.SetTheory.Game.State
 
 /-!
 # Domineering as a combinatorial game.
@@ -93,8 +93,7 @@ theorem snd_pred_mem_erase_of_mem_left {b : Board} {m : ℤ × ℤ} (h : m ∈ l
   exact ne_of_apply_ne Prod.snd (pred_ne_self m.2)
 #align pgame.domineering.snd_pred_mem_erase_of_mem_left PGame.Domineering.snd_pred_mem_erase_of_mem_left
 
-theorem card_of_mem_left {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) : 2 ≤ Finset.card b :=
-  by
+theorem card_of_mem_left {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) : 2 ≤ Finset.card b := by
   have w₁ : m ∈ b := (Finset.mem_inter.1 h).1
   have w₂ : (m.1, m.2 - 1) ∈ b.erase m := snd_pred_mem_erase_of_mem_left h
   have i₁ := Finset.card_erase_lt_of_mem w₁
@@ -102,8 +101,7 @@ theorem card_of_mem_left {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) : 2 ≤
   exact Nat.lt_of_le_of_lt i₂ i₁
 #align pgame.domineering.card_of_mem_left PGame.Domineering.card_of_mem_left
 
-theorem card_of_mem_right {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) : 2 ≤ Finset.card b :=
-  by
+theorem card_of_mem_right {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) : 2 ≤ Finset.card b := by
   have w₁ : m ∈ b := (Finset.mem_inter.1 h).1
   have w₂ := fst_pred_mem_erase_of_mem_right h
   have i₁ := Finset.card_erase_lt_of_mem w₁
@@ -112,8 +110,7 @@ theorem card_of_mem_right {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) : 2 �
 #align pgame.domineering.card_of_mem_right PGame.Domineering.card_of_mem_right
 
 theorem moveLeft_card {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
-    Finset.card (moveLeft b m) + 2 = Finset.card b :=
-  by
+    Finset.card (moveLeft b m) + 2 = Finset.card b := by
   dsimp [move_left]
   rw [Finset.card_erase_of_mem (snd_pred_mem_erase_of_mem_left h)]
   rw [Finset.card_erase_of_mem (Finset.mem_of_mem_inter_left h)]
@@ -121,8 +118,7 @@ theorem moveLeft_card {b : Board} {m : ℤ × ℤ} (h : m ∈ left b) :
 #align pgame.domineering.move_left_card PGame.Domineering.moveLeft_card
 
 theorem moveRight_card {b : Board} {m : ℤ × ℤ} (h : m ∈ right b) :
-    Finset.card (moveRight b m) + 2 = Finset.card b :=
-  by
+    Finset.card (moveRight b m) + 2 = Finset.card b := by
   dsimp [move_right]
   rw [Finset.card_erase_of_mem (fst_pred_mem_erase_of_mem_right h)]
   rw [Finset.card_erase_of_mem (Finset.mem_of_mem_inter_left h)]

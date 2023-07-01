@@ -2809,6 +2809,7 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Game.Basic
 import Mathlib.SetTheory.Game.Birthday
+import Mathlib.SetTheory.Game.Domineering
 import Mathlib.SetTheory.Game.Impartial
 import Mathlib.SetTheory.Game.Nim
 import Mathlib.SetTheory.Game.Ordinal
