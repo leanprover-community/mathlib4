@@ -35,14 +35,14 @@ open scoped PGame
 namespace PGame
 
 /-- A short game is a game with a finite set of moves at every turn. -/
--- Porting note: simpNF warns that `Short.mk.injEq` can be derived from
--- `eq_iff_true_of_subsingleton`.
-@[nolint simpNF]
 inductive Short : PGame.{u} → Type (u + 1)
   | mk :
     ∀ {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} (_ : ∀ i : α, Short (L i))
       (_ : ∀ j : β, Short (R j)) [Fintype α] [Fintype β], Short ⟨α, β, L, R⟩
 #align pgame.short PGame.Short
+
+-- Porting note: simp can prove this
+attribute [nolint simpNF] Short.mk.injEq
 
 instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
   induction x with
