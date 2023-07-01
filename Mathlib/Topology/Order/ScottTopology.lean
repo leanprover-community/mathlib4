@@ -294,8 +294,6 @@ lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
 
-#check LE
-
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 (-∞,a].
