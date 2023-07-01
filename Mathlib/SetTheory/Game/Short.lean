@@ -49,6 +49,9 @@ instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
     cases a; cases b
     congr!
 
+-- Porting note: simpNF warns that `injEq` can de derived from `eq_iff_true_of_subsingleton`
+attribute [-simp] PGame.Short.mk.injEq
+
 -- Porting note: We use `induction` to prove `subsingleton_short` instead of recursion.
 -- A proof using recursion generates a harder `decreasing_by` goal than in Lean 3 for some reason:
 attribute [-instance] subsingleton_short in
@@ -69,7 +72,7 @@ termination_by subsingleton_short_example x => x
 -- We need to unify a bunch of hypotheses before `pgame_wf_tac` can work.
 decreasing_by {
   subst_vars
-  simp at *
+  simp only [mk.injEq, heq_eq_eq, true_and] at *
   casesm* _ ∧ _
   subst_vars
   pgame_wf_tac
@@ -183,12 +186,17 @@ class inductive ListShort : List PGame.{u} → Type (u + 1)
   | cons' (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) : ListShort tl → ListShort (hd::tl)
 #align pgame.list_short PGame.ListShort
 
+-- Porting note: simpNF warns that the LHS of `cons'.injEq` isn't simplified using the lemma.
+-- If it becomes important to reason about equalities of `ListShort l`, we can add a `Subsingleton`
+-- instance
+attribute [-simp] ListShort.cons'.injEq
+
+attribute [instance] ListShort.nil
+
 instance ListShort.cons (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) [h : ListShort tl] :
     ListShort (hd::tl) :=
   cons' hd tl h
 #align pgame.list_short.cons PGame.ListShort.cons
-
-attribute [instance] ListShort.nil
 
 -- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 instance listShortGet :
