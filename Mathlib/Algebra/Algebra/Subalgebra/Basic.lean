@@ -104,8 +104,16 @@ theorem copy_eq (S : Subalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s hs =
 
 variable (S : Subalgebra R A)
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
-  S.algebraMap_mem' r
+instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
+  smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
+
+theorem _root_.algebraMap_mem {S R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
+    [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
+    algebraMap R A r ∈ s :=
+  Algebra.algebraMap_eq_smul_one (A := A) r ▸ SMulMemClass.smul_mem r (one_mem s)
+
+protected theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
+  algebraMap_mem S r
 #align subalgebra.algebra_map_mem Subalgebra.algebraMap_mem
 
 theorem rangeS_le : (algebraMap R A).rangeS ≤ S.toSubsemiring := fun _x ⟨r, hr⟩ =>
@@ -120,10 +128,8 @@ theorem range_le : Set.range (algebraMap R A) ≤ S :=
 #align subalgebra.range_le Subalgebra.range_le
 
 theorem smul_mem {x : A} (hx : x ∈ S) (r : R) : r • x ∈ S :=
-  (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem r) hx
+  SMulMemClass.smul_mem r hx
 #align subalgebra.smul_mem Subalgebra.smul_mem
-
-instance : SMulMemClass (Subalgebra R A) R A where smul_mem r _x hx := smul_mem _ hx r
 
 protected theorem one_mem : (1 : A) ∈ S :=
   one_mem S
