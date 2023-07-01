@@ -8,8 +8,8 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RepresentationTheory.Basic
-import Mathbin.RepresentationTheory.FdRep
+import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.FdRep
 
 /-!
 # Subspace of invariants a group representation
@@ -46,8 +46,7 @@ noncomputable def average : MonoidAlgebra k G :=
 -/
 @[simp]
 theorem mul_average_left (g : G) :
-    (Finsupp.single g 1 * average k G : MonoidAlgebra k G) = average k G :=
-  by
+    (Finsupp.single g 1 * average k G : MonoidAlgebra k G) = average k G := by
   simp only [mul_one, Finset.mul_sum, Algebra.mul_smul_comm, average, MonoidAlgebra.of_apply,
     Finset.sum_congr, MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
@@ -58,8 +57,7 @@ theorem mul_average_left (g : G) :
 /-- `average k G` is invariant under right multiplication by elements of `G`.
 -/
 @[simp]
-theorem mul_average_right (g : G) : average k G * Finsupp.single g 1 = average k G :=
-  by
+theorem mul_average_right (g : G) : average k G * Finsupp.single g 1 = average k G := by
   simp only [mul_one, Finset.sum_mul, Algebra.smul_mul_assoc, average, MonoidAlgebra.of_apply,
     Finset.sum_congr, MonoidAlgebra.single_mul_single]
   set f : G → MonoidAlgebra k G := fun x => Finsupp.single x 1
@@ -81,8 +79,7 @@ variable (ρ : Representation k G V)
 
 /-- The subspace of invariants, consisting of the vectors fixed by all elements of `G`.
 -/
-def invariants : Submodule k V
-    where
+def invariants : Submodule k V where
   carrier := setOf fun v => ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' v w hv hw g := by simp only [hv g, hw g, map_add]
@@ -115,8 +112,7 @@ theorem averageMap_invariant (v : V) : averageMap ρ v ∈ invariants ρ := fun 
 
 /-- The `average_map` acts as the identity on the subspace of invariants.
 -/
-theorem averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v :=
-  by
+theorem averageMap_id (v : V) (hv : v ∈ invariants ρ) : averageMap ρ v = v := by
   rw [mem_invariants] at hv 
   simp [average, map_sum, hv, Finset.card_univ, nsmul_eq_smul_cast k _ v, smul_smul]
 #align representation.average_map_id Representation.averageMap_id
@@ -138,8 +134,7 @@ section Rep
 variable {k : Type u} [CommRing k] {G : GroupCat.{u}}
 
 theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
-    (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f :=
-  by
+    (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   erw [← ρ_Aut_apply_inv]
   rw [← LinearMap.comp_assoc, ← ModuleCat.comp_def, ← ModuleCat.comp_def, iso.inv_comp_eq,
@@ -150,8 +145,7 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
 /-- The invariants of the representation `lin_hom X.ρ Y.ρ` correspond to the the representation
 homomorphisms from `X` to `Y` -/
 @[simps]
-def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y
-    where
+def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
   toFun f := ⟨f.val, fun g => (mem_invariants_iff_comm _ g).1 (f.property g)⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -168,8 +162,7 @@ variable {k : Type u} [Field k] {G : GroupCat.{u}}
 
 /-- The invariants of the representation `lin_hom X.ρ Y.ρ` correspond to the the representation
 homomorphisms from `X` to `Y` -/
-def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y :=
-  by
+def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
   rw [← FdRep.forget₂_ρ, ← FdRep.forget₂_ρ]
   exact lin_hom.invariants_equiv_Rep_hom _ _ ≪≫ₗ FdRep.forget₂HomLinearEquiv X Y
 #align representation.lin_hom.invariants_equiv_fdRep_hom Representation.linHom.invariantsEquivFdRepHom
