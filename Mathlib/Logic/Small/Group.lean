@@ -6,6 +6,10 @@ Authors: Scott Morrison
 import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Equiv.TransferInstance
 
+/-!
+# Transfer group structures from `α` to `Shrink α`.
+-/
+
 noncomputable section
 
 -- FIXME: here and below, why doesn't `to_additive` work?

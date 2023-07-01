@@ -6,6 +6,10 @@ Authors: Scott Morrison
 import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Equiv.TransferInstance
 
+/-!
+# Transfer ring structures from `α` to `Shrink α`.
+-/
+
 noncomputable section
 
 instance [NonUnitalNonAssocSemiring α] [Small α] : NonUnitalNonAssocSemiring (Shrink α) :=
