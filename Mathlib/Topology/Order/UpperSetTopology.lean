@@ -167,17 +167,21 @@ lemma isClosed_iff_isLower {s : Set α} : IsClosed s
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_isLower.mp h)
 
+lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
+  rw [subset_antisymm_iff]
+  constructor
+  . apply closure_minimal subset_lowerClosure _
+    rw [isClosed_iff_isLower]
+    exact LowerSet.lower (lowerClosure s)
+  . apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
 interval (-∞,a].
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
-  rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
-  refine' subset_antisymm _ _
-  . apply closure_minimal subset_lowerClosure
-    rw [isClosed_iff_isLower]
-    apply (lowerClosure {a}).lower
-  . exact lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+  rw [closure_eq_lowerClosure, lowerClosure_singleton]
+  rfl
 
 end Preorder
 
