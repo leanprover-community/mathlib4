@@ -130,6 +130,8 @@ class UpperSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : P
 instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) :=
   ⟨rfl⟩
 
+instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (upperSetTopology' α) _ := ⟨rfl⟩
+
 namespace UpperSetTopology
 
 section Preorder
