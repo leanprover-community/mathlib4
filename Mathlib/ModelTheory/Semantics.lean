@@ -1037,7 +1037,7 @@ section Cardinality
 variable (L)
 @[simp]
 theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ (#M) := by
-  rw [← lift_mk_fin, ← lift_le.{w, 0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
+  rw [← lift_mk_fin, ← lift_le.{0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
   simp only [Function.comp_apply, List.mem_map, Prod.exists, Ne.def, List.mem_product,

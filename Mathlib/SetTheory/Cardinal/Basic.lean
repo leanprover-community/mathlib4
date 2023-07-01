@@ -17,6 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Cardinal Numbers
@@ -109,6 +110,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 #align cardinal Cardinal
+pp_with_univ Cardinal
 
 namespace Cardinal
 
@@ -300,8 +302,8 @@ theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.ou
   · rw [mk'_def, mk'_def, le_def]
 #align cardinal.out_embedding Cardinal.out_embedding
 
-theorem lift_mk_le {α : Type u} {β : Type v} :
-    lift.{max v w} (#α) ≤ lift.{max u w} (#β) ↔ Nonempty (α ↪ β) :=
+theorem lift_mk_le {α : Type v} {β : Type w} :
+    lift.{max u w} (#α) ≤ lift.{max u v} (#β) ↔ Nonempty (α ↪ β) :=
   ⟨fun ⟨f⟩ => ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ =>
     ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
 #align cardinal.lift_mk_le Cardinal.lift_mk_le
@@ -311,7 +313,7 @@ Because Lean often can not realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} (#α) ≤ lift.{u} (#β) ↔ Nonempty (α ↪ β) :=
-  lift_mk_le.{u, v, 0}
+  lift_mk_le.{0}
 #align cardinal.lift_mk_le' Cardinal.lift_mk_le'
 
 theorem lift_mk_eq {α : Type u} {β : Type v} :
@@ -330,10 +332,10 @@ theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} (#α) = lift.{u} (#β
 #align cardinal.lift_mk_eq' Cardinal.lift_mk_eq'
 
 @[simp]
-theorem lift_le {a b : Cardinal.{u}} : lift.{v, u} a ≤ lift.{v, u} b ↔ a ≤ b :=
+theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
   inductionOn₂ a b fun α β => by
     rw [← lift_umax]
-    exact lift_mk_le.{u, u, v}
+    exact lift_mk_le.{u}
 #align cardinal.lift_le Cardinal.lift_le
 
 -- Porting note: changed `simps` to `simps!` because the linter told to do so.
@@ -677,10 +679,10 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α (range fᶜ : Set β) ≃ β :=
+        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
-        ⟨#↥(range fᶜ), mk_congr this.symm⟩
+        ⟨#↥(range f)ᶜ, mk_congr this.symm⟩
     le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by
@@ -1111,7 +1113,7 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u,v} (iInf f) = ⨅ i, lift
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v,u} a → ∃ a', lift.{v,u} a' = b :=
   inductionOn₂ a b fun α β => by
-    rw [← lift_id (#β), ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{_,_,v}]
+    rw [← lift_id (#β), ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{v}]
     exact fun ⟨f⟩ =>
       ⟨#Set.range f,
         Eq.symm <| lift_mk_eq.{_, _, v}.2
@@ -1406,7 +1408,7 @@ theorem one_le_iff_ne_zero {c : Cardinal} : 1 ≤ c ↔ c ≠ 0 := by
 theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
   succ_le_iff.1
     (by
-      rw [← nat_succ, ← lift_mk_fin, aleph0, lift_mk_le.{0, 0, u}]
+      rw [← nat_succ, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
       exact ⟨⟨(↑), fun a b => Fin.ext⟩⟩)
 #align cardinal.nat_lt_aleph_0 Cardinal.nat_lt_aleph0
 
@@ -1690,6 +1692,12 @@ theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c)
   rw [toNat_apply_of_aleph0_le h, Nat.cast_zero]
 #align cardinal.cast_to_nat_of_aleph_0_le Cardinal.cast_toNat_of_aleph0_le
 
+/-- Two finite cardinals are equal iff they are equal their to_nat are equal -/
+theorem toNat_eq_iff_eq_of_lt_aleph0 {c d : Cardinal} (hc : c < ℵ₀) (hd : d < ℵ₀) :
+    toNat c = toNat d ↔ c = d := by
+  rw [← natCast_inj, cast_toNat_of_lt_aleph0 hc, cast_toNat_of_lt_aleph0 hd]
+#align cardinal.to_nat_eq_iff_eq_of_lt_aleph_0 Cardinal.toNat_eq_iff_eq_of_lt_aleph0
+
 theorem toNat_le_iff_le_of_lt_aleph0 {c d : Cardinal} (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c ≤ toNat d ↔ c ≤ d := by
   rw [← natCast_le, cast_toNat_of_lt_aleph0 hc, cast_toNat_of_lt_aleph0 hd]
@@ -1880,6 +1888,85 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
   PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n => ⟨n, toPartENat_cast n⟩
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
+theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
+  toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    simp only [toPartENat_apply_of_lt_aleph0 hc, PartENat.natCast_ne_top, false_iff, not_le, hc]
+  | inr hc => simp only [toPartENat_apply_of_aleph0_le hc, eq_self_iff_true, true_iff]; exact hc
+#align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top_iff_le_aleph0
+
+lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
+  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    cases lt_or_ge c' ℵ₀ with
+    | inl hc' =>
+      rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+      exact toNat_le_iff_le_of_lt_aleph0 hc hc'
+    | inr hc' =>
+      simp only [toPartENat_apply_of_aleph0_le hc',
+      le_top, true_iff]
+      exact le_trans h hc'
+  | inr hc =>
+    rw [toPartENat_apply_of_aleph0_le hc]
+    simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0,
+    le_antisymm h hc]
+#align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_of_le_aleph0
+
+lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
+  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+    exact toNat_le_iff_le_of_lt_aleph0 hc hc'
+  | inr hc =>
+    rw [toPartENat_apply_of_aleph0_le hc]
+    simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0]
+    rw [← not_iff_not, not_le, not_le]
+    simp only [hc', lt_of_lt_of_le hc' hc]
+#align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_of_lt_aleph0
+
+lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+  toPartENat c = toPartENat c' ↔ c = c' := by
+  rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc,
+    toPartENat_le_iff_of_le_aleph0 hc']
+#align to_part_enat_eq_iff_eq_of_le_aleph_0 Cardinal.toPartENat_eq_iff_of_le_aleph0
+
+theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
+  toPartENat c ≤ toPartENat c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    cases lt_or_ge c' ℵ₀ with
+    | inl hc' =>
+      rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+      exact toNat_le_of_le_of_lt_aleph0 hc' h
+    | inr hc' =>
+        rw [toPartENat_apply_of_aleph0_le hc']
+        exact le_top
+  | inr hc =>
+      rw [toPartENat_apply_of_aleph0_le hc,
+      toPartENat_apply_of_aleph0_le (le_trans hc h)]
+#align cardinal.to_part_enat_mono Cardinal.toPartENat_mono
+
+theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPartENat c := by
+  cases' lt_or_ge c ℵ₀ with hc hc
+  · rw [toPartENat_apply_of_lt_aleph0 hc, Cardinal.toPartENat_apply_of_lt_aleph0 _]
+    simp only [toNat_lift]
+    rw [lift_lt_aleph0]
+    exact hc
+  . rw [toPartENat_apply_of_aleph0_le hc, toPartENat_apply_of_aleph0_le _]
+    rw [aleph0_le_lift]
+    exact hc
+#align cardinal.to_part_enat_lift Cardinal.toPartENat_lift
+
+theorem toPartENat_congr {β : Type v} (e : α ≃ β) : toPartENat (#α) = toPartENat (#β) := by
+  rw [← toPartENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toPartENat_lift]
+#align cardinal.to_part_enat_congr Cardinal.toPartENat_congr
+
 theorem mk_toPartENat_eq_coe_card [Fintype α] : toPartENat (#α) = Fintype.card α := by simp
 #align cardinal.mk_to_part_enat_eq_coe_card Cardinal.mk_toPartENat_eq_coe_card
 
@@ -2001,7 +2088,7 @@ theorem mk_image_le {α β : Type u} {f : α → β} {s : Set α} : (#f '' s) �
 
 theorem mk_image_le_lift {α : Type u} {β : Type v} {f : α → β} {s : Set α} :
     lift.{u} (#f '' s) ≤ lift.{v} (#s) :=
-  lift_mk_le.{v, u, 0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_image⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_image⟩
 #align cardinal.mk_image_le_lift Cardinal.mk_image_le_lift
 
 theorem mk_range_le {α β : Type u} {f : α → β} : (#range f) ≤ (#α) :=
@@ -2010,7 +2097,7 @@ theorem mk_range_le {α β : Type u} {f : α → β} : (#range f) ≤ (#α) :=
 
 theorem mk_range_le_lift {α : Type u} {β : Type v} {f : α → β} :
     lift.{u} (#range f) ≤ lift.{v} (#α) :=
-  lift_mk_le.{v, u, 0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
+  lift_mk_le.{0}.mpr ⟨Embedding.ofSurjective _ surjective_onto_range⟩
 #align cardinal.mk_range_le_lift Cardinal.mk_range_le_lift
 
 theorem mk_range_eq (f : α → β) (h : Injective f) : (#range f) = (#α) :=
@@ -2163,7 +2250,7 @@ theorem mk_sep (s : Set α) (t : α → Prop) : (#({ x ∈ s | t x } : Set α)) 
 
 theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : Injective f) : lift.{v} (#f ⁻¹' s) ≤ lift.{u} (#s) := by
-  rw [lift_mk_le.{u, v, 0}]
+  rw [lift_mk_le.{0}]
   -- Porting note: Needed to insert `mem_preimage.mp` below
   use Subtype.coind (fun x => f x.1) fun x => mem_preimage.mp x.2
   apply Subtype.coind_injective; exact h.comp Subtype.val_injective
@@ -2171,7 +2258,7 @@ theorem mk_preimage_of_injective_lift {α : Type u} {β : Type v} (f : α → β
 
 theorem mk_preimage_of_subset_range_lift {α : Type u} {β : Type v} (f : α → β) (s : Set β)
     (h : s ⊆ range f) : lift.{u} (#s) ≤ lift.{v} (#f ⁻¹' s) := by
-  rw [lift_mk_le.{v, u, 0}]
+  rw [lift_mk_le.{0}]
   refine' ⟨⟨_, _⟩⟩
   · rintro ⟨y, hy⟩
     rcases Classical.subtype_of_exists (h hy) with ⟨x, rfl⟩

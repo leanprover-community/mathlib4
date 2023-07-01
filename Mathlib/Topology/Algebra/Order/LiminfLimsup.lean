@@ -236,10 +236,8 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
     (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     ∃ c : α, Tendsto u f (𝓝 c) := by
-  by_cases hbot : f = ⊥;
-  · rw [hbot]
-    exact ⟨sInf ∅, tendsto_bot⟩
-  haveI : NeBot f := ⟨hbot⟩
+  rcases f.eq_or_neBot with rfl | hbot
+  · exact ⟨sInf ∅, tendsto_bot⟩
   refine' ⟨limsup u f, _⟩
   apply tendsto_of_le_liminf_of_limsup_le _ le_rfl h h'
   by_contra' hlt
@@ -320,7 +318,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     apply le_of_forall_lt
     intro c hc
     simp only [liminf, limsInf, lt_sSup_iff, eventually_map, Set.mem_setOf_eq, exists_prop,
-      Set.mem_image, exists_exists_and_eq_and] at hc⊢
+      Set.mem_image, exists_exists_and_eq_and] at hc ⊢
     rcases hc with ⟨d, hd, h'd⟩
     refine' ⟨f d, _, h'd⟩
     filter_upwards [hd]with x hx using f_decr hx
@@ -477,7 +475,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       rw [Nat.sub_add_cancel hj₁, Set.indicator_of_mem hj₂]
       exact zero_lt_one
     · rw [imp_false] at hk
-      push_neg  at hk
+      push_neg at hk
       obtain ⟨i, hi⟩ := hk
       obtain ⟨j, hj₁, hj₂⟩ := hω (i + 1)
       replace hi : (∑ k in Finset.range i, (s (k + 1)).indicator 1 ω) = k + 1 :=
@@ -495,7 +493,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
   · rintro hω i
     rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω
     by_contra hcon
-    push_neg  at hcon
+    push_neg at hcon
     obtain ⟨j, h⟩ := hω (i + 1)
     have : (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
       have hle : ∀ j ≤ i, (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
