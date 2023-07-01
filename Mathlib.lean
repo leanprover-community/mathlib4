@@ -3109,6 +3109,7 @@ import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.HSpaces
 import Mathlib.Topology.Homotopy.HomotopyGroup
 import Mathlib.Topology.Homotopy.Path
+import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Instances.AddCircle
 import Mathlib.Topology.Instances.Complex
