@@ -27,14 +27,14 @@ partial def nestedMap (f v t : Expr) : TermElabM Expr := do
   else if !v.occurs t.appFn! then
     let cl ← mkAppM ``Functor #[t.appFn!]
     let inst ← synthInstance cl
-    let f' ← nestedMap t v t.appArg!
+    let f' ← nestedMap f v t.appArg!
     mkAppOptM ``Functor.map #[t.appFn!, inst, none, none, f']
   else throwError "type {t} is not a functor with respect to variable {v}"
 
 /-- similar to `traverseField` but for `Functor` -/
 def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
   let t ← whnf (← inferType e)
-  if t.getAppFn.constName! = n then
+  if t.getAppFn.constName = some n then
     throwError "recursive types not supported"
   else if α.eqv e then
     return β
@@ -48,35 +48,34 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 
 /-- similar to `traverseConstructor` but for `Functor` -/
 def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr) (args₁ : List (Bool × Expr))
-    (recCall : List Expr) (m : MVarId) : TermElabM Expr := do
-  let g ← m.getType
+    (recCall : List Expr) (g : Expr) : TermElabM Expr := do
   let (_, args') ←
     mapAccumLM (fun (x : List Expr) (y : Bool × Expr) =>
       if y.1 then return (x.tail, x.head!)
       else Prod.mk recCall <$> mapField n g.appFn! f α β y.2) recCall args₁
-  let constr ← mkConstWithFreshMVarLevels c
-  let r := mkAppN constr (args₀ ++ args').toArray
+  let r ← mkAppOptM c ((args₀ ++ args').map some).toArray
   return r
 
 /-- derive the `map` definition of a `Functor` -/
-def mkMap (type : Name) (m : MVarId) : TermElabM Unit :=
-  m.withContext do
-    let ls := (← getLCtx).getFVars.toList
-    let (#[α, β, f, x], m) ← m.introN 4 [`α, `β, `f, `x] | unreachable!
-    m.withContext do
-      let et ← x.getType
-      let xs ← m.induction x (mkRecName type)
-      xs.forM fun ⟨m, args, _⟩ => do
-        let c := Name.mkStr type (← m.getTag).getString!
-        m.withContext do
-          let (args, recCall) ←
-            args.toList.partitionM fun e => (!(mkFVar β).occurs ·) <$> inferType e
-          let args₀ ← args.mapM fun a => do
-            let b ← et.occurs <$> inferType a
-            return (b, a)
-          mapConstructor
-              c type (mkFVar f) (mkFVar α) (mkFVar β) (ls.concat (mkFVar β)) args₀ recCall m
-            >>= m.assign
+def mkMap (type : Name) (ls : List Expr) (g : Expr) : TermElabM Expr := do
+  let m := (← mkFreshExprSyntheticOpaqueMVar g).mvarId!
+  let (#[α, β, f, x], m') ← m.introN 4 [`α, `β, `f, `x] | unreachable!
+  m'.withContext do
+    let et ← x.getType
+    let xs ← m'.induction x (mkRecName type)
+    xs.forM fun ⟨m', args, _⟩ => do
+      let c := Name.mkStr type (← m'.getTag).getString!
+      m'.withContext do
+        let (args, recCall) ←
+          args.toList.partitionM fun e => (!(mkFVar β).occurs ·) <$> inferType e
+        let args₀ ← args.mapM fun a => do
+          let b ← et.occurs <$> inferType a
+          return (b, a)
+        let g ← m'.getType
+        mapConstructor
+            c type (mkFVar f) (mkFVar α) (mkFVar β) (ls.concat (mkFVar β)) args₀ recCall g
+          >>= m'.assign
+  instantiateMVars (mkMVar m)
 
 /-
 meta def with_prefix : option name → name → name
