@@ -8,8 +8,8 @@ Authors: Julian Kuelshammer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Mon.Basic
-import Mathlib.Algebra.Category.Semigroup.Basic
+import Mathlib.Algebra.Category.MonCat.Basic
+import Mathlib.Algebra.Category.SemigroupCat.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.FreeMonoid.Basic
 
