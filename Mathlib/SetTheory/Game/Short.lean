@@ -8,9 +8,14 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+
 import Mathlib.Data.Fintype.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Game.Birthday
+
+-- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
+-- trigger this error.
+set_option synthInstance.checkSynthOrder false
 
 /-!
 # Short games
@@ -92,8 +97,7 @@ def fintypeLeft {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} [
     Fintype α := by cases' S with _ _ _ _ _ _ F _; exact F
 #align pgame.fintype_left PGame.fintypeLeft
 
--- Porting note: In Lean 4, it seems it can't be made an instance at all.
--- attribute [local instance] fintypeLeft
+attribute [local instance] fintypeLeft
 
 instance fintypeLeftMoves (x : PGame) [S : Short x] : Fintype x.LeftMoves := by
   cases S; assumption
@@ -106,8 +110,7 @@ def fintypeRight {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} 
     Fintype β := by cases' S with _ _ _ _ _ _ _ F; exact F
 #align pgame.fintype_right PGame.fintypeRight
 
--- Porting note: In Lean 4, it seems it can't be made an instance at all.
--- attribute [local instance] fintypeRight
+attribute [local instance] fintypeRight
 
 instance fintypeRightMoves (x : PGame) [S : Short x] : Fintype x.RightMoves := by
   cases S; assumption
@@ -125,8 +128,7 @@ def moveLeftShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (i : xl) : Short
   cases' S with _ _ _ _ L _ _ _; apply L
 #align pgame.move_left_short' PGame.moveLeftShort'
 
--- Porting note: In Lean 4, it seems it can't be made an instance at all.
--- attribute [local instance] moveLeftShort'
+attribute [local instance] moveLeftShort'
 
 instance moveRightShort (x : PGame) [S : Short x] (j : x.RightMoves) : Short (x.moveRight j) := by
   cases' S with _ _ _ _ _ R _ _; apply R
@@ -140,8 +142,7 @@ def moveRightShort' {xl xr} (xL xR) [S : Short (mk xl xr xL xR)] (j : xr) : Shor
   cases' S with _ _ _ _ _ R _ _; apply R
 #align pgame.move_right_short' PGame.moveRightShort'
 
--- Porting note: In Lean 4, it seems it can't be made an instance at all.
--- attribute [local instance] moveRightShort'
+attribute [local instance] moveRightShort'
 
 theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omega := by
   -- Porting note: Again `induction` is used instead of `pgame_wf_tac`
@@ -229,26 +230,12 @@ def shortOfRelabelling : ∀ {x y : PGame.{u}}, Relabelling x y → Short x → 
 
 instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
   | mk xl xr xL xR, _ => by
-    -- Porting note: These are needed because the local instances above were rejected by Lean 4
-    haveI := moveLeftShort' xL xR
-    haveI := moveRightShort' xL xR
-    haveI := @fintypeLeft xl xr xL xR _
-    haveI := @fintypeRight xl xr xL xR _
     exact Short.mk (fun i => shortNeg _) fun i => shortNeg _
 -- Porting note: `decreasing_by pgame_wf_tac` is no longer needed.
 #align pgame.short_neg PGame.shortNeg
 
 instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
   | mk xl xr xL xR, mk yl yr yL yR, _, _ => by
-    -- Porting note: These are needed because the local instances above were rejected by Lean 4
-    haveI := moveLeftShort' xL xR
-    haveI := moveRightShort' xL xR
-    haveI := @fintypeLeft xl xr xL xR _
-    haveI := @fintypeRight xl xr xL xR _
-    haveI := moveLeftShort' yL yR
-    haveI := moveRightShort' yL yR
-    haveI := @fintypeLeft yl yr yL yR _
-    haveI := @fintypeRight yl yr yL yR _
     apply Short.mk;
     all_goals
       rintro ⟨i⟩
@@ -281,15 +268,6 @@ Instances for the two projections separately are provided below.
 -/
 def leLfDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ y) × Decidable (x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
-    -- Porting note: These are needed because the local instances above were rejected by Lean 4
-    haveI := moveLeftShort' xL xR
-    haveI := moveRightShort' xL xR
-    haveI := @fintypeLeft xl xr xL xR _
-    haveI := @fintypeRight xl xr xL xR _
-    haveI := moveLeftShort' yL yR
-    haveI := moveRightShort' yL yR
-    haveI := @fintypeLeft yl yr yL yR _
-    haveI := @fintypeRight yl yr yL yR _
     constructor
     · refine' @decidable_of_iff' _ _ mk_le_mk (id _)
       apply @And.decidable _ _ ?_ ?_
