@@ -383,8 +383,8 @@ theorem exists_ne_zero_mem_ring_of_integers_lt (h : minkowski_bound K < volume (
   have : Countable (Submodule.span ℤ (Set.range (latticeBasis K))).toAddSubgroup := by
     change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
     infer_instance
-  obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure h_fund h
-    (convex_body_symmetric K f) (convex_body_convex K f)
+  obtain ⟨⟨x, hx⟩, h_nzr, h_mem⟩ := exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+    h_fund h (convex_body_symmetric K f) (convex_body_convex K f)
   rw [Submodule.mem_toAddSubgroup, mem_span_latticeBasis] at hx
   obtain ⟨a, ha, rfl⟩ := hx
   refine ⟨⟨a, ha⟩, ?_, (convex_body_mem K f).mp h_mem⟩
