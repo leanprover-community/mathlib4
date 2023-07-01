@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.Morphisms.Basic
-import Mathbin.Topology.LocalAtTarget
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Universally closed morphism
@@ -57,8 +57,7 @@ theorem universallyClosed_stableUnderBaseChange : StableUnderBaseChange @Univers
   universallyClosed_eq.symm ▸ universally_stableUnderBaseChange (topologically @IsClosedMap)
 #align algebraic_geometry.universally_closed_stable_under_base_change AlgebraicGeometry.universallyClosed_stableUnderBaseChange
 
-theorem universallyClosed_stableUnderComposition : StableUnderComposition @UniversallyClosed :=
-  by
+theorem universallyClosed_stableUnderComposition : StableUnderComposition @UniversallyClosed := by
   rw [universally_closed_eq]
   exact stable_under_composition.universally fun X Y Z f g hf hg => IsClosedMap.comp hg hf
 #align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_stableUnderComposition
@@ -83,8 +82,7 @@ theorem morphismRestrict_base {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y.carrier)
   funext fun x => Subtype.ext <| morphismRestrict_base_coe f U x
 #align algebraic_geometry.morphism_restrict_base AlgebraicGeometry.morphismRestrict_base
 
-theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @UniversallyClosed :=
-  by
+theorem universallyClosed_is_local_at_target : PropertyIsLocalAtTarget @UniversallyClosed := by
   rw [universally_closed_eq]
   apply universally_is_local_at_target_of_morphism_restrict
   ·
