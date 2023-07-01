@@ -153,9 +153,8 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     ∃ (f_lim : α → β) (hf_lim_meas : Measurable f_lim),
       ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
   inhabit ι
-  rcases eq_or_ne L ⊥ with (rfl | hL)
+  rcases eq_or_neBot L with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, eventually_of_forall fun x => tendsto_bot⟩
-  haveI : NeBot L := ⟨hL⟩
   let p : α → (ι → β) → Prop := fun x f' => ∃ l : β, Tendsto (fun n => f' n) L (𝓝 l)
   have hp_mem : ∀ x ∈ aeSeqSet hf p, p x fun n => f n x := fun x hx =>
     aeSeq.fun_prop_of_mem_aeSeqSet hf hx

@@ -217,7 +217,8 @@ elab_rules : tactic |
             let replaceResult ← goal.replaceLocalDecl f r.result.eNew r.result.eqProof
             replaceMainGoal (replaceResult.mvarId :: r.result.mvarIds)
         | _ => failure
-    do
+    -- See https://github.com/leanprover/lean4/issues/2150
+    do withMainContext do
       let target ← instantiateMVars (← goal.getType)
       let results ← rewrites lems goal target (stop_at_rfl := true)
       reportOutOfHeartbeats `rewrites tk
