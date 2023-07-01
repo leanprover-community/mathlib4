@@ -95,9 +95,7 @@ instance (priority := 100) isOpenImmersionCat_of_isEmpty {X Y : Scheme} (f : X �
     [IsEmpty X.carrier] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
   · apply openEmbedding_of_continuous_injective_open
-    -- Porting note : `continuity` failed
-    -- see https://github.com/leanprover-community/mathlib4/issues/5030
-    · exact f.1.base.2
+    · continuity
     · rintro (i : X.carrier); exact isEmptyElim i
     · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
       exact fun x => isEmptyElim (show X.carrier from x.choose)
