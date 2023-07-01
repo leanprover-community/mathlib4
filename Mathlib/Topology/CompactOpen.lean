@@ -194,7 +194,8 @@ theorem continuous_eval_const (a : α) :
   refine continuous_def.2 fun U hU ↦ ?_
   convert ContinuousMap.isOpen_gen (isCompact_singleton (a := a)) hU using 1
   ext; simp [CompactOpen.gen]
-#align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_constₓ
+#align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
+#align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
 
 /-- Coercion from `C(α, β)` with compact-open topology to `α → β` with pointwise convergence
 topology is a continuous map.
@@ -202,7 +203,8 @@ topology is a continuous map.
 Porting note: merged `continuous_coe` with `continuous_coe'` removing unneeded assumptions. -/
 theorem continuous_coe : Continuous ((⇑) : C(α, β) → (α → β)) :=
   continuous_pi continuous_eval_const
-#align continuous_map.continuous_coe' ContinuousMap.continuous_coeₓ
+#align continuous_map.continuous_coe' ContinuousMap.continuous_coe
+#align continuous_map.continuous_coe ContinuousMap.continuous_coe
 
 instance [T0Space β] : T0Space C(α, β) :=
   t0Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
