@@ -261,7 +261,7 @@ theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
 #align proper_cone.dual_dual ProperCone.dual_dual
 
 /-- This is a relative version of
-`convex_cone.hyperplane_separation_of_nonempty_of_is_closed_of_nmem`, which we recover by setting
+`ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`, which we recover by setting
 `f` to be the identity map. This is a geometric interpretation of the Farkas' lemma
 stated using proper cones. -/
 theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F} :
