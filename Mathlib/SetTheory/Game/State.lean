@@ -33,7 +33,7 @@ namespace PGame
 /-- `PGame.State S` describes how to interpret `s : S` as a state of a combinatorial game.
 Use `PGame.ofState s` or `Game.ofState s` to construct the game.
 
-`PGame.State.l : S → finset S` and `PGame.State.r : S → finset S` describe the states reachable
+`PGame.State.l : S → Finset S` and `PGame.State.r : S → Finset S` describe the states reachable
 by a move by Left or Right. `PGame.State.turnBound : S → ℕ` gives an upper bound on the number of
 possible turns remaining from this state.
 -/
