@@ -1863,6 +1863,7 @@ import Mathlib.Geometry.Manifold.Complex
 import Mathlib.Geometry.Manifold.ConformalGroupoid
 import Mathlib.Geometry.Manifold.ContMDiff
 import Mathlib.Geometry.Manifold.ContMDiffMap
+import Mathlib.Geometry.Manifold.DerivationBundle
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
