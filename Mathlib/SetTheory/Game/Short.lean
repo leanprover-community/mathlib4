@@ -35,6 +35,8 @@ open scoped PGame
 namespace PGame
 
 /-- A short game is a game with a finite set of moves at every turn. -/
+-- Porting note: simpNF warns that `Short.mk.injEq` can de derived from `eq_iff_true_of_subsingleton`
+@[nolint simpNF]
 inductive Short : PGame.{u} → Type (u + 1)
   | mk :
     ∀ {α β : Type u} {L : α → PGame.{u}} {R : β → PGame.{u}} (_ : ∀ i : α, Short (L i))
@@ -49,8 +51,6 @@ instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
     cases a; cases b
     congr!
 
--- Porting note: simpNF warns that `injEq` can de derived from `eq_iff_true_of_subsingleton`
-attribute [-simp] PGame.Short.mk.injEq
 
 -- Porting note: We use `induction` to prove `subsingleton_short` instead of recursion.
 -- A proof using recursion generates a harder `decreasing_by` goal than in Lean 3 for some reason:
@@ -183,19 +183,14 @@ class inductive ListShort : List PGame.{u} → Type (u + 1)
   -- Porting note: We introduce `cons` as a separate instance because attempting to use
   -- `[ListShort tl]` as a constructor argument errors saying that `ListShort tl` is not a class.
   -- Is this a bug in `class inductive`?
-  | cons' (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) : ListShort tl → ListShort (hd::tl)
+  | cons' {hd : PGame.{u}} {tl : List PGame.{u}} : Short hd → ListShort tl → ListShort (hd::tl)
 #align pgame.list_short PGame.ListShort
-
--- Porting note: simpNF warns that the LHS of `cons'.injEq` isn't simplified using the lemma.
--- If it becomes important to reason about equalities of `ListShort l`, we can add a `Subsingleton`
--- instance
-attribute [-simp] ListShort.cons'.injEq
 
 attribute [instance] ListShort.nil
 
-instance ListShort.cons (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) [h : ListShort tl] :
+instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd] (tl : List PGame.{u}) [short_tl : ListShort tl] :
     ListShort (hd::tl) :=
-  cons' hd tl h
+  cons' short_hd short_tl
 #align pgame.list_short.cons PGame.ListShort.cons
 
 -- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
@@ -206,8 +201,8 @@ instance listShortGet :
     rcases n with ⟨_, ⟨⟩⟩
     -- Porting note: The proof errors unless `done` or a `;` is added after `rcases`
     done
-  | _::_, @ListShort.cons' _ S _ _, ⟨0, _⟩ => S
-  | hd::tl, ListShort.cons' _ _ S, ⟨n + 1, h⟩ =>
+  | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
+  | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
     @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
 
 set_option linter.deprecated false in
