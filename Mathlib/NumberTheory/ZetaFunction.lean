@@ -103,7 +103,7 @@ irreducible_def riemannZeta :=
 #align riemann_zeta riemannZeta
 
 /- Note the next lemma is true by definition; what's hard is to show that with this definition, `ζ`
-is continuous (and indeed analytic) at 0, see `differentiable_riemann_zeta` below. -/
+is continuous (and indeed analytic) at 0, see `differentiableAt_riemannZeta` below. -/
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
   rw [riemannZeta_def]

@@ -358,8 +358,7 @@ def GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommGrou
 #align group_norm.to_normed_comm_group GroupNorm.toNormedCommGroup
 #align add_group_norm.to_normed_add_comm_group AddGroupNorm.toNormedAddCommGroup
 
-instance PUnit.normedAddCommGroup : NormedAddCommGroup PUnit
-    where
+instance PUnit.normedAddCommGroup : NormedAddCommGroup PUnit where
   norm := Function.const _ 0
   dist_eq _ _ := rfl
 
@@ -787,10 +786,10 @@ open Finset
 
 /-- A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant `C` such that
 for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
-(semi)normed spaces is in `normed_space.operator_norm`. -/
+(semi)normed spaces is in `Mathlib/Analysis/NormedSpace/OperatorNorm.lean`. -/
 @[to_additive "A homomorphism `f` of seminormed groups is Lipschitz, if there exists a constant
 `C` such that for all `x`, one has `‖f x‖ ≤ C * ‖x‖`. The analogous condition for a linear map of
-(semi)normed spaces is in `NormedSpace.OperatorNorm`."]
+(semi)normed spaces is in `Mathlib/Analysis/NormedSpace/OperatorNorm.lean`."]
 theorem MonoidHomClass.lipschitz_of_bound [MonoidHomClass 𝓕 E F] (f : 𝓕) (C : ℝ)
     (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) : LipschitzWith (Real.toNNReal C) f :=
   LipschitzWith.of_dist_le' fun x y => by simpa only [dist_eq_norm_div, map_div] using h (x / y)
@@ -874,7 +873,7 @@ alias MonoidHomClass.isometry_iff_norm ↔ _ MonoidHomClass.isometry_of_norm
 
 attribute [to_additive] MonoidHomClass.isometry_of_norm
 
-section Nnnorm
+section NNNorm
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -1018,7 +1017,7 @@ theorem MonoidHomClass.bound_of_antilipschitz [MonoidHomClass 𝓕 E F] (f : �
 #align monoid_hom_class.bound_of_antilipschitz MonoidHomClass.bound_of_antilipschitz
 #align add_monoid_hom_class.bound_of_antilipschitz AddMonoidHomClass.bound_of_antilipschitz
 
-end Nnnorm
+end NNNorm
 
 @[to_additive]
 theorem tendsto_iff_norm_tendsto_one {f : α → E} {a : Filter α} {b : E} :
@@ -1360,8 +1359,8 @@ def SeminormedCommGroup.induced [CommGroup E] [SeminormedGroup F] [MonoidHomClas
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `Group` to a `NormedGroup` induces a `NormedGroup`
 structure on the domain. -/
-@[to_additive (attr := reducible) "An injective group homomorphism from an `add_group` to a
-`normed_add_group` induces a `normed_add_group` structure on the domain."]
+@[to_additive (attr := reducible) "An injective group homomorphism from an `AddGroup` to a
+`NormedAddGroup` induces a `NormedAddGroup` structure on the domain."]
 def NormedGroup.induced [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
   { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
@@ -1572,7 +1571,7 @@ theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
   simp only [mem_ball, dist_eq_norm_div, ← div_pow] at h ⊢
   refine' lt_of_le_of_lt (norm_pow_le_mul_norm n (a / b)) _
-  replace hn : 0 < (n : ℝ);
+  replace hn : 0 < (n : ℝ)
   · norm_cast
   rw [nsmul_eq_mul]
   nlinarith
@@ -1652,9 +1651,9 @@ theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
         ‖j (a 0) / b‖ < f 0 ∧ ∀ n, 0 < n → ‖j (a n)‖ < f n := by
   obtain ⟨v, sum_v, v_in, hv₀, hv_pos⟩ := controlled_prod_of_mem_closure hb b_pos
   choose g hg using v_in
-  refine'
-    ⟨g, by simpa [← hg] using sum_v, by simpa [hg 0] using hv₀, fun n hn => by
-      simpa [hg] using hv_pos n hn⟩
+  exact
+    ⟨g, by simpa [← hg] using sum_v, by simpa [hg 0] using hv₀,
+      fun n hn => by simpa [hg] using hv_pos n hn⟩
 #align controlled_prod_of_mem_closure_range controlled_prod_of_mem_closure_range
 #align controlled_sum_of_mem_closure_range controlled_sum_of_mem_closure_range
 
@@ -2445,8 +2444,7 @@ variable [∀ i, SeminormedGroup (π i)] [SeminormedGroup E] (f : ∀ i, π i) {
 
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive "Finite product of seminormed groups, using the sup norm."]
-instance Pi.seminormedGroup : SeminormedGroup (∀ i, π i)
-    where
+instance Pi.seminormedGroup : SeminormedGroup (∀ i, π i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
     congr_arg (toReal : ℝ≥0 → ℝ) <|
@@ -2484,8 +2482,7 @@ theorem pi_nnnorm_le_iff' {r : ℝ≥0} : ‖x‖₊ ≤ r ↔ ∀ i, ‖x i‖�
 theorem pi_norm_le_iff_of_nonempty' [Nonempty ι] : ‖f‖ ≤ r ↔ ∀ b, ‖f b‖ ≤ r := by
   by_cases hr : 0 ≤ r
   · exact pi_norm_le_iff_of_nonneg' hr
-  ·
-    exact
+  · exact
       iff_of_false (fun h => hr <| (norm_nonneg' _).trans h) fun h =>
         hr <| (norm_nonneg' _).trans <| h <| Classical.arbitrary _
 #align pi_norm_le_iff_of_nonempty' pi_norm_le_iff_of_nonempty'
@@ -2600,8 +2597,7 @@ choice of norm in the multiplicative `SeminormedGroup E` case.
 We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
-instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ
-    where
+instance seminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
   norm x := ‖x.unop‖
   dist_eq _ _ := dist_eq_norm _ _
   toPseudoMetricSpace := MulOpposite.instPseudoMetricSpaceMulOpposite
@@ -2626,8 +2622,8 @@ instance normedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ :=
   { MulOpposite.seminormedAddGroup with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-instance seminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ
-    where dist_eq _ _ := dist_eq_norm _ _
+instance seminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
+  dist_eq _ _ := dist_eq_norm _ _
 
 instance normedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ :=
   { MulOpposite.seminormedAddCommGroup with
