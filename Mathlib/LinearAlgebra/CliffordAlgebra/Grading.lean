@@ -31,7 +31,7 @@ open scoped DirectSum
 variable (Q)
 
 /-- The even or odd submodule, defined as the supremum of the even or odd powers of
-`(ι Q).range`. `even_odd 0` is the even submodule, and `even_odd 1` is the odd submodule. -/
+`(ι Q).range`. `evenOdd 0` is the even submodule, and `evenOdd 1` is the odd submodule. -/
 def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
@@ -133,7 +133,7 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
     -- the proof from here onward is mostly similar to the `TensorAlgebra` case, with some extra
-    -- handling for the `iSup` in `even_odd`.
+    -- handling for the `iSup` in `evenOdd`.
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
@@ -143,12 +143,12 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
 set_option maxHeartbeats 300000 in
-theorem iSup_ι_range_eq_top : (⨆ i : ℕ, LinearMap.range (ι Q) ^ i) = ⊤ := by
+theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
     -- porting note: needs extra annotations, no longer unifies against the goal in the face of
     -- ambiguity
-    (⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ)) =
+    ⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ) =
         ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) :=
       by rw [iSup_sigma]
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=

@@ -117,7 +117,7 @@ alias Submodule.map_span_le ← _root_.LinearMap.map_span_le
 @[simp]
 theorem span_insert_zero : span R (insert (0 : M) s) = span R s := by
   refine' le_antisymm _ (Submodule.span_mono (Set.subset_insert 0 s))
-  rw [span_le, Set.insert_subset]
+  rw [span_le, Set.insert_subset_iff]
   exact ⟨by simp only [SetLike.mem_coe, Submodule.zero_mem], Submodule.subset_span⟩
 #align submodule.span_insert_zero Submodule.span_insert_zero
 
@@ -507,7 +507,7 @@ theorem span_insert (x) (s : Set M) : span R (insert x s) = span R ({x} : Set M)
 #align submodule.span_insert Submodule.span_insert
 
 theorem span_insert_eq_span (h : x ∈ span R s) : span R (insert x s) = span R s :=
-  span_eq_of_le _ (Set.insert_subset.mpr ⟨h, subset_span⟩) (span_mono <| subset_insert _ _)
+  span_eq_of_le _ (Set.insert_subset_iff.mpr ⟨h, subset_span⟩) (span_mono <| subset_insert _ _)
 #align submodule.span_insert_eq_span Submodule.span_insert_eq_span
 
 theorem span_span : span R (span R s : Set M) = span R s :=
@@ -609,12 +609,12 @@ theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f
   h.imp (apply_mem_span_image_of_mem_span f)
 #align submodule.not_mem_span_of_apply_not_mem_span_image Submodule.not_mem_span_of_apply_not_mem_span_image
 
-theorem iSup_span {ι : Sort _} (p : ι → Set M) : (⨆ i, span R (p i)) = span R (⋃ i, p i) :=
+theorem iSup_span {ι : Sort _} (p : ι → Set M) : ⨆ i, span R (p i) = span R (⋃ i, p i) :=
   le_antisymm (iSup_le fun i => span_mono <| subset_iUnion _ i) <|
     span_le.mpr <| iUnion_subset fun i _ hm => mem_iSup_of_mem i <| subset_span hm
 #align submodule.supr_span Submodule.iSup_span
 
-theorem iSup_eq_span {ι : Sort _} (p : ι → Submodule R M) : (⨆ i, p i) = span R (⋃ i, ↑(p i)) := by
+theorem iSup_eq_span {ι : Sort _} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by
   simp_rw [← iSup_span, span_eq]
 #align submodule.supr_eq_span Submodule.iSup_eq_span
 

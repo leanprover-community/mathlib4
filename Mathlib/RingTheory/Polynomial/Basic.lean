@@ -822,8 +822,8 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
   classical
     symm
     let eqv :=
-      (sumAlgEquiv R (↥(sᶜ)) s).symm.trans
-        (renameEquiv R <| (Equiv.sumComm (↥(sᶜ)) s).trans <| Equiv.Set.sumCompl s)
+      (sumAlgEquiv R (↥sᶜ) s).symm.trans
+        (renameEquiv R <| (Equiv.sumComm (↥sᶜ) s).trans <| Equiv.Set.sumCompl s)
     have : (rename (↑)).toRingHom = eqv.toAlgHom.toRingHom.comp C := by
       apply ringHom_ext
       · intro
@@ -833,8 +833,8 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
         dsimp
         erw [iterToSum_C_X, rename_X, rename_X]
         rfl
-    rw [← @prime_C_iff (MvPolynomial s R) (↥(sᶜ)) instCommRingMvPolynomialToCommSemiring p]
-    rw [@MulEquiv.prime_iff (MvPolynomial (↑(sᶜ)) (MvPolynomial (↑s) R)) (MvPolynomial σ R) (_) (_)]
+    rw [← @prime_C_iff (MvPolynomial s R) (↥sᶜ) instCommRingMvPolynomialToCommSemiring p]
+    rw [@MulEquiv.prime_iff (MvPolynomial ↑sᶜ (MvPolynomial ↑s R)) (MvPolynomial σ R) (_) (_)]
     rotate_left
     exact eqv.toMulEquiv
     convert Iff.rfl

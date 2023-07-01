@@ -835,7 +835,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
       (⨆ i, (S i).toAddSubmonoid)
       (AddSubmonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
   -- Porting note `@this` doesn't work
-  suffices H : (⨆ i, S i) ≤ U; simpa using @H x
+  suffices H : ⨆ i, S i ≤ U; simpa using @H x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align non_unital_subsemiring.mem_supr_of_directed NonUnitalSubsemiring.mem_iSup_of_directed
 

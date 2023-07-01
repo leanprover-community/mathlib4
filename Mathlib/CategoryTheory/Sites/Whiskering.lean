@@ -21,7 +21,7 @@ sheaf condition.
 
 The functor between sheaf categories is called `sheafCompose J F`.
 Given a natural transformation `η : F ⟶ G`, we obtain a natural transformation
-`sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η` (TODO).
+`sheafCompose J F ⟶ sheafCompose J G`, which we call `sheafCompose_map J η`.
 
 -/
 
@@ -42,7 +42,7 @@ variable {J : GrothendieckTopology C}
 
 variable {U : C} (R : Presieve U)
 
-variable (F : A ⥤ B)
+variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 namespace GrothendieckTopology.Cover
 
@@ -118,6 +118,8 @@ def mapMultifork :
 end GrothendieckTopology.Cover
 
 variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan F]
+variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan G]
+variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ A), PreservesLimit (S.index P).multicospan H]
 
 theorem Presheaf.IsSheaf.comp {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) :
     Presheaf.IsSheaf J (P ⋙ F) := by
@@ -141,5 +143,21 @@ def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf_compose CategoryTheory.sheafCompose
+
+variable {F G}
+
+/--
+If `η : F ⟶ G` is a natural transformation then we obtain a morphism of functors
+`sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
+-/
+def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
+  app := fun X => .mk <| whiskerLeft _ η
+
+@[simp]
+lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
+
+@[simp]
+lemma sheafCompose_comp :
+  sheafCompose_map J (η ≫ γ) = sheafCompose_map J η ≫ sheafCompose_map J γ := rfl
 
 end CategoryTheory

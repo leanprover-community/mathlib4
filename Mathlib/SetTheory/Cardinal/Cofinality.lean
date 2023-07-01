@@ -128,7 +128,7 @@ def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ (#S) = c }.Nonempty :=
-  @Order.cof_nonempty α _ (IsRefl.swap (rᶜ))
+  @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 #align strict_order.cof_nonempty StrictOrder.cof_nonempty
 
 /-! ### Cofinality of ordinals -/
@@ -1039,7 +1039,7 @@ then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`.
 -/
 theorem le_range_of_union_finset_eq_top {α β : Type _} [Infinite β] (f : α → Finset β)
-    (w : (⋃ a, (f a : Set β)) = ⊤) : (#β) ≤ (#range f) := by
+    (w : ⋃ a, (f a : Set β) = ⊤) : (#β) ≤ (#range f) := by
   have k : _root_.Infinite (range f) := by
     rw [infinite_coe_iff]
     apply mt (union_finset_finite_of_range_finite f)
