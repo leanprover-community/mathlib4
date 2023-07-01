@@ -12,14 +12,14 @@ open CategoryTheory
 noncomputable section
 
 theorem UnivLE.ofEssSurj.{u, v} (w : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)) :
-    UnivLE.{u, v} where
-  small a := by
+    UnivLE.{u, v} :=
+  fun a => by
     obtain ⟨a', ⟨m⟩⟩ := w.mem_essImage a
     exact ⟨a', ⟨(Iso.toEquiv m).symm.trans Equiv.ulift⟩⟩
 
-instance [I : UnivLE.{u, v}] : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) where
+instance [UnivLE.{u, v}] : EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) where
   mem_essImage α :=
-    ⟨@Shrink α (I.small α), ⟨Equiv.toIso (Equiv.ulift.trans (@equivShrink α (I.small α)).symm)⟩⟩
+    ⟨Shrink α, ⟨Equiv.toIso (Equiv.ulift.trans (equivShrink α).symm)⟩⟩
 
 theorem UnivLE_iff_essSurj.{u, v} :
     UnivLE.{u, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v) :=
