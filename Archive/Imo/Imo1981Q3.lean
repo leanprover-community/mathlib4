@@ -11,6 +11,7 @@ Authors: Kevin Lacker
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 1981 Q3
@@ -57,20 +58,14 @@ variable {N}
 
 theorem m_le_n {m n : ℤ} (h1 : ProblemPredicate N m n) : m ≤ n := by
   by_contra h2
-  have h3 : 1 = (n * (n - m) - m ^ 2) ^ 2 := by
-    calc
-      1 = (n ^ 2 - m * n - m ^ 2) ^ 2 := h1.eq_one.symm
-      _ = (n * (n - m) - m ^ 2) ^ 2 := by ring
+  have h3 : 1 = (n * (n - m) - m ^ 2) ^ 2 := by linear_combination - h1.eq_one
   have h4 : n * (n - m) - m ^ 2 < -1 := by nlinarith [h1.n_range.left]
   have h5 : 1 < (n * (n - m) - m ^ 2) ^ 2 := by nlinarith
   exact h5.ne h3
 #align imo1981_q3.problem_predicate.m_le_n Imo1981Q3.ProblemPredicate.m_le_n
 
 theorem eq_imp_1 {n : ℤ} (h1 : ProblemPredicate N n n) : n = 1 :=
-  haveI : n * (n * (n * n)) = 1 := by
-    calc
-      _ = (n ^ 2 - n * n - n ^ 2) ^ 2 := by simp [sq, mul_assoc]
-      _ = 1 := h1.eq_one
+  have : n * (n * (n * n)) = 1 := by linear_combination h1.eq_one
   eq_one_of_mul_eq_one_right h1.m_range.left.le this
 #align imo1981_q3.problem_predicate.eq_imp_1 Imo1981Q3.ProblemPredicate.eq_imp_1
 
@@ -79,7 +74,6 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
   obtain (rfl : m = n) | (h3 : m < n) := h1.m_le_n.eq_or_lt
   · have h4 : m = 1 := h1.eq_imp_1
     exact absurd h4.symm h2.ne
-  -- Porting note: Original proof used `refine_struct { n_range := h1.m_range .. }`
   exact
     { n_range := h1.m_range
       m_range := by
@@ -89,10 +83,7 @@ theorem reduction {m n : ℤ} (h1 : ProblemPredicate N m n) (h2 : 1 < n) :
             _ < n := sub_lt_self n h1.m_range.left
             _ ≤ N := h1.n_range.right
         exact ⟨h5, h6.le⟩
-      eq_one := by
-        calc
-          _ = (n ^ 2 - m * n - m ^ 2) ^ 2 := by ring
-          _ = 1 := h1.eq_one }
+      eq_one := by linear_combination h1.eq_one }
 #align imo1981_q3.problem_predicate.reduction Imo1981Q3.ProblemPredicate.reduction
 
 end ProblemPredicate

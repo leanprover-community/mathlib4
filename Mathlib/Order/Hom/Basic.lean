@@ -335,7 +335,7 @@ def curry : (α × β →o γ) ≃o (α →o β →o γ) where
     ext ⟨x, y⟩
     rfl
   right_inv f := by
-    ext (x y)
+    ext x y
     rfl
   map_rel_iff' := by simp [le_def]
 #align order_hom.curry OrderHom.curry
@@ -531,10 +531,10 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
   left_inv f := by
-    ext (x i)
+    ext x i
     rfl
   right_inv f := by
-    ext (x i)
+    ext x i
     rfl
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
