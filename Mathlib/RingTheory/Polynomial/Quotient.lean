@@ -169,7 +169,7 @@ theorem _root_.Polynomial.IsUnit.coeff_isUnit_isNilpotent {P : Polynomial R} (hu
 nilpotent, except its constant term which is a unit. -/
 theorem _root_.Polynomial.isUnit_iff_coeff_isUnit_isNilpotent (P : Polynomial R) :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
-  ⟨Polynomial.IsUnit.coeff_isUnit_isNilpotent, fun H => IsUnit.isUnit_of_isNilpotent H.1 H.2⟩
+  ⟨Polynomial.IsUnit.coeff_isUnit_isNilpotent, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
 
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
 theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
