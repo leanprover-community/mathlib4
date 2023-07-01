@@ -18,6 +18,7 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Covering.Differentiation
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+import Mathlib.LinearAlgebra.Finrank
 
 /-!
 # Convolution of functions
@@ -1016,7 +1017,7 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
     {k : ι → G} {x₀ : G} {z₀ : E'} {l : Filter ι} (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0))
     (hig : ∀ᶠ i in l, AEStronglyMeasurable (g i) μ) (hcg : Tendsto (uncurry g) (l ×ˢ 𝓝 x₀) (𝓝 z₀))
     (hk : Tendsto k l (𝓝 x₀)) :
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g i : G → E') (k i)) l (𝓝 z₀) :=
+    Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g i : G → E') (k i)) l (𝓝 z₀) :=
   convolution_tendsto_right (eventually_of_forall fun i => (φ i).nonneg_normed)
     (eventually_of_forall fun i => (φ i).integral_normed) (tendsto_support_normed_smallSets hφ) hig
     hcg hk
@@ -1026,28 +1027,48 @@ nonrec theorem convolution_tendsto_right {ι} {φ : ι → ContDiffBump (0 : G)}
   and the limit is taken only in the first function. -/
 theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
     (hφ : Tendsto (fun i => (φ i).rOut) l (𝓝 0)) (hg : Continuous g) (x₀ : G) :
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) l (𝓝 (g x₀)) :=
+    Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀) l (𝓝 (g x₀)) :=
   convolution_tendsto_right hφ (eventually_of_forall fun _ => hg.aestronglyMeasurable)
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
-theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} [IsNegInvariant μ]
-    (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0)) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
-    Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀)
+set_option autoImplicit false
+
+open Metric
+
+theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} {K : ℝ}
+    (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0))
+    (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
+    Tendsto (fun i => ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀)
     l (𝓝 (g x₀)) := by
-  have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) := sorry
-  let T := Besicovitch.vitaliFamily μ
-  filter_upwards [T.ae_tendsto_average_norm_sub hg] with x₀ h₀
-  have Z := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
-  simp only [Function.comp] at Z
+  have : IsAddHaarMeasure μ := ⟨⟩
+  filter_upwards [(Besicovitch.vitaliFamily μ).ae_tendsto_average_norm_sub hg] with x₀ h₀
   simp only [convolution_eq_swap, lsmul_apply]
-  apply tendsto_integral_smul_of_tendsto_average_norm_sub Z
+  have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
+    tendsto_nhdsWithin_iff.2 ⟨hφ, eventually_of_forall (fun i ↦ (φ i).rOut_pos)⟩
+  have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
+  simp only [Function.comp] at this
+  apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this
   · sorry
-  · apply tendsto_const_nhds.congr
-    intro i
+  · apply tendsto_const_nhds.congr (fun i ↦ ?_)
     rw [← integral_neg_eq_self]
-    simp only [sub_neg_eq_add, integral_add_left_eq_self]
-    simp
+    simp only [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
+  · apply eventually_of_forall (fun i ↦ ?_)
+    change support ((ContDiffBump.normed (φ i) μ) ∘ (fun y ↦ x₀ - y)) ⊆ closedBall x₀ (φ i).rOut
+    simp only [support_comp_eq_preimage, support_normed_eq]
+    intro x hx
+    simp only [mem_preimage, mem_ball, dist_zero_right] at hx
+    simpa [dist_eq_norm_sub'] using hx.le
+  · filter_upwards [h'φ] with i hi x
+    rw [abs_of_nonneg (nonneg_normed _ _), normed_def]
+    have : (μ (closedBall 0 (φ i).rIn)).toReal = ∫ x in closedBall (0 : G) (φ i).rIn, 1 ∂μ :=
+      by simp
+    have : ∫ x in closedBall (0 : G) (φ i).rIn, 1 ∂μ = ∫ x in closedBall (0 : G) (φ i).rIn, φ i x ∂μ :=
+      set_integral_congr (measurableSet_closedBall)
+        (fun x hx ↦ (one_of_mem_closedBall (φ i) hx).symm)
+    have : ∫ x in closedBall (0 : G) (φ i).rIn, φ i x ∂μ ≤ ∫ x in univ, φ i x ∂μ := by
+      apply set_integral_mono_set (Integrable.integrableOn (φ i).integrable)
+      apply eventually_of_forall (fun x ↦ (φ i).nonneg)
 
 
 
