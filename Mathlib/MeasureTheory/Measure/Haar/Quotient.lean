@@ -11,6 +11,7 @@ Authors: Alex Kontorovich, Heather Macbeth
 import Mathlib.MeasureTheory.Measure.Haar.Basic
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
+import Mathlib.MeasureTheory.Constructions.Polish
 
 /-!
 # Haar quotient measure
@@ -39,19 +40,34 @@ open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal
 
+section
+
 variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
-  [BorelSpace G] --{μ : Measure G}
-  {Γ : Subgroup G}
+  [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
+  [SecondCountableTopology (G ⧸ Γ)]
+
+--- TODO: move to `measure_theory.constructions.polish`
+instance CosetSpace.borelSpace {G : Type _} [TopologicalSpace G] [PolishSpace G]
+    [Group G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
+    [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace
 
 /-- Measurability of the action of the topological group `G` on the left-coset space `G / Γ`. -/
-@[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
-  space `G / Γ`."]
-instance QuotientGroup.measurableSMul [MeasurableSpace (G ⧸ Γ)] [BorelSpace (G ⧸ Γ)] :
-    MeasurableSMul G (G ⧸ Γ) where
+--@[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
+--  space `G / Γ`."]
+instance QuotientGroup.measurableSMul [PolishSpace G] [T2Space (G ⧸ Γ)]
+    [SecondCountableTopology (G ⧸ Γ)] : MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable
 #align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
-#align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
+--#align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
+
+end
+
+section smulInvariantMeasure
+
+variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
+  [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
+  [SecondCountableTopology (G ⧸ Γ)]
 
 --variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 μ)
 
@@ -67,25 +83,82 @@ local notation "π" => @QuotientGroup.mk G _ Γ
 --     volume U = volume (π ⁻¹' U ∩ t)
 
 
-variable [Countable Γ] [MeasureSpace G] [MeasureSpace (G ⧸ Γ)]
+variable [Countable Γ] --[MeasureSpace G] -- [MeasureSpace (G ⧸ Γ)]
   [QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ]
 --[BorelSpace (G ⧸ Γ)]
 
 
--- more beuatiful theorem: if you ahve ameasure speace downstairs and the downstairs one is smul invariant
+-- more beautiful theorem: if you have ameasure speace downstairs and the downstairs one is smul invariant
 -- then fund dom independent
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
   invariant measure on `G` to is a `G`-invariant measure on `G ⧸ Γ`. -/
-@[to_additive "The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and
-  right-invariant measure on an additive topological group `G` to a fundamental domain `𝓕` is a
-  `G`-invariant measure on `G ⧸ Γ`."]
-theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeftInvariant]
-    [μ.IsMulRightInvariant] :
-    SMulInvariantMeasure G (G ⧸ Γ) (Measure.map QuotientGroup.mk (μ.restrict 𝓕)) where
+-- @[to_additive "The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and
+--   right-invariant measure on an additive topological group `G` to a fundamental domain `𝓕` is a
+--   `G`-invariant measure on `G ⧸ Γ`."]
+theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map
+    [IsMulLeftInvariant (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)] :
+    SMulInvariantMeasure G (G ⧸ Γ) μ where
+  measure_preimage_smul g A hA := by
+    have meas_π : Measurable π := continuous_quotient_mk'.measurable
+    have meas_πA : MeasurableSet (π ⁻¹' A) := measurableSet_preimage meas_π hA
+    let 𝓕 : Set G := sorry
+    have h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕 volume := sorry
+    have meas_𝓕 : MeasurableSet 𝓕 := sorry
+    have meas_g𝓕 : MeasurableSet (g • 𝓕) := by
+      convert (@measurable_const_smul G G _ _ _ _ (g⁻¹)) meas_𝓕
+      simp only [smul_eq_mul] -- VERY UGLY! The below should be cleaned up
+      ext U y
+      simp only [mem_preimage]
+      rw [mem_smul_set]
+      constructor
+      · intro h
+        obtain ⟨y₁, hy₁, hy₁'⟩ := h
+        convert hy₁
+        rw [← hy₁']
+        simp
+      · intro h
+        refine ⟨g⁻¹ * y, h , by simp⟩
+    have h𝓕_translate_fundom : IsFundamentalDomain (Subgroup.opposite Γ) (g • 𝓕) volume :=
+      h𝓕.smul_of_comm g
+    rw [QuotientVolumeEqVolumePreimage.projection_respects_measure 𝓕 h𝓕]
+    rw [QuotientVolumeEqVolumePreimage.projection_respects_measure _ h𝓕_translate_fundom]
 
+    have := Set.quotientMeasure_invariant h𝓕 h𝓕_translate_fundom meas_𝓕 meas_g𝓕
+
+---- STOPPED 6/30/23
+
+    have := @Measure.map_apply
+    rw [Measure.map_apply meas_π hA,
+      Measure.map_apply meas_π (measurableSet_preimage (measurable_const_smul g) hA),
+      Measure.restrict_apply₀' 𝓕meas, Measure.restrict_apply₀' 𝓕meas]
+    set π_preA := π ⁻¹' A
+    have : π ⁻¹' ((fun x : G ⧸ Γ => g • x) ⁻¹' A) = (g * ·) ⁻¹' π_preA := by
+      ext1; simp
+    rw [this]
+    have : μ ((g * ·) ⁻¹' π_preA ∩ 𝓕) = μ (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕) := by
+      trans μ ((g * ·) ⁻¹' (π_preA ∩ (g⁻¹ * ·) ⁻¹' 𝓕))
+      · rw [preimage_inter]
+        congr 2
+        simp [Set.preimage]
+      rw [measure_preimage_mul]
+    rw [this]
+
+    rw [h𝓕.measure_set_eq h𝓕_translate_fundom meas_πA, ← preimage_smul_inv]; rfl
+    rintro ⟨γ, γ_in_Γ⟩
+    ext x
+    have : π (x * MulOpposite.unop γ) = π x := by simpa [QuotientGroup.eq'] using γ_in_Γ
+    simp only [(· • ·), ← this, mem_preimage]
+    rfl
+
+end
 
 #exit
+
+section
+
+variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
+  [BorelSpace G] {Γ : Subgroup G} {μ : Measure G} [Countable Γ]
 
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
@@ -93,7 +166,7 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
 @[to_additive "The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and
   right-invariant measure on an additive topological group `G` to a fundamental domain `𝓕` is a
   `G`-invariant measure on `G ⧸ Γ`."]
-theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeftInvariant]
+theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map' [μ.IsMulLeftInvariant]
     [μ.IsMulRightInvariant] :
     SMulInvariantMeasure G (G ⧸ Γ) (Measure.map QuotientGroup.mk (μ.restrict 𝓕)) where
   measure_preimage_smul g A hA := by
@@ -125,6 +198,12 @@ theorem MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map [μ.IsMulLeft
     rfl
 #align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.IsFundamentalDomain.smulInvariantMeasure_map
 #align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.IsAddFundamentalDomain.vaddInvariantMeasure_map
+
+
+end smulInvariantMeasure
+
+#exit
+
 
 /-- Assuming `Γ` is a normal subgroup of a topological group `G`, the pushforward to the quotient
   group `G ⧸ Γ` of the restriction of a both left- and right-invariant measure on `G` to a
