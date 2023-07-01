@@ -35,7 +35,8 @@ open scoped PGame
 namespace PGame
 
 /-- A short game is a game with a finite set of moves at every turn. -/
--- Porting note: simpNF warns that `Short.mk.injEq` can de derived from `eq_iff_true_of_subsingleton`
+-- Porting note: simpNF warns that `Short.mk.injEq` can be derived from
+-- `eq_iff_true_of_subsingleton`.
 @[nolint simpNF]
 inductive Short : PGame.{u} → Type (u + 1)
   | mk :
@@ -188,7 +189,8 @@ class inductive ListShort : List PGame.{u} → Type (u + 1)
 
 attribute [instance] ListShort.nil
 
-instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd] (tl : List PGame.{u}) [short_tl : ListShort tl] :
+instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
+                        (tl : List PGame.{u}) [short_tl : ListShort tl] :
     ListShort (hd::tl) :=
   cons' short_hd short_tl
 #align pgame.list_short.cons PGame.ListShort.cons
