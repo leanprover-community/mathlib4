@@ -332,12 +332,16 @@ theorem MulEquiv.map_finprod (g : M ≃* N) (f : α → M) : g (∏ᶠ i, f i) =
 #align mul_equiv.map_finprod MulEquiv.map_finprod
 #align add_equiv.map_finsum AddEquiv.map_finsum
 
+/-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
+infinite. For a more usual version assuming `(support f).Finite` instead, see `finsum_smul'`. -/
 theorem finsum_smul {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (f : ι → R) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x := by
   rcases eq_or_ne x 0 with (rfl | hx); · simp
   exact ((smulAddHom R M).flip x).map_finsum_of_injective (smul_left_injective R hx) _
 #align finsum_smul finsum_smul
 
+/-- The `NoZeroSMulDivisors` makes sure that the result holds even when the support of `f` is
+infinite. For a more usual version assuming `(support f).Finite` instead, see `smul_finsum'`. -/
 theorem smul_finsum {R M : Type _} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
     (c : R) (f : ι → M) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i := by
   rcases eq_or_ne c 0 with (rfl | hc); · simp
@@ -689,6 +693,18 @@ theorem finprod_pow (hf : (mulSupport f).Finite) (n : ℕ) : (∏ᶠ i, f i) ^ n
   (powMonoidHom n).map_finprod hf
 #align finprod_pow finprod_pow
 #align finsum_nsmul finsum_nsmul
+
+/-- See also `finsum_smul` for a version that works even when the support of `f` is not finite,
+but with slightly stronger typeclass requirements. -/
+theorem finsum_smul' {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] {f : ι → R}
+    (hf : (support f).Finite) (x : M) : (∑ᶠ i, f i) • x = ∑ᶠ i, f i • x :=
+  ((smulAddHom R M).flip x).map_finsum hf
+
+/-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
+but with slightly stronger typeclass requirements. -/
+theorem smul_finsum' {R M : Type _} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
+    (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
+  (smulAddHom R M c).map_finsum hf
 
 /-- A more general version of `MonoidHom.map_finprod_mem` that requires `s ∩ mulSupport f` rather
 than `s` to be finite. -/
