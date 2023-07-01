@@ -784,8 +784,8 @@ theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
 #align category_theory.presieve.is_sheaf_bot CategoryTheory.Presieve.isSheaf_bot
 
 /--
-For a presheaf of the form `yoneda.obj W`, a compatible family of Elements on a Sieve
-is the same as a co-cone. One direction is true for Presieves.
+For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
+is the same as a co-cone. One direction is true for presieves.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
  -/
 
