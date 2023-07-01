@@ -433,7 +433,7 @@ theorem of_symm_image_eq (h : e.symm '' (e.target ∩ t) = e.source ∩ s) : e.I
   of_preimage_eq <| Eq.trans (iff_preimage_eq.2 rfl).symm_image_eq.symm h
 #align local_equiv.is_image.of_symm_image_eq LocalEquiv.IsImage.of_symm_image_eq
 
-protected theorem compl (h : e.IsImage s t) : e.IsImage (sᶜ) (tᶜ) := fun _ hx => not_congr (h hx)
+protected theorem compl (h : e.IsImage s t) : e.IsImage sᶜ tᶜ := fun _ hx => not_congr (h hx)
 #align local_equiv.is_image.compl LocalEquiv.IsImage.compl
 
 protected theorem inter {s' t'} (h : e.IsImage s t) (h' : e.IsImage s' t') :

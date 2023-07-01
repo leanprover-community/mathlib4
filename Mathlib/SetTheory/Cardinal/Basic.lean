@@ -679,10 +679,10 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α (range fᶜ : Set β) ≃ β :=
+        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
-        ⟨#↥(range fᶜ), mk_congr this.symm⟩
+        ⟨#↥(range f)ᶜ, mk_congr this.symm⟩
     le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by
@@ -2131,17 +2131,17 @@ theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     _ = sum fun i => #f i := mk_sigma _
 #align cardinal.mk_Union_eq_sum_mk Cardinal.mk_iUnion_eq_sum_mk
 
-theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : (#⋃ i, f i) ≤ (#ι) * ⨆ i, #f i :=
+theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : (#⋃ i, f i) ≤ (#ι) * ⨆ i, (#f i) :=
   mk_iUnion_le_sum_mk.trans (sum_le_iSup _)
 #align cardinal.mk_Union_le Cardinal.mk_iUnion_le
 
-theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : (#⋃₀ A) ≤ (#A) * ⨆ s : A, #s := by
+theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : (#⋃₀ A) ≤ (#A) * ⨆ s : A, (#s) := by
   rw [sUnion_eq_iUnion]
   apply mk_iUnion_le
 #align cardinal.mk_sUnion_le Cardinal.mk_sUnion_le
 
 theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
-    (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, #A x.1 := by
+    (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, (#A x.1) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le
 #align cardinal.mk_bUnion_le Cardinal.mk_biUnion_le

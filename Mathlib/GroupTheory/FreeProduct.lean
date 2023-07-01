@@ -884,9 +884,9 @@ variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
 
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 
-variable (hX : ∀ i, a i • Y iᶜ ⊆ X i)
+variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 
-variable (hY : ∀ i, a⁻¹ i • X iᶜ ⊆ Y i)
+variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
 --include hXnonempty hXdisj hYdisj hXYdisj hX hY Porting note: commented out
 
@@ -945,41 +945,41 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
     · have h1n : 1 ≤ n := hlt
       calc
-        a i ^ n • X' j ⊆ a i ^ n • Y iᶜ :=
+        a i ^ n • X' j ⊆ a i ^ n • (Y i)ᶜ :=
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          refine Int.le_induction (P := fun n => a i ^ n • Y iᶜ ⊆ X i) ?_ ?_ n h1n
+          refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
           . dsimp
             rw [zpow_one]
             exact hX i
           . dsimp
             intro n _hle hi
             calc
-              a i ^ (n + 1) • Y iᶜ = (a i ^ n * a i) • Y iᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • Y iᶜ := (MulAction.mul_smul _ _ _)
+              a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
+              _ = a i ^ n • a i • (Y i)ᶜ := (MulAction.mul_smul _ _ _)
               _ ⊆ a i ^ n • X i := (smul_set_mono <| hX i)
-              _ ⊆ a i ^ n • Y iᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
+              _ ⊆ a i ^ n • (Y i)ᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
               _ ⊆ X i := hi
         _ ⊆ X' i := Set.subset_union_left _ _
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
       calc
-        a i ^ n • X' j ⊆ a i ^ n • X iᶜ :=
+        a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine' Int.le_induction_down (P := fun n => a i ^ n • X iᶜ ⊆ Y i) _ _ _ h1n
+          refine' Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) _ _ _ h1n
           · dsimp
             rw [zpow_neg, zpow_one]
             exact hY i
           · dsimp
             intro n _ hi
             calc
-              a i ^ (n - 1) • X iᶜ = (a i ^ n * (a i)⁻¹) • X iᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • X iᶜ := (MulAction.mul_smul _ _ _)
+              a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := (MulAction.mul_smul _ _ _)
               _ ⊆ a i ^ n • Y i := (smul_set_mono <| hY i)
-              _ ⊆ a i ^ n • X iᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
+              _ ⊆ a i ^ n • (X i)ᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
   show _ ∨ ∃ i, 3 ≤ (#H i)

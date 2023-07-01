@@ -250,11 +250,11 @@ theorem summable_abs_iff [LinearOrderedAddCommGroup α] [UniformSpace α] [Unifo
     [CompleteSpace α] {f : ι → α} : (Summable fun x => |f x|) ↔ Summable f :=
   let s := { x | 0 ≤ f x }
   have h1 : ∀ x : s, |f x| = f x := fun x => abs_of_nonneg x.2
-  have h2 : ∀ x : ↑(sᶜ), |f x| = -f x := fun x => abs_of_neg (not_le.1 x.2)
+  have h2 : ∀ x : ↑sᶜ, |f x| = -f x := fun x => abs_of_neg (not_le.1 x.2)
   calc (Summable fun x => |f x|) ↔
-      (Summable fun x : s => |f x|) ∧ Summable fun x : ↑(sᶜ) => |f x| :=
+      (Summable fun x : s => |f x|) ∧ Summable fun x : ↑sᶜ => |f x| :=
         summable_subtype_and_compl.symm
-  _ ↔ (Summable fun x : s => f x) ∧ Summable fun x : ↑(sᶜ) => -f x := by simp only [h1, h2]
+  _ ↔ (Summable fun x : s => f x) ∧ Summable fun x : ↑sᶜ => -f x := by simp only [h1, h2]
   _ ↔ Summable f := by simp only [summable_neg_iff, summable_subtype_and_compl]
 #align summable_abs_iff summable_abs_iff
 

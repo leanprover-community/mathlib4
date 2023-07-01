@@ -390,7 +390,7 @@ theorem AECover.lintegral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ :
 
 theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
     [l.IsCountablyGenerated] {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → ℝ≥0∞}
-    (hfm : AEMeasurable f μ) : (⨆ i : ι, ∫⁻ x in φ i, f x ∂μ) = ∫⁻ x, f x ∂μ := by
+    (hfm : AEMeasurable f μ) : ⨆ i : ι, ∫⁻ x in φ i, f x ∂μ = ∫⁻ x, f x ∂μ := by
   have := hφ.lintegral_tendsto_of_countably_generated hfm
   refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => _
