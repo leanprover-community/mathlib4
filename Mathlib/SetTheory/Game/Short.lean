@@ -13,10 +13,6 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Game.Birthday
 
--- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
--- trigger this error.
-set_option synthInstance.checkSynthOrder false
-
 /-!
 # Short games
 
@@ -28,6 +24,9 @@ short games, although unfortunately in practice `dec_trivial` doesn't seem to be
 prove anything using these instances.
 -/
 
+-- Porting note: The local instances `moveLeftShort'` and `fintypeLeft` (and resp. `Right`)
+-- trigger this error.
+set_option synthInstance.checkSynthOrder false
 
 universe u
 
@@ -184,7 +183,8 @@ class inductive ListShort : List PGame.{u} → Type (u + 1)
   | cons' (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) : ListShort tl → ListShort (hd::tl)
 #align pgame.list_short PGame.ListShort
 
-instance ListShort.cons (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) [h : ListShort tl] : ListShort (hd::tl) :=
+instance ListShort.cons (hd : PGame.{u}) [Short hd] (tl : List PGame.{u}) [h : ListShort tl] :
+    ListShort (hd::tl) :=
   cons' hd tl h
 #align pgame.list_short.cons PGame.ListShort.cons
 
