@@ -137,21 +137,22 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
     use V.1 ⊓ X.basicOpen f
     have : V.1.1 ⟶ U := by
       apply homOfLE; change _ ⊆ (U : Set X.carrier); rw [e]
-      convert @Set.subset_iUnion₂ _ _ _ (fun (U : X.affineOpens) (h : U ∈ s) => ↑U) V V.prop using
-        1
+      convert @Set.subset_iUnion₂ _ _ _
+        (fun (U : X.affineOpens) (_ : U ∈ s) => ↑U) V V.prop using 1
     erw [← X.toLocallyRingedSpace.toRingedSpace.basicOpen_res this.op]
     exact IsAffineOpen.basicOpenIsAffine V.1.prop _
   haveI : Finite s := hs.to_subtype
   refine' ⟨Set.range g, Set.finite_range g, _⟩
   refine' (Set.inter_eq_right_iff_subset.mpr
-            (SetLike.coe_subset_coe.2 <| RingedSpace.basicOpen_le _ _)).symm.trans
-      _
+            (SetLike.coe_subset_coe.2 <| RingedSpace.basicOpen_le _ _)).symm.trans _
   rw [e, Set.iUnion₂_inter]
   apply le_antisymm <;> apply Set.iUnion₂_subset
   · intro i hi
-    sorry
-    --refine' Set.Subset.trans _ (Set.subset_iUnion₂ _ (Set.mem_range_self ⟨i, hi⟩))
-    --exact Set.Subset.rfl
+    -- porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
+    exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
+      (@Set.subset_iUnion₂ _ _ _
+        (fun (i : Scheme.affineOpens X) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
+        (Set.mem_range_self ⟨i, hi⟩))
   · rintro ⟨i, hi⟩ ⟨⟨j, hj⟩, hj'⟩
     rw [← hj']
     refine' Set.Subset.trans _ (Set.subset_iUnion₂ j hj)
@@ -171,7 +172,6 @@ theorem QuasiCompact.affineProperty_isLocal : (QuasiCompact.affineProperty : _).
     apply isCompact_basicOpen
     exact H
   · rintro X Y H f S hS hS'
-    skip
     rw [← IsAffineOpen.basicOpen_union_eq_self_iff] at hS
     delta QuasiCompact.affineProperty
     rw [← isCompact_univ_iff]
