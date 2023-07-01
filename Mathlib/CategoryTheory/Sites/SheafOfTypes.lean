@@ -834,8 +834,8 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
   aesop_cat
 
 /--
-The base of a Sieve `S` is a colimit of `S` iff all yoneda-presheaves satisfy
-the sheaf condition for S
+The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
+the sheaf condition for `S`.
 -/
 theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
     (∀ W : C, Presieve.IsSheafFor (yoneda.obj W) (S : Presieve X)) ↔
