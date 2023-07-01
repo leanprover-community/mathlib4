@@ -175,7 +175,7 @@ theorem cylinder_eq_cylinder_of_le_firstDiff (x y : ∀ n, E n) {n : ℕ} (hn : 
 #align pi_nat.cylinder_eq_cylinder_of_le_first_diff PiNat.cylinder_eq_cylinder_of_le_firstDiff
 
 theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
-    (⋃ k, cylinder (update x n k) (n + 1)) = cylinder x n := by
+    ⋃ k, cylinder (update x n k) (n + 1) = cylinder x n := by
   ext y
   simp only [mem_cylinder_iff, mem_iUnion]
   constructor
@@ -793,7 +793,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [Met
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
-      (⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n)) =
+      ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n) =
         ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (y n)) ((1 / 2) ^ n) := by
       refine iInter_congr fun n ↦ iInter_congr fun hn ↦ ?_
       have : x n = y n := apply_eq_of_dist_lt (mem_ball'.1 hxy) hn

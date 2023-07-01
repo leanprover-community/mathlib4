@@ -511,7 +511,7 @@ theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
-    (⨆ n, m n) = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
+    ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
   ext s
   rw [measurableSet_iSup]
   rfl

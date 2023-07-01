@@ -229,7 +229,7 @@ theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
-    (⨅ (n : ℝ) (_ : 0 < n), f n) = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
+    ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
   le_antisymm (iInf_mono' fun r => ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
 #align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.iInf_real_pos_eq_iInf_nnreal_pos
 

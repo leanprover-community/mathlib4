@@ -134,6 +134,11 @@ theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rfl
 #align algebraic_geometry.Scheme.comp_val_base AlgebraicGeometry.Scheme.comp_val_base
 
+theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
+  simp
+#align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
+
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=

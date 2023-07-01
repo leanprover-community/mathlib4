@@ -16,7 +16,7 @@ import Mathlib.AlgebraicGeometry.AffineScheme
 
 We construct various limits and colimits in the category of schemes.
 
-* The existence of fibred products was shown in `algebraic_geometry/pullbacks.lean`.
+* The existence of fibred products was shown in `Mathlib/AlgebraicGeometry/Pullbacks.lean`.
 * `Spec ℤ` is the terminal object.
 * The preceding two results imply that `Scheme` has all finite limits.
 * The empty scheme is the (strict) initial object.
@@ -87,11 +87,11 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 instance : IsEmpty Scheme.empty.carrier :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_pUnit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
+instance spec_punit_isEmpty : IsEmpty (Scheme.Spec.obj (op <| CommRingCat.of PUnit)).carrier :=
   ⟨PrimeSpectrum.pUnit⟩
-#align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_pUnit_isEmpty
+#align algebraic_geometry.Spec_punit_is_empty AlgebraicGeometry.spec_punit_isEmpty
 
-instance (priority := 100) isOpenImmersionCat_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
+instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X.carrier] : IsOpenImmersion f := by
   apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_stalk_iso
   · apply openEmbedding_of_continuous_injective_open
@@ -102,7 +102,7 @@ instance (priority := 100) isOpenImmersionCat_of_isEmpty {X Y : Scheme} (f : X �
     · intro U _; convert isOpen_empty (α := Y); ext; rw [Set.mem_empty_iff_false, iff_false_iff]
       exact fun x => isEmptyElim (show X.carrier from x.choose)
   · rintro (i : X.carrier); exact isEmptyElim i
-#align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersionCat_of_isEmpty
+#align algebraic_geometry.is_open_immersion_of_is_empty AlgebraicGeometry.isOpenImmersion_of_isEmpty
 
 instance (priority := 100) isIso_of_isEmpty {X Y : Scheme} (f : X ⟶ Y) [IsEmpty Y.carrier] :
     IsIso f := by

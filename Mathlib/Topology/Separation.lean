@@ -664,7 +664,7 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space α] {x y : α} {s t : Se
 #align insert_mem_nhds_within_of_subset_insert insert_mem_nhdsWithin_of_subset_insert
 
 theorem biInter_basis_nhds [T1Space α] {ι : Sort _} {p : ι → Prop} {s : ι → Set α} {x : α}
-    (h : (𝓝 x).HasBasis p s) : (⋂ (i) (_ : p i), s i) = {x} := by
+    (h : (𝓝 x).HasBasis p s) : ⋂ (i) (_ : p i), s i = {x} := by
   simp only [eq_singleton_iff_unique_mem, mem_iInter]
   refine' ⟨fun i hi => mem_of_mem_nhds <| h.mem_of_mem hi, fun y hy => _⟩
   contrapose! hy
@@ -1912,7 +1912,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
     have H2 := isClopen_inter_of_disjoint_cover_clopen H.1 H.2.2 hv hu huv.symm
     by_cases hxu : x ∈ u <;> [left; right]
     -- The x ∈ u case.
-    · suffices (⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z) ⊆ u
+    · suffices ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z ⊆ u
         from Disjoint.left_le_of_le_sup_right hab (huv.mono this hbv)
       · apply Subset.trans _ (inter_subset_right Z u)
         exact iInter_subset (fun Z : { Z : Set α // IsClopen Z ∧ x ∈ Z } => Z.1)
@@ -1920,7 +1920,7 @@ theorem connectedComponent_eq_iInter_clopen [T2Space α] [CompactSpace α] (x : 
     -- If x ∉ u, we get x ∈ v since x ∈ u ∪ v. The rest is then like the x ∈ u case.
     · have h1 : x ∈ v :=
         (hab.trans (union_subset_union hau hbv) (mem_iInter.2 fun i => i.2.2)).resolve_left hxu
-      suffices (⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z) ⊆ v
+      suffices ⋂ Z : { Z : Set α // IsClopen Z ∧ x ∈ Z }, ↑Z ⊆ v
         from (huv.symm.mono this hau).left_le_of_le_sup_left hab
       · refine Subset.trans ?_ (inter_subset_right Z v)
         exact iInter_subset (fun Z : { Z : Set α // IsClopen Z ∧ x ∈ Z } => Z.1)
