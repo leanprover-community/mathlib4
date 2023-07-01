@@ -1031,7 +1031,7 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
-theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
+theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} [IsNegInvariant μ]
     (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0)) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
     Tendsto (fun i => ((fun x => (φ i).normed μ x) ⋆[lsmul ℝ ℝ, μ] g : G → E') x₀)
     l (𝓝 (g x₀)) := by
@@ -1040,10 +1040,16 @@ theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι}
   filter_upwards [T.ae_tendsto_average_norm_sub hg] with x₀ h₀
   have Z := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
   simp only [Function.comp] at Z
-  change Tendsto (fun i ↦ ∫ (y : G), (φ i).normed μ y • g (x₀ - y) ∂μ) l (𝓝 (g x₀))
+  simp only [convolution_eq_swap, lsmul_apply]
+  apply tendsto_integral_smul_of_tendsto_average_norm_sub Z
+  · sorry
+  · apply tendsto_const_nhds.congr
+    intro i
+    rw [← integral_neg_eq_self]
+    simp only [sub_neg_eq_add, integral_add_left_eq_self]
+    simp
 
 
-  -- apply tendsto_integral_smul_of_tendsto_average_norm_sub Z
 
 
 #exit
