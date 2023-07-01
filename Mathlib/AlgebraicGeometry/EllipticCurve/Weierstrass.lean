@@ -431,8 +431,7 @@ lemma eval_polynomial (x y : R) :
 
 @[simp]
 lemma eval_polynomial_zero : (W.polynomial.eval 0).eval 0 = -W.a₆ := by
-  simp only [← C_0, eval_polynomial, zero_add, zero_sub, MulZeroClass.mul_zero,
-    zero_pow <| Nat.zero_lt_succ _]
+  simp only [← C_0, eval_polynomial, zero_add, zero_sub, mul_zero, zero_pow <| Nat.zero_lt_succ _]
 #align weierstrass_curve.eval_polynomial_zero WeierstrassCurve.eval_polynomial_zero
 
 -- porting note: added `protected` for consistency with `WeierstrassCurve.polynomial`
@@ -468,9 +467,9 @@ lemma equation_iff_variableChange (x y : R) :
 lemma equation_iff_baseChange [Nontrivial A] [NoZeroSMulDivisors R A] (x y : R) :
     W.equation x y ↔ (W.baseChange A).equation (algebraMap R A x) (algebraMap R A y) := by
   simp only [equation_iff]
-  refine' ⟨fun h => _, fun h => _⟩
-  · convert congr_arg (algebraMap R A) h <;> map_simp <;> rfl
-  · apply NoZeroSMulDivisors.algebraMap_injective R A; map_simp; exact h
+  exact
+    ⟨fun h => by convert congr_arg (algebraMap R A) h <;> map_simp <;> rfl,
+      fun h => by apply NoZeroSMulDivisors.algebraMap_injective R A; map_simp; exact h⟩
 #align weierstrass_curve.equation_iff_base_change WeierstrassCurve.equation_iff_baseChange
 
 lemma equation_iff_baseChange_of_baseChange [Nontrivial B] [NoZeroSMulDivisors A B] (x y : A) :
@@ -500,8 +499,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma eval_polynomialX_zero : (W.polynomialX.eval 0).eval 0 = -W.a₄ := by
-  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, MulZeroClass.mul_zero,
-    zero_pow zero_lt_two]
+  simp only [← C_0, eval_polynomialX, zero_add, zero_sub, mul_zero, zero_pow zero_lt_two]
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_X_zero WeierstrassCurve.eval_polynomialX_zero
 
@@ -525,7 +523,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 lemma eval_polynomialY_zero : (W.polynomialY.eval 0).eval 0 = W.a₃ := by
-  simp only [← C_0, eval_polynomialY, zero_add, MulZeroClass.mul_zero]
+  simp only [← C_0, eval_polynomialY, zero_add, mul_zero]
 set_option linter.uppercaseLean3 false in
 #align weierstrass_curve.eval_polynomial_Y_zero WeierstrassCurve.eval_polynomialY_zero
 
@@ -568,9 +566,9 @@ lemma nonsingular_iff_variableChange (x y : R) :
 lemma nonsingular_iff_baseChange [Nontrivial A] [NoZeroSMulDivisors R A] (x y : R) :
     W.nonsingular x y ↔ (W.baseChange A).nonsingular (algebraMap R A x) (algebraMap R A y) := by
   rw [nonsingular_iff, nonsingular_iff, and_congr <| W.equation_iff_baseChange A x y]
-  refine'
-    ⟨Or.imp (not_imp_not.mpr fun h => _) (not_imp_not.mpr fun h => _),
-      Or.imp (not_imp_not.mpr fun h => _) (not_imp_not.mpr fun h => _)⟩
+  refine
+    ⟨Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_),
+      Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_)⟩
   any_goals apply NoZeroSMulDivisors.algebraMap_injective R A; map_simp; exact h
   any_goals convert congr_arg (algebraMap R A) h <;> map_simp <;> rfl
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.nonsingular_iff_baseChange
@@ -622,8 +620,8 @@ namespace CoordinateRing
 
 -- porting note: added the abbreviation `mk` for `AdjoinRoot.mk W.polynomial`
 /-- An element of the coordinate ring `R[W]` of `W` over `R`. -/
-noncomputable abbrev mk (x : R[X][X]) : W.CoordinateRing :=
-  AdjoinRoot.mk W.polynomial x
+noncomputable abbrev mk : R[X][Y] →+* W.CoordinateRing :=
+  AdjoinRoot.mk W.polynomial
 
 open Ideal
 
