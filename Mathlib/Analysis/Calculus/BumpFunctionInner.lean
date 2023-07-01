@@ -15,6 +15,7 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Infinitely smooth bump function
@@ -526,6 +527,37 @@ theorem integral_pos : 0 < ∫ x, f x ∂μ := by
   rw [f.support_eq]
   exact measure_ball_pos μ c f.rOut_pos
 #align cont_diff_bump.integral_pos ContDiffBump.integral_pos
+
+theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
+  (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
+  _ = ∫ x in closedBall c f.rIn, f x ∂μ := set_integral_congr (measurableSet_closedBall)
+        (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
+  _ ≤ ∫ x, f x ∂μ := set_integral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
+
+theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ (μ (closedBall c f.rOut)).toReal := by calc
+  ∫ x, f x ∂μ = ∫ x in closedBall c f.rOut, f x ∂μ := by
+    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+    apply f.zero_of_le_dist (le_of_lt _)
+    simpa using hx
+  _ ≤ ∫ x in closedBall c f.rOut, 1 ∂μ := by
+    apply set_integral_mono f.integrable.integrableOn _ (fun x ↦ f.le_one)
+    simp [measure_closedBall_lt_top]
+  _ = (μ (closedBall c f.rOut)).toReal := by simp
+
+open FiniteDimensional Measure
+
+theorem measure_closedBall_div_le_integral [IsAddHaarMeasure μ] (K : ℝ) (h : f.rOut ≤ K * f.rIn) :
+    (μ (closedBall c f.rOut)).toReal / K ^ finrank ℝ E ≤ ∫ x, f x ∂μ := by
+  have K_pos : 0 < K := by
+    simpa [f.rIn_pos, not_lt.2 f.rIn_pos.le] using mul_pos_iff.1 (f.rOut_pos.trans_le h)
+  apply le_trans _ f.measure_closedBall_le_integral
+  rw [div_le_iff (pow_pos K_pos _), addHaar_closedBall' _ _ f.rIn_pos.le,
+    addHaar_closedBall' _ _ f.rOut_pos.le, ENNReal.toReal_mul, ENNReal.toReal_mul,
+    ENNReal.toReal_ofReal (pow_nonneg f.rOut_pos.le _),
+    ENNReal.toReal_ofReal (pow_nonneg f.rIn_pos.le _), mul_assoc, mul_comm _ (K ^ _), ← mul_assoc,
+    ← mul_pow, mul_comm _ K]
+  gcongr
+  exact f.rOut_pos.le
 
 theorem integral_normed : ∫ x, f.normed μ x ∂μ = 1 := by
   simp_rw [ContDiffBump.normed, div_eq_mul_inv, mul_comm (f _), ← smul_eq_mul, integral_smul]

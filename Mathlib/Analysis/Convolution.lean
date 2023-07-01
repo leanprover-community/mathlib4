@@ -1066,8 +1066,8 @@ theorem glouglou {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} {K : �
     have : ∫ x in closedBall (0 : G) (φ i).rIn, 1 ∂μ = ∫ x in closedBall (0 : G) (φ i).rIn, φ i x ∂μ :=
       set_integral_congr (measurableSet_closedBall)
         (fun x hx ↦ (one_of_mem_closedBall (φ i) hx).symm)
-    have : ∫ x in closedBall (0 : G) (φ i).rIn, φ i x ∂μ ≤ ∫ x in univ, φ i x ∂μ := by
-      apply set_integral_mono_set (Integrable.integrableOn (φ i).integrable)
+    have : ∫ x in closedBall (0 : G) (φ i).rIn, φ i x ∂μ ≤ ∫ x, φ i x ∂μ := by
+      apply set_integral_let_integral (Integrable.integrableOn (φ i).integrable)
       apply eventually_of_forall (fun x ↦ (φ i).nonneg)
 
 
