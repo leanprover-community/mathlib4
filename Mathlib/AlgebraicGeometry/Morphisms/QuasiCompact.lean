@@ -297,8 +297,10 @@ theorem compact_open_induction_on {P : Opens X.carrier → Prop} (S : Opens X.ca
     exact iSup_insert
 #align algebraic_geometry.compact_open_induction_on AlgebraicGeometry.compact_open_induction_on
 
+unif_hint test (X : Scheme) {U : Opens X} where ⊢
+  X.presheaf.obj (op U) ≟ (forget CommRingCat).obj (X.presheaf.obj (op U)) in
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
-    {U : Opens X.carrier} (hU : IsAffineOpen U) (x f : X.presheaf.obj (op U))
+    {U : Opens X} (hU : IsAffineOpen U) (x f : X.presheaf.obj (op U))
     (_ : Scheme.basicOpen X f ≤ U) -- this assumption should be found automatically
     -- by `restrict_tac`, it is added temporarily so as to make `x |_ X.basicOpen f` work just below
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
@@ -325,7 +327,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
   have H' := fun i : s =>
     exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen X i.1.2
-      (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f) sorry ?_
+      (X.presheaf.map (homOfLE (h₁ i)).op x) (X.presheaf.map (homOfLE (h₁ i)).op f)
+      (X.basicOpen_le _) ?_
   swap
   · delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at H ⊢
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
