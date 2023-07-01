@@ -62,13 +62,13 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
 
 -- Porting note: increased priority so this fires before `image_subset_iff`
-@[simp 1001]
+@[simp high]
 protected theorem subset_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.subset_image
 
 -- Porting note: increased priority so this fires before `image_subset_iff`
-@[simp 1001]
+@[simp high]
 protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
   calc
