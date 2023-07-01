@@ -262,7 +262,7 @@ theorem truncateFun_add (x y : 𝕎 R) :
 @[simp]
 theorem truncateFun_mul (x y : 𝕎 R) :
     truncateFun n (x * y) = truncateFun n x * truncateFun n y := by
-witt_truncateFun_tac
+  witt_truncateFun_tac
 #align witt_vector.truncate_fun_mul WittVector.truncateFun_mul
 
 theorem truncateFun_neg (x : 𝕎 R) : truncateFun n (-x) = -truncateFun n x := by

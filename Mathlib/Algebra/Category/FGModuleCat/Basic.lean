@@ -124,12 +124,12 @@ instance : Full (forget₂ (FGModuleCat R) (ModuleCat.{u} R)) where
 variable {R}
 
 /-- Converts and isomorphism in the category `FGModuleCat R` to
-a `linear_equiv` between the underlying modules. -/
+a `LinearEquiv` between the underlying modules. -/
 def isoToLinearEquiv {V W : FGModuleCat R} (i : V ≅ W) : V ≃ₗ[R] W :=
   ((forget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R)).mapIso i).toLinearEquiv
 #align fgModule.iso_to_linear_equiv FGModuleCat.isoToLinearEquiv
 
-/-- Converts a `linear_equiv` to an isomorphism in the category `FGModuleCat R`. -/
+/-- Converts a `LinearEquiv` to an isomorphism in the category `FGModuleCat R`. -/
 @[simps]
 def _root_.LinearEquiv.toFGModuleCatIso
     {V W : Type u} [AddCommGroup V] [Module R V] [Module.Finite R V]

@@ -80,7 +80,7 @@ structure EvenHom : Type max uA uM where
 
 variable {A Q}
 
-/-- Compose an `even_hom` with an `AlgHom` on the output. -/
+/-- Compose an `EvenHom` with an `AlgHom` on the output. -/
 @[simps]
 def EvenHom.compr₂ (g : EvenHom Q A) (f : A →ₐ[R] B) : EvenHom Q B where
   bilin := g.bilin.compr₂ f.toLinearMap
@@ -143,7 +143,7 @@ private def S : Submodule R (M →ₗ[R] A) :=
   Submodule.span R
     {f' | ∃ x m₂, f' = LinearMap.lcomp R _ (f.bilin.flip m₂) (LinearMap.mulRight R x)}
 
-/-- An auxiliary bilinear map that is later passed into `clifford_algebra.fold`. Our desired result
+/-- An auxiliary bilinear map that is later passed into `CliffordAlgebra.foldr`. Our desired result
 is stored in the `A` part of the accumulator, while auxiliary recursion state is stored in the `S f`
 part. -/
 private def fFold : M →ₗ[R] A × S f →ₗ[R] A × S f :=
