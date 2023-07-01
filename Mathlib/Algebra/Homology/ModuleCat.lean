@@ -95,29 +95,31 @@ theorem homology_ext' {M : ModuleCat R} (i : ι) {h k : C.homology i ⟶ M}
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology_ext'
 
--- porting note: `erw` had to be used instead of `simp`
--- see https://github.com/leanprover-community/mathlib4/issues/5026
-/-- We give an alternative proof of `homology_map_eq_of_homotopy`,
-specialized to the setting of `V = Module R`,
-to demonstrate the use of extensionality lemmas for homology in `Module R`. -/
-example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
-    (homologyFunctor (ModuleCat.{u} R) c i).map f =
-      (homologyFunctor (ModuleCat.{u} R) c i).map g := by
-  -- To check that two morphisms out of a homology group agree, it suffices to check on cycles:
-  apply homology_ext
-  intro x
-  simp only [homologyFunctor_map]
-  erw [homology.π_map_apply, homology.π_map_apply]
-  -- To check that two elements are equal mod boundaries, it suffices to exhibit a boundary:
-  refine' cokernel_π_imageSubobject_ext _ _ ((toPrev i h.hom) x.1) _
-  -- Moreover, to check that two cycles are equal, it suffices to check their underlying elements:
-  ext
-  erw [map_add, CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
-    CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
-    ModuleCat.toKernelSubobject_arrow, imageToKernel_arrow_apply, imageSubobject_arrow_comp_apply]
-  rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i, LinearMap.add_apply,
-    LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext, comp_apply, comp_apply,
-    x.2, map_zero, zero_add]
-  abel
+-- timeouts???
+---- porting note: `erw` had to be used instead of `simp`
+---- see https://github.com/leanprover-community/mathlib4/issues/5026
+--/-- We give an alternative proof of `homology_map_eq_of_homotopy`,
+--specialized to the setting of `V = Module R`,
+--to demonstrate the use of extensionality lemmas for homology in `Module R`. -/
+--example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
+--    (homologyFunctor (ModuleCat.{u} R) c i).map f =
+--      (homologyFunctor (ModuleCat.{u} R) c i).map g := by
+--  -- To check that two morphisms out of a homology group agree, it suffices to check on cycles:
+--  apply homology_ext
+--  intro x
+--  simp only [homologyFunctor_map]
+--  erw [homology.π_map_apply, homology.π_map_apply]
+--  -- To check that two elements are equal mod boundaries, it suffices to exhibit a boundary:
+--  refine' cokernel_π_imageSubobject_ext _ _ ((toPrev i h.hom) x.1) _
+--  -- Moreover, to check that two cycles are equal, it suffices to check their underlying elements:
+--  ext
+--  erw [map_add, CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
+--    CategoryTheory.Limits.kernelSubobjectMap_arrow_apply,
+--    ModuleCat.toKernelSubobject_arrow, imageToKernel_arrow_apply, imageSubobject_arrow_comp_apply]
+--  rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i, LinearMap.add_apply,
+--    LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext, comp_apply, comp_apply,
+--    x.2, map_zero]
+--  dsimp
+--  abel
 
 end ModuleCat

@@ -815,14 +815,14 @@ section IsFirstQuadrant
 
 variable [E.IsFirstQuadrant]
 
-lemma isZero_of_isFirstQuadrant (r : ℤ) [E.HasPage r]
+lemma isZero_of_isFirstQuadrant (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ)
     (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.page r pq) := IsFirstQuadrant.isZero _ _ hpq
 
 lemma hasEdgeMonoAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] (h : pq.1 + 1 ≤ r) :
     E.HasEdgeMonoAt pq r where
   zero := by
     rintro pq' rfl
-    refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ (Or.inl _)) _ _
+    refine' IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inl _)) _ _
     dsimp at h
     linarith
 
@@ -830,7 +830,7 @@ lemma hasEdgeEpiAt_of_isFirstQuadrant (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] 
     E.HasEdgeEpiAt pq r where
   zero := by
     rintro pq' rfl
-    refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ (Or.inr _)) _ _
+    refine' IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inr _)) _ _
     dsimp
     linarith
 
@@ -841,7 +841,7 @@ instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       exact ⟨this, ⟨fun pq' hpq' =>
-        IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ (Or.inr h)) _ _⟩⟩
+        IsZero.eq_of_src (isZero_of_isFirstQuadrant _ _ _ (Or.inr h)) _ _⟩⟩
     . refine' ⟨max r₀ (pq.2 + 2), _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
@@ -852,7 +852,7 @@ instance (pq : ℤ × ℤ) : E.HasInfinityPageAt pq where
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
       refine' ⟨this, ⟨fun pq' hpq' =>
-        IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ (Or.inl h)) _ _⟩⟩
+        IsZero.eq_of_tgt (isZero_of_isFirstQuadrant _ _ _ (Or.inl h)) _ _⟩⟩
     . refine' ⟨max r₀ (pq.1 + 1), _⟩
       intro r' hr'
       have : E.HasPage r' := E.hasPage_of_le r₀ _ ((le_max_left _ _ ).trans hr')
@@ -888,7 +888,7 @@ lemma rMin_le_of_isFirstQuadrant (pq : ℤ × ℤ) :
 
 lemma isZero_pageInfinity_of_isFirstQuadrant (pq : ℤ × ℤ)
     (hpq : pq.1 < 0 ∨ pq.2 < 0) : IsZero (E.pageInfinity pq) :=
-  IsZero.of_iso (E.isZero_of_isFirstQuadrant _ hpq)
+  IsZero.of_iso (E.isZero_of_isFirstQuadrant _ _ hpq)
     (E.isoPageInfinityOfLE pq (E.rMin pq) (by rfl)).symm
 
 end IsFirstQuadrant
