@@ -716,7 +716,7 @@ theorem tendsto_add_haar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         ⟨0, ((measure_mono (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
       refine' tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ _) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
-    have : (⋂ n : ℕ, t \ closedBall 0 n) = ∅ := by
+    have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
         iUnion_closedBall_nat, compl_univ, inter_empty]
     simp only [this, measure_empty] at A
@@ -781,11 +781,11 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
     apply B.congr' _
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    convert I (closedBall x r) (sᶜ) (measure_closedBall_pos μ _ rpos).ne'
+    convert I (closedBall x r) sᶜ (measure_closedBall_pos μ _ rpos).ne'
       measure_closedBall_lt_top.ne hs.compl
     rw [compl_compl]
   have L' : Tendsto (fun r : ℝ => μ (sᶜ ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 0) :=
-    tendsto_add_haar_inter_smul_zero_of_density_zero μ (sᶜ) x L t ht h''t
+    tendsto_add_haar_inter_smul_zero_of_density_zero μ sᶜ x L t ht h''t
   have L'' : Tendsto (fun r : ℝ => μ ({x} + r • t) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 1) := by
     apply tendsto_const_nhds.congr' _
     filter_upwards [self_mem_nhdsWithin]
