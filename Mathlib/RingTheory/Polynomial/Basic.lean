@@ -469,7 +469,7 @@ end ModByMonic
 
 /-- Let `P` be a polynomial over `R`. If its constant term is a unit and its other coefficients are
 nilpotent, then `P` is a unit. -/
-theorem IsUnit.isUnit_of_isNilpotent {P : Polynomial R} (hunit : IsUnit (P.coeff 0))
+theorem isUnit_of_coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit (P.coeff 0))
     (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
   induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
   by_cases hdeg : P.natDegree = 0
