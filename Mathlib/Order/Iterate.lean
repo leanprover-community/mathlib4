@@ -70,7 +70,7 @@ theorem seq_pos_lt_seq_of_le_of_lt (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h�
 theorem seq_lt_seq_of_lt_of_le (hf : Monotone f) (n : ℕ) (h₀ : x 0 < y 0)
     (hx : ∀ k < n, x (k + 1) < f (x k)) (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n < y n := by
   cases n
-  exacts[h₀, hf.seq_pos_lt_seq_of_lt_of_le (Nat.zero_lt_succ _) h₀.le hx hy]
+  exacts [h₀, hf.seq_pos_lt_seq_of_lt_of_le (Nat.zero_lt_succ _) h₀.le hx hy]
 #align monotone.seq_lt_seq_of_lt_of_le Monotone.seq_lt_seq_of_lt_of_le
 
 theorem seq_lt_seq_of_le_of_lt (hf : Monotone f) (n : ℕ) (h₀ : x 0 < y 0)
@@ -169,7 +169,7 @@ section Preorder
 variable [Preorder α] {f g : α → α}
 
 theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone g) {x}
-    (hx : f x ≤ g x) (n : ℕ) : (f^[n]) x ≤ (g^[n]) x := by
+    (hx : f x ≤ g x) (n : ℕ) : f^[n] x ≤ g^[n] x := by
   apply hf.seq_le_seq n
   · rfl
   · intros; rw [iterate_succ_apply']
@@ -177,7 +177,7 @@ theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone 
 #align function.commute.iterate_le_of_map_le Function.Commute.iterate_le_of_map_le
 
 theorem iterate_pos_lt_of_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x}
-    (hx : f x < g x) {n} (hn : 0 < n) : (f^[n]) x < (g^[n]) x := by
+    (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x := by
   apply hf.seq_pos_lt_seq_of_le_of_lt hn
   · rfl
   · intros; rw [iterate_succ_apply']
@@ -185,7 +185,7 @@ theorem iterate_pos_lt_of_map_lt (h : Commute f g) (hf : Monotone f) (hg : Stric
 #align function.commute.iterate_pos_lt_of_map_lt Function.Commute.iterate_pos_lt_of_map_lt
 
 theorem iterate_pos_lt_of_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x}
-    (hx : f x < g x) {n} (hn : 0 < n) : (f^[n]) x < (g^[n]) x :=
+    (hx : f x < g x) {n} (hn : 0 < n) : f^[n] x < g^[n] x :=
   @iterate_pos_lt_of_map_lt αᵒᵈ _ g f h.symm hg.dual hf.dual x hx n hn
 #align function.commute.iterate_pos_lt_of_map_lt' Function.Commute.iterate_pos_lt_of_map_lt'
 
@@ -194,7 +194,7 @@ end Preorder
 variable [LinearOrder α] {f g : α → α}
 
 theorem iterate_pos_lt_iff_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
-    (hn : 0 < n) : (f^[n]) x < (g^[n]) x ↔ f x < g x := by
+    (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x := by
   rcases lt_trichotomy (f x) (g x) with (H | H | H)
   · simp only [*, iterate_pos_lt_of_map_lt]
   · simp only [*, h.iterate_eq_of_map_eq, lt_irrefl]
@@ -202,22 +202,22 @@ theorem iterate_pos_lt_iff_map_lt (h : Commute f g) (hf : Monotone f) (hg : Stri
 #align function.commute.iterate_pos_lt_iff_map_lt Function.Commute.iterate_pos_lt_iff_map_lt
 
 theorem iterate_pos_lt_iff_map_lt' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x n}
-    (hn : 0 < n) : (f^[n]) x < (g^[n]) x ↔ f x < g x :=
+    (hn : 0 < n) : f^[n] x < g^[n] x ↔ f x < g x :=
   @iterate_pos_lt_iff_map_lt αᵒᵈ _ _ _ h.symm hg.dual hf.dual x n hn
 #align function.commute.iterate_pos_lt_iff_map_lt' Function.Commute.iterate_pos_lt_iff_map_lt'
 
 theorem iterate_pos_le_iff_map_le (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
-    (hn : 0 < n) : (f^[n]) x ≤ (g^[n]) x ↔ f x ≤ g x := by
+    (hn : 0 < n) : f^[n] x ≤ g^[n] x ↔ f x ≤ g x := by
   simpa only [not_lt] using not_congr (h.symm.iterate_pos_lt_iff_map_lt' hg hf hn)
 #align function.commute.iterate_pos_le_iff_map_le Function.Commute.iterate_pos_le_iff_map_le
 
 theorem iterate_pos_le_iff_map_le' (h : Commute f g) (hf : StrictMono f) (hg : Monotone g) {x n}
-    (hn : 0 < n) : (f^[n]) x ≤ (g^[n]) x ↔ f x ≤ g x := by
+    (hn : 0 < n) : f^[n] x ≤ g^[n] x ↔ f x ≤ g x := by
   simpa only [not_lt] using not_congr (h.symm.iterate_pos_lt_iff_map_lt hg hf hn)
 #align function.commute.iterate_pos_le_iff_map_le' Function.Commute.iterate_pos_le_iff_map_le'
 
 theorem iterate_pos_eq_iff_map_eq (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x n}
-    (hn : 0 < n) : (f^[n]) x = (g^[n]) x ↔ f x = g x := by
+    (hn : 0 < n) : f^[n] x = g^[n] x ↔ f x = g x := by
   simp only [le_antisymm_iff, h.iterate_pos_le_iff_map_le hf hg hn,
     h.symm.iterate_pos_le_iff_map_le' hg hf hn]
 #align function.commute.iterate_pos_eq_iff_map_eq Function.Commute.iterate_pos_eq_iff_map_eq
@@ -232,15 +232,15 @@ variable [Preorder α] {f : α → α} {x : α}
 
 /-- If `f` is a monotone map and `x ≤ f x` at some point `x`, then the iterates `f^[n] x` form
 a monotone sequence. -/
-theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone fun n => (f^[n]) x :=
+theorem monotone_iterate_of_le_map (hf : Monotone f) (hx : x ≤ f x) : Monotone fun n => f^[n] x :=
   monotone_nat_of_le_succ $ fun n => by
     rw [iterate_succ_apply]
     exact hf.iterate n hx
 #align monotone.monotone_iterate_of_le_map Monotone.monotone_iterate_of_le_map
 
 /-- If `f` is a monotone map and `f x ≤ x` at some point `x`, then the iterates `f^[n] x` form
-a antitone sequence. -/
-theorem antitone_iterate_of_map_le (hf : Monotone f) (hx : f x ≤ x) : Antitone fun n => (f^[n]) x :=
+an antitone sequence. -/
+theorem antitone_iterate_of_map_le (hf : Monotone f) (hx : f x ≤ x) : Antitone fun n => f^[n] x :=
   hf.dual.monotone_iterate_of_le_map hx
 #align monotone.antitone_iterate_of_map_le Monotone.antitone_iterate_of_map_le
 
@@ -253,7 +253,7 @@ variable [Preorder α] {f : α → α} {x : α}
 /-- If `f` is a strictly monotone map and `x < f x` at some point `x`, then the iterates `f^[n] x`
 form a strictly monotone sequence. -/
 theorem strictMono_iterate_of_lt_map (hf : StrictMono f) (hx : x < f x) :
-    StrictMono fun n => (f^[n]) x :=
+    StrictMono fun n => f^[n] x :=
   strictMono_nat_of_lt_succ $ fun n => by
     rw [iterate_succ_apply]
     exact hf.iterate n hx
@@ -262,7 +262,7 @@ theorem strictMono_iterate_of_lt_map (hf : StrictMono f) (hx : x < f x) :
 /-- If `f` is a strictly antitone map and `f x < x` at some point `x`, then the iterates `f^[n] x`
 form a strictly antitone sequence. -/
 theorem strictAnti_iterate_of_map_lt (hf : StrictMono f) (hx : f x < x) :
-    StrictAnti fun n => (f^[n]) x :=
+    StrictAnti fun n => f^[n] x :=
   hf.dual.strictMono_iterate_of_lt_map hx
 #align strict_mono.strict_anti_iterate_of_map_lt StrictMono.strictAnti_iterate_of_map_lt
 

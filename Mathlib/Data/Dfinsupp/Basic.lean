@@ -24,7 +24,7 @@ For a non-dependent version see `data/finsupp.lean`.
 
 This file introduces the notation `Π₀ a, β a` as notation for `Dfinsupp β`, mirroring the `α →₀ β`
 notation used for `Finsupp`. This works for nested binders too, with `Π₀ a b, γ a b` as notation
-for `Dfinsupp (λ a, Dfinsupp (γ a))`.
+for `Dfinsupp (fun a ↦ Dfinsupp (γ a))`.
 
 ## Implementation notes
 
@@ -60,7 +60,7 @@ variable (β)
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
 
 Note that `Dfinsupp.support` is the preferred API for accessing the support of the function,
-`Dfinsupp.support'` is a implementation detail that aids computability; see the implementation
+`Dfinsupp.support'` is an implementation detail that aids computability; see the implementation
 notes in this file for more information. -/
 structure Dfinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   /-- The underlying function of a dependent function with finite support (aka `Dfinsupp`). -/
@@ -282,7 +282,7 @@ def evalAddMonoidHom [∀ i, AddZeroClass (β i)] (i : ι) : (Π₀ i, β i) →
   (Pi.evalAddMonoidHom β i).comp coeFnAddMonoidHom
 #align dfinsupp.eval_add_monoid_hom Dfinsupp.evalAddMonoidHom
 
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
+instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   FunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 @[simp]
@@ -340,7 +340,7 @@ instance [∀ i, AddGroup (β i)] : AddGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
+instance addCommGroup [∀ i, AddCommGroup (β i)] : AddCommGroup (Π₀ i, β i) :=
   FunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
@@ -1481,7 +1481,7 @@ theorem sigmaCurry_apply [∀ i j, Zero (δ i j)] (f : Π₀ i : Σi, _, δ i.1 
 
 @[simp]
 theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] : sigmaCurry (0 : Π₀ i : Σi, _, δ i.1 i.2) = 0 := by
-  ext (i j)
+  ext i j
   rw [sigmaCurry_apply]
   rfl
 #align dfinsupp.sigma_curry_zero Dfinsupp.sigmaCurry_zero
@@ -1489,7 +1489,7 @@ theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] : sigmaCurry (0 : Π₀ i : Σi
 @[simp]
 theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ i : Σi, α i, δ i.1 i.2) :
     @sigmaCurry _ _ δ _ (f + g) = @sigmaCurry _ _ δ _ f + @sigmaCurry ι α δ _ g := by
-  ext (i j)
+  ext i j
   rw [@add_apply _ (fun i => Π₀ j, δ i j) _ (sigmaCurry _), add_apply, sigmaCurry_apply,
     sigmaCurry_apply, sigmaCurry_apply, add_apply]
 #align dfinsupp.sigma_curry_add Dfinsupp.sigmaCurry_add
@@ -1498,7 +1498,7 @@ theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ i : Σi, α
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ i : Σi, α i, δ i.1 i.2) :
     @sigmaCurry _ _ δ _ (r • f) = r • @sigmaCurry _ _ δ _ f := by
-  ext (i j)
+  ext i j
   rw [@smul_apply _ _ (fun i => Π₀ j, δ i j) _ _ _ _ (sigmaCurry _), smul_apply, sigmaCurry_apply,
     sigmaCurry_apply, smul_apply]
 #align dfinsupp.sigma_curry_smul Dfinsupp.sigmaCurry_smul
@@ -1508,7 +1508,7 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
     (ij : Σi, α i) (x : δ ij.1 ij.2) :
     @sigmaCurry _ _ _ _ (single ij x) = single ij.1 (single ij.2 x : Π₀ j, δ ij.1 j) := by
   obtain ⟨i, j⟩ := ij
-  ext (i' j')
+  ext i' j'
   dsimp only
   rw [sigmaCurry_apply]
   obtain rfl | hi := eq_or_ne i i'
@@ -1608,7 +1608,7 @@ noncomputable def sigmaCurryEquiv [∀ i j, Zero (δ i j)]
     ext ⟨i, j⟩
     rw [sigmaUncurry_apply, sigmaCurry_apply]
   right_inv f := by
-    ext (i j)
+    ext i j
     rw [sigmaCurry_apply, sigmaUncurry_apply]
 #align dfinsupp.sigma_curry_equiv Dfinsupp.sigmaCurryEquiv
 
@@ -1619,8 +1619,7 @@ variable {α : Option ι → Type v}
 /-- Adds a term to a dfinsupp, making a dfinsupp indexed by an `Option`.
 
 This is the dfinsupp version of `Option.rec`. -/
-def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i
-    where
+def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i where
   toFun := fun i ↦ match i with | none => a | some _ => f _
   support' :=
     f.support'.map fun s =>
@@ -1962,7 +1961,7 @@ bounded `iSup` can be produced from taking a finite number of non-zero elements 
 satisfy `p i`, coercing them to `γ`, and summing them. -/
 theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
-    (⨆ (i) (_ : p i), S i) = -- Porting note: Removing `h` results in a timeout
+    ⨆ (i) (_ : p i), S i = -- Porting note: Removing `h` results in a timeout
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
   apply le_antisymm
   · refine' iSup₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩

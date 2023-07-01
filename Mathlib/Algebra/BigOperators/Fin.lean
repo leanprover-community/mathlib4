@@ -38,9 +38,7 @@ namespace Finset
 @[to_additive]
 theorem prod_range [CommMonoid β] {n : ℕ} (f : ℕ → β) :
     (∏ i in Finset.range n, f i) = ∏ i : Fin n, f i :=
-  prod_bij' (fun k w => ⟨k, mem_range.mp w⟩) (fun _ _ => mem_univ _)
-    (fun _ _ => congr_arg _ (Fin.val_mk _).symm) (fun a _ => a) (fun a _ => mem_range.mpr a.prop)
-    (fun _ _ => Fin.val_mk _) fun _ _ => Fin.eta _ _
+  (Fin.prod_univ_eq_prod_range _ _).symm
 #align finset.prod_range Finset.prod_range
 #align finset.sum_range Finset.sum_range
 
@@ -250,7 +248,7 @@ theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
 theorem partialProd_left_inv {G : Type _} [Group G] (f : Fin (n + 1) → G) :
     (f 0 • partialProd fun i : Fin n => (f i)⁻¹ * f i.succ) = f :=
   funext fun x => Fin.inductionOn x (by simp) fun x hx => by
-    simp only [coe_eq_castSucc, Pi.smul_apply, smul_eq_mul] at hx⊢
+    simp only [coe_eq_castSucc, Pi.smul_apply, smul_eq_mul] at hx ⊢
     rw [partialProd_succ, ← mul_assoc, hx, mul_inv_cancel_left]
 #align fin.partial_prod_left_inv Fin.partialProd_left_inv
 #align fin.partial_sum_left_neg Fin.partialSum_left_neg
@@ -263,7 +261,7 @@ theorem partialProd_right_inv {G : Type _} [Group G] (f : Fin n → G) (i : Fin 
   | zero => simp [-Fin.succ_mk, partialProd_succ]
   | succ i hi =>
     specialize hi (lt_trans (Nat.lt_succ_self i) hn)
-    simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi⊢
+    simp only [Fin.coe_eq_castSucc, Fin.succ_mk, Fin.castSucc_mk] at hi ⊢
     rw [← Fin.succ_mk _ _ (lt_trans (Nat.lt_succ_self _) hn), ← Fin.succ_mk]
     rw [Nat.succ_eq_add_one] at hn
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]

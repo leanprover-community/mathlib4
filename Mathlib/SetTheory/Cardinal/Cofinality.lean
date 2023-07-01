@@ -128,7 +128,7 @@ def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ (#S) = c }.Nonempty :=
-  @Order.cof_nonempty α _ (IsRefl.swap (rᶜ))
+  @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
 #align strict_order.cof_nonempty StrictOrder.cof_nonempty
 
 /-! ### Cofinality of ordinals -/
@@ -218,17 +218,17 @@ theorem ord_cof_eq (r : α → α → Prop) [IsWellOrder α r] :
 /-! ### Cofinality of suprema and least strict upper bounds -/
 
 
-private theorem card_mem_cof {o} : ∃ (ι : _)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = o.card :=
+private theorem card_mem_cof {o} : ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = o.card :=
   ⟨_, _, lsub_typein o, mk_ordinal_out o⟩
 
 /-- The set in the `lsub` characterization of `cof` is nonempty. -/
 theorem cof_lsub_def_nonempty (o) :
-    { a : Cardinal | ∃ (ι : _)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = a }.Nonempty :=
+    { a : Cardinal | ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = a }.Nonempty :=
   ⟨_, card_mem_cof⟩
 #align ordinal.cof_lsub_def_nonempty Ordinal.cof_lsub_def_nonempty
 
 theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
-    sInf { a : Cardinal | ∃ (ι : Type u)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = a } := by
+    sInf { a : Cardinal | ∃ (ι : Type u) (f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = a } := by
   refine' le_antisymm (le_csInf (cof_lsub_def_nonempty o) _) (csInf_le' _)
   · rintro a ⟨ι, f, hf, rfl⟩
     rw [← type_lt o]
@@ -298,7 +298,7 @@ theorem ord_cof_le (o : Ordinal.{u}) : o.cof.ord ≤ o :=
 #align ordinal.ord_cof_le Ordinal.ord_cof_le
 
 theorem exists_lsub_cof (o : Ordinal) :
-    ∃ (ι : _)(f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = cof o := by
+    ∃ (ι : _) (f : ι → Ordinal), lsub.{u, u} f = o ∧ (#ι) = cof o := by
   rw [cof_eq_sInf_lsub]
   exact csInf_mem (cof_lsub_def_nonempty o)
 #align ordinal.exists_lsub_cof Ordinal.exists_lsub_cof
@@ -638,7 +638,7 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     by_cases h : ∀ j, r j i → f j < f i
     · refine' ⟨typein r' ⟨i, h⟩, typein_lt_type _ _, _⟩
       rw [bfamilyOfFamily'_typein]
-    · push_neg  at h
+    · push_neg at h
       cases' wo.wf.min_mem _ h with hji hij
       refine' ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le _ hij⟩, typein_lt_type _ _, _⟩
       · by_contra' H
@@ -827,7 +827,7 @@ theorem infinite_pigeonhole_card {β α : Type u} (f : β → α) (θ : Cardinal
 
 theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ : Cardinal)
     (hθ : θ ≤ (#s)) (h₁ : ℵ₀ ≤ θ) (h₂ : (#α) < θ.ord.cof) :
-    ∃ (a : α)(t : Set β)(h : t ⊆ s), θ ≤ (#t) ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
+    ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ (#t) ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
   cases' infinite_pigeonhole_card f θ hθ h₁ h₂ with a ha
   refine' ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, _, _, _⟩
   · rintro x ⟨hx, _⟩
@@ -983,7 +983,7 @@ theorem isRegular_succ {c : Cardinal.{u}} (h : ℵ₀ ≤ c) : IsRegular (succ c
         cases' Quotient.exists_rep (@succ Cardinal _ _ c) with α αe; simp at αe
         rcases ord_eq α with ⟨r, wo, re⟩; skip
         have := ord_isLimit (h.trans (le_succ _))
-        rw [← αe, re] at this⊢
+        rw [← αe, re] at this ⊢
         rcases cof_eq' r this with ⟨S, H, Se⟩
         rw [← Se]
         apply lt_imp_lt_of_le_imp_le fun h => mul_le_mul_right' h c
@@ -1029,7 +1029,7 @@ has an infinite fiber.
 -/
 theorem exists_infinite_fiber {β α : Type _} (f : β → α) (w : (#α) < (#β)) (w' : Infinite α) :
     ∃ a : α, Infinite (f ⁻¹' {a}) := by
-  simp_rw [Cardinal.infinite_iff] at w'⊢
+  simp_rw [Cardinal.infinite_iff] at w' ⊢
   cases' infinite_pigeonhole_card_lt f w w' with a ha
   exact ⟨a, w'.trans ha.le⟩
 #align cardinal.exists_infinite_fiber Cardinal.exists_infinite_fiber
@@ -1039,7 +1039,7 @@ then the cardinality of the collection of those finite sets
 must be at least the cardinality of `β`.
 -/
 theorem le_range_of_union_finset_eq_top {α β : Type _} [Infinite β] (f : α → Finset β)
-    (w : (⋃ a, (f a : Set β)) = ⊤) : (#β) ≤ (#range f) := by
+    (w : ⋃ a, (f a : Set β) = ⊤) : (#β) ≤ (#range f) := by
   have k : _root_.Infinite (range f) := by
     rw [infinite_coe_iff]
     apply mt (union_finset_finite_of_range_finite f)
@@ -1226,7 +1226,7 @@ theorem lt_power_cof {c : Cardinal.{u}} : ℵ₀ ≤ c → c < (c^cof c.ord) :=
   Quotient.inductionOn c fun α h => by
     rcases ord_eq α with ⟨r, wo, re⟩; skip
     have := ord_isLimit h
-    rw [mk'_def, re] at this⊢
+    rw [mk'_def, re] at this ⊢
     rcases cof_eq' r this with ⟨S, H, Se⟩
     have := sum_lt_prod (fun a : S => #{ x // r x a }) (fun _ => #α) fun i => ?_
     · simp only [Cardinal.prod_const, Cardinal.lift_id, ← Se, ← mk_sigma, power_def] at this ⊢

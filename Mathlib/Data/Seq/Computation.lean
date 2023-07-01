@@ -28,7 +28,7 @@ universe u v w
 /-
 coinductive Computation (α : Type u) : Type u
 | pure : α → Computation α
-| think : Computation α → Xomputation α
+| think : Computation α → Computation α
 -/
 /-- `Computation α` is the type of unbounded computations returning `α`.
   An element of `Computation α` is an infinite sequence of `Option α` such
@@ -332,7 +332,7 @@ instance : Membership α (Computation α) :=
 theorem le_stable (s : Computation α) {a m n} (h : m ≤ n) : s.1 m = some a → s.1 n = some a := by
   cases' s with f al
   induction' h with n _ IH
-  exacts[id, fun h2 => al (IH h2)]
+  exacts [id, fun h2 => al (IH h2)]
 #align computation.le_stable Computation.le_stable
 
 theorem mem_unique {s : Computation α} {a b : α} : a ∈ s → b ∈ s → a = b
@@ -629,13 +629,13 @@ theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
 set_option linter.uppercaseLean3 false in
 #align computation.eq_thinkN' Computation.eq_thinkN'
 
-/-- Recursor based on memberhip-/
+/-- Recursor based on membership-/
 def memRecOn {C : Computation α → Sort v} {a s} (M : a ∈ s) (h1 : C (pure a))
     (h2 : ∀ s, C s → C (think s)) : C s := by
   haveI T := terminates_of_mem M
   rw [eq_thinkN' s, get_eq_of_mem s M]
   generalize length s = n
-  induction' n with n IH; exacts[h1, h2 _ IH]
+  induction' n with n IH; exacts [h1, h2 _ IH]
 #align computation.mem_rec_on Computation.memRecOn
 
 /-- Recursor based on assertion of `Terminates`-/
@@ -914,7 +914,7 @@ theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (ma
 -- Parallel computation
 /-- `c₁ <|> c₂` calculates `c₁` and `c₂` simultaneously, returning
   the first one that gives a result. -/
-def orElse (c₁: Computation α) (c₂: Unit → Computation α): Computation α :=
+def orElse (c₁ : Computation α) (c₂ : Unit → Computation α) : Computation α :=
   @Computation.corec α (Computation α × Computation α)
     (fun ⟨c₁, c₂⟩ =>
       match destruct c₁ with
@@ -1253,11 +1253,15 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
 --porting note: was attribute [simp] LiftRelAux but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
 @[simp] lemma LiftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
-@[simp] lemma LiftRelAux_inl_inr : LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
+@[simp] lemma LiftRelAux_inl_inr {cb} :
+    LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
-@[simp] lemma LiftRelAux_inr_inl : LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
+@[simp] lemma LiftRelAux_inr_inl {ca} :
+    LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
   rfl
-@[simp] lemma LiftRelAux_inr_inr : LiftRelAux R C (Sum.inr ca) (Sum.inr cb) = C ca cb := rfl
+@[simp] lemma LiftRelAux_inr_inr {ca cb} :
+    LiftRelAux R C (Sum.inr ca) (Sum.inr cb) = C ca cb :=
+  rfl
 
 @[simp]
 theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Computation β → Prop) (a cb) :

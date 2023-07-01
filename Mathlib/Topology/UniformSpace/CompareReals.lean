@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Patrick MAssot. All rights reserved.
+Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 
@@ -41,7 +41,7 @@ TODO:
 ## Implementation notes
 
 The heavy work is done in `Topology/UniformSpace/AbstractCompletion` which provides an abstract
-caracterization of completions of uniform spaces, and isomorphisms between them. The only work left
+characterization of completions of uniform spaces, and isomorphisms between them. The only work left
 here is to prove the uniform space structure coming from the absolute value on ℚ (with values in ℚ,
 not referring to ℝ) coincides with the one coming from the metric space structure (which of course
 does use ℝ).
@@ -70,16 +70,16 @@ theorem Rat.uniformSpace_eq :
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
 def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=
-@AbstractCompletion.mk
-  (space := ℝ)
-  (coe := ((↑) : ℚ → ℝ))
-  (uniformStruct := by infer_instance)
-  (complete := by infer_instance)
-  (separation := by infer_instance)
-  (uniformInducing := by
-    rw [Rat.uniformSpace_eq]
-    exact Rat.uniformEmbedding_coe_real.toUniformInducing)
-  (dense := Rat.denseEmbedding_coe_real.dense)
+  @AbstractCompletion.mk
+    (space := ℝ)
+    (coe := ((↑) : ℚ → ℝ))
+    (uniformStruct := by infer_instance)
+    (complete := by infer_instance)
+    (separation := by infer_instance)
+    (uniformInducing := by
+      rw [Rat.uniformSpace_eq]
+      exact Rat.uniformEmbedding_coe_real.toUniformInducing)
+    (dense := Rat.denseEmbedding_coe_real.dense)
 #align rational_cau_seq_pkg rationalCauSeqPkg
 
 namespace CompareReals

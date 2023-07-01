@@ -397,7 +397,7 @@ section CanonicallyOrderedMonoid
 
 variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
 
-@[to_additive (attr:=simp) sum_eq_zero_iff]
+@[to_additive (attr := simp) sum_eq_zero_iff]
 theorem prod_eq_one_iff' : (∏ x in s, f x) = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 #align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'
@@ -486,7 +486,7 @@ theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i �
       exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
     _ ≤ ∏ j in t, f j := by
       apply prod_le_prod_of_subset_of_one_le'
-      · simp [Finset.insert_subset, h, ht]
+      · simp [Finset.insert_subset_iff, h, ht]
       · intro x hx h'x
         simp only [mem_insert, not_or] at h'x
         exact hle x hx h'x.2
@@ -584,7 +584,7 @@ variable [OrderedCommSemiring R] {f g : ι → R} {s t : Finset ι}
 
 open Classical
 
--- this is also true for a ordered commutative multiplicative monoid with zero
+-- this is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
   prod_induction f (fun i ↦ 0 ≤ i) (fun _ _ ha hb ↦ mul_nonneg ha hb) zero_le_one h0
 #align finset.prod_nonneg Finset.prod_nonneg
@@ -647,7 +647,7 @@ section StrictOrderedCommSemiring
 
 variable [StrictOrderedCommSemiring R] [Nontrivial R] {f : ι → R} {s : Finset ι}
 
--- This is also true for a ordered commutative multiplicative monoid with zero
+-- This is also true for an ordered commutative multiplicative monoid with zero
 theorem prod_pos (h0 : ∀ i ∈ s, 0 < f i) : 0 < ∏ i in s, f i :=
   prod_induction f (fun x ↦ 0 < x) (fun _ _ ha hb ↦ mul_pos ha hb) zero_lt_one h0
 #align finset.prod_pos Finset.prod_pos

@@ -22,14 +22,14 @@ be satisfied by itself and all stricter types.
 ## Types of morphisms
 
 * `HeytingHom`: Heyting homomorphisms.
-* `Coheytinghom`: Co-Heyting homomorphisms.
+* `CoheytingHom`: Co-Heyting homomorphisms.
 * `BiheytingHom`: Bi-Heyting homomorphisms.
 
 ## Typeclasses
 
 * `HeytingHomClass`
-* `CoheytinghomClass`
-* `BiheytinghomClass`
+* `CoheytingHomClass`
+* `BiheytingHomClass`
 -/
 
 
@@ -190,7 +190,7 @@ section HeytingAlgebra
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingHomClass F α β] (f : F)
 
 @[simp]
-theorem map_compl (a : α) : f (aᶜ) = f aᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
+theorem map_compl (a : α) : f aᶜ = (f a)ᶜ := by rw [← himp_bot, ← himp_bot, map_himp, map_bot]
 #align map_compl map_compl
 
 @[simp]
@@ -244,7 +244,7 @@ namespace HeytingHom
 
 variable [HeytingAlgebra α] [HeytingAlgebra β] [HeytingAlgebra γ] [HeytingAlgebra δ]
 
-instance : HeytingHomClass (HeytingHom α β) α β where
+instance instHeytingHomClass : HeytingHomClass (HeytingHom α β) α β where
   coe f := f.toFun
   coe_injective' f g h := by obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f; obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := g; congr
   map_sup f := f.map_sup'
@@ -419,7 +419,7 @@ theorem copy_eq (f : CoheytingHom α β) (f' : α → β) (h : f' = f) : f.copy 
 
 variable (α)
 
-/-- `id` as a `Coheytinghom`. -/
+/-- `id` as a `CoheytingHom`. -/
 protected def id : CoheytingHom α α :=
   { TopHom.id _ with
     toLatticeHom := LatticeHom.id _

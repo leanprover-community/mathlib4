@@ -124,7 +124,7 @@ def commSquareM? (e : Expr) : MetaM (Option Html) := do
   let some (f, g) := homComp? lhs | return none
   let some (i, h) := homComp? rhs | return none
   let some (A, B) := homType? (← inferType f) | return none
-  let some (D, C) := homType? (← inferType g) | return none
+  let some (D, C) := homType? (← inferType h) | return none
   some <$> mkCommDiag subSquare
     #[("A", A), ("B", B), ("C", C), ("D", D),
       ("f", f), ("g", g), ("h", h), ("i", i)]

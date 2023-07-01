@@ -248,7 +248,7 @@ theorem tendsto_approxOn_L1_nnnorm [OpensMeasurableSpace E] {f : β → E} (hf :
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by
-  rw [← memℒp_one_iff_integrable] at hf hi₀⊢
+  rw [← memℒp_one_iff_integrable] at hf hi₀ ⊢
   exact memℒp_approxOn fmeas hf h₀ hi₀ n
 #align measure_theory.simple_func.integrable_approx_on MeasureTheory.SimpleFunc.integrable_approxOn
 
@@ -851,8 +851,8 @@ theorem exists_simpleFunc_nonneg_ae_eq {f : Lp.simpleFunc G p μ} (hf : 0 ≤ f)
   rw [← Lp.simpleFunc.coeFn_nonneg] at hf
   have hf_ae : 0 ≤ᵐ[μ] simpleFunc.toSimpleFunc f := by
     filter_upwards [toSimpleFunc_eq_toFun f, hf] with _ h1 _; rwa [h1]
-  let s := toMeasurable μ { x | ¬0 ≤ simpleFunc.toSimpleFunc f x }ᶜ
-  have hs_zero : μ (sᶜ) = 0 := by
+  let s := (toMeasurable μ { x | ¬0 ≤ simpleFunc.toSimpleFunc f x })ᶜ
+  have hs_zero : μ sᶜ = 0 := by
     rw [compl_compl, measure_toMeasurable]; rwa [EventuallyLE, ae_iff] at hf_ae
   have hfs_nonneg : ∀ x ∈ s, 0 ≤ simpleFunc.toSimpleFunc f x := by
     intro x hxs
