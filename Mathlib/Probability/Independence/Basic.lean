@@ -276,7 +276,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {μ 
     have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true, eq_self_iff_true]
     have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
     have h_inter :
-      (⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂) =
+      ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
         ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ :=
       by simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
     have h_prod :

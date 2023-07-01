@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 
 ! This file was ported from Lean 3 source module analysis.special_functions.log.base
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
+! leanprover-community/mathlib commit f23a09ce6d3f367220dc3cecad6b7eb69eb01690
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,6 +76,40 @@ theorem logb_div (hx : x ≠ 0) (hy : y ≠ 0) : logb b (x / y) = logb b x - log
 @[simp]
 theorem logb_inv (x : ℝ) : logb b x⁻¹ = -logb b x := by simp [logb, neg_div]
 #align real.logb_inv Real.logb_inv
+
+theorem inv_logb (a b : ℝ) : (logb a b)⁻¹ = logb b a := by simp_rw [logb, inv_div]
+#align real.inv_logb Real.inv_logb
+
+theorem inv_logb_mul_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    (logb (a * b) c)⁻¹ = (logb a c)⁻¹ + (logb b c)⁻¹ := by
+  simp_rw [inv_logb]; exact logb_mul h₁ h₂
+#align real.inv_logb_mul_base Real.inv_logb_mul_base
+
+theorem inv_logb_div_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    (logb (a / b) c)⁻¹ = (logb a c)⁻¹ - (logb b c)⁻¹ := by
+  simp_rw [inv_logb]; exact logb_div h₁ h₂
+#align real.inv_logb_div_base Real.inv_logb_div_base
+
+theorem logb_mul_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    logb (a * b) c = ((logb a c)⁻¹ + (logb b c)⁻¹)⁻¹ := by rw [← inv_logb_mul_base h₁ h₂ c, inv_inv]
+#align real.logb_mul_base Real.logb_mul_base
+
+theorem logb_div_base {a b : ℝ} (h₁ : a ≠ 0) (h₂ : b ≠ 0) (c : ℝ) :
+    logb (a / b) c = ((logb a c)⁻¹ - (logb b c)⁻¹)⁻¹ := by rw [← inv_logb_div_base h₁ h₂ c, inv_inv]
+#align real.logb_div_base Real.logb_div_base
+
+theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -1) :
+    logb a b * logb b c = logb a c := by
+  unfold logb
+  rw [mul_comm, div_mul_div_cancel _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+#align real.mul_logb Real.mul_logb
+
+theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
+    logb a c / logb b c = logb a b := by
+  unfold logb
+  -- TODO: div_div_div_cancel_left is missing for `group_with_zero`,
+  rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ (log_ne_zero.mpr ⟨h₁, h₂, h₃⟩)]
+#align real.div_logb Real.div_logb
 
 section BPosAndNeOne
 
