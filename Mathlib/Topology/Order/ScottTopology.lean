@@ -432,5 +432,3 @@ ScottHausdorffTopology ≤  ‹TopologicalSpace α› :=
 lemma ScottHausdorffOpen_implies_LowerOpen {s : Set α} :
   IsOpen (WithLowerTopology.ofLower ⁻¹' s) → ScottHausdorffTopology.IsOpen s :=
   Scott_Hausdorff_le_Lower _
-
-#check IsClosed.mono
