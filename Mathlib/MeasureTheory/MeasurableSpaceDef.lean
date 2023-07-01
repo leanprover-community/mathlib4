@@ -55,7 +55,7 @@ variable {α β γ δ δ' : Type _} {ι : Sort _} {s t u : Set α}
   /-- The empty set is a measurable set. Use `MeasurableSet.empty` instead. -/
   measurableSet_empty : MeasurableSet' ∅
   /-- The complement of a measurable set is a measurable set. Use `MeasurableSet.compl` instead. -/
-  measurableSet_compl : ∀ s, MeasurableSet' s → MeasurableSet' (sᶜ)
+  measurableSet_compl : ∀ s, MeasurableSet' s → MeasurableSet' sᶜ
   /-- The union of a sequence of measurable sets is a measurable set. Use a more general
   `MeasurableSet.iUnion` instead. -/
   measurableSet_iUnion : ∀ f : ℕ → Set α, (∀ i, MeasurableSet' (f i)) → MeasurableSet' (⋃ i, f i)
@@ -87,16 +87,16 @@ theorem MeasurableSet.empty [MeasurableSpace α] : MeasurableSet (∅ : Set α) 
 variable {m : MeasurableSpace α}
 
 @[measurability]
-protected theorem MeasurableSet.compl : MeasurableSet s → MeasurableSet (sᶜ) :=
+protected theorem MeasurableSet.compl : MeasurableSet s → MeasurableSet sᶜ :=
   MeasurableSpace.measurableSet_compl _ s
 #align measurable_set.compl MeasurableSet.compl
 
-protected theorem MeasurableSet.of_compl (h : MeasurableSet (sᶜ)) : MeasurableSet s :=
+protected theorem MeasurableSet.of_compl (h : MeasurableSet sᶜ) : MeasurableSet s :=
   compl_compl s ▸ h.compl
 #align measurable_set.of_compl MeasurableSet.of_compl
 
 @[simp]
-theorem MeasurableSet.compl_iff : MeasurableSet (sᶜ) ↔ MeasurableSet s :=
+theorem MeasurableSet.compl_iff : MeasurableSet sᶜ ↔ MeasurableSet s :=
   ⟨.of_compl, .compl⟩
 #align measurable_set.compl_iff MeasurableSet.compl_iff
 
@@ -358,7 +358,7 @@ instance : PartialOrder (MeasurableSpace α) :=
 inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
   | protected basic : ∀ u ∈ s, GenerateMeasurable s u
   | protected empty : GenerateMeasurable s ∅
-  | protected compl : ∀ t, GenerateMeasurable s t → GenerateMeasurable s (tᶜ)
+  | protected compl : ∀ t, GenerateMeasurable s t → GenerateMeasurable s tᶜ
   | protected iUnion : ∀ f : ℕ → Set α, (∀ n, GenerateMeasurable s (f n)) →
       GenerateMeasurable s (⋃ i, f i)
 #align measurable_space.generate_measurable MeasurableSpace.GenerateMeasurable
@@ -378,7 +378,7 @@ theorem measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s
 
 @[elab_as_elim]
 theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
-    (h_empty : p ∅) (h_compl : ∀ t, p t → p (tᶜ))
+    (h_empty : p ∅) (h_compl : ∀ t, p t → p tᶜ)
     (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
     (hs : MeasurableSet[generateFrom C] s) : p s := by
   induction hs
@@ -511,7 +511,7 @@ theorem measurableSet_iSup {ι} {m : ι → MeasurableSpace α} {s : Set α} :
 #align measurable_space.measurable_set_supr MeasurableSpace.measurableSet_iSup
 
 theorem measurableSpace_iSup_eq (m : ι → MeasurableSpace α) :
-    (⨆ n, m n) = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
+    ⨆ n, m n = generateFrom { s | ∃ n, MeasurableSet[m n] s } := by
   ext s
   rw [measurableSet_iSup]
   rfl
@@ -557,7 +557,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
 #align measurable.comp Measurable.comp
 
 -- This is needed due to reducibility issues with the `measurability` tactic.
-@[measurability]
+@[aesop safe 50 (rule_sets [Measurable])]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf

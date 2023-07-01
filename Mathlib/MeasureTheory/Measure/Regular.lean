@@ -220,7 +220,7 @@ class Regular (μ : Measure α) extends IsFiniteMeasureOnCompacts μ, OuterRegul
 /-- A measure `μ` is weakly regular if
   - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
   - it is inner regular for open sets, using closed sets:
-    `μ(U) = sup {μ(F) | F ⊆ U compact}` for `U` open. -/
+    `μ(U) = sup {μ(F) | F ⊆ U closed}` for `U` open. -/
 class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
   protected innerRegular : InnerRegular μ IsClosed IsOpen
 #align measure_theory.measure.weakly_regular MeasureTheory.Measure.WeaklyRegular
@@ -454,7 +454,7 @@ theorem isCompact_isClosed {X : Type _} [TopologicalSpace X] [SigmaCompactSpace 
   intro F hF r hr
   set B : ℕ → Set X := compactCovering X
   have hBc : ∀ n, IsCompact (F ∩ B n) := fun n => (isCompact_compactCovering X n).inter_left hF
-  have hBU : (⋃ n, F ∩ B n) = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
+  have hBU : ⋃ n, F ∩ B n = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
   have : μ F = ⨆ n, μ (F ∩ B n) := by
     rw [← measure_iUnion_eq_iSup, hBU]
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)

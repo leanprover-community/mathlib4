@@ -205,7 +205,7 @@ def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f
   intro k₁ k₂
   refine' homMk _ _
   apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  . apply coprod.hom_ext
+  . ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
@@ -707,7 +707,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     · refine' Sigma.desc _
       rintro ⟨g, m⟩
       refine' underlying.map (homOfLE (k _ _))
-      simpa [symm_apply_mem_iff_mem_image] using m
+      simpa using m
     · ext
       dsimp [smallCoproductDesc]
       simp

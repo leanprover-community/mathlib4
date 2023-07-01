@@ -65,6 +65,7 @@ set_option linter.uppercaseLean3 false in
 
 -- porting note: added because `Mon_.Hom.ext` is not triggered automatically
 -- for morphisms in `CommMon_ C`
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext _ _ h

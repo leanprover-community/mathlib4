@@ -17,6 +17,9 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
 
+-- In this file we would like to be able to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 namespace Mathlib.Tactic
 open Lean hiding Rat
 open Qq Meta
@@ -167,7 +170,7 @@ def ringNFTarget (s : IO.Ref AtomM.State) (cfg : Config) : TacticM Unit := withM
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
   let r ← M.run s cfg <| rewrite tgt
-  if r.expr.isConstOf ``True then
+  if r.expr.consumeMData.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
