@@ -34,7 +34,7 @@ preserving condition is relaxed to quasi measure preserving.
 -/
 
 
-open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
+open Set Function Filter MeasureTheory MeasureTheory.Measure
 
 open ENNReal
 
