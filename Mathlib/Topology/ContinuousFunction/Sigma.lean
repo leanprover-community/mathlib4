@@ -42,36 +42,42 @@ variable {X ι : Type _} {Y : ι → Type _} [TopologicalSpace X] [∀ i, Topolo
 
 namespace ContinuousMap
 
-theorem embedding_sigmaMk_comp : Embedding (fun g : Σ i, C(X, Y i) ↦ (sigmaMk g.1).comp g.2) := _
+theorem embedding_sigmaMk_comp [Nonempty X] :
+    Embedding (fun g : Σ i, C(X, Y i) ↦ (sigmaMk g.1).comp g.2) where
+  toInducing := inducing_sigma.2
+    ⟨fun i ↦ (sigmaMk i).inducing_comp embedding_sigmaMk.toInducing, fun i ↦
+      let ⟨x⟩ := ‹Nonempty X›
+      ⟨_, (isOpen_sigma_fst_preimage {i}).preimage (continuous_eval_const x), fun _ ↦ Iff.rfl⟩⟩
+  inj := by
+    · rintro ⟨i, g⟩ ⟨i', g'⟩ h
+      obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
+        Function.eq_of_sigmaMk_comp <| congr_arg FunLike.coe h
+      simpa using hg
+  
 
 section ConnectedSpace
 
 variable [ConnectedSpace X]
 
+/-- Every a continuous map from a connected topological space to the disjoint union of a family of
+topological spaces is a composition of the embedding `ContinuousMap.sigmMk i : C(Y i, Σ i, Y i)` for
+some `i` and a continuous map `g : C(X, Y i)`. See also `Continuous.exists_lift_sigma` for a version
+with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorphism defined using
+this fact. -/
 theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp g :=
   let ⟨i, g, hg, hfg⟩ := f.continuous.exists_lift_sigma
   ⟨i, ⟨g, hg⟩, FunLike.ext' hfg⟩
 
 variable (X Y)
 
-/-- Equivalence between the type `C(X, Σ i, Y i)` of continuous maps from a connected topological
+/-- Homeomorphism between the type `C(X, Σ i, Y i)` of continuous maps from a connected topological
 space to the disjoint union of a family of topological spaces and the disjoint union of the types of
 continuous maps `C(X, Y i)`.
 
 The inverse map sends `⟨i, g⟩` to `ContinuousMap.comp (ContinuousMap.sigmaMk i) g`. -/
 @[simps! symm_apply]
-def ContinuousMap.sigmaCodEquiv : C(X, Σ i, Y i) ≃ Σ i, C(X, Y i) :=
-  .symm <| .ofBijective (fun g ↦ (sigmaMk g.1).comp g.2) <| by
-    refine ⟨?_, fun f ↦ ?_⟩
-    · rintro ⟨i, g⟩ ⟨i', g'⟩ h
-      obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
-        Function.eq_of_sigmaMk_comp <| congr_arg FunLike.coe h
-      simpa using hg
-    · rcases f.exists_lift_sigma with ⟨i, g, rfl⟩
-      exact ⟨⟨i, g⟩, rfl⟩
-
-
-def ContinuousMap.sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
-  .symm <| (sigmaCodEquiv X Y).symm.toHomeomorphOfInducing <| by
-    change Inducing fun g : Σ i, C(X, Y i) ↦ (sigmaMk g.1).comp g.2
-    rw [inducing_iff_nhds]
+def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
+  .symm <| Equiv.toHomeomorphOfInducing
+    (.ofBijective _ ⟨embedding_sigmaMk_comp.inj, fun f ↦
+      let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)
+    embedding_sigmaMk_comp.toInducing
