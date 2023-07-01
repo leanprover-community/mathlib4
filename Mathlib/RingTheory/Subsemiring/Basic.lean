@@ -1094,7 +1094,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R}
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id) (⨆ i, (S i).toAddSubmonoid)
       (AddSubmonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
   -- Porting note: gave the hypothesis an explicit name because `@this` doesn't work
-  suffices h : (⨆ i, S i) ≤ U by simpa using @h x
+  suffices h : ⨆ i, S i ≤ U by simpa using @h x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align subsemiring.mem_supr_of_directed Subsemiring.mem_iSup_of_directed
 

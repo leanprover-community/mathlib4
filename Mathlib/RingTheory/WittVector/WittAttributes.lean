@@ -14,5 +14,5 @@ from the files that actually use the attribute, most likely the `WittVector` fil
 /-- A stub attribute for `is_poly`. -/
 register_label_attr is_poly
 
-/-- A stub attribute for `ghost_simps`. -/
-register_label_attr ghost_simps
+/-- Simplification rules for ghost equations. -/
+register_simp_attr ghost_simps

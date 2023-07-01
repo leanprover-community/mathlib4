@@ -17,6 +17,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Cardinal Numbers
@@ -109,6 +110,7 @@ instance Cardinal.isEquivalent : Setoid (Type u) where
 def Cardinal : Type (u + 1) :=
   Quotient Cardinal.isEquivalent
 #align cardinal Cardinal
+pp_with_univ Cardinal
 
 namespace Cardinal
 
@@ -677,10 +679,10 @@ instance canonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring Cardina
     add_le_add_left := fun a b => add_le_add_left
     exists_add_of_le := fun {a b} =>
       inductionOn₂ a b fun α β ⟨⟨f, hf⟩⟩ =>
-        have : Sum α (range fᶜ : Set β) ≃ β :=
+        have : Sum α ((range f)ᶜ : Set β) ≃ β :=
           (Equiv.sumCongr (Equiv.ofInjective f hf) (Equiv.refl _)).trans <|
             Equiv.Set.sumCompl (range f)
-        ⟨#↥(range fᶜ), mk_congr this.symm⟩
+        ⟨#↥(range f)ᶜ, mk_congr this.symm⟩
     le_self_add := fun a b => (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
     eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
       inductionOn₂ a b fun α β => by
@@ -1690,6 +1692,12 @@ theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c)
   rw [toNat_apply_of_aleph0_le h, Nat.cast_zero]
 #align cardinal.cast_to_nat_of_aleph_0_le Cardinal.cast_toNat_of_aleph0_le
 
+/-- Two finite cardinals are equal iff they are equal their to_nat are equal -/
+theorem toNat_eq_iff_eq_of_lt_aleph0 {c d : Cardinal} (hc : c < ℵ₀) (hd : d < ℵ₀) :
+    toNat c = toNat d ↔ c = d := by
+  rw [← natCast_inj, cast_toNat_of_lt_aleph0 hc, cast_toNat_of_lt_aleph0 hd]
+#align cardinal.to_nat_eq_iff_eq_of_lt_aleph_0 Cardinal.toNat_eq_iff_eq_of_lt_aleph0
+
 theorem toNat_le_iff_le_of_lt_aleph0 {c d : Cardinal} (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c ≤ toNat d ↔ c ≤ d := by
   rw [← natCast_le, cast_toNat_of_lt_aleph0 hc, cast_toNat_of_lt_aleph0 hd]
@@ -1880,6 +1888,85 @@ theorem toPartENat_surjective : Surjective toPartENat := fun x =>
   PartENat.casesOn x ⟨ℵ₀, toPartENat_apply_of_aleph0_le le_rfl⟩ fun n => ⟨n, toPartENat_cast n⟩
 #align cardinal.to_part_enat_surjective Cardinal.toPartENat_surjective
 
+theorem toPartENat_eq_top_iff_le_aleph0 {c : Cardinal} :
+  toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    simp only [toPartENat_apply_of_lt_aleph0 hc, PartENat.natCast_ne_top, false_iff, not_le, hc]
+  | inr hc => simp only [toPartENat_apply_of_aleph0_le hc, eq_self_iff_true, true_iff]; exact hc
+#align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top_iff_le_aleph0
+
+lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
+  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    cases lt_or_ge c' ℵ₀ with
+    | inl hc' =>
+      rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+      exact toNat_le_iff_le_of_lt_aleph0 hc hc'
+    | inr hc' =>
+      simp only [toPartENat_apply_of_aleph0_le hc',
+      le_top, true_iff]
+      exact le_trans h hc'
+  | inr hc =>
+    rw [toPartENat_apply_of_aleph0_le hc]
+    simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0,
+    le_antisymm h hc]
+#align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_of_le_aleph0
+
+lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
+  toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+    exact toNat_le_iff_le_of_lt_aleph0 hc hc'
+  | inr hc =>
+    rw [toPartENat_apply_of_aleph0_le hc]
+    simp only [top_le_iff, toPartENat_eq_top_iff_le_aleph0]
+    rw [← not_iff_not, not_le, not_le]
+    simp only [hc', lt_of_lt_of_le hc' hc]
+#align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_of_lt_aleph0
+
+lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+  toPartENat c = toPartENat c' ↔ c = c' := by
+  rw [le_antisymm_iff, le_antisymm_iff, toPartENat_le_iff_of_le_aleph0 hc,
+    toPartENat_le_iff_of_le_aleph0 hc']
+#align to_part_enat_eq_iff_eq_of_le_aleph_0 Cardinal.toPartENat_eq_iff_of_le_aleph0
+
+theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
+  toPartENat c ≤ toPartENat c' := by
+  cases lt_or_ge c ℵ₀ with
+  | inl hc =>
+    rw [toPartENat_apply_of_lt_aleph0 hc]
+    cases lt_or_ge c' ℵ₀ with
+    | inl hc' =>
+      rw [toPartENat_apply_of_lt_aleph0 hc', PartENat.coe_le_coe]
+      exact toNat_le_of_le_of_lt_aleph0 hc' h
+    | inr hc' =>
+        rw [toPartENat_apply_of_aleph0_le hc']
+        exact le_top
+  | inr hc =>
+      rw [toPartENat_apply_of_aleph0_le hc,
+      toPartENat_apply_of_aleph0_le (le_trans hc h)]
+#align cardinal.to_part_enat_mono Cardinal.toPartENat_mono
+
+theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPartENat c := by
+  cases' lt_or_ge c ℵ₀ with hc hc
+  · rw [toPartENat_apply_of_lt_aleph0 hc, Cardinal.toPartENat_apply_of_lt_aleph0 _]
+    simp only [toNat_lift]
+    rw [lift_lt_aleph0]
+    exact hc
+  . rw [toPartENat_apply_of_aleph0_le hc, toPartENat_apply_of_aleph0_le _]
+    rw [aleph0_le_lift]
+    exact hc
+#align cardinal.to_part_enat_lift Cardinal.toPartENat_lift
+
+theorem toPartENat_congr {β : Type v} (e : α ≃ β) : toPartENat (#α) = toPartENat (#β) := by
+  rw [← toPartENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toPartENat_lift]
+#align cardinal.to_part_enat_congr Cardinal.toPartENat_congr
+
 theorem mk_toPartENat_eq_coe_card [Fintype α] : toPartENat (#α) = Fintype.card α := by simp
 #align cardinal.mk_to_part_enat_eq_coe_card Cardinal.mk_toPartENat_eq_coe_card
 
@@ -2044,17 +2131,17 @@ theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
     _ = sum fun i => #f i := mk_sigma _
 #align cardinal.mk_Union_eq_sum_mk Cardinal.mk_iUnion_eq_sum_mk
 
-theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : (#⋃ i, f i) ≤ (#ι) * ⨆ i, #f i :=
+theorem mk_iUnion_le {α ι : Type u} (f : ι → Set α) : (#⋃ i, f i) ≤ (#ι) * ⨆ i, (#f i) :=
   mk_iUnion_le_sum_mk.trans (sum_le_iSup _)
 #align cardinal.mk_Union_le Cardinal.mk_iUnion_le
 
-theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : (#⋃₀ A) ≤ (#A) * ⨆ s : A, #s := by
+theorem mk_sUnion_le {α : Type u} (A : Set (Set α)) : (#⋃₀ A) ≤ (#A) * ⨆ s : A, (#s) := by
   rw [sUnion_eq_iUnion]
   apply mk_iUnion_le
 #align cardinal.mk_sUnion_le Cardinal.mk_sUnion_le
 
 theorem mk_biUnion_le {ι α : Type u} (A : ι → Set α) (s : Set ι) :
-    (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, #A x.1 := by
+    (#⋃ x ∈ s, A x) ≤ (#s) * ⨆ x : s, (#A x.1) := by
   rw [biUnion_eq_iUnion]
   apply mk_iUnion_le
 #align cardinal.mk_bUnion_le Cardinal.mk_biUnion_le
