@@ -164,7 +164,10 @@ variable {k : Type u} [Field k] {G : GroupCat.{u}}
 homomorphisms from `X` to `Y`. -/
 def invariantsEquivFdRepHom (X Y : FdRep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y := by
   rw [← FdRep.forget₂_ρ, ← FdRep.forget₂_ρ]
-  exact linHom.invariantsEquivRepHom _ _ ≪≫ₗ FdRep.forget₂HomLinearEquiv X Y
+  -- Porting note: The original version used `linHom.invariantsEquivRepHom _ _ ≪≫ₗ`
+  exact linHom.invariantsEquivRepHom
+    ((forget₂ (FdRep k G) (Rep k G)).obj X) ((forget₂ (FdRep k G) (Rep k G)).obj Y) ≪≫ₗ
+    FdRep.forget₂HomLinearEquiv X Y
 set_option linter.uppercaseLean3 false in
 #align representation.lin_hom.invariants_equiv_fdRep_hom Representation.linHom.invariantsEquivFdRepHom
 
