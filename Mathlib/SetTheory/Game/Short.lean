@@ -52,7 +52,7 @@ instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
 -- Porting note: We use `induction` to prove `subsingleton_short` instead of recursion.
 -- A proof using recursion generates a harder `decreasing_by` goal than in Lean 3 for some reason:
 attribute [-instance] subsingleton_short in
-def subsingleton_short_example : ∀ x : PGame, Subsingleton (Short x)
+theorem subsingleton_short_example : ∀ x : PGame, Subsingleton (Short x)
   | mk xl xr xL xR =>
     ⟨fun a b => by
       cases a; cases b
@@ -69,7 +69,7 @@ termination_by subsingleton_short_example x => x
 -- We need to unify a bunch of hypotheses before `pgame_wf_tac` can work.
 decreasing_by {
   subst_vars
-  simp only [mk.injEq, heq_eq_eq, true_and] at *
+  simp at *
   casesm* _ ∧ _
   subst_vars
   pgame_wf_tac
