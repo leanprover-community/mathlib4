@@ -156,8 +156,8 @@ def relabellingMoveLeftAux (n : ℕ) {s : S} (h : turnBound s ≤ n)
     (t : LeftMoves (ofStateAux n s h)) :
     Relabelling (moveLeft (ofStateAux n s h) t)
       (ofStateAux (n - 1) ((leftMovesOfStateAux n h) t : S)
-        (turnBound_of_left ((leftMovesOfStateAux n h) t).2 (n - 1) (Nat.le_trans h le_tsub_add))) :=
-  by
+        (turnBound_of_left ((leftMovesOfStateAux n h) t).2 (n - 1)
+          (Nat.le_trans h le_tsub_add))) := by
   induction n
   · have t' := (leftMovesOfStateAux 0 h) t
     exfalso; exact turnBound_ne_zero_of_left_move t'.2 (nonpos_iff_eq_zero.mp h)
