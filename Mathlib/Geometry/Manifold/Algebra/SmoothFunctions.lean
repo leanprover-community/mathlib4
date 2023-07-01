@@ -170,7 +170,7 @@ instance group {G : Type _} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [
 
 @[to_additive (attr := simp)]
 theorem coe_inv {G : Type _} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' G]
-    (f : C^∞⟮I, N; I', G⟯) : ⇑f⁻¹ = f⁻¹ :=
+    (f : C^∞⟮I, N; I', G⟯) : ⇑f⁻¹ = (⇑f)⁻¹ :=
   rfl
 #align smooth_map.coe_inv SmoothMap.coe_inv
 #align smooth_map.coe_neg SmoothMap.coe_neg
@@ -279,7 +279,7 @@ instance hasSmul {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
 
 @[simp]
 theorem coe_smul {V : Type _} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
-    (f : C^∞⟮I, N; 𝓘(𝕜, V), V⟯) : ⇑(r • f) = r • f :=
+    (f : C^∞⟮I, N; 𝓘(𝕜, V), V⟯) : ⇑(r • f) = r • ⇑f :=
   rfl
 #align smooth_map.coe_smul SmoothMap.coe_smul
 
