@@ -2207,7 +2207,9 @@ import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
+import Mathlib.Logic.Small.Ring
 import Mathlib.Logic.Unique
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Notation
