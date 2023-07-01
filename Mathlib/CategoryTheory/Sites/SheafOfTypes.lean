@@ -785,7 +785,9 @@ theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
 
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
-is the same as a co-cone. One direction is true for presieves.
+is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for
+any presieve, as does constructing a family of elements from a co-cone. Showing compatibility of the
+family needs the sieve condition.
 Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
  -/
 
@@ -842,7 +844,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
       Nonempty (IsColimit S.arrows.cocone) := by
   constructor
   · intro H
-    refine Nonempty.intro ?mp.val
+    refine Nonempty.intro ?_
     exact {
     desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
         (yonedaFamily_fromCocone_compatible S s) |>.choose
