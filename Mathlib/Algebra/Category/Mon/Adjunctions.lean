@@ -8,10 +8,10 @@ Authors: Julian Kuelshammer
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Mon.Basic
-import Mathbin.Algebra.Category.Semigroup.Basic
-import Mathbin.Algebra.Group.WithOne.Basic
-import Mathbin.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Category.Semigroup.Basic
+import Mathlib.Algebra.Group.WithOne.Basic
+import Mathlib.Algebra.FreeMonoid.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -33,8 +33,7 @@ open CategoryTheory
 /-- The functor of adjoining a neutral element `one` to a semigroup.
  -/
 @[to_additive "The functor of adjoining a neutral element `zero` to a semigroup", simps]
-def adjoinOne : SemigroupCat.{u} ⥤ MonCat.{u}
-    where
+def adjoinOne : SemigroupCat.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
   map X Y := WithOne.map
   map_id' X := WithOne.map_id
@@ -67,8 +66,7 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
 #align adjoin_zero_adj adjoinZeroAdj
 
 /-- The free functor `Type u ⥤ Mon` sending a type `X` to the free monoid on `X`. -/
-def free : Type u ⥤ MonCat.{u}
-    where
+def free : Type u ⥤ MonCat.{u} where
   obj α := MonCat.of (FreeMonoid α)
   map X Y := FreeMonoid.map
   map_id' := by intros; ext1; rfl
