@@ -135,7 +135,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   -- space of linear maps is second-countable
   obtain ⟨T, T_count, hT⟩ :
     ∃ T : Set s,
-      T.Countable ∧ (⋃ x ∈ T, ball (f' (x : E)) (r (f' x))) = ⋃ x : s, ball (f' x) (r (f' x)) :=
+      T.Countable ∧ ⋃ x ∈ T, ball (f' (x : E)) (r (f' x)) = ⋃ x : s, ball (f' x) (r (f' x)) :=
     TopologicalSpace.isOpen_iUnion_countable _ fun x => isOpen_ball
   -- fix a sequence `u` of positive reals tending to zero.
   obtain ⟨u, _, u_pos, u_lim⟩ :

@@ -594,7 +594,7 @@ theorem ae_restrict_of_ae_restrict_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s 
   let u := ⋃ i : ↥s × ↥s, T i
   have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
-    ∃ A : Set (↥s × ↥s), A.Countable ∧ (⋃ i ∈ A, T i) = ⋃ i : ↥s × ↥s, T i :=
+    ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
   have : s ⊆ s \ u ∪ ⋃ p ∈ A, s ∩ T p := by
     intro x hx
@@ -629,7 +629,7 @@ theorem ae_of_mem_of_ae_of_mem_inter_Ioo {μ : Measure ℝ} [NoAtoms μ] {s : Se
   let u := ⋃ i : ↥s × ↥s, T i
   have hfinite : (s \ u).Finite := s.finite_diff_iUnion_Ioo'
   obtain ⟨A, A_count, hA⟩ :
-    ∃ A : Set (↥s × ↥s), A.Countable ∧ (⋃ i ∈ A, T i) = ⋃ i : ↥s × ↥s, T i :=
+    ∃ A : Set (↥s × ↥s), A.Countable ∧ ⋃ i ∈ A, T i = ⋃ i : ↥s × ↥s, T i :=
     isOpen_iUnion_countable _ fun p => isOpen_Ioo
   have M : ∀ᵐ x ∂μ, x ∉ s \ u := hfinite.countable.ae_not_mem _
   have M' : ∀ᵐ x ∂μ, ∀ (i : ↥s × ↥s), i ∈ A → x ∈ s ∩ T i → p x := by
