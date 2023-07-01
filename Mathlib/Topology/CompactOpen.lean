@@ -123,7 +123,7 @@ theorem inducing_comp (hg : Inducing g) : Inducing (g.comp : C(α, β) → C(α,
 /-- If `g : C(β, γ)` is a topological embedding, then the composition
 `ContinuousMap.comp g : C(α, β) → C(α, γ)` is an embedding too. -/
 theorem embedding_comp (hg : Embedding g) : Embedding (g.comp : C(α, β) → C(α, γ)) :=
-  ⟨inducing_comp g hg.1, fun _ _ h ↦ FunLike.ext' <| hg.2.comp_left <| congr_arg FunLike.coe h⟩
+  ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 variable (f : C(α, β))
 
