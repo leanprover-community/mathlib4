@@ -8,8 +8,8 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.UpperHalfPlane.Topology
-import Mathbin.Geometry.Manifold.ContMdiffMfderiv
+import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+import Mathlib.Geometry.Manifold.ContMdiffMfderiv
 
 /-!
 # Manifold structure on the upper half plane.
