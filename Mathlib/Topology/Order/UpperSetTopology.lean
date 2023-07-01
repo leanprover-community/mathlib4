@@ -132,6 +132,11 @@ instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) :=
 
 instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (upperSetTopology' α) _ := ⟨rfl⟩
 
+instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
+  letI := upperSetTopology' α
+  exact ⟨rfl⟩
+
+
 namespace UpperSetTopology
 
 section Preorder
