@@ -8,9 +8,9 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.Morphisms.Basic
-import Mathbin.Topology.Spectral.Hom
-import Mathbin.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.Topology.Spectral.Hom
+import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Quasi-compact morphisms
@@ -66,8 +66,7 @@ instance (priority := 900) quasiCompactOfIsIso {X Y : Scheme} (f : X ⟶ Y) [IsI
 #align algebraic_geometry.quasi_compact_of_is_iso AlgebraicGeometry.quasiCompactOfIsIso
 
 instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCompact f]
-    [QuasiCompact g] : QuasiCompact (f ≫ g) :=
-  by
+    [QuasiCompact g] : QuasiCompact (f ≫ g) := by
   constructor
   intro U hU hU'
   rw [Scheme.comp_val_base, coe_comp, Set.preimage_comp]
@@ -78,8 +77,7 @@ instance quasiCompactComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCom
 
 theorem isCompact_open_iff_eq_finset_affine_union {X : Scheme} (U : Set X.carrier) :
     IsCompact U ∧ IsOpen U ↔
-      ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ (i : X.affineOpens) (h : i ∈ s), i :=
-  by
+      ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ (i : X.affineOpens) (h : i ∈ s), i := by
   apply opens.is_basis.is_compact_open_iff_eq_finite_Union (coe : X.affine_opens → opens X.carrier)
   · rw [Subtype.range_coe]; exact is_basis_affine_open X
   · exact fun i => i.2.IsCompact
@@ -95,8 +93,7 @@ theorem isCompact_open_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set
 
 theorem quasiCompact_iff_forall_affine :
     QuasiCompact f ↔
-      ∀ U : Opens Y.carrier, IsAffineOpen U → IsCompact (f.1.base ⁻¹' (U : Set Y.carrier)) :=
-  by
+      ∀ U : Opens Y.carrier, IsAffineOpen U → IsCompact (f.1.base ⁻¹' (U : Set Y.carrier)) := by
   rw [quasi_compact_iff]
   refine' ⟨fun H U hU => H U U.IsOpen hU.IsCompact, _⟩
   intro H U hU hU'
@@ -112,8 +109,7 @@ theorem QuasiCompact.affineProperty_toProperty {X Y : Scheme} (f : X ⟶ Y) :
 #align algebraic_geometry.quasi_compact.affine_property_to_property AlgebraicGeometry.QuasiCompact.affineProperty_toProperty
 
 theorem quasiCompact_iff_affineProperty :
-    QuasiCompact f ↔ targetAffineLocally QuasiCompact.affineProperty f :=
-  by
+    QuasiCompact f ↔ targetAffineLocally QuasiCompact.affineProperty f := by
   rw [quasi_compact_iff_forall_affine]
   trans ∀ U : Y.affine_opens, IsCompact (f.1.base ⁻¹' (U : Set Y.carrier))
   · exact ⟨fun h U => h U U.Prop, fun h U hU => h ⟨U, hU⟩⟩
@@ -158,8 +154,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
     exact Set.Subset.rfl
 #align algebraic_geometry.is_compact_basic_open AlgebraicGeometry.isCompact_basicOpen
 
-theorem QuasiCompact.affineProperty_isLocal : (QuasiCompact.affineProperty : _).IsLocal :=
-  by
+theorem QuasiCompact.affineProperty_isLocal : (QuasiCompact.affineProperty : _).IsLocal := by
   constructor
   · apply affine_target_morphism_property.respects_iso_mk <;> rintro X Y Z _ _ _ H
     exacts [@Homeomorph.compactSpace _ _ H (TopCat.homeoOfIso (as_iso e.inv.1.base)), H]
@@ -251,8 +246,7 @@ theorem quasiCompact_stableUnderComposition :
 attribute [-simp] PresheafedSpace.as_coe SheafedSpace.as_coe
 
 theorem QuasiCompact.affineProperty_stableUnderBaseChange :
-    QuasiCompact.affineProperty.StableUnderBaseChange :=
-  by
+    QuasiCompact.affineProperty.StableUnderBaseChange := by
   intro X Y S _ _ f g h
   rw [quasi_compact.affine_property] at h ⊢
   skip
@@ -301,8 +295,7 @@ theorem compact_open_induction_on {P : Opens X.carrier → Prop} (S : Opens X.ca
 
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
     {U : Opens X.carrier} (hU : IsAffineOpen U) (x f : X.Presheaf.obj (op U))
-    (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 :=
-  by
+    (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (hom_of_le <| X.basic_open_le f : X.basic_open f ⟶ U).op)] at H 
   have := (is_localization_basic_open hU f).3
   obtain ⟨⟨_, n, rfl⟩, e⟩ := this.mp H
@@ -313,8 +306,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
     {U : Opens X.carrier} (hU : IsCompact U.1) (x f : X.Presheaf.obj (op U))
-    (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 :=
-  by
+    (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (is_compact_open_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
   replace e : U = iSup fun i : s => (i : opens X.carrier)
   · ext1; simpa using e
@@ -333,8 +325,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   haveI := hs.to_subtype
   cases nonempty_fintype s
   use finset.univ.sup n
-  suffices ∀ i : s, X.presheaf.map (hom_of_le (h₁ i)).op (f ^ finset.univ.sup n * x) = 0
-    by
+  suffices ∀ i : s, X.presheaf.map (hom_of_le (h₁ i)).op (f ^ finset.univ.sup n * x) = 0 by
     subst e
     apply TopCat.Sheaf.eq_of_locally_eq.{u + 1, u} X.sheaf fun i : s => (i : opens X.carrier)
     intro i
