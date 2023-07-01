@@ -199,15 +199,17 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     exact map_zero _
 #align group_cohomology.inhomogeneous_cochains GroupCohomology.inhomogeneousCochains
 
+set_option maxHeartbeats 6400000
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A :=
-  (HomologicalComplex.Hom.isoOfComponents fun i => (Rep.diagonalHomEquiv i A).toModuleIso.symm)
-    <| by
-    rintro i j (h : i + 1 = j)
-    subst h
-    simp only [CochainComplex.of_d, d_eq, category.assoc, iso.symm_hom, iso.hom_inv_id,
-      category.comp_id]
+def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
+/- Porting note: just needs a `refine'` now -/
+  refine' HomologicalComplex.Hom.isoOfComponents (fun i =>
+    (Rep.diagonalHomEquiv i A).toModuleIso.symm) _
+  rintro i j (h : i + 1 = j)
+  subst h
+  simp only [CochainComplex.of_d, d_eq, Category.assoc, Iso.symm_hom, Iso.hom_inv_id,
+    Category.comp_id]
 #align group_cohomology.inhomogeneous_cochains_iso GroupCohomology.inhomogeneousCochainsIso
 
 end GroupCohomology
@@ -220,10 +222,12 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
   (inhomogeneousCochains A).homology n
 #align group_cohomology groupCohomology
 
+set_option maxHeartbeats 3200000 in
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   homologyObjIsoOfHomotopyEquiv (HomotopyEquiv.ofIso (inhomogeneousCochainsIso _)) _ ≪≫
     HomologicalComplex.homologyUnop _ _ ≪≫ (extIso k G A n).symm
+set_option linter.uppercaseLean3 false in
 #align group_cohomology_iso_Ext groupCohomologyIsoExt
