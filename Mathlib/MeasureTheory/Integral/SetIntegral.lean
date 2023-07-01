@@ -205,7 +205,7 @@ theorem ofReal_set_integral_one {α : Type _} {_ : MeasurableSpace α} (μ : Mea
 #align measure_theory.of_real_set_integral_one MeasureTheory.ofReal_set_integral_one
 
 theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf : IntegrableOn f s μ)
-    (hg : IntegrableOn g (sᶜ) μ) :
+    (hg : IntegrableOn g sᶜ μ) :
     ∫ x, s.piecewise f g x ∂μ = (∫ x in s, f x ∂μ) + ∫ x in sᶜ, g x ∂μ := by
   rw [← Set.indicator_add_compl_eq_piecewise,
     integral_add' (hf.integrable_indicator hs) (hg.integrable_indicator hs.compl),
@@ -822,7 +822,7 @@ theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(α, E)} {s : β →
 the sequence `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable. -/
 theorem integrable_of_summable_norm_restrict {f : C(α, E)} {s : β → Compacts α}
     (hf : Summable fun i : β => ‖f.restrict (s i)‖ * ENNReal.toReal (μ <| s i))
-    (hs : (⋃ i : β, ↑(s i)) = (univ : Set α)) : Integrable f μ := by
+    (hs : ⋃ i : β, ↑(s i) = (univ : Set α)) : Integrable f μ := by
   simpa only [hs, integrableOn_univ] using integrableOn_iUnion_of_summable_norm_restrict hf
 #align measure_theory.integrable_of_summable_norm_restrict MeasureTheory.integrable_of_summable_norm_restrict
 

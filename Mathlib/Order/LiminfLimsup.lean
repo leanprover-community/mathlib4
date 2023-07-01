@@ -690,7 +690,7 @@ theorem limsup_le_iSup {f : Filter β} {u : β → α} : limsup u f ≤ ⨆ n, u
   limsup_le_of_le (by isBoundedDefault) (eventually_of_forall (le_iSup u))
 #align filter.limsup_le_supr Filter.limsup_le_iSup
 
-theorem iInf_le_liminf {f : Filter β} {u : β → α} : (⨅ n, u n) ≤ liminf u f :=
+theorem iInf_le_liminf {f : Filter β} {u : β → α} : ⨅ n, u n ≤ liminf u f :=
   le_liminf_of_le (by isBoundedDefault) (eventually_of_forall (iInf_le u))
 #align filter.infi_le_liminf Filter.iInf_le_liminf
 
@@ -1020,11 +1020,11 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] (f : Filter β) (u : β → α)
 
-theorem limsup_compl : limsup u fᶜ = liminf (compl ∘ u) f := by
+theorem limsup_compl : (limsup u f)ᶜ = liminf (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 #align filter.limsup_compl Filter.limsup_compl
 
-theorem liminf_compl : liminf u fᶜ = limsup (compl ∘ u) f := by
+theorem liminf_compl : (liminf u f)ᶜ = limsup (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 #align filter.liminf_compl Filter.liminf_compl
 

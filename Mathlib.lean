@@ -416,11 +416,13 @@ import Mathlib.Algebra.Tropical.BigOperators
 import Mathlib.Algebra.Tropical.Lattice
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace.HasColimits
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
 import Mathlib.AlgebraicGeometry.PresheafedSpace
@@ -921,6 +923,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
@@ -1846,6 +1849,7 @@ import Mathlib.Geometry.Euclidean.Basic
 import Mathlib.Geometry.Euclidean.Circumcenter
 import Mathlib.Geometry.Euclidean.Inversion
 import Mathlib.Geometry.Euclidean.MongePoint
+import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.Geometry.Euclidean.Sphere.Power
 import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
@@ -2776,6 +2780,7 @@ import Mathlib.RingTheory.WittVector.FrobeniusFractionField
 import Mathlib.RingTheory.WittVector.Identities
 import Mathlib.RingTheory.WittVector.InitTail
 import Mathlib.RingTheory.WittVector.IsPoly
+import Mathlib.RingTheory.WittVector.Isocrystal
 import Mathlib.RingTheory.WittVector.MulCoeff
 import Mathlib.RingTheory.WittVector.MulP
 import Mathlib.RingTheory.WittVector.StructurePolynomial
