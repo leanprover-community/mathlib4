@@ -93,16 +93,17 @@ variable {E : Type _} [AddCommMonoid E] [TopologicalSpace E] [SMul 𝕜 E]
 instance : Coe (ProperCone 𝕜 E) (ConvexCone 𝕜 E) :=
   ⟨fun K => K.1⟩
 
-@[simp]
-theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
-  rfl
-#align proper_cone.to_convex_cone_eq_coe ProperCone.toConvexCone_eq_coe
+-- Porting note: now a syntactic tautology
+-- @[simp]
+-- theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
+--   rfl
+-- #align proper_cone.to_convex_cone_eq_coe ProperCone.toConvexCone_eq_coe
 
-theorem ext' : Function.Injective (Coe.coe : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
-  cases S ; cases T ; congr
+theorem ext' : Function.Injective ((↑) : ProperCone 𝕜 E → ConvexCone 𝕜 E) := fun S T h => by
+  cases S; cases T; congr
 #align proper_cone.ext' ProperCone.ext'
 
--- TODO: add convex_cone_class that extends set_like and replace the below instance
+-- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
 instance : SetLike (ProperCone 𝕜 E) E where
   coe K := K.carrier
   coe_injective' _ _ h := ProperCone.ext' (SetLike.coe_injective h)
@@ -146,7 +147,7 @@ theorem mem_zero (x : E) : x ∈ (0 : ProperCone 𝕜 E) ↔ x = 0 :=
   Iff.rfl
 #align proper_cone.mem_zero ProperCone.mem_zero
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast` (new-style structures)
 theorem coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
   rfl
 #align proper_cone.coe_zero ProperCone.coe_zero
@@ -175,7 +176,7 @@ noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone �
   is_closed' := isClosed_closure
 #align proper_cone.map ProperCone.map
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast` (new-style structures)
 theorem coe_map (f : E →L[ℝ] F) (K : ProperCone ℝ E) :
     ↑(K.map f) = (ConvexCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
   rfl
@@ -199,7 +200,7 @@ def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
   is_closed' := isClosed_innerDualCone _
 #align proper_cone.dual ProperCone.dual
 
-@[simp, norm_cast]
+@[simp] -- Porting note: removed `norm_cast` (new-style structures)
 theorem coe_dual (K : ProperCone ℝ E) : ↑(dual K) = (K : Set E).innerDualCone :=
   rfl
 #align proper_cone.coe_dual ProperCone.coe_dual
