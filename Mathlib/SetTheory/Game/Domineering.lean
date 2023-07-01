@@ -168,23 +168,21 @@ def domineering.one :=
 #align pgame.domineering.one PGame.domineering.one
 
 /-- The `L` shaped Domineering board, in which Left is exactly half a move ahead. -/
--- Porting note: Changed from `L` to `l` to follow naming convention.
--- Should it remain capitalized to match the shape it's describing?
-def domineering.l :=
+def domineering.L :=
   domineering [(0, 2), (0, 1), (0, 0), (1, 0)].toFinset
 set_option linter.uppercaseLean3 false in
-#align pgame.domineering.L PGame.domineering.l
+#align pgame.domineering.L PGame.domineering.L
 
 instance shortOne : Short domineering.one := by dsimp [domineering.one]; infer_instance
 #align pgame.short_one PGame.shortOne
 
-instance shortL : Short domineering.l := by dsimp [domineering.l]; infer_instance
+instance shortL : Short domineering.L := by dsimp [domineering.L]; infer_instance
 set_option linter.uppercaseLean3 false in
 #align pgame.short_L PGame.shortL
 
 -- The VM can play small games successfully:
 -- #eval decide (domineering.one ≈ 1)
--- #eval decide (domineering.l + domineering.l ≈ 1)
+-- #eval decide (domineering.L + domineering.L ≈ 1)
 -- The following no longer works since Lean 3.29, since definitions by well-founded
 -- recursion no longer reduce definitionally.
 -- We can check that `decidable` instances reduce as expected,
@@ -192,8 +190,8 @@ set_option linter.uppercaseLean3 false in
 -- run_cmd tactic.whnf `(by apply_instance : decidable (domineering.one ≤ 1)) >>= tactic.trace
 -- dec_trivial can handle most of the dictionary of small games described in [conway2001]
 -- example : domineering.one ≈ 1 := by decide
--- example : domineering.l + domineering.l ≈ 1 := by decide
--- example : domineering.l ≈ PGame.ofLists [0] [1] := by decide
+-- example : domineering.L + domineering.L ≈ 1 := by decide
+-- example : domineering.L ≈ PGame.ofLists [0] [1] := by decide
 -- example : (domineering ([(0,0), (0,1), (0,2), (0,3)].toFinset) ≈ 2) := by decide
 -- example : (domineering ([(0,0), (0,1), (1,0), (1,1)].toFinset) ≈ PGame.ofLists [1] [-1]) :=
 --   by decide
