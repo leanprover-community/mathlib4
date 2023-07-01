@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.SetTheory.Game.Short
+import Mathlib.SetTheory.Game.Short
 
 /-!
 # Games described via "the state of the board".
@@ -50,16 +50,14 @@ open StateM
 
 variable {S : Type u} [State S]
 
-theorem turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s ≠ 0 :=
-  by
+theorem turnBound_ne_zero_of_left_move {s t : S} (m : t ∈ l s) : turnBound s ≠ 0 := by
   intro h
   have t := state.left_bound m
   rw [h] at t 
   exact Nat.not_succ_le_zero _ t
 #align pgame.turn_bound_ne_zero_of_left_move PGame.turnBound_ne_zero_of_left_move
 
-theorem turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 :=
-  by
+theorem turnBound_ne_zero_of_right_move {s t : S} (m : t ∈ r s) : turnBound s ≠ 0 := by
   intro h
   have t := state.right_bound m
   rw [h] at t 
@@ -171,8 +169,7 @@ def relabellingMoveLeftAux (n : ℕ) {s : S} (h : turnBound s ≤ n)
 has itself been constructed using `of`.
 -/
 def relabellingMoveLeft (s : S) (t : LeftMoves (ofState s)) :
-    Relabelling (moveLeft (ofState s) t) (ofState ((leftMovesOfState s).toFun t : S)) :=
-  by
+    Relabelling (moveLeft (ofState s) t) (ofState ((leftMovesOfState s).toFun t : S)) := by
   trans
   apply relabelling_move_left_aux
   apply of_state_aux_relabelling
@@ -186,8 +183,7 @@ def relabellingMoveRightAux (n : ℕ) {s : S} (h : turnBound s ≤ n)
     Relabelling (moveRight (ofStateAux n s h) t)
       (ofStateAux (n - 1) ((rightMovesOfStateAux n h) t : S)
         (turnBound_of_right ((rightMovesOfStateAux n h) t).2 (n - 1)
-          (Nat.le_trans h le_tsub_add))) :=
-  by
+          (Nat.le_trans h le_tsub_add))) := by
   induction n
   · have t' := (right_moves_of_state_aux 0 h) t
     exfalso; exact turn_bound_ne_zero_of_right_move t'.2 (nonpos_iff_eq_zero.mp h)
@@ -198,23 +194,20 @@ def relabellingMoveRightAux (n : ℕ) {s : S} (h : turnBound s ≤ n)
 has itself been constructed using `of`.
 -/
 def relabellingMoveRight (s : S) (t : RightMoves (ofState s)) :
-    Relabelling (moveRight (ofState s) t) (ofState ((rightMovesOfState s).toFun t : S)) :=
-  by
+    Relabelling (moveRight (ofState s) t) (ofState ((rightMovesOfState s).toFun t : S)) := by
   trans
   apply relabelling_move_right_aux
   apply of_state_aux_relabelling
 #align pgame.relabelling_move_right PGame.relabellingMoveRight
 
 instance fintypeLeftMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
-    Fintype (LeftMoves (ofStateAux n s h)) :=
-  by
+    Fintype (LeftMoves (ofStateAux n s h)) := by
   apply Fintype.ofEquiv _ (left_moves_of_state_aux _ _).symm
   infer_instance
 #align pgame.fintype_left_moves_of_state_aux PGame.fintypeLeftMovesOfStateAux
 
 instance fintypeRightMovesOfStateAux (n : ℕ) (s : S) (h : turnBound s ≤ n) :
-    Fintype (RightMoves (ofStateAux n s h)) :=
-  by
+    Fintype (RightMoves (ofStateAux n s h)) := by
   apply Fintype.ofEquiv _ (right_moves_of_state_aux _ _).symm
   infer_instance
 #align pgame.fintype_right_moves_of_state_aux PGame.fintypeRightMovesOfStateAux
@@ -238,8 +231,7 @@ instance shortOfStateAux : ∀ (n : ℕ) {s : S} (h : turnBound s ≤ n), Short 
       shortOfRelabelling (relabellingMoveRightAux (n + 1) h j).symm (short_of_state_aux n _)
 #align pgame.short_of_state_aux PGame.shortOfStateAux
 
-instance shortOfState (s : S) : Short (ofState s) :=
-  by
+instance shortOfState (s : S) : Short (ofState s) := by
   dsimp [PGame.ofState]
   infer_instance
 #align pgame.short_of_state PGame.shortOfState
