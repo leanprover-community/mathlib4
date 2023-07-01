@@ -546,7 +546,6 @@ theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦
   · convert Real.sInf_empty
     exact eq_empty_of_forall_not_mem fun r ⟨hr₀, hr⟩ ↦ hx.ne' <| hr.resolve_left hr₀.out.ne'
 
--- TODO: use continuity?
 @[simp]
 theorem gauge_closedBall (hr : 0 ≤ r) (x : E) : gauge (closedBall (0 : E) r) x = ‖x‖ / r := by
   rcases hr.eq_or_lt with rfl | hr'
