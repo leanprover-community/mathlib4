@@ -11,6 +11,7 @@ Authors: Xavier Roblot
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.Discriminant
 
+
 /-!
 # Canonical embedding of a number field
 
@@ -50,7 +51,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) :
 open scoped ComplexConjugate
 
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
-that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`.  -/
+that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
@@ -90,9 +91,9 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-      intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
+      intro x ; rw [← norm_le_iff, mem_closedBall_zero_iff]
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
-    ext; constructor
+    ext ; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
@@ -121,7 +122,7 @@ noncomputable def latticeBasis [NumberField K] :
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
-    rw [show M = N.transpose by { ext : 2; rfl }]
+    rw [show M = N.transpose by { ext : 2 ; rfl }]
     rw [Matrix.det_transpose, ← @pow_ne_zero_iff ℂ _ _ _ 2 (by norm_num)]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
@@ -135,12 +136,14 @@ theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 
   simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
     Function.comp_apply, Equiv.apply_symm_apply]
 
-theorem mem_span_latticeBasis [NumberField K] (x : K) :
-    canonicalEmbedding K x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ 𝓞 K := by
-  rw [← mem_span_integralBasis, show Set.range (latticeBasis K) =
+theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
+    x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
+  rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp]
-    exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
-  exact Submodule.apply_mem_span_image_iff_mem_span (canonicalEmbedding_injective K)
+    rw [← Set.range_comp] ; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+  rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
+  rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
+    ext ; exact mem_span_integralBasis K]
+  rfl
 
 end NumberField.canonicalEmbedding
