@@ -41,7 +41,11 @@ inductive Short : PGame.{u} → Type (u + 1)
       (_ : ∀ j : β, Short (R j)) [Fintype α] [Fintype β], Short ⟨α, β, L, R⟩
 #align pgame.short PGame.Short
 
--- Porting note: simp can prove this
+-- Porting note: Added `simpNF` exception. It's unclear what puts `eq_iff_true_of_subsingleton` into
+-- the simp set. A minimal reproduction of the simpNF error needs to import transitively at least
+-- `Mathlib.Logic.Unique`.
+--
+-- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
 attribute [nolint simpNF] Short.mk.injEq
 
 instance subsingleton_short (x : PGame) : Subsingleton (Short x) := by
