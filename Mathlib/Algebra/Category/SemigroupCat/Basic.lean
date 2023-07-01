@@ -114,14 +114,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 /-- Typecheck a `AddHom` as a morphism in `AddMagmaCat`. -/
 add_decl_doc AddMagmaCat.ofHom
 
--- FIXME remove
--- -- Porting note: added these two instances as it wasn't able to find them.
--- instance {X : Type u} [h : Mul X] : Mul (of X) := h
--- instance {X Y : Type u} [Mul X] [Mul Y] :
---     CoeFun (of X ⟶ of Y) (fun _ => X → Y) :=
---   ⟨MulHom.toFun⟩
-
-@[to_additive (attr := simp)]
+@[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
 theorem ofHom_apply {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) (x : X) : ofHom f x = f x :=
   rfl
 #align Magma.of_hom_apply MagmaCat.ofHom_apply
@@ -207,14 +200,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 /-- Typecheck a `AddHom` as a morphism in `AddSemigroupCat`. -/
 add_decl_doc AddSemigroupCat.ofHom
 
--- FIXME remove
--- -- Porting note: added these two instances as it wasn't able to find them.
--- instance {X : Type u} [h : Semigroup X] : Semigroup (of X) := h
--- instance {X Y : Type u} [Semigroup X] [Semigroup Y] :
---     CoeFun (of X ⟶ of Y) (fun _ => X → Y) :=
---   ⟨MulHom.toFun⟩
-
-@[to_additive (attr := simp)]
+@[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
 theorem ofHom_apply {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) (x : X) :
     ofHom f x = f x :=
   rfl
