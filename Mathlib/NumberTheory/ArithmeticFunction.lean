@@ -48,7 +48,7 @@ to form the Dirichlet ring.
  * `sum_eq_iff_sum_mul_moebius_eq_on` for functions to a `CommRing`
  * `sum_eq_iff_sum_smul_moebius_eq_on` for functions to an `AddCommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq_on` for functions to a `CommGroup`
- * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero_on` for functions to a `CommGroupWithZero`
+ * `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
 
 ## Notation
 The arithmetic functions `ζ` and `σ` have Greek letter names, which are localized notation in
@@ -1170,8 +1170,8 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq_of_nonzero Nat.ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq_of_nonzero
 
-/-- Möbius inversion for functions to an `add_comm_group`, where the equalities only hold on
-  a well-behaved set. -/
+/-- Möbius inversion for functions to an `add_comm_group`, where the equalities only hold on a
+well-behaved set. -/
 theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∑ i in n.divisors, f i) = g n) ↔
@@ -1197,8 +1197,8 @@ theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
     apply sum_eq_iff_sum_smul_moebius_eq.mpr _ n hn
     intro _ _; rfl
 
-/-- Möbius inversion for functions to a `Ring`, where the equalities only hold on values satisfying
-a well-behaved set. -/
+/-- Möbius inversion for functions to a `Ring`, where the equalities only hold on a well-behaved
+set. -/
 theorem sum_eq_iff_sum_mul_moebius_eq_on [Ring R] {f g : ℕ → R}
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∑ i in n.divisors, f i) = g n) ↔
@@ -1210,8 +1210,8 @@ theorem sum_eq_iff_sum_mul_moebius_eq_on [Ring R] {f g : ℕ → R}
   refine' fun _ => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
   rw [zsmul_eq_mul]
 
-/-- Möbius inversion for functions to a `CommGroup`, where the equalities only hold on values
-satisfying a well-behaved set. -/
+/-- Möbius inversion for functions to a `CommGroup`, where the equalities only hold on a
+well-behaved set. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_on [CommGroup R] {f g : ℕ → R}
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
     (∀ n > 0, n ∈ s → (∏ i in n.divisors, f i) = g n) ↔
@@ -1219,7 +1219,7 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on [CommGroup R] {f g : ℕ → R}
   @sum_eq_iff_sum_smul_moebius_eq_on (Additive R) _ _ _ s hs
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
-values satisfying a well-behaved set. -/
+a well-behaved set. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
     (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) {f g : ℕ → R}
     (hf : ∀ n > 0, f n ≠ 0) (hg : ∀ n > 0, g n ≠ 0):
