@@ -167,26 +167,25 @@ namespace FdRep
 open Representation
 
 variable {k G V : Type u} [Field k] [Group G]
-
 variable [AddCommGroup V] [Module k V]
-
 variable [FiniteDimensional k V]
-
 variable (ρV : Representation k G V) (W : FdRep k G)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
+open scoped MonoidalCategory
+
 /-- Auxiliary definition for `FdRep.dualTensorIsoLinHom`. -/
 noncomputable def dualTensorIsoLinHomAux :
     (FdRep.of ρV.dual ⊗ W).V ≅ (FdRep.of (linHom ρV W.ρ)).V :=
-  (dualTensorHomEquiv k V W).toFGModuleCatIso
+  -- Porting note: had to make all types explicit arguments
+  @LinearEquiv.toFGModuleCatIso k _ (FdRep.of ρV.dual ⊗ W).V (V →ₗ[k] W)
+    _ _ _ _ _ _ (dualTensorHomEquiv k V W)
 #align fdRep.dual_tensor_iso_lin_hom_aux FdRep.dualTensorIsoLinHomAux
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FdRep.of ρV.dual ⊗ W ≅ FdRep.of (linHom ρV W.ρ) := by
-  apply Action.mkIso (dual_tensor_iso_lin_hom_aux ρV W)
-  convert dual_tensor_hom_comm ρV W.ρ
+  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) ?_
+  convert dualTensorHom_comm ρV W.ρ
 #align fdRep.dual_tensor_iso_lin_hom FdRep.dualTensorIsoLinHom
 
 @[simp]
