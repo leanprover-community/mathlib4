@@ -17,22 +17,22 @@ This file implements diffeomorphisms.
 
 ## Definitions
 
-* `diffeomorph I I' M M' n`:  `n`-times continuously differentiable diffeomorphism between
+* `Diffeomorph I I' M M' n`:  `n`-times continuously differentiable diffeomorphism between
   `M` and `M'` with respect to I and I'; we do not introduce a separate definition for the case
   `n = ∞`; we use notation instead.
-* `diffeomorph.to_homeomorph`: reinterpret a diffeomorphism as a homeomorphism.
-* `continuous_linear_equiv.to_diffeomorph`: reinterpret a continuous equivalence as
+* `Diffeomorph.toHomeomorph`: reinterpret a diffeomorphism as a homeomorphism.
+* `ContinuousLinearEquiv.toDiffeomorph`: reinterpret a continuous equivalence as
   a diffeomorphism.
-* `model_with_corners.trans_diffeomorph`: compose a given `model_with_corners` with a diffeomorphism
+* `ModelWithCorners.transDiffeomorph`: compose a given `ModelWithCorners` with a diffeomorphism
   between the old and the new target spaces. Useful, e.g, to turn any finite dimensional manifold
   into a manifold modelled on a Euclidean space.
-* `diffeomorph.to_trans_diffeomorph`: the identity diffeomorphism between `M` with model `I` and `M`
+* `Diffeomorph.toTransDiffeomorph`: the identity diffeomorphism between `M` with model `I` and `M`
   with model `I.trans_diffeomorph e`.
 
 ## Notations
 
-* `M ≃ₘ^n⟮I, I'⟯ M'`  := `diffeomorph I J M N n`
-* `M ≃ₘ⟮I, I'⟯ M'`    := `diffeomorph I J M N ⊤`
+* `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
+* `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ⊤`
 * `E ≃ₘ^n[𝕜] E'`      := `E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
 * `E ≃ₘ[𝕜] E'`        := `E ≃ₘ⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E'`
 
