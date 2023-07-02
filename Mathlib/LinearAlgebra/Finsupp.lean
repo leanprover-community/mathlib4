@@ -8,7 +8,6 @@ Authors: Johannes Hölzl
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Countable
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
@@ -135,7 +134,7 @@ theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :
 #align finsupp.ker_lsingle Finsupp.ker_lsingle
 
 theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
-     ⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) ≤
+    ⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) ≤
       ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
   refine' iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 _
   simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
@@ -1190,16 +1189,6 @@ theorem mem_span_set {m : M} {s : Set M} :
   conv_lhs => rw [← Set.image_id s]
   exact Finsupp.mem_span_image_iff_total R (v := _root_.id (α := M))
 #align mem_span_set mem_span_set
-
-/-- A `R`-submodule spanned by a finite family of `v` with `R` countable is countable. -/
-instance {ι : Type _} [Countable R] [Fintype ι] (v : ι → M) :
-    Countable (Submodule.span R (Set.range v)) := by
-  change Countable (Submodule.span R (Set.range v) : Set M)
-  rw [Set.countable_coe_iff]
-  refine Set.Countable.mono ?_ (Set.countable_range (fun f : (ι → R) => ∑ i, (f i) • v i))
-  intro _ h
-  obtain ⟨f, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp (SetLike.mem_coe.mp h)
-  exact ⟨↑f, by rw [Finsupp.sum_fintype] ; exact fun _ => zero_smul _ _⟩
 
 /-- If `Subsingleton R`, then `M ≃ₗ[R] ι →₀ R` for any type `ι`. -/
 @[simps]

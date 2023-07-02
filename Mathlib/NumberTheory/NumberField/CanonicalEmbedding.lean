@@ -379,7 +379,6 @@ theorem exists_ne_zero_mem_ring_of_integers_lt (h : minkowski_bound K < volume (
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   have : @IsAddHaarMeasure (E K) _ _ _ volume := prod.instIsAddHaarMeasure volume volume
   have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume
-  have : Countable (Submodule.span ℤ (Set.range (latticeBasis K)) : Set (E K)) := inferInstance
   have : Countable (Submodule.span ℤ (Set.range (latticeBasis K))).toAddSubgroup := by
     change Countable (Submodule.span ℤ (Set.range (latticeBasis K)): Set (E K))
     infer_instance
