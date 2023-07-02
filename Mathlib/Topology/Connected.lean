@@ -827,6 +827,19 @@ instance (priority := 100) IrreducibleSpace.connectedSpace (α : Type u) [Topolo
     [IrreducibleSpace α] : ConnectedSpace α where toNonempty := IrreducibleSpace.toNonempty
 #align irreducible_space.connected_space IrreducibleSpace.connectedSpace
 
+/-- A continuous map from a connected space to a disjoint union `Σ i, π i` can be lifted to one of
+the components `π i`. See also `ContinuousMap.exists_lift_sigma` for a version with bundled
+`ContinuousMap`s. -/
+theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (π i)]
+    {f : α → Σ i, π i} (hf : Continuous f) :
+    ∃ (i : ι) (g : α → π i), Continuous g ∧ f = Sigma.mk i ∘ g := by
+  obtain ⟨i, hi⟩ : ∃ i, range f ⊆ range (.mk i)
+  · rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
+    exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
+  rcases range_subset_range_iff_exists_comp.1 hi with ⟨g, rfl⟩
+  refine ⟨i, g, ?_, rfl⟩
+  rwa [← embedding_sigmaMk.continuous_iff] at hf
+
 theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
     IsOpen s → IsOpen t → s ∪ t = univ → s.Nonempty → t.Nonempty → (s ∩ t).Nonempty := by
   simpa only [univ_inter, univ_subset_iff] using @PreconnectedSpace.isPreconnected_univ α _ _ s t
@@ -1003,7 +1016,7 @@ theorem connectedComponent_subset_iInter_clopen {x : α} :
 
 /-- A clopen set is the union of its connected components. -/
 theorem IsClopen.biUnion_connectedComponent_eq {Z : Set α} (h : IsClopen Z) :
-    (⋃ x ∈ Z, connectedComponent x) = Z :=
+    ⋃ x ∈ Z, connectedComponent x = Z :=
   Subset.antisymm (iUnion₂_subset fun _ => h.connectedComponent_subset) fun _ h =>
     mem_iUnion₂_of_mem h mem_connectedComponent
 #align is_clopen.bUnion_connected_component_eq IsClopen.biUnion_connectedComponent_eq

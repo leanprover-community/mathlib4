@@ -647,7 +647,7 @@ of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over th
 See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
 theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartition I}
     (hU : π₁.iUnion = π₂.iUnion) :
-    (∑ J in π₁.boxes, integral J l f vol) = ∑ J in π₂.boxes, integral J l f vol := by
+    ∑ J in π₁.boxes, integral J l f vol = ∑ J in π₂.boxes, integral J l f vol := by
   refine' tendsto_nhds_unique (h.tendsto_integralSum_sum_integral π₁) _
   rw [l.toFilteriUnion_congr _ hU]
   exact h.tendsto_integralSum_sum_integral π₂
