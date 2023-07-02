@@ -40,7 +40,7 @@ Jacobson, Jacobson Ring
 
 -- proting note: TODO
 set_option profiler true
-set_option autoImplicit false
+-- set_option autoImplicit false
 
 universe u
 namespace Ideal
@@ -116,7 +116,7 @@ instance (priority := 100) isJacobson_field {K : Type _} [Field K] : IsJacobson 
 #align ideal.is_jacobson_field Ideal.isJacobson_field
 
 theorem isJacobson_of_surjective [H : IsJacobson R] :
-    (∃ f : R →+* S, Function.Surjective f) → IsJacobson S := by
+    (∃ f : R →+* S, Function.Surjective ↑f) → IsJacobson S := by
   rintro ⟨f, hf⟩
   rw [isJacobson_iff_sInf_maximal]
   intro p hp
@@ -296,65 +296,101 @@ open Polynomial
 
 section CommRing
 
+lemma Subring.mem_closure_image_of {S T : Type _} [CommRing S] [CommRing T]
+  (g : S →+* T) (u : Set S) (x : S)
+  (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
+  rw [Subring.mem_closure] at hx ⊢
+  intro T₁ h₁
+  rw [← Subring.mem_comap]
+  apply hx
+  simp only [Subring.coe_comap, ← Set.image_subset_iff, SetLike.mem_coe]
+  exact h₁
+
+lemma Polynomial.mem_closure_X_union_C {R : Type _} [Ring R] (p : R[X]) :
+  p ∈ Subring.closure (insert X {f | f.degree ≤ 0} : Set R[X]) := by
+  refine' Polynomial.induction_on p _ _ _
+  . intro r
+    apply Subring.subset_closure
+    apply Set.mem_insert_of_mem
+    exact degree_C_le
+  . intros p1 p2 h1 h2
+    exact Subring.add_mem _ h1 h2
+  . intros n r hr
+    rw [pow_succ', ← mul_assoc]
+    apply Subring.mul_mem _ hr
+    apply Subring.subset_closure
+    apply Set.mem_insert
+
 variable {R S : Type _} [CommRing R] [CommRing S] [IsDomain S]
+
+
 
 variable {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ]
 
+set_option maxHeartbeats 300000
 /-- If `I` is a prime ideal of `R[X]` and `pX ∈ I` is a non-constant polynomial,
   then the map `R →+* R[x]/I` descends to an integral map when localizing at `pX.leadingCoeff`.
   In particular `X` is integral because it satisfies `pX`, and constants are trivially integral,
   so integrality of the entire extension follows by closure under addition and multiplication. -/
 theorem isIntegral_isLocalization_polynomial_quotient (P : Ideal R[X]) (pX : R[X]) (hpX : pX ∈ P)
-    [Algebra (R ⧸ P.comap (C : R →+* _)) Rₘ]
+    [Algebra (R ⧸ P.comap (C : R →+* R[X])) Rₘ]
     [IsLocalization.Away (pX.map (Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff Rₘ]
     [Algebra (R[X] ⧸ P) Sₘ]
     [IsLocalization ((Submonoid.powers (pX.map (Quotient.mk (P.comap
       (C : R →+* R[X])))).leadingCoeff).map (quotientMap P C le_rfl) : Submonoid (R[X] ⧸ P)) Sₘ] :
     (IsLocalization.map Sₘ (quotientMap P C le_rfl) (Submonoid.powers (pX.map (Quotient.mk (P.comap
-      (C : R →+* R[X])))).leadingCoeff).le_comap_map : Rₘ →+* _).IsIntegral := by
-  -- let P' : Ideal R := P.comap C
-  -- let M : Submonoid (R ⧸ P') :=
-  --   Submonoid.powers (pX.map (Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff
-  -- let M' : Submonoid (R[X] ⧸ P) :=
-  --   (Submonoid.powers (pX.map (Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff).map
-  --     (quotientMap P C le_rfl)
-  -- let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
-  -- let φ' : Rₘ →+* Sₘ := IsLocalization.map Sₘ φ M.le_comap_map
-  -- have hφ' : φ.comp (Quotient.mk P') = (Quotient.mk P).comp C := rfl
-  -- intro p
-  -- obtain ⟨⟨p', ⟨q, hq⟩⟩, hp⟩ := IsLocalization.surj M' p
+      (C : R →+* R[X])))).leadingCoeff).le_comap_map : Rₘ →+* Sₘ).IsIntegral := by
+  let P' : Ideal R := P.comap C
+  let M : Submonoid (R ⧸ P') :=
+    Submonoid.powers (pX.map (Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff
+  let M' : Submonoid (R[X] ⧸ P) :=
+    (Submonoid.powers (pX.map (Quotient.mk (P.comap (C : R →+* R[X])))).leadingCoeff).map
+      (quotientMap P C le_rfl)
+  let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
+  let φ' : Rₘ →+* Sₘ := IsLocalization.map Sₘ φ M.le_comap_map
+  have hφ' : φ.comp (Quotient.mk P') = (Quotient.mk P).comp C := rfl
 
-  -- suffices φ'.IsIntegralElem (algebraMap _ _ p') by
-  --   obtain ⟨q', hq', rfl⟩ := hq
-  --   obtain ⟨q'', hq''⟩ := isUnit_iff_exists_inv'.1 (IsLocalization.map_units Rₘ (⟨q', hq'⟩ : M))
-  --   refine' φ'.isIntegral_of_isIntegral_mul_unit p (algebraMap _ _ (φ q')) q'' _ (hp.symm ▸ this)
-  --   convert _root_.trans (_root_.trans (φ'.map_mul _ _).symm (congr_arg φ' hq'')) φ'.map_one using 2
-  --   rw [← φ'.comp_apply, IsLocalization.map_comp, RingHom.comp_apply, Subtype.coe_mk]
-  -- refine'
-  --   isIntegral_of_mem_closure''
-  --     ((algebraMap _ Sₘ).comp (Quotient.mk P) '' insert X { p | p.degree ≤ 0 }) _ _ _
-  -- · rintro x ⟨p, hp, rfl⟩
-  --   refine' hp.rec_on (fun hy => _) fun hy => _
-  --   · refine'
-  --       hy.symm ▸
-  --         φ.isIntegral_elem_localization_at_leading_coeff ((Quotient.mk' P) X)
-  --           (pX.map (Quotient.mk' P')) _ M ⟨1, pow_one _⟩
-  --     rwa [eval₂_map, hφ', ← hom_eval₂, quotient.eq_zero_iff_mem, eval₂_C_X]
-  --   · rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
-  --     refine' hy.symm ▸ ⟨X - C (algebraMap _ _ ((Quotient.mk' P') (p.coeff 0))), monic_X_sub_C _, _⟩
-  --     simp only [eval₂_sub, eval₂_C, eval₂_X]
-  --     rw [sub_eq_zero, ← φ'.comp_apply, IsLocalization.map_comp]
-  --     rfl
-  -- · obtain ⟨p, rfl⟩ := quotient.mk_surjective p'
-  --   refine'
-  --     Polynomial.induction_on p
-  --       (fun r => Subring.subset_closure <| Set.mem_image_of_mem _ (Or.inr degree_C_le))
-  --       (fun _ _ h1 h2 => _) fun n _ hr => _
-  --   · convert Subring.add_mem _ h1 h2
-  --     rw [RingHom.map_add, RingHom.map_add]
-  --   · rw [pow_succ X n, mul_comm X, ← mul_assoc, RingHom.map_mul, RingHom.map_mul]
-  --     exact Subring.mul_mem _ hr (Subring.subset_closure (Set.mem_image_of_mem _ (Or.inl rfl)))
-  sorry
+  intro p
+  obtain ⟨⟨p', ⟨q, hq⟩⟩, hp⟩ := IsLocalization.surj M' p
+
+  suffices φ'.IsIntegralElem (algebraMap (R[X] ⧸ P) Sₘ p') by
+    obtain ⟨q', hq', rfl⟩ := hq
+    obtain ⟨q'', hq''⟩ := isUnit_iff_exists_inv'.1 (IsLocalization.map_units Rₘ (⟨q', hq'⟩ : M))
+    refine' φ'.isIntegral_of_isIntegral_mul_unit p (algebraMap (R[X] ⧸ P) Sₘ (φ q')) q'' _ (hp.symm ▸ this)
+    rw [← φ'.map_one, ← congr_arg φ' hq'', φ'.map_mul, ← φ'.comp_apply]
+    simp only [IsLocalization.map_comp _]
+    rw [RingHom.comp_apply]
+  dsimp at hp
+  refine'
+    @isIntegral_of_mem_closure'' Rₘ _ Sₘ _ φ'
+      ((algebraMap (R[X] ⧸ P) Sₘ).comp (Quotient.mk P) '' insert X { p | p.degree ≤ 0 }) _
+      ((algebraMap (R[X] ⧸ P) Sₘ) p') _
+  · rintro x ⟨p, hp, rfl⟩
+    simp only [Set.mem_insert_iff] at hp
+    cases' hp with hy hy
+    . rw [hy]
+      --suffices : eval₂ φ ((Quotient.mk P) X : R[X] ⧸ P) (pX.map (Quotient.mk P')) = 0
+      refine'
+        --  hy.symm ▸
+          φ.isIntegralElem_localization_at_leadingCoeff ((Quotient.mk P) X)
+            (pX.map (Quotient.mk P')) _ M _ -- ⟨1, pow_one _⟩
+      . rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
+      . use 1
+        simp only [pow_one]
+    . rw [Set.mem_setOf_eq, degree_le_zero_iff] at hy
+      -- refine' hy.symm ▸ ⟨X - C (algebraMap _ _ ((Quotient.mk P') (p.coeff 0))), monic_X_sub_C _, _⟩
+      rw [hy]
+      use X - C (algebraMap (R ⧸ P') Rₘ ((Quotient.mk P') (p.coeff 0)))
+      constructor
+      . apply monic_X_sub_C
+      . simp only [eval₂_sub, eval₂_X, eval₂_C]
+        rw [sub_eq_zero, ← φ'.comp_apply]
+        simp only [IsLocalization.map_comp _]
+        rfl
+  · obtain ⟨p, rfl⟩ := Quotient.mk_surjective p'
+    rw [← RingHom.comp_apply]
+    apply Subring.mem_closure_image_of
+    apply Polynomial.mem_closure_X_union_C
 #align ideal.polynomial.is_integral_is_localization_polynomial_quotient Ideal.Polynomial.isIntegral_isLocalization_polynomial_quotient
 
 /-- If `f : R → S` descends to an integral map in the localization at `x`,
