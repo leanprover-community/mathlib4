@@ -71,6 +71,7 @@ instance : LargeCategory.{u} SemilatSupCat where
   assoc _ _ _ := SupBotHom.comp_assoc _ _ _
 
 -- Porting note: added
+-- see https://github.com/leanprover-community/mathlib4/issues/5017
 instance instFunLike (X Y : SemilatSupCat) : FunLike (X ⟶ Y) X (fun _ => Y) :=
   show FunLike (SupBotHom X Y) X (fun _ => Y) from inferInstance
 
@@ -162,7 +163,7 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
   inv_hom_id := by ext; exact e.apply_symm_apply _
 #align SemilatSup.iso.mk SemilatSupCat.Iso.mk
 
-/-- `order_dual` as a functor. -/
+/-- `OrderDual` as a functor. -/
 @[simps]
 def dual : SemilatSupCat ⥤ SemilatInfCat where
   obj X := SemilatInfCat.of Xᵒᵈ

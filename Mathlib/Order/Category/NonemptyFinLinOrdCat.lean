@@ -69,6 +69,7 @@ instance : BundledHom.ParentProjection @NonemptyFinLinOrd.toLinearOrder :=
 
 deriving instance LargeCategory for NonemptyFinLinOrdCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory NonemptyFinLinOrdCat :=
   BundledHom.concreteCategory _
 
@@ -224,7 +225,7 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl

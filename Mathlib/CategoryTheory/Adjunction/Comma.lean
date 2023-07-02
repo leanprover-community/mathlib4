@@ -52,9 +52,7 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
   left_inv g := by
     let B' : StructuredArrow A G := StructuredArrow.mk ((⊥_ StructuredArrow A G).hom ≫ G.map g)
     let g' : ⊥_ StructuredArrow A G ⟶ B' := StructuredArrow.homMk g rfl
-    have : initial.to _ = g' := by
-      apply colimit.hom_ext
-      rintro ⟨⟨⟩⟩
+    have : initial.to _ = g' := by aesop_cat
     change CommaMorphism.right (initial.to B') = _
     rw [this]
     rfl
@@ -106,9 +104,7 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
     let g' : B' ⟶ ⊤_ CostructuredArrow G A := CostructuredArrow.homMk g rfl
-    have : terminal.from _ = g' := by
-      apply limit.hom_ext
-      rintro ⟨⟨⟩⟩
+    have : terminal.from _ = g' := by aesop_cat
     change CommaMorphism.left (terminal.from B') = _
     rw [this]
     rfl
@@ -144,8 +140,6 @@ end OfTerminals
 section
 
 variable {F : C ⥤ D}
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/

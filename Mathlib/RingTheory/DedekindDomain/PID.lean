@@ -80,7 +80,7 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
               (irreducible_iff_prime.mp (irreducible_of_normalized_factor _ hQi)))).le
 #align ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne
 
--- Porting note: replaced a lot of implicit coercions of `I` with explicit `(I : Submodule R A)`
+-- Porting note: replaced three implicit coercions of `I` with explicit `(I : Submodule R A)`
 theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {R A : Type _}
     [CommRing R] [CommRing A] [Algebra R A] {S : Submonoid R} [IsLocalization S A]
     (I : (FractionalIdeal S A)ˣ) {v : A} (hv : v ∈ (↑I⁻¹ : FractionalIdeal S A))
@@ -89,9 +89,9 @@ theorem FractionalIdeal.isPrincipal_of_unit_of_comap_mul_span_singleton_eq_top {
   have hinv := I.mul_inv
   set J := Submodule.comap (Algebra.linearMap R A) ((I : Submodule R A) * Submodule.span R {v})
   have hJ : IsLocalization.coeSubmodule A J = ↑I * Submodule.span R {v} := by
-    -- Porting note: had to replace the `rw` with an `rw` followed by `simp`
-    rw [Subtype.ext_iff] at hinv
-    simp only [coe_mul, val_eq_coe, coe_one] at hinv
+    -- Porting note: had to insert `val_eq_coe` into this rewrite.
+    -- Arguably this is because `Subtype.ext_iff` is breaking the `FractionalIdeal` API.
+    rw [Subtype.ext_iff, val_eq_coe, coe_mul, val_eq_coe, coe_one] at hinv
     apply Submodule.map_comap_eq_self
     rw [← Submodule.one_eq_range, ← hinv]
     exact Submodule.mul_le_mul_right ((Submodule.span_singleton_le_iff_mem _ _).2 hv)
@@ -124,7 +124,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type _} [Comm
     simp_rw [Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
-  have nle : ∀ M ∈ s, ¬(⨅ M' ∈ s.erase M, M') ≤ M := fun M hM =>
+  have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>
     left_lt_sup.1
       ((hf.mem_toFinset.1 hM).ne_top.lt_top.trans_eq (Ideal.sup_iInf_eq_top <| coprime M hM).symm)
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
@@ -151,24 +151,24 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type _} [Comm
     obtain ⟨c, hc⟩ := this _ (ha M hM) v hv
     refine' IsLocalization.coeSubmodule_mono _ hJM ⟨c, _, hc⟩
     have := Submodule.mul_mem_mul (ha M hM) (Submodule.mem_span_singleton_self v)
-    rwa [← hc] at this 
-  simp_rw [Finset.mul_sum, mul_smul_comm] at hmem 
-  rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem 
+    rwa [← hc] at this
+  simp_rw [Finset.mul_sum, mul_smul_comm] at hmem
+  rw [← s.add_sum_erase _ hM, Submodule.add_mem_iff_left] at hmem
   · refine' hm M hM _
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
     rw [← hc] at hmem ⊢
-    rw [Algebra.smul_def, ← _root_.map_mul] at hmem 
+    rw [Algebra.smul_def, ← _root_.map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
-    rw [IsLocalization.injective _ hS he] at hdM 
+    rw [IsLocalization.injective _ hS he] at hdM
     exact
       Submodule.mem_map_of_mem
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
   · refine' Submodule.sum_mem _ fun M' hM' => _
-    rw [Finset.mem_erase] at hM' 
+    rw [Finset.mem_erase] at hM'
     obtain ⟨c, hc⟩ := this _ (ha M hM) _ (hb M' hM'.2)
     rw [← hc, Algebra.smul_def, ← _root_.map_mul]
     specialize hu M' hM'.2
-    simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu 
+    simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
     exact Submodule.mem_map_of_mem (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
 #align fractional_ideal.is_principal.of_finite_maximals_of_inv FractionalIdeal.isPrincipal.of_finite_maximals_of_inv
 

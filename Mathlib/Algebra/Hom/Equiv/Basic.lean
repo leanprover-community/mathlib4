@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Winston Yin
 
 ! This file was ported from Lean 3 source module algebra.hom.equiv.basic
-! leanprover-community/mathlib commit 67f362670ed961bcb80239dc40ca18bcd4289c77
+! leanprover-community/mathlib commit 1ac8d4304efba9d03fa720d06516fac845aa5353
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -203,6 +203,11 @@ theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 #align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
 #align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
+
+-- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
+@[to_additive (attr := simp)]
+theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
+  rfl
 
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe

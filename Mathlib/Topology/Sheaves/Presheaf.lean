@@ -55,6 +55,17 @@ variable {C}
 
 namespace Presheaf
 
+-- Porting note: added an `ext` lemma,
+-- since `NatTrans.ext` can not see through the definition of `Presheaf`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
+    f = g := by
+  apply NatTrans.ext
+  ext U
+  induction U with | _ U => ?_
+  apply w
+
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
   CategoryTheory.ConcreteCategory.funLike
 
@@ -223,12 +234,17 @@ theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
--- porting note: TODO: attribute [local tidy] tactic.op_induction'
+-- Porting note:
+-- the proof below could be `by aesop_cat` if
+-- https://github.com/JLimperg/aesop/issues/59
+-- can be resolved, and we add:
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 @[simp]
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
-  -- was `tidy`
-  induction' U with U
+  -- was `tidy`, see porting note above.
+  induction U
   apply id_hom_app'
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
@@ -381,9 +397,8 @@ set_option linter.uppercaseLean3 false in
 theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
   · intros a b f
-    -- porting note : `ext` does not see this
-    refine NatTrans.ext _ _ (funext fun U => ?_)
-    . erw [NatTrans.congr f (Opens.op_map_id_obj U)]
+    ext U
+    . erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
       simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
         Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq

@@ -148,7 +148,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         apply h
         subst a
         exact hx
-      · simp only [h', mem_union, mem_singleton] at hx⊢
+      · simp only [h', mem_union, mem_singleton] at hx ⊢
         cases' hx with hx hx'
         · exact Or.inl hx
         · exact Or.inr (h _ hx')
@@ -233,14 +233,14 @@ def pi {β : α → Type max u v} [DecidableEq α] :
 theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
     (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) := by
   induction' xs with xs_hd xs_tl xs_ih <;> simp [pi, -List.map_eq_map, monad_norm, functor_norm]
-  · ext (a⟨⟩)
+  · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
     exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih
-    · ext (x h)
+    · ext x h
       simp [Pi.cons]
       split_ifs
       · subst x

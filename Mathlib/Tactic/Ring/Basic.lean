@@ -91,6 +91,9 @@ ring subexpressions of type `ℕ`.
 -/
 def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
+-- In this file, we would like to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/

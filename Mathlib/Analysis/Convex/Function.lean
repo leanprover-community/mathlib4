@@ -31,7 +31,7 @@ a convex set.
 -/
 
 
-open Finset LinearMap Set BigOperators Classical Convex Pointwise
+open LinearMap Set BigOperators Classical Convex Pointwise
 
 variable {𝕜 E F α β ι : Type _}
 
@@ -729,7 +729,7 @@ theorem ConcaveOn.left_le_of_le_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx :
 theorem ConvexOn.le_right_of_left_le' (hf : ConvexOn 𝕜 s f) {x y : E} {a b : 𝕜} (hx : x ∈ s)
     (hy : y ∈ s) (ha : 0 ≤ a) (hb : 0 < b) (hab : a + b = 1) (hfx : f x ≤ f (a • x + b • y)) :
     f (a • x + b • y) ≤ f y := by
-  rw [add_comm] at hab hfx⊢
+  rw [add_comm] at hab hfx ⊢
   exact hf.le_left_of_right_le' hy hx hb ha hab hfx
 #align convex_on.le_right_of_left_le' ConvexOn.le_right_of_left_le'
 
@@ -790,7 +790,7 @@ theorem ConcaveOn.left_lt_of_lt_right' (hf : ConcaveOn 𝕜 s f) {x y : E} (hx :
 theorem ConvexOn.lt_right_of_left_lt' (hf : ConvexOn 𝕜 s f) {x y : E} {a b : 𝕜} (hx : x ∈ s)
     (hy : y ∈ s) (ha : 0 < a) (hb : 0 < b) (hab : a + b = 1) (hfx : f x < f (a • x + b • y)) :
     f (a • x + b • y) < f y := by
-  rw [add_comm] at hab hfx⊢
+  rw [add_comm] at hab hfx ⊢
   exact hf.lt_left_of_right_lt' hy hx hb ha hab hfx
 #align convex_on.lt_right_of_left_lt' ConvexOn.lt_right_of_left_lt'
 
@@ -1084,6 +1084,51 @@ end SMul
 end OrderedAddCommMonoid
 
 end LinearOrderedField
+
+section OrderIso
+
+variable [OrderedSemiring 𝕜] [OrderedAddCommMonoid α] [SMul 𝕜 α]
+  [OrderedAddCommMonoid β] [SMul 𝕜 β]
+
+theorem OrderIso.strictConvexOn_symm (f : α ≃o β) (hf : StrictConcaveOn 𝕜 univ f) :
+    StrictConvexOn 𝕜 univ f.symm := by
+  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) hxy' ha hb hab
+
+theorem OrderIso.convexOn_symm (f : α ≃o β) (hf : ConcaveOn 𝕜 univ f) :
+    ConvexOn 𝕜 univ f.symm := by
+  refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.le_iff_le, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
+
+theorem OrderIso.strictConcaveOn_symm (f : α ≃o β) (hf : StrictConvexOn 𝕜 univ f) :
+    StrictConcaveOn 𝕜 univ f.symm := by
+  refine ⟨convex_univ, fun x _ y _ hxy a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  have hxy' : x' ≠ y' := by rw [←f.injective.ne_iff, ←hx'', ←hy'']; exact hxy
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.lt_iff_lt, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) hxy' ha hb hab
+
+theorem OrderIso.concaveOn_symm (f : α ≃o β) (hf : ConvexOn 𝕜 univ f) :
+    ConcaveOn 𝕜 univ f.symm := by
+  refine ⟨convex_univ, fun x _ y _ a b ha hb hab => ?_⟩
+  obtain ⟨x', hx''⟩ := f.surjective.exists.mp ⟨x, rfl⟩
+  obtain ⟨y', hy''⟩ := f.surjective.exists.mp ⟨y, rfl⟩
+  simp only [hx'', hy'', OrderIso.symm_apply_apply, gt_iff_lt]
+  rw [←f.le_iff_le, OrderIso.apply_symm_apply]
+  exact hf.2 (by simp : x' ∈ univ) (by simp : y' ∈ univ) ha hb hab
+
+end OrderIso
 
 section
 

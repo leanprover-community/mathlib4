@@ -43,8 +43,8 @@ i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In 
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
 
-Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for `A :
-DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`.  If
+Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
+`A : DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`. If
 `cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 
