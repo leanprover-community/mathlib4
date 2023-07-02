@@ -588,32 +588,36 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
   let P' : Ideal R := P.comap C
   obtain ⟨pX, hpX, hp0⟩ :=
     exists_nonzero_mem_of_ne_bot (ne_of_lt (bot_lt_of_maximal P polynomial_not_isField)).symm hP'
-  let M : Submonoid (R ⧸ P') := Submonoid.powers (pX.map (Quotient.mk P')).leadingCoeff
+  let a : R ⧸ P' := (pX.map (Quotient.mk P')).leadingCoeff
+  let M : Submonoid (R ⧸ P') := Submonoid.powers a
   let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P C le_rfl
-  haveI hp'_prime : P'.IsPrime := comap_isPrime C P
+  haveI hP'_prime : P'.IsPrime := comap_isPrime C P
   have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 <| leadingCoeff_eq_zero.mp (pow_eq_zero hn)
-  let M' : Submonoid (R[X] ⧸ P) := M.map (quotientMap P C le_rfl)
-  refine'
-    (quotientMap P C le_rfl).isIntegral_tower_bot_of_isIntegral (algebraMap _ (Localization M')) _ _
+  let M' : Submonoid (R[X] ⧸ P) := M.map φ
+  refine' φ.isIntegral_tower_bot_of_isIntegral (algebraMap _ (Localization M')) _ _
   · refine'
       IsLocalization.injective (Localization M')
         (show M' ≤ _ from le_nonZeroDivisors_of_noZeroDivisors fun hM' => hM _)
     exact
       let ⟨z, zM, z0⟩ := hM'
       quotientMap_injective (_root_.trans z0 φ.map_zero.symm) ▸ zM
-  sorry
-  -- · rw [← IsLocalization.map_comp M.le_comap_map]
-  --   refine'
-  --     RingHom.isIntegral_trans (algebraMap (R ⧸ P') (Localization M))
-  --       (IsLocalization.map (Localization M') _ M.le_comap_map) _ _
-  --   ·
-  --     exact
-  --       (algebraMap (R ⧸ P') (Localization M)).isIntegral_of_surjective
-  --         (IsField.localization_map_bijective hM
-  --             ((quotient.maximal_ideal_iff_is_field_quotient _).mp
-  --               (isMaximal_comap_C_of_isMaximal P hP'))).2
-  --   ·-- `convert` here is faster than `exact`, and this proof is near the time limit.
-  --     convert isIntegral_is_localization_polynomial_quotient P pX hpX
+  · suffices : RingHom.comp (algebraMap (R[X] ⧸ P) (Localization M')) φ =
+      (IsLocalization.map (Localization M') φ M.le_comap_map).comp (algebraMap (R ⧸ P') (Localization M))
+    rw [this]
+    refine'
+      RingHom.isIntegral_trans (algebraMap (R ⧸ P') (Localization M))
+        (IsLocalization.map (Localization M') φ M.le_comap_map) _ _
+    · exact
+        (algebraMap (R ⧸ P') (Localization M)).isIntegral_of_surjective
+          (IsField.localization_map_bijective hM
+              ((Quotient.maximal_ideal_iff_isField_quotient _).mp
+                (isMaximal_comap_C_of_isMaximal P hP'))).2
+    ·-- `convert` here is faster than `exact`, and this proof is near the time limit.
+      -- convert isIntegral_isLocalization_polynomial_quotient P pX hpX
+      have isloc : IsLocalization M' (Localization M') := by infer_instance
+      exact @isIntegral_isLocalization_polynomial_quotient R _
+        (Localization M) (Localization M') _ _ P pX hpX _ _ _ isloc
+    rw [IsLocalization.map_comp M.le_comap_map]
 -- Porting note: (TODO) do not align private decls?
 -- #align ideal.polynomial.quotient_mk_comp_C_is_integral_of_jacobson' Ideal.Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson'
 
