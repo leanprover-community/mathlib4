@@ -8,9 +8,9 @@ Authors: Chris Birkbeck
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-import Mathbin.Analysis.Complex.UpperHalfPlane.Manifold
-import Mathbin.NumberTheory.ModularForms.SlashInvariantForms
+import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 /-!
 # Modular forms
@@ -86,8 +86,7 @@ instance (priority := 100) ModularFormClass.modularForm : ModularFormClass (Modu
   bdd_at_infty := ModularForm.bdd_at_infty'
 #align modular_form_class.modular_form ModularFormClass.modularForm
 
-instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k
-    where
+instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k) Γ k where
   coe := CuspForm.toFun
   coe_injective' f g h := by cases f <;> cases g <;> congr
   slash_action_eq := CuspForm.slash_action_eq'
@@ -129,8 +128,7 @@ protected def ModularForm.copy (f : ModularForm Γ k) (f' : ℍ → ℂ) (h : f'
 
 /-- Copy of a `cusp_form` with a new `to_fun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def CuspForm.copy (f : CuspForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) : CuspForm Γ k
-    where
+protected def CuspForm.copy (f : CuspForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) : CuspForm Γ k where
   toFun := f'
   slash_action_eq' := h.symm ▸ f.slash_action_eq'
   holo' := h.symm ▸ f.holo'
@@ -401,8 +399,7 @@ instance : Module ℂ (CuspForm Γ k) :=
 instance : Inhabited (CuspForm Γ k) :=
   ⟨0⟩
 
-instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k
-    where
+instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   coe := FunLike.coe
   coe_injective' := FunLike.coe_injective'
   slash_action_eq := CuspFormClass.slash_action_eq
