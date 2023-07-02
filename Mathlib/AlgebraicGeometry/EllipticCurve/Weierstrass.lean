@@ -595,18 +595,14 @@ lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.equation x y) (hΔ : W.Δ ≠ 0
 
 /-! ### Ideals in the coordinate ring -/
 
--- porting note: verify that using `abbrev` instead of `def` does not cause an issue, otherwise
--- define a new `notation`, and verify if the new def-eq cache (lean4#1102) fixed this issue
-/-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`.
-
-In Lean 3, this is a `def` under a `derive [inhabited, comm_ring]` tag with the following comments.
-Note that `deriving comm_ring` generates a reducible instance of `comm_ring` for `coordinate_ring`.
-In certain circumstances this might be extremely slow, because all instances in its definition are
-unified exponentially many times. In this case, one solution is to manually add the local attribute
-`local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
-
-See Zulip thread:
-https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk -/
+-- porting note: in Lean 3, this is a `def` under a `derive comm_ring` tag.
+-- This generates a reducible instance of `comm_ring` for `coordinate_ring`. In certain
+-- circumstances this might be extremely slow, because all instances in its definition are unified
+-- exponentially many times. In this case, one solution is to manually add the local attribute
+-- `local attribute [irreducible] coordinate_ring.comm_ring` to block this type-level unification.
+-- In Lean 4, this is no longer an issue and is now an `abbrev`. See Zulip thread:
+-- https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/.E2.9C.94.20class_group.2Emk
+/-- The coordinate ring $R[W] := R[X, Y] / \langle W(X, Y) \rangle$ of `W`. -/
 abbrev CoordinateRing : Type u :=
   AdjoinRoot W.polynomial
 #align weierstrass_curve.coordinate_ring WeierstrassCurve.CoordinateRing
