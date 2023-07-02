@@ -372,7 +372,6 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
       (changeForm_changeForm _ _ x).trans <| by simp_rw [add_left_neg, changeForm_self_apply] }
 #align clifford_algebra.change_form_equiv CliffordAlgebra.changeFormEquiv
 
-#check changeForm
 @[simp]
 theorem changeFormEquiv_symm :
     (changeFormEquiv h).symm = changeFormEquiv (changeForm.neg_proof h) :=
