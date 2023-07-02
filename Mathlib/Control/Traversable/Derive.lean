@@ -17,7 +17,7 @@ import Mathlib.Control.Traversable.Lemmas
 
 namespace Mathlib.Deriving.Traversable
 
-open Lean Meta Elab Term Tactic List Monad Functor
+open Lean Meta Elab Term Command Tactic List Monad Functor
 
 /-- similar to `nestedTraverse` but for `Functor` -/
 partial def nestedMap (f v t : Expr) : TermElabM Expr := do
@@ -82,6 +82,7 @@ def mkMap (type : Name) (vars : List Expr) : TacticM Unit := do
 def deriveFunctor (levels : List Name) (vars : List Expr) : TacticM Unit := do
   let .app (.const ``Functor _) F ← getMainTarget | failure
   let some n := F.getAppFn.constName? | failure
+  let d ← getConstInfo n
   evalTactic (← `(tactic| refine { map := @(?_) }))
   let ms ← getGoals
   let t ← getMainTarget
@@ -96,12 +97,85 @@ def deriveFunctor (levels : List Name) (vars : List Expr) : TacticM Unit := do
     { ref := .missing
       kind := .def
       levelParams := levels
-      modifiers := {}
+      modifiers := { isUnsafe := d.isUnsafe }
       declName := n'
       type := t'
       value := e' }] {}
   setGoals ms
   closeMainGoal (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
+
+def mkOneInstance (n cls : Name) (tac : List Name → List Expr → TacticM Unit)
+    (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) : TermElabM Unit := do
+  let .inductInfo decl ← getConstInfo n |
+    throwError m!"failed to derive '{cls}', '{n}' is not an inductive type"
+  let clsDecl ← getConstInfo cls
+  let ls := decl.levelParams.map Level.param
+  -- incrementally build up target expression `(hp : p) → [cls hp] → ... cls (n.{ls} hp ...)`
+  -- where `p ...` are the inductive parameter types of `n`
+  let tgt := Lean.mkConst n ls
+  forallTelescope decl.type fun params _ => do
+    let params := params.pop
+    let tgt := mkAppN tgt params
+    let tgt ← mkInst cls tgt
+    let tgt ← params.toList.enum.foldrM (fun (i, param) tgt => do
+      -- add typeclass hypothesis for each inductive parameter
+      let tgt ← (do
+        guard (i < decl.numParams)
+        let paramCls ← mkAppM cls #[param]
+        return mkForall `a .instImplicit paramCls tgt) <|> return tgt
+      mkForallFVars #[param] tgt) tgt
+    (discard <| liftM (synthInstance tgt)) <|> do
+      let m := (← mkFreshExprSyntheticOpaqueMVar tgt).mvarId!
+      let (fvars, m') ← m.intros
+      discard <| run m' (tac decl.levelParams (fvars.toList.map mkFVar))
+      let val ← instantiateMVars (mkMVar m)
+      let isUnsafe := decl.isUnsafe && clsDecl.isUnsafe
+      let result ← m'.withContext <| do
+        let type ← m'.getType
+        let ref ← IO.mkRef ""
+        Meta.forEachExpr type fun e => do
+          if e.isForall then ref.modify (· ++ "ForAll")
+          else if e.isProp then ref.modify (· ++ "Prop")
+          else if e.isType then ref.modify (· ++ "Type")
+          else if e.isSort then ref.modify (· ++ "Sort")
+          else if e.isConst then
+            match e.constName!.eraseMacroScopes with
+            | .str _ str =>
+                if str.front.isLower then
+                  ref.modify (· ++ str.capitalize)
+                else
+                  ref.modify (· ++ str)
+            | _ => pure ()
+        ref.get
+      let instN ← liftMacroM <| mkUnusedBaseName <| Name.mkSimple ("inst" ++ result)
+      addPreDefinitions #[
+        { ref := .missing
+          kind := .def
+          levelParams := decl.levelParams
+          modifiers :=
+            { isUnsafe
+              attrs := #[
+                { kind := .global
+                  name := `instance
+                  stx := ← `(attr| instance) }
+              ] }
+          declName := instN
+          type := tgt
+          value := val }] {}
+
+def higherOrderDeriveHandler (cls : Name) (tac : List Name → List Expr → TacticM Unit)
+    (deps : List DerivingHandlerNoArgs := [])
+    (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
+    DerivingHandlerNoArgs := fun a => do
+  let #[n] := a | return false -- mutually inductive types are not supported yet
+  deps.forM fun f : DerivingHandlerNoArgs => discard <| f a
+  liftTermElabM <| mkOneInstance n cls tac mkInst
+  return true
+
+def functorDeriveHandler : DerivingHandlerNoArgs :=
+  higherOrderDeriveHandler ``Functor deriveFunctor []
+
+initialize registerDerivingHandler ``Functor functorDeriveHandler
 
 /-
 meta def with_prefix : option name → name → name
@@ -276,46 +350,6 @@ do vs ← local_context,
       tgt ← pis vs tgt,
       derive_traverse_equations pre n vs tgt
 
-meta def mk_one_instance
-  (n : name)
-  (cls : name)
-  (tac : tactic unit)
-  (namesp : option name)
-  (mk_inst : name → expr → tactic expr := λ n arg, mk_app n [arg]) :
-  tactic unit :=
-do decl ← get_decl n,
-   cls_decl ← get_decl cls,
-   env ← get_env,
-   guard (env.is_inductive n) <|>
-     fail format!"failed to derive '{cls}', '{n}' is not an inductive type",
-   let ls := decl.univ_params.map $ λ n, level.param n,
-   -- incrementally build up target expression `Π (hp : p) [cls hp] ..., cls (n.{ls} hp ...)`
-   -- where `p ...` are the inductive parameter types of `n`
-   let tgt : expr := expr.const n ls,
-   ⟨params, _⟩ ← open_pis (decl.type.instantiate_univ_params (decl.univ_params.zip ls)),
-   let params := params.init,
-   let tgt := tgt.mk_app params,
-   tgt ← mk_inst cls tgt,
-   tgt ← params.enum.mfoldr (λ ⟨i, param⟩ tgt,
-   do -- add typeclass hypothesis for each inductive parameter
-      tgt ← do
-      { guard $ i < env.inductive_num_params n,
-        param_cls ← mk_app cls [param],
-        pure $ expr.pi `a binder_info.inst_implicit param_cls tgt }
-      <|> pure tgt,
-      pure $ tgt.bind_pi param
-   ) tgt,
-   () <$ mk_instance tgt <|> do
-     (_, val) ← tactic.solve_aux tgt (do
-       tactic.intros >> tac),
-     val ← instantiate_mvars val,
-     let trusted := decl.is_trusted ∧ cls_decl.is_trusted,
-     let inst_n := with_prefix namesp n ++ cls,
-     add_decl (declaration.defn inst_n
-               decl.univ_params
-               tgt val reducibility_hints.abbrev trusted),
-     set_basic_attribute `instance inst_n namesp.is_none
-
 open interactive
 
 
@@ -387,25 +421,6 @@ if p.is_constant_of cls then
   hdl p n
 else
   pure ff
-
-meta def higher_order_derive_handler
-  (cls : name)
-  (tac : tactic unit)
-  (deps : list derive_handler := [])
-  (namesp : option name)
-  (mk_inst : name → expr → tactic expr := λ n arg, mk_app n [arg]) :
-  derive_handler :=
-λ p n,
-do mmap' (λ f : derive_handler, f p n) deps,
-   mk_one_instance n cls tac namesp mk_inst,
-   pure tt
-
-meta def functor_derive_handler' (nspace : option name := none) : derive_handler :=
-higher_order_derive_handler ``functor (derive_functor nspace) [] nspace
-
-@[derive_handler]
-meta def functor_derive_handler : derive_handler :=
-guard_class ``functor functor_derive_handler'
 
 meta def traversable_derive_handler' (nspace : option name := none) : derive_handler :=
 higher_order_derive_handler ``traversable (derive_traverse nspace)
