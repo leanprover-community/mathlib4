@@ -47,7 +47,7 @@ variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 namespace GrothendieckTopology.Cover
 
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
-set_option pp.universes true in
+
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`
 is isomorphic to the composition of the multicospan associated to `S` and `P`,
 composed with `F`. -/
