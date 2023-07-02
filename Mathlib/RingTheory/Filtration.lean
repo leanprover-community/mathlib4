@@ -471,7 +471,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing 
 
 /-- **Krull's intersection theorem** for noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h : I ≠ ⊤) :
-    (⨅ i : ℕ, I ^ i) = ⊥ := by
+    ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_localRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
@@ -479,7 +479,7 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
 
 /-- **Krull's intersection theorem** for noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
-    (⨅ i : ℕ, I ^ i) = ⊥ := by
+    ⨅ i : ℕ, I ^ i = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   by_contra hx'

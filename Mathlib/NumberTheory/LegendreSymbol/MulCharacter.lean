@@ -517,7 +517,7 @@ open BigOperators
 /-- The sum over all values of a nontrivial multiplicative character on a finite ring is zero
 (when the target is a domain). -/
 theorem IsNontrivial.sum_eq_zero [Fintype R] [IsDomain R'] {χ : MulChar R R'}
-    (hχ : χ.IsNontrivial) : (∑ a, χ a) = 0 := by
+    (hχ : χ.IsNontrivial) : ∑ a, χ a = 0 := by
   rcases hχ with ⟨b, hb⟩
   refine' eq_zero_of_mul_eq_self_left hb _
   -- POrting note: `map_mul` isn't applied
