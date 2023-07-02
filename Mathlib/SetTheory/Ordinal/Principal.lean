@@ -70,7 +70,7 @@ theorem principal_one_iff {op : Ordinal → Ordinal → Ordinal} : Principal op 
 #align ordinal.principal_one_iff Ordinal.principal_one_iff
 
 theorem Principal.iterate_lt {op : Ordinal → Ordinal → Ordinal} {a o : Ordinal} (hao : a < o)
-    (ho : Principal op o) (n : ℕ) : (op a^[n]) a < o := by
+    (ho : Principal op o) (n : ℕ) : (op a)^[n] a < o := by
   induction' n with n hn
   · rwa [Function.iterate_zero]
   · rw [Function.iterate_succ']
@@ -113,7 +113,7 @@ theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordin
   rw [lt_nfp] at *
   cases' ha with m hm
   cases' hb with n hn
-  cases' le_total ((blsub₂.{u, u} op^[m]) o) ((blsub₂.{u, u} op^[n]) o) with h h
+  cases' le_total ((blsub₂.{u, u} op)^[m] o) ((blsub₂.{u, u} op)^[n] o) with h h
   · use n + 1
     rw [Function.iterate_succ']
     exact lt_blsub₂ op (hm.trans_le h) hn

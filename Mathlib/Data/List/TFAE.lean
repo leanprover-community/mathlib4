@@ -72,4 +72,42 @@ theorem TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = s
   h _ (List.get?_mem h₁) _ (List.get?_mem h₂)
 #align list.tfae.out List.TFAE.out
 
+/-- If `P₁ x ↔ ... ↔ Pₙ x` for all `x`, then `(∀ x, P₁ x) ↔ ... ↔ (∀ x, Pₙ x)`.
+Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` from the list
+`[(∀ x, P₁ x), ..., (∀ x, Pₙ x)]`, but simply providing a list of underscores with the right
+length makes it happier.
+
+Example:
+```lean
+example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFAE) :
+    [∀ n, P₁ n, ∀ n, P₂ n, ∀ n, P₃ n].TFAE :=
+  forall_tfae [_, _, _] H
+```
+-/
+theorem forall_tfae {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+    (l.map (fun p ↦ ∀ a, p a)).TFAE := by
+  simp_rw [TFAE, List.forall_mem_map_iff]
+  intros p₁ hp₁ p₂ hp₂
+  exact forall_congr' fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
+    (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)
+
+/-- If `P₁ x ↔ ... ↔ Pₙ x` for all `x`, then `(∃ x, P₁ x) ↔ ... ↔ (∃ x, Pₙ x)`.
+Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` from the list
+`[(∃ x, P₁ x), ..., (∃ x, Pₙ x)]`, but simply providing a list of underscores with the right
+length makes it happier.
+
+Example:
+```lean
+example (P₁ P₂ P₃ : ℕ → Prop) (H : ∀ n, [P₁ n, P₂ n, P₃ n].TFAE) :
+    [∃ n, P₁ n, ∃ n, P₂ n, ∃ n, P₃ n].TFAE :=
+  exists_tfae [_, _, _] H
+```
+-/
+theorem exists_tfae {α : Type _} (l : List (α → Prop)) (H : ∀ a : α, (l.map (fun p ↦ p a)).TFAE) :
+    (l.map (fun p ↦ ∃ a, p a)).TFAE := by
+  simp_rw [TFAE, List.forall_mem_map_iff]
+  intros p₁ hp₁ p₂ hp₂
+  exact exists_congr fun a ↦ H a (p₁ a) (mem_map_of_mem (fun p ↦ p a) hp₁)
+    (p₂ a) (mem_map_of_mem (fun p ↦ p a) hp₂)
+
 end List
