@@ -41,7 +41,7 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
   else if α.occurs t then
     let f' ← nestedMap f α t
     return f'.app e
-  else if ← withNewMCtxDepth <| isDefEq t cl then
+  else if ← withNewMCtxDepth <| isDefEq t.appFn! cl then
     mkAppM ``Comp.mk #[e]
   else
     return e
@@ -53,7 +53,7 @@ def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr) (args₁ 
   let (_, args') ←
     mapAccumLM (fun (x : List Expr) (y : Bool × Expr) =>
       if y.1 then return (x.tail, x.head!)
-      else Prod.mk recCall <$> mapField n g.appFn! f α β y.2) recCall args₁
+      else Prod.mk x <$> mapField n g.appFn! f α β y.2) recCall args₁
   mkAppOptM c ((args₀ ++ args').map some).toArray
 
 /-- derive the `map` definition of a `Functor` -/
