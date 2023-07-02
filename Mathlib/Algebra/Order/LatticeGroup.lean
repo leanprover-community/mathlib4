@@ -358,7 +358,7 @@ theorem m_neg_abs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a|⁻
 
 @[to_additive pos_abs]
 theorem m_pos_abs [CovariantClass α α (· * ·) (· ≤ ·)] (a : α) : |a|⁺ = |a| := by
-  nth_rw 2 [← pos_div_neg (|a|)]
+  nth_rw 2 [← pos_div_neg |a|]
   rw [div_eq_mul_inv]
   symm
   rw [mul_right_eq_self, inv_eq_one]

@@ -72,7 +72,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
       exact ⟨m, hm', hm⟩
   have : ∃ n : ℕ, Set.Nonempty (H ∩ Ioc (n • a) ((n + 1) • a))
   · rcases (bot_or_exists_ne_zero H).resolve_left hbot with ⟨g, hgH, hg₀⟩
-    rcases hex (|g|) (abs_pos.2 hg₀) with ⟨n, hn⟩
+    rcases hex |g| (abs_pos.2 hg₀) with ⟨n, hn⟩
     exact ⟨n, _, (@abs_mem_iff (AddSubgroup G) G _ _).2 hgH, hn⟩
   classical rcases Nat.findX this with ⟨n, ⟨x, hxH, hnx, hxn⟩, hmin⟩
   by_contra hxmin
