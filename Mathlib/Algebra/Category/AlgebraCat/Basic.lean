@@ -150,6 +150,14 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     rfl
 #align Algebra.free AlgebraCat.free
 
+@[simp]
+theorem AlgebraCat.free_obj_isRing_nsmul (R : Type u) [inst : CommRing R] (S : Type u) (a : ℕ) (b : FreeAlgebra R S) :
+ a • b = nsmulRec a b := by rfl
+
+@[simp]
+theorem AlgebraCat.free_obj_isAlgebra_toFun (R : Type u) [inst : CommRing R] (S : Type u) (r : R) :
+  (Algebra.toRingHom r : FreeAlgebra R S) = Quot.mk (FreeAlgebra.Rel R S) (FreeAlgebra.Pre.of_scalar r) := by rfl
+
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
   Adjunction.mkOfHomEquiv
