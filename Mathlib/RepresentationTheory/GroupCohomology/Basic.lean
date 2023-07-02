@@ -146,6 +146,8 @@ theorem d_eq :
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · exact Finset.sum_congr rfl fun j hj => by
       rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
+  -- https://github.com/leanprover-community/mathlib4/issues/5026
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   change d n A f g = diagonalHomEquiv (n + 1) A
     ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
   rw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
