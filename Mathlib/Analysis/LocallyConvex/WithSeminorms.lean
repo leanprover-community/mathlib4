@@ -9,7 +9,6 @@ Authors: Moritz Doll, Anatole Dedecker
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
@@ -684,7 +683,7 @@ protected theorem _root_.NormedSpace.uniformEquicontinuous_TFAE {κ F : Type _}
     exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
   tfae_have 3 → 2
   . exact fun H ↦ ⟨⨆ k, (normSeminorm 𝕜₂ F).comp (f k), H.2, le_ciSup H.1⟩
-  tfae_have 2 → 1
+  tfae_have 2 → 1 -- This would work over any `NormedField`
   . intro ⟨p, hp, hfp⟩
     have hp' : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
     refine uniformEquicontinuous_of_equicontinuousAt_zero f
@@ -694,7 +693,7 @@ protected theorem _root_.NormedSpace.uniformEquicontinuous_TFAE {κ F : Type _}
     exact hfp k x
   tfae_finish
 
-lemma _root_.WithSeminorms.uniformEquicontinuous_TFAE {κ : Type _}
+protected theorem _root_.WithSeminorms.uniformEquicontinuous_TFAE {κ : Type _}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
     [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) : TFAE
@@ -702,43 +701,21 @@ lemma _root_.WithSeminorms.uniformEquicontinuous_TFAE {κ : Type _}
       ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p,
       ∀ i, BddAbove (range fun k ↦ (q i).comp (f k)) ∧
         Continuous (⨆ k, (q i).comp (f k) : Seminorm 𝕜 E) ] := by
-  sorry
+  rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng]
+  refine forall_tfae [_, _, _] fun i ↦ ?_
+  letI : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
+  letI : NormedSpace 𝕜₂ F := ⟨fun c x ↦ (map_smul_eq_mul (q i) _ _).le⟩
+  exact NormedSpace.uniformEquicontinuous_TFAE f
 
-lemma uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type _}
+theorem _root_.WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type _}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
     [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔
-    ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p := by
-  rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng]
-  -- Porting note: should be congrm (∀ i, _)
-  refine forall_congr' (fun i ↦ ?_)
-  clear hu hq u
-  letI : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
-  constructor
-  . intro H
-    have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
-      filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
-        with x hx k
-      replace hx : q i (f k 0 - f k x) ≤ 1 := (hx k).le
-      rwa [map_zero, zero_sub, map_neg_eq_map] at hx
-    have bdd : BddAbove (range fun k ↦ (q i).comp (f k)) :=
-      Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
-        (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
-    refine ⟨⨆ k, (q i).comp (f k), Seminorm.continuous' zero_lt_one ?_, le_ciSup bdd⟩
-    filter_upwards [this] with x hx
-    rw [closedBall_iSup bdd _ one_pos, mem_iInter]
-    exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
-    -- Works in trivially normed fields too
-  . intro ⟨p, hp, hfp⟩
-    have hp' : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
-    refine uniformEquicontinuous_of_equicontinuousAt_zero f
-      (Metric.equicontinuousAt_of_continuity_modulus p hp' _ <| eventually_of_forall fun x k ↦ ?_)
-    change q i (f k 0 - f k x) ≤ p x
-    rw [map_zero, zero_sub, map_neg_eq_map, ← comp_apply]
-    exact hfp k x
+    ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p :=
+  (hq.uniformEquicontinuous_TFAE f).out 0 1
 
-lemma uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type _}
+theorem _root_.WithSeminorms.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type _}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
     [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
