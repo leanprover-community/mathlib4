@@ -47,7 +47,7 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 noncomputable section
 
-open scoped Classical Topology ENNReal
+open scoped Classical Topology ENNReal Cardinal
 
 set_option linter.uppercaseLean3 false
 
@@ -639,9 +639,8 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     rcases exists_mem_of_nonempty Y with ⟨xY, _⟩
     rcases hs' xY with ⟨xs', Dxs'⟩
     have : 0 ≤ ε₃ := le_trans dist_nonneg Dxs'
-    refine'
-      hausdorffDist_le_of_mem_dist this (fun x hx => ⟨x, mem_univ _, by simpa only [dist_self]⟩)
-        fun x _ => _
+    refine hausdorffDist_le_of_mem_dist this (fun x _ => ⟨x, mem_univ _, by simpa only [dist_self]⟩)
+      fun x _ => ?_
     rcases hs' x with ⟨y, Dy⟩
     exact ⟨Φ y, mem_range_self _, Dy⟩
   linarith
@@ -656,8 +655,8 @@ instance : SecondCountableTopology GHSpace := by
   let ε := 2 / 5 * δ
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
   have : ∀ p : GHSpace, ∃ s : Set p.Rep, s.Finite ∧ univ ⊆ ⋃ x ∈ s, ball x ε := fun p => by
-    simpa only [subset_univ, exists_true_left] using
-      finite_cover_balls_of_compact isCompact_univ εpos
+    simpa only [subset_univ, true_and] using
+      finite_cover_balls_of_compact (α := p.Rep) isCompact_univ εpos
   -- for each `p`, `s p` is a finite `ε`-dense subset of `p` (or rather the metric space
   -- `p.rep` representing `p`)
   choose s hs using this
@@ -690,17 +689,17 @@ instance : SecondCountableTopology GHSpace := by
   -- are within controlled Gromov-Hausdorff distance.
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
     refine' ghDist_le_of_approx_subsets Φ _ _ _
-    show ∀ x : p.Rep, ∃ (y : p.Rep) (H : y ∈ s p), dist x y ≤ ε
+    show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
     · -- by construction, `s p` is `ε`-dense
       intro x
       have : x ∈ ⋃ y ∈ s p, ball y ε := (hs p).2 (mem_univ _)
-      rcases mem_Union₂.1 this with ⟨y, ys, hy⟩
+      rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       exact ⟨y, ys, le_of_lt hy⟩
     show ∀ x : q.Rep, ∃ z : s p, dist x (Φ z) ≤ ε
     · -- by construction, `s q` is `ε`-dense, and it is the range of `Φ`
       intro x
       have : x ∈ ⋃ y ∈ s q, ball y ε := (hs q).2 (mem_univ _)
-      rcases mem_Union₂.1 this with ⟨y, ys, hy⟩
+      rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
       let hi := ((E q) ⟨y, ys⟩).is_lt
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
@@ -711,7 +710,7 @@ instance : SecondCountableTopology GHSpace := by
       have C1 : (E p) z = ⟨i, hip⟩ := (E p).apply_symm_apply ⟨i, hip⟩
       have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
       have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
-      have : Φ z = y := by simp only [Φ, Ψ]; rw [C1, C2, C3]; rfl
+      have : Φ z = y := by simp only; rw [C1, C2, C3]
       rw [this]
       exact le_of_lt hy
     show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
@@ -731,17 +730,19 @@ instance : SecondCountableTopology GHSpace := by
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = ((E q) (Ψ y)).1 := by
-        simp only [Equiv.apply_symm_apply, Fin.val_eq_coe, Fin.coe_cast]
+        simp only [Equiv.apply_symm_apply, Fin.coe_cast]
       -- Express `dist x y` in terms of `F p`
-      have : (F p).2 ((E p) x) ((E p) y) = floor (ε⁻¹ * dist x y) := by
-        simp only [F, (E p).symm_apply_apply]
-      have Ap : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = floor (ε⁻¹ * dist x y) := by rw [← this];
-        congr <;> apply Fin.ext_iff.2 <;> rfl
+      have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
+        simp only [(E p).symm_apply_apply]
+      have Ap : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = ⌊ε⁻¹ * dist x y⌋ := by rw [← this]
       -- Express `dist (Φ x) (Φ y)` in terms of `F q`
-      have : (F q).2 ((E q) (Ψ x)) ((E q) (Ψ y)) = floor (ε⁻¹ * dist (Ψ x) (Ψ y)) := by
-        simp only [F, (E q).symm_apply_apply]
-      have Aq : (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ = floor (ε⁻¹ * dist (Ψ x) (Ψ y)) := by rw [← this];
-        congr <;> apply Fin.ext_iff.2 <;> [exact i'; exact j']
+      have : (F q).2 ((E q) (Ψ x)) ((E q) (Ψ y)) = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
+        simp only [(E q).symm_apply_apply]
+      have Aq : (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
+        rw [← this]
+        -- porting note: `congr` fails to make progress
+        refine congr_arg₂ (F q).2 ?_ ?_ <;> ext1
+        exacts [i', j']
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ := by
@@ -773,10 +774,9 @@ instance : SecondCountableTopology GHSpace := by
         _ = ε := mul_one _
 
   calc
-    dist p q = ghDist p.rep q.rep := dist_ghDist p q
+    dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
     _ ≤ ε + ε / 2 + ε := main
-    _ = δ := by simp only [ε]; ring
-
+    _ = δ := by ring
 
 /-- Compactness criterion: a closed set of compact metric spaces is compact if the spaces have
 a uniformly bounded diameter, and for all `ε` the number of balls of radius `ε` required
@@ -784,9 +784,8 @@ to cover the spaces is uniformly bounded. This is an equivalence, but we only pr
 interesting direction that these conditions imply compactness. -/
 theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ → ℕ}
     (ulim : Tendsto u atTop (𝓝 0)) (hdiam : ∀ p ∈ t, diam (univ : Set (GHSpace.Rep p)) ≤ C)
-    (hcov :
-      ∀ p ∈ t,
-        ∀ n : ℕ, ∃ s : Set (GHSpace.Rep p), Cardinal.mk s ≤ K n ∧ univ ⊆ ⋃ x ∈ s, ball x (u n)) :
+    (hcov : ∀ p ∈ t, ∀ n : ℕ, ∃ s : Set (GHSpace.Rep p),
+      (#s) ≤ K n ∧ univ ⊆ ⋃ x ∈ s, ball x (u n)) :
     TotallyBounded t := by
   /- Let `δ>0`, and `ε = δ/5`. For each `p`, we construct a finite subset `s p` of `p`, which
     is `ε`-dense and has cardinality at most `K n`. Encoding the mutual distances of points in `s p`,
@@ -816,7 +815,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     · rcases hcov _ (Set.not_not_mem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
       rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
       rw [hN, Cardinal.natCast_le] at scard
-      have : Cardinal.mk s = Cardinal.mk (Fin N) := by rw [hN, Cardinal.mk_fin]
+      have : (#s) = (#Fin N) := by rw [hN, Cardinal.mk_fin]
       cases' Quotient.exact this with E
       use s, N, scard, E
       simp only [scover, imp_true_iff]
@@ -839,17 +838,17 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     -- in `q`, and `s p` and `s q` are almost isometric. Then closeness follows
     -- from `ghDist_le_of_approx_subsets`
     refine' ghDist_le_of_approx_subsets Φ _ _ _
-    show ∀ x : p.Rep, ∃ (y : p.Rep) (H : y ∈ s p), dist x y ≤ ε
+    show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
     · -- by construction, `s p` is `ε`-dense
       intro x
       have : x ∈ ⋃ y ∈ s p, ball y (u n) := (hs p pt) (mem_univ _)
-      rcases mem_Union₂.1 this with ⟨y, ys, hy⟩
+      rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       exact ⟨y, ys, le_trans (le_of_lt hy) u_le_ε⟩
     show ∀ x : q.Rep, ∃ z : s p, dist x (Φ z) ≤ ε
     · -- by construction, `s q` is `ε`-dense, and it is the range of `Φ`
       intro x
       have : x ∈ ⋃ y ∈ s q, ball y (u n) := (hs q qt) (mem_univ _)
-      rcases mem_Union₂.1 this with ⟨y, ys, hy⟩
+      rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
       let hi := ((E q) ⟨y, ys⟩).2
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
@@ -860,7 +859,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have C1 : (E p) z = ⟨i, hip⟩ := (E p).apply_symm_apply ⟨i, hip⟩
       have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
       have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
-      have : Φ z = y := by simp only [Φ, Ψ]; rw [C1, C2, C3]; rfl
+      have : Φ z = y := by simp only; rw [C1, C2, C3]
       rw [this]
       exact le_trans (le_of_lt hy) u_le_ε
     show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
@@ -885,37 +884,34 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
         calc
           ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F p).2 ((E p) x) ((E p) y)).1 := by
             congr <;> apply Fin.ext_iff.2 <;> rfl
-          _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [F, (E p).symm_apply_apply]
+          _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [(E p).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist x y⌋₊ := by
             refine' min_eq_right (Nat.floor_mono _)
             refine' mul_le_mul_of_nonneg_left (le_trans _ (le_max_left _ _)) (inv_pos.2 εpos).le
-            change dist (x : p.rep) y ≤ C
-            refine'
-              le_trans (dist_le_diam_of_mem is_compact_univ.bounded (mem_univ _) (mem_univ _)) _
+            change dist (x : p.Rep) y ≤ C
+            refine' (dist_le_diam_of_mem isCompact_univ.bounded (mem_univ _) (mem_univ _)).trans _
             exact hdiam p pt
-
       -- Express `dist (Φ x) (Φ y)` in terms of `F q`
       have Aq : ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ :=
         calc
           ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ((F q).2 ((E q) (Ψ x)) ((E q) (Ψ y))).1 := by
-            congr <;> apply Fin.ext_iff.2 <;> [exact i'; exact j']
-          _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp only [F, (E q).symm_apply_apply]
+            -- Porting note: `congr` drops `Fin.val` but fails to make further progress
+            exact congr_arg₂ (Fin.val <| (F q).2 · ·) (Fin.ext i') (Fin.ext j')
+          _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp only [(E q).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by
             refine' min_eq_right (Nat.floor_mono _)
             refine' mul_le_mul_of_nonneg_left (le_trans _ (le_max_left _ _)) (inv_pos.2 εpos).le
-            change dist (Ψ x : q.rep) (Ψ y) ≤ C
-            refine'
-              le_trans (dist_le_diam_of_mem is_compact_univ.bounded (mem_univ _) (mem_univ _)) _
+            change dist (Ψ x : q.Rep) (Ψ y) ≤ C
+            refine (dist_le_diam_of_mem isCompact_univ.bounded (mem_univ _) (mem_univ _)).trans ?_
             exact hdiam q qt
-
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 := by
         -- we want to `subst hpq` where `hpq : F p = F q`, except that `subst` only works
         -- with a constant, so replace `F q` (and everything that depends on it) by a constant `f`
         -- then `subst`
-        revert hiq hjq
-        change N q with (F q).1
+        dsimp only at hpq
+        dsimp only [show N q = (F q).1 from rfl] at hiq hjq ⊢
         generalize F q = f at hpq ⊢
         subst hpq
         intros
@@ -936,7 +932,6 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
             (abs_mul _ _).symm
           _ = |ε⁻¹ * dist x y - ε⁻¹ * dist (Ψ x) (Ψ y)| := by congr; ring
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
-
       calc
         |dist x y - dist (Ψ x) (Ψ y)| = ε * ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| := by
           rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
@@ -944,13 +939,11 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
         _ ≤ ε * 1 := (mul_le_mul_of_nonneg_left I (le_of_lt εpos))
         _ = ε := mul_one _
-
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
     _ ≤ ε + ε / 2 + ε := main
     _ = δ / 2 := by simp only [one_div]; ring
     _ < δ := half_lt_self δpos
-
 #align Gromov_Hausdorff.totally_bounded GromovHausdorff.totallyBounded
 
 section Complete
@@ -1006,10 +999,10 @@ local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 /-- The Gromov-Hausdorff space is complete. -/
 instance : CompleteSpace GHSpace := by
-  have : ∀ n : ℕ, 0 < ((1 : ℝ) / 2) ^ n := by apply pow_pos; norm_num
+  set d := fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n
+  have : ∀ n : ℕ, 0 < d n := fun _ ↦ by positivity
   -- start from a sequence of nonempty compact metric spaces within distance `1/2^n` of each other
-  refine'
-    Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) this fun u hu => _
+  refine' Metric.complete_of_convergent_controlled_sequences d this fun u hu => _
   -- `X n` is a representative of `u n`
   let X n := (u n).Rep
   -- glue them together successively in an optimal way, getting a sequence of metric spaces `Y n`
@@ -1038,22 +1031,13 @@ instance : CompleteSpace GHSpace := by
     exact (toInductiveLimit_isometry _ _).comp (Y n).isom
   -- The Hausdorff distance of `X2 n` and `X2 (n+1)` is by construction the distance between
   -- `u n` and `u (n+1)`, therefore bounded by `1/2^n`
-  have D2 : ∀ n, hausdorffDist (X2 n) (X2 n.succ) < (1 / 2) ^ n := by
-    intro n
-    have X2n :
-      X2 n =
-        range
-          ((coeZ ∘
-              Φ n.succ ∘ c n ∘ toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ))) ∘
-            optimalGHInjl (X n) (X n.succ)) := by
-      change
-        X2 n =
-          range
-            (coeZ ∘
-              Φ n.succ ∘
-                c n ∘
-                  toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ)) ∘
-                    optimalGHInjl (X n) (X n.succ))
+  have D2 : ∀ n, hausdorffDist (X2 n) (X2 n.succ) < d n := fun n ↦ by
+    have X2n : X2 n =
+        range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
+          (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjl (X n) (X n.succ)) := by
+      change X2 n = range (coeZ ∘ Φ n.succ ∘ c n ∘
+        toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ)) ∘
+        optimalGHInjl (X n) (X n.succ))
       simp only --[X2, Φ]
       rw [← toInductiveLimit_commute I]
       simp only --[f]
@@ -1061,11 +1045,8 @@ instance : CompleteSpace GHSpace := by
     rw [range_comp] at X2n
     have X2nsucc :
       X2 n.succ =
-        range
-          ((coeZ ∘
-              Φ n.succ ∘ c n ∘ toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ))) ∘
-            optimalGHInjr (X n) (X n.succ)) :=
-      by rfl
+        range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
+          (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjr (X n) (X n.succ)) := rfl
     rw [range_comp] at X2nsucc
     rw [X2n, X2nsucc, hausdorffDist_image, hausdorffDist_optimal, ← dist_ghDist]
     · exact hu n n n.succ (le_refl n) (le_succ n)
