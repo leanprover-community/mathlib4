@@ -68,11 +68,6 @@ instance {S : AlgebraCat.{v} R} : Ring ((forget (AlgebraCat R)).obj S) :=
 instance {S : AlgebraCat.{v} R} : Algebra R ((forget (AlgebraCat R)).obj S) :=
   (inferInstance : Algebra R S.carrier)
 
--- porting note: added to ease automation
-@[ext]
-lemma ext {M N : ModuleCat.{v} R} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
-  FunLike.ext _ _ h
-
 instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
