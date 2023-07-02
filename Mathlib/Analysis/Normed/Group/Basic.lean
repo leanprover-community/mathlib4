@@ -1754,7 +1754,7 @@ theorem ennnorm_eq_ofReal (hr : 0 ≤ r) : (‖r‖₊ : ℝ≥0∞) = ENNReal.o
   rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg hr]
 #align real.ennnorm_eq_of_real Real.ennnorm_eq_ofReal
 
-theorem ennnorm_eq_ofReal_abs (r : ℝ) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal (|r|) := by
+theorem ennnorm_eq_ofReal_abs (r : ℝ) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal |r| := by
   rw [← Real.nnnorm_abs r, Real.ennnorm_eq_ofReal (abs_nonneg _)]
 #align real.ennnorm_eq_of_real_abs Real.ennnorm_eq_ofReal_abs
 

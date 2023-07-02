@@ -290,7 +290,7 @@ theorem gauge_smul_left_of_nonneg [MulActionWithZero α E] [SMulCommClass α ℝ
 
 theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower α ℝ ℝ]
     [IsScalarTower α ℝ E] {s : Set E} (symmetric : ∀ x ∈ s, -x ∈ s) (a : α) :
-    gauge (a • s) = (|a|)⁻¹ • gauge s := by
+    gauge (a • s) = |a|⁻¹ • gauge s := by
   rw [← gauge_smul_left_of_nonneg (abs_nonneg a)]
   obtain h | h := abs_choice a
   · rw [h]

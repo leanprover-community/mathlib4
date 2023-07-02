@@ -997,7 +997,7 @@ theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b /
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 #align max_div_div_right_of_nonpos max_div_div_right_of_nonpos
 
-theorem abs_inv (a : α) : |a⁻¹| = (|a|)⁻¹ :=
+theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 #align abs_inv abs_inv
 
