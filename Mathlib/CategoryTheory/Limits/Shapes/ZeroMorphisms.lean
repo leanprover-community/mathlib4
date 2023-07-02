@@ -135,8 +135,8 @@ section
 
 variable [HasZeroMorphisms C]
 
-@[simp] lemma op_zero [HasZeroMorphisms C] (X Y : C) : (0 : X ⟶ Y).op = 0 := rfl
-@[simp] lemma unop_zero [HasZeroMorphisms C] (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 := rfl
+@[simp] lemma op_zero (X Y : C) : (0 : X ⟶ Y).op = 0 := rfl
+@[simp] lemma unop_zero (X Y : Cᵒᵖ) : (0 : X ⟶ Y).unop = 0 := rfl
 
 theorem zero_of_comp_mono {X Y Z : C} {f : X ⟶ Y} (g : Y ⟶ Z) [Mono g] (h : f ≫ g = 0) : f = 0 := by
   rw [← zero_comp, cancel_mono] at h
