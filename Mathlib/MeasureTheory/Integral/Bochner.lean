@@ -9,7 +9,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 ! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetToL1
-import Mathlib.MeasureTheory.Integral.IntegralSimps
 
 /-!
 # Bochner integral

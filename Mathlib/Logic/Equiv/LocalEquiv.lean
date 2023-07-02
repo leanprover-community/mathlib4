@@ -10,7 +10,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Tactic.Core
 
 /-!

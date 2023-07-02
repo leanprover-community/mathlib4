@@ -9,7 +9,6 @@ Authors: Frédéric Dupuis
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.IsROrC.Attr
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
