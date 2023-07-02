@@ -370,7 +370,7 @@ theorem exists_mem (x : α) : ∃ i, x ∈ s i :=
   ⟨hs.index x, hs.mem_index x⟩
 #align indexed_partition.exists_mem IndexedPartition.exists_mem
 
-theorem iUnion : (⋃ i, s i) = univ := by
+theorem iUnion : ⋃ i, s i = univ := by
   ext x
   simp [hs.exists_mem x]
 #align indexed_partition.Union IndexedPartition.iUnion
