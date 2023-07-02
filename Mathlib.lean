@@ -2617,6 +2617,7 @@ import Mathlib.RepresentationTheory.Action
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.FdRep
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.Adjoin.Basic
