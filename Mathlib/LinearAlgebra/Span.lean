@@ -594,12 +594,12 @@ theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f
   h.imp (apply_mem_span_image_of_mem_span f)
 #align submodule.not_mem_span_of_apply_not_mem_span_image Submodule.not_mem_span_of_apply_not_mem_span_image
 
-theorem iSup_span {ι : Sort _} (p : ι → Set M) : (⨆ i, span R (p i)) = span R (⋃ i, p i) :=
+theorem iSup_span {ι : Sort _} (p : ι → Set M) : ⨆ i, span R (p i) = span R (⋃ i, p i) :=
   le_antisymm (iSup_le fun i => span_mono <| subset_iUnion _ i) <|
     span_le.mpr <| iUnion_subset fun i _ hm => mem_iSup_of_mem i <| subset_span hm
 #align submodule.supr_span Submodule.iSup_span
 
-theorem iSup_eq_span {ι : Sort _} (p : ι → Submodule R M) : (⨆ i, p i) = span R (⋃ i, ↑(p i)) := by
+theorem iSup_eq_span {ι : Sort _} (p : ι → Submodule R M) : ⨆ i, p i = span R (⋃ i, ↑(p i)) := by
   simp_rw [← iSup_span, span_eq]
 #align submodule.supr_eq_span Submodule.iSup_eq_span
 

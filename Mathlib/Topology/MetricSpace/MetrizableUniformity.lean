@@ -76,7 +76,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
     refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
     calc
-      (⨅ l, (zipWith d (x::l) (l ++ [z])).sum) ≤
+      ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
         ciInf_le (OrderBot.bddBelow _) (lxy ++ y::lyz)
       _ = (zipWith d (x::lxy) (lxy ++ [y])).sum + (zipWith d (y::lyz) (lyz ++ [z])).sum := by
