@@ -874,7 +874,7 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsProbabilityMeasure μ] {ι 
       fun a (j : ({i} : Finset ι)) => f j a := rfl
     have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
       => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
-    have h_left : (∏ j in s, f j) = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
+    have h_left : ∏ j in s, f j = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
       ext1 a
       simp only [Function.comp_apply]
       have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]

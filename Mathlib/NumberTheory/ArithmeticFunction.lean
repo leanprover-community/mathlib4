@@ -1090,8 +1090,8 @@ end CommRing
 
 /-- Möbius inversion for functions to an `add_comm_group`. -/
 theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
-    (∀ n > 0, (∑ i in n.divisors, f i) = g n) ↔
-      ∀ n > 0, (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+    (∀ n > 0, ∑ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
   let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
   let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
@@ -1129,8 +1129,8 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
 
 /-- Möbius inversion for functions to a `Ring`. -/
 theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
-    (∀ n > 0, (∑ i in n.divisors, f i) = g n) ↔
-      ∀ n > 0, (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
+    (∀ n > 0, ∑ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq]
   apply forall_congr'
   refine' fun a => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
@@ -1139,16 +1139,16 @@ theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
 
 /-- Möbius inversion for functions to a `CommGroup`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
-    (∀ n > 0, (∏ i in n.divisors, f i) = g n) ↔
-      ∀ n > 0, (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
+    (∀ n > 0, ∏ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n :=
   @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq Nat.ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : ℕ → R}
     (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0) :
-    (∀ n > 0, (∏ i in n.divisors, f i) = g n) ↔
-      ∀ n > 0, (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n := by
+    (∀ n > 0, ∏ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n := by
   refine'
       Iff.trans
         (Iff.trans (forall_congr' fun n => _)

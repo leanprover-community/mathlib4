@@ -193,7 +193,7 @@ theorem summable_geometric_of_lt_1 {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
   ⟨_, hasSum_geometric_of_lt_1 h₁ h₂⟩
 #align summable_geometric_of_lt_1 summable_geometric_of_lt_1
 
-theorem tsum_geometric_of_lt_1 {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ :=
+theorem tsum_geometric_of_lt_1 {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (hasSum_geometric_of_lt_1 h₁ h₂).tsum_eq
 #align tsum_geometric_of_lt_1 tsum_geometric_of_lt_1
 
@@ -254,7 +254,7 @@ theorem summable_geometric_two' (a : ℝ) : Summable fun n : ℕ => a / 2 / 2 ^ 
   ⟨a, hasSum_geometric_two' a⟩
 #align summable_geometric_two' summable_geometric_two'
 
-theorem tsum_geometric_two' (a : ℝ) : (∑' n : ℕ, a / 2 / 2 ^ n) = a :=
+theorem tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
   (hasSum_geometric_two' a).tsum_eq
 #align tsum_geometric_two' tsum_geometric_two'
 
@@ -270,14 +270,14 @@ theorem NNReal.summable_geometric {r : ℝ≥0} (hr : r < 1) : Summable fun n : 
   ⟨_, NNReal.hasSum_geometric hr⟩
 #align nnreal.summable_geometric NNReal.summable_geometric
 
-theorem tsum_geometric_nNReal {r : ℝ≥0} (hr : r < 1) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ :=
+theorem tsum_geometric_nNReal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (NNReal.hasSum_geometric hr).tsum_eq
 #align tsum_geometric_nnreal tsum_geometric_nNReal
 
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/
 @[simp]
-theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ := by
+theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
   cases' lt_or_le r 1 with hr hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
@@ -476,7 +476,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type _} {s : Set ι} (hs : s.Co
 
 theorem Set.Countable.exists_pos_forall_sum_le {ι : Type _} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
-    (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → (∑ i in t, ε' i) ≤ ε := by
+    (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i in t, ε' i ≤ ε := by
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
   refine' ⟨ε', hpos, fun t ht => _⟩
   rw [← sum_subtype_of_mem _ ht]
@@ -510,7 +510,7 @@ theorem exists_pos_sum_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Cou
 #align ennreal.exists_pos_sum_of_countable ENNReal.exists_pos_sum_of_countable
 
 theorem exists_pos_sum_of_countable' {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Countable ι] :
-    ∃ ε' : ι → ℝ≥0∞, (∀ i, 0 < ε' i) ∧ (∑' i, ε' i) < ε :=
+    ∃ ε' : ι → ℝ≥0∞, (∀ i, 0 < ε' i) ∧ ∑' i, ε' i < ε :=
   let ⟨δ, δpos, hδ⟩ := exists_pos_sum_of_countable hε ι
   ⟨fun i => δ i, fun i => ENNReal.coe_pos.2 (δpos i), hδ⟩
 #align ennreal.exists_pos_sum_of_countable' ENNReal.exists_pos_sum_of_countable'

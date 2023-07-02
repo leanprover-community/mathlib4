@@ -229,7 +229,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ ≤ δ + δ := (add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc))
           _ = 2 * δ := (two_mul δ).symm
       calc
-        (∏ j, |J.upper j - J.lower j|) ≤ ∏ j : Fin (n + 1), 2 * δ :=
+        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
           prod_le_prod (fun _ _ => abs_nonneg _) fun j _ => this j
         _ = (2 * δ) ^ (n + 1) := by simp
     · refine' (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
