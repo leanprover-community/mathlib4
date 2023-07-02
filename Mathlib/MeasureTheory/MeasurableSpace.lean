@@ -14,6 +14,7 @@ import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 
@@ -1664,6 +1665,14 @@ instance [MeasurableSpace α] [CountablyGenerated α] [MeasurableSpace β] [Coun
     CountablyGenerated (α × β) :=
   .sup (.comap Prod.fst) (.comap Prod.snd)
 
+instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [MeasurableSingletonClass s] :
+    HasCountableSeparatingOn α MeasurableSet s := by
+  suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
+  rcases h.1 with ⟨b, hbc, hb⟩
+  refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, fun x _ y _ h ↦ ?_⟩⟩
+  rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
+  simpa using h {y}
+
 variable (α)
 
 open Classical
@@ -1671,35 +1680,21 @@ open Classical
 /-- If a measurable space is countably generated, it admits a measurable injection
 into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
 theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
-    [h : CountablyGenerated α] [MeasurableSingletonClass α] :
+    [h : HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
-  obtain ⟨b, bct, hb⟩ := h.isCountablyGenerated
-  obtain ⟨e, he⟩ := Set.Countable.exists_eq_range (bct.insert ∅) (insert_nonempty _ _)
-  rw [← generateFrom_insert_empty, he] at hb
-  refine' ⟨fun x n => x ∈ e n, _, _⟩
+  rcases h.1 with ⟨S, hSc, hSm, hS⟩
+  wlog hne : S.Nonempty generalizing S
+  · exact this (insert ∅ S) (hSc.insert ∅) (forall_insert_of_forall hSm .empty)
+      (fun x hx y hy h ↦ hS x hx y hy (forall_of_forall_insert h)) (insert_nonempty _ _)
+  obtain ⟨e, rfl⟩ := Set.Countable.exists_eq_range hSc hne
+  simp only [forall_range_iff] at hSm hS
+  refine ⟨fun x n ↦ x ∈ e n, ?_, ?_⟩
   . rw [measurable_pi_iff]
     intro n
     apply measurable_to_bool
-    simp only [preimage, mem_singleton_iff, Bool.decide_iff]
-    rw [hb]
-    apply measurableSet_generateFrom
-    exact ⟨n, rfl⟩
-  intro x y hxy
-  have : ∀ s : Set α, MeasurableSet s → (x ∈ s ↔ y ∈ s) := fun s => by
-    rw [hb]
-    apply generateFrom_induction
-    · rintro - ⟨n, rfl⟩
-      rw [← decide_eq_decide]
-      rw [funext_iff] at hxy
-      exact hxy n
-    · tauto
-    · intro t
-      tauto
-    intro t ht
-    simp_rw [mem_iUnion, ht]
-  specialize this {y} measurableSet_eq
-  simp only [mem_singleton, iff_true_iff] at this
-  exact this
+    simp only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq]
+    apply hSm
+  · exact fun x y h ↦ hS x trivial y trivial fun n ↦ decide_eq_decide.1 <| congr_fun h _
 #align measurable_space.measurable_injection_nat_bool_of_countably_generated MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated
 
 end MeasurableSpace
