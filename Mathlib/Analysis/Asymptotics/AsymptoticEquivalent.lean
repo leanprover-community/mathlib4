@@ -363,7 +363,7 @@ instance transIsEquivalentIsEquivalent :
   trans := IsEquivalent.trans
 
 instance transEventuallyEqIsEquivalent :
-    @Trans (α → β) (α → β) (α → β) (· =ᶠ[l] ·) (· ~[l] ·) (· ~[l] ·) where
+    @Trans (α → β) (α → β) (α → β) (EventuallyEq l) (IsEquivalent l) (IsEquivalent l) where
   trans := EventuallyEq.trans_isEquivalent
 
 @[trans]
