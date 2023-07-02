@@ -112,7 +112,7 @@ private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
   rw [e3]
   simp only [UpperHalfPlane.num, UpperHalfPlane.denom, ofReal_mul, Subgroup.coe_mul,
     UpperHalfPlane.coe_smul, Units.val_mul, Matrix.mul_eq_mul, Matrix.det_mul,
-    UpperHalfPlane.smulAux, UpperHalfPlane.smulAux', Subtype.coe_mk] at *
+    UpperHalfPlane.smulAux, UpperHalfPlane.smulAux', UpperHalfPlane.coe_mk] at *
   field_simp
   have : (((↑(↑A : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ) *
       ((↑(↑B : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) ℝ).det : ℂ)) ^ (k - 1) =
