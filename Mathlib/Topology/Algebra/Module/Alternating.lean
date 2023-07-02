@@ -96,7 +96,7 @@ theorem ext_iff {f g : Λ^ι⟮R; M; N⟯} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align continuous_alternating_map.ext_iff ContinuousAlternatingMap.ext_iff
 
-/-- Projection to `alternating_map`s. -/
+/-- Projection to `AlternatingMap`s. -/
 def toAlternatingMap : AlternatingMap R M N ι :=
   { f with }
 #align continuous_alternating_map.to_alternating_map ContinuousAlternatingMap.toAlternatingMap
@@ -253,7 +253,7 @@ instance addCommMonoid : AddCommMonoid Λ^ι⟮R; M; N⟯ :=
   toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 #align continuous_alternating_map.add_comm_monoid ContinuousAlternatingMap.addCommMonoid
 
-/-- Evaluation of a `continuous_alternating_map` at a vector as an `add_monoid_hom`. -/
+/-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
 def applyAddHom (v : ι → M) : Λ^ι⟮R; M; N⟯ →+ N :=
   ⟨⟨fun f => f v, rfl⟩, fun _ _ => rfl⟩
 #align continuous_alternating_map.apply_add_hom ContinuousAlternatingMap.applyAddHom
@@ -264,7 +264,7 @@ theorem sum_apply {α : Type _} (f : α → Λ^ι⟮R; M; N⟯) (m : ι → M) {
   (applyAddHom m).map_sum f s
 #align continuous_alternating_map.sum_apply ContinuousAlternatingMap.sum_apply
 
-/-- Projection to `continuous_multilinear_map`s as a bundled `add_monoid_hom`. -/
+/-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
 @[simps]
 def toMultilinearAddHom : Λ^ι⟮R; M; N⟯ →+ ContinuousMultilinearMap R (fun _ : ι => M) N :=
   ⟨⟨fun f => f.1, rfl⟩, fun _ _ => rfl⟩
@@ -403,7 +403,7 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr (e : M ≃L[R] M'
   e.continuousAlternatingMapComp.trans e'.compContinuousAlternatingMap
 #align continuous_linear_equiv.continuous_alternating_map_congr ContinuousLinearEquiv.continuousAlternatingMapCongr
 
-/-- `continuous_alternating_map.pi` as an `equiv`. -/
+/-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [∀ i, TopologicalSpace (N i)]
     [∀ i, Module R (N i)] : (∀ i, Λ^ι⟮R; M; N i⟯) ≃ Λ^ι⟮R; M; ∀ i, N i⟯ where
@@ -413,32 +413,32 @@ def piEquiv {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [�
   right_inv f := by ext; rfl
 #align continuous_alternating_map.pi_equiv ContinuousAlternatingMap.piEquiv
 
-/-- In the specific case of continuous alternating maps on spaces indexed by `fin (n+1)`, where one
-can build an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the
+/-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
+can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 additivity of a alternating map along the first variable. -/
 theorem cons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
     f (Fin.cons (x + y) m) = f (Fin.cons x m) + f (Fin.cons y m) :=
   f.toMultilinearMap.cons_add m x y
 #align continuous_alternating_map.cons_add ContinuousAlternatingMap.cons_add
 
-/-- In the specific case of continuous alternating maps on spaces indexed by `fin (n+1)`, where one
-can build an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the
+/-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
+can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 additivity of a alternating map along the first variable. -/
 theorem vecCons_add (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (x y : M) :
     f (vecCons (x + y) m) = f (vecCons x m) + f (vecCons y m) :=
   f.toMultilinearMap.cons_add m x y
 #align continuous_alternating_map.vec_cons_add ContinuousAlternatingMap.vecCons_add
 
-/-- In the specific case of continuous alternating maps on spaces indexed by `fin (n+1)`, where one
-can build an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the
+/-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
+can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 multiplicativity of a alternating map along the first variable. -/
 theorem cons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
     (x : M) : f (Fin.cons (c • x) m) = c • f (Fin.cons x m) :=
   f.toMultilinearMap.cons_smul m c x
 #align continuous_alternating_map.cons_smul ContinuousAlternatingMap.cons_smul
 
-/-- In the specific case of continuous alternating maps on spaces indexed by `fin (n+1)`, where one
-can build an element of `Π(i : fin (n+1)), M i` using `cons`, one can express directly the
+/-- In the specific case of continuous alternating maps on spaces indexed by `Fin (n+1)`, where one
+can build an element of `Π(i : Fin (n+1)), M i` using `cons`, one can express directly the
 multiplicativity of a alternating map along the first variable. -/
 theorem vecCons_smul (f : ContinuousAlternatingMap R M N (Fin (n + 1))) (m : Fin n → M) (c : R)
     (x : M) : f (vecCons (c • x) m) = c • f (vecCons x m) :=
@@ -605,7 +605,7 @@ def toContinuousMultilinearMapLinear :
   map_smul' _ _ := rfl
 #align continuous_alternating_map.to_continuous_multilinear_map_linear ContinuousAlternatingMap.toContinuousMultilinearMapLinear
 
-/-- `continuous_alternating_map.pi` as a `linear_equiv`. -/
+/-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]
 def piLinearEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
@@ -640,7 +640,7 @@ variable {R M M' N N' ι : Type _} [CommSemiring R] [AddCommMonoid M] [Module R 
   [Module R N] [TopologicalSpace N] [ContinuousAdd N] [ContinuousConstSMul R N] [AddCommMonoid N']
   [Module R N'] [TopologicalSpace N'] [ContinuousAdd N'] [ContinuousConstSMul R N']
 
-/-- `continuous_alternating_map.comp_continuous_linear_map` as a bundled `linear_map`. -/
+/-- `ContinuousAlternatingMap.compContinuousLinearMap` as a bundled `LinearMap`. -/
 @[simps]
 def compContinuousLinearMapₗ (f : M →L[R] M') : Λ^ι⟮R; M'; N⟯ →ₗ[R] Λ^ι⟮R; M; N⟯ where
   toFun g := g.compContinuousLinearMap f
@@ -650,7 +650,7 @@ def compContinuousLinearMapₗ (f : M →L[R] M') : Λ^ι⟮R; M'; N⟯ →ₗ[R
 
 variable (R M N N')
 
-/-- `continuous_linear_map.comp_continuous_alternating_map` as a bundled bilinear map. -/
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled bilinear map. -/
 def _root_.ContinuousLinearMap.compContinuousAlternatingMapₗ :
     (N →L[R] N') →ₗ[R] Λ^ι⟮R; M; N⟯ →ₗ[R] Λ^ι⟮R; M; N'⟯ :=
   LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun f₁ f₂ g => rfl)
