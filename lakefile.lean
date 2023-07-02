@@ -57,15 +57,16 @@ def System.FilePath.makeRelativeTo (dir file : FilePath) : Option FilePath := do
   guard <| dir.toString.isPrefixOf file.toString
   return ⟨file.toString.drop dir.toString.length.succ⟩
 
-def importsForLib (dir : FilePath) (root : Name) : IO String := do
-  let filePathToImport (fp : FilePath) : String := fp.toString
+def System.FilePath.toImportString (fp : FilePath) : String := fp.toString
     |>.takeWhile (· != FilePath.extSeparator)
     |>.map <| fun c ↦ if c = FilePath.pathSeparator then '.' else c
+
+def importsForLib (dir : FilePath) (root : Name) : IO String := do
   let allFiles ← FilePath.walkDir (dir / root.toString)
   let imports ← allFiles.filterMapM <| fun file ↦ OptionT.run do
     guard !(← file.isDir)
-    let relFile ← file.makeRelativeTo dir
-    return s!"import {filePathToImport relFile}\n"
+    let relFile ← FilePath.makeRelativeTo dir file
+    return s!"import {relFile.toImportString}\n"
   return imports.foldl .append ""
 
 script import_all do
