@@ -214,9 +214,9 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
     change (i.inv ≫ i.hom) x = x
     simp only [inv_hom_id]
     rw [id_apply]
-  map_add' := i.hom.map_add -- Porting note: was `by simp`
-  map_mul' := i.hom.map_mul -- Porting note: was `by simp`
-  commutes' := i.hom.commutes -- Porting note: was `by simp`
+  map_add' := i.hom.map_add -- Porting note: was `by tidy`
+  map_mul' := i.hom.map_mul -- Porting note: was `by tidy`
+  commutes' := i.hom.commutes -- Porting note: was `by tidy`
 #align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 
 end CategoryTheory.Iso
