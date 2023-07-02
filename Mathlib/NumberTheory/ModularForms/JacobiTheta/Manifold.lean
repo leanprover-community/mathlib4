@@ -12,20 +12,19 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 
 /-!
-# Manifold differentiability of the Jacobi's theta function
+# Manifold differentiability of the Jacobi theta function
 
-In this file we reformulate differentiability of the Jacobi's theta function in terms of manifold
+In this file we reformulate differentiability of the Jacobi theta function in terms of manifold
 differentiability.
 
 ## TODO
 
-Prove smoothness (in terms of `smooth`).
+Prove smoothness (in terms of `Smooth`).
 -/
 
 
 open scoped UpperHalfPlane Manifold
 
-theorem mDifferentiable_jacobiTheta : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (jacobiTheta ∘ coe : ℍ → ℂ) :=
-  fun τ => (differentiableAt_jacobiTheta τ.2).MDifferentiableAt.comp τ τ.mDifferentiable_coe
-#align mdifferentiable_jacobi_theta mDifferentiable_jacobiTheta
-
+theorem mdifferentiable_jacobiTheta : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (jacobiTheta ∘ (↑) : ℍ → ℂ) :=
+  fun τ => (differentiableAt_jacobiTheta τ.2).mdifferentiableAt.comp τ τ.mdifferentiable_coe
+#align mdifferentiable_jacobi_theta mdifferentiable_jacobiTheta
