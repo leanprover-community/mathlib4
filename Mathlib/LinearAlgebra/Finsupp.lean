@@ -1028,6 +1028,14 @@ theorem finsuppProdLEquiv_symm_apply {α β R M : Type _} [Semiring R] [AddCommM
 
 end Prod
 
+/-- If `R` is countable, then any `R`-submodule spanned by a countable family of vectors is
+countable. -/
+instance {ι : Type _} [Countable R] [Countable ι] (v : ι → M) :
+    Countable (Submodule.span R (Set.range v)) := by
+  refine Set.countable_coe_iff.mpr (Set.Countable.mono ?_ (Set.countable_range
+      (fun c : (ι →₀ R) => c.sum fun i _ => (c i) • v i)))
+  exact fun _ h => Finsupp.mem_span_range_iff_exists_finsupp.mp (SetLike.mem_coe.mp h)
+
 end Finsupp
 
 section Fintype
@@ -1099,7 +1107,7 @@ variable {v} {x : M}
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
 theorem mem_span_range_iff_exists_fun :
-    x ∈ span R (range v) ↔ ∃ c : α → R, (∑ i, c i • v i) = x := by
+    x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
   -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
@@ -1110,7 +1118,7 @@ theorem mem_span_range_iff_exists_fun :
 can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
 theorem top_le_span_range_iff_forall_exists_fun :
-    ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, (∑ i, c i • v i) = x := by
+    ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
 #align top_le_span_range_iff_forall_exists_fun top_le_span_range_iff_forall_exists_fun
@@ -1171,7 +1179,7 @@ theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule
 #align submodule.mem_supr_iff_exists_finset Submodule.mem_iSup_iff_exists_finset
 
 theorem mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, (∑ i in s, f i • i) = x :=
+    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i in s, f i • i = x :=
   ⟨fun hx =>
     let ⟨v, hvs, hvx⟩ :=
       (Finsupp.mem_span_image_iff_total _).1

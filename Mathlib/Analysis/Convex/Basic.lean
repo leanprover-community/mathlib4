@@ -616,10 +616,10 @@ variable (𝕜) (ι : Type _) [OrderedSemiring 𝕜] [Fintype ι]
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
 coordinates with total sum `1`. This is the free object in the category of convex spaces. -/
 def stdSimplex : Set (ι → 𝕜) :=
-  { f | (∀ x, 0 ≤ f x) ∧ (∑ x, f x) = 1 }
+  { f | (∀ x, 0 ≤ f x) ∧ ∑ x, f x = 1 }
 #align std_simplex stdSimplex
 
-theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | (∑ x, f x) = 1 } := by
+theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
   ext f
   simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
 #align std_simplex_eq_inter stdSimplex_eq_inter

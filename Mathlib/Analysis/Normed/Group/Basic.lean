@@ -1754,7 +1754,7 @@ theorem ennnorm_eq_ofReal (hr : 0 ≤ r) : (‖r‖₊ : ℝ≥0∞) = ENNReal.o
   rw [← ofReal_norm_eq_coe_nnnorm, norm_of_nonneg hr]
 #align real.ennnorm_eq_of_real Real.ennnorm_eq_ofReal
 
-theorem ennnorm_eq_ofReal_abs (r : ℝ) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal (|r|) := by
+theorem ennnorm_eq_ofReal_abs (r : ℝ) : (‖r‖₊ : ℝ≥0∞) = ENNReal.ofReal |r| := by
   rw [← Real.nnnorm_abs r, Real.ennnorm_eq_ofReal (abs_nonneg _)]
 #align real.ennnorm_eq_of_real_abs Real.ennnorm_eq_ofReal_abs
 
@@ -2542,7 +2542,7 @@ theorem pi_nnnorm_const' [Nonempty ι] (a : E) : ‖fun _i : ι => a‖₊ = ‖
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
 @[to_additive Pi.sum_norm_apply_le_norm "The $L^1$ norm is less than the $L^\\infty$ norm scaled by
 the cardinality."]
-theorem Pi.sum_norm_apply_le_norm' : (∑ i, ‖f i‖) ≤ Fintype.card ι • ‖f‖ :=
+theorem Pi.sum_norm_apply_le_norm' : ∑ i, ‖f i‖ ≤ Fintype.card ι • ‖f‖ :=
   Finset.sum_le_card_nsmul _ _ _ fun i _hi => norm_le_pi_norm' _ i
 #align pi.sum_norm_apply_le_norm' Pi.sum_norm_apply_le_norm'
 #align pi.sum_norm_apply_le_norm Pi.sum_norm_apply_le_norm
@@ -2550,7 +2550,7 @@ theorem Pi.sum_norm_apply_le_norm' : (∑ i, ‖f i‖) ≤ Fintype.card ι • 
 /-- The $L^1$ norm is less than the $L^\infty$ norm scaled by the cardinality. -/
 @[to_additive Pi.sum_nnnorm_apply_le_nnnorm "The $L^1$ norm is less than the $L^\\infty$ norm
 scaled by the cardinality."]
-theorem Pi.sum_nnnorm_apply_le_nnnorm' : (∑ i, ‖f i‖₊) ≤ Fintype.card ι • ‖f‖₊ :=
+theorem Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι • ‖f‖₊ :=
   NNReal.coe_sum.trans_le <| Pi.sum_norm_apply_le_norm' _
 #align pi.sum_nnnorm_apply_le_nnnorm' Pi.sum_nnnorm_apply_le_nnnorm'
 #align pi.sum_nnnorm_apply_le_nnnorm Pi.sum_nnnorm_apply_le_nnnorm
