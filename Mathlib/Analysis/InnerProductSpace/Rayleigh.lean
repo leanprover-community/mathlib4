@@ -85,17 +85,17 @@ theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
 #align continuous_linear_map.image_rayleigh_eq_image_rayleigh_sphere ContinuousLinearMap.image_rayleigh_eq_image_rayleigh_sphere
 
 theorem iSup_rayleigh_eq_iSup_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
-    (⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x) =
+    ⨆ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨆ x : sphere (0 : E) r, rayleighQuotient T x :=
-  show (⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x) = _ by
+  show ⨆ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sSup_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 #align continuous_linear_map.supr_rayleigh_eq_supr_rayleigh_sphere ContinuousLinearMap.iSup_rayleigh_eq_iSup_rayleigh_sphere
 
 theorem iInf_rayleigh_eq_iInf_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
-    (⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x) =
+    ⨅ x : { x : E // x ≠ 0 }, rayleighQuotient T x =
       ⨅ x : sphere (0 : E) r, rayleighQuotient T x :=
-  show (⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x) = _ by
+  show ⨅ x : ({0}ᶜ : Set E), rayleighQuotient T x = _ by
     simp only [← @sInf_image' _ _ _ _ (rayleighQuotient T),
       T.image_rayleigh_eq_image_rayleigh_sphere hr]
 #align continuous_linear_map.infi_rayleigh_eq_infi_rayleigh_sphere ContinuousLinearMap.iInf_rayleigh_eq_iInf_rayleigh_sphere
