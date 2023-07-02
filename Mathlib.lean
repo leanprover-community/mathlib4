@@ -572,6 +572,7 @@ import Mathlib.Analysis.Complex.Schwarz
 import Mathlib.Analysis.Complex.UnitDisc.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.ConstantSpeed
