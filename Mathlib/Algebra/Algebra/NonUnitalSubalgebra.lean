@@ -3,13 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Data.Set.UnionLift
 import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings
@@ -225,24 +222,6 @@ def toNonUnitalSubring' {R : Type u} {A : Type v} [CommRing R] [NonUnitalRing A]
 section
 
 /-! ### `NonUnitalSubalgebra`s inherit structure from their `Submodule` coercions. -/
-
--- maybe these next two declarations should be moved?
--- the first to `SubMulAction`? and the second to `Submodule.Basic`?
-/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
-this to manually derive `SMulMemClass` on specific types. -/
-def _root_.SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
-  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
-  SMulMemClass S M α :=
-{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
-
-/-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
-this to manually derive `Module` on specific types. -/
-def _root_.SMulMemClass.toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
-    [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
-    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
-    Module R' s :=
-  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R  A
-  SMulMemClass.toModule s
 
 instance instModule' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
   SMulMemClass.toModule' _ R' R A S
@@ -544,19 +523,19 @@ variable {R}
 /-- If some predicate holds for all `x ∈ (s : Set A)` and this predicate is closed under the
 `algebraMap`, addition, multiplication and star operations, then it holds for `a ∈ adjoin R s`. -/
 theorem adjoin_induction {s : Set A} {p : A → Prop} {a : A} (h : a ∈ adjoin R s)
-    (Hs : ∀ x : A, x ∈ s → p x) (Hadd : ∀ x y : A, p x → p y → p (x + y)) (H0 : p 0)
-    (Hmul : ∀ x y : A, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) {x : A}, p x → p (r • x)) : p a :=
+    (Hs : ∀ x ∈ s, p x) (Hadd : ∀ x y, p x → p y → p (x + y)) (H0 : p 0)
+    (Hmul : ∀ x y, p x → p y → p (x * y)) (Hsmul : ∀ (r : R) x, p x → p (r • x)) : p a :=
   Submodule.span_induction h
     (fun _a ha => NonUnitalSubsemiring.closure_induction ha Hs H0 Hadd Hmul) H0 Hadd Hsmul
 
 theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin R s)
-    (hb : b ∈ adjoin R s) (Hs : ∀ x : A, x ∈ s → ∀ y : A, y ∈ s → p x y) (H0_left : ∀ y : A, p 0 y)
-    (H0_right : ∀ x : A, p x 0) (Hadd_left : ∀ x₁ x₂ y : A, p x₁ y → p x₂ y → p (x₁ + x₂) y)
-    (Hadd_right : ∀ x y₁ y₂ : A, p x y₁ → p x y₂ → p x (y₁ + y₂))
-    (Hmul_left : ∀ x₁ x₂ y : A, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂ : A, p x y₁ → p x y₂ → p x (y₁ * y₂))
-    (Hsmul_left : ∀ (r : R) (x y : A), p x y → p (r • x) y)
-    (Hsmul_right : ∀ (r : R) (x y : A), p x y → p x (r • y)) : p a b :=
+    (hb : b ∈ adjoin R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H0_left : ∀ y, p 0 y)
+    (H0_right : ∀ x, p x 0) (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
+    (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
+    (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
+    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂))
+    (Hsmul_left : ∀ (r : R) x y, p x y → p (r • x) y)
+    (Hsmul_right : ∀ (r : R) x y, p x y → p x (r • y)) : p a b :=
   Submodule.span_induction₂ ha hb
     (fun _x hx _y hy =>
       NonUnitalSubsemiring.closure_induction₂ hx hy Hs H0_left H0_right Hadd_left Hadd_right
