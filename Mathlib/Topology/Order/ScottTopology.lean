@@ -294,6 +294,12 @@ lemma isOpen_isUpperSet {s : Set α} : IsOpen s → IsUpperSet s := fun h =>
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_lower_and_subset_implies_LUB_mem.mp h).left
 
+lemma lowerClosure_le_closure (s : Set α) : lowerClosure s ≤ closure s := by
+  convert Closure.mono (@upper_le_Scott α _)
+  rw [(@UpperSetTopology.closure_eq_lowerClosure α _ (upperSetTopology' α) ?_ s)]
+  exact instUpperSetTopologyUpperSetTopology'
+  exact topology_eq α
+
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 (-∞,a].
