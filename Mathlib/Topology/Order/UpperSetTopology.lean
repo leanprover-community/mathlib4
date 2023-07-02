@@ -16,6 +16,13 @@ the upper sets.
 
 ## Main statements
 
+- `UpperSetTopology.IsOpen_sInter` - the intersection of any set of open sets is open
+- `UpperSetTopology.IsOpen_iInter` - the intersection of any indexed collection of open sets is open
+- `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
+- `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
+- `UpperSetTopology.Monotone_tfae` - the continuous functions are characterised as the monotone
+  functions
+
 ## Implementation notes
 
 A type synonym `WithUpperSetTopology` is introduced and for a preorder `α`, `WithUpperSetTopology α`
