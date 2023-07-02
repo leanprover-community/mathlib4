@@ -135,7 +135,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   -- space of linear maps is second-countable
   obtain ⟨T, T_count, hT⟩ :
     ∃ T : Set s,
-      T.Countable ∧ (⋃ x ∈ T, ball (f' (x : E)) (r (f' x))) = ⋃ x : s, ball (f' x) (r (f' x)) :=
+      T.Countable ∧ ⋃ x ∈ T, ball (f' (x : E)) (r (f' x)) = ⋃ x : s, ball (f' x) (r (f' x)) :=
     TopologicalSpace.isOpen_iUnion_countable _ fun x => isOpen_ball
   -- fix a sequence `u` of positive reals tending to zero.
   obtain ⟨u, _, u_pos, u_lim⟩ :
@@ -1014,9 +1014,9 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
           ENNReal.ofReal_le_ofReal I
         _ = ENNReal.ofReal (|(A n).det|) + ε := by
           simp only [ENNReal.ofReal_add, abs_nonneg, NNReal.zero_le_coe, ENNReal.ofReal_coe_nnreal]
-    _ = ∑' n, ENNReal.ofReal (|(A n).det|) * μ (s ∩ t n) + ε * μ (s ∩ t n) := by
+    _ = ∑' n, (ENNReal.ofReal (|(A n).det|) * μ (s ∩ t n) + ε * μ (s ∩ t n)) := by
       simp only [set_lintegral_const, lintegral_add_right _ measurable_const]
-    _ ≤ ∑' n, μ (f '' (s ∩ t n)) + ε * μ (s ∩ t n) + ε * μ (s ∩ t n) := by
+    _ ≤ ∑' n, (μ (f '' (s ∩ t n)) + ε * μ (s ∩ t n) + ε * μ (s ∩ t n)) := by
       refine' ENNReal.tsum_le_tsum fun n => add_le_add_right _ _
       exact (hδ (A n)).2.2 _ _ (ht n)
     _ = μ (f '' s) + 2 * ε * μ s := by

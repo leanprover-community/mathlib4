@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module analysis.normed_space.multilinear
-! leanprover-community/mathlib commit 284fdd2962e67d2932fa3a79ce19fcf92d38e228
+! leanprover-community/mathlib commit f40476639bac089693a489c9e354ebd75dc0f886
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -201,11 +201,11 @@ theorem norm_image_sub_le_of_bound {C : ℝ} (hC : 0 ≤ C) (H : ∀ m, ‖f m�
   classical
   have A :
     ∀ i : ι,
-      (∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) ≤
+      ∏ j, (if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) ≤
         ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
     intro i
     calc
-      (∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) ≤
+      ∏ j, (if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) ≤
           ∏ j : ι, Function.update (fun _ => max ‖m₁‖ ‖m₂‖) i ‖m₁ - m₂‖ j := by
         apply prod_le_prod
         · intro j _
@@ -506,17 +506,24 @@ section
 
 variable (𝕜 G)
 
+theorem norm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖ ≤ 1 :=
+  op_norm_le_bound _ zero_le_one fun m => by
+    rw [Fintype.prod_subsingleton _ i', one_mul, ofSubsingleton_apply]
+#align continuous_multilinear_map.norm_of_subsingleton_le ContinuousMultilinearMap.norm_ofSubsingleton_le
+
 @[simp]
 theorem norm_ofSubsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
     ‖ofSubsingleton 𝕜 G i'‖ = 1 := by
-  apply le_antisymm
-  · refine' op_norm_le_bound _ zero_le_one fun m => _
-    rw [Fintype.prod_subsingleton _ i', one_mul, ofSubsingleton_apply]
-  · obtain ⟨g, hg⟩ := exists_ne (0 : G)
-    rw [← norm_ne_zero_iff] at hg
-    have := (ofSubsingleton 𝕜 G i').ratio_le_op_norm fun _ => g
-    rwa [Fintype.prod_subsingleton _ i', ofSubsingleton_apply, div_self hg] at this
+  apply le_antisymm (norm_ofSubsingleton_le 𝕜 G i')
+  obtain ⟨g, hg⟩ := exists_ne (0 : G)
+  rw [← norm_ne_zero_iff] at hg
+  have := (ofSubsingleton 𝕜 G i').ratio_le_op_norm fun _ => g
+  rwa [Fintype.prod_subsingleton _ i', ofSubsingleton_apply, div_self hg] at this
 #align continuous_multilinear_map.norm_of_subsingleton ContinuousMultilinearMap.norm_ofSubsingleton
+
+theorem nnnorm_ofSubsingleton_le [Subsingleton ι] (i' : ι) : ‖ofSubsingleton 𝕜 G i'‖₊ ≤ 1 :=
+  norm_ofSubsingleton_le _ _ _
+#align continuous_multilinear_map.nnnorm_of_subsingleton_le ContinuousMultilinearMap.nnnorm_ofSubsingleton_le
 
 @[simp]
 theorem nnnorm_ofSubsingleton [Subsingleton ι] [Nontrivial G] (i' : ι) :
@@ -589,19 +596,22 @@ variable [NormedSpace 𝕜' G] [IsScalarTower 𝕜' 𝕜 G]
 variable [∀ i, NormedSpace 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)]
 
 @[simp]
-theorem norm_restrictScalars : ‖f.restrictScalars 𝕜'‖ = ‖f‖ := by
-  simp only [norm_def, coe_restrictScalars]
+theorem norm_restrictScalars : ‖f.restrictScalars 𝕜'‖ = ‖f‖ := rfl
 #align continuous_multilinear_map.norm_restrict_scalars ContinuousMultilinearMap.norm_restrictScalars
 
 variable (𝕜')
 
-/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousMultilinearMap`. -/
+/-- `ContinuousMultilinearMap.restrictScalars` as a `LinearIsometry`. -/
+def restrictScalarsₗᵢ : ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] ContinuousMultilinearMap 𝕜' E G where
+  toFun := restrictScalars 𝕜'
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  norm_map' _ := rfl
+#align continuous_multilinear_map.restrict_scalarsₗᵢ ContinuousMultilinearMap.restrictScalarsₗᵢ
+
+/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
 def restrictScalarsLinear : ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
-  LinearMap.mkContinuous
-    { toFun := restrictScalars 𝕜'
-      map_add' := fun m₁ m₂ => rfl
-      map_smul' := fun c m => rfl } 1 fun f => by
-        simp [FunLike.coe]
+  (restrictScalarsₗᵢ 𝕜').toContinuousLinearMap
 #align continuous_multilinear_map.restrict_scalars_linear ContinuousMultilinearMap.restrictScalarsLinear
 
 variable {𝕜'}
@@ -1013,8 +1023,10 @@ theorem _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_apply (g : G 
   rfl
 #align continuous_linear_equiv.comp_continuous_multilinear_mapL_apply ContinuousLinearEquiv.compContinuousMultilinearMapL_apply
 
+set_option maxHeartbeats 250000 in
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
+@[simps! apply_apply]
 def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
     ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') :=
   MultilinearMap.mkContinuous
@@ -1040,6 +1052,7 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
       refine LinearMap.mkContinuous_norm_le _
         (mul_nonneg (norm_nonneg f) (prod_nonneg fun i _ => norm_nonneg (m i))) _
 #align continuous_linear_map.flip_multilinear ContinuousLinearMap.flipMultilinear
+#align continuous_linear_map.flip_multilinear_apply_apply ContinuousLinearMap.flipMultilinear_apply_apply
 
 end ContinuousLinearMap
 
@@ -1745,27 +1758,24 @@ namespace ContinuousMultilinearMap
 
 variable (𝕜 G G')
 
+@[simp]
+theorem norm_domDomCongr (σ : ι ≃ ι') (f : ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :
+    ‖domDomCongr σ f‖ = ‖f‖ := by
+  simp only [norm_def, LinearEquiv.coe_mk, ← σ.prod_comp,
+    (σ.arrowCongr (Equiv.refl G)).surjective.forall, domDomCongr_apply, Equiv.arrowCongr_apply,
+    Equiv.coe_refl, comp.left_id, comp_apply, Equiv.symm_apply_apply, id]
+#align continuous_multilinear_map.norm_dom_dom_congr ContinuousMultilinearMap.norm_domDomCongr
+
 /-- An equivalence of the index set defines a linear isometric equivalence between the spaces
 of multilinear maps. -/
-def domDomCongr (σ : ι ≃ ι') :
+def domDomCongrₗᵢ (σ : ι ≃ ι') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G' :=
-  LinearIsometryEquiv.ofBounds
-    { toFun := fun f =>
-        (MultilinearMap.domDomCongr σ f.toMultilinearMap).mkContinuous ‖f‖ fun m =>
-          (f.le_op_norm fun i => m (σ i)).trans_eq <| by rw [← σ.prod_comp]
-      invFun := fun f =>
-        (MultilinearMap.domDomCongr σ.symm f.toMultilinearMap).mkContinuous ‖f‖ fun m =>
-          (f.le_op_norm fun i => m (σ.symm i)).trans_eq <| by rw [← σ.symm.prod_comp]
-      left_inv := fun f => ext fun m => congr_arg f <| by simp only [σ.symm_apply_apply]
-      right_inv := fun f => ext fun m => congr_arg f <| by simp only [σ.apply_symm_apply]
-      map_add' := fun f g => rfl
-      map_smul' := fun c f => rfl } (fun f => by
-        simp only [LinearEquiv.coe_mk]
-        exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _) fun f => by
-          simp only [LinearEquiv.coe_symm_mk]
-          exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
-#align continuous_multilinear_map.dom_dom_congr ContinuousMultilinearMap.domDomCongr
+  { domDomCongrEquiv σ with
+    map_add' := fun _ _ => rfl
+    map_smul' := fun _ _ => rfl
+    norm_map' := norm_domDomCongr 𝕜 G G' σ }
+#align continuous_multilinear_map.dom_dom_congrₗᵢ ContinuousMultilinearMap.domDomCongrₗᵢ
 
 variable {𝕜 G G'}
 
@@ -1848,7 +1858,8 @@ to the space of continuous multilinear maps `G [×k]→L[𝕜] G [×l]→L[𝕜]
 values in the space of continuous multilinear maps of `l` variables. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : s.card = k) (hl : sᶜ.card = l) :
     (G[×n]→L[𝕜] G') ≃ₗᵢ[𝕜] G[×k]→L[𝕜] G[×l]→L[𝕜] G' :=
-  (domDomCongr 𝕜 G G' (finSumEquivOfFinset hk hl).symm).trans (currySumEquiv 𝕜 (Fin k) (Fin l) G G')
+  (domDomCongrₗᵢ 𝕜 G G' (finSumEquivOfFinset hk hl).symm).trans
+    (currySumEquiv 𝕜 (Fin k) (Fin l) G G')
 #align continuous_multilinear_map.curry_fin_finset ContinuousMultilinearMap.curryFinFinset
 
 variable {𝕜 G G'}
