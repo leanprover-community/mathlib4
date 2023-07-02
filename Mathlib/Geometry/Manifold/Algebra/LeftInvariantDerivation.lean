@@ -8,8 +8,8 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Derivation.Lie
-import Mathbin.Geometry.Manifold.DerivationBundle
+import Mathlib.RingTheory.Derivation.Lie
+import Mathlib.Geometry.Manifold.DerivationBundle
 
 /-!
 
@@ -223,8 +223,7 @@ instance : Module 𝕜 (LeftInvariantDerivation I G) :=
 
 /-- Evaluation at a point for left invariant derivation. Same thing as for generic global
 derivations (`derivation.eval_at`). -/
-def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g
-    where
+def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
   toFun X := Derivation.evalAt g ↑X
   map_add' X Y := rfl
   map_smul' k X := rfl
@@ -257,8 +256,7 @@ theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
 
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G)
     where bracket X Y :=
-    ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g =>
-      by
+    ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
       ext f
       have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
       have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
@@ -281,8 +279,7 @@ theorem commutator_apply : ⁅X, Y⁆ f = X (Y f) - Y (X f) :=
   rfl
 #align left_invariant_derivation.commutator_apply LeftInvariantDerivation.commutator_apply
 
-instance : LieRing (LeftInvariantDerivation I G)
-    where
+instance : LieRing (LeftInvariantDerivation I G) where
   add_lie X Y Z := by
     ext1;
     simp only [commutator_apply, coe_add, Pi.add_apply, LinearMap.map_add,
