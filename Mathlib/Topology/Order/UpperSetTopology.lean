@@ -27,7 +27,12 @@ instance of `UpperSetTopology`.
 
 ## Motivation
 
-I need to take a run at this.
+An Alexandrov topology is a topology where the intersection of any collection of open sets is open.
+The `UpperSetTopology` is an Alexandrov topology, and, given any Alexandrov topology, a `Preorder`
+may be defined on the underlying set such that the `UpperSetTopology` of the `Preorder` coincides
+with the original topology.
+
+Furthermore, the `UpperSetTopology` is used in the construction of the Scott Topology.
 
 ## Tags
 
