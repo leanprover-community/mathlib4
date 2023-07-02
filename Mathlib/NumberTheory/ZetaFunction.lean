@@ -190,12 +190,12 @@ theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
       sub_add_cancel, sqrt_div zero_le_one, sqrt_one, one_div (sqrt _), ofReal_inv, ← one_div,
       one_div_one_div, mul_sub, mul_one]
     congr 2
-    let τ : UpperHalfPlane := ⟨u * I, (mul_I_im u).symm ▸ zero_lt_one.trans hu⟩
+    let τ : UpperHalfPlane := .mk (u * I) ((mul_I_im u).symm ▸ zero_lt_one.trans hu)
     convert jacobiTheta_S_smul τ using 2
-    · rw [UpperHalfPlane.modular_S_smul, UpperHalfPlane.coe_mk, Subtype.coe_mk, ← neg_inv, mul_inv,
-        inv_I, mul_neg, neg_neg, one_div, ofReal_inv]
-    · rw [Subtype.coe_mk, mul_comm, mul_assoc, mul_neg, I_mul_I, neg_neg, mul_one, sqrt_eq_rpow,
-        ofReal_cpow (zero_lt_one.trans hu).le]
+    · rw [UpperHalfPlane.modular_S_smul, UpperHalfPlane.coe_mk, UpperHalfPlane.coe_mk, ← neg_inv,
+        mul_inv, inv_I, mul_neg, neg_neg, one_div, ofReal_inv]
+    · rw [UpperHalfPlane.coe_mk, mul_comm, mul_assoc, mul_neg, I_mul_I, neg_neg, mul_one,
+        sqrt_eq_rpow, ofReal_cpow (zero_lt_one.trans hu).le]
       push_cast
       rfl
   rcases lt_trichotomy 1 t with (h | h | h)
@@ -213,7 +213,6 @@ theorem zetaKernel₂_one_div {t : ℝ} (ht : 0 < t) :
 We now establish asymptotic bounds for the zeta kernels as `t → ∞` and `t → 0`, and use these to
 show holomorphy of their Mellin transforms (for `1 / 2 < re s` for `zetaKernel₁`, and all `s` for
 `zetaKernel₂`). -/
-
 
 /-- Bound for `zetaKernel₁` for large `t`. -/
 theorem isBigO_atTop_zetaKernel₁ : IsBigO atTop zetaKernel₁ fun t => exp (-π * t) := by
@@ -305,7 +304,6 @@ set_option linter.uppercaseLean3 false in
 /-!
 ## Differentiability of the completed zeta function
 -/
-
 
 /-- The Mellin transform of the first zeta kernel is holomorphic for `1 / 2 < re s`. -/
 theorem differentiableAt_mellin_zetaKernel₁ {s : ℂ} (hs : 1 / 2 < s.re) :

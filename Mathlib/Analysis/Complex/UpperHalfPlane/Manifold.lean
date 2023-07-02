@@ -9,7 +9,7 @@ Authors: Chris Birkbeck
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Geometry.Manifold.ContMdiffMfderiv
+import Mathlib.Geometry.Manifold.MFDeriv
 
 /-!
 # Manifold structure on the upper half plane.
@@ -29,13 +29,13 @@ instance : SmoothManifoldWithCorners 𝓘(ℂ) ℍ :=
   UpperHalfPlane.openEmbedding_coe.singleton_smoothManifoldWithCorners 𝓘(ℂ)
 
 /-- The inclusion map `ℍ → ℂ` is a smooth map of manifolds. -/
-theorem smooth_coe : Smooth 𝓘(ℂ) 𝓘(ℂ) (coe : ℍ → ℂ) := fun x => contMDiffAt_extChartAt
+theorem smooth_coe : Smooth 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) := fun _ => contMDiffAt_extChartAt
 #align upper_half_plane.smooth_coe UpperHalfPlane.smooth_coe
 
 /-- The inclusion map `ℍ → ℂ` is a differentiable map of manifolds. -/
-theorem mDifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (coe : ℍ → ℂ) :=
-  smooth_coe.MDifferentiable
-#align upper_half_plane.mdifferentiable_coe UpperHalfPlane.mDifferentiable_coe
+theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ → ℂ) :=
+  smooth_coe.mdifferentiable
+#align upper_half_plane.mdifferentiable_coe UpperHalfPlane.mdifferentiable_coe
 
 end UpperHalfPlane
 
