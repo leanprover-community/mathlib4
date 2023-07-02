@@ -1839,6 +1839,27 @@ def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
 
 end Units
 
+section LocallyConnectedSpace
+
+@[to_additive]
+theorem TopologicalGroup.locallyConnectedSpace_of_connected_basis_one [Group G]
+    [TopologicalSpace G] [TopologicalGroup G] (b : α → Set G) (p : α → Prop)
+    (H : ∀ a, p a → IsPreconnected (b a)) (hbasis : (𝓝 1).HasBasis p b) :
+    LocallyConnectedSpace G :=
+  locallyConnectedSpace_of_connected_bases (fun x a ↦ x • b a) (fun _ ↦ p)
+    (fun x ↦ by rw [← map_mul_left_nhds_one]; exact hbasis.map _)
+    (fun x a ha ↦ (H a ha).image _ (Continuous.continuousOn <| by continuity))
+
+@[to_additive]
+theorem TopologicalGroup.locallyConnectedSpace_of_connected_subsets_one [Group G]
+    [TopologicalSpace G] [TopologicalGroup G]
+    (H : ∀ U ∈ (𝓝 1 : Filter G), ∃ V ∈ 𝓝 1, IsPreconnected V ∧ V ⊆ U) :
+    LocallyConnectedSpace G :=
+  TopologicalGroup.locallyConnectedSpace_of_connected_basis_one id
+    (fun s ↦ s ∈ 𝓝 1 ∧ IsPreconnected s) (fun _ hs ↦ hs.2) (Filter.hasBasis_self.mpr H)
+
+end LocallyConnectedSpace
+
 section LatticeOps
 
 variable {ι : Sort _} [Group G]

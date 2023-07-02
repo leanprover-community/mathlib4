@@ -2688,3 +2688,37 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
 end Submodule
 
 end Quotient
+
+section Connected
+
+open Set TopologicalAddGroup
+
+/-!
+### Results about (local) (path)-connectedness
+-/
+
+variable {R E F : Type _} [Semiring R] [AddCommMonoid E] [AddCommGroup F] [Module R E] [Module R F]
+  [TopologicalSpace R] [TopologicalSpace E] [TopologicalSpace F] [ContinuousSMul R E]
+  [TopologicalAddGroup F] [ContinuousSMul R F]
+
+theorem ContinuousSMul.toConnectedSpace [ConnectedSpace R] : ConnectedSpace E where
+  isPreconnected_univ := isPreconnected_of_forall 0 fun x _ ↦
+    ⟨Set.range (fun c : R ↦ c • x), subset_univ _, ⟨0, zero_smul _ _⟩, ⟨1, one_smul _ _⟩,
+      isPreconnected_range (by continuity)⟩
+  toNonempty := inferInstance
+
+#check continuous_smul
+
+theorem ContinuousSMul.toLocallyConnectedSpace [LocallyConnectedSpace R] :
+    LocallyConnectedSpace F := by
+  have : Tendsto (fun x : R × F ↦ x.1 • x.2) (𝓝 0 ×ˢ 𝓝 0) (𝓝 0) := by
+    convert continuous_smul.tendsto ((0, 0) : R × F)
+    . rw [← nhds_prod_eq]
+    . rw [zero_smul]
+  refine locallyConnectedSpace_of_connected_subsets_zero (fun U hU ↦ ?_)
+  rw [((LocallyConnectedSpace.open_connected_basis (0 : R)).prod
+    (nhds_basis_opens (0 : F))).tendsto_left_iff] at this
+  rcases this U hU with ⟨⟨A, V⟩, ⟨⟨A_open, hA0, A_conn⟩, ⟨hV0, V_open⟩⟩, hAV⟩
+  refine ⟨A • V, IsOpen.mem_nhds (V_open.smul_left) ?_, ?_, ?_⟩
+
+end Connected
