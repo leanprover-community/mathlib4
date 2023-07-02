@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.Morphisms.Basic
-import Mathbin.RingTheory.LocalProperties
+import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.RingTheory.LocalProperties
 
 /-!
 
@@ -55,8 +55,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
         (@IsLocalization.Away.map (Y.Presheaf.obj (Opposite.op ⊤)) _
           (Y.Presheaf.obj (Opposite.op <| Y.basicOpen r)) _ _ (X.Presheaf.obj (Opposite.op ⊤)) _
           (X.Presheaf.obj (Opposite.op <| X.basicOpen (Scheme.Γ.map f.op r))) _ _
-          (Scheme.Γ.map f.op) r _ _) :=
-  by
+          (Scheme.Γ.map f.op) r _ _) := by
   rw [Γ_map_morphism_restrict, hP.cancel_left_is_iso, hP.cancel_right_is_iso, ←
     hP.cancel_right_is_iso (f.val.c.app (Opposite.op (Y.basic_open r)))
       (X.presheaf.map (eq_to_hom (Scheme.preimage_basic_open f r).symm).op),
@@ -85,8 +84,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
         (Scheme.Γ.map
           ((X.restrict ((Opens.map f.1.base).obj _).OpenEmbedding).of_restrict V.OpenEmbedding ≫
               f ∣_ Y.basicOpen r).op) ↔
-      P (Localization.awayMap (Scheme.Γ.map (X.of_restrict U.OpenEmbedding ≫ f).op) r) :=
-  by
+      P (Localization.awayMap (Scheme.Γ.map (X.of_restrict U.OpenEmbedding ≫ f).op) r) := by
   subst e
   convert (hP.is_localization_away_iff _ _ _ _).symm
   rotate_left
@@ -122,8 +120,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
 
 theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (hP' : RespectsIso @P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
-    (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst : pullback f g ⟶ _).op) :=
-  by
+    (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst : pullback f g ⟶ _).op) := by
   rw [←
     preserves_pullback.iso_inv_fst AffineScheme.forget_to_Scheme (AffineScheme.of_hom f)
       (AffineScheme.of_hom g),
@@ -162,8 +159,7 @@ abbrev affineLocally : MorphismProperty Scheme :=
 variable {P}
 
 theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
-    (sourceAffineLocally @P).toProperty.RespectsIso :=
-  by
+    (sourceAffineLocally @P).toProperty.RespectsIso := by
   apply affine_target_morphism_property.respects_iso_mk
   · introv H U
     rw [← h₁.cancel_right_is_iso _ (Scheme.Γ.map (Scheme.restrict_map_iso e.inv U.1).Hom.op), ←
@@ -184,8 +180,7 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally 
 theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Scheme} (f : X ⟶ Y) :
     affineLocally (@P) f ↔
       ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ (Opens.map f.1.base).obj U.1),
-        P (f.appLe e) :=
-  by
+        P (f.appLe e) := by
   apply forall_congr'
   intro U
   delta source_affine_locally
@@ -226,8 +221,7 @@ theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.Respe
       (Scheme.Γ.map
         ((X.restrict ((Opens.map f.1.base).obj <| Y.basicOpen r).OpenEmbedding).of_restrict
               U.1.OpenEmbedding ≫
-            f ∣_ Y.basicOpen r).op) :=
-  by
+            f ∣_ Y.basicOpen r).op) := by
   specialize H ⟨_, U.2.imageIsOpenImmersion (X.of_restrict _)⟩
   convert (h₁.of_restrict_morphism_restrict_iff _ _ _ _ _).mpr _ using 1
   pick_goal 5
@@ -270,8 +264,7 @@ theorem source_affine_locally_of_source_open_cover_aux (h₁ : RingHom.RespectsI
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme} (f : X ⟶ Y) (U : X.affineOpens)
     (s : Set (X.Presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
     (hs' : ∀ r : s, P (Scheme.Γ.map (X.of_restrict (X.basicOpen r.1).OpenEmbedding ≫ f).op)) :
-    P (Scheme.Γ.map (X.of_restrict U.1.OpenEmbedding ≫ f).op) :=
-  by
+    P (Scheme.Γ.map (X.of_restrict U.1.OpenEmbedding ≫ f).op) := by
   apply_fun Ideal.map (X.presheaf.map (eq_to_hom U.1.openEmbedding_obj_top).op) at hs 
   rw [Ideal.map_span, Ideal.map_top] at hs 
   apply h₃ _ _ hs
@@ -307,8 +300,7 @@ theorem source_affine_locally_of_source_open_cover_aux (h₁ : RingHom.RespectsI
 
 theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsIso @P)
     {X Y Z : Scheme} [IsAffine X] [IsAffine Z] (f : X ⟶ Y) [IsOpenImmersionCat f] (g : Y ⟶ Z)
-    (h₂ : sourceAffineLocally (@P) g) : P (Scheme.Γ.map (f ≫ g).op) :=
-  by
+    (h₂ : sourceAffineLocally (@P) g) : P (Scheme.Γ.map (f ≫ g).op) := by
   rw [←
     h₁.cancel_right_is_iso _
       (Scheme.Γ.map (is_open_immersion.iso_of_range_eq (Y.of_restrict _) f _).Hom.op),
@@ -330,8 +322,7 @@ variable {P} (hP : RingHom.PropertyIsLocal @P)
 
 theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y]
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, P (Scheme.Γ.map (𝒰.map i ≫ f).op)) :
-    sourceAffineLocally (@P) f :=
-  by
+    sourceAffineLocally (@P) f := by
   let S i :=
     (⟨⟨Set.range (𝒰.map i).1.base, (𝒰.is_open i).base_open.open_range⟩,
         range_is_affine_open_of_open_immersion (𝒰.map i)⟩ :
@@ -387,8 +378,7 @@ theorem affine_openCover_tFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
         ∀ (𝒰 : Scheme.OpenCover.{u} X) [∀ i, IsAffine (𝒰.obj i)] (i : 𝒰.J),
           P (Scheme.Γ.map (𝒰.map i ≫ f).op),
         ∀ {U : Scheme} (g : U ⟶ X) [IsAffine U] [IsOpenImmersionCat g],
-          P (Scheme.Γ.map (g ≫ f).op)] :=
-  by
+          P (Scheme.Γ.map (g ≫ f).op)] := by
   tfae_have 1 → 4
   · intro H U g _ hg
     skip
@@ -417,8 +407,7 @@ theorem openCover_tFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
       [sourceAffineLocally (@P) f,
         ∃ 𝒰 : Scheme.OpenCover.{u} X, ∀ i : 𝒰.J, sourceAffineLocally (@P) (𝒰.map i ≫ f),
         ∀ (𝒰 : Scheme.OpenCover.{u} X) (i : 𝒰.J), sourceAffineLocally (@P) (𝒰.map i ≫ f),
-        ∀ {U : Scheme} (g : U ⟶ X) [IsOpenImmersionCat g], sourceAffineLocally (@P) (g ≫ f)] :=
-  by
+        ∀ {U : Scheme} (g : U ⟶ X) [IsOpenImmersionCat g], sourceAffineLocally (@P) (g ≫ f)] := by
   tfae_have 1 → 4
   · intro H U g hg V
     skip
@@ -478,8 +467,7 @@ theorem affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
 #align ring_hom.property_is_local.affine_open_cover_iff RingHom.PropertyIsLocal.affine_openCover_iff
 
 theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X) :
-    affineLocally (@P) f ↔ ∀ i, affineLocally (@P) (𝒰.map i ≫ f) :=
-  by
+    affineLocally (@P) f ↔ ∀ i, affineLocally (@P) (𝒰.map i ≫ f) := by
   constructor
   · intro H i U
     rw [morphism_restrict_comp]
@@ -502,8 +490,7 @@ theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
 #align ring_hom.property_is_local.source_open_cover_iff RingHom.PropertyIsLocal.source_openCover_iff
 
 theorem affineLocally_of_isOpenImmersionCat (hP : RingHom.PropertyIsLocal @P) {X Y : Scheme}
-    (f : X ⟶ Y) [hf : IsOpenImmersionCat f] : affineLocally (@P) f :=
-  by
+    (f : X ⟶ Y) [hf : IsOpenImmersionCat f] : affineLocally (@P) f := by
   intro U
   haveI H : is_affine _ := U.2
   rw [← category.comp_id (f ∣_ U)]
@@ -522,10 +509,8 @@ theorem affineLocally_of_comp
       ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
         ∀ (f : R →+* S) (g : S →+* T), P (g.comp f) → P g)
     {X Y Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} (h : affineLocally (@P) (f ≫ g)) :
-    affineLocally (@P) f :=
-  by
-  let 𝒰 : ∀ i, ((Z.affine_cover.pullback_cover (f ≫ g)).obj i).OpenCover :=
-    by
+    affineLocally (@P) f := by
+  let 𝒰 : ∀ i, ((Z.affine_cover.pullback_cover (f ≫ g)).obj i).OpenCover := by
     intro i
     refine' Scheme.open_cover.bind _ fun i => Scheme.affine_cover _
     apply
@@ -550,11 +535,9 @@ theorem affineLocally_of_comp
   exact H _ _ h
 #align ring_hom.property_is_local.affine_locally_of_comp RingHom.PropertyIsLocal.affineLocally_of_comp
 
-theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderComposition :=
-  by
+theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderComposition := by
   intro X Y S f g hf hg
-  let 𝒰 : ∀ i, ((S.affine_cover.pullback_cover (f ≫ g)).obj i).OpenCover :=
-    by
+  let 𝒰 : ∀ i, ((S.affine_cover.pullback_cover (f ≫ g)).obj i).OpenCover := by
     intro i
     refine' Scheme.open_cover.bind _ fun i => Scheme.affine_cover _
     apply
