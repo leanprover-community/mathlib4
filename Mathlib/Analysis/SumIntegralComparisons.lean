@@ -160,7 +160,7 @@ theorem MonotoneOn.sum_le_integral (hf : MonotoneOn f (Icc x₀ (x₀ + a))) :
 #align monotone_on.sum_le_integral MonotoneOn.sum_le_integral
 
 theorem MonotoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : MonotoneOn f (Set.Icc a b)) :
-    (∑ x in Finset.Ico a b, f x) ≤ ∫ x in a..b, f x := by
+    ∑ x in Finset.Ico a b, f x ≤ ∫ x in a..b, f x := by
   rw [← neg_le_neg_iff, ← Finset.sum_neg_distrib, ← intervalIntegral.integral_neg]
   exact hf.neg.integral_le_sum_Ico hab
 #align monotone_on.sum_le_integral_Ico MonotoneOn.sum_le_integral_Ico

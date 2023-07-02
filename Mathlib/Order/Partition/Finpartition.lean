@@ -474,7 +474,7 @@ theorem biUnion_parts : P.parts.biUnion id = s :=
   (sup_eq_biUnion _ _).symm.trans P.supParts
 #align finpartition.bUnion_parts Finpartition.biUnion_parts
 
-theorem sum_card_parts : (∑ i in P.parts, i.card) = s.card := by
+theorem sum_card_parts : ∑ i in P.parts, i.card = s.card := by
   convert congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl

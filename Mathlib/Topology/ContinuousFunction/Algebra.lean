@@ -438,7 +438,7 @@ theorem summable_apply [LocallyCompactSpace α] [AddCommMonoid β] [ContinuousAd
 
 theorem tsum_apply [LocallyCompactSpace α] [T2Space β] [AddCommMonoid β] [ContinuousAdd β]
     {γ : Type _} {f : γ → C(α, β)} (hf : Summable f) (x : α) :
-    (∑' i : γ, f i x) = (∑' i : γ, f i) x :=
+    ∑' i : γ, f i x = (∑' i : γ, f i) x :=
   (hasSum_apply hf.hasSum x).tsum_eq
 #align continuous_map.tsum_apply ContinuousMap.tsum_apply
 

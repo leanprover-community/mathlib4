@@ -56,7 +56,7 @@ theorem toMatrix_self [DecidableEq ι] : b.toMatrix b = (1 : Matrix ι ι k) := 
 
 variable {ι' : Type _} [Fintype ι'] [Fintype ι] (b₂ : AffineBasis ι k P)
 
-theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : (∑ j, b.toMatrix q i j) = 1 := by
+theorem toMatrix_row_sum_one {ι' : Type _} (q : ι' → P) (i : ι') : ∑ j, b.toMatrix q i j = 1 := by
   simp
 #align affine_basis.to_matrix_row_sum_one AffineBasis.toMatrix_row_sum_one
 
@@ -88,9 +88,9 @@ theorem affineSpan_eq_top_of_toMatrix_left_inv [DecidableEq ι] [Nontrivial k] (
     rintro q ⟨i, rfl⟩
     exact this i
   intro i
-  have hAi : (∑ j, A i j) = 1 := by
+  have hAi : ∑ j, A i j = 1 := by
     calc
-      (∑ j, A i j) = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
+      ∑ j, A i j = ∑ j, A i j * ∑ l, b.toMatrix p j l := by simp
       _ = ∑ j, ∑ l, A i j * b.toMatrix p j l := by simp_rw [Finset.mul_sum]
       _ = ∑ l, ∑ j, A i j * b.toMatrix p j l := by rw [Finset.sum_comm]
       _ = ∑ l, (A ⬝ b.toMatrix p) i l := rfl
