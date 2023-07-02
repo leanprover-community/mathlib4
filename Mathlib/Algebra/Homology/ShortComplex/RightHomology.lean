@@ -381,9 +381,6 @@ instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
 
 instance : Unique (RightHomologyMapData φ h₁ h₂) := Unique.mk' _
 
-def _root_.CategoryTheory.ShortComplex.rightHomologyMapData :
-  RightHomologyMapData φ h₁ h₂ := default
-
 variable {φ h₁ h₂}
 
 lemma congr_φH {γ₁ γ₂ : RightHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φH = γ₂.φH := by rw [eq]
@@ -478,6 +475,13 @@ lemma opcycles_ext_iff [HasRightHomology S] (f₁ f₂ : S.opcycles ⟶ A) :
 
 variable {S}
 
+section
+
+variable (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
+
+def rightHomologyMapData :
+  RightHomologyMapData φ h₁ h₂ := default
+
 def rightHomologyMap' (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
   h₁.H ⟶ h₂.H := (rightHomologyMapData φ _ _).φH
 
@@ -500,6 +504,8 @@ lemma rightHomologyι_naturality' (φ : S₁ ⟶ S₂)
     (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
     rightHomologyMap' φ h₁ h₂ ≫ h₂.ι = h₁.ι ≫ opcyclesMap' φ h₁ h₂ :=
   RightHomologyMapData.commι _
+
+end
 
 noncomputable def rightHomologyMap [HasRightHomology S₁] [HasRightHomology S₂]
     (φ : S₁ ⟶ S₂) : S₁.rightHomology ⟶ S₂.rightHomology :=
