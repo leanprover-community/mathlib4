@@ -17,7 +17,7 @@ import Mathlib.Control.Traversable.Lemmas
 
 namespace Mathlib.Deriving.Traversable
 
-open Lean Meta Elab Tactic List Monad Functor
+open Lean Meta Elab Term Tactic List Monad Functor
 
 /-- similar to `nestedTraverse` but for `Functor` -/
 partial def nestedMap (f v t : Expr) : TermElabM Expr := do
@@ -48,34 +48,60 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 
 /-- similar to `traverseConstructor` but for `Functor` -/
 def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr) (args₁ : List (Bool × Expr))
-    (recCall : List Expr) (g : Expr) : TermElabM Expr := do
+    (recCall : List Expr) : TacticM Expr := do
+  let g ← getMainTarget
   let (_, args') ←
     mapAccumLM (fun (x : List Expr) (y : Bool × Expr) =>
       if y.1 then return (x.tail, x.head!)
       else Prod.mk recCall <$> mapField n g.appFn! f α β y.2) recCall args₁
-  let r ← mkAppOptM c ((args₀ ++ args').map some).toArray
-  return r
+  mkAppOptM c ((args₀ ++ args').map some).toArray
 
 /-- derive the `map` definition of a `Functor` -/
-def mkMap (type : Name) (ls : List Expr) (g : Expr) : TermElabM Expr := do
-  let m := (← mkFreshExprSyntheticOpaqueMVar g).mvarId!
+def mkMap (type : Name) (vars : List Expr) : TacticM Unit := do
+  let ms ← getGoals
+  let m ← getMainGoal
   let (#[α, β, f, x], m') ← m.introN 4 [`α, `β, `f, `x] | unreachable!
   m'.withContext do
     let et ← x.getType
     let xs ← m'.induction x (mkRecName type)
     xs.forM fun ⟨m', args, _⟩ => do
-      let c := Name.mkStr type (← m'.getTag).getString!
+      setGoals [m']
       m'.withContext do
+        let c := Name.mkStr type (← m'.getTag).getString!
         let (args, recCall) ←
           args.toList.partitionM fun e => (!(mkFVar β).occurs ·) <$> inferType e
         let args₀ ← args.mapM fun a => do
           let b ← et.occurs <$> inferType a
           return (b, a)
-        let g ← m'.getType
         mapConstructor
-            c type (mkFVar f) (mkFVar α) (mkFVar β) (ls.concat (mkFVar β)) args₀ recCall g
-          >>= m'.assign
-  instantiateMVars (mkMVar m)
+            c type (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) args₀ recCall
+          >>= closeMainGoal
+  setGoals ms
+  pruneSolvedGoals
+
+def deriveFunctor (levels : List Name) (vars : List Expr) : TacticM Unit := do
+  let .app (.const ``Functor _) F ← getMainTarget | failure
+  let some n := F.getAppFn.constName? | failure
+  evalTactic (← `(tactic| refine { map := @(?_) }))
+  let ms ← getGoals
+  let t ← getMainTarget
+  let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
+  setGoals [m']
+  mkMap n vars
+  let e ← instantiateMVars (mkMVar m')
+  let e' ← mkLambdaFVars vars.toArray e
+  let t' ← mkForallFVars vars.toArray t
+  let n' := n.mkStr "map"
+  addPreDefinitions #[
+    { ref := .missing
+      kind := .def
+      levelParams := levels
+      modifiers := {}
+      declName := n'
+      type := t'
+      value := e' }] {}
+  setGoals ms
+  closeMainGoal (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-
 meta def with_prefix : option name → name → name
@@ -119,19 +145,6 @@ do e ← get_env,
         return () },
    set_goals [],
    return ()
-
-meta def derive_functor (pre : option name) : tactic unit :=
-do vs ← local_context,
-   `(functor %%f) ← target,
-   env ← get_env,
-   let n := f.get_app_fn.const_name,
-   d ← get_decl n,
-   refine ``( { functor . map := _ , .. } ),
-   tgt ← target,
-   extract_def (with_prefix pre n <.> "map") d.is_trusted $ mk_map n,
-   when (d.is_trusted) $ do
-     tgt ← pis vs tgt,
-     derive_map_equations pre n vs tgt
 
 /-- `seq_apply_constructor f [x,y,z]` synthesizes `f <*> x <*> y <*> z` -/
 private meta def seq_apply_constructor :
