@@ -8,9 +8,9 @@ Authors: Antoine Labelle
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RepresentationTheory.FdRep
-import Mathbin.LinearAlgebra.Trace
-import Mathbin.RepresentationTheory.Invariants
+import Mathlib.RepresentationTheory.FdRep
+import Mathlib.LinearAlgebra.Trace
+import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Characters of representations
@@ -111,8 +111,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal (V W : FdRep k G) [Simple V] [Simple W] :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g * W.character g⁻¹ =
-      if Nonempty (V ≅ W) then ↑1 else ↑0 :=
-  by
+      if Nonempty (V ≅ W) then ↑1 else ↑0 := by
   -- First, we can rewrite the summand `V.character g * W.character g⁻¹` as the character
   -- of the representation `V ⊗ W* ≅ Hom(W, V)` applied to `g`.
   conv in
