@@ -372,7 +372,7 @@ theorem IsEquivalent.trans_eventuallyEq {f g₁ g₂ : α → β} (h : f ~[l] g�
   h.trans h₂.isEquivalent
 
 instance transIsEquivalentEventuallyEq :
-    @Trans (α → β) (α → β) (α → β) (· ~[l] ·) (· =ᶠ[l] ·) (· ~[l] ·) where
+    @Trans (α → β) (α → β) (α → β) (IsEquivalent l) (EventuallyEq l) (IsEquivalent l) where
   trans := IsEquivalent.trans_eventuallyEq
 
 @[trans]
@@ -381,7 +381,7 @@ theorem IsEquivalent.trans_isBigO {f g₁ : α → β} {g₂ : α → β₂} (h 
   IsBigO.trans h.isBigO h₂
 
 instance transIsEquivalentIsBigO :
-    @Trans (α → β) (α → β) (α → β₂) (· ~[l] ·) (· =O[l] ·) (· =O[l] ·) where
+    @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsBigO l) (IsBigO l) where
   trans := IsEquivalent.trans_isBigO
 
 @[trans]
@@ -390,7 +390,7 @@ theorem IsBigO.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h 
   IsBigO.trans h h₂.isBigO
 
 instance transIsBigOIsEquivalent :
-    @Trans (α → β₂) (α → β) (α → β) (· =O[l] ·) (· ~[l] ·) (· =O[l] ·) where
+    @Trans (α → β₂) (α → β) (α → β) (IsBigO l) (IsEquivalent l) (IsBigO l) where
   trans := IsBigO.trans_isEquivalent
 
 @[trans]
@@ -399,7 +399,7 @@ theorem IsEquivalent.trans_isLittleO {f g₁ : α → β} {g₂ : α → β₂} 
   IsBigO.trans_isLittleO h.isBigO h₂
 
 instance transIsEquivalentIsLittleO :
-    @Trans (α → β) (α → β) (α → β₂) (· ~[l] ·) (· =o[l] ·) (· =o[l] ·) where
+    @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsLittleO l) (IsLittleO l) where
   trans := IsEquivalent.trans_isLittleO
 
 @[trans]
@@ -408,7 +408,7 @@ theorem IsLittleO.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} 
   IsLittleO.trans_isBigO h h₂.isBigO
 
 instance transIsLittleOIsEquivalent :
-    @Trans (α → β₂) (α → β) (α → β) (· =o[l] ·) (· ~[l] ·) (· =o[l] ·) where
+    @Trans (α → β₂) (α → β) (α → β) (IsLittleO l) (IsEquivalent l) (IsLittleO l) where
   trans := IsLittleO.trans_isEquivalent
 
 @[trans]
@@ -417,7 +417,7 @@ theorem IsEquivalent.trans_isTheta {f g₁ : α → β} {g₂ : α → β₂} (h
   IsTheta.trans h.isTheta h₂
 
 instance transIsEquivalentIsTheta :
-    @Trans (α → β) (α → β) (α → β₂) (· ~[l] ·) (· =Θ[l] ·) (· =Θ[l] ·) where
+    @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsTheta l) (IsTheta l) where
   trans := IsEquivalent.trans_isTheta
 
 @[trans]
@@ -426,7 +426,7 @@ theorem IsTheta.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h
   IsTheta.trans h h₂.isTheta
 
 instance transIsThetaIsEquivalent :
-    @Trans (α → β₂) (α → β) (α → β) (· =Θ[l] ·) (· ~[l] ·) (· =Θ[l] ·) where
+    @Trans (α → β₂) (α → β) (α → β) (IsTheta l) (IsEquivalent l) (IsTheta l) where
   trans := IsTheta.trans_isEquivalent
 
 end Asymptotics
