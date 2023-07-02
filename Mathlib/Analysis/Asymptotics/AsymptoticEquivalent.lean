@@ -359,7 +359,7 @@ theorem Filter.EventuallyEq.trans_isEquivalent {f g₁ g₂ : α → β} (h : f 
 namespace Asymptotics
 
 instance transIsEquivalentIsEquivalent :
-    @Trans (α → β) (α → β) (α → β) (· ~[l] ·) (· ~[l] ·) (· ~[l] ·) where
+    @Trans (α → β) (α → β) (α → β) (IsEquivalent l) (IsEquivalent l) (IsEquivalent l) where
   trans := IsEquivalent.trans
 
 instance transEventuallyEqIsEquivalent :
