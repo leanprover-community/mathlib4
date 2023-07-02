@@ -136,8 +136,8 @@ theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) 
 @[simp]
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
-  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app]
-  simp
+  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ←comp_app, Category.assoc, Iso.hom_inv_id,
+    Category.comp_id]
 #align Top.sigma_iso_sigma_inv_apply TopCat.sigmaIsoSigma_inv_apply
 
 -- Porting note: cannot use .topologicalSpace in place .str
@@ -188,10 +188,10 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     -- porting note: used to be `ext x`
     refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
     · specialize h ⟨WalkingPair.left⟩
-      apply_fun fun e => e x  at h
+      apply_fun fun e => e x at h
       exact h
     · specialize h ⟨WalkingPair.right⟩
-      apply_fun fun e => e x  at h
+      apply_fun fun e => e x at h
       exact h
 #align Top.prod_binary_fan_is_limit TopCat.prodBinaryFanIsLimit
 
@@ -265,13 +265,11 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     · simp only [← comp_apply, Category.assoc]
       erw [Limits.prod.map_fst]
       rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
-      have : (forget TopCat).map prodFst (x₁, x₂) = x₁ := rfl
-      rw [this, hx₁]
+      exact hx₁
     · simp only [← comp_apply, Category.assoc]
       erw [Limits.prod.map_snd]
       rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
-      have : (forget TopCat).map prodSnd (x₁, x₂) = x₂ := rfl
-      rw [this, hx₂]
+      exact hx₂
 #align Top.range_prod_map TopCat.range_prod_map
 
 theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
@@ -331,10 +329,11 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, _⟩
       simp only [Functor.map_comp]
-      erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
+
+      erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
-          (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr.symm]
-      congr 1
+            (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
+      aesop
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
         rw [eq_compl_iff_isCompl.mpr h₃.symm]
@@ -362,7 +361,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
             have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
-              rintro a (h : a ∈ Set.range c.inlᶜ)
+              rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
                 (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
@@ -374,7 +373,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               · continuity
               · rw [embedding_subtype_val.toInducing.continuous_iff]
                 exact continuous_subtype_val
-          · change IsOpen (Set.range c.inlᶜ)
+          · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.open_range
       · intro T f g

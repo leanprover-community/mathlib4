@@ -82,7 +82,7 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
 
 -- PORTING NOTE: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
-    LeftOrdContinuous (f^[n]) :=
+    LeftOrdContinuous f^[n] :=
 by induction n with
 | zero => exact LeftOrdContinuous.id α
 | succ n ihn => exact ihn.comp hf
@@ -191,7 +191,7 @@ theorem comp (hg : RightOrdContinuous g) (hf : RightOrdContinuous f) : RightOrdC
 #align right_ord_continuous.comp RightOrdContinuous.comp
 
 protected theorem iterate {f : α → α} (hf : RightOrdContinuous f) (n : ℕ) :
-    RightOrdContinuous (f^[n]) :=
+    RightOrdContinuous f^[n] :=
   hf.orderDual.iterate n
 #align right_ord_continuous.iterate RightOrdContinuous.iterate
 
@@ -215,7 +215,7 @@ theorem lt_iff (hf : RightOrdContinuous f) (h : Injective f) {x y} : f x < f y �
 
 variable (f)
 
-/-- Convert an injective left order continuous function to a `OrderEmbedding`. -/
+/-- Convert an injective left order continuous function to an `OrderEmbedding`. -/
 def toOrderEmbedding (hf : RightOrdContinuous f) (h : Injective f) : α ↪o β :=
   ⟨⟨f, h⟩, hf.le_iff h⟩
 #align right_ord_continuous.to_order_embedding RightOrdContinuous.toOrderEmbedding

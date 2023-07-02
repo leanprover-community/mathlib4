@@ -537,7 +537,7 @@ protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.spa
   classical rw [OrthonormalBasis.mk, _root_.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 #align orthonormal_basis.coe_mk OrthonormalBasis.coe_mk
 
-/-- Any finite subset of a orthonormal family is an `OrthonormalBasis` for its span. -/
+/-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
     OrthonormalBasis s 𝕜 (span 𝕜 (s.image v' : Set E)) :=
   let e₀' : Basis s 𝕜 _ :=
@@ -694,7 +694,7 @@ variable (a b : OrthonormalBasis ι 𝕜 E)
 theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
     a.toBasis.toMatrix b ∈ Matrix.unitaryGroup ι 𝕜 := by
   rw [Matrix.mem_unitaryGroup_iff']
-  ext (i j)
+  ext i j
   convert a.repr.inner_map_map (b i) (b j)
   rw [orthonormal_iff_ite.mp b.orthonormal i j]
   rfl

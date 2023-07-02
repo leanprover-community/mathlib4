@@ -343,7 +343,7 @@ theorem lt_sizeUpTo_index_succ (j : Fin n) : (j : ℕ) < c.sizeUpTo (c.index j).
 theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
   by_contra H
   set i := c.index j
-  push_neg  at H
+  push_neg at H
   have i_pos : (0 : ℕ) < i := by
     by_contra' i_pos
     revert H
@@ -605,7 +605,7 @@ theorem eq_single_iff_length {n : ℕ} (h : 0 < n) {c : Composition n} :
     ext1
     have A : c.blocks.length = 1 := H ▸ c.blocks_length
     have B : c.blocks.sum = n := c.blocks_sum
-    rw [eq_cons_of_length_one A] at B⊢
+    rw [eq_cons_of_length_one A] at B ⊢
     simpa [single_blocks] using B
 #align composition.eq_single_iff_length Composition.eq_single_iff_length
 
@@ -749,6 +749,12 @@ theorem nthLe_splitWrtComposition (l : List α) (c : Composition n) {i : ℕ}
     nthLe (l.splitWrtComposition c) i hi = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
   nthLe_splitWrtCompositionAux _ _ _
 #align list.nth_le_split_wrt_composition List.nthLe_splitWrtComposition
+
+-- porting note: restatement of `nthLe_splitWrtComposition`
+theorem get_splitWrtComposition (l : List α) (c : Composition n)
+    (i : Fin (l.splitWrtComposition c).length) :
+    get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
+  nthLe_splitWrtComposition _ _ _
 
 theorem join_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).join = l := by

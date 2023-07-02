@@ -431,7 +431,7 @@ inductive ProjectionRule where
     which is used to declare hover information. -/
   | rename (oldName : Name) (oldStx : Syntax) (newName : Name) (newStx : Syntax) :
       ProjectionRule
-  /-- A adding rule `+fieldName` -/
+  /-- An adding rule `+fieldName` -/
   | add : Name → Syntax → ProjectionRule
   /-- A hiding rule `-fieldName` -/
   | erase : Name → Syntax → ProjectionRule
@@ -834,7 +834,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd, `Opposite]
+  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   deriving Inhabited

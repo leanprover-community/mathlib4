@@ -24,7 +24,7 @@ would be the degree `i+n`-th term of `C`.
 ## Main definitions
 * `HasShift`: A typeclass asserting the existence of a shift functor.
 * `shiftEquiv`: When the indexing monoid is a group, then the functor indexed by `n` and `-n` forms
-  an self-equivalence of `C`.
+  a self-equivalence of `C`.
 * `shiftComm`: When the indexing monoid is commutative, then shifts commute as well.
 
 ## Implementation Notes
@@ -144,12 +144,10 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
         rintro ⟨n⟩
         ext X
         simp [endofunctorMonoidalCategory, h.zero_add_inv_app, ← Functor.map_comp]
-        rfl
       right_unitality := by
         rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.add_zero_inv_app]
-        rfl }⟩
+        simp [endofunctorMonoidalCategory, h.add_zero_inv_app]}⟩
 #align category_theory.has_shift_mk CategoryTheory.hasShiftMk
 
 end

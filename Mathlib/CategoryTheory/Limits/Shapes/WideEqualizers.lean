@@ -448,7 +448,7 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
 
 /-- This is a helper construction that can be useful when verifying that a category has all
     coequalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (λ j, F.map (line j))`, and a cotrident on `λ j, F.map (line j)` we get a
+    `parallelFamily (fun j ↦ F.map (line j))`, and a cotrident on `fun j ↦ F.map (line j)` we get a
     cocone on `F`.
 
     If you're thinking about using this, have a look at
@@ -476,8 +476,8 @@ theorem Cocone.ofCotrident_ι {F : WalkingParallelFamily J ⥤ C}
 #align category_theory.limits.cocone.of_cotrident_ι CategoryTheory.Limits.Cocone.ofCotrident_ι
 
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (λ j, F.map (line j))` and a cone on `F`, we get a trident on
-    `λ j, F.map (line j)`. -/
+    `parallelFamily (fun j ↦ F.map (line j))` and a cone on `F`, we get a trident on
+    `fun j ↦ F.map (line j)`. -/
 def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) : Trident fun j => F.map (line j)
     where
   pt := t.pt
@@ -488,7 +488,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) : Trident fu
 
 /-- Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
     `parallelFamily (F.map left) (F.map right)` and a cocone on `F`, we get a cotrident on
-    `λ j, F.map (line j)`. -/
+    `fun j ↦ F.map (line j)`. -/
 def Cotrident.ofCocone {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) :
     Cotrident fun j => F.map (line j) where
   pt := t.pt

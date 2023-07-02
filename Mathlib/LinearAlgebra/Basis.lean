@@ -1103,9 +1103,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
     ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
   simp_rw [Finsupp.total_apply] at e
-  -- Porting note: `change at` doesn't work
-  replace e : ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) =
-      ((⟨x, p⟩ : w) : M) := e
+  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
   -- Now we can contradict the linear independence of `hi`
   refine' hi.total_ne_of_not_mem_support _ _ e
@@ -1211,7 +1209,7 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   rw [eq_top_iff]
   intro j hj
   rw [← hv] at hj
-  rw [Submodule.mem_span] at hj⊢
+  rw [Submodule.mem_span] at hj ⊢
   refine' fun p hp => hj p fun u hu => _
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)

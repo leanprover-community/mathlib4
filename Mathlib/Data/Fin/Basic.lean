@@ -1057,7 +1057,7 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
-/-- `cast eq i` embeds `i` into a equal `Fin` type, see also `Equiv.finCongr`. -/
+/-- `cast eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
 def cast (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
@@ -2193,7 +2193,7 @@ theorem succAbove_right_inj {x : Fin (n + 1)} : x.succAbove a = x.succAbove b �
 
 /-- `succAbove` is injective at the pivot -/
 theorem succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
-  simpa [range_succAbove] using congr_arg (fun f : Fin n ↪o Fin (n + 1) => Set.range fᶜ) h
+  simpa [range_succAbove] using congr_arg (fun f : Fin n ↪o Fin (n + 1) => (Set.range f)ᶜ) h
 #align fin.succ_above_left_injective Fin.succAbove_left_injective
 
 /-- `succAbove` is injective at the pivot -/

@@ -531,7 +531,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   · use b.succ
     rw [Fin.predAbove_above i b.succ _, Fin.pred_succ]
     rw [not_le] at h
-    rw [Fin.lt_iff_val_lt_val] at h⊢
+    rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
 instance : ReflectsIsomorphisms (forget SimplexCategory) :=
@@ -624,7 +624,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     · dsimp [δ]
       erw [Fin.succAbove_above i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
-        Nat.lt_succ_iff, Fin.ext_iff] at h' h''⊢
+        Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
