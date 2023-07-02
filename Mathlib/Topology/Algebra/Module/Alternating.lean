@@ -365,8 +365,8 @@ def _root_.ContinuousLinearMap.compContinuousAlternatingMap (g : N →L[R] N') (
 #align continuous_linear_map.comp_continuous_alternating_map ContinuousLinearMap.compContinuousAlternatingMap
 
 @[simp]
-theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[R] N') (f : Λ^ι⟮R; M; N⟯) :
-    ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
+theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[R] N')
+    (f : Λ^ι⟮R; M; N⟯) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 #align continuous_linear_map.comp_continuous_alternating_map_coe ContinuousLinearMap.compContinuousAlternatingMap_coe
 
@@ -668,8 +668,8 @@ variable {R M N ι : Type _} [Semiring R] [AddCommMonoid M] [Module R M] [Topolo
   [DecidableEq ι] (f g : ContinuousMultilinearMap R (fun _ : ι => M) N)
 
 /-- Alternatization of a continuous multilinear map. -/
-@[simps (config := { attrs := [] }) apply_toContinuousMultilinearMap]
-def alternatization : ContinuousMultilinearMap R (fun i : ι => M) N →+ Λ^ι⟮R; M; N⟯ where
+@[simps (config := { isSimp := false }) apply_toContinuousMultilinearMap]
+def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ Λ^ι⟮R; M; N⟯ where
   toFun f :=
     { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f.domDomCongr σ
       map_eq_zero_of_eq' := fun v i j hv hne => by
