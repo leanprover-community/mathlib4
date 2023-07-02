@@ -8,8 +8,8 @@ Authors: David Loeffler
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.ModularForms.JacobiTheta.Basic
-import Mathbin.Analysis.Complex.UpperHalfPlane.Manifold
+import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 
 /-!
 # Manifold differentiability of the Jacobi's theta function
