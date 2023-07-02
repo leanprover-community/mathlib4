@@ -9,7 +9,6 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.TypeVec.Attr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Common
 
@@ -307,8 +306,7 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
--- Porting note: `simp` attribute `TypeVec` moved to file `Data/TypeVec/Attr.lean`
-
+-- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/SimpSet.lean`
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) : ∀ v, β v
