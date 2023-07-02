@@ -707,7 +707,7 @@ theorem sSup_le {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈
     · refine' Sigma.desc _
       rintro ⟨g, m⟩
       refine' underlying.map (homOfLE (k _ _))
-      simpa [symm_apply_mem_iff_mem_image] using m
+      simpa using m
     · ext
       dsimp [smallCoproductDesc]
       simp
