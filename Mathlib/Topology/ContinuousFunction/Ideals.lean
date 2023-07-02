@@ -96,7 +96,7 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
-theorem idealOfSet_closed [LocallyCompactSpace X] [T2Space R] (s : Set X) :
+theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
