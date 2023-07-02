@@ -152,8 +152,8 @@ def free : Type u ⥤ AlgebraCat.{u} R where
 
 @[simp]
 theorem AlgebraCat.free_obj_isRing_nsmul (a : ℕ) (b : FreeAlgebra R S) :
- a • b = nsmulRec a b :=
-by rfl
+ ↑a * b = nsmulRec a b := by
+  rw [← nsmul_eq_mul]; rfl
 
 @[simp]
 theorem AlgebraCat.free_obj_isAlgebra_toFun (r : R) :
