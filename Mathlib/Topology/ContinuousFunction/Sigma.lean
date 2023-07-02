@@ -53,7 +53,6 @@ theorem embedding_sigmaMk_comp [Nonempty X] :
       obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
         Function.eq_of_sigmaMk_comp <| congr_arg FunLike.coe h
       simpa using hg
-  
 
 section ConnectedSpace
 
