@@ -45,8 +45,8 @@ open scoped ModularForm
 
 /-- These are `slash_invariant_form`'s that are holomophic and bounded at infinity. -/
 structure ModularForm extends SlashInvariantForm Γ k where
-  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (to_fun : ℍ → ℂ)
-  bdd_at_infty' : ∀ A : SL(2, ℤ), IsBoundedAtImInfty (to_fun ∣[k] A)
+  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toFun : ℍ → ℂ)
+  bdd_at_infty' : ∀ A : SL(2, ℤ), IsBoundedAtImInfty (toFun ∣[k] A)
 #align modular_form ModularForm
 
 /-- The `slash_invariant_form` associated to a `modular_form`. -/
@@ -54,8 +54,8 @@ add_decl_doc ModularForm.toSlashInvariantForm
 
 /-- These are `slash_invariant_form`s that are holomophic and zero at infinity. -/
 structure CuspForm extends SlashInvariantForm Γ k where
-  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (to_fun : ℍ → ℂ)
-  zero_at_infty' : ∀ A : SL(2, ℤ), IsZeroAtImInfty (to_fun ∣[k] A)
+  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toFun : ℍ → ℂ)
+  zero_at_infty' : ∀ A : SL(2, ℤ), IsZeroAtImInfty (toFun ∣[k] A)
 #align cusp_form CuspForm
 
 /-- The `slash_invariant_form` associated to a `cusp_form`. -/
@@ -383,7 +383,7 @@ theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
 #align cusp_form.sub_apply CuspForm.sub_apply
 
 instance : AddCommGroup (CuspForm Γ k) :=
-  FunLike.coe_injective.AddCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  FunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `cusp_form` to `ℍ → ℂ`. -/
 @[simps]
@@ -404,7 +404,7 @@ instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   coe_injective' := FunLike.coe_injective'
   slash_action_eq := CuspFormClass.slash_action_eq
   holo := CuspFormClass.holo
-  bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).BoundedAtFilter
+  bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).boundedAtFilter
 
 end CuspForm
 
