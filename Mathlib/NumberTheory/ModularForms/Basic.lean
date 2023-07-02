@@ -270,8 +270,6 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
   rfl
 #align modular_form.mul_coe ModularForm.mul_coe
 
-#check Matrix.SpecialLinearGroup.toGLPos
-set_option pp.coercions false
 instance : One (ModularForm Γ 0) :=
   ⟨ { (1 : SlashInvariantForm Γ 0) with
       holo' := fun x => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
