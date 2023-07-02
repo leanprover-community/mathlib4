@@ -5,7 +5,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 
 ! This file was ported from Lean 3 source module topology.algebra.module.basic
-! leanprover-community/mathlib commit f430769b562e0cedef59ee1ed968d67e0e0c86ba
+! leanprover-community/mathlib commit 6285167a053ad0990fc88e56c48ccd9fae6550eb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -563,8 +563,8 @@ theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ
     [ContinuousSMul R₂ M₂] [ContinuousAdd M₂] {f : M₁ →SL[σ₁₂] M₂} (hf' : DenseRange f)
     {s : Submodule R₁ M₁} (hs : s.topologicalClosure = ⊤) :
     (s.map (f : M₁ →ₛₗ[σ₁₂] M₂)).topologicalClosure = ⊤ := by
-  rw [SetLike.ext'_iff] at hs⊢
-  simp only [Submodule.topologicalClosure_coe, Submodule.top_coe, ← dense_iff_closure_eq] at hs⊢
+  rw [SetLike.ext'_iff] at hs ⊢
+  simp only [Submodule.topologicalClosure_coe, Submodule.top_coe, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image f.continuous hs
 #align dense_range.topological_closure_map_submodule DenseRange.topologicalClosure_map_submodule
 
@@ -1154,6 +1154,19 @@ theorem range_coprod [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] 
   LinearMap.range_coprod _ _
 #align continuous_linear_map.range_coprod ContinuousLinearMap.range_coprod
 
+theorem comp_fst_add_comp_snd [Module R₁ M₂] [Module R₁ M₃] [ContinuousAdd M₃] (f : M₁ →L[R₁] M₃)
+    (g : M₂ →L[R₁] M₃) :
+    f.comp (ContinuousLinearMap.fst R₁ M₁ M₂) + g.comp (ContinuousLinearMap.snd R₁ M₁ M₂) =
+      f.coprod g :=
+  rfl
+#align continuous_linear_map.comp_fst_add_comp_snd ContinuousLinearMap.comp_fst_add_comp_snd
+
+theorem coprod_inl_inr [ContinuousAdd M₁] [ContinuousAdd M'₁] :
+    (ContinuousLinearMap.inl R₁ M₁ M'₁).coprod (ContinuousLinearMap.inr R₁ M₁ M'₁) =
+      ContinuousLinearMap.id R₁ (M₁ × M'₁) :=
+  by apply coe_injective; apply LinearMap.coprod_inl_inr
+#align continuous_linear_map.coprod_inl_inr ContinuousLinearMap.coprod_inl_inr
+
 section
 
 variable {R S : Type _} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
@@ -1194,6 +1207,44 @@ theorem smulRight_comp [ContinuousMul R₁] {x : M₂} {c : R₁} :
   ext
   simp [mul_smul]
 #align continuous_linear_map.smul_right_comp ContinuousLinearMap.smulRight_comp
+
+section ToSpanSingleton
+
+variable (R₁)
+
+variable [ContinuousSMul R₁ M₁]
+
+/-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
+linear map from `R` to `M` by taking multiples of `x`.-/
+def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁
+    where
+  toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
+  cont := continuous_id.smul continuous_const
+#align continuous_linear_map.to_span_singleton ContinuousLinearMap.toSpanSingleton
+
+theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
+  rfl
+#align continuous_linear_map.to_span_singleton_apply ContinuousLinearMap.toSpanSingleton_apply
+
+theorem toSpanSingleton_add [ContinuousAdd M₁] (x y : M₁) :
+    toSpanSingleton R₁ (x + y) = toSpanSingleton R₁ x + toSpanSingleton R₁ y := by
+  ext1; simp [toSpanSingleton_apply]
+#align continuous_linear_map.to_span_singleton_add ContinuousLinearMap.toSpanSingleton_add
+
+theorem toSpanSingleton_smul' {α} [Monoid α] [DistribMulAction α M₁] [ContinuousConstSMul α M₁]
+    [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
+    toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
+  by ext1; rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
+#align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
+
+/-- A special case of `to_span_singleton_smul'` for when `R` is commutative. -/
+theorem toSpanSingleton_smul (R) {M₁} [CommSemiring R] [AddCommMonoid M₁] [Module R M₁]
+    [TopologicalSpace R] [TopologicalSpace M₁] [ContinuousSMul R M₁] (c : R) (x : M₁) :
+    toSpanSingleton R (c • x) = c • toSpanSingleton R x :=
+  toSpanSingleton_smul' R c x
+#align continuous_linear_map.to_span_singleton_smul ContinuousLinearMap.toSpanSingleton_smul
+
+end ToSpanSingleton
 
 end Semiring
 

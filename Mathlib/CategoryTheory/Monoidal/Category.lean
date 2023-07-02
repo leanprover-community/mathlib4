@@ -445,13 +445,13 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
   rfl
 #align category_theory.monoidal_category.right_assoc_tensor_map CategoryTheory.MonoidalCategory.rightAssocTensor_map
 
-/-- The functor `λ X, 𝟙_ C ⊗ X`. -/
+/-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
 def tensorUnitLeft : C ⥤ C where
   obj X := 𝟙_ C ⊗ X
   map {X Y : C} (f : X ⟶ Y) := 𝟙 (𝟙_ C) ⊗ f
 #align category_theory.monoidal_category.tensor_unit_left CategoryTheory.MonoidalCategory.tensorUnitLeft
 
-/-- The functor `λ X, X ⊗ 𝟙_ C`. -/
+/-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
 def tensorUnitRight : C ⥤ C where
   obj X := X ⊗ 𝟙_ C
   map {X Y : C} (f : X ⟶ Y) := f ⊗ 𝟙 (𝟙_ C)

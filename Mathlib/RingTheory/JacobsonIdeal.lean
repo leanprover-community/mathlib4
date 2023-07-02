@@ -169,7 +169,7 @@ theorem eq_jacobson_iff_not_mem :
   constructor
   · intro h x hx
     erw [← h, mem_sInf] at hx
-    push_neg  at hx
+    push_neg at hx
     exact hx
   · refine fun h => le_antisymm (fun x hx => ?_) le_jacobson
     contrapose hx
@@ -233,7 +233,7 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
 @[mono]
 theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson := by
   intro h x hx
-  erw [mem_sInf] at hx⊢
+  erw [mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 #align ideal.jacobson_mono Ideal.jacobson_mono
 
