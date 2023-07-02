@@ -129,7 +129,8 @@ protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContM
   h.contMDiffAt.contMDiffWithinAt
 #align diffeomorph.cont_mdiff_within_at Diffeomorph.contMDiffWithinAt
 
-protected theorem contDiff (h : E ≃ₘ^n[𝕜] E') : ContDiff 𝕜 n h :=
+-- porting note: TODO: should use `E ≃ₘ^n[𝕜] F` notation
+protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
 #align diffeomorph.cont_diff Diffeomorph.contDiff
 
@@ -462,14 +463,16 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 #align diffeomorph.unique_mdiff_on_preimage Diffeomorph.uniqueMDiffOn_preimage
 
+-- porting note: TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
-theorem uniqueDiffOn_image (h : E ≃ₘ^n[𝕜] F) (hn : 1 ≤ n) {s : Set E} :
+theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
 #align diffeomorph.unique_diff_on_image Diffeomorph.uniqueDiffOn_image
 
 @[simp]
-theorem uniqueDiffOn_preimage (h : E ≃ₘ^n[𝕜] F) (hn : 1 ≤ n) {s : Set F} :
+-- porting note: TODO: should use `E ≃ₘ^n[𝕜] F` notation
+theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn
 #align diffeomorph.unique_diff_on_preimage Diffeomorph.uniqueDiffOn_preimage
@@ -543,7 +546,7 @@ theorem coe_extChartAt_transDiffeomorph_symm (x : M) :
 
 theorem extChartAt_transDiffeomorph_target (x : M) :
     (extChartAt (I.transDiffeomorph e) x).target = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [range_comp e, e.image_eq_preimage, preimage_preimage, mfld_simps]
+  simp only [e.range_comp, preimage_preimage, mfld_simps]; rfl
 #align model_with_corners.ext_chart_at_trans_diffeomorph_target ModelWithCorners.extChartAt_transDiffeomorph_target
 
 end ModelWithCorners
@@ -556,7 +559,7 @@ instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
   refine' e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.cont_diff.cont_diffOn _)
+      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn _)
   mfld_set_tac
 #align diffeomorph.smooth_manifold_with_corners_trans_diffeomorph Diffeomorph.smoothManifoldWithCorners_transDiffeomorph
 
@@ -569,19 +572,19 @@ def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph
   contMDiff_toFun x := by
     refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
     refine' e.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
-    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_ext_chartAt_transDiffeomorph,
-        (extChartAt I x).right_inv hy.1]
+    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph]
+      -- porting note: `simp only` failed to used next lemma, converted to `rw`
+      rw [(extChartAt I x).right_inv hy.1]
     exact
       ⟨(extChartAt I x).map_source (mem_extChartAt_source I x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
     refine' e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
-    · simp only [mem_inter_iff, I.ext_chartAt_transDiffeomorph_target] at hy 
+    · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy 
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
-        I.coe_ext_chartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
-    exact
-      ⟨(extChartAt _ x).map_source (mem_extChartAt_source _ x), trivial, by
-        simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
+        I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
+    exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source _ x), trivial, by
+      simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
 #align diffeomorph.to_trans_diffeomorph Diffeomorph.toTransDiffeomorph
 
 variable {I M}
