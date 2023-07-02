@@ -532,50 +532,52 @@ variable (P : Ideal R[X]) [hP : P.IsMaximal]
 
 theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ P → x = 0) :
     IsMaximal (comap (C : R →+* R[X]) P : Ideal R) := by
-  sorry
-  -- haveI hp'_prime : (P.comap (C : R →+* R[X]) : Ideal R).IsPrime := comap_isPrime C P
-  -- obtain ⟨m, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P polynomial_not_isField)
-  -- have : (m : R[X]) ≠ 0
-  -- rwa [Ne.def, Submodule.coe_eq_zero]
-  -- let φ : R ⧸ P.comap (C : R →+* R[X]) →+* R[X] ⧸ P := quotientMap P (C : R →+* R[X]) le_rfl
-  -- let M : Submonoid (R ⧸ P.comap C) :=
-  --   Submonoid.powers
-  --     ((m : R[X]).map (Quotient.mk (P.comap (C : R →+* R[X]) : Ideal R))).leadingCoeff
-  -- rw [← bot_quotient_isMaximal_iff]
-  -- have hp0 :
-  --   ((m : R[X]).map (Quotient.mk (P.comap (C : R →+* R[X]) : Ideal R))).leadingCoeff ≠ 0 :=
-  --   fun hp0' =>
-  --   this <|
-  --     map_injective (Quotient.mk (P.comap (C : R →+* R[X]) : Ideal R))
-  --       ((injective_iff_map_eq_zero (Quotient.mk (P.comap (C : R →+* R[X]) : Ideal R))).2
-  --         fun x hx => by
-  --         rwa [Quotient.eq_zero_iff_mem, (by rwa [eq_bot_iff] : (P.comap C : Ideal R) = ⊥)] at hx)
-  --       (by simpa only [leadingCoeff_eq_zero, Polynomial.map_zero] using hp0')
-  -- have hM : (0 : R ⧸ P.comap C) ∉ M := fun ⟨n, hn⟩ => hp0 (pow_eq_zero hn)
-  -- suffices (⊥ : Ideal (Localization M)).IsMaximal by
-  --   rw [←
-  --     IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
-  --       (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
-  --   refine' ((is_maximal_iff_is_maximal_disjoint (Localization M) _ _).mp (by rwa [map_bot])).1
-  --   swap
-  --   exact Localization.isLocalization
-  -- let M' : Submonoid (R[X] ⧸ P) := M.map φ
-  -- have hM' : (0 : R[X] ⧸ P) ∉ M' := fun ⟨z, hz⟩ =>
-  --   hM (quotientMap_injective (trans hz.2 φ.map_zero.symm) ▸ hz.1)
-  -- haveI : IsDomain (Localization M') :=
-  --   IsLocalization.isDomain_localization (le_nonZeroDivisors_of_noZeroDivisors hM')
-  -- suffices (⊥ : Ideal (Localization M')).IsMaximal by
-  --   rw [le_antisymm bot_le
-  --       (comap_bot_le_of_injective _
-  --         (IsLocalization.map_injective_of_injective M (Localization M) (Localization M')
-  --           quotientMap_injective))]
-  --   refine' isMaximal_comap_of_isIntegral_of_isMaximal' _ _ ⊥ this
-  --   apply isIntegral_isLocalization_polynomial_quotient P _ (Submodule.coe_mem m)
-  -- rw [(map_bot.symm :
-  --     (⊥ : Ideal (Localization M')) = map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
-  -- let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
+  let P' := comap (C : R →+* R[X]) P
+  haveI hP'_prime : P'.IsPrime := comap_isPrime C P
+  obtain ⟨⟨m, hmem_P⟩, hm⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_of_maximal P polynomial_not_isField)
+  have hm' : m ≠ 0 := by
+    simpa [Submodule.coe_eq_zero] using hm
+  let φ : R ⧸ P' →+* R[X] ⧸ P := quotientMap P (C : R →+* R[X]) le_rfl
+  let a : R ⧸ P' := (m.map (Quotient.mk P')).leadingCoeff
+  let M : Submonoid (R ⧸ P') := Submonoid.powers a
+  rw [← bot_quotient_isMaximal_iff]
+  have hp0 : a ≠ 0 :=
+    fun hp0' =>
+    hm' <|
+      map_injective (Quotient.mk (P.comap (C : R →+* R[X]) : Ideal R))
+        ((injective_iff_map_eq_zero (Quotient.mk (P.comap (C : R →+* R[X]) : Ideal R))).2
+          fun x hx => by
+          rwa [Quotient.eq_zero_iff_mem, (by rwa [eq_bot_iff] : (P.comap C : Ideal R) = ⊥)] at hx)
+        (by simpa only [leadingCoeff_eq_zero, Polynomial.map_zero] using hp0')
+  have hM : (0 : R ⧸ P') ∉ M := fun ⟨n, hn⟩ => hp0 (pow_eq_zero hn)
+  suffices (⊥ : Ideal (Localization M)).IsMaximal by
+    rw [←
+      IsLocalization.comap_map_of_isPrime_disjoint M (Localization M) ⊥ bot_prime
+        (disjoint_iff_inf_le.mpr fun x hx => hM (hx.2 ▸ hx.1))]
+    refine' ((isMaximal_iff_isMaximal_disjoint (Localization M) _ _).mp (by rwa [map_bot])).1
+    -- swap
+    -- exact Localization.isLocalization
+  let M' : Submonoid (R[X] ⧸ P) := M.map φ
+  have hM' : (0 : R[X] ⧸ P) ∉ M' := fun ⟨z, hz⟩ =>
+    hM (quotientMap_injective (_root_.trans hz.2 φ.map_zero.symm) ▸ hz.1)
+  haveI : IsDomain (Localization M') :=
+    IsLocalization.isDomain_localization (le_nonZeroDivisors_of_noZeroDivisors hM')
+  suffices (⊥ : Ideal (Localization M')).IsMaximal by
+    rw [le_antisymm bot_le
+        (comap_bot_le_of_injective _
+          (IsLocalization.map_injective_of_injective M (Localization M) (Localization M')
+            quotientMap_injective))]
+    refine' isMaximal_comap_of_isIntegral_of_isMaximal' _ _ ⊥ this
+    -- apply isIntegral_isLocalization_polynomial_quotient P _ hmem_P
+    have isloc : IsLocalization  (Submonoid.map φ M) (Localization M') := by infer_instance
+    exact @isIntegral_isLocalization_polynomial_quotient R _ (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
+  rw [(map_bot.symm :
+      (⊥ : Ideal (Localization M')) = map (algebraMap (R[X] ⧸ P) (Localization M')) ⊥)]
+  let bot_maximal := (bot_quotient_isMaximal_iff _).mpr hP
   -- refine' map.isMaximal (algebraMap _ _) (IsField.localization_map_bijective hM' _) bot_maximal
-  -- rwa [← quotient.maximal_ideal_iff_is_field_quotient, ← bot_quotient_isMaximal_iff]
+  refine' map.isMaximal (algebraMap (R[X] ⧸ P) (Localization M')) _ bot_maximal
+  apply IsField.localization_map_bijective hM'
+  rwa [← Quotient.maximal_ideal_iff_isField_quotient, ← bot_quotient_isMaximal_iff]
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.is_maximal_comap_C_of_is_maximal Ideal.Polynomial.isMaximal_comap_C_of_isMaximal
 
