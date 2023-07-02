@@ -1381,13 +1381,13 @@ theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
 
 variable {𝕜}
 
-theorem AnalyticAt.eventuallyAnalyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
     ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
 (isOpen_analyticAt 𝕜 f).mem_nhds h
 
-theorem AnalyticAt.existsMemNhdsAnalyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
-h.eventuallyAnalyticAt.exists_mem
+h.eventually_analyticAt.exists_mem
 
 end
 
