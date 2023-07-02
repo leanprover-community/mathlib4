@@ -143,12 +143,9 @@ theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.
 #align subgroup.eq_top_of_card_eq Subgroup.eq_top_of_card_eq
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
 
-@[to_additive]
-theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ := by
-  apply Iff.intro (eq_top_of_card_eq H)
-  intro h
-  simp_rw [h]
-  exact card_top
+@[to_additive (attr := simp)]
+theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
+  Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
 
 @[to_additive]
 theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
