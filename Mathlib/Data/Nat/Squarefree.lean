@@ -374,7 +374,7 @@ theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 
-theorem coprime_of_squarefree_mul {x y : ℕ} (h : Squarefree (x * y)) : x.coprime y := by
+theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.coprime n := by
   by_contra h_ncop
   cases' Prime.not_coprime_iff_dvd.mp h_ncop with p hp
   exact (squarefree_iff_prime_squarefree.mp h) p hp.1 $ mul_dvd_mul hp.2.1 hp.2.2
