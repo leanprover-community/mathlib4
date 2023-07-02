@@ -8,9 +8,9 @@ Authors: Yury G. Kudryashov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.Diffeomorph
-import Mathbin.Geometry.Manifold.Instances.Real
-import Mathbin.Geometry.Manifold.PartitionOfUnity
+import Mathlib.Geometry.Manifold.Diffeomorph
+import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
 # Whitney embedding theorem
@@ -56,8 +56,7 @@ In this section we prove a version of the Whitney embedding theorem: for any com
 variable [T2Space M] [hi : Fintype ι] {s : Set M} (f : SmoothBumpCovering ι I M s)
 
 /-- Smooth embedding of `M` into `(E × ℝ) ^ ι`. -/
-def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × ℝ⟯
-    where
+def embeddingPiTangent : C^∞⟮I, M; 𝓘(ℝ, ι → E × ℝ), ι → E × ℝ⟯ where
   val x i := (f i x • extChartAt I (f.c i) x, f i x)
   property :=
     contMDiff_pi_space.2 fun i =>
@@ -70,8 +69,7 @@ theorem embeddingPiTangent_coe :
   rfl
 #align smooth_bump_covering.embedding_pi_tangent_coe SmoothBumpCovering.embeddingPiTangent_coe
 
-theorem embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s :=
-  by
+theorem embeddingPiTangent_injOn : InjOn f.embeddingPiTangent s := by
   intro x hx y hy h
   simp only [embedding_pi_tangent_coe, funext_iff] at h 
   obtain ⟨h₁, h₂⟩ := Prod.mk.inj_iff.1 (h (f.ind x hx))
@@ -91,8 +89,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
             (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance)
               (f.ind x hx))).comp
         (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) =
-      mfderiv I I (chartAt H (f.c (f.ind x hx))) x :=
-  by
+      mfderiv I I (chartAt H (f.c (f.ind x hx))) x := by
   set L :=
     (ContinuousLinearMap.fst ℝ E ℝ).comp
       (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
@@ -106,8 +103,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
 #align smooth_bump_covering.comp_embedding_pi_tangent_mfderiv SmoothBumpCovering.comp_embeddingPiTangent_mfderiv
 
 theorem embeddingPiTangent_ker_mfderiv (x : M) (hx : x ∈ s) :
-    LinearMap.ker (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) = ⊥ :=
-  by
+    LinearMap.ker (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) = ⊥ := by
   apply bot_unique
   rw [←
     (mdifferentiable_chart I (f.c (f.ind x hx))).ker_mfderiv_eq_bot
@@ -126,8 +122,7 @@ supports of bump functions, then for some `n` it can be immersed into the `n`-di
 Euclidean space. -/
 theorem exists_immersion_euclidean [Finite ι] (f : SmoothBumpCovering ι I M) :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      Smooth I (𝓡 n) e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) :=
-  by
+      Smooth I (𝓡 n) e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   cases nonempty_fintype ι
   set F := EuclideanSpace ℝ (Fin <| finrank ℝ (ι → E × ℝ))
   letI : IsNoetherian ℝ (E × ℝ) := IsNoetherian.iff_fg.2 inferInstance
@@ -150,8 +145,7 @@ supports of bump functions, then for some `n` it can be embedded into the `n`-di
 Euclidean space. -/
 theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      Smooth I (𝓡 n) e ∧ ClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) :=
-  by
+      Smooth I (𝓡 n) e ∧ ClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
   rcases SmoothBumpCovering.exists_isSubordinate I isClosed_univ fun (x : M) _ => univ_mem with
     ⟨ι, f, -⟩
   haveI := f.fintype
