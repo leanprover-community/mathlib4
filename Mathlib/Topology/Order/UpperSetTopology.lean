@@ -119,6 +119,9 @@ theorem ofUpperSet_rel_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ of
 theorem toUpperSet_rel_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
+/--
+`ofUpper` as an `OrderIso`
+-/
 def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α := {
   toFun := ofUpperSet,
   invFun := toUpperSet,
@@ -127,6 +130,9 @@ def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α := {
   map_rel_iff' := ofUpperSet_rel_iff
 }
 
+/--
+`toUpper` as an `OrderIso`
+-/
 def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) := {
   toFun := toUpperSet,
   invFun := ofUpperSet,
@@ -173,6 +179,22 @@ def withUpperSetTopologyHomeomorph : WithUpperSetTopology α ≃ₜ α :=
 lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
   rfl
+
+-- Alexandrov property, set formulation
+theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
+  rw [IsOpen_iff_IsUpperSet]
+  apply isUpperSet_sInter
+  intros s hs
+  rw [← IsOpen_iff_IsUpperSet]
+  exact hf _ hs
+
+-- Alexandrov property, index formulation
+theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
+  rw [IsOpen_iff_IsUpperSet]
+  apply isUpperSet_iInter
+  intros i
+  rw [← IsOpen_iff_IsUpperSet]
+  exact hf i
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s
