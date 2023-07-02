@@ -108,6 +108,17 @@ instance : Preorder (WithUpperSetTopology α) :=
 
 instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
 
+theorem ofUpperSet_rel_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
+  Iff.rfl
+
+def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α := {
+  toFun := ofUpperSet,
+  invFun := toUpperSet,
+  left_inv := toUpperSet_ofUpperSet,
+  right_inv := ofUpperSet_toUpperSet,
+  map_rel_iff' := ofUpperSet_rel_iff
+}
+
 end WithUpperSetTopology
 
 /--
@@ -118,6 +129,13 @@ class UpperSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : P
 
 instance [Preorder α] : UpperSetTopology (WithUpperSetTopology α) :=
   ⟨rfl⟩
+
+instance [Preorder α] : @UpperSetTopology (WithUpperSetTopology α) (upperSetTopology' α) _ := ⟨rfl⟩
+
+instance [Preorder α] : @UpperSetTopology α (upperSetTopology' α) _ := by
+  letI := upperSetTopology' α
+  exact ⟨rfl⟩
+
 
 namespace UpperSetTopology
 
@@ -149,23 +167,33 @@ lemma isClosed_iff_isLower {s : Set α} : IsClosed s
 lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
   (isClosed_iff_isLower.mp h)
 
+lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
+  rw [subset_antisymm_iff]
+  constructor
+  . apply closure_minimal subset_lowerClosure _
+    rw [isClosed_iff_isLower]
+    exact LowerSet.lower (lowerClosure s)
+  . apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
 interval (-∞,a].
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
-  rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
-  refine' subset_antisymm _ _
-  . apply closure_minimal subset_lowerClosure
-    rw [isClosed_iff_isLower]
-    apply (lowerClosure {a}).lower
-  . exact lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+  rw [closure_eq_lowerClosure, lowerClosure_singleton]
+  rfl
 
 end Preorder
 
 section maps
 
 variable [Preorder α] [Preorder β]
+
+lemma upperSetTopology_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
+  (hf : Monotone f) : coinduced f t₁ ≤ upperSetTopology' β := by
+  intro s hs
+  rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
+  exact (IsUpperSet.preimage hs hf)
 
 open Topology
 
@@ -176,12 +204,9 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
            coinduced f t₁ ≤ t₂,
            t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
-  . intro hf
-    simp only [le_Prop_eq]
-    intro s hs
-    rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
+  . intro hf s hs
     rw [IsOpen_iff_IsUpperSet] at hs
-    exact (IsUpperSet.preimage hs hf)
+    exact upperSetTopology_coinduced hf _ hs
   tfae_have 2 → 1
   . intros hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
