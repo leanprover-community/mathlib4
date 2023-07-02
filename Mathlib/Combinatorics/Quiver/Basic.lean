@@ -41,7 +41,7 @@ For graphs with no repeated edges, one can use `Quiver.{0} V`, which ensures
 `a ⟶ b : Prop`. For multigraphs, one can use `Quiver.{v+1} V`, which ensures
 `a ⟶ b : Type v`.
 
-Because `Category` will later extend this class, we call the field `hom`.
+Because `Category` will later extend this class, we call the field `Hom`.
 Except when constructing instances, you should rarely see this, and use the `⟶` notation instead.
 -/
 class Quiver (V : Type u) where
