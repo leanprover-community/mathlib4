@@ -289,7 +289,7 @@ theorem toNat_lt : toNat f 0 i < 2^(i + 1) := by
 
 /-- The `ith` bit of `toNat` is the function at `i`. 
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem toNat_testBit (h1: i ≤ j): (toNat f 0 j).testBit i = f i := by
+theorem testBit_toNat (h1: i ≤ j): (toNat f 0 j).testBit i = f i := by
   induction' j with j ih generalizing i
   · simp [nonpos_iff_eq_zero.mp h1, toNat, bit_val]
   · cases' lt_or_eq_of_le h1 with h1 h1
