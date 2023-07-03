@@ -39,7 +39,7 @@ Jacobson, Jacobson Ring
 -/
 
 -- proting note: TODO
-set_option profiler true
+-- set_option profiler true
 -- set_option autoImplicit false
 
 universe u
