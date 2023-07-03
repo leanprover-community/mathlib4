@@ -8,6 +8,7 @@ Authors: Joe Hendrix, Sebastian Ullrich
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Pow
 import Init.Data.Format.Basic
@@ -349,4 +350,14 @@ instance {n} : ShiftLeft (BitVector n) := ⟨fun x y => x <<< y.toNat⟩
 
 instance {n} : ShiftRight (BitVector n) := ⟨fun x y => x >>> y.toNat⟩
 
-end Bitvec.BitVector
+end BitVector
+
+@[simp]
+abbrev toVector : Bitvec n → Bitvec.BitVector n :=
+  (BitVector.ofNat n ·.val)
+
+@[simp]
+abbrev ofVector : Bitvec.BitVector n → Bitvec n :=
+  Bitvec.BitVector.toFin
+
+end Bitvec

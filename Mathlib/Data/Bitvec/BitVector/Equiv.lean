@@ -8,16 +8,6 @@ import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.BitVector.Defs
 
 namespace Bitvec
-
-@[simp]
-abbrev toVector : Bitvec n → Bitvec.BitVector n :=
-  Bitvec.BitVector.ofFin
-
-@[simp]
-abbrev ofVector : Bitvec.BitVector n → Bitvec n :=
-  Bitvec.BitVector.toFin
-
-namespace BitVector
 open Bitvec (BitVector)
 
 variable (x y : BitVector n)
@@ -30,7 +20,5 @@ variable (x y : BitVector n)
 
 -- theorem mul_ofVector : (ofVector x) * (ofVector y) = ofVector (x * y) := by
 --   sorry
-
-end BitVector
 
 end Bitvec
