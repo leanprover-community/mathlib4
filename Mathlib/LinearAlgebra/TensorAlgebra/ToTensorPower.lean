@@ -124,13 +124,14 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
     (PiTensorProduct.reindex R M (Equiv.cast <| congr_arg Fin h) x) =
-      GradedMonoid.mk n x :=
+    GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 #align tensor_algebra.mk_reindex_cast TensorAlgebra.mk_reindex_cast
 
 @[simp]
 theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
-    GradedMonoid.mk m (PiTensorProduct.reindex R M (Fin.cast h).toEquiv x) = GradedMonoid.mk n x :=
+    GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
+    (PiTensorProduct.reindex R M (Fin.cast h).toEquiv x) = GradedMonoid.mk n x :=
   by rw [Fin.cast_to_equiv, mk_reindex_cast h]
 #align tensor_algebra.mk_reindex_fin_cast TensorAlgebra.mk_reindex_fin_cast
 
