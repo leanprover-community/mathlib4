@@ -185,7 +185,7 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   refine' _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
   rw [← mk_univ]
   refine'
-    (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{_, max u v w}.1 _)
+    (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{max u v w}.1 _)
   rw [lift_lift]
 #align first_order.language.Theory.exists_large_model_of_infinite_model FirstOrder.Language.Theory.exists_large_model_of_infinite_model
 
@@ -238,14 +238,14 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
     (h2 : Cardinal.lift.{w} (#M) ≤ Cardinal.lift.{w'} κ) :
     ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ (#N) = κ := by
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
-  rw [← lift_le.{max w w', max u v}, lift_lift, lift_lift] at h2
+  rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
     exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
       (aleph0_le_lift.1 ((aleph0_le_lift.2 (aleph0_le_mk M)).trans h2))
       (by
         simp only [card_withConstants, lift_add, lift_lift]
         rw [add_comm, add_eq_max (aleph0_le_lift.2 (infinite_iff.1 iM)), max_le_iff]
-        rw [← lift_le.{_, w'}, lift_lift, lift_lift] at h1
+        rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
       (hN0.trans (by rw [← lift_umax', lift_id]))
   · letI := (lhomWithConstants L M).reduct N
@@ -660,7 +660,7 @@ theorem Categorical.isComplete (h : κ.Categorical T) (h1 : ℵ₀ ≤ κ)
     obtain ⟨_, _⟩ := Theory.exists_model_card_eq ⟨hS.some, hT hS.some⟩ κ h1 h2
     rw [Theory.models_sentence_iff, Theory.models_sentence_iff]
     by_contra con
-    push_neg  at con
+    push_neg at con
     obtain ⟨⟨MF, hMF⟩, MT, hMT⟩ := con
     rw [Sentence.realize_not, Classical.not_not] at hMT
     refine' hMF _

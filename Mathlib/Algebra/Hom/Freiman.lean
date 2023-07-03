@@ -149,7 +149,7 @@ theorem map_prod_eq_map_prod [FreimanHomClass F A β n] (f : F) {s t : Multiset 
 @[to_additive]
 theorem map_mul_map_eq_map_mul_map [FreimanHomClass F A β 2] (f : F) (ha : a ∈ A) (hb : b ∈ A)
     (hc : c ∈ A) (hd : d ∈ A) (h : a * b = c * d) : f a * f b = f c * f d := by
-  simp_rw [← prod_pair] at h⊢
+  simp_rw [← prod_pair] at h ⊢
   refine' map_prod_eq_map_prod f _ _ (card_pair _ _) (card_pair _ _) h <;> simp [ha, hb, hc, hd]
 #align map_mul_map_eq_map_mul_map map_mul_map_eq_map_mul_map
 #align map_add_map_eq_map_add_map map_add_map_eq_map_add_map

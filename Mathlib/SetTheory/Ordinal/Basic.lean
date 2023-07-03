@@ -11,6 +11,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -153,6 +154,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 #align ordinal Ordinal
+pp_with_univ Ordinal
 
 instance hasWellFoundedOut (o : Ordinal) : WellFoundedRelation o.out.α :=
   ⟨o.out.r, o.out.wo.wf⟩
@@ -1267,7 +1269,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine' fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · rw [← lift_id (type s)] at h⊢
+    · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
       exists a

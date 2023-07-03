@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 
 ! This file was ported from Lean 3 source module group_theory.subgroup.basic
-! leanprover-community/mathlib commit cc67cd75b4e54191e13c2e8d722289a89e67e4fa
+! leanprover-community/mathlib commit d30d31261cdb4d2f5e612eabc3c4bf45556350d5
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -1270,7 +1270,7 @@ theorem closure_eq_bot_iff (G : Type _) [Group G] (S : Set G) : closure S = ⊥ 
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort _} (p : ι → Subgroup G) :
-    (⨆ i, p i) = closure (⋃ i, (p i : Set G)) := by simp_rw [closure_iUnion, closure_eq]
+    ⨆ i, p i = closure (⋃ i, (p i : Set G)) := by simp_rw [closure_iUnion, closure_eq]
 #align subgroup.supr_eq_closure Subgroup.iSup_eq_closure
 #align add_subgroup.supr_eq_closure AddSubgroup.iSup_eq_closure
 
@@ -1527,7 +1527,7 @@ theorem comap_sup_comap_le (H K : Subgroup N) (f : G →* N) :
 
 @[to_additive]
 theorem iSup_comap_le {ι : Sort _} (f : G →* N) (s : ι → Subgroup N) :
-    (⨆ i, (s i).comap f) ≤ (iSup s).comap f :=
+    ⨆ i, (s i).comap f ≤ (iSup s).comap f :=
   Monotone.le_map_iSup fun _ _ => comap_mono
 #align subgroup.supr_comap_le Subgroup.iSup_comap_le
 #align add_subgroup.supr_comap_le AddSubgroup.iSup_comap_le
@@ -3128,7 +3128,7 @@ theorem map_eq_comap_of_inverse {f : G →* N} {g : N →* G} (hl : Function.Lef
 @[to_additive "Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`."]
 theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ker ≤ K)
     (hf : map f H = map f K) : H = K := by
-  apply_fun comap f  at hf
+  apply_fun comap f at hf
   rwa [comap_map_eq, comap_map_eq, sup_of_le_left hH, sup_of_le_left hK] at hf
 #align subgroup.map_injective_of_ker_le Subgroup.map_injective_of_ker_le
 #align add_subgroup.map_injective_of_ker_le AddSubgroup.map_injective_of_ker_le
@@ -3697,6 +3697,16 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
     MonoidHom.restrict_apply, mem_comap]
   exact subset_normalClosure (Set.mem_singleton _)
 #align is_conj.normal_closure_eq_top_of IsConj.normalClosure_eq_top_of
+
+variable {M : Type _} [Monoid M]
+
+theorem eq_of_left_mem_center {g h : M} (H : IsConj g h) (Hg : g ∈ Set.center M) : g = h := by
+  rcases H with ⟨u, hu⟩; rwa [← u.mul_left_inj, ← Hg u]
+#align is_conj.eq_of_left_mem_center IsConj.eq_of_left_mem_center
+
+theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center M) : g = h :=
+  (H.symm.eq_of_left_mem_center Hh).symm
+#align is_conj.eq_of_right_mem_center IsConj.eq_of_right_mem_center
 
 end IsConj
 

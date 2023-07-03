@@ -141,7 +141,7 @@ def IsCobounded (s : Set α) : Prop :=
 
 /-- `IsBounded` is the predicate that `s` is bounded relative to the ambient bornology on `α`. -/
 def IsBounded (s : Set α) : Prop :=
-  IsCobounded (sᶜ)
+  IsCobounded sᶜ
 #align bornology.is_bounded Bornology.IsBounded
 
 theorem isCobounded_def {s : Set α} : IsCobounded s ↔ s ∈ cobounded α :=
@@ -153,12 +153,12 @@ theorem isBounded_def {s : Set α} : IsBounded s ↔ sᶜ ∈ cobounded α :=
 #align bornology.is_bounded_def Bornology.isBounded_def
 
 @[simp]
-theorem isBounded_compl_iff : IsBounded (sᶜ) ↔ IsCobounded s := by
+theorem isBounded_compl_iff : IsBounded sᶜ ↔ IsCobounded s := by
   rw [isBounded_def, isCobounded_def, compl_compl]
 #align bornology.is_bounded_compl_iff Bornology.isBounded_compl_iff
 
 @[simp]
-theorem isCobounded_compl_iff : IsCobounded (sᶜ) ↔ IsBounded s :=
+theorem isCobounded_compl_iff : IsCobounded sᶜ ↔ IsBounded s :=
   Iff.rfl
 #align bornology.is_cobounded_compl_iff Bornology.isCobounded_compl_iff
 
@@ -239,7 +239,7 @@ theorem ext_iff_isBounded {t t' : Bornology α} :
     t = t' ↔ ∀ s, @IsBounded α t s ↔ @IsBounded α t' s :=
   ⟨fun h s => h ▸ Iff.rfl, fun h => by
     ext s
-    simpa [@isBounded_def _ t, isBounded_def, compl_compl] using h (sᶜ)⟩
+    simpa [@isBounded_def _ t, isBounded_def, compl_compl] using h sᶜ⟩
 -- porting note: Lean 3 could do this without `@isBounded_def _ t`
 #align bornology.ext_iff_is_bounded Bornology.ext_iff_isBounded
 
@@ -344,7 +344,7 @@ theorem IsBounded.all (s : Set α) : IsBounded s :=
 #align bornology.is_bounded.all Bornology.IsBounded.all
 
 theorem IsCobounded.all (s : Set α) : IsCobounded s :=
-  compl_compl s ▸ IsBounded.all (sᶜ)
+  compl_compl s ▸ IsBounded.all sᶜ
 #align bornology.is_cobounded.all Bornology.IsCobounded.all
 
 variable (α)
