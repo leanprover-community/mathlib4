@@ -43,11 +43,6 @@ functor, applicative, monad, simp
 
 attribute [ext] ReaderT.ext StateT.ext ExceptT.ext OptionT.ext
 
-attribute [functor_norm] bind_assoc pure_bind bind_pure
-
-attribute [monad_norm] seq_eq_bind_map
-
-
 @[monad_norm]
 theorem map_eq_bind_pure_comp (m : Type u → Type v) [Monad m] [LawfulMonad m]
     (f : α → β) (x : m α) : f <$> x = x >>= pure ∘ f :=

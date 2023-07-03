@@ -718,6 +718,7 @@ theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ �
   exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 
+@[mfld_simps]
 theorem forall_true_iff : (α → True) ↔ True := imp_true_iff _
 #align forall_true_iff forall_true_iff
 

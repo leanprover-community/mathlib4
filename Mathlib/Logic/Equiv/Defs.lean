@@ -185,7 +185,7 @@ instance : Trans Equiv Equiv Equiv where
 
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
-@[simp] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+@[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
 -- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
@@ -194,7 +194,7 @@ instance : Trans Equiv Equiv Equiv where
 -- this theorem can be deleted hopefully without breaking any `simp` proofs.
 @[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
-@[simp] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+@[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
@@ -826,7 +826,8 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 #align equiv.sigma_congr Equiv.sigmaCongr
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
-@[simps apply symm_apply] def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
+@[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
+def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align equiv.sigma_equiv_prod_apply Equiv.sigmaEquivProd_apply
 #align equiv.sigma_equiv_prod_symm_apply Equiv.sigmaEquivProd_symm_apply

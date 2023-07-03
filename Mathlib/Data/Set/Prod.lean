@@ -55,12 +55,13 @@ theorem mem_prod_eq {p : α × β} : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t
   rfl
 #align set.mem_prod_eq Set.mem_prod_eq
 
-@[simp]
+@[simp, mfld_simps]
 theorem mem_prod {p : α × β} : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 #align set.mem_prod Set.mem_prod
 
 -- Porting note: Removing `simp` as `simp` can prove it
+@[mfld_simps]
 theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
 #align set.prod_mk_mem_set_prod_eq Set.prod_mk_mem_set_prod_eq
@@ -119,7 +120,7 @@ theorem empty_prod : (∅ : Set α) ×ˢ t = ∅ := by
   exact false_and_iff _
 #align set.empty_prod Set.empty_prod
 
-@[simp]
+@[simp, mfld_simps]
 theorem univ_prod_univ : @univ α ×ˢ @univ β = univ := by
   ext
   exact true_and_iff _
@@ -168,6 +169,7 @@ theorem prod_inter : s ×ˢ (t₁ ∩ t₂) = s ×ˢ t₁ ∩ s ×ˢ t₂ := by
   simp only [← and_and_left, mem_inter_iff, mem_prod]
 #align set.prod_inter Set.prod_inter
 
+@[mfld_simps]
 theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×ˢ (t₁ ∩ t₂) := by
   ext ⟨x, y⟩
   simp [and_assoc, and_left_comm]
@@ -296,7 +298,7 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
   ext <| by simp [range]
 #align set.prod_range_range_eq Set.prod_range_range_eq
 
-@[simp]
+@[simp, mfld_simps]
 theorem range_prod_map {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
 #align set.range_prod_map Set.range_prod_map

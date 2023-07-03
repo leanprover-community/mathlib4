@@ -30,9 +30,6 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 functor, applicative
 -/
 
-
-attribute [functor_norm] seq_assoc pure_seq map_pure seq_map_assoc map_seq
-
 universe u v w
 
 section Functor

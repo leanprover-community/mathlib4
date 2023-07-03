@@ -57,7 +57,7 @@ theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Func
   rfl
 #align prod.fst_comp_mk Prod.fst_comp_mk
 
-@[simp]
+@[simp, mfld_simps]
 theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
   rfl
 #align prod.map_mk Prod.map_mk

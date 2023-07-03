@@ -16,8 +16,6 @@ Generally useful tactics.
 
 open Lean.Elab.Tactic
 
-attribute [nontriviality] eq_iff_true_of_subsingleton
-
 namespace Lean
 
 open Elab
