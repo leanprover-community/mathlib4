@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching
 -/
 import Mathlib.Data.ZMod.Quotient
-import Mathlib.Algebra.Hom.Group
-import Mathlib.Tactic
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.PermuteGoals
-import Mathlib.Logic.Function.Basic
+
 /-!
 # Dirichlet characters
 This file defines Dirichlet characters over (ℤ/nℤ)ˣ.
