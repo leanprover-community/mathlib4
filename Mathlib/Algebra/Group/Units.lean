@@ -600,8 +600,6 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
-attribute [nontriviality] isAddUnit_of_subsingleton
-
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
   { prf := fun _ ↦ id }

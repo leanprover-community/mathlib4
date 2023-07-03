@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module logic.basic
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -718,6 +718,7 @@ theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ �
   exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 
+@[mfld_simps]
 theorem forall_true_iff : (α → True) ↔ True := imp_true_iff _
 #align forall_true_iff forall_true_iff
 

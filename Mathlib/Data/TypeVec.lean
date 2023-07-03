@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 
 ! This file was ported from Lean 3 source module data.typevec
-! leanprover-community/mathlib commit 4fcbc82dc2257986c03e113f87bc5ce021243a44
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.TypeVec.Attr
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.Common
 
@@ -307,8 +306,7 @@ instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun a b => funext fun a => by apply Fin2.elim0 a⟩ -- porting note: `by apply` necessary?
 #align typevec.subsingleton0 TypeVec.subsingleton0
 
--- Porting note: `simp` attribute `TypeVec` moved to file `Data/TypeVec/Attr.lean`
-
+-- Porting note: `simp` attribute `TypeVec` moved to file `Tactic/Attr/Register.lean`
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort _} (f : β Fin2.elim0) : ∀ v, β v

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -254,7 +254,7 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-@[simp] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 #align set.mem_set_of_eq Set.mem_setOf_eq
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
@@ -661,7 +661,7 @@ theorem setOf_true : { _x : α | True } = univ :=
   rfl
 #align set.set_of_true Set.setOf_true
 
-@[simp]
+@[simp, mfld_simps]
 theorem mem_univ (x : α) : x ∈ @univ α :=
   trivial
 #align set.mem_univ Set.mem_univ
@@ -891,7 +891,7 @@ theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a 
   rfl
 #align set.inter_def Set.inter_def
 
-@[simp]
+@[simp, mfld_simps]
 theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b :=
   Iff.rfl
 #align set.mem_inter_iff Set.mem_inter_iff
@@ -947,7 +947,7 @@ theorem inter_right_comm (s₁ s₂ s₃ : Set α) : s₁ ∩ s₂ ∩ s₃ = s�
   ext fun _ => and_right_comm
 #align set.inter_right_comm Set.inter_right_comm
 
-@[simp]
+@[simp, mfld_simps]
 theorem inter_subset_left (s t : Set α) : s ∩ t ⊆ s := fun _ => And.left
 #align set.inter_subset_left Set.inter_subset_left
 
@@ -998,12 +998,12 @@ theorem inter_eq_inter_iff_right : s ∩ u = t ∩ u ↔ t ∩ u ⊆ s ∧ s ∩
   inf_eq_inf_iff_right
 #align set.inter_eq_inter_iff_right Set.inter_eq_inter_iff_right
 
-@[simp]
+@[simp, mfld_simps]
 theorem inter_univ (a : Set α) : a ∩ univ = a :=
   inf_top_eq
 #align set.inter_univ Set.inter_univ
 
-@[simp]
+@[simp, mfld_simps]
 theorem univ_inter (a : Set α) : univ ∩ a = a :=
   top_inf_eq
 #align set.univ_inter Set.univ_inter
