@@ -8,10 +8,10 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.CategoryTheory.Groupoid
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.Basic
-import Mathbin.Topology.Category.Top.Limits.Products
-import Mathbin.Topology.Homotopy.Product
+import Mathlib.CategoryTheory.Groupoid
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+import Mathlib.Topology.Category.Top.Limits.Products
+import Mathlib.Topology.Homotopy.Product
 
 /-!
 # Fundamental groupoid preserves products
@@ -59,8 +59,7 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
 groupoid of the pi product. This is actually an isomorphism (see `pi_iso`)
 -/
 @[simps]
-def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i))
-    where
+def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
   obj g := g
   map v₁ v₂ p := Path.Homotopic.pi p
   map_id' := by
@@ -75,8 +74,7 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i))
 of the induced projections. This shows that `fundamental_groupoid_functor` preserves products.
 -/
 @[simps]
-def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of (∀ i, X i))
-    where
+def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of (∀ i, X i)) where
   Hom := piToPiTop X
   inv := CategoryTheory.Functor.pi' (proj X)
   hom_inv_id' := by
@@ -120,8 +118,7 @@ instance : IsIso (piTopToPiCone X) :=
   limits.cones.cone_iso_of_hom_iso (pi_Top_to_pi_cone X)
 
 /-- The fundamental groupoid functor preserves products -/
-def preservesProduct : Limits.PreservesLimit (Discrete.functor X) π :=
-  by
+def preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
   apply limits.preserves_limit_of_preserves_limit_cone (TopCat.piFanIsLimit.{u} X)
   apply (limits.is_limit.of_cone_equiv (cone_discrete_comp X)).toFun
   simp only [cone_discrete_comp_obj_map_cone]
@@ -164,8 +161,7 @@ The map taking the product of two fundamental groupoids to the fundamental group
 of the two topological spaces. This is in fact an isomorphism (see `prod_iso`).
 -/
 @[simps obj]
-def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B))
-    where
+def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
   obj g := g
   map x y p :=
     match x, y, p with
@@ -190,19 +186,16 @@ theorem prodToProdTop_map {x₀ x₁ : πₓ A} {y₀ y₁ : πₓ B} (p₀ : x�
 of the induced left and right projections.
 -/
 @[simps]
-def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (A × B))
-    where
+def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (A × B)) where
   Hom := prodToProdTop A B
   inv := (projLeft A B).prod' (projRight A B)
-  hom_inv_id' :=
-    by
+  hom_inv_id' := by
     change prod_to_prod_Top A B ⋙ (proj_left A B).prod' (proj_right A B) = 𝟭 _
     apply CategoryTheory.Functor.hext; · intros; ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ ⟨f₀, f₁⟩
     have := And.intro (Path.Homotopic.projLeft_prod f₀ f₁) (Path.Homotopic.projRight_prod f₀ f₁)
     simpa
-  inv_hom_id' :=
-    by
+  inv_hom_id' := by
     change (proj_left A B).prod' (proj_right A B) ⋙ prod_to_prod_Top A B = 𝟭 _
     apply CategoryTheory.Functor.hext; · intros; ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
