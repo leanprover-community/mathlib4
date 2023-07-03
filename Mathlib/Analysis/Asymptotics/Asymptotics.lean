@@ -77,8 +77,6 @@ variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
 
-variable {f''' : α → E'''}
-
 variable {l l' : Filter α}
 
 section Defs
@@ -309,7 +307,7 @@ theorem isLittleO_iff_nat_mul_le : f =o[l] g' ↔ ∀ n : ℕ, ∀ᶠ x in l, �
   isLittleO_iff_nat_mul_le_aux (Or.inr fun _x => norm_nonneg _)
 #align asymptotics.is_o_iff_nat_mul_le Asymptotics.isLittleO_iff_nat_mul_le
 
-theorem isLittleO_iff_nat_mul_le' : f''' =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f''' x‖ ≤ ‖g x‖ :=
+theorem isLittleO_iff_nat_mul_le' : f' =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f' x‖ ≤ ‖g x‖ :=
   isLittleO_iff_nat_mul_le_aux (Or.inl fun _x => norm_nonneg _)
 #align asymptotics.is_o_iff_nat_mul_le' Asymptotics.isLittleO_iff_nat_mul_le'
 
