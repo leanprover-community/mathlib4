@@ -89,7 +89,7 @@ protected def Scheme.affineTargetIsIso : AffineTargetMorphismProperty := fun _ _
 instance : Inhabited AffineTargetMorphismProperty :=
   ⟨Scheme.affineTargetIsIso⟩
 
-/-- A `affine_target_morphism_property` can be extended to a `morphism_property` such that it
+/-- An `affine_target_morphism_property` can be extended to a `morphism_property` such that it
 *never* holds when the target is not affine -/
 def AffineTargetMorphismProperty.toProperty (P : AffineTargetMorphismProperty) :
     MorphismProperty Scheme := fun _ _ f => ∃ h, @P _ _ f h
