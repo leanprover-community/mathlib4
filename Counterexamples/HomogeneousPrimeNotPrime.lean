@@ -48,10 +48,16 @@ abbrev Two :=
   WithZero Unit
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
+instance Two.LinearOrder : LinearOrder Two :=
+  inferInstance
+
+instance Two.AddCommMonoid : AddCommMonoid Two :=
+  inferInstance
+
 instance : LinearOrderedAddCommMonoid Two :=
-  { (_ : LinearOrder Two), (_ : AddCommMonoid Two) with
+  { Two.LinearOrder, Two.AddCommMonoid with
     add_le_add_left := by
-      delta Two WithZero <;> decide }
+      delta Two WithZero; decide }
 section
 
 variable (R : Type _) [CommRing R]
@@ -97,8 +103,8 @@ local notation "R" => ZMod 4
 /-- `R² ≅ {(a, a) | a ∈ R} ⨁ {(0, b) | b ∈ R}` by `(x, y) ↦ (x, x) + (0, y - x)`. -/
 def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
   toFun zz :=
-    of (fun i => grading R i) 0 ⟨(zz.1, zz.1), rfl⟩ +
-      of (fun i => grading R i) 1 ⟨(0, zz.2 - zz.1), rfl⟩
+    of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
+    of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩
   map_zero' := by
     refine' Dfinsupp.ext (fun (i : Two) =>
         Option.casesOn i _ (fun (i_1 : Unit) => PUnit.casesOn i_1 _)) <;> rfl
@@ -114,8 +120,13 @@ theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) gra
   fun zz => by
   induction' zz using DirectSum.induction_on with i zz d1 d2 ih1 ih2
   · simp only [map_zero]
-  · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab  <;>
-        cases hab <;> decide
+  · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab <;>
+      cases hab <;>
+      -- Porting note: proof was `decide`
+      -- now we need a `simp` and two `erw` subproofs...
+      simp only [coeLinearMap_of, decompose, AddMonoidHom.coe_mk, ZeroHom.coe_mk, sub_self, sub_zero]
+    · erw [map_zero (of (grading R ·) 1), add_zero]; rfl
+    · erw [map_zero (of (grading R ·) 0), zero_add]; rfl
   · simp only [map_add, ih1, ih2]
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.grading.right_inv Counterexample.CounterexampleNotPrimeButHomogeneousPrime.grading.right_inv
 
@@ -138,40 +149,67 @@ instance : GradedAlgebra (grading R) where
 set_option linter.uppercaseLean3 false
 
 /-- The counterexample is the ideal `I = span {(2, 2)}`. -/
-def i : Ideal (R × R) :=
+def I : Ideal (R × R) :=
   Ideal.span {((2, 2) : R × R)}
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.I Counterexample.CounterexampleNotPrimeButHomogeneousPrime.i
+#align counterexample.counterexample_not_prime_but_homogeneous_prime.I Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option class.instance_max_depth -/
---set_option class.instance_max_depth 34
+-- Porting note: new theorem, TODO move
+variable {G₁ : Type _} {G₂ : Type _} [CommSemigroup G₁] [CommSemigroup G₂] in
+theorem prod_dvd_iff {x y : G₁ × G₂} :
+    x ∣ y ↔ x.1 ∣ y.1 ∧ x.2 ∣ y.2 := by
+  cases x; cases y
+  simp only [dvd_iff_exists_eq_mul_left, Prod.exists, Prod.mk_mul_mk, Prod.mk.injEq,
+    exists_and_left, exists_and_right, and_self, true_and]
 
-theorem i_not_prime : ¬i.IsPrime := by
+theorem I_not_prime : ¬I.IsPrime := by
   rintro ⟨rid1, rid2⟩
-  apply rid1; clear rid1; revert rid2
-  simp only [Ideal.mem_span_singleton, Ideal.eq_top_iff_one]
-  tauto
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.I_not_prime Counterexample.CounterexampleNotPrimeButHomogeneousPrime.i_not_prime
+  apply rid1; clear rid1
+  -- Porting note: proof was:
+  -- `revert rid2; simp only [Ideal.mem_span_singleton, Ideal.eq_top_iff_one]; tauto`
+  specialize @rid2 (1,2) (2,1)
+  simpa only [I, Ideal.mem_span_singleton, Ideal.eq_top_iff_one, prod_dvd_iff, and_self, and_imp,
+    Prod.fst_mul, Prod.snd_mul, Prod.forall, Prod.fst_one, Prod.snd_one, one_mul, mul_one,
+    dvd_refl, and_true, true_and, or_self, forall_true_left] using rid2
+#align counterexample.counterexample_not_prime_but_homogeneous_prime.I_not_prime Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_not_prime
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:334:40: warning: unsupported option class.instance_max_depth -/
 -- this is what we change the max instance depth for, it's only 2 above the default
 --set_option class.instance_max_depth 32
 
-theorem i_isHomogeneous : Ideal.IsHomogeneous (grading R) i:= by
+theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
   refine' ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, _⟩
   rw [Set.image_singleton]
   rfl
-#align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.i_isHomogeneous
+#align counterexample.counterexample_not_prime_but_homogeneous_prime.I_is_homogeneous Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_isHomogeneous
 
 theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading R) x)
-    (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ i) : x ∈ i ∨ y ∈ i := by
-  simp only [Ideal.mem_span_singleton] at hxy ⊢
+    (hy : SetLike.Homogeneous (grading R) y) (hxy : x * y ∈ I) : x ∈ I ∨ y ∈ I := by
+  -- Porting note: added `h2` for later use; the proof is hideous
+  have h2 : Prime (2:R) := by
+    unfold Prime
+    simp only [true_and]
+    intro a b
+    have aux2 : (Fin.mk 2 _ : R) = 2 := rfl
+    have aux3 : (Fin.mk 3 _ : R) = -1 := rfl
+    fin_cases a <;>
+      simp (config := {contextual := true}) only
+        [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
+          Fin.mk_one, one_mul, aux2, dvd_refl]
+    fin_cases b <;>
+      simp (config := {contextual := true}) only
+        [Fin.mk_zero, zero_mul, dvd_zero, true_or, or_true, implies_true, forall_true_left,
+          Fin.mk_one, mul_one, aux2, dvd_refl, aux3, or_self, neg_one_mul, neg_neg, dvd_neg]
+  simp only [I, Ideal.mem_span_singleton] at hxy ⊢
   cases' x; cases' y
   obtain ⟨_ | ⟨⟨⟩⟩, hx : _ = _⟩ := hx <;> obtain ⟨_ | ⟨⟨⟩⟩, hy : _ = _⟩ := hy <;>
-            dsimp at hx hy  <;>
-          cases hx <;>
-        cases hy <;>
-      tauto
+    dsimp at hx hy <;>
+    cases hx <;>
+    cases hy <;>
+    -- Porting note: proof was `tauto`
+    simp only [prod_dvd_iff, dvd_zero, true_and, and_self,
+      Prod.mk_mul_mk, mul_zero, zero_mul] at hxy ⊢ <;>
+    apply h2.dvd_or_dvd hxy
+
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.homogeneous_mem_or_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.homogeneous_mem_or_mem
 
 end CounterexampleNotPrimeButHomogeneousPrime
