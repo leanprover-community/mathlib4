@@ -244,7 +244,7 @@ theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
     simp [h]
 #align nat.test_bit_two_pow Nat.testBit_two_pow
 
-theorem testBit_translate (h: i < w) : Nat.testBit (2^w * b + n) i = Nat.testBit n i := by
+theorem testBit_two_pow_mul_add (h: i < w) : Nat.testBit (2^w * b + n) i = Nat.testBit n i := by
   simp only [testBit, shiftr_eq_div_pow, bodd_eq_iff]
   rw [Nat.add_div_of_dvd_right (by simp [Dvd.dvd.mul_right, pow_dvd_pow, le_of_lt h]), add_mod]
   have h1: (2^w / 2^i) % 2 = 0 := by
