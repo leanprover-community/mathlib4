@@ -10,7 +10,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Init.Control.Combinators
 import Mathlib.Tactic.CasesM
-import Mathlib.Tactic.SimpSet
+import Mathlib.Tactic.Attr.Core
 
 /-!
 Extends the theory on functors, applicatives and monads.

@@ -5,7 +5,6 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
 import Std.Tactic.Simpa
 import Mathlib.Lean.Expr
-import Mathlib.Tactic.SimpSet
 
 /-!
 #

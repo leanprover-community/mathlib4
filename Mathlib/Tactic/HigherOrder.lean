@@ -7,7 +7,7 @@ import Lean.Elab.Term
 import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assumption
 import Lean.Elab.DeclarationRange
-import Mathlib.Tactic.SimpSet
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # HigherOrder attribute

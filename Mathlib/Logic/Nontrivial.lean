@@ -8,7 +8,7 @@ Authors: Sébastien Gouëzel
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.SimpSet
+import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Function.Basic

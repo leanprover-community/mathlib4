@@ -7,12 +7,12 @@ import Lean.Meta.Tactic.Simp
 import Mathlib.Tactic.LabelAttr
 
 /-!
-# Simp sets used in `Mathlib`
+# Attributes used in `Mathlib`
 
-In this file we define all `simp` sets used in `Mathlib`. We declare all of them in one file for two
-reasons:
+In this file we define all `simp`-like and `label`-like attributes used in `Mathlib`. We declare all
+of them in one file for two reasons:
 
-- in Lean 4, one cannot use a simp attribute in the same file where it was declared;
+- in Lean 4, one cannot use an attribute in the same file where it was declared;
 - this way it is easy to see which simp sets contain a given lemma.
 -/
 
@@ -24,6 +24,7 @@ register_simp_attr functor_norm
 --   mk_simp_attribute monad_norm none with functor_norm
 -- This syntax is not supported by mathlib4's `register_simp_attr`.
 -- See https://github.com/leanprover-community/mathlib4/issues/802
+-- TODO: add `@[monad_norm]` to all `@[functor_norm] lemmas
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr monad_norm
