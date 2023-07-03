@@ -520,6 +520,3 @@ theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
 #align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers
-
-/-- Simp attribute for lemmas about `Even` -/
-register_simp_attr parity_simps
