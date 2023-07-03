@@ -279,6 +279,26 @@ theorem _root_.Real.toNNReal_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) :
   rw [← NNReal.coe_rpow, Real.toNNReal_coe]
 #align real.to_nnreal_rpow_of_nonneg Real.toNNReal_rpow_of_nonneg
 
+theorem strictMono_rpow_of_pos {z : ℝ} (h : 0 < z) : StrictMono fun x : ℝ≥0 => x ^ z :=
+  fun x y hxy => by simp only [NNReal.rpow_lt_rpow hxy h, coe_lt_coe]
+
+theorem monotone_rpow_of_nonneg {z : ℝ} (h : 0 ≤ z) : Monotone fun x : ℝ≥0 => x ^ z :=
+  h.eq_or_lt.elim (fun h0 => h0 ▸ by simp only [rpow_zero, monotone_const]) fun h0 =>
+    (strictMono_rpow_of_pos h0).monotone
+
+/-- Bundles `fun x : ℝ≥0 => x ^ y` into an order isomorphism when `y : ℝ` is positive,
+where the inverse is `fun x : ℝ≥0 => x ^ (1 / y)`. -/
+@[simps! apply]
+def orderIsoRpow (y : ℝ) (hy : 0 < y) : ℝ≥0 ≃o ℝ≥0 :=
+  (strictMono_rpow_of_pos hy).orderIsoOfRightInverse (fun x => x ^ y) (fun x => x ^ (1 / y))
+    fun x => by
+      dsimp
+      rw [← rpow_mul, one_div_mul_cancel hy.ne.symm, rpow_one]
+
+theorem orderIsoRpow_symm_eq (y : ℝ) (hy : 0 < y) :
+    (orderIsoRpow y hy).symm = orderIsoRpow (1 / y) (one_div_pos.2 hy) := by
+  simp only [orderIsoRpow, one_div_one_div]; rfl
+
 end NNReal
 
 namespace ENNReal
@@ -707,14 +727,14 @@ theorem one_le_rpow {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (hz : 0 < z) : 1 �
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x < 1)
     (hz : z < 0) : 1 < x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_lt_of_le hx2 le_top)
-  simp only [coe_lt_one_iff, coe_pos] at hx1 hx2⊢
+  simp only [coe_lt_one_iff, coe_pos] at hx1 hx2 ⊢
   simp [coe_rpow_of_ne_zero (ne_of_gt hx1), NNReal.one_lt_rpow_of_pos_of_lt_one_of_neg hx1 hx2 hz]
 #align ennreal.one_lt_rpow_of_pos_of_lt_one_of_neg ENNReal.one_lt_rpow_of_pos_of_lt_one_of_neg
 
 theorem one_le_rpow_of_pos_of_le_one_of_neg {x : ℝ≥0∞} {z : ℝ} (hx1 : 0 < x) (hx2 : x ≤ 1)
     (hz : z < 0) : 1 ≤ x ^ z := by
   lift x to ℝ≥0 using ne_of_lt (lt_of_le_of_lt hx2 coe_lt_top)
-  simp only [coe_le_one_iff, coe_pos] at hx1 hx2⊢
+  simp only [coe_le_one_iff, coe_pos] at hx1 hx2 ⊢
   simp [coe_rpow_of_ne_zero (ne_of_gt hx1),
     NNReal.one_le_rpow_of_pos_of_le_one_of_nonpos hx1 hx2 (le_of_lt hz)]
 #align ennreal.one_le_rpow_of_pos_of_le_one_of_neg ENNReal.one_le_rpow_of_pos_of_le_one_of_neg

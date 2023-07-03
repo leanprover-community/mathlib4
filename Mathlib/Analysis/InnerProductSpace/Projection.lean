@@ -280,7 +280,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         _ = ‖u - w‖ * ‖u - w‖ := by
           have : u - v - (w - v) = u - w := by abel
           rw [this, sq]
-    · show (⨅ w : K, ‖u - w‖) ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
+    · show ⨅ w : K, ‖u - w‖ ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
       apply ciInf_le
       use 0
       rintro y ⟨z, rfl⟩
@@ -1279,7 +1279,7 @@ theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Sub
     exact congr_arg₂ (· + ·) hx hy
 #align orthogonal_family.sum_projection_of_mem_supr OrthogonalFamily.sum_projection_of_mem_iSup
 
-/-- If a family of submodules is orthogonal, then the `orthogonal_projection` on a direct sum
+/-- If a family of submodules is orthogonal, then the `orthogonalProjection` on a direct sum
 is just the coefficient of that direct sum. -/
 theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
     (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
@@ -1302,7 +1302,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
 /-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
 projection provides a means to decompose the space into its submodules.
 
-The projection function is `decompose V x i = orthogonal_projection (V i) x`.
+The projection function is `decompose V x i = orthogonalProjection (V i) x`.
 
 See note [reducible non-instances]. -/
 @[reducible]

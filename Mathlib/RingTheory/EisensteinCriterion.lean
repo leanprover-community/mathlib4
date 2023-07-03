@@ -119,7 +119,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
     have hq0 : q ≠ 0 := fun h => by
       simp_all only [eq_self_iff_true, not_true, Ne.def, MulZeroClass.mul_zero]
     have hbc0 : degree b = 0 ∧ degree c = 0 := by
-      apply_fun degree  at hbc
+      apply_fun degree at hbc
       rwa [degree_C hpql0, degree_mul, eq_comm, Nat.WithBot.add_eq_zero_iff] at hbc
     have hmp : m ≤ natDegree p := le_natDegree_of_map_eq_mul_X_pow hP hp hbc0.1
     have hnq : n ≤ natDegree q := le_natDegree_of_map_eq_mul_X_pow hP hq hbc0.2

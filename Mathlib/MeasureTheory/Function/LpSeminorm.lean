@@ -220,7 +220,7 @@ theorem zero_memℒp : Memℒp (0 : α → E) p μ :=
     exact ENNReal.coe_lt_top⟩
 #align measure_theory.zero_mem_ℒp MeasureTheory.zero_memℒp
 
-theorem zero_mem_ℒp' : Memℒp (fun _ : α => (0 : E)) p μ := by convert zero_memℒp (E := E)
+theorem zero_mem_ℒp' : Memℒp (fun _ : α => (0 : E)) p μ := zero_memℒp (E := E)
 #align measure_theory.zero_mem_ℒp' MeasureTheory.zero_mem_ℒp'
 
 variable [MeasurableSpace α]
@@ -921,6 +921,24 @@ theorem memℒp_map_measure_iff (hg : AEStronglyMeasurable g (Measure.map f μ))
   simp [Memℒp, snorm_map_measure hg hf, hg.comp_aemeasurable hf, hg]
 #align measure_theory.mem_ℒp_map_measure_iff MeasureTheory.memℒp_map_measure_iff
 
+theorem Memℒp.comp_of_map (hg : Memℒp g p (Measure.map f μ)) (hf : AEMeasurable f μ) :
+    Memℒp (g ∘ f) p μ :=
+  (memℒp_map_measure_iff hg.aestronglyMeasurable hf).1 hg
+
+theorem snorm_comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : AEStronglyMeasurable g ν)
+    (hf : MeasurePreserving f μ ν) : snorm (g ∘ f) p μ = snorm g p ν :=
+  Eq.symm <| hf.map_eq ▸ snorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable
+
+theorem AEEqFun.snorm_compMeasurePreserving {ν : MeasureTheory.Measure β} (g : β →ₘ[ν] E)
+    (hf : MeasurePreserving f μ ν) :
+    snorm (g.compMeasurePreserving f hf) p μ = snorm g p ν := by
+  rw [snorm_congr_ae (g.coeFn_compMeasurePreserving _)]
+  exact snorm_comp_measurePreserving g.aestronglyMeasurable hf
+
+theorem Memℒp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : Memℒp g p ν)
+    (hf : MeasurePreserving f μ ν) : Memℒp (g ∘ f) p μ :=
+  .comp_of_map (hf.map_eq.symm ▸ hg) hf.aemeasurable
+
 theorem _root_.MeasurableEmbedding.snormEssSup_map_measure {g : β → F}
     (hf : MeasurableEmbedding f) : snormEssSup g (Measure.map f μ) = snormEssSup (g ∘ f) μ :=
   hf.essSup_map_measure
@@ -1588,7 +1606,7 @@ theorem snorm_indicator_ge_of_bdd_below (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α
   filter_upwards [hf] with x hx
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   by_cases hxs : x ∈ s
-  · simp only [Set.indicator_of_mem hxs] at hx⊢
+  · simp only [Set.indicator_of_mem hxs] at hx ⊢
     exact ENNReal.rpow_le_rpow (ENNReal.coe_le_coe.2 (hx hxs)) ENNReal.toReal_nonneg
   · simp [Set.indicator_of_not_mem hxs]
 #align measure_theory.snorm_indicator_ge_of_bdd_below MeasureTheory.snorm_indicator_ge_of_bdd_below

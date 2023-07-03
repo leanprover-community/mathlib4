@@ -390,7 +390,7 @@ theorem totallyBounded_preimage {f : α → β} {s : Set β} (hf : UniformEmbedd
   rcases totallyBounded_iff_subset.1 (totallyBounded_subset (image_preimage_subset f s) hs) _ ht'
     with ⟨c, cs, hfc, hct⟩
   refine' ⟨f ⁻¹' c, hfc.preimage (hf.inj.injOn _), fun x h => _⟩
-  have := hct (mem_image_of_mem f h); simp at this⊢
+  have := hct (mem_image_of_mem f h); simp at this ⊢
   rcases this with ⟨z, zc, zt⟩
   rcases cs zc with ⟨y, -, rfl⟩
   exact ⟨y, zc, ts zt⟩

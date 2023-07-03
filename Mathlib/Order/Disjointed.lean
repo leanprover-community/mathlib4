@@ -143,11 +143,11 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α]
 
-theorem iSup_disjointed (f : ℕ → α) : (⨆ n, disjointed f n) = ⨆ n, f n :=
+theorem iSup_disjointed (f : ℕ → α) : ⨆ n, disjointed f n = ⨆ n, f n :=
   iSup_eq_iSup_of_partialSups_eq_partialSups (partialSups_disjointed f)
 #align supr_disjointed iSup_disjointed
 
-theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, f iᶜ := by
+theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, (f i)ᶜ := by
   cases n
   · rw [disjointed_zero, eq_comm, inf_eq_left]
     simp_rw [le_iInf_iff]
@@ -167,11 +167,12 @@ theorem disjointed_subset (f : ℕ → Set α) (n : ℕ) : disjointed f n ⊆ f 
   disjointed_le f n
 #align disjointed_subset disjointed_subset
 
-theorem iUnion_disjointed {f : ℕ → Set α} : (⋃ n, disjointed f n) = ⋃ n, f n :=
+theorem iUnion_disjointed {f : ℕ → Set α} : ⋃ n, disjointed f n = ⋃ n, f n :=
   iSup_disjointed f
 #align Union_disjointed iUnion_disjointed
 
-theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) : disjointed f n = f n ∩ ⋂ i < n, f iᶜ :=
+theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
+    disjointed f n = f n ∩ ⋂ i < n, (f i)ᶜ :=
   disjointed_eq_inf_compl f n
 #align disjointed_eq_inter_compl disjointed_eq_inter_compl
 

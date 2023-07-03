@@ -129,7 +129,6 @@ theorem cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t)
   have hcs' : μ s ≠ 0 :=
     (μ.toOuterMeasure.pos_of_subset_ne_zero (Set.inter_subset_left _ _) hci).ne'
   ext u
-  intro
   simp [*, hms.inter hmt, cond_apply, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, mul_comm, ←
     mul_assoc, ENNReal.mul_inv_cancel]
 #align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'
@@ -153,7 +152,7 @@ theorem cond_mul_eq_inter [IsFiniteMeasure μ] (hms : MeasurableSet s) (hcs : μ
 
 /-- A version of the law of total probability. -/
 theorem cond_add_cond_compl_eq [IsFiniteMeasure μ] (hms : MeasurableSet s) (hcs : μ s ≠ 0)
-    (hcs' : μ (sᶜ) ≠ 0) : μ[t|s] * μ s + μ[t|sᶜ] * μ (sᶜ) = μ t := by
+    (hcs' : μ sᶜ ≠ 0) : μ[t|s] * μ s + μ[t|sᶜ] * μ sᶜ = μ t := by
   rw [cond_mul_eq_inter μ hms hcs, cond_mul_eq_inter μ hms.compl hcs', Set.inter_comm _ t,
     Set.inter_comm _ t]
   exact measure_inter_add_diff t hms

@@ -890,4 +890,3 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
 #align phragmen_lindelof.eq_on_right_half_plane_of_superexponential_decay PhragmenLindelof.eqOn_right_half_plane_of_superexponential_decay
 
 end PhragmenLindelof
-
