@@ -95,7 +95,7 @@ lemma lt_succ_two_pow (h : b ≤ 1) (hm : m < 2^i) : 2^i * b + m < 2^(i + 1) := 
   rw [two_pow_succ]
   exact add_lt_add_of_le_of_lt (mul_le_of_le_one_right' h) hm
 
-lemma shiftr_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by 
+lemma shiftr_mod_two_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by 
   simp [Nat.testBit, Nat.mod_two_of_bodd]
 
 lemma div_add_mod_two_pow (m n : Nat) : n = 2^m * Nat.shiftr n m + n % (2^m) := by 
