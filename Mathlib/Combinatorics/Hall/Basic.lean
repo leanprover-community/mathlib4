@@ -56,7 +56,7 @@ Hall's Marriage Theorem, indexed families
 -/
 
 
-open Finset
+open Finset CategoryTheory
 
 universe u v
 
