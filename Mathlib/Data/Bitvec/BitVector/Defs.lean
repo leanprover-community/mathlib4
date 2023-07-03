@@ -352,12 +352,4 @@ instance {n} : ShiftRight (BitVector n) := ⟨fun x y => x >>> y.toNat⟩
 
 end BitVector
 
-@[simp]
-abbrev toVector : Bitvec n → Bitvec.BitVector n :=
-  (BitVector.ofNat n ·.val)
-
-@[simp]
-abbrev ofVector : Bitvec.BitVector n → Bitvec n :=
-  Bitvec.BitVector.toFin
-
 end Bitvec

@@ -6,9 +6,18 @@ Authors: Alex Keizer
 
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.BitVector.Defs
+import Mathlib.Data.Bitvec.BitVector.Lemmas
 
 namespace Bitvec
 open Bitvec (BitVector)
+
+@[simp]
+abbrev toVector (v : Bitvec n) : Bitvec.BitVector n :=
+  BitVector.ofNat n (Fin.val v)
+
+@[simp]
+abbrev ofVector (v : Bitvec.BitVector n) : Bitvec n :=
+  ⟨v.toNat, v.toNat_lt⟩
 
 variable (x y : BitVector n)
 
