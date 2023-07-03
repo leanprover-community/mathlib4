@@ -42,6 +42,7 @@ of quasi-compact open sets are quasi-compact.
 -/
 @[mk_iff]
 class QuasiCompact (f : X ⟶ Y) : Prop where
+  /-- Preimage of compact open set under a quasi-compact morphism between schemes is compact. -/
   isCompact_preimage : ∀ U : Set Y.carrier, IsOpen U → IsCompact U → IsCompact (f.1.base ⁻¹' U)
 #align algebraic_geometry.quasi_compact AlgebraicGeometry.QuasiCompact
 
