@@ -190,7 +190,7 @@ instance hasSmul : SMul α (ModularForm Γ k) :=
 #align modular_form.has_smul ModularForm.hasSmul
 
 @[simp]
-theorem coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • f :=
+theorem coe_smul (f : ModularForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
   rfl
 #align modular_form.coe_smul ModularForm.coe_smul
 
@@ -273,8 +273,9 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
 instance : One (ModularForm Γ 0) :=
   ⟨ { (1 : SlashInvariantForm Γ 0) with
       holo' := fun x => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
-      bdd_at_infty' := fun A => by simpa [SlashAction.zero_slash]
-        using atImInfty.const_boundedAtFilter (1 : ℂ) }⟩
+      bdd_at_infty' := fun A => by
+        simpa only [slashInvariantForm_toFun_eq_coe, SlashInvariantForm.one_coe_eq_one,
+          ModularForm.is_invariant_one] using atImInfty.const_boundedAtFilter (1 : ℂ) }⟩
 
 @[simp]
 theorem one_coe_eq_one : ((1 : ModularForm Γ 0) : ℍ → ℂ) = 1 :=
@@ -337,7 +338,7 @@ instance hasSmul : SMul α (CuspForm Γ k) :=
 #align cusp_form.has_smul CuspForm.hasSmul
 
 @[simp]
-theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • f :=
+theorem coe_smul (f : CuspForm Γ k) (n : α) : ⇑(n • f) = n • ⇑f :=
   rfl
 #align cusp_form.coe_smul CuspForm.coe_smul
 
@@ -405,4 +406,3 @@ instance (priority := 99) [CuspFormClass F Γ k] : ModularFormClass F Γ k where
   bdd_at_infty _ _ := (CuspFormClass.zero_at_infty _ _).boundedAtFilter
 
 end CuspForm
-
