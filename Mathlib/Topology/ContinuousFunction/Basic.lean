@@ -68,10 +68,10 @@ theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinA
   (map_continuous f).continuousWithinAt
 #align map_continuous_within_at map_continuousWithinAt
 
-instance : CoeTC F C(α, β) :=
-  ⟨fun f =>
-    { toFun := f
-      continuous_toFun := map_continuous f }⟩
+/-- Coerce a bundled morphism with a `ContinuousMapClass` instance to a `ContinuousMap`. -/
+@[coe] def toContinuousMap (f : F) : C(α, β) := ⟨f, map_continuous f⟩
+
+instance : CoeTC F C(α, β) := ⟨toContinuousMap⟩
 
 end ContinuousMapClass
 
@@ -87,7 +87,6 @@ instance toContinuousMapClass : ContinuousMapClass C(α, β) α β where
   coe := ContinuousMap.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_continuous := ContinuousMap.continuous_toFun
-
 
 /- Porting note: Probably not needed anymore
 /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_to_fun`
@@ -396,7 +395,7 @@ variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
 construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover : C(α, β) :=
-  haveI H : (⋃ i, S i) = Set.univ :=
+  haveI H : ⋃ i, S i = Set.univ :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]

@@ -357,7 +357,7 @@ variable {β : Type _} [CancelCommMonoidWithZero α] [CancelCommMonoidWithZero �
 
 theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactorizationMonoid α) :
     UniqueFactorizationMonoid β := by
-  rw [UniqueFactorizationMonoid.iff_exists_prime_factors] at hα⊢
+  rw [UniqueFactorizationMonoid.iff_exists_prime_factors] at hα ⊢
   intro a ha
   obtain ⟨w, hp, u, h⟩ :=
     hα (e.symm a) fun h =>
@@ -1491,7 +1491,7 @@ theorem eq_factors_of_eq_counts {a b : Associates α} (ha : a ≠ 0) (hb : b ≠
     a.factors = b.factors := by
   obtain ⟨sa, h_sa⟩ := factors_eq_some_iff_ne_zero.mpr ha
   obtain ⟨sb, h_sb⟩ := factors_eq_some_iff_ne_zero.mpr hb
-  rw [h_sa, h_sb] at h⊢
+  rw [h_sa, h_sb] at h ⊢
   rw [Option.some_inj]
   have h_count : ∀ (p : Associates α) (hp : Irreducible p),
       sa.count ⟨p, hp⟩ = sb.count ⟨p, hp⟩ := by
@@ -1513,7 +1513,7 @@ theorem count_le_count_of_factors_le {a b p : Associates α} (hb : b ≠ 0) (hp 
   · simp_all
   obtain ⟨sa, h_sa⟩ := factors_eq_some_iff_ne_zero.mpr ha
   obtain ⟨sb, h_sb⟩ := factors_eq_some_iff_ne_zero.mpr hb
-  rw [h_sa, h_sb] at h⊢
+  rw [h_sa, h_sb] at h ⊢
   rw [count_some hp, count_some hp]; rw [WithTop.some_le_some] at h
   exact Multiset.count_le_of_le _ h
 #align associates.count_le_count_of_factors_le Associates.count_le_count_of_factors_le
@@ -1587,7 +1587,7 @@ theorem dvd_of_mem_factors {a p : Associates α} {hp : Irreducible p} (hm : p �
     exact dvd_zero p
   obtain ⟨a0, nza, ha'⟩ := exists_non_zero_rep ha0
   rw [← Associates.factors_prod a]
-  rw [← ha', factors_mk a0 nza] at hm⊢
+  rw [← ha', factors_mk a0 nza] at hm ⊢
   rw [prod_coe]
   apply Multiset.dvd_prod; apply Multiset.mem_map.mpr
   exact ⟨⟨p, hp⟩, mem_factorSet_some.mp hm, rfl⟩
@@ -1873,7 +1873,7 @@ theorem eq_pow_of_mul_eq_pow [Nontrivial α] {a b c : Associates α} (ha : a ≠
   classical
     by_cases hk0 : k = 0
     · use 1
-      rw [hk0, pow_zero] at h⊢
+      rw [hk0, pow_zero] at h ⊢
       apply (mul_eq_one_iff.1 h).1
     · refine' is_pow_of_dvd_count ha _
       intro p hp

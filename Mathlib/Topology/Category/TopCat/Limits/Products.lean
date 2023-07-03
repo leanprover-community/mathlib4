@@ -188,10 +188,10 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     -- porting note: used to be `ext x`
     refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
     · specialize h ⟨WalkingPair.left⟩
-      apply_fun fun e => e x  at h
+      apply_fun fun e => e x at h
       exact h
     · specialize h ⟨WalkingPair.right⟩
-      apply_fun fun e => e x  at h
+      apply_fun fun e => e x at h
       exact h
 #align Top.prod_binary_fan_is_limit TopCat.prodBinaryFanIsLimit
 
@@ -361,7 +361,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
             have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
-              rintro a (h : a ∈ Set.range c.inlᶜ)
+              rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
                 (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
@@ -373,7 +373,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               · continuity
               · rw [embedding_subtype_val.toInducing.continuous_iff]
                 exact continuous_subtype_val
-          · change IsOpen (Set.range c.inlᶜ)
+          · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.open_range
       · intro T f g
