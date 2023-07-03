@@ -121,7 +121,7 @@ attribute [ghost_simps] Nat.zero_eq
 `verschiebung x` shifts the coefficients of `x` up by one, by inserting 0 as the 0th coefficient.
 `x.coeff i` then becomes `(verchiebung x).coeff (i + 1)`.
 
-This is a additive monoid hom with underlying function `verschiebung_fun`.
+This is an additive monoid hom with underlying function `verschiebung_fun`.
 -/
 noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
   toFun := verschiebungFun

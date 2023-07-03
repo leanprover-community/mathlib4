@@ -40,7 +40,7 @@ for `Set α`, and some more set constructions.
 In lemma names,
 * `⋃ i, s i` is called `iUnion`
 * `⋂ i, s i` is called `iInter`
-* `⋃ i j, s i j` is called `iUnion₂`. This is a `iUnion` inside a `iUnion`.
+* `⋃ i j, s i j` is called `iUnion₂`. This is an `iUnion` inside an `iUnion`.
 * `⋂ i j, s i j` is called `iInter₂`. This is an `iInter` inside an `iInter`.
 * `⋃ i ∈ s, t i` is called `biUnion` for "bounded `iUnion`". This is the special case of `iUnion₂`
   where `j : i ∈ s`.

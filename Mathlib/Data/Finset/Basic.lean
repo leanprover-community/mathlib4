@@ -101,7 +101,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
   For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
-* `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and a
+* `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and an
   `s : Finset α`, `s.biUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
 * `Finset.bInter`: TODO: Implement finite intersections.
 
