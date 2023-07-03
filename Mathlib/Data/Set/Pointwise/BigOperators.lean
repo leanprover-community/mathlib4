@@ -61,7 +61,7 @@ theorem image_finset_prod (f : F) (m : Finset ι) (s : ι → Set α) :
 /-- The n-ary version of `Set.mem_mul`. -/
 @[to_additive " The n-ary version of `Set.mem_add`. "]
 theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
-    (a ∈ ∏ i in t, f i) ↔ ∃ (g : ι → α) (_ : ∀ {i}, i ∈ t → g i ∈ f i), (∏ i in t, g i) = a := by
+    (a ∈ ∏ i in t, f i) ↔ ∃ (g : ι → α) (_ : ∀ {i}, i ∈ t → g i ∈ f i), ∏ i in t, g i = a := by
   classical
     induction' t using Finset.induction_on with i is hi ih generalizing a
     · simp_rw [Finset.prod_empty, Set.mem_one]
@@ -88,7 +88,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
 /-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
 @[to_additive " A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. "]
 theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
-    (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α) (_ : ∀ i, g i ∈ f i), (∏ i, g i) = a := by
+    (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α) (_ : ∀ i, g i ∈ f i), ∏ i, g i = a := by
   rw [mem_finset_prod]
   simp
 #align set.mem_fintype_prod Set.mem_fintype_prod
@@ -163,7 +163,7 @@ theorem finset_prod_mem_finset_prod (t : Finset ι) (f : ι → Set α) (g : ι 
 /-- An n-ary version of `Set.mul_subset_mul`. -/
 @[to_additive " An n-ary version of `Set.add_subset_add`. "]
 theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set α)
-    (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : (∏ i in t, f₁ i) ⊆ ∏ i in t, f₂ i :=
+    (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : ∏ i in t, f₁ i ⊆ ∏ i in t, f₂ i :=
   multiset_prod_subset_multiset_prod _ _ _ hf
 #align set.finset_prod_subset_finset_prod Set.finset_prod_subset_finset_prod
 #align set.finset_sum_subset_finset_sum Set.finset_sum_subset_finset_sum

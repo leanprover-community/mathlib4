@@ -438,7 +438,7 @@ such that for every `c : ℝ≥0`, for every tagged partition `π` subordinate t
 additional distortion estimates if `BoxIntegral.IntegrationParams.bDistortion l = true`), the
 corresponding integral sum is `ε`-close to the integral.
 
-If `box.integral.integration_params.bRiemann = true`, then `r c x` does not depend on `x`. If
+If `BoxIntegral.IntegrationParams.bRiemann = true`, then `r c x` does not depend on `x`. If
 `ε ≤ 0`, then we use `r c x = 1`.  -/
 def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
@@ -647,7 +647,7 @@ of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over th
 See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
 theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartition I}
     (hU : π₁.iUnion = π₂.iUnion) :
-    (∑ J in π₁.boxes, integral J l f vol) = ∑ J in π₂.boxes, integral J l f vol := by
+    ∑ J in π₁.boxes, integral J l f vol = ∑ J in π₂.boxes, integral J l f vol := by
   refine' tendsto_nhds_unique (h.tendsto_integralSum_sum_integral π₁) _
   rw [l.toFilteriUnion_congr _ hU]
   exact h.tendsto_integralSum_sum_integral π₂

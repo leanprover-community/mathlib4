@@ -221,7 +221,7 @@ def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
       ext
       simp [Algebra.ofId_apply, algebraMap_eq])
     (by
-      ext (i m)
+      ext i m
       exact IsEmpty.elim' he i)
 #align mv_polynomial.is_empty_alg_equiv MvPolynomial.isEmptyAlgEquiv
 

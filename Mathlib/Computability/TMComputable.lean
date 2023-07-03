@@ -121,7 +121,7 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
 remembering the number of steps it takes. -/
 structure EvalsTo {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) where
   steps : ℕ
-  evals_in_steps : (flip bind f^[steps]) a = b
+  evals_in_steps : (flip bind f)^[steps] a = b
 #align turing.evals_to Turing.EvalsTo
 
 -- note: this cannot currently be used in `calc`, as the last two arguments must be `a` and `b`.

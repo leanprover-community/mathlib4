@@ -862,7 +862,7 @@ instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
 instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
 
-instance [LinearOrder α] : IsTotal α (· ≤ ·) :=
+instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
   ⟨le_total⟩
 
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=

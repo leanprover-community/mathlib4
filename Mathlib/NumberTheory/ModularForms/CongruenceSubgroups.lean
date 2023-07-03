@@ -63,7 +63,7 @@ theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 
   · intro h
     simp [← SL_reduction_mod_hom_val N γ, h]
   · intro h
-    ext i; intro j
+    ext i j
     rw [SL_reduction_mod_hom_val N γ]
     fin_cases i <;> fin_cases j <;> simp only [h]
     exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
@@ -84,7 +84,7 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
     Subgroup.mem_bot]
   constructor
   · intro h
-    ext i; intro j
+    ext i j
     fin_cases i <;> fin_cases j <;> simp only [h]
     exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
   · intro h

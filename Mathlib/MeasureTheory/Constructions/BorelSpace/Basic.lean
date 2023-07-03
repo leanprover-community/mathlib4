@@ -134,13 +134,13 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     rintro _ ⟨a, rfl | rfl⟩ <;> [skip; apply H]
     by_cases h : ∃ a', ∀ b, a < b ↔ a' ≤ b
     · rcases h with ⟨a', ha'⟩
-      rw [(_ : Ioi a = Iio a'ᶜ)]
+      rw [(_ : Ioi a = (Iio a')ᶜ)]
       · exact (H _).compl
       simp [Set.ext_iff, ha']
     · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
       simp [Set.ext_iff] at vu
-      have : Ioi a = ⋃ x : v, Iio x.1.1ᶜ := by
+      have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
         simp [Set.ext_iff]
         refine' fun x => ⟨fun ax => _, fun ⟨a', ⟨h, _⟩, ax⟩ => lt_of_lt_of_le h ax⟩
         rcases (vu x).2 (by
@@ -220,17 +220,19 @@ Finally, `borelize α β γ` runs `borelize α; borelize β; borelize γ`.
 -/
 syntax "borelize" (ppSpace colGt term:max)* : tactic
 
-/-- Add instances `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def addBorelInstance (t : Term) : TacticM Unit := do
+/-- Add instances `borel e : MeasurableSpace e` and `⟨rfl⟩ : BorelSpace e`. -/
+def addBorelInstance (e : Expr) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     refine_lift
       letI : MeasurableSpace $t := borel $t
       haveI : BorelSpace $t := ⟨rfl⟩
       ?_)
 
-/-- Given a type `$t`, an assumption `i : MeasurableSpace $t`, and an instance `[BorelSpace $t]`,
-replace `i` with `borel $t`. -/
-def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
+/-- Given a type `e`, an assumption `i : MeasurableSpace e`, and an instance `[BorelSpace e]`,
+replace `i` with `borel e`. -/
+def borelToRefl (e : Expr) (i : FVarId) : TacticM Unit := do
+  let t ← Lean.Elab.Term.exprToSyntax e
   evalTactic <| ← `(tactic|
     have := @BorelSpace.measurable_eq $t _ _ _)
   liftMetaTactic fun m => return [← subst m i]
@@ -242,11 +244,11 @@ def borelToRefl (t : Term) (i : FVarId) : TacticM Unit := do
 /-- Given a type `$t`, if there is an assumption `[i : MeasurableSpace $t]`, then try to prove
 `[BorelSpace $t]` and replace `i` with `borel $t`. Otherwise, add instances
 `borel $t : MeasurableSpace $t` and `⟨rfl⟩ : BorelSpace $t`. -/
-def borelize (t : Term) : TacticM Unit := do
+def borelize (t : Term) : TacticM Unit := withMainContext <| do
   let u ← mkFreshLevelMVar
-  let e ← Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
+  let e ← withoutRecover <| Tactic.elabTermEnsuringType t (mkSort (mkLevelSucc u))
   let i? ← findLocalDeclWithType? (← mkAppOptM ``MeasurableSpace #[e])
-  i?.elim (addBorelInstance t) (borelToRefl t)
+  i?.elim (addBorelInstance e) (borelToRefl e)
 
 elab_rules : tactic
   | `(tactic| borelize $[$t:term]*) => t.forM borelize
@@ -291,7 +293,7 @@ instance (priority := 100) BorelSpace.countablyGenerated {α : Type _} [Topologi
 
 theorem MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
     {C : Set α → Prop} (h_open : ∀ U, IsOpen U → C U)
-    (h_compl : ∀ t, MeasurableSet t → C t → C (tᶜ))
+    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
     (h_union :
       ∀ f : ℕ → Set α,
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :
@@ -844,7 +846,7 @@ theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
-    (hf : ContinuousOn f s) (hg : ContinuousOn g (sᶜ)) (hs : MeasurableSet s) :
+    (hf : ContinuousOn f s) (hg : ContinuousOn g sᶜ) (hs : MeasurableSet s) :
     Measurable (s.piecewise f g) := by
   refine' measurable_of_isOpen fun t ht => _
   rw [piecewise_preimage, Set.ite]
@@ -944,7 +946,7 @@ theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
 #align continuous_map.measurable ContinuousMap.measurable
 
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
-    (hf : ContinuousOn f ({a}ᶜ)) : Measurable f :=
+    (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a
     (continuousOn_iff_continuous_restrict.1 hf).measurable
 #align measurable_of_continuous_on_compl_singleton measurable_of_continuousOn_compl_singleton
@@ -1233,7 +1235,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
     exact ne_of_lt (hy.2.trans_le (h₀ _))
   · apply measurableSet_of_mem_nhdsWithin_Ioi_aux h
     simp only [IsTop] at H
-    push_neg  at H
+    push_neg at H
     exact H
 #align measurable_set_of_mem_nhds_within_Ioi measurableSet_of_mem_nhdsWithin_Ioi
 
@@ -1371,7 +1373,7 @@ theorem measurable_cInf {ι} {f : ι → δ → α} {s : Set ι} (hs : s.Countab
 theorem measurable_ciSup {ι : Type _} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i))
     (bdd : ∀ x, BddAbove (range fun i => f i x)) : Measurable fun x => ⨆ i, f i x := by
   change Measurable fun x => sSup (range fun i : ι => f i x)
-  simp_rw [← image_univ] at bdd⊢
+  simp_rw [← image_univ] at bdd ⊢
   refine' measurable_cSup countable_univ hf bdd
 #align measurable_csupr measurable_ciSup
 
@@ -1730,7 +1732,7 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
           refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
           rcases exists_rat_btwn h with ⟨c, ac, cx⟩
           exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
-            : Ioo (a : ℝ) b = (⋃ c > a, Iio (c : ℝ)ᶜ) ∩ Iio (b : ℝ))]
+            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
     · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
         GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
       refine' @MeasurableSet.inter _ g _ _ _ (hg _)
