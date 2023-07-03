@@ -14,6 +14,7 @@ import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Ring-theoretic supplement of Data.Polynomial.
@@ -490,6 +491,34 @@ theorem isUnit_of_coeff_isUnit_isNilpotent {P : Polynomial R} (hunit : IsUnit (P
   · by_cases H : i ≤ P₁.natDegree
     simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
     simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
+
+/-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
+except its constant term which is a unit. -/
+theorem coeff_isUnit_isNilpotent_of_isUnit {P : Polynomial R} (hunit : IsUnit P) :
+    IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
+  obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
+  constructor
+  . refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
+    have h := (mul_coeff_zero P Q).symm
+    rwa [hQ, coeff_one_zero] at h
+  . intros n hn
+    rw [nilpotent_iff_mem_prime]
+    intros I hI
+    let f := mapRingHom (Ideal.Quotient.mk I)
+    have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
+      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
+    have hcoeff : (f P).coeff n = 0 := by
+      refine' coeff_eq_zero_of_degree_lt _
+      rw [hPQ.1]
+      exact (@WithBot.coe_pos _ _ _ n).2 (Ne.bot_lt hn)
+    rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
+    exact hcoeff
+
+/-- Let `P` be a polynomial over `R`. `P` is a unit if and only if all its coefficients are
+nilpotent, except its constant term which is a unit. -/
+theorem isUnit_iff_coeff_isUnit_isNilpotent (P : Polynomial R) :
+    IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
+  ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩
 
 end CommRing
 
