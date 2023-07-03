@@ -259,7 +259,7 @@ theorem testBit_two_pow_mul_toNat_add (h: n < 2^w) : Nat.testBit (2^w * b.toNat 
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
   cases' b <;> simp 
 
-theorem testBit_translate_one (h : i < w) : 
+theorem testBit_two_pow_add (h : i < w) : 
   Nat.testBit (2^w + n) i = Nat.testBit n i := mul_one (2^w) ▸ (testBit_translate h)
 
 theorem testBit_translate_one' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
