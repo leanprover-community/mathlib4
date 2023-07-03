@@ -1146,8 +1146,7 @@ theorem locallyConnectedSpace_iff_open_connected_subsets :
   · exact fun h => ⟨fun U => ⟨fun hU =>
       let ⟨V, hVU, hV⟩ := h U hU
       ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
-#align locally_connected_space_iff_open_connected_subsets
-  locallyConnectedSpace_iff_open_connected_subsets
+#align locally_connected_space_iff_open_connected_subsets locallyConnectedSpace_iff_open_connected_subsets
 
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
@@ -1196,8 +1195,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
           (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x _,
           mem_connectedComponentIn _, isConnected_connectedComponentIn_iff.mpr _⟩ <;>
       exact mem_interior_iff_mem_nhds.mpr hU
-#align locally_connected_space_iff_connected_component_in_open
-  locallyConnectedSpace_iff_connectedComponentIn_open
+#align locally_connected_space_iff_connected_component_in_open locallyConnectedSpace_iff_connectedComponentIn_open
 
 theorem locallyConnectedSpace_iff_connected_subsets :
     LocallyConnectedSpace α ↔ ∀ (x : α), ∀ U ∈ 𝓝 x, ∃ V ∈ 𝓝 x, IsPreconnected V ∧ V ⊆ U := by
@@ -1348,14 +1346,12 @@ theorem Continuous.image_connectedComponent_eq_singleton {β : Type _} [Topologi
     f '' connectedComponent a = {f a} :=
   (Set.subsingleton_iff_singleton <| mem_image_of_mem f mem_connectedComponent).mp
     (isPreconnected_connectedComponent.image f h.continuousOn).subsingleton
-#align continuous.image_connected_component_eq_singleton
-  Continuous.image_connectedComponent_eq_singleton
+#align continuous.image_connected_component_eq_singleton Continuous.image_connectedComponent_eq_singleton
 
 theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSpace α] (s : Set α) :
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
-#align is_totally_disconnected_of_totally_disconnected_space
-  isTotallyDisconnected_of_totallyDisconnectedSpace
+#align is_totally_disconnected_of_totally_disconnected_space isTotallyDisconnected_of_totallyDisconnectedSpace
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
