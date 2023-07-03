@@ -116,8 +116,7 @@ variable (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
 @[simp]
 theorem comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
   rfl
-#align category_theory.endofunctor.algebra.comp_eq_comp
-       CategoryTheory.Endofunctor.Algebra.comp_eq_comp
+#align category_theory.endofunctor.algebra.comp_eq_comp CategoryTheory.Endofunctor.Algebra.comp_eq_comp
 
 @[simp]
 theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=

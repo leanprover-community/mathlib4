@@ -594,8 +594,7 @@ theorem continuousWithinAt_arg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
     lift z to ℝ using him
     simpa using hre.ne
   · rw [arg, if_neg hre.not_le, if_pos him.ge]
-#align complex.continuous_within_at_arg_of_re_neg_of_im_zero
-Complex.continuousWithinAt_arg_of_re_neg_of_im_zero
+#align complex.continuous_within_at_arg_of_re_neg_of_im_zero Complex.continuousWithinAt_arg_of_re_neg_of_im_zero
 
 theorem tendsto_arg_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
     (him : z.im = 0) : Tendsto arg (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 π) := by
