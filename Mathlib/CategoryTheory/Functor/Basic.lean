@@ -18,6 +18,8 @@ Defines a functor between categories, extending a `Prefunctor` between quivers.
 
 Introduces, in the `CategoryTheory` scope, notations `C ⥤ D` for the type of all functors
 from `C` to `D`, `𝟭` for the identity functor and `⋙` for functor composition.
+
+TODO: Switch to using the `⇒` arrow.
 -/
 
 
