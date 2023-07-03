@@ -119,7 +119,7 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 
 variable [Group G] (n) (A : Rep k G)
 
-/- Porting note: linter says the statement doesn't typecheck -/
+/- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
 set_option maxHeartbeats 1600000 in
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
@@ -206,7 +206,7 @@ set_option maxHeartbeats 6400000
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
 to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
 def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
-/- Porting note: just needs a `refine'` now -/
+/- Porting note: just needs a `refine'` now, instead of term mode -/
   refine' HomologicalComplex.Hom.isoOfComponents (fun i =>
     (Rep.diagonalHomEquiv i A).toModuleIso.symm) _
   rintro i j (h : i + 1 = j)
