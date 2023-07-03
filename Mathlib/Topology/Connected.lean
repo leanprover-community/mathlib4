@@ -892,7 +892,8 @@ lemma Subsingleton_of_closed_disjoint_Union_eq_univ [Finite ι] [PreconnectedSpa
 
 /-- In a connected space, any finite disjoint cover of non-empty closed subsets has exactly one
 element. -/
-lemma Unique_of_closed_disjoint_Union_eq_univ [Finite ι] [ConnectedSpace α] {s : ι → Set α}
+noncomputable
+def Unique_of_closed_disjoint_Union_eq_univ [Finite ι] [ConnectedSpace α] {s : ι → Set α}
     (h_nonempty : ∀ i, (s i).Nonempty)
     (h_closed : ∀ i, IsClosed (s i))
     (h_disj : Pairwise (Disjoint on s))
