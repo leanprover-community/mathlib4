@@ -8,10 +8,10 @@ Authors: Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.RingTheory.Jacobson
-import Mathbin.FieldTheory.IsAlgClosed.Basic
-import Mathbin.FieldTheory.MvPolynomial
-import Mathbin.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Jacobson
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 /-!
 # Nullstellensatz
@@ -64,8 +64,7 @@ theorem zeroLocus_top : zeroLocus (⊤ : Ideal (MvPolynomial σ k)) = ⊥ :=
 #align mv_polynomial.zero_locus_top MvPolynomial.zeroLocus_top
 
 /-- Ideal of polynomials with common zeroes at all elements of a set -/
-def vanishingIdeal (V : Set (σ → k)) : Ideal (MvPolynomial σ k)
-    where
+def vanishingIdeal (V : Set (σ → k)) : Ideal (MvPolynomial σ k) where
   carrier := {p | ∀ x ∈ V, eval x p = 0}
   zero_mem' x hx := RingHom.map_zero _
   add_mem' p q hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, RingHom.map_add]
@@ -108,8 +107,7 @@ theorem mem_vanishingIdeal_singleton_iff (x : σ → k) (p : MvPolynomial σ k) 
 #align mv_polynomial.mem_vanishing_ideal_singleton_iff MvPolynomial.mem_vanishingIdeal_singleton_iff
 
 instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
-    (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal :=
-  by
+    (vanishingIdeal {x} : Ideal (MvPolynomial σ k)).IsMaximal := by
   have : MvPolynomial σ k ⧸ vanishing_ideal {x} ≃+* k :=
     RingEquiv.ofBijective
       (Ideal.Quotient.lift _ (eval x) fun p h => (mem_vanishing_ideal_singleton_iff x p).mp h)
@@ -125,8 +123,7 @@ instance vanishingIdeal_singleton_isMaximal {x : σ → k} :
 #align mv_polynomial.vanishing_ideal_singleton_is_maximal MvPolynomial.vanishingIdeal_singleton_isMaximal
 
 theorem radical_le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
-    I.radical ≤ vanishingIdeal (zeroLocus I) :=
-  by
+    I.radical ≤ vanishingIdeal (zeroLocus I) := by
   intro p hp x hx
   rw [← mem_vanishing_ideal_singleton_iff]
   rw [radical_eq_Inf] at hp 
@@ -167,8 +164,7 @@ theorem pointToPoint_zeroLocus_le (I : Ideal (MvPolynomial σ k)) :
 variable [IsAlgClosed k] [Finite σ]
 
 theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)) :
-    I.IsMaximal ↔ ∃ x : σ → k, I = vanishingIdeal {x} :=
-  by
+    I.IsMaximal ↔ ∃ x : σ → k, I = vanishingIdeal {x} := by
   cases nonempty_fintype σ
   refine'
     ⟨fun hI => _, fun h =>
@@ -195,8 +191,7 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
 /-- Main statement of the Nullstellensatz -/
 @[simp]
 theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
-    vanishingIdeal (zeroLocus I) = I.radical :=
-  by
+    vanishingIdeal (zeroLocus I) = I.radical := by
   rw [I.radical_eq_jacobson]
   refine' le_antisymm (le_sInf _) fun p hp x hx => _
   · rintro J ⟨hJI, hJ⟩
