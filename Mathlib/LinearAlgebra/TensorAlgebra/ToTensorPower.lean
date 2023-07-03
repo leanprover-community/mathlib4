@@ -10,6 +10,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.TensorPower
+set_option autoImplicit false
 
 /-!
 # Tensor algebras as direct sums of tensor powers
@@ -121,8 +122,9 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
 
 @[simp]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
-    GradedMonoid.mk m (PiTensorProduct.reindex R M (Equiv.cast <| congr_arg Fin h) x) =
-      GradedMonoid.mk (ι := ℕ) (A := fun i => (⨂[R]^n) M) n x :=
+    GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
+    (PiTensorProduct.reindex R M (Equiv.cast <| congr_arg Fin h) x) =
+      GradedMonoid.mk n x :=
   Eq.symm (PiTensorProduct.gradedMonoid_eq_of_reindex_cast h rfl)
 #align tensor_algebra.mk_reindex_cast TensorAlgebra.mk_reindex_cast
 
