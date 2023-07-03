@@ -41,7 +41,8 @@ theorem subst_abc {x y z : ℝ} (h : x * y * z = 1) :
     have := h.symm ▸ one_ne_zero
     simpa [not_or] using this
   have : z * (y * x) = 1 := by rw [← h]; ac_rfl
-  field_simp [hx, this] -- Porting note: Originally `field_simp [*]`, but `*` doesn't work
+  -- Porting note: Originally `field_simp [*]`, but `*` doesn't work (see #5689)
+  field_simp [hx, this]
 #align imo2008_q2.subst_abc Imo2008Q2.subst_abc
 
 theorem imo2008_q2a (x y z : ℝ) (h : x * y * z = 1) (hx : x ≠ 1) (hy : y ≠ 1) (hz : z ≠ 1) :
