@@ -88,7 +88,9 @@ def ofDirectSum : (⨁ n, (⨂[R]^n) M) →ₐ[R] TensorAlgebra R M :=
 @[simp]
 theorem ofDirectSum_of_tprod {n} (x : Fin n → M) :
     ofDirectSum (DirectSum.of _ n (PiTensorProduct.tprod R x)) = tprod R M n x :=
-  (DirectSum.toAddMonoid_of _ _ _).trans (TensorPower.toTensorAlgebra_tprod _)
+  (DirectSum.toAddMonoid_of
+    (fun _ ↦ LinearMap.toAddMonoidHom TensorPower.toTensorAlgebra) n _).trans
+  (TensorPower.toTensorAlgebra_tprod _)
 #align tensor_algebra.of_direct_sum_of_tprod TensorAlgebra.ofDirectSum_of_tprod
 
 /-- The canonical map from the tensor algebra to a direct sum of tensor powers. -/
