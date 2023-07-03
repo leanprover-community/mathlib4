@@ -35,7 +35,7 @@ In the second part of this file, we show properties of the bitwise operations
   of `n` is zero, the `i`-th bit of `m` is one, and all more significant bits are equal, then
   `n < m`.
 * `of_lt_of_testBit`: if `x < y` then there exists a bit `i` such that 
-`x.testBit i = false` and `y.testBit i = true`.
+  `x.testBit i = false` and `y.testBit i = true`.
 * `testBit_add`: the `testBit` of the sum of two bitvectors is equal to the bitwise
 xor of the `testBit` of the two bitvectors and the `testBit` of their carry.
 
