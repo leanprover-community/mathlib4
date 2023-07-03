@@ -58,6 +58,10 @@ theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
   ⟨h₁, h₂⟩
 #align asymptotics.is_O.antisymm Asymptotics.IsBigO.antisymm
 
+lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
+
+lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
+
 @[refl]
 theorem isTheta_refl (f : α → E) (l : Filter α) : f =Θ[l] f :=
   ⟨isBigO_refl _ _, isBigO_refl _ _⟩
@@ -313,5 +317,9 @@ theorem isTheta_const_mul_right {c : 𝕜} {g : α → 𝕜} (hc : c ≠ 0) :
 alias isTheta_const_mul_right ↔ IsTheta.of_const_mul_right IsTheta.const_mul_right
 #align asymptotics.is_Theta.of_const_mul_right Asymptotics.IsTheta.of_const_mul_right
 #align asymptotics.is_Theta.const_mul_right Asymptotics.IsTheta.const_mul_right
+
+lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'}
+    (h : f₂ =o[l] f₁) : (f₁ + f₂) =Θ[l] f₁ :=
+  ⟨(isBigO_refl _ _).add_isLittleO h, by rw [add_comm]; exact h.right_isBigO_add⟩
 
 end Asymptotics

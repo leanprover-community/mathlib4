@@ -59,13 +59,14 @@ namespace Asymptotics
 set_option linter.uppercaseLean3 false
 
 variable {α : Type _} {β : Type _} {E : Type _} {F : Type _} {G : Type _} {E' : Type _}
-  {F' : Type _} {G' : Type _} {E'' : Type _} {F'' : Type _} {G'' : Type _} {R : Type _}
-  {R' : Type _} {𝕜 : Type _} {𝕜' : Type _}
+  {F' : Type _} {G' : Type _} {E'' : Type _} {F'' : Type _} {G'' : Type _} {E''' : Type _}
+  {R : Type _} {R' : Type _} {𝕜 : Type _} {𝕜' : Type _}
 
 variable [Norm E] [Norm F] [Norm G]
 
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
   [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
+  [SeminormedAddGroup E''']
   [SeminormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
@@ -75,6 +76,8 @@ variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
 
 variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
+
+variable {f''' : α → E'''}
 
 variable {l l' : Filter α}
 
@@ -119,6 +122,46 @@ theorem isBigO_iff_isBigOWith : f =O[l] g ↔ ∃ c : ℝ, IsBigOWith c l f g :=
 theorem isBigO_iff : f =O[l] g ↔ ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
   simp only [IsBigO_def, IsBigOWith_def]
 #align asymptotics.is_O_iff Asymptotics.isBigO_iff
+
+/-- Definition of `IsBigO` in terms of filters, with a positive constant. -/
+theorem isBigO_iff' {g : α → E'''} :
+    f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [isBigO_iff] at h
+    obtain ⟨c, hc⟩ := h
+    by_cases hpos : 0 < c
+    case pos => exact ⟨c, ⟨hpos, hc⟩⟩
+    case neg =>
+      push_neg at hpos
+      refine ⟨1, ⟨by norm_num, ?_⟩⟩
+      filter_upwards [hc] with x hx
+      have : ‖f x‖ ≤ 0 * ‖g x‖ := calc
+        ‖f x‖ ≤ c * ‖g x‖     := by exact hx
+            _ ≤ 0 * ‖g x‖     := by gcongr
+      calc ‖f x‖ ≤ 0 * ‖g x‖    := by exact this
+               _ ≤ 1 * ‖g x‖    := by gcongr; norm_num
+  case mpr =>
+    rw [isBigO_iff]
+    obtain ⟨c, ⟨_, hc⟩⟩ := h
+    exact ⟨c, hc⟩
+
+/-- Definition of `IsBigO` in terms of filters, with the constant in the lower bound. -/
+theorem isBigO_iff'' {g : α → E'''} :
+    f =O[l] g ↔ ∃ c > 0, ∀ᶠ x in l, c * ‖f x‖ ≤ ‖g x‖ := by
+  refine ⟨fun h => ?mp, fun h => ?mpr⟩
+  case mp =>
+    rw [isBigO_iff'] at h
+    obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
+    refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
+    filter_upwards [hc] with x hx
+    rwa [inv_mul_le_iff (by positivity)]
+  case mpr =>
+    rw [isBigO_iff']
+    obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
+    refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
+    filter_upwards [hc] with x hx
+    rwa [←inv_inv c, inv_mul_le_iff (by positivity)] at hx
 
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩
@@ -266,7 +309,7 @@ theorem isLittleO_iff_nat_mul_le : f =o[l] g' ↔ ∀ n : ℕ, ∀ᶠ x in l, �
   isLittleO_iff_nat_mul_le_aux (Or.inr fun _x => norm_nonneg _)
 #align asymptotics.is_o_iff_nat_mul_le Asymptotics.isLittleO_iff_nat_mul_le
 
-theorem isLittleO_iff_nat_mul_le' : f' =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f' x‖ ≤ ‖g x‖ :=
+theorem isLittleO_iff_nat_mul_le' : f''' =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f''' x‖ ≤ ‖g x‖ :=
   isLittleO_iff_nat_mul_le_aux (Or.inl fun _x => norm_nonneg _)
 #align asymptotics.is_o_iff_nat_mul_le' Asymptotics.isLittleO_iff_nat_mul_le'
 
@@ -2151,6 +2194,27 @@ theorem isLittleO_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, Nor
   simp (config := { contextual := true }) only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
+
+lemma eventuallyLE_of_isLittleO_of_isBigO_symm {f₁ f₂ : α → E'} (hf₁ : f₁ =o[l] g)
+    (hf₂ : g =O[l] f₂) : (fun x => ‖f₁ x‖) ≤ᶠ[l] fun x => ‖f₂ x‖ := by
+  obtain ⟨c₂, ⟨hc₂', hc₂⟩⟩ := isBigO_iff'.mp hf₂
+  rw [isLittleO_iff] at hf₁
+  have : 0 < c₂⁻¹ := inv_pos_of_pos hc₂'
+  have hf₁' := hf₁ this
+  filter_upwards [hf₁', hc₂] with x hx hx'
+  calc ‖f₁ x‖ ≤ c₂⁻¹ * ‖g x‖     := by exact hx
+            _ ≤ c₂⁻¹ * c₂ * ‖f₂ x‖ := by rw [mul_assoc]; gcongr
+            _ = ‖f₂ x‖          := by rw [inv_mul_cancel (by positivity : c₂ ≠ 0), one_mul]
+
+theorem IsBigO.nat_cast_atTop {R : Type _} [StrictOrderedSemiring R] [Archimedean R]
+    {f : R → E} {g : R → F} (h : f =O[atTop] g) :
+    (fun (n:ℕ) => f n) =O[atTop] (fun n => g n) :=
+  IsBigO.comp_tendsto h tendsto_nat_cast_atTop_atTop
+
+theorem IsLittleO.nat_cast_atTop {R : Type _} [StrictOrderedSemiring R] [Archimedean R]
+    {f : R → E} {g : R → F} (h : f =o[atTop] g) :
+    (fun (n:ℕ) => f n) =o[atTop] (fun n => g n) :=
+  IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
 
 end Asymptotics
 
