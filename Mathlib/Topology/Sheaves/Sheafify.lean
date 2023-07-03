@@ -37,11 +37,7 @@ universe v
 
 noncomputable section
 
-open TopCat
-
-open Opposite
-
-open TopologicalSpace
+open TopCat Opposite TopologicalSpace CategoryTheory
 
 variable {X : TopCat.{v}} (F : Presheaf (Type v) X)
 
