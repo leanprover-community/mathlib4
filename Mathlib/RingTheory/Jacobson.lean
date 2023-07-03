@@ -39,7 +39,7 @@ Jacobson, Jacobson Ring
 -/
 
 -- proting note: TODO
-set_option profiler true
+-- set_option profiler true
 -- set_option autoImplicit false
 
 universe u
@@ -721,24 +721,16 @@ theorem quotient_mk_comp_C_isIntegral_of_jacobson {R : Type _} [CommRing R] [IsJ
     refine' RingHom.isIntegral_trans _ _ _ _
     · refine' RingHom.isIntegral_trans _ _ (isIntegral_of_surjective _ Quotient.mk_surjective) _
       refine' RingHom.isIntegral_trans _ _ _ _
-      · sorry
-        -- apply (isIntegral_quotientMap_iff _).mpr (IH _)
-        -- apply polynomial.isMaximal_comap_C_of_isJacobson _
-        -- · exact mv_polynomial.isJacobson_mv_polynomial_fin n
-        -- · apply comap_isMaximal_of_surjective
-        --   exact (finSuccEquiv R n).symm.Surjective
-      · refine' (isIntegral_quotientMap_iff _).mpr _
-        rw [← quotientMap_comp_mk le_rfl]
-        refine' RingHom.isIntegral_trans _ _ _ ((isIntegral_quotientMap_iff _).mpr _)
-        · exact RingHom.isIntegral_of_surjective _ Quotient.mk_surjective
-        · sorry
-          -- apply Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson _
-          -- · exact mv_polynomial.isJacobson_mv_polynomial_fin n
-          -- · exact comap_isMaximal_of_surjective _ (finSuccEquiv R n).symm.Surjective
-    · sorry
-      -- refine' (isIntegral_quotientMap_iff _).mpr _
-      -- refine' RingHom.isIntegral_trans _ _ _ (isIntegral_of_surjective _ quotient.mk_surjective)
-      -- exact RingHom.isIntegral_of_surjective _ (finSuccEquiv R n).symm.surjective
+      · apply (isIntegral_quotientMap_iff _).mpr (@IH _ ?_)
+        refine @Ideal.Polynomial.isMaximal_comap_c_of_isJacobson (MvPolynomial (Fin n) R) _
+          (MvPolynomial.isJacobson_mvPolynomial_fin n) _ ?_
+        apply comap_isMaximal_of_surjective
+        exact (finSuccEquiv R n).symm.surjective
+    . sorry
+    -- · sorry
+    --   -- refine' (isIntegral_quotientMap_iff _).mpr _
+    --   -- refine' RingHom.isIntegral_trans _ _ _ (isIntegral_of_surjective _ quotient.mk_surjective)
+    --   -- exact RingHom.isIntegral_of_surjective _ (finSuccEquiv R n).symm.surjective
 set_option linter.uppercaseLean3 false in
 #align ideal.mv_polynomial.quotient_mk_comp_C_isIntegral_of_jacobson Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson
 
