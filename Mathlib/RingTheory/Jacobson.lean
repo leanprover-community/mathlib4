@@ -648,13 +648,17 @@ theorem quotient_mk_comp_C_isIntegral_of_jacobson :
 set_option linter.uppercaseLean3 false in
 #align ideal.polynomial.quotient_mk_comp_C_is_integral_of_jacobson Ideal.Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson
 
-theorem isMaximal_comap_c_of_isJacobson : (P.comap (C : R →+* R[X])).IsMaximal := by
+theorem isMaximal_comap_C_of_isJacobson : (P.comap (C : R →+* R[X])).IsMaximal := by
   rw [← @mk_ker _ _ P, RingHom.ker_eq_comap_bot, comap_comap]
   exact
     isMaximal_comap_of_isIntegral_of_isMaximal' _ (quotient_mk_comp_C_isIntegral_of_jacobson P)
       ⊥ ((bot_quotient_isMaximal_iff _).mpr hP)
 set_option linter.uppercaseLean3 false in
-#align ideal.polynomial.is_maximal_comap_C_of_is_jacobson Ideal.Polynomial.isMaximal_comap_c_of_isJacobson
+#align ideal.polynomial.is_maximal_comap_C_of_is_jacobson Ideal.Polynomial.isMaximal_comap_C_of_isJacobson
+
+lemma isMaximal_comap_C_of_isJacobson' {P : Ideal R[X]} (hP : IsMaximal P) : (P.comap (C : R →+* R[X])).IsMaximal := by
+  haveI := hP
+  exact isMaximal_comap_C_of_isJacobson P
 
 theorem comp_C_integral_of_surjective_of_jacobson {S : Type _} [Field S] (f : R[X] →+* S)
     (hf : Function.Surjective ↑f) : (f.comp C).IsIntegral := by
@@ -678,14 +682,14 @@ open MvPolynomial RingHom
 
 namespace MvPolynomial
 
-theorem isJacobson_mvPolynomial_fin {R : Type u} [CommRing R] [H : IsJacobson R] :
+theorem isJacobson_MvPolynomial_fin {R : Type u} [CommRing R] [H : IsJacobson R] :
     ∀ n : ℕ, IsJacobson (MvPolynomial (Fin n) R)
   | 0 => (isJacobson_iso ((renameEquiv R (Equiv.equivPEmpty (Fin 0))).toRingEquiv.trans
     (isEmptyRingEquiv R PEmpty.{u+1}))).mpr H
   | n + 1 =>
     (isJacobson_iso (finSuccEquiv R n).toRingEquiv).2
-      (Polynomial.isJacobson_polynomial_iff_isJacobson.2 (isJacobson_mvPolynomial_fin n))
-#align ideal.mv_polynomial.is_jacobson_mv_polynomial_fin Ideal.MvPolynomial.isJacobson_mvPolynomial_fin
+      (Polynomial.isJacobson_polynomial_iff_isJacobson.2 (isJacobson_MvPolynomial_fin n))
+#align ideal.mv_polynomial.is_jacobson_mv_polynomial_fin Ideal.MvPolynomial.isJacobson_MvPolynomial_fin
 
 /-- General form of the nullstellensatz for Jacobson rings, since in a Jacobson ring we have
   `Inf {P maximal | P ≥ I} = Inf {P prime | P ≥ I} = I.radical`. Fields are always Jacobson,
@@ -697,7 +701,7 @@ instance isJacobson {R : Type _} [CommRing R] {ι : Type _} [Finite ι] [IsJacob
   haveI := Classical.decEq ι
   let e := Fintype.equivFin ι
   rw [isJacobson_iso (renameEquiv R e).toRingEquiv]
-  exact isJacobson_mvPolynomial_fin _
+  exact isJacobson_MvPolynomial_fin _
 #align ideal.mv_polynomial.is_jacobson Ideal.MvPolynomial.isJacobson
 
 variable {n : ℕ}
@@ -706,40 +710,201 @@ variable {n : ℕ}
 @[inherit_doc]
 notation f " ∘ᵣ " g => RingHom.comp f g
 
+private lemma aux_IH₃ {R S T: Type _} [CommRing R] [CommRing S] [CommRing T]
+  [Algebra R S] [Algebra R T] (u : S  ≃ₐ[R] T)
+  (P : Ideal T) :
+  RingHom.IsIntegral (Ideal.quotientMap P u.toAlgHom.toRingHom le_rfl) := by
+    rw [isIntegral_quotientMap_iff]
+    apply RingHom.isIntegral_of_surjective
+    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, coe_comp, coe_coe,
+      AlgHom.coe_coe, EquivLike.surjective_comp]
+    exact Quotient.mk_surjective
+
+private lemma aux_IH₂ {R : Type _} [CommRing R] [IsJacobson R] (n : ℕ)
+  (P : Ideal (MvPolynomial (Fin (n.succ)) R)) (hP : IsMaximal P) :
+  RingHom.IsIntegral (Quotient.mk (comap (MvPolynomial.finSuccEquiv R n).symm.toAlgHom.toRingHom P) ∘ᵣ (Polynomial.C : MvPolynomial (Fin n) R
+    →+* (MvPolynomial (Fin n) R) [X])) := by
+    haveI isJac : IsJacobson (MvPolynomial (Fin n) R) := by infer_instance
+    let P' := comap (MvPolynomial.finSuccEquiv R n).symm.toAlgHom.toRingHom P
+    haveI hP' : IsMaximal P' := by
+      refine' comap_isMaximal_of_surjective  _ _
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, coe_coe, AlgHom.coe_coe]
+      exact (MvPolynomial.finSuccEquiv R n).symm.surjective
+    apply @Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson (MvPolynomial (Fin n) R) _ isJac
+
+noncomputable def Polynomial.Cₐ (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] :
+  S →ₐ[R] S[X] := { Polynomial.C with
+    commutes' := fun r => by rfl }
+
+lemma aux_IH {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommRing T]
+  -- [IsJacobson R] [IsJacobson S]
+  [Algebra R S] [Algebra R T]
+  (v : S[X] ≃ₐ[R] T) (P : Ideal T) (hP : P.IsMaximal) :
+  RingHom.IsIntegral (algebraMap R (T ⧸ P)) := by
+  -- ((Ideal.Quotient.mk P).comp (Algebra.ofId R T)).toRingHom := by
+  let Q := P.comap v.toAlgHom.toRingHom
+  let w : S[X] ⧸ Q →ₐ[R] T ⧸ P := Ideal.quotientMapₐ P v.toAlgHom le_rfl
+  let Q' := Q.comap (Polynomial.C)
+  let w' : (S ⧸ Q') →ₐ[R] (S[X] ⧸ Q) := Ideal.quotientMapₐ Q (Polynomial.Cₐ R S) le_rfl
+  let φ := RingHom.comp (Ideal.Quotient.mk P) (algebraMap R T)
+  let ψ := w.toRingHom.comp (w'.toRingHom.comp ((Quotient.mkₐ R Q').toRingHom.comp (algebraMap R S)))
+
+  have h_eq : algebraMap R (T ⧸ P) = w.toRingHom.comp
+    (w'.toRingHom.comp (
+      -- (Quotient.mkₐ R Q').toRingHom.comp (algebraMap R S)
+      algebraMap R (S ⧸ Q'))) := by
+    ext r
+    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower]
+
+  rw [h_eq]
+  apply RingHom.isIntegral_trans
+  apply RingHom.isIntegral_trans
+  . -- Induction hypothesis
+    sorry
+  . sorry
+  . rw [isIntegral_quotientMap_iff _]
+    apply RingHom.isIntegral_of_surjective
+    simp only [AlgEquiv.toRingEquiv_eq_coe, coe_comp]
+    rw [Function.Surjective.of_comp_iff _]
+    exact Quotient.mk_surjective
+    exact v.surjective
+
+    -- simp only [AlgEquiv.toRingEquiv_eq_coe, coe_comp]
+    -- rw [EquivLike.surjective_comp]
+
+    --
+    sorry
+
+-- porting note : put hP : P.IsMaximal as an explicit argument rather than an instance
 theorem quotient_mk_comp_C_isIntegral_of_jacobson {R : Type _} [CommRing R] [IsJacobson R]
-    (P : Ideal (MvPolynomial (Fin n) R)) [P.IsMaximal] :
-    ((Quotient.mk P).comp MvPolynomial.C : R →+* MvPolynomial _ R ⧸ P).IsIntegral := by
+    (P : Ideal (MvPolynomial (Fin n) R)) (hP : P.IsMaximal) :
+    ((Quotient.mk P).comp MvPolynomial.C : R →+* MvPolynomial (Fin n) R ⧸ P).IsIntegral := by
   induction' n with n IH
   · apply RingHom.isIntegral_of_surjective
     apply Function.Surjective.comp Quotient.mk_surjective
     exact C_surjective (Fin 0)
-  · rw [← finSuccEquiv_comp_C_eq_C, ← RingHom.comp_assoc, ← RingHom.comp_assoc, ←
-      quotientMap_comp_mk le_rfl, RingHom.comp_assoc Polynomial.C, ← quotientMap_comp_mk le_rfl,
+  · let v : (MvPolynomial (Fin n) R)[X] ≃+* MvPolynomial (Fin (Nat.succ n)) R := (finSuccEquiv R n).symm.toRingEquiv
+    let Q := P.comap v.toRingHom
+    let v' : ((MvPolynomial (Fin n) R)[X]) ⧸ Q →+* (MvPolynomial (Fin (Nat.succ n)) R) ⧸ P :=
+      Ideal.quotientMap P v.toRingHom le_rfl
+    let Q₁ := Q.comap
+      (Polynomial.C : (MvPolynomial (Fin n) R) →+* (MvPolynomial (Fin n) R)[X])
+    let w₁ : (MvPolynomial (Fin n) R) ⧸ Q₁ →+* ((MvPolynomial (Fin n) R)[X]) ⧸ Q :=
+      Ideal.quotientMap Q (Polynomial.C) le_rfl
+
+    -- let Qₙ : Ideal R := Q₁.comap (MvPolynomial.C)
+    -- let wₙ : R ⧸ Qₙ →+* (MvPolynomial (Fin n) R) ⧸ Q₁ :=
+    --  Ideal.quotientMap Q₁ (MvPolynomial.C) le_rfl
+
+    have h_eq :
+      ((Quotient.mk P) ∘ᵣ (MvPolynomial.C : R →+* MvPolynomial (Fin (Nat.succ n)) R)) =
+        (v' ∘ᵣ w₁ ∘ᵣ (Quotient.mk Q₁ ∘ᵣ MvPolynomial.C)) := by
+        simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe]
+        rw [← finSuccEquiv_comp_C_eq_C]
+        rw [← quotientMap_comp_mk le_rfl],
+        rw [RingHom.comp_assoc]
+        rw [quotientMap_comp_mk]
+
+        sorry
+    sorry
+
+    /-
+    . rw [h_eq]
+      apply RingHom.isIntegral_trans
+      apply RingHom.isIntegral_trans
+      -- apply RingHom.isIntegral_trans
+      -- . apply RingHom.isIntegral_of_surjective
+      --  exact Quotient.mk_surjective
+      . -- wₙ
+        -- rw [quotientMap_comp_mk]
+        -- rw [isIntegral_quotientMap_iff _]
+        apply IH
+        . apply Polynomial.isMaximal_comap_C_of_isJacobson'
+          apply comap_isMaximal_of_surjective
+          exact (finSuccEquiv R n).symm.surjective
+
+      . -- w₁
+        rw [isIntegral_quotientMap_iff _]
+        sorry
+
+      . -- v'
+        have := aux_IH₃ (finSuccEquiv R n).symm P
+        exact this
+
+-/
+
+/-
+
+
+    have : (MvPolynomial.finSuccEquiv R n).symm.toAlgHom.toRingHom.comp
+        (Polynomial.C.comp MvPolynomial.C) =
+      (MvPolynomial.C : R →+* MvPolynomial (Fin n.succ) R) := by
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe]
+      rw [← finSuccEquiv_comp_C_eq_C]
+      apply congr_arg₂ _ _ rfl
+      rfl
+
+    rw [← this, ← RingHom.comp_assoc, ← RingHom.comp_assoc]
+    sorry -/
+/-  u : R[X0,...,Xn] ≃ R [X0,...,Xn-1] [X]
+    v : R[X0,..,Xn-1] [X] → R[X0,...,Xn] = u.symm
+    Q = P.comap v : Ideal (R[X0,..,Xn-1] [X])
+    v' : R[X0,...,Xn-1][X]/Q → R[X0,...,Xn]/P déduit de v
+    Q est maximal (v iso)
+
+    φ : R → R[X0,...,Xn] / P
+      = Quotient.mk P ∘ C
+      = Quotient.mk P ∘ v ∘ C₁ ∘ Cₙ
+      = v' ∘ Quotient.mk Q ∘ C₁ ∘ Cₙ
+
+    Q₁ = Q.comap C₁ : Ideal R[X0,..,Xn-1]
+    w₁ : R[X0,...,Xn-1]/Q₁ → R[X0,..,Xn-1][X]/Q déduit de C₁
+    Q₁ est maximal et w₁ est entier car R[X0,...,Xn] est Jacobson
+      (cas "n = 1")
+
+    φ = v' ∘ w₁ ∘ Quotient.mk Q₁ ∘ Cₙ
+
+    Qₙ = Q₁.comap Cₙ : Ideal R
+    wₙ : R/Qₙ → R[X0,..,Xn-1]/Q₁ déduit de Cₙ
+    Par récurrence, Qₙ est maximal et wₙ est entier
+
+    φ = v' ∘ w₁ ∘ wₙ ∘ Quotient.mk Qₙ
+
+    donc φ est entier
+
+    -/
+
+    /-
+    rw [← quotientMap_comp_mk le_rfl, RingHom.comp_assoc Polynomial.C, ← quotientMap_comp_mk le_rfl,
       RingHom.comp_assoc, RingHom.comp_assoc, ← quotientMap_comp_mk le_rfl, ←
       RingHom.comp_assoc (Quotient.mk _)]
     refine' RingHom.isIntegral_trans _ _ _ _
     · refine' RingHom.isIntegral_trans _ _ (isIntegral_of_surjective _ Quotient.mk_surjective) _
       refine' RingHom.isIntegral_trans _ _ _ _
-      · sorry
-        -- apply (isIntegral_quotientMap_iff _).mpr (IH _)
-        -- apply polynomial.isMaximal_comap_C_of_isJacobson _
-        -- · exact mv_polynomial.isJacobson_mv_polynomial_fin n
-        -- · apply comap_isMaximal_of_surjective
-        --   exact (finSuccEquiv R n).symm.Surjective
+      · -- apply (isIntegral_quotientMap_iff _).mpr (IH P')
+        rw [isIntegral_quotientMap_iff]
+        apply IH
+        apply Polynomial.isMaximal_comap_C_of_isJacobson'
+        · apply comap_isMaximal_of_surjective
+          exact (finSuccEquiv R n).symm.surjective
       · refine' (isIntegral_quotientMap_iff _).mpr _
         rw [← quotientMap_comp_mk le_rfl]
         refine' RingHom.isIntegral_trans _ _ _ ((isIntegral_quotientMap_iff _).mpr _)
         · exact RingHom.isIntegral_of_surjective _ Quotient.mk_surjective
-        · sorry
-          -- apply Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson _
-          -- · exact mv_polynomial.isJacobson_mv_polynomial_fin n
-          -- · exact comap_isMaximal_of_surjective _ (finSuccEquiv R n).symm.Surjective
-    · sorry
-      -- refine' (isIntegral_quotientMap_iff _).mpr _
-      -- refine' RingHom.isIntegral_trans _ _ _ (isIntegral_of_surjective _ quotient.mk_surjective)
-      -- exact RingHom.isIntegral_of_surjective _ (finSuccEquiv R n).symm.surjective
+
+        · apply aux_IH
+          exact hP
+
+    · refine' (isIntegral_quotientMap_iff _).mpr _
+      apply RingHom.isIntegral_of_surjective
+      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, coe_comp, coe_coe, AlgHom.coe_coe,
+        EquivLike.surjective_comp]
+      exact Quotient.mk_surjective
+      -/
 set_option linter.uppercaseLean3 false in
 #align ideal.mv_polynomial.quotient_mk_comp_C_isIntegral_of_jacobson Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson
+
+
 
 theorem comp_C_integral_of_surjective_of_jacobson {R : Type _} [CommRing R] [IsJacobson R]
     {σ : Type _} [Finite σ] {S : Type _} [Field S] (f : MvPolynomial σ R →+* S)
