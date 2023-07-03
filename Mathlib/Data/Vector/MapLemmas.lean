@@ -177,31 +177,48 @@ input values.
 -/
 
 section Bisim
+variable {xs : Vector α n}
 
-theorem mapAccumr_bisim (xs : Vector α n) (f₁ : α → σ₁ → σ₁ × β) (f₂ : α → σ₂ → σ₂ × β) (s₁ : σ₁)
-    (s₂ : σ₂) (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
-      ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
-    (mapAccumr f₁ xs s₁).2 = (mapAccumr f₂ xs s₂).2 := by
-  rcases h with ⟨R, h₀, hR⟩
+theorem mapAccumr_bisim {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
+      (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
+      (hR : ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
+    R (mapAccumr f₁ xs s₁).fst (mapAccumr f₂ xs s₂).fst
+    ∧ (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd := by
   induction xs using Vector.revInductionOn generalizing s₁ s₂
-  next => rfl
+  next => exact ⟨h₀, rfl⟩
   next xs x ih =>
     rcases (hR x h₀) with ⟨hR, _⟩
-    simp only [mapAccumr_snoc, ih _ _ hR]
+    simp only [mapAccumr_snoc, ih hR, true_and]
     congr 1
 
-theorem mapAccumr₂_bisim (xs : Vector α n) (ys : Vector β n) (f₁ : α → β → σ₁ → σ₁ × γ)
-    (f₂ : α → β → σ₂ → σ₂ × γ) (s₁ : σ₁) (s₂ : σ₂)
+theorem mapAccumr_bisim_tail {f₁ : α → σ₁ → σ₁ × β} {f₂ : α → σ₂ → σ₂ × β} {s₁ : σ₁} {s₂ : σ₂}
+    (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
+      ∀ {s q} a, R s q → R (f₁ a s).1 (f₂ a q).1 ∧ (f₁ a s).2 = (f₂ a q).2) :
+    (mapAccumr f₁ xs s₁).snd = (mapAccumr f₂ xs s₂).snd := by
+  rcases h with ⟨R, h₀, hR⟩
+  exact (mapAccumr_bisim R h₀ hR).2
+
+theorem mapAccumr₂_bisim {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
+    {f₂ : α → β → σ₂ → σ₂ × γ} {s₁ : σ₁} {s₂ : σ₂}
+    (R : σ₁ → σ₂ → Prop) (h₀ : R s₁ s₂)
+    (hR :  ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
+    R (mapAccumr₂ f₁ xs ys s₁).1 (mapAccumr₂ f₂ xs ys s₂).1
+    ∧ (mapAccumr₂ f₁ xs ys s₁).2 = (mapAccumr₂ f₂ xs ys s₂).2 := by
+  induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂
+  next => exact ⟨h₀, rfl⟩
+  next xs ys x y ih =>
+    rcases (hR x y h₀) with ⟨hR, _⟩
+    simp only [mapAccumr₂_snoc, ih hR, true_and]
+    congr 1
+
+theorem mapAccumr₂_bisim_tail {ys : Vector β n} {f₁ : α → β → σ₁ → σ₁ × γ}
+    {f₂ : α → β → σ₂ → σ₂ × γ} {s₁ : σ₁} {s₂ : σ₂}
     (h : ∃ R : σ₁ → σ₂ → Prop, R s₁ s₂ ∧
       ∀ {s q} a b, R s q → R (f₁ a b s).1 (f₂ a b q).1 ∧ (f₁ a b s).2 = (f₂ a b q).2) :
     (mapAccumr₂ f₁ xs ys s₁).2 = (mapAccumr₂ f₂ xs ys s₂).2 := by
   rcases h with ⟨R, h₀, hR⟩
-  induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂
-  next => rfl
-  next xs ys x y ih =>
-    rcases (hR x y h₀) with ⟨hR, _⟩
-    simp only [mapAccumr₂_snoc, ih _ _ hR]
-    congr 1
+  exact (mapAccumr₂_bisim R h₀ hR).2
+
 end Bisim
 
 /-!
@@ -213,6 +230,10 @@ accumulation state
 section RedundantState
 variable {xs : Vector α n} {ys : Vector β n}
 
+protected theorem map_eq_mapAccumr :
+    map f xs = (mapAccumr (fun x (_ : Unit) ↦ ((), f x)) xs ()).snd := by
+  clear ys
+  induction xs using Vector.revInductionOn <;> simp_all
 
 /--
   If there is a set of states that is closed under `f`, and such that `f` produces that same output
@@ -222,20 +243,12 @@ variable {xs : Vector α n} {ys : Vector β n}
 theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (h₀ : s₀ ∈ S)
     (closure : ∀ a s, s ∈ S → (f a s).1 ∈ S)
     (out : ∀ a s s', s ∈ S → s' ∈ S → (f a s).2 = (f a s').2) :
-    ∃ s_out ∈ S, (mapAccumr f xs s₀) = (s_out, map (f · s₀ |>.snd) xs) := by
+    (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
   clear ys
-  induction xs using revInductionOn generalizing s₀
-  next =>
-    use s₀
-    simp[h₀]
-  next xs x ih =>
-    specialize closure x _ h₀
-    rcases @ih (f x s₀).1 closure with ⟨s_out, hs, ih⟩
-    use s_out, hs
-    simp only [mapAccumr_snoc, ih, map_snoc]
-    congr
-    funext x'
-    rw [out x' s₀ (f x s₀).1 h₀ closure]
+  rw[Vector.map_eq_mapAccumr]
+  apply mapAccumr_bisim_tail
+  use fun s _ => s ∈ S
+  exact ⟨h₀, @fun s q a h => ⟨closure a s h, out a s s₀ h h₀⟩⟩
 
 /--
   If there is a set of states that is closed under `f`, and such that `f` produces that same output
@@ -280,27 +293,24 @@ theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ ×
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
 
+
+
+
+
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
   -/
 @[simp]
 theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
-    (h : ∀ x s, let s' := (f x (s, s)).fst; s'.fst = s'.snd) :
-    mapAccumr f xs (s, s)
-    = let m := mapAccumr (fun x s =>
-          let r := f x (s, s);
-          (r.fst.fst, r.snd)
-        ) xs s
-      ((m.fst, m.fst), m.snd) := by
-  clear ys
-  induction xs using Vector.revInductionOn generalizing s
-  case nil => rfl
-  case snoc xs x ih =>
-    specialize h x s
-    revert h
+    (h : ∀ x s, (f x (s, s)).fst.fst = (f x (s, s)).fst.snd) :
+    (mapAccumr f xs (s, s)).snd = (mapAccumr (fun x (s : σ) =>
+      (f x (s, s) |>.fst.fst, f x (s, s) |>.snd)
+    ) xs s).snd :=
+  mapAccumr_bisim_tail <| by
+    use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
     simp_all
-    rcases (f x (s, s)) with ⟨⟨s₁, s₂⟩, y⟩
-    simp_all
+
+
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
@@ -308,19 +318,11 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
 @[simp]
 theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ) × γ)
     (h : ∀ x y s, let s' := (f x y (s, s)).fst; s'.fst = s'.snd) :
-    mapAccumr₂ f xs ys (s, s) =
-      let m := mapAccumr₂ (fun x y s =>
-        let r := f x y (s, s);
-        (r.fst.fst, r.snd)
-      ) xs ys s
-      ((m.fst, m.fst), m.snd) := by
-  induction xs, ys using Vector.revInductionOn₂ generalizing s
-  case nil => rfl
-  case snoc xs ys x y ih =>
-    specialize h x y s
-    revert h
-    simp_all
-    rcases (f x y (s, s)) with ⟨⟨s₁, s₂⟩, y⟩
+    (mapAccumr₂ f xs ys (s, s)).snd = (mapAccumr₂ (fun x y (s : σ) =>
+      (f x y (s, s) |>.fst.fst, f x y (s, s) |>.snd)
+    ) xs ys s).snd :=
+  mapAccumr₂_bisim_tail <| by
+    use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
     simp_all
 
 end RedundantState
