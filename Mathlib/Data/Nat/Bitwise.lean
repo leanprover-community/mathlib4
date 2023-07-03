@@ -56,10 +56,6 @@ bitwise, and, or, xor
 
 infix:30 " ^^ " => xor
 
-lemma Bool.toNat_le_one (b: Bool) : b.toNat ≤ 1 := by cases' b <;> simp
-
-@[simp] lemma Bool.cond_eq_toNat : cond b 1 0 = b.toNat := by simp [cond, Bool.toNat]
-
 open Function
 
 namespace Nat
@@ -81,19 +77,9 @@ theorem bit_eq_zero {n : ℕ} {b : Bool} : n.bit b = 0 ↔ n = 0 ∧ b = false :
   cases b <;> simp [Nat.bit0_eq_zero, Nat.bit1_ne_zero]
 #align nat.bit_eq_zero Nat.bit_eq_zero
 
-@[simp] lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
-
-@[simp] lemma toNat_true : true.toNat = 1 := rfl
-
 lemma bit_toNat (b : Bool) : bit b 0 = b.toNat := by cases' b <;> simp
 
-theorem two_pow_pos (n : Nat) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
-
-theorem two_pow_succ (n : Nat) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
-
-lemma lt_succ_two_pow (h : b ≤ 1) (hm : m < 2^i) : 2^i * b + m < 2^(i + 1) := by
-  rw [two_pow_succ]
-  exact add_lt_add_of_le_of_lt (mul_le_of_le_one_right' h) hm
+@[simp] lemma testBit_bool : testBit b.toNat 0 = b := by cases' b <;> simp
 
 lemma shiftr_mod_two_eq_testBit : Nat.shiftr n i % 2 = (n.testBit i).toNat := by
   simp [Nat.testBit, Nat.mod_two_of_bodd]
@@ -111,7 +97,9 @@ theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (Nat.testBit n i).toN
   have h1 := div_add_mod_two_pow i n
   have h3 := div_add_mod (Nat.shiftr n i) 2
   rw [← h3, mul_add, ← mul_assoc, ← pow_succ, shiftr_mod_two_eq_testBit] at h1
-  have := lt_succ_two_pow (Bool.toNat_le_one (n.testBit i)) (mod_lt n (NeZero.pos (2^i)))
+  have : 2 ^ i * Bool.toNat (testBit n i) + n % 2 ^ i < 2 ^ (i + 1) := by
+    rw [two_pow_succ]
+    exact add_lt_add_of_le_of_lt (by simp [Bool.toNat_le_one (n.testBit i)]) (by simp [mod_lt])
   simp [(Nat.div_mod_unique (two_pow_pos (i + 1))).mpr ⟨add_rotate _ _ (n % (2^i)) ▸ h1.symm, this⟩]
 
 theorem bodd_eq_bodd_iff : bodd n = bodd m ↔ n % 2 = m % 2 := by
@@ -262,7 +250,7 @@ theorem testBit_two_pow_add (h : i < w) :
   Nat.testBit (2^w + n) i = Nat.testBit n i := mul_one (2^w) ▸ (testBit_two_pow_mul_add h)
 
 theorem testBit_two_pow_add' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
-  mul_one (2^w) ▸ toNat_true ▸ (@testBit_two_pow_mul_toNat_add n w true h)
+  mul_one (2^w) ▸ Bool.toNat_true ▸ (@testBit_two_pow_mul_toNat_add n w true h)
 
 /-- Generic method to create a natural number by appending bits tail-recursively.
 It takes a boolean function `f` on each bit and `z` the starting point and the number of bits `i`.
@@ -329,7 +317,7 @@ def bitcarry (n m : Nat) : Nat → Bool
 @[simp] def bitadd (n m i : Nat) :=
   toNat (λ j => (n.testBit j ^^ m.testBit j) ^^ bitcarry n m j) 0 i
 
-lemma unfold_carry (n m i : Nat) : (bitcarry n m (i + 1)).toNat =
+lemma carry_def (n m i : Nat) : (bitcarry n m (i + 1)).toNat =
     ((Nat.testBit n i && Nat.testBit m i) ||
     ((Nat.testBit n i ^^ Nat.testBit m i) && bitcarry n m i)).toNat := by
   simp [bitcarry]
@@ -342,7 +330,7 @@ lemma bitadd_eq_add_base : n % (2^(i + 1)) + m % (2^(i + 1)) =
     <;> simp [mod_two_of_bodd, testBit, hn, hm, shiftr]
   · rw [mod_two_pow_succ n, mod_two_pow_succ m]
     rw [add_assoc, add_comm _ (m % 2^(i + 1)), ← add_assoc (n % 2^(i + 1))]
-    rw [hi, unfold_carry n m (succ i), two_pow_succ (succ i)]
+    rw [hi, carry_def n m (succ i), two_pow_succ (succ i)]
     cases' hn : Nat.testBit n (i + 1) <;> cases' hm : Nat.testBit m (i + 1)
     <;> cases' hc : bitcarry n m (i + 1)
     <;> simp [Bool.toNat, @toNat_succ _ 1 i, two_pow_succ, hn, hm, hc, toNat]

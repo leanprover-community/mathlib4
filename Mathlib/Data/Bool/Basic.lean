@@ -375,6 +375,14 @@ def toNat (b : Bool) : Nat :=
   cond b 1 0
 #align bool.to_nat Bool.toNat
 
+lemma toNat_le_one (b: Bool) : b.toNat ≤ 1 := by cases' b <;> simp
+
+@[simp] lemma cond_eq_toNat : cond b 1 0 = b.toNat := by simp [cond, Bool.toNat]
+
+@[simp] lemma toNat_true : true.toNat = 1 := rfl
+
+@[simp] lemma toNat_false : false.toNat = 0 := rfl
+
 /-- convert a `ℕ` to a `bool`, `0 -> false`, everything else -> `true` -/
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
