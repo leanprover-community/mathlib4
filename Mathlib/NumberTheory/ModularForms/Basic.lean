@@ -42,8 +42,8 @@ open scoped ModularForm
 
 /-- These are `slash_invariant_form`'s that are holomophic and bounded at infinity. -/
 structure ModularForm extends SlashInvariantForm Γ k where
-  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toFun : ℍ → ℂ)
-  bdd_at_infty' : ∀ A : SL(2, ℤ), IsBoundedAtImInfty (toFun ∣[k] A)
+  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toSlashInvariantForm : ℍ → ℂ)
+  bdd_at_infty' : ∀ A : SL(2, ℤ), IsBoundedAtImInfty (toSlashInvariantForm ∣[k] A)
 #align modular_form ModularForm
 
 /-- The `slash_invariant_form` associated to a `modular_form`. -/
@@ -51,8 +51,8 @@ add_decl_doc ModularForm.toSlashInvariantForm
 
 /-- These are `slash_invariant_form`s that are holomophic and zero at infinity. -/
 structure CuspForm extends SlashInvariantForm Γ k where
-  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toFun : ℍ → ℂ)
-  zero_at_infty' : ∀ A : SL(2, ℤ), IsZeroAtImInfty (toFun ∣[k] A)
+  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toSlashInvariantForm : ℍ → ℂ)
+  zero_at_infty' : ∀ A : SL(2, ℤ), IsZeroAtImInfty (toSlashInvariantForm ∣[k] A)
 #align cusp_form CuspForm
 
 /-- The `slash_invariant_form` associated to a `cusp_form`. -/
@@ -95,15 +95,20 @@ instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k
 
 variable {F Γ k}
 
-@[simp]
-theorem modularForm_toFun_eq_coe {f : ModularForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
   rfl
-#align modular_form_to_fun_eq_coe modularForm_toFun_eq_coe
+#align modular_form_to_fun_eq_coe ModularForm.toFun_eq_coe
 
 @[simp]
-theorem cuspForm_toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+theorem ModularForm.toSlashInvariantForm_coe (f : ModularForm Γ k) : ⇑f.1 = f :=
   rfl
-#align cusp_form_to_fun_eq_coe cuspForm_toFun_eq_coe
+
+theorem CuspForm.toFun_eq_coe {f : CuspForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+  rfl
+#align cusp_form_to_fun_eq_coe CuspForm.toFun_eq_coe
+
+@[simp]
+theorem CuspForm.toSlashInvariantForm_coe (f : CuspForm Γ k) : ⇑f.1 = f := rfl
 
 @[ext]
 theorem ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g :=
@@ -117,10 +122,9 @@ theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
 
 /-- Copy of a `modular_form` with a new `to_fun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def ModularForm.copy (f : ModularForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) : ModularForm Γ k
-    where
-  toFun := f'
-  slash_action_eq' := h.symm ▸ f.slash_action_eq'
+protected def ModularForm.copy (f : ModularForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) :
+    ModularForm Γ k where
+  toSlashInvariantForm := f.1.copy f' h
   holo' := h.symm ▸ f.holo'
   bdd_at_infty' A := h.symm ▸ f.bdd_at_infty' A
 #align modular_form.copy ModularForm.copy
@@ -128,8 +132,7 @@ protected def ModularForm.copy (f : ModularForm Γ k) (f' : ℍ → ℂ) (h : f'
 /-- Copy of a `cusp_form` with a new `to_fun` equal to the old one. Useful to fix
 definitional equalities. -/
 protected def CuspForm.copy (f : CuspForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) : CuspForm Γ k where
-  toFun := f'
-  slash_action_eq' := h.symm ▸ f.slash_action_eq'
+  toSlashInvariantForm := f.1.copy f' h
   holo' := h.symm ▸ f.holo'
   zero_at_infty' A := h.symm ▸ f.zero_at_infty' A
 #align cusp_form.copy CuspForm.copy
@@ -142,14 +145,12 @@ open SlashInvariantForm
 
 variable {F : Type _} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
-instance hasAdd : Add (ModularForm Γ k) :=
+instance add : Add (ModularForm Γ k) :=
   ⟨fun f g =>
-    {
-      (f : SlashInvariantForm Γ k) +
-        g with
+    { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
       bdd_at_infty' := fun A => by simpa using (f.bdd_at_infty' A).add (g.bdd_at_infty' A) }⟩
-#align modular_form.has_add ModularForm.hasAdd
+#align modular_form.has_add ModularForm.add
 
 @[simp]
 theorem coe_add (f g : ModularForm Γ k) : ⇑(f + g) = f + g :=
@@ -162,7 +163,7 @@ theorem add_apply (f g : ModularForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 #align modular_form.add_apply ModularForm.add_apply
 
 instance hasZero : Zero (ModularForm Γ k) :=
-  ⟨ { (0 : SlashInvariantForm Γ k) with
+  ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
       bdd_at_infty' := fun A => by simpa using zero_form_isBoundedAtImInfty } ⟩
 #align modular_form.has_zero ModularForm.hasZero
@@ -183,8 +184,7 @@ variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance hasSmul : SMul α (ModularForm Γ k) :=
   ⟨fun c f =>
-    { c • (f : SlashInvariantForm Γ k) with
-      toFun := c • ⇑f
+    { toSlashInvariantForm := c • f.1
       holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
       bdd_at_infty' := fun A => by simpa using (f.bdd_at_infty' A).const_smul_left (c • (1 : ℂ)) }⟩
 #align modular_form.has_smul ModularForm.hasSmul
@@ -203,8 +203,7 @@ end
 
 instance hasNeg : Neg (ModularForm Γ k) :=
   ⟨fun f =>
-    { -(f : SlashInvariantForm Γ k) with
-      toFun := -f
+    { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
       bdd_at_infty' := fun A => by simpa using (f.bdd_at_infty' A).neg }⟩
 #align modular_form.has_neg ModularForm.hasNeg
@@ -254,13 +253,12 @@ instance : Inhabited (ModularForm Γ k) :=
 `k_1` and `k_2`. -/
 def mul {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k_1) (g : ModularForm Γ k_2) :
     ModularForm Γ (k_1 + k_2) where
-  toFun := f * g
-  slash_action_eq' A := by simp_rw [mul_slash_subgroup, SlashInvariantFormClass.slash_action_eq]
+  toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
   bdd_at_infty' A := by
     -- porting note: was `by simpa using ...`
     -- `mul_slash_SL2` is no longer a `simp` and `simpa only [mul_slash_SL2] using ...` failed
-    rw [mul_slash_SL2]
+    rw [SlashInvariantForm.coe_mul, mul_slash_SL2]
     exact (f.bdd_at_infty' A).mul (g.bdd_at_infty' A)
 #align modular_form.mul ModularForm.mul
 
@@ -271,10 +269,10 @@ theorem mul_coe {k_1 k_2 : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : ModularForm Γ k
 #align modular_form.mul_coe ModularForm.mul_coe
 
 instance : One (ModularForm Γ 0) :=
-  ⟨ { (1 : SlashInvariantForm Γ 0) with
+  ⟨ { toSlashInvariantForm := 1
       holo' := fun x => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
       bdd_at_infty' := fun A => by
-        simpa only [slashInvariantForm_toFun_eq_coe, SlashInvariantForm.one_coe_eq_one,
+        simpa only [SlashInvariantForm.one_coe_eq_one,
           ModularForm.is_invariant_one] using atImInfty.const_boundedAtFilter (1 : ℂ) }⟩
 
 @[simp]
@@ -292,8 +290,7 @@ variable {F : Type _} {Γ : Subgroup SL(2, ℤ)} {k : ℤ}
 
 instance hasAdd : Add (CuspForm Γ k) :=
   ⟨fun f g =>
-    { (f : SlashInvariantForm Γ k) + g with
-      toFun := f + g
+    { toSlashInvariantForm := f + g
       holo' := f.holo'.add g.holo'
       zero_at_infty' := fun A => by simpa using (f.zero_at_infty' A).add (g.zero_at_infty' A) }⟩
 #align cusp_form.has_add CuspForm.hasAdd
@@ -309,10 +306,9 @@ theorem add_apply (f g : CuspForm Γ k) (z : ℍ) : (f + g) z = f z + g z :=
 #align cusp_form.add_apply CuspForm.add_apply
 
 instance hasZero : Zero (CuspForm Γ k) :=
-  ⟨{ (0 : SlashInvariantForm Γ k) with
-      toFun := 0
+  ⟨ { toSlashInvariantForm := 0
       holo' := fun _ => mdifferentiableAt_const 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ)
-      zero_at_infty' := by simpa using Filter.zero_zeroAtFilter _ }⟩
+      zero_at_infty' := by simpa using Filter.zero_zeroAtFilter _ } ⟩
 #align cusp_form.has_zero CuspForm.hasZero
 
 @[simp]
@@ -331,8 +327,7 @@ variable {α : Type _} [SMul α ℂ] [IsScalarTower α ℂ ℂ]
 
 instance hasSmul : SMul α (CuspForm Γ k) :=
   ⟨fun c f =>
-    { c • (f : SlashInvariantForm Γ k) with
-      toFun := c • ⇑f
+    { toSlashInvariantForm := c • f.1
       holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
       zero_at_infty' := fun A => by simpa using (f.zero_at_infty' A).smul (c • (1 : ℂ)) }⟩
 #align cusp_form.has_smul CuspForm.hasSmul
@@ -351,8 +346,7 @@ end
 
 instance hasNeg : Neg (CuspForm Γ k) :=
   ⟨fun f =>
-    { -(f : SlashInvariantForm Γ k) with
-      toFun := -f
+    { toSlashInvariantForm := -f.1
       holo' := f.holo'.neg
       zero_at_infty' := fun A => by simpa using (f.zero_at_infty' A).neg }⟩
 #align cusp_form.has_neg CuspForm.hasNeg
