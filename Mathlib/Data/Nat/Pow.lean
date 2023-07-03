@@ -71,6 +71,8 @@ theorem one_le_two_pow (n : ℕ) : 1 ≤ 2 ^ n :=
 
 theorem two_pow_pos (n : Nat) : 0 < 2^n := Nat.pos_pow_of_pos _ (by decide)
 
+theorem two_pow_succ (n : Nat) : 2^(n + 1) = 2^n + 2^n := by simp [pow_succ, mul_two]
+
 theorem one_lt_pow (n m : ℕ) (h₀ : 0 < n) (h₁ : 1 < m) : 1 < m ^ n := by
   rw [← one_pow n]
   exact pow_lt_pow_of_lt_left h₁ h₀
