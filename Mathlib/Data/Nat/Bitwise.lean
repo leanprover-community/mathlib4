@@ -331,8 +331,8 @@ def bitcarry (n m : Nat) : Nat → Bool
   toNat (λ j => (n.testBit j ^^ m.testBit j) ^^ bitcarry n m j) 0 i
 
 lemma unfold_carry (n m i : Nat) : (bitcarry n m (i + 1)).toNat = 
-  ((Nat.testBit n i && Nat.testBit m i) || 
-  ((Nat.testBit n i ^^ Nat.testBit m i) && bitcarry n m i)).toNat := by 
+    ((Nat.testBit n i && Nat.testBit m i) || 
+    ((Nat.testBit n i ^^ Nat.testBit m i) && bitcarry n m i)).toNat := by 
   simp [bitcarry]
 
 lemma bitadd_eq_add_base : n % (2^(i + 1)) + m % (2^(i + 1)) = 
