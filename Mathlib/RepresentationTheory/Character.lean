@@ -57,10 +57,18 @@ theorem char_one (V : FdRep k G) : V.character 1 = FiniteDimensional.finrank k V
 #align fdRep.char_one FdRep.char_one
 
 /-- The character is multiplicative under the tensor product. -/
-@[simp]
+@[simp high] -- Porting note: high prio, because LHS simplifies, `char_tensor'` restores confluence
 theorem char_tensor (V W : FdRep k G) : (V ⊗ W).character = V.character * W.character := by
   ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
 #align fdRep.char_tensor FdRep.char_tensor
+
+-- Porting note: adding variant of `char_tensor` to make the simp-set confluent
+@[simp]
+theorem char_tensor' (V W : FdRep k G) :
+  character (Action.FunctorCategoryEquivalence.inverse.obj
+    (Action.FunctorCategoryEquivalence.functor.obj V ⊗
+     Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
+  simp [← char_tensor]
 
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FdRep k G} (i : V ≅ W) : V.character = W.character := by
