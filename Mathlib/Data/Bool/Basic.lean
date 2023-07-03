@@ -311,7 +311,7 @@ theorem not_and : ∀ a b : Bool, (!(a && b)) = (!a || !b) := by decide
 theorem not_or : ∀ a b : Bool, (!(a || b)) = (!a && !b) := by decide
 #align bool.bnot_bor Bool.not_or
 
-theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
+theorem not_inj : ∀ {a b : Bool}, (!a) = !b → a = b := by decide
 #align bool.bnot_inj Bool.not_inj
 
 -- Porting note: having to unfold here is not pretty.
