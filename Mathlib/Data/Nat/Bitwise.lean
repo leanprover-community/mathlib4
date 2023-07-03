@@ -254,7 +254,7 @@ theorem testBit_two_pow_mul_add (h: i < w) : Nat.testBit (2^w * b + n) i = Nat.t
     simp [← Nat.sub_add_comm, succ_le_of_lt h]
   simp [mul_comm, Nat.mul_div_assoc b (pow_dvd_pow 2 (le_of_lt h)), mul_mod, h1]
 
-theorem testBit_translate' (h: n < 2^w) : Nat.testBit (2^w * b.toNat + n) w = b:= by
+theorem testBit_two_pow_mul_toNat_add (h: n < 2^w) : Nat.testBit (2^w * b.toNat + n) w = b:= by
   simp only [Nat.testBit, Nat.shiftr_eq_div_pow]
   rw [Nat.add_div_of_dvd_right (Dvd.intro _ rfl), Nat.div_eq_zero h, add_zero]
   cases' b <;> simp 
