@@ -62,6 +62,10 @@ def Hom (X Y : Scheme) : Type _ :=
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
+-- porting note: added to ease automation
+@[continuity]
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
+
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
@@ -293,6 +297,15 @@ def basicOpen : Opens X.carrier :=
 theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
   RingedSpace.mem_basicOpen _ _ _
 #align algebraic_geometry.Scheme.mem_basic_open AlgebraicGeometry.Scheme.mem_basicOpen
+
+@[aesop norm simp (rule_sets [Restrict])]
+theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
+    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
+  fconstructor
+  . rintro ⟨y, hy1, rfl⟩
+    exact ⟨y.2, hy1⟩
+  . rintro ⟨m, hm⟩
+    exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]
 theorem mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :
