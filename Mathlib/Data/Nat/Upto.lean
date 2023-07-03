@@ -58,7 +58,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
     suffices Upto.GT p = Measure fun y : Nat.Upto p => x - y.val by
       rw [this]
       exact (measure _).wf
-    ext (⟨a, ha⟩⟨b, _⟩)
+    ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [Measure, InvImage, Upto.GT]
     rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
 #align nat.upto.wf Nat.Upto.wf

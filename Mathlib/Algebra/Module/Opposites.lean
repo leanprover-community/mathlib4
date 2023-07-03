@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.GroupAction.Opposite
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`GroupRheory.GroupAction.Opposite`.
+`GroupTheory.GroupAction.Opposite`.
 -/
 
 

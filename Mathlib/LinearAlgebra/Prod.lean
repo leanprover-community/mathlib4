@@ -448,7 +448,7 @@ theorem isCompl_range_inl_inr : IsCompl (range $ inl R M M₂) (range $ inr R M 
   constructor
   · rw [disjoint_def]
     rintro ⟨_, _⟩ ⟨x, hx⟩ ⟨y, hy⟩
-    simp only [Prod.ext_iff, inl_apply, inr_apply, mem_bot] at hx hy⊢
+    simp only [Prod.ext_iff, inl_apply, inr_apply, mem_bot] at hx hy ⊢
     exact ⟨hy.1.symm, hx.2.symm⟩
   · rw [codisjoint_iff_le_sup]
     rintro ⟨x, y⟩ -
@@ -519,7 +519,7 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type _} [AddCommGroup M₂] [Module
     (hd : Disjoint (range f) (range g)) : ker (f.coprod g) = (ker f).prod (ker g) := by
   apply le_antisymm _ (ker_prod_ker_le_ker_coprod f g)
   rintro ⟨y, z⟩ h
-  simp only [mem_ker, mem_prod, coprod_apply] at h⊢
+  simp only [mem_ker, mem_prod, coprod_apply] at h ⊢
   have : f y ∈ (range f) ⊓ (range g) := by
     simp only [true_and_iff, mem_range, mem_inf, exists_apply_eq_apply]
     use -z

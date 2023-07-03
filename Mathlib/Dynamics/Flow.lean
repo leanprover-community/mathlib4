@@ -27,7 +27,7 @@ commutative) monoid, we additionally define forward invariance, where
 `t` ranges over those elements which are nonnegative.
 
 Additionally, we define such constructions as the restriction of a
-flow onto an invariant subset, and the time-reveral of a flow by a
+flow onto an invariant subset, and the time-reversal of a flow by a
 group.
 -/
 
@@ -85,7 +85,7 @@ end Invariant
 -/
 
 
-/-- A flow on a topological space `α` by an a additive topological
+/-- A flow on a topological space `α` by an additive topological
     monoid `τ` is a continuous monoid action of `τ` on `α`.-/
 structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type _)
   [TopologicalSpace α] where
@@ -138,7 +138,7 @@ theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 /-- Iterations of a continuous function from a topological space `α`
     to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
-  toFun n x := (g^[n]) x
+  toFun n x := g^[n] x
   cont' := continuous_uncurry_of_discreteTopology_left (Continuous.iterate h)
   map_add' := iterate_add_apply _
   map_zero' _x := rfl

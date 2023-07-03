@@ -139,7 +139,7 @@ recognizes `q`, returning the cast of `q`. -/
 /-! # Arithmetic -/
 
 library_note "norm_num lemma function equality"/--
-Note: Many of the the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
+Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
 below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
 `+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
 by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean

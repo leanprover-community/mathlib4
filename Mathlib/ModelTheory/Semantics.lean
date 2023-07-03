@@ -184,7 +184,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     t.varsToConstants.realize v = t.realize (Sum.elim (fun a => ↑(L.con a)) v) := by
   induction' t with ab n f ts ih
   · cases' ab with a b
-    --Porting note: both cases were `simp [Language.con]
+    --Porting note: both cases were `simp [Language.con]`
     . simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
     . simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
@@ -1037,7 +1037,7 @@ section Cardinality
 variable (L)
 @[simp]
 theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ (#M) := by
-  rw [← lift_mk_fin, ← lift_le.{w, 0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
+  rw [← lift_mk_fin, ← lift_le.{0}, lift_lift, lift_mk_le, Sentence.cardGe, Sentence.Realize,
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
   simp only [Function.comp_apply, List.mem_map, Prod.exists, Ne.def, List.mem_product,

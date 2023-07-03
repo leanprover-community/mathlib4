@@ -39,9 +39,9 @@ Note that if the graph is not a tree then elements will be visited multiple time
 (See `depthFirstRemovingDuplicates`)
 -/
 def depthFirst (f : α → m α) (a : α) (maxDepth : Option Nat := none) : m α :=
-match maxDepth with
-| some d => depthFirst' (fun n a => if n ≤ d then f a else failure) 0 a
-| none => depthFirst' (fun _ a => f a) 0 a
+  match maxDepth with
+  | some d => depthFirst' (fun n a => if n ≤ d then f a else failure) 0 a
+  | none => depthFirst' (fun _ a => f a) 0 a
 
 end
 

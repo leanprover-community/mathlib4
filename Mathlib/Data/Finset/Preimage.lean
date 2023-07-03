@@ -75,7 +75,7 @@ theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
 @[simp, nolint simpNF] -- Porting note: linter complains that LHS doesn't simplify
 theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {f : α → β}
     (s : Finset β) (hf : Function.Injective f) :
-    preimage (sᶜ) f (hf.injOn _) = preimage s f (hf.injOn _)ᶜ :=
+    preimage sᶜ f (hf.injOn _) = (preimage s f (hf.injOn _))ᶜ :=
   Finset.coe_injective (by simp)
 #align finset.preimage_compl Finset.preimage_compl
 
@@ -111,7 +111,7 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 #align finset.preimage_subset Finset.preimage_subset
 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
-    s ⊆ t.map f ↔ ∃ (u : _)(_ : u ⊆ t), s = u.map f := by
+    s ⊆ t.map f ↔ ∃ (u : _) (_ : u ⊆ t), s = u.map f := by
   classical
     refine' ⟨fun h => ⟨_, preimage_subset h, _⟩, _⟩
     · rw [map_eq_image, image_preimage, filter_true_of_mem]

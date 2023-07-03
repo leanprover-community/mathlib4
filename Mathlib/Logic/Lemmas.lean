@@ -72,10 +72,10 @@ theorem ite_ite_distrib_right : ite p (ite q a b) c = ite q (ite p a c) (ite p b
 #align ite_ite_distrib_right ite_ite_distrib_right
 
 lemma Prop.forall {f : Prop → Prop} : (∀ p, f p) ↔ f True ∧ f False :=
-⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
+  ⟨fun h ↦ ⟨h _, h _⟩, by rintro ⟨h₁, h₀⟩ p; by_cases hp : p <;> simp only [hp] <;> assumption⟩
 #align Prop.forall Prop.forall
 
 lemma Prop.exists {f : Prop → Prop} : (∃ p, f p) ↔ f True ∨ f False :=
-⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
-  by rintro (h | h) <;> exact ⟨_, h⟩⟩
+  ⟨fun ⟨p, h⟩ ↦ by refine' (em p).imp _ _ <;> intro H <;> convert h <;> simp [H],
+    by rintro (h | h) <;> exact ⟨_, h⟩⟩
 #align Prop.exists Prop.exists

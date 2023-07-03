@@ -111,26 +111,26 @@ section from_ad_hoc
 
 /-- If you actually have an element of `Fin n`, then the `n` is always positive -/
 lemma size_positive : Fin n → 0 < n
-| ⟨x, h⟩ =>
-  match Nat.eq_or_lt_of_le (Nat.zero_le x) with
-  | Or.inl h_eq => h_eq ▸ h
-  | Or.inr h_lt => Nat.lt_trans h_lt h
+  | ⟨x, h⟩ =>
+    match Nat.eq_or_lt_of_le (Nat.zero_le x) with
+    | Or.inl h_eq => h_eq ▸ h
+    | Or.inr h_lt => Nat.lt_trans h_lt h
 
 lemma mod_def : ∀ (a m : Fin n),
-  a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a % m = Fin.mk ((a.val % m.val) % n) (Nat.mod_lt (a.val % m.val) (a.size_positive))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma add_def : ∀ (a b : Fin n),
-  a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a + b = (Fin.mk ((a.val + b.val) % n) (Nat.mod_lt _ (a.size_positive)))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma mul_def : ∀ (a b : Fin n),
-  a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a * b = (Fin.mk ((a.val * b.val) % n) (Nat.mod_lt _ (a.size_positive)))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma sub_def : ∀ (a b : Fin n),
-  a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
-| ⟨_, _⟩, ⟨_, _⟩ => rfl
+    a - b = (Fin.mk ((a + (n - b)) % n) (Nat.mod_lt _ (a.size_positive)))
+  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 
 lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
   ‹Nonempty (Fin n)›.elim fun i ↦ Fin.size_positive i
@@ -375,8 +375,8 @@ For example, the following definition is not accepted by the termination checker
 unless we declare the `WellFoundedRelation` instance:
 ```lean
 def factorial {n : ℕ} : Fin n → ℕ
-| ⟨0, _⟩ := 1
-| ⟨i + 1, hi⟩ := (i + 1) * factorial ⟨i, i.lt_succ_self.trans hi⟩
+  | ⟨0, _⟩ := 1
+  | ⟨i + 1, hi⟩ := (i + 1) * factorial ⟨i, i.lt_succ_self.trans hi⟩
 ```
 -/
 instance {n : ℕ} : WellFoundedRelation (Fin n) :=
@@ -393,7 +393,7 @@ instance {n : ℕ} [NeZero n] : Zero (Fin n) := ⟨ofNat'' 0⟩
 instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 -- porting note: `fin.val_zero` previously existed in core with statement
--- `(0 : Fin (succ n)).val = 0`, which was less general than the priemd mathlib lemma. We unprime
+-- `(0 : Fin (succ n)).val = 0`, which was less general than the primed mathlib lemma. We unprime
 -- the name now that there is no clash.
 @[simp]
 theorem val_zero (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
@@ -1057,7 +1057,7 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
-/-- `cast eq i` embeds `i` into a equal `Fin` type, see also `Equiv.finCongr`. -/
+/-- `cast eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
 def cast (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
@@ -1255,7 +1255,7 @@ theorem castLT_castSucc {n : ℕ} (a : Fin n) (h : (a : ℕ) < n) : castLT (cast
 #align fin.cast_lt_cast_succ Fin.castLT_castSucc
 
 --@[simp] Porting note: simp can prove it
-theorem castSucc_lt_castSucc_iff {a b : Fin n}: Fin.castSucc a < Fin.castSucc b ↔ a < b :=
+theorem castSucc_lt_castSucc_iff {a b : Fin n} : Fin.castSucc a < Fin.castSucc b ↔ a < b :=
   (@castSucc n).lt_iff_lt
 #align fin.cast_succ_lt_cast_succ_iff Fin.castSucc_lt_castSucc_iff
 
@@ -1875,7 +1875,7 @@ theorem liftFun_iff_succ {α : Type _} (r : α → α → Prop) [IsTrans α r] {
     · intro j ihj hij
       rw [← le_castSucc_iff] at hij
       rcases hij.eq_or_lt with (rfl | hlt)
-      exacts[H j, _root_.trans (ihj hlt) (H j)]
+      exacts [H j, _root_.trans (ihj hlt) (H j)]
 #align fin.lift_fun_iff_succ Fin.liftFun_iff_succ
 
 /-- A function `f` on `Fin (n + 1)` is strictly monotone if and only if `f i < f (i + 1)`
@@ -2154,7 +2154,7 @@ theorem pred_succAbove {x : Fin n} {y : Fin (n + 1)} (h : y ≤ castSucc x)
 
 theorem exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove z = x := by
   cases' h.lt_or_lt with hlt hlt
-  exacts[⟨_, succAbove_castLT hlt⟩, ⟨_, succAbove_pred hlt⟩]
+  exacts [⟨_, succAbove_castLT hlt⟩, ⟨_, succAbove_pred hlt⟩]
 #align fin.exists_succ_above_eq Fin.exists_succAbove_eq
 
 @[simp]
@@ -2193,7 +2193,7 @@ theorem succAbove_right_inj {x : Fin (n + 1)} : x.succAbove a = x.succAbove b �
 
 /-- `succAbove` is injective at the pivot -/
 theorem succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
-  simpa [range_succAbove] using congr_arg (fun f : Fin n ↪o Fin (n + 1) => Set.range fᶜ) h
+  simpa [range_succAbove] using congr_arg (fun f : Fin n ↪o Fin (n + 1) => (Set.range f)ᶜ) h
 #align fin.succ_above_left_injective Fin.succAbove_left_injective
 
 /-- `succAbove` is injective at the pivot -/

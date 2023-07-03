@@ -22,7 +22,7 @@ variable {α : Type _}
 section Sections
 
 /-- The sections of a multiset of multisets `s` consists of all those multisets
-which can be put in bijection with `s`, so each element is an member of the corresponding multiset.
+which can be put in bijection with `s`, so each element is a member of the corresponding multiset.
 -/
 
 def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
