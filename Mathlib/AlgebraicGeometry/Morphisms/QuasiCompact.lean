@@ -249,8 +249,6 @@ theorem quasiCompact_stableUnderComposition :
     MorphismProperty.StableUnderComposition @QuasiCompact := fun _ _ _ _ _ _ _ => inferInstance
 #align algebraic_geometry.quasi_compact_stable_under_composition AlgebraicGeometry.quasiCompact_stableUnderComposition
 
---attribute [-simp] PresheafedSpace.as_coe SheafedSpace.as_coe
-
 theorem QuasiCompact.affineProperty_stableUnderBaseChange :
     QuasiCompact.affineProperty.StableUnderBaseChange := by
   intro X Y S _ _ f g h
@@ -298,7 +296,6 @@ theorem compact_open_induction_on {P : Opens X.carrier → Prop} (S : Opens X.ca
     exact iSup_insert
 #align algebraic_geometry.compact_open_induction_on AlgebraicGeometry.compact_open_induction_on
 
-attribute [local simp] Scheme.mem_basicOpen_top' in
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
     {U : Opens X} (hU : IsAffineOpen U) (x f : X.presheaf.obj (op U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
@@ -307,7 +304,6 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
   exact ⟨n, by simpa [mul_comm x] using e⟩
 #align algebraic_geometry.exists_pow_mul_eq_zero_of_res_basic_open_eq_zero_of_is_affine_open AlgebraicGeometry.exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen
 
-attribute [local simp] Scheme.mem_basicOpen_top' in
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
