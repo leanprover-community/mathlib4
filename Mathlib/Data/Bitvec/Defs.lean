@@ -19,12 +19,19 @@ of `Bitvec` proofs
 -/
 
 /-- `Bitvec` represents fixed-width, signless integers in terms of `Fin`. -/
-@[reducible]
 def Bitvec (n : ℕ) :=
   Fin (2^n)
 #align bitvec Bitvec
 
 
 namespace Bitvec
+
+section Arithmetic
+
+instance : Add (Bitvec n) := inferInstanceAs (Add <| Fin _)
+instance : Sub (Bitvec n) := inferInstanceAs (Sub <| Fin _)
+instance : Mul (Bitvec n) := inferInstanceAs (Mul <| Fin _)
+
+end Arithmetic
 
 end Bitvec
