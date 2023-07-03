@@ -22,7 +22,7 @@ It is not fully in compliance with mathlib style standards.
 -/
 
 /-- `Bitvec.BitVector n` is a `Vector` of `Bool` with length `n`. -/
-protected def Bitvec.BitVector (n : ℕ) :=
+protected abbrev Bitvec.BitVector (n : ℕ) :=
   Vector Bool n
 
 namespace Bitvec.BitVector
