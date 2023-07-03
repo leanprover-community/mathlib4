@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 
+import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Coverage
 import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
-
+import Mathlib.Data.Fintype.Sigma
 /-!
 
 # The Coherent Grothendieck Topology
@@ -81,5 +82,149 @@ lemma isSheaf_coherent [Precoherent C] (P : Cᵒᵖ ⥤ Type w) :
     simp only [coherentTopology, Presieve.isSheaf_coverage]
     rintro B S ⟨α, _, X, π, rfl, hS⟩
     exact h _ _ _ _ hS
+
+
+namespace coherentTopology
+
+variable {C : Type _} [Category C] [Precoherent C]
+
+variable {X : C}
+/--
+For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a sieve of the
+coherent topology.
+Note: This is one direction of `Sieve_iff_hasEffectiveEpiFamily`, but is needed for the proof.
+-/
+theorem Sieve_of_hasEffectiveEpiFamily (S : Sieve X) :
+    (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
+        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
+          (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
+  rintro ⟨α, ⟨h, ⟨Y, ⟨π, hπ⟩⟩⟩⟩
+  have h_le : Sieve.generate (Presieve.ofArrows _ π) ≤ S := by
+      rw [Sieve.sets_iff_generate (Presieve.ofArrows _ π) S]
+      apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows (fun i => Y i) π) S _
+      intro Y g f
+      use Y, 𝟙 Y
+      rcases f with ⟨i⟩
+      exact ⟨π i, ⟨hπ.2 i,Category.id_comp (π i) ⟩⟩
+  apply Coverage.saturate_of_superset (coherentCoverage C) h_le
+  exact Coverage.saturate.of X _ ⟨α, inferInstance, Y, π, ⟨rfl, hπ.1⟩⟩
+
+/-- Every Yoneda-presheaf is a sheaf for the coherent topology. -/
+theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yoneda.obj W) := by
+  rw [isSheaf_coherent]
+  intro X α _ Y π H
+  have h_colim:= isColimitOfEffectiveEpiFamilyStruct Y π H.effectiveEpiFamily.some
+  rw [←Sieve.generateFamily_eq] at h_colim
+  intro x hx
+  let x_ext := Presieve.FamilyOfElements.sieveExtend x
+  have hx_ext := Presieve.FamilyOfElements.Compatible.sieveExtend hx
+  let S := Sieve.generate (Presieve.ofArrows Y π)
+  have := (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
+  rcases this with ⟨t, t_amalg, t_uniq⟩
+  use t
+  constructor
+  · convert Presieve.isAmalgamation_restrict (Sieve.le_generate (Presieve.ofArrows Y π)) _ _ t_amalg
+    refine Eq.symm (Presieve.restrict_extend hx)
+  · exact fun y hy => t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
+
+/-- The coherent topology on a precoherent category is subcanonical. -/
+theorem isSubcanonical : Sheaf.Subcanonical (coherentTopology C) :=
+  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+
+end coherentTopology
+
+variable {C : Type _} [Category C] [Precoherent C]
+
+variable {X : C}
+
+/--
+Effective epi families in a precoherent category are transitive, in the sense that an
+`EffectiveEpiFamily` and an `EffectiveEpiFamily` over each member, the composition is an
+`EffectiveEpiFamily`.
+Note: The finiteness condition is an artifact of the proof and is probably unneccessary
+-/
+theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α → C}
+    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Fintype (β a)]
+    {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
+    (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :
+EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fst c.snd ≫ π c.fst)
+    := by
+  rw [← Sieve.effectiveEpimorphic_family]
+  suffices h₂ : (Sieve.generate (Presieve.ofArrows (fun (⟨a, b⟩ : Σ _, β _) => Y_n a b)
+        (fun ⟨a,b⟩ => π_n a b ≫ π a))) ∈ GrothendieckTopology.sieves (coherentTopology C) X by
+    change Nonempty _
+    rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
+    exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
+  let h' := h
+  rw [← Sieve.effectiveEpimorphic_family] at h'
+  let H' := H
+  conv at H' =>
+    intro a
+    rw [← Sieve.effectiveEpimorphic_family]
+  -- Show that a covering sieve is a colimit, which implies the original set of arrows is regular
+  -- epimorphic. We use the transitivity property of saturation
+  apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
+  · apply Coverage.saturate.of
+    use α, inferInstance, Y, π
+    simp only [true_and]
+    exact Iff.mp (Sieve.effectiveEpimorphic_family Y π) h'
+  · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
+    rw [← hf, Sieve.pullback_comp]
+    apply (coherentTopology C).pullback_stable'
+    apply coherentTopology.Sieve_of_hasEffectiveEpiFamily
+    -- Need to show that the pullback of the family `π_n` to a given `Y i` is effective epimorphic
+    rcases hY with ⟨i⟩
+    use β i, inferInstance, Y_n i, π_n i
+    constructor
+    · exact H i
+    · intro b
+      use Y_n i b, (𝟙 _), π_n i b ≫ π i
+      constructor
+      · exact ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩
+      · exact Category.id_comp (π_n i b ≫ π i)
+
+/--
+A sieve belongs to the coherent topology if and only if it contains a finite
+`EffectiveEpiFamily`
+-/
+theorem coherentTopology.Sieve_iff_hasEffectiveEpiFamily (S : Sieve X) :
+    (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
+        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+          (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
+  constructor
+  · exact coherentTopology.Sieve_of_hasEffectiveEpiFamily S
+  · intro h
+    induction' h with Y T hS  Y Y R S _ _ a b
+    · rcases hS with ⟨a, h, Y', π, h'⟩
+      use a, h, Y', π
+      constructor
+      · tauto
+      · intro a'
+        cases' h' with h_left h_right
+        simp only [Sieve.generate_apply]
+        use Y' a', 𝟙 Y' a', π a'
+        constructor
+        · rw [h_left]
+          exact Presieve.ofArrows.mk a'
+        · apply Category.id_comp
+    · use Unit, Unit.fintype, fun _ => Y, fun _ => (𝟙 Y)
+      cases' S with arrows downward_closed
+      exact ⟨inferInstance, by simp only [Sieve.top_apply, forall_const]⟩
+    · rcases a with ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩
+      have H  := fun a => b (h₂ a)
+      rw [Classical.skolem] at H
+      rcases H with ⟨β, H⟩
+      rw [Classical.skolem] at H
+      rcases H with ⟨_, H⟩
+      rw [Classical.skolem] at H
+      rcases H with ⟨Y_n, H⟩
+      rw [Classical.skolem] at H
+      rcases H with ⟨π_n, H⟩
+      use (Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a)
+      constructor
+      · apply EffectiveEpiFamily.transitive_of_finite
+        · exact h₁
+        · exact fun a => (H a).1
+      · exact fun c => (H c.fst).2 c.snd
 
 end CategoryTheory
