@@ -262,7 +262,7 @@ theorem testBit_two_pow_mul_toNat_add (h: n < 2^w) : Nat.testBit (2^w * b.toNat 
 theorem testBit_two_pow_add (h : i < w) : 
   Nat.testBit (2^w + n) i = Nat.testBit n i := mul_one (2^w) ▸ (testBit_translate h)
 
-theorem testBit_translate_one' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
+theorem testBit_two_pow_add' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
   mul_one (2^w) ▸ toNat_true ▸ (@testBit_translate' n w true h)
 
 /-- Generic method to create a natural number by appending bits tail-recursively.
