@@ -64,8 +64,8 @@ variable [DecidableEq α] [Fintype α]
   {𝒜 : Finset (Finset α)} {r : ℕ}
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
-theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r):
-    𝒜.card * r ≤ ((∂ ) 𝒜).card * (Fintype.card α - r + 1) := by
+theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+    𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((. ⊆ .) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
@@ -93,7 +93,7 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r):
 than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
     (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (𝒜.card : 𝕜) / (Fintype.card α).choose r
-    ≤ ((∂ ) 𝒜).card / (Fintype.card α).choose (r - 1) := by
+    ≤ (∂ 𝒜).card / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
@@ -149,7 +149,7 @@ theorem falling_zero_subset : falling 0 𝒜 ⊆ {∅} :=
   subset_singleton_iff'.2 fun _ ht => card_eq_zero.1 <| sized_falling _ _ ht
 #align finset.falling_zero_subset Finset.falling_zero_subset
 
-theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ (∂ ) (falling (k + 1) 𝒜) = falling k 𝒜 := by
+theorem slice_union_shadow_falling_succ : 𝒜 # k ∪ ∂ (falling (k + 1) 𝒜) = falling k 𝒜 := by
   ext s
   simp_rw [mem_union, mem_slice, mem_shadow_iff, mem_falling]
   constructor
@@ -171,7 +171,7 @@ variable {𝒜 k}
 /-- The shadow of `falling m 𝒜` is disjoint from the `n`-sized elements of `𝒜`, thanks to the
 antichain property. -/
 theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
-    (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) ((∂ ) (falling n 𝒜)) :=
+    (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) : Disjoint (𝒜 # m) (∂ (falling n 𝒜)) :=
   disjoint_right.2 fun s h₁ h₂ => by
     simp_rw [mem_shadow_iff, mem_falling] at h₁
     obtain ⟨s, ⟨⟨t, ht, hst⟩, _⟩, a, ha, rfl⟩ := h₁

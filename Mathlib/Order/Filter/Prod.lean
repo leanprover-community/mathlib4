@@ -14,8 +14,8 @@ import Mathlib.Order.Filter.Basic
 # Product and coproduct filters
 
 In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
-of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and `Filter.Tendsto
-Prod.snd l g`.
+of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
+`Filter.Tendsto Prod.snd l g`.
 
 ## Implementation details
 
@@ -515,7 +515,7 @@ theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
 #align filter.coprod_ne_bot_right Filter.coprod_neBot_right
 
 theorem principal_coprod_principal (s : Set α) (t : Set β) :
-    (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) := by
+    (𝓟 s).coprod (𝓟 t) = 𝓟 (sᶜ ×ˢ tᶜ)ᶜ := by
   rw [Filter.coprod, comap_principal, comap_principal, sup_principal, Set.prod_eq, compl_inter,
     preimage_compl, preimage_compl, compl_compl, compl_compl]
 #align filter.principal_coprod_principal Filter.principal_coprod_principal

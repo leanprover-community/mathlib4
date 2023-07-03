@@ -151,7 +151,8 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type _} [MulZeroOneClas
       induction' y using WithTop.recTopCoe with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · simp only [map_coe, ← coe_mul, map_mul] } -- porting note: todo: `simp [← coe_mul]` fails
+      · -- porting note: todo: `simp [← coe_mul]` times out
+        simp only [map_coe, ← coe_mul, map_mul] }
 #align monoid_with_zero_hom.with_top_map MonoidWithZeroHom.withTopMap
 
 instance [SemigroupWithZero α] [NoZeroDivisors α] : SemigroupWithZero (WithTop α) :=

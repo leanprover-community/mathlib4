@@ -233,6 +233,11 @@ theorem lt_wf : WellFounded (@LT.lt (ι →₀ ℕ) _) :=
   Subrelation.wf (sum_id_lt_of_lt _ _) <| InvImage.wf _ Nat.lt_wfRel.2
 #align finsupp.lt_wf Finsupp.lt_wf
 
+-- TODO: generalize to `[WellFoundedRelation α] → WellFoundedRelation (ι →₀ α)`
+instance : WellFoundedRelation (ι →₀ ℕ) where
+  rel := (· < ·)
+  wf := lt_wf _
+
 end Finsupp
 
 theorem Multiset.toFinsupp_strictMono : StrictMono (@Multiset.toFinsupp ι) :=

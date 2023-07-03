@@ -496,12 +496,13 @@ theorem isJacobson_polynomial_of_isJacobson (hR : IsJacobson R) : IsJacobson R[X
     rwa [mem_comap, ← Quotient.eq_zero_iff_mem, ← RingHom.comp_apply]
   have R'_jacob : IsJacobson R' := isJacobson_of_surjective ⟨i, hi⟩
   let J := map (mapRingHom i) I
+  -- Porting note: moved ↓ this up a few lines, so that it can be used in the `have`
+  have h_surj : Function.Surjective (mapRingHom i) := Polynomial.map_surjective i hi
   -- Porting note : this is slow
-  have : IsPrime J := map_isPrime_of_surjective (map_surjective i hi) hi'
+  have : IsPrime J := map_isPrime_of_surjective h_surj hi'
   suffices h : J.jacobson = J
   -- Porting note: this block seems to take about 5.5 seconds, especially the `rw` takes already 3s
   · replace h := congrArg (comap (Polynomial.mapRingHom i)) h
-    have h_surj := Polynomial.map_surjective i hi
     rw [← map_jacobson_of_surjective h_surj hi', comap_map_of_surjective _ h_surj,
       comap_map_of_surjective _ h_surj] at h
     refine le_antisymm ?_ le_jacobson

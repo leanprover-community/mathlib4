@@ -81,7 +81,7 @@ theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup
 #align nat.Ioo_eq_range' Nat.Ioo_eq_range'
 
 theorem Iio_eq_range : Iio = range := by
-  ext (b x)
+  ext b x
   rw [mem_Iio, mem_range]
 #align nat.Iio_eq_range Nat.Iio_eq_range
 
@@ -211,11 +211,11 @@ theorem image_sub_const_Ico (h : c ≤ a) :
   rw [mem_image]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    rw [mem_Ico] at hx⊢
+    rw [mem_Ico] at hx ⊢
     exact ⟨tsub_le_tsub_right hx.1 _, tsub_lt_tsub_right_of_le (h.trans hx.1) hx.2⟩
   · rintro h
     refine' ⟨x + c, _, add_tsub_cancel_right _ _⟩
-    rw [mem_Ico] at h⊢
+    rw [mem_Ico] at h ⊢
     exact ⟨tsub_le_iff_right.1 h.1, lt_tsub_iff_right.1 h.2⟩
 #align nat.image_sub_const_Ico Nat.image_sub_const_Ico
 

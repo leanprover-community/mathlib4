@@ -29,7 +29,7 @@ namespace SimpleGraph
 /-- The components outside a given set of vertices `K` -/
 @[reducible]
 def ComponentCompl :=
-  (G.induce (Kᶜ)).ConnectedComponent
+  (G.induce Kᶜ).ConnectedComponent
 #align simple_graph.component_compl SimpleGraph.ComponentCompl
 
 variable {G} {K L M}
@@ -37,7 +37,7 @@ variable {G} {K L M}
 /-- The connected component of `v` in `G.induce Kᶜ`. -/
 @[reducible]
 def componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
-  connectedComponentMk (G.induce (Kᶜ)) ⟨v, vK⟩
+  connectedComponentMk (G.induce Kᶜ) ⟨v, vK⟩
 #align simple_graph.component_compl_mk SimpleGraph.componentComplMk
 
 /-- The set of vertices of `G` making up the connected component `C` -/
@@ -50,7 +50,7 @@ theorem ComponentCompl.supp_injective :
     Function.Injective (ComponentCompl.supp : G.ComponentCompl K → Set V) := by
   refine' ConnectedComponent.ind₂ _
   rintro ⟨v, hv⟩ ⟨w, hw⟩ h
-  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h⊢
+  simp only [Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq, ComponentCompl.supp] at h ⊢
   exact ((h v).mp ⟨hv, Reachable.refl _⟩).choose_spec
 #align simple_graph.component_compl.supp_injective SimpleGraph.ComponentCompl.supp_injective
 
@@ -118,7 +118,7 @@ protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
 #align simple_graph.component_compl.nonempty SimpleGraph.ComponentCompl.nonempty
 
 protected theorem exists_eq_mk (C : G.ComponentCompl K) :
-    ∃ (v : _)(h : v ∉ K), G.componentComplMk h = C :=
+    ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 #align simple_graph.component_compl.exists_eq_mk SimpleGraph.ComponentCompl.exists_eq_mk
 
@@ -157,8 +157,6 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra' h
-  -- Porting note: `push_neg` doesn't do its job
-  simp only [not_exists, not_and] at h
   suffices Set.univ = (C : Set V) by exact dis ⟨hK.choose_spec, this ▸ Set.mem_univ hK.some⟩
   symm
   rw [Set.eq_univ_iff_forall]
@@ -209,7 +207,7 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
 
 theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
-  erw [induceHom_id G (Lᶜ), ConnectedComponent.map_id]
+  erw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 #align simple_graph.component_compl.hom_refl SimpleGraph.ComponentCompl.hom_refl
 
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :

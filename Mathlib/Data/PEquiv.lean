@@ -385,7 +385,7 @@ theorem single_trans_single (a : α) (b : β) (c : γ) :
 
 @[simp]
 theorem single_subsingleton_eq_refl [Subsingleton α] (a b : α) : single a b = PEquiv.refl α := by
-  ext (i j)
+  ext i j
   dsimp [single]
   rw [if_pos (Subsingleton.elim i a), Subsingleton.elim i j, Subsingleton.elim b j]
 #align pequiv.single_subsingleton_eq_refl PEquiv.single_subsingleton_eq_refl

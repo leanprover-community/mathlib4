@@ -54,11 +54,11 @@ section tsum
 
 variable [T2Space α]
 
-theorem Summable.tsum_mul_left (a) (hf : Summable f) : (∑' i, a * f i) = a * ∑' i, f i :=
+theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
   (hf.hasSum.mul_left _).tsum_eq
 #align summable.tsum_mul_left Summable.tsum_mul_left
 
-theorem Summable.tsum_mul_right (a) (hf : Summable f) : (∑' i, f i * a) = (∑' i, f i) * a :=
+theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
   (hf.hasSum.mul_right _).tsum_eq
 #align summable.tsum_mul_right Summable.tsum_mul_right
 
@@ -113,21 +113,21 @@ theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i => f i / a) ↔ S
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 #align summable_div_const_iff summable_div_const_iff
 
-theorem tsum_mul_left [T2Space α] : (∑' x, a * f x) = a * ∑' x, f x :=
+theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x :=
   if hf : Summable f then hf.tsum_mul_left a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
 #align tsum_mul_left tsum_mul_left
 
-theorem tsum_mul_right [T2Space α] : (∑' x, f x * a) = (∑' x, f x) * a :=
+theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a :=
   if hf : Summable f then hf.tsum_mul_right a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
 #align tsum_mul_right tsum_mul_right
 
-theorem tsum_div_const [T2Space α] : (∑' x, f x / a) = (∑' x, f x) / a := by
+theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 #align tsum_div_const tsum_div_const
 
@@ -138,7 +138,7 @@ end DivisionSemiring
 
 In this section, we prove various results about `(∑' x : ι, f x) * (∑' y : κ, g y)`. Note that we
 always assume that the family `λ x : ι × κ, f x.1 * g x.2` is summable, since there is no way to
-deduce this from the summmabilities of `f` and `g` in general, but if you are working in a normed
+deduce this from the summabilities of `f` and `g` in general, but if you are working in a normed
 space, you may want to use the analogous lemmas in `Analysis/NormedSpace/Basic`
 (e.g `tsum_mul_tsum_of_summable_norm`).
 
@@ -170,7 +170,7 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
 #align has_sum.mul HasSum.mul
 
 /-- Product of two infinites sums indexed by arbitrary types.
-    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are abolutely summable. -/
+    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
 theorem tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ => f x.1 * g x.2) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=

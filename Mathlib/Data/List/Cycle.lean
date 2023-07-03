@@ -21,7 +21,7 @@ This relation is defined as `IsRotated`.
 Based on this, we define the quotient of lists by the rotation relation, called `Cycle`.
 
 We also define a representation of concrete cycles, available when viewing them in a goal state or
-via `#eval`, when over representatble types. For example, the cycle `(2 1 4 3)` will be shown
+via `#eval`, when over representable types. For example, the cycle `(2 1 4 3)` will be shown
 as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their internal representation
 is different.
 
@@ -325,7 +325,7 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
         List.nthLe, Nat.succ_add_sub_one, zero_add, getLast_eq_get,
         Nat.mod_eq_of_lt (Nat.succ_lt_succ l.length.lt_succ_self)]
     · simp only [mem_cons, nodup_cons] at h
-      push_neg  at h
+      push_neg at h
       simp only [List.prev_cons_cons_of_ne _ _ _ _ h.left.left.symm, Nat.zero_eq, List.length,
         List.nthLe, add_comm, eq_self_iff_true, Nat.succ_add_sub_one, Nat.mod_self, zero_add,
         List.get]
@@ -616,7 +616,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
 def Nontrivial (s : Cycle α) : Prop :=
-  ∃ (x y : α)(_h : x ≠ y), x ∈ s ∧ y ∈ s
+  ∃ (x y : α) (_h : x ≠ y), x ∈ s ∧ y ∈ s
 #align cycle.nontrivial Cycle.Nontrivial
 
 @[simp]
@@ -975,7 +975,7 @@ theorem Chain.imp {r₁ r₂ : α → α → Prop} (H : ∀ a b, r₁ a b → r�
     Chain r₂ s := by
   induction s using Cycle.induction_on
   · triv
-  · rw [chain_coe_cons] at p⊢
+  · rw [chain_coe_cons] at p ⊢
     exact p.imp H
 #align cycle.chain.imp Cycle.Chain.imp
 

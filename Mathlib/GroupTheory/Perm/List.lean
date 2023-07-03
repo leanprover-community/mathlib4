@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.Perm.Support
 /-!
 # Permutations from a list
 
-A list `l : List α` can be interpreted as a `Equiv.Perm α` where each element in the list
+A list `l : List α` can be interpreted as an `Equiv.Perm α` where each element in the list
 is permuted to the next one, defined as `formPerm`. When we have that `Nodup l`,
 we prove that `Equiv.Perm.support (formPerm l) = l.toFinset`, and that
 `formPerm l` is rotationally invariant, in `formPerm_rotate`.
@@ -42,7 +42,7 @@ variable [DecidableEq α] (l : List α)
 
 open Equiv Equiv.Perm
 
-/-- A list `l : List α` can be interpreted as a `Equiv.Perm α` where each element in the list
+/-- A list `l : List α` can be interpreted as an `Equiv.Perm α` where each element in the list
 is permuted to the next one, defined as `formPerm`. When we have that `Nodup l`,
 we prove that `Equiv.Perm.support (formPerm l) = l.toFinset`, and that
 `formPerm l` is rotationally invariant, in `formPerm_rotate`.
@@ -182,7 +182,7 @@ theorem zipWith_swap_prod_support' (l l' : List α) :
           coe_toFinset, Set.mem_union, Set.mem_setOf_eq] at hl
         refine' Or.elim hl (fun hm => _) fun hm => _ <;>
           · simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, toFinset_cons,
-              mem_toFinset] at hm⊢
+              mem_toFinset] at hm ⊢
             simp [hm]
       · simp only [not_not, Set.mem_setOf_eq] at h
         simp only [h, Set.mem_setOf_eq] at hx
@@ -350,7 +350,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
     have : x' ∈ { z | formPerm (x :: y :: l) z ≠ z } := by
       rw [Set.mem_setOf_eq, h x', formPerm_apply_head _ _ _ hd']
       simp only [mem_cons, nodup_cons] at hd'
-      push_neg  at hd'
+      push_neg at hd'
       exact hd'.left.left.symm
     simpa using support_formPerm_le' _ this
   obtain ⟨n, hn, hx'⟩ := nthLe_of_mem hx

@@ -210,7 +210,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   have rhs_eq : ∀ a b c, rhs a b c = a ₜ* (b ₜ* c) := fun _ _ _ => rfl
   suffices : lhs = rhs
   exact LinearMap.congr_fun (LinearMap.congr_fun (LinearMap.congr_fun this a) b) c
-  ext (a b c)
+  ext a b c
   -- clean up
   simp only [LinearMap.compMultilinearMap_apply, lhs_eq, rhs_eq, tprod_mul_tprod, cast_tprod]
   congr with j
