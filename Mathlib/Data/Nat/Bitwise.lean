@@ -114,7 +114,7 @@ theorem mod_two_pow_succ (n i : Nat) : n % 2^(i+1) = 2^i * (Nat.testBit n i).toN
   have := lt_succ_two_pow (Bool.toNat_le_one (n.testBit i)) (mod_lt n (NeZero.pos (2^i)))
   simp [(Nat.div_mod_unique (two_pow_pos (i + 1))).mpr ⟨add_rotate _ _ (n % (2^i)) ▸ h1.symm, this⟩]
 
-theorem bodd_eq_iff : bodd n = bodd m ↔ n % 2 = m % 2 := by
+theorem bodd_eq_bodd_iff : bodd n = bodd m ↔ n % 2 = m % 2 := by
   cases' hn : bodd n <;> cases' hm : bodd m 
   <;> simp [mod_two_of_bodd, hn, hm]
 
