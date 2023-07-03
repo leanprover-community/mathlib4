@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Lean.Meta.Tactic.Simp
+import Mathlib.Tactic.LabelAttr
 
 /-!
 # Simp sets used in `Mathlib`
@@ -73,3 +74,6 @@ register_simp_attr ghost_simps
 discharge theorems about the trivial case (where we know `Subsingleton α` and many theorems
 in e.g. groups are trivially true). -/
 register_simp_attr nontriviality
+
+/-- A stub attribute for `is_poly`. -/
+register_label_attr is_poly
