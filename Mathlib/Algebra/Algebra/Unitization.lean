@@ -11,6 +11,8 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Algebra.Hom.NonUnitalAlg
+import Mathlib.Algebra.Star.StarAlgHom
+import Mathlib.Algebra.Star.Module
 
 /-!
 # Unitization of a non-unital algebra
@@ -497,6 +499,18 @@ instance commSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A] [I
     [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
   { Unitization.commMonoid, Unitization.nonAssocSemiring with }
 
+instance nonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
+    NonAssocRing (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.nonAssocSemiring with }
+
+instance ring [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
+    [SMulCommClass R A A] : Ring (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.semiring with }
+
+instance commRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
+    [SMulCommClass R A A] : CommRing (Unitization R A) :=
+  { Unitization.addCommGroup, Unitization.commSemiring with }
+
 variable (R A)
 
 /-- The canonical inclusion of rings `R →+* Unitization R A`. -/
@@ -596,9 +610,9 @@ theorem algebraMap_eq_inl : ⇑(algebraMap R (Unitization R A)) = inl :=
   rfl
 #align unitization.algebra_map_eq_inl Unitization.algebraMap_eq_inl
 
-theorem algebraMap_eq_inl_hom : algebraMap R (Unitization R A) = inlRingHom R A :=
+theorem algebraMap_eq_inlRingHom : algebraMap R (Unitization R A) = inlRingHom R A :=
   rfl
-#align unitization.algebra_map_eq_inl_hom Unitization.algebraMap_eq_inl_hom
+#align unitization.algebra_map_eq_inl_hom Unitization.algebraMap_eq_inlRingHom
 
 /-- The canonical `R`-algebra projection `Unitization R A → R`. -/
 @[simps]
@@ -627,6 +641,15 @@ def inrNonUnitalAlgHom (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Mo
   map_mul' := inr_mul R
 #align unitization.coe_non_unital_alg_hom Unitization.inrNonUnitalAlgHom
 
+/-- The coercion from a non-unital `R`-algebra `A` to its unitization `unitization R A`
+realized as a non-unital star algebra homomorphism. -/
+@[simps!]
+def inrNonUnitalStarAlgHom (R A : Type _) [CommSemiring R] [StarAddMonoid R]
+    [NonUnitalSemiring A] [Star A] [Module R A] :
+    A →⋆ₙₐ[R] Unitization R A where
+  toNonUnitalAlgHom := inrNonUnitalAlgHom R A
+  map_star' := inr_star
+
 end coe
 
 section AlgHom
@@ -635,13 +658,18 @@ variable {S R A : Type _} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A
   [SMulCommClass R A A] [IsScalarTower R A A] {B : Type _} [Semiring B] [Algebra S B] [Algebra S R]
   [DistribMulAction S A] [IsScalarTower S R A] {C : Type _} [Semiring C] [Algebra R C]
 
-theorem algHom_ext {φ ψ : Unitization R A →ₐ[S] B} (h : ∀ a : A, φ a = ψ a)
+theorem algHom_ext {F : Type _} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
+    (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
-  ext x
+  refine FunLike.ext φ ψ (fun x ↦ ?_)
   induction x using Unitization.ind
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
+
+lemma algHom_ext'' {F : Type _} [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
+    (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
+  algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext 1100]
@@ -650,7 +678,7 @@ theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
       φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A) =
         ψ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)) :
     φ = ψ :=
-  algHom_ext (NonUnitalAlgHom.congr_fun h) (by simp [AlgHom.commutes])
+  algHom_ext'' (NonUnitalAlgHom.congr_fun h)
 #align unitization.alg_hom_ext' Unitization.algHom_ext'
 
 /- porting note: this was extracted from `Unitization.lift` below, where it had previously
@@ -686,7 +714,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
 
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to
 `Unitization R A →ₐ[R] C`. This is the universal property of the unitization. -/
-@[simps]
+@[simps! apply symm_apply apply_apply]
 def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   toFun := NonUnitalAlgHom.toAlgHom
   invFun φ := φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)
@@ -699,6 +727,46 @@ theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
   rfl
 #align unitization.lift_symm_apply Unitization.lift_symm_apply
 
+@[simp]
+lemma _root_.NonUnitalAlgHom.toAlgHom_zero :
+    ⇑(0 : A →ₙₐ[R] R).toAlgHom = Unitization.fst := by
+  ext
+  simp
+
 end AlgHom
+
+section StarAlgHom
+
+variable {R A C : Type _} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
+variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
+variable [Semiring C] [Algebra R C] [StarRing C] [StarModule R C]
+
+/-- See note [partially-applied ext lemmas] -/
+@[ext]
+theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
+    (h : (φ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A) =
+      (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
+    φ = ψ :=
+  Unitization.algHom_ext'' <| FunLike.congr_fun h
+
+/-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
+to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
+@[simps! apply symm_apply apply_apply]
+def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
+{ toFun := fun φ ↦
+  { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
+    map_star' := fun x => by
+      induction x using Unitization.ind
+      simp [map_star] }
+  invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
+  left_inv := fun φ => by ext; simp,
+  right_inv := fun φ => Unitization.algHom_ext'' <| by simp }
+
+@[simp]
+theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
+    Unitization.lift.symm φ a = φ a :=
+  rfl
+
+end StarAlgHom
 
 end Unitization

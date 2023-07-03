@@ -829,7 +829,7 @@ theorem Icc_diff_Ioc_same (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by
 @[simp]
 theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   rw [← Icc_diff_both, diff_diff_cancel_left]
-  simp [insert_subset, h]
+  simp [insert_subset_iff, h]
 #align set.Icc_diff_Ioo_same Set.Icc_diff_Ioo_same
 
 @[simp]
@@ -1057,22 +1057,22 @@ theorem not_mem_Iio : c ∉ Iio b ↔ b ≤ c :=
 #align set.not_mem_Iio Set.not_mem_Iio
 
 @[simp]
-theorem compl_Iic : Iic aᶜ = Ioi a :=
+theorem compl_Iic : (Iic a)ᶜ = Ioi a :=
   ext fun _ => not_le
 #align set.compl_Iic Set.compl_Iic
 
 @[simp]
-theorem compl_Ici : Ici aᶜ = Iio a :=
+theorem compl_Ici : (Ici a)ᶜ = Iio a :=
   ext fun _ => not_le
 #align set.compl_Ici Set.compl_Ici
 
 @[simp]
-theorem compl_Iio : Iio aᶜ = Ici a :=
+theorem compl_Iio : (Iio a)ᶜ = Ici a :=
   ext fun _ => not_lt
 #align set.compl_Iio Set.compl_Iio
 
 @[simp]
-theorem compl_Ioi : Ioi aᶜ = Iic a :=
+theorem compl_Ioi : (Ioi a)ᶜ = Iic a :=
   ext fun _ => not_lt
 #align set.compl_Ioi Set.compl_Ioi
 

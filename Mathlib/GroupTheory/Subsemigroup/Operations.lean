@@ -602,7 +602,7 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
 
 @[to_additive (attr := simp)]
 theorem topEquiv_toMulHom :
-    (topEquiv : _ ≃* M).toMulHom = MulMemClass.subtype (⊤ : Subsemigroup M) :=
+    ((topEquiv : _ ≃* M) : _ →ₙ* M) = MulMemClass.subtype (⊤ : Subsemigroup M) :=
   rfl
 #align subsemigroup.top_equiv_to_mul_hom Subsemigroup.topEquiv_toMulHom
 #align add_subsemigroup.top_equiv_to_add_hom AddSubsemigroup.topEquiv_toAddHom
@@ -700,27 +700,27 @@ open MulHom
 
 @[to_additive]
 theorem mem_map_equiv {f : M ≃* N} {K : Subsemigroup M} {x : N} :
-    x ∈ K.map f.toMulHom ↔ f.symm x ∈ K :=
+    x ∈ K.map (f : M →ₙ* N) ↔ f.symm x ∈ K :=
   @Set.mem_image_equiv _ _ (K : Set M) f.toEquiv x
 #align subsemigroup.mem_map_equiv Subsemigroup.mem_map_equiv
 #align add_subsemigroup.mem_map_equiv AddSubsemigroup.mem_map_equiv
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Subsemigroup M) :
-    K.map f.toMulHom = K.comap f.symm.toMulHom :=
+    K.map (f : M →ₙ* N) = K.comap (f.symm : N →ₙ* M) :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 #align subsemigroup.map_equiv_eq_comap_symm Subsemigroup.map_equiv_eq_comap_symm
 #align add_subsemigroup.map_equiv_eq_comap_symm AddSubsemigroup.map_equiv_eq_comap_symm
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :
-    K.comap f.toMulHom = K.map f.symm.toMulHom :=
+    K.comap (f : N →ₙ* M) = K.map (f.symm : M →ₙ* N) :=
   (map_equiv_eq_comap_symm f.symm K).symm
 #align subsemigroup.comap_equiv_eq_map_symm Subsemigroup.comap_equiv_eq_map_symm
 #align add_subsemigroup.comap_equiv_eq_map_symm AddSubsemigroup.comap_equiv_eq_map_symm
 
 @[to_additive (attr := simp)]
-theorem map_equiv_top (f : M ≃* N) : (⊤ : Subsemigroup M).map f.toMulHom = ⊤ :=
+theorem map_equiv_top (f : M ≃* N) : (⊤ : Subsemigroup M).map (f : M →ₙ* N) = ⊤ :=
   SetLike.coe_injective <| Set.image_univ.trans f.surjective.range_eq
 #align subsemigroup.map_equiv_top Subsemigroup.map_equiv_top
 #align add_subsemigroup.map_equiv_top AddSubsemigroup.map_equiv_top
@@ -787,7 +787,8 @@ theorem srange_top_iff_surjective {N} [Mul N] {f : M →ₙ* N} :
 #align add_hom.srange_top_iff_surjective AddHom.srange_top_iff_surjective
 
 /-- The range of a surjective semigroup hom is the whole of the codomain. -/
-@[to_additive "The range of a surjective `add_semigroup` hom is the whole of the codomain."]
+@[to_additive (attr := simp)
+  "The range of a surjective `AddSemigroup` hom is the whole of the codomain."]
 theorem srange_top_of_surjective {N} [Mul N] (f : M →ₙ* N) (hf : Function.Surjective f) :
     f.srange = (⊤ : Subsemigroup N) :=
   srange_top_iff_surjective.2 hf
@@ -995,10 +996,10 @@ See `MulHom.subsemigroupMap` for a variant for `MulHom`s. -/
       "An `AddEquiv` `φ` between two additive semigroups `M` and `N` induces an `AddEquiv`
       between a subsemigroup `S ≤ M` and the subsemigroup `φ(S) ≤ N`.
       See `AddHom.addSubsemigroupMap` for a variant for `AddHom`s."]
-def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map e.toMulHom :=
+def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M →ₙ* N) :=
   { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
-    e.toMulHom.subsemigroupMap S,
-    e.toEquiv.image S with
+    (e : M →ₙ* N).subsemigroupMap S,
+    (e : M ≃ N).image S with
     toFun := fun x => ⟨e x, _⟩
     invFun := fun x => ⟨e.symm x, _⟩ }
 #align mul_equiv.subsemigroup_map MulEquiv.subsemigroupMap

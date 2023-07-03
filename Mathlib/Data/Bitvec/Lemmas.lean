@@ -127,13 +127,13 @@ theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
 
 theorem ofNat_toNat {n : ℕ} (v : Bitvec n) : Bitvec.ofNat n v.toNat = v := by
   cases' v with xs h
-  -- Porting note: was `ext1`
+  -- Porting note: was `ext1`, but that now applies `Vector.ext` rather than `Subtype.ext`.
   apply Subtype.ext
   change Vector.toList _ = xs
   dsimp [Bitvec.toNat, bitsToNat]
   rw [← List.length_reverse] at h
   rw [← List.reverse_reverse xs, List.foldl_reverse]
-  generalize xs.reverse = ys at h⊢; clear xs
+  generalize xs.reverse = ys at h ⊢; clear xs
   induction' ys with ys_head ys_tail ys_ih generalizing n
   · cases h
     simp [Bitvec.ofNat]

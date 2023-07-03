@@ -17,7 +17,8 @@ import Mathlib.Tactic.LibrarySearch
 /-!
 # Gluing Topological spaces
 
-Given a family of gluing data (see `category_theory/glue_data`), we can then glue them together.
+Given a family of gluing data (see `Mathlib/CategoryTheory/GlueData.lean`), we can then glue them
+together.
 
 The construction should be "sealed" and considered as a black box, while only using the API
 provided.
@@ -31,7 +32,7 @@ provided.
 * `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : ι`.
 * `TopCat.GlueData.Rel`: A relation on `Σ i, D.U i` defined by `⟨i, x⟩ ~ ⟨j, y⟩` iff
     `⟨i, x⟩ = ⟨j, y⟩` or `t i j x = y`. See `TopCat.GlueData.ι_eq_iff_rel`.
-* `Top.glue_data.mk`: A constructor of `glue_data` whose conditions are stated in terms of
+* `TopCat.GlueData.mk`: A constructor of `GlueData` whose conditions are stated in terms of
   elements rather than subobjects and pullbacks.
 * `TopCat.GlueData.ofOpenSubsets`: Given a family of open sets, we may glue them into a new
   topological space. This new space embeds into the original space, and is homeomorphic to it if
@@ -47,8 +48,8 @@ provided.
 * `TopCat.GlueData.image_inter`: The intersection of the images of `U i` and `U j` in `glued` is
     `V i j`.
 * `TopCat.GlueData.preimage_range`: The preimage of the image of `U i` in `U j` is `V i j`.
-* `Top.glue_data.preimage_image_eq_preimage_f`: The preimage of the image of some `U ⊆ U i` is
-    given by the preimage along `f j i`.
+* `TopCat.GlueData.preimage_image_eq_image`: The preimage of the image of some `U ⊆ U i` is
+    given by XXX.
 * `TopCat.GlueData.ι_openEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
@@ -84,8 +85,8 @@ such that
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subspaces of the glued space.
 
-Most of the times it would be easier to use the constructor `Top.glue_data.mk'` where the conditions
-are stated in a less categorical way.
+Most of the times it would be easier to use the constructor `TopCat.GlueData.mk'` where the
+conditions are stated in a less categorical way.
 -/
 -- Porting note: removed @[nolint has_nonempty_instance]
 structure GlueData extends GlueData TopCat where
@@ -140,20 +141,13 @@ theorem rel_equiv : Equivalence D.Rel :=
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩); exact id
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩); exact Or.inr ⟨x, e₁, e₂⟩
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
-    have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
-      -- Porting note: was `simp`
-      -- See https://github.com/leanprover-community/mathlib4/issues/5026
-      rw [TopCat.pullbackIsoProdSubtype_inv_fst_apply, Subtype.coe_mk]
-      erw [CategoryTheory.GlueData.t_inv_apply]
+    have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by simp
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
     use (pullback.fst : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
     dsimp only at *
-    -- porting note: `rw + clear` was `substs e₁ e₃ e₄ eq₁ eq₂`
-    -- error: `failed to create binder due to failure when reverting variable dependencies`
-    rw [← e₁, ← e₃, ← e₄, ← eq₁, ← eq₂] at *
-    clear eq₂ eq₁ e₄ e₃ e₁
+    substs eq₁ eq₂ e₁ e₃ e₄
     have h₁ : D.t' j i k ≫ pullback.fst ≫ D.f i k = pullback.fst ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
     have h₂ : D.t' j i k ≫ pullback.fst ≫ D.t i k ≫ D.f k i = pullback.snd ≫ D.t j k ≫ D.f k j := by
@@ -373,7 +367,7 @@ set_option linter.uppercaseLean3 false in
 instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
   use h.t j i; constructor <;> ext1; exacts [h.t_inv _ _ _, h.t_inv _ _ _]
 
-/-- (Implementation) the restricted transition map to be fed into `glue_data`. -/
+/-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
       pullback (h.V j k).inclusion (h.V j i).inclusion := by
@@ -453,14 +447,16 @@ set_option linter.uppercaseLean3 false in
 #align Top.glue_data.of_open_subsets TopCat.GlueData.ofOpenSubsets
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
-This map is an open embedding (`from_open_subsets_glue_open_embedding`),
-and its range is `⋃ i, (U i : Set α)` (`range_from_open_subsets_glue`).
+This map is an open embedding (`fromOpenSubsetsGlue_openEmbedding`),
+and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun x => Opens.inclusion _) (by rintro ⟨i, j⟩; ext x; rfl)
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.from_open_subsets_glue TopCat.GlueData.fromOpenSubsetsGlue
 
+-- Porting note: `elementwise` here produces a bad lemma,
+-- where too much has been simplified, despite the `nosimp`.
 @[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion _ :=
@@ -473,6 +469,7 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
   -- porting note: now it is `erw`, it was `rw`
+  -- see the porting note on `ι_fromOpenSubsetsGlue`
   erw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
   change x = y at e
   subst e
@@ -500,6 +497,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     refine' Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine' ⟨Set.mem_image_of_mem _ hx, _⟩
     -- porting note: another `rw ↦ erw`
+    -- See above.
     erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.mem_range_self _
 set_option linter.uppercaseLean3 false in
@@ -517,16 +515,17 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
   · rintro ⟨x, rfl⟩
     obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
     -- porting note: another `rw ↦ erw`
+    -- See above
     erw [ι_fromOpenSubsetsGlue_apply]
     exact Set.subset_iUnion _ i hx'
   · rintro ⟨_, ⟨i, rfl⟩, hx⟩
     rename_i x
     refine' ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 set_option linter.uppercaseLean3 false in
-#align Top.glue_data.range_fromOpenSubsetsGlue TopCat.GlueData.range_fromOpenSubsetsGlue
+#align Top.glue_data.range_from_open_subsets_glue TopCat.GlueData.range_fromOpenSubsetsGlue
 
 /-- The gluing of an open cover is homeomomorphic to the original space. -/
-def openCoverGlueHomeo (h : (⋃ i, (U i : Set α)) = Set.univ) :
+def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
   Homeomorph.homeomorphOfContinuousOpen
     (Equiv.ofBijective (fromOpenSubsetsGlue U)

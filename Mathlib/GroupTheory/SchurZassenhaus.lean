@@ -200,7 +200,6 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
   have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
   have h4 := step1 h1 h2 h3
   contrapose! h4
-  rw [not_or] at h4 -- porting note: had to add `rw [not_or] at h4`
   have h5 : Fintype.card (G ⧸ K) < Fintype.card G := by
     rw [← index_eq_card, ← K.index_mul_card]
     refine'
@@ -287,8 +286,7 @@ private theorem exists_right_complement'_of_coprime_aux' [Fintype G] (hG : Finty
 theorem exists_right_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H :=
   exists_right_complement'_of_coprime_aux' rfl hN
-#align subgroup.exists_right_complement'_of_coprime_of_fintype
-  Subgroup.exists_right_complement'_of_coprime_of_fintype
+#align subgroup.exists_right_complement'_of_coprime_of_fintype Subgroup.exists_right_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
@@ -319,8 +317,7 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
 theorem exists_left_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' H N :=
   Exists.imp (fun _ => IsComplement'.symm) (exists_right_complement'_of_coprime_of_fintype hN)
-#align subgroup.exists_left_complement'_of_coprime_of_fintype
-  Subgroup.exists_left_complement'_of_coprime_of_fintype
+#align subgroup.exists_left_complement'_of_coprime_of_fintype Subgroup.exists_left_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a

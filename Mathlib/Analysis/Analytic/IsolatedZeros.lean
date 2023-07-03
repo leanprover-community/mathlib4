@@ -41,7 +41,7 @@ open scoped Topology BigOperators
 variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {s : E} {p q : FormalMultilinearSeries 𝕜 𝕜 E} {f g : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜}
 --  {y : Fin n → 𝕜} -- Porting note: This is used nowhere and creates problem since it is sometimes
--- automatically included as an hypothesis
+-- automatically included as a hypothesis
 
 namespace HasSum
 
@@ -90,20 +90,20 @@ theorem has_fpower_series_dslope_fslope (hp : HasFPowerSeriesAt f p z₀) :
 #align has_fpower_series_at.has_fpower_series_dslope_fslope HasFPowerSeriesAt.has_fpower_series_dslope_fslope
 
 theorem has_fpower_series_iterate_dslope_fslope (n : ℕ) (hp : HasFPowerSeriesAt f p z₀) :
-    HasFPowerSeriesAt ((swap dslope z₀^[n]) f) ((fslope^[n]) p) z₀ := by
+    HasFPowerSeriesAt ((swap dslope z₀)^[n] f) (fslope^[n] p) z₀ := by
   induction' n with n ih generalizing f p
   · exact hp
   · simpa using ih (has_fpower_series_dslope_fslope hp)
 #align has_fpower_series_at.has_fpower_series_iterate_dslope_fslope HasFPowerSeriesAt.has_fpower_series_iterate_dslope_fslope
 
 theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) :
-    (swap dslope z₀^[p.order]) f z₀ ≠ 0 := by
+    (swap dslope z₀)^[p.order] f z₀ ≠ 0 := by
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 #align has_fpower_series_at.iterate_dslope_fslope_ne_zero HasFPowerSeriesAt.iterate_dslope_fslope_ne_zero
 
 theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀^[p.order]) f z := by
+    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
   have hq := hasFPowerSeriesAt_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
   filter_upwards [hq, hasFPowerSeriesAt_iff'.mp hp] with x hx1 hx2
   have : ∀ k < p.order, p.coeff k = 0 := fun k hk => by
@@ -167,7 +167,7 @@ variable {U : Set 𝕜}
 analytic on a connected set `U` and vanishes in arbitrary neighborhoods of a point `z₀ ∈ U`, then
 it is identically zero in `U`.
 For higher-dimensional versions requiring that the function vanishes in a neighborhood of `z₀`,
-see `eq_on_zero_of_preconnected_of_eventually_eq_zero`. -/
+see `AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOn 𝕜 f U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfw : ∃ᶠ z in 𝓝[≠] z₀, f z = 0) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀
@@ -184,7 +184,7 @@ theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU 
 analytic on a connected set `U` and coincide at points which accumulate to a point `z₀ ∈ U`, then
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `eq_on_of_preconnected_of_eventually_eq`. -/
+see `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`. -/
 theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOn 𝕜 f U) (hg : AnalyticOn 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
@@ -203,7 +203,7 @@ theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hg : Ana
 field `𝕜` are analytic everywhere and coincide at points which accumulate to a point `z₀`, then
 they coincide globally.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `eq_of_eventually_eq`. -/
+see `AnalyticOn.eq_of_eventuallyEq`. -/
 theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOn 𝕜 f univ) (hg : AnalyticOn 𝕜 g univ)
     (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : f = g :=
   funext fun x =>

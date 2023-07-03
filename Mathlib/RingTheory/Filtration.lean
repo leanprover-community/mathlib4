@@ -408,7 +408,7 @@ variable {F}
 theorem Stable.of_le [IsNoetherianRing R] [h : Module.Finite R M] (hF : F.Stable)
     {F' : I.Filtration M} (hf : F' ≤ F) : F'.Stable := by
   haveI := isNoetherian_of_fg_of_noetherian' h.1
-  rw [← submodule_fg_iff_stable] at hF⊢
+  rw [← submodule_fg_iff_stable] at hF ⊢
   any_goals intro i; exact IsNoetherian.noetherian _
   have := isNoetherian_of_fg_of_noetherian _ hF
   rw [isNoetherian_submodule] at this
@@ -471,7 +471,7 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing 
 
 /-- **Krull's intersection theorem** for noetherian local rings. -/
 theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h : I ≠ ⊤) :
-    (⨅ i : ℕ, I ^ i) = ⊥ := by
+    ⨅ i : ℕ, I ^ i = ⊥ := by
   convert I.iInf_pow_smul_eq_bot_of_localRing (M := R) h
   ext i
   rw [smul_eq_mul, ← Ideal.one_eq_top, mul_one]
@@ -479,7 +479,7 @@ theorem Ideal.iInf_pow_eq_bot_of_localRing [IsNoetherianRing R] [LocalRing R] (h
 
 /-- **Krull's intersection theorem** for noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
-    (⨅ i : ℕ, I ^ i) = ⊥ := by
+    ⨅ i : ℕ, I ^ i = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
   by_contra hx'
