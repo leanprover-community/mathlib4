@@ -2404,6 +2404,7 @@ import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.Modular
+import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
