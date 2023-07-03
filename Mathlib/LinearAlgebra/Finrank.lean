@@ -332,7 +332,7 @@ theorem finrank_span_eq_card {ι : Type _} [Fintype ι] {b : ι → V} (hb : Lin
     finrank K (span K (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
     (by
-      have : Module.rank K (span K (Set.range b)) = (#Set.range b) := rank_span hb
+      have : Module.rank K (span K (Set.range b)) = #(Set.range b) := rank_span hb
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
         lift_eq_nat_iff] at this)
 #align finrank_span_eq_card finrank_span_eq_card
@@ -341,7 +341,7 @@ theorem finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent
     finrank K (span K s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
-      have : Module.rank K (span K s) = (#s) := rank_span_set hs
+      have : Module.rank K (span K s) = #s := rank_span_set hs
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 #align finrank_span_set_eq_card finrank_span_set_eq_card
 
