@@ -124,9 +124,7 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
           hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
         obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
         exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
-    · have := (tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg r)) h
-      simp only [← abs_pow] at this
-      exact this
+    · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg r)) h
 
 theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
