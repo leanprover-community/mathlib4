@@ -17,7 +17,7 @@ import Mathlib.Control.Traversable.Lemmas
 
 namespace Mathlib.Deriving.Traversable
 
-open Lean Meta Elab Term Command Tactic List Monad Functor
+open Lean Meta Elab Term Command Tactic Match List Monad Functor
 
 /-- similar to `nestedTraverse` but for `Functor` -/
 partial def nestedMap (f v t : Expr) : TermElabM Expr := do
@@ -41,41 +41,78 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
   else if α.occurs t then
     let f' ← nestedMap f α t
     return f'.app e
-  else if ← withNewMCtxDepth <| isDefEq t.appFn! cl then
+  else if ←
+      (match t with
+        | .app t' _ => withNewMCtxDepth <| isDefEq t' cl
+        | _ => return false) then
     mkAppM ``Comp.mk #[e]
   else
     return e
 
 /-- similar to `traverseConstructor` but for `Functor` -/
-def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr) (args₁ : List (Bool × Expr))
-    (recCall : List Expr) : TacticM Expr := do
+def mapConstructor (c n : Name) (ad : Expr) (f α β : Expr) (args₀ : List Expr)
+    (args₁ : List (Bool × Expr)) : TacticM Expr := do
   let g ← getMainTarget
-  let (_, args') ←
-    mapAccumLM (fun (x : List Expr) (y : Bool × Expr) =>
-      if y.1 then return (x.tail, x.head!)
-      else Prod.mk x <$> mapField n g.appFn! f α β y.2) recCall args₁
+  let args' ← args₁.mapM (fun (y : Bool × Expr) =>
+      if y.1 then return mkAppN ad #[α, β, f, y.2]
+      else mapField n g.appFn! f α β y.2)
   mkAppOptM c ((args₀ ++ args').map some).toArray
 
 /-- derive the `map` definition of a `Functor` -/
-def mkMap (type : Name) (vars : List Expr) : TacticM Unit := do
+def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) : TacticM Unit := do
   let ms ← getGoals
   let m ← getMainGoal
   let (#[α, β, f, x], m') ← m.introN 4 [`α, `β, `f, `x] | unreachable!
   m'.withContext do
     let et ← x.getType
-    let xs ← m'.induction x (mkRecName type)
-    xs.forM fun ⟨m', args, _⟩ => do
-      setGoals [m']
-      m'.withContext do
-        let c := Name.mkStr type (← m'.getTag).getString!
-        let (args, recCall) ←
-          args.toList.partitionM fun e => (!(mkFVar β).occurs ·) <$> inferType e
-        let args₀ ← args.mapM fun a => do
-          let b ← et.occurs <$> inferType a
-          return (b, a)
-        mapConstructor
-            c type (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) args₀ recCall
-          >>= closeMainGoal
+    let .inductInfo cinfo ← getConstInfo type | failure
+    let cinfos ← cinfo.ctors.mapM fun ctor => do
+      let .ctorInfo cinfo ← getConstInfo ctor | failure
+      return cinfo
+    let mn ← Lean.mkAuxName (type ++ "map" ++ "match") 1
+    let matchType ← mkArrow et (← m'.getType)
+    let motive ← forallBoundedTelescope matchType (some 1) fun xs body => mkLambdaFVars xs body
+    let lhss ← cinfos.mapM fun cinfo => do
+      let .ctorInfo cinfo ← getConstInfo cinfo.name | failure
+      let ls := levels.map Level.param
+      let vars' := vars.concat (.fvar α)
+      let ce := mkAppN (.const cinfo.name ls) vars'.toArray
+      let ct ← inferType ce
+      forallBoundedTelescope ct cinfo.numFields fun args _ => do
+        let fvarDecls ← args.toList.mapM fun arg => getFVarLocalDecl arg
+        let fields := args.toList.map fun arg => Pattern.var arg.fvarId!
+        let patterns := [Pattern.ctor cinfo.name ls vars' fields]
+        return { ref := .missing
+                 fvarDecls
+                 patterns }
+    let mres ← Term.mkMatcher
+      { matcherName := mn
+        matchType
+        discrInfos := #[{}]
+        lhss }
+    mres.addMatcher
+    let r := mkApp2 mres.matcher motive (.fvar x)
+    let ms' ← m'.apply r
+    let ms' := ms'.zip cinfos
+    ms'.forM fun (m', cinfo) => do
+      if cinfo.numFields = 0 then
+        let (_, m') ← m'.intro1
+        setGoals [m']
+        m'.withContext do
+          mapConstructor
+              cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) []
+            >>= closeMainGoal
+      else
+        let (args, m') ← m'.introN cinfo.numFields
+        setGoals [m']
+        m'.withContext do
+          let args := args.toList.map Expr.fvar
+          let args₀ ← args.mapM fun a => do
+            let b ← et.occurs <$> inferType a
+            return (b, a)
+          mapConstructor
+              cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) args₀
+            >>= closeMainGoal
   setGoals ms
   pruneSolvedGoals
 
@@ -86,21 +123,22 @@ def deriveFunctor (levels : List Name) (vars : List Expr) : TacticM Unit := do
   evalTactic (← `(tactic| refine { map := @(?_) }))
   let ms ← getGoals
   let t ← getMainTarget
-  let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
-  setGoals [m']
-  mkMap n vars
-  let e ← instantiateMVars (mkMVar m')
-  let e' ← mkLambdaFVars vars.toArray e
-  let t' ← mkForallFVars vars.toArray t
-  let n' := n.mkStr "map"
-  addPreDefinitions #[
-    { ref := .missing
-      kind := .def
-      levelParams := levels
-      modifiers := { isUnsafe := d.isUnsafe }
-      declName := n'
-      type := t'
-      value := e' }] {}
+  let n' := n ++ "map"
+  withAuxDecl "map" t n' fun ad => do
+    let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
+    let [] ← run m' <| mkMap n ad levels vars | failure
+    let e ← instantiateMVars (mkMVar m')
+    let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
+    let e' ← mkLambdaFVars vars.toArray e
+    let t' ← mkForallFVars vars.toArray t
+    addPreDefinitions
+      #[{ ref := .missing
+          kind := .def
+          levelParams := levels
+          modifiers := { isUnsafe := d.isUnsafe }
+          declName := n'
+          type := t'
+          value := e' }] {}
   setGoals ms
   closeMainGoal (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
@@ -117,7 +155,7 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → TacticM Unit
     let params := params.pop
     let tgt := mkAppN tgt params
     let tgt ← mkInst cls tgt
-    let tgt ← params.toList.enum.foldrM (fun (i, param) tgt => do
+    let tgt ← params.zipWithIndex.foldrM (fun (param, i) tgt => do
       -- add typeclass hypothesis for each inductive parameter
       let tgt ← (do
         guard (i < decl.numParams)
@@ -148,20 +186,20 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → TacticM Unit
             | _ => pure ()
         ref.get
       let instN ← liftMacroM <| mkUnusedBaseName <| Name.mkSimple ("inst" ++ result)
-      addPreDefinitions #[
-        { ref := .missing
-          kind := .def
-          levelParams := decl.levelParams
-          modifiers :=
-            { isUnsafe
-              attrs := #[
-                { kind := .global
-                  name := `instance
-                  stx := ← `(attr| instance) }
-              ] }
-          declName := instN
-          type := tgt
-          value := val }] {}
+      addPreDefinitions
+        #[{ ref := .missing
+            kind := .def
+            levelParams := decl.levelParams
+            modifiers :=
+              { isUnsafe
+                attrs := #[
+                  { kind := .global
+                    name := `instance
+                    stx := ← `(attr| instance) }
+                ] }
+            declName := instN
+            type := tgt
+            value := val }] {}
 
 def higherOrderDeriveHandler (cls : Name) (tac : List Name → List Expr → TacticM Unit)
     (deps : List DerivingHandlerNoArgs := [])
@@ -181,44 +219,6 @@ initialize registerDerivingHandler ``Functor functorDeriveHandler
 meta def with_prefix : option name → name → name
 | none n := n
 | (some p) n := p ++ n
-
-/-- derive the equations for a specific `map` definition -/
-meta def derive_map_equations (pre : option name) (n : name) (vs : list expr) (tgt : expr) :
-  tactic unit :=
-do e ← get_env,
-   ((e.constructors_of n).enum_from 1).mmap' $ λ ⟨i,c⟩,
-   do { mk_meta_var tgt >>= set_goals ∘ pure,
-        vs ← intro_lst $ vs.map expr.local_pp_name,
-        [α,β,f] ← tactic.intro_lst [`α,`β,`f] >>= mmap instantiate_mvars,
-        c' ← mk_mapp c $ vs.map some ++ [α],
-        tgt' ← infer_type c' >>= pis vs,
-        mk_meta_var tgt' >>= set_goals ∘ pure,
-        vs ← tactic.intro_lst $ vs.map expr.local_pp_name,
-        vs' ← tactic.intros,
-        c' ← mk_mapp c $ vs.map some ++ [α],
-        arg ← mk_mapp' c' vs',
-        n_map ← mk_const (with_prefix pre n <.> "map"),
-        let call_map := λ x, mk_mapp' n_map (vs ++ [α,β,f,x]),
-        lhs ← call_map arg,
-        args ← vs'.mmap $ λ a,
-        do { t ← infer_type a,
-             pure ((expr.const_name (expr.get_app_fn t) = n : bool),a) },
-        let rec_call := args.filter_map $
-          λ ⟨b, e⟩, guard b >> pure e,
-        rec_call ← rec_call.mmap call_map,
-        rhs ← map_constructor c n f α β (vs ++ [β]) args rec_call,
-        monad.join $ unify <$> infer_type lhs <*> infer_type rhs,
-        eqn ← mk_app ``eq [lhs,rhs],
-        let ws := eqn.list_local_consts,
-        eqn ← pis ws.reverse eqn,
-        eqn ← instantiate_mvars eqn,
-        (_,pr) ← solve_aux eqn (tactic.intros >> refine ``(rfl)),
-        let eqn_n := (with_prefix pre n <.> "map" <.> "equations" <.> "_eqn").append_after i,
-        pr ← instantiate_mvars pr,
-        add_decl $ declaration.thm eqn_n eqn.collect_univ_params eqn (pure pr),
-        return () },
-   set_goals [],
-   return ()
 
 /-- `seq_apply_constructor f [x,y,z]` synthesizes `f <*> x <*> y <*> z` -/
 private meta def seq_apply_constructor :
