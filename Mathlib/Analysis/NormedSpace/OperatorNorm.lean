@@ -193,6 +193,11 @@ theorem le_op_norm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
     (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
 #align continuous_linear_map.le_op_norm ContinuousLinearMap.le_op_norm
 
+theorem op_norm_le_iff (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M) :
+    ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M * ‖x‖ :=
+  ⟨fun H x ↦ (le_op_norm _ _).trans (mul_le_mul_of_nonneg_right H (norm_nonneg x)),
+    op_norm_le_bound f hMp⟩
+
 theorem dist_le_op_norm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
   simp_rw [dist_eq_norm, ← map_sub, f.le_op_norm]
 #align continuous_linear_map.dist_le_op_norm ContinuousLinearMap.dist_le_op_norm
@@ -1999,3 +2004,58 @@ if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`
 def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 #align is_coercive IsCoercive
+
+section Equicontinuous
+
+variable {ι : Type _} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
+
+/-- Equivalent characterizations for  -/
+protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
+    [ EquicontinuousAt ((↑) ∘ f) 0,
+      Equicontinuous ((↑) ∘ f),
+      UniformEquicontinuous ((↑) ∘ f),
+      ∃ C, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      ∃ C ≥ 0, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      BddAbove (Set.range (‖f ·‖)),
+      (⨆ i, (‖f i‖₊ : ENNReal)) < ⊤ ] := by
+  -- `1 ↔ 2 ↔ 3` follows from `uniformEquicontinuous_of_equicontinuousAt_zero`
+  tfae_have 1 → 3
+  . exact uniformEquicontinuous_of_equicontinuousAt_zero f
+  tfae_have 3 → 2
+  . exact UniformEquicontinuous.equicontinuous
+  tfae_have 2 → 1
+  . exact fun H ↦ H 0
+  -- `4 ↔ 5 ↔ 6 ↔ 7` is morally trivial, we just have to use a lot of rewriting
+  -- and `congr` lemmas
+  tfae_have 4 ↔ 5
+  . rw [exists_ge_and_iff_exists]
+    exact fun C₁ C₂ hC ↦ forall₂_imp (fun i x ↦ le_trans'
+      (mul_le_mul_of_nonneg_right hC (norm_nonneg x)))
+  tfae_have 5 ↔ 6
+  . simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
+    refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
+    rw [(f i).op_norm_le_iff hC]
+  tfae_have 6 ↔ 7
+  . have := (WithTop.iSup_coe_lt_top (fun i ↦ ‖f i‖₊)).symm -- can't `rw` into goal
+    rwa [← NNReal.bddAbove_coe, ← Set.range_comp] at this
+  -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
+  -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns
+  -- equicontinuity into existence of some continuous seminorm and
+  -- `Seminorm.bound_of_continuous_normedSpace` which characterize such seminorms.
+  tfae_have 3 ↔ 4
+  . refine ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans
+      ?_
+    rw [forall_const]
+    constructor
+    . intro ⟨p, hp, hpf⟩
+      rcases p.bound_of_continuous_normedSpace hp with ⟨C, -, hC⟩
+      exact ⟨C, fun i x ↦ (hpf i x).trans (hC x)⟩
+    . intro ⟨C, hC⟩
+      refine ⟨C.toNNReal • normSeminorm 𝕜 E,
+        ((norm_withSeminorms 𝕜 E).continuous_seminorm 0).const_smul C.toNNReal, fun i x ↦ ?_⟩
+      refine (hC i x).trans (mul_le_mul_of_nonneg_right (C.le_coe_toNNReal) (norm_nonneg x))
+  tfae_finish
+
+end Equicontinuous
