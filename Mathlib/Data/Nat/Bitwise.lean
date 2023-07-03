@@ -37,7 +37,7 @@ In the second part of this file, we show properties of the bitwise operations
 * `of_lt_of_testBit`: if `x < y` then there exists a bit `i` such that 
   `x.testBit i = false` and `y.testBit i = true`.
 * `testBit_add`: the `testBit` of the sum of two bitvectors is equal to the bitwise
-xor of the `testBit` of the two bitvectors and the `testBit` of their carry.
+  xor of the `testBit` of the two bitvectors and the `testBit` of their carry.
 
 ## Notation
 
