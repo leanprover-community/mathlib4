@@ -8,6 +8,7 @@ Authors: Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.StoneCech
 
 /-!
@@ -22,40 +23,31 @@ compact Hausdorff spaces.
 * `ExtremallyDisconnected`: Predicate for a space to be extremally disconnected.
 * `CompactT2.Projective`: Predicate for a topological space to be a projective object in the
   category of compact Hausdorff spaces.
-* `CompactT2.Projective.extremallyDisconnected`: Compact Hausdorff spaces that are
-  projective are extremally disconnected.
-
-# TODO
-
-Prove the converse to `CompactT2.Projective.extremallyDisconnected`, namely that a compact,
-Hausdorff, extremally disconnected space is a projective object in the category of compact Hausdorff
-spaces.
+* `CompactT2.Projective.extremallyDisconnected`: Compact Hausdorff spaces that are projective are
+  extremally disconnected.
+* `CompactT2.ExtremallyDisconnected.projective`: Extremally disconnected spaces are projective
+  objects in the category of compact Hausdorff spaces.
 
 ## References
 
 [Gleason, *Projective topological spaces*][gleason1958]
 -/
 
-
 noncomputable section
 
-open Set
+open Classical Function Set
 
-open Classical
+universe u
 
-universe u v w
+section
 
 variable (X : Type u) [TopologicalSpace X]
-
-open Function
 
 /-- An extremally disconnected topological space is a space
 in which the closure of every open set is open. -/
 class ExtremallyDisconnected : Prop where
   open_closure : ∀ U : Set X, IsOpen U → IsOpen (closure U)
 #align extremally_disconnected ExtremallyDisconnected
-
-section
 
 /-- The assertion `CompactT2.Projective` states that given continuous maps
 `f : X → Z` and `g : Y → Z` with `g` surjective between `t_2`, compact topological spaces,
@@ -66,8 +58,6 @@ def CompactT2.Projective : Prop :=
       ∀ {f : X → Z} {g : Y → Z} (_ : Continuous f) (_ : Continuous g) (_ : Surjective g),
         ∃ h : X → Y, Continuous h ∧ g ∘ h = f
 #align compact_t2.projective CompactT2.Projective
-
-end
 
 variable {X}
 
@@ -121,7 +111,61 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
     exact hx.1
 #align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
 
-/-- Gleason's theorem. -/
-protected theorem CompactT2.ExtremallyDisconnected.projective [CompactSpace X] [T2Space X]
-    (h : ExtremallyDisconnected X) : CompactT2.Projective X := by
+end
+
+section
+
+variable {A B C D : Type u} [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [TopologicalSpace D] {E : Set D} {ρ : E → A} (ρ_cont : Continuous ρ) (ρ_surj : ρ.Surjective)
+  {π : D → A} (π_cont : Continuous π) (π_surj : π.Surjective)
+  (zorn_subset : ∀ E₀ : Set E, E₀ ≠ ⊤ → IsClosed E₀ → ρ '' E₀ ≠ ⊤)
+
+/-- Gleason's Lemma 2.4: a continuous surjection $\rho$ from a compact space $D$ to a Fréchet space
+$A$ restricts to a compact subset $E$ of $D$, such that $\rho$ maps $E$ onto $A$ and satisfies the
+"Zorn subset condition", where $\rho(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$. -/
+lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] : ∃ E : Set D,
+    CompactSpace E ∧ π '' E = ⊤ ∧ ∀ E₀ : Set E, E₀ ≠ ⊤ → IsClosed E₀ → E.restrict π '' E₀ ≠ ⊤ := by
+  have := π_cont
+  have := π_surj
   sorry
+
+private lemma ExtremallyDisconnected.homeoCompactToT2_injective [T2Space A]
+    [ExtremallyDisconnected A] [T2Space E] [CompactSpace E] : ρ.Injective := by
+  have := ρ_cont
+  have := ρ_surj
+  have := zorn_subset
+  sorry
+
+/-- Gleason's Lemma 2.3: a continuous surjection from an extremally disconnected compact Hausdorff
+space to a compact Hausdorff space satisfying the "Zorn subset condition" is a homeomorphism. -/
+protected noncomputable def ExtremallyDisconnected.homeoCompactToT2 [T2Space A]
+    [ExtremallyDisconnected A] [T2Space E] [CompactSpace E] : E ≃ₜ A :=
+  ρ_cont.homeoOfEquivCompactToT2
+    (f := Equiv.ofBijective ρ ⟨homeoCompactToT2_injective ρ_cont ρ_surj zorn_subset, ρ_surj⟩)
+
+/-- Gleason's Theorem 2.5: in the category of compact spaces and continuous maps, the
+projective spaces are precisely the extremally disconnected spaces. -/
+protected theorem CompactT2.ExtremallyDisconnected.projective [CompactSpace A] [T2Space A]
+    [ExtremallyDisconnected A] : CompactT2.Projective A := by
+  intro B C _ _ _ _ _ _ φ f φ_cont f_cont f_surj
+  let D : Set <| A × B := {x | φ x.fst = f x.snd}
+  have D_comp : CompactSpace D := isCompact_iff_compactSpace.mp
+    (isClosed_eq (φ_cont.comp continuous_fst) (f_cont.comp continuous_snd)).isCompact
+  let π₁ : D → A := Prod.fst ∘ Subtype.val
+  have π₁_cont : Continuous π₁ := continuous_fst.comp continuous_subtype_val
+  have π₁_surj : π₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
+  rcases exists_compact_surjective_zorn_subset π₁_cont π₁_surj with ⟨E, _, E_surj, E_proper⟩
+  let ρ : E → A := E.restrict π₁
+  have ρ_cont : Continuous ρ := π₁_cont.continuousOn.restrict
+  have ρ_surj : ρ.Surjective := fun a => by
+    rcases (E_surj ▸ Set.mem_univ a : a ∈ π₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
+  let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_proper
+  let π₂ : D → B := Prod.snd ∘ Subtype.val
+  have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
+  refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
+  suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
+    rw [← comp.assoc, this, comp.assoc, Homeomorph.self_comp_symm, comp.right_id]
+  ext x
+  exact x.val.property.symm
+
+end
