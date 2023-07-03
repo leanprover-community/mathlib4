@@ -35,7 +35,7 @@ open Opposite
 
 namespace AlgebraicGeometry
 
-/-- We define `Scheme` as a `X : LocallyRingedSpace`,
+/-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
 so that that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`

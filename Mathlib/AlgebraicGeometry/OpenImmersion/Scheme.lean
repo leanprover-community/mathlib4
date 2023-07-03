@@ -236,7 +236,7 @@ def affineBasisCoverOfAffine (R : CommRingCat) : OpenCover (Spec.obj (Opposite.o
   IsOpen x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 #align algebraic_geometry.Scheme.affine_basis_cover_of_affine AlgebraicGeometry.Scheme.affineBasisCoverOfAffine
 
-/-- We may bind the basic open sets of an open affine cover to form a affine cover that is also
+/-- We may bind the basic open sets of an open affine cover to form an affine cover that is also
 a basis. -/
 def affineBasisCover (X : Scheme) : OpenCover X :=
   X.affineCover.bind fun _ => affineBasisCoverOfAffine _

@@ -20,7 +20,7 @@ Similarly `single₀ V : V ⥤ ChainComplex V ℕ` is the special case for
 `ℕ`-indexed chain complexes, with the object supported in degree `0`,
 but with better definitional properties.
 
-In `toSingle₀Equiv` we characterize chain maps to a `ℕ`-indexed complex concentrated in degree 0;
+In `toSingle₀Equiv` we characterize chain maps to an `ℕ`-indexed complex concentrated in degree 0;
 they are equivalent to `{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
 (This is useful translating between a projective resolution and
 an augmented exact complex of projectives.)
@@ -221,7 +221,7 @@ end
 
 variable {V}
 
-/-- Morphisms from a `ℕ`-indexed chain complex `C`
+/-- Morphisms from an `ℕ`-indexed chain complex `C`
 to a single object chain complex with `X` concentrated in degree 0
 are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 -/
@@ -263,7 +263,7 @@ theorem to_single₀_ext {C : ChainComplex V ℕ} {X : V} (f g : C ⟶ (single�
 #align chain_complex.to_single₀_ext ChainComplex.to_single₀_ext
 
 /-- Morphisms from a single object chain complex with `X` concentrated in degree 0
-to a `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X`.
+to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X`.
 -/
 @[simps]
 def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) : ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
@@ -419,7 +419,7 @@ end
 variable {V}
 
 /-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
-to a `ℕ`-indexed cochain complex `C`
+to an `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`.
 -/
 def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :

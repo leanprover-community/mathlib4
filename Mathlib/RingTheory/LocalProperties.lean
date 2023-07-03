@@ -406,7 +406,7 @@ theorem localization_away_map_finite (r : R) [IsLocalization.Away r R']
   localization_finite.away r hf
 #align localization_away_map_finite localization_away_map_finite
 
-/-- Let `S` be an `R`-algebra, `M` an submonoid of `R`, and `S' = M⁻¹S`.
+/-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
 span of `IsLocalization.finsetIntegerMultiple _ s` over `R`.
@@ -595,7 +595,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
     mul_comm]
 #align is_localization.exists_smul_mem_of_mem_adjoin IsLocalization.exists_smul_mem_of_mem_adjoin
 
-/-- Let `S` be an `R`-algebra, `M` an submonoid of `R`, and `S' = M⁻¹S`.
+/-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the adjoin of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
 adjoin of `IsLocalization.finsetIntegerMultiple _ s` over `R`.

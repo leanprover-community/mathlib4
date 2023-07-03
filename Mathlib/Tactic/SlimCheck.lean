@@ -231,7 +231,7 @@ set_option trace.Meta.synthInstance true
 -- | e := do
 --   failed
 
--- /-- format a `instance_tree` -/
+-- /-- format an `instance_tree` -/
 -- meta def instance_tree.to_format : instance_tree → tactic format
 -- | (instance_tree.node n p xs) := do
 --   xs ← format.join <$> (xs.mmap $ λ t, flip format.indent 2 <$> instance_tree.to_format t),

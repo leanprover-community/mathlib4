@@ -20,7 +20,7 @@ import Mathlib.Tactic.LinearCombination
 
 This file defines `UpperHalfPlane` to be the upper half plane in `ℂ`.
 
-We furthermore equip it with the structure of an `GLPos 2 ℝ` action by
+We furthermore equip it with the structure of a `GLPos 2 ℝ` action by
 fractional linear transformations.
 
 We define the notation `ℍ` for the upper half plane available in the locale

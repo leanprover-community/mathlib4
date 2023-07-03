@@ -1105,7 +1105,7 @@ noncomputable def natEmbedding (α : Type _) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 #align infinite.nat_embedding Infinite.natEmbedding
 
-/-- See `Infinite.exists_superset_card_eq` for a version that, for a `s : Finset α`,
+/-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,
 provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
 theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
   ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩

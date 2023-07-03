@@ -706,8 +706,8 @@ section Prod
 
 variable (b' : Basis ι' R M')
 
-/-- `Basis.prod` maps a `ι`-indexed basis for `M` and a `ι'`-indexed basis for `M'`
-to a `ι ⊕ ι'`-index basis for `M × M'`.
+/-- `Basis.prod` maps an `ι`-indexed basis for `M` and an `ι'`-indexed basis for `M'`
+to an `ι ⊕ ι'`-index basis for `M × M'`.
 For the specific case of `R × R`, see also `Basis.finTwoProd`. -/
 protected def prod : Basis (Sum ι ι') R (M × M') :=
   ofRepr ((b.repr.prod b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
@@ -1648,7 +1648,7 @@ variable (R)
 
 open Submodule
 
-/-- Let `b` be a `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
+/-- Let `b` be an `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
 divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as a `R`-basis. -/
 noncomputable def Basis.restrictScalars : Basis ι R (span R (Set.range b)) :=
   Basis.span (b.linearIndependent.restrict_scalars (smul_left_injective R one_ne_zero))
@@ -1673,7 +1673,7 @@ theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
     Basis.restrictScalars_apply, LinearMap.coe_restrictScalars]
 #align basis.restrict_scalars_repr_apply Basis.restrictScalars_repr_apply
 
-/-- Let `b` be a `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the
+/-- Let `b` be an `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the
 coordinates of `m` on the basis `b` are in `R` (see `Basis.mem_span` for the case `R = S`). -/
 theorem Basis.mem_span_iff_repr_mem (m : M) :
     m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by

@@ -253,9 +253,9 @@ partial def _root_.Lean.MVarId.gcongr
       throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
     unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
-    -- and also build a array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in the
-    -- template (these will be used in recursive calls later), and an array of booleans according to
-    -- which of these contain `?_`
+    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
+    -- the template (these will be used in recursive calls later), and an array of booleans
+    -- according to which of these contain `?_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
       let hasMVar := tpl.findMVar? fun mvarId =>

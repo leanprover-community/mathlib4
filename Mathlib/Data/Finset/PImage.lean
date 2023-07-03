@@ -28,7 +28,7 @@ variable {α β : Type _}
 
 namespace Part
 
-/-- Convert a `o : Part α` with decidable `Part.Dom o` to `Finset α`. -/
+/-- Convert an `o : Part α` with decidable `Part.Dom o` to `Finset α`. -/
 def toFinset (o : Part α) [Decidable o.Dom] : Finset α :=
   o.toOption.toFinset
 #align part.to_finset Part.toFinset
