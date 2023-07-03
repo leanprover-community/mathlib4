@@ -8,9 +8,9 @@ Authors: Riccardo Brasca, Johan Commelin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Analysis.Normed.Group.SemiNormedGroup
-import Mathbin.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathbin.Analysis.Normed.Group.HomCompletion
+import Mathlib.Analysis.Normed.Group.SemiNormedGroup
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Analysis.Normed.Group.HomCompletion
 
 /-!
 # Completions of normed groups
@@ -46,8 +46,7 @@ namespace SemiNormedGroupCat
 
 /-- The completion of a seminormed group, as an endofunctor on `SemiNormedGroup`. -/
 @[simps]
-def completion : SemiNormedGroupCat.{u} ⥤ SemiNormedGroupCat.{u}
-    where
+def completion : SemiNormedGroupCat.{u} ⥤ SemiNormedGroupCat.{u} where
   obj V := SemiNormedGroupCat.of (completion V)
   map V W f := f.Completion
   map_id' V := completion_id
@@ -60,8 +59,7 @@ instance completion_completeSpace {V : SemiNormedGroupCat} : CompleteSpace (comp
 
 /-- The canonical morphism from a seminormed group `V` to its completion. -/
 @[simps]
-def completion.incl {V : SemiNormedGroupCat} : V ⟶ completion.obj V
-    where
+def completion.incl {V : SemiNormedGroupCat} : V ⟶ completion.obj V where
   toFun v := (v : completion V)
   map_add' := Completion.coe_add
   bound' := ⟨1, fun v => by simp⟩
@@ -92,8 +90,7 @@ theorem completion.map_zero (V W : SemiNormedGroupCat) : completion.map (0 : V �
   (completion.mapHom V W).map_zero
 #align SemiNormedGroup.Completion.map_zero SemiNormedGroupCat.completion.map_zero
 
-instance : Preadditive SemiNormedGroupCat.{u}
-    where
+instance : Preadditive SemiNormedGroupCat.{u} where
   homGroup P Q := inferInstance
   add_comp := by
     intros; ext
