@@ -723,6 +723,9 @@ protected noncomputable def unit (h : IsUnit a) : Mˣ :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 #align is_unit.unit IsUnit.unit
 
+lemma unit_mul [Monoid M] {x y : M} (hx : IsUnit x) (hy : IsUnit y) :
+  hx.unit * hy.unit = (hx.mul hy).unit := Iff.mpr Units.ext_iff rfl
+
 -- Porting note: `to_additive` doesn't carry over `noncomputable` so we make an explicit defn
 /-- "The element of the additive group of additive units, corresponding to an element of
 an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
