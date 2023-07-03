@@ -216,7 +216,7 @@ theorem testBit_eq_false_of_lt (h: n < 2^i) : n.testBit i = false := by
   simp [testBit, shiftr_eq_div_pow, 
         Nat.div_eq_zero (lt_of_lt_of_le h (pow_le_pow_of_le_right (by decide) h1))]
 
-theorem lt_of_testBit_true (h: n.testBit i = true) (hn : n < 2^w) : i < w := by
+theorem lt_of_testBit_eq_true (h: n.testBit i = true) (hn : n < 2^w) : i < w := by
   by_contra'; simp [testBit_false_of_lt hn this] at h
 
 @[simp]
