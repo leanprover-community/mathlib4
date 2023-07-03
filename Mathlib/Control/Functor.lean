@@ -40,7 +40,7 @@ variable {α β γ : Type u}
 
 variable [Functor F] [LawfulFunctor F]
 
-theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := by apply funext <;> apply id_map
+theorem Functor.map_id : (· <$> ·) id = (id : F α → F α) := funext id_map
 #align functor.map_id Functor.map_id
 
 theorem Functor.map_comp_map (f : α → β) (g : β → γ) :
