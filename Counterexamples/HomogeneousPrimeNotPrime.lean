@@ -13,13 +13,13 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.DeriveFintype
 
 /-!
-# A homogeneous prime that is homogeneously prime but not prime
+# A homogeneous ideal that is homogeneously prime but not prime
 
-In `src/ring_theory/graded_algebra/radical.lean`,  we assumed that the underline grading is indexed
-by a `linear_ordered_cancel_add_comm_monoid` to prove that a homogeneous ideal is prime if and only
-if it is homogeneously prime. This file is aimed to show that even if this assumption isn't strictly
-necessary, the assumption of "being cancellative" is. We construct a counterexample where the
-underlying indexing set is a `linear_ordered_add_comm_monoid` but is not cancellative and the
+In `Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem`, we assumed that the underlying grading
+is indexed by a `LinearOrderedCancelAddCommMonoid` to prove that a homogeneous ideal is prime
+if and only if it is homogeneously prime. This file shows that even if this assumption isn't
+strictly necessary, the assumption of "being cancellative" is. We construct a counterexample where
+the underlying indexing set is a `LinearOrderedAddCommMonoid` but is not cancellative and the
 statement is false.
 
 We achieve this by considering the ring `R=ℤ/4ℤ`. We first give the two element set `ι = {0, 1}` a
@@ -75,7 +75,7 @@ def submoduleO : Submodule R (R × R) :=
   LinearMap.ker (LinearMap.fst R R R)
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.submodule_o Counterexample.CounterexampleNotPrimeButHomogeneousPrime.submoduleO
 
-/-- Given the above grading (see `submodule_z` and `submodule_o`),
+/-- Given the above grading (see `submoduleZ` and `submoduleO`),
   we turn `R²` into a graded ring. -/
 def grading : Two → Submodule R (R × R)
   | 0 => submoduleZ R
@@ -173,9 +173,6 @@ theorem I_not_prime : ¬I.IsPrime := by
     dvd_refl, and_true, true_and, or_self, forall_true_left] using rid2
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.I_not_prime Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I_not_prime
 
--- this is what we change the max instance depth for, it's only 2 above the default
---set_option class.instance_max_depth 32
-
 theorem I_isHomogeneous : Ideal.IsHomogeneous (grading R) I := by
   rw [Ideal.IsHomogeneous.iff_exists]
   refine' ⟨{⟨(2, 2), ⟨0, rfl⟩⟩}, _⟩
@@ -210,7 +207,6 @@ theorem homogeneous_mem_or_mem {x y : R × R} (hx : SetLike.Homogeneous (grading
     simp only [prod_dvd_iff, dvd_zero, true_and, and_self,
       Prod.mk_mul_mk, mul_zero, zero_mul] at hxy ⊢ <;>
     apply h2.dvd_or_dvd hxy
-
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.homogeneous_mem_or_mem Counterexample.CounterexampleNotPrimeButHomogeneousPrime.homogeneous_mem_or_mem
 
 end CounterexampleNotPrimeButHomogeneousPrime
