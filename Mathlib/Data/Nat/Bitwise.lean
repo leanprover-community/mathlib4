@@ -212,7 +212,7 @@ theorem testBit_of_lt (h: n < m) : ∃ i, Nat.testBit n i = false ∧
                                  have ⟨j', hj⟩ := exists_eq_add_of_le' hj
                                  simp[hj, testBit_succ, h3.1]⟩ 
 
-theorem testBit_false_of_lt (h: n < 2^i) (h1: i ≤ j) : n.testBit j = false:= by 
+theorem testBit_eq_false_of_lt (h: n < 2^i) : n.testBit i = false := by 
   simp [testBit, shiftr_eq_div_pow, 
         Nat.div_eq_zero (lt_of_lt_of_le h (pow_le_pow_of_le_right (by decide) h1))]
 
