@@ -110,7 +110,7 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
       (tendsto_inv_atTop_zero.comp this).congr fun n => by simp)
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
 
-theorem tendsto_pow_atTop_nhds_0_iff {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+@[simp] theorem tendsto_pow_atTop_nhds_0_iff {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} : --(h₁ : 0 ≤ r) :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
     rw [tendsto_zero_iff_abs_tendsto_zero]
