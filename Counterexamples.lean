@@ -6,6 +6,7 @@ import Counterexamples.Girard
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.Phillips
+import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
