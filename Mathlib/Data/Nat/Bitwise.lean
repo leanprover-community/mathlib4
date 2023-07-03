@@ -195,7 +195,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
 #align nat.lt_of_test_bit Nat.lt_of_testBit
 
 theorem testBit_of_lt (h: n < m) : ∃ i, Nat.testBit n i = false ∧ 
-  Nat.testBit m i = true ∧ ∀ j, i < j → Nat.testBit m j = Nat.testBit n j := by
+    Nat.testBit m i = true ∧ ∀ j, i < j → Nat.testBit m j = Nat.testBit n j := by
   induction' n using Nat.binaryRec with b n ih generalizing m
   · have ⟨i, _, _⟩ := exists_most_significant_bit (ne_of_lt h).symm
     use i; simpa [*]
