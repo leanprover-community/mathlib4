@@ -710,7 +710,7 @@ variable {n : ℕ}
 -- Porting note: TODO, I added this temporarily
 @[inherit_doc]
 notation f " ∘ᵣ " g => RingHom.comp f g
-
+/-
 private lemma aux_IH₃ {R S T: Type _} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] (u : S  ≃ₐ[R] T)
   (P : Ideal T) :
@@ -731,24 +731,14 @@ private lemma aux_IH₂ {R : Type _} [CommRing R] [IsJacobson R] (n : ℕ)
       refine' comap_isMaximal_of_surjective  _ _
       simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, coe_coe, AlgHom.coe_coe]
       exact (MvPolynomial.finSuccEquiv R n).symm.surjective
-    apply @Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson (MvPolynomial (Fin n) R) _ isJac
+    apply @Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson (MvPolynomial (Fin n) R) _ isJac -/
 
-noncomputable def Polynomial.Cₐ (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S] :
-  S →ₐ[R] S[X] := { Polynomial.C with
+-- Needed ?
+/-- The constant coefficient ap a R-linear morphism -/
+private noncomputable def Polynomial.Cₐ (R : Type u) (S : Type v)
+  [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
+  { Polynomial.C with
     commutes' := fun r => by rfl }
-
-example {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T]
-    (P : Ideal T) (v : S ≃ₐ[R] T) :
-    map v (comap v P) = P := map_comap_of_surjective v v.surjective P
-
-
-
-
-
-
-
-
 
 lemma aux_IH {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommRing T]
   -- [IsJacobson R]
@@ -804,8 +794,6 @@ theorem quotient_mk_comp_C_isIntegral_of_jacobson {R : Type _} [CommRing R] [IsJ
     infer_instance
 set_option linter.uppercaseLean3 false in
 #align ideal.mv_polynomial.quotient_mk_comp_C_isIntegral_of_jacobson Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson
-
-
 
 theorem comp_C_integral_of_surjective_of_jacobson {R : Type _} [CommRing R] [IsJacobson R]
     {σ : Type _} [Finite σ] {S : Type _} [Field S] (f : MvPolynomial σ R →+* S)
