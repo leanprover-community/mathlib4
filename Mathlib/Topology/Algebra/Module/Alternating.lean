@@ -29,8 +29,13 @@ open scoped BigOperators
 -/
 structure ContinuousAlternatingMap (R M N ι : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
-    ContinuousMultilinearMap R (fun _ : ι => M) N where
-  map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → toFun v = 0
+    ContinuousMultilinearMap R (fun _ : ι => M) N, AlternatingMap R M N ι  where
+
+/-- Projection to `ContinuousMultilinearMap`s. -/
+add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
+
+/-- Projection to `AlternatingMap`s. -/
+add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
 notation "Λ^" ι "⟮" R "; " M "; " N "⟯" => ContinuousAlternatingMap R M N ι
 
@@ -55,16 +60,10 @@ theorem range_toContinuousMultilinearMap :
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
 
-instance continuousMapClass : ContinuousMapClass Λ^ι⟮R; M; N⟯ (ι → M) N
-    where
+instance continuousMapClass : ContinuousMapClass Λ^ι⟮R; M; N⟯ (ι → M) N where
   coe f := f.toFun
   coe_injective' _ _ h := toContinuousMultilinearMap_injective <| FunLike.ext' h
   map_continuous f := f.cont
-
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
-def Simps.apply (f : Λ^ι⟮R; M; N⟯) : (ι → M) → N :=
-  f
 
 initialize_simps_projections ContinuousAlternatingMap (toFun → apply)
 
@@ -79,19 +78,16 @@ theorem coe_toContinuousMultilinearMap : ⇑f.toContinuousMultilinearMap = f :=
 theorem coe_mk (f : ContinuousMultilinearMap R (fun _ : ι => M) N) (h) : ⇑(mk f h) = f :=
   rfl
 
+-- not a `simp` lemma because this projection is a reducible call to `mk`, so `simp` can prove
+-- this lemma
+theorem coe_toAlternatingMap : ⇑f.toAlternatingMap = f := rfl
+
 @[ext]
 theorem ext {f g : Λ^ι⟮R; M; N⟯} (H : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ H
 
 theorem ext_iff {f g : Λ^ι⟮R; M; N⟯} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
-
-/-- Projection to `AlternatingMap`s. -/
-def toAlternatingMap : AlternatingMap R M N ι :=
-  { f with }
-
-@[simp] theorem toAlternatingMap_coe : ⇑f.toAlternatingMap = f := rfl
-theorem toAlternatingMap_apply : f.toAlternatingMap v = f v := rfl
 
 theorem toAlternatingMap_injective :
     Injective (toAlternatingMap : Λ^ι⟮R; M; N⟯ → AlternatingMap R M N ι) := fun f g h =>
@@ -297,9 +293,8 @@ theorem constOfIsEmpty_toAlternatingMap [IsEmpty ι] (m : N) :
 
 end
 
-/-- If `g` is continuous alternating and `f` is a collection of continuous linear maps,
-then `g (f₁ m₁, ..., fₙ mₙ)` is again a continuous alternating map, that we call
-`g.compContinuousLinearMap f`. -/
+/-- If `g` is continuous alternating and `f` is a continuous linear map, then `g (f m₁, ..., f mₙ)`
+is again a continuous alternating map, that we call `g.compContinuousLinearMap f`. -/
 def compContinuousLinearMap (g : Λ^ι⟮R; M; N⟯) (f : M' →L[R] M) : Λ^ι⟮R; M'; N⟯ :=
   { g.toAlternatingMap.compLinearMap (f : M' →ₗ[R] M) with
     toContinuousMultilinearMap := g.1.compContinuousLinearMap fun _ => f }
@@ -613,4 +608,3 @@ theorem alternatization_apply_toAlternatingMap :
   simp [alternatization_apply_apply, MultilinearMap.alternatization_apply, (· ∘ ·)]
 
 end ContinuousMultilinearMap
-
