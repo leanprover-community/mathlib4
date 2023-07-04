@@ -2700,6 +2700,13 @@ instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [h : Ca
   infer_instance
 #align category_theory.limits.has_pullbacks_of_has_wide_pullbacks CategoryTheory.Limits.hasPullbacks_of_hasWidePullbacks
 
+-- see Note [lower instance priority]
+/-- Having wide pushout at any universe level implies having binary pushouts. -/
+instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Category.{v} D]
+    [h' : HasWidePushouts.{w} D] : HasPushouts.{v,u} D := by
+  haveI I := @hasWidePushouts_shrink.{0, w} D h h'
+  infer_instance
+
 variable {C}
 
 -- Porting note: removed semireducible from the simps config

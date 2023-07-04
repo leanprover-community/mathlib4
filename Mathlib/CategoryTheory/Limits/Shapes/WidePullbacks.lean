@@ -264,6 +264,24 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
           cases j <;> cases j' <;> cases f <;> refine id _  <;> dsimp <;> simp [w] } }
 #align category_theory.limits.wide_pushout_shape.mk_cocone CategoryTheory.Limits.WidePushoutShape.mkCocone
 
+/-- Wide pushout diagrams of equivalent index types are equivalent. -/
+def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J'
+    where
+  functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
+  inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
+  unitIso :=
+    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+      simp only [eq_iff_true_of_subsingleton]
+  counitIso :=
+    NatIso.ofComponents (fun j => by aesop_cat_nonterminal; repeat rfl) fun f => by
+      simp only [eq_iff_true_of_subsingleton]
+
+/-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
+def uliftEquivalence :
+    ULiftHom.{w'} (ULift.{w'} (WidePushoutShape J)) ≌ WidePushoutShape (ULift J) :=
+  (ULiftHomULiftCategory.equiv.{w', w', w, w} (WidePushoutShape J)).symm.trans
+    (equivalenceOfEquiv _ (Equiv.ulift.{w', w}.symm : J ≃ ULift.{w'} J))
+
 end WidePushoutShape
 
 variable (C : Type u) [Category.{v} C]
@@ -548,6 +566,11 @@ def widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape 
   unitIso := (widePullbackShapeOpUnop J).symm
   counitIso := widePushoutShapeUnopOp J
 #align category_theory.limits.wide_pullback_shape_op_equiv CategoryTheory.Limits.widePullbackShapeOpEquiv
+
+/-- If a category has wide pushouts on a higher universe level it also has wide pushouts
+on a lower universe level. -/
+theorem hasWidePushouts_shrink [HasWidePushouts.{max w w'} C] : HasWidePushouts.{w} C := fun _ =>
+  hasColimitsOfShape_of_equivalence (WidePushoutShape.equivalenceOfEquiv _ Equiv.ulift.{w'})
 
 /-- If a category has wide pullbacks on a higher universe level it also has wide pullbacks
 on a lower universe level. -/
