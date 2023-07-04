@@ -143,7 +143,7 @@ theorem of_convergence_epsilon :
       exact lt_of_lt_of_le one_lt_ε_mul_N' this
     suffices : ε * n ≤ ε * (B * nB); exact lt_of_lt_of_le one_lt_ε_mul_N this
     -- cancel `ε`
-    suffices : (n : K) ≤ B * nB;
+    suffices : (n : K) ≤ B * nB
     exact (mul_le_mul_left ε_pos).mpr this
     show (n : K) ≤ B * nB
     calc

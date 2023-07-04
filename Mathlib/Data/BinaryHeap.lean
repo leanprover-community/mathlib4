@@ -90,7 +90,7 @@ def get {lt} (self : BinaryHeap α lt) (i : Fin self.size) : α := self.1.get i
 
 /-- `O(log n)`. Insert an element into a `BinaryHeap`, preserving the max-heap property. -/
 def insert {lt} (self : BinaryHeap α lt) (x : α) : BinaryHeap α lt where
-  arr := let n := self.size;
+  arr := let n := self.size
     heapifyUp lt (self.1.push x) ⟨n, by rw [Array.size_push]; apply Nat.lt_succ_self⟩
 
 @[simp] theorem size_insert {lt} (self : BinaryHeap α lt) (x : α) :

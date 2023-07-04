@@ -136,16 +136,16 @@ example {x y z w : ℕ} : true := by
 --     (h' : ys ≤ zs) :
 --     xs ≤ zs := by
 --   revert ys zs
---   induction' xs with x xs
---   intros ys zs h h'
---   cases ys with y ys
---   cases zs with z zs
---   try { cases h; cases h'; done },
---   { apply list.le_refl },
---   { simp [has_le.le,list.le],
---     split,
---     apply le_trans h.left h'.left,
---     apply xs_ih _ h.right h'.right, }
+--   induction' xs with x xs <;>
+--   intros ys zs h h' <;>
+--   cases ys with y ys <;>
+--   cases zs with z zs <;>
+--   try (cases h <;> cases h' <;> done)
+--   · apply list.le_refl
+--   · simp [has_le.le, list.le]
+--     split
+--     apply le_trans h.left h'.left
+--     apply xs_ih _ h.right h'.right
 
 -- @[mono]
 -- lemma list_le_mono_left {α : Type*} [preorder α] {xs ys zs : list α}

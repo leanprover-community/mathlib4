@@ -724,7 +724,7 @@ theorem map_append (f : α → β) (s t) : map f (append s t) = append (map f s)
   apply
     eq_of_bisim (fun s1 s2 => ∃ s t, s1 = map f (append s t) ∧ s2 = append (map f s) (map f t)) _
       ⟨s, t, rfl, rfl⟩
-  intro s1 s2 h;
+  intro s1 s2 h
   exact
     match s1, s2, h with
     | _, _, ⟨s, t, rfl, rfl⟩ => by

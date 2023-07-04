@@ -55,8 +55,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
               _ ≤ natDegree (C (coeff p n)) + n • ↑(natDegree q) :=
                 (add_le_add_left (nsmul_le_nsmul_of_le_right (@degree_le_natDegree _ _ q) n) _)
               _ = (n * natDegree q : ℕ) := by
-                rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul];
-                  simp
+                rw [natDegree_C, Nat.cast_zero, zero_add, nsmul_eq_mul]; simp
               _ ≤ (natDegree p * natDegree q : ℕ) :=
                 WithBot.coe_le_coe.2 <|
                   mul_le_mul_of_nonneg_right (le_natDegree_of_ne_zero (mem_support_iff.1 hn))
@@ -131,8 +130,8 @@ theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_degree_mul_C_eq_of_mul_eq_one Polynomial.natDegree_mul_C_eq_of_mul_eq_one
 
-/-- Although not explicitly stated, the assumptions of lemma `nat_degree_mul_C_eq_of_mul_ne_zero`
-force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
+/-- Although not explicitly stated, the assumptions of lemma `natDegree_mul_C_eq_of_mul_ne_zero`
+force the polynomial `p` to be non-zero, via `p.leadingCoeff ≠ 0`.
 -/
 theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
     (p * C a).natDegree = p.natDegree := by
@@ -142,8 +141,8 @@ theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
 set_option linter.uppercaseLean3 false in
 #align polynomial.nat_degree_mul_C_eq_of_mul_ne_zero Polynomial.natDegree_mul_C_eq_of_mul_ne_zero
 
-/-- Although not explicitly stated, the assumptions of lemma `nat_degree_C_mul_eq_of_mul_ne_zero`
-force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
+/-- Although not explicitly stated, the assumptions of lemma `natDegree_C_mul_eq_of_mul_ne_zero`
+force the polynomial `p` to be non-zero, via `p.leadingCoeff ≠ 0`.
 -/
 theorem natDegree_C_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by

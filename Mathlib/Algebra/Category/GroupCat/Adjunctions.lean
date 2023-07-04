@@ -148,7 +148,7 @@ def abelianize : GroupCat.{u} ⥤ CommGroupCat.{u} where
     intros; simp only [MonoidHom.mk_coe, coe_id]
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
   map_comp := by
-    intros; simp only [coe_comp];
+    intros; simp only [coe_comp]
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr; rfl
 #align abelianize abelianize
 

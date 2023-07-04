@@ -92,7 +92,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_conts_aux :
         · -- invoke the IH a second time
           cases' IH n <| lt_of_le_of_lt n.le_succ <| lt_add_one <| n + 1 with ppred_conts
             ppred_conts_eq
-          obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K);
+          obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K)
           exact of_part_num_eq_one_and_exists_int_part_denom_eq s_ppred_nth_eq
           -- finally, unfold the recurrence to obtain the required rational value.
           simp only [a_eq_one, b_eq_z,
@@ -131,7 +131,7 @@ variable {v}
 
 /-- Every terminating continued fraction corresponds to a rational number. -/
 theorem exists_rat_eq_of_terminates (terminates : (of v).Terminates) : ∃ q : ℚ, v = ↑q := by
-  obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convergents n;
+  obtain ⟨n, v_eq_conv⟩ : ∃ n, v = (of v).convergents n
   exact of_correctness_of_terminates terminates
   obtain ⟨q, conv_eq_q⟩ : ∃ q : ℚ, (of v).convergents n = (↑q : K)
   exact exists_rat_eq_nth_convergent v n
@@ -192,7 +192,7 @@ theorem coe_stream_nth_rat_eq :
       cases' ifp_n with b fr
       cases' Decidable.em (fr = 0) with fr_zero fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
-      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n;
+      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n
         · rwa [stream_q_nth_eq] at IH
         have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
         have coe_of_fr := coe_of_rat_eq this

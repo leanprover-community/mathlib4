@@ -289,7 +289,7 @@ theorem cast_one (h : m ∣ n) : ((1 : ZMod n) : R) = 1 := by
   cases' n with n
   · exact Int.cast_one
   show ((1 % (n + 1) : ℕ) : R) = 1
-  cases n;
+  cases n
   · rw [Nat.dvd_one] at h
     subst m
     apply Subsingleton.elim

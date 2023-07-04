@@ -187,9 +187,7 @@ def Cofix.corec₁ {α : TypeVec n} {β : Type u}
 
 theorem Cofix.dest_corec {α : TypeVec n} {β : Type u} (g : β → F (α.append1 β)) (x : β) :
     Cofix.dest (Cofix.corec g x) = appendFun id (Cofix.corec g) <$$> g x := by
-  conv =>
-    lhs
-    rw [Cofix.dest, Cofix.corec];
+  conv_lhs => rw [Cofix.dest, Cofix.corec]
   dsimp
   rw [corecF_eq, abs_map, abs_repr, ← comp_map, ← appendFun_comp]; rfl
 #align mvqpf.cofix.dest_corec MvQPF.Cofix.dest_corec
@@ -220,9 +218,9 @@ private theorem Cofix.bisim_aux {α : TypeVec n} (r : Cofix F α → Cofix F α 
       appendFun id (Quot.mk r) <$$> Cofix.dest x = appendFun id (Quot.mk r) <$$> Cofix.dest y) :
     ∀ x y, r x y → x = y := by
   intro x
-  rcases x; clear x; rename M (P F) α => x;
+  rcases x; clear x; rename M (P F) α => x
   intro y
-  rcases y; clear y; rename M (P F) α => y;
+  rcases y; clear y; rename M (P F) α => y
   intro rxy
   apply Quot.sound
   let r' := fun x y => r (Quot.mk _ x) (Quot.mk _ y)
@@ -337,7 +335,7 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type _} (Q : β → Prop) (u v : β 
 #align mvqpf.cofix.bisim' MvQPF.Cofix.bisim'
 
 theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
-  apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl;
+  apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl
   dsimp
   intro x y h
   rw [h]
@@ -352,7 +350,7 @@ theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x
   congr
   apply congrArg
   funext x
-  apply Quot.sound;
+  apply Quot.sound
   rfl
 #align mvqpf.cofix.mk_dest MvQPF.Cofix.mk_dest
 
@@ -437,8 +435,8 @@ variable {F: TypeVec (n + 1) → Type u} [MvFunctor F] [q : MvQPF F]
 theorem Cofix.abs_repr {α} (x : Cofix F α) : Quot.mk _ (Cofix.repr x) = x := by
   let R := fun x y : Cofix F α => abs (repr y) = x
   refine' Cofix.bisim₂ R _ _ _ rfl
-  clear x;
-  rintro x y h;
+  clear x
+  rintro x y h
   subst h
   dsimp [Cofix.dest, Cofix.abs]
   induction y using Quot.ind

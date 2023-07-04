@@ -142,7 +142,7 @@ theorem natTrailingDegree_eq_of_trailingDegree_eq_some {p : R[X]} {n : ℕ}
 
 @[simp]
 theorem natTrailingDegree_le_trailingDegree : ↑(natTrailingDegree p) ≤ trailingDegree p := by
-  by_cases hp : p = 0;
+  by_cases hp : p = 0
   · rw [hp, trailingDegree_zero]
     exact le_top
   rw [trailingDegree_eq_natTrailingDegree hp]
@@ -191,7 +191,7 @@ theorem natTrailingDegree_le_of_trailingDegree_le {n : ℕ} {hp : p ≠ 0}
 
 theorem natTrailingDegree_le_natTrailingDegree {hq : q ≠ 0}
     (hpq : p.trailingDegree ≤ q.trailingDegree) : p.natTrailingDegree ≤ q.natTrailingDegree := by
-  by_cases hp : p = 0;
+  by_cases hp : p = 0
   · rw [hp, natTrailingDegree_zero]
     exact zero_le _
   rw [trailingDegree_eq_natTrailingDegree hp, trailingDegree_eq_natTrailingDegree hq] at hpq

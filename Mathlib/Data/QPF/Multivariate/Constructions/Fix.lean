@@ -337,10 +337,8 @@ instance mvqpfFix : MvQPF (Fix F) where
     apply Quot.sound
     apply wrepr_equiv
   abs_map := by
-    intro α β g x;
-    conv =>
-      rhs
-      dsimp [MvFunctor.map]
+    intro α β g x
+    conv_rhs => dsimp [MvFunctor.map]
 #align mvqpf.mvqpf_fix MvQPF.mvqpfFix
 
 /-- Dependent recursor for `fix F` -/

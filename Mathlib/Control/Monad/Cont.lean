@@ -176,7 +176,7 @@ instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
     dsimp
     congr with ⟨⟩ <;> simp [@callCC_dummy m _]
   callCC_bind_left := by
-    intros;
+    intros
     simp [callCC, OptionT.callCC, callCC_bind_right, OptionT.goto_mkLabel, map_eq_bind_pure_comp,
       bind_assoc, @callCC_bind_left m _, Function.comp]
     ext; rfl
@@ -237,10 +237,10 @@ instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) 
     intros
     simp [callCC, StateT.callCC, callCC_bind_right]; ext; rfl
   callCC_bind_left := by
-    intros;
+    intros
     simp [callCC, StateT.callCC, callCC_bind_left, StateT.goto_mkLabel]; ext; rfl
   callCC_dummy := by
-    intros;
+    intros
     simp [callCC, StateT.callCC, callCC_bind_right, @callCC_dummy m _]
     ext; rfl
 

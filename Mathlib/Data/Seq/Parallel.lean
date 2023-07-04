@@ -285,14 +285,10 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
 #align computation.exists_of_mem_parallel Computation.exists_of_mem_parallel
 
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
-  refine'
-    eq_of_bisim
-      (fun c1 c2 =>
-        ∃ l S,
-          c1 = map f (corec parallel.aux1 (l, S)) ∧
-            c2 = corec parallel.aux1 (l.map (map f), S.map (map f)))
-      _ ⟨[], S, rfl, rfl⟩
-  intro c1 c2 h;
+  refine' eq_of_bisim (fun c1 c2 => ∃ l S,
+    c1 = map f (corec parallel.aux1 (l, S)) ∧
+    c2 = corec parallel.aux1 (l.map (map f), S.map (map f))) _ ⟨[], S, rfl, rfl⟩
+  intro c1 c2 h
   exact
     match c1, c2, h with
     | _, _, ⟨l, S, rfl, rfl⟩ => by

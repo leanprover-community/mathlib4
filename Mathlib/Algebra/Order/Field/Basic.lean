@@ -572,7 +572,7 @@ theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
 #align exists_pos_mul_lt exists_pos_mul_lt
 
 theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
-  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b;
+  let ⟨c, hc₀, hc⟩ := exists_pos_mul_lt h b
   ⟨c⁻¹, inv_pos.2 hc₀, by rwa [← div_eq_inv_mul, lt_div_iff hc₀]⟩
 #align exists_pos_lt_mul exists_pos_lt_mul
 

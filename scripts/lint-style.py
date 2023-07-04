@@ -290,7 +290,7 @@ def format_errors(errors):
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of · for it")
+            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
         if errno == ERR_SEM:
             output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
 

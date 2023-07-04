@@ -30,10 +30,9 @@ multiplicative group actions).
 
 ## Notations
 
-* `v +ᵥ p` is a notation for `VAdd.vadd`, the left action of an additive monoid;
-
+* `v +ᵥ p` is a notation for `VAdd.vadd`, the left action of an additive monoid.
 * `p₁ -ᵥ p₂` is a notation for `VSub.vsub`, difference between two points in an additive torsor
-  as an element of the corresponding additive group;
+  as an element of the corresponding additive group.
 
 ## References
 

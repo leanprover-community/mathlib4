@@ -140,7 +140,7 @@ fraction `GeneralizedContinuedFraction.of`.
 /-- Shows that the integer parts of the continued fraction are at least one. -/
 theorem of_one_le_get?_part_denom {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) : 1 ≤ b := by
-  obtain ⟨gp_n, nth_s_eq, ⟨-⟩⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b;
+  obtain ⟨gp_n, nth_s_eq, ⟨-⟩⟩ : ∃ gp_n, (of v).s.get? n = some gp_n ∧ gp_n.b = b
   exact exists_s_b_of_part_denom nth_part_denom_eq
   obtain ⟨ifp_n, succ_nth_stream_eq, ifp_n_b_eq_gp_n_b⟩ :
     ∃ ifp, IntFractPair.stream v (n + 1) = some ifp ∧ (ifp.b : K) = gp_n.b
@@ -168,7 +168,7 @@ theorem of_part_num_eq_one_and_exists_int_part_denom_eq {gp : GeneralizedContinu
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
 theorem of_part_num_eq_one {a : K} (nth_part_num_eq : (of v).partialNumerators.get? n = some a) :
     a = 1 := by
-  obtain ⟨gp, nth_s_eq, gp_a_eq_a_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.a = a;
+  obtain ⟨gp, nth_s_eq, gp_a_eq_a_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.a = a
   exact exists_s_a_of_part_num nth_part_num_eq
   have : gp.a = 1 := (of_part_num_eq_one_and_exists_int_part_denom_eq nth_s_eq).left
   rwa [gp_a_eq_a_n] at this
@@ -177,7 +177,7 @@ theorem of_part_num_eq_one {a : K} (nth_part_num_eq : (of v).partialNumerators.g
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
 theorem exists_int_eq_of_part_denom {b : K}
     (nth_part_denom_eq : (of v).partialDenominators.get? n = some b) : ∃ z : ℤ, b = (z : K) := by
-  obtain ⟨gp, nth_s_eq, gp_b_eq_b_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b;
+  obtain ⟨gp, nth_s_eq, gp_b_eq_b_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.b = b
   exact exists_s_b_of_part_denom nth_part_denom_eq
   have : ∃ z : ℤ, gp.b = (z : K) := (of_part_num_eq_one_and_exists_int_part_denom_eq nth_s_eq).right
   rwa [gp_b_eq_b_n] at this
@@ -346,7 +346,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
       have gp_a_eq_one : gp.a = 1 := of_part_num_eq_one (part_num_eq_s_a s_nth_eq)
       rw [gp_a_eq_one, this.symm]
       ring
-    suffices : pA * ppB - pB * ppA = (-1) ^ (n + 1);
+    suffices : pA * ppB - pB * ppA = (-1) ^ (n + 1)
     calc
       pA * (ppB + gp.b * pB) - pB * (ppA + gp.b * pA) =
           pA * ppB + pA * gp.b * pB - pB * ppA - pB * gp.b * pA := by ring
@@ -395,7 +395,7 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
     compExactValue_correctness_of_stream_eq_some stream_nth_eq
   cases' Decidable.em (ifp.fr = 0) with ifp_fr_eq_zero ifp_fr_ne_zero
   · suffices v - g.convergents n = 0 by simpa [ifp_fr_eq_zero]
-    replace g_finite_correctness : v = g.convergents n;
+    replace g_finite_correctness : v = g.convergents n
     · simpa [GeneralizedContinuedFraction.compExactValue, ifp_fr_eq_zero] using g_finite_correctness
     exact sub_eq_zero.2 g_finite_correctness
   · -- more shorthand notation
@@ -423,8 +423,8 @@ theorem sub_convergents_eq {ifp : IntFractPair K}
         exact Or.inr this
     have determinant_eq : pA * B - pB * A = (-1) ^ n :=
       determinant_aux n_eq_zero_or_not_terminated_at_pred_n
-    -- now all we got to do is to rewrite this equality in our goal and re-arrange terms;
-    -- however, for this, we first have to derive quite a few tedious inequalities.
+    -- Now all we have to do is rewrite this equality in our goal and re-arrange terms.
+    -- However, for this we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=
       haveI : n ≤ 1 ∨ ¬g.TerminatedAt (n - 2) := by
         cases' n_eq_zero_or_not_terminated_at_pred_n with n_eq_zero not_terminated_at_pred_n
