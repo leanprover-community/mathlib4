@@ -639,7 +639,7 @@ theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegra
     (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
     IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
   (isClosed_singleton_iff_isMaximal _).2
-    (Ideal.isMaximal_comap_of_isIntegral_of_is_maximal' f hf x.asIdeal <|
+    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal <|
       (isClosed_singleton_iff_isMaximal x).1 hx)
 #align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
 
