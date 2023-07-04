@@ -5,10 +5,10 @@ Authors: Kyle Miller
 -/
 import Mathlib.Tactic.Basic
 
-/-! # Tactics that do definitional transformations
+/-! # Tactics that transform types into definitionally equal types
 
 This module defines a standard wrapper that can be used to create tactics that
-change hypotheses and the goal definitionally.
+change hypotheses and the goal to things that are definitionally equal.
 
 It then provides a number of tactics that transform local hypotheses and/or the target.
 -/
@@ -36,13 +36,18 @@ def runDefeqTactic (m : Expr → MetaM Expr)
       mvarId.change (← m ty))
     (failed := fun _ => throwError "{tacticName} failed")
 
+/-- Like `Mathlib.Tactic.runDefeqTactic` but for `conv` mode. -/
+def runDefeqConvTactic (m : Expr → MetaM Expr) : TacticM Unit := withMainContext do
+  Conv.changeLhs <| ← m (← instantiateMVars <| ← Conv.getLhs)
+
 
 /-! ### `whnf` -/
 
 /--
 `whnf at loc` puts the given location into weak-head normal form.
+This also exists as a `conv`-mode tactic.
 
-This is when the outer-most expression has been fully reduced, the expression
+Weak-head normal form is when the outer-most expression has been fully reduced, the expression
 may contain subexpressions which have not been reduced.
 -/
 elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
@@ -53,19 +58,24 @@ elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
 
 /--
 `beta_reduce at loc` completely beta reduces the given location.
+This also exists as a `conv`-mode tactic.
 
 This means that whenever there is an applied lambda expression such as
 `(fun x => f x) y` then the argument is substituted into the lambda expression
 yielding an expression such as `f y`.
 -/
-elab "beta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
+elab (name := betaReduceStx) "beta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefeqTactic (Core.betaReduce ·) loc? "beta_reduce"
+
+@[inherit_doc betaReduceStx]
+elab "beta_reduce" : conv => runDefeqConvTactic (Core.betaReduce ·)
 
 
 /-! ### `reduce` -/
 
 /--
 `reduce at loc` completely reduces the given location.
+This also exists as a `conv`-mode tactic.
 
 This does the same transformation at the `#reduce` command.
 -/
@@ -88,13 +98,16 @@ def unfoldFVars (fvars : Array FVarId) (e : Expr) : MetaM Expr := do
 
 /--
 `unfold_let x y z at loc` unfolds the local definitions `x`, `y`, and `z` at the given
-location. This is known as "zeta reduction."
+location, which is known as "zeta reduction."
+This also exists as a `conv`-mode tactic.
 
 If no local definitions are given, then all local definitions are unfolded.
+This variant also exists as the `conv`-mode tactic `zeta`.
 
-The `unfold` tactic instead is for unfolding global definitions.
+This is similar to the `unfold` tactic, which instead is for unfolding global definitions.
 -/
-syntax "unfold_let" (ppSpace colGt term:max)* (ppSpace Parser.Tactic.location)? : tactic
+syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
+  (ppSpace Parser.Tactic.location)? : tactic
 
 elab_rules : tactic
   | `(tactic| unfold_let $[$loc?]?) =>
@@ -102,19 +115,40 @@ elab_rules : tactic
   | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
     runDefeqTactic (unfoldFVars (← getFVarIds hs)) loc? "unfold_let"
 
+syntax "unfold_let" (ppSpace colGt term:max)* : conv
+
+@[inherit_doc unfoldLetStx]
+elab_rules : conv
+  | `(conv| unfold_let) => runDefeqConvTactic Meta.zetaReduce
+  | `(conv| unfold_let $hs:term*) => do
+    runDefeqConvTactic (unfoldFVars (← getFVarIds hs))
+
 
 /-! ### `unfold_projs` -/
 
 /-- Recursively unfold all the projection applications for class instances. -/
-def unfoldProjs (e : Expr) : MetaM Expr := do
-  transform e fun node => do
-    (TransformStep.continue ·) <$> (Meta.unfoldProjInst? node >>= Option.mapM instantiateMVars)
+def unfoldProjs (e : Expr) (gas : Nat := 100) : MetaM Expr := do
+  let rec loop (e : Expr) (gas : Nat) : MetaM Expr :=
+    match gas with
+    | 0 => return e
+    | gas' + 1 => do
+      let e' ← transform e fun node => do
+        (TransformStep.continue ·) <$> (Meta.unfoldProjInst? node >>= Option.mapM instantiateMVars)
+      if e == e' then
+        return e
+      else
+        loop e' gas'
+  loop e gas
 
 /--
 `unfold_projs at loc` unfolds projections of class instances at the given location.
+This also exists as a `conv`-mode tactic.
 -/
-elab "unfold_projs" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
+elab (name := unfoldProjsStx) "unfold_projs" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefeqTactic unfoldProjs loc? "unfold_projs"
+
+@[inherit_doc unfoldProjsStx]
+elab "unfold_projs" : conv => runDefeqConvTactic unfoldProjs
 
 
 /-! ### `eta_reduce` -/
@@ -125,17 +159,55 @@ def etaReduceAll (e : Expr) : MetaM Expr := do
 
 /--
 `eta_reduce at loc` eta reduces all sub-expressions at the given location.
+This also exists as a `conv`-mode tactic.
 
 For example, `fun x y => f x y` becomes `f` after eta reduction.
 -/
-elab "eta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
+elab (name := etaReduceStx) "eta_reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefeqTactic etaReduceAll loc? "eta_reduce"
 
+@[inherit_doc etaReduceStx]
+elab "eta_reduce" : conv => runDefeqConvTactic etaReduceAll
 
--- /-! ### `eta_expand` -/
+/-! ### `eta_expand` -/
 
--- def etaExpandAll (e : Expr) : MetaM Expr := do
---   transform e fun node =>
---     TransformStep.done <$> Meta.etaExpand node
+/-- Eta expand every sub-expression in the given expression.
+
+As a side-effect, beta reduces any pre-existing instances of eta expanded terms.  -/
+partial def etaExpandAll (e : Expr) : MetaM Expr := do
+  let betaOrApp (f : Expr) (args : Array Expr) : Expr :=
+    if f.etaExpanded?.isSome then f.beta args else mkAppN f args
+  let expand (e : Expr) : MetaM Expr := do
+    if e.isLambda then
+      return e
+    else
+      forallTelescopeReducing (← inferType e) fun xs _ => do
+        mkLambdaFVars xs (betaOrApp e xs)
+  transform e
+    (pre := fun node => do
+      if node.isApp then
+        let f ← etaExpandAll node.getAppFn
+        let args ← node.getAppArgs.mapM etaExpandAll
+        TransformStep.done <$> expand (betaOrApp f args)
+      else
+        pure TransformStep.continue)
+    (post := (TransformStep.done <$> expand ·))
+
+/--
+`eta_expand at loc` eta expands all sub-expressions at the given location.
+It also beta reduces any applications of eta expanded terms, so it puts it
+into an eta-expanded "normal form."
+This also exists as a `conv`-mode tactic.
+
+For example, if `f` takes two arguments, then `f` becomes `fun x y => f x y`
+and `f x` becomes `fun y => f x y`.
+
+This can be useful to turn, for example, a raw `HAdd.hAdd` into `fun x y => x + y`.
+-/
+elab (name := etaExpandStx) "eta_expand" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
+  runDefeqTactic etaExpandAll loc? "eta_expand"
+
+@[inherit_doc etaExpandStx]
+elab "eta_expand" : conv => runDefeqConvTactic etaExpandAll
 
 end Mathlib.Tactic
