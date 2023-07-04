@@ -57,12 +57,13 @@ HasLimitsOfShape.has_limit (Discrete.functor f)
 instance (priority := high) {β : Type v} (f : β → Type v) : HasProduct f :=
 HasLimitsOfShape.has_limit (Discrete.functor f)
 
-instance : HasProducts.{v₁, v₁, v₁ + 1} (Type v₁) :=
-  -- FIXME?!
-  -- This doesn't work by `inferInstance`,
-  -- despite `#synth HasProducts.{v₁, v₁, v₁ + 1} (Type v₁)` succeeding!
-  (fun _ ↦ hasLimitsOfShapeOfHasLimits.{v₁, v₁, v₁, v₁ + 1})
+instance {β : Type v} (f : β → Type u) [UnivLE.{v, u}] : HasProduct f :=
+HasLimitsOfShape.has_limit (Discrete.functor f)
 
+example : HasProducts.{v} (Type v) := inferInstance
+example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
+
+-- TODO can we remove this in favor of the `UnivLE` version immediately below?
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type v} (f : β → TypeMax.{v, u}) {P : TypeMax.{v, u}}
@@ -70,6 +71,13 @@ theorem pi_lift_π_apply {β : Type v} (f : β → TypeMax.{v, u}) {P : TypeMax.
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
   congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
 #align category_theory.limits.types.pi_lift_π_apply CategoryTheory.Limits.Types.pi_lift_π_apply
+
+/-- A variant of `pi_lift_π_apply` using `UnivLE` rather than `TypeMax`. -/
+@[simp 1001]
+theorem UnivLE.pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : Type u}
+    (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
+    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
+  congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`,
 with specialized universes. -/
@@ -80,12 +88,20 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
   congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
 #align category_theory.limits.types.pi_lift_π_apply' CategoryTheory.Limits.Types.pi_lift_π_apply'
 
+-- TODO can we remove this in favor of the `UnivLE` version immediately below?
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
 @[simp 1001]
 theorem pi_map_π_apply {β : Type v} {f g : β → TypeMax.{v, u}} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
   Limit.map_π_apply.{v, max v u} _ _ _
 #align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
+
+/-- A variant of `pi_map_π_apply` using `UnivLE` rather than `TypeMax`. -/
+@[simp 1001]
+theorem UnivLE.pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
+    (α : ∀ j, f j ⟶ g j) (b : β) (x) :
+    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
+  Limit.map_π_apply.{v, u} _ _ _
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
@@ -346,7 +362,8 @@ noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
   exact Subtype.range_val
 #align category_theory.limits.types.is_coprod_of_mono CategoryTheory.Limits.Types.isCoprodOfMono
 
-/-- The category of types has `Π j, f j` as the product of a type family `f : J → Type`.
+/--
+The category of types has `Π j, f j` as the product of a type family `f : J → TypeMax.{v, u}`.
 -/
 def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
     Limits.LimitCone (Discrete.functor F) where
@@ -358,23 +375,70 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
       uniq := fun s m w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x : _) }
 #align category_theory.limits.types.product_limit_cone CategoryTheory.Limits.Types.productLimitCone
 
-/-- The categorical product in `Type u` is the type theoretic product `Π j, F j`. -/
+/-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
--- porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma.
+-- Porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma
+-- It should produce the lemma below.
 @[simp]
 theorem productIso_hom_comp_eval {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval CategoryTheory.Limits.Types.productIso_hom_comp_eval
 
+@[simp]
+theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → TypeMax.{v, u}) (j : J) (x) :
+    ((productIso.{v, u} F).hom x) j = Pi.π F j x :=
+  rfl
+#align category_theory.limits.types.product_iso_hom_comp_eval_apply CategoryTheory.Limits.Types.productIso_hom_comp_eval_apply
+
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => f j :=
   limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
 #align category_theory.limits.types.product_iso_inv_comp_π CategoryTheory.Limits.Types.productIso_inv_comp_π
+
+namespace UnivLE
+
+/--
+A variant of `productLimitCone` using a `UnivLE` hypothesis rather than a function to `TypeMax`.
+-/
+noncomputable def productLimitCone {J : Type v} (F : J → Type u) [UnivLE.{v, u}] :
+    Limits.LimitCone (Discrete.functor F) where
+  cone :=
+    { pt := Shrink (∀ j, F j)
+      π := Discrete.natTrans (fun ⟨j⟩ f => (equivShrink _).symm f j) }
+  isLimit :=
+    { lift := fun s x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
+      uniq := fun s m w => funext fun x => Shrink.ext <| funext fun j => by
+        simpa using (congr_fun (w ⟨j⟩) x : _) }
+
+/-- The categorical product in `Type u` indexed in `Type v`
+is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
+noncomputable def productIso {J : Type v} (F : J → Type u) [UnivLE.{v, u}] :
+    (∏ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
+  limit.isoLimitCone (productLimitCone.{v, u} F)
+
+@[simp]
+theorem productIso_hom_comp_eval {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
+    ((productIso.{v, u} F).hom ≫ fun f => (equivShrink _).symm f j) = Pi.π F j :=
+  limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
+
+-- Porting note:
+-- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
+@[simp]
+theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) (x) :
+   (equivShrink _).symm ((productIso F).hom x) j = Pi.π F j x :=
+  congr_fun (productIso_hom_comp_eval F j) x
+
+@[elementwise (attr := simp)]
+theorem productIso_inv_comp_π {J : Type v} (F : J → Type u) [UnivLE.{v, u}] (j : J) :
+    (productIso.{v, u} F).inv ≫ Pi.π F j = fun f => ((equivShrink _).symm f) j :=
+  limit.isoLimitCone_inv_π (productLimitCone.{v, u} F) ⟨j⟩
+
+end UnivLE
 
 /-- The category of types has `Σ j, f j` as the coproduct of a type family `f : J → Type`.
 -/
