@@ -591,7 +591,7 @@ variable (S)
 -/
 irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    commutes' := fun _ ↦ by simp [mkRingHom_def] ; rfl }
+    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
 #align ring_quot.mk_alg_hom RingQuot.mkAlgHom
 
 @[simp]

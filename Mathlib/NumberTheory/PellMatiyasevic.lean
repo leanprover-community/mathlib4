@@ -664,7 +664,7 @@ theorem eq_of_xn_modEq_lem2 {n} (h : 2 * xn a1 n = xn a1 (n + 1)) : a = 2 ∧ n 
         (lt_of_le_of_lt (Nat.mul_le_mul_left _ a1)
           (Nat.lt_add_of_pos_right <| mul_pos (d_pos a1) (strictMono_y a1 np)))
         h
-  cases this ; simp at h; exact ⟨h.symm, rfl⟩
+  cases this; simp at h; exact ⟨h.symm, rfl⟩
 #align pell.eq_of_xn_modeq_lem2 Pell.eq_of_xn_modEq_lem2
 
 theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :

@@ -597,7 +597,7 @@ def totalDegree (p : MvPolynomial σ R) : ℕ :=
 theorem totalDegree_eq (p : MvPolynomial σ R) :
     p.totalDegree = p.support.sup fun m => Multiset.card (toMultiset m) := by
   rw [totalDegree]
-  congr ; funext m
+  congr; funext m
   exact (Finsupp.card_toMultiset _).symm
 #align mv_polynomial.total_degree_eq MvPolynomial.totalDegree_eq
 

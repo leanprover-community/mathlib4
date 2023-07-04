@@ -886,7 +886,7 @@ theorem isSome_find_iff :
 
 /-- `find p` returns `none` if and only if `p i` never holds. -/
 theorem find_eq_none_iff {n : ℕ} {p : Fin n → Prop} [DecidablePred p] :
-    find p = none ↔ ∀ i, ¬p i := by rw [← not_exists, ← isSome_find_iff] ; cases find p <;> simp
+    find p = none ↔ ∀ i, ¬p i := by rw [← not_exists, ← isSome_find_iff]; cases find p <;> simp
 #align fin.find_eq_none_iff Fin.find_eq_none_iff
 
 /-- If `find p` returns `some i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among

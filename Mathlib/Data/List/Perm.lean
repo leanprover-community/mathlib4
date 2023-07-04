@@ -272,7 +272,7 @@ theorem Perm.pmap {p : α → Prop} (f : ∀ a, p a → β) {l₁ l₂ : List α
 #align list.perm.pmap List.Perm.pmap
 
 theorem Perm.filter (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
-    filter p l₁ ~ filter p l₂ := by rw [← filterMap_eq_filter] ; apply s.filterMap _
+    filter p l₁ ~ filter p l₂ := by rw [← filterMap_eq_filter]; apply s.filterMap _
 #align list.perm.filter List.Perm.filter
 
 theorem filter_append_perm (p : α → Bool) (l : List α) :
@@ -471,7 +471,7 @@ theorem Sublist.exists_perm_append : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ →
 
 theorem Perm.countp_eq (p : α → Bool) {l₁ l₂ : List α} (s : l₁ ~ l₂) :
     countp p l₁ = countp p l₂ := by
-  rw [countp_eq_length_filter, countp_eq_length_filter] ; exact (s.filter _).length_eq
+  rw [countp_eq_length_filter, countp_eq_length_filter]; exact (s.filter _).length_eq
 #align list.perm.countp_eq List.Perm.countp_eq
 
 theorem Subperm.countp_le (p : α → Bool) {l₁ l₂ : List α} :
@@ -524,8 +524,8 @@ theorem Perm.foldl_eq {f : β → α → β} {l₁ l₂ : List α} (rcomm : Righ
 
 theorem Perm.foldr_eq {f : α → β → β} {l₁ l₂ : List α} (lcomm : LeftCommutative f) (p : l₁ ~ l₂) :
     ∀ b, foldr f b l₁ = foldr f b l₂ :=
-  perm_induction_on p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp ; rw [r b])
-    (fun x y t₁ t₂ _p r b => by simp ; rw [lcomm, r b]) fun t₁ t₂ t₃ _p₁ _p₂ r₁ r₂ a =>
+  perm_induction_on p (fun b => rfl) (fun x t₁ t₂ _p r b => by simp; rw [r b])
+    (fun x y t₁ t₂ _p r b => by simp; rw [lcomm, r b]) fun t₁ t₂ t₃ _p₁ _p₂ r₁ r₂ a =>
     Eq.trans (r₁ a) (r₂ a)
 #align list.perm.foldr_eq List.Perm.foldr_eq
 
@@ -774,7 +774,7 @@ theorem Perm.erase (a : α) {l₁ l₂ : List α} (p : l₁ ~ l₂) : l₁.erase
     Perm.cons_inv <| (perm_cons_erase h₁).symm.trans <| p.trans (perm_cons_erase h₂)
   else by
     have h₂ : a ∉ l₂ := mt p.mem_iff.2 h₁
-    rw [erase_of_not_mem h₁, erase_of_not_mem h₂] ; exact p
+    rw [erase_of_not_mem h₁, erase_of_not_mem h₂]; exact p
 #align list.perm.erase List.Perm.erase
 
 theorem subperm_cons_erase (a : α) (l : List α) : l <+~ a :: l.erase a := by

@@ -75,7 +75,7 @@ def ofEquiv (E : σ ≃ τ) : CFilter α σ → CFilter α τ
 
 @[simp]
 theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
-  cases F ; rfl
+  cases F; rfl
 #align cfilter.of_equiv_val CFilter.ofEquiv_val
 
 end
@@ -113,7 +113,7 @@ protected def CFilter.toRealizer (F : CFilter (Set α) σ) : F.toFilter.Realizer
 namespace Filter.Realizer
 
 theorem mem_sets {f : Filter α} (F : f.Realizer) {a : Set α} : a ∈ f ↔ ∃ b, F.F b ⊆ a := by
-  cases F ; subst f ; rfl
+  cases F; subst f; rfl
 #align filter.realizer.mem_sets Filter.Realizer.mem_sets
 
 /-- Transfer a realizer along an equality of filter. This has better definitional equalities than
@@ -242,7 +242,7 @@ protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m 
       inf_le_left := fun _ _ ↦ preimage_mono (F.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ preimage_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
-      cases F ; subst f
+      cases F; subst f
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
         fun ⟨_, ⟨s, h⟩, h₂⟩ ↦ ⟨s, Subset.trans (preimage_mono h) h₂⟩⟩⟩
 #align filter.realizer.comap Filter.Realizer.comap
@@ -255,7 +255,7 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
       inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
       inf_le_left := fun _ _ ↦ union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
       inf_le_right := fun _ _ ↦ union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
-    filter_eq <| Set.ext fun _ ↦ by cases F ; cases G ; substs f g ; simp [CFilter.toFilter]⟩
+    filter_eq <| Set.ext fun _ ↦ by cases F; cases G; substs f g; simp [CFilter.toFilter]⟩
 #align filter.realizer.sup Filter.Realizer.sup
 
 /-- Construct a realizer for the inf of two filters -/
@@ -307,7 +307,7 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         simp only [mem_iUnion, forall_exists_index]
         exact fun i h₁ h₂ ↦ ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
     filter_eq <| Set.ext fun _ ↦ by
-      cases' F with _ F _ ; subst f
+      cases' F with _ F _; subst f
       simp only [CFilter.toFilter, iUnion_subset_iff, Sigma.exists, Filter.mem_sets, mem_bind]
       exact
         ⟨fun ⟨s, f, h⟩ ↦

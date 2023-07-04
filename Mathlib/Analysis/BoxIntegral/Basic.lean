@@ -762,7 +762,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     specialize hlH hsne
     have : ∀ J ∈ π.boxes.filter fun J => π.tag J ∈ s,
         dist (vol J (f <| π.tag J)) (g J) ≤ εs (π.tag J) := fun J hJ ↦ by
-      rw [Finset.mem_filter] at hJ ; cases' hJ with hJ hJs
+      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
       refine' Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) _
         (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_pos hJs).symm

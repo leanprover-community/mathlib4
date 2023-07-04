@@ -243,7 +243,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C)
     (by -- porting note: the proof has been mostly rewritten
       rintro X Y f
-      induction' f using Quotient.recOn with f ; swap ; rfl
+      induction' f using Quotient.recOn with f; swap; rfl
       induction' f with _ X₁ X₂ X₃ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ X₁ X₂ Y₁ Y₂ f g h₁ h₂
       · simp only [mk_id, Functor.map_id, Category.comp_id, Category.id_comp]
       · ext n

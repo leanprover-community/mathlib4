@@ -436,7 +436,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy] ; rfl⟩
+        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy]; rfl⟩
 #align ring.direct_limit.exists_of Ring.DirectLimit.exists_of
 
 section

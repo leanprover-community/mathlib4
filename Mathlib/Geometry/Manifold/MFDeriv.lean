@@ -176,7 +176,7 @@ theorem differentiable_within_at_localInvariantProp :
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
       convert (this.differentiableWithinAt le_top).comp _ h _
       · ext y; simp only [mfld_simps]
-      · intro y hy; simp only [mfld_simps] at hy ; simpa only [hy, mfld_simps] using hs hy.1 }
+      · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 #align differentiable_within_at_local_invariant_prop differentiable_within_at_localInvariantProp
 
 /-- Predicate ensuring that, at a point and within a set, a function can have at most one
@@ -1671,7 +1671,7 @@ theorem mfderiv_neg (f : M → E') (x : M) :
   simp_rw [mfderiv]
   by_cases hf : MDifferentiableAt I 𝓘(𝕜, E') f x
   · exact hf.hasMFDerivAt.neg.mfderiv
-  · rw [if_neg hf]; rw [← mdifferentiableAt_neg] at hf ; rw [if_neg hf, neg_zero]
+  · rw [if_neg hf]; rw [← mdifferentiableAt_neg] at hf; rw [if_neg hf, neg_zero]
 #align mfderiv_neg mfderiv_neg
 
 theorem HasMFDerivAt.sub (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')

@@ -184,8 +184,8 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
 abbrev cechNerveAdjunction : (Augmented.toArrow : _ ⥤ Arrow C) ⊣ augmentedCechNerve :=
   Adjunction.mkOfHomEquiv
     { homEquiv := cechNerveEquiv
-      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv] ; aesop_cat
-      homEquiv_naturality_right := by dsimp [cechNerveEquiv] ; aesop_cat }
+      homEquiv_naturality_left_symm := by dsimp [cechNerveEquiv]; aesop_cat
+      homEquiv_naturality_right := by dsimp [cechNerveEquiv]; aesop_cat }
 #align category_theory.simplicial_object.cech_nerve_adjunction CategoryTheory.SimplicialObject.cechNerveAdjunction
 
 end SimplicialObject
@@ -270,7 +270,7 @@ def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
   w := by
     dsimp
     rw [@WidePushout.arrow_ι_assoc _ _ _ _ _ (fun (_ : Fin 1) => F.hom)
-      (by dsimp ; infer_instance)]
+      (by dsimp; infer_instance)]
     exact congr_app G.w (SimplexCategory.mk 0)
 #align category_theory.cosimplicial_object.equivalence_left_to_right CategoryTheory.CosimplicialObject.equivalenceLeftToRight
 

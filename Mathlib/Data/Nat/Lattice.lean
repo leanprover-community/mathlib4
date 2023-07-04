@@ -126,11 +126,11 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     (inferInstance : LinearOrder ℕ) with
     -- sup := sSup -- Porting note: removed, unnecessary?
     -- inf := sInf -- Porting note: removed, unnecessary?
-    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb] ; revert a ha ; exact @Nat.find_spec _ _ hb
-    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
+    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by
-      rw [sInf_def hs] ; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
-    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+      rw [sInf_def hs]; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
+    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     csSup_empty := by
       simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
         not_false_iff, exists_const]

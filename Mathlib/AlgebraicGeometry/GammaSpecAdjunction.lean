@@ -217,7 +217,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ PresheafedSpace.stalkMap X.toΓSpecSheafedSpace x = X.ΓToStalk x := by
   rw [PresheafedSpace.stalkMap]
   erw [← toOpen_germ _ (basicOpen (1 : Γ.obj (op X)))
-      ⟨X.toΓSpecFun x, by rw [basicOpen_one] ; trivial⟩]
+      ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
   rw [← Category.assoc, Category.assoc (toOpen _ _)]
   erw [stalkFunctor_map_germ]
   -- Porting note : was `rw [←assoc, toΓSpecSheafedSpace_app_spec]`, but Lean did not like it.

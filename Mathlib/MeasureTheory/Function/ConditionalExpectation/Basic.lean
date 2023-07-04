@@ -230,7 +230,7 @@ theorem set_integral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : In
 theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
-    simp_rw [integral_univ] at this ; exact this
+    simp_rw [integral_univ] at this; exact this
   exact set_integral_condexp hm hf (@MeasurableSet.univ _ m)
 #align measure_theory.integral_condexp MeasureTheory.integral_condexp
 

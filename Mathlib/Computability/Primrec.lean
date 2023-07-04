@@ -1499,7 +1499,7 @@ theorem sqrt : @Primrec' 1 fun v => v.head.sqrt := by
     have x1 : @Primrec' 3 fun v => v.head.succ := succ.comp₁ _ head
     have y1 : @Primrec' 3 fun v => v.tail.head.succ := succ.comp₁ _ (tail head)
     exact if_lt x1 (mul.comp₂ _ y1 y1) (tail head) y1
-  introv ; symm
+  introv; symm
   induction' n with n IH; · simp
   dsimp; rw [IH]; split_ifs with h
   · exact le_antisymm (Nat.sqrt_le_sqrt (Nat.le_succ _)) (Nat.lt_succ_iff.1 <| Nat.sqrt_lt.2 h)

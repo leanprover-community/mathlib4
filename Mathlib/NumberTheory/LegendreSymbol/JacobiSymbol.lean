@@ -183,9 +183,9 @@ protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0
 theorem eq_zero_iff {a : ℤ} {b : ℕ} : J(a | b) = 0 ↔ b ≠ 0 ∧ a.gcd b ≠ 1 :=
   ⟨fun h => by
     cases' eq_or_ne b 0 with hb hb
-    · rw [hb, zero_right] at h ; cases h
+    · rw [hb, zero_right] at h; cases h
     exact ⟨hb, mt jacobiSym.ne_zero <| Classical.not_not.2 h⟩, fun ⟨hb, h⟩ => by
-    rw [← neZero_iff] at hb ; exact eq_zero_iff_not_coprime.2 h⟩
+    rw [← neZero_iff] at hb; exact eq_zero_iff_not_coprime.2 h⟩
 #align jacobi_sym.eq_zero_iff jacobiSym.eq_zero_iff
 
 /-- The symbol `J(0 | b)` vanishes when `b > 1`. -/

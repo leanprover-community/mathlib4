@@ -710,7 +710,7 @@ theorem opow_def (o₁ o₂ : ONote) : o₁ ^ o₂ = opowAux2 o₂ (split o₁) 
 #align onote.opow_def ONote.opow_def
 
 theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → split o = (scale 1 o', m)
-  | 0, o', m, _, p => by injection p ; substs o' m ; rfl
+  | 0, o', m, _, p => by injection p; substs o' m; rfl
   | oadd e n a, o', m, h, p => by
     by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
@@ -733,7 +733,7 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
 #align onote.split_eq_scale_split' ONote.split_eq_scale_split'
 
 theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ repr o = ω * repr o' + m
-  | 0, o', m, _, p => by injection p ; substs o' m ; simp [NF.zero]
+  | 0, o', m, _, p => by injection p; substs o' m; simp [NF.zero]
   | oadd e n a, o', m, h, p => by
     by_cases e0 : e = 0 <;> simp [e0, split, split'] at p ⊢
     · rcases p with ⟨rfl, rfl⟩
@@ -810,7 +810,7 @@ theorem split_add_lt {o e n a m} [NF o] (h : split o = (oadd e n a, m)) :
 theorem mulNat_eq_mul (n o) : mulNat o n = o * ofNat n := by cases o <;> cases n <;> rfl
 #align onote.mul_nat_eq_mul ONote.mulNat_eq_mul
 
-instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp ; exact ONote.mul_nf o (ofNat n)
+instance nf_mulNat (o) [NF o] (n) : NF (mulNat o n) := by simp; exact ONote.mul_nf o (ofNat n)
 #align onote.NF_mul_nat ONote.nf_mulNat
 
 instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a k m) := by
@@ -821,7 +821,7 @@ instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a
   cases' k with k k
   · exact NF.oadd_zero _ _
   · haveI := nf_opowAux e a0 a k
-    simp only [Nat.succ_ne_zero m] ; infer_instance
+    simp only [Nat.succ_ne_zero m]; infer_instance
 #align onote.NF_opow_aux ONote.nf_opowAux
 
 instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
@@ -1245,7 +1245,7 @@ def NONote :=
   { o : ONote // o.NF }
 #align nonote NONote
 
-instance : DecidableEq NONote := by unfold NONote ; infer_instance
+instance : DecidableEq NONote := by unfold NONote; infer_instance
 
 namespace NONote
 

@@ -96,7 +96,7 @@ theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
 --   suffices ∀ {m h l}, DArray.revIterateAux a (fun i => cons) m h l =
 --      ofFnAux (DArray.read a) m h l
 --     from this
---   intros ; induction' m with m IH generalizing l; · rfl
+--   intros; induction' m with m IH generalizing l; · rfl
 --   simp only [DArray.revIterateAux, of_fn_aux, IH]
 -- #align list.array_eq_of_fn List.array_eq_of_fn
 

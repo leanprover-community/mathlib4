@@ -345,7 +345,7 @@ open SNum
       `0 : SNum` and `(-1) : SNum`. -/
 def drec' {C : SNum → Sort _} (z : ∀ b, C (SNum.zero b)) (s : ∀ b p, C p → C (b :: p)) :
     ∀ p : NzsNum, C p
-  | msb b => by rw [← bit_one] ; exact s b (SNum.zero (Not b)) (z (Not b))
+  | msb b => by rw [← bit_one]; exact s b (SNum.zero (Not b)) (z (Not b))
   | bit b p => s b p (drec' z s p)
 #align nzsnum.drec' NzsNum.drec'
 

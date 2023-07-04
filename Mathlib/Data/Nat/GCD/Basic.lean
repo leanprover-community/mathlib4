@@ -239,7 +239,7 @@ def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
     obtain rfl : m = 0 := eq_zero_of_gcd_eq_zero_right h0
     exact ⟨⟨⟨0, dvd_refl 0⟩, ⟨n, dvd_refl n⟩⟩, (zero_mul n).symm⟩
   case succ tmp =>
-    have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _ ; clear h0 tmp
+    have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
     have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
     refine' ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, _⟩⟩, hd.symm⟩
     apply Nat.dvd_of_mul_dvd_mul_left hpos

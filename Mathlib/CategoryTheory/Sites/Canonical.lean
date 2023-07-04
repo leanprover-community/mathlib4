@@ -101,7 +101,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
       simp only [assoc]
     · have h : s _ _ = _ := (ht hf _ hm).symm
       -- porting note: this was done by `simp only [assoc] at`
-      conv_lhs at h => congr ; rw [assoc, assoc]
+      conv_lhs at h => congr; rw [assoc, assoc]
       rw [h]
       simp only [op_comp, assoc, FunctorToTypes.map_comp_apply]
   refine' ⟨hU.amalgamate t hT, _, _⟩

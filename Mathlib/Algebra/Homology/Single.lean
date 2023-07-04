@@ -55,8 +55,8 @@ def single (j : ι) : V ⥤ HomologicalComplex V c where
     { X := fun i => if i = j then A else 0
       d := fun i j => 0 }
   map f :=
-    { f := fun i => if h : i = j then eqToHom (by dsimp ; rw [if_pos h]) ≫ f ≫
-              eqToHom (by dsimp ; rw [if_pos h]) else 0 }
+    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
+              eqToHom (by dsimp; rw [if_pos h]) else 0 }
   map_id A := by
     ext
     dsimp

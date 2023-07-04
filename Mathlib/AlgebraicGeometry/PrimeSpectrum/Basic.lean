@@ -398,7 +398,7 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
 
 theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
-  rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff] ; rfl
+  rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 #align prime_spectrum.mem_compl_zero_locus_iff_not_mem PrimeSpectrum.mem_compl_zeroLocus_iff_not_mem
 
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
@@ -415,7 +415,7 @@ instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
 #align prime_spectrum.zariski_topology PrimeSpectrum.zariskiTopology
 
 theorem isOpen_iff (U : Set (PrimeSpectrum R)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus s := by
-  simp only [@eq_comm _ Uᶜ] ; rfl
+  simp only [@eq_comm _ Uᶜ]; rfl
 #align prime_spectrum.is_open_iff PrimeSpectrum.isOpen_iff
 
 theorem isClosed_iff_zeroLocus (Z : Set (PrimeSpectrum R)) : IsClosed Z ↔ ∃ s, Z = zeroLocus s := by

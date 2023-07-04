@@ -323,7 +323,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           case tail ht' => exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩ ; dsimp
+    · rintro ⟨S, hsum, helem⟩; dsimp
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]

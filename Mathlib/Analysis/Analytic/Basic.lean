@@ -1002,7 +1002,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
 theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x : 𝕜}
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
-  -- porting note: `funext ; ext` was `ext (n x)`
+  -- porting note: `funext; ext` was `ext (n x)`
   funext n
   ext x
   rw [← mkPiField_apply_one_eq_self (p n)]

@@ -257,7 +257,7 @@ of `f` over the whole space belongs to the interior of `s`. -/
 theorem Convex.average_mem_interior_of_set [IsFiniteMeasure μ] (hs : Convex ℝ s) (h0 : μ t ≠ 0)
     (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) (ht : (⨍ x in t, f x ∂μ) ∈ interior s) :
     (⨍ x, f x ∂μ) ∈ interior s := by
-  rw [← measure_toMeasurable] at h0 ; rw [← restrict_toMeasurable (measure_ne_top μ t)] at ht
+  rw [← measure_toMeasurable] at h0; rw [← restrict_toMeasurable (measure_ne_top μ t)] at ht
   by_cases h0' : μ (toMeasurable μ t)ᶜ = 0
   · rw [← ae_eq_univ] at h0'
     rwa [restrict_congr_set h0', restrict_univ] at ht

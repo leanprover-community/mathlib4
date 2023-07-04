@@ -546,7 +546,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
       _ ≤ ‖(f' x - A) a‖ + ‖(f' x - A) (z - a)‖ := (norm_add_le _ _)
       _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ‖z - a‖ := by
         apply add_le_add
-        · rw [mul_assoc] at I ; exact (mul_le_mul_left rpos).1 I
+        · rw [mul_assoc] at I; exact (mul_le_mul_left rpos).1 I
         · apply ContinuousLinearMap.le_op_norm
       _ ≤ (δ + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε :=
         add_le_add le_rfl

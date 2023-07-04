@@ -284,7 +284,7 @@ theorem path_nonempty_of_hom {G} [Groupoid.{u, u} G] [IsFreeGroupoid G] {a b : G
   let f : G → X := fun g => FreeGroup.of (WeaklyConnectedComponent.mk g)
   let F : G ⥤ CategoryTheory.SingleObj.{u} (X : Type u) := SingleObj.differenceFunctor f
   change (F.map p) = ((@CategoryTheory.Functor.const G _ _ (SingleObj.category X)).obj ()).map p
-  congr ; ext
+  congr; ext
   rw [Functor.const_obj_map, id_as_one, differenceFunctor_map, @mul_inv_eq_one _ _ (f _)]
   apply congr_arg FreeGroup.of
   apply (WeaklyConnectedComponent.eq _ _).mpr

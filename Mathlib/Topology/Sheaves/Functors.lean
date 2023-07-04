@@ -83,7 +83,7 @@ open Presheaf
 /-- The pushforward of a sheaf (by a continuous map) is a sheaf.
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf := by
-  rw [isSheaf_iff_isSheafPairwiseIntersections] at h ⊢ ;
+  rw [isSheaf_iff_isSheafPairwiseIntersections] at h ⊢
   exact SheafConditionPairwiseIntersections.pushforward_sheaf_of_sheaf f h
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.pushforward_sheaf_of_sheaf TopCat.Sheaf.pushforward_sheaf_of_sheaf

@@ -117,7 +117,7 @@ numbers of the form `n /. d` with `0 < d` and coprime `n`, `d`. -/
 @[elab_as_elim]
 def numDenCasesOn.{u} {C : ℚ → Sort u} :
     ∀ (a : ℚ) (_ : ∀ n d, 0 < d → (Int.natAbs n).coprime d → C (n /. d)), C a
-  | ⟨n, d, h, c⟩, H => by rw [num_den'] ; exact H n d (Nat.pos_of_ne_zero h) c
+  | ⟨n, d, h, c⟩, H => by rw [num_den']; exact H n d (Nat.pos_of_ne_zero h) c
 #align rat.num_denom_cases_on Rat.numDenCasesOn
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational

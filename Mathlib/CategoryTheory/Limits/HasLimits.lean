@@ -495,7 +495,7 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
     haveI : HasLimit (E ⋙  F ⋙  G) := h
     G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
   haveI : HasLimit (E ⋙  F ⋙  G) := h
-  ext ; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
+  ext; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
 #align category_theory.limits.limit.pre_post CategoryTheory.Limits.limit.pre_post
 
 open CategoryTheory.Equivalence

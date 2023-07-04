@@ -2384,7 +2384,7 @@ theorem addBottom_modifyNth (f : (∀ k, Option (Γ k)) → ∀ k, Option (Γ k)
     (addBottom L).modifyNth (fun a ↦ (a.1, f a.2)) n = addBottom (L.modifyNth f n) := by
   cases n <;>
     simp only [addBottom, ListBlank.head_cons, ListBlank.modifyNth, ListBlank.tail_cons]
-  congr ; symm; apply ListBlank.map_modifyNth; intro ; rfl
+  congr; symm; apply ListBlank.map_modifyNth; intro; rfl
 #align turing.TM2to1.add_bottom_modify_nth Turing.TM2to1.addBottom_modifyNth
 
 theorem addBottom_nth_snd (L : ListBlank (∀ k, Option (Γ k))) (n : ℕ) :
