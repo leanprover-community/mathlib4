@@ -229,16 +229,20 @@ def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
 def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
-  let mut acc := default
+  let mut acc := #[]
+  let mut tasks := #[]
   for (path, hash) in hashMap.toList do
     let zip := hash.asLTar
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
-        discard $ runCmd (← getLeanTar) $ #[zipPath.toString] ++
-          ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
+        tasks := tasks.push <| ← IO.asTask do
+          runCmd (← getLeanTar) $ #[zipPath.toString] ++
+            ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
       acc := acc.push zip
+  for task in tasks do
+    _ ← IO.ofExcept task.get
   return acc
 
 /-- Gets the set of all cached files -/
