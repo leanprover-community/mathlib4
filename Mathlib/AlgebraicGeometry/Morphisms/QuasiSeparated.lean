@@ -312,7 +312,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU
   simpa [mul_comm x] using d.symm
 #align algebraic_geometry.exists_eq_pow_mul_of_is_affine_open AlgebraicGeometry.exists_eq_pow_mul_of_isAffineOpen
 
-set_option maxHeartbeats 500000 in
+set_option maxHeartbeats 700000 in
 theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme)
     (S : X.affineOpens) (U₁ U₂ : Opens X.carrier) {n₁ n₂ : ℕ} {y₁ : X.presheaf.obj (op U₁)}
     {y₂ : X.presheaf.obj (op U₂)} {f : X.presheaf.obj (op <| U₁ ⊔ U₂)}
@@ -374,7 +374,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   exact e
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux AlgebraicGeometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
 
-set_option maxHeartbeats 1000000 in
+set_option maxHeartbeats 7000000 in
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : Opens X.carrier)
     (hU : IsCompact U.1) (hU' : IsQuasiSeparated U.1) (f : X.presheaf.obj (op U))
     (x : X.presheaf.obj (op <| X.basicOpen f)) :
@@ -384,7 +384,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
   -- Porting note : complains `expected type is not available`, but tell Lean that it is underscore
   -- is sufficient
   apply compact_open_induction_on (P := _) U hU
-  · intro hU' f x
+  · intro _ f x
     use 0, f
     refine' @Subsingleton.elim _
       (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty _)) _ _
@@ -494,19 +494,24 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         simp only [← Functor.map_comp, ← op_comp, mul_assoc, pow_add]
         erw [hy₁]; congr 1; rw [← mul_assoc, ← mul_assoc]; congr 1
         rw [mul_comm, ← comp_apply, ← Functor.map_comp]; congr 1
-    . sorry
-    -- · convert
-    --     congr_arg (X.presheaf.map (homOfLE _).op)
-    --       (X.sheaf.obj_sup_iso_prod_eq_locus_inv_snd S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using
-    --     1
-    --   · delta Scheme.sheaf SheafedSpace.sheaf
-    --     simp only [← comp_apply (X.presheaf.map _) (X.presheaf.map _), ← Functor.map_comp, ←
-    --       op_comp]
-    --     congr
-    --   · delta Scheme.sheaf SheafedSpace.sheaf
-    --     simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp, mul_assoc,
-    --       pow_add]
-    --     erw [hy₂]; rw [← comp_apply, ← Functor.map_comp]; congr
+    · convert
+        congr_arg (X.presheaf.map (homOfLE _).op)
+          (X.sheaf.objSupIsoProdEqLocus_inv_snd S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using
+        1
+      pick_goal 3
+      . rw [X.basicOpen_res]; restrict_tac
+      · delta Scheme.sheaf SheafedSpace.sheaf
+        -- Porting note : was just a single `simp only [...]`
+        simp only
+        erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+        simp only [← Functor.map_comp, ← op_comp]
+        congr 1
+      · delta Scheme.sheaf SheafedSpace.sheaf
+        -- Porting note : was just a single `simp only [...]`
+        simp only [map_pow, map_mul]
+        erw [← comp_apply, ← comp_apply]
+        simp only [← Functor.map_comp, ← op_comp, mul_assoc, pow_add]
+        erw [hy₂]; rw [← comp_apply, ← Functor.map_comp]; congr 1
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_is_quasi_separated AlgebraicGeometry.exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
