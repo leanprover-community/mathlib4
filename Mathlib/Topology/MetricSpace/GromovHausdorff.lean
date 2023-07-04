@@ -449,8 +449,9 @@ instance : MetricSpace GHSpace where
       simp (config := { singlePass := true }) only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
-    /- To show that two spaces at zero distance are isometric, we argue that the distance
-        is realized by some coupling. In this coupling, the two spaces are at zero Hausdorff distance,
+    /- To show that two spaces at zero distance are isometric,
+       we argue that the distance is realized by some coupling.
+        In this coupling, the two spaces are at zero Hausdorff distance,
         i.e., they coincide. Therefore, the original spaces are isometric. -/
     rcases ghDist_eq_hausdorffDist x.Rep y.Rep with ⟨Φ, Ψ, Φisom, Ψisom, DΦΨ⟩
     rw [← dist_ghDist] at DΦΨ
@@ -469,11 +470,13 @@ instance : MetricSpace GHSpace where
     rw [← x.toGHSpace_rep, ← y.toGHSpace_rep, toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     exact ⟨e⟩
   dist_triangle x y z := by
-    /- To show the triangular inequality between `X`, `Y` and `Z`, realize an optimal coupling
-        between `X` and `Y` in a space `γ1`, and an optimal coupling between `Y` and `Z` in a space
-        `γ2`. Then, glue these metric spaces along `Y`. We get a new space `γ` in which `X` and `Y` are
-        optimally coupled, as well as `Y` and `Z`. Apply the triangle inequality for the Hausdorff
-        distance in `γ` to conclude. -/
+    /- To show the triangular inequality between `X`, `Y` and `Z`,
+        realize an optimal coupling between `X` and `Y` in a space `γ1`,
+        and an optimal coupling between `Y` and `Z` in a space `γ2`.
+        Then, glue these metric spaces along `Y`. We get a new space `γ`
+        in which `X` and `Y` are optimally coupled, as well as `Y` and `Z`.
+        Apply the triangle inequality for the Hausdorff distance in `γ`
+        to conclude. -/
     let X := x.Rep
     let Y := y.Rep
     let Z := z.Rep
@@ -521,8 +524,9 @@ end GHSpace
 --section
 end GromovHausdorff
 
-/-- In particular, nonempty compacts of a metric space map to `GH_space`. We register this
-in the topological_space namespace to take advantage of the notation `p.toGHSpace`. -/
+/-- In particular, nonempty compacts of a metric space map to `GH_space`.
+    We register this in the topological_space namespace to take advantage
+    of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=
   GromovHausdorff.toGHSpace p
@@ -595,12 +599,12 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
   /- The proof goes as follows : the `GH_dist` is bounded by the Hausdorff distance of the images
     in the coupling, which is bounded (using the triangular inequality) by the sum of the Hausdorff
     distances of `X` and `s` (in the coupling or, equivalently in the original space), of `s` and
-    `Φ s`, and of `Φ s` and `Y` (in the coupling or, equivalently, in the original space). The first
-    term is bounded by `ε₁`, by `ε₁`-density. The third one is bounded by `ε₃`. And the middle one is
-    bounded by `ε₂/2` as in the coupling the points `x` and `Φ x` are at distance `ε₂/2` by
-    construction of the coupling (in fact `ε₂/2 + δ` where `δ` is an arbitrarily small positive
-    constant where positivity is used to ensure that the coupling is really a metric space and not a
-    premetric space on `X ⊕ Y`). -/
+    `Φ s`, and of `Φ s` and `Y` (in the coupling or, equivalently, in the original space).
+    The first term is bounded by `ε₁`, by `ε₁`-density. The third one is bounded by `ε₃`.
+    And the middle one is bounded by `ε₂/2` as in the coupling the points `x` and `Φ x` are
+    at distance `ε₂/2` by construction of the coupling (in fact `ε₂/2 + δ` where `δ` is an
+    arbitrarily small positive constant where positivity is used to ensure that the coupling
+    is really a metric space and not a premetric space on `X ⊕ Y`). -/
   have : ghDist X Y ≤ hausdorffDist (range Fl) (range Fr) := ghDist_le_hausdorffDist Il Ir
   have :
     hausdorffDist (range Fl) (range Fr) ≤
@@ -639,7 +643,8 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     rcases exists_mem_of_nonempty Y with ⟨xY, _⟩
     rcases hs' xY with ⟨xs', Dxs'⟩
     have : 0 ≤ ε₃ := le_trans dist_nonneg Dxs'
-    refine hausdorffDist_le_of_mem_dist this (fun x _ => ⟨x, mem_univ _, by simpa only [dist_self]⟩)
+    refine hausdorffDist_le_of_mem_dist this
+      (fun x _ => ⟨x, mem_univ _, by simpa only [dist_self]⟩)
       fun x _ => ?_
     rcases hs' x with ⟨y, Dy⟩
     exact ⟨Φ y, mem_range_self _, Dy⟩
@@ -709,7 +714,8 @@ instance : SecondCountableTopology GHSpace := by
       use z
       have C1 : (E p) z = ⟨i, hip⟩ := (E p).apply_symm_apply ⟨i, hip⟩
       have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
-      have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
+      have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by
+        rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
       have : Φ z = y := by simp only; rw [C1, C2, C3]
       rw [this]
       exact le_of_lt hy
@@ -788,9 +794,9 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       (#s) ≤ K n ∧ univ ⊆ ⋃ x ∈ s, ball x (u n)) :
     TotallyBounded t := by
   /- Let `δ>0`, and `ε = δ/5`. For each `p`, we construct a finite subset `s p` of `p`, which
-    is `ε`-dense and has cardinality at most `K n`. Encoding the mutual distances of points in `s p`,
-    up to `ε`, we will get a map `F` associating to `p` finitely many data, and making it possible to
-    reconstruct `p` up to `ε`. This is enough to prove total boundedness. -/
+    is `ε`-dense and has cardinality at most `K n`. Encoding the mutual distances of points
+    in `s p`, up to `ε`, we will get a map `F` associating to `p` finitely many data, and making
+    it possible to reconstruct `p` up to `ε`. This is enough to prove total boundedness. -/
   refine' Metric.totallyBounded_of_finite_discretization fun δ δpos => _
   let ε := 1 / 5 * δ
   have εpos : 0 < ε := mul_pos (by norm_num) δpos
@@ -858,7 +864,8 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       use z
       have C1 : (E p) z = ⟨i, hip⟩ := (E p).apply_symm_apply ⟨i, hip⟩
       have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
-      have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
+      have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by
+        rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
       have : Φ z = y := by simp only; rw [C1, C2, C3]
       rw [this]
       exact le_trans (le_of_lt hy) u_le_ε
