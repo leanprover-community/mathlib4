@@ -1038,24 +1038,28 @@ instance : CompleteSpace GHSpace := by
     exact (toInductiveLimit_isometry _ _).comp (Y n).isom
   -- The Hausdorff distance of `X2 n` and `X2 (n+1)` is by construction the distance between
   -- `u n` and `u (n+1)`, therefore bounded by `1/2^n`
+  have X2n : ∀ n, X2 n =
+    range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
+      (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjl (X n) (X n.succ)) := by
+    intro n
+    change X2 n = range (coeZ ∘ Φ n.succ ∘ c n ∘
+      toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ)) ∘
+      optimalGHInjl (X n) (X n.succ))
+    simp only --[X2, Φ]
+    rw [← toInductiveLimit_commute I]
+    simp only --[f]
+    rw [← toGlue_commute]
+    rfl
+  -- simp_rw [range_comp] at X2n
+  have X2nsucc : ∀ n, X2 n.succ =
+      range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
+        (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjr (X n) (X n.succ)) := by
+    intro n
+    rfl
+  -- simp_rw [range_comp] at X2nsucc
   have D2 : ∀ n, hausdorffDist (X2 n) (X2 n.succ) < d n := fun n ↦ by
-    have X2n : X2 n =
-        range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
-          (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjl (X n) (X n.succ)) := by
-      change X2 n = range (coeZ ∘ Φ n.succ ∘ c n ∘
-        toGlueR (Y n).isom (isometry_optimalGHInjl (X n) (X n.succ)) ∘
-        optimalGHInjl (X n) (X n.succ))
-      simp only --[X2, Φ]
-      rw [← toInductiveLimit_commute I]
-      simp only --[f]
-      rw [← toGlue_commute]
-    rw [range_comp] at X2n
-    have X2nsucc :
-      X2 n.succ =
-        range ((coeZ ∘ Φ n.succ ∘ c n ∘ toGlueR (Y n).isom
-          (isometry_optimalGHInjl (X n) (X n.succ))) ∘ optimalGHInjr (X n) (X n.succ)) := rfl
-    rw [range_comp] at X2nsucc
-    rw [X2n, X2nsucc, hausdorffDist_image, hausdorffDist_optimal, ← dist_ghDist]
+
+    rw [X2n n, X2nsucc n, range_comp, range_comp, hausdorffDist_image, hausdorffDist_optimal, ← dist_ghDist]
     · exact hu n n n.succ (le_refl n) (le_succ n)
     · apply UniformSpace.Completion.coe_isometry.comp _
       exact (toInductiveLimit_isometry _ _).comp ((ic n).comp (toGlueR_isometry _ _))
@@ -1071,18 +1075,19 @@ instance : CompleteSpace GHSpace := by
     exact le_of_lt (D2 n)
   -- therefore, it converges to a limit `L`
   rcases cauchySeq_tendsto_of_complete this with ⟨L, hL⟩
-  -- the images of `X3 n` in the Gromov-Hausdorff space converge to the image of `L`
-  have M : Tendsto (fun n => (X3 n).toGHSpace) atTop (𝓝 L.toGHSpace) :=
-    Tendsto.comp (toGHSpace_continuous.tendsto _) hL
   -- By construction, the image of `X3 n` in the Gromov-Hausdorff space is `u n`.
-  have : ∀ n, (X3 n).toGHSpace = u n := by
+  have : ∀ n, (NonemptyCompacts.toGHSpace ∘ X3) n = u n := by
     intro n
-    rw [NonemptyCompacts.toGHSpace, ← (u n).toGHSpace_rep,
+    rw [Function.comp_apply, NonemptyCompacts.toGHSpace, ← (u n).toGHSpace_rep,
       toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     constructor
     convert(isom n).isometryEquivOnRange.symm
-  -- Finally, we have proved the convergence of `u n`
-  exact ⟨L.toGHSpace, by simpa only [this] using M⟩
+  -- the images of `X3 n` in the Gromov-Hausdorff space converge to the image of `L`
+  -- so the images of `u n` converge to the image of `L` as well
+  use L.toGHSpace
+  apply Filter.Tendsto.congr this
+  refine' Tendsto.comp _ hL
+  apply toGHSpace_continuous.tendsto
 
 end Complete
 
