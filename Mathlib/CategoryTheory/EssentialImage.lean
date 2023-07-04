@@ -172,6 +172,6 @@ instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
 
 theorem Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
-  mem_essImage Y := Functor.essImage.ofNatIso α (mem_essImage Y)
+  mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
 
 end CategoryTheory
