@@ -8,7 +8,7 @@ Authors: Nicolò Cavalleri
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Bundle
@@ -119,8 +119,7 @@ def TotalSpace.trivialSnd (B : Type _) (F : Type _) : TotalSpace F (Bundle.Trivi
 
 /-- A trivial bundle is equivalent to the product `B × F`. -/
 @[simps (config := { attrs := [`simp, `mfld_simps] })]
-def TotalSpace.toProd (B F : Type _) : (TotalSpace F fun _ : B => F) ≃ B × F
-    where
+def TotalSpace.toProd (B F : Type _) : (TotalSpace F fun _ : B => F) ≃ B × F where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
   left_inv := fun ⟨_, _⟩ => rfl
