@@ -757,13 +757,13 @@ theorem lintegral_lintegral_mul {β} [MeasurableSpace β] {ν : Measure β} {f :
   simp [lintegral_const_mul'' _ hg, lintegral_mul_const'' _ hf]
 #align measure_theory.lintegral_lintegral_mul MeasureTheory.lintegral_lintegral_mul
 
--- TODO: Need a better way of rewriting inside of a integral
+-- TODO: Need a better way of rewriting inside of an integral
 theorem lintegral_rw₁ {f f' : α → β} (h : f =ᵐ[μ] f') (g : β → ℝ≥0∞) :
     ∫⁻ a, g (f a) ∂μ = ∫⁻ a, g (f' a) ∂μ :=
   lintegral_congr_ae <| h.mono fun a h => by dsimp only; rw [h]
 #align measure_theory.lintegral_rw₁ MeasureTheory.lintegral_rw₁
 
--- TODO: Need a better way of rewriting inside of a integral
+-- TODO: Need a better way of rewriting inside of an integral
 theorem lintegral_rw₂ {f₁ f₁' : α → β} {f₂ f₂' : α → γ} (h₁ : f₁ =ᵐ[μ] f₁') (h₂ : f₂ =ᵐ[μ] f₂')
     (g : β → γ → ℝ≥0∞) : ∫⁻ a, g (f₁ a) (f₂ a) ∂μ = ∫⁻ a, g (f₁' a) (f₂' a) ∂μ :=
   lintegral_congr_ae <| h₁.mp <| h₂.mono fun _ h₂ h₁ => by dsimp only; rw [h₁, h₂]
@@ -1414,12 +1414,12 @@ theorem lintegral_count [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
 #align measure_theory.lintegral_count MeasureTheory.lintegral_count
 
 theorem _root_.ENNReal.tsum_const_eq [MeasurableSingletonClass α] (c : ℝ≥0∞) :
-    (∑' _ : α, c) = c * Measure.count (univ : Set α) := by rw [← lintegral_count, lintegral_const]
+    ∑' _ : α, c = c * Measure.count (univ : Set α) := by rw [← lintegral_count, lintegral_const]
 #align ennreal.tsum_const_eq ENNReal.tsum_const_eq
 
 /-- Markov's inequality for the counting measure with hypothesis using `tsum` in `ℝ≥0∞`. -/
 theorem _root_.ENNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α] {a : α → ℝ≥0∞}
-    (a_mble : Measurable a) {c : ℝ≥0∞} (tsum_le_c : (∑' i, a i) ≤ c) {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0)
+    (a_mble : Measurable a) {c : ℝ≥0∞} (tsum_le_c : ∑' i, a i ≤ c) {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0)
     (ε_ne_top : ε ≠ ∞) : Measure.count { i : α | ε ≤ a i } ≤ c / ε := by
   rw [← lintegral_count] at tsum_le_c
   apply (MeasureTheory.meas_ge_le_lintegral_div a_mble.aemeasurable ε_ne_zero ε_ne_top).trans
@@ -1428,7 +1428,7 @@ theorem _root_.ENNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α
 
 /-- Markov's inequality for counting measure with hypothesis using `tsum` in `ℝ≥0`. -/
 theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α] {a : α → ℝ≥0}
-    (a_mble : Measurable a) (a_summable : Summable a) {c : ℝ≥0} (tsum_le_c : (∑' i, a i) ≤ c)
+    (a_mble : Measurable a) (a_summable : Summable a) {c : ℝ≥0} (tsum_le_c : ∑' i, a i ≤ c)
     {ε : ℝ≥0} (ε_ne_zero : ε ≠ 0) : Measure.count { i : α | ε ≤ a i } ≤ c / ε := by
   rw [show (fun i => ε ≤ a i) = fun i => (ε : ℝ≥0∞) ≤ ((↑) ∘ a) i by
       funext i

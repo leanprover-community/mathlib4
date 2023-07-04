@@ -119,7 +119,7 @@ theorem memℓp_gen {f : ∀ i, E i} (hf : Summable fun i => ‖f i‖ ^ p.toRea
   exact (memℓp_gen_iff hp).2 hf
 #align mem_ℓp_gen memℓp_gen
 
-theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, (∑ i in s, ‖f i‖ ^ p.toReal) ≤ C) :
+theorem memℓp_gen' {C : ℝ} {f : ∀ i, E i} (hf : ∀ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal ≤ C) :
     Memℓp f p := by
   apply memℓp_gen
   use ⨆ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal
@@ -534,7 +534,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
 /-- Hölder inequality -/
 protected theorem tsum_mul_le_mul_norm {p q : ℝ≥0∞} (hpq : p.toReal.IsConjugateExponent q.toReal)
     (f : lp E p) (g : lp E q) :
-    (Summable fun i => ‖f i‖ * ‖g i‖) ∧ (∑' i, ‖f i‖ * ‖g i‖) ≤ ‖f‖ * ‖g‖ := by
+    (Summable fun i => ‖f i‖ * ‖g i‖) ∧ ∑' i, ‖f i‖ * ‖g i‖ ≤ ‖f‖ * ‖g‖ := by
   have hf₁ : ∀ i, 0 ≤ ‖f i‖ := fun i => norm_nonneg _
   have hg₁ : ∀ i, 0 ≤ ‖g i‖ := fun i => norm_nonneg _
   have hf₂ := lp.hasSum_norm hpq.pos f
@@ -551,7 +551,7 @@ protected theorem summable_mul {p q : ℝ≥0∞} (hpq : p.toReal.IsConjugateExp
 #align lp.summable_mul lp.summable_mul
 
 protected theorem tsum_mul_le_mul_norm' {p q : ℝ≥0∞} (hpq : p.toReal.IsConjugateExponent q.toReal)
-    (f : lp E p) (g : lp E q) : (∑' i, ‖f i‖ * ‖g i‖) ≤ ‖f‖ * ‖g‖ :=
+    (f : lp E p) (g : lp E q) : ∑' i, ‖f i‖ * ‖g i‖ ≤ ‖f‖ * ‖g‖ :=
   (lp.tsum_mul_le_mul_norm hpq f g).2
 #align lp.tsum_mul_le_mul_norm' lp.tsum_mul_le_mul_norm'
 
@@ -568,7 +568,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
 #align lp.norm_apply_le_norm lp.norm_apply_le_norm
 
 theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
-    (∑ i in s, ‖f i‖ ^ p.toReal) ≤ ‖f‖ ^ p.toReal := by
+    ∑ i in s, ‖f i‖ ^ p.toReal ≤ ‖f‖ ^ p.toReal := by
   rw [lp.norm_rpow_eq_tsum hp f]
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
   refine' sum_le_tsum _ (fun i _ => this i) _
@@ -590,13 +590,13 @@ theorem norm_le_of_forall_le {f : lp E ∞} {C : ℝ} (hC : 0 ≤ C) (hCf : ∀ 
 #align lp.norm_le_of_forall_le lp.norm_le_of_forall_le
 
 theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
-    (hf : (∑' i, ‖f i‖ ^ p.toReal) ≤ C ^ p.toReal) : ‖f‖ ≤ C := by
+    (hf : ∑' i, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C := by
   rw [← Real.rpow_le_rpow_iff (norm_nonneg' _) hC hp, norm_rpow_eq_tsum hp]
   exact hf
 #align lp.norm_le_of_tsum_le lp.norm_le_of_tsum_le
 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
-    (hf : ∀ s : Finset α, (∑ i in s, ‖f i‖ ^ p.toReal) ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
+    (hf : ∀ s : Finset α, ∑ i in s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
   norm_le_of_tsum_le hp hC (tsum_le_of_sum_le ((lp.memℓp f).summable hp) hf)
 #align lp.norm_le_of_forall_sum_le lp.norm_le_of_forall_sum_le
 
@@ -1143,7 +1143,7 @@ variable [_i : Fact (1 ≤ p)]
 
 theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (hCF : ∀ᶠ k in l, ‖F k‖ ≤ C)
     {f : ∀ a, E a} (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) (s : Finset α) :
-    (∑ i : α in s, ‖f i‖ ^ p.toReal) ≤ C ^ p.toReal := by
+    ∑ i : α in s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal := by
   have hp' : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp' hp
   let G : (∀ a, E a) → ℝ := fun f => ∑ a in s, ‖f a‖ ^ p.toReal

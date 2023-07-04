@@ -2592,13 +2592,13 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
   rw [submatrix_mul_equiv, submatrix_id_id]
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
-/-- The left `n × l` part of a `n × (l+r)` matrix. -/
+/-- The left `n × l` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
-/-- The right `n × r` part of a `n × (l+r)` matrix. -/
+/-- The right `n × r` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)

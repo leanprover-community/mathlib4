@@ -1749,7 +1749,7 @@ a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b 
 `∑ b in s, f b` as `s → atTop` with the similar set for `g`."]
 theorem map_atTop_finset_prod_le_of_prod_eq [CommMonoid α] {f : β → α} {g : γ → α}
     (h_eq : ∀ u : Finset γ,
-      ∃ v : Finset β, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ (∏ x in u', g x) = ∏ b in v', f b) :
+      ∃ v : Finset β, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ ∏ x in u', g x = ∏ b in v', f b) :
     (atTop.map fun s : Finset β => ∏ b in s, f b) ≤
       atTop.map fun s : Finset γ => ∏ x in s, g x := by
   classical
