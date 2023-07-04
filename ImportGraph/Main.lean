@@ -1,6 +1,17 @@
+/-
+Copyright (c) 2023 Scott Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Scott Morrison
+-/
 import Mathlib.Util.Imports
 import Mathlib.Lean.IO.Process
 import Cli
+
+/-!
+# `lake exe graph`
+
+This is a replacement for Lean 3's `leanproject import-graph` tool.
+-/
 
 open Cli
 
@@ -28,7 +39,7 @@ elab "compileTimeSearchPath" : term =>
 
 /-- A custom command-line argument parser that allows either relative paths to Lean files,
 (e.g. `Mathlib/Topology/Basic.lean`) or the module name (e.g. `Mathlib.Topology.Basic`). -/
-instance instParseableTypeName : ParseableType Name where
+instance : ParseableType Name where
   name     := "Name"
   parse? s :=
     if s.endsWith ".lean" then
@@ -46,17 +57,13 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   | some to => some <| to.as! Name
   | none => none
   searchPathRef.set compileTimeSearchPath
-  let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env =>
-    -- Note: the current implementation doesn't actually need `CoreM` to run!
-    let ctx := {fileName := "", fileMap := default}
-    let state := {env}
-    Prod.fst <$> (CoreM.toIO · ctx state) do
-      let mut graph := env.importGraph
-      if let .some f := from? then
-        graph := graph.dependenciesOf (NameSet.empty.insert f)
-      if args.hasFlag "reduce" then
-        graph := graph.transitiveReduction
-      return asDotGraph graph
+  let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
+    let mut graph := env.importGraph
+    if let .some f := from? then
+      graph := graph.dependenciesOf (NameSet.empty.insert f)
+    if args.hasFlag "reduce" then
+      graph := graph.transitiveReduction
+    return asDotGraph graph
   match args.variableArgsAs! String with
   | #[] => writeFile "import_graph.dot" dotFile
   | outputs => for o in outputs do
