@@ -110,8 +110,8 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
     · rw [mul_one, tsub_self]
       exact dvd_zero _
   /- Induction step
-    `b` is the value of the previous sum as a natural, `hb` is the proof that it is indeed the value,
-    and `han` is the divisibility condition -/
+    `b` is the value of the previous sum as a natural, `hb` is the proof that it is indeed the
+    value, and `han` is the divisibility condition -/
   obtain ⟨b, hb, han⟩ :=
     ih (fun i hi => ha i <| Nat.le_succ_of_le hi) fun i hi => a_pos i <| Nat.le_succ_of_le hi
   specialize ha n le_rfl
