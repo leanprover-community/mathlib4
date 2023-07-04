@@ -17,8 +17,15 @@ def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
     | x, [] => x
   mkFilePath $ aux path.components parent.components
 
+def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
+  | 0, s => s
+  | len+1, s =>
+    let b := UInt8.ofNat (n >>> (len * 8))
+    Nat.toHexDigits n len <|
+      s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
+
 def UInt64.asLTar (n : UInt64) : String :=
-  s!"{n}.ltar"
+  s!"{Nat.toHexDigits n.toNat 8}.ltar"
 
 namespace Cache.IO
 
@@ -269,6 +276,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
+    let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
     let child ← IO.Process.spawn
@@ -283,6 +291,7 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
     if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
+    IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
   else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
