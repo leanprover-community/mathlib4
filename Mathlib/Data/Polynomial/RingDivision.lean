@@ -228,6 +228,8 @@ theorem degree_coe_units [Nontrivial R] (u : R[X]ˣ) : degree (u : R[X]) = 0 :=
   degree_eq_zero_of_isUnit ⟨u, rfl⟩
 #align polynomial.degree_coe_units Polynomial.degree_coe_units
 
+/-- Characterization of a unit of a polynomial ring over an integral domain `R`.
+See `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent` when `R` is a commutative ring. -/
 theorem isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
   ⟨fun hp =>
     ⟨p.coeff 0,
