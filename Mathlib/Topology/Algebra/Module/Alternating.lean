@@ -25,7 +25,7 @@ open scoped BigOperators
 
 - multilinear : `f (update m i (c • x)) = c • f (update m i x)` and
   `f (update m i (x + y)) = f (update m i x) + f (update m i y)`;
-- alternating `f v = 0` whenever `v` has two equal coordinates.
+- alternating : `f v = 0` whenever `v` has two equal coordinates.
 -/
 structure ContinuousAlternatingMap (R M N ι : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
@@ -270,7 +270,7 @@ section
 
 variable (R M)
 
-/-- The evaluation map from `ι → M₂` to `M₂` is alternating at a given `i` when `ι` is subsingleton.
+/-- The evaluation map from `ι → M` to `M` is alternating at a given `i` when `ι` is subsingleton.
 -/
 @[simps! toContinuousMultilinearMap apply]
 def ofSubsingleton [Subsingleton ι] (i' : ι) : Λ^ι⟮R; M; M⟯ :=
@@ -299,7 +299,7 @@ end
 
 /-- If `g` is continuous alternating and `f` is a collection of continuous linear maps,
 then `g (f₁ m₁, ..., fₙ mₙ)` is again a continuous alternating map, that we call
-`g.comp_continuous_linear_map f`. -/
+`g.compContinuousLinearMap f`. -/
 def compContinuousLinearMap (g : Λ^ι⟮R; M; N⟯) (f : M' →L[R] M) : Λ^ι⟮R; M'; N⟯ :=
   { g.toAlternatingMap.compLinearMap (f : M' →ₗ[R] M) with
     toContinuousMultilinearMap := g.1.compContinuousLinearMap fun _ => f }
@@ -391,7 +391,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ι → M) (t : Finset ι) :
     f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') :=
   f.toMultilinearMap.map_piecewise_add _ _ _
 
-/-- Additivity of a continuous multilinear map along all coordinates at the same time,
+/-- Additivity of a continuous alternating map along all coordinates at the same time,
 writing `f (m + m')` as the sum  of `f (s.piecewise m m')` over all sets `s`. -/
 theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
@@ -426,7 +426,7 @@ variable (R)
 variable {A : Type _} [Semiring A] [SMul R A] [Module A M] [Module A N] [IsScalarTower R A M]
   [IsScalarTower R A N]
 
-/-- Reinterpret an `A`-alternating map as an `R`-alternating map, if `A` is an algebra over `R`
+/-- Reinterpret a continuous `A`-alternating map as a continuous `R`-alternating map, if `A` is an algebra over `R`
 and their actions on all involved modules agree with the action of `R` on `A`. -/
 def restrictScalars (f : Λ^ι⟮A; M; N⟯) : Λ^ι⟮R; M; N⟯ :=
   { f with toContinuousMultilinearMap := f.1.restrictScalars R }
