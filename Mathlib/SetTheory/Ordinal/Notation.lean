@@ -341,21 +341,21 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       rw [cmpUsing, ite_eq_iff, not_lt] at nh
       case lt =>
         cases' nh with nh nh
-        . exact oadd_lt_oadd_2 h₁ nh.left
-        . rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
+        · exact oadd_lt_oadd_2 h₁ nh.left
+        · rw [ite_eq_iff] at nh; cases' nh.right with nh nh <;> cases nh <;> contradiction
       case gt =>
         cases' nh with nh nh
-        . cases nh; contradiction
-        . cases' nh with _ nh
+        · cases nh; contradiction
+        · cases' nh with _ nh
           rw [ite_eq_iff] at nh; cases' nh with nh nh
-          . exact oadd_lt_oadd_2 h₂ nh.left
-          . cases nh; contradiction
+          · exact oadd_lt_oadd_2 h₂ nh.left
+          · cases nh; contradiction
       cases' nh with nh nh
-      . cases nh; contradiction
+      · cases nh; contradiction
       cases' nh with nhl nhr
       rw [ite_eq_iff] at nhr
       cases' nhr with nhr nhr
-      . cases nhr; contradiction
+      · cases nhr; contradiction
       obtain rfl := Subtype.eq (eq_of_incomp ⟨(not_lt_of_ge nhl), nhr.left⟩)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
       revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
@@ -540,7 +540,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
     have ee := @cmp_compares _ _ h₁.fst h₂.fst
     cases h : cmp e₁ e₂ <;> simp only [h] at ee
     · rw [Ordinal.sub_eq_zero_iff_le.2]
-      . rfl
+      · rfl
       exact le_of_lt (oadd_lt_oadd_1 h₁ ee)
     · change e₁ = e₂ at ee
       subst e₂
@@ -817,10 +817,10 @@ instance nf_opowAux (e a0 a) [NF e] [NF a0] [NF a] : ∀ k m, NF (opowAux e a0 a
   intro k m
   unfold opowAux
   cases' m with m m
-  . cases k <;> exact NF.zero
+  · cases k <;> exact NF.zero
   cases' k with k k
-  . exact NF.oadd_zero _ _
-  . haveI := nf_opowAux e a0 a k
+  · exact NF.oadd_zero _ _
+  · haveI := nf_opowAux e a0 a k
     simp only [Nat.succ_ne_zero m] ; infer_instance
 #align onote.NF_opow_aux ONote.nf_opowAux
 
@@ -839,8 +839,8 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   · simp [(· ^ ·),Pow.pow,pow, opow, opowAux2, e₁, e₂, split_eq_scale_split' e₂]
     have := na.fst
     cases' k with k <;> simp <;> skip <;> dsimp
-    . infer_instance
-    . cases k <;> cases m <;> infer_instance
+    · infer_instance
+    · cases k <;> cases m <;> infer_instance
 #align onote.NF_opow ONote.nf_opow
 
 theorem scale_opowAux (e a0 a : ONote) [NF e] [NF a0] [NF a] :

@@ -94,8 +94,7 @@ theorem Real.iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
 theorem atBot_le_nhds_bot {α : Type _} [TopologicalSpace α] [LinearOrder α] [OrderBot α]
     [OrderTopology α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   cases subsingleton_or_nontrivial α
-  ·
-    simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
+  · simp only [nhds_discrete, le_pure_iff, mem_atBot_sets, mem_singleton_iff,
       eq_iff_true_of_subsingleton, imp_true_iff, exists_const]
   have h : atBot.HasBasis (fun _ : α => True) Iic := @atBot_basis α _ _
   have h_nhds : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a => Iio a := @nhds_bot_basis α _ _ _ _ _
@@ -730,8 +729,7 @@ theorem condCdf'_eq_condCdfRat (ρ : Measure (α × ℝ)) (a : α) (r : ℚ) :
     condCdf' ρ a r = condCdfRat ρ a r := by
   rw [← inf_gt_condCdfRat ρ a r, condCdf']
   refine' Equiv.iInf_congr _ _
-  ·
-    exact
+  · exact
       { toFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
         invFun := fun t => ⟨t.1, by exact_mod_cast t.2⟩
         left_inv := fun t => by simp only [Subtype.coe_eta]

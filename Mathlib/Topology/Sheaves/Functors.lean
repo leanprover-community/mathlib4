@@ -46,7 +46,7 @@ theorem map_diagram :
     Pairwise.diagram U ⋙ Opens.map f = Pairwise.diagram ((Opens.map f).obj ∘ U) := by
   have obj_eq : ∀ (j : Pairwise ι), (Pairwise.diagram U ⋙ Opens.map f).obj j =
     (Pairwise.diagram ((Opens.map f).toPrefunctor.obj ∘ U)).obj j
-  . rintro ⟨i⟩ <;> rfl
+  · rintro ⟨i⟩ <;> rfl
   refine Functor.hext obj_eq ?_
   intro i j g; apply Subsingleton.helim
   rw [obj_eq, obj_eq]

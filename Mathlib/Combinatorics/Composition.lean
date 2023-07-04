@@ -677,8 +677,8 @@ theorem splitWrtCompositionAux_cons (l : List α) (n ns) :
 theorem length_splitWrtCompositionAux (l : List α) (ns) :
     length (l.splitWrtCompositionAux ns) = ns.length := by
     induction ns generalizing l
-    . simp [splitWrtCompositionAux, *]
-    . simp [*]
+    · simp [splitWrtCompositionAux, *]
+    · simp [*]
 #align list.length_split_wrt_composition_aux List.length_splitWrtCompositionAux
 
 /-- When one splits a list along a composition `c`, the number of sublists thus created is
@@ -693,12 +693,12 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
-  . simp
+  · simp
   have := le_trans (Nat.le_add_right _ _) h
   simp only [splitWrtCompositionAux_cons, this] ; dsimp
   rw [length_take, IH] <;> simp [length_drop]
-  . assumption
-  . exact le_tsub_of_add_le_left h
+  · assumption
+  · exact le_tsub_of_add_le_left h
 #align list.map_length_split_wrt_composition_aux List.map_length_splitWrtCompositionAux
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
@@ -730,9 +730,9 @@ theorem nthLe_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi
   induction' ns with n ns IH generalizing l i
   · cases hi
   cases' i with i
-  . rw [Nat.add_zero, List.take_zero, sum_nil, nthLe_zero]; dsimp
+  · rw [Nat.add_zero, List.take_zero, sum_nil, nthLe_zero]; dsimp
     simp only [splitWrtCompositionAux_cons, head!, sum, foldl, zero_add]
-  . simp only [splitWrtCompositionAux_cons, take, sum_cons,
+  · simp only [splitWrtCompositionAux_cons, take, sum_cons,
       Nat.add_eq, add_zero, gt_iff_lt, nthLe_cons, IH]; dsimp
     rw [Nat.succ_sub_succ_eq_sub, ←Nat.succ_eq_add_one,tsub_zero]
     simp only [← drop_take, drop_drop]
@@ -763,7 +763,7 @@ theorem join_splitWrtCompositionAux {ns : List ℕ} :
   simp only [splitWrtCompositionAux_cons] ; dsimp
   rw [IH]
   · simp
-  . rw [length_drop, ← h, add_tsub_cancel_left]
+  · rw [length_drop, ← h, add_tsub_cancel_left]
 #align list.join_split_wrt_composition_aux List.join_splitWrtCompositionAux
 
 /-- If one splits a list along a composition, and then joins the sublists, one gets back the
@@ -855,9 +855,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     constructor
     · intro h
       cases' h with n h
-      . rw [add_comm] at this
+      · rw [add_comm] at this
         contradiction
-      . cases' h with w h; cases' h with h₁ h₂
+      · cases' h with w h; cases' h with h₁ h₂
         rw [←Fin.ext_iff] at h₂
         rwa [h₂]
     · intro h

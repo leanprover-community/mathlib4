@@ -324,12 +324,12 @@ def project : MonoidalFunctor (F C) D where
   μ X Y := 𝟙 _
   μ_natural := @fun _ _ _ _ f g => by
     induction' f using Quotient.recOn
-    . induction' g using Quotient.recOn
-      . dsimp
+    · induction' g using Quotient.recOn
+      · dsimp
         simp
         rfl
-      . rfl
-    . rfl
+      · rfl
+    · rfl
 #align category_theory.free_monoidal_category.project CategoryTheory.FreeMonoidalCategory.project
 
 end Functor

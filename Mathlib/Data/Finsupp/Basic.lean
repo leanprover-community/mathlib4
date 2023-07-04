@@ -662,8 +662,7 @@ theorem mapDomain_injOn (S : Set α) {f : α → β} (hf : Set.InjOn f S) :
   ext a
   classical
     by_cases h : a ∈ v₁.support ∪ v₂.support
-    ·
-      rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
+    · rw [← mapDomain_apply' S _ hv₁ hf _, ← mapDomain_apply' S _ hv₂ hf _, eq] <;>
         · apply Set.union_subset hv₁ hv₂
           exact_mod_cast h
     · simp only [not_or, mem_union, not_not, mem_support_iff] at h
@@ -1224,8 +1223,7 @@ theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg�
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
   rw [Finsupp.curry]
   trans
-  ·
-    exact
+  · exact
       sum_sum_index (fun a => sum_zero_index) fun a b₀ b₁ =>
         sum_add_index' (fun a => hg₀ _ _) fun c d₀ d₁ => hg₁ _ _ _ _
   congr ; funext p c

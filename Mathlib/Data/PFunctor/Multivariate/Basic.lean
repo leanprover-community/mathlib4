@@ -174,7 +174,7 @@ theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (
   simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
-  . intro
+  · intro
     repeat' first |constructor|assumption
 #align mvpfunctor.liftp_iff' MvPFunctor.liftP_iff'
 
