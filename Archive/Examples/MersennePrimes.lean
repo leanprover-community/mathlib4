@@ -21,17 +21,17 @@ for ideas about extending this to larger Mersenne primes.
 
 
 example : (mersenne 13).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by run_tac LucasLehmer.run_test)
+  lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer_test)
 
 example : (mersenne 17).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by run_tac LucasLehmer.run_test)
+  lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer_test)
 
 example : (mersenne 19).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by run_tac LucasLehmer.run_test)
+  lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer_test)
 
 /-- 2147483647.Prime, Euler (1772) -/
 example : (mersenne 31).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by run_tac LucasLehmer.run_test)
+  lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer_test)
 
 /-!
 The next four primality tests are too slow to run interactively with -T100000,
