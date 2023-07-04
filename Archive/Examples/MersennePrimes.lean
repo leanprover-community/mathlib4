@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.NumberTheory.LucasLehmer
+import Mathlib.NumberTheory.LucasLehmer
 
 /-!
 # Explicit Mersenne primes
