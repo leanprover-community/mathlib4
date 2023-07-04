@@ -73,10 +73,16 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
 
 theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Scheme} [IsAffine X]
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) :
-    P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔ P (Localization.awayMap (Scheme.Γ.map f.op) r) :=
-  (hP.basicOpen_iff _ _).trans (hP.is_localization_away_iff _ _ _ _).symm
+    P (Scheme.Γ.map (f ∣_ Y.basicOpen r).op) ↔ P (Localization.awayMap (Scheme.Γ.map f.op) r) := by
+  -- haveI i1 := isLocalization_basicOpen (topIsAffineOpen X) (Scheme.Γ.map f.op r)
+  refine (hP.basicOpen_iff _ _).trans ?_
+  -- Porting note : was a one line term mode proof, but this `dsimp` is vital so the term mode
+  -- one liner is not possible
+  dsimp
+  rw [← hP.is_localization_away_iff]
 #align ring_hom.respects_iso.basic_open_iff_localization RingHom.RespectsIso.basicOpen_iff_localization
 
+set_option synthInstance.maxHeartbeats 300000 in
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme}
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
     (hU : IsAffineOpen U) {V : Opens _}
