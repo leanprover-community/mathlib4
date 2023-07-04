@@ -428,8 +428,8 @@ theorem of_smul_def (i) (w : Word M) (m : M i) :
 theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
     Word.mk (⟨i, m⟩::ls) h1 h2 = of m • mkAux ls h1 h2 := by
   rw [cons_eq_rcons, of_smul_def, equivPair_eq_of_fstIdx_ne _]
-  . simp
-  . rw [fstIdx_ne_iff]
+  · simp
+  · rw [fstIdx_ne_iff]
     exact (List.chain'_cons'.1 h2).1
 #align free_product.word.cons_eq_smul FreeProduct.Word.cons_eq_smul
 
@@ -709,7 +709,7 @@ variable {H : ι → Type _} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
 
 -- We need many groups or one group with many elements
-variable (hcard : 3 ≤ (#ι) ∨ ∃ i, 3 ≤ (#H i))
+variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type _} [MulAction G α]
@@ -752,7 +752,7 @@ theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift 
   exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hk hk
 #align free_product.lift_word_prod_nontrivial_of_head_eq_last FreeProduct.lift_word_prod_nontrivial_of_head_eq_last
 
-theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ (#H i))
+theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ #(H i))
     (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
   obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
@@ -950,10 +950,10 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         _ ⊆ X i := by
           clear hnne0 hlt
           refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
-          . dsimp
+          · dsimp
             rw [zpow_one]
             exact hX i
-          . dsimp
+          · dsimp
             intro n _hle hi
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
@@ -982,7 +982,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • (X i)ᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
-  show _ ∨ ∃ i, 3 ≤ (#H i)
+  show _ ∨ ∃ i, 3 ≤ #(H i)
   · inhabit ι
     right
     use Inhabited.default

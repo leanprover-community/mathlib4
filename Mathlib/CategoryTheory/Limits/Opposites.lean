@@ -575,10 +575,10 @@ in the opposite category is a limit cone. -/
 def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.op := by
   apply equivOfSubsingletonOfSubsingleton
-  . intro h
+  · intro h
     exact (IsLimit.postcomposeHomEquiv _ _).invFun
       ((IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).toFun (isLimitCoconeOp _ h))
-  . intro h
+  · intro h
     exact (IsColimit.equivIsoColimit c.opUnop).toFun
       (isColimitConeUnop _ ((IsLimit.postcomposeHomEquiv _ _).invFun
         ((IsLimit.whiskerEquivalenceEquiv _).toFun h)))
@@ -589,10 +589,10 @@ in `C` is a limit cone. -/
 def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
-  . intro h
+  · intro h
     exact isLimitCoconeUnop _ ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
-  . intro h
+  · intro h
     exact (IsColimit.equivIsoColimit c.unopOp).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv walkingCospanOpEquiv.symm).toFun (isColimitConeOp _ h)))

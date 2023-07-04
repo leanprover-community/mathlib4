@@ -300,22 +300,22 @@ theorem local_hom_TFAE (f : R →+* S) :
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
   tfae_have 1 → 2
-  . rintro _ _ ⟨a, ha, rfl⟩
+  · rintro _ _ ⟨a, ha, rfl⟩
     exact map_nonunit f a ha
   tfae_have 2 → 4
-  . exact Set.image_subset_iff.1
+  · exact Set.image_subset_iff.1
   tfae_have 3 ↔ 4
-  . exact Ideal.map_le_iff_le_comap
+  · exact Ideal.map_le_iff_le_comap
   tfae_have 4 → 1
-  . intro h
+  · intro h
     constructor
     exact fun x => not_imp_not.1 (@h x)
   tfae_have 1 → 5
-  . intro
+  · intro
     ext
     exact not_iff_not.2 (isUnit_map_iff f _)
   tfae_have 5 → 4
-  . exact fun h => le_of_eq h.symm
+  · exact fun h => le_of_eq h.symm
   tfae_finish
 #align local_ring.local_hom_tfae LocalRing.local_hom_TFAE
 

@@ -1147,9 +1147,17 @@ instance Prod.t2Space {α : Type _} {β : Type _} [TopologicalSpace α] [T2Space
     (fun h₁ => separated_by_continuous continuous_fst h₁) fun h₂ =>
     separated_by_continuous continuous_snd h₂⟩
 
+/-- If the codomain of an injective continuous function is a Hausdorff space, then so is its
+domain. -/
+theorem T2Space.of_injective_continuous [TopologicalSpace β] [T2Space β] {f : α → β}
+    (hinj : Injective f) (hc : Continuous f) : T2Space α :=
+  ⟨fun _ _ h => separated_by_continuous hc (hinj.ne h)⟩
+
+/-- If the codomain of a topological embedding is a Hausdorff space, then so is its domain.
+See also `T2Space.of_continuous_injective`. -/
 theorem Embedding.t2Space [TopologicalSpace β] [T2Space β] {f : α → β} (hf : Embedding f) :
     T2Space α :=
-  ⟨fun _ _ h => separated_by_continuous hf.continuous (hf.inj.ne h)⟩
+  .of_injective_continuous hf.inj hf.continuous
 #align embedding.t2_space Embedding.t2Space
 
 instance {α β : Type _} [TopologicalSpace α] [T2Space α] [TopologicalSpace β] [T2Space β] :
