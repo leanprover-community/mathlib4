@@ -53,18 +53,22 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
       P (@IsLocalization.Away.map (Y.presheaf.obj (Opposite.op ⊤)) _
           (Y.presheaf.obj (Opposite.op <| Y.basicOpen r)) _ _ (X.presheaf.obj (Opposite.op ⊤)) _
           (X.presheaf.obj (Opposite.op <| X.basicOpen (Scheme.Γ.map f.op r))) _ _
-          (Scheme.Γ.map f.op) r _ _) := by
+          (Scheme.Γ.map f.op) r _ <| @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)) := by
   rw [Γ_map_morphismRestrict, hP.cancel_left_isIso, hP.cancel_right_isIso,
     ← hP.cancel_right_isIso (f.val.c.app (Opposite.op (Y.basicOpen r)))
       (X.presheaf.map (eqToHom (Scheme.preimage_basicOpen f r).symm).op), ← eq_iff_iff]
   congr
   delta IsLocalization.Away.map
   refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
-  convert (IsLocalization.map_comp _).symm using 1
+  generalize_proofs h1 h2 h3
+  haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
+  -- Porting note : needs to be very explicit here
+  convert (@IsLocalization.map_comp (hy := h3) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
+    _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
   erw [← X.presheaf.map_comp]
-  congr
+  congr 1
 #align ring_hom.respects_iso.basic_open_iff RingHom.RespectsIso.basicOpen_iff
 
 theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Scheme} [IsAffine X]
@@ -94,7 +98,7 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
     simp only [Set.image_univ, Subtype.range_coe, Set.image_subset_iff]
     rfl
   · exact AlgebraicGeometry.Γ_restrict_isLocalization Y r
-  · rw [← U.open_embedding_obj_top] at hU 
+  · rw [← U.open_embedding_obj_top] at hU
     dsimp [Scheme.Γ_obj_op, Scheme.Γ_map_op, Scheme.restrict]
     apply AlgebraicGeometry.isLocalization_of_eq_basicOpen _ hU
     rw [opens.open_embedding_obj_top, opens.functor_obj_map_obj]
@@ -124,10 +128,10 @@ theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (h
     _root_.congr_arg Quiver.Hom.unop
       (preserves_pullback.iso_hom_fst AffineScheme.Γ.right_op (AffineScheme.of_hom f)
         (AffineScheme.of_hom g))
-  simp only [Quiver.Hom.unop_op, functor.right_op_map, unop_comp] at this 
-  delta AffineScheme.Γ at this 
+  simp only [Quiver.Hom.unop_op, functor.right_op_map, unop_comp] at this
+  delta AffineScheme.Γ at this
   simp only [Quiver.Hom.unop_op, functor.comp_map, AffineScheme.forget_to_Scheme_map,
-    functor.op_map] at this 
+    functor.op_map] at this
   rw [← this, hP'.cancel_right_is_iso, ←
     pushout_iso_unop_pullback_inl_hom (Quiver.Hom.unop _) (Quiver.Hom.unop _),
     hP'.cancel_right_is_iso]
@@ -189,7 +193,7 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
       ext1; refine' set.image_preimage_eq_inter_range.trans (set.inter_eq_left_iff_subset.mpr _)
       convert e; exact Subtype.range_coe
     have := H ⟨(opens.map (X.ofRestrict U'.open_embedding).1.base).obj V.1, _⟩
-    erw [← X.presheaf.map_comp] at this 
+    erw [← X.presheaf.map_comp] at this
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eq_to_hom _)), category.assoc, ←
       X.presheaf.map_comp]
     convert this using 1
@@ -239,7 +243,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
     apply h₃ _ _ hs
     intro r
     have := hs' r ⟨(opens.map (X.ofRestrict _).1.base).obj U.1, _⟩
-    rwa [h₁.ofRestrict_morphism_restrict_iff] at this 
+    rwa [h₁.ofRestrict_morphism_restrict_iff] at this
     · exact U.2
     · rfl
     · infer_instance
@@ -248,7 +252,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
           is_affine_open ((opens.map (X.ofRestrict V.openEmbedding).1.base).obj U.1)
         by exact this _ rfl
       intro V hV
-      rw [Scheme.preimage_basic_open] at hV 
+      rw [Scheme.preimage_basic_open] at hV
       subst hV
       exact U.2.mapRestrictBasicOpen (Scheme.Γ.map f.op r.1)
 #align algebraic_geometry.source_affine_locally_is_local AlgebraicGeometry.sourceAffineLocally_isLocal
@@ -260,8 +264,8 @@ theorem source_affine_locally_of_source_open_cover_aux (h₁ : RingHom.RespectsI
     (s : Set (X.presheaf.obj (op U.1))) (hs : Ideal.span s = ⊤)
     (hs' : ∀ r : s, P (Scheme.Γ.map (X.ofRestrict (X.basicOpen r.1).openEmbedding ≫ f).op)) :
     P (Scheme.Γ.map (X.ofRestrict U.1.openEmbedding ≫ f).op) := by
-  apply_fun Ideal.map (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) at hs 
-  rw [Ideal.map_span, Ideal.map_top] at hs 
+  apply_fun Ideal.map (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) at hs
+  rw [Ideal.map_span, Ideal.map_top] at hs
   apply h₃ _ _ hs
   rintro ⟨s, r, hr, hs⟩
   have :=
@@ -343,7 +347,7 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
     · exact (RingHom.algebraMap_toAlgebra _).symm
     · dsimp [Scheme.Γ]
       have := U.2
-      rw [← U.1.openEmbedding_obj_top] at this 
+      rw [← U.1.openEmbedding_obj_top] at this
       convert is_localization_basic_open this _ using 6 <;> rw [opens.open_embedding_obj_top] <;>
         exact (Scheme.basic_open_res_eq _ _ _).symm
   · introv hs hs'
@@ -357,9 +361,9 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
     rw [← hP.respects_iso.cancel_right_isIso _
         (Scheme.Γ.map
           (is_open_immersion.iso_of_range_eq (𝒰.map i) (X.ofRestrict (S i).1.openEmbedding)
-                subtype.range_coe.symm).inv.op)] at H 
+                subtype.range_coe.symm).inv.op)] at H
     rwa [← Scheme.Γ.map_comp, ← op_comp, is_open_immersion.iso_of_range_eq_inv,
-      is_open_immersion.lift_fac_assoc] at H 
+      is_open_immersion.lift_fac_assoc] at H
 #align ring_hom.property_is_local.source_affine_locally_of_source_open_cover RingHom.PropertyIsLocal.sourceAffineLocally_of_source_openCover
 
 theorem affine_openCover_tFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
@@ -381,8 +385,8 @@ theorem affine_openCover_tFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
           (is_open_immersion.iso_of_range_eq g
                 (X.ofRestrict (opens.open_embedding ⟨_, hg.base_open.open_range⟩))
                 subtype.range_coe.symm).Hom.op),
-      ← Scheme.Γ.map_comp, ← op_comp, is_open_immersion.iso_of_range_eq_hom] at H 
-    erw [is_open_immersion.lift_fac_assoc] at H 
+      ← Scheme.Γ.map_comp, ← op_comp, is_open_immersion.iso_of_range_eq_hom] at H
+    erw [is_open_immersion.lift_fac_assoc] at H
     exact H
   tfae_have 4 → 3
   · intro H 𝒰 _ i; skip; apply H
@@ -403,7 +407,7 @@ theorem openCover_tfae {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
   tfae_have 1 → 4
   · intro H U g hg V
     skip
-    rw [(hP.affine_open_cover_tfae f).out 0 3] at H 
+    rw [(hP.affine_open_cover_tfae f).out 0 3] at H
     haveI : is_affine _ := V.2
     rw [← category.assoc]
     apply H
@@ -418,7 +422,7 @@ theorem openCover_tfae {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
     · intro i; dsimp; infer_instance
     · intro i
       specialize h𝒰 i.1
-      rw [(hP.affine_open_cover_tfae (𝒰.map i.fst ≫ f)).out 0 3] at h𝒰 
+      rw [(hP.affine_open_cover_tfae (𝒰.map i.fst ≫ f)).out 0 3] at h𝒰
       erw [category.assoc]
       apply @h𝒰 _ (show _ from _)
       dsimp; infer_instance
@@ -472,12 +476,12 @@ theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
     use 𝒰.pullback_cover (X.ofRestrict _)
     intro i
     specialize H i U
-    rw [morphism_restrict_comp] at H 
-    delta morphism_restrict at H 
+    rw [morphism_restrict_comp] at H
+    delta morphism_restrict at H
     have := source_affine_locally_respects_iso hP.respects_iso
     rw [category.assoc, affine_cancel_left_isIso this, ←
       affine_cancel_left_isIso this (pullback_symmetry _ _).Hom,
-      pullback_symmetry_hom_comp_snd_assoc] at H 
+      pullback_symmetry_hom_comp_snd_assoc] at H
     exact H
 #align ring_hom.property_is_local.source_open_cover_iff RingHom.PropertyIsLocal.source_openCover_iff
 
@@ -513,16 +517,16 @@ theorem affineLocally_of_comp
   let 𝒰' := (Z.affineCover.pullbackCover g).bind fun i => Scheme.affineCover _
   have h𝒰' : ∀ i, IsAffine (𝒰'.obj i) := by dsimp; infer_instance
   rw [hP.affine_openCover_iff f 𝒰' fun i => Scheme.affineCover _]
-  rw [hP.affine_openCover_iff (f ≫ g) Z.affineCover 𝒰] at h 
+  rw [hP.affine_openCover_iff (f ≫ g) Z.affineCover 𝒰] at h
   rintro ⟨i, j⟩ k
-  dsimp at i j k 
+  dsimp at i j k
   specialize h i ⟨j, k⟩
   dsimp only [Scheme.open_cover.bind_map, Scheme.open_cover.pushforward_iso_obj,
     Scheme.pullback.open_cover_of_right_obj, Scheme.open_cover.pushforward_iso_map,
     Scheme.pullback.open_cover_of_right_map, Scheme.open_cover.bind_obj,
     Scheme.open_cover.pullback_cover_obj, Scheme.open_cover.pullback_cover_map] at h ⊢
   rw [category.assoc, category.assoc, pullback_right_pullback_fst_iso_hom_snd,
-    pullback.lift_snd_assoc, category.assoc, ← category.assoc, op_comp, functor.map_comp] at h 
+    pullback.lift_snd_assoc, category.assoc, ← category.assoc, op_comp, functor.map_comp] at h
   exact H _ _ h
 #align ring_hom.property_is_local.affine_locally_of_comp RingHom.PropertyIsLocal.affineLocally_of_comp
 
@@ -540,7 +544,7 @@ theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderCom
   · exact 𝒰
   · intro i j; dsimp at *; infer_instance
   · rintro i ⟨j, k⟩
-    dsimp at i j k 
+    dsimp at i j k
     dsimp only [Scheme.open_cover.bind_map, Scheme.open_cover.pushforward_iso_obj,
       Scheme.pullback.open_cover_of_right_obj, Scheme.open_cover.pushforward_iso_map,
       Scheme.pullback.open_cover_of_right_map, Scheme.open_cover.bind_obj]
@@ -548,15 +552,14 @@ theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderCom
       pullback.lift_snd_assoc, category.assoc, ← category.assoc, op_comp, functor.map_comp]
     apply hP.stable_under_composition
     · exact (hP.affine_open_cover_iff _ _ _).mp hg _ _
-    · delta affine_locally at hf 
-      rw [(hP.is_local_source_affine_locally.affine_open_cover_tfae f).out 0 3] at hf 
+    · delta affine_locally at hf
+      rw [(hP.is_local_source_affine_locally.affine_open_cover_tfae f).out 0 3] at hf
       specialize hf ((pullback g (S.affine_cover.map i)).affineCover.map j ≫ pullback.fst)
       rw [(hP.affine_open_cover_tfae
               (pullback.snd :
                 pullback f ((pullback g (S.affine_cover.map i)).affineCover.map j ≫ pullback.fst) ⟶
-                  _)).out 0 3] at hf 
+                  _)).out 0 3] at hf
       apply hf
 #align ring_hom.property_is_local.affine_locally_stable_under_composition RingHom.PropertyIsLocal.affineLocally_stableUnderComposition
 
 end RingHom.PropertyIsLocal
-
