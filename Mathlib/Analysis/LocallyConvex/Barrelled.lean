@@ -11,7 +11,7 @@ import Mathlib.Topology.MetricSpace.Baire
 # Barrelled spaces
 -/
 
-open Bornology Set ContinuousLinearMap
+open Filter Topology Set ContinuousLinearMap
 
 /-- A topological vector space `E` is said to be "barrelled" if all lower semicontinuous seminorms
 on `E` are actually continuous. This is not the usual definition for TVS over `ℝ` or `ℂ`, but this
@@ -22,11 +22,31 @@ class BarrelledSpace (𝕜 E : Type _) [SeminormedRing 𝕜] [AddGroup E] [SMul 
     [TopologicalSpace E] : Prop where
   continuous_of_lowerSemicontinuous : ∀ p : Seminorm 𝕜 E, LowerSemicontinuous p → Continuous p
 
+theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type _} [AddGroup E] [SMul 𝕜 E]
+    [SeminormedRing 𝕜] [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : Seminorm 𝕜 E)
+    (hp : LowerSemicontinuous p) : Continuous p :=
+  BarrelledSpace.continuous_of_lowerSemicontinuous p hp
+
+theorem Seminorm.continuous_iSup {ι 𝕜 E : Type _} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
+    [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
+    (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
+    Continuous (⨆ i, p i : Seminorm 𝕜 E) := by
+  refine Seminorm.continuous_of_lowerSemicontinuous _ ?_
+  rw [Seminorm.coe_iSup_eq bdd]
+  rw [Seminorm.bddAbove_range_iff] at bdd
+  convert lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
+  exact iSup_apply
+
+section NontriviallyNormedField
+
+variable {α ι κ 𝕜₁ 𝕜₂ E F : Type _} [Nonempty κ] [NontriviallyNormedField 𝕜₁]
+    [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
+    [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F]
+
 /-- Any TVS over a `NontriviallyNormedField` that is also a Baire space is barrelled. In
 particular, this applies to Banach spaces and Fréchet spaces. -/
-instance {𝕜 E : Type _} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] [BaireSpace E] :
-    BarrelledSpace 𝕜 E where
+instance [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜₁ E] [BaireSpace E] :
+    BarrelledSpace 𝕜₁ E where
   continuous_of_lowerSemicontinuous := by
     intro p hp
     have h₁ : ∀ n : ℕ, IsClosed (p.closedBall (0 : E) n) := fun n ↦ by
@@ -45,29 +65,13 @@ instance {𝕜 E : Type _} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Modu
       _ ≤ n + n := add_le_add hy hxn'
       _ ≤ 2*n + 1 := by linarith
 
-theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type _} [AddGroup E] [SMul 𝕜 E]
-    [SeminormedRing 𝕜] [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : Seminorm 𝕜 E)
-    (hp : LowerSemicontinuous p) : Continuous p :=
-  BarrelledSpace.continuous_of_lowerSemicontinuous p hp
+namespace WithSeminorms
 
-theorem Seminorm.continuous_iSup {ι 𝕜 E : Type _} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
-    [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
-    (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
-    Continuous (⨆ i, p i : Seminorm 𝕜 E) := by
-  refine Seminorm.continuous_of_lowerSemicontinuous _ ?_
-  rw [Seminorm.coe_iSup_eq bdd]
-  rw [Seminorm.bddAbove_range_iff] at bdd
-  convert lowerSemicontinuous_ciSup (f := fun i x ↦ p i x) bdd (fun i ↦ (hp i).lowerSemicontinuous)
-  exact iSup_apply
+variable [UniformSpace E] [UniformSpace F] [UniformAddGroup E] [UniformAddGroup F]
+    [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] [BarrelledSpace 𝕜₁ E] {𝓕 : ι → E →SL[σ₁₂] F}
+    {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
 
-theorem WithSeminorms.banach_steinhaus {ι κ 𝕜₁ 𝕜₂ E F : Type _} [Nonempty κ]
-    [NontriviallyNormedField 𝕜₁] [NontriviallyNormedField 𝕜₂]
-    {σ₁₂ : 𝕜₁ →+* 𝕜₂} [RingHomIsometric σ₁₂]
-    [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] [UniformSpace E]
-    [UniformSpace F] [UniformAddGroup E] [UniformAddGroup F] [ContinuousSMul 𝕜₁ E]
-    [ContinuousSMul 𝕜₂ F] [BarrelledSpace 𝕜₁ E]
-    {q : SeminormFamily 𝕜₂ F κ} {𝓕 : ι → E →SL[σ₁₂] F}
-    (hq : WithSeminorms q) (H : ∀ k x, BddAbove (range fun i ↦ q k (𝓕 i x))) :
+theorem banach_steinhaus (H : ∀ k x, BddAbove (range fun i ↦ q k (𝓕 i x))) :
     UniformEquicontinuous ((↑) ∘ 𝓕) := by
   refine (hq.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup ((toLinearMap) ∘ 𝓕)).mpr ?_
   intro k
@@ -77,3 +81,26 @@ theorem WithSeminorms.banach_steinhaus {ι κ 𝕜₁ 𝕜₂ E F : Type _} [Non
   simp only [Function.comp_apply, ← Seminorm.coe_iSup_eq this]
   exact ⟨this, Seminorm.continuous_iSup _
     (fun i ↦ (hq.continuous_seminorm k).comp (𝓕 i).continuous) this⟩
+
+/-- Given a sequence of continuous linear maps which converges pointwise and for which the
+domain is barrelled, the Banach-Steinhaus theorem is used to guarantee that the limit map
+is a *continuous* linear map as well.
+
+This actually works for any *countably generated* filter instead of `AtTop : Filter ℕ`,
+but the proof ultimately goes back to sequences. -/
+def continuousLinearMapOfTendsto [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
+    [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
+    E →SL[σ₁₂] F where
+  toFun := f
+  map_add' := (linearMapOfTendsto _ _ h).map_add'
+  map_smul' := (linearMapOfTendsto _ _ h).map_smul'
+  cont := by
+    rcases l.exists_seq_tendsto with ⟨u, hu⟩
+    refine (h.comp hu).continuous_of_equicontinuous_at (hq.banach_steinhaus ?_).equicontinuous
+    intro k x
+    rw [tendsto_pi_nhds] at h
+    exact (((hq.continuous_seminorm k).tendsto _).comp <| (h x).comp hu).bddAbove_range
+
+end WithSeminorms
+
+end NontriviallyNormedField
