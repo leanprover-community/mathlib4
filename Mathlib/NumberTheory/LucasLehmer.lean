@@ -571,11 +571,14 @@ def run_test : TacticM Unit := withMainContext do
   closeMainGoal (.fvar h)
 #align lucas_lehmer.run_test LucasLehmer.run_test
 
+@[inherit_doc run_test]
+elab "lucas_lehmer_test" : tactic => LucasLehmer.run_test
+
 end LucasLehmer
 
 /-- We verify that the tactic works to prove `127.prime`. -/
 example : (mersenne 7).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by run_tac LucasLehmer.run_test)
+  lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer_test)
 
 /-!
 This implementation works successfully to prove `(2^127 - 1).prime`,
