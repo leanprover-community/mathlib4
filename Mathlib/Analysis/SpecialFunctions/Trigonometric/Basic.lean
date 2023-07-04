@@ -548,7 +548,7 @@ theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x 
     rcases(cos_eq_one_iff _).1 h with ⟨n, rfl⟩
     rw [mul_lt_iff_lt_one_left two_pi_pos] at hx₂
     rw [neg_lt, neg_mul_eq_neg_mul, mul_lt_iff_lt_one_left two_pi_pos] at hx₁
-    norm_cast  at hx₁ hx₂
+    norm_cast at hx₁ hx₂
     obtain rfl : n = 0 := le_antisymm (by linarith) (by linarith)
     simp, fun h => by simp [h]⟩
 #align real.cos_eq_one_iff_of_lt_of_lt Real.cos_eq_one_iff_of_lt_of_lt
@@ -864,7 +864,7 @@ theorem sq_cos_pi_div_six : cos (π / 6) ^ 2 = 3 / 4 := by
     convert cos_sq (π / 6) using 3
     have h2 : 2 * (π / 6) = π / 3 := by linarith
     rw [h2, cos_pi_div_three]
-  rw [← sub_eq_zero] at h1⊢
+  rw [← sub_eq_zero] at h1 ⊢
   convert h1 using 1
   ring
 #align real.sq_cos_pi_div_six Real.sq_cos_pi_div_six
@@ -877,7 +877,7 @@ theorem cos_pi_div_six : cos (π / 6) = sqrt 3 / 2 := by
     exact this.symm
   rw [sqrt_eq_iff_sq_eq]
   · have h1 := (mul_right_inj' (by norm_num : (4 : ℝ) ≠ 0)).mpr sq_cos_pi_div_six
-    rw [← sub_eq_zero] at h1⊢
+    rw [← sub_eq_zero] at h1 ⊢
     convert h1 using 1
     ring
   · norm_num
@@ -1406,10 +1406,10 @@ $$\left|exp^{a\left(e^{z}+e^{-z}\right)}\right| \le e^{a\cos b \exp^{|re z|}}.$$
 -/
 theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ} (hz : |z.im| ≤ b)
     (hb : b ≤ π / 2) :
-    abs (exp (a * (exp z + exp (-z)))) ≤ Real.exp (a * Real.cos b * Real.exp (|z.re|)) := by
+    abs (exp (a * (exp z + exp (-z)))) ≤ Real.exp (a * Real.cos b * Real.exp |z.re|) := by
   simp only [abs_exp, Real.exp_le_exp, ofReal_mul_re, add_re, exp_re, neg_im, Real.cos_neg, ←
     add_mul, mul_assoc, mul_comm (Real.cos b), neg_re, ← Real.cos_abs z.im]
-  have : Real.exp (|z.re|) ≤ Real.exp z.re + Real.exp (-z.re) :=
+  have : Real.exp |z.re| ≤ Real.exp z.re + Real.exp (-z.re) :=
     apply_abs_le_add_of_nonneg (fun x => (Real.exp_pos x).le) z.re
   refine' mul_le_mul_of_nonpos_left (mul_le_mul this _ _ ((Real.exp_pos _).le.trans this)) ha
   · exact

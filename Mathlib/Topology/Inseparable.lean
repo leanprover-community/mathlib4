@@ -83,7 +83,7 @@ theorem specializes_TFAE (x y : X) :
   tfae_have 2 → 3
   · exact fun h s hso hy => h (hso.mem_nhds hy)
   tfae_have 3 → 4
-  · exact fun h s hsc hx => of_not_not fun hy => h (sᶜ) hsc.isOpen_compl hy hx
+  · exact fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
   tfae_have 4 → 5
   · exact fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
   tfae_have 6 ↔ 5

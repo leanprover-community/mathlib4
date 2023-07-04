@@ -20,7 +20,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 
 ## Main definitions
 
-* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as a extended
+* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as an extended
   non-negative real.
 * `ProbabilityTheory.variance`: the variance of a real-valued random variable as a real number.
 
@@ -123,8 +123,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
     simp_rw [hXint, sub_zero]
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
-  · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
-    rename_i ω
+  · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
@@ -137,7 +136,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
-    rename_i ω
+      with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _

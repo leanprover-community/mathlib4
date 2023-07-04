@@ -304,28 +304,16 @@ open Trivialization
 theorem continuousWithinAt_totalSpace (f : X → TotalSpace E) {s : Set X} {x₀ : X} :
     ContinuousWithinAt f s x₀ ↔
       ContinuousWithinAt (fun x => (f x).proj) s x₀ ∧
-        ContinuousWithinAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ := by
-  refine' (and_iff_right_iff_imp.2 fun hf => _).symm.trans (and_congr_right fun hf => _)
-  · refine' (continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s)
-  have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
-    hf.preimage_mem_nhdsWithin ((open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
-  have h2 : ContinuousWithinAt (fun x => (trivializationAt F E (f x₀).proj (f x)).1) s x₀ := by
-    refine'
-      hf.congr_of_eventuallyEq (eventually_of_mem h1 fun x hx => _) trivializationAt_proj_fst
-    simp_rw [coe_fst' _ hx]
-  rw [(trivializationAt F E (f x₀).proj).continuousWithinAt_iff_continuousWithinAt_comp_left]
-  · simp_rw [continuousWithinAt_prod_iff, Function.comp, Trivialization.coe_coe, h2, true_and_iff]
-  · apply mem_trivializationAt_proj_source
-  · rwa [source_eq, preimage_preimage]
+        ContinuousWithinAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) s x₀ :=
+  (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 #align fiber_bundle.continuous_within_at_total_space FiberBundle.continuousWithinAt_totalSpace
 
 /-- Characterization of continuous functions (at a point) into a fiber bundle. -/
 theorem continuousAt_totalSpace (f : X → TotalSpace E) {x₀ : X} :
     ContinuousAt f x₀ ↔
       ContinuousAt (fun x => (f x).proj) x₀ ∧
-        ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ := by
-  simp_rw [← continuousWithinAt_univ]
-  exact continuousWithinAt_totalSpace F f
+        ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
+  (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
 #align fiber_bundle.continuous_at_total_space FiberBundle.continuousAt_totalSpace
 
 end FiberBundle
@@ -396,7 +384,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
     rw [disjoint_left] at he
-    push_neg  at he
+    push_neg at he
     rcases he with ⟨d', hdd' : d' < d, hd'c⟩
     exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 #align fiber_bundle.exists_trivialization_Icc_subset FiberBundle.exists_trivialization_Icc_subset
@@ -911,6 +899,11 @@ theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π E) := by
   exact FiberBundle.continuous_proj F E
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj
 
+instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
+    (letI := a.totalSpaceTopology; letI := a.toFiberBundle;
+      MemTrivializationAtlas (a.trivializationOfMemPretrivializationAtlas he₀)) :=
+  letI := a.totalSpaceTopology; letI := a.toFiberBundle; ⟨e₀, he₀, rfl⟩
+
 /-- For a fiber bundle `E` over `B` constructed using the `FiberPrebundle` mechanism,
 continuity of a function `TotalSpace E → X` on an open set `s` can be checked by precomposing at
 each point with the pretrivialization used for the construction at that point. -/
@@ -918,7 +911,7 @@ theorem continuousOn_of_comp_right {X : Type _} [TopologicalSpace X] {f : TotalS
     {s : Set B} (hs : IsOpen s) (hf : ∀ b ∈ s,
       ContinuousOn (f ∘ (a.pretrivializationAt b).toLocalEquiv.symm)
         ((s ∩ (a.pretrivializationAt b).baseSet) ×ˢ (Set.univ : Set F))) :
-    @ContinuousOn _ _ a.totalSpaceTopology _ f ((π E) ⁻¹' s) := by
+    @ContinuousOn _ _ a.totalSpaceTopology _ f (π E ⁻¹' s) := by
   letI := a.totalSpaceTopology
   intro z hz
   let e : Trivialization F (π E) :=

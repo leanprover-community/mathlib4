@@ -351,7 +351,7 @@ theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Funct
       ext
       exact h
     rw [cancel_mono] at this
-    apply_fun fun e => e PUnit.unit  at this
+    apply_fun fun e => e PUnit.unit at this
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget CompHaus).mono_of_mono_map
