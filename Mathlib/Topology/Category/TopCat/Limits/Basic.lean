@@ -77,8 +77,7 @@ def limitConeInfi (F : J ⥤ TopCatMax.{v, u}) : Cone F where
       ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
   π :=
     { app := fun j =>
-        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j,
-         continuous_iff_le_induced.mpr (iInf_le _ _)⟩
+        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (iInf_le _ _)⟩
       naturality := fun _ _ f =>
         ContinuousMap.coe_injective ((Types.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
 #align Top.limit_cone_infi TopCat.limitConeInfi
