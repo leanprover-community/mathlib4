@@ -121,8 +121,7 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
   let S := Sieve.generate (Presieve.ofArrows Y π)
   have := (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   rcases this with ⟨t, t_amalg, t_uniq⟩
-  use t
-  constructor
+  refine ⟨t, ?_, ?_⟩
   · convert Presieve.isAmalgamation_restrict (Sieve.le_generate (Presieve.ofArrows Y π)) _ _ t_amalg
     refine Eq.symm (Presieve.restrict_extend hx)
   · exact fun y hy => t_uniq y <| Presieve.isAmalgamation_sieveExtend x y hy
