@@ -285,13 +285,13 @@ lemma Subring.mem_closure_image_of {S T : Type _} [CommRing S] [CommRing T] (g :
 lemma mem_closure_X_union_C {R : Type _} [Ring R] (p : R[X]) :
     p ∈ Subring.closure (insert X {f | f.degree ≤ 0} : Set R[X]) := by
   refine' Polynomial.induction_on p _ _ _
-  . intro r
+  · intro r
     apply Subring.subset_closure
     apply Set.mem_insert_of_mem
     exact degree_C_le
-  . intros p1 p2 h1 h2
+  · intros p1 p2 h1 h2
     exact Subring.add_mem _ h1 h2
-  . intros n r hr
+  · intros n r hr
     rw [pow_succ', ← mul_assoc]
     apply Subring.mul_mem _ hr
     apply Subring.subset_closure
