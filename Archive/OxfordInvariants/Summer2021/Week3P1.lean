@@ -72,7 +72,6 @@ natural.
   * Divisibility condition:
     `aₙ₊₁ * ((aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁) - a₀ = aₙ₊₁aₙ₊₂b` is divisible by `aₙ₊₂`.
 -/
-example (n : ℕ)  : n + 1 ≤ Nat.succ (Nat.succ n)  := by exact Nat.le_succ (n + 1)
 
 open scoped BigOperators
 
