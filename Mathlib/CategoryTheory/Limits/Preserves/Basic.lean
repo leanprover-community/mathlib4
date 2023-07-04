@@ -91,6 +91,8 @@ class PreservesLimitsOfSize (F : C ⥤ D) where
 #align category_theory.limits.preserves_limits_of_size CategoryTheory.Limits.PreservesLimitsOfSize
 #align category_theory.limits.preserves_limits_of_size.preserves_limits_of_shape CategoryTheory.Limits.PreservesLimitsOfSize.preservesLimitsOfShape
 
+pp_with_univ PreservesLimitsOfSize
+
 /-- We say that `F` preserves (small) limits if it sends small
 limit cones over any diagram to limit cones. -/
 abbrev PreservesLimits (F : C ⥤ D) :=
@@ -106,6 +108,8 @@ class PreservesColimitsOfSize (F : C ⥤ D) where
     infer_instance
 #align category_theory.limits.preserves_colimits_of_size CategoryTheory.Limits.PreservesColimitsOfSize
 #align category_theory.limits.preserves_colimits_of_size.preserves_colimits_of_shape CategoryTheory.Limits.PreservesColimitsOfSize.preservesColimitsOfShape
+
+pp_with_univ PreservesColimitsOfSize
 
 /-- We say that `F` preserves (small) limits if it sends small
 limit cones over any diagram to limit cones. -/
@@ -403,6 +407,8 @@ class ReflectsLimitsOfSize (F : C ⥤ D) where
     infer_instance
 #align category_theory.limits.reflects_limits_of_size CategoryTheory.Limits.ReflectsLimitsOfSize
 
+pp_with_univ ReflectsLimitsOfSize
+
 /-- A functor `F : C ⥤ D` reflects (small) limits if
 whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone in `D`,
 the cone was already a limit cone in `C`.
@@ -423,6 +429,8 @@ class ReflectsColimitsOfSize (F : C ⥤ D) where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
 #align category_theory.limits.reflects_colimits_of_size CategoryTheory.Limits.ReflectsColimitsOfSize
+
+pp_with_univ ReflectsColimitsOfSize
 
 /-- A functor `F : C ⥤ D` reflects (small) colimits if
 whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit cocone in `D`,
