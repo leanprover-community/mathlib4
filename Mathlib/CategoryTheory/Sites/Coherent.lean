@@ -207,9 +207,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
       choose β _ Y_n π_n H using fun a => b (h₂ a)
       use (Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a)
       constructor
-      · apply EffectiveEpiFamily.transitive_of_finite
-        · exact h₁
-        · exact fun a => (H a).1
+      · exact EffectiveEpiFamily.transitive_of_finite _ h₁ _ (fun a => (H a).1)
       · exact fun c => (H c.fst).2 c.snd
   · exact coherentTopology.mem_sieves_of_hasEffectiveEpiFamily S
 
