@@ -74,7 +74,7 @@ infixl:25 " ≃ " => Equiv
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
 `Equiv`. This is declared as the default coercion from `F` to `α ≃ β`. -/
 @[coe]
-def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
+def EquivLike.toEquiv {F} [EquivLike F α β] (f : F) : α ≃ β where
   toFun := f
   invFun := EquivLike.inv f
   left_inv := EquivLike.left_inv f
