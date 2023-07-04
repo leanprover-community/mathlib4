@@ -428,8 +428,8 @@ theorem of_smul_def (i) (w : Word M) (m : M i) :
 theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
     Word.mk (⟨i, m⟩::ls) h1 h2 = of m • mkAux ls h1 h2 := by
   rw [cons_eq_rcons, of_smul_def, equivPair_eq_of_fstIdx_ne _]
-  . simp
-  . rw [fstIdx_ne_iff]
+  · simp
+  · rw [fstIdx_ne_iff]
     exact (List.chain'_cons'.1 h2).1
 #align free_product.word.cons_eq_smul FreeProduct.Word.cons_eq_smul
 
@@ -950,10 +950,10 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         _ ⊆ X i := by
           clear hnne0 hlt
           refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
-          . dsimp
+          · dsimp
             rw [zpow_one]
             exact hX i
-          . dsimp
+          · dsimp
             intro n _hle hi
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]

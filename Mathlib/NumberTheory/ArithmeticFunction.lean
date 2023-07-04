@@ -567,8 +567,8 @@ theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul
   ext x
   simp_rw [ppow_apply (Nat.succ_pos k), pow_succ] -- porting note: was `rw [..., pow_succ]`
   induction k <;> simp
-  . exact pow_one _       -- porting note: added
-  . exact pow_succ'' _ _  -- porting note: added
+  · exact pow_one _       -- porting note: added
+  · exact pow_succ'' _ _  -- porting note: added
 #align nat.arithmetic_function.ppow_succ Nat.ArithmeticFunction.ppow_succ
 
 theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
@@ -666,22 +666,19 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
           rw [← hcd.1.1, h.1, Nat.gcd_mul_left,
             cop.coprime_mul_left.coprime_mul_right_right.gcd_eq_one, mul_one]
       · trans Nat.gcd (a1 * a2) (a2 * b2)
-        ·
-          rw [mul_comm, Nat.gcd_mul_left, cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one,
+        · rw [mul_comm, Nat.gcd_mul_left, cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one,
             mul_one]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.1.1, h.2, mul_comm, Nat.gcd_mul_left,
             cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one, mul_one]
       · trans Nat.gcd (b1 * b2) (a1 * b1)
-        ·
-          rw [mul_comm, Nat.gcd_mul_right,
+        · rw [mul_comm, Nat.gcd_mul_right,
             cop.coprime_mul_right.coprime_mul_left_right.symm.gcd_eq_one, one_mul]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.2.1, h.1, mul_comm c1 d1, Nat.gcd_mul_left,
             cop.coprime_mul_right.coprime_mul_left_right.symm.gcd_eq_one, mul_one]
       · trans Nat.gcd (b1 * b2) (a2 * b2)
-        ·
-          rw [Nat.gcd_mul_right, cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one,
+        · rw [Nat.gcd_mul_right, cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one,
             one_mul]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.2.1, h.2, Nat.gcd_mul_right,

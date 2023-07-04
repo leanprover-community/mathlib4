@@ -302,9 +302,9 @@ theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.ge
 theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
   fconstructor
-  . rintro ⟨y, hy1, rfl⟩
+  · rintro ⟨y, hy1, rfl⟩
     exact ⟨y.2, hy1⟩
-  . rintro ⟨m, hm⟩
+  · rintro ⟨m, hm⟩
     exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]

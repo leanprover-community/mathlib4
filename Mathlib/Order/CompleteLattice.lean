@@ -391,12 +391,12 @@ instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : Linear
     max := Sup.sup
     min_def := fun a b => by
       split_ifs with h
-      . simp [h]
-      . simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+      · simp [h]
+      · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
     max_def :=  fun a b => by
       split_ifs with h
-      . simp [h]
-      . simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
+      · simp [h]
+      · simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
 
 namespace OrderDual
 

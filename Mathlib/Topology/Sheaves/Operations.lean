@@ -121,7 +121,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   -- Porting note : was an `apply (config := { instances := false })`
   -- See https://github.com/leanprover/lean4/issues/2273
   suffices : ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U)
-  . apply NatTrans.mono_of_mono_app
+  · apply NatTrans.mono_of_mono_app
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
