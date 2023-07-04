@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Algebra.Basic
-import Mathlib.Algebra.Category.Module.Limits
+import Mathlib.Algebra.Category.AlgebraCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.Ring.Limits
 
 /-!
