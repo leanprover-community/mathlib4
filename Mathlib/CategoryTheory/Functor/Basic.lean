@@ -16,9 +16,10 @@ import Mathlib.CategoryTheory.Category.Basic
 
 Defines a functor between categories, extending a `Prefunctor` between quivers.
 
-Introduces notation `C ⥤ D` for the type of all functors from `C` to `D`.
-(Unfortunately the `⇒` arrow (`\functor`) is taken by core,
-but in mathlib4 we should switch to this.)
+Introduces, in the `CategoryTheory` scope, notations `C ⥤ D` for the type of all functors
+from `C` to `D`, `𝟭` for the identity functor and `⋙` for functor composition.
+
+TODO: Switch to using the `⇒` arrow.
 -/
 
 
@@ -58,7 +59,7 @@ end
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-infixr:26 " ⥤ " => Functor -- type as \func
+scoped [CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id Functor.map_comp
 
@@ -87,7 +88,7 @@ protected def id : C ⥤ C where
 #align category_theory.functor.id CategoryTheory.Functor.id
 
 /-- Notation for the identity functor on a category. -/
-notation "𝟭" => Functor.id -- Type this as `\sb1`
+scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
   ⟨Functor.id C⟩
@@ -120,7 +121,7 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
 #align category_theory.functor.comp_obj CategoryTheory.Functor.comp_obj
 
 /-- Notation for composition of functors. -/
-infixr:80 " ⋙ " => comp
+scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :

@@ -91,7 +91,7 @@ theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
   (nat_lt_aleph0 n).trans aleph0_lt_continuum
 #align cardinal.nat_lt_continuum Cardinal.nat_lt_continuum
 
-theorem mk_set_nat : (#Set ℕ) = 𝔠 := by simp
+theorem mk_set_nat : #(Set ℕ) = 𝔠 := by simp
 #align cardinal.mk_set_nat Cardinal.mk_set_nat
 
 theorem continuum_pos : 0 < 𝔠 :=

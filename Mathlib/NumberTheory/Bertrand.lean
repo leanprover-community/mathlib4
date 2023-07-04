@@ -77,7 +77,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
       (Set.Ioi_subset_Ioi (by norm_num)) (convex_Ioi 0.5)
     convert ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
       ((2 : ℝ) • LinearMap.id))) using 1
-    . ext x
+    · ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
       rw [← mul_lt_mul_left (two_pos)]
@@ -90,7 +90,7 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this
     exact (h.right_le_of_le_left'' h1 ((h1.trans h2).trans_le h0) h2 h0 (h4.trans h3)).trans h4
   refine' ⟨18, 512, by norm_num1, by norm_num1, n_large, _, _⟩
-  . have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
+  · have : sqrt (2 * 18) = 6 := (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonneg_iff, this]
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
@@ -99,17 +99,17 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     apply rpow_pos_of_pos ; norm_num1
     apply hf' 18 ; norm_num1
     norm_num1
-  . have : sqrt (2 * 512) = 32 :=
+  · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
     have : (512 : ℝ) = 2 ^ (9 : ℕ)
-    . rw [rpow_nat_cast 2 9] ; norm_num1
+    · rw [rpow_nat_cast 2 9] ; norm_num1
     conv_lhs => rw [this]
     have : (1024 : ℝ) = 2 ^ (10 : ℕ)
-    . rw [rpow_nat_cast 2 10] ; norm_num1
+    · rw [rpow_nat_cast 2 10] ; norm_num1
     rw [this, ← rpow_mul, ← rpow_add] <;> norm_num1
     have : (4 : ℝ) = 2 ^ (2 : ℕ)
-    . rw [rpow_nat_cast 2 2] ; norm_num1
+    · rw [rpow_nat_cast 2 2] ; norm_num1
     rw [this, ← rpow_mul] <;> norm_num1
     apply rpow_le_rpow_of_exponent_le <;> norm_num1
     apply rpow_pos_of_pos four_pos
