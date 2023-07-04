@@ -894,10 +894,10 @@ theorem mem_map (f : α → β) {a} {s : Computation α} (m : a ∈ s) : f a ∈
 
 theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b ∈ map f s) :
     ∃ a, a ∈ s ∧ f a = b := by
-  rw [← bind_pure] at h ;
-    exact
-      let ⟨a, as, fb⟩ := exists_of_mem_bind h
-      ⟨a, as, mem_unique (ret_mem _) fb⟩
+  rw [← bind_pure] at h
+  exact
+    let ⟨a, as, fb⟩ := exists_of_mem_bind h
+    ⟨a, as, mem_unique (ret_mem _) fb⟩
 #align computation.exists_of_mem_map Computation.exists_of_mem_map
 
 instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
@@ -1193,8 +1193,8 @@ theorem liftRel_pure_right (R : α → β → Prop) (ca : Computation α) (b : �
 @[simp, nolint simpNF]
 theorem liftRel_pure (R : α → β → Prop) (a : α) (b : β) :
     LiftRel R (pure a) (pure b) ↔ R a b := by
-  rw [liftRel_pure_left] ;
-    exact ⟨fun ⟨b', mb', ab'⟩ => by rwa [eq_of_pure_mem mb'] at ab', fun ab => ⟨_, ret_mem _, ab⟩⟩
+  rw [liftRel_pure_left]
+  exact ⟨fun ⟨b', mb', ab'⟩ => by rwa [eq_of_pure_mem mb'] at ab', fun ab => ⟨_, ret_mem _, ab⟩⟩
 #align computation.lift_rel_return Computation.liftRel_pure
 
 @[simp]
@@ -1237,8 +1237,8 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
 -- porting notes: deleted initial arguments `(_R : α → α → Prop) (_S : β → β → Prop)`: unused
 theorem map_congr {s1 s2 : Computation α} {f : α → β}
     (h1 : s1 ~ s2) : map f s1 ~ map f s2 := by
-  rw [← lift_eq_iff_equiv] ;
-    exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
+  rw [← lift_eq_iff_equiv]
+  exact liftRel_map Eq _ ((lift_eq_iff_equiv _ _).2 h1) fun {a} b => congr_arg _
 #align computation.map_congr Computation.map_congr
 
 /-- Alternate definition of `LiftRel` over relations between `Computation`s-/

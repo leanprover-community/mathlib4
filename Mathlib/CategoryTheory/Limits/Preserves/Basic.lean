@@ -189,7 +189,7 @@ instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun j j' f => s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_colimits CategoryTheory.Limits.idPreservesColimits
 
@@ -517,7 +517,7 @@ instance idReflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun j j' f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_limits CategoryTheory.Limits.idReflectsLimits
 
@@ -528,7 +528,7 @@ instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun j j' f => s.ι.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
-            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_colimits CategoryTheory.Limits.idReflectsColimits
 

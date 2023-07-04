@@ -238,7 +238,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext; simp  ;
+    natCast_zero := by ext; simp
     natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
 -- porting note: have I aligned this correctly?
 #align nat.arithmetic_function.add_monoid_with_one Nat.ArithmeticFunction.instAddMonoidWithOne

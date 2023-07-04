@@ -1498,15 +1498,15 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
         show z * f.toMap (k.toEquiv w) = f.toMap (k.toEquiv v) by erw [hv, hw, hx]⟩)
     fun x y ↦
     show f.toMap _ = f.toMap _ ↔ _ by
-      erw [f.eq_iff_exists] ;
-        exact
-          ⟨fun ⟨c, hc⟩ ↦
-            let ⟨d, hd⟩ := k.toEquiv.surjective c
-            ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, by
-              erw [← hd, ← k.map_mul, ← k.map_mul] at hc; exact k.toEquiv.injective hc⟩,
-            fun ⟨c, hc⟩ ↦
-            ⟨⟨k c, H ▸ Set.mem_image_of_mem k c.2⟩, by
-              erw [← k.map_mul]; rw [hc, k.map_mul]; rfl⟩⟩
+      erw [f.eq_iff_exists]
+      exact
+        ⟨fun ⟨c, hc⟩ ↦
+          let ⟨d, hd⟩ := k.toEquiv.surjective c
+          ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, by
+            erw [← hd, ← k.map_mul, ← k.map_mul] at hc; exact k.toEquiv.injective hc⟩,
+          fun ⟨c, hc⟩ ↦
+          ⟨⟨k c, H ▸ Set.mem_image_of_mem k c.2⟩, by
+            erw [← k.map_mul]; rw [hc, k.map_mul]; rfl⟩⟩
 #align submonoid.localization_map.of_mul_equiv_of_dom Submonoid.LocalizationMap.ofMulEquivOfDom
 #align add_submonoid.localization_map.of_add_equiv_of_dom AddSubmonoid.LocalizationMap.ofAddEquivOfDom
 

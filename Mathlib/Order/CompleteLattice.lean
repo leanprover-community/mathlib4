@@ -1265,9 +1265,9 @@ theorem inf_iInf [Nonempty ι] {f : ι → α} {a : α} : (a ⊓ ⨅ x, f x) = �
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
   haveI : Nonempty { i // p i } :=
-      let ⟨i, hi⟩ := h
-      ⟨⟨i, hi⟩⟩ ;
-    rw [iSup_subtype', iSup_subtype', iSup_sup]
+    let ⟨i, hi⟩ := h
+    ⟨⟨i, hi⟩⟩
+  rw [iSup_subtype', iSup_subtype', iSup_sup]
 #align bsupr_sup biSup_sup
 
 theorem sup_biSup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :

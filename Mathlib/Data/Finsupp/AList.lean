@@ -65,8 +65,8 @@ absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
     where
   support := by
-    haveI := Classical.decEq α; haveI := Classical.decEq M ;
-      exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
+    haveI := Classical.decEq α; haveI := Classical.decEq M
+    exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
     (l.lookup a).getD 0

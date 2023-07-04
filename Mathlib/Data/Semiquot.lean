@@ -177,10 +177,9 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (pure_bind := fun {α β} x f => ext.2 <| by simp)
   (bind_assoc := fun {α β} γ s f g =>
     ext.2 <| by
-    simp only [bind_def, mem_bind] ;
-     exact fun c =>
-          ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩, fun ⟨a, as, b, bf, cg⟩ =>
-            ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
+    simp only [bind_def, mem_bind]
+    exact fun c => ⟨fun ⟨b, ⟨a, as, bf⟩, cg⟩ => ⟨a, as, b, bf, cg⟩,
+      fun ⟨a, as, b, bf, cg⟩ => ⟨b, ⟨a, as, bf⟩, cg⟩⟩)
   (id_map := fun {α} q => ext.2 <| by simp)
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
 
