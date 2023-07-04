@@ -204,15 +204,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
       cases' S with arrows downward_closed
       exact ⟨inferInstance, by simp only [Sieve.top_apply, forall_const]⟩
     · rcases a with ⟨α, w, Y₁, π, ⟨h₁,h₂⟩⟩
-      have H  := fun a => b (h₂ a)
-      rw [Classical.skolem] at H
-      rcases H with ⟨β, H⟩
-      rw [Classical.skolem] at H
-      rcases H with ⟨_, H⟩
-      rw [Classical.skolem] at H
-      rcases H with ⟨Y_n, H⟩
-      rw [Classical.skolem] at H
-      rcases H with ⟨π_n, H⟩
+      choose β _ Y_n π_n H using fun a => b (h₂ a)
       use (Σ a, β a), inferInstance, fun ⟨a,b⟩ => Y_n a b, fun ⟨a, b⟩ => (π_n a b) ≫ (π a)
       constructor
       · apply EffectiveEpiFamily.transitive_of_finite
