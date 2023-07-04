@@ -52,7 +52,7 @@ class QuasiSeparated (f : X ⟶ Y) : Prop where
 
 /-- The `affine_target_morphism_property` corresponding to `quasi_separated`, asserting that the
 domain is a quasi-separated scheme. -/
-def QuasiSeparated.affineProperty : AffineTargetMorphismProperty := fun X Y f _ =>
+def QuasiSeparated.affineProperty : AffineTargetMorphismProperty := fun X _ _ _ =>
   QuasiSeparatedSpace X.carrier
 #align algebraic_geometry.quasi_separated.affine_property AlgebraicGeometry.QuasiSeparated.affineProperty
 
@@ -312,6 +312,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : Opens X.carrier) (hU
   simpa [mul_comm x] using d.symm
 #align algebraic_geometry.exists_eq_pow_mul_of_is_affine_open AlgebraicGeometry.exists_eq_pow_mul_of_isAffineOpen
 
+set_option maxHeartbeats 500000 in
 theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme)
     (S : X.affineOpens) (U₁ U₂ : Opens X.carrier) {n₁ n₂ : ℕ} {y₁ : X.presheaf.obj (op U₁)}
     {y₂ : X.presheaf.obj (op U₂)} {f : X.presheaf.obj (op <| U₁ ⊔ U₂)}
@@ -344,18 +345,23 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
           (X.presheaf.map (homOfLE le_sup_left).op f ^ n₂ * y₁))
         (X.presheaf.map (homOfLE <| h₂).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ n₁ * y₂))).mp <| by
-    simp only [map_pow, RingHom.algebraMap_toAlgebra, map_mul, ← comp_apply, ← Functor.map_comp, ←
-      op_comp, homOfLE_comp]
+    -- Porting note : was just a `simp`, but know as some lemmas need `erw`, just a `simp` does not
+    -- leave the goal in a desired form
+    rw [RingHom.algebraMap_toAlgebra, map_mul, map_mul, map_pow, map_pow, map_mul, map_pow, map_mul]
+    erw [map_pow]
+    rw [←comp_apply, ←comp_apply]
+    erw [←comp_apply, ←comp_apply, ←comp_apply, ←comp_apply]
+    simp only [← Functor.map_comp, ← op_comp, homOfLE_comp]
     have h₃ : X.basicOpen ((X.presheaf.map (homOfLE (h₁.trans le_sup_left)).op) f) ≤ S.val := by
       simpa only [X.basicOpen_res] using inf_le_left
-    trans
-      X.presheaf.map (homOfLE <| h₃.trans <| h₁.trans le_sup_left).op f ^ (n₂ + n₁) *
-        X.presheaf.map (homOfLE <| (X.basicOpen_res f _).trans_le inf_le_right).op x
+    trans X.presheaf.map (homOfLE <| h₃.trans <| h₁.trans le_sup_left).op f ^ (n₂ + n₁) *
+      X.presheaf.map (homOfLE <| (X.basicOpen_res f _).trans_le inf_le_right).op x
     · rw [pow_add, mul_assoc]; congr 1
       convert congr_arg (X.presheaf.map (homOfLE _).op) e₁ using 1
-      · simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp]; congr
-      · simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp]; congr
+      pick_goal 3
       · rw [X.basicOpen_res, X.basicOpen_res]; rintro x ⟨H₁, H₂⟩; exact ⟨h₁ H₁, H₂⟩
+      · simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp]; congr 1
+      · simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp]; congr
     · rw [add_comm, pow_add, mul_assoc]; congr 1
       convert congr_arg (X.presheaf.map (homOfLE _).op) e₂.symm
       · simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp]; congr
@@ -368,18 +374,20 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
   exact e
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux AlgebraicGeometry.exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux
 
+set_option maxHeartbeats 1000000 in
 theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U : Opens X.carrier)
     (hU : IsCompact U.1) (hU' : IsQuasiSeparated U.1) (f : X.presheaf.obj (op U))
     (x : X.presheaf.obj (op <| X.basicOpen f)) :
     ∃ (n : ℕ) (y : X.presheaf.obj (op U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict
   revert hU' f x
-  apply compact_open_induction_on U hU
+  -- Porting note : complains `expected type is not available`, but tell Lean that it is underscore
+  -- is sufficient
+  apply compact_open_induction_on (P := _) U hU
   · intro hU' f x
     use 0, f
-    refine'
-      @Subsingleton.elim
-        (CommRingCat.subsingleton_of_isTerminal (X.sheaf.is_terminal_of_eq_empty _)) _ _
+    refine' @Subsingleton.elim _
+      (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty _)) _ _
     erw [eq_bot_iff]
     exact X.basicOpen_le f
   · -- Given `f : 𝒪(S ∪ U), x : 𝒪(X_f)`, we need to show that `f ^ n * x` is the restriction of
@@ -389,28 +397,32 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     obtain ⟨n₁, y₁, hy₁⟩ :=
       hU (hSU.of_subset <| Set.subset_union_left _ _) (X.presheaf.map (homOfLE le_sup_left).op f)
         (X.presheaf.map (homOfLE _).op x)
-    swap; · rw [X.basicOpen_res]; exact inf_le_right
+    -- · rw [X.basicOpen_res]; exact inf_le_right
     -- We know that such `y₂, n₂` exists on `U` since `U` is affine.
     obtain ⟨n₂, y₂, hy₂⟩ :=
-      exists_eq_pow_mul_of_is_affine_open X _ U.2 (X.presheaf.map (homOfLE le_sup_right).op f)
+      exists_eq_pow_mul_of_isAffineOpen X _ U.2 (X.presheaf.map (homOfLE le_sup_right).op f)
         (X.presheaf.map (homOfLE _).op x)
     delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict at hy₂
-    swap; · rw [X.basicOpen_res]; exact inf_le_right
+    -- swap; · rw [X.basicOpen_res]; exact inf_le_right
     -- Since `S ∪ U` is quasi-separated, `S ∩ U` can be covered by finite affine opens.
     obtain ⟨s, hs', hs⟩ :=
-      (is_compact_open_iff_eq_finset_affine_union _).mp
+      (isCompact_open_iff_eq_finset_affine_union _).mp
         ⟨hSU _ _ (Set.subset_union_left _ _) S.2 hS (Set.subset_union_right _ _) U.1.2
-            U.2.IsCompact,
+            U.2.isCompact,
           (S ⊓ U.1).2⟩
     haveI := hs'.to_subtype
     cases nonempty_fintype s
-    replace hs : S ⊓ U.1 = iSup fun i : s => (i : opens X.carrier) := by ext1; simpa using hs
+    replace hs : S ⊓ U.1 = iSup fun i : s => (i : Opens X.carrier) := by ext1; simpa using hs
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
-      intro i; change (i : opens X.carrier) ≤ S
-      refine' le_trans _ inf_le_left; use U.1; erw [hs]; exact le_iSup _ _
+      intro i; change (i : Opens X.carrier) ≤ S
+      refine' le_trans _ inf_le_left; swap; exact U.1; erw [hs]
+      -- Porting note : have to add argument explicitly
+      exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
-      intro i; change (i : opens X.carrier) ≤ U
-      refine' le_trans _ inf_le_right; use S; erw [hs]; exact le_iSup _ _
+      intro i; change (i : Opens X.carrier) ≤ U
+      refine' le_trans _ inf_le_right; swap; exact S; erw [hs]
+      -- Porting note : have to add argument explicitly
+      exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- for some `n` since `f ^ n₂ * y₁ = f ^ (n₁ + n₂) * x = f ^ n₁ * y₂` on `X_f`.
     have :
@@ -429,34 +441,35 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     -- on `S ∩ U`.
     have :
       X.presheaf.map (homOfLE <| inf_le_left).op
-          (X.presheaf.map (homOfLE le_sup_left).op f ^ (finset.univ.sup n + n₂) * y₁) =
+          (X.presheaf.map (homOfLE le_sup_left).op f ^ (Finset.univ.sup n + n₂) * y₁) =
         X.presheaf.map (homOfLE <| inf_le_right).op
-          (X.presheaf.map (homOfLE le_sup_right).op f ^ (finset.univ.sup n + n₁) * y₂) := by
+          (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply TopCat.Sheaf.eq_of_locally_eq'.{u + 1, u} X.sheaf fun i : s => i.1.1
-      · refine' fun i => homOfLE _; erw [hs]; exact le_iSup _ _
+      · refine' fun i => homOfLE _; erw [hs];
+        -- Porting note : have to add argument explicitly
+        exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
       · exact le_of_eq hs
       · intro i
         replace hn :=
           congr_arg
             (fun x =>
               X.presheaf.map (homOfLE (le_trans (hs₁ i) le_sup_left)).op f ^
-                  (finset.univ.sup n - n i) *
+                  (Finset.univ.sup n - n i) *
                 x)
             (hn i)
         dsimp only at hn
         delta Scheme.sheaf SheafedSpace.sheaf
-        simp only [← map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp, ← mul_assoc] at
-          hn ⊢
+        simp only [← map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp, ← mul_assoc]
+          at hn ⊢
         erw [← map_mul, ← map_mul] at hn
         rw [← pow_add, ← pow_add, ← add_assoc, ← add_assoc, tsub_add_cancel_of_le] at hn
         convert hn
         exact Finset.le_sup (Finset.mem_univ _)
-    use finset.univ.sup n + n₁ + n₂
+    use Finset.univ.sup n + n₁ + n₂
     -- By the sheaf condition, since `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`, it can be glued into
     -- the desired section on `S ∪ U`.
-    use (X.sheaf.obj_sup_iso_prod_eq_locus S U.1).inv ⟨⟨_ * _, _ * _⟩, this⟩
-    refine'
-      TopCat.Sheaf.eq_of_locally_eq₂.{u + 1, u} X.sheaf
+    use (X.sheaf.objSupIsoProdEqLocus S U.1).inv ⟨⟨_ * _, _ * _⟩, this⟩
+    refine' TopCat.Sheaf.eq_of_locally_eq₂.{u + 1, u} X.sheaf
         (homOfLE (_ : X.basicOpen (X.presheaf.map (homOfLE le_sup_left).op f) ≤ _))
         (homOfLE (_ : X.basicOpen (X.presheaf.map (homOfLE le_sup_right).op f) ≤ _)) _ _ _ _ _
     · rw [X.basicOpen_res]; exact inf_le_right
@@ -464,31 +477,36 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     · rw [X.basicOpen_res, X.basicOpen_res]
       erw [← inf_sup_right]
       refine' le_inf_iff.mpr ⟨X.basicOpen_le f, le_of_eq rfl⟩
-    · convert
-        congr_arg (X.presheaf.map (homOfLE _).op)
-          (X.sheaf.obj_sup_iso_prod_eq_locus_inv_fst S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using
-        1
+    · convert congr_arg (X.presheaf.map
+        -- Porting note : needs to be explicit here
+        (homOfLE (by restrict_tac : X.basicOpen (X.presheaf.map (homOfLE (le_sup_left : S ≤ S ⊔ U.1)).op f) ≤ S)).op)
+        (X.sheaf.objSupIsoProdEqLocus_inv_fst S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using 1
       · delta Scheme.sheaf SheafedSpace.sheaf
-        simp only [← comp_apply (X.presheaf.map _) (X.presheaf.map _), ← Functor.map_comp, ←
-          op_comp]
-        congr
+        -- Porting note : was just a single `simp only [...]`
+        simp only
+        erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
+        simp only [← Functor.map_comp, ← op_comp]
+        congr 1
       · delta Scheme.sheaf SheafedSpace.sheaf
-        simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp, mul_assoc,
-          pow_add]
+        -- Porting note : was just a single `simp only [...]`
+        simp only [map_pow, map_mul]
+        erw [← comp_apply, ← comp_apply]
+        simp only [← Functor.map_comp, ← op_comp, mul_assoc, pow_add]
         erw [hy₁]; congr 1; rw [← mul_assoc, ← mul_assoc]; congr 1
-        rw [mul_comm, ← comp_apply, ← Functor.map_comp]; congr
-    · convert
-        congr_arg (X.presheaf.map (homOfLE _).op)
-          (X.sheaf.obj_sup_iso_prod_eq_locus_inv_snd S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using
-        1
-      · delta Scheme.sheaf SheafedSpace.sheaf
-        simp only [← comp_apply (X.presheaf.map _) (X.presheaf.map _), ← Functor.map_comp, ←
-          op_comp]
-        congr
-      · delta Scheme.sheaf SheafedSpace.sheaf
-        simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp, mul_assoc,
-          pow_add]
-        erw [hy₂]; rw [← comp_apply, ← Functor.map_comp]; congr
+        rw [mul_comm, ← comp_apply, ← Functor.map_comp]; congr 1
+    . sorry
+    -- · convert
+    --     congr_arg (X.presheaf.map (homOfLE _).op)
+    --       (X.sheaf.obj_sup_iso_prod_eq_locus_inv_snd S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using
+    --     1
+    --   · delta Scheme.sheaf SheafedSpace.sheaf
+    --     simp only [← comp_apply (X.presheaf.map _) (X.presheaf.map _), ← Functor.map_comp, ←
+    --       op_comp]
+    --     congr
+    --   · delta Scheme.sheaf SheafedSpace.sheaf
+    --     simp only [map_pow, map_mul, ← comp_apply, ← Functor.map_comp, ← op_comp, mul_assoc,
+    --       pow_add]
+    --     erw [hy₂]; rw [← comp_apply, ← Functor.map_comp]; congr
 #align algebraic_geometry.exists_eq_pow_mul_of_is_compact_of_is_quasi_separated AlgebraicGeometry.exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated
 
 /-- If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
@@ -499,9 +517,9 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
   constructor
   · rintro ⟨_, n, rfl⟩
     simp only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra]
-    exact IsUnit.pow _ (RingedSpace.is_unit_res_basic_open _ f)
+    exact IsUnit.pow _ (RingedSpace.isUnit_res_basicOpen _ f)
   · intro z
-    obtain ⟨n, y, e⟩ := exists_eq_pow_mul_of_is_compact_of_is_quasi_separated X U hU hU' f z
+    obtain ⟨n, y, e⟩ := exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated X U hU hU' f z
     refine' ⟨⟨y, _, n, rfl⟩, _⟩
     simpa only [map_pow, Subtype.coe_mk, RingHom.algebraMap_toAlgebra, mul_comm z] using e.symm
   · intro x y
@@ -510,12 +528,15 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
     generalize x - y = z
     constructor
     · intro H
-      obtain ⟨n, e⟩ := exists_pow_mul_eq_zero_of_res_basic_open_eq_zero_of_is_compact X hU _ _ H
+      obtain ⟨n, e⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU _ _ H
       refine' ⟨⟨_, n, rfl⟩, _⟩
       simpa [mul_comm z] using e
     · rintro ⟨⟨_, n, rfl⟩, e : f ^ n * z = 0⟩
-      rw [← ((RingedSpace.is_unit_res_basic_open _ f).pow n).mul_right_inj, MulZeroClass.mul_zero, ←
-        map_pow, ← map_mul, e, map_zero]
+      rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, MulZeroClass.mul_zero, ←
+        map_pow]
+      -- Porting note : this one lemma needs `erw`
+      erw [← map_mul]
+      rw [e, map_zero]
 #align algebraic_geometry.is_localization_basic_open_of_qcqs AlgebraicGeometry.is_localization_basicOpen_of_qcqs
 
 end AlgebraicGeometry
