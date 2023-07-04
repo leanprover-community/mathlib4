@@ -189,7 +189,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
       neg_sub]
   set R : Set (ℝ × ℝ) := [[z.re, w.re]] ×ˢ [[w.im, z.im]]
   set t : Set (ℝ × ℝ) := e ⁻¹' s
-  rw [uIcc_comm z.im] at Hc Hi ; rw [min_comm z.im, max_comm z.im] at Hd
+  rw [uIcc_comm z.im] at Hc Hi; rw [min_comm z.im, max_comm z.im] at Hd
   have hR : e ⁻¹' ([[z.re, w.re]] ×ℂ [[w.im, z.im]]) = R := rfl
   have htc : ContinuousOn F R := Hc.comp e.continuousOn hR.ge
   have htd :
