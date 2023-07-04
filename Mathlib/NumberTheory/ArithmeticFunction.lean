@@ -229,7 +229,6 @@ instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
     add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
     zero_add := fun _ => ext fun _ => zero_add _
     add_zero := fun _ => ext fun _ => add_zero _ }
--- porting note: have I aligned this correctly?
 #align nat.arithmetic_function.add_monoid Nat.ArithmeticFunction.instAddMonoid
 
 end AddMonoid
@@ -238,17 +237,15 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext ; simp  ;
-    natCast_succ := fun n => by ext x ; by_cases h : x = 1 <;> simp [h] }
--- porting note: have I aligned this correctly?
+    natCast_zero := by ext; simp
+    natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
 #align nat.arithmetic_function.add_monoid_with_one Nat.ArithmeticFunction.instAddMonoidWithOne
 
 instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
 
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
-  {
-    ArithmeticFunction.instAddMonoid with
+  { ArithmeticFunction.instAddMonoid with
     neg := fun f => ⟨fun n => -f n, by simp⟩
     add_left_neg := fun _ => ext fun _ => add_left_neg _ }
 
@@ -619,19 +616,19 @@ theorem map_prod {ι : Type _} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
-  ⟨by simp [h], fun {m n} cop => by cases h ; rename_i j h; simp [h cop]⟩
+  ⟨by simp [h], fun {m n} cop => by cases h; rename_i j h; simp [h cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast Nat.ArithmeticFunction.IsMultiplicative.nat_cast
 
 theorem int_cast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
-  ⟨by simp [h], fun {m n} cop => by cases h ; rename_i j h; simp [h cop]⟩
+  ⟨by simp [h], fun {m n} cop => by cases h; rename_i j h; simp [h cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast Nat.ArithmeticFunction.IsMultiplicative.int_cast
 
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) :=
   ⟨by -- porting note was `simp [hf, hg]`.
-      have f1 := hf.left ; have g1 := hg.left
+      have f1 := hf.left; have g1 := hg.left
       simp only [mul_apply, divisorsAntidiagonal_one, ZeroHom.toFun_eq_coe, sum_singleton]
       rw [f1, g1, mul_one], by
     simp only [mul_apply]

@@ -156,7 +156,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
     have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
     convert (this.of_le le_top).comp _ h _
     · ext y; simp only [mfld_simps]
-    · intro y hy; simp only [mfld_simps] at hy ; simpa only [hy, mfld_simps] using hs hy.1
+    · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 #align cont_diff_within_at_local_invariant_prop contDiffWithinAt_localInvariantProp
 
 theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
@@ -2068,4 +2068,3 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : LocalHomeomorph M M') :
 #align is_local_structomorph_on_cont_diff_groupoid_iff isLocalStructomorphOn_contDiffGroupoid_iff
 
 end
-

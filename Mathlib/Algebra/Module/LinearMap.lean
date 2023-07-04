@@ -579,7 +579,7 @@ def inverse [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [Rin
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
   exact
     { toFun := g
-      map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)] ; simp [h₂]
+      map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
       map_smul' := fun a b ↦ by
         dsimp only
         rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]

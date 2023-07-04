@@ -452,7 +452,7 @@ def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n
   left_inv x := by
     rcases x with ⟨i, y⟩
     dsimp
-    congr ; · exact c.index_embedding _ _
+    congr; · exact c.index_embedding _ _
     rw [Fin.heq_ext_iff]
     · exact c.invEmbedding_comp _ _
     · rw [c.index_embedding]
@@ -695,7 +695,7 @@ theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
   induction' ns with n ns IH <;> intro l h <;> simp at h
   · simp
   have := le_trans (Nat.le_add_right _ _) h
-  simp only [splitWrtCompositionAux_cons, this] ; dsimp
+  simp only [splitWrtCompositionAux_cons, this]; dsimp
   rw [length_take, IH] <;> simp [length_drop]
   · assumption
   · exact le_tsub_of_add_le_left h
@@ -760,7 +760,7 @@ theorem join_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).join = l := by
   induction' ns with n ns IH <;> intro l h <;> simp at h
   · exact (length_eq_zero.1 h.symm).symm
-  simp only [splitWrtCompositionAux_cons] ; dsimp
+  simp only [splitWrtCompositionAux_cons]; dsimp
   rw [IH]
   · simp
   · rw [length_drop, ← h, add_tsub_cancel_left]

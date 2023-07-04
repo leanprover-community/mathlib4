@@ -230,14 +230,14 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
             rintro ⟨i', j'⟩
             rw [Finset.sum_apply, Finset.sum_apply]
             dsimp
-            rw [Finset.sum_eq_single i] ; rotate_left
+            rw [Finset.sum_eq_single i]; rotate_left
             · intro b _ hb
               apply Finset.sum_eq_zero
               intro x _
               rw [dif_neg hb.symm, zero_comp]
             · intro hi
               simp at hi
-            rw [Finset.sum_eq_single j] ; rotate_left
+            rw [Finset.sum_eq_single j]; rotate_left
             · intro b _ hb
               rw [dif_pos rfl, dif_neg, zero_comp]
               simp only
@@ -342,7 +342,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     simp only [biproduct.lift_desc]
     funext i j
     dsimp [id_def]
-    rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i] ; rotate_left
+    rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
       simp only [Finset.sum_const, Finset.card_singleton, one_smul]
