@@ -533,33 +533,42 @@ theorem sMod_succ {p a i b c} (h1 : (2 ^ p - 1 : ℤ) = a) (h2 : sMod p i = b)
   rfl
 #align lucas_lehmer.s_mod_succ LucasLehmer.sMod_succ
 
-/-- Given a goal of the form `lucas_lehmer_test p`,
+-- Porting note: direct port of unhygienic mathlib tactic.
+-- TODO: make tactic hygienic by refactoring or inlining `replace` tactic.
+open Lean Elab Tactic Meta Qq Mathlib.Meta.NormNum in
+/-- Given a goal of the form `LucasLehmerTest p`,
 attempt to do the calculation using `norm_num` to certify each step.
 -/
-unsafe def run_test : tactic Unit := do
-  let q(LucasLehmerTest $(p)) ← target
-  sorry
-  sorry
-  let p ← eval_expr ℕ p
-  let-- Calculate the candidate Mersenne prime
-  M : ℤ := 2 ^ p - 1
-  let t ← to_expr ``(2 ^ $(q(p)) - 1 = $(q(M)))
-  let v ← to_expr ``((by norm_num : 2 ^ $(q(p)) - 1 = $(q(M))))
-  let w ← assertv `w t v
-  let t
-    ←-- base case
-        to_expr
-        ``(sMod $(q(p)) 0 = 4)
-  let v ← to_expr ``((by norm_num [LucasLehmer.sMod] : sMod $(q(p)) 0 = 4))
-  let h ← assertv `h t v
+def run_test : TacticM Unit := withMainContext do
+  let .app (.const ``LucasLehmer.LucasLehmerTest _) (p : Q(ℕ)) ← whnfR <|← instantiateMVars <|← getMainTarget | throwError "goal is not of the form `LucasLehmerTest p` for some `p` "
+  evalTactic <|← `(tactic|(
+    dsimp [LucasLehmerTest]
+    rw [LucasLehmer.residue_eq_zero_iff_sMod_eq_zero]
+    swap
+    norm_num))
+  let goal ← getMainGoal; goal.withContext do
+  let p ← unsafe evalExpr ℕ q(ℕ) p
+  let M : ℤ := 2 ^ p - 1 -- Calculate the candidate Mersenne prime
+  let (t : Q(Prop)) := q(2 ^ $p - 1 = $M)
+  let v ← mkFreshExprMVar t
+  let .none ← normNumAt v.mvarId! (← getSimpContext mkNullNode false) #[]
+    | throwError "norm_num could not close the goal {t}"
+  let (_, goal) ← goal.assertHypotheses #[⟨`w, t, ← instantiateMVars v⟩]
+  replaceMainGoal [goal]; goal.withContext do
+    -- base case
+  let t : Q(Prop) := q(sMod $p 0 = 4)
+  let v ← mkFreshExprMVar t
+  let .none ← normNumAt v.mvarId! (← getSimpContext (←`(LucasLehmer.sMod)) false) #[]
+    | throwError "norm_num could not close the goal {t}"
+  let (_, goal) ← goal.assertHypotheses #[⟨`h, t, ← instantiateMVars v⟩]
+  replaceMainGoal [goal]
   -- step case, repeated p-2 times
-      iterate_exactly
-      (p - 2) sorry
-  let h
-    ←-- now close the goal
-        get_local
-        `h
-  exact h
+  iterateExactly' (p - 2) <| withMainContext <| evalTactic <|← set_option hygiene false in
+    `(tactic|replace h := LucasLehmer.sMod_succ w h (by { norm_num1; rfl }))
+  -- exact h
+  withMainContext do
+  let h := (← getLCtx).findFromUserName? `h |>.get!.fvarId
+  closeMainGoal (.fvar h)
 #align lucas_lehmer.run_test LucasLehmer.run_test
 
 end LucasLehmer
