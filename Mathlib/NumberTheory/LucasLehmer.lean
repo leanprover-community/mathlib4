@@ -533,50 +533,44 @@ theorem sMod_succ {p a i b c} (h1 : (2 ^ p - 1 : ℤ) = a) (h2 : sMod p i = b)
   rfl
 #align lucas_lehmer.s_mod_succ LucasLehmer.sMod_succ
 
--- /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- /- ./././Mathport/Syntax/Translate/Expr.lean:330:4: warning: unsupported (TODO): `[tacs] -/
--- /-- Given a goal of the form `lucas_lehmer_test p`,
--- attempt to do the calculation using `norm_num` to certify each step.
--- -/
--- unsafe def run_test : tactic Unit := do
---   let q(LucasLehmerTest $(p)) ← target
---   sorry
---   sorry
---   let p ← eval_expr ℕ p
---   let-- Calculate the candidate Mersenne prime
---   M : ℤ := 2 ^ p - 1
---   let t ← to_expr ``(2 ^ $(q(p)) - 1 = $(q(M)))
---   let v ← to_expr ``((by norm_num : 2 ^ $(q(p)) - 1 = $(q(M))))
---   let w ← assertv `w t v
---   let t
---     ←-- base case
---         to_expr
---         ``(sMod $(q(p)) 0 = 4)
---   let v ← to_expr ``((by norm_num [LucasLehmer.sMod] : sMod $(q(p)) 0 = 4))
---   let h ← assertv `h t v
---   -- step case, repeated p-2 times
---       iterate_exactly
---       (p - 2) sorry
---   let h
---     ←-- now close the goal
---         get_local
---         `h
---   exact h
--- #align lucas_lehmer.run_test lucas_lehmer.run_test
+/-- Given a goal of the form `lucas_lehmer_test p`,
+attempt to do the calculation using `norm_num` to certify each step.
+-/
+unsafe def run_test : tactic Unit := do
+  let q(LucasLehmerTest $(p)) ← target
+  sorry
+  sorry
+  let p ← eval_expr ℕ p
+  let-- Calculate the candidate Mersenne prime
+  M : ℤ := 2 ^ p - 1
+  let t ← to_expr ``(2 ^ $(q(p)) - 1 = $(q(M)))
+  let v ← to_expr ``((by norm_num : 2 ^ $(q(p)) - 1 = $(q(M))))
+  let w ← assertv `w t v
+  let t
+    ←-- base case
+        to_expr
+        ``(sMod $(q(p)) 0 = 4)
+  let v ← to_expr ``((by norm_num [LucasLehmer.sMod] : sMod $(q(p)) 0 = 4))
+  let h ← assertv `h t v
+  -- step case, repeated p-2 times
+      iterate_exactly
+      (p - 2) sorry
+  let h
+    ←-- now close the goal
+        get_local
+        `h
+  exact h
+#align lucas_lehmer.run_test LucasLehmer.run_test
 
 end LucasLehmer
 
--- /-- We verify that the tactic works to prove `127.prime`. -/
--- example : (mersenne 7).Prime :=
---   lucas_lehmer_sufficiency _ (by norm_num)
---     (by
---       run_tac
---         lucas_lehmer.run_test)
+/-- We verify that the tactic works to prove `127.prime`. -/
+example : (mersenne 7).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by run_tac LucasLehmer.run_test)
 
 /-!
 This implementation works successfully to prove `(2^127 - 1).prime`,
-and all the Mersenne primes up to this point appear in [archive/examples/mersenne_primes.lean].
+and all the Mersenne primes up to this point appear in [Archive/Examples/MersennePrimes.lean].
 
 `(2^127 - 1).prime` takes about 5 minutes to run (depending on your CPU!),
 and unfortunately the next Mersenne prime `(2^521 - 1)`,
