@@ -177,20 +177,20 @@ section
 
 variable {α : Type _} [CompleteLattice α]
 
-theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = (⨆ k < n, u k) ⊔ u n := by
+theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
   simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
 #align nat.supr_lt_succ Nat.iSup_lt_succ
 
-theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = u 0 ⊔ ⨆ k < n, u (k + 1) := by
+theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_iSup_nat_succ]
   simp
 #align nat.supr_lt_succ' Nat.iSup_lt_succ'
 
-theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : (⨅ k < n + 1, u k) = (⨅ k < n, u k) ⊓ u n :=
+theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = (⨅ k < n, u k) ⊓ u n :=
   @iSup_lt_succ αᵒᵈ _ _ _
 #align nat.infi_lt_succ Nat.iInf_lt_succ
 
-theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : (⨅ k < n + 1, u k) = u 0 ⊓ ⨅ k < n, u (k + 1) :=
+theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = u 0 ⊓ ⨅ k < n, u (k + 1) :=
   @iSup_lt_succ' αᵒᵈ _ _ _
 #align nat.infi_lt_succ' Nat.iInf_lt_succ'
 
@@ -202,19 +202,19 @@ namespace Set
 
 variable {α : Type _}
 
-theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = (⋃ k < n, u k) ∪ u n :=
+theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = (⋃ k < n, u k) ∪ u n :=
   Nat.iSup_lt_succ u n
 #align set.bUnion_lt_succ Set.biUnion_lt_succ
 
-theorem biUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = u 0 ∪ ⋃ k < n, u (k + 1) :=
+theorem biUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = u 0 ∪ ⋃ k < n, u (k + 1) :=
   Nat.iSup_lt_succ' u n
 #align set.bUnion_lt_succ' Set.biUnion_lt_succ'
 
-theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = (⋂ k < n, u k) ∩ u n :=
+theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = (⋂ k < n, u k) ∩ u n :=
   Nat.iInf_lt_succ u n
 #align set.bInter_lt_succ Set.biInter_lt_succ
 
-theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = u 0 ∩ ⋂ k < n, u (k + 1) :=
+theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = u 0 ∩ ⋂ k < n, u (k + 1) :=
   Nat.iInf_lt_succ' u n
 #align set.bInter_lt_succ' Set.biInter_lt_succ'
 

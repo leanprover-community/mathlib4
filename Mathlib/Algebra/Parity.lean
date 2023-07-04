@@ -196,7 +196,7 @@ theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow,
 
 end DivisionMonoid
 
-theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even (|a|) ↔ Even a := by
+theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
@@ -520,6 +520,3 @@ theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
 #align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers
-
-/-- Simp attribute for lemmas about `Even` -/
-register_simp_attr parity_simps
