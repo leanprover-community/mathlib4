@@ -8,7 +8,7 @@ Authors: Devon Tuma
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.MvPolynomial
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
@@ -144,8 +144,8 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → k)) :
     PrimeSpectrum.vanishingIdeal (pointToPoint '' V) = MvPolynomial.vanishingIdeal V :=
   le_antisymm
     (fun p hp x hx =>
-      (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal {x}, by infer_instance⟩
-          ⟨x, ⟨hx, rfl⟩⟩)
+      (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal {x}, by infer_instance⟩ <| by
+          exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note : tactic mode code compiles but term mode does not
         x rfl)
     fun p hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun I hI =>
@@ -170,21 +170,21 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
     ⟨fun hI => _, fun h =>
       let ⟨x, hx⟩ := h
       hx.symm ▸ MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
-  letI : I.isMaximal := hI
+  letI : I.IsMaximal := hI
   letI : Field (MvPolynomial σ k ⧸ I) := Quotient.field I
   let ϕ : k →+* MvPolynomial σ k ⧸ I := (Ideal.Quotient.mk I).comp C
   have hϕ : Function.Bijective ϕ :=
     ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
       IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
-        (mv_polynomial.comp_C_integral_of_surjective_of_jacobson _ quotient.mk_surjective)⟩
+        (MvPolynomial.comp_C_integral_of_surjective_of_jacobson _ Quotient.mk_surjective)⟩
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
     hφ ((Ideal.Quotient.mk I) (X s))
-  refine' ⟨x, (is_maximal.eq_of_le (by infer_instance) hI.ne_top _).symm⟩
+  refine' ⟨x, (IsMaximal.eq_of_le (by infer_instance) hI.ne_top _).symm⟩
   intro p hp
-  rw [← quotient.eq_zero_iff_mem, map_mv_polynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
-  rw [mem_vanishing_ideal_singleton_iff, eval_eq'] at hp
+  rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
+  rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
   simpa only [ϕ.map_sum, ϕ.map_mul, ϕ.map_prod, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
 #align mv_polynomial.is_maximal_iff_eq_vanishing_ideal_singleton MvPolynomial.isMaximal_iff_eq_vanishingIdeal_singleton
 
@@ -195,22 +195,20 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
   rw [I.radical_eq_jacobson]
   refine' le_antisymm (le_sInf _) fun p hp x hx => _
   · rintro J ⟨hJI, hJ⟩
-    obtain ⟨x, hx⟩ := (is_maximal_iff_eq_vanishing_ideal_singleton J).1 hJ
-    refine' hx.symm ▸ vanishing_ideal_anti_mono fun y hy p hp => _
-    rw [← mem_vanishing_ideal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
+    obtain ⟨x, hx⟩ := (isMaximal_iff_eq_vanishingIdeal_singleton J).1 hJ
+    refine' hx.symm ▸ vanishingIdeal_anti_mono fun y hy p hp => _
+    rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
     refine' hJI hp
-  · rw [← mem_vanishing_ideal_singleton_iff x p]
-    refine'
-      (mem_Inf.mp hp)
-        ⟨le_trans (le_vanishing_ideal_zero_locus I)
-            (vanishing_ideal_anti_mono fun y hy => hy.symm ▸ hx),
-          MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
+  · rw [← mem_vanishingIdeal_singleton_iff x p]
+    refine' (mem_sInf.mp hp)
+      ⟨le_trans (le_vanishingIdeal_zeroLocus I) (vanishingIdeal_anti_mono fun y hy => hy.symm ▸ hx),
+        MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
 #align mv_polynomial.vanishing_ideal_zero_locus_eq_radical MvPolynomial.vanishingIdeal_zeroLocus_eq_radical
 
 @[simp]
 theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.IsPrime] :
     vanishingIdeal (zeroLocus P) = P :=
-  trans (vanishingIdeal_zeroLocus_eq_radical P) h.radical
+  Trans.trans (vanishingIdeal_zeroLocus_eq_radical P) h.radical
 #align mv_polynomial.is_prime.vanishing_ideal_zero_locus MvPolynomial.IsPrime.vanishingIdeal_zeroLocus
 
 end MvPolynomial
