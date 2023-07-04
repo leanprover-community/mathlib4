@@ -9,8 +9,7 @@ Authors: Jireh Loreaux
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm
-import Mathlib.Topology.MetricSpace.Baire
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.LocallyConvex.Barrelled
 
 /-!
 # The Banach-Steinhaus theorem: Uniform Boundedness Principle
@@ -37,41 +36,9 @@ If a family of continuous linear maps from a Banach space into a normed space is
 bounded, then the norms of these linear maps are uniformly bounded. -/
 theorem banach_steinhaus {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, ∃ C, ∀ i, ‖g i x‖ ≤ C) : ∃ C', ∀ i, ‖g i‖ ≤ C' := by
-  -- sequence of subsets consisting of those `x : E` with norms `‖g i x‖` bounded by `n`
-  let e : ℕ → Set E := fun n => ⋂ i : ι, { x : E | ‖g i x‖ ≤ n }
-  -- each of these sets is closed
-  have hc : ∀ n : ℕ, IsClosed (e n) := fun i =>
-    isClosed_iInter fun i => isClosed_le (Continuous.norm (g i).cont) continuous_const
-  -- the union is the entire space; this is where we use `h`
-  have hU : (⋃ n : ℕ, e n) = univ := by
-    refine' eq_univ_of_forall fun x => _
-    cases' h x with C hC
-    obtain ⟨m, hm⟩ := exists_nat_ge C
-    exact ⟨e m, mem_range_self m, mem_iInter.mpr fun i => le_trans (hC i) hm⟩
-  -- apply the Baire category theorem to conclude that for some `m : ℕ`, `e m` contains some `x`
-  rcases nonempty_interior_of_iUnion_of_closed hc hU with ⟨m, x, hx⟩
-  rcases Metric.isOpen_iff.mp isOpen_interior x hx with ⟨ε, ε_pos, hε⟩
-  obtain ⟨k, hk⟩ := NormedField.exists_one_lt_norm 𝕜
-  -- show all elements in the ball have norm bounded by `m` after applying any `g i`
-  have real_norm_le : ∀ z : E, z ∈ Metric.ball x ε → ∀ i : ι, ‖g i z‖ ≤ m := by
-    intro z hz i
-    replace hz := mem_iInter.mp (interior_iInter_subset _ (hε hz)) i
-    apply interior_subset hz
-  have εk_pos : 0 < ε / ‖k‖ := div_pos ε_pos (zero_lt_one.trans hk)
-  refine' ⟨(m + m : ℕ) / (ε / ‖k‖), fun i => ContinuousLinearMap.op_norm_le_of_shell ε_pos _ hk _⟩
-  · exact div_nonneg (Nat.cast_nonneg _) εk_pos.le
-  intro y le_y y_lt
-  calc
-    ‖g i y‖ = ‖g i (y + x) - g i x‖ := by rw [ContinuousLinearMap.map_add, add_sub_cancel]
-    _ ≤ ‖g i (y + x)‖ + ‖g i x‖ := (norm_sub_le _ _)
-    _ ≤ m + m :=
-      (add_le_add (real_norm_le (y + x) (by rwa [add_comm, add_mem_ball_iff_norm]) i)
-        (real_norm_le x (Metric.mem_ball_self ε_pos) i))
-    _ = (m + m : ℕ) := (m.cast_add m).symm
-    _ ≤ (m + m : ℕ) * (‖y‖ / (ε / ‖k‖)) :=
-      (le_mul_of_one_le_right (Nat.cast_nonneg _)
-        ((one_le_div <| div_pos ε_pos (zero_lt_one.trans hk)).2 le_y))
-    _ = (m + m : ℕ) / (ε / ‖k‖) * ‖y‖ := (mul_comm_div _ _ _).symm
+  rw [show (∃ C, ∀ i, ‖g i‖ ≤ C) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 5 2]
+  refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
+  simpa [bddAbove_def, forall_range_iff] using h x
 #align banach_steinhaus banach_steinhaus
 
 open ENNReal
@@ -82,18 +49,10 @@ open ENNReal
 for convenience. -/
 theorem banach_steinhaus_iSup_nnnorm {ι : Type _} [CompleteSpace E] {g : ι → E →SL[σ₁₂] F}
     (h : ∀ x, (⨆ i, ↑‖g i x‖₊) < ∞) : (⨆ i, ↑‖g i‖₊) < ∞ := by
-  have h' : ∀ x : E, ∃ C : ℝ, ∀ i : ι, ‖g i x‖ ≤ C := by
-    intro x
-    rcases lt_iff_exists_coe.mp (h x) with ⟨p, hp₁, _⟩
-    refine' ⟨p, fun i => _⟩
-    exact_mod_cast
-      calc
-        (‖g i x‖₊ : ℝ≥0∞) ≤ ⨆ j, ↑‖g j x‖₊ := le_iSup (fun j => (‖g j x‖₊ : ℝ≥0∞)) i
-        _ = p := hp₁
-  cases' banach_steinhaus h' with C' hC'
-  refine' (iSup_le fun i => _).trans_lt (@coe_lt_top C'.toNNReal)
-  rw [← norm_toNNReal]
-  exact coe_mono (Real.toNNReal_le_toNNReal <| hC' i)
+  rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 8 2]
+  refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
+  simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using
+    (WithTop.iSup_coe_lt_top (fun i ↦ ‖g i x‖₊)).mp (h x)
 #align banach_steinhaus_supr_nnnorm banach_steinhaus_iSup_nnnorm
 
 open Topology
