@@ -51,17 +51,16 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 
 /-- similar to `traverseConstructor` but for `Functor` -/
 def mapConstructor (c n : Name) (ad : Expr) (f α β : Expr) (args₀ : List Expr)
-    (args₁ : List (Bool × Expr)) : TacticM Expr := do
-  let g ← getMainTarget
+    (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
+  let g ← m.getType >>= instantiateMVars
   let args' ← args₁.mapM (fun (y : Bool × Expr) =>
       if y.1 then return mkAppN ad #[α, β, f, y.2]
       else mapField n g.appFn! f α β y.2)
-  mkAppOptM c ((args₀ ++ args').map some).toArray
+  mkAppOptM c ((args₀ ++ args').map some).toArray >>= m.assign
 
 /-- derive the `map` definition of a `Functor` -/
-def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) : TacticM Unit := do
-  let ms ← getGoals
-  let m ← getMainGoal
+def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m : MVarId) :
+    TermElabM Unit := do
   let (#[α, β, f, x], m') ← m.introN 4 [`α, `β, `f, `x] | unreachable!
   m'.withContext do
     let et ← x.getType
@@ -97,36 +96,29 @@ def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) : Ta
     ms'.forM fun (m', cinfo) => do
       if cinfo.numFields = 0 then
         let (_, m') ← m'.intro1
-        setGoals [m']
         m'.withContext do
           mapConstructor
-              cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) []
-            >>= closeMainGoal
+            cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) [] m'
       else
         let (args, m') ← m'.introN cinfo.numFields
-        setGoals [m']
         m'.withContext do
           let args := args.toList.map Expr.fvar
           let args₀ ← args.mapM fun a => do
             let b ← et.occurs <$> inferType a
             return (b, a)
           mapConstructor
-              cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) args₀
-            >>= closeMainGoal
-  setGoals ms
-  pruneSolvedGoals
+            cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) args₀ m'
 
-def deriveFunctor (levels : List Name) (vars : List Expr) : TacticM Unit := do
-  let .app (.const ``Functor _) F ← getMainTarget | failure
+def deriveFunctor (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
+  let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let d ← getConstInfo n
-  evalTactic (← `(tactic| refine { map := @(?_) }))
-  let ms ← getGoals
-  let t ← getMainTarget
+  let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(?_) })) | failure
+  let t ← m.getType >>= instantiateMVars
   let n' := n ++ "map"
   withAuxDecl "map" t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
-    let [] ← run m' <| mkMap n ad levels vars | failure
+    mkMap n ad levels vars m'
     let e ← instantiateMVars (mkMVar m')
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
@@ -139,10 +131,9 @@ def deriveFunctor (levels : List Name) (vars : List Expr) : TacticM Unit := do
           declName := n'
           type := t'
           value := e' }] {}
-  setGoals ms
-  closeMainGoal (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
+  m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
-def mkOneInstance (n cls : Name) (tac : List Name → List Expr → TacticM Unit)
+def mkOneInstance (n cls : Name) (tac : List Name → List Expr → MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) : TermElabM Unit := do
   let .inductInfo decl ← getConstInfo n |
     throwError m!"failed to derive '{cls}', '{n}' is not an inductive type"
@@ -165,11 +156,11 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → TacticM Unit
     (discard <| liftM (synthInstance tgt)) <|> do
       let m := (← mkFreshExprSyntheticOpaqueMVar tgt).mvarId!
       let (fvars, m') ← m.intros
-      discard <| run m' (tac decl.levelParams (fvars.toList.map mkFVar))
+      tac decl.levelParams (fvars.toList.map mkFVar) m'
       let val ← instantiateMVars (mkMVar m)
       let isUnsafe := decl.isUnsafe && clsDecl.isUnsafe
       let result ← m'.withContext <| do
-        let type ← m'.getType
+        let type ← m'.getType >>= instantiateMVars
         let ref ← IO.mkRef ""
         Meta.forEachExpr type fun e => do
           if e.isForall then ref.modify (· ++ "ForAll")
@@ -201,7 +192,7 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → TacticM Unit
             type := tgt
             value := val }] {}
 
-def higherOrderDeriveHandler (cls : Name) (tac : List Name → List Expr → TacticM Unit)
+def higherOrderDeriveHandler (cls : Name) (tac : List Name → List Expr → MVarId → TermElabM Unit)
     (deps : List DerivingHandlerNoArgs := [])
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
     DerivingHandlerNoArgs := fun a => do
