@@ -21,7 +21,7 @@ This file defines the Gromov-Hausdorff distance on the space of nonempty compact
 up to isometry.
 
 We introduce the space of all nonempty compact metric spaces, up to isometry,
-called `GH_space`, and endow it with a metric space structure. The distance,
+called `GHSpace`, and endow it with a metric space structure. The distance,
 known as the Gromov-Hausdorff distance, is defined as follows: given two
 nonempty compact spaces `X` and `Y`, their distance is the minimum Hausdorff distance
 between all possible isometric embeddings of `X` and `Y` in all metric spaces.
@@ -68,10 +68,10 @@ namespace GromovHausdorff
 
 section GHSpace
 
-/- In this section, we define the Gromov-Hausdorff space, denoted `GH_space` as the quotient
+/- In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
-Using the Kuratwoski embedding, we get a canonical map `to_GH_space` mapping any nonempty
-compact type to `GH_space`. -/
+Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
+compact type to `GHSpace`. -/
 /-- Equivalence relation identifying two nonempty compact sets which are isometric -/
 private def IsometryRel (x : NonemptyCompacts ℓ_infty_ℝ) (y : NonemptyCompacts ℓ_infty_ℝ) : Prop :=
   Nonempty (x ≃ᵢ y)
@@ -90,7 +90,7 @@ def GHSpace : Type :=
   Quotient IsometryRel.setoid
 #align Gromov_Hausdorff.GH_space GromovHausdorff.GHSpace
 
-/-- Map any nonempty compact type to `GH_space` -/
+/-- Map any nonempty compact type to `GHSpace` -/
 def toGHSpace (X : Type u) [MetricSpace X] [CompactSpace X] [Nonempty X] : GHSpace :=
   ⟦NonemptyCompacts.kuratowskiEmbedding X⟧
 #align Gromov_Hausdorff.to_GH_space GromovHausdorff.toGHSpace
@@ -98,7 +98,7 @@ def toGHSpace (X : Type u) [MetricSpace X] [CompactSpace X] [Nonempty X] : GHSpa
 instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
-/-- A metric space representative of any abstract point in `GH_space` -/
+/-- A metric space representative of any abstract point in `GHSpace` -/
 -- porting note: was @[nolint has_nonempty_instance]; why?
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
@@ -149,7 +149,7 @@ theorem GHSpace.toGHSpace_rep (p : GHSpace) : toGHSpace p.Rep = p := by
   exact Quot.out_eq p
 #align Gromov_Hausdorff.GH_space.to_GH_space_rep GromovHausdorff.GHSpace.toGHSpace_rep
 
-/-- Two nonempty compact spaces have the same image in `GH_space` if and only if they are
+/-- Two nonempty compact spaces have the same image in `GHSpace` if and only if they are
 isometric. -/
 theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [CompactSpace X]
     [Nonempty X] {Y : Type v} [MetricSpace Y] [CompactSpace Y] [Nonempty Y] :
@@ -177,7 +177,7 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
     exact ⟨cast I ((f.trans e).trans g)⟩⟩
 #align Gromov_Hausdorff.to_GH_space_eq_to_GH_space_iff_isometry_equiv GromovHausdorff.toGHSpace_eq_toGHSpace_iff_isometryEquiv
 
-/-- Distance on `GH_space`: the distance between two nonempty compact spaces is the infimum
+/-- Distance on `GHSpace`: the distance between two nonempty compact spaces is the infimum
 Hausdorff distance between isometric copies of the two spaces in a metric space. For the definition,
 we only consider embeddings in `ℓ^∞(ℝ)`, but we will prove below that it works for all spaces. -/
 instance : Dist GHSpace where
@@ -524,7 +524,7 @@ end GHSpace
 --section
 end GromovHausdorff
 
-/-- In particular, nonempty compacts of a metric space map to `GH_space`.
+/-- In particular, nonempty compacts of a metric space map to `GHSpace`.
     We register this in the topological_space namespace to take advantage
     of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
@@ -674,7 +674,7 @@ instance : SecondCountableTopology GHSpace := by
   let N := fun p : GHSpace => N p (s p) (hs p).1
   -- equiv from `s p`, a nice finite subset of `p.rep`, to `fin (N p)`, called `E p`
   let E := fun p : GHSpace => e p (s p) (hs p).1
-  -- A function `F` associating to `p : GH_space` the data of all distances between points
+  -- A function `F` associating to `p : GHSpace` the data of all distances between points
   -- in the `ε`-dense set `s p`.
   let F : GHSpace → Σ n : ℕ, Fin n → Fin n → ℤ := fun p =>
     ⟨N p, fun a b => ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋⟩
