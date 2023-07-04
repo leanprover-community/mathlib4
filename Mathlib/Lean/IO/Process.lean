@@ -13,11 +13,11 @@ namespace IO.Process
 open System (FilePath)
 
 /--
-Pipe input into stdin of the spawned process,
-then return (exitCode, stdout, stdErr) upon completion.
+Pipe `input` into stdin of the spawned process,
+then return `(exitCode, stdout, stdErr)` upon completion.
 -/
--- TODO Put this somewhere central
--- TODO share with `cache` executable and with https://github.com/leanprover-community/llm.
+-- TODO We could reduce some code duplication by centralising some functions like this,
+-- which are used here, in `cahce`, and in https://github.com/leanprover-community/llm.
 def runCmdWithInput' (cmd : String) (args : Array String)
     (input : String := "") (throwFailure := true) : IO (UInt32 × String × String) := do
   let child ← spawn
@@ -34,6 +34,10 @@ def runCmdWithInput' (cmd : String) (args : Array String)
     let out ← IO.ofExcept stdout.get
     return (exitCode, out, err)
 
+/--
+Pipe `input` into stdin of the spawned process,
+then return the entire content of stdout as a `String` upon completion.
+-/
 def runCmdWithInput (cmd : String) (args : Array String)
     (input : String := "") (throwFailure := true) : IO String := do
   return (← runCmdWithInput' cmd args input throwFailure).2.1
