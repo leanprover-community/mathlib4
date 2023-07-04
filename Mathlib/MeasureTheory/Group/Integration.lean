@@ -10,7 +10,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Group.Action
 
 /-!
 # Integration on Groups

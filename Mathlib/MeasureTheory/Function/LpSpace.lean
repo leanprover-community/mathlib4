@@ -293,6 +293,10 @@ theorem edist_def (f g : Lp E p μ) : edist f g = snorm (⇑f - ⇑g) p μ :=
   rfl
 #align measure_theory.Lp.edist_def MeasureTheory.Lp.edist_def
 
+protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) := by
+  rw [edist_def, dist_def, ← snorm_congr_ae (coeFn_sub _ _),
+    ENNReal.ofReal_toReal (snorm_ne_top (f - g))]
+
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     edist (hf.toLp f) (hg.toLp g) = snorm (f - g) p μ := by
@@ -444,12 +448,9 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
           rw [snorm_congr_ae (coeFn_add _ _)]
           exact snorm_add_le (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g) hp.1
         eq_zero_of_map_eq_zero' := fun f =>
-          (norm_eq_zero_iff <|
-              zero_lt_one.trans_le hp.1).1 } with
+          (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
-    edist_dist := fun f g => by
-      rw [edist_def, dist_def, ← snorm_congr_ae (coeFn_sub _ _),
-        ENNReal.ofReal_toReal (snorm_ne_top (f - g))] }
+    edist_dist := Lp.edist_dist }
 #align measure_theory.Lp.normed_add_comm_group MeasureTheory.Lp.instNormedAddCommGroup
 
 -- check no diamond is created
@@ -875,12 +876,14 @@ theorem norm_compMeasurePreserving (g : Lp E p μb) (hf : MeasurePreserving f μ
 
 variable (𝕜 : Type _) [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
 
+/-- `MeasureTheory.Lp.compMeasurePreserving` as a linear map. -/
 @[simps]
 def compMeasurePreservingₗ (f : α → β) (hf : MeasurePreserving f μ μb) :
     Lp E p μb →ₗ[𝕜] Lp E p μ where
   __ := compMeasurePreserving f hf
   map_smul' c g := by rcases g with ⟨⟨_⟩, _⟩; rfl
 
+/-- `MeasureTheory.Lp.compMeasurePreserving` as a linear isometry. -/
 @[simps!]
 def compMeasurePreservingₗᵢ [Fact (1 ≤ p)] (f : α → β) (hf : MeasurePreserving f μ μb) :
     Lp E p μb →ₗᵢ[𝕜] Lp E p μ where
