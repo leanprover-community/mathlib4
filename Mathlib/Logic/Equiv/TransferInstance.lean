@@ -88,14 +88,14 @@ theorem div_def [Div β] (x y : α) :
 #align equiv.div_def Equiv.div_def
 #align equiv.sub_def Equiv.sub_def
 
--- Porting note: this should be called `Inv`,
+-- Porting note: this should be called `inv`,
 -- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
 /-- Transfer `Inv` across an `Equiv` -/
 @[reducible, to_additive "Transfer `Neg` across an `Equiv`"]
 protected def Inv [Inv β] : Inv α :=
   ⟨fun x => e.symm (e x)⁻¹⟩
-#align equiv.has_inv Equiv.inv
-#align equiv.has_neg Equiv.neg
+#align equiv.has_inv Equiv.Inv
+#align equiv.has_neg Equiv.Neg
 
 @[to_additive]
 theorem inv_def [Inv β] (x : α) :
