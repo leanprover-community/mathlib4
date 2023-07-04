@@ -194,17 +194,12 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
   · intro h
     induction' h with Y T hS  Y Y R S _ _ a b
     · rcases hS with ⟨a, h, Y', π, h'⟩
-      use a, h, Y', π
-      constructor
-      · tauto
-      · intro a'
-        cases' h' with h_left h_right
-        simp only [Sieve.generate_apply]
-        use Y' a', 𝟙 Y' a', π a'
-        constructor
-        · rw [h_left]
-          exact Presieve.ofArrows.mk a'
-        · apply Category.id_comp
+      use a, h, Y', π, by tauto
+      intro a'
+      rcases h' with ⟨rfl, _⟩
+      simp only [Sieve.generate_apply]
+      use Y' a', 𝟙 Y' a', π a', Presieve.ofArrows.mk a'
+      apply Category.id_comp
     · use Unit, Unit.fintype, fun _ => Y, fun _ => (𝟙 Y)
       cases' S with arrows downward_closed
       exact ⟨inferInstance, by simp only [Sieve.top_apply, forall_const]⟩
