@@ -29,6 +29,8 @@ In this file, we give the following definitions/theorems:
     preserves all products.
 -/
 
+-- Porting note: Plenty declarations in this file already used uppercase in mathlib 3 names
+set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -70,7 +72,7 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
 #align fundamental_groupoid_functor.pi_to_pi_Top FundamentalGroupoidFunctor.piToPiTop
 
-/-- Shows `pi_to_pi_Top` is an isomorphism, whose inverse is precisely the pi product
+/-- Shows `piToPiTop` is an isomorphism, whose inverse is precisely the pi product
 of the induced projections. This shows that `fundamental_groupoid_functor` preserves products.
 -/
 @[simps]
@@ -78,11 +80,11 @@ def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of
   hom := piToPiTop X
   inv := CategoryTheory.Functor.pi' (proj X)
   hom_inv_id := by
-    change pi_to_pi_Top X ⋙ CategoryTheory.Functor.pi' (proj X) = 𝟭 _
+    change piToPiTop X ⋙ CategoryTheory.Functor.pi' (proj X) = 𝟭 _
     apply CategoryTheory.Functor.ext <;> intros
     · ext; simp; · rfl
   inv_hom_id := by
-    change CategoryTheory.Functor.pi' (proj X) ⋙ pi_to_pi_Top X = 𝟭 _
+    change CategoryTheory.Functor.pi' (proj X) ⋙ piToPiTop X = 𝟭 _
     apply CategoryTheory.Functor.ext <;> intros
     · suffices Path.Homotopic.pi ((CategoryTheory.Functor.pi' (proj X)).map f) = f by simpa
       change (CategoryTheory.Functor.pi' (proj X)).map f with fun i =>
@@ -107,23 +109,23 @@ theorem coneDiscreteComp_obj_mapCone :
   rfl
 #align fundamental_groupoid_functor.cone_discrete_comp_obj_map_cone FundamentalGroupoidFunctor.coneDiscreteComp_obj_mapCone
 
-/-- This is `pi_iso.inv` as a cone morphism (in fact, isomorphism) -/
+/-- This is `piIso.inv` as a cone morphism (in fact, isomorphism) -/
 def piTopToPiCone :
     Limits.Fan.mk (πₓ (TopCat.of (∀ i, X i))) (proj X) ⟶ Grpd.piLimitFan fun i : I => πₓ (X i)
     where Hom := CategoryTheory.Functor.pi' (proj X)
 #align fundamental_groupoid_functor.pi_Top_to_pi_cone FundamentalGroupoidFunctor.piTopToPiCone
 
 instance : IsIso (piTopToPiCone X) :=
-  haveI : is_iso (pi_Top_to_pi_cone X).Hom := (inferInstance : is_iso (pi_iso X).inv)
-  limits.cones.cone_iso_of_hom_iso (pi_Top_to_pi_cone X)
+  haveI : IsIso (piTopToPiCone X).Hom := (inferInstance : IsIso (piIso X).inv)
+  Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/
 def preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
-  apply limits.preserves_limit_of_preserves_limit_cone (TopCat.piFanIsLimit.{u} X)
-  apply (limits.is_limit.of_cone_equiv (cone_discrete_comp X)).toFun
+  apply Limits.preservesLimitOfPreservesLimitCone (TopCat.piFanIsLimit.{u} X)
+  apply (Limits.IsLimit.ofConeEquiv (cone_discrete_comp X)).toFun
   simp only [cone_discrete_comp_obj_map_cone]
-  apply limits.is_limit.of_iso_limit _ (as_iso (pi_Top_to_pi_cone X)).symm
-  exact Groupoid.pi_limit_fan_is_limit _
+  apply Limits.IsLimit.ofIsoLimit _ (asIso (piTopToPiCone X)).symm
+  exact Grpd.piLimitFanIsLimit _
 #align fundamental_groupoid_functor.preserves_product FundamentalGroupoidFunctor.preservesProduct
 
 end Preserves
@@ -169,7 +171,8 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
   map_id' := by
     rintro ⟨x₀, x₁⟩
     simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
-    unfold_aux; rw [Path.Homotopic.prod_lift]; rfl
+    unfold_aux -- Porting note: jmc: I think this should just be removed now
+    rw [Path.Homotopic.prod_lift]; rfl
   map_comp' x y z f g :=
     match x, y, z, f, g with
     | (x₀, x₁), (y₀, y₁), (z₀, z₁), (f₀, f₁), (g₀, g₁) =>
@@ -206,4 +209,3 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
 end Prod
 
 end FundamentalGroupoidFunctor
-
