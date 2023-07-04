@@ -1207,7 +1207,7 @@ theorem count_map_roots [IsDomain A] [DecidableEq B] {p : A[X]} {f : A →+* B} 
     (Multiset.prod_dvd_prod_of_le <| Multiset.map_le_map <| Multiset.filter_le (Eq b) _).trans ?_
   convert Polynomial.map_dvd f p.prod_multiset_X_sub_C_dvd
   simp only [Polynomial.map_multiset_prod, Multiset.map_map]
-  congr ; ext1
+  congr; ext1
   simp only [Function.comp_apply, Polynomial.map_sub, map_X, map_C]
 #align polynomial.count_map_roots Polynomial.count_map_roots
 

@@ -667,7 +667,7 @@ theorem cycle_singleton (a : α) : cycle [a] (by simp) = const a :=
 #align stream.cycle_singleton Stream'.cycle_singleton
 
 theorem tails_eq (s : Stream' α) : tails s = tail s::tails (tail s) := by
-  unfold tails ; rw [corec_eq] ; rfl
+  unfold tails; rw [corec_eq]; rfl
 #align stream.tails_eq Stream'.tails_eq
 
 @[simp]

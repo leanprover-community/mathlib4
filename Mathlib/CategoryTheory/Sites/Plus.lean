@@ -57,7 +57,7 @@ def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).o
   app S :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
       Multiequalizer.condition (S.unop.index P) I.base
-  naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp ; simp ; rfl)
+  naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp; rfl)
 #align category_theory.grothendieck_topology.diagram_pullback CategoryTheory.GrothendieckTopology.diagramPullback
 
 /-- A natural transformation `P ⟶ Q` induces a natural transformation
@@ -164,7 +164,7 @@ def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q w
       ι_colimMap_assoc, Category.assoc]
     simp_rw [← Category.assoc]
     congr 1
-    exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp ; simp)
+    exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
 #align category_theory.grothendieck_topology.plus_map CategoryTheory.GrothendieckTopology.plusMap
 
 @[simp]
@@ -231,7 +231,7 @@ theorem toPlus_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [ι_colimMap, Category.assoc]
   simp_rw [← Category.assoc]
   congr 1
-  exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp ; simp)
+  exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
 #align category_theory.grothendieck_topology.to_plus_naturality CategoryTheory.GrothendieckTopology.toPlus_naturality
 
 variable (D)
@@ -288,7 +288,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   · apply isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop)
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
-    Multiequalizer.hom_ext _ _ _ (fun II => by dsimp ; simp)
+    Multiequalizer.hom_ext _ _ _ (fun II => by dsimp; simp)
   have :
     (J.diagram P X.unop).map e = inv (S.unop.toMultiequalizer P) ≫ T.unop.toMultiequalizer P := by
     simp [← this]

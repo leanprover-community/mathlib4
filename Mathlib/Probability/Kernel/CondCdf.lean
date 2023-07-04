@@ -265,7 +265,7 @@ theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableS
       ext1 x
       simp only [Rat.cast_eq_id, id.def, mem_iInter, mem_prod, mem_Iic]
       refine' ⟨fun h i => ⟨(h i).1, _⟩, fun h i => ⟨(h i).1, _⟩⟩ <;> have h' := h (-i)
-      · rw [neg_neg] at h' ; exact h'.2
+      · rw [neg_neg] at h'; exact h'.2
       · exact h'.2
     rw [h_inter_eq] at h_neg
     have h_fun_eq : (fun r : ℚ => ρ (s ×ˢ Iic (r : ℝ))) = fun r : ℚ => ρ (s ×ˢ Iic ↑(- -r)) := by

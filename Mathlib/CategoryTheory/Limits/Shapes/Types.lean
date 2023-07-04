@@ -356,12 +356,19 @@ noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ F ≅
   limit.isoLimitCone (productLimitCone.{v, u} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
--- porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma.
+-- Porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma
+-- It should produce the lemma below.
 @[simp]
 theorem productIso_hom_comp_eval {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval CategoryTheory.Limits.Types.productIso_hom_comp_eval
+
+@[simp]
+theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → TypeMax.{v, u}) (j : J) (x) :
+    ((productIso.{v, u} F).hom x) j = Pi.π F j x :=
+  rfl
+#align category_theory.limits.types.product_iso_hom_comp_eval_apply CategoryTheory.Limits.Types.productIso_hom_comp_eval_apply
 
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :

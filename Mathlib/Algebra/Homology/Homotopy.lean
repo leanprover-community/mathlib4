@@ -203,7 +203,7 @@ def add {f₁ g₁ f₂ g₂ : C ⟶ D} (h₁ : Homotopy f₁ g₁) (h₂ : Homo
 @[simps]
 def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫ g) (f ≫ g) where
   hom i j := h.hom i j ≫ g.f j
-  zero i j w := by dsimp ; rw [h.zero i j w, zero_comp]
+  zero i j w := by dsimp; rw [h.zero i j w, zero_comp]
   comm i := by rw [comp_f, h.comm i, dNext_comp_right, prevD_comp_right, Preadditive.add_comp,
     comp_f, Preadditive.add_comp]
 #align homotopy.comp_right Homotopy.compRight
@@ -212,7 +212,7 @@ def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫
 @[simps]
 def compLeft {f g : D ⟶ E} (h : Homotopy f g) (e : C ⟶ D) : Homotopy (e ≫ f) (e ≫ g) where
   hom i j := e.f i ≫ h.hom i j
-  zero i j w := by dsimp ; rw [h.zero i j w, comp_zero]
+  zero i j w := by dsimp; rw [h.zero i j w, comp_zero]
   comm i := by rw [comp_f, h.comm i, dNext_comp_left, prevD_comp_left, comp_f,
     Preadditive.comp_add, Preadditive.comp_add]
 #align homotopy.comp_left Homotopy.compLeft
@@ -549,7 +549,7 @@ def mkInductive : Homotopy e 0 where
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
     else 0
-  zero i j w := by dsimp ; rw [dif_neg] ; exact w
+  zero i j w := by dsimp; rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -673,7 +673,7 @@ def mkCoinductive : Homotopy e 0 where
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1
     else 0
-  zero i j w := by dsimp ; rw [dif_neg] ; exact w
+  zero i j w := by dsimp; rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -802,7 +802,7 @@ variable {W : Type _} [Category W] [Preadditive W]
 def Functor.mapHomotopy (F : V ⥤ W) [F.Additive] {f g : C ⟶ D} (h : Homotopy f g) :
     Homotopy ((F.mapHomologicalComplex c).map f) ((F.mapHomologicalComplex c).map g) where
   hom i j := F.map (h.hom i j)
-  zero i j w := by dsimp ; rw [h.zero i j w, F.map_zero]
+  zero i j w := by dsimp; rw [h.zero i j w, F.map_zero]
   comm i := by
     have H := h.comm i
     dsimp [dNext, prevD] at H ⊢
