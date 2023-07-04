@@ -165,8 +165,8 @@ instance : OrderClosedTopology ℝₗ :=
 instance : ContinuousAdd ℝₗ := by
   refine' ⟨continuous_iff_continuousAt.2 _⟩
   rintro ⟨x, y⟩
-  simp only [ContinuousAt, nhds_prod_eq, nhds_eq_map, nhds_eq_comap (x + y), prod_map_map_eq,
-    tendsto_comap_iff, tendsto_map'_iff, (· ∘ ·), ← nhdsWithin_prod_eq]
+  rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
+    nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
   exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
 
 theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
