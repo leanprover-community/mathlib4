@@ -1802,7 +1802,7 @@ termination_by _ => n + 1 - i
 theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
     (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) :
     (reverseInduction h0 hs (Fin.last n) : C (Fin.last n)) = h0 := by
-  rw [reverseInduction] ; simp
+  rw [reverseInduction]; simp
 #align fin.reverse_induction_last Fin.reverse_induction_last
 
 @[simp]
