@@ -576,15 +576,15 @@ elab "lucas_lehmer_test" : tactic => LucasLehmer.run_test
 
 end LucasLehmer
 
-/-- We verify that the tactic works to prove `127.prime`. -/
+/-- We verify that the tactic works to prove `127.Prime`. -/
 example : (mersenne 7).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by lucas_lehmer_test)
 
 /-!
-This implementation works successfully to prove `(2^127 - 1).prime`,
+This implementation works successfully to prove `(2^127 - 1).Prime`,
 and all the Mersenne primes up to this point appear in [Archive/Examples/MersennePrimes.lean].
 
-`(2^127 - 1).prime` takes about 5 minutes to run (depending on your CPU!),
+`(2^127 - 1).Prime` takes about 5 minutes to run (depending on your CPU!),
 and unfortunately the next Mersenne prime `(2^521 - 1)`,
 which was the first "computer era" prime,
 is out of reach with the current implementation.
