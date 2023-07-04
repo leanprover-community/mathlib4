@@ -148,18 +148,24 @@ def validateCurl : IO Bool := do
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
 
+def Version := Nat × Nat × Nat
+  deriving Inhabited, DecidableEq
+
+instance : Ord Version := let _ := @lexOrd; lexOrd
+instance : LE Version := leOfOrd
+
+def parseVersion (s : String) : Option Version := do
+  let [maj, min, patch] := s.splitOn "." | none
+  some (maj.toNat!, min.toNat!, patch.toNat!)
+
 def validateLeanTar : IO Unit := do
   if (← LEANTARBIN.pathExists) then return
   if let some version ← some <$> runCmd "leantar" #["--version"] <|> pure none then
     let "leantar" :: v :: _ := version.splitOn " "
       | throw $ IO.userError "Invalidly formatted response from `leantar --version`"
-    let maj :: min :: patch :: _ := v.splitOn "."
-      | throw $ IO.userError "Invalidly formatted version of `leantar`"
-    let version := (maj.toNat!, min.toNat!, patch.toNat!)
-    -- let _ := @lexOrd
-    -- let _ := @leOfOrd
+    let some v := parseVersion v | throw $ IO.userError "Invalidly formatted version of `leantar`"
     -- currently we need exactly one version of leantar, change this to reflect compatibility
-    if version = (0, 1, 0) then return
+    if v = (parseVersion LEANTARVERSION).get! then return
   let win := System.Platform.getIsWindows ()
   let target ← if win then
     pure "x86_64-pc-windows-msvc"
