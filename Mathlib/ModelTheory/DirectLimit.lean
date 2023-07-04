@@ -85,6 +85,7 @@ end DirectedSystem
 -- Otherwise we have a "cannot find synthesization order" error. See the discussion at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
 
+set_option linter.unusedVariables false in
 /-- Alias for `Σ i, G i`. -/
 @[nolint unusedArguments]
 protected abbrev Structure.Sigma (f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σ i, G i
