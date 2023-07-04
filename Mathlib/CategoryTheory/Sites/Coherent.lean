@@ -92,7 +92,7 @@ variable {X : C}
 /--
 For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a sieve of the
 coherent topology.
-Note: This is one direction of `Sieve_iff_hasEffectiveEpiFamily`, but is needed for the proof.
+Note: This is one direction of `mem_sieves_iff_hasEffectiveEpiFamily`, but is needed for the proof.
 -/
 theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
     (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
