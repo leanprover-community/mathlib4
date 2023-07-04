@@ -8,10 +8,10 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.BigOperators.Order
-import Mathbin.Algebra.BigOperators.Ring
-import Mathbin.Algebra.CharZero.Lemmas
-import Mathbin.Data.Rat.Cast
+import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Data.Rat.Cast
 
 /-!
 # The Oxford Invariants Puzzle Challenges - Summer 2021, Week 3, Problem 1
@@ -80,8 +80,7 @@ variable {α : Type _} [LinearOrderedField α]
 
 theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
-    ∃ b : ℕ, (b : α) = ∑ i in Finset.range n, a 0 * a n / (a i * a (i + 1)) :=
-  by
+    ∃ b : ℕ, (b : α) = ∑ i in Finset.range n, a 0 * a n / (a i * a (i + 1)) := by
   -- Treat separately `n = 0` and `n ≥ 1`
   cases n
   /- Case `n = 0`
@@ -114,8 +113,7 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
   obtain ⟨b, hb, han⟩ :=
     ih (fun i hi => ha i <| Nat.le_succ_of_le hi) fun i hi => a_pos i <| Nat.le_succ_of_le hi
   specialize ha n le_rfl
-  have ha₀ : a 0 ≤ a n * b :=
-    by
+  have ha₀ : a 0 ≤ a n * b := by
     -- Needing this is an artifact of `ℕ`-subtraction.
     rw [← @Nat.cast_le α, Nat.cast_mul, hb, ←
       div_le_iff' (a_pos _ <| n.le_succ.trans <| Nat.le_succ _), ←
@@ -129,8 +127,7 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
   ·
     calc
       (((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) : ℕ) : α) =
-          (a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) :=
-        by
+          (a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) := by
         norm_cast
         rw [Nat.cast_sub (Nat.div_le_of_le_mul _)]
         rw [← mul_assoc, Nat.mul_div_cancel' ha, add_mul]
@@ -138,8 +135,7 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
       _ = a (n + 2) / a (n + 1) * b + a 0 * a (n + 2) / (a (n + 1) * a (n + 2)) := by
         rw [add_div, add_mul, sub_div, mul_div_right_comm, add_sub_sub_cancel,
           mul_div_mul_right _ _ (a_pos _ le_rfl).ne']
-      _ = ∑ i : ℕ in Finset.range (n + 2), a 0 * a (n + 2) / (a i * a (i + 1)) :=
-        by
+      _ = ∑ i : ℕ in Finset.range (n + 2), a 0 * a (n + 2) / (a i * a (i + 1)) := by
         rw [Finset.sum_range_succ, hb, Finset.mul_sum]
         congr; ext i
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,
