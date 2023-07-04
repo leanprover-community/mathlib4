@@ -299,7 +299,7 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     set h := _
     change IsLocalRingHom h
     suffices : IsLocalRingHom ((PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _).comp h)
-    . apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _)
+    · apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _)
     change IsLocalRingHom (_ ≫ PresheafedSpace.stalkMap (coequalizerCofork f g).π.val y)
     erw [← PresheafedSpace.stalkMap.comp]
     apply isLocalRingHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
@@ -331,7 +331,7 @@ noncomputable instance preservesCoequalizer :
     -- of colimit is provided later
     suffices : PreservesColimit (parallelPair (F.map WalkingParallelPairHom.left)
       (F.map WalkingParallelPairHom.right)) forgetToSheafedSpace
-    . apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair F).symm
+    · apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair F).symm
     apply preservesColimitOfPreservesColimitCocone (coequalizerCoforkIsColimit _ _)
     apply (isColimitMapCoconeCoforkEquiv _ _).symm _
     dsimp only [forgetToSheafedSpace]

@@ -217,11 +217,11 @@ theorem index_of_argmax :
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
-    . rw [if_neg, if_neg]
+    · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
-    . rw [if_pos rfl]
+    · rw [if_pos rfl]
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
 

@@ -273,14 +273,14 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     rcases H with ⟨j, hj, H⟩
     rw [vars_C_mul] at H
     swap
-    . apply pow_ne_zero
+    · apply pow_ne_zero
       exact_mod_cast hp.1.ne_zero
     rw [mem_range] at hj
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
-  . rw [mem_range]
+  · rw [mem_range]
     linarith
-  . linarith
+  · linarith
 set_option linter.uppercaseLean3 false in
 #align X_in_terms_of_W_vars_aux xInTermsOfW_vars_aux
 

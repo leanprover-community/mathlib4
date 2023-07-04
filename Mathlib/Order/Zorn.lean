@@ -137,7 +137,7 @@ theorem zorn_nonempty_preorder₀ (s : Set α)
   -- rcases zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_ with ⟨m, ⟨hms, hxm⟩, hm⟩
   -- · exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   have H := zorn_preorder₀ ({ y ∈ s | x ≤ y }) fun c hcs hc => ?_
-  . rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
+  · rcases H with ⟨m, ⟨hms, hxm⟩, hm⟩
     exact ⟨m, hms, hxm, fun z hzs hmz => hm _ ⟨hzs, hxm.trans hmz⟩ hmz⟩
   · rcases c.eq_empty_or_nonempty with (rfl | ⟨y, hy⟩)
     · exact ⟨x, ⟨hxs, le_rfl⟩, fun z => False.elim⟩

@@ -93,12 +93,12 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
   induction' ys with ys_hd _ ys_ih generalizing f f'
-  . simp
-  . simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
+  · simp
+  · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih, permutationsAux2_fst]
     refine' ⟨_, rfl⟩
-    . simp only [← map_cons, ← map_append]; apply H
-    . intro a; apply H
+    · simp only [← map_cons, ← map_append]; apply H
+    · intro a; apply H
 #align list.map_permutations_aux2' List.map_permutationsAux2'
 
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/

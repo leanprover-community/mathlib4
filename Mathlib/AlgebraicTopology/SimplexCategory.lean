@@ -408,9 +408,9 @@ instance : EssSurj skeletalFunctor.{v} where
           rw [← hf.le_iff_le]
           show f (f.symm i) ≤ f (f.symm j)
           simpa only [OrderIso.apply_symm_apply]
-        . ext1 ⟨i⟩
+        · ext1 ⟨i⟩
           exact congr_arg ULift.up (f.symm_apply_apply i)
-        . ext1 i
+        · ext1 i
           exact f.apply_symm_apply i⟩⟩
 
 noncomputable instance isEquivalence : IsEquivalence skeletalFunctor.{v} :=
@@ -525,7 +525,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_fun_mk]
   by_cases b ≤ i
-  . use b
+  · use b
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ

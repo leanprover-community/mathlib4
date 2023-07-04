@@ -24,8 +24,8 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
       | isFalse h₂ => isFalse <| by
         intro h; cases' h with y h; cases' h with hm hp;
         cases' mem_cons.1 hm with h h
-        . rw [h] at hp; contradiction
-        . exact absurd ⟨y, h, hp⟩ h₂
+        · rw [h] at hp; contradiction
+        · exact absurd ⟨y, h, hp⟩ h₂
 #align list.decidable_bex List.decidableBex
 
 instance decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=

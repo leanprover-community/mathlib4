@@ -129,7 +129,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFa
       comp_id, ← assoc, hq v.of_succ, add_right_eq_self]
     by_cases hqn : n < q
     · exact v.of_succ.comp_Hσ_eq_zero hqn
-    . obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
+    · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
       have hnaq : n = a + q := by linarith
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
       have eq := v ⟨a, by linarith⟩ (by

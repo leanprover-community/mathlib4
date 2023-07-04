@@ -326,7 +326,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     convert congr_arg (X.presheaf.map (homOfLE _).op) H
     · simp only [← comp_apply, ← Functor.map_comp]
       rfl
-    . rw [map_zero]
+    · rw [map_zero]
       simp only [Scheme.basicOpen_res, ge_iff_le, inf_le_right]
   choose n hn using H'
   haveI := hs.to_subtype

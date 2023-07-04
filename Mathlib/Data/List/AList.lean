@@ -506,7 +506,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (by
       intros ; simp
       constructor <;> intro h'
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           apply h
@@ -514,7 +514,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           exact rfl
         · left
           rw [h'.2]
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           intro h''

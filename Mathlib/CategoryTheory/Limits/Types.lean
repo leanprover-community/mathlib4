@@ -427,8 +427,8 @@ theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
 theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel.{v, u} F) x y := fun ⟨k, f, g, h⟩ => by
   refine' EqvGen.trans _ ⟨k, F.map f x.2⟩ _ _ _
-  . exact (EqvGen.rel _ _ ⟨f, rfl⟩)
-  . exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
+  · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
+  · exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
 #align category_theory.limits.types.filtered_colimit.eqv_gen_quot_rel_of_rel CategoryTheory.Limits.Types.FilteredColimit.eqvGen_quot_rel_of_rel
 
 --attribute [local elab_without_expected_type] nat_trans.app
@@ -457,12 +457,12 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       rw [← colimit.w F f, ← colimit.w F g]
       change colimit.ι F k (F.map f xi) = colimit.ι F k (F.map g xj)
       rw [h']
-    . show Function.Surjective _
+    · show Function.Surjective _
       intro x
       rcases hsurj x with ⟨i, xi, rfl⟩
       use colimit.ι F i xi
       apply Colimit.ι_desc_apply.{v, u}
-  . intro j
+  · intro j
     apply colimit.ι_desc
 #align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf
 

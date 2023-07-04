@@ -692,9 +692,9 @@ lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
   have : 0 < ‖c‖ / ε := by positivity
   refine ⟨‖c‖ / ε, this, fun x ↦ ?_⟩
   by_cases hx : ‖x‖ = 0
-  . rw [hx, mul_zero]
+  · rw [hx, mul_zero]
     exact le_of_eq (map_eq_zero_of_norm_zero q hq hx)
-  . refine (normSeminorm 𝕜 F).bound_of_shell q ε_pos hc (fun x hle hlt ↦ ?_) hx
+  · refine (normSeminorm 𝕜 F).bound_of_shell q ε_pos hc (fun x hle hlt ↦ ?_) hx
     refine (le_of_lt <| show q x < _ from hε hlt).trans ?_
     rwa [← div_le_iff' this, one_div_div]
 

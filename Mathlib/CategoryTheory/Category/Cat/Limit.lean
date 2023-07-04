@@ -145,11 +145,11 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
   uniq s m w := by
     symm
     refine' CategoryTheory.Functor.ext _ _
-    . intro X
+    · intro X
       apply Types.limit_ext.{v, v}
       intro j
       simp [Types.Limit.lift_π_apply', ← w j]
-    . intro X Y f
+    · intro X Y f
       dsimp
       simp [fun j => Functor.congr_hom (w j).symm f]
 set_option linter.uppercaseLean3 false in

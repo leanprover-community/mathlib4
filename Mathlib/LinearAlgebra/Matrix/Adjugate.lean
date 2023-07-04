@@ -348,8 +348,7 @@ theorem adjugate_diagonal (v : n → α) :
   ext i j
   simp only [adjugate_def, cramer_apply, diagonal_transpose, of_apply]
   obtain rfl | hij := eq_or_ne i j
-  ·
-    rw [diagonal_apply_eq, diagonal_updateColumn_single, det_diagonal,
+  · rw [diagonal_apply_eq, diagonal_updateColumn_single, det_diagonal,
       prod_update_of_mem (Finset.mem_univ _), sdiff_singleton_eq_erase, one_mul]
   · rw [diagonal_apply_ne _ hij]
     refine' det_eq_zero_of_row_eq_zero j fun k => _

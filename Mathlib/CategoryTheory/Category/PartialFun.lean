@@ -108,9 +108,9 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     apply PFun.ext _
     rintro ⟨a, ha⟩ ⟨c, hc⟩
     constructor
-    . rintro ⟨h₁, h₂⟩
+    · rintro ⟨h₁, h₂⟩
       exact ⟨⟨fun h₀ => h₁ ((congr_arg g.toFun h₀).trans g.map_point), h₁⟩, h₂⟩
-    . rintro ⟨_, _, _⟩
+    · rintro ⟨_, _, _⟩
       exact ⟨_, rfl⟩
 #align Pointed_to_PartialFun pointedToPartialFun
 
@@ -152,12 +152,12 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
           refine' (Part.mem_bind_iff.trans _).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
-          . dsimp [Part.toOption]
+          · dsimp [Part.toOption]
             simp_rw [Part.mem_some_iff, Subtype.mk_eq_mk]
             constructor
-            . rintro ⟨_, ⟨h₁, h₂⟩, h₃⟩
+            · rintro ⟨_, ⟨h₁, h₂⟩, h₃⟩
               rw [h₃, ← h₂, dif_pos h₁]
-            . intro h
+            · intro h
               split_ifs at h with ha
               rw [some_inj] at h
               refine' ⟨b, ⟨ha, h.symm⟩, rfl⟩)
@@ -173,9 +173,9 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
         right_inv := fun a => by
           dsimp
           split_ifs with h
-          . rw [h]
+          · rw [h]
             rfl
-          . rfl} rfl)
+          · rfl} rfl)
       fun {X Y} f =>
       Pointed.Hom.ext _ _ <|
         funext fun a =>
@@ -187,8 +187,8 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
             -- conflicting `Decidable` instances
             rw [Option.elim'_eq_elim, @Part.elim_toOption _ _ _ (Classical.propDecidable _)]
             split_ifs with h
-            . rfl
-            . exact Eq.symm (of_not_not h)))
+            · rfl
+            · exact Eq.symm (of_not_not h)))
 #align PartialFun_equiv_Pointed partialFunEquivPointed
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just

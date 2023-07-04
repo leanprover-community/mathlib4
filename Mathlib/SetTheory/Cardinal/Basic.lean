@@ -1958,7 +1958,7 @@ theorem toPartENat_lift (c : Cardinal.{v}) : toPartENat (lift.{u, v} c) = toPart
     simp only [toNat_lift]
     rw [lift_lt_aleph0]
     exact hc
-  . rw [toPartENat_apply_of_aleph0_le hc, toPartENat_apply_of_aleph0_le _]
+  · rw [toPartENat_apply_of_aleph0_le hc, toPartENat_apply_of_aleph0_le _]
     rw [aleph0_le_lift]
     exact hc
 #align cardinal.to_part_enat_lift Cardinal.toPartENat_lift

@@ -3181,8 +3181,8 @@ theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
   induction' l with hd tl hl generalizing n
   · simp
   · cases' n with n
-    . simp
-    . simp [hl]
+    · simp
+    · simp [hl]
 #align list.nth_pmap List.get?_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
@@ -3543,8 +3543,8 @@ theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
 theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p l
   | x :: l, h, h1 => by
     rcases mem_cons.1 h with rfl | h
-    . simp [filter, h1]
-    . rw [filter]
+    · simp [filter, h1]
+    · rw [filter]
       cases p x <;> simp [mem_filter_of_mem h h1]
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 

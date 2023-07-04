@@ -402,8 +402,8 @@ noncomputable instance field [Fact (Irreducible f)] : Field (AdjoinRoot f) :=
       -- porting note: was
       -- `rw [Rat.cast_mk' (K := ℚ), _root_.map_mul, _root_.map_intCast, map_inv₀, map_natCast]`
       convert_to ((Rat.mk' a b h1 h2 : K) : AdjoinRoot f) = ((↑a * (↑b)⁻¹ : K) : AdjoinRoot f)
-      . simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
-      . simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [_root_.map_mul, map_intCast, map_inv₀, map_natCast]
+      · simp only [Rat.cast_mk', _root_.map_mul, map_intCast, map_inv₀, map_natCast]
     qsmul := (· • ·)
     qsmul_eq_mul' := fun a x =>
       -- porting note: I gave the explicit motive and changed `rw` to `simp`.

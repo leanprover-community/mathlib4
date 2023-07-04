@@ -870,7 +870,7 @@ protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
 protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
-  . rw [← f.right_inv x]; apply h.mp; apply h₂
+  · rw [← f.right_inv x]; apply h.mp; apply h₂
   · apply h.mpr; apply h₂
 #align equiv.forall_congr Equiv.forall_congr
 

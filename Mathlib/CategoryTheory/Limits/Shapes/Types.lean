@@ -221,8 +221,8 @@ noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor 
   refine' NatIso.ofComponents (fun X => _) (fun _ => _)
   · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
-    . apply Limits.prod.hom_ext <;> simp <;> rfl
-  . ext : 2
+    · apply Limits.prod.hom_ext <;> simp <;> rfl
+  · ext : 2
     apply Limits.prod.hom_ext <;> simp <;> rfl
 #align category_theory.limits.types.binary_product_iso_prod CategoryTheory.Limits.Types.binaryProductIsoProd
 
@@ -416,9 +416,9 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
     refine' ⟨fun i => _, _, _⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
-    . funext i
+    · funext i
       exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).1
-    . intro m hm
+    · intro m hm
       funext i
       exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).2 _ (congr_fun hm i)
 #align category_theory.limits.types.type_equalizer_of_unique CategoryTheory.Limits.Types.typeEqualizerOfUnique

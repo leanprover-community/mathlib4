@@ -208,8 +208,7 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         · exact node 3 (ι lx) lrx ι x
       · cases' id lr with lrs lrl lrx lrr
         · exact node 3 ll lx ι x
-        ·
-          exact
+        · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
@@ -245,8 +244,7 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         · exact node 3 (ι x) rlx ι rx
       · cases' id rl with rls rll rlx rlr
         · exact node 3 (ι x) rx rr
-        ·
-          exact
+        · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx

@@ -175,8 +175,8 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  . simp [h, forall_prop_of_true h]
-  . simp [h, forall_prop_of_false h]
+  · simp [h, forall_prop_of_true h]
+  · simp [h, forall_prop_of_false h]
 #align finset.sigma_lift_eq_empty Finset.sigmaLift_eq_empty
 
 theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σi, α i) (b : Σi, β i) :

@@ -121,8 +121,8 @@ theorem functorExtension₁_comp_whiskeringLeft_toKaroubi :
     refine' Functor.ext _ _
     · intro X
       ext
-      . simp
-      . simp
+      · simp
+      · simp
     · aesop_cat
   · intro F G φ
     aesop_cat
@@ -194,8 +194,8 @@ theorem functorExtension₁_comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
     (functorExtension₁ C E).obj (F ⋙ (functorExtension₁ D E).obj G) =
       (functorExtension₁ C D).obj F ⋙ (functorExtension₁ D E).obj G := by
   refine' Functor.ext _ _
-  . aesop_cat
-  . intro X Y f
+  · aesop_cat
+  · intro X Y f
     ext
     simp only [eqToHom_refl, id_comp, comp_id]
     rfl

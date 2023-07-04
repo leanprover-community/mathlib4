@@ -75,7 +75,7 @@ theorem decomposition_Q (n q : ℕ) :
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
           q'.rev_eq hnaq', neg_neg]
         rfl
-      . ext ⟨i, hi⟩
+      · ext ⟨i, hi⟩
         simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, Finset.mem_univ,
           forall_true_left, Finset.mem_filter, lt_self_iff_false, or_true, and_self, not_true,
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
@@ -121,7 +121,7 @@ theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
   congr 1
   · simp only [id, PInfty_f, P_f_idem]
-  . exact Eq.trans (by congr ; simp) (decomposition_Q n (n + 1)).symm
+  · exact Eq.trans (by congr ; simp) (decomposition_Q n (n + 1)).symm
 #align algebraic_topology.dold_kan.morph_components.id_φ AlgebraicTopology.DoldKan.MorphComponents.id_φ
 
 variable {X n}

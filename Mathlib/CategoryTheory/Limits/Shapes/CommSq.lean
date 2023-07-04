@@ -1005,7 +1005,7 @@ theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f
         (isLimitOfPreserves F s.isLimit))
   · rfl
   · simp
-  . simp
+  · simp
 #align category_theory.functor.map_is_pullback CategoryTheory.Functor.map_isPullback
 
 theorem Functor.map_isPushout [PreservesColimit (span f g) F] (s : IsPushout f g h i) :

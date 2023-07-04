@@ -138,10 +138,10 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
         intro x y f
         dsimp
         ext
-        . dsimp
+        · dsimp
           simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
           rfl
-        . dsimp
+        · dsimp
           simp }
   right := G.right
 #align category_theory.simplicial_object.equivalence_left_to_right CategoryTheory.SimplicialObject.equivalenceLeftToRight
@@ -173,11 +173,11 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     dsimp
     ext x : 2
     · refine' WidePullback.hom_ext _ _ _ (fun j => _) _
-      . dsimp
+      · dsimp
         simp
         rfl
-      . simpa using congr_app A.w.symm x
-    . rfl
+      · simpa using congr_app A.w.symm x
+    · rfl
 #align category_theory.simplicial_object.cech_nerve_equiv CategoryTheory.SimplicialObject.cechNerveEquiv
 
 /-- The augmented Čech nerve construction is right adjoint to the `toArrow` functor. -/
@@ -314,14 +314,14 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     intro A
     dsimp
     ext x : 2
-    . rfl
-    . refine' WidePushout.hom_ext _ _ _ (fun j => _) _
-      . dsimp
+    · rfl
+    · refine' WidePushout.hom_ext _ _ _ (fun j => _) _
+      · dsimp
         simp only [Category.assoc, ← NatTrans.naturality A.right, Arrow.augmentedCechConerve_right,
           SimplexCategory.len_mk, Arrow.cechConerve_map, colimit.ι_desc,
           WidePushoutShape.mkCocone_ι_app, colimit.ι_desc_assoc]
         rfl
-      . dsimp
+      · dsimp
         rw [colimit.ι_desc]
         exact congr_app A.w x
   right_inv := by

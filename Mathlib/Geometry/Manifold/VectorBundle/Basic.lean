@@ -422,7 +422,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
   · have : (e.toLocalHomeomorph.symm (b, x)).1 ∈ e'.baseSet
-    . simp_all only [Trivialization.mem_target, mfld_simps]
+    · simp_all only [Trivialization.mem_target, mfld_simps]
     exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
 variable {IB e e'}

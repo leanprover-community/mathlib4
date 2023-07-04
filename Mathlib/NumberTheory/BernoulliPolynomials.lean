@@ -131,11 +131,11 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
-    . skip
-    . conv =>
+    · skip
+    · conv =>
       apply_congr
-      . skip
-      . rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
+      · skip
+      · rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
             mem_range_le (by assumption)) (le.intro rfl),
           Nat.cast_mul, add_tsub_cancel_left, mul_assoc, mul_comm, ← smul_eq_mul, ←
           smul_monomial]
@@ -203,17 +203,17 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]
   conv_lhs =>
     congr
-    . skip
-    . apply_congr
-      . skip
-      . rw [eval_smul, hd _ (mem_range.1 (by assumption))]
+    · skip
+    · apply_congr
+      · skip
+      · rw [eval_smul, hd _ (mem_range.1 (by assumption))]
   rw [eval_sub, eval_finset_sum]
   simp_rw [eval_smul, smul_add]
   rw [sum_add_distrib, sub_add, sub_eq_sub_iff_sub_eq_sub, _root_.add_sub_sub_cancel]
   conv_rhs =>
     congr
-    . skip
-    . congr
+    · skip
+    · congr
       rw [succ_eq_add_one, ← choose_succ_self_right d]
   rw [Nat.cast_succ, ← smul_eq_mul, ← sum_range_succ _ d, eval_monomial_one_add_sub]
   simp_rw [smul_eq_mul]

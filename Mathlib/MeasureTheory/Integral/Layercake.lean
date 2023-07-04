@@ -111,14 +111,12 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α) 
           (Ici s).indicator (fun _ : ℝ => (1 : ℝ≥0∞)) (f x) := by
       funext a
       by_cases s ∈ Ioc (0 : ℝ) (f a)
-      ·
-        simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
+      · simp only [h, show s ∈ Ioi (0 : ℝ) from h.1, show f a ∈ Ici s from h.2, indicator_of_mem,
           mul_one]
       · have h_copy := h
         simp only [mem_Ioc, not_and, not_le] at h
         by_cases h' : 0 < s
-        ·
-          simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
+        · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le,
             MulZeroClass.mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
           simp only [this, h', indicator_of_not_mem, not_false_iff, MulZeroClass.mul_zero,

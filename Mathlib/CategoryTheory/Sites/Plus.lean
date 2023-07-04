@@ -265,12 +265,12 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   convert (Multiequalizer.condition (S.unop.index P)
       ⟨_, _, _, II.f, 𝟙 _, I.f, II.f ≫ I.f, I.hf,
         Sieve.downward_closed _ I.hf _, by simp⟩) using 1
-  . dsimp [diagram]
+  · dsimp [diagram]
     cases I
     simp only [Category.assoc, limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app,
       Cover.Arrow.map_Y, Cover.Arrow.map_f]
     rfl
-  . erw [Multiequalizer.lift_ι]
+  · erw [Multiequalizer.lift_ι]
     dsimp [Cover.index]
     simp only [Functor.map_id, Category.comp_id]
     rfl

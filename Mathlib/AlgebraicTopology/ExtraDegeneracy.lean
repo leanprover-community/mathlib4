@@ -218,9 +218,9 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     ext j : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
     by_cases j = 0
-    . subst h
+    · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
-    . obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
+    · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply]
   s_comp_σ n i := by
     ext1 φ
@@ -399,7 +399,7 @@ noncomputable def homotopyEquiv {C : Type _} [Category C] [Preadditive C] [HasZe
         · simp only [eq_self_iff_true]
       comm := fun i => by
         rcases i with _|i
-        . rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
+        · rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
           dsimp [ChainComplex.fromSingle₀Equiv, ChainComplex.toSingle₀Equiv]
           simp only [comp_id, ite_true, zero_add, ComplexShape.down_Rel, not_true,
             AlternatingFaceMapComplex.obj_d_eq, Preadditive.neg_comp]

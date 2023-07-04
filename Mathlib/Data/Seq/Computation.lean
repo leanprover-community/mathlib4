@@ -58,8 +58,8 @@ instance : CoeTC α (Computation α) :=
 def think (c : Computation α) : Computation α :=
   ⟨Stream'.cons none c.1, fun n a h => by
     cases' n with n
-    . contradiction
-    . exact c.2 h⟩
+    · contradiction
+    · exact c.2 h⟩
 #align computation.think Computation.think
 
 /-- `thinkN c n` is the computation that delays for `n` ticks and then performs
@@ -304,8 +304,8 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       have h := bisim r; revert r h
       apply recOn s _ _ <;> intro r' <;> apply recOn s' _ _ <;> intro a' r h
       · constructor <;> dsimp at h
-        . rw [h]
-        . rw [h] at r
+        · rw [h]
+        · rw [h] at r
           rw [tail_pure, tail_pure,h]
           assumption
       · rw [destruct_pure, destruct_think] at h
@@ -653,7 +653,7 @@ def map (f : α → β) : Computation α → Computation β
     ⟨s.map fun o => Option.casesOn o none (some ∘ f), fun n b => by
       dsimp [Stream'.map, Stream'.nth]
       induction' e : s n with a <;> intro h
-      . contradiction
+      · contradiction
       · rw [al e]; exact h⟩
 #align computation.map Computation.map
 
@@ -761,13 +761,13 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
   apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
-  . intro c₁ c₂ h
+  · intro c₁ c₂ h
     exact
       match c₁, c₂, h with
       | _, c₂, Or.inl (Eq.refl _) => by cases' destruct c₂ with b cb <;> simp
       | _, _, Or.inr ⟨s, rfl, rfl⟩ => by
         apply recOn s <;> intro s <;> simp
-  . exact Or.inr ⟨s, rfl, rfl⟩
+  · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_ret' Computation.bind_pure'
 
 @[simp]

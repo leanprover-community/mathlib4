@@ -556,8 +556,8 @@ theorem exp_sub : exp (x - y) = exp x / exp y := by
 
 theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
   cases n
-  . simp [exp_nat_mul]
-  . simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
+  · simp [exp_nat_mul]
+  · simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
 #align complex.exp_int_mul Complex.exp_int_mul
 
 @[simp]

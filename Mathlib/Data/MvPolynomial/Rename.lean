@@ -236,8 +236,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     exact ⟨∅, C r, by rw [rename_C]⟩
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine' ⟨s ∪ t, ⟨_, _⟩⟩
-    ·
-      refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
+    · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
         simp (config := { contextual := true }) only [id.def, true_or_iff, or_true_iff,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, AlgHom.map_add]

@@ -58,7 +58,7 @@ protected def scheme (X : LocallyRingedSpace)
     skip
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    . exact Opens.openEmbedding _ -- Porting note : was `infer_instance`
+    · exact Opens.openEmbedding _ -- Porting note : was `infer_instance`
 #align algebraic_geometry.LocallyRingedSpace.IsOpenImmersion.Scheme AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.scheme
 
 end LocallyRingedSpace.IsOpenImmersion
@@ -215,8 +215,8 @@ instance basic_open_isOpenImmersion {R : CommRingCat} (f : R) :
     AlgebraicGeometry.IsOpenImmersion
       (Scheme.Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f))).op) := by
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
-  . exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
-  . intro x
+  · exact (PrimeSpectrum.localization_away_openEmbedding (Localization.Away f) f : _)
+  · intro x
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
 #align algebraic_geometry.Scheme.basic_open_IsOpenImmersion AlgebraicGeometry.Scheme.basic_open_isOpenImmersion
 
@@ -538,7 +538,7 @@ instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetT
   delta Scheme.forgetToTop
   apply @Limits.compPreservesLimit (K := cospan f g) (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
-  . infer_instance
+  · infer_instance
   apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
@@ -1030,7 +1030,7 @@ theorem morphismRestrict_c_app {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : O
     ext1; exact Set.preimage_image_eq _ Subtype.coe_injective
   have : _ ≫ X.presheaf.map _ = _ :=
     (((f ∣_ U).1.c.naturality (eqToHom e).op).symm.trans ?_).trans this
-  . rw [← IsIso.eq_comp_inv, ← Functor.map_inv, Category.assoc] at this
+  · rw [← IsIso.eq_comp_inv, ← Functor.map_inv, Category.assoc] at this
     rw [this]
     congr 1
     erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
@@ -1092,10 +1092,10 @@ def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Ope
         ((Category.comp_id _).trans (Category.id_comp _).symm) (by aesop_cat) ≫
       (pullbackRightPullbackFstIso _ _ _).hom ≫ (pullbackSymmetry _ _).hom
   have i3 : IsIso h
-  . repeat
+  · repeat
       apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
   have : (f ∣_ U ∣_ V) ≫ (Iso.refl _).hom = (asIso h).hom ≫ pullback.snd (f := f) (g := g)
-  . simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_fst, Iso.refl_hom,
+  · simp only [Category.comp_id, pullbackRightPullbackFstIso_hom_fst, Iso.refl_hom,
       Category.assoc, pullbackSymmetry_hom_comp_snd, asIso_hom, pullback.lift_fst,
       pullbackSymmetry_hom_comp_fst]
     rfl
@@ -1152,7 +1152,7 @@ def morphismRestrictStalkMap {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (x) :
     erw [PresheafedSpace.stalkMap_germ _ (U.openEmbedding.isOpenMap.functor.obj V)
       ⟨x.1, ⟨⟨f.1.base x.1, x.2⟩, _, rfl⟩⟩]
     swap
-    . rw [morphismRestrict_val_base] at hxV
+    · rw [morphismRestrict_val_base] at hxV
       exact hxV
     erw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
     rw [morphismRestrict_c_app, Category.assoc, TopCat.Presheaf.germ_res]

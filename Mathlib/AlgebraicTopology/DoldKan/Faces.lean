@@ -94,21 +94,21 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   swap
   · rintro ⟨k, hk⟩
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-    . simp only [Fin.lt_iff_val_lt_val]
+    · simp only [Fin.lt_iff_val_lt_val]
       dsimp [Fin.natAdd, Fin.cast]
       linarith
-    . intro h
+    · intro h
       rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
       dsimp [Fin.cast] at h
       linarith
-    . dsimp [Fin.cast, Fin.pred]
+    · dsimp [Fin.cast, Fin.pred]
       rw [Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
       linarith
   simp only [assoc]
   conv_lhs =>
     congr
-    . rw [Fin.sum_univ_castSucc]
-    . rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
+    · rw [Fin.sum_univ_castSucc]
+    · rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
   dsimp [Fin.cast, Fin.castLE, Fin.castLT]
   /- the purpose of the following `simplif` is to create three subgoals in order
       to finish the proof -/
@@ -159,13 +159,13 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
     · intro j
       dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-      . simp only [Fin.lt_iff_val_lt_val]
+      · simp only [Fin.lt_iff_val_lt_val]
         dsimp [Fin.succ]
         linarith
-      . intro h
+      · intro h
         simp only [Fin.pred, Fin.ext_iff, Nat.pred_eq_sub_one, Nat.succ_add_sub_one, Fin.val_zero,
           add_eq_zero, false_and] at h
-      . simp only [Fin.pred, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
+      · simp only [Fin.pred, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         linarith
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_Hσ_eq_zero

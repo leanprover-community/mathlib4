@@ -111,8 +111,7 @@ theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι →
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
       exact @aeSeq.fun_prop_of_mem_aeSeqSet _ α β _ _ _ _ _ h'f x hx
     · exact tendsto_const_nhds
-  ·
-    exact
+  · exact
       (ite_ae_eq_of_measure_compl_zero g (fun x => (⟨f (v 0) x⟩ : Nonempty β).some) (aeSeqSet h'f p)
           (aeSeq.measure_compl_aeSeqSet_eq_zero h'f hp)).symm
 #align ae_measurable_of_tendsto_metrizable_ae aemeasurable_of_tendsto_metrizable_ae

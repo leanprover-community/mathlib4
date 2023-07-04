@@ -155,7 +155,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       cases' i with i
       · apply h0
-      . exact h i (lt_pred_iff.2 <| by simpa using w)
+      · exact h i (lt_pred_iff.2 <| by simpa using w)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp

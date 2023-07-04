@@ -1624,8 +1624,8 @@ isomorphism `R ⊗ R ≃ R`.
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
-  . exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  . exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
+  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
+  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
 
 variable (R M N)
