@@ -712,8 +712,7 @@ theorem lowerCentralSeries_prod (n : ℕ) :
     lowerCentralSeries (G₁ × G₂) n = (lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n) := by
   induction' n with n ih
   · simp
-  ·
-    calc
+  · calc
       lowerCentralSeries (G₁ × G₂) n.succ = ⁅lowerCentralSeries (G₁ × G₂) n, ⊤⁆ := rfl
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), ⊤⁆ := by rw [ih]
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ :=
@@ -721,7 +720,6 @@ theorem lowerCentralSeries_prod (n : ℕ) :
       _ = ⁅lowerCentralSeries G₁ n, (⊤ : Subgroup G₁)⁆.prod ⁅lowerCentralSeries G₂ n, ⊤⁆ :=
         (commutator_prod_prod _ _ _ _)
       _ = (lowerCentralSeries G₁ n.succ).prod (lowerCentralSeries G₂ n.succ) := rfl
-
 #align lower_central_series_prod lowerCentralSeries_prod
 
 /-- Products of nilpotent groups are nilpotent -/
@@ -755,14 +753,12 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
-  ·
-    calc
+  · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_mono ih (le_refl _))
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
       _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_le _ _)
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
-
 #align lower_central_series_pi_le lowerCentralSeries_pi_le
 
 /-- products of nilpotent groups are nilpotent if their nilpotency class is bounded -/
@@ -790,14 +786,12 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
-  ·
-    calc
+  · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
       _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_pi_pi_of_finite _ _)
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
-
 #align lower_central_series_pi_of_finite lowerCentralSeries_pi_of_finite
 
 /-- n-ary products of nilpotent groups are nilpotent -/

@@ -115,7 +115,7 @@ def revCasesOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector
     (snoc : ∀ {n : ℕ} (xs : Vector α n) (x : α), C (xs.snoc x)) :
     C v :=
   revInductionOn v nil fun xs x _ => snoc xs x
-  
+
 end Induction
 
 /-!
@@ -141,8 +141,8 @@ theorem mapAccumr_snoc :
       let r := mapAccumr f xs q.1
       (r.1, r.2.snoc q.2) := by
   induction xs using Vector.inductionOn
-  . rfl
-  . simp[*]
+  · rfl
+  · simp[*]
 
 variable (ys : Vector β n)
 

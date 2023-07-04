@@ -394,8 +394,8 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       apply recOn s _ _ <;> apply recOn s' _ _
       · intro r _
         constructor
-        . rfl
-        . assumption
+        · rfl
+        · assumption
       · intro x s _ this
         rw [destruct_nil, destruct_cons] at this
         exact False.elim this
@@ -528,7 +528,7 @@ def map (f : α → β) : Seq α → Seq β
       induction' e : s n with e <;> intro
       · rw [al e]
         assumption
-      . contradiction⟩
+      · contradiction⟩
 #align stream.seq.map Stream'.Seq.map
 
 /-- Flatten a sequence of sequences. (It is required that the
@@ -862,8 +862,8 @@ theorem exists_of_mem_map {f} {b : β} : ∀ {s : Seq α}, b ∈ map f s → ∃
   | ⟨g, al⟩ =>
     let ⟨o, om, oe⟩ := @Stream'.exists_of_mem_map _ _ (Option.map f) (some b) g h
     cases' o with a
-    . injection oe
-    . injection oe with h' ; exact ⟨a, om, h'⟩
+    · injection oe
+    · injection oe with h' ; exact ⟨a, om, h'⟩
 #align stream.seq.exists_of_mem_map Stream'.Seq.exists_of_mem_map
 
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by

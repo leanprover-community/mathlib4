@@ -314,11 +314,9 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
             (@disjoint_inf_sdiff _ s' t _).aedisjoint).symm
       _ = μ s' := (congr_arg μ (inter_union_diff _ _))
       _ = μ s := hs'
-  ·
-    calc
+  · calc
       μ s = μ (s ∩ t ∪ s \ t) := by rw [inter_union_diff]
       _ ≤ μ (s ∩ t) + μ (s \ t) := measure_union_le _ _
-
 #align measure_theory.measure_inter_add_diff₀ MeasureTheory.measure_inter_add_diff₀
 
 theorem measure_union_add_inter₀ (s : Set α) (ht : NullMeasurableSet t μ) :

@@ -780,10 +780,8 @@ division (semi)ring.
 This result actually holds for all division semirings, but we lack the predicate to state it. -/
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
-  ·
-    exact
-      ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
-        (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
+  · exact ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
+      (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
   push_neg
   simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]

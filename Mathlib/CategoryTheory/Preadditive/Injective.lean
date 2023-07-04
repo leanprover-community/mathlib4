@@ -365,17 +365,12 @@ def injectivePresentationOfMapInjectivePresentation (X : C)
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D := by
   constructor
   all_goals intro H; constructor; intro X; constructor
-  ·
-    exact
-      F.symm.injectivePresentationOfMapInjectivePresentation _
-        (Nonempty.some (H.presentation (F.inverse.obj X)))
-  ·
-    exact
-      F.injectivePresentationOfMapInjectivePresentation X
-        (Nonempty.some (H.presentation (F.functor.obj X)))
+  · exact F.symm.injectivePresentationOfMapInjectivePresentation _
+      (Nonempty.some (H.presentation (F.inverse.obj X)))
+  · exact F.injectivePresentationOfMapInjectivePresentation X
+      (Nonempty.some (H.presentation (F.functor.obj X)))
 #align category_theory.equivalence.enough_injectives_iff CategoryTheory.Equivalence.enoughInjectives_iff
 
 end Equivalence
 
 end CategoryTheory
-

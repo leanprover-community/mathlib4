@@ -96,7 +96,7 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
     · apply ((if_neg hV).symm.ndrec terminalIsTerminal).hom_ext
 #align skyscraper_presheaf_functor.map' SkyscraperPresheafFunctor.map'
 
-theorem SkyscraperPresheafFunctor.map'_id {a : C} : 
+theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   -- Porting note : `ext1` doesn't work here,
   -- see https://github.com/leanprover-community/mathlib4/issues/5229
@@ -235,8 +235,8 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
         (Presheaf.isSheaf_on_pUnit_of_isTerminal _ (by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
-          . exact terminalIsTerminal
-          . exact Set.not_mem_empty PUnit.unit)))
+          · exact terminalIsTerminal
+          · exact Set.not_mem_empty PUnit.unit)))
 #align skyscraper_presheaf_is_sheaf skyscraperPresheaf_isSheaf
 
 /--

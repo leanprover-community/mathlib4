@@ -665,8 +665,8 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _}
   dsimp only [Subtype.coe_mk]
   -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
   by_cases hi : p i
-  . simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
-  . simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
+  · simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
+  · simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.

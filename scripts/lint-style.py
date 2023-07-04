@@ -47,6 +47,7 @@ ERR_AUT = 7 # malformed authors list
 ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
+ERR_DOT = 12 # isolated or low focusing dot
 
 exceptions = []
 
@@ -243,6 +244,13 @@ def isolated_by_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
     return errors
 
+def dot_check(lines, path):
+    errors = []
+    for line_nr, line in enumerate(lines, 1):
+        if line.lstrip().startswith(". ") or line.strip() in (".", "·"):
+            errors += [(ERR_DOT, line_nr, path)]
+    return errors
+
 def output_message(path, line_nr, code, msg):
     if len(exceptions) == 0:
         # we are generating a new exceptions file
@@ -283,6 +291,8 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
         if errno == ERR_IBY:
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
+        if errno == ERR_DOT:
+            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of · for it")
 
 def lint(path):
     with path.open(encoding="utf-8") as f:
@@ -290,6 +300,8 @@ def lint(path):
         errs = long_lines_check(lines, path)
         format_errors(errs)
         errs = isolated_by_check(lines, path)
+        format_errors(errs)
+        errs = dot_check(lines, path)
         format_errors(errs)
         (b, errs) = import_only_check(lines, path)
         if b:
