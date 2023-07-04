@@ -119,8 +119,8 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
   let x_ext := Presieve.FamilyOfElements.sieveExtend x
   have hx_ext := Presieve.FamilyOfElements.Compatible.sieveExtend hx
   let S := Sieve.generate (Presieve.ofArrows Y π)
-  have := (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
-  rcases this with ⟨t, t_amalg, t_uniq⟩
+  obtain ⟨t, t_amalg, t_uniq⟩ : ∃! t, x_ext.IsAmalgamation t :=
+    (Sieve.forallYonedaIsSheaf_iff_colimit S).mpr ⟨h_colim⟩ W x_ext hx_ext
   refine ⟨t, ?_, ?_⟩
   · convert Presieve.isAmalgamation_restrict (Sieve.le_generate (Presieve.ofArrows Y π)) _ _ t_amalg
     exact (Presieve.restrict_extend hx).symm
