@@ -72,7 +72,7 @@ natural.
   * Divisibility condition:
     `aₙ₊₁ * ((aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁) - a₀ = aₙ₊₁aₙ₊₂b` is divisible by `aₙ₊₂`.
 -/
-
+example (n : ℕ)  : n + 1 ≤ Nat.succ (Nat.succ n)  := by exact Nat.le_succ (n + 1)
 
 open scoped BigOperators
 
@@ -80,9 +80,9 @@ variable {α : Type _} [LinearOrderedField α]
 
 theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
-    ∃ b : ℕ, (b : α) = ∑ i in Finset.range n, a 0 * a n / (a i * a (i + 1)) := by
+    ∃ b : ℕ, (b : α) = ∑ i in Finset.range n, (a 0 : α) * a n / (a i * a (i + 1)) := by
   -- Treat separately `n = 0` and `n ≥ 1`
-  cases n
+  cases' n with n
   /- Case `n = 0`
     The sum is trivially equal to `0` -/
   · exact ⟨0, by rw [Nat.cast_zero, Finset.sum_range_zero]⟩
@@ -91,10 +91,10 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
     Set up the stronger induction hypothesis -/
   rsuffices ⟨b, hb, -⟩ :
     ∃ b : ℕ,
-      (b : α) = ∑ i in Finset.range (n + 1), a 0 * a (n + 1) / (a i * a (i + 1)) ∧
+      (b : α) = ∑ i in Finset.range (n + 1), (a 0 : α) * a (n + 1) / (a i * a (i + 1)) ∧
         a (n + 1) ∣ a n * b - a 0
   · exact ⟨b, hb⟩
-  simp_rw [← @Nat.cast_pos α] at a_pos 
+  simp_rw [← @Nat.cast_pos α] at a_pos
   /- Declare the induction
     `ih` will be the induction hypothesis -/
   induction' n with n ih
@@ -102,7 +102,9 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
     Claim that the sum equals `1`-/
   · refine' ⟨1, _, _⟩
     -- Check that this indeed equals the sum
-    · rw [Nat.cast_one, Finset.sum_range_one, div_self]
+    · rw [Nat.cast_one, Finset.sum_range_one]
+      norm_num
+      rw [div_self]
       exact (mul_pos (a_pos 0 (Nat.zero_le _)) (a_pos 1 (Nat.zero_lt_succ _))).ne'
     -- Check the divisibility condition
     · rw [mul_one, tsub_self]
@@ -124,18 +126,19 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
   -- Claim that the sum equals `(aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁`
   refine' ⟨(a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1), _, _⟩
   -- Check that this indeed equals the sum
-  ·
-    calc
+  · calc
       (((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) : ℕ) : α) =
-          (a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) := by
-        norm_cast
+          ((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) ) := by
+        have :((a (n + 1)) : α) ≠ 0 := ne_of_gt <| a_pos (n + 1) <| Nat.le_succ (n + 1)
+        simp only [← Nat.cast_add, ← Nat.cast_div ha this, ← Nat.cast_mul, ← Nat.cast_sub ha₀,
+            ← Nat.cast_div han this]
         rw [Nat.cast_sub (Nat.div_le_of_le_mul _)]
         rw [← mul_assoc, Nat.mul_div_cancel' ha, add_mul]
         exact tsub_le_self.trans (Nat.le_add_right _ _)
       _ = a (n + 2) / a (n + 1) * b + a 0 * a (n + 2) / (a (n + 1) * a (n + 2)) := by
         rw [add_div, add_mul, sub_div, mul_div_right_comm, add_sub_sub_cancel,
           mul_div_mul_right _ _ (a_pos _ le_rfl).ne']
-      _ = ∑ i : ℕ in Finset.range (n + 2), a 0 * a (n + 2) / (a i * a (i + 1)) := by
+      _ = ∑ i : ℕ in Finset.range (n + 2), (a 0 : α) * a (n + 2) / (a i * a (i + 1)) := by
         rw [Finset.sum_range_succ, hb, Finset.mul_sum]
         congr; ext i
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,
@@ -145,4 +148,3 @@ theorem OxfordInvariants.week3_p1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤
       add_tsub_tsub_cancel ha₀, add_tsub_cancel_right]
     exact dvd_mul_right _ _
 #align oxford_invariants.week3_p1 OxfordInvariants.week3_p1
-
