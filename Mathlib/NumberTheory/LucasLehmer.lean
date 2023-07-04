@@ -541,11 +541,11 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 /-- Version of `sMod` that is `ℕ`-valued. One should have `q = 2 ^ p - 1`.
 This can be reduced by the kernel. -/
-def sMod' (p : ℕ) (q : ℕ) : ℕ → ℕ
+def sMod' (q : ℕ) : ℕ → ℕ
   | 0 => 4 % q
-  | i + 1 => (sMod' p q i ^ 2 + (q - 2)) % q
+  | i + 1 => (sMod' q i ^ 2 + (q - 2)) % q
 
-theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' p (2 ^ p - 1) k : ℤ) = sMod p k := by
+theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
     4 = 2 ^ 2 := by norm_num
     _ ≤ 2 ^ p := Nat.pow_le_pow_of_le_right (by norm_num) hp
@@ -565,14 +565,14 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' p (2 ^ p - 1) k : ℤ)
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
       Int.add_emod_self, ← sub_eq_add_neg]
 
-lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod' p (2 ^ p - 1) (p - 2) = 0) :
+lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod' (2 ^ p - 1) (p - 2) = 0) :
     LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp, h]
   rfl
 
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
-    (h : Nat.ble 1 (sMod' p (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+    (h : Nat.ble 1 (sMod' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
   rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod'_eq_sMod p _ hp]
@@ -597,13 +597,13 @@ def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
   unless 1 < np do
     failure
   have h1ltp : Q(Nat.blt 1 $ep) := (q(Eq.refl true) : Expr)
-  if sMod' np (2 ^ np - 1) (np - 2) = 0 then
-    have hs : Q(sMod' $ep (2 ^ $ep - 1) ($ep - 2) = 0) := (q(Eq.refl 0) : Expr)
+  if sMod' (2 ^ np - 1) (np - 2) = 0 then
+    have hs : Q(sMod' (2 ^ $ep - 1) ($ep - 2) = 0) := (q(Eq.refl 0) : Expr)
     have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
     have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
     return .isTrue pf'
   else
-    have hs : Q(Nat.ble 1 (sMod' $ep (2 ^ $ep - 1) ($ep - 2)) = true) := (q(Eq.refl true) : Expr)
+    have hs : Q(Nat.ble 1 (sMod' (2 ^ $ep - 1) ($ep - 2)) = true) := (q(Eq.refl true) : Expr)
     have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
     have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
     return .isFalse pf'
