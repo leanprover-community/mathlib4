@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Algebra.Basic
-import Mathbin.Algebra.Category.Module.Limits
-import Mathbin.Algebra.Category.Ring.Limits
+import Mathlib.Algebra.Category.Algebra.Basic
+import Mathlib.Algebra.Category.Module.Limits
+import Mathlib.Algebra.Category.Ring.Limits
 
 /-!
 # The category of R-algebras has all limits
@@ -53,15 +53,13 @@ def sectionsSubalgebra (F : J ⥤ AlgebraCat.{max v w} R) : Subalgebra R (∀ j,
 #align Algebra.sections_subalgebra AlgebraCat.sectionsSubalgebra
 
 instance limitSemiring (F : J ⥤ AlgebraCat.{max v w} R) :
-    Ring (Types.limitCone (F ⋙ forget (AlgebraCat.{max v w} R))).pt :=
-  by
+    Ring (Types.limitCone (F ⋙ forget (AlgebraCat.{max v w} R))).pt := by
   change Ring (sections_subalgebra F)
   infer_instance
 #align Algebra.limit_semiring AlgebraCat.limitSemiring
 
 instance limitAlgebra (F : J ⥤ AlgebraCat.{max v w} R) :
-    Algebra R (Types.limitCone (F ⋙ forget (AlgebraCat.{max v w} R))).pt :=
-  by
+    Algebra R (Types.limitCone (F ⋙ forget (AlgebraCat.{max v w} R))).pt := by
   have :
     Algebra R (types.limit_cone (F ⋙ forget (AlgebraCat.{max v w} R))).pt =
       Algebra R (sections_subalgebra F) :=
@@ -88,8 +86,7 @@ namespace HasLimits
 /-- Construction of a limit cone in `Algebra R`.
 (Internal use only; use the limits API.)
 -/
-def limitCone (F : J ⥤ AlgebraCat.{max v w} R) : Cone F
-    where
+def limitCone (F : J ⥤ AlgebraCat.{max v w} R) : Cone F where
   pt := AlgebraCat.of R (Types.limitCone (F ⋙ forget _)).pt
   π :=
     { app := limitπAlgHom F
@@ -100,8 +97,7 @@ def limitCone (F : J ⥤ AlgebraCat.{max v w} R) : Cone F
 /-- Witness that the limit cone in `Algebra R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit (F : J ⥤ AlgebraCat.{max v w} R) : IsLimit (limitCone F) :=
-  by
+def limitConeIsLimit (F : J ⥤ AlgebraCat.{max v w} R) : IsLimit (limitCone F) := by
   refine'
     is_limit.of_faithful (forget (AlgebraCat R)) (types.limit_cone_is_limit _) (fun s => { .. })
       fun s => rfl
