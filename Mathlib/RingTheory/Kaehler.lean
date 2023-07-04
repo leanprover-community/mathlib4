@@ -37,15 +37,11 @@ import Mathlib.RingTheory.IsTensorProduct
 - Define the `IsKaehlerDifferential` predicate.
 -/
 
-
-
 section KaehlerDifferential
 
 open scoped TensorProduct
-
 open Algebra
 
--- Porting note: TODO
 universe u v
 
 variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
@@ -220,7 +216,6 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
       congr
       rw [sub_self]
     leibniz' := fun a b => by
-      -- Porting note: TODO
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } (Ω[S⁄R]) S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply, - Ideal.toCotangent_apply]
       rw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
@@ -471,7 +466,7 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
       Set.range fun x : R => single (algebraMap R S x) 1)
 #align kaehler_differential.ker_total KaehlerDifferential.kerTotal
 
--- mathport name: «expr 𝖣 »
+-- mathport name: «expr 𝖣»
 local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
