@@ -86,11 +86,11 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (fun b => a < b) fun b =
     refine' (IsLeast.isGLB _).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_range_iff.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
-    iInf_iInf_eq_right]
+    iInf_iInf_eq_right, mem_Ico]
   simp_rw [@iInf_comm _ ℝₗ (_ ≤ _), iInf_subtype', ← Ici_inter_Iio, ← inf_principal,
-    ← inf_iInf (ι := { x // x ≤ a }), ← iInf_inf, this, iInf_subtype]
+    ← inf_iInf, ← iInf_inf, this, iInf_subtype]
   suffices : (⨅ x ∈ Ioi a, 𝓟 (Iio x)).HasBasis (a < ·) Iio; exact this.principal_inf _
-  refine' has_basis_binfi_principal _ nonempty_Ioi
+  refine' hasBasis_biInf_principal _ nonempty_Ioi
   exact directedOn_iff_directed.2 (directed_of_inf fun x y hxy => Iio_subset_Iio hxy)
 #align counterexample.sorgenfrey_line.nhds_basis_Ico Counterexample.SorgenfreyLine.nhds_basis_Ico
 
