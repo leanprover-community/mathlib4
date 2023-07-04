@@ -205,7 +205,8 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
         MvPolynomial.vanishingIdeal_singleton_isMaximal⟩
 #align mv_polynomial.vanishing_ideal_zero_locus_eq_radical MvPolynomial.vanishingIdeal_zeroLocus_eq_radical
 
-@[simp]
+-- Porting note : marked this as high priority to short cut simplifier
+@[simp (high)]
 theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.IsPrime] :
     vanishingIdeal (zeroLocus P) = P :=
   Trans.trans (vanishingIdeal_zeroLocus_eq_radical P) h.radical
