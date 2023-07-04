@@ -54,7 +54,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.0"
+  "0.1.1"
 
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
