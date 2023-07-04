@@ -21,7 +21,7 @@ In this file we prove Fubini's theorem.
 * `MeasureTheory.integrable_prod_iff` states that a binary function is integrable iff both
   * `y ↦ f (x, y)` is integrable for almost every `x`, and
   * the function `x ↦ ∫ ‖f (x, y)‖ dy` is integrable.
-* `MeasureTheory.integral_prod`: Fubini's theorem. It states that for a integrable function
+* `MeasureTheory.integral_prod`: Fubini's theorem. It states that for an integrable function
   `α × β → E` (where `E` is a second countable Banach space) we have
   `∫ z, f z ∂(μ.prod ν) = ∫ x, ∫ y, f (x, y) ∂ν ∂μ`. This theorem has the same variants as
   Tonelli's theorem (see `MeasureTheory.lintegral_prod`). The lemma

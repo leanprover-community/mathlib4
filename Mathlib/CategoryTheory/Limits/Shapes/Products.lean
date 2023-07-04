@@ -345,7 +345,7 @@ instance (priority := 100) hasProduct_unique : HasProduct f :=
   HasLimit.mk (limitConeOfUnique f)
 #align category_theory.limits.has_product_unique CategoryTheory.Limits.hasProduct_unique
 
-/-- A product over a index type with exactly one term is just the object over that term. -/
+/-- A product over an index type with exactly one term is just the object over that term. -/
 @[simps!]
 def productUniqueIso : ∏ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
