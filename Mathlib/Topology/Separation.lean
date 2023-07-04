@@ -232,6 +232,17 @@ theorem inseparable_eq_eq [T0Space α] : Inseparable = @Eq α :=
   funext₂ fun _ _ => propext inseparable_iff_eq
 #align inseparable_eq_eq inseparable_eq_eq
 
+theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set α)}
+    (hb : IsTopologicalBasis b) {x y : α} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
+  ⟨fun h s hs ↦ inseparable_iff_forall_open.1 h _ (hb.isOpen hs),
+    fun h ↦ hb.nhds_hasBasis.eq_of_same_basis $ by
+      convert hb.nhds_hasBasis using 2
+      exact and_congr_right (h _)⟩
+
+theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space α] {b : Set (Set α)}
+    (hb : IsTopologicalBasis b) {x y : α} : x = y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
+  inseparable_iff_eq.symm.trans hb.inseparable_iff
+
 theorem t0Space_iff_exists_isOpen_xor'_mem (α : Type u) [TopologicalSpace α] :
     T0Space α ↔ ∀ x y, x ≠ y → ∃ U : Set α, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
