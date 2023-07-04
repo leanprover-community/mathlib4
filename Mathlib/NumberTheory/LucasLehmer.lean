@@ -539,6 +539,7 @@ open Lean Elab Tactic Meta Qq Mathlib.Meta.NormNum in
 /-- Given a goal of the form `LucasLehmerTest p`,
 attempt to do the calculation using `norm_num` to certify each step.
 -/
+def runTest : TacticM Unit := withMainContext do
   let .app (.const ``LucasLehmer.LucasLehmerTest _) (p : Q(ℕ)) ←
     whnfR <|← instantiateMVars <|← getMainTarget
     | throwError "goal is not of the form `LucasLehmerTest p` for some `p` "
@@ -570,10 +571,10 @@ attempt to do the calculation using `norm_num` to certify each step.
   withMainContext do
   let h := (← getLCtx).findFromUserName? `h |>.get!.fvarId
   closeMainGoal (.fvar h)
-#align lucas_lehmer.run_test LucasLehmer.run_test
+#align lucas_lehmer.run_test LucasLehmer.runTest
 
-@[inherit_doc run_test]
-elab "lucas_lehmer_test" : tactic => LucasLehmer.run_test
+@[inherit_doc runTest]
+elab "lucas_lehmer_test" : tactic => LucasLehmer.runTest
 
 end LucasLehmer
 
