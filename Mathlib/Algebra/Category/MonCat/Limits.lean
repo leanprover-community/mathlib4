@@ -65,7 +65,7 @@ def sectionsSubmonoid (F : J ⥤ MonCatMax.{u,v}) : Submonoid (∀ j, F.obj j) w
 
 @[to_additive]
 instance limitMonoid (F : J ⥤ MonCatMax.{u,v}) :
-    Monoid (Types.TypeMax.limitCone.{v, u} (F ⋙ forget MonCatMax.{u,v})).pt :=
+    Monoid (Types.limitCone.{v, u} (F ⋙ forget MonCatMax.{u,v})).pt :=
   (sectionsSubmonoid.{v, u} F).toMonoid
 #align Mon.limit_monoid MonCat.limitMonoid
 #align AddMon.limit_add_monoid AddMonCat.limitAddMonoid
@@ -73,9 +73,9 @@ instance limitMonoid (F : J ⥤ MonCatMax.{u,v}) :
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
 @[to_additive "`limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`."]
 noncomputable def limitπMonoidHom (F : J ⥤ MonCatMax.{u, v}) (j : J) :
-  (Types.TypeMax.limitCone.{v, u} (F ⋙ forget MonCatMax.{u, v})).pt →*
+  (Types.limitCone.{v, u} (F ⋙ forget MonCatMax.{u, v})).pt →*
     ((F ⋙ forget MonCat.{max v u}).obj j) :=
-  { toFun := (Types.TypeMax.limitCone.{v, u} (F ⋙ forget MonCatMax.{u, v})).π.app j,
+  { toFun := (Types.limitCone.{v, u} (F ⋙ forget MonCatMax.{u, v})).π.app j,
     map_one' := rfl
     map_mul' := fun _ _ => rfl }
 #align Mon.limit_π_monoid_hom MonCat.limitπMonoidHom
@@ -91,12 +91,12 @@ namespace HasLimits
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
 noncomputable def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
-  { pt := MonCat.of (Types.TypeMax.limitCone (F ⋙ forget _)).pt
+  { pt := MonCat.of (Types.limitCone (F ⋙ forget _)).pt
     π :=
     { app := limitπMonoidHom F
       naturality := fun _ _ f =>
         set_option linter.deprecated false in
-        MonoidHom.coe_inj ((Types.TypeMax.limitCone (F ⋙ forget _)).π.naturality f) } }
+        MonoidHom.coe_inj ((Types.limitCone (F ⋙ forget _)).π.naturality f) } }
 #align Mon.has_limits.limit_cone MonCat.HasLimits.limitCone
 #align AddMon.has_limits.limit_cone AddMonCat.HasLimits.limitCone
 
@@ -105,7 +105,7 @@ noncomputable def limitCone (F : J ⥤ MonCatMax.{u,v}) : Cone F :=
 -/
 @[to_additive "(Internal use only; use the limits API.)"]
 noncomputable def limitConeIsLimit (F : J ⥤ MonCatMax.{u,v}) : IsLimit (limitCone F) := by
-  refine IsLimit.ofFaithful (forget MonCatMax) (Types.TypeMax.limitConeIsLimit.{v,u} _)
+  refine IsLimit.ofFaithful (forget MonCatMax) (Types.limitConeIsLimit.{v,u} _)
     (fun s => ⟨⟨_, ?_⟩, ?_⟩) (fun s => rfl) <;>
   aesop_cat
 #align Mon.has_limits.limit_cone_is_limit MonCat.HasLimits.limitConeIsLimit
@@ -142,7 +142,7 @@ noncomputable instance forgetPreservesLimitsOfSize :
   preservesLimitsOfShape {_} _ :=
     { preservesLimit := fun {F} =>
         preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
-          (Types.TypeMax.limitConeIsLimit (F ⋙ forget _)) }
+          (Types.limitConeIsLimit (F ⋙ forget _)) }
 #align Mon.forget_preserves_limits_of_size MonCat.forgetPreservesLimitsOfSize
 #align AddMon.forget_preserves_limits_of_size AddMonCat.forgetPreservesLimitsOfSize
 
@@ -177,7 +177,7 @@ instance commMonoidObj (F : J ⥤ CommMonCatMax.{u,v}) (j) :
 
 @[to_additive]
 instance limitCommMonoid (F : J ⥤ CommMonCatMax.{u,v}) :
-    CommMonoid (Types.TypeMax.limitCone.{v,u} (F ⋙ forget CommMonCatMax.{u,v})).pt :=
+    CommMonoid (Types.limitCone.{v,u} (F ⋙ forget CommMonCatMax.{u,v})).pt :=
   @Submonoid.toCommMonoid (∀ j, F.obj j) _
     (MonCat.sectionsSubmonoid (F ⋙ forget₂ CommMonCatMax.{u,v} MonCatMax.{u,v}))
 #align CommMon.limit_comm_monoid CommMonCat.limitCommMonoid
@@ -194,7 +194,7 @@ noncomputable instance forget₂CreatesLimit (F : J ⥤ CommMonCatMax.{u,v}) :
     CreatesLimit F (forget₂ CommMonCat MonCatMax.{u, v}) :=
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone :=
-        { pt := CommMonCat.of (Types.TypeMax.limitCone (F ⋙ forget CommMonCat)).pt
+        { pt := CommMonCat.of (Types.limitCone (F ⋙ forget CommMonCat)).pt
           π :=
             { app := MonCat.limitπMonoidHom (F ⋙ forget₂ CommMonCatMax.{u,v} MonCatMax.{u,v})
               naturality :=

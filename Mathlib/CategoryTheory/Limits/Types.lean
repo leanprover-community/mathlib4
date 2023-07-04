@@ -83,7 +83,9 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u
 
 end UnivLE
 
-namespace TypeMax
+-- TODO: If `UnivLE` works out well, we will eventually want to deprecate these
+-- definitions, and probably as a first step put them in namespace or otherwise rename them.
+section TypeMax
 
 /-- (internal implementation) the limit cone of a functor,
 implemented as flat sections of a pi type
@@ -96,7 +98,7 @@ noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
       naturality := fun j j' f => by
         funext x
         simp }
-#align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.TypeMax.limitCone
+#align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.limitCone
 
 --attribute [local elab_without_expected_type] congr_fun
 
@@ -111,9 +113,9 @@ noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCo
     apply Subtype.ext
     funext j
     exact congr_fun (w j) x
-#align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.TypeMax.limitConeIsLimit
+#align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.limitConeIsLimit
 
-end TypeMax
+section TypeMax
 
 
 /-!

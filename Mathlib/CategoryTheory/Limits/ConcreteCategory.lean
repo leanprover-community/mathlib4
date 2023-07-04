@@ -38,8 +38,8 @@ theorem Concrete.to_product_injective_of_isLimit {D : Cone F} (hD : IsLimit D) :
     Function.Injective fun (x : D.pt) (j : J) => D.π.app j x := by
   let E := (forget C).mapCone D
   let hE : IsLimit E := isLimitOfPreserves _ hD
-  let G := Types.TypeMax.limitCone.{w, v} (F ⋙ forget C)
-  let hG := Types.TypeMax.limitConeIsLimit.{w, v} (F ⋙ forget C)
+  let G := Types.limitCone.{w, v} (F ⋙ forget C)
+  let hG := Types.limitConeIsLimit.{w, v} (F ⋙ forget C)
   let T : E.pt ≅ G.pt := hE.conePointUniqueUpToIso hG
   change Function.Injective (T.hom ≫ fun x j => G.π.app j x)
   have h : Function.Injective T.hom := by
@@ -140,7 +140,7 @@ noncomputable def Concrete.multiequalizerEquiv (I : MulticospanIndex.{w} C) [Has
       { x : ∀ i : I.L, I.left i // ∀ i : I.R, I.fst i (x _) = I.snd i (x _) } := by
   let h1 := limit.isLimit I.multicospan
   let h2 := isLimitOfPreserves (forget C) h1
-  let E := h2.conePointUniqueUpToIso (Types.TypeMax.limitConeIsLimit.{w, v} _)
+  let E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{w, v} _)
   exact Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux.{w, v} I)
 #align category_theory.limits.concrete.multiequalizer_equiv CategoryTheory.Limits.Concrete.multiequalizerEquiv
 
