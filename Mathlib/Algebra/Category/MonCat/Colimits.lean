@@ -227,17 +227,17 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
   · intro x y r
     induction' r with _ _ _ _ h _ _ _ _ _ h₁ h₂ _ _ f x _ _ _ _ _ _ _ _ h _ _ _ _ h <;> try simp
     -- symm
-    . exact h.symm
+    · exact h.symm
     -- trans
-    . exact h₁.trans h₂
+    · exact h₁.trans h₂
     -- map
-    . exact s.w_apply f x
+    · exact s.w_apply f x
     -- mul_1
-    . rw [h]
+    · rw [h]
     -- mul_2
-    . rw [h]
+    · rw [h]
     -- mul_assoc
-    . rw [mul_assoc]
+    · rw [mul_assoc]
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
@@ -261,12 +261,12 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     ext x
     induction' x using Quot.inductionOn with x
     induction' x with j x x y hx hy
-    . change _ = s.ι.app j _
+    · change _ = s.ι.app j _
       rw [← w j]
       rfl
-    . rw [quot_one, map_one]
+    · rw [quot_one, map_one]
       rfl
-    . rw [quot_mul, map_mul, hx, hy]
+    · rw [quot_mul, map_mul, hx, hy]
       dsimp [descMorphism, FunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
 set_option linter.uppercaseLean3 false in

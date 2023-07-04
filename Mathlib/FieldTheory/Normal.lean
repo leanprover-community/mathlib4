@@ -521,7 +521,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     apply PowerBasis.lift_gen
     change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
     suffices : minpoly F (AdjoinSimple.gen F x) = minpoly F x
-    . exact this ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
+    · exact this ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
     exact minpoly_gen ((isIntegral_algebraMap_iff (algebraMap K L).injective).mp
       (h.isIntegral (algebraMap K L x)))
 

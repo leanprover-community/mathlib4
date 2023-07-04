@@ -185,8 +185,8 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
   induction' t with ab n f ts ih
   · cases' ab with a b
     --Porting note: both cases were `simp [Language.con]`
-    . simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
-    . simp [realize, constantMap]
+    · simp [Language.con, realize, constantMap, funMap_eq_coe_constants]
+    · simp [realize, constantMap]
   · simp only [realize, constantsOn, mk₂_Functions, ih]
     --Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
@@ -557,9 +557,9 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
 theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
     ∀ {xs : Fin n → M}, φ.toPrenex.Realize v xs ↔ φ.Realize v xs := by
   induction' φ with _ _ _ _ _ _ _ _ _ f1 f2 h1 h2 _ _ h
-  . exact Iff.rfl
-  . exact Iff.rfl
-  . exact Iff.rfl
+  · exact Iff.rfl
+  · exact Iff.rfl
+  · exact Iff.rfl
   · intros
     rw [toPrenex, realize_toPrenexImp f1.toPrenex_isPrenex f2.toPrenex_isPrenex, realize_imp,
       realize_imp, h1, h2]
@@ -741,8 +741,8 @@ theorem realize_equivSentence_symm_con [L[[α]].Structure M]
   refine' _root_.trans _ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
   congr with (_ | a)
-  . simp
-  . cases a
+  · simp
+  · cases a
 #align first_order.language.formula.realize_equiv_sentence_symm_con FirstOrder.Language.Formula.realize_equivSentence_symm_con
 
 @[simp]

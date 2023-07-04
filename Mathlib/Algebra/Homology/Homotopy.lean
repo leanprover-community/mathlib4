@@ -122,7 +122,7 @@ theorem prevD_nat (C D : CochainComplex V ℕ) (i : ℕ) (f : ∀ i j, C.X i ⟶
   cases i
   · simp only [shape, CochainComplex.prev_nat_zero, ComplexShape.up_Rel, Nat.one_ne_zero,
       not_false_iff, comp_zero]
-  . congr <;> simp
+  · congr <;> simp
 #align prev_d_nat prevD_nat
 
 -- porting note: removed @[has_nonempty_instance]
@@ -555,16 +555,16 @@ def mkInductive : Homotopy e 0 where
     simp only [add_zero]
     refine' (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
     congr
-    . cases i
-      . dsimp [fromNext, mkInductiveAux₂]
+    · cases i
+      · dsimp [fromNext, mkInductiveAux₂]
         rw [dif_neg]
         simp only
-      . dsimp [fromNext]
+      · dsimp [fromNext]
         simp only [ChainComplex.next_nat_succ, dite_true]
         rw [mkInductiveAux₃ e zero comm_zero one comm_one succ]
         dsimp [xNextIso]
         rw [Category.id_comp]
-    . dsimp [toPrev]
+    · dsimp [toPrev]
       erw [dif_pos, Category.comp_id]
       simp only [ChainComplex.prev]
 #align homotopy.mk_inductive Homotopy.mkInductive
@@ -680,16 +680,16 @@ def mkCoinductive : Homotopy e 0 where
     rw [add_comm]
     refine' (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
     congr
-    . cases i
-      . dsimp [toPrev, mkCoinductiveAux₂]
+    · cases i
+      · dsimp [toPrev, mkCoinductiveAux₂]
         rw [dif_neg]
         simp only
-      . dsimp [toPrev]
+      · dsimp [toPrev]
         simp only [CochainComplex.prev_nat_succ, dite_true]
         rw [mkCoinductiveAux₃ e zero comm_zero one comm_one succ]
         dsimp [xPrevIso]
         rw [Category.comp_id]
-    . dsimp [fromNext]
+    · dsimp [fromNext]
       erw [dif_pos, Category.id_comp]
       simp only [CochainComplex.next]
 #align homotopy.mk_coinductive Homotopy.mkCoinductive

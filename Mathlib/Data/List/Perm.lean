@@ -567,10 +567,10 @@ theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (h
     l₁.prod = l₂.prod := by
   refine h.foldl_eq' ?_ _
   apply Pairwise.forall_of_forall
-  . intro x y h z
+  · intro x y h z
     exact (h z).symm
-  . intros; rfl
-  . apply hc.imp
+  · intros; rfl
+  · apply hc.imp
     intro a b h z
     rw [mul_assoc z, mul_assoc z, h]
 #align list.perm.prod_eq' List.Perm.prod_eq'
@@ -1190,8 +1190,8 @@ theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ)
   have : n ≤ n + m := Nat.le_add_right _ _
   have h₂ := h.nodup_iff.2 h'
   apply Perm.trans _ (Perm.inter_append _).symm
-  . exact Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
-  . exact disjoint_take_drop h₂ this
+  · exact Perm.append (Perm.take_inter _ h h') (Perm.drop_inter _ h h')
+  · exact disjoint_take_drop h₂ this
 #align list.perm.slice_inter List.Perm.dropSlice_inter
 
 -- enumerating permutations

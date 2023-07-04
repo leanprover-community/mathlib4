@@ -180,8 +180,8 @@ theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
 @[simp]
 theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
   by_cases hp0 : p.content = 0
-  . simp [hp0]
-  . ext
+  · simp [hp0]
+  · ext
     apply mul_left_cancel₀ hp0
     erw [← normalize_apply, normalize_content, mul_one]
 
