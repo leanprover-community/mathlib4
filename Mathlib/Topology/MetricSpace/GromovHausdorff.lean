@@ -755,12 +755,13 @@ instance : SecondCountableTopology GHSpace := by
         -- we want to `subst hpq` where `hpq : F p = F q`, except that `subst` only works
         -- with a constant, so replace `F q` (and everything that depends on it) by a constant `f`
         -- then `subst`
+
         revert hiq hjq
         change N q with (F q).1
         generalize F q = f at hpq ⊢
         subst hpq
-        intros
         rfl
+
       rw [Ap, Aq] at this
       -- deduce that the distances coincide up to `ε`, by a straightforward computation
       -- that should be automated
@@ -1058,8 +1059,8 @@ instance : CompleteSpace GHSpace := by
     rfl
   -- simp_rw [range_comp] at X2nsucc
   have D2 : ∀ n, hausdorffDist (X2 n) (X2 n.succ) < d n := fun n ↦ by
-
-    rw [X2n n, X2nsucc n, range_comp, range_comp, hausdorffDist_image, hausdorffDist_optimal, ← dist_ghDist]
+    rw [X2n n, X2nsucc n, range_comp, range_comp, hausdorffDist_image,
+      hausdorffDist_optimal, ← dist_ghDist]
     · exact hu n n n.succ (le_refl n) (le_succ n)
     · apply UniformSpace.Completion.coe_isometry.comp _
       exact (toInductiveLimit_isometry _ _).comp ((ic n).comp (toGlueR_isometry _ _))
