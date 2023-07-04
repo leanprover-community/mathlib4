@@ -87,6 +87,11 @@ instance compactOpen : TopologicalSpace C(α, β) :=
     { m | ∃ (s : Set α) (_ : IsCompact s) (u : Set β) (_ : IsOpen u), m = CompactOpen.gen s u }
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
+/-- Definition of `ContinuousMap.compactOpen` in terms of `Set.image2`. -/
+theorem compactOpen_eq : @compactOpen α β _ _ =
+    .generateFrom (Set.image2 CompactOpen.gen {s | IsCompact s} {t | IsOpen t}) :=
+  congr_arg TopologicalSpace.generateFrom <| Set.ext fun _ ↦ by simp [eq_comm]
+
 protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : IsOpen u) :
     IsOpen (CompactOpen.gen s u) :=
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
@@ -96,18 +101,29 @@ section Functorial
 
 variable (g : C(β, γ))
 
-private theorem preimage_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpen u) :
+private theorem preimage_gen {s : Set α} {u : Set γ} :
     ContinuousMap.comp g ⁻¹' CompactOpen.gen s u = CompactOpen.gen s (g ⁻¹' u) := by
   ext ⟨f, _⟩
   change g ∘ f '' s ⊆ u ↔ f '' s ⊆ g ⁻¹' u
   rw [image_comp, image_subset_iff]
---#align continuous_map.preimage_gen ContinuousMap.preimage_gen
 
 /-- C(α, -) is a functor. -/
 theorem continuous_comp : Continuous (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
   continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
-    rw [hm, preimage_gen g hs hu]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
+    rw [hm, preimage_gen g]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
+
+/-- If `g : C(β, γ)` is a topology inducing map, then the composition
+`ContinuousMap.comp g : C(α, β) → C(α, γ)` is a topology inducing map too. -/
+theorem inducing_comp (hg : Inducing g) : Inducing (g.comp : C(α, β) → C(α, γ)) where
+  induced := by
+    simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, preimage_gen,
+      hg.setOf_isOpen, image2_image_right]
+
+/-- If `g : C(β, γ)` is a topological embedding, then the composition
+`ContinuousMap.comp g : C(α, β) → C(α, γ)` is an embedding too. -/
+theorem embedding_comp (hg : Embedding g) : Embedding (g.comp : C(α, β) → C(α, γ)) :=
+  ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 variable (f : C(α, β))
 
