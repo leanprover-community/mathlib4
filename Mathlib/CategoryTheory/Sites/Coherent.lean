@@ -102,8 +102,8 @@ theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
   have h_le : Sieve.generate (Presieve.ofArrows _ π) ≤ S := by
       rw [Sieve.sets_iff_generate (Presieve.ofArrows _ π) S]
       apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows (fun i => Y i) π) S _
-      intro Y g f
-      use Y, 𝟙 Y
+      intro W g f
+      use W, 𝟙 W
       rcases f with ⟨i⟩
       exact ⟨π i, ⟨hπ.2 i,Category.id_comp (π i) ⟩⟩
   apply Coverage.saturate_of_superset (coherentCoverage C) h_le
@@ -173,7 +173,7 @@ EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fs
     apply coherentTopology.mem_sieves_of_hasEffectiveEpiFamily
     -- Need to show that the pullback of the family `π_n` to a given `Y i` is effective epimorphic
     rcases hY with ⟨i⟩
-    use β i, inferInstance, Y_n i, π_n i, H i 
+    use β i, inferInstance, Y_n i, π_n i, H i
     intro b
     use Y_n i b, (𝟙 _), π_n i b ≫ π i, ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩
     exact Category.id_comp (π_n i b ≫ π i)
