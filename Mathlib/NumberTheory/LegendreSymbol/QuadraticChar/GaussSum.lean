@@ -129,7 +129,7 @@ theorem quadraticChar_odd_prime [DecidableEq F] (hF : ringChar F ≠ 2) {p : ℕ
 #align quadratic_char_odd_prime quadraticChar_odd_prime
 
 /-- An odd prime `p` is a square in `F` iff the quadratic character of `ZMod p` does not
-take the value `-1` on `χ₄(#F) * #F`. -/
+take the value `-1` on `χ₄#F * #F`. -/
 theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fact p.Prime]
     (hp : p ≠ 2) :
     IsSquare (p : F) ↔ quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) ≠ -1 := by

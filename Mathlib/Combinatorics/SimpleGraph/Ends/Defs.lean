@@ -29,7 +29,7 @@ namespace SimpleGraph
 /-- The components outside a given set of vertices `K` -/
 @[reducible]
 def ComponentCompl :=
-  (G.induce (Kᶜ)).ConnectedComponent
+  (G.induce Kᶜ).ConnectedComponent
 #align simple_graph.component_compl SimpleGraph.ComponentCompl
 
 variable {G} {K L M}
@@ -37,7 +37,7 @@ variable {G} {K L M}
 /-- The connected component of `v` in `G.induce Kᶜ`. -/
 @[reducible]
 def componentComplMk (G : SimpleGraph V) {v : V} (vK : v ∉ K) : G.ComponentCompl K :=
-  connectedComponentMk (G.induce (Kᶜ)) ⟨v, vK⟩
+  connectedComponentMk (G.induce Kᶜ) ⟨v, vK⟩
 #align simple_graph.component_compl_mk SimpleGraph.componentComplMk
 
 /-- The set of vertices of `G` making up the connected component `C` -/
@@ -207,7 +207,7 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
 
 theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
-  erw [induceHom_id G (Lᶜ), ConnectedComponent.map_id]
+  erw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 #align simple_graph.component_compl.hom_refl SimpleGraph.ComponentCompl.hom_refl
 
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :

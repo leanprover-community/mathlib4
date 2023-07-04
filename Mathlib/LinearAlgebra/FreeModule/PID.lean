@@ -220,7 +220,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
     refine' Finset.sum_congr rfl fun i _ ↦ _
     rw [← mul_smul, ← hc]
     rfl
-  -- We found an `y` and an `a`!
+  -- We found a `y` and an `a`!
   refine' ⟨y', y'M, a, a_smul_y'.symm ▸ yN, _⟩
   have ϕy'_eq : ϕ ⟨y', y'M⟩ = 1 :=
     mul_left_cancel₀ a_zero

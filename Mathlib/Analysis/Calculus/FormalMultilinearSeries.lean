@@ -316,7 +316,7 @@ theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
 #align formal_multilinear_series.coeff_fslope FormalMultilinearSeries.coeff_fslope
 
 @[simp]
-theorem coeff_iterate_fslope (k n : ℕ) : ((fslope^[k]) p).coeff n = p.coeff (n + k) := by
+theorem coeff_iterate_fslope (k n : ℕ) : (fslope^[k] p).coeff n = p.coeff (n + k) := by
   induction k generalizing p with
   | zero => rfl
   | succ k ih => simp [ih, add_assoc]

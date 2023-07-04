@@ -96,11 +96,11 @@ def idealOfSet (s : Set X) : Ideal C(X, R) where
   smul_mem' c f hf x hx := MulZeroClass.mul_zero (c x) ▸ congr_arg (fun y => c x * y) (hf x hx)
 #align continuous_map.ideal_of_set ContinuousMap.idealOfSet
 
-theorem idealOfSet_closed [LocallyCompactSpace X] [T2Space R] (s : Set X) :
+theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
-    isClosed_eq (continuous_eval_const' x) continuous_const
+    isClosed_eq (continuous_eval_const x) continuous_const
 #align continuous_map.ideal_of_set_closed ContinuousMap.idealOfSet_closed
 
 variable {R}
@@ -215,7 +215,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
   have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
-  have htI : Disjoint t (setOfIdeal Iᶜ) := by
+  have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine' Set.subset_compl_iff_disjoint_left.mp fun x hx => _
     simpa only [Set.mem_setOf, Set.mem_compl_iff, not_le] using
       (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
@@ -384,7 +384,7 @@ theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] 
 #align continuous_map.set_of_ideal_eq_compl_singleton ContinuousMap.setOfIdeal_eq_compl_singleton
 
 theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
-    I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 ({x}ᶜ) = I := by
+    I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 {x}ᶜ = I := by
   refine'
     ⟨_, fun h =>
       let ⟨x, hx⟩ := h
@@ -422,7 +422,7 @@ def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
     ⟨{  toFun := fun f => f x
         map_add' := fun f g => rfl
         map_smul' := fun z f => rfl
-        cont := continuous_eval_const' x }, by
+        cont := continuous_eval_const x }, by
         rw [CharacterSpace.eq_set_map_one_map_mul]; exact ⟨rfl, fun f g => rfl⟩⟩
   continuous_toFun := Continuous.subtype_mk (continuous_of_continuous_eval map_continuous) _
 #align weak_dual.character_space.continuous_map_eval WeakDual.CharacterSpace.continuousMapEval

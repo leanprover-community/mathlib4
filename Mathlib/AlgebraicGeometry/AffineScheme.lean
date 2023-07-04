@@ -261,7 +261,6 @@ theorem IsAffineOpen.imageIsOpenImmersion {X Y : Scheme} {U : Opens X} (hU : IsA
   exact Set.image_eq_range _ _
 #align algebraic_geometry.is_affine_open.image_is_open_immersion AlgebraicGeometry.IsAffineOpen.imageIsOpenImmersion
 
-set_option maxHeartbeats 0 in
 theorem isAffineOpen_iff_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     (U : Opens X) : IsAffineOpen (H.openFunctor.obj U) ↔ IsAffineOpen U := by
   -- Porting note : add this instance explicitly
@@ -364,7 +363,7 @@ theorem IsAffineOpen.basicOpenIsAffine {X : Scheme} {U : Opens X} (hU : IsAffine
     exact Scheme.basicOpen_le _ _
   rw [Scheme.Hom.opensRange_coe, Scheme.comp_val_base, ← this, coe_comp, Set.range_comp]
   -- Porting note : `congr 1` did not work
-  apply congr_arg (_ '' .)
+  apply congr_arg (_ '' ·)
   refine' (Opens.coe_inj.mpr <| Scheme.preimage_basicOpen hU.fromSpec f).trans _
   refine' Eq.trans _ (PrimeSpectrum.localization_away_comap_range (Localization.Away f) f).symm
   congr 1
@@ -474,7 +473,7 @@ theorem IsAffineOpen.opens_map_fromSpec_basicOpen {X : Scheme} {U : Opens X}
       (Scheme.Spec.obj <| op <| X.presheaf.obj (op U)).toLocallyRingedSpace.toRingedSpace
       (eqToHom hU.fromSpec_base_preimage).op _)
   -- Porting note : `congr` does not work
-  refine congr_arg (RingedSpace.basicOpen _ .) ?_
+  refine congr_arg (RingedSpace.basicOpen _ ·) ?_
   -- Porting note : change `rw` to `erw`
   erw [← comp_apply]
   congr
@@ -630,7 +629,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux {X : Scheme} (U : Opens X)
   rw [eqToHom_trans]
 #align algebraic_geometry.is_affine_open.is_localization_stalk_aux AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux
 
-set_option maxHeartbeats 1643256 in
+set_option maxHeartbeats 3200000 in
 theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
     hU.fromSpec.val.c.app (op U) ≫ (Scheme.Spec.obj <| op (X.presheaf.obj <| op U)).presheaf.germ
@@ -661,7 +660,7 @@ theorem IsAffineOpen.isLocalization_stalk_aux' {X : Scheme} {U : Opens X} (hU : 
   rw [Category.id_comp]
   rfl
 
-set_option maxHeartbeats 420000 in
+set_option maxHeartbeats 800000 in
 theorem IsAffineOpen.isLocalization_stalk' {X : Scheme} {U : Opens X} (hU : IsAffineOpen U)
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
   haveI : IsAffine _ := hU
@@ -699,7 +698,7 @@ theorem IsAffineOpen.isLocalization_stalk {X : Scheme} {U : Opens X} (hU : IsAff
   convert hU.isLocalization_stalk' y hx
 #align algebraic_geometry.is_affine_open.is_localization_stalk AlgebraicGeometry.IsAffineOpen.isLocalization_stalk
 
-/-- The basic open set of a section `f` on an an affine open as an `X.affine_opens`. -/
+/-- The basic open set of a section `f` on an an affine open as an `X.affineOpens`. -/
 @[simps]
 def Scheme.affineBasicOpen (X : Scheme) {U : X.affineOpens} (f : X.presheaf.obj <| op U) :
     X.affineOpens :=
@@ -738,8 +737,8 @@ theorem IsAffineOpen.fromSpec_map_basicOpen {X : Scheme} {U : Opens X} (hU : IsA
 
 theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
     (hU : IsAffineOpen U) (s : Set (X.presheaf.obj <| op U)) :
-    (⨆ f : s, X.basicOpen (f : X.presheaf.obj <| op U)) = U ↔ Ideal.span s = ⊤ := by
-  trans (⋃ i : s, (PrimeSpectrum.basicOpen i.1).1) = Set.univ
+    ⨆ f : s, X.basicOpen (f : X.presheaf.obj <| op U) = U ↔ Ideal.span s = ⊤ := by
+  trans ⋃ i : s, (PrimeSpectrum.basicOpen i.1).1 = Set.univ
   trans
     hU.fromSpec.1.base ⁻¹' (⨆ f : s, X.basicOpen (f : X.presheaf.obj <| op U)).1 =
       hU.fromSpec.1.base ⁻¹' U.1
@@ -758,7 +757,7 @@ theorem IsAffineOpen.basicOpen_union_eq_self_iff {X : Scheme} {U : Opens X}
     -- Porting note : need an extra rewrite here, after simp, it is in `↔` form
     rw [iff_iff_eq]
     congr 3
-    · refine congr_arg (Set.iUnion .) ?_
+    · refine congr_arg (Set.iUnion ·) ?_
       ext1 x
       exact congr_arg Opens.carrier (hU.fromSpec_map_basicOpen _)
     · exact congr_arg Opens.carrier hU.fromSpec_base_preimage
