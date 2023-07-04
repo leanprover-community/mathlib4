@@ -82,18 +82,22 @@ end DirectedSystem
 
 namespace DirectLimit
 
--- Porting note : Instead of `Σi, G i`, we use the alias SigmaG which depends on `f`. This way,
--- Lean can infer what `L` is in the `setoid` instance. Otherwise we have a
--- "cannot find synthesization order" error. See the discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
+-- Porting note : Instead of `Σi, G i`, we use the alias `Language.Structure.Sigma`
+-- which depends on `f`. This way, Lean can infer what `L` and `f` are in the `Setoid` instance.
+-- Otherwise we have a "cannot find synthesization order" error. See the discussion at
+-- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/local.20instance.20cannot.20find.20synthesization.20order.20in.20porting
 
 /-- Alias for `Σi, G i`. -/
 @[nolint unusedArguments]
-def SigmaG (_f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σi, G i
+def _root_.FirstOrder.Language.Structure.Sigma (_f : ∀ i j, i ≤ j → G i ↪[L] G j) := Σi, G i
 
-def SigmaG.mk (i : ι) (x : G i) : SigmaG f := ⟨i, x⟩
+-- Porting note: Setting up notation for `Language.Structure.Sigma`: add a little asterisk to `Σ`
+local notation "Σˣ" => Structure.Sigma
+
+def _root_.FirstOrder.Language.Structure.Sigma.mk (i : ι) (x : G i) : Σˣ f := ⟨i, x⟩
 
 /-- Raises a family of elements in the `Σ`-type to the same level along the embeddings. -/
-def unify {α : Type _} (x : α → SigmaG f) (i : ι) (h : i ∈ upperBounds (range (Sigma.fst ∘ x)))
+def unify {α : Type _} (x : α → Σˣ f) (i : ι) (h : i ∈ upperBounds (range (Sigma.fst ∘ x)))
     (a : α) : G i :=
   f (x a).1 i (h (mem_range_self a)) (x a).2
 #align first_order.language.direct_limit.unify FirstOrder.Language.DirectLimit.unify
@@ -108,7 +112,7 @@ theorem unify_sigma_mk_self {α : Type _} {i : ι} {x : α → G i} :
   simp only [unify, DirectedSystem.map_self]
 #align first_order.language.direct_limit.unify_sigma_mk_self FirstOrder.Language.DirectLimit.unify_sigma_mk_self
 
-theorem comp_unify {α : Type _} {x : α → SigmaG f} {i j : ι} (ij : i ≤ j)
+theorem comp_unify {α : Type _} {x : α → Σˣ f} {i j : ι} (ij : i ≤ j)
     (h : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     f i j ij ∘ unify f x i h = unify f x j
       fun k hk => _root_.trans (mem_upperBounds.1 h k hk) ij := by
@@ -120,10 +124,12 @@ end DirectLimit
 
 variable (G)
 
+-- Porting note: Setting up notation for `Language.Structure.Sigma`: add a little asterisk to `Σ`
+local notation "Σˣ" => Structure.Sigma
 namespace DirectLimit
 
 /-- The directed limit glues together the structures along the embeddings. -/
-def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (SigmaG f) where
+def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι)(ik : i ≤ k)(jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
     ⟨fun ⟨i, x⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, ik, jk, h⟩ =>
@@ -140,7 +146,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
  -/
-noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (SigmaG f) where
+noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,
       funMap F
@@ -173,7 +179,7 @@ namespace DirectLimit
 
 variable [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => f i j h]
 
-theorem equiv_iff {x y : SigmaG f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
+theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
   cases x
   cases y
@@ -186,15 +192,15 @@ theorem equiv_iff {x y : SigmaG f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
   exact h
 #align first_order.language.direct_limit.equiv_iff FirstOrder.Language.DirectLimit.equiv_iff
 
-theorem funMap_unify_equiv {n : ℕ} (F : L.Functions n) (x : Fin n → SigmaG f) (i j : ι)
+theorem funMap_unify_equiv {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) (i j : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
-    SigmaG.mk f i (funMap F (unify f x i hi)) ≈ ⟨j, funMap F (unify f x j hj)⟩ := by
+    Structure.Sigma.mk f i (funMap F (unify f x i hi)) ≈ ⟨j, funMap F (unify f x j hj)⟩ := by
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
   refine' ⟨k, ik, jk, _⟩
   rw [(f i k ik).map_fun, (f j k jk).map_fun, comp_unify, comp_unify]
 #align first_order.language.direct_limit.fun_map_unify_equiv FirstOrder.Language.DirectLimit.funMap_unify_equiv
 
-theorem relMap_unify_equiv {n : ℕ} (R : L.Relations n) (x : Fin n → SigmaG f) (i j : ι)
+theorem relMap_unify_equiv {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) (i j : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
     RelMap R (unify f x i hi) = RelMap R (unify f x j hj) := by
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
@@ -203,7 +209,7 @@ theorem relMap_unify_equiv {n : ℕ} (R : L.Relations n) (x : Fin n → SigmaG f
 
 variable [Nonempty ι]
 
-theorem exists_unify_eq {α : Type _} [Fintype α] {x y : α → SigmaG f} (xy : x ≈ y) :
+theorem exists_unify_eq {α : Type _} [Fintype α] {x y : α → Σˣ f} (xy : x ≈ y) :
     ∃ (i : ι)(hx : i ∈ upperBounds (range (Sigma.fst ∘ x)))(hy :
       i ∈ upperBounds (range (Sigma.fst ∘ y))), unify f x i hx = unify f y i hy := by
   obtain ⟨i, hi⟩ := Fintype.bddAbove_range (Sum.elim (fun a => (x a).1) fun a => (y a).1)
@@ -212,13 +218,13 @@ theorem exists_unify_eq {α : Type _} [Fintype α] {x y : α → SigmaG f} (xy :
   exact ⟨i, hi.1, hi.2, funext fun a => (equiv_iff G f _ _).1 (xy a)⟩
 #align first_order.language.direct_limit.exists_unify_eq FirstOrder.Language.DirectLimit.exists_unify_eq
 
-theorem funMap_equiv_unify {n : ℕ} (F : L.Functions n) (x : Fin n → SigmaG f) (i : ι)
+theorem funMap_equiv_unify {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     funMap F x ≈ ⟨_, funMap F (unify f x i hi)⟩ :=
   funMap_unify_equiv G f F x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1)) i _ hi
 #align first_order.language.direct_limit.fun_map_equiv_unify FirstOrder.Language.DirectLimit.funMap_equiv_unify
 
-theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → SigmaG f) (i : ι)
+theorem relMap_equiv_unify {n : ℕ} (R : L.Relations n) (x : Fin n → Σˣ f) (i : ι)
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) :
     RelMap R x = RelMap R (unify f x i hi) :=
   relMap_unify_equiv G f R x (Classical.choose (Fintype.bddAbove_range fun a => (x a).1)) i _ hi
@@ -281,7 +287,7 @@ theorem exists_quotient_mk'_sigma_mk'_eq {α : Type _} [Fintype α] (x : α → 
   rw [Quotient.eq_mk_iff_out, unify]
   let r := unify.proof_1 f (Quotient.out ∘ x) i hi a
   change _ ≈ ⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩
-  have : (⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩ : SigmaG f).fst ≤ i := le_rfl
+  have : (⟨i, f (Quotient.out (x a)).fst i r (Quotient.out (x a)).snd⟩ : Σˣ f).fst ≤ i := le_rfl
   rw [equiv_iff G f (i := i) (hi _) this]
   · simp only [DirectedSystem.map_self]
   exact ⟨a, rfl⟩
@@ -351,7 +357,7 @@ that respect the directed system structure (i.e. make some diagram commute) give
 to a unique map out of the direct limit. -/
 def lift : DirectLimit G f ↪[L] P where
   toFun :=
-    Quotient.lift (fun x : SigmaG f => (g x.1) x.2) fun x y xy => by
+    Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
       simp
       obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.1 y.1
       rw [← Hg x.1 i hx, ← Hg y.1 i hy]
@@ -368,13 +374,13 @@ def lift : DirectLimit G f ↪[L] P where
     exact (g i).injective xy
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
-    change _ = funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ SigmaG.mk f i ∘ y)
+    change _ = funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Structure.Sigma.mk f i ∘ y)
     rw [funMap_quotient_mk'_sigma_mk', ← Function.comp.assoc, Quotient.lift_comp_mk]
     simp only [Quotient.lift_mk, Embedding.map_fun]
     rfl
   map_rel' R x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
-    change RelMap R (Quotient.lift _ _ ∘ Quotient.mk _ ∘ SigmaG.mk f i ∘ y) ↔ _
+    change RelMap R (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Structure.Sigma.mk f i ∘ y) ↔ _
     rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp.assoc,
       Quotient.lift_comp_mk]
     rfl
