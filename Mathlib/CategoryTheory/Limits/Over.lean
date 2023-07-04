@@ -107,9 +107,9 @@ def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
             -- TODO: It would be nice to replace the next two lines with just `ext`.
             apply OverMorphism.ext
             apply pullback.hom_ext
-            . dsimp
+            · dsimp
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-            . dsimp
+            · dsimp
               simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
               rfl } }
 #align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj

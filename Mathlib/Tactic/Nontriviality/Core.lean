@@ -12,11 +12,6 @@ import Mathlib.Tactic.SolveByElim
 namespace Mathlib.Tactic.Nontriviality
 open Lean Elab Meta Tactic Linter Std.Linter UnreachableTactic Qq
 
-/-- The `@[nontriviality]` simp set is used by the `nontriviality` tactic to automatically
-discharge theorems about the trivial case (where we know `Subsingleton α` and many theorems
-in e.g. groups are trivially true). -/
-register_simp_attr nontriviality
-
 theorem subsingleton_or_nontrivial_elim {p : Prop} {α : Type u}
     (h₁ : Subsingleton α → p) (h₂ : Nontrivial α → p) : p :=
   (subsingleton_or_nontrivial α).elim @h₁ @h₂

@@ -517,8 +517,8 @@ instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetric
   uniformity_edist := by
     simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
       preimage_setOf_eq, comap_principal, edist_pi_def]
-    rw [iInf_comm]; congr ; funext ε
-    rw [iInf_comm]; congr ; funext εpos
+    rw [iInf_comm]; congr; funext ε
+    rw [iInf_comm]; congr; funext εpos
     simp [setOf_forall, εpos]
 #align pseudo_emetric_space_pi pseudoEMetricSpacePi
 
