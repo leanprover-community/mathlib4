@@ -69,8 +69,6 @@ lemma limitCone_pt_ext (F : J ⥤ Type u) {x y : (limitCone F).pt}
     (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
   aesop
 
---attribute [local elab_without_expected_type] congr_fun
-
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ Type u) : IsLimit (limitCone.{v, u} F) where
@@ -100,8 +98,6 @@ noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
         simp }
 #align category_theory.limits.types.limit_cone CategoryTheory.Limits.Types.limitCone
 
---attribute [local elab_without_expected_type] congr_fun
-
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCone.{v, u} F) where
@@ -115,7 +111,7 @@ noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCo
     exact congr_fun (w j) x
 #align category_theory.limits.types.limit_cone_is_limit CategoryTheory.Limits.Types.limitConeIsLimit
 
-section TypeMax
+end TypeMax
 
 
 /-!
