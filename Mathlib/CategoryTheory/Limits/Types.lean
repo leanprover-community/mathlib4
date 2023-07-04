@@ -130,7 +130,8 @@ sections of `F`.
 -/
 noncomputable def isLimitEquivSections {F : J ⥤ Type u} {c : Cone F} (t : IsLimit c) :
     c.pt ≃ F.sections :=
-  (IsLimit.conePointUniqueUpToIso t (limitConeIsLimit.{v, u} F)).toEquiv.trans (equivShrink _).symm
+  (IsLimit.conePointUniqueUpToIso t (UnivLE.limitConeIsLimit.{v, u} F)).toEquiv.trans
+    (equivShrink _).symm
 #align category_theory.limits.types.is_limit_equiv_sections CategoryTheory.Limits.Types.isLimitEquivSections
 
 @[simp]
@@ -158,8 +159,8 @@ instance (priority := 1300) hasLimitsOfSize : HasLimitsOfSize.{v} (Type u) where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
-          { cone := limitCone.{v, u} F
-            isLimit := limitConeIsLimit F } }
+          { cone := UnivLE.limitCone.{v, u} F
+            isLimit := UnivLE.limitConeIsLimit F } }
 #align category_theory.limits.types.has_limits_of_size CategoryTheory.Limits.Types.hasLimitsOfSize
 
 instance hasLimit (F : J ⥤ Type u) : HasLimit F :=
