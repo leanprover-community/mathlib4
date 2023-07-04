@@ -173,14 +173,10 @@ EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fs
     apply coherentTopology.mem_sieves_of_hasEffectiveEpiFamily
     -- Need to show that the pullback of the family `π_n` to a given `Y i` is effective epimorphic
     rcases hY with ⟨i⟩
-    use β i, inferInstance, Y_n i, π_n i
-    constructor
-    · exact H i
-    · intro b
-      use Y_n i b, (𝟙 _), π_n i b ≫ π i
-      constructor
-      · exact ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩
-      · exact Category.id_comp (π_n i b ≫ π i)
+    use β i, inferInstance, Y_n i, π_n i, H i 
+    intro b
+    use Y_n i b, (𝟙 _), π_n i b ≫ π i, ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩
+    exact Category.id_comp (π_n i b ≫ π i)
 
 /--
 A sieve belongs to the coherent topology if and only if it contains a finite
