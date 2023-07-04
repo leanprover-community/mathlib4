@@ -94,7 +94,7 @@ For a precoherent category, any sieve that contains an `EffectiveEpiFamily` is a
 coherent topology.
 Note: This is one direction of `Sieve_iff_hasEffectiveEpiFamily`, but is needed for the proof.
 -/
-theorem Sieve_of_hasEffectiveEpiFamily (S : Sieve X) :
+theorem mem_sieves_of_hasEffectiveEpiFamily (S : Sieve X) :
     (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) →
           (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
@@ -171,7 +171,7 @@ EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fs
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]
     apply (coherentTopology C).pullback_stable'
-    apply coherentTopology.Sieve_of_hasEffectiveEpiFamily
+    apply coherentTopology.mem_sieves_of_hasEffectiveEpiFamily
     -- Need to show that the pullback of the family `π_n` to a given `Y i` is effective epimorphic
     rcases hY with ⟨i⟩
     use β i, inferInstance, Y_n i, π_n i
@@ -187,12 +187,11 @@ EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fs
 A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`
 -/
-theorem coherentTopology.Sieve_iff_hasEffectiveEpiFamily (S : Sieve X) :
+theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
+(S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
     (∃ (α : Type) (_ : Fintype α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
-          (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) := by
+        EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
-  · exact coherentTopology.Sieve_of_hasEffectiveEpiFamily S
   · intro h
     induction' h with Y T hS  Y Y R S _ _ a b
     · rcases hS with ⟨a, h, Y', π, h'⟩
@@ -226,5 +225,6 @@ theorem coherentTopology.Sieve_iff_hasEffectiveEpiFamily (S : Sieve X) :
         · exact h₁
         · exact fun a => (H a).1
       · exact fun c => (H c.fst).2 c.snd
+  · exact coherentTopology.mem_sieves_of_hasEffectiveEpiFamily S
 
 end CategoryTheory
