@@ -199,8 +199,7 @@ theorem Ideal.minimalPrimes_eq_comap :
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
   constructor
-  ·
-    exact fun H =>
+  · exact fun H =>
       let e := H.1.1.radical_le_iff.mpr H.1.2
       (H.2 ⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩ e).antisymm e
   · rintro (rfl : J = I.radical)

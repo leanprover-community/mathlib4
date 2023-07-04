@@ -389,8 +389,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   · rw [hn] at hk
     cases' (Nat.le_of_lt_succ hk).eq_or_lt with hk' hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]
-    ·
-      simpa [Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), Nat.succ_lt_succ_iff] using
+    · simpa [Nat.mod_eq_of_lt (Nat.succ_lt_succ hk'), Nat.succ_lt_succ_iff] using
         k.zero_le.trans_lt hk'
 #align list.form_perm_apply_mem_eq_self_iff List.formPerm_apply_mem_eq_self_iff
 

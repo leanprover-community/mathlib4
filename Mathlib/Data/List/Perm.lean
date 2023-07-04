@@ -1426,11 +1426,9 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
     rw [length_insertNth _ _ hk.le, length_insertNth _ _ (Nat.succ_le_of_lt hk)]
   refine' ext_nthLe hl fun n hn hn' => _
   rcases lt_trichotomy n k with (H | rfl | H)
-  ·
-    rw [nthLe_insertNth_of_lt _ _ _ _ H (H.trans hk),
+  · rw [nthLe_insertNth_of_lt _ _ _ _ H (H.trans hk),
       nthLe_insertNth_of_lt _ _ _ _ (H.trans (Nat.lt_succ_self _))]
-  ·
-    rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
+  · rw [nthLe_insertNth_self _ _ _ hk.le, nthLe_insertNth_of_lt _ _ _ _ (Nat.lt_succ_self _) hk,
       hk']
   · rcases(Nat.succ_le_of_lt H).eq_or_lt with (rfl | H')
     · rw [nthLe_insertNth_self _ _ _ (Nat.succ_le_of_lt hk)]
