@@ -191,8 +191,8 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   · calc
       ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
         rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
-      _ ≤ ∑' n, (∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n := (ENNReal.tsum_le_tsum hg)
-      _ = (∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + ∑' n, δ n := ENNReal.tsum_add
+      _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := (ENNReal.tsum_le_tsum hg)
+      _ = ∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
         refine' add_le_add _ hδ.le
         rw [← lintegral_tsum]

@@ -249,7 +249,7 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   apply sum_mem
   rintro c -
   rw [coeff_smul, Submodule.smul_mem_iff']
-  have : (∑ x : n, 1) = Fintype.card n := by rw [Finset.sum_const, card_univ, smul_eq_mul, mul_one]
+  have : ∑ x : n, 1 = Fintype.card n := by rw [Finset.sum_const, card_univ, smul_eq_mul, mul_one]
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
