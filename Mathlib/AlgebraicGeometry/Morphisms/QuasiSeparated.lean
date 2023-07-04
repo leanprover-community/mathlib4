@@ -480,7 +480,8 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       refine' le_inf_iff.mpr ⟨X.basicOpen_le f, le_of_eq rfl⟩
     · convert congr_arg (X.presheaf.map
         -- Porting note : needs to be explicit here
-        (homOfLE (by restrict_tac : X.basicOpen (X.presheaf.map (homOfLE (le_sup_left : S ≤ S ⊔ U.1)).op f) ≤ S)).op)
+        (homOfLE (by restrict_tac :
+          X.basicOpen (X.presheaf.map (homOfLE (le_sup_left : S ≤ S ⊔ U.1)).op f) ≤ S)).op)
         (X.sheaf.objSupIsoProdEqLocus_inv_fst S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using 1
       · delta Scheme.sheaf SheafedSpace.sheaf
         -- Porting note : was just a single `simp only [...]`
