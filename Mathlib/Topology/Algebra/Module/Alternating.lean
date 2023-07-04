@@ -421,8 +421,8 @@ variable (R)
 variable {A : Type _} [Semiring A] [SMul R A] [Module A M] [Module A N] [IsScalarTower R A M]
   [IsScalarTower R A N]
 
-/-- Reinterpret a continuous `A`-alternating map as a continuous `R`-alternating map, if `A` is an algebra over `R`
-and their actions on all involved modules agree with the action of `R` on `A`. -/
+/-- Reinterpret a continuous `A`-alternating map as a continuous `R`-alternating map, if `A` is an
+algebra over `R` and their actions on all involved modules agree with the action of `R` on `A`. -/
 def restrictScalars (f : Λ^ι⟮A; M; N⟯) : Λ^ι⟮R; M; N⟯ :=
   { f with toContinuousMultilinearMap := f.1.restrictScalars R }
 
