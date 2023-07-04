@@ -47,6 +47,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 /-- A morphism is `quasi_separated` if diagonal map is quasi-compact. -/
 @[mk_iff]
 class QuasiSeparated (f : X ⟶ Y) : Prop where
+  /-- A morphism is `quasi_separated` if diagonal map is quasi-compact. -/
   diagonalQuasiCompact : QuasiCompact (pullback.diagonal f)
 #align algebraic_geometry.quasi_separated AlgebraicGeometry.QuasiSeparated
 
