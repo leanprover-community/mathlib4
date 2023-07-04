@@ -172,7 +172,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w ; simp [w] }
+      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
 set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 

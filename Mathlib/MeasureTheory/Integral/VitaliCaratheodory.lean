@@ -249,7 +249,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge_of_aemeasurable [SigmaFinite 
     · have := le_g1 x
       simp only [h, Set.indicator_of_mem, top_le_iff] at this
       simp [this]
-    · have : f x = fmeas.mk f x := by rw [Set.compl_subset_comm] at hs ; exact hs h
+    · have : f x = fmeas.mk f x := by rw [Set.compl_subset_comm] at hs; exact hs h
       rw [this]
       exact (f_lt_g0 x).trans_le le_self_add
   · calc

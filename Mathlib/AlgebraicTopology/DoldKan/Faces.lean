@@ -86,7 +86,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by linarith⟩ : Fin (n + 2)) = 0 by
       simp only [this, Fin.natAdd_mk, Fin.castIso_mk, zero_comp, smul_zero]
-    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk] ; linarith)
+    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk]; linarith)
     dsimp
     linarith
   -- cleaning up the second sum
