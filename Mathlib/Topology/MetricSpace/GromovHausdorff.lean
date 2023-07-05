@@ -687,7 +687,7 @@ instance : SecondCountableTopology GHSpace := by
     the fact that `N p = N q`, this constructs `Ψ` between `s p` and `s q`, and then
     composing with the canonical inclusion we get `Φ`. -/
   have Npq : N p = N q := (Sigma.mk.inj_iff.1 hpq).1
-  let Ψ : s p → s q := fun x => (E q).symm (Fin.cast Npq ((E p) x))
+  let Ψ : s p → s q := fun x => (E q).symm (Fin.castIso Npq ((E p) x))
   let Φ : s p → q.Rep := fun x => Ψ x
   -- Use the almost isometry `Φ` to show that `p.rep` and `q.rep`
   -- are within controlled Gromov-Hausdorff distance.
@@ -712,7 +712,7 @@ instance : SecondCountableTopology GHSpace := by
       let z := (E p).symm ⟨i, hip⟩
       use z
       have C1 : (E p) z = ⟨i, hip⟩ := (E p).apply_symm_apply ⟨i, hip⟩
-      have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
+      have C2 : Fin.castIso Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
       have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by
         rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
       have : Φ z = y := by simp only; rw [C1, C2, C3]
@@ -730,13 +730,13 @@ instance : SecondCountableTopology GHSpace := by
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [Equiv.apply_symm_apply, Fin.coe_castIso]
       -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
       have j' : j = ((E q) (Ψ y)).1 := by
-        simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+        simp only [Equiv.apply_symm_apply, Fin.coe_castIso]
       -- Express `dist x y` in terms of `F p`
       have : (F p).2 ((E p) x) ((E p) y) = ⌊ε⁻¹ * dist x y⌋ := by
         simp only [(E p).symm_apply_apply]
@@ -764,7 +764,6 @@ instance : SecondCountableTopology GHSpace := by
         -- generalize F q = f at hpq ⊢
         -- subst hpq
         -- rfl
-
       rw [Ap, Aq] at this
       -- deduce that the distances coincide up to `ε`, by a straightforward computation
       -- that should be automated
@@ -774,7 +773,6 @@ instance : SecondCountableTopology GHSpace := by
             (abs_mul _ _).symm
           _ = |ε⁻¹ * dist x y - ε⁻¹ * dist (Ψ x) (Ψ y)| := by congr; ring
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
-
       calc
         |dist x y - dist (Ψ x) (Ψ y)| = ε * ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)| := by
           rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
@@ -782,7 +780,6 @@ instance : SecondCountableTopology GHSpace := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
         _ ≤ ε * 1 := (mul_le_mul_of_nonneg_left I (le_of_lt εpos))
         _ = ε := mul_one _
-
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
     _ ≤ ε + ε / 2 + ε := main
@@ -825,7 +822,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     · rcases hcov _ (Set.not_not_mem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
       rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
       rw [hN, Cardinal.natCast_le] at scard
-      have : (#s) = (#Fin N) := by rw [hN, Cardinal.mk_fin]
+      have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
       cases' Quotient.exact this with E
       use s, N, scard, E
       simp only [scover, imp_true_iff]
@@ -841,7 +838,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
   -- It remains to show that if `F p = F q`, then `p` and `q` are `ε`-close
   rintro ⟨p, pt⟩ ⟨q, qt⟩ hpq
   have Npq : N p = N q := Fin.ext_iff.1 (Sigma.mk.inj_iff.1 hpq).1
-  let Ψ : s p → s q := fun x => (E q).symm (Fin.cast Npq ((E p) x))
+  let Ψ : s p → s q := fun x => (E q).symm (Fin.castIso Npq ((E p) x))
   let Φ : s p → q.Rep := fun x => Ψ x
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
     -- to prove the main inequality, argue that `s p` is `ε`-dense in `p`, and `s q` is `ε`-dense
@@ -867,7 +864,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       let z := (E p).symm ⟨i, hip⟩
       use z
       have C1 : (E p) z = ⟨i, hip⟩ := (E p).apply_symm_apply ⟨i, hip⟩
-      have C2 : Fin.cast Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
+      have C2 : Fin.castIso Npq ⟨i, hip⟩ = ⟨i, hi⟩ := rfl
       have C3 : (E q).symm ⟨i, hi⟩ = ⟨y, ys⟩ := by
         rw [ihi_eq]; exact (E q).symm_apply_apply ⟨y, ys⟩
       have : Φ z = y := by simp only; rw [C1, C2, C3]
@@ -884,12 +881,12 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
       have hiq : i < N q := by rwa [Npq] at hip
-      have i' : i = (E q) (Ψ x) := by simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+      have i' : i = (E q) (Ψ x) := by simp only [Equiv.apply_symm_apply, Fin.coe_castIso]
       -- introduce `j`, that codes both `y` and `Φ y` in `fin (N p) = fin (N q)`
       let j : ℕ := E p y
       have hjp : j < N p := ((E p) y).2
       have hjq : j < N q := by rwa [Npq] at hjp
-      have j' : j = (E q) (Ψ y) := by simp only [Equiv.apply_symm_apply, Fin.coe_cast]
+      have j' : j = (E q) (Ψ y) := by simp only [Equiv.apply_symm_apply, Fin.coe_castIso]
       -- Express `dist x y` in terms of `F p`
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
