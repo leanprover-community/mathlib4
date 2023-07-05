@@ -160,8 +160,8 @@ variable (S : Subgroup Rˣ) [Finite S]
 instance subgroup_units_cyclic : IsCyclic S := by
   -- porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
-  . exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  . exact Units.ext.comp Subtype.val_injective
+  · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
+  · exact Units.ext.comp Subtype.val_injective
 #align subgroup_units_cyclic subgroup_units_cyclic
 
 end

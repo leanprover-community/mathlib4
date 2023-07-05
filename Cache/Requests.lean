@@ -103,6 +103,10 @@ def downloadFiles (hashMap : IO.HashMap) (forceDownload : Bool) (parallel : Bool
           msg := msg ++ s!", {failed} failed"
         IO.eprintln msg
       IO.FS.removeFile IO.CURLCFG
+      if success + failed < done then
+        IO.eprintln "Warning: some files were not found in the cache."
+        IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
+        IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
       pure failed
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do

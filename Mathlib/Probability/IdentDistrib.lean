@@ -104,7 +104,7 @@ protected theorem trans {ρ : Measure δ} {h : δ → γ} (h₁ : IdentDistrib f
 protected theorem comp_of_aemeasurable {u : γ → δ} (h : IdentDistrib f g μ ν)
     (hu : AEMeasurable u (Measure.map f μ)) : IdentDistrib (u ∘ f) (u ∘ g) μ ν :=
   { aemeasurable_fst := hu.comp_aemeasurable h.aemeasurable_fst
-    aemeasurable_snd := by rw [h.map_eq] at hu ; exact hu.comp_aemeasurable h.aemeasurable_snd
+    aemeasurable_snd := by rw [h.map_eq] at hu; exact hu.comp_aemeasurable h.aemeasurable_snd
     map_eq := by
       rw [← AEMeasurable.map_map_of_aemeasurable hu h.aemeasurable_fst, ←
         AEMeasurable.map_map_of_aemeasurable _ h.aemeasurable_snd, h.map_eq]
