@@ -21,7 +21,7 @@ In our formalism, a fiber bundle is by definition the type `Bundle.TotalSpace F 
 `E : B → Type _` is a function associating to `x : B` the fiber over `x`. This type
 `Bundle.TotalSpace F E` is a type of pairs `⟨proj : B, snd : E proj⟩`.
 
-To have a fiber bundle structure on `Bundle.TotalSpace E`, one should
+To have a fiber bundle structure on `Bundle.TotalSpace F E`, one should
 additionally have the following data:
 
 * `F` should be a topological space;
@@ -60,7 +60,7 @@ fiber bundle from trivializations given as local equivalences with minimum addit
 Let `Z : FiberBundleCore ι B F`. Then we define
 
 * `Z.Fiber x`     : the fiber above `x`, homeomorphic to `F` (and defeq to `F` as a type).
-* `Z.TotalSpace`  : the total space of `Z`, defined as `Bundle.TotalSpace F Z.fiber` with a custom
+* `Z.TotalSpace`  : the total space of `Z`, defined as `Bundle.TotalSpace F Z.Fiber` with a custom
                     topology.
 * `Z.proj`        : projection from `Z.TotalSpace` to `B`. It is continuous.
 * `Z.localTriv i` : for `i : ι`, bundle trivialization above the set `Z.baseSet i`, which is an
@@ -435,7 +435,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 #align fiber_bundle_core.topological_space_fiber FiberBundleCore.topologicalSpaceFiber
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
-It is by definition equal to `Bundle.TotalSpace Z.fiber`. -/
+It is by definition equal to `Bundle.TotalSpace F Z.Fiber`. -/
 @[reducible]
 def TotalSpace := Bundle.TotalSpace F Z.Fiber
 #align fiber_bundle_core.total_space FiberBundleCore.TotalSpace
