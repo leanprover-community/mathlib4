@@ -249,7 +249,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
     haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
     haveI := fun i => isNoetherian_submodule' (torsionBy R N <| p i ^ e i)
     exact fun i =>
-      torsion_by_prime_power_decomposition (hp i)
+      torsion_by_prime_power_decomposition.{u, v} (hp i)
         ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
   classical
   refine'
@@ -263,6 +263,8 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
   simp only
 #align module.equiv_direct_sum_of_is_torsion Module.equiv_directSum_of_isTorsion
 
+set_option pp.universes true
+
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.-/
@@ -272,7 +274,8 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
   haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
   haveI := isNoetherian_submodule' (torsion R N)
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
-  obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ := equiv_directSum_of_isTorsion (@torsion_isTorsion R N _ _ _)
+  obtain ⟨I, fI, p, hp, e, ⟨h⟩⟩ :=
+    equiv_directSum_of_isTorsion.{u, v} (@torsion_isTorsion R N _ _ _)
   obtain ⟨n, ⟨g⟩⟩ := @Module.basisOfFiniteTypeTorsionFree' R _ _ _ (N ⧸ torsion R N) _ _ _ _
   haveI : Module.Projective R (N ⧸ torsion R N) := Module.Projective.of_basis ⟨g⟩
   obtain ⟨f, hf⟩ := Module.projective_lifting_property _ LinearMap.id (torsion R N).mkQ_surjective
@@ -280,7 +283,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ⟨n, I, fI, p, hp, e,
       ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype _ hf).symm.trans <|
           (h.prod g).trans <| LinearEquiv.prodComm R _ _⟩⟩
-  rw [range_subtype, ker_mkq]
+  rw [range_subtype, ker_mkQ]
 #align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum
 
 end Module
