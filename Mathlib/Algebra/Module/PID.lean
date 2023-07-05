@@ -251,7 +251,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
         ((isTorsion'_powers_iff <| p i).mpr fun x => ⟨e i, smul_torsionBy _ _⟩)
   classical
   refine'
-    ⟨Σ i, Fin (this i).choose, inferInstance, fun ⟨i, j⟩ => p i, fun ⟨i, j⟩ => hp i, fun ⟨i, j⟩ =>
+    ⟨Σ i, Fin (this i).choose, inferInstance, fun ⟨i, _⟩ => p i, fun ⟨i, _⟩ => hp i, fun ⟨i, j⟩ =>
       (this i).choose_spec.choose j,
       ⟨(LinearEquiv.ofBijective (DirectSum.coeLinearMap _) h).symm.trans <|
           (Dfinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
@@ -280,7 +280,8 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
   refine'
     ⟨n, I, fI, p, hp, e,
       ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype _ hf).symm.trans <|
-          (h.prod g).trans <| LinearEquiv.prodComm R _ _⟩⟩
+          (h.prod g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
+
   rw [range_subtype, ker_mkQ]
 #align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum
 
