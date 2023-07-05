@@ -12,21 +12,18 @@ import Mathlib.Algebra.Module.Basic
 
 /-!
 # Bundle
-
-> THIS FILE IS SYNCHRONIZED WITH MATHLIB4.
-> Any changes to this file require a corresponding PR to mathlib4.
 Basic data structure to implement fiber bundles, vector bundles (maybe fibrations?), etc. This file
 should contain all possible results that do not involve any topology.
 
-We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type*`.
+We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type _`.
 
-We define `bundle.total_space F E` to be the type of pairs `⟨b, x⟩`, where `b : B` and `x : E x`.
+We define `Bundle.TotalSpaceₓ F E` to be the type of pairs `⟨b, x⟩`, where `b : B` and `x : E x`.
 This type is isomorphic to `Σ x, E x` and uses an extra argument `F` for reasons explained below. In
 general, the constructions of fiber bundles we will make will be of this form.
 
 ## Main Definitions
 
-* `bundle.total_space` the total space of a bundle.
+* `Bundle.TotalSpaceₓ` the total space of a bundle.
 * `bundle.total_space.proj` the projection from the total space to the base space.
 * `bundle.total_space.mk` the constructor for the total space.
 
@@ -36,7 +33,7 @@ general, the constructions of fiber bundles we will make will be of this form.
   canonical disjoint union `Σ x, E x` because the total space usually has a different topology and
   Lean 4 `simp` fails to apply lemmas about `Σ x, E x` to elements of the total space.
 
-- The definition of `bundle.total_space` has an unused argument `F`. The reason is that in some
+- The definition of `Bundle.TotalSpaceₓ` has an unused argument `F`. The reason is that in some
   constructions (e.g., `bundle.continuous_linear_map.vector_bundle`) we need access to the atlas of
   trivializations of original fiber bundles to construct the topology on the total space of the new
   fiber bundle.
@@ -45,16 +42,19 @@ general, the constructions of fiber bundles we will make will be of this form.
 - https://en.wikipedia.org/wiki/Bundle_(mathematics)
 -/
 
+open Function Set
 
 namespace Bundle
 
 variable {B F : Type _} (E : B → Type _)
 
-/-- `bundle.total_space E` is the total space of the bundle. It consists of pairs
+/-- `Bundle.TotalSpaceₓ E` is the total space of the bundle. It consists of pairs
 `(proj : B, snd : E proj)`.
 -/
 @[ext]
 structure TotalSpace (F : Type _) (E : B → Type _) where
+  /-- `bundle.total_space.proj` is the canonical projection `Bundle.TotalSpaceₓ E → B` from the
+  total space to the base space. -/
   proj : B
   snd : E proj
 #align bundle.total_space Bundle.TotalSpaceₓ
@@ -64,53 +64,50 @@ instance [Inhabited B] [Inhabited (E default)] : Inhabited (TotalSpace F E) :=
 
 variable {E}
 
-/-- `bundle.total_space.proj` is the canonical projection `bundle.total_space E → B` from the
-total space to the base space. -/
-add_decl_doc total_space.proj
+scoped notation:max "π" F':max E':max => Bundle.TotalSpace.proj (F := F') (E := E')
 
--- this notation won't be used in the pretty-printer
-scoped notation "π" => @Bundle.TotalSpace.proj _
+abbrev TotalSpace.mk' (F : Type _) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
 
--- TODO: try `abbrev` in Lean 4
-scoped notation "total_space.mk'" F:arg => @Bundle.TotalSpace.mk _ F _
-
-#print Bundle.TotalSpace.mk_cast /-
 theorem TotalSpace.mk_cast {x x' : B} (h : x = x') (b : E x) :
-    (total_space.mk' F) x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
+    .mk' F x' (cast (congr_arg E h) b) = TotalSpace.mk x b := by subst h; rfl
 #align bundle.total_space.mk_cast Bundle.TotalSpace.mk_cast
--/
+
+@[simp 1001, mfld_simps 1001]
+theorem TotalSpace.mk_inj {b : B} {y y' : E b} : mk' F b y = mk' F b y' ↔ y = y' := by
+  simp [TotalSpace.ext_iff]
+
+theorem TotalSpace.mk_injective (b : B) : Injective (mk b : E b → TotalSpace F E) := fun _ _ ↦
+  mk_inj.1
 
 instance {x : B} : CoeTC (E x) (TotalSpace F E) :=
   ⟨TotalSpace.mk x⟩
 
-@[simp]
-theorem TotalSpace.coe_proj (x : B) (v : E x) : (v : TotalSpace F E).proj = x :=
-  rfl
-#align bundle.total_space.coe_proj Bundle.TotalSpaceₓ.coe_proj
+#noalign bundle.total_space.coe_proj
+#noalign bundle.total_space.coe_snd
+#noalign bundle.total_space.coe_eq_mk
 
-@[simp]
-theorem TotalSpace.coe_snd {x : B} {y : E x} : (y : TotalSpace F E).snd = y :=
-  rfl
-#align bundle.total_space.coe_snd Bundle.TotalSpaceₓ.coe_snd
-
-theorem TotalSpace.coe_eq_mk {x : B} (v : E x) : (v : TotalSpace F E) = TotalSpace.mk x v :=
-  rfl
-#align bundle.total_space.coe_eq_mk Bundle.TotalSpaceₓ.coe_eq_mk
-
-#print Bundle.TotalSpace.eta /-
-theorem TotalSpace.eta (z : TotalSpace F E) : TotalSpace.mk z.proj z.2 = z := by cases z <;> rfl
+theorem TotalSpace.eta (z : TotalSpace F E) : TotalSpace.mk z.proj z.2 = z := rfl
 #align bundle.total_space.eta Bundle.TotalSpace.eta
--/
+
+@[simp]
+theorem TotalSpace.exists {p : TotalSpace F E → Prop} : (∃ x, p x) ↔ ∃ b y, p ⟨b, y⟩ :=
+  ⟨fun ⟨x, hx⟩ ↦ ⟨x.1, x.2, hx⟩, fun ⟨b, y, h⟩ ↦ ⟨⟨b, y⟩, h⟩⟩
+
+@[simp]
+theorem TotalSpace.range_mk (b : B) : range ((↑) : E b → TotalSpace F E) = π F E ⁻¹' {b} := by
+  apply Subset.antisymm
+  · rintro _ ⟨x, rfl⟩
+    rfl
+  · rintro ⟨_, x⟩ rfl
+    exact ⟨x, rfl⟩
 
 notation:100 -- notation for the direct sum of two bundles over the same base
 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
-#print Bundle.Trivial /-
-/-- `bundle.trivial B F` is the trivial bundle over `B` of fiber `F`. -/
-@[reducible, nolint unused_arguments]
+/-- `Bundle.Trivial B F` is the trivial bundle over `B` of fiber `F`. -/
+@[reducible, nolint unusedArguments]
 def Trivial (B : Type _) (F : Type _) : B → Type _ := fun _ => F
 #align bundle.trivial Bundle.Trivial
--/
 
 /-- The trivial bundle, unlike other bundles, has a canonical projection on the fiber. -/
 def TotalSpace.trivialSnd (B : Type _) (F : Type _) : TotalSpace F (Bundle.Trivial B F) → F :=
@@ -130,62 +127,37 @@ section Pullback
 
 variable {B' : Type _}
 
-#print Bundle.Pullback /-
-/-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by `pullback f E`
-or `f *ᵖ E`,  is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
+/-- The pullback of a bundle `E` over a base `B` under a map `f : B' → B`, denoted by
+`Bundle.Pullback f E` or `f *ᵖ E`, is the bundle over `B'` whose fiber over `b'` is `E (f b')`. -/
 def Pullback (f : B' → B) (E : B → Type _) : B' → Type _ := fun x => E (f x)
 #align bundle.pullback Bundle.Pullback
--/
 
 notation f " *ᵖ " E:arg => Pullback f E
 
 instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) :=
   ‹Nonempty (E (f x))›
 
-#print Bundle.pullbackTotalSpaceEmbedding /-
 /-- Natural embedding of the total space of `f *ᵖ E` into `B' × total_space E`. -/
 @[simp]
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' × TotalSpace F E :=
   fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
 #align bundle.pullback_total_space_embedding Bundle.pullbackTotalSpaceEmbedding
--/
 
-#print Bundle.Pullback.lift /-
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
 @[simps (config := { attrs := [`simp, `mfld_simps] })]
 def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩
 #align bundle.pullback.lift Bundle.Pullback.lift
--/
 
-#print Bundle.Pullback.lift_mk /-
 @[simp, mfld_simps]
 theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :
-    Pullback.lift f ((total_space.mk' F) x y) = ⟨f x, y⟩ :=
+    Pullback.lift f (.mk' F x y) = ⟨f x, y⟩ :=
   rfl
 #align bundle.pullback.lift_mk Bundle.Pullback.lift_mk
--/
 
 end Pullback
 
-section FiberStructures
-
-#print Bundle.coe_snd_map_apply /-
-@[simp]
-theorem coe_snd_map_apply [∀ x, Add (E x)] (x : B) (v w : E x) :
-    (↑(v + w) : TotalSpace F E).snd = (v : TotalSpace F E).snd + (w : TotalSpace F E).snd :=
-  rfl
-#align bundle.coe_snd_map_apply Bundle.coe_snd_map_apply
--/
-
-#print Bundle.coe_snd_map_smul /-
-@[simp]
-theorem coe_snd_map_smul {R} [∀ x, SMul R (E x)] (x : B) (r : R) (v : E x) :
-    (↑(r • v) : TotalSpace F E).snd = r • (v : TotalSpace F E).snd :=
-  rfl
-#align bundle.coe_snd_map_smul Bundle.coe_snd_map_smul
--/
-
-end FiberStructures
+-- Porting note: not needed since Lean unfolds coercion
+#noalign bundle.coe_snd_map_apply
+#noalign bundle.coe_snd_map_smul
 
 end Bundle
-

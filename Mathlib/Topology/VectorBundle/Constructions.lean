@@ -77,16 +77,16 @@ end Bundle.Trivial
 section
 
 variable (𝕜 : Type _) {B : Type _} [NontriviallyNormedField 𝕜] [TopologicalSpace B] (F₁ : Type _)
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type _) [TopologicalSpace (TotalSpace E₁)]
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type _) [TopologicalSpace (TotalSpace F₁ E₁)]
   (F₂ : Type _) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type _)
-  [TopologicalSpace (TotalSpace E₂)]
+  [TopologicalSpace (TotalSpace F₂ E₂)]
 
 namespace Trivialization
 
 variable {F₁ E₁ F₂ E₂}
 variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
-  [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] (e₁ e₁' : Trivialization F₁ (π E₁))
-  (e₂ e₂' : Trivialization F₂ (π E₂))
+  [∀ x, AddCommMonoid (E₂ x)] [∀ x, Module 𝕜 (E₂ x)] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
+  (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
 instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
   linear := fun _ ⟨h₁, h₂⟩ =>
@@ -151,8 +151,8 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 variable {𝕜 F₁ E₁ F₂ E₂}
 
 @[simp] -- porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
-theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π E₁)}
-    {e₂ : Trivialization F₂ (π E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
+theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
+    {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :
     (e₁.prod e₂).continuousLinearEquivAt 𝕜 x hx =
       (e₁.continuousLinearEquivAt 𝕜 x hx.1).prod (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
@@ -175,11 +175,11 @@ instance [i : ∀ x : B, AddCommMonoid (E x)] (x : B') : AddCommMonoid ((f *ᵖ 
 instance [Semiring R] [∀ x : B, AddCommMonoid (E x)] [i : ∀ x, Module R (E x)] (x : B') :
     Module R ((f *ᵖ E) x) := i _
 
-variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace E)] [NontriviallyNormedField 𝕜]
+variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module 𝕜 (E x)] {K : Type _} [ContinuousMapClass K B' B]
 
-instance Trivialization.pullback_linear (e : Trivialization F (π E)) [e.IsLinear 𝕜] (f : K) :
+instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
     (@Trivialization.pullback _ _ _ B' _ _ _ _ _ _ _ e f).IsLinear 𝕜 where
   linear _ h := e.linear 𝕜 h
 #align trivialization.pullback_linear Trivialization.pullback_linear

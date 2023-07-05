@@ -189,7 +189,7 @@ protected theorem IsFiberBundle.isCoveringMap {F : Type _} [TopologicalSpace F] 
 #align is_fiber_bundle.is_covering_map IsFiberBundle.isCoveringMap
 
 protected theorem FiberBundle.isCoveringMap {F : Type _} {E : X → Type _} [TopologicalSpace F]
-    [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace E)] [∀ x, TopologicalSpace (E x)]
-    [FiberBundle F E] : IsCoveringMap (π E) :=
+    [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
+    [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 #align fiber_bundle.is_covering_map FiberBundle.isCoveringMap
