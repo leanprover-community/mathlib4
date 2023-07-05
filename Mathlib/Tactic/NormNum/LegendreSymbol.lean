@@ -346,7 +346,7 @@ partial def proveJacobiSymNat (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
         show (er : Q(ℤ)) × Q(jacobiSymNat 1 $eb = $er) from
           ⟨mkRawIntLit 1, q(jacobiSymNat.one_left $eb)⟩
       | a =>
-        match a % 0 with
+        match a % 2 with
         | 0 =>
           have hb₀ : Q(Nat.beq ($eb / 2) 0 = false) := (q(Eq.refl false) : Expr)
           have ha : Q(Nat.mod $ea 2 = 0) := (q(Eq.refl 0) : Expr)

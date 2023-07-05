@@ -408,8 +408,8 @@ theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} 
 theorem zero_or_exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
     s.sup p x = 0 ∨ ∃ i ∈ s, s.sup p x = p i x := by
   rcases Finset.eq_empty_or_nonempty s with (rfl|hs)
-  . left; rfl
-  . right; exact exists_apply_eq_finset_sup p hs x
+  · left; rfl
+  · right; exact exists_apply_eq_finset_sup p hs x
 
 theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥0) :
     s.sup (C • p) = C • s.sup p := by
@@ -483,7 +483,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
-    dsimp ; positivity⟩
+    dsimp; positivity⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
 noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
@@ -1226,7 +1226,7 @@ protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [Cont
 theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
   refine'
-    Seminorm.continuous
+    Seminorm.continuous (r := 1)
       (Filter.mem_of_superset (IsOpen.mem_nhds _ <| q.mem_ball_self zero_lt_one)
         (ball_antitone hpq))
   rw [ball_zero_eq]
@@ -1256,17 +1256,17 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
   have cpos : 0 < ‖c‖ := lt_trans (zero_lt_one : (0 :ℝ) < 1) hc
   have cnpos : 0 < ‖c^(n+1)‖ := by rw [norm_zpow]; exact lt_trans xεpos hn.2
   refine ⟨-(n+1), ?_, ?_, ?_, ?_⟩
-  . show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
-  . show p ((c ^ (-(n + 1))) • x) < ε
+  · show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
+  · show p ((c ^ (-(n + 1))) • x) < ε
     rw [map_smul_eq_mul, zpow_neg, norm_inv, ← div_eq_inv_mul, div_lt_iff cnpos, mul_comm,
         norm_zpow]
     exact (div_lt_iff εpos).1 (hn.2)
-  . show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
+  · show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
     rw [zpow_neg, div_le_iff cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
         zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel (ne_of_gt cpos),
         one_mul, ← div_eq_inv_mul, le_div_iff (zpow_pos_of_pos cpos _), mul_comm]
     exact (le_div_iff εpos).1 hn.1
-  . show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
+  · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
     rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
         ← div_eq_inv_mul]

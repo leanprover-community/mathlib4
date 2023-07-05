@@ -46,7 +46,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
             HasZeroMorphisms.comp_zero (Fork.ι s) N]
           rfl)
     (fun s => LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
-    LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h] ; rfl)
+    LinearMap.ext fun x => Subtype.ext_iff_val.2 (by simp [← h]; rfl)
 #align Module.kernel_is_limit ModuleCat.kernelIsLimit
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/

@@ -418,7 +418,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
   refine' (intervalIntegral.norm_integral_le_of_norm_le_const _).trans _
   pick_goal 3
   · rw [sub_zero]
-    conv_lhs => simp only [mul_comm _ (|c|)]
+    conv_lhs => simp only [mul_comm _ |c|]
     conv_rhs =>
       conv =>
         congr
@@ -547,7 +547,7 @@ theorem _root_.fourier_transform_gaussian_pi (hb : 0 < b.re) :
   convert _root_.fourier_transform_gaussian h1 (-2 * π * t) using 1
   · congr 1 with x : 1
     congr 2
-    all_goals push_cast ; ring
+    all_goals push_cast; ring
   · conv_lhs => rw [mul_comm]
     congr 2
     · field_simp [ofReal_ne_zero.mpr pi_ne_zero]; ring

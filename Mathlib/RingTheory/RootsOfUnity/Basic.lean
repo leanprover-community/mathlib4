@@ -488,7 +488,7 @@ protected theorem mem_rootsOfUnity {ζ : Mˣ} {n : ℕ+} (h : IsPrimitiveRoot ζ
   h.pow_eq_one
 #align is_primitive_root.mem_roots_of_unity IsPrimitiveRoot.mem_rootsOfUnity
 
-/-- If there is a `n`-th primitive root of unity in `R` and `b` divides `n`,
+/-- If there is an `n`-th primitive root of unity in `R` and `b` divides `n`,
 then there is a `b`-th primitive root of unity in `R`. -/
 theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod : n = a * b) :
     IsPrimitiveRoot (ζ ^ a) b := by
@@ -663,7 +663,7 @@ theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
 
 /-- If `1 < k` then `(∑ i in range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
-    (∑ i in range k, ζ ^ i) = 0 := by
+    ∑ i in range k, ζ ^ i = 0 := by
   refine' eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) _
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 #align is_primitive_root.geom_sum_eq_zero IsPrimitiveRoot.geom_sum_eq_zero

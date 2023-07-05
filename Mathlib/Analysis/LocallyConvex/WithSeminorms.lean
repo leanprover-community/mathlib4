@@ -75,7 +75,7 @@ namespace SeminormFamily
 
 /-- The sets of a filter basis for the neighborhood filter of 0. -/
 def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
-  ⋃ (s : Finset ι) (r) (_ : 0 < r), singleton <| ball (s.sup p) (0 : E) r
+  ⋃ (s : Finset ι) (r) (_ : 0 < r), singleton (ball (s.sup p) (0 : E) r)
 #align seminorm_family.basis_sets SeminormFamily.basisSets
 
 variable (p : SeminormFamily 𝕜 E ι)
@@ -440,7 +440,7 @@ theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf (p : SeminormFamily 𝕜 E
 theorem WithSeminorms.continuous_seminorm [NontriviallyNormedField 𝕝] [Module 𝕝 E]
     [ContinuousConstSMul 𝕝 E] {p : SeminormFamily 𝕝 E ι} (hp : WithSeminorms p) (i : ι) :
     Continuous (p i) := by
-  refine Seminorm.continuous (r := 1) ?_
+  refine' Seminorm.continuous (r := 1) _
   rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp, ball_zero_eq_preimage_ball]
   exact Filter.mem_iInf_of_mem i (Filter.preimage_mem_comap <| Metric.ball_mem_nhds _ one_pos)
 #align with_seminorms.continuous_seminorm WithSeminorms.continuous_seminorm
@@ -764,9 +764,9 @@ lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
   have : 0 < ‖c‖ / ε := by positivity
   refine ⟨‖c‖ / ε, this, fun x ↦ ?_⟩
   by_cases hx : ‖x‖ = 0
-  . rw [hx, mul_zero]
+  · rw [hx, mul_zero]
     exact le_of_eq (map_eq_zero_of_norm_zero q hq hx)
-  . refine (normSeminorm 𝕜 F).bound_of_shell q ε_pos hc (fun x hle hlt ↦ ?_) hx
+  · refine (normSeminorm 𝕜 F).bound_of_shell q ε_pos hc (fun x hle hlt ↦ ?_) hx
     refine (le_of_lt <| show q x < _ from hε hlt).trans ?_
     rwa [← div_le_iff' this, one_div_div]
 
