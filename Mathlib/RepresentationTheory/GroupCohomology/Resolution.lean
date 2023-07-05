@@ -109,7 +109,7 @@ set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ GroupCohomology.Resolution.actionDiagonalSucc
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
-    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
+    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSuccEmb i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · refine' Prod.ext rfl (funext fun x => _)
@@ -121,7 +121,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
-      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
+      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSuccEmb_fin_succ] -/
     · dsimp [actionDiagonalSucc]
       erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
       exact Fin.cases rfl (fun i => rfl) x
@@ -178,7 +178,7 @@ variable {k G n}
 
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
-      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
+      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSuccEmb i))⁻¹ * f i.succ) a := by
 /- Porting note: broken proof was
   dsimp only [diagonalSucc]
   simpa only [Iso.trans_hom, Iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
@@ -353,7 +353,7 @@ inverse map sends a function `f : Gⁿ → A` to the representation morphism sen
 to `A`. -/
 theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
-      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
+      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSuccEmb i))⁻¹ * x i.succ) := by
   unfold diagonalHomEquiv
 /- Porting note: broken proof was
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,

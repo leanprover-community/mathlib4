@@ -145,7 +145,7 @@ def sum [Add α] [Zero α] : ∀ {m} (_ : Fin m → α), α
   | 0, _ => 0
   | 1, v => v 0
   -- porting note: inline `∘` since it is no longer reducible
-  | _ + 2, v => sum (fun i => v (Fin.castSucc i)) + v (Fin.last _)
+  | _ + 2, v => sum (fun i => v (Fin.castSuccEmb i)) + v (Fin.last _)
 #align fin_vec.sum FinVec.sum
 
 open BigOperators
@@ -160,7 +160,7 @@ example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
 theorem sum_eq [AddCommMonoid α] : ∀ {m} (a : Fin m → α), sum a = ∑ i, a i
   | 0, a => rfl
   | 1, a => (Fintype.sum_unique a).symm
-  | n + 2, a => by rw [Fin.sum_univ_castSucc, sum, sum_eq]
+  | n + 2, a => by rw [Fin.sum_univ_castSuccEmb, sum, sum_eq]
 #align fin_vec.sum_eq FinVec.sum_eq
 
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=

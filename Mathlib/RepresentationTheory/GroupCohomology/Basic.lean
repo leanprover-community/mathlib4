@@ -138,12 +138,12 @@ and the homogeneous `linearYonedaObjResolution`. -/
     ←Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
   simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul, Fin.succAbove_zero,
     diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1)), Function.comp_apply,
-    Fin.partialProd_succ, Fin.castSucc_zero, Fin.partialProd_zero, one_mul]
+    Fin.partialProd_succ, Fin.castSuccEmb_zero, Fin.partialProd_zero, one_mul]
   congr 1
   · congr
     ext
-    have := Fin.partialProd_right_inv g (Fin.castSucc x)
-    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at *
+    have := Fin.partialProd_right_inv g (Fin.castSuccEmb x)
+    simp only [mul_inv_rev, Fin.castSuccEmb_fin_succ] at *
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · exact Finset.sum_congr rfl fun j hj => by
       rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
@@ -158,11 +158,11 @@ and the homogeneous `linearYonedaObjResolution`. -/
   simp only [←Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   rw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
-  simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
+  simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSuccEmb_zero,
     Fin.partialProd_zero, one_mul]
   rcongr x
-  · have := Fin.partialProd_right_inv g (Fin.castSucc x)
-    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
+  · have := Fin.partialProd_right_inv g (Fin.castSuccEmb x)
+    simp only [mul_inv_rev, Fin.castSuccEmb_fin_succ] at this ⊢
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
   · rw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
 #align inhomogeneous_cochains.d_eq InhomogeneousCochains.d_eq

@@ -51,9 +51,10 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
   -- Porting note: Lean can now find these instances without help...
   -- letI : Module.Finite R (Fin n.succ → R) := Module.Finite.pi
   -- letI : Module.Free R (Fin n.succ → R) := Module.Free.pi _ _
-  let g : (Fin (n + 1) → R) →ₗ[R] Fin (n + 1) → R := (ExtendByZero.linearMap R castSucc).comp f
-  have hg : Injective g := (extend_injective (RelEmbedding.injective castSucc) _).comp hf
-  have hnex : ¬∃ i : Fin n, castSucc i = last n := fun ⟨i, hi⟩ => ne_of_lt (castSucc_lt_last i) hi
+  let g : (Fin (n + 1) → R) →ₗ[R] Fin (n + 1) → R := (ExtendByZero.linearMap R castSuccEmb).comp f
+  have hg : Injective g := (extend_injective (RelEmbedding.injective castSuccEmb) _).comp hf
+  have hnex : ¬∃ i : Fin n, castSuccEmb i = last n :=
+    fun ⟨i, hi⟩ => ne_of_lt (castSuccEmb_lt_last i) hi
   let a₀ := (minpoly R g).coeff 0
   have : a₀ ≠ 0 := minpoly_coeff_zero_of_injective hg
   have : a₀ = 0 := by
