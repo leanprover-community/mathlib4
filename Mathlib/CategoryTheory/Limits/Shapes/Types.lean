@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.limits.shapes.types
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,7 +76,7 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
 @[simp 1001]
 theorem pi_map_π_apply {β : Type v} {f g : β → TypeMax.{v, u}} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : (∏ g) → g b) (Pi.map α x) = α b ((Pi.π f b : (∏ f) → f b) x) :=
+    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
   Limit.map_π_apply _ _ _
 #align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
 
@@ -84,7 +84,7 @@ theorem pi_map_π_apply {β : Type v} {f g : β → TypeMax.{v, u}} (α : ∀ j,
 with specialized universes. -/
 @[simp 1001]
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : (∏ g) → g b) (Pi.map α x) = α b ((Pi.π f b : (∏ f) → f b) x) :=
+    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
   Limit.map_π_apply' _ _ _
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
@@ -221,8 +221,8 @@ noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor 
   refine' NatIso.ofComponents (fun X => _) (fun _ => _)
   · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
-    . apply Limits.prod.hom_ext <;> simp <;> rfl
-  . ext : 2
+    · apply Limits.prod.hom_ext <;> simp <;> rfl
+  · ext : 2
     apply Limits.prod.hom_ext <;> simp <;> rfl
 #align category_theory.limits.types.binary_product_iso_prod CategoryTheory.Limits.Types.binaryProductIsoProd
 
@@ -330,7 +330,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
-    IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range fᶜ) → Y)) := by
+    IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
   refine' ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
@@ -356,12 +356,19 @@ noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ F ≅
   limit.isoLimitCone (productLimitCone.{v, u} F)
 #align category_theory.limits.types.product_iso CategoryTheory.Limits.Types.productIso
 
--- porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma.
+-- Porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma
+-- It should produce the lemma below.
 @[simp]
 theorem productIso_hom_comp_eval {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => f j) = Pi.π F j :=
   rfl
 #align category_theory.limits.types.product_iso_hom_comp_eval CategoryTheory.Limits.Types.productIso_hom_comp_eval
+
+@[simp]
+theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → TypeMax.{v, u}) (j : J) (x) :
+    ((productIso.{v, u} F).hom x) j = Pi.π F j x :=
+  rfl
+#align category_theory.limits.types.product_iso_hom_comp_eval_apply CategoryTheory.Limits.Types.productIso_hom_comp_eval_apply
 
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
@@ -416,9 +423,9 @@ noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X
     refine' ⟨fun i => _, _, _⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
-    . funext i
+    · funext i
       exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).1
-    . intro m hm
+    · intro m hm
       funext i
       exact (Classical.choose_spec (t (s.ι i) (congr_fun s.condition i))).2 _ (congr_fun hm i)
 #align category_theory.limits.types.type_equalizer_of_unique CategoryTheory.Limits.Types.typeEqualizerOfUnique

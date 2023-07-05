@@ -318,7 +318,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
     (h_pi : ∀ b ∈ s, IsPiSystem (g b)) (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b ∈ s, g b)) :
     ∃ (T : Finset β) (f : β → Set α), ↑T ⊆ s ∧ (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
-    suffices h1 : (⋃ b : Subtype s, (g ∘ Subtype.val) b) = ⋃ b ∈ s, g b
+    suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b
     · rwa [h1]
     ext x
     simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists, Subtype.coe_mk]
@@ -452,7 +452,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
   split_ifs with hn1 hn2 h
   · refine' hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => _)
     rw [h_inter_eq] at h_nonempty
-    suffices h_empty : (⋂ i ∈ p1 ∪ p2, g i) = ∅
+    suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅
     exact (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine' le_antisymm (Set.iInter_subset_of_subset n _) (Set.empty_subset _)
     refine' Set.iInter_subset_of_subset hn _
@@ -547,7 +547,7 @@ structure DynkinSystem (α : Type _) where
   /-- A Dynkin system contains the empty set. -/
   has_empty : Has ∅
   /-- A Dynkin system is closed under complementation. -/
-  has_compl : ∀ {a}, Has a → Has (aᶜ)
+  has_compl : ∀ {a}, Has a → Has aᶜ
   /-- A Dynkin system is closed under countable union of pairwise disjoint sets. Use a more general
   `MeasurableSpace.DynkinSystem.has_iUnion` instead.-/
   has_iUnion_nat : ∀ {f : ℕ → Set α}, Pairwise (Disjoint on f) → (∀ i, Has (f i)) → Has (⋃ i, f i)
@@ -565,7 +565,7 @@ theorem ext : ∀ {d₁ d₂ : DynkinSystem α}, (∀ s : Set α, d₁.Has s ↔
 
 variable (d : DynkinSystem α)
 
-theorem has_compl_iff {a} : d.Has (aᶜ) ↔ d.Has a :=
+theorem has_compl_iff {a} : d.Has aᶜ ↔ d.Has a :=
   ⟨fun h => by simpa using d.has_compl h, fun h => d.has_compl h⟩
 #align measurable_space.dynkin_system.has_compl_iff MeasurableSpace.DynkinSystem.has_compl_iff
 
@@ -625,12 +625,12 @@ theorem ofMeasurableSpace_le_ofMeasurableSpace_iff {m₁ m₂ : MeasurableSpace 
 inductive GenerateHas (s : Set (Set α)) : Set α → Prop
   | basic : ∀ t ∈ s, GenerateHas s t
   | empty : GenerateHas s ∅
-  | compl : ∀ {a}, GenerateHas s a → GenerateHas s (aᶜ)
+  | compl : ∀ {a}, GenerateHas s a → GenerateHas s aᶜ
   | iUnion : ∀ {f : ℕ → Set α},
     Pairwise (Disjoint on f) → (∀ i, GenerateHas s (f i)) → GenerateHas s (⋃ i, f i)
 #align measurable_space.dynkin_system.generate_has MeasurableSpace.DynkinSystem.GenerateHas
 
-theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C (sᶜ) ↔ GenerateHas C s := by
+theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine' ⟨_, GenerateHas.compl⟩
   intro h
   convert GenerateHas.compl h
@@ -734,7 +734,7 @@ end DynkinSystem
 
 theorem induction_on_inter {C : Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = generateFrom s) (h_inter : IsPiSystem s) (h_empty : C ∅) (h_basic : ∀ t ∈ s, C t)
-    (h_compl : ∀ t, MeasurableSet t → C t → C (tᶜ))
+    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
     (h_union :
       ∀ f : ℕ → Set α,
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :

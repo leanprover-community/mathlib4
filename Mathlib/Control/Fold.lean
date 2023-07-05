@@ -398,8 +398,8 @@ theorem length_toList {xs : t α} : length xs = List.length (toList xs) := by
   rw [← Nat.add_zero ys.length]
   generalize 0 = n
   induction' ys with _ _ ih generalizing n
-  . simp
-  . simp_arith [ih]
+  · simp
+  · simp_arith [ih]
 #align traversable.length_to_list Traversable.length_toList
 
 variable {m : Type u → Type u} [Monad m] [LawfulMonad m]

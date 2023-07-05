@@ -100,7 +100,7 @@ theorem triangle_succ (n : ℕ) : (n + 1) * (n + 1 - 1) / 2 = n * (n - 1) / 2 + 
 /-- `choose n 2` is the `n`-th triangle number. -/
 theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
   induction' n with n ih
-  . simp
+  · simp
   · rw [triangle_succ n, choose, ih]
     simp [add_comm]
 #align nat.choose_two_right Nat.choose_two_right
@@ -187,7 +187,7 @@ theorem factorial_mul_factorial_dvd_factorial {n k : ℕ} (hk : k ≤ n) : k ! *
 
 theorem factorial_mul_factorial_dvd_factorial_add (i j : ℕ) : i ! * j ! ∣ (i + j)! := by
   suffices : i ! * (i + j - i) ! ∣ (i + j)!
-  . rwa [add_tsub_cancel_left i j] at this
+  · rwa [add_tsub_cancel_left i j] at this
   exact factorial_mul_factorial_dvd_factorial (Nat.le_add_right _ _)
 #align nat.factorial_mul_factorial_dvd_factorial_add Nat.factorial_mul_factorial_dvd_factorial_add
 
@@ -199,7 +199,7 @@ theorem choose_symm {n k : ℕ} (hk : k ≤ n) : choose n (n - k) = choose n k :
 
 theorem choose_symm_of_eq_add {n a b : ℕ} (h : n = a + b) : Nat.choose n a = Nat.choose n b := by
   suffices : choose n (n - b) = choose n b
-  . rw [h, add_tsub_cancel_right] at this; rwa [h]
+  · rw [h, add_tsub_cancel_right] at this; rwa [h]
   exact choose_symm (h ▸ le_add_left _ _)
 #align nat.choose_symm_of_eq_add Nat.choose_symm_of_eq_add
 
@@ -272,6 +272,14 @@ theorem choose_eq_descFactorial_div_factorial (n k : ℕ) : n.choose k = n.descF
   rw [← descFactorial_eq_factorial_mul_choose]
   exact (Nat.mul_div_cancel' <| factorial_dvd_descFactorial _ _).symm
 #align nat.choose_eq_desc_factorial_div_factorial Nat.choose_eq_descFactorial_div_factorial
+
+/-- A faster implementation of `choose`, to be used during bytecode evaluation
+and in compiled code. -/
+def fast_choose n k := Nat.descFactorial n k / Nat.factorial k
+
+@[csimp] lemma choose_eq_fast_choose : Nat.choose = fast_choose :=
+  funext (fun _ => funext (Nat.choose_eq_descFactorial_div_factorial _))
+
 
 /-! ### Inequalities -/
 

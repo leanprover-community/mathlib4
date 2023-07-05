@@ -316,8 +316,8 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   cases' hb with j hb; replace hb := hb.symm
   rw [eq_some_iff] at ha hb
   cases' le_total i j with hij hji
-  . have := c.monotone hij _ ha; apply mem_unique this hb
-  . have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
+  · have := c.monotone hij _ ha; apply mem_unique this hb
+  · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
   --Porting note: Old proof
   -- wlog h : i ≤ j := le_total i j using a b i j, b a j i
   -- rw [eq_some_iff] at ha hb

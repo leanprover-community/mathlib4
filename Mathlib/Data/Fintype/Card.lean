@@ -168,7 +168,7 @@ See `Fintype.equivFinOfCardEq` for the noncomputable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
 -/
 def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
-  (truncEquivFin α).map fun e => e.trans (Fin.cast h).toEquiv
+  (truncEquivFin α).map fun e => e.trans (Fin.castIso h).toEquiv
 #align fintype.trunc_equiv_fin_of_card_eq Fintype.truncEquivFinOfCardEq
 
 /-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
@@ -292,8 +292,8 @@ theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) :
   Finset.card_univ_diff s
 #align finset.card_compl Finset.card_compl
 
-theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥(sᶜ) : Sort _)] :
-    Fintype.card (↥(sᶜ) : Sort _) = Fintype.card α - Fintype.card s := by
+theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
+    Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]
 #align fintype.card_compl_set Fintype.card_compl_set
 
@@ -315,7 +315,7 @@ theorem fin_injective : Function.Injective Fin := fun m n h =>
 
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
-    _root_.cast h = ⇑(Fin.cast <| fin_injective h) := by
+    _root_.cast h = ⇑(Fin.castIso <| fin_injective h) := by
   cases fin_injective h
   rfl
 #align fin.cast_eq_cast' Fin.cast_eq_cast'
@@ -850,7 +850,7 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
     [Fintype { x // ¬p x }] :
     Fintype.card { x // ¬p x } = Fintype.card α - Fintype.card { x // p x } := by
   classical
-    rw [Fintype.card_of_subtype (Set.toFinset (pᶜ)), Set.toFinset_compl p,
+    rw [Fintype.card_of_subtype (Set.toFinset pᶜ), Set.toFinset_compl p,
       Finset.card_compl, Fintype.card_of_subtype (Set.toFinset p)] <;>
     · intro
       simp only [Set.mem_toFinset, Set.mem_compl_iff]
@@ -1105,7 +1105,7 @@ noncomputable def natEmbedding (α : Type _) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩
 #align infinite.nat_embedding Infinite.natEmbedding
 
-/-- See `Infinite.exists_superset_card_eq` for a version that, for a `s : Finset α`,
+/-- See `Infinite.exists_superset_card_eq` for a version that, for an `s : Finset α`,
 provides a superset `t : Finset α`, `s ⊆ t` such that `t.card` is fixed. -/
 theorem exists_subset_card_eq (α : Type _) [Infinite α] (n : ℕ) : ∃ s : Finset α, s.card = n :=
   ⟨(range n).map (natEmbedding α), by rw [card_map, card_range]⟩

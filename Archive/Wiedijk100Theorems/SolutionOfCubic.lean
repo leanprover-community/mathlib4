@@ -134,7 +134,7 @@ theorem cubic_eq_zero_iff_of_p_eq_zero (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 
   have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
-  have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz ; rw [hpz]
+  have hb2 : b ^ 2 = 3 * a * c := by rw [sub_eq_zero] at hpz; rw [hpz]
   have hb3 : b ^ 3 = 3 * a * b * c := by rw [pow_succ, hb2]; ring
   have h₂ :=
     calc

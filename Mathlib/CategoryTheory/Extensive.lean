@@ -442,8 +442,8 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     ext ⟨⟨x, ⟨⟩⟩, (hx : f x = Sum.inl PUnit.unit)⟩
     change dite _ _ _ = _
     split_ifs with h
-    . rfl
-    . cases (h hx) -- Porting note : in Lean3 it is `rfl`
+    · rfl
+    · cases (h hx) -- Porting note : in Lean3 it is `rfl`
   · intro s
     ext ⟨⟨x, ⟨⟩⟩, hx⟩
     change dite _ _ _ = _

@@ -177,7 +177,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ <| (Ssep' n).symm
       _ ≤ μ (s ∩ t ∪ s \ t) := μ.mono <| union_subset_union_right _ <| S_sub n
       _ = μ s := by rw [inter_union_diff]
-  have iUnion_S : (⋃ n, S n) = s \ t := by
+  have iUnion_S : ⋃ n, S n = s \ t := by
     refine' Subset.antisymm (iUnion_subset S_sub) _
     rintro x ⟨hxs, hxt⟩
     rw [mem_iff_infEdist_zero_of_closed ht] at hxt
@@ -523,7 +523,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     congr 1 with n : 1
     simp only [iInf_eq_if, htr n, id, if_true, iSup_and']
   · rw [iInf_eq_if, if_neg htr]
-    push_neg at htr ; rcases htr with ⟨n, hn⟩
+    push_neg at htr; rcases htr with ⟨n, hn⟩
     refine' ENNReal.tsum_eq_top_of_eq_top ⟨n, _⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     exact hn.not_le

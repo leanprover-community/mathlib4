@@ -153,7 +153,7 @@ theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
 namespace Finset
 
 theorem sum_powerset_apply_card {α β : Type _} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
-    (∑ m in x.powerset, f m.card) = ∑ m in range (x.card + 1), x.card.choose m • f m := by
+    ∑ m in x.powerset, f m.card = ∑ m in range (x.card + 1), x.card.choose m • f m := by
   trans ∑ m in range (x.card + 1), ∑ j in x.powerset.filter fun z ↦ z.card = m, f j.card
   · refine' (sum_fiberwise_of_maps_to _ _).symm
     intro y hy
