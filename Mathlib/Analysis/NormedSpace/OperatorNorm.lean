@@ -2011,13 +2011,16 @@ variable {ι : Type _} [NontriviallyNormedField 𝕜] [NontriviallyNormedField �
   [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
-/-- Equivalent characterizations for  -/
+/-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
+between normed spaces. -/
 protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
     [ EquicontinuousAt ((↑) ∘ f) 0,
       Equicontinuous ((↑) ∘ f),
       UniformEquicontinuous ((↑) ∘ f),
       ∃ C, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
       ∃ C ≥ 0, ∀ i x, ‖f i x‖ ≤ C * ‖x‖,
+      ∃ C, ∀ i, ‖f i‖ ≤ C,
+      ∃ C ≥ 0, ∀ i, ‖f i‖ ≤ C,
       BddAbove (Set.range (‖f ·‖)),
       (⨆ i, (‖f i‖₊ : ENNReal)) < ⊤ ] := by
   -- `1 ↔ 2 ↔ 3` follows from `uniformEquicontinuous_of_equicontinuousAt_zero`
@@ -2027,17 +2030,20 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   . exact UniformEquicontinuous.equicontinuous
   tfae_have 2 → 1
   . exact fun H ↦ H 0
-  -- `4 ↔ 5 ↔ 6 ↔ 7` is morally trivial, we just have to use a lot of rewriting
+  -- `4 ↔ 5 ↔ 6 ↔ 7 ↔ 8 ↔ 9` is morally trivial, we just have to use a lot of rewriting
   -- and `congr` lemmas
   tfae_have 4 ↔ 5
   . rw [exists_ge_and_iff_exists]
     exact fun C₁ C₂ hC ↦ forall₂_imp (fun i x ↦ le_trans'
       (mul_le_mul_of_nonneg_right hC (norm_nonneg x)))
-  tfae_have 5 ↔ 6
-  . simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
-    refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
+  tfae_have 5 ↔ 7
+  . refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
     rw [(f i).op_norm_le_iff hC]
-  tfae_have 6 ↔ 7
+  tfae_have 7 ↔ 8
+  . simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_range_iff]
+  tfae_have 6 ↔ 8
+  . simp_rw [bddAbove_def, Set.forall_range_iff]
+  tfae_have 8 ↔ 9
   . have := (WithTop.iSup_coe_lt_top (fun i ↦ ‖f i‖₊)).symm -- can't `rw` into goal
     rwa [← NNReal.bddAbove_coe, ← Set.range_comp] at this
   -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
