@@ -78,8 +78,7 @@ theorem equiv_directSum_zMod_of_fintype [Finite G] :
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zMod G
   cases' n with n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
-      { uniq := by
-          simp only [Nat.zero_eq, eq_iff_true_of_subsingleton, forall_const] }
+      { uniq := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton] }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
@@ -101,4 +100,3 @@ theorem finite_of_fG_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G
 #align comm_group.finite_of_fg_torsion CommGroup.finite_of_fG_torsion
 
 end CommGroup
-
