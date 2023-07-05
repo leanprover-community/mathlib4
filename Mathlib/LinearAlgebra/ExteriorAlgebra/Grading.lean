@@ -16,7 +16,7 @@ import Mathlib.RingTheory.GradedAlgebra.Basic
 
 Many of these results are copied with minimal modification from the tensor algebra.
 
-The main result is `exterior_algebra.graded_algebra`, which says that the exterior algebra is a
+The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior algebra is a
 ℕ-graded algebra.
 -/
 
@@ -29,8 +29,8 @@ variable (R M)
 
 open scoped DirectSum
 
-/-- A version of `exterior_algebra.ι` that maps directly into the graded structure. This is
-primarily an auxiliary construction used to provide `exterior_algebra.graded_algebra`. -/
+/-- A version of `ExteriorAlgebra.ι` that maps directly into the graded structure. This is
+primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 -- porting note: protected
 protected def GradedAlgebra.ι :
     M →ₗ[R] ⨁ i : ℕ, ↥(LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i) :=
@@ -56,8 +56,8 @@ theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebr
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
 set_option maxHeartbeats 400000 in
-/-- `exterior_algebra.graded_algebra.ι` lifted to exterior algebra. This is
-primarily an auxiliary construction used to provide `exterior_algebra.graded_algebra`. -/
+/-- `ExteriorAlgebra.GradedAlgebra.ι` lifted to exterior algebra. This is
+primarily an auxiliary construction used to provide `ExteriorAlgebra.gradedAlgebra`. -/
 def GradedAlgebra.liftι :
   ExteriorAlgebra R M →ₐ[R] ⨁ i : ℕ,
     (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ i : Submodule R (ExteriorAlgebra R M)) :=
@@ -89,7 +89,7 @@ theorem GradedAlgebra.liftι_eq (i : ℕ)
 #align exterior_algebra.graded_algebra.lift_ι_eq ExteriorAlgebra.GradedAlgebra.liftι_eq
 
 set_option maxHeartbeats 400000 in
-/-- The exterior algebra is graded by the powers of the submodule `(exterior_algebra.ι R).range`. -/
+/-- The exterior algebra is graded by the powers of the submodule `(ExteriorAlgebra.ι R).range`. -/
 instance gradedAlgebra :
     GradedAlgebra (LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ · : ℕ → Submodule R _) :=
   GradedAlgebra.ofAlgHom _
