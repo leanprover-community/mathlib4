@@ -32,6 +32,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRingCat
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
