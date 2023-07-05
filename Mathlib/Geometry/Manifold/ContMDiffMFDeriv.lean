@@ -248,8 +248,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     apply B.congr
     rintro ⟨x, v⟩ hx
     dsimp [tangentMapWithin]
-    -- Porting note: was `ext; · rfl`
-    refine congr_arg (Sigma.mk _) ?_
+    ext; · rfl
     simp only [mfld_simps]
     apply congr_fun
     apply congr_arg
@@ -308,13 +307,13 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
   refine' ⟨hf.continuousOn_tangentMapWithin_aux one_le_n hs, fun p q => _⟩
   have A :
     range I ×ˢ univ ∩
-        ((total_space.to_prod H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd)) ⁻¹'
+        ((TotalSpace.toProd H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd)) ⁻¹'
           (π E (TangentSpace I) ⁻¹' s) =
       (range I ∩ I.symm ⁻¹' s) ×ˢ univ :=
     by ext ⟨x, v⟩; simp only [mfld_simps]
   suffices h :
     ContDiffOn 𝕜 m
-      (((fun p : H' × E' => (I' p.fst, p.snd)) ∘ total_space.to_prod H' E') ∘
+      (((fun p : H' × E' => (I' p.fst, p.snd)) ∘ TotalSpace.toProd H' E') ∘
         tangentMapWithin I I' f s ∘
           (TotalSpace.toProd H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd))
       ((range I ∩ I.symm ⁻¹' s) ×ˢ univ)
@@ -372,14 +371,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     follows that they are smooth. The composition of all these maps is `Tf`, and is therefore smooth
     as a composition of smooth maps.
     -/
-  have m_le_n : m ≤ n := by
-    apply le_trans _ hmn
-    have : m + 0 ≤ m + 1 := add_le_add_left (zero_le _) _
-    simpa only [add_zero]
-  have one_le_n : 1 ≤ n := by
-    apply le_trans _ hmn
-    change 0 + 1 ≤ m + 1
-    exact add_le_add_right (zero_le _) _
+  have m_le_n : m ≤ n := (le_add_right le_rfl).trans hmn
+  have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
   -- First step: local reduction on the space, to a set `s'` which is contained in chart domains.
   refine' contMDiffOn_of_locally_contMDiffOn fun p hp => _
   have hf' := contMDiffOn_iff.1 hf
@@ -448,7 +441,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       (Dr.symm ∘ (ir ∘ tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l) ∘ il.symm ∘ Dl) s'_lift := by
     have A : ContMDiffOn I.tangent I.tangent m Dl Dl.source := contMDiffOn_chart
     have A' : ContMDiffOn I.tangent I.tangent m Dl s'_lift := by
-      apply A.mono fun p hp => _
+      refine A.mono fun p hp => ?_
       simp only [mfld_simps] at hp 
       simp only [hp, mfld_simps]
     have B : ContMDiffOn I.tangent I.tangent m il.symm il.target := contMDiffOn_chart_symm
@@ -465,8 +458,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         (Dr.symm ∘ ir ∘ tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l ∘ il.symm ∘ Dl) q := by
     intro q hq
     simp only [mfld_simps] at hq 
-    have U'q : UniqueMDiffWithinAt I s' q.1 := by apply U'; simp only [hq, s', mfld_simps]
-    have U'lq : UniqueMDiffWithinAt I s'l (Dl q).1 := by apply U'l; simp only [hq, s'l, mfld_simps]
+    have U'q : UniqueMDiffWithinAt I s' q.1 := by apply U'; simp only [hq, mfld_simps]
+    have U'lq : UniqueMDiffWithinAt I s'l (Dl q).1 := by apply U'l; simp only [hq, mfld_simps]
     have A :
       tangentMapWithin I I' ((r ∘ f) ∘ l.symm) s'l (il.symm (Dl q)) =
         tangentMapWithin I I' (r ∘ f) s' (tangentMapWithin I I l.symm s'l (il.symm (Dl q))) := by
@@ -509,7 +502,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
           simp only [hq, mfld_simps]
       have : f p.proj = (tangentMapWithin I I' f s p).1 := rfl
       rw [A]
-      dsimp [r, Dr]
+      dsimp
       rw [this, tangentMap_chart]
       · simp only [hq, mfld_simps]
         have :
