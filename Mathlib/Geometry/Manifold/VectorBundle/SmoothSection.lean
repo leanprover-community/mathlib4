@@ -44,199 +44,200 @@ variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V] [VectorBundle �
   [SmoothVectorBundle F V I]
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
-@[protect_proj]
-structure ContMdiffSection where
-  toFun : ∀ x, V x
-  contMDiff_toFun : ContMDiff I (I.Prod 𝓘(𝕜, F)) n fun x => (total_space.mk' F) x (to_fun x)
-#align cont_mdiff_section ContMdiffSection
+structure ContMDiffSection where
+  protected toFun : ∀ x, V x
+  protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
+    TotalSpace.mk' F x (toFun x)
+#align cont_mdiff_section ContMDiffSection
 
 /-- Bundled smooth sections of a vector bundle. -/
 @[reducible]
 def SmoothSection :=
-  ContMdiffSection I F ⊤ V
+  ContMDiffSection I F ⊤ V
 #align smooth_section SmoothSection
 
-scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMdiffSection I F n V
+scoped[Manifold] notation "Cₛ^" n "⟮" I "; " F ", " V "⟯" => ContMDiffSection I F n V
 
-namespace ContMdiffSection
+namespace ContMDiffSection
 
 variable {I} {I'} {n} {F} {V}
 
-instance : CoeFun Cₛ^n⟮I; F, V⟯ fun s => ∀ x, V x :=
-  ⟨ContMdiffSection.toFun⟩
+instance : FunLike Cₛ^n⟮I; F, V⟯ M V where
+  coe := ContMDiffSection.toFun
+  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr
 
 variable {s t : Cₛ^n⟮I; F, V⟯}
 
 @[simp]
 theorem coeFn_mk (s : ∀ x, V x)
-    (hs : ContMDiff I (I.Prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk x (s x)) :
+    (hs : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk x (s x)) :
     (mk s hs : ∀ x, V x) = s :=
   rfl
-#align cont_mdiff_section.coe_fn_mk ContMdiffSection.coeFn_mk
+#align cont_mdiff_section.coe_fn_mk ContMDiffSection.coeFn_mk
 
 protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) :
-    ContMDiff I (I.Prod 𝓘(𝕜, F)) n fun x => (total_space.mk' F) x (s x : V x) :=
+    ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
-#align cont_mdiff_section.cont_mdiff ContMdiffSection.contMDiff
+#align cont_mdiff_section.cont_mdiff ContMDiffSection.contMDiff
 
 protected theorem smooth (s : Cₛ^∞⟮I; F, V⟯) :
-    Smooth I (I.Prod 𝓘(𝕜, F)) fun x => (total_space.mk' F) x (s x : V x) :=
+    Smooth I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
   s.contMDiff_toFun
-#align cont_mdiff_section.smooth ContMdiffSection.smooth
+#align cont_mdiff_section.smooth ContMDiffSection.smooth
 
 protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : 1 ≤ n) :
-    MDifferentiable I (I.Prod 𝓘(𝕜, F)) fun x => (total_space.mk' F) x (s x : V x) :=
-  s.ContMDiff.MDifferentiable hn
-#align cont_mdiff_section.mdifferentiable' ContMdiffSection.mdifferentiable'
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+  s.contMDiff.mdifferentiable hn
+#align cont_mdiff_section.mdifferentiable' ContMDiffSection.mdifferentiable'
 
-protected theorem mDifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
-    MDifferentiable I (I.Prod 𝓘(𝕜, F)) fun x => (total_space.mk' F) x (s x : V x) :=
-  s.ContMDiff.MDifferentiable le_top
-#align cont_mdiff_section.mdifferentiable ContMdiffSection.mDifferentiable
+protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) fun x => TotalSpace.mk' F x (s x : V x) :=
+  s.contMDiff.mdifferentiable le_top
+#align cont_mdiff_section.mdifferentiable ContMDiffSection.mdifferentiable
 
-protected theorem mDifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
-    MDifferentiableAt I (I.Prod 𝓘(𝕜, F)) (fun x => (total_space.mk' F) x (s x : V x)) x :=
-  s.MDifferentiable x
-#align cont_mdiff_section.mdifferentiable_at ContMdiffSection.mDifferentiableAt
+protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x => TotalSpace.mk' F x (s x : V x)) x :=
+  s.mdifferentiable x
+#align cont_mdiff_section.mdifferentiable_at ContMDiffSection.mdifferentiableAt
 
-theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t := by
-  cases s <;> cases t <;> cases h <;> rfl
-#align cont_mdiff_section.coe_inj ContMdiffSection.coe_inj
+theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
+  FunLike.ext' h
+#align cont_mdiff_section.coe_inj ContMDiffSection.coe_inj
 
-theorem coe_injective : Injective (coeFn : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :=
+theorem coe_injective : Injective ((↑) : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :=
   coe_inj
-#align cont_mdiff_section.coe_injective ContMdiffSection.coe_injective
+#align cont_mdiff_section.coe_injective ContMDiffSection.coe_injective
 
 @[ext]
-theorem ext (h : ∀ x, s x = t x) : s = t := by cases s <;> cases t <;> congr <;> exact funext h
-#align cont_mdiff_section.ext ContMdiffSection.ext
+theorem ext (h : ∀ x, s x = t x) : s = t := FunLike.ext _ _ h
+#align cont_mdiff_section.ext ContMDiffSection.ext
 
 instance hasAdd : Add Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s + t, _⟩⟩
   intro x₀
-  have hs := s.cont_mdiff x₀
-  have ht := t.cont_mdiff x₀
-  rw [cont_mdiff_at_section] at hs ht ⊢
-  set e := trivialization_at F V x₀
+  have hs := s.contMDiff x₀
+  have ht := t.contMDiff x₀
+  rw [contMDiffAt_section] at hs ht ⊢
+  set e := trivializationAt F V x₀
   refine' (hs.add ht).congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_base_set.mem_nhds <| mem_base_set_trivialization_at F V x₀) _
+  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).1
-#align cont_mdiff_section.has_add ContMdiffSection.hasAdd
+#align cont_mdiff_section.has_add ContMDiffSection.hasAdd
 
 @[simp]
-theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = s + t :=
+theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = ⇑s + t :=
   rfl
-#align cont_mdiff_section.coe_add ContMdiffSection.coe_add
+#align cont_mdiff_section.coe_add ContMDiffSection.coe_add
 
 instance hasSub : Sub Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s - t, _⟩⟩
   intro x₀
-  have hs := s.cont_mdiff x₀
-  have ht := t.cont_mdiff x₀
-  rw [cont_mdiff_at_section] at hs ht ⊢
-  set e := trivialization_at F V x₀
+  have hs := s.contMDiff x₀
+  have ht := t.contMDiff x₀
+  rw [contMDiffAt_section] at hs ht ⊢
+  set e := trivializationAt F V x₀
   refine' (hs.sub ht).congr_of_eventuallyEq _
-  refine' eventually_of_mem (e.open_base_set.mem_nhds <| mem_base_set_trivialization_at F V x₀) _
+  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).map_sub
-#align cont_mdiff_section.has_sub ContMdiffSection.hasSub
+#align cont_mdiff_section.has_sub ContMDiffSection.hasSub
 
 @[simp]
 theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
-#align cont_mdiff_section.coe_sub ContMdiffSection.coe_sub
+#align cont_mdiff_section.coe_sub ContMDiffSection.coe_sub
 
 instance hasZero : Zero Cₛ^n⟮I; F, V⟯ :=
-  ⟨⟨fun x => 0, (smooth_zeroSection 𝕜 V).of_le le_top⟩⟩
-#align cont_mdiff_section.has_zero ContMdiffSection.hasZero
+  ⟨⟨fun _ => 0, (smooth_zeroSection 𝕜 V).of_le le_top⟩⟩
+#align cont_mdiff_section.has_zero ContMDiffSection.hasZero
 
 instance inhabited : Inhabited Cₛ^n⟮I; F, V⟯ :=
   ⟨0⟩
-#align cont_mdiff_section.inhabited ContMdiffSection.inhabited
+#align cont_mdiff_section.inhabited ContMDiffSection.inhabited
 
 @[simp]
 theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
-#align cont_mdiff_section.coe_zero ContMdiffSection.coe_zero
+#align cont_mdiff_section.coe_zero ContMDiffSection.coe_zero
 
 instance hasSmul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
-  refine' ⟨fun c s => ⟨c • s, _⟩⟩
+  refine' ⟨fun c s => ⟨c • ⇑s, _⟩⟩
   intro x₀
-  have hs := s.cont_mdiff x₀
-  rw [cont_mdiff_at_section] at hs ⊢
-  set e := trivialization_at F V x₀
-  refine' (cont_mdiff_at_const.smul hs).congr_of_eventuallyEq _
+  have hs := s.contMDiff x₀
+  rw [contMDiffAt_section] at hs ⊢
+  set e := trivializationAt F V x₀
+  refine' (contMDiffAt_const.smul hs).congr_of_eventuallyEq _
   · exact c
-  refine' eventually_of_mem (e.open_base_set.mem_nhds <| mem_base_set_trivialization_at F V x₀) _
+  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).2
-#align cont_mdiff_section.has_smul ContMdiffSection.hasSmul
+#align cont_mdiff_section.has_smul ContMDiffSection.hasSmul
 
 @[simp]
-theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • s :=
+theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I; F, V⟯) = r • ⇑s :=
   rfl
-#align cont_mdiff_section.coe_smul ContMdiffSection.coe_smul
+#align cont_mdiff_section.coe_smul ContMDiffSection.coe_smul
 
 instance hasNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s => ⟨-s, _⟩⟩
   intro x₀
-  have hs := s.cont_mdiff x₀
-  rw [cont_mdiff_at_section] at hs ⊢
-  set e := trivialization_at F V x₀
-  refine' hs.neg.congr_of_eventually_eq _
-  refine' eventually_of_mem (e.open_base_set.mem_nhds <| mem_base_set_trivialization_at F V x₀) _
+  have hs := s.contMDiff x₀
+  rw [contMDiffAt_section] at hs ⊢
+  set e := trivializationAt F V x₀
+  refine' hs.neg.congr_of_eventuallyEq _
+  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).map_neg
-#align cont_mdiff_section.has_neg ContMdiffSection.hasNeg
+#align cont_mdiff_section.has_neg ContMDiffSection.hasNeg
 
 @[simp]
 theorem coe_neg (s : Cₛ^n⟮I; F, V⟯) : ⇑(-s : Cₛ^n⟮I; F, V⟯) = -s :=
   rfl
-#align cont_mdiff_section.coe_neg ContMdiffSection.coe_neg
+#align cont_mdiff_section.coe_neg ContMDiffSection.coe_neg
 
 instance hasNsmul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
   ⟨nsmulRec⟩
-#align cont_mdiff_section.has_nsmul ContMdiffSection.hasNsmul
+#align cont_mdiff_section.has_nsmul ContMDiffSection.hasNsmul
 
 @[simp]
-theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • s := by
+theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • ⇑s := by
   induction' k with k ih
-  · simp_rw [zero_smul]; rfl
+  · simp_rw [Nat.zero_eq, zero_smul]; rfl
   simp_rw [succ_nsmul, ← ih]; rfl
-#align cont_mdiff_section.coe_nsmul ContMdiffSection.coe_nsmul
+#align cont_mdiff_section.coe_nsmul ContMDiffSection.coe_nsmul
 
 instance hasZsmul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
   ⟨zsmulRec⟩
-#align cont_mdiff_section.has_zsmul ContMdiffSection.hasZsmul
+#align cont_mdiff_section.has_zsmul ContMDiffSection.hasZsmul
 
 @[simp]
-theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • s := by
+theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
   refine' (coe_nsmul s n).trans _
   simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
   refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
   simp only [negSucc_zsmul, neg_inj]
-#align cont_mdiff_section.coe_zsmul ContMdiffSection.coe_zsmul
+#align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 
 instance addCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
-  coe_injective.AddCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
-#align cont_mdiff_section.add_comm_group ContMdiffSection.addCommGroup
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+#align cont_mdiff_section.add_comm_group ContMDiffSection.addCommGroup
 
 variable (I F V n)
 
 /-- The additive morphism from smooth sections to dependent maps. -/
 def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
-  toFun := coeFn
+  toFun := (↑)
   map_zero' := coe_zero
   map_add' := coe_add
-#align cont_mdiff_section.coe_add_hom ContMdiffSection.coeAddHom
+#align cont_mdiff_section.coe_add_hom ContMDiffSection.coeAddHom
 
 variable {I F V n}
 
 instance module : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
-  coe_injective.Module 𝕜 (coeAddHom I F n V) coe_smul
-#align cont_mdiff_section.module ContMdiffSection.module
+  coe_injective.module 𝕜 (coeAddHom I F n V) coe_smul
+#align cont_mdiff_section.module ContMDiffSection.module
 
-end ContMdiffSection
+end ContMDiffSection
 
