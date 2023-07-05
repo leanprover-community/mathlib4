@@ -151,7 +151,7 @@ instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarT
 
 instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
     SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.sMulCommClass_self _
+  AddMonoidAlgebra.smulCommClass_self _
 #align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
