@@ -161,8 +161,8 @@ instance (priority := 900) (n : ℕ) : CoeTC (ZMod n) R :=
 theorem cast_zero : ((0 : ZMod n) : R) = 0 := by
   delta ZMod.cast
   cases n
-  . exact Int.cast_zero
-  . simp
+  · exact Int.cast_zero
+  · simp
 #align zmod.cast_zero ZMod.cast_zero
 
 theorem cast_eq_val [NeZero n] (a : ZMod n) : (a : R) = a.val := by
@@ -176,15 +176,15 @@ variable {S : Type _} [AddGroupWithOne S]
 @[simp]
 theorem _root_.Prod.fst_zmod_cast (a : ZMod n) : (a : R × S).fst = a := by
   cases n
-  . rfl
-  . simp [ZMod.cast]
+  · rfl
+  · simp [ZMod.cast]
 #align prod.fst_zmod_cast Prod.fst_zmod_cast
 
 @[simp]
 theorem _root_.Prod.snd_zmod_cast (a : ZMod n) : (a : R × S).snd = a := by
   cases n
-  . rfl
-  . simp [ZMod.cast]
+  · rfl
+  · simp [ZMod.cast]
 #align prod.snd_zmod_cast Prod.snd_zmod_cast
 
 end
@@ -440,15 +440,15 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   · exfalso
     exact m.succ_ne_zero h
   · exact
-      { Fin.cast h with
+      { Fin.castIso h with
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
+          rw [Fin.coe_castIso, Fin.coe_mul, Fin.coe_mul, Fin.coe_castIso, Fin.coe_castIso, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.val_add, Fin.val_add, Fin.coe_cast, Fin.coe_cast, ← h] }
+          rw [Fin.coe_castIso, Fin.val_add, Fin.val_add, Fin.coe_castIso, Fin.coe_castIso, ← h] }
 #align zmod.ring_equiv_congr ZMod.ringEquivCongr
 
 end CharEq
@@ -750,14 +750,14 @@ def chineseRemainder {m n : ℕ} (h : m.coprime n) : ZMod (m * n) ≃+* ZMod m �
   have inv : Function.LeftInverse inv_fun to_fun ∧ Function.RightInverse inv_fun to_fun :=
     if hmn0 : m * n = 0 then by
       rcases h.eq_of_mul_eq_zero hmn0 with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-      . constructor
-        . intro x; rfl
-        . rintro ⟨x, y⟩
+      · constructor
+        · intro x; rfl
+        · rintro ⟨x, y⟩
           fin_cases y
           simp [castHom, Prod.ext_iff]
-      . constructor
-        . intro x; rfl
-        . rintro ⟨x, y⟩
+      · constructor
+        · intro x; rfl
+        · rintro ⟨x, y⟩
           fin_cases x
           simp [castHom, Prod.ext_iff]
     else by
@@ -1162,8 +1162,8 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
 @[simp]
 theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f k = k := by
   cases n
-  . dsimp [ZMod, ZMod.cast] at f k ⊢; simp
-  . dsimp [ZMod, ZMod.cast] at f k ⊢
+  · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
+  · dsimp [ZMod, ZMod.cast] at f k ⊢
     erw [map_natCast, Fin.cast_val_eq_self]
 #align zmod.ring_hom_map_cast ZMod.ringHom_map_cast
 

@@ -975,11 +975,11 @@ theorem compatible_iff (x : FirstObj P S) :
     ((firstObjEqFamily P S).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
   rw [Presieve.compatible_iff_sieveCompatible]
   constructor
-  . intro t
+  · intro t
     apply SecondObj.ext
     intros Y Z g f hf
     simpa [firstMap, secondMap] using t _ g hf
-  . intro t Y Z f g hf
+  · intro t Y Z f g hf
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨Y, Z, g, f, hf⟩⟩
 #align category_theory.equalizer.sieve.compatible_iff CategoryTheory.Equalizer.Sieve.compatible_iff
@@ -998,7 +998,7 @@ theorem equalizer_sheaf_condition :
   rw [← Iso.toEquiv_symm_fun]
   rw [Equiv.eq_symm_apply]
   constructor
-  . intro q
+  · intro q
     funext Y f hf
     simpa [firstObjEqFamily, forkMap] using q _ _
   · intro q Y f hf
@@ -1056,7 +1056,7 @@ theorem compatible_iff (x : FirstObj P R) :
     ((firstObjEqFamily P R).hom x).Compatible ↔ firstMap P R x = secondMap P R x := by
   rw [Presieve.pullbackCompatible_iff]
   constructor
-  . intro t
+  · intro t
     apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
     rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
     simpa [firstMap, secondMap] using t hf hg
