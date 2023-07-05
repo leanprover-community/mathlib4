@@ -251,7 +251,7 @@ section Zero
 variable [∀ x, Zero (E x)]
 
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
-`B × F → TotalSpace E` of `e` on `e.baseSet`. It is defined to be `0` outside `e.baseSet`. -/
+`B × F → TotalSpace F E` of `e` on `e.baseSet`. It is defined to be `0` outside `e.baseSet`. -/
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
     cast (congr_arg E (e.proj_symm_apply' hb)) (e.toLocalEquiv.symm (b, y)).2
@@ -613,7 +613,7 @@ section Zero
 variable [∀ x, Zero (E x)]
 
 /-- A fiberwise inverse to `e'`. The function `F → E x` that induces a local inverse
-`B × F → TotalSpace E` of `e'` on `e'.baseSet`. It is defined to be `0` outside `e'.baseSet`. -/
+`B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It is defined to be `0` outside `e'.baseSet`. -/
 protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F) : E b :=
   e.toPretrivialization.symm b y
 #align trivialization.symm Trivialization.symm

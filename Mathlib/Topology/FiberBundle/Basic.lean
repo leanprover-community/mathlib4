@@ -25,7 +25,7 @@ To have a fiber bundle structure on `Bundle.TotalSpace F E`, one should
 additionally have the following data:
 
 * `F` should be a topological space;
-* There should be a topology on `Bundle.TotalSpace E`, for which the projection to `B` is
+* There should be a topology on `Bundle.TotalSpace F E`, for which the projection to `B` is
 a fiber bundle with fiber `F` (in particular, each fiber `E x` is homeomorphic to `F`);
 * For each `x`, the fiber `E x` should be a topological space, and the injection
 from `E x` to `Bundle.TotalSpace F E` should be an embedding;

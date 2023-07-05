@@ -139,7 +139,7 @@ notation f " *ᵖ " E:arg => Pullback f E
 instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) :=
   ‹Nonempty (E (f x))›
 
-/-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace E`. -/
+/-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace F E`. -/
 @[simp]
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' × TotalSpace F E :=
   fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
