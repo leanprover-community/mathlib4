@@ -973,9 +973,9 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 
 lemma closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
     (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
   cases isEmpty_or_nonempty ι
-  . rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
+  · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
     exact closedBall_bot _ hr
-  . ext x
+  · ext x
     have := Seminorm.bddAbove_range_iff.mp hp (x - e)
     simp only [mem_closedBall, mem_iInter, Seminorm.iSup_apply hp, ciSup_le_iff this]
 
