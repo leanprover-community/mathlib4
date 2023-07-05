@@ -256,24 +256,24 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
   -- factor `from_blocks` via `from_blocks_eq_of_invertible₂₂`, and state the inverse we expect
   refine'
     Invertible.copy' _ _
-      (from_blocks (⅟ (A - B ⬝ ⅟ D ⬝ C)) (-⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ B ⬝ ⅟ D)
+      (fromBlocks (⅟ (A - B ⬝ ⅟ D ⬝ C)) (-⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ B ⬝ ⅟ D)
         (-⅟ D ⬝ C ⬝ ⅟ (A - B ⬝ ⅟ D ⬝ C)) (⅟ D + ⅟ D ⬝ C ⬝ ⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ B ⬝ ⅟ D))
-      (from_blocks_eq_of_invertible₂₂ _ _ _ _) _
+      (fromBlocks_eq_of_invertible₂₂ _ _ _ _) _
   · -- the product is invertible because all the factors are
     letI : Invertible (1 : Matrix n n α) := invertibleOne
     letI : Invertible (1 : Matrix m m α) := invertibleOne
-    refine' Invertible.matrixMul _ (from_blocks_zero₁₂_invertible _ _ _)
+    refine' Invertible.matrixMul _ (fromBlocksZero₁₂Invertible _ _ _)
     exact
-      Invertible.matrixMul (from_blocks_zero₂₁_invertible _ _ _)
-        (from_blocks_zero₂₁_invertible _ _ _)
+      Invertible.matrixMul (fromBlocksZero₂₁Invertible _ _ _)
+        (fromBlocksZero₂₁Invertible _ _ _)
   · -- unfold the `invertible` instances to get the raw factors
     show
       _ =
-        from_blocks 1 0 (-1 ⬝ (⅟ D ⬝ C) ⬝ 1) 1 ⬝
-          (from_blocks (⅟ (A - B ⬝ ⅟ D ⬝ C)) (-⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ 0 ⬝ ⅟ D) 0 (⅟ D) ⬝
-            from_blocks 1 (-1 ⬝ (B ⬝ ⅟ D) ⬝ 1) 0 1)
+        fromBlocks 1 0 (-1 ⬝ (⅟ D ⬝ C) ⬝ 1) 1 ⬝
+          (fromBlocks (⅟ (A - B ⬝ ⅟ D ⬝ C)) (-⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ 0 ⬝ ⅟ D) 0 (⅟ D) ⬝
+            fromBlocks 1 (-1 ⬝ (B ⬝ ⅟ D) ⬝ 1) 0 1)
     -- combine into a single block matrix
-    simp only [from_blocks_multiply, invOf_one, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
+    simp only [fromBlocks_multiply, invOf_one, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
       Matrix.mul_assoc, add_comm]
 #align matrix.from_blocks₂₂_invertible Matrix.fromBlocks₂₂Invertible
