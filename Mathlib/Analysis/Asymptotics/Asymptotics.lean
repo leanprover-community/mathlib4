@@ -206,6 +206,9 @@ theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
   isBigOWith_iff.2 <| isLittleO_iff.1 h hc
 #align asymptotics.is_o.def' Asymptotics.IsLittleO.def'
 
+theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
+  simpa using h.def zero_lt_one
+
 end Defs
 
 /-! ### Conversions -/
@@ -2186,17 +2189,6 @@ theorem isLittleO_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, Nor
   simp (config := { contextual := true }) only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
-
-lemma eventuallyLE_of_isLittleO_of_isBigO_symm {f₁ f₂ : α → E'} (hf₁ : f₁ =o[l] g)
-    (hf₂ : g =O[l] f₂) : ∀ᶠ x in l, ‖f₁ x‖ ≤ ‖f₂ x‖ := by
-  obtain ⟨c₂, ⟨hc₂', hc₂⟩⟩ := isBigO_iff'.mp hf₂
-  rw [isLittleO_iff] at hf₁
-  have : 0 < c₂⁻¹ := inv_pos_of_pos hc₂'
-  have hf₁' := hf₁ this
-  filter_upwards [hf₁', hc₂] with x hx hx'
-  calc ‖f₁ x‖ ≤ c₂⁻¹ * ‖g x‖     := by exact hx
-            _ ≤ c₂⁻¹ * c₂ * ‖f₂ x‖ := by rw [mul_assoc]; gcongr
-            _ = ‖f₂ x‖          := by rw [inv_mul_cancel (by positivity : c₂ ≠ 0), one_mul]
 
 theorem IsBigO.nat_cast_atTop {R : Type _} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =O[atTop] g) :
