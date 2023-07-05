@@ -132,18 +132,6 @@ theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
 
 variable (R)
 
-@[simp]
-theorem simps.free_obj_isRing_nsmul (a : ℕ) (b : FreeAlgebra R S) :
- ↑a * b = nsmulRec a b := by
-  -- simp only [@nsmul_eq_mul, AlgebraCat.free_obj_isRing_natCast, AlgebraCat.free_obj_isRing_mul]
-  rw [← nsmul_eq_mul]; rfl
-
-@[simp]
-theorem simps.free_obj_isAlgebra_toFun (r : R) :
-  (Algebra.toRingHom r : FreeAlgebra R S) =
-    Quot.mk (FreeAlgebra.Rel R S) (FreeAlgebra.Pre.of_scalar r) :=
-by rfl
-
 /-- The "free algebra" functor, sending a type `S` to the free algebra on `S`. -/
 @[simps!]
 def free : Type u ⥤ AlgebraCat.{u} R where
