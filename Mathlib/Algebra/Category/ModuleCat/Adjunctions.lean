@@ -45,8 +45,8 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
   map {X Y} f := Finsupp.lmapDomain _ _ f
-  map_id := by intros ; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros ; exact Finsupp.lmapDomain_comp _ _ _ _
+  map_id := by intros; exact Finsupp.lmapDomain_id _ _
+  map_comp := by intros; exact Finsupp.lmapDomain_comp _ _ _ _
 #align Module.free ModuleCat.free
 
 /-- The free-forgetful adjunction for R-modules.
@@ -348,10 +348,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       dsimp at *
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
       · simp only [w₁, w₂, add_comp]
-      · intros ; rw [zero_smul]
-      · intros ; simp only [add_smul]
-      · intros ; rw [zero_smul]
-      · intros ; simp only [add_smul]
+      · intros; rw [zero_smul]
+      · intros; simp only [add_smul]
+      · intros; rw [zero_smul]
+      · intros; simp only [add_smul]
     · intro f' r
       apply Finsupp.induction_linear g
       · -- Porting note: simp used to be able to close this goal
@@ -362,10 +362,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         dsimp at *
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
         · simp only [w₁, w₂, comp_add]
-        · intros ; rw [zero_smul]
-        · intros ; simp only [add_smul]
-        · intros ; rw [zero_smul]
-        · intros ; simp only [add_smul]
+        · intros; rw [zero_smul]
+        · intros; simp only [add_smul]
+        · intros; rw [zero_smul]
+        · intros; simp only [add_smul]
       · intro g' s
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]

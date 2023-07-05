@@ -16,7 +16,7 @@ import Mathlib.Data.Int.SuccPred
 
 This file defines graded orders, also known as ranked orders.
 
-A `𝕆`-graded order is an order `α` equipped with a distinguished "grade" function `α → 𝕆` which
+An `𝕆`-graded order is an order `α` equipped with a distinguished "grade" function `α → 𝕆` which
 should be understood as giving the "height" of the elements. Usual graded orders are `ℕ`-graded,
 cograded orders are `ℕᵒᵈ`-graded, but we can also grade by `ℤ`, and polytopes are naturally
 `Fin n`-graded.
@@ -74,19 +74,19 @@ class GradeOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] where
   covby_grade ⦃a b : α⦄ : a ⋖ b → grade a ⋖ grade b
 #align grade_order GradeOrder
 
-/-- A `𝕆`-graded order where minimal elements have minimal grades. -/
+/-- An `𝕆`-graded order where minimal elements have minimal grades. -/
 class GradeMinOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Minimal elements have minimal grades. -/
   is_min_grade ⦃a : α⦄ : IsMin a → IsMin (grade a)
 #align grade_min_order GradeMinOrder
 
-/-- A `𝕆`-graded order where maximal elements have maximal grades. -/
+/-- An `𝕆`-graded order where maximal elements have maximal grades. -/
 class GradeMaxOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Maximal elements have maximal grades. -/
   is_max_grade ⦃a : α⦄ : IsMax a → IsMax (grade a)
 #align grade_max_order GradeMaxOrder
 
-/-- A `𝕆`-graded order where minimal elements have minimal grades and maximal elements have maximal
+/-- An `𝕆`-graded order where minimal elements have minimal grades and maximal elements have maximal
 grades. -/
 class GradeBoundedOrder (𝕆 α : Type _) [Preorder 𝕆] [Preorder α] extends GradeMinOrder 𝕆 α,
   GradeMaxOrder 𝕆 α
