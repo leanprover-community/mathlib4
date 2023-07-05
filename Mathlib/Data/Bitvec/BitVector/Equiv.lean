@@ -8,6 +8,11 @@ import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.BitVector.Defs
 import Mathlib.Data.Bitvec.BitVector.Lemmas
 
+/-!
+  Establish the equivalence between `Bitvec n` and `Bitvec.BitVector n`, and proof
+  how various operations are transported along this equivalence
+-/
+
 namespace Bitvec
 open Bitvec (BitVector)
 
