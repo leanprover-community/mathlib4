@@ -114,8 +114,8 @@ theorem continuousOn_continuousLinearMapCoordChange [VectorBundle 𝕜₁ F₁ E
     -- Porting note: was
     -- simp only [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
     --   ContinuousLinearEquiv.arrowCongrₛₗ_apply, LinearEquiv.toFun_eq_coe, coe_comp',
-    --   ContinuousLinearEquiv.arrowCongrSL_apply, comp_apply, Function.comp, compSL_apply, flip_apply,
-    --   ContinuousLinearEquiv.symm_symm]
+    --   ContinuousLinearEquiv.arrowCongrSL_apply, comp_apply, Function.comp, compSL_apply,
+    --   flip_apply, ContinuousLinearEquiv.symm_symm]
     -- Now `simp` fails to use `ContinuousLinearMap.comp_apply` in this case
     dsimp [continuousLinearMapCoordChange]
     rw [ContinuousLinearEquiv.symm_symm]
