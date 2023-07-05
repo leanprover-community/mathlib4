@@ -7,6 +7,12 @@ import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.Types
 
+/-!
+# Universe inequalities and essential surjectivity of `uliftFunctor`.
+
+We show `UnivLE.{u, v} ↔ EssSurj (uliftFunctor.{u, v} : Type v ⥤ Type max u v)`.
+-/
+
 open CategoryTheory
 
 noncomputable section
