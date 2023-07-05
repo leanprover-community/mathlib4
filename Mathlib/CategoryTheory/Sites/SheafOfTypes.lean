@@ -1056,7 +1056,7 @@ theorem compatible_iff (x : FirstObj P R) :
     ((firstObjEqFamily P R).hom x).Compatible ↔ firstMap P R x = secondMap P R x := by
   rw [Presieve.pullbackCompatible_iff]
   constructor
-  . intro t
+  · intro t
     apply Limits.Types.limit_ext
     rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
     simpa [firstMap, secondMap] using t hf hg
