@@ -44,7 +44,6 @@ i.e., it is complete and second countable. We also prove the Gromov compactness 
 
 -/
 
-
 noncomputable section
 
 open scoped Classical Topology ENNReal Cardinal
@@ -723,9 +722,11 @@ instance : SecondCountableTopology GHSpace := by
     · /- the distance between `x` and `y` is encoded in `F p`, and the distance between
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
+      -- porting note : we have to circumvent the absence of `change … with … `
+      have hNqFq1 : N q = (F q).1 := rfl
       intro x y
-      have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
-      rw [this]
+      -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
+      rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
       -- introduce `i`, that codes both `x` and `Φ x` in `fin (N p) = fin (N q)`
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
@@ -752,15 +753,18 @@ instance : SecondCountableTopology GHSpace := by
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ := by
+        have hpq' : HEq (F p).snd (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
+        rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
+        rw [← hpq']
+        -- porting note : new version above, because `change … with…` is not implemented
         -- we want to `subst hpq` where `hpq : F p = F q`, except that `subst` only works
         -- with a constant, so replace `F q` (and everything that depends on it) by a constant `f`
         -- then `subst`
-
-        revert hiq hjq
-        change N q with (F q).1
-        generalize F q = f at hpq ⊢
-        subst hpq
-        rfl
+        -- revert hiq hjq
+        -- change N q with (F q).1
+        -- generalize F q = f at hpq ⊢
+        -- subst hpq
+        -- rfl
 
       rw [Ap, Aq] at this
       -- deduce that the distances coincide up to `ε`, by a straightforward computation
@@ -891,7 +895,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
           ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F p).2 ((E p) x) ((E p) y)).1 := by
-            congr <;> apply Fin.ext_iff.2 <;> rfl
+            congr -- <;> apply Fin.ext_iff.2 <;> rfl
           _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [(E p).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist x y⌋₊ := by
             refine' min_eq_right (Nat.floor_mono _)
@@ -915,15 +919,18 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 := by
+        have hpq' : HEq (F p).snd (F q).snd := (Sigma.mk.inj_iff.1 hpq).2
+        rw [Fin.heq_fun₂_iff Npq Npq] at hpq'
+        rw [← hpq']
+        -- porting note: new version above because `subst…` does not work
         -- we want to `subst hpq` where `hpq : F p = F q`, except that `subst` only works
         -- with a constant, so replace `F q` (and everything that depends on it) by a constant `f`
         -- then `subst`
-        dsimp only at hpq
-        dsimp only [show N q = (F q).1 from rfl] at hiq hjq ⊢
-        generalize F q = f at hpq ⊢
-        subst hpq
-        intros
-        rfl
+        -- dsimp only [show N q = (F q).1 from rfl] at hiq hjq ⊢
+        -- generalize F q = f at hpq ⊢
+        -- subst hpq
+        -- intros
+        -- rfl
       have : ⌊ε⁻¹ * dist x y⌋ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
         rw [Ap, Aq] at this
         have D : 0 ≤ ⌊ε⁻¹ * dist x y⌋ :=
