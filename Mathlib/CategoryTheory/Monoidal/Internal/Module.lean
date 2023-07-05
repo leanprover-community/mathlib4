@@ -8,9 +8,9 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Category.Module.Monoidal.Basic
-import Mathbin.Algebra.Category.Algebra.Basic
-import Mathbin.CategoryTheory.Monoidal.Mon_
+import Mathlib.Algebra.Category.Module.Monoidal.Basic
+import Mathlib.Algebra.Category.Algebra.Basic
+import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # `Mon_ (Module R) ≌ Algebra R`
@@ -48,13 +48,11 @@ instance (A : Mon_ (ModuleCat.{u} R)) : Ring A.pt :=
     one_mul := fun x => by convert LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x); simp
     mul_one := fun x => by convert LinearMap.congr_fun A.mul_one (x ⊗ₜ (1 : R)); simp
     mul_assoc := fun x y z => by convert LinearMap.congr_fun A.mul_assoc (x ⊗ₜ y ⊗ₜ z)
-    left_distrib := fun x y z =>
-      by
+    left_distrib := fun x y z => by
       convert A.mul.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
       rfl
-    right_distrib := fun x y z =>
-      by
+    right_distrib := fun x y z => by
       convert A.mul.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl }
@@ -63,8 +61,7 @@ instance (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.pt :=
   { A.one with
     map_zero' := A.one.map_zero
     map_one' := rfl
-    map_mul' := fun x y =>
-      by
+    map_mul' := fun x y => by
       have h := LinearMap.congr_fun A.one_mul.symm (x ⊗ₜ A.one y)
       rwa [monoidal_category.left_unitor_hom_apply, ← A.one.map_smul] at h 
     commutes' := fun r a => by
@@ -82,8 +79,7 @@ theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.pt r = 
 /-- Converting a monoid object in `Module R` to a bundled algebra.
 -/
 @[simps]
-def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R
-    where
+def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
   obj A := AlgebraCat.of R A.pt
   map A B f :=
     { f.Hom.toAddMonoidHom with
@@ -96,8 +92,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R
 /-- Converting a bundled algebra to a monoid object in `Module R`.
 -/
 @[simps]
-def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R)
-    where
+def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   pt := ModuleCat.of R A
   one := Algebra.linearMap R A
   mul := LinearMap.mul' R A
@@ -126,8 +121,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R)
 /-- Converting a bundled algebra to a monoid object in `Module R`.
 -/
 @[simps]
-def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R)
-    where
+def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map A B f :=
     { Hom := f.toLinearMap
@@ -142,8 +136,7 @@ open MonModuleEquivalenceAlgebra
 /-- The category of internal monoid objects in `Module R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
-def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R
-    where
+def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
   Functor := Functor
   inverse := inverse
   unitIso :=
