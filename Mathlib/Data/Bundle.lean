@@ -17,7 +17,7 @@ should contain all possible results that do not involve any topology.
 
 We represent a bundle `E` over a base space `B` as a dependent type `E : B → Type _`.
 
-We define `Bundle.TotalSpace F E` to be the type of pairs `⟨b, x⟩`, where `b : B` and `x : E x`.
+We define `Bundle.TotalSpace F E` to be the type of pairs `⟨b, x⟩`, where `b : B` and `x : E b`.
 This type is isomorphic to `Σ x, E x` and uses an extra argument `F` for reasons explained below. In
 general, the constructions of fiber bundles we will make will be of this form.
 
