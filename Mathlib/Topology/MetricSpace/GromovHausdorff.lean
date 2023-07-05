@@ -723,7 +723,6 @@ instance : SecondCountableTopology GHSpace := by
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
       -- porting note : we have to circumvent the absence of `change … with … `
-      have hNqFq1 : N q = (F q).1 := rfl
       intro x y
       -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
       rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
