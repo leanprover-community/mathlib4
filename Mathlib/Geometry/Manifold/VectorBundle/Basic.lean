@@ -208,7 +208,8 @@ theorem smooth_proj : Smooth (IB.prod 𝓘(𝕜, F)) IB (π F E) :=
   contMDiff_proj E
 #align bundle.smooth_proj Bundle.smooth_proj
 
-theorem contMDiffOn_proj {s : Set (TotalSpace F E)} : ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
+theorem contMDiffOn_proj {s : Set (TotalSpace F E)} :
+    ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
   (Bundle.contMDiff_proj E).contMDiffOn
 #align bundle.cont_mdiff_on_proj Bundle.contMDiffOn_proj
 

@@ -201,8 +201,8 @@ def linearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) (hb : b
 variable {R}
 
 @[simp]
-theorem linearEquivAt_apply (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) (hb : b ∈ e.baseSet)
-    (v : E b) : e.linearEquivAt R b hb v = (e ⟨b, v⟩).2 :=
+theorem linearEquivAt_apply (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
+    (hb : b ∈ e.baseSet) (v : E b) : e.linearEquivAt R b hb v = (e ⟨b, v⟩).2 :=
   rfl
 #align trivialization.linear_equiv_at_apply Trivialization.linearEquivAt_apply
 
@@ -221,7 +221,8 @@ protected def symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F
 
 variable {R}
 
-theorem coe_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : ⇑(e.symmₗ R b) = e.symm b :=
+theorem coe_symmₗ (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) :
+    ⇑(e.symmₗ R b) = e.symm b :=
   rfl
 #align trivialization.coe_symmₗ Trivialization.coe_symmₗ
 
@@ -532,8 +533,8 @@ theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π 
       ContinuousLinearEquiv.apply_symm_apply]
 #align trivialization.symm_apply_eq_mk_continuous_linear_equiv_at_symm Trivialization.symm_apply_eq_mk_continuousLinearEquivAt_symm
 
-theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (π F E)) [e.IsLinear R]
-    [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) :
+theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (π F E))
+    [e.IsLinear R] [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) :
     (e.continuousLinearEquivAt R b hb.1).symm.trans (e'.continuousLinearEquivAt R b hb.2) =
       coordChangeL R e e' b := by
   ext v

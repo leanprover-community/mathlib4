@@ -263,8 +263,8 @@ theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.base
   dif_pos hb
 #align pretrivialization.symm_apply Pretrivialization.symm_apply
 
-theorem symm_apply_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
-    e.symm b y = 0 :=
+theorem symm_apply_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
+    (y : F) : e.symm b y = 0 :=
   dif_neg hb
 #align pretrivialization.symm_apply_of_not_mem Pretrivialization.symm_apply_of_not_mem
 
@@ -283,8 +283,8 @@ theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 #align pretrivialization.symm_proj_apply Pretrivialization.symm_proj_apply
 
-theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : E b) :
-    e.symm b (e ⟨b, y⟩).2 = y :=
+theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet)
+    (y : E b) : e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 #align pretrivialization.symm_apply_apply_mk Pretrivialization.symm_apply_apply_mk
 
@@ -633,8 +633,8 @@ theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (
   e.toPretrivialization.mk_symm hb y
 #align trivialization.mk_symm Trivialization.mk_symm
 
-theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E) (hz : z.proj ∈ e.baseSet) :
-    e.symm z.proj (e z).2 = z.2 :=
+theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E)
+    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 :=
   e.toPretrivialization.symm_proj_apply z hz
 #align trivialization.symm_proj_apply Trivialization.symm_proj_apply
 

@@ -2108,7 +2108,8 @@ theorem Trivialization.mdifferentiable (e : Trivialization F (π F Z)) [MemTrivi
   ⟨(e.smoothOn I).mdifferentiableOn, (e.smoothOn_symm I).mdifferentiableOn⟩
 
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
-    (hs : UniqueMDiffWithinAt I s p.proj) : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
+    (hs : UniqueMDiffWithinAt I s p.proj) :
+    UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
   set e := trivializationAt F Z p.proj
   have hp : p ∈ e.source := FiberBundle.mem_trivializationAt_proj_source
   have : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (s ×ˢ univ) (e p)

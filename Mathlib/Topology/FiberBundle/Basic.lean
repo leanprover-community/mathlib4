@@ -795,7 +795,8 @@ theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializ
   exact le_iSup₂ (α := TopologicalSpace (TotalSpace F E)) e he
 #align fiber_prebundle.continuous_symm_of_mem_pretrivialization_atlas FiberPrebundle.continuous_symm_of_mem_pretrivializationAtlas
 
-theorem isOpen_source (e : Pretrivialization F (π F E)) : IsOpen[a.totalSpaceTopology] e.source := by
+theorem isOpen_source (e : Pretrivialization F (π F E)) :
+    IsOpen[a.totalSpaceTopology] e.source := by
   refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
   refine' isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, _⟩)
   ext ⟨x, hx⟩
