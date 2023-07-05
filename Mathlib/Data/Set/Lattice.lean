@@ -192,10 +192,24 @@ def kernImage (f : α → β) (s : Set α) : Set β :=
   { y | ∀ ⦃x⦄, f x = y → x ∈ s }
 #align set.kern_image Set.kernImage
 
-lemma kernImage_eq_compl (s : Set α) : s.kernImage m = (m '' sᶜ)ᶜ := by
+lemma kernImage_mono : Monotone (kernImage f) :=
+  fun _ _ hst _ hxs _ hy ↦ hst (hxs hy)
+
+lemma kernImage_eq_compl (s : Set α) : kernImage f s = (f '' sᶜ)ᶜ := by
   ext x
   simp only [kernImage, mem_setOf_eq, mem_compl_iff, mem_image, not_exists, not_and]
   exact forall_congr' (fun _ ↦ not_imp_not.symm)
+
+lemma kernImage_empty : kernImage f ∅ = (range f)ᶜ := by
+  rw [kernImage_eq_compl, compl_empty, image_univ]
+
+lemma kernImage_preimage_eq_iff (s : Set β) : kernImage f (f ⁻¹' s) = s ↔ (range f)ᶜ ⊆ s := by
+  rw [kernImage_eq_compl, ← preimage_compl, compl_eq_comm, eq_comm, image_preimage_eq_iff,
+      compl_subset_comm]
+
+lemma subset_kernImage_iff : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
+  ⟨fun h _ hx ↦ h hx rfl,
+    fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
 
 end kernImage
 
@@ -207,11 +221,8 @@ protected theorem image_preimage : GaloisConnection (image f) (preimage f) := fu
   image_subset_iff
 #align set.image_preimage Set.image_preimage
 
-protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun a _ =>
-  ⟨fun h _ hx y hy =>
-    have : f y ∈ a := hy.symm ▸ hx
-    h this,
-    fun h x (hx : f x ∈ a) => h hx rfl⟩
+protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage f) := fun _ _ =>
+  subset_kernImage_iff.symm
 #align set.preimage_kern_image Set.preimage_kernImage
 
 end GaloisConnection
