@@ -4,16 +4,15 @@ import Mathlib.Analysis.Optimization.Basic
 
 open Filter Set
 
-
 structure ConeProgram
   (V : Type _) [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
   (W : Type _) [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
   where
+  K : ProperCone ℝ V
+  L : ProperCone ℝ W
   c : V
   b : W
   A : V →L[ℝ] W
-  K : ProperCone ℝ V
-  L : ProperCone ℝ W
 
 namespace ConeProgram
 
@@ -22,34 +21,71 @@ variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [Complete
 variable (P : ConeProgram V W)
 
 def toMinProb (P : ConeProgram V W) : MinimizationProblem EReal V where
-  objective := fun v => ⟪P.c, v⟫_ℝ
-  constraint := {x | x ∈ P.K ∧ P.A x - P.b ∈ P.L}
+  cost := fun v => ⟪P.c, v⟫_ℝ
+  constraint := {x | x ∈ P.K ∧ P.b - P.A x ∈ P.L}
 
-def IsSubsolution (seq : ℕ → V × W) : Prop :=
-  Tendsto (fun n => P.A (seq n).1 + (seq n).2) atTop (nhds P.b)
+def IsSubSolution (seqV : ℕ → V) :=
+  ∃ seqW : ℕ → W,
+  (∀ n, seqV n ∈ P.K) ∧
+  (∀ n, seqW n ∈ P.L) ∧
+  (Tendsto (fun n => P.A (seqV n) + (seqW n)) atTop (nhds P.b))
 
-def SubfeasibleSet := { seq | P.IsSubsolution seq }
+def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
 
-noncomputable def OptimalSubvalue :=
-  sSup <| (fun seq => iSup <| fun n => P.toMinProb.objective (seq n).1) '' P.SubfeasibleSet
+-- def Costs :=  { x | P.SubSolution x }
+
+noncomputable def Subcost (seqV : ℕ → V) :=
+  iSup <| fun n => P.toMinProb.cost <| seqV n
+
+
+lemma subsolution_of_solution (hx : P.toMinProb.IsSolution x) : P.IsSubSolution <| fun _ => x := by
+  use fun _ => P.b - P.A x
+  simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
+
+lemma cost_eq_subsolution_of_solution : P.toMinProb.cost x = P.Subcost (fun _ => x) := by
+  simp_rw [subsolution_of_solution, ConeProgram.Subcost, ciSup_const]
+
+def IsOptimalSubSolution (x : ℕ → V) :=
+  P.IsSubSolution x ∧ ∀ y, P.IsSubSolution y → P.Subcost x ≤ P.Subcost y
+
+def Subcosts := P.Subcost '' {x | P.IsSubSolution x}
+
+noncomputable def OptimalSubcost  := sSup P.Subcosts
+
+
+theorem OptimalCost_le_OptimalSubcost (_ : BddAbove P.Subcosts) :
+  P.toMinProb.OptimalCost ≤ P.OptimalSubcost := by
+    apply sSup_le
+    rintro x ⟨v, ⟨hv, heq⟩⟩
+    apply le_sSup
+    simp_rw [mem_image, mem_setOf_eq]
+    use fun _ => v
+    constructor
+    . apply subsolution_of_solution
+      assumption
+    . rw [← cost_eq_subsolution_of_solution]
+      assumption
+
+
+  -- unfold MinimizationProblem.OptimalValue
+  -- apply @sSup_le _ _ P.toMinProb.FeasibleValues P.OptimalSubvalue
+  -- sorry
+-- noncomputable def OptimalSubvalue := sSup <| P.Subvalues
+-- def SubfeasibleSet := { seq | P.IsSubsolution seq }
+-- noncomputable def Subvalues := (fun seq => iSup <| fun n => P.toMinProb.objective (seq n).1) '' P.SubfeasibleSet
 
 def SlaterCondition := Nonempty <| interior <| P.toMinProb.constraint
 
-theorem value_le_subvalue (h : Bounded P.OptimalSubvalue)
-  : P.toMinProb.OptimalValue ≤ P.OptimalSubvalue := by
-  unfold MinimizationProblem.OptimalValue
-  apply @sSup_le _ _ P.toMinProb.FeasibleValues P.OptimalSubvalue
-  unfold ConeProgram.OptimalSubvalue
-
-  sorry
 
 
-theorem value_subvalue (h : P.SlaterCondition) : P.toMinProb.OptimalValue = P.OptimalSubvalue := by
-  rcases h with ⟨v, openSet, ⟨hIsOpen, hIsSubset⟩, hv⟩
-  unfold MinimizationProblem.OptimalValue
-  unfold ConeProgram.OptimalSubvalue
-  simp
-  sorry
+
+
+-- theorem value_subvalue (h : P.SlaterCondition) : P.toMinProb.OptimalValue = P.OptimalSubvalue := by
+--   rcases h with ⟨v, openSet, ⟨hIsOpen, hIsSubset⟩, hv⟩
+--   unfold MinimizationProblem.OptimalValue
+--   unfold ConeProgram.OptimalSubvalue
+--   simp
+--   sorry
 
 end ConeProgram
 
