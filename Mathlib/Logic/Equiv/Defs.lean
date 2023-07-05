@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 
 ! This file was ported from Lean 3 source module logic.equiv.defs
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -74,7 +74,7 @@ infixl:25 " ≃ " => Equiv
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
 `Equiv`. This is declared as the default coercion from `F` to `α ≃ β`. -/
 @[coe]
-def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
+def EquivLike.toEquiv {F} [EquivLike F α β] (f : F) : α ≃ β where
   toFun := f
   invFun := EquivLike.inv f
   left_inv := EquivLike.left_inv f
@@ -185,7 +185,7 @@ instance : Trans Equiv Equiv Equiv where
 
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
-@[simp] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+@[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
 -- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
@@ -194,7 +194,7 @@ instance : Trans Equiv Equiv Equiv where
 -- this theorem can be deleted hopefully without breaking any `simp` proofs.
 @[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
-@[simp] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+@[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
@@ -826,7 +826,8 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 #align equiv.sigma_congr Equiv.sigmaCongr
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
-@[simps apply symm_apply] def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
+@[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
+def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align equiv.sigma_equiv_prod_apply Equiv.sigmaEquivProd_apply
 #align equiv.sigma_equiv_prod_symm_apply Equiv.sigmaEquivProd_symm_apply
@@ -869,7 +870,7 @@ protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
 protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
-  . rw [← f.right_inv x]; apply h.mp; apply h₂
+  · rw [← f.right_inv x]; apply h.mp; apply h₂
   · apply h.mpr; apply h₂
 #align equiv.forall_congr Equiv.forall_congr
 

@@ -117,6 +117,8 @@ class HasLimitsOfSize (C : Type u) [Category.{v} C] : Prop where
     infer_instance
 #align category_theory.limits.has_limits_of_size CategoryTheory.Limits.HasLimitsOfSize
 
+pp_with_univ HasLimitsOfSize
+
 /-- `C` has all (small) limits if it has limits of every shape that is as big as its hom-sets. -/
 abbrev HasLimits (C : Type u) [Category.{v} C] : Prop :=
   HasLimitsOfSize.{v, v} C
@@ -493,7 +495,7 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
     haveI : HasLimit (E ⋙  F ⋙  G) := h
     G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
   haveI : HasLimit (E ⋙  F ⋙  G) := h
-  ext ; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
+  ext; erw [assoc, limit.post_π, ← G.map_comp, limit.pre_π, assoc, limit.pre_π, limit.post_π]
 #align category_theory.limits.limit.pre_post CategoryTheory.Limits.limit.pre_post
 
 open CategoryTheory.Equivalence
@@ -670,6 +672,8 @@ class HasColimitsOfSize (C : Type u) [Category.{v} C] : Prop where
   has_colimits_of_shape : ∀ (J : Type u₁) [Category.{v₁} J], HasColimitsOfShape J C := by
     infer_instance
 #align category_theory.limits.has_colimits_of_size CategoryTheory.Limits.HasColimitsOfSize
+
+pp_with_univ HasColimitsOfSize
 
 /-- `C` has all (small) colimits if it has colimits of every shape that is as big as its hom-sets.
 -/
