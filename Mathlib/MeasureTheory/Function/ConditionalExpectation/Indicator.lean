@@ -20,7 +20,7 @@ a restricted measure.
 
 ## Main result
 
-* `MeasureTheory.condexp_indicator`: If `s` is a `m`-measurable set, then the conditional
+* `MeasureTheory.condexp_indicator`: If `s` is an `m`-measurable set, then the conditional
   expectation of the indicator function of `s` is almost everywhere equal to the indicator
   of `s` of the conditional expectation. Namely, `𝔼[s.indicator f | m] = s.indicator 𝔼[f | m]` a.e.
 
@@ -143,7 +143,7 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
   · exact (stronglyMeasurable_condexp.indicator hs_m).aeStronglyMeasurable'
 #align measure_theory.condexp_restrict_ae_eq_restrict MeasureTheory.condexp_restrict_ae_eq_restrict
 
-/-- If the restriction to a `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
+/-- If the restriction to an `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
 to `s` of another σ-algebra `m₂` (hypothesis `hs`), then `μ[f | m] =ᵐ[μ.restrict s] μ[f | m₂]`. -/
 theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableSpace α}
     {μ : Measure α} (hm : m ≤ m0) (hm₂ : m₂ ≤ m0) [SigmaFinite (μ.trim hm)]

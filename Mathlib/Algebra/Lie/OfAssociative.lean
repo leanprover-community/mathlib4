@@ -305,7 +305,7 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
     (A' : Subalgebra R A) : LieSubalgebra R A :=
   { Subalgebra.toSubmodule A' with
     lie_mem' := fun {x y} hx hy => by
-      change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx ; change y ∈ A' at hy
+      change ⁅x, y⁆ ∈ A'; change x ∈ A' at hx; change y ∈ A' at hy
       rw [LieRing.of_associative_ring_bracket]
       have hxy := A'.mul_mem hx hy
       have hyx := A'.mul_mem hy hx

@@ -449,7 +449,7 @@ instance commRing : CommRing ℂ :=
     mul_assoc := by intros; ext <;> simp [mul_assoc] <;> ring
     one_mul := by intros; ext <;> simp [one_mul]
     mul_one := by intros; ext <;> simp [mul_one]
-    mul_comm := by intros; ext <;> simp [mul_comm] ; ring }
+    mul_comm := by intros; ext <;> simp [mul_comm]; ring }
 
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
@@ -574,7 +574,7 @@ theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
 #align complex.conj_eq_iff_real Complex.conj_eq_iff_real
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
 #align complex.conj_eq_iff_re Complex.conj_eq_iff_re
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
@@ -682,7 +682,7 @@ theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
 #align complex.norm_sq_mul Complex.normSq_mul
 
 theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
-  dsimp [normSq] ; ring
+  dsimp [normSq]; ring
 #align complex.norm_sq_add Complex.normSq_add
 
 theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
@@ -1108,21 +1108,21 @@ theorem abs_le_abs_re_add_abs_im (z : ℂ) : Complex.abs z ≤ |z.re| + |z.im| :
 instance : NeZero (1 : ℝ) :=
  ⟨by apply one_ne_zero⟩
 
-theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max (|z.re|) (|z.im|) := by
+theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max |z.re| |z.im| := by
   cases' z with x y
   simp only [abs_apply, normSq_mk, ← sq]
   by_cases hle : |x| ≤ |y|
   · calc
       Real.sqrt (x ^ 2 + y ^ 2) ≤ Real.sqrt (y ^ 2 + y ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle) _)
-      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+      _ = Real.sqrt 2 * max |x| |y| := by
         rw [max_eq_right hle, ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
   · have hle' := le_of_not_le hle
     rw [add_comm]
     calc
       Real.sqrt (y ^ 2 + x ^ 2) ≤ Real.sqrt (x ^ 2 + x ^ 2) :=
         Real.sqrt_le_sqrt (add_le_add_right (sq_le_sq.2 hle') _)
-      _ = Real.sqrt 2 * max (|x|) (|y|) := by
+      _ = Real.sqrt 2 * max |x| |y| := by
         rw [max_eq_left hle', ← two_mul, Real.sqrt_mul two_pos.le, Real.sqrt_sq_eq_abs]
 #align complex.abs_le_sqrt_two_mul_max Complex.abs_le_sqrt_two_mul_max
 
@@ -1145,7 +1145,7 @@ theorem abs_cast_nat (n : ℕ) : Complex.abs (n : ℂ) = n := by
 #align complex.abs_cast_nat Complex.abs_cast_nat
 
 @[simp, norm_cast]
-theorem int_cast_abs (n : ℤ) : (|↑n|) = Complex.abs n := by
+theorem int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := by
   rw [← ofReal_int_cast, abs_ofReal]
 #align complex.int_cast_abs Complex.int_cast_abs
 
@@ -1331,18 +1331,18 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
 theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_re Complex.lim_re
 
 theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
   IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    rw [← RingHom.map_sub, abs_conj] ; exact hi j hj⟩
+    rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩
 #align complex.is_cau_seq_conj Complex.isCauSeq_conj
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
@@ -1352,7 +1352,7 @@ noncomputable def cauSeqConj (f : CauSeq ℂ Complex.abs) : CauSeq ℂ Complex.a
 
 theorem lim_conj (f : CauSeq ℂ Complex.abs) : lim (cauSeqConj f) = conj (lim f) :=
   Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
-    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm] ; rfl)
+    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm]; rfl)
 #align complex.lim_conj Complex.lim_conj
 
 /-- The absolute value of a complex Cauchy sequence, as a real Cauchy sequence. -/

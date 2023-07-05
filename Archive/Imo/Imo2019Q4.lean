@@ -42,7 +42,7 @@ namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
-  have h2 : (∑ i in range n, i) < k
+  have h2 : ∑ i in range n, i < k
   · suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
@@ -53,7 +53,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
       PartENat.coe_lt_coe, ← mem_range]
   rw [← not_le]; intro hn
   apply _root_.ne_of_gt _ h
-  calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ i in range n, (2:ℤ) ^ n := ?_
+  calc ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i) ≤ ∏ __ in range n, (2:ℤ) ^ n := ?_
     _ < ↑ k ! := ?_
   · gcongr
     · intro i hi
@@ -63,7 +63,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     · apply sub_le_self
       positivity
   norm_cast
-  calc ∏ i in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
+  calc ∏ __ in range n, 2 ^ n = 2 ^ (n * n) := by rw [prod_const, card_range, ← pow_mul]
     _ < (∑ i in range n, i)! := ?_
     _ ≤ k ! := by gcongr
   clear h h2

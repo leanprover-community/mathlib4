@@ -464,11 +464,9 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
     s.mulIndicator f * sᶜ.mulIndicator g = s.piecewise f g := by
   ext x
   by_cases h : x ∈ s
-  ·
-    rw [piecewise_eq_of_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_mem h,
+  · rw [piecewise_eq_of_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_mem h,
       Set.mulIndicator_of_not_mem (Set.not_mem_compl_iff.2 h), mul_one]
-  ·
-    rw [piecewise_eq_of_not_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_not_mem h,
+  · rw [piecewise_eq_of_not_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_not_mem h,
       Set.mulIndicator_of_mem (Set.mem_compl h), one_mul]
 #align set.mul_indicator_mul_compl_eq_piecewise Set.mulIndicator_mul_compl_eq_piecewise
 #align set.indicator_add_compl_eq_piecewise Set.indicator_add_compl_eq_piecewise
@@ -613,7 +611,7 @@ taking the original function over the original `Finset`. -/
       "Summing an indicator function over a possibly larger `Finset` is the same as summing
       the original function over the original `finset`."]
 theorem prod_mulIndicator_subset (f : α → M) {s t : Finset α} (h : s ⊆ t) :
-    (∏ i in s, f i) = ∏ i in t, mulIndicator (↑s) f i :=
+    ∏ i in s, f i = ∏ i in t, mulIndicator (↑s) f i :=
   prod_mulIndicator_subset_of_eq_one _ (fun _ b => b) h fun _ => rfl
 #align set.prod_mul_indicator_subset Set.prod_mulIndicator_subset
 #align set.sum_indicator_subset Set.sum_indicator_subset
