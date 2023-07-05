@@ -267,7 +267,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
   module over a PID is isomorphic to the product of a free module and a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.-/
 theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
-    ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (h : ∀ i, Irreducible <| p i) (e : ι → ℕ),
+    ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (_ : ∀ i, Irreducible <| p i) (e : ι → ℕ),
       Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
   haveI := isNoetherian_of_fg_of_noetherian' (Module.finite_def.mp h')
   haveI := isNoetherian_submodule' (torsion R N)
@@ -281,7 +281,6 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ⟨n, I, fI, p, hp, e,
       ⟨(lequivProdOfRightSplitExact (torsion R N).injective_subtype _ hf).symm.trans <|
           (h.prod g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
-
   rw [range_subtype, ker_mkQ]
 #align module.equiv_free_prod_direct_sum Module.equiv_free_prod_directSum
 
