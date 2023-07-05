@@ -8,6 +8,7 @@ Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Tactic.DeriveFintype
@@ -153,14 +154,6 @@ set_option linter.uppercaseLean3 false
 def I : Ideal (R × R) :=
   Ideal.span {((2, 2) : R × R)}
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.I Counterexample.CounterexampleNotPrimeButHomogeneousPrime.I
-
--- Porting note: new theorem, TODO move
-variable {G₁ : Type _} {G₂ : Type _} [CommSemigroup G₁] [CommSemigroup G₂] in
-theorem prod_dvd_iff {x y : G₁ × G₂} :
-    x ∣ y ↔ x.1 ∣ y.1 ∧ x.2 ∣ y.2 := by
-  cases x; cases y
-  simp only [dvd_iff_exists_eq_mul_left, Prod.exists, Prod.mk_mul_mk, Prod.mk.injEq,
-    exists_and_left, exists_and_right, and_self, true_and]
 
 theorem I_not_prime : ¬I.IsPrime := by
   rintro ⟨rid1, rid2⟩
