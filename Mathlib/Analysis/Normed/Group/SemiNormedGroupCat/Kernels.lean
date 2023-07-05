@@ -98,9 +98,12 @@ namespace SemiNormedGroupCat
 
 section EqualizersAndKernels
 
--- porting note: this wasn't needed in Lean 3
+-- porting note: these weren't needed in Lean 3
 instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) := (inferInstance : Sub (NormedAddGroupHom V W))
-
+noncomputable instance {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) :=
+  (inferInstance : Norm (NormedAddGroupHom V W))
+noncomputable instance {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) :=
+  (inferInstance : NNNorm (NormedAddGroupHom V W))
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 def fork {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) : Fork f g :=
   @Fork.ofι _ _ _ _ _ _ (of (f - g : NormedAddGroupHom V W).ker) (NormedAddGroupHom.incl (f - g).ker) <| by
@@ -233,6 +236,9 @@ theorem comp_explicitCokernelπ {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.comp_explicit_cokernel_π SemiNormedGroupCat.comp_explicitCokernelπ
 
+-- porting note: wasn't necessary in Lean 3. Is this a bug?
+attribute [simp] comp_explicitCokernelπ_assoc
+
 @[simp]
 theorem explicitCokernelπ_apply_dom_eq_zero {X Y : SemiNormedGroupCat.{u}} {f : X ⟶ Y} (x : X) :
     (explicitCokernelπ f) (f x) = 0 :=
@@ -349,6 +355,7 @@ set_option linter.uppercaseLean3 false in
 theorem explicitCokernelDesc_norm_le {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     (w : f ≫ g = 0) : ‖explicitCokernelDesc w‖ ≤ ‖g‖ :=
   explicitCokernelDesc_norm_le_of_norm_le w ‖g‖₊ le_rfl
+set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel_desc_norm_le SemiNormedGroupCat.explicitCokernelDesc_norm_le
 
 /-- The explicit cokernel is isomorphic to the usual cokernel. -/
@@ -386,7 +393,7 @@ set_option linter.uppercaseLean3 false in
 noncomputable def explicitCokernel.map {A B C D : SemiNormedGroupCat.{u}} {fab : A ⟶ B} {fbd : B ⟶ D}
     {fac : A ⟶ C} {fcd : C ⟶ D} (h : fab ≫ fbd = fac ≫ fcd) :
     explicitCokernel fab ⟶ explicitCokernel fcd :=
-  @explicitCokernelDesc _ _ _ fab (fbd ≫ explicitCokernelπ _) <| by simp [reassoc_of h]
+  @explicitCokernelDesc _ _ _ fab (fbd ≫ explicitCokernelπ _) <| by simp [reassoc_of% h]
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel.map SemiNormedGroupCat.explicitCokernel.map
 
