@@ -8,8 +8,8 @@ Authors: Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.VectorBundle.Basic
-import Mathbin.Topology.VectorBundle.Hom
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of smooth vector bundles over the same base space
 
@@ -51,8 +51,7 @@ theorem smoothOn_continuousLinearMapCoordChange [SmoothManifoldWithCorners IB B]
     [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂)
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
-      (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) :=
-  by
+      (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
   let L₁ := compL 𝕜 F₁ F₂ F₂
   have h₁ : Smooth _ _ _ := L₁.cont_mdiff
   have h₂ : Smooth _ _ _ := (ContinuousLinearMap.flip (compL 𝕜 F₁ F₁ F₂)).ContMDiff
@@ -70,8 +69,7 @@ theorem smoothOn_continuousLinearMapCoordChange [SmoothManifoldWithCorners IB B]
 
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
-      (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) :=
-  by
+      (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
   simp_rw [FiberBundle.chartedSpace_chartAt, trans_apply, LocalHomeomorph.prod_apply,
     Trivialization.coe_coe, LocalHomeomorph.refl_apply, Function.id_def, hom_trivializationAt_apply]
 #align hom_chart hom_chart
@@ -99,8 +97,7 @@ variable [SmoothManifoldWithCorners IB B] [SmoothVectorBundle F₁ E₁ IB]
 
 instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
     (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB
-    where exists_smooth_coord_change :=
-    by
+    where exists_smooth_coord_change := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
     skip
     refine'
