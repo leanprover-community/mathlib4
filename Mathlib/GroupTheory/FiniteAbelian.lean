@@ -77,7 +77,9 @@ theorem equiv_directSum_zMod_of_fintype [Finite G] :
   cases nonempty_fintype G
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zMod G
   cases' n with n
-  · have : Unique (Fin Nat.zero →₀ ℤ) := by sorry
+  · have : Unique (Fin Nat.zero →₀ ℤ) :=
+      { uniq := by
+          simp only [Nat.zero_eq, eq_iff_true_of_subsingleton, forall_const] }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
