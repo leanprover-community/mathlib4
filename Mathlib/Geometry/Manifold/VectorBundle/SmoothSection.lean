@@ -15,7 +15,7 @@ import Mathlib.Geometry.Manifold.Algebra.LieGroup
 /-!
 # Smooth sections
 
-In this file we define the type `cont_mdiff_section` of `n` times continuously differentiable
+In this file we define the type `ContMDiffSection` of `n` times continuously differentiable
 sections of a smooth vector bundle over a manifold `M` and prove that it's a module.
 -/
 
