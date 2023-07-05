@@ -696,7 +696,7 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type _}
       Seminorm.bddAbove_of_absorbent (absorbent_nhds_zero this)
         (fun x hx ↦ ⟨1, forall_range_iff.mpr hx⟩)
     rw [← Seminorm.coe_iSup_eq bdd]
-    refine ⟨bdd, Seminorm.continuous' zero_lt_one ?_⟩
+    refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx
     rw [closedBall_iSup bdd _ one_pos, mem_iInter]
     exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
