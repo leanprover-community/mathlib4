@@ -784,7 +784,7 @@ defined as `f i ⟨x, hx⟩` for `hx : x ∈ t i`, is measurable. -/
 theorem measurable_liftCover [Countable ι] (t : ι → Set α) (htm : ∀ i, MeasurableSet (t i))
     (f : ∀ i, t i → β) (hfm : ∀ i, Measurable (f i))
     (hf : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
-    (htU : (⋃ i, t i) = univ) :
+    (htU : ⋃ i, t i = univ) :
     Measurable (liftCover t f hf htU) := fun s hs => by
   rw [preimage_liftCover]
   exact .iUnion fun i => .subtype_image (htm i) <| hfm i hs
@@ -1677,7 +1677,7 @@ theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
   obtain ⟨e, he⟩ := Set.Countable.exists_eq_range (bct.insert ∅) (insert_nonempty _ _)
   rw [← generateFrom_insert_empty, he] at hb
   refine' ⟨fun x n => x ∈ e n, _, _⟩
-  . rw [measurable_pi_iff]
+  · rw [measurable_pi_iff]
     intro n
     apply measurable_to_bool
     simp only [preimage, mem_singleton_iff, Bool.decide_iff]
@@ -1779,7 +1779,7 @@ end Filter
   a needed condition to show that the product of two collections generate the product sigma algebra,
   see `generateFrom_prod_eq`. -/
 def IsCountablySpanning (C : Set (Set α)) : Prop :=
-  ∃ s : ℕ → Set α, (∀ n, s n ∈ C) ∧ (⋃ n, s n) = univ
+  ∃ s : ℕ → Set α, (∀ n, s n ∈ C) ∧ ⋃ n, s n = univ
 #align is_countably_spanning IsCountablySpanning
 
 theorem isCountablySpanning_measurableSet [MeasurableSpace α] :
