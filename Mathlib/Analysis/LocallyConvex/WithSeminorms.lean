@@ -680,13 +680,13 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type _}
   -- Now we can prove the equivalence in this setting
   simp only [List.map]
   tfae_have 1 → 3
-  . exact uniformEquicontinuous_of_equicontinuousAt_zero f
+  · exact uniformEquicontinuous_of_equicontinuousAt_zero f
   tfae_have 3 → 2
-  . exact UniformEquicontinuous.equicontinuous
+  · exact UniformEquicontinuous.equicontinuous
   tfae_have 2 → 1
-  . exact fun H ↦ H 0
+  · exact fun H ↦ H 0
   tfae_have 3 → 5
-  . intro H
+  · intro H
     have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
       filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
         with x hx k
@@ -701,11 +701,11 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type _}
     rw [closedBall_iSup bdd _ one_pos, mem_iInter]
     exact fun k ↦ (mem_closedBall_zero _).mpr (hx k)
   tfae_have 5 → 4
-  . refine fun H ↦ ⟨⨆ k, (q i).comp (f k), ?_, le_ciSup H.1⟩
+  · refine fun H ↦ ⟨⨆ k, (q i).comp (f k), ?_, le_ciSup H.1⟩
     rw [Seminorm.coe_iSup_eq H.1]
     exact H.2
   tfae_have 4 → 1 -- This would work over any `NormedField`
-  . intro ⟨p, hp, hfp⟩
+  · intro ⟨p, hp, hfp⟩
     have hp' : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
     refine (Metric.equicontinuousAt_of_continuity_modulus p hp' _ <|
       eventually_of_forall fun x k ↦ ?_)
