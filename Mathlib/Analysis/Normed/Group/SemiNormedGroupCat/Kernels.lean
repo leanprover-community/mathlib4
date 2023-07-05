@@ -11,6 +11,7 @@ Authors: Riccardo Brasca, Johan Commelin, Scott Morrison
 import Mathlib.Analysis.Normed.Group.SemiNormedGroupCat
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+set_option autoImplicit false
 
 /-!
 # Kernels and cokernels in SemiNormedGroupCat₁ and SemiNormedGroupCat
@@ -146,8 +147,15 @@ def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   @Cofork.ofπ _ _ _ _ _ _ (SemiNormedGroupCat.of (Y ⧸ NormedAddGroupHom.range f)) f.range.normedMk
     (by
       ext
-      simp only [comp_apply, Limits.zero_comp, NormedAddGroupHom.zero_apply, ←
-        NormedAddGroupHom.mem_ker, f.range.ker_normed_mk, f.mem_range, exists_apply_eq_apply])
+      simp only [comp_apply, Limits.zero_comp]
+      -- porting note: `simp` not firing on the below
+      rw [comp_apply, NormedAddGroupHom.zero_apply]
+      -- porting note: Lean 3 didn't need this instance
+      letI : SeminormedAddCommGroup ((forget SemiNormedGroupCat).obj Y) :=
+        (inferInstance : SeminormedAddCommGroup Y)
+      -- porting note: again simp doesn't seem to be firing in the below line
+      rw [ ←NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
+      simp only [exists_apply_eq_apply])
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_cocone SemiNormedGroupCat.cokernelCocone
 
