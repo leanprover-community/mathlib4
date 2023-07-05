@@ -18,9 +18,9 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 ## Main statements
 
-* `module.equiv_direct_sum_of_is_torsion` : A finitely generated torsion module over a PID is
+* `Module.equiv_directSum_of_isTorsion` : A finitely generated torsion module over a PID is
   isomorphic to a direct sum of some `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.
-* `module.equiv_free_prod_direct_sum` : A finitely generated module over a PID is isomorphic to the
+* `Module.equiv_free_prod_directSum` : A finitely generated module over a PID is isomorphic to the
   product of a free module (its torsion free part) and a direct sum of the form above (its torsion
   submodule).
 
@@ -34,17 +34,17 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 ## Implementation details
 
-We first prove (`submodule.is_internal_prime_power_torsion_of_pid`) that a finitely generated
+We first prove (`Submodule.isInternal_prime_power_torsion_of_pid`) that a finitely generated
 torsion module is the internal direct sum of its `p i ^ e i`-torsion submodules for some
 (finitely many) prime powers `p i ^ e i`. This is proved in more generality for a Dedekind domain
-at `submodule.is_internal_prime_power_torsion`.
+at `Submodule.isInternal_prime_power_torsion`.
 
 Then we treat the case of a `p ^ ∞`-torsion module (that is, a module where all elements are
 cancelled by scalar multiplication by some power of `p`) and apply it to the `p i ^ e i`-torsion
 submodules (that are `p i ^ ∞`-torsion) to get the result for torsion modules.
 
 Then we get the general result using that a torsion free module is free (which has been proved at
-`module.free_of_finite_type_torsion_free'` at `linear_algebra/free_module/pid.lean`.)
+`Module.free_of_finite_type_torsion_free'` at `linear_algebra/free_module/pid.lean`.)
 
 ## Tags
 
