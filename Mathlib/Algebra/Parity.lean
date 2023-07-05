@@ -468,19 +468,19 @@ set_option linter.deprecated false
 variable [LinearOrderedRing R] {a : R} {n : ℕ}
 
 theorem Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit0_nonneg a k
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_nonneg a k
 #align even.pow_nonneg Even.pow_nonneg
 
 theorem Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit0_pos ha k
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_pos ha k
 #align even.pow_pos Even.pow_pos
 
 theorem Odd.pow_nonpos (hn : Odd n) (ha : a ≤ 0) : a ^ n ≤ 0 := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
 #align odd.pow_nonpos Odd.pow_nonpos
 
 theorem Odd.pow_neg (hn : Odd n) (ha : a < 0) : a ^ n < 0 := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
 #align odd.pow_neg Odd.pow_neg
 
 theorem Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
@@ -516,10 +516,7 @@ theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
 #align pow_bit0_abs pow_bit0_abs
 
 theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using strictMono_pow_bit1 _
+  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
 #align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers
-
-/-- Simp attribute for lemmas about `Even` -/
-register_simp_attr parity_simps

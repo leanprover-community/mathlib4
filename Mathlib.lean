@@ -32,6 +32,7 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.BoolRingCat
 import Mathlib.Algebra.Category.FGModuleCat.Basic
 import Mathlib.Algebra.Category.FGModuleCat.Limits
@@ -427,6 +428,8 @@ import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace.HasColimits
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
@@ -1245,7 +1248,6 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Random
-import Mathlib.Control.SimpSet
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
@@ -1412,7 +1414,6 @@ import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.Units
-import Mathlib.Data.IsROrC.Attr
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Data.IsROrC.Lemmas
 import Mathlib.Data.KVMap
@@ -1644,6 +1645,7 @@ import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.QPF.Multivariate.Basic
+import Mathlib.Data.QPF.Multivariate.Constructions.Cofix
 import Mathlib.Data.QPF.Multivariate.Constructions.Comp
 import Mathlib.Data.QPF.Multivariate.Constructions.Const
 import Mathlib.Data.QPF.Multivariate.Constructions.Fix
@@ -1773,7 +1775,6 @@ import Mathlib.Data.Tree
 import Mathlib.Data.TwoPointing
 import Mathlib.Data.TypeMax
 import Mathlib.Data.TypeVec
-import Mathlib.Data.TypeVec.Attr
 import Mathlib.Data.UInt
 import Mathlib.Data.ULift
 import Mathlib.Data.UnionFind
@@ -2197,7 +2198,6 @@ import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Equiv.LocalEquiv
-import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Set
@@ -2298,7 +2298,6 @@ import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.MeasureTheory.Integral.IntegralSimps
 import Mathlib.MeasureTheory.Integral.IntervalAverage
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.Layercake
@@ -2350,6 +2349,7 @@ import Mathlib.MeasureTheory.Tactic
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Definability
+import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.ElementaryMaps
 import Mathlib.ModelTheory.Encoding
 import Mathlib.ModelTheory.FinitelyGenerated
@@ -2407,6 +2407,7 @@ import Mathlib.NumberTheory.Liouville.Residual
 import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.Modular
+import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Basic
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
@@ -2620,7 +2621,9 @@ import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.Variance
 import Mathlib.RepresentationTheory.Action
 import Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.FdRep
+import Mathlib.RepresentationTheory.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
@@ -2694,6 +2697,7 @@ import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Jacobson
 import Mathlib.RingTheory.JacobsonIdeal
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LocalProperties
@@ -2728,6 +2732,7 @@ import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.Nullstellensatz
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.OreSet
 import Mathlib.RingTheory.Perfection
@@ -2804,7 +2809,6 @@ import Mathlib.RingTheory.WittVector.StructurePolynomial
 import Mathlib.RingTheory.WittVector.Teichmuller
 import Mathlib.RingTheory.WittVector.Truncated
 import Mathlib.RingTheory.WittVector.Verschiebung
-import Mathlib.RingTheory.WittVector.WittAttributes
 import Mathlib.RingTheory.WittVector.WittPolynomial
 import Mathlib.RingTheory.ZMod
 import Mathlib.SetTheory.Cardinal.Basic
@@ -2843,6 +2847,8 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Backtracking
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
@@ -2946,7 +2952,6 @@ import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
-import Mathlib.Tactic.Qify.Attr
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
@@ -2991,7 +2996,6 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Zify
-import Mathlib.Tactic.Zify.Attr
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable

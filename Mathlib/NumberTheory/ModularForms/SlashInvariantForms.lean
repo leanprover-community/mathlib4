@@ -66,14 +66,17 @@ instance : CoeFun (SlashInvariantForm Γ k) fun _ => ℍ → ℂ :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem slashInvariantForm_toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
+theorem SlashInvariantForm.toFun_eq_coe {f : SlashInvariantForm Γ k} : f.toFun = (f : ℍ → ℂ) :=
   rfl
-#align slash_invariant_form_to_fun_eq_coe slashInvariantForm_toFun_eq_coe
+#align slash_invariant_form_to_fun_eq_coe SlashInvariantForm.toFun_eq_coe
+
+@[simp]
+theorem SlashInvariantForm.coe_mk (f : ℍ → ℂ) (hf : ∀ γ : Γ, f ∣[k] γ = f) : ⇑(mk f hf) = f := rfl
 
 @[ext]
-theorem slashInvariantForm_ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
+theorem SlashInvariantForm.ext {f g : SlashInvariantForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
-#align slash_invariant_form_ext slashInvariantForm_ext
+#align slash_invariant_form_ext SlashInvariantForm.ext
 
 /-- Copy of a `SlashInvariantForm` with a new `toFun` equal to the old one.
 Useful to fix definitional equalities. -/
@@ -224,5 +227,18 @@ theorem one_coe_eq_one : ((1 : SlashInvariantForm Γ 0) : ℍ → ℂ) = 1 :=
 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
+
+/-- The slash invariant form of weight `k₁ + k₂` given by the product of two modular forms of
+weights `k₁` and `k₂`. -/
+def mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
+    (g : SlashInvariantForm Γ k₂) : SlashInvariantForm Γ (k₁ + k₂) where
+  toFun := f * g
+  slash_action_eq' A := by
+    simp_rw [ModularForm.mul_slash_subgroup, SlashInvariantFormClass.slash_action_eq]
+
+@[simp]
+theorem coe_mul {k₁ k₂ : ℤ} {Γ : Subgroup SL(2, ℤ)} (f : SlashInvariantForm Γ k₁)
+    (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
+  rfl
 
 end SlashInvariantForm

@@ -664,7 +664,7 @@ theorem eq_of_xn_modEq_lem2 {n} (h : 2 * xn a1 n = xn a1 (n + 1)) : a = 2 ∧ n 
         (lt_of_le_of_lt (Nat.mul_le_mul_left _ a1)
           (Nat.lt_add_of_pos_right <| mul_pos (d_pos a1) (strictMono_y a1 np)))
         h
-  cases this ; simp at h; exact ⟨h.symm, rfl⟩
+  cases this; simp at h; exact ⟨h.symm, rfl⟩
 #align pell.eq_of_xn_modeq_lem2 Pell.eq_of_xn_modEq_lem2
 
 theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
@@ -809,7 +809,7 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
   have jj : j ≡ j' [MOD 4 * n] := by delta ModEq; rw [Nat.mod_eq_of_lt jl]
   have : ∀ j q, xn a1 (j + 4 * n * q) ≡ xn a1 j [MOD xn a1 n] := by
     intro j q; induction' q with q IH
-    . simp [ModEq.refl]
+    · simp [ModEq.refl]
     rw [Nat.mul_succ, ← add_assoc, add_comm]
     exact (xn_modEq_x4n_add _ _ _).trans IH
   Or.imp (fun ji : j' = i => by rwa [← ji])

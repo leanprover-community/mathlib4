@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 
 ! This file was ported from Lean 3 source module measure_theory.integral.bochner
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetToL1
-import Mathlib.MeasureTheory.Integral.IntegralSimps
 
 /-!
 # Bochner integral
@@ -702,21 +701,25 @@ theorem integral_zero : integral (0 : α →₁[μ] E) = 0 := by
 
 variable {α E}
 
+@[integral_simps]
 theorem integral_add (f g : α →₁[μ] E) : integral (f + g) = integral f + integral g := by
   simp only [integral]
   exact map_add integralCLM f g
 #align measure_theory.L1.integral_add MeasureTheory.L1.integral_add
 
+@[integral_simps]
 theorem integral_neg (f : α →₁[μ] E) : integral (-f) = -integral f := by
   simp only [integral]
   exact map_neg integralCLM f
 #align measure_theory.L1.integral_neg MeasureTheory.L1.integral_neg
 
+@[integral_simps]
 theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - integral g := by
   simp only [integral]
   exact map_sub integralCLM f g
 #align measure_theory.L1.integral_sub MeasureTheory.L1.integral_sub
 
+@[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
@@ -875,6 +878,7 @@ theorem integral_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀
   exact setToFun_finset_sum (dominatedFinMeasAdditive_weightedSMul _) s hf
 #align measure_theory.integral_finset_sum MeasureTheory.integral_finset_sum
 
+@[integral_simps]
 theorem integral_neg (f : α → E) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
   simp only [integral, L1.integral]
   exact setToFun_neg (dominatedFinMeasAdditive_weightedSMul μ) f
@@ -895,6 +899,7 @@ theorem integral_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
   integral_sub hf hg
 #align measure_theory.integral_sub' MeasureTheory.integral_sub'
 
+@[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α → E) : ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
   simp only [integral, L1.integral]
   exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
@@ -1187,7 +1192,7 @@ theorem integral_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : 
     ∫ a, (f a).toReal ∂μ = (∫⁻ a, f a ∂μ).toReal := by
   rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable]
   · rw [lintegral_congr_ae]; refine' hf.mp (eventually_of_forall _)
-    intro x hx; rw [lt_top_iff_ne_top] at hx ; simp [hx]
+    intro x hx; rw [lt_top_iff_ne_top] at hx; simp [hx]
   · exact eventually_of_forall fun x => ENNReal.toReal_nonneg
 #align measure_theory.integral_to_real MeasureTheory.integral_toReal
 
@@ -1722,9 +1727,6 @@ set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
 end Properties
-
-attribute [integral_simps] integral_neg integral_smul L1.integral_add L1.integral_sub
-  L1.integral_smul L1.integral_neg
 
 section IntegralTrim
 

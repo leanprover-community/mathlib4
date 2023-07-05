@@ -224,7 +224,7 @@ lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
-  mk S.g.op S.f.op (by simp only [← op_comp, S.zero] ; rfl)
+  mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
 
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
@@ -245,7 +245,7 @@ lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 /-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
-  mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero] ; rfl)
+  mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
 
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]

@@ -151,7 +151,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
-    -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is a increasing and
+    -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is an increasing and
     -- decreasing subsequence which we did right near the top.
     have z : 1 ≤ (ab i).1 ∧ 1 ≤ (ab i).2 := by
       simp only [← hab]

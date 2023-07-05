@@ -60,7 +60,7 @@ variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
   | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
-  | succ _ i_ih => intro ; apply f.monotone; apply i_ih
+  | succ _ i_ih => intro; apply f.monotone; apply i_ih
 #align part.fix.approx_mono' Part.Fix.approx_mono'
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
@@ -170,7 +170,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
-  | succ _ i_ih => trans f X; apply f.monotone i_ih ; apply hX
+  | succ _ i_ih => trans f X; apply f.monotone i_ih; apply hX
 #align part.fix_le Part.fix_le
 
 variable {f} (hc : Continuous f)

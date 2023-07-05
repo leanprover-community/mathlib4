@@ -206,7 +206,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
   refine' ⟨fun h => by rw [h]; simp, fun h => _⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
   interval_cases finrank 𝕜 (X ⟶ Y)
-  . rfl
+  · rfl
   · exact False.elim (h rfl)
 #align category_theory.finrank_hom_simple_simple_eq_zero_iff CategoryTheory.finrank_hom_simple_simple_eq_zero_iff
 

@@ -371,7 +371,7 @@ end DominatedConvergence
 
 section PosPart
 
-/-! Lemmas used for defining the positive part of a `L¹` function -/
+/-! Lemmas used for defining the positive part of an `L¹` function -/
 
 
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
@@ -998,7 +998,7 @@ theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEM
 
 section PosPart
 
-/-! ### Lemmas used for defining the positive part of a `L¹` function -/
+/-! ### Lemmas used for defining the positive part of an `L¹` function -/
 
 
 theorem Integrable.pos_part {f : α → ℝ} (hf : Integrable f μ) :

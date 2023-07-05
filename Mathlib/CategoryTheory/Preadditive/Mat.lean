@@ -221,40 +221,40 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C)
               split_ifs with h h'
               · substs h h'
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
-              . subst h
+              · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
-              . rfl }
+              · rfl }
           (by
             dsimp
             ext1 ⟨i, j⟩
             rintro ⟨i', j'⟩
             rw [Finset.sum_apply, Finset.sum_apply]
             dsimp
-            rw [Finset.sum_eq_single i] ; rotate_left
-            . intro b _ hb
+            rw [Finset.sum_eq_single i]; rotate_left
+            · intro b _ hb
               apply Finset.sum_eq_zero
               intro x _
               rw [dif_neg hb.symm, zero_comp]
-            . intro hi
+            · intro hi
               simp at hi
-            rw [Finset.sum_eq_single j] ; rotate_left
-            . intro b _ hb
+            rw [Finset.sum_eq_single j]; rotate_left
+            · intro b _ hb
               rw [dif_pos rfl, dif_neg, zero_comp]
               simp only
               tauto
-            . intro hj
+            · intro hj
               simp at hj
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
               Sigma.mk.inj_iff, not_and, id_def]
             by_cases i' = i
-            . subst h
+            · subst h
               rw [dif_pos rfl]
               simp only [heq_eq_eq, true_and]
               by_cases j' = j
-              . subst h
+              · subst h
                 simp
-              . rw [dif_neg h, dif_neg (Ne.symm h)]
-            . rw [dif_neg h, dif_neg]
+              · rw [dif_neg h, dif_neg (Ne.symm h)]
+            · rw [dif_neg h, dif_neg]
               tauto ) }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.has_finite_biproducts CategoryTheory.Mat_.hasFiniteBiproducts
@@ -342,12 +342,12 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     simp only [biproduct.lift_desc]
     funext i j
     dsimp [id_def]
-    rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i] ; rotate_left
-    . intro b _ hb
+    rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
+    · intro b _ hb
       dsimp
       simp only [Finset.sum_const, Finset.card_singleton, one_smul]
       rw [dif_neg hb.symm, zero_comp]
-    . intro h
+    · intro h
       simp at h
     simp
   inv_hom_id := by
@@ -361,9 +361,9 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     simp only [embedding, comp_apply, comp_dite, dite_comp, comp_zero, zero_comp,
       Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
     split_ifs with h
-    . subst h
+    · subst h
       simp
-    . rfl
+    · rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.iso_biproduct_embedding CategoryTheory.Mat_.isoBiproductEmbedding
 
@@ -442,8 +442,8 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
     dsimp
     ext i j
     by_cases h : j = i
-    . subst h; simp
-    . simp [h]
+    · subst h; simp
+    · simp [h]
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat_.lift CategoryTheory.Mat_.lift
 
