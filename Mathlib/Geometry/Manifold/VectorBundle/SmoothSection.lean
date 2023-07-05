@@ -8,7 +8,7 @@ Authors: Heather Macbeth, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Geometry.Manifold.ContMdiffMfderiv
+import Mathlib.Geometry.Manifold.MFDeriv
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
