@@ -38,6 +38,12 @@ structure AlgebraCat where
   [isAlgebra : Algebra R carrier]
 #align Algebra AlgebraCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `AlgebraCat.{max u₁ u₂}`, to deal around unification issues.
+Since the universe the ring lives in can be inferred, we put that last. -/
+@[nolint checkUnivs]
+abbrev AlgebraCatMax.{v₁, v₂} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
+
 attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
 
 namespace AlgebraCat
