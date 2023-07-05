@@ -230,7 +230,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
-  · dsimp [ε] at h ; exact h fun _ => true
+  · dsimp [ε] at h; exact h fun _ => true
   · cases' v with v₁ v₂
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);

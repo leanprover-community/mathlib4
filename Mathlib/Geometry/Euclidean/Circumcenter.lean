@@ -161,7 +161,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
         dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp0),
         orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃', h',
         dist_of_mem_subset_mk_sphere hp0 hcr, dist_eq_norm_vsub V _ cc, vadd_vsub, norm_smul, ←
-        dist_eq_norm_vsub V p, Real.norm_eq_abs, ← mul_assoc, mul_comm _ (|t₃|), ← mul_assoc,
+        dist_eq_norm_vsub V p, Real.norm_eq_abs, ← mul_assoc, mul_comm _ |t₃|, ← mul_assoc,
         abs_mul_abs_self]
       ring
     replace hcr₃ := dist_of_mem_subset_mk_sphere (Set.mem_insert _ _) hcr₃

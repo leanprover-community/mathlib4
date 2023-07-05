@@ -227,7 +227,7 @@ theorem finiteDimensional_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module K W]
 /-- If a vector space is finite-dimensional, then the cardinality of any basis is equal to its
 `finrank`. -/
 theorem finrank_eq_card_basis' [FiniteDimensional K V] {ι : Type w} (h : Basis ι K V) :
-    (finrank K V : Cardinal.{w}) = (#ι) := by
+    (finrank K V : Cardinal.{w}) = #ι := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   haveI : Fintype ι := fintypeBasisIndex h
   rw [Cardinal.mk_fintype, finrank_eq_card_basis h]
@@ -254,7 +254,7 @@ noncomputable def finBasis [FiniteDimensional K V] : Basis (Fin (finrank K V)) K
 /-- An `n`-dimensional vector space has a basis indexed by `Fin n`. -/
 noncomputable def finBasisOfFinrankEq [FiniteDimensional K V] {n : ℕ} (hn : finrank K V = n) :
     Basis (Fin n) K V :=
-  (finBasis K V).reindex (Fin.cast hn).toEquiv
+  (finBasis K V).reindex (Fin.castIso hn).toEquiv
 #align finite_dimensional.fin_basis_of_finrank_eq FiniteDimensional.finBasisOfFinrankEq
 
 variable {K V}
@@ -275,7 +275,7 @@ theorem basisUnique.repr_eq_zero_iff {ι : Type _} [Unique ι] {h : finrank K V 
 #align finite_dimensional.basis_unique.repr_eq_zero_iff FiniteDimensional.basisUnique.repr_eq_zero_iff
 
 theorem cardinal_mk_le_finrank_of_linearIndependent [FiniteDimensional K V] {ι : Type w} {b : ι → V}
-    (h : LinearIndependent K b) : (#ι) ≤ finrank K V := by
+    (h : LinearIndependent K b) : #ι ≤ finrank K V := by
   rw [← lift_le.{max v w}]
   simpa [← finrank_eq_rank', -finrank_eq_rank] using
     cardinal_lift_le_rank_of_linearIndependent h
@@ -293,7 +293,7 @@ theorem finset_card_le_finrank_of_linearIndependent [FiniteDimensional K V] {b :
 #align finite_dimensional.finset_card_le_finrank_of_linear_independent FiniteDimensional.finset_card_le_finrank_of_linearIndependent
 
 theorem lt_aleph0_of_linearIndependent {ι : Type w} [FiniteDimensional K V] {v : ι → V}
-    (h : LinearIndependent K v) : (#ι) < ℵ₀ := by
+    (h : LinearIndependent K v) : #ι < ℵ₀ := by
   apply Cardinal.lift_lt.1
   apply lt_of_le_of_lt
   apply cardinal_lift_le_rank_of_linearIndependent h
@@ -309,8 +309,8 @@ theorem _root_.LinearIndependent.finite [FiniteDimensional K V] {b : Set V}
 theorem not_linearIndependent_of_infinite {ι : Type w} [inf : Infinite ι] [FiniteDimensional K V]
     (v : ι → V) : ¬LinearIndependent K v := by
   intro h_lin_indep
-  have : ¬ℵ₀ ≤ (#ι) := not_le.mpr (lt_aleph0_of_linearIndependent h_lin_indep)
-  have : ℵ₀ ≤ (#ι) := infinite_iff.mp inf
+  have : ¬ℵ₀ ≤ #ι := not_le.mpr (lt_aleph0_of_linearIndependent h_lin_indep)
+  have : ℵ₀ ≤ #ι := infinite_iff.mp inf
   contradiction
 #align finite_dimensional.not_linear_independent_of_infinite FiniteDimensional.not_linearIndependent_of_infinite
 
@@ -405,11 +405,11 @@ variable {K}
 
 theorem _root_.CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux [FiniteDimensional K V]
     {ι : Type w} {p : ι → Submodule K V} (hp : CompleteLattice.Independent p) :
-    (#{ i // p i ≠ ⊥ }) ≤ (finrank K V : Cardinal.{w}) := by
-  suffices Cardinal.lift.{v} (#{ i // p i ≠ ⊥ }) ≤ Cardinal.lift.{v} (finrank K V : Cardinal.{w}) by
+    #{ i // p i ≠ ⊥ } ≤ (finrank K V : Cardinal.{w}) := by
+  suffices Cardinal.lift.{v} #{ i // p i ≠ ⊥ } ≤ Cardinal.lift.{v} (finrank K V : Cardinal.{w}) by
     rwa [Cardinal.lift_le] at this
   calc
-    Cardinal.lift.{v} (#{ i // p i ≠ ⊥ }) ≤ Cardinal.lift.{w} (Module.rank K V) :=
+    Cardinal.lift.{v} #{ i // p i ≠ ⊥ } ≤ Cardinal.lift.{w} (Module.rank K V) :=
       hp.subtype_ne_bot_le_rank
     _ = Cardinal.lift.{w} (finrank K V : Cardinal.{v}) := by rw [finrank_eq_rank]
     _ = Cardinal.lift.{v} (finrank K V : Cardinal.{w}) := by simp
@@ -420,7 +420,7 @@ number of nontrivial subspaces in the family `p` is finite. -/
 noncomputable def _root_.CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
     [FiniteDimensional K V] {ι : Type w} {p : ι → Submodule K V}
     (hp : CompleteLattice.Independent p) : Fintype { i : ι // p i ≠ ⊥ } := by
-  suffices (#{ i // p i ≠ ⊥ }) < (ℵ₀ : Cardinal.{w}) by
+  suffices #{ i // p i ≠ ⊥ } < (ℵ₀ : Cardinal.{w}) by
     rw [Cardinal.lt_aleph0_iff_fintype] at this
     exact this.some
   refine' lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux _
@@ -1542,17 +1542,17 @@ open Module
 open Cardinal
 
 theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K] [AddCommGroup V]
-    [Module K V] [FiniteDimensional K V] : (#V) = (#K) ^ Module.rank K V := by
+    [Module K V] [FiniteDimensional K V] : #V = #K ^ Module.rank K V := by
   let s := Basis.ofVectorSpaceIndex K V
   let hs := Basis.ofVectorSpace K V
   calc
-    (#V) = (#s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
-    _ = (#s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
+    #V = #(s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
+    _ = #(s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 
 theorem cardinal_lt_aleph0_of_finiteDimensional (K V : Type u) [DivisionRing K] [AddCommGroup V]
-    [Module K V] [Finite K] [FiniteDimensional K V] : (#V) < ℵ₀ := by
+    [Module K V] [Finite K] [FiniteDimensional K V] : #V < ℵ₀ := by
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   rw [cardinal_mk_eq_cardinal_mk_field_pow_rank K V]
   exact Cardinal.power_lt_aleph0 (Cardinal.lt_aleph0_of_finite K) (IsNoetherian.rank_lt_aleph0 K V)

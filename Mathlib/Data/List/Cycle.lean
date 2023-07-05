@@ -73,8 +73,8 @@ theorem nextOr_eq_nextOr_of_mem_of_ne (xs : List α) (x d d' : α) (x_mem : x �
   by_cases h : x = y
   · rw [h, nextOr_self_cons_cons, nextOr_self_cons_cons]
   · rw [nextOr, nextOr, IH]
-    . simpa [h] using x_mem
-    . simpa using x_ne
+    · simpa [h] using x_mem
+    · simpa using x_ne
 #align list.next_or_eq_next_or_of_mem_of_ne List.nextOr_eq_nextOr_of_mem_of_ne
 
 theorem mem_of_nextOr_ne {xs : List α} {x d : α} (h : nextOr xs x d ≠ d) : x ∈ xs := by
@@ -285,24 +285,24 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
     · subst hi'
       rw [next_getLast_cons]
       · simp [hi', get]
-      . rw [get_cons_succ]; exact get_mem _ _ _
-      . exact hx'
-      . simp [getLast_eq_get]
-      . exact hn.of_cons
-    . rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
+      · rw [get_cons_succ]; exact get_mem _ _ _
+      · exact hx'
+      · simp [getLast_eq_get]
+      · exact hn.of_cons
+    · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
       simp only [get_cons_succ]
       rw [next_get (y::l), ← get_cons_succ (a := x)]
       congr
       dsimp
       rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
         Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-      . simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
-      . exact hn.of_cons
-      . rw [getLast_eq_get]
+      · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
+      · exact hn.of_cons
+      · rw [getLast_eq_get]
         intro h
         have := nodup_iff_injective_get.1 hn h
         simp at this; simp [this] at hi'
-      . rw [get_cons_succ]; exact get_mem _ _ _
+      · rw [get_cons_succ]; exact get_mem _ _ _
 
 set_option linter.deprecated false in
 @[deprecated next_get]
@@ -414,7 +414,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
     rw [← nthLe_reverse]
     · simp [tsub_tsub_cancel_of_le (Nat.le_pred_of_lt hk)]
     · simpa using (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
-    . simpa
+    · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :

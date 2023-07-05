@@ -1677,7 +1677,7 @@ theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
   obtain ⟨e, he⟩ := Set.Countable.exists_eq_range (bct.insert ∅) (insert_nonempty _ _)
   rw [← generateFrom_insert_empty, he] at hb
   refine' ⟨fun x n => x ∈ e n, _, _⟩
-  . rw [measurable_pi_iff]
+  · rw [measurable_pi_iff]
     intro n
     apply measurable_to_bool
     simp only [preimage, mem_singleton_iff, Bool.decide_iff]
