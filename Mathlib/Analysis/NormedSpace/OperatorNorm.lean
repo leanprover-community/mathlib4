@@ -2065,5 +2065,3 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
   tfae_finish
 
 end Equicontinuous
-
-#lint
