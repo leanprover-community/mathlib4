@@ -8,8 +8,8 @@ Authors: Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.Pid
-import Mathbin.Data.Zmod.Quotient
+import Mathlib.Algebra.Module.Pid
+import Mathlib.Data.ZMod.Quotient
 
 /-!
 # Structure of finite(ly generated) abelian groups
@@ -32,8 +32,7 @@ namespace Module
 variable (M : Type u)
 
 theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
-    (hM : Module.IsTorsion ℤ M) : Finite M :=
-  by
+    (hM : Module.IsTorsion ℤ M) : Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
   haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
     ⟨Int.natAbs_ne_zero_of_ne_zero <| pow_ne_zero (e i) (h i).NeZero⟩
@@ -57,8 +56,7 @@ group is the product of a power of `ℤ` and a direct sum of some `zmod (p i ^ e
 prime powers `p i ^ e i`. -/
 theorem equiv_free_prod_directSum_zMod [hG : AddGroup.FG G] :
     ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
-      Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) :=
-  by
+      Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) := by
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ :=
     @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (module.finite.iff_add_group_fg.mpr hG)
   refine' ⟨n, ι, fι, fun i => (p i).natAbs, fun i => _, e, ⟨_⟩⟩
@@ -75,8 +73,7 @@ theorem equiv_free_prod_directSum_zMod [hG : AddGroup.FG G] :
 some `zmod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
 theorem equiv_directSum_zMod_of_fintype [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
-      Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) :=
-  by
+      Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
   cases nonempty_fintype G
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_direct_sum_zmod G
   cases n
