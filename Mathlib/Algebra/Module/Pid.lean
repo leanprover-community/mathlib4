@@ -8,10 +8,10 @@ Authors: Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Algebra.Module.DedekindDomain
-import Mathbin.LinearAlgebra.FreeModule.Pid
-import Mathbin.Algebra.Module.Projective
-import Mathbin.Algebra.Category.Module.Biproducts
+import Mathlib.Algebra.Module.DedekindDomain
+import Mathlib.LinearAlgebra.FreeModule.Pid
+import Mathlib.Algebra.Module.Projective
+import Mathlib.Algebra.Category.Module.Biproducts
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -87,8 +87,7 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
 theorem Submodule.exists_isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     ∃ (ι : Type u) (_ : Fintype ι) (_ : DecidableEq ι) (p : ι → R) (h : ∀ i, Irreducible <| p i) (e
-      : ι → ℕ), DirectSum.IsInternal fun i => torsion_by R M <| p i ^ e i :=
-  by
+      : ι → ℕ), DirectSum.IsInternal fun i => torsion_by R M <| p i ^ e i := by
   refine' ⟨_, _, _, _, _, _, Submodule.isInternal_prime_power_torsion_of_pid hM⟩
   exact Finset.fintypeCoeSort _
   · rintro ⟨p, hp⟩
@@ -107,8 +106,7 @@ variable [dec : ∀ x : M, Decidable (x = 0)]
 
 open Ideal Submodule.IsPrincipal
 
-theorem Ideal.torsionOf_eq_span_pow_pOrder (x : M) : torsionOf R M x = span {p ^ pOrder hM x} :=
-  by
+theorem Ideal.torsionOf_eq_span_pow_pOrder (x : M) : torsionOf R M x = span {p ^ pOrder hM x} := by
   dsimp only [p_order]
   rw [← (torsion_of R M x).span_singleton_generator, Ideal.span_singleton_eq_span_singleton, ←
     Associates.mk_eq_mk_iff_associated, Associates.mk_pow]
@@ -123,8 +121,7 @@ theorem Ideal.torsionOf_eq_span_pow_pOrder (x : M) : torsionOf R M x = span {p ^
 #align ideal.torsion_of_eq_span_pow_p_order Ideal.torsionOf_eq_span_pow_pOrder
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
-    (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y :=
-  by
+    (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
   by_cases hk : k ≤ p_order hM y
   · let f :=
       ((R ∙ p ^ (p_order hM y - k) * p ^ k).quotEquivOfEq _ _).trans
@@ -152,11 +149,9 @@ open Submodule.Quotient
 
 theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
-    ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk x = f 1 :=
-  by
+    ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk x = f 1 := by
   have f1 := mk_surjective (R ∙ z) (f 1)
-  have : p ^ k • f1.some ∈ R ∙ z :=
-    by
+  have : p ^ k • f1.some ∈ R ∙ z := by
     rw [← quotient.mk_eq_zero, mk_smul, f1.some_spec, ← f.map_smul]
     convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
     rw [← mk_smul, quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
@@ -173,8 +168,7 @@ open Finset Multiset
   `R ⧸ R ∙ (p ^ e i)` for some `e i`.-/
 theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoid.powers p))
     [h' : Module.Finite R N] :
-    ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) :=
-  by
+    ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
   induction' d with d IH generalizing N
   · use fun i => finZeroElim i
@@ -189,8 +183,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     obtain ⟨k, ⟨f⟩⟩ := IH _ s' _ <;> clear IH
     · have :
         ∀ i : Fin d,
-          ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 :=
-        by
+          ∃ x : N, p ^ k i • x = 0 ∧ f (Submodule.Quotient.mk x) = DirectSum.lof R _ _ i 1 := by
         intro i
         let fi := f.symm.to_linear_map.comp (DirectSum.lof _ _ _ i)
         obtain ⟨x, h0, h1⟩ := exists_smul_eq_zero_and_mk_eq hp hN hj fi; refine' ⟨x, h0, _⟩; rw [h1]
@@ -243,15 +236,13 @@ end PTorsion
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.-/
 theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTorsion R N) :
     ∃ (ι : Type u) (_ : Fintype ι) (p : ι → R) (h : ∀ i, Irreducible <| p i) (e : ι → ℕ),
-      Nonempty <| N ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i :=
-  by
+      Nonempty <| N ≃ₗ[R] ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
   obtain ⟨I, fI, _, p, hp, e, h⟩ := Submodule.exists_isInternal_prime_power_torsion_of_pid hN
   haveI := fI
   have :
     ∀ i,
       ∃ (d : ℕ) (k : Fin d → ℕ),
-        Nonempty <| torsion_by R N (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j :=
-    by
+        Nonempty <| torsion_by R N (p i ^ e i) ≃ₗ[R] ⨁ j, R ⧸ R ∙ p i ^ k j := by
     haveI := isNoetherian_of_fg_of_noetherian' (module.finite_def.mp h')
     haveI := fun i => isNoetherian_submodule' (torsion_by R N <| p i ^ e i)
     exact fun i =>
@@ -274,8 +265,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers.-/
 theorem equiv_free_prod_directSum [h' : Module.Finite R N] :
     ∃ (n : ℕ) (ι : Type u) (_ : Fintype ι) (p : ι → R) (h : ∀ i, Irreducible <| p i) (e : ι → ℕ),
-      Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i :=
-  by
+      Nonempty <| N ≃ₗ[R] (Fin n →₀ R) × ⨁ i : ι, R ⧸ R ∙ p i ^ e i := by
   haveI := isNoetherian_of_fg_of_noetherian' (module.finite_def.mp h')
   haveI := isNoetherian_submodule' (torsion R N)
   haveI := Module.Finite.of_surjective _ (torsion R N).mkQ_surjective
