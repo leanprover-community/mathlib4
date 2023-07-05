@@ -18,12 +18,12 @@ We define the (topological) vector bundle of continuous (semi)linear maps betwee
 over the same base.
 
 Given bundles `E₁ E₂ : B → Type _`, normed spaces `F₁` and `F₂`, and a ring-homomorphism `σ` between
-their respective scalar fields, we define `bundle.continuous_linear_map σ F₁ E₁ F₂ E₂ x` to be a
+their respective scalar fields, we define `Bundle.ContinuousLinearMap σ F₁ E₁ F₂ E₂ x` to be a
 type synonym for `fun x ↦ E₁ x →SL[σ] E₂ x`. If the `E₁` and `E₂` are vector bundles with model
 fibers `F₁` and `F₂`, then this will be a vector bundle with fiber `F₁ →SL[σ] F₂`.
 
 The topology on the total space is constructed from the trivializations for `E₁` and `E₂` and the
-norm-topology on the model fiber `F₁ →SL[𝕜] F₂` using the `vector_prebundle` construction.  This is
+norm-topology on the model fiber `F₁ →SL[𝕜] F₂` using the `VectorPrebundle` construction.  This is
 a bit awkward because it introduces a dependence on the normed space structure of the model fibers,
 rather than just their topological vector space structure; it is not clear whether this is
 necessary.
@@ -34,7 +34,7 @@ using a norm on the fiber model if this helps.
 
 ## Main Definitions
 
-* `bundle.continuous_linear_map.vector_bundle`: continuous semilinear maps between
+* `Bundle.ContinuousLinearMap.vectorBundle`: continuous semilinear maps between
   vector bundles form a vector bundle.
 
 -/
@@ -82,10 +82,10 @@ variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
 namespace Pretrivialization
 
 /-- Assume `eᵢ` and `eᵢ'` are trivializations of the bundles `Eᵢ` over base `B` with fiber `Fᵢ`
-(`i ∈ {1,2}`), then `continuous_linear_map_coord_change σ e₁ e₁' e₂ e₂'` is the coordinate change
-function between the two induced (pre)trivializations
-`pretrivialization.continuous_linear_map σ e₁ e₂` and
-`pretrivialization.continuous_linear_map σ e₁' e₂'` of `bundle.continuous_linear_map`. -/
+(`i ∈ {1,2}`), then `Pretrivialization.continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂'` is the
+coordinate change function between the two induced (pre)trivializations
+`Pretrivialization.continuousLinearMap σ e₁ e₂` and
+`Pretrivialization.continuousLinearMap σ e₁' e₂'` of `Bundle.ContinuousLinearMap`. -/
 def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂]
     [e₂'.IsLinear 𝕜₂] (b : B) : (F₁ →SL[σ] F₂) →L[𝕜₂] F₁ →SL[σ] F₂ :=
   ((e₁'.coordChangeL 𝕜₁ e₁ b).symm.arrowCongrSL (e₂.coordChangeL 𝕜₂ e₂' b) :
@@ -125,7 +125,7 @@ variable (σ e₁ e₁' e₂ e₂')
 variable [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂] [e₂'.IsLinear 𝕜₂]
 
 /-- Given trivializations `e₁`, `e₂` for vector bundles `E₁`, `E₂` over a base `B`,
-`pretrivialization.continuous_linear_map σ e₁ e₂` is the induced pretrivialization for the
+`Pretrivialization.continuousLinearMap σ e₁ e₂` is the induced pretrivialization for the
 continuous `σ`-semilinear maps from `E₁` to `E₂`. That is, the map which will later become a
 trivialization, after the bundle of continuous semilinear maps is equipped with the right
 topological vector bundle structure. -/
@@ -219,8 +219,8 @@ variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorB
 variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a
-`vector_prebundle` (this is an auxiliary construction for the
-`vector_bundle` instance, in which the pretrivializations are collated but no topology
+`VectorPrebundle` (this is an auxiliary construction for the
+`VectorBundle` instance, in which the pretrivializations are collated but no topology
 on the total space is yet provided). -/
 def Bundle.ContinuousLinearMap.vectorPrebundle :
     VectorPrebundle 𝕜₂ (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂) where
@@ -282,7 +282,7 @@ variable [he₁ : MemTrivializationAtlas e₁] [he₂ : MemTrivializationAtlas e
 
 /-- Given trivializations `e₁`, `e₂` in the atlas for vector bundles `E₁`, `E₂` over a base `B`,
 the induced trivialization for the continuous `σ`-semilinear maps from `E₁` to `E₂`,
-whose base set is `e₁.base_set ∩ e₂.base_set`. -/
+whose base set is `e₁.baseSet ∩ e₂.baseSet`. -/
 def Trivialization.continuousLinearMap :
     Trivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (Bundle.ContinuousLinearMap σ E₁ E₂)) :=
   VectorPrebundle.trivializationOfMemPretrivializationAtlas _ ⟨e₁, e₂, he₁, he₂, rfl⟩
