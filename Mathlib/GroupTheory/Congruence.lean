@@ -257,7 +257,7 @@ variable (c)
 @[to_additive "Defining the quotient by an additive congruence relation of a type with
 an addition."]
 protected def Quotient :=
-  Quotient <| c.toSetoid
+  Quotient c.toSetoid
 #align con.quotient Con.Quotient
 #align add_con.quotient AddCon.Quotient
 
