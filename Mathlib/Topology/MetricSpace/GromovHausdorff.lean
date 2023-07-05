@@ -894,7 +894,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have Ap : ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ⌊ε⁻¹ * dist x y⌋₊ :=
         calc
           ((F p).2 ⟨i, hip⟩ ⟨j, hjp⟩).1 = ((F p).2 ((E p) x) ((E p) y)).1 := by
-            congr -- <;> apply Fin.ext_iff.2 <;> rfl
+            congr
           _ = min M ⌊ε⁻¹ * dist x y⌋₊ := by simp only [(E p).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist x y⌋₊ := by
             refine' min_eq_right (Nat.floor_mono _)
