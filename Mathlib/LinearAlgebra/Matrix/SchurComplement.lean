@@ -253,7 +253,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     (D : Matrix n n α) [Invertible D] [Invertible (A - B ⬝ ⅟ D ⬝ C)] :
     Invertible (fromBlocks A B C D) :=
   by
-  -- factor `from_blocks` via `from_blocks_eq_of_invertible₂₂`, and state the inverse we expect
+  -- factor `fromBlocks` via `fromBlocks_eq_of_invertible₂₂`, and state the inverse we expect
   refine'
     Invertible.copy' _ _
       (fromBlocks (⅟ (A - B ⬝ ⅟ D ⬝ C)) (-⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ B ⬝ ⅟ D)
@@ -275,7 +275,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     -- combine into a single block matrix
     simp only [fromBlocks_multiply, invOf_one, Matrix.one_mul, Matrix.mul_one, Matrix.zero_mul,
       Matrix.mul_zero, add_zero, zero_add, neg_zero, Matrix.mul_neg, Matrix.neg_mul, neg_neg, ←
-      Matrix.mul_assoc, add_comm]
+      Matrix.mul_assoc, add_comm (⅟D)]
 #align matrix.from_blocks₂₂_invertible Matrix.fromBlocks₂₂Invertible
 
 /-- A block matrix is invertible if the top left corner and the corresponding schur complement
@@ -285,38 +285,38 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     Invertible (fromBlocks A B C D) :=
   by
   -- we argue by symmetry
-  letI := from_blocks₂₂_invertible D C B A
+  letI := fromBlocks₂₂Invertible D C B A
   letI iDCBA :=
-    submatrix_equiv_invertible (from_blocks D C B A) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
+    submatrixEquivInvertible (fromBlocks D C B A) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
   exact
     iDCBA.copy' _
-      (from_blocks (⅟ A + ⅟ A ⬝ B ⬝ ⅟ (D - C ⬝ ⅟ A ⬝ B) ⬝ C ⬝ ⅟ A) (-⅟ A ⬝ B ⬝ ⅟ (D - C ⬝ ⅟ A ⬝ B))
+      (fromBlocks (⅟ A + ⅟ A ⬝ B ⬝ ⅟ (D - C ⬝ ⅟ A ⬝ B) ⬝ C ⬝ ⅟ A) (-⅟ A ⬝ B ⬝ ⅟ (D - C ⬝ ⅟ A ⬝ B))
         (-⅟ (D - C ⬝ ⅟ A ⬝ B) ⬝ C ⬝ ⅟ A) (⅟ (D - C ⬝ ⅟ A ⬝ B)))
-      (from_blocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
-      (from_blocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
+      (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
+      (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
 #align matrix.from_blocks₁₁_invertible Matrix.fromBlocks₁₁Invertible
 
-theorem invOf_from_blocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B ⬝ ⅟ D ⬝ C)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
       fromBlocks (⅟ (A - B ⬝ ⅟ D ⬝ C)) (-⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ B ⬝ ⅟ D)
         (-⅟ D ⬝ C ⬝ ⅟ (A - B ⬝ ⅟ D ⬝ C)) (⅟ D + ⅟ D ⬝ C ⬝ ⅟ (A - B ⬝ ⅟ D ⬝ C) ⬝ B ⬝ ⅟ D) :=
   by
-  letI := from_blocks₂₂_invertible A B C D
-  convert (rfl : ⅟ (from_blocks A B C D) = _)
-#align matrix.inv_of_from_blocks₂₂_eq Matrix.invOf_from_blocks₂₂_eq
+  letI := fromBlocks₂₂Invertible A B C D
+  convert (rfl : ⅟ (fromBlocks A B C D) = _)
+#align matrix.inv_of_from_blocks₂₂_eq Matrix.invOf_fromBlocks₂₂_eq
 
-theorem invOf_from_blocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
+theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C ⬝ ⅟ A ⬝ B)]
     [Invertible (fromBlocks A B C D)] :
     ⅟ (fromBlocks A B C D) =
       fromBlocks (⅟ A + ⅟ A ⬝ B ⬝ ⅟ (D - C ⬝ ⅟ A ⬝ B) ⬝ C ⬝ ⅟ A) (-⅟ A ⬝ B ⬝ ⅟ (D - C ⬝ ⅟ A ⬝ B))
         (-⅟ (D - C ⬝ ⅟ A ⬝ B) ⬝ C ⬝ ⅟ A) (⅟ (D - C ⬝ ⅟ A ⬝ B)) :=
   by
-  letI := from_blocks₁₁_invertible A B C D
-  convert (rfl : ⅟ (from_blocks A B C D) = _)
-#align matrix.inv_of_from_blocks₁₁_eq Matrix.invOf_from_blocks₁₁_eq
+  letI := fromBlocks₁₁Invertible A B C D
+  convert (rfl : ⅟ (fromBlocks A B C D) = _)
+#align matrix.inv_of_from_blocks₁₁_eq Matrix.invOf_fromBlocks₁₁_eq
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
 Schur complement. -/
@@ -324,17 +324,17 @@ def invertibleOfFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n �
     (D : Matrix n n α) [Invertible D] [Invertible (fromBlocks A B C D)] :
     Invertible (A - B ⬝ ⅟ D ⬝ C) :=
   by
-  suffices Invertible (from_blocks (A - B ⬝ ⅟ D ⬝ C) 0 0 D) by
-    exact (invertible_of_from_blocks_zero₁₂_invertible (A - B ⬝ ⅟ D ⬝ C) 0 D).1
+  suffices Invertible (fromBlocks (A - B ⬝ ⅟ D ⬝ C) 0 0 D) by
+    exact (invertibleOfFromBlocksZero₁₂Invertible (A - B ⬝ ⅟ D ⬝ C) 0 D).1
   letI : Invertible (1 : Matrix n n α) := invertibleOne
   letI : Invertible (1 : Matrix m m α) := invertibleOne
-  letI iDC : Invertible (from_blocks 1 0 (⅟ D ⬝ C) 1 : Matrix (Sum m n) (Sum m n) α) :=
-    from_blocks_zero₁₂_invertible _ _ _
-  letI iBD : Invertible (from_blocks 1 (B ⬝ ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
-    from_blocks_zero₂₁_invertible _ _ _
-  letI iBDC := Invertible.copy ‹_› _ (from_blocks_eq_of_invertible₂₂ A B C D).symm
-  refine' (iBD.matrix_mul_left _).symm _
-  refine' (iDC.matrix_mul_right _).symm iBDC
+  letI iDC : Invertible (fromBlocks 1 0 (⅟ D ⬝ C) 1 : Matrix (Sum m n) (Sum m n) α) :=
+    fromBlocksZero₁₂Invertible _ _ _
+  letI iBD : Invertible (fromBlocks 1 (B ⬝ ⅟ D) 0 1 : Matrix (Sum m n) (Sum m n) α) :=
+    fromBlocksZero₂₁Invertible _ _ _
+  letI iBDC := Invertible.copy ‹_› _ (fromBlocks_eq_of_invertible₂₂ A B C D).symm
+  refine' (iBD.matrixMulLeft _).symm _
+  refine' (iDC.matrixMulRight _).symm iBDC
 #align matrix.invertible_of_from_blocks₂₂_invertible Matrix.invertibleOfFromBlocks₂₂Invertible
 
 /-- If a block matrix is invertible and so is its bottom left element, then so is the corresponding
@@ -345,9 +345,9 @@ def invertibleOfFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n �
   by
   -- another symmetry argument
   letI iABCD' :=
-    submatrix_equiv_invertible (from_blocks A B C D) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
-  letI iDCBA := iABCD'.copy _ (from_blocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
-  refine' invertible_of_from_blocks₂₂_invertible D C B A
+    submatrixEquivInvertible (fromBlocks A B C D) (Equiv.sumComm _ _) (Equiv.sumComm _ _)
+  letI iDCBA := iABCD'.copy _ (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
+  refine' invertibleOfFromBlocks₂₂Invertible D C B A
 #align matrix.invertible_of_from_blocks₁₁_invertible Matrix.invertibleOfFromBlocks₁₁Invertible
 
 /-- `matrix.invertible_of_from_blocks₂₂_invertible` and `matrix.from_blocks₂₂_invertible` as an
@@ -356,10 +356,10 @@ def invertibleEquivFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m 
     (D : Matrix n n α) [Invertible D] :
     Invertible (fromBlocks A B C D) ≃ Invertible (A - B ⬝ ⅟ D ⬝ C)
     where
-  toFun iABCD := invertible_of_from_blocks₂₂_invertible _ _ _ _
-  invFun i_schur := from_blocks₂₂_invertible _ _ _ _
-  left_inv iABCD := Subsingleton.elim _ _
-  right_inv i_schur := Subsingleton.elim _ _
+  toFun _iABCD := invertibleOfFromBlocks₂₂Invertible _ _ _ _
+  invFun _i_schur := fromBlocks₂₂Invertible _ _ _ _
+  left_inv _iABCD := Subsingleton.elim _ _
+  right_inv _i_schur := Subsingleton.elim _ _
 #align matrix.invertible_equiv_from_blocks₂₂_invertible Matrix.invertibleEquivFromBlocks₂₂Invertible
 
 /-- `matrix.invertible_of_from_blocks₁₁_invertible` and `matrix.from_blocks₁₁_invertible` as an
@@ -368,10 +368,10 @@ def invertibleEquivFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m 
     (D : Matrix n n α) [Invertible A] :
     Invertible (fromBlocks A B C D) ≃ Invertible (D - C ⬝ ⅟ A ⬝ B)
     where
-  toFun iABCD := invertible_of_from_blocks₁₁_invertible _ _ _ _
-  invFun i_schur := from_blocks₁₁_invertible _ _ _ _
-  left_inv iABCD := Subsingleton.elim _ _
-  right_inv i_schur := Subsingleton.elim _ _
+  toFun _iABCD := invertibleOfFromBlocks₁₁Invertible _ _ _ _
+  invFun _i_schur := fromBlocks₁₁Invertible _ _ _ _
+  left_inv _iABCD := Subsingleton.elim _ _
+  right_inv _i_schur := Subsingleton.elim _ _
 #align matrix.invertible_equiv_from_blocks₁₁_invertible Matrix.invertibleEquivFromBlocks₁₁Invertible
 
 /-- If the bottom-left element of a block matrix is invertible, then the whole matrix is invertible
@@ -380,7 +380,7 @@ theorem isUnit_fromBlocks_iff_of_invertible₂₂ {A : Matrix m m α} {B : Matri
     {C : Matrix n m α} {D : Matrix n n α} [Invertible D] :
     IsUnit (fromBlocks A B C D) ↔ IsUnit (A - B ⬝ ⅟ D ⬝ C) := by
   simp only [← nonempty_invertible_iff_isUnit,
-    (invertible_equiv_from_blocks₂₂_invertible A B C D).nonempty_congr]
+    (invertibleEquivFromBlocks₂₂Invertible A B C D).nonempty_congr]
 #align matrix.is_unit_from_blocks_iff_of_invertible₂₂ Matrix.isUnit_fromBlocks_iff_of_invertible₂₂
 
 /-- If the top-right element of a block matrix is invertible, then the whole matrix is invertible
@@ -389,7 +389,7 @@ theorem isUnit_fromBlocks_iff_of_invertible₁₁ {A : Matrix m m α} {B : Matri
     {C : Matrix n m α} {D : Matrix n n α} [Invertible A] :
     IsUnit (fromBlocks A B C D) ↔ IsUnit (D - C ⬝ ⅟ A ⬝ B) := by
   simp only [← nonempty_invertible_iff_isUnit,
-    (invertible_equiv_from_blocks₁₁_invertible A B C D).nonempty_congr]
+    (invertibleEquivFromBlocks₁₁Invertible A B C D).nonempty_congr]
 #align matrix.is_unit_from_blocks_iff_of_invertible₁₁ Matrix.isUnit_fromBlocks_iff_of_invertible₁₁
 
 end Block
