@@ -2416,13 +2416,11 @@ theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
 
 #align list.foldr_append List.foldr_append
 
-@[simp]
 theorem foldl_concat
     (f : β → α → β) (b : β) (x : α) (xs : List α) :
     List.foldl f b (xs ++ [x]) = f (List.foldl f b xs) x := by
   simp only [List.foldl_append, List.foldl]
 
-@[simp]
 theorem foldr_concat
     (f : α → β → β) (b : β) (x : α) (xs : List α) :
     List.foldr f b (xs ++ [x]) = (List.foldr f (f x b) xs) := by
