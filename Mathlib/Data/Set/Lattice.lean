@@ -185,34 +185,14 @@ instance : CompleteBooleanAlgebra (Set α) :=
     iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
     inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
 
-section kernImage
-
 /-- `kernImage f s` is the set of `y` such that `f ⁻¹ y ⊆ s`. -/
 def kernImage (f : α → β) (s : Set α) : Set β :=
   { y | ∀ ⦃x⦄, f x = y → x ∈ s }
 #align set.kern_image Set.kernImage
 
-lemma kernImage_mono : Monotone (kernImage f) :=
-  fun _ _ hst _ hxs _ hy ↦ hst (hxs hy)
-
-lemma kernImage_eq_compl (s : Set α) : kernImage f s = (f '' sᶜ)ᶜ := by
-  ext x
-  simp only [kernImage, mem_setOf_eq, mem_compl_iff, mem_image, not_exists, not_and]
-  exact forall_congr' (fun _ ↦ not_imp_not.symm)
-
-lemma kernImage_empty : kernImage f ∅ = (range f)ᶜ := by
-  rw [kernImage_eq_compl, compl_empty, image_univ]
-
-lemma kernImage_preimage_eq_iff (s : Set β) : kernImage f (f ⁻¹' s) = s ↔ (range f)ᶜ ⊆ s := by
-  rw [kernImage_eq_compl, ← preimage_compl, compl_eq_comm, eq_comm, image_preimage_eq_iff,
-      compl_subset_comm]
-
-lemma subset_kernImage_iff : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
+lemma subset_kernImage_iff {f : α → β} : s ⊆ kernImage f t ↔ f ⁻¹' s ⊆ t :=
   ⟨fun h _ hx ↦ h hx rfl,
     fun h _ hx y hy ↦ h (show f y ∈ s from hy.symm ▸ hx)⟩
-
-end kernImage
-
 section GaloisConnection
 
 variable {f : α → β}
@@ -226,6 +206,39 @@ protected theorem preimage_kernImage : GaloisConnection (preimage f) (kernImage 
 #align set.preimage_kern_image Set.preimage_kernImage
 
 end GaloisConnection
+
+section kernImage
+
+variable {f : α → β}
+
+lemma kernImage_mono : Monotone (kernImage f) :=
+  Set.preimage_kernImage.monotone_u
+
+lemma kernImage_eq_compl {s : Set α} : kernImage f s = (f '' sᶜ)ᶜ := by
+  rw [Set.preimage_kernImage.u_eq]
+  intro t
+  rw [le_compl_comm, Set.image_preimage, preimage_compl, compl_le_compl_iff_le]
+
+lemma kernImage_empty : kernImage f ∅ = (range f)ᶜ := by
+  rw [kernImage_eq_compl, compl_empty, image_univ]
+
+lemma kernImage_preimage_eq_iff {s : Set β} : kernImage f (f ⁻¹' s) = s ↔ (range f)ᶜ ⊆ s := by
+  rw [kernImage_eq_compl, ← preimage_compl, compl_eq_comm, eq_comm, image_preimage_eq_iff,
+      compl_subset_comm]
+
+lemma compl_range_subset_kernImage {s : Set α} : (range f)ᶜ ⊆ kernImage f s := by
+  rw [← kernImage_empty]
+  exact kernImage_mono (empty_subset _)
+
+lemma kernImage_union_preimage {s : Set α} {t : Set β} (h : kernImage f s ⊆ t) :
+    kernImage f (s ∪ f ⁻¹' t) = t := by
+  nth_rewrite 2 [← kernImage_preimage_eq_iff.mpr (compl_range_subset_kernImage.trans h)]
+  refine le_antisymm _ _
+  rw [eq_comm, Set.preimage_kernImage.u_eq]
+  intro t'
+
+
+end kernImage
 
 /-! ### Union and intersection over an indexed family of sets -/
 

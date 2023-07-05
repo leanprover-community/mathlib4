@@ -16,7 +16,7 @@ def kernMap (f : Filter α) : Filter β where
   univ_sets := ⟨univ, f.univ_sets, by simp [kernImage_eq_compl]⟩
   sets_of_superset := by
     rintro _ t ⟨s, hs, rfl⟩ hst
-    refine ⟨m ⁻¹' t, mem_of_superset hs ?_, ?_⟩
+    refine ⟨s ∪ m ⁻¹' t, mem_of_superset hs (subset_union_left s _), ?_⟩
     refine GaloisConnection.preimage
     exact ⟨f.sets_of_superset hm (subset_union_left s _), kern_image_upward_closed m hi⟩
   inter_sets := by
