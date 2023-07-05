@@ -38,11 +38,11 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
-@[simps]
-instance (A : Mon_ (ModuleCat.{u} R)) : Ring A.pt :=
-  {
-    (by infer_instance : AddCommGroup
-        A.pt) with
+instance (A : Mon_ (ModuleCat.{u} R)) : Ring A.X := by sorry
+
+@[simps!]
+instance (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
+  { (by infer_instance : AddCommGroup A.X) with
     one := A.one (1 : R)
     mul := fun x y => A.mul (x ⊗ₜ y)
     one_mul := fun x => by convert LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x); simp
@@ -57,7 +57,8 @@ instance (A : Mon_ (ModuleCat.{u} R)) : Ring A.pt :=
       rw [← TensorProduct.add_tmul]
       rfl }
 
-instance (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.pt :=
+
+instance (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X :=
   { A.one with
     map_zero' := A.one.map_zero
     map_one' := rfl
@@ -72,18 +73,18 @@ instance (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.pt :=
     smul_def' := fun r a => (LinearMap.congr_fun A.one_mul (r ⊗ₜ a)).symm }
 
 @[simp]
-theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.pt r = A.one r :=
+theorem algebraMap (A : Mon_ (ModuleCat.{u} R)) (r : R) : algebraMap R A.X r = A.one r :=
   rfl
 #align Module.Mon_Module_equivalence_Algebra.algebra_map ModuleCat.MonModuleEquivalenceAlgebra.algebraMap
 
 /-- Converting a monoid object in `Module R` to a bundled algebra.
 -/
-@[simps]
+@[simps!]
 def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
-  obj A := AlgebraCat.of R A.pt
-  map A B f :=
-    { f.Hom.toAddMonoidHom with
-      toFun := f.Hom
+  obj A := AlgebraCat.of R A.X
+  map {A} B f :=
+    { f.hom.toAddMonoidHom with
+      toFun := f.hom
       map_one' := LinearMap.congr_fun f.OneHom (1 : R)
       map_mul' := fun x y => LinearMap.congr_fun f.MulHom (x ⊗ₜ y)
       commutes' := fun r => LinearMap.congr_fun f.OneHom r }
@@ -123,10 +124,10 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
 @[simps]
 def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
-  map A B f :=
-    { Hom := f.toLinearMap
-      one_hom' := LinearMap.ext f.commutes
-      mul_hom' := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
+  map := @fun A B f =>
+    { hom := f.toLinearMap
+      one_hom := LinearMap.ext f.commutes
+      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
 #align Module.Mon_Module_equivalence_Algebra.inverse ModuleCat.MonModuleEquivalenceAlgebra.inverse
 
 end MonModuleEquivalenceAlgebra
@@ -137,28 +138,28 @@ open MonModuleEquivalenceAlgebra
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
 def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
-  Functor := Functor
+  functor := functor
   inverse := inverse
   unitIso :=
     NatIso.ofComponents
       (fun A =>
-        { Hom :=
-            { Hom :=
+        { hom :=
+            { hom :=
                 { toFun := id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
-              mul_hom' := by ext; dsimp at *; rfl }
+              mul_hom := by ext; dsimp at *; rfl }
           inv :=
-            { Hom :=
+            { hom :=
                 { toFun := id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
-              mul_hom' := by ext; dsimp at *; rfl } })
-      (by tidy)
+              mul_hom := by ext; dsimp at *; rfl } })
+      (by aesop_cat)
   counitIso :=
     NatIso.ofComponents
       (fun A =>
-        { Hom :=
+        { hom :=
             { toFun := id
               map_zero' := rfl
               map_add' := fun x y => rfl
@@ -183,7 +184,7 @@ def monModuleEquivalenceAlgebraForget :
       Mon_.forget (ModuleCat.{u} R) :=
   NatIso.ofComponents
     (fun A =>
-      { Hom :=
+      { hom :=
           { toFun := id
             map_add' := fun x y => rfl
             map_smul' := fun c x => rfl }
@@ -191,7 +192,7 @@ def monModuleEquivalenceAlgebraForget :
           { toFun := id
             map_add' := fun x y => rfl
             map_smul' := fun c x => rfl } })
-    (by tidy)
+    (by aesop_cat)
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
 end ModuleCat
