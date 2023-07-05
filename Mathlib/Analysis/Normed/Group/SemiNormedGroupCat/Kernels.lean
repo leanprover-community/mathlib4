@@ -141,6 +141,7 @@ section Cokernel
 -- PROJECT: can we reuse the work to construct cokernels in `SemiNormedGroupCat₁` here?
 -- I don't see a way to do this that is less work than just repeating the relevant parts.
 /-- Auxiliary definition for `has_cokernels SemiNormedGroupCat`. -/
+noncomputable
 def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   @Cofork.ofπ _ _ _ _ _ _ (SemiNormedGroupCat.of (Y ⧸ NormedAddGroupHom.range f)) f.range.normedMk
     (by
@@ -151,6 +152,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_cocone SemiNormedGroupCat.cokernelCocone
 
 /-- Auxiliary definition for `has_cokernels SemiNormedGroupCat`. -/
+noncomputable
 def cokernelLift {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt :=
   NormedAddGroupHom.lift _ s.π
@@ -162,6 +164,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_lift SemiNormedGroupCat.cokernelLift
 
 /-- Auxiliary definition for `has_cokernels SemiNormedGroupCat`. -/
+noncomputable
 def isColimitCokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
     IsColimit (cokernelCocone f) :=
   isColimitAux _ (cokernelLift f)
@@ -187,12 +190,14 @@ example : HasCokernels SemiNormedGroupCat := by infer_instance
 section ExplicitCokernel
 
 /-- An explicit choice of cokernel, which has good properties with respect to the norm. -/
+noncomputable
 def explicitCokernel {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : SemiNormedGroupCat.{u} :=
   (cokernelCocone f).pt
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel SemiNormedGroupCat.explicitCokernel
 
 /-- Descend to the explicit cokernel. -/
+noncomputable
 def explicitCokernelDesc {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y} {g : Y ⟶ Z} (w : f ≫ g = 0) :
     explicitCokernel f ⟶ Z :=
   (isColimitCokernelCocone f).desc (Cofork.ofπ g (by simp [w]))
@@ -200,6 +205,7 @@ set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel_desc SemiNormedGroupCat.explicitCokernelDesc
 
 /-- The projection from `Y` to the explicit cokernel of `X ⟶ Y`. -/
+noncomputable
 def explicitCokernelπ {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Y ⟶ explicitCokernel f :=
   (cokernelCocone f).ι.app WalkingParallelPair.one
 set_option linter.uppercaseLean3 false in
@@ -338,6 +344,7 @@ theorem explicitCokernelDesc_norm_le {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶
 #align SemiNormedGroup.explicit_cokernel_desc_norm_le SemiNormedGroupCat.explicitCokernelDesc_norm_le
 
 /-- The explicit cokernel is isomorphic to the usual cokernel. -/
+noncomputable
 def explicitCokernelIso {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : explicitCokernel f ≅ cokernel f :=
   (isColimitCokernelCocone f).coconePointUniqueUpToIso (colimit.isColimit _)
 set_option linter.uppercaseLean3 false in
