@@ -2188,7 +2188,7 @@ theorem isLittleO_pi {ι : Type _} [Fintype ι] {E' : ι → Type _} [∀ i, Nor
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
 
 lemma eventuallyLE_of_isLittleO_of_isBigO_symm {f₁ f₂ : α → E'} (hf₁ : f₁ =o[l] g)
-    (hf₂ : g =O[l] f₂) : (fun x => ‖f₁ x‖) ≤ᶠ[l] fun x => ‖f₂ x‖ := by
+    (hf₂ : g =O[l] f₂) : ∀ᶠ x in l, ‖f₁ x‖ ≤ ‖f₂ x‖ := by
   obtain ⟨c₂, ⟨hc₂', hc₂⟩⟩ := isBigO_iff'.mp hf₂
   rw [isLittleO_iff] at hf₁
   have : 0 < c₂⁻¹ := inv_pos_of_pos hc₂'
