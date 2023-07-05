@@ -20,6 +20,6 @@ theorem prod_dvd_iff {x y : G₁ × G₂} :
     exists_and_left, exists_and_right, and_self, true_and]
 
 @[simp]
-theorem pair_dvd_pair_iff {x₁ y₁ : G₁} {x₂ y₂ : G₂} :
+theorem Prod.mk_dvd_mk {x₁ y₁ : G₁} {x₂ y₂ : G₂} :
     (x₁, x₂) ∣ (y₁, y₂) ↔ x₁ ∣ y₁ ∧ x₂ ∣ y₂ :=
   prod_dvd_iff
