@@ -80,7 +80,7 @@ theorem UnivLE.pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`,
 with specialized universes. -/
-@[simp 1001]
+-- @[simp 1001] -- Porting note: simp can prove this
 theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
@@ -104,7 +104,7 @@ theorem UnivLE.pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type 
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
-@[simp 1001]
+-- @[simp 1001] -- Porting note: simp can prove this
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
   Limit.map_π_apply' _ _ _
