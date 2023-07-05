@@ -648,6 +648,7 @@ import Mathlib.Analysis.InnerProductSpace.TwoDim
 import Mathlib.Analysis.InnerProductSpace.l2Space
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
