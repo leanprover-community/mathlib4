@@ -229,7 +229,9 @@ and `S.mk` a structure constructor and returns `x`.
 Each projection `x.i` can be either a native projection or from a projection function.
 
 `tryWhnfR` controls whether to try applying `whnfR` to arguments when none of them
-are obviously projections. -/
+are obviously projections.
+
+Once an obviously correct projection is found, relies on the structure eta rule in `isDefEq`. -/
 def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
   let .const f _ := e.getAppFn | return none
   let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? f | return none
@@ -237,22 +239,26 @@ def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
   unless isStructureLike (← getEnv) fVal.induct do return none
   let args := e.getAppArgs
   let mut x? ← findProj fVal args pure
-  if tryWhnfR && x?.isNone then
-    x? ← findProj fVal args whnfR
-  if let some x := x? then
+  if tryWhnfR then
+    if let .undef := x? then
+      x? ← findProj fVal args whnfR
+  if let .some x := x? then
     -- Rely on eta for structures to make the check:
     if ← isDefEq x e then
       return x
   return none
 where
   findProj (fVal : ConstructorVal) (args : Array Expr) (m : Expr → MetaM Expr) :
-      MetaM (Option Expr) := do
+      MetaM (LOption Expr) := do
     for i in [0 : fVal.numFields] do
       let arg ← m args[fVal.numParams + i]!
-      let some (S, j, x) ← getProjectedExpr arg | return none
+      let some (S, j, x) ← getProjectedExpr arg | continue
       if S == fVal.induct && i == j then
-        return x
-    return none
+        return .some x
+      else
+        -- Then the eta rule can't apply since there's an obviously wrong projection
+        return .none
+    return .undef
 
 /-- Finds all occurrences of expressions of the form ``S.mk x.1 ... x.n` where `S.mk`
 is a structure constructor and replaces them by `x`.
