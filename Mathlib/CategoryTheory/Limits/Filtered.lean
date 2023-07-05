@@ -36,11 +36,15 @@ class HasCofilteredLimitsOfSize : Prop where
   HasLimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsCofiltered I], HasLimitsOfShape I C
 #align category_theory.limits.has_cofiltered_limits_of_size CategoryTheory.Limits.HasCofilteredLimitsOfSize
 
+pp_with_univ HasCofilteredLimitsOfSize
+
 /-- Class for having all filtered colimits of a given size. -/
 class HasFilteredColimitsOfSize : Prop where
   /-- For all filtered types of a size `w`, we have colimits -/
   HasColimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsFiltered I], HasColimitsOfShape I C
 #align category_theory.limits.has_filtered_colimits_of_size CategoryTheory.Limits.HasFilteredColimitsOfSize
+
+pp_with_univ HasFilteredColimitsOfSize
 
 end
 
@@ -57,4 +61,3 @@ instance (priority := 100) hasColimitsOfShape_of_has_filtered_colimits
 #align category_theory.limits.has_colimits_of_shape_of_has_filtered_colimits CategoryTheory.Limits.hasColimitsOfShape_of_has_filtered_colimits
 
 end CategoryTheory.Limits
-

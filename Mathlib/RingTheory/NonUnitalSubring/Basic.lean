@@ -11,7 +11,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 Let `R` be a non-unital ring. This file defines the "bundled" non-unital subring type
 `NonUnitalSubring R`, a type whose terms correspond to non-unital subrings of `R`.
-This is the preferred way to talk about non-unital non-unital subrings in mathlib.
+This is the preferred way to talk about non-unital subrings in mathlib.
 
 We prove that non-unital subrings are a complete lattice, and that you can `map` (pushforward) and
 `comap` (pull back) them along ring homomorphisms.
@@ -55,7 +55,7 @@ Notation used here:
 
 ## Implementation notes
 
-A non-unital subring is implemented as a non-unital `NonUnitalSubsemiring` which is also an
+A non-unital subring is implemented as a `NonUnitalSubsemiring` which is also an
 additive subgroup.
 
 Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆` and `∩`), although
@@ -118,7 +118,7 @@ def subtype (s : S) : s →ₙ+* R :=
     toFun := Subtype.val }
 
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = Subtype.val :=
+theorem coe_subtype : (subtype s : s → R) = Subtype.val :=
   rfl
 
 end NonUnitalSubringClass
@@ -288,7 +288,7 @@ protected theorem sub_mem {x y : R} (hx : x ∈ s) (hy : y ∈ s) : x - y ∈ s 
 protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum ∈ s :=
   list_sum_mem
 
-/-- Sum of a multiset of elements in an `NonUnitalSubring` of a `NonUnitalRing` is
+/-- Sum of a multiset of elements in a `NonUnitalSubring` of a `NonUnitalRing` is
 in the `NonUnitalSubring`. -/
 protected theorem multiset_sum_mem {R} [NonUnitalNonAssocRing R] (s : NonUnitalSubring R)
     (m : Multiset R) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
@@ -925,6 +925,7 @@ theorem range_top_iff_surjective {f : R →ₙ+* S} :
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem range_top_of_surjective (f : R →ₙ+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : NonUnitalSubring S) :=
   range_top_iff_surjective.2 hf

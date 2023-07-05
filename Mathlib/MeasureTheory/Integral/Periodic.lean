@@ -134,7 +134,7 @@ instance : IsUnifLocDoublingMeasure (volume : Measure (AddCircle T)) := by
   rw [mul_min_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
   exact min_le_min (by linarith [hT.out]) (le_refl _)
 
-/-- The isomorphism `add_circle T ≃ Ioc a (a + T)` whose inverse is the natural quotient map,
+/-- The isomorphism `AddCircle T ≃ Ioc a (a + T)` whose inverse is the natural quotient map,
   as an equivalence of measurable spaces. -/
 noncomputable def measurableEquivIoc (a : ℝ) : AddCircle T ≃ᵐ Ioc a (a + T) where
   toEquiv := equivIoc T a
@@ -195,7 +195,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
 to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
-    (∫ a in t..t + T, f a) = ∫ b : AddCircle T, f b := by
+    ∫ a in t..t + T, f a = ∫ b : AddCircle T, f b := by
   rw [integral_of_le, AddCircle.integral_preimage T t f]
   linarith [hT.out]
 #align add_circle.interval_integral_preimage AddCircle.intervalIntegral_preimage
@@ -247,7 +247,7 @@ protected theorem integral_preimage (t : ℝ) (f : UnitAddCircle → E) :
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
 equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) :
-    (∫ a in t..t + 1, f a) = ∫ b : UnitAddCircle, f b :=
+    ∫ a in t..t + 1, f a = ∫ b : UnitAddCircle, f b :=
   AddCircle.intervalIntegral_preimage 1 t f
 #align unit_add_circle.interval_integral_preimage UnitAddCircle.intervalIntegral_preimage
 
@@ -263,7 +263,7 @@ variable {f : ℝ → E} {T : ℝ}
 
 /-- An auxiliary lemma for a more general `Function.Periodic.intervalIntegral_add_eq`. -/
 theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : ℝ) :
-    (∫ x in t..t + T, f x) = ∫ x in s..s + T, f x := by
+    ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s _ => measure_preimage_add _ _ _⟩
@@ -274,7 +274,7 @@ theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : �
 /-- If `f` is a periodic function with period `T`, then its integral over `[t, t + T]` does not
 depend on `t`. -/
 theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
-    (∫ x in t..t + T, f x) = ∫ x in s..s + T, f x := by
+    ∫ x in t..t + T, f x = ∫ x in s..s + T, f x := by
   rcases lt_trichotomy (0 : ℝ) T with (hT | rfl | hT)
   · exact hf.intervalIntegral_add_eq_of_pos hT t s
   · simp
@@ -287,7 +287,7 @@ theorem intervalIntegral_add_eq (hf : Periodic f T) (t s : ℝ) :
 is the sum of its integrals over the intervals `[t, s]` and `[t, t + T]`. -/
 theorem intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
     (h_int : ∀ t₁ t₂, IntervalIntegrable f MeasureSpace.volume t₁ t₂) :
-    (∫ x in t..s + T, f x) = (∫ x in t..s, f x) + ∫ x in t..t + T, f x := by
+    ∫ x in t..s + T, f x = (∫ x in t..s, f x) + ∫ x in t..t + T, f x := by
   rw [hf.intervalIntegral_add_eq t s, integral_add_adjacent_intervals (h_int t s) (h_int s _)]
 #align function.periodic.interval_integral_add_eq_add Function.Periodic.intervalIntegral_add_eq_add
 
@@ -295,7 +295,7 @@ theorem intervalIntegral_add_eq_add (hf : Periodic f T) (t s : ℝ)
 integral over `[t, t + n • T]` is `n` times its integral over `[t, t + T]`. -/
 theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     (h_int : ∀ t₁ t₂, IntervalIntegrable f MeasureSpace.volume t₁ t₂) :
-    (∫ x in t..t + n • T, f x) = n • ∫ x in t..t + T, f x := by
+    ∫ x in t..t + n • T, f x = n • ∫ x in t..t + T, f x := by
   -- Reduce to the case `b = 0`
   suffices (∫ x in (0)..(n • T), f x) = n • ∫ x in (0)..T, f x by
     simp only [hf.intervalIntegral_add_eq t 0, (hf.zsmul n).intervalIntegral_add_eq t 0, zero_add,

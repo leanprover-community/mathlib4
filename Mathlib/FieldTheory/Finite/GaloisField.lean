@@ -41,7 +41,7 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-instance FiniteField.HasSub.Sub.Polynomial.isSplittingField (K F : Type _) [Field K] [Fintype K]
+instance FiniteField.isSplittingField_sub (K F : Type _) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
     have h : (X ^ Fintype.card K - X : K[X]).natDegree = Fintype.card K :=
@@ -53,7 +53,7 @@ instance FiniteField.HasSub.Sub.Polynomial.isSplittingField (K F : Type _) [Fiel
     trans Algebra.adjoin F ((roots (X ^ Fintype.card K - X : K[X])).toFinset : Set K)
     · simp only [rootSet, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
-#align finite_field.has_sub.sub.polynomial.is_splitting_field FiniteField.HasSub.Sub.Polynomial.isSplittingField
+#align finite_field.has_sub.sub.polynomial.is_splitting_field FiniteField.isSplittingField_sub
 
 theorem galois_poly_separable {K : Type _} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
@@ -72,8 +72,8 @@ def GaloisField  := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
 -- deriving Field -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 #align galois_field GaloisField
 
-instance : Field (GaloisField p n) := by
-  dsimp only [GaloisField]; exact SplittingField.instFieldSplittingField _
+instance : Field (GaloisField p n) :=
+  inferInstanceAs (Field (SplittingField _))
 
 instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
 
@@ -151,7 +151,7 @@ theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
   rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b, ZMod.card, finrank p h]
 #align galois_field.card GaloisField.card
 
-theorem splits_zMod_x_pow_sub_x : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
+theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
   have hp : 1 < p :=  h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -161,7 +161,7 @@ theorem splits_zMod_x_pow_sub_x : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
   cases p; cases hp
   rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ, h2, ZMod.card]
 set_option linter.uppercaseLean3 false in
-#align galois_field.splits_zmod_X_pow_sub_X GaloisField.splits_zMod_x_pow_sub_x
+#align galois_field.splits_zmod_X_pow_sub_X GaloisField.splits_zmod_X_pow_sub_X
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
@@ -172,14 +172,14 @@ def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
 
 variable {K : Type _} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
-theorem splits_x_pow_card_sub_x : Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
-  (FiniteField.HasSub.Sub.Polynomial.isSplittingField K (ZMod p)).splits
+theorem splits_X_pow_card_sub_X : Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
+  (FiniteField.isSplittingField_sub K (ZMod p)).splits
 set_option linter.uppercaseLean3 false in
-#align galois_field.splits_X_pow_card_sub_X GaloisField.splits_x_pow_card_sub_x
+#align galois_field.splits_X_pow_card_sub_X GaloisField.splits_X_pow_card_sub_X
 
 theorem isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
-  h ▸ FiniteField.HasSub.Sub.Polynomial.isSplittingField K (ZMod p)
+  h ▸ FiniteField.isSplittingField_sub K (ZMod p)
 #align galois_field.is_splitting_field_of_card_eq GaloisField.isSplittingField_of_card_eq
 
 instance (priority := 100) {K K' : Type _} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
@@ -228,7 +228,6 @@ def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := 
   choose n hp hK using FiniteField.card K p
   choose n' hp' hK' using FiniteField.card K' p'
   have hpp' : p = p' := by
-    -- := eq_prime_of_eq_prime_pow
     by_contra hne
     have h2 := Nat.coprime_pow_primes n n' hp hp' hne
     rw [(Eq.congr hK hK').mp hKK', Nat.coprime_self, pow_eq_one_iff (PNat.ne_zero n')] at h2

@@ -29,6 +29,8 @@ This file defines the embeddings of a number field into an algebraic closed fiel
 number field, embeddings, places, infinite places
 -/
 
+-- Porting note: see https://github.com/leanprover/lean4/issues/2220
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
 
 open scoped Classical
 
@@ -79,9 +81,6 @@ end Roots
 
 section Bounded
 
--- Porting note: see https://github.com/leanprover/lean4/issues/2220
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
-
 open FiniteDimensional Polynomial Set
 
 variable {K : Type _} [Field K] [NumberField K]
@@ -130,7 +129,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
     refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
-    rw [pow_eq_zero hp, map_zero, norm_zero] at hx ; norm_num at hx
+    rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 #align number_field.embeddings.pow_eq_one_of_norm_eq_one NumberField.Embeddings.pow_eq_one_of_norm_eq_one
 
 end Bounded
@@ -174,7 +173,7 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
   ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
-/-- A embedding into `ℂ` is real if it is fixed by complex conjugation. -/
+/-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 @[reducible]
 def IsReal (φ : K →+* ℂ) : Prop :=
   IsSelfAdjoint φ
@@ -305,7 +304,7 @@ theorem mk_conjugate_eq (φ : K →+* ℂ) : mk (ComplexEmbedding.conjugate φ) 
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
   · -- We prove that the map ψ ∘ φ⁻¹ between φ(K) and ℂ is uniform continuous, thus it is either the
-    -- inclusion or the complex conjugation using complex.uniform_continuous_ring_hom_eq_id_or_conj
+    -- inclusion or the complex conjugation using `Complex.uniformContinuous_ringHom_eq_id_or_conj`
     intro h₀
     obtain ⟨j, hiφ⟩ := (φ.injective).hasLeftInverse
     let ι := RingEquiv.ofLeftInverse hiφ
@@ -504,13 +503,10 @@ theorem prod_eq_abs_norm (x : K) :
     · rw [Finset.filter_congr fun (w : InfinitePlace K) _ => @not_isReal_iff_isComplex K _ w,
         ← Finset.prod_subtype_eq_prod_filter, ← Finset.prod_subtype_eq_prod_filter]
       convert Finset.prod_fiberwise Finset.univ (fun φ => mkComplex K φ)
-        (fun φ => Complex.abs (φ.val x)) using 2
+        (fun φ => Complex.abs (φ.val x)) using 2 with w
       · ext; simp only [Finset.mem_subtype, Finset.mem_univ, not_isReal_iff_isComplex]
-      · rename_i w _ -- Porting note : need to recover the name of the variable
-                     -- generated automatically by the `convert`
-        rw [@Finset.prod_congr _ _ _ _ _ (fun _ => w.val x) _ (Eq.refl _) fun φ hφ =>
+      · rw [@Finset.prod_congr _ _ _ _ _ (fun _ => w.val x) _ (Eq.refl _) fun φ hφ =>
             (mkComplex.apply K φ x).symm.trans ?_, Finset.prod_const, mkComplex.filter_card K w]
-        norm_num
         rw [congr_arg Subtype.val (Finset.mem_filter.1 hφ).2]
       · ext; simp only [Finset.mem_subtype, Finset.mem_univ]
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
