@@ -58,11 +58,11 @@ theorem equiv_free_prod_directSum_zMod [hG : AddGroup.FG G] :
     ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃+ (Fin n →₀ ℤ) × ⨁ i : ι, ZMod (p i ^ e i) := by
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ :=
-    @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (module.finite.iff_add_group_fg.mpr hG)
+    @Module.equiv_free_prod_directSum _ _ _ _ _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG)
   refine' ⟨n, ι, fι, fun i => (p i).natAbs, fun i => _, e, ⟨_⟩⟩
   · rw [← Int.prime_iff_natAbs_prime, ← GCDMonoid.irreducible_iff_prime]; exact hp i
   exact
-    f.to_add_equiv.trans
+    f.toAddEquiv.trans
       ((AddEquiv.refl _).prodCongr <|
         Dfinsupp.mapRange.addEquiv fun i =>
           ((Int.quotientSpanEquivZMod _).trans <|
@@ -75,13 +75,14 @@ theorem equiv_directSum_zMod_of_fintype [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
   cases nonempty_fintype G
-  obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_direct_sum_zmod G
-  cases n
-  · exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
-  · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.to_equiv) _
+  obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zMod G
+  cases' n with n
+  · have : Unique (Fin Nat.zero →₀ ℤ) := by sorry
+    exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
+  · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
       (Fintype.ofSurjective (fun f : Fin n.succ →₀ ℤ => f 0) fun a =>
-            ⟨Finsupp.single 0 a, Finsupp.single_eq_same⟩).False.elim
+            ⟨Finsupp.single 0 a, Finsupp.single_eq_same⟩).false.elim
 #align add_comm_group.equiv_direct_sum_zmod_of_fintype AddCommGroup.equiv_directSum_zMod_of_fintype
 
 theorem finite_of_fG_torsion [hG' : AddGroup.FG G] (hG : AddMonoid.IsTorsion G) : Finite G :=
