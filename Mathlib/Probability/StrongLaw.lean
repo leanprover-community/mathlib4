@@ -130,7 +130,7 @@ theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.memℒp_truncation [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) {A : ℝ} {p : ℝ≥0∞} : Memℒp (truncation f A) p μ :=
-  Memℒp.of_bound hf.truncation (|A|) (eventually_of_forall fun _ => abs_truncation_le_bound _ _ _)
+  Memℒp.of_bound hf.truncation |A| (eventually_of_forall fun _ => abs_truncation_le_bound _ _ _)
 #align measure_theory.ae_strongly_measurable.mem_ℒp_truncation MeasureTheory.AEStronglyMeasurable.memℒp_truncation
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFiniteMeasure μ]

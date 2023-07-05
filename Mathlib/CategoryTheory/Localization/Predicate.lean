@@ -236,7 +236,7 @@ instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
         erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
           eqToHom_refl, comp_id, id_comp]
-        . rfl
+        · rfl
         all_goals
           change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ _ = L ⋙ _
           rw [Construction.fac]

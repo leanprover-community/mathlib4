@@ -48,7 +48,7 @@ variable [Module R M] [Module R N] [Module R P]
 
 This is the submodule version of `Set.image2`.  -/
 def map₂ (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) : Submodule R P :=
-  ⨆ s : p, q.map <| f s
+  ⨆ s : p, q.map (f s)
 #align submodule.map₂ Submodule.map₂
 
 theorem apply_mem_map₂ (f : M →ₗ[R] N →ₗ[R] P) {m : M} {n : N} {p : Submodule R M}

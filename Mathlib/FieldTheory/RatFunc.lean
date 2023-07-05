@@ -253,8 +253,7 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : ∀ _p _q : K[X], P) (f0 : ∀ 
   · subst hq
     simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  ·
-    simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
+  · simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
 #align ratfunc.lift_on_mk RatFunc.liftOn_mk
 
 /-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,

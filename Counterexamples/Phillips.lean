@@ -498,7 +498,7 @@ We need the continuum hypothesis to construct it.
 -/
 
 
-theorem sierpinski_pathological_family (Hcont : (#ℝ) = aleph 1) :
+theorem sierpinski_pathological_family (Hcont : #ℝ = aleph 1) :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
   rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
   skip
@@ -523,15 +523,15 @@ theorem sierpinski_pathological_family (Hcont : (#ℝ) = aleph 1) :
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
-def spf (Hcont : (#ℝ) = aleph 1) (x : ℝ) : Set ℝ :=
+def spf (Hcont : #ℝ = aleph 1) (x : ℝ) : Set ℝ :=
   (sierpinski_pathological_family Hcont).choose x
 #align counterexample.phillips_1940.spf Counterexample.Phillips1940.spf
 
-theorem countable_compl_spf (Hcont : (#ℝ) = aleph 1) (x : ℝ) : (univ \ spf Hcont x).Countable :=
+theorem countable_compl_spf (Hcont : #ℝ = aleph 1) (x : ℝ) : (univ \ spf Hcont x).Countable :=
   (sierpinski_pathological_family Hcont).choose_spec.1 x
 #align counterexample.phillips_1940.countable_compl_spf Counterexample.Phillips1940.countable_compl_spf
 
-theorem countable_spf_mem (Hcont : (#ℝ) = aleph 1) (y : ℝ) : {x | y ∈ spf Hcont x}.Countable :=
+theorem countable_spf_mem (Hcont : #ℝ = aleph 1) (y : ℝ) : {x | y ∈ spf Hcont x}.Countable :=
   (sierpinski_pathological_family Hcont).choose_spec.2 y
 #align counterexample.phillips_1940.countable_spf_mem Counterexample.Phillips1940.countable_spf_mem
 
@@ -552,11 +552,11 @@ which is large (it has countable complement), as in the Sierpinski pathological 
 /-- A family of bounded functions `f_x` from `ℝ` (seen with the discrete topology) to `ℝ` (in fact
 taking values in `{0, 1}`), indexed by a real parameter `x`, corresponding to the characteristic
 functions of the different fibers of the Sierpinski pathological family -/
-def f (Hcont : (#ℝ) = aleph 1) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
+def f (Hcont : #ℝ = aleph 1) (x : ℝ) : DiscreteCopy ℝ →ᵇ ℝ :=
   ofNormedAddCommGroupDiscrete (indicator (spf Hcont x) 1) 1 (norm_indicator_le_one _)
 #align counterexample.phillips_1940.f Counterexample.Phillips1940.f
 
-theorem apply_f_eq_continuousPart (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
+theorem apply_f_eq_continuousPart (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ)
     (x : ℝ) (hx : φ.toBoundedAdditiveMeasure.discreteSupport ∩ spf Hcont x = ∅) :
     φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   set ψ := φ.toBoundedAdditiveMeasure
@@ -567,7 +567,7 @@ theorem apply_f_eq_continuousPart (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy
     ψ.continuousPart_apply_eq_zero_of_countable _ (countable_compl_spf Hcont x), add_zero]
 #align counterexample.phillips_1940.apply_f_eq_continuous_part Counterexample.Phillips1940.apply_f_eq_continuousPart
 
-theorem countable_ne (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+theorem countable_ne (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)}.Countable := by
   have A :
     {x | φ.toBoundedAdditiveMeasure.continuousPart univ ≠ φ (f Hcont x)} ⊆
@@ -588,7 +588,7 @@ theorem countable_ne (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ �
   exact Countable.biUnion (countable_discreteSupport _) fun a _ => countable_spf_mem Hcont a
 #align counterexample.phillips_1940.countable_ne Counterexample.Phillips1940.countable_ne
 
-theorem comp_ae_eq_const (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+theorem comp_ae_eq_const (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∀ᵐ x ∂volume.restrict (Icc (0 : ℝ) 1),
       φ.toBoundedAdditiveMeasure.continuousPart univ = φ (f Hcont x) := by
   apply ae_restrict_of_ae
@@ -597,7 +597,7 @@ theorem comp_ae_eq_const (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →�
   simp only [imp_self, mem_setOf_eq, mem_compl_iff]
 #align counterexample.phillips_1940.comp_ae_eq_const Counterexample.Phillips1940.comp_ae_eq_const
 
-theorem integrable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+theorem integrable_comp (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     IntegrableOn (fun x => φ (f Hcont x)) (Icc 0 1) := by
   have :
     IntegrableOn (fun _ => φ.toBoundedAdditiveMeasure.continuousPart univ) (Icc (0 : ℝ) 1)
@@ -606,7 +606,7 @@ theorem integrable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →�
   apply Integrable.congr this (comp_ae_eq_const Hcont φ)
 #align counterexample.phillips_1940.integrable_comp Counterexample.Phillips1940.integrable_comp
 
-theorem integral_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+theorem integral_comp (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     ∫ x in Icc 0 1, φ (f Hcont x) = φ.toBoundedAdditiveMeasure.continuousPart univ := by
   rw [← integral_congr_ae (comp_ae_eq_const Hcont φ)]
   simp
@@ -622,7 +622,7 @@ no Pettis integral.
 example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` is scalarly measurable. -/
-theorem measurable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
+theorem measurable_comp (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     Measurable fun x => φ (f Hcont x) := by
   have : Measurable fun _ : ℝ => φ.toBoundedAdditiveMeasure.continuousPart univ := measurable_const
   refine' this.measurable_of_countable_ne _
@@ -630,12 +630,12 @@ theorem measurable_comp (Hcont : (#ℝ) = aleph 1) (φ : (DiscreteCopy ℝ →�
 #align counterexample.phillips_1940.measurable_comp Counterexample.Phillips1940.measurable_comp
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` is uniformly bounded by `1` in norm. -/
-theorem norm_bound (Hcont : (#ℝ) = aleph 1) (x : ℝ) : ‖f Hcont x‖ ≤ 1 :=
+theorem norm_bound (Hcont : #ℝ = aleph 1) (x : ℝ) : ‖f Hcont x‖ ≤ 1 :=
   norm_ofNormedAddCommGroup_le _ zero_le_one (norm_indicator_le_one _)
 #align counterexample.phillips_1940.norm_bound Counterexample.Phillips1940.norm_bound
 
 /-- The function `f Hcont : ℝ → (DiscreteCopy ℝ →ᵇ ℝ)` has no Pettis integral. -/
-theorem no_pettis_integral (Hcont : (#ℝ) = aleph 1) :
+theorem no_pettis_integral (Hcont : #ℝ = aleph 1) :
     ¬∃ g : DiscreteCopy ℝ →ᵇ ℝ,
         ∀ φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ, ∫ x in Icc 0 1, φ (f Hcont x) = φ g := by
   rintro ⟨g, h⟩

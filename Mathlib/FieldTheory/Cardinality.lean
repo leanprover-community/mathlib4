@@ -69,7 +69,7 @@ set_option synthInstance.maxHeartbeats 50000 in
 /-- Any infinite type can be endowed a field structure. -/
 theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α) := by
   letI K := FractionRing (MvPolynomial α <| ULift.{u} ℚ)
-  suffices (#α) = (#K) by
+  suffices #α = #K by
     obtain ⟨e⟩ := Cardinal.eq.1 this
     exact ⟨e.field⟩
   rw [← IsLocalization.card (MvPolynomial α <| ULift.{u} ℚ)⁰ K le_rfl]
@@ -81,7 +81,7 @@ theorem Infinite.nonempty_field {α : Type u} [Infinite α] : Nonempty (Field α
 #align infinite.nonempty_field Infinite.nonempty_field
 
 /-- There is a field structure on type if and only if its cardinality is a prime power. -/
-theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow (#α) := by
+theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #α := by
   rw [Cardinal.isPrimePow_iff]
   cases' fintypeOrInfinite α with h h
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',

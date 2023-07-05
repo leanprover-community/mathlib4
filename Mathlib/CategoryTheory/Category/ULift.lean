@@ -19,8 +19,8 @@ import Mathlib.Data.ULift
 This file contains a very basic API for working with the categorical
 instance on `ULift C` where `C` is a type with a category instance.
 
-1. `CategoryTheory.ULift.up` is the functorial version of the usual `ULift.up`.
-2. `CategoryTheory.ULift.down` is the functorial version of the usual `ULift.down`.
+1. `CategoryTheory.ULift.upFunctor` is the functorial version of the usual `ULift.up`.
+2. `CategoryTheory.ULift.downFunctor` is the functorial version of the usual `ULift.down`.
 3. `CategoryTheory.ULift.equivalence` is the categorical equivalence between
   `C` and `ULift C`.
 
