@@ -8,9 +8,9 @@ Authors: Heather Macbeth, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Geometry.Manifold.ContMdiffMfderiv
-import Mathbin.Topology.ContinuousFunction.Basic
-import Mathbin.Geometry.Manifold.Algebra.LieGroup
+import Mathlib.Geometry.Manifold.ContMdiffMfderiv
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
 # Smooth sections
@@ -111,8 +111,7 @@ theorem coe_injective : Injective (coeFn : Cₛ^n⟮I; F, V⟯ → ∀ x, V x) :
 theorem ext (h : ∀ x, s x = t x) : s = t := by cases s <;> cases t <;> congr <;> exact funext h
 #align cont_mdiff_section.ext ContMdiffSection.ext
 
-instance hasAdd : Add Cₛ^n⟮I; F, V⟯ :=
-  by
+instance hasAdd : Add Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s + t, _⟩⟩
   intro x₀
   have hs := s.cont_mdiff x₀
@@ -130,8 +129,7 @@ theorem coe_add (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s + t) = s + t :=
   rfl
 #align cont_mdiff_section.coe_add ContMdiffSection.coe_add
 
-instance hasSub : Sub Cₛ^n⟮I; F, V⟯ :=
-  by
+instance hasSub : Sub Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s t => ⟨s - t, _⟩⟩
   intro x₀
   have hs := s.cont_mdiff x₀
@@ -162,8 +160,7 @@ theorem coe_zero : ⇑(0 : Cₛ^n⟮I; F, V⟯) = 0 :=
   rfl
 #align cont_mdiff_section.coe_zero ContMdiffSection.coe_zero
 
-instance hasSmul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ :=
-  by
+instance hasSmul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun c s => ⟨c • s, _⟩⟩
   intro x₀
   have hs := s.cont_mdiff x₀
@@ -181,8 +178,7 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
   rfl
 #align cont_mdiff_section.coe_smul ContMdiffSection.coe_smul
 
-instance hasNeg : Neg Cₛ^n⟮I; F, V⟯ :=
-  by
+instance hasNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   refine' ⟨fun s => ⟨-s, _⟩⟩
   intro x₀
   have hs := s.cont_mdiff x₀
@@ -204,8 +200,7 @@ instance hasNsmul : SMul ℕ Cₛ^n⟮I; F, V⟯ :=
 #align cont_mdiff_section.has_nsmul ContMdiffSection.hasNsmul
 
 @[simp]
-theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • s :=
-  by
+theorem coe_nsmul (s : Cₛ^n⟮I; F, V⟯) (k : ℕ) : ⇑(k • s : Cₛ^n⟮I; F, V⟯) = k • s := by
   induction' k with k ih
   · simp_rw [zero_smul]; rfl
   simp_rw [succ_nsmul, ← ih]; rfl
@@ -216,8 +211,7 @@ instance hasZsmul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 #align cont_mdiff_section.has_zsmul ContMdiffSection.hasZsmul
 
 @[simp]
-theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • s :=
-  by
+theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • s := by
   cases' z with n n
   refine' (coe_nsmul s n).trans _
   simp only [Int.ofNat_eq_coe, coe_nat_zsmul]
@@ -232,8 +226,7 @@ instance addCommGroup : AddCommGroup Cₛ^n⟮I; F, V⟯ :=
 variable (I F V n)
 
 /-- The additive morphism from smooth sections to dependent maps. -/
-def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x
-    where
+def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   toFun := coeFn
   map_zero' := coe_zero
   map_add' := coe_add
