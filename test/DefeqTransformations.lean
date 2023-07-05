@@ -51,6 +51,22 @@ example : let x := 1; let y := 2; x + y = y + x := by
   guard_target =ₛ 1 + 2 = 2 + 1
   rfl
 
+example : let x := 1; let y := 2 + x; y = 3 := by
+  intro x y
+  unfold_let x
+  guard_target =ₛ y = 3
+  unfold_let y
+  guard_target =ₛ 2 + x = 3
+  unfold_let x
+  guard_target =ₛ 2 + 1 = 3
+  rfl
+
+example : let x := 1; let y := 2 + x; y = 3 := by
+  intro x y
+  unfold_let x y
+  guard_target =ₛ 2 + 1 = 3
+  rfl
+
 example : 1 + 2 = 2 + 1 := by
   unfold_projs
   guard_target =ₛ Nat.add (nat_lit 1) (nat_lit 2) = Nat.add (nat_lit 2) (nat_lit 1)
