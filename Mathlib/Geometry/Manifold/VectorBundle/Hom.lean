@@ -52,11 +52,12 @@ theorem smoothOn_continuousLinearMapCoordChange [SmoothManifoldWithCorners IB B]
     SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂)
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
-  let L₁ := compL 𝕜 F₁ F₂ F₂
-  have h₁ : Smooth _ _ _ := L₁.cont_mdiff
-  have h₂ : Smooth _ _ _ := (ContinuousLinearMap.flip (compL 𝕜 F₁ F₁ F₂)).ContMDiff
-  have h₃ : SmoothOn IB _ _ _ := smooth_on_coord_change e₁' e₁
-  have h₄ : SmoothOn IB _ _ _ := smooth_on_coord_change e₂ e₂'
+  set L₁ := compL 𝕜 F₁ F₂ F₂
+  have h₁ : Smooth 𝓘(𝕜, F₂ →L[𝕜] F₂) 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₂)) L₁ :=
+    L₁.smooth
+  have h₂ : Smooth _ _ _ := (ContinuousLinearMap.flip L₁).contMDiff
+  have h₃ : SmoothOn IB _ _ _ := smoothOn_coordChange e₁' e₁
+  have h₄ : SmoothOn IB _ _ _ := smoothOn_coordChange e₂ e₂'
   refine' ((h₁.comp_smooth_on (h₄.mono _)).clm_comp (h₂.comp_smooth_on (h₃.mono _))).congr _
   · mfld_set_tac
   · mfld_set_tac
@@ -77,15 +78,15 @@ theorem hom_chart (y₀ y : LE₁E₂) :
 variable {IB}
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
-    ContMDiffAt IM (IB.Prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
+    ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
       ContMDiffAt IM IB n (fun x => (f x).1) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
           (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  by apply cont_mdiff_at_total_space
+  contMDiffAt_totalSpace ..
 #align cont_mdiff_at_hom_bundle contMDiffAt_hom_bundle
 
 theorem smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
-    SmoothAt IM (IB.Prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f x₀ ↔
+    SmoothAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) f x₀ ↔
       SmoothAt IM IB (fun x => (f x).1) x₀ ∧
         SmoothAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂)
           (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
@@ -96,18 +97,16 @@ variable [SmoothManifoldWithCorners IB B] [SmoothVectorBundle F₁ E₁ IB]
   [SmoothVectorBundle F₂ E₂ IB]
 
 instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
-    (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB
-    where exists_smooth_coord_change := by
+    (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB where
+  exists_smoothCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
-    skip
-    refine'
-      ⟨continuous_linear_map_coord_change (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
-        smoothOn_continuousLinearMapCoordChange IB,
-        continuous_linear_map_coord_change_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
+    exact ⟨continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
+      smoothOn_continuousLinearMapCoordChange IB,
+      continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
 #align bundle.continuous_linear_map.vector_prebundle.is_smooth Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth
 
 instance SmoothVectorBundle.continuousLinearMap :
     SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
-  (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).SmoothVectorBundle IB
+  (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).smoothVectorBundle IB
 #align smooth_vector_bundle.continuous_linear_map SmoothVectorBundle.continuousLinearMap
 
