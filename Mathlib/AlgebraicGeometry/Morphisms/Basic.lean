@@ -89,7 +89,7 @@ protected def Scheme.affineTargetIsIso : AffineTargetMorphismProperty := fun _ _
 instance : Inhabited AffineTargetMorphismProperty :=
   ⟨Scheme.affineTargetIsIso⟩
 
-/-- A `affine_target_morphism_property` can be extended to a `morphism_property` such that it
+/-- An `affine_target_morphism_property` can be extended to a `morphism_property` such that it
 *never* holds when the target is not affine -/
 def AffineTargetMorphismProperty.toProperty (P : AffineTargetMorphismProperty) :
     MorphismProperty Scheme := fun _ _ f => ∃ h, @P _ _ f h
@@ -324,8 +324,8 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_iff {P : AffineTar
     targetAffineLocally P f ↔ ∀ i, @P _ _ (pullback.snd : pullback f (𝒰.map i) ⟶ _) (h𝒰 i) := by
   refine' ⟨fun H => let h := ((hP.affine_openCover_TFAE f).out 0 2).mp H; _,
     fun H => let h := ((hP.affine_openCover_TFAE f).out 1 0).mp; _⟩
-  . exact fun i => h 𝒰 i
-  . exact h ⟨𝒰, inferInstance, H⟩
+  · exact fun i => h 𝒰 i
+  · exact h ⟨𝒰, inferInstance, H⟩
 #align algebraic_geometry.affine_target_morphism_property.is_local.affine_open_cover_iff AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.affine_openCover_iff
 
 theorem AffineTargetMorphismProperty.IsLocal.affine_target_iff {P : AffineTargetMorphismProperty}
@@ -440,8 +440,8 @@ theorem PropertyIsLocalAtTarget.openCover_iff {P : MorphismProperty Scheme}
   -- Porting note : couldn't get the term mode proof work
   refine ⟨fun H => let h := ((hP.openCover_TFAE f).out 0 2).mp H; fun i => ?_,
     fun H => let h := ((hP.openCover_TFAE f).out 1 0).mp; ?_⟩
-  . exact h 𝒰 i
-  . exact h ⟨𝒰, H⟩
+  · exact h 𝒰 i
+  · exact h ⟨𝒰, H⟩
 #align algebraic_geometry.property_is_local_at_target.open_cover_iff AlgebraicGeometry.PropertyIsLocalAtTarget.openCover_iff
 
 namespace AffineTargetMorphismProperty
@@ -563,8 +563,8 @@ theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
   -- Porting note : added this instance
   haveI hg₁ : IsOpenImmersion g₁ := by
     apply (config := { allowSynthFailures := true }) Scheme.pullback_map_isOpenImmersion
-    . exact PresheafedSpace.IsOpenImmersion.comp (hf := hf₁) _
-    . exact PresheafedSpace.IsOpenImmersion.comp (hf := hf₂) _
+    · exact PresheafedSpace.IsOpenImmersion.comp (hf := hf₁) _
+    · exact PresheafedSpace.IsOpenImmersion.comp (hf := hf₂) _
   specialize H g₁
   rw [← affine_cancel_left_isIso hP.1 (pullbackDiagonalMapIso f _ f₁ f₂).hom]
   convert H

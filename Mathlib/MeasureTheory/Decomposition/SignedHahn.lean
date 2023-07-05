@@ -254,7 +254,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     · convert le_of_eq s.empty.symm
       ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false_iff]
       exact fun h' => False.elim (h h')
-  · intro ; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
+  · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   · intro a b hab
     refine' Set.disjoint_iUnion_left.mpr fun _ => _
     refine' Set.disjoint_iUnion_right.mpr fun _ => _

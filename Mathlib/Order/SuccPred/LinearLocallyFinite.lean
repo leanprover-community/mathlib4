@@ -373,7 +373,7 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
-  map_rel_iff' := by intro i j ; exact toZ_le_iff i j
+  map_rel_iff' := by intro i j; exact toZ_le_iff i j
 set_option linter.uppercaseLean3 false in
 #align order_iso_range_to_Z_of_linear_succ_pred_arch orderIsoRangeToZOfLinearSuccPredArch
 
@@ -404,7 +404,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
     · simp_rw [if_neg (not_le.mpr hn)]
       rw [toZ_iterate_pred]
       simp only [hn.le, Int.toNat_of_nonneg, Right.nonneg_neg_iff, neg_neg]
-  map_rel_iff' := by intro i j ; exact toZ_le_iff i j
+  map_rel_iff' := by intro i j; exact toZ_le_iff i j
 #align order_iso_int_of_linear_succ_pred_arch orderIsoIntOfLinearSuccPredArch
 
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/

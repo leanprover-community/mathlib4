@@ -320,15 +320,15 @@ theorem mem_closure_iff_exists_term {x : M} :
   rw [← SetLike.mem_coe, coe_closure_eq_range_term_realize, mem_range]
 #align first_order.language.substructure.mem_closure_iff_exists_term FirstOrder.Language.Substructure.mem_closure_iff_exists_term
 
-theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} (#closure L s) ≤ (#L.Term s) := by
+theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} #(closure L s) ≤ #(L.Term s) := by
   rw [← SetLike.coe_sort_coe, coe_closure_eq_range_term_realize]
-  rw [← Cardinal.lift_id'.{w, max u w} (#L.Term s)]
+  rw [← Cardinal.lift_id'.{w, max u w} #(L.Term s)]
   exact Cardinal.mk_range_le_lift
 #align first_order.language.substructure.lift_card_closure_le_card_term FirstOrder.Language.Substructure.lift_card_closure_le_card_term
 
 theorem lift_card_closure_le :
-    Cardinal.lift.{u, w} (#closure L s) ≤
-      max ℵ₀ (Cardinal.lift.{u, w} (#s) + Cardinal.lift.{w, u} (#Σi, L.Functions i)) := by
+    Cardinal.lift.{u, w} #(closure L s) ≤
+      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
   rw [← lift_umax]
   refine' lift_card_closure_le_card_term.trans (Term.card_le.trans _)
   rw [mk_sum, lift_umax.{w, u}]

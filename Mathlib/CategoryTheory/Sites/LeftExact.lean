@@ -188,7 +188,7 @@ instance preservesLimitsOfShape_plusFunctor
   refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
-  . intro S m hm
+  · intro S m hm
     dsimp [liftToPlusObjLimitObj]
     simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
     refine' limit.hom_ext (fun k => _)
