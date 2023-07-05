@@ -546,23 +546,53 @@ def sMod' (q : ℕ) : ℕ → ℕ
   | 0 => 4 % q
   | i + 1 => (sMod' q i ^ 2 + (q - 2)) % q
 
-def sMod''_aux (q : ℕ) : ℕ → ℕ → ℕ
-  | 0, acc => acc
-  | i + 1, acc => sMod''_aux q i (((acc ^ 2) + (q - 2)) % q)
+/-- `sMod_iter q x steps` runs `steps` steps of iterations on `x`. -/
+def sMod_iter (q x : ℕ) : ℕ → ℕ
+  | 0 => x
+  | steps + 1 => (sMod_iter q x steps ^ 2 + (q - 2)) % q
 
-def sMod'' (q a : ℕ) : ℕ := sMod''_aux q a (4 % q)
+/-- Ensure the `Nat` is reduced before evaluating `f` -/
+def nat_seq (f : Nat → α) : Nat → α
+  | 0 => f 0
+  | n => f n
 
-theorem sMod''_aux_eq_sMod' (q a b : ℕ) : sMod''_aux q a (sMod' q b) = sMod' q (a + b) := by
+@[simp] theorem nat_seq_eq (f : Nat → α) (n : Nat) : nat_seq f n = f n := by
+  cases n <;> rfl
+
+/-- Block size to use in `sMod_iter'` -/
+def iterBlockSize : Nat := 800
+
+/-- Auxiliary definition for `sMod''`. -/
+def sMod_iter' (q x : ℕ) : ℕ → ℕ
+  | 0 => x
+  | i + 1 => nat_seq (sMod_iter' q · i) (sMod_iter q x iterBlockSize)
+
+/-- Version of `sMod'` that breaks up the iteration into blocks of iterations, to push
+the kernel farther without getting "deep recursion detected". -/
+def sMod'' (q n : ℕ) : ℕ :=
+  nat_seq (sMod_iter' q · (n / iterBlockSize)) (sMod_iter q (4 % q) (n % iterBlockSize))
+
+theorem sMod_iter_sMod' (q b a : ℕ) : sMod_iter q (sMod' q b) a = sMod' q (a + b) := by
   induction a generalizing b
   case zero =>
-    simp; rfl
+    rw [add_comm]; rfl
   case succ a ih =>
-    change sMod''_aux q a (sMod' q (b+1)) = _
-    rw [ih (b+1)]
-    rw [← Nat.add_assoc, Nat.succ_add]
+    simp [sMod_iter, ih, Nat.succ_add, sMod']
 
-theorem sMod''_eq_sMod' (q a : ℕ) : sMod'' q a = sMod' q a :=
-  sMod''_aux_eq_sMod' q a 0
+theorem sMod_iter'_sMod' (q b i : ℕ) :
+    sMod_iter' q (sMod' q b) i = sMod' q (iterBlockSize * i + b) := by
+  induction i generalizing b
+  case zero =>
+    simp [sMod_iter', sMod_iter_sMod']
+  case succ i ih =>
+    simp only [sMod_iter', sMod_iter_sMod', nat_seq_eq, ih, Nat.succ_eq_add_one]
+    congr! 1
+    ring
+
+theorem sMod''_eq_sMod' (q a : ℕ) : sMod'' q a = sMod' q a := by
+  rw [sMod'', nat_seq_eq]
+  erw [sMod_iter_sMod' q 0]
+  rw [add_zero, sMod_iter'_sMod', Nat.div_add_mod]
 
 theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc

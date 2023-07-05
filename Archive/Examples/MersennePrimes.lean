@@ -19,6 +19,8 @@ See the discussion at the end of [Mathlib/NumberTheory/LucasLehmer.lean]
 for ideas about extending this to larger Mersenne primes.
 -/
 
+set_option profiler true
+
 -- The Lucas-Lehmer test does not apply to `mersenne 2`
 example : ¬ LucasLehmerTest 2 := by norm_num
 
@@ -60,7 +62,7 @@ example : (mersenne 107).Prime :=
 example : (mersenne 127).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Lehmer and Robinson using SWAC computer, (1952) -/
+/-- Robinson and Lehmer using SWAC computer, (1952) -/
 example : (mersenne 521).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
@@ -76,15 +78,40 @@ example : (mersenne 2203).Prime :=
 example : (mersenne 2281).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
+/-- Riesel (1957) -/
 example : (mersenne 3217).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
+/-- Hurwitz (1961) -/
 example : (mersenne 4253).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
 example : (mersenne 4423).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
--- First failure ("deep recursion detected")
+/-- Gillies (1963) -/
 example : (mersenne 9689).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+example : (mersenne 9941).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+example : (mersenne 11213).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Tuckerman (1971) -/
+example : (mersenne 19937).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Noll and Nickel (1978) -/
+example : (mersenne 21701).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Noll (1979) -/
+example : (mersenne 23209).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- First failing example ("deep recursion detected")
+-- /-- Nelson and Slowinski (1979)) -/
+-- example : (mersenne 44497).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
