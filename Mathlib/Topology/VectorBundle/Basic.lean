@@ -644,7 +644,7 @@ protected def proj : TotalSpace F Z.Fiber → B :=
 #align vector_bundle_core.proj VectorBundleCore.proj
 
 /-- The total space of the vector bundle, as a convenience function for dot notation.
-It is by definition equal to `Bundle.TotalSpace Z.fiber`. -/
+It is by definition equal to `Bundle.TotalSpace F Z.Fiber`. -/
 @[nolint unusedArguments, reducible]
 protected def TotalSpace :=
   Bundle.TotalSpace F Z.Fiber
