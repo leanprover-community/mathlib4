@@ -75,8 +75,7 @@ theorem Submodule.isInternal_prime_power_torsion_of_pid [Module.Finite R M]
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBy R M
         (IsPrincipal.generator (p : Ideal R) ^
-          (factors (⊤ : Submodule R M).annihilator).count ↑p) :=
-  by
+          (factors (⊤ : Submodule R M).annihilator).count ↑p) := by
   convert isInternal_prime_power_torsion hM
   ext p : 1
   rw [← torsionBySet_span_singleton_eq, Ideal.submodule_span_eq, ← Ideal.span_singleton_pow,
@@ -131,14 +130,13 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
   · let f :=
       ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
         (quotTorsionOfEquivSpanSingleton R M y)
-    have :
-      f.symm ⟨p ^ k • x, h⟩ ∈ R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) :=
-      by
+    have : f.symm ⟨p ^ k • x, h⟩ ∈
+        R ∙ Ideal.Quotient.mk (R ∙ p ^ (pOrder hM y - k) * p ^ k) (p ^ k) := by
       rw [← Quotient.torsionBy_eq_span_singleton, mem_torsionBy_iff, ← f.symm.map_smul]
       convert f.symm.map_zero; ext
       rw [coe_smul_of_tower, coe_mk, coe_zero, smul_smul, ← pow_add, Nat.sub_add_cancel hk, @hM' x]
       · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
-    rw [Submodule.mem_span_singleton] at this ; obtain ⟨a, ha⟩ := this; use a
+    rw [Submodule.mem_span_singleton] at this; obtain ⟨a, ha⟩ := this; use a
     rw [f.eq_symm_apply, ← Ideal.Quotient.mk_eq_mk, ← Quotient.mk_smul] at ha
     dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mk,
       quotTorsionOfEquivSpanSingleton_apply_mk] at ha
@@ -226,7 +224,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hN x).choose, by rw [← Quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
     · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
-      rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs' ; simp only [mkQ_apply] at hs'
+      rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
       simp only; rw [← Function.comp.assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
         (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
@@ -263,7 +261,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
   simp only
 #align module.equiv_direct_sum_of_is_torsion Module.equiv_directSum_of_isTorsion
 
-set_option pp.universes true
+-- set_option pp.universes true
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
