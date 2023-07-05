@@ -48,12 +48,12 @@ namespace Bundle
 
 variable {B F : Type _} (E : B → Type _)
 
-/-- `Bundle.TotalSpace E` is the total space of the bundle. It consists of pairs
+/-- `Bundle.TotalSpace F E` is the total space of the bundle. It consists of pairs
 `(proj : B, snd : E proj)`.
 -/
 @[ext]
 structure TotalSpace (F : Type _) (E : B → Type _) where
-  /-- `bundle.total_space.proj` is the canonical projection `Bundle.TotalSpace E → B` from the
+  /-- `Bundle.TotalSpace.proj` is the canonical projection `Bundle.TotalSpace F E → B` from the
   total space to the base space. -/
   proj : B
   snd : E proj
@@ -139,7 +139,7 @@ notation f " *ᵖ " E:arg => Pullback f E
 instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) :=
   ‹Nonempty (E (f x))›
 
-/-- Natural embedding of the total space of `f *ᵖ E` into `B' × total_space E`. -/
+/-- Natural embedding of the total space of `f *ᵖ E` into `B' × TotalSpace E`. -/
 @[simp]
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' × TotalSpace F E :=
   fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
