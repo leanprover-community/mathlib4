@@ -14,11 +14,11 @@ import Mathlib.Data.ZMod.Quotient
 /-!
 # Structure of finite(ly generated) abelian groups
 
-* `add_comm_group.equiv_free_prod_direct_sum_zmod` : Any finitely generated abelian group is the
-  product of a power of `ℤ` and a direct sum of some `zmod (p i ^ e i)` for some prime powers
+* `AddCommGroup.equiv_free_prod_directSum_zMod` : Any finitely generated abelian group is the
+  product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some prime powers
   `p i ^ e i`.
-* `add_comm_group.equiv_direct_sum_zmod_of_fintype` : Any finite abelian group is a direct sum of
-  some `zmod (p i ^ e i)` for some prime powers `p i ^ e i`.
+* `AddCommGroup.equiv_directSum_zMod_of_fintype` : Any finite abelian group is a direct sum of
+  some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
 
 -/
 
@@ -52,7 +52,7 @@ namespace AddCommGroup
 variable [AddCommGroup G]
 
 /-- **Structure theorem of finitely generated abelian groups** : Any finitely generated abelian
-group is the product of a power of `ℤ` and a direct sum of some `zmod (p i ^ e i)` for some
+group is the product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some
 prime powers `p i ^ e i`. -/
 theorem equiv_free_prod_directSum_zMod [hG : AddGroup.FG G] :
     ∃ (n : ℕ) (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
@@ -70,7 +70,7 @@ theorem equiv_free_prod_directSum_zMod [hG : AddGroup.FG G] :
 #align add_comm_group.equiv_free_prod_direct_sum_zmod AddCommGroup.equiv_free_prod_directSum_zMod
 
 /-- **Structure theorem of finite abelian groups** : Any finite abelian group is a direct sum of
-some `zmod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
+some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
 theorem equiv_directSum_zMod_of_fintype [Finite G] :
     ∃ (ι : Type) (_ : Fintype ι) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
       Nonempty <| G ≃+ ⨁ i : ι, ZMod (p i ^ e i) := by
@@ -101,3 +101,4 @@ theorem finite_of_fG_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G
 #align comm_group.finite_of_fg_torsion CommGroup.finite_of_fG_torsion
 
 end CommGroup
+
