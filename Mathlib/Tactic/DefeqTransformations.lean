@@ -226,22 +226,33 @@ def getProjectedExpr (e : Expr) : MetaM (Option (Name × Nat × Expr)) := do
 
 /-- Checks if the expression is of the form `S.mk x.1 ... x.n` with `n` nonzero
 and `S.mk` a structure constructor and returns `x`.
-Each projection `x.i` can be either a native projection or from a projection function. -/
-def etaStruct? (e : Expr) : MetaM (Option Expr) := do
-  let .app _ lastArg := e | return none
+Each projection `x.i` can be either a native projection or from a projection function.
+
+`tryWhnfR` controls whether to try applying `whnfR` to arguments when none of them
+are obviously projections. -/
+def etaStruct? (e : Expr) (tryWhnfR : Bool := true) : MetaM (Option Expr) := do
   let .const f _ := e.getAppFn | return none
   let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? f | return none
-  unless e.getAppNumArgs == fVal.numParams + fVal.numFields do return none
+  unless 0 < fVal.numFields && e.getAppNumArgs == fVal.numParams + fVal.numFields do return none
   unless isStructureLike (← getEnv) fVal.induct do return none
-  let some (S, _, x) ← getProjectedExpr lastArg | return none
-  unless S == fVal.induct do return none
   let args := e.getAppArgs
-  for i in [0 : fVal.numFields] do
-    let arg := args[fVal.numParams + i]!
-    let some (S', i', x') ← getProjectedExpr arg | return none
-    unless S == S' && i == i' do return none
-    unless ← isDefEq x x' do return none
-  return x
+  let mut x? ← findProj fVal args pure
+  if tryWhnfR && x?.isNone then
+    x? ← findProj fVal args whnfR
+  if let some x := x? then
+    -- Rely on eta for structures to make the check:
+    if ← isDefEq x e then
+      return x
+  return none
+where
+  findProj (fVal : ConstructorVal) (args : Array Expr) (m : Expr → MetaM Expr) :
+      MetaM (Option Expr) := do
+    for i in [0 : fVal.numFields] do
+      let arg ← m args[fVal.numParams + i]!
+      let some (S, j, x) ← getProjectedExpr arg | return none
+      if S == fVal.induct && i == j then
+        return x
+    return none
 
 /-- Finds all occurrences of expressions of the form ``S.mk x.1 ... x.n` where `S.mk`
 is a structure constructor and replaces them by `x`.

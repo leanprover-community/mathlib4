@@ -2,6 +2,8 @@ import Mathlib.Tactic.DefeqTransformations
 import Mathlib.Init.Logic
 import Std.Tactic.GuardExpr
 
+namespace Tests
+
 example : id (1 = 1) := by
   with_reducible whnf
   guard_target =ₛ id (1 = 1)
@@ -121,6 +123,14 @@ example (p : Nat × Nat) : ((p.1, p.2).1, (p.1, p.2).2) = ((p.1, p.2).2, (p.1, p
   sorry
 
 example (n : Fin 5) : n = ⟨n.1, n.2⟩ := by
+  eta_struct
+  guard_target =ₛ n = n
+  rfl
+
+abbrev _root_.Fin.val2 : Fin n → Nat := Fin.val
+abbrev _root_.Fin.prop2 (x : Fin n) : (x : Nat) < n := x.isLt
+
+example (n : Fin 5) : n = ⟨n.val2, n.prop2⟩ := by
   eta_struct
   guard_target =ₛ n = n
   rfl
