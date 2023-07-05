@@ -552,11 +552,6 @@ def sMod''_aux (q : ℕ) : ℕ → ℕ → ℕ
 
 def sMod'' (q a : ℕ) : ℕ := sMod''_aux q a (4 % q)
 
--- #reduce sMod' (2^61 - 1) (61 - 2) -- deep recursion!
--- #reduce sMod'' (2^61 - 1) (61 - 2) -- deep recursion!
-#eval sMod' (2^9689 - 1) (9689 - 2) -- no problem
-#eval sMod'' (2^9689 - 1) (9689 - 2) -- no problem
-
 theorem sMod''_aux_eq_sMod' (q a b : ℕ) : sMod''_aux q a (sMod' q b) = sMod' q (a + b) := by
   induction a generalizing b
   case zero =>
