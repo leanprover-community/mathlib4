@@ -504,7 +504,7 @@ theorem map_invOf {R : Type _} {S : Type _} {F : Type _} [MulOneClass R] [Monoid
     [MonoidHomClass F R S] (f : F) (r : R) [Invertible r] [ifr : Invertible (f r)] :
     f (⅟ r) = ⅟ (f r) :=
   have h : ifr = Invertible.map f r := Subsingleton.elim _ _
-  by subst h ; rfl
+  by subst h; rfl
 #align map_inv_of map_invOf
 
 /-- If a function `f : R → S` has a left-inverse that is a monoid hom,

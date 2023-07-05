@@ -62,8 +62,8 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
         simp only [Equiv.symm_symm, adjoinOne_map, coe_comp]
         simp_rw [WithOne.map]
         cases x
-        . rfl
-        . simp
+        · rfl
+        · simp
           rfl }
 #align adjoin_one_adj adjoinOneAdj
 #align adjoin_zero_adj adjoinZeroAdj

@@ -353,7 +353,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : (↑ₘg) 0 0 * (↑ₘg) 1 1 = 1; · rw [det_fin_two, hc] at had ; linarith
+  replace had : (↑ₘg) 0 0 * (↑ₘg) 1 1 = 1; · rw [det_fin_two, hc] at had; linarith
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use (↑ₘg) 0 1
     suffices g = T ^ (↑ₘg) 0 1 by intro z; conv_lhs => rw [this]

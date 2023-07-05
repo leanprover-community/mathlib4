@@ -697,8 +697,8 @@ theorem tsum_iSup_decode₂ [CompleteLattice β] (m : β → α) (m0 : m ⊥ = 0
     intro n h
     generalize decode₂ γ n = foo at *
     cases' foo with b
-    . refine' (h <| by simp [m0]).elim
-    . exact rfl
+    · refine' (h <| by simp [m0]).elim
+    · exact rfl
   symm
   refine' tsum_eq_tsum_of_ne_zero_bij (fun a => Option.get _ (H a.1 a.2)) _ _ _
   · dsimp only []
@@ -842,7 +842,7 @@ theorem HasSum.update (hf : HasSum f a₁) (b : β) [DecidableEq β] (a : α) :
   by_cases h : b' = b
   · rw [h, update_same]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  . simp only [h, update_noteq, if_false, Ne.def, zero_add, not_false_iff]
+  · simp only [h, update_noteq, if_false, Ne.def, zero_add, not_false_iff]
 #align has_sum.update HasSum.update
 
 theorem Summable.update (hf : Summable f) (b : β) [DecidableEq β] (a : α) :

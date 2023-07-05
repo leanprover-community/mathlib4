@@ -178,7 +178,7 @@ instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   id_comp _ := by
     dsimp
     ext
-    . dsimp
+    · dsimp
       simp only [map_id, whiskerRight_id', assoc]
       erw [comp_id, comp_id]
     · dsimp
@@ -252,7 +252,7 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.comp_c_app AlgebraicGeometry.PresheafedSpace.comp_c_app
 
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
-    α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h ; rfl)) := by
+    α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
   simp
 set_option linter.uppercaseLean3 false in
@@ -392,7 +392,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1) (h
     simp only [PresheafedSpace.comp_base, PresheafedSpace.ofRestrict_base] at this
     rw [cancel_mono] at this
     exact this
-  . ext V
+  · ext V
     have hV : (Opens.map (X.ofRestrict hf).base).obj (hf.isOpenMap.functor.obj V) = V := by
       ext1
       exact Set.preimage_image_eq _ hf.inj
