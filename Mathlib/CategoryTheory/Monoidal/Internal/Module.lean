@@ -8,8 +8,8 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Category.Module.Monoidal.Basic
-import Mathlib.Algebra.Category.Algebra.Basic
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
@@ -63,7 +63,7 @@ instance (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.pt :=
     map_one' := rfl
     map_mul' := fun x y => by
       have h := LinearMap.congr_fun A.one_mul.symm (x ⊗ₜ A.one y)
-      rwa [monoidal_category.left_unitor_hom_apply, ← A.one.map_smul] at h 
+      rwa [monoidal_category.left_unitor_hom_apply, ← A.one.map_smul] at h
     commutes' := fun r a => by
       dsimp
       have h₁ := LinearMap.congr_fun A.one_mul (r ⊗ₜ a)
@@ -195,4 +195,3 @@ def monModuleEquivalenceAlgebraForget :
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
 end ModuleCat
-
