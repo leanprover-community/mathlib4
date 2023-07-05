@@ -693,12 +693,6 @@ theorem mem_localTrivAt_source (p : Z.TotalSpace) (b : B) :
 #align fiber_bundle_core.mem_local_triv_at_source FiberBundleCore.mem_localTrivAt_source
 
 @[simp, mfld_simps]
-theorem mem_source_at : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
-  rw [localTrivAt, mem_localTriv_source]
-  exact Z.mem_baseSet_at b
-#align fiber_bundle_core.mem_source_at FiberBundleCore.mem_source_at
-
-@[simp, mfld_simps]
 theorem mem_localTriv_target (p : B × F) :
     p ∈ (Z.localTriv i).target ↔ p.1 ∈ (Z.localTriv i).baseSet :=
   Trivialization.mem_target _
@@ -722,16 +716,21 @@ theorem mem_localTrivAt_baseSet (b : B) : b ∈ (Z.localTrivAt b).baseSet := by
   exact Z.mem_baseSet_at b
 #align fiber_bundle_core.mem_local_triv_at_base_set FiberBundleCore.mem_localTrivAt_baseSet
 
+-- porting note: was @[simp, mfld_simps], now `simp` can prove it
+theorem mk_mem_localTrivAt_source : (⟨b, a⟩ : Z.TotalSpace) ∈ (Z.localTrivAt b).source := by
+  simp only [mfld_simps]
+#align fiber_bundle_core.mem_source_at FiberBundleCore.mem_localTrivAt_source
+
 /-- A fiber bundle constructed from core is indeed a fiber bundle. -/
 instance fiberBundle : FiberBundle F Z.Fiber where
   totalSpaceMk_inducing' b := inducing_iff_nhds.2 fun x ↦ by
-    rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mem_source_at _ _ _), comap_inf,
+    rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
     simp only [(· ∘ ·), localTrivAt_apply_mk, Trivialization.coe_coe,
       ← (embedding_prod_mk b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr
-      exact eq_univ_of_forall (mem_source_at Z _)
+      exact eq_univ_of_forall (mk_mem_localTrivAt_source Z _)
     · rw [principal_univ, inf_top_eq]
   trivializationAtlas' := Set.range Z.localTriv
   trivializationAt' := Z.localTrivAt
