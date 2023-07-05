@@ -863,48 +863,88 @@ theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (
   (isClopen_iff.mp h').resolve_left h.ne_empty
 #align is_clopen.eq_univ IsClopen.eq_univ
 
-/-- In a preconnected space, any finite disjoint cover of non-empty closed subsets has at most one
+section disjoint_subsets
+
+variable {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+
+/-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/
-lemma Subsingleton_of_closed_disjoint_Union_eq_univ [Finite ι] [PreconnectedSpace α] {s : ι → Set α}
-    (h_nonempty : ∀ i, (s i).Nonempty)
-    (h_closed : ∀ i, IsClosed (s i))
-    (h_disj : Pairwise (Disjoint on s))
-    (h_Union : (⋃ i, s i) = univ) :
+lemma Subsingleton_of_Disjoint_IsClopen [PreconnectedSpace α]
+    (h_clopen : ∀ i, IsClopen (s i)) :
     Subsingleton ι := by
   replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
-  have h_clop : ∀ i, IsClopen (s i) := by
-    refine' fun i ↦ ⟨_, h_closed i⟩
-    rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
-    refine' isClosed_iUnion (fun j ↦ _)
-    rcases eq_or_ne i j with rfl | h_ne
-    · simp
-    · rw [(h_disj h_ne.symm).sdiff_eq_left]
-      exact h_closed j
   rw [← not_nontrivial_iff_subsingleton]
   by_contra contra
   obtain ⟨i, j, h_ne⟩ := contra
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
-  cases' isClopen_iff.mp (h_clop i) with hi hi
+  cases' isClopen_iff.mp (h_clopen i) with hi hi
   · exact h_nonempty i hi
   · rw [hi, univ_inter] at h_ne
     exact h_nonempty j h_ne
 
-/-- In a connected space, any finite disjoint cover of non-empty closed subsets has exactly one
+/-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
 element. -/
+lemma Subsingleton_of_Disjoint_IsOpen_Union_eq_univ [PreconnectedSpace α]
+    (h_open : ∀ i, IsOpen (s i)) (h_Union : (⋃ i, s i) = univ) :
+    Subsingleton ι := by
+  refine' Subsingleton_of_Disjoint_IsClopen h_nonempty h_disj (fun i ↦ ⟨h_open i, _⟩)
+  rw [← isOpen_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  refine' isOpen_iUnion (fun j ↦ _)
+  rcases eq_or_ne i j with rfl | h_ne
+  · simp
+  · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
+
+/-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
+element. -/
+lemma Subsingleton_of_Disjoint_IsClosed_Union_eq_univ [Finite ι] [PreconnectedSpace α]
+    (h_closed : ∀ i, IsClosed (s i)) (h_Union : (⋃ i, s i) = univ) :
+    Subsingleton ι := by
+  refine' Subsingleton_of_Disjoint_IsClopen h_nonempty h_disj (fun i ↦ ⟨_, h_closed i⟩)
+  rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  refine' isClosed_iUnion (fun j ↦ _)
+  rcases eq_or_ne i j with rfl | h_ne
+  · simp
+  · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_closed j
+
+/-- In a connected space, any disjoint cover by non-empty clopen subsets has exactly one element. -/
 noncomputable
-def Unique_of_closed_disjoint_Union_eq_univ [Finite ι] [ConnectedSpace α] {s : ι → Set α}
-    (h_nonempty : ∀ i, (s i).Nonempty)
-    (h_closed : ∀ i, IsClosed (s i))
-    (h_disj : Pairwise (Disjoint on s))
-    (h_Union : (⋃ i, s i) = univ) :
+def Unique_of_IsClopen_Disjoint_Union_eq_univ [ConnectedSpace α]
+    (h_clopen : ∀ i, IsClopen (s i)) (h_Union : (⋃ i, s i) = univ) :
     Unique ι := by
   suffices : Inhabited ι
-  · have _i := Subsingleton_of_closed_disjoint_Union_eq_univ h_nonempty h_closed h_disj h_Union
+  · have _i := Subsingleton_of_Disjoint_IsClopen h_nonempty h_disj h_clopen
     exact uniqueOfSubsingleton default
   have := mem_univ (Classical.choice (inferInstance : Nonempty α))
   rw [← h_Union, mem_iUnion] at this
   exact ⟨Classical.choose this⟩
+
+/-- In a connected space, any disjoint cover by non-empty open subsets has exactly one element. -/
+noncomputable
+def Unique_of_IsOpen_Disjoint_Union_eq_univ [ConnectedSpace α]
+    (h_open : ∀ i, IsOpen (s i)) (h_Union : (⋃ i, s i) = univ) :
+    Unique ι := by
+  suffices : Inhabited ι
+  · have _i := Subsingleton_of_Disjoint_IsOpen_Union_eq_univ h_nonempty h_disj h_open h_Union
+    exact uniqueOfSubsingleton default
+  have := mem_univ (Classical.choice (inferInstance : Nonempty α))
+  rw [← h_Union, mem_iUnion] at this
+  exact ⟨Classical.choose this⟩
+
+/-- In a connected space, any finite disjoint cover by non-empty closed subsets has exactly one
+element. -/
+noncomputable
+def Unique_of_IsClosed_Disjoint_Union_eq_univ [Finite ι] [ConnectedSpace α]
+    (h_closed : ∀ i, IsClosed (s i)) (h_Union : (⋃ i, s i) = univ) :
+    Unique ι := by
+  suffices : Inhabited ι
+  · have _i := Subsingleton_of_Disjoint_IsClosed_Union_eq_univ h_nonempty h_disj h_closed h_Union
+    exact uniqueOfSubsingleton default
+  have := mem_univ (Classical.choice (inferInstance : Nonempty α))
+  rw [← h_Union, mem_iUnion] at this
+  exact ⟨Classical.choose this⟩
+
+end disjoint_subsets
 
 theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
     frontier s = ∅ ↔ s = ∅ ∨ s = univ :=
