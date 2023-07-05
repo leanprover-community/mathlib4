@@ -13,6 +13,7 @@ import Mathlib.Logic.Equiv.TransferInstance
 noncomputable section
 
 -- FIXME: here and below, why doesn't `to_additive` work?
+-- We're waiting on the fix for https://github.com/leanprover/lean4/issues/2077 to arrive.
 
 instance [Zero α] [Small α] : Zero (Shrink α) := (equivShrink _).symm.zero
 
