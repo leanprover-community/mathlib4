@@ -1689,7 +1689,7 @@ theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
   obtain ⟨e, rfl⟩ := Set.Countable.exists_eq_range hSc hne
   simp only [forall_range_iff] at hSm hS
   refine ⟨fun x n ↦ x ∈ e n, ?_, ?_⟩
-  . rw [measurable_pi_iff]
+  · rw [measurable_pi_iff]
     intro n
     apply measurable_to_bool
     simp only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq]
