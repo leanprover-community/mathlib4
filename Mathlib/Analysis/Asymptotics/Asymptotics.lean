@@ -128,17 +128,11 @@ theorem isBigO_iff' {g : α → E'''} :
   case mp =>
     rw [isBigO_iff] at h
     obtain ⟨c, hc⟩ := h
-    by_cases hpos : 0 < c
-    case pos => exact ⟨c, ⟨hpos, hc⟩⟩
-    case neg =>
-      push_neg at hpos
-      refine ⟨1, ⟨by norm_num, ?_⟩⟩
-      filter_upwards [hc] with x hx
-      have : ‖f x‖ ≤ 0 * ‖g x‖ := calc
-        ‖f x‖ ≤ c * ‖g x‖     := by exact hx
-            _ ≤ 0 * ‖g x‖     := by gcongr
-      calc ‖f x‖ ≤ 0 * ‖g x‖    := by exact this
-               _ ≤ 1 * ‖g x‖    := by gcongr; norm_num
+    refine' ⟨max c 1, zero_lt_one.trans_le (le_max_right _ _), _⟩
+    filter_upwards [hc] with x hx
+    apply hx.trans
+    gcongr
+    exact le_max_left _ _
   case mpr =>
     rw [isBigO_iff]
     obtain ⟨c, ⟨_, hc⟩⟩ := h
