@@ -203,7 +203,8 @@ theorem trivializationAt_eq_localTriv (x : M) :
 
 @[simp, mfld_simps]
 theorem trivializationAt_source (x : M) :
-    (trivializationAt E (TangentSpace I) x).source = π _ _ ⁻¹' (chartAt H x).source :=
+    (trivializationAt E (TangentSpace I) x).source =
+      π E (tangent_space I) ⁻¹' (chartAt H x).source :=
   rfl
 #align tangent_bundle.trivialization_at_source TangentBundle.trivializationAt_source
 

@@ -227,6 +227,7 @@ theorem symm_trans_target_eq (e e' : Pretrivialization F proj) :
 
 variable (e' : Pretrivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
 
+@[simp]
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 #align pretrivialization.coe_mem_source Pretrivialization.coe_mem_source

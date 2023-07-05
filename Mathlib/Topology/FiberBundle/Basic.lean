@@ -17,11 +17,9 @@ Mathematically, a (topological) fiber bundle with fiber `F` over a base `B` is a
 `B` for which the fibers are all homeomorphic to `F`, such that the local situation around each
 point is a direct product.
 
-In our formalism, a fiber bundle is by definition the type
-`Bundle.TotalSpace E` where `E : B → Type*` is a function associating to
-`x : B` the fiber over `x`. This type `Bundle.TotalSpace E` is just a type synonym for
-`Σ (x : B), E x`, with the interest that one can put another topology than on `Σ (x : B), E x`
-which has the disjoint union topology.
+In our formalism, a fiber bundle is by definition the type `Bundle.TotalSpace F E` where
+`E : B → Type _` is a function associating to `x : B` the fiber over `x`. This type
+`Bundle.TotalSpace F E` is a type of pairs `⟨proj : B, snd : E proj⟩`.
 
 To have a fiber bundle structure on `Bundle.TotalSpace E`, one should
 additionally have the following data:
@@ -54,19 +52,18 @@ fiber bundle from trivializations given as local equivalences with minimum addit
 
 ### Construction of a bundle from trivializations
 
-* `Bundle.TotalSpace E` is a type synonym for `Σ (x : B), E x`, that we can endow with a suitable
-  topology.
+* `Bundle.TotalSpace F E` is the type of pairs `(proj : B, snd : E proj)`. We can use the extra
+  argument `F` to construct topology on the total space.
 * `FiberBundleCore ι B F` : structure registering how changes of coordinates act
   on the fiber `F` above open subsets of `B`, where local trivializations are indexed by `ι`.
 
 Let `Z : FiberBundleCore ι B F`. Then we define
 
 * `Z.Fiber x`     : the fiber above `x`, homeomorphic to `F` (and defeq to `F` as a type).
-* `Z.TotalSpace` : the total space of `Z`, defined as a `Type` as `Σ (b : B), F`, but with a
-  twisted topology coming from the fiber bundle structure. It is (reducibly) the same as
-  `Bundle.TotalSpace Z.Fiber`.
+* `Z.TotalSpace`  : the total space of `Z`, defined as `Bundle.TotalSpace F Z.fiber` with a custom
+                    topology.
 * `Z.proj`        : projection from `Z.TotalSpace` to `B`. It is continuous.
-* `Z.localTriv i`: for `i : ι`, bundle trivialization above the set `Z.baseSet i`, which is an
+* `Z.localTriv i` : for `i : ι`, bundle trivialization above the set `Z.baseSet i`, which is an
                     open set in `B`.
 
 * `FiberPrebundle F E` : structure registering a cover of prebundle trivializations
@@ -155,8 +152,8 @@ choose for each `x` one specific trivialization around it. We include this choic
 of the `FiberBundleCore`, as it makes some constructions more
 functorial and it is a nice way to say that the trivializations cover the whole space `B`.
 
-With this definition, the type of the fiber bundle space constructed from the core data is just
-`Σ (b : B), F `, but the topology is not the product one, in general.
+With this definition, the type of the fiber bundle space constructed from the core data is
+`Bundle.TotalSpace F (fun b : B ↦ F)`, but the topology is not the product one, in general.
 
 We also take the indexing type (indexing all the trivializations) as a parameter to the fiber bundle
 core: it could always be taken as a subtype of all the maps from open subsets of `B` to continuous
@@ -438,8 +435,7 @@ instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
 #align fiber_bundle_core.topological_space_fiber FiberBundleCore.topologicalSpaceFiber
 
 /-- The total space of the fiber bundle, as a convenience function for dot notation.
-It is by definition equal to `Bundle.TotalSpace Z.Fiber`, a.k.a. `Σ x, Z.Fiber x` but with a
-different name for typeclass inference. -/
+It is by definition equal to `Bundle.TotalSpace Z.fiber`. -/
 @[reducible]
 def TotalSpace := Bundle.TotalSpace F Z.Fiber
 #align fiber_bundle_core.total_space FiberBundleCore.TotalSpace

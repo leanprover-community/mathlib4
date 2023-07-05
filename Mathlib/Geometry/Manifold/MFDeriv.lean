@@ -757,19 +757,9 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
 #align tangent_map_within_proj tangentMapWithin_proj
 
 @[simp, mfld_simps]
-theorem tangentMapWithin_fst {p : TangentBundle I M} : (tangentMapWithin I I' f s p).1 = f p.1 :=
-  rfl
-#align tangent_map_within_fst tangentMapWithin_fst
-
-@[simp, mfld_simps]
 theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f p.proj :=
   rfl
 #align tangent_map_proj tangentMap_proj
-
-@[simp, mfld_simps]
-theorem tangentMap_fst {p : TangentBundle I M} : (tangentMap I I' f p).1 = f p.1 :=
-  rfl
-#align tangent_map_fst tangentMap_fst
 
 theorem MDifferentiableWithinAt.prod_mk {f : M → M'} {g : M → M''}
     (hf : MDifferentiableWithinAt I I' f s x) (hg : MDifferentiableWithinAt I I'' g s x) :
