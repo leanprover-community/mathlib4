@@ -60,7 +60,7 @@ section contractLeft
 variable (d d' : Module.Dual R M)
 
 /-- Auxiliary construction for `clifford_algebra.contract_left` -/
-@[simps]
+@[simps!]
 def contractLeftAux (d : Module.Dual R M) :
     M →ₗ[R] CliffordAlgebra Q × CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
@@ -126,27 +126,33 @@ local infixl:70 "⌋" => contractLeft (R := R) (M := M)
 
 local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
 
+-- Porting note: Lean needs to be reminded of this instance otherwise the statement of the
+-- next result times out
+instance : SMul R (CliffordAlgebra Q) := inferInstance
+
 /-- This is [grinberg_clifford_2016][] Theorem 6  -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
-    d⌋(ι Q a * b) = d a • b - ι Q a * (d⌋b) :=
-  foldr'_ι_mul _ _ _ _ _ _
+    d⌋(ι Q a * b) = d a • b - ι Q a * (d⌋b) := by
+-- Porting note: Lean cannot figure out anymore the third argument
+  refine foldr'_ι_mul _ _ ?_ _ _ _
+  exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_ι_mul CliffordAlgebra.contractLeft_ι_mul
 
 /-- This is [grinberg_clifford_2016][] Theorem 12  -/
 theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) : b * ι Q a⌊d = d a • b - b⌊d * ι Q a :=
   by
-  rw [contract_right_eq, reverse.map_mul, reverse_ι, contract_left_ι_mul, map_sub, map_smul,
-    reverse_reverse, reverse.map_mul, reverse_ι, contract_right_eq]
+  rw [contractRight_eq, reverse.map_mul, reverse_ι, contractLeft_ι_mul, map_sub, map_smul,
+    reverse_reverse, reverse.map_mul, reverse_ι, contractRight_eq]
 #align clifford_algebra.contract_right_mul_ι CliffordAlgebra.contractRight_mul_ι
 
 theorem contractLeft_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :
     d⌋(algebraMap _ _ r * b) = algebraMap _ _ r * (d⌋b) := by
-  rw [← Algebra.smul_def, map_smul, Algebra.smul_def]
+  rw [← Algebra.smul_def, map_smul, Algebra.smul_def, Algebra.smul_def]
 #align clifford_algebra.contract_left_algebra_map_mul CliffordAlgebra.contractLeft_algebraMap_mul
 
 theorem contractLeft_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
     d⌋(a * algebraMap _ _ r) = d⌋a * algebraMap _ _ r := by
-  rw [← Algebra.commutes, contractLeft_algebraMap_mul, Algebra.commutes]
+  rw [← Algebra.commutes, contractLeft_algebraMap_mul, Algebra.commutes, Algebra.commutes]
 #align clifford_algebra.contract_left_mul_algebra_map CliffordAlgebra.contractLeft_mul_algebraMap
 
 theorem contractRight_algebraMap_mul (r : R) (b : CliffordAlgebra Q) :
@@ -162,10 +168,12 @@ theorem contractRight_mul_algebraMap (a : CliffordAlgebra Q) (r : R) :
 variable (Q)
 
 @[simp]
-theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) :=
-  (foldr'_ι _ _ _ _ _).trans <| by
+theorem contractLeft_ι (x : M) : d⌋ι Q x = algebraMap R _ (d x) := by
+-- Porting note: Lean cannot figure out anymore the third argument
+  refine (foldr'_ι _ _ ?_ _ _).trans <| by
     simp_rw [contractLeftAux_apply_apply, MulZeroClass.mul_zero, sub_zero,
       Algebra.algebraMap_eq_smul_one]
+  exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_ι CliffordAlgebra.contractLeft_ι
 
 @[simp]
@@ -174,8 +182,10 @@ theorem contractRight_ι (x : M) : ι Q x⌊d = algebraMap R _ (d x) := by
 #align clifford_algebra.contract_right_ι CliffordAlgebra.contractRight_ι
 
 @[simp]
-theorem contractLeft_algebraMap (r : R) : d⌋algebraMap R (CliffordAlgebra Q) r = 0 :=
-  (foldr'_algebraMap _ _ _ _ _).trans <| smul_zero _
+theorem contractLeft_algebraMap (r : R) : d⌋algebraMap R (CliffordAlgebra Q) r = 0 := by
+-- Porting note: Lean cannot figure out anymore the third argument
+  refine (foldr'_algebraMap _ _ ?_ _ _).trans <| smul_zero _
+  exact fun m x fx ↦ contractLeftAux_contractLeftAux Q d m x fx
 #align clifford_algebra.contract_left_algebra_map CliffordAlgebra.contractLeft_algebraMap
 
 @[simp]
@@ -200,8 +210,7 @@ theorem contractLeft_contractLeft (x : CliffordAlgebra Q) : d⌋(d⌋x) = 0 := b
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [contractLeft_algebraMap, map_zero]
   · rw [map_add, map_add, hx, hy, add_zero]
-  ·
-    rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, LinearMap.map_smul,
+  · rw [contractLeft_ι_mul, map_sub, contractLeft_ι_mul, hx, LinearMap.map_smul,
       MulZeroClass.mul_zero, sub_zero, sub_self]
 #align clifford_algebra.contract_left_contract_left CliffordAlgebra.contractLeft_contractLeft
 
@@ -235,7 +244,7 @@ local infixl:70 "⌋" => contractLeft
 local infixl:70 "⌊" => contractRight
 
 /-- Auxiliary construction for `clifford_algebra.change_form` -/
-@[simps]
+@[simps!]
 def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   v_mul - contractLeft ∘ₗ (BilinForm.toLin B)
@@ -245,7 +254,7 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
     changeFormAux Q B v (changeFormAux Q B v x) = (Q v - B v v) • x := by
   simp only [changeFormAux_apply_apply]
   rw [mul_sub, ← mul_assoc, ι_sq_scalar, map_sub, contractLeft_ι_mul, ← sub_add, sub_sub_sub_comm,
-    ← Algebra.smul_def, BilinForm.toLin_apply, sub_self, sub_zero, contract_left_contract_left,
+    ← Algebra.smul_def, BilinForm.toLin_apply, sub_self, sub_zero, contractLeft_contractLeft,
     add_zero, sub_smul]
 #align clifford_algebra.change_form_aux_change_form_aux CliffordAlgebra.changeFormAux_changeFormAux
 
@@ -263,7 +272,7 @@ def changeForm (h : B.toQuadraticForm = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cl
   foldr Q (changeFormAux Q' B)
     (fun m x =>
       (changeFormAux_changeFormAux Q' B m x).trans <| by
-        dsimp [← BilinForm.toQuadraticForm_apply]
+        dsimp only [← BilinForm.toQuadraticForm_apply]
         rw [h, QuadraticForm.sub_apply, sub_sub_cancel])
     1
 #align clifford_algebra.change_form CliffordAlgebra.changeForm
