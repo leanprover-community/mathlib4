@@ -40,6 +40,8 @@ structure AlgebraCat where
 
 attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
 
+initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
+
 namespace AlgebraCat
 
 instance : CoeSort (AlgebraCat R) (Type v) :=
@@ -161,10 +163,6 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     erw [FreeAlgebra.lift_ι_apply, FreeAlgebra.lift_ι_apply]
     rfl
 #align Algebra.free AlgebraCat.free
-
--- initialize_simps_projections AlgebraCat (free_obj_isRing_nsmul → simps.free_obj_isRing_nsmul)
-
--- initialize_simps_projections AlgebraCat (free_obj_isAlgebra_toFun → simps.free_obj_isAlgebra_toFun)
 
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
