@@ -18,21 +18,22 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C⬝A⁻¹⬝B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the the file `cateogry_theory.preadditive.biproducts`,
-especially the declarations `category_theory.biprod.gaussian` and `category_theory.biprod.iso_elim`.
-Compare with `matrix.invertible_of_from_blocks₁₁_invertible`.
+results in this direction can be found in the the file `CateogryTheory.Preadditive.Biproducts`,
+especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
+Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
 ## Main results
 
- * `matrix.det_from_blocks₁₁`, `matrix.det_from_blocks₂₂`: determinant of a block matrix in terms of
+ * `Matrix.det_fromBlocks₁₁`, `Matrix.det_fromBlocks₂₂`: determinant of a block matrix in terms of
    the Schur complement.
- * `matrix.inv_of_from_blocks_zero₂₁_eq`, `matrix.inv_of_from_blocks_zero₁₂_eq`: the inverse of a
+ * `Matrix.invOf_fromBlocks_zero₂₁_eq`, `Matrix.invOf_fromBlocks_zero₁₂_eq`: the inverse of a
    block triangular matrix.
- * `matrix.is_unit_from_blocks_zero₂₁`, `matrix.is_unit_from_blocks_zero₁₂`: invertibility of a
+ * `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
    block triangular matrix.
- * `matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
- * `matrix.schur_complement_pos_semidef_iff` : If a matrix `A` is positive definite, then
-  `[A B; Bᴴ D]` is postive semidefinite if and only if `D - Bᴴ A⁻¹ B` is postive semidefinite.
+ * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
+ * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
+  positive definite, then `[A B; Bᴴ D]` is postive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
+  postive semidefinite.
 
 -/
 
@@ -155,7 +156,7 @@ def invertibleOfFromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n
         this
 #align matrix.invertible_of_from_blocks_zero₁₂_invertible Matrix.invertibleOfFromBlocksZero₁₂Invertible
 
-/-- `invertibleOfFromBlocksZero₂₁Invertible` and `from_blocks_zero₂₁_invertible` form
+/-- `invertibleOfFromBlocksZero₂₁Invertible` and `Matrix.fromBlocksZero₂₁Invertible` form
 an equivalence. -/
 def fromBlocksZero₂₁InvertibleEquiv (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α) :
     Invertible (fromBlocks A B 0 D) ≃ Invertible A × Invertible D where
@@ -168,7 +169,7 @@ def fromBlocksZero₂₁InvertibleEquiv (A : Matrix m m α) (B : Matrix m n α) 
   right_inv _ := Subsingleton.elim _ _
 #align matrix.from_blocks_zero₂₁_invertible_equiv Matrix.fromBlocksZero₂₁InvertibleEquiv
 
-/-- `invertibleOfFromBlocksZero₁₂Invertible` and `from_blocks_zero₁₂_invertible` form
+/-- `invertibleOfFromBlocksZero₁₂Invertible` and `Matrix.fromBlocksZero₁₂Invertible` form
 an equivalence. -/
 def fromBlocksZero₁₂InvertibleEquiv (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α) :
     Invertible (fromBlocks A 0 C D) ≃ Invertible A × Invertible D where
@@ -183,7 +184,7 @@ def fromBlocksZero₁₂InvertibleEquiv (A : Matrix m m α) (C : Matrix n m α) 
 
 /-- An upper block-triangular matrix is invertible iff both elements of its diagonal are.
 
-This is a propositional form of `matrix.from_blocks_zero₂₁_invertible_equiv`. -/
+This is a propositional form of `Matrix.fromBlocksZero₂₁InvertibleEquiv`. -/
 @[simp]
 theorem isUnit_fromBlocks_zero₂₁ {A : Matrix m m α} {B : Matrix m n α} {D : Matrix n n α} :
     IsUnit (fromBlocks A B 0 D) ↔ IsUnit A ∧ IsUnit D := by
@@ -193,7 +194,7 @@ theorem isUnit_fromBlocks_zero₂₁ {A : Matrix m m α} {B : Matrix m n α} {D 
 
 /-- A lower block-triangular matrix is invertible iff both elements of its diagonal are.
 
-This is a propositional form of  `matrix.from_blocks_zero₁₂_invertible_equiv` forms an `iff`. -/
+This is a propositional form of  `Matrix.fromBlocksZero₁₂InvertibleEquiv` forms an `iff`. -/
 @[simp]
 theorem isUnit_fromBlocks_zero₁₂ {A : Matrix m m α} {C : Matrix n m α} {D : Matrix n n α} :
     IsUnit (fromBlocks A 0 C D) ↔ IsUnit A ∧ IsUnit D := by
@@ -265,7 +266,7 @@ def fromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
     exact
       Invertible.matrixMul (fromBlocksZero₂₁Invertible _ _ _)
         (fromBlocksZero₂₁Invertible _ _ _)
-  · -- unfold the `invertible` instances to get the raw factors
+  · -- unfold the `Invertible` instances to get the raw factors
     show
       _ =
         fromBlocks 1 0 (-1 ⬝ (⅟ D ⬝ C) ⬝ 1) 1 ⬝
@@ -344,7 +345,7 @@ def invertibleOfFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n �
   refine' invertibleOfFromBlocks₂₂Invertible D C B A
 #align matrix.invertible_of_from_blocks₁₁_invertible Matrix.invertibleOfFromBlocks₁₁Invertible
 
-/-- `matrix.invertible_of_from_blocks₂₂_invertible` and `matrix.from_blocks₂₂_invertible` as an
+/-- `Matrix.invertibleOfFromBlocks₂₂Invertible` and `Matrix.fromBlocks₂₂Invertible` as an
 equivalence. -/
 def invertibleEquivFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] :
@@ -355,7 +356,7 @@ def invertibleEquivFromBlocks₂₂Invertible (A : Matrix m m α) (B : Matrix m 
   right_inv _i_schur := Subsingleton.elim _ _
 #align matrix.invertible_equiv_from_blocks₂₂_invertible Matrix.invertibleEquivFromBlocks₂₂Invertible
 
-/-- `matrix.invertible_of_from_blocks₁₁_invertible` and `matrix.from_blocks₁₁_invertible` as an
+/-- `Matrix.invertibleOfFromBlocks₁₁Invertible` and `Matrix.fromBlocks₁₁Invertible` as an
 equivalence. -/
 def invertibleEquivFromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] :
@@ -386,7 +387,7 @@ theorem isUnit_fromBlocks_iff_of_invertible₁₁ {A : Matrix m m α} {B : Matri
 
 end Block
 
-/-! ### Lemmas about `matrix.det` -/
+/-! ### Lemmas about `Matrix.det` -/
 
 
 section Det
