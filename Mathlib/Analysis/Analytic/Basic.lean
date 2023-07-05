@@ -1379,6 +1379,16 @@ theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
   exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.analyticAt_of_mem hy
 #align is_open_analytic_at isOpen_analyticAt
 
+variable {𝕜}
+
+theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
+(isOpen_analyticAt 𝕜 f).mem_nhds h
+
+theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+    ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
+h.eventually_analyticAt.exists_mem
+
 end
 
 section
