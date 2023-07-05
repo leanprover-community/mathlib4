@@ -51,7 +51,7 @@ Weak-head normal form is when the outer-most expression has been fully reduced, 
 may contain subexpressions which have not been reduced.
 -/
 elab "whnf" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic Meta.whnf loc? "whnf"
+  runDefeqTactic whnf loc? "whnf"
 
 
 /-! ### `beta_reduce` -/
@@ -80,21 +80,24 @@ This also exists as a `conv`-mode tactic.
 This does the same transformation at the `#reduce` command.
 -/
 elab "reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
-  runDefeqTactic (Meta.reduce · (skipTypes := false) (skipProofs := false)) loc? "reduce"
+  runDefeqTactic (reduce · (skipTypes := false) (skipProofs := false)) loc? "reduce"
 
 
 /-! ### `unfold_let` -/
 
 /-- Unfold all the fvars from `fvars` in `e` that have local definitions (are "let-bound"). -/
 def unfoldFVars (fvars : Array FVarId) (e : Expr) : MetaM Expr := do
-  transform (usedLetOnly := true) e fun node =>
+  transform (usedLetOnly := true) e fun node => do
     match node with
     | .fvar fvarId =>
       if fvars.contains fvarId then
-        (TransformStep.continue ·) <$> (fvarId.getValue? >>= Option.mapM instantiateMVars)
+        if let some val ← fvarId.getValue? then
+          return .visit (← instantiateMVars val)
+        else
+          return .continue
       else
-        pure TransformStep.continue
-    | _ => pure TransformStep.continue
+        return .continue
+    | _ => return .continue
 
 /--
 `unfold_let x y z at loc` unfolds the local definitions `x`, `y`, and `z` at the given
@@ -111,7 +114,7 @@ syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
 
 elab_rules : tactic
   | `(tactic| unfold_let $[$loc?]?) =>
-    runDefeqTactic Meta.zetaReduce loc? "unfold_let"
+    runDefeqTactic zetaReduce loc? "unfold_let"
   | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
     runDefeqTactic (unfoldFVars (← getFVarIds hs)) loc? "unfold_let"
 
@@ -119,7 +122,7 @@ syntax "unfold_let" (ppSpace colGt term:max)* : conv
 
 @[inherit_doc unfoldLetStx]
 elab_rules : conv
-  | `(conv| unfold_let) => runDefeqConvTactic Meta.zetaReduce
+  | `(conv| unfold_let) => runDefeqConvTactic zetaReduce
   | `(conv| unfold_let $hs:term*) => do
     runDefeqConvTactic (unfoldFVars (← getFVarIds hs))
 
@@ -127,18 +130,12 @@ elab_rules : conv
 /-! ### `unfold_projs` -/
 
 /-- Recursively unfold all the projection applications for class instances. -/
-def unfoldProjs (e : Expr) (gas : Nat := 100) : MetaM Expr := do
-  let rec loop (e : Expr) (gas : Nat) : MetaM Expr :=
-    match gas with
-    | 0 => return e
-    | gas' + 1 => do
-      let e' ← transform e fun node => do
-        (TransformStep.continue ·) <$> (Meta.unfoldProjInst? node >>= Option.mapM instantiateMVars)
-      if e == e' then
-        return e
-      else
-        loop e' gas'
-  loop e gas
+def unfoldProjs (e : Expr) : MetaM Expr := do
+  transform e fun node => do
+    if let some node' ← unfoldProjInst? node then
+      return .visit (← instantiateMVars node')
+    else
+      return .continue
 
 /--
 `unfold_projs at loc` unfolds projections of class instances at the given location.
@@ -155,7 +152,7 @@ elab "unfold_projs" : conv => runDefeqConvTactic unfoldProjs
 
 /-- Eta reduce everything -/
 def etaReduceAll (e : Expr) : MetaM Expr := do
-  transform e fun node => pure <| TransformStep.continue node.etaExpanded?
+  transform e fun node => pure <| .continue node.etaExpanded?
 
 /--
 `eta_reduce at loc` eta reduces all sub-expressions at the given location.
@@ -168,6 +165,7 @@ elab (name := etaReduceStx) "eta_reduce" loc?:(ppSpace Parser.Tactic.location)? 
 
 @[inherit_doc etaReduceStx]
 elab "eta_reduce" : conv => runDefeqConvTactic etaReduceAll
+
 
 /-! ### `eta_expand` -/
 
@@ -188,10 +186,10 @@ partial def etaExpandAll (e : Expr) : MetaM Expr := do
       if node.isApp then
         let f ← etaExpandAll node.getAppFn
         let args ← node.getAppArgs.mapM etaExpandAll
-        TransformStep.done <$> expand (betaOrApp f args)
+        .done <$> expand (betaOrApp f args)
       else
-        pure TransformStep.continue)
-    (post := (TransformStep.done <$> expand ·))
+        pure .continue)
+    (post := (.done <$> expand ·))
 
 /--
 `eta_expand at loc` eta expands all sub-expressions at the given location.
@@ -209,5 +207,66 @@ elab (name := etaExpandStx) "eta_expand" loc?:(ppSpace Parser.Tactic.location)? 
 
 @[inherit_doc etaExpandStx]
 elab "eta_expand" : conv => runDefeqConvTactic etaExpandAll
+
+
+/-! ### `eta_struct` -/
+
+/-- Given an expression that's either a native projection or a registered projection
+function, gives (1) the name of the structure type, (2) the index of the projection, and
+(3) the object being projected. -/
+def getProjectedExpr (e : Expr) : MetaM (Option (Name × Nat × Expr)) := do
+  if let .proj S i x := e then
+    return (S, i, x)
+  if let .const fn _ := e.getAppFn then
+    if let some info ← getProjectionFnInfo? fn then
+      if e.getAppNumArgs == info.numParams + 1 then
+        if let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? info.ctorName then
+          return (fVal.induct, info.i, e.appArg!)
+  return none
+
+/-- Checks if the expression is of the form `S.mk x.1 ... x.n` with `n` nonzero
+and `S.mk` a structure constructor and returns `x`.
+Each projection `x.i` can be either a native projection or from a projection function. -/
+def etaStruct? (e : Expr) : MetaM (Option Expr) := do
+  let .app _ lastArg := e | return none
+  let .const f _ := e.getAppFn | return none
+  let some (ConstantInfo.ctorInfo fVal) := (← getEnv).find? f | return none
+  unless e.getAppNumArgs == fVal.numParams + fVal.numFields do return none
+  unless isStructureLike (← getEnv) fVal.induct do return none
+  let some (S, _, x) ← getProjectedExpr lastArg | return none
+  unless S == fVal.induct do return none
+  let args := e.getAppArgs
+  for i in [0 : fVal.numFields] do
+    let arg := args[fVal.numParams + i]!
+    let some (S', i', x') ← getProjectedExpr arg | return none
+    unless S == S' && i == i' do return none
+    unless ← isDefEq x x' do return none
+  return x
+
+/-- Finds all occurrences of expressions of the form ``S.mk x.1 ... x.n` where `S.mk`
+is a structure constructor and replaces them by `x`.
+-/
+def etaStructAll (e : Expr) : MetaM Expr :=
+  transform e fun node => do
+    if let some node' ← etaStruct? node then
+      return .visit node'
+    else
+      return .continue
+
+/--
+`eta_struct at loc` transforms structure constructor applications such as `S.mk x.1 ... x.n`
+(pretty printed as, for example, `{a := x.a, b := x.b, ...}`) into `x`.
+This also exists as a `conv`-mode tactic.
+
+The transformation is known as eta reduction for structures, and it yields definitionally
+equal expressions.
+
+For example, for `x : α × β`, then `(x.1, x.2)` becomes `x`.
+-/
+elab (name := etaStructStx) "eta_struct" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
+  runDefeqTactic etaStructAll loc? "eta_struct"
+
+@[inherit_doc etaStructStx]
+elab "eta_struct" : conv => runDefeqConvTactic etaStructAll
 
 end Mathlib.Tactic

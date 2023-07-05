@@ -93,3 +93,18 @@ example : (fun (a : Nat) => 1 + a) 2 = (1 + ·) 2 := by
   eta_expand
   guard_target =ₛ 1 + 2 = 1 + 2
   rfl
+
+example (p : Nat × Nat) : (p.1, p.2) = (p.2, p.1) := by
+  eta_struct
+  guard_target =ₛ p = (p.2, p.1)
+  sorry
+
+example (p : Nat × Nat) : ((p.1, p.2).1, (p.1, p.2).2) = ((p.1, p.2).2, (p.1, p.2).1) := by
+  eta_struct
+  guard_target =ₛ p = (p.2, p.1)
+  sorry
+
+example (n : Fin 5) : n = ⟨n.1, n.2⟩ := by
+  eta_struct
+  guard_target =ₛ n = n
+  rfl
