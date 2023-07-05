@@ -8,7 +8,7 @@ Authors: Pierre-Alexandre Bazin
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Module.Pid
+import Mathlib.Algebra.Module.PID
 import Mathlib.Data.ZMod.Quotient
 
 /-!
@@ -32,15 +32,15 @@ namespace Module
 variable (M : Type u)
 
 theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ M]
-    (hM : Module.IsTorsion ℤ M) : Finite M := by
+    (hM : Module.IsTorsion ℤ M) : _root_.Finite M := by
   rcases Module.equiv_directSum_of_isTorsion hM with ⟨ι, _, p, h, e, ⟨l⟩⟩
   haveI : ∀ i : ι, NeZero (p i ^ e i).natAbs := fun i =>
-    ⟨Int.natAbs_ne_zero_of_ne_zero <| pow_ne_zero (e i) (h i).NeZero⟩
-  haveI : ∀ i : ι, _root_.finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i =>
+    ⟨Int.natAbs_ne_zero_of_ne_zero <| pow_ne_zero (e i) (h i).ne_zero⟩
+  haveI : ∀ i : ι, _root_.Finite <| ℤ ⧸ Submodule.span ℤ {p i ^ e i} := fun i =>
     Finite.of_equiv _ (p i ^ e i).quotientSpanEquivZMod.symm.toEquiv
-  haveI : _root_.finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
-    Finite.of_equiv _ dfinsupp.equiv_fun_on_fintype.symm
-  exact Finite.of_equiv _ l.symm.to_equiv
+  haveI : _root_.Finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
+    Finite.of_equiv _ Dfinsupp.equivFunOnFintype.symm
+  exact Finite.of_equiv _ l.symm.toEquiv
 #align module.finite_of_fg_torsion Module.finite_of_fg_torsion
 
 end Module
@@ -98,4 +98,3 @@ theorem finite_of_fG_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G
 #align comm_group.finite_of_fg_torsion CommGroup.finite_of_fG_torsion
 
 end CommGroup
-
