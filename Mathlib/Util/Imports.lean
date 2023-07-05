@@ -151,3 +151,30 @@ elab "#minimize_imports" : command => do
   let imports := (← getEnv).minimalRequiredModules.qsort Name.lt
     |>.toList.map (fun n => "import " ++ n.toString)
   logInfo <| Format.joinSep imports "\n"
+
+/--
+Find locations as high as possible in the import hierarchy
+where the named declaration could live.
+-/
+def Lean.Name.findHome (n : Name) : CoreM NameSet := do
+  let required ← n.requiredModules
+  let imports := (← getEnv).importGraph.transitiveClosure
+  let mut candidates : NameSet := {}
+  for (n, i) in imports do
+    if required.all fun r => n == r || i.contains r then
+      candidates := candidates.insert n
+  for c in candidates do
+    for i in candidates do
+      if imports.find? i |>.getD {} |>.contains c then
+        candidates := candidates.erase i
+  return candidates
+
+open Elab in
+/--
+Find locations as high as possible in the import hierarchy
+where the named declaration could live.
+-/
+elab "#find_home" n:ident : command => do
+  let n ← resolveGlobalConstNoOverloadWithInfo n
+  for i in (← Elab.Command.liftCoreM do n.findHome) do
+    logInfo i
