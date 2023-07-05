@@ -98,7 +98,7 @@ def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m :
         let (_, m') ← m'.intro1
         m'.withContext do
           mapConstructor
-            cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) [] m'
+            cinfo.name type ad (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) [] m'
       else
         let (args, m') ← m'.introN cinfo.numFields
         m'.withContext do
@@ -107,7 +107,7 @@ def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m :
             let b ← et.occurs <$> inferType a
             return (b, a)
           mapConstructor
-            cinfo.name type ad (mkFVar f) (mkFVar α) (mkFVar β) (vars.concat (mkFVar β)) args₀ m'
+            cinfo.name type ad (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) args₀ m'
 
 def deriveFunctor (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
@@ -161,7 +161,7 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → MVarId → T
     (discard <| liftM (synthInstance tgt)) <|> do
       let m := (← mkFreshExprSyntheticOpaqueMVar tgt).mvarId!
       let (fvars, m') ← m.intros
-      tac decl.levelParams (fvars.toList.map mkFVar) m'
+      tac decl.levelParams (fvars.toList.map Expr.fvar) m'
       let val ← instantiateMVars (mkMVar m)
       let isUnsafe := decl.isUnsafe && clsDecl.isUnsafe
       let result ← m'.withContext <| do
@@ -210,7 +210,7 @@ def functorDeriveHandler : DerivingHandlerNoArgs :=
 
 initialize registerDerivingHandler ``Functor functorDeriveHandler
 
-def deriveLawfulFunctor (_ : List Name) (_ : List Expr) (m : MVarId) : TermElabM Unit := do
+def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let rules (l₁ : List (Name × Bool)) (l₂ : List (Name)) (b : Bool) : MetaM Simp.Context := do
     let mut s : SimpTheorems := {}
     s ← l₁.foldlM (fun s (n, b) => s.addConst n (inv := b)) s
@@ -241,107 +241,157 @@ def deriveLawfulFunctor (_ : List Name) (_ : List Expr) (m : MVarId) : TermElabM
       mcm.refl
 
 def lawfulFunctorDeriveHandler : DerivingHandlerNoArgs :=
-  higherOrderDeriveHandler ``LawfulFunctor deriveLawfulFunctor [functorDeriveHandler]
+  higherOrderDeriveHandler ``LawfulFunctor (fun _ _ => deriveLawfulFunctor) [functorDeriveHandler]
     (fun n arg => mkAppOptM n #[arg, none])
 
 initialize registerDerivingHandler ``LawfulFunctor lawfulFunctorDeriveHandler
 
-/-
-/-- `seq_apply_constructor f [x,y,z]` synthesizes `f <*> x <*> y <*> z` -/
-private meta def seq_apply_constructor :
-  expr → list (expr ⊕ expr) → tactic (list (tactic expr) × expr)
-| e (sum.inr x :: xs) :=
-    prod.map (cons intro1)   id <$> (to_expr ``(%%e <*> %%x) >>= flip seq_apply_constructor xs)
-| e (sum.inl x :: xs) := prod.map (cons $ pure x) id <$> seq_apply_constructor e xs
-| e [] := return ([],e)
-
-/-- ``nested_traverse f α (list (array n (list α)))`` synthesizes the expression
-`traverse (traverse (traverse f))`. `nested_traverse` assumes that `α` appears in
-`(list (array n (list α)))` -/
-meta def nested_traverse (f v : expr) : expr → tactic expr
-| t :=
-do t ← instantiate_mvars t,
-   mcond (succeeds $ is_def_eq t v)
-      (pure f)
-      (if ¬ v.occurs (t.app_fn)
-          then do
-            cl ← mk_app ``traversable [t.app_fn],
-            _inst ← mk_instance cl,
-            f' ← nested_traverse t.app_arg,
-            mk_mapp ``traversable.traverse [t.app_fn,_inst,none,none,none,none,f']
-          else fail format!"type {t} is not traversable with respect to variable {v}")
+/-- `nestedTraverse f α (List (Array (List α)))` synthesizes the expression
+`traverse (traverse (traverse f))`. `nestedTraverse` assumes that `α` appears in
+`(List (Array (List α)))` -/
+partial def nestedTraverse (f v t : Expr) : TermElabM Expr := do
+  let t ← instantiateMVars t
+  if ← withNewMCtxDepth <| isDefEq t v then
+    return f
+  else if !v.occurs t.appFn! then
+    let cl ← mkAppM ``Traversable #[t.appFn!]
+    let inst ← synthInstance cl
+    let f' ← nestedTraverse f v t.appArg!
+    mkAppOptM ``Traversable.traverse #[t.appFn!, inst, none, none, none, none, f']
+  else throwError "type {t} is not traversable with respect to variable {v}"
 
 /--
-For a sum type `inductive foo (α : Type) | foo1 : list α → ℕ → foo | ...`
-``traverse_field `foo appl_inst f `α `(x : list α)`` synthesizes
+For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
+``traverseField `foo f `α `(x : List α)`` synthesizes
 `traverse f x` as part of traversing `foo1`. -/
-meta def traverse_field (n : name) (appl_inst cl f v e : expr) : tactic (expr ⊕ expr) :=
-do t ← infer_type e >>= whnf,
-   if t.get_app_fn.const_name = n
-   then fail "recursive types not supported"
-   else if v.occurs t
-   then do f' ← nested_traverse f v t,
-           pure $ sum.inr $ f' e
-   else
-         (is_def_eq t.app_fn cl >> sum.inr <$> mk_app ``comp.mk [e])
-     <|> pure (sum.inl e)
+def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
+  let t ← whnf (← inferType e)
+  if t.getAppFn.constName = some n then
+    throwError "recursive types not supported"
+  else if v.occurs t then
+    let f' ← nestedTraverse f v t
+    return (true, f'.app e)
+  else if ←
+      (match t with
+        | .app t' _ => withNewMCtxDepth <| isDefEq t' cl
+        | _ => return false) then
+    Prod.mk true <$> mkAppM ``Comp.mk #[e]
+  else
+    return (false, e)
 
 /--
-For a sum type `inductive foo (α : Type) | foo1 : list α → ℕ → foo | ...`
-``traverse_constructor `foo1 `foo appl_inst f `α `β [`(x : list α), `(y : ℕ)]``
+For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
+``traverseConstructor `foo1 `foo ad applInst f `α `β [`(x : List α), `(y : ℕ)]``
 synthesizes `foo1 <$> traverse f x <*> pure y.` -/
-meta def traverse_constructor (c n : name) (appl_inst f α β : expr)
-  (args₀ : list expr)
-  (args₁ : list (bool × expr)) (rec_call : list expr) : tactic expr :=
-do g ← target,
-   args' ← mmap (traverse_field n appl_inst g.app_fn f α) args₀,
-   (_, args') ← mmap_accuml (λ (x : list expr) (y : bool × _),
-     if y.1 then pure (x.tail, sum.inr x.head)
-     else prod.mk x <$> traverse_field n appl_inst g.app_fn f α y.2) rec_call args₁,
-   constr ← mk_const c,
-   v ← mk_mvar,
-   constr' ← to_expr ``(@pure _ (%%appl_inst).to_has_pure _ %%v),
-   (vars_intro,r) ← seq_apply_constructor constr' (args₀.map sum.inl ++ args'),
-   gs ← get_goals,
-   set_goals [v],
-   vs ← vars_intro.mmap id,
-   tactic.exact (constr.mk_app vs),
-   done,
-   set_goals gs,
-   return r
+def traverseConstructor (c n : Name) (ad : Expr) (applInst f α β : Expr) (args₀ : List Expr)
+    (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
+  let g ← m.getType >>= instantiateMVars
+  let args' ← args₁.mapM (fun (y : Bool × Expr) =>
+      if y.1 then return (true, mkAppN ad #[g.appFn!, applInst, α, β, f, y.2])
+      else traverseField n g.appFn! f α y.2)
+  let gargs := args'.filterMap (fun y => if y.1 then some y.2 else none)
+  let v ← mkFunCtor c (args₀.map (fun e => (false, e)) ++ args') #[] #[]
+  let pureInst ← mkAppOptM ``Applicative.toPure #[none, applInst]
+  let constr' ← mkAppOptM ``Pure.pure #[none, pureInst, none, v]
+  let r ← gargs.foldlM
+      (fun e garg => mkAppM ``Seq.seq #[e, .lam `_ (.const ``Unit []) garg .default]) constr'
+  m.assign r
+where
+  mkFunCtor (c : Name) (args : List (Bool × Expr)) (fvars : Array Expr) (aargs : Array Expr) :
+      TermElabM Expr := do
+    match args with
+    | (true, x) :: xs =>
+      let n ← mkFreshUserName `x
+      let t ← inferType x
+      withLocalDecl n .default t.appArg! fun y => mkFunCtor c xs (fvars.push y) (aargs.push y)
+    | (false, x) :: xs => mkFunCtor c xs fvars (aargs.push x)
+    | [] => liftM <| mkAppOptM c (aargs.map some) >>= mkLambdaFVars fvars
 
-/-- derive the `traverse` definition of a `traversable` instance -/
-meta def mk_traverse (type : name) := do
-do ls ← local_context,
-   [m,appl_inst,α,β,f,x] ← tactic.intro_lst [`m,`appl_inst,`α,`β,`f,`x],
-   et ← infer_type x,
-   reset_instance_cache,
-   xs ← tactic.induction x,
-   xs.mmap'
-      (λ (x : name × list expr × list (name × expr)),
-      do let (c,args,_) := x,
-         (args,rec_call) ← args.mpartition $ λ e, (bnot ∘ β.occurs) <$> infer_type e,
-         args₀ ← args.mmap $ λ a, do { b ← et.occurs <$> infer_type a, pure (b,a) },
-         traverse_constructor c type appl_inst f α β (ls ++ [β]) args₀ rec_call >>= tactic.exact)
+/-- derive the `traverse` definition of a `Traversable` instance -/
+def mkTraverse (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m : MVarId) :
+    TermElabM Unit := do
+  let (#[_, applInst, α, β, f, x], m') ← m.introN 6 [`m, `applInst, `α, `β, `f, `x] | unreachable!
+  m'.withContext do
+    let et ← x.getType
+    let .inductInfo cinfo ← getConstInfo type | failure
+    let cinfos ← cinfo.ctors.mapM fun ctor => do
+      let .ctorInfo cinfo ← getConstInfo ctor | failure
+      return cinfo
+    let mn ← Lean.mkAuxName (type ++ "traverse" ++ "match") 1
+    let matchType ← mkArrow et (← m'.getType)
+    let motive ← forallBoundedTelescope matchType (some 1) fun xs body => mkLambdaFVars xs body
+    let lhss ← cinfos.mapM fun cinfo => do
+      let .ctorInfo cinfo ← getConstInfo cinfo.name | failure
+      let ls := levels.map Level.param
+      let vars' := vars.concat (.fvar α)
+      let ce := mkAppN (.const cinfo.name ls) vars'.toArray
+      let ct ← inferType ce
+      forallBoundedTelescope ct cinfo.numFields fun args _ => do
+        let fvarDecls ← args.toList.mapM fun arg => getFVarLocalDecl arg
+        let fields := args.toList.map fun arg => Pattern.var arg.fvarId!
+        let patterns := [Pattern.ctor cinfo.name ls vars' fields]
+        return { ref := .missing
+                 fvarDecls
+                 patterns }
+    let mres ← Term.mkMatcher
+      { matcherName := mn
+        matchType
+        discrInfos := #[{}]
+        lhss }
+    mres.addMatcher
+    let r := mkApp2 mres.matcher motive (.fvar x)
+    let ms' ← m'.apply r
+    let ms' := ms'.zip cinfos
+    ms'.forM fun (m', cinfo) => do
+      if cinfo.numFields = 0 then
+        let (_, m') ← m'.intro1
+        m'.withContext do
+          traverseConstructor
+            cinfo.name type ad (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
+            (vars.concat (.fvar β)) [] m'
+      else
+        let (args, m') ← m'.introN cinfo.numFields
+        m'.withContext do
+          let args := args.toList.map Expr.fvar
+          let args₀ ← args.mapM fun a => do
+            let b ← et.occurs <$> inferType a
+            return (b, a)
+          traverseConstructor
+            cinfo.name type ad (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
+            (vars.concat (.fvar β)) args₀ m'
 
-open applicative
+def deriveTraversable (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
+  let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
+  let some n := F.getAppFn.constName? | failure
+  let d ← getConstInfo n
+  let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(?_) })) | failure
+  let t ← m.getType >>= instantiateMVars
+  let n' := n ++ "traverse"
+  withAuxDecl "traverse" t n' fun ad => do
+    let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
+    mkTraverse n ad levels vars m'
+    let e ← instantiateMVars (mkMVar m')
+    let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
+    let e' ← mkLambdaFVars vars.toArray e
+    let t' ← mkForallFVars vars.toArray t
+    addPreDefinitions
+      #[{ ref := .missing
+          kind := .def
+          levelParams := levels
+          modifiers :=
+            { isUnsafe := d.isUnsafe
+              visibility := .protected }
+          declName := n'
+          type := t'
+          value := e' }] {}
+  m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
-meta def derive_traverse (pre : option name) : tactic unit :=
-do vs ← local_context,
-   `(traversable %%f) ← target,
-   env ← get_env,
-   let n := f.get_app_fn.const_name,
-   d ← get_decl n,
-   constructor,
-   tgt ← target,
-   extract_def (with_prefix pre n <.> "traverse") d.is_trusted $ mk_traverse n,
-   when (d.is_trusted) $ do
-      tgt ← pis vs tgt,
-      derive_traverse_equations pre n vs tgt
+def traversableDeriveHandler : DerivingHandlerNoArgs :=
+  higherOrderDeriveHandler ``Traversable deriveTraversable [functorDeriveHandler]
 
-open interactive
+initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 
-
+/-
 meta def simp_functor (rs : list simp_arg_type := []) : tactic unit :=
 simp none none ff rs [`functor_norm] (loc.ns [none])
 
@@ -377,14 +427,6 @@ do `(@is_lawful_traversable %%f %%d) ← target,
    return ()
 
 open function
-
-meta def traversable_derive_handler' (nspace : option name := none) : derive_handler :=
-higher_order_derive_handler ``traversable (derive_traverse nspace)
-  [functor_derive_handler' nspace] nspace
-
-@[derive_handler]
-meta def traversable_derive_handler : derive_handler :=
-guard_class  ``traversable traversable_derive_handler'
 
 meta def lawful_traversable_derive_handler' (nspace : option name := none) : derive_handler :=
 higher_order_derive_handler
