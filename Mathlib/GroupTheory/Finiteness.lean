@@ -136,7 +136,7 @@ instance Monoid.fg_of_addMonoid_fg [AddMonoid.FG N] : Monoid.FG (Multiplicative 
 @[to_additive]
 instance (priority := 100) Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
   cases nonempty_fintype M
-  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submonoid.closure_univ⟩⟩
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ] ; exact Submonoid.closure_univ⟩⟩
 #align monoid.fg_of_finite Monoid.fg_of_finite
 #align add_monoid.fg_of_finite AddMonoid.fg_of_finite
 
@@ -325,6 +325,11 @@ theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
 #align group.fg_iff_monoid.fg Group.fg_iff_monoid_fg
 #align add_group.fg_iff_add_monoid.fg AddGroup.fg_iff_addMonoid_fg
 
+@[to_additive (attr := simp)]
+theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
+  (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
+    (Subgroup.fg_iff_submonoid_fg _).symm
+
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=
   ⟨fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Subgroup.fg_iff_add_fg ⊤).2 h.out⟩⟩
 #align group_fg.iff_add_fg GroupFG.iff_add_fg
@@ -345,7 +350,7 @@ instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) 
 @[to_additive]
 instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
   cases nonempty_fintype G
-  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Subgroup.closure_univ⟩⟩
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ] ; exact Subgroup.closure_univ⟩⟩
 #align group.fg_of_finite Group.fg_of_finite
 #align add_group.fg_of_finite AddGroup.fg_of_finite
 
