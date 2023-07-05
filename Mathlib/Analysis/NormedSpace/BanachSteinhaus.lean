@@ -61,8 +61,9 @@ open Filter
 /-- Given a *sequence* of continuous linear maps which converges pointwise and for which the
 domain is complete, the Banach-Steinhaus theorem is used to guarantee that the limit map
 is a *continuous* linear map as well. -/
-def continuousLinearMapOfTendsto [CompleteSpace E] [T2Space F] {l : Filter α} [l.IsCountablyGenerated]
-    [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F} (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
+def continuousLinearMapOfTendsto [CompleteSpace E] [T2Space F] {l : Filter α}
+    [l.IsCountablyGenerated] [l.NeBot] (g : α → E →SL[σ₁₂] F) {f : E → F}
+    (h : Tendsto (fun n x ↦ g n x) l (𝓝 f)) :
     E →SL[σ₁₂] F :=
   (norm_withSeminorms 𝕜₂ F).continuousLinearMapOfTendsto g h
 #align continuous_linear_map_of_tendsto continuousLinearMapOfTendsto
