@@ -2299,15 +2299,7 @@ theorem disjoint_comap (h : Disjoint g₁ g₂) : Disjoint (comap m g₁) (comap
 #align filter.disjoint_comap Filter.disjoint_comap
 
 theorem comap_iSup {ι} {f : ι → Filter β} {m : α → β} : comap m (iSup f) = ⨆ i, comap m (f i) :=
-  le_antisymm
-    (fun s hs =>
-      have : ∀ i, ∃ t, t ∈ f i ∧ m ⁻¹' t ⊆ s := by
-        simpa only [mem_comap, exists_prop, mem_iSup] using mem_iSup.1 hs
-      let ⟨t, ht⟩ := Classical.axiom_of_choice this
-      ⟨⋃ i, t i, mem_iSup.2 fun i => (f i).sets_of_superset (ht i).1 (subset_iUnion _ _), by
-        rw [preimage_iUnion, iUnion_subset_iff]
-        exact fun i => (ht i).2⟩)
-    (iSup_le fun i => comap_mono <| le_iSup _ _)
+  (gc_comap_kernMap m).l_iSup
 #align filter.comap_supr Filter.comap_iSup
 
 theorem comap_sSup {s : Set (Filter β)} {m : α → β} : comap m (sSup s) = ⨆ f ∈ s, comap m f := by
