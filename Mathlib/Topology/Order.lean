@@ -248,6 +248,9 @@ theorem IsClosed.mono (hs : IsClosed[t₂] s) (h : t₁ ≤ t₂) : IsClosed[t�
   (@isOpen_compl_iff α t₁ s).mp <| hs.isOpen_compl.mono h
 #align is_closed.mono IsClosed.mono
 
+theorem closure.mono (h : t₁ ≤ t₂) : closure[t₁] s ⊆ closure[t₂] s :=
+  @closure_minimal _ t₁ s (@closure _ t₂ s) subset_closure (IsClosed.mono isClosed_closure h)
+
 theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) ↔ t₂ ≤ t₁ :=
   Iff.rfl
 #align is_open_implies_is_open_iff isOpen_implies_isOpen_iff

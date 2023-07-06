@@ -169,7 +169,7 @@ noncomputable def leftInvEquiv : S.leftInv ≃* S :=
     left_inv := fun x ↦
       Subtype.eq <| by
         dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        conv => rhs ; rw [h.choose_spec]
+        conv => rhs; rw [h.choose_spec]
         exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
     right_inv := fun x ↦ by
       dsimp only [fromCommLeftInv]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 
 ! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.unique_gluing
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
