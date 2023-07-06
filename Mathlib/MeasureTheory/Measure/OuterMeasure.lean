@@ -742,8 +742,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
   refine' le_antisymm (OuterMeasure.union _ _ _) (le_iInf fun f => le_iInf fun hf => _)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
-  ·
-    calc
+  · calc
       μ s + μ t ≤ ∞ := le_top
       _ = m (f i) := (h (f i) hs ht).symm
       _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
@@ -1007,8 +1006,8 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
       intro t
       have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
         convert m.iUnion fun i => t ∩ s i using 1
-        . simp [inter_iUnion]
-        . simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
+        · simp [inter_iUnion]
+        · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
       refine' le_trans (add_le_add_right hp _) _
       rw [ENNReal.iSup_add]
       refine'
@@ -1110,7 +1109,7 @@ theorem le_add_caratheodory (m₁ m₂ : OuterMeasure α) :
 #align measure_theory.outer_measure.le_add_caratheodory MeasureTheory.OuterMeasure.le_add_caratheodory
 
 theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
-    (⨅ i, (m i).caratheodory) ≤ (sum m).caratheodory := fun s h t => by
+    ⨅ i, (m i).caratheodory ≤ (sum m).caratheodory := fun s h t => by
   simp [fun i => MeasurableSpace.measurableSet_iInf.1 h i t, ENNReal.tsum_add]
 #align measure_theory.outer_measure.le_sum_caratheodory MeasureTheory.OuterMeasure.le_sum_caratheodory
 
@@ -1154,7 +1153,7 @@ theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
 #align measure_theory.outer_measure.Inf_eq_bounded_by_Inf_gen MeasureTheory.OuterMeasure.sInf_eq_boundedBy_sInfGen
 
 theorem iSup_sInfGen_nonempty {m : Set (OuterMeasure α)} (h : m.Nonempty) (t : Set α) :
-    (⨆ _ : t.Nonempty, sInfGen m t) = ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ t := by
+    ⨆ _ : t.Nonempty, sInfGen m t = ⨅ (μ : OuterMeasure α) (_ : μ ∈ m), μ t := by
   rcases t.eq_empty_or_nonempty with (rfl | ht)
   · rcases h with ⟨μ, hμ⟩
     rw [eq_false Set.not_nonempty_empty, iSup_false, eq_comm]
@@ -1417,8 +1416,7 @@ theorem extend_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Di
     (hm : ∀ i, P (f i)) : extend m (⋃ i, f i) = ∑' i, extend m (f i) := by
   cases nonempty_encodable β
   rw [← Encodable.iUnion_decode₂, ← tsum_iUnion_decode₂]
-  ·
-    exact
+  · exact
       extend_iUnion_nat PU (fun n => Encodable.iUnion_decode₂_cases P0 hm)
         (mU _ (Encodable.iUnion_decode₂_disjoint_on hd))
   · exact extend_empty P0 m0

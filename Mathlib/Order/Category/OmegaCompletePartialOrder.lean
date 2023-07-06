@@ -15,11 +15,11 @@ import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 
 /-!
-# Category of types with a omega complete partial order
+# Category of types with an omega complete partial order
 
 In this file, we bundle the class `OmegaCompletePartialOrder` into a
 concrete category and prove that continuous functions also form
-a `OmegaCompletePartialOrder`.
+an `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
@@ -35,7 +35,7 @@ universe u v
 
 set_option linter.uppercaseLean3 false -- `ωCPO`
 
-/-- The category of types with a omega complete partial order. -/
+/-- The category of types with an omega complete partial order. -/
 def ωCPO : Type (u + 1) :=
   Bundled OmegaCompletePartialOrder
 #align ωCPO ωCPO

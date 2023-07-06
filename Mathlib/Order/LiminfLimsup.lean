@@ -690,7 +690,7 @@ theorem limsup_le_iSup {f : Filter β} {u : β → α} : limsup u f ≤ ⨆ n, u
   limsup_le_of_le (by isBoundedDefault) (eventually_of_forall (le_iSup u))
 #align filter.limsup_le_supr Filter.limsup_le_iSup
 
-theorem iInf_le_liminf {f : Filter β} {u : β → α} : (⨅ n, u n) ≤ liminf u f :=
+theorem iInf_le_liminf {f : Filter β} {u : β → α} : ⨅ n, u n ≤ liminf u f :=
   le_liminf_of_le (by isBoundedDefault) (eventually_of_forall (iInf_le u))
 #align filter.infi_le_liminf Filter.iInf_le_liminf
 
@@ -996,7 +996,7 @@ theorem bliminf_or_eq_inf : (bliminf u f fun x => p x ∨ q x) = bliminf u f p �
 
 theorem sup_limsup [NeBot f] (a : α) : a ⊔ limsup u f = limsup (fun x => a ⊔ u x) f := by
   simp only [limsup_eq_iInf_iSup, iSup_sup_eq, sup_iInf₂_eq]
-  congr ; ext s; congr ; ext hs; congr
+  congr; ext s; congr; ext hs; congr
   exact (biSup_const (nonempty_of_mem hs)).symm
 #align filter.sup_limsup Filter.sup_limsup
 

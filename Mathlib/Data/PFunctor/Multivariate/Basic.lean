@@ -174,7 +174,7 @@ theorem liftP_iff' {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (a : P.A) (
   simp only [liftP_iff, Sigma.mk.inj_iff]; constructor
   · rintro ⟨_, _, ⟨⟩, _⟩
     assumption
-  . intro
+  · intro
     repeat' first |constructor|assumption
 #align mvpfunctor.liftp_iff' MvPFunctor.liftP_iff'
 
@@ -227,15 +227,15 @@ open TypeVec
 
 variable {n : ℕ} (P : MvPFunctor.{u} (n + 1))
 
-/-- Split polynomial functor, get a n-ary functor
-from a `n+1`-ary functor -/
+/-- Split polynomial functor, get an n-ary functor
+from an `n+1`-ary functor -/
 def drop : MvPFunctor n where
   A := P.A
   B a := (P.B a).drop
 #align mvpfunctor.drop MvPFunctor.drop
 
 /-- Split polynomial functor, get a univariate functor
-from a `n+1`-ary functor -/
+from an `n+1`-ary functor -/
 def last : PFunctor where
   A := P.A
   B a := (P.B a).last

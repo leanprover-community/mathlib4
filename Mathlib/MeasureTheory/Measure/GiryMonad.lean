@@ -133,7 +133,7 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   suffices
     ∀ (s : ℕ → Finset ℝ≥0∞) (f : ℕ → ℝ≥0∞ → Measure α → ℝ≥0∞), (∀ n r, Measurable (f n r)) →
       Monotone (fun n μ => ∑ r in s n, r * f n r μ) →
-      (⨆ n, ∑ r in s n, r * ∫⁻ μ, f n r μ ∂m) = ∫⁻ μ, ⨆ n, ∑ r in s n, r * f n r μ ∂m by
+      ⨆ n, ∑ r in s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r in s n, r * f n r μ ∂m by
     refine'
       this (fun n => SimpleFunc.range (SimpleFunc.eapprox f n))
         (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) _ _

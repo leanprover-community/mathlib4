@@ -1593,8 +1593,7 @@ theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
     exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
   · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
-  ·
-    exact fun q hq =>
+  · exact fun q hq =>
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 #align is_lub_prod isLUB_prod
