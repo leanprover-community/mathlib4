@@ -225,7 +225,7 @@ variable {I J K : Ideal R}
 `selfLERadicalDiagram I`.
 
 PORTING NOTE: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
-to be near `ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
+to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
   obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
