@@ -65,8 +65,7 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 #align prefunctor Prefunctor
 
-pp_extended_field_notation Prefunctor.obj
-pp_extended_field_notation Prefunctor.map
+attribute [pp_dot] Prefunctor.obj Prefunctor.map
 
 namespace Prefunctor
 
@@ -105,7 +104,7 @@ instance (V : Type _) [Quiver V] : Inhabited (Prefunctor V V) :=
   ⟨id V⟩
 
 /-- Composition of morphisms between quivers. -/
-@[simps]
+@[simps, pp_dot]
 def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
     (F : Prefunctor U V) (G : Prefunctor V W) : Prefunctor U W where
   obj X := G.obj (F.obj X)
@@ -113,8 +112,6 @@ def comp {U : Type _} [Quiver U] {V : Type _} [Quiver V] {W : Type _} [Quiver W]
 #align prefunctor.comp Prefunctor.comp
 #align prefunctor.comp_obj Prefunctor.comp_obj
 #align prefunctor.comp_map Prefunctor.comp_map
-
-pp_extended_field_notation Prefunctor.comp
 
 @[simp]
 theorem comp_id {U V : Type _} [Quiver U] [Quiver V] (F : Prefunctor U V) :
@@ -151,19 +148,15 @@ instance opposite {V} [Quiver V] : Quiver Vᵒᵖ :=
   ⟨fun a b => (unop b ⟶ unop a)ᵒᵖ⟩
 #align quiver.opposite Quiver.opposite
 
-/-- The opposite of an arrow in `V`.
--/
+/-- The opposite of an arrow in `V`. -/
+@[pp_dot]
 def Hom.op {V} [Quiver V] {X Y : V} (f : X ⟶ Y) : op Y ⟶ op X := ⟨f⟩
 #align quiver.hom.op Quiver.Hom.op
 
-pp_extended_field_notation Quiver.Hom.op
-
-/-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`.
--/
+/-- Given an arrow in `Vᵒᵖ`, we can take the "unopposite" back in `V`. -/
+@[pp_dot]
 def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X := Opposite.unop f
 #align quiver.hom.unop Quiver.Hom.unop
-
-pp_extended_field_notation Quiver.Hom.unop
 
 /-- A type synonym for a quiver with no arrows. -/
 -- Porting note: no has_nonempty_instance linter yet

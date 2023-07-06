@@ -152,11 +152,9 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm]
+@[symm, pp_dot]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 #align equiv.symm Equiv.symm
-
-pp_extended_field_notation Equiv.symm
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
@@ -172,12 +170,10 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
-@[trans]
+@[trans, pp_dot]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
-
-pp_extended_field_notation Equiv.trans
 
 @[simps]
 instance : Trans Equiv Equiv Equiv where

@@ -73,7 +73,7 @@ structure OplaxNatTrans (F G : OplaxFunctor B C) where
 #align category_theory.oplax_nat_trans.naturality_comp' CategoryTheory.OplaxNatTrans.naturality_comp
 #align category_theory.oplax_nat_trans.naturality_comp CategoryTheory.OplaxNatTrans.naturality_comp
 
-pp_extended_field_notation OplaxNatTrans.app
+attribute [pp_dot] OplaxNatTrans.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality
@@ -236,7 +236,7 @@ structure Modification (η θ : F ⟶ G) where
 #align category_theory.oplax_nat_trans.modification.naturality' CategoryTheory.OplaxNatTrans.Modification.naturality
 #align category_theory.oplax_nat_trans.modification.naturality CategoryTheory.OplaxNatTrans.Modification.naturality
 
-pp_extended_field_notation Modification.app
+attribute [pp_dot] Modification.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.Modification.app
   CategoryTheory.OplaxNatTrans.Modification.naturality

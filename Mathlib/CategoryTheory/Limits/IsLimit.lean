@@ -394,6 +394,7 @@ end Equivalence
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
+@[pp_dot]
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F where
   hom f := (t.extend f.down).π
   inv π := ⟨h.lift { pt := W, π }⟩
@@ -401,8 +402,6 @@ def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (
     funext f; apply ULift.ext
     apply h.hom_ext; intro j; simp
 #align category_theory.limits.is_limit.hom_iso CategoryTheory.Limits.IsLimit.homIso
-
-pp_extended_field_notation IsLimit.homIso
 
 @[simp]
 theorem homIso_hom (h : IsLimit t) {W : C} (f : ULift.{u₁} (W ⟶ t.pt)) :
@@ -417,8 +416,8 @@ def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones
 #align category_theory.limits.is_limit.nat_iso CategoryTheory.Limits.IsLimit.natIso
 
 /-- Another, more explicit, formulation of the universal property of a limit cone.
-See also `homIso`.
--/
+See also `homIso`. -/
+@[pp_dot]
 def homIso' (h : IsLimit t) (W : C) :
     ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
@@ -429,8 +428,6 @@ def homIso' (h : IsLimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 #align category_theory.limits.is_limit.hom_iso' CategoryTheory.Limits.IsLimit.homIso'
-
-pp_extended_field_notation IsLimit.homIso'
 
 /-- If G : C → D is a faithful functor which sends t to a limit cone,
   then it suffices to check that the induced maps for the image of t
@@ -909,6 +906,7 @@ end Equivalence
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
+@[pp_dot]
 def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W where
   hom f := (t.extend f.down).ι
   inv ι := ⟨h.desc
@@ -918,8 +916,6 @@ def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
     funext f; apply ULift.ext
     apply h.hom_ext; intro j; simp
 #align category_theory.limits.is_colimit.hom_iso CategoryTheory.Limits.IsColimit.homIso
-
-pp_extended_field_notation IsColimit.homIso
 
 @[simp]
 theorem homIso_hom (h : IsColimit t) {W : C} (f : ULift (t.pt ⟶ W)) :
@@ -934,8 +930,8 @@ def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} �
 #align category_theory.limits.is_colimit.nat_iso CategoryTheory.Limits.IsColimit.natIso
 
 /-- Another, more explicit, formulation of the universal property of a colimit cocone.
-See also `homIso`.
--/
+See also `homIso`. -/
+@[pp_dot]
 def homIso' (h : IsColimit t) (W : C) :
     ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
@@ -946,8 +942,6 @@ def homIso' (h : IsColimit t) (W : C) :
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
 #align category_theory.limits.is_colimit.hom_iso' CategoryTheory.Limits.IsColimit.homIso'
-
-pp_extended_field_notation IsColimit.homIso'
 
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
   then it suffices to check that the induced maps for the image of t
