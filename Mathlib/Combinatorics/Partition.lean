@@ -96,7 +96,7 @@ def ofSums (n : ℕ) (l : Multiset ℕ) (hl : l.sum = n) : Partition n
   parts_pos {i} hi := Nat.pos_of_ne_zero <| by apply of_mem_filter hi
   parts_sum := by
     have lt : l.filter (· = 0) + l.filter (· ≠ 0) = l := filter_add_not _ l
-    apply_fun Multiset.sum  at lt
+    apply_fun Multiset.sum at lt
     have lz : (l.filter (· = 0)).sum = 0 := by
       rw [Multiset.sum_eq_zero_iff]
       simp

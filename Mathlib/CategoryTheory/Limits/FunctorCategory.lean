@@ -62,13 +62,12 @@ def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
           rw [assoc, (t Y).fac _ j]
           simpa using
             ((t X).fac_assoc ⟨s.pt.obj X, whiskerRight s.π ((evaluation K C).obj X)⟩ j _).symm }
-  fac s j := NatTrans.ext _ _ <| funext fun k => (t k).fac _ j
-  uniq s m w :=
-    NatTrans.ext _ _ <|
-      funext fun x =>
-        (t x).hom_ext fun j =>
-          (congr_app (w j) x).trans
-            ((t x).fac ⟨s.pt.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
+  fac s j := by ext k; exact (t k).fac _ j
+  uniq s m w := by
+    ext x
+    exact (t x).hom_ext fun j =>
+      (congr_app (w j) x).trans
+        ((t x).fac ⟨s.pt.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
 #align category_theory.limits.evaluation_jointly_reflects_limits CategoryTheory.Limits.evaluationJointlyReflectsLimits
 
 /-- Given a functor `F` and a collection of limit cones for each diagram `X ↦ F X k`, we can stitch
@@ -89,7 +88,7 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
       map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₃).isLimit.hom_ext fun j => by simp }
   π :=
     { app := fun j => { app := fun k => (c k).cone.π.app j }
-      naturality := fun j₁ j₂ g => NatTrans.ext _ _ <| funext fun k => (c k).cone.π.naturality g }
+      naturality := fun j₁ j₂ g => by ext k; exact (c k).cone.π.naturality g }
 #align category_theory.limits.combine_cones CategoryTheory.Limits.combineCones
 
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
@@ -121,13 +120,12 @@ def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
           erw [(t Y).fac ⟨s.pt.obj _, whiskerRight s.ι _⟩ j]
           dsimp
           simp }
-  fac s j := NatTrans.ext _ _ <| funext fun k => (t k).fac _ j
-  uniq s m w :=
-    NatTrans.ext _ _ <|
-      funext fun x =>
-        (t x).hom_ext fun j =>
-          (congr_app (w j) x).trans
-            ((t x).fac ⟨s.pt.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
+  fac s j := by ext k; exact (t k).fac _ j
+  uniq s m w := by
+    ext x
+    exact (t x).hom_ext fun j =>
+      (congr_app (w j) x).trans
+        ((t x).fac ⟨s.pt.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
 #align category_theory.limits.evaluation_jointly_reflects_colimits CategoryTheory.Limits.evaluationJointlyReflectsColimits
 
 /--
@@ -149,8 +147,7 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
       map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₁).isColimit.hom_ext fun j => by simp }
   ι :=
     { app := fun j => { app := fun k => (c k).cocone.ι.app j }
-      naturality := fun j₁ j₂ g =>
-        NatTrans.ext _ _ <| funext fun k => (c k).cocone.ι.naturality g }
+      naturality := fun j₁ j₂ g => by ext k; exact (c k).cocone.ι.naturality g }
 #align category_theory.limits.combine_cocones CategoryTheory.Limits.combineCocones
 
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/

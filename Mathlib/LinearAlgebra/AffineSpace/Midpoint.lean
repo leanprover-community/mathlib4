@@ -105,6 +105,16 @@ theorem midpoint_eq_iff {x y z : P} : midpoint R x y = z ↔ pointReflection R z
 #align midpoint_eq_iff midpoint_eq_iff
 
 @[simp]
+theorem midpoint_pointReflection_left (x y : P) :
+    midpoint R (Equiv.pointReflection x y) y = x :=
+  midpoint_eq_iff.2 <| Equiv.pointReflection_involutive _ _
+
+@[simp]
+theorem midpoint_pointReflection_right (x y : P) :
+    midpoint R y (Equiv.pointReflection x y) = x :=
+  midpoint_eq_iff.2 rfl
+
+@[simp]
 theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟ 2 : R) • (p₂ -ᵥ p₁) :=
   lineMap_vsub_left _ _ _
 #align midpoint_vsub_left midpoint_vsub_left

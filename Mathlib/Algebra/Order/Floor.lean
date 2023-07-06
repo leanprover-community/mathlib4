@@ -919,7 +919,7 @@ theorem fract_floor (a : α) : fract (⌊a⌋ : α) = 0 :=
 
 @[simp]
 theorem floor_fract (a : α) : ⌊fract a⌋ = 0 := by
-  rw [floor_eq_iff, Int.cast_zero, zero_add] ; exact ⟨fract_nonneg _, fract_lt_one _⟩
+  rw [floor_eq_iff, Int.cast_zero, zero_add]; exact ⟨fract_nonneg _, fract_lt_one _⟩
 #align int.floor_fract Int.floor_fract
 
 theorem fract_eq_iff {a b : α} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : ℤ, a - b = z :=

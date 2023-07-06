@@ -28,16 +28,15 @@ namespace Imo2005Q3
 
 theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x * y * z ≥ 1) :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥ (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by
-  have h₁ : 0 < x ^ 5 + y ^ 2 + z ^ 2 := by positivity
-  have h₂ : 0 < x ^ 3 := by positivity
-  have h₃ : 0 < x ^ 2 + y ^ 2 + z ^ 2 := by positivity
-  have h₄ : 0 < x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2) := by positivity
+  have h₁ : x ^ 5 + y ^ 2 + z ^ 2 ≠ 0 := by positivity
+  have h₃ : x ^ 2 + y ^ 2 + z ^ 2 ≠ 0 := by positivity
+  have h₄ : x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2) ≠ 0 := by positivity
   have key :
     (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) -
-        (x ^ 5 - x ^ 2) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) =
+        (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) =
       (x ^ 3 - 1) ^ 2 * x ^ 2 * (y ^ 2 + z ^ 2) /
         ((x ^ 5 + y ^ 2 + z ^ 2) * (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2))) := by
-    field_simp [h₁.ne', h₄.ne']
+    field_simp
     ring
   have h₅ :
     (x ^ 3 - 1) ^ 2 * x ^ 2 * (y ^ 2 + z ^ 2) /
@@ -45,13 +44,10 @@ theorem key_insight (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x 
       0 :=
     by positivity
   calc
-    (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2) ≥
-        (x ^ 5 - x ^ 2) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) :=
-      by linarith [key, h₅]
-    _ ≥ (x ^ 5 - x ^ 2 * (x * y * z)) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by
-      refine' (div_le_div_right h₄).mpr _; simp only [sub_le_sub_iff_left]
-      exact (le_mul_iff_one_le_right (pow_pos hx 2)).mpr h
-    _ = (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by field_simp [h₂.ne', h₃.ne']; ring
+    (x ^ 5 - x ^ 2) / (x ^ 5 + y ^ 2 + z ^ 2)
+      ≥ (x ^ 5 - x ^ 2 * 1) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by linarith only [key, h₅]
+    _ ≥ (x ^ 5 - x ^ 2 * (x * y * z)) / (x ^ 3 * (x ^ 2 + y ^ 2 + z ^ 2)) := by gcongr
+    _ = (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) := by field_simp; ring
 #align imo2005_q3.key_insight Imo2005Q3.key_insight
 
 end Imo2005Q3
@@ -67,13 +63,7 @@ theorem imo2005_q3 (x y z : ℝ) (hx : x > 0) (hy : y > 0) (hz : z > 0) (h : x *
           (z ^ 5 - z ^ 2) / (z ^ 5 + x ^ 2 + y ^ 2) ≥
         (x ^ 2 - y * z) / (x ^ 2 + y ^ 2 + z ^ 2) + (y ^ 2 - z * x) / (y ^ 2 + z ^ 2 + x ^ 2) +
           (z ^ 2 - x * y) / (z ^ 2 + x ^ 2 + y ^ 2) := by
-      linarith [key_insight x y z hx hy hz h, key_insight y z x hy hz hx (by linarith [h]),
-        key_insight z x y hz hx hy (by linarith [h])]
-    _ = 1 / 2 * ((x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2) / (x ^ 2 + y ^ 2 + z ^ 2) := by
-      have h₁ : y ^ 2 + z ^ 2 + x ^ 2 = x ^ 2 + y ^ 2 + z ^ 2; ring
-      have h₂ : z ^ 2 + x ^ 2 + y ^ 2 = x ^ 2 + y ^ 2 + z ^ 2; ring
-      rw [h₁, h₂]; ring
-    _ ≥ 0 :=
-      div_nonneg (by linarith [sq_nonneg (x - y), sq_nonneg (y - z), sq_nonneg (z - x)])
-        (by linarith [sq_nonneg x, sq_nonneg y, sq_nonneg z])
+      gcongr ?_ + ?_ + ?_ <;> apply key_insight <;> linarith
+    _ = 1 / 2 * ((x - y) ^ 2 + (y - z) ^ 2 + (z - x) ^ 2) / (x ^ 2 + y ^ 2 + z ^ 2) := by ring
+    _ ≥ 0 := by positivity
 #align imo2005_q3 imo2005_q3

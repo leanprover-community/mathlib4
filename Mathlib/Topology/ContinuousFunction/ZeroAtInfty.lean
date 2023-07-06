@@ -425,7 +425,7 @@ instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapC
     map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }
 
 /-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
-@[simps]
+@[simps!]
 def toBcf (f : C₀(α, β)) : α →ᵇ β :=
   ⟨f, map_bounded f⟩
 #align zero_at_infty_continuous_map.to_bcf ZeroAtInftyContinuousMap.toBcf

@@ -23,36 +23,27 @@ namespace Konigsberg
 
 /-- The vertices for the Königsberg graph; four vertices for the bodies of land and seven
 vertices for the bridges. -/
--- @[nolint has_inhabited_instance] -- Porting note: removed
 inductive Verts : Type
-  | V1
-  | V2
-  | V3
-  | V4-- The islands and mainlands
-
-  | B1
-  | B2
-  | B3
-  | B4
-  | B5
-  | B6
-  | B7
+  -- The islands and mainlands
+  | V1 | V2 | V3 | V4
+  -- The bridges
+  | B1 | B2 | B3 | B4 | B5 | B6 | B7
   deriving DecidableEq, Fintype
 #align konigsberg.verts Konigsberg.Verts
 
--- The bridges
 open Verts
 
 /-- Each of the connections between the islands/mainlands and the bridges.
 These are ordered pairs, but the data becomes symmetric in `Konigsberg.adj`. -/
 def edges : List (Verts × Verts) :=
-  [(V1, B1), (V1, B2), (V1, B3), (V1, B4), (V1, B5), (B1, V2), (B2, V2), (B3, V4), (B4, V3),
-    (B5, V3), (V2, B6), (B6, V4), (V3, B7), (B7, V4)]
+  [(V1, B1), (V1, B2), (V1, B3), (V1, B4), (V1, B5),
+   (B1, V2), (B2, V2), (B3, V4), (B4, V3), (B5, V3),
+   (V2, B6), (B6, V4),
+   (V3, B7), (B7, V4)]
 #align konigsberg.edges Konigsberg.edges
 
 /-- The adjacency relation for the Königsberg graph. -/
-def adj (v w : Verts) : Bool :=
-  (v, w) ∈ edges || (w, v) ∈ edges
+def adj (v w : Verts) : Bool := (v, w) ∈ edges || (w, v) ∈ edges
 #align konigsberg.adj Konigsberg.adj
 
 /-- The Königsberg graph structure. While the Königsberg bridge problem
@@ -73,42 +64,33 @@ def graph : SimpleGraph Verts where
     decide
 #align konigsberg.graph Konigsberg.graph
 
-instance : DecidableRel graph.Adj := fun a b => decidable_of_bool (adj a b) Iff.rfl
+instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 
 /-- To speed up the proof, this is a cache of all the degrees of each vertex,
 proved in `Konigsberg.degree_eq_degree`. -/
-@[simp]
 def degree : Verts → ℕ
-  | V1 => 5
-  | V2 => 3
-  | V3 => 3
-  | V4 => 3
-  | B1 => 2
-  | B2 => 2
-  | B3 => 2
-  | B4 => 2
-  | B5 => 2
-  | B6 => 2
-  | B7 => 2
+  | V1 => 5 | V2 => 3 | V3 => 3 | V4 => 3
+  | B1 => 2 | B2 => 2 | B3 => 2 | B4 => 2 | B5 => 2 | B6 => 2 | B7 => 2
 #align konigsberg.degree Konigsberg.degree
 
 @[simp]
-theorem degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;> rfl
+lemma degree_eq_degree (v : Verts) : graph.degree v = degree v := by cases v <;> rfl
 #align konigsberg.degree_eq_degree Konigsberg.degree_eq_degree
+
+lemma not_even_degree_iff (w : Verts) : ¬Even (degree w) ↔ w = V1 ∨ w = V2 ∨ w = V3 ∨ w = V4 := by
+  cases w <;> simp
+
+lemma setOf_odd_degree_eq :
+    {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by
+  ext w
+  simp [not_even_degree_iff]
 
 /-- The Königsberg graph is not Eulerian. -/
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
-  have : {v | Odd (graph.degree v)} = {Verts.V1, Verts.V2, Verts.V3, Verts.V4} := by
-    ext w
-    simp only [degree_eq_degree, Nat.odd_iff_not_even, Set.mem_setOf_eq, Set.mem_insert_iff,
-      Set.mem_singleton_iff]
-    cases w <;> simp
   have h := h.card_odd_degree
-  -- Porting note: the next four lines were `simp_rw [this] at h`, which times out
-  rw [← Set.toFinset_card] at h
-  conv_lhs at h => arg 1; simp only [this]
-  conv_rhs at h => arg 1; simp only [this]
-  rw [Set.toFinset_card] at h
+  have h' := setOf_odd_degree_eq
+  apply_fun Fintype.card at h'
+  rw [h'] at h
   norm_num at h
 #align konigsberg.not_is_eulerian Konigsberg.not_isEulerian
 

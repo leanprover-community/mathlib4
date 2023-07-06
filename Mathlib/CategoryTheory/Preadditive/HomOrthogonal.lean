@@ -93,12 +93,7 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     biproduct.matrix fun j k =>
       if h : f j = g k then z (f j) ⟨k, by simp [h]⟩ ⟨j, by simp⟩ ≫ eqToHom (by simp [h]) else 0
   left_inv z := by
-    -- Porting note: `ext j k` applies the lemmas in the other order,
-    -- and gets stuck. Consider adjusting priorities, or making this proof more robust.
-    apply biproduct.hom_ext
-    intro j
-    apply biproduct.hom_ext'
-    intro k
+    ext j k
     simp only [biproduct.matrix_π, biproduct.ι_desc]
     split_ifs with h
     · simp
@@ -106,7 +101,7 @@ noncomputable def matrixDecomposition (o : HomOrthogonal s) {α β : Type} [Fint
     · symm
       apply o.eq_zero h
   right_inv z := by
-    ext (i ⟨j, w⟩ ⟨k, ⟨⟩⟩)
+    ext i ⟨j, w⟩ ⟨k, ⟨⟩⟩
     simp only [eqToHom_refl, biproduct.matrix_components, Category.id_comp]
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     split_ifs with h
@@ -137,7 +132,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
 @[simp]
 theorem matrixDecomposition_id (o : HomOrthogonal s) {α : Type} [Fintype α] {f : α → ι} (i : ι) :
     o.matrixDecomposition (𝟙 (⨁ fun a => s (f a))) i = 1 := by
-  ext (⟨b, ⟨⟩⟩⟨a, j_property⟩)
+  ext ⟨b, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Category.comp_id, Category.id_comp, Category.assoc, End.one_def, eqToHom_refl,
     Matrix.one_apply, HomOrthogonal.matrixDecomposition_apply, biproduct.components]
@@ -155,7 +150,7 @@ theorem matrixDecomposition_comp (o : HomOrthogonal s) {α β γ : Type} [Fintyp
     [Fintype γ] {f : α → ι} {g : β → ι} {h : γ → ι} (z : (⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b))
     (w : (⨁ fun b => s (g b)) ⟶ ⨁ fun c => s (h c)) (i : ι) :
     o.matrixDecomposition (z ≫ w) i = o.matrixDecomposition w i ⬝ o.matrixDecomposition z i := by
-  ext (⟨c, ⟨⟩⟩⟨a, j_property⟩)
+  ext ⟨c, ⟨⟩⟩ ⟨a, j_property⟩
   simp only [Set.mem_preimage, Set.mem_singleton_iff] at j_property
   simp only [Matrix.mul_apply, Limits.biproduct.components,
     HomOrthogonal.matrixDecomposition_apply, Category.comp_id, Category.id_comp, Category.assoc,

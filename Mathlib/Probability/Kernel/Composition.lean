@@ -293,10 +293,7 @@ variable {κ : kernel α β} [IsSFiniteKernel κ] {η : kernel (α × β) γ} [I
 
 theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     kernel.restrict κ hs ⊗ₖ kernel.restrict η ht = kernel.restrict (κ ⊗ₖ η) (hs.prod ht) := by
-  -- Porting note: was
-  -- ext (a u hu) : 2
-  ext (a u) : 2
-  intro hu
+  ext a u hu
   rw [compProd_apply _ _ _ hu, restrict_apply' _ _ _ hu,
     compProd_apply _ _ _ (hu.inter (hs.prod ht))]
   simp only [kernel.restrict_apply, Measure.restrict_apply' ht, Set.mem_inter_iff,
@@ -338,7 +335,7 @@ theorem lintegral_compProd' (κ : kernel α β) [IsSFiniteKernel κ] (η : kerne
     [IsSFiniteKernel η] (a : α) {f : β → γ → ℝ≥0∞} (hf : Measurable (Function.uncurry f)) :
     ∫⁻ bc, f bc.1 bc.2 ∂(κ ⊗ₖ η) a = ∫⁻ b, ∫⁻ c, f b c ∂η (a, b) ∂κ a := by
   let F : ℕ → SimpleFunc (β × γ) ℝ≥0∞ := SimpleFunc.eapprox (Function.uncurry f)
-  have h : ∀ a, (⨆ n, F n a) = Function.uncurry f a :=
+  have h : ∀ a, ⨆ n, F n a = Function.uncurry f a :=
     SimpleFunc.iSup_eapprox_apply (Function.uncurry f) hf
   simp only [Prod.forall, Function.uncurry_apply_pair] at h
   simp_rw [← h, Prod.mk.eta]
@@ -452,16 +449,13 @@ theorem compProd_eq_tsum_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η :
 
 theorem compProd_eq_sum_compProd (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = kernel.sum fun n => kernel.sum fun m => seq κ n ⊗ₖ seq η m := by
-  ext a s; intro hs; simp_rw [kernel.sum_apply' _ a hs]; rw [compProd_eq_tsum_compProd κ η a hs]
+  ext a s hs; simp_rw [kernel.sum_apply' _ a hs]; rw [compProd_eq_tsum_compProd κ η a hs]
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod ProbabilityTheory.kernel.compProd_eq_sum_compProd
 
 theorem compProd_eq_sum_compProd_left (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] : κ ⊗ₖ η = kernel.sum fun n => seq κ n ⊗ₖ η := by
   rw [compProd_eq_sum_compProd]
-  -- Porting note: was
-  -- congr with (n a s hs)
-  congr with (n a s)
-  intro hs
+  congr with n a s hs
   simp_rw [kernel.sum_apply' _ _ hs, compProd_apply_eq_compProdFun _ _ _ hs,
     compProdFun_tsum_right _ η a hs]
 #align probability_theory.kernel.comp_prod_eq_sum_comp_prod_left ProbabilityTheory.kernel.compProd_eq_sum_compProd_left
@@ -542,10 +536,7 @@ nonrec theorem lintegral_map (κ : kernel α β) (hf : Measurable f) (a : α) {g
 
 theorem sum_map_seq (κ : kernel α β) [IsSFiniteKernel κ] (hf : Measurable f) :
     (kernel.sum fun n => map (seq κ n) f hf) = map κ f hf := by
-  -- Porting note: was
-  -- ext (a s hs) : 2
-  ext (a s) : 2
-  intro hs
+  ext a s hs
   rw [kernel.sum_apply, map_apply' κ hf a hs, Measure.sum_apply _ hs, ← measure_sum_seq κ,
     Measure.sum_apply _ (hf hs)]
   simp_rw [map_apply' _ hf _ hs]
@@ -593,10 +584,7 @@ theorem lintegral_comap (κ : kernel α β) (hg : Measurable g) (c : γ) (g' : �
 
 theorem sum_comap_seq (κ : kernel α β) [IsSFiniteKernel κ] (hg : Measurable g) :
     (kernel.sum fun n => comap (seq κ n) g hg) = comap κ g hg := by
-  -- Porting note: was
-  -- ext (a s hs) : 2
-  ext (a s) : 2
-  intro hs
+  ext a s hs
   rw [kernel.sum_apply, comap_apply' κ hg a s, Measure.sum_apply _ hs, ← measure_sum_seq κ,
     Measure.sum_apply _ hs]
   simp_rw [comap_apply' _ hg _ s]
@@ -808,7 +796,7 @@ theorem comp_apply' (η : kernel β γ) (κ : kernel α β) (a : α) {s : Set γ
 
 theorem comp_eq_snd_compProd (η : kernel β γ) [IsSFiniteKernel η] (κ : kernel α β)
     [IsSFiniteKernel κ] : η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η) := by
-  ext a s; intro hs
+  ext a s hs
   rw [comp_apply' _ _ _ hs, snd_apply' _ _ hs, compProd_apply]
   swap
   · exact measurable_snd hs
@@ -841,14 +829,14 @@ theorem comp_assoc {δ : Type _} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) 
 
 theorem deterministic_comp_eq_map (hf : Measurable f) (κ : kernel α β) :
     deterministic f hf ∘ₖ κ = map κ f hf := by
-  ext a s; intro hs
+  ext a s hs
   simp_rw [map_apply' _ _ _ hs, comp_apply' _ _ _ hs, deterministic_apply' hf _ hs,
     lintegral_indicator_const_comp hf hs, one_mul]
 #align probability_theory.kernel.deterministic_comp_eq_map ProbabilityTheory.kernel.deterministic_comp_eq_map
 
 theorem comp_deterministic_eq_comap (κ : kernel α β) (hg : Measurable g) :
     κ ∘ₖ deterministic g hg = comap κ g hg := by
-  ext a s; intro hs
+  ext a s hs
   simp_rw [comap_apply' _ _ _ s, comp_apply' _ _ _ hs, deterministic_apply hg a,
     lintegral_dirac' _ (kernel.measurable_coe κ hs)]
 #align probability_theory.kernel.comp_deterministic_eq_comap ProbabilityTheory.kernel.comp_deterministic_eq_comap

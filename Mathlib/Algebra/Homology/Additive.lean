@@ -359,12 +359,12 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
               | _ + 1 => F.mapZeroObject.inv }
         hom_inv_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+          · simp
+          · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
         inv_hom_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (isZero_zero _) _ _ })
+          · simp
+          · exact IsZero.eq_of_src (isZero_zero _) _ _ })
     fun f => by ext (_|_) <;> simp
 #align chain_complex.single₀_map_homological_complex ChainComplex.single₀MapHomologicalComplex
 
@@ -415,12 +415,12 @@ def single₀MapHomologicalComplex (F : V ⥤ W) [F.Additive] :
               | _ + 1 => F.mapZeroObject.inv }
         hom_inv_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
+          · simp
+          · exact IsZero.eq_of_src (IsZero.of_iso (isZero_zero _) F.mapZeroObject) _ _
         inv_hom_id := by
           ext (_|_)
-          . simp
-          . exact IsZero.eq_of_src (isZero_zero _) _ _ })
+          · simp
+          · exact IsZero.eq_of_src (isZero_zero _) _ _ })
     fun f => by ext (_|_) <;> simp
 #align cochain_complex.single₀_map_homological_complex CochainComplex.single₀MapHomologicalComplex
 

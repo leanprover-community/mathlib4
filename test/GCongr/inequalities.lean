@@ -107,6 +107,13 @@ example {a b x c d : ℝ} (h1 : a ≤ b) (h2 : c ≤ d) (h3 : 1 ≤ x + 1) : x *
   have : 0 ≤ x := by linarith
   rel [h1, h2]
 
+-- test for a missing `withContext`
+example {x y : ℚ} {n : ℕ} (hx : 0 ≤ x) (hn : 0 < n) : y ≤ x := by
+  have h : x < y := sorry
+  have : x ^ n < y ^ n
+  · rel [h] -- before bugfix: complained "unknown identifier 'h'"
+  sorry
+
 /-! ## Non-finishing examples -/
 
 example {a b x c d : ℝ} (h1 : a + 1 ≤ b + 1) (h2 : c + 2 ≤ d + 2) :
