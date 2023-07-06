@@ -16,15 +16,15 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 # Contraction in Clifford Algebras
 
 This file contains some of the results from [grinberg_clifford_2016][].
-The key result is `clifford_algebra.equiv_exterior`.
+The key result is `CliffordAlgebra.equivExterior`.
 
 ## Main definitions
 
-* `clifford_algebra.contract_left`: contract a multivector by a `module.dual R M` on the left.
-* `clifford_algebra.contract_right`: contract a multivector by a `module.dual R M` on the right.
-* `clifford_algebra.change_form`: convert between two algebras of different quadratic form, sending
+* `CliffordAlgebra.contractLeft`: contract a multivector by a `Module.Dual R M` on the left.
+* `CliffordAlgebra.contractRight`: contract a multivector by a `Module.Dual R M` on the right.
+* `CliffordAlgebra.changeForm`: convert between two algebras of different quadratic form, sending
   vectors to vectors. The difference of the quadratic forms must be a bilinear form.
-* `clifford_algebra.equiv_exterior`: in characteristic not-two, the `clifford_algebra Q` is
+* `CliffordAlgebra.equivExterior`: in characteristic not-two, the `CliffordAlgebra Q` is
   isomorphic as a module to the exterior algebra.
 
 ## Implementation notes
@@ -39,8 +39,8 @@ a rehash of parts of [bourbaki2007][]; we should at some point consider swapping
 refer to the latter.
 
 Within this file, we use the local notation
-* `x ⌊ d` for `contract_right x d`
-* `d ⌋ x` for `contract_left d x`
+* `x ⌊ d` for `contractRight x d`
+* `d ⌋ x` for `contractLeft d x`
 
 -/
 
@@ -59,7 +59,7 @@ section contractLeft
 
 variable (d d' : Module.Dual R M)
 
-/-- Auxiliary construction for `clifford_algebra.contract_left` -/
+/-- Auxiliary construction for `CliffordAlgebra.contractLeft` -/
 @[simps!]
 def contractLeftAux (d : Module.Dual R M) :
     M →ₗ[R] CliffordAlgebra Q × CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
@@ -77,9 +77,9 @@ theorem contractLeftAux_contractLeftAux (v : M) (x : CliffordAlgebra Q) (fx : Cl
 
 variable {Q}
 
-/-- Contract an element of the clifford algebra with an element `d : module.dual R M` from the left.
+/-- Contract an element of the clifford algebra with an element `d : Module.Dual R M` from the left.
 
-Note that $v ⌋ x$ is spelt `contract_left (Q.associated v) x`.
+Note that $v ⌋ x$ is spelt `contractLeft (Q.associated v) x`.
 
 This includes [grinberg_clifford_2016][] Theorem 10.75 -/
 def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q where
@@ -106,10 +106,10 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
         rw [LinearMap.smul_apply, smul_assoc, mul_smul_comm, smul_sub]
 #align clifford_algebra.contract_left CliffordAlgebra.contractLeft
 
-/-- Contract an element of the clifford algebra with an element `d : module.dual R M` from the
+/-- Contract an element of the clifford algebra with an element `d : Module.Dual R M` from the
 right.
 
-Note that $x ⌊ v$ is spelt `contract_right x (Q.associated v)`.
+Note that $x ⌊ v$ is spelt `contractRight x (Q.associated v)`.
 
 This includes [grinberg_clifford_2016][] Theorem 16.75 -/
 def contractRight : CliffordAlgebra Q →ₗ[R] Module.Dual R M →ₗ[R] CliffordAlgebra Q :=
@@ -243,7 +243,7 @@ local infixl:70 "⌋" => contractLeft
 
 local infixl:70 "⌊" => contractRight
 
-/-- Auxiliary construction for `clifford_algebra.change_form` -/
+/-- Auxiliary construction for `CliffordAlgebra.changeForm` -/
 @[simps!]
 def changeFormAux (B : BilinForm R M) : M →ₗ[R] CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q :=
   haveI v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
@@ -277,17 +277,17 @@ def changeForm (h : B.toQuadraticForm = Q' - Q) : CliffordAlgebra Q →ₗ[R] Cl
     1
 #align clifford_algebra.change_form CliffordAlgebra.changeForm
 
-/-- Auxiliary lemma used as an argument to `clifford_algebra.change_form` -/
+/-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.zero_proof : (0 : BilinForm R M).toQuadraticForm = Q - Q :=
   (sub_self _).symm
 #align clifford_algebra.change_form.zero_proof CliffordAlgebra.changeForm.zero_proof
 
-/-- Auxiliary lemma used as an argument to `clifford_algebra.change_form` -/
+/-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.add_proof : (B + B').toQuadraticForm = Q'' - Q :=
   (congr_arg₂ (· + ·) h h').trans <| sub_add_sub_cancel' _ _ _
 #align clifford_algebra.change_form.add_proof CliffordAlgebra.changeForm.add_proof
 
-/-- Auxiliary lemma used as an argument to `clifford_algebra.change_form` -/
+/-- Auxiliary lemma used as an argument to `CliffordAlgebra.changeForm` -/
 theorem changeForm.neg_proof : (-B).toQuadraticForm = Q - Q' :=
   (congr_arg Neg.neg h).trans <| neg_sub _ _
 #align clifford_algebra.change_form.neg_proof CliffordAlgebra.changeForm.neg_proof
