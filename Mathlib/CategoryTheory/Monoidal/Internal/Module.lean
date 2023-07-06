@@ -185,7 +185,11 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                 { toFun := _root_.id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
-              mul_hom := sorry -- by ext; dsimp at *; rfl
+              mul_hom := by
+                -- Porting note : `ext` did not pick up `TensorProduct.ext`
+                refine TensorProduct.ext ?_
+                dsimp at *
+                rfl
               one_hom := sorry }
           inv :=
             { hom :=
@@ -232,9 +236,7 @@ def monModuleEquivalenceAlgebraForget :
         inv :=
           { toFun := _root_.id
             map_add' := fun x y => rfl
-            map_smul' := fun c x => rfl }
-        hom_inv_id := sorry
-        inv_hom_id := sorry })
+            map_smul' := fun c x => rfl } })
     (by aesop_cat)
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
