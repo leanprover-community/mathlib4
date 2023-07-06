@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 
 ! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.pullback
-! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
+! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -28,7 +28,7 @@ open scoped Manifold
 variable {𝕜 B B' M : Type _} (F : Type _) (E : B → Type _)
 
 variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace E)]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] {EB : Type _} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type _} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B]
   [ChartedSpace HB B] [SmoothManifoldWithCorners IB B] {EB' : Type _} [NormedAddCommGroup EB']
