@@ -9,6 +9,7 @@ Authors: Scott Morrison
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.AlgebraCat.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.Ring.Limits
 
@@ -100,7 +101,7 @@ def limitCone (F : J ⥤ AlgebraCatMax.{v, w} R) : Cone F where
 -/
 def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone F) := by
   refine'
-    IsLimit.ofFaithful (forget (AlgebraCat R)) (types.limit_cone_is_limit _) (fun s => { .. })
+    IsLimit.ofFaithful (forget (AlgebraCat R)) (Types.limitConeIsLimit _) (fun s => { .. })
       fun s => rfl
   · simp only [forget_map_eq_coe, AlgHom.map_one, functor.map_cone_π_app]; rfl
   · intro x y; simp only [forget_map_eq_coe, AlgHom.map_mul, functor.map_cone_π_app]; rfl
@@ -133,7 +134,7 @@ instance hasLimits : HasLimits (AlgebraCat.{w} R) :=
 /-- The forgetful functor from R-algebras to rings preserves all limits.
 -/
 instance forget₂RingPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ (AlgebraCat R) RingCat.{max v w})
+    PreservesLimitsOfSize.{v, v} (forget₂ (AlgebraCat R) RingCatMax.{max v w})
     where preservesLimitsOfShape {J} 𝒥 :=
     {
       preservesLimit := fun F =>
@@ -148,7 +149,7 @@ instance forget₂RingPreservesLimits : PreservesLimits (forget₂ (AlgebraCat R
 /-- The forgetful functor from R-algebras to R-modules preserves all limits.
 -/
 instance forget₂ModulePreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget₂ (AlgebraCat R) (ModuleCat.{max v w} R))
+    PreservesLimitsOfSize.{v, v} (forget₂ (AlgebraCat R) (ModuleCat.ModuleCatMax.{v, w} R))
     where preservesLimitsOfShape {J} 𝒥 :=
     {
       preservesLimit := fun F =>
@@ -156,7 +157,7 @@ instance forget₂ModulePreservesLimitsOfSize :
           (by
             apply
               ModuleCat.HasLimits.limitConeIsLimit
-                (F ⋙ forget₂ (AlgebraCat R) (ModuleCat.{max v w} R))) }
+                (F ⋙ forget₂ (AlgebraCat R) (ModuleCat.ModuleCatMax.{v, w} R))) }
 #align Algebra.forget₂_Module_preserves_limits_of_size AlgebraCat.forget₂ModulePreservesLimitsOfSize
 
 instance forget₂ModulePreservesLimits :
@@ -167,12 +168,12 @@ instance forget₂ModulePreservesLimits :
 /-- The forgetful functor from R-algebras to types preserves all limits.
 -/
 instance forgetPreservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, v} (forget (AlgebraCat.{max v w} R))
+    PreservesLimitsOfSize.{v, v} (forget (AlgebraCatMax.{v, w} R))
     where preservesLimitsOfShape {J} 𝒥 :=
     {
       preservesLimit := fun F =>
        preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
-          (types.limit_cone_is_limit (F ⋙ forget _)) }
+          (Types.limitConeIsLimit (F ⋙ forget _)) }
 #align Algebra.forget_preserves_limits_of_size AlgebraCat.forgetPreservesLimitsOfSize
 
 instance forgetPreservesLimits : PreservesLimits (forget (AlgebraCat.{w} R)) :=
