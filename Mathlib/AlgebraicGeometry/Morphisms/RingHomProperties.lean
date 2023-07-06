@@ -189,9 +189,12 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
     rw [← h₁.cancel_right_isIso _ (Scheme.Γ.map (Scheme.restrictMapIso e.inv U.1).hom.op), ←
       Functor.map_comp, ← op_comp]
     convert H ⟨_, U.prop.map_isIso e.inv⟩ using 3
+    -- Porting note : have to add this instance manually
+    haveI i1 : IsOpenImmersion
+      (Scheme.ofRestrict Y ((Opens.map e.inv.val.base).obj U.1).openEmbedding ≫ e.inv) :=
+      PresheafedSpace.IsOpenImmersion.comp _ _
     rw [IsOpenImmersion.isoOfRangeEq_hom, IsOpenImmersion.lift_fac_assoc, Category.assoc,
       e.inv_hom_id_assoc]
-    rfl
   · introv H U
     rw [← Category.assoc, op_comp, Functor.map_comp, h₁.cancel_left_isIso]
     exact H U
