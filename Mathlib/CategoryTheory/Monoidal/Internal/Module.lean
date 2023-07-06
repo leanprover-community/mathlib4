@@ -164,7 +164,7 @@ def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   map := @fun A B f =>
     { hom := f.toLinearMap
       one_hom := LinearMap.ext f.commutes
-      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
+      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| f.map_mul }
 #align Module.Mon_Module_equivalence_Algebra.inverse ModuleCat.MonModuleEquivalenceAlgebra.inverse
 
 end MonModuleEquivalenceAlgebra
@@ -182,29 +182,33 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
       (fun A =>
         { hom :=
             { hom :=
-                { toFun := id
+                { toFun := _root_.id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
-              mul_hom := by ext; dsimp at *; rfl }
+              mul_hom := sorry -- by ext; dsimp at *; rfl
+              one_hom := sorry }
           inv :=
             { hom :=
-                { toFun := id
+                { toFun := _root_.id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
-              mul_hom := by ext; dsimp at *; rfl } })
+              mul_hom := sorry -- by ext; dsimp at *; rfl
+              one_hom := sorry }
+          hom_inv_id := sorry
+          inv_hom_id := sorry })
       (by aesop_cat)
   counitIso :=
     NatIso.ofComponents
       (fun A =>
         { hom :=
-            { toFun := id
+            { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun x y => rfl
               map_one' := (algebraMap R A).map_one
               map_mul' := fun x y => @LinearMap.mul'_apply R _ _ _ _ _ _ x y
               commutes' := fun r => rfl }
           inv :=
-            { toFun := id
+            { toFun := _root_.id
               map_zero' := rfl
               map_add' := fun x y => rfl
               map_one' := (algebraMap R A).map_one.symm
@@ -222,13 +226,15 @@ def monModuleEquivalenceAlgebraForget :
   NatIso.ofComponents
     (fun A =>
       { hom :=
-          { toFun := id
+          { toFun := _root_.id
             map_add' := fun x y => rfl
             map_smul' := fun c x => rfl }
         inv :=
-          { toFun := id
+          { toFun := _root_.id
             map_add' := fun x y => rfl
-            map_smul' := fun c x => rfl } })
+            map_smul' := fun c x => rfl }
+        hom_inv_id := sorry
+        inv_hom_id := sorry })
     (by aesop_cat)
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
