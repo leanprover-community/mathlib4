@@ -8,7 +8,10 @@ Authors: Xavier Roblot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.GroupTheory.Torsion
+import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Units of a number field
@@ -54,3 +57,60 @@ theorem isUnit_iff_norm [NumberField K] (x : 𝓞 K) :
 #align is_unit_iff_norm isUnit_iff_norm
 
 end IsUnit
+
+namespace NumberField.units
+
+section coe
+
+/-- The `MonoidHom` from the group of units `(𝓞 K)ˣ` to the field `K`. -/
+def coe_to_field : (𝓞 K)ˣ →* K := (Units.coeHom K).comp (map (algebraMap (𝓞 K) K))
+
+theorem coe_to_field_injective : Function.Injective (coe_to_field K) :=
+  fun _ _ h => Units.eq_iff.mp (SetCoe.ext h)
+
+/-- There is a natural coercion from `(𝓞 K)ˣ` to `(𝓞 K)` and then from `(𝓞 K)` to `K` but it is
+useful to also have a direct one from `(𝓞 K)ˣ` to `K`. -/
+instance : Coe (𝓞 K)ˣ K := ⟨coe_to_field K⟩
+
+@[ext]
+theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
+
+end coe
+
+open NumberField.InfinitePlace
+
+section torsion
+
+/-- The torsion subgroup of the group of units. -/
+def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
+
+theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
+    x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
+  rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+  refine ⟨fun ⟨n, h_pos, h_eq⟩ φ => ?_, fun h => ?_⟩
+  · refine norm_map_one_of_pow_eq_one φ.toMonoidHom (k := ⟨n, h_pos⟩) ?_
+    rw [PNat.mk_coe, ← map_pow, h_eq, map_one]
+  · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
+    exact ⟨n, hn, by ext; rwa [map_pow, map_one]⟩
+end torsion
+
+instance : Nonempty (torsion K) := ⟨1⟩
+
+/-- The torsion subgroup is finite. -/
+instance [NumberField K] : Fintype (torsion K) := by
+  refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
+  refine Set.Finite.of_finite_image ?_ ((coe_to_field_injective K).injOn _)
+  refine (Embeddings.finite_of_norm_le K ℂ 1).subset
+    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
+  · rw [← h_ua]
+    exact u.val.prop
+  · rw [← h_ua]
+    exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
+
+/-- The torsion subgroup is cylic. -/
+instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
+
+/-- The order of the torsion subgroup as positive integer. -/
+def torsion_order [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
+
+end NumberField.units
