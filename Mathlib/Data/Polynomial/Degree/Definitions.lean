@@ -723,7 +723,7 @@ theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
       contrapose! hpd
       rw [nonpos_iff_eq_zero, ← degree_eq_iff_natDegree_eq hp] at hpd
       rw [hpd]
-      simp
+      rfl
 
 theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
     degree (p + q) = max p.degree q.degree :=
@@ -1138,8 +1138,7 @@ theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegre
   constructor
   · intro h
     rw [h, natDegree_C]
-  · intro h
-    exact eq_C_of_natDegree_eq_zero h
+  · exact eq_C_of_natDegree_eq_zero
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
   zero_le_degree_iff.mp <| (WithBot.coe_le_coe.mpr n.zero_le).trans hdeg
