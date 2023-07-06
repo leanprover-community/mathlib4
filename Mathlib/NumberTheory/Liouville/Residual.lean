@@ -65,7 +65,7 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
-    · have := Int.ofNat_le.2 r.pos; rw [Int.ofNat_one] at this ; linarith
+    · have := Int.ofNat_le.2 r.pos; rw [Int.ofNat_one] at this; linarith
     · convert @mem_ball_self ℝ _ (r : ℝ) _ _
       · push_cast; norm_cast; simp [Rat.divInt_mul_right (two_ne_zero), Rat.mkRat_self]
       · refine' one_div_pos.2 (pow_pos (Int.cast_pos.2 _) _)

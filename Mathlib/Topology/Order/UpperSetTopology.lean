@@ -16,6 +16,13 @@ the upper sets.
 
 ## Main statements
 
+- `UpperSetTopology.IsOpen_sInter` - the intersection of any set of open sets is open
+- `UpperSetTopology.IsOpen_iInter` - the intersection of any indexed collection of open sets is open
+- `UpperSetTopology.isClosed_iff_isLower` - a set is closed if and only if it is a Lower set
+- `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
+- `UpperSetTopology.Monotone_tfae` - the continuous functions are characterised as the monotone
+  functions
+
 ## Implementation notes
 
 A type synonym `WithUpperSetTopology` is introduced and for a preorder `α`, `WithUpperSetTopology α`
@@ -27,7 +34,12 @@ instance of `UpperSetTopology`.
 
 ## Motivation
 
-I need to take a run at this.
+An Alexandrov topology is a topology where the intersection of any collection of open sets is open.
+The `UpperSetTopology` is an Alexandrov topology, and, given any Alexandrov topology, a `Preorder`
+may be defined on the underlying set such that the `UpperSetTopology` of the `Preorder` coincides
+with the original topology.
+
+Furthermore, the `UpperSetTopology` is used in the construction of the Scott Topology.
 
 ## Tags
 
@@ -111,12 +123,29 @@ instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
 theorem ofUpperSet_rel_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
+theorem toUpperSet_rel_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b :=
+  Iff.rfl
+
+/--
+`ofUpper` as an `OrderIso`
+-/
 def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α := {
   toFun := ofUpperSet,
   invFun := toUpperSet,
   left_inv := toUpperSet_ofUpperSet,
   right_inv := ofUpperSet_toUpperSet,
   map_rel_iff' := ofUpperSet_rel_iff
+}
+
+/--
+`toUpper` as an `OrderIso`
+-/
+def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) := {
+  toFun := toUpperSet,
+  invFun := ofUpperSet,
+  left_inv := ofUpperSet_toUpperSet,
+  right_inv := toUpperSet_ofUpperSet,
+  map_rel_iff' := toUpperSet_rel_iff
 }
 
 end WithUpperSetTopology
@@ -158,6 +187,22 @@ lemma IsOpen_iff_IsUpperSet : IsOpen s ↔ IsUpperSet s := by
   rw [topology_eq α]
   rfl
 
+-- Alexandrov property, set formulation
+theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
+  rw [IsOpen_iff_IsUpperSet]
+  apply isUpperSet_sInter
+  intros s hs
+  rw [← IsOpen_iff_IsUpperSet]
+  exact hf _ hs
+
+-- Alexandrov property, index formulation
+theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
+  rw [IsOpen_iff_IsUpperSet]
+  apply isUpperSet_iInter
+  intros i
+  rw [← IsOpen_iff_IsUpperSet]
+  exact hf i
+
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
 lemma isClosed_iff_isLower {s : Set α} : IsClosed s
   ↔ (IsLowerSet s) := by
@@ -170,10 +215,10 @@ lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]
   constructor
-  . apply closure_minimal subset_lowerClosure _
+  · apply closure_minimal subset_lowerClosure _
     rw [isClosed_iff_isLower]
     exact LowerSet.lower (lowerClosure s)
-  . apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+  · apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
 
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
@@ -204,11 +249,11 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
            coinduced f t₁ ≤ t₂,
            t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
-  . intro hf s hs
+  · intro hf s hs
     rw [IsOpen_iff_IsUpperSet] at hs
     exact upperSetTopology_coinduced hf _ hs
   tfae_have 2 → 1
-  . intros hf a b hab
+  · intros hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
     apply (Continuous.closure_preimage_subset hf {f b})
     rw [← mem_Iic, ← closure_singleton] at hab
@@ -216,9 +261,9 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
   tfae_have 2 ↔ 4
-  . exact continuous_iff_le_induced
+  · exact continuous_iff_le_induced
   tfae_have 2 ↔ 3
-  . exact continuous_iff_coinduced_le
+  · exact continuous_iff_coinduced_le
   tfae_finish
 
 end maps

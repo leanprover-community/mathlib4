@@ -85,8 +85,8 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   swap
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by linarith⟩ : Fin (n + 2)) = 0 by
-      simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk] ; linarith)
+      simp only [this, Fin.natAdd_mk, Fin.castIso_mk, zero_comp, smul_zero]
+    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk]; linarith)
     dsimp
     linarith
   -- cleaning up the second sum
@@ -94,22 +94,22 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   swap
   · rintro ⟨k, hk⟩
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-    . simp only [Fin.lt_iff_val_lt_val]
-      dsimp [Fin.natAdd, Fin.cast]
+    · simp only [Fin.lt_iff_val_lt_val]
+      dsimp [Fin.natAdd, Fin.castIso]
       linarith
-    . intro h
+    · intro h
       rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
-      dsimp [Fin.cast] at h
+      dsimp [Fin.castIso] at h
       linarith
-    . dsimp [Fin.cast, Fin.pred]
+    · dsimp [Fin.castIso, Fin.pred]
       rw [Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
       linarith
   simp only [assoc]
   conv_lhs =>
     congr
-    . rw [Fin.sum_univ_castSucc]
-    . rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
-  dsimp [Fin.cast, Fin.castLE, Fin.castLT]
+    · rw [Fin.sum_univ_castSucc]
+    · rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
+  dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
   /- the purpose of the following `simplif` is to create three subgoals in order
       to finish the proof -/
   have simplif :
@@ -152,20 +152,20 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
       AlternatingFaceMapComplex.obj_d_eq]
     rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by linarith), Fin.sum_trunc]
     · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
-        Fin.cast_mk, Fin.castSucc_mk]
+        Fin.castIso_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
       erw [δ_comp_σ_self, δ_comp_σ_succ, add_right_neg]
     · intro j
-      dsimp [Fin.cast, Fin.castLE, Fin.castLT]
+      dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-      . simp only [Fin.lt_iff_val_lt_val]
+      · simp only [Fin.lt_iff_val_lt_val]
         dsimp [Fin.succ]
         linarith
-      . intro h
+      · intro h
         simp only [Fin.pred, Fin.ext_iff, Nat.pred_eq_sub_one, Nat.succ_add_sub_one, Fin.val_zero,
           add_eq_zero, false_and] at h
-      . simp only [Fin.pred, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
+      · simp only [Fin.pred, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         linarith
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_Hσ_eq_zero

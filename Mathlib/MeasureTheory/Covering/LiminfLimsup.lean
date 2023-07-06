@@ -125,7 +125,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     rw [eventually_atTop]
     refine'
       ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) _⟩
-    change Disjoint (b j) (Z iᶜ)
+    change Disjoint (b j) (Z i)ᶜ
     rw [disjoint_compl_right_iff_subset]
     refine' (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
       ((cthickening_mono hj' _).trans fun a ha => _)

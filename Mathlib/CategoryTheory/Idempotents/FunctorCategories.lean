@@ -82,11 +82,11 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
       naturality := fun j j' φ => equalizer.hom_ext (by simp) }
   use Y, i, e
   constructor
-  . ext j
+  · ext j
     apply equalizer.hom_ext
     dsimp
     rw [assoc, equalizer.lift_ι, ← equalizer.condition, id_comp, comp_id]
-  . ext j
+  · ext j
     simp
 namespace KaroubiFunctorCategoryEmbedding
 

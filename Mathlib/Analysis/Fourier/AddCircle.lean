@@ -469,7 +469,7 @@ set_option linter.uppercaseLean3 false in
 /-- **Parseval's identity**: for an `L²` function `f` on `AddCircle T`, the sum of the squared
 norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    (∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2) = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
+    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
   simp_rw [← fourierBasis_repr]
   have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
     apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
