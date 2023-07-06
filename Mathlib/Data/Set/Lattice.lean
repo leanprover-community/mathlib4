@@ -214,10 +214,12 @@ variable {f : α → β}
 lemma kernImage_mono : Monotone (kernImage f) :=
   Set.preimage_kernImage.monotone_u
 
-lemma kernImage_eq_compl {s : Set α} : kernImage f s = (f '' sᶜ)ᶜ := by
-  rw [Set.preimage_kernImage.u_eq]
-  intro t
-  rw [le_compl_comm, Set.image_preimage, preimage_compl, compl_le_compl_iff_le]
+lemma kernImage_eq_compl {s : Set α} : kernImage f s = (f '' sᶜ)ᶜ :=
+  Set.preimage_kernImage.u_unique (Set.image_preimage.compl)
+    (fun t ↦ compl_compl (f ⁻¹' t) ▸ Set.preimage_compl)
+
+lemma kernImage_compl {s : Set α} : kernImage f (sᶜ) = (f '' s)ᶜ := by
+  rw [kernImage_eq_compl, compl_compl]
 
 lemma kernImage_empty : kernImage f ∅ = (range f)ᶜ := by
   rw [kernImage_eq_compl, compl_empty, image_univ]
@@ -230,13 +232,14 @@ lemma compl_range_subset_kernImage {s : Set α} : (range f)ᶜ ⊆ kernImage f s
   rw [← kernImage_empty]
   exact kernImage_mono (empty_subset _)
 
-lemma kernImage_union_preimage {s : Set α} {t : Set β} (h : kernImage f s ⊆ t) :
-    kernImage f (s ∪ f ⁻¹' t) = t := by
-  nth_rewrite 2 [← kernImage_preimage_eq_iff.mpr (compl_range_subset_kernImage.trans h)]
-  refine le_antisymm _ _
-  rw [eq_comm, Set.preimage_kernImage.u_eq]
-  intro t'
+lemma kernImage_union_preimage {s : Set α} {t : Set β} :
+    kernImage f (s ∪ f ⁻¹' t) = kernImage f s ∪ t := by
+  rw [kernImage_eq_compl, kernImage_eq_compl, compl_union, ← preimage_compl, image_inter_preimage,
+      compl_inter, compl_compl]
 
+lemma kernImage_preimage_union {s : Set α} {t : Set β} :
+    kernImage f (f ⁻¹' t ∪ s) = t ∪ kernImage f s := by
+  rw [union_comm, kernImage_union_preimage, union_comm]
 
 end kernImage
 
