@@ -36,7 +36,8 @@ Extensive API for `Set` operations such as union, intersection, insertion are pr
 
 `Set.encard` is useful where one frequently wants to compare sizes sets not already known to be
 finite or infinite. For instance, the lemma `encard_subset_le` states that if `s ⊆ t`, then
-`s.encard ≤ t.encard`; this holds for all finite and infinite `s` and `t`, and can be also stated as `Monotone encard`. Making this natural statement using `Finset.card` requires splitting into cases
+`s.encard ≤ t.encard`; this holds for all finite and infinite `s` and `t`, and can be also stated as
+`Monotone encard`. Making this natural statement using `Finset.card` requires splitting into cases
 and moving between `Set` and `Finset`. Of course, `encard` taking values in `ℕ∞` can be unwieldy,
 which is why its API is smaller and contains many lemmas translating it back to `ncard`, allowing
 one to work in the nicer type `ℕ` and its much larger API.
