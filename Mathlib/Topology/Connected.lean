@@ -865,11 +865,12 @@ theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (
 
 section disjoint_subsets
 
-variable {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+variable [PreconnectedSpace α]
+  {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
 
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/
-lemma Subsingleton_of_Disjoint_IsClopen [PreconnectedSpace α]
+lemma subsingleton_of_disjoint_isClopen
     (h_clopen : ∀ i, IsClopen (s i)) :
     Subsingleton ι := by
   replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
@@ -885,10 +886,10 @@ lemma Subsingleton_of_Disjoint_IsClopen [PreconnectedSpace α]
 
 /-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
 element. -/
-lemma Subsingleton_of_Disjoint_IsOpen_Union_eq_univ [PreconnectedSpace α]
-    (h_open : ∀ i, IsOpen (s i)) (h_Union : (⋃ i, s i) = univ) :
+lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
+    (h_open : ∀ i, IsOpen (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
-  refine' Subsingleton_of_Disjoint_IsClopen h_nonempty h_disj (fun i ↦ ⟨h_open i, _⟩)
+  refine' subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨h_open i, _⟩)
   rw [← isOpen_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
   refine' isOpen_iUnion (fun j ↦ _)
   rcases eq_or_ne i j with rfl | h_ne
@@ -897,52 +898,15 @@ lemma Subsingleton_of_Disjoint_IsOpen_Union_eq_univ [PreconnectedSpace α]
 
 /-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
 element. -/
-lemma Subsingleton_of_Disjoint_IsClosed_Union_eq_univ [Finite ι] [PreconnectedSpace α]
-    (h_closed : ∀ i, IsClosed (s i)) (h_Union : (⋃ i, s i) = univ) :
+lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
+    (h_closed : ∀ i, IsClosed (s i)) (h_Union : ⋃ i, s i = univ) :
     Subsingleton ι := by
-  refine' Subsingleton_of_Disjoint_IsClopen h_nonempty h_disj (fun i ↦ ⟨_, h_closed i⟩)
+  refine' subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨_, h_closed i⟩)
   rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
   refine' isClosed_iUnion (fun j ↦ _)
   rcases eq_or_ne i j with rfl | h_ne
   · simp
   · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_closed j
-
-/-- In a connected space, any disjoint cover by non-empty clopen subsets has exactly one element. -/
-noncomputable
-def Unique_of_IsClopen_Disjoint_Union_eq_univ [ConnectedSpace α]
-    (h_clopen : ∀ i, IsClopen (s i)) (h_Union : (⋃ i, s i) = univ) :
-    Unique ι := by
-  suffices : Inhabited ι
-  · have _i := Subsingleton_of_Disjoint_IsClopen h_nonempty h_disj h_clopen
-    exact uniqueOfSubsingleton default
-  have := mem_univ (Classical.choice (inferInstance : Nonempty α))
-  rw [← h_Union, mem_iUnion] at this
-  exact ⟨Classical.choose this⟩
-
-/-- In a connected space, any disjoint cover by non-empty open subsets has exactly one element. -/
-noncomputable
-def Unique_of_IsOpen_Disjoint_Union_eq_univ [ConnectedSpace α]
-    (h_open : ∀ i, IsOpen (s i)) (h_Union : (⋃ i, s i) = univ) :
-    Unique ι := by
-  suffices : Inhabited ι
-  · have _i := Subsingleton_of_Disjoint_IsOpen_Union_eq_univ h_nonempty h_disj h_open h_Union
-    exact uniqueOfSubsingleton default
-  have := mem_univ (Classical.choice (inferInstance : Nonempty α))
-  rw [← h_Union, mem_iUnion] at this
-  exact ⟨Classical.choose this⟩
-
-/-- In a connected space, any finite disjoint cover by non-empty closed subsets has exactly one
-element. -/
-noncomputable
-def Unique_of_IsClosed_Disjoint_Union_eq_univ [Finite ι] [ConnectedSpace α]
-    (h_closed : ∀ i, IsClosed (s i)) (h_Union : (⋃ i, s i) = univ) :
-    Unique ι := by
-  suffices : Inhabited ι
-  · have _i := Subsingleton_of_Disjoint_IsClosed_Union_eq_univ h_nonempty h_disj h_closed h_Union
-    exact uniqueOfSubsingleton default
-  have := mem_univ (Classical.choice (inferInstance : Nonempty α))
-  rw [← h_Union, mem_iUnion] at this
-  exact ⟨Classical.choose this⟩
 
 end disjoint_subsets
 
