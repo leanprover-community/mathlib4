@@ -2061,6 +2061,70 @@ def OrdConeIsLimitLift {o : Ordinal} (ho : o.IsLimit)
     (s : Cone (OrdToProfinite C o hC)) : s.pt ⟶ (OrdCone C o hC).pt :=
   ⟨OrdConeIsLimitLiftFun C ho hto hC hsC s, continuous_ordConeIsLimitLiftFun C ho hto hC hsC s⟩
 
+lemma OrdToProfinite_aux {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (s: Cone (OrdToProfinite C o hC))
+    (x : s.pt) (i j : WithTop I) (hi : ord I i < o)
+    (hj : ord I j < o)
+    (hs : ord I (ISucc ho hto hj) ≤ ord I i) :
+    ((s.π.app { unop := { val := i, property := hi } } ≫ (OrdToProfinite C o hC).map
+    (@HomOfLEOrd I _ _ o (ISucc ho hto hj) ⟨i,hi⟩
+    hs).op).1 x).1 j =
+    ((s.π.app { unop := { val := i, property := hi } }).1 x).1 j := by
+  dsimp [OrdToProfinite]
+  have : (ResOnSubsets C hs ((s.π.app { unop := { val := i, property := hi } }).1 x)).val j =
+      ((s.π.app { unop := { val := i, property := hi } }).1 x).val j
+  · dsimp [ResOnSubsets, ProjOrd]
+    split_ifs with hjs
+    · rfl
+    · exfalso
+      exact hjs (ord_lt_succ _ _ _)
+  exact this
+
+lemma OrdConeIsLimitLiftFun_aux {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
+    (s: Cone (OrdToProfinite C o hC))
+    (x : s.pt) (i j : WithTop I) (hi : ord I i < o) (h : ord I j < ord I i) :
+    ((OrdConeIsLimitLiftFun C ho hto hC hsC s) x).val j =
+    ((s.π.app { unop := { val := i, property := hi } }).1 x).1 j := by
+  dsimp [OrdConeIsLimitLiftFun, OrdConeIsLimitLiftFunAux]
+  split_ifs with hj
+  · have hs : ord I (ISucc ho hto hj) ≤ ord I i
+    · dsimp [ord, ISucc]
+      dsimp [ord] at h
+      simp only [Ordinal.typein_lt_typein] at h
+      simpa only [Ordinal.typein_enum, Order.succ_le_iff, Ordinal.typein_lt_typein]
+    let f := (@HomOfLEOrd I _ _ o (ISucc ho hto hj) ⟨i,hi⟩ hs)
+    have := Cone.w s f.op
+    rw [← this]
+    exact OrdToProfinite_aux C ho hto hC s x i j hi hj hs
+  · exfalso
+    exact hj (lt_trans h hi)
+
+lemma OrdConeIsLimit_fac_aux {o : Ordinal} (ho : o.IsLimit)
+    (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
+    (hC : IsClosed C)
+    (hsC : Support C ⊆ { j | ord I j < o })
+    (s: Cone (OrdToProfinite C o hC))
+    (x : s.pt) (i : WithTop I) (hi : ord I i < o) :
+    (ResOnSubset C (ord I i)) ((OrdConeIsLimitLift C ho hto hC hsC s) x) =
+    (s.π.app { unop := { val := i, property := hi } }) x := by
+  ext j
+  dsimp [ResOnSubset, ProjOrd]
+  split_ifs with h
+  · dsimp [OrdConeIsLimitLift]
+    exact OrdConeIsLimitLiftFun_aux C ho hto hC hsC s x i j hi h
+  · have hR := (s.π.app ⟨i,hi⟩ x).prop
+    dsimp [Res] at hR
+    obtain ⟨g,⟨_,hg⟩⟩ := hR
+    dsimp [ProjOrd] at hg
+    have hgj := congr_fun hg j
+    split_ifs at hgj
+    rw [hgj]
+
 lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit)
     (hto : o ≤ Ordinal.type (·<· : WithTop I → WithTop I → Prop))
     (hC : IsClosed C)
@@ -2069,38 +2133,9 @@ lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit)
   fac := by
     rintro s ⟨⟨i,hi⟩⟩
     ext x
-    simp only [FunctorToTypes.map_comp_apply]
-    dsimp [OrdCone, ResOnSubset, ProjOrd]
-    congr
-    ext j
     simp only [comp_apply]
-    split_ifs with h
-    <;> dsimp [OrdConeIsLimitLift, OrdConeIsLimitLiftFun, OrdConeIsLimitLiftFunAux]
-    · split_ifs with hj
-      · have hs : ord I (ISucc ho hto hj) ≤ ord I i
-        · dsimp [ord, ISucc]
-          dsimp [ord] at h
-          simp only [Ordinal.typein_lt_typein] at h
-          simpa only [Ordinal.typein_enum, Order.succ_le_iff, Ordinal.typein_lt_typein]
-        let f := (@HomOfLEOrd I _ _ o (ISucc ho hto hj) ⟨i,hi⟩ hs)
-        have := Cone.w s f.op
-        rw [← this]
-        dsimp [OrdToProfinite, ResOnSubsets, ProjOrd]
-        simp only [FunctorToTypes.map_comp_apply, Profinite.forget_ContinuousMap_mk]
-        split_ifs with hjs
-        · rfl
-        · exfalso
-          exact hjs (ord_lt_succ _ _ _)
-      · exfalso
-        exact hj (lt_trans h hi)
-    · have hR := (s.π.app ⟨i,hi⟩ x).prop
-      dsimp [Res] at hR
-      obtain ⟨g,⟨_,hg⟩⟩ := hR
-      dsimp [ProjOrd] at hg
-      have hgj := congr_fun hg j
-      split_ifs at hgj
-      rw [hgj]
-      rfl
+    dsimp [OrdCone]
+    exact OrdConeIsLimit_fac_aux C ho hto hC hsC s x i hi
   uniq := by
     rintro s ⟨m,hm⟩ h
     dsimp [OrdCone] at m
@@ -2112,12 +2147,15 @@ lemma OrdConeIsLimit {o : Ordinal} (ho : o.IsLimit)
     dsimp
     split_ifs with hi
     · rw [← h (Opposite.op (ISucc ho hto hi) : {i // ord I i < o}ᵒᵖ)]
-      simp only [FunctorToTypes.map_comp_apply, Profinite.forget_ContinuousMap_mk]
-      dsimp [OrdCone, ResOnSubset, ProjOrd]
-      split_ifs with hi'
-      · rfl
-      · exfalso
-        exact hi' (ord_lt_succ _ _ _)
+      simp only [FunctorToTypes.map_comp_apply]
+      dsimp [OrdCone]
+      have : (ResOnSubset C (ord I (ISucc ho hto hi)) (m x)).val i = (m x).val i
+      · dsimp [ResOnSubset, ProjOrd]
+        split_ifs with hi'
+        · rfl
+        · exfalso
+          exact hi' (ord_lt_succ _ _ _)
+      exact this.symm
     · have := (m x).prop
       dsimp [Support] at hsC
       simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
