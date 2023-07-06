@@ -44,3 +44,10 @@ theorem Fintype.card_units [GroupWithZero α] [Fintype α] [Fintype αˣ] :
     have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α))).symm
     rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
 #align fintype.card_units Fintype.card_units
+
+theorem Fintype.card_units_add_one [GroupWithZero α] [Fintype α] [Fintype αˣ] :
+    Fintype.card αˣ + 1 = Fintype.card α := by
+  classical
+    rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
+    have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α))).symm
+    rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
