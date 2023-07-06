@@ -81,6 +81,8 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
   rw [← hP.is_localization_away_iff]
 #align ring_hom.respects_iso.basic_open_iff_localization RingHom.RespectsIso.basicOpen_iff_localization
 
+-- Porting note : the following proof has been restructured.
+-- Porting note : not sure what the max heart beats should be, but 1,000,000 does not work
 set_option maxHeartbeats 0 in
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme}
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
@@ -130,14 +132,8 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
   congr 1
   apply IsLocalization.ringHom_ext (R := Scheme.Γ.obj (Opposite.op Y)) (Submonoid.powers r) _
   rw [IsLocalization.Away.map, IsLocalization.map_comp, RingHom.algebraMap_toAlgebra]
-  -- clear_value a1 a2 i1 i2
-  -- change comp (Scheme.Γ.map (_ ≫ _)) (Scheme.Γ.map _) = comp (X.presheaf.map _) (Scheme.Γ.map (_ ≫ _))
-  -- rw [CommRingCat.ringHom_comp_eq_comp]
-  -- change _ = _ ≫ _
   rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
   change _ = comp (X.presheaf.map _) _
-  -- rw [CommRingCat.ringHom_comp_eq_comp, CommRingCat.ringHom_comp_eq_comp]
-  -- rw  [op_comp, Functor.map_comp, op_comp, Functor.map_comp]
   refine' (@Category.assoc CommRingCat _ _ _ _ _ _ _ _).symm.trans _
   refine' Eq.trans _ (@Category.assoc CommRingCat _ _ _ _ _ _ _ _)
   dsimp only [Scheme.Γ_map, Quiver.Hom.unop_op]
