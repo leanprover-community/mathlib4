@@ -266,16 +266,20 @@ instance SLAction {R : Type _} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R)
   MulAction.compHom ℍ <| SpecialLinearGroup.toGLPos.comp <| map (algebraMap R ℝ)
 #align upper_half_plane.SL_action UpperHalfPlane.SLAction
 
-instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨fun g => ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)⟩
+/-- Implementation of coercion from `SL(2, ℤ)` to `GL(2, ℝ)⁺` to make it be semireducible. -/
+-- Porting note: this definition was inlined into the coercion instance.
+@[coe] def coeSLZToGLPos (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := (g : SL(2, ℝ))
+
+instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ := ⟨coeSLZToGLPos⟩
+
+@[simp] lemma coe_SLZ_GLPos (g : SL(2, ℤ)) : ((g : SL(2, ℝ)) : GL(2, ℝ)⁺) = g := rfl
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.SL_on_GL_pos UpperHalfPlane.SLOnGLPos
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = SMul.smul ((s : GL(2, ℝ)⁺) * g) z :=
+    (s • g) • z = (s * g) • z :=
   rfl
 #align upper_half_plane.SL_on_GL_pos_smul_apply UpperHalfPlane.SLOnGLPos_smul_apply
 
@@ -290,9 +294,8 @@ instance subgroupGLPos : SMul Γ GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 #align upper_half_plane.subgroup_GL_pos UpperHalfPlane.subgroupGLPos
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 theorem subgroup_on_glpos_smul_apply (s : Γ) (g : GL(2, ℝ)⁺) (z : ℍ) :
-    (s • g) • z = SMul.smul ((s : GL(2, ℝ)⁺) * g) z :=
+    (s • g) • z = (s * g) • z :=
   rfl
 #align upper_half_plane.subgroup_on_GL_pos_smul_apply UpperHalfPlane.subgroup_on_glpos_smul_apply
 
@@ -366,14 +369,12 @@ section SLModularAction
 
 variable (g : SL(2, ℤ)) (z : ℍ) (Γ : Subgroup SL(2, ℤ))
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
 @[simp]
-theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
+theorem sl_moeb (A : SL(2, ℤ)) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 #align upper_half_plane.sl_moeb UpperHalfPlane.sl_moeb
 
--- Porting note: writing the `SMul.smul` explicitly is terrible. Needs a fix
-theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = SMul.smul (A : GL(2, ℝ)⁺) z :=
+theorem subgroup_moeb (A : Γ) (z : ℍ) : A • z = (A : GL(2, ℝ)⁺) • z :=
   rfl
 #align upper_half_plane.subgroup_moeb UpperHalfPlane.subgroup_moeb
 
@@ -382,10 +383,12 @@ theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • 
   rfl
 #align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.subgroup_to_sl_moeb
 
--- @[simp] Failed simpNF linter, probably due to the `SMul.smul` hack
+@[simp] lemma neg_coe_SLZ_GLPos (g : SL(2, ℤ)) : (-g : SL(2, ℤ)) = (-g : GL(2, ℝ)⁺) := by
+  rw [← coe_SLZ_GLPos, coe_int_neg, coe_GLPos_neg, coe_SLZ_GLPos]
+
+@[simp]
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
-  simp only [coe_GLPos_neg, sl_moeb, coe_int_neg, neg_smul]
-  apply neg_smul -- Porting note: should be unneeded once `SMul.smul` hack is fixed
+  rw [sl_moeb, sl_moeb, neg_coe_SLZ_GLPos, neg_smul]
 #align upper_half_plane.SL_neg_smul UpperHalfPlane.SL_neg_smul
 
 theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
@@ -400,13 +403,17 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
 nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
+  -- Porting note: needed to rw with this coercion lemma
+  rw [← coe_SLZ_GLPos]
   simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul]
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
-    denom g z = (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (↑g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
-  simp [denom]
+    denom g z = (g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
+  -- Porting note: needed this coercion lemma
+  rw [← coe_SLZ_GLPos]
+  simp [-coe_SLZ_GLPos, denom]
 #align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
 
 end SLModularAction
