@@ -619,9 +619,7 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y`
 -/
-@[simps apply, nolint simpNF] -- Porting note: this file has to probably be reworked when
--- coercions and instance synthesis are fixed for concrete categories so I say nolint now and
--- move on
+@[simps apply]
 def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f
   letI m2 : Module R Y := Module.compHom Y f
@@ -654,6 +652,10 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
       rw [mul_smul]
     · rw [smul_add, map_add, map_add, ih1, ih2, smul_add]
 #align category_theory.Module.extend_restrict_scalars_adj.counit.map CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.Counit.map
+
+attribute [nolint simpNF] Counit.map_apply -- Porting note: this file has to probably be reworked when
+-- coercions and instance synthesis are fixed for concrete categories so I say nolint now and
+-- move on
 
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
