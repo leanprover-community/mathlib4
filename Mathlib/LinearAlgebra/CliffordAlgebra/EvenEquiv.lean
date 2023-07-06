@@ -124,10 +124,11 @@ end EquivEven
 
 open EquivEven
 
+set_option pp.proofs false
+--set_option pp.explicit true
 -- Porting FIXME: the `dsimp only` here take a very long time,
 -- and even if you wait for it it hasn't reached the desired state,
 -- and `rw [← mul_assoc]` fails.
-
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
@@ -136,14 +137,19 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    dsimp only [Subalgebra.coe_mul, LinearMap.codRestrict_apply, LinearMap.comp_apply,
-      LinearMap.mulLeft_apply, LinearMap.inl_apply, Subalgebra.coe_algebraMap]
+    -- porting note: was `dsimp only`
+    rw [Subalgebra.coe_mul]
+    -- porting note: was `dsimp only`
+    erw [LinearMap.codRestrict_apply]
+    dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
 
 @[simp]
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
-  rw [toEven, CliffordAlgebra.lift_ι_apply, LinearMap.codRestrict_apply]
+  rw [toEven, CliffordAlgebra.lift_ι_apply]
+  -- porting note: was `rw`
+  erw [LinearMap.codRestrict_apply]
   rfl
 #align clifford_algebra.to_even_ι CliffordAlgebra.toEven_ι
 
