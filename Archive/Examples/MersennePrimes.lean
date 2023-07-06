@@ -19,6 +19,13 @@ See the discussion at the end of [Mathlib/NumberTheory/LucasLehmer.lean]
 for ideas about extending this to larger Mersenne primes.
 -/
 
+
+set_option profiler true
+example : 10^40000000 = 10^40000000 := by norm_num
+-- norm_num took 582ms
+-- norm_num took 563ms
+-- type checking took 587ms
+
 set_option profiler true
 
 -- The Lucas-Lehmer test does not apply to `mersenne 2`
@@ -111,7 +118,48 @@ example : (mersenne 21701).Prime :=
 example : (mersenne 23209).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
+-- We now run into a little problem, that requires a small patch to the kernel.
+example : 2^25744 - (2^25744 - 1) = 1 := by norm_num
+example : 2^25745 - (2^25745 - 1) = 1 := by norm_num
+
+
+
 -- First failing example ("deep recursion detected")
--- /-- Nelson and Slowinski (1979)) -/
--- example : (mersenne 44497).Prime :=
+/-- Nelson and Slowinski (1979) -/
+example : (mersenne 44497).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski (1982) -/
+example : (mersenne 86243).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Colquitt and Welsh (1988) -/
+example : (mersenne 110503).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski (1983) -/
+example : (mersenne 132049).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski (1985) -/
+example : (mersenne 216091).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- Lean crashes after an hour or so,
+-- and is unable to handle the 90s.
+
+-- /-- Slowinski and Gage (1992) -/
+-- example : (mersenne 756839).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- /-- Slowinski and Gage (1994) -/
+-- example : (mersenne 859433).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- /-- Slowinski and Gage (1996) -/
+-- example : (mersenne 1257787).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- /-- GIMPS / Armengaud (1996) -/
+-- example : (mersenne 1398269).Prime :=
 --   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
