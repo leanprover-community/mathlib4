@@ -207,22 +207,23 @@ theorem affineLocally_respectsIso (h : RingHom.RespectsIso @P) : (affineLocally 
 theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Scheme} (f : X ⟶ Y) :
     affineLocally (@P) f ↔
       ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ (Opens.map f.1.base).obj U.1),
-        P (f.appLe e) := by
+        P (Scheme.Hom.appLe f e) := by
   apply forall_congr'
   intro U
-  delta source_affine_locally
-  simp_rw [op_comp, Scheme.Γ.map_comp, Γ_map_morphism_restrict, category.assoc, Scheme.Γ_map_op,
+  delta sourceAffineLocally
+  simp_rw [op_comp, Scheme.Γ.map_comp, Γ_map_morphismRestrict, Category.assoc, Scheme.Γ_map_op,
     hP.cancel_left_isIso]
   constructor
   · intro H V e
-    let U' := (opens.map f.val.base).obj U.1
-    have e' : U'.open_embedding.is_open_map.functor.obj ((opens.map U'.inclusion).obj V.1) = V.1 :=
+    let U' := (Opens.map f.val.base).obj U.1
+    have e' : U'.openEmbedding.isOpenMap.functor.obj ((Opens.map U'.inclusion).obj V.1) = V.1 :=
       by
-      ext1; refine' set.image_preimage_eq_inter_range.trans (set.inter_eq_left_iff_subset.mpr _)
-      convert e; exact Subtype.range_coe
-    have := H ⟨(opens.map (X.ofRestrict U'.open_embedding).1.base).obj V.1, _⟩
+      ext1; refine' Set.image_preimage_eq_inter_range.trans (Set.inter_eq_left_iff_subset.mpr _)
+      erw [Subtype.range_val]
+      convert e
+    have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, _⟩
     erw [← X.presheaf.map_comp] at this
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eq_to_hom _)), category.assoc, ←
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
       X.presheaf.map_comp]
     convert this using 1
     · dsimp only [functor.op, unop_op]; rw [opens.open_embedding_obj_top]; congr 1; exact e'.symm
@@ -233,11 +234,10 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     erw [← X.presheaf.map_comp]
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eq_to_hom _)), category.assoc, ←
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
       X.presheaf.map_comp]
     convert H
-    · dsimp only [functor.op, unop_op]; rw [opens.open_embedding_obj_top]; rfl
-    · infer_instance
+    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
 theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.RespectsIso @P)
