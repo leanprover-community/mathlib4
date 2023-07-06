@@ -18,7 +18,7 @@ structure BoundedContDiffMap (n : ℕ∞) : Type _ where
   protected contDiff' : ContDiff 𝕜 n toFun
   protected bounded' : ∀ i : ℕ, i ≤ n → ∃ C, ∀ x, ‖iteratedFDeriv 𝕜 i toFun x‖ ≤ C
 
-notation:25 E " →ᵇ[" 𝕜 ", " n "]" F => BoundedContDiffMap 𝕜 E F n
+notation:25 E " →ᵇ[" 𝕜 ", " n "] " F => BoundedContDiffMap 𝕜 E F n
 
 class BoundedContDiffMapClass (B : Type _) (𝕜 E F : outParam <| Type _) [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
