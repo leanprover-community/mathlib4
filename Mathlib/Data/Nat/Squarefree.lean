@@ -374,6 +374,14 @@ theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 
+theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.coprime n :=
+  coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
+
+theorem squarefree_mul_iff {m n : ℕ} :
+    Squarefree (m * n) ↔ m.coprime n ∧ Squarefree m ∧ Squarefree n :=
+  ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
+    fun h => (squarefree_mul h.1).mpr h.2⟩
+
 end Nat
 
 -- Porting note: comment out NormNum tactic, to be moved to another file.
