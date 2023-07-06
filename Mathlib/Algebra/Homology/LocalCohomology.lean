@@ -171,7 +171,7 @@ end localCohomology
 
 /-! We give two models for the local cohomology with support in an ideal `J`: first in terms of
 the powers of `J` (`localCohomology`), then in terms of *all* ideals with radical
-containing `J` (`localCohomology.of_self_le_radical`). -/
+containing `J` (`localCohomology.ofSelfLERadical`). -/
 
 
 section ModelsForLocalCohomology
@@ -209,8 +209,8 @@ section LocalCohomologyEquiv
 
 variable {R : Type u} [CommRing R]
 
-/-- Lifting `ideal_powers_diagram J` from a diagram valued in `ideals R` to a diagram
-valued in `self_le_radical J`. -/
+/-- Lifting `idealPowersDiagram J` from a diagram valued in `ideals R` to a diagram
+valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
@@ -221,10 +221,10 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
 
 variable {I J K : Ideal R}
 
-/-- The lemma below essentially says that `ideal_powers_to_self_le_radical I` is initial in
-`self_le_radical_diagram I`.
+/-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
+`selfLERadicalDiagram I`.
 
-PORTING NOTE: This lemma should probably be moved to `ring_theory/finiteness.lean`
+PORTING NOTE: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
 to be near `ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
 theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
     ∃ k : ℕ, I ^ k ≤ J := by
