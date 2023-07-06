@@ -653,9 +653,10 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
     · rw [smul_add, map_add, map_add, ih1, ih2, smul_add]
 #align category_theory.Module.extend_restrict_scalars_adj.counit.map CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.Counit.map
 
-attribute [nolint simpNF] Counit.map_apply -- Porting note: this file has to probably be reworked when
--- coercions and instance synthesis are fixed for concrete categories so I say nolint now and
--- move on
+-- Porting note: this file has to probably be reworked when
+-- coercions and instance synthesis are fixed for concrete categories
+-- so I say nolint now and move on
+attribute [nolint simpNF] Counit.map_apply
 
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
