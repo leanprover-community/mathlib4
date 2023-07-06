@@ -1528,7 +1528,7 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     ext1 a
     simp only [(· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply_toFun,
+      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
       ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply,
       LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.arrowCongrₛₗ_symm_apply, eq_self_iff_true]
   simp_rw [this] at A
