@@ -56,7 +56,7 @@ def arrayEquivList (α : Type _) : Array α ≃ List α :=
 end Equiv
 
 /- Porting note: removed instances for what would be ported as `Traversable (Array α)` and
-`IsLawfulTraversable (Array α)`. These would
+`LawfulTraversable (Array α)`. These would
 
 1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
@@ -73,7 +73,7 @@ instance for `array` was)
 -- instance : Traversable (Array' n) :=
 --   @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
 
--- instance : IsLawfulTraversable (Array' n) :=
+-- instance : LawfulTraversable (Array' n) :=
 --   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
 
 -- end Array'

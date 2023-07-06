@@ -32,7 +32,7 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
 
 instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp; rfl
 
-open IsLawfulTraversable CommApplicative
+open LawfulTraversable CommApplicative
 
 variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 
@@ -86,7 +86,7 @@ instance : LawfulMonad Multiset := LawfulMonad.mk'
 
 open Functor
 
-open Traversable IsLawfulTraversable
+open Traversable LawfulTraversable
 
 @[simp]
 theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
@@ -141,7 +141,7 @@ theorem naturality {G H : Type _ → Type _} [Applicative G] [Applicative H] [Co
   refine' Quotient.inductionOn x _
   intro
   simp only [quot_mk_to_coe, traverse, lift_coe, Function.comp_apply,
-    ApplicativeTransformation.preserves_map, IsLawfulTraversable.naturality]
+    ApplicativeTransformation.preserves_map, LawfulTraversable.naturality]
 #align multiset.naturality Multiset.naturality
 
 end Multiset

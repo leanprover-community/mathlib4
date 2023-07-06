@@ -25,21 +25,21 @@ Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 
 universe u
 
-open IsLawfulTraversable
+open LawfulTraversable
 
 open Function hiding comp
 
 open Functor
 
-attribute [functor_norm] IsLawfulTraversable.naturality
+attribute [functor_norm] LawfulTraversable.naturality
 
-attribute [simp] IsLawfulTraversable.id_traverse
+attribute [simp] LawfulTraversable.id_traverse
 
 namespace Traversable
 
 variable {t : Type u → Type u}
 
-variable [Traversable t] [IsLawfulTraversable t]
+variable [Traversable t] [LawfulTraversable t]
 
 variable (F G : Type u → Type u)
 
