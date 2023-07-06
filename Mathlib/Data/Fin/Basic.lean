@@ -237,6 +237,16 @@ protected theorem heq_fun_iff {α : Sort _} {k l : ℕ} (h : k = l) {f : Fin k �
   simp [Function.funext_iff]
 #align fin.heq_fun_iff Fin.heq_fun_iff
 
+/-- Assume `k = l` and `k' = l'`.
+If two functions `Fin k → Fin k' → α` and `Fin l → Fin l' → α` are equal on each pair,
+then they coincide (in the heq sense). -/
+protected theorem heq_fun₂_iff {α : Sort _} {k l k' l' : ℕ} (h : k = l) (h' : k' = l')
+  {f : Fin k → Fin k' → α} {g : Fin l → Fin l' → α} :
+    HEq f g ↔ ∀ (i : Fin k) (j : Fin k'), f i j = g ⟨(i : ℕ), h ▸ i.2⟩ ⟨(j : ℕ), h' ▸ j.2⟩ := by
+  subst h
+  subst h'
+  simp [Function.funext_iff]
+
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
     HEq i j ↔ (i : ℕ) = (j : ℕ) := by
   subst h
