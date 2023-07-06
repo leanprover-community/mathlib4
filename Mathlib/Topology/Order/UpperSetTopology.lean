@@ -215,10 +215,10 @@ lemma isClosed_isLower {s : Set α} : IsClosed s → IsLowerSet s := fun h =>
 lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
   rw [subset_antisymm_iff]
   constructor
-  . apply closure_minimal subset_lowerClosure _
+  · apply closure_minimal subset_lowerClosure _
     rw [isClosed_iff_isLower]
     exact LowerSet.lower (lowerClosure s)
-  . apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
+  · apply lowerClosure_min subset_closure (isClosed_isLower isClosed_closure)
 
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
@@ -249,11 +249,11 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
            coinduced f t₁ ≤ t₂,
            t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
-  . intro hf s hs
+  · intro hf s hs
     rw [IsOpen_iff_IsUpperSet] at hs
     exact upperSetTopology_coinduced hf _ hs
   tfae_have 2 → 1
-  . intros hf a b hab
+  · intros hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
     apply (Continuous.closure_preimage_subset hf {f b})
     rw [← mem_Iic, ← closure_singleton] at hab
@@ -261,9 +261,9 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
   tfae_have 2 ↔ 4
-  . exact continuous_iff_le_induced
+  · exact continuous_iff_le_induced
   tfae_have 2 ↔ 3
-  . exact continuous_iff_coinduced_le
+  · exact continuous_iff_coinduced_le
   tfae_finish
 
 end maps
