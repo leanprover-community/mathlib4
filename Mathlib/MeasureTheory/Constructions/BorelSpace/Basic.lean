@@ -852,7 +852,7 @@ theorem IsClosed.ae_eq_univ_iff_eq {μ : Measure α} [μ.IsOpenPosMeasure]
 theorem IsClosed.measure_eq_univ_iff_eq {μ : Measure α} [μ.IsOpenPosMeasure] [IsFiniteMeasure μ]
     {F : Set α} (hF : IsClosed F) :
     μ F = μ univ ↔ F = univ := by
-  rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_univ_iff_eq]
+  rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_eq_univ_iff_eq]
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
