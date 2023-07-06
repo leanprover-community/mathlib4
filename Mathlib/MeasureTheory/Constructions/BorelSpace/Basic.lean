@@ -843,7 +843,7 @@ theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
   exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
 #align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
 
-theorem IsClosed.ae_univ_iff_eq {μ : Measure α} [μ.IsOpenPosMeasure]
+theorem IsClosed.ae_eq_univ_iff_eq {μ : Measure α} [μ.IsOpenPosMeasure]
     {F : Set α} (hF : IsClosed F) :
     F =ᵐ[μ] univ ↔ F = univ := by
   refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
