@@ -6,6 +6,6 @@ structure a where
 
 example : a := by
   constructor
-  guard_target = Nat
+  guard_target =ₛ Nat
   sorry
   done
