@@ -411,6 +411,10 @@ def closure (s : Set α) : Set α :=
   ⋂₀ { t | IsClosed t ∧ s ⊆ t }
 #align closure closure
 
+set_option quotPrecheck false in
+/-- Notation for `closure` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
+
 @[simp]
 theorem isClosed_closure {s : Set α} : IsClosed (closure s) :=
   isClosed_sInter fun _ => And.left
