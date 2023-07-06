@@ -21,7 +21,10 @@ does not set a new MCtx depth
 if newly-created implicit argument mvars are unassigned, instead returning them along with the
 `Expr`. Useful if we want to delay the assignment of these metavariables.
 
+# Notes
 
+Note that we frequently use `decl_name%` in non-dynamic way simply to avoid mistakes when passing
+a function's name to itself.
 -/
 
 open Lean Meta
@@ -41,19 +44,21 @@ private def withAppBuilderTrace' [ToMessageData α] [ToMessageData β] [ToMessag
       trace[Meta.appBuilder.error] ex.toMessageData
       throw ex
 
-private def tooManyExplicitArgsException (n : Name) (f : Expr) (used : Nat) (provided : Array Expr)
-    : MetaM α :=
-  throwAppBuilderException n m!"too many explicit arguments provided to{indentExpr f}\nexpected {
-    used}, got {provided.size}.\nused:{indentD provided[0:used]}\nunused:{indentD provided[used:]
-    }"
+/-- An informative exception for providing too many explicit arguments. -/
+private def tooManyExplicitArgsException (n : Name) (f remainingType : Expr) (used : Nat)
+    (provided : Array Expr) : MetaM α :=
+  throwAppBuilderException n m!"too many explicit arguments provided to{indentExpr f}\nExpected {
+    remainingType} to be a function type. Used {used} arguments, got {provided.size}.\nused:{
+    indentD provided[0:used]}\nunused:{indentD provided[used:]}"
 
 namespace Lean.Meta
 
 /-- Like `mkAppN f xs`, but unifies the types of the arguments `xs` with the function `f`'s input
 types, and therefore (unlike `mkAppN`) fails if any argument types are not defeq to the
-corresponding input type. Note that, by design, this may assign metavariables at the current
-MCtxDepth. -/
-def mkAppNUnifying (f : Expr) (xs : Array Expr) (reducing := true): MetaM Expr := do
+corresponding input type.
+
+Note that, by design, this may assign metavariables at the current MCtxDepth. -/
+def mkAppNUnifying (f : Expr) (xs : Array Expr) (reducing := true) : MetaM Expr := do
   mkAppNUnifyingArgs f (← inferType f) xs
 where
   mkAppNUnifyingArgs (f fType : Expr) (xs : Array Expr) : MetaM Expr := withAppBuilderTrace f xs do
@@ -72,7 +77,7 @@ where
           guard type.isForall
           pure (args, args.size, type)
         catch _ =>
-          tooManyExplicitArgsException `mkAppNUnifying f args.size xs
+          tooManyExplicitArgsException `mkAppNUnifying f type args.size xs
     instantiateMVars (mkAppN f args)
 
 /-- Like `mkAppMFinal`, but does not fail if unassigned metavariables are present. However, it does
@@ -133,54 +138,63 @@ private partial def mkAppMArgsUnifyingCont (n : Name) (f : Expr) (fType : Expr) 
           if type.isForall then
             loop type i args.size args mvars instMVars
           else
-            throwAppBuilderException n m!"too many explicit arguments provided to{
-              indentExpr f}\narguments{indentD xs}"
+            tooManyExplicitArgsException n f type i xs
         else
-          throwAppBuilderException n m!"too many explicit arguments provided to{
-            indentExpr f}\narguments{indentD xs}"
+          tooManyExplicitArgsException n f type i xs
   loop fType 0 0 #[] #[] #[]
 
-/-- Like `mkAppM`, but allows metavariables to be unified during the construction of the
-application. Fails if any metavariables for implicit arguments created during the course of
-`mkAppMUnifying` are still unassigned; to return these mvars, use `mkAppMUnifyingWithNewMVars`. -/
-def mkAppMUnifying (const : Name) (xs : Array Expr) (reducing := true)
-    : MetaM Expr :=
+/-- Like `mkAppM`, but allows metavariables at the current MCtxDepth to be unified during the
+construction of the application. Fails if any metavariables for implicit arguments created during
+the course of `mkAppMUnifying` are still unassigned; to return these mvars instead of failing, use
+`mkAppMUnifyingWithNewMVars`.
+
+If `reducing` is `true` (the default), reduces the argument types of `const` at default
+transparency. -/
+def mkAppMUnifying (const : Name) (xs : Array Expr) (reducing := true) : MetaM Expr :=
   withAppBuilderTrace const xs do
     let (f, fType) ← mkFun const
     mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifying
 
 /-- Like `mkAppM'`, but allows metavariables to be unified during the construction of the
 application. Fails if any metavariables for implicit arguments created during the course of
-`mkAppMUnifying'` are still unassigned; to return these mvars, use `mkAppMUnifyingWithNewMVars'`. -/
-def mkAppMUnifying' (f : Expr) (xs : Array Expr) (reducing := true)
-    : MetaM Expr :=
+`mkAppMUnifying'` are still unassigned; to return these mvars instead of failing, use
+`mkAppMUnifyingWithNewMVars'`.
+
+If `reducing` is `true` (the default), reduces the argument types of `f` at default transparency. -/
+def mkAppMUnifying' (f : Expr) (xs : Array Expr) (reducing := true) : MetaM Expr :=
   withAppBuilderTrace f xs do
     mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifying
 
 local instance : ToMessageData (Expr × Array MVarId × Array MVarId) where
   toMessageData := fun (e, m₁, m₂) =>
     toMessageData e ++
-      "\nimplicit mvars:\n" ++ toMessageData m₁ ++
-      "\ninstance mvars:\n" ++ toMessageData m₂
+      "\nunassigned implicit mvars:\n" ++ toMessageData m₁ ++
+      "\nunassigned instance mvars:\n" ++ toMessageData m₂
 
 /-- Like `mkAppNUnifying`, but returns `(e, implicitMVars, instMVars)` where `implicitMVars` and
-`instMVars` are any newly-created metavariables for the implicit and instance arguments of `const`.
-Useful in case we want to e.g. try assigning the `implicitMVars` with `isDefEq` afterwards, or if
-we want to try synthesizing instance arguments later. -/
+`instMVars` are any newly-created unassigned metavariables for the implicit and instance arguments
+of `const`. Useful in case we want to e.g. try assigning the `implicitMVars` or synthesizing the
+instance arguments later.
+
+If `reducing` is `true` (the default), reduces the argument types of `const` at default
+transparency. -/
 def mkAppMUnifyingWithNewMVars (const : Name) (xs : Array Expr) (reducing := true)
     : MetaM (Expr × Array MVarId × Array MVarId) :=
   withAppBuilderTrace' const xs do
     let (f, fType) ← mkFun const
     mkAppMArgsUnifyingCont decl_name% f fType xs reducing mkAppMFinalUnifyingWithNewMVars
 
-/-- Like `mkAppNUnifyingWithNewMVars'`, but returns `(e, implicitMVars, instMVars)`. Useful in case
-we want to e.g. try assigning the `implicitMVars` with `isDefEq` or if we want to try synthesizing
-instance arguments later. -/
+/-- Like `mkAppMUnifying'`, but returns `(e, implicitMVars, instMVars)` where `implicitMVars` and
+`instMVars` are any newly-created unassigned metavariables for the implicit and instance arguments
+of `const`. Useful in case we want to e.g. try assigning the `implicitMVars` or synthesizing the
+instance arguments later.
+
+If `reducing` is `true` (the default), reduces the argument types of `f` at default transparency. -/
 def mkAppMUnifyingWithNewMVars' (f : Expr) (xs : Array Expr) (reducing := true)
     : MetaM (Expr × Array MVarId × Array MVarId) :=
   withAppBuilderTrace' f xs do
     mkAppMArgsUnifyingCont decl_name% f (← inferType f) xs reducing mkAppMFinalUnifyingWithNewMVars
 
-/-- `mkFun constName` returns `(f, fType)` with fresh level mvars, and updates caches
-appropriately. -/
+/-- `mkFun constName` returns `(f, fType)` with fresh level mvars, where `f` =
+`.const constName us`. -/
 alias mkFun ← mkFun
