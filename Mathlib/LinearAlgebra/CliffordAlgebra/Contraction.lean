@@ -315,23 +315,27 @@ theorem changeForm_ι (m : M) : changeForm h (ι (M := M) Q m) = ι (M := M) Q' 
 
 theorem changeForm_ι_mul (m : M) (x : CliffordAlgebra Q) :
     changeForm h (ι (M := M) Q m * x) = ι (M := M) Q' m * changeForm h x
-    - BilinForm.toLin B m⌋changeForm h x :=
+    - contractLeft (Q := Q') (BilinForm.toLin B m) (changeForm h x) :=
+-- Porting note: original statement
+--    - BilinForm.toLin B m⌋changeForm h x :=
   (foldr_mul _ _ _ _ _ _).trans <| by rw [foldr_ι]; rfl
 #align clifford_algebra.change_form_ι_mul CliffordAlgebra.changeForm_ι_mul
 
 theorem changeForm_ι_mul_ι (m₁ m₂ : M) :
-    changeForm h (ι _ m₁ * ι _ m₂) = ι _ m₁ * ι _ m₂ - algebraMap _ _ (B m₁ m₂) := by
-  rw [change_form_ι_mul, change_form_ι, contract_left_ι, BilinForm.toLin_apply]
+    changeForm h (ι Q m₁ * ι Q m₂) = ι Q' m₁ * ι Q' m₂ - algebraMap _ _ (B m₁ m₂) := by
+  rw [changeForm_ι_mul, changeForm_ι, contractLeft_ι, BilinForm.toLin_apply]
 #align clifford_algebra.change_form_ι_mul_ι CliffordAlgebra.changeForm_ι_mul_ι
 
 /-- Theorem 23 of [grinberg_clifford_2016][] -/
 theorem changeForm_contractLeft (d : Module.Dual R M) (x : CliffordAlgebra Q) :
-    changeForm h (d⌋x) = d⌋changeForm h x := by
+-- Porting note: original statement
+--    changeForm h (d⌋x) = d⌋changeForm h x := by
+    changeForm h (contractLeft (Q := Q) d x) = contractLeft (Q := Q') d (changeForm h x) := by
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
-  · simp only [contract_left_algebra_map, change_form_algebra_map, map_zero]
+  · simp only [contractLeft_algebraMap, changeForm_algebraMap, map_zero]
   · rw [map_add, map_add, map_add, map_add, hx, hy]
-  · simp only [contract_left_ι_mul, change_form_ι_mul, map_sub, LinearMap.map_smul]
-    rw [← hx, contract_left_comm, ← sub_add, sub_neg_eq_add, ← hx]
+  · simp only [contractLeft_ι_mul, changeForm_ι_mul, map_sub, LinearMap.map_smul]
+    rw [← hx, contractLeft_comm, ← sub_add, sub_neg_eq_add, ← hx]
 #align clifford_algebra.change_form_contract_left CliffordAlgebra.changeForm_contractLeft
 
 theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
@@ -339,8 +343,7 @@ theorem changeForm_self_apply (x : CliffordAlgebra Q) : changeForm (Q' := Q)
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [changeForm_algebraMap]
   · rw [map_add, hx, hy]
-  ·
-    rw [changeForm_ι_mul, hx, map_zero, LinearMap.zero_apply, map_zero, LinearMap.zero_apply,
+  · rw [changeForm_ι_mul, hx, map_zero, LinearMap.zero_apply, map_zero, LinearMap.zero_apply,
       sub_zero]
 #align clifford_algebra.change_form_self_apply CliffordAlgebra.changeForm_self_apply
 
@@ -356,15 +359,14 @@ theorem changeForm_changeForm (x : CliffordAlgebra Q) :
   induction' x using CliffordAlgebra.left_induction with r x y hx hy m x hx
   · simp_rw [changeForm_algebraMap]
   · rw [map_add, map_add, map_add, hx, hy]
-  ·
-    rw [changeForm_ι_mul, map_sub, changeForm_ι_mul, changeForm_ι_mul, hx, sub_sub, map_add,
-      LinearMap.add_apply, map_add, LinearMap.add_apply, change_form_contract_left, hx,
+  · rw [changeForm_ι_mul, map_sub, changeForm_ι_mul, changeForm_ι_mul, hx, sub_sub, map_add,
+      LinearMap.add_apply, map_add, LinearMap.add_apply, changeForm_contractLeft, hx,
       add_comm (_ : CliffordAlgebra Q'')]
 #align clifford_algebra.change_form_change_form CliffordAlgebra.changeForm_changeForm
 
 theorem changeForm_comp_changeForm :
     (changeForm h').comp (changeForm h) = changeForm (changeForm.add_proof h h') :=
-  LinearMap.ext <| changeForm_changeForm _ _
+  LinearMap.ext <| changeForm_changeForm _ h'
 #align clifford_algebra.change_form_comp_change_form CliffordAlgebra.changeForm_comp_changeForm
 
 /-- Any two algebras whose quadratic forms differ by a bilinear form are isomorphic as modules.
@@ -375,16 +377,19 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
   { changeForm h with
     toFun := changeForm h
     invFun := changeForm (changeForm.neg_proof h)
-    left_inv := fun x =>
-      (changeForm_changeForm _ _ x).trans <| by simp_rw [add_right_neg, changeForm_self_apply]
-    right_inv := fun x =>
-      (changeForm_changeForm _ _ x).trans <| by simp_rw [add_left_neg, changeForm_self_apply] }
+    left_inv := fun x => by
+      dsimp only
+      exact (changeForm_changeForm _ _ x).trans <| by simp_rw [add_right_neg, changeForm_self_apply]
+    right_inv := fun x => by
+      dsimp only
+      exact (changeForm_changeForm _ _ x).trans <|
+        by simp_rw [add_left_neg, changeForm_self_apply] }
 #align clifford_algebra.change_form_equiv CliffordAlgebra.changeFormEquiv
 
 @[simp]
 theorem changeFormEquiv_symm :
     (changeFormEquiv h).symm = changeFormEquiv (changeForm.neg_proof h) :=
-  LinearEquiv.ext fun x => (rfl : changeForm _ x = changeForm _ x)
+  LinearEquiv.ext fun _ => rfl
 #align clifford_algebra.change_form_equiv_symm CliffordAlgebra.changeFormEquiv_symm
 
 variable (Q)
