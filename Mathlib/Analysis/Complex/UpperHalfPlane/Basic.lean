@@ -272,7 +272,7 @@ instance SLAction {R : Type _} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R)
 
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ := ⟨coeSLZToGLPos⟩
 
-@[simp] lemma coe_SLZ_GLPos (g : SL(2, ℤ)) : ((g : SL(2, ℝ)) : GL(2, ℝ)⁺) = g := rfl
+@[simp] lemma coe_SLR_coe_GLPos (g : SL(2, ℤ)) : g = ((g : SL(2, ℝ)) : GL(2, ℝ)⁺) := rfl
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
@@ -384,7 +384,7 @@ theorem subgroup_to_sl_moeb (A : Γ) (z : ℍ) : A • z = (A : SL(2, ℤ)) • 
 #align upper_half_plane.subgroup_to_sl_moeb UpperHalfPlane.subgroup_to_sl_moeb
 
 @[simp] lemma neg_coe_SLZ_GLPos (g : SL(2, ℤ)) : (-g : SL(2, ℤ)) = (-g : GL(2, ℝ)⁺) := by
-  rw [← coe_SLZ_GLPos, coe_int_neg, coe_GLPos_neg, coe_SLZ_GLPos]
+  rw [coe_SLR_coe_GLPos, coe_int_neg, coe_GLPos_neg, coe_SLR_coe_GLPos]
 
 @[simp]
 theorem SL_neg_smul (g : SL(2, ℤ)) (z : ℍ) : -g • z = g • z := by
@@ -403,17 +403,13 @@ theorem c_mul_im_sq_le_normSq_denom (z : ℍ) (g : SL(2, ℝ)) :
 nonrec theorem SpecialLinearGroup.im_smul_eq_div_normSq :
     (g • z).im = z.im / Complex.normSq (denom g z) := by
   convert im_smul_eq_div_normSq g z
-  -- Porting note: needed to rw with this coercion lemma
-  rw [← coe_SLZ_GLPos]
-  simp only [GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
+  simp only [coe_SLR_coe_GLPos, GeneralLinearGroup.det_apply_val, coe_GLPos_coe_GL_coe_matrix,
     Int.coe_castRingHom, (g : SL(2, ℝ)).prop, one_mul]
 #align upper_half_plane.special_linear_group.im_smul_eq_div_norm_sq UpperHalfPlane.SpecialLinearGroup.im_smul_eq_div_normSq
 
 theorem denom_apply (g : SL(2, ℤ)) (z : ℍ) :
     denom g z = (g : Matrix (Fin 2) (Fin 2) ℤ) 1 0 * z + (g : Matrix (Fin 2) (Fin 2) ℤ) 1 1 := by
-  -- Porting note: needed this coercion lemma
-  rw [← coe_SLZ_GLPos]
-  simp [-coe_SLZ_GLPos, denom]
+  simp [denom]
 #align upper_half_plane.denom_apply UpperHalfPlane.denom_apply
 
 end SLModularAction
