@@ -713,16 +713,15 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
 #align polynomial.degree_add_C Polynomial.degree_add_C
 
 theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
-  by_cases hp : (p = 0)
-  · rw [hp, zero_add, natDegree_C, natDegree_zero]
-  · by_cases hpd: p.degree ≤ 0
-    · rw [eq_C_of_degree_le_zero hpd, ← C_add, natDegree_C, natDegree_C]
-    · apply natDegree_add_eq_left_of_natDegree_lt
-      rw [natDegree_C a]
-      contrapose! hpd
-      rw [nonpos_iff_eq_zero, ← degree_eq_iff_natDegree_eq hp] at hpd
-      rw [hpd]
-      rfl
+  by_cases hpd: p.degree ≤ 0
+  · rw [eq_C_of_degree_le_zero hpd, ← C_add, natDegree_C, natDegree_C]
+  · apply natDegree_add_eq_left_of_natDegree_lt
+    rw [natDegree_C a]
+    contrapose! hpd
+    apply le_trans degree_le_natDegree
+    rw [nonpos_iff_eq_zero] at hpd
+    rw [hpd]
+    rfl
 
 theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
     degree (p + q) = max p.degree q.degree :=
