@@ -1150,36 +1150,53 @@ theorem op_norm_mulLeftRight_le : ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   op_norm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ op_norm_mulLeftRight_apply_le 𝕜 𝕜' x
 #align continuous_linear_map.op_norm_mul_left_right_le ContinuousLinearMap.op_norm_mulLeftRight_le
 
-end NonUnital
+/-- This is a mixin class for non-unital normed algebras which states that the left-regular
+representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
+a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addiiton, so is every
+C⋆-algebra, non-unital included (see `CstarRing.instRegularNormedAlgebra`), but there are yet other
+examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regular.
 
-section Unital
+This is a useful class because it gives rise to a nice norm on the unitization; in particular it is
+a C⋆-norm when the norm on `A` is a C⋆-norm. -/
+class _root_.RegularNormedAlgebra : Prop :=
+  /-- The left regular representation of the algebra on itself is an isometry. -/
+  isometry_mul' : Isometry (mul 𝕜 𝕜')
 
-variable (𝕜) (𝕜' : Type _) [SeminormedRing 𝕜']
+/-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
+instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 𝕜' : Type _} [NontriviallyNormedField 𝕜]
+    [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜'] : RegularNormedAlgebra 𝕜 𝕜'  where
+  isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 𝕜') <|
+    fun x => le_antisymm (op_norm_mul_apply_le _ _ _) <| by
+      convert ratio_le_op_norm ((mul 𝕜 𝕜') x) (1 : 𝕜')
+      simp [norm_one]
 
-variable [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜']
+variable [RegularNormedAlgebra 𝕜 𝕜']
+
+lemma isometry_mul : Isometry (mul 𝕜 𝕜') :=
+  RegularNormedAlgebra.isometry_mul'
+
+@[simp]
+lemma op_norm_mul_apply (x : 𝕜') : ‖mul 𝕜 𝕜' x‖ = ‖x‖ :=
+  (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 𝕜')).mp (isometry_mul 𝕜 𝕜') x
+#align continuous_linear_map.op_norm_mul_apply ContinuousLinearMap.op_norm_mul_applyₓ
+
+@[simp]
+lemma op_nnnorm_mul_apply (x : 𝕜') : ‖mul 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
+  Subtype.ext <| op_norm_mul_apply 𝕜 𝕜' x
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
 def mulₗᵢ : 𝕜' →ₗᵢ[𝕜] 𝕜' →L[𝕜] 𝕜' where
   toLinearMap := mul 𝕜 𝕜'
-  norm_map' x :=
-    le_antisymm (op_norm_mul_apply_le _ _ _)
-      (by
-        convert ratio_le_op_norm ((mul 𝕜 𝕜') x) (1 : 𝕜')
-        simp [norm_one])
-#align continuous_linear_map.mulₗᵢ ContinuousLinearMap.mulₗᵢ
+  norm_map' x := op_norm_mul_apply 𝕜 𝕜' x
+#align continuous_linear_map.mulₗᵢ ContinuousLinearMap.mulₗᵢₓ
 
 @[simp]
 theorem coe_mulₗᵢ : ⇑(mulₗᵢ 𝕜 𝕜') = mul 𝕜 𝕜' :=
   rfl
-#align continuous_linear_map.coe_mulₗᵢ ContinuousLinearMap.coe_mulₗᵢ
+#align continuous_linear_map.coe_mulₗᵢ ContinuousLinearMap.coe_mulₗᵢₓ
 
-@[simp]
-theorem op_norm_mul_apply (x : 𝕜') : ‖mul 𝕜 𝕜' x‖ = ‖x‖ :=
-  (mulₗᵢ 𝕜 𝕜').norm_map x
-#align continuous_linear_map.op_norm_mul_apply ContinuousLinearMap.op_norm_mul_apply
-
-end Unital
+end NonUnital
 
 end MultiplicationLinear
 
@@ -1886,13 +1903,18 @@ variable (𝕜) (𝕜' : Type _)
 
 section
 
-variable [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable [NonUnitalNormedRing 𝕜'] [NormedSpace 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
+variable [SMulCommClass 𝕜 𝕜' 𝕜'] [RegularNormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
 
 @[simp]
-theorem op_norm_mul [NormOneClass 𝕜'] : ‖mul 𝕜 𝕜'‖ = 1 :=
-  haveI := NormOneClass.nontrivial 𝕜'
+theorem op_norm_mul : ‖mul 𝕜 𝕜'‖ = 1 :=
   (mulₗᵢ 𝕜 𝕜').norm_toContinuousLinearMap
-#align continuous_linear_map.op_norm_mul ContinuousLinearMap.op_norm_mul
+#align continuous_linear_map.op_norm_mul ContinuousLinearMap.op_norm_mulₓ
+
+@[simp]
+theorem op_nnnorm_mul : ‖mul 𝕜 𝕜'‖₊ = 1 :=
+  Subtype.ext <| op_norm_mul 𝕜 𝕜'
+#align continuous_linear_map.op_nnnorm_mul ContinuousLinearMap.op_nnnorm_mulₓ
 
 end
 
