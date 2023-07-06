@@ -606,17 +606,17 @@ theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 #align integral_closure.is_integral integralClosure.isIntegral
 
-theorem RingHom.is_integral_of_is_integral_mul_unit (x y : S) (r : R) (hr : f r * y = 1)
+theorem RingHom.isIntegral_of_isIntegral_mul_unit (x y : S) (r : R) (hr : f r * y = 1)
     (hx : f.IsIntegralElem (x * y)) : f.IsIntegralElem x := by
   obtain ⟨p, ⟨p_monic, hp⟩⟩ := hx
   refine' ⟨scaleRoots p r, ⟨(monic_scaleRoots_iff r).2 p_monic, _⟩⟩
   convert scaleRoots_eval₂_eq_zero f hp
   rw [mul_comm x y, ← mul_assoc, hr, one_mul]
-#align ring_hom.is_integral_of_is_integral_mul_unit RingHom.is_integral_of_is_integral_mul_unit
+#align ring_hom.is_integral_of_is_integral_mul_unit RingHom.isIntegral_of_isIntegral_mul_unit
 
 theorem isIntegral_of_isIntegral_mul_unit {x y : A} {r : R} (hr : algebraMap R A r * y = 1)
     (hx : IsIntegral R (x * y)) : IsIntegral R x :=
-  (algebraMap R A).is_integral_of_is_integral_mul_unit x y r hr hx
+  (algebraMap R A).isIntegral_of_isIntegral_mul_unit x y r hr hx
 #align is_integral_of_is_integral_mul_unit isIntegral_of_isIntegral_mul_unit
 
 /-- Generalization of `isIntegral_of_mem_closure` bootstrapped up from that lemma -/
@@ -626,10 +626,10 @@ theorem isIntegral_of_mem_closure' (G : Set A) (hG : ∀ x ∈ G, IsIntegral R x
     (fun _ => isIntegral_neg) fun _ _ => isIntegral_mul
 #align is_integral_of_mem_closure' isIntegral_of_mem_closure'
 
-theorem is_integral_of_mem_closure'' {S : Type _} [CommRing S] {f : R →+* S} (G : Set S)
+theorem isIntegral_of_mem_closure'' {S : Type _} [CommRing S] {f : R →+* S} (G : Set S)
     (hG : ∀ x ∈ G, f.IsIntegralElem x) : ∀ x ∈ Subring.closure G, f.IsIntegralElem x := fun x hx =>
   @isIntegral_of_mem_closure' R S _ _ f.toAlgebra G hG x hx
-#align is_integral_of_mem_closure'' is_integral_of_mem_closure''
+#align is_integral_of_mem_closure'' isIntegral_of_mem_closure''
 
 theorem IsIntegral.pow {x : A} (h : IsIntegral R x) (n : ℕ) : IsIntegral R (x ^ n) :=
   (integralClosure R A).pow_mem h n
