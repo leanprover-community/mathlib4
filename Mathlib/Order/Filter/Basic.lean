@@ -2216,8 +2216,15 @@ theorem gc_map_comap (m : α → β) : GaloisConnection (map m) (comap m) :=
   fun _ _ => map_le_iff_le_comap
 #align filter.gc_map_comap Filter.gc_map_comap
 
+theorem comap_le_iff_le_kernMap : comap m g ≤ f ↔ g ≤ kernMap m f := by
+  simp [Filter.le_def, mem_comap'', mem_kernMap, -mem_comap]
+
 theorem gc_comap_kernMap (m : α → β) : GaloisConnection (comap m) (kernMap m) :=
-  fun f g ↦ by simp [Filter.le_def, mem_comap'', mem_kernMap, -mem_comap]
+  fun _ _ ↦ comap_le_iff_le_kernMap
+
+theorem kernMap_principal {s : Set α} : kernMap m (𝓟 s) = 𝓟 (kernImage m s) := by
+  refine eq_of_forall_le_iff (fun g ↦ ?_)
+  rw [← comap_le_iff_le_kernMap, le_principal_iff, le_principal_iff, mem_comap'']
 
 @[mono]
 theorem map_mono : Monotone (map m) :=
