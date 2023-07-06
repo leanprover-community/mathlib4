@@ -314,10 +314,8 @@ lemma closure_singleton (a : α) : closure {a} = Iic a := by
     . exact isLowerSet_Iic a
     . intros d b _ _ d₃ d₄
       exact (isLUB_le_iff d₃).mpr d₄
-  . convert Closure.mono (@upper_le_Scott α _)
-    rw [(@UpperSetTopology.closure_singleton α _ (upperSetTopology' α) ?_ a)]
-    exact instUpperSetTopologyUpperSetTopology'
-    exact topology_eq α
+  . rw [← LowerSet.coe_Iic, ← lowerClosure_singleton]
+    apply lowerClosure_le_closure
 
 variable [Preorder β] [TopologicalSpace β] [ScottTopology β]
 
