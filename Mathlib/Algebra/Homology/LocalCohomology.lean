@@ -119,15 +119,17 @@ variable {R : Type max u v v'} [CommRing R] {D : Type v} [SmallCategory D]
 
 variable {E : Type v'} [SmallCategory E] (I' : E ⥤ D) (I : D ⥤ Ideal R)
 
+set_option maxHeartbeats 400000 in
 /-- Local cohomology along a composition of diagrams. -/
 def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   Iso.refl _
 #align local_cohomology.diagram_comp localCohomology.diagramComp
 
+set_option pp.universes true in
 /-- Local cohomology agrees along precomposition with a cofinal diagram. -/
 def isoOfFinal [Functor.Initial I'] (i : ℕ) :
     ofDiagram.{max u v, v'} (I' ⋙ I) i ≅ ofDiagram.{max u v', v} I i :=
-  HasColimit.isoOfNatIso (diagramComp _ _ _) ≪≫ Functor.Final.colimitIso _ _
+  HasColimit.isoOfNatIso (diagramComp.{u} _ _ _) ≪≫ Functor.Final.colimitIso _ _
 #align local_cohomology.iso_of_final localCohomology.isoOfFinal
 
 end
@@ -251,13 +253,14 @@ instance ideal_powers_initial [hR : IsNoetherian R R] : Functor.Initial (idealPo
     }
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
 
+set_option pp.universes true in
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local
 cohomology computed over all ideals with radical containing `J`. -/
-def isoSelfLeRadical (J : Ideal R) [IsNoetherian R R] (i : ℕ) :
-    localCohomology.ofSelfLeRadical J i ≅ localCohomology J i :=
-  (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLeRadical J) (selfLeRadicalDiagram J)
+def isoSelfLeRadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
+    localCohomology.ofSelfLeRadical.{u} J i ≅ localCohomology.{u} J i :=
+  (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLeRadical.{u} J) (selfLeRadicalDiagram.{u} J)
         i).symm ≪≫
-    HasColimit.isoOfNatIso (Iso.refl _)
+    HasColimit.isoOfNatIso.{0,0,u+1,u+1} (Iso.refl.{u+1,u+1} _)
 #align local_cohomology.iso_self_le_radical localCohomology.isoSelfLeRadical
 
 /-- Casting from the full subcategory of ideals with radical containing `J` to the full
