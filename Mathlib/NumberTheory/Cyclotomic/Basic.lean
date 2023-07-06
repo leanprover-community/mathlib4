@@ -78,7 +78,7 @@ variable [Field K] [Field L] [Algebra K L]
 noncomputable section
 
 /-- Given an `A`-algebra `B` and `S : Set ℕ+`, we define `IsCyclotomicExtension S A B` requiring
-that there is a `n`-th primitive root of unity in `B` for all `n ∈ S` and that `B` is generated
+that there is an `n`-th primitive root of unity in `B` for all `n ∈ S` and that `B` is generated
 over `A` by the roots of `X ^ n - 1`. -/
 
 @[mk_iff]
@@ -555,9 +555,9 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : K)] :
   rw [← eval_map, ← IsRoot.def, map_cyclotomic, isRoot_cyclotomic_iff] at hζ
 -- Porting note: the first `?_` was `forall_eq.2 ⟨ζ, hζ⟩` that now fails.
   refine ⟨?_, ?_⟩
-  . simp only [mem_singleton_iff, forall_eq]
+  · simp only [mem_singleton_iff, forall_eq]
     exact ⟨ζ, hζ⟩
-  . rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
+  · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 #align cyclotomic_field.is_cyclotomic_extension CyclotomicField.isCyclotomicExtension
 

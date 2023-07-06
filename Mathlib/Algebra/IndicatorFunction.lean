@@ -415,28 +415,28 @@ theorem mulIndicator_mul' (s : Set α) (f g : α → M) :
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_compl_mul_self_apply (s : Set α) (f : α → M) (a : α) :
-    mulIndicator (sᶜ) f a * mulIndicator s f a = f a :=
+    mulIndicator sᶜ f a * mulIndicator s f a = f a :=
   by_cases (fun ha : a ∈ s => by simp [ha]) fun ha => by simp [ha]
 #align set.mul_indicator_compl_mul_self_apply Set.mulIndicator_compl_mul_self_apply
 #align set.indicator_compl_add_self_apply Set.indicator_compl_add_self_apply
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_compl_mul_self (s : Set α) (f : α → M) :
-    mulIndicator (sᶜ) f * mulIndicator s f = f :=
+    mulIndicator sᶜ f * mulIndicator s f = f :=
   funext <| mulIndicator_compl_mul_self_apply s f
 #align set.mul_indicator_compl_mul_self Set.mulIndicator_compl_mul_self
 #align set.indicator_compl_add_self Set.indicator_compl_add_self
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_self_mul_compl_apply (s : Set α) (f : α → M) (a : α) :
-    mulIndicator s f a * mulIndicator (sᶜ) f a = f a :=
+    mulIndicator s f a * mulIndicator sᶜ f a = f a :=
   by_cases (fun ha : a ∈ s => by simp [ha]) fun ha => by simp [ha]
 #align set.mul_indicator_self_mul_compl_apply Set.mulIndicator_self_mul_compl_apply
 #align set.indicator_self_add_compl_apply Set.indicator_self_add_compl_apply
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_self_mul_compl (s : Set α) (f : α → M) :
-    mulIndicator s f * mulIndicator (sᶜ) f = f :=
+    mulIndicator s f * mulIndicator sᶜ f = f :=
   funext <| mulIndicator_self_mul_compl_apply s f
 #align set.mul_indicator_self_mul_compl Set.mulIndicator_self_mul_compl
 #align set.indicator_self_add_compl Set.indicator_self_add_compl
@@ -464,11 +464,9 @@ theorem mulIndicator_mul_compl_eq_piecewise [DecidablePred (· ∈ s)] (f g : α
     s.mulIndicator f * sᶜ.mulIndicator g = s.piecewise f g := by
   ext x
   by_cases h : x ∈ s
-  ·
-    rw [piecewise_eq_of_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_mem h,
+  · rw [piecewise_eq_of_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_mem h,
       Set.mulIndicator_of_not_mem (Set.not_mem_compl_iff.2 h), mul_one]
-  ·
-    rw [piecewise_eq_of_not_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_not_mem h,
+  · rw [piecewise_eq_of_not_mem _ _ _ h, Pi.mul_apply, Set.mulIndicator_of_not_mem h,
       Set.mulIndicator_of_mem (Set.mem_compl h), one_mul]
 #align set.mul_indicator_mul_compl_eq_piecewise Set.mulIndicator_mul_compl_eq_piecewise
 #align set.indicator_add_compl_eq_piecewise Set.indicator_add_compl_eq_piecewise
@@ -546,13 +544,13 @@ theorem mulIndicator_div' (s : Set α) (f g : α → G) :
 
 @[to_additive indicator_compl']
 theorem mulIndicator_compl (s : Set α) (f : α → G) :
-    mulIndicator (sᶜ) f = f * (mulIndicator s f)⁻¹ :=
+    mulIndicator sᶜ f = f * (mulIndicator s f)⁻¹ :=
   eq_mul_inv_of_mul_eq <| s.mulIndicator_compl_mul_self f
 #align set.mul_indicator_compl Set.mulIndicator_compl
 #align set.indicator_compl' Set.indicator_compl'
 
 theorem indicator_compl {G} [AddGroup G] (s : Set α) (f : α → G) :
-    indicator (sᶜ) f = f - indicator s f := by rw [sub_eq_add_neg, indicator_compl']
+    indicator sᶜ f = f - indicator s f := by rw [sub_eq_add_neg, indicator_compl']
 #align set.indicator_compl Set.indicator_compl
 
 @[to_additive indicator_diff']
@@ -613,7 +611,7 @@ taking the original function over the original `Finset`. -/
       "Summing an indicator function over a possibly larger `Finset` is the same as summing
       the original function over the original `finset`."]
 theorem prod_mulIndicator_subset (f : α → M) {s t : Finset α} (h : s ⊆ t) :
-    (∏ i in s, f i) = ∏ i in t, mulIndicator (↑s) f i :=
+    ∏ i in s, f i = ∏ i in t, mulIndicator (↑s) f i :=
   prod_mulIndicator_subset_of_eq_one _ (fun _ b => b) h fun _ => rfl
 #align set.prod_mul_indicator_subset Set.prod_mulIndicator_subset
 #align set.sum_indicator_subset Set.sum_indicator_subset

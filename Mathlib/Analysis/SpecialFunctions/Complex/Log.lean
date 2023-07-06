@@ -190,8 +190,7 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
   · simp [sub_eq_add_neg]
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero
-Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
+#align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
@@ -210,8 +209,7 @@ theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by
   simpa only [log, arg_eq_pi_iff.2 ⟨hre, him⟩] using
     (continuousWithinAt_log_of_re_neg_of_im_zero hre him).tendsto
-#align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero
-Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
+#align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
 @[simp]
 theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by

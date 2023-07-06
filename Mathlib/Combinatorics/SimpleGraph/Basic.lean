@@ -996,7 +996,7 @@ theorem card_neighborSet_union_compl_neighborSet [Fintype V] (G : SimpleGraph V)
 #align simple_graph.card_neighbor_set_union_compl_neighbor_set SimpleGraph.card_neighborSet_union_compl_neighborSet
 
 theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
-    Gᶜ.neighborSet v = G.neighborSet vᶜ \ {v} := by
+    Gᶜ.neighborSet v = (G.neighborSet v)ᶜ \ {v} := by
   ext w
   simp [and_comm, eq_comm]
 #align simple_graph.neighbor_set_compl SimpleGraph.neighborSet_compl
@@ -1478,7 +1478,7 @@ theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
 #align simple_graph.neighbor_finset_eq_filter SimpleGraph.neighborFinset_eq_filter
 
 theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
-    Gᶜ.neighborFinset v = G.neighborFinset vᶜ \ {v} := by
+    Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
   simp only [neighborFinset, neighborSet_compl, Set.toFinset_diff, Set.toFinset_compl,
     Set.toFinset_singleton]
 #align simple_graph.neighbor_finset_compl SimpleGraph.neighborFinset_compl

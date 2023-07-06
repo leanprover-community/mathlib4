@@ -107,12 +107,12 @@ variable {Ω : Type _} [MeasurableSpace Ω]
 theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i E) ≤ μ E) :
-    μ (Eᶜ) ≤ L.liminf fun i => μs i (Eᶜ) := by
+    μ Eᶜ ≤ L.liminf fun i => μs i Eᶜ := by
   rcases L.eq_or_neBot with rfl | hne
   · simp only [liminf_bot, le_top]
-  have meas_Ec : μ (Eᶜ) = 1 - μ E := by
+  have meas_Ec : μ Eᶜ = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
-  have meas_i_Ec : ∀ i, μs i (Eᶜ) = 1 - μs i E := by
+  have meas_i_Ec : ∀ i, μs i Eᶜ = 1 - μs i E := by
     intro i
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top (μs i) E).ne
   simp_rw [meas_Ec, meas_i_Ec]
@@ -127,7 +127,7 @@ theorem le_measure_compl_liminf_of_limsup_measure_le {ι : Type _} {L : Filter �
 
 theorem le_measure_liminf_of_limsup_measure_compl_le {ι : Type _} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
-    (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i (Eᶜ)) ≤ μ (Eᶜ)) :
+    (E_mble : MeasurableSet E) (h : (L.limsup fun i => μs i Eᶜ) ≤ μ Eᶜ) :
     μ E ≤ L.liminf fun i => μs i E :=
   compl_compl E ▸ le_measure_compl_liminf_of_limsup_measure_le (MeasurableSet.compl E_mble) h
 #align measure_theory.le_measure_liminf_of_limsup_measure_compl_le MeasureTheory.le_measure_liminf_of_limsup_measure_compl_le
@@ -135,12 +135,12 @@ theorem le_measure_liminf_of_limsup_measure_compl_le {ι : Type _} {L : Filter �
 theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type _} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
     (E_mble : MeasurableSet E) (h : μ E ≤ L.liminf fun i => μs i E) :
-    (L.limsup fun i => μs i (Eᶜ)) ≤ μ (Eᶜ) := by
+    (L.limsup fun i => μs i Eᶜ) ≤ μ Eᶜ := by
   rcases L.eq_or_neBot with rfl | hne
   · simp only [limsup_bot, bot_le]
-  have meas_Ec : μ (Eᶜ) = 1 - μ E := by
+  have meas_Ec : μ Eᶜ = 1 - μ E := by
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top μ E).ne
-  have meas_i_Ec : ∀ i, μs i (Eᶜ) = 1 - μs i E := by
+  have meas_i_Ec : ∀ i, μs i Eᶜ = 1 - μs i E := by
     intro i
     simpa only [measure_univ] using measure_compl E_mble (measure_lt_top (μs i) E).ne
   simp_rw [meas_Ec, meas_i_Ec]
@@ -155,7 +155,7 @@ theorem limsup_measure_compl_le_of_le_liminf_measure {ι : Type _} {L : Filter �
 
 theorem limsup_measure_le_of_le_liminf_measure_compl {ι : Type _} {L : Filter ι} {μ : Measure Ω}
     {μs : ι → Measure Ω} [IsProbabilityMeasure μ] [∀ i, IsProbabilityMeasure (μs i)] {E : Set Ω}
-    (E_mble : MeasurableSet E) (h : μ (Eᶜ) ≤ L.liminf fun i => μs i (Eᶜ)) :
+    (E_mble : MeasurableSet E) (h : μ Eᶜ ≤ L.liminf fun i => μs i Eᶜ) :
     (L.limsup fun i => μs i E) ≤ μ E :=
   compl_compl E ▸ limsup_measure_compl_le_of_le_liminf_measure (MeasurableSet.compl E_mble) h
 #align measure_theory.limsup_measure_le_of_le_liminf_measure_compl MeasureTheory.limsup_measure_le_of_le_liminf_measure_compl
@@ -179,10 +179,10 @@ theorem limsup_measure_closed_le_iff_liminf_measure_open_ge {ι : Type _} {L : F
   constructor
   · intro h G G_open
     exact le_measure_liminf_of_limsup_measure_compl_le
-      G_open.measurableSet (h (Gᶜ) (isClosed_compl_iff.mpr G_open))
+      G_open.measurableSet (h Gᶜ (isClosed_compl_iff.mpr G_open))
   · intro h F F_closed
     exact limsup_measure_le_of_le_liminf_measure_compl
-      F_closed.measurableSet (h (Fᶜ) (isOpen_compl_iff.mpr F_closed))
+      F_closed.measurableSet (h Fᶜ (isOpen_compl_iff.mpr F_closed))
 #align measure_theory.limsup_measure_closed_le_iff_liminf_measure_open_ge MeasureTheory.limsup_measure_closed_le_iff_liminf_measure_open_ge
 
 end LimsupClosedLEAndLELiminfOpen

@@ -690,7 +690,7 @@ theorem limsup_le_iSup {f : Filter β} {u : β → α} : limsup u f ≤ ⨆ n, u
   limsup_le_of_le (by isBoundedDefault) (eventually_of_forall (le_iSup u))
 #align filter.limsup_le_supr Filter.limsup_le_iSup
 
-theorem iInf_le_liminf {f : Filter β} {u : β → α} : (⨅ n, u n) ≤ liminf u f :=
+theorem iInf_le_liminf {f : Filter β} {u : β → α} : ⨅ n, u n ≤ liminf u f :=
   le_liminf_of_le (by isBoundedDefault) (eventually_of_forall (iInf_le u))
 #align filter.infi_le_liminf Filter.iInf_le_liminf
 
@@ -838,21 +838,21 @@ theorem le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
 `a : α` is a fixed point. -/
 @[simp]
 theorem CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom α α) (a : α) :
-    f (limsup (fun n => (f^[n]) a) atTop) = limsup (fun n => (f^[n]) a) atTop := by
+    f (limsup (fun n => f^[n] a) atTop) = limsup (fun n => f^[n] a) atTop := by
   rw [limsup_eq_iInf_iSup_of_nat', map_iInf]
   simp_rw [_root_.map_iSup, ← Function.comp_apply (f := f), ← Function.iterate_succ' f,
     ← Nat.add_succ]
   conv_rhs => rw [iInf_split _ ((· < ·) (0 : ℕ))]
   simp only [not_lt, le_zero_iff, iInf_iInf_eq_left, add_zero, iInf_nat_gt_zero_eq, left_eq_inf]
-  refine' (iInf_le (fun i => ⨆ j, (f^[j + (i + 1)]) a) 0).trans _
+  refine' (iInf_le (fun i => ⨆ j, f^[j + (i + 1)] a) 0).trans _
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
-  exact fun i => le_iSup (fun i => (f^[i]) a) (i + 1)
+  exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 #align filter.complete_lattice_hom.apply_limsup_iterate Filter.CompleteLatticeHom.apply_limsup_iterate
 
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
 `a : α` is a fixed point. -/
 theorem CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
-    f (liminf (fun n => (f^[n]) a) atTop) = liminf (fun n => (f^[n]) a) atTop :=
+    f (liminf (fun n => f^[n] a) atTop) = liminf (fun n => f^[n] a) atTop :=
   apply_limsup_iterate (CompleteLatticeHom.dual f) _
 #align filter.complete_lattice_hom.apply_liminf_iterate Filter.CompleteLatticeHom.apply_liminf_iterate
 
@@ -996,7 +996,7 @@ theorem bliminf_or_eq_inf : (bliminf u f fun x => p x ∨ q x) = bliminf u f p �
 
 theorem sup_limsup [NeBot f] (a : α) : a ⊔ limsup u f = limsup (fun x => a ⊔ u x) f := by
   simp only [limsup_eq_iInf_iSup, iSup_sup_eq, sup_iInf₂_eq]
-  congr ; ext s; congr ; ext hs; congr
+  congr; ext s; congr; ext hs; congr
   exact (biSup_const (nonempty_of_mem hs)).symm
 #align filter.sup_limsup Filter.sup_limsup
 
@@ -1020,11 +1020,11 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] (f : Filter β) (u : β → α)
 
-theorem limsup_compl : limsup u fᶜ = liminf (compl ∘ u) f := by
+theorem limsup_compl : (limsup u f)ᶜ = liminf (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 #align filter.limsup_compl Filter.limsup_compl
 
-theorem liminf_compl : liminf u fᶜ = limsup (compl ∘ u) f := by
+theorem liminf_compl : (liminf u f)ᶜ = limsup (compl ∘ u) f := by
   simp only [limsup_eq_iInf_iSup, compl_iInf, compl_iSup, liminf_eq_iSup_iInf, Function.comp_apply]
 #align filter.liminf_compl Filter.liminf_compl
 
