@@ -49,12 +49,23 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
   else
     return e
 
+def getAuxDefOfDeclName : TermElabM FVarId := do
+  let some declName ← getDeclName? | throwError "no 'declName?'"
+  let auxDeclMap ← Term.Context.auxDeclToFullName <$> read
+  let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
+    if fullName = declName then fvars.concat fvar else fvars
+  match fvars with
+  | [] => throwError "no auxiliary local declaration corresponding to the current declaration"
+  | [fvar] => return fvar
+  | _ => throwError "multiple local declarations corresponding to the current declaration"
+
 /-- similar to `traverseConstructor` but for `Functor` -/
-def mapConstructor (c n : Name) (ad : Expr) (f α β : Expr) (args₀ : List Expr)
+def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr)
     (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
+  let ad ← getAuxDefOfDeclName
   let g ← m.getType >>= instantiateMVars
   let args' ← args₁.mapM (fun (y : Bool × Expr) =>
-      if y.1 then return mkAppN ad #[α, β, f, y.2]
+      if y.1 then return mkAppN (.fvar ad) #[α, β, f, y.2]
       else mapField n g.appFn! f α β y.2)
   mkAppOptM c ((args₀ ++ args').map some).toArray >>= m.assign
 
@@ -65,7 +76,7 @@ match (motive := motive) indices₁, indices₂, .., (val : type.{univs} params�
 | _, _, .., ctor₂ fields₂₁ fields₂₂ .. => rhss ctor₂ [fields₂₁, fields₂₂, ..]
 ```
 This is convenient to make a definition with equation lemmas. -/
-def mkCasesOnMatch (type : Name) (univs : List Level) (params : List Expr) (motive : Expr)
+def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (motive : Expr)
     (indices : List Expr) (val : Expr)
     (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
   let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (n?.getD type ++ "match") 1)
@@ -75,11 +86,11 @@ def mkCasesOnMatch (type : Name) (univs : List Level) (params : List Expr) (moti
   let lhss ← iinfo.ctors.mapM fun ctor => do
     let .ctorInfo cinfo ← getConstInfo ctor | unreachable!
     let catype ←
-      instantiateForall (cinfo.type.instantiateLevelParams cinfo.levelParams univs) params.toArray
+      instantiateForall (cinfo.type.instantiateLevelParams cinfo.levelParams levels) params.toArray
     forallBoundedTelescope catype cinfo.numFields fun cargs _ => do
       let fvarDecls ← cargs.toList.mapM fun carg => getFVarLocalDecl carg
       let fieldPats := cargs.toList.map fun carg => Pattern.var carg.fvarId!
-      let patterns := [Pattern.ctor cinfo.name univs params fieldPats]
+      let patterns := [Pattern.ctor cinfo.name levels params fieldPats]
       return { ref := .missing
                fvarDecls
                patterns }
@@ -99,10 +110,20 @@ def mkCasesOnMatch (type : Name) (univs : List Level) (params : List Expr) (moti
         mkLambdaFVars (fields.map Expr.fvar).toArray rhsBody
   return mkAppN mres.matcher (motive :: indices ++ [val] ++ rhss).toArray
 
+def getFVarIdsWithoutImplementationDetails : MetaM (List FVarId) := do
+  let lctx ← getLCtx
+  return lctx.decls.foldl (init := []) fun r decl? => match decl? with
+    | some decl => if decl.isImplementationDetail then r else r.concat decl.fvarId
+    | none      => r
+
+def getFVarsWithoutImplementationDetails : MetaM (List Expr) :=
+  List.map Expr.fvar <$> getFVarIdsWithoutImplementationDetails
+
 /-- derive the `map` definition of a `Functor` -/
-def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m : MVarId) :
-    TermElabM Unit := do
-  let (#[α, β, f, x], m) ← m.introN 4 [`α, `β, `f, `x] | unreachable!
+def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
+  let levels ← getLevelNames
+  let vars ← getFVarsWithoutImplementationDetails
+  let (#[α, β, f, x], m) ← m.introN 4 [`α, `β, `f, `x] | failure
   m.withContext do
     let xtype ← x.getType
     let target ← m.getType >>= instantiateMVars
@@ -116,20 +137,22 @@ def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m :
             let b ← xtype.occurs <$> inferType a
             return (b, a)
           mapConstructor
-            ctor type ad (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) args₀ m.mvarId!
+            ctor type (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) args₀ m.mvarId!
           instantiateMVars m
     m.assign e
 
-def deriveFunctor (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
+def deriveFunctor (m : MVarId) : TermElabM Unit := do
+  let levels ← getLevelNames
+  let vars ← getFVarsWithoutImplementationDetails
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let d ← getConstInfo n
   let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(?_) })) | failure
   let t ← m.getType >>= instantiateMVars
   let n' := n ++ "map"
-  withDeclName n <| withAuxDecl "map" t n' fun ad => do
+  withDeclName n' <| withAuxDecl "map" t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
-    mkMap n ad levels vars m'
+    mkMap n m'
     let e ← instantiateMVars (mkMVar m')
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
@@ -149,7 +172,27 @@ def deriveFunctor (levels : List Name) (vars : List Expr) (m : MVarId) : TermEla
           value := e' }] {}
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
-def mkOneInstance (n cls : Name) (tac : List Name → List Expr → MVarId → TermElabM Unit)
+/-- Similar to `mkInstanceName`, but for a `Expr` type. -/
+def mkInstanceNameForTypeExpr (type : Expr) : TermElabM Name := do
+  let result ← do
+    let ref ← IO.mkRef ""
+    Meta.forEachExpr type fun e => do
+      if e.isForall then ref.modify (· ++ "ForAll")
+      else if e.isProp then ref.modify (· ++ "Prop")
+      else if e.isType then ref.modify (· ++ "Type")
+      else if e.isSort then ref.modify (· ++ "Sort")
+      else if e.isConst then
+        match e.constName!.eraseMacroScopes with
+        | .str _ str =>
+            if str.front.isLower then
+              ref.modify (· ++ str.capitalize)
+            else
+              ref.modify (· ++ str)
+        | _ => pure ()
+    ref.get
+  liftMacroM <| mkUnusedBaseName <| Name.mkSimple ("inst" ++ result)
+
+def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) : TermElabM Unit := do
   let .inductInfo decl ← getConstInfo n |
     throwError m!"failed to derive '{cls}', '{n}' is not an inductive type"
@@ -158,56 +201,41 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → MVarId → T
   -- incrementally build up target expression `(hp : p) → [cls hp] → ... cls (n.{ls} hp ...)`
   -- where `p ...` are the inductive parameter types of `n`
   let tgt := Lean.mkConst n ls
-  forallTelescope decl.type fun params _ => do
+  let tgt ← forallTelescope decl.type fun params _ => do
     let params := params.pop
     let tgt := mkAppN tgt params
     let tgt ← mkInst cls tgt
-    let tgt ← params.zipWithIndex.foldrM (fun (param, i) tgt => do
+    params.zipWithIndex.foldrM (fun (param, i) tgt => do
       -- add typeclass hypothesis for each inductive parameter
       let tgt ← (do
         guard (i < decl.numParams)
         let paramCls ← mkAppM cls #[param]
         return mkForall `a .instImplicit paramCls tgt) <|> return tgt
       mkForallFVars #[param] tgt) tgt
-    (discard <| liftM (synthInstance tgt)) <|> do
-      let m := (← mkFreshExprSyntheticOpaqueMVar tgt).mvarId!
-      let (fvars, m') ← m.intros
-      tac decl.levelParams (fvars.toList.map Expr.fvar) m'
-      let val ← instantiateMVars (mkMVar m)
-      let isUnsafe := decl.isUnsafe || clsDecl.isUnsafe
-      let result ← m'.withContext <| do
-        let type ← m'.getType >>= instantiateMVars
-        let ref ← IO.mkRef ""
-        Meta.forEachExpr type fun e => do
-          if e.isForall then ref.modify (· ++ "ForAll")
-          else if e.isProp then ref.modify (· ++ "Prop")
-          else if e.isType then ref.modify (· ++ "Type")
-          else if e.isSort then ref.modify (· ++ "Sort")
-          else if e.isConst then
-            match e.constName!.eraseMacroScopes with
-            | .str _ str =>
-                if str.front.isLower then
-                  ref.modify (· ++ str.capitalize)
-                else
-                  ref.modify (· ++ str)
-            | _ => pure ()
-        ref.get
-      let instN ← liftMacroM <| mkUnusedBaseName <| Name.mkSimple ("inst" ++ result)
-      addPreDefinitions
-        #[{ ref := .missing
-            kind := .def
-            levelParams := decl.levelParams
-            modifiers :=
-              { isUnsafe
-                attrs :=
-                  #[{ kind := .global
-                      name := `instance
-                      stx := ← `(attr| instance) }] }
-            declName := instN
-            type := tgt
-            value := val }] {}
+  (discard <| liftM (synthInstance tgt)) <|> do
+    let m := (← mkFreshExprSyntheticOpaqueMVar tgt).mvarId!
+    let (_, m') ← m.intros
+    withLevelNames decl.levelParams <| m'.withContext <| tac m'
+    let val ← instantiateMVars (mkMVar m)
+    let isUnsafe := decl.isUnsafe || clsDecl.isUnsafe
+    let instN ← m'.withContext do
+      let type ← m'.getType >>= instantiateMVars
+      mkInstanceNameForTypeExpr type
+    addPreDefinitions
+      #[{ ref := .missing
+          kind := .def
+          levelParams := decl.levelParams
+          modifiers :=
+            { isUnsafe
+              attrs :=
+                #[{ kind := .global
+                    name := `instance
+                    stx := ← `(attr| instance) }] }
+          declName := instN
+          type := tgt
+          value := val }] {}
 
-def higherOrderDeriveHandler (cls : Name) (tac : List Name → List Expr → MVarId → TermElabM Unit)
+def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
     (deps : List DerivingHandlerNoArgs := [])
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
     DerivingHandlerNoArgs := fun a => do
@@ -233,7 +261,8 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let .app (.app (.const ``LawfulFunctor _) F) _ ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let [mcn, mim, mcm] ← m.applyConst ``LawfulFunctor.mk | failure
-  liftM <| (Prod.snd <$> mcn.introN 2) >>= MVarId.refl
+  let (_, mcn) ← mcn.introN 2
+  mcn.refl
   let (#[_, x], mim) ← mim.introN 2 | failure
   let (some mim, _) ← dsimpGoal mim (← rules [] [``Functor.map] false) | failure
   let xs ← mim.induction x (mkRecName n)
@@ -252,7 +281,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
         mcm.refl
 
 def lawfulFunctorDeriveHandler : DerivingHandlerNoArgs :=
-  higherOrderDeriveHandler ``LawfulFunctor (fun _ _ => deriveLawfulFunctor) [functorDeriveHandler]
+  higherOrderDeriveHandler ``LawfulFunctor deriveLawfulFunctor [functorDeriveHandler]
     (fun n arg => mkAppOptM n #[arg, none])
 
 initialize registerDerivingHandler ``LawfulFunctor lawfulFunctorDeriveHandler
@@ -292,13 +321,14 @@ def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
 
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
-``traverseConstructor `foo1 `Foo ad applInst f `α `β [`(x : List α), `(y : ℕ)]``
+``traverseConstructor `foo1 `Foo applInst f `α `β [`(x : List α), `(y : ℕ)]``
 synthesizes `foo1 <$> traverse f x <*> pure y.` -/
-def traverseConstructor (c n : Name) (ad : Expr) (applInst f α β : Expr) (args₀ : List Expr)
+def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List Expr)
     (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
+  let ad ← getAuxDefOfDeclName
   let g ← m.getType >>= instantiateMVars
   let args' ← args₁.mapM (fun (y : Bool × Expr) =>
-      if y.1 then return (true, mkAppN ad #[g.appFn!, applInst, α, β, f, y.2])
+      if y.1 then return (true, mkAppN (.fvar ad) #[g.appFn!, applInst, α, β, f, y.2])
       else traverseField n g.appFn! f α y.2)
   let gargs := args'.filterMap (fun y => if y.1 then some y.2 else none)
   let v ← mkFunCtor c (args₀.map (fun e => (false, e)) ++ args') #[] #[]
@@ -319,9 +349,10 @@ where
     | [] => liftM <| mkAppOptM c (aargs.map some) >>= mkLambdaFVars fvars
 
 /-- derive the `traverse` definition of a `Traversable` instance -/
-def mkTraverse (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m : MVarId) :
-    TermElabM Unit := do
-  let (#[_, applInst, α, β, f, x], m) ← m.introN 6 [`m, `applInst, `α, `β, `f, `x] | unreachable!
+def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
+  let vars ← getFVarsWithoutImplementationDetails
+  let levels ← getLevelNames
+  let (#[_, applInst, α, β, f, x], m) ← m.introN 6 [`m, `applInst, `α, `β, `f, `x] | failure
   m.withContext do
     let xtype ← x.getType
     let target ← m.getType >>= instantiateMVars
@@ -335,21 +366,23 @@ def mkTraverse (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr)
             let b ← xtype.occurs <$> inferType a
             return (b, a)
           traverseConstructor
-            ctor type ad (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
+            ctor type (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
             (vars.concat (.fvar β)) args₀ m.mvarId!
           instantiateMVars m
     m.assign e
 
-def deriveTraversable (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
+def deriveTraversable (m : MVarId) : TermElabM Unit := do
+  let levels ← getLevelNames
+  let vars ← getFVarsWithoutImplementationDetails
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
   let some n := F.getAppFn.constName? | failure
   let d ← getConstInfo n
   let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(?_) })) | failure
   let t ← m.getType >>= instantiateMVars
   let n' := n ++ "traverse"
-  withDeclName n <| withAuxDecl "traverse" t n' fun ad => do
+  withDeclName n' <| withAuxDecl "traverse" t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
-    mkTraverse n ad levels vars m'
+    mkTraverse n m'
     let e ← instantiateMVars (mkMVar m')
     let e := e.replaceFVar ad (mkAppN (.const n' (levels.map Level.param)) vars.toArray)
     let e' ← mkLambdaFVars vars.toArray e
@@ -418,7 +451,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     m.refl
 
 def lawfulTraversableDeriveHandler : DerivingHandlerNoArgs :=
-  higherOrderDeriveHandler ``LawfulTraversable (fun _ _ => deriveLawfulTraversable)
+  higherOrderDeriveHandler ``LawfulTraversable deriveLawfulTraversable
     [traversableDeriveHandler, lawfulFunctorDeriveHandler] (fun n arg => mkAppOptM n #[arg, none])
 
 initialize registerDerivingHandler ``LawfulTraversable lawfulTraversableDeriveHandler
