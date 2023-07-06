@@ -12,6 +12,11 @@ import Mathlib.Topology.Algebra.Module.Multilinear
 In this file we define bundled continuous alternating maps and develop basic API about these
 maps, by reusing API about continuous multilinear maps and alternating maps.
 
+## Notation
+
+`M [Λ^ι]→L[R] N`: notation for `R`-linear continuous alternating maps from `M` to `N`; the arguments
+are indexed by `i : ι`.
+
 ## Keywords
 
 multilinear map, alternating map, continuous
