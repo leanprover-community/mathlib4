@@ -145,20 +145,21 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
 theorem StableUnderBaseChange.Γ_pullback_fst (hP : StableUnderBaseChange @P) (hP' : RespectsIso @P)
     {X Y S : Scheme} [IsAffine X] [IsAffine Y] [IsAffine S] (f : X ⟶ S) (g : Y ⟶ S)
     (H : P (Scheme.Γ.map g.op)) : P (Scheme.Γ.map (pullback.fst : pullback f g ⟶ _).op) := by
-  rw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
-      (AffineScheme.ofHom g),
-    op_comp, functor.map_comp, hP'.cancel_right_is_iso, AffineScheme.forget_to_Scheme_map]
+  -- Porting note : change `rw` to `erw`
+  erw [← PreservesPullback.iso_inv_fst AffineScheme.forgetToScheme (AffineScheme.ofHom f)
+      (AffineScheme.ofHom g)]
+  rw [op_comp, Functor.map_comp, hP'.cancel_right_isIso, AffineScheme.forgetToScheme_map]
   have :=
     _root_.congr_arg Quiver.Hom.unop
-      (preserves_pullback.iso_hom_fst AffineScheme.Γ.right_op (AffineScheme.of_hom f)
-        (AffineScheme.of_hom g))
-  simp only [Quiver.Hom.unop_op, functor.right_op_map, unop_comp] at this
+      (PreservesPullback.iso_hom_fst AffineScheme.Γ.rightOp (AffineScheme.ofHom f)
+        (AffineScheme.ofHom g))
+  simp only [Quiver.Hom.unop_op, Functor.rightOp_map, unop_comp] at this
   delta AffineScheme.Γ at this
-  simp only [Quiver.Hom.unop_op, functor.comp_map, AffineScheme.forget_to_Scheme_map,
-    functor.op_map] at this
-  rw [← this, hP'.cancel_right_is_iso, ←
-    pushout_iso_unop_pullback_inl_hom (Quiver.Hom.unop _) (Quiver.Hom.unop _),
-    hP'.cancel_right_is_iso]
+  simp only [Quiver.Hom.unop_op, Functor.comp_map, AffineScheme.forgetToScheme_map,
+    Functor.op_map] at this
+  rw [← this, hP'.cancel_right_isIso,
+    ←pushoutIsoUnopPullback_inl_hom (Quiver.Hom.unop _) (Quiver.Hom.unop _),
+    hP'.cancel_right_isIso]
   exact hP.pushout_inl _ hP' _ _ H
 #align ring_hom.stable_under_base_change.Γ_pullback_fst RingHom.StableUnderBaseChange.Γ_pullback_fst
 
