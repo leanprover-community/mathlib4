@@ -17,6 +17,8 @@ to infer the argument from optional or auto parameters, and if this fails consum
 -/
 
 open Lean Elab Tactic
+/-- `consume` clears type annotations of the form `autoParam` and `optParam` by simply removing
+them, see `infer_param` to attempt to use them to fill in the goal instead.  -/
 elab "consume" : tactic => do
   withMainContext do
     let mvarIds ← getMainGoal
