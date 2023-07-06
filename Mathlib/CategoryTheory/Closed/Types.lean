@@ -43,11 +43,6 @@ instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) wher
       { unit := { app := fun Z (z : Z) x => ⟨x, z⟩ }
         counit := { app := fun Z xf => xf.2 xf.1 } }
 
--- FIXME I'm not sure what is going on here:
--- #synth HasProducts.{v₁} (Type v₁)  -- Succeeds!
--- example : HasProducts.{v₁} (Type v₁) := inferInstance  -- Fails!
-instance : HasProducts.{v₁} (Type v₁) := fun _ ↦ hasLimitsOfShapeOfHasLimits.{v₁, v₁, v₁, v₁ + 1}
-
 -- Porting note: this instance should be moved to a higher file.
 instance : HasFiniteProducts.{v₁, v₁+1} (Type v₁) :=
   hasFiniteProducts_of_hasProducts.{v₁, v₁, v₁+1} (Type v₁)

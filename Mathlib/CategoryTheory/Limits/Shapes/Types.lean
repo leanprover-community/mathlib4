@@ -62,52 +62,37 @@ HasLimitsOfShape.has_limit (Discrete.functor f)
 example : HasProducts.{v} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 
--- TODO can we remove this in favor of the `UnivLE` version immediately below?
+instance : HasProducts.{v₁} (Type v₁) := inferInstance
+
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
-theorem pi_lift_π_apply {β : Type v} (f : β → TypeMax.{v, u}) {P : TypeMax.{v, u}}
+theorem pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
   congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
 #align category_theory.limits.types.pi_lift_π_apply CategoryTheory.Limits.Types.pi_lift_π_apply
 
-/-- A variant of `pi_lift_π_apply` using `UnivLE` rather than `TypeMax`. -/
-@[simp 1001]
-theorem UnivLE.pi_lift_π_apply [UnivLE.{v, u}] {β : Type v} (f : β → Type u) {P : Type u}
-    (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
-    (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
-  congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
-
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`,
 with specialized universes. -/
--- @[simp 1001] -- Porting note: simp can prove this
 theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
     (Pi.π f b : (piObj f) → f b) (@Pi.lift β _ _ f _ P s x) = s b x :=
-  congr_fun (limit.lift_π (Fan.mk P s) ⟨b⟩) x
+  by simp
 #align category_theory.limits.types.pi_lift_π_apply' CategoryTheory.Limits.Types.pi_lift_π_apply'
 
--- TODO can we remove this in favor of the `UnivLE` version immediately below?
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
 @[simp 1001]
-theorem pi_map_π_apply {β : Type v} {f g : β → TypeMax.{v, u}} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
-    (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
-  Limit.map_π_apply.{v, max v u} _ _ _
-#align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
-
-/-- A variant of `pi_map_π_apply` using `UnivLE` rather than `TypeMax`. -/
-@[simp 1001]
-theorem UnivLE.pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
+theorem pi_map_π_apply [UnivLE.{v, u}] {β : Type v} {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
   Limit.map_π_apply.{v, u} _ _ _
+#align category_theory.limits.types.pi_map_π_apply CategoryTheory.Limits.Types.pi_map_π_apply
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`,
 with specialized universes. -/
--- @[simp 1001] -- Porting note: simp can prove this
 theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ f → f b) x) :=
-  Limit.map_π_apply' _ _ _
+   by simp
 #align category_theory.limits.types.pi_map_π_apply' CategoryTheory.Limits.Types.pi_map_π_apply'
 
 /-- The category of types has `PUnit` as a terminal object. -/
@@ -619,8 +604,10 @@ end Cofork
 
 section Pullback
 
+-- #synth HasPullbacks.{u} (Type u)
 instance : HasPullbacks.{u} (Type u) :=
   -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
+  -- inferInstance
   hasPullbacks_of_hasWidePullbacks.{u} (Type u)
 
 open CategoryTheory.Limits.WalkingPair
@@ -708,8 +695,10 @@ end Pullback
 
 section Pushout
 
+-- #synth HasPushouts.{u} (Type u)
 instance : HasPushouts.{u} (Type u) :=
-  -- FIXME does not work via `inferInstance` despite `#synth HasPullbacks.{u} (Type u)` succeeding.
+  -- FIXME does not work via `inferInstance` despite `#synth HasPushouts.{u} (Type u)` succeeding.
+  -- inferInstance
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
 end Pushout
