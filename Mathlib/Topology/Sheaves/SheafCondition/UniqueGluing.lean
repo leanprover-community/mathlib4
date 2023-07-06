@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 
 ! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.unique_gluing
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -118,9 +118,9 @@ theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
     exact h i j
   · intro i j
     convert congr_arg (Limits.Pi.π (fun p : ι × ι => F.obj (op (U p.1 ⊓ U p.2))) (i, j)) h
-    · rw [leftRes, Types.pi_lift_π_apply]
+    · rw [leftRes, Types.pi_lift_π_apply']
       rfl
-    · rw [rightRes, Types.pi_lift_π_apply]
+    · rw [rightRes, Types.pi_lift_π_apply']
       rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.compatible_iff_left_res_eq_right_res TopCat.Presheaf.compatible_iff_leftRes_eq_rightRes
@@ -139,7 +139,7 @@ theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
     exact h i
   · intro i
     convert congr_arg (Limits.Pi.π (fun i : ι => F.obj (op (U i))) i) h
-    rw [res, Types.pi_lift_π_apply]
+    rw [res, Types.pi_lift_π_apply']
     rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_gluing_iff_eq_res TopCat.Presheaf.isGluing_iff_eq_res
@@ -160,7 +160,8 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   choose m m_spec m_uniq using fun x : s.pt =>
     Fsh U ((piOpensIsoSectionsFamily F U).hom (s.ι x)) (h_compatible x)
   refine' ⟨m, _, _⟩
-  · -- Porting note : Lean can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
     simp [res]
     exact m_spec x i

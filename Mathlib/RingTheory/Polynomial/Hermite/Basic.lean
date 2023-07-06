@@ -59,7 +59,7 @@ theorem hermite_succ (n : ℕ) : hermite (n + 1) = X * hermite n - derivative (h
   rw [hermite]
 #align polynomial.hermite_succ Polynomial.hermite_succ
 
-theorem hermite_eq_iterate (n : ℕ) : hermite n = ((fun p => X * p - derivative p)^[n]) 1 := by
+theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative p)^[n] 1 := by
   induction' n with n ih
   · rfl
   · rw [Function.iterate_succ_apply', ← ih, hermite_succ]
@@ -80,7 +80,7 @@ theorem hermite_one : hermite 1 = X := by
 /-! ### Lemmas about `Polynomial.coeff` -/
 
 
-section Coeff
+section coeff
 
 theorem coeff_hermite_succ_zero (n : ℕ) : coeff (hermite (n + 1)) 0 = -coeff (hermite n) 1 := by
   simp [coeff_derivative]
@@ -113,11 +113,9 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
-  simp_rw [degree_le_iff_coeff_zero]
-   -- porting note: mathlib3 also had `simp_rw [WithBot.coe_lt_coe]` but it's not firing
-   -- so we add it manually later
+  simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
   · rintro m hnm
-    exact coeff_hermite_of_lt (WithBot.coe_lt_coe.1 hnm)
+    exact coeff_hermite_of_lt hnm
   · simp [coeff_hermite_self n]
 #align polynomial.degree_hermite Polynomial.degree_hermite
 
@@ -148,7 +146,7 @@ theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermit
         exact (Nat.odd_add.mp hnk).mpr even_two
 #align polynomial.coeff_hermite_of_odd_add Polynomial.coeff_hermite_of_odd_add
 
-end Coeff
+end coeff
 
 section CoeffExplicit
 
@@ -192,9 +190,9 @@ theorem coeff_hermite_explicit :
         (by ring : 2 * (n + 1) + k = 2 * n + 1 + (k + 1)),
         (by ring : 2 * n + (k + 2) = 2 * n + 1 + (k + 1))]
       rw [Nat.choose, Nat.choose_succ_right_eq (2 * n + 1 + (k + 1)) (k + 1), Nat.add_sub_cancel,
-      Int.negSucc_eq]
+        Int.negSucc_eq]
       -- porting note: ring could not solve the goal so the lines 195, 198-200 were added.
-      ring
+      ring_nf
       simp only [sub_eq_add_neg, ← neg_mul, ← right_distrib _ _ ((-(1 : ℤ)) ^ n), ← neg_add]
       norm_cast
       simp only [← add_assoc, add_comm]

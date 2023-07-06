@@ -181,7 +181,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
 #align mvqpf.mem_supp MvQPF.mem_supp
 
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
-    supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext ; apply mem_supp
+    supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp
 #align mvqpf.supp_eq MvQPF.supp_eq
 
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
@@ -195,7 +195,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     refine' ⟨a, f, xeq.symm, _⟩
     intro a' f' h''
     rintro hu u ⟨j, _h₂, hfi⟩
-    have hh : u ∈ supp x a' := by rw [← hfi] ; apply h'
+    have hh : u ∈ supp x a' := by rw [← hfi]; apply h'
     refine' (mem_supp x _ u).mp hh _ _ hu
   rintro ⟨a, f, xeq, h⟩ p; rw [liftP_iff]; constructor
   · rintro ⟨a', f', xeq', h'⟩ i u usuppx
@@ -229,7 +229,7 @@ def SuppPreservation : Prop :=
 
 theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f : q.P.B a ⟹ α) :
     ∀ i, supp (abs ⟨a, f⟩) i = f i '' univ := by
-  intro ; ext u; rw [mem_supp]; constructor
+  intro; ext u; rw [mem_supp]; constructor
   · intro h'
     apply h' _ _ rfl
   intro h' a' f' e

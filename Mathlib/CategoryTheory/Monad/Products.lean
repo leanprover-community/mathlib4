@@ -81,14 +81,7 @@ def coalgebraEquivOver : Coalgebra (prodComonad X) ≌ Over X where
   functor := coalgebraToOver X
   inverse := overToCoalgebra X
   unitIso := NatIso.ofComponents fun A =>
-    Coalgebra.isoMk (Iso.refl _)
-      (prod.hom_ext
-        (by
-          dsimp
-          simp)
-        (by
-          dsimp
-          simpa using A.counit))
+    Coalgebra.isoMk (Iso.refl _) (prod.hom_ext (by simp) (by simpa using A.counit))
   counitIso := NatIso.ofComponents fun f => Over.isoMk (Iso.refl _)
 #align category_theory.coalgebra_equiv_over CategoryTheory.coalgebraEquivOver
 
@@ -139,13 +132,8 @@ def underToAlgebra : Under X ⥤ Monad.Algebra (coprodMonad X) where
 def algebraEquivUnder : Monad.Algebra (coprodMonad X) ≌ Under X where
   functor := algebraToUnder X
   inverse := underToAlgebra X
-  unitIso := NatIso.ofComponents
-    fun A =>
-      Monad.Algebra.isoMk (Iso.refl _)
-        (coprod.hom_ext (by aesop_cat)
-          (by
-            dsimp
-            simpa using A.unit.symm))
+  unitIso := NatIso.ofComponents fun A =>
+    Monad.Algebra.isoMk (Iso.refl _) (coprod.hom_ext (by simp) (by simpa using A.unit.symm))
   counitIso :=
     NatIso.ofComponents fun f => Under.isoMk (Iso.refl _)
 #align category_theory.algebra_equiv_under CategoryTheory.algebraEquivUnder

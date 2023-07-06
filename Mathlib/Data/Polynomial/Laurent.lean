@@ -93,7 +93,7 @@ local notation:9000 R "[T;T⁻¹]" => LaurentPolynomial R
 
 -- Porting note: `ext` no longer applies `Finsupp.ext` automatically
 @[ext]
-theorem ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
+theorem LaurentPolynomial.ext [Semiring R] {p q : R[T;T⁻¹]} (h : ∀ a, p a = q a) : p = q :=
   Finsupp.ext h
 
 /-- The ring homomorphism, taking a polynomial with coefficients in `R` to a Laurent polynomial

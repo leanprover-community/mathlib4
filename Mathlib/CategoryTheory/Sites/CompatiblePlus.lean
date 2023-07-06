@@ -50,6 +50,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
     (by
       intro A B f
       -- porting note: this used to work with `ext`
+      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply Multiequalizer.hom_ext
       dsimp
       simp only [Functor.mapCone_π_app, Multiequalizer.multifork_π_app_left, Iso.symm_hom,
@@ -148,6 +149,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
   simp only [← Category.assoc]
   congr 1
   -- porting note: this used to work with `ext`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
   dsimp
@@ -184,6 +186,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [← Category.assoc]
   congr 1
   -- porting note: this used to work with `ext`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
   dsimp
@@ -209,6 +212,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [← Category.assoc]
   congr 1
   -- porting note: this used to work with `ext`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   delta Cover.toMultiequalizer
   simp only [diagramCompIso_hom_ι, Category.assoc, ← F.map_comp]

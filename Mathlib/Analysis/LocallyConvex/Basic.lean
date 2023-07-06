@@ -100,8 +100,7 @@ theorem absorbs_iUnion_finset {ι : Type _} {t : Finset ι} {f : ι → Set E} :
     Absorbs 𝕜 s (⋃ i ∈ t, f i) ↔ ∀ i ∈ t, Absorbs 𝕜 s (f i) := by
   classical
     induction' t using Finset.induction_on with i t _ht hi
-    ·
-      simp only [Finset.not_mem_empty, Set.iUnion_false, Set.iUnion_empty, absorbs_empty,
+    · simp only [Finset.not_mem_empty, Set.iUnion_false, Set.iUnion_empty, absorbs_empty,
         IsEmpty.forall_iff, imp_true_iff]
     rw [Finset.set_biUnion_insert, absorbs_union, hi]
     constructor <;> intro h
@@ -406,7 +405,7 @@ variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 theorem balanced_convexHull_of_balanced (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
-    rw [balanced_iff_smul_mem] at hs⊢
+    rw [balanced_iff_smul_mem] at hs ⊢
     refine' fun a ha x hx => convexHull_min _ this hx a ha
     exact fun y hy a ha => subset_convexHull ℝ s (hs ha hy)
   intro x hx y hy u v hu hv huv a ha

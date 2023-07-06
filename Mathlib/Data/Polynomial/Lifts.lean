@@ -113,7 +113,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If `p` lifts and `(r : R)` then `r * p` lifts. -/
 theorem base_mul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts f) : C (f r) * p ∈ lifts f := by
-  simp only [lifts, RingHom.mem_rangeS] at hp⊢
+  simp only [lifts, RingHom.mem_rangeS] at hp ⊢
   obtain ⟨p₁, rfl⟩ := hp
   use C r * p₁
   simp only [coe_mapRingHom, map_C, map_mul]
@@ -129,7 +129,7 @@ theorem monomial_mem_lifts {s : S} (n : ℕ) (h : s ∈ Set.range f) : monomial 
 
 /-- If `p` lifts then `p.erase n` lifts. -/
 theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈ lifts f := by
-  rw [lifts_iff_ringHom_rangeS, mem_map_rangeS] at h⊢
+  rw [lifts_iff_ringHom_rangeS, mem_map_rangeS] at h ⊢
   intro k
   by_cases hk : k = n
   · use 0
@@ -184,7 +184,7 @@ theorem mem_lifts_and_degree_eq {p : S[X]} (hlifts : p ∈ lifts f) :
     rw [habs, eraseLead_zero, eq_self_iff_true, not_true] at erase_zero
     exact erase_zero
   have lead_zero : p.coeff p.natDegree ≠ 0 := by
-    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero] ; exact pzero
+    rw [← leadingCoeff, Ne.def, leadingCoeff_eq_zero]; exact pzero
   obtain ⟨lead, hlead⟩ :=
     monomial_mem_lifts_and_degree_eq
       (monomial_mem_lifts p.natDegree ((lifts_iff_coeff_lifts p).1 hlifts p.natDegree))
@@ -288,7 +288,7 @@ theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiri
 /-- If `p` lifts and `(r : R)` then `r • p` lifts. -/
 theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
     r • p ∈ lifts (algebraMap R S) := by
-  rw [mem_lifts_iff_mem_alg] at hp⊢
+  rw [mem_lifts_iff_mem_alg] at hp ⊢
   exact Subalgebra.smul_mem (mapAlg R S).range hp r
 #align polynomial.smul_mem_lifts Polynomial.smul_mem_lifts
 

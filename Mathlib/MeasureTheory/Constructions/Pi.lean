@@ -75,7 +75,7 @@ variable {ι ι' : Type _} {α : ι → Type _}
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
     IsPiSystem (pi univ '' pi univ C) := by
   rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
-  rw [← pi_inter_distrib] at hst⊢; rw [univ_pi_nonempty_iff] at hst
+  rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty_iff] at hst
   exact mem_image_of_mem _ fun i _ => hC i _ (hs₁ i (mem_univ i)) _ (hs₂ i (mem_univ i)) (hst i)
 #align is_pi_system.pi IsPiSystem.pi
 
@@ -117,7 +117,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
         Set.pi univ fun k => ⋃ j : ℕ,
         @update ι (fun i' => Set (α i')) _ (fun i' => t i' j) i s k := by
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
-      by_cases i' = i
+      by_cases h : i' = i
       · subst h; simp
       · rw [← Ne.def] at h; simp [h]
     rw [this, ← iUnion_univ_pi]

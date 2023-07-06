@@ -269,9 +269,9 @@ theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.a
 #align free_add_monoid.lift_restrict FreeAddMonoid.lift_restrict
 
 @[to_additive]
-theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) :=
-  -- Porting note: replace ext by FreeMonoid.hom_eq
-  FreeMonoid.hom_eq (by simp)
+theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) := by
+  ext
+  simp
 #align free_monoid.comp_lift FreeMonoid.comp_lift
 #align free_add_monoid.comp_lift FreeAddMonoid.comp_lift
 

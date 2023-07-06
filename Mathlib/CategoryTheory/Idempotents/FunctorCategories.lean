@@ -72,9 +72,7 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     { obj := fun j => Limits.equalizer (𝟙 _) (p.app j)
       map := fun {j j'} φ =>
         equalizer.lift (Limits.equalizer.ι (𝟙 _) (p.app j) ≫ F.map φ)
-          (by rw [comp_id, assoc, p.naturality φ, ← assoc, ← Limits.equalizer.condition, comp_id])
-      map_id := fun _ => equalizer.hom_ext (by simp)
-      map_comp := fun _ _ => equalizer.hom_ext (by simp) }
+          (by rw [comp_id, assoc, p.naturality φ, ← assoc, ← Limits.equalizer.condition, comp_id]) }
   let i : Y ⟶ F :=
     { app := fun j => equalizer.ι _ _
       naturality := fun _ _ _ => by rw [equalizer.lift_ι] }
@@ -84,11 +82,11 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
       naturality := fun j j' φ => equalizer.hom_ext (by simp) }
   use Y, i, e
   constructor
-  . ext j
+  · ext j
     apply equalizer.hom_ext
     dsimp
     rw [assoc, equalizer.lift_ι, ← equalizer.condition, id_comp, comp_id]
-  . ext j
+  · ext j
     simp
 namespace KaroubiFunctorCategoryEmbedding
 

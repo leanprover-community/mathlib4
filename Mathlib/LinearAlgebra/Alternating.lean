@@ -232,7 +232,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
 
 theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 := by
   rw [Function.Injective] at hv
-  push_neg  at hv
+  push_neg at hv
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 #align alternating_map.map_eq_zero_of_not_injective AlternatingMap.map_eq_zero_of_not_injective

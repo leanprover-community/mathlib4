@@ -82,21 +82,21 @@ theorem isUpperSet_univ : IsUpperSet (univ : Set α) := fun _ _ _ => id
 theorem isLowerSet_univ : IsLowerSet (univ : Set α) := fun _ _ _ => id
 #align is_lower_set_univ isLowerSet_univ
 
-theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet (sᶜ) := fun _a _b h hb ha => hb <| hs h ha
+theorem IsUpperSet.compl (hs : IsUpperSet s) : IsLowerSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 #align is_upper_set.compl IsUpperSet.compl
 
-theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet (sᶜ) := fun _a _b h hb ha => hb <| hs h ha
+theorem IsLowerSet.compl (hs : IsLowerSet s) : IsUpperSet sᶜ := fun _a _b h hb ha => hb <| hs h ha
 #align is_lower_set.compl IsLowerSet.compl
 
 @[simp]
-theorem isUpperSet_compl : IsUpperSet (sᶜ) ↔ IsLowerSet s :=
+theorem isUpperSet_compl : IsUpperSet sᶜ ↔ IsLowerSet s :=
   ⟨fun h => by
     convert h.compl
     rw [compl_compl], IsLowerSet.compl⟩
 #align is_upper_set_compl isUpperSet_compl
 
 @[simp]
-theorem isLowerSet_compl : IsLowerSet (sᶜ) ↔ IsUpperSet s :=
+theorem isLowerSet_compl : IsLowerSet sᶜ ↔ IsUpperSet s :=
   ⟨fun h => by
     convert h.compl
     rw [compl_compl], IsUpperSet.compl⟩
@@ -794,7 +794,7 @@ namespace UpperSet
 variable {s t : UpperSet α} {a : α}
 
 @[simp]
-theorem coe_compl (s : UpperSet α) : (s.compl : Set α) = ↑sᶜ :=
+theorem coe_compl (s : UpperSet α) : (s.compl : Set α) = (↑s)ᶜ :=
   rfl
 #align upper_set.coe_compl UpperSet.coe_compl
 
@@ -870,7 +870,7 @@ namespace LowerSet
 variable {s t : LowerSet α} {a : α}
 
 @[simp]
-theorem coe_compl (s : LowerSet α) : (s.compl : Set α) = ↑sᶜ :=
+theorem coe_compl (s : LowerSet α) : (s.compl : Set α) = (↑s)ᶜ :=
   rfl
 #align lower_set.coe_compl LowerSet.coe_compl
 
@@ -1339,13 +1339,13 @@ theorem lowerClosure_image (f : α ≃o β) :
 #align lower_closure_image lowerClosure_image
 
 @[simp]
-theorem UpperSet.iInf_Ici (s : Set α) : (⨅ a ∈ s, UpperSet.Ici a) = upperClosure s := by
+theorem UpperSet.iInf_Ici (s : Set α) : ⨅ a ∈ s, UpperSet.Ici a = upperClosure s := by
   ext
   simp
 #align upper_set.infi_Ici UpperSet.iInf_Ici
 
 @[simp]
-theorem LowerSet.iSup_Iic (s : Set α) : (⨆ a ∈ s, LowerSet.Iic a) = lowerClosure s := by
+theorem LowerSet.iSup_Iic (s : Set α) : ⨆ a ∈ s, LowerSet.Iic a = lowerClosure s := by
   ext
   simp
 #align lower_set.supr_Iic LowerSet.iSup_Iic
