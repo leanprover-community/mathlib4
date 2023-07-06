@@ -1601,6 +1601,11 @@ theorem comp_quasiMeasurePreserving {γ : Type _} {_ : MeasurableSpace γ} {_ : 
   (hg.mono' hf.absolutelyContinuous).comp_measurable hf.measurable
 #align measure_theory.ae_strongly_measurable.comp_quasi_measure_preserving MeasureTheory.AEStronglyMeasurable.comp_quasiMeasurePreserving
 
+theorem comp_measurePreserving {γ : Type _} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
+    {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
+    (hf : MeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
+  hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving
+
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
   refine' ⟨range (hf.mk f), hf.stronglyMeasurable_mk.isSeparable_range, _⟩

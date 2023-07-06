@@ -28,7 +28,7 @@ universe u w v
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
 -/
-@[pp_with_univ]
+@[mk_iff, pp_with_univ]
 class Small (α : Type v) : Prop where
   /-- If a type is `Small.{w}`, then there exists an equivalence with some `S : Type w` -/
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
