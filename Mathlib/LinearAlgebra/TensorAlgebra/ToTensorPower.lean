@@ -10,7 +10,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.LinearAlgebra.TensorPower
-set_option autoImplicit false
 
 /-!
 # Tensor algebras as direct sums of tensor powers
