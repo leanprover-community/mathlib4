@@ -556,6 +556,25 @@ def nat_seq (f : Nat → α) : Nat → α
   | 0 => f 0
   | n => f n
 
+/-- Tail recursive version of `sMod`, aux definition. -/
+def sMod_tail_aux (q x : ℕ) : ℕ → ℕ
+  | 0 => x
+  | i + 1 => sMod_tail_aux q ((x ^ 2 + (q - 2)) % q) i
+
+/-- Tail recursive version of `sMod`, for evaluation. -/
+def sMod_tail (q i : ℕ) : ℕ := sMod_tail_aux q (4 % q) i
+
+theorem sMod_tail_aux_eq_sMod' (q i j : ℕ) : sMod_tail_aux q (sMod' q i) j = sMod' q (i + j) := by
+  induction j generalizing i
+  case zero => rfl
+  case succ j ih =>
+    rw [sMod_tail_aux, Nat.add_succ, ← Nat.succ_add, ← ih]
+    rfl
+
+theorem s_mod_tail_eq_sMod' (q i : ℕ) : sMod_tail q i = sMod' q i := by
+  change sMod_tail_aux q (sMod' q 0) i = _
+  rw [sMod_tail_aux_eq_sMod', zero_add]
+
 @[simp] theorem nat_seq_eq (f : Nat → α) (n : Nat) : nat_seq f n = f n := by
   cases n <;> rfl
 
@@ -617,15 +636,20 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
 theorem sMod''_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod'' (2 ^ p - 1) k : ℤ) = sMod p k := by
   rw [sMod''_eq_sMod', sMod'_eq_sMod p k hp]
 
-lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod'' (2 ^ p - 1) (p - 2) = 0) :
+lemma testTrueHelper (p q : ℕ) (hp : Nat.blt 1 p = true)
+    (hq : IsNat (2 ^ p) q)
+    (h : sMod'' (q - 1) (p - 2) = 0) :
     LucasLehmerTest p := by
+  obtain ⟨rfl⟩ := hq
   rw [Nat.blt_eq] at hp
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp,
     ← sMod''_eq_sMod p _ hp, h]
   rfl
 
-lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
-    (h : Nat.ble 1 (sMod'' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+lemma testFalseHelper (p q : ℕ) (hp : Nat.blt 1 p = true)
+    (hq : IsNat (2 ^ p) q)
+    (h : Nat.ble 1 (sMod'' (q - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+  obtain ⟨rfl⟩ := hq
   rw [Nat.blt_eq] at hp
   rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod''_eq_sMod p _ hp]
@@ -646,18 +670,21 @@ def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ep, hp⟩ ← deriveNat p
-  let np := ep.natLit!
+  have np := ep.natLit!
   unless 1 < np do
     failure
   have h1ltp : Q(Nat.blt 1 $ep) := (q(Eq.refl true) : Expr)
-  if sMod'' (2 ^ np - 1) (np - 2) = 0 then
-    have hs : Q(sMod'' (2 ^ $ep - 1) ($ep - 2) = 0) := (q(Eq.refl 0) : Expr)
-    have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
+  let ⟨e2p, h2p⟩ ← deriveNat q(2 ^ $ep : ℕ) sℕ
+  -- Unfortunately we need to compute `sMod` twice: once to see if the proof will
+  -- go through, and again once the kernel typechecks the proof.
+  if sMod_tail (e2p.natLit! - 1) (np - 2) = 0 then
+    have hs : Q(sMod'' ($e2p - 1) ($ep - 2) = 0) := (q(Eq.refl 0) : Expr)
+    have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $e2p $h1ltp $h2p $hs)
     have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
     return .isTrue pf'
   else
-    have hs : Q(Nat.ble 1 (sMod'' (2 ^ $ep - 1) ($ep - 2)) = true) := (q(Eq.refl true) : Expr)
-    have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
+    have hs : Q(Nat.ble 1 (sMod'' ($e2p - 1) ($ep - 2)) = true) := (q(Eq.refl true) : Expr)
+    have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $e2p $h1ltp $h2p $hs)
     have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
     return .isFalse pf'
 

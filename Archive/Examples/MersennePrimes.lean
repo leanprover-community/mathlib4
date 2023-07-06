@@ -109,41 +109,55 @@ example : (mersenne 11213).Prime :=
 /-- Tuckerman (1971) -/
 example : (mersenne 19937).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-
+norm_num took 1s
+type checking took 5.6s
+-/
 
 /-- Noll and Nickel (1978) -/
 example : (mersenne 21701).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-
+norm_num took 1.25s
+type checking took 5.99s
+-/
 
 /-- Noll (1979) -/
 example : (mersenne 23209).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-
+norm_num took 1.49s
+type checking took 6.38s
+-/
 
--- We now run into a little problem, that requires a small patch to the kernel.
-example : 2^25744 - (2^25744 - 1) = 1 := by norm_num
-example : 2^25745 - (2^25745 - 1) = 1 := by norm_num
 
+-- /-- Nelson and Slowinski (1979) -/
+-- example : (mersenne 44497).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-
+norm_num took 7.78s
+type checking took 19.5s
+-/
 
+-- /-- Slowinski (1982) -/
+-- example : (mersenne 86243).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-
+norm_num took 38s
+type checking took 62.5s
+-/
 
--- First failing example ("deep recursion detected")
-/-- Nelson and Slowinski (1979) -/
-example : (mersenne 44497).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Colquitt and Welsh (1988) -/
+-- example : (mersenne 110503).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Slowinski (1982) -/
-example : (mersenne 86243).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Slowinski (1983) -/
+-- example : (mersenne 132049).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Colquitt and Welsh (1988) -/
-example : (mersenne 110503).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
-
-/-- Slowinski (1983) -/
-example : (mersenne 132049).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
-
-/-- Slowinski (1985) -/
-example : (mersenne 216091).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Slowinski (1985) -/
+-- example : (mersenne 216091).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
 -- Lean crashes after an hour or so,
 -- and is unable to handle the 90s.
