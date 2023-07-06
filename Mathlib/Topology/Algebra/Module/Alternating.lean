@@ -37,7 +37,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 /-- Projection to `AlternatingMap`s. -/
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
-notation "Λ^" ι "⟮" R "; " M "; " N "⟯" => ContinuousAlternatingMap R M N ι
+notation M "[Λ^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
@@ -46,21 +46,21 @@ section Semiring
 variable {R M M' N N' ι : Type _} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
   [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N] [Module R N]
   [TopologicalSpace N] [AddCommMonoid N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
-  (f g : Λ^ι⟮R; M; N⟯)
+  (f g : M [Λ^ι]→L[R] N)
 
 theorem toContinuousMultilinearMap_injective :
     Injective (ContinuousAlternatingMap.toContinuousMultilinearMap :
-      Λ^ι⟮R; M; N⟯ → ContinuousMultilinearMap R (fun _ : ι => M) N)
+      M [Λ^ι]→L[R] N → ContinuousMultilinearMap R (fun _ : ι => M) N)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 theorem range_toContinuousMultilinearMap :
     Set.range
         (toContinuousMultilinearMap :
-          Λ^ι⟮R; M; N⟯ → ContinuousMultilinearMap R (fun _ : ι => M) N) =
+          M [Λ^ι]→L[R] N → ContinuousMultilinearMap R (fun _ : ι => M) N) =
       {f | ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → f v = 0} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.2, fun h => ⟨⟨f, h⟩, rfl⟩⟩
 
-instance continuousMapClass : ContinuousMapClass Λ^ι⟮R; M; N⟯ (ι → M) N where
+instance continuousMapClass : ContinuousMapClass (M [Λ^ι]→L[R] N) (ι → M) N where
   coe f := f.toFun
   coe_injective' _ _ h := toContinuousMultilinearMap_injective <| FunLike.ext' h
   map_continuous f := f.cont
@@ -83,19 +83,19 @@ theorem coe_mk (f : ContinuousMultilinearMap R (fun _ : ι => M) N) (h) : ⇑(mk
 theorem coe_toAlternatingMap : ⇑f.toAlternatingMap = f := rfl
 
 @[ext]
-theorem ext {f g : Λ^ι⟮R; M; N⟯} (H : ∀ x, f x = g x) : f = g :=
+theorem ext {f g : M [Λ^ι]→L[R] N} (H : ∀ x, f x = g x) : f = g :=
   FunLike.ext _ _ H
 
-theorem ext_iff {f g : Λ^ι⟮R; M; N⟯} : f = g ↔ ∀ x, f x = g x :=
+theorem ext_iff {f g : M [Λ^ι]→L[R] N} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 
 theorem toAlternatingMap_injective :
-    Injective (toAlternatingMap : Λ^ι⟮R; M; N⟯ → AlternatingMap R M N ι) := fun f g h =>
+    Injective (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) := fun f g h =>
   FunLike.ext' <| by convert FunLike.ext'_iff.1 h
 
 @[simp]
 theorem range_toAlternatingMap :
-    Set.range (toAlternatingMap : Λ^ι⟮R; M; N⟯ → AlternatingMap R M N ι) =
+    Set.range (toAlternatingMap : M [Λ^ι]→L[R] N → AlternatingMap R M N ι) =
       {f : AlternatingMap R M N ι | Continuous f} :=
   Set.ext fun f => ⟨fun ⟨g, hg⟩ => hg ▸ g.cont, fun h => ⟨{ f with cont := h }, FunLike.ext' rfl⟩⟩
 
@@ -128,25 +128,25 @@ theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v
 
 /-- Restrict the codomain of a continuous alternating map to a submodule. -/
 @[simps!]
-def codRestrict (f : Λ^ι⟮R; M; N⟯) (p : Submodule R N) (h : ∀ v, f v ∈ p) : Λ^ι⟮R; M; p⟯ :=
+def codRestrict (f : M [Λ^ι]→L[R] N) (p : Submodule R N) (h : ∀ v, f v ∈ p) : M [Λ^ι]→L[R] p :=
   { f.toAlternatingMap.codRestrict p h with toContinuousMultilinearMap := f.1.codRestrict p h }
 
-instance : Zero Λ^ι⟮R; M; N⟯ :=
+instance : Zero (M [Λ^ι]→L[R] N) :=
   ⟨⟨0, (0 : AlternatingMap R M N ι).map_eq_zero_of_eq⟩⟩
 
-instance : Inhabited Λ^ι⟮R; M; N⟯ :=
+instance : Inhabited (M [Λ^ι]→L[R] N) :=
   ⟨0⟩
 
 @[simp]
-theorem coe_zero : ⇑(0 : Λ^ι⟮R; M; N⟯) = 0 :=
+theorem coe_zero : ⇑(0 : M [Λ^ι]→L[R] N) = 0 :=
   rfl
 
 @[simp]
-theorem toContinuousMultilinearMap_zero : (0 : Λ^ι⟮R; M; N⟯).toContinuousMultilinearMap = 0 :=
+theorem toContinuousMultilinearMap_zero : (0 : M [Λ^ι]→L[R] N).toContinuousMultilinearMap = 0 :=
   rfl
 
 @[simp]
-theorem toAlternatingMap_zero : (0 : Λ^ι⟮R; M; N⟯).toAlternatingMap = 0 :=
+theorem toAlternatingMap_zero : (0 : M [Λ^ι]→L[R] N).toAlternatingMap = 0 :=
   rfl
 
 section SMul
@@ -155,36 +155,36 @@ variable {R' R'' A : Type _} [Monoid R'] [Monoid R''] [Semiring A] [Module A M] 
   [DistribMulAction R' N] [ContinuousConstSMul R' N] [SMulCommClass A R' N] [DistribMulAction R'' N]
   [ContinuousConstSMul R'' N] [SMulCommClass A R'' N]
 
-instance : SMul R' Λ^ι⟮A; M; N⟯ :=
+instance : SMul R' (M [Λ^ι]→L[A] N) :=
   ⟨fun c f => ⟨c • f.1, (c • f.toAlternatingMap).map_eq_zero_of_eq⟩⟩
 
 @[simp]
-theorem coe_smul (f : Λ^ι⟮A; M; N⟯) (c : R') : ⇑(c • f) = c • ⇑f :=
+theorem coe_smul (f : M [Λ^ι]→L[A] N) (c : R') : ⇑(c • f) = c • ⇑f :=
   rfl
 
-theorem smul_apply (f : Λ^ι⟮A; M; N⟯) (c : R') (v : ι → M) : (c • f) v = c • f v :=
+theorem smul_apply (f : M [Λ^ι]→L[A] N) (c : R') (v : ι → M) : (c • f) v = c • f v :=
   rfl
 
 @[simp]
-theorem toContinuousMultilinearMap_smul (c : R') (f : Λ^ι⟮A; M; N⟯) :
+theorem toContinuousMultilinearMap_smul (c : R') (f : M [Λ^ι]→L[A] N) :
     (c • f).toContinuousMultilinearMap = c • f.toContinuousMultilinearMap :=
   rfl
 
 @[simp]
-theorem toAlternatingMap_smul (c : R') (f : Λ^ι⟮A; M; N⟯) :
+theorem toAlternatingMap_smul (c : R') (f : M [Λ^ι]→L[A] N) :
     (c • f).toAlternatingMap = c • f.toAlternatingMap :=
   rfl
 
-instance [SMulCommClass R' R'' N] : SMulCommClass R' R'' Λ^ι⟮A; M; N⟯ :=
+instance [SMulCommClass R' R'' N] : SMulCommClass R' R'' (M [Λ^ι]→L[A] N) :=
   ⟨fun _ _ _ => ext fun _ => smul_comm _ _ _⟩
 
-instance [SMul R' R''] [IsScalarTower R' R'' N] : IsScalarTower R' R'' Λ^ι⟮A; M; N⟯ :=
+instance [SMul R' R''] [IsScalarTower R' R'' N] : IsScalarTower R' R'' (M [Λ^ι]→L[A] N) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
 
-instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScalar R' Λ^ι⟮A; M; N⟯ :=
+instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScalar R' (M [Λ^ι]→L[A] N) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' Λ^ι⟮A; M; N⟯ :=
+instance : MulAction R' (M [Λ^ι]→L[A] N) :=
   toContinuousMultilinearMap_injective.mulAction toContinuousMultilinearMap fun _ _ => rfl
 
 end SMul
@@ -193,7 +193,7 @@ section ContinuousAdd
 
 variable [ContinuousAdd N]
 
-instance : Add Λ^ι⟮R; M; N⟯ :=
+instance : Add (M [Λ^ι]→L[R] N) :=
   ⟨fun f g => ⟨f.1 + g.1, (f.toAlternatingMap + g.toAlternatingMap).map_eq_zero_of_eq⟩⟩
 
 @[simp]
@@ -205,29 +205,29 @@ theorem add_apply (v : ι → M) : (f + g) v = f v + g v :=
   rfl
 
 @[simp]
-theorem toContinuousMultilinearMap_add (f g : Λ^ι⟮R; M; N⟯) : (f + g).1 = f.1 + g.1 :=
+theorem toContinuousMultilinearMap_add (f g : M [Λ^ι]→L[R] N) : (f + g).1 = f.1 + g.1 :=
   rfl
 
 @[simp]
-theorem toAlternatingMap_add (f g : Λ^ι⟮R; M; N⟯) :
+theorem toAlternatingMap_add (f g : M [Λ^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid Λ^ι⟮R; M; N⟯ :=
+instance addCommMonoid : AddCommMonoid (M [Λ^ι]→L[R] N) :=
   toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
-def applyAddHom (v : ι → M) : Λ^ι⟮R; M; N⟯ →+ N :=
+def applyAddHom (v : ι → M) : M [Λ^ι]→L[R] N →+ N :=
   ⟨⟨fun f => f v, rfl⟩, fun _ _ => rfl⟩
 
 @[simp]
-theorem sum_apply {α : Type _} (f : α → Λ^ι⟮R; M; N⟯) (m : ι → M) {s : Finset α} :
+theorem sum_apply {α : Type _} (f : α → M [Λ^ι]→L[R] N) (m : ι → M) {s : Finset α} :
     (∑ a in s, f a) m = ∑ a in s, f a m :=
   (applyAddHom m).map_sum f s
 
 /-- Projection to `ContinuousMultilinearMap`s as a bundled `AddMonoidHom`. -/
 @[simps]
-def toMultilinearAddHom : Λ^ι⟮R; M; N⟯ →+ ContinuousMultilinearMap R (fun _ : ι => M) N :=
+def toMultilinearAddHom : M [Λ^ι]→L[R] N →+ ContinuousMultilinearMap R (fun _ : ι => M) N :=
   ⟨⟨fun f => f.1, rfl⟩, fun _ _ => rfl⟩
 
 end ContinuousAdd
@@ -241,24 +241,24 @@ def toContinuousLinearMap [DecidableEq ι] (m : ι → M) (i : ι) : M →L[R] N
 
 /-- The cartesian product of two continuous alternating maps, as a continuous alternating map. -/
 @[simps!]
-def prod (f : Λ^ι⟮R; M; N⟯) (g : Λ^ι⟮R; M; N'⟯) : Λ^ι⟮R; M; N × N'⟯ :=
+def prod (f : M [Λ^ι]→L[R] N) (g : M [Λ^ι]→L[R] N') : M [Λ^ι]→L[R] (N × N') :=
   ⟨f.1.prod g.1, (f.toAlternatingMap.prod g.toAlternatingMap).map_eq_zero_of_eq⟩
 
 /-- Combine a family of continuous alternating maps with the same domain and codomains `M' i` into a
 continuous alternating map taking values in the space of functions `Π i, M' i`. -/
 def pi {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)] [∀ i, TopologicalSpace (M' i)]
-    [∀ i, Module R (M' i)] (f : ∀ i, Λ^ι⟮R; M; M' i⟯) : Λ^ι⟮R; M; ∀ i, M' i⟯ :=
+    [∀ i, Module R (M' i)] (f : ∀ i, M [Λ^ι]→L[R] M' i) : M [Λ^ι]→L[R] ∀ i, M' i :=
   ⟨ContinuousMultilinearMap.pi fun i => (f i).1,
     (AlternatingMap.pi fun i => (f i).toAlternatingMap).map_eq_zero_of_eq⟩
 
 @[simp]
 theorem coe_pi {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
-    [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, Λ^ι⟮R; M; M' i⟯) :
+    [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, M [Λ^ι]→L[R] M' i) :
     ⇑(pi f) = fun m j => f j m :=
   rfl
 
 theorem pi_apply {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
-    [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, Λ^ι⟮R; M; M' i⟯) (m : ι → M)
+    [∀ i, TopologicalSpace (M' i)] [∀ i, Module R (M' i)] (f : ∀ i, M [Λ^ι]→L[R] M' i) (m : ι → M)
     (j : ι') : pi f m j = f j m :=
   rfl
 
@@ -269,7 +269,7 @@ variable (R M)
 /-- The evaluation map from `ι → M` to `M` is alternating at a given `i` when `ι` is subsingleton.
 -/
 @[simps! toContinuousMultilinearMap apply]
-def ofSubsingleton [Subsingleton ι] (i' : ι) : Λ^ι⟮R; M; M⟯ :=
+def ofSubsingleton [Subsingleton ι] (i' : ι) : M [Λ^ι]→L[R] M :=
   { AlternatingMap.ofSubsingleton R _ i' with
     toContinuousMultilinearMap := ContinuousMultilinearMap.ofSubsingleton R _ i' }
 
@@ -282,7 +282,7 @@ variable (ι)
 
 /-- The constant map is alternating when `ι` is empty. -/
 @[simps! toContinuousMultilinearMap apply]
-def constOfIsEmpty [IsEmpty ι] (m : N) : Λ^ι⟮R; M; N⟯ :=
+def constOfIsEmpty [IsEmpty ι] (m : N) : M [Λ^ι]→L[R] N :=
   { AlternatingMap.constOfIsEmpty R M ι m with
     toContinuousMultilinearMap := ContinuousMultilinearMap.constOfIsEmpty R (fun _ => M) m }
 
@@ -295,31 +295,31 @@ end
 
 /-- If `g` is continuous alternating and `f` is a continuous linear map, then `g (f m₁, ..., f mₙ)`
 is again a continuous alternating map, that we call `g.compContinuousLinearMap f`. -/
-def compContinuousLinearMap (g : Λ^ι⟮R; M; N⟯) (f : M' →L[R] M) : Λ^ι⟮R; M'; N⟯ :=
+def compContinuousLinearMap (g : M [Λ^ι]→L[R] N) (f : M' →L[R] M) : M' [Λ^ι]→L[R] N :=
   { g.toAlternatingMap.compLinearMap (f : M' →ₗ[R] M) with
     toContinuousMultilinearMap := g.1.compContinuousLinearMap fun _ => f }
 
 @[simp]
-theorem compContinuousLinearMap_apply (g : Λ^ι⟮R; M; N⟯) (f : M' →L[R] M) (m : ι → M') :
+theorem compContinuousLinearMap_apply (g : M [Λ^ι]→L[R] N) (f : M' →L[R] M) (m : ι → M') :
     g.compContinuousLinearMap f m = g (f ∘ m) :=
   rfl
 
 /-- Composing a continuous alternating map with a continuous linear map gives again a
 continuous alternating map. -/
-def _root_.ContinuousLinearMap.compContinuousAlternatingMap (g : N →L[R] N') (f : Λ^ι⟮R; M; N⟯) :
-    Λ^ι⟮R; M; N'⟯ :=
+def _root_.ContinuousLinearMap.compContinuousAlternatingMap (g : N →L[R] N') (f : M [Λ^ι]→L[R] N) :
+    M [Λ^ι]→L[R] N' :=
   { (g : N →ₗ[R] N').compAlternatingMap f.toAlternatingMap with
     toContinuousMultilinearMap := g.compContinuousMultilinearMap f.1 }
 
 @[simp]
 theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[R] N')
-    (f : Λ^ι⟮R; M; N⟯) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
+    (f : M [Λ^ι]→L[R] N) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 
 /-- A continuous linear equivalence of domains defines an equivalence between continuous
 alternating maps. -/
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M') :
-    Λ^ι⟮R; M; N⟯ ≃ Λ^ι⟮R; M'; N⟯ where
+    M [Λ^ι]→L[R] N ≃ M' [Λ^ι]→L[R] N where
   toFun f := f.compContinuousLinearMap ↑e.symm
   invFun f := f.compContinuousLinearMap ↑e
   left_inv f := by ext; simp [(· ∘ ·)]
@@ -328,7 +328,7 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapComp (e : M ≃L[R] M')
 /-- A continuous linear equivalence of codomains defines an equivalence between continuous
 alternating maps. -/
 def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N') :
-    Λ^ι⟮R; M; N⟯ ≃ Λ^ι⟮R; M; N'⟯ where
+    M [Λ^ι]→L[R] N ≃ M [Λ^ι]→L[R] N' where
   toFun := (e : N →L[R] N').compContinuousAlternatingMap
   invFun := (e.symm : N' →L[R] N).compContinuousAlternatingMap
   left_inv f := by ext; simp [(· ∘ ·)]
@@ -336,19 +336,19 @@ def _root_.ContinuousLinearEquiv.compContinuousAlternatingMap (e : N ≃L[R] N')
 
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
-    (e : N ≃L[R] N') (f : Λ^ι⟮R; M; N⟯) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
+    (e : N ≃L[R] N') (f : M [Λ^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
   rfl
 
 /-- Continuous linear equivalences between domains and codomains define an equivalence between the
 spaces of continuous alternating maps. -/
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr (e : M ≃L[R] M') (e' : N ≃L[R] N') :
-    Λ^ι⟮R; M; N⟯ ≃ Λ^ι⟮R; M'; N'⟯ :=
+    M [Λ^ι]→L[R] N ≃ M' [Λ^ι]→L[R] N' :=
   e.continuousAlternatingMapComp.trans e'.compContinuousAlternatingMap
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type _} {N : ι' → Type _} [∀ i, AddCommMonoid (N i)] [∀ i, TopologicalSpace (N i)]
-    [∀ i, Module R (N i)] : (∀ i, Λ^ι⟮R; M; N i⟯) ≃ Λ^ι⟮R; M; ∀ i, N i⟯ where
+    [∀ i, Module R (N i)] : (∀ i, M [Λ^ι]→L[R] N i) ≃ M [Λ^ι]→L[R] ∀ i, N i where
   toFun := pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] N i).compContinuousAlternatingMap f
   left_inv f := by ext; rfl
@@ -423,11 +423,11 @@ variable {A : Type _} [Semiring A] [SMul R A] [Module A M] [Module A N] [IsScala
 
 /-- Reinterpret a continuous `A`-alternating map as a continuous `R`-alternating map, if `A` is an
 algebra over `R` and their actions on all involved modules agree with the action of `R` on `A`. -/
-def restrictScalars (f : Λ^ι⟮A; M; N⟯) : Λ^ι⟮R; M; N⟯ :=
+def restrictScalars (f : M [Λ^ι]→L[A] N) : M [Λ^ι]→L[R] N :=
   { f with toContinuousMultilinearMap := f.1.restrictScalars R }
 
 @[simp]
-theorem coe_restrictScalars (f : Λ^ι⟮A; M; N⟯) : ⇑(f.restrictScalars R) = f :=
+theorem coe_restrictScalars (f : M [Λ^ι]→L[A] N) : ⇑(f.restrictScalars R) = f :=
   rfl
 
 end RestrictScalar
@@ -439,7 +439,7 @@ section Ring
 variable {R M M' N N' ι : Type _} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace M]
   [AddCommGroup M'] [Module R M'] [TopologicalSpace M'] [AddCommGroup N] [Module R N]
   [TopologicalSpace N] [AddCommGroup N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
-  (f g : Λ^ι⟮R; M; N⟯)
+  (f g : M [Λ^ι]→L[R] N)
 
 @[simp]
 theorem map_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
@@ -450,7 +450,7 @@ section TopologicalAddGroup
 
 variable [TopologicalAddGroup N]
 
-instance : Neg Λ^ι⟮R; M; N⟯ :=
+instance : Neg (M [Λ^ι]→L[R] N) :=
   ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
 
 @[simp]
@@ -460,7 +460,7 @@ theorem coe_neg : ⇑(-f) = -f :=
 theorem neg_apply (m : ι → M) : (-f) m = -f m :=
   rfl
 
-instance : Sub Λ^ι⟮R; M; N⟯ :=
+instance : Sub (M [Λ^ι]→L[R] N) :=
   ⟨fun f g =>
     { f.toAlternatingMap - g.toAlternatingMap with toContinuousMultilinearMap := f.1 - g.1 }⟩
 
@@ -468,7 +468,7 @@ instance : Sub Λ^ι⟮R; M; N⟯ :=
 
 theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
-instance : AddCommGroup Λ^ι⟮R; M; N⟯ :=
+instance : AddCommGroup (M [Λ^ι]→L[R] N) :=
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -481,7 +481,7 @@ section CommSemiring
 variable {R M M' N N' ι : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [TopologicalSpace M] [AddCommMonoid M'] [Module R M'] [TopologicalSpace M'] [AddCommMonoid N]
   [Module R N] [TopologicalSpace N] [AddCommMonoid N'] [Module R N'] [TopologicalSpace N'] {n : ℕ}
-  (f g : Λ^ι⟮R; M; N⟯)
+  (f g : M [Λ^ι]→L[R] N)
 
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ι → M) (s : Finset ι) :
     f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m :=
@@ -501,7 +501,7 @@ variable {R A M N ι : Type _} [Monoid R] [Semiring A] [AddCommMonoid M] [AddCom
   [TopologicalSpace M] [TopologicalSpace N] [Module A M] [Module A N] [DistribMulAction R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
-instance [ContinuousAdd N] : DistribMulAction R Λ^ι⟮A; M; N⟯ :=
+instance [ContinuousAdd N] : DistribMulAction R (M [Λ^ι]→L[A] N) :=
   Function.Injective.distribMulAction toMultilinearAddHom
     toContinuousMultilinearMap_injective fun _ _ => rfl
 
@@ -515,7 +515,7 @@ variable {R A M N ι : Type _} [Semiring R] [Semiring A] [AddCommMonoid M] [AddC
 
 /-- The space of continuous alternating maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R Λ^ι⟮A; M; N⟯ :=
+instance : Module R (M [Λ^ι]→L[A] N) :=
   Function.Injective.module _ toMultilinearAddHom toContinuousMultilinearMap_injective fun _ _ =>
     rfl
 
@@ -523,7 +523,7 @@ instance : Module R Λ^ι⟮A; M; N⟯ :=
 the corresponding multilinear map. -/
 @[simps]
 def toContinuousMultilinearMapLinear :
-    Λ^ι⟮A; M; N⟯ →ₗ[R] ContinuousMultilinearMap A (fun _ : ι => M) N where
+    M [Λ^ι]→L[A] N →ₗ[R] ContinuousMultilinearMap A (fun _ : ι => M) N where
   toFun := toContinuousMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -533,7 +533,7 @@ def toContinuousMultilinearMapLinear :
 def piLinearEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
-    (∀ i, Λ^ι⟮A; M; M' i⟯) ≃ₗ[R] Λ^ι⟮A; M; ∀ i, M' i⟯ :=
+    (∀ i, M [Λ^ι]→L[A] M' i) ≃ₗ[R] M [Λ^ι]→L[A] ∀ i, M' i :=
   { piEquiv with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
@@ -544,12 +544,12 @@ section SmulRight
 
 variable {R A M N ι : Type _} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
-  (f : Λ^ι⟮R; M; R⟯) (z : N)
+  (f : M [Λ^ι]→L[R] R) (z : N)
 
 /-- Given a continuous `R`-alternating map `f` taking values in `R`, `f.smul_right z` is the
 continuous alternating map sending `m` to `f m • z`. -/
 @[simps! toContinuousMultilinearMap apply]
-def smulRight : Λ^ι⟮R; M; N⟯ :=
+def smulRight : M [Λ^ι]→L[R] N :=
   { f.toAlternatingMap.smulRight z with toContinuousMultilinearMap := f.1.smulRight z }
 
 end SmulRight
@@ -563,7 +563,7 @@ variable {R M M' N N' ι : Type _} [CommSemiring R] [AddCommMonoid M] [Module R 
 
 /-- `ContinuousAlternatingMap.compContinuousLinearMap` as a bundled `LinearMap`. -/
 @[simps]
-def compContinuousLinearMapₗ (f : M →L[R] M') : Λ^ι⟮R; M'; N⟯ →ₗ[R] Λ^ι⟮R; M; N⟯ where
+def compContinuousLinearMapₗ (f : M →L[R] M') : M' [Λ^ι]→L[R] N →ₗ[R] M [Λ^ι]→L[R] N where
   toFun g := g.compContinuousLinearMap f
   map_add' g g' := by ext; simp
   map_smul' c g := by ext; simp
@@ -572,7 +572,7 @@ variable (R M N N')
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled bilinear map. -/
 def _root_.ContinuousLinearMap.compContinuousAlternatingMapₗ :
-    (N →L[R] N') →ₗ[R] Λ^ι⟮R; M; N⟯ →ₗ[R] Λ^ι⟮R; M; N'⟯ :=
+    (N →L[R] N') →ₗ[R] M [Λ^ι]→L[R] N →ₗ[R] M [Λ^ι]→L[R] N' :=
   LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun f₁ f₂ g => rfl)
     (fun c f g => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
 
@@ -588,7 +588,7 @@ variable {R M N ι : Type _} [Semiring R] [AddCommMonoid M] [Module R M] [Topolo
 
 /-- Alternatization of a continuous multilinear map. -/
 @[simps (config := { isSimp := false }) apply_toContinuousMultilinearMap]
-def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ Λ^ι⟮R; M; N⟯ where
+def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [Λ^ι]→L[R] N where
   toFun f :=
     { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f.domDomCongr σ
       map_eq_zero_of_eq' := fun v i j hv hne => by
