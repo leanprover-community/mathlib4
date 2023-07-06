@@ -16,25 +16,25 @@ import Mathlib.RingTheory.TensorProduct
 
 ## Main definitions
 
-* `category_theory.Module.restrict_scalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`,
-  then `restrict_scalars : Module S ⥤ Module R` is defined by `M ↦ M` where `M : S-module` is seen
+* `CategoryTheory.ModuleCat.restrictScalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`,
+  then `restrictScalars : Module S ⥤ Module R` is defined by `M ↦ M` where `M : S-module` is seen
   as `R-module` by `r • m := f r • m` and `S`-linear map `l : M ⟶ M'` is `R`-linear as well.
 
-* `category_theory.Module.extend_scalars`: given **commutative** rings `R, S` and ring homomorphism
-  `f : R ⟶ S`, then `extend_scalars : Module R ⥤ Module S` is defined by `M ↦ S ⨂ M` where the
+* `CategoryTheory.ModuleCat.extendScalars`: given **commutative** rings `R, S` and ring homomorphism
+  `f : R ⟶ S`, then `extendScalars : Module R ⥤ Module S` is defined by `M ↦ S ⨂ M` where the
   module structure is defined by `s • (s' ⊗ m) := (s * s') ⊗ m` and `R`-linear map `l : M ⟶ M'`
   is sent to `S`-linear map `s ⊗ m ↦ s ⊗ l m : S ⨂ M ⟶ S ⨂ M'`.
 
-* `category_theory.Module.coextend_scalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`
-  then `coextend_scalars : Module R ⥤ Module S` is defined by `M ↦ (S →ₗ[R] M)` where `S` is seen as
+* `CategoryTheory.ModuleCat.coextendScalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`
+  then `coextendScalars : Module R ⥤ Module S` is defined by `M ↦ (S →ₗ[R] M)` where `S` is seen as
   `R-module` by restriction of scalars and `l ↦ l ∘ _`.
 
 ## Main results
 
-* `category_theory.Module.extend_restrict_scalars_adj`: given commutative rings `R, S` and a ring
+* `CategoryTheory.ModuleCat.extendRestrictScalarsAdj`: given commutative rings `R, S` and a ring
   homomorphism `f : R →+* S`, the extension and restriction of scalars by `f` are adjoint functors.
-* `category_theory.Module.restrict_coextend_scalars_adj`: given rings `R, S` and a ring homomorphism
-  `f : R ⟶ S` then `coextend_scalars f` is the right adjoint of `restrict_scalars f`.
+* `CategoryTheory.ModuleCat.restrictCoextendScalarsAdj`: given rings `R, S` and a ring homomorphism
+  `f : R ⟶ S` then `coextendScalars f` is the right adjoint of `restrictScalars f`.
 
 ## List of notations
 Let `R, S` be rings and `f : R →+* S`
@@ -55,7 +55,7 @@ variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 variable (M : ModuleCat.{v} S)
 
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
-    `r • m := f r • m` (`module.comp_hom`). This is called restriction of scalars. -/
+    `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
 def obj' : ModuleCat R where
   carrier := M
   isModule := Module.compHom M f
@@ -138,7 +138,7 @@ variable (M : Type v) [AddCommMonoid M] [Module R M]
 
 -- mathport name: «expr ⊗ₜ[ , ] »
 -- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
--- without this notation, one need to work with `s : (restrict_scalars f).obj ⟨S⟩`.
+-- without this notation, one need to work with `s : (restrictScalars f).obj ⟨S⟩`.
 scoped[ChangeOfRings]
   notation s "⊗ₜ[" R "," f "]" m => @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -335,9 +335,10 @@ namespace RestrictionCoextensionAdj
 
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
+-- Porting note: too much time
 set_option maxHeartbeats 600000 in
-/-- Given `R`-module X and `S`-module Y, any `g : (restrict_of_scalars f).obj Y ⟶ X`
-corresponds to `Y ⟶ (coextend_scalars f).obj X` by sending `y ↦ (s ↦ g (s • y))`
+/-- Given `R`-module X and `S`-module Y, any `g : (restrictScalars f).obj Y ⟶ X`
+corresponds to `Y ⟶ (coextendScalars f).obj X` by sending `y ↦ (s ↦ g (s • y))`
 -/
 @[simps apply_apply]
 def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
@@ -366,8 +367,8 @@ def HomEquiv.fromRestriction {X : ModuleCat R} {Y : ModuleCat S}
       rw [mul_smul]
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.from_restriction CategoryTheory.ModuleCat.RestrictionCoextensionAdj.HomEquiv.fromRestriction
 
-/-- Given `R`-module X and `S`-module Y, any `g : Y ⟶ (coextend_scalars f).obj X`
-corresponds to `(restrict_scalars f).obj Y ⟶ X` by `y ↦ g y 1`
+/-- Given `R`-module X and `S`-module Y, any `g : Y ⟶ (coextendScalars f).obj X`
+corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
 @[simps apply]
 def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restrictScalars f).obj Y ⟶ X
@@ -497,8 +498,8 @@ open TensorProduct
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S)
 
 /--
-Given `R`-module X and `S`-module Y and a map `g : (extend_scalars f).obj X ⟶ Y`, i.e. `S`-linear
-map `S ⨂ X → Y`, there is a `X ⟶ (restrict_scalars f).obj Y`, i.e. `R`-linear map `X ⟶ Y` by
+Given `R`-module X and `S`-module Y and a map `g : (extendScalars f).obj X ⟶ Y`, i.e. `S`-linear
+map `S ⨂ X → Y`, there is a `X ⟶ (restrictScalars f).obj Y`, i.e. `R`-linear map `X ⟶ Y` by
 `x ↦ g (1 ⊗ x)`.
 -/
 @[simps apply]
@@ -565,8 +566,8 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     · rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.from_extend_scalars CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.fromExtendScalars
 
-/-- Given `R`-module X and `S`-module Y, `S`-linear linear maps `(extend_scalars f).obj X ⟶ Y`
-bijectively correspond to `R`-linear maps `X ⟶ (restrict_scalars f).obj Y`.
+/-- Given `R`-module X and `S`-module Y, `S`-linear linear maps `(extendScalars f).obj X ⟶ Y`
+bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
 -/
 @[simps symm_apply]
 def homEquiv {X Y} :
