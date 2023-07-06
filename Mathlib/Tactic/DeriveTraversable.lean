@@ -58,56 +58,67 @@ def mapConstructor (c n : Name) (ad : Expr) (f α β : Expr) (args₀ : List Exp
       else mapField n g.appFn! f α β y.2)
   mkAppOptM c ((args₀ ++ args').map some).toArray >>= m.assign
 
+/-- Makes a `match` expression corresponding to the application of `casesOn` like:
+```lean
+match (motive := motive) indices₁, indices₂, .., (val : type.{univs} params₁ params₂ ..) with
+| _, _, .., ctor₁ fields₁₁ fields₁₂ .. => rhss ctor₁ [fields₁₁, fields₁₂, ..]
+| _, _, .., ctor₂ fields₂₁ fields₂₂ .. => rhss ctor₂ [fields₂₁, fields₂₂, ..]
+```
+This is convenient to make a definition with equation lemmas. -/
+def mkCasesOnMatch (type : Name) (univs : List Level) (params : List Expr) (motive : Expr)
+    (indices : List Expr) (val : Expr)
+    (rhss : (ctor : Name) → (fields : List FVarId) → TermElabM Expr) : TermElabM Expr := do
+  let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (n?.getD type ++ "match") 1)
+  let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
+    mkForallFVars iargs (motive.beta iargs)
+  let .inductInfo iinfo ← getConstInfo type | throwError m!"'{type}' is not an inductive type"
+  let lhss ← iinfo.ctors.mapM fun ctor => do
+    let .ctorInfo cinfo ← getConstInfo ctor | unreachable!
+    let catype ←
+      instantiateForall (cinfo.type.instantiateLevelParams cinfo.levelParams univs) params.toArray
+    forallBoundedTelescope catype cinfo.numFields fun cargs _ => do
+      let fvarDecls ← cargs.toList.mapM fun carg => getFVarLocalDecl carg
+      let fieldPats := cargs.toList.map fun carg => Pattern.var carg.fvarId!
+      let patterns := [Pattern.ctor cinfo.name univs params fieldPats]
+      return { ref := .missing
+               fvarDecls
+               patterns }
+  let mres ← Term.mkMatcher { matcherName
+                              matchType
+                              discrInfos := mkArray (indices.length + 1) {}
+                              lhss }
+  mres.addMatcher
+  let rhss ← lhss.mapM fun altLHS => do
+    let [.ctor ctor _ _ cpats] := altLHS.patterns | unreachable!
+    withExistingLocalDecls altLHS.fvarDecls do
+      let fields := altLHS.fvarDecls.map LocalDecl.fvarId
+      let rhsBody ← rhss ctor fields
+      if cpats.isEmpty then
+        mkFunUnit rhsBody
+      else
+        mkLambdaFVars (fields.map Expr.fvar).toArray rhsBody
+  return mkAppN mres.matcher (motive :: indices ++ [val] ++ rhss).toArray
+
 /-- derive the `map` definition of a `Functor` -/
 def mkMap (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m : MVarId) :
     TermElabM Unit := do
-  let (#[α, β, f, x], m') ← m.introN 4 [`α, `β, `f, `x] | unreachable!
-  m'.withContext do
-    let et ← x.getType
-    let .inductInfo cinfo ← getConstInfo type | failure
-    let cinfos ← cinfo.ctors.mapM fun ctor => do
-      let .ctorInfo cinfo ← getConstInfo ctor | failure
-      return cinfo
-    let mn ← Lean.mkAuxName (type ++ "map" ++ "match") 1
-    let matchType ← mkArrow et (← m'.getType)
-    let motive ← forallBoundedTelescope matchType (some 1) fun xs body => mkLambdaFVars xs body
-    let lhss ← cinfos.mapM fun cinfo => do
-      let .ctorInfo cinfo ← getConstInfo cinfo.name | failure
-      let ls := levels.map Level.param
-      let vars' := vars.concat (.fvar α)
-      let ce := mkAppN (.const cinfo.name ls) vars'.toArray
-      let ct ← inferType ce
-      forallBoundedTelescope ct cinfo.numFields fun args _ => do
-        let fvarDecls ← args.toList.mapM fun arg => getFVarLocalDecl arg
-        let fields := args.toList.map fun arg => Pattern.var arg.fvarId!
-        let patterns := [Pattern.ctor cinfo.name ls vars' fields]
-        return { ref := .missing
-                 fvarDecls
-                 patterns }
-    let mres ← Term.mkMatcher
-      { matcherName := mn
-        matchType
-        discrInfos := #[{}]
-        lhss }
-    mres.addMatcher
-    let r := mkApp2 mres.matcher motive (.fvar x)
-    let ms' ← m'.apply r
-    let ms' := ms'.zip cinfos
-    ms'.forM fun (m', cinfo) => do
-      if cinfo.numFields = 0 then
-        let (_, m') ← m'.intro1
-        m'.withContext do
-          mapConstructor
-            cinfo.name type ad (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) [] m'
-      else
-        let (args, m') ← m'.introN cinfo.numFields
-        m'.withContext do
-          let args := args.toList.map Expr.fvar
+  let (#[α, β, f, x], m) ← m.introN 4 [`α, `β, `f, `x] | unreachable!
+  m.withContext do
+    let xtype ← x.getType
+    let target ← m.getType >>= instantiateMVars
+    let motive ← mkLambdaFVars #[.fvar x] target
+    let e ←
+      mkCasesOnMatch type (levels.map Level.param) (vars.concat (.fvar α)) motive [] (.fvar x)
+        fun ctor fields => do
+          let m ← mkFreshExprSyntheticOpaqueMVar target
+          let args := fields.map Expr.fvar
           let args₀ ← args.mapM fun a => do
-            let b ← et.occurs <$> inferType a
+            let b ← xtype.occurs <$> inferType a
             return (b, a)
           mapConstructor
-            cinfo.name type ad (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) args₀ m'
+            ctor type ad (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) args₀ m.mvarId!
+          instantiateMVars m
+    m.assign e
 
 def deriveFunctor (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
   let .app (.const ``Functor _) F ← m.getType >>= instantiateMVars | failure
@@ -116,7 +127,7 @@ def deriveFunctor (levels : List Name) (vars : List Expr) (m : MVarId) : TermEla
   let [m] ← run m <| evalTactic (← `(tactic| refine { map := @(?_) })) | failure
   let t ← m.getType >>= instantiateMVars
   let n' := n ++ "map"
-  withAuxDecl "map" t n' fun ad => do
+  withDeclName n <| withAuxDecl "map" t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
     mkMap n ad levels vars m'
     let e ← instantiateMVars (mkMVar m')
@@ -294,7 +305,7 @@ def traverseConstructor (c n : Name) (ad : Expr) (applInst f α β : Expr) (args
   let pureInst ← mkAppOptM ``Applicative.toPure #[none, applInst]
   let constr' ← mkAppOptM ``Pure.pure #[none, pureInst, none, v]
   let r ← gargs.foldlM
-      (fun e garg => mkAppM ``Seq.seq #[e, .lam `_ (.const ``Unit []) garg .default]) constr'
+      (fun e garg => mkFunUnit garg >>= fun e' => mkAppM ``Seq.seq #[e, e']) constr'
   m.assign r
 where
   mkFunCtor (c : Name) (args : List (Bool × Expr)) (fvars : Array Expr) (aargs : Array Expr) :
@@ -310,55 +321,24 @@ where
 /-- derive the `traverse` definition of a `Traversable` instance -/
 def mkTraverse (type : Name) (ad : Expr) (levels : List Name) (vars : List Expr) (m : MVarId) :
     TermElabM Unit := do
-  let (#[_, applInst, α, β, f, x], m') ← m.introN 6 [`m, `applInst, `α, `β, `f, `x] | unreachable!
-  m'.withContext do
-    let et ← x.getType
-    let .inductInfo cinfo ← getConstInfo type | failure
-    let cinfos ← cinfo.ctors.mapM fun ctor => do
-      let .ctorInfo cinfo ← getConstInfo ctor | failure
-      return cinfo
-    let mn ← Lean.mkAuxName (type ++ "traverse" ++ "match") 1
-    let matchType ← mkArrow et (← m'.getType)
-    let motive ← forallBoundedTelescope matchType (some 1) fun xs body => mkLambdaFVars xs body
-    let lhss ← cinfos.mapM fun cinfo => do
-      let .ctorInfo cinfo ← getConstInfo cinfo.name | failure
-      let ls := levels.map Level.param
-      let vars' := vars.concat (.fvar α)
-      let ce := mkAppN (.const cinfo.name ls) vars'.toArray
-      let ct ← inferType ce
-      forallBoundedTelescope ct cinfo.numFields fun args _ => do
-        let fvarDecls ← args.toList.mapM fun arg => getFVarLocalDecl arg
-        let fields := args.toList.map fun arg => Pattern.var arg.fvarId!
-        let patterns := [Pattern.ctor cinfo.name ls vars' fields]
-        return { ref := .missing
-                 fvarDecls
-                 patterns }
-    let mres ← Term.mkMatcher
-      { matcherName := mn
-        matchType
-        discrInfos := #[{}]
-        lhss }
-    mres.addMatcher
-    let r := mkApp2 mres.matcher motive (.fvar x)
-    let ms' ← m'.apply r
-    let ms' := ms'.zip cinfos
-    ms'.forM fun (m', cinfo) => do
-      if cinfo.numFields = 0 then
-        let (_, m') ← m'.intro1
-        m'.withContext do
-          traverseConstructor
-            cinfo.name type ad (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
-            (vars.concat (.fvar β)) [] m'
-      else
-        let (args, m') ← m'.introN cinfo.numFields
-        m'.withContext do
-          let args := args.toList.map Expr.fvar
+  let (#[_, applInst, α, β, f, x], m) ← m.introN 6 [`m, `applInst, `α, `β, `f, `x] | unreachable!
+  m.withContext do
+    let xtype ← x.getType
+    let target ← m.getType >>= instantiateMVars
+    let motive ← mkLambdaFVars #[.fvar x] target
+    let e ←
+      mkCasesOnMatch type (levels.map Level.param) (vars.concat (.fvar α)) motive [] (.fvar x)
+        fun ctor fields => do
+          let m ← mkFreshExprSyntheticOpaqueMVar target
+          let args := fields.map Expr.fvar
           let args₀ ← args.mapM fun a => do
-            let b ← et.occurs <$> inferType a
+            let b ← xtype.occurs <$> inferType a
             return (b, a)
           traverseConstructor
-            cinfo.name type ad (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
-            (vars.concat (.fvar β)) args₀ m'
+            ctor type ad (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
+            (vars.concat (.fvar β)) args₀ m.mvarId!
+          instantiateMVars m
+    m.assign e
 
 def deriveTraversable (levels : List Name) (vars : List Expr) (m : MVarId) : TermElabM Unit := do
   let .app (.const ``Traversable _) F ← m.getType >>= instantiateMVars | failure
@@ -367,7 +347,7 @@ def deriveTraversable (levels : List Name) (vars : List Expr) (m : MVarId) : Ter
   let [m] ← run m <| evalTactic (← `(tactic| refine { traverse := @(?_) })) | failure
   let t ← m.getType >>= instantiateMVars
   let n' := n ++ "traverse"
-  withAuxDecl "traverse" t n' fun ad => do
+  withDeclName n <| withAuxDecl "traverse" t n' fun ad => do
     let m' := (← mkFreshExprSyntheticOpaqueMVar t).mvarId!
     mkTraverse n ad levels vars m'
     let e ← instantiateMVars (mkMVar m')
