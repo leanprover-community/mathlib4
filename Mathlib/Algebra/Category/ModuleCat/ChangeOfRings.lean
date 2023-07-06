@@ -411,7 +411,7 @@ The natural transformation from identity functor to the composition of restricti
 of scalars.
 -/
 @[simps]
-protected def unit' : 𝟭 (ModuleCat.{u₂,u₂} S) ⟶ restrictScalars f ⋙ coextendScalars f where
+protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
   app Y := app' f Y
   naturality Y Y' g :=
     LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
@@ -419,7 +419,8 @@ protected def unit' : 𝟭 (ModuleCat.{u₂,u₂} S) ⟶ restrictScalars f ⋙ c
       simp only [ModuleCat.coe_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj, Functor.comp_map]
       rw [coe_comp, coe_comp, Function.comp, Function.comp]
       conv_rhs => rw [← LinearMap.coe_toAddHom, ←AddHom.toFun_eq_coe]
-      rw [CoextendScalars.map_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, restrictScalars.map_apply]
+      erw [CoextendScalars.map_apply, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
+        restrictScalars.map_apply f]
       change s • (g y) = g (s • y)
       rw [map_smul]
 #align category_theory.Module.restriction_coextension_adj.unit' CategoryTheory.ModuleCat.RestrictionCoextensionAdj.unit'
@@ -449,28 +450,34 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
 
 end RestrictionCoextensionAdj
 
-set_option pp.universes true in
-#check RestrictionCoextensionAdj.HomEquiv.fromRestriction
-
-set_option pp.universes true in
-#check RestrictionCoextensionAdj.HomEquiv.toRestriction
-
-set_option pp.universes true in
-#check restrictScalars
-
+-- Porting note: very fiddly universes
 /-- Restriction of scalars is left adjoint to coextension of scalars. -/
 @[simps]
-def restrictCoextendScalarsAdj {R : Type u} {S : Type u} [Ring R] [Ring S] (f : R →+* S) :
-    restrictScalars.{u,u,u} f ⊣ coextendScalars.{u,u,u} f where
+def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
+    restrictScalars.{max v u₂,u₁,u₂} f ⊣ coextendScalars f where
   homEquiv X Y :=
-    { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u,u,u} f
-      invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u,u,u} f
-      left_inv := fun g => LinearMap.ext fun x : X => by sorry
-      right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by simp }
-  unit := RestrictionCoextensionAdj.unit' f
-  counit := RestrictionCoextensionAdj.counit'.{u,u,u} f
+    { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
+      invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
+      left_inv := fun g => LinearMap.ext fun x : X => by
+        -- Porting note: once just simp
+        rw [RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
+          LinearMap.coe_toAddHom, RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
+          one_smul]
+      right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by
+        -- Porting note: once just simp
+        rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_apply_apply,
+          RestrictionCoextensionAdj.HomEquiv.toRestriction_apply, AddHom.toFun_eq_coe,
+          LinearMap.coe_toAddHom, LinearMap.map_smulₛₗ, RingHom.id_apply, CoextendScalars.smul_apply',
+          one_mul] }
+  unit := RestrictionCoextensionAdj.unit'.{u₁,u₂,v} f
+  counit := RestrictionCoextensionAdj.counit'.{u₁,u₂,v} f
   homEquiv_unit := LinearMap.ext fun y => rfl
-  homEquiv_counit := LinearMap.ext fun y : Y => by simp
+  homEquiv_counit := fun {X Y g} => LinearMap.ext <| by
+    -- Porting note: previously simp [RestrictionCoextensionAdj.counit']
+    intro x; dsimp
+    rw [coe_comp, Function.comp]
+    change _ = (((restrictScalars f).map g) x).toFun (1 : S)
+    rw [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, restrictScalars.map_apply]
 #align category_theory.Module.restrict_coextend_scalars_adj CategoryTheory.ModuleCat.restrictCoextendScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
@@ -579,9 +586,9 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
 bijectively correspond to `R`-linear maps `X ⟶ (restrict_scalars f).obj Y`.
 -/
 @[simps]
-def homEquiv {X Y} : ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars f).obj Y) where
-  toFun := HomEquiv.toRestrictScalars f
-  invFun := HomEquiv.fromExtendScalars f
+def homEquiv {X Y} : ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars.{max v u₂,u₁,u₂} f).obj Y) where
+  toFun := HomEquiv.toRestrictScalars.{u₁,u₂,v} f
+  invFun := HomEquiv.fromExtendScalars.{u₁,u₂,v} f
   left_inv g := by
     apply LinearMap.ext; intro z
     induction' z using TensorProduct.induction_on with x s z1 z2 ih1 ih2
@@ -616,8 +623,8 @@ The natural transformation from identity functor on `R`-module to the compositio
 restriction of scalars.
 -/
 @[simps]
-def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars f where
-  app _ := Unit.map f
+def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂,u₁,u₂} f where
+  app _ := Unit.map.{u₁,u₂,v} f
 #align category_theory.Module.extend_restrict_scalars_adj.unit CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.unit
 
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
@@ -652,8 +659,8 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by s
 identity functor on `S`-module.
 -/
 @[simps]
-def counit : restrictScalars f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
-  app _ := Counit.map f
+def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
+  app _ := Counit.map.{u₁,u₂,v} f
   naturality Y Y' g := by
     apply LinearMap.ext; intro z; induction z using TensorProduct.induction_on
     · simp only [map_zero]
@@ -670,12 +677,12 @@ scalars by `f` are adjoint to each other.
 -/
 @[simps]
 def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    extendScalars f ⊣ restrictScalars f where
-  homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv f
-  unit := ExtendRestrictScalarsAdj.unit f
-  counit := ExtendRestrictScalarsAdj.counit f
-  homEquiv_unit X Y g := LinearMap.ext fun x => by simp
-  homEquiv_counit X Y g :=
+    extendScalars f ⊣ restrictScalars.{max v u₂,u₁,u₂} f where
+  homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv.{u₁,u₂,v} f
+  unit := ExtendRestrictScalarsAdj.unit.{u₁,u₂,v} f
+  counit := ExtendRestrictScalarsAdj.counit.{v,u₁,u₂} f
+  homEquiv_unit {X Y g} := LinearMap.ext fun x => by simp
+  homEquiv_counit {X Y g} :=
     LinearMap.ext fun x => by
       induction x using TensorProduct.induction_on
       · simp only [map_zero]
