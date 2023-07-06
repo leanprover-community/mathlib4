@@ -180,7 +180,7 @@ EffectiveEpiFamily (fun (c : Σ a, β a) => Y_n c.fst c.snd) (fun c => π_n c.fs
 
 /--
 A sieve belongs to the coherent topology if and only if it contains a finite
-`EffectiveEpiFamily`
+`EffectiveEpiFamily`.
 -/
 theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
 (S ∈ GrothendieckTopology.sieves (coherentTopology C) X) ↔
