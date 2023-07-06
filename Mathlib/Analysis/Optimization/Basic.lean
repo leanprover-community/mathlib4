@@ -18,6 +18,11 @@ def IsOptimalSolution (x : V) := P.IsSolution x ∧ ∀ y, P.IsSolution y → P.
 
 def Costs := P.cost '' { x | P.IsSolution x }
 
+lemma nonempty_costs_of_feasible (h : P.IsFeasible) : P.Costs.Nonempty := by
+  rcases h with ⟨v, hv⟩
+  use P.cost v, v
+  exact ⟨hv, by rfl⟩
+
 def OptimalCost [SupSet 𝕜] := sSup P.Costs
 
 end MinimizationProblem
