@@ -287,7 +287,7 @@ instance : CoeFun (obj' f M) fun _ => S → M where coe g := g.toFun
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h`-/
--- @[simps]
+@[simps]
 def map' {M M' : ModuleCat R} (g : M ⟶ M') : obj' f M ⟶ obj' f M' where
   toFun h := g.comp h
   map_add' _ _ := LinearMap.comp_add _ _ _
@@ -385,7 +385,6 @@ def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) : (restri
 #align category_theory.Module.restriction_coextension_adj.hom_equiv.to_restriction CategoryTheory.ModuleCat.RestrictionCoextensionAdj.HomEquiv.toRestriction
 
 -- Porting note: add to address timeout in unit'
--- @[simps]
 def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙  coextendScalars f).obj Y :=
   { toFun := fun y : Y =>
       { toFun := fun s : S => (s • y : Y)
@@ -410,7 +409,7 @@ def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙  coextendScalars
 The natural transformation from identity functor to the composition of restriction and coextension
 of scalars.
 -/
--- @[simps]
+-- @[simps] Porting note: not in normal form and not used
 protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
   app Y := app' f Y
   naturality Y Y' g :=
@@ -429,7 +428,7 @@ protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScala
 /-- The natural transformation from the composition of coextension and restriction of scalars to
 identity functor.
 -/
--- @[simps]
+-- @[simps] Porting note: not in normal form and not used
 protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (ModuleCat R) where
   app X :=
     { toFun := fun g => g.toFun (1 : S)
@@ -453,7 +452,7 @@ end RestrictionCoextensionAdj
 
 -- Porting note: very fiddly universes
 /-- Restriction of scalars is left adjoint to coextension of scalars. -/
--- @[simps]
+-- @[simps] Porting note: not in normal form and not used
 def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     restrictScalars.{max v u₂,u₁,u₂} f ⊣ coextendScalars f where
   homEquiv X Y :=
@@ -597,7 +596,7 @@ def homEquiv {X Y} :
 /--
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
 -/
-@[simps apply]
+-- @[simps] Porting note: not in normal form and not used
 def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X where
   toFun x := (1 : S)⊗ₜ[R,f]x
   map_add' x x' := by dsimp; rw [TensorProduct.tmul_add]
@@ -619,7 +618,9 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y`
 -/
-@[simps apply]
+@[simps apply, nolint simpNF] -- Porting note: this file has to probably be reworked when
+-- coercions and instance synthesis are fixed for concrete categories so I say nolint now and
+-- move on
 def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f
   letI m2 : Module R Y := Module.compHom Y f
@@ -669,9 +670,8 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
     · rw [map_zero, map_zero]
     · dsimp
       rw [ModuleCat.coe_comp, ModuleCat.coe_comp,Function.comp,Function.comp,
-        ExtendScalars.map_tmul,
-        restrictScalars.map_apply, Counit.map_apply, Counit.map_apply, lift.tmul, lift.tmul,
-        LinearMap.coe_mk, LinearMap.coe_mk]
+        ExtendScalars.map_tmul, restrictScalars.map_apply, Counit.map_apply, Counit.map_apply,
+        lift.tmul, lift.tmul, LinearMap.coe_mk, LinearMap.coe_mk]
       set s' : S := s'
       change s' • g y = g (s' • y)
       rw [map_smul]
@@ -691,10 +691,10 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
   counit := ExtendRestrictScalarsAdj.counit.{v,u₁,u₂} f
   homEquiv_unit {X Y g} := LinearMap.ext fun x => by
     dsimp
-    rw [ModuleCat.coe_comp, Function.comp, restrictScalars.map_apply,
-      ExtendRestrictScalarsAdj.Unit.map_apply]
+    rw [ModuleCat.coe_comp, Function.comp, restrictScalars.map_apply]
     rfl
   homEquiv_counit {X Y g} := LinearMap.ext fun x => by
+      -- Porting note: once again reminding Lean of the instances
       letI m1 : Module R S := Module.compHom S f
       letI m2 : Module R Y := Module.compHom Y f
       induction' x using TensorProduct.induction_on with s x _ _ _ _
@@ -717,4 +717,4 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
   ⟨_, extendRestrictScalarsAdj f⟩
 
 end CategoryTheory.ModuleCat
-#lint
+
