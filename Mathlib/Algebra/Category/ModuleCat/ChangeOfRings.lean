@@ -515,71 +515,51 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     congr
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.to_restrict_scalars CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.toRestrictScalars
 
--- set_option maxHeartbeats 0 in
+-- Porting note: forced to break apart fromExtendScalars due to timeouts
+/--
+The map `S → X →ₗ[R] Y` given by `fun s x => s • (g x)`
+-/
+@[simps]
+def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S) (g : X ⟶  (restrictScalars f).obj Y) :
+    have : Module R Y := Module.compHom Y f
+    X →ₗ[R] Y := @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
+      { toFun := fun x => s • (g x : Y)
+        map_add' := by intros; dsimp; rw [map_add,smul_add] }
+      (by
+        intros r x
+        rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
+          LinearMap.map_smul, smul_comm r s (g x : Y)] )
+
 /--
 Given `R`-module X and `S`-module Y and a map `X ⟶ (restrict_scalars f).obj Y`, i.e `R`-linear map
 `X ⟶ Y`, there is a map `(extend_scalars f).obj X ⟶ Y`, i.e  `S`-linear map `S ⨂ X → Y` by
 `s ⊗ x ↦ s • g x`.
 -/
--- @[simps]
+@[simps]
 def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
-    (extendScalars f).obj X ⟶ Y := by sorry
-  -- letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
-  -- refine {toFun := fun z => TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
-  -- · refine {toFun := fun s => ?_, map_add' := ?_, map_smul' := ?_}
-  --   · refine {toFun := fun x => ?_, map_add' := ?_, map_smul' := ?_}
-  --     · let s : S := s; exact s • (g x)
-  --     · intros
-  --       dsimp
-  --       rw [map_add, smul_add]
-  --     · intros
-  --       dsimp
-  --       rw [smul_comm, ← LinearMap.map_smul]
-  --   · intros
-  --     ext
-  --     dsimp
-  --     simp only [LinearMap.coe_mk, LinearMap.add_apply]
-  --     rw [← add_smul]
-  --   · intros
-  --     ext
-  --     dsimp
-  --     simp only [LinearMap.coe_mk, RingHom.id_apply, LinearMap.smul_apply, RestrictScalars.smul_def,
-  --       smul_eq_mul]
-  --     convert mul_smul _ _ _
-  -- · intros
-  --   dsimp
-  --   rw [map_add]
-  -- · intro r z
-  --   dsimp
-  --   -- rw [RingHom.id_apply]
-  --   induction' z using TensorProduct.induction_on with x y x y ih1 ih2
-  --   · simp only [smul_zero, map_zero]
-  --   · simp only [LinearMap.coe_mk, ExtendScalars.smul_tmul, lift.tmul, ← mul_smul]
-  --   · rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
-
-  -- refine' {toFun := fun z => TensorProduct.lift {toFun := fun (s : S) => {toFun := _, map_add' := _, map_smul' := _}, map_add' := _, map_smul' := _} z, map_add' := _, map_smul' := _}
-  -- · exact fun x => s • g x
-  -- · intros
-  --   rw [map_add, smul_add]
-  -- · intros
-  --   rw [RingHom.id_apply, smul_comm, ← LinearMap.map_smul]
-  -- · intros
-  --   ext
-  --   simp only [LinearMap.coe_mk, LinearMap.add_apply]
-  --   rw [← add_smul]
-  -- · intros
-  --   ext
-  --   simp only [LinearMap.coe_mk, RingHom.id_apply, LinearMap.smul_apply, RestrictScalars.smul_def,
-  --     smul_eq_mul]
-  --   convert mul_smul _ _ _
-  -- · intros
-  --   rw [map_add]
-  -- · intro r z
-  --   rw [RingHom.id_apply]
-  --   induction' z using TensorProduct.induction_on with x y x y ih1 ih2
-  --   · simp only [smul_zero, map_zero]
-  --   · simp only [LinearMap.coe_mk, extend_scalars.smul_tmul, lift.tmul, ← mul_smul]
-  --   · rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
+    (extendScalars f).obj X ⟶ Y := by
+  letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
+  refine {toFun := fun z => TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
+  · refine {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_, map_smul' := fun (r : R) (s : S) => ?_}
+    · ext
+      dsimp
+      simp only [LinearMap.coe_mk, LinearMap.add_apply]
+      rw [← add_smul]
+    · ext x
+      apply mul_smul (f r) s (g x)
+  · intros z₁ z₂
+    change lift _ (z₁ + z₂) = lift _ z₁ + lift _ z₂
+    rw [map_add]
+  · intro s z
+    change lift _ (s • z) = s • lift _ z
+    induction' z using TensorProduct.induction_on with s' x x y ih1 ih2
+    · rw [smul_zero, map_zero, smul_zero]
+    · rw [LinearMap.coe_mk, ExtendScalars.smul_tmul]
+      erw [lift.tmul, lift.tmul]
+      set s' : S := s'
+      change (s * s') • (g x) = s • s' • (g x)
+      rw [mul_smul]
+    · rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.from_extend_scalars CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.fromExtendScalars
 
 /-- Given `R`-module X and `S`-module Y, `S`-linear linear maps `(extend_scalars f).obj X ⟶ Y`
@@ -590,19 +570,23 @@ def homEquiv {X Y} : ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars
   toFun := HomEquiv.toRestrictScalars.{u₁,u₂,v} f
   invFun := HomEquiv.fromExtendScalars.{u₁,u₂,v} f
   left_inv g := by
+    letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
     apply LinearMap.ext; intro z
     induction' z using TensorProduct.induction_on with x s z1 z2 ih1 ih2
-    · simp only [map_zero]
+    · rw [map_zero, map_zero]
     · erw [TensorProduct.lift.tmul]
       simp only [LinearMap.coe_mk]
       change S at x
+      dsimp
       erw [← LinearMap.map_smul, ExtendScalars.smul_tmul, mul_one x]
     · rw [map_add, map_add, ih1, ih2]
   right_inv g := by
-    apply LinearMap.ext; intro _
+    letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
+    apply LinearMap.ext; intro x
     rw [HomEquiv.toRestrictScalars_apply, HomEquiv.fromExtendScalars_apply, lift.tmul,
       LinearMap.coe_mk, LinearMap.coe_mk]
-    convert one_smul _ _
+    dsimp
+    rw [one_smul]
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.homEquiv
 
 /--
