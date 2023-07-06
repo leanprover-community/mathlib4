@@ -72,6 +72,7 @@ instance unbundledHom : UnbundledHom @Measurable :=
 deriving instance LargeCategory for MeasCat
 
 -- Porting note: `deriving instance ConcreteCategory for MeasCat` didn't work. Define it manually.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory MeasCat := by
   unfold MeasCat
   infer_instance
@@ -116,7 +117,7 @@ def Integral : Giry.Algebra where
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
   unit := Subtype.eq <| funext fun r : ℝ≥0∞ => lintegral_dirac' _ measurable_id
   assoc := Subtype.eq <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) =>
-    show (∫⁻ x, x ∂μ.join) = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
+    show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>
         apply_rules [measurable_id, Measure.measurable_lintegral]
 #align Meas.Integral MeasCat.Integral

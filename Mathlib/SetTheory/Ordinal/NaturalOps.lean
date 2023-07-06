@@ -181,7 +181,7 @@ theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
 #align ordinal.to_nat_ordinal_eq_one Ordinal.toNatOrdinal_eq_one
 
 @[simp]
-theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b ):=
+theorem toNatOrdinal_max : toNatOrdinal (max a b) = max (toNatOrdinal a) (toNatOrdinal b ) :=
   rfl
 #align ordinal.to_nat_ordinal_max Ordinal.toNatOrdinal_max
 
@@ -270,15 +270,14 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     apply mem_brange_self
 #align ordinal.blsub_nadd_of_mono Ordinal.blsub_nadd_of_mono
 
-theorem nadd_assoc : ∀ a b c, a ♯ b ♯ c = a ♯ (b ♯ c)
-  | a, b, c => by
-    rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
-    · congr <;> ext (d hd) <;> apply nadd_assoc
-    · exact fun  _ _ h => nadd_le_nadd_left h a
-    · exact fun  _ _ h => nadd_le_nadd_right h c
-    termination_by' PSigma.lex (inferInstance) (fun _ ↦ inferInstance)
-    -- Porting note: above lines replaces
-    -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
+  rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
+  · congr <;> ext (d hd) <;> apply nadd_assoc
+  · exact fun  _ _ h => nadd_le_nadd_left h a
+  · exact fun  _ _ h => nadd_le_nadd_right h c
+termination_by _ => (a, b, c)
+-- Porting note: above lines replaces
+-- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]

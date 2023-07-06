@@ -19,9 +19,9 @@ theorem inj_on_of_subset {f : α → β} {as bs : List α} (h : inj_on f bs) (hs
 protected def equiv (as bs : List α) := ∀ x, x ∈ as ↔ x ∈ bs
 
 theorem equiv_iff_subset_and_subset {as bs : List α} : as.equiv bs ↔ as ⊆ bs ∧ bs ⊆ as :=
-Iff.intro
-  (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
-  (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
+  Iff.intro
+    (fun h ↦ ⟨fun _ xas ↦ (h _).1 xas, fun _ xbs ↦ (h _).2 xbs⟩)
+    (fun ⟨h1, h2⟩ x ↦ ⟨@h1 x, @h2 x⟩)
 
 theorem insert_equiv_cons [DecidableEq α] (a : α) (as : List α) : (as.insert a).equiv (a :: as) :=
   fun x ↦ by simp

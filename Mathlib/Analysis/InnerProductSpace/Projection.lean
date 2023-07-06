@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 
 ! This file was ported from Lean 3 source module analysis.inner_product_space.projection
-! leanprover-community/mathlib commit 67e606eaea14c7854bdc556bd53d98aefdf76ec0
+! leanprover-community/mathlib commit 0b7c740e25651db0ba63648fbae9f9d6f941e31b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -13,6 +13,7 @@ import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Data.IsROrC.Lemmas
+import Mathlib.Algebra.DirectSum.Decomposition
 
 /-!
 # The orthogonal projection
@@ -201,34 +202,23 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
 /-- Characterization of minimizers for the projection on a convex set in a real inner product
 space. -/
 theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : F} {v : F}
-    (hv : v ∈ K) : (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 :=
-  Iff.intro
-    (by
-      intro eq w hw
-      let δ := ⨅ w : K, ‖u - w‖
-      let p := ⟪u - v, w - v⟫_ℝ
-      let q := ‖w - v‖ ^ 2
-      letI : Nonempty K := ⟨⟨v, hv⟩⟩
-      have : 0 ≤ δ
-      apply le_ciInf
-      intro
-      exact norm_nonneg _
-      have δ_le : ∀ w : K, δ ≤ ‖u - w‖
-      intro w
-      apply ciInf_le
-      use (0 : ℝ)
-      rintro _ ⟨_, rfl⟩
-      exact norm_nonneg _
-      have δ_le' : ∀ w ∈ K, δ ≤ ‖u - w‖ := fun w hw => δ_le ⟨w, hw⟩
-      have : ∀ θ : ℝ, 0 < θ → θ ≤ 1 → 2 * p ≤ θ * q
-      intro θ hθ₁ hθ₂
+    (hv : v ∈ K) : (‖u - v‖ = ⨅ w : K, ‖u - w‖) ↔ ∀ w ∈ K, ⟪u - v, w - v⟫_ℝ ≤ 0 := by
+  letI : Nonempty K := ⟨⟨v, hv⟩⟩
+  constructor
+  · intro eq w hw
+    let δ := ⨅ w : K, ‖u - w‖
+    let p := ⟪u - v, w - v⟫_ℝ
+    let q := ‖w - v‖ ^ 2
+    have δ_le (w : K) : δ ≤ ‖u - w‖ := ciInf_le ⟨0, fun _ ⟨_, h⟩ => h ▸ norm_nonneg _⟩ _
+    have δ_le' (w) (hw : w ∈ K) : δ ≤ ‖u - w‖ := δ_le ⟨w, hw⟩
+    have (θ : ℝ) (hθ₁ : 0 < θ) (hθ₂ : θ ≤ 1) : 2 * p ≤ θ * q := by
       have : ‖u - v‖ ^ 2 ≤ ‖u - v‖ ^ 2 - 2 * θ * ⟪u - v, w - v⟫_ℝ + θ * θ * ‖w - v‖ ^ 2 :=
-        calc
-          ‖u - v‖ ^ 2 ≤ ‖u - (θ • w + (1 - θ) • v)‖ ^ 2 := by
+        calc ‖u - v‖ ^ 2
+          _ ≤ ‖u - (θ • w + (1 - θ) • v)‖ ^ 2 := by
             simp only [sq]; apply mul_self_le_mul_self (norm_nonneg _)
             rw [eq]; apply δ_le'
             apply h hw hv
-            exacts[le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel'_right _ _]
+            exacts [le_of_lt hθ₁, sub_nonneg.2 hθ₂, add_sub_cancel'_right _ _]
           _ = ‖u - v - θ • (w - v)‖ ^ 2 := by
             have : u - (θ • w + (1 - θ) • v) = u - v - θ • (w - v) := by
               rw [smul_sub, sub_smul, one_smul]
@@ -239,13 +229,13 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
             simp only [sq]
             show
               ‖u - v‖ * ‖u - v‖ - 2 * (θ * inner (u - v) (w - v)) +
-                  absR θ * ‖w - v‖ * (absR θ * ‖w - v‖) =
-                ‖u - v‖ * ‖u - v‖ - 2 * θ * inner (u - v) (w - v) + θ * θ * (‖w - v‖ * ‖w - v‖)
+                absR θ * ‖w - v‖ * (absR θ * ‖w - v‖) =
+              ‖u - v‖ * ‖u - v‖ - 2 * θ * inner (u - v) (w - v) + θ * θ * (‖w - v‖ * ‖w - v‖)
             rw [abs_of_pos hθ₁]; ring
       have eq₁ :
         ‖u - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v) + θ * θ * ‖w - v‖ ^ 2 =
-          ‖u - v‖ ^ 2 + (θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v)) :=
-        by abel
+          ‖u - v‖ ^ 2 + (θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v)) := by
+        abel
       rw [eq₁, le_add_iff_nonneg_right] at this
       have eq₂ :
         θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v) =
@@ -254,57 +244,47 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
       rw [eq₂] at this
       have := le_of_sub_nonneg (nonneg_of_mul_nonneg_right this hθ₁)
       exact this
-      by_cases hq : q = 0
-      · rw [hq] at this
-        have : p ≤ 0
+    by_cases hq : q = 0
+    · rw [hq] at this
+      have : p ≤ 0 := by
         have := this (1 : ℝ) (by norm_num) (by norm_num)
         linarith
-        exact this
-      · have q_pos : 0 < q
-        apply lt_of_le_of_ne
-        exact sq_nonneg _
-        intro h
-        exact hq h.symm
-        by_contra hp
-        rw [not_le] at hp
-        let θ := min (1 : ℝ) (p / q)
-        have eq₁ : θ * q ≤ p :=
-          calc
-            θ * q ≤ p / q * q := mul_le_mul_of_nonneg_right (min_le_right _ _) (sq_nonneg _)
-            _ = p := div_mul_cancel _ hq
-
-        have : 2 * p ≤ p :=
-          calc
-            2 * p ≤ θ * q := by
-              refine' this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num)
-            _ ≤ p := eq₁
-
-        linarith)
-    (by
-      intro h
-      letI : Nonempty K := ⟨⟨v, hv⟩⟩
-      apply le_antisymm
-      · apply le_ciInf
-        intro w
-        apply nonneg_le_nonneg_of_sq_le_sq (norm_nonneg _)
-        have := h w w.2
+      exact this
+    · have q_pos : 0 < q := lt_of_le_of_ne (sq_nonneg _) fun h ↦ hq h.symm
+      by_contra hp
+      rw [not_le] at hp
+      let θ := min (1 : ℝ) (p / q)
+      have eq₁ : θ * q ≤ p :=
         calc
-          ‖u - v‖ * ‖u - v‖ ≤ ‖u - v‖ * ‖u - v‖ - 2 * inner (u - v) ((w : F) - v) := by linarith
-          _ ≤ ‖u - v‖ ^ 2 - 2 * inner (u - v) ((w : F) - v) + ‖(w : F) - v‖ ^ 2 := by
-            rw [sq]
-            refine' le_add_of_nonneg_right _
-            exact sq_nonneg _
-          _ = ‖u - v - (w - v)‖ ^ 2 := (@norm_sub_sq ℝ _ _ _ _ _ _).symm
-          _ = ‖u - w‖ * ‖u - w‖ := by
-            have : u - v - (w - v) = u - w
-            abel
-            rw [this, sq]
-
-      · show (⨅ w : K, ‖u - w‖) ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
-        apply ciInf_le
-        use 0
-        rintro y ⟨z, rfl⟩
-        exact norm_nonneg _)
+          θ * q ≤ p / q * q := mul_le_mul_of_nonneg_right (min_le_right _ _) (sq_nonneg _)
+          _ = p := div_mul_cancel _ hq
+      have : 2 * p ≤ p :=
+        calc
+          2 * p ≤ θ * q := by
+            refine' this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num)
+          _ ≤ p := eq₁
+      linarith
+  · intro h
+    apply le_antisymm
+    · apply le_ciInf
+      intro w
+      apply nonneg_le_nonneg_of_sq_le_sq (norm_nonneg _)
+      have := h w w.2
+      calc
+        ‖u - v‖ * ‖u - v‖ ≤ ‖u - v‖ * ‖u - v‖ - 2 * inner (u - v) ((w : F) - v) := by linarith
+        _ ≤ ‖u - v‖ ^ 2 - 2 * inner (u - v) ((w : F) - v) + ‖(w : F) - v‖ ^ 2 := by
+          rw [sq]
+          refine' le_add_of_nonneg_right _
+          exact sq_nonneg _
+        _ = ‖u - v - (w - v)‖ ^ 2 := (@norm_sub_sq ℝ _ _ _ _ _ _).symm
+        _ = ‖u - w‖ * ‖u - w‖ := by
+          have : u - v - (w - v) = u - w := by abel
+          rw [this, sq]
+    · show ⨅ w : K, ‖u - w‖ ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
+      apply ciInf_le
+      use 0
+      rintro y ⟨z, rfl⟩
+      exact norm_nonneg _
 #align norm_eq_infi_iff_real_inner_le_zero norm_eq_iInf_iff_real_inner_le_zero
 
 variable (K : Submodule 𝕜 E)
@@ -364,7 +344,7 @@ theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F
       have h₁ := h w' this
       exact le_of_eq h₁
       rwa [norm_eq_iInf_iff_real_inner_le_zero]
-      exacts[Submodule.convex _, hv])
+      exacts [Submodule.convex _, hv])
 #align norm_eq_infi_iff_real_inner_eq_zero norm_eq_iInf_iff_real_inner_eq_zero
 
 /-- Characterization of minimizers in the projection on a subspace.
@@ -1276,6 +1256,74 @@ theorem OrthogonalFamily.isInternal_iff [DecidableEq ι] [FiniteDimensional 𝕜
   haveI h := FiniteDimensional.proper_isROrC 𝕜 (↥(iSup V))
   hV.isInternal_iff_of_isComplete (completeSpace_coe_iff_isComplete.mp inferInstance)
 #align orthogonal_family.is_internal_iff OrthogonalFamily.isInternal_iff
+
+open DirectSum
+
+/-- If `x` lies within an orthogonal family `v`, it can be expressed as a sum of projections. -/
+theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
+    [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
+    (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
+  -- porting note: switch to the better `induction _ using`. Need the primed induction principle,
+  -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
+  induction hx using Submodule.iSup_induction' with
+  | hp i x hx =>
+    refine'
+      (Finset.sum_eq_single_of_mem i (Finset.mem_univ _) fun j _ hij => _).trans
+        (orthogonalProjection_eq_self_iff.mpr hx)
+    rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.coe_zero]
+    exact hV.isOrtho hij.symm hx
+  | h0 =>
+    simp_rw [map_zero, Submodule.coe_zero, Finset.sum_const_zero]
+  | hadd x y _ _ hx hy =>
+    simp_rw [map_add, Submodule.coe_add, Finset.sum_add_distrib]
+    exact congr_arg₂ (· + ·) hx hy
+#align orthogonal_family.sum_projection_of_mem_supr OrthogonalFamily.sum_projection_of_mem_iSup
+
+/-- If a family of submodules is orthogonal, then the `orthogonalProjection` on a direct sum
+is just the coefficient of that direct sum. -/
+theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι → Submodule 𝕜 E}
+    (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (x : ⨁ i, V i) (i : ι)
+    [CompleteSpace (V i)] :
+    orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i := by
+  induction' x using DirectSum.induction_on with j x x y hx hy
+  · simp
+  · simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
+    -- porting note: was in the previous `simp_rw`, no longer works
+    rw [Dfinsupp.singleAddHom_apply]
+    obtain rfl | hij := Decidable.eq_or_ne i j
+    · rw [orthogonalProjection_mem_subspace_eq_self, Dfinsupp.single_eq_same]
+    · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
+        Dfinsupp.single_eq_of_ne hij.symm]
+      exact hV.isOrtho hij.symm x.prop
+  · simp_rw [map_add, Dfinsupp.add_apply]
+    exact congr_arg₂ (· + ·) hx hy
+#align orthogonal_family.projection_direct_sum_coe_add_hom OrthogonalFamily.projection_directSum_coeAddHom
+
+/-- If a family of submodules is orthogonal and they span the whole space, then the orthogonal
+projection provides a means to decompose the space into its submodules.
+
+The projection function is `decompose V x i = orthogonalProjection (V i) x`.
+
+See note [reducible non-instances]. -/
+@[reducible]
+def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
+    [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
+    (h : iSup V = ⊤) : DirectSum.Decomposition V
+    where
+  decompose' x := Dfinsupp.equivFunOnFintype.symm fun i => orthogonalProjection (V i) x
+  left_inv x := by
+    dsimp only
+    letI := fun i => Classical.decEq (V i)
+    rw [DirectSum.coeAddMonoidHom, DirectSum.toAddMonoid, Dfinsupp.liftAddHom_apply,
+      Dfinsupp.sumAddHom_apply, Dfinsupp.sum_eq_sum_fintype]
+    · simp_rw [Equiv.apply_symm_apply, AddSubmonoidClass.coe_subtype]
+      exact hV.sum_projection_of_mem_iSup _ ((h.ge : _) Submodule.mem_top)
+    · intro i
+      exact map_zero _
+  right_inv x := by
+    dsimp only
+    simp_rw [hV.projection_directSum_coeAddHom, Dfinsupp.equivFunOnFintype_symm_coe]
+#align orthogonal_family.decomposition OrthogonalFamily.decomposition
 
 end OrthogonalFamily
 

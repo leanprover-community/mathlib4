@@ -163,7 +163,7 @@ open Lean Elab Tactic
 --  I do not know what to do with `#align`
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
 elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
-  evalTactic (← `(tactic|(
+  evalTactic (← `(tactic| (
   ext n
   have := congr_fun (congr_arg (@peval R _ _) (wittStructureInt_prop p $φ n)) $fn
   simp only [wittZero, OfNat.ofNat, Zero.zero, wittOne, One.one,

@@ -70,24 +70,24 @@ theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : 
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
 #align complex.exp_inj_of_neg_pi_lt_of_le_pi Complex.exp_inj_of_neg_pi_lt_of_le_pi
 
-theorem of_real_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
+theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
   Complex.ext (by rw [log_re, ofReal_re, abs_of_nonneg hx])
-    (by rw [ofReal_im, log_im, arg_of_real_of_nonneg hx])
-#align complex.of_real_log Complex.of_real_log
+    (by rw [ofReal_im, log_im, arg_ofReal_of_nonneg hx])
+#align complex.of_real_log Complex.ofReal_log
 
-theorem log_of_real_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [log_re]
-#align complex.log_of_real_re Complex.log_of_real_re
+theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [log_re]
+#align complex.log_of_real_re Complex.log_ofReal_re
 
-theorem log_of_real_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
+theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
     log (r * x) = Real.log r + log x := by
   replace hx := Complex.abs.ne_zero_iff.mpr hx
   simp_rw [log, map_mul, abs_ofReal, arg_real_mul _ hr, abs_of_pos hr, Real.log_mul hr.ne' hx,
     ofReal_add, add_assoc]
-#align complex.log_of_real_mul Complex.log_of_real_mul
+#align complex.log_of_real_mul Complex.log_ofReal_mul
 
-theorem log_mul_of_real (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
-    log (x * r) = Real.log r + log x := by rw [mul_comm, log_of_real_mul hr hx, add_comm]
-#align complex.log_mul_of_real Complex.log_mul_of_real
+theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
+    log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx, add_comm]
+#align complex.log_mul_of_real Complex.log_mul_ofReal
 
 @[simp]
 theorem log_zero : log 0 = 0 := by simp [log]
@@ -122,7 +122,7 @@ theorem log_conj (x : ℂ) (h : x.arg ≠ π) : log (conj x) = conj (log x) := b
 theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x) else -log x := by
   by_cases hx : x = 0
   · simp [hx]
-  rw [inv_def, log_mul_of_real, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
+  rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_abs, Real.log_pow,
       Nat.cast_two, ofReal_mul, ofReal_bit0, ofReal_one, neg_add, mul_neg, two_mul, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
@@ -172,7 +172,7 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
     · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
-    · push_neg  at hne
+    · push_neg at hne
       simp [Set.preimage, hne]
 #align complex.countable_preimage_exp Complex.countable_preimage_exp
 
@@ -190,8 +190,7 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
   · simp [sub_eq_add_neg]
   · lift z to ℝ using him
     simpa using hre.ne
-#align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero
-Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
+#align complex.tendsto_log_nhds_within_im_neg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero
 
 theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (him : z.im = 0) :
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
@@ -210,8 +209,7 @@ theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z
     (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by
   simpa only [log, arg_eq_pi_iff.2 ⟨hre, him⟩] using
     (continuousWithinAt_log_of_re_neg_of_im_zero hre him).tendsto
-#align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero
-Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
+#align complex.tendsto_log_nhds_within_im_nonneg_of_re_neg_of_im_zero Complex.tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero
 
 @[simp]
 theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by

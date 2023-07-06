@@ -34,7 +34,7 @@ noncomputable def Valuation.extendToLocalization : Valuation B Γ :=
   { f.lift h with
     map_zero' := by convert f.lift_eq (P := Γ) _ 0 <;> simp
     map_add_le_max' := fun x y => by
-      obtain ⟨a, b, s, rfl, rfl⟩ : ∃ (a b : A)(s : S), f.mk' a s = x ∧ f.mk' b s = y := by
+      obtain ⟨a, b, s, rfl, rfl⟩ : ∃ (a b : A) (s : S), f.mk' a s = x ∧ f.mk' b s = y := by
         obtain ⟨a, s, rfl⟩ := f.mk'_surjective x
         obtain ⟨b, t, rfl⟩ := f.mk'_surjective y
         use a * t, b * s, s * t

@@ -19,8 +19,8 @@ import Mathlib.Data.Set.Constructions
 
 # Compacta and Compact Hausdorff Spaces
 
-Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
-- A type `X : Type*`
+Recall that, given a monad `M` on `Type _`, an *algebra* for `M` consists of the following data:
+- A type `X : Type _`
 - A "structure" map `M X → X`.
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
@@ -37,14 +37,14 @@ Here are the main objects introduced in this file.
 - `Compactum` is the type of compacta, which we define as algebras for the ultrafilter monad.
 - `compactumToCompHaus` is the functor `Compactum ⥤ CompHaus`. Here `CompHaus` is the usual
   category of compact Hausdorff spaces.
-- `compactumToCompHaus.isEquivalence` is a term of type `is_equivalence compactumToCompHaus`.
+- `compactumToCompHaus.isEquivalence` is a term of type `IsEquivalence compactumToCompHaus`.
 
 The proof of this equivalence is a bit technical. But the idea is quite simply that the structure
 map `Ultrafilter X → X` for an algebra `X` of the ultrafilter monad should be considered as the map
 sending an ultrafilter to its limit in `X`. The topology on `X` is then defined by mimicking the
 characterization of open sets in terms of ultrafilters.
 
-Any `X : Compactum` is endowed with a coercion to `Type*`, as well as the following instances:
+Any `X : Compactum` is endowed with a coercion to `Type _`, as well as the following instances:
 - `TopologicalSpace X`.
 - `CompactSpace X`.
 - `T2Space X`.
@@ -58,9 +58,9 @@ topological space which satisfies `CompactSpace` and `T2Space`.
 We also add wrappers around structures which already exist. Here are the main ones, all in the
 `Compactum` namespace:
 
-- `forget : Compactum ⥤ Type*` is the forgetful functor, which induces a `concrete_category`
+- `forget : Compactum ⥤ Type _` is the forgetful functor, which induces a `ConcreteCategory`
   instance for `Compactum`.
-- `free : Type* ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
+- `free : Type _ ⥤ Compactum` is the left adjoint to `forget`, and the adjunction is in `adj`.
 - `str : Ultrafilter X → X` is the structure map for `X : Compactum`.
   The notation `X.str` is preferred.
 - `join : Ultrafilter (Ultrafilter X) → Ultrafilter X` is the monadic join for `X : Compactum`.
@@ -82,7 +82,6 @@ open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits Fi
 
 open Classical Topology
 
--- mathport name: exprβ
 local notation "β" => ofTypeMonad Ultrafilter
 
 /-- The type `Compactum` of Compacta, defined as algebras for the ultrafilter monad. -/
@@ -92,17 +91,17 @@ def Compactum :=
 
 namespace Compactum
 
-/-- The forgetful functor to Type* -/
+/-- The forgetful functor to Type _ -/
 def forget : Compactum ⥤ Type _ :=
   Monad.forget _ --deriving CreatesLimits, Faithful
   -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
 #align Compactum.forget Compactum.forget
 
 instance : Faithful forget :=
-show Faithful <| Monad.forget _ from inferInstance
+  show Faithful <| Monad.forget _ from inferInstance
 
 noncomputable instance : CreatesLimits forget :=
-show CreatesLimits <| Monad.forget _ from inferInstance
+  show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
 def free : Type _ ⥤ Compactum :=
@@ -185,7 +184,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
   · intro h1 F h2
     specialize h1 F
     cases' F.mem_or_compl_mem S with h h
-    exacts[absurd (h1 h) h2, h]
+    exacts [absurd (h1 h) h2, h]
 #align Compactum.is_closed_iff Compactum.isClosed_iff
 
 instance {X : Compactum} : CompactSpace X := by
@@ -200,26 +199,22 @@ instance {X : Compactum} : CompactSpace X := by
 /-- A local definition used only in the proofs. -/
 private def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
   { F | A ∈ F }
--- Porting note: removed #align declaration since it is a private lemma
 
 /-- A local definition used only in the proofs. -/
 private def cl {X : Compactum} (A : Set X) : Set X :=
   X.str '' basic A
--- Porting note: removed #align declaration since it is a private lemma
 
 private theorem basic_inter {X : Compactum} (A B : Set X) : basic (A ∩ B) = basic A ∩ basic B := by
   ext G
   constructor
   · intro hG
     constructor <;> filter_upwards [hG]with _
-    exacts[And.left, And.right]
+    exacts [And.left, And.right]
   · rintro ⟨h1, h2⟩
     exact inter_mem h1 h2
--- Porting note: removed #align declaration since it is a private lemma
 
 private theorem subset_cl {X : Compactum} (A : Set X) : A ⊆ cl A := fun a ha =>
   ⟨X.incl a, ha, by simp⟩
--- Porting note: removed #align declaration since it is a private lemma
 
 private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   rintro _ ⟨F, hF, rfl⟩
@@ -279,7 +274,6 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   apply claim4.finiteInter_mem T
   intro t ht
   refine' finiteInterClosure.basic (@hT t ht)
--- Porting note: removed #align declaration since it is a private lemma
 
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
@@ -302,7 +296,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     intro A hA h
     by_contra H
     rw [le_nhds_iff] at cond
-    specialize cond (Aᶜ) H hA.isOpen_compl
+    specialize cond Aᶜ H hA.isOpen_compl
     rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_not_mem] at cond
     contradiction
   -- If A ∈ F, then x ∈ cl A.
@@ -362,7 +356,7 @@ theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F 
   fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]
 #align Compactum.le_nhds_of_str_eq Compactum.le_nhds_of_str_eq
 
--- All the hard work above boils down to this t2_space instance.
+-- All the hard work above boils down to this `T2Space` instance.
 instance {X : Compactum} : T2Space X := by
   rw [t2_iff_ultrafilter]
   intro _ _ F hx hy
@@ -448,11 +442,11 @@ def compactumToCompHaus : Compactum ⥤ CompHaus where
 
 namespace compactumToCompHaus
 
-/-- The functor Compactum_to_CompHaus is full. -/
+/-- The functor `compactumToCompHaus` is full. -/
 def full : Full compactumToCompHaus.{u} where preimage X Y {f} := Compactum.homOfContinuous f.1 f.2
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
-/-- The functor Compactum_to_CompHaus is faithful. -/
+/-- The functor `compactumToCompHaus` is faithful. -/
 theorem faithful : Faithful compactumToCompHaus where
   -- Porting note: this used to be obviously (though it consumed a bit of memory)
   map_injective := by
@@ -462,7 +456,7 @@ theorem faithful : Faithful compactumToCompHaus where
     apply congrArg (fun f => f.toFun) h
 #align Compactum_to_CompHaus.faithful compactumToCompHaus.faithful
 
-/-- This definition is used to prove essential surjectivity of Compactum_to_CompHaus. -/
+/-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
   hom :=
@@ -480,12 +474,12 @@ def isoOfTopologicalSpace {D : CompHaus} :
           exact h1 _ h2 }
 #align Compactum_to_CompHaus.iso_of_topological_space compactumToCompHaus.isoOfTopologicalSpace
 
-/-- The functor Compactum_to_CompHaus is essentially surjective. -/
+/-- The functor `compactumToCompHaus` is essentially surjective. -/
 theorem essSurj : EssSurj compactumToCompHaus :=
   { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
 #align Compactum_to_CompHaus.ess_surj compactumToCompHaus.essSurj
 
-/-- The functor Compactum_to_CompHaus is an equivalence of categories. -/
+/-- The functor `compactumToCompHaus` is an equivalence of categories. -/
 noncomputable instance isEquivalence : IsEquivalence compactumToCompHaus := by
   have := compactumToCompHaus.full
   have := compactumToCompHaus.faithful
@@ -499,17 +493,14 @@ end compactumToCompHaus
 `compactumToCompHaus`. -/
 def compactumToCompHausCompForget :
     compactumToCompHaus ⋙ CategoryTheory.forget CompHaus ≅ Compactum.forget :=
-  (NatIso.ofComponents fun X => eqToIso rfl) <| by
-    intro X Y f
-    dsimp
-    simp
+  NatIso.ofComponents fun X => eqToIso rfl
 #align Compactum_to_CompHaus_comp_forget compactumToCompHausCompForget
 
 /-
 TODO: `forget CompHaus` is monadic, as it is isomorphic to the composition
 of an equivalence with the monadic functor `forget Compactum`.
 Once we have the API to transfer monadicity of functors along such isomorphisms,
-the instance `creates_limits (forget CompHaus)` can be deduced from this
+the instance `CreatesLimits (forget CompHaus)` can be deduced from this
 monadicity.
 -/
 noncomputable instance CompHaus.forgetCreatesLimits : CreatesLimits (forget CompHaus) := by

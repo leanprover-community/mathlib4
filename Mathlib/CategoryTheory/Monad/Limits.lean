@@ -259,7 +259,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
                 ext1
                 dsimp
                 erw [comp_id, c.w] } }
-      validLift := Cocones.ext (Iso.refl _) (by aesop_cat)
+      validLift := Cocones.ext (Iso.refl _)
       makesColimit := liftedCoconeIsColimit _ _ }
 #align category_theory.monad.forget_creates_colimit CategoryTheory.Monad.forgetCreatesColimit
 

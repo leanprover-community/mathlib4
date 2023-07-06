@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 
 ! This file was ported from Lean 3 source module ring_theory.subring.basic
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
+! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -120,7 +120,7 @@ instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass 
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `Orderedring` is an `Orderedring`. -/
+/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
   Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
@@ -384,7 +384,7 @@ protected theorem multiset_prod_mem {R} [CommRing R] (s : Subring R) (m : Multis
   multiset_prod_mem _
 #align subring.multiset_prod_mem Subring.multiset_prod_mem
 
-/-- Sum of a multiset of elements in an `Subring` of a `Ring` is
+/-- Sum of a multiset of elements in a `Subring` of a `Ring` is
 in the `Subring`. -/
 protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
@@ -840,6 +840,52 @@ theorem center.coe_div (a b : center K) : ((a / b : center K) : K) = (a : K) / (
 
 end DivisionRing
 
+section Centralizer
+
+/-- The centralizer of a set inside a ring as a `Subring`. -/
+def centralizer (s : Set R) : Subring R :=
+  { Subsemiring.centralizer s with neg_mem' := Set.neg_mem_centralizer }
+#align subring.centralizer Subring.centralizer
+
+@[simp, norm_cast]
+theorem coe_centralizer (s : Set R) : (centralizer s : Set R) = s.centralizer :=
+  rfl
+#align subring.coe_centralizer Subring.coe_centralizer
+
+theorem centralizer_toSubmonoid (s : Set R) :
+    (centralizer s).toSubmonoid = Submonoid.centralizer s :=
+  rfl
+#align subring.centralizer_to_submonoid Subring.centralizer_toSubmonoid
+
+theorem centralizer_toSubsemiring (s : Set R) :
+    (centralizer s).toSubsemiring = Subsemiring.centralizer s :=
+  rfl
+#align subring.centralizer_to_subsemiring Subring.centralizer_toSubsemiring
+
+theorem mem_centralizer_iff {s : Set R} {z : R} : z ∈ centralizer s ↔ ∀ g ∈ s, g * z = z * g :=
+  Iff.rfl
+#align subring.mem_centralizer_iff Subring.mem_centralizer_iff
+
+theorem center_le_centralizer (s) : center R ≤ centralizer s :=
+  s.center_subset_centralizer
+#align subring.center_le_centralizer Subring.center_le_centralizer
+
+theorem centralizer_le (s t : Set R) (h : s ⊆ t) : centralizer t ≤ centralizer s :=
+  Set.centralizer_subset h
+#align subring.centralizer_le Subring.centralizer_le
+
+@[simp]
+theorem centralizer_eq_top_iff_subset {s : Set R} : centralizer s = ⊤ ↔ s ⊆ center R :=
+  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+#align subring.centralizer_eq_top_iff_subset Subring.centralizer_eq_top_iff_subset
+
+@[simp]
+theorem centralizer_univ : centralizer Set.univ = center R :=
+  SetLike.ext' (Set.centralizer_univ R)
+#align subring.centralizer_univ Subring.centralizer_univ
+
+end Centralizer
+
 /-! ## subring closure of a subset -/
 
 
@@ -1101,7 +1147,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by intro h; simpa using (this h)
+  suffices ⨆ i, S i ≤ U by intro h; simpa using (this h)
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 
@@ -1169,6 +1215,7 @@ theorem range_top_iff_surjective {f : R →+* S} :
 #align ring_hom.range_top_iff_surjective RingHom.range_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_top_iff_surjective.2 hf

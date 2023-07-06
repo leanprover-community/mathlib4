@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebraic_geometry.structure_sheaf
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -83,11 +83,11 @@ def Localizations (P : PrimeSpectrum.Top R) : Type u :=
 
 -- Porting note : can't derive `CommRingCat`
 instance CommRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
-show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
+  show CommRing <| Localization.AtPrime P.asIdeal from inferInstance
 
 -- Porting note : can't derive `LocalRing`
 instance LocalRingLocalizations (P : PrimeSpectrum.Top R) : LocalRing <| Localizations R P :=
-show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
+  show LocalRing <| Localization.AtPrime P.asIdeal from inferInstance
 
 instance (P : PrimeSpectrum.Top R) : Inhabited (Localizations R P) :=
   ⟨1⟩
@@ -255,7 +255,7 @@ with the `Type` valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=
-  NatIso.ofComponents (fun U => Iso.refl _) (fun i => by aesop)
+  NatIso.ofComponents fun U => Iso.refl _
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.structure_presheaf_comp_forget AlgebraicGeometry.structurePresheafCompForget
 
@@ -530,7 +530,7 @@ formed by gluing the `open_to_localization` maps. -/
 def stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
     (structureSheaf R).presheaf.stalk x ⟶ CommRingCat.of (Localization.AtPrime x.asIdeal) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (structureSheaf R).1)
-    { pt:= _
+    { pt := _
       ι := { app := fun U =>
         openToLocalization R ((OpenNhds.inclusion _).obj (unop U)) x (unop U).2 } }
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom
@@ -557,14 +557,14 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
--- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
     toStalk R x ≫ stalkToFiberRingHom R x = algebraMap R (Localization.AtPrime x.asIdeal) := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberRingHom]; rfl
 #align algebraic_geometry.structure_sheaf.to_stalk_comp_stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.toStalk_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
--- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom_to_stalk AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom_toStalk
@@ -577,11 +577,15 @@ def stalkIso (x : PrimeSpectrum.Top R) :
   hom := stalkToFiberRingHom R x
   inv := localizationToStalk R x
   hom_inv_id :=
+    -- Porting note: We should be able to replace the next two lines with `ext U hxU s`,
+    -- but there seems to be a bug in `ext` whereby
+    -- it will not do multiple introductions for a single lemma, if you name the arguments.
+    -- See https://github.com/leanprover/std4/pull/159
     (structureSheaf R).presheaf.stalk_hom_ext fun U hxU => by
       ext s
       simp only [FunctorToTypes.map_comp_apply, CommRingCat.forget_map,
         CommRingCat.coe_of, Category.comp_id]
-      rw [stalkToFiberRingHom_germ']
+      rw [comp_apply, comp_apply, stalkToFiberRingHom_germ']
       obtain ⟨V, hxV, iVU, f, g, (hg : V ≤ PrimeSpectrum.basicOpen _), hs⟩ :=
         exists_const _ _ s x hxU
       erw [← res_apply R U V iVU s ⟨x, hxV⟩, ← hs, const_apply, localizationToStalk_mk']
@@ -673,6 +677,7 @@ theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := 
   have := congr_fun (congr_arg Subtype.val h_eq) ⟨p, hfp⟩
   dsimp at this
   -- Porting note : need to tell Lean what `S` is and need to change to `erw`
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [IsLocalization.eq (S := Localization.AtPrime p.asIdeal)] at this
   cases' this with r hr
   exact ⟨r.1, hr, r.2⟩
@@ -684,7 +689,7 @@ Every section can locally be represented on basic opens `basic_opens g` as a fra
 -/
 theorem locally_const_basicOpen (U : Opens (PrimeSpectrum.Top R))
     (s : (structureSheaf R).1.obj (op U)) (x : U) :
-    ∃ (f g : R)(i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
+    ∃ (f g : R) (i : PrimeSpectrum.basicOpen g ⟶ U), x.1 ∈ PrimeSpectrum.basicOpen g ∧
       (const R f g (PrimeSpectrum.basicOpen g) fun y hy => hy) =
       (structureSheaf R).1.map i.op s := by
   -- First, any section `s` can be represented as a fraction `f/g` on some open neighborhood of `x`
@@ -735,7 +740,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
       ∀ i : ι,
         (const R (a i) (h i) (PrimeSpectrum.basicOpen (h i)) fun y hy => hy) =
           (structureSheaf R).1.map (iDh i).op s) :
-    ∃ (a' h' : ι → R)(iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
+    ∃ (a' h' : ι → R) (iDh' : ∀ i : ι, PrimeSpectrum.basicOpen (h' i) ⟶ U),
       (U ≤ ⨆ i ∈ t, PrimeSpectrum.basicOpen (h' i)) ∧
         (∀ (i) (_ : i ∈ t) (j) (_ : j ∈ t), a' i * h' j = h' i * a' j) ∧
           ∀ i ∈ t,
@@ -764,7 +769,7 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
     all_goals rw [res_const]; apply const_ext; ring
     -- The remaining two goals were generated during the rewrite of `res_const`
     -- These can be solved immediately
-    exacts[PrimeSpectrum.basicOpen_mul_le_right _ _, PrimeSpectrum.basicOpen_mul_le_left _ _]
+    exacts [PrimeSpectrum.basicOpen_mul_le_right _ _, PrimeSpectrum.basicOpen_mul_le_left _ _]
   -- From the equality in the localization, we obtain for each `(i,j)` some power `(h i * h j) ^ n`
   -- which equalizes `a i * h j` and `h i * a j`
   have exists_power :
@@ -849,7 +854,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
     ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
-  . convert ht_cover using 2
+  · convert ht_cover using 2
     exact funext fun j => by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
@@ -857,9 +862,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     -- Porting note : simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
       ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
-    . convert ht_cover
-      . rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
-      . simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
+    · convert ht_cover
+      · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
+      · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [Set.compl_subset_comm] at ht_cover
     -- Why doesn't `simp_rw` do this?
     simp_rw [Set.compl_iUnion, compl_compl, ← PrimeSpectrum.zeroLocus_iUnion,

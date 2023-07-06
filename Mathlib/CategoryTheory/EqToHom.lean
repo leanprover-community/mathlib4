@@ -173,7 +173,8 @@ namespace Functor
 /-- Proving equality between functors. This isn't an extensionality lemma,
   because usually you don't really want to do this. -/
 theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
-    (h_map : ∀ X Y f, F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm) :
+    (h_map : ∀ X Y f,
+      F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm := by aesop_cat) :
     F = G := by
   match F, G with
   | mk F_pre _ _ , mk G_pre _ _ =>

@@ -205,7 +205,7 @@ theorem dickson_one_one_zmod_p (p : ℕ) [Fact p.Prime] : dickson 1 (1 : ZMod p)
   -- Since `X ^ p` also satisfies this property in characteristic `p`,
   -- we can use a variant on `Polynomial.funext` to conclude that these polynomials are equal.
   -- For this argument, we need an arbitrary infinite field of characteristic `p`.
-  obtain ⟨K, _, _, H⟩ : ∃ (K : Type)(_ : Field K), ∃ _ : CharP K p, Infinite K := by
+  obtain ⟨K, _, _, H⟩ : ∃ (K : Type) (_ : Field K), ∃ _ : CharP K p, Infinite K := by
     let K := FractionRing (Polynomial (ZMod p))
     let f : ZMod p →+* K := (algebraMap _ (FractionRing _)).comp C
     have : CharP K p := by

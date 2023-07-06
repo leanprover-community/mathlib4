@@ -199,23 +199,23 @@ variable [Monad m] [MonadExcept Exception m]
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
 def iterateAtMost : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
+  | 0, _ => pure ()
+  | n + 1, tac => try tac; iterateAtMost n tac catch _ => pure ()
 
 /-- `iterateExactly' n t` executes `t` `n` times. If any iteration fails, the whole tactic fails.
 -/
 def iterateExactly' : Nat → m Unit → m Unit
-| 0, _ => pure ()
-| n+1, tac => tac *> iterateExactly' n tac
+  | 0, _ => pure ()
+  | n+1, tac => tac *> iterateExactly' n tac
 
 /--
 `iterateRange m n t`: Repeat the given tactic at least `m` times and
 at most `n` times or until `t` fails. Fails if `t` does not run at least `m` times.
 -/
 def iterateRange : Nat → Nat → m Unit → m Unit
-| 0, 0, _   => pure ()
-| 0, b, tac => iterateAtMost b tac
-| (a+1), n, tac => do tac; iterateRange a (n-1) tac
+  | 0, 0, _   => pure ()
+  | 0, b, tac => iterateAtMost b tac
+  | (a+1), n, tac => do tac; iterateRange a (n-1) tac
 
 /-- Repeats a tactic until it fails. Always succeeds. -/
 partial def iterateUntilFailure (tac : m Unit) : m Unit :=

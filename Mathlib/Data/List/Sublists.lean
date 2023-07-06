@@ -46,7 +46,7 @@ theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
 #noalign list.sublists'_aux_eq_sublists'
 
 --Porting note: Not the same as `sublists'_aux` from Lean3
-/-- Auxiliary helper definiiton for `sublists'` -/
+/-- Auxiliary helper definition for `sublists'` -/
 def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
   r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
 #align list.sublists'_aux List.sublists'Aux
@@ -65,8 +65,8 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
   simp only [sublists', sublists'Aux_eq_array_foldl]
   dsimp only
   rw [← List.foldr_hom Array.toList]
-  . rfl
-  . intros _ _; congr <;> simp
+  · rfl
+  · intros _ _; congr <;> simp
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
@@ -143,8 +143,8 @@ theorem sublists_eq_sublistsAux (l : List α) :
     sublists l = l.foldr sublistsAux [[]] := by
   simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
   rw [← foldr_hom Array.toList]
-  . rfl
-  . intros _ _; congr <;> simp
+  · rfl
+  · intros _ _; congr <;> simp
 
 #noalign list.sublists_aux₁_eq_sublists_aux
 #noalign list.sublists_aux_cons_eq_sublists_aux₁
@@ -160,8 +160,8 @@ theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (. ++ x)) := by
   simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
   induction l₁
-  . case nil => simp
-  . case cons a l₁ ih =>
+  · case nil => simp
+  · case cons a l₁ ih =>
       rw [foldr_cons, ih]
       simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
@@ -430,10 +430,10 @@ theorem sublists_cons_perm_append (a : α) (l : List α) :
 theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists → l₁ ++ l₂ ~ l := by
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
-  . intro l₁ l₂ h
+  · intro l₁ l₂ h
     simp at h
     simp [h]
-  . intro l₁ l₂ h
+  · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,
       zip_map_left] at * <;> [skip; simp]
     simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h

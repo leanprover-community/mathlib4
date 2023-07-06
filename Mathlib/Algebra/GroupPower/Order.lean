@@ -403,10 +403,10 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
   induction' k with k ih;
-  . have eqn : Nat.succ Nat.zero = 1 := rfl
+  · have eqn : Nat.succ Nat.zero = 1 := rfl
     rw [eqn]
     simp only [pow_one, le_refl]
-  . let n := k.succ
+  · let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
@@ -771,8 +771,7 @@ section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
 
 theorem pow_pos_iff (hn : 0 < n) : 0 < a ^ n ↔ 0 < a := by
-  simp_rw [zero_lt_iff]
-  rw [pow_ne_zero_iff hn] -- Porting note: simp used to find unify the instances here
+  simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
 #align pow_pos_iff pow_pos_iff
 
 end LinearOrderedCommMonoidWithZero
@@ -788,7 +787,7 @@ theorem pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 
 theorem pow_lt_pow₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih
-  exacts[pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
+  exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow₀
 
 end LinearOrderedCommGroupWithZero

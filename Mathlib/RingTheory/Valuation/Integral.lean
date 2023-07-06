@@ -12,7 +12,7 @@ import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.Integers
 
 /-!
-# Integral elements over the ring of integers of a valution
+# Integral elements over the ring of integers of a valuation
 
 The ring of integers is integrally closed inside the original ring.
 -/

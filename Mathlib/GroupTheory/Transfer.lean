@@ -20,12 +20,12 @@ In this file we construct the transfer homomorphism.
 
 - `diff ϕ S T` : The difference of two left transversals `S` and `T` under the homomorphism `ϕ`.
 - `transfer ϕ` : The transfer homomorphism induced by `ϕ`.
-- `transfer_center_pow`: The transfer homomorphism `G →* center G`.
+- `transferCenterPow`: The transfer homomorphism `G →* center G`.
 
 ## Main results
-- `transfer_center_pow_apply`:
+- `transferCenterPow_apply`:
   The transfer homomorphism `G →* center G` is given by `g ↦ g ^ (center G).index`.
-- `ker_transfer_sylow_is_complement'`: Burnside's transfer (or normal `p`-complement) theorem:
+- `ker_transferSylow_isComplement'`: Burnside's transfer (or normal `p`-complement) theorem:
   If `hP : N(P) ≤ C(P)`, then `(transfer P hP).ker` is a normal `p`-complement.
 -/
 
@@ -144,10 +144,9 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
           exact map_one ϕ
-#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot
-  MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
+#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
-/-- Auxillary lemma in order to state `transfer_eq_pow`. -/
+/-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     g ^ H.index ∈ H := by
@@ -225,24 +224,24 @@ noncomputable def transferSylow [FiniteIndex (P : Subgroup G)] : G →* (P : Sub
 
 variable [Fact p.Prime] [Finite (Sylow p G)]
 
-/-- Auxillary lemma in order to state `transfer_sylow_eq_pow`. -/
-theorem transfer_sylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
+/-- Auxiliary lemma in order to state `transferSylow_eq_pow`. -/
+theorem transferSylow_eq_pow_aux (g : G) (hg : g ∈ P) (k : ℕ) (g₀ : G)
     (h : g₀⁻¹ * g ^ k * g₀ ∈ P) : g₀⁻¹ * g ^ k * g₀ = g ^ k := by
   haveI : (P : Subgroup G).IsCommutative :=
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩
   replace hg := (P : Subgroup G).pow_mem hg k
   obtain ⟨n, hn, h⟩ := P.conj_eq_normalizer_conj_of_mem (g ^ k) g₀ hg h
   exact h.trans (Commute.inv_mul_cancel (hP hn (g ^ k) hg).symm)
-#align monoid_hom.transfer_sylow_eq_pow_aux MonoidHom.transfer_sylow_eq_pow_aux
+#align monoid_hom.transfer_sylow_eq_pow_aux MonoidHom.transferSylow_eq_pow_aux
 
 variable [FiniteIndex (P : Subgroup G)]
 
 theorem transferSylow_eq_pow (g : G) (hg : g ∈ P) :
     transferSylow P hP g =
-      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transfer_sylow_eq_pow_aux P hP g hg)⟩ :=
+      ⟨g ^ (P : Subgroup G).index, transfer_eq_pow_aux g (transferSylow_eq_pow_aux P hP g hg)⟩ :=
   @transfer_eq_pow G _ P P (@Subgroup.IsCommutative.commGroup G _ P
     ⟨⟨fun a b => Subtype.ext (hP (le_normalizer b.2) a a.2)⟩⟩) _ _ g
-      (transfer_sylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
+      (transferSylow_eq_pow_aux P hP g hg) -- porting note: apply used to do this automatically
 #align monoid_hom.transfer_sylow_eq_pow MonoidHom.transferSylow_eq_pow
 
 theorem transferSylow_restrict_eq_pow : ⇑((transferSylow P hP).restrict (P : Subgroup G)) =

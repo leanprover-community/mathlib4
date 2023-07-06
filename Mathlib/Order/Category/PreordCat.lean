@@ -40,6 +40,7 @@ instance : BundledHom @OrderHom where
 
 deriving instance LargeCategory for PreordCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory PreordCat :=
   BundledHom.concreteCategory _
 
@@ -91,8 +92,8 @@ set_option linter.uppercaseLean3 false in
 def dualEquiv : PreordCat ≌ PreordCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align Preord.dual_equiv PreordCat.dualEquiv
 

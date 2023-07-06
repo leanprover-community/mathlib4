@@ -83,30 +83,18 @@ def toComonad (h : L ⊣ R) : Comonad D where
 /-- The monad induced by the Eilenberg-Moore adjunction is the original monad.  -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
-  MonadIso.mk (NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat))
-    (fun X => by
-      dsimp
-      simp)
-    fun X => by
-    dsimp
-    simp
+  MonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 #align category_theory.adjunction.adj_to_monad_iso CategoryTheory.Adjunction.adjToMonadIso
 
 /-- The comonad induced by the Eilenberg-Moore adjunction is the original comonad. -/
 @[simps!]
 def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
-  ComonadIso.mk (NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat))
-    (fun X => by
-      dsimp
-      simp)
-    fun X => by
-    dsimp
-    simp
+  ComonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 #align category_theory.adjunction.adj_to_comonad_iso CategoryTheory.Adjunction.adjToComonadIso
 
 end Adjunction
 
-/-- Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
+/-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
 We later show that this is full when `R` is full, faithful when `R` is faithful,
@@ -139,21 +127,22 @@ theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMon
   rfl
 #align category_theory.monad.left_comparison CategoryTheory.Monad.left_comparison
 
-instance [Faithful R] (h : L ⊣ R) : Faithful (Monad.comparison h)
-    where map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
+instance [Faithful R] (h : L ⊣ R) : Faithful (Monad.comparison h) where
+  map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
 
-instance (T : Monad C) : Full (Monad.comparison T.adj)
-    where preimage {_ _} f := ⟨f.f, by simpa using f.h⟩
+instance (T : Monad C) : Full (Monad.comparison T.adj) where
+  preimage {_ _} f := ⟨f.f, by simpa using f.h⟩
 
-instance (T : Monad C) : EssSurj (Monad.comparison T.adj)
-    where mem_essImage X :=
+instance (T : Monad C) : EssSurj (Monad.comparison T.adj) where
+  mem_essImage X :=
     ⟨{  A := X.A
         a := X.a
         unit := by simpa using X.unit
-        assoc := by simpa using X.assoc }, ⟨Monad.Algebra.isoMk (Iso.refl _) (by simp)⟩⟩
+        assoc := by simpa using X.assoc },
+    ⟨Monad.Algebra.isoMk (Iso.refl _)⟩⟩
 
 /--
-Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
+Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
 `L.obj X`.
 -/
@@ -187,19 +176,20 @@ theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.t
 #align category_theory.comonad.left_comparison CategoryTheory.Comonad.left_comparison
 
 instance Comonad.comparison_faithful_of_faithful [Faithful L] (h : L ⊣ R) :
-    Faithful (Comonad.comparison h)
-    where map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w : _)
+    Faithful (Comonad.comparison h) where
+  map_injective {_ _} _ _ w := L.map_injective (congr_arg Comonad.Coalgebra.Hom.f w : _)
 #align category_theory.comonad.comparison_faithful_of_faithful CategoryTheory.Comonad.comparison_faithful_of_faithful
 
-instance (G : Comonad C) : Full (Comonad.comparison G.adj)
-    where preimage f := ⟨f.f, by simpa using f.h⟩
+instance (G : Comonad C) : Full (Comonad.comparison G.adj) where
+  preimage f := ⟨f.f, by simpa using f.h⟩
 
-instance (G : Comonad C) : EssSurj (Comonad.comparison G.adj)
-    where mem_essImage X :=
+instance (G : Comonad C) : EssSurj (Comonad.comparison G.adj) where
+  mem_essImage X :=
     ⟨{  A := X.A
         a := X.a
         counit := by simpa using X.counit
-        coassoc := by simpa using X.coassoc }, ⟨Comonad.Coalgebra.isoMk (Iso.refl _) (by simp)⟩⟩
+        coassoc := by simpa using X.coassoc },
+      ⟨Comonad.Coalgebra.isoMk (Iso.refl _)⟩⟩
 
 /-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `Monad.comparison R`
 from `D` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
@@ -229,7 +219,6 @@ instance μ_iso_of_reflective [Reflective R] : IsIso (Adjunction.ofRightAdjoint 
 #align category_theory.μ_iso_of_reflective CategoryTheory.μ_iso_of_reflective
 
 attribute [instance] MonadicRightAdjoint.eqv
-
 attribute [instance] ComonadicLeftAdjoint.eqv
 
 namespace Reflective
@@ -261,7 +250,8 @@ instance comparison_essSurj [Reflective R] :
 #align category_theory.reflective.comparison_ess_surj CategoryTheory.Reflective.comparison_essSurj
 
 instance comparisonFull [Full R] [IsRightAdjoint R] :
-    Full (Monad.comparison (Adjunction.ofRightAdjoint R)) where preimage f := R.preimage f.f
+    Full (Monad.comparison (Adjunction.ofRightAdjoint R)) where
+  preimage f := R.preimage f.f
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparisonFull
 
 end Reflective
@@ -271,8 +261,9 @@ end Reflective
 -- see Note [lower instance priority]
 /-- Any reflective inclusion has a monadic right adjoint.
     cf Prop 5.3.3 of [Riehl][riehl2017] -/
-noncomputable instance (priority := 100) monadicOfReflective [Reflective R] : MonadicRightAdjoint R
-    where eqv := Equivalence.ofFullyFaithfullyEssSurj _
+noncomputable instance (priority := 100) monadicOfReflective [Reflective R] :
+    MonadicRightAdjoint R where
+  eqv := Equivalence.ofFullyFaithfullyEssSurj _
 #align category_theory.monadic_of_reflective CategoryTheory.monadicOfReflective
 
 end CategoryTheory

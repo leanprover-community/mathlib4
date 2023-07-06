@@ -80,6 +80,30 @@ instance hasLimit (F : J ⥤ TypeMax.{v, u}) : HasLimit F :=
 instance hasLimit' (F : J ⥤ Type v) : HasLimit F :=
   hasLimit.{v, v} F
 
+-- This instance is not necessary, and indeed unhelpful:
+-- if it has higher priority than the instance for `TypeMax.{w, v}`,
+-- or has the same priority and is defined later,
+-- then it blocks successful typeclass search with universe unification errors.
+instance : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) :=
+  Types.hasLimitsOfSize.{w, v}
+
+-- This either needs to have higher priority (safer) or come after the instance for `Type max v w`.
+instance (priority := 1100) :
+    HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) :=
+  Types.hasLimitsOfSize.{w, v}
+
+-- This needs to have priority higher than the instance for `TypeMax.{w, v}`.
+instance (priority := 1200) : HasLimitsOfSize.{v, v, v, v + 1} (Type v) :=
+  Types.hasLimitsOfSize.{v, v}
+
+-- Verify that we can find instances, at least when we ask for `TypeMax.{w, v}`:
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
+example : HasLimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+-- Note however this fails unless we modify the universe unification algorithm:
+-- `stuck at solving universe constraint max (v+1) (w+1) =?= max (w+1) (?u+1)`
+-- example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
+
 /-- The equivalence between a limiting cone of `F` in `Type u` and the "concrete" definition as the
 sections of `F`.
 -/
@@ -392,7 +416,7 @@ Elements in `F.obj j` and `F.obj j'` are equivalent if there is some `k : J` to 
 where their images are equal.
 -/
 protected def Rel (x y : Σ j, F.obj j) : Prop :=
-  ∃ (k : _)(f : x.1 ⟶ k)(g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
+  ∃ (k : _) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
 #align category_theory.limits.types.filtered_colimit.rel CategoryTheory.Limits.Types.FilteredColimit.Rel
 
 theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
@@ -403,8 +427,8 @@ theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
 theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → EqvGen (Quot.Rel.{v, u} F) x y := fun ⟨k, f, g, h⟩ => by
   refine' EqvGen.trans _ ⟨k, F.map f x.2⟩ _ _ _
-  . exact (EqvGen.rel _ _ ⟨f, rfl⟩)
-  . exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
+  · exact (EqvGen.rel _ _ ⟨f, rfl⟩)
+  · exact (EqvGen.symm _ _ (EqvGen.rel _ _ ⟨g, h⟩))
 #align category_theory.limits.types.filtered_colimit.eqv_gen_quot_rel_of_rel CategoryTheory.Limits.Types.FilteredColimit.eqvGen_quot_rel_of_rel
 
 --attribute [local elab_without_expected_type] nat_trans.app
@@ -413,7 +437,7 @@ theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :
       ∀ i j xi xj,
-        t.ι.app i xi = t.ι.app j xj → ∃ (k : _)(f : i ⟶ k)(g : j ⟶ k), F.map f xi = F.map g xj) :
+        t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
     IsColimit t := by
   -- Strategy: Prove that the map from "the" colimit of F (defined above) to t.X
   -- is a bijection.
@@ -433,12 +457,12 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
       rw [← colimit.w F f, ← colimit.w F g]
       change colimit.ι F k (F.map f xi) = colimit.ι F k (F.map g xj)
       rw [h']
-    . show Function.Surjective _
+    · show Function.Surjective _
       intro x
       rcases hsurj x with ⟨i, xi, rfl⟩
       use colimit.ι F i xi
       apply Colimit.ι_desc_apply.{v, u}
-  . intro j
+  · intro j
     apply colimit.ι_desc
 #align category_theory.limits.types.filtered_colimit.is_colimit_of CategoryTheory.Limits.Types.FilteredColimit.isColimitOf
 
@@ -478,7 +502,7 @@ theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
 #align category_theory.limits.types.filtered_colimit.colimit_eq_iff_aux CategoryTheory.Limits.Types.FilteredColimit.colimit_eq_iff_aux
 
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
-    t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _)(f : i ⟶ k)(g : j ⟶ k), F.map f xi = F.map g xj := by
+    t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
   let t' := colimitCocone.{v, u} F
   let e : t' ≅ t := IsColimit.uniqueUpToIso (colimitCoconeIsColimit F) ht
   let e' : t'.pt ≅ t.pt := (Cocones.forget _).mapIso e
@@ -489,7 +513,7 @@ theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj
 
 theorem colimit_eq_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
-      ∃ (k : _)(f : i ⟶ k)(g : j ⟶ k), F.map f xi = F.map g xj :=
+      ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj :=
   isColimit_eq_iff.{v, u} _ (colimit.isColimit F)
 #align category_theory.limits.types.filtered_colimit.colimit_eq_iff CategoryTheory.Limits.Types.FilteredColimit.colimit_eq_iff
 

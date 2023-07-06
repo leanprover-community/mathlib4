@@ -126,8 +126,8 @@ theorem functorPullback_pushforward_covering [Full G] (H : CoverDense K G) {X : 
   · simp
 #align category_theory.cover_dense.functor_pullback_pushforward_covering CategoryTheory.CoverDense.functorPullback_pushforward_covering
 
-/-- (Implementation). Given an hom between the pullbacks of two sheaves, we can whisker it with
-`coyoneda` to obtain an hom between the pullbacks of the sheaves of maps from `X`.
+/-- (Implementation). Given a hom between the pullbacks of two sheaves, we can whisker it with
+`coyoneda` to obtain a hom between the pullbacks of the sheaves of maps from `X`.
 -/
 @[simps!]
 def homOver {ℱ : Dᵒᵖ ⥤ A} {ℱ' : Sheaf K A} (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) (X : A) :
@@ -259,7 +259,7 @@ noncomputable def appIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.val �
     simp
 #align category_theory.cover_dense.types.app_iso CategoryTheory.CoverDense.Types.appIso
 
-/-- Given an natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of types, where `G` is
+/-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of types, where `G` is
 full and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural transformation between sheaves.
 -/
 @[simps]
@@ -273,7 +273,7 @@ noncomputable def presheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ �
     -- porting note: Lean 3 proof continued with a rewrite but we're done here
 #align category_theory.cover_dense.types.presheaf_hom CategoryTheory.CoverDense.Types.presheafHom
 
-/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
+/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
 and cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between presheaves.
 -/
 @[simps!]
@@ -282,7 +282,7 @@ noncomputable def presheafIso {ℱ ℱ' : SheafOfTypes.{v} K} (i : G.op ⋙ ℱ.
   NatIso.ofComponents (fun X => appIso H i (unop X)) @(presheafHom H i.hom).naturality
 #align category_theory.cover_dense.types.presheaf_iso CategoryTheory.CoverDense.Types.presheafIso
 
-/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
+/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of types, where `G` is full
 and cover-dense, and `ℱ, ℱ'` are sheaves, we may obtain a natural isomorphism between sheaves.
 -/
 @[simps]
@@ -311,7 +311,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
       coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ'.val where
   app X := presheafHom H (homOver α (unop X))
   naturality X Y f := by
-    ext (U x)
+    ext U x
     change
       appHom H (homOver α (unop Y)) (unop U) (f.unop ≫ x) =
         f.unop ≫ appHom H (homOver α (unop X)) (unop U) x
@@ -346,11 +346,11 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
       { app := fun X => (α.app X).app U
         naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
   · intro U V i
-    ext (X x)
+    ext X x
     exact congr_fun ((α.app X).naturality i) x
 #align category_theory.cover_dense.sheaf_yoneda_hom CategoryTheory.CoverDense.sheafYonedaHom
 
-/-- Given an natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
+/-- Given a natural transformation `G ⋙ ℱ ⟶ G ⋙ ℱ'` between presheaves of arbitrary category,
 where `G` is full and cover-dense, and `ℱ'` is a sheaf, we may obtain a natural transformation
 between presheaves.
 -/
@@ -360,7 +360,7 @@ noncomputable def sheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) : ℱ ⟶ �
     naturality := fun X Y f => yoneda.map_injective (by simpa using α'.naturality f) }
 #align category_theory.cover_dense.sheaf_hom CategoryTheory.CoverDense.sheafHom
 
-/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
+/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
 where `G` is full and cover-dense, and `ℱ', ℱ` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
@@ -371,7 +371,7 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
     intro X
     -- porting note: somehow `apply` in Lean 3 is leaving a typeclass goal,
     -- perhaps due to elaboration order. The corresponding `apply` in Lean 4 fails
-    -- because the instance can't yet be synthezised. I hence reorder the proof.
+    -- because the instance can't yet be synthesized. I hence reorder the proof.
     suffices IsIso (yoneda.map ((sheafHom H i.hom).app X)) by
       apply isIso_of_reflects_iso _ yoneda
     use (sheafYonedaHom H i.inv).app X
@@ -384,7 +384,7 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
   apply asIso (sheafHom H i.hom)
 #align category_theory.cover_dense.presheaf_iso CategoryTheory.CoverDense.presheafIso
 
-/-- Given an natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
+/-- Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
 where `G` is full and cover-dense, and `ℱ', ℱ` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/

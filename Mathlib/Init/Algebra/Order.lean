@@ -252,7 +252,7 @@ def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → 
 
 /-- Default definition of `min`. -/
 def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
-if a ≤ b then a else b
+  if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:

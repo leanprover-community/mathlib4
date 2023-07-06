@@ -654,7 +654,7 @@ theorem range_eq_univ (e : E ≃ₛₗᵢ[σ₁₂] E₂) : Set.range e = Set.un
   exact IsometryEquiv.range_eq_univ _
 #align linear_isometry_equiv.range_eq_univ LinearIsometryEquiv.range_eq_univ
 
-/-- Reinterpret a `LinearIsometryEquiv` as an `Homeomorph`. -/
+/-- Reinterpret a `LinearIsometryEquiv` as a `Homeomorph`. -/
 def toHomeomorph : E ≃ₜ E₂ :=
   e.toIsometryEquiv.toHomeomorph
 #align linear_isometry_equiv.to_homeomorph LinearIsometryEquiv.toHomeomorph

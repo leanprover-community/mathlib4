@@ -93,6 +93,8 @@ class CreatesLimitsOfSize (F : C ⥤ D) where
     infer_instance
 #align category_theory.creates_limits_of_size CategoryTheory.CreatesLimitsOfSize
 
+pp_with_univ CreatesLimitsOfSize
+
 /-- `F` creates small limits if it creates limits of shape `J` for any small `J`. -/
 abbrev CreatesLimits (F : C ⥤ D) :=
   CreatesLimitsOfSize.{v₂, v₂} F
@@ -125,6 +127,8 @@ class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance
 #align category_theory.creates_colimits_of_size CategoryTheory.CreatesColimitsOfSize
+
+pp_with_univ CreatesColimitsOfSize
 
 /-- `F` creates small colimits if it creates colimits of shape `J` for any small `J`. -/
 abbrev CreatesColimits (F : C ⥤ D) :=
@@ -581,7 +585,7 @@ def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c
   liftedCone :=
     { pt := c.pt
       π := c.π ≫ K.rightUnitor.hom }
-  validLift := Cones.ext (Iso.refl _) (by aesop_cat)
+  validLift := Cones.ext (Iso.refl _)
 #align category_theory.id_lifts_cone CategoryTheory.idLiftsCone
 
 /-- The identity functor creates all limits. -/
@@ -596,7 +600,7 @@ def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c
   liftedCocone :=
     { pt := c.pt
       ι := K.rightUnitor.inv ≫ c.ι }
-  validLift := Cocones.ext (Iso.refl _) (by aesop_cat)
+  validLift := Cocones.ext (Iso.refl _)
 #align category_theory.id_lifts_cocone CategoryTheory.idLiftsCocone
 
 /-- The identity functor creates all colimits. -/

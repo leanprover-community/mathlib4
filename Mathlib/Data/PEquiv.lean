@@ -335,12 +335,12 @@ def single (a : α) (b : β) :
   inv x y := by
     dsimp only
     split_ifs with h1 h2
-    . simp [*]
-    . simp only [mem_def, some.injEq, iff_false] at *
+    · simp [*]
+    · simp only [mem_def, some.injEq, iff_false] at *
       exact Ne.symm h2
-    . simp only [mem_def, some.injEq, false_iff] at *
+    · simp only [mem_def, some.injEq, false_iff] at *
       exact Ne.symm h1
-    . simp
+    · simp
 #align pequiv.single PEquiv.single
 
 theorem mem_single (a : α) (b : β) : b ∈ single a b a :=
@@ -385,7 +385,7 @@ theorem single_trans_single (a : α) (b : β) (c : γ) :
 
 @[simp]
 theorem single_subsingleton_eq_refl [Subsingleton α] (a b : α) : single a b = PEquiv.refl α := by
-  ext (i j)
+  ext i j
   dsimp [single]
   rw [if_pos (Subsingleton.elim i a), Subsingleton.elim i j, Subsingleton.elim b j]
 #align pequiv.single_subsingleton_eq_refl PEquiv.single_subsingleton_eq_refl

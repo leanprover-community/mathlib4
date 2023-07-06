@@ -445,7 +445,7 @@ theorem dualBasis_apply (i : ι) (m : M) : b.dualBasis i m = b.repr m i :=
 
 @[simp]
 theorem coe_dualBasis : ⇑b.dualBasis = b.coord := by
-  ext (i x)
+  ext i x
   apply dualBasis_apply
 #align basis.coe_dual_basis Basis.coe_dualBasis
 
@@ -642,7 +642,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [DecidableEq ι]
 open Lean.Elab.Tactic in
 /-- Try using `Set.to_finite` to dispatch a `Set.finite` goal. -/
 def evalUseFiniteInstance : TacticM Unit := do
-  evalTactic (← `(tactic|intros; apply Set.toFinite ))
+  evalTactic (← `(tactic| intros; apply Set.toFinite ))
 
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
@@ -811,7 +811,7 @@ theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator �
 /-- That $\operatorname{ker}(\iota^* : V^* \to W^*) = \operatorname{ann}(W)$.
 This is the definition of the dual annihilator of the submodule $W$. -/
 theorem dualRestrict_ker_eq_dualAnnihilator (W : Submodule R M) :
--- Porting note: broken dot notation lean4#1910 LinearMap.ker
+    -- Porting note: broken dot notation lean4#1910 LinearMap.ker
     LinearMap.ker W.dualRestrict = W.dualAnnihilator :=
   rfl
 #align submodule.dual_restrict_ker_eq_dual_annihilator Submodule.dualRestrict_ker_eq_dualAnnihilator
@@ -927,7 +927,7 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 
 /-- See also `Subspace.dualAnnihilator_iInf_eq` for vector subspaces when `ι` is finite. -/
 theorem iSup_dualAnnihilator_le_iInf {ι : Type _} (U : ι → Submodule R M) :
-    (⨆ i : ι, (U i).dualAnnihilator) ≤ (⨅ i : ι, U i).dualAnnihilator := by
+    ⨆ i : ι, (U i).dualAnnihilator ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
   apply iInf_mono
   exact fun i : ι => le_dualAnnihilator_dualCoannihilator (U i)
@@ -966,7 +966,7 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     rintro rfl
     exact hw'n (Submodule.zero_mem W)
   rw [Ne.def, ← Module.forall_dual_apply_eq_zero_iff K w'] at hw'nz
-  push_neg  at hw'nz
+  push_neg at hw'nz
   obtain ⟨φ, hφ⟩ := hw'nz
   exists ((LinearMap.ofIsComplProd hW).comp (LinearMap.inr _ _ _)) φ
   simp only [coe_comp, coe_inr, Function.comp_apply, ofIsComplProd_apply, map_add,
@@ -1028,7 +1028,7 @@ theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLi
 
 @[simp]
 theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.dualLift = 1 := by
-  ext (φ x)
+  ext φ x
   simp
 #align subspace.dual_restrict_comp_dual_lift Subspace.dualRestrict_comp_dualLift
 
@@ -1093,7 +1093,10 @@ open FiniteDimensional
 
 variable {V₁ : Type _} [AddCommGroup V₁] [Module K V₁]
 
-instance [H : FiniteDimensional K V] : FiniteDimensional K (Module.Dual K V) := by infer_instance
+instance instModuleDualFiniteDimensional [H : FiniteDimensional K V] :
+    FiniteDimensional K (Module.Dual K V) := by
+  infer_instance
+#align subspace.module.dual.finite_dimensional Subspace.instModuleDualFiniteDimensional
 
 variable [FiniteDimensional K V] [FiniteDimensional K V₁]
 
@@ -1140,7 +1143,7 @@ theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
 theorem finrank_add_finrank_dualCoannihilator_eq (W : Subspace K (Module.Dual K V)) :
     finrank K W + finrank K W.dualCoannihilator = finrank K V := by
   rw [finrank_dualCoannihilator_eq]
-  -- Porting note: LineqrEquiv.finrank_eq needs help
+  -- Porting note: LinearEquiv.finrank_eq needs help
   let equiv := W.quotEquivAnnihilator
   have eq := LinearEquiv.finrank_eq (R := K) (M := (Module.Dual K V) ⧸ W)
     (M₂ := { x // x ∈ dualAnnihilator W }) equiv
@@ -1303,7 +1306,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_surjective (f : M →ₗ[R] M')
   · rw [LinearMap.range_comp_of_range_eq_top]
     apply LinearEquiv.range
   · apply congr_arg
-    ext (φ x)
+    ext φ x
     simp only [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, LinearMap.dualMap_apply,
       LinearEquiv.dualMap_apply, mkQ_apply, LinearMap.quotKerEquivOfSurjective,
       LinearEquiv.trans_symm, LinearEquiv.trans_apply, LinearEquiv.ofTop_symm_apply,
@@ -1452,7 +1455,7 @@ theorem dualAnnihilator_iInf_eq {ι : Type _} [Finite ι] (W : ι → Subspace K
 to direct sum decompositions. -/
 theorem isCompl_dualAnnihilator {W W' : Subspace K V₁} (h : IsCompl W W') :
     IsCompl W.dualAnnihilator W'.dualAnnihilator := by
-  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at h⊢
+  rw [isCompl_iff, disjoint_iff, codisjoint_iff] at h ⊢
   rw [← dualAnnihilator_inf_eq, ← dualAnnihilator_sup_eq, h.1, h.2, dualAnnihilator_top,
     dualAnnihilator_bot]
   exact ⟨rfl, rfl⟩
@@ -1575,7 +1578,7 @@ variable [Module R M] [Module R N]
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  -- Porting note: ∑ (i) (j) does not seem to work; applyₗneeds a little help to unify
+  -- Porting note: ∑ (i) (j) does not seem to work; applyₗ needs a little help to unify
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
       (applyₗ (R := R) (c j)) ∘ₗ (applyₗ (R := R) (b i)) ∘ₗ lcurry R M N R
@@ -1621,8 +1624,8 @@ isomorphism `R ⊗ R ≃ R`.
 noncomputable def dualDistribEquivOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (M ⊗[R] N) := by
   refine' LinearEquiv.ofLinear (dualDistrib R M N) (dualDistribInvOfBasis b c) _ _
-  . exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
-  . exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
+  · exact dualDistrib_dualDistribInvOfBasis_left_inverse _ _
+  · exact dualDistrib_dualDistribInvOfBasis_right_inverse _ _
 #align tensor_product.dual_distrib_equiv_of_basis TensorProduct.dualDistribEquivOfBasis
 
 variable (R M N)
@@ -1644,4 +1647,3 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
 #align tensor_product.dual_distrib_equiv TensorProduct.dualDistribEquiv
 
 end TensorProduct
-

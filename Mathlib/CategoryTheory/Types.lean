@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # The category `Type`.
@@ -194,18 +195,18 @@ and the original type.
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   hom a := a.1
   inv a := .up a
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
-Write this as `uliftFunctor.{5 2}` to get `Type 2 ⥤ Type 5`.
+Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
 def uliftFunctor : Type u ⥤ Type max u v
     where
   obj X := ULift.{v} X
   map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
+
+pp_with_univ uliftFunctor
 
 @[simp]
 theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
@@ -225,7 +226,7 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
-  NatIso.ofComponents uliftTrivial (by aesop_cat)
+  NatIso.ofComponents uliftTrivial
 #align category_theory.ulift_functor_trivial CategoryTheory.uliftFunctorTrivial
 
 -- TODO We should connect this to a general story about concrete categories
@@ -246,7 +247,7 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
   constructor
   · intro H x x' h
     skip
-    rw [← homOfElement_eq_iff] at h⊢
+    rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩
 #align category_theory.mono_iff_injective CategoryTheory.mono_iff_injective

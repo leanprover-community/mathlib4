@@ -488,7 +488,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
         ext ⟨f, hf⟩
         apply t.2.to_sieveCompatible _ }
   left_inv α := by
-    ext (X⟨_, _⟩)
+    ext X ⟨_, _⟩
     rfl
   right_inv := by
     rintro ⟨x, hx⟩
@@ -783,7 +783,92 @@ theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
   simp [isSheafFor_top_sieve]
 #align category_theory.presieve.is_sheaf_bot CategoryTheory.Presieve.isSheaf_bot
 
+/--
+For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
+is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for
+any presieve, as does constructing a family of elements from a co-cone. Showing compatibility of the
+family needs the sieve condition.
+Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily`
+ -/
+
+def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
+  (hx : FamilyOfElements.Compatible x) :
+     Cocone (R.diagram)  where
+  pt := W
+  ι  := {
+    app := fun f => x f.obj.hom f.property
+    naturality := by
+      intro g₁ g₂ F
+      simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
+          Functor.const_obj_obj, Functor.comp_map, fullSubcategoryInclusion.map, Over.forget_map,
+          Functor.const_obj_map, Category.comp_id]
+      rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
+      apply hx
+      simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp]
+  }
+
+def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
+      FamilyOfElements (yoneda.obj s.pt) R := fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
+
 end Presieve
+
+namespace Sieve
+open Presieve
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+variable {X : C}
+
+theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
+    FamilyOfElements.Compatible <| yonedaFamilyOfElements_fromCocone S.arrows s := by
+  intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ hgf
+  have Hs := s.ι.naturality
+  simp only [Functor.id_obj, yoneda_obj_obj, Opposite.unop_op, yoneda_obj_map, Quiver.Hom.unop_op]
+  dsimp [yonedaFamilyOfElements_fromCocone]
+  have hgf₁ : S.arrows (g₁ ≫ f₁) := by exact Sieve.downward_closed S hf₁ g₁
+  have hgf₂ : S.arrows (g₂ ≫ f₂) := by exact Sieve.downward_closed S hf₂ g₂
+  let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := (Over.homMk (𝟙 Z) )
+  let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := (Over.homMk g₁)
+  let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := (Over.homMk g₂)
+  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
+  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
+  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
+  aesop_cat
+
+/--
+The base of a sieve `S` is a colimit of `S` iff all Yoneda-presheaves satisfy
+the sheaf condition for `S`.
+-/
+theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
+    (∀ W : C, Presieve.IsSheafFor (yoneda.obj W) (S : Presieve X)) ↔
+      Nonempty (IsColimit S.arrows.cocone) := by
+  constructor
+  · intro H
+    refine Nonempty.intro ?_
+    exact {
+    desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+        (yonedaFamily_fromCocone_compatible S s) |>.choose
+    fac := by
+      intro s f
+      replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+         (yonedaFamily_fromCocone_compatible S s)
+      have ht := H.choose_spec.1 f.obj.hom f.property
+      aesop_cat
+    uniq := by
+      intro s Fs HFs
+      replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+          (yonedaFamily_fromCocone_compatible S s)
+      apply H.choose_spec.2 Fs
+      exact fun _ f hf => HFs ⟨Over.mk f, hf⟩  }
+  · intro H W x hx
+    replace H := Classical.choice H
+    let s := compatibleYonedaFamily_toCocone S W x hx
+    use H.desc s
+    constructor
+    · exact fun _ f hf => (H.fac s) ⟨Over.mk f, hf⟩
+    · exact fun g hg => H.uniq s g (fun ⟨⟨f, _, hom⟩, hf⟩ => hg hom hf)
+
+end Sieve
 
 namespace Equalizer
 
@@ -818,13 +903,6 @@ variable (P R)
 def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
   hom t Y f hf := Pi.π (fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)) ⟨_, _, hf⟩ t
   inv := Pi.lift fun f x => x _ f.2.2
-  hom_inv_id := by
-    funext
-    ext
-    simp
-  inv_hom_id := by
-    funext
-    apply Limits.Types.Limit.lift_π_apply'
 #align category_theory.equalizer.first_obj_eq_family CategoryTheory.Equalizer.firstObjEqFamily
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
@@ -854,7 +932,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v₁ u₁ :=
-  ∏ fun f : Σ(Y Z : _)(_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 #align category_theory.equalizer.sieve.second_obj CategoryTheory.Equalizer.Sieve.SecondObj
 
 variable {P S}
@@ -885,8 +963,7 @@ def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
 #align category_theory.equalizer.sieve.second_map CategoryTheory.Equalizer.Sieve.secondMap
 
 theorem w : forkMap P (S : Presieve X) ≫ firstMap P S = forkMap P S ≫ secondMap P S := by
-  apply limit.hom_ext
-  rintro ⟨Y, Z, g, f, hf⟩
+  ext
   simp [firstMap, secondMap, forkMap]
 #align category_theory.equalizer.sieve.w CategoryTheory.Equalizer.Sieve.w
 
@@ -898,11 +975,11 @@ theorem compatible_iff (x : FirstObj P S) :
     ((firstObjEqFamily P S).hom x).Compatible ↔ firstMap P S x = secondMap P S x := by
   rw [Presieve.compatible_iff_sieveCompatible]
   constructor
-  . intro t
+  · intro t
     apply SecondObj.ext
     intros Y Z g f hf
     simpa [firstMap, secondMap] using t _ g hf
-  . intro t Y Z f g hf
+  · intro t Y Z f g hf
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨Y, Z, g, f, hf⟩⟩
 #align category_theory.equalizer.sieve.compatible_iff CategoryTheory.Equalizer.Sieve.compatible_iff
@@ -921,7 +998,7 @@ theorem equalizer_sheaf_condition :
   rw [← Iso.toEquiv_symm_fun]
   rw [Equiv.eq_symm_apply]
   constructor
-  . intro q
+  · intro q
     funext Y f hf
     simpa [firstObjEqFamily, forkMap] using q _ _
   · intro q Y f hf
@@ -944,7 +1021,7 @@ variable [HasPullbacks C]
 /-- The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
-def SecondObj : Type max v₁ u₁ :=
+@[simp] def SecondObj : Type max v₁ u₁ :=
   ∏ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 #align category_theory.equalizer.presieve.second_obj CategoryTheory.Equalizer.Presieve.SecondObj
@@ -963,8 +1040,8 @@ def secondMap : FirstObj P R ⟶ SecondObj P R :=
 #align category_theory.equalizer.presieve.second_map CategoryTheory.Equalizer.Presieve.secondMap
 
 theorem w : forkMap P R ≫ firstMap P R = forkMap P R ≫ secondMap P R := by
-  apply limit.hom_ext
-  rintro ⟨⟨Y, f, hf⟩, ⟨Z, g, hg⟩⟩
+  dsimp
+  ext
   simp only [firstMap, secondMap, forkMap]
   simp only [limit.lift_π, limit.lift_π_assoc, assoc, Fan.mk_π_app]
   rw [← P.map_comp, ← op_comp, pullback.condition]
@@ -979,7 +1056,7 @@ theorem compatible_iff (x : FirstObj P R) :
     ((firstObjEqFamily P R).hom x).Compatible ↔ firstMap P R x = secondMap P R x := by
   rw [Presieve.pullbackCompatible_iff]
   constructor
-  . intro t
+  · intro t
     apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
     rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
     simpa [firstMap, secondMap] using t hf hg

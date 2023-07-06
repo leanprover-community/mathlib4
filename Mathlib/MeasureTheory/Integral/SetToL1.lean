@@ -47,7 +47,7 @@ The lemmas listed here don't show all hypotheses. Refer to the actual lemmas for
 Linearity:
 - `setToFun_zero_left : setToFun μ 0 hT f = 0`
 - `setToFun_add_left : setToFun μ (T + T') _ f = setToFun μ T hT f + setToFun μ T' hT' f`
-- `setToFun_smul_left : setToFun μ (λ s, c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
+- `setToFun_smul_left : setToFun μ (fun s ↦ c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
 - `setToFun_zero : setToFun μ T hT (0 : α → E) = 0`
 - `setToFun_neg : setToFun μ T hT (-f) = - setToFun μ T hT f`
 If `f` and `g` are integrable:
@@ -1426,7 +1426,7 @@ theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ]
   by_cases hfi : Integrable f μ
   · have hgi : Integrable g μ := hfi.congr h
     rw [setToFun_eq hT hfi, setToFun_eq hT hgi, (Integrable.toL1_eq_toL1_iff f g hfi hgi).2 h]
-  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi ; exact hfi
+  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi; exact hfi
     rw [setToFun_undef hT hfi, setToFun_undef hT hgi]
 #align measure_theory.set_to_fun_congr_ae MeasureTheory.setToFun_congr_ae
 

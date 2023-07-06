@@ -216,7 +216,7 @@ section EnoughInjectives
 variable [EnoughInjectives C]
 
 /-- `Injective.under X` provides an arbitrarily chosen injective object equipped with
-an monomorphism `Injective.ι : X ⟶  Injective.under X`.
+a monomorphism `Injective.ι : X ⟶  Injective.under X`.
 -/
 def under (X : C) : C :=
   (EnoughInjectives.presentation X).some.J
@@ -365,12 +365,10 @@ def injectivePresentationOfMapInjectivePresentation (X : C)
 theorem enoughInjectives_iff (F : C ≌ D) : EnoughInjectives C ↔ EnoughInjectives D := by
   constructor
   all_goals intro H; constructor; intro X; constructor
-  ·
-    exact
+  · exact
       F.symm.injectivePresentationOfMapInjectivePresentation _
         (Nonempty.some (H.presentation (F.inverse.obj X)))
-  ·
-    exact
+  · exact
       F.injectivePresentationOfMapInjectivePresentation X
         (Nonempty.some (H.presentation (F.functor.obj X)))
 #align category_theory.equivalence.enough_injectives_iff CategoryTheory.Equivalence.enoughInjectives_iff

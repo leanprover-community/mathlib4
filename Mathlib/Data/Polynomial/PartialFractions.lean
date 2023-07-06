@@ -100,7 +100,7 @@ deg(r i) < deg(g i), provided that the g i are monic and pairwise coprime.
 -/
 theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type _} {g : ι → R[X]} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).Monic) (hcop : Set.Pairwise ↑s fun i j => IsCoprime (g i) (g j)) :
-    ∃ (q : R[X])(r : ι → R[X]),
+    ∃ (q : R[X]) (r : ι → R[X]),
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
   induction' s using Finset.induction_on with a b hab Hind f generalizing f
@@ -126,7 +126,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type _} {g : ι → R[X]} {s
         exact hdeg₁
       · intro hi
         exact hrdeg i (Finset.mem_of_mem_insert_of_ne hi h1)
-    norm_cast  at hf IH⊢
+    norm_cast at hf IH ⊢
     rw [Finset.prod_insert hab, hf, IH, Finset.sum_insert hab, if_pos rfl]
     trans (↑(q₀ + q : R[X]) : K) + (↑r₁ / ↑(g a) + ∑ i : ι in b, (r i : K) / (g i : K))
     · push_cast

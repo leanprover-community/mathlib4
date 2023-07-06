@@ -194,7 +194,7 @@ def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
 lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexShape ι}
     {K L : HomologicalComplex V c} (f : K ⟶ L) :
     (F.mapHomotopyCategory c).map ((HomotopyCategory.quotient V c).map f) =
-      (HomotopyCategory.quotient W c).map ((F.mapHomologicalComplex c).map f):=
+      (HomotopyCategory.quotient W c).map ((F.mapHomologicalComplex c).map f) :=
   rfl
 
 -- TODO `F.mapHomotopyCategory c` is additive (and linear when `F` is linear).

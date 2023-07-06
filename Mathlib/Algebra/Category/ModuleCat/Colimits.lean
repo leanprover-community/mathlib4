@@ -14,9 +14,9 @@ import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 /-!
 # The category of R-modules has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Mon/colimits.lean`.
+This file uses a "pre-automated" approach, just as for `Mathlib.Algebra.Category.MonCat.Colimits`.
 
-Note that finite colimits can already be obtained from the instance `abelian (Module R)`.
+Note that finite colimits can already be obtained from the instance `Abelian (Module R)`.
 
 TODO:
 In fact, in `Module R` there is a much nicer model of colimits as quotients
@@ -242,8 +242,8 @@ set_option linter.uppercaseLean3 false in
 /-- The group homomorphism from a given module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_smul' := by intros ; apply Quot.sound ; apply Relation.smul
-  map_add' := by intros ; apply Quot.sound ; apply Relation.add
+  map_smul' := by intros; apply Quot.sound; apply Relation.smul
+  map_add' := by intros; apply Quot.sound; apply Relation.add
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_morphism ModuleCat.Colimits.coconeMorphism
 
@@ -341,8 +341,8 @@ set_option linter.uppercaseLean3 false in
 /-- The group homomorphism from the colimit module to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
-  map_smul' s x := by rcases x ; rfl
-  map_add' x y := by rcases x ; rcases y ; rfl
+  map_smul' s x := by rcases x; rfl
+  map_add' x y := by rcases x; rcases y; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_morphism ModuleCat.Colimits.descMorphism
 
@@ -362,8 +362,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
       rfl
     · rw [quot_zero, map_zero] -- porting note: was `simp` but `map_zero` won't fire
       rfl
-    · rw [quot_neg, map_neg, map_neg, neg_inj] -- porting note: this was closed by `simp [*]`
-      assumption
+    · simpa
     · rw [quot_add, map_add, map_add]  -- porting note: this was closed by `simp [*]`
       congr 1
     · rw [quot_smul, map_smul, map_smul]  -- porting note: this was closed by `simp [*]`

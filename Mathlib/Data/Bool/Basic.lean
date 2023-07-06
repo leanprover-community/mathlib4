@@ -80,12 +80,12 @@ theorem not_false' : ¬false := fun.
 #align bool.not_ff Bool.not_false'
 
 -- Porting note: new theorem
-theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) :=
-by cases a <;> cases b <;> simp
+theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
+  cases a <;> cases b <;> simp
 
 -- Porting note: new theorem
 theorem beq_eq_decide_eq [DecidableEq α]
-  (a b : α) : (a == b) = decide (a = b) := rfl
+    (a b : α) : (a == b) = decide (a = b) := rfl
 
 -- Porting note: new theorem
 theorem beq_comm [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
@@ -304,14 +304,14 @@ theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 /-! ### De Morgan's laws for booleans-/
 
 @[simp]
-theorem not_and : ∀ a b : Bool, !(a && b) = (!a || !b) := by decide
+theorem not_and : ∀ a b : Bool, (!(a && b)) = (!a || !b) := by decide
 #align bool.bnot_band Bool.not_and
 
 @[simp]
-theorem not_or : ∀ a b : Bool, !(a || b) = (!a && !b) := by decide
+theorem not_or : ∀ a b : Bool, (!(a || b)) = (!a && !b) := by decide
 #align bool.bnot_bor Bool.not_or
 
-theorem not_inj : ∀ {a b : Bool}, !a = !b → a = b := by decide
+theorem not_inj : ∀ {a b : Bool}, (!a) = !b → a = b := by decide
 #align bool.bnot_inj Bool.not_inj
 
 -- Porting note: having to unfold here is not pretty.
@@ -404,12 +404,22 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 theorem injective_iff {α : Sort _} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ ff_ne_tt (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
-    exacts[rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+    exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
 #align bool.injective_iff Bool.injective_iff
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
   cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
 #align bool.apply_apply_apply Bool.apply_apply_apply
+
+/-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
+protected def xor3 (x y c : Bool) :=
+  xor (xor x y) c
+#align bitvec.xor3 Bool.xor3
+
+/-- `carry x y c` is `x && y || x && c || y && c`. -/
+protected def carry (x y c : Bool) :=
+  x && y || x && c || y && c
+#align bitvec.carry Bool.carry
 
 end Bool

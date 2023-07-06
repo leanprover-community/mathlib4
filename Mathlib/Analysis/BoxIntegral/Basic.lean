@@ -15,7 +15,7 @@ import Mathlib.Topology.UniformSpace.Compact
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
 
-In this file we define the integral of a function over a box in `ℝⁿ. The same definition works for
+In this file we define the integral of a function over a box in `ℝⁿ`. The same definition works for
 Riemann, Henstock-Kurzweil, and McShane integrals.
 
 As usual, we represent `ℝⁿ` as the type of functions `ι → ℝ` for some finite type `ι`. A rectangular
@@ -438,7 +438,7 @@ such that for every `c : ℝ≥0`, for every tagged partition `π` subordinate t
 additional distortion estimates if `BoxIntegral.IntegrationParams.bDistortion l = true`), the
 corresponding integral sum is `ε`-close to the integral.
 
-If `box.integral.integration_params.bRiemann = true`, then `r c x` does not depend on `x`. If
+If `BoxIntegral.IntegrationParams.bRiemann = true`, then `r c x` does not depend on `x`. If
 `ε ≤ 0`, then we use `r c x = 1`.  -/
 def convergenceR (h : Integrable I l f vol) (ε : ℝ) : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ) :=
   if hε : 0 < ε then (hasIntegral_iff.1 h.hasIntegral ε hε).choose
@@ -647,7 +647,7 @@ of `f` over the boxes of `π₁` is equal to the sum of integrals of `f` over th
 See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
 theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartition I}
     (hU : π₁.iUnion = π₂.iUnion) :
-    (∑ J in π₁.boxes, integral J l f vol) = ∑ J in π₂.boxes, integral J l f vol := by
+    ∑ J in π₁.boxes, integral J l f vol = ∑ J in π₂.boxes, integral J l f vol := by
   refine' tendsto_nhds_unique (h.tendsto_integralSum_sum_integral π₁) _
   rw [l.toFilteriUnion_congr _ hU]
   exact h.tendsto_integralSum_sum_integral π₂
@@ -762,7 +762,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     specialize hlH hsne
     have : ∀ J ∈ π.boxes.filter fun J => π.tag J ∈ s,
         dist (vol J (f <| π.tag J)) (g J) ≤ εs (π.tag J) := fun J hJ ↦ by
-      rw [Finset.mem_filter] at hJ ; cases' hJ with hJ hJs
+      rw [Finset.mem_filter] at hJ; cases' hJ with hJ hJs
       refine' Hδ₁ c _ ⟨π.tag_mem_Icc _, hJs⟩ _ (hεs0 _) _ (π.le_of_mem' _ hJ) _
         (hπδ.2 hlH J hJ) fun hD => (Finset.le_sup hJ).trans (hπδ.3 hD)
       convert hπδ.1 J hJ using 3; exact (if_pos hJs).symm
@@ -812,7 +812,7 @@ box `J ≤ I` such that
 the distance between the term `vol J (f x)` of an integral sum corresponding to `J` and `g J` is
 less than or equal to `ε` if `x ∈ s` and is less than or equal to `ε * B J` otherwise.
 
-Then `f` is integrable on `I along `l` with integral `g I`. -/
+Then `f` is integrable on `I` along `l` with integral `g I`. -/
 theorem HasIntegral.of_le_Henstock_of_forall_isLittleO (hl : l ≤ Henstock) (B : ι →ᵇᵃ[I] ℝ)
     (hB0 : ∀ J, 0 ≤ B J) (g : ι →ᵇᵃ[I] F) (s : Set ℝⁿ) (hs : s.Countable)
     (H₁ : ∀ (c : ℝ≥0), ∀ x ∈ Box.Icc I ∩ s, ∀ ε > (0 : ℝ),

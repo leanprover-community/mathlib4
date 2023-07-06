@@ -19,7 +19,7 @@ import Mathlib.ModelTheory.ElementaryMaps
 ## Main Results
 * `FirstOrder.Language.exists_elementarySubstructure_card_eq` is the Downward Löwenheim–Skolem
   theorem: If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
-  `max (# s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
+  `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.
 
 ## TODO
@@ -51,12 +51,12 @@ def skolem₁ : Language :=
 variable {L}
 
 theorem card_functions_sum_skolem₁ :
-    (#Σ n, (L.sum L.skolem₁).Functions n) = (#Σ n, L.BoundedFormula Empty (n + 1)) := by
+    #(Σ n, (L.sum L.skolem₁).Functions n) = #(Σ n, L.BoundedFormula Empty (n + 1)) := by
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
   · refine' sum_le_sum _ _ fun n => _
-    rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{_, _, v}]
+    rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
     refine' ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => _⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩
     rfl
@@ -65,13 +65,13 @@ theorem card_functions_sum_skolem₁ :
       (Sigma.mk.inj_iff.1 xy).1)
 #align first_order.language.card_functions_sum_skolem₁ FirstOrder.Language.card_functions_sum_skolem₁
 
-theorem card_functions_sum_skolem₁_le : (#Σn, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
+theorem card_functions_sum_skolem₁_le : #(Σ n, (L.sum L.skolem₁).Functions n) ≤ max ℵ₀ L.card := by
   rw [card_functions_sum_skolem₁]
-  trans #Σ n, L.BoundedFormula Empty n
+  trans #(Σ n, L.BoundedFormula Empty n)
   · exact
       ⟨⟨Sigma.map Nat.succ fun _ => id,
           Nat.succ_injective.sigma_map fun _ => Function.injective_id⟩⟩
-  · refine' _root_.trans BoundedFormula.card_le (lift_le.{_, max u v}.1 _)
+  · refine' _root_.trans BoundedFormula.card_le (lift_le.{max u v}.1 _)
     simp only [mk_empty, lift_zero, lift_uzero, zero_add]
     rfl
 #align first_order.language.card_functions_sum_skolem₁_le FirstOrder.Language.card_functions_sum_skolem₁_le
@@ -129,13 +129,13 @@ variable {M}
 
 /-- The Downward Löwenheim–Skolem theorem :
   If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
-  `max (# s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
+  `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.  -/
 theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (h1 : ℵ₀ ≤ κ)
-    (h2 : Cardinal.lift.{w'} (#s) ≤ Cardinal.lift.{w} κ)
+    (h2 : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} κ)
     (h3 : Cardinal.lift.{w'} L.card ≤ Cardinal.lift.{max u v} κ)
-    (h4 : Cardinal.lift.{w} κ ≤ Cardinal.lift.{w'} (#M)) :
-    ∃ S : L.ElementarySubstructure M, s ⊆ S ∧ Cardinal.lift.{w'} (#S) = Cardinal.lift.{w} κ := by
+    (h4 : Cardinal.lift.{w} κ ≤ Cardinal.lift.{w'} #M) :
+    ∃ S : L.ElementarySubstructure M, s ⊆ S ∧ Cardinal.lift.{w'} #S = Cardinal.lift.{w} κ := by
   obtain ⟨s', hs'⟩ := Cardinal.le_mk_iff_exists_set.1 h4
   rw [← aleph0_le_lift.{_, w}] at h1
   rw [← hs'] at h1 h2 ⊢
@@ -152,11 +152,11 @@ theorem exists_elementarySubstructure_card_eq (s : Set M) (κ : Cardinal.{w'}) (
   refine' ⟨h1, (mk_union_le _ _).trans _, (lift_le.2 card_functions_sum_skolem₁_le).trans _⟩
   · rw [← lift_le, lift_add, h, add_comm, add_eq_max h1]
     exact max_le le_rfl h2
-  · rw [lift_max, lift_aleph0, max_le_iff, aleph0_le_lift, and_comm, ← lift_le.{_, w'},
+  · rw [lift_max, lift_aleph0, max_le_iff, aleph0_le_lift, and_comm, ← lift_le.{w'},
       lift_lift, lift_lift, ← aleph0_le_lift, h]
     refine' ⟨_, h1⟩
     rw [← lift_lift.{w', w}]
-    refine' _root_.trans (lift_le.{_, w}.2 h3) _
+    refine' _root_.trans (lift_le.{w}.2 h3) _
     rw [lift_lift, ← lift_lift.{w, max u v}, ← hs', ← h, lift_lift]
   · refine' _root_.trans _ (lift_le.2 (mk_le_mk_of_subset (Set.subset_union_right _ _)))
     rw [aleph0_le_lift, ← aleph0_le_lift, h]

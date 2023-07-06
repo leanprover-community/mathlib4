@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 
 ! This file was ported from Lean 3 source module field_theory.ratfunc
-! leanprover-community/mathlib commit 67237461d7cbf410706a6a06f4d40cbb594c32dc
+! leanprover-community/mathlib commit bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,11 +76,11 @@ We define the degree of a rational function, with values in `ℤ`:
 To provide good API encapsulation and speed up unification problems,
 `RatFunc` is defined as a structure, and all operations are `@[irreducible] def`s
 
-We need a couple of maps to set up the `field` and `IsFractionRing` structure,
-namely `RatFunc.of_fraction_ring`, `RatFunc.to_fraction_ring`, `RatFunc.mk` and
-`RatFunc.to_fraction_ring_ring_equiv`.
-All these maps get `simp`ed to bundled morphisms like `algebra_map K[X] (RatFunc K)`
-and `is_localization.alg_equiv`.
+We need a couple of maps to set up the `Field` and `IsFractionRing` structure,
+namely `RatFunc.ofFractionRing`, `RatFunc.toFractionRing`, `RatFunc.mk` and
+`RatFunc.toFractionRingRingEquiv`.
+All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] (RatFunc K)`
+and `IsLocalization.algEquiv`.
 
 There are separate lifts and maps of homomorphisms, to provide routes of lifting even when
 the codomain is not a field or even an integral domain.
@@ -253,8 +253,7 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : ∀ _p _q : K[X], P) (f0 : ∀ 
   · subst hq
     simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  ·
-    simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
+  · simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
 #align ratfunc.lift_on_mk RatFunc.liftOn_mk
 
 /-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,
@@ -699,7 +698,7 @@ theorem coe_mapRingHom_eq_coe_map [RingHomClass F R[X] S[X]] (φ : F) (hφ : R[X
 #align ratfunc.coe_map_ring_hom_eq_coe_map RatFunc.coe_mapRingHom_eq_coe_map
 
 -- TODO: Generalize to `FunLike` classes,
-/-- Lift an monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
+/-- Lift a monoid with zero homomorphism `R[X] →*₀ G₀` to a `RatFunc R →*₀ G₀`
 on the condition that `φ` maps non zero divisors to non zero divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.comap φ) : RatFunc R →*₀ G₀ where
@@ -1248,6 +1247,14 @@ theorem num_div_denom (x : RatFunc K) : algebraMap _ _ (num x) / algebraMap _ _ 
     exact inv_ne_zero (Polynomial.leadingCoeff_ne_zero.mpr q_div_ne_zero)
 #align ratfunc.num_div_denom RatFunc.num_div_denom
 
+theorem isCoprime_num_denom (x : RatFunc K) : IsCoprime x.num x.denom := by
+  induction' x using RatFunc.induction_on with p q hq
+  rw [num_div, denom_div _ hq]
+  exact (isCoprime_mul_unit_left
+    ((leadingCoeff_ne_zero.2 <| right_div_gcd_ne_zero hq).isUnit.inv.map C) _ _).2
+      (isCoprime_div_gcd_div_gcd hq)
+#align ratfunc.is_coprime_num_denom RatFunc.isCoprime_num_denom
+
 @[simp]
 theorem num_eq_zero_iff {x : RatFunc K} : num x = 0 ↔ x = 0 :=
   ⟨fun h => by rw [← num_div_denom x, h, RingHom.map_zero, zero_div], fun h => h.symm ▸ num_zero⟩
@@ -1288,7 +1295,7 @@ theorem num_denom_mul (x y : RatFunc K) :
 #align ratfunc.num_denom_mul RatFunc.num_denom_mul
 
 theorem num_dvd {x : RatFunc K} {p : K[X]} (hp : p ≠ 0) :
-    num x ∣ p ↔ ∃ (q : K[X])(hq : q ≠ 0), x = algebraMap _ _ p / algebraMap _ _ q := by
+    num x ∣ p ↔ ∃ (q : K[X]) (hq : q ≠ 0), x = algebraMap _ _ p / algebraMap _ _ q := by
   constructor
   · rintro ⟨q, rfl⟩
     obtain ⟨_hx, hq⟩ := mul_ne_zero_iff.mp hp

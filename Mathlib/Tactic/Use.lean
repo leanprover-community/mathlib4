@@ -35,4 +35,4 @@ example : ∃ x : String × String, x.1 = x.2 := by use ("forty-two", "forty-two
 -/
 -- TODO extend examples in doc-string once mathlib3 parity is achieved.
 macro "use " es:term,+ : tactic =>
-  `(tactic|(refine ⟨$es,*, ?_⟩; try with_reducible rfl))
+  `(tactic| (refine ⟨$es,*, ?_⟩; try with_reducible rfl))

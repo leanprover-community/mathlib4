@@ -37,11 +37,7 @@ universe v
 
 noncomputable section
 
-open TopCat
-
-open Opposite
-
-open TopologicalSpace
+open TopCat Opposite TopologicalSpace CategoryTheory
 
 variable {X : TopCat.{v}} (F : Presheaf (Type v) X)
 
@@ -110,11 +106,10 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩
   rcases hV ⟨x, V.2⟩ with ⟨V', mV, iV, gV, wV⟩
   have wUx := wU ⟨x, mU⟩
-  dsimp at wUx ; erw [wUx] at e ; clear wUx
+  dsimp at wUx; erw [wUx] at e; clear wUx
   have wVx := wV ⟨x, mV⟩
-  dsimp at wVx ; erw [wVx] at e ; clear wVx
-  rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', e'⟩
-  dsimp at e'
+  dsimp at wVx; erw [wVx] at e; clear wVx
+  rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', (e' : F.map iU'.op gU = F.map iV'.op gV)⟩
   use ⟨W ⊓ (U' ⊓ V'), ⟨mW, mU, mV⟩⟩
   refine' ⟨_, _, _⟩
   · change W ⊓ (U' ⊓ V') ⟶ U.obj
@@ -126,10 +121,10 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
     specialize wV ⟨w.1, w.2.2.2⟩
     dsimp at wU wV ⊢
     erw [wU, ← F.germ_res iU' ⟨w, w.2.1⟩, wV, ← F.germ_res iV' ⟨w, w.2.1⟩,
-      CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']; rfl
+      CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 #align Top.presheaf.stalk_to_fiber_injective TopCat.Presheaf.stalkToFiber_injective
 
-/-- The isomorphism betweeen a stalk of the sheafification and the original stalk.
+/-- The isomorphism between a stalk of the sheafification and the original stalk.
 -/
 def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
   (Equiv.ofBijective _ ⟨stalkToFiber_injective _ _, stalkToFiber_surjective _ _⟩).toIso

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Attr.Register
 -- a port of core Lean `init/function.lean`
 
 /-!
@@ -53,9 +54,9 @@ theorem right_id (f : α → β) : f ∘ id = f := rfl
 
 theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ (g ∘ h) := rfl
 
-@[simp] theorem comp.left_id (f : α → β) : id ∘ f = f := rfl
+@[simp, mfld_simps] theorem comp.left_id (f : α → β) : id ∘ f = f := rfl
 
-@[simp] theorem comp.right_id (f : α → β) : f ∘ id = f := rfl
+@[simp, mfld_simps] theorem comp.right_id (f : α → β) : f ∘ id = f := rfl
 
 theorem comp_const_right (f : β → φ) (b : β) : f ∘ (const α b) = const α (f b) := rfl
 
@@ -68,7 +69,7 @@ fun _ _ h ↦ hf (hg h)
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
-@[reducible] def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
+def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
 
 theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
   Surjective (g ∘ f) :=
@@ -79,7 +80,7 @@ theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf 
 def Bijective (f : α → β) := Injective f ∧ Surjective f
 
 theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
-| ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
+  | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
 /-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
 def LeftInverse (g : β → α) (f : α → β) : Prop := ∀ x, g (f x) = x
@@ -96,10 +97,10 @@ def HasRightInverse (f : α → β) : Prop := ∃ finv : β → α, RightInverse
 #align function.has_right_inverse Function.HasRightInverse
 
 theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f → Injective f :=
-λ h a b hf => h a ▸ h b ▸ hf ▸ rfl
+  λ h a b hf => h a ▸ h b ▸ hf ▸ rfl
 
 theorem HasLeftInverse.injective {f : α → β} : HasLeftInverse f → Injective f :=
-λ h => Exists.elim h (λ _ inv => inv.injective)
+  λ h => Exists.elim h (λ _ inv => inv.injective)
 
 theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α}
     (injf : Injective f) (lfg : LeftInverse f g) :
@@ -108,10 +109,10 @@ theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α}
 #align function.right_inverse_of_injective_of_left_inverse Function.rightInverse_of_injective_of_leftInverse
 
 theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInverse g f) : Surjective f :=
-λ y => ⟨g y, h y⟩
+  λ y => ⟨g y, h y⟩
 
 theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
-| ⟨_, inv⟩ => inv.surjective
+  | ⟨_, inv⟩ => inv.surjective
 
 theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
   (rfg : RightInverse f g) : LeftInverse f g :=
@@ -141,15 +142,15 @@ variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
 λ f a => f a.1 a.2
 
 @[simp] theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
-rfl
+  rfl
 
 @[simp] theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
-funext (λ ⟨_, _⟩ => rfl)
+  funext (λ ⟨_, _⟩ => rfl)
 
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
-funext h
+  funext h
 
 protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInverse g f) : f ∘ g = id :=
-funext h
+  funext h
 
 end Function

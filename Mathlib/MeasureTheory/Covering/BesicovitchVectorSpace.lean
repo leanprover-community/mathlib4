@@ -275,7 +275,7 @@ theorem exists_goodδ :
     simp only [forall_apply_eq_imp_iff', forall_exists_index, Finset.mem_univ, Finset.mem_image,
       Ne.def, exists_true_left, forall_apply_eq_imp_iff', forall_true_left, true_and]
     intro i j hij
-    have : i ≠ j := fun h => by rw [h] at hij ; exact hij rfl
+    have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h'f i j this
   have : s.card ≤ multiplicity E := card_le_multiplicity hs h's
   rw [s_card, hN] at this
@@ -328,7 +328,7 @@ theorem le_multiplicity_of_δ_of_fin {n : ℕ} (f : Fin n → E) (h : ∀ i, ‖
     simp only [forall_apply_eq_imp_iff', forall_exists_index, Finset.mem_univ, Finset.mem_image,
       Ne.def, exists_true_left, forall_apply_eq_imp_iff', forall_true_left, true_and]
     intro i j hij
-    have : i ≠ j := fun h => by rw [h] at hij ; exact hij rfl
+    have : i ≠ j := fun h => by rw [h] at hij; exact hij rfl
     exact h' i j this
   have : s.card ≤ multiplicity E := card_le_multiplicity_of_δ hs h's
   rwa [s_card] at this
@@ -342,7 +342,7 @@ namespace SatelliteConfig
 ### Relating satellite configurations to separated points in the ball of radius `2`.
 
 We prove that the number of points in a satellite configuration is bounded by the maximal number
-of `1`-separated points in the ball of radius `2`. For this, start from a satellite congifuration
+of `1`-separated points in the ball of radius `2`. For this, start from a satellite configuration
 `c`. Without loss of generality, one can assume that the last ball is centered at `0` and of
 radius `1`. Define `c' i = c i` if `‖c i‖ ≤ 2`, and `c' i = (2/‖c i‖) • c i` if `‖c i‖ > 2`.
 It turns out that these points are `1 - δ`-separated, where `δ` is arbitrarily small if `τ` is
@@ -510,11 +510,11 @@ theorem exists_normalized {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ) (las
     split_ifs with h; · exact h
     by_cases hi : ‖a.c i‖ = 0 <;> field_simp [norm_smul, hi]; norm_num
   refine' ⟨c', fun n => norm_c'_le n, fun i j inej => _⟩
-  -- up to exchanging `i` and `j`, one can assume `∥c i∥ ≤ ∥c j∥`.
+  -- up to exchanging `i` and `j`, one can assume `‖c i‖ ≤ ‖c j‖`.
   wlog hij : ‖a.c i‖ ≤ ‖a.c j‖ generalizing i j
   · rw [norm_sub_rev]; exact this j i inej.symm (le_of_not_le hij)
   rcases le_or_lt ‖a.c j‖ 2 with (Hj | Hj)
-  -- case `∥c j∥ ≤ 2` (and therefore also `∥c i∥ ≤ 2`)
+  -- case `‖c j‖ ≤ 2` (and therefore also `‖c i‖ ≤ 2`)
   · simp_rw [Hj, hij.trans Hj, if_true]
     exact exists_normalized_aux1 a lastr hτ δ hδ1 hδ2 i j inej
   -- case `2 < ‖c j‖`
