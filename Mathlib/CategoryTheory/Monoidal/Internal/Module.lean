@@ -171,6 +171,7 @@ end MonModuleEquivalenceAlgebra
 
 open MonModuleEquivalenceAlgebra
 
+set_option maxHeartbeats 400000 in
 /-- The category of internal monoid objects in `Module R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
@@ -190,16 +191,20 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                 refine TensorProduct.ext ?_
                 dsimp at *
                 rfl
-              one_hom := sorry }
+              one_hom := by ext; rfl }
           inv :=
             { hom :=
                 { toFun := _root_.id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
-              mul_hom := sorry -- by ext; dsimp at *; rfl
-              one_hom := sorry }
-          hom_inv_id := sorry
-          inv_hom_id := sorry })
+              mul_hom := by
+                -- Porting note : `ext` did not pick up `TensorProduct.ext`
+                refine TensorProduct.ext ?_
+                dsimp at *
+                rfl
+              one_hom := by ext; rfl }
+          hom_inv_id := by ext; rfl
+          inv_hom_id := by ext; rfl })
       (by aesop_cat)
   counitIso :=
     NatIso.ofComponents
