@@ -15,8 +15,8 @@ set_option autoImplicit false
 /-!
 # Tensor algebras as direct sums of tensor powers
 
-In this file we show that `tensor_algebra R M` is isomorphic to a direct sum of tensor powers, as
-`tensor_algebra.equiv_direct_sum`.
+In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of tensor powers, as
+`TensorAlgebra.equivDirectSum`.
 -/
 
 
