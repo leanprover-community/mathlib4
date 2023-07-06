@@ -78,10 +78,10 @@ def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
 #align local_cohomology.ring_mod_ideals localCohomology.ringModIdeals
 
 -- Porting note: TODO:  Once this file is ported, move this instance to the right location.
-instance moduleCat_enough_projectives' : EnoughProjectives (ModuleCat.{u} R) :=
+instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 set_option linter.uppercaseLean3 false in
-#align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enough_projectives'
+#align local_cohomology.Module_enough_projectives' localCohomology.moduleCat_enoughProjectives'
 
 /-- The diagram we will take the colimit of to define local cohomology, corresponding to the
 directed system determined by the functor `I` -/
@@ -161,17 +161,17 @@ instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J)
 
 /-- The diagram of all ideals with radical containing `J`, represented as a functor.
 This is the "largest" diagram that computes local cohomology with support in `J`. -/
-def SelfLERadicalDiagram (J : Ideal R) : SelfLERadical J ⥤ Ideal R :=
+def selfLERadicalDiagram (J : Ideal R) : SelfLERadical J ⥤ Ideal R :=
   fullSubcategoryInclusion _
-#align local_cohomology.self_le_radical_diagram localCohomology.SelfLERadicalDiagram
+#align local_cohomology.self_le_radical_diagram localCohomology.selfLERadicalDiagram
 
 end Diagrams
 
 end localCohomology
 
 /-! We give two models for the local cohomology with support in an ideal `J`: first in terms of
-the powers of `J` (`local_cohomology`), then in terms of *all* ideals with radical
-containing `J` (`local_cohomology.of_self_le_radical`). -/
+the powers of `J` (`localCohomology`), then in terms of *all* ideals with radical
+containing `J` (`localCohomology.of_self_le_radical`). -/
 
 
 section ModelsForLocalCohomology
@@ -180,7 +180,7 @@ open localCohomology
 
 variable {R : Type u} [CommRing R]
 
-/-- `local_cohomology J i` is `i`-th the local cohomology module of a module `M` over
+/-- `localCohomology J i` is `i`-th the local cohomology module of a module `M` over
 a commutative ring `R` with support in the ideal `J` of `R`, defined as the direct limit
 of `Ext^i(R/J^t, M)` over all powers `t : ℕ`. -/
 def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
@@ -190,7 +190,7 @@ def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} 
 /-- Local cohomology as the direct limit of `Ext^i(R/J', M)` over *all* ideals `J'` with radical
 containing `J`. -/
 def localCohomology.ofSelfLERadical (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
-  ofDiagram.{u} (SelfLERadicalDiagram.{u} J) i
+  ofDiagram.{u} (selfLERadicalDiagram.{u} J) i
 #align local_cohomology.of_self_le_radical localCohomology.ofSelfLERadical
 
 end ModelsForLocalCohomology
@@ -258,7 +258,7 @@ set_option pp.universes true in
 cohomology computed over all ideals with radical containing `J`. -/
 def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
     localCohomology.ofSelfLERadical.{u} J i ≅ localCohomology.{u} J i :=
-  (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J) (SelfLERadicalDiagram.{u} J)
+  (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J) (selfLERadicalDiagram.{u} J)
         i).symm ≪≫
     HasColimit.isoOfNatIso.{0,0,u+1,u+1} (Iso.refl.{u+1,u+1} _)
 #align local_cohomology.iso_self_le_radical localCohomology.isoSelfLERadical
