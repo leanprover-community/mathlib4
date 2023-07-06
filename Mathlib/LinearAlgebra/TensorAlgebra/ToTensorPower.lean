@@ -131,37 +131,35 @@ theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
 @[simp]
 theorem mk_reindex_fin_cast {n m : ℕ} (h : n = m) (x : (⨂[R]^n) M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m
-    (PiTensorProduct.reindex R M (Fin.cast h).toEquiv x) = GradedMonoid.mk n x :=
-  by rw [Fin.cast_to_equiv, mk_reindex_cast h]
+    (PiTensorProduct.reindex R M (Fin.castIso h).toEquiv x) = GradedMonoid.mk n x :=
+  by rw [Fin.castIso_to_equiv, mk_reindex_cast h]
 #align tensor_algebra.mk_reindex_fin_cast TensorAlgebra.mk_reindex_fin_cast
 
 /-- The product of tensor products made of a single vector is the same as a single product of
 all the vectors. -/
-theorem TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
+theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n → M) :
     ((List.finRange n).map fun a =>
-          (GradedMonoid.mk _ (PiTensorProduct.tprod R fun i : Fin 1 => x a) :
+          (GradedMonoid.mk _ (PiTensorProduct.tprod R fun _ : Fin 1 => x a) :
             GradedMonoid fun n => (⨂[R]^n) M)).prod =
       GradedMonoid.mk n (PiTensorProduct.tprod R x) := by
   refine' Fin.consInduction _ _ x <;> clear x
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
     rfl
   · intro n x₀ x ih
-    rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map, Function.comp]
-    simp_rw [Fin.cons_zero, Fin.cons_succ]
+    rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map]
+    simp_rw [Function.comp, Fin.cons_zero, Fin.cons_succ]
     rw [ih, GradedMonoid.mk_mul_mk, TensorPower.tprod_mul_tprod]
     refine' TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) _
     dsimp only [GradedMonoid.mk]
     rw [TensorPower.cast_tprod]
     simp_rw [Fin.append_left_eq_cons, Function.comp]
     congr 1 with i
-    congr 1
-    rw [Fin.cast_trans, Fin.cast_refl, OrderIso.refl_apply]
 #align tensor_power.list_prod_graded_monoid_mk_single TensorPower.list_prod_gradedMonoid_mk_single
 
 theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
     toDirectSum (tprod R M n x) = DirectSum.of _ n (PiTensorProduct.tprod R x) := by
-  rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn, Function.comp]
-  simp_rw [to_direct_sum_ι]
+  rw [tprod_apply, AlgHom.map_list_prod, List.map_ofFn]
+  simp_rw [Function.comp, toDirectSum_ι]
   dsimp only
   rw [DirectSum.list_prod_ofFn_of_eq_dProd]
   apply DirectSum.of_eq_of_gradedMonoid_eq
@@ -182,7 +180,7 @@ theorem toDirectSum_ofDirectSum (x : ⨁ n, (⨂[R]^n) M) :
 #align tensor_algebra.to_direct_sum_of_direct_sum TensorAlgebra.toDirectSum_ofDirectSum
 
 /-- The tensor algebra is isomorphic to a direct sum of tensor powers. -/
-@[simps]
+@[simps!]
 def equivDirectSum : TensorAlgebra R M ≃ₐ[R] ⨁ n, (⨂[R]^n) M :=
   AlgEquiv.ofAlgHom toDirectSum ofDirectSum toDirectSum_comp_ofDirectSum
     ofDirectSum_comp_toDirectSum
