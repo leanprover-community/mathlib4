@@ -1680,21 +1680,14 @@ open Classical
 /-- If a measurable space is countably generated and separates points, it admits a measurable injection
 into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
 theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
-    [h : HasCountableSeparatingOn α MeasurableSet univ] :
+    [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
-  rcases h.1 with ⟨S, hSc, hSm, hS⟩
-  wlog hne : S.Nonempty generalizing S
-  · exact this (insert ∅ S) (hSc.insert ∅) (forall_insert_of_forall hSm .empty)
-      (fun x hx y hy h ↦ hS x hx y hy (forall_of_forall_insert h)) (insert_nonempty _ _)
-  obtain ⟨e, rfl⟩ := Set.Countable.exists_eq_range hSc hne
-  simp only [forall_range_iff] at hSm hS
-  refine ⟨fun x n ↦ x ∈ e n, ?_, ?_⟩
+  rcases exists_seq_separating α MeasurableSet.empty univ with ⟨e, hem, he⟩
+  refine ⟨(· ∈ e ·), ?_, ?_⟩
   · rw [measurable_pi_iff]
-    intro n
-    apply measurable_to_bool
-    simp only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq]
-    apply hSm
-  · exact fun x y h ↦ hS x trivial y trivial fun n ↦ decide_eq_decide.1 <| congr_fun h _
+    refine fun n ↦ measurable_to_bool ?_
+    simpa only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq] using hem n
+  · exact fun x y h ↦ he x trivial y trivial fun n ↦ decide_eq_decide.1 <| congr_fun h _
 #align measurable_space.measurable_injection_nat_bool_of_countably_generated MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated
 
 end MeasurableSpace

@@ -75,7 +75,7 @@ open Function Set Filter
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
 `p : Set α → Prop` on a set `t` if there exists a countable family of sets `S : Set (Set α)` such
 that all sets `s ∈ S` satisfy `p` and any two distinct points `x y ∈ t`, `x ≠ y`, can be separated
-by `s ∈ S`.
+by `s ∈ S`: there exists `s ∈ S` such that exactly one of `x` and `y` belongs to `s`.
 
 E.g., if `α` is a `T₀` topological space with second countable topology, then it has a countable
 separating family of open sets and a countable separating family of closed sets.
@@ -83,6 +83,28 @@ separating family of open sets and a countable separating family of closed sets.
 class HasCountableSeparatingOn (α : Type _) (p : Set α → Prop) (t : Set α) : Prop where
   exists_countable_separating : ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
     ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y
+
+theorem exists_countable_separating (α : Type _) (p : Set α → Prop) (t : Set α)
+    [h : HasCountableSeparatingOn α p t] :
+    ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧
+      ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y :=
+  h.1
+
+theorem exists_nonempty_countable_separating (α : Type _) {p : Set α → Prop} {s₀} (hp : p s₀)
+    (t : Set α) [HasCountableSeparatingOn α p t] :
+    ∃ S : Set (Set α), S.Nonempty ∧ S.Countable ∧ (∀ s ∈ S, p s) ∧
+      ∀ x ∈ t, ∀ y ∈ t, (∀ s ∈ S, x ∈ s ↔ y ∈ s) → x = y :=
+  let ⟨S, hSc, hSp, hSt⟩ := exists_countable_separating α p t
+  ⟨insert s₀ S, insert_nonempty _ _, hSc.insert _, forall_insert_of_forall hSp hp,
+    fun x hx y hy hxy ↦ hSt x hx y hy <| forall_of_forall_insert hxy⟩
+
+theorem exists_seq_separating (α : Type _) {p : Set α → Prop} {s₀} (hp : p s₀) (t : Set α)
+    [HasCountableSeparatingOn α p t] :
+    ∃ S : ℕ → Set α, (∀ n, p (S n)) ∧ ∀ x ∈ t, ∀ y ∈ t, (∀ n, x ∈ S n ↔ y ∈ S n) → x = y := by
+  rcases exists_nonempty_countable_separating α hp t with ⟨S, hSne, hSc, hS⟩
+  rcases hSc.exists_eq_range hSne with ⟨S, rfl⟩
+  use S
+  simpa only [forall_range_iff] using hS
 
 theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
