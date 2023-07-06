@@ -521,11 +521,11 @@ theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
 partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c) :=
   have a' : Q(ℕ) := a.appArg!
   if 0 ≤ za then
-    have : $a =Q .ofNat $a' := ⟨⟩
+    have _ : $a =Q .ofNat $a' := ⟨⟩
     let ⟨c, p⟩ := evalNatPow a' b
     ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
   else
-    have : $a =Q .negOfNat $a' := ⟨⟩
+    have _ : $a =Q .negOfNat $a' := ⟨⟩
     let b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
     let ⟨c₀, p⟩ := evalNatPow a' b₀
