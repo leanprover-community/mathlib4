@@ -584,7 +584,7 @@ protected def Function.Injective.completeAtomicBooleanAlgebra [Sup α] [Inf α] 
     (hf : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
     (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
-    (map_compl : ∀ a, f (aᶜ) = f aᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     CompleteAtomicBooleanAlgebra α where
   __ := hf.completelyDistribLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
   __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff
