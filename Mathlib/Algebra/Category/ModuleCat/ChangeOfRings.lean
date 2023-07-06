@@ -449,17 +449,26 @@ protected def counit' : coextendScalars f ⋙ restrictScalars f ⟶ 𝟭 (Module
 
 end RestrictionCoextensionAdj
 
+set_option pp.universes true in
+#check RestrictionCoextensionAdj.HomEquiv.fromRestriction
+
+set_option pp.universes true in
+#check RestrictionCoextensionAdj.HomEquiv.toRestriction
+
+set_option pp.universes true in
+#check restrictScalars
+
 /-- Restriction of scalars is left adjoint to coextension of scalars. -/
 @[simps]
-def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    restrictScalars f ⊣ coextendScalars f where
+def restrictCoextendScalarsAdj {R : Type u} {S : Type u} [Ring R] [Ring S] (f : R →+* S) :
+    restrictScalars.{u,u,u} f ⊣ coextendScalars.{u,u,u} f where
   homEquiv X Y :=
-    { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction f
-      invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction f
+    { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u,u,u} f
+      invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u,u,u} f
       left_inv := fun g => LinearMap.ext fun x : X => by sorry
       right_inv := fun g => LinearMap.ext fun x => LinearMap.ext fun s : S => by simp }
   unit := RestrictionCoextensionAdj.unit' f
-  counit := RestrictionCoextensionAdj.counit' f
+  counit := RestrictionCoextensionAdj.counit'.{u,u,u} f
   homEquiv_unit := LinearMap.ext fun y => rfl
   homEquiv_counit := LinearMap.ext fun y : Y => by simp
 #align category_theory.Module.restrict_coextend_scalars_adj CategoryTheory.ModuleCat.restrictCoextendScalarsAdj
