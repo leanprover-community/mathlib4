@@ -12,7 +12,7 @@ import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Analysis.NormedSpace.Star.Mul
+import Mathlib.Analysis.NormedSpace.Star.Unitization
 
 /-!
 # Multiplier Algebra of a C⋆-algebra
