@@ -94,7 +94,7 @@ def LoopSpace :=
 #align loop_space LoopSpace
 
 -- mathport name: exprΩ
-scoped[Topology] notation "Ω" => LoopSpace
+scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -107,7 +107,9 @@ def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 #align gen_loop GenLoop
 
-scoped[Topology] notation "Ω^" => GenLoop
+scoped[Topology.Homotopy] notation "Ω^" => GenLoop
+
+open Topology.Homotopy
 
 variable {N X x}
 

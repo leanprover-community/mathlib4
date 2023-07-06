@@ -118,7 +118,6 @@ section Equiv
 
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 
--- Porting note: The naming `LawfulTraversable` seems weird, why not `LawfulTraversable`?
 -- Is this to do with the fact it lives in `Type (u+1)` not `Prop`?
 variable [Traversable t] [LawfulTraversable t]
 
