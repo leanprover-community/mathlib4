@@ -403,7 +403,7 @@ theorem ExplicitCoker.map_desc {A B C D B' D' : SemiNormedGroupCat.{u}} {fab : A
     {condb : fab ≫ fbb' = 0} {condd : fcd ≫ fdd' = 0} {g : B' ⟶ D'} (h' : fbb' ≫ g = fbd ≫ fdd') :
     explicitCokernelDesc condb ≫ g = explicitCokernel.map h ≫ explicitCokernelDesc condd := by
   delta explicitCokernel.map
-  simp [← cancel_epi (explicitCokernelπ fab), Category.assoc, explicitCokernelπ_desc, h']
+  simp [← cancel_epi (explicitCokernelπ fab), ← Category.assoc, explicitCokernelπ_desc, h']
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_coker.map_desc SemiNormedGroupCat.ExplicitCoker.map_desc
 
