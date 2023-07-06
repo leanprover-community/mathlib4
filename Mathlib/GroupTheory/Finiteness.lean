@@ -136,7 +136,7 @@ instance Monoid.fg_of_addMonoid_fg [AddMonoid.FG N] : Monoid.FG (Multiplicative 
 @[to_additive]
 instance (priority := 100) Monoid.fg_of_finite [Finite M] : Monoid.FG M := by
   cases nonempty_fintype M
-  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ] ; exact Submonoid.closure_univ⟩⟩
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Submonoid.closure_univ⟩⟩
 #align monoid.fg_of_finite Monoid.fg_of_finite
 #align add_monoid.fg_of_finite AddMonoid.fg_of_finite
 
@@ -350,7 +350,7 @@ instance Group.fg_of_mul_group_fg [AddGroup.FG H] : Group.FG (Multiplicative H) 
 @[to_additive]
 instance (priority := 100) Group.fg_of_finite [Finite G] : Group.FG G := by
   cases nonempty_fintype G
-  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ] ; exact Subgroup.closure_univ⟩⟩
+  exact ⟨⟨Finset.univ, by rw [Finset.coe_univ]; exact Subgroup.closure_univ⟩⟩
 #align group.fg_of_finite Group.fg_of_finite
 #align add_group.fg_of_finite AddGroup.fg_of_finite
 
