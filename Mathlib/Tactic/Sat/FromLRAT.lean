@@ -151,7 +151,7 @@ def Valuation.mk : List Prop → Valuation
 
 /-- The fundamental relationship between `mk` and `implies`:
 `(mk ps).implies p ps 0` is equivalent to `p`. -/
-theorem Valuation.mk_implies (as₁) : as = List.reverseAux as₁ ps →
+theorem Valuation.mk_implies {as ps} (as₁) : as = List.reverseAux as₁ ps →
   (Valuation.mk as).implies p ps as₁.length → p := by
   induction ps generalizing as₁ with
   | nil => exact fun _ ↦ id
@@ -170,7 +170,7 @@ structure Fmla.reify (v : Valuation) (f : Fmla) (p : Prop) : Prop where
 /-- If `f` is unsatisfiable, and every `v` which agrees with `ps` implies `¬⟦f⟧_v → p`, then `p`.
 Equivalently, there exists a valuation `v` which agrees with `ps`,
 and every such valuation yields `¬⟦f⟧_v` because `f` is unsatisfiable. -/
-theorem Fmla.refute (f : Fmla) (hf : f.proof [])
+theorem Fmla.refute {ps} (f : Fmla) (hf : f.proof [])
   (hv : ∀ v, Valuation.implies v (Fmla.reify v f p) ps 0) : p :=
   (Valuation.mk_implies [] rfl (hv _)).1 (hf _)
 

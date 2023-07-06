@@ -17,11 +17,12 @@ import Mathlib.RingTheory.EisensteinCriterion
 # Construction of an algebraic number that is not solvable by radicals.
 
 The main ingredients are:
- * `solvableByRad.isSolvable'` in `FieldTheory/AbelRuffini` :
+ * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
- * `galActionHom_bijective_of_prime_degree'` in `FieldTheory/PolynomialGaloisGroup` :
+ * `galActionHom_bijective_of_prime_degree'` in `Mathlib/FieldTheory/PolynomialGaloisGroup.lean` :
   an irreducible polynomial of prime degree with 1-3 non-real roots has full Galois group
- * `Equiv.Perm.not_solvable` in `GroupTheory/Solvable` : the symmetric group is not solvable
+ * `Equiv.Perm.not_solvable` in `Mathlib/GroupTheory/Solvable.lean` : the symmetric group is not
+  solvable
 
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
 `galActionHom_bijective_of_prime_degree'`, which is done in this file.
@@ -55,7 +56,7 @@ theorem map_Phi {S : Type _} [CommRing S] (f : R →+* S) : (Φ R a b).map f = �
 #align abel_ruffini.map_Phi AbelRuffini.map_Phi
 
 @[simp]
-theorem coeff_zero_Phi : (Φ R a b).coeff 0 = ↑b := by simp [Φ, coeff_X_pow]
+theorem coeff_zero_Phi : (Φ R a b).coeff 0 = (b : R) := by simp [Φ, coeff_X_pow]
 #align abel_ruffini.coeff_zero_Phi AbelRuffini.coeff_zero_Phi
 
 @[simp]
@@ -65,13 +66,12 @@ theorem coeff_five_Phi : (Φ R a b).coeff 5 = 1 := by
 
 variable [Nontrivial R]
 
-theorem degree_Phi : (Φ R a b).degree = ↑5 := by
-  suffices degree (X ^ 5 - C (a : R) * X) = ↑5 by
+theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
+  suffices degree (X ^ 5 - C (a : R) * X) = ((5 : ℕ) : WithBot ℕ) by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
     convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by norm_num))
-  rw [degree_sub_eq_left_of_degree_lt]; · simp
-  rw [degree_X_pow]
-  exact (degree_C_mul_X_le _).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by norm_num))
+  rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
+  exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by norm_num))
 #align abel_ruffini.degree_Phi AbelRuffini.degree_Phi
 
 theorem natDegree_Phi : (Φ R a b).natDegree = 5 :=
@@ -110,8 +110,13 @@ theorem real_roots_Phi_le : Fintype.card ((Φ ℚ a b).rootSet ℝ) ≤ 3 := by
   rw [← map_Phi a b (algebraMap ℤ ℚ), Φ, ← one_mul (X ^ 5), ← C_1]
   refine' (card_rootSet_le_derivative _).trans
     (Nat.succ_le_succ ((card_rootSet_le_derivative _).trans (Nat.succ_le_succ _)))
-  simp [-map_ofNat]
-  rw [Fintype.card_le_one_iff_subsingleton, ← mul_assoc, ← _root_.map_mul, rootSet_C_mul_X_pow] <;>
+  simp only [algebraMap_int_eq, map_one, one_mul, map_natCast, Polynomial.map_add,
+    Polynomial.map_sub, Polynomial.map_pow, map_X, Polynomial.map_mul, Polynomial.map_nat_cast,
+    map_add, map_sub, derivative_X_pow, Nat.cast_ofNat, ge_iff_le, Nat.succ_sub_succ_eq_sub,
+    tsub_zero, derivative_mul, derivative_nat_cast, zero_mul, derivative_X, mul_one, zero_add,
+    add_zero, derivative_C, sub_zero, map_C, eq_ratCast, ne_eq, Rat.cast_eq_zero, not_false_eq_true,
+    roots_C_mul, roots_pow, roots_X, Fintype.card_le_one_iff_subsingleton]
+  rw [← mul_assoc, ← _root_.map_mul, rootSet_C_mul_X_pow] <;>
   norm_num
 #align abel_ruffini.real_roots_Phi_le AbelRuffini.real_roots_Phi_le
 
@@ -126,7 +131,8 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
   by_cases hb : (1 : ℝ) - a + b < 0
   · have hf1 : f 1 < 0 := by simp [hf, hb]
     have hfa : 0 ≤ f a := by
-      simp [hf, ← sq]
+      -- Porting note: was `simp_rw`
+      simp only [hf, ← sq]
       refine' add_nonneg (sub_nonneg.mpr (pow_le_pow ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)
@@ -135,8 +141,11 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
     have hf1 : f 1 = 0 := by simp [hf, hb]
     have hfa :=
       calc
-        f (-a) = ↑a ^ 2 - ↑a ^ 5 + b := by simp [hf, ← sq]; rw [Odd.neg_pow]; ring; norm_num
-        _ ≤ ↑a ^ 2 - ↑a ^ 3 + (a - 1) := by
+        f (-a) = (a : ℝ) ^ 2 - (a : ℝ) ^ 5 + b := by
+            -- Porting note: was `norm_num [hf, ← sq]`
+            simp only [hf, mul_neg, ← sq, sub_neg_eq_add, Nat.cast_pow, add_left_inj]
+            rw [Odd.neg_pow (by norm_num), neg_add_eq_sub]
+        _ ≤ (a : ℝ) ^ 2 - (a : ℝ) ^ 3 + (a - 1) := by
           refine' add_le_add (sub_le_sub_left (pow_le_pow ha _) _) _ <;> linarith
         _ = -((a : ℝ) - 1) ^ 2 * (a + 1) := by ring
         _ ≤ 0 := by nlinarith

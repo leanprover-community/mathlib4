@@ -24,7 +24,7 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 `max ℵ₀ # (α ⊕ Σ i, L.Functions i)`.
 * `FirstOrder.Language.BoundedFormula.card_le` shows that the number of bounded formulas in
 `Σ n, L.BoundedFormula α n` is at most
-`max ℵ₀ (Cardinal.lift.{max u v} (#α) + Cardinal.lift.{u'} L.card)`.
+`max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card)`.
 
 ## TODO
 * `Primcodable` instances for terms and formulas, based on the `encoding`s
@@ -120,11 +120,11 @@ theorem listEncode_injective :
   Term.encoding.encode_injective
 #align first_order.language.term.list_encode_injective FirstOrder.Language.Term.listEncode_injective
 
-theorem card_le : (#L.Term α) ≤ max ℵ₀ (#Sum α (Σi, L.Functions i)) :=
+theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
   lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
 #align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
-theorem card_sigma : (#Σn, L.Term (Sum α (Fin n))) = max ℵ₀ (#Sum α (Σi, L.Functions i)) := by
+theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
   refine' le_antisymm _ _
   · rw [mk_sigma]
     refine' (sum_le_iSup_lift _).trans _
@@ -132,7 +132,7 @@ theorem card_sigma : (#Σn, L.Term (Sum α (Fin n))) = max ℵ₀ (#Sum α (Σi,
       ciSup_le_iff' (bddAbove_range _)]
     · refine' ⟨le_max_left _ _, fun i => card_le.trans _⟩
       refine' max_le (le_max_left _ _) _
-      rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift (#α)), lift_add,
+      rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
         add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast]
       exact add_le_add_right (nat_lt_aleph0 _).le _
     · rw [← one_le_iff_ne_zero]
@@ -311,8 +311,8 @@ theorem listEncode_sigma_injective :
   BoundedFormula.encoding.encode_injective
 #align first_order.language.bounded_formula.list_encode_sigma_injective FirstOrder.Language.BoundedFormula.listEncode_sigma_injective
 
-theorem card_le : (#Σn, L.BoundedFormula α n) ≤
-    max ℵ₀ (Cardinal.lift.{max u v} (#α) + Cardinal.lift.{u'} L.card) := by
+theorem card_le : #(Σn, L.BoundedFormula α n) ≤
+    max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
   refine' lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans _)
   rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,
     max_le_iff]

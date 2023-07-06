@@ -60,7 +60,7 @@ theorem nmem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1
 #align function.nmem_support Function.nmem_support
 
 @[to_additive]
-theorem compl_mulSupport {f : α → M} : mulSupport fᶜ = { x | f x = 1 } :=
+theorem compl_mulSupport {f : α → M} : (mulSupport f)ᶜ = { x | f x = 1 } :=
   ext fun _ => nmem_mulSupport
 #align function.compl_mul_support Function.compl_mulSupport
 #align function.compl_support Function.compl_support

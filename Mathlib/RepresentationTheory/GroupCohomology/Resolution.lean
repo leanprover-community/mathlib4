@@ -109,7 +109,7 @@ set_option linter.uppercaseLean3 false in
 #align group_cohomology.resolution.Action_diagonal_succ GroupCohomology.Resolution.actionDiagonalSucc
 
 theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
-    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
+    (actionDiagonalSucc G n).hom.hom f = (f 0, fun i => (f (Fin.castSuccEmb i))⁻¹ * f i.succ) := by
   induction' n with n hn
   · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
   · refine' Prod.ext rfl (funext fun x => _)
@@ -121,7 +121,7 @@ theorem actionDiagonalSucc_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (
         tensor_rho, MonoidHom.one_apply, End.one_def, hn fun j : Fin (n + 1) => f j.succ,
         Fin.insertNth_zero']
       refine' Fin.cases (Fin.cons_zero _ _) (fun i => _) x
-      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSucc_fin_succ] -/
+      · simp only [Fin.cons_succ, mul_left_inj, inv_inj, Fin.castSuccEmb_fin_succ] -/
     · dsimp [actionDiagonalSucc]
       erw [hn (fun (j : Fin (n + 1)) => f j.succ)]
       exact Fin.cases rfl (fun i => rfl) x
@@ -178,7 +178,7 @@ variable {k G n}
 
 theorem diagonalSucc_hom_single (f : Gⁿ⁺¹) (a : k) :
     (diagonalSucc k G n).hom.hom (single f a) =
-      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
+      single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSuccEmb i))⁻¹ * f i.succ) a := by
 /- Porting note: broken proof was
   dsimp only [diagonalSucc]
   simpa only [Iso.trans_hom, Iso.symm_hom, Action.comp_hom, ModuleCat.comp_def,
@@ -345,7 +345,7 @@ theorem diagonalHomEquiv_apply (f : Rep.ofMulAction k G (Fin (n + 1) → G) ⟶ 
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_apply Rep.diagonalHomEquiv_apply
 
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 800000
 /-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
 the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
 inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
@@ -353,7 +353,7 @@ inverse map sends a function `f : Gⁿ → A` to the representation morphism sen
 to `A`. -/
 theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
     ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
-      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
+      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSuccEmb i))⁻¹ * x i.succ) := by
   unfold diagonalHomEquiv
 /- Porting note: broken proof was
   simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
@@ -363,10 +363,13 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
     diagonalSucc_hom_single x (1 : k), TensorProduct.uncurry_apply, Rep.leftRegularHom_hom,
     Finsupp.lift_apply, ihom_obj_ρ_def, Rep.ihom_obj_ρ_apply, Finsupp.sum_single_index, zero_smul,
     one_smul, Rep.of_ρ, Rep.Action_ρ_eq_ρ, Rep.trivial_def (x 0)⁻¹, Finsupp.llift_apply A k k] -/
-  simp only [LinearEquiv.trans_symm, LinearEquiv.trans_apply,
-    leftRegularHomEquiv_symm_apply, LinearEquiv.symm_symm, Linear.homCongr_symm_apply,
-    Action.comp_hom, Iso.refl_inv, Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom,
-    Iso.trans_hom, ModuleCat.coe_comp, Function.comp_apply]
+  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
+    leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
+    Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom]
+  -- Porting note: This is a sure sign that coercions for morphisms in `ModuleCat`
+  -- are still not set up properly.
+  rw [ModuleCat.coe_comp]
+  simp only [ModuleCat.coe_comp, Function.comp_apply]
   rw [diagonalSucc_hom_single]
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
   simp only [one_smul]

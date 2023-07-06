@@ -14,7 +14,7 @@ import Mathlib.Topology.ContinuousFunction.Basic
 /-!
 # Smooth bundled map
 
-In this file we define the type `cont_mdiff_map` of `n` times continuously differentiable
+In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
 -/
 
@@ -69,8 +69,7 @@ protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
 
--- attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
---   ContMDiffMap.ContinuousMap.hasCoe
+attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.funLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 
