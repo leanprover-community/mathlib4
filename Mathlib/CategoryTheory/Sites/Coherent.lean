@@ -140,7 +140,7 @@ variable {X : C}
 Effective epi families in a precoherent category are transitive, in the sense that an
 `EffectiveEpiFamily` and an `EffectiveEpiFamily` over each member, the composition is an
 `EffectiveEpiFamily`.
-Note: The finiteness condition is an artifact of the proof and is probably unneccessary
+Note: The finiteness condition is an artifact of the proof and is probably unnecessary.
 -/
 theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Fintype α] {Y : α → C}
     (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Fintype (β a)]
