@@ -794,4 +794,15 @@ lemma Set.quotientMeasureSpace.instQuotientVolumeEqVolumePreimage [Countable G] 
 
 end QuotientVolumeEqVolume
 
+section HasFundamentalDomain
+
+/-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
+  which `IsFundamentalDomain G s` holds -/
+class HasFundamentalDomain (G : Type _) (α : Type _) [One G] [SMul G α]
+  [MeasureSpace α] : Prop :=
+(has_fundamental_domain_characterization :
+  ∃ (s : Set α), IsFundamentalDomain G s ∧ MeasurableSet s)
+
+end HasFundamentalDomain
+
 end MeasureTheory
