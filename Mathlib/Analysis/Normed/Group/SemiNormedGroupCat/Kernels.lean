@@ -11,7 +11,6 @@ Authors: Riccardo Brasca, Johan Commelin, Scott Morrison
 import Mathlib.Analysis.Normed.Group.SemiNormedGroupCat
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-set_option autoImplicit false
 
 /-!
 # Kernels and cokernels in SemiNormedGroupCat₁ and SemiNormedGroupCat
@@ -384,8 +383,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem explicitCokernelIso_hom_desc {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
-    (w : f ≫ g = 0) : (explicitCokernelIso f).hom ≫ cokernel.desc f g w = explicitCokernelDesc w :=
-  by
+    (w : f ≫ g = 0) :
+    (explicitCokernelIso f).hom ≫ cokernel.desc f g w = explicitCokernelDesc w := by
   ext1
   simp [explicitCokernelDesc, explicitCokernelπ, explicitCokernelIso,
     IsColimit.coconePointUniqueUpToIso]
