@@ -238,8 +238,8 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext ; simp  ;
-    natCast_succ := fun n => by ext x ; by_cases h : x = 1 <;> simp [h] }
+    natCast_zero := by ext; simp
+    natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
 -- porting note: have I aligned this correctly?
 #align nat.arithmetic_function.add_monoid_with_one Nat.ArithmeticFunction.instAddMonoidWithOne
 
@@ -567,8 +567,8 @@ theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul
   ext x
   simp_rw [ppow_apply (Nat.succ_pos k), pow_succ] -- porting note: was `rw [..., pow_succ]`
   induction k <;> simp
-  . exact pow_one _       -- porting note: added
-  . exact pow_succ'' _ _  -- porting note: added
+  · exact pow_one _       -- porting note: added
+  · exact pow_succ'' _ _  -- porting note: added
 #align nat.arithmetic_function.ppow_succ Nat.ArithmeticFunction.ppow_succ
 
 theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
@@ -619,19 +619,19 @@ theorem map_prod {ι : Type _} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
-  ⟨by simp [h], fun {m n} cop => by cases h ; rename_i j h; simp [h cop]⟩
+  ⟨by simp [h], fun {m n} cop => by cases h; rename_i j h; simp [h cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast Nat.ArithmeticFunction.IsMultiplicative.nat_cast
 
 theorem int_cast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
-  ⟨by simp [h], fun {m n} cop => by cases h ; rename_i j h; simp [h cop]⟩
+  ⟨by simp [h], fun {m n} cop => by cases h; rename_i j h; simp [h cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast Nat.ArithmeticFunction.IsMultiplicative.int_cast
 
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) :=
   ⟨by -- porting note was `simp [hf, hg]`.
-      have f1 := hf.left ; have g1 := hg.left
+      have f1 := hf.left; have g1 := hg.left
       simp only [mul_apply, divisorsAntidiagonal_one, ZeroHom.toFun_eq_coe, sum_singleton]
       rw [f1, g1, mul_one], by
     simp only [mul_apply]
@@ -666,22 +666,19 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
           rw [← hcd.1.1, h.1, Nat.gcd_mul_left,
             cop.coprime_mul_left.coprime_mul_right_right.gcd_eq_one, mul_one]
       · trans Nat.gcd (a1 * a2) (a2 * b2)
-        ·
-          rw [mul_comm, Nat.gcd_mul_left, cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one,
+        · rw [mul_comm, Nat.gcd_mul_left, cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one,
             mul_one]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.1.1, h.2, mul_comm, Nat.gcd_mul_left,
             cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one, mul_one]
       · trans Nat.gcd (b1 * b2) (a1 * b1)
-        ·
-          rw [mul_comm, Nat.gcd_mul_right,
+        · rw [mul_comm, Nat.gcd_mul_right,
             cop.coprime_mul_right.coprime_mul_left_right.symm.gcd_eq_one, one_mul]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.2.1, h.1, mul_comm c1 d1, Nat.gcd_mul_left,
             cop.coprime_mul_right.coprime_mul_left_right.symm.gcd_eq_one, mul_one]
       · trans Nat.gcd (b1 * b2) (a2 * b2)
-        ·
-          rw [Nat.gcd_mul_right, cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one,
+        · rw [Nat.gcd_mul_right, cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one,
             one_mul]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.2.1, h.2, Nat.gcd_mul_right,

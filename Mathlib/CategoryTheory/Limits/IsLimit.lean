@@ -77,7 +77,7 @@ attribute [reassoc (attr := simp)] IsLimit.fac
 namespace IsLimit
 
 instance subsingleton {t : Cone F} : Subsingleton (IsLimit t) :=
-  ⟨by intro P Q ; cases P ; cases Q ; congr ; aesop_cat⟩
+  ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
 #align category_theory.limits.is_limit.subsingleton CategoryTheory.Limits.IsLimit.subsingleton
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cone point
@@ -580,7 +580,7 @@ attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 namespace IsColimit
 
 instance subsingleton {t : Cocone F} : Subsingleton (IsColimit t) :=
-  ⟨by intro P Q ; cases P ; cases Q ; congr ; aesop_cat⟩
+  ⟨by intro P Q; cases P; cases Q; congr; aesop_cat⟩
 #align category_theory.limits.is_colimit.subsingleton CategoryTheory.Limits.IsColimit.subsingleton
 
 /-- Given a natural transformation `α : F ⟶ G`, we give a morphism from the cocone point
@@ -956,7 +956,7 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
     (ht : IsColimit (mapCocone G t)) (desc : ∀ s : Cocone F, t.pt ⟶ s.pt)
     (h : ∀ s, G.map (desc s) = ht.desc (mapCocone G s)) : IsColimit t :=
   { desc
-    fac := fun s j => by apply G.map_injective ; rw [G.map_comp, h] ; apply ht.fac
+    fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
     uniq := fun s m w => by
       apply G.map_injective; rw [h]
       refine' ht.uniq (mapCocone G s) _ fun j => _
@@ -1005,7 +1005,7 @@ def homOfCocone (s : Cocone F) : X ⟶ s.pt :=
 theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s) = s := by
   dsimp [coconeOfHom, homOfCocone];
   have ⟨s_pt,s_ι⟩ := s
-  congr ; dsimp
+  congr; dsimp
   convert congrFun (congrFun (congrArg NatTrans.app h.inv_hom_id) s_pt) s_ι using 1
 #align category_theory.limits.is_colimit.of_nat_iso.cocone_of_hom_of_cocone CategoryTheory.Limits.IsColimit.OfNatIso.coconeOfHom_homOfCocone
 

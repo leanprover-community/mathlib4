@@ -153,7 +153,7 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
   revert l
   induction' len with len ih <;> intros l e n f
   · have : l = [] := by cases l; rfl; contradiction
-    rw [this] ; rfl
+    rw [this]; rfl
   · cases' l with head tail
     · contradiction
     · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, zero_add, zipWith_map_left]

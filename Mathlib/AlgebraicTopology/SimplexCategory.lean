@@ -345,7 +345,7 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
   simp [Fin.lt_iff_val_lt_val, Fin.ite_val]
   split_ifs
   all_goals try linarith
-  all_goals cases k <;> simp at * ; linarith
+  all_goals cases k <;> simp at *; linarith
 #align simplex_category.σ_comp_σ SimplexCategory.σ_comp_σ
 
 end Generators
@@ -408,9 +408,9 @@ instance : EssSurj skeletalFunctor.{v} where
           rw [← hf.le_iff_le]
           show f (f.symm i) ≤ f (f.symm j)
           simpa only [OrderIso.apply_symm_apply]
-        . ext1 ⟨i⟩
+        · ext1 ⟨i⟩
           exact congr_arg ULift.up (f.symm_apply_apply i)
-        . ext1 i
+        · ext1 i
           exact f.apply_symm_apply i⟩⟩
 
 noncomputable instance isEquivalence : IsEquivalence skeletalFunctor.{v} :=
@@ -466,7 +466,7 @@ instance : ConcreteCategory.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
-  forget_faithful := ⟨fun h => by ext : 2 ; exact h⟩
+  forget_faithful := ⟨fun h => by ext : 2; exact h⟩
 
 end Concrete
 
@@ -525,7 +525,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   intro b
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_fun_mk]
   by_cases b ≤ i
-  . use b
+  · use b
     rw [Fin.predAbove_below i b (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
@@ -610,7 +610,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     · rwa [eq, ← Fin.le_castSucc_iff]
     rw [eq]
   · simp only [not_le] at h'
-    let y := x.pred (by rintro rfl ; simp at h')
+    let y := x.pred (by rintro rfl; simp at h')
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
     rw [Fin.predAbove_above i y.succ h', Fin.pred_succ]
@@ -760,7 +760,7 @@ theorem len_lt_of_mono {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ) [hi : Mono i]
   rcases lt_or_eq_of_le (len_le_of_mono hi) with (h | h)
   · exact h
   · exfalso
-    exact hi' (by ext ; exact h.symm)
+    exact hi' (by ext; exact h.symm)
 #align simplex_category.len_lt_of_mono SimplexCategory.len_lt_of_mono
 
 noncomputable instance : SplitEpiCategory SimplexCategory :=

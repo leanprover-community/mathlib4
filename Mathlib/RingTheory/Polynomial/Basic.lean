@@ -498,10 +498,10 @@ theorem coeff_isUnit_isNilpotent_of_isUnit {P : Polynomial R} (hunit : IsUnit P)
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
   constructor
-  . refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
+  · refine' isUnit_of_mul_eq_one _ (Q.coeff 0) _
     have h := (mul_coeff_zero P Q).symm
     rwa [hQ, coeff_one_zero] at h
-  . intros n hn
+  · intros n hn
     rw [nilpotent_iff_mem_prime]
     intros I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
@@ -957,7 +957,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
-              refine' WellFounded.not_lt_min (wellFounded_submodule_gt R R) _ _ _ ; exact ⟨k, rfl⟩
+              refine' WellFounded.not_lt_min (wellFounded_submodule_gt R R) _ _ _; exact ⟨k, rfl⟩
             this ⟨HN ▸ I.leadingCoeffNth_mono (le_of_lt h), fun H => hxm (H hx)⟩
       have hs2 : ∀ {x}, x ∈ I.degreeLE N → x ∈ Ideal.span (↑s : Set R[X]) :=
         hs ▸ fun hx =>

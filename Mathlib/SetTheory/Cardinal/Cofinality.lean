@@ -529,7 +529,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
           simp [Subrel, Order.Preimage, EmptyRelation]
         exact x.2
       · suffices : r x a ∨ ∃ _ : PUnit.{u}, ↑a = x
-        . convert this
+        · convert this
           dsimp [RelEmbedding.ofMonotone]; simp
         rcases trichotomous_of r x a with (h | h | h)
         · exact Or.inl h
