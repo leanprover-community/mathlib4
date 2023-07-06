@@ -163,7 +163,7 @@ def mkOneInstance (n cls : Name) (tac : List Name → List Expr → MVarId → T
       let (fvars, m') ← m.intros
       tac decl.levelParams (fvars.toList.map Expr.fvar) m'
       let val ← instantiateMVars (mkMVar m)
-      let isUnsafe := decl.isUnsafe && clsDecl.isUnsafe
+      let isUnsafe := decl.isUnsafe || clsDecl.isUnsafe
       let result ← m'.withContext <| do
         let type ← m'.getType >>= instantiateMVars
         let ref ← IO.mkRef ""
@@ -228,17 +228,17 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
   let xs ← mim.induction x (mkRecName n)
   xs.forM fun ⟨mim, _, _⟩ =>
     mim.withContext do
-      let (some (_, mim), _) ←
-        simpGoal mim (← rules [(``Functor.map_id, false)] [n ++ "map"] true) | failure
-      mim.refl
+      if let (some (_, mim), _) ←
+          simpGoal mim (← rules [(``Functor.map_id, false)] [n ++ "map"] true) then
+        mim.refl
   let (#[_, _, _, _, _, x], mcm) ← mcm.introN 6 | failure
   let (some mcm, _) ← dsimpGoal mcm (← rules [] [``Functor.map] false) | failure
   let xs ← mcm.induction x (mkRecName n)
   xs.forM fun ⟨mcm, _, _⟩ =>
     mcm.withContext do
-      let (some (_, mcm), _) ←
-        simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [n ++ "map"] true) | failure
-      mcm.refl
+      if let (some (_, mcm), _) ←
+          simpGoal mcm (← rules [(``Functor.map_comp_map, true)] [n ++ "map"] true) then
+        mcm.refl
 
 def lawfulFunctorDeriveHandler : DerivingHandlerNoArgs :=
   higherOrderDeriveHandler ``LawfulFunctor (fun _ _ => deriveLawfulFunctor) [functorDeriveHandler]
@@ -391,54 +391,56 @@ def traversableDeriveHandler : DerivingHandlerNoArgs :=
 
 initialize registerDerivingHandler ``Traversable traversableDeriveHandler
 
-/-
-meta def simp_functor (rs : list simp_arg_type := []) : tactic unit :=
-simp none none ff rs [`functor_norm] (loc.ns [none])
+def simpFunctorGoal (m : MVarId) (s : Simp.Context) :
+    MetaM (Option (Array FVarId × MVarId) × Simp.UsedSimps) := do
+  let some e ← getSimpExtension? `functor_norm | failure
+  let s' ← e.getTheorems
+  simpGoal m { s with simpTheorems := s.simpTheorems.push s' }
 
-meta def traversable_law_starter (rs : list simp_arg_type) :=
-do vs ← tactic.intros,
-   resetI,
-   dunfold [``traversable.traverse,``functor.map] (loc.ns [none]),
-   () <$ tactic.induction vs.ilast;
-     simp_functor rs
+def traversableLawStarter (m : MVarId) (n : Name) (s : MetaM Simp.Context)
+    (tac : Array FVarId → InductionSubgoal → MVarId → MetaM Unit) : MetaM Unit := do
+  let s' ← [``Traversable.traverse, ``Functor.map].foldlM
+      (fun s n => s.addDeclToUnfold n) ({} : SimpTheorems)
+  let (fi, m) ← m.intros
+  m.withContext do
+    if let (some m, _) ← dsimpGoal m { simpTheorems := #[s'] } then
+      let ma ← m.induction fi.back (mkRecName n)
+      ma.forM fun is =>
+        is.mvarId.withContext do
+          if let (some (_, m), _) ← simpFunctorGoal is.mvarId (← s) then
+            tac fi is m
 
-meta def derive_lawful_traversable (pre : option name) : tactic unit :=
-do `(@is_lawful_traversable %%f %%d) ← target,
-   let n := f.get_app_fn.const_name,
-   eqns  ← get_equations_of (with_prefix pre n <.> "traverse"),
-   eqns' ← get_equations_of (with_prefix pre n <.> "map"),
-   let def_eqns := eqns.map simp_arg_type.expr ++
-                   eqns'.map simp_arg_type.expr ++
-                  [simp_arg_type.all_hyps],
-   let comp_def := [ simp_arg_type.expr ``(function.comp) ],
-   let tr_map := list.map simp_arg_type.expr [``(traversable.traverse_eq_map_id')],
-   let natur  := λ (η : expr), [simp_arg_type.expr ``(traversable.naturality_pf %%η)],
-   let goal := loc.ns [none],
-   constructor;
-     [ traversable_law_starter def_eqns; refl,
-       traversable_law_starter def_eqns; (refl <|> simp_functor (def_eqns ++ comp_def)),
-       traversable_law_starter def_eqns; (refl <|> simp none none tt tr_map [] goal ),
-       traversable_law_starter def_eqns; (refl <|> do
-         η ← get_local `η <|> do
-         { t ← mk_const ``is_lawful_traversable.naturality >>= infer_type >>= pp,
-           fail format!"expecting an `applicative_transformation` called `η` in\nnaturality : {t}"},
-         simp none none tt (natur η) [] goal) ];
-   refl,
-   return ()
+def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
+  let rules (l₁ : List (Name × Bool)) (l₂ : List (Name)) (b : Bool) : MetaM Simp.Context := do
+    let mut s : SimpTheorems := {}
+    s ← l₁.foldlM (fun s (n, b) => s.addConst n (inv := b)) s
+    s ← l₂.foldlM (fun s n => s.addDeclToUnfold n) s
+    if b then
+      let hs ← getPropHyps
+      s ← hs.foldlM (fun s f => f.getDecl >>= fun d => s.add (.fvar f) #[] d.toExpr) s
+    return { simpTheorems := #[s] }
+  let .app (.app (.const ``LawfulTraversable _) F) _ ← m.getType >>= instantiateMVars | failure
+  let some n := F.getAppFn.constName? | failure
+  let [mit, mct, mtmi, mn] ← m.applyConst ``LawfulTraversable.mk | failure
+  let defEqns : MetaM Simp.Context := rules [] [n ++ "map", n ++ "traverse"] true
+  traversableLawStarter mit n defEqns fun _ _ m => m.refl
+  traversableLawStarter mct n defEqns fun _ _ m => do
+    if let (some (_, m), _) ←
+        simpFunctorGoal m (← rules [] [n ++ "map", n ++ "traverse", ``Function.comp] true) then
+    m.refl
+  traversableLawStarter mtmi n defEqns fun _ _ m => do
+    if let (some (_, m), _) ←
+        simpGoal m (← rules [(``Traversable.traverse_eq_map_id', false)] [] false) then
+    m.refl
+  traversableLawStarter mn n defEqns fun _ _ m => do
+    if let (some (_, m), _) ←
+        simpGoal m (← rules [(``Traversable.naturality_pf, false)] [] false) then
+    m.refl
 
-open function
+def lawfulTraversableDeriveHandler : DerivingHandlerNoArgs :=
+  higherOrderDeriveHandler ``LawfulTraversable (fun _ _ => deriveLawfulTraversable)
+    [traversableDeriveHandler, lawfulFunctorDeriveHandler] (fun n arg => mkAppOptM n #[arg, none])
 
-meta def lawful_traversable_derive_handler' (nspace : option name := none) : derive_handler :=
-higher_order_derive_handler
-  ``is_lawful_traversable (derive_lawful_traversable nspace)
-  [traversable_derive_handler' nspace,
-   lawful_functor_derive_handler' nspace]
-  nspace
-  (λ n arg, mk_mapp n [arg,none])
-
-@[derive_handler]
-meta def lawful_traversable_derive_handler : derive_handler :=
-guard_class ``is_lawful_traversable lawful_traversable_derive_handler'
--/
+initialize registerDerivingHandler ``LawfulTraversable lawfulTraversableDeriveHandler
 
 end Mathlib.Deriving.Traversable
