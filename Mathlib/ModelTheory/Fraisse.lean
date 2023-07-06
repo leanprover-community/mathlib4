@@ -223,9 +223,12 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   have hF' : ∀ n : ℕ, (F n).out ∈ K := by
     intro n
     obtain ⟨P, hP1, hP2⟩ := (hF (F n).out).2 ⟨n, Setoid.refl _⟩
+    -- Porting note: fix hP2 because `Quotient.out (Quotient.mk' x) ≈ a` was not simplified
+    -- to `x ≈ a` in hF
+    replace hP2 := Setoid.trans (Setoid.symm (Quotient.mk_out P)) hP2
     exact (h _ _ hP2).1 hP1
   choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
-  have G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
+  let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
   let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
   refine' ⟨Bundled.of (DirectLimit (fun n => G n) f), DirectLimit.cg _ fun n => (fg _ (G n).2).cg,
     (age_directDimit _ _).trans
