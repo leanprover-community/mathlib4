@@ -8,9 +8,9 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.ModelTheory.FinitelyGenerated
-import Mathbin.ModelTheory.DirectLimit
-import Mathbin.ModelTheory.Bundled
+import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.ModelTheory.DirectLimit
+import Mathlib.ModelTheory.Bundled
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -218,8 +218,7 @@ theorem exists_cG_is_age_of (hn : K.Nonempty)
     (h : ∀ M N : Bundled.{w} L.Structure, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K))
     (hc : (Quotient.mk' '' K).Countable)
     (fg : ∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) (hp : Hereditary K)
-    (jep : JointEmbedding K) : ∃ M : Bundled.{w} L.Structure, Structure.CG L M ∧ L.age M = K :=
-  by
+    (jep : JointEmbedding K) : ∃ M : Bundled.{w} L.Structure, Structure.CG L M ∧ L.age M = K := by
   obtain ⟨F, hF⟩ := hc.exists_eq_range (hn.image _)
   simp only [Set.ext_iff, forall_quotient_iff, mem_image, mem_range, Quotient.eq'] at hF 
   simp_rw [Quotient.eq_mk_iff_out] at hF 
@@ -247,8 +246,7 @@ theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
         (∀ M N : Bundled.{w} L.Structure, Nonempty (M ≃[L] N) → (M ∈ K ↔ N ∈ K)) ∧
           (Quotient.mk' '' K).Countable ∧
             (∀ M : Bundled.{w} L.Structure, M ∈ K → Structure.FG L M) ∧
-              Hereditary K ∧ JointEmbedding K :=
-  by
+              Hereditary K ∧ JointEmbedding K := by
   constructor
   · rintro ⟨M, h1, h2, rfl⟩
     skip
