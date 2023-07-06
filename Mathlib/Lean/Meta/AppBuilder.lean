@@ -85,8 +85,8 @@ fail if any *new* metavariables are present. -/
 private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Expr)
     (mvars instMVars : Array MVarId) : MetaM Expr := do
   instMVars.forM fun mvarId => do
-    let mvarVal ← synthInstance (← mvarId.getType)
-    mvarId.assign mvarVal
+    unless ← mvarId.isAssigned do
+      mvarId.assign (← synthInstance (← mvarId.getType))
   let result ← instantiateMVars (mkAppN f args)
   unless ← (mvars.allM (·.isAssigned) <&&> instMVars.allM (·.isAssigned)) do
     throwAppBuilderException methodName ("result contains new metavariables" ++ indentExpr result)
@@ -96,11 +96,16 @@ private def mkAppMFinalUnifying (methodName : Name) (f : Expr) (args : Array Exp
 unassigned new implicit mvars and instance MVars. -/
 private def mkAppMFinalUnifyingWithNewMVars (_ : Name) (f : Expr) (args : Array Expr)
     (mvars instMVars : Array MVarId) : MetaM (Expr × Array MVarId × Array MVarId) := do
-  instMVars.forM fun mvarId => tryM do
-    unless ← mvarId.isAssigned do
-      mvarId.assign (← synthInstance (← mvarId.getType))
+  let unassignedInstMVars ← instMVars.foldlM (init := #[])
+    fun unassignedInstMVars mvarId =>
+      try
+        unless ← mvarId.isAssigned do
+          mvarId.assign (← synthInstance (← mvarId.getType))
+        pure unassignedInstMVars
+      catch _ =>
+        pure (unassignedInstMVars.push mvarId)
   let result ← instantiateMVars (mkAppN f args)
-  return (result, ← mvars.filterM (notM ·.isAssigned), ← instMVars.filterM (notM ·.isAssigned))
+  return (result, ← mvars.filterM (notM ·.isAssigned), unassignedInstMVars)
 
 /-- Nearly identical to `mkAppMArgs`, but passes a continuation for `mkAppMFinal` and keeps track
 of any created implicit mvars. -/
