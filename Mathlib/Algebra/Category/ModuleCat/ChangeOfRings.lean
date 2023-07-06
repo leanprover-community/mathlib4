@@ -614,29 +614,35 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y`
 -/
--- @[simps]
-def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by sorry
-  -- letI m1 : Module R S := Module.compHom S f
-  -- letI m2 : Module R Y := Module.compHom Y f
-  -- refine' ⟨TensorProduct.lift ⟨fun s : S => ⟨fun y : Y => s • y, smul_add _, _⟩, _, _⟩, _, _⟩
-  -- · intros
-  --   rw [RingHom.id_apply, RestrictScalars.smul_def, ← mul_smul, mul_comm, mul_smul,
-  --     RestrictScalars.smul_def]
-  -- · intros
-  --   ext
-  --   simp only [LinearMap.add_apply, LinearMap.coe_mk, add_smul]
-  -- · intros
-  --   ext
-  --   simpa only [RingHom.id_apply, LinearMap.smul_apply, LinearMap.coe_mk,
-  --     @RestrictScalars.smul_def _ _ _ _ f ⟨S⟩, smul_eq_mul, mul_smul]
-  -- · intros
-  --   rw [map_add]
-  -- · intro s z
-  --   rw [RingHom.id_apply]
-  --   induction' z using TensorProduct.induction_on with x s' z1 z2 ih1 ih2
-  --   · simp only [smul_zero, map_zero]
-  --   · simp only [extend_scalars.smul_tmul, LinearMap.coe_mk, TensorProduct.lift.tmul, mul_smul]
-  --   · rw [smul_add, map_add, map_add, ih1, ih2, smul_add]
+@[simps]
+def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
+  letI m1 : Module R S := Module.compHom S f
+  letI m2 : Module R Y := Module.compHom Y f
+  refine' {toFun := TensorProduct.lift {toFun := fun s : S => {toFun := fun y : Y => s • y, map_add' := smul_add _, map_smul' := _}, map_add' := _, map_smul' := _}, map_add' := _, map_smul' := _}
+  · intros r y
+    dsimp
+    change s • f r • y = f r • s • y
+    rw [←mul_smul, mul_comm, mul_smul]
+  · intros s₁ s₂
+    ext y
+    change (s₁ + s₂) • y = s₁ • y + s₂ • y
+    rw [add_smul]
+  · intros r s
+    ext y
+    change (f r • s) • y = (f r) • s • y
+    rw [smul_eq_mul,mul_smul]
+  · intros
+    rw [map_add]
+  · intro s z
+    dsimp
+    induction' z using TensorProduct.induction_on with s' y z1 z2 ih1 ih2
+    · rw [smul_zero, map_zero, smul_zero]
+    · rw [ExtendScalars.smul_tmul, LinearMap.coe_mk]
+      erw [TensorProduct.lift.tmul, TensorProduct.lift.tmul]
+      set s' : S := s'
+      change (s * s') • y = s • s' • y
+      rw [mul_smul]
+    · rw [smul_add, map_add, map_add, ih1, ih2, smul_add]
 #align category_theory.Module.extend_restrict_scalars_adj.counit.map CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.Counit.map
 
 /-- The natural transformation from the composition of restriction and extension of scalars to the
@@ -646,35 +652,49 @@ identity functor on `S`-module.
 def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
   app _ := Counit.map.{u₁,u₂,v} f
   naturality Y Y' g := by
-    apply LinearMap.ext; intro z; induction z using TensorProduct.induction_on
-    · simp only [map_zero]
-    · simp only [CategoryTheory.Functor.comp_map, ModuleCat.coe_comp, Function.comp_apply,
-        ExtendScalars.map_tmul, restrictScalars.map_apply, Counit.map_apply, lift.tmul,
-        LinearMap.coe_mk, CategoryTheory.Functor.id_map, LinearMap.map_smulₛₗ, RingHom.id_apply]
-    · simp only [map_add, *]
+    -- Porting note: this is very annoying; fix instances in concrete categories
+    letI m1 : Module R S := Module.compHom S f
+    letI m2 : Module R Y := Module.compHom Y f
+    letI m2 : Module R Y' := Module.compHom Y' f
+    apply LinearMap.ext; intro z; induction' z using TensorProduct.induction_on with s' y z₁ z₂ ih₁ ih₂
+    · rw [map_zero, map_zero]
+    · dsimp
+      rw [ModuleCat.coe_comp, ModuleCat.coe_comp,Function.comp,Function.comp, ExtendScalars.map_tmul,
+        restrictScalars.map_apply, Counit.map_apply, Counit.map_apply, lift.tmul, lift.tmul,
+        LinearMap.coe_mk, LinearMap.coe_mk]
+      set s' : S := s'
+      change s' • g y = g (s' • y)
+      rw [map_smul]
+    · rw [map_add,map_add]
+      congr 1
 #align category_theory.Module.extend_restrict_scalars_adj.counit CategoryTheory.ModuleCat.ExtendRestrictScalarsAdj.counit
-
 end ExtendRestrictScalarsAdj
 
 /-- Given commutative rings `R, S` and a ring hom `f : R →+* S`, the extension and restriction of
 scalars by `f` are adjoint to each other.
 -/
-@[simps]
+-- @[simps]
 def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    extendScalars f ⊣ restrictScalars.{max v u₂,u₁,u₂} f where
-  homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv.{u₁,u₂,v} f
-  unit := ExtendRestrictScalarsAdj.unit.{u₁,u₂,v} f
+    extendScalars.{u₁,u₂,max v u₂} f ⊣ restrictScalars.{max v u₂,u₁,u₂} f where
+  homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv.{v,u₁,u₂} f
+  unit := ExtendRestrictScalarsAdj.unit.{v,u₁,u₂} f
   counit := ExtendRestrictScalarsAdj.counit.{v,u₁,u₂} f
-  homEquiv_unit {X Y g} := LinearMap.ext fun x => by simp
-  homEquiv_counit {X Y g} :=
-    LinearMap.ext fun x => by
-      induction x using TensorProduct.induction_on
-      · simp only [map_zero]
-      · simp only [ExtendRestrictScalarsAdj.homEquiv_symm_apply, LinearMap.coe_mk,
-          ExtendRestrictScalarsAdj.HomEquiv.fromExtendScalars_apply, TensorProduct.lift.tmul,
-          ExtendRestrictScalarsAdj.counit_app, ModuleCat.coe_comp, Function.comp_apply,
-          ExtendScalars.map_tmul, ExtendRestrictScalarsAdj.Counit.map_apply]
-      · simp only [map_add, *]
+  homEquiv_unit {X Y g} := LinearMap.ext fun x => by
+    dsimp
+    rw [ModuleCat.coe_comp, Function.comp, restrictScalars.map_apply,
+      ExtendRestrictScalarsAdj.Unit.map_apply]
+  homEquiv_counit {X Y g} := LinearMap.ext fun x => by
+      letI m1 : Module R S := Module.compHom S f
+      letI m2 : Module R Y := Module.compHom Y f
+      induction' x using TensorProduct.induction_on with s x _ _ _ _
+      · rw [map_zero, map_zero]
+      · rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply, ModuleCat.coe_comp, Function.comp_apply,
+          ExtendRestrictScalarsAdj.counit_app, ExtendRestrictScalarsAdj.Counit.map_apply]
+        dsimp
+        rw [TensorProduct.lift.tmul]
+        rfl
+      · rw [map_add,map_add]
+        congr 1
 #align category_theory.Module.extend_restrict_scalars_adj CategoryTheory.ModuleCat.extendRestrictScalarsAdj
 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
