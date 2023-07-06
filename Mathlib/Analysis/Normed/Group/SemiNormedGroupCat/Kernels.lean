@@ -38,7 +38,7 @@ namespace SemiNormedGroupCat₁
 
 noncomputable section
 
-/-- Auxiliary definition for `has_cokernels SemiNormedGroupCat₁`. -/
+/-- Auxiliary definition for `HasCokernels SemiNormedGroupCat₁`. -/
 def cokernelCocone {X Y : SemiNormedGroupCat₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   Cofork.ofπ
     (@SemiNormedGroupCat₁.mkHom _ (SemiNormedGroupCat.of (Y ⧸ NormedAddGroupHom.range f.1))
@@ -57,7 +57,7 @@ def cokernelCocone {X Y : SemiNormedGroupCat₁.{u}} (f : X ⟶ Y) : Cofork f 0 
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup₁.cokernel_cocone SemiNormedGroupCat₁.cokernelCocone
 
-/-- Auxiliary definition for `has_cokernels SemiNormedGroupCat₁`. -/
+/-- Auxiliary definition for `HasCokernels SemiNormedGroupCat₁`. -/
 def cokernelLift {X Y : SemiNormedGroupCat₁.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt := by
   fconstructor
@@ -99,14 +99,16 @@ namespace SemiNormedGroupCat
 section EqualizersAndKernels
 
 -- porting note: these weren't needed in Lean 3
-instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) := (inferInstance : Sub (NormedAddGroupHom V W))
+instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) :=
+  (inferInstance : Sub (NormedAddGroupHom V W))
 noncomputable instance {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) :=
   (inferInstance : Norm (NormedAddGroupHom V W))
 noncomputable instance {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) :=
   (inferInstance : NNNorm (NormedAddGroupHom V W))
 /-- The equalizer cone for a parallel pair of morphisms of seminormed groups. -/
 def fork {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) : Fork f g :=
-  @Fork.ofι _ _ _ _ _ _ (of (f - g : NormedAddGroupHom V W).ker) (NormedAddGroupHom.incl (f - g).ker) <| by
+  @Fork.ofι _ _ _ _ _ _ (of (f - g : NormedAddGroupHom V W).ker)
+    (NormedAddGroupHom.incl (f - g).ker) <| by
     -- porting note: not needed in mathlib3
     change NormedAddGroupHom V W at f g
     ext v
@@ -144,7 +146,7 @@ section Cokernel
 
 -- PROJECT: can we reuse the work to construct cokernels in `SemiNormedGroupCat₁` here?
 -- I don't see a way to do this that is less work than just repeating the relevant parts.
-/-- Auxiliary definition for `has_cokernels SemiNormedGroupCat`. -/
+/-- Auxiliary definition for `HasCokernels SemiNormedGroupCat`. -/
 noncomputable
 def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   @Cofork.ofπ _ _ _ _ _ _ (SemiNormedGroupCat.of (Y ⧸ NormedAddGroupHom.range f)) f.range.normedMk
@@ -162,7 +164,7 @@ def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_cocone SemiNormedGroupCat.cokernelCocone
 
-/-- Auxiliary definition for `has_cokernels SemiNormedGroupCat`. -/
+/-- Auxiliary definition for `HasCokernels SemiNormedGroupCat`. -/
 noncomputable
 def cokernelLift {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) (s : CokernelCofork f) :
     (cokernelCocone f).pt ⟶ s.pt :=
@@ -174,7 +176,7 @@ def cokernelLift {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) (s : CokernelCofor
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.cokernel_lift SemiNormedGroupCat.cokernelLift
 
-/-- Auxiliary definition for `has_cokernels SemiNormedGroupCat`. -/
+/-- Auxiliary definition for `HasCokernels SemiNormedGroupCat`. -/
 noncomputable
 def isColimitCokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
     IsColimit (cokernelCocone f) :=
@@ -360,7 +362,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The explicit cokernel is isomorphic to the usual cokernel. -/
 noncomputable
-def explicitCokernelIso {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : explicitCokernel f ≅ cokernel f :=
+def explicitCokernelIso {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
+    explicitCokernel f ≅ cokernel f :=
   (isColimitCokernelCocone f).coconePointUniqueUpToIso (colimit.isColimit _)
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel_iso SemiNormedGroupCat.explicitCokernelIso
@@ -389,18 +392,19 @@ theorem explicitCokernelIso_hom_desc {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel_iso_hom_desc SemiNormedGroupCat.explicitCokernelIso_hom_desc
 
-/-- A special case of `category_theory.limits.cokernel.map` adapted to `explicit_cokernel`. -/
-noncomputable def explicitCokernel.map {A B C D : SemiNormedGroupCat.{u}} {fab : A ⟶ B} {fbd : B ⟶ D}
-    {fac : A ⟶ C} {fcd : C ⟶ D} (h : fab ≫ fbd = fac ≫ fcd) :
+/-- A special case of `CategoryTheory.Limits.cokernel.map` adapted to `explicitCokernel`. -/
+noncomputable def explicitCokernel.map {A B C D : SemiNormedGroupCat.{u}}
+    {fab : A ⟶ B} {fbd : B ⟶ D} {fac : A ⟶ C} {fcd : C ⟶ D} (h : fab ≫ fbd = fac ≫ fcd) :
     explicitCokernel fab ⟶ explicitCokernel fcd :=
   @explicitCokernelDesc _ _ _ fab (fbd ≫ explicitCokernelπ _) <| by simp [reassoc_of% h]
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel.map SemiNormedGroupCat.explicitCokernel.map
 
-/-- A special case of `category_theory.limits.cokernel.map_desc` adapted to `explicit_cokernel`. -/
-theorem ExplicitCoker.map_desc {A B C D B' D' : SemiNormedGroupCat.{u}} {fab : A ⟶ B} {fbd : B ⟶ D}
-    {fac : A ⟶ C} {fcd : C ⟶ D} {h : fab ≫ fbd = fac ≫ fcd} {fbb' : B ⟶ B'} {fdd' : D ⟶ D'}
-    {condb : fab ≫ fbb' = 0} {condd : fcd ≫ fdd' = 0} {g : B' ⟶ D'} (h' : fbb' ≫ g = fbd ≫ fdd') :
+/-- A special case of `CategoryTheory.Limits.cokernel.map_desc` adapted to `explicitCokernel`. -/
+theorem ExplicitCoker.map_desc {A B C D B' D' : SemiNormedGroupCat.{u}}
+    {fab : A ⟶ B} {fbd : B ⟶ D} {fac : A ⟶ C} {fcd : C ⟶ D} {h : fab ≫ fbd = fac ≫ fcd}
+    {fbb' : B ⟶ B'} {fdd' : D ⟶ D'} {condb : fab ≫ fbb' = 0} {condd : fcd ≫ fdd' = 0} {g : B' ⟶ D'}
+    (h' : fbb' ≫ g = fbd ≫ fdd') :
     explicitCokernelDesc condb ≫ g = explicitCokernel.map h ≫ explicitCokernelDesc condd := by
   delta explicitCokernel.map
   simp [← cancel_epi (explicitCokernelπ fab), ← Category.assoc, explicitCokernelπ_desc, h']
