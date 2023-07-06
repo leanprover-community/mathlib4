@@ -229,7 +229,12 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     exact (h _ _ hP2).1 hP1
   choose P hPK hP hFP using fun (N : K) (n : ℕ) => jep N N.2 (F (n + 1)).out (hF' _)
   let G : ℕ → K := @Nat.rec (fun _ => K) ⟨(F 0).out, hF' 0⟩ fun n N => ⟨P N n, hPK N n⟩
-  let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
+  -- Poting note: was
+  -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
+  let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
+    refine DirectedSystem.natLeRec (G' := fun i => (G i).val) (L := L) ?_
+    dsimp only
+    exact (fun n => (hP _ n).some)
   refine' ⟨Bundled.of (DirectLimit (fun n => G n) f), DirectLimit.cg _ fun n => (fg _ (G n).2).cg,
     (age_directDimit _ _).trans
       (subset_antisymm (iUnion_subset fun n N hN => hp (G n) (G n).2 hN) fun N KN => _)⟩
