@@ -696,7 +696,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
-      simp only [← @op_nnnorm_mul_apply 𝕜 _ A]
+      simp only [← @_root_.op_nnnorm_mul 𝕜 A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
       refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
       · rintro - ⟨x, hx, rfl⟩
