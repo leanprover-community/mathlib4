@@ -273,10 +273,10 @@ it is the infimum of all Grothendieck topologies whose associated coverage conta
 theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     sInf {J | K ≤ ofGrothendieck _ J } := by
   apply le_antisymm
-  · apply le_sInf ; intro J hJ
+  · apply le_sInf; intro J hJ
     intro X S hS
     induction hS with
-    | of X S hS => apply hJ ; assumption
+    | of X S hS => apply hJ; assumption
     | top => apply J.top_mem
     | transitive X R S _ _ H1 H2 => exact J.transitive H1 _ H2
   · apply sInf_le
@@ -314,11 +314,11 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
       · intro Z g hg
         obtain ⟨W, i, e, h1, h2⟩ := hT2 hg
         exact ⟨Z, 𝟙 _, g, ⟨W, i, e, h1, h2⟩, by simp⟩
-      · apply H ; assumption
+      · apply H; assumption
       · intro Z g _
         obtain ⟨R, hR1, hR2⟩ := K.pullback g _ hT1
         refine ⟨R, (H _ hR1).isSeparatedFor, hR2⟩
-    | top => intros ; simpa using Presieve.isSheafFor_top_sieve _
+    | top => intros; simpa using Presieve.isSheafFor_top_sieve _
     | transitive X R S _ _ H1 H2 =>
       intro Y f
       simp only [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor] at *
@@ -348,17 +348,17 @@ theorem isSheaf_coverage (K : Coverage C) (P : Cᵒᵖ ⥤ Type w) :
         intro ZZ gg hgg
         simp only [← types_comp_apply]
         rw [← P.map_comp, ← P.map_comp, ← op_comp, ← op_comp, hz, hz]
-        · dsimp ; congr 1 ; simp only [Category.assoc, h]
+        · dsimp; congr 1; simp only [Category.assoc, h]
         · simpa [reassoc_of% h] using hgg
         · simpa using hgg
       obtain ⟨t, ht⟩ := H1' f q hq
       refine ⟨t, fun Z g hg => ?_⟩
       refine (H1 (g ≫ f)).ext (fun ZZ gg hgg => ?_)
       rw [← types_comp_apply _ (P.map gg.op), ← P.map_comp, ← op_comp, ht]
-      swap ; simpa using hgg
+      swap; simpa using hgg
       refine (H2 hgg (𝟙 _)).ext (fun ZZZ ggg hggg => ?_)
       rw [← types_comp_apply _ (P.map ggg.op), ← P.map_comp, ← op_comp, hz]
-      swap ; simpa using hggg
+      swap; simpa using hggg
       refine (H2 hgg ggg).ext (fun ZZZZ gggg _ => ?_)
       rw [← types_comp_apply _ (P.map gggg.op), ← P.map_comp, ← op_comp]
       apply hx

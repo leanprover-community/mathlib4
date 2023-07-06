@@ -88,18 +88,17 @@ section TangentCone
 -- This section is devoted to the properties of the tangent cone.
 open NormedField
 
-theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ := by
-  refine' univ_subset_iff.1 fun y _ => _
-  rcases exists_one_lt_norm 𝕜 with ⟨w, hw⟩
-  refine' ⟨fun n => w ^ n, fun n => (w ^ n)⁻¹ • y, univ_mem' fun n => mem_univ _, _, _⟩
-  · simp only [norm_pow]
-    exact tendsto_pow_atTop_atTop_of_one_lt hw
-  · convert @tendsto_const_nhds E ℕ _ _ atTop with n
-    have : w ^ n * (w ^ n)⁻¹ = 1 := by
-      apply mul_inv_cancel
-      apply pow_ne_zero
-      simpa [norm_eq_zero] using (ne_of_lt (lt_trans zero_lt_one hw)).symm
-    rw [smul_smul, this, one_smul]
+theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
+    (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
+  refine ⟨fun n ↦ (r ^ n)⁻¹, fun n ↦ r ^ n • y, hs, ?_, ?_⟩
+  · simp only [norm_inv, norm_pow, ← inv_pow]
+    exact tendsto_pow_atTop_atTop_of_one_lt <| one_lt_inv (norm_pos_iff.2 hr₀) hr
+  · simp only [inv_smul_smul₀ (pow_ne_zero _ hr₀), tendsto_const_nhds]
+
+theorem tangentCone_univ : tangentConeAt 𝕜 univ x = univ :=
+  let ⟨_r, hr₀, hr⟩ := exists_norm_lt_one 𝕜
+  eq_univ_of_forall fun _ ↦ mem_tangentConeAt_of_pow_smul (norm_pos_iff.1 hr₀) hr <|
+    eventually_of_forall fun _ ↦ mem_univ _
 #align tangent_cone_univ tangentCone_univ
 
 theorem tangentCone_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
@@ -115,7 +114,7 @@ theorem tangentConeAt.lim_zero {α : Type _} (l : Filter α) {c : α → 𝕜} {
   have A : Tendsto (fun n => ‖c n‖⁻¹) l (𝓝 0) := tendsto_inv_atTop_zero.comp hc
   have B : Tendsto (fun n => ‖c n • d n‖) l (𝓝 ‖y‖) := (continuous_norm.tendsto _).comp hd
   have C : Tendsto (fun n => ‖c n‖⁻¹ * ‖c n • d n‖) l (𝓝 (0 * ‖y‖)) := A.mul B
-  rw [MulZeroClass.zero_mul] at C
+  rw [zero_mul] at C
   have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
     refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
     rw [norm_smul, ← mul_assoc, inv_mul_cancel, one_mul]
@@ -213,34 +212,13 @@ theorem mapsTo_tangentCone_pi {ι : Type _} [DecidableEq ι] {E : ι → Type _}
 segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSegment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x := by
-  let c := fun n : ℕ => (2 : ℝ) ^ (n + 1)
-  let d := fun n : ℕ => (c n)⁻¹ • (y - x)
-  refine' ⟨c, d, Filter.univ_mem' fun n => h _, _, _⟩
-  show x + d n ∈ openSegment ℝ x y
-  · rw [openSegment_eq_image]
-    refine' ⟨(c n)⁻¹, ⟨_, _⟩, _⟩
-    · rw [inv_pos]
-      apply pow_pos
-      norm_num
-    · apply inv_lt_one
-      apply one_lt_pow _ (Nat.succ_ne_zero _)
-      norm_num
-    · simp only [sub_smul, smul_sub, one_smul]
-      abel
-  show Filter.Tendsto (fun n : ℕ => ‖c n‖) Filter.atTop Filter.atTop
-  · have : (fun n : ℕ => ‖c n‖) = c := by
-      ext n
-      exact abs_of_nonneg (pow_nonneg (by norm_num) _)
-    rw [this]
-    exact (tendsto_pow_atTop_atTop_of_one_lt (by norm_num)).comp (tendsto_add_atTop_nat 1)
-  show Filter.Tendsto (fun n : ℕ => c n • d n) Filter.atTop (𝓝 (y - x))
-  · have : (fun n : ℕ => c n • d n) = fun _ => y - x := by
-      ext n
-      simp only [smul_smul]
-      rw [mul_inv_cancel, one_smul]
-      exact pow_ne_zero _ (by norm_num)
-    rw [this]
-    apply tendsto_const_nhds
+  refine mem_tangentConeAt_of_pow_smul one_half_pos.ne' (by norm_num) ?_
+  refine (eventually_ne_atTop 0).mono fun n hn ↦ (h ?_)
+  rw [openSegment_eq_image]
+  refine ⟨(1 / 2) ^ n, ⟨?_, ?_⟩, ?_⟩
+  · exact pow_pos one_half_pos _
+  · exact pow_lt_one one_half_pos.le one_half_lt_one hn
+  · simp only [sub_smul, one_smul, smul_sub]; abel
 #align mem_tangent_cone_of_open_segment_subset mem_tangentCone_of_openSegment_subset
 
 /-- If a subset of a real vector space contains a segment, then the direction of this
@@ -277,6 +255,9 @@ theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
 theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
   fun _ hx => hx.elim
 #align unique_diff_on_empty uniqueDiffOn_empty
+
+theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
+    UniqueDiffWithinAt 𝕜 s y := hy ▸ h
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by

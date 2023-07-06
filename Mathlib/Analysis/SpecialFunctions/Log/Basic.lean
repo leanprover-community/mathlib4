@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 
 ! This file was ported from Lean 3 source module analysis.special_functions.log.basic
-! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
+! leanprover-community/mathlib commit f23a09ce6d3f367220dc3cecad6b7eb69eb01690
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -104,7 +104,7 @@ theorem log_one : log 1 = 0 :=
 #align real.log_one Real.log_one
 
 @[simp]
-theorem log_abs (x : ℝ) : log (|x|) = log x := by
+theorem log_abs (x : ℝ) : log |x| = log x := by
   by_cases h : x = 0
   · simp [h]
   · rw [← exp_eq_exp, exp_log_eq_abs h, exp_log_eq_abs (abs_pos.2 h).ne', abs_abs]
@@ -155,9 +155,9 @@ theorem log_lt_log (hx : 0 < x) : x < y → log x < log y := by
 @[gcongr]
 theorem log_le_log' (hx : 0 < x) : x ≤ y → log x ≤ log y := by
   intro hxy
-  by_cases h_eq : x = y
-  case pos => simp [h_eq]
-  case neg => exact le_of_lt <| log_lt_log hx <| lt_of_le_of_ne hxy h_eq
+  cases hxy.eq_or_lt with
+  | inl h_eq => simp [h_eq]
+  | inr hlt => exact le_of_lt <| log_lt_log hx hlt
 
 theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
   rw [← exp_lt_exp, exp_log hx, exp_log hy]
@@ -255,6 +255,10 @@ theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 := by
   · rintro (rfl | rfl | rfl) <;> simp only [log_one, log_zero, log_neg_eq_log]
 #align real.log_eq_zero Real.log_eq_zero
 
+theorem log_ne_zero {x : ℝ} : log x ≠ 0 ↔ x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1 := by
+  simpa only [not_or] using log_eq_zero.not
+#align real.log_ne_zero Real.log_ne_zero
+
 @[simp]
 theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
   induction' n with n ih
@@ -309,7 +313,7 @@ theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 
-theorem continuousOn_log : ContinuousOn log ({0}ᶜ) := by
+theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp only [continuousOn_iff_continuous_restrict, restrict]
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)

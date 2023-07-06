@@ -529,32 +529,30 @@ theorem IsCycle.swap_mul {α : Type _} [DecidableEq α] {f : Perm α} (hf : IsCy
     isCycle_swap_mul_aux₂ (i - 1) hy hi⟩
 #align equiv.perm.is_cycle.swap_mul Equiv.Perm.IsCycle.swap_mul
 
-theorem IsCycle.sign : ∀ {f : Perm α} (hf : IsCycle f), sign f = -(-1) ^ f.support.card
-  | f => fun hf =>
-    let ⟨x, hx⟩ := hf
-    calc
-      Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by
-        {rw [← mul_assoc, mul_def, mul_def, swap_swap, trans_refl]}
-      _ = -(-1) ^ f.support.card :=
-        if h1 : f (f x) = x then by
-          have h : swap x (f x) * f = 1 := by
-            simp only [mul_def, one_def]
-            rw [hf.eq_swap_of_apply_apply_eq_self hx.1 h1, swap_apply_left, swap_swap]
-          dsimp only
-          rw [sign_mul, sign_swap hx.1.symm, h, sign_one,
-            hf.eq_swap_of_apply_apply_eq_self hx.1 h1, card_support_swap hx.1.symm]
-          rfl
-        else by
-          have h : card (support (swap x (f x) * f)) + 1 = card (support f) := by
-            rw [← insert_erase (mem_support.2 hx.1), support_swap_mul_eq _ _ h1,
-              card_insert_of_not_mem (not_mem_erase _ _), sdiff_singleton_eq_erase]
-          have : card (support (swap x (f x) * f)) < card (support f) :=
-            card_support_swap_mul hx.1
-          dsimp only
-          rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
-          simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
-      termination_by'
-  ⟨_, (measure fun f => f.support.card).wf ⟩
+theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ f.support.card :=
+  let ⟨x, hx⟩ := hf
+  calc
+    Perm.sign f = Perm.sign (swap x (f x) * (swap x (f x) * f)) := by
+      {rw [← mul_assoc, mul_def, mul_def, swap_swap, trans_refl]}
+    _ = -(-1) ^ f.support.card :=
+      if h1 : f (f x) = x then by
+        have h : swap x (f x) * f = 1 := by
+          simp only [mul_def, one_def]
+          rw [hf.eq_swap_of_apply_apply_eq_self hx.1 h1, swap_apply_left, swap_swap]
+        dsimp only
+        rw [sign_mul, sign_swap hx.1.symm, h, sign_one,
+          hf.eq_swap_of_apply_apply_eq_self hx.1 h1, card_support_swap hx.1.symm]
+        rfl
+      else by
+        have h : card (support (swap x (f x) * f)) + 1 = card (support f) := by
+          rw [← insert_erase (mem_support.2 hx.1), support_swap_mul_eq _ _ h1,
+            card_insert_of_not_mem (not_mem_erase _ _), sdiff_singleton_eq_erase]
+        have : card (support (swap x (f x) * f)) < card (support f) :=
+          card_support_swap_mul hx.1
+        dsimp only
+        rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
+        simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
+termination_by _ => f.support.card
 #align equiv.perm.is_cycle.sign Equiv.Perm.IsCycle.sign
 
 theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^ n).support) :
@@ -1674,7 +1672,7 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.coprime n 
   have h1' : IsCycle ((σ ^ n) ^ (m : ℤ)) := by rwa [← hm] at h1
   replace h1' : IsCycle (σ ^ n) :=
     h1'.of_pow (le_trans (support_pow_le σ n) (ge_of_eq (congr_arg support hm)))
-  rw [eq_top_iff, ← closure_cycle_adjacent_swap h1' h2' x, closure_le, Set.insert_subset]
+  rw [eq_top_iff, ← closure_cycle_adjacent_swap h1' h2' x, closure_le, Set.insert_subset_iff]
   exact
     ⟨Subgroup.pow_mem (closure _) (subset_closure (Set.mem_insert σ _)) n,
       Set.singleton_subset_iff.mpr (subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _)))⟩
@@ -1715,8 +1713,7 @@ theorem isConj_of_support_equiv
   by_cases hx : x ∈ σ.support
   · rw [Equiv.extendSubtype_apply_of_mem, Equiv.extendSubtype_apply_of_mem]
     · exact hf x (Finset.mem_coe.2 hx)
-  ·
-    rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_not_mem f _ _)),
+  · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_not_mem f _ _)),
       Classical.not_not.1 ((not_congr mem_support).mp hx)]
 #align equiv.perm.is_conj_of_support_equiv Equiv.Perm.isConj_of_support_equiv
 

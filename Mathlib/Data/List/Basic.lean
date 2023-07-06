@@ -1018,7 +1018,7 @@ def bidirectionalRec {C : List α → Sort _} (H0 : C []) (H1 : ∀ a : α, C [a
     rw [← dropLast_append_getLast (cons_ne_nil b l)]
     have : C l' := bidirectionalRec H0 H1 Hn l'
     exact Hn a l' b' this
-termination_by' measure List.length
+termination_by _ l => l.length
 #align list.bidirectional_rec List.bidirectionalRecₓ -- universe order
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
@@ -2416,6 +2416,16 @@ theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
 
 #align list.foldr_append List.foldr_append
 
+theorem foldl_concat
+    (f : β → α → β) (b : β) (x : α) (xs : List α) :
+    List.foldl f b (xs ++ [x]) = f (List.foldl f b xs) x := by
+  simp only [List.foldl_append, List.foldl]
+
+theorem foldr_concat
+    (f : α → β → β) (b : β) (x : α) (xs : List α) :
+    List.foldr f b (xs ++ [x]) = (List.foldr f (f x b) xs) := by
+  simp only [List.foldr_append, List.foldr]
+
 theorem foldl_fixed' {f : α → β → α} {a : α} (hf : ∀ b, f a b = a) : ∀ l : List β, foldl f a l = a
   | [] => rfl
   | b :: l => by rw [foldl_cons, hf b, foldl_fixed' hf l]
@@ -3181,8 +3191,8 @@ theorem get?_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : �
   induction' l with hd tl hl generalizing n
   · simp
   · cases' n with n
-    . simp
-    . simp [hl]
+    · simp
+    · simp [hl]
 #align list.nth_pmap List.get?_pmap
 
 theorem get_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (h : ∀ a ∈ l, p a) {n : ℕ}
@@ -3543,8 +3553,8 @@ theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
 theorem mem_filter_of_mem {a : α} : ∀ {l}, a ∈ l → p a → a ∈ filter p l
   | x :: l, h, h1 => by
     rcases mem_cons.1 h with rfl | h
-    . simp [filter, h1]
-    . rw [filter]
+    · simp [filter, h1]
+    · rw [filter]
       cases p x <;> simp [mem_filter_of_mem h h1]
 #align list.mem_filter_of_mem List.mem_filter_of_mem
 

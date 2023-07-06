@@ -30,7 +30,7 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp ; rfl
+instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp; rfl
 
 open IsLawfulTraversable CommApplicative
 
@@ -97,7 +97,7 @@ theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
     Functor.map h ∘ Coe.coe = (Coe.coe ∘ Functor.map h : List α → Multiset β) := by
-  funext ; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
+  funext; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
 #align multiset.map_comp_coe Multiset.map_comp_coe
 
 theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
