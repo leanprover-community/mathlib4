@@ -150,6 +150,10 @@ type checking took 62.5s
 -- /-- Colquitt and Welsh (1988) -/
 -- example : (mersenne 110503).Prime :=
 --   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-
+norm_num took 69.8s
+type checking took 101s
+-/
 
 -- /-- Slowinski (1983) -/
 -- example : (mersenne 132049).Prime :=
