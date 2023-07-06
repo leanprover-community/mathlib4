@@ -29,89 +29,125 @@ example : (mersenne 2).Prime := by decide
 example : (mersenne 3).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 5).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 5).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 7).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 7).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 13).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 13).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 17).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 17).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 19).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 19).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- 2147483647.Prime, Euler (1772) -/
-example : (mersenne 31).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- 2147483647.Prime, Euler (1772) -/
+-- example : (mersenne 31).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Pervushin (1883), Seelhoff (1886) -/
-example : (mersenne 61).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Pervushin (1883), Seelhoff (1886) -/
+-- example : (mersenne 61).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 89).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 89).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 107).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 107).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Édouard Lucas (1876) -/
-example : (mersenne 127).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Édouard Lucas (1876) -/
+-- example : (mersenne 127).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Robinson and Lehmer using SWAC computer, (1952) -/
-example : (mersenne 521).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Robinson and Lehmer using SWAC computer, (1952) -/
+-- example : (mersenne 521).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 607).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 607).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 1279).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 1279).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 2203).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 2203).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 2281).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 2281).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Riesel (1957) -/
-example : (mersenne 3217).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Riesel (1957) -/
+-- example : (mersenne 3217).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Hurwitz (1961) -/
-example : (mersenne 4253).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Hurwitz (1961) -/
+-- example : (mersenne 4253).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 4423).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 4423).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Gillies (1963) -/
-example : (mersenne 9689).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Gillies (1963) -/
+-- example : (mersenne 9689).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 9941).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 9941).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-example : (mersenne 11213).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- example : (mersenne 11213).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Tuckerman (1971) -/
-example : (mersenne 19937).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Tuckerman (1971) -/
+-- example : (mersenne 19937).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Noll and Nickel (1978) -/
-example : (mersenne 21701).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Noll and Nickel (1978) -/
+-- example : (mersenne 21701).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
-/-- Noll (1979) -/
-example : (mersenne 23209).Prime :=
-  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+-- /-- Noll (1979) -/
+-- example : (mersenne 23209).Prime :=
+--   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+-- We now run into a little problem, that requires a small patch to the kernel.
+example : 2^25744 - (2^25744 - 1) = 1 := by norm_num
+example : 2^25745 - (2^25745 - 1) = 1 := by norm_num
 
 -- First failing example ("deep recursion detected")
-/-- Nelson and Slowinski (1979)) -/
+/-- Nelson and Slowinski (1979) -/
 example : (mersenne 44497).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski (1982) -/
+example : (mersenne 86243).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Colquitt and Welsh (1988) -/
+example : (mersenne 110503).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski (1983) -/
+example : (mersenne 132049).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski (1985) -/
+example : (mersenne 216091).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski and Gage (1992) -/
+example : (mersenne 756839).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski and Gage (1994) -/
+example : (mersenne 859433).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- Slowinski and Gage (1996) -/
+example : (mersenne 1257787).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+
+/-- GIMPS / Armengaud (1996) -/
+example : (mersenne 1398269).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
