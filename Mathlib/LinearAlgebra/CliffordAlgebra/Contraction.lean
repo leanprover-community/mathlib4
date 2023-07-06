@@ -139,8 +139,8 @@ theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
 #align clifford_algebra.contract_left_ι_mul CliffordAlgebra.contractLeft_ι_mul
 
 /-- This is [grinberg_clifford_2016][] Theorem 12  -/
-theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) : b * ι Q a⌊d = d a • b - b⌊d * ι Q a :=
-  by
+theorem contractRight_mul_ι (a : M) (b : CliffordAlgebra Q) :
+    b * ι Q a⌊d = d a • b - b⌊d * ι Q a := by
   rw [contractRight_eq, reverse.map_mul, reverse_ι, contractLeft_ι_mul, map_sub, map_smul,
     reverse_reverse, reverse.map_mul, reverse_ι, contractRight_eq]
 #align clifford_algebra.contract_right_mul_ι CliffordAlgebra.contractRight_mul_ι
