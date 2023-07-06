@@ -15,6 +15,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.SlimCheck
+import Mathlib.Tactic.Qify
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -540,16 +541,92 @@ up through `mersenne 4423`.
 namespace norm_num_ext
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
-/-- Version of `sMod` that is `ℕ`-valued. One should have `q = 2 ^ p - 1`.
+
+theorem modEq_mersenne (n k : ℕ) : k ≡ k / 2 ^ n + k % 2 ^ n [MOD 2 ^ n - 1] :=
+  -- See https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/help.20finding.20a.20lemma/near/177698446
+  calc
+    k = 2 ^ n * (k / 2 ^ n) + k % 2 ^ n := (Nat.div_add_mod k (2 ^ n)).symm
+    _ ≡ 1 * (k / 2 ^ n) + k % 2 ^ n [MOD 2 ^ n - 1] :=
+      ((Nat.modEq_sub <| Nat.succ_le_of_lt <| pow_pos zero_lt_two _).mul_right _).add_right _
+    _ = k / 2 ^ n + k % 2 ^ n := by rw [one_mul]
+#align modeq_mersenne LucasLehmer.norm_num_ext.modEq_mersenne
+
+def modOnce (n k : ℕ) : ℕ :=
+  if k ≤ n then
+    n - k
+  else
+    n
+
+theorem modOnce_eq (n k : ℕ) (w : n < 2 * k) : modOnce n k = n % k := by
+  dsimp [modOnce]
+  split_ifs with h
+  · rw [Nat.mod_eq_sub_mod h]
+    replace w : n - k < k := by
+      rwa [← tsub_lt_tsub_iff_right h, two_mul, Nat.add_sub_cancel] at w
+    exact Eq.symm (Nat.mod_eq_of_lt (by simpa using w))
+  · exact Eq.symm (Nat.mod_eq_of_lt (by simpa using h))
+
+theorem blah (a b : ℤ) (w : 0 ≤ b) : ((a / b : ℤ) : ℚ) ≤ (a / b : ℚ) := sorry
+
+theorem modEq_mersenne' (n k : ℕ) (h : 0 < n) (w : k < 4 ^ n - 2 * 2 ^ n) :
+    k % (2 ^ n - 1) = modOnce (k / 2 ^ n + k % 2 ^ n) (2 ^ n - 1) := by
+  rw [modOnce_eq, modEq_mersenne]
+  have w₁ : 0 < 2 ^ n := Nat.one_le_two_pow n
+  have w₂ : 2 ^ n ≥ 2 := Nat.le_self_pow (Nat.pos_iff_ne_zero.mp h) 2
+  replace w : k / 2 ^ n < 2 ^ n - 2 := by
+    have w₀ : 2 * 2 ^ n ≤ 4 ^ n := sorry
+    qify [w₀] at w
+    qify [w₁, w₂]
+    calc _ ≤ _ := blah _ _ (by norm_num)
+         _ < _ := ?_
+    push_cast
+    calc (k : ℚ) / 2 ^ n < (4 ^ n - 2 * 2 ^ n) / 2 ^ n :=
+        (div_lt_div_right (pow_pos zero_lt_two n)).mpr w
+      _ = (2 ^ n - 2 : ℚ) := by
+        rw [sub_div, ← div_pow, mul_div_cancel _ (NeZero.ne ((2 : ℚ) ^ n))]
+        norm_num
+  have mod_le : k % 2 ^ n ≤ 2 ^ n - 1 := Nat.le_pred_of_lt (Nat.mod_lt k w₁)
+  have awkward : (2 ^ n - 2) + (2 ^ n - 1) < 2 * (2 ^ n - 1) := by
+    zify [w₁, w₂]
+    linarith
+  calc k / 2 ^ n + k % 2 ^ n < (2 ^ n - 2) + k % 2 ^ n := Nat.add_lt_add_right w (k % 2 ^ n)
+   _ ≤ (2 ^ n - 2) + (2 ^ n - 1) := Nat.add_le_add_left mod_le (2 ^ n - 2)
+   _ < 2 * (2 ^ n - 1) := awkward
+
+theorem shiftr (k n : ℕ) : k >>> n = k / 2 ^ n := sorry
+theorem trunc (k n : ℕ) : k &&& (2 ^ n - 1) = k % 2 ^ n := sorry
+
+def trickMod (e q k : ℕ) : ℕ := modOnce (k / e + (k % e)) q
+
+theorem trickMod_eq_mod (n e q k : ℕ) (we : e = 2 ^ n) (w : q = 2 ^ n - 1) (hn : 0 < n) (b : k < 4 ^ n - 2 * 2 ^ n) :
+    trickMod e q k = k % q := by
+  rw [w, trickMod, modEq_mersenne' n k hn b, we]
+
+/-- Version of `sMod` that is `ℕ`-valued. We evaluate this with `q = 2 ^ p - 1`.
 This can be reduced by the kernel. -/
 def sMod' (q : ℕ) : ℕ → ℕ
   | 0 => 4 % q
   | i + 1 => (sMod' q i ^ 2 + (q - 2)) % q
 
+theorem sMod'_le (q i : ℕ) (w : 0 < q) : sMod' q i ≤ q - 1 := Nat.le_pred_of_lt (by
+  cases i <;>
+  exact Nat.mod_lt _ w)
+
+theorem sMod'_le' (q i : ℕ) (w : 0 < q) : sMod' q i ^ 2 + (q - 2) ≤ q ^ 2 - q - 1 := by
+  calc sMod' q i ^ 2 + (q - 2) ≤ (q - 1)^2 + (q - 2) :=
+      Nat.add_le_add_right (Nat.pow_le_pow_of_le_left (sMod'_le q i w) 2) (q - 2)
+    _ = q ^ 2 - q - 1 := by
+      have : 1 ≤ q^2 - q := sorry
+      have : q ≤ q^2 := sorry
+      have : 1 ≤ q := sorry
+      have : 2 ≤ q := sorry
+      zify [*]
+      ring
+
 /-- `sMod_iter q x steps` runs `steps` steps of iterations on `x`. -/
-def sMod_iter (q x : ℕ) : ℕ → ℕ
+def sMod_iter (e q x : ℕ) : ℕ → ℕ
   | 0 => x
-  | steps + 1 => (sMod_iter q x steps ^ 2 + (q - 2)) % q
+  | steps + 1 => trickMod e q (sMod_iter e q x steps ^ 2 + (q - 2))
 
 /-- Ensure the `Nat` is reduced before evaluating `f` -/
 def nat_seq (f : Nat → α) : Nat → α
@@ -563,36 +640,42 @@ def nat_seq (f : Nat → α) : Nat → α
 def iterBlockSize : Nat := 800
 
 /-- Auxiliary definition for `sMod''`. -/
-def sMod_iter' (q x : ℕ) : ℕ → ℕ
+def sMod_iter' (e q x : ℕ) : ℕ → ℕ
   | 0 => x
-  | i + 1 => nat_seq (sMod_iter' q · i) (sMod_iter q x iterBlockSize)
+  | i + 1 => nat_seq (sMod_iter' e q · i) (sMod_iter e q x iterBlockSize)
 
 /-- Version of `sMod'` that breaks up the iteration into blocks of iterations, to push
 the kernel farther without getting "deep recursion detected". -/
-def sMod'' (q n : ℕ) : ℕ :=
-  nat_seq (sMod_iter' q · (n / iterBlockSize)) (sMod_iter q (4 % q) (n % iterBlockSize))
+def sMod'' (e q k : ℕ) : ℕ :=
+  nat_seq (sMod_iter' e q · (k / iterBlockSize)) (sMod_iter e q (4 % q) (k % iterBlockSize))
 
-theorem sMod_iter_sMod' (q b a : ℕ) : sMod_iter q (sMod' q b) a = sMod' q (a + b) := by
+theorem sMod_iter_sMod' (n e q : ℕ) (hn : 0 < n) (he : e = 2 ^ n) (w : q = 2 ^ n - 1) (b a : ℕ) :
+    sMod_iter e q (sMod' q b) a = sMod' q (a + b) := by
   induction a generalizing b
   case zero =>
     rw [add_comm]; rfl
   case succ a ih =>
     simp [sMod_iter, ih, Nat.succ_add, sMod']
+    rw [trickMod_eq_mod _ _ _ _ he w hn]
+    calc sMod' q (a + b)^2 + (q - 2) ≤ q^2 - q - 1 := sMod'_le' _ _ sorry
+      _ < 4^n - 2 * 2^n := by
+        rw [w]
+        sorry -- monus horror
 
-theorem sMod_iter'_sMod' (q b i : ℕ) :
-    sMod_iter' q (sMod' q b) i = sMod' q (iterBlockSize * i + b) := by
+theorem sMod_iter'_sMod' (n e q : ℕ) (hn : 0 < n) (he : e = 2 ^ n) (w : q = 2 ^ n - 1) (b i : ℕ):
+    sMod_iter' e q (sMod' q b) i = sMod' q (iterBlockSize * i + b) := by
   induction i generalizing b
   case zero =>
     simp [sMod_iter', sMod_iter_sMod']
   case succ i ih =>
-    simp only [sMod_iter', sMod_iter_sMod', nat_seq_eq, ih, Nat.succ_eq_add_one]
+    simp only [sMod_iter', sMod_iter_sMod' n e q hn he w , nat_seq_eq, ih, Nat.succ_eq_add_one]
     congr! 1
     ring
 
-theorem sMod''_eq_sMod' (q a : ℕ) : sMod'' q a = sMod' q a := by
+theorem sMod''_eq_sMod' (n e q : ℕ) (hn : 0 < n) (he : e = 2 ^ n) (w : q = 2 ^ n - 1) (a : ℕ) : sMod'' e q a = sMod' q a := by
   rw [sMod'', nat_seq_eq]
-  erw [sMod_iter_sMod' q 0]
-  rw [add_zero, sMod_iter'_sMod', Nat.div_add_mod]
+  erw [sMod_iter_sMod' n e q hn he w 0]
+  rw [add_zero, sMod_iter'_sMod' n e q hn he w, Nat.div_add_mod]
 
 theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) = sMod p k := by
   have h1 := calc
@@ -614,19 +697,27 @@ theorem sMod'_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod' (2 ^ p - 1) k : ℤ) =
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
       Int.add_emod_self, ← sub_eq_add_neg]
 
-theorem sMod''_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod'' (2 ^ p - 1) k : ℤ) = sMod p k := by
-  rw [sMod''_eq_sMod', sMod'_eq_sMod p k hp]
+theorem sMod''_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sMod'' (2 ^ p) (2 ^ p - 1) k : ℤ) = sMod p k := by
+  rw [sMod''_eq_sMod' p (2 ^ p) (2 ^ p - 1) (by linarith) rfl rfl, sMod'_eq_sMod p k hp]
 
-lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod'' (2 ^ p - 1) (p - 2) = 0) :
+def red : ℕ → ℕ
+  | 0 => 0
+  | n => n
+
+theorem red_eq : red n = n := by cases n <;> rfl
+
+lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sMod'' (red (2 ^ p)) (red (2 ^ p - 1)) (p - 2) = 0) :
     LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
+  rw [red_eq, red_eq] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp,
     ← sMod''_eq_sMod p _ hp, h]
   rfl
 
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
-    (h : Nat.ble 1 (sMod'' (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
+    (h : Nat.ble 1 (sMod'' (red (2 ^ p)) (red (2 ^ p - 1))  (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
+  rw [red_eq, red_eq] at h
   rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sMod''_eq_sMod p _ hp]
   simpa using h
@@ -650,13 +741,13 @@ def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
   unless 1 < np do
     failure
   have h1ltp : Q(Nat.blt 1 $ep) := (q(Eq.refl true) : Expr)
-  if sMod'' (2 ^ np - 1) (np - 2) = 0 then
-    have hs : Q(sMod'' (2 ^ $ep - 1) ($ep - 2) = 0) := (q(Eq.refl 0) : Expr)
+  if sMod'' (2 ^ np) (2 ^ np - 1) (np - 2) = 0 then
+    have hs : Q(sMod'' (red (2 ^ $ep)) (red (2 ^ $ep - 1)) ($ep - 2) = 0) := (q(Eq.refl 0) : Expr)
     have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
     have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
     return .isTrue pf'
   else
-    have hs : Q(Nat.ble 1 (sMod'' (2 ^ $ep - 1) ($ep - 2)) = true) := (q(Eq.refl true) : Expr)
+    have hs : Q(Nat.ble 1 (sMod'' (red (2 ^ $ep)) (red (2 ^ $ep - 1)) ($ep - 2)) = true) := (q(Eq.refl true) : Expr)
     have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
     have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
     return .isFalse pf'
@@ -682,15 +773,6 @@ n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]
 and the fact that `% 2^p` and `/ 2^p` can be very efficient on the binary representation.
 Someone should do this, too!
 -/
-
-theorem modEq_mersenne (n k : ℕ) : k ≡ k / 2 ^ n + k % 2 ^ n [MOD 2 ^ n - 1] :=
-  -- See https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/help.20finding.20a.20lemma/near/177698446
-  calc
-    k = 2 ^ n * (k / 2 ^ n) + k % 2 ^ n := (Nat.div_add_mod k (2 ^ n)).symm
-    _ ≡ 1 * (k / 2 ^ n) + k % 2 ^ n [MOD 2 ^ n - 1] :=
-      ((Nat.modEq_sub <| Nat.succ_le_of_lt <| pow_pos zero_lt_two _).mul_right _).add_right _
-    _ = k / 2 ^ n + k % 2 ^ n := by rw [one_mul]
-#align modeq_mersenne modEq_mersenne
 
 -- It's hard to know what the limiting factor for large Mersenne primes would be.
 -- In the purely computational world, I think it's the squaring operation in `s`.

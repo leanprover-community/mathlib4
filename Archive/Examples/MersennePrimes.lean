@@ -112,6 +112,6 @@ example : (mersenne 23209).Prime :=
   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
 
 -- First failing example ("deep recursion detected")
--- /-- Nelson and Slowinski (1979)) -/
--- example : (mersenne 44497).Prime :=
---   lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
+/-- Nelson and Slowinski (1979)) -/
+example : (mersenne 44497).Prime :=
+  lucas_lehmer_sufficiency _ (by norm_num) (by norm_num)
