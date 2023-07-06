@@ -298,6 +298,15 @@ attribute [nolint simpNF]
   EffectiveEpiFamily.fac
   EffectiveEpiFamily.fac_assoc
 
+/-- The effective epi family structure on the identity -/
+def effectiveEpiFamilyStructId : EffectiveEpiFamilyStruct (α : Unit → C) (fun _ => 𝟙 (α ())) where
+  desc := fun e _ => e ()
+  fac := by aesop_cat
+  uniq := by aesop_cat
+
+instance : EffectiveEpiFamily (fun _ => X : Unit → C) (fun _ => 𝟙 X) :=
+  ⟨⟨effectiveEpiFamilyStructId⟩⟩
+
 example {B W : C} {α : Type _} (X : α → C) (π : (a : α) → (X a ⟶ B))
     [EffectiveEpiFamily X π] (e : (a : α) → (X a ⟶ W))
     (h : ∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
