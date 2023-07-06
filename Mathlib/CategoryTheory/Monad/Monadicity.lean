@@ -223,7 +223,7 @@ def counitCofork (B : D) :
 def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app (F.obj A.A))) G] :
-    IsColimit (unitCofork A) :=
+    IsColimit (unitCofork (G := G) A) :=
   isColimitOfHasCoequalizerOfPreservesColimit G _ _
 #align category_theory.monad.monadicity_internal.unit_colimit_of_preserves_coequalizer CategoryTheory.Monad.MonadicityInternal.unitColimitOfPreservesCoequalizer
 
@@ -237,7 +237,7 @@ def counitCoequalizerOfReflectsCoequalizer (B : D)
 
 theorem comparisonAdjunction_counit_app
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] (B : D) :
-    comparisonAdjunction.counit.app B = colimit.desc _ (counitCofork B) := by
+    (comparisonAdjunction (G := G)).counit.app B = colimit.desc _ (counitCofork B) := by
   apply coequalizer.hom_ext
   change
     coequalizer.π _ _ ≫ coequalizer.desc ((adj.homEquiv _ B).symm (𝟙 _)) _ =
