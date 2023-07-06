@@ -29,7 +29,7 @@ open scoped BigOperators
 -/
 structure ContinuousAlternatingMap (R M N ι : Type _) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
-    ContinuousMultilinearMap R (fun _ : ι => M) N, AlternatingMap R M N ι  where
+    ContinuousMultilinearMap R (fun _ : ι => M) N, AlternatingMap R M N ι where
 
 /-- Projection to `ContinuousMultilinearMap`s. -/
 add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
@@ -563,7 +563,7 @@ variable {R M M' N N' ι : Type _} [CommSemiring R] [AddCommMonoid M] [Module R 
 
 /-- `ContinuousAlternatingMap.compContinuousLinearMap` as a bundled `LinearMap`. -/
 @[simps]
-def compContinuousLinearMapₗ (f : M →L[R] M') : M' [Λ^ι]→L[R] N →ₗ[R] M [Λ^ι]→L[R] N where
+def compContinuousLinearMapₗ (f : M →L[R] M') : (M' [Λ^ι]→L[R] N) →ₗ[R] (M [Λ^ι]→L[R] N) where
   toFun g := g.compContinuousLinearMap f
   map_add' g g' := by ext; simp
   map_smul' c g := by ext; simp
@@ -572,7 +572,7 @@ variable (R M N N')
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled bilinear map. -/
 def _root_.ContinuousLinearMap.compContinuousAlternatingMapₗ :
-    (N →L[R] N') →ₗ[R] M [Λ^ι]→L[R] N →ₗ[R] M [Λ^ι]→L[R] N' :=
+    (N →L[R] N') →ₗ[R] (M [Λ^ι]→L[R] N) →ₗ[R] (M [Λ^ι]→L[R] N') :=
   LinearMap.mk₂ R ContinuousLinearMap.compContinuousAlternatingMap (fun f₁ f₂ g => rfl)
     (fun c f g => rfl) (fun f g₁ g₂ => by ext1; apply f.map_add) fun c f g => by ext1; simp
 
