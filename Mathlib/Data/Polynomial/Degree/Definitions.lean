@@ -715,8 +715,7 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
 theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   by_cases hp : (p = 0)
   · rw [hp, zero_add, natDegree_C, natDegree_zero]
-  · rw [← Ne.def] at hp
-    by_cases hpd: p.degree ≤ 0
+  · by_cases hpd: p.degree ≤ 0
     · rw [eq_C_of_degree_le_zero hpd, ← C_add, natDegree_C, natDegree_C]
     · apply natDegree_add_eq_left_of_natDegree_lt
       rw [natDegree_C a]
