@@ -12,7 +12,7 @@ import Mathlib.Tactic.Basic
 import Mathlib.Control.Traversable.Lemmas
 
 /-!
-## Automation to construct `traversable` instances
+## Automation to construct `Traversable` instances
 -/
 
 namespace Mathlib.Deriving.Traversable
@@ -262,7 +262,7 @@ partial def nestedTraverse (f v t : Expr) : TermElabM Expr := do
 
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
-``traverseField `foo f `α `(x : List α)`` synthesizes
+``traverseField `Foo f `α `(x : List α)`` synthesizes
 `traverse f x` as part of traversing `foo1`. -/
 def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
   let t ← whnf (← inferType e)
@@ -281,7 +281,7 @@ def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
 
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
-``traverseConstructor `foo1 `foo ad applInst f `α `β [`(x : List α), `(y : ℕ)]``
+``traverseConstructor `foo1 `Foo ad applInst f `α `β [`(x : List α), `(y : ℕ)]``
 synthesizes `foo1 <$> traverse f x <*> pure y.` -/
 def traverseConstructor (c n : Name) (ad : Expr) (applInst f α β : Expr) (args₀ : List Expr)
     (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do

@@ -1,4 +1,4 @@
-import Mathlib.Control.Traversable.Derive
+import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Control.Traversable.Instances
 
 universe u
