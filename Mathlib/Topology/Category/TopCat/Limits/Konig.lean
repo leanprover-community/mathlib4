@@ -125,15 +125,15 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
-theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty J]
+theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty.{u,u} J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :
-    Nonempty (TopCat.limitCone.{u} F).pt := by
+    Nonempty (TopCat.limitCone.{u, u} F).pt := by
   classical
   obtain ⟨u, hu⟩ :=
-    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed (fun G => partial_sections F _)
-      (partial_sections.directed F) (fun G => partial_sections.nonempty F _)
-      (fun G => IsClosed.isCompact (partial_sections.closed F _)) fun G =>
-      partial_sections.closed F _
+    IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed (fun G => partialSections F _)
+      (partialSections.directed F) (fun G => partialSections.nonempty F _)
+      (fun G => IsClosed.isCompact (partialSections.closed F _)) fun G =>
+      partialSections.closed F _
   use u
   intro X Y f
   let G : FiniteDiagram J :=
