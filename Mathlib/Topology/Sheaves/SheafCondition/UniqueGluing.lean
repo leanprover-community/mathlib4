@@ -120,9 +120,9 @@ theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
     simpa using h i j
   · intro i j
     convert congr_arg (Limits.Pi.π (fun p : ι × ι => F.obj (op (U p.1 ⊓ U p.2))) (i, j)) h
-    · rw [leftRes, Types.UnivLE.pi_lift_π_apply, piOpensIsoSectionsFamily_apply]
+    · rw [leftRes, Types.pi_lift_π_apply, piOpensIsoSectionsFamily_apply]
       rfl
-    · rw [rightRes, Types.UnivLE.pi_lift_π_apply]
+    · rw [rightRes, Types.pi_lift_π_apply]
       simp only [piOpensIsoSectionsFamily_apply]
       rfl
 set_option linter.uppercaseLean3 false in
@@ -142,7 +142,7 @@ theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
     simpa using h i
   · intro i
     convert congr_arg (Limits.Pi.π (fun i : ι => F.obj (op (U i))) i) h
-    rw [res, Types.UnivLE.pi_lift_π_apply]
+    rw [res, Types.pi_lift_π_apply]
     · rfl
     · simp
 set_option linter.uppercaseLean3 false in
