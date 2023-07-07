@@ -52,7 +52,7 @@ namespace Iso
 
 /-- The application of a natural isomorphism to an object. We put this definition in a different
 namespace, so that we can use `α.app` -/
-@[simps]
+@[simps, pp_dot]
 def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     F.obj X ≅ G.obj X where
   hom := α.hom.app X
@@ -62,8 +62,6 @@ def app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
 #align category_theory.iso.app CategoryTheory.Iso.app
 #align category_theory.iso.app_hom CategoryTheory.Iso.app_hom
 #align category_theory.iso.app_inv CategoryTheory.Iso.app_inv
-
-pp_extended_field_notation Iso.app
 
 @[reassoc (attr := simp)]
 theorem hom_inv_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :

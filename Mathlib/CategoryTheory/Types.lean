@@ -200,13 +200,12 @@ def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
 /-- The functor embedding `Type u` into `Type (max u v)`.
 Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
+@[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v
     where
   obj X := ULift.{v} X
   map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
 #align category_theory.ulift_functor CategoryTheory.uliftFunctor
-
-pp_with_univ uliftFunctor
 
 @[simp]
 theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
@@ -343,16 +342,14 @@ open CategoryTheory
 
 variable {X Y : Type u}
 
-/-- Any isomorphism between types gives an equivalence.
--/
+/-- Any isomorphism between types gives an equivalence. -/
+@[pp_dot]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
-
-pp_extended_field_notation Iso.toEquiv
 
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
