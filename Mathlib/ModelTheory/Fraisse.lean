@@ -235,14 +235,18 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
     refine DirectedSystem.natLeRec (G' := fun i => (G i).val) (L := L) ?_
     dsimp only
     exact (fun n => (hP _ n).some)
-  refine' ⟨Bundled.of (DirectLimit (fun n => G n) f), DirectLimit.cg _ fun n => (fg _ (G n).2).cg,
-    (age_directDimit _ _).trans
-      (subset_antisymm (iUnion_subset fun n N hN => hp (G n) (G n).2 hN) fun N KN => _)⟩
-  obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, Setoid.refl _⟩
-  refine' mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp _ e.symm.toEmbedding⟩⟩
-  cases n
-  · exact Embedding.refl _ _
-  · exact (hFP _ n).some
+  have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by
+    dsimp; infer_instance
+  refine ⟨Bundled.of (@DirectLimit L _ _ (fun n ↦ (G n).val) _ f _ _), ?_, ?_⟩
+  · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
+  · refine (age_directLimit (fun n ↦ (G n).val) f).trans
+      (subset_antisymm (iUnion_subset fun n N hN => hp (G n).val (G n).2 hN) fun N KN => ?_)
+    obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, ?_⟩
+    refine' mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp _ e.symm.toEmbedding⟩⟩
+    cases' n with n
+    · dsimp; exact Embedding.refl _ _
+    · -- dsimp -- Porting note: uncomment this and lots of stuff ↑ ↑ ↑ will break
+      exact (hFP _ n).some
 #align first_order.language.exists_cg_is_age_of FirstOrder.Language.exists_cg_is_age_of
 
 theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
