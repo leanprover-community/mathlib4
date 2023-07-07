@@ -338,8 +338,6 @@ theorem mapAccumr₂_redundant_pair (f : α → β → (σ × σ) → (σ × σ)
 
 end RedundantState
 
-
-
 /-!
 ## Unused input optimizations
 -/
