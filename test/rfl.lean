@@ -32,3 +32,15 @@ example (a : Foo) : a ≤ a := by rfl
 example (x : Nat) : x ≤ x := by
   show _
   rfl
+
+-- Reducible heads:
+axiom A : Prop
+axiom a : A
+
+@[reducible] def rel : Unit → Unit → Prop
+| _, _ => A
+
+@[refl] theorem rel.refl : rel () () := a
+
+example : rel () () := by rfl
+example : A := by rfl
