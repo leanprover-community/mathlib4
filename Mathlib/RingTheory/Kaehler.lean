@@ -470,9 +470,10 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
       Set.range fun x : R => single (algebraMap R S x) 1)
 #align kaehler_differential.ker_total KaehlerDifferential.kerTotal
 
--- mathport name: «expr 𝖣»
-local macro x:term "𝖣" y:term : term => `((KaehlerDifferential.kerTotal R S).mkQ (single $y $x))
--- local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
+-- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
+-- but `notation3` wants an explicit expansion to be able to generate a pretty printer.
+local notation3 x "𝖣" y =>
+  FunLike.coe (Submodule.mkQ (KaehlerDifferential.kerTotal R S)) (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
