@@ -163,10 +163,6 @@ theorem ofFin_toFin {n} (v : Bitvec n) : ofFin (toFin v) = v := by
   rw [toFin_val, ofNat_toNat]
 #align bitvec.of_fin_to_fin Bitvec.ofFin_toFin
 
-instance : NatCast (Bitvec n) := ⟨Bitvec.ofNat _⟩
-
-instance : IntCast (Bitvec n) := ⟨Bitvec.ofInt _⟩
-
 theorem foldl_addLsb_add : ∀ (n k : ℕ) (x : List Bool),
     x.foldl addLsb (n + k) = 2 ^ x.length * k + x.foldl addLsb n
   | n, k, [] => by simp [addLsb, add_comm, add_assoc, add_left_comm]
