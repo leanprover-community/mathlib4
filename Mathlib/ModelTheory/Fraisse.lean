@@ -285,7 +285,7 @@ variable {M}
 
 theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Amalgamation (L.age M) := by
-  rintro N P Q NP NQ ⟨Nfg, ⟨NM⟩⟩ ⟨Pfg, ⟨PM⟩⟩ ⟨Qfg, ⟨QM⟩⟩
+  rintro N P Q NP NQ ⟨Nfg, ⟨-⟩⟩ ⟨Pfg, ⟨PM⟩⟩ ⟨Qfg, ⟨QM⟩⟩
   obtain ⟨g, hg⟩ := h (PM.comp NP).toHom.range (Nfg.range _)
     ((QM.comp NQ).comp (PM.comp NP).equivRange.symm.toEmbedding)
   let s := (g.toHom.comp PM.toHom).range ⊔ QM.toHom.range
