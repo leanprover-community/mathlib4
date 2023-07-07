@@ -223,6 +223,7 @@ variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
 functors `f` and `g` -/
+-- Porting note: couldn't use category arrow `\hom` in statement, needed to expand
 def homotopicMapsNatIso : @Quiver.Hom _ Functor.category.toQuiver (πₘ f) (πₘ g) where
   app x := ⟦H.evalAt x⟧
   -- Porting note: Turned `rw` into `erw` in the line below
