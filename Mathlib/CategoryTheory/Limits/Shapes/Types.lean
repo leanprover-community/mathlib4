@@ -48,21 +48,12 @@ open CategoryTheory Limits
 
 namespace CategoryTheory.Limits.Types
 
-instance {β : Type v} (f : β → TypeMax.{v, u}) : HasProduct f :=
-HasLimitsOfShape.has_limit (Discrete.functor f)
-
--- This must have higher priority than the instance for `TypeMax`.
--- (Merely being defined later is enough, but that is fragile.)
-instance (priority := high) {β : Type v} (f : β → Type v) : HasProduct f :=
-HasLimitsOfShape.has_limit (Discrete.functor f)
-
-instance {β : Type v} (f : β → Type u) [UnivLE.{v, u}] : HasProduct f :=
-HasLimitsOfShape.has_limit (Discrete.functor f)
-
 example : HasProducts.{v} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 
-instance : HasProducts.{v₁} (Type v₁) := inferInstance
+-- This shortcut instance is required in `Mathlib.CategoryTheory.Closed.Types`,
+-- although I don't understand why, and wish it wasn't.
+instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 @[simp 1001]
