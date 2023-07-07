@@ -10,7 +10,8 @@ import Mathlib.Topology.MetricSpace.Dilation
 -/
 
 open scoped NNReal ENNReal
-open Function Set Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
+open Function Set
+open Dilation (ratio ratio_ne_zero ratio_pos edist_eq)
 
 section Class
 
@@ -74,7 +75,7 @@ def refl (X : Type _) [PseudoEMetricSpace X] : X ≃ᵈ X where
   edist_eq' := ⟨1, one_ne_zero, fun _ _ ↦ by simp⟩
 
 @[simp] theorem refl_symm : (refl X).symm = refl X := rfl
-@[simp] theorem refl_ratio : ratio (refl X) = 1 := Dilation.id_ratio
+@[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
 @[simps! (config := .asFn) apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
@@ -95,14 +96,14 @@ protected theorem bijective (e : X ≃ᵈ Y) : Bijective e := e.1.bijective
 protected theorem injective (e : X ≃ᵈ Y) : Injective e := e.1.injective
 
 @[simp]
-theorem trans_ratio (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
-  -- If `X` is nontrivial, then we apply `Dilation.comp_ratio'`
+theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ratio e * ratio e' := by
+  -- If `X` is trivial, then so is `Y`, otherwise we apply `Dilation.ratio_comp'`
   by_cases hX : ∀ x y : X, edist x y = 0 ∨ edist x y = ∞
   · have hY : ∀ x y : Y, edist x y = 0 ∨ edist x y = ∞ := e.surjective.forall₂.2 fun x y ↦ by
       refine (hX x y).imp (fun h ↦ ?_) fun h ↦ ?_ <;> simp [*, Dilation.ratio_ne_zero]
     simp [Dilation.ratio_of_trivial, *]
   push_neg at hX
-  exact (Dilation.comp_ratio' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
+  exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
 
 instance : Group (X ≃ᵈ X) where
   mul e e' := e'.trans e
@@ -124,15 +125,15 @@ theorem coe_inv (e : X ≃ᵈ X) : ⇑(e⁻¹) = e.symm := rfl
 /-- Dilation.ratio as a mo-/
 noncomputable def ratioHom : (X ≃ᵈ X) →* ℝ≥0 where
   toFun := Dilation.ratio
-  map_one' := refl_ratio
-  map_mul' _ _ := (trans_ratio _ _).trans (mul_comm _ _)
+  map_one' := ratio_refl
+  map_mul' _ _ := (ratio_trans _ _).trans (mul_comm _ _)
 
 @[simp]
-theorem pow_ratio (e : X ≃ᵈ X) (n : ℕ) : ratio (e ^ n) = ratio e ^ n :=
+theorem ratio_pow (e : X ≃ᵈ X) (n : ℕ) : ratio (e ^ n) = ratio e ^ n :=
   ratioHom.map_pow _ _
 
 @[simp]
-theorem zpow_ratio (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
+theorem ratio_zpow (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
   ratioHom.map_zpow _ _
 
 @[simps]

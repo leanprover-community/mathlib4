@@ -291,14 +291,14 @@ theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 #align dilation.coe_id Dilation.coe_id
 
-theorem id_ratio : ratio (Dilation.id α) = 1 := by
+theorem ratio_id : ratio (Dilation.id α) = 1 := by
   by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · rw [ratio, if_pos h]
   · push_neg at h
     rcases h with ⟨x, y, hne⟩
     refine' (ratio_unique hne.1 hne.2 _).symm
     simp
-#align dilation.id_ratio Dilation.id_ratio
+#align dilation.id_ratio Dilation.ratio_id
 
 /-- The composition of dilations is a dilation -/
 def comp (g : β →ᵈ γ) (f : α →ᵈ β) : α →ᵈ γ where
@@ -325,16 +325,16 @@ theorem comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : 
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
 that there exist two points in `α` at extended distance neither `0` nor `∞` because otherwise
 `Dilation.ratio (g.comp f) = Dilation.ratio f = 1` while `Dilation.ratio g` can by any number. This
-version works for most general spaces, see also `Dilation.comp_ratio` for a version assuming that
+version works for most general spaces, see also `Dilation.ratio_comp` for a version assuming that
 `α` is a nontrivial metric space. -/
-theorem comp_ratio' {g : β →ᵈ γ} {f : α →ᵈ β}
+theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
     (hne : ∃ x y : α, edist x y ≠ 0 ∧ edist x y ≠ ⊤) : ratio (g.comp f) = ratio g * ratio f := by
   rcases hne with ⟨x, y, hα⟩
   have hgf := (edist_eq (g.comp f) x y).symm
   simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_eq_mul_right hα.1 hα.2]
     at hgf
   rwa [← ENNReal.coe_eq_coe, ENNReal.coe_mul]
-#align dilation.comp_ratio Dilation.comp_ratio'
+#align dilation.comp_ratio Dilation.ratio_comp'
 
 @[simp]
 theorem comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
@@ -371,18 +371,22 @@ theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align dilation.coe_mul Dilation.coe_mul
 
-@[simp] theorem one_ratio : ratio (1 : α →ᵈ α) = 1 := id_ratio
+@[simp] theorem ratio_one : ratio (1 : α →ᵈ α) = 1 := ratio_id
 
 @[simp]
-theorem mul_ratio (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
+theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
   by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · simp [ratio_of_trivial, h]
   push_neg at h
-  exact comp_ratio' h
+  exact ratio_comp' h
 
 /-- `Dilation.ratio` as a monoid homomorphism from `α →ᵈ α` to `ℝ≥0`. -/
 @[simps]
-def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, one_ratio⟩, mul_ratio⟩
+def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
+
+@[simp]
+theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
+  ratioHom.map_pow _ _
 
 theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
@@ -476,11 +480,11 @@ end EmetricDilation
 that the domain `α` of `f` is a nontrivial metric space, otherwise
 `Dilation.ratio f = Dilation.ratio (g.comp f) = 1` but `Dilation.ratio g` may have any value.
 
-See also `Dilation.comp_ratio'` for a version that works for more general spaces. -/
+See also `Dilation.ratio_comp'` for a version that works for more general spaces. -/
 @[simp]
-theorem comp_ratio [MetricSpace α] [Nontrivial α] [PseudoEMetricSpace β]
+theorem ratio_comp [MetricSpace α] [Nontrivial α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] {g : β →ᵈ γ} {f : α →ᵈ β} : ratio (g.comp f) = ratio g * ratio f :=
-  comp_ratio' <|
+  ratio_comp' <|
     let ⟨x, y, hne⟩ := exists_pair_ne α; ⟨x, y, mt edist_eq_zero.1 hne, edist_ne_top _ _⟩
 
 section PseudoMetricDilation
