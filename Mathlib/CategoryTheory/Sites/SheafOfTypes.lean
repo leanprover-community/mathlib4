@@ -892,7 +892,7 @@ variable {P R}
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₁ =
       (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₂) : z₁ = z₂ := by
-  apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+  apply Limits.Types.limit_ext
   rintro ⟨⟨Y, f, hf⟩⟩
   exact h Y f hf
 
@@ -942,7 +942,7 @@ variable {P S}
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₁ =
       (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₂) : z₁ = z₂ := by
-  apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+  apply Limits.Types.limit_ext
   rintro ⟨⟨Y, Z, g, f, hf⟩⟩
   apply h
 
@@ -1057,7 +1057,7 @@ theorem compatible_iff (x : FirstObj P R) :
   rw [Presieve.pullbackCompatible_iff]
   constructor
   · intro t
-    apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+    apply Limits.Types.limit_ext
     rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
     simpa [firstMap, secondMap] using t hf hg
   · intro t Y Z f g hf hg

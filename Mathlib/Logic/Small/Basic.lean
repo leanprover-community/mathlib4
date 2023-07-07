@@ -52,6 +52,11 @@ noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 #align equiv_shrink equivShrink
 
+@[ext]
+theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
+    (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
+  simpa using w
+
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/JLimperg/aesop/issues/59
 -- is resolved.
