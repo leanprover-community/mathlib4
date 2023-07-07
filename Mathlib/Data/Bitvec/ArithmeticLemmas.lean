@@ -34,16 +34,16 @@ end Vector
 
 namespace Bool
   @[simp]
-  theorem xor3_false_left : Bitvec.xor3 false x y = xor x y := by
-    simp only [Bitvec.xor3, xor_false_left]
+  theorem xor3_false_left : Bool.xor3 false x y = xor x y := by
+    simp only [Bool.xor3, xor_false_left]
 
   @[simp]
-  theorem xor3_false_middle : Bitvec.xor3 x false y = xor x y := by
-    simp only [Bitvec.xor3, xor_false_right]
+  theorem xor3_false_middle : Bool.xor3 x false y = xor x y := by
+    simp only [Bool.xor3, xor_false_right]
 
   @[simp]
-  theorem xor3_false_right : Bitvec.xor3 x y false = xor x y := by
-    simp only [Bitvec.xor3, xor_false_right]
+  theorem xor3_false_right : Bool.xor3 x y false = xor x y := by
+    simp only [Bool.xor3, xor_false_right]
 end Bool
 
 
@@ -79,7 +79,6 @@ theorem neg_neg_x : neg (neg x) = x := by
   aesop_bitvec
 
 
-
 theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x &&& y = 0) :
     x + y = x ||| y := by
   simp[(· + ·), Add.add, (· ||| ·), OrOp.or, Bitvec.or]
@@ -93,6 +92,6 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x &&& y = 0) 
     specialize ih tail
     have head : (x = false) ∨ (y = false) := by
       revert head; simp
-    cases head <;> simp_all[Bitvec.carry]
+    cases head <;> simp_all [Bool.carry]
 
 end Bitvec

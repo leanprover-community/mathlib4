@@ -89,8 +89,8 @@ namespace Bitvec.Tactic
   attribute [aesop norm simp (rule_sets [Mathlib.Data.Bitvec])]
     Bitvec.add
     Bitvec.adc
-    Bitvec.carry
-    Bitvec.xor3
+    Bool.carry
+    Bool.xor3
     Bitvec.sub
     Bitvec.sbb
     Bitvec.neg
@@ -144,7 +144,7 @@ namespace Bitvec.Tactic
           (· * ·), Mul.mul,
           (· / ·), Div.div
         ] <;>
-        aesop (rule_sets [Mathlib.Data.Bitvec]) $opt*
+        aesop (rule_sets [Mathlib.Data.Bitvec]) (options := {terminal := false}) $opt*
     )
 
   macro "aesop_bitvec?" opt:Aesop.tactic_clause* : tactic =>
@@ -153,7 +153,7 @@ namespace Bitvec.Tactic
           (· * ·), Mul.mul,
           (· / ·), Div.div
         ] <;>
-        aesop? (rule_sets [Mathlib.Data.Bitvec]) $opt*
+        aesop? (rule_sets [Mathlib.Data.Bitvec]) (options := {terminal := false}) $opt*
       )
 
 end Bitvec.Tactic
