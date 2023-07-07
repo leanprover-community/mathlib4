@@ -295,11 +295,14 @@ theorem IsUltrahomogeneous.amalgamation_age (h : L.IsUltrahomogeneous M) :
     Embedding.comp (Substructure.inclusion le_sup_right) QM.equivRange.toEmbedding,
     ⟨(fg_iff_structure_fg _).1 (FG.sup (Pfg.range _) (Qfg.range _)), ⟨Substructure.subtype _⟩⟩, _⟩
   ext n
+  apply Subtype.ext
   have hgn := (Embedding.ext_iff.1 hg) ((PM.comp NP).equivRange n)
   simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.symm_apply_apply,
     Substructure.coeSubtype, Embedding.equivRange_apply] at hgn
-  simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Substructure.coe_inclusion,
-    Set.coe_inclusion, Embedding.equivRange_apply, hgn]
+  simp only [Embedding.comp_apply, Equiv.coe_toEmbedding]
+  erw [Substructure.coe_inclusion, Substructure.coe_inclusion]
+  simp only [Embedding.comp_apply, Equiv.coe_toEmbedding, Set.coe_inclusion,
+    Embedding.equivRange_apply, hgn]
 #align first_order.language.is_ultrahomogeneous.amalgamation_age FirstOrder.Language.IsUltrahomogeneous.amalgamation_age
 
 theorem IsUltrahomogeneous.age_isFraisse [Countable M] (h : L.IsUltrahomogeneous M) :
