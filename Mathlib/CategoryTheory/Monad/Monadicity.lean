@@ -263,7 +263,6 @@ monadicity theorem, the converse is given in `monadic_of_creates_G_split_coequal
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
-  infer_instance
   · apply preservesColimitOfIsoDiagram _ (diagramIsoParallelPair.{v₁} _).symm
     dsimp
     infer_instance
