@@ -471,18 +471,19 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
 #align kaehler_differential.ker_total KaehlerDifferential.kerTotal
 
 -- mathport name: «expr 𝖣»
-local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
+local macro x:term "𝖣" y:term : term => `((KaehlerDifferential.kerTotal R S).mkQ (single $y $x))
+-- local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
-  rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub, Submodule.mkQ_apply,
-    Submodule.Quotient.mk_eq_zero]
+  rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
+    Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
   simp_rw [← Finsupp.smul_single_one _ z, ← smul_add, ← smul_sub]
   exact Submodule.smul_mem _ _ (Submodule.subset_span (Or.inl <| Or.inl <| ⟨⟨_, _⟩, rfl⟩))
 #align kaehler_differential.ker_total_mkq_single_add KaehlerDifferential.kerTotal_mkQ_single_add
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_mul (x y z) :
     (z𝖣x * y) = ((z * x)𝖣y) + (z * y)𝖣x := by
-  rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub, Submodule.mkQ_apply,
+  rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)), Submodule.mkQ_apply,
     Submodule.Quotient.mk_eq_zero]
   simp_rw [← Finsupp.smul_single_one _ z, ← @smul_eq_mul _ _ z, ← Finsupp.smul_single, ← smul_add,
     ← smul_sub]
@@ -502,6 +503,9 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r •
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
     KaehlerDifferential.kerTotal_mkQ_single_algebraMap, add_zero, ← LinearMap.map_smul_of_tower,
     Finsupp.smul_single, mul_comm, Algebra.smul_def]
+  -- Porting note: apparently the proof was original done here
+  congr 2
+  rw [mul_comm]
 #align kaehler_differential.ker_total_mkq_single_smul KaehlerDifferential.kerTotal_mkQ_single_smul
 
 /-- The (universal) derivation into `(S →₀ S) ⧸ KaehlerDifferential.kerTotal R S`. -/
@@ -582,9 +586,9 @@ variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
 
 -- mathport name: exprfinsupp_map
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
-local notation "finsupp_map" =>
-  (Finsupp.mapRange.linearMap (Algebra.ofId A B).toLinearMap).comp
-    (Finsupp.lmapDomain A A (algebraMap A B))
+local macro "finsupp_map" : term =>
+  `((Finsupp.mapRange.linearMap (Algebra.ofId A B).toLinearMap).comp
+    (Finsupp.lmapDomain A A (algebraMap A B)))
 
 theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
@@ -638,12 +642,12 @@ A --→ B
 R --→ S -/
 def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
-    (((KaehlerDifferential.D S B).restrictScalars R).comp_algebraMap A)
+    (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)
 #align kaehler_differential.map KaehlerDifferential.map
 
 theorem KaehlerDifferential.map_compDer :
     (KaehlerDifferential.map R S A B).compDer (KaehlerDifferential.D R A) =
-      ((KaehlerDifferential.D S B).restrictScalars R).comp_algebraMap A :=
+      ((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A :=
   Derivation.liftKaehlerDifferential_comp _
 #align kaehler_differential.map_comp_der KaehlerDifferential.map_compDer
 
