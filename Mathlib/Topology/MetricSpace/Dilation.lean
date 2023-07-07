@@ -28,6 +28,10 @@ infinite distance.
 * `Dilation.ratio f : ℝ≥0`: the value of `r` in the relation above, defaulting to 1 in the case
   where it is not well-defined.
 
+## Notation
+
+- `α →ᵈ β`: notation for `Dilation α β`.
+
 ## Implementation notes
 
 The type of dilations defined in this file are also referred to as "similarities" or "similitudes"
@@ -40,7 +44,7 @@ needed.
 ## TODO
 
 - Introduce dilation equivs.
-- Refactor the `isometry` API to match the `*HomClass` API below.
+- Refactor the `Isometry` API to match the `*HomClass` API below.
 
 ## References
 
