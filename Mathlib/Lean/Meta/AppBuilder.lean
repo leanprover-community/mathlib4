@@ -5,7 +5,6 @@ Authors: Thomas Murrills
 -/
 import Lean
 import Std.Tactic.OpenPrivate
-import Mathlib.Control.Basic
 import Mathlib.Tactic.Alias
 
 /-!
