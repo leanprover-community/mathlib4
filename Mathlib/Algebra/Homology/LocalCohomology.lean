@@ -249,7 +249,12 @@ instance ideal_powers_initial [hR : IsNoetherian R R] : Functor.Initial (idealPo
         left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩ }
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
 
-set_option pp.universes true in
+-- FIXME again, this instance is not found by `inferInstance`, but `#synth` finds it just fine.
+-- #synth HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R)
+instance : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) :=
+  ModuleCat.Colimits.hasColimitsOfSize_zero_moduleCat.{u, u}
+
+example : HasColimitsOfSize.{0, 0, u, u + 1} (ModuleCat.{u, u} R) := inferInstance
 /-- Local cohomology (defined in terms of powers of `J`) agrees with local
 cohomology computed over all ideals with radical containing `J`. -/
 def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
