@@ -232,7 +232,7 @@ theorem toNat_tail : ∀ {n : Nat} (x : Bitvec n), Bitvec.toNat x.tail = x.toNat
   | n+1, ⟨a::l, h⟩ => by
     conv_lhs => rw [← Nat.mod_eq_of_lt (Bitvec.toNat_lt (Vector.tail ⟨a::l, h⟩))]
     simp only [List.length_cons, Nat.succ.injEq] at h
-    simp only [Bitvec.toNat, bitsToNat, foldl_addLsb_cons_zero, Vector.toList, h]
+    simp only [Bitvec.toNat, bitsToNat, foldl_addLsb_cons_zero, Vector.toList, h, Vector.foldl]
     simp only [Vector.tail_val, List.tail_cons, ge_iff_le, add_le_iff_nonpos_left,
       nonpos_iff_eq_zero, add_tsub_cancel_right, mul_comm, Nat.mul_add_mod]
 
