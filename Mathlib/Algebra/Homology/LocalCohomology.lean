@@ -125,7 +125,6 @@ def diagramComp (i : ℕ) : diagram (I' ⋙ I) i ≅ I'.op ⋙ diagram I i :=
   Iso.refl _
 #align local_cohomology.diagram_comp localCohomology.diagramComp
 
-set_option pp.universes true in
 /-- Local cohomology agrees along precomposition with a cofinal diagram. -/
 def isoOfFinal [Functor.Initial I'] (i : ℕ) :
     ofDiagram.{max u v, v'} (I' ⋙ I) i ≅ ofDiagram.{max u v', v} I i :=
@@ -147,13 +146,12 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLERadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
---deriving Category
+#align local_cohomology.self_le_radical localCohomology.SelfLERadical
 
 -- Porting note: `deriving Category` is not able to derive this instance
+-- https://github.com/leanprover-community/mathlib4/issues/5020
 instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
-
-#align local_cohomology.self_le_radical localCohomology.SelfLERadical
 
 instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J)
     where default := ⟨J, Ideal.le_radical⟩
@@ -233,24 +231,22 @@ theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.
   calc
     I ^ k ≤ J.radical ^ k := Ideal.pow_mono hIJ _
     _ ≤ J := hk
-
 #align local_cohomology.ideal.exists_pow_le_of_le_radical_of_fg localCohomology.Ideal.exists_pow_le_of_le_radical_of_fG
-#check zigzag_isConnected
+
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
 radical containing `J`. This uses noetherianness. -/
 instance ideal_powers_initial [hR : IsNoetherian R R] : Functor.Initial (idealPowersToSelfLERadical J)
     where out J' := by
-    { apply @zigzag_isConnected _ _ _
+    { apply (config := {allowSynthFailures := true }) zigzag_isConnected
+      . obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
+        exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
       . intro j1 j2
         apply Relation.ReflTransGen.single
         -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
         -- which exponent is larger.
         cases' le_total (unop j1.left) (unop j2.left) with h h
         right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
-        left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
-      . obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
-        exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
-    }
+        left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩ }
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
 
 set_option pp.universes true in
@@ -258,8 +254,7 @@ set_option pp.universes true in
 cohomology computed over all ideals with radical containing `J`. -/
 def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u,u} R R] (i : ℕ) :
     localCohomology.ofSelfLERadical.{u} J i ≅ localCohomology.{u} J i :=
-  (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J) (selfLERadicalDiagram.{u} J)
-        i).symm ≪≫
+  (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J) (selfLERadicalDiagram.{u} J) i).symm ≪≫
     HasColimit.isoOfNatIso.{0,0,u+1,u+1} (Iso.refl.{u+1,u+1} _)
 #align local_cohomology.iso_self_le_radical localCohomology.isoSelfLERadical
 
@@ -274,11 +269,10 @@ def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfL
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.
 instance SelfLERadical.castIsEquivalence (hJK : J.radical = K.radical) :
-    IsEquivalence (SelfLERadical.cast hJK)
-    where
+    IsEquivalence (SelfLERadical.cast hJK) where
   inverse := SelfLERadical.cast hJK.symm
-  unitIso := by sorry -- was "by tidy"
-  counitIso := by sorry -- was "by tidy"
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 #align local_cohomology.self_le_radical.cast_is_equivalence localCohomology.SelfLERadical.castIsEquivalence
 
 /-- The natural isomorphism between local cohomology defined using the `of_self_le_radical`
