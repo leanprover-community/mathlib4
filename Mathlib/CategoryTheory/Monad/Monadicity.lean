@@ -59,9 +59,6 @@ namespace MonadicityInternal
 
 section
 
--- Porting note: is it correct that I replaced `parameter` with `variable` in all 3 rows below?
--- We use these parameters and notations to simplify the statements of internal constructions
--- here.
 variable {C : Type u₁} {D : Type u₂}
 
 variable [Category.{v₁} C] [Category.{v₁} D]
@@ -94,15 +91,15 @@ instance main_pair_reflexive (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra)
 `G`-split pair, and will be used to construct the left adjoint to the comparison functor and show it
 is an equivalence.
 -/
-instance main_pair_G_split (A : adj.toMonad.Algebra) :
-    G.IsSplitPair (F.map A.a) (adj.counit.app ((leftAdjoint G).obj A.A))
+instance main_pair_G_split (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra) :
+    G.IsSplitPair ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))
     where splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.monadicity_internal.main_pair_G_split CategoryTheory.Monad.MonadicityInternal.main_pair_G_split
 
 /-- The object function for the left adjoint to the comparison functor. -/
-def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
-    [HasCoequalizer ((leftAdjoint G).map A.a) (adj.counit.app _)] : D :=
+def comparisonLeftAdjointObj (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra)
+    [HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 #align category_theory.monad.monadicity_internal.comparison_left_adjoint_obj CategoryTheory.Monad.MonadicityInternal.comparisonLeftAdjointObj
 
@@ -160,16 +157,16 @@ def leftAdjointComparison
 -- Porting note: changed `simps` to `simps!`
 @[simps! counit]
 def comparisonAdjunction
-    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer (F.map A.a)
-      (adj.counit.app (F.obj A.A))] :
+    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer ((leftAdjoint G).map A.a)
+      ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))] :
     leftAdjointComparison ⊣ comparison (Adjunction.ofRightAdjoint G) :=
   Adjunction.adjunctionOfEquivLeft _ _
 #align category_theory.monad.monadicity_internal.comparison_adjunction CategoryTheory.Monad.MonadicityInternal.comparisonAdjunction
 
 theorem comparisonAdjunction_unit_f_aux
-    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer (F.map A.a)
-      (adj.counit.app (F.obj A.A))]
-    (A : adj.toMonad.Algebra) :
+    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer ((leftAdjoint G).map A.a)
+      ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))]
+    (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra) :
     (comparisonAdjunction.unit.app A).f =
       (Adjunction.ofRightAdjoint G).homEquiv A.A _
         (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
@@ -221,8 +218,8 @@ def counitCofork (B : D) :
 
 /-- The unit cofork is a colimit provided `G` preserves it.  -/
 def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
-    [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
-    [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app (F.obj A.A))) G] :
+    [HasCoequalizer ((leftAdjoint G).map A.a) (adj.counit.app ((leftAdjoint G).obj A.A))]
+    [PreservesColimit (parallelPair (F.map A.a) (adj.counit.app ((leftAdjoint G).obj A.A))) G] :
     IsColimit (unitCofork (G := G) A) :=
   isColimitOfHasCoequalizerOfPreservesColimit G _ _
 #align category_theory.monad.monadicity_internal.unit_colimit_of_preserves_coequalizer CategoryTheory.Monad.MonadicityInternal.unitColimitOfPreservesCoequalizer
@@ -230,13 +227,13 @@ def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
 /-- The counit cofork is a colimit provided `G` reflects it. -/
 def counitCoequalizerOfReflectsCoequalizer (B : D)
     [ReflectsColimit
-        (parallelPair (F.map (G.map (adj.counit.app B))) (adj.counit.app (F.obj (G.obj B)))) G] :
+        (parallelPair ((leftAdjoint G).map (G.map (adj.counit.app B))) (adj.counit.app ((leftAdjoint G).obj (G.obj B)))) G] :
     IsColimit (counitCofork (G := G) B) :=
   isColimitOfIsColimitCoforkMap G _ (beckCoequalizer ((comparison adj).obj B))
 #align category_theory.monad.monadicity_internal.counit_coequalizer_of_reflects_coequalizer CategoryTheory.Monad.MonadicityInternal.counitCoequalizerOfReflectsCoequalizer
 
 theorem comparisonAdjunction_counit_app
-    [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] (B : D) :
+    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))] (B : D) :
     (comparisonAdjunction (G := G)).counit.app B = colimit.desc _ (counitCofork B) := by
   apply coequalizer.hom_ext
   change
