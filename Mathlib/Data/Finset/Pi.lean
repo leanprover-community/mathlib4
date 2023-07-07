@@ -107,7 +107,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
                     Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
       _ (insert_val_of_not_mem ha)
   subst s'; rw [pi_cons]
-  congr ; funext b
+  congr; funext b
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 #align finset.pi_insert Finset.pi_insert
 
@@ -117,7 +117,7 @@ theorem pi_singletons {β : Type _} (s : Finset α) (f : α → β) :
   constructor
   · simp
   intro a ha
-  ext (i hi)
+  ext i hi
   rw [mem_pi] at ha
   simpa using ha i hi
 #align finset.pi_singletons Finset.pi_singletons

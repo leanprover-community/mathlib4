@@ -89,7 +89,8 @@ set_option linter.uppercaseLean3 false in
 @[elementwise]
 theorem w : res F U ≫ leftRes F U = res F U ≫ rightRes F U := by
   dsimp [res, leftRes, rightRes]
-  -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+  -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   refine limit.hom_ext (fun _ => ?_)
   simp only [limit.lift_π, limit.lift_π_assoc, Fan.mk_π_app, Category.assoc]
   rw [← F.map_comp]
@@ -162,13 +163,15 @@ def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
     (by
       rintro ⟨⟩ ⟨⟩ ⟨⟩
       · simp
-      · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+      · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        -- See https://github.com/leanprover-community/mathlib4/issues/5229
         refine limit.hom_ext (fun _ => ?_)
         simp only [leftRes, piOpens.isoOfIso, piInters.isoOfIso, parallelPair_map_left,
           Functor.mapIso_hom, lim_map, limit.lift_map, limit.lift_π, Cones.postcompose_obj_π,
           NatTrans.comp_app, Fan.mk_π_app, Discrete.natIso_hom_app, Iso.app_hom, Category.assoc,
           NatTrans.naturality, limMap_π_assoc]
-      · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+      · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        -- See https://github.com/leanprover-community/mathlib4/issues/5229
         refine limit.hom_ext (fun _ => ?_)
         simp only [rightRes, piOpens.isoOfIso, piInters.isoOfIso, parallelPair_map_right,
           Functor.mapIso_hom, lim_map, limit.lift_map, limit.lift_π, Cones.postcompose_obj_π,
@@ -187,7 +190,8 @@ def fork.isoOfIso (α : F ≅ G) :
     fork F U ≅ (Cones.postcompose (diagram.isoOfIso U α).inv).obj (fork G U) := by
   fapply Fork.ext
   · apply α.app
-  · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext (fun _ => ?_)
     dsimp only [Fork.ι]
     -- Ugh, `simp` can't unfold abbreviations.
@@ -231,14 +235,16 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           (Pi.lift fun b : ι × ι => c.π.app (op (pair b.1 b.2)))
       naturality := fun Y Z f => by
         cases Y <;> cases Z <;> cases f
-        · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+          -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun i => ?_
           dsimp
           simp only [limit.lift_π, Category.id_comp, Fan.mk_π_app, CategoryTheory.Functor.map_id,
             Category.assoc]
           dsimp
           simp only [limit.lift_π, Category.id_comp, Fan.mk_π_app]
-        · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+          -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun ⟨i, j⟩ => ?_
           dsimp [SheafConditionEqualizerProducts.leftRes]
           simp only [limit.lift_π, limit.lift_π_assoc, Category.id_comp, Fan.mk_π_app,
@@ -246,7 +252,8 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           have h := c.π.naturality (Quiver.Hom.op (Hom.left i j))
           dsimp at h
           simpa using h
-        · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+          -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun ⟨i, j⟩ => ?_
           dsimp [SheafConditionEqualizerProducts.rightRes]
           simp only [limit.lift_π, limit.lift_π_assoc, Category.id_comp, Fan.mk_π_app,
@@ -254,7 +261,8 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
           have h := c.π.naturality (Quiver.Hom.op (Hom.right i j))
           dsimp at h
           simpa using h
-        · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+        · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+          -- See https://github.com/leanprover-community/mathlib4/issues/5229
           refine limit.hom_ext fun i => ?_
           dsimp
           simp only [limit.lift_π, Category.id_comp, Fan.mk_π_app, CategoryTheory.Functor.map_id,
@@ -276,7 +284,9 @@ def coneEquivFunctor :
     { Hom := f.Hom
       w := fun j => by
         cases j <;>
-          · refine limit.hom_ext fun i => ?_
+          · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+            -- See https://github.com/leanprover-community/mathlib4/issues/5229
+            refine limit.hom_ext fun i => ?_
             simp only [Limits.Fan.mk_π_app, Limits.ConeMorphism.w, Limits.limit.lift_π,
               Category.assoc, coneEquivFunctorObj_π_app] }
 set_option linter.uppercaseLean3 false in
@@ -371,12 +381,6 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
-  hom_inv_id := by
-    ext
-    simp only [Category.comp_id, (. ≫ .), (𝟙 .)]
-  inv_hom_id := by
-    ext
-    simp only [Category.comp_id, (. ≫ .), (𝟙 .)]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.cone_equiv_unit_iso_app TopCat.Presheaf.SheafConditionPairwiseIntersections.coneEquivUnitIsoApp
 
@@ -399,11 +403,13 @@ def coneEquivCounitIso :
           { Hom := 𝟙 _
             w := by
               rintro ⟨_ | _⟩
-              · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+                -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨j⟩ => ?_
                 dsimp [coneEquivInverse]
                 simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π]
-              · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+                -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨i, j⟩ => ?_
                 dsimp [coneEquivInverse]
                 simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
@@ -411,22 +417,16 @@ def coneEquivCounitIso :
           { Hom := 𝟙 _
             w := by
               rintro ⟨_ | _⟩
-              · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+                -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨j⟩ => ?_
                 dsimp [coneEquivInverse]
                 simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π]
-              · -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+              · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+                -- See https://github.com/leanprover-community/mathlib4/issues/5229
                 refine limit.hom_ext fun ⟨i, j⟩ => ?_
                 dsimp [coneEquivInverse]
-                simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
-        hom_inv_id := by
-          ext
-          dsimp
-          simp only [Category.comp_id]
-        inv_hom_id := by
-          ext
-          dsimp
-          simp only [Category.comp_id] })
+                simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] } })
     fun {c d} f => by
     ext
     dsimp
@@ -462,10 +462,9 @@ def isLimitMapConeOfIsLimitSheafConditionFork
         { Hom := 𝟙 _
           w := by
             intro x
-            induction x using Opposite.rec' with | h x => ?_
+            induction x with | h x => ?_
             rcases x with ⟨⟩
-            · dsimp
-              simp
+            · simp
               rfl
             · dsimp [coneEquivInverse, SheafConditionEqualizerProducts.res,
                 SheafConditionEqualizerProducts.leftRes]
@@ -477,25 +476,16 @@ def isLimitMapConeOfIsLimitSheafConditionFork
         { Hom := 𝟙 _
           w := by
             intro x
-            induction x using Opposite.rec' with | h x => ?_
+            induction x with | h x => ?_
             rcases x with ⟨⟩
-            · dsimp
-              simp
+            · simp
               rfl
             · dsimp [coneEquivInverse, SheafConditionEqualizerProducts.res,
                 SheafConditionEqualizerProducts.leftRes]
               simp only [limit.lift_π, limit.lift_π_assoc, Category.id_comp, Fan.mk_π_app,
                 Category.assoc]
               rw [← F.map_comp]
-              rfl }
-      hom_inv_id := by
-        ext
-        dsimp
-        simp only [Category.comp_id]
-      inv_hom_id := by
-        ext
-        dsimp
-        simp only [Category.comp_id] }
+              rfl } }
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.is_limit_map_cone_of_is_limit_sheaf_condition_fork TopCat.Presheaf.SheafConditionPairwiseIntersections.isLimitMapConeOfIsLimitSheafConditionFork
 
@@ -509,11 +499,10 @@ def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U)
         { Hom := 𝟙 _
           w := by
             rintro ⟨⟩
-            · dsimp
-              simp
+            · simp
               rfl
-            · dsimp
-              -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+            · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+              -- See https://github.com/leanprover-community/mathlib4/issues/5229
               refine limit.hom_ext fun ⟨i, j⟩ => ?_
               dsimp [coneEquivInverse, SheafConditionEqualizerProducts.res,
                 SheafConditionEqualizerProducts.leftRes]
@@ -525,26 +514,17 @@ def isLimitSheafConditionForkOfIsLimitMapCone (Q : IsLimit (F.mapCone (cocone U)
         { Hom := 𝟙 _
           w := by
             rintro ⟨⟩
-            · dsimp
-              simp
+            · simp
               rfl
-            · dsimp
-              -- Porting note : Lean can't use `limit.hom_ext` as `ext` lemma
+            · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+              -- See https://github.com/leanprover-community/mathlib4/issues/5229
               refine limit.hom_ext fun ⟨i, j⟩ => ?_
               dsimp [coneEquivInverse, SheafConditionEqualizerProducts.res,
                 SheafConditionEqualizerProducts.leftRes]
               simp only [limit.lift_π, limit.lift_π_assoc, Category.id_comp, Fan.mk_π_app,
                 Category.assoc]
               rw [← F.map_comp]
-              rfl }
-      hom_inv_id := by
-        ext
-        dsimp
-        simp only [Category.comp_id]
-      inv_hom_id := by
-        ext
-        dsimp
-        simp only [Category.comp_id] }
+              rfl } }
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_pairwise_intersections.is_limit_sheaf_condition_fork_of_is_limit_map_cone TopCat.Presheaf.SheafConditionPairwiseIntersections.isLimitSheafConditionForkOfIsLimitMapCone
 

@@ -315,7 +315,7 @@ theorem iInf_eq_of_tendsto {α} [TopologicalSpace α] [CompleteLinearOrder α] [
 
 theorem iSup_eq_iSup_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
-    (hφ : Tendsto φ l atTop) : (⨆ i, f i) = ⨆ i, f (φ i) :=
+    (hφ : Tendsto φ l atTop) : ⨆ i, f i = ⨆ i, f (φ i) :=
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : i ≤ φ j) => hf hj) (hφ.eventually <| eventually_ge_atTop i).exists)
@@ -324,6 +324,6 @@ theorem iSup_eq_iSup_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι�
 
 theorem iInf_eq_iInf_subseq_of_monotone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Monotone f)
-    (hφ : Tendsto φ l atBot) : (⨅ i, f i) = ⨅ i, f (φ i) :=
+    (hφ : Tendsto φ l atBot) : ⨅ i, f i = ⨅ i, f (φ i) :=
   iSup_eq_iSup_subseq_of_monotone hf.dual hφ
 #align infi_eq_infi_subseq_of_monotone iInf_eq_iInf_subseq_of_monotone

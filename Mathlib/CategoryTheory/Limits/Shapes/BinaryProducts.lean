@@ -709,7 +709,7 @@ section ProdLemmas
 -- Making the reassoc version of this a simp lemma seems to be more harmful than helpful.
 @[reassoc, simp]
 theorem prod.comp_lift {V W X Y : C} [HasBinaryProduct X Y] (f : V ⟶ W) (g : W ⟶ X) (h : W ⟶ Y) :
-    f ≫ prod.lift g h = prod.lift (f ≫ g) (f ≫ h) := by apply prod.hom_ext; simp; simp
+    f ≫ prod.lift g h = prod.lift (f ≫ g) (f ≫ h) := by ext <;> simp
 #align category_theory.limits.prod.comp_lift CategoryTheory.Limits.prod.comp_lift
 #align category_theory.limits.prod.comp_lift_assoc CategoryTheory.Limits.prod.comp_lift_assoc
 
@@ -733,18 +733,18 @@ theorem prod.map_snd {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z]
 
 @[simp]
 theorem prod.map_id_id {X Y : C} [HasBinaryProduct X Y] : prod.map (𝟙 X) (𝟙 Y) = 𝟙 _ := by
-  apply prod.hom_ext; simp; simp
+  ext <;> simp
 #align category_theory.limits.prod.map_id_id CategoryTheory.Limits.prod.map_id_id
 
 @[simp]
 theorem prod.lift_fst_snd {X Y : C} [HasBinaryProduct X Y] :
-    prod.lift prod.fst prod.snd = 𝟙 (X ⨯ Y) := by apply prod.hom_ext; simp; simp
+    prod.lift prod.fst prod.snd = 𝟙 (X ⨯ Y) := by ext <;> simp
 #align category_theory.limits.prod.lift_fst_snd CategoryTheory.Limits.prod.lift_fst_snd
 
 @[reassoc (attr := simp)]
 theorem prod.lift_map {V W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : V ⟶ W)
     (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
-    prod.lift f g ≫ prod.map h k = prod.lift (f ≫ h) (g ≫ k) := by apply prod.hom_ext; simp; simp
+    prod.lift f g ≫ prod.map h k = prod.lift (f ≫ h) (g ≫ k) := by ext <;> simp
 #align category_theory.limits.prod.lift_map CategoryTheory.Limits.prod.lift_map
 #align category_theory.limits.prod.lift_map_assoc CategoryTheory.Limits.prod.lift_map_assoc
 
@@ -761,7 +761,7 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
 @[reassoc (attr := simp)]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
     [HasBinaryProduct A₃ B₃] (f : A₁ ⟶ A₂) (g : B₁ ⟶ B₂) (h : A₂ ⟶ A₃) (k : B₂ ⟶ B₃) :
-    prod.map f g ≫ prod.map h k = prod.map (f ≫ h) (g ≫ k) := by apply prod.hom_ext; simp; simp
+    prod.map f g ≫ prod.map h k = prod.map (f ≫ h) (g ≫ k) := by ext <;> simp
 #align category_theory.limits.prod.map_map CategoryTheory.Limits.prod.map_map
 #align category_theory.limits.prod.map_map_assoc CategoryTheory.Limits.prod.map_map_assoc
 
@@ -804,7 +804,7 @@ instance isIso_prod {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] 
 instance prod.map_mono {C : Type _} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryProduct W X] [HasBinaryProduct Y Z] : Mono (prod.map f g) :=
   ⟨fun i₁ i₂ h => by
-    apply prod.hom_ext
+    ext
     · rw [← cancel_mono f]
       simpa using congr_arg (fun f => f ≫ prod.fst) h
     · rw [← cancel_mono g]
@@ -841,7 +841,7 @@ section CoprodLemmas
 @[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
-  apply coprod.hom_ext; simp; simp
+  ext <;> simp
 #align category_theory.limits.coprod.desc_comp CategoryTheory.Limits.coprod.desc_comp
 
 -- Porting note: hand generated reassoc here. Simp can prove it
@@ -870,12 +870,12 @@ theorem coprod.inr_map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduc
 
 @[simp]
 theorem coprod.map_id_id {X Y : C} [HasBinaryCoproduct X Y] : coprod.map (𝟙 X) (𝟙 Y) = 𝟙 _ := by
-  apply coprod.hom_ext; simp; simp
+  ext <;> simp
 #align category_theory.limits.coprod.map_id_id CategoryTheory.Limits.coprod.map_id_id
 
 @[simp]
 theorem coprod.desc_inl_inr {X Y : C} [HasBinaryCoproduct X Y] :
-    coprod.desc coprod.inl coprod.inr = 𝟙 (X ⨿ Y) := by apply coprod.hom_ext; simp; simp
+    coprod.desc coprod.inl coprod.inr = 𝟙 (X ⨿ Y) := by ext <;> simp
 #align category_theory.limits.coprod.desc_inl_inr CategoryTheory.Limits.coprod.desc_inl_inr
 
 -- The simp linter says simp can prove the reassoc version of this lemma.
@@ -883,7 +883,7 @@ theorem coprod.desc_inl_inr {X Y : C} [HasBinaryCoproduct X Y] :
 theorem coprod.map_desc {S T U V W : C} [HasBinaryCoproduct U W] [HasBinaryCoproduct T V]
     (f : U ⟶ S) (g : W ⟶ S) (h : T ⟶ U) (k : V ⟶ W) :
     coprod.map h k ≫ coprod.desc f g = coprod.desc (h ≫ f) (k ≫ g) := by
-  apply coprod.hom_ext; simp; simp
+  ext <;> simp
 #align category_theory.limits.coprod.map_desc CategoryTheory.Limits.coprod.map_desc
 #align category_theory.limits.coprod.map_desc_assoc CategoryTheory.Limits.coprod.map_desc_assoc
 
@@ -901,7 +901,7 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
 theorem coprod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
     [HasBinaryCoproduct A₃ B₃] (f : A₁ ⟶ A₂) (g : B₁ ⟶ B₂) (h : A₂ ⟶ A₃) (k : B₂ ⟶ B₃) :
     coprod.map f g ≫ coprod.map h k = coprod.map (f ≫ h) (g ≫ k) := by
-  apply coprod.hom_ext; simp; simp
+  ext <;> simp
 #align category_theory.limits.coprod.map_map CategoryTheory.Limits.coprod.map_map
 #align category_theory.limits.coprod.map_map_assoc CategoryTheory.Limits.coprod.map_map_assoc
 
@@ -944,7 +944,7 @@ instance isIso_coprod {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct
 instance coprod.map_epi {C : Type _} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] : Epi (coprod.map f g) :=
   ⟨fun i₁ i₂ h => by
-    apply coprod.hom_ext
+    ext
     · rw [← cancel_epi f]
       simpa using congr_arg (fun f => coprod.inl ≫ f) h
     · rw [← cancel_epi g]
@@ -1048,14 +1048,6 @@ theorem prod.symmetry (P Q : C) [HasBinaryProduct P Q] [HasBinaryProduct Q P] :
 def prod.associator [HasBinaryProducts C] (P Q R : C) : (P ⨯ Q) ⨯ R ≅ P ⨯ Q ⨯ R where
   hom := prod.lift (prod.fst ≫ prod.fst) (prod.lift (prod.fst ≫ prod.snd) prod.snd)
   inv := prod.lift (prod.lift prod.fst (prod.snd ≫ prod.fst)) (prod.snd ≫ prod.snd)
-  hom_inv_id := by
-    apply prod.hom_ext
-    · apply prod.hom_ext; simp; simp
-    · simp
-  inv_hom_id := by
-    apply prod.hom_ext
-    · simp
-    · apply prod.hom_ext; simp; simp
 #align category_theory.limits.prod.associator CategoryTheory.Limits.prod.associator
 
 @[reassoc]
@@ -1083,10 +1075,7 @@ variable [HasTerminal C]
 def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P where
   hom := prod.snd
   inv := prod.lift (terminal.from P) (𝟙 _)
-  hom_inv_id := by
-    apply prod.hom_ext
-    · simp
-    · simp
+  hom_inv_id := by apply prod.hom_ext <;> simp
   inv_hom_id := by simp
 #align category_theory.limits.prod.left_unitor CategoryTheory.Limits.prod.leftUnitor
 
@@ -1095,10 +1084,7 @@ def prod.leftUnitor (P : C) [HasBinaryProduct (⊤_ C) P] : (⊤_ C) ⨯ P ≅ P
 def prod.rightUnitor (P : C) [HasBinaryProduct P (⊤_ C)] : P ⨯ ⊤_ C ≅ P where
   hom := prod.fst
   inv := prod.lift (𝟙 _) (terminal.from P)
-  hom_inv_id := by
-    apply prod.hom_ext
-    · simp
-    · simp
+  hom_inv_id := by apply prod.hom_ext <;> simp
   inv_hom_id := by simp
 #align category_theory.limits.prod.right_unitor CategoryTheory.Limits.prod.rightUnitor
 
@@ -1133,7 +1119,7 @@ theorem prod_rightUnitor_inv_naturality [HasBinaryProducts C] (f : X ⟶ Y) :
 theorem prod.triangle [HasBinaryProducts C] (X Y : C) :
     (prod.associator X (⊤_ C) Y).hom ≫ prod.map (𝟙 X) (prod.leftUnitor Y).hom =
       prod.map (prod.rightUnitor X).hom (𝟙 Y) :=
-  by dsimp; apply prod.hom_ext; simp; simp;
+  by ext <;> simp
 #align category_theory.limits.prod.triangle CategoryTheory.Limits.prod.triangle
 
 end
@@ -1167,14 +1153,6 @@ theorem coprod.symmetry (P Q : C) : (coprod.braiding P Q).hom ≫ (coprod.braidi
 def coprod.associator (P Q R : C) : (P ⨿ Q) ⨿ R ≅ P ⨿ Q ⨿ R where
   hom := coprod.desc (coprod.desc coprod.inl (coprod.inl ≫ coprod.inr)) (coprod.inr ≫ coprod.inr)
   inv := coprod.desc (coprod.inl ≫ coprod.inl) (coprod.desc (coprod.inr ≫ coprod.inl) coprod.inr)
-  hom_inv_id := by
-    apply coprod.hom_ext
-    · apply coprod.hom_ext; simp; simp
-    · simp
-  inv_hom_id := by
-    apply coprod.hom_ext
-    · simp
-    · apply coprod.hom_ext; simp; simp
 #align category_theory.limits.coprod.associator CategoryTheory.Limits.coprod.associator
 
 theorem coprod.pentagon (W X Y Z : C) :
@@ -1198,10 +1176,7 @@ variable [HasInitial C]
 def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
   hom := coprod.desc (initial.to P) (𝟙 _)
   inv := coprod.inr
-  hom_inv_id := by
-    apply coprod.hom_ext
-    · simp
-    · simp
+  hom_inv_id := by apply coprod.hom_ext <;> simp
   inv_hom_id := by simp
 #align category_theory.limits.coprod.left_unitor CategoryTheory.Limits.coprod.leftUnitor
 
@@ -1210,17 +1185,14 @@ def coprod.leftUnitor (P : C) : (⊥_ C) ⨿ P ≅ P where
 def coprod.rightUnitor (P : C) : P ⨿ ⊥_ C ≅ P where
   hom := coprod.desc (𝟙 _) (initial.to P)
   inv := coprod.inl
-  hom_inv_id := by
-    apply coprod.hom_ext
-    · simp
-    · simp
+  hom_inv_id := by apply coprod.hom_ext <;> simp
   inv_hom_id := by simp
 #align category_theory.limits.coprod.right_unitor CategoryTheory.Limits.coprod.rightUnitor
 
 theorem coprod.triangle (X Y : C) :
     (coprod.associator X (⊥_ C) Y).hom ≫ coprod.map (𝟙 X) (coprod.leftUnitor Y).hom =
       coprod.map (coprod.rightUnitor X).hom (𝟙 Y) :=
-  by dsimp; apply coprod.hom_ext; simp; simp
+  by ext <;> simp
 #align category_theory.limits.coprod.triangle CategoryTheory.Limits.coprod.triangle
 
 end

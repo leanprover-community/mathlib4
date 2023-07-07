@@ -504,8 +504,6 @@ theorem exists_factorization_lt_of_lt {a b : ℕ} (ha : a ≠ 0) (hab : a < b) :
     ∃ p : ℕ, a.factorization p < b.factorization p := by
   have hb : b ≠ 0 := (ha.bot_lt.trans hab).ne'
   contrapose! hab
-  -- Porting note: `push_neg` fails to push the negation
-  simp_rw [not_exists, not_lt] at hab
   rw [← Finsupp.le_def, factorization_le_iff_dvd hb ha] at hab
   exact le_of_dvd ha.bot_lt hab
 #align nat.exists_factorization_lt_of_lt Nat.exists_factorization_lt_of_lt

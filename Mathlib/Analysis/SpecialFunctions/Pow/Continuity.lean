@@ -64,7 +64,7 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
       dsimp only
       rw [cpow_def_of_ne_zero hx]
   refine' IsOpen.eventually_mem _ hp_fst
-  change IsOpen ({ x : ℂ × ℂ | x.1 = 0 }ᶜ)
+  change IsOpen { x : ℂ × ℂ | x.1 = 0 }ᶜ
   rw [isOpen_compl_iff]
   exact isClosed_eq continuous_fst continuous_const
 #align cpow_eq_nhds' cpow_eq_nhds'
@@ -354,7 +354,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
           ((continuous_re.comp continuous_snd).tendsto _) _ <;>
       simp [hz, Real.zero_rpow hz.ne']
   · simp only [Function.comp, Real.norm_eq_abs, abs_of_pos (Real.exp_pos _)]
-    rcases exists_gt (|im z|) with ⟨C, hC⟩
+    rcases exists_gt |im z| with ⟨C, hC⟩
     refine' ⟨Real.exp (π * C), eventually_map.2 _⟩
     refine'
       (((continuous_im.comp continuous_snd).abs.tendsto (_, z)).eventually (gt_mem_nhds hC)).mono

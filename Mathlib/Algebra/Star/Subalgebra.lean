@@ -725,7 +725,7 @@ variable {F R A B : Type _} [CommSemiring R] [StarRing R]
 
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 
-variable [Semiring B] [Algebra R B] [StarRing B]
+variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
 
 variable [hF : StarAlgHomClass F R A B] (f g : F)
 
@@ -775,4 +775,62 @@ theorem ext_adjoin_singleton {a : A} [StarAlgHomClass F R (adjoin R ({a} : Set A
       h
 #align star_alg_hom.ext_adjoin_singleton StarAlgHom.ext_adjoin_singleton
 
+/-- Range of a `StarAlgHom` as a star subalgebra. -/
+protected def range
+    (φ : A →⋆ₐ[R] B) : StarSubalgebra R B where
+  toSubalgebra := φ.toAlgHom.range
+  star_mem' := by rintro _ ⟨b, rfl⟩; exact ⟨star b, map_star φ b⟩
+
+theorem range_eq_map_top (φ : A →⋆ₐ[R] B) : φ.range = (⊤ : StarSubalgebra R A).map φ :=
+  StarSubalgebra.ext fun x =>
+    ⟨by rintro ⟨a, ha⟩; exact ⟨a, by simp, ha⟩, by rintro ⟨a, -, ha⟩; exact ⟨a, ha⟩⟩
+
+/-- Restriction of the codomain of a `StarAlgHom` to a star subalgebra containing the range. -/
+protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
+    A →⋆ₐ[R] S where
+  toAlgHom := AlgHom.codRestrict f.toAlgHom S.toSubalgebra hf
+  map_star' := fun x => Subtype.ext (map_star f x)
+
+/-- Restriction of the codomain of a `StarAlgHom` to its range. -/
+def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
+  StarAlgHom.codRestrict f _ fun x => ⟨x, rfl⟩
+
+/-- The `StarAlgEquiv` onto the range corresponding to an injective `StarAlgHom`. -/
+@[simps]
+noncomputable def _root_.StarAlgEquiv.ofInjective (f : A →⋆ₐ[R] B)
+    (hf : Function.Injective f) : A ≃⋆ₐ[R] f.range :=
+  { AlgEquiv.ofInjective (f : A →ₐ[R] B) hf with
+    toFun := f.rangeRestrict
+    map_star' := fun a => Subtype.ext (map_star f a)
+    map_smul' := fun r a => Subtype.ext (map_smul f r a) }
 end StarAlgHom
+
+
+section RestrictScalars
+
+variable (R : Type _) {S A B : Type _} [CommSemiring R]
+  [CommSemiring S] [Semiring A] [Semiring B] [Algebra R S] [Algebra S A] [Algebra S B]
+  [Algebra R A] [Algebra R B] [IsScalarTower R S A] [IsScalarTower R S B] [Star A] [Star B]
+
+@[simps!]
+def StarAlgHom.restrictScalars (f : A →⋆ₐ[S] B) : A →⋆ₐ[R] B where
+  toAlgHom := f.toAlgHom.restrictScalars R
+  map_star' := map_star f
+
+theorem StarAlgHom.restrictScalars_injective :
+    Function.Injective (StarAlgHom.restrictScalars R : (A →⋆ₐ[S] B) → A →⋆ₐ[R] B) :=
+  fun f g h => StarAlgHom.ext fun x =>
+    show f.restrictScalars R x = g.restrictScalars R x from FunLike.congr_fun h x
+
+@[simps]
+def StarAlgEquiv.restrictScalars (f : A ≃⋆ₐ[S] B) : A ≃⋆ₐ[R] B :=
+  { (f : A →⋆ₐ[S] B).restrictScalars R, f with
+    toFun := f
+    map_smul' := map_smul ((f : A →⋆ₐ[S] B).restrictScalars R) }
+
+theorem StarAlgEquiv.restrictScalars_injective :
+    Function.Injective (StarAlgEquiv.restrictScalars R : (A ≃⋆ₐ[S] B) → A ≃⋆ₐ[R] B) :=
+  fun f g h => StarAlgEquiv.ext fun x =>
+    show f.restrictScalars R x = g.restrictScalars R x from FunLike.congr_fun h x
+
+end RestrictScalars

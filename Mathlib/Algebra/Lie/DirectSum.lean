@@ -207,7 +207,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' x, toModule R ι L' f' (of L i y)⁆ by
         simp only [← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
-        congr; clear y; ext (i y); exact this i y
+        congr; clear y; ext i y; exact this i y
       -- Similarly, we can reduce to the case that `x` has only one non-zero component.
       suffices ∀ (i j) (y : L i) (x : L j),
           toModule R ι L' f' ⁅of L j x, of L i y⁆ =
@@ -216,7 +216,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
         simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
-        congr; clear x; ext (j x); exact this j i x y
+        congr; clear x; ext j x; exact this j i x y
       -- Tidy up and use `lie_of`.
       intro i j y x
       simp only [lie_of R, lieAlgebraOf_apply, LieHom.coe_toLinearMap, toAddMonoid_of,

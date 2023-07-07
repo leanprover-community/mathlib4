@@ -74,7 +74,8 @@ variable (R M N ι)
 /-- An alternating map is a multilinear map that vanishes when two of its arguments are equal.
 -/
 structure AlternatingMap extends MultilinearMap R (fun _ : ι => M) N where
-  map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι) (_ : v i = v j) (_ : i ≠ j), toFun v = 0
+  /-- The map is alternating: if `v` has two equal coordinates, then `f v = 0`. -/
+  map_eq_zero_of_eq' : ∀ (v : ι → M) (i j : ι), v i = v j → i ≠ j → toFun v = 0
 #align alternating_map AlternatingMap
 
 end
@@ -232,7 +233,7 @@ theorem map_zero [Nonempty ι] : f 0 = 0 :=
 
 theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v) : f v = 0 := by
   rw [Function.Injective] at hv
-  push_neg  at hv
+  push_neg at hv
   rcases hv with ⟨i₁, i₂, heq, hne⟩
   exact f.map_eq_zero_of_eq v heq hne
 #align alternating_map.map_eq_zero_of_not_injective AlternatingMap.map_eq_zero_of_not_injective
@@ -357,6 +358,11 @@ theorem zero_apply : (0 : AlternatingMap R M N ι) v = 0 :=
 theorem coe_zero : ((0 : AlternatingMap R M N ι) : MultilinearMap R (fun _ : ι => M) N) = 0 :=
   rfl
 #align alternating_map.coe_zero AlternatingMap.coe_zero
+
+@[simp]
+theorem mk_zero :
+    mk (0 : MultilinearMap R (fun _ : ι ↦ M) N) (0 : AlternatingMap R M N ι).2 = 0 :=
+  rfl
 
 instance inhabited : Inhabited (AlternatingMap R M N ι) :=
   ⟨0⟩

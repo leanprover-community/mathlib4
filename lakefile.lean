@@ -3,7 +3,8 @@ import Lake
 open Lake DSL
 
 def moreServerArgs := #[
-  "-Dpp.unicode.fun=true" -- pretty-prints `fun a ↦ b`
+  "-Dpp.unicode.fun=true", -- pretty-prints `fun a ↦ b`
+  "-DrelaxedAutoImplicit=false"
 ]
 
 -- These settings only apply during `lake build`, but not in VSCode editor.
@@ -41,3 +42,9 @@ lean_exe cache where
 
 lean_lib MathlibExtras where
   roots := #[`MathlibExtras]
+
+lean_lib Archive where
+  roots := #[`Archive]
+
+lean_lib Counterexamples where
+  roots := #[`Counterexamples]

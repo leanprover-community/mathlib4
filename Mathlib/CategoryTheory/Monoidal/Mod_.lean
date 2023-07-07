@@ -77,6 +77,7 @@ instance : Category (Mod_ A) where
   comp f g := comp f g
 
 -- porting note: added because `Hom.ext` is not triggered automatically
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
   Hom.ext _ _ h
