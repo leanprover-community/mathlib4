@@ -160,13 +160,13 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
 noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app X)] : B ⥤ A := by
   refine' Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ Y X) _
   intro X Y Y' g h
-  rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply, Function.comp_apply,
-    Function.comp_apply, Equiv.trans_apply, Equiv.trans_apply, Equiv.trans_apply, Equiv.trans_apply,
-    Equiv.symm_apply_eq, Subtype.ext_iff, Cofork.IsColimit.homIso_natural, Equiv.apply_symm_apply,
-    Equiv.subtypeEquiv_apply, Equiv.subtypeEquiv_apply, Equiv.subtypeEquiv_apply,
-    Equiv.subtypeEquiv_apply, Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk, Subtype.coe_mk,
-    ← adj₁.homEquiv_naturality_right_symm, Cofork.IsColimit.homIso_natural,
-    adj₂.homEquiv_naturality_right, Functor.comp_map]
+  rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
+    Equiv.symm_apply_eq, Subtype.ext_iff]
+  dsimp
+  rw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
+  erw [adj₂.homEquiv_naturality_right]
+  simp_rw [Functor.comp_map]
+  simp
 #align category_theory.lift_adjoint.construct_left_adjoint CategoryTheory.LiftAdjoint.constructLeftAdjoint
 
 end LiftAdjoint
