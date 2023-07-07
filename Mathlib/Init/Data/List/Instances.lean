@@ -14,9 +14,7 @@ import Mathlib.Init.Data.List.Lemmas
 Decidable Instances for `List` not (yet) in `Std`
 -/
 
-universe u
-
-attribute [local simp] List.join List.ret
+universe u v w
 
 namespace List
 
