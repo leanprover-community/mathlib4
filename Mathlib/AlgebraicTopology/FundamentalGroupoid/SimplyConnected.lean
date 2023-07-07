@@ -8,10 +8,10 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathbin.Topology.Homotopy.Contractible
-import Mathbin.CategoryTheory.Punit
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.Punit
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+import Mathlib.Topology.Homotopy.Contractible
+import Mathlib.CategoryTheory.Punit
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.Punit
 
 /-!
 # Simply connected spaces
@@ -87,8 +87,7 @@ attribute [local instance] Path.Homotopic.setoid
 theorem simply_connected_iff_paths_homotopic {Y : Type _} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
-  ⟨by intro; constructor <;> infer_instance, fun h =>
-    by
+  ⟨by intro; constructor <;> infer_instance, fun h => by
     cases h; rw [simply_connected_iff_unique_homotopic]
     exact ⟨inferInstance, fun x y => ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
 #align simply_connected_iff_paths_homotopic simply_connected_iff_paths_homotopic
@@ -96,8 +95,7 @@ theorem simply_connected_iff_paths_homotopic {Y : Type _} [TopologicalSpace Y] :
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
 theorem simply_connected_iff_paths_homotopic' {Y : Type _} [TopologicalSpace Y] :
     SimplyConnectedSpace Y ↔
-      PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ :=
-  by
+      PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
 #align simply_connected_iff_paths_homotopic' simply_connected_iff_paths_homotopic'
