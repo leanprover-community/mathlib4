@@ -11,6 +11,8 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Localized Module
@@ -34,6 +36,7 @@ localize `M` by `S`. This gives us a `Localization S`-module.
   we have `mk r s • mk m t = mk (r • m) (s * t)` where `mk r s : Localization S` is localized ring
   by `S`.
 * `LocalizedModule.isModule` : `LocalizedModule M S` is a `Localization S`-module.
+* `IsLocalizedModule.IsBaseChange` : A localization of modules is a base change.
 
 ## Future work
 
@@ -1081,6 +1084,83 @@ theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [A
 #align is_localized_module.mk_of_algebra IsLocalizedModule.mkOfAlgebra
 
 end Algebra
+
+variable [Module (Localization S) M'] [IsScalarTower R (Localization S) M']
+
+/--
+- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
+- `(localization S) × M → N, (s, m) ↦ s • f m` is a tensor product.
+- In particular, there is an isomorphism between `localized_module S M` and
+- `(localization S) ⊗[R] M` given by `m/s ↦ (1/s) ⊗ₜ m`.
+--/
+
+#check IsLocalizedModule.is_universal
+
+theorem isBaseChange [IsLocalizedModule S f] : IsBaseChange (Localization S) f :=
+  by
+  apply IsBaseChange.of_lift_unique
+  intros Q _ _ _ _ g
+  have := IsLocalizedModule.is_universal S f g <| by
+      intro s
+      rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique]
+      intro q
+      exists Localization.mk 1 s • q
+      dsimp only
+      constructor
+      on_goal 1 => rw [Module.algebraMap_end_apply]
+      on_goal 2 =>
+        intro q' h
+        rw [Module.algebraMap_end_apply] at h 
+        rw [← h, smul_comm]
+      all_goals
+        rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, mul_one, Localization.mk_self,
+          one_smul]
+  rcases this with ⟨ℓ, h₁, h₂⟩
+  -- Should this be refactored into a `linear_map.extend_scalars` lemma? If so, what would the
+  -- predicate have to be? Just `map_smul'`?
+  let g' : M' →ₗ[Localization S] Q :=
+    { toFun := ℓ.toFun
+      map_add' := ℓ.map_add'
+      map_smul' := by
+        intros r x
+        rw [RingHom.id_apply]
+        induction' r using Localization.induction_on with data
+        rcases data with ⟨r, s⟩
+        dsimp only
+        conv_lhs =>
+          rw [← one_smul (Localization S) (ℓ.toFun _), ← Localization.mk_self s, ← mul_one r, ←
+            @mul_one R _ ↑s]
+          pattern (occs := 1 3) Localization.mk _ s <;>
+            (rw [← smul_eq_mul R, ← Localization.smul_mk])
+          pattern (occs := 1 3) (r • _) • _ <;> (rw [smul_assoc])
+          rw [ℓ.map_smul', RingHom.id_apply]
+          pattern (↑s • _) • _
+          rw [smul_comm]
+          pattern (↑s • _) • _
+          rw [smul_assoc, smul_comm]
+          rw [← RingHom.id_apply ↑s, ← ℓ.map_smul']
+          pattern (occs := 1 2) _ • _ • _ <;> (rw [← smul_assoc])
+        iterate 2 rw [Localization.smul_mk, smul_eq_mul, mul_one]
+        rw [Localization.mk_self, one_smul] }
+  exists g'
+  have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ :=
+    by
+    ext
+    intros
+    rw [LinearMap.restrictScalars_apply]
+    iterate 2 rw [← LinearMap.toFun_eq_coe]
+  constructor
+  · dsimp only
+    rw [g'_extends_scalars]
+    assumption
+  · rintro g'' h
+    have := h₂ (LinearMap.restrictScalars R g'') h
+    rw [← g'_extends_scalars] at this 
+    ext
+    apply_fun fun f => f x at this 
+    iterate 2 rw [LinearMap.restrictScalars_apply] at this 
+    exact this
+#align is_localized_module.is_base_change IsLocalizedModule.isBaseChange
 
 end IsLocalizedModule
 
