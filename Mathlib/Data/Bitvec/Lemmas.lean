@@ -231,20 +231,20 @@ theorem toNat_adc {n : Nat} {x y : Bitvec n} :
   dsimp [Bitvec.toNat, bitsToNat]
   exact toNat_adc_aux hy.symm
 
--- theorem toNat_tail : ∀ {n : Nat} (x : Bitvec n), Bitvec.toNat x.tail = x.toNat % 2^(n-1)
---   | 0, ⟨[], _⟩ => rfl
---   | n+1, ⟨a::l, h⟩ => by
---     conv_lhs => rw [← Nat.mod_eq_of_lt (Bitvec.toNat_lt (Vector.tail ⟨a::l, h⟩))]
---     simp only [List.length_cons, Nat.succ.injEq] at h
---     simp only [Bitvec.toNat, bitsToNat, foldl_addLsb_cons_zero, Vector.toList, h]
---     simp only [Vector.tail_val, List.tail_cons, ge_iff_le, add_le_iff_nonpos_left,
---       nonpos_iff_eq_zero, add_tsub_cancel_right, mul_comm, Nat.mul_add_mod]
---     sorry
+theorem toNat_tail : ∀ {n : Nat} (x : Bitvec n), Bitvec.toNat x.tail = x.toNat % 2^(n-1)
+  | 0, ⟨[], _⟩ => rfl
+  | n+1, ⟨a::l, h⟩ => by
+    conv_lhs => rw [← Nat.mod_eq_of_lt (Bitvec.toNat_lt (Vector.tail ⟨a::l, h⟩))]
+    simp only [List.length_cons, Nat.succ.injEq] at h
+    simp only [Bitvec.toNat, bitsToNat, foldl_addLsb_cons_zero, Vector.toList, h]
+    simp only [Vector.tail_val, List.tail_cons, ge_iff_le, add_le_iff_nonpos_left,
+      nonpos_iff_eq_zero, add_tsub_cancel_right, mul_comm, Nat.mul_add_mod]
 
--- @[simp]
--- theorem toNat_add {n : Nat} (x y : Bitvec n) : (x + y).toNat = (x.toNat + y.toNat) % 2^n := by
---   show Bitvec.toNat (x.adc y false).tail = (x.toNat + y.toNat) % 2^n
---   rw [toNat_tail, toNat_adc, add_tsub_cancel_right]
+@[simp]
+theorem toNat_add {n : Nat} (x y : Bitvec n) : (x + y).toNat = (x.toNat + y.toNat) % 2^n := by
+  show Bitvec.toNat (x.adc y false).tail = (x.toNat + y.toNat) % 2^n
+  rw [toNat_tail, toNat_adc, add_tsub_cancel_right]
+
 
 section get
 

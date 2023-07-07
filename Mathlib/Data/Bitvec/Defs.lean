@@ -424,3 +424,7 @@ instance {n} : HShiftRight (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.ushr⟩
 instance {n} : ShiftLeft (Bitvec n) := ⟨fun x y => x <<< y.toNat⟩
 
 instance {n} : ShiftRight (Bitvec n) := ⟨fun x y => x >>> y.toNat⟩
+
+instance {n} : NatCast (Bitvec n) := ⟨Bitvec.ofNat _⟩
+
+instance {n} : IntCast (Bitvec n) := ⟨Bitvec.ofInt _⟩
