@@ -8,9 +8,9 @@ Authors: Praneeth Kolichala
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Homotopy.Equiv
-import Mathbin.CategoryTheory.Equivalence
-import Mathbin.AlgebraicTopology.FundamentalGroupoid.Product
+import Mathlib.Topology.Homotopy.Equiv
+import Mathlib.CategoryTheory.Equivalence
+import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
 /-!
 # Homotopic maps induce naturally isomorphic functors
@@ -57,8 +57,7 @@ def path01 : Path (0 : I) 1 where
 #align unit_interval.path01 unitInterval.path01
 
 /-- The path 0 ⟶ 1 in ulift I -/
-def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1)
-    where
+def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where
   toFun := ULift.up
   source' := rfl
   target' := rfl
@@ -171,8 +170,7 @@ def diagonalPath' : fromTop (f x₀) ⟶ fromTop (g x₁) :=
 theorem apply_zero_path :
     (πₘ f).map p =
       hcast (H.apply_zero x₀).symm ≫
-        (πₘ H.uliftMap).map (prodToProdTopI (𝟙 (ULift.up 0)) p) ≫ hcast (H.apply_zero x₁) :=
-  by
+        (πₘ H.uliftMap).map (prodToProdTopI (𝟙 (ULift.up 0)) p) ≫ hcast (H.apply_zero x₁) := by
   apply Quotient.inductionOn p
   intro p'
   apply @eq_path_of_eq_image _ _ _ _ H.ulift_map _ _ _ _ _ ((Path.refl (ULift.up _)).Prod p')
@@ -183,8 +181,7 @@ theorem apply_zero_path :
 theorem apply_one_path :
     (πₘ g).map p =
       hcast (H.apply_one x₀).symm ≫
-        (πₘ H.uliftMap).map (prodToProdTopI (𝟙 (ULift.up 1)) p) ≫ hcast (H.apply_one x₁) :=
-  by
+        (πₘ H.uliftMap).map (prodToProdTopI (𝟙 (ULift.up 1)) p) ≫ hcast (H.apply_one x₁) := by
   apply Quotient.inductionOn p
   intro p'
   apply @eq_path_of_eq_image _ _ _ _ H.ulift_map _ _ _ _ _ ((Path.refl (ULift.up _)).Prod p')
@@ -195,8 +192,7 @@ theorem apply_one_path :
 theorem evalAt_eq (x : X) :
     ⟦H.evalAt x⟧ =
       hcast (H.apply_zero x).symm ≫
-        (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 x)) ≫ hcast (H.apply_one x).symm.symm :=
-  by
+        (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 x)) ≫ hcast (H.apply_one x).symm.symm := by
   dsimp only [prod_to_prod_Top_I, uhpath01, hcast]
   refine' (@functor.conj_eq_to_hom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _ _).mpr _
   simp only [id_eq_path_refl, prod_to_prod_Top_map, Path.Homotopic.prod_lift, map_eq, ←
@@ -207,8 +203,7 @@ theorem evalAt_eq (x : X) :
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
 theorem eq_diag_path :
     (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
-      (⟦H.evalAt x₀⟧ ≫ (πₘ g).map p : fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p :=
-  by
+      (⟦H.evalAt x₀⟧ ≫ (πₘ g).map p : fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
   rw [H.apply_zero_path, H.apply_one_path, H.eval_at_eq, H.eval_at_eq]
   dsimp only [prod_to_prod_Top_I]
   constructor <;> · slice_lhs 2 5 => simp [← CategoryTheory.Functor.map_comp]; rfl
@@ -228,8 +223,7 @@ variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
 functors `f` and `g` -/
-def homotopicMapsNatIso : πₘ f ⟶ πₘ g
-    where
+def homotopicMapsNatIso : πₘ f ⟶ πₘ g where
   app x := ⟦H.evalAt x⟧
   naturality' x y p := by rw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
 #align fundamental_groupoid_functor.homotopic_maps_nat_iso FundamentalGroupoidFunctor.homotopicMapsNatIso
@@ -239,8 +233,7 @@ instance : IsIso (homotopicMapsNatIso H) := by apply nat_iso.is_iso_of_is_iso_ap
 open scoped ContinuousMap
 
 /-- Homotopy equivalent topological spaces have equivalent fundamental groupoids. -/
-def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y :=
-  by
+def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y := by
   apply equivalence.mk (πₘ hequiv.to_fun : πₓ X ⥤ πₓ Y) (πₘ hequiv.inv_fun : πₓ Y ⥤ πₓ X) <;>
     simp only [Groupoid.hom_to_functor, Groupoid.id_to_functor]
   · convert (as_iso (homotopic_maps_nat_iso hequiv.left_inv.some)).symm
