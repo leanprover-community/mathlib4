@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
+Authors: Kyle Miller
 
 ! This file was ported from Lean 3 source module topology.category.Top.limits.konig
 ! leanprover-community/mathlib commit dbdf71cee7bb20367cb7e37279c08b0c218cf967
