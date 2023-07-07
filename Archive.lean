@@ -1,4 +1,5 @@
 import Archive.Arithcc
+import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1960Q1
@@ -19,6 +20,7 @@ import Archive.Imo.Imo2001Q6
 import Archive.Imo.Imo2005Q3
 import Archive.Imo.Imo2006Q3
 import Archive.Imo.Imo2006Q5
+import Archive.Imo.Imo2008Q2
 import Archive.Imo.Imo2008Q3
 import Archive.Imo.Imo2008Q4
 import Archive.Imo.Imo2011Q3
@@ -33,6 +35,7 @@ import Archive.Imo.Imo2021Q1
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
+import Archive.OxfordInvariants.Summer2021.Week3P1
 import Archive.Sensitivity
 import Archive.Wiedijk100Theorems.AbelRuffini
 import Archive.Wiedijk100Theorems.AreaOfACircle
