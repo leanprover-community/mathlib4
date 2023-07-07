@@ -50,10 +50,10 @@ section TopologicalKonig
 
 variable {J : Type u} [SmallCategory J]
 
-variable (F : J ⥤ TopCat.{u})
+variable (F : J ⥤ TopCat)
 
 private abbrev FiniteDiagramArrow {J : Type u} [SmallCategory J] (G : Finset J) :=
-  Σ' (X Y : J) (_mX : X ∈ G) (_mY : Y ∈ G), X ⟶ Y
+  Σ' (X Y : J) (_ : X ∈ G) (_ : Y ∈ G), X ⟶ Y
 
 private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
   Σ G : Finset J, Finset (FiniteDiagramArrow G)
@@ -61,9 +61,9 @@ private abbrev FiniteDiagram (J : Type u) [SmallCategory J] :=
 /-- Partial sections of a cofiltered limit are sections when restricted to
 a finite subset of objects and morphisms of `J`.
 -/
-def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat.{u}) {G : Finset J}
+def partialSections {J : Type u} [SmallCategory J] (F : J ⥤ TopCat) {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : Set (∀ j, F.obj j) :=
-  {u | ∀ {f : FiniteDiagramArrow G} (_hf : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
+  {u | ∀ {f : FiniteDiagramArrow G} (_ : f ∈ H), F.map f.2.2.2.2 (u f.1) = u f.2.1}
 #align Top.partial_sections TopCat.partialSections
 
 theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempty (F.obj j)]
@@ -107,13 +107,13 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
     (H : Finset (FiniteDiagramArrow G)) : IsClosed (partialSections F H) := by
   have :
     partialSections F H =
-      ⋂ (f : FiniteDiagramArrow G) (_hf : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
+      ⋂ (f : FiniteDiagramArrow G) (_ : f ∈ H), {u | F.map f.2.2.2.2 (u f.1) = u f.2.1} := by
     ext1
     simp only [Set.mem_iInter, Set.mem_setOf_eq]
     rfl
   rw [this]
   apply isClosed_biInter
-  intro f _hf
+  intro f _
   -- Porting note: can't see through forget
   have : T2Space ((forget TopCat).obj (F.obj f.snd.fst)) :=
     inferInstanceAs (T2Space (F.obj f.snd.fst))
@@ -125,9 +125,9 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
-theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty.{u,u} J]
+theorem nonempty_limitCone_of_compact_t2_cofiltered_system [IsCofilteredOrEmpty J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :
-    Nonempty (TopCat.limitCone.{u, u} F).pt := by
+    Nonempty (TopCat.limitCone F).pt := by
   classical
   obtain ⟨u, hu⟩ :=
     IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed (fun G => partialSections F _)
