@@ -17,7 +17,7 @@ Pipe `input` into stdin of the spawned process,
 then return `(exitCode, stdout, stdErr)` upon completion.
 -/
 -- TODO We could reduce some code duplication by centralising some functions like this,
--- which are used here, in `cahce`, and in https://github.com/leanprover-community/llm.
+-- which are used here, in `cache`, and in https://github.com/leanprover-community/llm.
 def runCmdWithInput' (cmd : String) (args : Array String)
     (input : String := "") (throwFailure := true) : IO (UInt32 × String × String) := do
   let child ← spawn
