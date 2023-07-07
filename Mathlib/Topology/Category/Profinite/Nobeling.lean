@@ -56,8 +56,8 @@ lemma extendBy_preimage_of_junk_mem {X Y : Type _} {C : Set X} (f : {i // i ∈ 
     (s : Set Y) (hj : junk ∈ s) : (f.ExtendBy junk) ⁻¹' s = Subtype.val '' (f ⁻¹' s) ∪ Cᶜ := by
   ext x
   dsimp [ExtendBy]
-  simp only [Set.mem_preimage, Set.mem_union, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-    Set.mem_compl_iff]
+  simp only [Set.mem_preimage, Set.mem_union, Set.mem_image, Subtype.exists, exists_and_right,
+    exists_eq_right, Set.mem_compl_iff]
   constructor
   <;> intro hx
   · split_ifs at hx with h
@@ -2416,6 +2416,99 @@ lemma support_C0 : Support (C0 C ho) ⊆ {j | ord I j < o} := by
 lemma support_C1 : Support (Res (C1 C ho) o) ⊆ {j | ord I j < o} :=
   support_Res_le_o _ _
 
+lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
+  ext x
+  constructor
+  <;> intro hx
+  · dsimp [C0, C1] at hx
+    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
+    rw [← and_or_left] at hx
+    exact hx.1
+  · dsimp [C0, C1]
+    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
+    rw [← and_or_left]
+    refine' ⟨hx,_⟩
+    by_cases h : x (term I ho) = false
+    · left
+      assumption
+    · right
+      simpa only [← Bool.not_eq_false]
+
+def C0' : Set {i // i ∈ C} := {f | f.val ∈ C0 C ho}
+
+def C1' : Set {i // i ∈ C} := {f | f.val ∈ C1 C ho}
+
+lemma isOpen_false : IsOpen {f : WithTop I → Bool | f (term I ho) = false} := by
+  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
+      continuous_apply (term I ho)
+  exact IsOpen.preimage h (isOpen_discrete {false})
+
+lemma isOpen_true : IsOpen {f : WithTop I → Bool | f (term I ho) = true} := by
+  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
+      continuous_apply (term I ho)
+  exact IsOpen.preimage h (isOpen_discrete {true})
+
+lemma isClopen_C0' : IsClopen (C0' C ho) := by
+  constructor
+  · have := IsOpen.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isOpen_false ho)
+    suffices h : C0' C ho = Subtype.val ⁻¹' {f | f (term I ho) = false}
+    · rw [h]
+      exact this
+    ext x
+    exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
+  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isClosed_C0 C hC ho)
+    suffices h : C0' C ho = Subtype.val ⁻¹' (C0 C ho)
+    · rw [h]
+      exact this
+    rfl
+
+lemma isClopen_C1' : IsClopen (C1' C ho) := by
+  constructor
+  · have := IsOpen.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isOpen_true ho)
+    suffices h : C1' C ho = Subtype.val ⁻¹' {f | f (term I ho) = true}
+    · rw [h]
+      exact this
+    ext x
+    exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
+  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+      (isClosed_C1 C hC ho)
+    suffices h : C1' C ho = Subtype.val ⁻¹' (C1 C ho)
+    · rw [h]
+      exact this
+    rfl
+
+lemma union_C0'C1'_eq_univ : (C0' C ho) ∪ (C1' C ho) = Set.univ := by
+  rw [(by rfl : C0' C ho = Subtype.val ⁻¹' (C0 C ho)),
+    (by rfl : C1' C ho = Subtype.val ⁻¹' (C1 C ho)),
+    (by simp only [← Subtype.coe_preimage_self] :
+    (Set.univ : Set {i // i ∈ C}) = Subtype.val ⁻¹' C)]
+  simp only [← Set.preimage_union]
+  rw [UnionEq]
+
+def rC1' : Set {i // i ∈ C} := {f | f.val ∈ Res (C1 C ho) o}
+
+lemma rC1_subset_C0 : rC1' C ho ⊆ C0' C ho := by
+  intro x hx
+  refine ⟨Subtype.mem x, ?_⟩
+  obtain ⟨y, hy⟩ := hx
+  rw [← hy.2]
+  dsimp [ProjOrd]
+  simp only [ite_eq_right_iff]
+  intro h
+  dsimp [ord, term] at h
+  simp only [Ordinal.typein_enum, lt_self_iff_false] at h
+
+lemma isClosed_rC1' : IsClosed (rC1' C ho) := by
+  have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+    (isClosed_Res _ o (isClosed_C1 C hC ho))
+  suffices h : rC1' C ho = Subtype.val ⁻¹' (Res (C1 C ho) o)
+  · rw [h]
+    exact this
+  rfl
+
 def C' := C0 C ho ∩ Res (C1 C ho) o
 
 lemma isClosed_C' : IsClosed (C' C ho) :=
@@ -2431,7 +2524,6 @@ lemma support_C' : Support (C' C ho) ⊆ {j | ord I j < o} := by
   dsimp [Support] at hC1
   simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp] at hC1
   exact hC1 i f hf.1.2 hf.2
-
 
 def CC'₀ : {i // i ∈ C' C ho} → {i // i ∈ C} := fun g ↦ ⟨g.val,g.prop.1.1⟩
 
@@ -2574,105 +2666,288 @@ Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr
 
 lemma GoodProducts.huw : Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr = w C hsC ho := by rfl
 
-lemma UnionEq : (C0 C ho) ∪ (C1 C ho) = C := by
-  ext x
-  constructor
-  <;> intro hx
-  · dsimp [C0, C1] at hx
-    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
-    rw [← and_or_left] at hx
-    exact hx.1
-  · dsimp [C0, C1]
-    simp only [Set.mem_union, Set.mem_inter_iff, Set.mem_setOf_eq]
-    rw [← and_or_left]
-    refine' ⟨hx,_⟩
-    by_cases h : x (term I ho) = false
-    · left
-      assumption
-    · right
-      simpa only [← Bool.not_eq_false]
+def C'' : Set {i // i ∈ C} := {f | f.val ∈ C' C ho}
 
-def C0' : Set {i // i ∈ C} := {f | f.val ∈ C0 C ho}
-
-def C1' : Set {i // i ∈ C} := {f | f.val ∈ C1 C ho}
-
-lemma isOpen_false : IsOpen {f : WithTop I → Bool | f (term I ho) = false} := by
-  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
-      continuous_apply (term I ho)
-  exact IsOpen.preimage h (isOpen_discrete {false})
-
-lemma isOpen_true : IsOpen {f : WithTop I → Bool | f (term I ho) = true} := by
-  have h : Continuous ((fun f ↦ f (term I ho) : ((WithTop I) → Bool) → Bool)) :=
-      continuous_apply (term I ho)
-  exact IsOpen.preimage h (isOpen_discrete {true})
-
-lemma isClopen_C0' : IsClopen (C0' C ho) := by
-  constructor
-  · have := IsOpen.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
-      (isOpen_false ho)
-    suffices h : C0' C ho = Subtype.val ⁻¹' {f | f (term I ho) = false}
-    · rw [h]
-      exact this
-    ext x
+lemma isOpen_resOnSubset_C0' : IsOpen ((ResOnSubset C o) '' (C0' C ho)) := by
+  have h : C0' C ho = Subtype.val ⁻¹' {f | f (term I ho) = false}
+  · ext x
     exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
-  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
-      (isClosed_C0 C hC ho)
-    suffices h : C0' C ho = Subtype.val ⁻¹' (C0 C ho)
-    · rw [h]
-      exact this
-    rfl
-
-lemma isClopen_C1' : IsClopen (C1' C ho) := by
-  constructor
-  · have := IsOpen.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
-      (isOpen_true ho)
-    suffices h : C1' C ho = Subtype.val ⁻¹' {f | f (term I ho) = true}
-    · rw [h]
-      exact this
-    ext x
-    exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
-  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
-      (isClosed_C1 C hC ho)
-    suffices h : C1' C ho = Subtype.val ⁻¹' (C1 C ho)
-    · rw [h]
-      exact this
-    rfl
-
-lemma union_C0'C1'_eq_univ : (C0' C ho) ∪ (C1' C ho) = Set.univ := by
-  rw [(by rfl : C0' C ho = Subtype.val ⁻¹' (C0 C ho)),
-    (by rfl : C1' C ho = Subtype.val ⁻¹' (C1 C ho)),
-    (by simp only [← Subtype.coe_preimage_self] :
-    (Set.univ : Set {i // i ∈ C}) = Subtype.val ⁻¹' C)]
-  simp only [← Set.preimage_union]
-  rw [UnionEq]
-
-def rC1' : Set {i // i ∈ C} := {f | f.val ∈ Res (C1 C ho) o}
-
--- def SwapFalseC : {i // i ∈ C}
+  rw [h]
+  sorry
 
 lemma isOpenMap_swapFalse : IsOpenMap (SwapFalse o : (WithTop I → Bool) → (WithTop I → Bool)) := by
   sorry
 
+lemma swapFalse_mem_res {x : WithTop I → Bool} (hx : x ∈ C) : SwapFalse o x ∈ Res C o := sorry
+
+lemma isOpenMap_resOnSubset : IsOpenMap (ResOnSubset C o) := by
+  intro U hU
+  rw [isOpen_induced_iff] at hU
+  obtain ⟨t,ht⟩ := hU
+  rw [← ht.2]
+  rw [isOpen_induced_iff]
+  have h : ResOnSubset C o = fun x ↦ ⟨SwapFalse o x.val, swapFalse_mem_res C x.prop⟩ := sorry
+  rw [h]
+  sorry
+  -- have : Subtype.val ∘ ResOnSubset C o = SwapFalse o ∘ Subtype.val := sorry
+  -- refine' ⟨SwapTrue o ⁻¹' t, ⟨IsOpen.preimage (continuous_swapTrue _) ht.1, _⟩⟩
+  -- refine' ⟨SwapFalse o '' t, ⟨isOpenMap_swapFalse t ht.1, _⟩⟩
+  -- ext f
+  -- constructor
+  -- <;> intro hf
+  -- · simp only [Set.mem_preimage] at hf
+  --   suffices : f.val ∈ Subtype.val '' ((ResOnSubset C o) '' (Subtype.val ⁻¹' t))
+  --   · obtain ⟨f', hf'⟩ := this
+  --     suffices ff' : f = f'
+  --     · rw [ff']
+  --       exact hf'.1
+  --     rw [Subtype.ext_iff]
+  --     exact hf'.2.symm
+  --   convert hf
+  --   have : Subtype.val ∘ ResOnSubset C o = SwapFalse o ∘ Subtype.val := sorry
+  --   rw [← Set.image_comp, this, Set.image_comp]
+
+  --   -- obtain ⟨x, ⟨hxt, hxf⟩⟩ := hf
+  --   -- use ⟨x, ?_⟩
+  --   -- ·
+  --   -- · simp only [Set.mem_preimage]
+  --   --   refine' ⟨hxt, _⟩
+  --   --   apply Subtype.ext
+  --   --   rw [← hxf]
+  --   --   ext i
+  --   --   dsimp [ResOnSubset, ProjOrd, SwapFalse]
+  --   --   split_ifs with hi
+  --   --   · sorry
+  --   --   · sorry
+  --   --   · sorry
+  --   --   · sorry
+  -- · sorry
+
 lemma isClopen_rC1' : IsClopen (rC1' C ho) := by
-  constructor
-  · have : rC1' C ho = {f | f.val ∈ (SwapFalse o) '' (C1 C ho)}
-    · sorry
-    sorry
-  · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
-      (isClosed_Res _ o (isClosed_C1 C hC ho))
-    suffices h : rC1' C ho = Subtype.val ⁻¹' (Res (C1 C ho) o)
-    · rw [h]
-      exact this
-    rfl
-
-def C'' : Set {i // i ∈ C} := {f | f.val ∈ C' C ho}
-
-lemma isClopen_C'' : IsClopen (C'' C ho) := by
-  suffices : C'' C ho = C0' C ho ∩ rC1' C ho
+  let V : Set (Res C o) := ResOnSubset C o '' (rC1' C ho) -- {f | f.val ∈ C' C ho}
+  have hV : IsClopen V
+  · constructor
+    · have : V = ResOnSubset C o '' (C0' C ho) ∩ ResOnSubset C o '' (C1' C ho)
+      · ext f
+        dsimp
+        constructor
+        <;> intro hf
+        · obtain ⟨g, hg⟩ := hf
+          have hg' : g.val ∈ C' C ho
+          · dsimp [C']
+            exact ⟨rC1_subset_C0 C ho hg.1, hg.1⟩
+          refine' ⟨⟨g, ⟨rC1_subset_C0 C ho hg.1, hg.2⟩⟩ ,⟨⟨SwapTrue o g.val, swapTrue_mem_C C hsC ho
+            ⟨g, hg'⟩⟩,⟨_, _⟩⟩⟩
+          · dsimp [C1', C1]
+            refine' ⟨swapTrue_mem_C C hsC ho ⟨g, hg'⟩, _⟩
+            dsimp [SwapTrue]
+            simp only [ite_eq_left_iff]
+            intro hfalse
+            dsimp [ord, term] at hfalse
+            simp only [Ordinal.typein_enum, not_true] at hfalse
+          · ext i
+            dsimp [ResOnSubset, SwapTrue, ProjOrd]
+            split_ifs with hi hi'
+            · exfalso
+              exact ne_of_lt hi hi'
+            · rw [← hg.2]
+              dsimp [ResOnSubset, ProjOrd]
+              apply Eq.symm
+              simp only [ite_eq_left_iff, not_lt]
+              intro hfalse
+              simp only [← not_lt] at hfalse
+              exfalso
+              exact hfalse hi
+            · rw [← hg.2]
+              dsimp [ResOnSubset, ProjOrd]
+              apply Eq.symm
+              simp only [ite_eq_right_iff]
+              intro hfalse
+              exfalso
+              exact hi hfalse
+        · obtain ⟨g, hg⟩ := hf.1
+          obtain ⟨r, hr⟩ := hf.2
+          dsimp [rC1', Res]
+          dsimp [C1'] at hr
+          use ⟨ProjOrd o r.val, ?_⟩
+          · dsimp [ResOnSubset] at hr
+            have hr' : ProjOrd o r.val = f.val
+            · rw [Subtype.ext_iff] at hr
+              exact hr.2
+            rw [hr']
+            have hg' : ProjOrd o g.val = f.val
+            · rw [Subtype.ext_iff] at hg
+              exact hg.2
+            rw [← hg']
+            suffices : g.val = ProjOrd o g.val
+            · rw [← this]
+              exact g.prop
+            ext i
+            dsimp [ProjOrd]
+            split_ifs with hi
+            · rfl
+            · simp only [not_lt] at hi
+              by_cases hi' : i = term I ho
+              · rw [hi']
+                exact hg.1.2
+              · dsimp [Support] at hsC
+                simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp]
+                    at hsC
+                specialize hsC i g.val g.prop
+                rw [← not_imp_not] at hsC
+                simp only [not_le, Bool.not_eq_true] at hsC
+                apply hsC
+                refine' lt_of_le_of_ne hi _
+                intro hoi
+                apply hi'
+                dsimp [term]
+                simp_rw [hoi]
+                dsimp [ord]
+                simp only [Ordinal.enum_typein]
+          · simp only [Set.mem_image, Set.mem_setOf_eq]
+            refine' ⟨⟨r.val, ⟨hr.1, rfl⟩⟩, _⟩
+            simp_rw [← hr.2]
+            dsimp [ResOnSubset]
+            simp only [Subtype.mk.injEq]
+            set r' := ProjOrd o r.val with hr'
+            ext i
+            unfold ProjOrd
+            split_ifs with hi
+            · rfl
+            · rw [hr']
+              dsimp [ProjOrd]
+              apply Eq.symm
+              simp only [ite_eq_right_iff]
+              intro hfalse
+              exfalso
+              exact hi hfalse
+      rw [this]
+      apply IsOpen.inter
+      · sorry
+      · sorry
+    · apply IsCompact.isClosed
+      refine' IsCompact.image _ (continuous_ResOnSubset _ _)
+      have CsC : CompactSpace {i // i ∈ C}
+      · rw [← isCompact_iff_compactSpace]
+        exact hC.isCompact
+      apply IsClosed.isCompact
+      exact isClosed_rC1' _ hC _
+  suffices : rC1' C ho = ((ResOnSubset C o) ⁻¹' V) ∩ (C0' C ho)
   · rw [this]
-    exact IsClopen.inter (isClopen_C0' _ hC _) (isClopen_rC1' _ hC _)
-  dsimp [C'', C', C0', rC1']
-  rfl
+    exact IsClopen.inter (IsClopen.preimage hV (continuous_ResOnSubset _ _)) (isClopen_C0' C hC ho)
+  dsimp
+  have hf : Set.InjOn (ResOnSubset C o) (C0' C ho)
+  · intro a ha b hb h
+    dsimp [C0', C0] at ha hb
+    ext i
+    dsimp [ResOnSubset] at h
+    simp only [Subtype.mk.injEq] at h
+    have ht := @trichotomous _ (·<·) inferInstance (ord I i) o
+    cases' ht with ht ht
+    · dsimp [ProjOrd] at h
+      have h' := congr_fun h i
+      split_ifs at h' with h''
+      · exact h'
+      · exfalso
+        exact h'' ht
+    cases' ht with ht ht
+    · have hi : i = term I ho
+      · dsimp [term]
+        simp_rw [← ht]
+        dsimp [ord]
+        simp only [Ordinal.enum_typein]
+      rw [hi, ha.2, hb.2]
+    · dsimp [Support] at hsC
+      simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
+      have ha' := hsC i a.val a.prop
+      have hb' := hsC i b.val b.prop
+      rw [← not_imp_not] at ha' hb'
+      simp only [not_le, Bool.not_eq_true] at ha' hb'
+      rw [ha' ht, hb' ht]
+  exact (Set.InjOn.preimage_image_inter hf (rC1_subset_C0 C ho)).symm
+  -- ext f
+  -- constructor
+  -- <;> intro hf
+  -- · dsimp [ResOnSubset]
+  --   dsimp [C0]
+  --   have : (ProjOrd o f.val) (term I ho) = false
+  --   · dsimp [ProjOrd, ord, term]
+  --     simp only [Ordinal.typein_enum, lt_self_iff_false, ite_false]
+  --   have hs : ProjOrd o f.val = f.val
+  --   · dsimp [ProjOrd]
+  --     ext i
+  --     split_ifs with hi
+  --     · rfl
+  --     · by_cases hi' : i = term I ho
+  --       · rw [hi']
+  --         exact (rC1_subset_C0 C ho hf).2.symm
+  --       · have gt_succ : ¬(ord I i < Order.succ o)
+  --         · simp only [Order.lt_succ_iff, not_le]
+  --           simp only [not_lt] at hi
+  --           refine' lt_of_le_of_ne hi _
+  --           intro hoi
+  --           apply hi'
+  --           dsimp [term]
+  --           simp_rw [hoi]
+  --           dsimp [ord]
+  --           simp only [Ordinal.enum_typein]
+  --         dsimp [Support] at hsC
+  --         simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
+  --         specialize hsC i f.val f.prop
+  --         rw [← not_imp_not] at hsC
+  --         simp only [Order.lt_succ_iff] at gt_succ
+  --         convert hsC gt_succ
+  --         simp only [Bool.not_eq_true]
+  --         tauto
+  --   refine' ⟨⟨_, this⟩ , _⟩
+  --   · rw [hs]
+  --     exact Subtype.mem f
+  --   · rw [hs]
+  --     dsimp [Res]
+  --     use (SwapTrue o f)
+  --     refine' ⟨swapTrue_mem_C1 C hsC ho ⟨f,hf⟩, _⟩
+  --     dsimp [ProjOrd ,SwapTrue]
+  --     ext i
+  --     split_ifs with hi hi'
+  --     · exfalso
+  --       exact ne_of_lt hi hi'
+  --     · rfl
+  --     · rw [← hs]
+  --       dsimp [ProjOrd]
+  --       apply Eq.symm
+  --       simp only [ite_eq_right_iff]
+  --       intro hi'
+  --       exfalso
+  --       exact hi hi'
+  -- · simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq] at hf
+  --   dsimp [rC1']
+  --   dsimp [C'] at hf
+  --   dsimp [Res]
+  --   dsimp [ResOnSubset, Res] at hf
+  --   obtain ⟨g,hg⟩ := hf.2
+  --   use SwapTrue o (ProjOrd o f)
+  --   sorry
+  -- suffices : rC1' C ho = p ⁻¹' (C1' C ho)
+  -- · rw [this]
+  --   refine' IsClopen.preimage (isClopen_C1' C hC ho) _
+  --   sorry
+  -- sorry
+  -- ext x
+  -- constructor
+  -- · sorry
+  -- · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
+  --     (isClosed_Res _ o (isClosed_C1 C hC ho))
+  --   suffices h : rC1' C ho = Subtype.val ⁻¹' (Res (C1 C ho) o)
+  --   · rw [h]
+  --     exact this
+  --   rfl
+
+lemma isClopen_C'' : IsClopen (C'' C ho) := by sorry
+  -- suffices : C'' C ho = C0' C ho ∩ rC1' C ho
+  -- · rw [this]
+  --   exact IsClopen.inter (isClopen_C0' _ hC _) (isClopen_rC1' _ hC _)
+  -- dsimp [C'', C', C0', rC1']
+  -- rfl
 
 lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
   intro f
@@ -2681,6 +2956,8 @@ lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
   use LocallyConstant.piecewise (isClopen_C0' C hC ho).2 (isClopen_C1' C hC ho).2
     (union_C0'C1'_eq_univ C ho) ?_ ?_ ?_ 0
   · sorry
+    -- let f' : LocallyConstant (C'' C ho) ℤ := sorry
+    -- use f'.ExtendBy (isClopen_C'' _ hC _) (0 : ℤ)
     -- let g := ((LocallyConstant.equiv (setHomeoSubtype (C'' C ho))).toFun f).ExtendBy (isClopen_C'' _ hC _) (0 : ℤ)
   · sorry
   · sorry
