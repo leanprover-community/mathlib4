@@ -4,12 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.Category.ExtrDisc.Basic
+/-!
+# Explicit (co)limits in Extremally disconnected sets
+
+This file describes some explicit (co)limits in `ExtrDisc`
+
+## Overview
+
+We define explicit finite coproducts in `ExtrDisc` as sigma types (disjoint unions).
+
+TODO: Define pullbacks of open embeddings.
+
+-/
 
 open CategoryTheory
 
-/-!
-This section contains helper lemmas about the sigma-type `Σ i, π i`.
--/
+-- This section contains helper lemmas about the sigma-type `Σ i, π i`.
 section Sigma
 
 @[simp]
