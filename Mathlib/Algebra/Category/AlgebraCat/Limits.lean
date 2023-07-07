@@ -96,13 +96,19 @@ def limitCone (F : J ⥤ AlgebraCatMax.{v, w} R) : Cone F where
 def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v, w} F) := by
   refine'
     IsLimit.ofFaithful (forget (AlgebraCat R)) (Types.limitConeIsLimit.{v, w} _)
-      (fun s => ⟨⟨(Types.limitConeIsLimit.{v, w} _).lift ((forget (AlgebraCat R)).mapCone s), _, _⟩, _⟩)
-      (fun s => rfl)
-  · simp only [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]; rfl
-  · intro x y; simp only [forget_map_eq_coe, AlgHom.map_mul, functor.map_cone_π_app]; rfl
-  · simp only [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]; rfl
-  · intro x y; simp only [forget_map_eq_coe, AlgHom.map_add, functor.map_cone_π_app]; rfl
-  · intro r; ext j; exact (s.π.app j).commutes r
+      -- Porting note: in mathlib3 the function term
+      -- `fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v`
+      -- was provided by unification, and the last argument `(fun s => _)` was `(fun s => rfl)`.
+      (fun s => ⟨⟨⟨⟨fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v, _⟩,
+         _⟩, _⟩, _, _⟩, _⟩)
+      (fun s => _)
+  · intro j j' f; exact FunLike.congr_fun (Cone.w s f) v
+  · apply Subtype.ext; ext j; simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]; rfl
+  · intro x y; apply Subtype.ext; ext j; simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]; rfl
+  · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]; rfl
+  · intro x y; simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]; rfl
+  · intro r; apply Subtype.ext; ext j; exact (s.π.app j).commutes r
+  · rfl
 #align Algebra.has_limits.limit_cone_is_limit AlgebraCat.HasLimits.limitConeIsLimit
 
 end HasLimits
