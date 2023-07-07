@@ -288,32 +288,6 @@ theorem Limit.map_π_apply' {F G : J ⥤ Type v} (α : F ⟶ G) (j : J) (x : lim
 end UnivLE
 
 /-!
-In this section we provide instances with `u = v`, i.e. limits in `Type u` indexed in `Type u`.
-
-FIXME: can we just delete them?
--/
-section
-
-/-- The category `Type u` has all `u`-small limits. -/
--- Note this instance does not have a `UnivLE` hypothesis.
-instance : HasLimits (Type u) :=
-  Types.hasLimitsOfSize.{u, u}
-
-instance hasLimit' (F : J ⥤ Type v) : HasLimit F :=
-  hasLimit.{v, v} F
-
--- This either needs to have higher priority (safer) or come after the instance for `Type max v w`.
-instance (priority := 1100) :
-    HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) :=
-  Types.hasLimitsOfSize.{w, max w v}
-
--- This needs to have priority higher than the instance for `TypeMax.{w, v}`.
-instance (priority := 1200) : HasLimitsOfSize.{v, v, v, v + 1} (Type v) :=
-  Types.hasLimitsOfSize.{v, v}
-
-end
-
-/-!
 In this section we verify that instances are available as expected.
 -/
 section instances

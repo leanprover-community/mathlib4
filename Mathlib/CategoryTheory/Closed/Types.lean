@@ -44,8 +44,8 @@ instance (X : Type v₁) : IsLeftAdjoint (Types.binaryProductFunctor.obj X) wher
         counit := { app := fun Z xf => xf.2 xf.1 } }
 
 -- Porting note: this instance should be moved to a higher file.
-instance : HasFiniteProducts.{v₁, v₁+1} (Type v₁) :=
-  hasFiniteProducts_of_hasProducts.{v₁, v₁, v₁+1} (Type v₁)
+instance : HasFiniteProducts (Type v₁) :=
+  hasFiniteProducts_of_hasProducts.{v₁} _
 
 instance : CartesianClosed (Type v₁) :=
   CartesianClosed.mk _
