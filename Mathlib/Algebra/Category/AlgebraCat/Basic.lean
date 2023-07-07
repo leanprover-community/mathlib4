@@ -42,7 +42,7 @@ structure AlgebraCat where
 /-- An alias for `AlgebraCat.{max u₁ u₂}`, to deal around unification issues.
 Since the universe the ring lives in can be inferred, we put that last. -/
 @[nolint checkUnivs]
-abbrev AlgebraCatMax.{v₁, v₂} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
+abbrev AlgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
 
 attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
 
@@ -60,9 +60,8 @@ instance : Category (AlgebraCat.{v} R) where
   id A := AlgHom.id R A
   comp f g := g.comp f
 
--- simplifies definitions below
-instance {S T : AlgebraCat.{v} R} : FunLike (S ⟶ T) S (fun _ => T) :=
-  ⟨fun f => f.toFun, fun _ _ h => AlgHom.ext (congr_fun h)⟩
+instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
+  AlgHom.algHomClass
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
