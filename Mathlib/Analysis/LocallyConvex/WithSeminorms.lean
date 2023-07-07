@@ -267,7 +267,30 @@ end Bounded
 
 section Topology
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι]
+variable [NormedField 𝕜] [NormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
+  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜₂ F] [Nonempty ι]
+
+def Seminorm.toUniformSpace (p : Seminorm 𝕜 E) : UniformSpace E :=
+  p.toSeminormedAddCommGroup.toUniformSpace
+
+def Seminorm.toTopologicalSpace (p : Seminorm 𝕜 E) : TopologicalSpace E :=
+  p.toUniformSpace.toTopologicalSpace
+
+theorem Seminorm.toUniformSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toUniformSpace = UniformSpace.comap f p.toUniformSpace := by
+  letI : SeminormedAddCommGroup F := p.toSeminormedAddCommGroup
+  --letI : UniformAddGroup E := uniformAddGroup_comap f
+  letI : SeminormedAddCommGroup E := (p.comp f).toSeminormedAddCommGroup
+  rw [Seminorm.toUniformSpace, Seminorm.toUniformSpace,
+      UniformAddGroup.ext_iff inferInstance (uniformAddGroup_comap f),
+      nhds_induced _ _, map_zero, ← comap_norm_nhds_zero (E := E), ← comap_norm_nhds_zero (E := F),
+      comap_comap]
+  rfl
+
+theorem Seminorm.toTopologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toTopologicalSpace = induced f p.toTopologicalSpace := by
+  rw [Seminorm.toTopologicalSpace, Seminorm.toTopologicalSpace, Seminorm.toUniformSpace_comp,
+      toTopologicalSpace_comap]
 
 /-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
 structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [t : TopologicalSpace E] : Prop where
@@ -448,8 +471,7 @@ theorem WithSeminorms.continuous_seminorm [NontriviallyNormedField 𝕝] [Module
 each seminorm individually. We express this as a characterization of `WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔
-      t = ⨅ i,
-        (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
+      t = ⨅ i, (p i).toTopologicalSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
@@ -457,7 +479,7 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf (p : SeminormF
   refine Eq.to_iff ?_
   congr
   funext i
-  exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_topological_space_eq_infi SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf
 
 end TopologicalSpace
@@ -467,8 +489,7 @@ induced by each seminorm individually. We express this as a characterization of
 `WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace E]
     [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
-    WithSeminorms p ↔
-    u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace := by
+    WithSeminorms p ↔ u = ⨅ i, (p i).toUniformSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
@@ -476,7 +497,7 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
   refine Eq.to_iff ?_
   congr
   funext i
-  exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_uniform_space_eq_infi SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf
 
 end TopologicalAddGroup

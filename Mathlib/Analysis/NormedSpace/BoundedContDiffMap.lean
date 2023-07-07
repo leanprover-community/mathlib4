@@ -8,7 +8,8 @@ import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Analysis.Seminorm
 
-open scoped BoundedContinuousFunction
+open TopologicalSpace SeminormFamily
+open scoped BoundedContinuousFunction Topology
 
 variable (𝕜 E F : Type _) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
@@ -116,7 +117,40 @@ protected noncomputable def iteratedFDerivₗ (i : ℕ) :
       exact iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi) }
   else 0
 
+/-- This is mostly for dot notation. Should I keep it? -/
 protected noncomputable abbrev iteratedFDeriv (i : ℕ) (f : E →ᵇ[𝕜, n] F) : E →ᵇ (E [×i]→L[𝕜] F) :=
   BoundedContDiffMap.iteratedFDerivₗ i f
+
+instance : TopologicalSpace (E →ᵇ[𝕜, n] F) :=
+  ⨅ (i : ℕ), induced (BoundedContDiffMap.iteratedFDerivₗ i) inferInstance
+
+noncomputable instance : UniformSpace (E →ᵇ[𝕜, n] F) := .replaceTopology
+  (⨅ (i : ℕ), UniformSpace.comap (BoundedContDiffMap.iteratedFDerivₗ i) inferInstance)
+  toTopologicalSpace_iInf.symm
+
+protected theorem BoundedContDiffMap.uniformSpace_eq_iInf :
+    (instUniformSpaceBoundedContDiffMap : UniformSpace (E →ᵇ[𝕜, n] F)) =
+    ⨅ (i : ℕ), UniformSpace.comap (BoundedContDiffMap.iteratedFDerivₗ i) inferInstance :=
+  UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
+
+instance : UniformAddGroup (E →ᵇ[𝕜, n] F) := by
+  rw [BoundedContDiffMap.uniformSpace_eq_iInf]
+  refine uniformAddGroup_iInf (fun i ↦ ?_)
+  exact uniformAddGroup_comap _
+
+protected noncomputable def BoundedContDiffMap.seminorm (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
+  (normSeminorm 𝕜 <| E →ᵇ (E [×i]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ i)
+
+protected noncomputable def BoundedContDiffMap.seminorm' (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
+  (Finset.Iic i).sup fun j ↦
+    (normSeminorm 𝕜 <| E →ᵇ (E [×j]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ j)
+
+theorem BoundedContDiffMap.withSeminorms :
+    WithSeminorms (BoundedContDiffMap.seminorm : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) :=
+  (withSeminorms_iff_topologicalSpace_eq_iInf _).mpr <| by
+    refine iInf_congr (fun i ↦ ?_)
+    congr
+    rw [toTopologicalSpace_comap]
+    change _ = (SeminormedAddGroup.induced (E →ᵇ[𝕜, n] F) (E →ᵇ (E [×i]→L[𝕜] F)) (BoundedContDiffMap.iteratedFDerivₗ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
 
 end BoundedContDiffMap
