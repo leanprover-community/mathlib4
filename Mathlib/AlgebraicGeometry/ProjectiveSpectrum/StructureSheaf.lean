@@ -65,8 +65,9 @@ variable [CommRing R] [CommRing A] [Algebra R A]
 
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
-local macro "at " x:term : term => `(HomogeneousLocalization.AtPrime 𝒜
-  ($x : ProjectiveSpectrum.top 𝒜).asHomogeneousIdeal.toIdeal)
+local notation3 "at " x =>
+  HomogeneousLocalization.AtPrime 𝒜
+    (HomogeneousIdeal.toIdeal (ProjectiveSpectrum.asHomogeneousIdeal x))
 
 namespace ProjectiveSpectrum.StructureSheaf
 
