@@ -20,6 +20,27 @@ attribute [local simp] List.join List.ret
 
 namespace List
 
+variable {α : Type u} {β : Type v} {γ : Type w}
+
+-- Porting note: simp can prove this
+-- @[simp]
+theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
+  append_nil (f x)
+#align list.bind_singleton List.bind_singleton
+
+@[simp] theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
+  induction l <;> simp [*]
+#align list.bind_singleton' List.bind_singleton'
+
+theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
+  simp only [← map_singleton]
+  rw [← bind_singleton' l, bind_map, bind_singleton']
+#align list.map_eq_bind List.map_eq_bind
+
+theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
+    (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
+#align list.bind_assoc List.bind_assoc
+
 instance instMonad : Monad List.{u} where
   pure := @List.ret
   bind := @List.bind
@@ -29,14 +50,8 @@ instance instMonad : Monad List.{u} where
 instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
   (id_map := map_id)
   (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := by
-    intro _ _ _ l _ _
-    induction l with
-    | nil => simp [Bind.bind]
-    | cons _ _ ih => simp [Bind.bind] at ih; simp [Bind.bind, ih])
-  (bind_pure_comp := by
-    intro _ _ _ l
-    induction l <;> simp [Bind.bind, Functor.map, pure, List.ret] at *; assumption)
+  (bind_assoc := List.bind_assoc)
+  (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
 #align list.is_lawful_monad List.instLawfulMonad
 
 instance instAlternative : Alternative List.{u} where
