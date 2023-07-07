@@ -151,63 +151,63 @@ section Additive
 
 variable {T : Type _} {S : Type _} {R : Type _} {A : Type _}
 
-instance inhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
+instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
 
-instance zero [Zero R] [Zero A] : Zero (Unitization R A) :=
+instance instZero [Zero R] [Zero A] : Zero (Unitization R A) :=
   Prod.instZeroSum
 
-instance add [Add R] [Add A] : Add (Unitization R A) :=
+instance instAdd [Add R] [Add A] : Add (Unitization R A) :=
   Prod.instAddSum
 
-instance neg [Neg R] [Neg A] : Neg (Unitization R A) :=
+instance instNeg [Neg R] [Neg A] : Neg (Unitization R A) :=
   Prod.instNegSum
 
-instance addSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
+instance instAddSemigroup [AddSemigroup R] [AddSemigroup A] : AddSemigroup (Unitization R A) :=
   Prod.instAddSemigroupSum
 
-instance addZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
+instance instAddZeroClass [AddZeroClass R] [AddZeroClass A] : AddZeroClass (Unitization R A) :=
   Prod.instAddZeroClassSum
 
-instance addMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
+instance instAddMonoid [AddMonoid R] [AddMonoid A] : AddMonoid (Unitization R A) :=
   Prod.instAddMonoidSum
 
-instance addGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
+instance instAddGroup [AddGroup R] [AddGroup A] : AddGroup (Unitization R A) :=
   Prod.instAddGroupSum
 
-instance addCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
+instance instAddCommSemigroup [AddCommSemigroup R] [AddCommSemigroup A] :
     AddCommSemigroup (Unitization R A) :=
   Prod.instAddCommSemigroupSum
 
-instance addCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
+instance instAddCommMonoid [AddCommMonoid R] [AddCommMonoid A] : AddCommMonoid (Unitization R A) :=
   Prod.instAddCommMonoidSum
 
-instance addCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
+instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unitization R A) :=
   Prod.instAddCommGroupSum
 
-instance smul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
+instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
   Prod.smul
 
-instance isScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S] [IsScalarTower T S R]
-    [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
+instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
+    [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
   Prod.isScalarTower
 
-instance smulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
+instance instSmulCommClass [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMulCommClass T S R]
     [SMulCommClass T S A] : SMulCommClass T S (Unitization R A) :=
   Prod.smulCommClass
 
-instance isCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ A] [IsCentralScalar S R]
+instance instIsCentralScalar [SMul S R] [SMul S A] [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ A] [IsCentralScalar S R]
     [IsCentralScalar S A] : IsCentralScalar S (Unitization R A) :=
   Prod.isCentralScalar
 
-instance mulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
+instance instMulAction [Monoid S] [MulAction S R] [MulAction S A] : MulAction S (Unitization R A) :=
   Prod.mulAction
 
-instance distribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
+instance instDistribMulAction [Monoid S] [AddMonoid R] [AddMonoid A] [DistribMulAction S R]
     [DistribMulAction S A] : DistribMulAction S (Unitization R A) :=
   Prod.distribMulAction
 
-instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
+instance instModule [Semiring S] [AddCommMonoid R] [AddCommMonoid A] [Module S R] [Module S A] :
     Module S (Unitization R A) :=
   Prod.module
 
@@ -351,10 +351,10 @@ section Mul
 
 variable {R A : Type _}
 
-instance one [One R] [Zero A] : One (Unitization R A) :=
+instance instOne [One R] [Zero A] : One (Unitization R A) :=
   ⟨(1, 0)⟩
 
-instance mul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
+instance instMul [Mul R] [Add A] [Mul A] [SMul R A] : Mul (Unitization R A) :=
   ⟨fun x y => (x.1 * y.1, x.1 • y.2 + y.1 • x.2 + x.2 * y.2)⟩
 
 @[simp]
@@ -430,9 +430,9 @@ theorem inr_mul_inl [Semiring R] [NonUnitalNonAssocSemiring A] [DistribMulAction
       rw [smul_zero, zero_add, MulZeroClass.mul_zero, add_zero]
 #align unitization.coe_mul_inl Unitization.inr_mul_inl
 
-instance mulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
+instance instMulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A] :
     MulOneClass (Unitization R A) :=
-  { Unitization.one, Unitization.mul with
+  { Unitization.instOne, Unitization.instMul with
     one_mul := fun x =>
       ext (one_mul x.1) <|
         show (1 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = x.2 by
@@ -441,12 +441,12 @@ instance mulOneClass [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction 
       ext (mul_one x.1) <|
         show (x.1 • (0 : A)) + (1 : R) • x.2 + x.2 * (0 : A) = x.2 by
           rw [smul_zero, zero_add, one_smul, MulZeroClass.mul_zero, add_zero] }
-#align unitization.mul_one_class Unitization.mulOneClass
+#align unitization.mul_one_class Unitization.instMulOneClass
 
-instance nonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
+instance instNonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
     NonAssocSemiring (Unitization R A) :=
-  { Unitization.mulOneClass,
-    Unitization.addCommMonoid with
+  { Unitization.instMulOneClass,
+    Unitization.instAddCommMonoid with
     zero_mul := fun x =>
       ext (MulZeroClass.zero_mul x.1) <|
         show (0 : R) • x.2 + x.1 • (0 : A) + 0 * x.2 = 0 by
@@ -468,9 +468,9 @@ instance nonAssocSemiring [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A
           simp only [add_smul, smul_add, add_mul]
           abel }
 
-instance monoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A] [IsScalarTower R A A]
-    [SMulCommClass R A A] : Monoid (Unitization R A) :=
-  { Unitization.mulOneClass with
+instance instMonoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] : Monoid (Unitization R A) :=
+  { Unitization.instMulOneClass with
     mul_assoc := fun x y z =>
       ext (mul_assoc x.1 y.1 z.1) <|
         show (x.1 * y.1) • z.2 + z.1 • (x.1 • y.2 + y.1 • x.2 + x.2 * y.2) +
@@ -483,33 +483,33 @@ instance monoid [CommMonoid R] [NonUnitalSemiring A] [DistribMulAction R A] [IsS
           rw [mul_comm z.1 y.1]
           abel }
 
-instance commMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
+instance instCommMonoid [CommMonoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : CommMonoid (Unitization R A) :=
-  { Unitization.monoid with
+  { Unitization.instMonoid with
     mul_comm := fun x₁ x₂ =>
       ext (mul_comm x₁.1 x₂.1) <|
         show x₁.1 • x₂.2 + x₂.1 • x₁.2 + x₁.2 * x₂.2 = x₂.1 • x₁.2 + x₁.1 • x₂.2 + x₂.2 * x₁.2 by
           rw [add_comm (x₁.1 • x₂.2), mul_comm] }
 
-instance semiring [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
+instance instSemiring [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Semiring (Unitization R A) :=
-  { Unitization.monoid, Unitization.nonAssocSemiring with }
+  { Unitization.instMonoid, Unitization.instNonAssocSemiring with }
 
-instance commSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A] [IsScalarTower R A A]
-    [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
-  { Unitization.commMonoid, Unitization.nonAssocSemiring with }
+instance instCommSemiring [CommSemiring R] [NonUnitalCommSemiring A] [Module R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] : CommSemiring (Unitization R A) :=
+  { Unitization.instCommMonoid, Unitization.instNonAssocSemiring with }
 
-instance nonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
+instance instNonAssocRing [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
     NonAssocRing (Unitization R A) :=
-  { Unitization.addCommGroup, Unitization.nonAssocSemiring with }
+  { Unitization.instAddCommGroup, Unitization.instNonAssocSemiring with }
 
-instance ring [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
+instance instRing [CommRing R] [NonUnitalRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : Ring (Unitization R A) :=
-  { Unitization.addCommGroup, Unitization.semiring with }
+  { Unitization.instAddCommGroup, Unitization.instSemiring with }
 
-instance commRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
+instance instCommRing [CommRing R] [NonUnitalCommRing A] [Module R A] [IsScalarTower R A A]
     [SMulCommClass R A A] : CommRing (Unitization R A) :=
-  { Unitization.addCommGroup, Unitization.commSemiring with }
+  { Unitization.instAddCommGroup, Unitization.instCommSemiring with }
 
 variable (R A)
 
@@ -533,7 +533,7 @@ section Star
 
 variable {R A : Type _}
 
-instance toStar [Star R] [Star A] : Star (Unitization R A) :=
+instance instStar [Star R] [Star A] : Star (Unitization R A) :=
   ⟨fun ra => (star ra.fst, star ra.snd)⟩
 
 @[simp]
@@ -558,18 +558,19 @@ theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
   ext (by simp only [fst_star, star_zero, fst_inr]) rfl
 #align unitization.coe_star Unitization.inr_star
 
-instance starAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
+instance instStarAddMonoid [AddMonoid R] [AddMonoid A] [StarAddMonoid R] [StarAddMonoid A] :
     StarAddMonoid (Unitization R A)
     where
   star_involutive x := ext (star_star x.fst) (star_star x.snd)
   star_add x y := ext (star_add x.fst y.fst) (star_add x.snd y.snd)
 
-instance starModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A] [Module R A]
-    [StarModule R A] : StarModule R (Unitization R A) where star_smul r x := ext (by simp) (by simp)
+instance instStarModule [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A]
+    [Module R A] [StarModule R A] : StarModule R (Unitization R A) where
+  star_smul r x := ext (by simp) (by simp)
 
-instance starRing [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
+instance instStarRing [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] : StarRing (Unitization R A) :=
-  { Unitization.starAddMonoid with
+  { Unitization.instStarAddMonoid with
     star_mul := fun x y =>
       ext (by simp [-star_mul']) (by simp [-star_mul', add_comm (star x.fst • star y.snd)]) }
 
@@ -584,7 +585,7 @@ variable (S R A : Type _) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
-instance algebra : Algebra S (Unitization R A) :=
+instance instAlgebra : Algebra S (Unitization R A) :=
   { (Unitization.inlRingHom R A).comp (algebraMap S R) with
     commutes' := fun s x => by
       induction' x using Unitization.ind with r a
@@ -595,7 +596,7 @@ instance algebra : Algebra S (Unitization R A) :=
       show _ = inl (algebraMap S R s) * _
       rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr, smul_one_mul,
         inl_smul, inr_smul, smul_one_smul] }
-#align unitization.algebra Unitization.algebra
+#align unitization.algebra Unitization.instAlgebra
 
 theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=
   rfl
