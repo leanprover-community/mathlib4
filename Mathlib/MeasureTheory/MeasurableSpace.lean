@@ -1677,8 +1677,8 @@ variable (α)
 
 open Classical
 
-/-- If a measurable space is countably generated and separates points, it admits a measurable injection
-into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
+/-- If a measurable space is countably generated and separates points, it admits a measurable
+injection into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
 theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
