@@ -744,6 +744,16 @@ lemma _root_.Set.quotientMeasure_apply (s : Set α) (μ : Measure α)
     (s.quotientMeasure μ hs) U = μ ((π ⁻¹' U) ∩ s) :=
   MeasureTheory.Measure.ofMeasurable_apply U meas_U
 
+lemma _root_.Set.quotientMeasure_eq_map_restrict (s : Set α) (μ : Measure α)
+    (hs : MeasurableSet s) :
+    (s.quotientMeasure μ hs) = Measure.map π (μ.restrict s) := by
+  ext U meas_U
+  rw [Measure.map_apply, Measure.restrict_apply]
+  · exact quotientMeasure_apply _ _ _ meas_U
+  · exact measurableSet_quotient.mp meas_U
+  · intro V hV
+    exact measurableSet_quotient.mp hV
+  · exact meas_U
 
 lemma _root_.Set.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s t : Set α}
     {μ : Measure α} [SMulInvariantMeasure G α μ] [MeasurableSMul G α]
@@ -766,6 +776,29 @@ lemma _root_.Set.quotientMeasure_invariant [Countable G] [MeasurableSpace G] {s 
 
 end FundamentalDomainMeasure
 
+section HasFundamentalDomain
+
+/-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
+  which `IsFundamentalDomain G s` holds -/
+class HasFundamentalDomain (G : Type _) (α : Type _) [One G] [SMul G α]
+  [MeasureSpace α] : Prop :=
+(has_fundamental_domain_characterization :
+  ∃ (s : Set α), IsFundamentalDomain G s ∧ MeasurableSet s)
+
+def covolume (G : Type _) (α : Type _) [One G] [SMul G α] [MeasureSpace α]
+    [funDom : HasFundamentalDomain G α] : ℝ≥0∞ :=
+  volume funDom.has_fundamental_domain_characterization.choose
+
+lemma covolume_eq_volume (G : Type _) (α : Type _) [Group G] [MulAction G α] [MeasurableSpace G]
+    [Countable G] [MeasureSpace α] [MeasurableSMul G α] [SMulInvariantMeasure G α volume]
+    [funDom : HasFundamentalDomain G α] (s : Set α) (fund_dom_s : IsFundamentalDomain G s) :
+    covolume G α = volume s := by
+  rw [covolume]
+  rw [fund_dom_s.measure_eq]
+  exact funDom.has_fundamental_domain_characterization.choose_spec.1
+
+end HasFundamentalDomain
+
 section QuotientVolumeEqVolume
 
 variable (G α : Type _) [Group G] [MulAction G α] [MeasureSpace α]
@@ -783,7 +816,7 @@ class QuotientVolumeEqVolumePreimage (μ : Measure (Quotient α_mod_G)) --[Measu
 
 /-- If you want to make an instance of the typeclass, you can do it starting from any given
   fundamental domain -/
-lemma Set.quotientMeasureSpace.instQuotientVolumeEqVolumePreimage [Countable G] [MeasurableSpace G]
+lemma Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage [Countable G] [MeasurableSpace G]
     [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
     (fund_dom_s : IsFundamentalDomain G s) :
     @QuotientVolumeEqVolumePreimage G α _ _ _ (s.quotientMeasure volume meas_s) :=
@@ -792,17 +825,45 @@ lemma Set.quotientMeasureSpace.instQuotientVolumeEqVolumePreimage [Countable G] 
       rw [quotientMeasure_invariant fund_dom_s fund_dom_t meas_s meas_t,
         quotientMeasure_apply _ _ _ meas_U] }
 
+
+lemma quotientVolumeEqVolumePreimage_map_restrict [Countable G] [MeasurableSpace G]
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
+    (fund_dom_s : IsFundamentalDomain G s) :
+    @QuotientVolumeEqVolumePreimage G α _ _ _ (Measure.map π (volume.restrict s)) := by
+  convert Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage G α s meas_s fund_dom_s
+  exact Eq.symm (quotientMeasure_eq_map_restrict s volume meas_s)
+
+
+/-- Any two measures satisfying `QuotientVolumeEqVolumePreimage` are equal. -/
+lemma QuotientVolumeEqVolumePreimage.unique [Countable G] [MeasurableSpace G]
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] [hasFun : HasFundamentalDomain G α]
+    (μ ν : Measure (Quotient α_mod_G))
+    [QuotientVolumeEqVolumePreimage G α μ] [QuotientVolumeEqVolumePreimage G α ν] :
+    μ = ν := by
+  ext U meas_U
+  obtain ⟨𝓕, h𝓕, meas_𝓕⟩ := hasFun.has_fundamental_domain_characterization
+  rw [QuotientVolumeEqVolumePreimage.projection_respects_measure 𝓕 h𝓕 meas_𝓕 U meas_U,
+    QuotientVolumeEqVolumePreimage.projection_respects_measure 𝓕 h𝓕 meas_𝓕 U meas_U]
+
+/-- Any measure satisfying `QuotientVolumeEqVolumePreimage` is equal to the quotient measure
+  associated to the fundamental domain. -/
+lemma QuotientVolumeEqVolumePreimage.eq_quotient_measure [Countable G] [MeasurableSpace G]
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
+    (fund_dom_s : IsFundamentalDomain G s) (μ : Measure (Quotient α_mod_G))
+    [QuotientVolumeEqVolumePreimage G α μ] :
+    μ = s.quotientMeasure volume meas_s := by
+  haveI : HasFundamentalDomain G α := ⟨⟨s, fund_dom_s, meas_s⟩⟩
+  haveI := Set.quotientMeasureSpace.QuotientVolumeEqVolumePreimage G α s meas_s fund_dom_s
+  apply QuotientVolumeEqVolumePreimage.unique
+
+lemma QuotientVolumeEqVolumePreimage.eq_map_restrict [Countable G] [MeasurableSpace G]
+    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] (s : Set α) (meas_s : MeasurableSet s)
+    (fund_dom_s : IsFundamentalDomain G s) (μ : Measure (Quotient α_mod_G))
+    [QuotientVolumeEqVolumePreimage G α μ] :
+    μ = Measure.map π (volume.restrict s) := by
+  rw [QuotientVolumeEqVolumePreimage.eq_quotient_measure G α s meas_s fund_dom_s μ]
+  exact Set.quotientMeasure_eq_map_restrict s volume meas_s
+
 end QuotientVolumeEqVolume
-
-section HasFundamentalDomain
-
-/-- We say a quotient of `α` by `G` `HasFundamentalDomain` if there is a measurable set `s` for
-  which `IsFundamentalDomain G s` holds -/
-class HasFundamentalDomain (G : Type _) (α : Type _) [One G] [SMul G α]
-  [MeasureSpace α] : Prop :=
-(has_fundamental_domain_characterization :
-  ∃ (s : Set α), IsFundamentalDomain G s ∧ MeasurableSet s)
-
-end HasFundamentalDomain
 
 end MeasureTheory
