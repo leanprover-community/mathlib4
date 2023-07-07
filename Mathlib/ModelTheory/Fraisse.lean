@@ -241,12 +241,12 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   · exact DirectLimit.cg _ (fun n => (fg _ (G n).2).cg)
   · refine (age_directLimit (fun n ↦ (G n).val) f).trans
       (subset_antisymm (iUnion_subset fun n N hN => hp (G n).val (G n).2 hN) fun N KN => ?_)
-    obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, ?_⟩
-    refine' mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp _ e.symm.toEmbedding⟩⟩
+    have : Quotient.out (Quotient.mk' N) ≈ N := Quotient.eq_mk_iff_out.mp rfl
+    obtain ⟨n, ⟨e⟩⟩ := (hF N).1 ⟨N, KN, this⟩
+    refine mem_iUnion_of_mem n ⟨fg _ KN, ⟨Embedding.comp ?_ e.symm.toEmbedding⟩⟩
     cases' n with n
     · dsimp; exact Embedding.refl _ _
-    · -- dsimp -- Porting note: uncomment this and lots of stuff ↑ ↑ ↑ will break
-      exact (hFP _ n).some
+    · dsimp; exact (hFP _ n).some
 #align first_order.language.exists_cg_is_age_of FirstOrder.Language.exists_cg_is_age_of
 
 theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
