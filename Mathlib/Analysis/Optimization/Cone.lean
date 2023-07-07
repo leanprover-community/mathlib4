@@ -16,69 +16,83 @@ namespace ConeProgram
 
 variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
 variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
-variable (P : ConeProgram V W)
+variable {P : ConeProgram V W}
 
 def Objective (v : V) := ⟪P.c, v⟫_ℝ
 
--- def Constraint := {v | v ∈ P.K ∧ P.b - P.A v ∈ P.L}
+def IsSolution (v : V) := v ∈ P.K ∧ P.b - P.A v ∈ P.L
 
-def FeasibleSolution (v : V) := v ∈ P.K ∧ P.b - P.A v ∈ P.L
+def IsFeasible := Nonempty { v | P.IsSolution v }
 
-protected def Nonempty := Nonempty { v | P.FeasibleSolution v }
+def IsOptimalSolution (v : V) :=
+  P.IsSolution v ∧
+  IsGreatest (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
 
-def OptimalSolution (v : V) :=
-  IsGreatest (P.Objective ''  { v | P.FeasibleSolution v }) (P.Objective v)
-  -- P.FeasibleSolution v ∧ ∀ v', P.FeasibleSolution v' → P.Objective v' ≤ P.Objective v
+example (x : ℕ) (S : Set ℕ) (h : IsGreatest S x) : x ∈ S := by exact mem_of_mem_inter_left h
 
-def Values := P.Objective '' { v | P.FeasibleSolution v }
+@[simp] lemma IsSolution_of_IsOptimalSolution (v : V) (h : P.IsOptimalSolution x) :
+  P.IsSolution x := h.1
+
+def Values := P.Objective '' { v | P.IsSolution v }
+
+@[simp] lemma nonempty_values_iff : (P.Values).Nonempty ↔ P.IsFeasible := by
+    unfold Values
+    unfold IsFeasible
+    rw [nonempty_image_iff]
+    exact Iff.symm nonempty_coe_sort
 
 noncomputable def Value := sSup <| P.Values
 
-lemma nonempty_values_of_feasible (h : P.Nonempty) : P.Values.Nonempty := by
-  unfold Values
+@[simp] lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v := by
+  apply IsLUB.csSup_eq <| IsGreatest.isLUB h.2
   rw [nonempty_image_iff]
-  unfold ConeProgram.Nonempty at h
-  rwa [nonempty_subtype] at h
-
-lemma value_of_optimal (h : P.OptimalSolution x) : P.Value = P.Objective x := by
-  apply IsLUB.csSup_eq <| IsGreatest.isLUB h
-  simp
-  use x
-  let t := h.1
-  simp at t
-
-  sorry
+  exact ⟨v, h.1⟩
 
 ----------------------------------------------------------------------------------------------------
 
-def IsFeasibleSeq (seqV : ℕ → V) :=
+def IsSubSolution (seqV : ℕ → V) :=
   ∃ seqW : ℕ → W,
   (∀ n, seqV n ∈ P.K) ∧
   (∀ n, seqW n ∈ P.L) ∧
   (Tendsto (fun n => P.A (seqV n) + (seqW n)) atTop (nhds P.b))
 
-lemma subsolution_of_solution (hx : P.FeasibleSolution x) : P.IsFeasibleSeq <| fun _ => x := by
+noncomputable def Objective' (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
+
+@[simp] lemma SubSolution_of_Solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
   use fun _ => P.b - P.A x
   simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
 
-def IsSubFeasible := Nonempty { x : ℕ → V | P.IsFeasibleSeq x }
+@[simp] lemma SubSolution_of_Solution_Value : P.Objective' (fun _ => x) = P.Objective x :=
+  limsup_const (inner P.c x)
 
-noncomputable def SeqValue (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
+def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
 
-def SeqValues := P.SeqValue '' { seqV | P.IsFeasibleSeq seqV}
+def SubValues := P.Objective' '' { seqV | P.IsSubSolution seqV }
 
-noncomputable def SubValue := sSup <| P.SeqValues
+noncomputable def SubValue := sSup <| P.SubValues
 
 ----------------------------------------------------------------------------------------------------
 
+@[simp] lemma Values_subset_SubValues : P.Values ⊆ P.SubValues := fun r ⟨v, hv, hvr⟩ =>
+  ⟨fun _ => v, P.SubSolution_of_Solution hv, by rwa [P.SubSolution_of_Solution_Value]⟩
+
+lemma Value_le_Subvalue (fs : P.IsFeasible) (bdd : BddAbove P.SubValues) :
+-- lemma Value_le_Subvalue (ne: Set.Nonempty P.Values) (bdd : BddAbove P.SubValues) :
+  P.Value ≤ P.SubValue := csSup_le_csSup bdd (nonempty_values_iff.2 fs) Values_subset_SubValues
+
 def SlaterCondition := ∃ v : P.K, P.b - P.A v ∈ interior P.L
 
-theorem Value_eq_SubValue (sl : P.SlaterCondition) :
-  P.Value = P.SubValue := by
-  -- unfold Value
-  unfold SubValue
-  unfold SeqValues
-  unfold SeqValue
+example (x y : ℕ) : x ≤ y → y ≤ x → x = y := by exact fun a a_1 ↦ Nat.le_antisymm a a_1
+
+theorem Value_eq_SubValue  (fs : P.IsFeasible) (bdd : BddAbove P.SubValues)
+  (sl : P.SlaterCondition) : P.Value = P.SubValue := by
+  apply le_antisymm (P.Value_le_Subvalue fs bdd)
+  by_contra'
+
+--   -- unfold Value
+--   unfold SubValue
+--   unfold SubValues
+--   unfold SeqValue
 
 
 end ConeProgram
