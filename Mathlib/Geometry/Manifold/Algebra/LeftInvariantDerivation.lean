@@ -19,7 +19,7 @@ In this file we define the concept of left invariant derivation for a Lie group.
 analogous to the more classical concept of left invariant vector fields, and it holds that the
 derivation associated to a vector field is left invariant iff the field is.
 
-Moreover we prove that `left_invariant_derivation I G` has the structure of a Lie algebra, hence
+Moreover we prove that `LeftInvariantDerivation I G` has the structure of a Lie algebra, hence
 implementing one of the possible definitions of the Lie algebra attached to a Lie group.
 
 -/
@@ -231,7 +231,7 @@ instance : Module 𝕜 (LeftInvariantDerivation I G) :=
   coe_injective.module _ (coeFnAddMonoidHom I G) coe_smul
 
 /-- Evaluation at a point for left invariant derivation. Same thing as for generic global
-derivations (`derivation.eval_at`). -/
+derivations (`Derivation.evalAt`). -/
 def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
   toFun X := Derivation.evalAt g X.1
   map_add' _ _ := rfl
@@ -260,11 +260,12 @@ theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := 
 
 theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   ext h
-  rw [ContMDiffMap.comp_apply, L_apply, ← eval_at_apply, eval_at_mul, apply_hfdifferential,
-    apply_fdifferential, eval_at_apply]
+  rw [ContMDiffMap.comp_apply, L_apply, ← evalAt_apply, evalAt_mul, apply_hfdifferential,
+    apply_fdifferential, evalAt_apply]
 set_option linter.uppercaseLean3 false in
 #align left_invariant_derivation.comp_L LeftInvariantDerivation.comp_L
 
+set_option maxHeartbeats 400000 in
 instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) where
   bracket X Y :=
     ⟨⁅(X : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯), Y⁆, fun g => by
@@ -272,7 +273,7 @@ instance : Bracket (LeftInvariantDerivation I G) (LeftInvariantDerivation I G) w
       have hX := Derivation.congr_fun (left_invariant' g X) (Y f)
       have hY := Derivation.congr_fun (left_invariant' g Y) (X f)
       rw [apply_hfdifferential, apply_fdifferential, Derivation.evalAt_apply] at hX hY ⊢
-      rw [comp_L] at hX hY 
+      rw [comp_L] at hX hY
       rw [Derivation.commutator_apply, SmoothMap.coe_sub, Pi.sub_apply, coe_derivation]
       rw [coe_derivation] at hX hY ⊢
       rw [hX, hY]
