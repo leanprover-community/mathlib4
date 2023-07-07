@@ -2,6 +2,11 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
+
+! This file was ported from Lean 3 source module init.data.list.instances
+! leanprover-community/lean commit 9af482290ef68e8aaa5ead01aa7b09b7be7019fd
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.List.Lemmas
 /-!
