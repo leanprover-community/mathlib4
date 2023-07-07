@@ -105,7 +105,9 @@ private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Pa
 
 theorem eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
-  rw [Functor.conj_eqToHom_iff_heq ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) (start_path hfg) (end_path hfg)]; exact heq_path_of_eq_image hfg
+  rw [Functor.conj_eqToHom_iff_heq
+    ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧) (start_path hfg) (end_path hfg)]
+  exact heq_path_of_eq_image hfg
 #align continuous_map.homotopy.eq_path_of_eq_image ContinuousMap.Homotopy.eq_path_of_eq_image
 
 end Casts
