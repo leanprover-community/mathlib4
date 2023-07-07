@@ -7,6 +7,16 @@ import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Dilation equivalence
+
+In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and Y` such
+that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
+
+We also develop basic API about these equivalences.
+
+## TODO
+
+- Add missing lemmas (compare to other `*Equiv` structures).
+- [after-port] Add `DilationEquivInstance` for `IsometryEquiv`.
 -/
 
 open scoped NNReal ENNReal
@@ -17,6 +27,8 @@ section Class
 
 variable (F : Type _) (X Y : outParam (Type _)) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 
+/-- Typeclass saying that `F` is a type of bundled equivalences such that all `e : F` are
+dilations. -/
 class DilationEquivClass extends EquivLike F X Y where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
@@ -25,6 +37,8 @@ instance (priority := 100) [DilationEquivClass F X Y] : DilationClass F X Y :=
 
 end Class
 
+/-- Type of equivalences `X ≃ Y` such that `∀ x y, edist (f x) (f y) = r * edist x y` for some
+`r : ℝ≥0`, `r ≠ 0`. -/
 structure DilationEquiv (X Y : Type _) [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
     extends X ≃ Y, Dilation X Y
 
@@ -53,6 +67,7 @@ instance : CoeFun (X ≃ᵈ Y) fun _ ↦ (X → Y) where
 protected theorem ext {e e' : X ≃ᵈ Y} (h : ∀ x, e x = e' x) : e = e' :=
   FunLike.ext _ _ h
 
+/-- Inverse `DilationEquiv`. -/
 def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
   toEquiv := e.1.symm
   edist_eq' := by
@@ -65,10 +80,12 @@ def symm (e : X ≃ᵈ Y) : Y ≃ᵈ X where
 @[simp] theorem apply_symm_apply (e : X ≃ᵈ Y) (x : Y) : e (e.symm x) = x := e.right_inv x
 @[simp] theorem symm_apply_apply (e : X ≃ᵈ Y) (x : X) : e.symm (e x) = x := e.left_inv x
 
+/-- See Note [custom simps projection]. -/
 def Simps.symm_apply (e : X ≃ᵈ Y) : Y → X := e.symm
 
 initialize_simps_projections DilationEquiv (toFun → apply, invFun → symm_apply)
 
+/-- Identity map as a `DilationEquiv`. -/
 @[simps! (config := .asFn) apply]
 def refl (X : Type _) [PseudoEMetricSpace X] : X ≃ᵈ X where
   toEquiv := .refl X
@@ -77,6 +94,7 @@ def refl (X : Type _) [PseudoEMetricSpace X] : X ≃ᵈ X where
 @[simp] theorem refl_symm : (refl X).symm = refl X := rfl
 @[simp] theorem ratio_refl : ratio (refl X) = 1 := Dilation.ratio_id
 
+/-- Composition of `DilationEquiv`s. -/
 @[simps! (config := .asFn) apply]
 def trans (e₁ : X ≃ᵈ Y) (e₂ : Y ≃ᵈ Z) : X ≃ᵈ Z where
   toEquiv := e₁.1.trans e₂.1
@@ -105,6 +123,10 @@ theorem ratio_trans (e : X ≃ᵈ Y) (e' : Y ≃ᵈ Z) : ratio (e.trans e') = ra
   push_neg at hX
   exact (Dilation.ratio_comp' (g := e'.toDilation) (f := e.toDilation) hX).trans (mul_comm _ _)
 
+@[simp]
+theorem ratio_symm (e : X ≃ᵈ Y) : ratio e.symm = (ratio e)⁻¹ :=
+  eq_inv_of_mul_eq_one_left <| by rw [← ratio_trans, symm_trans_self, ratio_refl]
+
 instance : Group (X ≃ᵈ X) where
   mul e e' := e'.trans e
   mul_assoc _ _ _ := rfl
@@ -122,11 +144,14 @@ theorem inv_def (e : X ≃ᵈ X) : e⁻¹ = e.symm := rfl
 @[simp] theorem coe_one : ⇑(1 : X ≃ᵈ X) = id := rfl
 theorem coe_inv (e : X ≃ᵈ X) : ⇑(e⁻¹) = e.symm := rfl
 
-/-- Dilation.ratio as a mo-/
+/-- `Dilation.ratio` as a monoid homomorphism. -/
 noncomputable def ratioHom : (X ≃ᵈ X) →* ℝ≥0 where
   toFun := Dilation.ratio
   map_one' := ratio_refl
   map_mul' _ _ := (ratio_trans _ _).trans (mul_comm _ _)
+
+@[simp]
+theorem ratio_inv (e : X ≃ᵈ X) : ratio (e⁻¹) = (ratio e)⁻¹ := ratio_symm e
 
 @[simp]
 theorem ratio_pow (e : X ≃ᵈ X) (n : ℕ) : ratio (e ^ n) = ratio e ^ n :=
@@ -136,6 +161,7 @@ theorem ratio_pow (e : X ≃ᵈ X) (n : ℕ) : ratio (e ^ n) = ratio e ^ n :=
 theorem ratio_zpow (e : X ≃ᵈ X) (n : ℤ) : ratio (e ^ n) = ratio e ^ n :=
   ratioHom.map_zpow _ _
 
+/-- `DilationEquiv.toEquiv` as a monoid homomorphism. -/
 @[simps]
 def toPerm : (X ≃ᵈ X) →* Equiv.Perm X where
   toFun e := e.1
