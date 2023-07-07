@@ -21,14 +21,14 @@ not closed points.)
 
 We give this in a more general form, which is that cofiltered limits
 of nonempty compact Hausdorff spaces are nonempty
-(`nonempty_limit_cone_of_compact_t2_cofiltered_system`).
+(`nonempty_limitCone_of_compact_t2_cofiltered_system`).
 
-This also applies to inverse limits, where `{J : Type u} [preorder J] [is_directed J (≤)]` and
-`F : Jᵒᵖ ⥤ Top`.
+This also applies to inverse limits, where `{J : Type u} [Preorder J] [IsDirected J (≤)]` and
+`F : Jᵒᵖ ⥤ TopCat`.
 
 The theorem is specialized to nonempty finite types (which are compact Hausdorff with the
 discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
-`nonempty_sections_of_finite_inverse_system` in the file `category_theory.cofiltered_system`.
+`nonempty_sections_of_finite_inverse_system` in the file `Mathlib.CategoryTheory.CofilteredSystem`.
 
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
