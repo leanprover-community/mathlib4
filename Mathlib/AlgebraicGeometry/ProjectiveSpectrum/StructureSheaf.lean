@@ -65,11 +65,8 @@ variable [CommRing R] [CommRing A] [Algebra R A]
 
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
--- porting note: this should be "local notation", but as "local notation", `at x` does not work
--- this should be fixed before merging...
-set_option quotPrecheck false in
-notation "at " x => HomogeneousLocalization.AtPrime 𝒜
-  ((x : ProjectiveSpectrum.top 𝒜)).asHomogeneousIdeal.toIdeal
+local macro "at " x:term : term => `(HomogeneousLocalization.AtPrime 𝒜
+  ($x : ProjectiveSpectrum.top 𝒜).asHomogeneousIdeal.toIdeal)
 
 namespace ProjectiveSpectrum.StructureSheaf
 
