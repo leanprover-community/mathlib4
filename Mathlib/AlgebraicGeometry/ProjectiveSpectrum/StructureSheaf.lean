@@ -87,7 +87,7 @@ subset `V` of `U`.
 -/
 def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x where
   pred f := IsFraction f
-  res := by rintro V U i f ⟨j, r, s, w⟩ ; exact ⟨j, r, s, fun y => w (i y)⟩
+  res := by rintro V U i f ⟨j, r, s, w⟩; exact ⟨j, r, s, fun y => w (i y)⟩
 #align algebraic_geometry.projective_spectrum.structure_sheaf.is_fraction_prelocal AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.isFractionPrelocal
 
 /-- We will define the structure sheaf as the subsheaf of all dependent functions in
