@@ -163,11 +163,11 @@ def toProfinite : ExtrDisc.{u} ⥤ Profinite.{u} where
 
 /-- The functor from extremally disconnected spaces to profinite spaces is full. -/
 instance : Full toProfinite := by
-  fconstructor ; intro X Y f ; exact f ; simp
+  fconstructor; intro X Y f; exact f; simp
 
 /-- The functor from extremally disconnected spaces to profinite spaces is faithful. -/
 instance : Faithful toProfinite := by
-  fconstructor ; intro X Y f g h ; assumption
+  fconstructor; intro X Y f g h; assumption
 
 /-- The functor from extremally disconnected spaces to compact Hausdorff spaces
     factors through profinite spaces. -/
