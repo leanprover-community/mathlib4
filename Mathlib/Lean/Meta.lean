@@ -9,9 +9,30 @@ import Lean.Meta.Tactic.Clear
 import Std.Data.Option.Basic
 import Std.Data.List.Basic
 
-/-! ## Additional utilities in `Lean.MVarId` -/
-
 open Lean Meta
+
+namespace Lean.Meta
+
+/-- Given `hs : Array α` (usually `Array Expr`) and `bs : Array BinderInfo`, return
+`(explicit, implicit, instImplicit)`, where `explicit`, `implicit`, and `instImplicit` consist of
+the elements of `hs` for which the corresponding element of `bs` is `.explicit`, {`.implicit` or
+`.strictImplicit`}, and `.instImplicit`, respectively. This function panics if `hs` is not at least
+as big as `bs`. -/
+def groupByBinderInfo [Inhabited α] (hs : Array α) (bs : Array BinderInfo)
+    : Array α × Array α × Array α := Id.run do
+  let mut explicit     := #[]
+  let mut implicit     := #[]
+  let mut instImplicit := #[]
+  for i in [: bs.size] do
+    match bs[i]! with
+    | .default                    => explicit     := explicit.push hs[i]!
+    | .implicit | .strictImplicit => implicit     := implicit.push hs[i]!
+    | .instImplicit               => instImplicit := instImplicit.push hs[i]!
+  return (explicit, implicit, instImplicit)
+
+end Lean.Meta
+
+/-! ## Additional utilities in `Lean.MVarId` -/
 
 namespace Lean.MVarId
 
