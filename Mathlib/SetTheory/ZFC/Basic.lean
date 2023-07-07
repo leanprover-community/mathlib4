@@ -555,7 +555,7 @@ def Resp.f {n} (f : Resp (n + 1)) (x : PSet) : Resp n :=
   ⟨f.1 x, f.2 _ _ <| Equiv.refl x⟩
 #align pSet.resp.f PSet.Resp.f
 
-/-- Function equivalence for functions respecting equivalence. See `PSet.Arity.equiv`. -/
+/-- Function equivalence for functions respecting equivalence. See `PSet.Arity.Equiv`. -/
 def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 #align pSet.resp.equiv PSet.Resp.Equiv
