@@ -102,12 +102,27 @@ def limitConeIsLimit (F : J ⥤ AlgebraCatMax.{v, w} R) : IsLimit (limitCone.{v,
       (fun s => ⟨⟨⟨⟨fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v, _⟩,
          _⟩, _⟩, _, _⟩, _⟩)
       (fun s => _)
-  · intro j j' f; exact FunLike.congr_fun (Cone.w s f) v
-  · apply Subtype.ext; ext j; simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]; rfl
-  · intro x y; apply Subtype.ext; ext j; simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]; rfl
-  · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]; rfl
-  · intro x y; simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]; rfl
-  · intro r; apply Subtype.ext; ext j; exact (s.π.app j).commutes r
+  · intro j j' f
+    exact FunLike.congr_fun (Cone.w s f) v
+  · -- Porting note: we could add a custom `ext` lemma here.
+    apply Subtype.ext
+    ext j
+    simp [forget_map_eq_coe, AlgHom.map_one, Functor.mapCone_π_app]
+    rfl
+  · intro x y
+    apply Subtype.ext
+    ext j
+    simp [forget_map_eq_coe, AlgHom.map_mul, Functor.mapCone_π_app]
+    rfl
+  · simp [forget_map_eq_coe, AlgHom.map_zero, Functor.mapCone_π_app]
+    rfl
+  · intro x y
+    simp [forget_map_eq_coe, AlgHom.map_add, Functor.mapCone_π_app]
+    rfl
+  · intro r
+    apply Subtype.ext
+    ext j
+    exact (s.π.app j).commutes r
   · rfl
 #align Algebra.has_limits.limit_cone_is_limit AlgebraCat.HasLimits.limitConeIsLimit
 
