@@ -50,7 +50,7 @@ lean_lib Counterexamples where
   roots := #[`Counterexamples]
 
 lean_lib ImportGraph where
-  roots := #[`ImporGraph]
+  roots := #[`ImportGraph]
 
 lean_exe graph where
   root := `ImportGraph.Main
