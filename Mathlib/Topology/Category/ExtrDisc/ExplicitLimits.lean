@@ -22,12 +22,6 @@ open CategoryTheory
 -- This section contains helper lemmas about the sigma-type `Σ i, π i`.
 section Sigma
 
-@[simp]
-theorem mem_sigma_iff {π : ι → Type _} [∀ i, TopologicalSpace (π i)]
-  {i : ι} {x : π i} {s : Set (Σ i, π i)}
-    : x ∈ Sigma.mk i ⁻¹' s ↔ ⟨i, x⟩ ∈ s :=
-  Iff.rfl
-
 lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' U) = ∅ := by
   change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ U} = ∅
   -- change { x | (Sigma.mk j) x ∈ {⟨i, u⟩ | u ∈ U}} = ∅
