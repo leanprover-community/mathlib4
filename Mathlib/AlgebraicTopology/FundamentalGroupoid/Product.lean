@@ -17,15 +17,15 @@ import Mathlib.Topology.Homotopy.Product
 # Fundamental groupoid preserves products
 In this file, we give the following definitions/theorems:
 
-  - `fundamental_groupoid_functor.pi_iso` An isomorphism between Π i, (π Xᵢ) and π (Πi, Xᵢ), whose
+  - `FundamentalGroupoidFunctor.piIso` An isomorphism between Π i, (π Xᵢ) and π (Πi, Xᵢ), whose
     inverse is precisely the product of the maps π (Π i, Xᵢ) → π (Xᵢ), each induced by
     the projection in `Top` Π i, Xᵢ → Xᵢ.
 
-  - `fundamental_groupoid_functor.prod_iso` An isomorphism between πX × πY and π (X × Y), whose
+  - `FundamentalGroupoidFunctor.prodIso` An isomorphism between πX × πY and π (X × Y), whose
     inverse is precisely the product of the maps π (X × Y) → πX and π (X × Y) → Y, each induced by
     the projections X × Y → X and X × Y → Y
 
-  - `fundamental_groupoid_functor.preserves_product` A proof that the fundamental groupoid functor
+  - `FundamentalGroupoidFunctor.preservesProduct` A proof that the fundamental groupoid functor
     preserves all products.
 -/
 
@@ -60,9 +60,8 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
 -- Porting note: losing the instance with a concrete category again
 instance : (i : I) → TopologicalSpace (πₓ (X i)).α := fun i => TopCat.topologicalSpace_coe (X i)
 
-set_option pp.coercions false in
 /-- The map taking the pi product of a family of fundamental groupoids to the fundamental
-groupoid of the pi product. This is actually an isomorphism (see `pi_iso`)
+groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/
 @[simps]
 def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
@@ -76,7 +75,7 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
 #align fundamental_groupoid_functor.pi_to_pi_Top FundamentalGroupoidFunctor.piToPiTop
 
 /-- Shows `piToPiTop` is an isomorphism, whose inverse is precisely the pi product
-of the induced projections. This shows that `fundamental_groupoid_functor` preserves products.
+of the induced projections. This shows that `fundamentalGroupoidFunctor` preserves products.
 -/
 @[simps]
 def piIso : CategoryTheory.Grpd.of (∀ i : I, πₓ (X i)) ≅ πₓ (TopCat.of (∀ i, X i)) where
@@ -166,7 +165,7 @@ theorem projRight_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x�
 
 /--
 The map taking the product of two fundamental groupoids to the fundamental groupoid of the product
-of the two topological spaces. This is in fact an isomorphism (see `prod_iso`).
+of the two topological spaces. This is in fact an isomorphism (see `prodIso`).
 -/
 @[simps obj]
 def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
@@ -191,7 +190,7 @@ theorem prodToProdTop_map {x₀ x₁ : πₓ A} {y₀ y₁ : πₓ B} (p₀ : x�
   rfl
 #align fundamental_groupoid_functor.prod_to_prod_Top_map FundamentalGroupoidFunctor.prodToProdTop_map
 
-/-- Shows `prod_to_prod_Top` is an isomorphism, whose inverse is precisely the product
+/-- Shows `prodToProdTop` is an isomorphism, whose inverse is precisely the product
 of the induced left and right projections.
 -/
 @[simps]
