@@ -186,7 +186,7 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
 #align first_order.language.age.countable_quotient FirstOrder.Language.age.countable_quotient
 
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
-@[simp]
+-- @[simp] -- Porting note: cannot simplify itself
 theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     (G : ι → Type max w w') [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [DirectedSystem G fun i j h => f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
