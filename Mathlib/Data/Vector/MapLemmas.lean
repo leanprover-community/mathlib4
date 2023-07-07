@@ -31,7 +31,6 @@ theorem mapAccumr_mapAccumr :
       ) xs (s₁, s₂)).snd) := by
   induction xs using Vector.revInductionOn generalizing s₁ s₂ <;> simp_all
 
-
 @[simp]
 theorem mapAccumr_map (f₂ : α → β) :
     (mapAccumr f₁ (map f₂ xs) s) = (mapAccumr (fun x s => f₁ (f₂ x) s) xs s) := by
@@ -50,8 +49,6 @@ theorem map_map (f₁ : β → γ) (f₂ : α → β) :
   induction xs using Vector.inductionOn <;> simp_all
 
 end Unary
-
-
 
 section Binary
 variable (xs : Vector α n) (ys : Vector β n)
@@ -73,8 +70,6 @@ theorem map₂_map_left (f₁ : γ → β → ζ) (f₂ : α → γ) :
     map₂ f₁ (map f₂ xs) ys = map₂ (fun x y => f₁ (f₂ x) y) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
-
-
 @[simp]
 theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ) (f₂ : β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr f₂ ys s₂).snd s₁)
@@ -94,8 +89,6 @@ theorem mapAccumr₂_mapAccumr_right (f₁ : α → γ → σ₁ → σ₁ × ζ
 theorem map₂_map_right (f₁ : α → γ → ζ) (f₂ : β → γ) :
     map₂ f₁ xs (map f₂ ys) = map₂ (fun x y => f₁ x (f₂ y)) xs ys := by
   induction xs, ys using Vector.revInductionOn₂ <;> simp_all
-
-
 
 @[simp]
 theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α → β → σ₂ → σ₂ × γ) :
@@ -170,9 +163,7 @@ theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
-
 end Binary
-
 
 end Fold
 
@@ -319,9 +310,6 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
   mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => h a b s s')
 
 
-
-
-
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
   -/
@@ -334,8 +322,6 @@ theorem mapAccumr_redundant_pair (f : α → (σ × σ) → (σ × σ) × β)
   mapAccumr_bisim_tail <| by
     use fun (s₁, s₂) s => s₂ = s ∧ s₁ = s
     simp_all
-
-
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
     pair, then we can simplify to just a single element of state
@@ -388,8 +374,6 @@ theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ →
 
 end UnusedInput
 
-
-
 /-!
 ## Commutativity
 -/
@@ -406,8 +390,6 @@ theorem mapAccumr₂_comm (f : α → α → σ → σ × γ) (comm : ∀ a₁ a
 
 end Comm
 
-
-
 /-!
 ## Argument Flipping
 -/
@@ -418,12 +400,10 @@ theorem map₂_flip (f : α → β → γ) :
     map₂ f xs ys = map₂ (flip f) ys xs := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
 
-
 theorem mapAccumr₂_flip (f : α → β → σ → σ × γ) :
     mapAccumr₂ f xs ys s = mapAccumr₂ (flip f) ys xs s := by
   induction xs, ys using Vector.inductionOn₂ <;> simp_all[flip]
 
 end Flip
-
 
 end Vector
