@@ -56,7 +56,7 @@ def sectionsSubalgebra (F : J ⥤ AlgebraCatMax.{v, w} R) : Subalgebra R (∀ j,
 
 instance limitSemiring (F : J ⥤ AlgebraCatMax.{v, w} R) :
     Ring (Types.limitCone (F ⋙ forget (AlgebraCatMax.{v, w} R))).pt := by
-  change Ring (sections_subalgebra F)
+  change Ring (sectionsSubalgebra F)
   infer_instance
 #align Algebra.limit_semiring AlgebraCat.limitSemiring
 
