@@ -9,13 +9,44 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.List.Lemmas
+
 /-!
 Decidable Instances for `List` not (yet) in `Std`
 -/
 
+universe u
+
+attribute [local simp] List.join List.ret
+
 namespace List
 
-variable {α : Type _} {p : α → Prop} [DecidablePred p]
+instance instMonad : Monad List.{u} where
+  pure := @List.ret
+  bind := @List.bind
+  map := @List.map
+#align list.monad List.instMonad
+
+instance instLawfulMonad : LawfulMonad List.{u} := LawfulMonad.mk'
+  (id_map := map_id)
+  (pure_bind := fun _ _ => List.append_nil _)
+  (bind_assoc := by
+    intro _ _ _ l _ _
+    induction l with
+    | nil => simp [Bind.bind]
+    | cons _ _ ih => simp [Bind.bind] at ih; simp [Bind.bind, ih])
+  (bind_pure_comp := by
+    intro _ _ _ l
+    induction l <;> simp [Bind.bind, Functor.map, pure, List.ret] at *; assumption)
+#align list.is_lawful_monad List.instLawfulMonad
+
+instance instAlternative : Alternative List.{u} where
+  failure := @List.nil
+  orElse l l' := List.append l (l' ())
+#align list.alternative List.instAlternative
+
+#noalign list.bin_tree_to_list
+
+variable {α : Type u} {p : α → Prop} [DecidablePred p]
 
 instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
   | []    => isFalse (by simp)
