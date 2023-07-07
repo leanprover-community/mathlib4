@@ -254,11 +254,14 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
     (closure : ∀ a s, s ∈ S → (f a s).1 ∈ S)
     (out : ∀ a s s', s ∈ S → s' ∈ S → (f a s).2 = (f a s').2) :
     (mapAccumr f xs s₀).snd = map (f · s₀ |>.snd) xs := by
-  clear ys
   rw[Vector.map_eq_mapAccumr]
   apply mapAccumr_bisim_tail
   use fun s _ => s ∈ S
   exact ⟨h₀, @fun s q a h => ⟨closure a s h, out a s s₀ h h₀⟩⟩
+
+protected theorem map₂_eq_mapAccumr₂ :
+    map₂ f xs ys = (mapAccumr₂ (fun x y (_ : Unit) ↦ ((), f x y)) xs ys ()).snd := by
+  induction xs, ys using Vector.revInductionOn₂ <;> simp_all
 
 /--
   If there is a set of states that is closed under `f`, and such that `f` produces that same output
@@ -268,20 +271,11 @@ theorem mapAccumr_eq_map {f : α → σ → σ × β} {s₀ : σ} (S : Set σ) (
 theorem mapAccumr₂_eq_map₂ {f : α → β → σ → σ × γ} {s₀ : σ} (S : Set σ) (h₀ : s₀ ∈ S)
     (closure : ∀ a b s, s ∈ S → (f a b s).1 ∈ S)
     (out : ∀ a b s s', s ∈ S → s' ∈ S → (f a b s).2 = (f a b s').2) :
-    ∃ s_out ∈ S, (mapAccumr₂ f xs ys s₀) = (s_out, map₂ (f · · s₀ |>.snd) xs ys) := by
-  induction xs, ys using revInductionOn₂ generalizing s₀
-  next =>
-    use s₀
-    simp[h₀]
-  next xs ys x y ih =>
-    specialize closure x y _ h₀
-    specialize @ih (f x y s₀).1 closure
-    rcases ih with ⟨s_out, hs, ih⟩
-    use s_out, hs
-    simp[ih]
-    congr
-    funext x' y'
-    rw [out x' y' s₀ (f x y s₀).1 h₀ closure]
+    (mapAccumr₂ f xs ys s₀).snd = map₂ (f · · s₀ |>.snd) xs ys := by
+  rw[Vector.map₂_eq_mapAccumr₂]
+  apply mapAccumr₂_bisim_tail
+  use fun s _ => s ∈ S
+  exact ⟨h₀, @fun s q a b h => ⟨closure a b s h, out a b s s₀ h h₀⟩⟩
 
 /--
   If an accumulation function `f`, given an initial state `s`, produces `s` as its output state
@@ -302,6 +296,27 @@ theorem mapAccumr₂_eq_map₂_of_constant_state (f : α → β → σ → σ ×
     (h : ∀ a b, (f a b s).fst = s) :
     mapAccumr₂ f xs ys s = (s, (map₂ (fun x y => (f x y s).snd) xs ys)) := by
   induction xs, ys using revInductionOn₂ <;> simp_all
+
+/--
+  If an accumulation function `f`, produces the same output bits regardless of accumulation state,
+  then the state is redundant and can be optimized out
+-/
+@[simp]
+theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
+    (h : ∀ a s s', (f a s).snd = (f a s').snd) :
+    (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) :=
+  mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => h a s s')
+
+
+/--
+  If an accumulation function `f`, produces the same output bits regardless of accumulation state,
+  then the state is redundant and can be optimized out
+-/
+@[simp]
+theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (s : σ)
+    (h : ∀ a b s s', (f a b s).snd = (f a b s').snd) :
+    (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
+  mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => h a b s s')
 
 
 
