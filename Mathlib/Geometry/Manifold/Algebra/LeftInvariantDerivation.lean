@@ -144,11 +144,21 @@ instance : Add (LeftInvariantDerivation I G) where
     ⟨X + Y, fun g => by
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
+set_option maxHeartbeats 400000 in
 instance : Neg (LeftInvariantDerivation I G) where
-  neg X := ⟨-X, fun g => by simp [left_invariant']⟩
+  neg X := ⟨-X, fun g => by
+    -- porting note: was simp [left_invariant']
+    -- `rw` fails without detailed type annotations too; also it needs a lot of time
+    rw [map_neg (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_neg (𝒅ₕ (smoothLeftMul_one I g)),
+      left_invariant', map_neg (Derivation.evalAt (𝕜 := 𝕜) g)]⟩
 
+set_option maxHeartbeats 400000 in
 instance : Sub (LeftInvariantDerivation I G) where
-  sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
+  sub X Y := ⟨X - Y, fun g => by
+    -- porting note: was simp [left_invariant']
+    -- `rw` fails without detailed type annotations too; also it needs a lot of time
+    rw [map_sub (Derivation.evalAt (𝕜 := 𝕜) (1 : G)), map_sub (𝒅ₕ (smoothLeftMul_one I g)),
+      map_sub (Derivation.evalAt (𝕜 := 𝕜) g), left_invariant', left_invariant']⟩
 
 @[simp]
 theorem coe_add : ⇑(X + Y) = X + Y :=
@@ -198,7 +208,7 @@ instance : SMul 𝕜 (LeftInvariantDerivation I G) where
 variable (r)
 
 @[simp]
-theorem coe_smul : ⇑(r • X) = r • X :=
+theorem coe_smul : ⇑(r • X) = r • ⇑X :=
   rfl
 #align left_invariant_derivation.coe_smul LeftInvariantDerivation.coe_smul
 
@@ -223,9 +233,9 @@ instance : Module 𝕜 (LeftInvariantDerivation I G) :=
 /-- Evaluation at a point for left invariant derivation. Same thing as for generic global
 derivations (`derivation.eval_at`). -/
 def evalAt : LeftInvariantDerivation I G →ₗ[𝕜] PointDerivation I g where
-  toFun X := Derivation.evalAt g ↑X
-  map_add' X Y := rfl
-  map_smul' k X := rfl
+  toFun X := Derivation.evalAt g X.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 #align left_invariant_derivation.eval_at LeftInvariantDerivation.evalAt
 
 theorem evalAt_apply : evalAt g X f = (X f) g :=
