@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
 import Mathlib.Topology.Category.ExtrDisc.Basic
 
 open CategoryTheory
@@ -90,7 +95,7 @@ def finiteCoproduct.desc {B : ExtrDisc.{u}} (e : (a : α) → (X a ⟶ B)) :
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
     apply continuous_sigma
-    intro a ; exact (e a).continuous
+    intro a; exact (e a).continuous
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : ExtrDisc.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :

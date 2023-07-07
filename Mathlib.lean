@@ -3092,6 +3092,8 @@ import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 import Mathlib.Topology.Category.CompHaus.ExplicitLimits
 import Mathlib.Topology.Category.CompHaus.Projective
 import Mathlib.Topology.Category.Compactum
+import Mathlib.Topology.Category.ExtrDisc.Basic
+import Mathlib.Topology.Category.ExtrDisc.ExplicitLimits
 import Mathlib.Topology.Category.Locale
 import Mathlib.Topology.Category.Profinite.AsLimit
 import Mathlib.Topology.Category.Profinite.Basic
