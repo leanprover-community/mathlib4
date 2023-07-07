@@ -207,8 +207,8 @@ theorem toNat_one : ∀ {n : Nat}, (1 : Bitvec n).toNat = if n = 0 then 0 else 1
 
 private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.length y),
     List.foldl addLsb (addLsb 0 (List.mapAccumr₂
-        (fun x y c => (Bitvec.carry x y c, Bitvec.xor3 x y c)) x y false).fst)
-      (List.mapAccumr₂ (fun x y c => (Bitvec.carry x y c, Bitvec.xor3 x y c)) x y false).snd =
+        (fun x y c => (Bool.carry x y c, Bool.xor3 x y c)) x y false).fst)
+      (List.mapAccumr₂ (fun x y c => (Bool.carry x y c, Bool.xor3 x y c)) x y false).snd =
     List.foldl addLsb 0 x + List.foldl addLsb 0 y
 | [], [], _ => rfl
 | a::x, b::y, h => by
@@ -217,7 +217,7 @@ private theorem toNat_adc_aux : ∀ {x y: List Bool} (_h : List.length x = List.
     List.mapAccumr₂, foldl_addLsb_eq_add_foldl_addLsb_zero, foldl_addLsb_cons_zero,
     foldl_addLsb_eq_add_foldl_addLsb_zero _ (addLsb _ _)]
   cases a <;> cases b <;>
-  simp only [Bitvec.xor3, Bool.xor_self, Bitvec.carry, Bool.xor_assoc, Bool.xor_false_left, List.length_cons,
+  simp only [Bool.xor3, Bool.xor_self, Bool.carry, Bool.xor_assoc, Bool.xor_false_left, List.length_cons,
     List.length_mapAccumr₂, h, min_self, Nat.pow_succ, Nat.mul_comm, two_mul, Bool.and_self, Bool.false_and,
     Bool.or_self, addLsb._eq_1, add_zero, cond_false, mul_zero, zero_add] <;>
   cases (List.mapAccumr₂ (fun x y c => (x && y || x && c || y && c, xor x (xor y c))) x y false).fst
