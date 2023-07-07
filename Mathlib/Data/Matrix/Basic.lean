@@ -106,9 +106,8 @@ The two sides of the equivalence are definitionally equal types. We want to use 
 to distinguish the types because `Matrix` has different instances to pi types (such as `Pi.mul`,
 which performs elementwise multiplication, vs `Matrix.mul`).
 
-If you are defining a matrix, in terms of its entries, use `of (λ i j, _)`. The
-purpose of this approach is to ensure that terms of th
-e form `(λ i j, _) * (λ i j, _)` do not
+If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
+purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
 
 Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
@@ -1204,14 +1203,18 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
 
 end NonUnitalNonAssocRing
 
-instance [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
+instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
+#align matrix.non_unital_ring Matrix.instNonUnitalRing
 
-instance [Fintype n] [DecidableEq n] [NonAssocRing α] : NonAssocRing (Matrix n n α) :=
+instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
+    NonAssocRing (Matrix n n α) :=
   { Matrix.nonAssocSemiring, Matrix.addCommGroup with }
+#align matrix.non_assoc_ring Matrix.instNonAssocRing
 
-instance [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
+instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
   { Matrix.semiring, Matrix.addCommGroup with }
+#align matrix.ring Matrix.instRing
 
 section Semiring
 
@@ -1302,12 +1305,13 @@ variable [Fintype n] [DecidableEq n]
 
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
-instance : Algebra R (Matrix n n α) :=
+instance instAlgebra : Algebra R (Matrix n n α) :=
   { (Matrix.scalar n).comp (algebraMap R α) with
     commutes' := fun r x => by
       ext
       simp [Matrix.scalar, Matrix.mul_apply, Matrix.one_apply, Algebra.commutes, smul_ite]
     smul_def' := fun r x => by ext; simp [Matrix.scalar, Algebra.smul_def r] }
+#align matrix.algebra Matrix.instAlgebra
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
@@ -2588,13 +2592,13 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
   rw [submatrix_mul_equiv, submatrix_id_id]
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
-/-- The left `n × l` part of a `n × (l+r)` matrix. -/
+/-- The left `n × l` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
-/-- The right `n × r` part of a `n × (l+r)` matrix. -/
+/-- The right `n × r` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
@@ -2874,7 +2878,7 @@ theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : 
 theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l)
     (r : o → α) (e : l ≃ m) (f : o ≃ n) :
     updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
-  ext (i' j)
+  ext i' j
   simp only [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
 #align matrix.update_row_submatrix_equiv Matrix.updateRow_submatrix_equiv
 

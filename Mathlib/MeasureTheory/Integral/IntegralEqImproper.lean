@@ -42,7 +42,7 @@ When using this definition with a measure restricted to a set `s`, which happens
 should not try too hard to use a `MeasureTheory.AECover` of subsets of `s`, as it often makes proofs
 more complicated than necessary. See for example the proof of
 `MeasureTheory.integrableOn_Iic_of_intervalIntegral_norm_tendsto` where we use `(λ x, Ioi x)` as a
-`MeasureTheory.AECover` w.r.t. `μ.restrict (Iic b)`, instead of using `(λ x, Ioc x b)`.
+`MeasureTheory.AECover` w.r.t. `μ.restrict (Iic b)`, instead of using `(fun x ↦ Ioc x b)`.
 
 ## Main statements
 
@@ -384,13 +384,13 @@ theorem AECover.lintegral_tendsto_of_countably_generated [l.IsCountablyGenerated
 
 theorem AECover.lintegral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → ℝ≥0∞} (I : ℝ≥0∞) (hfm : AEMeasurable f μ)
-    (htendsto : Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) l (𝓝 I)) : (∫⁻ x, f x ∂μ) = I :=
+    (htendsto : Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) l (𝓝 I)) : ∫⁻ x, f x ∂μ = I :=
   tendsto_nhds_unique (hφ.lintegral_tendsto_of_countably_generated hfm) htendsto
 #align measure_theory.ae_cover.lintegral_eq_of_tendsto MeasureTheory.AECover.lintegral_eq_of_tendsto
 
 theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
     [l.IsCountablyGenerated] {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → ℝ≥0∞}
-    (hfm : AEMeasurable f μ) : (⨆ i : ι, ∫⁻ x in φ i, f x ∂μ) = ∫⁻ x, f x ∂μ := by
+    (hfm : AEMeasurable f μ) : ⨆ i : ι, ∫⁻ x in φ i, f x ∂μ = ∫⁻ x, f x ∂μ := by
   have := hφ.lintegral_tendsto_of_countably_generated hfm
   refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => _
@@ -498,14 +498,14 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 theorem AECover.integral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (I : E) (hfi : Integrable f μ)
-    (h : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) : (∫ x, f x ∂μ) = I :=
+    (h : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) : ∫ x, f x ∂μ = I :=
   tendsto_nhds_unique (hφ.integral_tendsto_of_countably_generated hfi) h
 #align measure_theory.ae_cover.integral_eq_of_tendsto MeasureTheory.AECover.integral_eq_of_tendsto
 
 theorem AECover.integral_eq_of_tendsto_of_nonneg_ae [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → ℝ} (I : ℝ) (hnng : 0 ≤ᵐ[μ] f)
     (hfi : ∀ n, IntegrableOn f (φ n) μ) (htendsto : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) :
-    (∫ x, f x ∂μ) = I :=
+    ∫ x, f x ∂μ = I :=
   have hfi' : Integrable f μ := hφ.integrable_of_integral_tendsto_of_nonneg_ae I hfi hnng htendsto
   hφ.integral_eq_of_tendsto I hfi' htendsto
 #align measure_theory.ae_cover.integral_eq_of_tendsto_of_nonneg_ae MeasureTheory.AECover.integral_eq_of_tendsto_of_nonneg_ae
@@ -671,7 +671,7 @@ integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differe
 on `(a, +∞)` and continuity on `[a, +∞)`.-/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousOn f (Ici a))
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x) (f'int : IntegrableOn f' (Ioi a))
-    (hf : Tendsto f atTop (𝓝 m)) : (∫ x in Ioi a, f' x) = m - f a := by
+    (hf : Tendsto f atTop (𝓝 m)) : ∫ x in Ioi a, f' x = m - f a := by
   refine' tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) _
   apply Tendsto.congr' _ (hf.sub_const _)
   filter_upwards [Ioi_mem_atTop a] with x hx
@@ -690,7 +690,7 @@ integral of the derivative on `(a, +∞)` is `m - f a`. Version assuming differe
 on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (hf : Tendsto f atTop (𝓝 m)) :
-    (∫ x in Ioi a, f' x) = m - f a := by
+    ∫ x in Ioi a, f' x = m - f a := by
   refine integral_Ioi_of_hasDerivAt_of_tendsto (fun x hx ↦ ?_) (fun x hx => hderiv x hx.out.le)
     f'int hf
   exact (hderiv x hx).continuousAt.continuousWithinAt
@@ -739,7 +739,7 @@ integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is in
 continuity on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousOn g (Ici a))
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
-    (hg : Tendsto g atTop (𝓝 l)) : (∫ x in Ioi a, g' x) = l - g a :=
+    (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
     (integrableOn_Ioi_deriv_of_nonneg hcont hderiv g'pos hg) hg
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg
@@ -748,7 +748,7 @@ theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousOn g (Ici a))
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
 `integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
-    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : (∫ x in Ioi a, g' x) = l - g a :=
+    (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonneg' hderiv g'pos hg)
     hg
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_nonneg' MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg'
@@ -779,7 +779,7 @@ integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is in
 continuity on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousOn g (Ici a))
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
-    (hg : Tendsto g atTop (𝓝 l)) : (∫ x in Ioi a, g' x) = l - g a :=
+    (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto hcont hderiv
     (integrableOn_Ioi_deriv_of_nonpos hcont hderiv g'neg hg) hg
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_nonpos MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos
@@ -788,7 +788,7 @@ theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousOn g (Ici a))
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
 `integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
-    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : (∫ x in Ioi a, g' x) = l - g a :=
+    (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonpos' hderiv g'neg hg)
     hg
 #align measure_theory.integral_Ioi_of_has_deriv_at_of_nonpos' MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonpos'
@@ -863,7 +863,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     · intro hx; refine' ⟨x ^ (1 / p), rpow_pos_of_pos hx _, _⟩
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
   have := integral_image_eq_integral_abs_deriv_smul measurableSet_Ioi a1 a2 g
-  rw [a3] at this ; rw [this]
+  rw [a3] at this; rw [this]
   refine' set_integral_congr measurableSet_Ioi _
   intro x hx; dsimp only
   rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]

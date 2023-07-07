@@ -22,7 +22,7 @@ radius `1`.  We equip it with the following structure:
 * a group
 * a topological group
 
-We furthermore define `expMapCircle` to be the natural map `λ t, exp (t * I)` from `ℝ` to
+We furthermore define `expMapCircle` to be the natural map `fun t ↦ exp (t * I)` from `ℝ` to
 `circle`, and show that this map is a group homomorphism.
 
 ## Implementation notes

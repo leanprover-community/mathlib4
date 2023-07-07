@@ -15,6 +15,7 @@ import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.FDerivAnalytic
 import Mathlib.Data.Real.Cardinality
 
 /-!
@@ -29,7 +30,7 @@ Banach space with second countable topology.
 In the following theorems, if the name ends with `off_countable`, then the actual theorem assumes
 differentiability at all but countably many points of the set mentioned below.
 
-* `complex.integral_boundary_rect_of_has_fderiv_within_at_real_off_countable`: If a function
+* `Complex.integral_boundary_rect_of_hasFDerivAt_real_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and *real* differentiable on its interior, then
   its integral over the boundary of this rectangle is equal to the integral of
   `I • f' (x + y * I) 1 - f' (x + y * I) I` over the rectangle, where `f' z w : E` is the derivative
@@ -72,7 +73,7 @@ differentiability at all but countably many points of the set mentioned below.
   on a neighborhood of a point, then it is analytic at this point. In particular, if `f : ℂ → E`
   is differentiable on the whole `ℂ`, then it is analytic at every point `z : ℂ`.
 
-* `differentiable.has_power_series_on_ball`: If `f : ℂ → E` is differentiable everywhere then the
+* `Differentiable.hasFPowerSeriesOnBall`: If `f : ℂ → E` is differentiable everywhere then the
   `cauchyPowerSeries f z R` is a formal power series representing `f` at `z` with infinite
   radius of convergence (this holds for any choice of `0 < R`).
 
@@ -174,7 +175,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     (Hi : IntegrableOn (fun z => I • f' z 1 - f' z I) ([[z.re, w.re]] ×ℂ [[z.im, w.im]])) :
     (∫ x : ℝ in z.re..w.re, f (x + z.im * I)) - (∫ x : ℝ in z.re..w.re, f (x + w.im * I)) +
       I • (∫ y : ℝ in z.im..w.im, f (re w + y * I)) -
-      I • (∫ y : ℝ in z.im..w.im, f (re z + y * I)) =
+      I • ∫ y : ℝ in z.im..w.im, f (re z + y * I) =
       ∫ x : ℝ in z.re..w.re, ∫ y : ℝ in z.im..w.im, I • f' (x + y * I) 1 - f' (x + y * I) I := by
   set e : (ℝ × ℝ) ≃L[ℝ] ℂ := equivRealProdClm.symm
   have he : ∀ x y : ℝ, ↑x + ↑y * I = e (x, y) := fun x y => (mk_eq_add_mul_I x y).symm
@@ -189,7 +190,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
       neg_sub]
   set R : Set (ℝ × ℝ) := [[z.re, w.re]] ×ˢ [[w.im, z.im]]
   set t : Set (ℝ × ℝ) := e ⁻¹' s
-  rw [uIcc_comm z.im] at Hc Hi ; rw [min_comm z.im, max_comm z.im] at Hd
+  rw [uIcc_comm z.im] at Hc Hi; rw [min_comm z.im, max_comm z.im] at Hd
   have hR : e ⁻¹' ([[z.re, w.re]] ×ℂ [[w.im, z.im]]) = R := rfl
   have htc : ContinuousOn F R := Hc.comp e.continuousOn hR.ge
   have htd :
@@ -302,7 +303,7 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
     (hc : ContinuousOn f (closedBall c R \ ball c r))
     (hd : ∀ z ∈ (ball c R \ closedBall c r) \ s, DifferentiableAt ℂ f z) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = ∮ z in C(c, r), (z - c)⁻¹ • f z := by
-  /- We apply the previous lemma to `λ z, f (c + exp z)` on the rectangle
+  /- We apply the previous lemma to `fun z ↦ f (c + exp z)` on the rectangle
     `[log r, log R] × [0, 2 * π]`. -/
   set A := closedBall c R \ ball c r
   obtain ⟨a, rfl⟩ : ∃ a, Real.exp a = r; exact ⟨Real.log r, Real.exp_log h0⟩
@@ -352,7 +353,7 @@ theorem circleIntegral_eq_of_differentiable_on_annulus_off_countable {c : ℂ} {
 /-- **Cauchy integral formula** for the value at the center of a disc. If `f` is continuous on a
 punctured closed disc of radius `R`, is differentiable at all but countably many points of the
 interior of this disc, and has a limit `y` at the center of the disc, then the integral
-$\oint_{‖z-c‖=R} \frac{f(z)}{z-c}\,dz$ is equal to $2πiy`. -/
+$\oint_{‖z-c‖=R} \frac{f(z)}{z-c}\,dz$ is equal to `2πiy`. -/
 theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto {c : ℂ}
     {R : ℝ} (h0 : 0 < R) {f : ℂ → E} {y : E} {s : Set ℂ} (hs : s.Countable)
     (hc : ContinuousOn f (closedBall c R \ {c}))
@@ -400,7 +401,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
 
 /-- **Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous
 on a closed disc of radius `R` and is complex differentiable at all but countably many points of its
-interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to $2πiy`. -/
+interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to `2πiy`. -/
 theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 < R)
     {f : ℂ → E} {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
@@ -605,11 +606,22 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
     (hs : IsOpen s) : AnalyticOn ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
 #align differentiable_on.analytic_on DifferentiableOn.analyticOn
 
+/-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
+differentiable on `s`. -/
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E}
+    (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
+  (hd.analyticOn hs).contDiffOn
+
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
     AnalyticAt ℂ f z :=
   hf.differentiableOn.analyticAt univ_mem
 #align differentiable.analytic_at Differentiable.analyticAt
+
+/-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
+protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
+    ContDiff ℂ n f :=
+  contDiff_iff_contDiffAt.mpr $ fun z ↦ (hf.analyticAt z).contDiffAt
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with  `0 < R`. -/
@@ -620,4 +632,3 @@ protected theorem _root_.Differentiable.hasFPowerSeriesOnBall {f : ℂ → E} (h
 #align differentiable.has_fpower_series_on_ball Differentiable.hasFPowerSeriesOnBall
 
 end Complex
-

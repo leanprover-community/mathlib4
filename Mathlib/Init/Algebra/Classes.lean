@@ -68,7 +68,7 @@ class IsSymmOp (α : Type u) (β : Type v) (op : α → α → β) : Prop where
 class IsCommutative (α : Type u) (op : α → α → α) : Prop where
   comm : ∀ a b, op a b = op b a
 
-instance [IsCommutative α op] : Lean.IsCommutative op where
+instance {op} [IsCommutative α op] : Lean.IsCommutative op where
   comm := IsCommutative.comm
 
 instance isSymmOp_of_isCommutative (α : Type u) (op : α → α → α)
@@ -79,7 +79,7 @@ instance isSymmOp_of_isCommutative (α : Type u) (op : α → α → α)
 class IsAssociative (α : Type u) (op : α → α → α) : Prop where
   assoc : ∀ a b c, op (op a b) c = op a (op b c)
 
-instance [IsAssociative α op] : Lean.IsAssociative op where
+instance {op} [IsAssociative α op] : Lean.IsAssociative op where
   assoc := IsAssociative.assoc
 
 /-- A binary operation with a left identity. -/
@@ -90,7 +90,7 @@ class IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) : Prop wh
 class IsRightId (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
   right_id : ∀ a, op a o = a
 
-instance [IsLeftId α op o] [IsRightId α op o] : Lean.IsNeutral op o where
+instance {op} [IsLeftId α op o] [IsRightId α op o] : Lean.IsNeutral op o where
   left_neutral := IsLeftId.left_id
   right_neutral := IsRightId.right_id
 
@@ -109,7 +109,7 @@ class IsRightCancel (α : Type u) (op : α → α → α) : Prop where
 class IsIdempotent (α : Type u) (op : α → α → α) : Prop where
   idempotent : ∀ a, op a a = a
 
-instance [IsIdempotent α op] : Lean.IsIdempotent op where
+instance {op} [IsIdempotent α op] : Lean.IsIdempotent op where
   idempotent := IsIdempotent.idempotent
 
 --class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
@@ -222,7 +222,7 @@ class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, Is
 class IsStrictOrder (α : Type u) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
 
 /-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
-`λ a b, ¬ lt a b ∧ ¬ lt b a` is transitive. -/
+`fun a b ↦ ¬ lt a b ∧ ¬ lt b a` is transitive. -/
 class IsIncompTrans (α : Type u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 

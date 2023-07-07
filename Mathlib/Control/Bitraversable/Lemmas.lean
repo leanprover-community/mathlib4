@@ -62,7 +62,7 @@ def tsnd {α α'} (f : α → F α') : t β α → F (t β α') :=
   bitraverse pure f
 #align bitraversable.tsnd Bitraversable.tsnd
 
-variable [IsLawfulBitraversable t] [LawfulApplicative F] [LawfulApplicative G]
+variable [LawfulBitraversable t] [LawfulApplicative F] [LawfulApplicative G]
 
 @[higher_order tfst_id]
 theorem id_tfst : ∀ {α β} (x : t α β), tfst (F := Id) pure x = pure x :=

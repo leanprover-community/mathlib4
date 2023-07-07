@@ -36,7 +36,7 @@ needed. In the future there will likely be a data-carrying, constructive, typecl
 When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toAddMonoid (λ i, AddSubmonoid.inclusion $ le_iSup A i)`.
+`DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion $ le_iSup A i)`.
 
 ## tags
 
@@ -327,7 +327,7 @@ def DirectSum.coeAlgHom [AddMonoid ι] [CommSemiring S] [Semiring R] [Algebra S 
 `DirectSum.coeAlgHom`. -/
 theorem Submodule.iSup_eq_toSubmodule_range [AddMonoid ι] [CommSemiring S] [Semiring R]
     [Algebra S R] (A : ι → Submodule S R) [SetLike.GradedMonoid A] :
-    (⨆ i, A i) = Subalgebra.toSubmodule (DirectSum.coeAlgHom A).range :=
+    ⨆ i, A i = Subalgebra.toSubmodule (DirectSum.coeAlgHom A).range :=
   (Submodule.iSup_eq_range_dfinsupp_lsum A).trans <| SetLike.coe_injective rfl
 #align submodule.supr_eq_to_submodule_range Submodule.iSup_eq_toSubmodule_range
 

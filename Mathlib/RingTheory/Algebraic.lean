@@ -155,7 +155,7 @@ theorem isAlgebraic_algHom_of_isAlgebraic {B} [Ring B] [Algebra R B] (f : A →�
 /-- Transfer `Algebra.IsAlgebraic` across an `AlgEquiv`. -/
 theorem AlgEquiv.isAlgebraic {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B)
     (h : Algebra.IsAlgebraic R A) : Algebra.IsAlgebraic R B := fun b => by
-  convert← isAlgebraic_algHom_of_isAlgebraic e.toAlgHom (h _) ; refine e.apply_symm_apply ?_
+  convert← isAlgebraic_algHom_of_isAlgebraic e.toAlgHom (h _); refine e.apply_symm_apply ?_
 #align alg_equiv.is_algebraic AlgEquiv.isAlgebraic
 
 theorem AlgEquiv.isAlgebraic_iff {B} [Ring B] [Algebra R B] (e : A ≃ₐ[R] B) :
@@ -216,7 +216,7 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 then A is algebraic over K. -/
 theorem isAlgebraic_trans (L_alg : IsAlgebraic K L) (A_alg : IsAlgebraic L A) :
     IsAlgebraic K A := by
-  simp only [IsAlgebraic, isAlgebraic_iff_isIntegral] at L_alg A_alg⊢
+  simp only [IsAlgebraic, isAlgebraic_iff_isIntegral] at L_alg A_alg ⊢
   exact isIntegral_trans L_alg A_alg
 #align algebra.is_algebraic_trans Algebra.isAlgebraic_trans
 

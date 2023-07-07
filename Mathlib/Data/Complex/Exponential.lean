@@ -556,8 +556,8 @@ theorem exp_sub : exp (x - y) = exp x / exp y := by
 
 theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
   cases n
-  . simp [exp_nat_mul]
-  . simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
+  · simp [exp_nat_mul]
+  · simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
 #align complex.exp_int_mul Complex.exp_int_mul
 
 @[simp]
@@ -1194,7 +1194,7 @@ theorem cos_neg : cos (-x) = cos x := by simp [cos, exp_neg]
 #align real.cos_neg Real.cos_neg
 
 @[simp]
-theorem cos_abs : cos (|x|) = cos x := by
+theorem cos_abs : cos |x| = cos x := by
   cases le_total x 0 <;> simp only [*, _root_.abs_of_nonneg, abs_of_nonpos, cos_neg]
 #align real.cos_abs Real.cos_abs
 
@@ -1371,7 +1371,7 @@ theorem cosh_neg : cosh (-x) = cosh x :=
 #align real.cosh_neg Real.cosh_neg
 
 @[simp]
-theorem cosh_abs : cosh (|x|) = cosh x := by
+theorem cosh_abs : cosh |x| = cosh x := by
   cases le_total x 0 <;> simp [*, _root_.abs_of_nonneg, abs_of_nonpos]
 #align real.cosh_abs Real.cosh_abs
 
@@ -1459,9 +1459,9 @@ nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
 
 open IsAbsoluteValue Nat
 
-theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (∑ i in range n, x ^ i / i !) ≤ exp x :=
+theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range n, x ^ i / i ! ≤ exp x :=
   calc
-    (∑ i in range n, x ^ i / i !) ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
+    ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
       refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
       simp only [exp', const_apply, re_sum]
       norm_cast

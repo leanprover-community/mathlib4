@@ -103,7 +103,7 @@ class LinearOrderedCommMonoid (α : Type _) extends LinearOrder α, OrderedCommM
 attribute [to_additive existing] LinearOrderedCommMonoid.toOrderedCommMonoid
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined.` -/
+  Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommMonoidWithTop (α : Type _) extends LinearOrderedAddCommMonoid α,
     Top α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is larger than any other element.-/

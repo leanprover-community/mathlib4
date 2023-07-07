@@ -119,17 +119,17 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
     simp only [assoc, ← SimplicialObject.δ_naturality, ed.s₀_comp_δ₁_assoc, reassoc_of% h]
   s_comp_δ₀ n := by
     have h := ed.s_comp_δ₀
-    dsimp at h⊢
+    dsimp at h ⊢
     simpa only [assoc, ← SimplicialObject.δ_naturality, reassoc_of% h] using
       congr_app (drop.mapIso e).inv_hom_id (op [n])
   s_comp_δ n i := by
     have h := ed.s_comp_δ n i
-    dsimp at h⊢
+    dsimp at h ⊢
     simp only [assoc, ← SimplicialObject.δ_naturality, reassoc_of% h,
       ← SimplicialObject.δ_naturality_assoc]
   s_comp_σ n i := by
     have h := ed.s_comp_σ n i
-    dsimp at h⊢
+    dsimp at h ⊢
     simp only [assoc, ← SimplicialObject.σ_naturality, reassoc_of% h,
       ← SimplicialObject.σ_naturality_assoc]
 #align simplicial_object.augmented.extra_degeneracy.of_iso SimplicialObject.Augmented.ExtraDegeneracy.ofIso
@@ -218,9 +218,9 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     ext j : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.standardSimplex]
     by_cases j = 0
-    . subst h
+    · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
-    . obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
+    · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
       simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply]
   s_comp_σ n i := by
     ext1 φ
@@ -399,7 +399,7 @@ noncomputable def homotopyEquiv {C : Type _} [Category C] [Preadditive C] [HasZe
         · simp only [eq_self_iff_true]
       comm := fun i => by
         rcases i with _|i
-        . rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
+        · rw [Homotopy.prevD_chainComplex, Homotopy.dNext_zero_chainComplex, zero_add]
           dsimp [ChainComplex.fromSingle₀Equiv, ChainComplex.toSingle₀Equiv]
           simp only [comp_id, ite_true, zero_add, ComplexShape.down_Rel, not_true,
             AlternatingFaceMapComplex.obj_d_eq, Preadditive.neg_comp]

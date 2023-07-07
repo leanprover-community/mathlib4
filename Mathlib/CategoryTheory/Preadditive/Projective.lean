@@ -26,8 +26,8 @@ projective object.
 epimorphism.
 
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
-`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism `π
-(kernel f) ≫ kernel.ι f`.
+`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism
+`π (kernel f) ≫ kernel.ι f`.
 
 -/
 

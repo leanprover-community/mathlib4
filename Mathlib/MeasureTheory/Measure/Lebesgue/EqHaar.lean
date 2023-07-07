@@ -219,7 +219,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
   [NormedSpace ℝ F] [CompleteSpace F]
 
 theorem map_linearMap_add_haar_eq_smul_add_haar {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) :
-    Measure.map f μ = ENNReal.ofReal (|(LinearMap.det f)⁻¹|) • μ := by
+    Measure.map f μ = ENNReal.ofReal |(LinearMap.det f)⁻¹| • μ := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
   -- matrices in `map_linear_map_add_haar_pi_eq_smul_add_haar`.
   let ι := Fin (finrank ℝ E)
@@ -250,12 +250,12 @@ theorem map_linearMap_add_haar_eq_smul_add_haar {f : E →ₗ[ℝ] E} (hf : Line
 equal to `μ s` times the absolute value of the inverse of the determinant of `f`. -/
 @[simp]
 theorem add_haar_preimage_linearMap {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) (s : Set E) :
-    μ (f ⁻¹' s) = ENNReal.ofReal (|(LinearMap.det f)⁻¹|) * μ s :=
+    μ (f ⁻¹' s) = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s :=
   calc
     μ (f ⁻¹' s) = Measure.map f μ s :=
       ((f.equivOfDetNeZero hf).toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv.map_apply
           s).symm
-    _ = ENNReal.ofReal (|(LinearMap.det f)⁻¹|) * μ s := by
+    _ = ENNReal.ofReal |(LinearMap.det f)⁻¹| * μ s := by
       rw [map_linearMap_add_haar_eq_smul_add_haar μ hf]; rfl
 #align measure_theory.measure.add_haar_preimage_linear_map MeasureTheory.Measure.add_haar_preimage_linearMap
 
@@ -272,7 +272,7 @@ theorem add_haar_preimage_continuousLinearMap {f : E →L[ℝ] E}
 equal to `μ s` times the absolute value of the inverse of the determinant of `f`. -/
 @[simp]
 theorem add_haar_preimage_linearEquiv (f : E ≃ₗ[ℝ] E) (s : Set E) :
-    μ (f ⁻¹' s) = ENNReal.ofReal (|LinearMap.det (f.symm : E →ₗ[ℝ] E)|) * μ s := by
+    μ (f ⁻¹' s) = ENNReal.ofReal |LinearMap.det (f.symm : E →ₗ[ℝ] E)| * μ s := by
   have A : LinearMap.det (f : E →ₗ[ℝ] E) ≠ 0 := (LinearEquiv.isUnit_det' f).ne_zero
   convert add_haar_preimage_linearMap μ A s
   simp only [LinearEquiv.det_coe_symm]
@@ -282,7 +282,7 @@ theorem add_haar_preimage_linearEquiv (f : E ≃ₗ[ℝ] E) (s : Set E) :
 equal to `μ s` times the absolute value of the inverse of the determinant of `f`. -/
 @[simp]
 theorem add_haar_preimage_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
-    μ (f ⁻¹' s) = ENNReal.ofReal (|LinearMap.det (f.symm : E →ₗ[ℝ] E)|) * μ s :=
+    μ (f ⁻¹' s) = ENNReal.ofReal |LinearMap.det (f.symm : E →ₗ[ℝ] E)| * μ s :=
   add_haar_preimage_linearEquiv μ _ s
 #align measure_theory.measure.add_haar_preimage_continuous_linear_equiv MeasureTheory.Measure.add_haar_preimage_continuousLinearEquiv
 
@@ -290,7 +290,7 @@ theorem add_haar_preimage_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) 
 equal to `μ s` times the absolute value of the determinant of `f`. -/
 @[simp]
 theorem add_haar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
-    μ (f '' s) = ENNReal.ofReal (|LinearMap.det f|) * μ s := by
+    μ (f '' s) = ENNReal.ofReal |LinearMap.det f| * μ s := by
   rcases ne_or_eq (LinearMap.det f) 0 with (hf | hf)
   · let g := (f.equivOfDetNeZero hf).toContinuousLinearEquiv
     change μ (g '' s) = _
@@ -306,7 +306,7 @@ theorem add_haar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
 equal to `μ s` times the absolute value of the determinant of `f`. -/
 @[simp]
 theorem add_haar_image_continuousLinearMap (f : E →L[ℝ] E) (s : Set E) :
-    μ (f '' s) = ENNReal.ofReal (|LinearMap.det (f : E →ₗ[ℝ] E)|) * μ s :=
+    μ (f '' s) = ENNReal.ofReal |LinearMap.det (f : E →ₗ[ℝ] E)| * μ s :=
   add_haar_image_linearMap μ _ s
 #align measure_theory.measure.add_haar_image_continuous_linear_map MeasureTheory.Measure.add_haar_image_continuousLinearMap
 
@@ -314,7 +314,7 @@ theorem add_haar_image_continuousLinearMap (f : E →L[ℝ] E) (s : Set E) :
 equal to `μ s` times the absolute value of the determinant of `f`. -/
 @[simp]
 theorem add_haar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
-    μ (f '' s) = ENNReal.ofReal (|LinearMap.det (f : E →ₗ[ℝ] E)|) * μ s :=
+    μ (f '' s) = ENNReal.ofReal |LinearMap.det (f : E →ₗ[ℝ] E)| * μ s :=
   μ.add_haar_image_linearMap (f : E →ₗ[ℝ] E) s
 #align measure_theory.measure.add_haar_image_continuous_linear_equiv MeasureTheory.Measure.add_haar_image_continuousLinearEquiv
 
@@ -541,7 +541,7 @@ variable {ι G : Type _} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup G] [N
   [MeasurableSpace G] [BorelSpace G]
 
 theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
-    b.addHaar (parallelepiped v) = ENNReal.ofReal (|b.det v|) := by
+    b.addHaar (parallelepiped v) = ENNReal.ofReal |b.det v| := by
   have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
@@ -550,6 +550,7 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     exact (b.constr_basis ℕ v i).symm
   rw [A, add_haar_image_linearMap]
   -- Porting note: this used to be a big `rw`, but one intermediate `erw` was needed
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
   erw [b.addHaar_self]
   rw [mul_one, ← LinearMap.det_toMatrix b, ← Basis.toMatrix_eq_toMatrix_constr]
   rfl
@@ -566,7 +567,7 @@ noncomputable irreducible_def _root_.AlternatingMap.measure (ω : AlternatingMap
 #align alternating_map.measure AlternatingMap.measure
 
 theorem _root_.AlternatingMap.measure_parallelepiped (ω : AlternatingMap ℝ G ℝ (Fin n))
-    (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal (|ω v|) := by
+    (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
   simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
     AlternatingMap.smul_apply, Algebra.id.smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
@@ -715,7 +716,7 @@ theorem tendsto_add_haar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         ⟨0, ((measure_mono (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
       refine' tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ _) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
-    have : (⋂ n : ℕ, t \ closedBall 0 n) = ∅ := by
+    have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
         iUnion_closedBall_nat, compl_univ, inter_empty]
     simp only [this, measure_empty] at A
@@ -780,11 +781,11 @@ theorem tendsto_add_haar_inter_smul_one_of_density_one_aux (s : Set E) (hs : Mea
     apply B.congr' _
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
-    convert I (closedBall x r) (sᶜ) (measure_closedBall_pos μ _ rpos).ne'
+    convert I (closedBall x r) sᶜ (measure_closedBall_pos μ _ rpos).ne'
       measure_closedBall_lt_top.ne hs.compl
     rw [compl_compl]
   have L' : Tendsto (fun r : ℝ => μ (sᶜ ∩ ({x} + r • t)) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 0) :=
-    tendsto_add_haar_inter_smul_zero_of_density_zero μ (sᶜ) x L t ht h''t
+    tendsto_add_haar_inter_smul_zero_of_density_zero μ sᶜ x L t ht h''t
   have L'' : Tendsto (fun r : ℝ => μ ({x} + r • t) / μ ({x} + r • t)) (𝓝[>] 0) (𝓝 1) := by
     apply tendsto_const_nhds.congr' _
     filter_upwards [self_mem_nhdsWithin]

@@ -346,7 +346,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
-    simp only [toFunAux_eq, ofNat, range_succ] at ih⊢
+    simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
       rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]

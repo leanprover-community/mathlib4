@@ -71,14 +71,14 @@ variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) :
     f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align module.directed_system.map_self Module.DirectedSystem.map_self
 
 /-- A copy of `DirectedSystem.map_map` specialized to linear maps, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
@@ -227,7 +227,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
           · intro i0 hi0
             rw [Dfinsupp.mem_support_iff, DirectSum.sub_apply, ← DirectSum.single_eq_lof, ←
               DirectSum.single_eq_lof, Dfinsupp.single_apply, Dfinsupp.single_apply] at hi0
-            split_ifs  at hi0 with hi hj hj
+            split_ifs at hi0 with hi hj hj
             · rwa [hi] at hik
             · rwa [hi] at hik
             · rwa [hj] at hjk
@@ -436,7 +436,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy] ; rfl⟩
+        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy]; rfl⟩
 #align ring.direct_limit.exists_of Ring.DirectLimit.exists_of
 
 section
@@ -489,8 +489,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
     f' j k hjk (lift (fun ix : s => f' ix.1.1 j (hj ix ix.2) ix.1.2) (restriction s x)) =
       lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
-  ·
-    rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
+  · rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
       (restriction _).map_one, (FreeCommRing.lift _).map_one]
   · -- porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
   -- `RingHom.map_neg` to get the rewrite to compile

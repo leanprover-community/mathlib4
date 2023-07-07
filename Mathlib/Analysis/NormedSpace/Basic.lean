@@ -65,6 +65,7 @@ instance NormedField.toNormedSpace : NormedSpace α α where norm_smul_le a b :=
 -- shortcut instance
 instance NormedField.to_boundedSMul : BoundedSMul α α :=
   NormedSpace.boundedSMul
+#align normed_field.to_has_bounded_smul NormedField.to_boundedSMul
 
 theorem norm_zsmul (α) [NormedField α] [NormedSpace α β] (n : ℤ) (x : β) :
     ‖n • x‖ = ‖(n : α)‖ * ‖x‖ := by rw [← norm_smul, ← Int.smul_one_eq_coe, smul_assoc, one_smul]
@@ -259,44 +260,6 @@ instance Submodule.normedSpace {𝕜 R : Type _} [SMul 𝕜 R] [NormedField 𝕜
     (s : Submodule R E) : NormedSpace 𝕜 s where norm_smul_le c x := norm_smul_le c (x : E)
 #align submodule.normed_space Submodule.normedSpace
 
-/-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
-moved by scalar multiplication to any shell of width `‖c‖`. Also recap information on the norm of
-the rescaling element that shows up in applications. -/
-theorem rescale_to_shell_semi_normed_zpow {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
-    (hx : ‖x‖ ≠ 0) :
-    ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ ε / ‖c‖ ≤ ‖c ^ n • x‖ ∧ ‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖ := by
-  have xεpos : 0 < ‖x‖ / ε := div_pos ((Ne.symm hx).le_iff_lt.1 (norm_nonneg x)) εpos
-  rcases exists_mem_Ico_zpow xεpos hc with ⟨n, hn⟩
-  have cpos : 0 < ‖c‖ := lt_trans (zero_lt_one : (0 : ℝ) < 1) hc
-  have cnpos : 0 < ‖c ^ (n + 1)‖ := by
-    rw [norm_zpow]
-    exact lt_trans xεpos hn.2
-  refine' ⟨-(n + 1), _, _, _, _⟩
-  show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
-  show ‖c ^ (-(n + 1)) • x‖ < ε
-  · rw [norm_smul, zpow_neg, norm_inv, ← _root_.div_eq_inv_mul, div_lt_iff cnpos, mul_comm,
-      norm_zpow]
-    exact (div_lt_iff εpos).1 hn.2
-  show ε / ‖c‖ ≤ ‖c ^ (-(n + 1)) • x‖
-  · rw [zpow_neg, div_le_iff cpos, norm_smul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
-      zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel (ne_of_gt cpos),
-      one_mul, ← _root_.div_eq_inv_mul, le_div_iff (zpow_pos_of_pos cpos _), mul_comm]
-    exact (le_div_iff εpos).1 hn.1
-  show ‖c ^ (-(n + 1))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖
-  · rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ cpos.ne', zpow_one, mul_right_comm, ←
-      _root_.div_eq_inv_mul]
-    exact mul_le_mul_of_nonneg_right hn.1 (norm_nonneg _)
-#align rescale_to_shell_semi_normed_zpow rescale_to_shell_semi_normed_zpow
-
-/-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
-moved by scalar multiplication to any shell of width `‖c‖`. Also recap information on the norm of
-the rescaling element that shows up in applications. -/
-theorem rescale_to_shell_semi_normed {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
-    (hx : ‖x‖ ≠ 0) : ∃ d : α, d ≠ 0 ∧ ‖d • x‖ < ε ∧ ε / ‖c‖ ≤ ‖d • x‖ ∧ ‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖ :=
-  let ⟨_, hn⟩ := rescale_to_shell_semi_normed_zpow hc εpos hx
-  ⟨_, hn⟩
-#align rescale_to_shell_semi_normed rescale_to_shell_semi_normed
-
 end SeminormedAddCommGroup
 
 /-- A linear map from a `Module` to a `NormedSpace` induces a `NormedSpace` structure on the
@@ -402,19 +365,6 @@ theorem frontier_sphere' [NormedSpace ℝ E] [Nontrivial E] (x : E) (r : ℝ) :
     frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
 #align frontier_sphere' frontier_sphere'
-
-theorem rescale_to_shell_zpow {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E} (hx : x ≠ 0) :
-    ∃ n : ℤ, c ^ n ≠ 0 ∧ ‖c ^ n • x‖ < ε ∧ ε / ‖c‖ ≤ ‖c ^ n • x‖ ∧ ‖c ^ n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖ :=
-  rescale_to_shell_semi_normed_zpow hc εpos (mt norm_eq_zero.1 hx)
-#align rescale_to_shell_zpow rescale_to_shell_zpow
-
-/-- If there is a scalar `c` with `‖c‖>1`, then any element can be moved by scalar multiplication to
-any shell of width `‖c‖`. Also recap information on the norm of the rescaling element that shows
-up in applications. -/
-theorem rescale_to_shell {c : α} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E} (hx : x ≠ 0) :
-    ∃ d : α, d ≠ 0 ∧ ‖d • x‖ < ε ∧ ε / ‖c‖ ≤ ‖d • x‖ ∧ ‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖ :=
-  rescale_to_shell_semi_normed hc εpos (mt norm_eq_zero.1 hx)
-#align rescale_to_shell rescale_to_shell
 
 end NormedAddCommGroup
 

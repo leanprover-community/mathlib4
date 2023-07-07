@@ -36,7 +36,7 @@ the sequence of elements `x : Fin k → ℕ` such that `n = ∑ i, x i`.
 
 ## Implementation notes
 
-While we could implement this by filtering `(Fintype.PiFinset $ λ _, range (n + 1))` or similar,
+While we could implement this by filtering `(Fintype.PiFinset $ fun _ ↦ range (n + 1))` or similar,
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
@@ -82,7 +82,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] 
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n := by
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n := by
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
@@ -199,7 +199,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = 0 :
 #align multiset.nat.antidiagonal_tuple_zero_succ Multiset.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n :=
   List.Nat.mem_antidiagonalTuple
 #align multiset.nat.mem_antidiagonal_tuple Multiset.Nat.mem_antidiagonalTuple
 
@@ -244,7 +244,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = ∅
 #align finset.nat.antidiagonal_tuple_zero_succ Finset.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n :=
   List.Nat.mem_antidiagonalTuple
 #align finset.nat.mem_antidiagonal_tuple Finset.Nat.mem_antidiagonalTuple
 

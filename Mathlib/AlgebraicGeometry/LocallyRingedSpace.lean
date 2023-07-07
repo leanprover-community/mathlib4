@@ -19,9 +19,6 @@ stalks are local rings), and morphisms between these (morphisms in `SheafedSpace
 `is_local_ring_hom` on the stalk maps).
 -/
 
-
-universe v u
-
 open CategoryTheory
 
 open TopCat
@@ -65,8 +62,8 @@ def toTopCat : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Top AlgebraicGeometry.LocallyRingedSpace.toTopCat
 
-instance : CoeSort LocallyRingedSpace (Type u) :=
-  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type u)⟩
+instance : CoeSort LocallyRingedSpace (Type _) :=
+  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
 instance (x : X) : LocalRing (X.stalk x) :=
   X.localRing x
@@ -82,7 +79,7 @@ set_option linter.uppercaseLean3 false in
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
  such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
-structure Hom (X Y : LocallyRingedSpace.{u}) : Type u where
+structure Hom (X Y : LocallyRingedSpace) : Type _ where
   /-- the underlying morphism between ringed spaces -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
@@ -92,6 +89,9 @@ set_option linter.uppercaseLean3 false in
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
+
+@[ext] lemma Hom.ext' (X Y : LocallyRingedSpace) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
+Hom.ext _ _ h
 
 -- TODO perhaps we should make a bundled `LocalRing` and return one here?
 -- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
@@ -177,7 +177,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note : complains that `(f ≫ g).val.c` can be further simplified
 -- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
-theorem comp_val_c {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem comp_val_c {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f.1 ≫ g.1).c = g.val.c ≫ (Presheaf.pushforward _ g.val.base).map f.val.c :=
   rfl
 set_option linter.uppercaseLean3 false in

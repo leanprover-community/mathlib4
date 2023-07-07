@@ -1090,7 +1090,7 @@ class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, Li
 #align linear_ordered_add_comm_group LinearOrderedAddCommGroup
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
-  Instances should include number systems with an infinite element adjoined.` -/
+  Instances should include number systems with an infinite element adjoined. -/
 class LinearOrderedAddCommGroupWithTop (α : Type _) extends LinearOrderedAddCommMonoidWithTop α,
   SubNegMonoid α, Nontrivial α where
   protected neg_top : -(⊤ : α) = ⊤

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer, Andrew Yang
 
 ! This file was ported from Lean 3 source module algebraic_geometry.ringed_space
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -24,8 +24,7 @@ make use of the locality of stalks. See for instance <https://stacks.math.columb
 
 -/
 
-
-universe v
+universe v u
 
 open CategoryTheory
 
@@ -40,8 +39,8 @@ open TopCat.Presheaf
 namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-abbrev RingedSpace : Type _ :=
-  SheafedSpace CommRingCat
+abbrev RingedSpace : TypeMax.{u+1, v+1} :=
+  SheafedSpace.{_, v, u} CommRingCat.{v}
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.RingedSpace AlgebraicGeometry.RingedSpace
 
@@ -49,7 +48,7 @@ namespace RingedSpace
 
 open SheafedSpace
 
-variable (X : RingedSpace.{v})
+variable (X : RingedSpace)
 
 -- Porting note : this was not necessary in mathlib3
 instance : CoeSort RingedSpace (Type _) where
@@ -70,7 +69,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   -- desired form
   replace heq : (X.presheaf.germ ⟨x.val, hxW⟩) ((X.presheaf.map (U.infLELeft V).op) f *
     (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ ⟨x.val, hxW⟩) 1
-  . dsimp [germ]
+  · dsimp [germ]
     erw [map_mul, map_one, show X.presheaf.germ ⟨x, hxW⟩ ((X.presheaf.map (U.infLELeft V).op) f) =
       X.presheaf.germ x f from X.presheaf.germ_res_apply (Opens.infLELeft U V) ⟨x.1, hxW⟩ f,
       show X.presheaf.germ ⟨x, hxW⟩ (X.presheaf.map (U.infLERight V).op g) =
@@ -90,7 +89,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   -- We pick a cover of `U` by open sets `V x`, such that `f` is a unit on each `V x`.
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x (h x)
   have hcover : U ≤ iSup V
-  . intro x hxU
+  · intro x hxU
     -- Porting note : in Lean3 `rw` is sufficient
     erw [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
