@@ -270,27 +270,32 @@ section Topology
 variable [NormedField 𝕜] [NormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
   [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜₂ F] [Nonempty ι]
 
+def Seminorm.toPseudoMetricSpace (p : Seminorm 𝕜 E) : PseudoMetricSpace E :=
+  p.toSeminormedAddCommGroup.toPseudoMetricSpace
+
 def Seminorm.toUniformSpace (p : Seminorm 𝕜 E) : UniformSpace E :=
-  p.toSeminormedAddCommGroup.toUniformSpace
+  p.toPseudoMetricSpace.toUniformSpace
 
 def Seminorm.toTopologicalSpace (p : Seminorm 𝕜 E) : TopologicalSpace E :=
   p.toUniformSpace.toTopologicalSpace
 
+theorem Seminorm.toPseudoMetricSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toPseudoMetricSpace = p.toPseudoMetricSpace.induced f := by
+  ext x y
+  rw [@dist_eq_norm _ (_)]
+  change p (f (x - y)) = p.toPseudoMetricSpace.dist (f x) (f y)
+  rw [@dist_eq_norm _ (_), map_sub]
+  rfl
+
 theorem Seminorm.toUniformSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
     (p.comp f).toUniformSpace = UniformSpace.comap f p.toUniformSpace := by
-  letI : SeminormedAddCommGroup F := p.toSeminormedAddCommGroup
-  --letI : UniformAddGroup E := uniformAddGroup_comap f
-  letI : SeminormedAddCommGroup E := (p.comp f).toSeminormedAddCommGroup
-  rw [Seminorm.toUniformSpace, Seminorm.toUniformSpace,
-      UniformAddGroup.ext_iff inferInstance (uniformAddGroup_comap f),
-      nhds_induced _ _, map_zero, ← comap_norm_nhds_zero (E := E), ← comap_norm_nhds_zero (E := F),
-      comap_comap]
+  rw [Seminorm.toUniformSpace, Seminorm.toUniformSpace, Seminorm.toPseudoMetricSpace_comp]
   rfl
 
 theorem Seminorm.toTopologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
     (p.comp f).toTopologicalSpace = induced f p.toTopologicalSpace := by
-  rw [Seminorm.toTopologicalSpace, Seminorm.toTopologicalSpace, Seminorm.toUniformSpace_comp,
-      toTopologicalSpace_comap]
+  rw [Seminorm.toTopologicalSpace, Seminorm.toTopologicalSpace, Seminorm.toUniformSpace_comp]
+  rfl
 
 /-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
 structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [t : TopologicalSpace E] : Prop where
