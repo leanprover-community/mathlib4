@@ -286,8 +286,7 @@ private theorem exists_right_complement'_of_coprime_aux' [Fintype G] (hG : Finty
 theorem exists_right_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' N H :=
   exists_right_complement'_of_coprime_aux' rfl hN
-#align subgroup.exists_right_complement'_of_coprime_of_fintype
-  Subgroup.exists_right_complement'_of_coprime_of_fintype
+#align subgroup.exists_right_complement'_of_coprime_of_fintype Subgroup.exists_right_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a
@@ -318,8 +317,7 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
 theorem exists_left_complement'_of_coprime_of_fintype [Fintype G] {N : Subgroup G} [N.Normal]
     (hN : Nat.coprime (Fintype.card N) N.index) : ∃ H : Subgroup G, IsComplement' H N :=
   Exists.imp (fun _ => IsComplement'.symm) (exists_right_complement'_of_coprime_of_fintype hN)
-#align subgroup.exists_left_complement'_of_coprime_of_fintype
-  Subgroup.exists_left_complement'_of_coprime_of_fintype
+#align subgroup.exists_left_complement'_of_coprime_of_fintype Subgroup.exists_left_complement'_of_coprime_of_fintype
 
 /-- **Schur-Zassenhaus** for normal subgroups:
   If `H : Subgroup G` is normal, and has order coprime to its index, then there exists a

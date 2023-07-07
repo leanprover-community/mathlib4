@@ -35,7 +35,7 @@ open Opposite
 
 namespace AlgebraicGeometry
 
-/-- We define `Scheme` as a `X : LocallyRingedSpace`,
+/-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
 so that that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
@@ -95,6 +95,15 @@ def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 #align algebraic_geometry.Scheme.forget_to_Top AlgebraicGeometry.Scheme.forgetToTop
 
+-- Porting note : Lean seems not able to find this coercion any more
+instance hasCoeToTopCat : CoeOut Scheme TopCat where
+  coe X := X.carrier
+
+-- Porting note : added this unification hint just in case
+/-- forgetful functor to `TopCat` is the same as coercion -/
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
+  forgetToTop.obj X ≟ (X : TopCat)
+
 @[simp]
 theorem id_val_base (X : Scheme) : (𝟙 X : _).1.base = 𝟙 _ :=
   rfl
@@ -125,6 +134,11 @@ theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
   rfl
 #align algebraic_geometry.Scheme.comp_val_base AlgebraicGeometry.Scheme.comp_val_base
 
+theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
+  simp
+#align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
+
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).val.c.app U = g.val.c.app U ≫ f.val.c.app _ :=
@@ -145,6 +159,12 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
   cases e
   rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
+
+-- Porting note : in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
+-- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
+lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
+    X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
+  rw [eqToHom_op, eqToHom_map]
 
 instance is_locallyRingedSpace_iso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     @IsIso LocallyRingedSpace _ _ _ f :=

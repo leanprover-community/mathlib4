@@ -412,4 +412,14 @@ theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := 
   cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
 #align bool.apply_apply_apply Bool.apply_apply_apply
 
+/-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
+protected def xor3 (x y c : Bool) :=
+  xor (xor x y) c
+#align bitvec.xor3 Bool.xor3
+
+/-- `carry x y c` is `x && y || x && c || y && c`. -/
+protected def carry (x y c : Bool) :=
+  x && y || x && c || y && c
+#align bitvec.carry Bool.carry
+
 end Bool

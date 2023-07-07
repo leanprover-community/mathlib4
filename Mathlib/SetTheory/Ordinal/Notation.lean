@@ -1152,7 +1152,7 @@ def fastGrowing : ONote → ℕ → ℕ
     | Sum.inl none, _ => Nat.succ
     | Sum.inl (some a), h =>
       have : a < o := by rw [lt_def, h.1]; apply lt_succ
-      fun i => (fastGrowing a^[i]) i
+      fun i => (fastGrowing a)^[i] i
     | Sum.inr f, h => fun i =>
       have : f i < o := (h.2.1 i).2.1
       fastGrowing (f i) i
@@ -1168,7 +1168,7 @@ theorem fastGrowing_def {o : ONote} {x} (e : fundamentalSequence o = x) :
         x, e ▸ fundamentalSequence_has_prop o with
       | Sum.inl none, _ => Nat.succ
       | Sum.inl (some a), _ =>
-        fun i => (fastGrowing a^[i]) i
+        fun i => (fastGrowing a)^[i] i
       | Sum.inr f, _ => fun i =>
         fastGrowing (f i) i := by
   subst x
@@ -1181,7 +1181,7 @@ theorem fastGrowing_zero' (o : ONote) (h : fundamentalSequence o = Sum.inl none)
 #align onote.fast_growing_zero' ONote.fastGrowing_zero'
 
 theorem fastGrowing_succ (o) {a} (h : fundamentalSequence o = Sum.inl (some a)) :
-    fastGrowing o = fun i => (fastGrowing a^[i]) i := by
+    fastGrowing o = fun i => (fastGrowing a)^[i] i := by
   rw [fastGrowing_def h]
 #align onote.fast_growing_succ ONote.fastGrowing_succ
 
@@ -1198,7 +1198,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
-  suffices : ∀ a b, (Nat.succ^[a]) b = b + a; exact this _ _
+  suffices : ∀ a b, Nat.succ^[a] b = b + a; exact this _ _
   intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_succ, -Function.iterate_succ]
 #align onote.fast_growing_one ONote.fastGrowing_one
 
@@ -1207,7 +1207,7 @@ section
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by
   rw [@fastGrowing_succ 2 1 rfl]; funext i; rw [fastGrowing_one]
-  suffices : ∀ a b, ((fun n : ℕ => 2 * n)^[a]) b = (2 ^ a) * b; exact this _ _
+  suffices : ∀ a b, (fun n : ℕ => 2 * n)^[a] b = (2 ^ a) * b; exact this _ _
   intro a b; induction a <;>
     simp [*, Function.iterate_succ', pow_succ, mul_assoc, -Function.iterate_succ]
 #align onote.fast_growing_two ONote.fastGrowing_two
@@ -1219,7 +1219,7 @@ end
   Extending the fast growing hierarchy beyond this requires a definition of fundamental sequence
   for larger ordinals. -/
 def fastGrowingε₀ (i : ℕ) : ℕ :=
-  fastGrowing (((fun a => a.oadd 1 0)^[i]) 0) i
+  fastGrowing ((fun a => a.oadd 1 0)^[i] 0) i
 #align onote.fast_growing_ε₀ ONote.fastGrowingε₀
 
 theorem fastGrowingε₀_zero : fastGrowingε₀ 0 = 1 := by simp [fastGrowingε₀]

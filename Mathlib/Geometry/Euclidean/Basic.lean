@@ -9,6 +9,7 @@ Authors: Joseph Myers, Manuel Candales
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
@@ -82,8 +83,8 @@ theorem dist_left_midpoint_eq_dist_right_midpoint (p1 p2 : P) :
 /-- The inner product of two vectors given with `weightedVSub`, in
 terms of the pairwise distances. -/
 theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ} (p₁ : ι₁ → P)
-    (h₁ : (∑ i in s₁, w₁ i) = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
-    (h₂ : (∑ i in s₂, w₂ i) = 0) :
+    (h₁ : ∑ i in s₁, w₁ i = 0) {ι₂ : Type _} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ} (p₂ : ι₂ → P)
+    (h₂ : ∑ i in s₂, w₂ i = 0) :
     ⟪s₁.weightedVSub p₁ w₁, s₂.weightedVSub p₂ w₂⟫ =
       (-∑ i₁ in s₁, ∑ i₂ in s₂, w₁ i₁ * w₂ i₂ * (dist (p₁ i₁) (p₂ i₂) * dist (p₁ i₁) (p₂ i₂))) /
         2 := by
@@ -97,7 +98,7 @@ theorem inner_weightedVSub {ι₁ : Type _} {s₁ : Finset ι₁} {w₁ : ι₁ 
 in terms of the pairwise distances between the points in that
 combination. -/
 theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι → ℝ} (p : ι → P)
-    (h₁ : (∑ i in s, w₁ i) = 1) (h₂ : (∑ i in s, w₂ i) = 1) : by
+    (h₁ : ∑ i in s, w₁ i = 1) (h₂ : ∑ i in s, w₂ i = 1) : by
       have a₁ := s.affineCombination ℝ p w₁
       have a₂ := s.affineCombination ℝ p w₂
       exact dist a₁ a₂ * dist a₁ a₂ = (-∑ i₁ in s, ∑ i₂ in s,
@@ -110,23 +111,7 @@ theorem dist_affineCombination {ι : Type _} {s : Finset ι} {w₁ w₂ : ι →
   exact inner_weightedVSub p h p h
 #align euclidean_geometry.dist_affine_combination EuclideanGeometry.dist_affineCombination
 
-/-- Suppose that `c₁` is equidistant from `p₁` and `p₂`, and the same
-applies to `c₂`. Then the vector between `c₁` and `c₂` is orthogonal
-to that between `p₁` and `p₂`. (In two dimensions, this says that the
-diagonals of a kite are orthogonal.) -/
-theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ : dist p₁ c₁ = dist p₂ c₁)
-    (hc₂ : dist p₁ c₂ = dist p₂ c₂) : ⟪c₂ -ᵥ c₁, p₂ -ᵥ p₁⟫ = 0 := by
-  have h : ⟪c₂ -ᵥ c₁ + (c₂ -ᵥ c₁), p₂ -ᵥ p₁⟫ = 0 := by
-    conv_lhs => congr; congr; rw [← vsub_sub_vsub_cancel_right c₂ c₁ p₁]
-    rw [← vsub_sub_vsub_cancel_right c₂ c₁ p₂, sub_add_sub_comm, inner_sub_left]
-    conv_lhs => congr; rw [← vsub_sub_vsub_cancel_right p₂ p₁ c₂]
-    rw [← vsub_sub_vsub_cancel_right p₂ p₁ c₁]
-    rw [dist_comm p₁, dist_comm p₂, dist_eq_norm_vsub V _ p₁, dist_eq_norm_vsub V _ p₂, ←
-      real_inner_add_sub_eq_zero_iff] at hc₁ hc₂
-    simp_rw [← neg_vsub_eq_vsub_rev c₁, ← neg_vsub_eq_vsub_rev c₂, sub_neg_eq_add, neg_add_eq_sub,
-      hc₁, hc₂, sub_zero]
-  simpa [inner_add_left, ← mul_two, (by norm_num : (2 : ℝ) ≠ 0)] using h
-#align euclidean_geometry.inner_vsub_vsub_of_dist_eq_of_dist_eq EuclideanGeometry.inner_vsub_vsub_of_dist_eq_of_dist_eq
+-- Porting note: `inner_vsub_vsub_of_dist_eq_of_dist_eq` moved to `PerpendicularBisector`
 
 /-- The squared distance between points on a line (expressed as a
 multiple of a fixed vector added to a point) and another point,

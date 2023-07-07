@@ -415,7 +415,7 @@ instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
 #align prime_spectrum.zariski_topology PrimeSpectrum.zariskiTopology
 
 theorem isOpen_iff (U : Set (PrimeSpectrum R)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus s := by
-  simp only [@eq_comm _ (Uᶜ)] ; rfl
+  simp only [@eq_comm _ Uᶜ] ; rfl
 #align prime_spectrum.is_open_iff PrimeSpectrum.isOpen_iff
 
 theorem isClosed_iff_zeroLocus (Z : Set (PrimeSpectrum R)) : IsClosed Z ↔ ∃ s, Z = zeroLocus s := by
@@ -561,11 +561,11 @@ theorem isIrreducible_iff_vanishingIdeal_isPrime {s : Set (PrimeSpectrum R)} :
     isIrreducible_zeroLocus_iff_of_radical _ (isRadical_vanishingIdeal s)]
 #align prime_spectrum.is_irreducible_iff_vanishing_ideal_is_prime PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime
 
-instance [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
+instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
   rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
   simpa using Ideal.bot_prime
 
-instance : QuasiSober (PrimeSpectrum R) :=
+instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
     ⟨⟨_, isIrreducible_iff_vanishingIdeal_isPrime.1 h₁⟩, by
       rw [IsGenericPoint, closure_singleton, zeroLocus_vanishingIdeal_eq_closure, h₂.closure_eq]⟩⟩
@@ -778,7 +778,7 @@ theorem isOpen_basicOpen {a : R} : IsOpen (basicOpen a : Set (PrimeSpectrum R)) 
 
 @[simp]
 theorem basicOpen_eq_zeroLocus_compl (r : R) :
-    (basicOpen r : Set (PrimeSpectrum R)) = zeroLocus {r}ᶜ :=
+    (basicOpen r : Set (PrimeSpectrum R)) = (zeroLocus {r})ᶜ :=
   Set.ext fun x => by simp only [SetLike.mem_coe, mem_basicOpen, Set.mem_compl_iff, mem_zeroLocus,
     Set.singleton_subset_iff]
 #align prime_spectrum.basic_open_eq_zero_locus_compl PrimeSpectrum.basicOpen_eq_zeroLocus_compl
@@ -853,7 +853,7 @@ theorem isCompact_basicOpen (f : R) : IsCompact (basicOpen f : Set (PrimeSpectru
     rcases Submodule.exists_finset_of_mem_iSup I hn with ⟨s, hs⟩
     use s
     -- Using simp_rw here, because `hI` and `zero_locus_supr` need to be applied underneath binders
-    simp_rw [basicOpen_eq_zeroLocus_compl f, Set.inter_comm (zeroLocus {f}ᶜ), ← Set.diff_eq,
+    simp_rw [basicOpen_eq_zeroLocus_compl f, Set.inter_comm (zeroLocus {f})ᶜ, ← Set.diff_eq,
       Set.diff_eq_empty]
     rw [show (Set.iInter fun i => Set.iInter fun (_ : i ∈ s) => Z i) =
       Set.iInter fun i => Set.iInter fun (_ : i ∈ s) => zeroLocus (I i) from congr_arg _
@@ -898,7 +898,7 @@ theorem localization_away_openEmbedding (S : Type v) [CommRing S] [Algebra R S] 
 end BasicOpen
 
 /-- The prime spectrum of a commutative ring is a compact topological space. -/
-instance : CompactSpace (PrimeSpectrum R) :=
+instance compactSpace : CompactSpace (PrimeSpectrum R) :=
   { isCompact_univ := by
       convert isCompact_basicOpen (1 : R)
       rw [basicOpen_one]

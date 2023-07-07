@@ -20,7 +20,7 @@ We set up the basic theory of `V`-enriched categories,
 for `V` an arbitrary monoidal category.
 
 We do not assume here that `V` is a concrete category,
-so there does not need to be a "honest" underlying category!
+so there does not need to be an "honest" underlying category!
 
 Use `X ⟶[V] Y` to obtain the `V` object of morphisms from `X` to `Y`.
 

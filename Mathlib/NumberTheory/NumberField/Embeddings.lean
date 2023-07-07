@@ -173,7 +173,7 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
   ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
-/-- A embedding into `ℂ` is real if it is fixed by complex conjugation. -/
+/-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 @[reducible]
 def IsReal (φ : K →+* ℂ) : Prop :=
   IsSelfAdjoint φ

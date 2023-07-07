@@ -18,7 +18,7 @@ We gather several results about minimal polynomial of root of unity.
 
 ## Main results
 
-* `IsPrimitiveRoot.totient_le_degree_minpoly`: The degree of the minimal polynomial of a `n`-th
+* `IsPrimitiveRoot.totient_le_degree_minpoly`: The degree of the minimal polynomial of an `n`-th
   primitive root of unity is at least `totient n`.
 
 -/
