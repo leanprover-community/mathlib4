@@ -197,9 +197,14 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
 theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
     (⟦H.evalAt x₀⟧ ≫ (πₘ g).map p : fromTop (f x₀) ⟶ fromTop (g x₁)) = H.diagonalPath' p := by
-  rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq, H.evalAt_eq]
+  rw [H.apply_zero_path, H.apply_one_path, H.evalAt_eq]
+  erw [H.evalAt_eq] -- Porting note: `rw` didn't work, so using `erw`
   dsimp only [prodToProdTopI]
-  constructor <;> · slice_lhs 2 5 => simp [← CategoryTheory.Functor.map_comp]; rfl
+  constructor
+  · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
+    slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
+  · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
+    slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
 #align continuous_map.homotopy.eq_diag_path ContinuousMap.Homotopy.eq_diag_path
 
 end ContinuousMap.Homotopy
@@ -218,7 +223,8 @@ variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 functors `f` and `g` -/
 def homotopicMapsNatIso : @Quiver.Hom _ Functor.category.toQuiver (πₘ f) (πₘ g) where
   app x := ⟦H.evalAt x⟧
-  naturality x y p := by rw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
+  -- Porting note: Turned `rw` into `erw` in the line below
+  naturality x y p := by erw [(H.eq_diag_path p).1, (H.eq_diag_path p).2]
 #align fundamental_groupoid_functor.homotopic_maps_nat_iso FundamentalGroupoidFunctor.homotopicMapsNatIso
 
 instance : IsIso (homotopicMapsNatIso H) := by apply NatIso.isIso_of_isIso_app
