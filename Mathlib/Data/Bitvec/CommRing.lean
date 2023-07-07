@@ -1,4 +1,5 @@
 import Mathlib.Data.Bitvec.Lemmas
+import Mathlib.Data.Bitvec.ConstantLemmas
 import Mathlib.Data.ZMod.Basic
 
 namespace Bitvec
@@ -31,13 +32,14 @@ theorem ofZMod_toZMod {n} (v : Bitvec n) : ofZMod (toZMod v) = v := by
 theorem toZMod_natCast {n : ℕ} (x : ℕ) : (↑x : Bitvec n).toZMod = x := by
   show (Bitvec.ofNat n x).toZMod = x
   simp [toZMod, toNat_ofNat]
-#print Bitvec.neg
+
+
 @[simp]
 theorem toZMod_intCast {n : ℕ} (x : ℤ) : (↑x : Bitvec n).toZMod = x := by
   show (Bitvec.ofInt n x).toZMod = x
   cases x
   . simp [Bitvec.ofInt, toZMod, toNat_ofNat]
-  . simp [Bitvec.ofInt]
+  . sorry
 
 
 @[simp]
@@ -52,8 +54,8 @@ theorem ofZMod_add {n : ℕ} (x y : ZMod (2 ^n)) :
     ofZMod_toZMod]
 
 @[simp]
-theorem toZMod_zero : ∀ {n : Nat}, (0 : Bitvec n).toZMod = 0 :=
-  by simp [toZMod]
+theorem toZMod_zero : ∀ {n : Nat}, (0 : Bitvec n).toZMod = 0 := by
+  simp [toZMod]
 
 @[simp]
 theorem ofZMod_zero : Bitvec.ofZMod (0 : ZMod (2^n)) = 0 := by
@@ -69,9 +71,9 @@ theorem ofZMod_one : Bitvec.ofZMod (1 : ZMod (2^n)) = 1 := by
 
 private theorem toInt_sub_aux : ∀ {x y : List Bool} (_hx : List.length x = List.length y),
     (↑(((x.mapAccumr₂
-      (fun a b c => (Bitvec.carry (!a) b c, Bitvec.xor3 a b c)) y false).snd).foldl addLsb 0) : ℤ)
+      (fun a b c => (Bool.carry (!a) b c, Bool.xor3 a b c)) y false).snd).foldl addLsb 0) : ℤ)
     - 2 ^ x.length * cond (x.mapAccumr₂
-      (fun a b c => (Bitvec.carry (!a) b c, Bitvec.xor3 a b c)) y false).fst 1 0 =
+      (fun a b c => (Bool.carry (!a) b c, Bool.xor3 a b c)) y false).fst 1 0 =
     x.foldl addLsb 0 + -y.foldl addLsb 0
 | [], [], _ => rfl
 |  a::x, b::y, h => by
@@ -83,8 +85,8 @@ private theorem toInt_sub_aux : ∀ {x y : List Bool} (_hx : List.length x = Lis
     zero_add, Nat.cast_add, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
   cases a <;>
   cases b <;>
-  cases (x.mapAccumr₂ (fun a b c => (Bitvec.carry (!a) b c, Bitvec.xor3 a b c)) y false).fst <;>
-  simp [Bitvec.carry, Bitvec.xor3] <;>
+  cases (x.mapAccumr₂ (fun a b c => (Bool.carry (!a) b c, Bool.xor3 a b c)) y false).fst <;>
+  simp [Bool.carry, Bool.xor3] <;>
   ring
 
 theorem toZMod_sbb {n : ℕ} (x y : Bitvec n) : (x.sbb y false).2.toZMod = x.toZMod - y.toZMod := by
@@ -153,7 +155,8 @@ theorem toZMod_mul_aux {n : ℕ} :
 
 theorem toZMod_mul {n : ℕ} (x y : Bitvec n) : (x * y).toZMod = (x.toZMod * y.toZMod) := by
   refine (toZMod_mul_aux x.toList 0 y).trans ?_
-  simp [toZMod, Bitvec.toNat, bitsToNat]
+  simp [toZMod, Bitvec.toNat, bitsToNat, Vector.foldl, Vector.toList]
+  sorry
 
 instance : Pow (Bitvec n) ℕ := ⟨fun x n => npowRec n x⟩
 

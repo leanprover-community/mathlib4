@@ -82,4 +82,40 @@ namespace Bitvec
   theorem not_or  :  ~~~(x ||| y) = (~~~x) &&& (~~~y) := by
     ext; simp
 
+
+
+  /-!
+    Shifts
+  -/
+
+  -- @[simp]
+  -- theorem shl_succ (x : Bitvec n) :
+  --     (x <<< (@Bitvec.ofNat n <| m + 1)) = (x.snoc false |>.tail) := by
+  --   simp[(· <<< ·), ShiftLeft.shiftLeft, Bitvec.shl]
+  --   sorry
+
+
+
+  -- theorem shl_eq_mapAccumr :
+  --     x <<< y
+  --     = (Vector.mapAccumr (fun b s =>
+  --         (s.snoc b |>.tail, (s.snoc b).head)
+  --       ) x (Vector.replicate (y.toNat) false)).snd := by
+  --   conv_lhs => {rw[←ofNat_toNat y]}
+  --   induction y.toNat
+  --   . simp
+  --     have : Vector.replicate 0 false = Vector.nil := rfl
+  --     rw[this]
+  --     simp
+  --     clear z shl_eq_mapAccumr y
+  --     induction x using Vector.inductionOn
+  --     . rfl
+  --     . simp; congr
+  --   next ih =>
+  --     simp
+  --     clear z shl_eq_mapAccumr y
+  --     induction x using Vector.revInductionOn
+  --     . rfl
+  --     . simp_all
+
 end Bitvec

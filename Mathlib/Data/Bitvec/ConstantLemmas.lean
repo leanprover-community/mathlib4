@@ -49,6 +49,9 @@ theorem toNat_zero : ∀ {n : Nat}, (0 : Bitvec n).toNat = 0
 theorem ofNat_zero : Bitvec.ofNat w 0 = 0 := by
   rw [← toNat_zero, ofNat_toNat]
 
+theorem zero_eq_replicate :
+    (0 : Bitvec n) = Vector.replicate n false  :=
+  rfl
 
 end Zero
 

@@ -42,44 +42,49 @@ infix:50 " ⊑ " => Refinement
 theorem refine_some_some (h : x = y) : some x ⊑ some y :=
   Refinement.bothSome h
 
-macro "alive_auto" : tactic => `(tactic| aesop_bitvec)
-
+macro "alive_auto" : tactic => `(tactic|
+--   try ring <;>
+  (aesop_bitvec (options := {
+      terminal := false,
+      warnOnNonterminal := false,
+  }))
+)
 
 open Bitvec
 theorem bitvec_AddSub_1043 :
  ∀ (w : ℕ) (C1 Z RHS : Bitvec w), (Z &&& C1 ^^^ C1) + 1 + RHS = RHS - (Z ||| ~~~C1)
-:= by alive_auto
-      try sorry
+:= by
+      alive_auto
+      sorry
+
 
 theorem bitvec_AddSub_1152:
  ∀ (y x : Bitvec 1), x + y = x ^^^ y
 := by alive_auto
-      try sorry
 
 theorem bitvec_AddSub_1156 :
  ∀ (w : ℕ) (b : Bitvec w), b + b = b <<< 1
-:= by alive_auto
-      try sorry
+:= by sorry -- shifts are hard
 
 theorem bitvec_AddSub_1164 :
  ∀ (w : ℕ) (a b : Bitvec w), 0 - a + b = b - a
-:= by alive_auto
-      try sorry
+:= by sorry --ring
 
 theorem bitvec_AddSub_1165 :
  ∀ (w : ℕ) (a b : Bitvec w), 0 - a + (0 - b) = 0 - (a + b)
-:= by alive_auto
-      try sorry
+:= by sorry -- ring
 
 theorem bitvec_AddSub_1176 :
  ∀ (w : ℕ) (a b : Bitvec w), a + (0 - b) = a - b
-:= by alive_auto
-      try sorry
+:= by sorry -- ring
 
 theorem bitvec_AddSub_1202 :
  ∀ (w : ℕ) (x C : Bitvec w), (x ^^^ -1) + C = C - 1 - x
-:= by alive_auto
-      try sorry
+:= by intros;
+      alive_auto
+      save
+      skip
+      sorry
 
 theorem bitvec_AddSub_1295 :
  ∀ (w : ℕ) (a b : Bitvec w), (a &&& b) + (a ^^^ b) = a ||| b

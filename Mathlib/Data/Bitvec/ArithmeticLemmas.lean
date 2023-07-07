@@ -5,32 +5,6 @@ import Mathlib.Data.Bitvec.Tactic
 import Mathlib.Data.Vector.MapLemmas
 import Mathlib.Data.Vector.Snoc
 
-namespace Vector
-  variable (xs : Vector α n)
-
-
-  @[simp]
-  theorem mapAccumr₂_replicate_left :
-      mapAccumr₂ f (Vector.replicate n b) = mapAccumr (f b) := by
-    clear *-f
-    funext xs s
-    induction xs using Vector.revInductionOn generalizing s
-    case nil => rfl
-    case snoc xs x ih =>
-      rw[replicate_succ_to_snoc]
-      simp[ih]
-
-  @[simp]
-  theorem mapAccumr₂_replicate_right :
-      mapAccumr₂ f xs (Vector.replicate n b) = mapAccumr (fun x => f x b) xs := by
-    funext s
-    induction xs using Vector.revInductionOn generalizing s
-    case nil => rfl
-    case snoc xs x ih =>
-      rw[replicate_succ_to_snoc]
-      simp[ih]
-end Vector
-
 
 namespace Bool
   @[simp]
@@ -86,7 +60,7 @@ theorem add_eq_or_of_and_eq_zero {n : ℕ} {x y : Bitvec n} (hxy : x &&& y = 0) 
   induction x, y using Vector.revInductionOn₂
   next => rfl
   next xs ys x y ih =>
-    simp [(· &&& ·), AndOp.and, Bitvec.and] at hxy
+    simp only [(· &&& ·), AndOp.and, Bitvec.and, Vector.map₂_snoc] at hxy
     rw [Bitvec.zero_unfold_snoc] at hxy
     rcases (Vector.snoc.inj hxy) with ⟨head, tail⟩
     specialize ih tail

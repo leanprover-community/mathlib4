@@ -773,6 +773,11 @@ section Simp
 variable (xs : Vector α n)
 
 @[simp]
+theorem replicate_zero (val : α) :
+    replicate 0 val = nil :=
+  rfl
+
+@[simp]
 theorem replicate_succ (val : α) :
     replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
