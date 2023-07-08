@@ -232,9 +232,10 @@ theorem targetAffineLocallyOfOpenCover {P : AffineTargetMorphismProperty} (hP : 
     exact (hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr h𝒰
 #align algebraic_geometry.target_affine_locally_of_open_cover AlgebraicGeometry.targetAffineLocallyOfOpenCover
 
+open List in
 theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    List.TFAE
+    TFAE
       [targetAffineLocally P f,
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
           ∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
@@ -383,9 +384,10 @@ theorem AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
       simp
 #align algebraic_geometry.affine_target_morphism_property.is_local.target_affine_locally_is_local AlgebraicGeometry.AffineTargetMorphismProperty.IsLocal.targetAffineLocallyIsLocal
 
+open List in
 theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
     (hP : PropertyIsLocalAtTarget P) {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    List.TFAE
+    TFAE
       [P f,
         ∃ 𝒰 : Scheme.OpenCover.{u} Y,
           ∀ i : 𝒰.J, P (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
