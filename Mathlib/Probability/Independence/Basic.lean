@@ -147,18 +147,23 @@ end Definitions
 
 section Definition_lemmas
 
-lemma iIndepSets_def [MeasurableSpace Ω] (π : ι → Set (Set Ω)) (μ : Measure Ω) :
+lemma iIndepSets_iff [MeasurableSpace Ω] (π : ι → Set (Set Ω)) (μ : Measure Ω) :
     iIndepSets π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
   simp only [iIndepSets, iIndepSetsₖ, ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
 
-lemma IndepSets_def [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
+lemma IndepSets_iff [MeasurableSpace Ω] (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by
   simp only [IndepSets, IndepSetsₖ, ae_dirac_eq, Filter.eventually_pure, kernel.const_apply]
 
 lemma iIndep_iff_iIndepSets (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
     iIndep m μ ↔ iIndepSets (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
   simp only [iIndep, iIndepSets, iIndepₖ]
+
+lemma iIndep_iff (m : ι → MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω) :
+    iIndep m μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[m i] (f i)),
+      μ (⋂ i ∈ s, f i) = ∏ i in s, μ (f i) := by
+  simp only [iIndep_iff_iIndepSets, iIndepSets_iff]; rfl
 
 lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
     Indep m₁ m₂ μ ↔ IndepSets {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s} μ := by
@@ -167,21 +172,38 @@ lemma Indep_iff_IndepSets (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] 
 lemma Indep_iff (m₁ m₂ : MeasurableSpace Ω) [MeasurableSpace Ω] (μ : Measure Ω ) :
     Indep m₁ m₂ μ
       ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
-  rw [Indep_iff_IndepSets, IndepSets_def]
-  rfl
+  rw [Indep_iff_IndepSets, IndepSets_iff]; rfl
 
 lemma iIndepSet_iff_iIndep [MeasurableSpace Ω] (s : ι → Set Ω) (μ : Measure Ω) :
     iIndepSet s μ ↔ iIndep (fun i ↦ generateFrom {s i}) μ := by
   simp only [iIndepSet, iIndep, iIndepSetₖ]
 
+lemma iIndepSet_iff [MeasurableSpace Ω] (s : ι → Set Ω) (μ : Measure Ω) :
+    iIndepSet s μ ↔ ∀ (s' : Finset ι) {f : ι → Set Ω}
+      (_H : ∀ i, i ∈ s' → MeasurableSet[generateFrom {s i}] (f i)),
+      μ (⋂ i ∈ s', f i) = ∏ i in s', μ (f i) := by
+  simp only [iIndepSet_iff_iIndep, iIndep_iff]
+
 lemma IndepSet_iff_Indep [MeasurableSpace Ω] (s t : Set Ω) (μ : Measure Ω) :
     IndepSet s t μ ↔ Indep (generateFrom {s}) (generateFrom {t}) μ := by
   simp only [IndepSet, Indep, IndepSetₖ]
 
+lemma IndepSet_iff [MeasurableSpace Ω] (s t : Set Ω) (μ : Measure Ω) :
+    IndepSet s t μ ↔ ∀ t1 t2, MeasurableSet[generateFrom {s}] t1
+      → MeasurableSet[generateFrom {t}] t2 → μ (t1 ∩ t2) = μ t1 * μ t2 := by
+  simp only [IndepSet_iff_Indep, Indep_iff]
+
 lemma iIndepFun_iff_iIndep [MeasurableSpace Ω] {β : ι → Type _}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
-    iIndepFun m f μ ↔ iIndep (fun x ↦ MeasurableSpace.comap (f x) (m x)) μ := by
+    iIndepFun m f μ ↔ iIndep (fun x ↦ (m x).comap (f x)) μ := by
   simp only [iIndepFun, iIndep, iIndepFunₖ]
+
+lemma iIndepFun_iff [MeasurableSpace Ω] {β : ι → Type _}
+    (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (μ : Measure Ω) :
+    iIndepFun m f μ ↔ ∀ (s : Finset ι) {f' : ι → Set Ω}
+      (_H : ∀ i, i ∈ s → MeasurableSet[(m i).comap (f i)] (f' i)),
+      μ (⋂ i ∈ s, f' i) = ∏ i in s, μ (f' i) := by
+  simp only [iIndepFun_iff_iIndep, iIndep_iff]
 
 lemma IndepFun_iff_Indep [MeasurableSpace Ω] [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) :
