@@ -224,11 +224,14 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
       X.presheaf.map_comp]
     convert this using 1
-    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]; congr 1; exact e'.symm
-    · infer_instance
-    · apply (isAffineOpen_iff_of_isOpenImmersion (X.ofRestrict _) _).mp
-      convert V.2
-      infer_instance
+    · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
+      · congr 1; apply e'.symm
+      · -- Porting note: makes instance metavariable like in Lean 3
+        apply (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
+        -- Porting note: was convert V.2
+        erw [e']
+        apply V.2
+        infer_instance
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     erw [← X.presheaf.map_comp]
@@ -245,7 +248,7 @@ theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.Respe
     P (Scheme.Γ.map ((X.restrict ((Opens.map f.1.base).obj <|
       Y.basicOpen r).openEmbedding).ofRestrict U.1.openEmbedding ≫ f ∣_ Y.basicOpen r).op) := by
   specialize H ⟨_, U.2.imageIsOpenImmersion (X.ofRestrict _)⟩
-  convert (h₁.ofRestrict_morphismRestrict_iff _ _ _ _ _).mpr _ using 1
+  convert (h₁.ofRestrict_morphismRestrict_iff f r U.1 U.2 _).mpr _ using 1
   pick_goal 5
   · exact h₂.away r H
   · infer_instance
