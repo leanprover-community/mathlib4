@@ -588,12 +588,15 @@ local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.ofId A B).toLinearMap).comp
     (Finsupp.lmapDomain A A (algebraMap A B)))
 
+set_option maxHeartbeats 400000 in
 theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
         Submodule.span A (Set.range fun x : S => single (algebraMap S B x) (1 : B)) =
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
+  -- Porting note: the proof is diverging from the mathlib3 proof here.
+  -- `map_sub` and `map_add` are not firing.
   simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
     map_sub, map_add]
   simp only [LinearMap.comp_apply, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
@@ -601,7 +604,7 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
     Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply, map_one, map_add, map_mul]
   simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
   congr 3
-  rw [sup_eq_right]
+  erw [sup_eq_right]
   apply Submodule.span_mono
   simp_rw [IsScalarTower.algebraMap_apply R S B]
   exact Set.range_comp_subset_range (algebraMap R S) fun x => single (algebraMap S B x) (1 : B)
