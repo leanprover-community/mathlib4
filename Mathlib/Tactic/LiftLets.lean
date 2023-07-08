@@ -21,6 +21,10 @@ This list is used during the computation to merge let bindings.
 -/
 private partial def Lean.Expr.liftLetsAux (e : Expr) (fvars : Array Expr)
     (f : Array Expr → Expr → MetaM Expr) : MetaM Expr := do
+  if (e.find? Expr.isLet).isNone then
+    return ← f fvars e
+  if ← Meta.isProof e then
+    return ← f fvars e
   match e with
   | .letE n t v b _ =>
     t.liftLetsAux fvars fun fvars t' =>
