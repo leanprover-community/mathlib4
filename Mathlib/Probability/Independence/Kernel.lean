@@ -331,10 +331,10 @@ private theorem IndepSetsₖ.indepₖ_aux {m₂ m : MeasurableSpace Ω}
     ∀ᵐ a ∂μ, κ a (t1 ∩ t2) = κ a t1 * κ a t2 := by
   refine @induction_on_inter _ (fun t ↦ ∀ᵐ a ∂μ, κ a (t1 ∩ t) = κ a t1 * κ a t) _
     m₂ hpm2 hp2 ?_ ?_ ?_ ?_ t2 ht2m
-  . simp only [Set.inter_empty, measure_empty, mul_zero, eq_self_iff_true,
+  · simp only [Set.inter_empty, measure_empty, mul_zero, eq_self_iff_true,
       Filter.eventually_true]
-  . exact fun t ht_mem_p2 ↦ hyp t1 t ht1 ht_mem_p2
-  . intros t ht h
+  · exact fun t ht_mem_p2 ↦ hyp t1 t ht1 ht_mem_p2
+  · intros t ht h
     filter_upwards [h] with a ha
     have : t1 ∩ tᶜ = t1 \ (t1 ∩ t) := by
       rw [Set.diff_self_inter, Set.diff_eq_compl_inter, Set.inter_comm]
@@ -342,18 +342,18 @@ private theorem IndepSetsₖ.indepₖ_aux {m₂ m : MeasurableSpace Ω}
       measure_diff (Set.inter_subset_left _ _) (ht1m.inter (h2 _ ht)) (measure_ne_top (κ a) _),
       measure_compl (h2 _ ht) (measure_ne_top (κ a) t), measure_univ,
       ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, ha]
-  . intros f hf_disj hf_meas h
+  · intros f hf_disj hf_meas h
     rw [← ae_all_iff] at h
     filter_upwards [h] with a ha
     rw [Set.inter_iUnion, measure_iUnion]
-    . rw [measure_iUnion hf_disj (fun i ↦ h2 _ (hf_meas i))]
+    · rw [measure_iUnion hf_disj (fun i ↦ h2 _ (hf_meas i))]
       rw [← ENNReal.tsum_mul_left]
       congr with i
       rw [ha i]
-    . intros i j hij
+    · intros i j hij
       rw [Function.onFun, Set.inter_comm t1, Set.inter_comm t1]
       exact Disjoint.inter_left _ (Disjoint.inter_right _ (hf_disj hij))
-    . exact fun i ↦ ht1m.inter (h2 _ (hf_meas i))
+    · exact fun i ↦ ht1m.inter (h2 _ (hf_meas i))
 
 theorem IndepSetsₖ.indepₖ {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω} {μ : Measure α}
     [IsMarkovKernel κ] {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ m) (h2 : m2 ≤ m) (hp1 : IsPiSystem p1)
@@ -363,15 +363,15 @@ theorem IndepSetsₖ.indepₖ {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω}
   intros t1 t2 ht1 ht2
   refine @induction_on_inter _ (fun t ↦ ∀ᵐ (a : α) ∂μ, κ a (t ∩ t2) = κ a t * κ a t2) _ m1 hpm1 hp1
     ?_ ?_ ?_ ?_ _ ht1
-  . simp only [Set.empty_inter, measure_empty, zero_mul, eq_self_iff_true,
+  · simp only [Set.empty_inter, measure_empty, zero_mul, eq_self_iff_true,
       Filter.eventually_true]
-  . intros t ht_mem_p1
+  · intros t ht_mem_p1
     have ht1 : MeasurableSet[m] t := by
       refine h1 _ ?_
       rw [hpm1]
       exact measurableSet_generateFrom ht_mem_p1
     exact IndepSetsₖ.indepₖ_aux h2 hp2 hpm2 hyp ht_mem_p1 ht1 ht2
-  . intros t ht h
+  · intros t ht h
     filter_upwards [h] with a ha
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
       rw [Set.inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
@@ -380,18 +380,18 @@ theorem IndepSetsₖ.indepₖ {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω}
         (measure_ne_top (κ a) _),
       Set.inter_comm, ha, measure_compl (h1 _ ht) (measure_ne_top (κ a) t), measure_univ,
       mul_comm (1 - κ a t), ENNReal.mul_sub (fun _ _ ↦ measure_ne_top (κ a) _), mul_one, mul_comm]
-  . intros f hf_disj hf_meas h
+  · intros f hf_disj hf_meas h
     rw [← ae_all_iff] at h
     filter_upwards [h] with a ha
     rw [Set.inter_comm, Set.inter_iUnion, measure_iUnion]
-    . rw [measure_iUnion hf_disj (fun i ↦ h1 _ (hf_meas i))]
+    · rw [measure_iUnion hf_disj (fun i ↦ h1 _ (hf_meas i))]
       rw [← ENNReal.tsum_mul_right]
       congr 1 with i
       rw [Set.inter_comm t2, ha i]
-    . intros i j hij
+    · intros i j hij
       rw [Function.onFun, Set.inter_comm t2, Set.inter_comm t2]
       exact Disjoint.inter_left _ (Disjoint.inter_right _ (hf_disj hij))
-    . exact fun i ↦ (h2 _ ht2).inter (h1 _ (hf_meas i))
+    · exact fun i ↦ (h2 _ ht2).inter (h1 _ (hf_meas i))
 
 theorem IndepSetsₖ.indepₖ' {_mΩ : MeasurableSpace Ω}
     {κ : kernel α Ω} {μ : Measure α} [IsMarkovKernel κ]
@@ -582,9 +582,9 @@ theorem iIndepSetsₖ.iIndepₖ [IsMarkovKernel κ] (m : ι → MeasurableSpace 
       exact IndepSetsₖ.indepₖ hm_p (h_le a) hp (h_pi a) hS_eq_generate (h_generate a)
         (iIndepSetsₖ.piiUnionInter_of_not_mem h_ind ha_notin_S)
     have h := h_indep.symm (f a) (⋂ n ∈ S, f n) (hf_m a (Finset.mem_insert_self a S)) ?_
-    . filter_upwards [h_rec hf_m_S, h] with a' ha' h'
+    · filter_upwards [h_rec hf_m_S, h] with a' ha' h'
       rwa [Finset.set_biInter_insert, Finset.prod_insert ha_notin_S, ← ha']
-    . have h_le_p : ∀ i ∈ S, m i ≤ m_p := by
+    · have h_le_p : ∀ i ∈ S, m i ≤ m_p := by
         intros n hn
         rw [hS_eq_generate, h_generate n]
         refine le_generateFrom_piiUnionInter (S : Set ι) hn
@@ -814,9 +814,9 @@ theorem iIndepFunₖ.indepFunₖ_finset [IsMarkovKernel κ] {ι : Type _} {β : 
     intros i hi_mem
     rw [Finset.mem_union] at hi_mem
     cases' hi_mem with hi_mem hi_mem
-    . rw [h_sets_t'_univ hi_mem, Set.inter_univ]
+    · rw [h_sets_t'_univ hi_mem, Set.inter_univ]
       exact h_meas_s' i hi_mem
-    . rw [h_sets_s'_univ hi_mem, Set.univ_inter]
+    · rw [h_sets_s'_univ hi_mem, Set.univ_inter]
       exact h_meas_t' i hi_mem
   filter_upwards [hf_Indepₖ S h_meas_s', hf_Indepₖ T h_meas_t', hf_Indepₖ (S ∪ T) h_meas_inter]
     with a h_indepS h_indepT h_indepST -- todo: this unfolded sets_s', sets_t'?

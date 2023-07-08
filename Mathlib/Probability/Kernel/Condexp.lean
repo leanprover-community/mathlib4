@@ -170,8 +170,8 @@ lemma condexpKernel_ae_eq_trim_condexp [IsFiniteMeasure μ]
     (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
   rw [ae_eq_trim_iff hm _ stronglyMeasurable_condexp]
-  . exact condexpKernel_ae_eq_condexp hm hs
-  . refine Measurable.stronglyMeasurable ?_
+  · exact condexpKernel_ae_eq_condexp hm hs
+  · refine Measurable.stronglyMeasurable ?_
     exact @Measurable.ennreal_toReal _ m _ (measurable_condexpKernel hs)
 
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is almost everywhere equal to
