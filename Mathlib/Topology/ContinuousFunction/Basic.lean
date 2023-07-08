@@ -99,6 +99,8 @@ theorem toFun_eq_coe {f : C(α, β)} : f.toFun = (f : α → β) :=
   rfl
 #align continuous_map.to_fun_eq_coe ContinuousMap.toFun_eq_coe
 
+instance : CanLift (α → β) C(α, β) FunLike.coe Continuous := ⟨fun f hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+
 /-- See note [custom simps projection]. -/
 def Simps.apply (f : C(α, β)) : α → β := f
 
@@ -376,6 +378,11 @@ theorem restrict_apply_mk (f : C(α, β)) (s : Set α) (x : α) (hx : x ∈ s) :
     f.restrict s ⟨x, hx⟩ = f x :=
   rfl
 #align continuous_map.restrict_apply_mk ContinuousMap.restrict_apply_mk
+
+theorem injective_restrict [T2Space β] {s : Set α} (hs : Dense s) :
+    Injective (restrict s : C(α, β) → C(s, β)) := fun f g h ↦
+  FunLike.ext' <| f.continuous.ext_on hs g.continuous <| Set.restrict_eq_restrict_iff.1 <|
+    congr_arg FunLike.coe h
 
 /-- The restriction of a continuous map to the preimage of a set. -/
 @[simps]
