@@ -352,7 +352,7 @@ theorem compiler_correctness :
       intro x
       calc
         read (loc x map) ζ₂ = read (loc x map) (write t ν₁ η) := hζ₂ _ (ht' _)
-        _ = read (loc x map) η := by simp only [loc] at ht ; simp [(ht _).ne]
+        _ = read (loc x map) η := by simp only [loc] at ht; simp [(ht _).ne]
         _ = ξ x := hmap x
     have hζ₃ : ζ₃ ≃[t + 1] { write t ν₁ η with ac := ν₂ }
     calc

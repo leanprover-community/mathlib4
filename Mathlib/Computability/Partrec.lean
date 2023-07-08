@@ -475,7 +475,7 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
     cases' e : decode (α := α) n with a <;> simp [e]
     induction' f a with m IH <;> simp
     rw [IH, Part.bind_map]
-    congr ; funext s
+    congr; funext s
     simp [encodek]
 #align partrec.nat_elim Partrec.nat_rec
 
@@ -569,7 +569,7 @@ theorem rfind {p : α → ℕ →. Bool} (hp : Partrec₂ p) : Partrec fun a => 
         hp.map ((Primrec.dom_bool fun b => cond b 0 1).comp Primrec.snd).to₂.to_comp).of_eq
     fun n => by
     cases' e : decode (α := α) n with a <;> simp [e, Nat.rfind_zero_none, map_id']
-    congr ; funext n
+    congr; funext n
     simp [Part.map_map, (· ∘ ·)]
     refine map_id' (fun b => ?_) _
     cases b <;> rfl

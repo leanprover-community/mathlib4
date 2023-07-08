@@ -331,7 +331,7 @@ set_option linter.uppercaseLean3 false in
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
 are dense. Formulated here with an index set which is a countable set in any type. -/
 theorem dense_biUnion_interior_of_closed {S : Set β} {f : β → Set α} (hc : ∀ s ∈ S, IsClosed (f s))
-    (hS : S.Countable) (hU : (⋃ s ∈ S, f s) = univ) : Dense (⋃ s ∈ S, interior (f s)) :=
+    (hS : S.Countable) (hU : ⋃ s ∈ S, f s = univ) : Dense (⋃ s ∈ S, interior (f s)) :=
   isGδ_univ.dense_biUnion_interior_of_closed dense_univ hS hc hU.ge
 #align dense_bUnion_interior_of_closed dense_biUnion_interior_of_closed
 
@@ -345,14 +345,14 @@ theorem dense_sUnion_interior_of_closed {S : Set (Set α)} (hc : ∀ s ∈ S, Is
 /-- Baire theorem: if countably many closed sets cover the whole space, then their interiors
 are dense. Formulated here with an index set which is an encodable type. -/
 theorem dense_iUnion_interior_of_closed [Encodable β] {f : β → Set α} (hc : ∀ s, IsClosed (f s))
-    (hU : (⋃ s, f s) = univ) : Dense (⋃ s, interior (f s)) :=
+    (hU : ⋃ s, f s = univ) : Dense (⋃ s, interior (f s)) :=
   isGδ_univ.dense_iUnion_interior_of_closed dense_univ hc hU.ge
 #align dense_Union_interior_of_closed dense_iUnion_interior_of_closed
 
 /-- One of the most useful consequences of Baire theorem: if a countable union of closed sets
 covers the space, then one of the sets has nonempty interior. -/
 theorem nonempty_interior_of_iUnion_of_closed [Nonempty α] [Encodable β] {f : β → Set α}
-    (hc : ∀ s, IsClosed (f s)) (hU : (⋃ s, f s) = univ) : ∃ s, (interior <| f s).Nonempty := by
+    (hc : ∀ s, IsClosed (f s)) (hU : ⋃ s, f s = univ) : ∃ s, (interior <| f s).Nonempty := by
   simpa using (dense_iUnion_interior_of_closed hc hU).nonempty
 #align nonempty_interior_of_Union_of_closed nonempty_interior_of_iUnion_of_closed
 

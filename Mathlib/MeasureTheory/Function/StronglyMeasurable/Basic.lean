@@ -865,8 +865,7 @@ theorem _root_.MeasurableEmbedding.stronglyMeasurable_extend {f : α → β} {g 
   · rcases hx with ⟨y, rfl⟩
     simpa only [SimpleFunc.extend_apply, hg.injective, Injective.extend_apply] using
       hf.tendsto_approx y
-  ·
-    simpa only [hx, SimpleFunc.extend_apply', not_false_iff, extend_apply'] using
+  · simpa only [hx, SimpleFunc.extend_apply', not_false_iff, extend_apply'] using
       hg'.tendsto_approx x
 #align measurable_embedding.strongly_measurable_extend MeasurableEmbedding.stronglyMeasurable_extend
 
@@ -967,10 +966,10 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
     (hm : m ≤ m0) (hf : StronglyMeasurable[m] f) (μ : Measure α) [SigmaFinite (μ.trim hm)] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet[m] (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, ‖f x‖ ≤ n) ∧
-      (⋃ i, s i) = Set.univ := by
+      ⋃ i, s i = Set.univ := by
   let sigma_finite_sets := spanningSets (μ.trim hm)
   let norm_sets := fun n : ℕ => { x | ‖f x‖ ≤ n }
-  have norm_sets_spanning : (⋃ n, norm_sets n) = Set.univ := by
+  have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
     ext1 x
     simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true_iff]
     exact ⟨⌈‖f x‖⌉₊, Nat.le_ceil ‖f x‖⟩
@@ -985,7 +984,7 @@ theorem exists_spanning_measurableSet_norm_le [SeminormedAddCommGroup β] {m m0 
   refine' ⟨sets, fun n => ⟨h_meas n, h_finite n, _⟩, _⟩
   · exact fun x hx => hx.2
   · have :
-      (⋃ i, sigma_finite_sets i ∩ norm_sets i) = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
+      ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets (μ.trim hm)) fun i j hij x => _
       simp only [Set.mem_setOf_eq]
       refine' fun hif => hif.trans _
@@ -1602,6 +1601,11 @@ theorem comp_quasiMeasurePreserving {γ : Type _} {_ : MeasurableSpace γ} {_ : 
   (hg.mono' hf.absolutelyContinuous).comp_measurable hf.measurable
 #align measure_theory.ae_strongly_measurable.comp_quasi_measure_preserving MeasureTheory.AEStronglyMeasurable.comp_quasiMeasurePreserving
 
+theorem comp_measurePreserving {γ : Type _} {_ : MeasurableSpace γ} {_ : MeasurableSpace α}
+    {f : γ → α} {μ : Measure γ} {ν : Measure α} (hg : AEStronglyMeasurable g ν)
+    (hf : MeasurePreserving f μ ν) : AEStronglyMeasurable (g ∘ f) μ :=
+  hg.comp_quasiMeasurePreserving hf.quasiMeasurePreserving
+
 theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
     ∃ t : Set β, IsSeparable t ∧ ∀ᵐ x ∂μ, f x ∈ t := by
   refine' ⟨range (hf.mk f), hf.stronglyMeasurable_mk.isSeparable_range, _⟩
@@ -1836,8 +1840,7 @@ theorem _root_.StronglyMeasurable.apply_continuousLinearMap {_m : MeasurableSpac
 theorem apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : AEStronglyMeasurable φ μ) (v : F) :
     AEStronglyMeasurable (fun a => φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_aestronglyMeasurable hφ
-#align measure_theory.ae_strongly_measurable.apply_continuous_linear_map
-MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap
+#align measure_theory.ae_strongly_measurable.apply_continuous_linear_map MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap
 
 theorem _root_.ContinuousLinearMap.aestronglyMeasurable_comp₂ (L : E →L[𝕜] F →L[𝕜] G) {f : α → E}
     {g : α → F} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
@@ -1896,8 +1899,7 @@ protected noncomputable def mk (f : α → β) (hf : AEFinStronglyMeasurable f �
 theorem finStronglyMeasurable_mk (hf : AEFinStronglyMeasurable f μ) :
     FinStronglyMeasurable (hf.mk f) μ :=
   hf.choose_spec.1
-#align measure_theory.ae_fin_strongly_measurable.fin_strongly_measurable_mk
-MeasureTheory.AEFinStronglyMeasurable.finStronglyMeasurable_mk
+#align measure_theory.ae_fin_strongly_measurable.fin_strongly_measurable_mk MeasureTheory.AEFinStronglyMeasurable.finStronglyMeasurable_mk
 
 theorem ae_eq_mk (hf : AEFinStronglyMeasurable f μ) : f =ᵐ[μ] hf.mk f :=
   hf.choose_spec.2
