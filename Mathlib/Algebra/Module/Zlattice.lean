@@ -401,7 +401,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       replace h := Finset.card_le_of_subset h
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card _ ht_lin]
-    -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then get the contradiction
+    -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
       refine LinearIndependent.mono ?_ this
@@ -412,8 +412,8 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       (linearIndependent_insert (Set.not_mem_of_mem_diff hv)),  not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
-    -- such that `(n - m) • v ∈ span ℤ e` because `n ↦ Zspan.fract e (n • v)` takes value
-    -- into the finite set `fundamentalDomain e ∩ L`
+    -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ Zspan.fract e (n • v)` 
+    -- takes value into the finite set `fundamentalDomain e ∩ L`
     have : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
         (L ∩ Metric.closedBall 0 (∑ i, ‖e i‖)) := by
       rw [Set.mapsTo_inter, Set.maps_univ_to, Set.maps_univ_to]
