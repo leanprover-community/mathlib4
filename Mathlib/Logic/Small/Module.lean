@@ -16,12 +16,14 @@ instance [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : Module α 
   (equivShrink _).symm.module α
 
 /-- A small module is linearly equivalent to its small model. -/
-def linearEquivShrink (α β) [Semiring α] [AddCommMonoid β] [Module α β] [Small β] : β ≃ₗ[α] Shrink β :=
+def linearEquivShrink (α β) [Semiring α] [AddCommMonoid β] [Module α β] [Small β] :
+    β ≃ₗ[α] Shrink β :=
   ((equivShrink β).symm.linearEquiv α).symm
 
 instance [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : Algebra α (Shrink β) :=
   (equivShrink _).symm.algebra α
 
 /-- A small algebra is algebra equivalent to its small model. -/
-def algEquivShrink (α β) [CommSemiring α] [Semiring β] [Algebra α β] [Small β] : β ≃ₐ[α] Shrink β :=
+def algEquivShrink (α β) [CommSemiring α] [Semiring β] [Algebra α β] [Small β] :
+    β ≃ₐ[α] Shrink β :=
   ((equivShrink β).symm.algEquiv α).symm
