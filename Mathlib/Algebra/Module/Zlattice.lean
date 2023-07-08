@@ -392,7 +392,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     have h : LinearIndependent ℤ (fun x : (Set.range b) => (x : E)) := by
       rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
-    -- Since `finrank ℤ L ≤ finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
+    -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
       contrapose h
