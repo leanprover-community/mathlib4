@@ -360,47 +360,44 @@ namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
 
-section synthOrder
-
-/- porting note: Lean correctly determines that there is no good synthesization order for this
-instance, but in this case it is only a local instance with low priority so we circumvent the
-check. In addition, note that this instance is not actually needed for the *statement* of
-`LinearMap.adjoint`. -/
-set_option synthInstance.checkSynthOrder false
-attribute [local instance 20] FiniteDimensional.complete
+/- Porting note: Lean can't use `FiniteDimensional.complete` since it was generalized to topological
+vector spaces. Use `haveI` instead. -/
 
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
 def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
+  haveI := FiniteDimensional.complete 𝕜
   ((LinearMap.toContinuousLinearMap : (E →ₗ[𝕜] F) ≃ₗ[𝕜] E →L[𝕜] F).trans
       ContinuousLinearMap.adjoint.toLinearEquiv).trans
     LinearMap.toContinuousLinearMap.symm
 #align linear_map.adjoint LinearMap.adjoint
 
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜
     LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
       ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 #align linear_map.adjoint_to_continuous_linear_map LinearMap.adjoint_toContinuousLinearMap
 
 theorem adjoint_eq_toClm_adjoint (A : E →ₗ[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜
     LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 #align linear_map.adjoint_eq_to_clm_adjoint LinearMap.adjoint_eq_toClm_adjoint
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
+  haveI := FiniteDimensional.complete 𝕜
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 #align linear_map.adjoint_inner_left LinearMap.adjoint_inner_left
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
+  haveI := FiniteDimensional.complete 𝕜
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toClm_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 #align linear_map.adjoint_inner_right LinearMap.adjoint_inner_right
-
-end synthOrder
 
 /-- The adjoint is involutive. -/
 @[simp]
