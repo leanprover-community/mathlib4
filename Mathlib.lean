@@ -2725,6 +2725,7 @@ import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Jacobson
 import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Kaehler
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.AsSubring
