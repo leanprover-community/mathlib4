@@ -1,12 +1,7 @@
 /-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
+Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.independence.basic
-! leanprover-community/mathlib commit 2f8347015b12b0864dfaf366ec4909eb70c78740
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Kernel.Condexp
@@ -685,7 +680,7 @@ theorem iCondIndepFun_iff_measure_inter_preimage_eq_mul {β : ι → Type _}
         simp only [dif_pos hi]
       convert h with i hi i hi <;> exact hg i hi
 
-theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+theorem condIndepFun_iff_condIndepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → CondIndepSet m' hm' (f ⁻¹' s) (g ⁻¹' t) μ := by
