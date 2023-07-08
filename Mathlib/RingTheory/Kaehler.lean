@@ -604,7 +604,7 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
     Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply, map_one, map_add, map_mul]
   simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
   congr 3
-  erw [sup_eq_right]
+  rw [sup_eq_right]
   apply Submodule.span_mono
   simp_rw [IsScalarTower.algebraMap_apply R S B]
   exact Set.range_comp_subset_range (algebraMap R S) fun x => single (algebraMap S B x) (1 : B)
