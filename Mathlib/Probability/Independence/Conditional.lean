@@ -694,13 +694,6 @@ nonrec theorem CondIndepFun.symm {_ : MeasurableSpace β} {f g : Ω → β}
     CondIndepFun m' hm' g f μ :=
   hfg.symm
 
-theorem CondIndepFun.ae_eq {mβ : MeasurableSpace β} {f g f' g' : Ω → β}
-    (hfg : CondIndepFun m' hm' f g μ) (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') :
-    CondIndepFun m' hm' f' g' μ := by
-  refine IndepFunₖ.ae_eq hfg ?_ ?_
-  . sorry
-  . sorry
-
 theorem CondIndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : CondIndepFun m' hm' f g μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
