@@ -1087,16 +1087,12 @@ end Algebra
 
 variable [Module (Localization S) M'] [IsScalarTower R (Localization S) M']
 
-/--
-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
-- `(localization S) × M → N, (s, m) ↦ s • f m` is a tensor product.
-- In particular, there is an isomorphism between `localized_module S M` and
-- `(localization S) ⊗[R] M` given by `m/s ↦ (1/s) ⊗ₜ m`.
+/-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
+`(localization S) × M → N, (s, m) ↦ s • f m` is a tensor product.
+In particular, there is an isomorphism between `localized_module S M` and
+`(localization S) ⊗[R] M` given by `m/s ↦ (1/s) ⊗ₜ m`.
 --/
-
-#check IsLocalizedModule.is_universal
-
-theorem isBaseChange [IsLocalizedModule S f] : IsBaseChange (Localization S) f :=
+theorem isBaseChange : IsBaseChange (Localization S) f :=
   by
   apply IsBaseChange.of_lift_unique
   intros Q _ _ _ _ g
@@ -1104,13 +1100,13 @@ theorem isBaseChange [IsLocalizedModule S f] : IsBaseChange (Localization S) f :
       intro s
       rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique]
       intro q
-      exists Localization.mk 1 s • q
+      use Localization.mk 1 s • q
       dsimp only
       constructor
       on_goal 1 => rw [Module.algebraMap_end_apply]
       on_goal 2 =>
         intro q' h
-        rw [Module.algebraMap_end_apply] at h 
+        rw [Module.algebraMap_end_apply] at h
         rw [← h, smul_comm]
       all_goals
         rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, mul_one, Localization.mk_self,
@@ -1126,7 +1122,6 @@ theorem isBaseChange [IsLocalizedModule S f] : IsBaseChange (Localization S) f :
         rw [RingHom.id_apply]
         induction' r using Localization.induction_on with data
         rcases data with ⟨r, s⟩
-        dsimp only
         conv_lhs =>
           rw [← one_smul (Localization S) (ℓ.toFun _), ← Localization.mk_self s, ← mul_one r, ←
             @mul_one R _ ↑s]
@@ -1142,7 +1137,7 @@ theorem isBaseChange [IsLocalizedModule S f] : IsBaseChange (Localization S) f :
           pattern (occs := 1 2) _ • _ • _ <;> (rw [← smul_assoc])
         iterate 2 rw [Localization.smul_mk, smul_eq_mul, mul_one]
         rw [Localization.mk_self, one_smul] }
-  exists g'
+  use g'
   have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ :=
     by
     ext
@@ -1151,15 +1146,13 @@ theorem isBaseChange [IsLocalizedModule S f] : IsBaseChange (Localization S) f :
     iterate 2 rw [← LinearMap.toFun_eq_coe]
   constructor
   · dsimp only
-    rw [g'_extends_scalars]
-    assumption
+    rwa [g'_extends_scalars]
   · rintro g'' h
     have := h₂ (LinearMap.restrictScalars R g'') h
-    rw [← g'_extends_scalars] at this 
-    ext
-    apply_fun fun f => f x at this 
-    iterate 2 rw [LinearMap.restrictScalars_apply] at this 
-    exact this
+    rw [← g'_extends_scalars] at this
+    ext x
+    apply_fun fun f => f x at this
+    simpa only [LinearMap.restrictScalars_apply, this]
 #align is_localized_module.is_base_change IsLocalizedModule.isBaseChange
 
 end IsLocalizedModule
