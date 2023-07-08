@@ -124,7 +124,8 @@ theorem indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep 
   indepₖ_iSup_directed_limsup h_le h_indep hf hns hnsp
 #align probability_theory.indep_supr_directed_limsup ProbabilityTheory.indep_iSup_directed_limsup
 
-theorem indepₖ_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndepₖ s κ μα) (hf : ∀ t, p t → tᶜ ∈ f)
+theorem indepₖ_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndepₖ s κ μα)
+    (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indepₖ (⨆ n, s n) (limsup s f) κ μα := by
   suffices (⨆ a, ⨆ n ∈ ns a, s n) = ⨆ n, s n by
@@ -142,7 +143,8 @@ theorem indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf
   indepₖ_iSup_limsup h_le h_indep hf hns hnsp hns_univ
 #align probability_theory.indep_supr_limsup ProbabilityTheory.indep_iSup_limsup
 
-theorem indepₖ_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndepₖ s κ μα) (hf : ∀ t, p t → tᶜ ∈ f)
+theorem indepₖ_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndepₖ s κ μα)
+    (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indepₖ (limsup s f) (limsup s f) κ μα :=
   indepₖ_of_indepₖ_of_le_left (indepₖ_iSup_limsup h_le h_indep hf hns hnsp hns_univ) limsup_le_iSup
