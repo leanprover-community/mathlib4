@@ -596,14 +596,16 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
   -- Porting note: the proof is diverging from the mathlib3 proof here.
-  -- `map_sub` and `map_add` are not firing.
+  -- `map_sub` and `map_add` are not firing so we need to use `LinearMap.map_*` instead
   simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
-    map_sub, map_add]
-  simp only [LinearMap.comp_apply, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
-    Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, AlgHom.toLinearMap_apply,
-    Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply, map_one, map_add, map_mul]
+    LinearMap.map_sub, LinearMap.map_add]
+  simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
+    Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, AlgHom.toLinearMap_apply,
+    map_one, map_add, map_mul]
   simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
   congr 3
+  -- Porting note: new
+  simp_rw [← IsScalarTower.algebraMap_apply R A B]
   rw [sup_eq_right]
   apply Submodule.span_mono
   simp_rw [IsScalarTower.algebraMap_apply R S B]
