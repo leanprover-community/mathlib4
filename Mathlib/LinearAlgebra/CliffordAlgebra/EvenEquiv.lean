@@ -11,6 +11,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
+import Mathlib.Tactic.LiftLets
 
 /-!
 # Isomorphisms with the even subalgebra of a Clifford algebra
@@ -167,10 +168,10 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
           (ι Q).comp (LinearMap.fst _ _ _) +
             (Algebra.linearMap R _).comp (LinearMap.snd _ _ _)).compl₂
       ((ι Q).comp (LinearMap.fst _ _ _) - (Algebra.linearMap R _).comp (LinearMap.snd _ _ _))
-  have f_apply : ∀ x y, f x y = (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
+  haveI f_apply : ∀ x y, f x y = (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
     fun x y => by rfl
-  have hc : ∀ (r : R) (x : CliffordAlgebra Q), Commute (algebraMap _ _ r) x := Algebra.commutes
-  have hm :
+  haveI hc : ∀ (r : R) (x : CliffordAlgebra Q), Commute (algebraMap _ _ r) x := Algebra.commutes
+  haveI hm :
     ∀ m : M × R,
       ι Q m.1 * ι Q m.1 - algebraMap R _ m.2 * algebraMap R _ m.2 = algebraMap R _ (Q' Q m) := by
     intro m
@@ -183,10 +184,22 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
       Algebra.smul_def, ← mul_assoc, hm]
 #align clifford_algebra.of_even CliffordAlgebra.ofEven
 
+set_option pp.proofs.withType false
+
+-- set_option maxHeartbeats 800000 in
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
-      (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
-  even.lift_ι (Q' Q) _ x y
+      (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
+  -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
+  unfold ofEven
+  -- TODO: `lift_lets` gives a deep recursion error if we try to use it here
+  let f : M × R →ₗ[R] M × R →ₗ[R] CliffordAlgebra Q :=
+    ((Algebra.lmul R (CliffordAlgebra Q)).toLinearMap.comp <|
+          (ι Q).comp (LinearMap.fst _ _ _) +
+            (Algebra.linearMap R _).comp (LinearMap.snd _ _ _)).compl₂
+      ((ι Q).comp (LinearMap.fst _ _ _) - (Algebra.linearMap R _).comp (LinearMap.snd _ _ _))
+  -- TODO: replacing `?_` with `_` takes way longer?
+  refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
@@ -218,7 +231,7 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
                 have h3 : -algebraMap R _ (r₁ * r₂) = r₁ • e0 Q * r₂ • e0 Q := by
                   rw [Algebra.algebraMap_eq_smul_one, smul_mul_smul, e0_mul_e0, smul_neg]
                 rw [sub_eq_add_neg, sub_eq_add_neg, h1, h2, h3]
-              _ = ι _ (m₁, r₁) * ι _ (m₂, r₂) := by
+              _ = ι (Q' Q) (m₁, r₁) * ι (Q' Q) (m₂, r₂) := by
                 rw [ι_eq_v_add_smul_e0, ι_eq_v_add_smul_e0, mul_add, add_mul, add_mul, add_assoc]
 #align clifford_algebra.to_even_comp_of_even CliffordAlgebra.toEven_comp_ofEven
 
@@ -250,6 +263,8 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   induction x using CliffordAlgebra.induction
   case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
   case h_grade1 m =>
+    -- porting note: added
+    letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
   case h_mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
@@ -258,11 +273,14 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 
 /-! ### Constructions needed for `CliffordAlgebra.evenEquivEvenNeg` -/
 
-
+set_option maxHeartbeats 400000 in
 /-- One direction of `CliffordAlgebra.evenEquivEvenNeg` -/
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
-  even.lift Q
+  even.lift Q <|
+    -- porting note: added
+    letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _;
+    letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
       contract := fun m => by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticForm.neg_apply, map_neg,
@@ -278,6 +296,7 @@ theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
   even.lift_ι _ _ m₁ m₂
 #align clifford_algebra.even_to_neg_ι CliffordAlgebra.evenToNeg_ι
 
+set_option synthInstance.maxHeartbeats 100000 in
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4
