@@ -431,8 +431,8 @@ def KaehlerDifferential.endEquivAuxEquiv :
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 #align kaehler_differential.End_equiv_aux_equiv KaehlerDifferential.endEquivAuxEquiv
 
-set_option maxHeartbeats 3200000 in
-set_option synthInstance.maxHeartbeats 2000000 in
+set_option maxHeartbeats 4000000 in
+set_option synthInstance.maxHeartbeats 4000000 in
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -504,9 +504,6 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r •
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
     KaehlerDifferential.kerTotal_mkQ_single_algebraMap, add_zero, ← LinearMap.map_smul_of_tower,
     Finsupp.smul_single, mul_comm, Algebra.smul_def]
-  -- Porting note: apparently the proof was original done here
-  congr 2
-  rw [mul_comm]
 #align kaehler_differential.ker_total_mkq_single_smul KaehlerDifferential.kerTotal_mkQ_single_smul
 
 /-- The (universal) derivation into `(S →₀ S) ⧸ KaehlerDifferential.kerTotal R S`. -/
@@ -552,8 +549,9 @@ theorem KaehlerDifferential.total_surjective :
   rw [← LinearMap.range_eq_top, Finsupp.range_total, KaehlerDifferential.span_range_derivation]
 #align kaehler_differential.total_surjective KaehlerDifferential.total_surjective
 
+set_option maxHeartbeats 3200000 in -- 2569452
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
-@[simps]
+@[simps!]
 noncomputable def KaehlerDifferential.quotKerTotalEquiv :
     ((S →₀ S) ⧸ KaehlerDifferential.kerTotal R S) ≃ₗ[S] Ω[S⁄R] :=
   { (KaehlerDifferential.kerTotal R S).liftQ
@@ -577,7 +575,7 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
     (KaehlerDifferential.quotKerTotalEquiv R S).symm.toLinearMap.compDer
         (KaehlerDifferential.D R S) =
       KaehlerDifferential.derivationQuotKerTotal R S := by
-  convert (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp using 0
+  convert (KaehlerDifferential.derivationQuotKerTotal R S).liftKaehlerDifferential_comp
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.quot_ker_total_equiv_symm_comp_D KaehlerDifferential.quotKerTotalEquiv_symm_comp_D
 
@@ -585,7 +583,6 @@ variable (A B : Type _) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [A
 
 variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
 
--- mathport name: exprfinsupp_map
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
 local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.ofId A B).toLinearMap).comp
@@ -602,7 +599,7 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
   simp only [LinearMap.comp_apply, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single,
     Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, AlgHom.toLinearMap_apply,
     Algebra.ofId_apply, ← IsScalarTower.algebraMap_apply, map_one, map_add, map_mul]
-  simp_rw [sup_assoc, ← (h.prod_map h).range_comp]
+  simp_rw [sup_assoc, ← (h.Prod_map h).range_comp]
   congr 3
   rw [sup_eq_right]
   apply Submodule.span_mono
@@ -652,6 +649,7 @@ theorem KaehlerDifferential.map_compDer :
   Derivation.liftKaehlerDifferential_comp _
 #align kaehler_differential.map_comp_der KaehlerDifferential.map_compDer
 
+set_option maxHeartbeats 2400000 in -- 1692832
 theorem KaehlerDifferential.map_D (x : A) :
     KaehlerDifferential.map R S A B (KaehlerDifferential.D R A x) =
       KaehlerDifferential.D S B (algebraMap A B x) :=
