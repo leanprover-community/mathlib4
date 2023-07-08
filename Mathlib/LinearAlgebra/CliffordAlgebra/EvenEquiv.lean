@@ -125,11 +125,6 @@ end EquivEven
 
 open EquivEven
 
-set_option pp.proofs false
---set_option pp.explicit true
--- Porting FIXME: the `dsimp only` here take a very long time,
--- and even if you wait for it it hasn't reached the desired state,
--- and `rw [← mul_assoc]` fails.
 /-- The embedding from the smaller algebra into the new larger one. -/
 def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
   refine' CliffordAlgebra.lift Q ⟨_, fun m => _⟩
@@ -138,10 +133,8 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     rw [Subtype.coe_mk, pow_two]
     exact Submodule.mul_mem_mul (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
   · ext1
-    -- porting note: was `dsimp only`
-    rw [Subalgebra.coe_mul]
-    -- porting note: was `dsimp only`
-    erw [LinearMap.codRestrict_apply]
+    rw [Subalgebra.coe_mul]  -- porting note: was part of the `dsimp only` below
+    erw [LinearMap.codRestrict_apply] -- porting note: was part of the `dsimp only` below
     dsimp only [LinearMap.comp_apply, LinearMap.mulLeft_apply, Subalgebra.coe_algebraMap]
     rw [← mul_assoc, e0_mul_v_mul_e0, v_sq_scalar]
 #align clifford_algebra.to_even CliffordAlgebra.toEven
@@ -184,9 +177,6 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
       Algebra.smul_def, ← mul_assoc, hm]
 #align clifford_algebra.of_even CliffordAlgebra.ofEven
 
-set_option pp.proofs.withType false
-
--- set_option maxHeartbeats 800000 in
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
@@ -263,7 +253,7 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   induction x using CliffordAlgebra.induction
   case h_grade0 r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
   case h_grade1 m =>
-    -- porting note: added
+    -- porting note: added `letI`
     letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
@@ -278,7 +268,7 @@ set_option maxHeartbeats 400000 in
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q <|
-    -- porting note: added
+    -- porting note: added `letI`s
     letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _;
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg;
     { bilin := -(even.ι Q' : _).bilin
