@@ -134,7 +134,7 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
     intro E₀ E₀_min E₀_closed
     contrapose! E₀_min
     exact eq_univ_of_coe_eq <|
-      E_min E₀ ⟨E_closed.trans E₀_closed, image_coe_eq_restrict_image ▸ E₀_min⟩ coe_subset
+      E_min E₀ ⟨E₀_closed.trans E_closed, image_coe_eq_restrict_image ▸ E₀_min⟩ coe_subset
   intro C C_sub C_chain
   refine ⟨iInter (fun c : C => c), ⟨isClosed_iInter fun ⟨_, h⟩ => (C_sub h).left, ?_⟩,
     fun c hc _ h => mem_iInter.mp h ⟨c, hc⟩⟩
