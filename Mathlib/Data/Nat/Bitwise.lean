@@ -257,31 +257,32 @@ It takes a boolean function `f` on each bit and `z` the starting point and the n
 It is almost always specialized with `z = 0` and `i = w`; the length of the binary representation.
 This is an alternative to using `List` altogether. It will be used for bitadd, bitneg, bitmul etc.-/
 def toNat (f : Nat → Bool) (z : Nat) : Nat → Nat
-  | 0 => z.bit (f 0)
-  | i + 1 => toNat f (z.bit (f (i + 1))) i
+  | 0 => z
+  | i + 1 => toNat f (z.bit (f i)) i
 
-theorem toNat_succ : toNat f z i = 2^(i + 1) * z + toNat f 0 i := by
+theorem toNat_succ : toNat f z i = 2^ i * z + toNat f 0 i := by
   induction' i with i ih generalizing z
   · simp [toNat, bit_val]
-  · simp only [toNat, @ih (bit (f (i + 1)) 0), @ih (bit (f (i + 1)) z)]
+  · simp only [toNat, @ih (bit (f i) 0), @ih (bit (f i) z)]
     rw [bit_val, mul_add, ← mul_assoc, ← pow_succ]
     simp [bit_val, add_assoc]
 
-theorem toNat_lt : toNat f 0 i < 2^(i + 1) := by
+theorem toNat_lt : toNat f 0 i < 2^i := by
   induction' i with i ih
   · simp [toNat, bit_val, lt_succ, Bool.toNat_le_one]
   · simp only [toNat]
     rw [toNat_succ]
-    cases' (f (i + 1)) <;> simp [ih, two_pow_succ] at * <;> linarith
+    cases' (f i) <;> simp [two_pow_succ, ih] ; linarith
 
 /-- The `ith` bit of `toNat` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
-theorem testBit_toNat (h1: i ≤ j): (toNat f 0 j).testBit i = f i := by
-  induction' j with j ih generalizing i
-  · simp [nonpos_iff_eq_zero.mp h1, toNat, bit_val]
-  · cases' lt_or_eq_of_le h1 with h1 h1
-    · rw [← ih (show i ≤ j by linarith), toNat, toNat_succ, testBit_two_pow_mul_add h1]
+theorem testBit_toNat (h1: i < j): (toNat f 0 j).testBit i = f i := by
+  induction' j, (pos_of_gt h1) using Nat.le_induction with j _ ih generalizing i
+  · simp [lt_one_iff.1 h1, toNat]
+  · cases' lt_or_eq_of_le (lt_succ_iff.mp h1) with h1 h1
+    · rw [← ih h1, toNat, toNat_succ, testBit_two_pow_mul_add h1]
     · rw [h1, toNat, toNat_succ, bit_toNat, testBit_two_pow_mul_toNat_add (toNat_lt)]
+
 
 
 /-! ### Unsigned Less Than-/
@@ -322,25 +323,22 @@ lemma carry_def (n m i : Nat) : (bitcarry n m (i + 1)).toNat =
     ((Nat.testBit n i ^^ Nat.testBit m i) && bitcarry n m i)).toNat := by
   simp [bitcarry]
 
-lemma bitadd_eq_add_base : n % (2^(i + 1)) + m % (2^(i + 1)) =
-  bitadd n m i + 2^(i + 1) * (bitcarry n m (i + 1)).toNat := by
+lemma bitadd_eq_add_base : n % (2^i) + m % (2^i) =
+  bitadd n m i + 2^i * (bitcarry n m i).toNat := by
   induction' i with i hi
-  · simp only [bitcarry, bitadd, toNat]
-    cases' hn: Nat.bodd n  <;> cases' hm: Nat.bodd m
-    <;> simp [mod_two_of_bodd, testBit, hn, hm, shiftr]
+  · simp [mod_one, toNat, bitcarry]
   · rw [mod_two_pow_succ n, mod_two_pow_succ m]
-    rw [add_assoc, add_comm _ (m % 2^(i + 1)), ← add_assoc (n % 2^(i + 1))]
-    rw [hi, carry_def n m (succ i), two_pow_succ (succ i)]
-    cases' hn : Nat.testBit n (i + 1) <;> cases' hm : Nat.testBit m (i + 1)
-    <;> cases' hc : bitcarry n m (i + 1)
+    rw [add_assoc, add_comm _ (m % 2^i), ← add_assoc (n % 2^i)]
+    rw [hi, carry_def n m i, two_pow_succ i]
+    cases' hn : Nat.testBit n i <;> cases' hm : Nat.testBit m i
+    <;> cases' hc : bitcarry n m i
     <;> simp [Bool.toNat, @toNat_succ _ 1 i, two_pow_succ, hn, hm, hc, toNat]
     <;> ring
 
-theorem bitadd_eq_add : bitadd n m i = (n + m) % 2^(i + 1) := by
+theorem bitadd_eq_add : bitadd n m i = (n + m) % 2^i := by
   rw [Nat.add_mod, bitadd_eq_add_base]
   cases' i with i i
-  · cases' h0: Nat.testBit n 0 ^^ (Nat.testBit m 0 ^^ bitcarry n m 0)
-    <;> simp [toNat, h0]
+  · simp [mod_one, toNat]
   · simp [bitadd, Nat.mod_eq_of_lt toNat_lt]
 
 theorem testBit_add : (n + m).testBit i = ((n.testBit i ^^ m.testBit i) ^^ bitcarry n m i):= by
@@ -348,7 +346,7 @@ theorem testBit_add : (n + m).testBit i = ((n.testBit i ^^ m.testBit i) ^^ bitca
           (lt_trans (lt_two_pow (n + m)) (pow_lt_pow_succ (by decide) (n + m)))
           (pow_le_pow_of_le_right (show 0 < 2 by decide) (@le_add_self _ _ _ i))
   rw [← Nat.mod_eq_of_lt this, ← add_assoc, ← bitadd_eq_add]
-  simp [testBit_toNat (le_add_right i (n + m))]
+  simp [testBit_toNat (show i < i + (n + m) + 1 by linarith)]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
