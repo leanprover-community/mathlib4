@@ -531,7 +531,7 @@ variable [NonAssocSemiring R]
 @[simp]
 theorem pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
   ext x
-  cases x <;> simp [Nat.succ_ne_zero]
+  cases x <;> simp? [Nat.succ_ne_zero]
 #align nat.arithmetic_function.pmul_zeta Nat.ArithmeticFunction.pmul_zeta
 
 @[simp]
@@ -580,6 +580,24 @@ theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
 #align nat.arithmetic_function.ppow_succ' Nat.ArithmeticFunction.ppow_succ'
 
 end Pmul
+
+section Pdiv
+
+/-- This is the pointwise division of `ArithmeticFunction`s. -/
+def pdiv {R : Type _} [GroupWithZero R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
+  ⟨fun n => f n / g n, by simp only [map_zero, ne_eq, not_true, div_zero]⟩
+
+@[simp]
+theorem pdiv_apply {R : Type _} [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ):
+    pdiv f g n = f n / g n := rfl
+
+@[simp]
+theorem pdiv_zeta  {R : Type _} [DivisionSemiring R] (f : ArithmeticFunction R) :
+    pdiv f zeta = f := by
+  ext n
+  cases n <;> simp [succ_ne_zero]
+
+end Pdiv
 
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
@@ -700,6 +718,13 @@ theorem pmul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicat
     simp only [pmul_apply, hf.map_mul_of_coprime cop, hg.map_mul_of_coprime cop]
     ring⟩
 #align nat.arithmetic_function.is_multiplicative.pmul Nat.ArithmeticFunction.IsMultiplicative.pmul
+
+theorem pdiv [CommGroupWithZero R] {f g : ArithmeticFunction R} (hf : IsMultiplicative f)
+  (hg : IsMultiplicative g) : IsMultiplicative (pdiv f g) :=
+  ⟨ by simp [hf, hg], fun {m n} cop => by
+    simp only [pdiv_apply, map_mul_of_coprime hf cop, map_mul_of_coprime hg cop,
+      div_eq_mul_inv, mul_inv]
+    apply mul_mul_mul_comm ⟩
 
 /-- For any multiplicative function `f` and any `n > 0`,
 we can evaluate `f n` by evaluating `f` at `p ^ k` over the factorization of `n` -/
