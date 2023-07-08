@@ -160,7 +160,7 @@ variable (m' : MeasurableSpace Ω)
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   (hm' : m' ≤ mΩ)
 
-lemma iCondIndepSets_def (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ π i), MeasurableSet s)
+lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ π i), MeasurableSet s)
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepSets m' hm' π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ⟦⋂ i ∈ s, f i | m'⟧ =ᵐ[μ] ∏ i in s, (μ⟦f i | m'⟧) := by
@@ -200,7 +200,7 @@ lemma iCondIndepSets_def (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     exact Finset.prod_congr rfl (fun i hi ↦ (h_eq i hi).symm)
 
 -- todo fix notation
-lemma condIndepSets_def (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSet s)
+lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSet s)
   (hs2 : ∀ s ∈ s2, MeasurableSet s) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSets m' hm' s1 s2 μ ↔ ∀ (t1 t2 : Set Ω) (_ : t1 ∈ s1) (_ : t2 ∈ s2),
       (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
@@ -237,7 +237,7 @@ lemma iCondIndep_iff (m : ι → MeasurableSpace Ω) (hm : ∀ i, m i ≤ mΩ)
     iCondIndep m' hm' m μ
       ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[m i] (f i)),
       μ⟦⋂ i ∈ s, f i | m'⟧ =ᵐ[μ] ∏ i in s, (μ⟦f i | m'⟧) := by
-  rw [iCondIndep_iff_iCondIndepSets, iCondIndepSets_def]
+  rw [iCondIndep_iff_iCondIndepSets, iCondIndepSets_iff]
   . rfl
   . exact hm
 
@@ -258,7 +258,7 @@ lemma condIndep_iff (m' m₁ m₂ : MeasurableSpace Ω)
     CondIndep m' m₁ m₂ hm' μ
       ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2
         → (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
-  rw [condIndep_iff_condIndepSets, condIndepSets_def]
+  rw [condIndep_iff_condIndepSets, condIndepSets_iff]
   . rfl
   . exact hm₁
   . exact hm₂
@@ -279,7 +279,7 @@ lemma iCondIndepSet_iff (s : ι → Set Ω) (hs : ∀ i, MeasurableSet (s i))
       (_H : ∀ i, i ∈ S → MeasurableSet[generateFrom {s i}] (f i)),
       μ⟦⋂ i ∈ S, f i | m'⟧ =ᵐ[μ] ∏ i in S, μ⟦f i | m'⟧ := by
   simp only [iCondIndepSet_iff_iCondIndep]
-  rw [iCondIndep_iff_iCondIndepSets, iCondIndepSets_def]
+  rw [iCondIndep_iff_iCondIndepSets, iCondIndepSets_iff]
   . rfl
   . intros i t ht
     suffices generateFrom {s i} ≤ mΩ from this _ ht
@@ -395,7 +395,7 @@ theorem CondIndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
 
 theorem condIndepSets_singleton_iff {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
-  rw [condIndepSets_def _ _ _ _ ?_ ?_]
+  rw [condIndepSets_iff _ _ _ _ ?_ ?_]
   . simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff', forall_eq]
   . intros s' hs'
     rw [Set.mem_singleton_iff] at hs'
