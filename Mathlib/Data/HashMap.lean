@@ -7,7 +7,7 @@ import Std.Data.HashMap
 import Std.Data.RBMap
 
 /-!
-# Additional API for `RBMap`.
+# Additional API for `HashMap` and `RBSet`.
 
 These should be replaced by proper implementations in Std.
 -/
