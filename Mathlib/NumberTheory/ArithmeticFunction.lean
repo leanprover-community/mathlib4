@@ -531,7 +531,7 @@ variable [NonAssocSemiring R]
 @[simp]
 theorem pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
   ext x
-  cases x <;> simp? [Nat.succ_ne_zero]
+  cases x <;> simp [Nat.succ_ne_zero]
 #align nat.arithmetic_function.pmul_zeta Nat.ArithmeticFunction.pmul_zeta
 
 @[simp]
