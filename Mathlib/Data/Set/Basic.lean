@@ -610,6 +610,14 @@ theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 #align set.nonempty_iff_ne_empty Set.nonempty_iff_ne_empty
 
+/-- See also `nonempty_iff_ne_empty'`. -/
+theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
+  rw [nonempty_subtype, not_exists, eq_empty_iff_forall_not_mem]
+
+/-- See also `not_nonempty_iff_eq_empty'`. -/
+theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
+  not_nonempty_iff_eq_empty'.not_right
+
 alias nonempty_iff_ne_empty ↔ Nonempty.ne_empty _
 #align set.nonempty.ne_empty Set.Nonempty.ne_empty
 
