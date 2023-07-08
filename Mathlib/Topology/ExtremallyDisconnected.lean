@@ -116,35 +116,6 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
 
 end
 
-namespace Set
-
-variable {α : Type u} {β : Set α} {γ : Set β}
-
-theorem mem_coe_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
-  ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
-
-theorem coe_subset : (γ : Set α) ⊆ β := by
-  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
-
-theorem mem_of_mem_coe (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
-  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
-
-theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = univ :=
-  eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
-
-theorem IsClosed.trans [TopologicalSpace α] (hγ : IsClosed γ) (hβ : IsClosed β) :
-    IsClosed (γ : Set α) := by
-  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
-  convert IsClosed.inter hβ hδ
-  ext
-  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
-
-theorem image_coe_eq_restrict_image : f '' γ = β.restrict f '' γ :=
-  ext fun _ =>
-    ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
-
-end Set
-
 section
 
 variable {A B C D : Type u} {E : Set D}
