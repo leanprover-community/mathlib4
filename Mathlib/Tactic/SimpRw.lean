@@ -5,6 +5,7 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
 import Lean
+import Mathlib.Tactic.FailIfNoProgress
 
 namespace Mathlib.Tactic
 
@@ -59,6 +60,6 @@ elab s:"simp_rw " rws:rwRuleSeq g:(location)? : tactic => do
     evalTactic (← match term with
     | `(term| $e:term) =>
       if symm then
-        `(tactic| simp%$e only [←$e:term] $g ?)
+        `(tactic| fail_if_no_progress simp%$e only [←$e:term] $g ?)
       else
-        `(tactic| simp%$e only [$e:term] $g ?))
+        `(tactic| fail_if_no_progress simp%$e only [$e:term] $g ?))
