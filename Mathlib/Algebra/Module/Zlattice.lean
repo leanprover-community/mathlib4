@@ -35,7 +35,7 @@ the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 * `Zlattice.module_free`: an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
 * `Zlattice.rank`:  an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
-`ℤ`-module has `ℤ`-rank equal to the `K`-rank of `E`
+`ℤ`-module of `ℤ`-rank equal to the `K`-rank of `E`
 -/
 
 
