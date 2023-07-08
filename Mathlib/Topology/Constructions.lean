@@ -1604,13 +1604,13 @@ section Monad
 
 variable [TopologicalSpace α] {β : Set α} {γ : Set β}
 
-theorem IsOpen.trans (hβ : IsOpen β) (hγ : IsOpen γ) : IsOpen (γ : Set α) := by
+theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
   rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
   convert IsOpen.inter hβ hδ
   ext
   exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
 
-theorem IsClosed.trans (hβ : IsClosed β) (hγ : IsClosed γ) : IsClosed (γ : Set α) := by
+theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
   rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
   convert IsClosed.inter hβ hδ
   ext
