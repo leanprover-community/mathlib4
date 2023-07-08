@@ -414,9 +414,9 @@ variable {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
 
-theorem indepSet_empty_right (s : Set Ω) : CondIndepSet m' hm' s ∅ μ := indepSetₖ_empty_right s
+theorem condIndepSet_empty_right (s : Set Ω) : CondIndepSet m' hm' s ∅ μ := indepSetₖ_empty_right s
 
-theorem indepSet_empty_left (s : Set Ω) : CondIndepSet m' hm' ∅ s μ := indepSetₖ_empty_left s
+theorem condIndepSet_empty_left (s : Set Ω) : CondIndepSet m' hm' ∅ s μ := indepSetₖ_empty_left s
 
 end CondIndepSet
 
