@@ -38,7 +38,7 @@ def DList.listEquivDList : List α ≃ DList α := by
 instance : Traversable DList :=
   Equiv.traversable DList.listEquivDList
 
-instance : IsLawfulTraversable DList :=
+instance : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList
 
 instance {α} : Inhabited (DList α) :=

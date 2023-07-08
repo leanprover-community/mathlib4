@@ -64,7 +64,7 @@ theorem continuous_abs : Continuous (abs : G → G) :=
 #align continuous_abs continuous_abs
 
 protected theorem Filter.Tendsto.abs {a : G} (h : Tendsto f l (𝓝 a)) :
-    Tendsto (fun x => |f x|) l (𝓝 (|a|)) :=
+    Tendsto (fun x => |f x|) l (𝓝 |a|) :=
   (continuous_abs.tendsto _).comp h
 #align filter.tendsto.abs Filter.Tendsto.abs
 

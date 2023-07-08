@@ -158,8 +158,8 @@ instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
 #align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 
 theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
-    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) =
-      { p : T.CompleteType α | (⋃ i : ι, S i) ⊆ p } := by
+    ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
+      { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext
   simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 #align first_order.language.Theory.complete_type.Inter_set_of_subset FirstOrder.Language.Theory.CompleteType.iInter_setOf_subset

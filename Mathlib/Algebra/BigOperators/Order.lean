@@ -112,7 +112,7 @@ variable {f g : ι → N} {s t : Finset ι}
 equal to the corresponding factor `g i` of another finite product, then
 `∏ i in s, f i ≤ ∏ i in s, g i`. -/
 @[to_additive sum_le_sum]
-theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : (∏ i in s, f i) ≤ ∏ i in s, g i :=
+theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : ∏ i in s, f i ≤ ∏ i in s, g i :=
   Multiset.prod_map_le_prod_map f g h
 #align finset.prod_le_prod' Finset.prod_le_prod'
 #align finset.sum_le_sum Finset.sum_le_sum
@@ -151,16 +151,16 @@ theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i : ι in s, f i :
 #align finset.sum_nonneg' Finset.sum_nonneg'
 
 @[to_additive sum_nonpos]
-theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : (∏ i in s, f i) ≤ 1 :=
+theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : ∏ i in s, f i ≤ 1 :=
   (prod_le_prod' h).trans_eq (by rw [prod_const_one])
 #align finset.prod_le_one' Finset.prod_le_one'
 #align finset.sum_nonpos Finset.sum_nonpos
 
 @[to_additive sum_le_sum_of_subset_of_nonneg]
 theorem prod_le_prod_of_subset_of_one_le' (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) :
-    (∏ i in s, f i) ≤ ∏ i in t, f i := by
+    ∏ i in s, f i ≤ ∏ i in t, f i := by
   classical calc
-      (∏ i in s, f i) ≤ (∏ i in t \ s, f i) * ∏ i in s, f i :=
+      ∏ i in s, f i ≤ (∏ i in t \ s, f i) * ∏ i in s, f i :=
         le_mul_of_one_le_left' <| one_le_prod' <| by simpa only [mem_sdiff, and_imp]
       _ = ∏ i in t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
       _ = ∏ i in t, f i := by rw [sdiff_union_of_subset h]
@@ -175,7 +175,7 @@ theorem prod_mono_set_of_one_le' (hf : ∀ x, 1 ≤ f x) : Monotone fun s ↦ �
 
 @[to_additive sum_le_univ_sum_of_nonneg]
 theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
-    (∏ x in s, f x) ≤ ∏ x, f x :=
+    ∏ x in s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 #align finset.prod_le_univ_prod_of_one_le' Finset.prod_le_univ_prod_of_one_le'
 #align finset.sum_le_univ_sum_of_nonneg Finset.sum_le_univ_sum_of_nonneg
@@ -251,8 +251,8 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
 -- Porting note: Mathport warning: expanding binder collection (y «expr ∉ » t)
 @[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ (y) (_ : y ∉ t), (∏ x in s.filter fun x ↦ g x = y, f x) ≤ 1) :
-    (∏ x in s, f x) ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
+    (h : ∀ (y) (_ : y ∉ t), ∏ x in s.filter fun x ↦ g x = y, f x ≤ 1) :
+    ∏ x in s, f x ≤ ∏ y in t, ∏ x in s.filter fun x ↦ g x = y, f x :=
   @prod_fiberwise_le_prod_of_one_le_prod_fiber' _ Nᵒᵈ _ _ _ _ _ _ _ h
 #align finset.prod_le_prod_fiberwise_of_prod_fiber_le_one' Finset.prod_le_prod_fiberwise_of_prod_fiber_le_one'
 #align finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos Finset.sum_le_sum_fiberwise_of_sum_fiber_nonpos
@@ -328,9 +328,9 @@ theorem sum_card_inter_le (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card ≤
 /-- If every element belongs to at most `n` Finsets, then the sum of their sizes is at most `n`
 times how many they are. -/
 theorem sum_card_le [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card ≤ n) :
-    (∑ s in B, s.card) ≤ Fintype.card α * n :=
+    ∑ s in B, s.card ≤ Fintype.card α * n :=
   calc
-    (∑ s in B, s.card) = ∑ s in B, (univ ∩ s).card := by simp_rw [univ_inter]
+    ∑ s in B, s.card = ∑ s in B, (univ ∩ s).card := by simp_rw [univ_inter]
     _ ≤ Fintype.card α * n := sum_card_inter_le fun a _ ↦ h a
 #align finset.sum_card_le Finset.sum_card_le
 
@@ -362,7 +362,7 @@ theorem sum_card_inter (h : ∀ a ∈ s, (B.filter <| (· ∈ ·) a).card = n) :
 /-- If every element belongs to exactly `n` Finsets, then the sum of their sizes is `n` times how
 many they are. -/
 theorem sum_card [Fintype α] (h : ∀ a, (B.filter <| (· ∈ ·) a).card = n) :
-    (∑ s in B, s.card) = Fintype.card α * n := by
+    ∑ s in B, s.card = Fintype.card α * n := by
   simp_rw [Fintype.card, ← sum_card_inter fun a _ ↦ h a, univ_inter]
 #align finset.sum_card Finset.sum_card
 
@@ -398,13 +398,13 @@ section CanonicallyOrderedMonoid
 variable [CanonicallyOrderedMonoid M] {f : ι → M} {s t : Finset ι}
 
 @[to_additive (attr := simp) sum_eq_zero_iff]
-theorem prod_eq_one_iff' : (∏ x in s, f x) = 1 ↔ ∀ x ∈ s, f x = 1 :=
+theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
   prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 #align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'
 #align finset.sum_eq_zero_iff Finset.sum_eq_zero_iff
 
 @[to_additive sum_le_sum_of_subset]
-theorem prod_le_prod_of_subset' (h : s ⊆ t) : (∏ x in s, f x) ≤ ∏ x in t, f x :=
+theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x in s, f x ≤ ∏ x in t, f x :=
   prod_le_prod_of_subset_of_one_le' h fun _ _ _ ↦ one_le _
 #align finset.prod_le_prod_of_subset' Finset.prod_le_prod_of_subset'
 #align finset.sum_le_sum_of_subset Finset.sum_le_sum_of_subset
@@ -417,15 +417,15 @@ theorem prod_mono_set' (f : ι → M) : Monotone fun s ↦ ∏ x in s, f x := fu
 
 @[to_additive sum_le_sum_of_ne_zero]
 theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
-    (∏ x in s, f x) ≤ ∏ x in t, f x := by
+    ∏ x in s, f x ≤ ∏ x in t, f x := by
   classical calc
-    (∏ x in s, f x) = (∏ x in s.filter fun x ↦ f x = 1, f x) *
+    ∏ x in s, f x = (∏ x in s.filter fun x ↦ f x = 1, f x) *
         ∏ x in s.filter fun x ↦ f x ≠ 1, f x := by
       rw [← prod_union, filter_union_filter_neg_eq]
       exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
     _ ≤ ∏ x in t, f x :=
       mul_le_of_le_one_of_le
-        (prod_le_one' <| by simp only [mem_filter, and_imp] ; exact fun _ _ ↦ le_of_eq)
+        (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero
@@ -438,7 +438,7 @@ variable [OrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive sum_lt_sum]
 theorem prod_lt_prod' (Hle : ∀ i ∈ s, f i ≤ g i) (Hlt : ∃ i ∈ s, f i < g i) :
-    (∏ i in s, f i) < ∏ i in s, g i := by
+    ∏ i in s, f i < ∏ i in s, g i := by
   classical
     rcases Hlt with ⟨i, hi, hlt⟩
     rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
@@ -448,7 +448,7 @@ theorem prod_lt_prod' (Hle : ∀ i ∈ s, f i ≤ g i) (Hlt : ∃ i ∈ s, f i <
 
 @[to_additive sum_lt_sum_of_nonempty]
 theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
-    (∏ i in s, f i) < ∏ i in s, g i := by
+    ∏ i in s, f i < ∏ i in s, g i := by
   apply prod_lt_prod'
   · intro i hi
     apply le_of_lt (Hlt i hi)
@@ -479,9 +479,9 @@ add_decl_doc GCongr.sum_lt_sum_of_nonempty
 -- Porting note: TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
-    (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : (∏ j in s, f j) < ∏ j in t, f j := by
+    (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : ∏ j in s, f j < ∏ j in t, f j := by
   classical calc
-    (∏ j in s, f j) < ∏ j in insert i s, f j := by
+    ∏ j in s, f j < ∏ j in insert i s, f j := by
       rw [prod_insert hs]
       exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
     _ ≤ ∏ j in t, f j := by
@@ -511,7 +511,7 @@ theorem one_lt_prod (h : ∀ i ∈ s, 1 < f i) (hs : s.Nonempty) : 1 < ∏ i in 
 #align finset.sum_pos Finset.sum_pos
 
 @[to_additive]
-theorem prod_lt_one (h : ∀ i ∈ s, f i < 1) (hs : s.Nonempty) : (∏ i in s, f i) < 1 :=
+theorem prod_lt_one (h : ∀ i ∈ s, f i < 1) (hs : s.Nonempty) : ∏ i in s, f i < 1 :=
   (prod_lt_prod_of_nonempty' hs h).trans_le (by rw [prod_const_one])
 #align finset.prod_lt_one Finset.prod_lt_one
 #align finset.sum_neg Finset.sum_neg
@@ -523,7 +523,7 @@ theorem one_lt_prod' (h : ∀ i ∈ s, 1 ≤ f i) (hs : ∃ i ∈ s, 1 < f i) : 
 #align finset.sum_pos' Finset.sum_pos'
 
 @[to_additive]
-theorem prod_lt_one' (h : ∀ i ∈ s, f i ≤ 1) (hs : ∃ i ∈ s, f i < 1) : (∏ i in s, f i) < 1 :=
+theorem prod_lt_one' (h : ∀ i ∈ s, f i ≤ 1) (hs : ∃ i ∈ s, f i < 1) : ∏ i in s, f i < 1 :=
   prod_const_one.le.trans_lt' <| prod_lt_prod' h hs
 #align finset.prod_lt_one' Finset.prod_lt_one'
 #align finset.sum_neg' Finset.sum_neg'
@@ -550,14 +550,14 @@ section LinearOrderedCancelCommMonoid
 variable [LinearOrderedCancelCommMonoid M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
-theorem exists_lt_of_prod_lt' (Hlt : (∏ i in s, f i) < ∏ i in s, g i) : ∃ i ∈ s, f i < g i := by
+theorem exists_lt_of_prod_lt' (Hlt : ∏ i in s, f i < ∏ i in s, g i) : ∃ i ∈ s, f i < g i := by
   contrapose! Hlt with Hle
   exact prod_le_prod' Hle
 #align finset.exists_lt_of_prod_lt' Finset.exists_lt_of_prod_lt'
 #align finset.exists_lt_of_sum_lt Finset.exists_lt_of_sum_lt
 
 @[to_additive exists_le_of_sum_le]
-theorem exists_le_of_prod_le' (hs : s.Nonempty) (Hle : (∏ i in s, f i) ≤ ∏ i in s, g i) :
+theorem exists_le_of_prod_le' (hs : s.Nonempty) (Hle : ∏ i in s, f i ≤ ∏ i in s, g i) :
     ∃ i ∈ s, f i ≤ g i := by
   contrapose! Hle with Hlt
   exact prod_lt_prod_of_nonempty' hs Hlt
@@ -565,13 +565,13 @@ theorem exists_le_of_prod_le' (hs : s.Nonempty) (Hle : (∏ i in s, f i) ≤ ∏
 #align finset.exists_le_of_sum_le Finset.exists_le_of_sum_le
 
 @[to_additive exists_pos_of_sum_zero_of_exists_nonzero]
-theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : (∏ i in s, f i) = 1)
+theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i in s, f i = 1)
     (h₂ : ∃ i ∈ s, f i ≠ 1) : ∃ i ∈ s, 1 < f i := by
   contrapose! h₁
   obtain ⟨i, m, i_ne⟩ : ∃ i ∈ s, f i ≠ 1 := h₂
   apply ne_of_lt
   calc
-    (∏ j in s, f j) < ∏ j in s, 1 := prod_lt_prod' h₁ ⟨i, m, (h₁ i m).lt_of_ne i_ne⟩
+    ∏ j in s, f j < ∏ j in s, 1 := prod_lt_prod' h₁ ⟨i, m, (h₁ i m).lt_of_ne i_ne⟩
     _ = 1 := prod_const_one
 #align finset.exists_one_lt_of_prod_one_of_exists_ne_one' Finset.exists_one_lt_of_prod_one_of_exists_ne_one'
 #align finset.exists_pos_of_sum_zero_of_exists_nonzero Finset.exists_pos_of_sum_zero_of_exists_nonzero
@@ -593,7 +593,7 @@ theorem prod_nonneg (h0 : ∀ i ∈ s, 0 ≤ f i) : 0 ≤ ∏ i in s, f i :=
 product of `f i` is less than or equal to the product of `g i`. See also `Finset.prod_le_prod'` for
 the case of an ordered commutative multiplicative monoid. -/
 theorem prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ g i) :
-    (∏ i in s, f i) ≤ ∏ i in s, g i := by
+    ∏ i in s, f i ≤ ∏ i in s, g i := by
   induction' s using Finset.induction with a s has ih h
   · simp
   · simp only [prod_insert has]
@@ -616,7 +616,7 @@ theorem _root_.GCongr.prod_le_prod (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈
 
 /-- If each `f i`, `i ∈ s` belongs to `[0, 1]`, then their product is less than or equal to one.
 See also `Finset.prod_le_one'` for the case of an ordered commutative multiplicative monoid. -/
-theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : (∏ i in s, f i) ≤ 1 := by
+theorem prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : ∏ i in s, f i ≤ 1 := by
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one
 #align finset.prod_le_one Finset.prod_le_one
@@ -710,26 +710,26 @@ open Finset
 
 /-- A product of finite numbers is still finite -/
 theorem prod_lt_top [CommMonoidWithZero R] [NoZeroDivisors R] [Nontrivial R] [DecidableEq R] [LT R]
-    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : (∏ i in s, f i) < ⊤ :=
+    {s : Finset ι} {f : ι → WithTop R} (h : ∀ i ∈ s, f i ≠ ⊤) : ∏ i in s, f i < ⊤ :=
   prod_induction f (fun a ↦ a < ⊤) (fun _ _ h₁ h₂ ↦ mul_lt_top' h₁ h₂) (coe_lt_top 1)
     fun a ha ↦ WithTop.lt_top_iff_ne_top.2 (h a ha)
 #align with_top.prod_lt_top WithTop.prod_lt_top
 
 /-- A sum of numbers is infinite iff one of them is infinite -/
 theorem sum_eq_top_iff [AddCommMonoid M] {s : Finset ι} {f : ι → WithTop M} :
-    (∑ i in s, f i) = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
+    ∑ i in s, f i = ⊤ ↔ ∃ i ∈ s, f i = ⊤ := by
   induction s using Finset.cons_induction <;> simp [*]
 #align with_top.sum_eq_top_iff WithTop.sum_eq_top_iff
 
 /-- A sum of finite numbers is still finite -/
 theorem sum_lt_top_iff [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M} :
-    (∑ i in s, f i) < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
+    ∑ i in s, f i < ⊤ ↔ ∀ i ∈ s, f i < ⊤ := by
   simp only [WithTop.lt_top_iff_ne_top, ne_eq, sum_eq_top_iff, not_exists, not_and]
 #align with_top.sum_lt_top_iff WithTop.sum_lt_top_iff
 
 /-- A sum of finite numbers is still finite -/
 theorem sum_lt_top [AddCommMonoid M] [LT M] {s : Finset ι} {f : ι → WithTop M}
-    (h : ∀ i ∈ s, f i ≠ ⊤) : (∑ i in s, f i) < ⊤ :=
+    (h : ∀ i ∈ s, f i ≠ ⊤) : ∑ i in s, f i < ⊤ :=
   sum_lt_top_iff.2 fun i hi => WithTop.lt_top_iff_ne_top.2 (h i hi)
 #align with_top.sum_lt_top WithTop.sum_lt_top
 
