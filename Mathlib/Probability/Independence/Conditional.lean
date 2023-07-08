@@ -91,12 +91,13 @@ for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `.
 It will be used for families of pi_systems. -/
 def iCondIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
-  Prop :=
+    Prop :=
   iIndepSetsₖ π (condexpKernel μ m') (μ.trim hm')
 
 /-- Two sets of sets `s₁, s₂` are independent with respect to a measure `μ` if for any sets
 `t₁ ∈ p₁, t₂ ∈ s₂`, then `μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
-def CondIndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
+def CondIndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
+    Prop :=
   IndepSetsₖ s1 s2 (condexpKernel μ m') (μ.trim hm')
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
@@ -175,8 +176,8 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     rw [ae_ball_iff (Finset.countable_toSet s)]
     exact h_eq' s f H
   have h_inter_eq : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i),
-      (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω (⋂ i ∈ s, f i))) =ᵐ[μ] μ⟦⋂ i ∈ s, f i | m'⟧ :=
-    by
+      (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω (⋂ i ∈ s, f i)))
+        =ᵐ[μ] μ⟦⋂ i ∈ s, f i | m'⟧ := by
     refine fun s f H ↦ condexpKernel_ae_eq_condexp hm' ?_
     exact MeasurableSet.biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (H i hi))
   refine ⟨fun h s f hf ↦ ?_, fun h s f hf ↦ ?_⟩ <;> specialize h s hf
@@ -228,7 +229,8 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
     exact ENNReal.mul_ne_top (measure_ne_top (condexpKernel μ m' ω) s)
       (measure_ne_top (condexpKernel μ m' ω) t)
 
-lemma iCondIndep_iff_iCondIndepSets (m : ι → MeasurableSpace Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
+lemma iCondIndep_iff_iCondIndepSets (m : ι → MeasurableSpace Ω)
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndep m' hm' m μ ↔ iCondIndepSets m' hm' (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
   simp only [iCondIndep, iCondIndepSets, iIndepₖ]
 
@@ -538,8 +540,10 @@ theorem condIndepSets_piiUnionInter_of_disjoint {s : ι → Set (Set Ω)}
   indepSetsₖ_piiUnionInter_of_disjoint h_indep hST
 
 theorem iCondIndepSet.condIndep_generateFrom_of_disjoint {s : ι → Set Ω}
-    (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (S T : Set ι) (hST : Disjoint S T) :
-    CondIndep m' (generateFrom { t | ∃ n ∈ S, s n = t }) (generateFrom { t | ∃ k ∈ T, s k = t }) hm' μ :=
+    (hsm : ∀ n, MeasurableSet (s n)) (hs : iCondIndepSet m' hm' s μ) (S T : Set ι)
+    (hST : Disjoint S T) :
+    CondIndep m' (generateFrom { t | ∃ n ∈ S, s n = t })
+      (generateFrom { t | ∃ k ∈ T, s k = t }) hm' μ :=
   iIndepSetₖ.indepₖ_generateFrom_of_disjoint hsm hs S T hST
 
 theorem condIndep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
