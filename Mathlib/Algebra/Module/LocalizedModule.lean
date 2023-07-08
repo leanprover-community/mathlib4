@@ -1088,12 +1088,12 @@ end Algebra
 variable [Module (Localization S) M'] [IsScalarTower R (Localization S) M']
 
 /-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
-`(localization S) × M → N, (s, m) ↦ s • f m` is a tensor product.
-In particular, there is an isomorphism between `localized_module S M` and
-`(localization S) ⊗[R] M` given by `m/s ↦ (1/s) ⊗ₜ m`.
+`(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
+bilinear map).
+In particular, there is an isomorphism between `localized_module S M` and `(localization S) ⊗[R] M`
+given by `m/s ↦ (1/s) ⊗ₜ m`.
 --/
-theorem isBaseChange : IsBaseChange (Localization S) f :=
-  by
+theorem isBaseChange : IsBaseChange (Localization S) f := by
   apply IsBaseChange.of_lift_unique
   intros Q _ _ _ _ g
   have := IsLocalizedModule.is_universal S f g <| by
@@ -1138,8 +1138,7 @@ theorem isBaseChange : IsBaseChange (Localization S) f :=
         iterate 2 rw [Localization.smul_mk, smul_eq_mul, mul_one]
         rw [Localization.mk_self, one_smul] }
   use g'
-  have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ :=
-    by
+  have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ := by
     ext
     intros
     rw [LinearMap.restrictScalars_apply]
@@ -1153,7 +1152,8 @@ theorem isBaseChange : IsBaseChange (Localization S) f :=
     ext x
     apply_fun fun f => f x at this
     simpa only [LinearMap.restrictScalars_apply, this]
-#align is_localized_module.is_base_change IsLocalizedModule.isBaseChange
+
+#lint
 
 end IsLocalizedModule
 
