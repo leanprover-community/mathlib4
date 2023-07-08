@@ -16,7 +16,7 @@ namespace ConeProgram
 
 variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
 variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
-variable {P : ConeProgram V W}
+variable (P : ConeProgram V W)
 
 def Objective (v : V) := ⟪P.c, v⟫_ℝ
 
@@ -37,7 +37,6 @@ def Values := P.Objective '' { v | P.IsSolution v }
 
 @[simp] lemma nonempty_values_iff : (P.Values).Nonempty ↔ P.IsFeasible := by
     unfold Values
-    unfold IsFeasible
     rw [nonempty_image_iff]
     exact Iff.symm nonempty_coe_sort
 
@@ -77,22 +76,41 @@ noncomputable def SubValue := sSup <| P.SubValues
   ⟨fun _ => v, P.SubSolution_of_Solution hv, by rwa [P.SubSolution_of_Solution_Value]⟩
 
 lemma Value_le_Subvalue (fs : P.IsFeasible) (bdd : BddAbove P.SubValues) :
--- lemma Value_le_Subvalue (ne: Set.Nonempty P.Values) (bdd : BddAbove P.SubValues) :
-  P.Value ≤ P.SubValue := csSup_le_csSup bdd (nonempty_values_iff.2 fs) Values_subset_SubValues
+  P.Value ≤ P.SubValue := csSup_le_csSup bdd (P.nonempty_values_iff.2 fs) P.Values_subset_SubValues
 
-def SlaterCondition := ∃ v : P.K, P.b - P.A v ∈ interior P.L
 
-example (x y : ℕ) : x ≤ y → y ≤ x → x = y := by exact fun a a_1 ↦ Nat.le_antisymm a a_1
+----------------------------------------------------------------------------------------------------
 
-theorem Value_eq_SubValue  (fs : P.IsFeasible) (bdd : BddAbove P.SubValues)
-  (sl : P.SlaterCondition) : P.Value = P.SubValue := by
-  apply le_antisymm (P.Value_le_Subvalue fs bdd)
-  by_contra'
+noncomputable def Dual : ConeProgram W V where
+  K := (P.L).dual
+  L := (P.K).dual
+  c := -P.b
+  b := -P.c
+  A := -ContinuousLinearMap.adjoint (P.A)
 
---   -- unfold Value
---   unfold SubValue
---   unfold SubValues
---   unfold SeqValue
+theorem weak_duality_aux
+  (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
+  P.Objective v ≤ - (P.Dual).Objective w := by
+  rcases hv with ⟨hv1, hv2⟩
+  rcases hw with ⟨hw1, hw2⟩
+  specialize @hw2 v hv1
+  dsimp [Dual, Objective] at *
+  simp_rw [inner_sub_right, inner_neg_right, sub_nonneg, ContinuousLinearMap.adjoint_inner_right] at hw2
+  specialize hw1 (P.b - P.A v) hv2
+  sorry
+  -- have := Inner.inner
+  -- rw [inner.left_distrib] at hw2
 
+example (x y : ℝ) : -x ≤ -y → y ≤ x := by apply?
+
+
+-- def SlaterCondition := ∃ v : P.K, P.b - P.A v ∈ interior P.L
+
+-- example (x y : ℕ) : x ≤ y → y ≤ x → x = y := by exact fun a a_1 ↦ Nat.le_antisymm a a_1
+
+-- theorem Value_eq_SubValue  (fs : P.IsFeasible) (bdd : BddAbove P.SubValues)
+--   (sl : P.SlaterCondition) : P.Value = P.SubValue := by
+--   apply le_antisymm (P.Value_le_Subvalue fs bdd)
+--   by_contra'
 
 end ConeProgram
