@@ -31,7 +31,7 @@ This file is to prove that `Proj` is a scheme.
 
 ## Implementation
 
-In `src/algebraic_geometry/projective_spectrum/structure_sheaf.lean`, we have given `Proj` a
+In `AlgebraicGeometry/ProjectiveSpectrum/StructureSheaf.lean`, we have given `Proj` a
 structure sheaf so that `Proj` is a locally ringed space. In this file we will prove that `Proj`
 equipped with this structure sheaf is a scheme. We achieve this by using an affine cover by basic
 open sets in `Proj`, more specifically:
@@ -39,35 +39,35 @@ open sets in `Proj`, more specifically:
 1. We prove that `Proj` can be covered by basic open sets at homogeneous element of positive degree.
 2. We prove that for any homogeneous element `f : A` of positive degree `m`, `Proj.T | (pbo f)` is
     homeomorphic to `Spec.T A⁰_f`:
-  - forward direction `to_Spec`:
+  - forward direction `toSpec`:
     for any `x : pbo f`, i.e. a relevant homogeneous prime ideal `x`, send it to
-    `A⁰_f ∩ span {g / 1 | g ∈ x}` (see `Proj_iso_Spec_Top_component.to_Spec.carrier`). This ideal is
-    prime, the proof is in `Proj_iso_Spec_Top_component.to_Spec.to_fun`. The fact that this function
-    is continuous is found in `Proj_iso_Spec_Top_component.to_Spec`
-  - backward direction `from_Spec`:
+    `A⁰_f ∩ span {g / 1 | g ∈ x}` (see `ProjIsoSpecTopComponent.IoSpec.carrier`). This ideal is
+    prime, the proof is in `ProjIsoSpecTopcomponent.ToSpec.toFun`. The fact that this function
+    is continuous is found in `ProjIsoSpecTopComponent.toSpec`
+  - backward direction `fromSpec`:
     for any `q : Spec A⁰_f`, we send it to `{a | ∀ i, aᵢᵐ/fⁱ ∈ q}`; we need this to be a
     homogeneous prime ideal that is relevant.
     * This is in fact an ideal, the proof can be found in
-      `Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal`;
+      `ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal`;
     * This ideal is also homogeneous, the proof can be found in
-      `Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal.homogeneous`;
+      `ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.homogeneous`;
     * This ideal is relevant, the proof can be found in
-      `Proj_iso_Spec_Top_component.from_Spec.carrier.relevant`;
+      `ProjIsoSpecTopComponent.FromSpec.carrier.relevant`;
     * This ideal is prime, the proof can be found in
-      `Proj_iso_Spec_Top_component.from_Spec.carrier.prime`.
+      `ProjIsoSpecTopComponent.FromSpec.carrier.prime`.
     Hence we have a well defined function `Spec.T A⁰_f → Proj.T | (pbo f)`, this function is called
-    `Proj_iso_Spec_Top_component.from_Spec.to_fun`. But to prove the continuity of this function,
-    we need to prove `from_Spec ∘ to_Spec` and `to_Spec ∘ from_Spec` are both identities (TBC).
+    `ProjIsoSpecTopComponent.FromSpec.toFun`. But to prove the continuity of this function,
+    we need to prove `fromSpec ∘ toSpec` and `toSpec ∘ fromSpec` are both identities (TBC).
 
 ## Main Definitions and Statements
 
-* `degree_zero_part`: the degree zero part of the localized ring `Aₓ` where `x` is a homogeneous
+* `degreeZeroPart`: the degree zero part of the localized ring `Aₓ` where `x` is a homogeneous
   element of degree `n` is the subring of elements of the form `a/f^m` where `a` has degree `mn`.
 
 For a homogeneous element `f` of degree `n`
-* `Proj_iso_Spec_Top_component.to_Spec`: `forward f` is the
+* `ProjIsoSpecTopComponent.toSpec`: `forward f` is the
   continuous map between `Proj.T| pbo f` and `Spec.T A⁰_f`
-* `Proj_iso_Spec_Top_component.to_Spec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
+* `ProjIsoSpecTopComponent.ToSpec.preimage_eq`: for any `a: A`, if `a/f^m` has degree zero,
   then the preimage of `sbo a/f^m` under `to_Spec f` is `pbo f ∩ pbo a`.
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
@@ -100,8 +100,10 @@ open CategoryTheory Opposite
 
 open ProjectiveSpectrum.StructureSheaf
 
+-- Porting note: currently require lack of hygiene to use in variable declarations
+-- maybe all make into notation3?
+set_option hygiene false
 -- `Proj` as a locally ringed space
-set_option hygiene false -- Porting note: currently required to use in variable declarations
 local notation3 "Proj" => Proj.toLocallyRingedSpace 𝒜
 
 -- the underlying topological space of `Proj`
@@ -109,12 +111,11 @@ local notation3 "Proj.T" => PresheafedSpace.carrier <| SheafedSpace.toPresheafed
   <| LocallyRingedSpace.toSheafedSpace <| Proj.toLocallyRingedSpace 𝒜
 
 -- `Proj` restrict to some open set
-macro "Proj| " U:term : term => `((Proj.toLocallyRingedSpace 𝒜).restrict (Opens.openEmbedding (X := Proj.T) ($U : Opens Proj.T)))
--- notation3 "Proj| " U => LocallyRingedSpace.restrict (Proj.toLocallyRingedSpace 𝒜)
---   (Opens.openEmbedding (X := Proj.T) (U : Opens Proj.T))
+macro "Proj| " U:term : term =>
+  `((Proj.toLocallyRingedSpace 𝒜).restrict (Opens.openEmbedding (X := Proj.T) ($U : Opens Proj.T)))
 
 -- the underlying topological space of `Proj` restricted to some open set
-local notation3 "Proj.T| " U => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
+local notation "Proj.T| " U => PresheafedSpace.carrier <| SheafedSpace.toPresheafedSpace
   <| LocallyRingedSpace.toSheafedSpace
     <| (LocallyRingedSpace.restrict Proj (Opens.openEmbedding (X := Proj.T) (U : Opens Proj.T)))
 
@@ -128,7 +129,7 @@ local notation "sbo " f => PrimeSpectrum.basicOpen f
 local notation3 "Spec " ring => Spec.locallyRingedSpaceObj (CommRingCat.of ring)
 
 -- the underlying topological space of `Spec`
-local notation3 "Spec.T " ring =>
+local notation "Spec.T " ring =>
   (Spec.locallyRingedSpaceObj (CommRingCat.of ring)).toSheafedSpace.toPresheafedSpace.1
 
 local notation3 "A⁰_ " f => HomogeneousLocalization.Away 𝒜 f
@@ -151,7 +152,7 @@ variable {𝒜} {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : Proj| (pbo f))
 
 /--
 For any `x` in `Proj| (pbo f)`, the corresponding ideal in `Spec A⁰_f`. This fact that this ideal
-is prime is proven in `Top_component.forward.to_fun`-/
+is prime is proven in `TopComponent.Forward.toFun`-/
 def carrier : Ideal (A⁰_ f) :=
   Ideal.comap (algebraMap (A⁰_ f) (Away f))
     (Ideal.span <| algebraMap A (Away f) '' x.val.asHomogeneousIdeal)
@@ -193,8 +194,8 @@ theorem MemCarrier.clear_denominator [DecidableEq (Away f)] {z : A⁰_ f} (hz : 
   MemCarrier.clear_denominator' x <| (mem_carrier_iff x z).mpr hz
 #align algebraic_geometry.Proj_iso_Spec_Top_component.to_Spec.mem_carrier.clear_denominator AlgebraicGeometry.ProjIsoSpecTopComponent.ToSpec.MemCarrier.clear_denominator
 
-theorem disjoint : Disjoint (x.1.asHomogeneousIdeal.toIdeal : Set A) (Submonoid.powers f : Set A) :=
-  by
+theorem disjoint :
+    Disjoint (x.1.asHomogeneousIdeal.toIdeal : Set A) (Submonoid.powers f : Set A) := by
   by_contra rid
   rw [Set.not_disjoint_iff] at rid
   choose g hg using rid
@@ -231,7 +232,7 @@ theorem carrier_ne_top : carrier x ≠ ⊤ := by
 variable (f)
 
 /-- The function between the basic open set `D(f)` in `Proj` to the corresponding basic open set in
-`Spec A⁰_f`. This is bundled into a continuous map in `Top_component.forward`.
+`Spec A⁰_f`. This is bundled into a continuous map in `TopComponent.forward`.
 -/
 def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
   ⟨carrier x, carrier_ne_top x, fun {x1 x2} hx12 => by
@@ -239,7 +240,7 @@ def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
     rw [mem_carrier_iff] at hx12
     let J := span ((algebraMap A (Away f) : A → (Away f)) '' x.val.asHomogeneousIdeal)
     suffices h : ∀ x y : Localization.Away f, x * y ∈ J → x ∈ J ∨ y ∈ J
-    · rw [HomogeneousLocalization.mul_val] at hx12 ; exact h x1.val x2.val hx12
+    · rw [HomogeneousLocalization.mul_val] at hx12; exact h x1.val x2.val hx12
     clear x1 x2 hx12
     intro x1 x2 hx12
     induction' x1 using Localization.induction_on with data_x1
@@ -297,7 +298,8 @@ theorem preimage_eq (a b : A) (k : ℕ) (a_mem : a ∈ 𝒜 k) (b_mem1 : b ∈ �
     rw [toFun, mem_carrier_iff, HomogeneousLocalization.val_mk'', Subtype.coe_mk]
     dsimp; rcases b_mem2 with ⟨k, hk⟩
     dsimp at hk
-    simp only [show (mk a ⟨b, ⟨k, hk⟩⟩ : Away f) = Localization.mk 1 (⟨f ^ k, ⟨_, rfl⟩⟩ : Submonoid.powers f) * mk a 1 by
+    simp only [show (mk a ⟨b, ⟨k, hk⟩⟩ : Away f) =
+      Localization.mk 1 (⟨f ^ k, ⟨_, rfl⟩⟩ : Submonoid.powers f) * mk a 1 by
         rw [mk_mul, one_mul, mul_one]; congr; rw [hk]]
     exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨_, a_mem_y, rfl⟩)
   · change y.1 ∈ ProjectiveSpectrum.basicOpen 𝒜 f ⊓ ProjectiveSpectrum.basicOpen 𝒜 a at hy
@@ -374,9 +376,9 @@ of the `i`-th projection of `a` by the `i`-th power of the degree-`m` homogeneou
 lies in `q`.
 
 The set `{a | aᵢᵐ/fⁱ ∈ q}`
-* is an ideal, as proved in `carrier.as_ideal`;
-* is homogeneous, as proved in `carrier.as_homogeneous_ideal`;
-* is prime, as proved in `carrier.as_ideal.prime`;
+* is an ideal, as proved in `carrier.asIdeal`;
+* is homogeneous, as proved in `carrier.asHomogeneousIdeal`;
+* is prime, as proved in `carrier.asIdeal.prime`;
 * is relevant, as proved in `carrier.relevant`.
 -/
 def carrier (q : Spec.T A⁰_ f) : Set A :=
@@ -398,7 +400,7 @@ theorem mem_carrier_iff' (q : Spec.T A⁰_ f) (a : A) :
     (by
       constructor <;> intro h i <;> specialize h i
       · rw [Set.mem_image]; refine' ⟨_, h, rfl⟩
-      · rw [Set.mem_image] at h ; rcases h with ⟨x, h, hx⟩
+      · rw [Set.mem_image] at h; rcases h with ⟨x, h, hx⟩
         change x ∈ q.asIdeal at h
         convert h
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'']
@@ -500,7 +502,8 @@ def carrier.asIdeal : Ideal A where
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal
 
 
-theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 := fun i a ha j =>
+theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous 𝒜 :=
+  fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
     fun h => by
     simp only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
@@ -542,7 +545,8 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
       · apply q.2.mem_or_mem; convert hxy (nx + ny) using 1
         dsimp
         simp_rw [proj_apply, decompose_of_mem_same 𝒜 hnx, decompose_of_mem_same 𝒜 hny,
-          decompose_of_mem_same 𝒜 (SetLike.GradedMonoid.toGradedMul.mul_mem hnx hny), mul_pow, pow_add]
+          decompose_of_mem_same 𝒜 (SetLike.GradedMonoid.toGradedMul.mul_mem hnx hny),
+          mul_pow, pow_add]
         simp only [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.mul_val, mk_mul]
         simp only [Submonoid.mk_mul_mk, mk_eq_monoidOf_mk']
@@ -550,11 +554,10 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         intro n hn; convert q.1.zero_mem using 1
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
           HomogeneousLocalization.zero_val]; simp_rw [proj_apply, Subtype.coe_mk]
-        convert mk_zero (S := Submonoid.powers f) _; rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm]
+        convert mk_zero (S := Submonoid.powers f) _
+        rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm]
         · first | exact hnx | exact hny
 #align algebraic_geometry.Proj_iso_Spec_Top_component.from_Spec.carrier.as_ideal.prime AlgebraicGeometry.ProjIsoSpecTopComponent.FromSpec.carrier.asIdeal.prime
-
--- variable (f_deg)
 
 /-- The function `Spec A⁰_f → Proj|D(f)` by sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`.
 -/
