@@ -90,3 +90,11 @@ example : let x := 1; ∀ n, let y := 1; x + n = y + n := by
   guard_target =ₛ let x := 1; ∀ n, x + n = x + n
   intros x n
   rfl
+
+example (m : Nat) (h : ∃ n, n + 1 = m) (x : Fin m) (y : Fin _) :
+    cast (let h' := h.choose_spec.symm; congrArg Fin h') x = y := by
+  lift_lets (config := {proofs := true})
+  intro h'
+  clear_value h'
+  guard_hyp h' : m = Exists.choose h + 1
+  sorry
