@@ -78,7 +78,7 @@ theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
     simp [hj']
 #align matrix.matrix_eq_sum_std_basis Matrix.matrix_eq_sum_std_basis
 
--- TODO: tie this up with the `basis` machinery of linear algebra
+-- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
 -- TODO: add `std_basis_vec`
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
@@ -196,15 +196,15 @@ theorem mul_right_apply_of_ne (a b : n) (hbj : b ≠ j) (M : Matrix n n α) :
 @[simp]
 theorem mul_same (k : n) (d : α) :
     stdBasisMatrix i j c ⬝ stdBasisMatrix j k d = stdBasisMatrix i k (c * d) := by
-  ext (a b)
+  ext a b
   simp only [mul_apply, stdBasisMatrix, boole_mul]
   by_cases h₁ : i = a <;> by_cases h₂ : k = b <;> simp [h₁, h₂]
 #align matrix.std_basis_matrix.mul_same Matrix.StdBasisMatrix.mul_same
 
 @[simp]
-theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) : stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 :=
-  by
-  ext (a b)
+theorem mul_of_ne {k l : n} (h : j ≠ k) (d : α) :
+    stdBasisMatrix i j c ⬝ stdBasisMatrix k l d = 0 := by
+  ext a b
   simp only [mul_apply, boole_mul, stdBasisMatrix]
   by_cases h₁ : i = a
   -- Porting note: was `simp [h₁, h, h.symm]`

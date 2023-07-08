@@ -24,9 +24,6 @@ interval is convex on this interval.
 affine space, slope
 -/
 
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
-
 open AffineMap
 
 variable {k E PE : Type _} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]
@@ -71,7 +68,7 @@ theorem sub_smul_slope_vadd (f : k → PE) (a b : k) : (b - a) • slope f a b +
 
 @[simp]
 theorem slope_vadd_const (f : k → E) (c : PE) : (slope fun x => f x +ᵥ c) = slope f := by
-  ext (a b)
+  ext a b
   simp only [slope, vadd_vsub_vadd_cancel_right, vsub_eq_sub]
 #align slope_vadd_const slope_vadd_const
 

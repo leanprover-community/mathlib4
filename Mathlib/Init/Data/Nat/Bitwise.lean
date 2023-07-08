@@ -24,7 +24,7 @@ Possibly only of archaeological significance.
 
 universe u
 
--- Once we're in the `Nat` namespace, `xor` will inconventiently resolve to `Nat.xor`.
+-- Once we're in the `Nat` namespace, `xor` will inconveniently resolve to `Nat.xor`.
 /-- `bxor` denotes the `xor` function i.e. the exclusive-or function on type `Bool`. -/
 local notation "bxor" => _root_.xor
 
@@ -240,10 +240,9 @@ lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
   they can be constructed for all natural numbers. -/
 def binaryRec {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) : ∀ n, C n :=
   fun n =>
-    if n0 : n = 0 then
-      by
-        simp [n0]
-        exact z
+    if n0 : n = 0 then by
+      simp [n0]
+      exact z
     else by
       let n' := div2 n
       have _x : bit (bodd n) n' = n := by
@@ -381,7 +380,7 @@ theorem binaryRec_eq {C : Nat → Sort u} {z : C 0} {f : ∀ b n, C n → C (bit
       (Eq.symm (bit_decomp (bit b n)) ▸ Eq.refl (C (bit b n))) = e
     revert e
     rw [bodd_bit, div2_bit]
-    intros ; rfl
+    intros; rfl
 #align nat.binary_rec_eq Nat.binaryRec_eq
 
 theorem bitwise'_bit_aux {f : Bool → Bool → Bool} (h : f false false = false) :

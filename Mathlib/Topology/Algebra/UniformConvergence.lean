@@ -209,10 +209,6 @@ variable (𝕜 α E H : Type _) {hom : Type _} [NormedField 𝕜] [AddCommGroup 
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace H] [UniformSpace E] [UniformAddGroup E]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α} [LinearMapClass hom 𝕜 H (α →ᵤ[𝔖] E)]
 
--- Porting note:
--- This is another alarming location where we need to use
--- `eta_experiment%` to elaborate a particular subterm, but having `synthInstance.etaExperiment`
--- on for the whole declaration breaks other typeclass search.
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
 equipped with the topology of `𝔖`-convergence, is a TVS.
@@ -231,7 +227,7 @@ theorem UniformOnFun.continuousSMul_induced_of_image_bounded (h𝔖₁ : 𝔖.No
   have : (𝓝 0 : Filter H).HasBasis _ _ := by
     rw [hφ.induced, nhds_induced, map_zero]
     exact (UniformOnFun.hasBasis_nhds_zero 𝔖 h𝔖₁ h𝔖₂).comap φ
-  refine' eta_experiment% ContinuousSMul.of_basis_zero this _ _ _
+  refine' ContinuousSMul.of_basis_zero this _ _ _
   · rintro ⟨S, V⟩ ⟨hS, hV⟩
     have : Tendsto (fun kx : 𝕜 × E => kx.1 • kx.2) (𝓝 (0, 0)) (𝓝 <| (0 : 𝕜) • (0 : E)) :=
       continuous_smul.tendsto (0 : 𝕜 × E)

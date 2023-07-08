@@ -32,7 +32,7 @@ especially once interactions between algebraic and order/topological/etc structu
 
 In mathlib, we try to avoid this by only introducing new algebraic typeclasses either
 1. when there is "real mathematics" to be done with them, or
-2. when there is a meaninful gain in simplicity by factoring out a common substructure.
+2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
 (As examples, at this point we don't have `Loop`, or `UnitalMagma`,
 but we do have `LieSubmodule` and `TopologicalField`!
@@ -64,22 +64,22 @@ one should attempt to add the following constructions and results,
 when applicable:
 
 * Instances transferred elementwise to products, like `Prod.Monoid`.
-  See `Mathilb.Algebra.Group.Prod` for more examples.
+  See `Mathlib.Algebra.Group.Prod` for more examples.
   ```
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathilb.Algebra.Group.Pi` for more examples.
+  See `Mathlib.Algebra.Group.Pi` for more examples.
   ```
   instance Pi.Z [∀ i, Z $ f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `Mathilb.Algebra.Opposites` for more examples.
+  See `Mathlib.Algebra.Opposites` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
-  See `Mathilb.Algebra.Group.ULift` for more examples.
+  See `Mathlib.Algebra.Group.ULift` for more examples.
   ```
   instance ULift.Z [Z M] : Z (ULift M) := ...
   ```
@@ -87,7 +87,7 @@ when applicable:
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
   We make these definitions `@[reducible]`, see note [reducible non-instances].
-  See `Mathilb.Algebra.Group.InjSurj` for more examples.
+  See `Mathlib.Algebra.Group.InjSurj` for more examples.
   ```
   @[reducible]
   def Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
@@ -98,17 +98,17 @@ when applicable:
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
-  See `Mathilb.Data.Finsupp.Pointwise` for more examples.
+  See `Mathlib.Data.Finsupp.Pointwise` for more examples.
   ```
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathilb.Algebra.Pointwise` for more examples.
+  See `Mathlib.Algebra.Pointwise` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathilb.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
+  See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /- When there is a new notion of `Z`-equiv: -/
@@ -133,7 +133,7 @@ you should provide instances transferring
 Typically this is done using the `Function.Injective.Z` definition mentioned above.
 ```
 instance SubY.toZ [Z α] : Z (SubY α) :=
-coe_injective.Z coe ...
+  coe_injective.Z coe ...
 ```
 
 ## Morphisms and equivalences

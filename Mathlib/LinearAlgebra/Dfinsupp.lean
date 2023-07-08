@@ -37,9 +37,6 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 function with finite support, module, linear algebra
 -/
 
--- Porting note: TODO Erase this line. Workaround for lean4#2074.
-attribute [-instance] Ring.toNonAssocRing
-
 variable {ι : Type _} {R : Type _} {S : Type _} {M : ι → Type _} {N : Type _}
 
 variable [dec_ι : DecidableEq ι]
@@ -290,7 +287,7 @@ section Basis
 
 /-- The direct sum of free modules is free.
 
-Note that while this is stated for `Dfinsupp` not `direct_sum`, the types are defeq. -/
+Note that while this is stated for `Dfinsupp` not `DirectSum`, the types are defeq. -/
 noncomputable def basis {η : ι → Type _} (b : ∀ i, Basis (η i) R (M i)) :
     Basis (Σi, η i) R (Π₀ i, M i) :=
   .ofRepr
@@ -320,71 +317,71 @@ theorem dfinsupp_sumAddHom_mem {β : ι → Type _} [∀ i, AddZeroClass (β i)]
 #align submodule.dfinsupp_sum_add_hom_mem Submodule.dfinsupp_sumAddHom_mem
 
 /-- The supremum of a family of submodules is equal to the range of `Dfinsupp.lsum`; that is
-every element in the `supr` can be produced from taking a finite number of non-zero elements
+every element in the `iSup` can be produced from taking a finite number of non-zero elements
 of `p i`, coercing them to `N`, and summing them. -/
-theorem supᵢ_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
-    supᵢ p = LinearMap.range (Dfinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
+theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
+    iSup p = LinearMap.range (Dfinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   apply le_antisymm
-  · apply supᵢ_le _
+  · apply iSup_le _
     intro i y hy
     simp only [LinearMap.mem_range, lsum_apply_apply]
     exact ⟨Dfinsupp.single i ⟨y, hy⟩, Dfinsupp.sumAddHom_single _ _ _⟩
   · rintro x ⟨v, rfl⟩
-    exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_supᵢ p i : p i ≤ _) (v i).2
-#align submodule.supr_eq_range_dfinsupp_lsum Submodule.supᵢ_eq_range_dfinsupp_lsum
+    exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_iSup p i : p i ≤ _) (v i).2
+#align submodule.supr_eq_range_dfinsupp_lsum Submodule.iSup_eq_range_dfinsupp_lsum
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `Dfinsupp.sumAddHom` composed with `Dfinsupp.filter_add_monoid_hom`; that is, every element in the
-bounded `supr` can be produced from taking a finite number of non-zero elements from the `S i` that
+bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
-theorem bsupᵢ_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
-    (⨆ (i) (_h : p i), S i) =
+theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N) :
+    ⨆ (i) (_ : p i), S i =
       LinearMap.range
         (LinearMap.comp
           (Dfinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype))
             (Dfinsupp.filterLinearMap R _ p)) := by
   apply le_antisymm
-  · refine' supᵢ₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩
+  · refine' iSup₂_le fun i hi y hy => ⟨Dfinsupp.single i ⟨y, hy⟩, _⟩
     rw [LinearMap.comp_apply, filterLinearMap_apply, filter_single_pos _ _ hi]
     simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coeSubtype]
   · rintro x ⟨v, rfl⟩
     refine' dfinsupp_sumAddHom_mem _ _ _ fun i _ => _
-    refine' mem_supᵢ_of_mem i _
+    refine' mem_iSup_of_mem i _
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
-#align submodule.bsupr_eq_range_dfinsupp_lsum Submodule.bsupᵢ_eq_range_dfinsupp_lsum
+#align submodule.bsupr_eq_range_dfinsupp_lsum Submodule.biSup_eq_range_dfinsupp_lsum
 
-theorem mem_supᵢ_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
-    x ∈ supᵢ p ↔
+theorem mem_iSup_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
+    x ∈ iSup p ↔
       ∃ f : Π₀ i, p i, Dfinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) f = x :=
-  SetLike.ext_iff.mp (supᵢ_eq_range_dfinsupp_lsum p) x
-#align submodule.mem_supr_iff_exists_dfinsupp Submodule.mem_supᵢ_iff_exists_dfinsupp
+  SetLike.ext_iff.mp (iSup_eq_range_dfinsupp_lsum p) x
+#align submodule.mem_supr_iff_exists_dfinsupp Submodule.mem_iSup_iff_exists_dfinsupp
 
-/-- A variant of `Submodule.mem_supᵢ_iff_exists_dfinsupp` with the RHS fully unfolded. -/
-theorem mem_supᵢ_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p i), Decidable (x ≠ 0)]
-    (x : N) : x ∈ supᵢ p ↔ ∃ f : Π₀ i, p i, (f.sum fun i xi => ↑xi) = x := by
-  rw [mem_supᵢ_iff_exists_dfinsupp]
+/-- A variant of `Submodule.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded. -/
+theorem mem_iSup_iff_exists_dfinsupp' (p : ι → Submodule R N) [∀ (i) (x : p i), Decidable (x ≠ 0)]
+    (x : N) : x ∈ iSup p ↔ ∃ f : Π₀ i, p i, (f.sum fun i xi => ↑xi) = x := by
+  rw [mem_iSup_iff_exists_dfinsupp]
   simp_rw [Dfinsupp.lsum_apply_apply, Dfinsupp.sumAddHom_apply,
     LinearMap.toAddMonoidHom_coe, coeSubtype]
-#align submodule.mem_supr_iff_exists_dfinsupp' Submodule.mem_supᵢ_iff_exists_dfinsupp'
+#align submodule.mem_supr_iff_exists_dfinsupp' Submodule.mem_iSup_iff_exists_dfinsupp'
 
-theorem mem_bsupᵢ_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
+theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : ι → Submodule R N)
     (x : N) :
-    (x ∈ ⨆ (i) (_h : p i), S i) ↔
+    (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i,
         Dfinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype) (f.filter p) = x :=
-  SetLike.ext_iff.mp (bsupᵢ_eq_range_dfinsupp_lsum p S) x
-#align submodule.mem_bsupr_iff_exists_dfinsupp Submodule.mem_bsupᵢ_iff_exists_dfinsupp
+  SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum p S) x
+#align submodule.mem_bsupr_iff_exists_dfinsupp Submodule.mem_biSup_iff_exists_dfinsupp
 
 open BigOperators
 
-theorem mem_supᵢ_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N) (a : N) :
+theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N) (a : N) :
     (a ∈ ⨆ i ∈ s, p i) ↔ ∃ μ : ∀ i, p i, (∑ i in s, (μ i : N)) = a := by
   classical
-    rw [Submodule.mem_supᵢ_iff_exists_dfinsupp']
+    rw [Submodule.mem_iSup_iff_exists_dfinsupp']
     constructor <;> rintro ⟨μ, hμ⟩
-    · use fun i => ⟨μ i, (supᵢ_const_le : _ ≤ p i) (coe_mem <| μ i)⟩
+    · use fun i => ⟨μ i, (iSup_const_le : _ ≤ p i) (coe_mem <| μ i)⟩
       rw [← hμ]
       symm
       apply Finset.sum_subset
@@ -394,9 +391,9 @@ theorem mem_supᵢ_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R
         rw [mem_support_iff, not_ne_iff]
         ext
         rw [coe_zero, ← mem_bot R]
-        suffices : ⊥ = ⨆ (_H : x ∈ s), p x
+        suffices : ⊥ = ⨆ (_ : x ∈ s), p x
         · exact this.symm ▸ coe_mem (μ x)
-        exact (supᵢ_neg hx).symm
+        exact (iSup_neg hx).symm
       · intro x _ hx
         rw [mem_support_iff, not_ne_iff] at hx
         rw [hx]
@@ -404,7 +401,7 @@ theorem mem_supᵢ_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R
     · refine' ⟨Dfinsupp.mk s _, _⟩
       · rintro ⟨i, hi⟩
         refine' ⟨μ i, _⟩
-        rw [supᵢ_pos]
+        rw [iSup_pos]
         · exact coe_mem _
         · exact hi
       simp only [Dfinsupp.sum]
@@ -414,7 +411,7 @@ theorem mem_supᵢ_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R
         rw [mem_support_iff, not_ne_iff] at hx
         rw [hx]
         rfl
-#align submodule.mem_supr_finset_iff_exists_sum Submodule.mem_supᵢ_finset_iff_exists_sum
+#align submodule.mem_supr_finset_iff_exists_sum Submodule.mem_iSup_finset_iff_exists_sum
 
 end Submodule
 
@@ -436,7 +433,7 @@ theorem independent_iff_forall_dfinsupp (p : ι → Submodule R N) :
       ∀ (i) (x : p i) (v : Π₀ i : ι, ↥(p i)),
         lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
   simp_rw [CompleteLattice.independent_def, Submodule.disjoint_def,
-    Submodule.mem_bsupᵢ_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
+    Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
   refine' forall_congr' fun i => Subtype.forall'.trans _
   simp_rw [Submodule.coe_eq_zero]
 #align complete_lattice.independent_iff_forall_dfinsupp CompleteLattice.independent_iff_forall_dfinsupp
@@ -482,7 +479,7 @@ section Ring
 
 variable [Ring R] [AddCommGroup N] [Module R N]
 
-/- If `Dfinsupp.sumAddHom` applied with `add_submonoid.subtype` is injective then the additive
+/- If `Dfinsupp.sumAddHom` applied with `AddSubmonoid.subtype` is injective then the additive
 subgroups are independent. -/
 theorem independent_of_dfinsupp_sumAddHom_injective' (p : ι → AddSubgroup N)
     (h : Function.Injective (sumAddHom fun i => (p i).subtype)) : Independent p := by
@@ -501,8 +498,7 @@ theorem Independent.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : Inde
     Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`
   rw [independent_iff_forall_dfinsupp] at h
-  suffices LinearMap.ker (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) = ⊥
-    by
+  suffices LinearMap.ker (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) = ⊥ by
     -- Lean can't find this without our help
     letI thisI : AddCommGroup (Π₀ i, p i) := inferInstance
     rw [LinearMap.ker_eq_bot] at this
@@ -542,7 +538,6 @@ theorem independent_iff_dfinsupp_sumAddHom_injective (p : ι → AddSubgroup N) 
   ⟨Independent.dfinsupp_sumAddHom_injective, independent_of_dfinsupp_sumAddHom_injective' p⟩
 #align complete_lattice.independent_iff_dfinsupp_sum_add_hom_injective CompleteLattice.independent_iff_dfinsupp_sumAddHom_injective
 
-set_option synthInstance.etaExperiment true in
 /-- If a family of submodules is `Independent`, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
 

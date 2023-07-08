@@ -192,8 +192,8 @@ theorem prod_bind [CommMonoid β] (s : Multiset α) (t : α → Multiset β) :
 #align multiset.sum_bind Multiset.sum_bind
 
 theorem rel_bind {r : α → β → Prop} {p : γ → δ → Prop} {s t} {f : α → Multiset γ}
-    {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) : Rel p (s.bind f) (t.bind g) :=
-  by
+    {g : β → Multiset δ} (h : (r ⇒ Rel p) f g) (hst : Rel r s t) :
+    Rel p (s.bind f) (t.bind g) := by
   apply rel_join
   rw [rel_map]
   exact hst.mono fun a _ b _ hr => h hr
@@ -241,41 +241,43 @@ def product (s : Multiset α) (t : Multiset β) : Multiset (α × β) :=
   s.bind fun a => t.map <| Prod.mk a
 #align multiset.product Multiset.product
 
--- This notation binds more strongly than (pre)images, unions and intersections.
-@[inherit_doc]
-infixr:82 " ×ˢ " => Multiset.product
+instance instSProd : SProd (Multiset α) (Multiset β) (Multiset (α × β)) where
+  sprod := Multiset.product
 
 @[simp]
-theorem coe_product (l₁ : List α) (l₂ : List β) : @product α β l₁ l₂ = l₁.product l₂ := by
+theorem coe_product (l₁ : List α) (l₂ : List β) :
+    (l₁ : Multiset α) ×ˢ (l₂ : Multiset β) = (l₁ ×ˢ l₂) := by
+  dsimp only [SProd.sprod]
   rw [product, List.product, ← coe_bind]
   simp
 #align multiset.coe_product Multiset.coe_product
 
 @[simp]
-theorem zero_product : @product α β 0 t = 0 :=
+theorem zero_product : (0 : Multiset α) ×ˢ t = 0 :=
   rfl
 #align multiset.zero_product Multiset.zero_product
 
 @[simp]
-theorem cons_product : (a ::ₘ s) ×ˢ t = map (Prod.mk a) t + s ×ˢ t := by simp [product]
+theorem cons_product : (a ::ₘ s) ×ˢ t = map (Prod.mk a) t + s ×ˢ t := by simp [SProd.sprod, product]
 #align multiset.cons_product Multiset.cons_product
 
 @[simp]
-theorem product_zero : s ×ˢ (0 : Multiset β) = 0 := by simp [product]
+theorem product_zero : s ×ˢ (0 : Multiset β) = 0 := by simp [SProd.sprod, product]
 #align multiset.product_zero Multiset.product_zero
 
 @[simp]
-theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ˢ t := by simp [product]
+theorem product_cons : s ×ˢ (b ::ₘ t) = (s.map fun a => (a, b)) + s ×ˢ t := by
+  simp [SProd.sprod, product]
 #align multiset.product_cons Multiset.product_cons
 
 @[simp]
 theorem product_singleton : ({a} : Multiset α) ×ˢ ({b} : Multiset β) = {(a, b)} := by
-  simp only [product, bind_singleton, map_singleton]
+  simp only [SProd.sprod, product, bind_singleton, map_singleton]
 #align multiset.product_singleton Multiset.product_singleton
 
 @[simp]
 theorem add_product (s t : Multiset α) (u : Multiset β) : (s + t) ×ˢ u = s ×ˢ u + t ×ˢ u := by
-  simp [product]
+  simp [SProd.sprod, product]
 #align multiset.add_product Multiset.add_product
 
 @[simp]
@@ -291,7 +293,7 @@ theorem mem_product {s t} : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1
 #align multiset.mem_product Multiset.mem_product
 
 @[simp]
-theorem card_product : card (s ×ˢ t) = card s * card t := by simp [product]
+theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod, product]
 #align multiset.card_product Multiset.card_product
 
 end Product
@@ -303,7 +305,7 @@ section Sigma
 
 variable {σ : α → Type _} (a : α) (s : Multiset α) (t : ∀ a, Multiset (σ a))
 
-/-- `sigma s t` is the dependent version of `product`. It is the sum of
+/-- `Multiset.sigma s t` is the dependent version of `Multiset.product`. It is the sum of
   `(a, b)` as `a` ranges over `s` and `b` ranges over `t a`. -/
 protected def sigma (s : Multiset α) (t : ∀ a, Multiset (σ a)) : Multiset (Σa, σ a) :=
   s.bind fun a => (t a).map <| Sigma.mk a

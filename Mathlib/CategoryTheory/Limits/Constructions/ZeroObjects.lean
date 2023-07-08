@@ -71,7 +71,7 @@ def binaryFanZeroRight (X : C) : BinaryFan X (0 : C) :=
 /-- The limit cone for the product with a zero object is limiting. -/
 def binaryFanZeroRightIsLimit (X : C) : IsLimit (binaryFanZeroRight X) :=
   BinaryFan.isLimitMk (fun s => BinaryFan.fst s) (by aesop_cat) (by aesop_cat)
-    (fun s m h₁ => by simpa using h₁)
+    (fun s m h₁ _ => by simpa using h₁)
 #align category_theory.limits.binary_fan_zero_right_is_limit CategoryTheory.Limits.binaryFanZeroRightIsLimit
 
 instance hasBinaryProduct_zero_right (X : C) : HasBinaryProduct X (0 : C) :=
@@ -162,7 +162,7 @@ instance hasPullback_over_zero (X Y : C) [HasBinaryProduct X Y] :
     ⟨_, isPullbackOfIsTerminalIsProduct _ _ _ _ HasZeroObject.zeroIsTerminal (prodIsProd X Y)⟩
 #align category_theory.limits.has_pullback_over_zero CategoryTheory.Limits.hasPullback_over_zero
 
-/-- The pullback over the zeron object is the product. -/
+/-- The pullback over the zero object is the product. -/
 def pullbackZeroZeroIso (X Y : C) [HasBinaryProduct X Y] :
     pullback (0 : X ⟶ 0) (0 : Y ⟶ 0) ≅ X ⨯ Y :=
   limit.isoLimitCone

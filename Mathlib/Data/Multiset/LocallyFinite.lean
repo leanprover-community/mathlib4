@@ -250,8 +250,8 @@ theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
   Finset.Ico_subset_Ico_iff h
 #align multiset.Ico_subset_Ico_iff Multiset.Ico_subset_Ico_iff
 
-theorem Ico_add_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) : Ico a b + Ico b c = Ico a c :=
-  by
+theorem Ico_add_Ico_eq_Ico {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) :
+    Ico a b + Ico b c = Ico a c := by
   rw [add_eq_union_iff_disjoint.2 (Ico_disjoint_Ico le_rfl), Ico, Ico, Ico, ← Finset.union_val,
     Finset.Ico_union_Ico_eq_Ico hab hbc]
 #align multiset.Ico_add_Ico_eq_Ico Multiset.Ico_add_Ico_eq_Ico
@@ -329,4 +329,3 @@ theorem map_add_right_Ioo (a b c : α) : ((Ioo a b).map fun x => x + c) = Ioo (a
 end OrderedCancelAddCommMonoid
 
 end Multiset
-

@@ -121,7 +121,7 @@ theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
 variable (P)
 
 /-- `Idx` identifies a location inside the application of a pfunctor.
-For `F : pfunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
+For `F : PFunctor`, `x : F.obj α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
 def IdxCat :=
   Σx : P.A, P.B x

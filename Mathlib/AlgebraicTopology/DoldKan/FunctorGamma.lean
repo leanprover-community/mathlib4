@@ -58,7 +58,7 @@ theorem iff {j : ℕ} {i : Fin (j + 2)} : Isδ₀ (SimplexCategory.δ i) ↔ i =
     by_contra h
     exact h₂ (Fin.succAbove_ne_zero_zero h)
   · rintro rfl
-    exact ⟨rfl, by dsimp ; exact Fin.succ_ne_zero 0⟩
+    exact ⟨rfl, by dsimp; exact Fin.succ_ne_zero (0 : Fin (j + 1))⟩
 #align algebraic_topology.dold_kan.is_δ₀.iff AlgebraicTopology.DoldKan.Isδ₀.iff
 
 theorem eq_δ₀ {n : ℕ} {i : ([n] : SimplexCategory) ⟶ [n + 1]} [Mono i] (hi : Isδ₀ i) :

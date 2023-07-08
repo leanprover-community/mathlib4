@@ -21,40 +21,40 @@ Porting note:
 This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
 name clashes.  -/
 
-
 open Nat Function Option
-
-universe u v w
 
 namespace Stream'
 
 variable {α : Type u} {β : Type v} {δ : Type w}
 
-instance {α} [Inhabited α] : Inhabited (Stream' α) :=
+instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
 protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
   funext fun i => by cases i <;> rfl
 #align stream.eta Stream'.eta
 
+@[ext]
+protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, nth s₁ n = nth s₂ n) → s₁ = s₂ :=
+  fun h => funext h
+#align stream.ext Stream'.ext
+
 @[simp]
 theorem nth_zero_cons (a : α) (s : Stream' α) : nth (a::s) 0 = a :=
   rfl
 #align stream.nth_zero_cons Stream'.nth_zero_cons
 
+@[simp]
 theorem head_cons (a : α) (s : Stream' α) : head (a::s) = a :=
   rfl
 #align stream.head_cons Stream'.head_cons
 
+@[simp]
 theorem tail_cons (a : α) (s : Stream' α) : tail (a::s) = s :=
   rfl
 #align stream.tail_cons Stream'.tail_cons
 
-theorem tail_drop (n : Nat) (s : Stream' α) : tail (drop n s) = drop n (tail s) :=
-  funext fun i => by
-    unfold tail drop; simp [nth, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
-#align stream.tail_drop Stream'.tail_drop
-
+@[simp]
 theorem nth_drop (n m : Nat) (s : Stream' α) : nth (drop m s) n = nth s (n + m) :=
   rfl
 #align stream.nth_drop Stream'.nth_drop
@@ -63,9 +63,20 @@ theorem tail_eq_drop (s : Stream' α) : tail s = drop 1 s :=
   rfl
 #align stream.tail_eq_drop Stream'.tail_eq_drop
 
-theorem drop_drop (n m : Nat) (s : Stream' α) : drop n (drop m s) = drop (n + m) s :=
-  funext fun i => by unfold drop; rw [Nat.add_assoc]
+@[simp]
+theorem drop_drop (n m : Nat) (s : Stream' α) : drop n (drop m s) = drop (n + m) s := by
+  ext; simp [Nat.add_assoc]
 #align stream.drop_drop Stream'.drop_drop
+
+@[simp] theorem nth_tail {s : Stream' α} : s.tail.nth n = s.nth (n + 1) := rfl
+
+@[simp] theorem tail_drop' {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
+  ext; simp [add_comm, add_assoc, add_left_comm]
+
+@[simp] theorem drop_tail' {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
+
+theorem tail_drop (n : Nat) (s : Stream' α) : tail (drop n s) = drop n (tail s) := by simp
+#align stream.tail_drop Stream'.tail_drop
 
 theorem nth_succ (n : Nat) (s : Stream' α) : nth s (succ n) = nth (tail s) n :=
   rfl
@@ -76,19 +87,14 @@ theorem nth_succ_cons (n : Nat) (s : Stream' α) (x : α) : nth (x::s) n.succ = 
   rfl
 #align stream.nth_succ_cons Stream'.nth_succ_cons
 
+@[simp] theorem drop_zero {s : Stream' α} : s.drop 0 = s := rfl
+
 theorem drop_succ (n : Nat) (s : Stream' α) : drop (succ n) s = drop n (tail s) :=
   rfl
 #align stream.drop_succ Stream'.drop_succ
 
-@[simp]
-theorem head_drop {α} (a : Stream' α) (n : ℕ) : (a.drop n).head = a.nth n := by
-  simp only [drop, head, Nat.zero_add, Stream'.nth]
+theorem head_drop (a : Stream' α) (n : ℕ) : (a.drop n).head = a.nth n := by simp
 #align stream.head_drop Stream'.head_drop
-
-@[ext]
-protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, nth s₁ n = nth s₂ n) → s₁ = s₂ :=
-  fun h => funext h
-#align stream.ext Stream'.ext
 
 theorem cons_injective2 : Function.Injective2 (cons : α → Stream' α → Stream' α) := fun x y s t h =>
   ⟨by rw [← nth_zero_cons x s, h, nth_zero_cons],
@@ -111,6 +117,7 @@ theorem any_def (p : α → Prop) (s : Stream' α) : Any p s = ∃ n, p (nth s n
   rfl
 #align stream.any_def Stream'.any_def
 
+@[simp]
 theorem mem_cons (a : α) (s : Stream' α) : a ∈ a::s :=
   Exists.intro 0 rfl
 #align stream.mem_cons Stream'.mem_cons
@@ -141,13 +148,15 @@ theorem drop_map (n : Nat) (s : Stream' α) : drop n (map f s) = map f (drop n s
   Stream'.ext fun _ => rfl
 #align stream.drop_map Stream'.drop_map
 
+@[simp]
 theorem nth_map (n : Nat) (s : Stream' α) : nth (map f s) n = f (nth s n) :=
   rfl
 #align stream.nth_map Stream'.nth_map
 
-theorem tail_map (s : Stream' α) : tail (map f s) = map f (tail s) := by rw [tail_eq_drop]; rfl
+theorem tail_map (s : Stream' α) : tail (map f s) = map f (tail s) := rfl
 #align stream.tail_map Stream'.tail_map
 
+@[simp]
 theorem head_map (s : Stream' α) : head (map f s) = f (head s) :=
   rfl
 #align stream.head_map Stream'.head_map
@@ -160,14 +169,17 @@ theorem map_cons (a : α) (s : Stream' α) : map f (a::s) = f a::map f s := by
   rw [← Stream'.eta (map f (a::s)), map_eq]; rfl
 #align stream.map_cons Stream'.map_cons
 
+@[simp]
 theorem map_id (s : Stream' α) : map id s = s :=
   rfl
 #align stream.map_id Stream'.map_id
 
+@[simp]
 theorem map_map (g : β → δ) (f : α → β) (s : Stream' α) : map g (map f s) = map (g ∘ f) s :=
   rfl
 #align stream.map_map Stream'.map_map
 
+@[simp]
 theorem map_tail (s : Stream' α) : map f (tail s) = tail (map f s) :=
   rfl
 #align stream.map_tail Stream'.map_tail
@@ -191,6 +203,7 @@ theorem drop_zip (n : Nat) (s₁ : Stream' α) (s₂ : Stream' β) :
   Stream'.ext fun _ => rfl
 #align stream.drop_zip Stream'.drop_zip
 
+@[simp]
 theorem nth_zip (n : Nat) (s₁ : Stream' α) (s₂ : Stream' β) :
     nth (zip f s₁ s₂) n = f (nth s₁ n) (nth s₂ n) :=
   rfl
@@ -221,6 +234,7 @@ theorem enum_eq_zip (s : Stream' α) : enum s = zip Prod.mk nats s :=
 
 end Zip
 
+@[simp]
 theorem mem_const (a : α) : a ∈ const a :=
   Exists.intro 0 rfl
 #align stream.mem_const Stream'.mem_const
@@ -230,36 +244,41 @@ theorem const_eq (a : α) : const a = a::const a := by
   cases n <;> rfl
 #align stream.const_eq Stream'.const_eq
 
+@[simp]
 theorem tail_const (a : α) : tail (const a) = const a :=
   suffices tail (a::const a) = const a by rwa [← const_eq] at this
   rfl
 #align stream.tail_const Stream'.tail_const
 
+@[simp]
 theorem map_const (f : α → β) (a : α) : map f (const a) = const (f a) :=
   rfl
 #align stream.map_const Stream'.map_const
 
+@[simp]
 theorem nth_const (n : Nat) (a : α) : nth (const a) n = a :=
   rfl
 #align stream.nth_const Stream'.nth_const
 
+@[simp]
 theorem drop_const (n : Nat) (a : α) : drop n (const a) = const a :=
   Stream'.ext fun _ => rfl
 #align stream.drop_const Stream'.drop_const
 
+@[simp]
 theorem head_iterate (f : α → α) (a : α) : head (iterate f a) = a :=
   rfl
 #align stream.head_iterate Stream'.head_iterate
 
+theorem nth_succ_iterate' (n : Nat) (f : α → α) (a : α) :
+    nth (iterate f a) (succ n) = f (nth (iterate f a) n) := rfl
+
 theorem tail_iterate (f : α → α) (a : α) : tail (iterate f a) = iterate f (f a) := by
-  funext n
+  ext n
+  rw [nth_tail]
   induction' n with n' ih
   · rfl
-  · unfold tail iterate
-    rw [Nat.add, Nat.add_zero (succ n')]
-    rw [tail, iterate] at ih
-    rw [iterate]
-    congr
+  · rw [nth_succ_iterate', ih, nth_succ_iterate']
 #align stream.tail_iterate Stream'.tail_iterate
 
 theorem iterate_eq (f : α → α) (a : α) : iterate f a = a::iterate f (f a) := by
@@ -267,6 +286,7 @@ theorem iterate_eq (f : α → α) (a : α) : iterate f a = a::iterate f (f a) :
   rw [tail_iterate]; rfl
 #align stream.iterate_eq Stream'.iterate_eq
 
+@[simp]
 theorem nth_zero_iterate (f : α → α) (a : α) : nth (iterate f a) 0 = a :=
   rfl
 #align stream.nth_zero_iterate Stream'.nth_zero_iterate
@@ -333,6 +353,7 @@ theorem coinduction {s₁ s₂ : Stream' α} :
     (And.intro hh ht)
 #align stream.coinduction Stream'.coinduction
 
+@[simp]
 theorem iterate_id (a : α) : iterate id a = const a :=
   coinduction rfl fun β fr ch => by rw [tail_iterate, tail_const]; exact ch
 #align stream.iterate_id Stream'.iterate_id
@@ -440,6 +461,7 @@ theorem odd_eq (s : Stream' α) : odd s = even (tail s) :=
   rfl
 #align stream.odd_eq Stream'.odd_eq
 
+@[simp]
 theorem head_even (s : Stream' α) : head (even s) = head s :=
   rfl
 #align stream.head_even Stream'.head_even
@@ -549,23 +571,48 @@ theorem take_zero (s : Stream' α) : take 0 s = [] :=
   rfl
 #align stream.take_zero Stream'.take_zero
 
-@[simp]
+-- This lemma used to be simp, but we removed it from the simp set because:
+-- 1) It duplicates the (often large) `s` term, resulting in large tactic states.
+-- 2) It conflicts with the very useful `dropLast_take` lemma below (causing nonconfluence).
 theorem take_succ (n : Nat) (s : Stream' α) : take (succ n) s = head s::take n (tail s) :=
   rfl
 #align stream.take_succ Stream'.take_succ
 
+@[simp] theorem take_succ_cons (n : Nat) (s : Stream' α) : take (n+1) (a::s) = a :: take n s := rfl
+
+theorem take_succ' {s : Stream' α} : ∀ n, s.take (n+1) = s.take n ++ [s.nth n]
+  | 0 => rfl
+  | n+1 => by rw [take_succ, take_succ' n, ← List.cons_append, ← take_succ, nth_tail]
+
 @[simp]
 theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
-  induction n generalizing s <;> simp [*]
+  induction n generalizing s <;> simp [*, take_succ]
 #align stream.length_take Stream'.length_take
 
-theorem get?_take_succ : ∀ (n : Nat) (s : Stream' α),
-    List.get? (take (succ n) s) n = some (nth s n)
-  | 0, s => rfl
-  | n + 1, s => by
-    rw [take_succ, add_one, List.get?, get?_take_succ n]; rfl
+@[simp]
+theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min n m)
+  | 0, n => by rw [min_zero, List.take_zero, take_zero]
+  | m, 0 => by rw [zero_min, take_zero, List.take_nil]
+  | m+1, n+1 => by rw [take_succ, List.take_cons, Nat.min_succ_succ, take_succ, take_take]
+
+@[simp] theorem concat_take_nth {s : Stream' α} : s.take n ++ [s.nth n] = s.take (n+1) :=
+  (take_succ' n).symm
+
+theorem get?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get? k = s.nth k
+  | 0, n+1, _ => rfl
+  | k+1, n+1, h => by rw [take_succ, List.get?, get?_take (Nat.lt_of_succ_lt_succ h), nth_succ]
+
+theorem get?_take_succ (n : Nat) (s : Stream' α) :
+    List.get? (take (succ n) s) n = some (nth s n) :=
+  get?_take (Nat.lt_succ_self n)
 #align stream.nth_take_succ Stream'.get?_take_succ
 
+@[simp] theorem dropLast_take {xs : Stream' α} :
+    (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
+  cases n; case zero => simp
+  case succ n => rw [take_succ', List.dropLast_concat, Nat.succ_sub_one]
+
+@[simp]
 theorem append_take_drop : ∀ (n : Nat) (s : Stream' α),
     appendStream' (take n s) (drop n s) = s := by
   intro n
@@ -597,11 +644,8 @@ protected theorem cycle_g_cons (a : α) (a₁ : α) (l₁ : List α) (a₀ : α)
 theorem cycle_eq : ∀ (l : List α) (h : l ≠ []), cycle l h = l ++ₛ cycle l h
   | [], h => absurd rfl h
   | List.cons a l, _ =>
-    have gen :
-      ∀ l' a',
-        corec Stream'.cycleF Stream'.cycleG (a', l', a, l) =
-          (a'::l') ++ₛ corec Stream'.cycleF Stream'.cycleG (a, l, a, l) :=
-      by
+    have gen : ∀ l' a', corec Stream'.cycleF Stream'.cycleG (a', l', a, l) =
+        (a'::l') ++ₛ corec Stream'.cycleF Stream'.cycleG (a, l, a, l) := by
       intro l'
       induction' l' with a₁ l₁ ih
       · intros
@@ -617,14 +661,16 @@ theorem mem_cycle {a : α} {l : List α} : ∀ h : l ≠ [], a ∈ l → a ∈ c
   rw [cycle_eq]; exact mem_append_stream_left _ ainl
 #align stream.mem_cycle Stream'.mem_cycle
 
-theorem cycle_singleton (a : α) (h : [a] ≠ []) : cycle [a] h = const a :=
+@[simp]
+theorem cycle_singleton (a : α) : cycle [a] (by simp) = const a :=
   coinduction rfl fun β fr ch => by rwa [cycle_eq, const_eq]
 #align stream.cycle_singleton Stream'.cycle_singleton
 
 theorem tails_eq (s : Stream' α) : tails s = tail s::tails (tail s) := by
-  unfold tails ; rw [corec_eq] ; rfl
+  unfold tails; rw [corec_eq]; rfl
 #align stream.tails_eq Stream'.tails_eq
 
+@[simp]
 theorem nth_tails : ∀ (n : Nat) (s : Stream' α), nth (tails s) n = drop n (tail s) := by
   intro n; induction' n with n' ih
   · intros
@@ -665,6 +711,7 @@ theorem cons_nth_inits_core :
     rfl
 #align stream.cons_nth_inits_core Stream'.cons_nth_inits_core
 
+@[simp]
 theorem nth_inits : ∀ (n : Nat) (s : Stream' α), nth (inits s) n = take (succ n) s := by
   intro n; induction' n with n' ih
   · intros

@@ -63,7 +63,7 @@ In the above example, when the `apply_congr` tactic is called it gives the hypot
 which is then used to rewrite the `f x` to `g x`.
 -/
 def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
-  let const lhsFun _ ← (getAppFn ∘ cleanupAnnotations) <$> getLhs |
+  let const lhsFun _ ← (getAppFn ∘ cleanupAnnotations) <$> instantiateMVars (← getLhs) |
     throwError "Left-hand side must be an application of a constant."
   let congrTheoremExprs ←
     match q with
@@ -75,12 +75,17 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
       let congrTheorems ←
         (fun congrTheoremMap => congrTheoremMap.get lhsFun) <$> getSimpCongrTheorems
       congrTheorems.mapM (fun congrTheorem => liftM <| Prod.fst <$> mkFun congrTheorem.theoremName)
+  if congrTheoremExprs == [] then
+    throwError "No matching congr lemmas found"
   -- For every lemma:
   liftMetaTactic <| fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
     let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 
-syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace (colGt term))? : conv
+syntax (name := Lean.Parser.Tactic.applyCongr) "apply_congr" (ppSpace colGt term)? : conv
+
+-- TODO: add `apply_congr with h` to specify hypothesis name
+-- https://github.com/leanprover-community/mathlib/issues/2882
 
 elab_rules : conv
   | `(conv| apply_congr$[ $t?]?) => do

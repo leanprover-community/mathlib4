@@ -110,7 +110,7 @@ These hypotheses can be given a name using `fin_cases a using ha`.
 
 For example,
 ```
-example (f : ℕ → fin 3) : true := by
+example (f : ℕ → Fin 3) : True := by
   let a := f 3
   fin_cases a using ha
 ```

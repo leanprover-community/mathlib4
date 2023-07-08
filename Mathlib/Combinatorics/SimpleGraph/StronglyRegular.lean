@@ -115,16 +115,16 @@ set_option linter.uppercaseLean3 false in
 #align simple_graph.is_SRG_with.card_neighbor_finset_union_of_adj SimpleGraph.IsSRGWith.card_neighborFinset_union_of_adj
 
 theorem compl_neighborFinset_sdiff_inter_eq {v w : V} :
-    G.neighborFinset vᶜ \ {v} ∩ (G.neighborFinset wᶜ \ {w}) =
-      (G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ) \ ({w} ∪ {v}) := by
+    (G.neighborFinset v)ᶜ \ {v} ∩ ((G.neighborFinset w)ᶜ \ {w}) =
+      ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) := by
   ext
   rw [← not_iff_not]
   simp [imp_iff_not_or, or_assoc, or_comm, or_left_comm]
 #align simple_graph.compl_neighbor_finset_sdiff_inter_eq SimpleGraph.compl_neighborFinset_sdiff_inter_eq
 
 theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
-    (G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ) \ ({w} ∪ {v}) =
-      G.neighborFinset vᶜ ∩ G.neighborFinset wᶜ := by
+    ((G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ) \ ({w} ∪ {v}) =
+      (G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ := by
   ext
   simp only [and_imp, mem_union, mem_sdiff, mem_compl, and_iff_left_iff_imp, mem_neighborFinset,
     mem_inter, mem_singleton]

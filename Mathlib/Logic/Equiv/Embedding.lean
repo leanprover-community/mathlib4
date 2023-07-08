@@ -36,8 +36,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type _} :
     ⟨fun x =>
       match x with
       | Sum.inl a => f a
-      | Sum.inr b => g b,
-      by
+      | Sum.inr b => g b, by
       rintro (a₁ | b₁) (a₂ | b₂) f_eq <;>
         simp only [Equiv.coe_fn_symm_mk, Sum.elim_inl, Sum.elim_inr] at f_eq
       · rw [f.injective f_eq]
@@ -72,7 +71,7 @@ def codRestrict (α : Type _) {β : Type _} (bs : Set β) :
 in which the second embedding cannot take values in the range of the first. -/
 def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
     { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } ≃
-      Σf : α ↪ γ, β ↪ ↥(Set.range fᶜ) :=
+      Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   (subtypeProdEquivSigmaSubtype fun (a : α ↪ γ) (b : β ↪ _) =>
         Disjoint (Set.range a) (Set.range b)).trans <|
     Equiv.sigmaCongrRight fun a =>
@@ -86,7 +85,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type _} :
 into two dependent embeddings, the second of which avoids any members of the range
 of the first. This is helpful for constructing larger embeddings out of smaller ones. -/
 def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type _} :
-    (Sum α β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range fᶜ) :=
+    (Sum α β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 #align equiv.sum_embedding_equiv_sigma_embedding_restricted Equiv.sumEmbeddingEquivSigmaEmbeddingRestricted

@@ -50,7 +50,7 @@ def PythagoreanTriple (x y z : ℤ) : Prop :=
   x * x + y * y = z * z
 #align pythagorean_triple PythagoreanTriple
 
-/-- Pythagorean triples are interchangable, i.e `x * x + y * y = y * y + x * x = z * z`.
+/-- Pythagorean triples are interchangeable, i.e `x * x + y * y = y * y + x * x = z * z`.
 This comes from additive commutativity. -/
 theorem pythagoreanTriple_comm {x y z : ℤ} : PythagoreanTriple x y z ↔ PythagoreanTriple y x z := by
   delta PythagoreanTriple
@@ -106,7 +106,7 @@ def IsClassified (_ : PythagoreanTriple x y z) :=
       Int.gcd m n = 1
 #align pythagorean_triple.is_classified PythagoreanTriple.IsClassified
 
-/-- A primitive pythogorean triple `x, y, z` is a pythagorean triple with `x` and `y` coprime.
+/-- A primitive Pythagorean triple `x, y, z` is a Pythagorean triple with `x` and `y` coprime.
  Such a triple is “primitively classified” if there exist coprime integers `m, n` such that either
  * `x = m ^ 2 - n ^ 2` and `y = 2 * m * n`, or
  * `x = 2 * m * n` and `y = m ^ 2 - n ^ 2`.
@@ -174,7 +174,7 @@ theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
         or_self_iff] using h
     simp only [hz, dvd_zero]
   obtain ⟨k, x0, y0, _, h2, rfl, rfl⟩ :
-    ∃ (k : ℕ)(x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
+    ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul]
   rw [← Int.pow_dvd_pow_iff zero_lt_two, sq z, ← h.eq]
@@ -197,12 +197,12 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
     exact zero
   rcases h.gcd_dvd with ⟨z0, rfl⟩
   obtain ⟨k, x0, y0, k0, h2, rfl, rfl⟩ :
-    ∃ (k : ℕ)(x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
+    ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
   have hk : (k : ℤ) ≠ 0 := by
     norm_cast
     rwa [pos_iff_ne_zero] at k0
-  rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul] at h⊢
+  rw [Int.gcd_mul_right, h2, Int.natAbs_ofNat, one_mul] at h ⊢
   rw [mul_comm x0, mul_comm y0, mul_iff k hk] at h
   rwa [Int.mul_ediv_cancel _ hk, Int.mul_ediv_cancel _ hk, Int.mul_ediv_cancel_left _ hk]
 #align pythagorean_triple.normalize PythagoreanTriple.normalize

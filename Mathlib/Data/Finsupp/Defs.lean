@@ -239,8 +239,8 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (a «expr ∉ » s) -/
-theorem support_subset_iff {s : Set α} {f : α →₀ M} : ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 :=
-  by
+theorem support_subset_iff {s : Set α} {f : α →₀ M} :
+    ↑f.support ⊆ s ↔ ∀ (a) (_ : a ∉ s), f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
 #align finsupp.support_subset_iff Finsupp.support_subset_iff
 
@@ -363,11 +363,11 @@ theorem support_single_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = 
 #align finsupp.support_single_ne_zero Finsupp.support_single_ne_zero
 
 theorem support_single_subset : (single a b).support ⊆ {a} := by
-  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _, exact Subset.refl _]
+  classical show ite _ _ _ ⊆ _; split_ifs <;> [exact empty_subset _; exact Subset.refl _]
 #align finsupp.support_single_subset Finsupp.support_single_subset
 
 theorem single_apply_mem (x) : single a b x ∈ ({0, b} : Set M) := by
-  rcases em (a = x) with (rfl | hx) <;> [simp, simp [single_eq_of_ne hx]]
+  rcases em (a = x) with (rfl | hx) <;> [simp; simp [single_eq_of_ne hx]]
 #align finsupp.single_apply_mem Finsupp.single_apply_mem
 
 theorem range_single_subset : Set.range (single a b) ⊆ {0, b} :=
@@ -472,7 +472,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
-    f.support = {a} ↔ ∃ (b : _)(_ : b ≠ 0), f = single a b :=
+    f.support = {a} ↔ ∃ (b : _) (_ : b ≠ 0), f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
@@ -486,7 +486,7 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ (a : _)(b : _)(_ : b ≠ 0), f = single a b := by
+    card f.support = 1 ↔ ∃ (a : _) (b : _) (_ : b ≠ 0), f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 #align finsupp.card_support_eq_one' Finsupp.card_support_eq_one'
 
@@ -911,8 +911,8 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
 #align finsupp.single_of_emb_domain_single Finsupp.single_of_embDomain_single
 
 @[simp]
-theorem embDomain_single (f : α ↪ β) (a : α) (m : M) : embDomain f (single a m) = single (f a) m :=
-  by
+theorem embDomain_single (f : α ↪ β) (a : α) (m : M) :
+    embDomain f (single a m) = single (f a) m := by
   classical
     ext b
     by_cases h : b ∈ Set.range f

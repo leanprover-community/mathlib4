@@ -2,20 +2,25 @@
 Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
--/
 
-import Mathlib.Data.Array.Basic
+! This file was ported from Lean 3 source module testing.slim_check.testable
+! leanprover-community/mathlib commit fdc286cc6967a012f41b87f76dcd2797b53152af
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
+-/
 import Mathlib.Testing.SlimCheck.Sampleable
 import Lean
 
 /-!
 # `Testable` Class
+
 Testable propositions have a procedure that can generate counter-examples
 together with a proof that they invalidate the proposition.
 
 This is a port of the Haskell QuickCheck library.
 
 ## Creating Customized Instances
+
 The type classes `Testable`, `SampleableExt` and `Shrinkable` are the
 means by which `SlimCheck` creates samples and tests them. For instance,
 the proposition `∀ i j : ℕ, i ≤ j` has a `Testable` instance because `ℕ`
@@ -27,7 +32,9 @@ example. This allows the user to create new instances and apply
 `SlimCheck` to new situations.
 
 ### What do I do if I'm testing a property about my newly defined type?
+
 Let us consider a type made for a new formalization:
+
 ```lean
 structure MyType where
   x : ℕ
@@ -35,10 +42,12 @@ structure MyType where
   h : x ≤ y
   deriving Repr
 ```
+
 How do we test a property about `MyType`? For instance, let us consider
 `Testable.check $ ∀ a b : MyType, a.y ≤ b.x → a.x ≤ b.y`. Writing this
 property as is will give us an error because we do not have an instance
 of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
+
 ```lean
 instance : Shrinkable MyType where
   shrink := λ ⟨x,y,h⟩ =>
@@ -51,6 +60,7 @@ instance : SampleableExt MyType :=
     let xyDiff ← SampleableExt.interpSample Nat
     pure $ ⟨x, x + xyDiff, sorry⟩
 ```
+
 Again, we take advantage of the fact that other types have useful
 `Shrinkable` implementations, in this case `Prod`. Note that the second
 proof is heavily based on `WellFoundedRelation` since its used for termination so
@@ -58,37 +68,40 @@ the first step you want to take is almost always to `simp_wf` in order to
 get through the `WellFoundedRelation`.
 
 ## Main definitions
-  * `Testable` class
-  * `Testable.check`: a way to test a proposition using random examples
+
+* `Testable` class
+* `Testable.check`: a way to test a proposition using random examples
 
 ## Tags
 
 random testing
 
 ## References
-  * https://hackage.haskell.org/package/QuickCheck
+
+* https://hackage.haskell.org/package/QuickCheck
+
 -/
 
 namespace SlimCheck
 
 /-- Result of trying to disprove `p`
 The constructors are:
-  *  `success : (PSum Unit p) → TestResult p`
-     succeed when we find another example satisfying `p`
-     In `success h`, `h` is an optional proof of the proposition.
-     Without the proof, all we know is that we found one example
-     where `p` holds. With a proof, the one test was sufficient to
-     prove that `p` holds and we do not need to keep finding examples.
-   * `gaveUp : ℕ → TestResult p`
-     give up when a well-formed example cannot be generated.
-     `gaveUp n` tells us that `n` invalid examples were tried.
-     Above 100, we give up on the proposition and report that we
-     did not find a way to properly test it.
-   * `failure : ¬ p → (List String) → ℕ → TestResult p`
-     a counter-example to `p`; the strings specify values for the relevant variables.
-     `failure h vs n` also carries a proof that `p` does not hold. This way, we can
-     guarantee that there will be no false positive. The last component, `n`,
-     is the number of times that the counter-example was shrunk.
+*  `success : (PSum Unit p) → TestResult p`
+  succeed when we find another example satisfying `p`
+  In `success h`, `h` is an optional proof of the proposition.
+  Without the proof, all we know is that we found one example
+  where `p` holds. With a proof, the one test was sufficient to
+  prove that `p` holds and we do not need to keep finding examples.
+* `gaveUp : ℕ → TestResult p`
+  give up when a well-formed example cannot be generated.
+  `gaveUp n` tells us that `n` invalid examples were tried.
+  Above 100, we give up on the proposition and report that we
+  did not find a way to properly test it.
+* `failure : ¬ p → (List String) → ℕ → TestResult p`
+  a counter-example to `p`; the strings specify values for the relevant variables.
+  `failure h vs n` also carries a proof that `p` does not hold. This way, we can
+  guarantee that there will be no false positive. The last component, `n`,
+  is the number of times that the counter-example was shrunk.
 -/
 inductive TestResult (p : Prop) where
   | success : PSum Unit p → TestResult p
@@ -108,6 +121,19 @@ structure Configuration where
   randomSeed : Option Nat := none
   quiet : Bool := false
   deriving Inhabited
+
+open Lean in
+instance : ToExpr Configuration where
+  toTypeExpr := mkConst `Configuration
+  toExpr cfg := mkApp9 (mkConst ``Configuration.mk)
+    (toExpr cfg.numInst) (toExpr cfg.maxSize) (toExpr cfg.numRetries) (toExpr cfg.traceDiscarded)
+    (toExpr cfg.traceSuccesses) (toExpr cfg.traceShrink) (toExpr cfg.traceShrinkCandidates)
+    (toExpr cfg.randomSeed) (toExpr cfg.quiet)
+
+/--
+Allow elaboration of `Configuration` arguments to tactics.
+-/
+declare_config_elab elabConfig Configuration
 
 /--
 `PrintableProp p` allows one to print a proposition so that
@@ -132,40 +158,40 @@ def NamedBinder (_n : String) (p : Prop) : Prop := p
 namespace TestResult
 
 def toString : TestResult p → String
-| success (PSum.inl _) => "success (no proof)"
-| success (PSum.inr _) => "success (proof)"
-| gaveUp n => s!"gave {n} times"
-| failure _ counters _ => s!"failed {counters}"
+  | success (PSum.inl _) => "success (no proof)"
+  | success (PSum.inr _) => "success (proof)"
+  | gaveUp n => s!"gave {n} times"
+  | failure _ counters _ => s!"failed {counters}"
 
 instance : ToString (TestResult p) := ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
 def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
-| PSum.inr f, PSum.inr proof => PSum.inr $ f proof
-| _, _ => PSum.inl ()
+  | PSum.inr f, PSum.inr proof => PSum.inr $ f proof
+  | _, _ => PSum.inl ()
 
 /-- Combine the test result for properties `p` and `q` to create a test for their conjunction. -/
 def and : TestResult p → TestResult q → TestResult (p ∧ q)
-| failure h xs n, _ => failure (λ h2 => h h2.left) xs n
-| _, failure h xs n => failure (λ h2 => h h2.right) xs n
-| success h1, success h2 => success $ combine (combine (PSum.inr And.intro) h1) h2
-| gaveUp n, gaveUp m => gaveUp $ n + m
-| gaveUp n, _ => gaveUp n
-| _, gaveUp n => gaveUp n
+  | failure h xs n, _ => failure (λ h2 => h h2.left) xs n
+  | _, failure h xs n => failure (λ h2 => h h2.right) xs n
+  | success h1, success h2 => success $ combine (combine (PSum.inr And.intro) h1) h2
+  | gaveUp n, gaveUp m => gaveUp $ n + m
+  | gaveUp n, _ => gaveUp n
+  | _, gaveUp n => gaveUp n
 
 /-- Combine the test result for properties `p` and `q` to create a test for their disjunction. -/
 def or : TestResult p → TestResult q → TestResult (p ∨ q)
-| failure h1 xs n, failure h2 ys m =>
-  let h3 := λ h =>
-    match h with
-    | Or.inl h3 => h1 h3
-    | Or.inr h3 => h2 h3
-  failure h3 (xs ++ ys) (n + m)
-| success h, _ => success $ combine (PSum.inr Or.inl) h
-| _, success h => success $ combine (PSum.inr Or.inr) h
-| gaveUp n, gaveUp m => gaveUp $ n + m
-| gaveUp n, _ => gaveUp n
-| _, gaveUp n => gaveUp n
+  | failure h1 xs n, failure h2 ys m =>
+    let h3 := λ h =>
+      match h with
+      | Or.inl h3 => h1 h3
+      | Or.inr h3 => h2 h3
+    failure h3 (xs ++ ys) (n + m)
+  | success h, _ => success $ combine (PSum.inr Or.inl) h
+  | _, success h => success $ combine (PSum.inr Or.inr) h
+  | gaveUp n, gaveUp m => gaveUp $ n + m
+  | gaveUp n, _ => gaveUp n
+  | _, gaveUp n => gaveUp n
 
 /-- If `q → p`, then `¬ p → ¬ q` which means that testing `p` can allow us
 to find counter-examples to `q`. -/
@@ -196,8 +222,8 @@ def addVarInfo [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool
-| failure _ _ _ => true
-| _ => false
+  | failure _ _ _ => true
+  | _ => false
 
 end TestResult
 
@@ -244,6 +270,8 @@ instance iffTestable [Testable ((p ∧ q) ∨ (¬ p ∧ ¬ q))] : Testable (p �
     let h ← runProp ((p ∧ q) ∨ (¬ p ∧ ¬ q)) cfg min
     pure $ iff iff_iff_and_or_not_and_not h
 
+variable {var : String}
+
 instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀ h, Testable (β h)] :
     Testable (NamedBinder var $ ∀ h, β h) where
   run := λ cfg min => do
@@ -282,21 +310,23 @@ def formatFailure (s : String) (xs : List String) (n : Nat) : String :=
 Increase the number of shrinking steps in a test result.
 -/
 def addShrinks (n : Nat) : TestResult p → TestResult p
-| TestResult.failure p xs m => TestResult.failure p xs (m + n)
-| p => p
+  | TestResult.failure p xs m => TestResult.failure p xs (m + n)
+  | p => p
+
+instance [Pure m] : Inhabited (OptionT m α) := ⟨(pure none : m (Option α))⟩
 
 /-- Shrink a counter-example `x` by using `Shrinkable.shrink x`, picking the first
 candidate that falsifies a property and recursively shrinking that one.
 The process is guaranteed to terminate because `shrink x` produces
 a proof that all the values it produces are smaller (according to `SizeOf`)
 than `x`. -/
-def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
+partial def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (cfg : Configuration)
     (var : String) (x : SampleableExt.proxy α) (n : Nat) :
     OptionT Gen (Σ x, TestResult (β (SampleableExt.interp x))) := do
   let candidates := SampleableExt.shrink.shrink x
   if cfg.traceShrinkCandidates then
     slimTrace s!"Candidates for {var} := {repr x}:\n  {repr candidates}"
-  for ⟨candidate, h⟩ in candidates do
+  for candidate in candidates do
     if cfg.traceShrinkCandidates then
       slimTrace s!"Trying {var} := {repr candidate}"
     let res ← OptionT.lift $ Testable.runProp (β (SampleableExt.interp candidate)) cfg true
@@ -309,7 +339,6 @@ def minimizeAux [SampleableExt α] {β : α → Prop} [∀ x, Testable (β x)] (
   if cfg.traceShrink then
     slimTrace s!"No shrinking possible for {var} := {repr x}"
   failure
-  termination_by minimizeAux cfg var x n => x
 
 /-- Once a property fails to hold on an example, look for smaller counter-examples
 to show the user. -/
@@ -416,20 +445,20 @@ open TestResult
 
 /-- Execute `cmd` and repeat every time the result is `gave_up` (at most `n` times). -/
 def retry (cmd : Rand (TestResult p)) : Nat → Rand (TestResult p)
-| 0 => pure $ TestResult.gaveUp 1
-| n+1 => do
-  let r ← cmd
-  match r with
-  | success hp => pure $ success hp
-  | TestResult.failure h xs n => pure $ failure h xs n
-  | gaveUp _ => retry cmd n
+  | 0 => pure $ TestResult.gaveUp 1
+  | n+1 => do
+    let r ← cmd
+    match r with
+    | success hp => pure $ success hp
+    | TestResult.failure h xs n => pure $ failure h xs n
+    | gaveUp _ => retry cmd n
 
 /-- Count the number of times the test procedure gave up. -/
 def giveUp (x : Nat) : TestResult p → TestResult p
-| success (PSum.inl ()) => gaveUp x
-| success (PSum.inr p) => success $ (PSum.inr p)
-| gaveUp n => gaveUp $ n + x
-| TestResult.failure h xs n => failure h xs n
+  | success (PSum.inl ()) => gaveUp x
+  | success (PSum.inr p) => success $ (PSum.inr p)
+  | gaveUp n => gaveUp $ n + x
+  | TestResult.failure h xs n => failure h xs n
 
 /-- Try `n` times to find a counter-example for `p`. -/
 def Testable.runSuiteAux (p : Prop) [Testable p] (cfg : Configuration) :
@@ -517,5 +546,10 @@ def Testable.check (p : Prop) (cfg : Configuration := {})
 -- #eval Testable.check (∀ (x : (Nat × Nat)), x.fst - x.snd - 10 = x.snd - x.fst - 10)
 --   Configuration.verbose
 -- #eval Testable.check (∀ (x : Nat) (h : 10 < x), 5 < x) Configuration.verbose
+
+macro tk:"#test " e:term : command => `(command| #eval%$tk Testable.check $e)
+
+-- #test ∀ (x : Nat) (h : 5 < x), 10 < x
+-- #test ∀ (x : Nat) (h : 10 < x), 5 < x
 
 end SlimCheck

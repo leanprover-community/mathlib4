@@ -21,7 +21,7 @@ example : ¬(p ∧ q) → (p → ¬q) := by
   guard_hyp h : p → ¬q
   exact h
 
-example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x:= by
+example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x := by
   intro h
   push_neg
   guard_target = ∀ (x : α), ¬p' x
@@ -112,6 +112,17 @@ example {α} [Preorder α] (m n : α) (h : ¬(∃ k : α, m < k)) (h₂ : m ≤ 
   guard_hyp h : ∀ k, ¬(m < k)
   exact h₂
 
+example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(s.lt a b → r.lt a b) := by
+  push_neg
+  guard_target = s.lt a b ∧ r.le b a
+  sorry
+
+example (r : LinearOrder α) (s : Preorder α) (a b : α) : ¬(r.lt a b → s.lt a b) := by
+  push_neg
+  guard_target = r.lt a b ∧ ¬ s.lt a b
+  sorry
+
+section use_distrib
 set_option push_neg.use_distrib true
 
 example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
@@ -127,4 +138,10 @@ example : p →  ¬ ¬ ¬ ¬ ¬ ¬ p := by
 example (h : x = 0 ∧ y ≠ 0) : ¬(x = 0 → y = 0) := by
   push_neg
   guard_target = x = 0 ∧ y ≠ 0
+  exact h
+
+end use_distrib
+
+example (a : α) (o : Option α) (h : ¬∀ hs, o.get hs ≠ a) : ∃ hs, o.get hs = a := by
+  push_neg at h
   exact h

@@ -74,13 +74,11 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
   haveI := Nontrivial.of_polynomial_ne hp0
   calc
     degree (divX p) < (divX p * X + C (p.coeff 0)).degree :=
-      if h : degree p ≤ 0 then
-        by
+      if h : degree p ≤ 0 then by
         have h' : C (p.coeff 0) ≠ 0 := by rwa [← eq_C_of_degree_le_zero h]
         rw [eq_C_of_degree_le_zero h, divX_C, degree_zero, zero_mul, zero_add]
         exact lt_of_le_of_ne bot_le (Ne.symm (mt degree_eq_bot.1 <| by simpa using h'))
-      else
-        by
+      else by
         have hXp0 : divX p ≠ 0 := by
           simpa [divX_eq_zero_iff, -not_le, degree_le_zero_iff] using h
         have : leadingCoeff (divX p) * leadingCoeff X ≠ 0 := by simpa
@@ -118,7 +116,7 @@ noncomputable def recOnHorner {M : R[X] → Sort _} (p : R[X]) (M0 : M 0)
         MC _ _ (coeff_mul_X_zero _) hcp0
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
-termination_by' invImage PSigma.fst ⟨_, degree_lt_wf⟩
+termination_by _ => p.degree
 #align polynomial.rec_on_horner Polynomial.recOnHorner
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`

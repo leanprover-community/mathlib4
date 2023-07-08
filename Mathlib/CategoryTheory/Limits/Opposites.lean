@@ -575,10 +575,10 @@ in the opposite category is a limit cone. -/
 def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.op := by
   apply equivOfSubsingletonOfSubsingleton
-  . intro h
+  · intro h
     exact (IsLimit.postcomposeHomEquiv _ _).invFun
       ((IsLimit.whiskerEquivalenceEquiv walkingSpanOpEquiv.symm).toFun (isLimitCoconeOp _ h))
-  . intro h
+  · intro h
     exact (IsColimit.equivIsoColimit c.opUnop).toFun
       (isColimitConeUnop _ ((IsLimit.postcomposeHomEquiv _ _).invFun
         ((IsLimit.whiskerEquivalenceEquiv _).toFun h)))
@@ -589,10 +589,10 @@ in `C` is a limit cone. -/
 def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton
-  . intro h
+  · intro h
     exact isLimitCoconeUnop _ ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv _).toFun h))
-  . intro h
+  · intro h
     exact (IsColimit.equivIsoColimit c.unopOp).toFun
       ((IsColimit.precomposeHomEquiv _ _).invFun
       ((IsColimit.whiskerEquivalenceEquiv walkingCospanOpEquiv.symm).toFun (isColimitConeOp _ h)))
@@ -646,8 +646,8 @@ theorem pullbackIsoUnopPushout_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_hom_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    [HasPushout f.op g.op] : pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.fst.op :=
-  by
+    [HasPushout f.op g.op] :
+    pushout.inl ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.fst.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pullbackIsoUnopPushout_inv_fst, Iso.hom_inv_id_assoc]
@@ -655,8 +655,8 @@ theorem pullbackIsoUnopPushout_hom_inl {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [
 
 @[reassoc (attr := simp)]
 theorem pullbackIsoUnopPushout_hom_inr {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    [HasPushout f.op g.op] : pushout.inr ≫ (pullbackIsoUnopPushout f g).hom.op = pullback.snd.op :=
-  by
+    [HasPushout f.op g.op] : pushout.inr ≫ (pullbackIsoUnopPushout f g).hom.op =
+    pullback.snd.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pullbackIsoUnopPushout_inv_snd, Iso.hom_inv_id_assoc]
@@ -693,8 +693,7 @@ theorem pushoutIsoUnopPullback_inr_hom {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
 @[simp]
 theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
     [HasPullback f.op g.op] :
-      (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op :=
-  by
+    (pushoutIsoUnopPullback f g).inv.op ≫ pullback.fst = pushout.inl.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pushoutIsoUnopPullback_inl_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]
@@ -703,8 +702,7 @@ theorem pushoutIsoUnopPullback_inv_fst {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [
 @[simp]
 theorem pushoutIsoUnopPullback_inv_snd {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [HasPushout f g]
     [HasPullback f.op g.op] :
-      (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op :=
-  by
+    (pushoutIsoUnopPullback f g).inv.op ≫ pullback.snd = pushout.inr.op := by
   apply Quiver.Hom.unop_inj
   dsimp
   rw [← pushoutIsoUnopPullback_inr_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id]

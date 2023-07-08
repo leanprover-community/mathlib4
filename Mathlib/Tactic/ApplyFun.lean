@@ -141,7 +141,7 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 * If we have `h : a ≤ b`, then `apply_fun f at h` will replace this with `h : f a ≤ f b`,
   and create a subsidiary goal `Monotone f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
-  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : monotone f`.
+  or an explicit solution can be provided with `apply_fun f at h using P`, where `P : Monotone f`.
 * If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
 * If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
   and create a subsidiary goal `injective f`.
@@ -167,7 +167,7 @@ example (X Y Z : Type) (f : X → Y) (g : Y → Z) (H : Injective <| g ∘ f) :
 The function `f` is handled similarly to how it would be handled by `refine` in that `f` can contain
 placeholders. Named placeholders (like `?a` or `?_`) will produce new goals.
  -/
-syntax (name := applyFun) "apply_fun " term (ppSpace location)? (" using " term)? : tactic
+syntax (name := applyFun) "apply_fun " term (location)? (" using " term)? : tactic
 
 elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
   let P ← P.mapM (elabTerm · none)

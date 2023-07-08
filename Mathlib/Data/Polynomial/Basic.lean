@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 
 ! This file was ported from Lean 3 source module data.polynomial.basic
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
+! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -31,7 +31,7 @@ There are often two natural variants of lemmas involving sums, depending on whet
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
 the polynomials. For instance,
 * `sum_add_index` states that `(p + q).sum f = p.sum f + q.sum f`;
-* `sum_add` states that `p.sum (λ n x, f n x + g n x) = p.sum f + p.sum g`.
+* `sum_add` states that `p.sum (fun n x ↦ f n x + g n x) = p.sum f + p.sum g`.
 * Notation to refer to `Polynomial R`, as `R[X]` or `R[t]`.
 
 ## Implementation
@@ -308,8 +308,7 @@ instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulActi
     toFinsupp_injective toFinsupp_smul
 #align polynomial.distrib_mul_action Polynomial.distribMulAction
 
-instance faithfulSMul {S} [Monoid S] [DistribMulAction S R] [FaithfulSMul S R] :
-    FaithfulSMul S R[X] where
+instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
   eq_of_smul_eq_smul {_s₁ _s₂} h :=
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
 #align polynomial.has_faithful_smul Polynomial.faithfulSMul
@@ -319,15 +318,15 @@ instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
     toFinsupp_smul
 #align polynomial.module Polynomial.module
 
-instance smulCommClass {S₁ S₂} [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
-    [DistribMulAction S₂ R] [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ R[X] :=
+instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
+  SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 #align polynomial.smul_comm_class Polynomial.smulCommClass
 
-instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
-    [DistribMulAction S₂ R] [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
+instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
+  [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
@@ -340,8 +339,8 @@ instance isScalarTower_right {α K : Type _} [Semiring K] [DistribSMul α K] [Is
       simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
-instance isCentralScalar {S} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
-    [IsCentralScalar S R] : IsCentralScalar S R[X] :=
+instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
+  IsCentralScalar S R[X] :=
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
@@ -809,8 +808,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
 
 theorem addHom_ext {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
-  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <|
-    by
+  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 #align polynomial.add_hom_ext Polynomial.addHom_ext
@@ -1182,10 +1180,7 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
 #align polynomial.support_neg Polynomial.support_neg
 
-@[simp]
-theorem C_eq_int_cast (n : ℤ) : C (n : R) = n :=
-  -- Porting note: Eta structure is disabled so the instance should be specified.
-  @map_intCast _ _ _ _ _ (@RingHom.instRingHomClassRingHom R R[X] _ _) C n
+theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
 
 end Ring

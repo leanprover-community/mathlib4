@@ -81,7 +81,7 @@ protected theorem lawfulFunctor' [F : Functor t']
   have : F = Equiv.functor eqv := by
     cases F
     dsimp [Equiv.functor]
-    congr <;> ext <;> dsimp only <;> [rw [← h₀], rw [← h₁]] <;> rfl
+    congr <;> ext <;> dsimp only <;> [rw [← h₀]; rw [← h₁]] <;> rfl
   subst this
   exact Equiv.lawfulFunctor eqv
 #align equiv.is_lawful_functor' Equiv.lawfulFunctor'
@@ -118,9 +118,8 @@ section Equiv
 
 variable {t t' : Type u → Type u} (eqv : ∀ α, t α ≃ t' α)
 
--- Porting note: The naming `IsLawfulTraversable` seems weird, why not `LawfulTraversable`?
 -- Is this to do with the fact it lives in `Type (u+1)` not `Prop`?
-variable [Traversable t] [IsLawfulTraversable t]
+variable [Traversable t] [LawfulTraversable t]
 
 variable {F G : Type u → Type u} [Applicative F] [Applicative G]
 
@@ -130,7 +129,7 @@ variable (η : ApplicativeTransformation F G)
 
 variable {α β γ : Type u}
 
-open IsLawfulTraversable Functor
+open LawfulTraversable Functor
 
 -- Porting note: Id.bind_eq is missing an `#align`.
 
@@ -158,7 +157,7 @@ protected theorem naturality (f : α → F β) (x : t' α) :
 /-- The fact that `t` is a lawful traversable functor carries over the
 equivalences to `t'`, with the traversable functor structure given by
 `Equiv.traversable`. -/
-protected def isLawfulTraversable : @IsLawfulTraversable t' (Equiv.traversable eqv) :=
+protected def isLawfulTraversable : @LawfulTraversable t' (Equiv.traversable eqv) :=
   -- Porting note: Same `_inst` local variable problem.
   let _inst := Equiv.traversable eqv; {
     toLawfulFunctor := Equiv.lawfulFunctor eqv
@@ -179,7 +178,7 @@ protected def isLawfulTraversable' [Traversable t']
     (h₂ :
       ∀ {F : Type u → Type u} [Applicative F],
         ∀ [LawfulApplicative F] {α β} (f : α → F β), traverse f = Equiv.traverse eqv f) :
-    IsLawfulTraversable t' := by
+    LawfulTraversable t' := by
   -- we can't use the same approach as for `lawful_functor'` because
   -- h₂ needs a `LawfulApplicative` assumption
   refine' { toLawfulFunctor := Equiv.lawfulFunctor' eqv @h₀ @h₁.. } <;> intros

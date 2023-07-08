@@ -58,7 +58,7 @@ Monad operations:
 open Function
 
 /-- `PFun α β`, or `α →. β`, is the type of partial functions from
-  `α` to `β`. It is defined as `α → part β`. -/
+  `α` to `β`. It is defined as `α → Part β`. -/
 def PFun (α β : Type _) :=
   α → Part β
 #align pfun PFun
@@ -123,10 +123,10 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 #align pfun.as_subtype PFun.asSubtype
 
 /-- The type of partial functions `α →. β` is equivalent to
-the type of pairs `(p : α → Prop, f : subtype p → β)`. -/
+the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
   ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp ; congr ⟩
+    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr ⟩
 #align pfun.equiv_subtype PFun.equivSubtype
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
@@ -230,7 +230,7 @@ instance monad : Monad (PFun α) where
 
 instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
-  (id_map := fun f => by funext a ; dsimp [Functor.map, PFun.map] ; cases f a; rfl)
+  (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
   (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))
   (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 #align pfun.is_lawful_monad PFun.lawfulMonad
@@ -263,7 +263,7 @@ def fix (f : α →. Sum β α) : α →. β := fun a =>
 
 theorem dom_of_mem_fix {f : α →. Sum β α} {a : α} {b : β} (h : b ∈ f.fix a) : (f a).Dom := by
   let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
-  rw [WellFounded.fixFEq] at h₂ ; exact h₂.fst.fst
+  rw [WellFounded.fixFEq] at h₂; exact h₂.fst.fst
 #align pfun.dom_of_mem_fix PFun.dom_of_mem_fix
 
 theorem mem_fix_iff {f : α →. Sum β α} {a : α} {b : β} :
@@ -451,13 +451,13 @@ theorem preimage_union (s t : Set β) : f.preimage (s ∪ t) = f.preimage s ∪ 
   Rel.preimage_union _ s t
 #align pfun.preimage_union PFun.preimage_union
 
-theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext ; simp [mem_preimage, mem_dom]
+theorem preimage_univ : f.preimage Set.univ = f.Dom := by ext; simp [mem_preimage, mem_dom]
 #align pfun.preimage_univ PFun.preimage_univ
 
-theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext ; simp
+theorem coe_preimage (f : α → β) (s : Set β) : (f : α →. β).preimage s = f ⁻¹' s := by ext; simp
 #align pfun.coe_preimage PFun.coe_preimage
 
-/-- Core of a set `s : set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
+/-- Core of a set `s : Set β` with respect to a partial function `f : α →. β`. Set of all `a : α`
 such that `f a ∈ s`, if `f a` is defined. -/
 def core (s : Set β) : Set α :=
   f.graph'.core s
@@ -501,7 +501,7 @@ theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = 
 end
 
 theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
-  ext x ; simp [core_def]
+  ext x; simp [core_def]
 #align pfun.core_restrict PFun.core_restrict
 
 theorem preimage_subset_core (f : α →. β) (s : Set β) : f.preimage s ⊆ f.core s :=
@@ -704,7 +704,7 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
     (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golf'd verson of the `tidy?` proof
+  -- Porting note: was `by tidy`, below is a golf'd version of the `tidy?` proof
   ext $ λ ⟨_, _⟩ ⟨_, _⟩ =>
   ⟨λ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
    λ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ => ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩

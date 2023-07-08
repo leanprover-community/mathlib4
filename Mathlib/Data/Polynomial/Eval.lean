@@ -663,8 +663,8 @@ theorem comp_assoc {R : Type _} [CommSemiring R] (φ ψ χ : R[X]) :
 #align polynomial.comp_assoc Polynomial.comp_assoc
 
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
-    coeff (p.comp q) (natDegree p * natDegree q) = leadingCoeff p * leadingCoeff q ^ natDegree p :=
-  by
+    coeff (p.comp q) (natDegree p * natDegree q) =
+    leadingCoeff p * leadingCoeff q ^ natDegree p := by
   rw [comp, eval₂_def, coeff_sum]
   -- Porting note: `convert` → `refine`
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
@@ -755,7 +755,7 @@ theorem coe_mapRingHom (f : R →+* S) : ⇑(mapRingHom f) = map f :=
   rfl
 #align polynomial.coe_map_ring_hom Polynomial.coe_mapRingHom
 
--- This is protected to not clash with the global `map_nat_cast`.
+-- This is protected to not clash with the global `map_natCast`.
 @[simp]
 protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
   map_natCast (mapRingHom f) n
@@ -1036,7 +1036,7 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
-    eval₂ f t ((p.comp^[k]) q) = ((fun x => eval₂ f x p)^[k]) (eval₂ f t q) := by
+    eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
   induction' k with k IH
   · simp
   · rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
@@ -1081,6 +1081,12 @@ theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
   | h_monomial n a =>
     simp
 #align polynomial.eval_comp Polynomial.eval_comp
+
+@[simp]
+theorem iterate_comp_eval :
+    ∀ (k : ℕ) (t : R), (p.comp^[k] q).eval t = (fun x => p.eval x)^[k] (q.eval t) :=
+  iterate_comp_eval₂ _
+#align polynomial.iterate_comp_eval Polynomial.iterate_comp_eval
 
 /-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
 def compRingHom : R[X] → R[X] →+* R[X] :=

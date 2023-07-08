@@ -327,7 +327,7 @@ section NonAssocRing
 
 variable [NonAssocRing α]
 
--- porting note: for some reaso this declaration is very slow?
+-- porting note: for some reason this declaration is very slow?
 /-- Pullback a `NonAssocRing` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]

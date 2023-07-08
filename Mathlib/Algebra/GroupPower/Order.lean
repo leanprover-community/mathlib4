@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 
 ! This file was ported from Lean 3 source module algebra.group_power.order
-! leanprover-community/mathlib commit dd4c2044a9dee231309637e7fd4e61aea1506e33
+! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -403,23 +403,20 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
   induction' k with k ih;
-  . have eqn : Nat.succ Nat.zero = 1 := rfl
+  · have eqn : Nat.succ Nat.zero = 1 := rfl
     rw [eqn]
     simp only [pow_one, le_refl]
-  . let n := k.succ
+  · let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
-      x ^ n.succ + y ^ n.succ ≤ x * x ^ n + y * y ^ n + (x * y ^ n + y * x ^ n) :=
-      by
+      x ^ n.succ + y ^ n.succ ≤ x * x ^ n + y * y ^ n + (x * y ^ n + y * x ^ n) := by
         rw [pow_succ _ n, pow_succ _ n]
         exact le_add_of_nonneg_right h1
-      _ = (x + y) * (x ^ n + y ^ n) :=
-      by
+      _ = (x + y) * (x ^ n + y ^ n) := by
         rw [add_mul, mul_add, mul_add, add_comm (y * x ^ n), ← add_assoc, ← add_assoc,
           add_assoc (x * x ^ n) (x * y ^ n), add_comm (x * y ^ n) (y * y ^ n), ← add_assoc]
-      _ ≤ (x + y) ^ n.succ :=
-      by
+      _ ≤ (x + y) ^ n.succ := by
         rw [pow_succ _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 #align pow_add_pow_le pow_add_pow_le
@@ -637,6 +634,11 @@ theorem pow_abs (a : R) (n : ℕ) : |a| ^ n = |a ^ n| :=
 theorem abs_neg_one_pow (n : ℕ) : |(-1 : R) ^ n| = 1 := by rw [← pow_abs, abs_neg, abs_one, one_pow]
 #align abs_neg_one_pow abs_neg_one_pow
 
+theorem abs_pow_eq_one (a : R) {n : ℕ} (h : 0 < n) : |a ^ n| = 1 ↔ |a| = 1 := by
+  convert pow_left_inj (abs_nonneg a) zero_le_one h
+  exacts [(pow_abs _ _).symm, (one_pow _).symm]
+#align abs_pow_eq_one abs_pow_eq_one
+
 section
 set_option linter.deprecated false
 
@@ -678,6 +680,8 @@ theorem sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 :=
 
 variable {x y : R}
 
+-- Porting note: added `simp` to replace `pow_bit0_abs`
+@[simp]
 theorem sq_abs (x : R) : |x| ^ 2 = x ^ 2 := by simpa only [sq] using abs_mul_abs_self x
 #align sq_abs sq_abs
 
@@ -767,8 +771,7 @@ section LinearOrderedCommMonoidWithZero
 variable [LinearOrderedCommMonoidWithZero M] [NoZeroDivisors M] {a : M} {n : ℕ}
 
 theorem pow_pos_iff (hn : 0 < n) : 0 < a ^ n ↔ 0 < a := by
-  simp_rw [zero_lt_iff]
-  rw [pow_ne_zero_iff hn] -- Porting note: simp used to find unify the instances here
+  simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
 #align pow_pos_iff pow_pos_iff
 
 end LinearOrderedCommMonoidWithZero
@@ -784,7 +787,7 @@ theorem pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 
 theorem pow_lt_pow₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih
-  exacts[pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
+  exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow₀
 
 end LinearOrderedCommGroupWithZero

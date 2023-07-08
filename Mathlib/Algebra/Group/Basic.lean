@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.group.basic
-! leanprover-community/mathlib commit 84771a9f5f0bd5e5d6218811556508ddf476dcbd
+! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -31,7 +31,7 @@ section Semigroup
 is equal to a multiplication on the left by `x * y`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the left by `y` then `x`
-is equal to a addition on the left by `x + y`."]
+is equal to an addition on the left by `x + y`."]
 theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
   ext z
   simp [mul_assoc]
@@ -42,7 +42,7 @@ theorem comp_mul_left [Semigroup α] (x y : α) : (x * ·) ∘ (y * ·) = (x * y
 is equal to a multiplication on the right by `y * x`.
 -/
 @[to_additive (attr := simp) "Composing two additions on the right by `y` and `x`
-is equal to a addition on the right by `y + x`."]
+is equal to an addition on the right by `y + x`."]
 theorem comp_mul_right [Semigroup α] (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   ext z
   simp [mul_assoc]
@@ -755,6 +755,11 @@ theorem mul_div_cancel'' (a b : G) : a * b / b = a :=
 #align mul_div_cancel'' mul_div_cancel''
 #align add_sub_cancel add_sub_cancel
 
+@[to_additive (attr := simp) sub_add_cancel'']
+theorem div_mul_cancel''' (a b : G) : a / (b * a) = b⁻¹ := by rw [← inv_div, mul_div_cancel'']
+#align div_mul_cancel''' div_mul_cancel'''
+#align sub_add_cancel'' sub_add_cancel''
+
 @[to_additive (attr := simp)]
 theorem mul_div_mul_right_eq_div (a b c : G) : a * c / (b * c) = a / b := by
   rw [div_mul_eq_div_div_swap]; simp only [mul_left_inj, eq_self_iff_true, mul_div_cancel'']
@@ -1049,24 +1054,18 @@ lemma multiplicative_of_symmetric_of_isTotal
 
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
-  (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied. -/
+  (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
+  We allow restricting to a subset specified by a predicate `p`. -/
 @[to_additive additive_of_isTotal "If a binary function from a type equipped with a total relation
-  `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
-  it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c`
-  are satisfied."]
-lemma multiplicative_of_isTotal [Monoid β] (f : α → α → β) (r : α → α → Prop) [t : IsTotal α r]
-    (hswap : ∀ a b, f a b * f b a = 1)
-    (hmul : ∀ {a b c}, r a b → r b c → f a c = f a b * f b c)
-    (a b c : α) : f a c = f a b * f b c := by
-  have h : ∀ b c, r b c → f a c = f a b * f b c := by
-    intros b c hbc
-    obtain hab | hba := t.total a b
-    · exact hmul hab hbc
-    obtain hac | hca := t.total a c
-    · rw [hmul hba hac, ← mul_assoc, hswap a b, one_mul]
-    · rw [← one_mul (f a c), ← hswap a b, hmul hbc hca, mul_assoc, mul_assoc, hswap c a, mul_one]
-  obtain hbc | hcb := t.total b c
-  · exact h b c hbc
-  · rw [h c b hcb, mul_assoc, hswap c b, mul_one]
+`r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in order to show
+it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and `r b c` are
+satisfied. We allow restricting to a subset specified by a predicate `p`."]
+theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
+    (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
+    (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
+  apply multiplicative_of_symmetric_of_isTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  · simp_rw [and_imp]; exact @hswap
+  · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
+  exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
 #align multiplicative_of_is_total multiplicative_of_isTotal
 #align additive_of_is_total additive_of_isTotal

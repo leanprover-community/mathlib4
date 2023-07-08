@@ -78,11 +78,10 @@ section MulZeroOneClass
 
 variable [MulZeroOneClass R] {a b : α} {e : Sym2 α}
 
-theorem incMatrix_apply_mul_incMatrix_apply :
-    G.incMatrix R a e * G.incMatrix R b e = (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e :=
-  by
+theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R b e =
+    (G.incidenceSet a ∩ G.incidenceSet b).indicator 1 e := by
   classical simp only [incMatrix, Set.indicator_apply, ← ite_and_mul_zero, Pi.one_apply, mul_one,
-      Set.mem_inter_iff]
+    Set.mem_inter_iff]
 #align simple_graph.inc_matrix_apply_mul_inc_matrix_apply SimpleGraph.incMatrix_apply_mul_incMatrix_apply
 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
@@ -122,7 +121,7 @@ section NonAssocSemiring
 variable [Fintype α] [NonAssocSemiring R] {a b : α} {e : Sym2 α}
 
 theorem sum_incMatrix_apply [DecidableEq α] [DecidableRel G.Adj] :
-    (∑ e, G.incMatrix R a e) = G.degree a := by
+    ∑ e, G.incMatrix R a e = G.degree a := by
   simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 #align simple_graph.sum_inc_matrix_apply SimpleGraph.sum_incMatrix_apply
 
@@ -134,7 +133,7 @@ theorem incMatrix_mul_transpose_diag [DecidableEq α] [DecidableRel G.Adj] :
 #align simple_graph.inc_matrix_mul_transpose_diag SimpleGraph.incMatrix_mul_transpose_diag
 
 theorem sum_incMatrix_apply_of_mem_edgeSet :
-    e ∈ G.edgeSet → (∑ a, G.incMatrix R a e) = 2 := by
+    e ∈ G.edgeSet → ∑ a, G.incMatrix R a e = 2 := by
   classical
     refine' e.ind _
     intro a b h
@@ -147,7 +146,7 @@ theorem sum_incMatrix_apply_of_mem_edgeSet :
 #align simple_graph.sum_inc_matrix_apply_of_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_mem_edgeSet
 
 theorem sum_incMatrix_apply_of_not_mem_edgeSet (h : e ∉ G.edgeSet) :
-    (∑ a, G.incMatrix R a e) = 0 :=
+    ∑ a, G.incMatrix R a e = 0 :=
   sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
 #align simple_graph.sum_inc_matrix_apply_of_not_mem_edge_set SimpleGraph.sum_incMatrix_apply_of_not_mem_edgeSet
 
@@ -191,7 +190,7 @@ theorem incMatrix_mul_transpose_apply_of_adj (h : G.Adj a b) :
 theorem incMatrix_mul_transpose [Fintype α] [DecidableEq α] [DecidableRel G.Adj] :
     G.incMatrix R ⬝ (G.incMatrix R)ᵀ = fun a b =>
       if a = b then (G.degree a : R) else if G.Adj a b then 1 else 0 := by
-  ext (a b)
+  ext a b
   split_ifs with h h'
   · subst b
     rename Semiring R => sr

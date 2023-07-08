@@ -26,16 +26,16 @@ open Filter
 variable {α β ι : Type _} {π : ι → Type _} [Fintype ι] [Bornology α] [Bornology β]
   [∀ i, Bornology (π i)]
 
-instance : Bornology (α × β)
-    where
+instance Prod.instBornology : Bornology (α × β) where
   cobounded' := (cobounded α).coprod (cobounded β)
   le_cofinite' :=
     @coprod_cofinite α β ▸ coprod_mono ‹Bornology α›.le_cofinite ‹Bornology β›.le_cofinite
+#align prod.bornology Prod.instBornology
 
-instance : Bornology (∀ i, π i)
-    where
+instance Pi.instBornology : Bornology (∀ i, π i) where
   cobounded' := Filter.coprodᵢ fun i => cobounded (π i)
   le_cofinite' := @coprodᵢ_cofinite ι π _ ▸ Filter.coprodᵢ_mono fun _ => Bornology.le_cofinite _
+#align pi.bornology Pi.instBornology
 
 /-- Inverse image of a bornology. -/
 @[reducible]

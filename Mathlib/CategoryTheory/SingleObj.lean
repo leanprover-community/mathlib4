@@ -17,7 +17,7 @@ import Mathlib.Combinatorics.Quiver.SingleObj
 # Single-object category
 
 Single object category with a given monoid of endomorphisms.
-It is defined to facilitate transfering some definitions and lemmas (e.g., conjugacy etc.)
+It is defined to facilitate transferring some definitions and lemmas (e.g., conjugacy etc.)
 from category theory to monoids and groups.
 
 ## Main definitions
@@ -119,8 +119,8 @@ theorem toEnd_def [Monoid α] (x : α) : toEnd α x = x :=
 See <https://stacks.math.columbia.edu/tag/001F> --
 although we do not characterize when the functor is full or faithful.
 -/
-def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] : (α →* β) ≃ SingleObj α ⥤ SingleObj β
-    where
+def mapHom (α : Type u) (β : Type v) [Monoid α] [Monoid β] :
+    (α →* β) ≃ SingleObj α ⥤ SingleObj β where
   toFun f :=
     { obj := id
       map := ⇑f
@@ -168,7 +168,7 @@ open CategoryTheory
 namespace MonoidHom
 
 /-- Reinterpret a monoid homomorphism `f : α → β` as a functor `(single_obj α) ⥤ (single_obj β)`.
-See also `category_theory.single_obj.map_hom` for an equivalence between these types. -/
+See also `CategoryTheory.SingleObj.mapHom` for an equivalence between these types. -/
 @[reducible]
 def toFunctor {α : Type u} {β : Type v} [Monoid α] [Monoid β] (f : α →* β) :
     SingleObj α ⥤ SingleObj β :=

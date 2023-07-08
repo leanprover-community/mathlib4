@@ -36,7 +36,7 @@ instead.
 
 ## Implementation notes
 
-The definition of `Finite α` is not just `NonEmpty (Fintype α)` since `Fintype` requires
+The definition of `Finite α` is not just `Nonempty (Fintype α)` since `Fintype` requires
 that `α : Type _`, and the definition in this module allows for `α : Sort*`. This means
 we can write the instance `Finite.prop`.
 
@@ -55,7 +55,7 @@ variable {α β : Sort _}
 /-- A type is `Finite` if it is in bijective correspondence to some
 `Fin n`.
 
-While this could be defined as `NonEmpty (Fintype α)`, it is defined
+While this could be defined as `Nonempty (Fintype α)`, it is defined
 in this way to allow there to be `Finite` instances for propositions.
 -/
 class inductive Finite (α : Sort _) : Prop

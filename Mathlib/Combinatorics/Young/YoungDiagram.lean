@@ -73,7 +73,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ)
     where
-  -- porting note: TODO: figure out how to do this correcly
+  -- porting note: TODO: figure out how to do this correctly
   coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
@@ -273,7 +273,7 @@ section Rows
 
 This section defines `μ.row` and `μ.rowLen`, with the following API:
       1.  `(i, j) ∈ μ ↔ j < μ.rowLen i`
-      2.  `μ.row i = {i} ×ᶠ (finset.range (μ.rowLen i))`
+      2.  `μ.row i = {i} ×ˢ (Finset.range (μ.rowLen i))`
       3.  `μ.rowLen i = (μ.row i).card`
       4.  `∀ {i1 i2}, i1 ≤ i2 → μ.rowLen i2 ≤ μ.rowLen i1`
 
@@ -314,7 +314,7 @@ theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j 
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 #align young_diagram.mem_iff_lt_row_len YoungDiagram.mem_iff_lt_rowLen
 
-theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ᶠ Finset.range (μ.rowLen i) := by
+theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_row_iff,
     mem_iff_lt_rowLen, and_comm, and_congr_right_iff]
@@ -330,7 +330,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
   by_contra' h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
-  rw [← mem_iff_lt_rowLen] at h_lt⊢
+  rw [← mem_iff_lt_rowLen] at h_lt ⊢
   exact μ.up_left_mem hi (by rfl) h_lt
 #align young_diagram.row_len_anti YoungDiagram.rowLen_anti
 
@@ -380,7 +380,7 @@ theorem mem_iff_lt_colLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ i 
   simp
 #align young_diagram.mem_iff_lt_col_len YoungDiagram.mem_iff_lt_colLen
 
-theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ᶠ {j} := by
+theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.colLen j) ×ˢ {j} := by
   ext ⟨a, b⟩
   simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range, mem_col_iff,
     mem_iff_lt_colLen, and_comm, and_congr_right_iff]
@@ -403,7 +403,7 @@ section RowLens
 
 /-! ### The list of row lengths of a Young diagram
 
-This section defines `μ.rowLens : list ℕ`, the list of row lengths of a Young diagram `μ`.
+This section defines `μ.rowLens : List ℕ`, the list of row lengths of a Young diagram `μ`.
   1. `YoungDiagram.rowLens_sorted` : It is weakly decreasing (`List.Sorted (· ≥ ·)`).
   2. `YoungDiagram.rowLens_pos` : It is strictly positive.
 
@@ -456,7 +456,7 @@ The two directions are `YoungDiagram.rowLens` (defined above) and `YoungDiagram.
 protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
   | [] => ∅
   | w::ws =>
-    ({0} : Finset ℕ) ×ᶠ Finset.range w ∪
+    ({0} : Finset ℕ) ×ˢ Finset.range w ∪
       (YoungDiagram.cellsOfRowLens ws).map
         (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
 #align young_diagram.cells_of_row_lens YoungDiagram.cellsOfRowLens
@@ -479,14 +479,13 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
   cells := YoungDiagram.cellsOfRowLens w
   isLowerSet := by
     rintro ⟨i2, j2⟩ ⟨i1, j1⟩ ⟨hi : i1 ≤ i2, hj : j1 ≤ j2⟩ hcell
-    rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell⊢
+    rw [Finset.mem_coe, YoungDiagram.mem_cellsOfRowLens] at hcell ⊢
     obtain ⟨h1, h2⟩ := hcell
     refine' ⟨hi.trans_lt h1, _⟩
     calc
       j1 ≤ j2 := hj
       _ < w.get ⟨i2, _⟩  := h2
-      _ ≤ w.get ⟨i1, _⟩ :=
-      by
+      _ ≤ w.get ⟨i1, _⟩ := by
         obtain rfl | h := eq_or_lt_of_le hi
         · convert le_refl (w.get ⟨i1, h1⟩)
         · exact List.pairwise_iff_get.mp hw _ _ h

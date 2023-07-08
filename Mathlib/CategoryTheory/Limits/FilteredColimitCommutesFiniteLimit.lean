@@ -19,7 +19,7 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 # Filtered colimits commute with finite limits.
 
 We show that for a functor `F : J × K ⥤ Type v`, when `J` is finite and `K` is filtered,
-the universal morphism `colimit_limit_to_limit_colimit F` comparing the
+the universal morphism `colimitLimitToLimitColimit F` comparing the
 colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an isomorphism.
 
 (In fact, to prove that it is injective only requires that `J` has finitely many objects.)
@@ -32,22 +32,17 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Category
-
-open CategoryTheory.Limits.Types
-
-open CategoryTheory.Limits.Types.FilteredColimit
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits.Types
+  CategoryTheory.Limits.Types.FilteredColimit
 
 namespace CategoryTheory.Limits
 
 variable {J K : Type v} [SmallCategory J] [SmallCategory K]
 
-/-- `(G ⋙ lim).obj S` = `limit (G.obj S)` definitionally, so this
+/-- `(G ⋙ lim).obj j` = `limit (G.obj j)` definitionally, so this
 is just a variant of `limit_ext'`. -/
-@[ext] lemma comp_lim_obj_ext {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj S) (w : ∀ (j : K),
-    limit.π (G.obj S) j x = limit.π (G.obj S) j y) : x = y :=
+@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj j)
+    (w : ∀ (k : K), limit.π (G.obj j) k x = limit.π (G.obj j) k y) : x = y :=
   limit_ext' _ x y w
 
 variable (F : J × K ⥤ Type v)
@@ -68,12 +63,12 @@ variable [Finite J]
 /-- This follows this proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 -/
-theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitToLimitColimit F) :=
-  by
+theorem colimitLimitToLimitColimit_injective :
+    Function.Injective (colimitLimitToLimitColimit F) := by
   classical
     cases nonempty_fintype J
     -- Suppose we have two terms `x y` in the colimit (over `K`) of the limits (over `J`),
-    -- and that these have the same image under `colimit_limit_to_limit_colimit F`.
+    -- and that these have the same image under `colimitLimitToLimitColimit F`.
     intro x y h
     -- These elements of the colimit have representatives somewhere:
     obtain ⟨kx, x, rfl⟩ := jointly_surjective'.{v, v} x
@@ -101,12 +96,12 @@ theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitT
     have kxO : kx ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kyO : ky ∈ O := Finset.mem_union.mpr (Or.inr (by simp))
     have kjO : ∀ j, k j ∈ O := fun j => Finset.mem_union.mpr (Or.inl (by simp))
-    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
+    let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
       (Finset.univ.image fun j : J =>
           ⟨kx, k j, kxO, Finset.mem_union.mpr (Or.inl (by simp)), f j⟩) ∪
         Finset.univ.image fun j : J => ⟨ky, k j, kyO, Finset.mem_union.mpr (Or.inl (by simp)), g j⟩
     obtain ⟨S, T, W⟩ := IsFiltered.sup_exists O H
-    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
+    have fH : ∀ j, (⟨kx, k j, kxO, kjO j, f j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inl
@@ -115,7 +110,8 @@ theorem colimitLimitToLimitColimit_injective : Function.Injective (colimitLimitT
               Finset.mem_image, heq_iff_eq]
             refine' ⟨j, _⟩
             simp only [heq_iff_eq] ))
-    have gH : ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) ∈ H :=
+    have gH :
+      ∀ j, (⟨ky, k j, kyO, kjO j, g j⟩ : Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) ∈ H :=
       fun j =>
       Finset.mem_union.mpr
         (Or.inr
@@ -196,15 +192,15 @@ theorem colimitLimitToLimitColimit_surjective :
     -- where these images of `y j` and `y j'` become equal.
     simp_rw [colimit_eq_iff.{v, v}] at w
     -- We take a moment to restate `w` more conveniently.
-    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun {_} {_} f => (w f).choose
-    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f => (w f).choose_spec.choose
-    let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun {_} {_} f =>
+    let kf : ∀ {j j'} (_ : j ⟶ j'), K := fun f => (w f).choose
+    let gf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f => (w f).choose_spec.choose
+    let hf : ∀ {j j'} (f : j ⟶ j'), k' ⟶ kf f := fun f =>
       (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
         F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j') =
           F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j) :=
-      fun {j} {j'} f => by
+      fun {j j'} f => by
       have q :
         ((curry.obj F).obj j').map (gf f) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
@@ -222,24 +218,24 @@ theorem colimitLimitToLimitColimit_surjective :
     -- the morphisms `gf f : k' ⟶ kh f` and `hf f : k' ⟶ kf f`.
     -- At this point we're relying on there being only finitely morphisms in `J`.
     let O :=
-      (Finset.univ.bunionᵢ fun j => Finset.univ.bunionᵢ fun j' => Finset.univ.image
+      (Finset.univ.biUnion fun j => Finset.univ.biUnion fun j' => Finset.univ.image
         (@kf j j')) ∪ {k'}
     have kfO : ∀ {j j'} (f : j ⟶ j'), kf f ∈ O := fun {j} {j'} f =>
       Finset.mem_union.mpr
         (Or.inl
           (by
-            rw [Finset.mem_bunionᵢ]
+            rw [Finset.mem_biUnion]
             refine' ⟨j, Finset.mem_univ j, _⟩
-            rw [Finset.mem_bunionᵢ]
+            rw [Finset.mem_biUnion]
             refine' ⟨j', Finset.mem_univ j', _⟩
             rw [Finset.mem_image]
             refine' ⟨f, Finset.mem_univ _, _⟩
             rfl))
     have k'O : k' ∈ O := Finset.mem_union.mpr (Or.inr (Finset.mem_singleton.mpr rfl))
-    let H : Finset (Σ'(X Y : K)(_ : X ∈ O)(_ : Y ∈ O), X ⟶ Y) :=
-      Finset.univ.bunionᵢ fun j : J =>
-        Finset.univ.bunionᵢ fun j' : J =>
-          Finset.univ.bunionᵢ fun f : j ⟶ j' =>
+    let H : Finset (Σ' (X Y : K) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
+      Finset.univ.biUnion fun j : J =>
+        Finset.univ.biUnion fun j' : J =>
+          Finset.univ.biUnion fun f : j ⟶ j' =>
             {⟨k', kf f, k'O, kfO f, gf f⟩, ⟨k', kf f, k'O, kfO f, hf f⟩}
     obtain ⟨k'', i', s'⟩ := IsFiltered.sup_exists O H
     -- We then restate this slightly more conveniently, as a family of morphism `i f : kf f ⟶ k''`,
@@ -251,18 +247,18 @@ theorem colimitLimitToLimitColimit_surjective :
       -- porting note: the three goals here in Lean 3 were in a different order
       exact k'O
       swap
-      · rw [Finset.mem_bunionᵢ]
+      · rw [Finset.mem_biUnion]
         refine' ⟨j₁, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨j₂, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨f, Finset.mem_univ _, _⟩
         simp only [true_or_iff, eq_self_iff_true, and_self_iff, Finset.mem_insert, heq_iff_eq]
-      · rw [Finset.mem_bunionᵢ]
+      · rw [Finset.mem_biUnion]
         refine' ⟨j₃, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨j₄, Finset.mem_univ _, _⟩
-        rw [Finset.mem_bunionᵢ]
+        rw [Finset.mem_biUnion]
         refine' ⟨f', Finset.mem_univ _, _⟩
         simp only [eq_self_iff_true, or_true_iff, and_self_iff, Finset.mem_insert,
           Finset.mem_singleton, heq_iff_eq]
@@ -337,13 +333,12 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
 noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
-  intro J _ _; skip; constructor
-  intro F; constructor
-  intro c hc
-  apply IsLimit.ofIsoLimit (limit.isLimit _)
-  symm; trans colim.mapCone (limit.cone F)
-  exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
-  exact asIso (colimitLimitToLimitColimitCone.{v, v + 1} F)
+  intro J _ _
+  refine ⟨fun {F} => ⟨fun {c} hc => IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩
+  symm
+  trans colim.mapCone (limit.cone F)
+  · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
+  · exact asIso (colimitLimitToLimitColimitCone.{v, v + 1} F)
 #align category_theory.limits.filtered_colim_preserves_finite_limits_of_types CategoryTheory.Limits.filteredColimPreservesFiniteLimitsOfTypes
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
@@ -371,7 +366,8 @@ noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesFilteredColi
     [HasFiniteLimits C] [HasColimitsOfShape K C] [ReflectsIsomorphisms (forget C)] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
-  intro J _ _; skip; infer_instance
+  intro J _ _
+  infer_instance
 
 section
 

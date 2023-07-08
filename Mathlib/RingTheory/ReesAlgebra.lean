@@ -82,7 +82,6 @@ theorem reesAlgebra.monomial_mem {I : Ideal R} {i : ℕ} {r : R} :
     imp_iff_not_or]
 #align rees_algebra.monomial_mem reesAlgebra.monomial_mem
 
-set_option synthInstance.etaExperiment true in
 theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈ I ^ n) :
     monomial n r ∈ Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) := by
   induction' n with n hn generalizing r
@@ -99,7 +98,6 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
       exact Subalgebra.add_mem _ hx hy
 #align monomial_mem_adjoin_monomial monomial_mem_adjoin_monomial
 
-set_option synthInstance.etaExperiment true in
 theorem adjoin_monomial_eq_reesAlgebra :
     Algebra.adjoin R (Submodule.map (monomial 1 : R →ₗ[R] R[X]) I : Set R[X]) = reesAlgebra I := by
   apply le_antisymm
@@ -115,8 +113,7 @@ theorem adjoin_monomial_eq_reesAlgebra :
 
 variable {I}
 
-set_option synthInstance.etaExperiment true in
-theorem reesAlgebra.fg (hI : I.Fg) : (reesAlgebra I).Fg := by
+theorem reesAlgebra.fg (hI : I.FG) : (reesAlgebra I).FG := by
   classical
     obtain ⟨s, hs⟩ := hI
     rw [← adjoin_monomial_eq_reesAlgebra, ← hs]

@@ -12,7 +12,6 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Logic.Nontrivial
-import Mathlib.Tactic.Spread
 
 /-!
 # Semirings and rings
@@ -26,8 +25,8 @@ the present file is about their interaction.
 * `Distrib`: Typeclass for distributivity of multiplication over addition.
 * `HasDistribNeg`: Typeclass for commutativity of negation and multiplication. This is useful when
   dealing with multiplicative submonoids which are closed under negation without being closed under
-  addition, for example `units`.
-* `(NonUnital_)(NonAssoc_)(Semi)ring`: Typeclasses for possibly non-unital or non-associative
+  addition, for example `Units`.
+* `(NonUnital)(NonAssoc)(Semi)Ring`: Typeclasses for possibly non-unital or non-associative
   rings and semirings. Some combinations are not defined yet because they haven't found use.
 
 ## Tags
@@ -43,7 +42,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
 open Function
 
 /-!
-### `distrib` class
+### `Distrib` class
 -/
 
 
@@ -100,9 +99,18 @@ theorem distrib_three_right [Mul R] [Add R] [RightDistribClass R] (a b c d : R) 
 #align distrib_three_right distrib_three_right
 
 /-!
-### Semirings
--/
+### Classes of semirings and rings
 
+We make sure that the canonical path from `NonAssocSemiring` to `Ring` passes through `Semiring`,
+as this is a path which is followed all the time in linear algebra where the defining semilinear map
+`σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
+definition depends on the `Semiring` structure.
+
+It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
+that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
+TODO: clean this once lean4#2115 is fixed
+-/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
@@ -117,8 +125,30 @@ class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZe
     AddCommMonoidWithOne α
 #align non_assoc_semiring NonAssocSemiring
 
+/-- A not-necessarily-unital, not-necessarily-associative ring. -/
+class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+#align non_unital_non_assoc_ring NonUnitalNonAssocRing
+
+-- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
+-- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
+/-- An associative but not-necessarily unital ring. -/
+class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
+#align non_unital_ring NonUnitalRing
+
+/-- A unital but not-necessarily-associative ring. -/
+class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
+    AddCommGroupWithOne α
+#align non_assoc_ring NonAssocRing
+
 class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
 #align semiring Semiring
+
+class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+#align ring Ring
+
+/-!
+### Semirings
+-/
 
 section DistribMulOneClass
 
@@ -319,25 +349,6 @@ end HasDistribNeg
 /-!
 ### Rings
 -/
-
-
-/-- A not-necessarily-unital, not-necessarily-associative ring. -/
-class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
-#align non_unital_non_assoc_ring NonUnitalNonAssocRing
-
--- We defer the instance `NonUnitalNonAssocRing.toHasDistribNeg` to `Algebra.Ring.Basic`
--- as it relies on the lemma `eq_neg_of_add_eq_zero_left`.
-/-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type _) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
-#align non_unital_ring NonUnitalRing
-
-/-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type _) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddCommGroupWithOne α
-#align non_assoc_ring NonAssocRing
-
-class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
-#align ring Ring
 
 section NonUnitalNonAssocRing
 

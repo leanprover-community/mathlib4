@@ -15,7 +15,7 @@ import Mathlib.Data.Nat.Choose.Basic
 
 # Vandermonde's identity
 
-In this file we prove Vandermonde's identity (`nat.add_choose_eq`):
+In this file we prove Vandermonde's identity (`Nat.add_choose_eq`):
 `(m + n).choose k = ∑ (ij : ℕ × ℕ) in antidiagonal k, m.choose ij.1 * n.choose ij.2`
 
 We follow the algebraic proof from

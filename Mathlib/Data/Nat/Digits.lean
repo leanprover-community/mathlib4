@@ -69,7 +69,7 @@ theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
 
-In any base, we have `ofDigits b L = L.foldr (λ x y, x + b * y) 0`.
+In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 * For any `2 ≤ b`, we have `l < b` for any `l ∈ digits b n`,
   and the last digit is not zero.
   This uniquely specifies the behaviour of `digits b`.
@@ -310,7 +310,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · norm_num at h
   rcases n with (_ | n)
   · norm_num at w
-  . simp only [digits_add_two_add_one, ne_eq]
+  · simp only [digits_add_two_add_one, ne_eq]
 #align nat.digits_eq_cons_digits_div Nat.digits_eq_cons_digits_div
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
@@ -381,8 +381,8 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    . apply Nat.div_lt_self <;> simp
-    . assumption
+    · apply Nat.div_lt_self <;> simp
+    · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
@@ -429,8 +429,8 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 #align nat.of_digits_digits_append_digits Nat.ofDigits_digits_append_digits
 
-theorem digits_len_le_digits_len_succ (b n : ℕ) : (digits b n).length ≤ (digits b (n + 1)).length :=
-  by
+theorem digits_len_le_digits_len_succ (b n : ℕ) :
+    (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   cases' le_or_lt b 1 with hb hb
@@ -570,8 +570,7 @@ theorem ofDigits_neg_one :
     ∀ L : List ℕ, ofDigits (-1 : ℤ) L = (L.map fun n : ℕ => (n : ℤ)).alternatingSum
   | [] => rfl
   | [n] => by simp [ofDigits, List.alternatingSum]
-  | a :: b :: t =>
-    by
+  | a :: b :: t => by
     simp only [ofDigits, List.alternatingSum, List.map_cons, ofDigits_neg_one t]
     ring
 #align nat.of_digits_neg_one Nat.ofDigits_neg_one
@@ -633,10 +632,8 @@ namespace NormDigits
 theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
     (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
   rcases h with ⟨h, b2, m0⟩
-  -- Porting note: Below line was proved by `by linarith`
-  have b0 : 0 < b := by simp_arith [lt_iff_le_and_ne.mp b2]
-  -- Porting note: Below line was proved by `by linarith [mul_pos b0 m0]`
-  have n0 : 0 < n := le_trans (lt_iff_add_one_le.mp (mul_pos b0 m0)) (e.subst (le_add_left _ r))
+  have b0 : 0 < b := by linarith
+  have n0 : 0 < n := by linarith [mul_pos b0 m0]
   refine' ⟨_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩
   subst h; exact Nat.digits_def' b2 n0
@@ -702,7 +699,7 @@ open Tactic
 `a` and `b` are numerals.
 
 ```
-example : nat.digits 10 123 = [3,2,1] := by norm_num
+example : Nat.digits 10 123 = [3,2,1] := by norm_num
 ```
 -/
 @[norm_num]

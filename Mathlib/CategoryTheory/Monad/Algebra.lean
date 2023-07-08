@@ -145,8 +145,8 @@ To construct an isomorphism of algebras, it suffices to give an isomorphism of t
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk {A B : Algebra T} (h : A.A ≅ B.A) (w : (T : C ⥤ C).map h.hom ≫ B.a = A.a ≫ h.hom) :
-    A ≅ B  where
+def isoMk {A B : Algebra T} (h : A.A ≅ B.A)
+    (w : (T : C ⥤ C).map h.hom ≫ B.a = A.a ≫ h.hom := by aesop_cat) : A ≅ B where
   hom := { f := h.hom }
   inv :=
     { f := h.inv
@@ -272,16 +272,7 @@ The identity monad morphism induces the identity functor from the category of al
 -- Porting note: `semireducible -> default`
 @[simps (config := { rhsMd := .default })]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
-  NatIso.ofComponents
-    (fun X =>
-      Algebra.isoMk (Iso.refl _)
-        (by
-          dsimp
-          simp))
-    fun f => by
-    ext
-    dsimp
-    simp
+  NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 #align category_theory.monad.algebra_functor_of_monad_hom_id CategoryTheory.Monad.algebraFunctorOfMonadHomId
 
 /-- A composition of monad morphisms gives the composition of corresponding functors.
@@ -289,16 +280,7 @@ def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙
 @[simps (config := { rhsMd := .default })]
 def algebraFunctorOfMonadHomComp {T₁ T₂ T₃ : Monad C} (f : T₁ ⟶ T₂) (g : T₂ ⟶ T₃) :
     algebraFunctorOfMonadHom (f ≫ g) ≅ algebraFunctorOfMonadHom g ⋙ algebraFunctorOfMonadHom f :=
-  NatIso.ofComponents
-    (fun X =>
-      Algebra.isoMk (Iso.refl _)
-        (by
-          dsimp
-          simp))
-    fun f => by
-    ext
-    dsimp
-    simp
+  NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 #align category_theory.monad.algebra_functor_of_monad_hom_comp CategoryTheory.Monad.algebraFunctorOfMonadHomComp
 
 /-- If `f` and `g` are two equal morphisms of monads, then the functors of algebras induced by them
@@ -309,16 +291,7 @@ lemmas about.
 @[simps (config := { rhsMd := .default })]
 def algebraFunctorOfMonadHomEq {T₁ T₂ : Monad C} {f g : T₁ ⟶ T₂} (h : f = g) :
     algebraFunctorOfMonadHom f ≅ algebraFunctorOfMonadHom g :=
-  NatIso.ofComponents
-    (fun X =>
-      Algebra.isoMk (Iso.refl _)
-        (by
-          dsimp
-          simp [h]))
-    fun f => by
-    ext
-    dsimp
-    simp
+  NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
 #align category_theory.monad.algebra_functor_of_monad_hom_eq CategoryTheory.Monad.algebraFunctorOfMonadHomEq
 
 /-- Isomorphic monads give equivalent categories of algebras. Furthermore, they are equivalent as
@@ -453,8 +426,8 @@ To construct an isomorphism of coalgebras, it suffices to give an isomorphism of
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk {A B : Coalgebra G} (h : A.A ≅ B.A) (w : A.a ≫ (G : C ⥤ C).map h.hom = h.hom ≫ B.a) :
-    A ≅ B where
+def isoMk {A B : Coalgebra G} (h : A.A ≅ B.A)
+    (w : A.a ≫ (G : C ⥤ C).map h.hom = h.hom ≫ B.a := by aesop_cat) : A ≅ B where
   hom := { f := h.hom }
   inv :=
     { f := h.inv

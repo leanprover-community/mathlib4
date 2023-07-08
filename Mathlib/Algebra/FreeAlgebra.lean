@@ -238,8 +238,7 @@ variable {A : Type _} [Semiring A] [Algebra R A]
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
-    Quot.liftOn a (liftFun _ _ f) fun a b h ↦
-      by
+    Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
       induction' h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _
@@ -310,7 +309,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
       case add a b ha hb =>
-        -- Porting note: it is necessary to declare fa and fb explicitely otherwise Lean refuses
+        -- Porting note: it is necessary to declare fa and fb explicitly otherwise Lean refuses
         -- to consider `Quot.mk (Rel R X) ·` as element of FreeAlgebra R X
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
@@ -367,8 +366,8 @@ as a quotient of an inductive type as completely hidden. -/
 -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/algebra.2Esemiring_to_ring.20breaks.20semimodule.20typeclass.20lookup/near/212580241
 -- For now, we avoid this by not marking it irreducible.
 @[simp]
-theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) : lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g :=
-  by
+theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
+    lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
 #align free_algebra.lift_comp_ι FreeAlgebra.lift_comp_ι
@@ -498,8 +497,7 @@ theorem induction {C : FreeAlgebra R X → Prop}
       algebraMap_mem' := h_grade0 }
   let of : X → s := Subtype.coind (ι R) h_grade1
   -- the mapping through the subalgebra is the identity
-  have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) :=
-    by
+  have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
     simp [Subtype.coind]
   -- finding a proof is finding an element of the subalgebra

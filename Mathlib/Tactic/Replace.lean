@@ -39,21 +39,19 @@ h : β
 
 This can be used to simulate the `specialize` and `apply at` tactics of Coq.
 -/
-syntax "replace " haveDecl : tactic
+syntax "replace" haveDecl : tactic
 
 elab_rules : tactic
-  | `(tactic| replace $[$n?:ident]? $[: $t?:term]? := $v:term) =>
+  | `(tactic| replace $decl:haveDecl) =>
     withMainContext do
-      let name : Name := match n? with
-      | none   => `this
-      | some n => n.getId
-      let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
-      evalTactic $ ← `(tactic| have $[$n?]? $[: $t?]? := $v)
-      match hId? with
-      | some hId =>
-        try replaceMainGoal [← (← getMainGoal).clear hId]
-        catch | _ => pure ()
-      | none     => pure ()
+      let vars ← Elab.Term.Do.getDoHaveVars <| mkNullNode #[.missing, decl]
+      let origLCtx ← getLCtx
+      evalTactic $ ← `(tactic| have $decl:haveDecl)
+      let mut toClear := #[]
+      for fv in vars do
+        if let some ldecl := origLCtx.findFromUserName? fv.getId then
+          toClear := toClear.push ldecl.fvarId
+      liftMetaTactic1 (·.tryClearMany toClear)
 
 /--
 Acts like `have`, but removes a hypothesis with the same name as
@@ -86,14 +84,12 @@ h : β
 ⊢ goal
 ```
 -/
-syntax (name := replace') "replace " Parser.Term.haveIdLhs' : tactic
+syntax (name := replace') "replace" haveIdLhs' : tactic
 
 elab_rules : tactic
-| `(tactic| replace $[$n:ident $bs*]? $[: $t:term]?) => withMainContext do
-    let (goal1, goal2) ← haveLetCore (← getMainGoal) n (bs.getD #[]) t false
-    let name : Name := match n with
-    | none   => `this
-    | some n => n.getId
+| `(tactic| replace $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
+    let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t false
+    let name := optBinderIdent.name n
     let hId? := (← getLCtx).findFromUserName? name |>.map fun d ↦ d.fvarId
     match hId? with
     | some hId =>

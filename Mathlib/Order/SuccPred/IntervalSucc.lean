@@ -16,7 +16,7 @@ import Mathlib.Order.SuccPred.Basic
 
 In this file we prove
 
-* `Monotone.bunionᵢ_Ico_Ioc_map_succ`: if `α` is a linear archimedean succ order and `β` is a linear
+* `Monotone.biUnion_Ico_Ioc_map_succ`: if `α` is a linear archimedean succ order and `β` is a linear
   order, then for any monotone function `f` and `m n : α`, the union of intervals
   `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`, is equal to `Set.Ioc (f m) (f n)`;
 
@@ -37,18 +37,18 @@ namespace Monotone
 /-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone
 function `f` and `m n : α`, the union of intervals `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`,
 is equal to `Set.Ioc (f m) (f n)` -/
-theorem bunionᵢ_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
-    (hf : Monotone f) (m n : α) : (⋃ i ∈ Ico m n, Ioc (f i) (f (succ i))) = Ioc (f m) (f n) := by
+theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β] {f : α → β}
+    (hf : Monotone f) (m n : α) : ⋃ i ∈ Ico m n, Ioc (f i) (f (succ i)) = Ioc (f m) (f n) := by
   cases' le_total n m with hnm hmn
-  · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), bunionᵢ_empty]
+  · rw [Ico_eq_empty_of_le hnm, Ioc_eq_empty_of_le (hf hnm), biUnion_empty]
   · refine' Succ.rec _ _ hmn
-    · simp only [Ioc_self, Ico_self, bunionᵢ_empty]
+    · simp only [Ioc_self, Ico_self, biUnion_empty]
     · intro k hmk ihk
       rw [← Ioc_union_Ioc_eq_Ioc (hf hmk) (hf <| le_succ _), union_comm, ← ihk]
       by_cases hk : IsMax k
       · rw [hk.succ_eq, Ioc_self, empty_union]
-      · rw [Ico_succ_right_eq_insert_of_not_isMax hmk hk, bunionᵢ_insert]
-#align monotone.bUnion_Ico_Ioc_map_succ Monotone.bunionᵢ_Ico_Ioc_map_succ
+      · rw [Ico_succ_right_eq_insert_of_not_isMax hmk hk, biUnion_insert]
+#align monotone.bUnion_Ico_Ioc_map_succ Monotone.biUnion_Ico_Ioc_map_succ
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioc (f n) (f (Order.succ n))` are pairwise disjoint. -/

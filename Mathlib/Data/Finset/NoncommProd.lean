@@ -189,8 +189,7 @@ protected theorem noncommProd_map_aux [MonoidHomClass F α β] (s : Multiset α)
 
 @[to_additive]
 theorem noncommProd_map [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F) :
-    f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.noncommProd_map_aux s comm f) :=
-  by
+    f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.noncommProd_map_aux s comm f) := by
   induction s using Quotient.inductionOn
   simpa using map_list_prod f _
 #align multiset.noncomm_prod_map Multiset.noncommProd_map
@@ -229,7 +228,7 @@ namespace Finset
 variable [Monoid β] [Monoid γ]
 
 
-/-- Proof used in definition of `Finset.noncommProd -/
+/-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
     (comm : (s : Set α).Pairwise fun a b => Commute (f a) (f b)) :
@@ -264,8 +263,7 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
 
 @[to_additive (attr := simp)]
 theorem noncommProd_toFinset [DecidableEq α] (l : List α) (f : α → β) (comm) (hl : l.Nodup) :
-    noncommProd l.toFinset f comm = (l.map f).prod :=
-  by
+    noncommProd l.toFinset f comm = (l.map f).prod := by
   rw [← List.dedup_eq_self] at hl
   simp [noncommProd, hl]
 #align finset.noncomm_prod_to_finset Finset.noncommProd_toFinset
@@ -424,15 +422,15 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   ext i
   apply (univ.noncommProd_map (fun i => MonoidHom.single M i (x i)) _ (Pi.evalMonoidHom M i)).trans
   refine' (noncommProd_congr (insert_erase (mem_univ i)).symm _ _).trans _
-  . intro i _ j _ _
+  · intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
-  . intro j
+  · intro j
     exact Pi.mulSingle j (x j) i
-  . intro j _; dsimp
-  . rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
+  · intro j _; dsimp
+  · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     simp
-    . intro j hj
+    · intro j hj
       simp at hj
       simp [Pi.mulSingle, Function.update]
       intro h

@@ -150,7 +150,6 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
   limit.lift _ S ≫ (HasLimit.isoOfNatIso s.symm).hom ≫ e.inv ≫ p.inv
 #align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj
 
-set_option maxHeartbeats 800000 in
 -- This lemma should not be used directly. Instead, one should use the fact that
 -- `J.plusFunctor D` preserves finite limits, along with the fact that
 -- evaluation preserves limits.
@@ -180,7 +179,6 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   rfl
 #align category_theory.grothendieck_topology.lift_to_plus_obj_limit_obj_fac CategoryTheory.GrothendieckTopology.liftToPlusObjLimitObj_fac
 
-set_option maxHeartbeats 400000 in
 instance preservesLimitsOfShape_plusFunctor
     (K : Type max v u) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
     [PreservesLimitsOfShape K (forget D)] [ReflectsLimitsOfShape K (forget D)] :
@@ -190,7 +188,7 @@ instance preservesLimitsOfShape_plusFunctor
   refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
-  . intro S m hm
+  · intro S m hm
     dsimp [liftToPlusObjLimitObj]
     simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
     refine' limit.hom_ext (fun k => _)

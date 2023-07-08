@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finset.pairwise
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit c4c2ed622f43768eff32608d4a0f8a6cec1c047d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,7 +14,7 @@ import Mathlib.Data.Finset.Lattice
 # Relations holding pairwise on finite sets
 
 In this file we prove a few results about the interaction of `Set.PairwiseDisjoint` and `Finset`,
-as well as the interaction of `List.Pairwise disjoint` and the condition of
+as well as the interaction of `List.Pairwise Disjoint` and the condition of
 `Disjoint` on `List.toFinset`, in `Set` form.
 -/
 
@@ -28,8 +28,7 @@ instance [DecidableEq α] {r : α → α → Prop} [DecidableRel r] {s : Finset 
   decidable_of_iff' (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) Iff.rfl
 
 theorem Finset.pairwiseDisjoint_range_singleton :
-    (Set.range (singleton : α → Finset α)).PairwiseDisjoint id :=
-  by
+    (Set.range (singleton : α → Finset α)).PairwiseDisjoint id := by
   rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ h
   exact disjoint_singleton.2 (ne_of_apply_ne _ h)
 #align finset.pairwise_disjoint_range_singleton Finset.pairwiseDisjoint_range_singleton
@@ -41,30 +40,39 @@ theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s
   hs.elim hi hj (Finset.not_disjoint_iff.2 ⟨a, hai, haj⟩)
 #align set.pairwise_disjoint.elim_finset Set.PairwiseDisjoint.elim_finset
 
-theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] [SemilatticeInf α] [OrderBot α]
-    {s : Finset ι} {f : ι → α} (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι}
-    (hf : ∀ a, f (g a) ≤ f a) : (s.image g : Set ι).PairwiseDisjoint f :=
-  by
+section SemilatticeInf
+
+variable [SemilatticeInf α] [OrderBot α] {s : Finset ι} {f : ι → α}
+
+theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f : ι → α}
+    (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι} (hf : ∀ a, f (g a) ≤ f a) :
+    (s.image g : Set ι).PairwiseDisjoint f := by
   rw [coe_image]
   exact hs.image_of_le hf
 #align set.pairwise_disjoint.image_finset_of_le Set.PairwiseDisjoint.image_finset_of_le
 
+theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
+    (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
+  hs i.2 j.2 <| mt Subtype.ext_val hij
+#align set.pairwise_disjoint.attach Set.PairwiseDisjoint.attach
+
+end SemilatticeInf
+
 variable [Lattice α] [OrderBot α]
 
 /-- Bind operation for `Set.PairwiseDisjoint`. In a complete lattice, you can use
-`Set.PairwiseDisjoint.bunionᵢ`. -/
-theorem PairwiseDisjoint.bunionᵢ_finset {s : Set ι'} {g : ι' → Finset ι} {f : ι → α}
+`Set.PairwiseDisjoint.biUnion`. -/
+theorem PairwiseDisjoint.biUnion_finset {s : Set ι'} {g : ι' → Finset ι} {f : ι → α}
     (hs : s.PairwiseDisjoint fun i' : ι' => (g i').sup f)
-    (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f :=
-  by
+    (hg : ∀ i ∈ s, (g i : Set ι).PairwiseDisjoint f) : (⋃ i ∈ s, ↑(g i)).PairwiseDisjoint f := by
   rintro a ha b hb hab
-  simp_rw [Set.mem_unionᵢ] at ha hb
+  simp_rw [Set.mem_iUnion] at ha hb
   obtain ⟨c, hc, ha⟩ := ha
   obtain ⟨d, hd, hb⟩ := hb
   obtain hcd | hcd := eq_or_ne (g c) (g d)
   · exact hg d hd (by rwa [hcd] at ha) hb hab
   · exact (hs hc hd (ne_of_apply_ne _ hcd)).mono (Finset.le_sup ha) (Finset.le_sup hb)
-#align set.pairwise_disjoint.bUnion_finset Set.PairwiseDisjoint.bunionᵢ_finset
+#align set.pairwise_disjoint.bUnion_finset Set.PairwiseDisjoint.biUnion_finset
 
 end Set
 

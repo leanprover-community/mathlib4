@@ -332,8 +332,8 @@ variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ�
 -- we have to list all the variables explicitly here in order to match the Lean 3 signature.
 set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/
--- Note: the `ring_hom_comp_triple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
--- implicitly for lemmas like `linear_equiv.self_trans_symm`.
+-- Note: the `RingHomCompTriple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
+-- implicitly for lemmas like `LinearEquiv.self_trans_symm`.
 @[trans, nolint unusedArguments]
 def trans
     [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]

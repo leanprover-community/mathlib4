@@ -46,7 +46,6 @@ noncomputable section
 
 open Function LinearIsometry ContinuousLinearMap
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- A continuous linear map `f'` is said to be conformal if it's
     a nonzero multiple of a linear isometry. -/
@@ -63,8 +62,8 @@ theorem isConformalMap_id : IsConformalMap (id R M) :=
   ⟨1, one_ne_zero, id, by simp⟩
 #align is_conformal_map_id isConformalMap_id
 
-theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) : IsConformalMap (c • f) :=
-  by
+theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
+    IsConformalMap (c • f) := by
   rcases hf with ⟨c', hc', li, rfl⟩
   exact ⟨c * c', mul_ne_zero hc hc', li, smul_smul _ _ _⟩
 #align is_conformal_map.smul IsConformalMap.smul

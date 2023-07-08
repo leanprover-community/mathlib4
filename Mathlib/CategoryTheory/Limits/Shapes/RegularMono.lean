@@ -52,7 +52,7 @@ class RegularMono (f : X ⟶ Y) where
   /-- Another map from the codomain of `f` to `Z` -/
   right : Y ⟶ Z
   /-- `f` equalizes the two maps -/
-  w : f ≫ left = f ≫ right
+  w : f ≫ left = f ≫ right := by aesop_cat
   /-- `f` is the equalizer of the two maps -/
   isLimit : IsLimit (Fork.ofι f w)
 #align category_theory.regular_mono CategoryTheory.RegularMono
@@ -71,19 +71,17 @@ instance equalizerRegular (g h : X ⟶ Y) [HasLimit (parallelPair g h)] :
   right := h
   w := equalizer.condition g h
   isLimit :=
-    Fork.IsLimit.mk _ (fun s => limit.lift _ s) (by simp) fun s m w =>
-      by
+    Fork.IsLimit.mk _ (fun s => limit.lift _ s) (by simp) fun s m w => by
       apply equalizer.hom_ext
       simp [← w]
 #align category_theory.equalizer_regular CategoryTheory.equalizerRegular
 
 /-- Every split monomorphism is a regular monomorphism. -/
-instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] : RegularMono f
-    where
+instance (priority := 100) RegularMono.ofIsSplitMono (f : X ⟶ Y) [IsSplitMono f] :
+    RegularMono f where
   Z := Y
   left := 𝟙 Y
   right := retraction f ≫ f
-  w := by aesop_cat
   isLimit := isSplitMonoEqualizes f
 #align category_theory.regular_mono.of_is_split_mono CategoryTheory.RegularMono.ofIsSplitMono
 
@@ -193,7 +191,7 @@ class RegularEpi (f : X ⟶ Y) where
   /-- Two maps to the domain of `f` -/
   (left right : W ⟶ X)
   /-- `f` coequalizes the two maps -/
-  w : left ≫ f = right ≫ f
+  w : left ≫ f = right ≫ f := by aesop_cat
   /-- `f` is the coequalizer -/
   isColimit : IsColimit (Cofork.ofπ f w)
 #align category_theory.regular_epi CategoryTheory.RegularEpi
@@ -213,7 +211,8 @@ instance coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
   w := coequalizer.condition g h
   isColimit :=
     Cofork.IsColimit.mk _ (fun s => colimit.desc _ s) (by simp) fun s m w => by
-      apply coequalizer.hom_ext; simp [← w]
+      apply coequalizer.hom_ext
+      simp [← w]
 #align category_theory.coequalizer_regular CategoryTheory.coequalizerRegular
 
 /-- Every split epimorphism is a regular epimorphism. -/
@@ -222,7 +221,6 @@ instance (priority := 100) RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : 
   W := X
   left := 𝟙 X
   right := f ≫ section_ f
-  w := by aesop_cat
   isColimit := isSplitEpiCoequalizes f
 #align category_theory.regular_epi.of_split_epi CategoryTheory.RegularEpi.ofSplitEpi
 
@@ -279,8 +277,7 @@ instance (priority := 100) strongEpi_of_regularEpi (f : X ⟶ Y) [RegularEpi f] 
   StrongEpi.mk'
     (by
       intro A B z hz u v sq
-      have : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ u = RegularEpi.right ≫ u :=
-        by
+      have : (RegularEpi.left : RegularEpi.W f ⟶ X) ≫ u = RegularEpi.right ≫ u := by
         apply (cancel_mono z).1
         simp only [Category.assoc, sq.w, RegularEpi.w_assoc]
       obtain ⟨t, ht⟩ := RegularEpi.desc' f u this
@@ -316,8 +313,7 @@ def regularEpiOfEpi [RegularEpiCategory C] (f : X ⟶ Y) [Epi f] : RegularEpi f 
 
 instance (priority := 100) regularEpiCategoryOfSplitEpiCategory [SplitEpiCategory C] :
     RegularEpiCategory C where
-  regularEpiOfEpi f _ :=
-    by
+  regularEpiOfEpi f _ := by
     haveI := isSplitEpi_of_epi f
     infer_instance
 #align category_theory.regular_epi_category_of_split_epi_category CategoryTheory.regularEpiCategoryOfSplitEpiCategory

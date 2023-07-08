@@ -70,8 +70,9 @@ def Monom.one : Monom := RBMap.empty
 
 /-- Compare monomials by first comparing their keys and then their powers. -/
 def Monom.lt : Monom → Monom → Bool :=
-fun a b =>
-  ((a.keys : List ℕ) < b.keys) || (((a.keys : List ℕ) = b.keys) && ((a.values : List ℕ) < b.values))
+  fun a b =>
+    ((a.keys : List ℕ) < b.keys) ||
+      (((a.keys : List ℕ) = b.keys) && ((a.values : List ℕ) < b.values))
 
 instance : Ord Monom where
   compare x y := if x.lt y then .lt else if x == y then .eq else .gt
@@ -84,31 +85,32 @@ def Sum.one : Sum := RBMap.empty.insert Monom.one 1
 
 /-- `Sum.scaleByMonom s m` multiplies every monomial in `s` by `m`. -/
 def Sum.scaleByMonom (s : Sum) (m : Monom) : Sum :=
-s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
+  s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
 
-/-- `sum.mul s1 s2` distributes the multiplication of two sums.` -/
+/-- `sum.mul s1 s2` distributes the multiplication of two sums. -/
 def Sum.mul (s1 s2 : Sum) : Sum :=
-s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff))) RBMap.empty
+  s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff)))
+    RBMap.empty
 
 /-- The `n`th power of `s : Sum` is the `n`-fold product of `s`, with `s.pow 0 = Sum.one`. -/
 def Sum.pow (s : Sum) : ℕ → Sum
-| 0     => Sum.one
-| (k+1) => s.mul (s.pow k)
+  | 0     => Sum.one
+  | (k+1) => s.mul (s.pow k)
 
 /-- `SumOfMonom m` lifts `m` to a sum with coefficient `1`. -/
 def SumOfMonom (m : Monom) : Sum :=
-RBMap.empty.insert m 1
+  RBMap.empty.insert m 1
 
 /-- The unit monomial `one` is represented by the empty RBMap. -/
 def one : Monom := RBMap.empty
 
-/-- A scalar `z` is represented by a `sum` with coefficient `z` and monomial `one` -/
+/-- A scalar `z` is represented by a `Sum` with coefficient `z` and monomial `one` -/
 def scalar (z : ℤ) : Sum :=
-RBMap.empty.insert one z
+  RBMap.empty.insert one z
 
 /-- A single variable `n` is represented by a sum with coefficient `1` and monomial `n`. -/
 def var (n : ℕ) : Sum :=
-RBMap.empty.insert (RBMap.empty.insert n 1) 1
+  RBMap.empty.insert (RBMap.empty.insert n 1) 1
 
 
 /-! ### Parsing algorithms -/
@@ -186,13 +188,13 @@ but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
  -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
-s.foldr (λ mn coeff ⟨map, out⟩ =>
-  match map.find? mn with
-  | some n => ⟨map, out.insert n coeff⟩
-  | none =>
-    let n := map.size
-    ⟨map.insert mn n, out.insert n coeff⟩)
-  (m, RBMap.empty)
+  s.foldr (λ mn coeff ⟨map, out⟩ =>
+    match map.find? mn with
+    | some n => ⟨map, out.insert n coeff⟩
+    | none =>
+      let n := map.size
+      ⟨map.insert mn n, out.insert n coeff⟩)
+    (m, RBMap.empty)
 
 /--
 `toComp red e e_map monom_map` converts an expression of the form `t < 0`, `t ≤ 0`, or `t = 0`

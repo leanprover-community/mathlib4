@@ -11,8 +11,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
+import Mathlib.Util.AssertExists
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -95,8 +94,7 @@ noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.u
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
 @[simp]
 theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
-  simp only [Units.isUnit, inverse, dif_pos]
-  exact Units.inv_unique rfl
+  rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 #align ring.inverse_unit Ring.inverse_unit
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
@@ -220,7 +218,7 @@ theorem mk0_inj {a b : G₀} (ha : a ≠ 0) (hb : b ≠ 0) : Units.mk0 a ha = Un
 #align units.mk0_inj Units.mk0_inj
 
 /-- In a group with zero, an existential over a unit can be rewritten in terms of `Units.mk0`. -/
-theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)(hg : g ≠ 0), p (Units.mk0 g hg) :=
+theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀) (hg : g ≠ 0), p (Units.mk0 g hg) :=
   ⟨fun ⟨g, pg⟩ => ⟨g, g.ne_zero, (g.mk0_val g.ne_zero).symm ▸ pg⟩,
   fun ⟨g, hg, pg⟩ => ⟨Units.mk0 g hg, pg⟩⟩
 #align units.exists0 Units.exists0
@@ -228,7 +226,7 @@ theorem exists0 {p : G₀ˣ → Prop} : (∃ g : G₀ˣ, p g) ↔ ∃ (g : G₀)
 /-- An alternative version of `Units.exists0`. This one is useful if Lean cannot
 figure out `p` when using `Units.exists0` from right to left. -/
 theorem exists0' {p : ∀ g : G₀, g ≠ 0 → Prop} :
-    (∃ (g : G₀)(hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
+    (∃ (g : G₀) (hg : g ≠ 0), p g hg) ↔ ∃ g : G₀ˣ, p g g.ne_zero :=
   Iff.trans (by simp_rw [val_mk0]) exists0.symm
   -- porting note: had to add the `rfl`
 #align units.exists0' Units.exists0'
@@ -357,5 +355,4 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
 end NoncomputableDefs
 
 -- Guard against import creep
--- porting note: command not ported yet (added in mathlib#17416)
--- assert_not_exists multiplicative
+assert_not_exists Multiplicative

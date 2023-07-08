@@ -54,7 +54,6 @@ def AddEquiv.toRealLinearEquiv (e : E ≃+ F) (h₁ : Continuous e) (h₂ : Cont
   { e, e.toAddMonoidHom.toRealLinearMap h₁ with }
 #align add_equiv.to_real_linear_equiv AddEquiv.toRealLinearEquiv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A topological group carries at most one structure of a topological `ℝ`-module, so for any
 topological `ℝ`-algebra `A` (e.g. `A = ℂ`) and any topological group that is both a topological
 `ℝ`-module and a topological `A`-module, these structures agree. -/

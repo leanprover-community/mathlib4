@@ -43,8 +43,7 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
               rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π];
                 exact PullbackCone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          apply equalizer.hom_ext
-          apply prod.hom_ext
+          ext
           · dsimp; simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_limit_cospan_of_has_limit_pair_of_has_limit_parallel_pair CategoryTheory.Limits.hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair
@@ -77,14 +76,12 @@ theorem hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair {C : Type 
           rw [← Category.assoc, ← Category.assoc, coequalizer.condition]
       isColimit :=
         PushoutCocone.IsColimit.mk _
-          (fun s =>
-            coequalizer.desc (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <|
-              by
-              rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc];
-                exact PushoutCocone.condition _)
+          (fun s => coequalizer.desc
+              (coprod.desc (s.ι.app WalkingSpan.left) (s.ι.app WalkingSpan.right)) <| by
+            rw [Category.assoc, colimit.ι_desc, Category.assoc, colimit.ι_desc]
+            exact PushoutCocone.condition _)
           (by simp) (by simp) fun s m h₁ h₂ => by
-          apply coequalizer.hom_ext
-          apply coprod.hom_ext
+          ext
           · simpa using h₁
           · simpa using h₂ }
 #align category_theory.limits.has_colimit_span_of_has_colimit_pair_of_has_colimit_parallel_pair CategoryTheory.Limits.hasColimit_span_of_hasColimit_pair_of_hasColimit_parallelPair

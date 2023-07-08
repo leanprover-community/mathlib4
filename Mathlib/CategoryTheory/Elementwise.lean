@@ -8,7 +8,7 @@ Authors: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Elementwise
+import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
@@ -25,7 +25,7 @@ so we need to add the attribute after the fact.
 
 open CategoryTheory
 
--- Porting note: Iso.hom_inv_id and Iso.inv_hom_id produce trivial elementwise lemmas now.
+attribute [elementwise (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 
 -- This list is incomplete, and it would probably be useful to add more.
 set_option linter.existingAttributeWarning false in

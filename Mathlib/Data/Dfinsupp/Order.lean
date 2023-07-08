@@ -56,15 +56,16 @@ theorem le_def {f g : Π₀ i, α i} : f ≤ g ↔ ∀ i, f i ≤ g i :=
 #align dfinsupp.le_def Dfinsupp.le_def
 
 /-- The order on `Dfinsupp`s over a partial order embeds into the order on functions -/
-def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i
-    where
+def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
   toFun := FunLike.coe
   inj' := FunLike.coe_injective
   map_rel_iff' := by rfl
 #align dfinsupp.order_embedding_to_fun Dfinsupp.orderEmbeddingToFun
 
+-- Porting note: we added implicit arguments here in #3414.
 @[simp]
-theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} : orderEmbeddingToFun f i = f i :=
+theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
+    (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl
 #align dfinsupp.order_embedding_to_fun_apply Dfinsupp.orderEmbeddingToFun_apply
 
@@ -157,7 +158,7 @@ theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 :=
   simp [FunLike.ext_iff, forall_and]
 #align dfinsupp.add_eq_zero_iff Dfinsupp.add_eq_zero_iff
 
-section Le
+section LE
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
@@ -172,9 +173,9 @@ theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
 
 variable (α)
 
-instance decidableLe [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
+instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
   fun _ _ ↦ decidable_of_iff _ le_iff.symm
-#align dfinsupp.decidable_le Dfinsupp.decidableLe
+#align dfinsupp.decidable_le Dfinsupp.decidableLE
 
 variable {α}
 
@@ -183,7 +184,7 @@ theorem single_le_iff {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i :=
   (le_iff' support_single_subset).trans <| by simp
 #align dfinsupp.single_le_iff Dfinsupp.single_le_iff
 
-end Le
+end LE
 
 -- porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)

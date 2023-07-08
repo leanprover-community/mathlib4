@@ -10,12 +10,6 @@ Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Spread
-import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -29,7 +23,7 @@ classes and allows to transfer order instances.
 * `AsLinearOrder α`: A type synonym to promote `PartialOrder α` to `LinearOrder α` using
   `IsTotal α (≤)`.
 
-### Transfering orders
+### Transferring orders
 
 - `Order.Preimage`, `Preorder.lift`: Transfers a (pre)order on `β` to an order on `α`
   using a function `f : α → β`.
@@ -628,17 +622,17 @@ theorem LinearOrder.toPartialOrder_injective {α : Type _} :
     Function.Injective (@LinearOrder.toPartialOrder α) :=
   fun A B h ↦ match A, B with
   | { le := A_le, lt := A_lt,
-      decidable_le := A_decidable_le, decidable_eq := A_decidable_eq, decidable_lt := A_decidable_lt
+      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
       min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
       compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,  .. },
     { le := B_le, lt := B_lt,
-      decidable_le := B_decidable_le, decidable_eq := B_decidable_eq, decidable_lt := B_decidable_lt
+      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
       min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
       compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
     cases h
-    obtain rfl : A_decidable_le = B_decidable_le := Subsingleton.elim _ _
-    obtain rfl : A_decidable_eq = B_decidable_eq := Subsingleton.elim _ _
-    obtain rfl : A_decidable_lt = B_decidable_lt := Subsingleton.elim _ _
+    obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
+    obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
+    obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
@@ -729,8 +723,8 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   min := fun a b ↦ (max a b : α)
   min_def := fun a b ↦ show (max .. : α) = _ by rw [max_comm, max_def]; rfl
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
-  decidable_le := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
-  decidable_lt := (inferInstance : DecidableRel (λ a b : α => b < a))
+  decidableLE := (inferInstance : DecidableRel (λ a b : α => b ≤ a))
+  decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
@@ -763,32 +757,32 @@ class HasCompl (α : Type _) where
 export HasCompl (compl)
 
 @[inherit_doc]
-postfix:999 "ᶜ" => compl
+postfix:1024 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
 #align Prop.has_compl Prop.hasCompl
 
 instance Pi.hasCompl {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) :=
-  ⟨fun x i ↦ x iᶜ⟩
+  ⟨fun x i ↦ (x i)ᶜ⟩
 #align pi.has_compl Pi.hasCompl
 
 theorem Pi.compl_def {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) :
-    xᶜ = fun i ↦ x iᶜ :=
+    xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 #align pi.compl_def Pi.compl_def
 
 @[simp]
 theorem Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) (i : ι) :
-    (xᶜ) i = x iᶜ :=
+    xᶜ i = (x i)ᶜ :=
   rfl
 #align pi.compl_apply Pi.compl_apply
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α (rᶜ) :=
+instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
   ⟨@irrefl α r _⟩
 #align is_irrefl.compl IsIrrefl.compl
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α (rᶜ) :=
+instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 #align is_refl.compl IsRefl.compl
 
@@ -1038,14 +1032,14 @@ def LinearOrder.lift {α β} [LinearOrder β] [Sup α] [Inf α] (f : α → β) 
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrder α :=
   letI instOrdα : Ord α := ⟨fun a b ↦ compare (f a) (f b)⟩
-  letI decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj, instOrdα with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidable_le := decidable_le
-    decidable_lt := decidable_lt
-    decidable_eq := decidable_eq
+    decidableLE := decidableLE
+    decidableLT := decidableLT
+    decidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1085,14 +1079,14 @@ def LinearOrder.liftWithOrd {α β} [LinearOrder β] [Sup α] [Inf α] [Ord α] 
     (inj : Injective f) (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y))
     (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (compare_f : ∀ a b : α, compare a b = compare (f a) (f b)) : LinearOrder α :=
-  letI decidable_le := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
-  letI decidable_lt := fun x y ↦ (inferInstance : Decidable (f x < f y))
-  letI decidable_eq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
+  letI decidableLE := fun x y ↦ (inferInstance : Decidable (f x ≤ f y))
+  letI decidableLT := fun x y ↦ (inferInstance : Decidable (f x < f y))
+  letI decidableEq := fun x y ↦ decidable_of_iff (f x = f y) inj.eq_iff
   { PartialOrder.lift f inj with
     le_total := fun x y ↦ le_total (f x) (f y)
-    decidable_le := decidable_le
-    decidable_lt := decidable_lt
-    decidable_eq := decidable_eq
+    decidableLE := decidableLE
+    decidableLT := decidableLT
+    decidableEq := decidableEq
     min := (· ⊓ ·)
     max := (· ⊔ ·)
     min_def := by
@@ -1194,6 +1188,10 @@ namespace Prod
 
 instance (α : Type u) (β : Type v) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
+
+-- Porting note: new instance
+instance instDecidableLE (α : Type u) (β : Type v) [LE α] [LE β] (x y : α × β)
+    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
   Iff.rfl
@@ -1354,26 +1352,25 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
--- Porting note: no `refine_struct` at time of port
 instance linearOrder: LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False
   max := fun _ _ ↦ unit
   min := fun _ _ ↦ unit
-  decidable_eq := inferInstance
-  decidable_le := fun _ _ ↦ Decidable.isTrue trivial
-  decidable_lt := fun _ _ ↦ Decidable.isFalse id
+  decidableEq := inferInstance
+  decidableLE := fun _ _ ↦ Decidable.isTrue trivial
+  decidableLT := fun _ _ ↦ Decidable.isFalse id
   le_refl     := by intros; trivial
   le_trans    := by intros; trivial
   le_total    := by intros; exact Or.inl trivial
   le_antisymm := by intros; rfl
   lt_iff_le_not_le := by simp only [not_true, and_false, forall_const]
 
-theorem max_eq : max a b = star :=
+theorem max_eq : max a b = unit :=
   rfl
 #align punit.max_eq PUnit.max_eq
 
-theorem min_eq : min a b = star :=
+theorem min_eq : min a b = unit :=
   rfl
 #align punit.min_eq PUnit.min_eq
 
@@ -1434,5 +1431,5 @@ noncomputable instance AsLinearOrder.linearOrder {α} [PartialOrder α] [IsTotal
     LinearOrder (AsLinearOrder α) where
   __ := inferInstanceAs (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
-  decidable_le := Classical.decRel _
+  decidableLE := Classical.decRel _
 #align as_linear_order.linear_order AsLinearOrder.linearOrder

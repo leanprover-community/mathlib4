@@ -35,8 +35,8 @@ theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-| []       => default
-| (a :: _) => a
+  | []       => default
+  | (a :: _) => a
 #align list.head List.headI
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl

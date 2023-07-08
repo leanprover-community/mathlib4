@@ -100,7 +100,7 @@ theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit fal
 #align nat.bit_add' Nat.bit_add'
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> [exact Nat.bit0_ne_zero h, exact Nat.bit1_ne_zero _]
+  cases b <;> [exact Nat.bit0_ne_zero h; exact Nat.bit1_ne_zero _]
 #align nat.bit_ne_zero Nat.bit_ne_zero
 
 theorem bit0_mod_two : bit0 n % 2 = 0 := by
@@ -140,7 +140,7 @@ theorem bitCasesOn_bit1 {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (n : ℕ
 theorem bit_cases_on_injective {C : ℕ → Sort u} :
     Function.Injective fun H : ∀ b n, C (bit b n) => fun n => bitCasesOn n H := by
   intro H₁ H₂ h
-  ext (b n)
+  ext b n
   simpa only [bitCasesOn_bit] using congr_fun h (bit b n)
 #align nat.bit_cases_on_injective Nat.bit_cases_on_injective
 

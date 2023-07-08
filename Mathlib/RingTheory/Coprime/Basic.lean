@@ -38,7 +38,6 @@ variable {R : Type u} [CommSemiring R] (x y z : R)
 /-- The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
 e.g., the multivariate polynomials `x₁` and `x₂` are not coprime. -/
-@[simp]
 def IsCoprime : Prop :=
   ∃ a b, a * x + b * y = 1
 #align is_coprime IsCoprime
@@ -113,7 +112,7 @@ theorem IsCoprime.mul_left (H1 : IsCoprime x z) (H2 : IsCoprime y z) : IsCoprime
 #align is_coprime.mul_left IsCoprime.mul_left
 
 theorem IsCoprime.mul_right (H1 : IsCoprime x y) (H2 : IsCoprime x z) : IsCoprime x (y * z) := by
-  rw [isCoprime_comm] at H1 H2⊢
+  rw [isCoprime_comm] at H1 H2 ⊢
   exact H1.mul_left H2
 #align is_coprime.mul_right IsCoprime.mul_right
 
@@ -138,7 +137,7 @@ theorem IsCoprime.of_mul_left_right (H : IsCoprime (x * y) z) : IsCoprime y z :=
 #align is_coprime.of_mul_left_right IsCoprime.of_mul_left_right
 
 theorem IsCoprime.of_mul_right_left (H : IsCoprime x (y * z)) : IsCoprime x y := by
-  rw [isCoprime_comm] at H⊢
+  rw [isCoprime_comm] at H ⊢
   exact H.of_mul_left_left
 #align is_coprime.of_mul_right_left IsCoprime.of_mul_right_left
 
@@ -193,7 +192,7 @@ theorem IsCoprime.of_add_mul_right_left (h : IsCoprime (x + z * y) y) : IsCoprim
 #align is_coprime.of_add_mul_right_left IsCoprime.of_add_mul_right_left
 
 theorem IsCoprime.of_add_mul_left_right (h : IsCoprime x (y + x * z)) : IsCoprime x y := by
-  rw [isCoprime_comm] at h⊢
+  rw [isCoprime_comm] at h ⊢
   exact h.of_add_mul_left_left
 #align is_coprime.of_add_mul_left_right IsCoprime.of_add_mul_left_right
 

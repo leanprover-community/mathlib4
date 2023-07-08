@@ -116,7 +116,7 @@ that a specific definition is in fact being called. Or a specific definition may
 name altogether because the existing name is already taken in lean 4 for something else. For
 these reasons, you should use `#align` on any theorem that needs to be renamed from the default.
 -/
-syntax (name := align) "#align " ident ident : command
+syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
@@ -134,7 +134,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
   let allowed : List String :=
     ["Prop", "Type", "Pi", "Exists", "End",
      "Inf", "Sup", "Union", "Inter",
-     "Hausdorff",
+     "Hausdorff", "is_R_or_C",
      "Ioo", "Ico", "Iio", "Icc", "Iic", "Ioc", "Ici", "Ioi", "Ixx"]
   let mut s := s
   for a in allowed do

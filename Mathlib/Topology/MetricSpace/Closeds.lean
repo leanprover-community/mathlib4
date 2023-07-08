@@ -110,7 +110,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     standard criterion. -/
   refine' complete_of_convergent_controlled_sequences B B_pos fun s hs => _
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
-  let t : Closeds α := ⟨t0, isClosed_interᵢ fun _ => isClosed_closure⟩
+  let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
   -- The inequality is written this way to agree with `edist_le_of_edist_le_geometric_of_tendsto₀`
   have I1 : ∀ n, ∀ x ∈ s n, ∃ y ∈ t0, edist x y ≤ 2 * B n := by
@@ -145,11 +145,11 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     -- the limit point `y` will be the desired point, in `t0` and close to our initial point `x`.
     -- First, we check it belongs to `t0`.
     have : y ∈ t0 :=
-      mem_interᵢ.2 fun k =>
+      mem_iInter.2 fun k =>
         mem_closure_of_tendsto y_lim
           (by
-            simp only [exists_prop, Set.mem_unionᵢ, Filter.eventually_atTop, Set.mem_preimage,
-              Set.preimage_unionᵢ]
+            simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop, Set.mem_preimage,
+              Set.preimage_iUnion]
             exact ⟨k, fun m hm => ⟨n + m, zero_add k ▸ add_le_add (zero_le n) hm, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
@@ -164,10 +164,10 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
             `s n` are close, this point is itself well approximated by a point `y` in `s n`,
             as required. -/
     intro n x xt0
-    have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_interᵢ.1 xt0 n
+    have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_iInter.1 xt0 n
     rcases mem_closure_iff.1 this (B n) (B_pos n) with ⟨z, hz, Dxz⟩
     -- z : α,  Dxz : edist x z < B n,
-    simp only [exists_prop, Set.mem_unionᵢ] at hz
+    simp only [exists_prop, Set.mem_iUnion] at hz
     rcases hz with ⟨m, ⟨m_ge_n, hm⟩⟩
     -- m : ℕ, m_ge_n : m ≥ n, hm : z ∈ s m
     have : hausdorffEdist (s m : Set α) (s n) < B n := hs n m n m_ge_n (le_refl n)
@@ -210,14 +210,14 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       ⟨s, fs, hs⟩
     -- s : Set α,  fs : s.Finite,  hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
     -- we first show that any set is well approximated by a subset of `s`.
-    have main : ∀ u : Set α, ∃ (v : _)(_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
+    have main : ∀ u : Set α, ∃ (v : _) (_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
       intro u
       let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
       exists v, (fun x hx => hx.1 : v ⊆ s)
       refine' hausdorffEdist_le_of_mem_edist _ _
       · intro x hx
         have : x ∈ ⋃ y ∈ s, ball y δ := hs (by simp)
-        rcases mem_unionᵢ₂.1 this with ⟨y, ys, dy⟩
+        rcases mem_iUnion₂.1 this with ⟨y, ys, dy⟩
         have : edist y x < δ := by simp at dy; rwa [edist_comm] at dy
         exact ⟨y, ⟨ys, ⟨x, hx, this⟩⟩, le_of_lt dy⟩
       · rintro x ⟨_, ⟨y, yu, hy⟩⟩
@@ -239,7 +239,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       let t : Closeds α := ⟨t0, this⟩
       have : t ∈ F := t0s
       have : edist u t < ε := lt_of_le_of_lt Dut0 δlt
-      apply mem_unionᵢ₂.2
+      apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
 #align emetric.closeds.compact_space EMetric.Closeds.compactSpace
 
@@ -291,13 +291,13 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     -- u : set α,  fu : u.finite,  ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
     -- then s is covered by the union of the balls centered at u of radius ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dst with ⟨z, hz, Dxz⟩
-    rcases mem_unionᵢ₂.1 (ut hz) with ⟨y, hy, Dzy⟩
+    rcases mem_iUnion₂.1 (ut hz) with ⟨y, hy, Dzy⟩
     have : edist x y < ε :=
       calc
         edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
         _ < ε / 2 + ε / 2 := (ENNReal.add_lt_add Dxz Dzy)
         _ = ε := ENNReal.add_halves _
-    exact mem_bunionᵢ hy this
+    exact mem_biUnion hy this
 #align emetric.nonempty_compacts.is_closed_in_closeds EMetric.NonemptyCompacts.isClosed_in_closeds
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
@@ -353,7 +353,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       have : b.Finite := af.image _
       have tb : ∀ x ∈ t, ∃ y ∈ b, edist x y < δ := by
         intro x hx
-        rcases mem_unionᵢ₂.1 (ta hx) with ⟨z, za, Dxz⟩
+        rcases mem_iUnion₂.1 (ta hx) with ⟨z, za, Dxz⟩
         exists F z, mem_image_of_mem _ za
         calc
           edist x (F z) ≤ edist x z + edist z (F z) := edist_triangle _ _ _

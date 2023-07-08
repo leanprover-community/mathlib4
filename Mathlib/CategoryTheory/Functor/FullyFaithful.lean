@@ -10,7 +10,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Choose
 
 /-!
 # Full and faithful functors
@@ -85,6 +84,7 @@ theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
 #align category_theory.functor.map_iso_injective CategoryTheory.Functor.mapIso_injective
 
 /-- The specified preimage of a morphism under a full functor. -/
+@[pp_dot]
 def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   Full.preimage.{v₁, v₂} f
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
@@ -354,8 +354,8 @@ theorem Faithful.div_comp (F : C ⥤ E) [Faithful F] (G : D ⥤ E) [Faithful G] 
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
   -- Porting note: Have to unfold the structure twice because the first one recovers only the
   -- prefunctor `F_pre`
-  cases' F with F_pre _ _ ; cases' G with G_pre _ _
-  cases' F_pre with F_obj _ ; cases' G_pre with G_obj _
+  cases' F with F_pre _ _; cases' G with G_pre _ _
+  cases' F_pre with F_obj _; cases' G_pre with G_obj _
   unfold Faithful.div Functor.comp
   -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm

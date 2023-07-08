@@ -153,28 +153,28 @@ protected theorem Countable.preimage {s : Set β} (hs : s.Countable) {f : α →
   hs.preimage_of_injOn (hf.injOn _)
 #align set.countable.preimage Set.Countable.preimage
 
-theorem exists_seq_supᵢ_eq_top_iff_countable [CompleteLattice α] {p : α → Prop} (h : ∃ x, p x) :
-    (∃ s : ℕ → α, (∀ n, p (s n)) ∧ (⨆ n, s n) = ⊤) ↔
-      ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ supₛ S = ⊤ := by
+theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Prop} (h : ∃ x, p x) :
+    (∃ s : ℕ → α, (∀ n, p (s n)) ∧ ⨆ n, s n = ⊤) ↔
+      ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
   · rintro ⟨s, hps, hs⟩
     refine' ⟨range s, countable_range s, forall_range_iff.2 hps, _⟩
-    rwa [supₛ_range]
+    rwa [sSup_range]
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)
-    · rw [supₛ_empty] at hS
+    · rw [sSup_empty] at hS
       haveI := subsingleton_of_bot_eq_top hS
       rcases h with ⟨x, hx⟩
       exact ⟨fun _ => x, fun _ => hx, Subsingleton.elim _ _⟩
     · rcases(Set.countable_iff_exists_surjective hne).1 hSc with ⟨s, hs⟩
       refine' ⟨fun n => s n, fun n => hps _ (s n).coe_prop, _⟩
-      rwa [hs.supᵢ_comp, ← supₛ_eq_supᵢ']
-#align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_supᵢ_eq_top_iff_countable
+      rwa [hs.iSup_comp, ← sSup_eq_iSup']
+#align set.exists_seq_supr_eq_top_iff_countable Set.exists_seq_iSup_eq_top_iff_countable
 
 theorem exists_seq_cover_iff_countable {p : Set α → Prop} (h : ∃ s, p s) :
-    (∃ s : ℕ → Set α, (∀ n, p (s n)) ∧ (⋃ n, s n) = univ) ↔
+    (∃ s : ℕ → Set α, (∀ n, p (s n)) ∧ ⋃ n, s n = univ) ↔
       ∃ S : Set (Set α), S.Countable ∧ (∀ s ∈ S, p s) ∧ ⋃₀ S = univ :=
-  exists_seq_supᵢ_eq_top_iff_countable h
+  exists_seq_iSup_eq_top_iff_countable h
 #align set.exists_seq_cover_iff_countable Set.exists_seq_cover_iff_countable
 
 theorem countable_of_injective_of_countable_image {s : Set α} {f : α → β} (hf : InjOn f s)
@@ -182,38 +182,38 @@ theorem countable_of_injective_of_countable_image {s : Set α} {f : α → β} (
   (mapsTo_image _ _).countable_of_injOn hf hs
 #align set.countable_of_injective_of_countable_image Set.countable_of_injective_of_countable_image
 
-theorem countable_unionᵢ {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).Countable) :
+theorem countable_iUnion {t : ι → Set α} [Countable ι] (ht : ∀ i, (t i).Countable) :
     (⋃ i, t i).Countable := by
   haveI := fun a => (ht a).to_subtype
-  rw [unionᵢ_eq_range_psigma]
+  rw [iUnion_eq_range_psigma]
   apply countable_range
-#align set.countable_Union Set.countable_unionᵢ
+#align set.countable_Union Set.countable_iUnion
 
 @[simp]
-theorem countable_unionᵢ_iff [Countable ι] {t : ι → Set α} :
+theorem countable_iUnion_iff [Countable ι] {t : ι → Set α} :
     (⋃ i, t i).Countable ↔ ∀ i, (t i).Countable :=
-  ⟨fun h _ => h.mono <| subset_unionᵢ _ _, countable_unionᵢ⟩
-#align set.countable_Union_iff Set.countable_unionᵢ_iff
+  ⟨fun h _ => h.mono <| subset_iUnion _ _, countable_iUnion⟩
+#align set.countable_Union_iff Set.countable_iUnion_iff
 
-theorem Countable.bunionᵢ_iff {s : Set α} {t : ∀ a ∈ s, Set β} (hs : s.Countable) :
+theorem Countable.biUnion_iff {s : Set α} {t : ∀ a ∈ s, Set β} (hs : s.Countable) :
     (⋃ a ∈ s, t a ‹_›).Countable ↔ ∀ a (ha : a ∈ s), (t a ha).Countable := by
   haveI := hs.to_subtype
-  rw [bunionᵢ_eq_unionᵢ, countable_unionᵢ_iff, SetCoe.forall']
-#align set.countable.bUnion_iff Set.Countable.bunionᵢ_iff
+  rw [biUnion_eq_iUnion, countable_iUnion_iff, SetCoe.forall']
+#align set.countable.bUnion_iff Set.Countable.biUnion_iff
 
-theorem Countable.unionₛ_iff {s : Set (Set α)} (hs : s.Countable) :
-    (⋃₀ s).Countable ↔ ∀ a ∈ s, (a : _).Countable := by rw [unionₛ_eq_bunionᵢ, hs.bunionᵢ_iff]
-#align set.countable.sUnion_iff Set.Countable.unionₛ_iff
+theorem Countable.sUnion_iff {s : Set (Set α)} (hs : s.Countable) :
+    (⋃₀ s).Countable ↔ ∀ a ∈ s, (a : _).Countable := by rw [sUnion_eq_biUnion, hs.biUnion_iff]
+#align set.countable.sUnion_iff Set.Countable.sUnion_iff
 
-alias Countable.bunionᵢ_iff ↔ _ Countable.bunionᵢ
-#align set.countable.bUnion Set.Countable.bunionᵢ
+alias Countable.biUnion_iff ↔ _ Countable.biUnion
+#align set.countable.bUnion Set.Countable.biUnion
 
-alias Countable.unionₛ_iff ↔ _ Countable.unionₛ
-#align set.countable.sUnion Set.Countable.unionₛ
+alias Countable.sUnion_iff ↔ _ Countable.sUnion
+#align set.countable.sUnion Set.Countable.sUnion
 
 @[simp]
 theorem countable_union {s t : Set α} : (s ∪ t).Countable ↔ s.Countable ∧ t.Countable := by
-  simp [union_eq_unionᵢ, and_comm]
+  simp [union_eq_iUnion, and_comm]
 #align set.countable_union Set.countable_union
 
 theorem Countable.union {s t : Set α} (hs : s.Countable) (ht : t.Countable) : (s ∪ t).Countable :=
@@ -293,4 +293,3 @@ end Set
 theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
   s.finite_toSet.countable
 #align finset.countable_to_set Finset.countable_toSet
-

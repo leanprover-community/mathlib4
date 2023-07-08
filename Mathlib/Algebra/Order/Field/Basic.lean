@@ -237,8 +237,8 @@ theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * 
 /-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
 lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b := by
   obtain rfl | hc := hc.eq_or_lt
-  . simpa using hb
-  . rwa [le_div_iff hc] at h
+  · simpa using hb
+  · rwa [le_div_iff hc] at h
 #align mul_le_of_nonneg_of_le_div mul_le_of_nonneg_of_le_div
 
 theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
@@ -493,7 +493,7 @@ The equalities also hold in semifields of characteristic `0`.
 
 
 /- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
-`division_semiring` + `char_zero` -/
+`DivisionSemiring` + `CharZero` -/
 theorem add_halves (a : α) : a / 2 + a / 2 = a := by
   rw [div_add_div_same, ← two_mul, mul_div_cancel_left a two_ne_zero]
 #align add_halves add_halves
@@ -544,6 +544,10 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff, 
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff, mul_two]
 #align add_div_two_lt_right add_div_two_lt_right
 
+theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
+  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+    mul_div_cancel_left a three_ne_zero]
+
 /-!
 ### Miscellaneous lemmas
 -/
@@ -574,7 +578,7 @@ theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ 
 
 theorem Monotone.div_const {β : Type _} [Preorder β] {f : β → α} (hf : Monotone f) {c : α}
     (hc : 0 ≤ c) : Monotone fun x => f x / c := by
-  haveI := @LinearOrder.decidable_le α _
+  haveI := @LinearOrder.decidableLE α _
   simpa only [div_eq_mul_inv] using (monotone_mul_right_of_nonneg (inv_nonneg.2 hc)).comp hf
 #align monotone.div_const Monotone.div_const
 
@@ -993,7 +997,7 @@ theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b /
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 #align max_div_div_right_of_nonpos max_div_div_right_of_nonpos
 
-theorem abs_inv (a : α) : |a⁻¹| = (|a|)⁻¹ :=
+theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 #align abs_inv abs_inv
 

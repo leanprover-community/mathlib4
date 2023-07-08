@@ -36,7 +36,7 @@ def dfinsupp (s : Finset ι) (t : ∀ i, Finset (α i)) : Finset (Π₀ i, α i)
   (s.pi t).map
     ⟨fun f => Dfinsupp.mk s fun i => f i i.2, by
       refine' (mk_injective _).comp fun f g h => _
-      ext (i hi)
+      ext i hi
       convert congr_fun h ⟨i, hi⟩⟩
 #align finset.dfinsupp Finset.dfinsupp
 
@@ -51,7 +51,7 @@ variable [∀ i, DecidableEq (α i)]
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine' mem_map.trans ⟨_, _⟩
   · rintro ⟨f, hf, rfl⟩
-    rw [Function.Embedding.coeFn_mk] -- porting note: added to avoid hearbeat timeout
+    rw [Function.Embedding.coeFn_mk] -- porting note: added to avoid heartbeat timeout
     refine' ⟨support_mk_subset, fun i hi => _⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi

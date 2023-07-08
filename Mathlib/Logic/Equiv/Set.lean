@@ -44,6 +44,7 @@ protected theorem image_eq_preimage {α β} (e : α ≃ β) (s : Set α) : e '' 
   Set.ext fun _ => mem_image_iff_of_inverse e.left_inv e.right_inv
 #align equiv.image_eq_preimage Equiv.image_eq_preimage
 
+@[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
   Set.ext_iff.mp (f.image_eq_preimage S) x
@@ -61,12 +62,14 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
   (f.symm.image_eq_preimage S).symm
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
 
-/- Porting note: Removed `simp` attribute. LHS not in normal form -/
+-- Porting note: increased priority so this fires before `image_subset_iff`
+@[simp high]
 protected theorem subset_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.subset_image
 
-/- Porting note: Removed `simp` attribute. LHS not in normal form  -/
+-- Porting note: increased priority so this fires before `image_subset_iff`
+@[simp high]
 protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
   calc
@@ -150,7 +153,7 @@ theorem prod_assoc_symm_preimage {α β γ} {s : Set α} {t : Set β} {u : Set �
   simp [and_assoc]
 #align equiv.prod_assoc_symm_preimage Equiv.prod_assoc_symm_preimage
 
--- `@[simp]` doesn't like these lemmas, as it uses `set.image_congr'` to turn `equiv.prod_assoc`
+-- `@[simp]` doesn't like these lemmas, as it uses `Set.image_congr'` to turn `Equiv.prodAssoc`
 -- into a lambda expression and then unfold it.
 theorem prod_assoc_image {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
     Equiv.prodAssoc α β γ '' (s ×ˢ t) ×ˢ u = s ×ˢ t ×ˢ u := by
@@ -228,7 +231,7 @@ protected def union' {α} {s t : Set α} (p : α → Prop) [DecidablePred p] (hs
     | Sum.inr x => ⟨x, Or.inr x.2⟩
   left_inv := fun ⟨x, h'⟩ => by by_cases h : p x <;> simp [h]
   right_inv o := by
-    rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h], simp [ht _ h]]
+    rcases o with (⟨x, h⟩ | ⟨x, h⟩) <;> [simp [hs _ h]; simp [ht _ h]]
 #align equiv.set.union' Equiv.Set.union'
 
 /-- If sets `s` and `t` are disjoint, then `s ∪ t` is equivalent to `s ⊕ t`. -/
@@ -275,7 +278,7 @@ protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
   Equiv.setCongr h
 #align equiv.set.of_eq Equiv.Set.ofEq
 
-/-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ punit`. -/
+/-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ Sum s PUnit.{u + 1} :=
   calc
@@ -404,7 +407,7 @@ protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ 
       sumCongr (Equiv.refl _)
         (by
           refine' (Set.union' (· ∉ s) _ _).symm
-          exacts[fun x hx => hx.2, fun x hx => not_not_intro hx.1])
+          exacts [fun x hx => hx.2, fun x hx => not_not_intro hx.1])
     _ ≃ Sum s t := by
       { rw [(_ : t \ s ∪ s ∩ t = t)]
         rw [union_comm, inter_comm, inter_union_diff] }
@@ -663,9 +666,10 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _}
   refine' forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
   -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
+  -- This regression is https://github.com/leanprover/lean4/issues/1926
   by_cases hi : p i
-  . simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
-  . simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
+  · simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
+  · simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.
@@ -704,7 +708,7 @@ noncomputable def Set.BijOn.equiv {α : Type _} {β : Type _} {s : Set α} {t : 
 
 /-- The composition of an updated function with an equiv on a subtype can be expressed as an
 updated function. -/
--- porting note: replace `s : set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
+-- porting note: replace `s : Set α` and `: s` with `p : α → Prop` and `: Subtype p`, since the
 -- former now unfolds syntactically to a less general case of the latter.
 theorem dite_comp_equiv_update {α : Type _} {β : Sort _} {γ : Sort _} {p : α → Prop}
     (e : β ≃ Subtype p)

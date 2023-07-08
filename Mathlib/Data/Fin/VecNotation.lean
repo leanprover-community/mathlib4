@@ -11,8 +11,6 @@ Authors: Anne Baanen
 import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.List.Range
 import Mathlib.GroupTheory.GroupAction.Pi
-import Mathlib.Tactic.ToExpr
-import Qq
 
 /-!
 # Matrix and vector notation
@@ -261,7 +259,7 @@ This turns out to be helpful when providing simp lemmas to reduce `![a, b, c] n`
 that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case because there is
 no `Zero (Fin (m + n))` instance. -/
 def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
-  Fin.append u v ∘ Fin.cast ho
+  Fin.append u v ∘ Fin.castIso ho
 #align matrix.vec_append Matrix.vecAppend
 
 theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
@@ -292,10 +290,8 @@ theorem empty_vecAppend (v : Fin n → α) : vecAppend (zero_add _).symm ![] v =
 
 @[simp]
 theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho (vecCons x u) v =
-      vecCons x
-        (vecAppend (by rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) :=
-  by
+    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by
+      rwa [add_assoc, add_comm 1, ← add_assoc, add_right_cancel_iff] at ho) u v) := by
   ext i
   simp_rw [vecAppend_eq_ite]
   split_ifs with h
@@ -342,19 +338,20 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl v v) = v ∘ bit1 := by
   ext i
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
-  cases n
-  · cases' i with i hi
+  cases n with
+  | zero =>
+    cases' i with i hi
     simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
-  · split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
+  | succ n =>
+    split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
     · simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk]
       rw [Fin.val_mk] at h
-      rw [Fin.val_one]
       erw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
       erw [Nat.mod_eq_of_lt h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
-        Nat.mod_eq_sub_mod h]
-      refine' (Nat.mod_eq_of_lt _).symm
+        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by simp)]
+      refine (Nat.mod_eq_of_lt ?_).symm
       rw [tsub_lt_iff_left h]
       exact Nat.add_succ_lt_add i.2 i.2
 #align matrix.vec_alt1_vec_append Matrix.vecAlt1_vecAppend
@@ -538,7 +535,7 @@ theorem zero_empty : (0 : Fin 0 → α) = ![] :=
 
 @[simp]
 theorem cons_zero_zero : vecCons (0 : α) (0 : Fin n → α) = 0 := by
-  ext (i j)
+  ext i
   refine' Fin.cases _ _ i
   · rfl
   simp

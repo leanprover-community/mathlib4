@@ -60,9 +60,7 @@ More generally this applies to objects essentially in the reflective subcategory
 `Functor.essImage.unit_isIso`.
 -/
 instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) := by
-  have :
-    (ofRightAdjoint i).unit.app (i.obj B) = inv (i.map ((ofRightAdjoint i).counit.app B)) :=
-    by
+  have : (ofRightAdjoint i).unit.app (i.obj B) = inv (i.map ((ofRightAdjoint i).counit.app B)) := by
     rw [← comp_hom_eq_id]
     apply (ofRightAdjoint i).right_triangle_components
   rw [this]
@@ -77,12 +75,9 @@ reflection of `A`, with the isomorphism as `η_A`.
 -/
 theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage) :
     IsIso ((ofRightAdjoint i).unit.app A) := by
-  suffices
-    (ofRightAdjoint i).unit.app A =
-      h.getIso.inv ≫
-        (ofRightAdjoint i).unit.app (i.obj (Functor.essImage.witness h)) ≫
-          (leftAdjoint i ⋙ i).map h.getIso.hom
-    by
+  suffices (ofRightAdjoint i).unit.app A = h.getIso.inv ≫
+      (ofRightAdjoint i).unit.app (i.obj (Functor.essImage.witness h)) ≫
+      (leftAdjoint i ⋙ i).map h.getIso.hom by
     rw [this]
     infer_instance
   rw [← NatTrans.naturality]

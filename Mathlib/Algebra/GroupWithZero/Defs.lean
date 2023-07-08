@@ -41,7 +41,7 @@ theorem eq_of_sub_eq_zero' [AddGroup R] {a b : R} (h : a - b = 0) : a = b :=
 -- This theorem was introduced during ad-hoc porting
 -- and hopefully can be removed again after `Mathlib.Algebra.Ring.Basic` is fully ported.
 theorem pow_succ'' [Monoid M] : ∀ (n : ℕ) (a : M), a ^ n.succ = a * a ^ n :=
-Monoid.npow_succ
+  Monoid.npow_succ
 
 /-- Typeclass for expressing that a type `M₀` with multiplication and a zero satisfies
 `0 * a = 0` and `a * 0 = 0` for all `a : M₀`. -/
@@ -54,7 +54,7 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
-  /-- Multiplicatin by a nonzero element is left cancellative. -/
+  /-- Multiplication by a nonzero element is left cancellative. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
 #align is_left_cancel_mul_zero IsLeftCancelMulZero
 
@@ -189,7 +189,7 @@ export GroupWithZero (inv_zero)
 attribute [simp] inv_zero
 
 @[simp] lemma mul_inv_cancel [GroupWithZero G₀] {a : G₀} (h : a ≠ 0) : a * a⁻¹ = 1 :=
-GroupWithZero.mul_inv_cancel a h
+  GroupWithZero.mul_inv_cancel a h
 #align mul_inv_cancel mul_inv_cancel
 
 /-- A type `G₀` is a commutative “group with zero”
@@ -200,8 +200,6 @@ class CommGroupWithZero (G₀ : Type _) extends CommMonoidWithZero G₀, GroupWi
 #align comm_group_with_zero CommGroupWithZero
 
 section NeZero
-
-attribute [field_simps] two_ne_zero three_ne_zero four_ne_zero
 
 variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
 
@@ -221,7 +219,7 @@ instance NeZero.one : NeZero (1 : M₀) := ⟨by
 
 variable {M₀}
 
-/-- Pullback a `nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
+/-- Pullback a `Nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
 theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
     Nontrivial M₀' :=
   ⟨⟨0, 1, mt (congr_arg f) <| by

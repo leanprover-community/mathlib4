@@ -50,7 +50,7 @@ instance linearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ :
 /-! Extra instances to short-circuit type class resolution and ensure computability -/
 
 
--- Not using `infer_instance` avoids `classical.choice` in the following two
+-- Not using `inferInstance` avoids `Classical.choice` in the following two
 instance linearOrderedSemiring : LinearOrderedSemiring ℕ :=
   inferInstance
 
@@ -175,17 +175,7 @@ theorem lt_one_iff {n : ℕ} : n < 1 ↔ n = 0 :=
 
 /-! ### `add` -/
 
-
-theorem add_pos_left {m : ℕ} (h : 0 < m) (n : ℕ) : 0 < m + n :=
-  calc
-    m + n > 0 + n := Nat.add_lt_add_right h n
-    _ = n := Nat.zero_add n
-    _ ≥ 0 := zero_le n
 #align nat.add_pos_left Nat.add_pos_left
-
-theorem add_pos_right (m : ℕ) {n : ℕ} (h : 0 < n) : 0 < m + n := by
-  rw [add_comm]
-  exact add_pos_left h m
 #align nat.add_pos_right Nat.add_pos_right
 
 theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
@@ -269,7 +259,7 @@ theorem lt_of_lt_pred (h : m < n - 1) : m < n :=
 #align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 theorem le_or_le_of_add_eq_add_pred (h : k + l = m + n - 1) : m ≤ k ∨ n ≤ l := by
-  cases' le_or_lt m k with h' h' <;> [left, right]
+  cases' le_or_lt m k with h' h' <;> [left; right]
   · exact h'
   · replace h' := add_lt_add_right h' l
     rw [h] at h'
@@ -388,7 +378,7 @@ theorem set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S
 
 
 protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
-  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero] ; apply zero_le) fun k0 =>
+  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero]; apply zero_le) fun k0 =>
     le_of_mul_le_mul_left
       (calc
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
@@ -424,7 +414,7 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
   else
     calc
       m / k * n / m ≤ n * m / k / m :=
-        Nat.div_le_div_right (by rw [mul_comm] ; exact mul_div_le_mul_div_assoc _ _ _)
+        Nat.div_le_div_right (by rw [mul_comm]; exact mul_div_le_mul_div_assoc _ _ _)
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
             Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
@@ -621,13 +611,13 @@ theorem findGreatest_eq_iff :
         exact ⟨le_rfl, fun _ => hk, fun n hlt hle => (hlt.not_le hle).elim⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
-        exacts[rfl, (hm hlt le_rfl hk).elim]
+        exacts [rfl, (hm hlt le_rfl hk).elim]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts[hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
         refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl

@@ -137,7 +137,6 @@ theorem finrank_eq_card_finset_basis {ι : Type w} {b : Finset ι} (h : Basis.{w
 
 variable (K)
 
-set_option synthInstance.etaExperiment true in
 /-- A ring satisfying `StrongRankCondition` (such as a `DivisionRing`) is one-dimensional as a
 module over itself. -/
 @[simp]
@@ -145,14 +144,12 @@ theorem finrank_self : finrank K K = 1 :=
   finrank_eq_of_rank_eq (by simp)
 #align finite_dimensional.finrank_self FiniteDimensional.finrank_self
 
-set_option synthInstance.etaExperiment true in
 /-- The vector space of functions on a `Fintype ι` has finrank equal to the cardinality of `ι`. -/
 @[simp]
 theorem finrank_fintype_fun_eq_card {ι : Type v} [Fintype ι] : finrank K (ι → K) = Fintype.card ι :=
   finrank_eq_of_rank_eq rank_fun'
 #align finite_dimensional.finrank_fintype_fun_eq_card FiniteDimensional.finrank_fintype_fun_eq_card
 
-set_option synthInstance.etaExperiment true in
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
 -- @[simp] -- Porting note: simp already proves this
 theorem finrank_fin_fun {n : ℕ} : finrank K (Fin n → K) = n := by simp
@@ -224,14 +221,12 @@ variable {R M M₂ : Type _} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 
 variable [Module R M] [Module R M₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The dimension of a finite dimensional space is preserved under linear equivalence. -/
 theorem finrank_eq (f : M ≃ₗ[R] M₂) : finrank R M = finrank R M₂ := by
   unfold finrank
   rw [← Cardinal.toNat_lift, f.lift_rank_eq, Cardinal.toNat_lift]
 #align linear_equiv.finrank_eq LinearEquiv.finrank_eq
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- Pushforwards of finite-dimensional submodules along a `LinearEquiv` have the same finrank. -/
 theorem finrank_map_eq (f : M ≃ₗ[R] M₂) (p : Submodule R M) :
     finrank R (p.map (f : M →ₗ[R] M₂)) = finrank R p :=
@@ -248,7 +243,6 @@ section Ring
 
 variable [Ring K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂] [Module K V₂]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- The dimensions of the domain and range of an injective linear map are equal. -/
 theorem finrank_range_of_inj {f : V →ₗ[K] V₂} (hf : Function.Injective f) :
     finrank K (LinearMap.range f) = finrank K V := by rw [(LinearEquiv.ofInjective f hf).finrank_eq]
@@ -290,8 +284,8 @@ theorem lt_of_le_of_finrank_lt_finrank {s t : Submodule K V} (le : s ≤ t)
   lt_of_le_of_ne le fun h => ne_of_lt lt (by rw [h])
 #align submodule.lt_of_le_of_finrank_lt_finrank Submodule.lt_of_le_of_finrank_lt_finrank
 
-theorem lt_top_of_finrank_lt_finrank {s : Submodule K V} (lt : finrank K s < finrank K V) : s < ⊤ :=
-  by
+theorem lt_top_of_finrank_lt_finrank {s : Submodule K V} (lt : finrank K s < finrank K V) :
+    s < ⊤ := by
   rw [← finrank_top K V] at lt
   exact lt_of_le_of_finrank_lt_finrank le_top lt
 #align submodule.lt_top_of_finrank_lt_finrank Submodule.lt_top_of_finrank_lt_finrank
@@ -338,7 +332,7 @@ theorem finrank_span_eq_card {ι : Type _} [Fintype ι] {b : ι → V} (hb : Lin
     finrank K (span K (Set.range b)) = Fintype.card ι :=
   finrank_eq_of_rank_eq
     (by
-      have : Module.rank K (span K (Set.range b)) = (#Set.range b) := rank_span hb
+      have : Module.rank K (span K (Set.range b)) = #(Set.range b) := rank_span hb
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
         lift_eq_nat_iff] at this)
 #align finrank_span_eq_card finrank_span_eq_card
@@ -347,7 +341,7 @@ theorem finrank_span_set_eq_card (s : Set V) [Fintype s] (hs : LinearIndependent
     finrank K (span K s) = s.toFinset.card :=
   finrank_eq_of_rank_eq
     (by
-      have : Module.rank K (span K s) = (#s) := rank_span_set hs
+      have : Module.rank K (span K s) = #s := rank_span_set hs
       rwa [Cardinal.mk_fintype, ← Set.toFinset_card] at this)
 #align finrank_span_set_eq_card finrank_span_set_eq_card
 
@@ -537,28 +531,24 @@ theorem Subalgebra.rank_toSubmodule (S : Subalgebra F E) :
   rfl
 #align subalgebra.rank_to_submodule Subalgebra.rank_toSubmodule
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem Subalgebra.finrank_toSubmodule (S : Subalgebra F E) :
     finrank F (Subalgebra.toSubmodule S) = finrank F S :=
   rfl
 #align subalgebra.finrank_to_submodule Subalgebra.finrank_toSubmodule
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem subalgebra_top_rank_eq_submodule_top_rank :
     Module.rank F (⊤ : Subalgebra F E) = Module.rank F (⊤ : Submodule F E) := by
   rw [← Algebra.top_toSubmodule]
   rfl
 #align subalgebra_top_rank_eq_submodule_top_rank subalgebra_top_rank_eq_submodule_top_rank
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem subalgebra_top_finrank_eq_submodule_top_finrank :
     finrank F (⊤ : Subalgebra F E) = finrank F (⊤ : Submodule F E) := by
   rw [← Algebra.top_toSubmodule]
   rfl
 #align subalgebra_top_finrank_eq_submodule_top_finrank subalgebra_top_finrank_eq_submodule_top_finrank
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem Subalgebra.rank_top : Module.rank F (⊤ : Subalgebra F E) = Module.rank F E := by
   rw [subalgebra_top_rank_eq_submodule_top_rank]
   exact _root_.rank_top F E
@@ -568,7 +558,6 @@ section
 
 variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   ((Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.trans <|

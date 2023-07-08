@@ -84,7 +84,7 @@ class PreservesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) wher
 -- This should be used with explicit universe variables.
 /-- `PreservesLimitsOfSize.{v u} F` means that `F` sends all limit cones over any
 diagram `J ⥤ C` to limit cones, where `J : Type u` with `[Category.{v} J]`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class PreservesLimitsOfSize (F : C ⥤ D) where
   preservesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesLimitsOfShape J F := by
     infer_instance
@@ -100,7 +100,7 @@ abbrev PreservesLimits (F : C ⥤ D) :=
 -- This should be used with explicit universe variables.
 /-- `PreservesColimitsOfSize.{v u} F` means that `F` sends all colimit cocones over any
 diagram `J ⥤ C` to colimit cocones, where `J : Type u` with `[Category.{v} J]`. -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class PreservesColimitsOfSize (F : C ⥤ D) where
   preservesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], PreservesColimitsOfShape J F := by
     infer_instance
@@ -184,8 +184,8 @@ instance idPreservesColimits : PreservesColimitsOfSize.{w', w} (𝟭 C) where
       preservesColimit := fun {K} =>
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun j j' f => s.ι.naturality f⟩, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s j ; cases s ; exact h.fac _ j, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s m w ; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_preserves_colimits CategoryTheory.Limits.idPreservesColimits
 
@@ -236,17 +236,17 @@ def preservesLimitOfPreservesLimitCone {F : C ⥤ D} {t : Cone K} (h : IsLimit t
 /-- Transfer preservation of limits along a natural isomorphism in the diagram. -/
 def preservesLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [PreservesLimit K₁ F] :
     PreservesLimit K₂ F where
-    preserves {c} t := by
-      apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _ _
-      have := (IsLimit.postcomposeInvEquiv h c).symm t
-      apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
-      refine' Cones.ext (Iso.refl _) fun j => by aesop_cat
+  preserves {c} t := by
+    apply IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _ _
+    have := (IsLimit.postcomposeInvEquiv h c).symm t
+    apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
+    refine' Cones.ext (Iso.refl _)
 #align category_theory.limits.preserves_limit_of_iso_diagram CategoryTheory.Limits.preservesLimitOfIsoDiagram
 
 /-- Transfer preservation of a limit along a natural isomorphism in the functor. -/
 def preservesLimitOfNatIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [PreservesLimit K F] :
     PreservesLimit K G where
-      preserves t := IsLimit.mapConeEquiv h (PreservesLimit.preserves t)
+  preserves t := IsLimit.mapConeEquiv h (PreservesLimit.preserves t)
 #align category_theory.limits.preserves_limit_of_nat_iso CategoryTheory.Limits.preservesLimitOfNatIso
 
 /-- Transfer preservation of limits of shape along a natural isomorphism in the functor. -/
@@ -261,12 +261,11 @@ def preservesLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOfSize
   preservesLimitsOfShape {_J} _𝒥₁ := preservesLimitsOfShapeOfNatIso h
 #align category_theory.limits.preserves_limits_of_nat_iso CategoryTheory.Limits.preservesLimitsOfNatIso
 
-/-- Transfer preservation of limits along a equivalence in the shape. -/
+/-- Transfer preservation of limits along an equivalence in the shape. -/
 def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
   preservesLimit {K} :=
-    {
-      preserves := fun {c} t => by
+    { preserves := fun {c} t => by
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
@@ -304,7 +303,7 @@ def preservesColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ �
     apply IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _ _
     have := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
-    refine' Cocones.ext (Iso.refl _) fun j => by aesop_cat
+    refine' Cocones.ext (Iso.refl _)
 #align category_theory.limits.preserves_colimit_of_iso_diagram CategoryTheory.Limits.preservesColimitOfIsoDiagram
 
 /-- Transfer preservation of a colimit along a natural isomorphism in the functor. -/
@@ -325,7 +324,7 @@ def preservesColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOf
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShapeOfNatIso h
 #align category_theory.limits.preserves_colimits_of_nat_iso CategoryTheory.Limits.preservesColimitsOfNatIso
 
-/-- Transfer preservation of colimits along a equivalence in the shape. -/
+/-- Transfer preservation of colimits along an equivalence in the shape. -/
 def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : PreservesColimitsOfShape J' F where
   preservesColimit {K} :=
@@ -398,7 +397,7 @@ whenever the image of a cone over some `K : J ⥤ C` under `F` is a limit cone i
 the cone was already a limit cone in `C`.
 Note that we do not assume a priori that `D` actually has any limits.
 -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class ReflectsLimitsOfSize (F : C ⥤ D) where
   reflectsLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsLimitsOfShape J F := by
     infer_instance
@@ -419,7 +418,7 @@ whenever the image of a cocone over some `K : J ⥤ C` under `F` is a colimit co
 the cocone was already a colimit cocone in `C`.
 Note that we do not assume a priori that `D` actually has any colimits.
 -/
-@[nolint checkUnivs]
+@[nolint checkUnivs, pp_with_univ]
 class ReflectsColimitsOfSize (F : C ⥤ D) where
   reflectsColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], ReflectsColimitsOfShape J F := by
     infer_instance
@@ -509,8 +508,8 @@ instance idReflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
       reflectsLimit := fun {K} =>
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun j j' f => s.π.naturality f⟩, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s j ; cases s ; exact h.fac _ j, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s m w ; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_limits CategoryTheory.Limits.idReflectsLimits
 
@@ -520,8 +519,8 @@ instance idReflectsColimits : ReflectsColimitsOfSize.{w, w'} (𝟭 C) where
       reflectsColimit := fun {K} =>
         ⟨fun {c} h =>
           ⟨fun s => h.desc ⟨s.pt, fun j => s.ι.app j, fun j j' f => s.ι.naturality f⟩, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s j ; cases s ; exact h.fac _ j, by
-            cases K ; rcases c with ⟨_, _, _⟩ ; intro s m w ; rcases s with ⟨_, _, _⟩ ;
+            cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
+            cases K; rcases c with ⟨_, _, _⟩; intro s m w; rcases s with ⟨_, _, _⟩;
               exact h.uniq _ m w⟩⟩ }
 #align category_theory.limits.id_reflects_colimits CategoryTheory.Limits.idReflectsColimits
 
@@ -587,7 +586,7 @@ def reflectsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ 
   reflects {c} t := by
     apply IsLimit.postcomposeInvEquiv h c (isLimitOfReflects F _)
     apply ((IsLimit.postcomposeInvEquiv (isoWhiskerRight h F : _) _).symm t).ofIsoLimit _
-    exact Cones.ext (Iso.refl _) (by aesop_cat)
+    exact Cones.ext (Iso.refl _)
 #align category_theory.limits.reflects_limit_of_iso_diagram CategoryTheory.Limits.reflectsLimitOfIsoDiagram
 
 /-- Transfer reflection of a limit along a natural isomorphism in the functor. -/
@@ -608,7 +607,7 @@ def reflectsLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsLimitsOfSize.{
   reflectsLimitsOfShape := reflectsLimitsOfShapeOfNatIso h
 #align category_theory.limits.reflects_limits_of_nat_iso CategoryTheory.Limits.reflectsLimitsOfNatIso
 
-/-- Transfer reflection of limits along a equivalence in the shape. -/
+/-- Transfer reflection of limits along an equivalence in the shape. -/
 def reflectsLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsLimitsOfShape J F] : ReflectsLimitsOfShape J' F where
   reflectsLimit {K} :=
@@ -697,7 +696,7 @@ def reflectsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ �
   reflects {c} t := by
     apply IsColimit.precomposeHomEquiv h c (isColimitOfReflects F _)
     apply ((IsColimit.precomposeHomEquiv (isoWhiskerRight h F : _) _).symm t).ofIsoColimit _
-    exact Cocones.ext (Iso.refl _) (by aesop_cat)
+    exact Cocones.ext (Iso.refl _)
 #align category_theory.limits.reflects_colimit_of_iso_diagram CategoryTheory.Limits.reflectsColimitOfIsoDiagram
 
 /-- Transfer reflection of a colimit along a natural isomorphism in the functor. -/
@@ -718,7 +717,7 @@ def reflectsColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsColimitsOfSi
   reflectsColimitsOfShape := reflectsColimitsOfShapeOfNatIso h
 #align category_theory.limits.reflects_colimits_of_nat_iso CategoryTheory.Limits.reflectsColimitsOfNatIso
 
-/-- Transfer reflection of colimits along a equivalence in the shape. -/
+/-- Transfer reflection of colimits along an equivalence in the shape. -/
 def reflectsColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsColimitsOfShape J F] : ReflectsColimitsOfShape J' F where
   reflectsColimit :=
@@ -800,13 +799,10 @@ def fullyFaithfulReflectsLimits [Full F] [Faithful F] : ReflectsLimitsOfSize.{w,
 /-- A fully faithful functor reflects colimits. -/
 def fullyFaithfulReflectsColimits [Full F] [Faithful F] : ReflectsColimitsOfSize.{w, w'} F
     where reflectsColimitsOfShape {J} 𝒥₁ :=
-    {
-      reflectsColimit := fun {K} =>
-        {
-          reflects := fun {c} t =>
+    { reflectsColimit := fun {K} =>
+        { reflects := fun {c} t =>
             (IsColimit.mkCoconeMorphism fun s =>
-                (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <|
-              by
+                (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
               rw [Functor.image_preimage]

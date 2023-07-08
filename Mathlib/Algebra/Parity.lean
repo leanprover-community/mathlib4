@@ -26,7 +26,7 @@ Odd elements are not unified with a multiplicative notion.
 
 ## Future work
 
-* TODO: Try to generalize further the typeclass assumptions on `IsSquare/even`.
+* TODO: Try to generalize further the typeclass assumptions on `IsSquare/Even`.
   For instance, in some cases, there are `Semiring` assumptions that I (DT) am not convinced are
   necessary.
 * TODO: Consider moving the definition and lemmas about `Odd` to a separate file.
@@ -196,7 +196,7 @@ theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow,
 
 end DivisionMonoid
 
-theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even (|a|) ↔ Even a := by
+theorem even_abs [SubtractionMonoid α] [LinearOrder α] {a : α} : Even |a| ↔ Even a := by
   cases abs_choice a
   · have h : abs a = a := by assumption
     simp only [h, even_neg]
@@ -468,19 +468,19 @@ set_option linter.deprecated false
 variable [LinearOrderedRing R] {a : R} {n : ℕ}
 
 theorem Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit0_nonneg a k
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_nonneg a k
 #align even.pow_nonneg Even.pow_nonneg
 
 theorem Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit0_pos ha k
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_pos ha k
 #align even.pow_pos Even.pow_pos
 
 theorem Odd.pow_nonpos (hn : Odd n) (ha : a ≤ 0) : a ^ n ≤ 0 := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
 #align odd.pow_nonpos Odd.pow_nonpos
 
 theorem Odd.pow_neg (hn : Odd n) (ha : a < 0) : a ^ n < 0 := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
+  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
 #align odd.pow_neg Odd.pow_neg
 
 theorem Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
@@ -516,10 +516,7 @@ theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
 #align pow_bit0_abs pow_bit0_abs
 
 theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk ; simpa only [hk, two_mul] using strictMono_pow_bit1 _
+  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
 #align odd.strict_mono_pow Odd.strictMono_pow
 
 end Powers
-
-/-- Simp attribute for lemmas about `even` -/
-register_simp_attr parity_simps

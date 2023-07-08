@@ -68,7 +68,6 @@ theorem pointwise_smul_toAddSubgroup (m : M) (S : Subring R) :
   rfl
 #align subring.pointwise_smul_to_add_subgroup Subring.pointwise_smul_toAddSubgroup
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem pointwise_smul_toSubsemiring (m : M) (S : Subring R) :
     (m • S).toSubsemiring = m • S.toSubsemiring :=

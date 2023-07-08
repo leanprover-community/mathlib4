@@ -75,9 +75,7 @@ Urysohn's lemma, normal topological space
 
 variable {X : Type _} [TopologicalSpace X]
 
-open Set Filter TopologicalSpace
-
-open Topology Filter
+open Set Filter TopologicalSpace Topology Filter
 
 namespace Urysohns
 
@@ -89,7 +87,7 @@ structure CU (X : Type _) [TopologicalSpace X] where
   protected (C U : Set X)
   protected closed_C : IsClosed C
   protected open_U : IsOpen U
-  protected Subset : C ⊆ U
+  protected subset : C ⊆ U
 #align urysohns.CU Urysohns.CU
 
 instance : Inhabited (CU X) :=
@@ -100,25 +98,25 @@ variable [NormalSpace X]
 namespace CU
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
-such chat `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
+such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
 @[simps C]
 def left (c : CU X) : CU X where
   C := c.C
-  U := (normal_exists_closure_subset c.closed_C c.open_U c.Subset).choose
+  U := (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose
   closed_C := c.closed_C
-  open_U := (normal_exists_closure_subset c.closed_C c.open_U c.Subset).choose_spec.1
-  Subset := (normal_exists_closure_subset c.closed_C c.open_U c.Subset).choose_spec.2.1
+  open_U := (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose_spec.1
+  subset := (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose_spec.2.1
 #align urysohns.CU.left Urysohns.CU.left
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
-such chat `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
+such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
 @[simps U]
 def right (c : CU X) : CU X where
-  C := closure (normal_exists_closure_subset c.closed_C c.open_U c.Subset).choose
+  C := closure (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose
   U := c.U
   closed_C := isClosed_closure
   open_U := c.open_U
-  Subset := (normal_exists_closure_subset c.closed_C c.open_U c.Subset).choose_spec.2.2
+  subset := (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose_spec.2.2
 #align urysohns.CU.right Urysohns.CU.right
 
 theorem left_U_subset_right_C (c : CU X) : c.left.U ⊆ c.right.C :=
@@ -126,23 +124,23 @@ theorem left_U_subset_right_C (c : CU X) : c.left.U ⊆ c.right.C :=
 #align urysohns.CU.left_U_subset_right_C Urysohns.CU.left_U_subset_right_C
 
 theorem left_U_subset (c : CU X) : c.left.U ⊆ c.U :=
-  Subset.trans c.left_U_subset_right_C c.right.Subset
+  Subset.trans c.left_U_subset_right_C c.right.subset
 #align urysohns.CU.left_U_subset Urysohns.CU.left_U_subset
 
 theorem subset_right_C (c : CU X) : c.C ⊆ c.right.C :=
-  Subset.trans c.left.Subset c.left_U_subset_right_C
+  Subset.trans c.left.subset c.left_U_subset_right_C
 #align urysohns.CU.subset_right_C Urysohns.CU.subset_right_C
 
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
 noncomputable def approx : ℕ → CU X → X → ℝ
-  | 0, c, x => indicator (c.Uᶜ) 1 x
+  | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 #align urysohns.CU.approx Urysohns.CU.approx
 
 theorem approx_of_mem_C (c : CU X) (n : ℕ) {x : X} (hx : x ∈ c.C) : c.approx n x = 0 := by
   induction' n with n ihn generalizing c
-  · exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.Subset hx) _
+  · exact indicator_of_not_mem (fun (hU : x ∈ c.Uᶜ) => hU <| c.subset hx) _
   · simp only [approx]
     rw [ihn, ihn, midpoint_self]
     exacts [c.subset_right_C hx, hx]
@@ -222,15 +220,15 @@ protected noncomputable def lim (c : CU X) (x : X) : ℝ :=
 
 theorem tendsto_approx_atTop (c : CU X) (x : X) :
     Tendsto (fun n => c.approx n x) atTop (𝓝 <| c.lim x) :=
-  tendsto_atTop_csupᵢ (c.approx_mono x) ⟨1, fun _ ⟨_, hn⟩ => hn ▸ c.approx_le_one _ _⟩
+  tendsto_atTop_ciSup (c.approx_mono x) ⟨1, fun _ ⟨_, hn⟩ => hn ▸ c.approx_le_one _ _⟩
 #align urysohns.CU.tendsto_approx_at_top Urysohns.CU.tendsto_approx_atTop
 
 theorem lim_of_mem_C (c : CU X) (x : X) (h : x ∈ c.C) : c.lim x = 0 := by
-  simp only [CU.lim, approx_of_mem_C, h, csupᵢ_const]
+  simp only [CU.lim, approx_of_mem_C, h, ciSup_const]
 #align urysohns.CU.lim_of_mem_C Urysohns.CU.lim_of_mem_C
 
 theorem lim_of_nmem_U (c : CU X) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
-  simp only [CU.lim, approx_of_nmem_U c _ h, csupᵢ_const]
+  simp only [CU.lim, approx_of_nmem_U c _ h, ciSup_const]
 #align urysohns.CU.lim_of_nmem_U Urysohns.CU.lim_of_nmem_U
 
 theorem lim_eq_midpoint (c : CU X) (x : X) :
@@ -241,7 +239,7 @@ theorem lim_eq_midpoint (c : CU X) (x : X) :
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint
 
 theorem approx_le_lim (c : CU X) (x : X) (n : ℕ) : c.approx n x ≤ c.lim x :=
-  le_csupᵢ (c.bddAbove_range_approx x) _
+  le_ciSup (c.bddAbove_range_approx x) _
 #align urysohns.CU.approx_le_lim Urysohns.CU.approx_le_lim
 
 theorem lim_nonneg (c : CU X) (x : X) : 0 ≤ c.lim x :=
@@ -249,7 +247,7 @@ theorem lim_nonneg (c : CU X) (x : X) : 0 ≤ c.lim x :=
 #align urysohns.CU.lim_nonneg Urysohns.CU.lim_nonneg
 
 theorem lim_le_one (c : CU X) (x : X) : c.lim x ≤ 1 :=
-  csupᵢ_le fun _ => c.approx_le_one _ _
+  ciSup_le fun _ => c.approx_le_one _ _
 #align urysohns.CU.lim_le_one Urysohns.CU.lim_le_one
 
 theorem lim_mem_Icc (c : CU X) (x : X) : c.lim x ∈ Icc (0 : ℝ) 1 :=
@@ -274,9 +272,9 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
         c.right.lim_of_mem_C _ (c.left_U_subset_right_C hxl)]
       refine' (dist_midpoint_midpoint_le _ _ _ _).trans _
       rw [dist_self, add_zero, div_eq_inv_mul]
-      exact mul_le_mul h1234.le hyd dist_nonneg (h0.trans h1234).le
+      gcongr
     · replace hxl : x ∈ c.left.right.Cᶜ
-      exact compl_subset_compl.2 c.left.right.Subset hxl
+      exact compl_subset_compl.2 c.left.right.subset hxl
       filter_upwards [IsOpen.mem_nhds (isOpen_compl_iff.2 c.left.right.closed_C) hxl,
         ihn c.left.right, ihn c.right]with y hyl hydl hydr
       replace hxl : x ∉ c.left.left.U
@@ -289,11 +287,9 @@ theorem continuous_lim (c : CU X) : Continuous c.lim := by
       refine' (div_le_div_of_le_of_nonneg (add_le_add_right (dist_midpoint_midpoint_le _ _ _ _) _)
         zero_le_two).trans _
       rw [dist_self, zero_add]
-      refine' (div_le_div_of_le_of_nonneg (add_le_add (div_le_div_of_le_of_nonneg hydl zero_le_two)
-        hydr) zero_le_two).trans_eq _
-      generalize (3 / 4 : ℝ) ^ n = r
-      field_simp [two_ne_zero' ℝ]
-      ring
+      set r := (3 / 4 : ℝ) ^ n
+      calc _ ≤ (r / 2 + r) / 2 := by gcongr
+        _ = _ := by field_simp; ring
 #align urysohns.CU.continuous_lim Urysohns.CU.continuous_lim
 
 end CU

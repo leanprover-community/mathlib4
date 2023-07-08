@@ -130,7 +130,7 @@ theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
 
 /-! ### Neighborhoods of infinity -/
 
-theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_h : a ≠ ⊤), 𝓟 (Ioi a) :=
+theorem nhds_top : 𝓝 (⊤ : EReal) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
   nhds_top_order.trans <| by simp only [lt_top_iff_ne_top]
 #align ereal.nhds_top EReal.nhds_top
 
@@ -139,7 +139,7 @@ nonrec theorem nhds_top_basis : (𝓝 (⊤ : EReal)).HasBasis (fun _ : ℝ ↦ T
   rcases exists_rat_btwn_of_lt hx with ⟨y, hxy, -⟩
   exact ⟨_, trivial, Ioi_subset_Ioi hxy.le⟩
 
-theorem nhds_top' : 𝓝 (⊤ : EReal) = ⨅ a : ℝ, 𝓟 (Ioi ↑a) := nhds_top_basis.eq_infᵢ
+theorem nhds_top' : 𝓝 (⊤ : EReal) = ⨅ a : ℝ, 𝓟 (Ioi ↑a) := nhds_top_basis.eq_iInf
 #align ereal.nhds_top' EReal.nhds_top'
 
 theorem mem_nhds_top_iff {s : Set EReal} : s ∈ 𝓝 (⊤ : EReal) ↔ ∃ y : ℝ, Ioi (y : EReal) ⊆ s :=
@@ -151,7 +151,7 @@ theorem tendsto_nhds_top_iff_real {α : Type _} {m : α → EReal} {f : Filter �
   nhds_top_basis.tendsto_right_iff.trans <| by simp only [true_implies, mem_Ioi]
 #align ereal.tendsto_nhds_top_iff_real EReal.tendsto_nhds_top_iff_real
 
-theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_h : a ≠ ⊥), 𝓟 (Iio a) :=
+theorem nhds_bot : 𝓝 (⊥ : EReal) = ⨅ (a) (_ : a ≠ ⊥), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]
 #align ereal.nhds_bot EReal.nhds_bot
 
@@ -161,7 +161,7 @@ theorem nhds_bot_basis : (𝓝 (⊥ : EReal)).HasBasis (fun _ : ℝ ↦ True) (I
   exact ⟨_, trivial, Iio_subset_Iio hxy.le⟩
 
 theorem nhds_bot' : 𝓝 (⊥ : EReal) = ⨅ a : ℝ, 𝓟 (Iio ↑a) :=
-  nhds_bot_basis.eq_infᵢ
+  nhds_bot_basis.eq_iInf
 #align ereal.nhds_bot' EReal.nhds_bot'
 
 theorem mem_nhds_bot_iff {s : Set EReal} : s ∈ 𝓝 (⊥ : EReal) ↔ ∃ y : ℝ, Iio (y : EReal) ⊆ s :=

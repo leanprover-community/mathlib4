@@ -75,7 +75,7 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
   comp F G := F ⋙ G
   id_comp _ := by rfl
   comp_id _ := by rfl
-  assoc := by intros ; rfl
+  assoc := by intros; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.category CategoryTheory.Grpd.category
 
@@ -116,8 +116,6 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.id_to_functor CategoryTheory.Grpd.id_to_functor
 
 section Products
-
---attribute [local tidy] tactic.discrete_cases
 
 /-- Construct the product over an indexed family of groupoids, as a fan. -/
 def piLimitFan ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.Fan F :=

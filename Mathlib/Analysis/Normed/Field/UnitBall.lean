@@ -205,7 +205,7 @@ instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] : TopologicalG
   toContinuousMul := (Submonoid.unitSphere 𝕜).continuousMul
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
-instance Metric.unitSphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
+instance Metric.sphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
   { Metric.sphere.group,
     Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl) with }
   -- porting note: Lean couldn't see past the type synonym into the subtype.

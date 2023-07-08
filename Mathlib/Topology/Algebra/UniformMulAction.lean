@@ -34,7 +34,7 @@ noncomputable section
 variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [UniformSpace X]
   [UniformSpace Y]
 
-/-- An additive action such that for all `c`, the map `λ x, c +ᵥ x` is uniformly continuous. -/
+/-- An additive action such that for all `c`, the map `fun x ↦ c +ᵥ x` is uniformly continuous. -/
 class UniformContinuousConstVAdd [VAdd M X] : Prop where
   uniformContinuous_const_vadd : ∀ c : M, UniformContinuous ((· +ᵥ ·) c : X → X)
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd
@@ -70,27 +70,17 @@ theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGro
       (Continuous.continuousAt (continuous_const_smul r))⟩
 #align has_uniform_continuous_const_smul_of_continuous_const_smul uniformContinuousConstSMul_of_continuousConstSMul
 
-section instances
-
-variable [Ring R]
-
--- Porting note: needs Lean4#2074
-local instance : Module R R := Semiring.toModule
 /-- The action of `Semiring.toModule` is uniformly continuous. -/
 instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 #align ring.has_uniform_continuous_const_smul Ring.uniformContinuousConstSMul
 
--- Porting note: needs Lean4#2074
-local instance : Module Rᵐᵒᵖ R := Semiring.toOppositeModule
 /-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
 instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 #align ring.has_uniform_continuous_const_op_smul Ring.uniformContinuousConstSMul_op
-
-end instances
 
 section SMul
 
@@ -164,14 +154,16 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 instance : UniformContinuousConstSMul M (Completion X) :=
   ⟨fun _ => uniformContinuous_map⟩
 
-@[to_additive]
-instance [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
+@[to_additive instVAddAssocClass]
+instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
     refine' Eq.trans _ (congr_fun this.symm x)
     exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
+#align uniform_space.completion.is_scalar_tower UniformSpace.Completion.instIsScalarTower
+#align uniform_space.completion.vadd_assoc_class UniformSpace.Completion.instVAddAssocClass
 
 @[to_additive]
 instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]

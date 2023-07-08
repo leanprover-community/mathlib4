@@ -113,8 +113,7 @@ theorem alternatingProd_append :
 theorem alternatingProd_reverse :
     ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
   | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
-  | a :: l =>
-    by
+  | a :: l => by
     simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
       alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ, neg_mul,
       one_mul, zpow_neg, inv_inv]

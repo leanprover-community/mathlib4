@@ -2,6 +2,11 @@
 Copyright (c) 2021 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
+
+! This file was ported from Lean 3 source module testing.slim_check.gen
+! leanprover-community/mathlib commit fdc286cc6967a012f41b87f76dcd2797b53152af
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Control.Random
 import Mathlib.Data.List.Perm
@@ -10,19 +15,22 @@ import Mathlib.Data.Nat.Basic
 
 /-!
 # `Gen` Monad
+
 This monad is used to formulate randomized computations with a parameter
 to specify the desired size of the result.
 This is a port of the Haskell QuickCheck library.
 
 ## Main definitions
-  * `Gen` monad
+
+* `Gen` monad
 
 ## Tags
 
 random testing
 
 ## References
-  * https://hackage.haskell.org/package/QuickCheck
+
+* https://hackage.haskell.org/package/QuickCheck
 -/
 
 namespace SlimCheck
@@ -74,7 +82,7 @@ def arrayOf (x : Gen α) : Gen (Array α) := do
     res := res.push (← x)
   pure res
 
-/-- Create an `List` of examples using `x`. The size is controlled
+/-- Create a `List` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
 def listOf (x : Gen α) : Gen (List α) :=
   arrayOf x >>= pure ∘ Array.toList
@@ -92,11 +100,11 @@ def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
 open List in
 /-- Generate a random permutation of a given list. -/
 def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
-| [] => pure ⟨[], Perm.nil⟩
-| x::xs => do
-  let ⟨ys, h1⟩ ← permutationOf xs
-  let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
-  pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
+  | [] => pure ⟨[], Perm.nil⟩
+  | x::xs => do
+    let ⟨ys, h1⟩ ← permutationOf xs
+    let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
+    pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α β : Type u} (x : Gen α) (y : Gen β) : Gen (α × β) := do

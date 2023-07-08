@@ -100,6 +100,5 @@ end
 
 end Submonoid
 
--- Porting note: `assert_not_exists` is not ported yet
 -- Guard against import creep
---assert_not_exists finset
+assert_not_exists Finset

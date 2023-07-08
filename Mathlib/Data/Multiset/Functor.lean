@@ -30,9 +30,9 @@ theorem fmap_def {α' β'} {s : Multiset α'} (f : α' → β') : f <$> s = s.ma
   rfl
 #align multiset.fmap_def Multiset.fmap_def
 
-instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp ; rfl
+instance : LawfulFunctor Multiset := by refine' { .. } <;> intros <;> simp; rfl
 
-open IsLawfulTraversable CommApplicative
+open LawfulTraversable CommApplicative
 
 variable {F : Type u → Type u} [Applicative F] [CommApplicative F]
 
@@ -86,7 +86,7 @@ instance : LawfulMonad Multiset := LawfulMonad.mk'
 
 open Functor
 
-open Traversable IsLawfulTraversable
+open Traversable LawfulTraversable
 
 @[simp]
 theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
@@ -97,7 +97,7 @@ theorem lift_coe {α β : Type _} (x : List α) (f : List α → β)
 @[simp]
 theorem map_comp_coe {α β} (h : α → β) :
     Functor.map h ∘ Coe.coe = (Coe.coe ∘ Functor.map h : List α → Multiset β) := by
-  funext ; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
+  funext; simp only [Function.comp_apply, Coe.coe, fmap_def, coe_map, List.map_eq_map]
 #align multiset.map_comp_coe Multiset.map_comp_coe
 
 theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id α) x = x := by
@@ -108,8 +108,8 @@ theorem id_traverse {α : Type _} (x : Multiset α) : traverse (pure : α → Id
 
 theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] [CommApplicative G]
     [CommApplicative H] {α β γ : Type _} (g : α → G β) (h : β → H γ) (x : Multiset α) :
-    traverse (Comp.mk ∘ Functor.map h ∘ g) x = Comp.mk (Functor.map (traverse h) (traverse g x)) :=
-  by
+    traverse (Comp.mk ∘ Functor.map h ∘ g) x =
+    Comp.mk (Functor.map (traverse h) (traverse g x)) := by
   refine' Quotient.inductionOn x _
   intro
   simp only [traverse, quot_mk_to_coe, lift_coe, Coe.coe, Function.comp_apply, Functor.map_map,
@@ -141,7 +141,7 @@ theorem naturality {G H : Type _ → Type _} [Applicative G] [Applicative H] [Co
   refine' Quotient.inductionOn x _
   intro
   simp only [quot_mk_to_coe, traverse, lift_coe, Function.comp_apply,
-    ApplicativeTransformation.preserves_map, IsLawfulTraversable.naturality]
+    ApplicativeTransformation.preserves_map, LawfulTraversable.naturality]
 #align multiset.naturality Multiset.naturality
 
 end Multiset

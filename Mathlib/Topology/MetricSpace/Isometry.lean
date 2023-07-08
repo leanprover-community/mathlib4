@@ -5,7 +5,7 @@ Isometries of emetric and metric spaces
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module topology.metric_space.isometry
-! leanprover-community/mathlib commit 832a8ba8f10f11fea99367c469ff802e69a5b8ec
+! leanprover-community/mathlib commit b1859b6d4636fdbb78c5d5cefd24530653cfd3eb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -19,7 +19,7 @@ the edistance (on metric spaces, these are exactly the maps that preserve distan
 and prove their basic properties. We also introduce isometric bijections.
 
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
-theory for `pseudo_metric_space` and we specialize to `metric_space` when needed.
+theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
 
 
@@ -27,7 +27,7 @@ noncomputable section
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w}
 
 open Function Set
 
@@ -569,6 +569,22 @@ theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpac
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
 #align isometry_equiv.complete_space IsometryEquiv.completeSpace
+
+variable (ι α)
+
+/-- `Equiv.funUnique` as an `IsometryEquiv`. -/
+@[simps!]
+def funUnique [Unique ι] [Fintype ι] : (ι → α) ≃ᵢ α where
+  toEquiv := Equiv.funUnique ι α
+  isometry_toFun x hx := by simp [edist_pi_def, Finset.univ_unique, Finset.sup_singleton]
+#align isometry_equiv.fun_unique IsometryEquiv.funUnique
+
+/-- `piFinTwoEquiv` as an `IsometryEquiv`. -/
+@[simps!]
+def piFinTwo (α : Fin 2 → Type _) [∀ i, PseudoEMetricSpace (α i)] : (∀ i, α i) ≃ᵢ α 0 × α 1 where
+  toEquiv := piFinTwoEquiv α
+  isometry_toFun x hx := by simp [edist_pi_def, Fin.univ_succ, Prod.edist_eq]
+#align isometry_equiv.pi_fin_two IsometryEquiv.piFinTwo
 
 end PseudoEMetricSpace
 

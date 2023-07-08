@@ -187,11 +187,10 @@ theorem T_derivative_eq_U : ∀ n : ℕ, derivative (T R (n + 1)) = (n + 1) * U 
   | n + 2 =>
     calc
       derivative (T R (n + 2 + 1)) =
-          2 * T R (n + 2) + 2 * X * derivative (T R (n + 1 + 1)) - derivative (T R (n + 1)) :=
-        by
-          rw [T_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X,
-            derivative_ofNat]
-          ring_nf
+          2 * T R (n + 2) + 2 * X * derivative (T R (n + 1 + 1)) - derivative (T R (n + 1)) := by
+        rw [T_add_two _ (n + 1), derivative_sub, derivative_mul, derivative_mul, derivative_X,
+          derivative_ofNat]
+        ring_nf
       _ = 2 * (U R (n + 1 + 1) - X * U R (n + 1)) + 2 * X * (((n + 1 + 1) : R[X]) * U R (n + 1))
           - ((n + 1) : R[X]) * U R n := by
         rw_mod_cast [T_derivative_eq_U (n + 1), T_derivative_eq_U n, T_eq_U_sub_X_mul_U _ (n + 1)]
@@ -214,11 +213,8 @@ theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℕ) :
 
 theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
-  have h :
-    derivative (T R (n + 2)) =
-      U R (n + 1) - X * U R n + X * derivative (T R (n + 1)) + 2 * X * U R n -
-        (1 - X ^ 2) * derivative (U R n) :=
-    by
+  have h : derivative (T R (n + 2)) = U R (n + 1) - X * U R n + X * derivative (T R (n + 1)) +
+      2 * X * U R n - (1 - X ^ 2) * derivative (U R n) := by
     conv_lhs => rw [T_eq_X_mul_T_sub_pol_U]
     simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
       one_mul, T_derivative_eq_U]

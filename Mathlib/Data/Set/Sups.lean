@@ -14,7 +14,7 @@ import Mathlib.Order.UpperLower.Basic
 /-!
 # Set family operations
 
-This file defines a few binary operations on `set α` for use in set family combinatorics.
+This file defines a few binary operations on `Set α` for use in set family combinatorics.
 
 ## Main declarations
 
@@ -175,13 +175,13 @@ theorem sups_inter_subset_right : s ⊻ (t₁ ∩ t₂) ⊆ s ⊻ t₁ ∩ s ⊻
 
 variable (s t u)
 
-theorem unionᵢ_image_sup_left : (⋃ a ∈ s, (· ⊔ ·) a '' t) = s ⊻ t :=
-  unionᵢ_image_left _
-#align set.Union_image_sup_left Set.unionᵢ_image_sup_left
+theorem iUnion_image_sup_left : ⋃ a ∈ s, (· ⊔ ·) a '' t = s ⊻ t :=
+  iUnion_image_left _
+#align set.Union_image_sup_left Set.iUnion_image_sup_left
 
-theorem unionᵢ_image_sup_right : (⋃ b ∈ t, (· ⊔ b) '' s) = s ⊻ t :=
-  unionᵢ_image_right _
-#align set.Union_image_sup_right Set.unionᵢ_image_sup_right
+theorem iUnion_image_sup_right : ⋃ b ∈ t, (· ⊔ b) '' s = s ⊻ t :=
+  iUnion_image_right _
+#align set.Union_image_sup_right Set.iUnion_image_sup_right
 
 @[simp]
 theorem image_sup_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊔ x_1) s t = s ⊻ t := by
@@ -330,13 +330,13 @@ theorem infs_inter_subset_right : s ⊼ (t₁ ∩ t₂) ⊆ s ⊼ t₁ ∩ s ⊼
 
 variable (s t u)
 
-theorem unionᵢ_image_inf_left : (⋃ a ∈ s, (· ⊓ ·) a '' t) = s ⊼ t :=
-  unionᵢ_image_left _
-#align set.Union_image_inf_left Set.unionᵢ_image_inf_left
+theorem iUnion_image_inf_left : ⋃ a ∈ s, (· ⊓ ·) a '' t = s ⊼ t :=
+  iUnion_image_left _
+#align set.Union_image_inf_left Set.iUnion_image_inf_left
 
-theorem unionᵢ_image_inf_right : (⋃ b ∈ t, (· ⊓ b) '' s) = s ⊼ t :=
-  unionᵢ_image_right _
-#align set.Union_image_inf_right Set.unionᵢ_image_inf_right
+theorem iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
+  iUnion_image_right _
+#align set.Union_image_inf_right Set.iUnion_image_inf_right
 
 @[simp]
 theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by

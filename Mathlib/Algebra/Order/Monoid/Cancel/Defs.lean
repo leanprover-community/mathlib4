@@ -72,7 +72,7 @@ instance OrderedCancelCommMonoid.to_contravariantClass_left (M : Type _)
 #align ordered_cancel_comm_monoid.to_contravariant_class_left OrderedCancelCommMonoid.to_contravariantClass_left
 #align ordered_cancel_add_comm_monoid.to_contravariant_class_left OrderedCancelAddCommMonoid.to_contravariantClass_left
 
-/- This instance can be proven with `by apply_instance`.  However, by analogy with the
+/- This instance can be proven with `by infer_instance`.  However, by analogy with the
 instance `OrderedCancelCommMonoid.to_covariantClass_right` above, I imagine that without
 this instance, some Type would not have a `ContravariantClass M M (function.swap (*)) (<)`
 instance. -/

@@ -75,21 +75,17 @@ structure LaxMonoidalFunctor extends C ⥤ D where
   μ_natural :
     ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
       (map f ⊗ map g) ≫ μ Y Y' = μ X X' ≫ map (f ⊗ g) := by
-    --Porting note: was `obviously`
     aesop_cat
   /-- associativity of the tensorator -/
   associativity :
     ∀ X Y Z : C,
       (μ X Y ⊗ 𝟙 (obj Z)) ≫ μ (X ⊗ Y) Z ≫ map (α_ X Y Z).hom =
         (α_ (obj X) (obj Y) (obj Z)).hom ≫ (𝟙 (obj X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
-    --Porting note: was `obviously`
     aesop_cat
   -- unitality
   left_unitality : ∀ X : C, (λ_ (obj X)).hom = (ε ⊗ 𝟙 (obj X)) ≫ μ (𝟙_ C) X ≫ map (λ_ X).hom :=
-    --Porting note: was `obviously`
     by aesop_cat
   right_unitality : ∀ X : C, (ρ_ (obj X)).hom = (𝟙 (obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ map (ρ_ X).hom :=
-    --Porting note: was `obviously`
     by aesop_cat
 #align category_theory.lax_monoidal_functor CategoryTheory.LaxMonoidalFunctor
 
@@ -327,8 +323,7 @@ def comp : LaxMonoidalFunctor.{v₁, v₃} C E :=
   { F.toFunctor ⋙ G.toFunctor with
     ε := G.ε ≫ G.map F.ε
     μ := fun X Y => G.μ (F.obj X) (F.obj Y) ≫ G.map (F.μ X Y)
-    μ_natural := @fun _ _ _ _ f g =>
-      by
+    μ_natural := @fun _ _ _ _ f g => by
       simp only [Functor.comp_map, assoc]
       rw [← Category.assoc, LaxMonoidalFunctor.μ_natural, Category.assoc, ← map_comp, ← map_comp,
         ← LaxMonoidalFunctor.μ_natural]
