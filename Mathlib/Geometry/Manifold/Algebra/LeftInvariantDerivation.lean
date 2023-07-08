@@ -254,8 +254,10 @@ theorem left_invariant : 𝒅ₕ (smoothLeftMul_one I g) (evalAt (1 : G) X) = ev
 theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := by
   ext f
   rw [← left_invariant, apply_hfdifferential, apply_hfdifferential, L_mul, fdifferential_comp,
-    apply_fdifferential, LinearMap.comp_apply, apply_fdifferential, ← apply_hfdifferential,
-    left_invariant]
+    apply_fdifferential]
+  -- Porting note: more agressive here
+  erw [LinearMap.comp_apply]
+  rw [apply_fdifferential, ← apply_hfdifferential, left_invariant]
 #align left_invariant_derivation.eval_at_mul LeftInvariantDerivation.evalAt_mul
 
 theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
