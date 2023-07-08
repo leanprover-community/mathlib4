@@ -81,10 +81,8 @@ theorem toFun_eq_coe : X.toFun = ⇑X :=
 
 #noalign left_invariant_derivation.coe_to_linear_map
 
-@[simp]
-theorem toDerivation_eq_coe : X.toDerivation = X :=
-  rfl
-#align left_invariant_derivation.to_derivation_eq_coe LeftInvariantDerivation.toDerivation_eq_coe
+-- Porting note: now LHS is the same as RHS
+#noalign left_invariant_derivation.to_derivation_eq_coe
 
 theorem coe_injective :
     @Function.Injective (LeftInvariantDerivation I G) (_ → C^∞⟮I, G; 𝕜⟯) FunLike.coe :=
@@ -213,7 +211,7 @@ theorem coe_smul : ⇑(r • X) = r • ⇑X :=
 #align left_invariant_derivation.coe_smul LeftInvariantDerivation.coe_smul
 
 @[simp]
-theorem lift_smul (k : 𝕜) : (↑(k • X) : Derivation 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯) = k • X :=
+theorem lift_smul (k : 𝕜) : (k • X).1 = k • X.1 :=
   rfl
 #align left_invariant_derivation.lift_smul LeftInvariantDerivation.lift_smul
 
