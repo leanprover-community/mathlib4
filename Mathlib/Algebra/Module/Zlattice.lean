@@ -118,7 +118,7 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
 #align zspan.ceil_eq_self_of_mem Zspan.ceil_eq_self_of_mem
 
 /-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
-see `Zspan.fract_mem_fundamentalDomain` and `fract_restrict` for the map with the codomain
+see `Zspan.fract_mem_fundamentalDomain`, and `fract_restrict` for the map with the codomain
 restricted to `fundamentalDomain`. -/
 def fract (m : E) : E := m - floor b m
 #align zspan.fract Zspan.fract
@@ -243,7 +243,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 #align zspan.exist_unique_vadd_mem_fundamental_domain Zspan.exist_unique_vadd_mem_fundamentalDomain
 
-/-- The map `Zspan.fract` give an equiv map between `E ⧸ span ℤ (Set.range b)`
+/-- The map `Zspan.fract_restrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `Zspan.fundamentalDomain b`. -/
 def QuotientEquiv [Fintype ι] :
     E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
