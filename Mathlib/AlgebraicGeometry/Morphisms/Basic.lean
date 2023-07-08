@@ -562,9 +562,10 @@ theorem AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
       pullbackDiagonalMapIso_hom_snd]
 #align algebraic_geometry.affine_target_morphism_property.diagonal_of_target_affine_locally AlgebraicGeometry.AffineTargetMorphismProperty.diagonalOfTargetAffineLocally
 
+open List in
 theorem AffineTargetMorphismProperty.IsLocal.diagonal_affine_openCover_TFAE
     {P : AffineTargetMorphismProperty} (hP : P.IsLocal) {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    List.TFAE
+    TFAE
       [(targetAffineLocally P).diagonal f,
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
           ∀ i : 𝒰.J, P.diagonal (pullback.snd : pullback f (𝒰.map i) ⟶ _),
