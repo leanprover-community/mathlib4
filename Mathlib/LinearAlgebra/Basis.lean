@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 
 ! This file was ported from Lean 3 source module linear_algebra.basis
-! leanprover-community/mathlib commit 04cdee31e196e30f507e8e9eb2d06e02c9ff6310
+! leanprover-community/mathlib commit 13bce9a6b6c44f6b4c91ac1c1d2a816e2533d395
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -73,9 +73,6 @@ universe u
 open Function Set Submodule
 
 open BigOperators
-
--- Porting note: TODO: workaround for lean4#2074
--- attribute [-instance] Ring.toNonAssocRing
 
 variable {ι : Type _} {ι' : Type _} {R : Type _} {R₂ : Type _} {K : Type _}
 variable {M : Type _} {M' M'' : Type _} {V : Type u} {V' : Type _}
@@ -390,7 +387,7 @@ def mapCoeffs : Basis ι R' M := by
 
 theorem mapCoeffs_apply (i : ι) : b.mapCoeffs f h i = b i :=
   apply_eq_iff.mpr <| by
-    -- Porting note: in Lean 3, these were automatically infered from the definition of
+    -- Porting note: in Lean 3, these were automatically inferred from the definition of
     -- `mapCoeffs`.
     letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
     haveI : IsScalarTower R' R M :=
@@ -709,8 +706,8 @@ section Prod
 
 variable (b' : Basis ι' R M')
 
-/-- `Basis.prod` maps a `ι`-indexed basis for `M` and a `ι'`-indexed basis for `M'`
-to a `ι ⊕ ι'`-index basis for `M × M'`.
+/-- `Basis.prod` maps an `ι`-indexed basis for `M` and an `ι'`-indexed basis for `M'`
+to an `ι ⊕ ι'`-index basis for `M × M'`.
 For the specific case of `R × R`, see also `Basis.finTwoProd`. -/
 protected def prod : Basis (Sum ι ι') R (M × M') :=
   ofRepr ((b.repr.prod b'.repr).trans (Finsupp.sumFinsuppLEquivProdFinsupp R).symm)
@@ -832,10 +829,9 @@ theorem singleton_repr (ι R : Type _) [Unique ι] [Semiring R] (x i) :
     (Basis.singleton ι R).repr x i = x := by simp [Basis.singleton, Unique.eq_default i]
 #align basis.singleton_repr Basis.singleton_repr
 
-set_option synthInstance.etaExperiment true in
 theorem basis_singleton_iff {R M : Type _} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] (ι : Type _) [Unique ι] :
-    Nonempty (Basis ι R M) ↔ ∃ (x : _)(_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
+    Nonempty (Basis ι R M) ↔ ∃ (x : _) (_ : x ≠ 0), ∀ y : M, ∃ r : R, r • x = y := by
   constructor
   · rintro ⟨b⟩
     refine' ⟨b default, b.linearIndependent.ne_zero _, _⟩
@@ -928,12 +924,12 @@ theorem Basis.map_equivFun (f : M ≃ₗ[R] M') : (b.map f).equivFun = f.symm.tr
   rfl
 #align basis.map_equiv_fun Basis.map_equivFun
 
-theorem Basis.sum_equivFun (u : M) : (∑ i, b.equivFun u i • b i) = u := by
+theorem Basis.sum_equivFun (u : M) : ∑ i, b.equivFun u i • b i = u := by
   conv_rhs => rw [← b.total_repr u]
   simp [Finsupp.total_apply, Finsupp.sum_fintype, b.equivFun_apply]
 #align basis.sum_equiv_fun Basis.sum_equivFun
 
-theorem Basis.sum_repr (u : M) : (∑ i, b.repr u i • b i) = u :=
+theorem Basis.sum_repr (u : M) : ∑ i, b.repr u i • b i = u :=
   b.sum_equivFun u
 #align basis.sum_repr Basis.sum_repr
 
@@ -984,6 +980,12 @@ theorem Basis.ofEquivFun_equivFun (v : Basis ι R M) : Basis.ofEquivFun v.equivF
     simp only [Finset.mem_univ, if_true, Pi.zero_apply, one_smul, Finset.sum_ite_eq', zero_smul]
 #align basis.of_equiv_fun_equiv_fun Basis.ofEquivFun_equivFun
 
+@[simp]
+theorem Basis.equivFun_ofEquivFun (e : M ≃ₗ[R] ι → R) : (Basis.ofEquivFun e).equivFun = e := by
+  ext j
+  simp_rw [Basis.equivFun_apply, Basis.ofEquivFun_repr_apply]
+#align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
+
 variable (S : Type _) [Semiring S] [Module S M']
 
 variable [SMulCommClass R S M']
@@ -997,7 +999,7 @@ theorem Basis.constr_apply_fintype (f : ι → M') (x : M) :
 /-- If the submodule `P` has a finite basis,
 `x ∈ P` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_submodule_iff' {P : Submodule R M} (b : Basis ι R P) {x : M} :
-    x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • b i :=
+    x ∈ P ↔ ∃ c : ι → R, x = ∑ i, c i • (b i : M) :=
   b.mem_submodule_iff.trans <|
     Finsupp.equivFunOnFinite.exists_congr_left.trans <|
       exists_congr fun c => by simp [Finsupp.sum_fintype, Finsupp.equivFunOnFinite]
@@ -1101,9 +1103,7 @@ theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal 
     ⟨fun i => ⟨b i, h ⟨i, rfl⟩⟩, fun i i' r =>
       b.injective (by simpa only [Subtype.mk_eq_mk] using r)⟩
   simp_rw [Finsupp.total_apply] at e
-  -- Porting note: `change at` doesn't work
-  replace e : ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) =
-      ((⟨x, p⟩ : w) : M) := e
+  change ((b.repr x).sum fun (i : ι) (a : R) ↦ a • (u i : M)) = ((⟨x, p⟩ : w) : M) at e
   rw [← Finsupp.sum_embDomain (f := u) (g := fun x r ↦ r • (x : M)), ← Finsupp.total_apply] at e
   -- Now we can contradict the linear independence of `hi`
   refine' hi.total_ne_of_not_mem_support _ _ e
@@ -1117,7 +1117,6 @@ section Mk
 
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
-set_option synthInstance.etaExperiment true in
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
@@ -1130,7 +1129,6 @@ protected noncomputable def mk : Basis ι R M :=
       right_inv := fun _ => hli.repr_eq rfl }
 #align basis.mk Basis.mk
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ :=
   rfl
@@ -1147,14 +1145,12 @@ theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=
 
 variable {hli hsp}
 
-set_option synthInstance.etaExperiment true in
 /-- Given a basis, the `i`th element of the dual basis evaluates to 1 on the `i`th element of the
 basis. -/
 theorem mk_coord_apply_eq (i : ι) : (Basis.mk hli hsp).coord i (v i) = 1 :=
   show hli.repr ⟨v i, Submodule.subset_span (mem_range_self i)⟩ i = 1 by simp [hli.repr_eq_single i]
 #align basis.mk_coord_apply_eq Basis.mk_coord_apply_eq
 
-set_option synthInstance.etaExperiment true in
 /-- Given a basis, the `i`th element of the dual basis evaluates to 0 on the `j`th element of the
 basis if `j ≠ i`. -/
 theorem mk_coord_apply_ne {i j : ι} (h : j ≠ i) : (Basis.mk hli hsp).coord i (v j) = 0 :=
@@ -1190,11 +1186,8 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rw [← span_image, Submodule.coeSubtype]
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
-    have h₃ :
-      (x : M) ∈
-        map (Submodule.subtype (span R (range v)))
-          (span R (Set.range fun i => Subtype.mk (v i) _)) :=
-      by
+    have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
+        (span R (Set.range fun i => Subtype.mk (v i) _)) := by
       rw [h₂]
       apply Subtype.mem x
     rcases mem_map.1 h₃ with ⟨y, hy₁, hy₂⟩
@@ -1216,7 +1209,7 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   rw [eq_top_iff]
   intro j hj
   rw [← hv] at hj
-  rw [Submodule.mem_span] at hj⊢
+  rw [Submodule.mem_span] at hj ⊢
   refine' fun p hp => hj p fun u hu => _
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
@@ -1237,7 +1230,6 @@ theorem groupSmul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMu
     (groupSmul_span_eq_top v.span_eq).ge i
 #align basis.group_smul_apply Basis.groupSmul_apply
 
-set_option synthInstance.etaExperiment true in
 theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → Rˣ} :
     Submodule.span R (Set.range (w • v)) = ⊤ :=
   groupSmul_span_eq_top hv
@@ -1255,7 +1247,6 @@ theorem unitsSMul_apply {v : Basis ι R M} {w : ι → Rˣ} (i : ι) : unitsSMul
     (units_smul_span_eq_top v.span_eq).ge i
 #align basis.units_smul_apply Basis.unitsSMul_apply
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     (unitsSMul e w).coord i = (w i)⁻¹ • e.coord i := by
@@ -1270,7 +1261,6 @@ theorem coord_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (i : ι) :
     split_ifs with h <;> simp [h]
 #align basis.coord_units_smul Basis.coord_unitsSMul
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι) :
     (e.unitsSMul w).repr v i = (w i)⁻¹ • e.repr v i :=
@@ -1445,7 +1435,7 @@ theorem range_extend (hs : LinearIndependent K ((↑) : s → V)) :
 The specific value of this definition should be considered an implementation detail.
 -/
 def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
-LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
+  LinearIndependent.extend hs.to_subtype_range (subset_univ _) \ range v
 
 /-- If `v` is a linear independent family of vectors, extend it to a basis indexed by a sum type. -/
 noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExtendIndex hs) K V :=
@@ -1560,15 +1550,12 @@ theorem atom_iff_nonzero_span (W : Submodule K V) :
 
 /-- The lattice of submodules of a module over a division ring is atomistic. -/
 instance : IsAtomistic (Submodule K V) where
-  eq_supₛ_atoms W := by
-    refine ⟨_, submodule_eq_supₛ_le_nonzero_spans W, ?_⟩
+  eq_sSup_atoms W := by
+    refine ⟨_, submodule_eq_sSup_le_nonzero_spans W, ?_⟩
     rintro _ ⟨w, ⟨_, ⟨hw, rfl⟩⟩⟩
     exact nonzero_span_atom w hw
 
 end AtomsOfSubmoduleLattice
-
--- Porting note: TODO: workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 variable {K V}
 
@@ -1624,7 +1611,6 @@ theorem LinearMap.exists_extend {p : Submodule K V} (f : p →ₗ[K] V') :
 
 open Submodule LinearMap
 
-set_option synthInstance.etaExperiment true in
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
@@ -1662,8 +1648,7 @@ variable (R)
 
 open Submodule
 
-set_option synthInstance.etaExperiment true in
-/-- Let `b` be a `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
+/-- Let `b` be an `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
 divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as a `R`-basis. -/
 noncomputable def Basis.restrictScalars : Basis ι R (span R (Set.range b)) :=
   Basis.span (b.linearIndependent.restrict_scalars (smul_left_injective R one_ne_zero))
@@ -1674,7 +1659,6 @@ theorem Basis.restrictScalars_apply (i : ι) : (b.restrictScalars R i : M) = b i
   simp only [Basis.restrictScalars, Basis.span_apply]
 #align basis.restrict_scalars_apply Basis.restrictScalars_apply
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
     algebraMap R S ((b.restrictScalars R).repr m i) = b.repr m i := by
@@ -1689,7 +1673,7 @@ theorem Basis.restrictScalars_repr_apply (m : span R (Set.range b)) (i : ι) :
     Basis.restrictScalars_apply, LinearMap.coe_restrictScalars]
 #align basis.restrict_scalars_repr_apply Basis.restrictScalars_repr_apply
 
-/-- Let `b` be a `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the
+/-- Let `b` be an `S`-basis of `M`. Then `m : M` lies in the `R`-module spanned by `b` iff all the
 coordinates of `m` on the basis `b` are in `R` (see `Basis.mem_span` for the case `R = S`). -/
 theorem Basis.mem_span_iff_repr_mem (m : M) :
     m ∈ span R (Set.range b) ↔ ∀ i, b.repr m i ∈ Set.range (algebraMap R S) := by

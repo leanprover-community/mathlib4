@@ -10,6 +10,7 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Real.NNReal
+import Mathlib.Tactic.GCongr
 
 /-!
 # Group seminorms
@@ -398,7 +399,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩ -- porting note: was `positivity`
+    positivity⟩
 #align group_seminorm.mul_bdd_below_range_add GroupSeminorm.mul_bddBelow_range_add
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
@@ -407,18 +408,17 @@ noncomputable instance : Inf (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
-        cinfᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
+        ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
           -- porting note: replace `add_nonneg` with `positivity` once we have the extension
           (fun x => add_nonneg (map_nonneg _ _) (map_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
-        le_cinfᵢ_add_cinfᵢ fun u v =>
-          by
-          refine' cinfᵢ_le_of_le mul_bddBelow_range_add (u * v) _
+        le_ciInf_add_ciInf fun u v => by
+          refine' ciInf_le_of_le mul_bddBelow_range_add (u * v) _
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
       inv' := fun x =>
-        (inv_surjective.infᵢ_comp _).symm.trans <| by
+        (inv_surjective.iInf_comp _).symm.trans <| by
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp)]
@@ -432,12 +432,12 @@ noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
-      cinfᵢ_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
+      ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
     inf_le_right := fun p q x =>
-      cinfᵢ_le_of_le mul_bddBelow_range_add (1 : E) <| by
+      ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
     le_inf := fun a b c hb hc x =>
-      le_cinfᵢ fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
+      le_ciInf fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup
 
@@ -472,12 +472,10 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
     { toFun := fun x => r • p x
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero, mul_zero]
-      add_le' := fun _ _ =>
-        by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        exact
-          (mul_le_mul_of_nonneg_left (map_add_le_add _ _ _) <| NNReal.coe_nonneg _).trans_eq
-            (mul_add _ _ _)
+      add_le' := fun _ _ => by
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
+        gcongr
+        apply map_add_le_add
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
 
 @[simp, norm_cast]
@@ -610,8 +608,7 @@ theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
-    -- porting note: was `positivity`
+    positivity⟩
 #align nonarch_add_group_seminorm.add_bdd_below_range_add NonarchAddGroupSeminorm.add_bddBelow_range_add
 
 end AddCommGroup
@@ -648,12 +645,10 @@ instance : SMul R (GroupSeminorm E) :=
       map_one' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
           mul_zero]
-      mul_le' := fun _ _ =>
-        by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        exact
-          (mul_le_mul_of_nonneg_left (map_mul_le_add p _ _) <| NNReal.coe_nonneg _).trans_eq
-            (mul_add _ _ _)
+      mul_le' := fun _ _ => by
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←mul_add]
+        gcongr
+        apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
 @[to_additive existing AddGroupSeminorm.isScalarTower]
@@ -709,11 +704,11 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero p,
           mul_zero]
-      add_le_max' := fun x y =>
-        by
+      add_le_max' := fun x y => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←
           mul_max_of_nonneg _ _ NNReal.zero_le_coe]
-        exact mul_le_mul_of_nonneg_left (map_add_le_max p _ _) NNReal.zero_le_coe
+        gcongr
+        apply map_add_le_max
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :

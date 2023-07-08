@@ -31,11 +31,11 @@ For example with three ideals : `I ⊔ J = I ⊔ K = J ⊔ K = ⊤ ↔ (I ⊓ J)
 
 When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
 `exists_sum_eq_one_iff_pairwise_coprime` lemma.-/
-theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
-    (⨆ i ∈ t, ⨅ (j) (_hj : j ∈ t) (_ij : j ≠ i), I j) = ⊤ ↔
+theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
+    (⨆ i ∈ t, ⨅ (j) (_ : j ∈ t) (_ : j ≠ i), I j) = ⊤ ↔
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
   haveI : DecidableEq ι := Classical.decEq ι
-  rw [eq_top_iff_one, Submodule.mem_supᵢ_finset_iff_exists_sum]
+  rw [eq_top_iff_one, Submodule.mem_iSup_finset_iff_exists_sum]
   refine' h.cons_induction _ _ <;> clear t h
   · simp only [Finset.sum_singleton, Finset.coe_singleton, Set.pairwise_singleton, iff_true_iff]
     refine' fun a => ⟨fun i => if h : i = a then ⟨1, _⟩ else 0, _⟩
@@ -51,18 +51,18 @@ theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : 
     refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, ?a1⟩ + fun i => ⟨μ i, ?a2⟩, ?a3⟩, fun b hb ab => ?a4⟩
     case a1 =>
       have := Submodule.coe_mem (μ a)
-      rw [mem_infᵢ] at this ⊢
-      --for some reason `simp only [mem_infᵢ]` times out
+      rw [mem_iInf] at this ⊢
+      --for some reason `simp only [mem_iInf]` times out
       intro i
       specialize this i
-      rw [mem_infᵢ, mem_infᵢ] at this ⊢
+      rw [mem_iInf, mem_iInf] at this ⊢
       intro hi _
       apply this (Finset.subset_cons _ hi)
       rintro rfl
       exact hat hi
     case a2 =>
       have := Submodule.coe_mem (μ i)
-      simp only [mem_infᵢ] at this ⊢
+      simp only [mem_iInf] at this ⊢
       intro j hj ij
       exact this _ (Finset.subset_cons _ hj) ij
     case a3 =>
@@ -80,25 +80,25 @@ theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : 
       refine' ⟨_, _, _, _, hμ⟩
       · refine' sum_mem _ fun x hx => _
         have := Submodule.coe_mem (μ x)
-        simp only [mem_infᵢ] at this
+        simp only [mem_iInf] at this
         apply this _ (Finset.mem_cons_self _ _)
         rintro rfl
         exact hat hx
       · have := Submodule.coe_mem (μ a)
-        simp only [mem_infᵢ] at this
+        simp only [mem_iInf] at this
         exact this _ (Finset.subset_cons _ hb) ab.symm
   · rintro ⟨hs, Hb⟩
     obtain ⟨μ, hμ⟩ := ih.mpr hs
-    have := sup_infᵢ_eq_top fun b hb => Hb b hb (ne_of_mem_of_not_mem hb hat).symm
+    have := sup_iInf_eq_top fun b hb => Hb b hb (ne_of_mem_of_not_mem hb hat).symm
     rw [eq_top_iff_one, Submodule.mem_sup] at this
     obtain ⟨u, hu, v, hv, huv⟩ := this
     refine' ⟨fun i => if hi : i = a then ⟨v, _⟩ else ⟨u * μ i, _⟩, _⟩
-    · simp only [mem_infᵢ] at hv⊢
+    · simp only [mem_iInf] at hv ⊢
       intro j hj ij
       rw [Finset.mem_cons, ← hi] at hj
       exact hv _ (hj.resolve_left ij)
     · have := Submodule.coe_mem (μ i)
-      simp only [mem_infᵢ] at this⊢
+      simp only [mem_iInf] at this ⊢
       intro j hj ij
       rcases Finset.mem_cons.mp hj with (rfl | hj)
       · exact mul_mem_right _ _ hu
@@ -113,6 +113,6 @@ theorem supᵢ_infᵢ_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : 
       rw [dif_neg]
       rintro rfl
       exact hat hj
-#align ideal.supr_infi_eq_top_iff_pairwise Ideal.supᵢ_infᵢ_eq_top_iff_pairwise
+#align ideal.supr_infi_eq_top_iff_pairwise Ideal.iSup_iInf_eq_top_iff_pairwise
 
 end Ideal

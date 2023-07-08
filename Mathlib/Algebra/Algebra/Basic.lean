@@ -604,7 +604,7 @@ instance : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
-      Algebra.smul_def, Algebra.commutes, op_unop]
+      Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
   commutes' r := MulOpposite.rec' fun x => by
     simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
@@ -924,7 +924,7 @@ variable (R)
 #align linear_map.coe_coe_is_scalar_tower LinearMap.coe_restrictScalars
 
 -- porting note: todo: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce a `R`-linear map from `M` to `A` to a function, given an algebra `A` over
+/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
     [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where

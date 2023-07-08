@@ -193,7 +193,7 @@ def unaryEncodeNat : Nat → List Bool
   | n + 1 => true :: unaryEncodeNat n
 #align computability.unary_encode_nat Computability.unaryEncodeNat
 
-/-- A unary decoding function from `List bool` to ℕ. -/
+/-- A unary decoding function from `List Bool` to ℕ. -/
 def unaryDecodeNat : List Bool → Nat :=
   List.length
 #align computability.unary_decode_nat Computability.unaryDecodeNat
@@ -243,12 +243,12 @@ instance inhabitedEncoding : Inhabited (Encoding Bool) :=
 #align computability.inhabited_encoding Computability.inhabitedEncoding
 
 theorem Encoding.card_le_card_list {α : Type u} (e : Encoding.{u, v} α) :
-    Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} (#List e.Γ) :=
+    Cardinal.lift.{v} #α ≤ Cardinal.lift.{u} #(List e.Γ) :=
   Cardinal.lift_mk_le'.2 ⟨⟨e.encode, e.encode_injective⟩⟩
 #align computability.encoding.card_le_card_list Computability.Encoding.card_le_card_list
 
-theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Encodable e.Γ] : (#α) ≤ ℵ₀ :=
-  by
+theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Encodable e.Γ] :
+    #α ≤ ℵ₀ := by
   refine' Cardinal.lift_le.1 (e.card_le_card_list.trans _)
   simp only [Cardinal.lift_aleph0, Cardinal.lift_le_aleph0]
   cases' isEmpty_or_nonempty e.Γ with h h
@@ -256,7 +256,7 @@ theorem Encoding.card_le_aleph0 {α : Type u} (e : Encoding.{u, v} α) [Encodabl
   · rw [Cardinal.mk_list_eq_aleph0]
 #align computability.encoding.card_le_aleph_0 Computability.Encoding.card_le_aleph0
 
-theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : (#α) ≤ ℵ₀ :=
+theorem FinEncoding.card_le_aleph0 {α : Type u} (e : FinEncoding α) : #α ≤ ℵ₀ :=
   haveI : Encodable e.Γ := Fintype.toEncodable _
   e.toEncoding.card_le_aleph0
 #align computability.fin_encoding.card_le_aleph_0 Computability.FinEncoding.card_le_aleph0

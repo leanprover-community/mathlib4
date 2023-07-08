@@ -109,7 +109,7 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 `QuotientGroup.mk'` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext 1100) "Two `AddMonoidHoms`s from an additive quotient group are equal if
+@[to_additive (attr := ext 1100) "Two `AddMonoidHom`s from an additive quotient group are equal if
  their compositions with `AddQuotientGroup.mk'` are equal.
 
  See note [partially-applied ext lemmas]. "]
@@ -133,10 +133,10 @@ theorem ker_mk' : MonoidHom.ker (QuotientGroup.mk' N : G →* G ⧸ N) = N :=
 -- porting note: I think this is misnamed without the prime
 
 @[to_additive]
-theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} : (x : G ⧸ N) = y ↔ x / y ∈ N :=
-  by
-    refine' eq_comm.trans (QuotientGroup.eq.trans _)
-    rw [nN.mem_comm_iff, div_eq_mul_inv]
+theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
+    (x : G ⧸ N) = y ↔ x / y ∈ N := by
+  refine' eq_comm.trans (QuotientGroup.eq.trans _)
+  rw [nN.mem_comm_iff, div_eq_mul_inv]
 #align quotient_group.eq_iff_div_mem QuotientGroup.eq_iff_div_mem
 #align quotient_add_group.eq_iff_sub_mem QuotientAddGroup.eq_iff_sub_mem
 
@@ -192,8 +192,7 @@ group homomorphism `G/N →* H`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ H` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* H`."]
 def lift (φ : G →* H) (HN : ∀ x ∈ N, φ x = 1) : Q →* H :=
-  (QuotientGroup.con N).lift φ fun x y h =>
-    by
+  (QuotientGroup.con N).lift φ fun x y h => by
     simp only [QuotientGroup.con, leftRel_apply, Con.rel_mk] at h
     rw [Con.ker_rel]
     calc
@@ -669,8 +668,7 @@ theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := b
 @[to_additive "If the quotient by an additive subgroup gives a singleton then the additive subgroup
 is the whole additive group."]
 theorem subgroup_eq_top_of_subsingleton (H : Subgroup G) (h : Subsingleton (G ⧸ H)) : H = ⊤ :=
-  top_unique fun x _ =>
-    by
+  top_unique fun x _ => by
     have this : 1⁻¹ * x ∈ H := QuotientGroup.eq.1 (Subsingleton.elim _ _)
     rwa [inv_one, one_mul] at this
 #align quotient_group.subgroup_eq_top_of_subsingleton QuotientGroup.subgroup_eq_top_of_subsingleton

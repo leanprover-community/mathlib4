@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.multiset.pi
-! leanprover-community/mathlib commit 4c586d291f189eecb9d00581aeb3dd998ac34442
+! leanprover-community/mathlib commit b2c89893177f66a48daf993b7ba5ef7cddeff8c9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,9 +50,8 @@ theorem Pi.cons_ne {m : Multiset α} {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ
 #align multiset.pi.cons_ne Multiset.Pi.cons_ne
 
 theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
-    (h : a ≠ a') :
-    HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f)) (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) :=
-  by
+    (h : a ≠ a') : HEq (Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f))
+      (Pi.cons (a ::ₘ m) a' b' (Pi.cons m a b f)) := by
   apply hfunext rfl
   simp only [heq_iff_eq]
   rintro a'' _ rfl
@@ -61,6 +60,28 @@ theorem Pi.cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : 
   rcases eq_or_ne a'' a' with (rfl | h₂)
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 #align multiset.pi.cons_swap Multiset.Pi.cons_swap
+
+@[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
+theorem pi.cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
+    (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
+  ext a' h'
+  by_cases h : a' = a
+  · subst h
+    rw [Pi.cons_same]
+  · rw [Pi.cons_ne _ h]
+#align multiset.pi.cons_eta Multiset.pi.cons_eta
+
+theorem Pi.cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
+    Function.Injective (Pi.cons s a b) := fun f₁ f₂ eq =>
+  funext fun a' =>
+    funext fun h' =>
+      have ne : a ≠ a' := fun h => hs <| h.symm ▸ h'
+      have : a' ∈ a ::ₘ s := mem_cons_of_mem h'
+      calc
+        f₁ a' h' = Pi.cons s a b f₁ a' this := by rw [Pi.cons_ne this ne.symm]
+        _ = Pi.cons s a b f₂ a' this := by rw [eq]
+        _ = f₂ a' h' := by rw [Pi.cons_ne this ne.symm]
+#align multiset.pi.cons_injective Multiset.Pi.cons_injective
 
 /-- `pi m t` constructs the Cartesian product over `t` indexed by `m`. -/
 def pi (m : Multiset α) (t : ∀ a, Multiset (β a)) : Multiset (∀ a ∈ m, β a) :=
@@ -94,18 +115,6 @@ theorem pi_cons (m : Multiset α) (t : ∀ a, Multiset (β a)) (a : α) :
   recOn_cons a m
 #align multiset.pi_cons Multiset.pi_cons
 
-theorem pi_cons_injective {a : α} {b : δ a} {s : Multiset α} (hs : a ∉ s) :
-    Function.Injective (Pi.cons s a b) := fun f₁ f₂ eq =>
-  funext fun a' =>
-    funext fun h' =>
-      have ne : a ≠ a' := fun h => hs <| h.symm ▸ h'
-      have : a' ∈ a ::ₘ s := mem_cons_of_mem h'
-      calc
-        f₁ a' h' = Pi.cons s a b f₁ a' this := by rw [Pi.cons_ne this ne.symm]
-        _ = Pi.cons s a b f₂ a' this := by rw [eq]
-        _ = f₂ a' h' := by rw [Pi.cons_ne this ne.symm]
-#align multiset.pi_cons_injective Multiset.pi_cons_injective
-
 theorem card_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     card (pi m t) = prod (m.map fun a => card (t a)) :=
   Multiset.induction_on m (by simp) (by simp (config := { contextual := true }) [mul_comm])
@@ -120,7 +129,7 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
       have hs : Nodup s := by simp at hs; exact hs.2
       simp
       refine'
-        ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (pi_cons_injective has),
+        ⟨fun b _ => ((ih hs) fun a' h' => ht a' <| mem_cons_of_mem h').map (Pi.cons_injective has),
           _⟩
       refine' (ht a <| mem_cons_self _ _).pairwise _
       exact fun b₁ _ b₂ _ neb =>
@@ -129,16 +138,6 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
             by rw [eq]
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 #align multiset.nodup.pi Multiset.Nodup.pi
-
-@[simp, nolint simpNF] --Porting note: false positive, this lemma can prove itself
-theorem pi.cons_ext {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
-    (Pi.cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
-  ext (a' h')
-  by_cases h : a' = a
-  · subst h
-    rw [Pi.cons_same]
-  · rw [Pi.cons_ne _ h]
-#align multiset.pi.cons_ext Multiset.pi.cons_ext
 
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
@@ -157,7 +156,7 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
       apply hf'
   · intro hf
     refine' ⟨_, hf a (mem_cons_self _ _), _, fun a ha => hf a (mem_cons_of_mem ha), _⟩
-    rw [pi.cons_ext]
+    rw [pi.cons_eta]
 #align multiset.mem_pi Multiset.mem_pi
 
 end Pi

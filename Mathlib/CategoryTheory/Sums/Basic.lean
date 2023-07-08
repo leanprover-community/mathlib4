@@ -40,8 +40,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 
 /-- `sum C D` gives the direct sum of two categories.
 -/
-instance sum : Category.{v₁} (Sum C D)
-    where
+instance sum : Category.{v₁} (Sum C D) where
   Hom X Y :=
     match X, Y with
     | inl X, inl Y => X ⟶ Y
@@ -103,8 +102,7 @@ def inr_ : D ⥤ Sum C D where
 but `map_id` was ok. -/
 
 /-- The functor exchanging two direct summand categories. -/
-def swap : Sum C D ⥤ Sum D C
-    where
+def swap : Sum C D ⥤ Sum D C where
   obj X :=
     match X with
     | inl X => inr X
@@ -147,9 +145,9 @@ namespace Swap
 def equivalence : Sum C D ≌ Sum D C :=
   Equivalence.mk (swap C D) (swap D C)
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-    (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+      (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl))
-    (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
+      (by simp only [swap]; aesop_cat_nonterminal; cases f; cases f))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
 instance isEquivalence : IsEquivalence (swap C D) :=

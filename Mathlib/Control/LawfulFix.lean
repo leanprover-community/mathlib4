@@ -12,7 +12,6 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Tactic.WLOG
 
 /-!
 # Lawful fixed point operators
@@ -38,7 +37,7 @@ open OmegaCompletePartialOrder
 /-- Intuitively, a fixed point operator `fix` is lawful if it satisfies `fix f = f (fix f)` for all
 `f`, but this is inconsistent / uninteresting in most cases due to the existence of "exotic"
 functions `f`, such as the function that is defined iff its argument is not, familiar from the
-halting problem. Instead, this requirement is limited to only functions that are `continuous` in the
+halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
 class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where
@@ -61,7 +60,7 @@ variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
   | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
-  | succ _ i_ih => intro ; apply f.monotone; apply i_ih
+  | succ _ i_ih => intro; apply f.monotone; apply i_ih
 #align part.fix.approx_mono' Part.Fix.approx_mono'
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
@@ -87,7 +86,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
-    · cases' le_total i j with H H <;> [skip, symm] <;> apply_assumption <;> assumption
+    · cases' le_total i j with H H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
@@ -171,7 +170,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
-  | succ _ i_ih => trans f X; apply f.monotone i_ih ; apply hX
+  | succ _ i_ih => trans f X; apply f.monotone i_ih; apply hX
 #align part.fix_le Part.fix_le
 
 variable {f} (hc : Continuous f)
@@ -250,14 +249,14 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 open OmegaCompletePartialOrder.Chain
 
 theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
-  ext (x y)
+  ext x y
   dsimp [curry, ωSup]
   rw [map_comp, map_comp]
   rfl
 #align pi.continuous_curry Pi.continuous_curry
 
 theorem continuous_uncurry : Continuous <| monotoneUncurry α β γ := fun c ↦ by
-  ext (x y)
+  ext ⟨x, y⟩
   dsimp [uncurry, ωSup]
   rw [map_comp, map_comp]
   rfl

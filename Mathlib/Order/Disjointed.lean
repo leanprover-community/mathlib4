@@ -26,7 +26,7 @@ It is actually unique, as `disjointed_unique` shows.
 * `disjoint_disjointed`: The elements of `disjointed f` are pairwise disjoint.
 * `disjointed_unique`: `disjointed f` is the only pairwise disjoint sequence having the same partial
   sups as `f`.
-* `supᵢ_disjointed`: `disjointed f` has the same supremum as `f`. Limiting case of
+* `iSup_disjointed`: `disjointed f` has the same supremum as `f`. Limiting case of
   `partialSups_disjointed`.
 
 We also provide set notation variants of some lemmas.
@@ -143,17 +143,16 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α]
 
-theorem supᵢ_disjointed (f : ℕ → α) : (⨆ n, disjointed f n) = ⨆ n, f n :=
-  supᵢ_eq_supᵢ_of_partialSups_eq_partialSups (partialSups_disjointed f)
-#align supr_disjointed supᵢ_disjointed
+theorem iSup_disjointed (f : ℕ → α) : ⨆ n, disjointed f n = ⨆ n, f n :=
+  iSup_eq_iSup_of_partialSups_eq_partialSups (partialSups_disjointed f)
+#align supr_disjointed iSup_disjointed
 
-theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, f iᶜ :=
-  by
+theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, (f i)ᶜ := by
   cases n
   · rw [disjointed_zero, eq_comm, inf_eq_left]
-    simp_rw [le_infᵢ_iff]
+    simp_rw [le_iInf_iff]
     exact fun i hi => (i.not_lt_zero hi).elim
-  simp_rw [disjointed_succ, partialSups_eq_bsupᵢ, sdiff_eq, compl_supᵢ]
+  simp_rw [disjointed_succ, partialSups_eq_biSup, sdiff_eq, compl_iSup]
   congr
   ext i
   rw [Nat.lt_succ_iff]
@@ -168,17 +167,17 @@ theorem disjointed_subset (f : ℕ → Set α) (n : ℕ) : disjointed f n ⊆ f 
   disjointed_le f n
 #align disjointed_subset disjointed_subset
 
-theorem unionᵢ_disjointed {f : ℕ → Set α} : (⋃ n, disjointed f n) = ⋃ n, f n :=
-  supᵢ_disjointed f
-#align Union_disjointed unionᵢ_disjointed
+theorem iUnion_disjointed {f : ℕ → Set α} : ⋃ n, disjointed f n = ⋃ n, f n :=
+  iSup_disjointed f
+#align Union_disjointed iUnion_disjointed
 
-theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) : disjointed f n = f n ∩ ⋂ i < n, f iᶜ :=
+theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
+    disjointed f n = f n ∩ ⋂ i < n, (f i)ᶜ :=
   disjointed_eq_inf_compl f n
 #align disjointed_eq_inter_compl disjointed_eq_inter_compl
 
 theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x ∈ s n)
-    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n :=
-  by
+    [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
 #align preimage_find_eq_disjointed preimage_find_eq_disjointed

@@ -72,10 +72,8 @@ variable {K : Type _} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
 @[to_additive]
 theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
-  {
-    is_nonarchimedean := fun U hU =>
-      have h₁ : f ⁻¹' U ∈ nhds (1 : G) :=
-        by
+  { is_nonarchimedean := fun U hU =>
+      have h₁ : f ⁻¹' U ∈ nhds (1 : G) := by
         apply emb.continuous.tendsto
         rwa [f.map_one]
       let ⟨V, hV⟩ := is_nonarchimedean (f ⁻¹' U) h₁
@@ -89,7 +87,7 @@ contains the cartesian product of an open neighborhood in each group. -/
 the cartesian product of two nonarchimedean groups contains the cartesian product of
 an open neighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ nhds (1 : G × K)) :
-    ∃ (V : OpenSubgroup G)(W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
+    ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
   erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
   cases' is_nonarchimedean _ hU₁ with V hV

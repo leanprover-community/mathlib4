@@ -55,6 +55,7 @@ structure LHom where
 #align first_order.language.Lhom FirstOrder.Language.LHom
 
 -- mathport name: «expr →ᴸ »
+@[inherit_doc FirstOrder.Language.LHom]
 infixl:10 " →ᴸ " => LHom
 
 -- \^L
@@ -78,7 +79,7 @@ variable (ϕ : L →ᴸ L')
 /-- Pulls a structure back along a language map. -/
 def reduct (M : Type _) [L'.Structure M] : L.Structure M where
   funMap f xs := funMap (ϕ.onFunction f) xs
-  rel_map r xs := rel_map (ϕ.onRelation r) xs
+  RelMap r xs := RelMap (ϕ.onRelation r) xs
 #align first_order.language.Lhom.reduct FirstOrder.Language.LHom.reduct
 
 /-- The identity language homomorphism. -/
@@ -228,7 +229,7 @@ protected structure Injective : Prop where
   onRelation {n} : Function.Injective fun R : L.Relations n => onRelation ϕ R
 #align first_order.language.Lhom.injective FirstOrder.Language.LHom.Injective
 
-/-- Pulls a `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
+/-- Pulls an `L`-structure along a language map `ϕ : L →ᴸ L'`, and then expands it
   to an `L'`-structure arbitrarily. -/
 noncomputable def defaultExpansion (ϕ : L →ᴸ L')
     [∀ (n) (f : L'.Functions n), Decidable (f ∈ Set.range fun f : L.Functions n => onFunction ϕ f)]
@@ -237,8 +238,8 @@ noncomputable def defaultExpansion (ϕ : L →ᴸ L')
   funMap {n} f xs :=
     if h' : f ∈ Set.range fun f : L.Functions n => onFunction ϕ f then funMap h'.choose xs
     else default
-  rel_map {n} r xs :=
-    if h' : r ∈ Set.range fun r : L.Relations n => onRelation ϕ r then rel_map h'.choose xs
+  RelMap {n} r xs :=
+    if h' : r ∈ Set.range fun r : L.Relations n => onRelation ϕ r then RelMap h'.choose xs
     else default
 #align first_order.language.Lhom.default_expansion FirstOrder.Language.LHom.defaultExpansion
 
@@ -247,7 +248,7 @@ all symbols on that structure. -/
 class IsExpansionOn (M : Type _) [L.Structure M] [L'.Structure M] : Prop where
   map_onFunction : ∀ {n} (f : L.Functions n) (x : Fin n → M), funMap (ϕ.onFunction f) x = funMap f x
   map_onRelation : ∀ {n} (R : L.Relations n) (x : Fin n → M),
-    rel_map (ϕ.onRelation R) x = rel_map R x
+    RelMap (ϕ.onRelation R) x = RelMap R x
 #align first_order.language.Lhom.is_expansion_on FirstOrder.Language.LHom.IsExpansionOn
 
 @[simp]
@@ -258,7 +259,7 @@ theorem map_onFunction {M : Type _} [L.Structure M] [L'.Structure M] [ϕ.IsExpan
 
 @[simp]
 theorem map_onRelation {M : Type _} [L.Structure M] [L'.Structure M] [ϕ.IsExpansionOn M] {n}
-    (R : L.Relations n) (x : Fin n → M) : rel_map (ϕ.onRelation R) x = rel_map R x :=
+    (R : L.Relations n) (x : Fin n → M) : RelMap (ϕ.onRelation R) x = RelMap R x :=
   IsExpansionOn.map_onRelation R x
 #align first_order.language.Lhom.map_on_relation FirstOrder.Language.LHom.map_onRelation
 
@@ -412,7 +413,7 @@ instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α
     fun _ => (inferInstanceAs (IsEmpty PEmpty))
 #align first_order.language.is_empty_functions_constants_on_succ FirstOrder.Language.isEmpty_functions_constantsOn_succ
 
-theorem card_constantsOn : (constantsOn α).card = (#α) := by simp
+theorem card_constantsOn : (constantsOn α).card = #α := by simp
 #align first_order.language.card_constants_on FirstOrder.Language.card_constantsOn
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
@@ -453,11 +454,12 @@ def withConstants : Language.{max u w', v} :=
 #align first_order.language.with_constants FirstOrder.Language.withConstants
 
 -- mathport name: language.with_constants
+@[inherit_doc FirstOrder.Language.withConstants]
 scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
 
 @[simp]
 theorem card_withConstants :
-    L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} (#α) := by
+    L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
 #align first_order.language.card_with_constants FirstOrder.Language.card_withConstants
 
@@ -512,7 +514,7 @@ theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L
 
 @[simp]
 theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {R : L.Relations n} {x : Fin n → M} : @rel_map (L[[α]]) M _ n (Sum.inl R) x = rel_map R x :=
+    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 #align first_order.language.with_constants_rel_map_sum_inl FirstOrder.Language.withConstants_relMap_sum_inl
 
@@ -523,7 +525,7 @@ def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
 
 @[simp]
 theorem LHom.map_constants_comp_sumInl {f : α → β} :
-    (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext (n f R) <;> rfl
+    (L.lhomWithConstantsMap f).comp LHom.sumInl = L.lhomWithConstants β := by ext <;> rfl
 #align first_order.language.Lhom.map_constants_comp_sum_inl FirstOrder.Language.LHom.map_constants_comp_sumInl
 
 end

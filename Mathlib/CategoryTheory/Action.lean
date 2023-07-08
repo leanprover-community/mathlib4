@@ -22,7 +22,7 @@ types, mapping the single object of M to X and an element `m : M` to map `X → 
 multiplication by `m`.
   This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
-where M is a group, this category is a groupoid -- the `action groupoid'.
+where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
 
 
@@ -44,7 +44,7 @@ def actionAsFunctor : SingleObj M ⥤ Type u where
   map_comp f g := funext fun x => (smul_smul g f x).symm
 #align category_theory.action_as_functor CategoryTheory.actionAsFunctor
 
-/-- A multiplicative action M ↻ X induces a category strucure on X, where a morphism
+/-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
  from x to y is a scalar taking x to y. Due to implementation details, the object type
  of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
@@ -89,7 +89,7 @@ theorem coe_back (x : X) : ActionCategory.back (x : ActionCategory M X) = x :=
 #align category_theory.action_category.coe_back CategoryTheory.ActionCategory.coe_back
 
 @[simp]
-theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x ; rfl
+theorem back_coe (x : ActionCategory M X) : ↑x.back = x := by cases x; rfl
 #align category_theory.action_category.back_coe CategoryTheory.ActionCategory.back_coe
 
 variable (M X)

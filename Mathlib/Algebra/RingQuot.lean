@@ -490,7 +490,7 @@ variable {B : Type u₁} [CommRing B]
 /-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
 def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Ideal.ofRel r :=
   lift ⟨Ideal.Quotient.mk (Ideal.ofRel r),
-        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_infₛ.mpr
+        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_sInf.mpr
           fun _ w ↦ w ⟨x, y, h, sub_add_cancel x y⟩⟩
 #align ring_quot.ring_quot_to_ideal_quotient RingQuot.ringQuotToIdealQuotient
 
@@ -591,7 +591,7 @@ variable (S)
 -/
 irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    commutes' := fun _ ↦ by simp [mkRingHom_def] ; rfl }
+    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
 #align ring_quot.mk_alg_hom RingQuot.mkAlgHom
 
 @[simp]

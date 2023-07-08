@@ -61,7 +61,7 @@ theorem image_finset_prod (f : F) (m : Finset ι) (s : ι → Set α) :
 /-- The n-ary version of `Set.mem_mul`. -/
 @[to_additive " The n-ary version of `Set.mem_add`. "]
 theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
-    (a ∈ ∏ i in t, f i) ↔ ∃ (g : ι → α)(_ : ∀ {i}, i ∈ t → g i ∈ f i), (∏ i in t, g i) = a := by
+    (a ∈ ∏ i in t, f i) ↔ ∃ (g : ι → α) (_ : ∀ {i}, i ∈ t → g i ∈ f i), ∏ i in t, g i = a := by
   classical
     induction' t using Finset.induction_on with i is hi ih generalizing a
     · simp_rw [Finset.prod_empty, Set.mem_one]
@@ -88,7 +88,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
 /-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
 @[to_additive " A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. "]
 theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
-    (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α)(_ : ∀ i, g i ∈ f i), (∏ i, g i) = a := by
+    (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α) (_ : ∀ i, g i ∈ f i), ∏ i, g i = a := by
   rw [mem_finset_prod]
   simp
 #align set.mem_fintype_prod Set.mem_fintype_prod
@@ -163,7 +163,7 @@ theorem finset_prod_mem_finset_prod (t : Finset ι) (f : ι → Set α) (g : ι 
 /-- An n-ary version of `Set.mul_subset_mul`. -/
 @[to_additive " An n-ary version of `Set.add_subset_add`. "]
 theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set α)
-    (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : (∏ i in t, f₁ i) ⊆ ∏ i in t, f₂ i :=
+    (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : ∏ i in t, f₁ i ⊆ ∏ i in t, f₂ i :=
   multiset_prod_subset_multiset_prod _ _ _ hf
 #align set.finset_prod_subset_finset_prod Set.finset_prod_subset_finset_prod
 #align set.finset_sum_subset_finset_sum Set.finset_sum_subset_finset_sum
@@ -175,18 +175,17 @@ theorem finset_prod_singleton {M ι : Type _} [CommMonoid M] (s : Finset ι) (I 
 #align set.finset_prod_singleton Set.finset_prod_singleton
 #align set.finset_sum_singleton Set.finset_sum_singleton
 
-/-- The n-ary version of `set.image_mul_prod`. -/
-@[to_additive "The n-ary version of `set.add_image_prod`. "]
+/-- The n-ary version of `Set.image_mul_prod`. -/
+@[to_additive "The n-ary version of `Set.add_image_prod`. "]
 theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
-    (fun f : ι → α => ∏ i in l, f i) '' (l : Set ι).pi S = ∏ i in l, S i :=
-  by
+    (fun f : ι → α => ∏ i in l, f i) '' (l : Set ι).pi S = ∏ i in l, S i := by
   ext
   simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop, Finset.mem_coe]
 #align set.image_finset_prod_pi Set.image_finset_prod_pi
 #align set.image_finset_sum_pi Set.image_finset_sum_pi
 
-/-- A special case of `set.image_finset_prod_pi` for `finset.univ`. -/
-@[to_additive "A special case of `set.image_finset_sum_pi` for `finset.univ`. "]
+/-- A special case of `Set.image_finset_prod_pi` for `Finset.univ`. -/
+@[to_additive "A special case of `Set.image_finset_sum_pi` for `Finset.univ`. "]
 theorem image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
     (fun f : ι → α => ∏ i, f i) '' univ.pi S = ∏ i, S i := by
   simpa only [Finset.coe_univ] using image_finset_prod_pi Finset.univ S

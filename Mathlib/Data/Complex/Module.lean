@@ -53,27 +53,6 @@ open ComplexConjugate
 
 variable {R : Type _} {S : Type _}
 
-section
-
-variable [SMul R ℝ]
-
-/- The useless `0` multiplication in `smul` is to make sure that
-`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance : SMul R ℂ where smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
-
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
-#align complex.smul_re Complex.smul_re
-
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
-#align complex.smul_im Complex.smul_im
-
-@[simp]
-theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
-  rfl
-#align complex.real_smul Complex.real_smul
-
-end
-
 instance [SMul R ℝ] [SMul S ℝ] [SMulCommClass R S ℝ] : SMulCommClass R S ℂ where
   smul_comm r s x := by ext <;> simp [smul_re, smul_im, smul_comm]
 
@@ -306,7 +285,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 @[simp]
 theorem toMatrix_conjAe :
     LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
-  ext (i j)
+  ext i j
   -- Porting note: replaced non-terminal `simp [LinearMap.toMatrix_apply]`
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 #align complex.to_matrix_conj_ae Complex.toMatrix_conjAe
@@ -316,7 +295,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
   refine'
       (eq_or_eq_neg_of_sq_eq_sq (f I) I <| by rw [← map_pow, I_sq, map_neg, map_one]).imp _ _ <;>
     refine' fun h => algHom_ext _
-  exacts[h, conj_I.symm ▸ h]
+  exacts [h, conj_I.symm ▸ h]
 #align complex.real_alg_hom_eq_id_or_conj Complex.real_algHom_eq_id_or_conj
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
@@ -337,7 +316,6 @@ section lift
 
 variable {A : Type _} [Ring A] [Algebra ℝ A]
 
-set_option synthInstance.etaExperiment true in
 /-- There is an alg_hom from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
 See `Complex.lift` for this as an equiv. -/
@@ -364,7 +342,6 @@ theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap �
   rfl
 #align complex.lift_aux_apply Complex.liftAux_apply
 
-set_option synthInstance.etaExperiment true in
 theorem liftAux_apply_I (I' : A) (hI') : liftAux I' hI' I = I' := by simp
 set_option linter.uppercaseLean3 false in
 #align complex.lift_aux_apply_I Complex.liftAux_apply_I

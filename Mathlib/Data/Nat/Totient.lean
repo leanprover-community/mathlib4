@@ -97,10 +97,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
-    (filter a.coprime (Ico k (k + n % a + a * i + a))).card =
-        (filter a.coprime
-            (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card :=
-      by
+    (filter a.coprime (Ico k (k + n % a + a * i + a))).card = (filter a.coprime
+        (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
       rw [add_assoc]
@@ -258,7 +256,7 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
   cases' eq_zero_or_neZero p with hp hp
   · subst hp
     simp only [ZMod, not_prime_zero, false_iff_iff, zero_tsub]
-    -- the subst created an non-defeq but subsingleton instance diamond; resolve it
+    -- the subst created a non-defeq but subsingleton instance diamond; resolve it
     suffices Fintype.card ℤˣ ≠ 0 by convert this
     simp
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]

@@ -15,7 +15,7 @@ import Mathlib.Tactic.Linarith
 /-!
 # Central binomial coefficients
 
-This file proves properties of the central binomial coefficients (that is, `nat.choose (2 * n) n`).
+This file proves properties of the central binomial coefficients (that is, `Nat.choose (2 * n) n`).
 
 ## Main definition and results
 

@@ -107,12 +107,8 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
     fun h => funext fun p => Subtype.eq rfl
-  have :
-    ∀ (t) (eq : s.ndinsert a = t),
-      t.attach =
-        ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
-          (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) :=
-    by
+  have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
+      (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
     by_cases h : a ∈ s
     · rw [ndinsert_of_mem h] at ht
@@ -288,7 +284,6 @@ theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ D
 
 end Multiset
 
--- Porting note: `assert_not_exists` has not been ported yet.
--- -- Assert that we define `finset` without the material on the set lattice.
--- -- Note that we cannot put this in `data.finset.basic` because we proved relevant lemmas there.
--- assert_not_exists set.sInter
+-- Assert that we define `Finset` without the material on the set lattice.
+-- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
+assert_not_exists Set.sInter

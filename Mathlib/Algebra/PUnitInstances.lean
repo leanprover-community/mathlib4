@@ -37,6 +37,12 @@ instance commGroup: CommGroup PUnit where
   mul_left_inv := by intros; rfl
   mul_comm := by intros; rfl
 
+-- shortcut instances
+@[to_additive] instance : One PUnit where one := ()
+@[to_additive] instance : Mul PUnit where mul _ _ := ()
+@[to_additive] instance : Div PUnit where div _ _ := ()
+@[to_additive] instance : Inv PUnit where inv _ := ()
+
 @[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = unit :=
   rfl
@@ -102,7 +108,7 @@ theorem lcm_eq : lcm x y = unit :=
 #align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
-theorem norm_unit_eq {x: PUnit} : normUnit x = 1 :=
+theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 

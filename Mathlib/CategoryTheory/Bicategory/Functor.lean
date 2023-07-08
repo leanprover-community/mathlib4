@@ -35,14 +35,14 @@ of the oplax functor associated with it is already done. For example, the compos
 pseudofunctors can be defined by using the composition of oplax functors as follows:
 ```lean
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-mkOfOplax ((F : OplaxFunctor B C).comp G)
-{ mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-  mapCompIso := λ f g =>
-    (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
+  mkOfOplax ((F : OplaxFunctor B C).comp G)
+  { mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+    mapCompIso := λ f g =>
+      (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
 because `obviously` wasn't smart enough in mathlib3 and the porter of this file was too lazy
-to investigage this issue further in mathlib4. Similarly, the composition is also defined by using
+to investigate this issue further in mathlib4. Similarly, the composition is also defined by using
 `mkOfOplax'` after giving appropriate instances for `IsIso`. The former constructor
 `mkOfOplax` requires isomorphisms as data type `Iso`, and so it is useful if you don't want
 to forget the definitions of the inverses. On the other hand, the latter constructor
@@ -289,13 +289,11 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
     mapId := fun a => by exact (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
     mapComp := fun f g => by
       exact (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
-    mapComp_naturality_left := fun η g =>
-      by
+    mapComp_naturality_left := fun η g => by
       dsimp
       rw [← map₂_comp_assoc, mapComp_naturality_left, map₂_comp_assoc, mapComp_naturality_left,
         assoc]
-    mapComp_naturality_right := fun η =>
-      by
+    mapComp_naturality_right := fun η => by
       dsimp
       intros
       rw [← map₂_comp_assoc, mapComp_naturality_right, map₂_comp_assoc, mapComp_naturality_right,
@@ -506,8 +504,6 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B :=
 instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
--- porting note: this is aesop_cat taking a long time auto-filling in fields
-set_option maxHeartbeats 500000 in
 /-- Composition of pseudofunctors. -/
 @[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=

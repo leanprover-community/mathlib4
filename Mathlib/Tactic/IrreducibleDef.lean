@@ -67,7 +67,7 @@ open Command in elab_rules : command
       elabCommand cmd.raw
       if (← get).messages.hasErrors then break
 
-syntax irredDefLemma := atomic("(" "lemma" " := ") ident ")"
+syntax irredDefLemma := atomic(" (" &"lemma" " := ") ident ")"
 
 /--
 Introduces an irreducible definition.
@@ -76,8 +76,9 @@ a constant `foo : Nat` as well as
 a theorem `foo_def : foo = 42`.
 -/
 elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
-    declSig:optDeclSig val:declVal :
+    declSig:ppIndent(optDeclSig) val:declVal :
     command => do
+  let declSig : TSyntax ``Parser.Command.optDeclSig := ⟨declSig.raw⟩ -- HACK
   let (n, us) ← match n_id with
     | `(Parser.Command.declId| $n:ident $[.{$us,*}]?) => pure (n, us)
     | _ => throwUnsupportedSyntax

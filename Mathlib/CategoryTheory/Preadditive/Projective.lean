@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.preadditive.projective
-! leanprover-community/mathlib commit f8d8465c3c392a93b9ed226956e26dee00975946
+! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -26,8 +26,8 @@ projective object.
 epimorphism.
 
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
-`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism `π
-(kernel f) ≫ kernel.ι f`.
+`CategoryTheory.Limits.kernel f`, and `projective.d f : projective.left f ⟶ X` is the morphism
+`π (kernel f) ≫ kernel.ι f`.
 
 -/
 
@@ -123,16 +123,8 @@ instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Proj
   factors f e epi := ⟨coprod.desc (factorThru (coprod.inl ≫ f) e) (factorThru (coprod.inr ≫ f) e),
     by aesop_cat⟩
 
-section
-
--- porting note: `coprod.hom_ext` and `Sigma.hom_ext` have been added in
---   Limits.Shapes.BinaryProducts and Limits.Shapes.Products
--- attribute [local tidy] tactic.discrete_cases
-
 instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
   factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by aesop_cat⟩
-
-end
 
 instance {P Q : C} [HasZeroMorphisms C] [HasBinaryBiproduct P Q] [Projective P] [Projective Q] :
     Projective (P ⊞ Q) where

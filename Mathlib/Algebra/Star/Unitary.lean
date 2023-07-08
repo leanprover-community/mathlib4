@@ -18,7 +18,7 @@ This file defines `unitary R`, where `R` is a star monoid, as the submonoid made
 that satisfy `star U * U = 1` and `U * star U = 1`, and these form a group.
 This includes, for instance, unitary operators on Hilbert spaces.
 
-See also `Matrix.UnitaryGroup` for specializations to `unitary (matrix n n R)`.
+See also `Matrix.UnitaryGroup` for specializations to `unitary (Matrix n n R)`.
 
 ## Tags
 

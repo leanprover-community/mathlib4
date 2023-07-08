@@ -41,7 +41,6 @@ variable {R A : Type _} {a b : A} {r : R}
 
 variable [OrderedCommRing R] [OrderedRing A] [Algebra R A]
 
-set_option synthInstance.etaExperiment true
 
 variable [OrderedSMul R A]
 

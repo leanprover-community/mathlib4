@@ -129,14 +129,23 @@ theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup
 #align add_subgroup.card_bot AddSubgroup.card_bot
 
 @[to_additive]
-theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) : H = ⊤ :=
-  by
+theorem card_top [Fintype G] : Fintype.card (⊤ : Subgroup G) = Fintype.card G := by
+  rw [Fintype.card_eq]
+  exact Nonempty.intro Subgroup.topEquiv.toEquiv
+
+@[to_additive]
+theorem eq_top_of_card_eq [Fintype H] [Fintype G] (h : Fintype.card H = Fintype.card G) :
+    H = ⊤ := by
   letI : Fintype (H : Set G) := ‹Fintype H›
   rw [SetLike.ext'_iff, coe_top, ← Finset.coe_univ, ← (H : Set G).coe_toFinset, Finset.coe_inj, ←
     Finset.card_eq_iff_eq_univ, ← h, Set.toFinset_card]
   congr
 #align subgroup.eq_top_of_card_eq Subgroup.eq_top_of_card_eq
 #align add_subgroup.eq_top_of_card_eq AddSubgroup.eq_top_of_card_eq
+
+@[to_additive (attr := simp)]
+theorem card_eq_iff_eq_top [Fintype H] [Fintype G] : Fintype.card H = Fintype.card G ↔ H = ⊤ :=
+  Iff.intro (eq_top_of_card_eq H) (fun h ↦ by simpa only [h] using card_top)
 
 @[to_additive]
 theorem eq_top_of_le_card [Fintype H] [Fintype G] (h : Fintype.card G ≤ Fintype.card H) : H = ⊤ :=
@@ -173,6 +182,10 @@ theorem one_lt_card_iff_ne_bot [Fintype H] : 1 < Fintype.card H ↔ H ≠ ⊥ :=
 #align subgroup.one_lt_card_iff_ne_bot Subgroup.one_lt_card_iff_ne_bot
 #align add_subgroup.pos_card_iff_ne_bot AddSubgroup.one_lt_card_iff_ne_bot
 
+@[to_additive]
+theorem card_le_card_group [Fintype G] [Fintype H] : Fintype.card H ≤ Fintype.card G :=
+  Fintype.card_le_of_injective _ Subtype.coe_injective
+
 end Subgroup
 
 namespace Subgroup
@@ -191,8 +204,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
   · convert one_mem H
     ext i
     exact h1 i (Finset.not_mem_empty i)
-  · have : x = Function.update x i 1 * Pi.mulSingle i (x i) :=
-      by
+  · have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
       ext j
       by_cases heq : j = i
       · subst heq

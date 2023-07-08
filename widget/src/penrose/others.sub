@@ -1,0 +1,177 @@
+/*
+Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wojciech Nawrocki
+*/
+
+-- This is a Penrose (https://penrose.cs.cmu.edu/) substance file with example commutative diagrams.
+
+-- Product
+Object X,Y,Z,W
+Cell f := MakeCell(W, X)
+Cell g := MakeCell(W, Y)
+Cell h := MakeCell(W, Z)
+Cell pi1 := MakeCell(Z, X)
+Cell pi2 := MakeCell(Z, Y)
+
+IsDownVertical(h)
+IsLeftHorizontal(pi1)
+IsRightHorizontal(pi2)
+
+AutoLabel All
+Label Z "X \times Y"
+Label pi1 "\pi_1"
+Label pi2 "\pi_2"
+Label h "\langle f, g \rangle"
+
+-- Pullback
+Object X,Y,Z,W,D
+Cell f := MakeCell(X, Z)
+Cell g := MakeCell(Y, Z)
+IsRightHorizontal(f)
+IsDownVertical(g)
+
+Cell pi1 := MakeCell(W, X)
+Cell pi2 := MakeCell(W, Y)
+IsDownVertical(pi1)
+IsRightHorizontal(pi2)
+
+Cell h1 := MakeCell(D, X)
+Cell h2 := MakeCell(D, Y)
+Cell h := MakeCell(D, W)
+IsRightDownDiagonal(h)
+IsCurvedRight(h1)
+IsCurvedLeft(h2)
+
+AutoLabel All
+Label W "X \times_Z Y"
+Label pi1 "\pi_1"
+Label pi2 "\pi_2"
+Label h1 "h_1"
+Label h2 "h_2"
+
+-- Two squares
+Object A,B,C,D,E,F
+Cell f := MakeCell(A, B)
+Cell g := MakeCell(B, C)
+IsRightHorizontal(f)
+IsRightHorizontal(g)
+
+Cell h := MakeCell(A, F)
+Cell i := MakeCell(B, E)
+Cell j := MakeCell(C, D)
+IsDownVertical(h)
+IsDownVertical(i)
+IsDownVertical(j)
+
+Cell k := MakeCell(F, E)
+Cell l := MakeCell(E, D)
+IsRightHorizontal(k)
+IsRightHorizontal(l)
+
+AutoLabel All
+
+-- Example from fig. 7, "'Chasing' the Diagram", Silvia de Toffoli
+Object I, U1, U2, P, X
+
+Cell i1 := MakeCell(I, U1)
+Cell i2 := MakeCell(I, U2)
+Cell h1 := MakeCell(U1, P)
+Cell h2 := MakeCell(U2, P)
+Cell iso := MakeCell(P, X)
+Cell j1 := MakeCell(U1, X)
+Cell j2 := MakeCell(U2, X)
+
+IsRightUpDiagonal(i1)
+IsRightDownDiagonal(i2)
+IsRightUpDiagonal(h2)
+IsRightDownDiagonal(h1)
+IsRightHorizontal(iso)
+
+IsLabelLeft(i1)
+IsLabelLeft(i2)
+IsLabelLeft(j1)
+IsLabelLeft(j2)
+IsCurvedLeft(j1)
+IsCurvedRight(j2)
+IsLabelLeft(iso)
+IsDashed(iso)
+
+Label I "π_1(U_1 ∩ U_2)"
+Label i1 "i_1"
+Label i2 "i_2"
+Label U1 "π_1(U_1)"
+Label U2 "π_1(U_2)"
+Label P "π_1(U_1)*_{π_1(U_1∩U_2)}π_1(U_2)"
+Label iso "≃"
+Label X "π_1(X)"
+Label j1 "j_1"
+Label j2 "j_2"
+Label h1 "h_1"
+Label h2 "h_2"
+
+-- Example from Awodey, "Cartesian Cubical Model Categories" (https://arxiv.org/pdf/2305.00893.pdf), p. 46
+Object A,B,C,D
+
+Cell AB := MakeCell(A,B)
+Cell BC := MakeCell(B,C)
+Cell DC := MakeCell(D,C)
+Cell AD := MakeCell(A,D)
+IsRightHorizontal(AB)
+IsDownVertical(BC)
+IsRightHorizontal(DC)
+IsDownVertical(AD)
+
+Object E,F,G,H
+
+Cell EF := MakeCell(E,F)
+Cell FG := MakeCell(F,G)
+Cell HG := MakeCell(H,G)
+Cell EH := MakeCell(E,H)
+IsRightHorizontal(EF)
+IsDownVertical(FG)
+IsRightHorizontal(HG)
+IsDownVertical(EH)
+
+Object X,Y
+
+Cell XY := MakeCell(X,Y)
+Cell XA := MakeCell(X,A)
+Cell YB := MakeCell(Y,B)
+
+IsRightHorizontal(XY)
+IsDownVertical(XA)
+IsDownVertical(YB)
+
+-- Connect the two squares
+Cell AE := MakeCell(A,E)
+Cell BF := MakeCell(B,F)
+Cell CG := MakeCell(C,G)
+Cell DH := MakeCell(D,H)
+-- Note: We only position two corners, the others are determined well enough.
+IsRightDownDiagonal(AE)
+IsRightDownDiagonal(BF)
+
+IsLabelRight(HG)
+IsLabelRight(DH)
+IsLabelRight(CG)
+
+IsDashed(AB)
+
+AutoLabel All
+Label A "(t^* A)_\epsilon"
+Label B "A_\epsilon"
+Label C "X^I"
+Label D "Y^I"
+
+Label E "t^*A"
+Label F "A"
+Label G "X"
+Label H "Y"
+
+Label X "(t^* A)^I"
+Label Y "A^I"
+
+Label HG "t"
+Label DH "\epsilon"
+Label CG "\epsilon"

@@ -81,7 +81,7 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 /-- `1 : Submodule R A` is the submodule R of A. -/
 instance one : One (Submodule R A) :=
--- porting note: `f.range` notation doesn't work
+  -- porting note: `f.range` notation doesn't work
   ⟨LinearMap.range (Algebra.linearMap R A)⟩
 #align submodule.has_one Submodule.one
 
@@ -131,8 +131,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 
 @[simp]
 theorem map_op_one :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 :=
-  by
+    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
   induction x using MulOpposite.rec'
   simp
@@ -140,8 +139,7 @@ theorem map_op_one :
 
 @[simp]
 theorem comap_op_one :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 :=
-  by
+    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
   ext
   simp
 #align submodule.comap_op_one Submodule.comap_op_one
@@ -175,7 +173,7 @@ theorem mul_le : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
 theorem mul_toAddSubmonoid (M N : Submodule R A) :
     (M * N).toAddSubmonoid = M.toAddSubmonoid * N.toAddSubmonoid := by
   dsimp [HMul.hMul, Mul.mul]  --porting note: added `hMul`
-  rw [map₂, supᵢ_toAddSubmonoid]
+  rw [map₂, iSup_toAddSubmonoid]
   rfl
 #align submodule.mul_to_add_submonoid Submodule.mul_toAddSubmonoid
 
@@ -263,10 +261,9 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
     map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
   calc
     map f.toLinearMap (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f.toLinearMap :=
-      map_supᵢ _ _
-    _ = map f.toLinearMap M * map f.toLinearMap N :=
-      by
-      apply congr_arg supₛ
+      map_iSup _ _
+    _ = map f.toLinearMap M * map f.toLinearMap N := by
+      apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
       · use ⟨f y, mem_map.mpr ⟨y.1, y.2, rfl⟩⟩  -- porting note: added `⟨⟩`
@@ -292,7 +289,7 @@ theorem map_op_mul :
     show op n * op m ∈ _
     exact mul_mem_mul hn hm
   · refine' mul_le.2 (MulOpposite.rec' fun m hm => MulOpposite.rec' fun n hn => _)
-    rw [Submodule.mem_map_equiv] at hm hn⊢
+    rw [Submodule.mem_map_equiv] at hm hn ⊢
     exact mul_mem_mul hn hm
 #align submodule.map_op_mul Submodule.map_op_mul
 
@@ -325,21 +322,11 @@ section
 
 open Pointwise
 
-/-
-Porting note: the following def ought to be
-```
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
-  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
-```
-but this is not possible due to η-for-classes issues. See lean4#2074
--/
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
-This is available as an instance in the `pointwise` locale. -/
-protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] :
-    HasDistribNeg (@Submodule R A _ _ Algebra.toModule) :=
-  @Function.Injective.hasDistribNeg _ _ _ _ (id _) _ _ toAddSubmonoid_injective
-    (@neg_toAddSubmonoid R A _ _ Algebra.toModule) mul_toAddSubmonoid
+This is available as an instance in the `Pointwise` locale. -/
+protected def hasDistribPointwiseNeg {A} [Ring A] [Algebra R A] : HasDistribNeg (Submodule R A) :=
+  toAddSubmonoid_injective.hasDistribNeg _ neg_toAddSubmonoid mul_toAddSubmonoid
 #align submodule.has_distrib_pointwise_neg Submodule.hasDistribPointwiseNeg
 
 scoped[Pointwise] attribute [instance] Submodule.hasDistribPointwiseNeg
@@ -367,13 +354,13 @@ theorem mul_eq_span_mul_set (s t : Submodule R A) : s * t = span R ((s : Set A) 
   map₂_eq_span_image2 _ s t
 #align submodule.mul_eq_span_mul_set Submodule.mul_eq_span_mul_set
 
-theorem supᵢ_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
-  map₂_supᵢ_left _ s t
-#align submodule.supr_mul Submodule.supᵢ_mul
+theorem iSup_mul (s : ι → Submodule R A) (t : Submodule R A) : (⨆ i, s i) * t = ⨆ i, s i * t :=
+  map₂_iSup_left _ s t
+#align submodule.supr_mul Submodule.iSup_mul
 
-theorem mul_supᵢ (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
-  map₂_supᵢ_right _ t s
-#align submodule.mul_supr Submodule.mul_supᵢ
+theorem mul_iSup (t : Submodule R A) (s : ι → Submodule R A) : (t * ⨆ i, s i) = ⨆ i, t * s i :=
+  map₂_iSup_right _ t s
+#align submodule.mul_supr Submodule.mul_iSup
 
 theorem mem_span_mul_finite_of_mem_mul {P Q : Submodule R A} {x : A} (hx : x ∈ P * Q) :
     ∃ T T' : Finset A, (T : Set A) ⊆ P ∧ (T' : Set A) ⊆ Q ∧ x ∈ span R (T * T' : Set A) :=
@@ -429,8 +416,7 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 #align submodule.pow_mem_pow Submodule.pow_mem_pow
 
-theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n :=
-  by
+theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
   induction' n with n ih
   · exact (h rfl).elim
   · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
@@ -452,7 +438,8 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
     (hr : ∀ r : R, C 0 (algebraMap _ _ r) (algebraMap_mem r))
     (hadd : ∀ x y i hx hy, C i x hx → C i y hy → C i (x + y) (add_mem ‹_› ‹_›))
     (hmul : ∀ m (hm : m ∈ M), ∀ (i x hx), C i x hx → C i.succ (m * x) (mul_mem_mul hm hx))
-    {x : A} {n : ℕ}
+    -- porting note: swapped argument order to match order of `C`
+    {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
@@ -471,7 +458,8 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     (hmul :
       ∀ i x hx, C i x hx →
         ∀ m (hm : m ∈ M), C i.succ (x * m) ((pow_succ' M i).symm ▸ mul_mem_mul hx hm))
-    {x : A} {n : ℕ} (hx : x ∈ M ^ n) : C n x hx := by
+    -- porting note: swapped argument order to match order of `C`
+    {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
   induction' n with n n_ih generalizing x
   · rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx

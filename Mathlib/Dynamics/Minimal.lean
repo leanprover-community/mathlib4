@@ -77,20 +77,20 @@ theorem IsOpen.exists_smul_mem [IsMinimal M α] (x : α) {U : Set α} (hUo : IsO
 #align is_open.exists_vadd_mem IsOpen.exists_vadd_mem
 
 @[to_additive]
-theorem IsOpen.unionᵢ_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen U)
-    (hne : U.Nonempty) : (⋃ c : M, (· • ·) c ⁻¹' U) = univ :=
-  unionᵢ_eq_univ_iff.2 fun x ↦ hUo.exists_smul_mem M x hne
-#align is_open.Union_preimage_smul IsOpen.unionᵢ_preimage_smul
-#align is_open.Union_preimage_vadd IsOpen.unionᵢ_preimage_vadd
+theorem IsOpen.iUnion_preimage_smul [IsMinimal M α] {U : Set α} (hUo : IsOpen U)
+    (hne : U.Nonempty) : ⋃ c : M, (· • ·) c ⁻¹' U = univ :=
+  iUnion_eq_univ_iff.2 fun x ↦ hUo.exists_smul_mem M x hne
+#align is_open.Union_preimage_smul IsOpen.iUnion_preimage_smul
+#align is_open.Union_preimage_vadd IsOpen.iUnion_preimage_vadd
 
 @[to_additive]
-theorem IsOpen.unionᵢ_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne : U.Nonempty) :
-    (⋃ g : G, g • U) = univ :=
-  unionᵢ_eq_univ_iff.2 fun x ↦
+theorem IsOpen.iUnion_smul [IsMinimal G α] {U : Set α} (hUo : IsOpen U) (hne : U.Nonempty) :
+    ⋃ g : G, g • U = univ :=
+  iUnion_eq_univ_iff.2 fun x ↦
     let ⟨g, hg⟩ := hUo.exists_smul_mem G x hne
     ⟨g⁻¹, _, hg, inv_smul_smul _ _⟩
-#align is_open.Union_smul IsOpen.unionᵢ_smul
-#align is_open.Union_vadd IsOpen.unionᵢ_vadd
+#align is_open.Union_smul IsOpen.iUnion_smul
+#align is_open.Union_vadd IsOpen.iUnion_vadd
 
 @[to_additive]
 theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul G α]
@@ -98,7 +98,7 @@ theorem IsCompact.exists_finite_cover_smul [IsMinimal G α] [ContinuousConstSMul
     ∃ I : Finset G, K ⊆ ⋃ g ∈ I, g • U :=
   (hK.elim_finite_subcover (fun g ↦ g • U) fun _ ↦ hUo.smul _) <| calc
     K ⊆ univ := subset_univ K
-    _ = ⋃ g : G, g • U := (hUo.unionᵢ_smul G hne).symm
+    _ = ⋃ g : G, g • U := (hUo.iUnion_smul G hne).symm
 #align is_compact.exists_finite_cover_smul IsCompact.exists_finite_cover_smul
 #align is_compact.exists_finite_cover_vadd IsCompact.exists_finite_cover_vadd
 
@@ -125,7 +125,7 @@ theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
   · intro _ _
     exact eq_empty_or_univ_of_smul_invariant_closed M
   refine' fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ _ _).resolve_left _⟩
-  exacts[isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
+  exacts [isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
     (orbit_nonempty _).closure.ne_empty]
 #align is_minimal_iff_closed_smul_invariant isMinimal_iff_closed_smul_invariant
 #align is_minimal_iff_closed_vadd_invariant isMinimal_iff_closed_vadd_invariant

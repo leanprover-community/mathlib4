@@ -108,9 +108,9 @@ theorem homOfLE_leOfHom {x y : X} (h : x ⟶ y) : h.le.hom = h :=
 #align category_theory.hom_of_le_le_of_hom CategoryTheory.homOfLE_leOfHom
 
 /-- Construct a morphism in the opposite of a preorder category from an inequality. -/
-def opHomOfLe {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
+def opHomOfLE {x y : Xᵒᵖ} (h : unop x ≤ unop y) : y ⟶ x :=
   (homOfLE h).op
-#align category_theory.op_hom_of_le CategoryTheory.opHomOfLe
+#align category_theory.op_hom_of_le CategoryTheory.opHomOfLE
 
 theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
   h.unop.le
@@ -129,6 +129,8 @@ instance uniqueFromBot [OrderBot X] {x : X} : Unique (⊥ ⟶ x) where
 end CategoryTheory
 
 section
+
+open CategoryTheory
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 

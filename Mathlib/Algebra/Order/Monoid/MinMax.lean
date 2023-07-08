@@ -10,7 +10,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.Order.Monoid.Lemmas
-import Mathlib.Tactic.Contrapose
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.

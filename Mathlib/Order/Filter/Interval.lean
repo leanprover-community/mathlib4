@@ -68,11 +68,11 @@ eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is even
 We mark `l₂` as an `outParam` so that Lean can automatically find an appropriate `l₂` based on
 `Ixx` and `l₁`. This way, e.g., `tendsto.Ico h₁ h₂` works without specifying explicitly `l₂`. -/
 class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : outParam <| Filter α) : Prop where
-  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ᶠ l₁`. In other words, for any
+  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ˢ l₁`. In other words, for any
   `s ∈ l₂` there exists `t ∈ l₁` such that `Ixx x y ⊆ s` whenever `x ∈ t` and `y ∈ t`.
 
   Use lemmas like `Filter.Tendsto.Icc` instead. -/
-  tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ᶠ l₁) l₂.smallSets
+  tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ˢ l₁) l₂.smallSets
 #align filter.tendsto_Ixx_class Filter.TendstoIxxClass
 
 protected theorem Tendsto.Icc {l₁ l₂ : Filter α} [TendstoIxxClass Icc l₁ l₂] {lb : Filter β}
@@ -123,8 +123,8 @@ theorem HasBasis.tendstoIxxClass {ι : Type _} {p : ι → Prop} {s} {l : Filter
 #align filter.has_basis.tendsto_Ixx_class Filter.HasBasis.tendstoIxxClass
 
 instance tendsto_Icc_atTop_atTop : TendstoIxxClass Icc (atTop : Filter α) atTop :=
-  (hasBasis_infᵢ_principal_finite _).tendstoIxxClass fun _ _ =>
-    Set.OrdConnected.out <| ordConnected_binterᵢ fun _ _ => ordConnected_Ici
+  (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>
+    Set.OrdConnected.out <| ordConnected_biInter fun _ _ => ordConnected_Ici
 #align filter.tendsto_Icc_at_top_at_top Filter.tendsto_Icc_atTop_atTop
 
 instance tendsto_Ico_atTop_atTop : TendstoIxxClass Ico (atTop : Filter α) atTop :=
@@ -140,8 +140,8 @@ instance tendsto_Ioo_atTop_atTop : TendstoIxxClass Ioo (atTop : Filter α) atTop
 #align filter.tendsto_Ioo_at_top_at_top Filter.tendsto_Ioo_atTop_atTop
 
 instance tendsto_Icc_atBot_atBot : TendstoIxxClass Icc (atBot : Filter α) atBot :=
-  (hasBasis_infᵢ_principal_finite _).tendstoIxxClass fun _ _ =>
-    Set.OrdConnected.out <| ordConnected_binterᵢ fun _ _ => ordConnected_Iic
+  (hasBasis_iInf_principal_finite _).tendstoIxxClass fun _ _ =>
+    Set.OrdConnected.out <| ordConnected_biInter fun _ _ => ordConnected_Iic
 #align filter.tendsto_Icc_at_bot_at_bot Filter.tendsto_Icc_atBot_atBot
 
 instance tendsto_Ico_atBot_atBot : TendstoIxxClass Ico (atBot : Filter α) atBot :=

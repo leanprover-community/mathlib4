@@ -10,6 +10,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.GCD
 import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Congruences modulo a natural number
@@ -95,7 +97,7 @@ alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
 #align nat.modeq.dvd Nat.ModEq.dvd
 #align nat.modeq_of_dvd Nat.modEq_of_dvd
 
-/-- A variant of `modEq_iff_dvd` with `nat` divisibility -/
+/-- A variant of `modEq_iff_dvd` with `Nat` divisibility -/
 theorem modEq_iff_dvd' (h : a ≤ b) : a ≡ b [MOD n] ↔ n ∣ b - a := by
   rw [modEq_iff_dvd, ← Int.coe_nat_dvd, Int.ofNat_sub h]
 #align nat.modeq_iff_dvd' Nat.modEq_iff_dvd'
@@ -113,6 +115,7 @@ protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [M
   unfold ModEq at *; rw [mul_mod_mul_left, mul_mod_mul_left, h]
 #align nat.modeq.mul_left' Nat.ModEq.mul_left'
 
+@[gcongr]
 protected theorem mul_left (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD n] :=
   (h.mul_left' _).of_dvd (dvd_mul_left _ _)
 #align nat.modeq.mul_left Nat.ModEq.mul_left
@@ -121,14 +124,17 @@ protected theorem mul_right' (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left' c
 #align nat.modeq.mul_right' Nat.ModEq.mul_right'
 
+@[gcongr]
 protected theorem mul_right (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n] := by
   rw [mul_comm a, mul_comm b]; exact h.mul_left c
 #align nat.modeq.mul_right Nat.ModEq.mul_right
 
+@[gcongr]
 protected theorem mul (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a * c ≡ b * d [MOD n] :=
   (h₂.mul_left _).trans (h₁.mul_right _)
 #align nat.modeq.mul Nat.ModEq.mul
 
+@[gcongr]
 protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] := by
   induction m with
   | zero => rfl
@@ -137,15 +143,18 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
     exact hd.mul h
 #align nat.modeq.pow Nat.ModEq.pow
 
+@[gcongr]
 protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
   rw [modEq_iff_dvd, Int.ofNat_add, Int.ofNat_add, add_sub_add_comm]
   exact dvd_add h₁.dvd h₂.dvd
 #align nat.modeq.add Nat.ModEq.add
 
+@[gcongr]
 protected theorem add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
   ModEq.rfl.add h
 #align nat.modeq.add_left Nat.ModEq.add_left
 
+@[gcongr]
 protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [MOD n] :=
   h.add ModEq.rfl
 #align nat.modeq.add_right Nat.ModEq.add_right
@@ -266,9 +275,9 @@ lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := b
 #align nat.modeq.eq_of_abs_lt Nat.ModEq.eq_of_abs_lt
 
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
-h.eq_of_abs_lt $ abs_sub_lt_iff.2
-  ⟨(sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 hb,
-   (sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 ha⟩
+  h.eq_of_abs_lt $ abs_sub_lt_iff.2
+    ⟨(sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 hb,
+    (sub_le_self _ $ Int.coe_nat_nonneg _).trans_lt $ Int.ofNat_lt.2 ha⟩
 #align nat.modeq.eq_of_lt_of_lt Nat.ModEq.eq_of_lt_of_lt
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
@@ -284,8 +293,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
     rw [mul_sub]
     exact modEq_iff_dvd.mp h
   show Int.gcd (m / d) (c / d) = 1
-  ·
-    simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
+  · simp only [← Int.coe_nat_div, Int.coe_nat_gcd (m / d) (c / d), gcd_div hmd hcd,
       Nat.div_self (gcd_pos_of_pos_left c hm)]
 #align nat.modeq.cancel_left_div_gcd Nat.ModEq.cancel_left_div_gcd
 
@@ -317,7 +325,7 @@ lemma cancel_left_of_coprime (hmc : gcd m c = 1) (h : c * a ≡ c * b [MOD m]) :
 
 /-- A common factor that's coprime with the modulus can be cancelled from a `ModEq` -/
 lemma cancel_right_of_coprime (hmc : gcd m c = 1) (h : a * c ≡ b * c [MOD m]) : a ≡ b [MOD m] :=
-cancel_left_of_coprime hmc $ by simpa [mul_comm] using h
+  cancel_left_of_coprime hmc $ by simpa [mul_comm] using h
 #align nat.modeq.cancel_right_of_coprime Nat.ModEq.cancel_right_of_coprime
 
 end ModEq
@@ -328,9 +336,7 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
   else
     if hm : m = 0 then ⟨b, by rw [hm, gcd_zero_right] at h; constructor; exact h.symm; rfl⟩
     else
-      ⟨let (c, d) := xgcd n m
-       Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m),
-       by
+      ⟨let (c, d) := xgcd n m; Int.toNat ((n * c * b + m * d * a) / gcd n m % lcm n m), by
         rw [xgcd_val]
         dsimp
         rw [modEq_iff_dvd, modEq_iff_dvd,
@@ -341,7 +347,6 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
           exact fun _ => hm
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
-
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
             refine' dvd_add _ (dvd_mul_of_dvd_left _ _) <;>
           try norm_cast

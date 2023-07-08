@@ -10,7 +10,6 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Ro
 -/
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.WLOG
 
 /-!
 # Counting on ℕ

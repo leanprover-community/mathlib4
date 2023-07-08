@@ -25,7 +25,7 @@ See <https://stacks.math.columbia.edu/tag/03A3>
 
 ## Notes
 The hypotheses, following the statement from the Stacks project,
-may appear suprising: we don't ask that the counit of the adjunction is an isomorphism,
+may appear surprising: we don't ask that the counit of the adjunction is an isomorphism,
 but just that we have some potentially unrelated isomorphism `i : F ⋙ G ≅ 𝟭 C`.
 
 However Lemma A1.1.1 from [Elephant] shows that in this situation the counit itself

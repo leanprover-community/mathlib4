@@ -83,7 +83,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   cases' eq_or_ne (b * c) 0 with hz hz
   · rcases mul_eq_zero.mp hz with (rfl | rfl) <;> simp
   wlog h : c ≤ b
-  · cases le_total c b <;> [skip, rw [or_comm]] <;> apply_assumption
+  · cases le_total c b <;> [skip; rw [or_comm]] <;> apply_assumption
     assumption'
     all_goals rwa [mul_comm]
   left

@@ -76,7 +76,7 @@ theorem IsTrail.even_countp_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
         rintro rfl
         exact huv.ne
     · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih⊢
+      simp only [h.1, h.2, not_false_iff, true_and_iff, add_zero, Ne.def] at ih ⊢
       rw [ih]
       constructor <;>
         · rintro h' h'' rfl
@@ -164,9 +164,8 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
 #align simple_graph.walk.is_eulerian.card_filter_odd_degree SimpleGraph.Walk.IsEulerian.card_filter_odd_degree
 
 theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p : G.Walk u v}
-    (ht : p.IsEulerian) :
-    Fintype.card { v : V | Odd (G.degree v) } = 0 ∨ Fintype.card { v : V | Odd (G.degree v) } = 2 :=
-  by
+    (ht : p.IsEulerian) : Fintype.card { v : V | Odd (G.degree v) } = 0 ∨
+      Fintype.card { v : V | Odd (G.degree v) } = 2 := by
   rw [← Set.toFinset_card]
   apply IsEulerian.card_filter_odd_degree ht
   ext v

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module linear_algebra.multilinear.basic
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
+! leanprover-community/mathlib commit 78fdf68dcd2fdb3fe64c0dd6f88926a49418a6ea
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -69,7 +69,7 @@ are:
 3. Quantifying over all possible `DecidableEq ι` instances in the statement of `map_add'` and
    `map_smul'`.
 
-Option 1 works fine, but puts unecessary constraints on the user (the zero map certainly does not
+Option 1 works fine, but puts unnecessary constraints on the user (the zero map certainly does not
 need decidability). Option 2 looks great at first, but in the common case when `ι = Fin n` it
 introduces non-defeq decidability instance diamonds within the context of proving `map_add'` and
 `map_smul'`, of the form `Fin.decidableEq n = Classical.decEq (Fin n)`. Option 3 of course does
@@ -160,8 +160,8 @@ theorem ext_iff {f g : MultilinearMap R M₁ M₂} : f = g ↔ ∀ x, f x = g x 
 #align multilinear_map.ext_iff MultilinearMap.ext_iff
 
 @[simp]
-theorem mk_coe (f : MultilinearMap R M₁ M₂) (h₁ h₂) : (⟨f, h₁, h₂⟩ : MultilinearMap R M₁ M₂) = f :=
-  by
+theorem mk_coe (f : MultilinearMap R M₁ M₂) (h₁ h₂) :
+    (⟨f, h₁, h₂⟩ : MultilinearMap R M₁ M₂) = f := by
   ext
   rfl
 #align multilinear_map.mk_coe MultilinearMap.mk_coe
@@ -264,12 +264,14 @@ def toLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R]
 #align multilinear_map.to_linear_map_to_add_hom_apply MultilinearMap.toLinearMap_apply
 
 /-- The cartesian product of two multilinear maps, as a multilinear map. -/
+@[simps]
 def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) : MultilinearMap R M₁ (M₂ × M₃)
     where
   toFun m := (f m, g m)
   map_add' m i x y := by simp
   map_smul' m i c x := by simp
 #align multilinear_map.prod MultilinearMap.prod
+#align multilinear_map.prod_apply MultilinearMap.prod_apply
 
 /-- Combine a family of multilinear maps with the same domain and codomains `M' i` into a
 multilinear map taking values in the space of functions `∀ i, M' i`. -/
@@ -360,7 +362,8 @@ theorem cons_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
 an element of `∀ (i : Fin (n+1)), M i` using `snoc`, one can express directly the additivity of a
 multilinear map along the first variable. -/
-theorem snoc_add (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc i)) (x y : M (last n)) :
+theorem snoc_add (f : MultilinearMap R M M₂)
+    (m : ∀ i : Fin n, M (castSuccEmb i)) (x y : M (last n)) :
     f (snoc m (x + y)) = f (snoc m x) + f (snoc m y) := by
   simp_rw [← update_snoc_last x m (x + y), f.map_add, update_snoc_last]
 #align multilinear_map.snoc_add MultilinearMap.snoc_add
@@ -368,7 +371,7 @@ theorem snoc_add (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc i
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
 an element of `∀ (i : Fin (n+1)), M i` using `cons`, one can express directly the multiplicativity
 of a multilinear map along the first variable. -/
-theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc i)) (c : R)
+theorem snoc_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSuccEmb i)) (c : R)
     (x : M (last n)) : f (snoc m (c • x)) = c • f (snoc m x) := by
   simp_rw [← update_snoc_last x m (c • x), f.map_smul, update_snoc_last]
 #align multilinear_map.snoc_smul MultilinearMap.snoc_smul
@@ -508,7 +511,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   -- If one of the sets is empty, then all the sums are zero
   by_cases Ai_empty : ∃ i, A i = ∅
   · rcases Ai_empty with ⟨i, hi⟩
-    have : (∑ j in A i, g i j) = 0 := by rw [hi, Finset.sum_empty]
+    have : ∑ j in A i, g i j = 0 := by rw [hi, Finset.sum_empty]
     rw [f.map_coord_zero i this]
     have : piFinset A = ∅ := by
       refine Finset.eq_empty_of_forall_not_mem fun r hr => ?_
@@ -1186,7 +1189,7 @@ section Currying
 
 We associate to a multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curryLeft` (which is a linear map on `E 0` taking values
-in multilinear maps in `n` variables) and `f.curryRight` (wich is a multilinear map in `n`
+in multilinear maps in `n` variables) and `f.curryRight` (which is a multilinear map in `n`
 variables taking values in linear maps on `E 0`). In both constructions, the variable that is
 singled out is `0`, to take advantage of the operations `cons` and `tail` on `Fin n`.
 The inverse operations are called `uncurryLeft` and `uncurryRight`.
@@ -1269,10 +1272,9 @@ theorem MultilinearMap.curryLeft_apply (f : MultilinearMap R M M₂) (x : M 0)
 #align multilinear_map.curry_left_apply MultilinearMap.curryLeft_apply
 
 @[simp]
-theorem LinearMap.curry_uncurryLeft
-    (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f :=
-  by
-  ext (m x)
+theorem LinearMap.curry_uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i :
+    Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := by
+  ext m x
   simp only [tail_cons, LinearMap.uncurryLeft_apply, MultilinearMap.curryLeft_apply]
   rw [cons_zero]
 #align linear_map.curry_uncurry_left LinearMap.curry_uncurryLeft
@@ -1316,7 +1318,7 @@ variable {R M M₂}
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
 the variables, given by `m ↦ f (init m) (m (last n))`-/
 def MultilinearMap.uncurryRight
-    (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
+    (f : MultilinearMap R (fun i : Fin n => M (castSuccEmb i)) (M (last n) →ₗ[R] M₂)) :
     MultilinearMap R M M₂ where
   toFun m := f (init m) (m (last n))
   map_add' {dec} m i x y := by
@@ -1326,10 +1328,10 @@ def MultilinearMap.uncurryRight
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
       simp_rw [update_noteq this]
       revert x y
-      rw [(castSucc_castLT i h).symm]
+      rw [(castSuccEmb_castLT i h).symm]
       intro x y
-      rw [init_update_castSucc, MultilinearMap.map_add, init_update_castSucc,
-        init_update_castSucc, LinearMap.add_apply]
+      rw [init_update_castSuccEmb, MultilinearMap.map_add, init_update_castSuccEmb,
+        init_update_castSuccEmb, LinearMap.add_apply]
     · revert x y
       rw [eq_last_of_not_lt h]
       intro x y
@@ -1341,9 +1343,9 @@ def MultilinearMap.uncurryRight
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
       simp_rw [update_noteq this]
       revert x
-      rw [(castSucc_castLT i h).symm]
+      rw [(castSuccEmb_castLT i h).symm]
       intro x
-      rw [init_update_castSucc, init_update_castSucc, MultilinearMap.map_smul,
+      rw [init_update_castSuccEmb, init_update_castSuccEmb, MultilinearMap.map_smul,
         LinearMap.smul_apply]
     · revert x
       rw [eq_last_of_not_lt h]
@@ -1353,8 +1355,8 @@ def MultilinearMap.uncurryRight
 
 @[simp]
 theorem MultilinearMap.uncurryRight_apply
-    (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) (m : ∀ i, M i) :
-    f.uncurryRight m = f (init m) (m (last n)) :=
+    (f : MultilinearMap R (fun i : Fin n => M (castSuccEmb i)) (M (last n) →ₗ[R] M₂))
+    (m : ∀ i, M i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
 #align multilinear_map.uncurry_right_apply MultilinearMap.uncurryRight_apply
 
@@ -1362,7 +1364,7 @@ theorem MultilinearMap.uncurryRight_apply
 a multilinear map in `n` variables taking values in linear maps from `M (last n)` to `M₂`, given by
 `m ↦ (x ↦ f (snoc m x))`. -/
 def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
-    MultilinearMap R (fun i : Fin n => M (Fin.castSucc i)) (M (last n) →ₗ[R] M₂) where
+    MultilinearMap R (fun i : Fin n => M (Fin.castSuccEmb i)) (M (last n) →ₗ[R] M₂) where
   toFun m :=
     { toFun := fun x => f (snoc m x)
       map_add' := fun x y => by simp_rw [f.snoc_add]
@@ -1381,15 +1383,15 @@ def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)
-    (m : ∀ i : Fin n, M (castSucc i)) (x : M (last n)) : f.curryRight m x = f (snoc m x) :=
+    (m : ∀ i : Fin n, M (castSuccEmb i)) (x : M (last n)) : f.curryRight m x = f (snoc m x) :=
   rfl
 #align multilinear_map.curry_right_apply MultilinearMap.curryRight_apply
 
 @[simp]
 theorem MultilinearMap.curry_uncurryRight
-    (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) :
+    (f : MultilinearMap R (fun i : Fin n => M (castSuccEmb i)) (M (last n) →ₗ[R] M₂)) :
     f.uncurryRight.curryRight = f := by
-  ext (m x)
+  ext m x
   simp only [snoc_last, MultilinearMap.curryRight_apply, MultilinearMap.uncurryRight_apply]
   rw [init_snoc]
 #align multilinear_map.curry_uncurry_right MultilinearMap.curry_uncurryRight
@@ -1404,14 +1406,14 @@ theorem MultilinearMap.uncurry_curryRight (f : MultilinearMap R M M₂) :
 variable (R M M₂)
 
 /-- The space of multilinear maps on `∀ (i : Fin (n+1)), M i` is canonically isomorphic to
-the space of linear maps from the space of multilinear maps on `∀ (i : Fin n), M (castSucc i)` to
+the space of linear maps from the space of multilinear maps on `∀ (i : Fin n), M (castSuccEmb i)` to
 the space of linear maps on `M (last n)`, by separating the last variable. We register this
 isomorphism as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.uncurryRight` and `f.curryRight`. Use these
 unless you need the full framework of linear equivs. -/
 def multilinearCurryRightEquiv :
-    MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂) ≃ₗ[R]
+    MultilinearMap R (fun i : Fin n => M (castSuccEmb i)) (M (last n) →ₗ[R] M₂) ≃ₗ[R]
       MultilinearMap R M M₂ where
   toFun := MultilinearMap.uncurryRight
   map_add' f₁ f₂ := by

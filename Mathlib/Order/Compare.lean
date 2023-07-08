@@ -157,14 +157,14 @@ open Ordering OrderDual
 theorem toDual_compares_toDual [LT α] {a b : α} {o : Ordering} :
     Compares o (toDual a) (toDual b) ↔ Compares o b a := by
   cases o
-  exacts[Iff.rfl, eq_comm, Iff.rfl]
+  exacts [Iff.rfl, eq_comm, Iff.rfl]
 #align to_dual_compares_to_dual toDual_compares_toDual
 
 @[simp]
 theorem ofDual_compares_ofDual [LT α] {a b : αᵒᵈ} {o : Ordering} :
     Compares o (ofDual a) (ofDual b) ↔ Compares o b a := by
   cases o
-  exacts[Iff.rfl, eq_comm, Iff.rfl]
+  exacts [Iff.rfl, eq_comm, Iff.rfl]
 #align of_dual_compares_of_dual ofDual_compares_ofDual
 
 theorem cmp_compares [LinearOrder α] (a b : α) : (cmp a b).Compares a b := by
@@ -218,9 +218,9 @@ def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     le_total := fun a b => (h a b).le_total,
     toMin := minOfLe,
     toMax := maxOfLe,
-    decidable_le := H,
-    decidable_lt := fun a b => decidable_of_iff _ (h a b).eq_lt,
-    decidable_eq := fun a b => decidable_of_iff _ (h a b).eq_eq }
+    decidableLE := H,
+    decidableLT := fun a b => decidable_of_iff _ (h a b).eq_lt,
+    decidableEq := fun a b => decidable_of_iff _ (h a b).eq_eq }
 #align linear_order_of_compares linearOrderOfCompares
 
 variable [LinearOrder α] (x y : α)

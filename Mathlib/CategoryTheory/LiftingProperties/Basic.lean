@@ -135,16 +135,16 @@ theorem of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' :
 #align category_theory.has_lifting_property.of_arrow_iso_right CategoryTheory.HasLiftingProperty.of_arrow_iso_right
 
 theorem iff_of_arrow_iso_left {A B A' B' X Y : C} {i : A ⟶ B} {i' : A' ⟶ B'}
-    (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) : HasLiftingProperty i p ↔ HasLiftingProperty i' p :=
-  by
+    (e : Arrow.mk i ≅ Arrow.mk i') (p : X ⟶ Y) :
+    HasLiftingProperty i p ↔ HasLiftingProperty i' p := by
   constructor <;> intro
-  exacts[of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
+  exacts [of_arrow_iso_left e p, of_arrow_iso_left e.symm p]
 #align category_theory.has_lifting_property.iff_of_arrow_iso_left CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_left
 
 theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {p' : X' ⟶ Y'}
     (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' := by
   constructor <;> intro
-  exacts[of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
+  exacts [of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
 #align category_theory.has_lifting_property.iff_of_arrow_iso_right CategoryTheory.HasLiftingProperty.iff_of_arrow_iso_right
 
 end HasLiftingProperty

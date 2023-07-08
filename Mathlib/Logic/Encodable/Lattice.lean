@@ -29,19 +29,19 @@ namespace Encodable
 
 variable {α : Type _} {β : Type _} [Encodable β]
 
-theorem supᵢ_decode₂ [CompleteLattice α] (f : β → α) :
-    (⨆ (i : ℕ) (b ∈ decode₂ β i), f b) = (⨆ b, f b) := by
-  rw [supᵢ_comm]
-  simp only [mem_decode₂, supᵢ_supᵢ_eq_right]
-#align encodable.supr_decode₂ Encodable.supᵢ_decode₂
+theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
+    ⨆ (i : ℕ) (b ∈ decode₂ β i), f b = (⨆ b, f b) := by
+  rw [iSup_comm]
+  simp only [mem_decode₂, iSup_iSup_eq_right]
+#align encodable.supr_decode₂ Encodable.iSup_decode₂
 
-theorem unionᵢ_decode₂ (f : β → Set α) : (⋃ (i : ℕ) (b ∈ decode₂ β i), f b) = ⋃ b, f b :=
-  supᵢ_decode₂ f
-#align encodable.Union_decode₂ Encodable.unionᵢ_decode₂
+theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
+  iSup_decode₂ f
+#align encodable.Union_decode₂ Encodable.iUnion_decode₂
 
 /- Porting note: `@[elab_as_elim]` gives `unexpected eliminator resulting type`. -/
 --@[elab_as_elim]
-theorem unionᵢ_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
+theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
@@ -50,16 +50,15 @@ theorem unionᵢ_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 :
   | some b => by
     convert H1 b
     simp [ext_iff]
-#align encodable.Union_decode₂_cases Encodable.unionᵢ_decode₂_cases
+#align encodable.Union_decode₂_cases Encodable.iUnion_decode₂_cases
 
-theorem unionᵢ_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
-    Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) :=
-  by
+theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
+    Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij
   refine' disjoint_left.mpr fun x => _
   suffices ∀ a, encode a = i → x ∈ f a → ∀ b, encode b = j → x ∉ f b by simpa [decode₂_eq_some]
   rintro a rfl ha b rfl hb
   exact (hd (mt (congr_arg encode) ij)).le_bot ⟨ha, hb⟩
-#align encodable.Union_decode₂_disjoint_on Encodable.unionᵢ_decode₂_disjoint_on
+#align encodable.Union_decode₂_disjoint_on Encodable.iUnion_decode₂_disjoint_on
 
 end Encodable

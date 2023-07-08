@@ -365,24 +365,18 @@ theorem mem_roots_map [CommRing k] [IsDomain k] {f : R →+* k} {x : k} (hp : p 
   rw [mem_roots (map_ne_zero hp), IsRoot, Polynomial.eval_map]
 #align polynomial.mem_roots_map Polynomial.mem_roots_map
 
--- Porting note: previously could not synthesize Algebra R S
-set_option synthInstance.etaExperiment true in
 theorem rootSet_monomial [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : (monomial n a).rootSet S = {0} := by
   rw [rootSet, map_monomial, roots_monomial ((_root_.map_ne_zero (algebraMap R S)).2 ha),
     Multiset.toFinset_nsmul _ _ hn, Multiset.toFinset_singleton, Finset.coe_singleton]
 #align polynomial.root_set_monomial Polynomial.rootSet_monomial
 
--- Porting note: previously could not synthesize Algebra R S
-set_option synthInstance.etaExperiment true in
 theorem rootSet_C_mul_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) {a : R}
     (ha : a ≠ 0) : rootSet (C a * X ^ n) S = {0} := by
   rw [C_mul_X_pow_eq_monomial, rootSet_monomial hn ha]
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_C_mul_X_pow Polynomial.rootSet_C_mul_X_pow
 
--- Porting note: previously could not synthesize Algebra R S
-set_option synthInstance.etaExperiment true in
 theorem rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n ≠ 0) :
     (X ^ n : R[X]).rootSet S = {0} := by
   rw [← one_mul (X ^ n : R[X]), ← C_1, rootSet_C_mul_X_pow hn]
@@ -390,18 +384,15 @@ theorem rootSet_X_pow [CommRing S] [IsDomain S] [Algebra R S] {n : ℕ} (hn : n 
 set_option linter.uppercaseLean3 false in
 #align polynomial.root_set_X_pow Polynomial.rootSet_X_pow
 
--- Porting note: previously could not synthesize Algebra R S
-set_option synthInstance.etaExperiment true in
 theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type _} (f : ι → R[X])
     (s : Finset ι) (h : s.prod f ≠ 0) : (s.prod f).rootSet S = ⋃ i ∈ s, (f i).rootSet S := by
   simp only [rootSet, ← Finset.mem_coe]
-  rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_bunionᵢ]
+  rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
   rwa [← Polynomial.map_prod, Ne, map_eq_zero]
 #align polynomial.root_set_prod Polynomial.rootSet_prod
 
 theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
-  ⟨-(p.coeff 0 / p.coeff 1),
-    by
+  ⟨-(p.coeff 0 / p.coeff 1), by
     have : p.coeff 1 ≠ 0 := by
       have h' := natDegree_eq_of_degree_eq_some h
       change natDegree p = 1 at h'; rw [←h']
@@ -420,8 +411,6 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
   · simp
 #align polynomial.coeff_inv_units Polynomial.coeff_inv_units
 
--- Porting note: previously could not synthesize NormalisationMonoid R[X]
-set_option synthInstance.etaExperiment true in
 theorem monic_normalize (hp0 : p ≠ 0) : Monic (normalize p) := by
   rw [Ne.def, ← leadingCoeff_eq_zero, ← Ne.def, ← isUnit_iff_ne_zero] at hp0
   rw [Monic, leadingCoeff_normalize, normalize_eq_one]
@@ -464,20 +453,14 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.dvd_C_mul Polynomial.dvd_C_mul
 
--- Porting note: previously could not synthesize NormalisationMonoid R[X]
-set_option synthInstance.etaExperiment true in
 theorem coe_normUnit_of_ne_zero (hp : p ≠ 0) : (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 #align polynomial.coe_norm_unit_of_ne_zero Polynomial.coe_normUnit_of_ne_zero
 
--- Porting note: previously could not synthesize NormalisationMonoid R[X]
-set_option synthInstance.etaExperiment true in
 theorem normalize_monic (h : Monic p) : normalize p = p := by simp [h]
 #align polynomial.normalize_monic Polynomial.normalize_monic
 
--- Porting note: previously could not synthesize NormalisationMonoid R[X]
-set_option synthInstance.etaExperiment true in
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y :=
   if H : x = 0 then by rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, map_eq_zero]
   else by
@@ -487,13 +470,9 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
       map_dvd_map _ f.injective (monic_mul_leadingCoeff_inv H)]
 #align polynomial.map_dvd_map' Polynomial.map_dvd_map'
 
--- Porting note: previously could not synthesize NormalisationMonoid R[X]
-set_option synthInstance.etaExperiment true in
 theorem degree_normalize : degree (normalize p) = degree p := by simp
 #align polynomial.degree_normalize Polynomial.degree_normalize
 
--- Porting note: previously could not synthesize NormalisationMonoid R[X]
-set_option synthInstance.etaExperiment true in
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p :=
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)

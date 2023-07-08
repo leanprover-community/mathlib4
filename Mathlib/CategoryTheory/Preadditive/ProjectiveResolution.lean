@@ -16,7 +16,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory
 # Projective resolutions
 
 A projective resolution `P : ProjectiveResolution Z` of an object `Z : C` consists of
-a `ℕ`-indexed chain complex `P.complex` of projective objects,
+an `ℕ`-indexed chain complex `P.complex` of projective objects,
 along with a chain map `P.π` from `C` to the chain complex consisting just of `Z` in degree zero,
 so that the augmented chain complex is exact.
 
@@ -206,7 +206,7 @@ set_option linter.uppercaseLean3 false in
 @[reassoc (attr := simp)]
 theorem lift_commutes {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
     (Q : ProjectiveResolution Z) : lift f P Q ≫ Q.π = P.π ≫ (ChainComplex.single₀ C).map f := by
-  ext (_|_) <;> simp [lift, liftZero]
+  ext; simp [lift, liftZero]
 set_option linter.uppercaseLean3 false in
 #align category_theory.ProjectiveResolution.lift_commutes CategoryTheory.ProjectiveResolution.lift_commutes
 

@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Prod
 # N-ary images of sets
 
 This file defines `Set.image2`, the binary image of finsets. This is the finset version of
-`set.image2`. This is mostly useful to define pointwise operations.
+`Set.image2`. This is mostly useful to define pointwise operations.
 
 ## Notes
 
@@ -99,13 +99,13 @@ variable (f)
 
 -- Porting note: Removing `simp` - LHS does not simplify
 lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :=
-ext $ fun a ↦
-⟨ by rintro ⟨_, _, rfl⟩; exact ⟨_, _, (mem_prod.1 ‹_›).1, (mem_prod.1 ‹_›).2, rfl⟩,
-  by rintro ⟨_, _, _, _, rfl⟩; exact ⟨(_, _), ⟨‹_›, ‹_›⟩, rfl⟩⟩
+  ext $ fun a ↦
+  ⟨ by rintro ⟨_, _, rfl⟩; exact ⟨_, _, (mem_prod.1 ‹_›).1, (mem_prod.1 ‹_›).2, rfl⟩,
+    by rintro ⟨_, _, _, _, rfl⟩; exact ⟨(_, _), ⟨‹_›, ‹_›⟩, rfl⟩⟩
 #align set.image_prod Set.image_prod
 
 @[simp] lemma image_uncurry_prod (s : Set α) (t : Set β) : uncurry f '' s ×ˢ t = image2 f s t :=
-image_prod _
+  image_prod _
 #align set.image_uncurry_prod Set.image_uncurry_prod
 
 @[simp] lemma image2_mk_eq_prod : image2 Prod.mk s t = s ×ˢ t := ext $ by simp
@@ -127,7 +127,7 @@ variable {f}
 theorem image2_union_left : image2 f (s ∪ s') t = image2 f s t ∪ image2 f s' t := by
   ext c
   constructor
-  · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left, right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
+  · rintro ⟨a, b, ha | ha, hb, rfl⟩ <;> [left; right] <;> exact ⟨_, _, ‹_›, ‹_›, rfl⟩
   · rintro (⟨_, _, _, _, rfl⟩ | ⟨_, _, _, _, rfl⟩) <;> refine' ⟨_, _, _, ‹_›, rfl⟩ <;>
       simp [mem_union, *]
 #align set.image2_union_left Set.image2_union_left
@@ -136,12 +136,14 @@ theorem image2_union_right : image2 f s (t ∪ t') = image2 f s t ∪ image2 f s
   rw [← image2_swap, image2_union_left, image2_swap f, image2_swap f]
 #align set.image2_union_right Set.image2_union_right
 
-lemma image2_inter_left (hf : Injective2 f) : image2 f (s ∩ s') t = image2 f s t ∩ image2 f s' t :=
-by simp_rw [←image_uncurry_prod, inter_prod, image_inter hf.uncurry]
+lemma image2_inter_left (hf : Injective2 f) :
+    image2 f (s ∩ s') t = image2 f s t ∩ image2 f s' t := by
+  simp_rw [←image_uncurry_prod, inter_prod, image_inter hf.uncurry]
 #align set.image2_inter_left Set.image2_inter_left
 
-lemma image2_inter_right (hf : Injective2 f) : image2 f s (t ∩ t') = image2 f s t ∩ image2 f s t' :=
-by simp_rw [←image_uncurry_prod, prod_inter, image_inter hf.uncurry]
+lemma image2_inter_right (hf : Injective2 f) :
+    image2 f s (t ∩ t') = image2 f s t ∩ image2 f s t' := by
+  simp_rw [←image_uncurry_prod, prod_inter, image_inter hf.uncurry]
 #align set.image2_inter_right Set.image2_inter_right
 
 @[simp]

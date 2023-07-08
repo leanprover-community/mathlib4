@@ -410,7 +410,7 @@ theorem BddBelow.inter_of_right (h : BddBelow t) : BddBelow (s ∩ t) :=
   h.mono <| inter_subset_right s t
 #align bdd_below.inter_of_right BddBelow.inter_of_right
 
-/-- If `s` and `t` are bounded above sets in a `semilattice_sup`, then so is `s ∪ t`. -/
+/-- If `s` and `t` are bounded above sets in a `SemilatticeSup`, then so is `s ∪ t`. -/
 theorem BddAbove.union [SemilatticeSup γ] {s t : Set γ} :
     BddAbove s → BddAbove t → BddAbove (s ∪ t) := by
   rintro ⟨bs, hs⟩ ⟨bt, ht⟩
@@ -1279,13 +1279,13 @@ theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowe
 #align monotone.image_lower_bounds_subset_lower_bounds_image Monotone.image_lowerBounds_subset_lowerBounds_image
 
 /-- The image under a monotone function of a set which is bounded above is bounded above. See also
-`bdd_above.image2`. -/
+`BddAbove.image2`. -/
 theorem map_bddAbove : BddAbove s → BddAbove (f '' s)
   | ⟨C, hC⟩ => ⟨f C, Hf.mem_upperBounds_image hC⟩
 #align monotone.map_bdd_above Monotone.map_bddAbove
 
 /-- The image under a monotone function of a set which is bounded below is bounded below. See also
-`bdd_below.image2`. -/
+`BddBelow.image2`. -/
 theorem map_bddBelow : BddBelow s → BddBelow (f '' s)
   | ⟨C, hC⟩ => ⟨f C, Hf.mem_lowerBounds_image hC⟩
 #align monotone.map_bdd_below Monotone.map_bddBelow
@@ -1593,8 +1593,7 @@ theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
     exact fun q hq => ⟨(H.1 hq).1, ha <| mem_image_of_mem _ hq⟩
   · exact fun q hq => ⟨H.1.1 <| mem_image_of_mem _ hq, H.2.1 <| mem_image_of_mem _ hq⟩
-  ·
-    exact fun q hq =>
+  · exact fun q hq =>
       ⟨H.1.2 <| monotone_fst.mem_upperBounds_image hq,
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 #align is_lub_prod isLUB_prod

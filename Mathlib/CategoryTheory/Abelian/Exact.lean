@@ -152,7 +152,7 @@ def isColimitCoimage (h : Exact f g) :
       (by rw [← cokernel.π_desc f u hu, ← Category.assoc, h.2, zero_comp]))
     (by aesop_cat) _
   intros _ _ _ _ hm
-  apply coequalizer.hom_ext
+  ext
   rw [hm, cokernel.π_desc]
 #align category_theory.abelian.is_colimit_coimage CategoryTheory.Abelian.isColimitCoimage
 
@@ -224,8 +224,8 @@ def isLimitOfExactOfMono [Mono f] (h : Exact f g) : IsLimit (KernelFork.ofι _ h
       fun j => by cases j <;> simp
 #align category_theory.abelian.is_limit_of_exact_of_mono CategoryTheory.Abelian.isLimitOfExactOfMono
 
-theorem exact_of_is_cokernel (w : f ≫ g = 0) (h : IsColimit (CokernelCofork.ofπ _ w)) : Exact f g :=
-  by
+theorem exact_of_is_cokernel (w : f ≫ g = 0)
+    (h : IsColimit (CokernelCofork.ofπ _ w)) : Exact f g := by
   refine' (exact_iff _ _).2 ⟨w, _⟩
   have := h.fac (CokernelCofork.ofπ _ (cokernel.condition f)) WalkingParallelPair.one
   simp only [Cofork.ofπ_ι_app] at this
@@ -366,7 +366,7 @@ variable [PreservesFiniteLimits L] [PreservesFiniteColimits L]
 
 /-- A functor preserving finite limits and finite colimits preserves exactness. The converse
 result is also true, see `Functor.preservesFiniteLimitsOfMapExact` and
-`Functor.preservesFiniteCoimitsOfMapExact`. -/
+`Functor.preservesFiniteColimitsOfMapExact`. -/
 theorem map_exact {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (e1 : Exact f g) :
     Exact (L.map f) (L.map g) := by
   let hcoker := isColimitOfHasCokernelOfPreservesColimit L f

@@ -96,7 +96,7 @@ theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine' ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => _⟩
-  rw [← compl_compl s, ← bunionᵢ_of_singleton (sᶜ), compl_unionᵢ₂, Filter.binterᵢ_mem hs]
+  rw [← compl_compl s, ← biUnion_of_singleton sᶜ, compl_iUnion₂, Filter.biInter_mem hs]
   exact fun x _ => h x
 #align filter.le_cofinite_iff_compl_singleton_mem Filter.le_cofinite_iff_compl_singleton_mem
 
@@ -167,7 +167,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type _} [LinearOrder β]
     refine' ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim _ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
-    push_neg  at not_all_top
+    push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
     exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
 #align filter.tendsto.exists_within_forall_le Filter.Tendsto.exists_within_forall_le

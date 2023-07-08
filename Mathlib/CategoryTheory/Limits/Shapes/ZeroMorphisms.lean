@@ -78,12 +78,13 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 #align category_theory.limits.zero_comp CategoryTheory.Limits.zero_comp
 
-instance hasZeroMorphismsPempty : HasZeroMorphisms (Discrete PEmpty) where Zero := by dee
-#align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPempty
+instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
+  Zero := by aesop_cat
+#align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPEmpty
 
-instance hasZeroMorphismsPunit : HasZeroMorphisms (Discrete PUnit) where
+instance hasZeroMorphismsPUnit : HasZeroMorphisms (Discrete PUnit) where
   Zero := fun X Y => by repeat (constructor)
-#align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPunit
+#align category_theory.limits.has_zero_morphisms_punit CategoryTheory.Limits.hasZeroMorphismsPUnit
 
 namespace HasZeroMorphisms
 
@@ -428,7 +429,7 @@ theorem idZeroEquivIsoZero_apply_inv (X : C) (h : 𝟙 X = 0) : ((idZeroEquivIso
   rfl
 #align category_theory.limits.id_zero_equiv_iso_zero_apply_inv CategoryTheory.Limits.idZeroEquivIsoZero_apply_inv
 
-/-- If `0 : X ⟶ Y` is an monomorphism, then `X ≅ 0`. -/
+/-- If `0 : X ⟶ Y` is a monomorphism, then `X ≅ 0`. -/
 @[simps]
 def isoZeroOfMonoZero {X Y : C} (h : Mono (0 : X ⟶ Y)) : X ≅ 0 where
   hom := 0
@@ -508,7 +509,7 @@ open ZeroObject
 `X` and `Y` are isomorphic to the zero object.
 -/
 def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y ≅ 0) := by
-  -- This is lame, because `prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
+  -- This is lame, because `Prod` can't cope with `Prop`, so we can't use `Equiv.prodCongr`.
   refine' (isIsoZeroEquiv X Y).trans _
   symm
   fconstructor
@@ -524,8 +525,8 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
   · aesop_cat
 #align category_theory.limits.is_iso_zero_equiv_iso_zero CategoryTheory.Limits.isIsoZeroEquivIsoZero
 
-theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) : IsIso f :=
-  by
+theorem isIso_of_source_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : X ≅ 0) (j : Y ≅ 0) :
+    IsIso f := by
   rw [zero_of_source_iso_zero f i]
   exact (isIsoZeroEquivIsoZero _ _).invFun ⟨i, j⟩
 #align category_theory.limits.is_iso_of_source_target_iso_zero CategoryTheory.Limits.isIso_of_source_target_iso_zero
@@ -540,8 +541,8 @@ def isIsoZeroSelfEquivIsoZero (X : C) : IsIso (0 : X ⟶ X) ≃ (X ≅ 0) :=
 end IsIso
 
 /-- If there are zero morphisms, any initial object is a zero object. -/
-theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] : HasZeroObject C :=
-  by
+theorem hasZeroObject_of_hasInitial_object [HasZeroMorphisms C] [HasInitial C] :
+    HasZeroObject C := by
   refine' ⟨⟨⊥_ C, fun X => ⟨⟨⟨0⟩, by aesop_cat⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩⟩
   calc
     f = f ≫ 𝟙 _ := (Category.comp_id _).symm

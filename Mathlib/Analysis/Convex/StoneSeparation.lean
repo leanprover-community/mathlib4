@@ -63,9 +63,9 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       · exact mul_nonneg (mul_nonneg haz hav) hbu
       · exact mul_nonneg (mul_nonneg hbz hau) hbv
       · exact mul_nonneg hau hav
-    have hw : (∑ i, w i) = az * av + bz * au := by
+    have hw : ∑ i, w i = az * av + bz * au := by
       trans az * av * bu + (bz * au * bv + au * av)
-      . simp [Fin.sum_univ_succ, Fin.sum_univ_zero]
+      · simp [Fin.sum_univ_succ, Fin.sum_univ_zero]
       rw [← one_mul (au * av), ← habz, add_mul, ← add_assoc, add_add_add_comm, mul_assoc, ← mul_add,
         mul_assoc, ← mul_add, mul_comm av, ← add_mul, ← mul_add, add_comm bu, add_comm bv, habu,
         habv, one_mul, mul_one]
@@ -84,15 +84,15 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :
-    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 (Cᶜ) ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
+    ∃ C : Set E, Convex 𝕜 C ∧ Convex 𝕜 Cᶜ ∧ s ⊆ C ∧ t ⊆ Cᶜ := by
   let S : Set (Set E) := { C | Convex 𝕜 C ∧ Disjoint C t }
   obtain ⟨C, hC, hsC, hCmax⟩ :=
     zorn_subset_nonempty S
       (fun c hcS hc ⟨_, _⟩ =>
         ⟨⋃₀ c,
-          ⟨hc.directedOn.convex_unionₛ  fun s hs => (hcS hs).1,
-            disjoint_unionₛ_left.2 fun c hc => (hcS hc).2⟩,
-          fun s => subset_unionₛ_of_mem⟩)
+          ⟨hc.directedOn.convex_sUnion  fun s hs => (hcS hs).1,
+            disjoint_sUnion_left.2 fun c hc => (hcS hc).2⟩,
+          fun s => subset_sUnion_of_mem⟩)
       s ⟨hs, hst⟩
   refine'
     ⟨C, hC.1, convex_iff_segment_subset.2 fun x hx y hy z hz hzC => _, hsC, hC.2.subset_compl_left⟩
@@ -102,7 +102,7 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
     refine'
       not_disjoint_segment_convexHull_triple hz hu hv
         (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
-    simpa [insert_subset, hp, hq, singleton_subset_iff.2 hzC]
+    simpa [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
   by_contra' h
   suffices h : Disjoint (convexHull 𝕜 (insert c C)) t
@@ -110,6 +110,6 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
       hCmax _ ⟨convex_convexHull _ _, h⟩ ((subset_insert _ _).trans <| subset_convexHull _ _)] at hc
     exact hc (subset_convexHull _ _ <| mem_insert _ _)
   rw [convexHull_insert ⟨z, hzC⟩, convexJoin_singleton_left]
-  refine' disjoint_unionᵢ₂_left.2 fun a ha => disjoint_iff_inf_le.mpr fun b hb => h a _ ⟨b, hb⟩
+  refine' disjoint_iUnion₂_left.2 fun a ha => disjoint_iff_inf_le.mpr fun b hb => h a _ ⟨b, hb⟩
   rwa [← hC.1.convexHull_eq]
 #align exists_convex_convex_compl_subset exists_convex_convex_compl_subset

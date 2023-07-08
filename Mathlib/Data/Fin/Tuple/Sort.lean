@@ -25,7 +25,7 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 ## Main declarations
 
 * `Tuple.sort`: given `f : Fin n → α`, produces a permutation on `Fin n`
-* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `monotone`
+* `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
 
 -/
 
@@ -148,7 +148,7 @@ theorem eq_sort_iff :
   refine' ⟨fun h => ⟨(monotone_proj f).comp h.monotone, fun i j hij hfij => _⟩, fun h i j hij => _⟩
   · exact (((Prod.Lex.lt_iff _ _).1 <| h hij).resolve_left hfij.not_lt).2
   · obtain he | hl := (h.1 hij.le).eq_or_lt <;> apply (Prod.Lex.lt_iff _ _).2
-    exacts[Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
+    exacts [Or.inr ⟨he, h.2 i j hij he⟩, Or.inl hl]
 #align tuple.eq_sort_iff Tuple.eq_sort_iff
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/

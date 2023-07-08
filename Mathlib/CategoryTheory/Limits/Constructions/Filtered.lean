@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Limits.Opposites
 # Constructing colimits from finite colimits and filtered colimits
 
 We construct colimits of size `w` from finite colimits and filtered colimits of size `w`. Since
-`w`-sized colimits are constructured from coequalizers and `w`-sized coproducts, it suffices to
+`w`-sized colimits are constructed from coequalizers and `w`-sized coproducts, it suffices to
 construct `w`-sized coproducts from finite coproducts and `w`-sized filtered colimits.
 
 The idea is simple: to construct coproducts of shape `α`, we take the colimit of the filtered
@@ -70,9 +70,9 @@ def liftToFinsetColimitCocone [HasFiniteCoproducts C] [HasFilteredColimitsOfSize
         apply colimit.hom_ext
         rintro ⟨⟨j, hj⟩⟩
         convert h j using 1
-        . simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
+        · simp [← colimit.w (liftToFinset F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
-        . aesop_cat }
+        · aesop_cat }
 #align category_theory.limits.coproducts_from_finite_filtered.lift_to_finset_colimit_cocone CategoryTheory.Limits.CoproductsFromFiniteFiltered.liftToFinsetColimitCocone
 
 end CoproductsFromFiniteFiltered

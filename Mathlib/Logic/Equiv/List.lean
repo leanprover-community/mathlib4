@@ -224,7 +224,7 @@ theorem sortedUniv_toFinset (α) [Fintype α] [Encodable α] [DecidableEq α] :
   Finset.sort_toFinset _ _
 #align encodable.sorted_univ_to_finset Encodable.sortedUniv_toFinset
 
-/-- An encodable `Fintype` is equivalent to the same size `fin`. -/
+/-- An encodable `Fintype` is equivalent to the same size `Fin`. -/
 def fintypeEquivFin {α} [Fintype α] [Encodable α] : α ≃ Fin (Fintype.card α) :=
   haveI : DecidableEq α := Encodable.decidableEqOfEncodable _
   -- Porting note: used the `trans` tactic
@@ -308,8 +308,7 @@ theorem lower_raise : ∀ l n, lower (raise l n) n = l
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
   | [], n, _ => rfl
-  | m :: l, n, h =>
-    by
+  | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, tsub_add_cancel_of_le this, raise_lower h.of_cons]
 #align denumerable.raise_lower Denumerable.raise_lower
@@ -319,7 +318,7 @@ theorem raise_chain : ∀ l n, List.Chain (· ≤ ·) n (raise l n)
   | _ :: _, _ => List.Chain.cons (Nat.le_add_left _ _) (raise_chain _ _)
 #align denumerable.raise_chain Denumerable.raise_chain
 
-/-- `raise l n` is an non-decreasing sequence. -/
+/-- `raise l n` is a non-decreasing sequence. -/
 theorem raise_sorted : ∀ l n, List.Sorted (· ≤ ·) (raise l n)
   | [], _ => List.sorted_nil
   | _ :: _, _ => List.chain_iff_pairwise.1 (raise_chain _ _)

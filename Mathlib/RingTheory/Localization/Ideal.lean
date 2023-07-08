@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Localization.Basic
 /-!
 # Ideals in localizations of commutative rings
 ## Implementation notes
-See `src/ring_theory/localization/basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
@@ -28,9 +28,9 @@ variable {R : Type _} [CommSemiring R] (M : Submonoid R) (S : Type _) [CommSemir
 
 variable [Algebra R S] [IsLocalization M S]
 
-/-- Explicit characterization of the ideal given by `ideal.map (algebra_map R S) I`.
+/-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
 In practice, this ideal differs only in that the carrier set is defined explicitly.
-This definition is only meant to be used in proving `mem_map_algebra_map_iff`,
+This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
 and any proof that needs to refer to the explicit carrier set should use that theorem. -/
 private def map_ideal (I : Ideal R) : Ideal S where
   carrier := { z : S | ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 }
@@ -53,12 +53,11 @@ private def map_ideal (I : Ideal R) : Ideal S where
     ring
 -- Porting note: removed #align declaration since it is a private def
 
-theorem mem_map_algebraMap_iff {I : Ideal R} {z} :
-    z ∈ Ideal.map (algebraMap R S) I ↔ ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
-  by
+theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
+    ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
   constructor
   · change _ → z ∈ map_ideal M S I
-    refine' fun h => Ideal.mem_infₛ.1 h fun z hz => _
+    refine' fun h => Ideal.mem_sInf.1 h fun z hz => _
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
     use ⟨Z, 1⟩
@@ -71,7 +70,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} :
 theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
     obtain ⟨r, s, hx⟩ := mk'_surjective M x
-    rw [← hx] at hJ⊢
+    rw [← hx] at hJ ⊢
     exact
       Ideal.mul_mem_right _ _
         (Ideal.mem_map_of_mem _
@@ -170,7 +169,7 @@ variable {R : Type _} [CommRing R] (M : Submonoid R) (S : Type _) [CommRing S]
 
 variable [Algebra R S] [IsLocalization M S]
 
-/-- `quotient_map` applied to maximal ideals of a localization is `surjective`.
+/-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
   and the localization necessarily maps the equivalence class of the inverse in the localization -/
 theorem surjective_quotientMap_of_maximal_of_localization {I : Ideal S} [I.IsPrime] {J : Ideal R}

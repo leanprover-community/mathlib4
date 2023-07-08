@@ -9,7 +9,6 @@ Authors: Leonardo de Moura, Jeremy Avigad
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Image
-import Mathlib.Tactic.ByContra
 
 /-!
 # Cardinality of a finite set
@@ -294,7 +293,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     (hf' : ∀ (i) (h : i < n), f i h ∈ s)
     (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.card = n := by
   classical
-    have : ∀ a : α, a ∈ s ↔ ∃ (i : _)(hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
+    have : ∀ a : α, a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a := fun a =>
       ⟨fun ha =>
         let ⟨i, hi, eq⟩ := hf a ha
         ⟨i, mem_range.2 hi, eq⟩,
@@ -495,8 +494,7 @@ theorem exists_smaller_set (A : Finset α) (i : ℕ) (h₁ : i ≤ card A) :
 #align finset.exists_smaller_set Finset.exists_smaller_set
 
 theorem exists_subset_or_subset_of_two_mul_lt_card [DecidableEq α] {X Y : Finset α} {n : ℕ}
-    (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) :=
-  by
+    (hXY : 2 * n < (X ∪ Y).card) : ∃ C : Finset α, n < C.card ∧ (C ⊆ X ∨ C ⊆ Y) := by
   have h₁ : (X ∩ (Y \ X)).card = 0 := Finset.card_eq_zero.mpr (Finset.inter_sdiff_self X Y)
   have h₂ : (X ∪ Y).card = X.card + (Y \ X).card := by
     rw [← card_union_add_card_inter X (Y \ X), Finset.union_sdiff_self_eq_union, h₁, add_zero]
@@ -515,7 +513,7 @@ theorem card_eq_one : s.card = 1 ↔ ∃ a, s = {a} := by
 #align finset.card_eq_one Finset.card_eq_one
 
 theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
-    (∃ (a : _)(_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
+    (∃ (a : _) (_ : a ∉ s), insert a s = t) ↔ s ⊆ t ∧ s.card + 1 = t.card := by
   constructor
   · rintro ⟨a, ha, rfl⟩
     exact ⟨subset_insert _ _, (card_insert_of_not_mem ha).symm⟩
@@ -564,8 +562,7 @@ theorem one_lt_card : 1 < s.card ↔ ∃ a ∈ s, ∃ b ∈ s, a ≠ b := by
   exact card_le_one
 #align finset.one_lt_card Finset.one_lt_card
 
-theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
-  by
+theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_card]
   simp only [exists_prop, exists_and_left]
 #align finset.one_lt_card_iff Finset.one_lt_card_iff
@@ -704,8 +701,7 @@ def strongDownwardInductionOn {p : Finset α → Sort _} (s : Finset α)
 @[nolint unusedHavesSuffices] --Porting note: false positive
 theorem strongDownwardInductionOn_eq {p : Finset α → Sort _} (s : Finset α)
     (H : ∀ t₁, (∀ {t₂ : Finset α}, t₂.card ≤ n → t₁ ⊂ t₂ → p t₂) → t₁.card ≤ n → p t₁) :
-    s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht :=
-  by
+    s.strongDownwardInductionOn H = H s fun {t} ht _ => t.strongDownwardInductionOn H ht := by
   dsimp only [strongDownwardInductionOn]
   rw [strongDownwardInduction]
 #align finset.strong_downward_induction_on_eq Finset.strongDownwardInductionOn_eq

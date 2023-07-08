@@ -32,7 +32,7 @@ This file defines affine maps.
 
 ## Implementation notes
 
-`out_param` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
+`outParam` is used in the definition of `[AddTorsor V P]` to make `V` an implicit argument
 (deduced from `P`) in most cases. As for modules, `k` is an explicit argument rather than implied by
 `P` or `V`.
 
@@ -45,9 +45,6 @@ topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
-
--- Porting note: Workaround for lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 open Affine
 
@@ -192,8 +189,8 @@ theorem const_linear (p : P2) : (const k P1 p).linear = 0 :=
 
 variable {k P1}
 
-theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) : f.linear = 0 ↔ ∃ q, f = const k P1 q :=
-  by
+theorem linear_eq_zero_iff_exists_const (f : P1 →ᵃ[k] P2) :
+    f.linear = 0 ↔ ∃ q, f = const k P1 q := by
   refine' ⟨fun h => _, fun h => _⟩
   · use f (Classical.arbitrary P1)
     ext
@@ -246,10 +243,6 @@ theorem coe_smul (c : R) (f : P1 →ᵃ[k] V2) : ⇑(c • f) = c • ⇑f :=
 theorem smul_linear (t : R) (f : P1 →ᵃ[k] V2) : (t • f).linear = t • f.linear :=
   rfl
 #align affine_map.smul_linear AffineMap.smul_linear
-
--- Porting note: Workaround for lean4#2074
-instance [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] : SMulCommClass k Rᵐᵒᵖ V2 :=
-SMulCommClass.op_right
 
 instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V2] [IsCentralScalar R V2] :
   IsCentralScalar R (P1 →ᵃ[k] V2) where
@@ -475,8 +468,7 @@ def linearHom : (P1 →ᵃ[k] P1) →* V1 →ₗ[k] V1 where
 theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
     Function.Injective f.linear ↔ Function.Injective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
-  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
-    by
+  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_injective, Equiv.injective_comp]
@@ -486,8 +478,7 @@ theorem linear_injective_iff (f : P1 →ᵃ[k] P2) :
 theorem linear_surjective_iff (f : P1 →ᵃ[k] P2) :
     Function.Surjective f.linear ↔ Function.Surjective f := by
   obtain ⟨p⟩ := (inferInstance : Nonempty P1)
-  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p :=
-    by
+  have h : ⇑f.linear = (Equiv.vaddConst (f p)).symm ∘ f ∘ Equiv.vaddConst p := by
     ext v
     simp [f.map_vadd, vadd_vsub_assoc]
   rw [h, Equiv.comp_surjective, Equiv.surjective_comp]
@@ -513,9 +504,6 @@ theorem image_vsub_image {s t : Set P1} (f : P1 →ᵃ[k] P2) :
 #align affine_map.image_vsub_image AffineMap.image_vsub_image
 
 /-! ### Definition of `AffineMap.lineMap` and lemmas about it -/
-
--- Porting note: Workaround for lean4#2074
-instance : Module k k := Semiring.toModule
 
 /-- The affine map from `k` to `P1` sending `0` to `p₀` and `1` to `p₁`. -/
 def lineMap (p₀ p₁ : P1) : k →ᵃ[k] P1 :=
@@ -705,9 +693,6 @@ section
 variable {ι : Type _} {V : ∀ _ : ι, Type _} {P : ∀ _ : ι, Type _} [∀ i, AddCommGroup (V i)]
   [∀ i, Module k (V i)] [∀ i, AddTorsor (V i) (P i)]
 
--- Workaround for lean4#2074
-instance : AffineSpace (∀ i : ι, (V i)) (∀ i : ι, P i) := Pi.instAddTorsorForAllForAllAddGroup
-
 /-- Evaluation at a point as an affine map. -/
 def proj (i : ι) : (∀ i : ι, P i) →ᵃ[k] P i where
   toFun f := f i
@@ -767,12 +752,6 @@ instance : Module R (P1 →ᵃ[k] V2) :=
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 
 variable (R)
-
--- Porting note: Workarounds for lean4#2074
-instance : AddCommMonoid (V1 →ₗ[k] V2) := LinearMap.addCommMonoid
-instance : AddCommMonoid (V2 × (V1 →ₗ[k] V2)) := Prod.instAddCommMonoidSum
-instance : Module R (V1 →ₗ[k] V2) := LinearMap.instModuleLinearMapAddCommMonoid
-instance : Module R (V2 × (V1 →ₗ[k] V2)) := Prod.module
 
 /-- The space of affine maps between two modules is linearly equivalent to the product of the
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the

@@ -78,7 +78,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- we start by expanding d ≫ d as a double sum
   dsimp
   simp only [comp_sum, sum_comp, ← Finset.sum_product']
-  -- then, we decompose the index set P into a subet S and its complement Sᶜ
+  -- then, we decompose the index set P into a subset S and its complement Sᶜ
   let P := Fin (n + 2) × Fin (n + 3)
   let S := Finset.univ.filter fun ij : P => (ij.2 : ℕ) ≤ (ij.1 : ℕ)
   erw [← Finset.sum_add_sum_compl S, ← eq_neg_iff_add_eq_zero, ← Finset.sum_neg_distrib]
@@ -98,25 +98,25 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     dsimp
     simp only [zsmul_comp, comp_zsmul, smul_smul, ← neg_smul]
     congr 1
-    . simp only [Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
+    · simp only [Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
       apply mul_comm
-    . rw [CategoryTheory.SimplicialObject.δ_comp_δ'']
+    · rw [CategoryTheory.SimplicialObject.δ_comp_δ'']
       simpa using hij
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ ⟨i', j'⟩ hij hij' h
     rw [Prod.mk.inj_iff]
     exact ⟨by simpa using congr_arg Prod.snd h,
-      by simpa [Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+      by simpa [Fin.castSuccEmb_castLT] using congr_arg Fin.castSuccEmb (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
     simp only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.compl_filter,
       not_le, Finset.mem_filter, true_and] at hij'
-    refine' ⟨(j'.pred _, Fin.castSucc i'), _, _⟩
-    . rintro rfl
+    refine' ⟨(j'.pred _, Fin.castSuccEmb i'), _, _⟩
+    · rintro rfl
       simp only [Fin.val_zero, not_lt_zero'] at hij'
-    . simpa only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
-        Fin.coe_castSucc, Fin.coe_pred, true_and] using Nat.le_pred_of_lt hij'
-    . simp only [Fin.castLT_castSucc, Fin.succ_pred]
+    · simpa only [Finset.mem_univ, forall_true_left, Prod.forall, ge_iff_le, Finset.mem_filter,
+        Fin.coe_castSuccEmb, Fin.coe_pred, true_and] using Nat.le_pred_of_lt hij'
+    · simp only [Fin.castLT_castSuccEmb, Fin.succ_pred]
 #align algebraic_topology.alternating_face_map_complex.d_squared AlgebraicTopology.AlternatingFaceMapComplex.d_squared
 
 /-!
@@ -264,7 +264,7 @@ def inclusionOfMooreComplexMap (X : SimplicialObject A) :
   simp only [AlternatingFaceMapComplex.objD, comp_sum]
   rw [Fin.sum_univ_succ, Fintype.sum_eq_zero]
   swap
-  . intro j
+  · intro j
     rw [NormalizedMooreComplex.objX, comp_zsmul,
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ _ (Finset.mem_univ j)),
       Category.assoc, kernelSubobject_arrow_comp, comp_zero, smul_zero]

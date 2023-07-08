@@ -175,8 +175,8 @@ theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤
     exact natDegree_lt_coeff_mul (add_lt_add hm hn)
 #align polynomial.coeff_mul_of_nat_degree_le Polynomial.coeff_mul_of_natDegree_le
 
-theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) : (p ^ m).coeff (n * m) = p.coeff n ^ m :=
-  by
+theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
+    (p ^ m).coeff (n * m) = p.coeff n ^ m := by
   induction' m with m hm
   · simp
   · rw [pow_succ', pow_succ', ← hm, Nat.mul_succ, coeff_mul_of_natDegree_le _ pn]
@@ -247,7 +247,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
           simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
-  · push_neg  at H
+  · push_neg at H
     rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
     intro x hx
     simp [H x hx]
@@ -267,8 +267,7 @@ variable [Semiring S]
 
 theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
     (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < natDegree p :=
-  lt_of_not_ge fun hlt =>
-    by
+  lt_of_not_ge fun hlt => by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
     rw [A, eval₂_C] at hz
     simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A
@@ -356,7 +355,7 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
 
 @[simp]
 theorem natDegree_iterate_comp (k : ℕ) :
-    ((p.comp^[k]) q).natDegree = p.natDegree ^ k * q.natDegree := by
+    (p.comp^[k] q).natDegree = p.natDegree ^ k * q.natDegree := by
   induction' k with k IH
   · simp
   · rw [Function.iterate_succ_apply', natDegree_comp, IH, pow_succ, mul_assoc]

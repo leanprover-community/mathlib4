@@ -60,8 +60,8 @@ adjoint functor theorem to go through.
 -/
 def SolutionSetCondition {D : Type u} [Category.{v} D] (G : D ⥤ C) : Prop :=
   ∀ A : C,
-    ∃ (ι : Type v)(B : ι → D)(f : ∀ i : ι, A ⟶ G.obj (B i)),
-      ∀ (X) (h : A ⟶ G.obj X), ∃ (i : ι)(g : B i ⟶ X), f i ≫ G.map g = h
+    ∃ (ι : Type v) (B : ι → D) (f : ∀ i : ι, A ⟶ G.obj (B i)),
+      ∀ (X) (h : A ⟶ G.obj X), ∃ (i : ι) (g : B i ⟶ X), f i ≫ G.map g = h
 #align category_theory.solution_set_condition CategoryTheory.SolutionSetCondition
 
 section GeneralAdjointFunctorTheorem

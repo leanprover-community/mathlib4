@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.matrix.dot_product
-! leanprover-community/mathlib commit 5ac1dab1670014b4c07a82c86a67f3d064a1b3e1
+! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.StdBasis
 

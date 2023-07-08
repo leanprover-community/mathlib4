@@ -15,7 +15,7 @@ import Mathlib.Algebra.Ring.Defs
 /-!
 # Idempotents
 
-This file defines idempotents for an arbitary multiplication and proves some basic results,
+This file defines idempotents for an arbitrary multiplication and proves some basic results,
 including:
 
 * `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
@@ -122,7 +122,7 @@ instance : HasCompl { p : R // IsIdempotentElem p } :=
   ⟨fun p => ⟨1 - p, p.prop.one_sub⟩⟩
 
 @[simp]
-theorem coe_compl (p : { p : R // IsIdempotentElem p }) : ↑(pᶜ) = (1 : R) - ↑p :=
+theorem coe_compl (p : { p : R // IsIdempotentElem p }) : ↑pᶜ = (1 : R) - ↑p :=
   rfl
 #align is_idempotent_elem.coe_compl IsIdempotentElem.coe_compl
 

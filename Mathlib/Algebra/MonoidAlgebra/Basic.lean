@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury G. Kudryashov, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebra.monoid_algebra.basic
-! leanprover-community/mathlib commit 2651125b48fc5c170ab1111afd0817c903b1fc6c
+! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,8 +33,8 @@ in the same way, and then define the convolution product on these.
 
 When the domain is additive, this is used to define polynomials:
 ```
-polynomial α := add_monoid_algebra ℕ α
-mv_polynomial σ α := add_monoid_algebra (σ →₀ ℕ) α
+Polynomial α := AddMonoidAlgebra ℕ α
+MvPolynomial σ α := AddMonoidAlgebra (σ →₀ ℕ) α
 ```
 
 When the domain is multiplicative, e.g. a group, this will be used to define the group ring.
@@ -134,7 +134,7 @@ theorem mapDomain_sum {k' G' : Type _} [Semiring k'] {f : G → G'} {s : MonoidA
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
   Finsupp.mapDomain_sum
 
-/-- A non-commutative version of `MonoidAlgebra.lift`: given a additive homomorphism `f : k →+ R`
+/-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
 `MonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
 and the range of either `f` or `g` is in center of `R`, then the result is a ring homomorphism.  If
@@ -394,9 +394,8 @@ instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSM
   Finsupp.faithfulSMul
 #align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (MonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (MonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
@@ -438,8 +437,8 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
         (f * g) x = ∑ a₁ in f.support, ∑ a₂ in g.support, F (a₁, a₂) := mul_apply f g x
-        _ = ∑ p in f.support ×ᶠ g.support, F p := Finset.sum_product.symm
-        _ = ∑ p in (f.support ×ᶠ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
+        _ = ∑ p in f.support ×ˢ g.support, F p := Finset.sum_product.symm
+        _ = ∑ p in (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
         _ = ∑ p in s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
           (sum_congr
@@ -448,9 +447,8 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
               simp only [mem_filter, mem_product, hs, and_comm])
             fun _ _ => rfl)
         _ = ∑ p in s, f p.1 * g p.2 :=
-          sum_subset (filter_subset _ _) fun p hps hp =>
-            by
-            simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp⊢
+          sum_subset (filter_subset _ _) fun p hps hp => by
+            simp only [mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
             · rw [hp hps h1, mul_zero]
@@ -488,7 +486,7 @@ theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
   rw [Finsupp.sum_mapDomain_index]
   · congr
-    ext (a b)
+    ext a b
     rw [Finsupp.sum_mapDomain_index]
     · simp
     · simp [mul_add]
@@ -644,7 +642,7 @@ instance isScalarTower_self [IsScalarTower R k k] :
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
-instance sMulCommClass_self [SMulCommClass R k k] :
+instance smulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
     -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
@@ -657,14 +655,14 @@ instance sMulCommClass_self [SMulCommClass R k k] :
         (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
       simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
         imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]⟩
-#align monoid_algebra.smul_comm_class_self MonoidAlgebra.sMulCommClass_self
+#align monoid_algebra.smul_comm_class_self MonoidAlgebra.smulCommClass_self
 
-instance sMulCommClass_symm_self [SMulCommClass k R k] :
+instance smulCommClass_symm_self [SMulCommClass k R k] :
     SMulCommClass (MonoidAlgebra k G) R (MonoidAlgebra k G) :=
   ⟨fun t a b => by
     haveI := SMulCommClass.symm k R k
     rw [← smul_comm]⟩
-#align monoid_algebra.smul_comm_class_symm_self MonoidAlgebra.sMulCommClass_symm_self
+#align monoid_algebra.smul_comm_class_symm_self MonoidAlgebra.smulCommClass_symm_self
 
 variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
 
@@ -808,7 +806,7 @@ instance algebra {A : Type _} [CommSemiring k] [Semiring A] [Algebra k A] [Monoi
       refine Finsupp.ext fun _ => ?_
       simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes] }
 
-/-- `Finsupp.single 1` as a `AlgHom` -/
+/-- `Finsupp.single 1` as an `AlgHom` -/
 @[simps! apply]
 def singleOneAlgHom {A : Type _} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     A →ₐ[k] MonoidAlgebra A G :=
@@ -854,7 +852,7 @@ variable [CommSemiring k] [Monoid G]
 
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type _} [Semiring B] [Algebra k B]
 
-/-- `liftNCRingHom` as a `AlgHom`, for when `f` is an `AlgHom` -/
+/-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     MonoidAlgebra A G →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
@@ -1085,7 +1083,7 @@ open Finsupp MulOpposite
 
 variable [Semiring k]
 
-/-- The opposite of an `MonoidAlgebra R I` equivalent as a ring to
+/-- The opposite of a `MonoidAlgebra R I` equivalent as a ring to
 the `MonoidAlgebra Rᵐᵒᵖ Iᵐᵒᵖ` over the opposite ring, taking elements to their opposite. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply]
 protected noncomputable def opRingEquiv [Monoid G] :
@@ -1224,8 +1222,8 @@ theorem mapDomain_single {G' : Type _} {f : G → G'} {a : G} {b : k} :
     mapDomain f (single a b) = single (f a) b :=
   Finsupp.mapDomain_single
 
-/-- A non-commutative version of `AddMonoidAlgebra.lift`: given a additive homomorphism `f : k →+
-R` and a map `g : Multiplicative G → R`, returns the additive
+/-- A non-commutative version of `AddMonoidAlgebra.lift`: given an additive homomorphism
+`f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive
 homomorphism from `AddMonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f`
 is a ring homomorphism and the range of either `f` or `g` is in center of `R`, then the result is a
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
@@ -1483,8 +1481,8 @@ instance distribMulAction [Monoid R] [Semiring k] [DistribMulAction R k] :
   Finsupp.distribMulAction G k
 #align add_monoid_algebra.distrib_mul_action AddMonoidAlgebra.distribMulAction
 
-instance faithfulSMul [Monoid R] [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
-    [Nonempty G] : FaithfulSMul R (AddMonoidAlgebra k G) :=
+instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
+    FaithfulSMul R (AddMonoidAlgebra k G) :=
   Finsupp.faithfulSMul
 #align add_monoid_algebra.faithful_smul AddMonoidAlgebra.faithfulSMul
 
@@ -1492,18 +1490,17 @@ instance module [Semiring R] [Semiring k] [Module R k] : Module R (AddMonoidAlge
   Finsupp.module G k
 #align add_monoid_algebra.module AddMonoidAlgebra.module
 
-instance isScalarTower [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMul R S] [IsScalarTower R S k] :
-    IsScalarTower R S (AddMonoidAlgebra k G) :=
+instance isScalarTower [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMul R S]
+    [IsScalarTower R S k] : IsScalarTower R S (AddMonoidAlgebra k G) :=
   Finsupp.isScalarTower G k
 #align add_monoid_algebra.is_scalar_tower AddMonoidAlgebra.isScalarTower
 
-instance smulCommClass [Monoid R] [Monoid S] [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (AddMonoidAlgebra k G) :=
+instance smulCommClass [Semiring k] [SMulZeroClass R k] [SMulZeroClass S k] [SMulCommClass R S k] :
+    SMulCommClass R S (AddMonoidAlgebra k G) :=
   Finsupp.smulCommClass G k
 #align add_monoid_algebra.smul_comm_tower AddMonoidAlgebra.smulCommClass
 
-instance isCentralScalar [Monoid R] [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (AddMonoidAlgebra k G) :=
   Finsupp.isCentralScalar G k
 #align add_monoid_algebra.is_central_scalar AddMonoidAlgebra.isCentralScalar
@@ -1560,7 +1557,7 @@ theorem mapDomain_mul {α : Type _} {β : Type _} {α₂ : Type _} [Semiring β]
   simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
   rw [Finsupp.sum_mapDomain_index]
   · congr
-    ext (a b)
+    ext a b
     rw [Finsupp.sum_mapDomain_index]
     · simp
     · simp [mul_add]
@@ -1703,7 +1700,7 @@ end AddMonoidAlgebra
 We have not defined `AddMonoidAlgebra k G = MonoidAlgebra k (Multiplicative G)`
 because historically this caused problems;
 since the changes that have made `nsmul` definitional, this would be possible,
-but for now we just contruct the ring isomorphisms using `RingEquiv.refl _`.
+but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
 
@@ -1755,15 +1752,15 @@ instance isScalarTower_self [IsScalarTower R k k] :
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
-instance sMulCommClass_self [SMulCommClass R k k] :
+instance smulCommClass_self [SMulCommClass R k k] :
     SMulCommClass R (AddMonoidAlgebra k G) (AddMonoidAlgebra k G) :=
-  @MonoidAlgebra.sMulCommClass_self k (Multiplicative G) R _ _ _ _
-#align add_monoid_algebra.smul_comm_class_self AddMonoidAlgebra.sMulCommClass_self
+  @MonoidAlgebra.smulCommClass_self k (Multiplicative G) R _ _ _ _
+#align add_monoid_algebra.smul_comm_class_self AddMonoidAlgebra.smulCommClass_self
 
-instance sMulCommClass_symm_self [SMulCommClass k R k] :
+instance smulCommClass_symm_self [SMulCommClass k R k] :
     SMulCommClass (AddMonoidAlgebra k G) R (AddMonoidAlgebra k G) :=
-  @MonoidAlgebra.sMulCommClass_symm_self k (Multiplicative G) R _ _ _ _
-#align add_monoid_algebra.smul_comm_class_symm_self AddMonoidAlgebra.sMulCommClass_symm_self
+  @MonoidAlgebra.smulCommClass_symm_self k (Multiplicative G) R _ _ _ _
+#align add_monoid_algebra.smul_comm_class_symm_self AddMonoidAlgebra.smulCommClass_symm_self
 
 variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
 
@@ -1899,7 +1896,7 @@ instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
       simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes] }
 #align add_monoid_algebra.algebra AddMonoidAlgebra.algebra
 
-/-- `Finsupp.single 0` as a `AlgHom` -/
+/-- `Finsupp.single 0` as an `AlgHom` -/
 @[simps! apply]
 def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     k →ₐ[R] AddMonoidAlgebra k G :=
@@ -1926,7 +1923,7 @@ variable [CommSemiring k] [AddMonoid G]
 
 variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type _} [Semiring B] [Algebra k B]
 
-/-- `liftNCRingHom` as a `AlgHom`, for when `f` is an `AlgHom` -/
+/-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     AddMonoidAlgebra A G →ₐ[k] B :=
   {

@@ -749,21 +749,17 @@ instance : Subsingleton (LocallyFiniteOrder α) :=
       h₀_finset_mem_Icc h₀_finset_mem_Ico h₀_finset_mem_Ioc h₀_finset_mem_Ioo
     cases' h₁ with h₁_finset_Icc h₁_finset_Ico h₁_finset_Ioc h₁_finset_Ioo
       h₁_finset_mem_Icc h₁_finset_mem_Ico h₁_finset_mem_Ioc h₁_finset_mem_Ioo
-    have hIcc : h₀_finset_Icc = h₁_finset_Icc :=
-      by
-      ext (a b x)
+    have hIcc : h₀_finset_Icc = h₁_finset_Icc := by
+      ext a b x
       rw [h₀_finset_mem_Icc, h₁_finset_mem_Icc]
-    have hIco : h₀_finset_Ico = h₁_finset_Ico :=
-      by
-      ext (a b x)
+    have hIco : h₀_finset_Ico = h₁_finset_Ico := by
+      ext a b x
       rw [h₀_finset_mem_Ico, h₁_finset_mem_Ico]
-    have hIoc : h₀_finset_Ioc = h₁_finset_Ioc :=
-      by
-      ext (a b x)
+    have hIoc : h₀_finset_Ioc = h₁_finset_Ioc := by
+      ext a b x
       rw [h₀_finset_mem_Ioc, h₁_finset_mem_Ioc]
-    have hIoo : h₀_finset_Ioo = h₁_finset_Ioo :=
-      by
-      ext (a b x)
+    have hIoo : h₀_finset_Ioo = h₁_finset_Ioo := by
+      ext a b x
       rw [h₀_finset_mem_Ioo, h₁_finset_mem_Ioo]
     simp_rw [hIcc, hIco, hIoc, hIoo]
 
@@ -771,13 +767,11 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
   Subsingleton.intro fun h₀ h₁ => by
     cases' h₀ with h₀_finset_Ioi h₀_finset_Ici h₀_finset_mem_Ici h₀_finset_mem_Ioi
     cases' h₁ with h₁_finset_Ioi h₁_finset_Ici h₁_finset_mem_Ici h₁_finset_mem_Ioi
-    have hIci : h₀_finset_Ici = h₁_finset_Ici :=
-      by
-      ext (a b x)
+    have hIci : h₀_finset_Ici = h₁_finset_Ici := by
+      ext a b
       rw [h₀_finset_mem_Ici, h₁_finset_mem_Ici]
-    have hIoi : h₀_finset_Ioi = h₁_finset_Ioi :=
-      by
-      ext (a b x)
+    have hIoi : h₀_finset_Ioi = h₁_finset_Ioi := by
+      ext a b
       rw [h₀_finset_mem_Ioi, h₁_finset_mem_Ioi]
     simp_rw [hIci, hIoi]
 
@@ -785,13 +779,11 @@ instance : Subsingleton (LocallyFiniteOrderBot α) :=
   Subsingleton.intro fun h₀ h₁ => by
     cases' h₀ with h₀_finset_Iio h₀_finset_Iic h₀_finset_mem_Iic h₀_finset_mem_Iio
     cases' h₁ with h₁_finset_Iio h₁_finset_Iic h₁_finset_mem_Iic h₁_finset_mem_Iio
-    have hIic : h₀_finset_Iic = h₁_finset_Iic :=
-      by
-      ext (a b x)
+    have hIic : h₀_finset_Iic = h₁_finset_Iic := by
+      ext a b
       rw [h₀_finset_mem_Iic, h₁_finset_mem_Iic]
-    have hIio : h₀_finset_Iio = h₁_finset_Iio :=
-      by
-      ext (a b x)
+    have hIio : h₀_finset_Iio = h₁_finset_Iio := by
+      ext a b
       rw [h₀_finset_mem_Iio, h₁_finset_mem_Iio]
     simp_rw [hIic, hIio]
 
@@ -962,35 +954,32 @@ namespace Prod
 
 instance [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] : LocallyFiniteOrder (α × β) :=
-  LocallyFiniteOrder.ofIcc' (α × β) (fun a b => Icc a.fst b.fst ×ᶠ Icc a.snd b.snd) fun a b x =>
-    by
+  LocallyFiniteOrder.ofIcc' (α × β) (fun a b => Icc a.fst b.fst ×ˢ Icc a.snd b.snd) fun a b x => by
     rw [mem_product, mem_Icc, mem_Icc, and_and_and_comm]
     rfl
 
 instance [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] : LocallyFiniteOrderTop (α × β) :=
-  LocallyFiniteOrderTop.ofIci' (α × β) (fun a => Ici a.fst ×ᶠ Ici a.snd) fun a x =>
-    by
+  LocallyFiniteOrderTop.ofIci' (α × β) (fun a => Ici a.fst ×ˢ Ici a.snd) fun a x => by
     rw [mem_product, mem_Ici, mem_Ici]
     rfl
 
 instance [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] : LocallyFiniteOrderBot (α × β) :=
-  LocallyFiniteOrderBot.ofIic' (α × β) (fun a => Iic a.fst ×ᶠ Iic a.snd) fun a x =>
-    by
+  LocallyFiniteOrderBot.ofIic' (α × β) (fun a => Iic a.fst ×ˢ Iic a.snd) fun a x => by
     rw [mem_product, mem_Iic, mem_Iic]
     rfl
 
 theorem Icc_eq [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (p q : α × β) :
-    Finset.Icc p q = Finset.Icc p.1 q.1 ×ᶠ Finset.Icc p.2 q.2 :=
+    Finset.Icc p q = Finset.Icc p.1 q.1 ×ˢ Finset.Icc p.2 q.2 :=
   rfl
 #align prod.Icc_eq Prod.Icc_eq
 
 @[simp]
 theorem Icc_mk_mk [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (a₁ a₂ : α) (b₁ b₂ : β) :
-    Finset.Icc (a₁, b₁) (a₂, b₂) = Finset.Icc a₁ a₂ ×ᶠ Finset.Icc b₁ b₂ :=
+    Finset.Icc (a₁, b₁) (a₂, b₂) = Finset.Icc a₁ a₂ ×ˢ Finset.Icc b₁ b₂ :=
   rfl
 #align prod.Icc_mk_mk Prod.Icc_mk_mk
 
@@ -1010,14 +999,14 @@ variable [Lattice α] [Lattice β]
 
 theorem uIcc_eq [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (p q : α × β) :
-    Finset.uIcc p q = Finset.uIcc p.1 q.1 ×ᶠ Finset.uIcc p.2 q.2 :=
+    Finset.uIcc p q = Finset.uIcc p.1 q.1 ×ˢ Finset.uIcc p.2 q.2 :=
   rfl
 #align prod.uIcc_eq Prod.uIcc_eq
 
 @[simp]
 theorem uIcc_mk_mk [LocallyFiniteOrder α] [LocallyFiniteOrder β]
     [DecidableRel ((· ≤ ·) : α × β → α × β → Prop)] (a₁ a₂ : α) (b₁ b₂ : β) :
-    Finset.uIcc (a₁, b₁) (a₂, b₂) = Finset.uIcc a₁ a₂ ×ᶠ Finset.uIcc b₁ b₂ :=
+    Finset.uIcc (a₁, b₁) (a₂, b₂) = Finset.uIcc a₁ a₂ ×ˢ Finset.uIcc b₁ b₂ :=
   rfl
 #align prod.uIcc_mk_mk Prod.uIcc_mk_mk
 
@@ -1374,5 +1363,28 @@ theorem map_subtype_embedding_Iio : (Iio a).map (Embedding.subtype p) = (Iio a :
 #align finset.map_subtype_embedding_Iio Finset.map_subtype_embedding_Iio
 
 end LocallyFiniteOrderBot
+
+section Finite
+
+variable {α : Type _} {s : Set α}
+
+theorem finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
+    s.Finite ↔ BddAbove s :=
+  ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
+    fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun x hx ↦ ⟨bot_le, hm hx⟩)⟩
+
+theorem finite_iff_bddBelow [SemilatticeInf α] [LocallyFiniteOrder α] [OrderTop α] :
+    s.Finite ↔ BddBelow s :=
+  finite_iff_bddAbove (α := αᵒᵈ)
+
+theorem finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFiniteOrder α] :
+    s.Finite ↔ BddBelow s ∧ BddAbove s := by
+  obtain (rfl | hs) := s.eq_empty_or_nonempty
+  · simp only [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
+  exact ⟨fun h ↦ ⟨⟨h.toFinset.inf' (by simpa) id, fun x hx ↦ Finset.inf'_le id (by simpa)⟩,
+    ⟨h.toFinset.sup' (by simpa) id, fun x hx ↦ Finset.le_sup' id (by simpa)⟩⟩,
+    fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
+
+end Finite
 
 end Finset

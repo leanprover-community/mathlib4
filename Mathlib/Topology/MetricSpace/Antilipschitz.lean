@@ -20,7 +20,7 @@ For a metric space, the latter inequality is equivalent to `dist x y ≤ K * dis
 
 ## Implementation notes
 
-The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
+The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the definition, mostly because
 we do not have a `posreal` type.
 -/
@@ -228,7 +228,7 @@ theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded
   Exists.intro (K * diam s) fun x hx y hy =>
     calc
       dist x y ≤ K * dist (f x) (f y) := hf.le_mul_dist x y
-      _ ≤ K * diam s := mul_le_mul_of_nonneg_left (dist_le_diam_of_mem hs hx hy) K.2
+      _ ≤ K * diam s := by gcongr; exact dist_le_diam_of_mem hs hx hy
 #align antilipschitz_with.bounded_preimage AntilipschitzWith.bounded_preimage
 
 theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=

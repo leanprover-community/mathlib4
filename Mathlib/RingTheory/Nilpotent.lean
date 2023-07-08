@@ -11,6 +11,7 @@ Authors: Oliver Nash
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.GeomSum
 
 /-!
 # Nilpotent elements
@@ -27,6 +28,8 @@ import Mathlib.RingTheory.Ideal.Operations
 -/
 
 universe u v
+
+open BigOperators
 
 variable {R S : Type u} {x y : R}
 
@@ -64,6 +67,23 @@ theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type 
   rw [← map_pow, hr.choose_spec, map_zero]
 #align is_nilpotent.map IsNilpotent.map
 
+theorem IsNilpotent.sub_one_isUnit [Ring R] {r : R} (hnil : IsNilpotent r) : IsUnit (r - 1) := by
+  obtain ⟨n, hn⟩ := hnil
+  refine' ⟨⟨r - 1, -∑ i in Finset.range n, r ^ i, _, _⟩, rfl⟩
+  · rw [mul_neg, mul_geom_sum, hn]
+    simp
+  · rw [neg_mul, geom_sum_mul, hn]
+    simp
+
+theorem Commute.IsNilpotent.add_isUnit [Ring R] {r : R} {u : Rˣ} (hnil : IsNilpotent r)
+  (hru : Commute r (↑u⁻¹ : R)) : IsUnit (u + r) := by
+  rw [← Units.isUnit_mul_units _ u⁻¹, add_mul, Units.mul_inv, ← IsUnit.neg_iff, add_comm, neg_add,
+    ← sub_eq_add_neg]
+  obtain ⟨n, hn⟩ := hnil
+  refine' IsNilpotent.sub_one_isUnit ⟨n, _⟩
+  rw [neg_pow, hru.mul_pow, hn]
+  simp
+
 /-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
 @[mk_iff isReduced_iff]
 class IsReduced (R : Type _) [Zero R] [Pow R ℕ] : Prop where
@@ -100,17 +120,12 @@ theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type _
   exact (hx.map f).eq_zero
 #align is_reduced_of_injective isReduced_of_injective
 
--- Porting note: Added etaExperiment line to synthesize RingHomClass
-set_option synthInstance.etaExperiment true
-
 theorem RingHom.ker_isRadical_iff_reduced_of_surjective {S F} [CommSemiring R] [CommRing S]
     [RingHomClass F R S] {f : F} (hf : Function.Surjective f) :
     (RingHom.ker f).IsRadical ↔ IsReduced S := by
   simp_rw [isReduced_iff, hf.forall, IsNilpotent, ← map_pow, ← RingHom.mem_ker]
   rfl
 #align ring_hom.ker_is_radical_iff_reduced_of_surjective RingHom.ker_isRadical_iff_reduced_of_surjective
-
-set_option synthInstance.etaExperiment false
 
 /-- An element `y` in a monoid is radical if for any element `x`, `y` divides `x` whenever it
   divides a power of `x`. -/
@@ -201,18 +216,18 @@ theorem mem_nilradical : x ∈ nilradical R ↔ IsNilpotent x :=
   Iff.rfl
 #align mem_nilradical mem_nilradical
 
-theorem nilradical_eq_infₛ (R : Type _) [CommSemiring R] :
-    nilradical R = infₛ { J : Ideal R | J.IsPrime } :=
-  (Ideal.radical_eq_infₛ ⊥).trans <| by simp_rw [and_iff_right bot_le]
-#align nilradical_eq_Inf nilradical_eq_infₛ
+theorem nilradical_eq_sInf (R : Type _) [CommSemiring R] :
+    nilradical R = sInf { J : Ideal R | J.IsPrime } :=
+  (Ideal.radical_eq_sInf ⊥).trans <| by simp_rw [and_iff_right bot_le]
+#align nilradical_eq_Inf nilradical_eq_sInf
 
 theorem nilpotent_iff_mem_prime : IsNilpotent x ↔ ∀ J : Ideal R, J.IsPrime → x ∈ J := by
-  rw [← mem_nilradical, nilradical_eq_infₛ, Submodule.mem_infₛ]
+  rw [← mem_nilradical, nilradical_eq_sInf, Submodule.mem_sInf]
   rfl
 #align nilpotent_iff_mem_prime nilpotent_iff_mem_prime
 
 theorem nilradical_le_prime (J : Ideal R) [H : J.IsPrime] : nilradical R ≤ J :=
-  (nilradical_eq_infₛ R).symm ▸ infₛ_le H
+  (nilradical_eq_sInf R).symm ▸ sInf_le H
 #align nilradical_le_prime nilradical_le_prime
 
 @[simp]
@@ -229,14 +244,14 @@ variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn⊢ <;>
+      simp only [mulLeft_eq_zero_iff, pow_mulLeft] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_left_iff LinearMap.isNilpotent_mulLeft_iff
 
 @[simp]
 theorem isNilpotent_mulRight_iff (a : A) : IsNilpotent (mulRight R a) ↔ IsNilpotent a := by
   constructor <;> rintro ⟨n, hn⟩ <;> use n <;>
-      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn⊢ <;>
+      simp only [mulRight_eq_zero_iff, pow_mulRight] at hn ⊢ <;>
     exact hn
 #align linear_map.is_nilpotent_mul_right_iff LinearMap.isNilpotent_mulRight_iff
 

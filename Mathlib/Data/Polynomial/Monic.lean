@@ -68,8 +68,7 @@ theorem ne_zero_of_ne_zero_of_monic (hp : p ≠ 0) (hq : Monic q) : q ≠ 0 := b
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) := by
   unfold Monic
   nontriviality
-  have : f p.leadingCoeff ≠ 0 :=
-    by
+  have : f p.leadingCoeff ≠ 0 := by
     rw [show _ = _ from hp, f.map_one]
     exact one_ne_zero
   rw [Polynomial.leadingCoeff, coeff_map]
@@ -140,13 +139,13 @@ theorem Monic.add_of_right (hq : Monic q) (hpq : degree p < degree q) : Monic (p
 
 theorem Monic.of_mul_monic_left (hp : p.Monic) (hpq : (p * q).Monic) : q.Monic := by
   contrapose! hpq
-  rw [Monic.def] at hpq⊢
+  rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_monic_mul hp]
 #align polynomial.monic.of_mul_monic_left Polynomial.Monic.of_mul_monic_left
 
 theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic := by
   contrapose! hpq
-  rw [Monic.def] at hpq⊢
+  rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_mul_monic hq]
 #align polynomial.monic.of_mul_monic_right Polynomial.Monic.of_mul_monic_right
 
@@ -221,8 +220,7 @@ theorem nextCoeff_mul (hp : Monic p) (hq : Monic q) :
 theorem eq_one_of_map_eq_one {S : Type _} [Semiring S] [Nontrivial S] (f : R →+* S) (hp : p.Monic)
     (map_eq : p.map f = 1) : p = 1 := by
   nontriviality R
-  have hdeg : p.degree = 0 :=
-    by
+  have hdeg : p.degree = 0 := by
     rw [← degree_map_eq_of_leadingCoeff_ne_zero f _, map_eq, degree_one]
     · rw [hp.leadingCoeff, f.map_one]
       exact one_ne_zero
@@ -288,7 +286,7 @@ theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : �
     rw [nextCoeff_C_eq_zero]
   · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons,
       Monic.nextCoeff_mul, ih]
-    exacts[fun i hi => ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
+    exacts [fun i hi => ht i (Multiset.mem_cons_of_mem hi), ht a (Multiset.mem_cons_self _ _),
       monic_multiset_prod_of_monic _ _ fun b bs => ht _ (Multiset.mem_cons_of_mem bs)]
 #align polynomial.monic.next_coeff_multiset_prod Polynomial.Monic.nextCoeff_multiset_prod
 
@@ -384,8 +382,8 @@ set_option linter.uppercaseLean3 false in
 #align polynomial.monic_X_pow_sub Polynomial.monic_X_pow_sub
 
 /-- `X ^ n - a` is monic. -/
-theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) : (X ^ n - C a).Monic :=
-  by
+theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) :
+    (X ^ n - C a).Monic := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h
   apply monic_X_pow_sub _
   exact le_trans degree_C_le Nat.WithBot.coe_nonneg
@@ -402,8 +400,8 @@ theorem not_isUnit_X_pow_sub_one (R : Type _) [CommRing R] [Nontrivial R] (n : �
 set_option linter.uppercaseLean3 false in
 #align polynomial.not_is_unit_X_pow_sub_one Polynomial.not_isUnit_X_pow_sub_one
 
-theorem Monic.sub_of_left {p q : R[X]} (hp : Monic p) (hpq : degree q < degree p) : Monic (p - q) :=
-  by
+theorem Monic.sub_of_left {p q : R[X]} (hp : Monic p) (hpq : degree q < degree p) :
+    Monic (p - q) := by
   rw [sub_eq_add_neg]
   apply hp.add_of_left
   rwa [degree_neg]
@@ -515,8 +513,8 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type _} [Monoid S] [DistribMulAct
     natDegree_smul_of_smul_regular p h]
 #align polynomial.leading_coeff_smul_of_smul_regular Polynomial.leadingCoeff_smul_of_smul_regular
 
-theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) : Monic (h.unit⁻¹ • p) :=
-  by
+theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
+    Monic (h.unit⁻¹ • p) := by
   rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
   obtain ⟨k, hk⟩ := h
   simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
@@ -528,8 +526,7 @@ theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q
   constructor
   · intro hp
     rw [← smul_eq_zero_iff_eq h.unit⁻¹] at hp
-    have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q :=
-      by
+    have : h.unit⁻¹ • (p * q) = h.unit⁻¹ • p * q := by
       ext
       simp only [Units.smul_def, coeff_smul, coeff_mul, smul_eq_mul, mul_sum]
       refine' sum_congr rfl fun x _ => _

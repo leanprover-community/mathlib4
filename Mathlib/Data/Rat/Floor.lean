@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Data.Rat.Cast
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Set
 
 /-!
 # Floor Function for Rational Numbers
@@ -37,8 +36,8 @@ variable {α : Type _} [LinearOrderedField α] [FloorRing α]
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]
   split
-  . next h => simp [h]
-  . next => rfl
+  · next h => simp [h]
+  · next => rfl
 
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
@@ -62,8 +61,7 @@ theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d :
   obtain rfl | hd := @eq_zero_or_pos _ _ d
   · simp
   set q := (n : ℚ) / d with q_eq
-  obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den :=
-    by
+  obtain ⟨c, n_eq_c_mul_num, d_eq_c_mul_denom⟩ : ∃ c, n = c * q.num ∧ (d : ℤ) = c * q.den := by
     rw [q_eq]
     exact_mod_cast @Rat.exists_eq_mul_div_num_and_eq_mul_div_den n d (by exact_mod_cast hd.ne')
   rw [n_eq_c_mul_num, d_eq_c_mul_denom]

@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baanen, Lu-Ming Zhang
 
 ! This file was ported from Lean 3 source module linear_algebra.matrix.nonsingular_inverse
-! leanprover-community/mathlib commit a07a7ae98384cd6485d7825e161e528ba78ef3bc
+! leanprover-community/mathlib commit 722b3b152ddd5e0cf21c0a29787c76596cb6b422
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Matrix.Invertible
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
@@ -66,36 +67,6 @@ open Matrix BigOperators Equiv Equiv.Perm Finset
 section Invertible
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
-
-/-- A copy of `invOf_mul_self` using `⬝` not `*`. -/
-protected theorem invOf_mul_self (A : Matrix n n α) [Invertible A] : ⅟ A ⬝ A = 1 :=
-  invOf_mul_self A
-#align matrix.inv_of_mul_self Matrix.invOf_mul_self
-
-/-- A copy of `mul_invOf_self` using `⬝` not `*`. -/
-protected theorem mul_invOf_self (A : Matrix n n α) [Invertible A] : A ⬝ ⅟ A = 1 :=
-  mul_invOf_self A
-#align matrix.mul_inv_of_self Matrix.mul_invOf_self
-
-/-- A copy of `invOf_mul_self_assoc` using `⬝` not `*`. -/
-protected theorem invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
-    ⅟ A ⬝ (A ⬝ B) = B := by rw [← Matrix.mul_assoc, Matrix.invOf_mul_self, Matrix.one_mul]
-#align matrix.inv_of_mul_self_assoc Matrix.invOf_mul_self_assoc
-
-/-- A copy of `mul_invOf_self_assoc` using `⬝` not `*`. -/
-protected theorem mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
-    A ⬝ (⅟ A ⬝ B) = B := by rw [← Matrix.mul_assoc, Matrix.mul_invOf_self, Matrix.one_mul]
-#align matrix.mul_inv_of_self_assoc Matrix.mul_invOf_self_assoc
-
-/-- A copy of `mul_invOf_mul_self_cancel` using `⬝` not `*`. -/
-protected theorem mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
-    A ⬝ ⅟ B ⬝ B = A := by rw [Matrix.mul_assoc, Matrix.invOf_mul_self, Matrix.mul_one]
-#align matrix.mul_inv_of_mul_self_cancel Matrix.mul_invOf_mul_self_cancel
-
-/-- A copy of `mul_mul_invOf_self_cancel` using `⬝` not `*`. -/
-protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
-    A ⬝ B ⬝ ⅟ B = A := by rw [Matrix.mul_assoc, Matrix.mul_invOf_self, Matrix.mul_one]
-#align matrix.mul_mul_inv_of_self_cancel Matrix.mul_mul_invOf_self_cancel
 
 variable (A : Matrix n n α) (B : Matrix n n α)
 
@@ -179,6 +150,11 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ :=
   haveI : Invertible Aᵀ.det := by simpa using detInvertibleOfInvertible A
   invertibleOfDetInvertible Aᵀ
 #align matrix.invertible_transpose Matrix.invertibleTranspose
+
+-- porting note: added because Lean can no longer find this instance automatically
+/-- The conjugate transpose of an invertible matrix is invertible. -/
+instance invertibleConjTranspose [StarRing α] [Invertible A] : Invertible Aᴴ :=
+  Invertible.star A
 
 /-- A matrix is invertible if the transpose is invertible. -/
 def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A := by
@@ -293,7 +269,6 @@ theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 #align matrix.transpose_nonsing_inv Matrix.transpose_nonsing_inv
 
-set_option synthInstance.etaExperiment true in
 theorem conjTranspose_nonsing_inv [StarRing α] : A⁻¹ᴴ = Aᴴ⁻¹ := by
   rw [inv_def, inv_def, conjTranspose_smul, det_conjTranspose, adjugate_conjTranspose,
     Ring.inverse_star]
@@ -502,17 +477,14 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
 
-set_option synthInstance.etaExperiment true in
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟ k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul Matrix.inv_smul
 
-set_option synthInstance.etaExperiment true in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 #align matrix.inv_smul' Matrix.inv_smul'
 
-set_option synthInstance.etaExperiment true in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine' inv_eq_left_inv _
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
@@ -589,7 +561,6 @@ theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
   · simp [nonsing_inv_apply_not_isUnit _ h]
 #align matrix.inv_inv_inv Matrix.inv_inv_inv
 
-set_option synthInstance.etaExperiment true in
 theorem mul_inv_rev (A B : Matrix n n α) : (A ⬝ B)⁻¹ = B⁻¹ ⬝ A⁻¹ := by
   simp only [inv_def]
   rw [Matrix.smul_mul, Matrix.mul_smul, smul_smul, det_mul, adjugate_mul_distrib,
@@ -604,7 +575,6 @@ theorem list_prod_inv_reverse : ∀ l : List (Matrix n n α), l.prod⁻¹ = (l.r
       Matrix.mul_eq_mul, mul_inv_rev, list_prod_inv_reverse Xs]
 #align matrix.list_prod_inv_reverse Matrix.list_prod_inv_reverse
 
-set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :
@@ -613,7 +583,6 @@ theorem det_smul_inv_mulVec_eq_cramer (A : Matrix n n α) (b : n → α) (h : Is
     h.mul_val_inv, one_smul]
 #align matrix.det_smul_inv_mul_vec_eq_cramer Matrix.det_smul_inv_mulVec_eq_cramer
 
-set_option synthInstance.etaExperiment true in
 /-- One form of **Cramer's rule**. See `Matrix.mulVec_cramer` for a stronger form. -/
 @[simp]
 theorem det_smul_inv_vecMul_eq_cramer_transpose (A : Matrix n n α) (b : n → α) (h : IsUnit A.det) :

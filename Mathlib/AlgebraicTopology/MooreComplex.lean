@@ -73,7 +73,7 @@ set_option linter.uppercaseLean3 false in
 def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
   | 0 => Subobject.arrow _ ≫ X.δ (0 : Fin 2) ≫ inv (⊤ : Subobject _).arrow
   | n + 1 => by
-    -- The differential is `Subobject.arrow _ ≫ X.δ (0 : fin (n+3))`,
+    -- The differential is `Subobject.arrow _ ≫ X.δ (0 : Fin (n+3))`,
     -- factored through the intersection of the kernels.
     refine' factorThru _ (arrow _ ≫ X.δ (0 : Fin (n + 3))) _
     -- We now need to show that it factors!
@@ -95,11 +95,11 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first erw the proofs are almost identical
   rcases n with _ | n <;> dsimp [objD]
-  . erw [Subobject.factorThru_arrow_assoc, Category.assoc,
+  · erw [Subobject.factorThru_arrow_assoc, Category.assoc,
       ← X.δ_comp_δ_assoc (Fin.zero_le (0 : Fin 2)),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin 2) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
-  . erw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
+  · erw [factorThru_right, factorThru_eq_zero, factorThru_arrow_assoc, Category.assoc,
       ← X.δ_comp_δ (Fin.zero_le (0 : Fin (n + 3))),
       ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ (0 : Fin (n + 3)) (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]

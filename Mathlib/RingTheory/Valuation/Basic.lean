@@ -10,7 +10,6 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.TFAE
 
 /-!
@@ -585,7 +584,6 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
     _ ≤ v (a + s) := aux (a + s) (-s) (by rwa [← Ideal.neg_mem_iff] at h)
 #align valuation.map_add_supp Valuation.map_add_supp
 
-set_option synthInstance.etaExperiment true in
 theorem comap_supp {S : Type _} [CommRing S] (f : S →+* R) :
     supp (v.comap f) = Ideal.comap f v.supp :=
   Ideal.ext fun x => by rw [mem_supp_iff, Ideal.mem_comap, mem_supp_iff, comap_apply]
@@ -618,7 +616,9 @@ section Monoid
 
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
-  CoeFun (AddValuation R Γ₀) fun _ => R → Γ₀ where coe v := v.toMonoidWithZeroHom.toFun
+    FunLike (AddValuation R Γ₀) R fun _ => Γ₀ where
+  coe v := v.toMonoidWithZeroHom.toFun
+  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀) {x y z : R}
@@ -673,19 +673,19 @@ theorem map_one : v 1 = (0 : Γ₀) :=
 def asFun : R → Γ₀ := v
 
 @[simp]
-theorem map_mul : ∀ (x y : R), v.asFun (x * y) = v.asFun x + v.asFun y :=
+theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
   Valuation.map_mul v
 #align add_valuation.map_mul AddValuation.map_mul
 
 -- Porting note: LHS simplified so created map_add' and removed simp tag
-theorem map_add : ∀ (x y : R), min (v.asFun x) (v.asFun y) ≤ v.asFun (x + y) :=
+theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
   Valuation.map_add v
 #align add_valuation.map_add AddValuation.map_add
 
 @[simp]
-theorem map_add' : ∀ (x y : R), v.asFun x ≤ v.asFun (x + y) ∨ v.asFun y ≤ v.asFun (x + y) := by
+theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
   intro x y
-  rw [← @min_le_iff _ _ (v.asFun x) (v.asFun y) (v.asFun (x+y)), ← ge_iff_le]
+  rw [← @min_le_iff _ _ (v x) (v y) (v (x+y)), ← ge_iff_le]
   apply map_add
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
@@ -712,7 +712,7 @@ theorem map_lt_sum' {ι : Type _} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg
 #align add_valuation.map_lt_sum' AddValuation.map_lt_sum'
 
 @[simp]
-theorem map_pow : ∀ (x : R) (n : ℕ), v.asFun (x ^ n) = n • (v.asFun x) :=
+theorem map_pow : ∀ (x : R) (n : ℕ), v (x ^ n) = n • (v x) :=
   Valuation.map_pow v
 #align add_valuation.map_pow AddValuation.map_pow
 
@@ -734,7 +734,7 @@ def toPreorder : Preorder R :=
 
 /-- If `v` is an additive valuation on a division ring then `v(x) = ⊤` iff `x = 0`. -/
 @[simp]
-theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v.asFun x = (⊤ : Γ₀) ↔ x = 0 :=
+theorem top_iff [Nontrivial Γ₀] (v : AddValuation K Γ₀) {x : K} : v x = (⊤ : Γ₀) ↔ x = 0 :=
   v.zero_iff
 #align add_valuation.top_iff AddValuation.top_iff
 
@@ -782,7 +782,7 @@ section Group
 variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R Γ₀) {x y z : R}
 
 @[simp]
-theorem map_inv (v : AddValuation K Γ₀) {x : K} : v.asFun x⁻¹ = - (v.asFun x) :=
+theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
   map_inv₀ v.valuation x
 #align add_valuation.map_inv AddValuation.map_inv
 
@@ -795,7 +795,7 @@ theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   Valuation.map_sub_swap v x y
 #align add_valuation.map_sub_swap AddValuation.map_sub_swap
 
-theorem map_sub (x y : R) : min (v.asFun x) (v y) ≤ v (x - y) :=
+theorem map_sub (x y : R) : min (v x) (v y) ≤ v (x - y) :=
   Valuation.map_sub v x y
 #align add_valuation.map_sub AddValuation.map_sub
 
@@ -807,7 +807,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = @Min.min Γ₀ _
   Valuation.map_add_of_distinct_val v h
 #align add_valuation.map_add_of_distinct_val AddValuation.map_add_of_distinct_val
 
-theorem map_eq_of_lt_sub (h : v.asFun x < v (y - x)) : v y = v x :=
+theorem map_eq_of_lt_sub (h : v x < v (y - x)) : v y = v x :=
   Valuation.map_eq_of_sub_lt v h
 #align add_valuation.map_eq_of_lt_sub AddValuation.map_eq_of_lt_sub
 

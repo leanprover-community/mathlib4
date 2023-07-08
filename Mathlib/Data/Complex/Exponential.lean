@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 
 ! This file was ported from Lean 3 source module data.complex.exponential
-! leanprover-community/mathlib commit 372edc36e5d2caafdd135769e0136b5a59186834
+! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -135,22 +135,17 @@ theorem isCauSeq_geo_series {β : Type _} [Ring β] [Nontrivial β] {abv : β �
     (by
       simp only [abv_pow abv, geom_sum_eq hx1']
       conv in _ / _ => rw [← neg_div_neg_eq, neg_sub, neg_sub]
+      have : 0 < 1 - abv x := sub_pos.2 hx1
       refine' @isCauSeq_of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 _ _
-      · intro n hn
-        rw [abs_of_nonneg]
-        refine'
-          div_le_div_of_le (le_of_lt <| sub_pos.2 hx1)
-            (sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _))
-        refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
-        clear hn
-        induction' n with n ih
-        · simp
-        · rw [pow_succ, ← one_mul (1 : α)]
-          refine' mul_le_mul (le_of_lt hx1) ih (abv_pow abv x n ▸ abv_nonneg _ _) (by norm_num)
       · intro n _
-        refine' div_le_div_of_le (le_of_lt <| sub_pos.2 hx1) (sub_le_sub_left _ _)
+        rw [abs_of_nonneg]
+        gcongr
+        · exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
+        refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
+        exact pow_le_one _ (by positivity) hx1.le
+      · intro n _
         rw [←one_mul (abv x ^ n), pow_succ]
-        exact mul_le_mul_of_nonneg_right (le_of_lt hx1) (pow_nonneg (abv_nonneg _ _) _))
+        gcongr)
 #align is_cau_geo_series isCauSeq_geo_series
 
 theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
@@ -164,8 +159,8 @@ theorem isCauSeq_geo_series_const (a : α) {x : α} (hx1 : |x| < 1) :
 variable {β : Type _} [Ring β] {abv : β → α} [IsAbsoluteValue abv]
 
 theorem series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1 : r < 1)
-    (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) : IsCauSeq abv fun m => ∑ n in range m, f n :=
-  by
+    (h : ∀ m, n ≤ m → abv (f m.succ) ≤ r * abv (f m)) :
+    IsCauSeq abv fun m => ∑ n in range m, f n := by
   have har1 : |r| < 1 := by rwa [abs_of_nonneg hr0]
   refine'
     isCauSeq_series_of_abv_le_of_isCauSeq n.succ _
@@ -260,8 +255,7 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
   have hQε0 : 0 < ε / (4 * Q) :=
     div_pos ε0 (mul_pos (show (0 : α) < 4 by norm_num) (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)))
   let ⟨M, hM⟩ := CauSeq.cauchy₂ ⟨_, ha⟩ hQε0
-  ⟨2 * (max N M + 1), fun K hK =>
-    by
+  ⟨2 * (max N M + 1), fun K hK => by
     have h₁ :
       (∑ m in range K, ∑ k in range (m + 1), a k * b (m - k)) =
         ∑ m in range K, ∑ n in range (K - m), a m * b n :=
@@ -291,21 +285,19 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
     have hsumlesum :
       (∑ i in range (max N M + 1),
           abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) ≤
-        ∑ i in range (max N M + 1), abv (a i) * (ε / (2 * P)) :=
-      sum_le_sum fun m hmJ =>
-        mul_le_mul_of_nonneg_left
-          (le_of_lt
+        ∑ i in range (max N M + 1), abv (a i) * (ε / (2 * P))
+    · gcongr with m hmJ
+      exact le_of_lt
             (hN (K - m)
               (le_tsub_of_add_le_left
                 (le_trans
                   (by
                     rw [two_mul]
-                    exact
-                      add_le_add (le_of_lt (mem_range.1 hmJ))
-                        (le_trans (le_max_left _ _) (le_of_lt (lt_add_one _))))
+                    gcongr
+                    · exact le_of_lt (mem_range.1 hmJ)
+                    · exact le_trans (le_max_left _ _) (le_of_lt (lt_add_one _)))
                   hK))
-              K (le_of_lt hKN)))
-          (abv_nonneg abv _)
+              K (le_of_lt hKN))
     have hsumltP : (∑ n in range (max N M + 1), abv (a n)) < P :=
       calc
         (∑ n in range (max N M + 1), abv (a n)) = |∑ n in range (max N M + 1), abv (a n)| :=
@@ -320,38 +312,30 @@ theorem cauchy_product {a b : ℕ → β} (ha : IsCauSeq abs fun m => ∑ n in r
           ((∑ i in range K, abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) -
             ∑ i in range (max N M + 1),
               abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) <
-        ε / (2 * P) * P + ε / (4 * Q) * (2 * Q)
-      by
+        ε / (2 * P) * P + ε / (4 * Q) * (2 * Q) by
       rw [hε] at this
       simpa [abv_mul abv] using this
-    refine'
-      add_lt_add
-        (lt_of_le_of_lt hsumlesum
-          (by rw [← sum_mul, mul_comm]; exact (mul_lt_mul_left hPε0).mpr hsumltP))
-        _
+    gcongr
+    · exact lt_of_le_of_lt hsumlesum
+          (by rw [← sum_mul, mul_comm]; gcongr)
     rw [sum_range_sub_sum_range (le_of_lt hNMK)]
     calc
       (∑ i in (range K).filter fun k => max N M + 1 ≤ k,
             abv (a i) * abv ((∑ k in range (K - i), b k) - ∑ k in range K, b k)) ≤
-          ∑ i in (range K).filter fun k => max N M + 1 ≤ k, abv (a i) * (2 * Q) :=
-        sum_le_sum fun n _ =>
-          by
-          refine' mul_le_mul_of_nonneg_left _ (abv_nonneg _ _)
+          ∑ i in (range K).filter fun k => max N M + 1 ≤ k, abv (a i) * (2 * Q) := by
+          gcongr
           rw [sub_eq_add_neg]
           refine' le_trans (abv_add _ _ _) _
           rw [two_mul, abv_neg abv]
-          exact add_le_add (le_of_lt (hQ _)) (le_of_lt (hQ _))
+          gcongr <;> exact le_of_lt (hQ _)
       _ < ε / (4 * Q) * (2 * Q) := by
-        rw [← sum_mul, ← sum_range_sub_sum_range (le_of_lt hNMK)];
+          rw [← sum_mul, ← sum_range_sub_sum_range (le_of_lt hNMK)]
+          have := lt_of_le_of_lt (abv_nonneg _ _) (hQ 0)
+          gcongr
           refine'
-            (mul_lt_mul_right <| by
-                  rw [two_mul]
-                  exact
-                    add_pos (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0))
-                      (lt_of_le_of_lt (abv_nonneg _ _) (hQ 0))).2
-              (lt_of_le_of_lt (le_abs_self _)
+               lt_of_le_of_lt (le_abs_self _)
                 (hM _ (le_trans (Nat.le_succ_of_le (le_max_right _ _)) (le_of_lt hNMK)) _
-                  (Nat.le_succ_of_le (le_max_right _ _))))
+                  (Nat.le_succ_of_le (le_max_right _ _)))
       ⟩
 #align cauchy_product cauchy_product
 
@@ -375,10 +359,8 @@ theorem isCauSeq_abs_exp (z : ℂ) :
     (by rwa [div_lt_iff hn0, one_mul]) fun m hm => by
       rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ, mul_comm m.succ, Nat.cast_mul, ← div_div,
         mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_cast_nat]
-      exact
-        mul_le_mul_of_nonneg_right
-          (div_le_div_of_le_left (abs.nonneg _) hn0 (Nat.cast_le.2 (le_trans hm (Nat.le_succ _))))
-          (abs.nonneg _)
+      gcongr
+      exact le_trans hm (Nat.le_succ _)
 #align complex.is_cau_abs_exp Complex.isCauSeq_abs_exp
 
 noncomputable section
@@ -574,8 +556,8 @@ theorem exp_sub : exp (x - y) = exp x / exp y := by
 
 theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
   cases n
-  . simp [exp_nat_mul]
-  . simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
+  · simp [exp_nat_mul]
+  · simp [exp_add, add_mul, pow_add, exp_neg, exp_nat_mul]
 #align complex.exp_int_mul Complex.exp_int_mul
 
 @[simp]
@@ -591,7 +573,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
 
 @[simp]
 theorem ofReal_exp_ofReal_re (x : ℝ) : ((exp x).re : ℂ) = exp x :=
-  eq_conj_iff_re.1 <| by rw [← exp_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← exp_conj, conj_ofReal]
 #align complex.of_real_exp_of_real_re Complex.ofReal_exp_ofReal_re
 
 @[simp, norm_cast]
@@ -667,7 +649,7 @@ theorem sinh_conj : sinh (conj x) = conj (sinh x) := by
 
 @[simp]
 theorem ofReal_sinh_ofReal_re (x : ℝ) : ((sinh x).re : ℂ) = sinh x :=
-  eq_conj_iff_re.1 <| by rw [← sinh_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← sinh_conj, conj_ofReal]
 #align complex.of_real_sinh_of_real_re Complex.ofReal_sinh_ofReal_re
 
 @[simp, norm_cast]
@@ -676,12 +658,12 @@ theorem ofReal_sinh (x : ℝ) : (Real.sinh x : ℂ) = sinh x :=
 #align complex.of_real_sinh Complex.ofReal_sinh
 
 @[simp]
-theorem sinh_of_real_im (x : ℝ) : (sinh x).im = 0 := by rw [← ofReal_sinh_ofReal_re, ofReal_im]
-#align complex.sinh_of_real_im Complex.sinh_of_real_im
+theorem sinh_ofReal_im (x : ℝ) : (sinh x).im = 0 := by rw [← ofReal_sinh_ofReal_re, ofReal_im]
+#align complex.sinh_of_real_im Complex.sinh_ofReal_im
 
-theorem sinh_of_real_re (x : ℝ) : (sinh x).re = Real.sinh x :=
+theorem sinh_ofReal_re (x : ℝ) : (sinh x).re = Real.sinh x :=
   rfl
-#align complex.sinh_of_real_re Complex.sinh_of_real_re
+#align complex.sinh_of_real_re Complex.sinh_ofReal_re
 
 theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
   rw [cosh, ← RingHom.map_neg, exp_conj, exp_conj, ← RingHom.map_add, cosh, map_div₀]
@@ -690,7 +672,7 @@ theorem cosh_conj : cosh (conj x) = conj (cosh x) := by
 #align complex.cosh_conj Complex.cosh_conj
 
 theorem ofReal_cosh_ofReal_re (x : ℝ) : ((cosh x).re : ℂ) = cosh x :=
-  eq_conj_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← cosh_conj, conj_ofReal]
 #align complex.of_real_cosh_of_real_re Complex.ofReal_cosh_ofReal_re
 
 @[simp, norm_cast]
@@ -725,7 +707,7 @@ theorem tanh_conj : tanh (conj x) = conj (tanh x) := by
 
 @[simp]
 theorem ofReal_tanh_ofReal_re (x : ℝ) : ((tanh x).re : ℂ) = tanh x :=
-  eq_conj_iff_re.1 <| by rw [← tanh_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← tanh_conj, conj_ofReal]
 #align complex.of_real_tanh_of_real_re Complex.ofReal_tanh_ofReal_re
 
 @[simp, norm_cast]
@@ -848,8 +830,7 @@ set_option linter.uppercaseLean3 false in
 #align complex.cos_mul_I Complex.cos_mul_I
 
 theorem sin_mul_I : sin (x * I) = sinh x * I := by
-  have h : I * sin (x * I) = -sinh x :=
-    by
+  have h : I * sin (x * I) = -sinh x := by
     rw [mul_comm, ← sinh_mul_I]
     ring_nf
     simp
@@ -950,7 +931,7 @@ theorem sin_conj : sin (conj x) = conj (sin x) := by
 
 @[simp]
 theorem ofReal_sin_ofReal_re (x : ℝ) : ((sin x).re : ℂ) = sin x :=
-  eq_conj_iff_re.1 <| by rw [← sin_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← sin_conj, conj_ofReal]
 #align complex.of_real_sin_of_real_re Complex.ofReal_sin_ofReal_re
 
 @[simp, norm_cast]
@@ -972,7 +953,7 @@ theorem cos_conj : cos (conj x) = conj (cos x) := by
 
 @[simp]
 theorem ofReal_cos_ofReal_re (x : ℝ) : ((cos x).re : ℂ) = cos x :=
-  eq_conj_iff_re.1 <| by rw [← cos_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← cos_conj, conj_ofReal]
 #align complex.of_real_cos_of_real_re Complex.ofReal_cos_ofReal_re
 
 @[simp, norm_cast]
@@ -1009,7 +990,7 @@ theorem tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj
 
 @[simp]
 theorem ofReal_tan_ofReal_re (x : ℝ) : ((tan x).re : ℂ) = tan x :=
-  eq_conj_iff_re.1 <| by rw [← tan_conj, conj_ofReal]
+  conj_eq_iff_re.1 <| by rw [← tan_conj, conj_ofReal]
 #align complex.of_real_tan_of_real_re Complex.ofReal_tan_ofReal_re
 
 @[simp, norm_cast]
@@ -1018,12 +999,12 @@ theorem ofReal_tan (x : ℝ) : (Real.tan x : ℂ) = tan x :=
 #align complex.of_real_tan Complex.ofReal_tan
 
 @[simp]
-theorem tan_of_real_im (x : ℝ) : (tan x).im = 0 := by rw [← ofReal_tan_ofReal_re, ofReal_im]
-#align complex.tan_of_real_im Complex.tan_of_real_im
+theorem tan_ofReal_im (x : ℝ) : (tan x).im = 0 := by rw [← ofReal_tan_ofReal_re, ofReal_im]
+#align complex.tan_of_real_im Complex.tan_ofReal_im
 
-theorem tan_of_real_re (x : ℝ) : (tan x).re = Real.tan x :=
+theorem tan_ofReal_re (x : ℝ) : (tan x).re = Real.tan x :=
   rfl
-#align complex.tan_of_real_re Complex.tan_of_real_re
+#align complex.tan_of_real_re Complex.tan_ofReal_re
 
 theorem cos_add_sin_I : cos x + sin x * I = exp (x * I) := by
   rw [← cosh_add_sinh, sinh_mul_I, cosh_mul_I]
@@ -1213,7 +1194,7 @@ theorem cos_neg : cos (-x) = cos x := by simp [cos, exp_neg]
 #align real.cos_neg Real.cos_neg
 
 @[simp]
-theorem cos_abs : cos (|x|) = cos x := by
+theorem cos_abs : cos |x| = cos x := by
   cases le_total x 0 <;> simp only [*, _root_.abs_of_nonneg, abs_of_nonpos, cos_neg]
 #align real.cos_abs Real.cos_abs
 
@@ -1390,7 +1371,7 @@ theorem cosh_neg : cosh (-x) = cosh x :=
 #align real.cosh_neg Real.cosh_neg
 
 @[simp]
-theorem cosh_abs : cosh (|x|) = cosh x := by
+theorem cosh_abs : cosh |x| = cosh x := by
   cases le_total x 0 <;> simp [*, _root_.abs_of_nonneg, abs_of_nonpos]
 #align real.cosh_abs Real.cosh_abs
 
@@ -1476,27 +1457,36 @@ nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
   rw [← ofReal_inj]; simp [sinh_three_mul]
 #align real.sinh_three_mul Real.sinh_three_mul
 
-open IsAbsoluteValue
+open IsAbsoluteValue Nat
+
+theorem sum_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : ∑ i in range n, x ^ i / i ! ≤ exp x :=
+  calc
+    ∑ i in range n, x ^ i / i ! ≤ lim (⟨_, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) := by
+      refine' le_lim (CauSeq.le_of_exists ⟨n, fun j hj => _⟩)
+      simp only [exp', const_apply, re_sum]
+      norm_cast
+      rw [← Nat.add_sub_of_le hj, Finset.sum_range_add]
+      refine' le_add_of_nonneg_right (sum_nonneg fun i _ => _)
+      positivity
+    _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
+#align real.sum_le_exp_of_nonneg Real.sum_le_exp_of_nonneg
+
+theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
+  calc
+    1 + x + x ^ 2 / 2 = ∑ i in range 3, x ^ i / i ! := by simp [Finset.sum_range_succ]; ring_nf
+    _ ≤ exp x := sum_le_exp_of_nonneg hx 3
+#align real.quadratic_le_exp_of_nonneg Real.quadratic_le_exp_of_nonneg
+
+theorem add_one_lt_exp_of_pos {x : ℝ} (hx : 0 < x) : x + 1 < exp x :=
+  (by nlinarith : x + 1 < 1 + x + x ^ 2 / 2).trans_le (quadratic_le_exp_of_nonneg hx.le)
+#align real.add_one_lt_exp_of_pos Real.add_one_lt_exp_of_pos
 
 /-- This is an intermediate result that is later replaced by `Real.add_one_le_exp`; use that lemma
 instead. -/
-theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x :=
-  calc
-    x + 1 ≤ CauSeq.lim (⟨fun n : ℕ => ((exp' x) n).re, isCauSeq_re (exp' x)⟩ : CauSeq ℝ Abs.abs) :=
-      le_lim
-        (CauSeq.le_of_exists
-          ⟨2, fun j hj =>
-            show x + (1 : ℝ) ≤ (∑ m in range j, ((x : ℂ) ^ m / m.factorial)).re by
-              have h₁ : (((fun m : ℕ => ((x : ℂ) ^ m / m.factorial)) ∘ Nat.succ) 0).re = x :=
-                by simp [show Nat.succ 0 = 1 from rfl, Complex.ofReal_re]
-              have h₂ : ((x : ℂ) ^ 0 / (Nat.factorial 0)).re = 1 := by simp
-              erw [← tsub_add_cancel_of_le hj, sum_range_succ', sum_range_succ', add_re, add_re, h₁,
-                h₂, add_assoc, ← coe_reAddGroupHom, reAddGroupHom.map_sum,
-                coe_reAddGroupHom]
-              refine' le_add_of_nonneg_of_le (sum_nonneg fun m _ => _) le_rfl
-              rw [← ofReal_pow, ← ofReal_nat_cast, ← ofReal_div, ofReal_re]
-              exact div_nonneg (pow_nonneg hx _) (Nat.cast_nonneg _)⟩)
-    _ = exp x := by rw [exp, Complex.exp, ← cauSeqRe, lim_re]
+theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x := by
+  rcases eq_or_lt_of_le hx with (rfl | h)
+  · simp
+  exact (add_one_lt_exp_of_pos h).le
 #align real.add_one_le_exp_of_nonneg Real.add_one_le_exp_of_nonneg
 
 theorem one_le_exp {x : ℝ} (hx : 0 ≤ x) : 1 ≤ exp x := by linarith [add_one_le_exp_of_nonneg hx]
@@ -1600,35 +1590,22 @@ theorem sum_div_factorial_le {α : Type _} [LinearOrderedField α] (n j : ℕ) (
           mem_filter.2 ⟨mem_range.2 <| lt_tsub_iff_right.mp (mem_range.1 hb), Nat.le_add_left _ _⟩,
           by dsimp; rw [add_tsub_cancel_right]⟩
     _ ≤ ∑ m in range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
-      refine' sum_le_sum fun m _ => _
-      rw [one_div, inv_le_inv]
+      simp_rw [one_div]
+      gcongr
       · rw [← Nat.cast_pow, ← Nat.cast_mul, Nat.cast_le, add_comm]
         exact Nat.factorial_mul_pow_le_factorial
-      · exact Nat.cast_pos.2 (Nat.factorial_pos _)
-      · exact mul_pos (Nat.cast_pos.2 (Nat.factorial_pos _))
-            (pow_pos (Nat.cast_pos.2 (Nat.succ_pos _)) _)
     _ = (n.factorial : α)⁻¹ * ∑ m in range (j - n), (n.succ : α)⁻¹ ^ m := by
       simp [mul_inv, mul_sum.symm, sum_mul.symm, -Nat.factorial_succ, mul_comm, inv_pow]
-    _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) :=
-      by
+    _ = ((n.succ : α) - n.succ * (n.succ : α)⁻¹ ^ (j - n)) / (n.factorial * n) := by
       have h₁ : (n.succ : α) ≠ 1 :=
         @Nat.cast_one α _ ▸ mt Nat.cast_inj.1 (mt Nat.succ.inj (pos_iff_ne_zero.1 hn))
-      have h₂ : (n.succ : α) ≠ 0 := Nat.cast_ne_zero.2 (Nat.succ_ne_zero _)
-      have h₃ : (n.factorial * n : α) ≠ 0 :=
-        mul_ne_zero (Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 (Nat.factorial_pos _)))
-          (Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 hn))
+      have h₂ : (n.succ : α) ≠ 0 := by positivity
+      have h₃ : (n.factorial * n : α) ≠ 0 := by positivity
       have h₄ : (n.succ - 1 : α) = n := by simp
       rw [geom_sum_inv h₁ h₂, eq_div_iff_mul_eq h₃, mul_comm _ (n.factorial * n : α),
           ← mul_assoc (n.factorial⁻¹ : α), ← mul_inv_rev, h₄, ← mul_assoc (n.factorial * n : α),
           mul_comm (n : α) n.factorial, mul_inv_cancel h₃, one_mul, mul_comm]
-    _ ≤ n.succ / (n.factorial * n : α) :=
-      by
-      refine' Iff.mpr (div_le_div_right (mul_pos _ _)) _
-      exact Nat.cast_pos.2 (Nat.factorial_pos _)
-      exact Nat.cast_pos.2 hn
-      exact
-        sub_le_self _
-          (mul_nonneg (Nat.cast_nonneg _) (pow_nonneg (inv_nonneg.2 (Nat.cast_nonneg _)) _))
+    _ ≤ n.succ / (n.factorial * n : α) := by gcongr; apply sub_le_self; positivity
 #align complex.sum_div_factorial_le Complex.sum_div_factorial_le
 
 theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -1644,26 +1621,23 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
   rw [sum_range_sub_sum_range hj]
   calc
     abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
-        abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) :=
-      by
+      abs (∑ m in (range j).filter fun k => n ≤ k,
+        (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
       refine' congr_arg abs (sum_congr rfl fun m hm => _)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=
       (abv_sum_le_sum_abv (abv := Complex.abs) _ _)
-    _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) :=
-      by
-      refine' sum_le_sum fun m _ => _
-      rw [map_mul, map_pow, map_div₀, abs_cast_nat]
-      refine' mul_le_mul_of_nonneg_left ((div_le_div_right _).2 _) _
-      · exact Nat.cast_pos.2 (Nat.factorial_pos _)
+    _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs x ^ n * (1 / m.factorial) := by
+      simp_rw [map_mul, map_pow, map_div₀, abs_cast_nat]
+      gcongr
       · rw [abv_pow abs]
         exact pow_le_one _ (abs.nonneg _) hx
-      · exact pow_nonneg (abs.nonneg _) _
     _ = abs x ^ n * ∑ m in (range j).filter fun k => n ≤ k, (1 / m.factorial : ℝ) := by
       simp [abs_mul, abv_pow abs, abs_div, mul_sum.symm]
-    _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) :=
-      mul_le_mul_of_nonneg_left (sum_div_factorial_le _ _ hn) (pow_nonneg (abs.nonneg _) _)
+    _ ≤ abs x ^ n * (n.succ * (n.factorial * n : ℝ)⁻¹) := by
+      gcongr
+      exact sum_div_factorial_le _ _ hn
 #align complex.exp_bound Complex.exp_bound
 
 theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
@@ -1686,38 +1660,20 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : abs x / n.succ ≤ 1 / 2) :
     _ ≤ ∑ i : ℕ in range k, abs x ^ (n + i) / ((n.factorial : ℝ) * (n.succ : ℝ) ^ i) := ?_
     _ = ∑ i : ℕ in range k, abs x ^ n / n.factorial * (abs x ^ i / (n.succ : ℝ) ^ i) := ?_
     _ ≤ abs x ^ n / ↑n.factorial * 2 := ?_
-  · refine' sum_le_sum fun m _ => div_le_div (pow_nonneg (abs.nonneg x) (n + m)) le_rfl _ _
-    · exact_mod_cast mul_pos n.factorial_pos (pow_pos n.succ_pos _)
+  · gcongr
     · exact_mod_cast Nat.factorial_mul_pow_le_factorial
   · refine' Finset.sum_congr rfl fun _ _ => _
     simp only [pow_add, div_eq_inv_mul, mul_inv, mul_left_comm, mul_assoc]
   · rw [← mul_sum]
-    apply mul_le_mul_of_nonneg_left
+    gcongr
     · simp_rw [← div_pow]
       rw [geom_sum_eq, div_le_iff_of_neg]
       · trans (-1 : ℝ)
-        · -- Porting note: was linarith
-          simp [Nat.succ_eq_add_one] at hx
-          rw [mul_comm, ← le_div_iff]
-          simp [hx]
-          . norm_num [this, hx]
-            simp [hx]
-          . exact zero_lt_two
+        · linarith
         · simp only [neg_le_sub_iff_le_add, div_pow, Nat.cast_succ, le_add_iff_nonneg_left]
-          exact
-            div_nonneg (pow_nonneg (abs.nonneg x) k)
-              (pow_nonneg (add_nonneg n.cast_nonneg zero_le_one) k)
-      · -- Porting note: was linarith
-        simp [Nat.succ_eq_add_one] at hx
-        simp
-        apply lt_of_le_of_lt hx
-        norm_num
-      · -- Porting note: was linarith
-        intro h
-        simp at h
-        simp [h] at hx
-        norm_num at hx
-    · exact div_nonneg (pow_nonneg (abs.nonneg x) n) (Nat.cast_nonneg n.factorial)
+          positivity
+      · linarith
+      · linarith
 #align complex.exp_bound' Complex.exp_bound'
 
 theorem abs_exp_sub_one_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1) ≤ 2 * abs x :=
@@ -1734,7 +1690,7 @@ theorem abs_exp_sub_one_sub_id_le {x : ℂ} (hx : abs x ≤ 1) : abs (exp x - 1 
       simp [sub_eq_add_neg, sum_range_succ_comm, add_assoc]
     _ ≤ abs x ^ 2 * ((Nat.succ 2 : ℝ) * (Nat.factorial 2 * (2 : ℕ) : ℝ)⁻¹) :=
       (exp_bound hx (by decide))
-    _ ≤ abs x ^ 2 * 1 := (mul_le_mul_of_nonneg_left (by norm_num) (sq_nonneg (abs x)))
+    _ ≤ abs x ^ 2 * 1 := by gcongr; norm_num
     _ = abs x ^ 2 := by rw [mul_one]
 #align complex.abs_exp_sub_one_sub_id_le Complex.abs_exp_sub_one_sub_id_le
 
@@ -1871,13 +1827,13 @@ theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x|
           abs (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) / 2 :=
       by simp [map_div₀]
     _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 :=
-      (add_le_add ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide)))
-        ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide))))
+          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+      gcongr
+      · exact Complex.exp_bound (by simpa) (by decide)
+      · exact Complex.exp_bound (by simpa) (by decide)
     _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
 #align real.cos_bound Real.cos_bound
 
-set_option maxHeartbeats 300000 in
 theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
   calc
     |sin x - (x - x ^ 3 / 6)| = Complex.abs (Complex.sin x - (x - x ^ 3 / 6 : ℝ)) := by
@@ -1901,9 +1857,10 @@ theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x|
           abs (Complex.exp (-x * I) - ∑ m in range 4, (-x * I) ^ m / m.factorial) / 2 :=
       by simp [add_comm, map_div₀]
     _ ≤ Complex.abs (x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 :=
-      (add_le_add ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide)))
-        ((div_le_div_right (by norm_num)).2 (Complex.exp_bound (by simpa) (by decide))))
+          Complex.abs (-x * I) ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+      gcongr
+      · exact Complex.exp_bound (by simpa) (by decide)
+      · exact Complex.exp_bound (by simpa) (by decide)
     _ ≤ |x| ^ 4 * (5 / 96) := by norm_num
 #align real.sin_bound Real.sin_bound
 
@@ -1912,12 +1869,11 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
       sub_pos.2 <|
         lt_sub_iff_add_lt.2
           (calc
-            |x| ^ 4 * (5 / 96) + x ^ 2 / 2 ≤ 1 * (5 / 96) + 1 / 2 :=
-              add_le_add (mul_le_mul_of_nonneg_right (pow_le_one _ (abs_nonneg _) hx) (by norm_num))
-                ((div_le_div_right (by norm_num)).2
-                  (by
-                    rw [sq, ← abs_mul_self, abs_mul]
-                    exact mul_le_one hx (abs_nonneg _) hx))
+            |x| ^ 4 * (5 / 96) + x ^ 2 / 2 ≤ 1 * (5 / 96) + 1 / 2 := by
+                  gcongr
+                  · exact pow_le_one _ (abs_nonneg _) hx
+                  · rw [sq, ← abs_mul_self, abs_mul]
+                    exact mul_le_one hx (abs_nonneg _) hx
             _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
 #align real.cos_pos_of_le_one Real.cos_pos_of_le_one
@@ -1926,24 +1882,17 @@ theorem sin_pos_of_pos_of_le_one {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 1) : 0 < si
   calc 0 < x - x ^ 3 / 6 - |x| ^ 4 * (5 / 96) :=
       sub_pos.2 <| lt_sub_iff_add_lt.2
           (calc
-            |x| ^ 4 * (5 / 96) + x ^ 3 / 6 ≤ x * (5 / 96) + x / 6 :=
-              add_le_add
-                (mul_le_mul_of_nonneg_right
-                  (calc
+            |x| ^ 4 * (5 / 96) + x ^ 3 / 6 ≤ x * (5 / 96) + x / 6 := by
+                gcongr
+                · calc
                     |x| ^ 4 ≤ |x| ^ 1 :=
                       pow_le_pow_of_le_one (abs_nonneg _)
                         (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]) (by decide)
                     _ = x := by simp [_root_.abs_of_nonneg (le_of_lt hx0)]
-                    )
-                  (by norm_num))
-                ((div_le_div_right (by norm_num)).2
-                  (calc
+                · calc
                     x ^ 3 ≤ x ^ 1 := pow_le_pow_of_le_one (le_of_lt hx0) hx (by decide)
                     _ = x := pow_one _
-                    ))
-            --Porting note : was `_ < x := by linarith`
-            _ = x * (7 / 32) := by ring
-            _ < x := (mul_lt_iff_lt_one_right hx0).2 (by norm_num))
+            _ < x := by linarith)
     _ ≤ sin x :=
       sub_le_comm.1 (abs_sub_le_iff.1 (sin_bound (by rwa [_root_.abs_of_nonneg (le_of_lt hx0)]))).2
 #align real.sin_pos_of_pos_of_le_one Real.sin_pos_of_pos_of_le_one
@@ -1971,79 +1920,74 @@ theorem cos_one_pos : 0 < cos 1 :=
 theorem cos_two_neg : cos 2 < 0 :=
   calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
     _ = _ := (Real.cos_two_mul 1)
-    _ ≤ 2 * (2 / 3) ^ 2 - 1 :=
-      (sub_le_sub_right
-        (mul_le_mul_of_nonneg_left
-          (by
-            rw [sq, sq]
-            exact mul_self_le_mul_self (le_of_lt cos_one_pos) cos_one_le)
-          zero_le_two) _)
+    _ ≤ 2 * (2 / 3) ^ 2 - 1 := by
+      gcongr
+      · exact cos_one_pos.le
+      · apply cos_one_le
     _ < 0 := by norm_num
 #align real.cos_two_neg Real.cos_two_neg
 
---Porting note: removed `(h1 : 0 ≤ x)` because it is no longer used
-theorem exp_bound_div_one_sub_of_interval_approx {x : ℝ} (h2 : x ≤ 1) :
-    (∑ j : ℕ in Finset.range 3, x ^ j / j.factorial) +
-        x ^ 3 * ((3 : ℕ) + 1) / ((3 : ℕ).factorial * (3 : ℕ)) ≤
-      ∑ j in Finset.range 3, x ^ j :=
+theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
+    Real.exp x < 1 / (1 - x) := by
+  have H : 0 < 1 - (1 + x + x ^ 2) * (1 - x)
+  · calc
+      0 < x ^ 3 := by positivity
+      _ = 1 - (1 + x + x ^ 2) * (1 - x) := by ring
   calc
-    (∑ j : ℕ in Finset.range 3, x ^ j / j.factorial) +
-        x ^ 3 * ((3 : ℕ) + 1) / ((3 : ℕ).factorial * (3 : ℕ))
-      = (2 / 9) * x ^ 3 + x ^ 2 / 2 + x + 1 := by simp [Finset.sum]; ring
-    _ ≤ x ^ 2 + x + 1 := sub_nonneg.1 <|
-      calc 0 ≤ x^2 * (2 / 9) * (9 / 4 - x) :=
-          mul_nonneg (mul_nonneg (pow_two_nonneg _) (by norm_num : (0 : ℝ) ≤ 2 / 9))
-            (sub_nonneg.2 (le_trans h2 (by norm_num)))
-        _ = _ := by ring
-    _ = _ := by simp [Finset.sum]; ring
-#align real.exp_bound_div_one_sub_of_interval_approx Real.exp_bound_div_one_sub_of_interval_approxₓ
+    exp x ≤ _ := exp_bound' h1.le h2.le zero_lt_three
+    _ ≤ 1 + x + x ^ 2 := by
+      -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
+      -- This proof should be restored after the norm_num plugin for big operators is ported.
+      -- (It may also need the positivity extensions in #3907.)
+      rw [Finset.sum, range_val]
+      nth_rw 1 [← two_add_one_eq_three]
+      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
+      nth_rw 3 [← one_add_one_eq_two]
+      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
+      nth_rw 3 [← zero_add 1]
+      rw [← Nat.succ_eq_add_one, Multiset.range_succ, Multiset.map_cons, Multiset.sum_cons]
+      rw [Multiset.range_zero, Multiset.map_zero, Multiset.sum_zero]
+      norm_num
+      nlinarith
+    _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
+#align real.exp_bound_div_one_sub_of_interval' Real.exp_bound_div_one_sub_of_interval'
 
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
-    Real.exp x ≤ 1 / (1 - x) :=
-  haveI h : (∑ j in Finset.range 3, x ^ j) ≤ 1 / (1 - x) :=
-    by
-    norm_num [Finset.sum]
-    have h1x : 0 < 1 - x := by simpa
-    rw [inv_eq_one_div, le_div_iff h1x]
-    norm_num [← add_assoc, mul_sub_left_distrib, mul_one, add_mul, sub_add_eq_sub_sub,
-      pow_succ' x 2]
-    have hx3 : 0 ≤ x ^ 3 := by
-      norm_num
-      simp [h1]
-    simp [Finset.sum]
-    linarith
-  (exp_bound' h1 h2.le <| by linarith).trans
-    ((exp_bound_div_one_sub_of_interval_approx h2.le).trans h)
+    Real.exp x ≤ 1 / (1 - x) := by
+  rcases eq_or_lt_of_le h1 with (rfl | h1)
+  · simp
+  · exact (exp_bound_div_one_sub_of_interval' h1 h2).le
 #align real.exp_bound_div_one_sub_of_interval Real.exp_bound_div_one_sub_of_interval
 
-theorem one_sub_le_exp_minus_of_pos {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) := by
-  rw [Real.exp_neg]
-  have r1 : (1 - y) * Real.exp y ≤ 1 :=
-    by
-    cases le_or_lt (1 - y) 0
-    · have h'' : (1 - y) * y.exp ≤ 0 := by
-        rw [mul_nonpos_iff]
-        right
-        exact ⟨by assumption, y.exp_pos.le⟩
-      linarith
-    have hy1 : y < 1 := by linarith
-    rw [← le_div_iff' ‹0 < 1 - y›]
-    exact exp_bound_div_one_sub_of_interval h hy1
-  rw [inv_eq_one_div]
-  rw [le_div_iff' y.exp_pos]
-  rwa [mul_comm] at r1
-#align real.one_sub_le_exp_minus_of_pos Real.one_sub_le_exp_minus_of_pos
+theorem one_sub_lt_exp_minus_of_pos {y : ℝ} (h : 0 < y) : 1 - y < Real.exp (-y) := by
+  cases' le_or_lt 1 y with h' h'
+  · linarith [(-y).exp_pos]
+  rw [exp_neg, lt_inv _ y.exp_pos, inv_eq_one_div]
+  · exact exp_bound_div_one_sub_of_interval' h h'
+  · linarith
+#align real.one_sub_le_exp_minus_of_pos Real.one_sub_lt_exp_minus_of_pos
 
-theorem add_one_le_exp_of_nonpos {x : ℝ} (h : x ≤ 0) : x + 1 ≤ Real.exp x := by
-  rw [add_comm]
-  have h1 : 0 ≤ -x := by linarith
-  simpa using one_sub_le_exp_minus_of_pos h1
-#align real.add_one_le_exp_of_nonpos Real.add_one_le_exp_of_nonpos
+theorem one_sub_le_exp_minus_of_nonneg {y : ℝ} (h : 0 ≤ y) : 1 - y ≤ Real.exp (-y) := by
+  rcases eq_or_lt_of_le h with (rfl | h)
+  · simp
+  · exact (one_sub_lt_exp_minus_of_pos h).le
+#align real.one_sub_le_exp_minus_of_nonneg Real.one_sub_le_exp_minus_of_nonneg
+
+theorem add_one_lt_exp_of_neg {x : ℝ} (h : x < 0) : x + 1 < Real.exp x := by
+  have h1 : 0 < -x := by linarith
+  simpa [add_comm] using one_sub_lt_exp_minus_of_pos h1
+#align real.add_one_lt_exp_of_neg Real.add_one_lt_exp_of_neg
+
+theorem add_one_lt_exp_of_nonzero {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
+  cases' lt_or_gt_of_ne hx with h h
+  · exact add_one_lt_exp_of_neg h
+  exact add_one_lt_exp_of_pos h
+#align real.add_one_lt_exp_of_nonzero Real.add_one_lt_exp_of_nonzero
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by
   cases' le_or_lt 0 x with h h
   · exact Real.add_one_le_exp_of_nonneg h
-  exact add_one_le_exp_of_nonpos h.le
+  exact (add_one_lt_exp_of_neg h).le
 #align real.add_one_le_exp Real.add_one_le_exp
 
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
@@ -2065,7 +2009,7 @@ end Real
 namespace Tactic
 open Lean.Meta Qq
 
-/-- Extension for the `positivity` tactic: `real.exp` is always positive. -/
+/-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
 def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
   let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"

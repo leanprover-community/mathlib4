@@ -380,7 +380,7 @@ theorem coe_int_dvd_coe_int (a b : ℤ) : (a : ℤ√d) ∣ b ↔ a ∣ b := by
 
 protected theorem eq_of_smul_eq_smul_left {a : ℤ} {b c : ℤ√d} (ha : a ≠ 0) (h : ↑a * b = a * c) :
     b = c := by
-  rw [ext] at h⊢
+  rw [ext] at h ⊢
   apply And.imp _ _ h <;> simpa only [smul_re, smul_im] using mul_left_cancel₀ ha
 #align zsqrtd.eq_of_smul_eq_smul_left Zsqrtd.eq_of_smul_eq_smul_left
 
@@ -564,12 +564,14 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 @[simp]
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 #align zsqrtd.norm_neg Zsqrtd.norm_neg
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
+  -- See https://github.com/leanprover-community/mathlib4/issues/5026
   Zsqrtd.coe_int_inj <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 #align zsqrtd.norm_conj Zsqrtd.norm_conj
 
@@ -892,8 +894,7 @@ theorem divides_sq_eq_zero {x y} (h : x * x = d * y * y) : x = 0 ∧ y = 0 :=
   let g := x.gcd y
   Or.elim g.eq_zero_or_pos
     (fun H => ⟨Nat.eq_zero_of_gcd_eq_zero_left H, Nat.eq_zero_of_gcd_eq_zero_right H⟩) fun gpos =>
-    False.elim <|
-      by
+    False.elim <| by
       let ⟨m, n, co, (hx : x = m * g), (hy : y = n * g)⟩ := Nat.exists_coprime gpos
       rw [hx, hy] at h
       have : m * m = d * (n * n) := by
@@ -952,7 +953,7 @@ instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
     le_antisymm := fun _ _ => Zsqrtd.le_antisymm
     le_total := Zsqrtd.le_total
-    decidable_le := Zsqrtd.decidableLE }
+    decidableLE := Zsqrtd.decidableLE }
 
 protected theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : ℤ√d}, a * b = 0 → a = 0 ∨ b = 0
   | ⟨x, y⟩, ⟨z, w⟩, h => by
@@ -1019,7 +1020,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     exact divides_sq_eq_zero_z ha
   · push_neg at h
     suffices a.re * a.re = 0 by
-      rw [eq_zero_of_mul_self_eq_zero this] at ha⊢
+      rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
       simpa only [true_and_iff, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
         mul_zero, mul_eq_zero, h.ne, false_or_iff, or_self_iff] using ha
     apply _root_.le_antisymm _ (mul_self_nonneg _)

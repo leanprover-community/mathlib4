@@ -114,8 +114,7 @@ theorem pi_univ_Ioc_update_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} (
 
 theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {m : α i₀} :
     Disjoint (pi univ fun i ↦ Ioc (x i) (update y i₀ m i))
-      (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) :=
-  by
+    (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
   refine' (h₁ i₀ (mem_univ _)).2.not_lt _
@@ -354,8 +353,7 @@ E.g., if `x' = x` and `y' = y`, then this lemma states that the difference betwe
 of the faces of `[x, y]`. -/
 theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     (Icc x y \ pi univ fun i ↦ Ioo (x' i) (y' i)) ⊆
-      (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y :=
-  by
+    (⋃ i : ι, Icc x (update y i (x' i))) ∪ ⋃ i : ι, Icc (update x i (y' i)) y := by
   rintro a ⟨⟨hxa, hay⟩, ha'⟩
   simp at ha'
   simp [le_update_iff, update_le_iff, hxa, hay, hxa _, hay _, ← exists_or]

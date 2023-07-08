@@ -37,7 +37,7 @@ instance (priority := 100) : Abs C(α, β) :=
   ⟨fun f => abs f⟩
 
 @[simp]
-theorem abs_apply (f : C(α, β)) (x : α) : (|f|) x = |f x| :=
+theorem abs_apply (f : C(α, β)) (x : α) : |f| x = |f x| :=
   rfl
 #align continuous_map.abs_apply ContinuousMap.abs_apply
 
@@ -155,7 +155,7 @@ section Extend
 
 variable [LinearOrder α] [OrderTopology α] {a b : α} (h : a ≤ b)
 
-/-- Extend a continuous function `f : C(set.Icc a b, β)` to a function `f : C(α, β)`.  -/
+/-- Extend a continuous function `f : C(Set.Icc a b, β)` to a function `f : C(α, β)`.  -/
 def IccExtend (f : C(Set.Icc a b, β)) : C(α, β) where
   toFun := Set.IccExtend h f
 #align continuous_map.Icc_extend ContinuousMap.IccExtend

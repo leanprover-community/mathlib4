@@ -58,7 +58,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
     suffices Upto.GT p = Measure fun y : Nat.Upto p => x - y.val by
       rw [this]
       exact (measure _).wf
-    ext (⟨a, ha⟩⟨b, _⟩)
+    ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [Measure, InvImage, Upto.GT]
     rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
 #align nat.upto.wf Nat.Upto.wf
@@ -71,7 +71,7 @@ def zero : Nat.Upto p :=
 /-- The successor of `n` is in `Nat.Upto p` provided that `n` doesn't satisfy `p`. -/
 def succ (x : Nat.Upto p) (h : ¬p x.val) : Nat.Upto p :=
   ⟨x.val.succ, fun j h' => by
-    rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.2 _ h', exact h]⟩
+    rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.2 _ h'; exact h]⟩
 #align nat.upto.succ Nat.Upto.succ
 
 end Upto

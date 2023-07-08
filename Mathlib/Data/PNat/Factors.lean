@@ -337,8 +337,8 @@ theorem factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset
     exact le_self_add
 #align pnat.factor_multiset_le_iff PNat.factorMultiset_le_iff
 
-theorem factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} : factorMultiset m ≤ v ↔ m ∣ v.prod :=
-  by
+theorem factorMultiset_le_iff' {m : ℕ+} {v : PrimeMultiset} :
+    factorMultiset m ≤ v ↔ m ∣ v.prod := by
   let h := @factorMultiset_le_iff m v.prod
   rw [v.factorMultiset_prod] at h
   exact h
@@ -369,7 +369,7 @@ namespace PNat
 theorem factorMultiset_gcd (m n : ℕ+) :
     factorMultiset (gcd m n) = factorMultiset m ⊓ factorMultiset n := by
   apply le_antisymm
-  · apply le_inf_iff.mpr ; constructor <;> apply factorMultiset_le_iff.mpr
+  · apply le_inf_iff.mpr; constructor <;> apply factorMultiset_le_iff.mpr
     exact gcd_dvd_left m n
     exact gcd_dvd_right m n
   · rw [← PrimeMultiset.prod_dvd_iff, prod_factorMultiset]
@@ -385,7 +385,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
     apply lcm_dvd <;> rw [← factorMultiset_le_iff']
     exact le_sup_left
     exact le_sup_right
-  · apply sup_le_iff.mpr ; constructor <;> apply factorMultiset_le_iff.mpr
+  · apply sup_le_iff.mpr; constructor <;> apply factorMultiset_le_iff.mpr
     exact dvd_lcm_left m n
     exact dvd_lcm_right m n
 #align pnat.factor_multiset_lcm PNat.factorMultiset_lcm

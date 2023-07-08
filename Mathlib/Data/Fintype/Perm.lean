@@ -49,17 +49,12 @@ theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length 
 
 theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x → x ∈ l) :
     f ∈ permsOfList l := by
-  induction l generalizing f
-  -- with a l IH
-  case nil =>
-    -- Porting note: Previous code was:
-    -- exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
-    --
-    -- `h x` does not work as expected.
-    -- This is because `x ∈ []` is not `False` before `simp`.
-    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| by
-      intro h'; simp at h; apply h x; intro h''; apply h'; simp; exact h'')
-  case cons a l IH =>
+  induction l generalizing f with
+  | nil =>
+    -- Porting note: applied `not_mem_nil` because it is no longer true definitionally.
+    simp only [not_mem_nil] at h
+    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
+  | cons a l IH =>
   by_cases hfa : f a = a
   · refine' mem_append_left _ (IH fun x hx => mem_of_ne_of_mem _ (h x hx))
     rintro rfl
@@ -74,7 +69,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
     refine' List.mem_of_ne_of_mem hxa (h x fun h => _)
     simp only [mul_apply, swap_apply_def, mul_apply, Ne.def, apply_eq_iff_eq] at hx
     split_ifs at hx with h_1
-    exacts[hxa (h.symm.trans h_1), hx h]
+    exacts [hxa (h.symm.trans h_1), hx h]
   suffices f ∈ permsOfList l ∨ ∃ b ∈ l, ∃ g ∈ permsOfList l, Equiv.swap a b * g = f by
     simpa only [permsOfList, exists_prop, List.mem_map, mem_append, List.mem_bind]
   refine' or_iff_not_imp_left.2 fun _hfl => ⟨f a, _, Equiv.swap a (f a) * f, IH this, _⟩
@@ -99,7 +94,7 @@ theorem mem_of_mem_permsOfList :
         if hxy : x = y then mem_cons_of_mem _ <| by rwa [hxy]
         else mem_cons_of_mem a <| mem_of_mem_permsOfList hg₁ _ <| by
               rw [eq_inv_mul_iff_mul_eq.2 hg₂, mul_apply, swap_inv, swap_apply_def]
-              split_ifs <;> [exact Ne.symm hxy, exact Ne.symm hxa, exact hx]
+              split_ifs <;> [exact Ne.symm hxy; exact Ne.symm hxa; exact hx]
 #align mem_of_mem_perms_of_list mem_of_mem_permsOfList
 
 theorem mem_permsOfList_iff {l : List α} {f : Perm α} :
@@ -147,11 +142,11 @@ def permsOfFinset (s : Finset α) : Finset (Perm α) :=
 
 theorem mem_perms_of_finset_iff :
     ∀ {s : Finset α} {f : Perm α}, f ∈ permsOfFinset s ↔ ∀ {x}, f x ≠ x → x ∈ s := by
-  rintro ⟨⟨l⟩, hs⟩ f ; exact mem_permsOfList_iff
+  rintro ⟨⟨l⟩, hs⟩ f; exact mem_permsOfList_iff
 #align mem_perms_of_finset_iff mem_perms_of_finset_iff
 
 theorem card_perms_of_finset : ∀ s : Finset α, (permsOfFinset s).card = s.card ! := by
-  rintro ⟨⟨l⟩, hs⟩ ; exact length_permsOfList l
+  rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 #align card_perms_of_finset card_perms_of_finset
 
 /-- The collection of permutations of a fintype is a fintype. -/

@@ -57,19 +57,18 @@ fixed iff they are not in the subtype. -/
 protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
     derangements (Subtype p) ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
   calc
-    derangements (Subtype p) ≃
-        { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } // ∀ a, a ∈ fixedPoints f → ¬p a } :=
-      by
-        refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
-        · refine' hf ⟨a, ha⟩ (Subtype.ext _)
-          simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
-          Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
-          assumption
-        rintro hf ⟨a, ha⟩ hfa
-        refine' hf _ _ ha
-        simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
-        dsimp [IsFixedPt]
-        simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
+    derangements (Subtype p) ≃ { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } //
+        ∀ a, a ∈ fixedPoints f → ¬p a } := by
+      refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
+      · refine' hf ⟨a, ha⟩ (Subtype.ext _)
+        simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
+        Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
+        assumption
+      rintro hf ⟨a, ha⟩ hfa
+      refine' hf _ _ ha
+      simp only [Perm.subtypeEquivSubtypePerm_apply_coe, mem_fixedPoints]
+      dsimp [IsFixedPt]
+      simp_rw [Perm.ofSubtype_apply_of_mem _ ha, hfa]
     _ ≃ { f : Perm α // ∃ _h : ∀ a, ¬p a → a ∈ fixedPoints f, ∀ a, a ∈ fixedPoints f → ¬p a } :=
       subtypeSubtypeEquivSubtypeExists _ _
     _ ≃ { f : Perm α // ∀ a, ¬p a ↔ a ∈ fixedPoints f } :=
@@ -92,10 +91,10 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
       -- porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine' Equiv.sumCongr _ _
-      . exact subtypeSubtypeEquivSubtypeInter
+      · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (a ∈ fixedPoints ·)
-      . exact subtypeSubtypeEquivSubtypeInter
+      · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
@@ -147,7 +146,7 @@ theorem RemoveNone.fiber_some (a : α) :
   · rw [RemoveNone.mem_fiber]
     rintro ⟨F, F_derangement, F_none, rfl⟩ x x_fixed
     rw [mem_fixedPoints_iff] at x_fixed
-    apply_fun some  at x_fixed
+    apply_fun some at x_fixed
     cases' Fx : F (some x) with y
     · rwa [removeNone_none F Fx, F_none, Option.some_inj, eq_comm] at x_fixed
     · exfalso
@@ -183,8 +182,7 @@ variable [DecidableEq α]
     of "permutations with `a` the only possible fixed point". -/
 def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     derangements (Option α) ≃ Σa : α, { f : Perm α | fixedPoints f ⊆ {a} } := by
-  have fiber_none_is_false : Equiv.RemoveNone.fiber (@none α) → False :=
-    by
+  have fiber_none_is_false : Equiv.RemoveNone.fiber (@none α) → False := by
     rw [Equiv.RemoveNone.fiber_none]
     exact IsEmpty.false
   calc

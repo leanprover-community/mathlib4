@@ -86,8 +86,7 @@ theorem unit_mem_leftInv (x : Mˣ) (hx : (x : M) ∈ S) : ((x⁻¹ : _) : M) ∈
 theorem leftInv_leftInv_eq (hS : S ≤ IsUnit.submonoid M) : S.leftInv.leftInv = S := by
   refine' le_antisymm S.leftInv_leftInv_le _
   intro x hx
-  have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) :=
-    by
+  have : x = ((hS hx).unit⁻¹⁻¹ : Mˣ) := by
     rw [inv_inv (hS hx).unit]
     rfl
   rw [this]
@@ -170,7 +169,7 @@ noncomputable def leftInvEquiv : S.leftInv ≃* S :=
     left_inv := fun x ↦
       Subtype.eq <| by
         dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        conv => rhs ; rw [h.choose_spec]
+        conv => rhs; rw [h.choose_spec]
         exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
     right_inv := fun x ↦ by
       dsimp only [fromCommLeftInv]

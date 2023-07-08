@@ -69,7 +69,7 @@ theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤
     (f g : AddMonoidAlgebra R A) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   refine' (Finset.sup_mono <| support_mul _ _).trans _
-  simp_rw [Finset.sup_bunionᵢ, Finset.sup_singleton]
+  simp_rw [Finset.sup_biUnion, Finset.sup_singleton]
   refine' Finset.sup_le fun fd fds => Finset.sup_le fun gd gds => degbm.trans <| add_le_add _ _ <;>
     exact Finset.le_sup ‹_›
 #align add_monoid_algebra.sup_support_mul_le AddMonoidAlgebra.sup_support_mul_le

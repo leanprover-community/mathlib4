@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.Pairing
 /-!
 # Equivalences involving `ℕ`
 
-This file defines some additional constructive equivalences using `encodable` and the pairing
+This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
 

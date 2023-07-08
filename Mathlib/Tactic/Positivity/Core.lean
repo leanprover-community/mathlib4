@@ -24,7 +24,7 @@ open Lean hiding Rat
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
-syntax (name := positivity) "positivity" term,+ : attr
+syntax (name := positivity) "positivity " term,+ : attr
 
 lemma ne_of_ne_of_eq' (hab : (a : α) ≠ c) (hbc : a = b) : b ≠ c := hbc ▸ hab
 
@@ -51,7 +51,7 @@ def Strictness.toString : Strictness zα pα e → String
 
 /-- An extension for `positivity`. -/
 structure PositivityExt where
-  /-- Attempts to prove a expression `e : α` is `>0`, `≥0`, or `≠0`. -/
+  /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
   eval {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα pα e)
 

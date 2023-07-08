@@ -146,7 +146,7 @@ variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
   simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
-  exact Iff.symm (Fin.cast _).surjective.forall₂
+  exact Iff.symm (Fin.castIso _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -255,7 +255,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionS
   | [a], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive

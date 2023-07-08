@@ -23,7 +23,6 @@ universe u
 
 open CategoryTheory
 
-set_option synthInstance.etaExperiment true in
 /-- An ingredient of Tannaka duality for rings:
 A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
@@ -39,9 +38,7 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
   invFun φ := φ.app (ModuleCat.of R R) (1 : R)
   left_inv := by
     intro r
-    dsimp
-    erw [AddCommGroupCat.ofHom_apply]
-    simp only [DistribMulAction.toAddMonoidHom_apply, smul_eq_mul, mul_one]
+    simp
   right_inv := by
     intro φ
     apply NatTrans.ext
@@ -52,17 +49,15 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
   map_add' := by
     intros
     apply NatTrans.ext
-    ext1
-    dsimp
     ext
+    dsimp
     simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, add_smul]
     rfl
   map_mul' := by
     intros
     apply NatTrans.ext
-    ext1
-    dsimp
     ext
+    dsimp
     simp only [AddCommGroupCat.ofHom_apply, DistribMulAction.toAddMonoidHom_apply, mul_smul]
     rfl
 

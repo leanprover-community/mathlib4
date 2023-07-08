@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 
 ! This file was ported from Lean 3 source module algebra.big_operators.pi
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
+! leanprover-community/mathlib commit fa2309577c7009ea243cffdf990cd6c84f0ad497
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -41,7 +41,7 @@ theorem multiset_prod_apply {α : Type _} {β : α → Type _} [∀ a, CommMonoi
 
 end Pi
 
-@[to_additive (attr:=simp)]
+@[to_additive (attr := simp)]
 theorem Finset.prod_apply {α : Type _} {β : α → Type _} {γ} [∀ a, CommMonoid (β a)] (a : α)
     (s : Finset γ) (g : γ → ∀ a, β a) : (∏ c in s, g c) a = ∏ c in s, g c a :=
   (Pi.evalMonoidHom β a).map_prod _ _
@@ -51,7 +51,7 @@ theorem Finset.prod_apply {α : Type _} {β : α → Type _} {γ} [∀ a, CommMo
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
 @[to_additive "An 'unapplied' analogue of `Finset.sum_apply`."]
 theorem Finset.prod_fn {α : Type _} {β : α → Type _} {γ} [∀ a, CommMonoid (β a)] (s : Finset γ)
-    (g : γ → ∀ a, β a) : (∏ c in s, g c) = fun a ↦ ∏ c in s, g c a :=
+    (g : γ → ∀ a, β a) : ∏ c in s, g c = fun a ↦ ∏ c in s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
 #align finset.prod_fn Finset.prod_fn
 #align finset.sum_fn Finset.sum_fn
@@ -71,37 +71,42 @@ theorem prod_mk_prod {α β γ : Type _} [CommMonoid α] [CommMonoid β] (s : Fi
 #align prod_mk_prod prod_mk_prod
 #align prod_mk_sum prod_mk_sum
 
-section Single
+section MulSingle
 
 variable {I : Type _} [DecidableEq I] {Z : I → Type _}
 
-variable [∀ i, AddCommMonoid (Z i)]
+variable [∀ i, CommMonoid  (Z i)]
 
--- As we only defined `single` into `add_monoid`, we only prove the `Finset.sum` version here.
-theorem Finset.univ_sum_single [Fintype I] (f : ∀ i, Z i) : (∑ i, Pi.single i (f i)) = f := by
+@[to_additive]
+theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :
+    (∏ i, Pi.mulSingle i (f i)) = f := by
   ext a
   simp
+#align finset.univ_prod_mul_single Finset.univ_prod_mulSingle
 #align finset.univ_sum_single Finset.univ_sum_single
 
-theorem AddMonoidHom.functions_ext [Finite I] (G : Type _) [AddCommMonoid G] (g h : (∀ i, Z i) →+ G)
-    (H : ∀ i x, g (Pi.single i x) = h (Pi.single i x)) : g = h := by
+@[to_additive]
+theorem MonoidHom.functions_ext [Finite I] (G : Type _) [CommMonoid G] (g h : (∀ i, Z i) →* G)
+    (H : ∀ i x, g (Pi.mulSingle i x) = h (Pi.mulSingle i x)) : g = h := by
   cases nonempty_fintype I
   ext k
-  rw [← Finset.univ_sum_single k, g.map_sum, h.map_sum]
+  rw [← Finset.univ_prod_mulSingle k, g.map_prod, h.map_prod]
   simp only [H]
+#align monoid_hom.functions_ext MonoidHom.functions_ext
 #align add_monoid_hom.functions_ext AddMonoidHom.functions_ext
 
-/-- This is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons explained in
+/-- This is used as the ext lemma instead of `MonoidHom.functions_ext` for reasons explained in
 note [partially-applied ext lemmas]. -/
-@[ext]
-theorem AddMonoidHom.functions_ext' [Finite I] (M : Type _) [AddCommMonoid M]
-    (g h : (∀ i, Z i) →+ M)
-    (H : ∀ i, g.comp (AddMonoidHom.single Z i) = h.comp (AddMonoidHom.single Z i)) : g = h :=
-  have := fun i ↦ FunLike.congr_fun (H i)
-  g.functions_ext M h this
+@[to_additive (attr := ext)
+      "\nThis is used as the ext lemma instead of `AddMonoidHom.functions_ext` for reasons
+      explained in note [partially-applied ext lemmas]."]
+theorem MonoidHom.functions_ext' [Finite I] (M : Type _) [CommMonoid M] (g h : (∀ i, Z i) →* M)
+    (H : ∀ i, g.comp (MonoidHom.single Z i) = h.comp (MonoidHom.single Z i)) : g = h :=
+  g.functions_ext M h fun i => FunLike.congr_fun (H i)
+#align monoid_hom.functions_ext' MonoidHom.functions_ext'
 #align add_monoid_hom.functions_ext' AddMonoidHom.functions_ext'
 
-end Single
+end MulSingle
 
 section RingHom
 

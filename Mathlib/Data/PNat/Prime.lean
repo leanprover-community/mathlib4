@@ -14,7 +14,7 @@ import Mathlib.Data.PNat.Basic
 /-!
 # Primality and GCD on pnat
 
-This file extends the theory of `ℕ+` with `gcd`, `lcm` and `prime` functions, analogous to those on
+This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, analogous to those on
 `Nat`.
 -/
 

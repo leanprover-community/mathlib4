@@ -36,7 +36,7 @@ the sequence of elements `x : Fin k → ℕ` such that `n = ∑ i, x i`.
 
 ## Implementation notes
 
-While we could implement this by filtering `(Fintype.PiFinset $ λ _, range (n + 1))` or similar,
+While we could implement this by filtering `(Fintype.PiFinset $ fun _ ↦ range (n + 1))` or similar,
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
@@ -82,7 +82,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] 
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n := by
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n := by
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
@@ -126,8 +126,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | 0 => (congr_arg fun x => [x]) <| Subsingleton.elim _ _
-  | k + 1 =>
-    by
+  | k + 1 => by
     rw [antidiagonalTuple, antidiagonal_zero, List.bind_singleton, antidiagonalTuple_zero_right k,
       List.map_singleton]
     exact congr_arg (fun x => [x]) Matrix.cons_zero_zero
@@ -157,8 +156,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     ∀ k n, (antidiagonalTuple k n).Pairwise (Pi.Lex (· < ·) @fun _ => (· < ·))
   | 0, 0 => List.pairwise_singleton _ _
   | 0, _ + 1 => List.Pairwise.nil
-  | k + 1, n =>
-    by
+  | k + 1, n => by
     simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
@@ -201,7 +199,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = 0 :
 #align multiset.nat.antidiagonal_tuple_zero_succ Multiset.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n :=
   List.Nat.mem_antidiagonalTuple
 #align multiset.nat.mem_antidiagonal_tuple Multiset.Nat.mem_antidiagonalTuple
 
@@ -246,7 +244,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = ∅
 #align finset.nat.antidiagonal_tuple_zero_succ Finset.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n :=
   List.Nat.mem_antidiagonalTuple
 #align finset.nat.mem_antidiagonal_tuple Finset.Nat.mem_antidiagonalTuple
 

@@ -98,6 +98,11 @@ instance categoryMonoidalFunctor : Category (MonoidalFunctor C D) :=
   InducedCategory.category MonoidalFunctor.toLaxMonoidalFunctor
 #align category_theory.monoidal_nat_trans.category_monoidal_functor CategoryTheory.MonoidalNatTrans.categoryMonoidalFunctor
 
+-- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
+@[ext]
+lemma ext' {F G : LaxMonoidalFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
+  MonoidalNatTrans.ext _ _ (funext w)
+
 @[simp]
 theorem comp_toNatTrans {F G H : MonoidalFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
@@ -156,14 +161,6 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
       dsimp
       rw [Iso.comp_inv_eq, assoc, tensor', ← tensor_comp_assoc,
         Iso.inv_hom_id, Iso.inv_hom_id, tensor_id, id_comp] }
-  hom_inv_id := by
-    apply MonoidalNatTrans.ext
-    ext x
-    exact (app x).hom_inv_id
-  inv_hom_id := by
-    apply MonoidalNatTrans.ext
-    ext x
-    exact (app x).inv_hom_id
 #align category_theory.monoidal_nat_iso.of_components CategoryTheory.MonoidalNatIso.ofComponents
 
 @[simp]
@@ -214,7 +211,7 @@ def monoidalUnit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalUnit F) :=
   haveI : ∀ X : C, IsIso ((monoidalUnit F).toNatTrans.app X) := by
-    dsimp ; infer_instance
+    dsimp; infer_instance
   MonoidalNatIso.isIso_of_isIso_app _
 
 /-- The counit of a monoidal equivalence can be upgraded to a monoidal natural transformation. -/
@@ -247,7 +244,7 @@ def monoidalCounit (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] :
 
 instance (F : MonoidalFunctor C D) [IsEquivalence F.toFunctor] : IsIso (monoidalCounit F) :=
   haveI : ∀ X : D, IsIso ((monoidalCounit F).toNatTrans.app X) :=
-    by dsimp ; infer_instance
+    by dsimp; infer_instance
   MonoidalNatIso.isIso_of_isIso_app _
 
 end

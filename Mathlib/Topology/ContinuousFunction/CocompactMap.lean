@@ -198,14 +198,13 @@ end Basics
 
 end CocompactMap
 
-/-- A homemomorphism is a cocompact map. -/
+/-- A homeomorphism is a cocompact map. -/
 @[simps]
 def Homeomorph.toCocompactMap {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
     (f : α ≃ₜ β) : CocompactMap α β where
   toFun := f
   continuous_toFun := f.continuous
-  cocompact_tendsto' :=
-    by
+  cocompact_tendsto' := by
     refine' CocompactMap.tendsto_of_forall_preimage fun K hK => _
     erw [K.preimage_equiv_eq_image_symm]
     exact hK.image f.symm.continuous

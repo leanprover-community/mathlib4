@@ -9,7 +9,6 @@ Authors: Johannes Hölzl, Bryan Gin-ge Chen
 ! if you have ported upstream changes.
 -/
 import Mathlib.Order.Heyting.Basic
-import Aesop
 
 /-!
 # (Generalized) Boolean algebras
@@ -46,7 +45,7 @@ The `sup_inf_sdiff` and `inf_inf_sdiff` axioms for the relative complement opera
 [Stone's paper introducing generalized Boolean algebras][Stone1935] does not define a relative
 complement operator `a \ b` for all `a`, `b`. Instead, the postulates there amount to an assumption
 that for all `a, b : α` where `a ≤ b`, the equations `x ⊔ a = b` and `x ⊓ a = ⊥` have a solution
-`x`. `disjoint.sdiff_unique` proves that this `x` is in fact `b \ a`.
+`x`. `Disjoint.sdiff_unique` proves that this `x` is in fact `b \ a`.
 
 ## References
 
@@ -91,7 +90,7 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
   inf_inf_sdiff : ∀ a b : α, a ⊓ b ⊓ a \ b = ⊥
 #align generalized_boolean_algebra GeneralizedBooleanAlgebra
 
--- We might want a `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
+-- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,
 -- however we'd need another type class for lattices with bot, and all the API for that.
 section GeneralizedBooleanAlgebra
 
@@ -219,12 +218,12 @@ theorem disjoint_sdiff_self_right : Disjoint x (y \ x) :=
 #align disjoint_sdiff_self_right disjoint_sdiff_self_right
 
 lemma le_sdiff : x ≤ y \ z ↔ x ≤ y ∧ Disjoint x z :=
-⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
-  by rw [←h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
+  ⟨fun h ↦ ⟨h.trans sdiff_le, disjoint_sdiff_self_left.mono_left h⟩, fun h ↦
+    by rw [←h.2.sdiff_eq_left]; exact sdiff_le_sdiff_right h.1⟩
 #align le_sdiff le_sdiff
 
 @[simp] lemma sdiff_eq_left : x \ y = x ↔ Disjoint x y :=
-⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
+  ⟨fun h ↦ disjoint_sdiff_self_left.mono_left h.ge, Disjoint.sdiff_eq_left⟩
 #align sdiff_eq_left sdiff_eq_left
 
 /- TODO: we could make an alternative constructor for `GeneralizedBooleanAlgebra` using
@@ -548,6 +547,7 @@ def GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [O
     top_le_sup_compl := fun _ => le_sup_sdiff,
     sdiff_eq := fun _ _ => by
       -- Porting note: changed `rw` to `erw` here.
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
       erw [← inf_sdiff_assoc, inf_top_eq] }
 #align generalized_boolean_algebra.to_boolean_algebra GeneralizedBooleanAlgebra.toBooleanAlgebra
 
@@ -569,7 +569,7 @@ theorem compl_sup_eq_top : xᶜ ⊔ x = ⊤ :=
   sup_comm.trans sup_compl_eq_top
 #align compl_sup_eq_top compl_sup_eq_top
 
-theorem isCompl_compl : IsCompl x (xᶜ) :=
+theorem isCompl_compl : IsCompl x xᶜ :=
   IsCompl.of_eq inf_compl_eq_bot' sup_compl_eq_top
 #align is_compl_compl isCompl_compl
 
@@ -732,11 +732,11 @@ theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
   @compl_sdiff_compl αᵒᵈ _ _ _
 #align compl_himp_compl compl_himp_compl
 
-theorem disjoint_compl_left_iff : Disjoint (xᶜ) y ↔ y ≤ x := by
+theorem disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
   rw [← le_compl_iff_disjoint_left, compl_compl]
 #align disjoint_compl_left_iff disjoint_compl_left_iff
 
-theorem disjoint_compl_right_iff : Disjoint x (yᶜ) ↔ x ≤ y := by
+theorem disjoint_compl_right_iff : Disjoint x yᶜ ↔ x ≤ y := by
   rw [← le_compl_iff_disjoint_right, compl_compl]
 #align disjoint_compl_right_iff disjoint_compl_right_iff
 
@@ -823,7 +823,7 @@ protected def Function.Injective.generalizedBooleanAlgebra [Sup α] [Inf α] [Bo
 protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot α] [HasCompl α]
     [SDiff α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) : BooleanAlgebra α :=
   { hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff with
     compl := compl,
@@ -841,11 +841,7 @@ protected def Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [Bot 
 
 end lift
 
--- Porting note: when `refine_struct` is ported this can be by:
--- refine_struct { PUnit.biheytingAlgebra with } <;>
---   intros <;> first |trivial|exact Subsingleton.elim _ _
-instance PUnit.booleanAlgebra : BooleanAlgebra PUnit :=
+instance PUnit.booleanAlgebra : BooleanAlgebra PUnit := by
+  refine'
   { PUnit.biheytingAlgebra with
-    le_sup_inf := by intros; trivial
-    inf_compl_le_bot := by intros; trivial
-    top_le_sup_compl := by intros; trivial }
+    .. } <;> (intros; trivial)

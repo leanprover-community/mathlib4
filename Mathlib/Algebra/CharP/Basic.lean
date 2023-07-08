@@ -349,7 +349,7 @@ theorem frobenius_def : frobenius R p x = x ^ p :=
   rfl
 #align frobenius_def frobenius_def
 
-theorem iterate_frobenius (n : ℕ) : (frobenius R p^[n]) x = x ^ p ^ n := by
+theorem iterate_frobenius (n : ℕ) : (frobenius R p)^[n] x = x ^ p ^ n := by
   induction n with
   | zero => simp
   | succ n n_ih =>
@@ -373,22 +373,22 @@ theorem RingHom.map_frobenius : g (frobenius R p x) = frobenius S p (g x) :=
 #align ring_hom.map_frobenius RingHom.map_frobenius
 
 theorem MonoidHom.map_iterate_frobenius (n : ℕ) :
-    f ((frobenius R p^[n]) x) = (frobenius S p^[n]) (f x) :=
+    f ((frobenius R p)^[n] x) = (frobenius S p)^[n] (f x) :=
   Function.Semiconj.iterate_right (f.map_frobenius p) n x
 #align monoid_hom.map_iterate_frobenius MonoidHom.map_iterate_frobenius
 
 theorem RingHom.map_iterate_frobenius (n : ℕ) :
-    g ((frobenius R p^[n]) x) = (frobenius S p^[n]) (g x) :=
+    g ((frobenius R p)^[n] x) = (frobenius S p)^[n] (g x) :=
   g.toMonoidHom.map_iterate_frobenius p x n
 #align ring_hom.map_iterate_frobenius RingHom.map_iterate_frobenius
 
 theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [Fact p.Prime] [CharP R p] (n : ℕ) :
-    (f^[n]) (frobenius R p x) = frobenius R p ((f^[n]) x) :=
+    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
   f.iterate_map_pow _ _ _
 #align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
 
 theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [Fact p.Prime] [CharP R p] (n : ℕ) :
-    (f^[n]) (frobenius R p x) = frobenius R p ((f^[n]) x) :=
+    f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
   f.iterate_map_pow _ _ _
 #align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
 
@@ -444,7 +444,7 @@ end frobenius
 
 theorem frobenius_inj [CommRing R] [IsReduced R] (p : ℕ) [Fact p.Prime] [CharP R p] :
     Function.Injective (frobenius R p) := fun x h H => by
-  rw [← sub_eq_zero] at H⊢
+  rw [← sub_eq_zero] at H ⊢
   rw [← frobenius_sub] at H
   exact IsReduced.eq_zero _ ⟨_, H⟩
 #align frobenius_inj frobenius_inj
@@ -664,14 +664,13 @@ theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 
 #align char_p_of_ne_zero charP_of_ne_zero
 
 theorem charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p : ℕ) [hp : Fact p.Prime] (n : ℕ)
-    (hn : Fintype.card R = p ^ n) (hR : ∀ i ≤ n, (p ^ i : R) = 0 → i = n) : CharP R (p ^ n) := by
+    (hn : Fintype.card R = p ^ n) (hR : ∀ i ≤ n, (p : R) ^ i = 0 → i = n) : CharP R (p ^ n) := by
   obtain ⟨c, hc⟩ := CharP.exists R
-  skip
   have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, CharP.cast_card_eq_zero]
   obtain ⟨i, hi, hc⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
   obtain rfl : i = n := by
     apply hR i hi
-    rw [← hc, CharP.cast_eq_zero]
+    rw [← Nat.cast_pow, ← hc, CharP.cast_eq_zero]
   rwa [← hc]
 #align char_p_of_prime_pow_injective charP_of_prime_pow_injective
 
@@ -695,12 +694,12 @@ instance Prod.charP [CharP S p] : CharP (R × S) p := by
 
 end Prod
 
-instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift.{v} R) p
-    where cast_eq_zero_iff' n := Iff.trans (ULift.ext_iff _ _) <| CharP.cast_eq_zero_iff R p n
+instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift.{v} R) p where
+  cast_eq_zero_iff' n := Iff.trans (ULift.ext_iff _ _) <| CharP.cast_eq_zero_iff R p n
 #align ulift.char_p ULift.charP
 
-instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p
-    where cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
+instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
+  cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
 #align mul_opposite.char_p MulOpposite.charP
 
 section

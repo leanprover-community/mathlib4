@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.EssentiallySmall
 A category `(C : Type u) [Category.{v} C]` is `[WellPowered C]` if
 for every `X : C`, we have `Small.{v} (Subobject X)`.
 
-(Note that in this situtation `Subobject X : Type (max u v)`,
+(Note that in this situation `Subobject X : Type (max u v)`,
 so this is a nontrivial condition for large categories,
 but automatic for small categories.)
 

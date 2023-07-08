@@ -6,6 +6,7 @@ Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
+import Mathlib.Tactic.CancelDenoms
 import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
@@ -276,31 +277,39 @@ def compWithZero : Preprocessor where
 
 end compWithZero
 
--- FIXME the `cancelDenoms : Preprocessor` from mathlib3 will need to wait
--- for a port of the `cancel_denoms` tactic.
 section cancelDenoms
--- /--
--- `normalize_denominators_in_lhs h lhs` assumes that `h` is a proof of `lhs R 0`.
--- It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
--- -/
--- meta def normalize_denominators_in_lhs (h lhs : expr) : tactic expr :=
--- do (v, lhs') ← cancel_factors.derive lhs,
---    if v = 1 then return h else do
---    (ih, h'') ← mk_single_comp_zero_pf v h,
---    (_, nep, _) ← infer_type h'' >>= rewrite_core lhs',
---    mk_eq_mp nep h''
 
--- /--
--- `cancel_denoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
--- it tries to scale `t` to cancel out division by numerals.
--- -/
--- meta def cancel_denoms : preprocessor :=
--- { name := "cancel denominators",
---   transform := λ pf,
--- (do some (_, lhs) ← parse_into_comp_and_expr <$> infer_type pf,
---    guardb $ lhs.contains_constant (= `has_div.div),
---    singleton <$> normalize_denominators_in_lhs pf lhs)
--- <|> return [pf] }
+theorem without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
+
+/--
+`normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.
+It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
+-/
+def normalizeDenominatorsLHS (h lhs : Expr) : MetaM Expr := do
+  let mut (v, lhs') ← CancelDenoms.derive lhs
+  if v = 1 then
+    -- `lhs'` has a `1 *` out front, but `mkSingleCompZeroOf` has a special case
+    -- where it does not produce `1 *`. We strip it off here:
+    lhs' ← mkAppM ``without_one_mul #[lhs']
+  let (_, h'') ← mkSingleCompZeroOf v h
+  try
+    h''.rewriteType lhs'
+  catch e =>
+    dbg_trace
+      s!"Error in Linarith.normalizeDenominatorsLHS: {← e.toMessageData.toString}"
+    throw e
+
+/--
+`cancelDenoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
+it tries to scale `t` to cancel out division by numerals.
+-/
+def cancelDenoms : Preprocessor where
+  name := "cancel denominators"
+  transform := fun pf => (do
+      let (_, lhs) ← parseCompAndExpr (← inferType pf)
+      guard $ lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      pure [← normalizeDenominatorsLHS pf lhs])
+    <|> return [pf]
 end cancelDenoms
 
 section nlinarith
@@ -370,7 +379,7 @@ def nlinarithExtras : GlobalPreprocessor where
 
 end nlinarith
 
--- TODO the `removeNe` preprocesor
+-- TODO the `removeNe` preprocessor
 section removeNe
 -- /--
 -- `remove_ne_aux` case splits on any proof `h : a ≠ b` in the input,
@@ -405,7 +414,7 @@ The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
   [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
-    compWithZero/-, cancelDenoms-/]
+    compWithZero, cancelDenoms]
 
 /--
 `preprocess pps l` takes a list `l` of proofs of propositions.

@@ -9,7 +9,7 @@ Ported by: Scott Morrison
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
 
 /-!
 # Natural transformations
@@ -48,7 +48,7 @@ The field `app` provides the components of the natural transformation.
 
 Naturality is expressed by `α.naturality`.
 -/
-@[ext]
+@[ext, pp_dot]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The component of a natural transformation. -/
   app : ∀ X : C, F.obj X ⟶ G.obj X
@@ -59,20 +59,8 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 #align category_theory.nat_trans.ext_iff CategoryTheory.NatTrans.ext_iff
 #align category_theory.nat_trans.ext CategoryTheory.NatTrans.ext
 
-/--
-This unexpander will pretty print `η.app X` properly.
-Without this, we would have `NatTrans.app η X`.
--/
-@[app_unexpander NatTrans.app] def
-  unexpandNatTransApp : Lean.PrettyPrinter.Unexpander
-  | `($_ $η $(X)*)  => set_option hygiene false in `($(η).app $(X)*)
-  | _            => throw ()
-
--- TODO Perhaps we should just turn on `ext` in aesop?
-attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
-
 -- Rather arbitrarily, we say that the 'simpler' form is
--- components of natural transfomations moving earlier.
+-- components of natural transformations moving earlier.
 attribute [reassoc (attr := simp)] NatTrans.naturality
 #align category_theory.nat_trans.naturality_assoc CategoryTheory.NatTrans.naturality_assoc
 

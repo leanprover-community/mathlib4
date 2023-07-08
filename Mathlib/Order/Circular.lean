@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module order.circular
-! leanprover-community/mathlib commit a2d2e18906e2b62627646b5d5be856e6a642062f
+! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Set
 
 /-!
 # Circular order hierarchy
@@ -73,7 +72,7 @@ What is the correct generality of "rolling the necklace" open? At least, this wo
 `β × α` where `α` is a circular order and `β` is a linear order.
 
 What's next is to define circular groups and provide instances for `ZMod n`, the usual circle group
-`Circle`, `Real.Angle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
+`Circle`, and `RootsOfUnity M`. What conditions do we need on `M` for this last one
 to work?
 
 We should have circular order homomorphisms. The typical example is
@@ -370,13 +369,13 @@ theorem right_mem_cIcc (a b : α) : b ∈ cIcc a b :=
   btw_rfl_right
 #align set.right_mem_cIcc Set.right_mem_cIcc
 
-theorem compl_cIcc {a b : α} : cIcc a bᶜ = cIoo b a := by
+theorem compl_cIcc {a b : α} : (cIcc a b)ᶜ = cIoo b a := by
   ext
   rw [Set.mem_cIoo, sbtw_iff_not_btw]
   rfl
 #align set.compl_cIcc Set.compl_cIcc
 
-theorem compl_cIoo {a b : α} : cIoo a bᶜ = cIcc b a := by
+theorem compl_cIoo {a b : α} : (cIoo a b)ᶜ = cIcc b a := by
   ext
   rw [Set.mem_cIcc, btw_iff_not_sbtw]
   rfl
@@ -426,10 +425,17 @@ def Preorder.toCircularPreorder (α : Type _) [Preorder α] : CircularPreorder �
     · exact Or.inr (Or.inr ⟨hca, hab.trans hbd⟩)
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_le]
-    have := le_trans a b c
-    have := le_trans b c a
-    have := le_trans c a b
-    tauto
+    have h1 := le_trans a b c
+    have h2 := le_trans b c a
+    have h3 := le_trans c a b
+    -- Porting note: was `tauto`, but this is a much faster tactic proof
+    revert h1 h2 h3
+    generalize (a ≤ b) = p1
+    generalize (b ≤ a) = p2
+    generalize (a ≤ c) = p3
+    generalize (c ≤ a) = p4
+    generalize (b ≤ c) = p5
+    by_cases p1 <;> by_cases p2 <;> by_cases p3 <;> by_cases p4 <;> by_cases p5 <;> simp [*]
 #align preorder.to_circular_preorder Preorder.toCircularPreorder
 
 /-- The circular partial order obtained from "looping around" a partial order.

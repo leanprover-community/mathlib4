@@ -77,9 +77,9 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
 def toAlgHom {F : Type _} [AlgHomClass F R A B] (f : F) : A →ₐ[R] B :=
-{ (f : A →+* B) with
-    toFun := f
-    commutes' := AlgHomClass.commutes f }
+  { (f : A →+* B) with
+      toFun := f
+      commutes' := AlgHomClass.commutes f }
 
 instance coeTC {F : Type _} [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
   ⟨AlgHomClass.toAlgHom⟩
@@ -495,9 +495,6 @@ end AlgHom
 
 namespace RingHom
 
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
-
 variable {R S : Type _}
 
 /-- Reinterpret a `RingHom` as an `ℕ`-algebra homomorphism. -/
@@ -509,18 +506,7 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with
-    commutes' := fun n => by
-      -- Porting note: TODO Erase these `have`s.
-      --               Needed because we don't have η for classes. (lean4#2074)
-      have e₁ : algebraMap ℤ R n = n :=
-        @eq_intCast _ R Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ R) n
-      have e₂ : algebraMap ℤ S n = n :=
-        @eq_intCast _ S Ring.toNonAssocRing RingHom.instRingHomClassRingHom (algebraMap ℤ S) n
-      have e₃ : f n = n :=
-        @map_intCast _ R S Ring.toNonAssocRing Ring.toNonAssocRing RingHom.instRingHomClassRingHom
-          f n
-      simp [e₁, e₂, e₃] }
+  { f with commutes' := fun n => by simp }
 #align ring_hom.to_int_alg_hom RingHom.toIntAlgHom
 
 /-- Reinterpret a `RingHom` as a `ℚ`-algebra homomorphism. This actually yields an equivalence,
@@ -538,9 +524,6 @@ theorem toRatAlgHom_toRingHom [Ring R] [Ring S] [Algebra ℚ R] [Algebra ℚ S] 
 end RingHom
 
 section
-
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 variable {R S : Type _}
 
@@ -587,7 +570,7 @@ variable {M G : Type _} (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R 
 
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
-/-- Each element of the monoid defines a algebra homomorphism.
+/-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
 `DistribMulAction.toLinearMap`. -/

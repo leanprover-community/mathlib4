@@ -58,8 +58,7 @@ that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ β → P α → P β)
     (h_empty : P PEmpty) (h_option : ∀ {α} [Fintype α] [DecidableEq α], P α → P (Option α))
     (α : Type u) [Fintype α] [DecidableEq α] : Trunc (P α) := by
-  suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n))
-    by
+  suffices ∀ n : ℕ, Trunc (P (ULift <| Fin n)) by
     apply Trunc.bind (this (Fintype.card α))
     intro h
     apply Trunc.map _ (Fintype.truncEquivFin α)
@@ -88,7 +87,7 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
 #align fintype.trunc_rec_empty_option Fintype.truncRecEmptyOption
 
 -- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
--- I had to explicitely name `h_fintype` in order to access it manually.
+-- I had to explicitly name `h_fintype` in order to access it manually.
 -- was `[Fintype α]`
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
@@ -118,5 +117,5 @@ theorem Finite.induction_empty_option {P : Type u → Prop} (of_equiv : ∀ {α 
     [Finite α] : P α := by
   cases nonempty_fintype α
   refine' Fintype.induction_empty_option _ _ _ α
-  exacts[fun α β _ => of_equiv, h_empty, @h_option]
+  exacts [fun α β _ => of_equiv, h_empty, @h_option]
 #align finite.induction_empty_option Finite.induction_empty_option
