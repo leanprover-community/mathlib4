@@ -160,34 +160,86 @@ variable (m' : MeasurableSpace Ω)
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   (hm' : m' ≤ mΩ)
 
-lemma iCondIndepSets_def (π : ι → Set (Set Ω)) (μ : Measure Ω) [IsFiniteMeasure μ] :
+lemma iCondIndepSets_def (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ π i), MeasurableSet s)
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepSets m' hm' π μ ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
       μ⟦⋂ i ∈ s, f i | m'⟧ =ᵐ[μ] ∏ i in s, (μ⟦f i | m'⟧) := by
   simp only [iCondIndepSets, iIndepSetsₖ]
+  have h_eq' : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i) i (_hi : i ∈ s),
+      (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω (f i))) =ᵐ[μ] μ⟦f i | m'⟧ :=
+    fun s f H i hi ↦ condexpKernel_ae_eq_condexp hm' (hπ i (f i) (H i hi))
+  have h_eq : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i), ∀ᵐ ω ∂μ,
+      ∀ i ∈ s, ENNReal.toReal (condexpKernel μ m' ω (f i)) = (μ⟦f i | m'⟧) ω := by
+    intros s f H
+    simp_rw [← Finset.mem_coe]
+    rw [ae_ball_iff (Finset.countable_toSet s)]
+    exact h_eq' s f H
+  have h_inter_eq : ∀ (s : Finset ι) (f : ι → Set Ω) (_H : ∀ i, i ∈ s → f i ∈ π i),
+      (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω (⋂ i ∈ s, f i))) =ᵐ[μ] μ⟦⋂ i ∈ s, f i | m'⟧ :=
+    by
+    refine fun s f H ↦ condexpKernel_ae_eq_condexp hm' ?_
+    exact MeasurableSet.biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (H i hi))
   refine ⟨fun h s f hf ↦ ?_, fun h s f hf ↦ ?_⟩ <;> specialize h s hf
   . have h' := ae_eq_of_ae_eq_trim h
-    sorry
-  . sorry
+    filter_upwards [h_eq s f hf, h_inter_eq s f hf, h'] with ω h_eq h_inter_eq h'
+    rw [← h_inter_eq, h', ENNReal.toReal_prod, Finset.prod_apply]
+    exact Finset.prod_congr rfl h_eq
+  . refine (ae_eq_trim_iff hm' ?_ ?_).mpr ?_
+    . refine stronglyMeasurable_condexpKernel ?_
+      exact MeasurableSet.biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (hf i hi))
+    . refine Measurable.stronglyMeasurable ?_
+      exact Finset.measurable_prod s (fun i hi ↦ measurable_condexpKernel (hπ i _ (hf i hi)))
+    filter_upwards [h_eq s f hf, h_inter_eq s f hf, h] with ω h_eq h_inter_eq h
+    have h_ne_top : condexpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ :=
+      (measure_ne_top (condexpKernel μ m' ω) _)
+    have : (∏ i in s, condexpKernel μ m' ω (f i)) ≠ ∞ :=
+      (ENNReal.prod_lt_top (fun _ _ ↦ measure_ne_top (condexpKernel μ m' ω) _)).ne
+    rw [← ENNReal.ofReal_toReal h_ne_top, h_inter_eq, h, Finset.prod_apply,
+      ← ENNReal.ofReal_toReal this, ENNReal.toReal_prod]
+    congr 1
+    exact Finset.prod_congr rfl (fun i hi ↦ (h_eq i hi).symm)
 
 -- todo fix notation
-lemma condIndepSets_def (s1 s2 : Set (Set Ω)) (μ : Measure Ω) [IsFiniteMeasure μ] :
+lemma condIndepSets_def (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSet s)
+  (hs2 : ∀ s ∈ s2, MeasurableSet s) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSets m' hm' s1 s2 μ ↔ ∀ (t1 t2 : Set Ω) (_ : t1 ∈ s1) (_ : t2 ∈ s2),
       (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
   simp only [CondIndepSets, IndepSetsₖ]
+  have hs1_eq : ∀ s ∈ s1, (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω s)) =ᵐ[μ] μ⟦s | m'⟧ :=
+    fun s hs ↦ condexpKernel_ae_eq_condexp hm' (hs1 s hs)
+  have hs2_eq : ∀ s ∈ s2, (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω s)) =ᵐ[μ] μ⟦s | m'⟧ :=
+    fun s hs ↦ condexpKernel_ae_eq_condexp hm' (hs2 s hs)
+  have hs12_eq : ∀ s ∈ s1, ∀ t ∈ s2, (fun ω ↦ ENNReal.toReal (condexpKernel μ m' ω (s ∩ t)))
+      =ᵐ[μ] μ⟦s ∩ t | m'⟧ :=
+    fun s hs t ht ↦ condexpKernel_ae_eq_condexp hm' ((hs1 s hs).inter ((hs2 t ht)))
   refine ⟨fun h s t hs ht ↦ ?_, fun h s t hs ht ↦ ?_⟩ <;> specialize h s t hs ht
-  . sorry
-  . sorry
+  . have h' := ae_eq_of_ae_eq_trim h
+    filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h'] with ω hs_eq ht_eq hst_eq h'
+    rw [← hst_eq, Pi.mul_apply, ← hs_eq, ← ht_eq, h', ENNReal.toReal_mul]
+  . refine (ae_eq_trim_iff hm' ?_ ?_).mpr ?_
+    . exact stronglyMeasurable_condexpKernel ((hs1 s hs).inter ((hs2 t ht)))
+    . refine Measurable.stronglyMeasurable (Measurable.mul ?_ ?_)
+      . exact measurable_condexpKernel (hs1 s hs)
+      . exact measurable_condexpKernel (hs2 t ht)
+    filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
+    have h_ne_top : condexpKernel μ m' ω (s ∩ t) ≠ ∞ := (measure_ne_top (condexpKernel μ m' ω) _)
+    rw [← ENNReal.ofReal_toReal h_ne_top, hst_eq, h, Pi.mul_apply, ← hs_eq, ← ht_eq,
+      ← ENNReal.toReal_mul, ENNReal.ofReal_toReal]
+    exact ENNReal.mul_ne_top (measure_ne_top (condexpKernel μ m' ω) s)
+      (measure_ne_top (condexpKernel μ m' ω) t)
 
 lemma iCondIndep_iff_iCondIndepSets (m : ι → MeasurableSpace Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndep m' hm' m μ ↔ iCondIndepSets m' hm' (fun x ↦ {s | MeasurableSet[m x] s}) μ := by
   simp only [iCondIndep, iCondIndepSets, iIndepₖ]
 
-lemma iCondIndep_iff (m : ι → MeasurableSpace Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
+lemma iCondIndep_iff (m : ι → MeasurableSpace Ω) (hm : ∀ i, m i ≤ mΩ)
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndep m' hm' m μ
       ↔ ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[m i] (f i)),
       μ⟦⋂ i ∈ s, f i | m'⟧ =ᵐ[μ] ∏ i in s, (μ⟦f i | m'⟧) := by
   rw [iCondIndep_iff_iCondIndepSets, iCondIndepSets_def]
-  rfl
+  . rfl
+  . exact hm
 
 end
 
@@ -202,12 +254,14 @@ lemma condIndep_iff_condIndepSets (m' m₁ m₂ : MeasurableSpace Ω)
 
 lemma condIndep_iff (m' m₁ m₂ : MeasurableSpace Ω)
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
-    (hm' : m' ≤ mΩ) (μ : Measure Ω ) [IsFiniteMeasure μ] :
+    (hm' : m' ≤ mΩ) (hm₁ : m₁ ≤ mΩ) (hm₂ : m₂ ≤ mΩ) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndep m' m₁ m₂ hm' μ
       ↔ ∀ t1 t2, MeasurableSet[m₁] t1 → MeasurableSet[m₂] t2
         → (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
   rw [condIndep_iff_condIndepSets, condIndepSets_def]
-  rfl
+  . rfl
+  . exact hm₁
+  . exact hm₂
 
 end CondIndep
 
@@ -219,22 +273,35 @@ lemma iCondIndepSet_iff_iCondIndep (s : ι → Set Ω) (μ : Measure Ω) [IsFini
     iCondIndepSet m' hm' s μ ↔ iCondIndep m' hm' (fun i ↦ generateFrom {s i}) μ := by
   simp only [iCondIndepSet, iCondIndep, iIndepSetₖ]
 
-lemma iCondIndepSet_iff (s : ι → Set Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
+lemma iCondIndepSet_iff (s : ι → Set Ω) (hs : ∀ i, MeasurableSet (s i))
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepSet m' hm' s μ ↔ ∀ (S : Finset ι) {f : ι → Set Ω}
       (_H : ∀ i, i ∈ S → MeasurableSet[generateFrom {s i}] (f i)),
       μ⟦⋂ i ∈ S, f i | m'⟧ =ᵐ[μ] ∏ i in S, μ⟦f i | m'⟧ := by
-  simp only [iCondIndepSet_iff_iCondIndep, iCondIndep_iff_iCondIndepSets, iCondIndepSets_def,
-    Set.mem_setOf_eq]
+  simp only [iCondIndepSet_iff_iCondIndep]
+  rw [iCondIndep_iff_iCondIndepSets, iCondIndepSets_def]
+  . rfl
+  . intros i t ht
+    suffices generateFrom {s i} ≤ mΩ from this _ ht
+    refine MeasurableSpace.generateFrom_le (fun u hu ↦ ?_)
+    rw [Set.mem_singleton_iff] at hu
+    rw [hu]
+    exact hs i
 
 lemma condIndepSet_iff_condIndep (s t : Set Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSet m' hm' s t μ ↔ CondIndep m' (generateFrom {s}) (generateFrom {t}) hm' μ := by
   simp only [CondIndepSet, CondIndep, IndepSetₖ]
 
-lemma condIndepSet_iff (s t : Set Ω) (μ : Measure Ω) [IsFiniteMeasure μ] :
+lemma condIndepSet_iff (s t : Set Ω) (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSet m' hm' s t μ
       ↔ ∀ t1 t2, MeasurableSet[generateFrom {s}] t1 → MeasurableSet[generateFrom {t}] t2
         → (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
-  simp only [condIndepSet_iff_condIndep, condIndep_iff]
+  simp only [condIndepSet_iff_condIndep]
+  rw [condIndep_iff _ _ _ hm' ?_ ?_] <;>
+  . refine generateFrom_le (fun s' hs' ↦ ?_)
+    rw [Set.mem_singleton_iff] at hs'
+    rwa [hs']
 
 lemma iCondIndepFun_iff_iCondIndep {β : ι → Type _}
     (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x)
@@ -244,12 +311,14 @@ lemma iCondIndepFun_iff_iCondIndep {β : ι → Type _}
   simp only [iCondIndepFun, iCondIndep, iIndepFunₖ]
 
 lemma iCondIndepFun_iff {β : ι → Type _}
-    (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x)
+    (m : ∀ x : ι, MeasurableSpace (β x)) (f : ∀ x : ι, Ω → β x) (hf : ∀ i, Measurable (f i))
     (μ : Measure Ω) [IsFiniteMeasure μ] :
     iCondIndepFun m' hm' m f μ
       ↔ ∀ (s : Finset ι) {g : ι → Set Ω} (_H : ∀ i, i ∈ s → MeasurableSet[(m i).comap (f i)] (g i)),
       μ⟦⋂ i ∈ s, g i | m'⟧ =ᵐ[μ] ∏ i in s, (μ⟦g i | m'⟧) := by
-  simp only [iCondIndepFun_iff_iCondIndep, iCondIndep_iff]
+  simp only [iCondIndepFun_iff_iCondIndep]
+  rw [iCondIndep_iff]
+  exact fun i ↦ (hf i).comap_le
 
 lemma condIndepFun_iff_condIndep [mβ : MeasurableSpace β]
     [mγ : MeasurableSpace γ] (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) [IsFiniteMeasure μ] :
@@ -258,11 +327,12 @@ lemma condIndepFun_iff_condIndep [mβ : MeasurableSpace β]
   simp only [CondIndepFun, CondIndep, IndepFunₖ]
 
 lemma condIndepFun_iff [mβ : MeasurableSpace β] [mγ : MeasurableSpace γ]
-    (f : Ω → β) (g : Ω → γ) (μ : Measure Ω) [IsFiniteMeasure μ] :
+    (f : Ω → β) (g : Ω → γ) (hf : Measurable f) (hg : Measurable g)
+    (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepFun m' hm' f g μ ↔ ∀ t1 t2, MeasurableSet[MeasurableSpace.comap f mβ] t1
       → MeasurableSet[MeasurableSpace.comap g mγ] t2
         → (μ⟦t1 ∩ t2 | m'⟧) =ᵐ[μ] (μ⟦t1 | m'⟧) * (μ⟦t2 | m'⟧) := by
-  rw [condIndepFun_iff_condIndep, condIndep_iff]
+  rw [condIndepFun_iff_condIndep, condIndep_iff _ _ _ _ hf.comap_le hg.comap_le]
 
 end Definition_lemmas
 
@@ -323,9 +393,16 @@ theorem CondIndepSets.bInter {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     CondIndepSets m' hm' (⋂ n ∈ u, s n) s' μ :=
   IndepSetsₖ.bInter h
 
-theorem condIndepSets_singleton_iff {s t : Set Ω} :
+theorem condIndepSets_singleton_iff {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
-  simp only [condIndepSets_def, Set.mem_singleton_iff, forall_eq_apply_imp_iff', forall_eq]
+  rw [condIndepSets_def _ _ _ _ ?_ ?_]
+  . simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff', forall_eq]
+  . intros s' hs'
+    rw [Set.mem_singleton_iff] at hs'
+    rwa [hs']
+  . intros s' hs'
+    rw [Set.mem_singleton_iff] at hs'
+    rwa [hs']
 
 end CondIndepSets
 
@@ -539,7 +616,8 @@ theorem condIndepSet_iff_condIndepSets_singleton (hs_meas : MeasurableSet s)
 theorem condIndepSet_iff_measure_inter_eq_mul (hs_meas : MeasurableSet s)
     (ht_meas : MeasurableSet t) (μ : Measure Ω) [IsFiniteMeasure μ] :
     CondIndepSet m' hm' s t μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] fun ω ↦ (μ⟦s | m'⟧) ω * (μ⟦t | m'⟧) ω :=
-  (condIndepSet_iff_condIndepSets_singleton hs_meas ht_meas μ).trans condIndepSets_singleton_iff
+  (condIndepSet_iff_condIndepSets_singleton hs_meas ht_meas μ).trans
+    (condIndepSets_singleton_iff hs_meas ht_meas)
 
 theorem CondIndepSets.condIndepSet_of_mem (hs : s ∈ S) (ht : t ∈ T)
     (hs_meas : MeasurableSet s) (ht_meas : MeasurableSet t) (μ : Measure Ω) [IsFiniteMeasure μ]
@@ -572,22 +650,24 @@ variable {m' : MeasurableSpace Ω}
   {f : Ω → β} {g : Ω → β'}
 
 theorem condIndepFun_iff_measure_inter_preimage_eq_mul {mβ : MeasurableSpace β}
-    {mβ' : MeasurableSpace β'} :
+    {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t
         → (μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧) =ᵐ[μ] fun ω ↦ (μ⟦f ⁻¹' s | m'⟧) ω * (μ⟦g ⁻¹' t | m'⟧) ω := by
-  rw [condIndepFun_iff]
-  refine ⟨fun h s t hs ht ↦ ?_, fun h s t ↦ ?_⟩
-  . exact h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-  . rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-    exact h s t hs ht
+  rw [condIndepFun_iff _ _ _ _ hf hg]
+  . refine ⟨fun h s t hs ht ↦ ?_, fun h s t ↦ ?_⟩
+    . exact h (f ⁻¹' s) (g ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+    . rintro ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+      exact h s t hs ht
 
 theorem iCondIndepFun_iff_measure_inter_preimage_eq_mul {β : ι → Type _}
-    (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) :
+    (m : ∀ x, MeasurableSpace (β x)) (f : ∀ i, Ω → β i) (hf : ∀ i, Measurable (f i)) :
     iCondIndepFun m' hm' m f μ ↔
       ∀ (S : Finset ι) {sets : ∀ i : ι, Set (β i)} (_H : ∀ i, i ∈ S → MeasurableSet[m i] (sets i)),
         (μ⟦⋂ i ∈ S, f i ⁻¹' sets i| m'⟧) =ᵐ[μ] ∏ i in S, (μ⟦f i ⁻¹' sets i | m'⟧) := by
-  simp only [iCondIndepFun_iff]
+  rw [iCondIndepFun_iff]
+  swap
+  . exact hf
   refine ⟨fun h s sets h_sets ↦ ?_, fun h s sets h_sets ↦ ?_⟩
   . refine h s (g := fun i ↦ f i ⁻¹' (sets i)) (fun i hi ↦ ?_)
     exact ⟨sets i, h_sets i hi, rfl⟩
