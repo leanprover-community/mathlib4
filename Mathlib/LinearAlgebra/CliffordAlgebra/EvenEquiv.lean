@@ -182,12 +182,8 @@ theorem ofEven_ι (x y : M × R) :
       (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
   -- porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
   unfold ofEven
-  -- TODO: `lift_lets` gives a deep recursion error if we try to use it here
-  let f : M × R →ₗ[R] M × R →ₗ[R] CliffordAlgebra Q :=
-    ((Algebra.lmul R (CliffordAlgebra Q)).toLinearMap.comp <|
-          (ι Q).comp (LinearMap.fst _ _ _) +
-            (Algebra.linearMap R _).comp (LinearMap.snd _ _ _)).compl₂
-      ((ι Q).comp (LinearMap.fst _ _ _) - (Algebra.linearMap R _).comp (LinearMap.snd _ _ _))
+  lift_lets
+  intro f
   -- TODO: replacing `?_` with `_` takes way longer?
   refine @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
 #align clifford_algebra.of_even_ι CliffordAlgebra.ofEven_ι
