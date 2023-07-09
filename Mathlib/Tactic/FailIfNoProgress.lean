@@ -25,6 +25,29 @@ example : (1 - 1 = 0) := by with_reducible rfl
 This tactic is useful in situations where we want to stop iterating some tactics if they're not
 having any  effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 
+## Config notes
+
+We use the following pattern to propagate defaults from a "global" setting to "local" setting. In particular, we want to propagate the settings for comparing `Expr`s from a global one to several different local ones, while allowing each "local" setting (each config for each type of expr comparison) to override the global settings.
+
+When a structure `SubConfig` needs defaults from a global `SharedProcessConfig` (e.g. `ExprComparisonConfig`) and has fields for config options for multiple SharedProcesses or processes which also involve that common process, we allow `SubConfig` to extend `SharedProcessConfig`, set the defaults, and then use the field values (not the inherited defaults) for the defaults for the subprocesses:
+```
+structure SubConfig (defaults : SharedProcessConfig) extends SharedProcessConfig where
+  sharedField1 := defaults.sharedField1
+  sharedField2 := defaults.sharedField2
+  sharedProcess1Config : Option (SharedProcessConfigWithDefaults { sharedField1, sharedField2 })
+    := some {}
+  sharedProcess2Config : Option (SharedProcessConfigWithDefaults { sharedField1, sharedField2 })
+    := some {}
+  subSubProcessConfig : Option (SubSubProcessConfig { sharedField1, sharedField2 }) := some {}
+```
+where `SharedProcessConfigWithDefaults` is `SharedProcess` but with defaults inherited from its argument.
+
+If `SubConfig` does not contain multiple different subprocesses which rely on `defaults`, we do not extend `SharedProcessConfig` but merely pass along `defaults`:
+```
+structure SubConfig (defaults : SharedProcessConfig) where
+  subSubProcessConfig : Option (SubSubProcessConfig defaults) := some {}
+```
+-/
 -/
 
 namespace Mathlib.Tactic
