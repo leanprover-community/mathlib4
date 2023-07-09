@@ -1125,18 +1125,26 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
         conv_lhs =>
           rw [← one_smul (Localization S) (ℓ.toFun _), ← Localization.mk_self s, ← mul_one r, ←
             @mul_one R _ ↑s]
-          pattern (occs := 1 3) Localization.mk _ s <;>
-            (rw [← smul_eq_mul R, ← Localization.smul_mk])
-          pattern (occs := 1 3) (r • _) • _ <;> (rw [smul_assoc])
+          conv =>
+            pattern (occs := 1 2) Localization.mk _ s <;>
+              (rw [← smul_eq_mul R, ← Localization.smul_mk])
+          conv =>
+            pattern (r • _) • _
+            rw [smul_assoc]
           rw [ℓ.map_smul', RingHom.id_apply]
-          pattern (↑s • _) • _
-          rw [smul_comm]
-          pattern (↑s • _) • _
-          rw [smul_assoc, smul_comm]
-          rw [← RingHom.id_apply ↑s, ← ℓ.map_smul']
-          pattern (occs := 1 2) _ • _ • _ <;> (rw [← smul_assoc])
+          conv =>
+            pattern (↑s • _) • _
+            rw [smul_comm]
+          conv =>
+            pattern (↑s • _) • _
+            rw [smul_assoc, smul_comm]
+          dsimp
+          rw [← ℓ.map_smul (↑s : ↑ S)]
+          conv =>
+            pattern (occs := 1) _ • _ • _; (rw [← smul_assoc])
+          arg 2; rw [← smul_assoc]
         iterate 2 rw [Localization.smul_mk, smul_eq_mul, mul_one]
-        rw [Localization.mk_self, one_smul] }
+        rw [Localization.mk_self, one_smul]; rfl }
   use g'
   have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ := by
     ext
@@ -1152,8 +1160,6 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
     ext x
     apply_fun fun f => f x at this
     simpa only [LinearMap.restrictScalars_apply, this]
-
-#lint
 
 end IsLocalizedModule
 
