@@ -87,7 +87,7 @@ theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Fins
   sup_mono
 #align finset.shadow_monotone Finset.shadow_monotone
 
-/-- `s` is in the shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element to
+/-- `s` is in the shadow of `𝒜` iff there is a `t ∈ 𝒜` from which we can remove one element to
 get `s`. -/
 theorem mem_shadow_iff : s ∈ ∂ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ a ∈ t, erase t a = s := by
   simp only [shadow, mem_sup, mem_image]
@@ -203,7 +203,7 @@ theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (
   fun _ _ => sup_mono
 #align finset.up_shadow_monotone Finset.upShadow_monotone
 
-/-- `s` is in the upper shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element
+/-- `s` is in the upper shadow of `𝒜` iff there is a `t ∈ 𝒜` from which we can remove one element
 to get `s`. -/
 theorem mem_upShadow_iff : s ∈ ∂⁺ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ (a : _) (_ : a ∉ t), insert a t = s := by
   simp_rw [upShadow, mem_sup, mem_image, exists_prop, mem_compl]

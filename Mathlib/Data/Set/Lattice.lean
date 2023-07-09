@@ -40,7 +40,7 @@ for `Set α`, and some more set constructions.
 In lemma names,
 * `⋃ i, s i` is called `iUnion`
 * `⋂ i, s i` is called `iInter`
-* `⋃ i j, s i j` is called `iUnion₂`. This is a `iUnion` inside a `iUnion`.
+* `⋃ i j, s i j` is called `iUnion₂`. This is an `iUnion` inside an `iUnion`.
 * `⋂ i j, s i j` is called `iInter₂`. This is an `iInter` inside an `iInter`.
 * `⋃ i ∈ s, t i` is called `biUnion` for "bounded `iUnion`". This is the special case of `iUnion₂`
   where `j : i ∈ s`.
@@ -272,6 +272,15 @@ theorem nonempty_of_union_eq_top_of_nonempty {ι : Type _} (t : Set ι) (s : ι 
   obtain ⟨x, m, -⟩ := exists_set_mem_of_union_eq_top t s w H.some
   exact ⟨x, m⟩
 #align set.nonempty_of_union_eq_top_of_nonempty Set.nonempty_of_union_eq_top_of_nonempty
+
+theorem nonempty_of_nonempty_iUnion
+    {s : ι → Set α} (h_Union : (⋃ i, s i).Nonempty) : Nonempty ι := by
+  obtain ⟨x, hx⟩ := h_Union
+  exact ⟨Classical.choose $ mem_iUnion.mp hx⟩
+
+theorem nonempty_of_nonempty_iUnion_eq_univ
+    {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
+  nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
   ext fun _ => mem_iUnion.symm

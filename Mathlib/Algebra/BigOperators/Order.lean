@@ -425,7 +425,7 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       exact disjoint_filter.2 fun _ _ h n_h ↦ n_h h
     _ ≤ ∏ x in t, f x :=
       mul_le_of_le_one_of_le
-        (prod_le_one' <| by simp only [mem_filter, and_imp] ; exact fun _ _ ↦ le_of_eq)
+        (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp] )
 #align finset.prod_le_prod_of_ne_one' Finset.prod_le_prod_of_ne_one'
 #align finset.sum_le_sum_of_ne_zero Finset.sum_le_sum_of_ne_zero

@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module logic.equiv.local_equiv
-! leanprover-community/mathlib commit aba57d4d3dae35460225919dcd82fe91355162f9
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
-import Mathlib.Logic.Equiv.MfldSimpsAttr
 import Mathlib.Tactic.Core
 
 /-!
@@ -79,18 +78,6 @@ functions (`LocalEquiv`, `LocalHomeomorph`, etc).
 This is in a separate file from `Mathlib.Logic.Equiv.MfldSimpsAttr` because attributes need a new
 file to become functional.
 -/
-
--- register in the simpset `mfld_simps` several lemmas that are often useful when dealing
--- with manifolds
-attribute [mfld_simps]
-  id.def Function.comp.left_id Set.mem_setOf_eq Set.image_eq_empty Set.univ_inter Set.preimage_univ
-  Set.prod_mk_mem_set_prod_eq and_true_iff Set.mem_univ Set.mem_image_of_mem true_and_iff
-  Set.mem_inter_iff Set.mem_preimage Function.comp_apply Set.inter_subset_left Set.mem_prod
-  Set.range_id Set.range_prod_map and_self_iff Set.mem_range_self eq_self_iff_true forall_const
-  forall_true_iff Set.inter_univ Set.preimage_id Function.comp.right_id not_false_iff and_imp
-  Set.prod_inter_prod Set.univ_prod_univ true_or_iff or_true_iff Prod.map_mk Set.preimage_inter
-  heq_iff_eq Equiv.sigmaEquivProd_apply Equiv.sigmaEquivProd_symm_apply Subtype.coe_mk
-  Equiv.toFun_as_coe Equiv.invFun_as_coe
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
 def mfld_cfg : Simps.Config where

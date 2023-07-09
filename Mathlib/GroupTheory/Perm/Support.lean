@@ -518,8 +518,7 @@ theorem eq_on_support_mem_disjoint {l : List (Perm α)} (h : f ∈ l) (hl : l.Pa
     rw [List.pairwise_cons] at hl
     rw [List.mem_cons] at h
     rcases h with (rfl | h)
-    ·
-      rw [List.prod_cons, mul_apply,
+    · rw [List.prod_cons, mul_apply,
         not_mem_support.mp ((disjoint_prod_right tl hl.left).mem_imp hx)]
     · rw [List.prod_cons, mul_apply, ← IH h hl.right _ hx, eq_comm, ← not_mem_support]
       refine' (hl.left _ h).symm.mem_imp _
