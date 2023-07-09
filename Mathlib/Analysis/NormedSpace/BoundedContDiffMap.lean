@@ -149,7 +149,7 @@ theorem BoundedContDiffMap.withSeminorms :
     WithSeminorms (BoundedContDiffMap.seminorm : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) :=
   (withSeminorms_iff_topologicalSpace_eq_iInf _).mpr <| by
     refine iInf_congr (fun i ↦ ?_)
-    congr
+    rw [BoundedContDiffMap.seminorm, Seminorm.toTopologicalSpace_comp]
     rw [toTopologicalSpace_comap]
     change _ = (SeminormedAddGroup.induced (E →ᵇ[𝕜, n] F) (E →ᵇ (E [×i]→L[𝕜] F)) (BoundedContDiffMap.iteratedFDerivₗ i)).toPseudoMetricSpace.toUniformSpace.toTopologicalSpace
 

@@ -279,6 +279,19 @@ def Seminorm.toUniformSpace (p : Seminorm 𝕜 E) : UniformSpace E :=
 def Seminorm.toTopologicalSpace (p : Seminorm 𝕜 E) : TopologicalSpace E :=
   p.toUniformSpace.toTopologicalSpace
 
+theorem normSeminorm_toPseudoMetricSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').toPseudoMetricSpace = h.toPseudoMetricSpace := by
+  ext a b
+  rw [dist_eq_norm, @dist_eq_norm _ (normSeminorm 𝕜 E').toSeminormedAddGroup a b]
+
+theorem normSeminorm_toUniformSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').toUniformSpace = h.toUniformSpace := by
+  rw [Seminorm.toUniformSpace, normSeminorm_toPseudoMetricSpace]
+
+theorem normSeminorm_toTopologicalSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').toTopologicalSpace = h.toUniformSpace.toTopologicalSpace := by
+  rw [Seminorm.toTopologicalSpace, normSeminorm_toUniformSpace]
+
 theorem Seminorm.toPseudoMetricSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
     (p.comp f).toPseudoMetricSpace = p.toPseudoMetricSpace.induced f := by
   ext x y
