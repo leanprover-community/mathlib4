@@ -657,10 +657,13 @@ example : ((- - (28 + 48) / 75) + ((- 59 - 14) - 0)) = (-5399/75 : α) := by nor
 example : (- ((- (((66 - 86) - 36) / 94) - 3) / - - (77 / (56 - - - 79))) + 87) =
   (312254/3619 : α) := by norm_num1
 
--- example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
+example : 2 ^ 13 - 1 = Int.ofNat 8191 := by norm_num1
 
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
 instance : LinearOrderedField (R a b) := sorry
 
 example : (1 : R PUnit.{u+1} PUnit.{v+1}) <= 2 := by
   norm_num
+
+-- Check that we avoid deep recursion in evaluating large powers.
+example : 10^40000000 = 10^40000000 := by norm_num
