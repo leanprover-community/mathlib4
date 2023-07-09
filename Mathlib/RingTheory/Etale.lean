@@ -25,6 +25,9 @@ under `R`-algebra homomorphisms and compositions.
 -/
 
 
+-- Porting note: added to make the syntax work below.
+open scoped TensorProduct
+
 universe u
 
 namespace Algebra
@@ -438,16 +441,15 @@ instance FormallyUnramified.base_change [FormallyUnramified R A] :
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
   apply AlgHom.restrictScalars_injective R
   apply TensorProduct.ext
-  any_goals infer_instance
   intro b a
-  have : b ⊗ₜ[R] a = b • 1 ⊗ₜ a := by rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  have : b ⊗ₜ[R] a = b • (1 : B) ⊗ₜ a := by rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
   rw [this, AlgHom.restrictScalars_apply, AlgHom.restrictScalars_apply, map_smul, map_smul]
   congr 1
   change
-    ((f₁.restrict_scalars R).comp tensor_product.include_right) a =
-      ((f₂.restrict_scalars R).comp tensor_product.include_right) a
+    ((f₁.restrictScalars R).comp TensorProduct.includeRight) a =
+      ((f₂.restrictScalars R).comp TensorProduct.includeRight) a
   congr 1
-  refine' formally_unramified.ext I ⟨2, hI⟩ _
+  refine' FormallyUnramified.ext I ⟨2, hI⟩ _
   intro x
   exact AlgHom.congr_fun e (1 ⊗ₜ x)
 #align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
@@ -457,11 +459,10 @@ instance FormallySmooth.base_change [FormallySmooth R A] : FormallySmooth B (B �
   intro C _ _ I hI f
   letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
   haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  refine' ⟨tensor_product.product_left_alg_hom (Algebra.ofId B C) _, _⟩
-  · exact formally_smooth.lift I ⟨2, hI⟩ ((f.restrict_scalars R).comp tensor_product.include_right)
+  refine' ⟨TensorProduct.productLeftAlgHom (Algebra.ofId B C) _, _⟩
+  · exact FormallySmooth.lift I ⟨2, hI⟩ ((f.restrictScalars R).comp TensorProduct.includeRight)
   · apply AlgHom.restrictScalars_injective R
     apply TensorProduct.ext
-    any_goals infer_instance
     intro b a
     suffices algebraMap B _ b * f (1 ⊗ₜ[R] a) = f (b ⊗ₜ[R] a) by simpa [Algebra.ofId_apply]
     rw [← Algebra.smul_def, ← map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
