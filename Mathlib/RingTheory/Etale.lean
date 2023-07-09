@@ -552,7 +552,7 @@ consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
  The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
  without the need to change anything (including removing redundant arguments). -/
-@[nolint unusedArguments]
+-- @[nolint unusedArguments] -- Porting note: removed
 theorem FormallyUnramified.localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   -- Porting note: added
   let _ := M
