@@ -549,7 +549,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
- The intended use is for copying proofs between `formally_{unramified, smooth, etale}`
+ The intended use is for copying proofs between `Formally{Unramified, Smooth, Etale}`
  without the need to change anything (including removing redundant arguments). -/
 @[nolint unusedArguments]
 theorem FormallyUnramified.localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
