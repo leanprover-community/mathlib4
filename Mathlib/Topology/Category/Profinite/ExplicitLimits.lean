@@ -195,17 +195,11 @@ noncomputable
 def FromFiniteCoproductIso : finiteCoproduct X ≅ ∐ X :=
 Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.colimit.isColimit _)
 
-@[simp]
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
     finiteCoproduct.ι X a = (Limits.Sigma.ι X a) ≫ (FromFiniteCoproductIso X).inv := by
   dsimp [FromFiniteCoproductIso]
   simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
     finiteCoproduct.cocone_ι, Discrete.natTrans_app]
-
-@[simp]
-theorem finiteCoproduct.ι_comp_fromFiniteCoproduct (a : α) :
-    (finiteCoproduct.ι X a) ≫ (FromFiniteCoproductIso X).hom = Limits.Sigma.ι X a := by
-  simp only [Sigma.ι_comp_toFiniteCoproduct, Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
 noncomputable
 def ToFiniteCoproductHomeo : finiteCoproduct X ≃ₜ (∐ X : _) :=
