@@ -82,12 +82,12 @@ def free : QuivCat.{v, u} ⥤ Cat.{max u v, u} where
       map_comp := fun f g => F.mapPath_comp f g }
   map_id V := by
     change (show Paths V ⥤ _ from _) = _
-    ext
+    ext; swap
     apply eq_conj_eqToHom
     rfl
   map_comp {U _ _} F G := by
     change (show Paths U ⥤ _ from _) = _
-    ext
+    ext; swap
     apply eq_conj_eqToHom
     rfl
 set_option linter.uppercaseLean3 false in
@@ -126,7 +126,7 @@ def adj : Cat.free ⊣ QuivCat.forget :=
             exact Category.id_comp _ }
       homEquiv_naturality_left_symm := fun {V _ _} f g => by
         change (show Paths V ⥤ _ from _) = _
-        ext
+        ext; swap
         apply eq_conj_eqToHom
         rfl }
 set_option linter.uppercaseLean3 false in
