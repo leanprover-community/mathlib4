@@ -112,7 +112,7 @@ protected theorem lt_of_le_and_ne {m n : ℕ} (h1 : m ≤ n) : m ≠ n → m < n
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
 
-instance : LinearOrder ℕ where
+instance linearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
   le_trans := @Nat.le_trans
@@ -123,6 +123,7 @@ instance : LinearOrder ℕ where
   decidableLT := inferInstance
   decidableLE := inferInstance
   decidableEq := inferInstance
+#align nat.linear_order Nat.linearOrder
 
 #align nat.eq_zero_of_le_zero Nat.eq_zero_of_le_zero
 
