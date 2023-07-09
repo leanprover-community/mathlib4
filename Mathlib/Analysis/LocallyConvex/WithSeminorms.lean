@@ -57,6 +57,64 @@ open BigOperators NNReal Pointwise Topology
 
 variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type _}
 
+section OneSeminorm
+
+variable [NormedField 𝕜] [NormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
+  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜₂ F] [Nonempty ι]
+
+def Seminorm.toPseudoMetricSpace (p : Seminorm 𝕜 E) : PseudoMetricSpace E :=
+  p.toSeminormedAddCommGroup.toPseudoMetricSpace
+
+def Seminorm.toUniformSpace (p : Seminorm 𝕜 E) : UniformSpace E :=
+  p.toPseudoMetricSpace.toUniformSpace
+
+def Seminorm.toTopologicalSpace (p : Seminorm 𝕜 E) : TopologicalSpace E :=
+  p.toUniformSpace.toTopologicalSpace
+
+theorem normSeminorm_toPseudoMetricSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').toPseudoMetricSpace = h.toPseudoMetricSpace := by
+  ext a b
+  rw [dist_eq_norm, @dist_eq_norm _ (normSeminorm 𝕜 E').toSeminormedAddGroup a b]
+
+theorem normSeminorm_toUniformSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').toUniformSpace = h.toUniformSpace := by
+  rw [Seminorm.toUniformSpace, normSeminorm_toPseudoMetricSpace]
+
+theorem normSeminorm_toTopologicalSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').toTopologicalSpace = h.toUniformSpace.toTopologicalSpace := by
+  rw [Seminorm.toTopologicalSpace, normSeminorm_toUniformSpace]
+
+theorem Seminorm.toPseudoMetricSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toPseudoMetricSpace = p.toPseudoMetricSpace.induced f := by
+  ext x y
+  rw [@dist_eq_norm _ (_)]
+  change p (f (x - y)) = p.toPseudoMetricSpace.dist (f x) (f y)
+  rw [@dist_eq_norm _ (_), map_sub]
+  rfl
+
+theorem Seminorm.toUniformSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toUniformSpace = UniformSpace.comap f p.toUniformSpace := by
+  rw [Seminorm.toUniformSpace, Seminorm.toUniformSpace, Seminorm.toPseudoMetricSpace_comp]
+  rfl
+
+theorem Seminorm.toTopologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toTopologicalSpace = induced f p.toTopologicalSpace := by
+  rw [Seminorm.toTopologicalSpace, Seminorm.toTopologicalSpace, Seminorm.toUniformSpace_comp]
+  rfl
+
+theorem Seminorm.toUniformSpace_iSup {p : ι → Seminorm 𝕜₂ F} :
+    (⨆ i, p i).toUniformSpace = ⨅ i, (p i).toUniformSpace := by
+  rw [UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
+      toTopologicalSpace_iInf, nhds_iInf]
+  rw [← @comap_norm_nhds_zero _ (⨆ i, p i).toSeminormedAddGroup]
+
+theorem Seminorm.toTopologicalSpace_iSup (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).toTopologicalSpace = induced f p.toTopologicalSpace := by
+  rw [Seminorm.toTopologicalSpace, Seminorm.toTopologicalSpace, Seminorm.toUniformSpace_comp]
+  rfl
+
+end OneSeminorm
+
 section FilterBasis
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
@@ -267,48 +325,7 @@ end Bounded
 
 section Topology
 
-variable [NormedField 𝕜] [NormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
-  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜₂ F] [Nonempty ι]
-
-def Seminorm.toPseudoMetricSpace (p : Seminorm 𝕜 E) : PseudoMetricSpace E :=
-  p.toSeminormedAddCommGroup.toPseudoMetricSpace
-
-def Seminorm.toUniformSpace (p : Seminorm 𝕜 E) : UniformSpace E :=
-  p.toPseudoMetricSpace.toUniformSpace
-
-def Seminorm.toTopologicalSpace (p : Seminorm 𝕜 E) : TopologicalSpace E :=
-  p.toUniformSpace.toTopologicalSpace
-
-theorem normSeminorm_toPseudoMetricSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
-    (normSeminorm 𝕜 E').toPseudoMetricSpace = h.toPseudoMetricSpace := by
-  ext a b
-  rw [dist_eq_norm, @dist_eq_norm _ (normSeminorm 𝕜 E').toSeminormedAddGroup a b]
-
-theorem normSeminorm_toUniformSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
-    (normSeminorm 𝕜 E').toUniformSpace = h.toUniformSpace := by
-  rw [Seminorm.toUniformSpace, normSeminorm_toPseudoMetricSpace]
-
-theorem normSeminorm_toTopologicalSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
-    (normSeminorm 𝕜 E').toTopologicalSpace = h.toUniformSpace.toTopologicalSpace := by
-  rw [Seminorm.toTopologicalSpace, normSeminorm_toUniformSpace]
-
-theorem Seminorm.toPseudoMetricSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
-    (p.comp f).toPseudoMetricSpace = p.toPseudoMetricSpace.induced f := by
-  ext x y
-  rw [@dist_eq_norm _ (_)]
-  change p (f (x - y)) = p.toPseudoMetricSpace.dist (f x) (f y)
-  rw [@dist_eq_norm _ (_), map_sub]
-  rfl
-
-theorem Seminorm.toUniformSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
-    (p.comp f).toUniformSpace = UniformSpace.comap f p.toUniformSpace := by
-  rw [Seminorm.toUniformSpace, Seminorm.toUniformSpace, Seminorm.toPseudoMetricSpace_comp]
-  rfl
-
-theorem Seminorm.toTopologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
-    (p.comp f).toTopologicalSpace = induced f p.toTopologicalSpace := by
-  rw [Seminorm.toTopologicalSpace, Seminorm.toTopologicalSpace, Seminorm.toUniformSpace_comp]
-  rfl
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι]
 
 /-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
 structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [t : TopologicalSpace E] : Prop where
