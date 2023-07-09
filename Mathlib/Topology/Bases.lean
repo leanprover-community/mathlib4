@@ -370,6 +370,15 @@ instance {ι : Type _} {X : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ 
     simp only [dif_pos hi]
     exact hyu _
 
+
+/-- If `α` is a separable space and `f : α → β` is a continuous map with dense range, then `β` is
+a separable space as well. E.g., the completion of a separable uniform space is separable. -/
+protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [TopologicalSpace β]
+    {f : α → β} (h : DenseRange f) (h' : Continuous f) : SeparableSpace β :=
+  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
+  ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
+#align dense_range.separable_space DenseRange.separableSpace
+
 /-- If `f` has a dense range and its domain is countable, then its codomain is a separable space.
 See also `DenseRange.separableSpace_of_dom`. -/
 theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α) (hu : DenseRange u) :
@@ -377,18 +386,11 @@ theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α
   ⟨⟨range u, countable_range u, hu⟩⟩
 #align topological_space.separable_space_of_dense_range TopologicalSpace.SeparableSpace.of_denseRange
 
-alias SeparableSpace.of_denseRange ← _root_.DenseRange.separableSpace
-
-/-- If `f` has dense range and its domain is a separable space, then its codomain is a separable
-space too. See also `DenseRange.separableSpace`. -/
-theorem _root_.DenseRange.separableSpace_of_dom [SeparableSpace α] [TopologicalSpace β] {f : α → β}
-    (hfd : DenseRange f) (hfc : Continuous f) : SeparableSpace β := by
-  rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
-  exact ⟨⟨f '' s, hsc.image f, hfd.dense_image hfc hsd⟩⟩
+alias SeparableSpace.of_denseRange ← _root_.DenseRange.separableSpace'
 
 theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
     (hf : QuotientMap f) : SeparableSpace β :=
-  hf.surjective.denseRange.separableSpace_of_dom hf.continuous
+  hf.surjective.denseRange.separableSpace hf.continuous
 
 instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
   quotientMap_quot_mk.separableSpace
@@ -396,8 +398,9 @@ instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
   quotientMap_quot_mk.separableSpace
 
+/-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
-  simp [SeparableSpace_iff]
+  simp [SeparableSpace_iff, countable_univ_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
 theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type _}
@@ -541,14 +544,6 @@ theorem isTopologicalBasis_singletons (α : Type _) [TopologicalSpace α] [Discr
   isTopologicalBasis_of_open_of_nhds (fun _ _ => isOpen_discrete _) fun x _ hx _ =>
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
 #align is_topological_basis_singletons isTopologicalBasis_singletons
-
-/-- If `α` is a separable space and `f : α → β` is a continuous map with dense range, then `β` is
-a separable space as well. E.g., the completion of a separable uniform space is separable. -/
-protected theorem DenseRange.separableSpace {α β : Type _} [TopologicalSpace α] [SeparableSpace α]
-    [TopologicalSpace β] {f : α → β} (h : DenseRange f) (h' : Continuous f) : SeparableSpace β :=
-  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
-  ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
-#align dense_range.separable_space DenseRange.separableSpace
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type _} [TopologicalSpace α] {s : Set α}
