@@ -11,6 +11,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.Seminorm
+import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Data.IsROrC.Basic
 
 /-!
@@ -452,6 +453,23 @@ theorem gauge_eq_one_iff_mem_frontier (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
   rw [eq_iff_le_not_lt, gauge_le_one_iff_mem_closure hc hs₀, gauge_lt_one_iff_mem_interior hc hs₀]
   rfl
 
+theorem gauge_eq_zero [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    gauge s x = 0 ↔ x = 0 := by
+  refine ⟨not_imp_not.1 fun (h : x ≠ 0) ↦ ne_of_gt ?_, fun h ↦ h.symm ▸ gauge_zero⟩
+  rcases hb (isOpen_compl_singleton.mem_nhds h.symm) with ⟨c, hc₀, hc⟩
+  refine (inv_pos.2 hc₀).trans_le <| le_csInf hs.gauge_set_nonempty ?_
+  rintro r ⟨hr₀, x, hx, rfl⟩
+  contrapose! hc
+  refine ⟨r⁻¹, ?_, fun h ↦ ?_⟩
+  · rw [norm_inv, Real.norm_of_nonneg hr₀.le, le_inv hc₀ hr₀]
+    exact hc.le
+  · rcases h hx with ⟨y, hy, rfl⟩
+    simp [hr₀.ne'] at hy
+
+theorem gauge_pos [T1Space E] (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
+    0 < gauge s x ↔ x ≠ 0 := by
+  simp only [(gauge_nonneg _).gt_iff_ne, Ne.def, gauge_eq_zero hs hb]
+
 end TopologicalAddGroup
 
 section IsROrC
@@ -601,10 +619,5 @@ theorem le_gauge_of_subset_closedBall (hs : Absorbent ℝ s) (hr : 0 ≤ r) (hsr
     ‖x‖ / r ≤ gauge s x := by
   rw [← gauge_closedBall hr]
   exact gauge_mono hs hsr _
-
-theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bounded s) (hx : x ≠ 0) : 0 < gauge s x := by
-  rcases hb.subset_ball_lt 0 0 with ⟨R, hR₀, hR⟩
-  refine lt_of_lt_of_le ?_ (le_gauge_of_subset_closedBall hs hR₀.le hR)
-  exact div_pos (norm_pos_iff.2 hx) hR₀
 
 end Normed
