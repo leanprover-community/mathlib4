@@ -40,7 +40,7 @@ This file expands on the development in the core library.
 * `Fin.lastCases`: define `f : Π i, Fin (n + 1), C i` by separately handling the cases
   `i = Fin.last n` and `i = Fin.castSuccEmb j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
-  `Fin.castAdd n i` and `Fin.natAddEmb m i`;
+  `Fin.castAddEmb n i` and `Fin.natAddEmb m i`;
 * `Fin.succAboveEmb_cases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by
   separately handling the cases `j = i` and `j = Fin.succAboveEmb i k`, same as `Fin.insertNth` but
   marked as eliminator and works for `Sort*`. -- Porting note: this is in another file
@@ -1439,15 +1439,15 @@ theorem castIso_natAddEmb_left {n m m' : ℕ} (i : Fin n) (h : m' + n = m + n) :
   ext <| (congr_arg (· + (i : ℕ)) (add_right_cancel h) : _)
 #align fin.cast_nat_add_left Fin.castIso_natAddEmb_left
 
-theorem castAdd_natAddEmb (p m : ℕ) {n : ℕ} (i : Fin n) :
-    castAdd p (natAddEmb m i) = castIso (add_assoc _ _ _).symm (natAddEmb m (castAdd p i)) :=
+theorem castAddEmb_natAddEmb (p m : ℕ) {n : ℕ} (i : Fin n) :
+    castAddEmb p (natAddEmb m i) = castIso (add_assoc _ _ _).symm (natAddEmb m (castAddEmb p i)) :=
   rfl
-#align fin.cast_add_nat_add Fin.castAdd_natAddEmb
+#align fin.cast_add_nat_add Fin.castAddEmb_natAddEmb
 
-theorem natAddEmb_castAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
-    natAddEmb m (castAdd p i) = castIso (add_assoc _ _ _) (castAdd p (natAddEmb m i)) :=
+theorem natAddEmb_castAddEmb (p m : ℕ) {n : ℕ} (i : Fin n) :
+    natAddEmb m (castAddEmb p i) = castIso (add_assoc _ _ _) (castAdd p (natAddEmb m i)) :=
   rfl
-#align fin.nat_add_cast_add Fin.natAddEmb_castAdd
+#align fin.nat_add_cast_add Fin.natAddEmb_castAddEmb
 
 theorem natAddEmb_natAddEmb (m n : ℕ) {p : ℕ} (i : Fin p) :
     natAddEmb m (natAddEmb n i) = cast (add_assoc _ _ _) (natAddEmb (m + n) i) :=
@@ -1830,26 +1830,26 @@ theorem lastCases_castSuccEmb {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C 
   reverse_induction_castSuccEmb _ _ _
 #align fin.last_cases_cast_succ Fin.lastCases_castSuccEmb
 
-/-- Define `f : Π i : Fin (m + n), C i` by separately handling the cases `i = castAdd n i`,
+/-- Define `f : Π i : Fin (m + n), C i` by separately handling the cases `i = castAddEmb n i`,
 `j : Fin m` and `i = natAddEmb m j`, `j : Fin n`. -/
 @[elab_as_elim]
-def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
+def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAddEmb n i))
     (hright : ∀ i, C (natAddEmb m i)) (i : Fin (m + n)) : C i :=
   if hi : (i : ℕ) < m then (castAddEmb_castLT n i hi) ▸ (hleft (castLT i hi))
   else (natAddEmb_subNat_castIso (le_of_not_lt hi)) ▸ (hright _)
 #align fin.add_cases Fin.addCases
 
 @[simp]
-theorem addCases_left {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, C (castAdd n i))
+theorem addCases_left {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, C (castAddEmb n i))
     (hright : ∀ i, C (natAddEmb m i)) (i : Fin m) :
-    addCases hleft hright (Fin.castAdd n i) = hleft i := by
+    addCases hleft hright (Fin.castAddEmb n i) = hleft i := by
   cases' i with i hi
   erw [addCases, dif_pos (castAddEmb_lt _ _)]
   rfl
 #align fin.add_cases_left Fin.addCases_left
 
 @[simp]
-theorem addCases_right {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, C (castAdd n i))
+theorem addCases_right {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, C (castAddEmb n i))
     (hright : ∀ i, C (natAddEmb m i)) (i : Fin n) :
     addCases hleft hright (natAddEmb m i) = hright i := by
   have : ¬(natAddEmb m i : ℕ) < m := (le_coe_natAddEmb _ _).not_lt

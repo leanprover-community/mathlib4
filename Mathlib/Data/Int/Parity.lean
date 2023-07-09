@@ -199,7 +199,7 @@ theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
 
 @[simp, norm_cast]
 theorem even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
-  rw_mod_cast [even_iff, Nat.even_iff]
+  rw [even_iff, Nat.even_iff, show (2 : ℤ) = ((2 : ℕ) : ℤ) from Nat.cast_ofNat]; norm_cast
 #align int.even_coe_nat Int.even_coe_nat
 
 -- Porting note: was simp. simp can prove this.
