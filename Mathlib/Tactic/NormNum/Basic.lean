@@ -421,6 +421,126 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return (.isNat mα c (q(isNat_mul (α := $α) $pf $pa $pb $r) : Expr) : Result q($f $a $b))
   core
 
+theorem natPow_zero : Nat.pow a (nat_lit 0) = nat_lit 1 := rfl
+theorem natPow_one : Nat.pow a (nat_lit 1) = a := Nat.pow_one _
+theorem zero_natPow : Nat.pow (nat_lit 0) (Nat.succ b) = nat_lit 0 := rfl
+theorem one_natPow : Nat.pow (nat_lit 1) b = nat_lit 1 := Nat.one_pow _
+
+/-- This is an opaque wrapper around `Nat.pow` to prevent lean from unfolding the definition of
+`Nat.pow` on numerals. The arbitrary precondition `p` is actually a formula of the form
+`Nat.pow a' b' = c'` but we usually don't care to unfold this proposition so we just carry a
+reference to it. -/
+structure IsNatPowT (p : Prop) (a b c : Nat) : Prop where
+  /-- Unfolds the assertion. -/
+  run' : p → Nat.pow a b = c
+
+theorem IsNatPowT.run
+  (p : IsNatPowT (Nat.pow a (nat_lit 1) = a) a b c) : Nat.pow a b = c := p.run' (Nat.pow_one _)
+
+/-- This is the key to making the proof proceed as a balanced tree of applications instead of
+a linear sequence. It is just modus ponens after unwrapping the definitions. -/
+theorem IsNatPowT.trans (h1 : IsNatPowT p a b c) (h2 : IsNatPowT (Nat.pow a b = c) a b' c') :
+    IsNatPowT p a b' c' := ⟨h2.run' ∘ h1.run'⟩
+
+theorem IsNatPowT.bit0 : IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b) (Nat.mul c c) :=
+  ⟨fun h1 => by simp [two_mul, pow_add, ← h1]⟩
+theorem IsNatPowT.bit1 :
+    IsNatPowT (Nat.pow a b = c) a (nat_lit 2 * b + nat_lit 1) (Nat.mul c (Nat.mul c a)) :=
+  ⟨fun h1 => by simp [two_mul, pow_add, mul_assoc, ← h1]⟩
+
+/--
+Proves `Nat.pow a b = c` where `a` and `b` are raw nat literals. This could be done by just
+`rfl` but the kernel does not have a special case implementation for `Nat.pow` so this would
+proceed by unary recursion on `b`, which is too slow and also leads to deep recursion.
+
+We instead do the proof by binary recursion, but this can still lead to deep recursion,
+so we use an additional trick to do binary subdivision on `log2 b`. As a result this produces
+a proof of depth `log (log b)` which will essentially never overflow before the numbers involved
+themselves exceed memory limits.
+-/
+partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
+  if b.natLit! = 0 then
+    have _ : $b =Q 0 := ⟨⟩
+    ⟨q(nat_lit 1), q(natPow_zero)⟩
+  else if a.natLit! = 0 then
+    have _ : $a =Q 0 := ⟨⟩
+    have b' : Q(ℕ) := mkRawNatLit (b.natLit! - 1)
+    have _ : $b =Q Nat.succ $b' := ⟨⟩
+    ⟨q(nat_lit 0), q(zero_natPow)⟩
+  else if a.natLit! = 1 then
+    have _ : $a =Q 1 := ⟨⟩
+    ⟨q(nat_lit 1), q(one_natPow)⟩
+  else if b.natLit! = 1 then
+    have _ : QE (α := (q(ℕ) : Q(Type))) b q(1) := ⟨⟩
+    ⟨a, q(natPow_one)⟩
+  else
+    let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
+    ⟨c, q(($p).run)⟩
+where
+  /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀`, `p := Nat.pow $a $b₀ = $c₀` -/
+  go (depth : Nat) (a b₀ c₀ b : Q(ℕ)) (p : Q(Prop)) (hp : $p =Q (Nat.pow $a $b₀ = $c₀)) :
+      (c : Q(ℕ)) × Q(IsNatPowT $p $a $b $c) :=
+    let b' := b.natLit!
+    if depth ≤ 1 then
+      let a' := a.natLit!
+      let c₀' := c₀.natLit!
+      if b' &&& 1 == 0 then
+        have c : Q(ℕ) := mkRawNatLit (c₀' * c₀')
+        have : QE (α := (q(ℕ) : Q(Type))) c q(Nat.mul $c₀ $c₀) := ⟨⟩
+        have : QE (α := (q(ℕ) : Q(Type))) b q(2 * $b₀) := ⟨⟩
+        ⟨c, q(IsNatPowT.bit0)⟩
+      else
+        have c : Q(ℕ) := mkRawNatLit (c₀' * (c₀' * a'))
+        have : QE (α := (q(ℕ) : Q(Type))) c q(Nat.mul $c₀ (Nat.mul $c₀ $a)) := ⟨⟩
+        have : QE (α := (q(ℕ) : Q(Type))) b q(2 * $b₀ + 1) := ⟨⟩
+        ⟨c, q(IsNatPowT.bit1)⟩
+    else
+      let d := depth >>> 1
+      have hi : Q(ℕ) := mkRawNatLit (b' >>> d)
+      let ⟨c1, p1⟩ := go (depth - d) a b₀ c₀ hi p hp
+      let ⟨c2, p2⟩ := go d a hi c1 b q(Nat.pow $a $hi = $c1) ⟨⟩
+      ⟨c2, q(($p1).trans $p2)⟩
+
+theorem intPow_ofNat (h1 : Nat.pow a b = c) :
+    Int.pow (Int.ofNat a) b = Int.ofNat c := by simp [← h1]
+
+theorem intPow_negOfNat_bit0 (h1 : Nat.pow a b' = c')
+    (hb : nat_lit 2 * b' = b) (hc : c' * c' = c) :
+    Int.pow (Int.negOfNat a) b = Int.ofNat c := by
+  rw [← hb, Int.negOfNat_eq, pow_eq, pow_mul, neg_pow_two, ← pow_mul, two_mul, pow_add, ← hc, ← h1]
+  simp
+
+theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
+    (hb : nat_lit 2 * b' + nat_lit 1 = b) (hc : c' * (c' * a) = c) :
+    Int.pow (Int.negOfNat a) b = Int.negOfNat c := by
+  rw [← hb, Int.negOfNat_eq, Int.negOfNat_eq, pow_eq, pow_succ, pow_mul, neg_pow_two, ← pow_mul,
+    two_mul, pow_add, ← hc, ← h1]
+  simp [mul_assoc, mul_comm, mul_left_comm]
+
+/-- Evaluates `Int.pow a b = c` where `a` and `b` are raw integer literals. -/
+partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c) :=
+  have a' : Q(ℕ) := a.appArg!
+  if 0 ≤ za then
+    have _ : $a =Q .ofNat $a' := ⟨⟩
+    let ⟨c, p⟩ := evalNatPow a' b
+    ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
+  else
+    have _ : $a =Q .negOfNat $a' := ⟨⟩
+    let b' := b.natLit!
+    have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
+    let ⟨c₀, p⟩ := evalNatPow a' b₀
+    let c' := c₀.natLit!
+    if b' &&& 1 == 0 then
+      have c : Q(ℕ) := mkRawNatLit (c' * c')
+      have pc : Q($c₀ * $c₀ = $c) := (q(Eq.refl $c) : Expr)
+      have pb : Q(2 * $b₀ = $b) := (q(Eq.refl $b) : Expr)
+      ⟨c.natLit!, q(.ofNat $c), q(intPow_negOfNat_bit0 $p $pb $pc)⟩
+    else
+      have c : Q(ℕ) := mkRawNatLit (c' * (c' * a'.natLit!))
+      have pc : Q($c₀ * ($c₀ * $a') = $c) := (q(Eq.refl $c) : Expr)
+      have pb : Q(2 * $b₀ + 1 = $b) := (q(Eq.refl $b) : Expr)
+      ⟨-c.natLit!, q(.negOfNat $c), q(intPow_negOfNat_bit1 $p $pb $pc)⟩
+
 -- see note [norm_num lemma function equality]
 theorem isNat_pow {α} [Semiring α] : ∀ {f : α → ℕ → α} {a : α} {b a' b' c : ℕ},
     f = HPow.hPow → IsNat a a' → IsNat b b' → Nat.pow a' b' = c → IsNat (f a b) c
@@ -458,27 +578,22 @@ def evalPow : NormNumExt where eval {u α} e := do
     | .isBool .. => failure
     | .isNat sα na pa =>
       have : $sα =Q AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
-      have c : Q(ℕ) := mkRawNatLit (na.natLit! ^ nb.natLit!)
+      have ⟨c, r⟩ := evalNatPow na nb
       let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
-      let r : Q(Nat.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
       let pb : Q(IsNat $b $nb) := pb
       return (.isNat sα c q(isNat_pow $pf $pa $pb $r) : Result q($f $a $b))
     | .isNegNat rα .. =>
       have : $sα =Q Ring.toSemiring := ⟨⟩
       let ⟨za, na, pa⟩ ← ra.toInt
-      let zc := za ^ nb.natLit!
-      let c := mkRawIntLit zc
       let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
-      let r : Q(Int.pow $na $nb = $c) := (q(Eq.refl $c) : Expr)
+      have ⟨zc, c, r⟩ := evalIntPow za na nb
       return (.isInt rα c zc q(isInt_pow $pf $pa $pb $r) : Result q($f $a $b))
     | .isRat dα qa na da pa =>
       have : $sα =Q Ring.toSemiring := ⟨⟩
-      let qc := qa ^ nb.natLit!
-      have nc : Q(ℤ) := mkRawIntLit qc.num
-      have dc : Q(ℕ) := mkRawNatLit qc.den
       let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
-      have r1 : Q(Int.pow $na $nb = $nc) := (q(Eq.refl $nc) : Expr)
-      have r2 : Q(Nat.pow $da $nb = $dc) := (q(Eq.refl $dc) : Expr)
+      have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
+      have ⟨dc, r2⟩ := evalNatPow da nb
+      let qc := mkRat zc dc.natLit!
       return (.isRat' dα qc nc dc q(isRat_pow $pf $pa $pb $r1 $r2) : Result q($f $a $b))
   core
 
