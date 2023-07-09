@@ -3,30 +3,25 @@ Copyright (c) 2023 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine-/
 
-import Mathlib.Tactic
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Data.Real.EReal
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Instances.EReal
 
 /-!
 # Extended nonnegative real logarithm
-We define `log` as an extension of the logarithm of a positive real 
-to the extended nonnegative reals `ENNReal`. The function takes values in the extended reals `EReal`, 
+We define `log` as an extension of the logarithm of a positive real
+to the extended nonnegative reals `ENNReal`. The function takes values in the extended reals `EReal`,
 with `log 0 = ⊥` and `log ⊤ = ⊤`.
 
 ## Main definitions
 - `log`: The extension of the real logarithm to `ENNReal`.
-- `log_OrderIso`, `log_equiv`: `log` seen respectively 
+- `log_OrderIso`, `log_equiv`: `log` seen respectively
 as an order isomorphism and an homeomorphism.
 
 ## Main Results
 - `log_strictMono`: `log` is increasing;
 - `log_injective`, `log_surjective`, `log_bijective`: `log` is
   injective, surjective, and bijective;
-- `log_mul_add`, `log_pow`, `log_pow`: `log` satisfy 
+- `log_mul_add`, `log_pow`, `log_pow`: `log` satisfy
 the identities `log (x * y) = log x + log y` and `log (x * y) = y * log x` (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
 ## Tags
@@ -42,12 +37,12 @@ namespace ENNReal
 section Definition
 
 /--
-The logarithm function defined on the extended nonnegative reals `ENNReal` to the extended reals `EReal`. 
-Coincides with the usual logarithm function and with `Real.log` on positive reals, and takes 
-values `log 0 = ⊥` and `log ⊤ = ⊤`. Conventions about multiplication in `ENNReal` 
+The logarithm function defined on the extended nonnegative reals `ENNReal` to the extended reals `EReal`.
+Coincides with the usual logarithm function and with `Real.log` on positive reals, and takes
+values `log 0 = ⊥` and `log ⊤ = ⊤`. Conventions about multiplication in `ENNReal`
 and addition in `EReal` make the identity `log (x * y) = log x + log y` unconditionnal. --/
 noncomputable def log (x : ENNReal) : EReal :=
-  if x = 0 then ⊥ 
+  if x = 0 then ⊥
     else if x = ⊤ then ⊤
     else Real.log (ENNReal.toReal x)
 
@@ -71,8 +66,8 @@ theorem log_pos_real {x : ENNReal} (h : x ≠ 0) (h' : x ≠ ⊤) :
 by simp [log, h, h']
 
 theorem log_pos_real' {x : ENNReal} (h : 0 < x.toReal) :
-  log x = Real.log (ENNReal.toReal x) := 
-by simp [log, Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 h).1), 
+  log x = Real.log (ENNReal.toReal x) :=
+by simp [log, Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 h).1),
   ne_of_lt (ENNReal.toReal_pos_iff.1 h).2]
 
 theorem log_of_nNReal {x : NNReal} (h : x ≠ 0) :
@@ -97,21 +92,21 @@ by
       rw [x_zero, y_zero] at h
       exact lt_irrefl 0 h
     . simp [x_zero, y_top]
-    . simp [x_zero, Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1), 
+    . simp [x_zero, Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1),
         ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).2]
   . exfalso
     exact (ne_top_of_lt h) x_top
-  . simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1), 
+  . simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1),
       ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).2]
     rcases ENNReal.trichotomy y with (y_zero | y_top | y_real)
-    . exfalso 
+    . exfalso
       rw [y_zero, ← ENNReal.bot_eq_zero] at h
       exact not_lt_bot h
     . simp [y_top]
-    . simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1), 
+    . simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).1),
         ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).2]
       apply Real.log_lt_log x_real
-      apply (ENNReal.toReal_lt_toReal (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).2) 
+      apply (ENNReal.toReal_lt_toReal (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).2)
         (ne_of_lt (ENNReal.toReal_pos_iff.1 y_real).2)).2 h
 
 theorem log_monotone :
@@ -249,7 +244,7 @@ by
       simp
       exact Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1)
     · have xy_real := Real.mul_pos x_real y_real
-      rw [← ENNReal.toReal_mul] at xy_real 
+      rw [← ENNReal.toReal_mul] at xy_real
       rw [log_pos_real' xy_real, log_pos_real' y_real, ENNReal.toReal_mul]
       norm_cast
       exact Real.log_mul (Ne.symm (ne_of_lt x_real)) (Ne.symm (ne_of_lt y_real))
