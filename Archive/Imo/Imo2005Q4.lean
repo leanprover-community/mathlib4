@@ -20,7 +20,6 @@ This is quite an easy problem, in which the key point is a modular arithmetic ca
 the sequence `a n` relative to an arbitrary prime.
 -/
 
-
 namespace IMO2005Q4
 
 /-- The sequence considered in the problem, `2 ^ n + 3 ^ n + 6 ^ n - 1`. -/
@@ -29,29 +28,26 @@ def a (n : ℕ) : ℤ :=
 #align imo2005_q4.a IMO2005Q4.a
 
 /-- Key lemma (a modular arithmetic calculation):  Given a prime `p` other than `2` or `3`, the
-`p - 2`th term of the sequence has `p` as a factor. -/
+`(p - 2)`th term of the sequence has `p` as a factor. -/
 theorem find_specified_factor {p : ℕ} (hp : Nat.Prime p) (hp2 : p ≠ 2) (hp3 : p ≠ 3) :
     ↑p ∣ a (p - 2) := by
-  -- restate in terms of `ZMod p`
-  have := Fact.mk hp
-  rw [← ZMod.int_cast_zmod_eq_zero_iff_dvd, a]
-  push_cast
-  have hle : 1 ≤ p - 1 := le_tsub_of_add_le_right hp.two_le
-  -- reformulate assumptions `p ≠ 2` and `p ≠ 3` in `ZMod p`
-  replace hp2 : (2 : ZMod p) ≠ 0
-  · rwa [← Nat.cast_ofNat, Ne.def, ZMod.nat_cast_zmod_eq_zero_iff_dvd,
-      Nat.prime_dvd_prime_iff_eq hp Nat.prime_two]
-  replace hp3 : (3 : ZMod p) ≠ 0
-  · rwa [← Nat.cast_ofNat, Ne.def, ZMod.nat_cast_zmod_eq_zero_iff_dvd,
-      Nat.prime_dvd_prime_iff_eq hp Nat.prime_three]
-  -- main computation
+  -- Since `p` is neither `2` nor `3`, it is coprime with `2`, `3`, and `6`
+  rw [Ne.def, ← Nat.prime_dvd_prime_iff_eq hp (by norm_num), ← Nat.Prime.coprime_iff_not_dvd hp]
+    at hp2 hp3
+  have : Int.gcd p 6 = 1 := Nat.coprime_mul_iff_right.2 ⟨hp2, hp3⟩
+  -- Nat arithmetic needed to deal with powers
+  have hp' : p - 1 = p - 2 + 1 := Eq.symm <| Nat.succ_pred <| (tsub_pos_of_lt hp.one_lt).ne'
+  -- Thus it suffices to show that `6 * a (p - 2) ≡ 0 [ZMOD p]`
+  rw [← Int.modEq_zero_iff_dvd, ← Int.ediv_one p, ← Nat.cast_one, ← this]
+  refine Int.ModEq.cancel_left_div_gcd (Nat.cast_pos.2 hp.pos) ?_
   calc
-    (2 : ZMod p) ^ (p - 2) + 3 ^ (p - 2) + 6 ^ (p - 2) - 1
-      = 2 ^ (p - 1 - 1) + 3 ^ (p - 1 - 1) + (2 * 3) ^ (p - 1 - 1) - 1 := by congr 3; norm_num
-    _ = 1 / 2 + 1 / 3 + (1 / 2) * (1 / 3) - 1 := by
-      simp [pow_sub₀, mul_pow, ZMod.pow_card_sub_one_eq_one, mul_comm, *]
-    _ = 0 := by field_simp; norm_num
-#align imo2005_q4.find_specified_factor IMO2005Q4.find_specified_factor
+    6 * a (p - 2) = 3 * 2 ^ (p - 1) + 2 * 3 ^ (p - 1) + (2 * 3) ^ (p - 1) - 6 := by
+      simp only [a, hp', pow_succ']; ring
+    _ ≡ 3 * 1 + 2 * 1 + 1 - 6 [ZMOD p] := by
+      gcongr <;> apply Int.ModEq.pow_card_sub_one_eq_one hp <;>
+        rwa [Int.isCoprime_iff_gcd_eq_one, Int.gcd_comm]
+    _ = 0 := rfl
+#align imo2005_q4.find_specified_factor IMO2005Q4.find_specified_factorₓ
 
 end IMO2005Q4
 
@@ -88,4 +84,3 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
     1 = 3 - 2 := by norm_num
     _ ≤ p - 2 := tsub_le_tsub_right (Nat.succ_le_of_lt $ hp.two_le.lt_of_ne' hp2) _
 #align imo2005_q4 imo2005_q4
-
