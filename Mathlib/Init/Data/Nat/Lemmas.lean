@@ -508,8 +508,8 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
   | succ n, succ m => H3 _ _ (subInduction H1 H2 H3 n m)
 #align nat.sub_induction Nat.subInduction
 
-protected def strongRecOn {p : Nat → Sort u} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
-  by
+protected def strongRecOn {p : Nat → Sort u} (n : Nat) (h : ∀ n, (∀ m, m < n → p m) → p n) :
+    p n := by
   suffices ∀ n m, m < n → p m from this (succ n) n (lt_succ_self _)
   intro n; induction' n with n ih
   · intro m h₁; exact absurd h₁ m.not_lt_zero
@@ -534,23 +534,10 @@ protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 
 
 /-! mod -/
 
-
 #align nat.mod_def Nat.mod_eq
 
-@[simp]
-theorem mod_zero (a : Nat) : a % 0 = a := by
-  rw [mod_def]
-  have h : ¬(0 < 0 ∧ 0 ≤ a)
-  simp [lt_irrefl]
-  simp [if_neg, h]
 #align nat.mod_zero Nat.mod_zero
 
-theorem mod_eq_of_lt {a b : Nat} (h : a < b) : a % b = a :=
-  by
-  rw [mod_def]
-  have h' : ¬(0 < b ∧ b ≤ a)
-  simp [not_le_of_gt h]
-  simp [if_neg, h']
 #align nat.mod_eq_of_lt Nat.mod_eq_of_lt
 
 #align nat.zero_mod Nat.zero_mod
@@ -652,12 +639,6 @@ protected theorem mul_div_mul {m : ℕ} (n k : ℕ) (H : 0 < m) : m * n / (m * k
   rw [← Nat.div_div_eq_div_mul, Nat.mul_div_cancel_left _ H]
 #align nat.mul_div_mul Nat.mul_div_mul
 
-theorem div_lt_self {n m : Nat} : 0 < n → 1 < m → n / m < n :=
-  by
-  intro h₁ h₂
-  have := Nat.mul_lt_mul h₂ (le_refl _) h₁
-  rw [Nat.one_mul, Nat.mul_comm] at this
-  exact (Nat.div_lt_iff_lt_mul <| lt_trans (by comp_val) h₂).2 this
 #align nat.div_lt_self Nat.div_lt_self
 
 /-! dvd -/
