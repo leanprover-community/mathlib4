@@ -8,146 +8,65 @@ Authors: Leonardo de Moura, Jeremy Avigad
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Data.Nat.Basic
-import Leanbin.Init.Data.Nat.Div
-import Leanbin.Init.Meta.Default
-import Leanbin.Init.Algebra.Functions
+import Std.Data.Nat.Lemmas
+import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Nat.Div
+import Mathlib.Init.Algebra.Functions
 
 universe u
 
 namespace Nat
 
-attribute [pre_smt] nat_zero_eq_zero
-
 /-! addition -/
 
-
-protected theorem add_comm : ∀ n m : ℕ, n + m = m + n
-  | n, 0 => Eq.symm (Nat.zero_add n)
-  | n, m + 1 =>
-    suffices succ (n + m) = succ (m + n) from Eq.symm (succ_add m n) ▸ this
-    congr_arg succ (add_comm n m)
 #align nat.add_comm Nat.add_comm
 
-protected theorem add_assoc : ∀ n m k : ℕ, n + m + k = n + (m + k)
-  | n, m, 0 => rfl
-  | n, m, succ k => by rw [add_succ, add_succ, add_assoc] <;> rfl
 #align nat.add_assoc Nat.add_assoc
 
-protected theorem add_left_comm : ∀ n m k : ℕ, n + (m + k) = m + (n + k) :=
-  left_comm Nat.add Nat.add_comm Nat.add_assoc
 #align nat.add_left_comm Nat.add_left_comm
 
-protected theorem add_left_cancel : ∀ {n m k : ℕ}, n + m = n + k → m = k
-  | 0, m, k => by simp (config := { contextual := true }) [Nat.zero_add]
-  | succ n, m, k => fun h =>
-    have : n + m = n + k := by simp [succ_add] at h ; assumption
-    add_left_cancel this
 #align nat.add_left_cancel Nat.add_left_cancel
 
-protected theorem add_right_cancel {n m k : ℕ} (h : n + m = k + m) : n = k :=
-  have : m + n = m + k := by rwa [Nat.add_comm n m, Nat.add_comm k m] at h
-  Nat.add_left_cancel this
 #align nat.add_right_cancel Nat.add_right_cancel
 
-theorem succ_ne_zero (n : ℕ) : succ n ≠ 0 := fun h => Nat.noConfusion h
 #align nat.succ_ne_zero Nat.succ_ne_zero
 
-theorem succ_ne_self : ∀ n : ℕ, succ n ≠ n
-  | 0, h => absurd h (Nat.succ_ne_zero 0)
-  | n + 1, h => succ_ne_self n (Nat.noConfusion h fun h => h)
 #align nat.succ_ne_self Nat.succ_ne_self
 
-protected theorem one_ne_zero : 1 ≠ (0 : ℕ) := fun h => Nat.noConfusion h
 #align nat.one_ne_zero Nat.one_ne_zero
 
-protected theorem zero_ne_one : 0 ≠ (1 : ℕ) := fun h => Nat.noConfusion h
 #align nat.zero_ne_one Nat.zero_ne_one
 
-protected theorem eq_zero_of_add_eq_zero_right : ∀ {n m : ℕ}, n + m = 0 → n = 0
-  | 0, m => by simp [Nat.zero_add]
-  | n + 1, m => fun h => by
-    exfalso
-    rw [add_one, succ_add] at h
-    apply succ_ne_zero _ h
 #align nat.eq_zero_of_add_eq_zero_right Nat.eq_zero_of_add_eq_zero_right
 
-protected theorem eq_zero_of_add_eq_zero_left {n m : ℕ} (h : n + m = 0) : m = 0 :=
-  @Nat.eq_zero_of_add_eq_zero_right m n (Nat.add_comm n m ▸ h)
 #align nat.eq_zero_of_add_eq_zero_left Nat.eq_zero_of_add_eq_zero_left
 
-protected theorem add_right_comm : ∀ n m k : ℕ, n + m + k = n + k + m :=
-  right_comm Nat.add Nat.add_comm Nat.add_assoc
 #align nat.add_right_comm Nat.add_right_comm
 
-theorem eq_zero_of_add_eq_zero {n m : ℕ} (H : n + m = 0) : n = 0 ∧ m = 0 :=
-  ⟨Nat.eq_zero_of_add_eq_zero_right H, Nat.eq_zero_of_add_eq_zero_left H⟩
 #align nat.eq_zero_of_add_eq_zero Nat.eq_zero_of_add_eq_zero
 
 /-! multiplication -/
 
-
-protected theorem mul_zero (n : ℕ) : n * 0 = 0 :=
-  rfl
 #align nat.mul_zero Nat.mul_zero
 
-theorem mul_succ (n m : ℕ) : n * succ m = n * m + n :=
-  rfl
 #align nat.mul_succ Nat.mul_succ
 
-protected theorem zero_mul : ∀ n : ℕ, 0 * n = 0
-  | 0 => rfl
-  | succ n => by rw [mul_succ, MulZeroClass.zero_mul]
 #align nat.zero_mul Nat.zero_mul
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
-private unsafe def sort_add :=
-  sorry
-
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.285555777.sort_add -/
-theorem succ_mul : ∀ n m : ℕ, succ n * m = n * m + m
-  | n, 0 => rfl
-  | n, succ m => by
-    simp [mul_succ, add_succ, succ_mul n m]
-    run_tac
-      sort_add
 #align nat.succ_mul Nat.succ_mul
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.285555777.sort_add -/
-protected theorem right_distrib : ∀ n m k : ℕ, (n + m) * k = n * k + m * k
-  | n, m, 0 => rfl
-  | n, m, succ k => by simp [mul_succ, right_distrib n m k];
-    run_tac
-      sort_add
 #align nat.right_distrib Nat.right_distrib
 
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic _private.285555777.sort_add -/
-protected theorem left_distrib : ∀ n m k : ℕ, n * (m + k) = n * m + n * k
-  | 0, m, k => by simp [Nat.zero_mul]
-  | succ n, m, k => by simp [succ_mul, left_distrib n m k];
-    run_tac
-      sort_add
 #align nat.left_distrib Nat.left_distrib
 
-protected theorem mul_comm : ∀ n m : ℕ, n * m = m * n
-  | n, 0 => by rw [Nat.zero_mul, Nat.mul_zero]
-  | n, succ m => by simp [mul_succ, succ_mul, mul_comm n m]
 #align nat.mul_comm Nat.mul_comm
 
-protected theorem mul_assoc : ∀ n m k : ℕ, n * m * k = n * (m * k)
-  | n, m, 0 => rfl
-  | n, m, succ k => by simp [mul_succ, Nat.left_distrib, mul_assoc n m k]
 #align nat.mul_assoc Nat.mul_assoc
 
-protected theorem mul_one : ∀ n : ℕ, n * 1 = n :=
-  Nat.zero_add
 #align nat.mul_one Nat.mul_one
 
-protected theorem one_mul (n : ℕ) : 1 * n = n := by rw [Nat.mul_comm, Nat.mul_one]
 #align nat.one_mul Nat.one_mul
 
-theorem succ_add_eq_succ_add (n m : ℕ) : succ n + m = n + succ m := by simp [succ_add, add_succ]
 #align nat.succ_add_eq_succ_add Nat.succ_add_eq_succ_add
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
