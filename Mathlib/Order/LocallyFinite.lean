@@ -1364,6 +1364,8 @@ theorem map_subtype_embedding_Iio : (Iio a).map (Embedding.subtype p) = (Iio a :
 
 end LocallyFiniteOrderBot
 
+end Finset
+
 section Finite
 
 variable {α : Type _} {s : Set α}
@@ -1386,5 +1388,3 @@ theorem finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFiniteOr
     fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
 
 end Finite
-
-end Finset
