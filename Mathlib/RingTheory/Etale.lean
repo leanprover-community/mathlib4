@@ -46,7 +46,7 @@ variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 class FormallyUnramified : Prop where
   comp_injective :
     ∀ ⦃B : Type u⦄ [CommRing B],
-      ∀ [Algebra R B] (I : Ideal B) (hI : I ^ 2 = ⊥),
+      ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_unramified Algebra.FormallyUnramified
 
@@ -56,7 +56,7 @@ class FormallyUnramified : Prop where
 class FormallySmooth : Prop where
   comp_surjective :
     ∀ ⦃B : Type u⦄ [CommRing B],
-      ∀ [Algebra R B] (I : Ideal B) (hI : I ^ 2 = ⊥),
+      ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_smooth Algebra.FormallySmooth
 
@@ -66,7 +66,7 @@ class FormallySmooth : Prop where
 class FormallyEtale : Prop where
   comp_bijective :
     ∀ ⦃B : Type u⦄ [CommRing B],
-      ∀ [Algebra R B] (I : Ideal B) (hI : I ^ 2 = ⊥),
+      ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Bijective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
 #align algebra.formally_etale Algebra.FormallyEtale
 
@@ -252,7 +252,7 @@ variable (R : Type u) [CommSemiring R]
 
 instance FormallySmooth.mvPolynomial (σ : Type u) : FormallySmooth R (MvPolynomial σ R) := by
   constructor
-  intro C _ _ I hI f
+  intro C _ _ I _ f
   have : ∀ s : σ, ∃ c : C, Ideal.Quotient.mk I c = f (MvPolynomial.X s) := fun s =>
     Ideal.Quotient.mk_surjective _
   choose g hg using this
@@ -509,7 +509,7 @@ theorem FormallySmooth.of_isLocalization : FormallySmooth R Rₘ := by
 /-- This holds in general for epimorphisms. -/
 theorem FormallyUnramified.of_isLocalization : FormallyUnramified R Rₘ := by
   constructor
-  intro Q _ _ I e f₁ f₂ e
+  intro Q _ _ I _ f₁ f₂ _
   apply AlgHom.coe_ringHom_injective
   refine' IsLocalization.ringHom_ext M _
   ext
