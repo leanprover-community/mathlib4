@@ -550,6 +550,8 @@ consistency. See `algebra.formally_unramified.of_comp` instead.
  without the need to change anything (including removing redundant arguments). -/
 @[nolint unusedArguments]
 theorem FormallyUnramified.localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
+  -- Porting note: added
+  let _ := M
   FormallyUnramified.of_comp R Rₘ Sₘ
 #align algebra.formally_unramified.localization_base Algebra.FormallyUnramified.localization_base
 
@@ -564,8 +566,8 @@ theorem FormallySmooth.localization_map [FormallySmooth R S] : FormallySmooth R�
   exact FormallySmooth.localization_base M
 #align algebra.formally_smooth.localization_map Algebra.FormallySmooth.localization_map
 
-theorem FormallyUnramified.localization_map [FormallyUnramified R S] : FormallyUnramified Rₘ Sₘ :=
-  by
+theorem FormallyUnramified.localization_map [FormallyUnramified R S] :
+    FormallyUnramified Rₘ Sₘ := by
   haveI : FormallyUnramified S Sₘ :=
     FormallyUnramified.of_isLocalization (M.map (algebraMap R S))
   haveI : FormallyUnramified R Sₘ := FormallyUnramified.comp R S Sₘ
