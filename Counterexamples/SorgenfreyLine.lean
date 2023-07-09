@@ -39,7 +39,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 
 open Set Filter TopologicalSpace
 
-open scoped Topology Filter
+open scoped Topology Filter Cardinal
 
 namespace Counterexample
 
@@ -236,9 +236,15 @@ theorem isClopen_Ici_prod (x : ℝₗ × ℝₗ) : IsClopen (Ici x) :=
   (Ici_prod_eq x).symm ▸ (isClopen_Ici _).prod (isClopen_Ici _)
 #align counterexample.sorgenfrey_line.is_clopen_Ici_prod Counterexample.SorgenfreyLine.isClopen_Ici_prod
 
+theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 = c} = 𝔠 := by
+  rw [← Cardinal.mk_real]
+  exact Equiv.cardinal_eq ⟨fun x ↦ toReal x.1.1,
+    fun x ↦ ⟨(toReal.symm x, c - toReal.symm x), by simp⟩,
+    fun ⟨x, hx⟩ ↦ by ext <;> simp [← hx.out], fun x ↦ rfl⟩
+
 /-- Any subset of an antidiagonal `{(x, y) : ℝₗ × ℝₗ| x + y = c}` is a closed set. -/
-theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ}
-    (hs : ∀ x : ℝₗ × ℝₗ, x ∈ s → x.1 + x.2 = c) : IsClosed s := by
+theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ} (hs : ∀ x ∈ s, x.1 + x.2 = c) :
+    IsClosed s := by
   rw [← closure_subset_iff_isClosed]
   rintro ⟨x, y⟩ H
   obtain rfl : x + y = c := by
@@ -259,9 +265,20 @@ instance (c : ℝₗ) : DiscreteTopology {x : ℝₗ × ℝₗ | x.1 + x.2 = c} 
     ⟨val '' Uᶜ, isClosed_of_subset_antidiagonal <| coe_image_subset _ Uᶜ,
       preimage_image_eq _ val_injective⟩
 
-#check SeparableSpace
+/-- The Sorgenfrey plane `ℝₗ × ℝₗ` is not a normal space. -/
+theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) :=
+  (isClosed_antidiagonal 0).not_normal_of_continuum_le_mk (cardinal_antidiagonal _).ge
+#align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
+
+/-- An antidiagonal is a separable set but is not a separable space. -/
 theorem isSeparable_antidiagonal (c : ℝₗ) : IsSeparable {x : ℝₗ × ℝₗ | x.1 + x.2 = c} :=
   isSeparable_of_separableSpace _
+
+/-- An antidiagonal is a separable set but is not a separable space. -/
+theorem not_separableSpace_antidiagonal (c : ℝₗ) :
+    ¬SeparableSpace {x : ℝₗ × ℝₗ | x.1 + x.2 = c} := by
+  rw [separableSpace_iff_countable, ← Cardinal.mk_le_aleph0_iff, cardinal_antidiagonal, not_le]
+  exact Cardinal.aleph0_lt_continuum
 
 theorem nhds_prod_antitone_basis_inv_pnat (x y : ℝₗ) :
     (𝓝 (x, y)).HasAntitoneBasis fun n : ℕ+ => Ico x (x + (n : ℝₗ)⁻¹) ×ˢ Ico y (y + (n : ℝₗ)⁻¹) := by
@@ -323,10 +340,6 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   · refine' (nhds_antitone_basis_Ico_inv_pnat (-x)).2 hnN ⟨neg_le_neg hxn.1.le, _⟩
     simp only [add_neg_lt_iff_le_add', lt_neg_add_iff_add_lt]
     exact hxn.2
-
-theorem not_normalSpace_prod : ¬NormalSpace (ℝₗ × ℝₗ) := by
-  
-#align counterexample.sorgenfrey_line.not_normal_space_prod Counterexample.SorgenfreyLine.not_normalSpace_prod
 
 /-- Topology on the Sorgenfrey line is not metrizable. -/
 theorem not_metrizableSpace : ¬MetrizableSpace ℝₗ := by
