@@ -274,10 +274,8 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | 0, 0, _h => rfl
   | 0, m + 1, h => by contradiction
   | n + 1, 0, h => by contradiction
-  | n + 1, m + 1, h =>
-    by
-    have : succ (succ (n + n)) = succ (succ (m + m)) :=
-      by
+  | n + 1, m + 1, h => by
+    have : succ (succ (n + n)) = succ (succ (m + m)) := by
       unfold bit0 at h ; simp [add_one, add_succ, succ_add] at h
       have aux : n + n = m + m := h; rw [aux]
     have : n + n = m + m := by repeat injection this with this
