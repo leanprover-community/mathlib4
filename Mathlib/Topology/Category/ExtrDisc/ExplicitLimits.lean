@@ -32,10 +32,8 @@ section FiniteCoproducts
 
 open Limits
 
--- Assume we have `X a → B` which are jointly surjective.
 variable {α : Type} [Fintype α] {B : ExtrDisc.{u}}
-  (X : α → ExtrDisc.{u}) (π : (a : α) → (X a ⟶ B))
-  (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b)
+  (X : α → ExtrDisc.{u})
 
 /--
 The coproduct of a finite family of objects in `ExtrDisc`, constructed as the disjoint
