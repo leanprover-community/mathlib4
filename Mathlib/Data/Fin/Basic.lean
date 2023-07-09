@@ -56,7 +56,7 @@ This file expands on the development in the core library.
   see also `Equiv.finCongr`;
 * `Fin.castAdd m` : embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : embed `Fin n` into `Fin (n+1)`;
-* `Fin.succAbove p` : embed `Fin n` into `Fin (n + 1)` with a hole around `p`;
+* `Fin.succAboveEmb p` : embed `Fin n` into `Fin (n + 1)` with a hole around `p`;
 * `Fin.addNatEmb m i` : add `m` on `i` on the right, generalizes `Fin.succ`;
 * `Fin.natAddEmb n i` adds `n` on `i` on the left;
 
@@ -1115,10 +1115,8 @@ theorem castIso_to_equiv (h : n = m) : (castIso h).toEquiv = Equiv.cast (h ▸ r
 
 /-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
-theorem castIso_eq_cast (h : n = m) : (castIso h : Fin n → Fin m) = cast (h ▸ rfl) := by
-  subst h
-  ext
-  simp
+theorem castIso_eq_cast (h : n = m) : (castIso h : Fin n → Fin m) = cast (h ▸ rfl) :=
+  rfl
 #align fin.cast_eq_cast Fin.castIso_eq_cast
 
 /-- `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
@@ -1437,15 +1435,13 @@ theorem castIso_natAddEmb_left {n m m' : ℕ} (i : Fin n) (h : m' + n = m + n) :
 #align fin.cast_nat_add_left Fin.castIso_natAddEmb_left
 
 theorem castAdd_natAddEmb (p m : ℕ) {n : ℕ} (i : Fin n) :
-    castAdd p (natAddEmb m i) = castIso (add_assoc _ _ _).symm (natAddEmb m (castAdd p i)) := by
-  ext
-  simp
+    castAdd p (natAddEmb m i) = castIso (add_assoc _ _ _).symm (natAddEmb m (castAdd p i)) :=
+  rfl
 #align fin.cast_add_nat_add Fin.castAdd_natAddEmb
 
 theorem natAddEmb_castAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
-    natAddEmb m (castAdd p i) = castIso (add_assoc _ _ _) (castAdd p (natAddEmb m i)) := by
-  ext
-  simp
+    natAddEmb m (castAdd p i) = castIso (add_assoc _ _ _) (castAdd p (natAddEmb m i)) :=
+  rfl
 #align fin.nat_add_cast_add Fin.natAddEmb_castAdd
 
 theorem natAddEmb_natAddEmb (m n : ℕ) {p : ℕ} (i : Fin p) :
@@ -1490,44 +1486,34 @@ section Pred
 -/
 
 
--- Porting note: taken from lean3port
-/-- Predecessor -/
-def pred {n : ℕ} : ∀ i : Fin (n + 1), i ≠ 0 → Fin n
-  | ⟨a, h₁⟩, h₂ =>
-    ⟨a.pred,
-      haveI : a ≠ 0 := by
-        have aux₁ := vne_of_ne h₂
-        dsimp at aux₁
-        exact aux₁
-      Nat.pred_lt_pred this h₁⟩
 #align fin.pred Fin.pred
 
 @[simp]
-theorem coe_pred (j : Fin (n + 1)) (h : j ≠ 0) : (j.pred h : ℕ) = j - 1 := by
+theorem coe_pred (j : Fin (n + 1)) (h : j.1 ≠ 0) : (j.pred h : ℕ) = j - 1 := by
   cases j
   rfl
 #align fin.coe_pred Fin.coe_pred
 
 @[simp]
-theorem succ_pred : ∀ (i : Fin (n + 1)) (h : i ≠ 0), (i.pred h).succ = i
+theorem succ_pred : ∀ (i : Fin (n + 1)) (h : i.1 ≠ 0), (i.pred h).succ = i
   | ⟨0, h⟩, hi => by simp only [mk_zero, ne_eq, not_true] at hi
   | ⟨n + 1, h⟩, hi => rfl
 #align fin.succ_pred Fin.succ_pred
 
 @[simp]
-theorem pred_succ (i : Fin n) {h : i.succ ≠ 0} : i.succ.pred h = i := by
+theorem pred_succ (i : Fin n) {h : i.succ.1 ≠ 0} : i.succ.pred h = i := by
   cases i
   rfl
 #align fin.pred_succ Fin.pred_succ
 
-theorem pred_eq_iff_eq_succ {n : ℕ} (i : Fin (n + 1)) (hi : i ≠ 0) (j : Fin n) :
+theorem pred_eq_iff_eq_succ {n : ℕ} (i : Fin (n + 1)) (hi : i.1 ≠ 0) (j : Fin n) :
     i.pred hi = j ↔ i = j.succ :=
   ⟨fun h => by simp only [← h, Fin.succ_pred], fun h => by simp only [h, Fin.pred_succ]⟩
 #align fin.pred_eq_iff_eq_succ Fin.pred_eq_iff_eq_succ
 
 --Porting note: removing @[simp]. `pred_mk_succ'` has `simp` attribute instead
 theorem pred_mk_succ (i : ℕ) (h : i < n + 1) :
-    Fin.pred ⟨i + 1, add_lt_add_right h 1⟩ (ne_of_vne (_root_.ne_of_gt (mk_succ_pos i h))) =
+    Fin.pred ⟨i + 1, add_lt_add_right h 1⟩ (_root_.ne_of_gt (mk_succ_pos i h)) =
       ⟨i, h⟩ := by
   simp only [ext_iff, coe_pred, add_tsub_cancel_right]
 #align fin.pred_mk_succ Fin.pred_mk_succ
@@ -1539,32 +1525,33 @@ theorem pred_mk_succ' (i : ℕ) (h₁ : i + 1 < n + 1 + 1) (h₂) :
   pred_mk_succ i _
 
 -- This is not a simp lemma by default, because `pred_mk_succ` is nicer when it applies.
-theorem pred_mk {n : ℕ} (i : ℕ) (h : i < n + 1) (w) : Fin.pred ⟨i, h⟩ w =
+theorem pred_mk {n : ℕ} (i : ℕ) (h : i < n + 1) (w : i ≠ 0) : Fin.pred ⟨i, h⟩ w =
     ⟨i - 1, by
       rwa [tsub_lt_iff_right (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero
-        (by simpa using Fin.vne_of_ne w))]⟩ :=
+        (by simpa using w))]⟩ :=
   rfl
 #align fin.pred_mk Fin.pred_mk
 
 @[simp]
-theorem pred_le_pred_iff {n : ℕ} {a b : Fin n.succ} {ha : a ≠ 0} {hb : b ≠ 0} :
+theorem pred_le_pred_iff {n : ℕ} {a b : Fin n.succ} {ha : a.1 ≠ 0} {hb : b.1 ≠ 0} :
     a.pred ha ≤ b.pred hb ↔ a ≤ b := by rw [← succ_le_succ_iff, succ_pred, succ_pred]
 #align fin.pred_le_pred_iff Fin.pred_le_pred_iff
 
 @[simp]
-theorem pred_lt_pred_iff {n : ℕ} {a b : Fin n.succ} {ha : a ≠ 0} {hb : b ≠ 0} :
+theorem pred_lt_pred_iff {n : ℕ} {a b : Fin n.succ} {ha : a.1 ≠ 0} {hb : b.1 ≠ 0} :
     a.pred ha < b.pred hb ↔ a < b := by rw [← succ_lt_succ_iff, succ_pred, succ_pred]
 #align fin.pred_lt_pred_iff Fin.pred_lt_pred_iff
 
 @[simp]
-theorem pred_inj : ∀ {a b : Fin (n + 1)} {ha : a ≠ 0} {hb : b ≠ 0}, a.pred ha = b.pred hb ↔ a = b
+theorem pred_inj : ∀ {a b : Fin (n + 1)} {ha : a.1 ≠ 0} {hb : b.1 ≠ 0},
+    a.pred ha = b.pred hb ↔ a = b
   | ⟨0, _⟩, _, ha, _ => by simp only [mk_zero, ne_eq, not_true] at ha
   | ⟨i + 1, _⟩, ⟨0, _⟩, _, hb => by simp only [mk_zero, ne_eq, not_true] at hb
   | ⟨i + 1, hi⟩, ⟨j + 1, hj⟩, ha, hb => by simp [Fin.eq_iff_veq]
 #align fin.pred_inj Fin.pred_inj
 
 @[simp]
-theorem pred_one {n : ℕ} : Fin.pred (1 : Fin (n + 2)) (Ne.symm (ne_of_lt one_pos)) = 0 := by
+theorem pred_one {n : ℕ} : Fin.pred (1 : Fin (n + 2)) (Ne.symm (_root_.ne_of_lt one_pos)) = 0 := by
   ext
   simp
 #align fin.pred_one Fin.pred_one
@@ -1576,11 +1563,6 @@ theorem pred_add_one (i : Fin (n + 2)) (h : (i : ℕ) < n + 1) :
   exact add_lt_add_right h 1
 #align fin.pred_add_one Fin.pred_add_one
 
-/-- `subNat i h` subtracts `m` from `i`, generalizes `Fin.pred`. -/
-def subNat (m) (i : Fin (n + m)) (h : m ≤ (i : ℕ)) : Fin n :=
-  ⟨(i : ℕ) - m, by
-    rw [tsub_lt_iff_right h]
-    exact i.is_lt⟩
 #align fin.sub_nat Fin.subNat
 
 @[simp]
@@ -1596,7 +1578,7 @@ theorem subNat_mk {i : ℕ} (h₁ : i < n + m) (h₂ : m ≤ i) :
 
 @[simp]
 theorem pred_castSuccEmb_succ (i : Fin n) :
-    pred (castSuccEmb i.succ) (ne_of_gt (castSuccEmb_pos i.succ_pos)) = castSuccEmb i := by
+    pred (castSuccEmb i.succ) (_root_.ne_of_gt (castSuccEmb_pos i.succ_pos)) = castSuccEmb i := by
   simp [eq_iff_veq]
 #align fin.pred_cast_succ_succ Fin.pred_castSuccEmb_succ
 
@@ -1613,7 +1595,7 @@ theorem subNat_addNatEmb (i : Fin n) (m : ℕ) (h : m ≤ addNatEmb m i := le_co
 
 @[simp]
 theorem natAddEmb_subNat_castIso {i : Fin (n + m)} (h : n ≤ i) :
-    natAddEmb n (subNat n (castIso (add_comm _ _) i) h) = i := by simp [← cast_addNatEmb]
+    natAddEmb n (subNat n (castIso (add_comm _ _) i) h) = i := by simp [← castIso_addNatEmb]
 #align fin.nat_add_sub_nat_cast Fin.natAddEmb_subNat_castIso
 
 end Pred
@@ -1848,7 +1830,7 @@ theorem lastCases_castSuccEmb {n : ℕ} {C : Fin (n + 1) → Sort _} (hlast : C 
 @[elab_as_elim]
 def addCases {m n : ℕ} {C : Fin (m + n) → Sort u} (hleft : ∀ i, C (castAdd n i))
     (hright : ∀ i, C (natAddEmb m i)) (i : Fin (m + n)) : C i :=
-  if hi : (i : ℕ) < m then (castAdd_castLT n i hi) ▸ (hleft (castLT i hi))
+  if hi : (i : ℕ) < m then (castAddEmb_castLT n i hi) ▸ (hleft (castLT i hi))
   else (natAddEmb_subNat_castIso (le_of_not_lt hi)) ▸ (hright _)
 #align fin.add_cases Fin.addCases
 
@@ -1857,7 +1839,7 @@ theorem addCases_left {m n : ℕ} {C : Fin (m + n) → Sort _} (hleft : ∀ i, C
     (hright : ∀ i, C (natAddEmb m i)) (i : Fin m) :
     addCases hleft hright (Fin.castAdd n i) = hleft i := by
   cases' i with i hi
-  rw [addCases, dif_pos (castAdd_lt _ _)]
+  erw [addCases, dif_pos (castAddEmb_lt _ _)]
   rfl
 #align fin.add_cases_left Fin.addCases_left
 
@@ -2021,16 +2003,16 @@ end AddGroup
 
 section SuccAbove
 
-theorem succAbove_aux (p : Fin (n + 1)) :
-    StrictMono fun i : Fin n => if (castSuccEmb i) < p then (castSuccEmb i) else i.succ :=
+theorem strictMono_succAbove (p : Fin (n + 1)) :
+    StrictMono p.succAbove :=
   (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
     (fun _ _ hij hj => lt_trans ((castSuccEmb : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
     (castSuccEmb_lt_succ i).le
-#align fin.succ_above_aux Fin.succAbove_aux
+#align fin.succ_above_aux Fin.strictMono_succAbove
 
-/-- `succAbove p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
-def succAbove (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
-  OrderEmbedding.ofStrictMono _ p.succAbove_aux
+/-- `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
+def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
+  OrderEmbedding.ofStrictMono _ p.strictMono_succAbove
 #align fin.succ_above Fin.succAbove
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` with a hole around `p : Fin (n + 1)`
