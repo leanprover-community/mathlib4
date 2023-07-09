@@ -288,10 +288,9 @@ lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduc
   exact eq_of_heq (Sigma.ext_iff.mp hxy).2
 
 lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
-    ∃ (a : α) (r : X a), R = finiteCoproduct.ι X a r := by
-  exact ⟨R.fst, R.snd, rfl⟩
+    ∃ (a : α) (r : X a), R = finiteCoproduct.ι X a r := ⟨R.fst, R.snd, rfl⟩
 
-lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B} (a : α) :
+lemma finiteCoproduct.ι_desc_apply' {B : CompHaus} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
   intro x
   change (ι X a ≫ desc X π) _ = _
