@@ -1370,16 +1370,16 @@ section Finite
 
 variable {α : Type _} {s : Set α}
 
-theorem finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
+theorem Set.finite_iff_bddAbove [SemilatticeSup α] [LocallyFiniteOrder α] [OrderBot α]:
     s.Finite ↔ BddAbove s :=
   ⟨fun h ↦ ⟨h.toFinset.sup id, fun x hx ↦ Finset.le_sup (f := id) (by simpa)⟩,
     fun ⟨m, hm⟩ ↦ (Set.finite_Icc ⊥ m).subset (fun x hx ↦ ⟨bot_le, hm hx⟩)⟩
 
-theorem finite_iff_bddBelow [SemilatticeInf α] [LocallyFiniteOrder α] [OrderTop α] :
+theorem Set.finite_iff_bddBelow [SemilatticeInf α] [LocallyFiniteOrder α] [OrderTop α] :
     s.Finite ↔ BddBelow s :=
   finite_iff_bddAbove (α := αᵒᵈ)
 
-theorem finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFiniteOrder α] :
+theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFiniteOrder α] :
     s.Finite ↔ BddBelow s ∧ BddAbove s := by
   obtain (rfl | hs) := s.eq_empty_or_nonempty
   · simp only [Set.finite_empty, bddBelow_empty, bddAbove_empty, and_self]
