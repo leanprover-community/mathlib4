@@ -574,4 +574,24 @@ theorem AeMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
 
 end Lintegral
 
+/-- If an integrable function has zero integral on all closed sets, then it is zero
+almost everwhere.-/
+lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero
+    {β : Type _} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {μ : Measure β}
+    {f : β → E} (hf : Integrable f μ) (h'f : ∀ {s : Set β}, IsClosed s → ∫ x in s, f x ∂μ = 0) :
+    f =ᵐ[μ] 0 := by
+  suffices : ∀ s, MeasurableSet s → ∫ x in s, f x ∂μ = 0
+  · exact hf.ae_eq_zero_of_forall_set_integral_eq_zero (fun s hs _ ↦ this s hs)
+  have A : ∀ (t : Set β), MeasurableSet t → ∫ (x : β) in t, f x ∂μ = 0
+      → ∫ (x : β) in tᶜ, f x ∂μ = 0 := by
+    intro t t_meas ht
+    have I : ∫ x, f x ∂μ = 0 := by rw [← integral_univ]; exact h'f isClosed_univ
+    simpa [ht, I] using integral_add_compl t_meas hf
+  intro s hs
+  refine MeasurableSet.induction_on_open (fun U hU ↦ ?_) A (fun g g_disj g_meas hg ↦ ?_) hs
+  · rw [← compl_compl U]
+    exact A _ hU.measurableSet.compl (h'f hU.isClosed_compl)
+  · rw [integral_iUnion g_meas g_disj hf.integrableOn]
+    simp [hg]
+
 end MeasureTheory
