@@ -863,7 +863,6 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm (n + 1) n⟩).1 := by
   dsimp [mkHom, mkHomAux]
-  induction n <;> congr
 #align chain_complex.mk_hom_f_succ_succ ChainComplex.mkHom_f_succ_succ
 
 end MkHom
@@ -1113,7 +1112,6 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm n (n + 1)⟩).1 := by
   dsimp [mkHom, mkHomAux]
-  induction n <;> congr
 #align cochain_complex.mk_hom_f_succ_succ CochainComplex.mkHom_f_succ_succ
 
 end MkHom

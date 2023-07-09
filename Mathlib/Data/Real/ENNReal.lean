@@ -413,7 +413,7 @@ theorem toReal_eq_toReal_iff' {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ �
 
 @[simp]
 nonrec theorem one_lt_two : (1 : ℝ≥0∞) < 2 :=
-  coe_one ▸ coe_two ▸ by exact_mod_cast (one_lt_two : 1 < 2)
+  coe_one ▸ coe_two ▸ by norm_cast; exact one_lt_two
 #align ennreal.one_lt_two ENNReal.one_lt_two
 
 theorem two_ne_top : (2 : ℝ≥0∞) ≠ ∞ := coe_ne_top
@@ -1779,7 +1779,7 @@ protected theorem half_le_self : a / 2 ≤ a :=
 
 theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := by
   lift a to ℝ≥0 using h
-  exact sub_eq_of_add_eq (mul_ne_top coe_ne_top <| by simp) (ENNReal.add_halves a)
+  exact sub_eq_of_add_eq (mul_ne_top coe_ne_top <| by simp; norm_num) (ENNReal.add_halves a)
 #align ennreal.sub_half ENNReal.sub_half
 
 @[simp]
@@ -1864,7 +1864,7 @@ theorem exists_nnreal_pos_mul_lt (ha : a ≠ ∞) (hb : b ≠ 0) : ∃ n > 0, �
 theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
   rcases exists_inv_nat_lt ha with ⟨n, hn⟩
   refine' ⟨n, lt_trans _ hn⟩
-  rw [← ENNReal.inv_pow, ENNReal.inv_lt_inv]
+  rw [← ENNReal.inv_pow, ENNReal.inv_lt_inv, show (2 : ℝ≥0∞) = ((2 : ℕ) : ℝ≥0∞) from rfl]
   norm_cast
   exact n.lt_two_pow
 #align ennreal.exists_inv_two_pow_lt ENNReal.exists_inv_two_pow_lt

@@ -107,8 +107,8 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   simp only [assoc]
   conv_lhs =>
     congr
-    · rw [Fin.sum_univ_castSuccEmb]
-    · rw [Fin.sum_univ_castSuccEmb, Fin.sum_univ_castSuccEmb]
+    · rw [Fin.sum_univ_castSucc]
+    · rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
   dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
   /- the purpose of the following `simplif` is to create three subgoals in order
       to finish the proof -/
@@ -121,7 +121,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     rw [← pow_add, Odd.neg_one_pow, neg_smul, one_zsmul]
     exact ⟨a, by linarith⟩
   · -- d + e = 0
-    rw [X.δ_comp_σ_self' (Fin.castSuccEmb_mk _ _ _).symm,
+    rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
       X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
     simp only [comp_id, pow_add _ (a + 1) 1, pow_one, mul_neg, mul_one, neg_mul, neg_smul,
       add_right_neg]
@@ -131,7 +131,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     rintro ⟨i, hi⟩ _
     simp only
     have hia : (⟨i, by linarith⟩ : Fin (n + 2)) ≤
-        Fin.castSuccEmb (⟨a, by linarith⟩ : Fin (n + 1)) := by
+        Fin.castSucc (⟨a, by linarith⟩ : Fin (n + 1)) := by
       rw [Fin.le_iff_val_le_val]
       dsimp
       linarith
@@ -151,8 +151,8 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
       Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
       AlternatingFaceMapComplex.obj_d_eq]
     rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by linarith), Fin.sum_trunc]
-    · simp only [Fin.sum_univ_castSuccEmb, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
-        Fin.castIso_mk, Fin.castSuccEmb_mk]
+    · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
+        Fin.castIso_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
       erw [δ_comp_σ_self, δ_comp_σ_succ, add_right_neg]

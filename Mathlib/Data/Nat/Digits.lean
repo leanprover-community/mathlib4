@@ -480,7 +480,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · simp; trivial
+  · simp
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]

@@ -180,15 +180,15 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   have h3q := H.trans hpq
   have h3r := h3q.trans hqr
   have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv _ h3]
+    rw [inv_le_inv _ h3, show (3 : ℚ) = ((3 : ℕ+) : ℚ) from rfl]
     assumption_mod_cast
     norm_num
   have hq: (q : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv _ h3]
+    rw [inv_le_inv _ h3, show (3 : ℚ) = ((3 : ℕ+) : ℚ) from rfl]
     assumption_mod_cast
     norm_num
   have hr: (r : ℚ)⁻¹ ≤ 3⁻¹ := by
-    rw [inv_le_inv _ h3]
+    rw [inv_le_inv _ h3, show (3 : ℚ) = ((3 : ℕ+) : ℚ) from rfl]
     assumption_mod_cast
     norm_num
   calc
@@ -203,11 +203,11 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   have h4r := H.trans hqr
   simp at H
   have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
-    rw [inv_le_inv _ h4]
+    rw [inv_le_inv _ h4, show (4 : ℚ) = ((4 : ℕ+) : ℚ) from rfl]
     assumption_mod_cast
     norm_num
   have hr: (r : ℚ)⁻¹ ≤ 4⁻¹ := by
-    rw [inv_le_inv _ h4]
+    rw [inv_le_inv _ h4, show (4 : ℚ) = ((4 : ℕ+) : ℚ) from rfl]
     assumption_mod_cast
     norm_num
   calc
@@ -221,7 +221,7 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   rw [sumInv_pqr]
   simp at H
   have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
-    rw [inv_le_inv _ h6]
+    rw [inv_le_inv _ h6, show (6 : ℚ) = ((6 : ℕ+) : ℚ) from rfl]
     assumption_mod_cast
     norm_num
   calc

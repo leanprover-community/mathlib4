@@ -1012,7 +1012,7 @@ theorem strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m
   fun _ _ h => h
 
 /-- `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
-@[simps! apply]
+@[simps! apply toEmbedding]
 def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
   OrderEmbedding.ofStrictMono (castLE h) (strictMono_castLE h)
 #align fin.cast_le Fin.castLEEmb
@@ -1128,7 +1128,7 @@ theorem strictMono_castAdd (m) : StrictMono (castAdd m : Fin n → Fin (n + m)) 
 
 /-- `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and
 `Fin.addNatEmb`. -/
-@[simps! apply]
+@[simps! apply toEmbedding]
 def castAddEmb (m) : Fin n ↪o Fin (n + m) :=
   OrderEmbedding.ofStrictMono (castAdd m) (strictMono_castAdd m)
 #align fin.cast_add Fin.castAddEmb
@@ -1209,7 +1209,7 @@ theorem strictMono_castSucc : StrictMono (castSucc : Fin n → Fin (n + 1)) :=
   strictMono_castAdd 1
 
 /-- `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
-@[simps! apply]
+@[simps! apply toEmbedding]
 def castSuccEmb : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono castSucc strictMono_castSucc
 #align fin.cast_succ Fin.castSuccEmb
@@ -1355,7 +1355,7 @@ theorem strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m
   fun i j h => add_lt_add_right (show i.val < j.val from h) _
 
 /-- `addNatEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
-@[simps! apply]
+@[simps! apply toEmbedding]
 def addNatEmb (m) : Fin n ↪o Fin (n + m) :=
   OrderEmbedding.ofStrictMono (addNat · m) (strictMono_addNat m)
 #align fin.add_nat Fin.addNatEmb
@@ -1408,7 +1408,7 @@ theorem strictMono_natAdd (n) {m} : StrictMono (natAdd n : Fin m → Fin (n + m)
   fun i j h => add_lt_add_left (show i.val < j.val from h) _
 
 /-- `natAddEmb n i` adds `n` to `i` "on the left". -/
-@[simps! apply]
+@[simps! apply toEmbedding]
 def natAddEmb (n) {m} : Fin m ↪o Fin (n + m) :=
   OrderEmbedding.ofStrictMono (natAdd n) (strictMono_natAdd n)
 #align fin.nat_add Fin.natAddEmb
@@ -2029,7 +2029,7 @@ theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
 #align fin.succ_above_aux Fin.strictMono_succAbove
 
 /-- `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
-@[simps! apply]
+@[simps! apply toEmbedding]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
 #align fin.succ_above Fin.succAboveEmb

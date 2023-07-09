@@ -561,7 +561,7 @@ theorem abs_sub_convergents_le' {b : K}
   refine' (abs_sub_convergents_le not_terminated_at_n).trans _
   -- One can show that `0 < (GeneralizedContinuedFraction.of v).denominators n` but it's easier
   -- to consider the case `(GeneralizedContinuedFraction.of v).denominators n = 0`.
-  rcases zero_le_of_denom.eq_or_gt with
+  rcases (zero_le_of_denom (K := K)).eq_or_gt with
     ((hB : (GeneralizedContinuedFraction.of v).denominators n = 0) | hB)
   · simp only [hB, MulZeroClass.mul_zero, MulZeroClass.zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le

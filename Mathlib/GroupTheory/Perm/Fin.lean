@@ -256,16 +256,16 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
   cases n
   · rcases j with ⟨_, ⟨⟩⟩
   rcases lt_trichotomy j i with (hlt | heq | hgt)
-  · have : castSuccEmb (j + 1) = j.succ := by
+  · have : castSucc (j + 1) = j.succ := by
       ext
-      rw [coe_castSuccEmb, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
+      rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_below, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
     · rw [Fin.lt_iff_val_lt_val]
       simpa [this] using hlt
-  · rw [heq, Fin.cycleRange_self, Fin.succAbove_below, swap_apply_right, Fin.castSuccEmb_zero]
-    · rw [Fin.castSuccEmb_zero]
+  · rw [heq, Fin.cycleRange_self, Fin.succAbove_below, swap_apply_right, Fin.castSucc_zero]
+    · rw [Fin.castSucc_zero]
       apply Fin.succ_pos
   · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_above, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
@@ -276,9 +276,9 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 @[simp]
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
-  cases' lt_or_ge (castSuccEmb j) i with h h
+  cases' lt_or_ge (castSucc j) i with h h
   · rw [Fin.succAbove_below _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
-  · rw [Fin.succAbove_above _ _ h, Fin.cycleRange_of_gt (Fin.le_castSuccEmb_iff.mp h)]
+  · rw [Fin.succAbove_above _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 #align fin.cycle_range_succ_above Fin.cycleRange_succAbove
 
 @[simp]
