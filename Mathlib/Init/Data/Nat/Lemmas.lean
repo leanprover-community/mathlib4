@@ -276,7 +276,7 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | n + 1, 0, h => by contradiction
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h ; simp [add_one, add_succ, succ_add] at h
+      unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
       have aux : n + n = m + m := h; rw [aux]
     have : n + n = m + m := by repeat injection this with this
     have : n = m := Nat.bit0_inj this
@@ -284,7 +284,7 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
 #align nat.bit0_inj Nat.bit0_inj
 
 protected theorem bit1_inj : ∀ {n m : ℕ}, bit1 n = bit1 m → n = m := @fun n m h =>
-  have : succ (bit0 n) = succ (bit0 m) := by simp [Nat.bit1_eq_succ_bit0] at h ; rw [h]
+  have : succ (bit0 n) = succ (bit0 m) := by simp [Nat.bit1_eq_succ_bit0] at h; rw [h]
   have : bit0 n = bit0 m := by injection this
   Nat.bit0_inj this
 #align nat.bit1_inj Nat.bit1_inj
@@ -694,7 +694,7 @@ def iterate {α : Sort u} (op : α → α) : ℕ → α → α
   | succ k, a => iterate op k (op a)
 #align nat.iterate Nat.iterate
 
-notation f "^[" n "]" => iterate f n
+notation:max f "^["n"]" => iterate f n
 
 /-! find -/
 
@@ -728,7 +728,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
       if pm : p m then ⟨m, pm, al⟩
       else
         have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Decidable.lt_or_eq_of_le h) (al n) fun e => by rw [e] ; exact pm
+          Or.elim (Decidable.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun n h => absurd h (Nat.not_lt_zero _)
 #align nat.find_x Nat.findX
