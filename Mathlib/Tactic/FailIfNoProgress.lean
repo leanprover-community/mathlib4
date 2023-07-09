@@ -46,22 +46,88 @@ structure ExprComparisonConfig where
   /-- What transparency to use for equality checks. -/
   transparency : TransparencyMode := .reducible
 
+/-- Config data for comparing expressions, where the default field values are drawn from
+`defaults`. -/
+structure ExprComparisonConfigWithDefaults (defaults : ExprComparisonConfig)
+  extends ExprComparisonConfig
+where
+  -- Inherit defaults
+  eqKind       := defaults.eqKind
+  transparency := defaults.transparency
+
 /-- Config data for comparing local contexts. -/
-structure DeclComparisonConfig extends ExprComparisonConfig where
+structure LocalDeclComparisonConfig (defaults : ExprComparisonConfig)
+  extends ExprComparisonConfig
+where
+  -- Inherit defaults
+  eqKind       := defaults.eqKind
+  transparency := defaults.transparency
+  /-- Whether to compare the indices of two `LocalDecl`s. -/
   checkIndex     : Bool := true
-  checkFVarIds   : Bool := true
-  checkUserNames : Bool := true
-  checkLetValue  : Bool := true
+  /-- Whether to compare the `FVarIds` of two `LocalDecl`s. -/
+  checkFVarId   : Bool := true
+  /-- Whether to compare the userNames of two `LocalDecl`s. -/
+  checkUserName : Bool := true
+  /-- Whether to compare the types of two `LocalDecl`s, and if so, how. -/
+  compareTypes? : Option (ExprComparisonConfigWithDefaults { eqKind, transparency }) :=
+    some {}
+  /-- Whether to compare the letValues of two `ldecl`s, and if so, how. -/
+  compareLetValues? : Option (ExprComparisonConfigWithDefaults { eqKind, transparency }) :=
+    some {}
+  /-- Whether to compare the binderInfos of two `cdecl`s. -/
+  checkBinderInfo : Bool := true
+  /-- Whether to compare the declKinds of a `LocalDecl`. -/
+  checkLocalDeclKind : Bool := true
 
 -- Merge?
 /-- Config data for comparing local contexts. -/
-structure CtxComparisonConfig extends DeclComparisonConfig
+structure LocalContextComparisonConfig (defaults : ExprComparisonConfig)
+  extends LocalDeclComparisonConfig defaults
+where
+  -- Filtering options
+  /-- Whether to include implementation detail decls. -/
+  includeImplDetails  : Bool := true
+  /-- Whether to include auxiliary decls. -/
+  includeAuxDecls     : Bool := true
+  /-- Whether to include default decls. -/
+  includeDefaultDecls : Bool := true
+  /-- Whether to include `ldecls`. -/
+  includeLDecls       : Bool := true
+  /-- Whether to include `cdecls`. -/
+  includeCDecls       : Bool := true
+/-- Config data for comparing local instances. Since the `Expr` in the `LocalInstance` is meant to
+be an `.fvar`, we always use `BEq`. -/ --!! True?
+structure LocalInstanceComparisonConfig where
+  checkName : Bool := true
+  checkFVar : Bool := true
 
--- Needed?
-/-- Config data for comparing local contexts. -/
-structure LocalInstanceComparisonConfig extends ExprComparisonConfig
+--!! docs
+structure MetavarDeclComparisonConfig (defaults : ExprComparisonConfig)
+  extends ExprComparisonConfig
+where
+  eqKind := defaults.eqKind
+  transparency := defaults.transparency
+  checkUserName : Bool := true
+  compareLocalContexts? : Option (LocalContextComparisonConfig { eqKind, transparency }) := some {}
+  compareTarget? : Option (ExprComparisonConfigWithDefaults { eqKind, transparency }) := some {}
+  checkLocalInstance? : Option LocalInstanceComparisonConfig := some {}
+  checkMetavarKind : Bool := true
+  checkIndex : Bool := true -- !! need? shouldn't this persist?
 
-/-- Config data for `failIfNoProgress`, `fail_if_no_progress`, and `runAndFailIfNoProgress`.
+-- !! Generalize with filtering and mustNotLose,mustNotGain list/array config stuff? Generalize into a goal list config?
+inductive FailIfNoProgress.Mode where
+/-- Compares the goal lists before and after the tactic. -/
+| normal
+/-- Only checks if the initial metavariables have been assigned or not. -/
+| quick
+/-- Only checks if the metavariable counter in the `MetaVarContext` has gone up or not. May erroneously consider "progress" to have been made even if attempts to make progress failed. -/
+| veryQuick --!! Good idea or not?
+
+-- allow custom functions for comparing `Expr`s etc.? It'd be cool if every comparison function could be overridden, and really was stored in a structure. It'd be neat to do the custom elaborator thing.
+/--
+--!! Needs updating
+
+Config data for `failIfNoProgress`, `fail_if_no_progress`, and `runAndFailIfNoProgress`.
 
 This determines which aspects of the goals are checked for "progress" and the nature of the
 equality checks made.
@@ -86,11 +152,8 @@ instances of goals. If `none`, local instances are not compared.
   * `checkUserNames : Bool := true` – compares the names of fvars in the local context
   * `checkLetValue  : Bool := true` – compares the values of `ldecls`
 -/
-structure FailIfNoProgress.Config extends ExprComparisonConfig where
-  checkTarget : Bool := true
-  onLocalInstances : Option LocalInstanceComparisonConfig := some { eqKind, transparency }
-  onCtx    : Option CtxComparisonConfig :=
-    some { eqKind, transparency, checkIndex := eqKind.isBEq, checkFVarIds := eqKind.isBEq }
+structure FailIfNoProgress.Config extends MetavarDeclComparisonConfig {} where
+  mode : FailIfNoProgress.Mode
 
 --!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be
 -- sure.
