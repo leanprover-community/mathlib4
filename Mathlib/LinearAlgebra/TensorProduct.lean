@@ -425,7 +425,8 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
 #align tensor_product.map₂_mk_top_top_eq_top TensorProduct.map₂_mk_top_top_eq_top
 
 theorem pure_if_absorbing_add (x : TensorProduct R M N)
-    (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) : ∃ m n, x = m ⊗ₜ n := by
+    (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n)
+    : ∃ m n, x = m ⊗ₜ n := by
   induction' x using TensorProduct.induction_on with m n x y h₁ h₂
   · use 0, 0
     rw [TensorProduct.zero_tmul]
