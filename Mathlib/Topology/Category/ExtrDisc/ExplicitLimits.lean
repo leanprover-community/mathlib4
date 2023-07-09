@@ -19,47 +19,6 @@ TODO: Define pullbacks of open embeddings.
 
 open CategoryTheory
 
--- This section contains helper lemmas about the sigma-type `Σ i, π i`.
-section Sigma
-
-lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' U) = ∅ := by
-  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ U} = ∅
-  -- change { x | (Sigma.mk j) x ∈ {⟨i, u⟩ | u ∈ U}} = ∅
-  simp [h]
-
-lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' U) = U := by
-  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ U} = U
-  simp
-
--- Note: It might be possible to use Gleason for this instead
-/-- The sigma-type of extremally disconneted spaces is extremally disconnected -/
-instance instExtremallyDisconnected
-    {π : ι → Type _} [∀ i, TopologicalSpace (π i)] [h₀ : ∀ i, ExtremallyDisconnected (π i)] :
-    ExtremallyDisconnected (Σi, π i) := by
-  constructor
-  intro s hs
-  rw [isOpen_sigma_iff] at hs ⊢
-  intro i
-  rcases h₀ i with ⟨h₀⟩
-  have h₁ : IsOpen (closure (Sigma.mk i ⁻¹' s))
-  · apply h₀
-    exact hs i
-  suffices h₂ : Sigma.mk i ⁻¹' closure s = closure (Sigma.mk i ⁻¹' s)
-  · rwa [h₂]
-  apply IsOpenMap.preimage_closure_eq_closure_preimage
-  intro U _
-  · rw [isOpen_sigma_iff]
-    intro j
-    by_cases ij : i = j
-    · rw [← ij]
-      rw [sigma_mk_preimage_image_eq_self]
-      assumption
-    · rw [sigma_mk_preimage_image' ij]
-      apply isOpen_empty
-  · continuity
-
-end Sigma
-
 namespace ExtrDisc
 
 /-!
