@@ -114,17 +114,19 @@ lemma finiteCoproduct.hom_ext {B : ExtrDisc.{u}} (f g : finiteCoproduct X ⟶ B)
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
 @[simps]
-def finiteCoproduct.cocone : Cocone (Discrete.functor X) where
-  pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+def finiteCoproduct.cocone (F : Discrete α ⥤ ExtrDisc) :
+    Cocone F where
+  pt := finiteCoproduct F.obj
+  ι := Discrete.natTrans fun a => finiteCoproduct.ι F.obj a
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
 @[simps]
-def finiteCoproduct.isColimit : IsColimit (finiteCoproduct.cocone X) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
+def finiteCoproduct.isColimit (F : Discrete α ⥤ ExtrDisc) :
+    IsColimit (finiteCoproduct.cocone F) where
+  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app a
   fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
   uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
+    specialize hm a
     ext t
     apply_fun (fun q => q t) at hm
     exact hm
@@ -132,20 +134,11 @@ def finiteCoproduct.isColimit : IsColimit (finiteCoproduct.cocone X) where
 /-- The category of extremally disconnected spaces has finite coproducts.
 -/
 instance hasFiniteCoproducts : HasFiniteCoproducts ExtrDisc.{u} where
-  out n := {
+  out _ := {
     has_colimit := fun F => {
       exists_colimit := ⟨{
-        cocone := {
-          pt := finiteCoproduct (F.obj ⟨·⟩)
-          ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι (F.obj ⟨·⟩) a }
-        isColimit := {
-          desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-          fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-          uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-            specialize hm ⟨a⟩
-            ext t
-            apply_fun (fun q => q t) at hm
-            exact hm }}⟩}}
+        cocone := finiteCoproduct.cocone F
+        isColimit := finiteCoproduct.isColimit F }⟩ } }
 
 end FiniteCoproducts
 
