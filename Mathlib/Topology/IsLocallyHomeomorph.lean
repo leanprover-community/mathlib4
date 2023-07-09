@@ -49,9 +49,9 @@ theorem mk (h : ∀ x ∈ s, ∃ e : LocalHomeomorph X Y, x ∈ e.source ∧ ∀
   exact
     ⟨{ e with
         toFun := f
-        map_source' := fun x hx => by rw [he x hx] ; exact e.map_source' hx
-        left_inv' := fun x hx => by rw [he x hx] ; exact e.left_inv' hx
-        right_inv' := fun y hy => by rw [he _ (e.map_target' hy)] ; exact e.right_inv' hy
+        map_source' := fun x hx => by rw [he x hx]; exact e.map_source' hx
+        left_inv' := fun x hx => by rw [he x hx]; exact e.left_inv' hx
+        right_inv' := fun y hy => by rw [he _ (e.map_target' hy)]; exact e.right_inv' hy
         continuous_toFun := (continuousOn_congr he).mpr e.continuous_toFun },
       hx, rfl⟩
 #align is_locally_homeomorph_on.mk IsLocallyHomeomorphOn.mk

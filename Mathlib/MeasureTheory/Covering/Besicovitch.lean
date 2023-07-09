@@ -669,7 +669,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hk
     obtain ⟨l', _, rfl⟩ : ∃ l' : u i, l' ∈ w ∧ ↑l' = l := by
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hl
-    have k'nel' : (k' : s) ≠ l' := by intro h; rw [h] at hkl ; exact hkl rfl
+    have k'nel' : (k' : s) ≠ l' := by intro h; rw [h] at hkl; exact hkl rfl
     exact hu i k'.2 l'.2 k'nel'
 #align besicovitch.exist_finset_disjoint_balls_large_measure Besicovitch.exist_finset_disjoint_balls_large_measure
 

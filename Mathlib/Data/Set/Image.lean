@@ -155,7 +155,6 @@ theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
   rfl
 #align set.preimage_comp_eq Set.preimage_comp_eq
 
-@[simp]
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
   induction' n with n ih; · simp
   rw [iterate_succ, iterate_succ', Set.preimage_comp_eq, ih]
@@ -1014,11 +1013,11 @@ theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h
   ext ⟨x, hx⟩
   rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
   apply Iff.intro
-  . rintro ⟨a, b, hab⟩
+  · rintro ⟨a, b, hab⟩
     rw [Subtype.map, Subtype.mk.injEq] at hab
     use a
     trivial
-  . rintro ⟨a, b, hab⟩
+  · rintro ⟨a, b, hab⟩
     use a
     use b
     rw [Subtype.map, Subtype.mk.injEq]
@@ -1135,12 +1134,12 @@ theorem range_inclusion (h : s ⊆ t) : range (inclusion h) = { x : t | (x : α)
   ext ⟨x, hx⟩
   -- Porting note: `simp [inclusion]` doesn't solve goal
   apply Iff.intro
-  . rw [mem_range]
+  · rw [mem_range]
     rintro ⟨a, ha⟩
     rw [inclusion, Subtype.mk.injEq] at ha
     rw [mem_setOf, Subtype.coe_mk, ← ha]
     exact Subtype.coe_prop _
-  . rw [mem_setOf, Subtype.coe_mk, mem_range]
+  · rw [mem_setOf, Subtype.coe_mk, mem_range]
     intro hx'
     use ⟨x, hx'⟩
     trivial
