@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Kaehler
 # Formally étale morphisms
 
 An `R`-algebra `A` is formally étale (resp. unramified, smooth) if for every `R`-algebra,
-every square-zero ideal `I : ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
+every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 exactly (resp. at most, at least) one lift `A →ₐ[R] B`.
 
 We show that the property extends onto nilpotent ideals, and that these properties are stable
@@ -41,7 +41,7 @@ variable (A : Type u) [Semiring A] [Algebra R A]
 variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
 /-- An `R`-algebra `A` is formally unramified if for every `R`-algebra, every square-zero ideal
-`I : ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`. -/
 @[mk_iff]
 class FormallyUnramified : Prop where
   comp_injective :
@@ -51,7 +51,7 @@ class FormallyUnramified : Prop where
 #align algebra.formally_unramified Algebra.FormallyUnramified
 
 /-- An `R` algebra `A` is formally smooth if for every `R`-algebra, every square-zero ideal
-`I : ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
 @[mk_iff]
 class FormallySmooth : Prop where
   comp_surjective :
@@ -61,7 +61,7 @@ class FormallySmooth : Prop where
 #align algebra.formally_smooth Algebra.FormallySmooth
 
 /-- An `R` algebra `A` is formally étale if for every `R`-algebra, every square-zero ideal
-`I : ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists exactly one lift `A →ₐ[R] B`. -/
 @[mk_iff]
 class FormallyEtale : Prop where
   comp_bijective :
@@ -547,7 +547,7 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
 #align algebra.formally_smooth.localization_base Algebra.FormallySmooth.localization_base
 
 /-- This actually does not need the localization instance, and is stated here again for
-consistency. See `algebra.formally_unramified.of_comp` instead.
+consistency. See `Algebra.FormallyUnramified.of_comp` instead.
 
  The intended use is for copying proofs between `formally_{unramified, smooth, etale}`
  without the need to change anything (including removing redundant arguments). -/
