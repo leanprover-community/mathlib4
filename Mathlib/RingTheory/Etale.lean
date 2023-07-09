@@ -406,7 +406,7 @@ instance FormallyUnramified.subsingleton_kaehlerDifferential [FormallyUnramified
   apply e
   ext1
   apply FormallyUnramified.lift_unique' _ _ _ _ (f₁.2.trans f₂.2.symm)
-  rw [← AlgHom.toRingHom_eq_coe, AlgHom.ker_ker_sqare_lift]
+  rw [← AlgHom.toRingHom_eq_coe, AlgHom.ker_kerSquareLift]
   exact ⟨_, Ideal.cotangentIdeal_square _⟩
 #align algebra.formally_unramified.subsingleton_kaehler_differential Algebra.FormallyUnramified.subsingleton_kaehlerDifferential
 
