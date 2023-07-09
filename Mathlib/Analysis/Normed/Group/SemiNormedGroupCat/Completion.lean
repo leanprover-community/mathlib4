@@ -77,28 +77,40 @@ theorem completion.map_normNoninc {V W : SemiNormedGroupCat} {f : V ⟶ W} (hf :
       NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.1 hf
 #align SemiNormedGroup.Completion.map_norm_noninc SemiNormedGroupCat.completion.map_normNoninc
 
+variable (V W : SemiNormedGroupCat)
+
 /-- Given a normed group hom `V ⟶ W`, this defines the associated morphism
 from the completion of `V` to the completion of `W`.
 The difference from the definition obtained from the functoriality of completion is in that the
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
 def completion.mapHom (V W : SemiNormedGroupCat.{u}) :
+    -- Porting note: cannot see instances through concrete cats
+    have (V W : SemiNormedGroupCat.{u}) : AddGroup (V ⟶  W) := inferInstanceAs <| AddGroup
+      <| NormedAddGroupHom V W
     (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
-  AddMonoidHom.mk' completion.map fun f g => f.completion_add g
+  @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g => f.completion_add g
 #align SemiNormedGroup.Completion.map_hom SemiNormedGroupCat.completion.mapHom
 
-@[simp]
+-- @[simp] -- Porting note: removed simp since LHS simplifies and is not used
 theorem completion.map_zero (V W : SemiNormedGroupCat) : completion.map (0 : V ⟶ W) = 0 :=
-  (completion.mapHom V W).map_zero
+  -- Porting note: cannot see instances through concrete cats
+  @AddMonoidHom.map_zero _ _ (_) (_) (completion.mapHom V W)
 #align SemiNormedGroup.Completion.map_zero SemiNormedGroupCat.completion.map_zero
 
 instance : Preadditive SemiNormedGroupCat.{u} where
-  homGroup P Q := inferInstance
+  homGroup P Q := inferInstanceAs <| AddCommGroup <| NormedAddGroupHom P Q
   add_comp := by
-    intros; ext
-    simp only [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, map_add]
+    intros _ Q _ f f' g; ext x
+    -- Porting note: failing simps probably due to instance synthesis issues with concrete
+    -- cats; see the gymnastics below for what used to be
+    -- simp only [add_apply, comp_apply. map_add]
+    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
+      CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
+    convert map_add g (f x) (f' x)
   comp_add := by
     intros; ext
-    simp only [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, map_add]
+    rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
+      CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
 
 instance : Functor.Additive completion where
   map_add := NormedAddGroupHom.completion_add _ _
