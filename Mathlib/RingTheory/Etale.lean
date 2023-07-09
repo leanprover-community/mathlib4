@@ -381,7 +381,8 @@ theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
     -- Porting note: lean3 was not finished here:
     -- obtain ⟨y, e⟩ :=
     --   Ideal.Quotient.mk_surjective
-    --     (FormallySmooth.lift _ ⟨2, sqz⟩ (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
+    --     (FormallySmooth.lift _ ⟨2, sqz⟩
+    --       (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
     --       x)
     -- dsimp at e ⊢
     -- rw [← e]
