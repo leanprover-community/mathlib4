@@ -584,15 +584,15 @@ end Pmul
 section Pdiv
 
 /-- This is the pointwise division of `ArithmeticFunction`s. -/
-def pdiv {R : Type _} [GroupWithZero R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
+def pdiv [GroupWithZero R] (f g : ArithmeticFunction R) : ArithmeticFunction R :=
   ⟨fun n => f n / g n, by simp only [map_zero, ne_eq, not_true, div_zero]⟩
 
 @[simp]
-theorem pdiv_apply {R : Type _} [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ):
+theorem pdiv_apply [GroupWithZero R] (f g : ArithmeticFunction R) (n : ℕ) :
     pdiv f g n = f n / g n := rfl
 
 @[simp]
-theorem pdiv_zeta  {R : Type _} [DivisionSemiring R] (f : ArithmeticFunction R) :
+theorem pdiv_zeta [DivisionSemiring R] (f : ArithmeticFunction R) :
     pdiv f zeta = f := by
   ext n
   cases n <;> simp [succ_ne_zero]
