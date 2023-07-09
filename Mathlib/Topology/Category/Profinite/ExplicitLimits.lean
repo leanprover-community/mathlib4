@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
+Authors: Adam Topaz
 -/
 
 import Mathlib.Topology.Category.Profinite.Basic
@@ -11,14 +11,12 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 # Explicit limits and colimits
 
-This file collects some constructions of explicit limits and colimits in `Profinite`,
+This file collects some constructions of explicit limits and colimits in `CompHaus`,
 which may be useful due to their definitional properties.
 
 So far, we have the following:
 - Explicit pullbacks, defined in the "usual" way as a subset of the product.
 - Explicit finite coproducts, defined as a disjoint union.
-
-This is essentially just copied from the Profinite folder
 
 -/
 
@@ -38,10 +36,9 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 -/
 def pullback : Profinite.{u} :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
-  haveI : CompactSpace set := by
-    rw [← isCompact_iff_compactSpace]
-    apply IsClosed.isCompact
-    exact isClosed_eq (f.continuous.comp continuous_fst) (g.continuous.comp continuous_snd)
+  haveI : CompactSpace set :=
+  isCompact_iff_compactSpace.mp (isClosed_eq (f.continuous.comp continuous_fst)
+    (g.continuous.comp continuous_snd)).isCompact
   Profinite.of set
 
 /--
@@ -114,49 +111,20 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
 section Isos
 
 noncomputable
-def ToExplicit : Limits.pullback f g ⟶ Profinite.pullback f g :=
-  pullback.lift f g Limits.pullback.fst Limits.pullback.snd Limits.pullback.condition
-
-noncomputable
-def FromExplicit : Profinite.pullback f g ⟶ Limits.pullback f g :=
-  Limits.pullback.lift (pullback.fst _ _) (pullback.snd _ _) (pullback.condition f g)
-
-@[simp]
-theorem toExplicit_comp_fromExplicit_eq_id :
-    (ToExplicit f g ≫ FromExplicit f g) = 𝟙 _ := by
-  refine' Limits.pullback.hom_ext (k := (ToExplicit f g ≫ FromExplicit f g)) _ _
-  · simp [ToExplicit, FromExplicit]
-  · rw [Category.id_comp, Category.assoc, FromExplicit, Limits.pullback.lift_snd,
-      ToExplicit, pullback.lift_snd]
-
-@[simp]
-theorem fromExplicit_comp_toExplicit_eq_id :
-    (FromExplicit f g ≫ ToExplicit f g) = 𝟙 _ :=
-  pullback.hom_ext f g _ _ (by simp [ToExplicit, FromExplicit]) (by simp [ToExplicit, FromExplicit])
-
-@[simps]
-noncomputable
-def FromExplicitIso : Profinite.pullback f g ≅ Limits.pullback f g where
-  hom := FromExplicit f g
-  inv := ToExplicit f g
-  hom_inv_id := fromExplicit_comp_toExplicit_eq_id f g
-  inv_hom_id := toExplicit_comp_fromExplicit_eq_id f g
-
-end Isos
-
-section Compatibility
+def FromExplicitIso : Profinite.pullback f g ≅ Limits.pullback f g :=
+Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit f g) (Limits.limit.isLimit _)
 
 theorem explicit_fst_eq :
-    Profinite.pullback.fst f g = FromExplicit f g ≫ Limits.pullback.fst := by
-  dsimp [FromExplicit]
-  simp only [Limits.limit.lift_π, Limits.PullbackCone.mk_pt, Limits.PullbackCone.mk_π_app]
+    Profinite.pullback.fst f g = (FromExplicitIso f g).hom ≫ Limits.pullback.fst := by
+  dsimp [FromExplicitIso]
+  simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 theorem explicit_snd_eq :
-    Profinite.pullback.snd f i = FromExplicit f i ≫ Limits.pullback.snd := by
-  dsimp [FromExplicit]
-  simp only [Limits.limit.lift_π, Limits.PullbackCone.mk_pt, Limits.PullbackCone.mk_π_app]
+    Profinite.pullback.snd f g = (FromExplicitIso f g).hom ≫ Limits.pullback.snd := by
+  dsimp [FromExplicitIso]
+  simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
-end Compatibility
+end Isos
 
 end Pullbacks
 
@@ -224,74 +192,24 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) wher
 section Iso
 
 noncomputable
-def ToFiniteCoproduct : ∐ X ⟶ finiteCoproduct X :=
-  Limits.Sigma.desc <| fun a => finiteCoproduct.ι X a ≫ (𝟙 _)
-
-noncomputable
-def FromFiniteCoproduct : finiteCoproduct X ⟶ ∐ X :=
-  finiteCoproduct.desc X <| fun a => (Limits.Sigma.ι X a)
-
-@[simp]
-theorem toFiniteCoproduct_comp_fromFiniteCoproduct_eq_id :
-    (ToFiniteCoproduct X ≫ FromFiniteCoproduct X) = 𝟙 _ := by
-  ext
-  simp [ToFiniteCoproduct, FromFiniteCoproduct]
-
-@[simp]
-theorem fromFiniteCoproduct_comp_toFiniteCoproduct_eq_id :
-    (FromFiniteCoproduct X ≫ ToFiniteCoproduct X) = 𝟙 _ := by
-  refine' finiteCoproduct.hom_ext _ _ _ (fun a => _)
-  simp [ToFiniteCoproduct, FromFiniteCoproduct]
-
-@[simps]
-noncomputable
-def FromFiniteCoproductIso : finiteCoproduct X ≅ ∐ X where
-  hom := FromFiniteCoproduct X
-  inv := ToFiniteCoproduct X
-  hom_inv_id := fromFiniteCoproduct_comp_toFiniteCoproduct_eq_id X
-  inv_hom_id := toFiniteCoproduct_comp_fromFiniteCoproduct_eq_id X
-
-@[simps]
-noncomputable
-def ToFiniteCoproductIso : ∐ X ≅ finiteCoproduct X where
-  hom := ToFiniteCoproduct X
-  inv := FromFiniteCoproduct X
-  hom_inv_id := toFiniteCoproduct_comp_fromFiniteCoproduct_eq_id X
-  inv_hom_id := fromFiniteCoproduct_comp_toFiniteCoproduct_eq_id X
-
-theorem isIso_toFiniteCoproduct :
-    IsIso (ToFiniteCoproduct X) :=
-  ⟨FromFiniteCoproduct X, by simp, by simp⟩
-
-theorem isIso_fromFiniteCoproduct :
-    IsIso (FromFiniteCoproduct X) :=
-  ⟨ToFiniteCoproduct X, by simp, by simp⟩
+def FromFiniteCoproductIso : finiteCoproduct X ≅ ∐ X :=
+Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.colimit.isColimit _)
 
 @[simp]
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
-    (Limits.Sigma.ι X a) ≫ ToFiniteCoproduct X = finiteCoproduct.ι X a := by
-  simp [ToFiniteCoproduct]
+    finiteCoproduct.ι X a = (Limits.Sigma.ι X a) ≫ (FromFiniteCoproductIso X).inv := by
+  dsimp [FromFiniteCoproductIso]
+  simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
+    finiteCoproduct.cocone_ι, Discrete.natTrans_app]
 
 @[simp]
 theorem finiteCoproduct.ι_comp_fromFiniteCoproduct (a : α) :
-    (finiteCoproduct.ι X a) ≫ FromFiniteCoproduct X = Limits.Sigma.ι X a := by
-  simp [FromFiniteCoproduct]
+    (finiteCoproduct.ι X a) ≫ (FromFiniteCoproductIso X).hom = Limits.Sigma.ι X a := by
+  simp only [Sigma.ι_comp_toFiniteCoproduct, Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
-@[simps] noncomputable
-def ToFiniteCoproductHomeo : (∐ X : _) ≃ₜ finiteCoproduct X where
-  toFun := ToFiniteCoproduct X
-  invFun := FromFiniteCoproduct X
-  left_inv := fun x => by
-    change (ToFiniteCoproduct X ≫ FromFiniteCoproduct X) x = x
-    simp only [toFiniteCoproduct_comp_fromFiniteCoproduct_eq_id, id_apply]
-  right_inv := fun x => by
-    change (FromFiniteCoproduct X ≫ ToFiniteCoproduct X) x = x
-    simp only [fromFiniteCoproduct_comp_toFiniteCoproduct_eq_id, id_apply]
-  continuous_toFun := (ToFiniteCoproduct X).continuous_toFun
-  continuous_invFun := (FromFiniteCoproduct X).continuous_toFun
-
-theorem ToFiniteCoproduct.OpenEmbedding : OpenEmbedding (ToFiniteCoproductHomeo X) :=
-  Homeomorph.openEmbedding (ToFiniteCoproductHomeo X)
+noncomputable
+def ToFiniteCoproductHomeo : finiteCoproduct X ≃ₜ (∐ X : _) :=
+Profinite.homeoOfIso (FromFiniteCoproductIso X)
 
 end Iso
 
@@ -300,8 +218,7 @@ lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduc
   exact eq_of_heq (Sigma.ext_iff.mp hxy).2
 
 lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
-    ∃ (a : α) (r : X a), R = finiteCoproduct.ι X a r := by
-  exact ⟨R.fst, R.snd, rfl⟩
+    ∃ (a : α) (r : X a), R = finiteCoproduct.ι X a r := ⟨R.fst, R.snd, rfl⟩
 
 lemma finiteCoproduct.ι_desc_apply {B : Profinite} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
