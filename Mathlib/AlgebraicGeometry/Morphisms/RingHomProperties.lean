@@ -507,6 +507,11 @@ theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
   · intro H i U
     rw [morphismRestrict_comp]
     delta morphismRestrict
+    -- Porting note: Lean can no longer find these instances for the following apply
+    have : IsAffine (Scheme.restrict Y <| Opens.openEmbedding U.val) := U.property
+    have : IsOpenImmersion ((pullbackRestrictIsoRestrict (Scheme.OpenCover.map 𝒰 i)
+        ((Opens.map f.val.base).obj ↑U)).inv ≫ pullback.snd) :=
+      LocallyRingedSpace.IsOpenImmersion.comp _ _
     apply hP.sourceAffineLocally_comp_of_isOpenImmersion
     apply H
   · intro H U
@@ -533,14 +538,23 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
   -- Porting note: need to excuse Lean from synthesizing an instance
   rw [@source_affine_openCover_iff _ hP _ _ _ _ (Scheme.openCoverOfIsIso (𝟙 _)) (_)]
   · intro i; erw [Category.id_comp, op_id, Scheme.Γ.map_id]
-    convert hP.HoldsForLocalizationAway ?_ (1 : Scheme.Γ.obj ?_)
-    · exact (RingHom.algebraMap_toAlgebra _).symm
-    · infer_instance
-    · refine' IsLocalization.away_of_isUnit_of_bijective _ isUnit_one Function.bijective_id
-  · intro i; exact H
+    let esto := Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val))
+    let eso := Scheme.Γ.obj (Opposite.op ((Scheme.openCoverOfIsIso
+      (𝟙 (Y.restrict <| Opens.openEmbedding U.val))).obj i))
+    -- Porting note: Lean this needed this spelled out before
+    -- convert hP.HoldsAwayLocalizationAway _ (1 : Scheme.Γ.obj _) _
+    have : 𝟙 (Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val)))
+      = @algebraMap esto eso _ _ (_) := (RingHom.algebraMap_toAlgebra _).symm
+    rw [this]
+    have := hP.HoldsForLocalizationAway
+    convert @this esto eso _ _ ?_ ?_ ?_
+    · exact 1
+    · refine' @IsLocalization.away_of_isUnit_of_bijective _ _ _ _ (_) _ isUnit_one Function.bijective_id
+  · intro; exact H
 #align ring_hom.property_is_local.affine_locally_of_is_open_immersion RingHom.PropertyIsLocal.affineLocally_of_isOpenImmersion
 
 theorem affineLocally_of_comp
+    -- have : Algebra esto eso := inferInstanceAs <| Algebra esto esto
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (g : S →+* T), P (g.comp f) → P g)
     {X Y Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} (h : affineLocally (@P) (f ≫ g)) :
