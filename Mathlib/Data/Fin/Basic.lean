@@ -54,7 +54,7 @@ This file expands on the development in the core library.
 * `Fin.castLE h` : embed `Fin n` into `Fin m`, `h : n ≤ m`;
 * `Fin.castIso` : order isomorphism between `Fin n` and `Fin m` provided that `n = m`,
   see also `Equiv.finCongr`;
-* `Fin.castAdd m` : embed `Fin n` into `Fin (n+m)`;
+* `Fin.castAddEmb m` : embed `Fin n` into `Fin (n+m)`;
 * `Fin.castSuccEmb` : embed `Fin n` into `Fin (n+1)`;
 * `Fin.succAboveEmb p` : embed `Fin n` into `Fin (n + 1)` with a hole around `p`;
 * `Fin.addNatEmb m i` : add `m` on `i` on the right, generalizes `Fin.succ`;
