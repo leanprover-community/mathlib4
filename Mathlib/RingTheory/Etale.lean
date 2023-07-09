@@ -373,16 +373,19 @@ theorem FormallySmooth.iff_split_surjection [FormallySmooth R P] :
       (Ideal.quotientKerAlgEquivOfSurjective surj).toAlgHom.congr_arg
         (FormallySmooth.mk_lift _ ⟨2, sqz⟩
           (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom x)
-    dsimp at this
-    rw [AlgEquiv.apply_symm_apply] at this
+    -- Porting note: was
+    -- dsimp at this
+    -- rw [AlgEquiv.apply_symm_apply] at this
+    erw [AlgEquiv.apply_symm_apply] at this
     conv_rhs => rw [← this, AlgHom.id_apply]
-    obtain ⟨y, e⟩ :=
-      Ideal.Quotient.mk_surjective
-        (FormallySmooth.lift _ ⟨2, sqz⟩ (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
-          x)
-    dsimp at e ⊢
-    rw [← e]
-    rfl
+    -- Porting note: lean3 was not finished here:
+    -- obtain ⟨y, e⟩ :=
+    --   Ideal.Quotient.mk_surjective
+    --     (FormallySmooth.lift _ ⟨2, sqz⟩ (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
+    --       x)
+    -- dsimp at e ⊢
+    -- rw [← e]
+    -- rfl
   · rintro ⟨g, hg⟩; exact FormallySmooth.of_split f g hg
 #align algebra.formally_smooth.iff_split_surjection Algebra.FormallySmooth.iff_split_surjection
 
