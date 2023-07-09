@@ -74,8 +74,7 @@ namespace Cat
 
 /-- The functor sending each quiver to its path category. -/
 @[simps]
-def free : QuivCat.{v, u} ⥤ Cat.{max u v, u}
-    where
+def free : QuivCat.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (Paths V)
   map F :=
     { obj := fun X => F.obj X
