@@ -304,7 +304,7 @@ deduce `TopologicalSpace.SecondCountableTopology` from `TopologicalSpace.Separab
 
 Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
 instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
-class SeparableSpace : Prop where
+@[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s
 #align topological_space.separable_space TopologicalSpace.SeparableSpace
@@ -345,10 +345,59 @@ instance (priority := 100) Countable.to_separableSpace [Countable α] : Separabl
     where exists_countable_dense := ⟨Set.univ, Set.countable_univ, dense_univ⟩
 #align topological_space.countable.to_separable_space TopologicalSpace.Countable.to_separableSpace
 
-theorem separableSpace_of_denseRange {ι : Type _} [Countable ι] (u : ι → α) (hu : DenseRange u) :
+/-- The product of two separable spaces is a separable space. -/
+instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
+  rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
+  rcases exists_countable_dense β with ⟨t, htc, htd⟩
+  exact ⟨⟨s ×ˢ t, hsc.prod htc, hsd.prod htd⟩⟩
+
+/-- The product of a countable family of separable spaces is a separable space. -/
+instance {ι : Type _} {X : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, SeparableSpace (X i)]
+    [Countable ι] : SeparableSpace (∀ i, X i) := by
+  choose t htc htd using (exists_countable_dense <| X ·)
+  haveI := fun i ↦ (htc i).to_subtype
+  nontriviality ∀ i, X i; inhabit ∀ i, X i
+  classical
+    set f : (Σ I : Finset ι, ∀ i : I, t i) → ∀ i, X i := fun ⟨I, g⟩ i ↦
+      if hi : i ∈ I then g ⟨i, hi⟩ else (default : ∀ i, X i) i
+    refine ⟨⟨range f, countable_range f, dense_iff_inter_open.2 fun U hU ⟨g, hg⟩ ↦ ?_⟩⟩
+    rcases isOpen_pi_iff.1 hU g hg with ⟨I, u, huo, huU⟩
+    have : ∀ i : I, ∃ y ∈ t i, y ∈ u i := fun i ↦
+      (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
+    choose y hyt hyu using this
+    lift y to ∀ i : I, t i using hyt
+    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self _⟩
+    simp only [dif_pos hi]
+    exact hyu _
+
+/-- If `f` has a dense range and its domain is countable, then its codomain is a separable space.
+See also `DenseRange.separableSpace_of_dom`. -/
+theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α) (hu : DenseRange u) :
     SeparableSpace α :=
   ⟨⟨range u, countable_range u, hu⟩⟩
-#align topological_space.separable_space_of_dense_range TopologicalSpace.separableSpace_of_denseRange
+#align topological_space.separable_space_of_dense_range TopologicalSpace.SeparableSpace.of_denseRange
+
+alias SeparableSpace.of_denseRange ← _root_.DenseRange.separableSpace
+
+/-- If `f` has dense range and its domain is a separable space, then its codomain is a separable
+space too. See also `DenseRange.separableSpace`. -/
+theorem _root_.DenseRange.separableSpace_of_dom [SeparableSpace α] [TopologicalSpace β] {f : α → β}
+    (hfd : DenseRange f) (hfc : Continuous f) : SeparableSpace β := by
+  rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
+  exact ⟨⟨f '' s, hsc.image f, hfd.dense_image hfc hsd⟩⟩
+
+theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
+    (hf : QuotientMap f) : SeparableSpace β :=
+  hf.surjective.denseRange.separableSpace_of_dom hf.continuous
+
+instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
+  quotientMap_quot_mk.separableSpace
+
+instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
+  quotientMap_quot_mk.separableSpace
+
+theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
+  simp [SeparableSpace_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
 theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type _}
