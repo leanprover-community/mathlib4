@@ -395,10 +395,10 @@ instance FormallyUnramified.subsingleton_kaehlerDifferential [FormallyUnramified
     Subsingleton (Ω[S⁄R]) := by
   rw [← not_nontrivial_iff_subsingleton]
   intro h
-  obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R S).Injective.Nontrivial
+  obtain ⟨f₁, f₂, e⟩ := (KaehlerDifferential.endEquiv R S).injective.nontrivial
   apply e
   ext1
-  apply formally_unramified.lift_unique' _ _ _ _ (f₁.2.trans f₂.2.symm)
+  apply FormallyUnramified.lift_unique' _ _ _ _ (f₁.2.trans f₂.2.symm)
   rw [← AlgHom.toRingHom_eq_coe, AlgHom.ker_ker_sqare_lift]
   exact ⟨_, Ideal.cotangentIdeal_square _⟩
 #align algebra.formally_unramified.subsingleton_kaehler_differential Algebra.FormallyUnramified.subsingleton_kaehlerDifferential
@@ -410,12 +410,12 @@ theorem FormallyUnramified.iff_subsingleton_kaehlerDifferential :
   · intro H
     constructor
     intro B _ _ I hI f₁ f₂ e
-    letI := f₁.to_ring_hom.to_algebra
-    haveI := IsScalarTower.of_algebraMap_eq' f₁.comp_algebra_map.symm
+    letI := f₁.toRingHom.toAlgebra
+    haveI := IsScalarTower.of_algebraMap_eq' f₁.comp_algebraMap.symm
     have :=
       ((KaehlerDifferential.linearMapEquivDerivation R S).toEquiv.trans
-            (derivationToSquareZeroEquivLift I hI)).Surjective.Subsingleton
-    exact subtype.ext_iff.mp (@Subsingleton.elim this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
+            (derivationToSquareZeroEquivLift I hI)).surjective.subsingleton
+    exact Subtype.ext_iff.mp (@Subsingleton.elim _ this ⟨f₁, rfl⟩ ⟨f₂, e.symm⟩)
 #align algebra.formally_unramified.iff_subsingleton_kaehler_differential Algebra.FormallyUnramified.iff_subsingleton_kaehlerDifferential
 
 end UnramifiedDerivation
@@ -485,7 +485,8 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 
-attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
+-- Porting note: no longer supported
+-- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 theorem FormallySmooth.of_isLocalization : FormallySmooth R Rₘ := by
   constructor
@@ -495,7 +496,7 @@ theorem FormallySmooth.of_isLocalization : FormallySmooth R Rₘ := by
     apply (IsNilpotent.isUnit_quotient_mk_iff ⟨2, e⟩).mp
     convert (IsLocalization.map_units Rₘ x).map f
     simp only [Ideal.Quotient.mk_algebraMap, AlgHom.commutes]
-  let this.1 : Rₘ →ₐ[R] Q :=
+  let this : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this
   apply AlgHom.coe_ringHom_injective
@@ -525,10 +526,10 @@ theorem FormallySmooth.localization_base [FormallySmooth R Sₘ] : FormallySmoot
   letI := ((algebraMap Rₘ Q).comp (algebraMap R Rₘ)).toAlgebra
   letI : IsScalarTower R Rₘ Q := IsScalarTower.of_algebraMap_eq' rfl
   let f : Sₘ →ₐ[Rₘ] Q := by
-    refine' { formally_smooth.lift I ⟨2, e⟩ (f.restrict_scalars R) with commutes' := _ }
+    refine' { FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) with commutes' := _ }
     intro r
     change
-      (RingHom.comp (formally_smooth.lift I ⟨2, e⟩ (f.restrict_scalars R) : Sₘ →+* Q)
+      (RingHom.comp (FormallySmooth.lift I ⟨2, e⟩ (f.restrictScalars R) : Sₘ →+* Q)
             (algebraMap _ _))
           r =
         algebraMap _ _ r
@@ -546,7 +547,7 @@ consistency. See `algebra.formally_unramified.of_comp` instead.
 
  The intended use is for copying proofs between `formally_{unramified, smooth, etale}`
  without the need to change anything (including removing redundant arguments). -/
-@[nolint unused_arguments]
+@[nolint unusedArguments]
 theorem FormallyUnramified.localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ Sₘ :=
   FormallyUnramified.of_comp R Rₘ Sₘ
 #align algebra.formally_unramified.localization_base Algebra.FormallyUnramified.localization_base
@@ -557,23 +558,23 @@ theorem FormallyEtale.localization_base [FormallyEtale R Sₘ] : FormallyEtale R
 #align algebra.formally_etale.localization_base Algebra.FormallyEtale.localization_base
 
 theorem FormallySmooth.localization_map [FormallySmooth R S] : FormallySmooth Rₘ Sₘ := by
-  haveI : formally_smooth S Sₘ := formally_smooth.of_is_localization (M.map (algebraMap R S))
-  haveI : formally_smooth R Sₘ := formally_smooth.comp R S Sₘ
-  exact formally_smooth.localization_base M
+  haveI : FormallySmooth S Sₘ := FormallySmooth.of_isLocalization (M.map (algebraMap R S))
+  haveI : FormallySmooth R Sₘ := FormallySmooth.comp R S Sₘ
+  exact FormallySmooth.localization_base M
 #align algebra.formally_smooth.localization_map Algebra.FormallySmooth.localization_map
 
 theorem FormallyUnramified.localization_map [FormallyUnramified R S] : FormallyUnramified Rₘ Sₘ :=
   by
-  haveI : formally_unramified S Sₘ :=
-    formally_unramified.of_is_localization (M.map (algebraMap R S))
-  haveI : formally_unramified R Sₘ := formally_unramified.comp R S Sₘ
-  exact formally_unramified.localization_base M
+  haveI : FormallyUnramified S Sₘ :=
+    FormallyUnramified.of_isLocalization (M.map (algebraMap R S))
+  haveI : FormallyUnramified R Sₘ := FormallyUnramified.comp R S Sₘ
+  exact FormallyUnramified.localization_base M
 #align algebra.formally_unramified.localization_map Algebra.FormallyUnramified.localization_map
 
 theorem FormallyEtale.localization_map [FormallyEtale R S] : FormallyEtale Rₘ Sₘ := by
-  haveI : formally_etale S Sₘ := formally_etale.of_is_localization (M.map (algebraMap R S))
-  haveI : formally_etale R Sₘ := formally_etale.comp R S Sₘ
-  exact formally_etale.localization_base M
+  haveI : FormallyEtale S Sₘ := FormallyEtale.of_isLocalization (M.map (algebraMap R S))
+  haveI : FormallyEtale R Sₘ := FormallyEtale.comp R S Sₘ
+  exact FormallyEtale.localization_base M
 #align algebra.formally_etale.localization_map Algebra.FormallyEtale.localization_map
 
 end Localization
