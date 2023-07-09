@@ -36,10 +36,9 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 -/
 def pullback : CompHaus.{u} :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
-  haveI : CompactSpace set := by
-    rw [← isCompact_iff_compactSpace]
-    apply IsClosed.isCompact
-    exact isClosed_eq (f.continuous.comp continuous_fst) (g.continuous.comp continuous_snd)
+  haveI : CompactSpace set :=
+  isCompact_iff_compactSpace.mp (isClosed_eq (f.continuous.comp continuous_fst)
+    (g.continuous.comp continuous_snd)).isCompact
   CompHaus.of set
 
 /--
@@ -275,18 +274,9 @@ theorem finiteCoproduct.ι_comp_fromFiniteCoproduct (a : α) :
     (finiteCoproduct.ι X a) ≫ FromFiniteCoproduct X = Limits.Sigma.ι X a := by
   simp [FromFiniteCoproduct]
 
-@[simps] noncomputable
-def ToFiniteCoproductHomeo : (∐ X : _) ≃ₜ finiteCoproduct X where
-  toFun := ToFiniteCoproduct X
-  invFun := FromFiniteCoproduct X
-  left_inv := fun x => by
-    change (ToFiniteCoproduct X ≫ FromFiniteCoproduct X) x = x
-    simp only [toFiniteCoproduct_comp_fromFiniteCoproduct_eq_id, id_apply]
-  right_inv := fun x => by
-    change (FromFiniteCoproduct X ≫ ToFiniteCoproduct X) x = x
-    simp only [fromFiniteCoproduct_comp_toFiniteCoproduct_eq_id, id_apply]
-  continuous_toFun := (ToFiniteCoproduct X).continuous_toFun
-  continuous_invFun := (FromFiniteCoproduct X).continuous_toFun
+noncomputable
+def ToFiniteCoproductHomeo : (∐ X : _) ≃ₜ finiteCoproduct X :=
+CompHaus.homeoOfIso (FromFiniteCoproductIso X).symm
 
 theorem ToFiniteCoproduct.OpenEmbedding : OpenEmbedding (ToFiniteCoproductHomeo X) :=
   Homeomorph.openEmbedding (ToFiniteCoproductHomeo X)

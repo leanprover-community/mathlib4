@@ -142,6 +142,41 @@ noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Funct
 set_option linter.uppercaseLean3 false in
 #align CompHaus.iso_of_bijective CompHaus.isoOfBijective
 
+/-- Construct an isomorphism from a homeomorphism. -/
+@[simps hom inv]
+def isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y where
+  hom := ⟨f, f.continuous⟩
+  inv := ⟨f.symm, f.symm.continuous⟩
+  hom_inv_id := by
+    ext x
+    exact f.symm_apply_apply x
+  inv_hom_id := by
+    ext x
+    exact f.apply_symm_apply x
+
+/-- Construct a homeomorphism from an isomorphism. -/
+@[simps]
+def homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y where
+  toFun := f.hom
+  invFun := f.inv
+  left_inv x := by simp
+  right_inv x := by simp
+  continuous_toFun := f.hom.continuous
+  continuous_invFun := f.inv.continuous
+
+/-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
+of topological spaces. -/
+@[simps]
+def isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by
+    ext
+    rfl
+  right_inv f := by
+    ext
+    rfl
+
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
