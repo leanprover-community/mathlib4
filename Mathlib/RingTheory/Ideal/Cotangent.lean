@@ -50,13 +50,14 @@ instance Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance : IsScalarTower S S' I.Cotangent := by
+instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent := by
   delta Cotangent
   constructor
   intro s s' x
   rw [← @IsScalarTower.algebraMap_smul S' R, ← @IsScalarTower.algebraMap_smul S' R, ← smul_assoc, ←
     IsScalarTower.toAlgHom_apply S S' R, map_smul]
   rfl
+#align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent := by delta Cotangent; infer_instance
 

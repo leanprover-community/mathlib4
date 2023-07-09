@@ -49,11 +49,11 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 --Porting note: new theorem
 @[simp]
-theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
+theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.castIso (by simp) i) := by
   have := Array.getElem_ofFn f i (by simpa using i.2)
   cases' i with i hi
   simp only [getElem, Array.get] at this
-  simp only [Fin.cast_mk]
+  simp only [Fin.castIso_mk]
   rw [← this]
   congr <;> simp [ofFn]
 
@@ -96,15 +96,15 @@ theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
 --   suffices ∀ {m h l}, DArray.revIterateAux a (fun i => cons) m h l =
 --      ofFnAux (DArray.read a) m h l
 --     from this
---   intros ; induction' m with m IH generalizing l; · rfl
+--   intros; induction' m with m IH generalizing l; · rfl
 --   simp only [DArray.revIterateAux, of_fn_aux, IH]
 -- #align list.array_eq_of_fn List.array_eq_of_fn
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
-    ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
+    ofFn f = ofFn fun i : Fin n => f (Fin.castIso h.symm i) := by
   subst h
-  simp_rw [Fin.cast_refl, OrderIso.refl_apply]
+  simp_rw [Fin.castIso_refl, OrderIso.refl_apply]
 #align list.of_fn_congr List.ofFn_congr
 
 /-- `ofFn` on an empty domain is the empty list. -/
@@ -122,11 +122,11 @@ theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => 
 #align list.of_fn_succ List.ofFn_succ
 
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
-    ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
+    ofFn f = (ofFn fun i => f (Fin.castSuccEmb i)).concat (f (Fin.last _)) := by
   induction' n with n IH
   · rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]
     rfl
-  · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
+  · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSuccEmb_zero]
     congr
 #align list.of_fn_succ' List.ofFn_succ'
 
@@ -151,7 +151,7 @@ theorem ofFn_add {m n} (f : Fin (m + n) → α) :
     List.ofFn f =
       (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
   induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
+  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.castIso_refl]
     rfl
   · rw [ofFn_succ', ofFn_succ', IH, append_concat]
     rfl
@@ -181,7 +181,7 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
     calc
       m * i + j < m * (i + 1) := (add_lt_add_left j.prop _).trans_eq (mul_add_one (_ : ℕ) _).symm
       _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by
-  simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.cast_mk]
+  simp_rw [mul_comm m n, mul_comm m, ofFn_mul, Fin.castIso_mk]
 #align list.of_fn_mul' List.ofFn_mul'
 
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
@@ -202,7 +202,7 @@ theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
 -- is much more useful
 theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
   simp only [mem_iff_get, Set.mem_range, get_ofFn]
-  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
+  exact ⟨fun ⟨i, hi⟩ => ⟨Fin.castIso (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.castIso (by simp) i, hi⟩⟩
 #align list.mem_of_fn List.mem_ofFn
 
 @[simp]
@@ -226,7 +226,7 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_get, (Fin.cast (length_ofFn f)).surjective.forall, get_ofFn,
+  simp only [pairwise_iff_get, (Fin.castIso (length_ofFn f)).surjective.forall, get_ofFn,
     OrderIso.lt_iff_lt]
 #align list.pairwise_of_fn List.pairwise_ofFn
 
@@ -237,7 +237,7 @@ def equivSigmaTuple : List α ≃ Σn, Fin n → α where
   invFun f := List.ofFn f.2
   left_inv := List.ofFn_get
   right_inv := fun ⟨_, f⟩ =>
-    Fin.sigma_eq_of_eq_comp_cast (length_ofFn _) <| funext fun i => get_ofFn f i
+    Fin.sigma_eq_of_eq_comp_castIso (length_ofFn _) <| funext fun i => get_ofFn f i
 #align list.equiv_sigma_tuple List.equivSigmaTuple
 #align list.equiv_sigma_tuple_symm_apply List.equivSigmaTuple_symm_apply
 #align list.equiv_sigma_tuple_apply_fst List.equivSigmaTuple_apply_fst

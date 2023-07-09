@@ -48,6 +48,7 @@ ERR_TAC = 9 # imported Mathlib.Tactic
 ERR_UNF = 10 # unfreeze_local_instances
 ERR_IBY = 11 # isolated by
 ERR_DOT = 12 # isolated or low focusing dot
+ERR_SEM = 13 # the substring " ;"
 
 exceptions = []
 
@@ -232,7 +233,7 @@ def banned_import_check(lines, path):
             errors += [(ERR_TAC, line_nr, path)]
     return errors
 
-def isolated_by_dot_check(lines, path):
+def isolated_by_dot_semicolon_check(lines, path):
     errors = []
     for line_nr, line in enumerate(lines, 1):
         if line.strip() == "by":
@@ -244,6 +245,8 @@ def isolated_by_dot_check(lines, path):
                 errors += [(ERR_IBY, line_nr, path)]
         if line.lstrip().startswith(". ") or line.strip() in (".", "·"):
             errors += [(ERR_DOT, line_nr, path)]
+        if " ;" in line:
+            errors += [(ERR_SEM, line_nr, path)]
     return errors
 
 def output_message(path, line_nr, code, msg):
@@ -288,13 +291,15 @@ def format_errors(errors):
             output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
         if errno == ERR_DOT:
             output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
+        if errno == ERR_SEM:
+            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
 
 def lint(path):
     with path.open(encoding="utf-8") as f:
         lines = f.readlines()
         errs = long_lines_check(lines, path)
         format_errors(errs)
-        errs = isolated_by_dot_check(lines, path)
+        errs = isolated_by_dot_semicolon_check(lines, path)
         format_errors(errs)
         (b, errs) = import_only_check(lines, path)
         if b:

@@ -226,7 +226,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
     constantCoeff (xInTermsOfW p R n) = 0 := by
-  apply Nat.strongInductionOn n ; clear n
+  apply Nat.strongInductionOn n; clear n
   intro n IH
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]

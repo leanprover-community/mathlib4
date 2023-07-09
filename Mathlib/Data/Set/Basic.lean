@@ -226,7 +226,7 @@ theorem Subtype.mem {α : Type _} {s : Set α} (p : s) : (p : α) ∈ s :=
 
 /-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
 theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  fun h₁ _ h₂ => by rw [← h₁] ; exact h₂
+  fun h₁ _ h₂ => by rw [← h₁]; exact h₂
 #align eq.subset Eq.subset
 
 namespace Set

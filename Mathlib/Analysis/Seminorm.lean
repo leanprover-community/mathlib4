@@ -483,7 +483,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
-    dsimp ; positivity⟩
+    dsimp; positivity⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
 noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
@@ -1132,25 +1132,29 @@ variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [
 
 variable [Module 𝕝 E]
 
-theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
-    (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
+theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E}
+    {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
+  let r' := max 1 r
+  have hr' : 0 < r' := lt_max_of_lt_left one_pos
+  have hp' : p.closedBall 0 r' ∈ (𝓝 0 : Filter E) :=
+    mem_of_superset hp (closedBall_mono <| le_max_right _ _)
   refine' Metric.nhds_basis_closedBall.tendsto_right_iff.mpr _
   intro ε hε
   rw [map_zero]
   suffices p.closedBall 0 ε ∈ (𝓝 0 : Filter E) by
     rwa [Seminorm.closedBall_zero_eq_preimage_closedBall] at this
-  rcases exists_norm_lt 𝕜 (div_pos hε hr) with ⟨k, hk0, hkε⟩
+  rcases exists_norm_lt 𝕜 (div_pos hε hr') with ⟨k, hk0, hkε⟩
   have hk0' := norm_pos_iff.mp hk0
-  have := (set_smul_mem_nhds_zero_iff hk0').mpr hp
+  have := (set_smul_mem_nhds_zero_iff hk0').mpr hp'
   refine' Filter.mem_of_superset this (smul_set_subset_iff.mpr fun x hx => _)
-  rw [mem_closedBall_zero, map_smul_eq_mul, ← div_mul_cancel ε hr.ne.symm]
+  rw [mem_closedBall_zero, map_smul_eq_mul, ← div_mul_cancel ε hr'.ne.symm]
   gcongr
   exact p.mem_closedBall_zero.mp hx
 #align seminorm.continuous_at_zero' Seminorm.continuousAt_zero'
 
 theorem continuousAt_zero [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
-    (hr : 0 < r) (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
-  continuousAt_zero' hr (Filter.mem_of_superset hp <| p.ball_subset_closedBall _ _)
+    (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
+  continuousAt_zero' (Filter.mem_of_superset hp <| p.ball_subset_closedBall _ _)
 #align seminorm.continuous_at_zero Seminorm.continuousAt_zero
 
 protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [UniformAddGroup E]
@@ -1171,32 +1175,32 @@ protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [Topologi
 #align seminorm.continuous_of_continuous_at_zero Seminorm.continuous_of_continuousAt_zero
 
 protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
-  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hr hp)
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.uniform_continuous Seminorm.uniformContinuous
 
 protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
-  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hr hp)
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.uniform_continuous' Seminorm.uniform_continuous'
 
 protected theorem continuous [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
-  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hr hp)
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.continuous Seminorm.continuous
 
 protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     Continuous p :=
-  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hr hp)
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.continuous' Seminorm.continuous'
 
 theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
   refine'
-    Seminorm.continuous one_pos
+    Seminorm.continuous (r := 1)
       (Filter.mem_of_superset (IsOpen.mem_nhds _ <| q.mem_ball_self zero_lt_one)
         (ball_antitone hpq))
   rw [ball_zero_eq]

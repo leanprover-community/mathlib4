@@ -95,21 +95,21 @@ theorem real_main_inequality {x : ℝ} (n_large : (512 : ℝ) ≤ x) :
     rw [one_le_div] <;> norm_num1
     apply le_trans _ (le_mul_of_one_le_left _ _) <;> norm_num1
     apply Real.rpow_le_rpow <;> norm_num1
-    apply rpow_nonneg_of_nonneg ; norm_num1
-    apply rpow_pos_of_pos ; norm_num1
-    apply hf' 18 ; norm_num1
+    apply rpow_nonneg_of_nonneg; norm_num1
+    apply rpow_pos_of_pos; norm_num1
+    apply hf' 18; norm_num1
     norm_num1
   · have : sqrt (2 * 512) = 32 :=
       (sqrt_eq_iff_mul_self_eq_of_pos (by norm_num1)).mpr (by norm_num1)
     rw [hf, log_nonpos_iff (hf' _ _), this, div_le_one] <;> norm_num1
     have : (512 : ℝ) = 2 ^ (9 : ℕ)
-    · rw [rpow_nat_cast 2 9] ; norm_num1
+    · rw [rpow_nat_cast 2 9]; norm_num1
     conv_lhs => rw [this]
     have : (1024 : ℝ) = 2 ^ (10 : ℕ)
-    · rw [rpow_nat_cast 2 10] ; norm_num1
+    · rw [rpow_nat_cast 2 10]; norm_num1
     rw [this, ← rpow_mul, ← rpow_add] <;> norm_num1
     have : (4 : ℝ) = 2 ^ (2 : ℕ)
-    · rw [rpow_nat_cast 2 2] ; norm_num1
+    · rw [rpow_nat_cast 2 2]; norm_num1
     rw [this, ← rpow_mul] <;> norm_num1
     apply rpow_le_rpow_of_exponent_le <;> norm_num1
     apply rpow_pos_of_pos four_pos
@@ -215,7 +215,7 @@ theorem exists_prime_lt_and_le_two_mul_eventually (n : ℕ) (n_big : 512 ≤ n) 
     Nat.four_pow_lt_mul_centralBinom n (le_trans (by norm_num1) n_big)
   have H3 : n.centralBinom ≤ (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) :=
     centralBinom_le_of_no_bertrand_prime n (lt_of_lt_of_le (by norm_num1) n_big) no_prime
-  rw [mul_assoc] at H1 ; exact not_le.2 H2 ((mul_le_mul_left' H3 n).trans H1)
+  rw [mul_assoc] at H1; exact not_le.2 H2 ((mul_le_mul_left' H3 n).trans H1)
 #align nat.exists_prime_lt_and_le_two_mul_eventually Nat.exists_prime_lt_and_le_two_mul_eventually
 
 /-- Proves that Bertrand's postulate holds over all positive naturals less than n by identifying a

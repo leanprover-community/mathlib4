@@ -567,7 +567,7 @@ end
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
   simp_rw [← sup_iterate_eq_nfp, ← sup_mul_nat]
-  congr ; funext n
+  congr; funext n
   induction' n with n hn
   · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
   · nth_rw 2 [Nat.succ_eq_one_add]

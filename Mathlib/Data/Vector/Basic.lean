@@ -98,7 +98,7 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp]
 theorem toList_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
-  by cases v ; rfl
+  by cases v; rfl
 #align vector.to_list_map Vector.toList_map
 
 @[simp]
@@ -115,14 +115,14 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
 #align vector.tail_map Vector.tail_map
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
-    v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
+    v.get i = v.toList.get (Fin.castIso v.toList_length.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_get
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]
 theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
+    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length]; exact i.2)
   | ⟨_, _⟩, _ => rfl
 
 @[simp]
@@ -167,7 +167,7 @@ def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n
 
 theorem get_tail (x : Vector α n) (i) :
     x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ := by
-  cases' i with i ih ; dsimp
+  cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
   rw [←h] at ih
@@ -176,7 +176,7 @@ theorem get_tail (x : Vector α n) (i) :
 
 @[simp]
 theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get] ; rfl
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get]; rfl
 #align vector.nth_tail_succ Vector.get_tail_succ
 
 @[simp]
@@ -381,14 +381,14 @@ theorem scanl_head : (scanl f b v).head = b := by
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
-function `f : β → α → β` of the `castSucc i` element of
+function `f : β → α → β` of the `castSuccEmb i` element of
 `scanl f b v` and `get v i`.
 
 This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
 theorem scanl_get (i : Fin n) :
-    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
+    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSuccEmb i)) (v.get i) := by
   cases' n with n
   · exact i.elim0
   induction' n with n hn generalizing b
@@ -396,9 +396,9 @@ theorem scanl_get (i : Fin n) :
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
-    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
+    · simp only [get_zero, scanl_head, Fin.castSuccEmb_zero, head_cons]
     · intro i'
-      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
+      simp only [hn, Fin.castSuccEmb_fin_succ, get_cons_succ]
 #align vector.scanl_nth Vector.scanl_get
 
 end Scan
@@ -593,10 +593,10 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
-      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
+      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSuccEmb i)
   | ⟨l, hl⟩ => by
     refine' Subtype.eq _
-    simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
+    simp only [insertNth_val, Fin.val_succ, Fin.castSuccEmb, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
     · rw [hl]
@@ -637,7 +637,7 @@ theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
-  split_ifs <;> try simp [*] <;> try rw [get_set_of_ne] ; assumption
+  split_ifs <;> try simp [*] <;> try rw [get_set_of_ne]; assumption
 #align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
 @[to_additive]
@@ -688,7 +688,7 @@ variable {α β : Type u}
 @[simp]
 protected theorem traverse_def (f : α → F β) (x : α) :
     ∀ xs : Vector α n, (x ::ᵥ xs).traverse f = cons <$> f x <*> xs.traverse f := by
-  rintro ⟨xs, rfl⟩ ; rfl
+  rintro ⟨xs, rfl⟩; rfl
 #align vector.traverse_def Vector.traverse_def
 
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
@@ -706,7 +706,7 @@ variable [LawfulApplicative F] [LawfulApplicative G]
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
--- the `IsLawfulTraversable` instance below expects a particular signature.
+-- the `LawfulTraversable` instance below expects a particular signature.
 @[nolint unusedArguments]
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
@@ -720,7 +720,7 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure: _ → Id _) ∘ f) = (pure: _ → Id _) (map f x) := by
-  rintro ⟨x, rfl⟩ ; simp! ; induction x <;> simp! [*, functor_norm] <;> rfl
+  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
 #align vector.traverse_eq_map_id Vector.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
@@ -739,7 +739,7 @@ instance : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
-instance : IsLawfulTraversable.{u} (flip Vector n) where
+instance : LawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
   comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n

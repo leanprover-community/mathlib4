@@ -113,7 +113,7 @@ instance : Inhabited (N ⋊[φ] G) := ⟨1⟩
 def inl : N →* N ⋊[φ] G where
   toFun n := ⟨n, 1⟩
   map_one' := rfl
-  map_mul' := by intros ; ext <;>
+  map_mul' := by intros; ext <;>
     simp only [mul_left, map_one, MulAut.one_apply, mul_right, mul_one]
 #align semidirect_product.inl SemidirectProduct.inl
 
@@ -138,7 +138,7 @@ theorem inl_inj {n₁ n₂ : N} : (inl n₁ : N ⋊[φ] G) = inl n₂ ↔ n₁ =
 def inr : G →* N ⋊[φ] G where
   toFun g := ⟨1, g⟩
   map_one' := rfl
-  map_mul' := by intros ; ext <;> simp
+  map_mul' := by intros; ext <;> simp
 #align semidirect_product.inr SemidirectProduct.inr
 
 @[simp]
@@ -186,12 +186,12 @@ theorem rightHom_eq_right : (rightHom : N ⋊[φ] G → G) = right := rfl
 #align semidirect_product.right_hom_eq_right SemidirectProduct.rightHom_eq_right
 
 @[simp]
-theorem rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext ; simp [rightHom]
+theorem rightHom_comp_inl : (rightHom : N ⋊[φ] G →* G).comp inl = 1 := by ext; simp [rightHom]
 #align semidirect_product.right_hom_comp_inl SemidirectProduct.rightHom_comp_inl
 
 @[simp]
 theorem rightHom_comp_inr : (rightHom : N ⋊[φ] G →* G).comp inr = MonoidHom.id _ := by
-  ext ; simp [rightHom]
+  ext; simp [rightHom]
 #align semidirect_product.right_hom_comp_inr SemidirectProduct.rightHom_comp_inr
 
 @[simp]
@@ -233,7 +233,7 @@ theorem lift_inl (n : N) : lift f₁ f₂ h (inl n) = f₁ n := by simp [lift]
 #align semidirect_product.lift_inl SemidirectProduct.lift_inl
 
 @[simp]
-theorem lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext ; simp
+theorem lift_comp_inl : (lift f₁ f₂ h).comp inl = f₁ := by ext; simp
 #align semidirect_product.lift_comp_inl SemidirectProduct.lift_comp_inl
 
 @[simp]
@@ -241,11 +241,11 @@ theorem lift_inr (g : G) : lift f₁ f₂ h (inr g) = f₂ g := by simp [lift]
 #align semidirect_product.lift_inr SemidirectProduct.lift_inr
 
 @[simp]
-theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext ; simp
+theorem lift_comp_inr : (lift f₁ f₂ h).comp inr = f₂ := by ext; simp
 #align semidirect_product.lift_comp_inr SemidirectProduct.lift_comp_inr
 
 theorem lift_unique (F : N ⋊[φ] G →* H) :
-    F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext ; simp [inl_aut] := by
+    F = lift (F.comp inl) (F.comp inr) fun _ ↦ by ext; simp [inl_aut] := by
   rw [FunLike.ext_iff]
   simp only [lift, MonoidHom.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk, ← map_mul,
     inl_left_mul_inr_right, forall_const]

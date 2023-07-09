@@ -85,8 +85,8 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   swap
   · rintro ⟨k, hk⟩
     suffices φ ≫ X.δ (⟨a + 2 + k, by linarith⟩ : Fin (n + 2)) = 0 by
-      simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk] ; linarith)
+      simp only [this, Fin.natAdd_mk, Fin.castIso_mk, zero_comp, smul_zero]
+    convert v ⟨a + k + 1, by linarith⟩ (by rw [Fin.val_mk]; linarith)
     dsimp
     linarith
   -- cleaning up the second sum
@@ -95,21 +95,21 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
   · rintro ⟨k, hk⟩
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
     · simp only [Fin.lt_iff_val_lt_val]
-      dsimp [Fin.natAdd, Fin.cast]
+      dsimp [Fin.natAdd, Fin.castIso]
       linarith
     · intro h
       rw [Fin.pred_eq_iff_eq_succ, Fin.ext_iff] at h
-      dsimp [Fin.cast] at h
+      dsimp [Fin.castIso] at h
       linarith
-    · dsimp [Fin.cast, Fin.pred]
+    · dsimp [Fin.castIso, Fin.pred]
       rw [Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
       linarith
   simp only [assoc]
   conv_lhs =>
     congr
-    · rw [Fin.sum_univ_castSucc]
-    · rw [Fin.sum_univ_castSucc, Fin.sum_univ_castSucc]
-  dsimp [Fin.cast, Fin.castLE, Fin.castLT]
+    · rw [Fin.sum_univ_castSuccEmb]
+    · rw [Fin.sum_univ_castSuccEmb, Fin.sum_univ_castSuccEmb]
+  dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
   /- the purpose of the following `simplif` is to create three subgoals in order
       to finish the proof -/
   have simplif :
@@ -121,7 +121,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     rw [← pow_add, Odd.neg_one_pow, neg_smul, one_zsmul]
     exact ⟨a, by linarith⟩
   · -- d + e = 0
-    rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
+    rw [X.δ_comp_σ_self' (Fin.castSuccEmb_mk _ _ _).symm,
       X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
     simp only [comp_id, pow_add _ (a + 1) 1, pow_one, mul_neg, mul_one, neg_mul, neg_smul,
       add_right_neg]
@@ -131,7 +131,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     rintro ⟨i, hi⟩ _
     simp only
     have hia : (⟨i, by linarith⟩ : Fin (n + 2)) ≤
-        Fin.castSucc (⟨a, by linarith⟩ : Fin (n + 1)) := by
+        Fin.castSuccEmb (⟨a, by linarith⟩ : Fin (n + 1)) := by
       rw [Fin.le_iff_val_le_val]
       dsimp
       linarith
@@ -151,13 +151,13 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
       Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
       AlternatingFaceMapComplex.obj_d_eq]
     rw [← Fin.sum_congr' _ (show 2 + (n + 1) = n + 1 + 2 by linarith), Fin.sum_trunc]
-    · simp only [Fin.sum_univ_castSucc, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
-        Fin.cast_mk, Fin.castSucc_mk]
+    · simp only [Fin.sum_univ_castSuccEmb, Fin.sum_univ_zero, zero_add, Fin.last, Fin.castLE_mk,
+        Fin.castIso_mk, Fin.castSuccEmb_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
       erw [δ_comp_σ_self, δ_comp_σ_succ, add_right_neg]
     · intro j
-      dsimp [Fin.cast, Fin.castLE, Fin.castLT]
+      dsimp [Fin.castIso, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
       · simp only [Fin.lt_iff_val_lt_val]
         dsimp [Fin.succ]

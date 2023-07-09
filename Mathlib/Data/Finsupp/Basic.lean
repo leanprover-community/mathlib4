@@ -1226,7 +1226,7 @@ theorem sum_curry_index (f : α × β →₀ M) (g : α → β → M → N) (hg�
   · exact
       sum_sum_index (fun a => sum_zero_index) fun a b₀ b₁ =>
         sum_add_index' (fun a => hg₀ _ _) fun c d₀ d₁ => hg₁ _ _ _ _
-  congr ; funext p c
+  congr; funext p c
   trans
   · exact sum_single_index sum_zero_index
   exact sum_single_index (hg₀ _ _)
