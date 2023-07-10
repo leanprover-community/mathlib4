@@ -153,7 +153,9 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
             (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp))
         (fun t _ a  _ => if a ∈ t then true else false)
-        (by simp; tauto)
+        (by
+          simp_rw [mem_singleton, mem_pi, mem_insert, ite_eq_left_iff, mem_singleton,
+            ite_eq_right_iff, mem_powerset]; tauto)
         (by
           simp [Function.funext_iff];
           intro a _ a1 ha1
@@ -162,7 +164,7 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
             exact ⟨ ha1, fun _ => h ⟩
           · rw [Bool.eq_false_of_ne_true h, if_neg]
             tauto)
-        (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
+        (by simp_rw [ite_eq_left_iff, ext_iff, mem_filter, mem_powerset]; tauto)
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
