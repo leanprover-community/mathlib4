@@ -54,3 +54,7 @@ lean_lib ImportGraph where
 
 lean_exe graph where
   root := `ImportGraph.Main
+
+/-- Additional documentation in the form of modules that only contain module docstrings. -/
+lean_lib docs where
+  roots := #[`docs]
