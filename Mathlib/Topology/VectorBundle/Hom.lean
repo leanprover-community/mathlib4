@@ -196,8 +196,7 @@ theorem continuousLinearMapCoordChange_apply (b : B)
       (continuousLinearMap σ e₁' e₂' ⟨b, (continuousLinearMap σ e₁ e₂).symm b L⟩).2 := by
   ext v
   simp_rw [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.arrowCongrSL_apply, LinearEquiv.toFun_eq_coe,
-    ContinuousLinearEquiv.arrowCongrₛₗ_apply, continuousLinearMap_apply,
+    ContinuousLinearEquiv.arrowCongrSL_apply, continuousLinearMap_apply,
     continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, comp_apply, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply,
     Trivialization.symmL_apply]
