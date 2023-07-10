@@ -107,12 +107,12 @@ def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
 
 open List in
 /-- Generate a random permutation of a given list. -/
-def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
+def permutationOf : (xs : List α) → Gen { ys // xs ~ ys }
   | [] => pure ⟨[], Perm.nil⟩
   | x::xs => do
     let ⟨ys, h1⟩ ← permutationOf xs
     let ⟨n, _, h3⟩ ← ULiftable.up <| choose Nat 0 ys.length (Nat.zero_le _)
-    pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
+    pure ⟨insertNth n x ys, Perm.trans (Perm.cons _ h1) (perm_insertNth _ _ h3).symm⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
 def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β) := do

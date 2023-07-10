@@ -123,13 +123,16 @@ section
 universe ua ub
 variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
 
+-- porting note: removed, there is no `sizeof` in the new `Sampleable`
+
 -- /-- Redefine `sizeof` to follow the structure of `sampleable` instances. -/
 -- def Total.sizeof : TotalFunction α β → ℕ
 --   | ⟨m, x⟩ => 1 + @SizeOf.sizeOf _ Sampleable.wf m + SizeOf.sizeOf x
--- #align slim_check.total_function.total.sizeof SlimCheck.TotalFunction.Total.sizeof
+#noalign slim_check.total_function.total.sizeof
 
 -- instance (priority := 2000) : SizeOf (TotalFunction α β) :=
 --   ⟨Total.sizeof⟩
+#noalign slim_check.total_function.has_sizeof
 
 variable [DecidableEq α]
 
@@ -328,33 +331,35 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
 theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys)
     (x : α) : List.applyId.{u} (xs.zip ys) x ∈ ys ↔ x ∈ xs := by
   simp only [List.applyId]
-  cases h₃ : List.lookup x (List.map Prod.toSigma (xs.zip ys))
-  · dsimp [Option.getD]
+  cases h₃ : List.dlookup x (List.map Prod.toSigma (xs.zip ys)) with
+  | none =>
+    dsimp [Option.getD]
     rw [h₁.mem_iff]
-  · have h₂ : ys.nodup := h₁.nodup_iff.1 h₀
+  | some val =>
+    have h₂ : ys.Nodup := h₁.nodup_iff.1 h₀
     replace h₁ : xs.length = ys.length := h₁.length_eq
     dsimp
-    induction xs generalizing ys
-    case nil ys h₃ h₂ h₁ => contradiction
-    case cons x' xs xs_ih ys h₃ h₂ h₁ =>
+    induction xs generalizing ys with
+    | nil => contradiction
+    | cons x' xs xs_ih =>
       cases' ys with y ys
       · cases h₃
-      dsimp [lookup] at h₃ ; split_ifs at h₃
-      · subst x'; subst val
-        simp only [mem_cons_iff, true_or_iff, eq_self_iff_true]
+      dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
+      · rw [Option.some_inj] at h₃
+        subst x'; subst val
+        simp only [List.mem_cons, true_or_iff, eq_self_iff_true]
       · cases' h₀ with _ _ h₀ h₅
         cases' h₂ with _ _ h₂ h₄
         have h₆ := Nat.succ.inj h₁
-        specialize xs_ih h₅ ys h₃ h₄ h₆
-        simp only [Ne.symm h, xs_ih, mem_cons_iff, false_or_iff]
+        specialize xs_ih h₅ h₃ h₄ h₆
+        simp only [Ne.symm h, xs_ih, List.mem_cons, false_or_iff]
         suffices : val ∈ ys; tauto
-        erw [← Option.mem_def, mem_lookup_iff] at h₃
-        simp only [to_sigma, mem_map, heq_iff_eq, Prod.exists] at h₃
+        erw [← Option.mem_def, List.mem_dlookup_iff] at h₃
+        simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
         rcases h₃ with ⟨a, b, h₃, h₄, h₅⟩
-        subst a; subst b
-        apply (mem_zip h₃).2
-        simp only [nodupkeys, keys, comp, Prod.fst_toSigma, map_map]
-        rwa [map_fst_zip _ _ (le_of_eq h₆)]
+        apply (List.mem_zip h₃).2
+        simp only [List.NodupKeys, List.keys, comp, Prod.fst_toSigma, List.map_map]
+        rwa [List.map_fst_zip _ _ (le_of_eq h₆)]
 #align slim_check.injective_function.apply_id_mem_iff SlimCheck.InjectiveFunction.applyId_mem_iff
 
 theorem List.applyId_eq_self [DecidableEq α] {xs ys : List α} (x : α) :
@@ -428,46 +433,35 @@ of the list) and then `n / 2`, then `n / 4`, etc down to 1. The slices
 will be taken at index `0`, `n / k`, `2n / k`, `3n / k`, etc.
 -/
 protected def shrinkPerm {α : Type} [DecidableEq α] [SizeOf α] :
-    ShrinkFn (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup)
+    (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup) → List (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup)
   | xs => do
     let k := xs.1.length
-    let n ← sliceSizes k
-    let i ← LazyList.ofList <| List.finRange <| k / n
-    have : ↑i * ↑n < xs.1.length :=
-        Nat.lt_of_div_lt_div
-          (lt_of_le_of_lt (by simp only [Nat.mul_div_cancel, gt_iff_lt, Fin.val_eq_coe, PNat.pos])
-            i.2)
-      pure
-        ⟨perm.slice (i * n) n xs, by
-          rcases xs with ⟨a, b, c, d⟩ <;> dsimp [sizeof_lt] <;> unfold_wf <;>
-                simp only [perm.slice] <;>
-              unfold_wf <;>
-            apply List.sizeOf_dropSlice_lt _ _ n.2 _ this⟩
+    let n ← (sliceSizes k).toList
+    let i ← List.finRange <| k / n
+    pure <| Perm.slice (i * n) n xs
 #align slim_check.injective_function.shrink_perm SlimCheck.InjectiveFunction.shrinkPerm
 
-instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
-  ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
+
+-- porting note: removed, there is no `sizeof` in the new `Sampleable`
+-- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
+--   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
+#noalign slim_check.injective_function.has_sizeof
 
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that
 one is a permutation of the other.
 -/
-protected def shrink {α : Type} [SizeOf α] [DecidableEq α] : ShrinkFn (InjectiveFunction α)
+protected def shrink {α : Type} [SizeOf α] [DecidableEq α] :
+    InjectiveFunction α → List (InjectiveFunction α)
   | ⟨xs, h₀, h₁⟩ => do
-    let ⟨⟨xs', ys', h₀, h₁⟩, h₂⟩ ← InjectiveFunction.shrinkPerm ⟨_, _, h₀, h₁⟩
-    have h₃ : xs' ≤ ys' := le_of_eq (perm.length_eq h₀)
-      have h₄ : ys' ≤ xs' := le_of_eq (perm.length_eq h₀)
-      pure
-        ⟨⟨(List.zip xs' ys').map Prod.toSigma, by
-            simp only [comp, map_fst_zip, map_snd_zip, *, Prod.fst_toSigma, Prod.snd_toSigma,
-              map_map],
-            by simp only [comp, map_snd_zip, *, Prod.snd_toSigma, map_map]⟩, by
-          revert h₂ <;> dsimp [sizeof_lt] <;> unfold_wf <;>
-                  simp only [has_sizeof._match_1, map_map, comp, map_fst_zip, *,
-                    Prod.fst_toSigma] <;>
-                unfold_wf <;>
-              intro h₂ <;>
-            convert h₂⟩
+    let ⟨xs', ys', h₀, h₁⟩ ← InjectiveFunction.shrinkPerm ⟨_, _, h₀, h₁⟩
+    have h₃ : xs'.length ≤ ys'.length := le_of_eq (List.Perm.length_eq h₀)
+    have h₄ : ys'.length ≤ xs'.length := le_of_eq (List.Perm.length_eq h₀.symm)
+    pure
+      ⟨(List.zip xs' ys').map Prod.toSigma,
+        by simp only [comp, List.map_fst_zip, List.map_snd_zip, *, Prod.fst_toSigma,
+          Prod.snd_toSigma, List.map_map],
+        by simp only [comp, List.map_snd_zip, *, Prod.snd_toSigma, List.map_map]⟩
 #align slim_check.injective_function.shrink SlimCheck.InjectiveFunction.shrink
 
 /-- Create an injective function from one list and a permutation of that list. -/
@@ -493,10 +487,10 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     case cons xs_hd xs_tl
       xs_ih =>
       simp only [true_and_iff, Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
-        List.map]
+        List.map, List.cons_inj]
       exact xs_ih
   revert hperm hnodup
-  rw [hxs]; intros
+  rw [hxs]; intros hperm hnodup
   apply InjectiveFunction.applyId_injective
   · rwa [← h₀, hxs, hperm.nodup_iff]
   · rwa [← hxs, h₀, h₁] at hperm
@@ -504,17 +498,17 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
 
 instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function.Injective f } where
   proxy := InjectiveFunction ℤ
-  interp f := ⟨apply f, f.Injective⟩
-  sample :=
-    Gen.sized fun sz => do
-      let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
-      let ys ← Gen.permutationOf xs'
-      have Hinj : injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun x y h =>
-          Int.ofNat.inj (add_right_injective _ h)
-        let r : injective_function ℤ :=
-          InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (nodup_range _).map Hinj)
-        pure r
-  shrink := @InjectiveFunction.shrink ℤ _ _
+  interp f := ⟨apply f, f.injective⟩
+  sample := do
+    let ⟨sz⟩ ← ULiftable.up Gen.getSize
+    let xs' := Int.range (-(2 * sz + 2)) (2 * sz + 2)
+    let ys ← Gen.permutationOf xs'
+    have Hinj : Injective fun r : ℕ => -(2 * sz + 2 : ℤ) + ↑r := fun _x _y h =>
+        Int.ofNat.inj (add_right_injective _ h)
+    let r : InjectiveFunction ℤ :=
+      InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (List.nodup_range _).map Hinj)
+    pure r
+  shrink := {shrink := @InjectiveFunction.shrink ℤ _ _ }
 #align slim_check.injective_function.pi_injective.sampleable_ext SlimCheck.InjectiveFunction.PiInjective.sampleableExt
 
 end InjectiveFunction
