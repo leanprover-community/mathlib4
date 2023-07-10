@@ -13,11 +13,11 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of smooth vector bundles over the same base space
 
-Here we show that `bundle.continuous_linear_map` is a smooth vector bundle.
+Here we show that `Bundle.ContinuousLinearMap` is a smooth vector bundle.
 
 Note that we only do this for bundles of linear maps, not for bundles of arbitrary semilinear maps.
-To do it for semilinear maps, we would need to generalize `continuous_linear_map.cont_mdiff`
-(and `continuous_linear_map.cont_diff`) to semilinear maps.
+To do it for semilinear maps, we would need to generalize `ContinuousLinearMap.contMDiff`
+(and `ContinuousLinearMap.contDiff`) to semilinear maps.
 -/
 
 
