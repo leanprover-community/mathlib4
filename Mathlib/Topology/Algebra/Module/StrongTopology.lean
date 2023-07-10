@@ -326,8 +326,8 @@ set_option linter.uppercaseLean3 false in
 #noalign continuous_linear_equiv.arrow_congrSL_to_linear_equiv
 
 @[simp]
-theorem arrowCongrSL_toLinearEquiv_symm_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) (L : F →SL[σ₂₃] G) :
-    (e₁₂.arrowCongrSL e₄₃).toLinearEquiv.symm L =
+theorem arrowCongrSL_toLinearEquiv_symm_apply (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
+    (L : F →SL[σ₂₃] G) : (e₁₂.arrowCongrSL e₄₃).toLinearEquiv.symm L =
       (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F)) :=
   rfl
 set_option linter.uppercaseLean3 false in
