@@ -34,22 +34,18 @@ open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimens
 
 open scoped Pointwise Topology NNReal BigOperators Convolution
 
-variable (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-set_option linter.unusedVariables false in
+variable {E : Type _} [NormedAddCommGroup E]
+
+section
+
+variable [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s t : Set E}
+
 /-- If a set `s` is a neighborhood of `x`, then there exists a smooth function `f` taking
 values in `[0, 1]`, supported in `s` and with `f x = 1`. -/
-class HasWeakContDiffBump :=
-  exists_smooth_tsupport_subset : ∀ {s : Set E} {x : E} (hs : s ∈ 𝓝 x), ∃ f : E → ℝ,
-    tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1
-
-export HasWeakContDiffBump (exists_smooth_tsupport_subset)
-
-variable {E}
-
-lemma hasWeakContDiffBump_of_finiteDimensional [FiniteDimensional ℝ E] : HasWeakContDiffBump E := by
-  constructor
-  intros s x hs
+theorem exists_smooth_tsupport_subset {x : E} (hs : s ∈ 𝓝 x) :
+    ∃ f : E → ℝ,
+      tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
   obtain ⟨d : ℝ, d_pos : 0 < d, hd : Euclidean.closedBall x d ⊆ s⟩ :=
     Euclidean.nhds_basis_closedBall.mem_iff.1 hs
   let c : ContDiffBump (toEuclidean x) :=
@@ -80,12 +76,11 @@ lemma hasWeakContDiffBump_of_finiteDimensional [FiniteDimensional ℝ E] : HasWe
     apply mem_closedBall_self
     exact (half_pos d_pos).le
 
-attribute [local instance] hasWeakContDiffBump_of_finiteDimensional
-
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
-function with values in `[0, 1]` whose support is exactly `s`. -/
-theorem IsOpen.exists_smooth_support_eq [SecondCountableTopology E]
-    [HasWeakContDiffBump E] {s : Set E} (hs : IsOpen s) :
+function with values in `[0, 1]` whose support is exactly `s`.
+For a stronger version ensuring that the function is equal to `1` on a given closed set inside `s`,
+see `IsOpen.exists_smooth_support_eq_eq_one_of_isClosed` -/
+theorem IsOpen.exists_smooth_support_eq (hs : IsOpen s) :
     ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   /- For any given point `x` in `s`, one can construct a smooth function with support in `s` and
     nonzero at `x`. By second-countability, it follows that we may cover `s` with the supports of
@@ -204,22 +199,34 @@ theorem IsOpen.exists_smooth_support_eq [SecondCountableTopology E]
     apply (le_abs_self _).trans
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
 
-theorem IsOpen.exists_smooth_support_subset [SecondCountableTopology E]
-    [HasWeakContDiffBump E] {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+/-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
+vector space, there exists a smooth function with values in `[0, 1]` whose support is
+contained in `s` and equal to `1` on `t`.
+Superseded by `IsOpen.exists_smooth_support_eq_eq_one_of_isClosed`, ensuring that the support is
+exactly `s`. -/
+theorem IsOpen.exists_smooth_support_subset (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
     ∃ f : E → ℝ, f.support ⊆ s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x)
-    ∧ ∀ x ∈ t, f x = 1 := by
+      ∧ ∀ x ∈ t, f x = 1 := by
+  /- Consider `u` an open set between `t` and `s`. Take `f` with support `u`, and `g` with support
+  `s \ t`. Then `f / (f + g)` works. The only nontrivial fact is that it is smooth. This follows
+  from the fact that `f + g` is strictly positive on a neighborhood of the topological support of
+  `f`, by construction. -/
   obtain ⟨u, u_open, tu, us⟩ : ∃ u, IsOpen u ∧ t ⊆ u ∧ closure u ⊆ s :=
     normal_exists_closure_subset ht hs h
   rcases u_open.exists_smooth_support_eq with ⟨f, f_supp, f_diff, f_range⟩
   have A : IsOpen (s \ t) := hs.sdiff ht
   rcases A.exists_smooth_support_eq with ⟨g, g_supp, g_diff, g_range⟩
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
+  -- check that the support is included in `s`.
   · apply support_subset_iff'.2 (fun x hx ↦ ?_)
     have : x ∉ support f := by
       contrapose! hx
       rw [f_supp] at hx
       exact us (subset_closure hx)
     simp only [nmem_support.1 this, zero_add, zero_div]
+  /- check that the function is smooth around each `x`, by separating the case where `x ∈ s`
+  (in this case, the denominator `f x + g x` is nonzero) and the case where `x ∉ s` (in this
+  case, the function vanishes in a neighborhood of `x` as this is the case of `f`). -/
   · apply contDiff_iff_contDiffAt.2 (fun x ↦ ?_)
     have : 0 ≤ f x := (f_range (mem_range_self (i := x))).1
     have : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
@@ -243,10 +250,12 @@ theorem IsOpen.exists_smooth_support_subset [SecondCountableTopology E]
         contrapose! hy
         simpa using subset_closure hy
       simp [this]
+  -- check that the function is nonnegative
   · intros x
     have : 0 ≤ f x := (f_range (mem_range_self (i := x))).1
     have : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
     positivity
+  -- check that the function is equal to `1` on `t`.
   · intros x hx
     have A : g x = 0 := by
       rw [← nmem_support, g_supp]
@@ -256,10 +265,15 @@ theorem IsOpen.exists_smooth_support_subset [SecondCountableTopology E]
       exact tu hx
     simp [A, B]
 
-theorem IsOpen.exists_smooth_support_eq'_aux [SecondCountableTopology E]
-    [HasWeakContDiffBump E] {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
-    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x)
-    ∧ (∀ x ∈ t, 1 ≤ f x) := by
+/-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
+vector space, there exists a smooth function with nonnegative values whose support is
+exactly `s` and at least `1` on `t`.
+Superseded by `IsOpen.exists_smooth_support_eq_eq_one_of_isClosed`, ensuring that the function
+is exactly equal to `1` on `t`. -/
+theorem IsOpen.exists_smooth_support_eq'_aux (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x) ∧ (∀ x ∈ t, 1 ≤ f x) := by
+  /- We start from a nonnegative function supported inside `s` and equal to `1` on `t`, and add
+  to it a nonegative function with support exactly `s`. -/
   rcases hs.exists_smooth_support_subset ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
   rcases (hs.sdiff ht).exists_smooth_support_eq with ⟨g, g_supp, g_diff, g_range⟩
   refine ⟨f + g, ?_, f_diff.add g_diff, ?_, ?_⟩
@@ -286,22 +300,29 @@ theorem IsOpen.exists_smooth_support_eq'_aux [SecondCountableTopology E]
   · intros x hx
     simpa [Pi.add_apply, ge_iff_le, ft x hx] using (g_range (mem_range_self (i := x))).1
 
-theorem IsOpen.exists_smooth_support_eq' [SecondCountableTopology E]
-    [HasWeakContDiffBump E] {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
-    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1
-    ∧ (∀ x ∈ t, f x = 1) := by
+/-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
+vector space, there exists a smooth function with values in `[0, 1]` whose support is exactly `s`
+and equal to `1` on `t`. -/
+theorem IsOpen.exists_smooth_support_eq_eq_one_of_isClosed
+    (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ (∀ x ∈ t, f x = 1) := by
+  /- We start from a function with support equal to `s` and at least equal to `1` on `t`, and
+  compose it with a smooth function equal to `1` on `[1, ∞)`. -/
   rcases hs.exists_smooth_support_eq'_aux ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
   refine ⟨Real.smoothTransition ∘ f, ?_, ?_, ?_, ?_⟩
-  · rw [support_comp_eq_of_range_subset]
+  · rwa [support_comp_eq_of_range_subset _ (Ici 0)]
+    · rintro x (hx : 0 ≤ x)
+      simpa using LE.le.le_iff_eq hx
+    · rintro - ⟨y, rfl⟩
+      exact f_nonneg y
+  · exact Real.smoothTransition.contDiff.comp f_diff
+  · apply (range_comp_subset_range _ _).trans
+    rintro - ⟨y, rfl⟩
+    exact ⟨Real.smoothTransition.nonneg _, Real.smoothTransition.le_one _⟩
+  · intro x hx
+    exact Real.smoothTransition.one_of_one_le (ft x hx)
 
-
-
-
-
-
-#exit
-
-Real.smoothTransition
+end
 
 section
 
