@@ -199,7 +199,7 @@ theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
 
 @[simp, norm_cast]
 theorem even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
-  rw [even_iff, Nat.even_iff, show (2 : ℤ) = ((2 : ℕ) : ℤ) from Nat.cast_ofNat]; norm_cast
+  rw_mod_cast [even_iff, Nat.even_iff]
 #align int.even_coe_nat Int.even_coe_nat
 
 -- Porting note: was simp. simp can prove this.
@@ -210,7 +210,7 @@ theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
 
 @[simp]
 theorem natAbs_even : Even n.natAbs ↔ Even n := by
-  simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]; rfl
+  simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
 #align int.nat_abs_even Int.natAbs_even
 
 -- Porting note: was simp. simp can prove this.

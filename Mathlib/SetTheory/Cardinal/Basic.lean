@@ -564,12 +564,12 @@ theorem one_power {a : Cardinal} : (1 ^ a) = 1 :=
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem mk_bool : #Bool = 2 := by simp [-Nat.cast_succ]; rw [Nat.cast_ofNat]
+theorem mk_bool : #Bool = 2 := by simp
 #align cardinal.mk_bool Cardinal.mk_bool
 
 -- Porting note : simp can prove this
 -- @[simp]
-theorem mk_Prop : #Prop = 2 := by simp [-Nat.cast_succ]; rw [Nat.cast_ofNat]
+theorem mk_Prop : #Prop = 2 := by simp
 #align cardinal.mk_Prop Cardinal.mk_Prop
 
 @[simp]
@@ -1322,7 +1322,7 @@ theorem mk_coe_finset {α : Type u} {s : Finset α} : #s = ↑(Finset.card s) :=
 #align cardinal.mk_coe_finset Cardinal.mk_coe_finset
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ℕ Fintype.card α := by
-  simp [Pow.pow, -Nat.cast_succ]; rw [Nat.cast_ofNat]
+  simp [Pow.pow]
 #align cardinal.mk_finset_of_fintype Cardinal.mk_finset_of_fintype
 
 @[simp]
@@ -2351,7 +2351,7 @@ theorem exists_not_mem_of_length_lt {α : Type _} (l : List α) (h : ↑l.length
 #align cardinal.exists_not_mem_of_length_lt Cardinal.exists_not_mem_of_length_lt
 
 theorem three_le {α : Type _} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
-  have : ↑(3 : ℕ) ≤ #α; rw [Nat.cast_ofNat]; simpa using h
+  have : ↑(3 : ℕ) ≤ #α; simpa using h
   have : ↑(2 : ℕ) < #α; rwa [← succ_le_iff, ← Cardinal.nat_succ]
   have := exists_not_mem_of_length_lt [x, y] this
   simpa [not_or] using this
