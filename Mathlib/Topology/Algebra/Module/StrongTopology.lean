@@ -180,7 +180,7 @@ end General
 section BoundedSets
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type _} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
-  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E E' F F' G : Type} [AddCommGroup E]
+  {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E E' F F' G : Type _} [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup E'] [Module ℝ E'] [AddCommGroup F] [Module 𝕜₂ F] [AddCommGroup F']
   [Module ℝ F'] [AddCommGroup G] [Module 𝕜₃ G] [TopologicalSpace E]
 
@@ -249,7 +249,6 @@ def precomp [TopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurj
     exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
         (strongTopology.embedding_coeFn _ _ _).continuous
 #align continuous_linear_map.precomp ContinuousLinearMap.precomp
-
 
 variable (E) {G}
 
