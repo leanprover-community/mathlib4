@@ -90,10 +90,7 @@ structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
   /-- Whether to include `cdecls`. -/
   includeCDecls       : Bool := true
 deriving Repr, Inhabited
-be an `.fvar`, we always use `BEq`. -/ --!! True?
-structure LocalInstanceComparisonConfig where
-  checkName : Bool := true
-  checkFVar : Bool := true
+
 
 --!! docs
 structure MetavarDeclComparisonConfig where
