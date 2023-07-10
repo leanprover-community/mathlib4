@@ -432,7 +432,8 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
     haveI : IsAffine _ := V.2
     rw [← Category.assoc]
     -- Porting note: Lean could find this previously
-    have : IsOpenImmersion <| (Scheme.ofRestrict U (Opens.openEmbedding V.val)) ≫ g := sorry
+    have : IsOpenImmersion <| (Scheme.ofRestrict U (Opens.openEmbedding V.val)) ≫ g :=
+      LocallyRingedSpace.IsOpenImmersion.comp _ _
     apply H
   tfae_have 4 → 3
   · intro H 𝒰 _ i; skip; apply H
@@ -554,7 +555,6 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
 #align ring_hom.property_is_local.affine_locally_of_is_open_immersion RingHom.PropertyIsLocal.affineLocally_of_isOpenImmersion
 
 theorem affineLocally_of_comp
-    -- have : Algebra esto eso := inferInstanceAs <| Algebra esto esto
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (g : S →+* T), P (g.comp f) → P g)
     {X Y Z : Scheme} {f : X ⟶ Y} {g : Y ⟶ Z} (h : affineLocally (@P) (f ≫ g)) :
@@ -580,6 +580,23 @@ theorem affineLocally_of_comp
     Scheme.OpenCover.pullbackCover_obj, Scheme.OpenCover.pullbackCover_map] at h ⊢
   rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,
     pullback.lift_snd_assoc, Category.assoc, ← Category.assoc, op_comp, Functor.map_comp] at h
+  -- let f' := Scheme.Γ.map
+  --     (Scheme.OpenCover.map (Scheme.affineCover (pullback g (Scheme.OpenCover.map (Scheme.affineCover Z) i))) j ≫
+  --         pullback.snd).op
+  -- let g' := Scheme.Γ.map
+  --     (Scheme.OpenCover.map
+  --           (Scheme.affineCover
+  --             (pullback f
+  --               (Scheme.OpenCover.map (Scheme.affineCover (pullback g (Scheme.OpenCover.map (Scheme.affineCover Z) i)))
+  --                   j ≫
+  --                 pullback.fst)))
+  --           k ≫
+  --         pullback.snd).op
+  -- have u := g'.comp f'
+  -- have : P <| g'.comp f' := by
+  --   convert h
+  --   congr!
+  -- exact H _ _ h
   -- Porting note: exact H _ _ h times out
   sorry
 #align ring_hom.property_is_local.affine_locally_of_comp RingHom.PropertyIsLocal.affineLocally_of_comp
