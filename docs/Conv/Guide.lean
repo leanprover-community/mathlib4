@@ -22,7 +22,7 @@ for `conv` mode.
 The `in` clause is exactly the same as the arguments to the `conv` tactic `pattern`.
 ```lean
 conv in ...pattArgs... =>
-  ...`
+  ...
 ```
 is short for
 ```lean
@@ -59,6 +59,9 @@ then it uses the resulting `lhs = rhs` proof to rewrite the goal in the surround
 tactic mode.
 
 ## Conv tactics from Lean 4, Std4, and Mathlib4
+
+Unless they're annotated with "Std4" or "Mathlib", the following tactics are defined
+in Lean 4 core.
 
 ### Control
 
