@@ -95,6 +95,13 @@ def List.ProveNilOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(List $α)}
   | .nil pf => .nil q(Eq.trans $eq $pf)
   | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
+lemma List.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
+    List.range n = [] := by rw [pn.out, Nat.cast_zero, List.range_zero]
+
+lemma List.range_succ_eq_map' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
+    List.range n = 0 :: List.map Nat.succ (List.range n') := by
+  rw [pn.out, Nat.cast_id, pn', List.range_succ_eq_map]
+
 /-- Either show the expression `s : Q(List α)` is Nil, or remove one element from it.
 
 Fails if we cannot determine which of the alternatives apply to the expression.
@@ -108,13 +115,19 @@ partial def List.proveNilOrCons {α : Q(Type u)} :
   | (_, `List.nil, _) => pure (.nil (q(rfl) : Q(([] : List $α) = [])))
   | (_, `List.cons, #[_, a, s']) => pure (.cons a s' (q(rfl) : Q($s = $s)))
   | (_, `List.range, #[(n : Q(ℕ))]) => do
-    match ← Nat.unifyZeroOrSucc n with
-    | .zero _pf => do
-      pure (.nil (q(List.range_zero) : Q(List.range 0 = [])))
-    | .succ n' _pf => pure <| (List.ProveNilOrConsResult.cons
+    let instAMO_nat : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    let ⟨nn, pn⟩ ← NormNum.deriveNat n
+    let nnL := nn.natLit!
+    if nnL = 0 then
+      let pn : Q(@NormNum.IsNat _ _ $n 0) := pn
+      return .nil (q(List.range_zero' $pn) : Q(List.range $n = []))
+    else
+      have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
+      let pn' : Q($nn = Nat.succ $n') := (q(Eq.refl $nn) : Expr)
+      return (List.ProveNilOrConsResult.cons
         q(0)
-        (q(List.map Nat.succ (List.range $n')))
-        (q(List.range_succ_eq_map $n'))).uncheckedCast (q(List.range ($n' + 1)) : Q(List ℕ)) s
+        q(List.map Nat.succ (List.range $n'))
+        q(List.range_succ_eq_map' $pn $pn')).uncheckedCast (q(List.range ($n)) : Q(List ℕ)) s
   | (_, `List.finRange, #[(n : Q(ℕ))]) => do
     match ← Nat.unifyZeroOrSucc n with
     | .zero _pf => do
@@ -164,8 +177,15 @@ def Multiset.ProveZeroOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Multiset $
   | .cons a s' pf => .cons a s' q(Eq.trans $eq $pf)
 
 lemma Multiset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Multiset α) :
-    insert a s = Multiset.cons a s := by 
+    insert a s = Multiset.cons a s := by
   ext; simp
+
+lemma Multiset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
+    Multiset.range n = 0 := by rw [pn.out, Nat.cast_zero, Multiset.range_zero]
+
+lemma Multiset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
+    Multiset.range n = n' ::ₘ Multiset.range n' := by
+  rw [pn.out, Nat.cast_id, pn', Multiset.range_succ]
 
 /-- Either show the expression `s : Q(Multiset α)` is Zero, or remove one element from it.
 
@@ -185,15 +205,19 @@ partial def Multiset.proveZeroOrCons {α : Q(Type u)} :
       return (.cons a q($s')
         (q($pf ▸ Multiset.cons_coe $a $s') : Q(↑$val = Multiset.cons $a $s')))
   | (`Multiset.range, #[(n : Q(ℕ))]) => do
-    match ← Nat.unifyZeroOrSucc n with
-    | .zero _pf => do
-      pure (.zero (q(Multiset.range_zero) : Q(Multiset.range 0 = 0)))
-    | .succ n' _pf => pure <| ((Multiset.ProveZeroOrConsResult.cons
+    let instAMO_nat : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    let ⟨nn, pn⟩ ← NormNum.deriveNat n
+    let nnL := nn.natLit!
+    if nnL = 0 then
+      let pn : Q(@NormNum.IsNat _ _ $n 0) := pn
+      return .zero (q(Multiset.range_zero' $pn) : Q(Multiset.range $n = 0))
+    else
+      have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
+      let pn' : Q($nn = Nat.succ $n') := (q(Eq.refl $nn) : Expr)
+      return (Multiset.ProveZeroOrConsResult.cons
         n'
-        (q(Multiset.range $n'))
-        (q(Multiset.range_succ $n'))).uncheckedCast
-          (q(Multiset.range (Nat.succ $n')) : Q(Multiset ℕ))
-          s)
+        q(Multiset.range $n')
+        q(Multiset.range_succ' $pn $pn')).uncheckedCast (q(Multiset.range ($n)) : Q(Multiset ℕ)) s
   | (fn, args) =>
     throwError "Multiset.proveZeroOrCons: unsupported multiset expression {s} ({fn}, {args})"
 
@@ -227,10 +251,12 @@ lemma Finset.insert_eq_cons {α : Type _} [DecidableEq α] (a : α) (s : Finset 
     insert a s = Finset.cons a s h := by
   ext; simp
 
-lemma Finset.range_succ_eq_cons (n' : ℕ) :
-    Finset.range (Nat.succ n') =
-      Finset.cons n' (Finset.range n') Finset.not_mem_range_self :=
-  by rw [Finset.range_succ, Finset.insert_eq_cons]
+lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
+    Finset.range n = {} := by rw [pn.out, Nat.cast_zero, Finset.range_zero]
+
+lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
+    Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
+  rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
 
 lemma Finset.univ_eq_elems {α : Type _} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :
@@ -257,16 +283,22 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} :
       return (.cons a q(Finset.mk $s' $nd') h'
         (q($pf ▸ Finset.mk_cons $h) : Q(Finset.mk $val $nd = Finset.cons $a ⟨$s', $nd'⟩ $h')))
   | (`Finset.range, #[(n : Q(ℕ))]) => do
-    match ← Nat.unifyZeroOrSucc n with
-    | .zero _pf => do
-      pure (.empty (q(Finset.range_zero) : Q(Finset.range 0 = ∅)))
-    | .succ n' _pf => pure <| ((Finset.ProveEmptyOrConsResult.cons
+    let instAMO_nat : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
+    let ⟨nn, pn⟩ ← NormNum.deriveNat n
+    let nnL := nn.natLit!
+    if nnL = 0 then
+      let pn : Q(@NormNum.IsNat _ _ $n 0) := pn
+      return .empty (q(Finset.range_zero' $pn) : Q(Finset.range $n = {}))
+    else
+      have n' : Q(ℕ) := mkRawNatLit (nnL - 1)
+      let pn' : Q($nn = Nat.succ $n') := (q(Eq.refl $nn) : Expr)
+      return (Finset.ProveEmptyOrConsResult.cons
         n'
         (q(Finset.range $n'))
         (q(@Finset.not_mem_range_self $n'))
-        (q(Finset.range_succ_eq_cons $n'))).uncheckedCast
-          (q(Finset.range (Nat.succ $n')) : Q(Finset ℕ))
-          s)
+        (q(Finset.range_succ' $pn $pn'))).uncheckedCast
+          (q(Finset.range $n) : Q(Finset ℕ))
+          s
   | (`Finset.univ, #[_, instFT]) => do
     match Expr.getAppFnArgs (← whnfI instFT) with
     | (`Fintype.mk, #[_, (elems : Q(Finset $α)), (complete : Q(∀ x : $α, x ∈ $elems))]) => do
