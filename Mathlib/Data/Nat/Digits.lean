@@ -448,7 +448,7 @@ theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p 
   · simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
-theorem digit_sum_le (p n : ℕ) (h : 1 ≤ p) : List.sum (digits p n) ≤ n  := by
+theorem digit_sum_le (p n : ℕ) (h : 1 ≤ p) : List.sum (digits p n) ≤ n := by
   nth_rw 2 [← ofDigits_digits p n]
   rw [← ofDigits_one <| digits p n]
   exact ofDigits_monotone (digits p n) h
