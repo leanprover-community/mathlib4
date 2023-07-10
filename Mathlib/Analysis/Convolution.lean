@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module analysis.convolution
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
+! leanprover-community/mathlib commit 8905e5ed90859939681a725b00f6063e65096d95
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
