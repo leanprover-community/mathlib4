@@ -9,20 +9,23 @@ Authors: Mario Carneiro
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Vector
 import Mathlib.Logic.Equiv.Array
 
 /-!
-# `array n α` is a fintype when `α` is.
+# `align` information for `Fintype` declarations around mathlib3's `array` (now `Vector`)
 -/
 
 
 variable {α : Type _}
 
-instance DArray.fintype {n : ℕ} {α : Fin n → Type _} [∀ n, Fintype (α n)] : Fintype (DArray n α) :=
-  Fintype.ofEquiv _ (Equiv.dArrayEquivFin _).symm
-#align d_array.fintype DArray.fintype
+-- porting note: `DArray` does not exist in std4/mathlib4
+-- instance DArray.fintype {n : ℕ} {α : Fin n → Type _} [∀ n, Fintype (α n)] : Fintype (DArray n α) :=
+--   Fintype.ofEquiv _ (Equiv.dArrayEquivFin _).symm
+#noalign d_array.fintype
 
-instance Array'.fintype {n : ℕ} {α : Type _} [Fintype α] : Fintype (Array' n α) :=
-  DArray.fintype
-#align array.fintype Array'.fintype
-
+-- porting note: The closest thing to `Array' n α` is `Vector n α`, for which we already have this
+-- intance elsewhere.
+-- instance Array'.fintype {n : ℕ} {α : Type _} [Fintype α] : Fintype (Array' n α) :=
+--   DArray.fintype
+#align array.fintype Vector.fintypeₓ
