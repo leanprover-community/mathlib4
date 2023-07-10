@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.preadditive.biproducts
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
+! leanprover-community/mathlib commit a176cb1219e300e85793d44583dede42377b51af
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -48,6 +48,13 @@ In (or between) preadditive categories,
 
 * A functor preserves a biproduct if and only if it preserves
   the corresponding product if and only if it preserves the corresponding coproduct.
+
+There are connections between this material and the special case of the category whose morphisms are
+matrices over a ring, in particular the Schur complement (see
+`Mathlib.LinearAlgebra.Matrix.SchurComplement`). In particular, the declarations
+`CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
+and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
+
 -/
 
 
