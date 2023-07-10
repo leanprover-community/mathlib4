@@ -102,15 +102,11 @@ structure LocalInstanceComparisonConfig where
   checkFVar : Bool := true
 
 --!! docs
-structure MetavarDeclComparisonConfig (defaults : ExprComparisonConfig)
-  extends ExprComparisonConfig
-where
-  eqKind := defaults.eqKind
-  transparency := defaults.transparency
+structure MetavarDeclComparisonConfig where
   checkUserName : Bool := true
-  compareLocalContexts? : Option (LocalContextComparisonConfig { eqKind, transparency }) := some {}
-  compareTarget? : Option (ExprComparisonConfigWithDefaults { eqKind, transparency }) := some {}
-  checkLocalInstance? : Option LocalInstanceComparisonConfig := some {}
+  compareLocalContexts? : Option LocalContextComparisonConfig := some {}
+  checkTarget : Bool := true
+  checkLocalInstances : Bool := true
   checkMetavarKind : Bool := true
   checkIndex : Bool := true -- !! need? shouldn't this persist?
 
