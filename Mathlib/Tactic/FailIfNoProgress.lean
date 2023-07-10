@@ -159,56 +159,7 @@ structure FailIfNoProgress.Config extends ExprComparisonConfig, MetavarDeclCompa
 --!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be
 -- sure.
 /-- Compares two expressions according to the given `ComparisonConfig`. -/
-def compareExpr (e₁ e₂ : Expr) : (config : ExprComparisonConfig := {}) → MetaM Bool
-| ⟨.beq, _⟩ => pure (e₁ == e₂)
-| ⟨.defEq, t⟩ => withTransparency t <| withNewMCtxDepth <| isDefEq e₁ e₂
-
-/-- Zip two lists together only if they have the same length. If they don't, return `none`. -/
-def zip? : (l₁ : List α) → (l₂ : List β) → Option (List (α × β))
-  | a :: l₁, b :: l₂ => do return (a, b) :: (← zip? l₁ l₂)
-  | [], [] => some []
-  | _, _ => none
-
-/-- Zip two lists together with `f` only if they have the same length. If they don't, return
-`none`. -/
-def zipWith? (f : α → β → γ) : (l₁ : List α) → (l₂ : List β) → Option (List γ)
-  | a :: l₁, b :: l₂ => do return (f a b) :: (← zipWith? f l₁ l₂)
-  | [], [] => some []
-  | _, _ => none
-
-/-- Zip two lists together with `f` in a monad only if they have the same length. If they don't,
-fail. -/
-def zipWithM? [Monad m] [Alternative m] (f : α → β → m γ) :
-    (l₁ : List α) → (l₂ : List β) → m (List γ)
-  | a :: l₁, b :: l₂ => do return (← f a b) :: (← zipWithM? f l₁ l₂)
-  | [], [] => pure []
-  | _, _ => failure
-
-/-- Fold two lists together only if they have the same length. If they don't, return
-fail. -/
-def zipWithFold? (f : α → β → γ → γ) (init : γ) : (l₁ : List α) → (l₂ : List β) → Option γ
-  | a :: l₁, b :: l₂ => do return (f a b (← zipWithFold? f init l₁ l₂))
-  | [], [] => some init
-  | _, _ => none
-
-/-- Zip two lists together with `f` only if they have the same length. If they don't, return
-`none`. -/
-def zipWithFoldM? [Monad m] [Alternative m] (f : α → β → γ → m γ) (init : γ) :
-    (l₁ : List α) → (l₂ : List β) → m γ
-  | a :: l₁, b :: l₂ => do (f a b (← zipWithFoldM? f init l₁ l₂))
-  | [], [] => pure init
-  | _, _ => failure
-
-@[macro_inline] def andM' [Monad m] (b : Bool) (c : m Bool) : m Bool :=
-  match b with
-  | true => c
-  | false => pure false
-
-@[macro_inline] def impM' [Monad m] (b : Bool) (c : m Bool) : m Bool :=
-  match b with
-  | true => c
-  | false => pure true
-
+  
 /-- Compares two lists monadically. -/
 def compareListM [Monad m] (l₁ l₂ : List α) (c : α → α → m Bool) : m Bool := do
   let some lZip := zip? l₁ l₂ | return false
