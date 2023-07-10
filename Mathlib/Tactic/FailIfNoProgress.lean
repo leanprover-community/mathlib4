@@ -219,27 +219,39 @@ def compareGoalList (goals₁ goals₂ : List MVarId) (cfg : MetavarDeclComparis
     (ecfg : ExprComparisonConfig := {}) : MetaM Bool :=
   compareListM (compareMVarId · · cfg ecfg) goals₁ goals₂
 
-/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
+/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. Return the resulting list of goals otherwise. -/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
-    (config : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
-  let l ← run goal tacs
-  try
-    let [newGoal] := l | failure
-    guard <|← compareGoal goal newGoal config
+    (cfg : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
+  let s ← saveState
+  let l ← run goal tacs -- !! correct `run`?
+  try -- failing this `try` means we return `l`, and occurs iff progress has been made
+    if let .quick := cfg.mode then
+      if ← goal.isAssigned then failure -- progress made
+    else
+      let [newGoal] := l | failure -- progress if number of goals has changed
+      -- progress if they are not equivalent goals
+      guard <|← compareMVarId goal newGoal cfg.toMetavarDeclComparisonConfig
+        cfg.toExprComparisonConfig
   catch _ =>
     return l
+  s.restore
   throwError "no progress made on goal:\n{goal}"
 
-/-- Run `tacs`, and fail if no progress is made. -/
-def failIfNoProgress [ToMessageData α] (tacs : TacticM α) (config : FailIfNoProgress.Config := {}) :
+/-- Run `tacs`, and fail if no progress is made. Return the result otherwise. -/
+def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
     TacticM α := do
+  let s ← saveState
   let goals₁ ← getGoals
   let result ← tacs
-  let goals₂ ← getGoals
-  unless (← compareGoals goals₁ goals₂ config) do
-    return result
-  let goalString := if goals₁.length = 1 then "goal" else "goals"
-  throwError "no progress made on {goalString}"
+  let noProgress ← match cfg.mode with
+    | .quick => notM <| goals₁.anyM (·.isAssigned)
+    | .normal => do
+      let goals₂ ← getGoals
+      compareGoalList goals₁ goals₂ cfg.toMetavarDeclComparisonConfig cfg.toExprComparisonConfig
+  unless noProgress do return result
+  s.restore
+  let pluralization := if goals₁.length = 1 then "" else "s"
+  throwError "no progress made on goal{pluralization}"
 
 namespace FailIfNoProgress
 
