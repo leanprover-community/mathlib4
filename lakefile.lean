@@ -33,24 +33,35 @@ require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require Cli from git "https://github.com/mhuisi/lean4-cli.git" @ "nightly"
 require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.11"
 
-lean_lib Cache where
-  moreLeanArgs := moreLeanArgs
-  roots := #[`Cache]
-
-lean_exe cache where
-  root := `Cache.Main
-
-lean_lib MathlibExtras where
-  roots := #[`MathlibExtras]
-
 lean_lib Archive where
   roots := #[`Archive]
 
 lean_lib Counterexamples where
   roots := #[`Counterexamples]
 
+/-!
+# Utilities, stored in the `Util` directory.
+
+* `lake exe cache`, providing olean caching
+* `lake exe graph`, generating import graphs, as `leanproject import-graph` used to in Lean 3.
+* additional caches for tactics, stored in `Util/TacticCaches`.
+-/
+
+lean_lib Cache where
+  moreLeanArgs := moreLeanArgs
+  roots := #[`Cache]
+  srcDir := "Util"
+
+lean_exe cache where
+  root := `Util.Cache.Main
+
 lean_lib ImportGraph where
   roots := #[`ImportGraph]
+  srcDir := "Util"
 
 lean_exe graph where
-  root := `ImportGraph.Main
+  root := `Util.ImportGraph.Main
+
+lean_lib TacticCaches where
+  roots := #[`TacticCaches]
+  srcDir := "Util"

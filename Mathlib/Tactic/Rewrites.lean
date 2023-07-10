@@ -64,7 +64,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
 /-- Insert a lemma into the discrimination tree. -/
 -- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
--- `build/lib/MathlibExtras/Rewrites.extra`
+-- `build/lib/Util/TacticCaches/Rewrites.extra`
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × Bool × Nat) true) : MetaM (DiscrTree (Name × Bool × Nat) true) := do
@@ -89,9 +89,9 @@ open System (FilePath)
 
 def cachePath : IO FilePath :=
   try
-    return (← findOLean `MathlibExtras.Rewrites).withExtension "extra"
+    return (← findOLean `TacticCaches.Rewrites).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "MathlibExtras" / "Rewrites.extra"
+    return "build" / "lib" / "Util" / "TacticCaches" / "Rewrites.extra"
 
 initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
   let path ← cachePath

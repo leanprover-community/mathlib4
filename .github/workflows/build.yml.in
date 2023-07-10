@@ -58,9 +58,9 @@ jobs:
         run: |
           git ls-files 'Mathlib/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Mathlib.lean
 
-      - name: update MathlibExtras.lean
+      - name: update TacticCaches.lean
         run: |
-          git ls-files 'MathlibExtras/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > MathlibExtras.lean
+          git ls-files 'Util/TacticCaches/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Util/TacticCaches.lean
 
       - name: update Mathlib/Tactic.lean
         run: |
@@ -117,8 +117,8 @@ jobs:
         run: |
           ! grep "stdout:" stdout.log
 
-      - name: build library_search cache
-        run: lake build MathlibExtras
+      - name: build tactic caches
+        run: lake build TacticCaches
 
       - name: upload cache
         if: always()

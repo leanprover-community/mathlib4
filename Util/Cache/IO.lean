@@ -69,7 +69,7 @@ def mathlibDepPath : FilePath :=
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("TacticCaches", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
   ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
@@ -206,8 +206,8 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
   | ["Mathlib.lean"] => true
-  | "MathlibExtras" :: _ => true
-  | ["MathlibExtras.lean"] => true
+  | "Util" :: "TacticCaches" :: _ => true
+  | ["Util", "TacticCaches.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
