@@ -85,7 +85,7 @@ The difference from the definition obtained from the functoriality of completion
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
 def completion.mapHom (V W : SemiNormedGroupCat.{u}) :
     -- Porting note: cannot see instances through concrete cats
-    have (V W : SemiNormedGroupCat.{u}) : AddGroup (V ⟶  W) := inferInstanceAs <| AddGroup
+    have (V W : SemiNormedGroupCat.{u}) : AddGroup (V ⟶ W) := inferInstanceAs <| AddGroup
       <| NormedAddGroupHom V W
     (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
   @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g => f.completion_add g
@@ -109,6 +109,9 @@ instance : Preadditive SemiNormedGroupCat.{u} where
     convert map_add g (f x) (f' x)
   comp_add := by
     intros; ext
+    -- Porting note: failing simps probably due to instance synthesis issues with concrete
+    -- cats; see the gymnastics below for what used to be
+    -- simp only [add_apply, comp_apply. map_add]
     rw [NormedAddGroupHom.add_apply, CategoryTheory.comp_apply, CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, @NormedAddGroupHom.add_apply _ _ (_) (_)]
 
