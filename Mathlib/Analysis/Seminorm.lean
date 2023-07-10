@@ -1196,7 +1196,7 @@ protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [Cont
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.continuous' Seminorm.continuous'
 
-theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕝 E]
+theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E]
     {p q : Seminorm 𝕝 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
   replace hq : ContinuousAt q 0 := hq.continuousAt
   refine Seminorm.continuous_of_continuousAt_zero ?_
