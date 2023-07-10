@@ -52,7 +52,7 @@ for path in paths:
         m = import_re.match(line)
         if m:
             imported = m.group(1)
-            if imported.startswith('tactic.') or imported.startswith('meta.'):
+            if imported.startswith('tactic.') or imported.startswith('meta.') or imported.startswith('.'):
                 continue
             if imported not in graph.nodes:
                 if imported + '.default' in graph.nodes:
