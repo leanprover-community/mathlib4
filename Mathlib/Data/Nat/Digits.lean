@@ -456,7 +456,7 @@ theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
     · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
     · nth_rw 2 [← ofDigits_digits p.succ n.succ]
       rw [← ofDigits_one <| digits p.succ n.succ]
-      refine ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
+      exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
 
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
