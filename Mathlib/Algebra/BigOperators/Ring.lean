@@ -128,18 +128,18 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/
 theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
-    ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
+    ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a := by
+  classical
   calc
     ∏ a in s, (f a + g a) =
-        ∏ a in s, ∑ p in ({true, false} : Finset Bool), if p then f a else g a :=
+        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
       by simp
-    _ = ∑ p in (s.pi fun _ => {true, false} : Finset (∀ a ∈ s, Bool)),
+    _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
       sum_bij'
-        (fun (f: ∀ a ∈ s, Bool) _ =>
-          s.filter (fun a : α => ∀ h : a ∈ s, f a h))
+        (fun f _ => s.filter (fun a => ∀ h : a ∈ s, f a h))
         (by simp)
         (fun a _ => by
           rw [prod_ite]
@@ -152,19 +152,11 @@ theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
             (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp))
-        (fun t _ a  _ => if a ∈ t then true else false)
-        (by
-          simp_rw [mem_singleton, mem_pi, mem_insert, ite_eq_left_iff, mem_singleton,
-            ite_eq_right_iff, mem_powerset]; tauto)
-        (by
-          simp [Function.funext_iff];
-          intro a _ a1 ha1
-          by_cases h : a a1 ha1
-          · rw [h, if_pos]
-            exact ⟨ ha1, fun _ => h ⟩
-          · rw [Bool.eq_false_of_ne_true h, if_neg]
-            tauto)
-        (by simp_rw [ite_eq_left_iff, ext_iff, mem_filter, mem_powerset]; tauto)
+        (fun t _ a  _ => a ∈ t)
+        (by simp [Classical.em])
+        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_singleton, mem_pi,
+          mem_insert, iff_true, iff_false]; tauto)
+        (by simp_rw [ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
 #align finset.prod_add Finset.prod_add
 
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
