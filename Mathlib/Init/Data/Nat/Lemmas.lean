@@ -518,6 +518,8 @@ protected def strongRecOn {p : Nat → Sort u} (n : Nat) (h : ∀ n, (∀ m, m <
     · intros; subst m; apply h _ ih
 #align nat.strong_rec_on Nat.strongRecOn
 
+-- porting note: added `elab_as_elim`
+@[elab_as_elim]
 protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
   Nat.strongRecOn n h
