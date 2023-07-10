@@ -20,7 +20,8 @@ import Mathlib.Logic.Equiv.Array
 variable {α : Type _}
 
 -- porting note: `DArray` does not exist in std4/mathlib4
--- instance DArray.fintype {n : ℕ} {α : Fin n → Type _} [∀ n, Fintype (α n)] : Fintype (DArray n α) :=
+-- instance DArray.fintype {n : ℕ} {α : Fin n → Type _} [∀ n, Fintype (α n)] :
+--     Fintype (DArray n α) :=
 --   Fintype.ofEquiv _ (Equiv.dArrayEquivFin _).symm
 #noalign d_array.fintype
 
