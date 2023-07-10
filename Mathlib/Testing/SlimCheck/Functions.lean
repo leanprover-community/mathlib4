@@ -80,6 +80,12 @@ instance TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β
 
 namespace TotalFunction
 
+-- porting note: new
+/-- Compose a total function with a regular function on the left -/
+def comp {γ : Type w} (f : β → γ) : TotalFunction α β → TotalFunction α γ
+  | TotalFunction.withDefault m y => TotalFunction.withDefault
+    (m.map <| Sigma.map id <| fun _ => f) (f y)
+
 /-- Apply a total function to an argument. -/
 def apply [DecidableEq α] : TotalFunction α β → α → β
   | TotalFunction.withDefault m y, x => (m.dlookup x).getD y
@@ -114,37 +120,37 @@ def List.toFinmap' (xs : List (α × β)) : List (Σ _ : α, β) :=
 
 section
 
-variable [SampleableExt α] [SampleableExt β]
+universe ua ub
+variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
 
-/-- Redefine `sizeof` to follow the structure of `sampleable` instances. -/
-def Total.sizeof : TotalFunction α β → ℕ
-  | ⟨m, x⟩ => 1 + @SizeOf.sizeOf _ Sampleable.wf m + SizeOf.sizeOf x
-#align slim_check.total_function.total.sizeof SlimCheck.TotalFunction.Total.sizeof
+-- /-- Redefine `sizeof` to follow the structure of `sampleable` instances. -/
+-- def Total.sizeof : TotalFunction α β → ℕ
+--   | ⟨m, x⟩ => 1 + @SizeOf.sizeOf _ Sampleable.wf m + SizeOf.sizeOf x
+-- #align slim_check.total_function.total.sizeof SlimCheck.TotalFunction.Total.sizeof
 
-instance (priority := 2000) : SizeOf (TotalFunction α β) :=
-  ⟨Total.sizeof⟩
+-- instance (priority := 2000) : SizeOf (TotalFunction α β) :=
+--   ⟨Total.sizeof⟩
 
 variable [DecidableEq α]
 
 /-- Shrink a total function by shrinking the lists that represent it. -/
-protected def shrink : ShrinkFn (TotalFunction α β)
-  | ⟨m, x⟩ =>
-    (Sampleable.shrink (m, x)).map fun ⟨⟨m', x'⟩, h⟩ =>
-      ⟨⟨List.dedupKeys m', x'⟩,
-        lt_of_le_of_lt
-          (by unfold_wf <;> refine' @List.sizeOf_dedupKeys _ _ _ (@sampleable.wf _ _) _) h⟩
+def shrink {α β} [DecidableEq α] [Shrinkable α] [Shrinkable β] :
+    TotalFunction α β → List (TotalFunction α β)
+  | ⟨m, x⟩ => (Shrinkable.shrink (m, x)).map fun ⟨m', x'⟩ => ⟨List.dedupKeys m', x'⟩
 #align slim_check.total_function.shrink SlimCheck.TotalFunction.shrink
 
 variable [Repr α] [Repr β]
 
 instance Pi.sampleableExt : SampleableExt (α → β) where
-  proxy := TotalFunction α β
-  interp := TotalFunction.apply
+  proxy := TotalFunction α (SampleableExt.proxy β)
+  interp f := SampleableExt.interp ∘ f.apply
   sample := do
-    let xs ← (Sampleable.sample (List (α × β)) : Gen (List (α × β)))
-    let ⟨x⟩ ← (ULiftable.up <| sample β : Gen (ULift.{max u v} β))
-    pure <| total_function.with_default (list.to_finmap' xs) x
-  shrink := TotalFunction.shrink
+    let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
+    let ⟨x⟩ ← (ULiftable.up <| SampleableExt.sample : Gen (ULift.{max u ub} (SampleableExt.proxy β)))
+    pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
+      Prod.map SampleableExt.interp id) x
+  -- note: no way of shrinking the domain without an inverse to `interp`
+  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
 #align slim_check.total_function.pi.sampleable_ext SlimCheck.TotalFunction.Pi.sampleableExt
 
 end
@@ -182,39 +188,35 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
     · rintro ⟨od, hval, hod⟩
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
       rw [(_ : List.dlookup a A = od)]
-      · simpa
+      · simpa using hod
       · simpa [List.dlookup_dedupKeys, WithTop.some_eq_coe]
     · intro h
-      use (A.lookup a).getD (0 : β)
+      use (A.dlookup a).getD (0 : β)
       rw [← List.dlookup_dedupKeys] at h ⊢
-      simp only [h, ← List.mem_dlookup_iff A.nodupkeys_dedupkeys, and_true_iff, not_false_iff,
+      simp only [h, ← List.mem_dlookup_iff A.nodupKeys_dedupKeys, and_true_iff, not_false_iff,
         Option.mem_def]
-      cases List.dlookup a A.dedupkeys
-      · simpa using h
+      cases haA : List.dlookup a A.dedupKeys
+      · simp [haA] at h
       · simp
 #align slim_check.total_function.apply_finsupp SlimCheck.TotalFunction.applyFinsupp
 
 variable [SampleableExt α] [SampleableExt β]
 
 instance Finsupp.sampleableExt [Repr α] [Repr β] : SampleableExt (α →₀ β) where
-  proxy := TotalFunction α β
-  interp := TotalFunction.applyFinsupp
-  sample := do
-    let xs ← (Sampleable.sample (List (α × β)) : Gen (List (α × β)))
-    let ⟨x⟩ ← (ULiftable.up <| sample β : Gen (ULift.{max u v} β))
-    pure <| total_function.with_default (list.to_finmap' xs) x
-  shrink := TotalFunction.shrink
+  proxy := TotalFunction α (SampleableExt.proxy β)
+  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
+  sample := SampleableExt.sample (α := α → β)
+  -- note: no way of shrinking the domain without an inverse to `interp`
+  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
 #align slim_check.total_function.finsupp.sampleable_ext SlimCheck.TotalFunction.Finsupp.sampleableExt
 
 -- TODO: support a non-constant codomain type
-instance Dfinsupp.sampleableExt [Repr α] [Repr β] : SampleableExt (Π₀ a : α, β) where
-  proxy := TotalFunction α β
-  interp := Finsupp.toDfinsupp ∘ TotalFunction.applyFinsupp
-  sample := do
-    let xs ← (Sampleable.sample (List (α × β)) : Gen (List (α × β)))
-    let ⟨x⟩ ← (ULiftable.up <| sample β : Gen (ULift.{max u v} β))
-    pure <| total_function.with_default (list.to_finmap' xs) x
-  shrink := TotalFunction.shrink
+instance Dfinsupp.sampleableExt [Repr α] [Repr β] : SampleableExt (Π₀ _ : α, β) where
+  proxy := TotalFunction α (SampleableExt.proxy β)
+  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDfinsupp
+  sample := SampleableExt.sample (α := α → β)
+  -- note: no way of shrinking the domain without an inverse to `interp`
+  shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
 #align slim_check.total_function.dfinsupp.sampleable_ext SlimCheck.TotalFunction.Dfinsupp.sampleableExt
 
 end Finsupp
@@ -228,7 +230,7 @@ instance (priority := 2000) PiPred.sampleableExt [SampleableExt (α → Bool)] :
   proxy := proxy (α → Bool)
   interp m x := interp m x
   sample := sample
-  shrink := shrink
+  shrink := SampleableExt.shrink
 #align slim_check.total_function.pi_pred.sampleable_ext SlimCheck.TotalFunction.PiPred.sampleableExt
 
 instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt (α × β → γ)] :
@@ -236,7 +238,7 @@ instance (priority := 2000) PiUncurry.sampleableExt [SampleableExt (α × β →
   proxy := proxy (α × β → γ)
   interp m x y := interp m (x, y)
   sample := sample
-  shrink := shrink
+  shrink := SampleableExt.shrink
 #align slim_check.total_function.pi_uncurry.sampleable_ext SlimCheck.TotalFunction.PiUncurry.sampleableExt
 
 end SampleableExt
