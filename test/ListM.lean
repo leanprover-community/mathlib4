@@ -8,18 +8,21 @@ import Mathlib.Control.Basic
 
 @[reducible] def S (α : Type) := StateT (List Nat) Option α
 def append (x : Nat) : S Unit :=
-fun s => some ((), x :: s)
+  fun s => some ((), x :: s)
 
 def F : Nat → S Nat
-| 0 => failure
-| (n+1) => do
-    append (n+1)
-    pure n
+  | 0 => failure
+  | (n+1) => do
+      append (n+1)
+      pure n
 
 open Lean
 
 #eval show MetaM Unit from do
-  let x := ((ListM.fix F 10).force).run []
+  -- Note that `fix` fails if any invocation of `F` fails.
+  -- This is different from previous behaviour, where it just terminated the lazy list.
+  -- Hence we must use `.takeAsList 11` here rather than `.force`.
+  let x := ((ListM.fix F 10).takeAsList 11).run []
   guard $ x = some ([10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 example : ((ListM.fix F 10).takeAsList 4).run [] = some ([10, 9, 8, 7], [8, 9, 10]) := by

@@ -185,10 +185,17 @@ def inverse (f : A →[M] B) (g : B → A) (h₁ : Function.LeftInverse g f)
       _ = g (f (m • g x)) := by rw [f.map_smul]
       _ = m • g x := by rw [h₁]
 #align mul_action_hom.inverse_to_fun MulActionHom.inverse_toFun
-
 #align mul_action_hom.inverse MulActionHom.inverse
 
 end MulActionHom
+
+/-- If actions of `M` and `N` on `α` commute, then for `c : M`, `(c • · : α → α)` is an `N`-action
+homomorphism. -/
+@[simps]
+def SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
+    (c : M) : α →[N] α where
+  toFun := (c • ·)
+  map_smul' := smul_comm _
 
 /-- Equivariant additive monoid homomorphisms. -/
 structure DistribMulActionHom extends A →[M] B, A →+ B
@@ -264,7 +271,7 @@ instance [DistribMulActionHomClass F M A B] : CoeTC F (A →+[M] B) :=
   ⟨DistribMulActionHomClass.toDistribMulActionHom⟩
 
 @[simp]
-theorem toFun_eq_coe (f : A →+[M] B): f.toFun = f := rfl
+theorem toFun_eq_coe (f : A →+[M] B) : f.toFun = f := rfl
 #align distrib_mul_action_hom.to_fun_eq_coe DistribMulActionHom.toFun_eq_coe
 
 @[norm_cast]
@@ -408,6 +415,14 @@ theorem ext_ring_iff {f g : R →+[R] M'} : f = g ↔ f 1 = g 1 :=
 end Semiring
 
 end DistribMulActionHom
+
+/-- If `DistribMulAction` of `M` and `N` on `A` commute, then for each `c : M`, `(c • ·)` is an
+`N`-action additive homomorphism. -/
+@[simps]
+def SMulCommClass.toDistribMulActionHom {M} (N A : Type _) [Monoid N] [AddMonoid A]
+    [DistribSMul M A] [DistribMulAction N A] [SMulCommClass M N A] (c : M) : A →+[N] A :=
+  { SMulCommClass.toMulActionHom N A c, DistribSMul.toAddMonoidHom _ c with
+    toFun := (c • ·) }
 
 /-- Equivariant ring homomorphisms. -/
 -- Porting note: This linter does not exist yet

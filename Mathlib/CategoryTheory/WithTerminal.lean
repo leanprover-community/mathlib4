@@ -32,7 +32,7 @@ The relevant constructions needed for the universal properties of these construc
   functor which was lifted.
 3. `liftUnique` provides the uniqueness property of `lift`.
 
-In addition to this, we provide `WithTerminal.map` and `WithInitinal.map` providing the
+In addition to this, we provide `WithTerminal.map` and `WithInitial.map` providing the
 functoriality of these constructions with respect to functors on the base categories.
 
 -/
@@ -102,9 +102,9 @@ instance : Category.{v} (WithTerminal C) where
     -- so the `false_of_from_star` destruct rule below can be used here.
     -- That works, but causes mysterious failures of `aesop_cat` in `map`.
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
-    . exact (h : PEmpty).elim
-    . exact (g : PEmpty).elim
-    . exact (h : PEmpty).elim
+    · exact (h : PEmpty).elim
+    · exact (g : PEmpty).elim
+    · exact (h : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f
@@ -289,9 +289,9 @@ instance : Category.{v} (WithInitial C) where
     -- Porting note: it would be nice to automate this away as well.
     -- See the note on `Category (WithTerminal C)`
     cases a <;> cases b <;> cases c <;> cases d <;> try aesop_cat
-    . exact (g : PEmpty).elim
-    . exact (f : PEmpty).elim
-    . exact (f : PEmpty).elim
+    · exact (g : PEmpty).elim
+    · exact (f : PEmpty).elim
+    · exact (f : PEmpty).elim
 
 /-- Helper function for typechecking. -/
 def down {X Y : C} (f : of X ⟶ of Y) : X ⟶ Y := f

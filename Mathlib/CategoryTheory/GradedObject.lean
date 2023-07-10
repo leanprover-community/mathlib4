@@ -100,8 +100,8 @@ pulling back along two propositionally equal functions.
 -/
 @[simps]
 def comapEq {β γ : Type w} {f g : β → γ} (h : f = g) : comap C f ≅ comap C g where
-  hom := { app := fun X b => eqToHom (by dsimp ; simp only [h]) }
-  inv := { app := fun X b => eqToHom (by dsimp ; simp only [h]) }
+  hom := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
+  inv := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
 #align category_theory.graded_object.comap_eq CategoryTheory.GradedObject.comapEq
 
 theorem comapEq_symm {β γ : Type w} {f g : β → γ} (h : f = g) :
@@ -127,10 +127,9 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
   functor := comap C (e.symm : γ → β)
   inverse := comap C (e : β → γ)
   counitIso :=
-    (Pi.comapComp (fun _ => C) _ _).trans (comapEq C (by ext ; simp))
+    (Pi.comapComp (fun _ => C) _ _).trans (comapEq C (by ext; simp))
   unitIso :=
-    (comapEq C (by ext ; simp)).trans (Pi.comapComp _ _ _).symm
-  functor_unitIso_comp X := by aesop_cat
+    (comapEq C (by ext; simp)).trans (Pi.comapComp _ _ _).symm
 #align category_theory.graded_object.comap_equiv CategoryTheory.GradedObject.comapEquiv
 
 -- See note [dsimp, simp].
@@ -140,7 +139,7 @@ instance hasShift {β : Type _} [AddCommGroup β] (s : β) : HasShift (GradedObj
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by aesop_cat) ≪≫ Pi.comapId β fun _ => C
-      add := fun m n => comapEq C (by ext ; dsimp ; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
+      add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
           (Pi.comapComp _ _ _).symm }
 #align category_theory.graded_object.has_shift CategoryTheory.GradedObject.hasShift
 
@@ -196,8 +195,6 @@ variable (C : Type u) [Category.{v} C]
 variable [HasCoproducts.{0} C]
 
 section
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- The total object of a graded object is the coproduct of the graded components.
 -/

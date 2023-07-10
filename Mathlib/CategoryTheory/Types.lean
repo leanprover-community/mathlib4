@@ -12,6 +12,7 @@ import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # The category `Type`.
@@ -194,13 +195,12 @@ and the original type.
 def uliftTrivial (V : Type u) : ULift.{u} V ≅ V where
   hom a := a.1
   inv a := .up a
-  hom_inv_id := by aesop_cat
-  inv_hom_id := by aesop_cat
 #align category_theory.ulift_trivial CategoryTheory.uliftTrivial
 
 /-- The functor embedding `Type u` into `Type (max u v)`.
-Write this as `uliftFunctor.{5 2}` to get `Type 2 ⥤ Type 5`.
+Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 -/
+@[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v
     where
   obj X := ULift.{v} X
@@ -225,7 +225,7 @@ instance uliftFunctor_faithful : Faithful uliftFunctor
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
  -/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
-  NatIso.ofComponents uliftTrivial (by aesop_cat)
+  NatIso.ofComponents uliftTrivial
 #align category_theory.ulift_functor_trivial CategoryTheory.uliftFunctorTrivial
 
 -- TODO We should connect this to a general story about concrete categories
@@ -246,7 +246,7 @@ theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.In
   constructor
   · intro H x x' h
     skip
-    rw [← homOfElement_eq_iff] at h⊢
+    rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩
 #align category_theory.mono_iff_injective CategoryTheory.mono_iff_injective
@@ -342,16 +342,14 @@ open CategoryTheory
 
 variable {X Y : Type u}
 
-/-- Any isomorphism between types gives an equivalence.
--/
+/-- Any isomorphism between types gives an equivalence. -/
+@[pp_dot]
 def toEquiv (i : X ≅ Y) : X ≃ Y where
   toFun := i.hom
   invFun := i.inv
   left_inv x := congr_fun i.hom_inv_id x
   right_inv y := congr_fun i.inv_hom_id y
 #align category_theory.iso.to_equiv CategoryTheory.Iso.toEquiv
-
-pp_extended_field_notation Iso.toEquiv
 
 @[simp]
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=

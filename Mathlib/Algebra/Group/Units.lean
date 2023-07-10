@@ -214,7 +214,7 @@ instance : Inhabited αˣ :=
 attribute [instance] AddUnits.instInhabitedAddUnits
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
-@[to_additive "Additive units of an addditive monoid have a representation of the base value in
+@[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
@@ -600,11 +600,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
-attribute [nontriviality] isAddUnit_of_subsingleton
-
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
-{ prf := fun _ ↦ id }
+  { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]

@@ -278,7 +278,7 @@ theorem essSup_indicator_eq_essSup_restrict [Zero β] {s : Set α} {f : α → �
       (limsSup_le_limsSup_of_le (map_restrict_ae_le_map_indicator_ae hs)
         (by isBoundedDefault) (by isBoundedDefault) )
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_restrict_le => _)
-  rw [eventually_map] at h_restrict_le⊢
+  rw [eventually_map] at h_restrict_le ⊢
   rw [ae_restrict_iff' hs] at h_restrict_le
   have hc : 0 ≤ c := by
     rsuffices ⟨x, hx⟩ : ∃ x, 0 ≤ f x ∧ f x ≤ c

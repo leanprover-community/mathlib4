@@ -64,7 +64,7 @@ example (x n p : Nat) (h₁ : n * Nat.succ p ≤ x) : n * p ≤ x := by
   · apply Nat.mul_le_mul_left; apply Nat.le_succ
   · apply h₁
 
-example (a : α)(c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
+example (a : α) (c : γ) : ∀ b : β, HEq a b → HEq b c → HEq a c := by
     intro b h₁ h₂
     trans b
     assumption

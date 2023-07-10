@@ -54,7 +54,7 @@ coordinates needed.
 
 ## Tags
 
-combinatorial line, Ramsey theory, arithmetic progession
+combinatorial line, Ramsey theory, arithmetic progression
 
 ### References
 
@@ -260,7 +260,7 @@ private theorem exists_mono_in_high_dimension' :
     -- `r` color focused lines or a monochromatic line.
     suffices key :
       ∀ r : ℕ,
-        ∃ (ι : Type)(_ : Fintype ι),
+        ∃ (ι : Type) (_ : Fintype ι),
           ∀ C : (ι → Option α) → κ,
             (∃ s : ColorFocused C, Multiset.card s.lines = r) ∨ ∃ l, IsMono C l
     -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
@@ -347,7 +347,7 @@ end Line
 /-- A generalization of Van der Waerden's theorem: if `M` is a finitely colored commutative
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type _} [AddCommMonoid M] (S : Finset M) [Finite κ]
-    (C : M → κ) : ∃ a > 0, ∃ (b : M)(c : κ), ∀ s ∈ S, C (a • s + b) = c := by
+    (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   skip
   specialize hι fun v => C <| ∑ i, v i

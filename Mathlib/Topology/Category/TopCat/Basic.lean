@@ -46,6 +46,7 @@ set_option linter.uppercaseLean3 false in
 deriving instance LargeCategory for TopCat
 
 -- Porting note: currently no derive handler for ConcreteCategory
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 instance concreteCategory : ConcreteCategory TopCat := by
   dsimp [TopCat]
   infer_instance
@@ -59,7 +60,7 @@ set_option linter.uppercaseLean3 false in
 #align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
 
 -- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.hasCoeToFun in
+attribute [instance] ConcreteCategory.funLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 

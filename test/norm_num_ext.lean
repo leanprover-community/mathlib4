@@ -8,6 +8,7 @@ import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.NormNum.LegendreSymbol
 
 /-!
 # Tests for `norm_num` extensions
@@ -379,12 +380,11 @@ example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_n
 
 end big_operators
 
-/-
 section jacobi
 
 -- Jacobi and Legendre symbols
 
-open_locale number_theory_symbols
+open scoped NumberTheorySymbols
 
 example : J(123 | 335) = -1 := by norm_num
 example : J(-2345 | 6789) = -1 := by norm_num
@@ -397,8 +397,7 @@ example : J(58378362899022564339483801989973056405585914719065 |
 example : J(3 + 4 | 3 * 5) = -1 := by norm_num
 example : J(J(-1 | 7) | 11) = -1 := by norm_num
 
-instance prime_1000003 : fact (Nat.Prime 1000003) := ⟨by norm_num⟩
-example : legendre_sym 1000003 7 = -1 := by norm_num
+instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num⟩
+example : legendreSym 1000003 7 = -1 := by norm_num
 
 end jacobi
--/

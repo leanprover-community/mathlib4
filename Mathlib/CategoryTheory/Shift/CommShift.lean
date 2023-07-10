@@ -15,7 +15,7 @@ type class is `[F.CommShift A]`. The data consists of commutation isomorphisms
 `F.commShiftIso a : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` for all `a : A`
 which satisfy a compatibility with the addition and the zero. After this was formalised in Lean,
 it was found that this definition is exactly the definition which appears in Jean-Louis
-Verdier's thesis (I 1.2.3/1.2.4), allthough the language is different. (In Verdier's thesis,
+Verdier's thesis (I 1.2.3/1.2.4), although the language is different. (In Verdier's thesis,
 the shift is not given by a monoidal functor `Discrete A ⥤ C ⥤ C`, but by a fibred
 category `C ⥤ BA`, where `BA` is the category with one object, the endomorphisms of which
 identify to `A`. The choice of a cleavage for this fibered category gives the individual

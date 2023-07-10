@@ -111,7 +111,7 @@ instance concreteCategory : ConcreteCategory Pointed where
 set_option linter.uppercaseLean3 false in
 #align Pointed.concrete_category Pointed.concreteCategory
 
-/-- Constructs a isomorphism between pointed types from an equivalence that preserves the point
+/-- Constructs an isomorphism between pointed types from an equivalence that preserves the point
 between them. -/
 @[simps]
 def Iso.mk {α β : Pointed} (e : α ≃ β) (he : e α.point = β.point) : α ≅ β where
@@ -144,8 +144,8 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             apply Pointed.Hom.ext
             funext x
             cases x
-            . exact f.map_point.symm
-            . rfl
+            · exact f.map_point.symm
+            · rfl
           right_inv := fun f => funext fun _ => rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext

@@ -55,15 +55,14 @@ theorem le_einfsep_iff {d} :
   simp_rw [einfsep, le_iInf_iff]
 #align set.le_einfsep_iff Set.le_einfsep_iff
 
-theorem einfsep_zero :
-    s.einfsep = 0 ↔
-      ∀ (C) (_hC : 0 < C), ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), edist x y < C :=
+theorem einfsep_zero : s.einfsep = 0 ↔
+    ∀ (C) (_hC : 0 < C), ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y < C :=
   by simp_rw [einfsep, ← _root_.bot_eq_zero, iInf_eq_bot, iInf_lt_iff]
 #align set.einfsep_zero Set.einfsep_zero
 
 theorem einfsep_pos :
     0 < s.einfsep ↔
-      ∃ (C : _)(_hC : 0 < C), ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), C ≤ edist x y := by
+      ∃ (C : _) (_hC : 0 < C), ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), C ≤ edist x y := by
   rw [pos_iff_ne_zero, Ne.def, einfsep_zero]
   simp only [not_forall, not_exists, not_lt]
 #align set.einfsep_pos Set.einfsep_pos
@@ -74,17 +73,17 @@ theorem einfsep_top :
 #align set.einfsep_top Set.einfsep_top
 
 theorem einfsep_lt_top :
-    s.einfsep < ∞ ↔ ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), edist x y < ∞ := by
+    s.einfsep < ∞ ↔ ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y < ∞ := by
   simp_rw [einfsep, iInf_lt_iff]
 #align set.einfsep_lt_top Set.einfsep_lt_top
 
 theorem einfsep_ne_top :
-    s.einfsep ≠ ∞ ↔ ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), edist x y ≠ ∞ := by
+    s.einfsep ≠ ∞ ↔ ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), edist x y ≠ ∞ := by
   simp_rw [← lt_top_iff_ne_top, einfsep_lt_top]
 #align set.einfsep_ne_top Set.einfsep_ne_top
 
 theorem einfsep_lt_iff {d} :
-    s.einfsep < d ↔ ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_h : x ≠ y), edist x y < d := by
+    s.einfsep < d ↔ ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_h : x ≠ y), edist x y < d := by
   simp_rw [einfsep, iInf_lt_iff]
 #align set.einfsep_lt_iff Set.einfsep_lt_iff
 
@@ -160,7 +159,7 @@ theorem einfsep_pair_le_left (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edi
 #align set.einfsep_pair_le_left Set.einfsep_pair_le_left
 
 theorem einfsep_pair_le_right (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edist y x := by
-  rw [pair_comm] ; exact einfsep_pair_le_left hxy.symm
+  rw [pair_comm]; exact einfsep_pair_le_left hxy.symm
 #align set.einfsep_pair_le_right Set.einfsep_pair_le_right
 
 theorem einfsep_pair_eq_inf (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y ⊓ edist y x :=
@@ -192,7 +191,7 @@ theorem Finset.coe_einfsep [DecidableEq α] {s : Finset α} :
 #align set.finset.coe_einfsep Set.Finset.coe_einfsep
 
 theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
-    ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), s.einfsep = edist x y := by
+    ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), s.einfsep = edist x y := by
   classical
     cases nonempty_fintype s
     simp_rw [einfsep_of_fintype]
@@ -203,7 +202,7 @@ theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
 #align set.nontrivial.einfsep_exists_of_finite Set.Nontrivial.einfsep_exists_of_finite
 
 theorem Finite.einfsep_exists_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
-    ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), s.einfsep = edist x y :=
+    ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), s.einfsep = edist x y :=
   letI := hsf.fintype
   hs.einfsep_exists_of_finite
 #align set.finite.einfsep_exists_of_nontrivial Set.Finite.einfsep_exists_of_nontrivial
@@ -303,7 +302,7 @@ theorem einfsep_pos_of_finite [Finite s] : 0 < s.einfsep := by
 #align set.einfsep_pos_of_finite Set.einfsep_pos_of_finite
 
 theorem relatively_discrete_of_finite [Finite s] :
-    ∃ (C : _)(_hC : 0 < C), ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), C ≤ edist x y := by
+    ∃ (C : _) (_hC : 0 < C), ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), C ≤ edist x y := by
   rw [← einfsep_pos]
   exact einfsep_pos_of_finite
 #align set.relatively_discrete_of_finite Set.relatively_discrete_of_finite
@@ -314,7 +313,7 @@ theorem Finite.einfsep_pos (hs : s.Finite) : 0 < s.einfsep :=
 #align set.finite.einfsep_pos Set.Finite.einfsep_pos
 
 theorem Finite.relatively_discrete (hs : s.Finite) :
-    ∃ (C : _)(_hC : 0 < C), ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), C ≤ edist x y :=
+    ∃ (C : _) (_hC : 0 < C), ∀ (x) (_ : x ∈ s) (y) (_ : y ∈ s) (_hxy : x ≠ y), C ≤ edist x y :=
   letI := hs.fintype
   relatively_discrete_of_finite
 #align set.finite.relatively_discrete Set.Finite.relatively_discrete
@@ -402,7 +401,7 @@ theorem Nontrivial.le_infsep_iff {d} (hs : s.Nontrivial) :
 #align set.nontrivial.le_infsep_iff Set.Nontrivial.le_infsep_iff
 
 theorem Nontrivial.infsep_lt_iff {d} (hs : s.Nontrivial) :
-    s.infsep < d ↔ ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), dist x y < d := by
+    s.infsep < d ↔ ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), dist x y < d := by
   rw [← not_iff_not]
   push_neg
   exact hs.le_infsep_iff
@@ -518,7 +517,7 @@ theorem _root_.Finset.coe_infsep_of_offDiag_empty
 #align finset.coe_infsep_of_off_diag_empty Finset.coe_infsep_of_offDiag_empty
 
 theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
-    ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), s.infsep = dist x y := by
+    ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), s.infsep = dist x y := by
   classical
     cases nonempty_fintype s
     simp_rw [hs.infsep_of_fintype]
@@ -529,7 +528,7 @@ theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
 #align set.nontrivial.infsep_exists_of_finite Set.Nontrivial.infsep_exists_of_finite
 
 theorem Finite.infsep_exists_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
-    ∃ (x : _)(_ : x ∈ s)(y : _)(_ : y ∈ s)(_hxy : x ≠ y), s.infsep = dist x y :=
+    ∃ (x : _) (_ : x ∈ s) (y : _) (_ : y ∈ s) (_hxy : x ≠ y), s.infsep = dist x y :=
   letI := hsf.fintype
   hs.infsep_exists_of_finite
 #align set.finite.infsep_exists_of_nontrivial Set.Finite.infsep_exists_of_nontrivial

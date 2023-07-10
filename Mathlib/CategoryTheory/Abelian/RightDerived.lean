@@ -218,11 +218,11 @@ def rightDerivedZeroToSelfApp [EnoughInjectives C] [PreservesFiniteLimits F] {X 
       (cokernel.desc _ (𝟙 _) (by simp)) (𝟙 _)
           (by
             -- Porting note: was ext; simp
-            apply coequalizer.hom_ext
+            ext
             dsimp
             simp) ≫
         -- Porting note: isIso_kernel_lift_of_exact_of_mono is no longer allowed as an
-        -- instance for reasons am I not privy to
+        -- instance for reasons I am not privy to
         have : IsIso <| kernel.lift _ _ (exact_of_map_injectiveResolution F P).w :=
           isIso_kernel_lift_of_exact_of_mono _ _ (exact_of_map_injectiveResolution F P)
         (asIso (kernel.lift _ _ (exact_of_map_injectiveResolution F P).w)).inv
@@ -274,8 +274,7 @@ theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteL
   -- Porting note: this IsIso instance used to be filled automatically
   apply (@IsIso.comp_inv_eq D _ _ _ _ _ ?_ _ _).mpr
   · rw [Category.id_comp]
-    -- Porting note: broken ext
-    apply equalizer.hom_ext
+    ext
     simp only [Limits.kernel.lift_ι_assoc,
       Category.assoc, Limits.kernel.lift_ι, homology.lift]
     rw [← Category.assoc, ← Category.assoc,

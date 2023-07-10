@@ -110,7 +110,7 @@ determined. -/
 @[ext]
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
   (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
-  cases' F with _ Fm _ _ Ffac ; cases' F' with _ Fm' _ _ Ffac'
+  cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
   cases' hI
   simp at hm
   dsimp at Ffac Ffac'
@@ -1021,7 +1021,7 @@ factorisation.
 -/
 def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f) [StrongEpi e]
     [Mono m] : I' ≅ image f :=
-  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e:=e}
+  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e}
   IsImage.isoExt F.toMonoIsImage <| Image.isImage f
 #align category_theory.limits.image.iso_strong_epi_mono CategoryTheory.Limits.image.isoStrongEpiMono
 

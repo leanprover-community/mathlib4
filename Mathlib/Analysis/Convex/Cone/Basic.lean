@@ -771,7 +771,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
       rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
         smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne, one_mul] at this
     · subst r
-      simp only [zero_smul, add_zero] at hzs⊢
+      simp only [zero_smul, add_zero] at hzs ⊢
       apply nonneg
       exact hzs
     · have : r⁻¹ • x + y ∈ s := by

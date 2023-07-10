@@ -326,7 +326,7 @@ theorem mem_support_not_mem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
-  simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx⊢
+  simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
   simpa using Multiset.mem_of_le (degrees_add _ _) hx
 #align mv_polynomial.vars_add_subset MvPolynomial.vars_add_subset
 
@@ -334,7 +334,7 @@ theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by
   apply Finset.Subset.antisymm (vars_add_subset p q)
   intro x hx
-  simp only [vars_def, Multiset.disjoint_toFinset] at h hx⊢
+  simp only [vars_def, Multiset.disjoint_toFinset] at h hx ⊢
   rw [degrees_add_of_disjoint h, Multiset.toFinset_union]
   exact hx
 #align mv_polynomial.vars_add_of_disjoint MvPolynomial.vars_add_of_disjoint
@@ -436,7 +436,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun 
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
     unfold Pairwise onFun at h
     rw [hsum]
-    simp only [Finset.disjoint_iff_ne] at h⊢
+    simp only [Finset.disjoint_iff_ne] at h ⊢
     intro v hv v2 hv2
     rw [Finset.mem_biUnion] at hv2
     rcases hv2 with ⟨i, his, hi⟩
@@ -554,7 +554,7 @@ theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
 theorem degreeOf_mul_X_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
-  repeat' rw [degreeOf_eq_sup (R:=R) i]
+  repeat' rw [degreeOf_eq_sup (R := R) i]
   rw [support_mul_X]
   simp only [Finset.sup_map]
   congr
@@ -571,7 +571,7 @@ theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
   repeat' rw [degreeOf]
   apply (Multiset.count_le_of_le j (degrees_mul f (X j))).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
-  convert Multiset.count_le_of_le j (degrees_X' (R:=R) j)
+  convert Multiset.count_le_of_le j (degrees_X' (R := R) j)
   rw [Multiset.count_singleton_self]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.degree_of_mul_X_eq MvPolynomial.degreeOf_mul_X_eq
@@ -597,7 +597,7 @@ def totalDegree (p : MvPolynomial σ R) : ℕ :=
 theorem totalDegree_eq (p : MvPolynomial σ R) :
     p.totalDegree = p.support.sup fun m => Multiset.card (toMultiset m) := by
   rw [totalDegree]
-  congr ; funext m
+  congr; funext m
   exact (Finsupp.card_toMultiset _).symm
 #align mv_polynomial.total_degree_eq MvPolynomial.totalDegree_eq
 
@@ -887,7 +887,7 @@ theorem vars_rename [DecidableEq τ] (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).vars ⊆ φ.vars.image f := by
   classical
   intro i hi
-  simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi⊢
+  simp only [vars_def, exists_prop, Multiset.mem_toFinset, Finset.mem_image] at hi ⊢
   simpa only [Multiset.mem_map] using degrees_rename _ _ hi
 #align mv_polynomial.vars_rename MvPolynomial.vars_rename
 

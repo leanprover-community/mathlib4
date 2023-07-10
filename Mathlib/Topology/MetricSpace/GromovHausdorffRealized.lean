@@ -79,8 +79,7 @@ private def maxVar : ℝ≥0 :=
 private theorem one_le_maxVar : 1 ≤ maxVar X Y :=
   calc
     (1 : Real) = 2 * 0 + 1 + 2 * 0 := by simp
-    _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by
-      apply_rules [add_le_add, mul_le_mul_of_nonneg_left, diam_nonneg] <;> norm_num
+    _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> positivity
 
 /-- The set of functions on `X ⊕ Y` that are candidates distances to realize the
 minimum of the Hausdorff distances between `X` and `Y` in a coupling. -/
@@ -119,8 +118,7 @@ private theorem maxVar_bound : dist x y ≤ maxVar X Y :=
       rw [isometry_inl.diam_range, isometry_inr.diam_range]
       rfl
     _ = 1 * diam (univ : Set X) + 1 + 1 * diam (univ : Set Y) := by simp
-    _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by
-      apply_rules [add_le_add, mul_le_mul_of_nonneg_right, diam_nonneg, le_refl] <;> norm_num
+    _ ≤ 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by gcongr <;> norm_num
 
 private theorem candidates_symm (fA : f ∈ candidates X Y) : f (x, y) = f (y, x) :=
   fA.1.1.1.2 x y
@@ -160,48 +158,40 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
       _ = dist (inl x) (inl y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (inl x) (inl y) := by simp
-      _ ≤ maxVar X Y * dist (inl x) (inl y) :=
-        mul_le_mul_of_nonneg_right (one_le_maxVar X Y) dist_nonneg
+      _ = 1 * dist (inl x) (inl y) := by ring
+      _ ≤ maxVar X Y * dist (inl x) (inl y) := by gcongr; exact one_le_maxVar X Y
   | inl x, inr y =>
     calc
       f (inl x, inr y) ≤ maxVar X Y := candidates_le_maxVar fA
       _ = maxVar X Y * 1 := by simp
-      _ ≤ maxVar X Y * dist (inl x) (inr y) :=
-        mul_le_mul_of_nonneg_left Sum.one_le_dist_inl_inr (le_trans zero_le_one (one_le_maxVar X Y))
+      _ ≤ maxVar X Y * dist (inl x) (inr y) := by gcongr; apply Sum.one_le_dist_inl_inr
   | inr x, inl y =>
     calc
       f (inr x, inl y) ≤ maxVar X Y := candidates_le_maxVar fA
       _ = maxVar X Y * 1 := by simp
-      _ ≤ maxVar X Y * dist (inl x) (inr y) :=
-        mul_le_mul_of_nonneg_left Sum.one_le_dist_inl_inr (le_trans zero_le_one (one_le_maxVar X Y))
+      _ ≤ maxVar X Y * dist (inl x) (inr y) := by gcongr; apply Sum.one_le_dist_inl_inr
   | inr x, inr y =>
     calc
       f (inr x, inr y) = dist x y := candidates_dist_inr fA x y
       _ = dist (inr x) (inr y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (inr x) (inr y) := by simp
-      _ ≤ maxVar X Y * dist (inr x) (inr y) :=
-        mul_le_mul_of_nonneg_right (one_le_maxVar X Y) dist_nonneg
+      _ = 1 * dist (inr x) (inr y) := by ring
+      _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
 /-- Technical lemma to prove that candidates are Lipschitz -/
 private theorem candidates_lipschitz_aux (fA : f ∈ candidates X Y) :
     f (x, y) - f (z, t) ≤ 2 * maxVar X Y * dist (x, y) (z, t) :=
   calc
-    f (x, y) - f (z, t) ≤ f (x, t) + f (t, y) - f (z, t) :=
-      sub_le_sub_right (candidates_triangle fA) _
-    _ ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) :=
-      (sub_le_sub_right (add_le_add_right (candidates_triangle fA) _) _)
+    f (x, y) - f (z, t) ≤ f (x, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
+    _ ≤ f (x, z) + f (z, t) + f (t, y) - f (z, t) := by gcongr; exact candidates_triangle fA
     _ = f (x, z) + f (t, y) := by simp [sub_eq_add_neg, add_assoc]
-    _ ≤ maxVar X Y * dist x z + maxVar X Y * dist t y :=
-      (add_le_add (candidates_dist_bound fA) (candidates_dist_bound fA))
+    _ ≤ maxVar X Y * dist x z + maxVar X Y * dist t y := by
+      gcongr <;> apply candidates_dist_bound fA
     _ ≤ maxVar X Y * max (dist x z) (dist t y) + maxVar X Y * max (dist x z) (dist t y) := by
-      apply add_le_add
-      apply mul_le_mul_of_nonneg_left (le_max_left (dist x z) (dist t y))
-        (zero_le_one.trans (one_le_maxVar X Y))
-      apply mul_le_mul_of_nonneg_left (le_max_right (dist x z) (dist t y))
-        (zero_le_one.trans (one_le_maxVar X Y))
+      gcongr
+      · apply le_max_left
+      · apply le_max_right
     _ = 2 * maxVar X Y * max (dist x z) (dist y t) := by
       rw [dist_comm t y]
       ring
@@ -314,7 +304,7 @@ private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2 with ⟨Cf, hCf⟩
   refine' ⟨Cf + C, forall_range_iff.2 fun x => _⟩
   calc
-    (⨅ y, f (inl x, inr y) + C) ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
+    ⨅ y, f (inl x, inr y) + C ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
 
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
@@ -328,7 +318,7 @@ private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2 with ⟨Cf, hCf⟩
   refine' ⟨Cf + C, forall_range_iff.2 fun y => _⟩
   calc
-    (⨅ x, f (inl x, inr y) + C) ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
+    ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
 
 /-- Explicit bound on `HD (dist)`. This means that when looking for minimizers it will
@@ -336,22 +326,22 @@ be sufficient to look for functions with `HD(f)` bounded by this bound. -/
 theorem HD_candidatesBDist_le :
     HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
   refine' max_le (ciSup_le fun x => _) (ciSup_le fun y => _)
-  · have A : (⨅ y, candidatesBDist X Y (inl x, inr y)) ≤ candidatesBDist X Y (inl x, inr default) :=
+  · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
       ciInf_le (by simpa using HD_below_aux1 0) default
     have B : dist (inl x) (inr default) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
       calc
         dist (inl x) (inr (default : Y)) = dist x (default : X) + 1 + dist default default := rfl
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-          apply add_le_add (add_le_add _ le_rfl) <;>
+          gcongr <;>
             exact dist_le_diam_of_mem bounded_of_compactSpace (mem_univ _) (mem_univ _)
     exact le_trans A B
-  · have A : (⨅ x, candidatesBDist X Y (inl x, inr y)) ≤ candidatesBDist X Y (inl default, inr y) :=
+  · have A : ⨅ x, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl default, inr y) :=
       ciInf_le (by simpa using HD_below_aux2 0) default
     have B : dist (inl default) (inr y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
       calc
         dist (inl (default : X)) (inr y) = dist default default + 1 + dist default y := rfl
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
-          apply add_le_add (add_le_add _ le_rfl) <;>
+          gcongr <;>
             exact dist_le_diam_of_mem bounded_of_compactSpace (mem_univ _) (mem_univ _)
     exact le_trans A B
 #align Gromov_Hausdorff.HD_candidates_b_dist_le GromovHausdorff.HD_candidatesBDist_le
@@ -514,9 +504,9 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     have I1 : (⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y)) < r :=
       lt_of_le_of_lt (le_max_left _ _) hr
     have I2 :
-        (⨅ y, optimalGHDist X Y (inl z, inr y)) ≤ ⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y) :=
+        ⨅ y, optimalGHDist X Y (inl z, inr y) ≤ ⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y) :=
       le_csSup (by simpa using HD_bound_aux1 _ 0) (mem_range_self _)
-    have I : (⨅ y, optimalGHDist X Y (inl z, inr y)) < r := lt_of_le_of_lt I2 I1
+    have I : ⨅ y, optimalGHDist X Y (inl z, inr y) < r := lt_of_le_of_lt I2 I1
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     exact ⟨optimalGHInjr X Y z', mem_range_self _, le_of_lt hr'⟩
   refine' hausdorffDist_le_of_mem_dist _ A _
@@ -527,9 +517,9 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     have I1 : (⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y)) < r :=
       lt_of_le_of_lt (le_max_right _ _) hr
     have I2 :
-        (⨅ x, optimalGHDist X Y (inl x, inr z)) ≤ ⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y) :=
+        ⨅ x, optimalGHDist X Y (inl x, inr z) ≤ ⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y) :=
       le_csSup (by simpa using HD_bound_aux2 _ 0) (mem_range_self _)
-    have I : (⨅ x, optimalGHDist X Y (inl x, inr z)) < r := lt_of_le_of_lt I2 I1
+    have I : ⨅ x, optimalGHDist X Y (inl x, inr z) < r := lt_of_le_of_lt I2 I1
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     refine' ⟨optimalGHInjl X Y z', mem_range_self _, le_of_lt _⟩
     rwa [dist_comm]

@@ -62,7 +62,7 @@ respects multiplication, i.e. the product of an element of degree `i` and an ele
 is an element of degree `i + j`.
 
 Note that the fact that `A` is internally-graded, `GradedAlgebra 𝒜`, implies an externally-graded
-algebra structure `DirectSum.GAlgebra R (λ i, ↥(𝒜 i))`, which in turn makes available an
+algebra structure `DirectSum.GAlgebra R (fun i ↦ ↥(𝒜 i))`, which in turn makes available an
 `Algebra R (⨁ i, 𝒜 i)` instance.
 -/
 class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum.Decomposition 𝒜
@@ -194,7 +194,7 @@ def GradedAlgebra.ofAlgHom [SetLike.GradedMonoid 𝒜] (decompose : A →ₐ[R] 
   left_inv := AlgHom.congr_fun right_inv
   right_inv := by
     suffices decompose.comp (DirectSum.coeAlgHom 𝒜) = AlgHom.id _ _ from AlgHom.congr_fun this
-    -- Porting note: was ext (i x) : 2
+    -- Porting note: was ext i x : 2
     refine DirectSum.algHom_ext' _ _ fun i => ?_
     ext x
     exact (decompose.congr_arg <| DirectSum.coeAlgHom_of _ _ _).trans (left_inv i x)

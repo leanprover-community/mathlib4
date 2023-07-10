@@ -26,7 +26,7 @@ and if every monomorphism and epimorphism is normal.
 
 It should be noted that if we also assume coproducts, then preadditivity is
 actually a consequence of the other properties, as we show in
-`non_preadditive_abelian.lean`. However, this fact is of little practical
+`NonPreadditiveAbelian.lean`. However, this fact is of little practical
 relevance, since essentially all interesting abelian categories come with a
 preadditive structure. In this way, by requiring preadditivity, we allow the
 user to pass in the "native" preadditive structure for the specific category they are
@@ -34,7 +34,7 @@ working with.
 
 ## Main definitions
 
-* `Abelian` is the type class indicating that a category is abelian. It extends `preadditive`.
+* `Abelian` is the type class indicating that a category is abelian. It extends `Preadditive`.
 * `Abelian.image f` is `kernel (cokernel.π f)`, and
 * `Abelian.coimage f` is `cokernel (kernel.ι f)`.
 
@@ -42,7 +42,7 @@ working with.
 
 * In an abelian category, mono + epi = iso.
 * If `f : X ⟶ Y`, then the map `factorThruImage f : X ⟶ image f` is an epimorphism, and the map
-  `factor_thru_coimage f : coimage f ⟶ Y` is a monomorphism.
+  `factorThruCoimage f : coimage f ⟶ Y` is a monomorphism.
 * Factoring through the image and coimage is a strong epi-mono factorisation. This means that
   * every abelian category has images. We provide the isomorphism
     `imageIsoImage : abelian.image f ≅ limits.image f`.
@@ -74,7 +74,7 @@ convention:
 * If the statement of a theorem involves limits, the existence of these limits should be made an
   explicit typeclass parameter.
 * If a limit only appears in a proof, but not in the statement of a theorem, the limit should not
-  be a typeclass parameter, but instead be created using `abelian.has_pullbacks` or a similar
+  be a typeclass parameter, but instead be created using `Abelian.hasPullbacks` or a similar
   definition.
 
 ## References
@@ -150,7 +150,8 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
 
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
-  apply equalizer.hom_ext
+  dsimp
+  ext
   simp only [Abelian.coimageImageComparison, imageMonoFactorisation_e, Category.assoc,
     cokernel.π_desc_assoc]
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_mono_factorisation_e' CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageMonoFactorisation_e'
@@ -166,7 +167,7 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
         rw [imageMonoFactorisation_m]
         simp only [Category.assoc]
         rw [IsIso.inv_comp_eq]
-        apply coequalizer.hom_ext
+        ext
         simp }
 #align category_theory.abelian.of_coimage_image_comparison_is_iso.image_factorisation CategoryTheory.Abelian.OfCoimageImageComparisonIsIso.imageFactorisation
 
@@ -401,7 +402,7 @@ instance : IsIso (coimageImageComparison f) := by
     IsIso.of_iso
       (IsImage.isoExt (coimageStrongEpiMonoFactorisation f).toMonoIsImage
         (imageStrongEpiMonoFactorisation f).toMonoIsImage)
-  apply coequalizer.hom_ext; apply equalizer.hom_ext
+  ext
   change _ = _ ≫ (imageStrongEpiMonoFactorisation f).m
   simp [-imageStrongEpiMonoFactorisation_m]
 
@@ -420,7 +421,7 @@ abbrev coimageIsoImage' : Abelian.coimage f ≅ image f :=
 theorem coimageIsoImage'_hom :
     (coimageIsoImage' f).hom =
       cokernel.desc _ (factorThruImage f) (by simp [← cancel_mono (Limits.image.ι f)]) := by
-  apply coequalizer.hom_ext
+  ext
   simp only [← cancel_mono (Limits.image.ι f), IsImage.isoExt_hom, cokernel.π_desc,
     Category.assoc, IsImage.lift_ι, coimageStrongEpiMonoFactorisation_m,
     Limits.image.fac]
@@ -445,7 +446,7 @@ theorem imageIsoImage_hom_comp_image_ι : (imageIsoImage f).hom ≫ Limits.image
 theorem imageIsoImage_inv :
     (imageIsoImage f).inv =
       kernel.lift _ (Limits.image.ι f) (by simp [← cancel_epi (factorThruImage f)]) := by
-  apply image.ext; apply equalizer.hom_ext
+  ext
   rw [IsImage.isoExt_inv, image.isImage_lift, Limits.image.fac_lift,
     imageStrongEpiMonoFactorisation_e, Category.assoc, kernel.lift_ι, equalizer_as_kernel,
     kernel.lift_ι, Limits.image.fac]
@@ -543,7 +544,7 @@ namespace PullbackToBiproductIsKernel
 variable [Limits.HasPullbacks C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
 
 /-! This section contains a slightly technical result about pullbacks and biproducts.
-    We will need it in the proof that the pullback of an epimorphism is an epimorpism. -/
+    We will need it in the proof that the pullback of an epimorphism is an epimorphism. -/
 
 
 /-- The canonical map `pullback f g ⟶ X ⊞ Y` -/

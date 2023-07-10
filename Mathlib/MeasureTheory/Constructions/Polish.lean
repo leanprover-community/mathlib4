@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 
 ! This file was ported from Lean 3 source module measure_theory.constructions.polish
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
+! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -243,24 +243,38 @@ theorem _root_.MeasurableSet.analyticSet {α : Type _} [t : TopologicalSpace α]
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
 a finer Polish topology on the source space for which the function is continuous. -/
 theorem _root_.Measurable.exists_continuous {α β : Type _} [t : TopologicalSpace α] [PolishSpace α]
-    [MeasurableSpace α] [BorelSpace α] [tβ : TopologicalSpace β] [SecondCountableTopology β]
-    [MeasurableSpace β] [BorelSpace β] {f : α → β} (hf : Measurable f) :
+    [MeasurableSpace α] [BorelSpace α] [tβ : TopologicalSpace β] [MeasurableSpace β]
+    [OpensMeasurableSpace β] {f : α → β} [SecondCountableTopology (range f)] (hf : Measurable f) :
     ∃ t' : TopologicalSpace α, t' ≤ t ∧ @Continuous α β t' tβ f ∧ @PolishSpace α t' := by
-  obtain ⟨b, b_count, -, hb⟩ : ∃ b : Set (Set β), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b :=
-    exists_countable_basis β
-  haveI : Encodable b := b_count.toEncodable
-  have : ∀ s : b, IsClopenable (f ⁻¹' s) := by
-    intro s
+  obtain ⟨b, b_count, -, hb⟩ :
+    ∃ b : Set (Set (range f)), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b :=
+    exists_countable_basis (range f)
+  haveI : Countable b := b_count.to_subtype
+  have : ∀ s : b, IsClopenable (rangeFactorization f ⁻¹' s) := fun s ↦ by
     apply MeasurableSet.isClopenable
-    exact hf (hb.isOpen s.2).measurableSet
+    exact hf.subtype_mk (hb.isOpen s.2).measurableSet
   choose T Tt Tpolish _ Topen using this
   obtain ⟨t', t'T, t't, t'_polish⟩ :
     ∃ t' : TopologicalSpace α, (∀ i, t' ≤ T i) ∧ t' ≤ t ∧ @PolishSpace α t' :=
     exists_polishSpace_forall_le T Tt Tpolish
   refine' ⟨t', t't, _, t'_polish⟩
-  refine hb.continuous _ fun s hs => ?_
-  exact t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
+  have : Continuous[t', _] (rangeFactorization f) :=
+    hb.continuous _ fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
+  exact continuous_subtype_val.comp this
 #align measurable.exists_continuous Measurable.exists_continuous
+
+/-- The image of a measurable set in a Polish space under a measurable map is an analytic set. -/
+theorem _root_.MeasurableSet.analyticSet_image {X Y : Type _} [TopologicalSpace X] [PolishSpace X]
+    [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [MeasurableSpace Y]
+    [OpensMeasurableSpace Y] {f : X → Y} [SecondCountableTopology (range f)] {s : Set X}
+    (hs : MeasurableSet s) (hf : Measurable f) : AnalyticSet (f '' s) := by
+  borelize X
+  rcases hf.exists_continuous with ⟨τ', hle, hfc, hτ'⟩
+  letI m' : MeasurableSpace X := @borel _ τ'
+  haveI b' : BorelSpace X := ⟨rfl⟩
+  have hle := borel_anti hle
+  exact (hle _ hs).analyticSet.image_of_continuous hfc
+#align measurable_set.analytic_set_image MeasurableSet.analyticSet_image
 
 /-! ### Separating sets with measurable sets -/
 
@@ -290,8 +304,8 @@ theorem MeasurablySeparable.iUnion [Countable ι] {α : Type _} [MeasurableSpace
 contained in disjoint Borel sets (see the full statement in `AnalyticSet.measurablySeparable`).
 Here, we prove this when our analytic sets are the ranges of functions from `ℕ → ℕ`.
 -/
-theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α] [BorelSpace α]
-    {f g : (ℕ → ℕ) → α} (hf : Continuous f) (hg : Continuous g)
+theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
+    [OpensMeasurableSpace α] {f g : (ℕ → ℕ) → α} (hf : Continuous f) (hg : Continuous g)
     (h : Disjoint (range f) (range g)) : MeasurablySeparable (range f) (range g) := by
   /- We follow [Kechris, *Classical Descriptive Set Theory* (Theorem 14.7)][kechris1995].
     If the ranges are not Borel-separated, then one can find two cylinders of length one whose
@@ -324,7 +338,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α] 
   choose F hFn hFx hFy using this
   let p0 : A := ⟨⟨0, fun _ => 0, fun _ => 0⟩, by simp [hfg]⟩
   -- construct inductively decreasing sequences of cylinders whose images are not separated
-  let p : ℕ → A := fun n => (F^[n]) p0
+  let p : ℕ → A := fun n => F^[n] p0
   have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := by
@@ -404,8 +418,9 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α] 
 
 /-- The Lusin separation theorem: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
-theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [BorelSpace α] {s t : Set α}
-    (hs : AnalyticSet s) (ht : AnalyticSet t) (h : Disjoint s t) : MeasurablySeparable s t := by
+theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    {s t : Set α} (hs : AnalyticSet s) (ht : AnalyticSet t) (h : Disjoint s t) :
+    MeasurablySeparable s t := by
   rw [AnalyticSet] at hs ht
   rcases hs with (rfl | ⟨f, f_cont, rfl⟩)
   · refine' ⟨∅, Subset.refl _, by simp, MeasurableSet.empty⟩
@@ -414,8 +429,133 @@ theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [Borel
   exact measurablySeparable_range_of_disjoint f_cont g_cont h
 #align measure_theory.analytic_set.measurably_separable MeasureTheory.AnalyticSet.measurablySeparable
 
-/-! ### Injective images of Borel sets -/
+/-- **Suslin's Theorem**: in a Hausdorff topological space, an analytic set with an analytic
+complement is measurable. -/
+theorem AnalyticSet.measurableSet_of_compl [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    {s : Set α} (hs : AnalyticSet s) (hsc : AnalyticSet sᶜ) : MeasurableSet s := by
+  rcases hs.measurablySeparable hsc disjoint_compl_right with ⟨u, hsu, hdu, hmu⟩
+  obtain rfl : s = u := hsu.antisymm (disjoint_compl_left_iff_subset.1 hdu)
+  exact hmu
+#align measure_theory.analytic_set.measurable_set_of_compl MeasureTheory.AnalyticSet.measurableSet_of_compl
 
+end MeasureTheory
+
+/-!
+### Measurability of preimages under measurable maps
+-/
+
+namespace Measurable
+
+variable {X Y β : Type _} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X] [BorelSpace X]
+  [TopologicalSpace Y] [T2Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [MeasurableSpace β]
+
+/-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
+with second countable topology, then the preimage of a set `s` is measurable if and only if the set
+is measurable.
+One implication is the definition of measurability, the other one heavily relies on `X` being a
+Polish space. -/
+theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
+    (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
+  refine ⟨fun h => ?_, fun h => hf h⟩
+  apply AnalyticSet.measurableSet_of_compl
+  · rw [← image_preimage_eq s hsurj]
+    exact h.analyticSet_image hf
+  · rw [← image_preimage_eq sᶜ hsurj]
+    exact h.compl.analyticSet_image hf
+#align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
+
+theorem map_measurableSpace_eq [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
+    (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Y› :=
+  MeasurableSpace.ext fun _ => hf.measurableSet_preimage_iff_of_surjective hsurj
+#align measurable.map_measurable_space_eq Measurable.map_measurableSpace_eq
+
+theorem map_measurableSpace_eq_borel [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
+    (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = borel Y := by
+  have d := hf.mono le_rfl OpensMeasurableSpace.borel_le
+  letI := borel Y; haveI : BorelSpace Y := ⟨rfl⟩
+  exact d.map_measurableSpace_eq hsurj
+#align measurable.map_measurable_space_eq_borel Measurable.map_measurableSpace_eq_borel
+
+theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
+    (hsurj : Surjective f) : BorelSpace Y :=
+  ⟨(hf.map_measurableSpace_eq hsurj).symm.trans <| hf.map_measurableSpace_eq_borel hsurj⟩
+#align measurable.borel_space_codomain Measurable.borelSpace_codomain
+
+/-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
+countable topology, then the preimage of a set `s` is measurable if and only if the set is
+measurable in `Set.range f`. -/
+theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTopology (range f)]
+    (hf : Measurable f) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
+  have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+#align measurable.measurable_set_preimage_iff_preimage_coe Measurable.measurableSet_preimage_iff_preimage_val
+
+/-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
+countable topology and the range of `f` is measurable, then the preimage of a set `s` is measurable
+if and only if the intesection with `Set.range f` is measurable. -/
+theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
+    (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
+    MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
+  rw [hf.measurableSet_preimage_iff_preimage_val,
+    ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
+#align measurable.measurable_set_preimage_iff_inter_range Measurable.measurableSet_preimage_iff_inter_range
+
+/-- If `f : X → Y` is a Borel measurable map from a Polish space to a topological space with second
+countable topology, then for any measurable space `β` and `g : Y → β`, the composition `g ∘ f` is
+measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
+theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (range f)]
+    (hf : Measurable f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
+  forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
+#align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
+
+/-- If `f : X → Y` is a surjective Borel measurable map from a Polish space to a topological space
+with second countable topology, then for any measurable space `α` and `g : Y → α`, the composition
+`g ∘ f` is measurable if and only if `g` is measurable. -/
+theorem measurable_comp_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
+    (hf : Measurable f) (hsurj : Surjective f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable g :=
+  forall₂_congr fun s _ => measurableSet_preimage_iff_of_surjective hf hsurj (s := g ⁻¹' s)
+#align measurable.measurable_comp_iff_of_surjective Measurable.measurable_comp_iff_of_surjective
+
+end Measurable
+
+theorem Continuous.map_eq_borel {X Y : Type _} [TopologicalSpace X] [PolishSpace X]
+    [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [T2Space Y] [SecondCountableTopology Y]
+    {f : X → Y} (hf : Continuous f) (hsurj : Surjective f) :
+    MeasurableSpace.map f ‹MeasurableSpace X› = borel Y := by
+  borelize Y
+  exact hf.measurable.map_measurableSpace_eq hsurj
+#align continuous.map_eq_borel Continuous.map_eq_borel
+
+theorem Continuous.map_borel_eq {X Y : Type _} [TopologicalSpace X] [PolishSpace X]
+    [TopologicalSpace Y] [T2Space Y] [SecondCountableTopology Y] {f : X → Y} (hf : Continuous f)
+    (hsurj : Surjective f) : MeasurableSpace.map f (borel X) = borel Y := by
+  borelize X
+  exact hf.map_eq_borel hsurj
+#align continuous.map_borel_eq Continuous.map_borel_eq
+
+instance Quotient.borelSpace {X : Type _} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
+    [BorelSpace X] {s : Setoid X} [T2Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
+    BorelSpace (Quotient s) :=
+  ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk _)⟩
+#align quotient.borel_space Quotient.borelSpace
+
+@[to_additive]
+instance QuotientGroup.borelSpace {G : Type _} [TopologicalSpace G] [PolishSpace G] [Group G]
+    [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
+    [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
+  -- porting note: 1st and 3rd `haveI`s were not needed in Lean 3
+  haveI := Subgroup.t3_quotient_of_isClosed N
+  haveI := @PolishSpace.secondCountableTopology G
+  haveI := QuotientGroup.secondCountableTopology (Γ := N)
+  Quotient.borelSpace
+#align quotient_group.borel_space QuotientGroup.borelSpace
+#align quotient_add_group.borel_space QuotientAddGroup.borelSpace
+
+namespace MeasureTheory
+
+/-! ### Injective images of Borel sets -/
 
 variable {γ : Type _} [tγ : TopologicalSpace γ] [PolishSpace γ]
 
@@ -680,10 +820,8 @@ theorem isClopenable_iff_measurableSet : IsClopenable s ↔ MeasurableSet s := b
 theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
-  by_cases hl : l.NeBot
-  swap;
-  · rw [not_neBot] at hl
-    simp [hl]
+  rcases l.eq_or_neBot with rfl | hl
+  · simp
   letI := upgradePolishSpace γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
@@ -709,7 +847,6 @@ theorem measurableSet_exists_tendsto [hγ : OpensMeasurableSpace γ] [Countable 
 end MeasureTheory
 
 /-! ### The Borel Isomorphism Theorem -/
-
 
 -- Porting note: Move to topology/metric_space/polish when porting.
 instance (priority := 50) polish_of_countable [h : Countable α] [DiscreteTopology α] :

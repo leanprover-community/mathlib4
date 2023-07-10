@@ -378,7 +378,7 @@ theorem set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S
 
 
 protected theorem div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n :=
-  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero] ; apply zero_le) fun k0 =>
+  (Nat.eq_zero_or_pos k).elim (fun k0 => by rw [k0, Nat.div_zero]; apply zero_le) fun k0 =>
     le_of_mul_le_mul_left
       (calc
         k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
@@ -414,7 +414,7 @@ theorem div_mul_div_le_div (m n k : ℕ) : m / k * n / m ≤ n / k :=
   else
     calc
       m / k * n / m ≤ n * m / k / m :=
-        Nat.div_le_div_right (by rw [mul_comm] ; exact mul_div_le_mul_div_assoc _ _ _)
+        Nat.div_le_div_right (by rw [mul_comm]; exact mul_div_le_mul_div_assoc _ _ _)
       _ = n / k := by
         { rw [Nat.div_div_eq_div_mul, mul_comm n, mul_comm k,
             Nat.mul_div_mul_left _ _ (Nat.pos_of_ne_zero hm0)] }
@@ -611,13 +611,13 @@ theorem findGreatest_eq_iff :
         exact ⟨le_rfl, fun _ => hk, fun n hlt hle => (hlt.not_le hle).elim⟩
       · rintro ⟨hle, h0, hm⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt)
-        exacts[rfl, (hm hlt le_rfl hk).elim]
+        exacts [rfl, (hm hlt le_rfl hk).elim]
     · rw [findGreatest_of_not hk, ihk]
       constructor
       · rintro ⟨hle, hP, hm⟩
         refine ⟨hle.trans k.le_succ, hP, fun n hlt hle => ?_⟩
         rcases Decidable.eq_or_lt_of_le hle with (rfl | hlt')
-        exacts[hk, hm hlt <| lt_succ_iff.1 hlt']
+        exacts [hk, hm hlt <| lt_succ_iff.1 hlt']
       · rintro ⟨hle, hP, hm⟩
         refine ⟨lt_succ_iff.1 (hle.lt_of_ne ?_), hP, fun n hlt hle => hm hlt (hle.trans k.le_succ)⟩
         rintro rfl

@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module data.is_R_or_C.basic
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.IsROrC.Attr
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
@@ -868,7 +867,7 @@ end CleanupLemmas
 
 section LinearMaps
 
-/-- The real part in a `IsROrC` field, as a linear map. -/
+/-- The real part in an `IsROrC` field, as a linear map. -/
 def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 #align is_R_or_C.re_lm IsROrC.reLm
@@ -878,7 +877,7 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_lm_coe IsROrC.reLm_coe
 
-/-- The real part in a `IsROrC` field, as a continuous linear map. -/
+/-- The real part in an `IsROrC` field, as a continuous linear map. -/
 noncomputable def reClm : K →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by
     rw [one_mul]
@@ -900,7 +899,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reClm.continuous
 #align is_R_or_C.continuous_re IsROrC.continuous_re
 
-/-- The imaginary part in a `IsROrC` field, as a linear map. -/
+/-- The imaginary part in an `IsROrC` field, as a linear map. -/
 def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 #align is_R_or_C.im_lm IsROrC.imLm
@@ -910,7 +909,7 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_lm_coe IsROrC.imLm_coe
 
-/-- The imaginary part in a `IsROrC` field, as a continuous linear map. -/
+/-- The imaginary part in an `IsROrC` field, as a continuous linear map. -/
 noncomputable def imClm : K →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by
     rw [one_mul]

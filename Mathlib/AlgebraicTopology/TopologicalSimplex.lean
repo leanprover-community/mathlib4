@@ -17,7 +17,7 @@ import Mathlib.Topology.Instances.NNReal
 
 We define the natural functor from `SimplexCategory` to `TopCat` sending `[n]` to the
 topological `n`-simplex.
-This is used to define `TopCat.toSSet` in `AlgebraicTopology.SimplicialSset`.
+This is used to define `TopCat.toSSet` in `AlgebraicTopology.SimplicialSet`.
 -/
 
 
@@ -25,10 +25,10 @@ noncomputable section
 
 namespace SimplexCategory
 
-open Simplicial NNReal BigOperators Classical
+open Simplicial NNReal BigOperators Classical CategoryTheory
 
 attribute [local instance]
-  CategoryTheory.ConcreteCategory.hasCoeToSort CategoryTheory.ConcreteCategory.hasCoeToFun
+  CategoryTheory.ConcreteCategory.hasCoeToSort CategoryTheory.ConcreteCategory.funLike
 
 -- porting note: added, should be moved
 instance (x : SimplexCategory) : Fintype (CategoryTheory.ConcreteCategory.forget.obj x) := by
@@ -60,7 +60,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj :
     dsimp [toTopObj] at hg
     convert hg
     · simp [Finset.eq_univ_iff_forall]
-    . intro i _ j _ h
+    · intro i _ j _ h
       rw [Function.onFun, disjoint_iff_inf_le]
       intro e he
       simp only [Finset.bot_eq_empty, Finset.not_mem_empty]
@@ -98,19 +98,19 @@ def toTop : SimplexCategory ⥤ TopCat where
     apply toTopObj.ext
     funext i
     change (Finset.univ.filter fun k => k = i).sum _ = _
-    simp [Finset.sum_filter]
+    simp [Finset.sum_filter, CategoryTheory.id_apply]
   map_comp := fun f g => by
     ext h
     apply toTopObj.ext
     funext i
     dsimp
-    simp only [TopCat.comp_app]
-    simp only [TopCat.hom_apply, coe_toTopMap]
+    rw [CategoryTheory.comp_apply, ContinuousMap.coe_mk, ContinuousMap.coe_mk, ContinuousMap.coe_mk]
+    simp only [coe_toTopMap]
     erw [← Finset.sum_biUnion]
-    . apply Finset.sum_congr
-      . exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
-      . tauto
-    . intro j _ k _ h
+    · apply Finset.sum_congr
+      · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
+      · tauto
+    · intro j _ k _ h
       rw [Function.onFun, disjoint_iff_inf_le]
       intro e he
       simp only [Finset.bot_eq_empty, Finset.not_mem_empty]

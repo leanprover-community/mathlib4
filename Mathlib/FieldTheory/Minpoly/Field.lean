@@ -22,9 +22,7 @@ are irreducible, and uniquely determined by their defining property.
 -/
 
 
-open Classical Polynomial
-
-open Polynomial Set Function minpoly
+open Classical Polynomial Set Function minpoly
 
 namespace minpoly
 
@@ -37,8 +35,8 @@ section Ring
 variable [Ring B] [Algebra A B] (x : B)
 
 /-- If an element `x` is a root of a nonzero polynomial `p`, then the degree of `p` is at least the
-degree of the minimal polynomial of `x`. See also `gcd_domain_degree_le_of_ne_zero` which relaxes
-the assumptions on `A` in exchange for stronger assumptions on `B`. -/
+degree of the minimal polynomial of `x`. See also `minpoly.IsIntegrallyClosed.degree_le_of_ne_zero`
+which relaxes the assumptions on `A` in exchange for stronger assumptions on `B`. -/
 theorem degree_le_of_ne_zero {p : A[X]} (pnz : p ≠ 0) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p :=
   calc
@@ -53,8 +51,8 @@ theorem ne_zero_of_finite_field_extension (e : B) [FiniteDimensional A B] : minp
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
-is equal to the minimal polynomial of `x`. See also `minpoly.gcd_unique` which relaxes the
-assumptions on `A` in exchange for stronger assumptions on `B`. -/
+is equal to the minimal polynomial of `x`. See also `minpoly.IsIntegrallyClosed.Minpoly.unique`
+which relaxes the assumptions on `A` in exchange for stronger assumptions on `B`. -/
 theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
     (pmin : ∀ q : A[X], q.Monic → Polynomial.aeval x q = 0 → degree p ≤ degree q) :
     p = minpoly A x := by
@@ -69,8 +67,8 @@ theorem unique {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0)
 #align minpoly.unique minpoly.unique
 
 /-- If an element `x` is a root of a polynomial `p`, then the minimal polynomial of `x` divides `p`.
-See also `minpoly.gcd_domain_dvd` which relaxes the assumptions on `A` in exchange for stronger
-assumptions on `B`. -/
+See also `minpoly.isIntegrallyClosed_dvd` which relaxes the assumptions on `A` in exchange for
+stronger assumptions on `B`. -/
 theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   by_cases hp0 : p = 0
   · simp only [hp0, dvd_zero]
@@ -92,14 +90,14 @@ theorem dvd_map_of_isScalarTower (A K : Type _) {R : Type _} [CommRing A] [Field
   rw [aeval_map_algebraMap, minpoly.aeval]
 #align minpoly.dvd_map_of_is_scalar_tower minpoly.dvd_map_of_isScalarTower
 
-theorem dvd_map_of_is_scalar_tower' (R : Type _) {S : Type _} (K L : Type _) [CommRing R]
+theorem dvd_map_of_isScalarTower' (R : Type _) {S : Type _} (K L : Type _) [CommRing R]
     [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
   apply minpoly.dvd K (algebraMap S L s)
   rw [← map_aeval_eq_aeval_map, minpoly.aeval, map_zero]
   rw [← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
-#align minpoly.dvd_map_of_is_scalar_tower' minpoly.dvd_map_of_is_scalar_tower'
+#align minpoly.dvd_map_of_is_scalar_tower' minpoly.dvd_map_of_isScalarTower'
 
 /-- If `y` is a conjugate of `x` over a field `K`, then it is a conjugate over a subring `R`. -/
 theorem aeval_of_isScalarTower (R : Type _) {K T U : Type _} [CommRing R] [Field K] [CommRing T]
@@ -176,10 +174,10 @@ noncomputable def Fintype.subtypeProd {E : Type _} {X : Set E} (hX : X.Finite) {
 variable (F E K : Type _) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
--- Marked as `noncomputable!` since this definition takes multiple seconds to compile,
--- and isn't very computable in practice (since neither `finrank` nor `finBasis` are).
+-- Porting note: removed `noncomputable!` since it seems not to be slow in lean 4,
+-- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
-noncomputable def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
+def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (FiniteDimensional.finBasis F E : _ → E)) :
     { l : K // l ∈ (((minpoly F x.1).map (algebraMap F K)).roots : Multiset K) } :=
   ⟨φ x, by
@@ -189,7 +187,7 @@ noncomputable def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
-  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this⊢
+  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
   exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)

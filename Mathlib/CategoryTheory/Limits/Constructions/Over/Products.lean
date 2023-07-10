@@ -103,11 +103,10 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
-  NatIso.ofComponents
-    (fun _ => Cones.ext
-      { hom := 𝟙 _
-        inv := 𝟙 _ } (by rintro (j | j) <;> aesop_cat))
-    (by aesop_cat)
+  NatIso.ofComponents fun _ => Cones.ext
+    { hom := 𝟙 _
+      inv := 𝟙 _ }
+    (by rintro (j | j) <;> aesop_cat)
 #align category_theory.over.construct_products.cones_equiv_unit_iso CategoryTheory.Over.ConstructProducts.conesEquivUnitIso
 
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
@@ -116,11 +115,9 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
 @[simp]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
-  NatIso.ofComponents
-    (fun _ => Cones.ext
-      { hom := Over.homMk (𝟙 _)
-        inv := Over.homMk (𝟙 _) } (by aesop_cat))
-    (by aesop_cat)
+  NatIso.ofComponents fun _ => Cones.ext
+    { hom := Over.homMk (𝟙 _)
+      inv := Over.homMk (𝟙 _) }
 #align category_theory.over.construct_products.cones_equiv_counit_iso CategoryTheory.Over.ConstructProducts.conesEquivCounitIso
 
 /-- (Impl) Establish an equivalence between the category of cones for `F` and for the "grown" `F`.
@@ -167,8 +164,6 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 #align category_theory.over.construct_products.over_finite_products_of_finite_wide_pullbacks CategoryTheory.Over.ConstructProducts.over_finiteProducts_of_finiteWidePullbacks
 
 end ConstructProducts
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.

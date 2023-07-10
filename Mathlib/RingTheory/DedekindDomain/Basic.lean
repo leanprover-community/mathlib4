@@ -103,7 +103,7 @@ TODO: Prove that these are actually equivalent definitions.
 -/
 class IsDedekindDomain : Prop where
   isNoetherianRing : IsNoetherianRing A
-  dimensionLeOne : DimensionLEOne A
+  dimensionLEOne : DimensionLEOne A
   isIntegrallyClosed : IsIntegrallyClosed A
 #align is_dedekind_domain IsDedekindDomain
 

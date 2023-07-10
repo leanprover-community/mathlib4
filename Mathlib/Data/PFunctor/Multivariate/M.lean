@@ -85,7 +85,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
   let f := PFunctor.M.children x
   ⟨M.Path.root _ a f
       (PFunctor.M.casesOn' x
-        (r:=fun _ => PFunctor.M.dest x = ⟨a, f⟩)
+        (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
         intros; simp [PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
       _ default⟩

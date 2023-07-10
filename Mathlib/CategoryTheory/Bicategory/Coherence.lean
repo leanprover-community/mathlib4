@@ -48,8 +48,6 @@ namespace CategoryTheory
 
 open Bicategory Category
 
-open Bicategory
-
 universe v u
 
 namespace FreeBicategory
@@ -155,12 +153,11 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   rcases η with ⟨η'⟩
   apply @congr_fun _ _ fun p => normalizeAux p f
   clear p η
-  induction η'
-  case vcomp => apply Eq.trans <;> assumption
-  -- p ≠ nil required! See the docstring of `normalizeAux`.
-  case whisker_left _ _ _ _ _ _ _ ih => funext; apply congr_fun ih
-  case whisker_right _ _ _ _ _ _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
-  all_goals funext; rfl
+  induction η' with
+  | vcomp _ _ _ _ => apply Eq.trans <;> assumption
+  | whisker_left _ _ ih => funext; apply congr_fun ih
+  | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
+  | _ => funext; rfl
 #align category_theory.free_bicategory.normalize_aux_congr CategoryTheory.FreeBicategory.normalizeAux_congr
 
 /-- The 2-isomorphism `normalizeIso p f` is natural in `f`. -/
@@ -168,34 +165,35 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
       (normalizeIso p f).hom ≫
         (preinclusion B).map₂ (eqToHom (Discrete.ext _ _ (normalizeAux_congr p η))) := by
-  rcases η with ⟨η'⟩; clear η; induction η'
-  case id => simp
-  case vcomp _ _ _ _ _ η θ ihf ihg =>
+  rcases η with ⟨η'⟩; clear η;
+  induction η' with
+  | id => simp
+  | vcomp η θ ihf ihg =>
     simp only [mk_vcomp, Bicategory.whiskerLeft_comp]
     slice_lhs 2 3 => rw [ihg]
     slice_lhs 1 2 => rw [ihf]
     simp
   -- p ≠ nil required! See the docstring of `normalizeAux`.
-  case whisker_left _ _ _ _ _ _ _ ih =>
+  | whisker_left _ _ ih =>
     dsimp
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
     simp
-  case whisker_right _ _ _ _ _ h η' ih =>
+  | whisker_right h η' ih =>
     dsimp
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih, comp_whiskerRight]
     have := dcongr_arg (fun x => (normalizeIso x h).hom) (normalizeAux_congr p (Quot.mk _ η'))
     dsimp at this; simp [this]
-  all_goals simp
+  | _ => simp
 #align category_theory.free_bicategory.normalize_naturality CategoryTheory.FreeBicategory.normalize_naturality
 
 -- Porting note: the left-hand side is not in simp-normal form.
 -- @[simp]
 theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
     normalizeAux nil (f.comp g) = (normalizeAux nil f).comp (normalizeAux nil g) := by
-  induction g generalizing a
-  case id => rfl
-  case of => rfl
-  case comp _ _ _ g _ ihf ihg => erw [ihg (f.comp g), ihf f, ihg g, comp_assoc]
+  induction g generalizing a with
+  | id => rfl
+  | of => rfl
+  | comp g _ ihf ihg => erw [ihg (f.comp g), ihf f, ihg g, comp_assoc]
 #align category_theory.free_bicategory.normalize_aux_nil_comp CategoryTheory.FreeBicategory.normalizeAux_nil_comp
 
 /-- The normalization pseudofunctor for the free bicategory on a quiver `B`. -/

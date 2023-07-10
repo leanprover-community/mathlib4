@@ -20,7 +20,7 @@ import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 In this file we prove the Divergence Theorem for a Henstock-Kurzweil style integral. The theorem
 says the following. Let `f : ℝⁿ → Eⁿ` be a function differentiable on a closed rectangular box
-`I` with derivative `f' x : ℝⁿ →L[ℝ] Eⁿ` at `x ∈ I`. Then the divergence `λ x, ∑ k, f' x eₖ k`,
+`I` with derivative `f' x : ℝⁿ →L[ℝ] Eⁿ` at `x ∈ I`. Then the divergence `fun x ↦ ∑ k, f' x eₖ k`,
 where `eₖ = Pi.single k 1` is the `k`-th basis vector, is integrable on `I`, and its integral is
 equal to the sum of integrals of `f` over the faces of `I` taken with appropriate signs.
 
@@ -81,7 +81,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
   -- Porting note: Lean fails to find `α` in the next line
   set e : ℝ → (Fin n → ℝ) → (Fin (n + 1) → ℝ) := i.insertNth (α := fun _ ↦ ℝ)
   /- **Plan of the proof**. The difference of the integrals of the affine function
-    `λ y, a + f' (y - x)` over the faces `x i = I.upper i` and `x i = I.lower i` is equal to the
+    `fun y ↦ a + f' (y - x)` over the faces `x i = I.upper i` and `x i = I.lower i` is equal to the
     volume of `I` multiplied by `f' (Pi.single i 1)`, so it suffices to show that the integral of
     `f y - a - f' (y - x)` over each of these faces is less than or equal to `ε * c * vol I`. We
     integrate a function of the norm `≤ ε * diam I.Icc` over a box of volume
@@ -102,7 +102,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
           (f (e (I.upper i) y) - f (e (I.lower i) y))‖ ≤
         2 * ε * diam (Box.Icc I) := fun y hy ↦ by
     set g := fun y => f y - a - f' (y - x) with hg
-    change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε 
+    change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε
     clear_value g; obtain rfl : f = fun y => a + f' (y - x) + g y := by simp [hg]
     convert_to ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
     · congr 1
@@ -145,7 +145,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
-the partial derivative `λ x, f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
+the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.
 
 More precisely, we use a non-standard generalization of the Henstock-Kurzweil integral and
@@ -173,7 +173,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     integral.{0, u, u} J GP (fun x => f (i.insertNth y x)) BoxAdditiveMap.volume
   set fb : Icc (I.lower i) (I.upper i) → Fin n →ᵇᵃ[↑(I.face i)] E := fun x =>
     (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.2) volume).toBoxAdditive
-  set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x hx J => rfl
+  set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x _ J => rfl
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
   refine' HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le _ _ _ s hs _ _
@@ -229,7 +229,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ ≤ δ + δ := (add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc))
           _ = 2 * δ := (two_mul δ).symm
       calc
-        (∏ j, |J.upper j - J.lower j|) ≤ ∏ j : Fin (n + 1), 2 * δ :=
+        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
           prod_le_prod (fun _ _ => abs_nonneg _) fun j _ => this j
         _ = (2 * δ) ^ (n + 1) := by simp
     · refine' (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
@@ -283,10 +283,9 @@ theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
           integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x) i)
             BoxAdditiveMap.volume)) := by
   refine HasIntegral.sum fun i _ => ?_
-  simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs 
+  simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs
   exact hasIntegral_GP_pderiv I _ _ s hs (fun x hx => Hs x hx i) (fun x hx => Hd x hx i) i
 set_option linter.uppercaseLean3 false in
 #align box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
 
 end BoxIntegral
-

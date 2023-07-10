@@ -15,11 +15,11 @@ namespace Nat
 /- multiplication -/
 
 theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
-| 0,        m => fun _ => Or.inl rfl
-| (succ n), m => by
-    rw [succ_mul]
-    intro h
-    exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
+  | 0,        m => fun _ => Or.inl rfl
+  | (succ n), m => by
+      rw [succ_mul]
+      intro h
+      exact Or.inr (Nat.eq_zero_of_add_eq_zero_left h)
 
 /- properties of inequality -/
 
@@ -72,7 +72,7 @@ def iterate {α : Sort u} (op : α → α) : ℕ → α → α
  | 0,      a => a
  | succ k, a => iterate op k (op a)
 
-notation f "^["n"]" => iterate f n
+notation:max f "^["n"]" => iterate f n
 
 /-! bit0/bit1 properties -/
 section bit
@@ -230,12 +230,12 @@ def sub_induction {P : ℕ → ℕ → Sort u} (H1 : ∀m, P 0 m)
 | n+1, m+1 => H3 _ _ (sub_induction H1 H2 H3 n m)
 
 protected def lt_ge_by_cases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
-if h : a < b then h₁ h else h₂ (not_lt.1 h)
+  if h : a < b then h₁ h else h₂ (not_lt.1 h)
 
 protected def lt_by_cases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a = b → C)
-  (h₃ : b < a → C) : C :=
-Nat.lt_ge_by_cases h₁ fun h₁ ↦
-  Nat.lt_ge_by_cases h₃ fun h ↦ h₂ (Nat.le_antisymm h h₁)
+    (h₃ : b < a → C) : C :=
+  Nat.lt_ge_by_cases h₁ fun h₁ ↦
+    Nat.lt_ge_by_cases h₃ fun h ↦ h₂ (Nat.le_antisymm h h₁)
 
 /- find -/
 
@@ -257,12 +257,12 @@ private def wf_lbp : WellFounded (lbp p) := by
   | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)
 /-- Used in the definition of `Nat.find`. Returns the smallest natural satisfying `p`-/
 protected def findX : {n // p n ∧ ∀ m, m < n → ¬p m} :=
-(wf_lbp H).fix (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
-  (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
-      have this : ∀ n, n ≤ m → ¬p n := fun n h ↦
-        (lt_or_eq_of_le h).elim (al n) fun e ↦ by rw [e]; exact pm
-      IH _ ⟨rfl, this⟩ fun n h ↦ this n $ Nat.le_of_succ_le_succ h)
-  0 fun n h ↦ absurd h (Nat.not_lt_zero _)
+  (wf_lbp H).fix (C := fun k ↦ (∀n, n < k → ¬p n) → {n // p n ∧ ∀ m, m < n → ¬p m})
+    (fun m IH al ↦ if pm : p m then ⟨m, pm, al⟩ else
+        have this : ∀ n, n ≤ m → ¬p n := fun n h ↦
+          (lt_or_eq_of_le h).elim (al n) fun e ↦ by rw [e]; exact pm
+        IH _ ⟨rfl, this⟩ fun n h ↦ this n $ Nat.le_of_succ_le_succ h)
+    0 fun n h ↦ absurd h (Nat.not_lt_zero _)
 
 /--
 If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
@@ -283,7 +283,7 @@ protected lemma find_spec : p (Nat.find H) := (Nat.findX H).2.1
 protected lemma find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m := @(Nat.findX H).2.2
 
 protected lemma find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-not_lt.1 fun l ↦ Nat.find_min H l h
+  not_lt.1 fun l ↦ Nat.find_min H l h
 
 end find
 

@@ -14,8 +14,8 @@ import Mathlib.Algebra.Homology.Single
 /-!
 # Injective resolutions
 
-A injective resolution `I : InjectiveResolution Z` of an object `Z : C` consists of
-a `ℕ`-indexed cochain complex `I.cocomplex` of injective objects,
+An injective resolution `I : InjectiveResolution Z` of an object `Z : C` consists of
+an `ℕ`-indexed cochain complex `I.cocomplex` of injective objects,
 along with a cochain map `I.ι` from cochain complex consisting just of `Z` in degree zero to `C`,
 so that the augmented cochain complex is exact.
 ```
@@ -71,7 +71,7 @@ attribute [inherit_doc InjectiveResolution]
 
 attribute [instance] InjectiveResolution.injective InjectiveResolution.mono
 
-/-- An object admits a injective resolution. -/
+/-- An object admits an injective resolution. -/
 class HasInjectiveResolution (Z : C) : Prop where
   out : Nonempty (InjectiveResolution Z)
 #align category_theory.has_injective_resolution CategoryTheory.HasInjectiveResolution

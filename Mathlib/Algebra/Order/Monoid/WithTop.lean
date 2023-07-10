@@ -342,7 +342,7 @@ instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (
       rintro a b h (_ | c); · simp [none_eq_top]
       rcases b with (_ | b); · simp [none_eq_top]
       rcases le_coe_iff.1 h with ⟨a, rfl, _⟩
-      simp only [some_eq_coe, ← coe_add, coe_le_coe] at h⊢
+      simp only [some_eq_coe, ← coe_add, coe_le_coe] at h ⊢
       exact add_le_add_left h c }
 
 instance linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :

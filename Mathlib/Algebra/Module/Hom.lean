@@ -18,7 +18,7 @@ This file defines instances for `Module`, `MulAction` and related structures on 
 These are analogous to the instances in `Algebra.Module.Pi`, but for bundled instead of unbundled
 functions.
 
-We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidhom.smulLeft` and
+We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidHom.smulLeft` and
 `AddMonoidHom.smul`, respectively.
 -/
 
@@ -28,19 +28,19 @@ namespace AddMonoidHom
 
 section
 
+instance distribSMul [AddZeroClass A] [AddCommMonoid B] [DistribSMul M B] :
+    DistribSMul M (A →+ B) where
+  smul_add _ _ _ := ext fun _ => smul_add _ _ _
+
 variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
 
 variable [DistribMulAction R B] [DistribMulAction S B]
 
 instance distribMulAction : DistribMulAction R (A →+ B) where
-  smul r f :=
-    { toFun := (fun a => r • (f a))
-      map_zero' := by simp only [map_zero, smul_zero]
-      map_add' := fun x y => by simp only [map_add, smul_add] }
-  one_smul f := ext fun _ => MulAction.one_smul _
-  mul_smul r s f := ext fun _ => MulAction.mul_smul _ _ _
-  smul_add r f g := ext fun _ => smul_add _ _ _
-  smul_zero r := ext fun _ => smul_zero _
+  smul_zero := smul_zero
+  smul_add := smul_add
+  one_smul _ := ext fun _ => one_smul _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 #align add_monoid_hom.distrib_mul_action AddMonoidHom.distribMulAction
 
 @[simp] theorem coe_smul (r : R) (f : A →+ B) : ⇑(r • f) = r • ⇑f := rfl

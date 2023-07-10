@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 
-# Calyley-Hamilton theorem for f.g. modules.
+# Cayley-Hamilton theorem for f.g. modules.
 
 Given a fixed finite spanning set `b : ι → M` of a `R`-module `M`, we say that a matrix `M`
 represents an endomorphism `f : M →ₗ[R] M` if the matrix as an endomorphism of `ι → R` commutes
@@ -34,7 +34,7 @@ variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
 open BigOperators Polynomial
 
-/-- The composition of a matrix (as an endomporphism of `ι → R`) with the projection
+/-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`.  -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
   (LinearMap.llcomp R _ _ _ (Fintype.total R R b)).comp algEquivMatrix'.symm.toLinearMap
@@ -103,7 +103,7 @@ theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
 #align matrix.represents_iff Matrix.represents_iff
 
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
-    A.Represents b f ↔ ∀ j, (∑ i : ι, A i j • b i) = f (b j) := by
+    A.Represents b f ↔ ∀ j, ∑ i : ι, A i j • b i = f (b j) := by
   constructor
   · intro h i
     have := LinearMap.congr_fun h (Pi.single i 1)
@@ -135,7 +135,7 @@ theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
 
 theorem Matrix.Represents.add {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A + A').Represents b (f + f') := by
-  delta Matrix.Represents at h h'⊢; rw [map_add, map_add, h, h']
+  delta Matrix.Represents at h h' ⊢; rw [map_add, map_add, h, h']
 #align matrix.represents.add Matrix.Represents.add
 
 theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by

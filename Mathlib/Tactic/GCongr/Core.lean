@@ -3,10 +3,8 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Init.Algebra.Order
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
 import Mathlib.Tactic.Backtracking
+import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -255,9 +253,9 @@ partial def _root_.Lean.MVarId.gcongr
       throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
     unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
-    -- and also build a array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in the
-    -- template (these will be used in recursive calls later), and a array of booleans according to
-    -- which of these contain `?_`
+    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
+    -- the template (these will be used in recursive calls later), and an array of booleans
+    -- according to which of these contain `?_`
     tplArgs.mapM fun tpl => do
       let mctx ← getMCtx
       let hasMVar := tpl.findMVar? fun mvarId =>
@@ -271,7 +269,7 @@ partial def _root_.Lean.MVarId.gcongr
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
       -- (if not, stop and report the existing goal)
       return (false, names, #[g])
-    -- and also build a array of booleans according to which arguments `_ ... _` to the head
+    -- and also build an array of booleans according to which arguments `_ ... _` to the head
     -- function differ between the LHS and RHS
     (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
       return (none, !(← isDefEq lhsArg rhsArg))
@@ -357,44 +355,23 @@ def _root_.Lean.MVarId.exact (e : Expr) (g : MVarId) : MetaM Unit := do
   g.checkNotAssigned `myExact
   g.assign e
 
-/-- An extension for `gcongr_forward`. -/
-structure ForwardExt where
-  eval (h : Expr) (goal : MVarId) : MetaM Unit
+/-- See if the term is `a = b` and the goal is `a ∼ b` or `b ∼ a`, with `∼` reflexive. -/
+@[gcongr_forward] def exactRefl : ForwardExt where
+  eval h goal := do
+    let m ← mkFreshExprMVar none
+    goal.exact (← mkAppOptM ``Eq.subst #[h, m])
+    goal.rfl
 
-/-- Read a `gcongr_forward` extension from a declaration of the right type. -/
-def mkForwardExt (n : Name) : ImportM ForwardExt := do
-  let { env, opts, .. } ← read
-  IO.ofExcept <| unsafe env.evalConstCheck ForwardExt opts ``ForwardExt n
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[gcongr_forward] def exactLeOfLt : ForwardExt where
+  eval h goal := do goal.exact (← mkAppM ``le_of_lt #[h])
 
-/-- Environment extensions for `gcongrForward` declarations -/
-initialize forwardExt : PersistentEnvExtension Name (Name × ForwardExt)
-    (List Name × List (Name × ForwardExt)) ←
-  registerPersistentEnvExtension {
-    mkInitial := pure ([], {})
-    addImportedFn := fun s => do
-      let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
-        return (n, ← mkForwardExt n) :: dt
-      pure ([], dt)
-    addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
-  }
+/-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
+@[gcongr_forward] def symmExact : ForwardExt where
+  eval h goal := do (← goal.symm).exact h
 
-initialize registerBuiltinAttribute {
-  name := `gcongr_forward
-  descr := "adds a gcongr_forward extension"
-  applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
-    | `(attr| gcongr_forward) => do
-      unless kind == AttributeKind.global do
-        throwError "invalid attribute 'gcongr_forward', must be global"
-      let env ← getEnv
-      unless (env.getModuleIdxFor? declName).isNone do
-        throwError "invalid attribute 'gcongr_forward', declaration is in an imported module"
-      if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
-      let ext ← mkForwardExt declName
-      setEnv <| forwardExt.addEntry env (declName, ext)
-    | _ => throwUnsupportedSyntax
-}
+@[gcongr_forward] def exact : ForwardExt where
+  eval := MVarId.exact
 
 /-- Attempt to resolve an (implicitly) relational goal by one of a provided list of hypotheses,
 either with such a hypothesis directly or by a limited palette of relational forward-reasoning from
@@ -512,9 +489,9 @@ syntax "rel" " [" term,* "]" : tactic
 
 elab_rules : tactic
   | `(tactic| rel [$hyps,*]) => do
-    let hyps ← hyps.getElems.mapM (elabTerm · none)
     let g ← getMainGoal
     g.withContext do
+    let hyps ← hyps.getElems.mapM (elabTerm · none)
     let .app (.app _rel lhs) rhs ← withReducible g.getType'
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do

@@ -23,7 +23,7 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
   and the composition is bilinear.
 
 See `ring_theory.derivation.lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form an lie algebra over `R`.
+- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
 and `ring_theory.derivation.to_square_zero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
@@ -229,7 +229,7 @@ variable [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] [SMulCommClass 
 
 variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass T A M]
 
-instance (priority := 100) : SMul S (Derivation R A M) :=
+instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
     { toLinearMap := r • D.1
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
@@ -260,7 +260,7 @@ def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   map_add' := coe_add
 #align derivation.coe_fn_add_monoid_hom Derivation.coeFnAddMonoidHom
 
-instance (priority := 100) : DistribMulAction S (Derivation R A M) :=
+instance : DistribMulAction S (Derivation R A M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] : IsCentralScalar S (Derivation R A M)
@@ -274,7 +274,7 @@ instance [SMulCommClass S T M] : SMulCommClass S T (Derivation R A M) :=
 
 end Scalar
 
-instance (priority := 100) instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
+instance instModule {S : Type _} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulCommClass S A M] : Module S (Derivation R A M) :=
   Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
@@ -316,7 +316,7 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[R] Derivation R A
   map_smul' r D := by ext; rfl
 #align derivation.llcomp Derivation.llcomp
 
-/-- Pushing a derivation foward through a linear equivalence is an equivalence. -/
+/-- Pushing a derivation forward through a linear equivalence is an equivalence. -/
 def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer

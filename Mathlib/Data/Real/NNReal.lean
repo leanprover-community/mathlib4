@@ -383,7 +383,7 @@ protected theorem coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NN
 #align nnreal.coe_mono NNReal.coe_mono
 
 @[gcongr]
-theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x:ℝ) ≤ y := NNReal.coe_mono h
+theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x : ℝ) ≤ y := NNReal.coe_mono h
 
 protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max h (le_refl 0)
@@ -934,18 +934,18 @@ nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupS
   exact sSup_of_not_bddAbove hs
 #align nnreal.Sup_of_not_bdd_above NNReal.sSup_of_not_bddAbove
 
-theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : (⨆ i, f i) = 0 :=
+theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 #align nnreal.supr_of_not_bdd_above NNReal.iSup_of_not_bddAbove
 
-theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨆ i, f i) = 0 := ciSup_of_empty f
+theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
 
-theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
+theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem iInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ≥0)) = 0 := by
+theorem iInf_const_zero {α : Sort _} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
   rw [← NNReal.coe_eq, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero

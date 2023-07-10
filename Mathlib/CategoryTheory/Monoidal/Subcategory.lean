@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 /-!
 # Full monoidal subcategories
 
-Given a monidal category `C` and a monoidal predicate on `C`, that is a function `P : C → Prop`
+Given a monoidal category `C` and a monoidal predicate on `C`, that is a function `P : C → Prop`
 closed under `𝟙_` and `⊗`, we can put a monoidal structure on `{X : C // P X}` (the category
 structure is defined in `Mathlib.CategoryTheory.FullSubcategory`).
 
@@ -58,7 +58,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   tensorHom := @fun X₁ Y₁ X₂ Y₂ f g => by
     change X₁.1 ⊗ X₂.1 ⟶ Y₁.1 ⊗ Y₂.1
-    change X₁.1 ⟶ Y₁.1 at f ; change X₂.1 ⟶ Y₂.1 at g ; exact f ⊗ g
+    change X₁.1 ⟶ Y₁.1 at f; change X₂.1 ⟶ Y₂.1 at g; exact f ⊗ g
   tensorUnit' := ⟨𝟙_ C, prop_id⟩
   associator X Y Z :=
     ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),

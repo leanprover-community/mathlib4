@@ -69,10 +69,22 @@ theorem bernstein_apply (n ν : ℕ) (x : I) :
 
 theorem bernstein_nonneg {n ν : ℕ} {x : I} : 0 ≤ bernstein n ν x := by
   simp only [bernstein_apply]
-  exact
-    mul_nonneg (mul_nonneg (Nat.cast_nonneg _) (pow_nonneg (by unit_interval) _))
-      (pow_nonneg (by unit_interval) _)
+  have h₁ : (0:ℝ) ≤ x := by unit_interval
+  have h₂ : (0:ℝ) ≤ 1 - x := by unit_interval
+  positivity
 #align bernstein_nonneg bernstein_nonneg
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+@[positivity FunLike.coe _ _]
+def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
+  let p ← mkAppOptM ``bernstein_nonneg #[n, ν, x]
+  pure (.nonnegative p)
+
+end Mathlib.Meta.Positivity
 
 /-!
 We now give a slight reformulation of `bernsteinPolynomial.variance`.
@@ -192,7 +204,7 @@ theorem lt_of_mem_S {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k
 This particular formulation will be helpful later.
 -/
 theorem le_of_mem_S_compl {f : C(I, ℝ)} {ε : ℝ} {h : 0 < ε} {n : ℕ} {x : I} {k : Fin (n + 1)}
-    (m : k ∈ S f ε h n xᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 := by
+    (m : k ∈ (S f ε h n x)ᶜ) : (1 : ℝ) ≤ δ f ε h ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 := by
   -- Porting note: added parentheses to help `simp`
   simp only [Finset.mem_compl, not_lt, (Set.mem_toFinset), Set.mem_setOf_eq, S] at m
   rw [zpow_neg, ← div_eq_inv_mul, zpow_two, ← pow_two, one_le_div (pow_pos δ_pos 2), sq_le_sq,
@@ -227,10 +239,8 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   have nhds_zero := tendsto_const_div_atTop_nhds_0_nat (2 * ‖f‖ * δ ^ (-2 : ℤ))
   filter_upwards [nhds_zero.eventually (gt_mem_nhds (half_pos h)), eventually_gt_atTop 0] with n nh
     npos'
-  have npos : 0 < (n : ℝ) := by exact_mod_cast npos'
-  -- Two easy inequalities we'll need later:
-  have w₁ : 0 ≤ 2 * ‖f‖ := mul_nonneg (by norm_num) (norm_nonneg f)
-  have w₂ : 0 ≤ 2 * ‖f‖ * δ ^ (-2 : ℤ) := mul_nonneg w₁ (zpow_neg_two_nonneg _)
+  have npos : 0 < (n : ℝ) := by positivity
+  have w₂ : 0 ≤ δ ^ (-2:ℤ) := zpow_neg_two_nonneg _ -- TODO: need a positivity extension for `zpow`
   -- As `[0,1]` is compact, it suffices to check the inequality pointwise.
   rw [ContinuousMap.norm_lt_iff _ h]
   intro x
@@ -256,48 +266,40 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   · -- We now work on the terms in `S`: uniform continuity and `bernstein.probability`
     -- quickly give us a bound.
     calc
-      (∑ k in S, |f k/ₙ - f x| * bernstein n k x) ≤ ∑ k in S, ε / 2 * bernstein n k x :=
-        Finset.sum_le_sum fun k m =>
-          mul_le_mul_of_nonneg_right (le_of_lt (lt_of_mem_S m)) bernstein_nonneg
+      ∑ k in S, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k in S, ε / 2 * bernstein n k x := by
+        gcongr with _ m
+        exact le_of_lt (lt_of_mem_S m)
       _ = ε / 2 * ∑ k in S, bernstein n k x := by rw [Finset.mul_sum]
       -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
       -- so that we can use `bernstein.probability`.
-      _ ≤
-          ε / 2 * ∑ k : Fin (n + 1), bernstein n k x :=
-        (mul_le_mul_of_nonneg_left (Finset.sum_le_univ_sum_of_nonneg fun k => bernstein_nonneg)
-          (le_of_lt (half_pos h)))
+      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by
+        gcongr
+        exact Finset.sum_le_univ_sum_of_nonneg fun k => bernstein_nonneg
       _ = ε / 2 := by rw [bernstein.probability, mul_one]
   · -- We now turn to working on `Sᶜ`: we control the difference term just using `‖f‖`,
     -- and then insert a `δ^(-2) * (x - k/n)^2` factor
     -- (which is at least one because we are not in `S`).
     calc
-      (∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x) ≤ ∑ k in Sᶜ, 2 * ‖f‖ * bernstein n k x :=
-        Finset.sum_le_sum fun k _ =>
-          mul_le_mul_of_nonneg_right (f.dist_le_two_norm _ _) bernstein_nonneg
+      ∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k in Sᶜ, 2 * ‖f‖ * bernstein n k x := by
+        gcongr
+        apply f.dist_le_two_norm
       _ = 2 * ‖f‖ * ∑ k in Sᶜ, bernstein n k x := by rw [Finset.mul_sum]
-      _ ≤ 2 * ‖f‖ * ∑ k in Sᶜ, δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x :=
-        (mul_le_mul_of_nonneg_left
-          (Finset.sum_le_sum fun k m => by
-            conv_lhs => rw [← one_mul (bernstein _ _ _)]
-            exact mul_le_mul_of_nonneg_right (le_of_mem_S_compl m) bernstein_nonneg)
-          w₁)
+      _ ≤ 2 * ‖f‖ * ∑ k in Sᶜ, δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
+        gcongr with _ m
+        conv_lhs => rw [← one_mul (bernstein _ _ _)]
+        gcongr
+        exact le_of_mem_S_compl m
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
-      _ ≤
-          2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x :=
-        (mul_le_mul_of_nonneg_left
-          (Finset.sum_le_univ_sum_of_nonneg fun k =>
-            mul_nonneg (mul_nonneg (zpow_neg_two_nonneg _) (sq_nonneg _)) bernstein_nonneg)
-          w₁)
+      _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
+        gcongr
+        refine Finset.sum_le_univ_sum_of_nonneg <| fun k => ?_
+        positivity
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>
           rw [mul_assoc, Finset.mul_sum]
           simp only [← mul_assoc]
       -- `bernstein.variance` and `x ∈ [0,1]` gives the uniform bound
-      _ =
-          2 * ‖f‖ * δ ^ (-2 : ℤ) * x * (1 - x) / n :=
-        by rw [variance npos]; ring
-      _ ≤ 2 * ‖f‖ * δ ^ (-2 : ℤ) / n :=
-        ((div_le_div_right npos).mpr <| by
-          refine' mul_le_of_le_of_le_one' (mul_le_of_le_one_right w₂ _) _ _ w₂ <;> unit_interval)
-      _ < ε / 2 := nh
+      _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * x * (1 - x) / n := by rw [variance npos]; ring
+      _ ≤ 2 * ‖f‖ * δ ^ (-2 : ℤ) * 1 * 1 / n := by gcongr <;> unit_interval
+      _ < ε / 2 := by simp only [mul_one]; exact nh
 #align bernstein_approximation_uniform bernsteinApproximation_uniform
