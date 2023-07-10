@@ -27,19 +27,17 @@ open Bundle Set LocalHomeomorph ContinuousLinearMap Pretrivialization
 
 open scoped Manifold Bundle
 
-variable {𝕜 B F F₁ F₂ M M₁ M₂ : Type _} {E : B → Type _} {E₁ : B → Type _} {E₂ : B → Type _}
-  [NontriviallyNormedField 𝕜] [∀ x, AddCommGroup (E x)] [∀ x, Module 𝕜 (E x)] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
+variable {𝕜 B F₁ F₂ M : Type _} {E₁ : B → Type _} {E₂ : B → Type _} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
-  [_i₁ : ∀ x, TopologicalAddGroup (E₂ x)] [_i₂ : ∀ x, ContinuousSMul 𝕜 (E₂ x)] {EB : Type _}
+  [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)] {EB : Type _}
   [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type _} [TopologicalSpace HB]
   (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B] [ChartedSpace HB B] {EM : Type _}
   [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type _} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  [Is : SmoothManifoldWithCorners IM M] {n : ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+  [SmoothManifoldWithCorners IM M] {n : ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
   {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
 
@@ -71,7 +69,7 @@ theorem smoothOn_continuousLinearMapCoordChange [SmoothManifoldWithCorners IB B]
 theorem hom_chart (y₀ y : LE₁E₂) :
     chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
-  simp_rw [FiberBundle.chartedSpace_chartAt, trans_apply, LocalHomeomorph.prod_apply,
+  rw [FiberBundle.chartedSpace_chartAt, trans_apply, LocalHomeomorph.prod_apply,
     Trivialization.coe_coe, LocalHomeomorph.refl_apply, Function.id_def, hom_trivializationAt_apply]
 #align hom_chart hom_chart
 
