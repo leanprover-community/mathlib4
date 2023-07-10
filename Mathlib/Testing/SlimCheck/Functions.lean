@@ -537,3 +537,5 @@ instance Antitone.testable [Preorder α] [Preorder β] (f : α → β)
 #align slim_check.antitone.testable SlimCheck.Antitone.testable
 
 end SlimCheck
+
+#sample ℕ → ℕ → ℤ

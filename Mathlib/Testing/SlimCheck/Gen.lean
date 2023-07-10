@@ -43,11 +43,6 @@ It has a `Nat` parameter so that the caller can decide on the
 size of the examples. -/
 abbrev Gen (α : Type u) := ReaderT (ULift Nat) Rand α
 
--- TODO: move
-instance : ULiftable (Rand.{u}) Rand.{v} := StateT.uliftable' (Equiv.ulift.trans Equiv.ulift.symm)
-
-instance : ULiftable (Gen.{u}) Gen.{v} := ReaderT.uliftable' (Equiv.ulift.trans Equiv.ulift.symm)
-
 namespace Gen
 
 /-- Lift `Random.random` to the `Gen` monad. -/
