@@ -8,8 +8,8 @@ Authors: Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fintype.Pi
-import Mathbin.Logic.Equiv.Array
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Logic.Equiv.Array
 
 /-!
 # `array n α` is a fintype when `α` is.
