@@ -57,6 +57,142 @@ open BigOperators NNReal Pointwise Topology
 
 variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type _}
 
+section OneSeminorm
+
+variable [NormedField 𝕜] [NormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
+  [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜₂ F] [Nonempty ι]
+
+protected def Seminorm.pseudoMetricSpace (p : Seminorm 𝕜 E) : PseudoMetricSpace E :=
+  p.toSeminormedAddCommGroup.toPseudoMetricSpace
+
+protected def Seminorm.uniformSpace (p : Seminorm 𝕜 E) : UniformSpace E :=
+  p.pseudoMetricSpace.toUniformSpace
+
+protected def Seminorm.topologicalSpace (p : Seminorm 𝕜 E) : TopologicalSpace E :=
+  p.uniformSpace.toTopologicalSpace
+
+theorem normSeminorm_pseudoMetricSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').pseudoMetricSpace = h.toPseudoMetricSpace := by
+  ext a b
+  rw [dist_eq_norm, @dist_eq_norm _ (normSeminorm 𝕜 E').toSeminormedAddGroup a b]
+
+theorem normSeminorm_uniformSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').uniformSpace = h.toUniformSpace := by
+  rw [Seminorm.uniformSpace, normSeminorm_pseudoMetricSpace]
+
+theorem normSeminorm_topologicalSpace {h : SeminormedAddCommGroup E'} [NormedSpace 𝕜 E'] :
+    (normSeminorm 𝕜 E').topologicalSpace = h.toUniformSpace.toTopologicalSpace := by
+  rw [Seminorm.topologicalSpace, normSeminorm_uniformSpace]
+
+theorem Seminorm.pseudoMetricSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).pseudoMetricSpace = p.pseudoMetricSpace.induced f := by
+  ext x y
+  rw [@dist_eq_norm _ (_)]
+  change p (f (x - y)) = p.pseudoMetricSpace.dist (f x) (f y)
+  rw [@dist_eq_norm _ (_), map_sub]
+  rfl
+
+theorem Seminorm.uniformSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).uniformSpace = UniformSpace.comap f p.uniformSpace := by
+  rw [Seminorm.uniformSpace, Seminorm.uniformSpace, Seminorm.pseudoMetricSpace_comp]
+  rfl
+
+theorem Seminorm.topologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).topologicalSpace = induced f p.topologicalSpace := by
+  rw [Seminorm.topologicalSpace, Seminorm.topologicalSpace, Seminorm.uniformSpace_comp]
+  rfl
+
+theorem Seminorm.uniformSpace_iSup {p : ι → Seminorm 𝕜₂ F} :
+    (⨆ i, p i).uniformSpace = ⨅ i, (p i).uniformSpace := by
+  sorry
+
+theorem Seminorm.topologicalSpace_iSup {p : ι → Seminorm 𝕜₂ F} :
+    (⨆ i, p i).topologicalSpace = ⨅ i, (p i).topologicalSpace := by
+  sorry
+
+end OneSeminorm
+
+variable (𝕜 E ι)
+
+/-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
+abbrev SeminormFamily [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] :=
+  ι → Seminorm 𝕜 E
+#align seminorm_family SeminormFamily
+
+variable {𝕜 E ι}
+
+section Topology
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+protected def SeminormFamily.topologicalSpace (p : SeminormFamily 𝕜 E ι) : TopologicalSpace E :=
+  ⨅ i, (p i).topologicalSpace
+
+protected def SeminormFamily.uniformSpace (p : SeminormFamily 𝕜 E ι) : UniformSpace E :=
+  (⨅ i, (p i).uniformSpace).replaceTopology (i := p.topologicalSpace)
+    toTopologicalSpace_iInf.symm
+
+/-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
+structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [t : TopologicalSpace E] : Prop where
+  topology_eq_withSeminorms : t = p.topologicalSpace
+#align with_seminorms WithSeminorms
+
+theorem WithSeminorms.topology_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
+    (hp : WithSeminorms p) : t = p.topologicalSpace :=
+  hp.1
+-- #align with_seminorms.with_seminorms_eq WithSeminorms.withSeminorms_eq
+
+variable [TopologicalSpace E]
+
+variable {p : SeminormFamily 𝕜 E ι}
+
+theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : TopologicalAddGroup E := by
+  rw [hp.topology_eq]
+  exact topologicalAddGroup_iInf (fun i ↦ inferInstance)
+#align with_seminorms.topological_add_group WithSeminorms.topologicalAddGroup
+
+end Topology
+
+section Basis
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+namespace SeminormFamily
+
+/-- The sets of a filter basis for the neighborhood filter of 0. -/
+protected def basisSet (p : SeminormFamily 𝕜 E ι) (s : Finset ι) (r) (_ : 0 < r) : (Set E) :=
+  ball (s.sup p) (0 : E) r
+-- #align seminorm_family.basis_sets SeminormFamily.basisSet
+
+variable (p : SeminormFamily 𝕜 E ι)
+
+theorem _root_.WithSeminorms.hasBasis [TopologicalSpace E] [Nonempty ι] (hp : WithSeminorms p) :
+    (𝓝 (0 : E)).HasBasis (fun sr : Finset ι × ℝ ↦ 0 < sr.2)
+      (fun sr ↦ ball (sr.1.sup p) (0 : E) sr.2) := by
+  classical
+  rw [hp.topology_eq, nhds_iInf]
+  convert hasBasis_iInf' (fun i ↦ @Metric.nhds_basis_ball _ (p i).pseudoMetricSpace 0)
+  constructor; intro H; refine H.to_hasBasis ?_ ?_
+  · refine fun ⟨s, r⟩ hr ↦ ⟨⟨s, fun _ ↦ r⟩, ⟨⟨s.finite_toSet, fun _ _ ↦ hr⟩, ?_⟩⟩
+    rw [ball_finset_sup_eq_iInter]
+    · rfl
+    · exact hr
+  · intro ⟨s, r⟩ ⟨hs, hr⟩
+    let t : Finset ι := hs.toFinset ∪ {Classical.arbitrary ι}
+    have ht : t.Nonempty := ⟨Classical.arbitrary ι,
+      Finset.mem_union_right _ (Finset.mem_singleton_self _)⟩
+    refine ⟨⟨t, t.sup' ht r⟩, ?_⟩
+    --↦ ⟨⟨hs.toFinset, hs.toFinset.sup' r⟩, ?_⟩
+    sorry
+  --exact AddGroupFilterBasis.nhds_zero_hasBasis _
+#align with_seminorms.has_basis WithSeminorms.hasBasis
+
+end SeminormFamily
+
+end Basis
+
+--- OLD below
+
 section FilterBasis
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
