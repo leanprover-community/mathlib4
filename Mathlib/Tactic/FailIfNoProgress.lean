@@ -86,7 +86,7 @@ structure LocalDeclComparisonConfig where
 structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
   -- Filtering options
   /-- Whether to include implementation detail decls. -/
-  includeImplDetails  : Bool := true
+  includeImplDetails  : Bool := false
   /-- Whether to include auxiliary decls. -/
   includeAuxDecls     : Bool := true
   /-- Whether to include default decls. -/
