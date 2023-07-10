@@ -35,46 +35,6 @@ theorem Finset.Nonempty.sup'_id_eq_cSup {s : Finset α} (hs : s.Nonempty) : s.su
   by rw [hs.sup'_eq_cSup_image, Set.image_id]
 #align finset.nonempty.sup'_id_eq_cSup Finset.Nonempty.sup'_id_eq_cSup
 
-variable {ι : Type _}
-
-/-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
-`⨆ i ∈ t, s i`. -/
-theorem ciSup_eq_ciSup_finset_sup' [Nonempty ι] (s : ι → α) (bdd : BddAbove (Set.range s)) :
-    ⨆ i, s i = ⨆ t : {t : Finset ι | t.Nonempty}, t.1.sup' t.2 s := by
-  classical
-    let ⟨B, hB⟩ := bdd
-    rw [mem_upperBounds, forall_range_iff] at hB
-    haveI : Nonempty {t : Finset ι | t.Nonempty} :=
-      ⟨{Classical.arbitrary ι}, Finset.singleton_nonempty _⟩
-    refine le_antisymm ?_ ?_
-    · refine ciSup_le fun b ↦ le_ciSup_of_le ?_ ⟨{b}, Finset.singleton_nonempty _⟩ ?_
-      · exact ⟨B, forall_range_iff.mpr fun ⟨t, ht⟩ ↦ Finset.sup'_le ht _ (fun b _ ↦ hB b)⟩
-      exact Finset.le_sup' _ (Finset.mem_singleton_self b)
-    · exact ciSup_le fun ⟨t, ht⟩ ↦ Finset.sup'_le _ _ fun b _ ↦ le_ciSup bdd b
-
-/-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
-`⨆ i ∈ t, s i`. See `ciSup_eq_ciSup_finset_sup'` for a version that does not assume `OrderBot`. -/
-theorem ciSup_eq_ciSup_finset_sup [OrderBot α] (s : ι → α) (bdd : BddAbove (Set.range s)) :
-    ⨆ i, s i = ⨆ t : Finset ι, t.sup s := by
-  rw ciSup
-
-#align supr_eq_supr_finset' iSup_eq_iSup_finset'
-
-/-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `iInf_eq_iInf_finset'` for a version
-that works for `ι : Sort*`. -/
-theorem iInf_eq_iInf_finset (s : ι → α) : ⨅ i, s i = ⨅ (t : Finset ι) (i ∈ t), s i :=
-  @iSup_eq_iSup_finset αᵒᵈ _ _ _
-#align infi_eq_infi_finset iInf_eq_iInf_finset
-
-/-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `iInf_eq_iInf_finset` for a version
-that assumes `ι : Type _` but has no `PLift`s. -/
-theorem iInf_eq_iInf_finset' (s : ι' → α) :
-    ⨅ i, s i = ⨅ t : Finset (PLift ι'), ⨅ i ∈ t, s (PLift.down i) :=
-  @iSup_eq_iSup_finset' αᵒᵈ _ _ _
-#align infi_eq_infi_finset' iInf_eq_iInf_finset'
-
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -152,47 +112,3 @@ theorem inf'_id_eq_csInf [ConditionallyCompleteLattice α] (s : Finset α) (H) :
     s.inf' H id = sInf s :=
   @sup'_id_eq_csSup αᵒᵈ _ _ H
 #align finset.inf'_id_eq_cInf Finset.inf'_id_eq_csInf
-
-/-!
-### `OrderBot`/`OrderTop`
--/
-
-variable {ι : Type _} {ι' : Sort _} [ConditionallyCompleteLattice α] [OrderBot α]
-
-/-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
-`⨆ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `iSup_eq_iSup_finset'` for a version
-that works for `ι : Sort*`. -/
-theorem ciSup_eq_ciSup_finset_sup' (s : ι → α) (bdd : BddAbove (Set.range s)) :
-    ⨆ i, s i = ⨆ t : Finset ι, t.sup s := by
-  classical
-
-    refine le_antisymm ?_ ?_
-    refine ciSup_le ?_
-    exact ciSup_le fun b => le_ciSup_of_le {b} <| le_ciSup_of_le b <| le_ciSup_of_le (by simp) <| le_rfl
-    exact ciSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _
-#align supr_eq_supr_finset iSup_eq_iSup_finset
-
-/-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
-`⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `iSup_eq_iSup_finset` for a version
-that assumes `ι : Type _` but has no `PLift`s. -/
-theorem iSup_eq_iSup_finset' (s : ι' → α) :
-    ⨆ i, s i = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
-  rw [← iSup_eq_iSup_finset, ← Equiv.plift.surjective.iSup_comp]; rfl
-#align supr_eq_supr_finset' iSup_eq_iSup_finset'
-
-/-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `iInf_eq_iInf_finset'` for a version
-that works for `ι : Sort*`. -/
-theorem iInf_eq_iInf_finset (s : ι → α) : ⨅ i, s i = ⨅ (t : Finset ι) (i ∈ t), s i :=
-  @iSup_eq_iSup_finset αᵒᵈ _ _ _
-#align infi_eq_infi_finset iInf_eq_iInf_finset
-
-/-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `iInf_eq_iInf_finset` for a version
-that assumes `ι : Type _` but has no `PLift`s. -/
-theorem iInf_eq_iInf_finset' (s : ι' → α) :
-    ⨅ i, s i = ⨅ t : Finset (PLift ι'), ⨅ i ∈ t, s (PLift.down i) :=
-  @iSup_eq_iSup_finset' αᵒᵈ _ _ _
-#align infi_eq_infi_finset' iInf_eq_iInf_finset'
-
-end Finset

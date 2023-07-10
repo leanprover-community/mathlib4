@@ -216,6 +216,19 @@ section LatticeOps
 
 variable [Group β]
 
+#check iInf_uniformity
+
+@[to_additive]
+theorem uniformGroup_bot : @UniformGroup β ⊥ _ := by
+  letI : UniformSpace β := ⊥
+  constructor
+  rw [UniformContinuous, Tendsto, uniformity_prod_eq_prod, bot_uniformity,
+      prod_principal_principal, map_map, map_principal, le_principal_iff,
+      mem_principal, image_subset_iff, prod_subset_iff]
+  intro
+  simp
+
+
 @[to_additive]
 theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
     @UniformGroup β (sInf us) _ :=

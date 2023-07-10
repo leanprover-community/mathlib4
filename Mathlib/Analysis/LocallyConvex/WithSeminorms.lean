@@ -102,10 +102,27 @@ theorem Seminorm.topologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ
   rw [Seminorm.topologicalSpace, Seminorm.topologicalSpace, Seminorm.uniformSpace_comp]
   rfl
 
-theorem Seminorm.uniformSpace_iSup {p : ι → Seminorm 𝕜₂ F} (bdd : BddAbove (range p)) :
-    (⨆ i, p i).uniformSpace = ⨅ i, (p i).uniformSpace := by
-  rw [UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i ↦ inferInstance)]
-  q
+#check uniformAddGroup_iInf
+
+theorem Seminorm.uniformSpace_zero : (0 : Seminorm 𝕜 E).uniformSpace = ⊥ := by
+  rw [UniformAddGroup.ext_iff inferInstance uniformAddGroup_bot]
+  rfl
+
+theorem Seminorm.topologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ[σ₁₂] F) :
+    (p.comp f).topologicalSpace = induced f p.topologicalSpace := by
+  rw [Seminorm.topologicalSpace, Seminorm.topologicalSpace, Seminorm.uniformSpace_comp]
+  rfl
+
+-- Note: this doesn't need finiteness, just boundedness, but we don't have the tools to
+-- do it nicely
+theorem Seminorm.uniformSpace_finset_sup {p : ι → Seminorm 𝕜₂ F} (s : Finset ι) :
+    (s.sup p).uniformSpace = ⨅ i ∈ s, (p i).uniformSpace := by
+  rw [← Finset.inf_eq_iInf]
+  induction' s using Finset.cons_induction with c s hc ih
+  simp_rw [UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i ↦
+    uniformAddGroup_iInf fun _ ↦ inferInstance), toTopologicalSpace_iInf, nhds_iInf]
+  rw [Metric.nhds_basis_ball]
+
 
 theorem Seminorm.topologicalSpace_iSup {p : ι → Seminorm 𝕜₂ F} :
     (⨆ i, p i).topologicalSpace = ⨅ i, (p i).topologicalSpace := by

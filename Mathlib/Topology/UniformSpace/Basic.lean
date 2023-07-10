@@ -1197,6 +1197,9 @@ instance : Bot (UniformSpace α) :=
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [subset_def, idRel] }⟩
 
+theorem bot_uniformity : (𝓤[⊥] : Filter (α × α)) = 𝓟 idRel :=
+  rfl
+
 instance : Inf (UniformSpace α) :=
   ⟨fun u₁ u₂ => .ofNhdsEqComap
     { uniformity := u₁.uniformity ⊓ u₂.uniformity
