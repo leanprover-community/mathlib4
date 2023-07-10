@@ -43,27 +43,16 @@ variable {𝕜 B F₁ F₂ M : Type _} {E₁ : B → Type _} {E₂ : B → Type 
 
 local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂)
 
--- This proof is slow, especially the `simp only` and the elaboration of `h₂`.
+-- Porting note: moved slow parts to separate lemmas
 theorem smoothOn_continuousLinearMapCoordChange [SmoothManifoldWithCorners IB B]
     [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] [MemTrivializationAtlas e₁]
     [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂)
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
-  set L₁ := compL 𝕜 F₁ F₂ F₂
-  have h₁ : Smooth 𝓘(𝕜, F₂ →L[𝕜] F₂) 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₂)) L₁ :=
-    L₁.smooth
-  have h₂ : Smooth _ _ _ := (ContinuousLinearMap.flip L₁).contMDiff
-  have h₃ : SmoothOn IB _ _ _ := smoothOn_coordChange e₁' e₁
-  have h₄ : SmoothOn IB _ _ _ := smoothOn_coordChange e₂ e₂'
-  refine' ((h₁.comp_smooth_on (h₄.mono _)).clm_comp (h₂.comp_smooth_on (h₃.mono _))).congr _
-  · mfld_set_tac
-  · mfld_set_tac
-  · intro b hb; ext L v
-    simp only [continuous_linear_map_coord_change, ContinuousLinearEquiv.coe_coe,
-      ContinuousLinearEquiv.arrowCongrSL_apply, comp_apply, Function.comp, compL_apply, flip_apply,
-      ContinuousLinearEquiv.symm_symm, LinearEquiv.toFun_eq_coe,
-      ContinuousLinearEquiv.arrowCongrₛₗ_apply, ContinuousLinearMap.coe_comp']
+  have h₁ := smoothOn_coordChangeL IB e₁' e₁
+  have h₂ := smoothOn_coordChangeL IB e₂ e₂'
+  refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
 #align smooth_on_continuous_linear_map_coord_change smoothOn_continuousLinearMapCoordChange
 
 theorem hom_chart (y₀ y : LE₁E₂) :
