@@ -42,6 +42,7 @@ open Lean Meta Elab Tactic Parser.Tactic
 
 /-- Specifies which type of equality check to use. Either `.beq` or `.defEq`. -/
 inductive EqKind where | beq | defEq
+deriving Repr, Inhabited
 
 /-- Returns `true` if its argument is `.beq` and `false` if `.defEq`. -/
 def EqKind.isBEq : EqKind → Bool
@@ -54,15 +55,7 @@ structure ExprComparisonConfig where
   eqKind       : EqKind := .defEq
   /-- What transparency to use for equality checks. -/
   transparency : TransparencyMode := .reducible
-
-/-- Config data for comparing expressions, where the default field values are drawn from
-`defaults`. -/
-structure ExprComparisonConfigWithDefaults (defaults : ExprComparisonConfig)
-  extends ExprComparisonConfig
-where
-  -- Inherit defaults
-  eqKind       := defaults.eqKind
-  transparency := defaults.transparency
+deriving Repr, Inhabited
 
 /-- Config data for comparing local contexts. -/
 structure LocalDeclComparisonConfig where
@@ -80,6 +73,7 @@ structure LocalDeclComparisonConfig where
   checkBinderInfo    : Bool := true
   /-- Whether to compare the declKinds of a `LocalDecl`. -/
   checkLocalDeclKind : Bool := true
+deriving Repr, Inhabited
 
 -- Merge?
 /-- Config data for comparing local contexts. -/
@@ -95,7 +89,7 @@ structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
   includeLDecls       : Bool := true
   /-- Whether to include `cdecls`. -/
   includeCDecls       : Bool := true
-/-- Config data for comparing local instances. Since the `Expr` in the `LocalInstance` is meant to
+deriving Repr, Inhabited
 be an `.fvar`, we always use `BEq`. -/ --!! True?
 structure LocalInstanceComparisonConfig where
   checkName : Bool := true
@@ -109,6 +103,7 @@ structure MetavarDeclComparisonConfig where
   checkLocalInstances : Bool := true
   checkMetavarKind : Bool := true
   checkIndex : Bool := true -- !! need? shouldn't this persist?
+deriving Repr, Inhabited
 
 -- !! Generalize with filtering and mustNotLose,mustNotGain list/array config stuff? Generalize into a goal list config?
 inductive FailIfNoProgress.Mode where
@@ -116,6 +111,7 @@ inductive FailIfNoProgress.Mode where
 | normal
 /-- Only checks if the initial metavariables have been assigned or not. -/
 | quick
+deriving Repr, Inhabited
 
 
 
@@ -151,6 +147,7 @@ instances of goals. If `none`, local instances are not compared.
 -/
 structure FailIfNoProgress.Config extends ExprComparisonConfig, MetavarDeclComparisonConfig where
   mode : FailIfNoProgress.Mode := .normal
+deriving Repr, Inhabited
 
 --!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be
 -- sure.
