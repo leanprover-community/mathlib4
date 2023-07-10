@@ -810,8 +810,6 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     · simp only [get_zero, head_cons]
     · simp only [get_cons_succ, ih]
 
-
-
 @[simp]
 theorem mapAccumr_cons :
     mapAccumr f (x ::ᵥ xs) s
