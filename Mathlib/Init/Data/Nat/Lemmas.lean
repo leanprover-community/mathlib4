@@ -380,9 +380,9 @@ def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ
   · exact H2 _ h
 #align nat.discriminate Nat.discriminate
 
-theorem one_succ_zero : 1 = succ 0 :=
+theorem one_eq_succ_zero : 1 = succ 0 :=
   rfl
-#align nat.one_succ_zero Nat.one_succ_zero
+#align nat.one_succ_zero Nat.one_eq_succ_zero
 
 #align nat.pred_inj Nat.pred_inj
 
