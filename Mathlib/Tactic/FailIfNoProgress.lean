@@ -29,12 +29,12 @@ having any  effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 
 
 
-```
-structure SubConfig (defaults : SharedProcessConfig) where
-  subSubProcessConfig : Option (SubSubProcessConfig defaults) := some {}
-```
+
 -/
--/
+
+
+
+
 
 namespace Mathlib.Tactic
 
