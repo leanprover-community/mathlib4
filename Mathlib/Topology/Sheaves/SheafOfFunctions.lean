@@ -51,7 +51,7 @@ In fact, the proof is identical when we do this for dependent functions to a typ
 so we do the more general case.
 -/
 theorem toTypes_isSheaf (T : X → Type u) : (presheafToTypes X T).IsSheaf :=
-  isSheaf_of_isSheafUniqueGluing_types _ fun ι U sf hsf => by
+  isSheaf_of_isSheafUniqueGluing_types.{u} _ fun ι U sf hsf => by
   -- We use the sheaf condition in terms of unique gluing
   -- U is a family of open sets, indexed by `ι` and `sf` is a compatible family of sections.
   -- In the informal comments below, I'll just write `U` to represent the union.

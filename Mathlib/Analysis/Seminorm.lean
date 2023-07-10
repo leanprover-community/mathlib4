@@ -942,6 +942,16 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
   exact hr.trans_le (map_nonneg _ _)
 #align seminorm.closed_ball_eq_emptyset Seminorm.closedBall_eq_emptyset
 
+theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+  simpa only [mem_ball_zero, map_neg_eq_map] using hx
+#align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
+
+@[simp]
+theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
+  ext
+  rw [Set.mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
+#align seminorm.neg_ball Seminorm.neg_ball
+
 end Module
 
 end AddCommGroup
@@ -1027,17 +1037,6 @@ protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedB
   rw [p.mem_closedBall_zero] at hy
   exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 #align seminorm.absorbent_closed_ball Seminorm.absorbent_closedBall
-
-theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r :=
-  balanced_ball_zero p r (-1) (by rw [norm_neg, norm_one]) ⟨x, hx, by
-    simp only [neg_smul, one_smul]⟩ -- Porting note: was `rw` instead of `simp only`
-#align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
-
-@[simp]
-theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
-  ext
-  rw [Set.mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
-#align seminorm.neg_ball Seminorm.neg_ball
 
 @[simp]
 theorem smul_ball_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : 𝕜) (ha : a ≠ 0) :
@@ -1197,14 +1196,13 @@ protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [Cont
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.continuous' Seminorm.continuous'
 
-theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
-  refine'
-    Seminorm.continuous (r := 1)
-      (Filter.mem_of_superset (IsOpen.mem_nhds _ <| q.mem_ball_self zero_lt_one)
-        (ball_antitone hpq))
-  rw [ball_zero_eq]
-  exact isOpen_lt hq continuous_const
+theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕝 E]
+    {p q : Seminorm 𝕝 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
+  replace hq : ContinuousAt q 0 := hq.continuousAt
+  refine Seminorm.continuous_of_continuousAt_zero ?_
+  simp_rw [Metric.continuousAt_iff', map_zero, dist_zero_right,
+    Real.norm_of_nonneg (map_nonneg _ _)] at hq ⊢
+  exact fun ε hε ↦ (hq ε hε).mono (fun x ↦ lt_of_le_of_lt (hpq x))
 #align seminorm.continuous_of_le Seminorm.continuous_of_le
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
