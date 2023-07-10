@@ -273,7 +273,7 @@ theorem ofBits_lt : ofBits f 0 i < 2^i := by
   · simp [ofBits, bit_val, lt_succ, Bool.toNat_le_one]
   · simp only [ofBits]
     rw [ofBits_eq_pow_mul_add]
-    cases' (f i) <;> simp [two_pow_succ, ih] ; linarith
+    cases' (f i) <;> simp [two_pow_succ, ih]; linarith
 
 /-- The `ith` bit of `ofBits` is the function at `i`.
 This is used extensively in the proof of each of the bitadd, bitneg, bitmul etc.-/
