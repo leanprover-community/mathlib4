@@ -3,6 +3,8 @@ import Mathlib.Tactic.Alias
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyWith
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Backtracking
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
@@ -107,7 +109,6 @@ import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.PushNeg
 import Mathlib.Tactic.Qify
-import Mathlib.Tactic.Qify.Attr
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
 import Mathlib.Tactic.Recover
@@ -152,4 +153,3 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Zify
-import Mathlib.Tactic.Zify.Attr

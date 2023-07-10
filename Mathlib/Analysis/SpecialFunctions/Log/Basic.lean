@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 
 ! This file was ported from Lean 3 source module analysis.special_functions.log.basic
-! leanprover-community/mathlib commit a8b2226cfb0a79f5986492053fc49b1a0c6aeffb
+! leanprover-community/mathlib commit f23a09ce6d3f367220dc3cecad6b7eb69eb01690
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -104,7 +104,7 @@ theorem log_one : log 1 = 0 :=
 #align real.log_one Real.log_one
 
 @[simp]
-theorem log_abs (x : ℝ) : log (|x|) = log x := by
+theorem log_abs (x : ℝ) : log |x| = log x := by
   by_cases h : x = 0
   · simp [h]
   · rw [← exp_eq_exp, exp_log_eq_abs h, exp_log_eq_abs (abs_pos.2 h).ne', abs_abs]
@@ -254,6 +254,10 @@ theorem log_eq_zero {x : ℝ} : log x = 0 ↔ x = 0 ∨ x = 1 ∨ x = -1 := by
     · exact Or.inr (Or.inl (eq_one_of_pos_of_log_eq_zero x_gt_zero h))
   · rintro (rfl | rfl | rfl) <;> simp only [log_one, log_zero, log_neg_eq_log]
 #align real.log_eq_zero Real.log_eq_zero
+
+theorem log_ne_zero {x : ℝ} : log x ≠ 0 ↔ x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1 := by
+  simpa only [not_or] using log_eq_zero.not
+#align real.log_ne_zero Real.log_ne_zero
 
 @[simp]
 theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by

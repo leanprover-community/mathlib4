@@ -266,7 +266,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
   · -- We now work on the terms in `S`: uniform continuity and `bernstein.probability`
     -- quickly give us a bound.
     calc
-      (∑ k in S, |f k/ₙ - f x| * bernstein n k x) ≤ ∑ k in S, ε / 2 * bernstein n k x := by
+      ∑ k in S, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k in S, ε / 2 * bernstein n k x := by
         gcongr with _ m
         exact le_of_lt (lt_of_mem_S m)
       _ = ε / 2 * ∑ k in S, bernstein n k x := by rw [Finset.mul_sum]
@@ -280,7 +280,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
     -- and then insert a `δ^(-2) * (x - k/n)^2` factor
     -- (which is at least one because we are not in `S`).
     calc
-      (∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x) ≤ ∑ k in Sᶜ, 2 * ‖f‖ * bernstein n k x := by
+      ∑ k in Sᶜ, |f k/ₙ - f x| * bernstein n k x ≤ ∑ k in Sᶜ, 2 * ‖f‖ * bernstein n k x := by
         gcongr
         apply f.dist_le_two_norm
       _ = 2 * ‖f‖ * ∑ k in Sᶜ, bernstein n k x := by rw [Finset.mul_sum]

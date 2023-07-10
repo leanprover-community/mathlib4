@@ -68,15 +68,15 @@ theorem hasSum_coe_one (p : Pmf α) : HasSum p 1 :=
 #align pmf.has_sum_coe_one Pmf.hasSum_coe_one
 
 @[simp]
-theorem tsum_coe (p : Pmf α) : (∑' a, p a) = 1 :=
+theorem tsum_coe (p : Pmf α) : ∑' a, p a = 1 :=
   p.hasSum_coe_one.tsum_eq
 #align pmf.tsum_coe Pmf.tsum_coe
 
-theorem tsum_coe_ne_top (p : Pmf α) : (∑' a, p a) ≠ ∞ :=
+theorem tsum_coe_ne_top (p : Pmf α) : ∑' a, p a ≠ ∞ :=
   p.tsum_coe.symm ▸ ENNReal.one_ne_top
 #align pmf.tsum_coe_ne_top Pmf.tsum_coe_ne_top
 
-theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : (∑' a, s.indicator p a) ≠ ∞ :=
+theorem tsum_coe_indicator_ne_top (p : Pmf α) (s : Set α) : ∑' a, s.indicator p a ≠ ∞ :=
   ne_of_lt (lt_of_le_of_lt
     (tsum_le_tsum (fun _ => Set.indicator_apply_le fun _ => le_rfl) ENNReal.summable
       ENNReal.summable)
@@ -128,7 +128,7 @@ theorem apply_eq_one_iff (p : Pmf α) (a : α) : p a = 1 ↔ p.support = {a} := 
     _ = (∑' b, ite (b = a) (p b) 0) + ∑' b, ite (b = a) 0 (p b) := by
       congr
       exact symm (tsum_eq_single a fun b hb => if_neg hb)
-    _ = ∑' b, ite (b = a) (p b) 0 + ite (b = a) 0 (p b) := ENNReal.tsum_add.symm
+    _ = ∑' b, (ite (b = a) (p b) 0 + ite (b = a) 0 (p b)) := ENNReal.tsum_add.symm
     _ = ∑' b, p b := tsum_congr fun b => by split_ifs <;> simp only [zero_add, add_zero, le_rfl]
 #align pmf.apply_eq_one_iff Pmf.apply_eq_one_iff
 

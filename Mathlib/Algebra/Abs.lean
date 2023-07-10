@@ -63,7 +63,7 @@ class NegPart (α : Type _) where
 #align has_neg_part NegPart
 
 @[inherit_doc Abs.abs]
-macro atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
+macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|` for `abs a`.
 Tries to add discretionary parentheses in unparseable cases. -/
@@ -76,7 +76,7 @@ def Abs.abs.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 @[inherit_doc]
-postfix:1000 "⁺" => PosPart.pos
+postfix:max "⁺" => PosPart.pos
 
 @[inherit_doc]
-postfix:1000 "⁻" => NegPart.neg
+postfix:max "⁻" => NegPart.neg

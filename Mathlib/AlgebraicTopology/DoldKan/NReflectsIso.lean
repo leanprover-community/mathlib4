@@ -76,7 +76,7 @@ theorem compatibility_N₂_N₁_karoubi :
     · ext n
       · dsimp
         simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
-      . rfl
+      · rfl
     · rintro _ n (rfl : n + 1 = _)
       ext
       have h := (AlternatingFaceMapComplex.map P.p).comm (n + 1) n

@@ -117,7 +117,7 @@ variable (M)
 def SMulWithZero.compHom (f : ZeroHom R' R) : SMulWithZero R' M where
   smul := (· • ·) ∘ f
   smul_zero m := smul_zero (f m)
-  zero_smul m := by show (f 0) • m = 0 ; rw [map_zero, zero_smul]
+  zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
 #align smul_with_zero.comp_hom SMulWithZero.compHom
 
 end Zero

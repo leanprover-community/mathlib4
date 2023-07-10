@@ -162,7 +162,7 @@ theorem IsTopologicalBasis.isOpen_iff {s : Set α} {b : Set (Set α)} (hb : IsTo
 
 theorem IsTopologicalBasis.nhds_hasBasis {b : Set (Set α)} (hb : IsTopologicalBasis b) {a : α} :
     (𝓝 a).HasBasis (fun t : Set α => t ∈ b ∧ a ∈ t) fun t => t :=
-  ⟨fun s => hb.mem_nhds_iff.trans <| by simp only [exists_prop, and_assoc]⟩
+  ⟨fun s => hb.mem_nhds_iff.trans <| by simp only [and_assoc]⟩
 #align topological_space.is_topological_basis.nhds_has_basis TopologicalSpace.IsTopologicalBasis.nhds_hasBasis
 
 protected theorem IsTopologicalBasis.isOpen {s : Set α} {b : Set (Set α)}

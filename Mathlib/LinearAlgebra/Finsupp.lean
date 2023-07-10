@@ -1099,7 +1099,7 @@ variable {v} {x : M}
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
 theorem mem_span_range_iff_exists_fun :
-    x ∈ span R (range v) ↔ ∃ c : α → R, (∑ i, c i • v i) = x := by
+    x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
   -- Porting note: `Finsupp.equivFunOnFinite.surjective.exists` should be come before `simp`.
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
@@ -1110,7 +1110,7 @@ theorem mem_span_range_iff_exists_fun :
 can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
 theorem top_le_span_range_iff_forall_exists_fun :
-    ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, (∑ i, c i • v i) = x := by
+    ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
 #align top_le_span_range_iff_forall_exists_fun top_le_span_range_iff_forall_exists_fun
@@ -1171,7 +1171,7 @@ theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule
 #align submodule.mem_supr_iff_exists_finset Submodule.mem_iSup_iff_exists_finset
 
 theorem mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, (∑ i in s, f i • i) = x :=
+    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i in s, f i • i = x :=
   ⟨fun hx =>
     let ⟨v, hvs, hvx⟩ :=
       (Finsupp.mem_span_image_iff_total _).1
