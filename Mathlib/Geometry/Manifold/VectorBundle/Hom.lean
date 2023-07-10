@@ -44,7 +44,7 @@ variable {𝕜 B F₁ F₂ M : Type _} {E₁ : B → Type _} {E₂ : B → Type 
 local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂)
 
 -- Porting note: moved slow parts to separate lemmas
-theorem smoothOn_continuousLinearMapCoordChange [SmoothManifoldWithCorners IB B]
+theorem smoothOn_continuousLinearMapCoordChange
     [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] [MemTrivializationAtlas e₁]
     [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
     SmoothOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂)
@@ -80,8 +80,7 @@ theorem smoothAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
   contMDiffAt_hom_bundle f
 #align smooth_at_hom_bundle smoothAt_hom_bundle
 
-variable [SmoothManifoldWithCorners IB B] [SmoothVectorBundle F₁ E₁ IB]
-  [SmoothVectorBundle F₂ E₂ IB]
+variable [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB]
 
 instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
     (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB where
@@ -96,4 +95,3 @@ instance SmoothVectorBundle.continuousLinearMap :
     SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).smoothVectorBundle IB
 #align smooth_vector_bundle.continuous_linear_map SmoothVectorBundle.continuousLinearMap
-
