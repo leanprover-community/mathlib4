@@ -102,7 +102,7 @@ structure MetavarDeclComparisonConfig where
   checkTarget : Bool := true
   checkLocalInstances : Bool := true
   checkMetavarKind : Bool := true
-  checkIndex : Bool := true -- !! need? shouldn't this persist?
+  checkIndex : Bool := false
 deriving Repr, Inhabited
 
 -- !! Generalize with filtering and mustNotLose,mustNotGain list/array config stuff? Generalize into a goal list config?
