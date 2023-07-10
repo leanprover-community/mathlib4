@@ -569,7 +569,7 @@ the largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 theorem padicValNat_factorial_div {p : ℕ} (n : ℕ)  [hp : Fact p.Prime]:
    padicValNat p n ! = padicValNat p (p * (n / p))! := by
   nth_rw 1 [← div_add_mod n p]
-  refine' padicValNat_factorial_add (n / p) <| mod_lt n <|Prime.pos hp.out
+  exact padicValNat_factorial_add (n / p) <| mod_lt n <|Prime.pos hp.out
 
 end padicValNat
 
