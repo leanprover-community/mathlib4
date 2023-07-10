@@ -645,7 +645,7 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
 #align seminorm.continuous_from_bounded Seminorm.continuous_from_bounded
 
 theorem cont_withSeminorms_normedSpace (F) [SeminormedAddCommGroup F] [NormedSpace 𝕝₂ F]
-    [UniformSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
+    [TopologicalSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∃ (s : Finset ι) (C : ℝ≥0), (normSeminorm 𝕝₂ F).comp f ≤ C • s.sup p) :
     Continuous f := by
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
@@ -653,7 +653,7 @@ theorem cont_withSeminorms_normedSpace (F) [SeminormedAddCommGroup F] [NormedSpa
 #align seminorm.cont_with_seminorms_normed_space Seminorm.cont_withSeminorms_normedSpace
 
 theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
-    [UniformSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
+    [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i : ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • normSeminorm 𝕝 E) :
     Continuous f := by
   rw [← Seminorm.const_isBounded (Fin 1)] at hf
@@ -871,12 +871,14 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonemp
 
 variable {p : SeminormFamily 𝕜 E ι}
 
-variable [UniformSpace E] [UniformAddGroup E]
+variable [TopologicalSpace E] [TopologicalAddGroup E]
 
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology
 is first countable. -/
 theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
     TopologicalSpace.FirstCountableTopology E := by
+  letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
+  haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]
     exact Filter.iInf.isCountablyGenerated _
