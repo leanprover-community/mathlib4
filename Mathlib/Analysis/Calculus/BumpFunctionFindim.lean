@@ -13,6 +13,7 @@ import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Data.Set.Pointwise.Support
+import Mathlib.Topology.MetricSpace.EMetricParacompact
 
 /-!
 # Bump functions in finite-dimensional vector spaces
@@ -33,17 +34,22 @@ open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimens
 
 open scoped Pointwise Topology NNReal BigOperators Convolution
 
-variable {E : Type _} [NormedAddCommGroup E]
+variable (E : Type _) [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-section
-
-variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-
+set_option linter.unusedVariables false in
 /-- If a set `s` is a neighborhood of `x`, then there exists a smooth function `f` taking
 values in `[0, 1]`, supported in `s` and with `f x = 1`. -/
-theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
-    ∃ f : E → ℝ,
-      tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1 := by
+class HasWeakContDiffBump :=
+  exists_smooth_tsupport_subset : ∀ {s : Set E} {x : E} (hs : s ∈ 𝓝 x), ∃ f : E → ℝ,
+    tsupport f ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ f x = 1
+
+export HasWeakContDiffBump (exists_smooth_tsupport_subset)
+
+variable {E}
+
+lemma hasWeakContDiffBump_of_finiteDimensional [FiniteDimensional ℝ E] : HasWeakContDiffBump E := by
+  constructor
+  intros s x hs
   obtain ⟨d : ℝ, d_pos : 0 < d, hd : Euclidean.closedBall x d ⊆ s⟩ :=
     Euclidean.nhds_basis_closedBall.mem_iff.1 hs
   let c : ContDiffBump (toEuclidean x) :=
@@ -73,11 +79,13 @@ theorem exists_smooth_tsupport_subset {s : Set E} {x : E} (hs : s ∈ 𝓝 x) :
   · apply c.one_of_mem_closedBall
     apply mem_closedBall_self
     exact (half_pos d_pos).le
-#align exists_smooth_tsupport_subset exists_smooth_tsupport_subset
+
+attribute [local instance] hasWeakContDiffBump_of_finiteDimensional
 
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`. -/
-theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
+theorem IsOpen.exists_smooth_support_eq [SecondCountableTopology E]
+    [HasWeakContDiffBump E] {s : Set E} (hs : IsOpen s) :
     ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   /- For any given point `x` in `s`, one can construct a smooth function with support in `s` and
     nonzero at `x`. By second-countability, it follows that we may cover `s` with the supports of
@@ -195,9 +203,105 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     intro n
     apply (le_abs_self _).trans
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
-#align is_open.exists_smooth_support_eq IsOpen.exists_smooth_support_eq
 
-end
+theorem IsOpen.exists_smooth_support_subset [SecondCountableTopology E]
+    [HasWeakContDiffBump E] {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, f.support ⊆ s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x)
+    ∧ ∀ x ∈ t, f x = 1 := by
+  obtain ⟨u, u_open, tu, us⟩ : ∃ u, IsOpen u ∧ t ⊆ u ∧ closure u ⊆ s :=
+    normal_exists_closure_subset ht hs h
+  rcases u_open.exists_smooth_support_eq with ⟨f, f_supp, f_diff, f_range⟩
+  have A : IsOpen (s \ t) := hs.sdiff ht
+  rcases A.exists_smooth_support_eq with ⟨g, g_supp, g_diff, g_range⟩
+  refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩
+  · apply support_subset_iff'.2 (fun x hx ↦ ?_)
+    have : x ∉ support f := by
+      contrapose! hx
+      rw [f_supp] at hx
+      exact us (subset_closure hx)
+    simp only [nmem_support.1 this, zero_add, zero_div]
+  · apply contDiff_iff_contDiffAt.2 (fun x ↦ ?_)
+    have : 0 ≤ f x := (f_range (mem_range_self (i := x))).1
+    have : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
+    by_cases H : x ∈ s
+    · apply f_diff.contDiffAt.div (f_diff.contDiffAt.add g_diff.contDiffAt)
+      apply ne_of_gt
+      by_cases H' : x ∈ t
+      · have : f x ≠ 0 := by rw [← mem_support, f_supp]; exact tu H'
+        positivity
+      · have : g x ≠ 0 := by rw [← mem_support, g_supp]; exact ⟨H, H'⟩
+        positivity
+    · have B : (closure u)ᶜ ∈ 𝓝 x := by
+        apply (isOpen_compl_iff.2 (isClosed_closure)).mem_nhds
+        contrapose! H
+        simp only [mem_compl_iff, not_not] at H
+        exact us H
+      apply ContDiffOn.contDiffAt _ B
+      apply (contDiffOn_const (c := 0)).congr (fun y hy ↦ ?_)
+      have : f y = 0 := by
+        rw [← nmem_support, f_supp]
+        contrapose! hy
+        simpa using subset_closure hy
+      simp [this]
+  · intros x
+    have : 0 ≤ f x := (f_range (mem_range_self (i := x))).1
+    have : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
+    positivity
+  · intros x hx
+    have A : g x = 0 := by
+      rw [← nmem_support, g_supp]
+      simp [hx]
+    have B : f x ≠ 0 := by
+      rw [← mem_support, f_supp]
+      exact tu hx
+    simp [A, B]
+
+theorem IsOpen.exists_smooth_support_eq'_aux [SecondCountableTopology E]
+    [HasWeakContDiffBump E] {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x)
+    ∧ (∀ x ∈ t, 1 ≤ f x) := by
+  rcases hs.exists_smooth_support_subset ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
+  rcases (hs.sdiff ht).exists_smooth_support_eq with ⟨g, g_supp, g_diff, g_range⟩
+  refine ⟨f + g, ?_, f_diff.add g_diff, ?_, ?_⟩
+  · apply Subset.antisymm
+    · apply (support_add _ _).trans
+      apply union_subset f_supp
+      rw [g_supp]
+      exact diff_subset s t
+    · intros x hx
+      rw [mem_support, Pi.add_apply]
+      apply ne_of_gt
+      specialize f_nonneg x
+      have B : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
+      by_cases H : x ∈ t
+      · have Z := ft x H
+        positivity
+      · have : g x ≠ 0 := by rw [← mem_support, g_supp]; exact ⟨hx, H⟩
+        positivity
+  · intros x
+    specialize f_nonneg x
+    have B : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
+    simp only [Pi.add_apply, ge_iff_le]
+    positivity
+  · intros x hx
+    simpa [Pi.add_apply, ge_iff_le, ft x hx] using (g_range (mem_range_self (i := x))).1
+
+theorem IsOpen.exists_smooth_support_eq' [SecondCountableTopology E]
+    [HasWeakContDiffBump E] {s t : Set E} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1
+    ∧ (∀ x ∈ t, f x = 1) := by
+  rcases hs.exists_smooth_support_eq'_aux ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
+  refine ⟨Real.smoothTransition ∘ f, ?_, ?_, ?_, ?_⟩
+  · rw [support_comp_eq_of_range_subset]
+
+
+
+
+
+
+#exit
+
+Real.smoothTransition
 
 section
 
