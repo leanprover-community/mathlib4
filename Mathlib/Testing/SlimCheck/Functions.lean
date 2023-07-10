@@ -101,11 +101,11 @@ def reprAux [Repr α] [Repr β] (m : List (Σ _ : α, β)) : String :=
 The output is of the form `[x₀ ↦ f x₀, .. xₙ ↦ f xₙ, _ ↦ y]`.
 -/
 protected def repr [Repr α] [Repr β] : TotalFunction α β → String
-  | TotalFunction.withDefault m y => s!"[{(reprAux m)}_ ↦ {Repr.repr y}]"
+  | TotalFunction.withDefault m y => s!"[{(reprAux m)}_ ↦ {repr y}]"
 #align slim_check.total_function.repr SlimCheck.TotalFunction.repr
 
-instance (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) :=
-  ⟨TotalFunction.repr⟩
+instance (α : Type u) (β : Type v) [Repr α] [Repr β] : Repr (TotalFunction α β) where
+  reprPrec f _ := TotalFunction.repr f
 
 /-- Create a `finmap` from a list of pairs. -/
 def List.toFinmap' (xs : List (α × β)) : List (Σ _ : α, β) :=
@@ -278,8 +278,8 @@ protected def repr [Repr α] : InjectiveFunction α → String
   | InjectiveFunction.mapToSelf m _ _ => s! "[{TotalFunction.reprAux m}x ↦ x]"
 #align slim_check.injective_function.repr SlimCheck.InjectiveFunction.repr
 
-instance (α : Type u) [Repr α] : Repr (InjectiveFunction α) :=
-  ⟨InjectiveFunction.repr⟩
+instance (α : Type u) [Repr α] : Repr (InjectiveFunction α) where
+  reprPrec f _p := InjectiveFunction.repr f
 
 /-- Interpret a list of pairs as a total function, defaulting to
 the identity function when no entries are found for a given function -/
