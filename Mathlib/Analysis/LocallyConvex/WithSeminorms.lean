@@ -102,9 +102,10 @@ theorem Seminorm.topologicalSpace_comp (p : Seminorm 𝕜₂ F) (f : E →ₛₗ
   rw [Seminorm.topologicalSpace, Seminorm.topologicalSpace, Seminorm.uniformSpace_comp]
   rfl
 
-theorem Seminorm.uniformSpace_iSup {p : ι → Seminorm 𝕜₂ F} :
+theorem Seminorm.uniformSpace_iSup {p : ι → Seminorm 𝕜₂ F} (bdd : BddAbove (range p)) :
     (⨆ i, p i).uniformSpace = ⨅ i, (p i).uniformSpace := by
-  sorry
+  rw [UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i ↦ inferInstance)]
+  q
 
 theorem Seminorm.topologicalSpace_iSup {p : ι → Seminorm 𝕜₂ F} :
     (⨆ i, p i).topologicalSpace = ⨅ i, (p i).topologicalSpace := by
@@ -128,9 +129,25 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 protected def SeminormFamily.topologicalSpace (p : SeminormFamily 𝕜 E ι) : TopologicalSpace E :=
   ⨅ i, (p i).topologicalSpace
 
+protected theorem SeminormFamily.topologicalSpace_eq (p : SeminormFamily 𝕜 E ι) :
+    p.topologicalSpace = ⨅ i, (p i).topologicalSpace :=
+  rfl
+
+protected theorem SeminormFamily.topologicalSpace_eq_iInf_finset (p : SeminormFamily 𝕜 E ι) :
+    p.topologicalSpace = ⨅ s : Finset ι, ⨅ i ∈ s, (p i).topologicalSpace :=
+  iInf_eq_iInf_finset _
+
 protected def SeminormFamily.uniformSpace (p : SeminormFamily 𝕜 E ι) : UniformSpace E :=
   (⨅ i, (p i).uniformSpace).replaceTopology (i := p.topologicalSpace)
     toTopologicalSpace_iInf.symm
+
+protected theorem SeminormFamily.uniformSpace_eq (p : SeminormFamily 𝕜 E ι) :
+    p.uniformSpace = ⨅ i, (p i).uniformSpace :=
+  @UniformSpace.replaceTopology_eq _ (_) _ toTopologicalSpace_iInf.symm
+
+protected theorem SeminormFamily.uniformSpace_eq_iInf_finset (p : SeminormFamily 𝕜 E ι) :
+    p.uniformSpace = ⨅ s : Finset ι, ⨅ i ∈ s, (p i).uniformSpace := by
+  rw [p.uniformSpace_eq, iInf_eq_iInf_finset]
 
 /-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
 structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [t : TopologicalSpace E] : Prop where
