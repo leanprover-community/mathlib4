@@ -198,11 +198,11 @@ theorem Finset.prod_univ_sum [DecidableEq α] [Fintype α] [CommSemiring β] {δ
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
 `x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
 a proof reducing to the usual binomial theorem to have a result over semirings. -/
-theorem Fintype.sum_pow_mul_eq_add_pow (α : Type _) [DecidableEq α] [Fintype α] {R : Type _}
-  [CommSemiring R]
+theorem Fintype.sum_pow_mul_eq_add_pow (α : Type _) [Fintype α] {R : Type _} [CommSemiring R]
     (a b : R) :
-    (∑ s : Finset α, a ^ s.card * b ^ (Fintype.card α - s.card)) = (a + b) ^ Fintype.card α :=
-  Finset.sum_pow_mul_eq_add_pow _ _ _
+    (∑ s : Finset α, a ^ s.card * b ^ (Fintype.card α - s.card)) = (a + b) ^ Fintype.card α := by
+  classical
+  exact Finset.sum_pow_mul_eq_add_pow _ _ _
 #align fintype.sum_pow_mul_eq_add_pow Fintype.sum_pow_mul_eq_add_pow
 
 @[to_additive]
