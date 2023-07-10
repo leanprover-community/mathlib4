@@ -1790,6 +1790,16 @@ theorem ContinuousLinearMap.contMDiff (L : E →L[𝕜] F) : ContMDiff 𝓘(𝕜
   L.contDiff.contMDiff
 #align continuous_linear_map.cont_mdiff ContinuousLinearMap.contMDiff
 
+theorem ContinuousLinearMap.contMDiffAt (L : E →L[𝕜] F) {x} : ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, F) n L x :=
+  L.contMDiff _
+
+theorem ContinuousLinearMap.contMDiffWithinAt (L : E →L[𝕜] F) {s x} :
+    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, F) n L s x :=
+  L.contMDiffAt.contMDiffWithinAt
+
+theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n L s :=
+  L.contMDiff.contMDiffOn
+
 theorem ContinuousLinearMap.smooth (L : E →L[𝕜] F) : Smooth 𝓘(𝕜, E) 𝓘(𝕜, F) L := L.contMDiff
 
 theorem ContMDiffWithinAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M} {x : M}
