@@ -11,6 +11,7 @@ Authors: Robert Y. Lewis, Matthew Robert Ballard
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Data.Nat.MaxPowDiv
+import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -539,6 +540,14 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
   exact (Nat.one_lt_pow _ _ k.succ_pos hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
+
+/-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
+theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
+    padicValNat p (p * n) ! = padicValNat p n ! + n :=  by
+  refine' PartENat.natCast_inj.mp _
+  rw [padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos (p * n), Nat.cast_add,
+      padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
+  exact Prime.multiplicity_factorial_mul hp
 
 end padicValNat
 
