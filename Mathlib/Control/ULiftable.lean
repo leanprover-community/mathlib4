@@ -110,6 +110,9 @@ open ULift
 instance : ULiftable id id where
   congr F := F
 
+instance : ULiftable Id Id where
+  congr F := F
+
 /-- for specific state types, this function helps to create a uliftable instance -/
 def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v₁} [ULiftable m m']
     (F : s ≃ s') : ULiftable (StateT s m) (StateT s' m') where
@@ -120,6 +123,10 @@ def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v�
 instance {m m'} [ULiftable m m'] : ULiftable (StateT s m) (StateT (ULift s) m') :=
   StateT.uliftable' Equiv.ulift.symm
 
+instance StateT.instULiftableULiftULift {m m'} [ULiftable m m'] :
+    ULiftable (StateT (ULift.{max v₀ u₀} s) m) (StateT (ULift.{max v₁ u₀} s) m') :=
+  StateT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+
 /-- for specific reader monads, this function helps to create a uliftable instance -/
 def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
     ULiftable (ReaderT s m) (ReaderT s' m') where
@@ -128,6 +135,10 @@ def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
 
 instance {m m'} [ULiftable m m'] : ULiftable (ReaderT s m) (ReaderT (ULift s) m') :=
   ReaderT.uliftable' Equiv.ulift.symm
+
+instance ReaderT.instULiftableULiftULift {m m'} [ULiftable m m'] :
+    ULiftable (ReaderT (ULift.{max v₀ u₀} s) m) (ReaderT (ULift.{max v₁ u₀} s) m') :=
+  ReaderT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific continuation passing monads, this function helps to create a uliftable instance -/
 def ContT.uliftable' {m m'} [ULiftable m m'] (F : r ≃ r') :
@@ -138,6 +149,10 @@ def ContT.uliftable' {m m'} [ULiftable m m'] (F : r ≃ r') :
 instance {s m m'} [ULiftable m m'] : ULiftable (ContT s m) (ContT (ULift s) m') :=
   ContT.uliftable' Equiv.ulift.symm
 
+instance ContT.instULiftableULiftULift {m m'} [ULiftable m m'] :
+    ULiftable (ContT (ULift.{max v₀ u₀} s) m) (ContT (ULift.{max v₁ u₀} s) m') :=
+  ContT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+
 /-- for specific writer monads, this function helps to create a uliftable instance -/
 def WriterT.uliftable' {m m'} [ULiftable m m'] (F : w ≃ w') :
     ULiftable (WriterT w m) (WriterT w' m') where
@@ -146,3 +161,7 @@ def WriterT.uliftable' {m m'} [ULiftable m m'] (F : w ≃ w') :
 
 instance {m m'} [ULiftable m m'] : ULiftable (WriterT s m) (WriterT (ULift s) m') :=
   WriterT.uliftable' Equiv.ulift.symm
+
+instance WriterT.instULiftableULiftULift {m m'} [ULiftable m m'] :
+    ULiftable (WriterT (ULift.{max v₀ u₀} s) m) (WriterT (ULift.{max v₁ u₀} s) m') :=
+  WriterT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
