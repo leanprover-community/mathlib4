@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module category_theory.preadditive.biproducts
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
+! leanprover-community/mathlib commit a176cb1219e300e85793d44583dede42377b51af
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -48,6 +48,13 @@ In (or between) preadditive categories,
 
 * A functor preserves a biproduct if and only if it preserves
   the corresponding product if and only if it preserves the corresponding coproduct.
+
+There are connections between this material and the special case of the category whose morphisms are
+matrices over a ring, in particular the Schur complement (see
+`Mathlib.LinearAlgebra.Matrix.SchurComplement`). In particular, the declarations
+`CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
+and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
+
 -/
 
 
@@ -789,7 +796,7 @@ def Biprod.isoElim' [IsIso f₁₁] [IsIso (Biprod.ofComponents f₁₁ f₁₂ 
     infer_instance
   letI : IsIso g := isIso_right_of_isIso_biprod_map f₁₁ g
   exact asIso g
-#align category_theory.biprod.iso_elim' CategoryTheory.Biprod.isoElim'
+#align category_theory.biprodE' CategoryTheory.Biprod.isoElim'
 
 /-- If `f` is an isomorphism `X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂` whose `X₁ ⟶ Y₁` entry is an isomorphism,
 then we can construct an isomorphism `X₂ ≅ Y₂`, via Gaussian elimination.
@@ -803,7 +810,7 @@ def Biprod.isoElim (f : X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ 
     infer_instance
   Biprod.isoElim' (biprod.inl ≫ f.hom ≫ biprod.fst) (biprod.inl ≫ f.hom ≫ biprod.snd)
     (biprod.inr ≫ f.hom ≫ biprod.fst) (biprod.inr ≫ f.hom ≫ biprod.snd)
-#align category_theory.biprod.iso_elim CategoryTheory.Biprod.isoElim
+#align category_theory.biprodE CategoryTheory.Biprod.isoElim
 
 theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
     𝟙 W = 0 ∨ biprod.inl ≫ f ≫ biprod.fst ≠ 0 ∨ biprod.inl ≫ f ≫ biprod.snd ≠ 0 := by
