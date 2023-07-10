@@ -90,47 +90,48 @@ theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P
     (e : V = (Opens.map (X.ofRestrict ((Opens.map f.1.base).obj _).openEmbedding).1.base).obj U) :
     P (Scheme.Γ.map ((X.restrict ((Opens.map f.1.base).obj _).openEmbedding).ofRestrict
       V.openEmbedding ≫ f ∣_ Y.basicOpen r).op) ↔
-    P (Localization.awayMap (Scheme.Γ.map (X.ofRestrict U.openEmbedding ≫ f).op) r) := by sorry
-  -- subst e
-  -- letI a1 : Algebra (Scheme.Γ.obj (Opposite.op Y))
-  --   (Scheme.Γ.obj (Opposite.op (Y.restrict (Y.basicOpen r).openEmbedding))) := ΓRestrictAlgebra _
-  -- let U' := ((Opens.map (X.ofRestrict ((Opens.map f.val.base).obj
-  --   (Y.basicOpen r)).openEmbedding).val.base).obj U).openEmbedding
-  -- letI a2 : Algebra (Scheme.Γ.obj (Opposite.op (X.restrict U.openEmbedding)))
-  --   (Scheme.Γ.obj <| Opposite.op <|
-  --     (X.restrict ((Opens.map f.val.base).obj (Y.basicOpen r)).openEmbedding).restrict U') := by
-  --   apply RingHom.toAlgebra
-  --   refine X.presheaf.map
-  --     (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) ?_).op
-  --   rw [← SetLike.coe_subset_coe, Functor.op_obj]
-  --   dsimp [Opens.inclusion]
-  --   simp only [Set.image_univ, Set.image_subset_iff, Subtype.range_val]
-  --   rw [ContinuousMap.coe_mk, Subtype.range_val, ContinuousMap.coe_mk, ContinuousMap.coe_mk,
-  --     Subtype.range_val]
-  --   rfl
-  -- have i1 := AlgebraicGeometry.Γ_restrict_isLocalization Y r
-  -- have i2 : IsLocalization.Away ((Scheme.Γ.map (X.ofRestrict U.openEmbedding ≫ f).op) r)
-  --   (Scheme.Γ.obj <| Opposite.op <|
-  --     (X.restrict ((Opens.map f.val.base).obj (Y.basicOpen r)).openEmbedding).restrict U') := by
-  --   rw [← U.openEmbedding_obj_top] at hU
-  --   dsimp [Scheme.Γ_obj_op, Scheme.Γ_map_op, Scheme.restrict]
-  --   apply AlgebraicGeometry.isLocalization_of_eq_basicOpen _ hU
-  --   rw [Opens.openEmbedding_obj_top, Opens.functor_obj_map_obj]
-  --   convert (X.basicOpen_res (Scheme.Γ.map f.op r) (homOfLE le_top).op).symm using 1
-  --   rw [Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top, inf_comm, Scheme.Γ_map_op]
-  --   -- Porting note : changed `rw` to `erw`
-  --   erw [← Scheme.preimage_basicOpen]
-  -- -- Porting note : have to add many explicit variables
-  -- have := @RespectsIso.is_localization_away_iff (hP := hP) (R := Scheme.Γ.obj <| Opposite.op Y)
-  --   (S := Scheme.Γ.obj (Opposite.op (X.restrict U.openEmbedding)))
-  --   (R' := Scheme.Γ.obj (Opposite.op (Y.restrict (Y.basicOpen r).openEmbedding)))
-  --   (S' := Scheme.Γ.obj <| Opposite.op <|
-  --     (X.restrict ((Opens.map f.val.base).obj (Y.basicOpen r)).openEmbedding).restrict U')
-  --   _ _ _ _ _ _ (Scheme.Γ.map (X.ofRestrict U.openEmbedding ≫ f).op) r
-  -- rw [this, iff_iff_eq]
-  -- congr 1
-  -- apply IsLocalization.ringHom_ext (R := Scheme.Γ.obj (Opposite.op Y)) (Submonoid.powers r) _
-  -- rw [IsLocalization.Away.map, IsLocalization.map_comp, RingHom.algebraMap_toAlgebra]
+    P (Localization.awayMap (Scheme.Γ.map (X.ofRestrict U.openEmbedding ≫ f).op) r) := by
+  subst e
+  letI a1 : Algebra (Scheme.Γ.obj (Opposite.op Y))
+    (Scheme.Γ.obj (Opposite.op (Y.restrict (Y.basicOpen r).openEmbedding))) := ΓRestrictAlgebra _
+  let U' := ((Opens.map (X.ofRestrict ((Opens.map f.val.base).obj
+    (Y.basicOpen r)).openEmbedding).val.base).obj U).openEmbedding
+  letI a2 : Algebra (Scheme.Γ.obj (Opposite.op (X.restrict U.openEmbedding)))
+    (Scheme.Γ.obj <| Opposite.op <|
+      (X.restrict ((Opens.map f.val.base).obj (Y.basicOpen r)).openEmbedding).restrict U') := by
+    apply RingHom.toAlgebra
+    refine X.presheaf.map
+      (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) ?_).op
+    rw [← SetLike.coe_subset_coe, Functor.op_obj]
+    dsimp [Opens.inclusion]
+    simp only [Set.image_univ, Set.image_subset_iff, Subtype.range_val]
+    rw [ContinuousMap.coe_mk, Subtype.range_val, ContinuousMap.coe_mk, ContinuousMap.coe_mk,
+      Subtype.range_val]
+    rfl
+  have i1 := AlgebraicGeometry.Γ_restrict_isLocalization Y r
+  have i2 : IsLocalization.Away ((Scheme.Γ.map (X.ofRestrict U.openEmbedding ≫ f).op) r)
+    (Scheme.Γ.obj <| Opposite.op <|
+      (X.restrict ((Opens.map f.val.base).obj (Y.basicOpen r)).openEmbedding).restrict U') := by
+    rw [← U.openEmbedding_obj_top] at hU
+    dsimp [Scheme.Γ_obj_op, Scheme.Γ_map_op, Scheme.restrict]
+    apply AlgebraicGeometry.isLocalization_of_eq_basicOpen _ hU
+    rw [Opens.openEmbedding_obj_top, Opens.functor_obj_map_obj]
+    convert (X.basicOpen_res (Scheme.Γ.map f.op r) (homOfLE le_top).op).symm using 1
+    rw [Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top, inf_comm, Scheme.Γ_map_op]
+    -- Porting note : changed `rw` to `erw`
+    erw [← Scheme.preimage_basicOpen]
+  -- Porting note : have to add many explicit variables
+  have := @RespectsIso.is_localization_away_iff (hP := hP) (R := Scheme.Γ.obj <| Opposite.op Y)
+    (S := Scheme.Γ.obj (Opposite.op (X.restrict U.openEmbedding)))
+    (R' := Scheme.Γ.obj (Opposite.op (Y.restrict (Y.basicOpen r).openEmbedding)))
+    (S' := Scheme.Γ.obj <| Opposite.op <|
+      (X.restrict ((Opens.map f.val.base).obj (Y.basicOpen r)).openEmbedding).restrict U')
+    _ _ _ _ _ _ (Scheme.Γ.map (X.ofRestrict U.openEmbedding ≫ f).op) r
+  rw [this, iff_iff_eq]
+  congr 1
+  apply IsLocalization.ringHom_ext (R := Scheme.Γ.obj (Opposite.op Y)) (Submonoid.powers r) _
+  rw [IsLocalization.Away.map, IsLocalization.map_comp, RingHom.algebraMap_toAlgebra]
+  sorry
   -- rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
   -- change _ = comp (X.presheaf.map _) _
   -- refine' (@Category.assoc CommRingCat _ _ _ _ _ _ _ _).symm.trans _
@@ -249,12 +250,15 @@ theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.Respe
     P (Scheme.Γ.map ((X.restrict ((Opens.map f.1.base).obj <|
       Y.basicOpen r).openEmbedding).ofRestrict U.1.openEmbedding ≫ f ∣_ Y.basicOpen r).op) := by
   specialize H ⟨_, U.2.imageIsOpenImmersion (X.ofRestrict _)⟩
-  convert (h₁.ofRestrict_morphismRestrict_iff f _ ?_ ?_ ?_).mpr ?_ using 1 <;> sorry
-  -- pick_goal 4
-  -- · exact h₂.away r H
-  -- · infer_instance
-  -- · exact U.2.imageIsOpenImmersion _
-  -- · ext1; exact (Set.preimage_image_eq _ Subtype.coe_injective).symm
+  convert (h₁.ofRestrict_morphismRestrict_iff f _ ?_ ?_ ?_).mpr ?_ using 1
+  pick_goal 4
+  · apply RingHom.LocalizationPreserves.away h₂
+    swap
+    -- Porting note: needed to tell Lean this term early to avoid timeout
+    · exact (Scheme.Hom.opensFunctor (X.ofRestrict _)).obj U.val
+    · exact H
+  · exact U.2.imageIsOpenImmersion _
+  · ext1; exact (Set.preimage_image_eq _ Subtype.coe_injective).symm
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Scheme_restrict_basic_open_of_localization_preserves AlgebraicGeometry.scheme_restrict_basicOpen_of_localizationPreserves
 
