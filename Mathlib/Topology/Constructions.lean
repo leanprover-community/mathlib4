@@ -628,7 +628,7 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
     (le_inf
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun u hu =>
-          have : (⋃ v ∈ t, u ×ˢ v) = Prod.fst ⁻¹' u := by
+          have : ⋃ v ∈ t, u ×ˢ v = Prod.fst ⁻¹' u := by
             simp_rw [← prod_iUnion, ← sUnion_eq_biUnion, ht, prod_univ]
           show G.IsOpen (Prod.fst ⁻¹' u) by
             rw [← this]
@@ -637,7 +637,7 @@ theorem prod_generateFrom_generateFrom_eq {α β : Type _} {s : Set (Set α)} {t
                 isOpen_iUnion fun hv => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩)
       (coinduced_le_iff_le_induced.mp <|
         le_generateFrom fun v hv =>
-          have : (⋃ u ∈ s, u ×ˢ v) = Prod.snd ⁻¹' v := by
+          have : ⋃ u ∈ s, u ×ˢ v = Prod.snd ⁻¹' v := by
             simp_rw [← iUnion_prod_const, ← sUnion_eq_biUnion, hs, univ_prod]
           show G.IsOpen (Prod.snd ⁻¹' v) by
             rw [← this]

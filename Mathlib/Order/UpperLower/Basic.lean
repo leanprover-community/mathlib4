@@ -1339,13 +1339,13 @@ theorem lowerClosure_image (f : α ≃o β) :
 #align lower_closure_image lowerClosure_image
 
 @[simp]
-theorem UpperSet.iInf_Ici (s : Set α) : (⨅ a ∈ s, UpperSet.Ici a) = upperClosure s := by
+theorem UpperSet.iInf_Ici (s : Set α) : ⨅ a ∈ s, UpperSet.Ici a = upperClosure s := by
   ext
   simp
 #align upper_set.infi_Ici UpperSet.iInf_Ici
 
 @[simp]
-theorem LowerSet.iSup_Iic (s : Set α) : (⨆ a ∈ s, LowerSet.Iic a) = lowerClosure s := by
+theorem LowerSet.iSup_Iic (s : Set α) : ⨆ a ∈ s, LowerSet.Iic a = lowerClosure s := by
   ext
   simp
 #align lower_set.supr_Iic LowerSet.iSup_Iic
