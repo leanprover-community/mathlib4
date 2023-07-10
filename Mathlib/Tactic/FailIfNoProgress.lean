@@ -155,61 +155,69 @@ structure FailIfNoProgress.Config extends ExprComparisonConfig, MetavarDeclCompa
 --!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be
 -- sure.
 /-- Compares two expressions according to the given `ComparisonConfig`. -/
-  
+def compareExpr (config : ExprComparisonConfig := {}) : Expr → Expr → MetaM Bool :=
+  match config with
+  | ⟨.beq, _⟩ => fun e₁ e₂ => pure (e₁ == e₂)
+  | ⟨.defEq, t⟩ => fun e₁ e₂ => withTransparency t <| withNewMCtxDepth <| isDefEq e₁ e₂
+
 /-- Compares two lists monadically. -/
-def compareListM [Monad m] (l₁ l₂ : List α) (c : α → α → m Bool) : m Bool := do
-  let some lZip := zip? l₁ l₂ | return false
-  for (a₁, a₂) in lZip do
-    unless (← c a₁ a₂) do
-      return false
-  return true
+private def compareListM [Monad m] (c : α → α → m Bool) (l₁ l₂ : List α) : m Bool := do
+  unless l₁.length == l₂.length do return false
+  l₁.zip l₂ |>.allM fun (a, b) => c a b
 
 /-- Compare two `LocalDecl`s according to `config`. -/
-def compareLocalDecl (l₁ l₂ : LocalDecl) : (config : DeclComparisonConfig) → MetaM Bool
-| { toExprComparisonConfig, checkIndex, checkFVarIds, checkUserNames, checkLetValue } =>
-  let b := l₁.kind == l₂.kind
-    && (! checkIndex     || l₁.index == l₂.index)
-    && (! checkFVarIds   || l₁.fvarId == l₂.fvarId)
-    && (! checkUserNames || l₁.userName == l₂.userName)
-  andM' b
-  (match l₁.isLet && checkLetValue with
-    | true => andM
-      (compareExpr l₁.value l₂.value toExprComparisonConfig)
-      (compareExpr l₁.type l₂.type toExprComparisonConfig)
-    | false => compareExpr l₁.type l₂.type toExprComparisonConfig
-  )
+def compareLocalDecl (l₁ l₂ : LocalDecl) (cfg : LocalDeclComparisonConfig := {})
+    (ecfg : ExprComparisonConfig) : MetaM Bool :=
+  (pure <| (! cfg.checkFVarId   || l₁.fvarId   == l₂.fvarId)
+    && (! cfg.checkIndex    || l₁.index    == l₂.index)
+    && (! cfg.checkUserName || l₁.userName == l₂.userName)
+    && (! cfg.checkLocalDeclKind || l₁.kind == l₂.kind)
+    && (! cfg.checkBinderInfo || l₁.binderInfo == l₂.binderInfo))
+  <&&> (pure ! (cfg.checkLetValue && l₁.isLet && l₂.isLet) <||> compareExpr ecfg l₁.value l₂.value)
+  <&&> (pure ! cfg.checkType <||> compareExpr ecfg l₁.type l₂.type)
 
 /-- Compare two `LocalContext`s according to the specifications in `config`. -/
-def compareLCtx (lctx₁ lctx₂ : LocalContext) (config : CtxComparisonConfig := {}) : MetaM Bool :=
-  let l₁ := lctx₁.decls.toList.reduceOption
-  let l₂ := lctx₂.decls.toList.reduceOption
-  compareListM l₁ l₂ (compareLocalDecl (config := config.toDeclComparisonConfig))
+def compareLCtx (lctx₁ lctx₂ : LocalContext) (cfg : LocalContextComparisonConfig) (ecfg : ExprComparisonConfig) : MetaM Bool := do
+  -- Would be slightly better if we could normalize this function given cfg in advance. Likewise elsewhere. And also not filter at all if they're all true.
+  let f (d : LocalDecl) :=
+    (cfg.includeImplDetails || ! d.isImplementationDetail)
+    && (cfg.includeAuxDecls || ! d.isAuxDecl)
+    && (cfg.includeCDecls || d.isLet)
+    && (cfg.includeLDecls || ! d.isLet)
+    && (cfg.includeDefaultDecls || ! (d.kind == .default))
+  let l₁ := lctx₁.decls.toList.reduceOption.filter f
+  let l₂ := lctx₂.decls.toList.reduceOption.filter f
+  compareListM (compareLocalDecl (cfg := cfg.toLocalDeclComparisonConfig) (ecfg := ecfg)) l₁ l₂
 
-/-- Compare local instances. -/
-def compareLocalInstances (lis₁ lis₂ : LocalInstances)
-    (config : LocalInstanceComparisonConfig := {}) : MetaM Bool :=
-  compareListM lis₁.toList lis₂.toList (compareExpr ·.fvar ·.fvar config.toExprComparisonConfig)
+instance : BEq MetavarKind where
+  beq
+  | .natural, .natural | .synthetic, .synthetic | .syntheticOpaque, .syntheticOpaque => true
+  | _, _ => false
 
 /-- Compare two `MVarId`s by comparing their types and their local contexts, according to
 `config`. -/
-def compareGoal (goal₁ goal₂ : MVarId) (config : FailIfNoProgress.Config := {}) : MetaM Bool := do
-  let decl₁ ← goal₁.getDecl; let decl₂ ← goal₂.getDecl
-  andM
-    (impM' config.checkTarget
-      (compareExpr decl₁.type decl₂.type config.toExprComparisonConfig))
-    <| andM
-      (do
-        let some cfg := config.onLocalInstances | return true
-        compareLocalInstances decl₁.localInstances decl₂.localInstances cfg)
-      (do
-        let some cfg := config.onCtx | return true
-        compareLCtx decl₁.lctx decl₂.lctx cfg)
+def compareMVarId (goal₁ goal₂ : MVarId) (cfg : MetavarDeclComparisonConfig := {})
+    (ecfg : ExprComparisonConfig := {}) : MetaM Bool := do
+  let decl₁ ← goal₁.getDecl
+  let decl₂ ← goal₂.getDecl
+  (pure (
+    (! cfg.checkIndex || decl₁.index == decl₂.index)
+    && (! cfg.checkUserName || decl₁.userName == decl₂.userName)
+    && (! cfg.checkMetavarKind || decl₁.kind == decl₂.kind)
+    && (! cfg.checkLocalInstances || decl₁.localInstances == decl₂.localInstances)
+  ))
+  <&&> (pure ! cfg.checkTarget <||> compareExpr ecfg decl₁.type decl₂.type)
+  <&&>
+    if let some lcfg := cfg.compareLocalContexts? then
+      compareLCtx decl₁.lctx decl₂.lctx lcfg ecfg
+    else
+      pure true
 
 /-- Compare a list of goals to another list of goals. Return false if the number of goals differs,
 and otherwise compare the goals pairwise in order according to `config`. -/
-def compareGoals (goals₁ goals₂ : List MVarId) (config : FailIfNoProgress.Config := {}) :
-    MetaM Bool :=
-  compareListM goals₁ goals₂ (compareGoal (config := config))
+def compareGoalList (goals₁ goals₂ : List MVarId) (cfg : MetavarDeclComparisonConfig := {})
+    (ecfg : ExprComparisonConfig := {}) : MetaM Bool :=
+  compareListM (compareMVarId · · cfg ecfg) goals₁ goals₂
 
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
