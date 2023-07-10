@@ -5,6 +5,8 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Directed
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Data.Set.Finite
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Complete Partial Order
@@ -55,6 +57,54 @@ def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
         rw [← cn, ← cm]
         apply (c.monotone' (Nat.le_of_lt hmn)) }
 
+def Set.ToDirectedSet [Lattice α] [DecidableEq α] (s : Set α) : DirectedSet α := {
+  set := { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   },
+  directed := by
+    intros a ha b hb
+    simp at ha hb
+    obtain ⟨Fa,hFa⟩ := ha
+    obtain ⟨Fb,hFb⟩ := hb
+    use a⊔b
+    constructor
+    . simp
+      use (Fa ∪ Fb)
+      simp
+      simp at hFa
+      constructor
+      . constructor
+        . exact hFa.1
+        . exact hFb.1
+      . use sorry
+        rw [le_antisymm_iff]
+        constructor
+        . simp
+          constructor
+          . rw [hFa.2.2]
+            apply Finset.sup'_mono
+            exact Finset.subset_union_left Fa Fb
+          . rw [hFb.2.2]
+            apply Finset.sup'_mono
+            exact Finset.subset_union_right Fa Fb
+        . simp
+          intros c hc
+          cases' hc with h₁ h₂
+          . apply le_sup_of_le_left
+            obtain ⟨hnFa,ha⟩ := hFa.2
+            rw [ha]
+            apply Finset.le_sup'_of_le
+            exact h₁
+            exact Eq.le rfl
+          . apply le_sup_of_le_right
+            obtain ⟨hnFb,hb⟩ := hFb.2
+            rw [hb]
+            apply Finset.le_sup'_of_le
+            exact h₂
+            exact Eq.le rfl
+    . constructor
+      . exact le_sup_left
+      . exact le_sup_right
+}
+
 lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
 
 /-
@@ -72,3 +122,8 @@ instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
     obtain ⟨i,hi⟩:= ha
     rw [← hi]
     exact h i
+
+
+instance [Lattice α] (dSup : DirectedSet α → α) (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) :
+  CompleteLattice α where
+  sSup := fun s
