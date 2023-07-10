@@ -835,8 +835,8 @@ lemma quotientVolumeEqVolumePreimage_map_restrict [Countable G] [MeasurableSpace
 
 
 /-- Any two measures satisfying `QuotientVolumeEqVolumePreimage` are equal. -/
-lemma QuotientVolumeEqVolumePreimage.unique [Countable G] [MeasurableSpace G]
-    [SMulInvariantMeasure G α volume] [MeasurableSMul G α] [hasFun : HasFundamentalDomain G α]
+lemma QuotientVolumeEqVolumePreimage.unique
+    [hasFun : HasFundamentalDomain G α]
     (μ ν : Measure (Quotient α_mod_G))
     [QuotientVolumeEqVolumePreimage G α μ] [QuotientVolumeEqVolumePreimage G α ν] :
     μ = ν := by
@@ -863,6 +863,23 @@ lemma QuotientVolumeEqVolumePreimage.eq_map_restrict [Countable G] [MeasurableSp
     μ = Measure.map π (volume.restrict s) := by
   rw [QuotientVolumeEqVolumePreimage.eq_quotient_measure G α s meas_s fund_dom_s μ]
   exact Set.quotientMeasure_eq_map_restrict s volume meas_s
+
+
+/-- The quotient map to `α ⧸ G` is measure-preserving between the restriction of `volume` to a
+  fundamental domain in `α` and a related measure satisfying `QuotientVolumeEqVolumePreimage`. -/
+theorem measurePreserving_quotient_mk_of_quotientVolumeEqVolumePreimage
+    [Countable G] [MeasurableSpace G] [MeasurableSMul G α]
+    [SMulInvariantMeasure G α volume]
+    (𝓕 : Set α) (h𝓕 : IsFundamentalDomain G 𝓕)
+    (meas_𝓕 : MeasurableSet 𝓕) (μ : Measure (Quotient α_mod_G))
+    [QuotientVolumeEqVolumePreimage G α μ] :
+    MeasurePreserving π (volume.restrict 𝓕) μ where
+  measurable := measurable_quotient_mk' (s := α_mod_G)
+  map_eq := by
+    haveI : HasFundamentalDomain G α := ⟨𝓕, h𝓕, meas_𝓕⟩
+    rw [QuotientVolumeEqVolumePreimage.eq_map_restrict (μ := μ) (s := 𝓕)]
+    · assumption
+    · assumption
 
 end QuotientVolumeEqVolume
 
