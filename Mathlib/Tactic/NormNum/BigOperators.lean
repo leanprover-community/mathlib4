@@ -370,8 +370,7 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
   have f : Q($α → $β) := f
   let instCS ← synthInstanceQ (q(CommSemiring $β) : Q(Type u)) <|>
     throwError "not a commutative semiring: {β}"
-  -- Have to construct this expression manually, `q(0)` doesn't parse correctly:
-  let n : Q(ℕ) := .lit (.natVal 0) 
+  let n : Q(ℕ) := q(0)
   let pf : Q(IsNat (Finset.sum ∅ $f) $n) := q(@Finset.sum_empty $β $α $instCS $f)
   let res_empty := Result.isNat _ n pf
 
