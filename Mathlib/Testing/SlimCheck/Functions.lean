@@ -296,7 +296,7 @@ theorem List.applyId_cons [DecidableEq α] (xs : List (α × α)) (x y z : α) :
 #align slim_check.injective_function.list.apply_id_cons SlimCheck.InjectiveFunction.List.applyId_cons
 
 open Function
-open _root_.List
+open List
 
 open Nat
 
@@ -310,15 +310,17 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
     · injection h₂ with h₀; subst h₀
       cases ys
       · cases h₁
-      · simp only [List.applyId, Prod.toSigma, Option.getD_some, nth, lookup_cons_eq, zip_cons_cons,
-          List.map]
+      · -- porting note: `open List` no longer makes `zip_cons_cons` visible
+        simp only [List.applyId, Prod.toSigma, Option.getD_some, List.get?, List.dlookup_cons_eq,
+          List.zip_cons_cons, List.map, Option.some_inj]
     · cases ys
       · cases h₁
       · cases' h₀ with _ _ h₀ h₁
-        simp only [nth, zip_cons_cons, list.apply_id_cons] at h₂ ⊢
+        -- porting note: `open List` no longer makes `zip_cons_cons` visible
+        simp only [List.get?, List.zip_cons_cons, List.applyId_cons] at h₂ ⊢
         rw [if_neg]
-        · apply xs_ih <;> solve_by_elim [succ.inj]
-        · apply h₀; apply nth_mem h₂
+        · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
+        · apply h₀; apply List.get?_mem h₂
 #align slim_check.injective_function.list.apply_id_zip_eq SlimCheck.InjectiveFunction.List.applyId_zip_eq
 
 theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs) (h₁ : xs ~ ys)
