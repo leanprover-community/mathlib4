@@ -66,43 +66,43 @@ def Set.ToDirectedSet [Lattice α] [DecidableEq α] (s : Set α) : DirectedSet �
     obtain ⟨Fb,hFb⟩ := hb
     use a⊔b
     constructor
-    . simp
+    · simp
       use (Fa ∪ Fb)
       simp
       simp at hFa
       constructor
-      . constructor
-        . exact hFa.1
-        . exact hFb.1
-      . use sorry
+      · constructor
+        · exact hFa.1
+        · exact hFb.1
+      · obtain ⟨hnFa,ha⟩ := hFa.2
+        obtain ⟨hnFb,hb⟩ := hFb.2
+        use (by sorry)
         rw [le_antisymm_iff]
         constructor
-        . simp
+        · simp
           constructor
-          . rw [hFa.2.2]
+          · rw [hFa.2.2]
             apply Finset.sup'_mono
             exact Finset.subset_union_left Fa Fb
-          . rw [hFb.2.2]
+          · rw [hFb.2.2]
             apply Finset.sup'_mono
             exact Finset.subset_union_right Fa Fb
-        . simp
+        · simp
           intros c hc
           cases' hc with h₁ h₂
-          . apply le_sup_of_le_left
-            obtain ⟨hnFa,ha⟩ := hFa.2
+          · apply le_sup_of_le_left
             rw [ha]
             apply Finset.le_sup'_of_le
             exact h₁
             exact Eq.le rfl
-          . apply le_sup_of_le_right
-            obtain ⟨hnFb,hb⟩ := hFb.2
+          · apply le_sup_of_le_right
             rw [hb]
             apply Finset.le_sup'_of_le
             exact h₂
             exact Eq.le rfl
-    . constructor
-      . exact le_sup_left
-      . exact le_sup_right
+    · constructor
+      · exact le_sup_left
+      · exact le_sup_right
 }
 
 lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
