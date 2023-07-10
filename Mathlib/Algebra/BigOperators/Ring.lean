@@ -205,9 +205,10 @@ theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : 
 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
 gives `(a + b)^s.card`.-/
-theorem sum_pow_mul_eq_add_pow {α R : Type _} [DecidableEq α] [CommSemiring R] (a b : R)
+theorem sum_pow_mul_eq_add_pow {α R : Type _} [CommSemiring R] (a b : R)
   (s : Finset α) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
+  classical
   rw [← prod_const, prod_add]
   refine' Finset.sum_congr rfl fun t ht => _
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
