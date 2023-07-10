@@ -1377,10 +1377,24 @@ theorem ContDiffWithinAt.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s 
   hg.contMDiffWithinAt.comp x hf h
 #align cont_diff_within_at.comp_cont_mdiff_within_at ContDiffWithinAt.comp_contMDiffWithinAt
 
+theorem ContDiffAt.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s : Set M}
+    {x : M} (hg : ContDiffAt 𝕜 n g (f x)) (hf : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x :=
+  hg.contMDiffAt.comp_contMDiffWithinAt x hf
+
 theorem ContDiffAt.comp_contMDiffAt {g : F → F'} {f : M → F} {x : M} (hg : ContDiffAt 𝕜 n g (f x))
     (hf : ContMDiffAt I 𝓘(𝕜, F) n f x) : ContMDiffAt I 𝓘(𝕜, F') n (g ∘ f) x :=
-  hg.comp_contMDiffWithinAt hf Subset.rfl
+  hg.comp_contMDiffWithinAt hf
 #align cont_diff_at.comp_cont_mdiff_at ContDiffAt.comp_contMDiffAt
+
+theorem ContDiff.comp_contMDiffWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
+    (hg : ContDiff 𝕜 n g) (hf : ContMDiffWithinAt I 𝓘(𝕜, F) n f s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, F') n (g ∘ f) s x :=
+  hg.contDiffAt.comp_contMDiffWithinAt hf
+
+theorem ContDiff.comp_contMDiffAt {g : F → F'} {f : M → F} {x : M} (hg : ContDiff 𝕜 n g)
+    (hf : ContMDiffAt I 𝓘(𝕜, F) n f x) : ContMDiffAt I 𝓘(𝕜, F') n (g ∘ f) x :=
+  hg.comp_contMDiffWithinAt hf
 
 theorem ContDiff.comp_contMDiff {g : F → F'} {f : M → F} (hg : ContDiff 𝕜 n g)
     (hf : ContMDiff I 𝓘(𝕜, F) n f) : ContMDiff I 𝓘(𝕜, F') n (g ∘ f) := fun x =>
@@ -1806,10 +1820,8 @@ theorem ContMDiffWithinAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g s x)
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n (fun x => (g x).comp (f x)) s x :=
-  @ContDiffWithinAt.comp_contMDiffWithinAt _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2) (fun x => (g x, f x)) s _ x
-    (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_comp contDiff_snd) (hg.prod_mk_space hf)
-    (by simp_rw [preimage_univ, subset_univ])
+  ContDiff.comp_contMDiffWithinAt (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
+    (f := fun x => (g x, f x)) (contDiff_fst.clm_comp contDiff_snd) (hg.prod_mk_space hf)
 #align cont_mdiff_within_at.clm_comp ContMDiffWithinAt.clm_comp
 
 theorem ContMDiffAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {x : M}
@@ -1855,16 +1867,40 @@ theorem ContMDiff.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁}
     ContMDiff I 𝓘(𝕜, F₂) n fun x => g x (f x) := fun x => (hg x).clm_apply (hf x)
 #align cont_mdiff.clm_apply ContMDiff.clm_apply
 
+-- porting note: Lean 3 code didn't need `@`
+theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
+    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
+      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
+  @ContDiff.comp_contMDiffWithinAt 𝕜 _ E _ _ H _ I M _ _ (F₁ →L[𝕜] F₂) _ _
+    ((F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) _ _ n (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip f s x
+    (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip.contDiff hf
+
+-- porting note: Lean 3 code didn't need `@`
+theorem ContMDiffWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
+    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) n f s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) n
+      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
+  @ContDiff.comp_contMDiffWithinAt 𝕜 _ E _ _ H _ I M _ _ (F₂ →L[𝕜] F₃) _ _
+    ((F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) _ _ n (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃) f s x
+    (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).contDiff hf
+
+-- porting note: Lean 3 code didn't need `@`
+theorem ContMDiffWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
+    {s : Set M} {x : M}
+    (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) n (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s x)
+    (hg : ContMDiffWithinAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) n (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₄)) n
+      (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) s x :=
+  hf.clm_precomp.clm_comp hg.clm_postcomp
+
 theorem ContMDiffWithinAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {s : Set M}
     {x : M} (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g s x)
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₄) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) n (fun x => (g x).prodMap (f x)) s x :=
-  @ContDiffWithinAt.comp_contMDiffWithinAt _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+  @ContDiff.comp_contMDiffWithinAt _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     (fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2) (fun x => (g x, f x)) s _ x
-    (by
-      apply ContDiff.contDiffAt
-      exact (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).contDiff)
-    (hg.prod_mk_space hf) (by simp_rw [preimage_univ, subset_univ])
+    (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).contDiff
 #align cont_mdiff_within_at.clm_prod_map ContMDiffWithinAt.clm_prodMap
 
 theorem ContMDiffAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {x : M}
