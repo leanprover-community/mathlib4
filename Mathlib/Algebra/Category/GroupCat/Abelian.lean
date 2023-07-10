@@ -64,42 +64,23 @@ theorem exact_iff' : Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
   exact and_congr ⟨fun h => ext fun x => h (AddMonoidHom.mem_range.mpr ⟨x, rfl⟩),
     by rintro h _ ⟨x, rfl⟩; exact FunLike.congr_fun h x⟩ Iff.rfl
 
-lemma exact_of_exact_functor {F G H : J ⥤ AddCommGroupCat.{u}} {η : F ⟶ G} {γ : G ⟶ H}
-    (h : Exact η γ) (j : J) : Exact (η.app j) (γ.app j) := by
-  sorry
-
-/-- The category of abelian groups is an AB5 category. -/
-instance : PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
-  apply Functor.preservesFiniteLimitsOfMapExact
-  intro F G H η γ h
-  replace h := exact_of_exact_functor h
-  rw [exact_iff']
+/-- The category of abelian groups satisfies Grothedieck's Axiom AB5. -/
+instance {J : Type u} [SmallCategory J] [IsFiltered J] :
+    PreservesFiniteLimits <| colim (J := J) (C := AddCommGroupCat.{u}) := by
+  refine Functor.preservesFiniteLimitsOfMapExact _ fun F G H η γ h => (exact_iff' _ _).mpr ?_
+  replace h : ∀ j : J, Exact (η.app j) (γ.app j) :=
+    fun j => Functor.map_exact ((evaluation _ _).obj j) η γ h
   constructor
-  · refine colimit.hom_ext  (fun j => ?_)
-    simp [reassoc_of% (h j).1]
-  · rintro x (hx :  _ = _)
-    let x' : (forget AddCommGroupCat).obj (colimit G) := x
-    obtain ⟨j,y,rfl⟩ := Limits.Concrete.colimit_exists_rep G x'
-    erw [← comp_apply, Limits.colimit.ι_desc] at hx
-    dsimp at hx
-    rw [comp_apply] at hx
-    have : 0 = Limits.colimit.ι H j 0 := by
-      simp
-    rw [this] at hx
-    clear this
-    obtain ⟨k,e₁,e₂,hk⟩ := Limits.Concrete.colimit_exists_of_rep_eq _ _ _ hx
-    let temp : H.obj j →+ H.obj k := H.map e₂
-    change _ = temp 0 at hk
-    rw [temp.map_zero] at hk
-    rw [← comp_apply, ← NatTrans.naturality] at hk
-    rw [comp_apply] at hk
-    have hk' : (G.map e₁ y) ∈ AddMonoidHom.ker (γ.app k) := by
-      rw [AddMonoidHom.mem_ker]
-      convert hk
-    obtain ⟨t, ht⟩ := ((AddCommGroupCat.exact_iff' (η.app k) (γ.app k)).1 (h k)).2 hk'
-    use Limits.colimit.ι F k t
-    erw [← comp_apply, Limits.colimit.ι_map, comp_apply, ht, ← comp_apply]
-    congr 1
-    simp
+  · exact colimit.hom_ext fun j => by simp [reassoc_of% (h j).w]
+  · intro x (hx : _ = _)
+    rcases Concrete.colimit_exists_rep G x with ⟨j, y, rfl⟩
+    erw [← comp_apply, colimit.ι_map, comp_apply,
+      ← map_zero (by exact colimit.ι H j : H.obj j →+ ↑(colimit H))] at hx
+    rcases Concrete.colimit_exists_of_rep_eq H _ _ hx with ⟨k, e₁, e₂, hk : _ = H.map e₂ 0⟩
+    rw [map_zero, ← comp_apply, ← NatTrans.naturality, comp_apply] at hk
+    rcases ((exact_iff' _ _).mp <| h k).right hk with ⟨t, ht⟩
+    use colimit.ι F k t
+    erw [← comp_apply, colimit.ι_map, comp_apply, ht]
+    exact colimit.w_apply G e₁ y
 
 end AddCommGroupCat
