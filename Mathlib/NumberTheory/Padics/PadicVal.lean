@@ -549,6 +549,28 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
       padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp
 
+/-- The `p`-adic valuation of `m` equals zero if it is between `n * k` and `n * (k + 1)` for
+some `k`. -/
+theorem padicValNat_eq_zero_between_consec_multiples {m p k : ℕ}
+    (h1 : p * k < m) (h2 : m < p * (k + 1)) : padicValNat p m = 0 :=
+  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples h1 h2
+
+theorem padicValNat_factorial_add {p n : ℕ} (m : ℕ) (hp : p.Prime) (h : n < p):
+    padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
+  induction' n with n hn
+  · rw [zero_eq, add_zero]
+  · rw [add_succ, factorial_succ, @padicValNat.mul _ _ _ { out := hp } (succ_ne_zero (p * m + n))
+        <| factorial_ne_zero (p * m + _), hn <| lt_of_succ_lt h, ← add_succ,
+        padicValNat_eq_zero_between_consec_multiples (Nat.lt_add_of_pos_right <| succ_pos n)
+        (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h)), zero_add]
+
+/-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
+the largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
+theorem padicValNat_factorial_div {p : ℕ} (n : ℕ)  (hp : p.Prime):
+   padicValNat p n ! = padicValNat p (p * (n / p))! := by
+  nth_rw 1 [← div_add_mod n p]
+  exact padicValNat_factorial_add (n / p) hp <| mod_lt n <|Prime.pos hp
+
 end padicValNat
 
 section padicValInt
