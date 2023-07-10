@@ -242,7 +242,6 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
--- Porting note: current convert branches run away if maxHeartbeats is off
 theorem scheme_restrict_basicOpen_of_localizationPreserves (h₁ : RingHom.RespectsIso @P)
     (h₂ : RingHom.LocalizationPreserves @P) {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y)
     (r : Y.presheaf.obj (op ⊤)) (H : sourceAffineLocally (@P) f)
@@ -627,16 +626,19 @@ theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderCom
       Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj]
     rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,
       pullback.lift_snd_assoc, Category.assoc, ← Category.assoc, op_comp, Functor.map_comp]
-    -- refine hP.StableUnderComposition _ _ ?_ ?_ -- (hP.affine_openCover_iff ?_ ?_ ?_).mp hg ?_ ?_
-    have : P (Scheme.Γ.map (Scheme.OpenCover.map (Scheme.affineCover (pullback g (Scheme.OpenCover.map (Scheme.affineCover S) i))) j ≫ pullback.snd).op) := sorry
     apply hP.StableUnderComposition
-    · exact this
-    -- · exact (hP.affine_openCover_iff _ _ _).mp hg _ _
+    · -- Porting note: used to be exact _|>. hg i j but that can't find an instance
+      apply hP.affine_openCover_iff _ _ _|>.mp
+      exact hg
     · delta affineLocally at hf
+      -- Porting note: again strange behavior of TFAE
       have := (hP.isLocal_sourceAffineLocally.affine_openCover_TFAE f).out 0 3
       rw [this] at hf
-      have : IsOpenImmersion <| ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) := sorry
+      -- Porting note: needed to help Lean with this instance (same as above)
+      have : IsOpenImmersion <| ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) :=
+        LocallyRingedSpace.IsOpenImmersion.comp _ _
       specialize hf ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)
+      -- Porting note: again strange behavior of TFAE
       have := (hP.affine_openCover_TFAE
         (pullback.snd : pullback f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
         pullback.fst) ⟶ _)).out 0 3
