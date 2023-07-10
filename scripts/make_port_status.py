@@ -58,7 +58,7 @@ for path in paths:
                 if imported + '.default' in graph.nodes:
                     imported = imported + '.default'
                 else:
-                    imported = 'lean_core.' + imported
+                    imported = imported
             graph.add_edge(imported, label)
 
 def get_mathlib4_module_commit_info(contents):
@@ -104,6 +104,8 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         'mathlib4_pr': mathlib4_pr,
         'source': dict(repo=repo, commit=commit)
     }
+
+    graph.add_node(module)
 
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']
