@@ -78,7 +78,8 @@ jobs:
 
       - name: update TacticCaches.lean
         run: |
-          git ls-files 'Util/TacticCaches/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Util/TacticCaches.lean
+          cd Util
+          git ls-files 'TacticCaches/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > TacticCaches.lean
 
       - name: update Mathlib/Tactic.lean
         run: |
