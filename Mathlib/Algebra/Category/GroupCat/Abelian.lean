@@ -56,8 +56,8 @@ instance : Abelian AddCommGroupCat.{u} where
 theorem exact_iff : Exact f g ↔ f.range = g.ker := by
   rw [Abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
   exact
-    ⟨fun h => le_antisymm (range_le_ker_iff.mpr h.left) (ker_le_range_iff.mpr h.right),
-      fun h => ⟨range_le_ker_iff.mp <| le_of_eq h, ker_le_range_iff.mp <| le_of_eq h.symm⟩⟩
+    ⟨fun h => ((range_le_ker_iff _ _).mpr h.left).antisymm ((ker_le_range_iff _ _).mpr h.right),
+      fun h => ⟨(range_le_ker_iff _ _).mp h.le, (ker_le_range_iff _ _).mp h.symm.le⟩⟩
 
 theorem exact_iff' : Exact f g ↔ f ≫ g = 0 ∧ g.ker ≤ f.range := by
   rw [exact_iff, le_antisymm_iff]
