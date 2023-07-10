@@ -614,7 +614,7 @@ instance commMonoid : CommMonoid PosNum := by
     { mul := (· * ·)
       one := (1 : PosNum)
       npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
-  try { intros ; rfl } <;>
+  try { intros; rfl } <;>
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
