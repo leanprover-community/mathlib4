@@ -594,10 +594,15 @@ section continuous_of_bounded
 namespace Seminorm
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
 variable [NormedField 𝕝] [Module 𝕝 E]
+
 variable [NontriviallyNormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+
 variable [NormedField 𝕝₂] [Module 𝕝₂ F]
+
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
+
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
 
 variable [Nonempty ι] [Nonempty ι']
