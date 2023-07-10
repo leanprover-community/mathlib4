@@ -149,7 +149,8 @@ instance Pi.sampleableExt : SampleableExt (α → β) where
   interp f := SampleableExt.interp ∘ f.apply
   sample := do
     let xs : List (_ × _) ← (SampleableExt.sample (α := List (α × β)))
-    let ⟨x⟩ ← (ULiftable.up <| SampleableExt.sample : Gen (ULift.{max u ub} (SampleableExt.proxy β)))
+    let ⟨x⟩ ← (ULiftable.up <|
+      SampleableExt.sample : Gen (ULift.{max u ub} (SampleableExt.proxy β)))
     pure <| TotalFunction.withDefault (List.toFinmap' <| xs.map <|
       Prod.map SampleableExt.interp id) x
   -- note: no way of shrinking the domain without an inverse to `interp`
@@ -537,5 +538,3 @@ instance Antitone.testable [Preorder α] [Preorder β] (f : α → β)
 #align slim_check.antitone.testable SlimCheck.Antitone.testable
 
 end SlimCheck
-
-#sample ℕ → ℕ → ℤ
