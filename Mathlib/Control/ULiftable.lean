@@ -107,11 +107,9 @@ end ULiftable
 
 open ULift
 
-instance : ULiftable id id where
+instance instULiftableId : ULiftable Id Id where
   congr F := F
-
-instance : ULiftable Id Id where
-  congr F := F
+#align id.uliftable instULiftableId
 
 /-- for specific state types, this function helps to create a uliftable instance -/
 def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v₁} [ULiftable m m']
