@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Coypright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
@@ -124,22 +124,22 @@ theorem prod_sum {δ : α → Type _} [DecidableEq α] [∀ a, DecidableEq (δ a
         Subtype.exists, exists_prop, exists_eq_right] using ha
 #align finset.prod_sum Finset.prod_sum
 
-open Classical
 /-- The product of `f a + g a` over all of `s` is the sum
   over the powerset of `s` of the product of `f` over a subset `t` times
   the product of `g` over the complement of `t`  -/
-theorem prod_add (f g : α → β) (s : Finset α) :
+theorem prod_add [DecidableEq α] (f g : α → β) (s : Finset α) :
     ∏ a in s, (f a + g a) = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
   calc
     ∏ a in s, (f a + g a) =
-        ∏ a in s, ∑ p in ({True, False} : Finset Prop), if p then f a else g a :=
+        ∏ a in s, ∑ p in ({true, false} : Finset Bool), if p then f a else g a :=
       by simp
-    _ = ∑ p in (s.pi fun _ => {True, False} : Finset (∀ a ∈ s, Prop)),
+    _ = ∑ p in (s.pi fun _ => {true, false} : Finset (∀ a ∈ s, Bool)),
           ∏ a in s.attach, if p a.1 a.2 then f a.1 else g a.1 :=
       prod_sum
     _ = ∑ t in s.powerset, (∏ a in t, f a) * ∏ a in s \ t, g a :=
       sum_bij'
-        (fun f _ => s.filter (fun a => ∀ h : a ∈ s, f a h))
+        (fun (f: ∀ a ∈ s, Bool) _ =>
+          s.filter (fun a : α => ∀ h : a ∈ s, f a h))
         (by simp)
         (fun a _ => by
           rw [prod_ite]
@@ -152,9 +152,16 @@ theorem prod_add (f g : α → β) (s : Finset α) :
             (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp))
-        (fun t _ a  _ => a ∈ t)
-        (by simp [Classical.em])
-        (by simp [Function.funext_iff]; tauto)
+        (fun t _ a  _ => if a ∈ t then true else false)
+        (by simp; tauto)
+        (by
+          simp [Function.funext_iff];
+          intro a _ a1 ha1
+          by_cases h : a a1 ha1
+          · rw [h, if_pos]
+            exact ⟨ ha1, fun _ => h ⟩
+          · rw [Bool.eq_false_of_ne_true h, if_neg]
+            tauto)
         (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
 #align finset.prod_add Finset.prod_add
 
@@ -204,7 +211,7 @@ theorem prod_one_sub_ordered {ι R : Type _} [CommRing R] [LinearOrder ι] (s : 
 
 /-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
 gives `(a + b)^s.card`.-/
-theorem sum_pow_mul_eq_add_pow {α R : Type _} [CommSemiring R] (a b : R) (s : Finset α) :
+theorem sum_pow_mul_eq_add_pow {α R : Type _} [DecidableEq α] [CommSemiring R] (a b : R) (s : Finset α) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   rw [← prod_const, prod_add]
   refine' Finset.sum_congr rfl fun t ht => _
