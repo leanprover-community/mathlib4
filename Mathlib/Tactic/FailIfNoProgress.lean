@@ -25,24 +25,10 @@ example : (1 - 1 = 0) := by with_reducible rfl
 This tactic is useful in situations where we want to stop iterating some tactics if they're not
 having any  effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 
-## Config notes
 
-We use the following pattern to propagate defaults from a "global" setting to "local" setting. In particular, we want to propagate the settings for comparing `Expr`s from a global one to several different local ones, while allowing each "local" setting (each config for each type of expr comparison) to override the global settings.
 
-When a structure `SubConfig` needs defaults from a global `SharedProcessConfig` (e.g. `ExprComparisonConfig`) and has fields for config options for multiple SharedProcesses or processes which also involve that common process, we allow `SubConfig` to extend `SharedProcessConfig`, set the defaults, and then use the field values (not the inherited defaults) for the defaults for the subprocesses:
-```
-structure SubConfig (defaults : SharedProcessConfig) extends SharedProcessConfig where
-  sharedField1 := defaults.sharedField1
-  sharedField2 := defaults.sharedField2
-  sharedProcess1Config : Option (SharedProcessConfigWithDefaults { sharedField1, sharedField2 })
-    := some {}
-  sharedProcess2Config : Option (SharedProcessConfigWithDefaults { sharedField1, sharedField2 })
-    := some {}
-  subSubProcessConfig : Option (SubSubProcessConfig { sharedField1, sharedField2 }) := some {}
-```
-where `SharedProcessConfigWithDefaults` is `SharedProcess` but with defaults inherited from its argument.
 
-If `SubConfig` does not contain multiple different subprocesses which rely on `defaults`, we do not extend `SharedProcessConfig` but merely pass along `defaults`:
+
 ```
 structure SubConfig (defaults : SharedProcessConfig) where
   subSubProcessConfig : Option (SubSubProcessConfig defaults) := some {}
@@ -79,34 +65,25 @@ where
   transparency := defaults.transparency
 
 /-- Config data for comparing local contexts. -/
-structure LocalDeclComparisonConfig (defaults : ExprComparisonConfig)
-  extends ExprComparisonConfig
-where
-  -- Inherit defaults
-  eqKind       := defaults.eqKind
-  transparency := defaults.transparency
+structure LocalDeclComparisonConfig where
   /-- Whether to compare the indices of two `LocalDecl`s. -/
-  checkIndex     : Bool := true
+  checkIndex         : Bool := true
   /-- Whether to compare the `FVarIds` of two `LocalDecl`s. -/
-  checkFVarId   : Bool := true
+  checkFVarId        : Bool := true
   /-- Whether to compare the userNames of two `LocalDecl`s. -/
-  checkUserName : Bool := true
-  /-- Whether to compare the types of two `LocalDecl`s, and if so, how. -/
-  compareTypes? : Option (ExprComparisonConfigWithDefaults { eqKind, transparency }) :=
-    some {}
-  /-- Whether to compare the letValues of two `ldecl`s, and if so, how. -/
-  compareLetValues? : Option (ExprComparisonConfigWithDefaults { eqKind, transparency }) :=
-    some {}
+  checkUserName      : Bool := true
+  /-- Whether to compare the types of two `LocalDecl`s. -/
+  checkType          : Bool := true
+  /-- Whether to compare the letValues of two `ldecl`s. -/
+  checkLetValue      : Bool := true
   /-- Whether to compare the binderInfos of two `cdecl`s. -/
-  checkBinderInfo : Bool := true
+  checkBinderInfo    : Bool := true
   /-- Whether to compare the declKinds of a `LocalDecl`. -/
   checkLocalDeclKind : Bool := true
 
 -- Merge?
 /-- Config data for comparing local contexts. -/
-structure LocalContextComparisonConfig (defaults : ExprComparisonConfig)
-  extends LocalDeclComparisonConfig defaults
-where
+structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
   -- Filtering options
   /-- Whether to include implementation detail decls. -/
   includeImplDetails  : Bool := true
@@ -143,8 +120,9 @@ inductive FailIfNoProgress.Mode where
 | normal
 /-- Only checks if the initial metavariables have been assigned or not. -/
 | quick
-/-- Only checks if the metavariable counter in the `MetaVarContext` has gone up or not. May erroneously consider "progress" to have been made even if attempts to make progress failed. -/
-| veryQuick --!! Good idea or not?
+
+
+
 
 -- allow custom functions for comparing `Expr`s etc.? It'd be cool if every comparison function could be overridden, and really was stored in a structure. It'd be neat to do the custom elaborator thing.
 /--
@@ -175,8 +153,8 @@ instances of goals. If `none`, local instances are not compared.
   * `checkUserNames : Bool := true` – compares the names of fvars in the local context
   * `checkLetValue  : Bool := true` – compares the values of `ldecls`
 -/
-structure FailIfNoProgress.Config extends MetavarDeclComparisonConfig {} where
-  mode : FailIfNoProgress.Mode
+structure FailIfNoProgress.Config extends ExprComparisonConfig, MetavarDeclComparisonConfig where
+  mode : FailIfNoProgress.Mode := .normal
 
 --!! Does transparency affect BEq or is it only a DefEq thing? I think the latter, but want to be
 -- sure.
