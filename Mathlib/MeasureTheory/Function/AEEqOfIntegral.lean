@@ -574,24 +574,59 @@ theorem AeMeasurable.ae_eq_of_forall_set_lintegral_eq {f g : α → ℝ≥0∞} 
 
 end Lintegral
 
+variables {β : Type _} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
+
 /-- If an integrable function has zero integral on all closed sets, then it is zero
 almost everwhere.-/
 lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero
-    {β : Type _} [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {μ : Measure β}
-    {f : β → E} (hf : Integrable f μ) (h'f : ∀ {s : Set β}, IsClosed s → ∫ x in s, f x ∂μ = 0) :
+     {μ : Measure β}
+    {f : β → E} (hf : Integrable f μ) (h'f : ∀ (s : Set β), IsClosed s → ∫ x in s, f x ∂μ = 0) :
     f =ᵐ[μ] 0 := by
   suffices : ∀ s, MeasurableSet s → ∫ x in s, f x ∂μ = 0
   · exact hf.ae_eq_zero_of_forall_set_integral_eq_zero (fun s hs _ ↦ this s hs)
   have A : ∀ (t : Set β), MeasurableSet t → ∫ (x : β) in t, f x ∂μ = 0
       → ∫ (x : β) in tᶜ, f x ∂μ = 0 := by
     intro t t_meas ht
-    have I : ∫ x, f x ∂μ = 0 := by rw [← integral_univ]; exact h'f isClosed_univ
+    have I : ∫ x, f x ∂μ = 0 := by rw [← integral_univ]; exact h'f _ isClosed_univ
     simpa [ht, I] using integral_add_compl t_meas hf
   intro s hs
   refine MeasurableSet.induction_on_open (fun U hU ↦ ?_) A (fun g g_disj g_meas hg ↦ ?_) hs
   · rw [← compl_compl U]
-    exact A _ hU.measurableSet.compl (h'f hU.isClosed_compl)
+    exact A _ hU.measurableSet.compl (h'f _ hU.isClosed_compl)
   · rw [integral_iUnion g_meas g_disj hf.integrableOn]
     simp [hg]
 
+set_option autoImplicit false
+
+open Set
+
+open scoped Topology
+
+/-- If an integrable function has zero integral on all bounded closed sets, then it is zero
+almost everwhere.-/
+lemma ae_eq_zero_of_forall_set_integral_isClosed_isBounded_eq_zero
+    [SigmaCompactSpace β] {μ : Measure β}
+    {f : β → E} (hf : Integrable f μ)
+    (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
+    f =ᵐ[μ] 0 := by
+  apply ae_eq_zero_of_forall_set_integral_isClosed_eq_zero hf (fun s hs ↦ ?_)
+  let t : ℕ → Set β := fun n ↦ compactCovering β n ∩ s
+  suffices H : Tendsto (fun n ↦ ∫ x in t n, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ))
+  · have A : ∀ n, ∫ x in t n, f x ∂μ = 0 :=
+      fun n ↦ h'f _ (IsCompact.inter_right (isCompact_compactCovering β n) hs)
+    simp_rw [A, tendsto_const_nhds_iff] at H
+    exact H.symm
+  have B : s = ⋃ n, t n := by rw [← Set.iUnion_inter, iUnion_compactCovering, Set.univ_inter]
+  rw [B]
+  apply tendsto_set_integral_of_monotone
+  · intros n
+    apply IsClosed.measurableSet
+
+  · sorry
+  · exact hf.integrableOn
+
 end MeasureTheory
+
+#exit
+
+tendsto_set_integral_of_monotone

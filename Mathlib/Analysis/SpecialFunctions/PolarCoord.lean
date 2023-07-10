@@ -121,7 +121,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
       Classical.not_not] at hx
     exact hx.2
   have B : volume (LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) : Set (ℝ × ℝ)) = 0 := by
-    apply Measure.addhaar_submodule
+    apply Measure.addHaar_submodule
     rw [Ne.def, LinearMap.ker_eq_top]
     intro h
     have : (LinearMap.snd ℝ ℝ ℝ) (0, 1) = (0 : ℝ × ℝ →ₗ[ℝ] ℝ) (0, 1) := by rw [h]
