@@ -9,6 +9,7 @@ Authors: Henrik Böving, Simon Hudon
 ! if you have ported upstream changes.
 -/
 import Mathlib.Control.Random
+import Mathlib.Control.ULiftable
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Subtype
 import Mathlib.Data.Nat.Basic
@@ -42,6 +43,11 @@ It has a `Nat` parameter so that the caller can decide on the
 size of the examples. -/
 abbrev Gen (α : Type u) := ReaderT (ULift Nat) Rand α
 
+-- TODO: move
+instance : ULiftable (Rand.{u}) Rand.{v} := StateT.uliftable' (Equiv.ulift.trans Equiv.ulift.symm)
+
+instance : ULiftable (Gen.{u}) Gen.{v} := ReaderT.uliftable' (Equiv.ulift.trans Equiv.ulift.symm)
+
 namespace Gen
 
 /-- Lift `Random.random` to the `Gen` monad. -/
@@ -73,10 +79,12 @@ def getSize : Gen Nat :=
 def resize (f : Nat → Nat) (x : Gen α) : Gen α :=
   withReader (ULift.up ∘ f ∘ ULift.down) x
 
+variable {α : Type u}
+
 /-- Create an `Array` of examples using `x`. The size is controlled
 by the size parameter of `Gen`. -/
-def arrayOf (x : Gen α) : Gen (Array α) := do
-  let sz ← choose Nat 0 (←getSize) (Nat.zero_le _)
+def arrayOf (x : Gen α) : Gen (Array α) :=do
+  let ⟨sz⟩ ← (ULiftable.up <| do choose Nat 0 (←getSize) (Nat.zero_le _) : Gen (ULift ℕ))
   let mut res := #[]
   for _ in [0:sz] do
     res := res.push (← x)
@@ -89,12 +97,12 @@ def listOf (x : Gen α) : Gen (List α) :=
 
 /-- Given a list of example generators, choose one to create an example. -/
 def oneOf (xs : Array (Gen α)) (pos : 0 < xs.size := by decide) : Gen α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.size pos
+  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.size pos
   xs.get ⟨x, h2⟩
 
 /-- Given a list of examples, choose one to create an example. -/
 def elements (xs : List α) (pos : 0 < xs.length) : Gen α := do
-  let ⟨x, _, h2⟩ ← chooseNatLt 0 xs.length pos
+  let ⟨x, _, h2⟩ ← ULiftable.up <| chooseNatLt 0 xs.length pos
   pure $ xs.get ⟨x, h2⟩
 
 open List in
@@ -103,7 +111,7 @@ def permutationOf : (xs : List α) → Gen { ys // ys ~ xs }
   | [] => pure ⟨[], Perm.nil⟩
   | x::xs => do
     let ⟨ys, h1⟩ ← permutationOf xs
-    let ⟨n, _, h3⟩ ← choose Nat 0 ys.length (Nat.zero_le _)
+    let ⟨n, _, h3⟩ ← ULiftable.up <| choose Nat 0 ys.length (Nat.zero_le _)
     pure ⟨insertNth n x ys, Perm.trans (perm_insertNth _ _ h3) (Perm.cons _ h1)⟩
 
 /-- Given two generators produces a tuple consisting out of the result of both -/
