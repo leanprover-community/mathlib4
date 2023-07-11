@@ -107,8 +107,9 @@ end ULiftable
 
 open ULift
 
-instance : ULiftable id id where
+instance instULiftableId : ULiftable Id Id where
   congr F := F
+#align id.uliftable instULiftableId
 
 instance : ULiftable Id Id where
   congr F := F
