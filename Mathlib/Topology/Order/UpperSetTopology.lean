@@ -123,7 +123,7 @@ instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
 theorem ofUpperSet_le_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
-theorem toUpperSet_rel_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b :=
+theorem toUpperSet_le_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
 /--
