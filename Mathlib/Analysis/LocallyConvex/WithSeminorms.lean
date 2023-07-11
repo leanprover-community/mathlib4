@@ -629,7 +629,7 @@ theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [Topol
 #align seminorm.continuous_iff_continuous_comp Seminorm.continuous_iff_continuous_comp
 
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}
-    [TopologicalSpace E] (hp : WithSeminorms p) [TopologicalSpace F] (hq : WithSeminorms q)
+    {_ : TopologicalSpace E} (hp : WithSeminorms p) {_ : TopologicalSpace F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : Seminorm.IsBounded p q f) : Continuous f := by
   haveI : TopologicalAddGroup E := hp.topologicalAddGroup
   haveI : ContinuousSMul 𝕝 E := hp.continuousSMul
