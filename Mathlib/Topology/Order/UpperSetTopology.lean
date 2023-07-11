@@ -111,7 +111,7 @@ theorem ofUpperSet_inj {a b : WithUpperSetTopology α} : ofUpperSet a = ofUpperS
 
 /-- A recursor for `WithUpperSetTopology`. Use as `induction x using WithUpperSetTopology.rec`. -/
 protected def rec {β : WithUpperSetTopology α → Sort _} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
-fun a => h (ofUpperSet a)
+  fun a => h (ofUpperSet a)
 
 instance [Nonempty α] : Nonempty (WithUpperSetTopology α) :=
   ‹Nonempty α›
@@ -205,8 +205,7 @@ theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (�
   exact hf i
 
 -- c.f. isClosed_iff_lower_and_subset_implies_LUB_mem
-lemma isClosed_iff_isLower {s : Set α} : IsClosed s
-  ↔ (IsLowerSet s) := by
+lemma isClosed_iff_isLower {s : Set α} : IsClosed s ↔ (IsLowerSet s) := by
   rw [← isOpen_compl_iff, IsOpen_iff_IsUpperSet,
     isLowerSet_compl.symm, compl_compl]
 
@@ -245,10 +244,11 @@ open Topology
 
 lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
-    List.TFAE [ Monotone f,
-           Continuous f,
-           coinduced f t₁ ≤ t₂,
-           t₁ ≤ induced f t₂ ] := by
+    List.TFAE
+    [ Monotone f,
+      Continuous f,
+      coinduced f t₁ ≤ t₂,
+      t₁ ≤ induced f t₂ ] := by
   tfae_have 1 → 3
   · intro hf s hs
     rw [IsOpen_iff_IsUpperSet] at hs
@@ -269,7 +269,7 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
 
 lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
   [UpperSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → βᵒᵈ} (hf : Monotone f) :
-  Continuous f:= by
+    Continuous f := by
   rw [continuous_def]
   intro s hs
   rw [IsOpen_iff_IsUpperSet]
