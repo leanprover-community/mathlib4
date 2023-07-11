@@ -9,7 +9,7 @@ Authors: Andreas Swerdlow, Kexing Ying
 ! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+--import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Bilinear form
