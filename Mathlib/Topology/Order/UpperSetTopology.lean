@@ -7,12 +7,15 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.TFAE
+import Mathlib.Topology.Order.LowerTopology
 
 /-!
 # UpperSet topology
 
 This file introduces the upper set topology on a preorder as the topology where the open sets are
 the upper sets.
+
+In general the upper set topology does not coincide with the dual of the lower topology.
 
 ## Main statements
 
@@ -22,6 +25,8 @@ the upper sets.
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
 - `UpperSetTopology.Monotone_tfae` - the continuous functions are characterised as the monotone
   functions
+- `UpperSetTopology.Monotone_to_LowerTopology_Dual_Continuous` - a `Monotone` map from a `Preorder`
+  with the `UpperSetTopology` to the dual of a `Preorder` with the `LowerTopology` is `Continuous`
 
 ## Implementation notes
 
@@ -54,7 +59,8 @@ section preorder
 variable [Preorder α]
 
 /--
-The set of upper sets forms a topology
+The set of upper sets forms a topology. In general the upper set topology does not coincide with the
+dual of the lower topology.
 -/
 def upperSetTopology' : TopologicalSpace α :=
 { IsOpen := IsUpperSet,
@@ -135,7 +141,7 @@ def ofUpperSetOrderIso : OrderIso (WithUpperSetTopology α) α :=
   map_rel_iff' := ofUpperSet_le_iff }
 
 /-- `toUpper` as an `OrderIso` -/
-def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) := 
+def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) :=
 { toFun := toUpperSet,
   invFun := ofUpperSet,
   left_inv := ofUpperSet_toUpperSet,
@@ -145,7 +151,8 @@ def toUpperSetOrderIso : OrderIso α (WithUpperSetTopology α) :=
 end WithUpperSetTopology
 
 /--
-The upper set topology is the topology where the open sets are the upper sets.
+The upper set topology is the topology where the open sets are the upper sets. In general the upper
+set topology does not coincide with the dual of the lower topology.
 -/
 class UpperSetTopology (α : Type _) [t : TopologicalSpace α] [Preorder α] : Prop where
   topology_eq_upperSetTopology : t = upperSetTopology' α
@@ -259,6 +266,17 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   tfae_have 2 ↔ 3
   · exact continuous_iff_coinduced_le
   tfae_finish
+
+lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
+  [UpperSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → βᵒᵈ} (hf : Monotone f) :
+  Continuous f:= by
+  rw [continuous_def]
+  intro s hs
+  rw [IsOpen_iff_IsUpperSet]
+  apply IsUpperSet.preimage _ hf
+  rw [← isLowerSet_preimage_toDual_iff]
+  apply LowerTopology.isLowerSet_of_isOpen
+  exact hs
 
 end maps
 
