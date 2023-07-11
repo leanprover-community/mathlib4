@@ -243,7 +243,7 @@ lemma upperSetTopology_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology 
 open Topology
 
 lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
-  {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
+    {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
     List.TFAE
     [ Monotone f,
       Continuous f,
@@ -268,7 +268,7 @@ lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
   tfae_finish
 
 lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
-  [UpperSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → βᵒᵈ} (hf : Monotone f) :
+    [UpperSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → βᵒᵈ} (hf : Monotone f) :
     Continuous f := by
   rw [continuous_def]
   intro s hs
