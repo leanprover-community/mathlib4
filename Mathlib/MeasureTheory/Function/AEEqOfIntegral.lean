@@ -587,6 +587,20 @@ lemma ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
     exact Set.inter_subset_inter_left _ (compactCovering_subset β hmn)
   · exact hf.integrableOn
 
+/-- If a locally integrable function has zero integral on all compact sets in a sigma-compact space,
+then it is zero almost everwhere. -/
+lemma ae_eq_zero_of_forall_set_integral_isCompact_eq_zero'
+    [SigmaCompactSpace β] [T2Space β] {μ : Measure β} {f : β → E} (hf : LocallyIntegrable f μ)
+    (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
+    f =ᵐ[μ] 0 := by
+  rw [← Measure.restrict_univ (μ := μ), ← iUnion_compactCovering]
+  apply (ae_restrict_iUnion_iff _ _).2 (fun n ↦ ?_)
+  apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
+  · exact hf.integrableOn_isCompact (isCompact_compactCovering β n)
+  · intro s hs
+    rw [Measure.restrict_restrict hs.measurableSet]
+    exact h'f _ (hs.inter (isCompact_compactCovering β n))
+
 end AeEqOfForallSetIntegralEq
 
 section Lintegral

@@ -13,14 +13,21 @@ integrable function whose integral against compactly supported smooth functions 
 the function is almost everywhere zero.
 -/
 
-open MeasureTheory
+open MeasureTheory Filter Metric Function
+
+open scoped Topology
 
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] {μ : Measure E} {f : E → ℝ}
 
-theorem glou (hf : Integrable f μ) (h : ∀ (g : E → ℝ), ContDiff ⊤ g → HasCompactSupport g →
+theorem glou (hf : Integrable f μ) (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → HasCompactSupport g →
     ∫ x, g x * f x ∂μ = 0) : ∀ᵐ x ∂μ, f x = 0 := by
-  apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
+  apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero hf (fun s hs ↦ ?_)
+  obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 0) :=
+    exists_seq_strictAnti_tendsto (0 : ℝ)
+  let v : ℕ → Set E := fun n ↦ thickening (u n) s
+  have : ∀ n, ∃ (g : E → ℝ), support g = v n :=
+
 
 
 #exit
