@@ -20,12 +20,13 @@ import Mathlib.Topology.MetricSpace.EMetricParacompact
 
 Let `E` be a finite-dimensional real normed vector space. We show that any open set `s` in `E` is
 exactly the support of a smooth function taking values in `[0, 1]`,
-in `IsOpen.exists_smooth_support_eq`.
+in `IsOpen.exists_smooth_support_eq`. Given a closed subset `t` of `s`, we can even
+construct a smooth function taking values in `[0, 1]` with support equal to `s` and taking the
+value `1` exactly on `t`, in `IsOpen.exists_smooth_support_eq_eq_one_iff`
 
 Then we use this construction to construct bump functions with nice behavior, by convolving
 the indicator function of `closedBall 0 1` with a function as above with `s = ball 0 D`.
 -/
-
 
 noncomputable section
 
@@ -33,7 +34,6 @@ open Set Metric TopologicalSpace Function Asymptotics MeasureTheory FiniteDimens
   ContinuousLinearMap Filter MeasureTheory.Measure
 
 open scoped Pointwise Topology NNReal BigOperators Convolution
-
 
 variable {E : Type _} [NormedAddCommGroup E]
 
@@ -75,6 +75,7 @@ theorem exists_smooth_tsupport_subset {x : E} (hs : s ∈ 𝓝 x) :
   · apply c.one_of_mem_closedBall
     apply mem_closedBall_self
     exact (half_pos d_pos).le
+#align exists_smooth_tsupport_subset exists_smooth_tsupport_subset
 
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`.
@@ -198,11 +199,12 @@ theorem IsOpen.exists_smooth_support_eq (hs : IsOpen s) :
     intro n
     apply (le_abs_self _).trans
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
+#align is_open.exists_smooth_support_eq IsOpen.exists_smooth_support_eq
 
 /-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
 vector space, there exists a smooth function with values in `[0, 1]` whose support is
 contained in `s` and equal to `1` on `t`.
-Superseded by `IsOpen.exists_smooth_support_eq_eq_one_of_isClosed`, ensuring that the support is
+Superseded by `IsOpen.exists_smooth_support_eq_eq_one_of_iff`, ensuring that the support is
 exactly `s`. -/
 theorem IsOpen.exists_smooth_support_subset (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
     ∃ f : E → ℝ, f.support ⊆ s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x)
@@ -268,9 +270,9 @@ theorem IsOpen.exists_smooth_support_subset (hs : IsOpen s) (ht : IsClosed t) (h
 /-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
 vector space, there exists a smooth function with nonnegative values whose support is
 exactly `s` and at least `1` on `t`.
-Superseded by `IsOpen.exists_smooth_support_eq_eq_one_of_isClosed`, ensuring that the function
+Superseded by `IsOpen.exists_smooth_support_eq_eq_one_iff`, ensuring that the function
 is exactly equal to `1` on `t`. -/
-theorem IsOpen.exists_smooth_support_eq'_aux (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+theorem IsOpen.exists_smooth_support_eq_le_one (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
     ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x) ∧ (∀ x ∈ t, 1 ≤ f x) := by
   /- We start from a nonnegative function supported inside `s` and equal to `1` on `t`, and add
   to it a nonegative function with support exactly `s`. -/
@@ -302,13 +304,15 @@ theorem IsOpen.exists_smooth_support_eq'_aux (hs : IsOpen s) (ht : IsClosed t) (
 
 /-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
 vector space, there exists a smooth function with values in `[0, 1]` whose support is exactly `s`
-and equal to `1` on `t`. -/
-theorem IsOpen.exists_smooth_support_eq_eq_one_of_isClosed
+and equal to `1` on `t`.
+Superseded by `IsOpen.exists_smooth_support_eq_eq_one_iff`, ensuring that the function
+is equal to `1` just on `t`. -/
+theorem IsOpen.exists_smooth_support_eq_eq_one
     (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
     ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ (∀ x ∈ t, f x = 1) := by
   /- We start from a function with support equal to `s` and at least equal to `1` on `t`, and
   compose it with a smooth function equal to `1` on `[1, ∞)`. -/
-  rcases hs.exists_smooth_support_eq'_aux ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
+  rcases hs.exists_smooth_support_eq_le_one ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
   refine ⟨Real.smoothTransition ∘ f, ?_, ?_, ?_, ?_⟩
   · rwa [support_comp_eq_of_range_subset _ (Ici 0)]
     · rintro x (hx : 0 ≤ x)
@@ -322,6 +326,66 @@ theorem IsOpen.exists_smooth_support_eq_eq_one_of_isClosed
   · intro x hx
     exact Real.smoothTransition.one_of_one_le (ft x hx)
 
+/-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
+vector space, there exists a smooth function with values in `[0, 1]` whose support is exactly `s`
+and equal to `1` exactly on `t`. -/
+theorem IsOpen.exists_smooth_support_eq_eq_one_iff (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
+    ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ t ↔ f x = 1) := by
+  /- Start from a function `f` with support `s` and equal to `1` on `t`, and subtract to it a
+  function `g/2` taking values in `[0, 1/2]` and supported on the complement of `t`, to make sure
+  that `f - g/2` can only take the value `1` on `t`. We should also make sure that this function is
+  positive on `s`, so we take `g` supported on the points where `f > 1/2`. -/
+  rcases hs.exists_smooth_support_eq_eq_one ht h with ⟨f, f_supp, f_diff, f_range, hf⟩
+  have A : IsOpen (f ⁻¹' (Ioi ((1:ℝ)/2))) := f_diff.continuous.isOpen_preimage _ isOpen_Ioi
+  rcases (A.sdiff ht).exists_smooth_support_eq with ⟨g, g_supp, g_diff, g_range⟩
+  refine ⟨fun x ↦ f x - (g x)/2, ?_, f_diff.sub (g_diff.div_const _), ?_, fun x ↦ ?_⟩
+  -- show that the support is exactly `s`
+  · refine support_eq_iff.2 ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩
+    · apply ne_of_gt
+      have : g x ≤ 1 := (g_range (mem_range_self x)).2
+      by_cases H : (1:ℝ)/2 < f x
+      · dsimp; linarith
+      · have : 0 ≤ f x := (f_range (mem_range_self x)).1
+        have : f x ≠ 0 := by rwa [← mem_support, f_supp]
+        have : 0 < f x := by positivity
+        have : g x = 0 := by
+          rw [← nmem_support, g_supp]
+          simp only [mem_diff, mem_preimage, mem_Ioi, not_and_or, H, true_or]
+        dsimp
+        linarith
+    · have If : f x = 0 := by rwa [← nmem_support, f_supp]
+      have Ig : g x = 0 := by
+        rw [← nmem_support, g_supp]
+        have A : ¬ (2 : ℝ) < (0 : ℝ) := by norm_num
+        simp [If, A]
+      simp [If, Ig]
+  -- show that the range is included in `[0, 1]`
+  · rintro - ⟨x, rfl⟩
+    have : 0 ≤ f x := (f_range (mem_range_self x)).1
+    have : f x ≤ 1 := (f_range (mem_range_self x)).2
+    have : 0 ≤ g x := (g_range (mem_range_self x)).1
+    have : g x ≤ 1 := (g_range (mem_range_self x)).2
+    refine' ⟨?_, by dsimp; linarith⟩
+    by_cases H : (1:ℝ)/2 < f x
+    · dsimp; linarith
+    · have : g x = 0 := by
+        rw [← nmem_support, g_supp]
+        simp only [mem_diff, mem_preimage, mem_Ioi, not_and_or, H, true_or]
+      dsimp; linarith
+  -- show that the function is equal to `1` exactly on `t`
+  · refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+    · have : g x = 0 := by rw [← nmem_support, g_supp]; simp [hx]
+      simp [this, hf x hx]
+    · contrapose! hx
+      have : 0 ≤ g x := (g_range (mem_range_self x)).1
+      apply ne_of_lt
+      by_cases H : (1:ℝ)/2 < f x
+      · have : f x ≤ 1 := (f_range (mem_range_self x)).2
+        have : g x ≠ 0 := by rw [← mem_support, g_supp]; exact ⟨H, hx⟩
+        have : 0 < g x := by positivity
+        linarith
+      · simp only [not_lt] at H
+        linarith
 end
 
 section
