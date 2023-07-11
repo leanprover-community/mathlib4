@@ -152,7 +152,7 @@ instance : Faithful toProfinite := by
 instance : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
   rfl
 
--- TODO: Gleason's theorem.
+/-- Every extremally disconnected space is projective in `CompHaus` -/
 instance (X : ExtrDisc) : Projective X.compHaus where
   factors := by
     intro B C φ f _
@@ -204,9 +204,9 @@ instance epiPresentπ (X : CompHaus) : Epi X.presentationπ :=
                \/
   Z ---(e)---> Y
 
-If `Z` is extremally disconnected, X, Y are compact Hausdorff, if `f : X ⟶ Y` is an epi and `e : Z ⟶ Y` is
-arbitrary, then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism `Z ⟶ X`. It exists because
-`Z` is a projective object in `CompHaus`.
+If `Z` is extremally disconnected, X, Y are compact Hausdorff, if `f : X ⟶ Y` is an epi and
+`e : Z ⟶ Y` is arbitrary, then `lift e f` is a fixed (but arbitrary) lift of `e` to a morphism
+`Z ⟶ X`. It exists because `Z` is a projective object in `CompHaus`.
 -/
 noncomputable
 def lift {X Y : CompHaus} {Z : ExtrDisc} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] : Z.compHaus ⟶ X :=
