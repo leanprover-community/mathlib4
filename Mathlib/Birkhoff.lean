@@ -109,7 +109,30 @@ theorem omegaLimit_nonempty (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x
   done
 
 /- Show that the omega-limit set of any point is contained in the non-wandering set. -/
-
+theorem omegaLimit_nonwandering (x : α) : (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (nonWanderingSet f) := by
+  intro z hz
+  rewrite [mem_omegaLimit_iff_frequently] at hz
+  simp at hz
+  have subsequence : ∀ U ∈ nhds z, ∃ φ, StrictMono φ ∧ ∀ (n : ℕ), f^[φ n] x ∈ U := by
+    intro U hU
+    apply Filter.extraction_of_frequently_atTop (hz U hU)
+    done
+  unfold nonWanderingSet
+  intro ε hε
+  have ball_in_nbd : ball z ε ∈ nhds z := by
+    exact ball_mem_nhds z hε
+  let ⟨φ, hφ, hf⟩ := subsequence (ball z ε) ball_in_nbd
+  use f^[φ 1] x, φ 2 - φ 1
+  refine' ⟨_, _, _⟩
+  . exact (hf 1)
+  . have : f^[φ 2 - φ 1] (f^[φ 1] x) = f^[φ 2] x := by
+      sorry
+    rw [this]
+    apply (hf 2)
+  . simp
+    apply hφ
+    norm_num
+  done
 
 /- Show that the non-wandering set is non-empty -/
 
