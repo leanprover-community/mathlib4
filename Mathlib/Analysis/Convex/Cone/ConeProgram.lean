@@ -15,7 +15,7 @@ import Mathlib.Analysis.Convex.Cone.Proper
 
 -/
 
-open Filter Set
+open Filter Set Topology
 
 structure ConeProgram
   (V : Type _) [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -35,7 +35,7 @@ variable (P : ConeProgram V W)
 
 def Objective (v : V) := ⟪P.obj, v⟫_ℝ
 
-notation x "≼[" L "] " y => y - x ∈ L
+scoped[ConeProgram] notation x "≼[" L "] " y => y - x ∈ L
 
 def IsSolution (v : V) := v ∈ P.K ∧ P.lhs v ≼[P.L] P.rhs
 
@@ -67,7 +67,7 @@ def IsSubSolution (seqV : ℕ → V) :=
   ∃ seqW : ℕ → W,
   (∀ n, seqV n ∈ P.K) ∧
   (∀ n, seqW n ∈ P.L) ∧
-  (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (nhds P.rhs))
+  (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (𝓝 P.rhs))
 
 noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
@@ -112,7 +112,7 @@ theorem weak_duality_aux (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
     specialize hw1 (P.rhs - P.lhs v) hv2
     rw [inner_sub_left, sub_nonneg] at hw1
     rw [inner_neg_left, neg_neg, real_inner_comm v P.obj]
-    apply le_trans hw2 hw1
+    exact le_trans hw2 hw1
 
 theorem weak_duality (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
   P.Value ≤ -(P.Dual).Value := by
@@ -122,7 +122,7 @@ theorem weak_duality (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
     apply csSup_le ((P.Dual).nonempty_values_iff.2 hD)
     rintro w ⟨_, hw2, hw3⟩
     rw [← hv3, ← hw3, le_neg]
-    apply P.weak_duality_aux hv2 hw2
+    exact P.weak_duality_aux hv2 hw2
 
 theorem weak_duality_aux' (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
   P.SubObjective seqV ≤ - (P.Dual).Objective w := by
@@ -138,8 +138,9 @@ theorem weak_duality_aux' (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (
     specialize @hw1 (seqW n) (hseqW n)
     specialize @hw2 (seqV n) (hseqV n)
     rw [real_inner_comm (seqV n) _]
-    sorry
-
+    have htends' : Tendsto (fun n => ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) := by sorry
+    have :  ⟪P.lhs (seqV n), w⟫_ℝ ≤ ⟪P.rhs, w⟫_ℝ := by sorry
+    exact le_trans hw2 this
 
 theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsSubFeasible) :
   P.Value ≤ -(P.Dual).SubValue := by sorry
