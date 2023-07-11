@@ -34,6 +34,13 @@ This file uses the local notation `/.` for `Rat.mk`.
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
 by taking `[Fact p.Prime]` as a type class argument.
 
+## Multiplicity calculations
+
+* `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
+quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
+greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the corresponding theorem on
+multiplcity.
+
 ## References
 
 * [F. Q. Gouvêa, *p-adic numbers*][gouvea1997]
@@ -548,6 +555,16 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
   rw [padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos (p * n), Nat.cast_add,
       padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp
+
+/-- **Legendre's Theorem**
+
+The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
+over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
+theorem multiplicity_factorial {p : ℕ} [hp : Fact p.Prime] :
+    ∀ {n b : ℕ}, log p n < b → (padicValNat p (n !)) = (∑ i in Finset.Ico 1 b, n / p ^ i : ℕ) :=
+  fun hb => PartENat.natCast_inj.mp
+      ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
+      Prime.multiplicity_factorial hp.out hb)
 
 end padicValNat
 
