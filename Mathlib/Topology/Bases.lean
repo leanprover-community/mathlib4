@@ -544,6 +544,8 @@ theorem isTopologicalBasis_singletons (α : Type _) [TopologicalSpace α] [Discr
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
 #align is_topological_basis_singletons isTopologicalBasis_singletons
 
+-- Porting note: moved `DenseRange.separableSpace` up
+
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type _} [TopologicalSpace α] {s : Set α}
     [SeparableSpace s] (hs : Dense s) : ∃ t, t ⊆ s ∧ t.Countable ∧ Dense t :=
