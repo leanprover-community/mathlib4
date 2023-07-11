@@ -942,6 +942,16 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
   exact hr.trans_le (map_nonneg _ _)
 #align seminorm.closed_ball_eq_emptyset Seminorm.closedBall_eq_emptyset
 
+theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+  simpa only [mem_ball_zero, map_neg_eq_map] using hx
+#align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
+
+@[simp]
+theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
+  ext
+  rw [Set.mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
+#align seminorm.neg_ball Seminorm.neg_ball
+
 end Module
 
 end AddCommGroup
@@ -1027,17 +1037,6 @@ protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedB
   rw [p.mem_closedBall_zero] at hy
   exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 #align seminorm.absorbent_closed_ball Seminorm.absorbent_closedBall
-
-theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r :=
-  balanced_ball_zero p r (-1) (by rw [norm_neg, norm_one]) ⟨x, hx, by
-    simp only [neg_smul, one_smul]⟩ -- Porting note: was `rw` instead of `simp only`
-#align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
-
-@[simp]
-theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
-  ext
-  rw [Set.mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
-#align seminorm.neg_ball Seminorm.neg_ball
 
 @[simp]
 theorem smul_ball_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : 𝕜) (ha : a ≠ 0) :
@@ -1132,17 +1131,23 @@ variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [
 
 variable [Module 𝕝 E]
 
+/-- A seminorm is continuous at `0` if `p.closedBall 0 r` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
+theorem continuousAt_zero_of_forall' [TopologicalSpace E] {p : Seminorm 𝕝 E}
+    (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    ContinuousAt p 0 := by
+  simp_rw [Seminorm.closedBall_zero_eq_preimage_closedBall] at hp
+  rwa [ContinuousAt, Metric.nhds_basis_closedBall.tendsto_right_iff, map_zero]
+
 theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E}
     {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
   let r' := max 1 r
   have hr' : 0 < r' := lt_max_of_lt_left one_pos
   have hp' : p.closedBall 0 r' ∈ (𝓝 0 : Filter E) :=
     mem_of_superset hp (closedBall_mono <| le_max_right _ _)
-  refine' Metric.nhds_basis_closedBall.tendsto_right_iff.mpr _
+  refine' continuousAt_zero_of_forall' _
   intro ε hε
-  rw [map_zero]
-  suffices p.closedBall 0 ε ∈ (𝓝 0 : Filter E) by
-    rwa [Seminorm.closedBall_zero_eq_preimage_closedBall] at this
   rcases exists_norm_lt 𝕜 (div_pos hε hr') with ⟨k, hk0, hkε⟩
   have hk0' := norm_pos_iff.mp hk0
   have := (set_smul_mem_nhds_zero_iff hk0').mpr hp'
@@ -1151,6 +1156,15 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
   gcongr
   exact p.mem_closedBall_zero.mp hx
 #align seminorm.continuous_at_zero' Seminorm.continuousAt_zero'
+
+/-- A seminorm is continuous at `0` if `p.ball 0 r` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
+theorem continuousAt_zero_of_forall [TopologicalSpace E] {p : Seminorm 𝕝 E}
+    (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    ContinuousAt p 0 :=
+  continuousAt_zero_of_forall'
+    (fun r hr ↦ Filter.mem_of_superset (hp r hr) <| p.ball_subset_closedBall _ _)
 
 theorem continuousAt_zero [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
     (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
@@ -1174,11 +1188,27 @@ protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [Topologi
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 #align seminorm.continuous_of_continuous_at_zero Seminorm.continuous_of_continuousAt_zero
 
+/-- A seminorm is uniformly continuous if `p.ball 0 r` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.uniformContinuous`. -/
+protected theorem uniformContinuous_of_forall [UniformSpace E] [UniformAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    UniformContinuous p :=
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
+
 protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.uniform_continuous Seminorm.uniformContinuous
+
+/-- A seminorm is uniformly continuous if `p.closedBall 0 r` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.uniformContinuous'`. -/
+protected theorem uniform_continuous_of_forall' [UniformSpace E] [UniformAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    UniformContinuous p :=
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
 protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
@@ -1186,10 +1216,26 @@ protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [Cont
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.uniform_continuous' Seminorm.uniform_continuous'
 
+/-- A seminorm is continuous if `p.ball 0 r` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuous`. -/
+protected theorem continuous_of_forall [TopologicalSpace E] [TopologicalAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
+
 protected theorem continuous [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.continuous Seminorm.continuous
+
+/-- A seminorm is continuous if `p.closedBall 0 r` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuous'`. -/
+protected theorem continuous_of_forall' [TopologicalSpace E] [TopologicalAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
 protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
@@ -1197,12 +1243,10 @@ protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [Cont
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.continuous' Seminorm.continuous'
 
-theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
-  refine'
-    Seminorm.continuous (r := 1)
-      (Filter.mem_of_superset (IsOpen.mem_nhds _ <| q.mem_ball_self zero_lt_one)
-        (ball_antitone hpq))
+theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E]
+    {p q : Seminorm 𝕝 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
+  refine Seminorm.continuous_of_forall (fun r hr ↦ Filter.mem_of_superset
+    (IsOpen.mem_nhds ?_ <| q.mem_ball_self hr) (ball_antitone hpq))
   rw [ball_zero_eq]
   exact isOpen_lt hq continuous_const
 #align seminorm.continuous_of_le Seminorm.continuous_of_le
