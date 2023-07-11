@@ -104,7 +104,9 @@ theorem is_cpt : IsCompact (nonWanderingSet f : Set α) := by
 /- Click F12 on ω⁺ below to go to its definition, and browse a little bit the file to get a
 feel of what is already there. -/
 theorem omegaLimit_nonempty (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x})) := by
-  sorry
+  apply nonempty_omegaLimit atTop (fun n ↦ f^[n]) {x}
+  exact Set.singleton_nonempty x
+  done
 
 /- Show that the omega-limit set of any point is contained in the non-wandering set. -/
 
