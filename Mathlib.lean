@@ -3142,6 +3142,7 @@ import Mathlib.Topology.ContinuousFunction.Ideals
 import Mathlib.Topology.ContinuousFunction.LocallyConstant
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.ContinuousFunction.Polynomial
+import Mathlib.Topology.ContinuousFunction.Sigma
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
 import Mathlib.Topology.ContinuousFunction.Units
