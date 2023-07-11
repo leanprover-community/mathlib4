@@ -1902,6 +1902,7 @@ import Mathlib.Geometry.Manifold.Sheaf.Basic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
+import Mathlib.Geometry.Manifold.VectorBundle.Hom
 import Mathlib.Geometry.Manifold.VectorBundle.Pullback
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -2964,6 +2965,7 @@ import Mathlib.Tactic.NormCast
 import Mathlib.Tactic.NormCast.Tactic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
@@ -3141,6 +3143,7 @@ import Mathlib.Topology.ContinuousFunction.Ideals
 import Mathlib.Topology.ContinuousFunction.LocallyConstant
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.ContinuousFunction.Polynomial
+import Mathlib.Topology.ContinuousFunction.Sigma
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
 import Mathlib.Topology.ContinuousFunction.Units
