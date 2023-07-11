@@ -1533,6 +1533,22 @@ theorem continuous_sigma {f : Sigma σ → α} (hf : ∀ i, Continuous fun a => 
   continuous_sigma_iff.2 hf
 #align continuous_sigma continuous_sigma
 
+/-- A map defined on a sigma type (a.k.a. the disjoint union of an indexed family of topological
+spaces) is inducing iff its restriction to each component is inducing and each the image of each
+component under `f` can be separated from the images of all other components by an open set. -/
+theorem inducing_sigma {f : Sigma σ → α} :
+    Inducing f ↔ (∀ i, Inducing (f ∘ Sigma.mk i)) ∧
+      (∀ i, ∃ U, IsOpen U ∧ ∀ x, f x ∈ U ↔ x.1 = i) := by
+  refine ⟨fun h ↦ ⟨fun i ↦ h.comp embedding_sigmaMk.1, fun i ↦ ?_⟩, ?_⟩
+  · rcases h.isOpen_iff.1 (isOpen_range_sigmaMk (i := i)) with ⟨U, hUo, hU⟩
+    refine ⟨U, hUo, ?_⟩
+    simpa [Set.ext_iff] using hU
+  · refine fun ⟨h₁, h₂⟩ ↦ inducing_iff_nhds.2 fun ⟨i, x⟩ ↦ ?_
+    rw [Sigma.nhds_mk, (h₁ i).nhds_eq_comap, comp_apply, ← comap_comap, map_comap_of_mem]
+    rcases h₂ i with ⟨U, hUo, hU⟩
+    filter_upwards [preimage_mem_comap <| hUo.mem_nhds <| (hU _).2 rfl] with y hy
+    simpa [hU] using hy
+
 @[simp 1100]
 theorem continuous_sigma_map {f₁ : ι → κ} {f₂ : ∀ i, σ i → τ (f₁ i)} :
     Continuous (Sigma.map f₁ f₂) ↔ ∀ i, Continuous (f₂ i) :=
