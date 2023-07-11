@@ -92,7 +92,8 @@ instance main_pair_reflexive (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra)
 is an equivalence.
 -/
 instance main_pair_G_split (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra) :
-    G.IsSplitPair ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))
+    G.IsSplitPair ((leftAdjoint G).map A.a)
+      ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))
     where splittable := ⟨_, _, ⟨beckSplitCoequalizer A⟩⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.monad.monadicity_internal.main_pair_G_split CategoryTheory.Monad.MonadicityInternal.main_pair_G_split
@@ -212,7 +213,8 @@ this pair to this morphism is the counit.
 -- Porting note: changed `simps` to `simps!`
 @[simps!]
 def counitCofork (B : D) :
-    Cofork ((leftAdjoint G).map (G.map ((Adjunction.ofRightAdjoint G).counit.app B))) ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj (G.obj B))) :=
+    Cofork ((leftAdjoint G).map (G.map ((Adjunction.ofRightAdjoint G).counit.app B)))
+      ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj (G.obj B))) :=
   Cofork.ofπ (adj.counit.app B) (adj.counit_naturality _)
 #align category_theory.monad.monadicity_internal.counit_cofork CategoryTheory.Monad.MonadicityInternal.counitCofork
 
@@ -226,17 +228,17 @@ def unitColimitOfPreservesCoequalizer (A : adj.toMonad.Algebra)
 
 /-- The counit cofork is a colimit provided `G` reflects it. -/
 def counitCoequalizerOfReflectsCoequalizer (B : D)
-    [ReflectsColimit
-        (parallelPair ((leftAdjoint G).map (G.map (adj.counit.app B))) (adj.counit.app ((leftAdjoint G).obj (G.obj B)))) G] :
+    [ReflectsColimit (parallelPair ((leftAdjoint G).map (G.map (adj.counit.app B)))
+      (adj.counit.app ((leftAdjoint G).obj (G.obj B)))) G] :
     IsColimit (counitCofork (G := G) B) :=
   isColimitOfIsColimitCoforkMap G _ (beckCoequalizer ((comparison adj).obj B))
 #align category_theory.monad.monadicity_internal.counit_coequalizer_of_reflects_coequalizer CategoryTheory.Monad.MonadicityInternal.counitCoequalizerOfReflectsCoequalizer
 
-variable  [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))] (B : D)
-
 -- Porting note: Lean 3 didn't seem to need this
-instance : HasColimit
-    (parallelPair ((leftAdjoint G).map (G.map (NatTrans.app (Adjunction.ofRightAdjoint G).counit B)))
+instance [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
+    HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app
+    ((leftAdjoint G).obj A.A))] (B : D)  : HasColimit (parallelPair ((leftAdjoint G).map
+      (G.map (NatTrans.app (Adjunction.ofRightAdjoint G).counit B)))
       (NatTrans.app (Adjunction.ofRightAdjoint G).counit ((leftAdjoint G).obj (G.obj B)))) :=
   inferInstanceAs <| HasCoequalizer
     ((leftAdjoint G).map ((comparison (Adjunction.ofRightAdjoint G)).obj B).a)
@@ -244,7 +246,9 @@ instance : HasColimit
       ((comparison (Adjunction.ofRightAdjoint G)).obj B).A))
   --
 theorem comparisonAdjunction_counit_app
-    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj A.A))] (B : D) :
+    [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
+      HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app
+      ((leftAdjoint G).obj A.A))] (B : D) :
     (comparisonAdjunction (G := G)).counit.app B = colimit.desc _ (counitCofork B) := by
   apply coequalizer.hom_ext
   change
@@ -451,8 +455,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
   let _ :
     ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
       IsIso
-        ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X) :=
-    by
+        ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X) := by
     intro X
     apply
       @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad) ?_ _
