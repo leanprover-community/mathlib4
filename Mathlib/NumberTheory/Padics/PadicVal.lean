@@ -43,7 +43,7 @@ greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the correspon
 multiplcity.
 
 * padicValNat_factorial'`: Legendre's Theorem.  Taking (`p - 1`) times the `p`-adic valuation
-of `n!` equals `n` minus the sum of base `p` digits of `n`. -/
+of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 ## References
 
