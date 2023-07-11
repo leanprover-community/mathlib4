@@ -218,7 +218,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
 instance Char.sampleableDefault : SampleableExt Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
-instance Prod.sampleableExt {α β : Type u} [SampleableExt α] [SampleableExt β] :
+instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
     SampleableExt (α × β) where
   proxy := Prod (proxy α) (proxy β)
   proxyRepr := inferInstance
