@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.array.lemmas
-! leanprover-community/mathlib commit 78314d08d707a6338079f00094bbdb90bf11fc41
+! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Control.Traversable.Equiv
-import Mathlib.Data.Vector.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.List.Basic
 
 universe u v w
 
