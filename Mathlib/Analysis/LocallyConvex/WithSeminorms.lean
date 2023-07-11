@@ -704,6 +704,13 @@ protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : Sem
     rw [Finset.sup_singleton, one_smul]
     exact (Finset.le_sup (Finset.mem_Iic.mpr le_rfl) : p i ≤ (Finset.Iic i).sup p)
 
+protected theorem congr_equiv {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
+    (hp : WithSeminorms p) (e : ι' ≃ ι) : WithSeminorms (p ∘ e) := by
+  refine hp.congr ?_ ?_ <;>
+  intro i <;>
+  [use {e i}, 1; use {e.symm i}, 1] <;>
+  simp
+
 end WithSeminorms
 
 end Congr
