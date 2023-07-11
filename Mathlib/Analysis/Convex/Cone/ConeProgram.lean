@@ -1,4 +1,19 @@
+/-
+Copyright (c) 2023 Apurva Nakade All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Apurva Nakade
+-/
 import Mathlib.Analysis.Convex.Cone.Proper
+
+/-!
+
+# Cone Programs
+
+## References
+
+- [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
+
+-/
 
 open Filter Set
 
