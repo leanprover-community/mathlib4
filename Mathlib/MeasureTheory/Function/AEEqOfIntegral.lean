@@ -566,7 +566,7 @@ lemma ae_eq_zero_of_forall_set_integral_isClosed_eq_zero {μ : Measure β} {f : 
     simp [hg]
 
 /-- If an integrable function has zero integral on all compact sets in a sigma-compact space, then
-it is zero almost everwhere.-/
+it is zero almost everwhere. -/
 lemma ae_eq_zero_of_forall_set_integral_isCompact_eq_zero
     [SigmaCompactSpace β] [T2Space β] {μ : Measure β} {f : β → E} (hf : Integrable f μ)
     (h'f : ∀ (s : Set β), IsCompact s → ∫ x in s, f x ∂μ = 0) :
