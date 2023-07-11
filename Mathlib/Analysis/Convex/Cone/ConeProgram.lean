@@ -115,7 +115,7 @@ theorem weak_duality_aux
     specialize hw1 (P.b - P.A v) hv2
     rw [inner_sub_left, sub_nonneg] at hw1
     rw [inner_neg_left, neg_neg, real_inner_comm v P.c]
-    linarith
+    apply le_trans hw2 hw1
 
 theorem weak_duality (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
   P.Value ≤ -(P.Dual).Value := by
