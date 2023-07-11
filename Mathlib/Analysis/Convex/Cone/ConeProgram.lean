@@ -103,8 +103,7 @@ noncomputable def Dual : ConeProgram W V where
   b := -P.c
   A := -ContinuousLinearMap.adjoint (P.A)
 
-theorem weak_duality_aux
-  (hv : P.Solution v) (hw : (P.Dual).Solution w) :
+theorem weak_duality_aux (hv : P.Solution v) (hw : (P.Dual).Solution w) :
   P.Objective v ≤ - (P.Dual).Objective w := by
     rcases hv with ⟨hv1, hv2⟩
     rcases hw with ⟨hw1, hw2⟩
