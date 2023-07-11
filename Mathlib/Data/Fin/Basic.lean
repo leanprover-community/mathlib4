@@ -77,6 +77,7 @@ This file expands on the development in the core library.
 
 * `Fin.last n` : The greatest value of `Fin (n+1)`.
 * `Fin.rev : Fin n → Fin n` : the antitone involution given by `i ↦ n-(i+1)`
+* `Fin.splitAt m i : Fin n ⊕ Fin m` : checks whether a `i : Fin n + m` is less than a pivot `m`
 
 -/
 
@@ -1607,6 +1608,31 @@ theorem subNat_addNat (i : Fin n) (m : ℕ) (h : m ≤ addNat m i := le_coe_addN
 theorem natAdd_subNat_cast {i : Fin (n + m)} (h : n ≤ i) :
     natAdd n (subNat n (cast (add_comm _ _) i) h) = i := by simp [← cast_addNat]
 #align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_cast
+
+/--
+  Cast `i : Fin (n+m)` to either `Fin m`, if `i < m`, or subtract `m` from `i` (see `subNat`)
+  to get a `Fin n`
+-/
+def splitAt (n : ℕ) (i : Fin (n+m)) : Fin n ⊕ Fin m :=
+  if h : i.val < n then
+    .inl ⟨i, h⟩
+  else
+    .inr <| @subNat m n (Fin.cast (Nat.add_comm ..) i) (by simp[LE.le] at h; exact h)
+
+@[simp]
+theorem splitAt_zero {i : Fin (0+n)} :
+    splitAt 0 i = (.inr <| Fin.cast (by simp) i) := by
+  simp[splitAt, subNat, cast, castLE, castLT]
+
+@[simp]
+theorem splitAt_zero_left {i : Fin m} :
+    @splitAt 0 m i = .inl i := by
+  simp[splitAt]
+
+@[simp]
+theorem splitAt_succ_zero :
+    @splitAt n (m+1) ⟨0, by simp⟩ = .inl ⟨0, by simp⟩ := by
+  simp[splitAt]
 
 end Pred
 

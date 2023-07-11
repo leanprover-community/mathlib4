@@ -10,6 +10,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Data.Bitvec.BitVector.Defs
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.FinVector.Lemmas
 import Mathlib.Tactic.NormNum
 import Mathlib.Init.Data.Nat.Lemmas
 
@@ -23,35 +24,24 @@ namespace Bitvec.BitVector
 
 open Bitvec (BitVector)
 
-open Nat
+open Nat FinVector
 
-theorem bitsToNat_toList {n : ℕ} (x : BitVector n) :
-    BitVector.toNat x = bitsToNat (Vector.toList x) :=
-  rfl
-#align bitvec.bits_to_nat_to_list Bitvec.BitVector.bitsToNat_toList
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
 attribute [local simp] Nat.zero_add Nat.add_zero Nat.one_mul Nat.mul_one Nat.zero_mul Nat.mul_zero
 
-local infixl:65 "++ₜ" => Vector.append
-
-
 theorem toNat_append {m : ℕ} (xs : BitVector m) (b : Bool) :
-    BitVector.toNat (xs++ₜb ::ᵥ Vector.nil) =
-      BitVector.toNat xs * 2 + BitVector.toNat (b ::ᵥ Vector.nil) := by
-  cases' xs with xs P
-  simp [bitsToNat_toList]; clear P
-  unfold bitsToNat
-  -- porting note: was `unfold List.foldl`, which now unfolds to an ugly match
-  rw [List.foldl, List.foldl]
+    BitVector.toNat (xs++b ::ᵥ nil) =
+      BitVector.toNat xs * 2 + BitVector.toNat (b ::ᵥ nil) := by
+  simp[BitVector.toNat]
   -- generalize the accumulator of foldl
-  generalize h : 0 = x
-  conv in addLsb x b =>
-    rw [← h]
-  clear h
+  suffices ∀ y,
+      foldl addLsb y (xs ++ b ::ᵥ nil) 
+      = foldl addLsb 0 (b ::ᵥ nil) + foldl addLsb 0 xs * 2
+    from this _
   simp only [List.foldl_append, List.foldl]
-  induction' xs with x xs xs_ih generalizing x
+  induction' xs using FinVector.rec with x xs xs_ih
   · simp
     unfold addLsb
     simp [Nat.mul_succ]
@@ -71,7 +61,7 @@ theorem bits_toNat_decide (n : ℕ) :
 #align bitvec.bits_to_nat_to_bool Bitvec.BitVector.bits_toNat_decide
 
 theorem ofNat_succ {k n : ℕ} :
-    BitVector.ofNat k.succ n = BitVector.ofNat k (n / 2)++ₜdecide (n % 2 = 1) ::ᵥ Vector.nil :=
+    BitVector.ofNat k.succ n = BitVector.ofNat k (n / 2)++decide (n % 2 = 1) ::ᵥ Vector.nil :=
   rfl
 #align bitvec.of_nat_succ Bitvec.BitVector.ofNat_succ
 

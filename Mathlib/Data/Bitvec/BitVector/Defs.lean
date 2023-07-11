@@ -10,6 +10,7 @@ Authors: Joe Hendrix, Sebastian Ullrich
 -/
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Vector.Basic
+import Mathlib.Data.FinVector.Defs
 import Mathlib.Data.Nat.Pow
 import Init.Data.Format.Basic
 import Mathlib.Init.Data.Nat.Lemmas
@@ -24,15 +25,13 @@ It is not fully in compliance with mathlib style standards.
 
 /-- `Bitvec.BitVector n` is a `Vector` of `Bool` with length `n`. -/
 protected abbrev Bitvec.BitVector (n : ℕ) :=
-  Vector Bool n
+  FinVector Bool n
 
 namespace Bitvec.BitVector
 
-open Nat Vector
+open Nat FinVector
 open Bitvec (BitVector)
 
--- mathport name: «expr ++ₜ »
-local infixl:65 "++ₜ" => Vector.append
 
 /-- Create a zero bitvector -/
 @[reducible]
@@ -44,17 +43,17 @@ protected def zero (n : ℕ) : BitVector n :=
 @[reducible]
 protected def one : ∀ n : ℕ, BitVector n
   | 0 => nil
-  | succ n => replicate n false++ₜtrue ::ᵥ nil
+  | succ n => concat (replicate n false) true
 #align bitvec.one Bitvec.BitVector.one
 
 /-- Create a bitvector from another with a provably equal length. -/
-protected def cong {a b : ℕ} (h : a = b) : BitVector a → BitVector b
-  | ⟨x, p⟩ => ⟨x, h ▸ p⟩
+protected def cong {a b : ℕ} (h : a = b) : BitVector a → BitVector b :=
+  FinVector.congr h
 #align bitvec.cong Bitvec.BitVector.cong
 
 /-- `BitVector` specific version of `Vector.append` -/
 def append {m n} : BitVector m → BitVector n → BitVector (m + n) :=
-  Vector.append
+  FinVector.append
 #align bitvec.append Bitvec.BitVector.append
 
 /-! ### Shift operations -/
@@ -67,7 +66,7 @@ variable {n : ℕ}
 /-- `shl x i` is the bitvector obtained by left-shifting `x` `i` times and padding with `false`.
 If `x.length < i` then this will return the all-`false`s bitvector. -/
 def shl (x : BitVector n) (i : ℕ) : BitVector n :=
-  BitVector.cong (by simp) <| drop i x++ₜreplicate (min n i) false
+  BitVector.cong (by simp) <| drop i x ++ replicate (min n i) false
 #align bitvec.shl Bitvec.BitVector.shl
 
 /-- `fill_shr x i fill` is the bitvector obtained by right-shifting `x` `i` times and then
@@ -82,7 +81,7 @@ def fillShr (x : BitVector n) (i : ℕ) (fill : Bool) : BitVector n :=
           rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
         · have h₁ := le_of_not_ge h
           rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
-    replicate (min n i) fill++ₜtake (n - i) x
+    replicate (min n i) fill ++ take (n - i) x
 #align bitvec.fill_shr Bitvec.BitVector.fillShr
 
 /-- unsigned shift right -/
@@ -159,7 +158,7 @@ protected def neg (x : BitVector n) : BitVector n :=
 /-- Add with carry (no overflow) -/
 def adc (x y : BitVector n) (c : Bool) : BitVector (n + 1) :=
   let f x y c := (Bool.carry x y c, Bool.xor3 x y c)
-  let ⟨c, z⟩ := Vector.mapAccumr₂ f x y c
+  let ⟨c, z⟩ := mapAccumr₂ f x y c
   c ::ᵥ z
 #align bitvec.adc Bitvec.BitVector.adc
 
@@ -171,7 +170,7 @@ protected def add (x y : BitVector n) : BitVector n :=
 /-- Subtract with borrow -/
 def sbb (x y : BitVector n) (b : Bool) : Bool × BitVector n :=
   let f x y c := (Bool.carry (not x) y c, Bool.xor3 x y c)
-  Vector.mapAccumr₂ f x y b
+  mapAccumr₂ f x y b
 #align bitvec.sbb Bitvec.BitVector.sbb
 
 /-- The difference of two bitvectors -/
@@ -197,7 +196,7 @@ instance : Neg (BitVector n) :=
 /-- The product of two bitvectors -/
 protected def mul (x y : BitVector n) : BitVector n :=
   let f r b := cond b (r + r + y) (r + r)
-  (toList x).foldl f 0
+  x.foldl f 0
 #align bitvec.mul Bitvec.BitVector.mul
 
 instance : Mul (BitVector n) :=
@@ -280,7 +279,7 @@ variable {α : Type}
 /-- Create a bitvector from a `nat` -/
 protected def ofNat : ∀ n : ℕ, Nat → BitVector n
   | 0, _ => nil
-  | succ n, x => BitVector.ofNat n (x / 2)++ₜdecide (x % 2 = 1) ::ᵥ nil
+  | succ n, x => BitVector.ofNat n (x / 2) ++ decide (x % 2 = 1) ::ᵥ nil
 #align bitvec.of_nat Bitvec.BitVector.ofNat
 
 /-- Create a bitvector from an `Int`. The ring homomorphism from Int to bitvectors. -/
@@ -293,14 +292,9 @@ def addLsb (r : ℕ) (b : Bool) :=
   r + r + cond b 1 0
 #align bitvec.add_lsb Bitvec.BitVector.addLsb
 
-/-- Given a `List` of `Bool`s, return the `nat` they represent as a list of binary digits. -/
-def bitsToNat (v : List Bool) : Nat :=
-  v.foldl addLsb 0
-#align bitvec.bits_to_nat Bitvec.BitVector.bitsToNat
-
 /-- Return the natural number encoded by the input bitvector -/
 protected def toNat {n : Nat} (v : BitVector n) : Nat :=
-  bitsToNat (toList v)
+  v.foldl addLsb 0
 #align bitvec.to_nat Bitvec.BitVector.toNat
 
 instance (n : ℕ) : Preorder (BitVector n) :=
@@ -330,8 +324,8 @@ end Conversion
 /-! ### Miscellaneous instances -/
 
 
-private def repr {n : Nat} : BitVector n → String
-  | ⟨bs, _⟩ => "0b" ++ (bs.map fun b : Bool => if b then '1' else '0').asString
+private def repr {n : Nat} : BitVector n → String :=
+  fun bs => "0b" ++ (bs.map fun b : Bool => if b then '1' else '0').toList.asString
 
 instance (n : Nat) : Repr (BitVector n) where
   reprPrec (b : BitVector n) _ := Std.Format.text (repr b)
