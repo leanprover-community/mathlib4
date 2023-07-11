@@ -44,7 +44,7 @@ def IsFeasible := Nonempty { v | P.IsSolution v }
 def IsOptimalSolution (v : V) :=
   P.IsSolution v ∧ IsGreatest (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
 
-@[simp] lemma Solution_of_OptimalSolution (v : V) (h : P.IsOptimalSolution x) :
+@[simp] lemma solution_of_optimalSolution (v : V) (h : P.IsOptimalSolution x) :
   P.IsSolution x := h.1
 
 def Values := P.Objective '' { v | P.IsSolution v }
@@ -71,11 +71,11 @@ def IsSubSolution (seqV : ℕ → V) :=
 
 noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
-@[simp] lemma IsSubSolution_of_Solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
+@[simp] lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
   use fun _ => P.rhs - P.lhs x
   simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
 
-@[simp] lemma IsSubSolution_of_Solution_Value : P.SubObjective (fun _ => x) = P.Objective x :=
+@[simp] lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
   limsup_const (inner P.obj x)
 
 def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
@@ -87,7 +87,7 @@ noncomputable def SubValue := sSup <| P.SubValues
 ----------------------------------------------------------------------------------------------------
 
 @[simp] lemma Values_subset_SubValues : P.Values ⊆ P.SubValues := fun r ⟨v, hv, hvr⟩ =>
-  ⟨fun _ => v, P.IsSubSolution_of_Solution hv, by rwa [P.IsSubSolution_of_Solution_Value]⟩
+  ⟨fun _ => v, P.subSolution_of_solution hv, by rwa [P.subSolution_of_solution_value]⟩
 
 lemma Value_le_Subvalue (fs : P.IsFeasible) (bdd : BddAbove P.SubValues) :
   P.Value ≤ P.SubValue := csSup_le_csSup bdd (P.nonempty_values_iff.2 fs) P.Values_subset_SubValues
@@ -138,6 +138,7 @@ theorem weak_duality_aux' (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (
     specialize @hw1 (seqW n) (hseqW n)
     specialize @hw2 (seqV n) (hseqV n)
     rw [real_inner_comm (seqV n) _]
+    sorry
 
 
 theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsSubFeasible) :
