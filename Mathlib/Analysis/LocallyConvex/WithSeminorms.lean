@@ -458,8 +458,8 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [TopologicalAd
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_topological_space_eq_infi SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf
 
-theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) (i : ι) :
-    Continuous (p i) := by
+theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p)
+    (i : ι) : Continuous (p i) := by
   haveI := hp.topologicalAddGroup
   rw [p.withSeminorms_iff_topologicalSpace_eq_iInf.mp hp]
   exact continuous_iInf_dom (@continuous_norm _ (p i).toSeminormedAddGroup)
