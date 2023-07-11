@@ -94,7 +94,11 @@ example : IsClosed (nonWanderingSet f) := by
 
 
 /- Show that the non-wandering set of `f` is compact. -/
-
+theorem is_cpt : IsCompact (nonWanderingSet f : Set α) := by
+  apply isCompact_of_isClosed_bounded
+  . exact is_closed f
+  . exact bounded_of_compactSpace
+  done
 
 /- Show that the omega-limit set of any point is nonempty. -/
 /- Click F12 on ω⁺ below to go to its definition, and browse a little bit the file to get a
