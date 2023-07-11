@@ -120,7 +120,7 @@ instance : Preorder (WithUpperSetTopology α) :=
 
 instance : TopologicalSpace (WithUpperSetTopology α) := upperSetTopology' α
 
-theorem ofUpperSet_rel_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
+theorem ofUpperSet_le_iff {a b : WithUpperSetTopology α} : ofUpperSet a ≤ ofUpperSet b ↔ a ≤ b :=
   Iff.rfl
 
 theorem toUpperSet_rel_iff {a b : α} : toUpperSet a ≤ toUpperSet b ↔ a ≤ b :=
