@@ -312,6 +312,10 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
 
+instance (priority := 500) {s : Set α} [HasCountableSeparatingOn α IsOpen s] :
+    HasCountableSeparatingOn α MeasurableSet s :=
+  .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
+
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
   isOpen_interior.measurableSet
