@@ -236,7 +236,7 @@ section maps
 variable [Preorder α] [Preorder β]
 
 lemma upperSetTopology_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology α]
-  (hf : Monotone f) : coinduced f t₁ ≤ upperSetTopology' β := by
+    (hf : Monotone f) : coinduced f t₁ ≤ upperSetTopology' β := by
   intro s hs
   rw [isOpen_coinduced, IsOpen_iff_IsUpperSet]
   exact (IsUpperSet.preimage hs hf)
