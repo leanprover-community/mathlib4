@@ -11,6 +11,10 @@ Authors: Leonardo de Moura, Mario Carneiro
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 
+/-!
+# `align` for lemmas about lean3/mathlib3 versions of d_array and array
+-/
+
 universe u v w
 
 -- Porting note: `DArray` and `Array'` do not exist in std4/mathlib4; return when they do
@@ -182,7 +186,8 @@ section Nth
 #noalign array.to_list_nth_le --Array'.toList_nthLe
 
 -- @[simp]
--- theorem toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.nthLe a.toList i h' = a.read i := by
+-- theorem toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.nthLe a.toList i h'
+--    = a.read i := by
 --   cases i <;> apply to_list_nth_le
 #noalign array.to_list_nth_le' -- Array'.toList_nth_le'
 
