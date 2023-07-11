@@ -171,6 +171,13 @@ instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
+instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
+    Shrinkable ((_ : α) × β) where
+  shrink := λ ⟨fst,snd⟩ =>
+    let shrink1 := shrA.shrink fst |>.map fun x ↦ ⟨x, snd⟩
+    let shrink2 := shrB.shrink snd |>.map fun x ↦ ⟨fst, x⟩
+    shrink1 ++ shrink2
+
 open Shrinkable
 
 /-- Shrink a list of a shrinkable type, either by discarding an element or shrinking an element. -/
