@@ -124,11 +124,27 @@ theorem weak_duality (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
     rw [← hv3, ← hw3, le_neg]
     apply P.weak_duality_aux hv2 hw2
 
-theorem weak_duality_aux' (hv : P.IsSolution v) (hw : (P.Dual).IsSubSolution w) :
-  P.Objective v ≤ - (P.Dual).SubObjective w := by sorry
+theorem weak_duality_aux' (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
+  P.SubObjective seqV ≤ - (P.Dual).Objective w := by
+    rcases hv with ⟨seqW, hseqV, hseqW, htends⟩
+    rcases hw with ⟨hw1, hw2⟩
+    dsimp [Objective, SubObjective]
+    apply limsSup_le_of_le sorry
+    dsimp [Dual] at *
+    simp at *
+    simp only [inner_add_right, inner_neg_right, le_neg_add_iff_add_le, add_zero, ContinuousLinearMap.adjoint_inner_right] at hw2
+    use 0 -- fix this
+    rintro n hn
+    specialize @hw1 (seqW n) (hseqW n)
+    specialize @hw2 (seqV n) (hseqV n)
+    rw [real_inner_comm (seqV n) _]
+
 
 theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsSubFeasible) :
   P.Value ≤ -(P.Dual).SubValue := by sorry
+
+example (seq : ℕ → ℝ) (c : ℝ) (h : Tendsto seq atTop (nhds c)) (f : ℝ → ℝ) (hf : ContinuousAt f c) :
+  Tendsto (fun n => f (seq n)) atTop (nhds (f c)) := by sorry
 
 -- def SlaterCondition := ∃ v : P.K, P.rhs - P.lhs v ∈ interior P.L
 
