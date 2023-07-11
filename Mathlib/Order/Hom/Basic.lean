@@ -262,6 +262,10 @@ theorem ext (f g : α →o β) (h : (f : α → β) = g) : f = g :=
 
 @[simp] theorem coe_eq (f : α →o β) : OrderHomClass.toOrderHom f = f := rfl
 
+@[simp] theorem _root_.OrderHomClass.coe_coe {F} [OrderHomClass F α β] (f : F) :
+    ⇑(f : α →o β) = f :=
+  rfl
+
 /-- One can lift an unbundled monotone function to a bundled one. -/
 protected instance canLift : CanLift (α → β) (α →o β) (↑) Monotone where
   prf f h := ⟨⟨f, h⟩, rfl⟩
