@@ -1023,11 +1023,11 @@ theorem disjointUnion_eq_piecewise (e e' : LocalEquiv α β) (hs : Disjoint e.so
 
 section Pi
 
-variable {ι : Type _} {αi βi : ι → Type _} (ei : ∀ i, LocalEquiv (αi i) (βi i))
+variable {ι : Type _} {αi βi γi : ι → Type _}
 
 /-- The product of a family of local equivs, as a local equiv on the pi type. -/
-@[simps (config := mfld_cfg)]
-protected def pi : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
+@[simps (config := mfld_cfg) apply source target]
+protected def pi (ei : ∀ i, LocalEquiv (αi i) (βi i)) : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun f i := ei i (f i)
   invFun f i := (ei i).symm (f i)
   source := pi univ fun i => (ei i).source
@@ -1037,10 +1037,28 @@ protected def pi : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
   left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
   right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
 #align local_equiv.pi LocalEquiv.pi
-#align local_equiv.pi_symm_apply LocalEquiv.pi_symm_apply
 #align local_equiv.pi_source LocalEquiv.pi_source
 #align local_equiv.pi_apply LocalEquiv.pi_apply
 #align local_equiv.pi_target LocalEquiv.pi_target
+
+@[simp, mfld_simps]
+theorem pi_symm (ei : ∀ i, LocalEquiv (αi i) (βi i)) :
+    (LocalEquiv.pi ei).symm = .pi fun i ↦ (ei i).symm :=
+  rfl
+
+theorem pi_symm_apply (ei : ∀ i, LocalEquiv (αi i) (βi i)) :
+    ⇑(LocalEquiv.pi ei).symm = fun f i ↦ (ei i).symm (f i) :=
+  rfl
+#align local_equiv.pi_symm_apply LocalEquiv.pi_symm_apply
+
+@[simp, mfld_simps]
+theorem pi_refl : (LocalEquiv.pi fun i ↦ LocalEquiv.refl (αi i)) = .refl (∀ i, αi i) := by
+  ext <;> simp
+
+@[simp, mfld_simps]
+theorem pi_trans (ei : ∀ i, LocalEquiv (αi i) (βi i)) (ei' : ∀ i, LocalEquiv (βi i) (γi i)) :
+    (LocalEquiv.pi ei).trans (LocalEquiv.pi ei') = .pi fun i ↦ (ei i).trans (ei' i) := by
+  ext <;> simp [forall_and]
 
 end Pi
 

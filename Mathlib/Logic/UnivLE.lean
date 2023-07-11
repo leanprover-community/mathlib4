@@ -35,9 +35,8 @@ but we can not prove the reverse implication.
 This is because in Lean's type theory, while `max u v` is at least at big as `u` and `v`,
 it could be bigger than both!
 -/
+@[pp_with_univ]
 abbrev UnivLE.{u, v} : Prop := ∀ α : Type max u v, Small.{v} α
-
-pp_with_univ UnivLE
 
 example : UnivLE.{u, u} := inferInstance
 example : UnivLE.{u, u+1} := inferInstance

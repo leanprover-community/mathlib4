@@ -604,8 +604,8 @@ protected theorem bddAbove_iff {s : Set <| Seminorm 𝕜 E} :
 #align seminorm.bdd_above_iff Seminorm.bddAbove_iff
 
 protected theorem bddAbove_range_iff {p : ι → Seminorm 𝕜 E} :
-  BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) :=
-by rw [Seminorm.bddAbove_iff, ← range_comp, bddAbove_range_pi]; rfl
+    BddAbove (range p) ↔ ∀ x, BddAbove (range fun i ↦ p i x) := by
+  rw [Seminorm.bddAbove_iff, ← range_comp, bddAbove_range_pi]; rfl
 
 protected theorem coe_sSup_eq {s : Set <| Seminorm 𝕜 E} (hs : BddAbove s) :
     ↑(sSup s) = ⨆ p : s, ((p : Seminorm 𝕜 E) : E → ℝ) :=
@@ -618,13 +618,18 @@ protected theorem coe_iSup_eq {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : B
   exact iSup_range' (fun p : Seminorm 𝕜 E => (p : E → ℝ)) p
 #align seminorm.coe_supr_eq Seminorm.coe_iSup_eq
 
-protected lemma sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : E} :
-  (sSup s) x = ⨆ p : s, (p : E → ℝ) x :=
-by rw [Seminorm.coe_sSup_eq hp, iSup_apply]
+protected theorem sSup_apply {s : Set (Seminorm 𝕜 E)} (hp : BddAbove s) {x : E} :
+    (sSup s) x = ⨆ p : s, (p : E → ℝ) x := by
+  rw [Seminorm.coe_sSup_eq hp, iSup_apply]
 
-protected lemma iSup_apply {ι : Type _} {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) {x : E} :
-  (⨆ i, p i) x = ⨆ i, p i x :=
-by rw [Seminorm.coe_iSup_eq hp, iSup_apply]
+protected theorem iSup_apply {ι : Type _} {p : ι → Seminorm 𝕜 E}
+    (hp : BddAbove (range p)) {x : E} : (⨆ i, p i) x = ⨆ i, p i x := by
+  rw [Seminorm.coe_iSup_eq hp, iSup_apply]
+
+protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
+  ext
+  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
+  rfl
 
 private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
     IsLUB s (sSup s) := by
@@ -633,11 +638,6 @@ private theorem Seminorm.isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbov
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_range_iff.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
-
-protected lemma sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
-  ext
-  rw [Seminorm.sSup_apply bddAbove_empty, Real.ciSup_empty]
-  rfl
 
 /-- `Seminorm 𝕜 E` is a conditionally complete lattice.
 
@@ -970,7 +970,7 @@ section NormedField
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (p : Seminorm 𝕜 E) {A B : Set E} {a : 𝕜}
   {r : ℝ} {x : E}
 
-lemma closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
+theorem closedBall_iSup {p : ι → Seminorm 𝕜 E} (hp : BddAbove (range p)) (e : E) {r : ℝ}
     (hr : 0 < r) : closedBall (⨆ i, p i) e r = ⋂ i, closedBall (p i) e r := by
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty', iInter_of_empty, Seminorm.sSup_empty]
