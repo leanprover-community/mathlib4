@@ -69,8 +69,10 @@ structure ClosureOperator [Preorder α] extends α →o α where
 
 namespace ClosureOperator
 
-instance [Preorder α] : CoeFun (ClosureOperator α) fun _ => α → α :=
-  ⟨fun c => c.toFun⟩
+instance [Preorder α] : OrderHomClass (ClosureOperator α) α α where
+  coe c := c.1
+  coe_injective' := by rintro ⟨⟩ ⟨⟩ h; congr; exact FunLike.ext' h
+  map_rel f _ _ h := f.mono h
 
 initialize_simps_projections ClosureOperator (toFun → apply)
 
@@ -260,7 +262,7 @@ theorem closure_sup_closure_left (x y : α) : c (c x ⊔ y) = c (x ⊔ y) :=
 #align closure_operator.closure_sup_closure_left ClosureOperator.closure_sup_closure_left
 
 theorem closure_sup_closure_right (x y : α) : c (x ⊔ c y) = c (x ⊔ y) := by
-  rw [sup_comm, closure_sup_closure_left, sup_comm]
+  rw [sup_comm, closure_sup_closure_left, sup_comm (a := x)]
 #align closure_operator.closure_sup_closure_right ClosureOperator.closure_sup_closure_right
 
 theorem closure_sup_closure (x y : α) : c (c x ⊔ c y) = c (x ⊔ y) := by
@@ -311,8 +313,7 @@ variable (α)
 
 /-- The identity function as a lower adjoint to itself. -/
 @[simps]
-protected def id [Preorder α] : LowerAdjoint (id : α → α)
-    where
+protected def id [Preorder α] : LowerAdjoint (id : α → α) where
   toFun x := x
   gc' := GaloisConnection.id
 #align lower_adjoint.id LowerAdjoint.id
