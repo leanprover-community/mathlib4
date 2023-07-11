@@ -676,7 +676,8 @@ protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 
   clear hp t
   refine le_antisymm ?_ ?_ <;>
   rw [← continuous_id_iff_le] <;>
-  refine continuous_from_bounded (.mk (t := _) rfl) (.mk (t := _) rfl) LinearMap.id (by assumption)
+  refine continuous_from_bounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
+    LinearMap.id (by assumption)
 
 protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E]
     (hp : WithSeminorms p) : WithSeminorms (fun s : Finset ι ↦ s.sup p) := by
@@ -852,7 +853,8 @@ variable [TopologicalSpace F]
 theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι}
     (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
     WithSeminorms (topology := induced f inferInstance) (q.comp f) := by
-  haveI : TopologicalSpace E := induced f inferInstance
+  haveI := hq.topologicalAddGroup
+  letI : TopologicalSpace E := induced f inferInstance
   haveI : TopologicalAddGroup E := topologicalAddGroup_induced f
   rw [(q.comp f).withSeminorms_iff_nhds_eq_iInf, nhds_induced, map_zero,
     q.withSeminorms_iff_nhds_eq_iInf.mp hq, Filter.comap_iInf]
