@@ -132,7 +132,6 @@ private theorem image_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpe
   ext ⟨g, _⟩
   change g ∘ f '' s ⊆ u ↔ g '' (f '' s) ⊆ u
   rw [Set.image_comp]
---#align continuous_map.image_gen continuous_map.image_gen
 
 /-- C(-, γ) is a functor. -/
 theorem continuous_comp_left : Continuous (fun g => g.comp f : C(β, γ) → C(α, γ)) :=
