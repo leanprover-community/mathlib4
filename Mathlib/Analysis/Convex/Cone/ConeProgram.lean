@@ -35,9 +35,21 @@ variable (P : ConeProgram V W)
 
 def Objective (v : V) := ⟪P.obj, v⟫_ℝ
 
+
+-- def ConvexConePreorder {K : ConvexCone 𝕜 E} (hK : K.Pointed) : Preorder E where
+--   le := fun x y => ∃ k ∈ K, x + k = y
+--   le_refl := fun x => ⟨0, by simpa⟩
+--   le_trans := fun x y z ⟨k, hk1, hk2⟩ ⟨l, hl1, hl2⟩ =>
+--     ⟨k + l, ⟨K.add_mem hk1 hl1, by rw [← add_assoc, hk2, hl2]⟩⟩
+
+-- set_option quotPrecheck false in
+-- notation x "≼[" K "] " y => K.ConvexConePreorder.le x y
+
 scoped[ConeProgram] notation x "≼[" L "] " y => y - x ∈ L
 
 def IsSolution (v : V) := v ∈ P.K ∧ P.lhs v ≼[P.L] P.rhs
+
+-- TODO: Show that the set `Solutions := { v | P.IsSolution v }` is itself a `ConvexCone`.
 
 def IsFeasible := Nonempty { v | P.IsSolution v }
 
@@ -71,7 +83,7 @@ def IsSubSolution (seqV : ℕ → V) :=
 
 noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
-@[simp] lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
+lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
   use fun _ => P.rhs - P.lhs x
   simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
 
@@ -79,6 +91,10 @@ noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objectiv
   limsup_const (inner P.obj x)
 
 def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
+
+lemma subfeasible_of_feasible (h : P.IsFeasible) : P.IsSubFeasible :=
+  let ⟨v, hv⟩ := h
+  ⟨fun _ => v, P.subSolution_of_solution hv⟩
 
 def SubValues := P.SubObjective '' { seqV | P.IsSubSolution seqV }
 
@@ -139,7 +155,9 @@ theorem weak_duality_aux' (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (
     specialize @hw2 (seqV n) (hseqV n)
     rw [real_inner_comm (seqV n) _]
     have htends' : Tendsto (fun n => ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) := by sorry
-    have :  ⟪P.lhs (seqV n), w⟫_ℝ ≤ ⟪P.rhs, w⟫_ℝ := by sorry
+    simp_rw [Metric.tendsto_atTop] at htends'
+    -- have :  ⟪P.lhs (seqV n), w⟫_ℝ ≤ ⟪P.rhs, w⟫_ℝ := by sorry
+
     exact le_trans hw2 this
 
 theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsSubFeasible) :
@@ -147,6 +165,12 @@ theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsSubFeasible) :
 
 example (seq : ℕ → ℝ) (c : ℝ) (h : Tendsto seq atTop (nhds c)) (f : ℝ → ℝ) (hf : ContinuousAt f c) :
   Tendsto (fun n => f (seq n)) atTop (nhds (f c)) := by sorry
+
+
+
+example (c : ℝ) (U : Set ℝ) (hc : c ∈ U) (hU : IsOpen U) :
+  ∃ δ, ∀ y, |x - y| ≤ δ → y ∈ U := by rw [Metric.tendsto_nhds]
+
 
 -- def SlaterCondition := ∃ v : P.K, P.rhs - P.lhs v ∈ interior P.L
 
