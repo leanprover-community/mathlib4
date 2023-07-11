@@ -229,6 +229,7 @@ instance : CoeFun (α →o β) fun _ => α → β :=
   ⟨FunLike.coe⟩
 
 @[simp] theorem coe_mk (f : α → β) (hf : Monotone f) : ⇑(mk f hf) = f := rfl
+#align order_hom.coe_fun_mk OrderHom.coe_mk
 
 protected theorem monotone (f : α →o β) : Monotone f :=
   f.monotone'
@@ -248,11 +249,6 @@ initialize_simps_projections OrderHom (toFun → coe)
 
 @[simp] theorem toFun_eq_coe (f : α →o β) : f.toFun = f := rfl
 #align order_hom.to_fun_eq_coe OrderHom.toFun_eq_coe
-
--- Porting note: no longer good as a simp lemma, as after `whnfR` the LHS is just `f` anyway.
-theorem coe_fun_mk {f : α → β} (hf : Monotone f) : (mk f hf : α → β) = f :=
-  rfl
-#align order_hom.coe_fun_mk OrderHom.coe_fun_mk
 
 -- See library note [partially-applied ext lemmas]
 @[ext]
