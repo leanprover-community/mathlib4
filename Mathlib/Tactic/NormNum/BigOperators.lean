@@ -57,6 +57,9 @@ inductive Nat.UnifyZeroOrSuccResult (n : Q(ℕ))
 
 /-- Determine whether the expression `n : Q(ℕ)` unifies with `0` or `Nat.succ n'`.
 
+We do not use `norm_num` functionality because we want definitional equality,
+not propositional equality, for use in dependent types.
+
 Fails if neither of the options succeed.
 -/
 def Nat.unifyZeroOrSucc (n : Q(ℕ)) : MetaM (Nat.UnifyZeroOrSuccResult n) := do
@@ -129,7 +132,7 @@ partial def List.proveNilOrCons {α : Q(Type u)} :
         q(List.map Nat.succ (List.range $n'))
         q(List.range_succ_eq_map' $pn $pn')).uncheckedCast (q(List.range ($n)) : Q(List ℕ)) s
   | (_, `List.finRange, #[(n : Q(ℕ))]) => do
-    match ← Nat.unifyZeroOrSucc n with
+    match ← Nat.unifyZeroOrSucc n with -- We want definitional equality on `n`.
     | .zero _pf => do
       pure (.nil (q(List.finRange_zero) : Q(List.finRange 0 = [])))
     | .succ n' _pf => pure <| ((List.ProveNilOrConsResult.cons
