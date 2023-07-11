@@ -20,20 +20,20 @@ variable (P : ConeProgram V W)
 
 def Objective (v : V) := ⟪P.c, v⟫_ℝ
 
-def IsSolution (v : V) := v ∈ P.K ∧ P.b - P.A v ∈ P.L
+def Solution (v : V) := v ∈ P.K ∧ P.b - P.A v ∈ P.L
 
-def IsFeasible := Nonempty { v | P.IsSolution v }
+def IsFeasible := Nonempty { v | P.Solution v }
 
-def IsOptimalSolution (v : V) :=
-  P.IsSolution v ∧
-  IsGreatest (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
+def OptimalSolution (v : V) :=
+  P.Solution v ∧
+  IsGreatest (P.Objective ''  { v | P.Solution v }) (P.Objective v)
 
 example (x : ℕ) (S : Set ℕ) (h : IsGreatest S x) : x ∈ S := by exact mem_of_mem_inter_left h
 
-@[simp] lemma IsSolution_of_IsOptimalSolution (v : V) (h : P.IsOptimalSolution x) :
-  P.IsSolution x := h.1
+@[simp] lemma Solution_of_OptimalSolution (v : V) (h : P.OptimalSolution x) :
+  P.Solution x := h.1
 
-def Values := P.Objective '' { v | P.IsSolution v }
+def Values := P.Objective '' { v | P.Solution v }
 
 @[simp] lemma nonempty_values_iff : (P.Values).Nonempty ↔ P.IsFeasible := by
     unfold Values
@@ -42,14 +42,14 @@ def Values := P.Objective '' { v | P.IsSolution v }
 
 noncomputable def Value := sSup <| P.Values
 
-@[simp] lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v := by
+@[simp] lemma value_optimal (h : P.OptimalSolution v) : P.Value = P.Objective v := by
   apply IsLUB.csSup_eq <| IsGreatest.isLUB h.2
   rw [nonempty_image_iff]
   exact ⟨v, h.1⟩
 
 ----------------------------------------------------------------------------------------------------
 
-def IsSubSolution (seqV : ℕ → V) :=
+def SubSolution (seqV : ℕ → V) :=
   ∃ seqW : ℕ → W,
   (∀ n, seqV n ∈ P.K) ∧
   (∀ n, seqW n ∈ P.L) ∧
@@ -57,16 +57,16 @@ def IsSubSolution (seqV : ℕ → V) :=
 
 noncomputable def Objective' (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
-@[simp] lemma SubSolution_of_Solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
+@[simp] lemma SubSolution_of_Solution (hx : P.Solution x) : P.SubSolution <| fun _ => x := by
   use fun _ => P.b - P.A x
   simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
 
 @[simp] lemma SubSolution_of_Solution_Value : P.Objective' (fun _ => x) = P.Objective x :=
   limsup_const (inner P.c x)
 
-def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
+def IsSubFeasible := Nonempty { x : ℕ → V | P.SubSolution x }
 
-def SubValues := P.Objective' '' { seqV | P.IsSubSolution seqV }
+def SubValues := P.Objective' '' { seqV | P.SubSolution seqV }
 
 noncomputable def SubValue := sSup <| P.SubValues
 
@@ -89,24 +89,30 @@ noncomputable def Dual : ConeProgram W V where
   A := -ContinuousLinearMap.adjoint (P.A)
 
 theorem weak_duality_aux
-  (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
+  (hv : P.Solution v) (hw : (P.Dual).Solution w) :
   P.Objective v ≤ - (P.Dual).Objective w := by
-  rcases hv with ⟨hv1, hv2⟩
-  rcases hw with ⟨hw1, hw2⟩
-  specialize @hw2 v hv1
-  dsimp [Dual, Objective] at *
-  simp_rw [inner_sub_right, inner_neg_right, sub_nonneg, ContinuousLinearMap.adjoint_inner_right] at hw2
-  specialize hw1 (P.b - P.A v) hv2
-  sorry
-  -- have := Inner.inner
-  -- rw [inner.left_distrib] at hw2
+    rcases hv with ⟨hv1, hv2⟩
+    rcases hw with ⟨hw1, hw2⟩
+    specialize @hw2 v hv1
+    dsimp [Dual, Objective] at *
+    simp_rw [inner_sub_right, inner_neg_right, sub_nonneg, ContinuousLinearMap.adjoint_inner_right,
+      neg_le, neg_neg] at hw2
+    specialize hw1 (P.b - P.A v) hv2
+    rw [inner_sub_left, sub_nonneg] at hw1
+    rw [inner_neg_left, neg_neg, real_inner_comm v P.c]
+    linarith
 
-example (x y : ℝ) : -x ≤ -y → y ≤ x := by apply?
-
+theorem weak_duality (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
+  P.Value ≤ -(P.Dual).Value := by
+    apply csSup_le (P.nonempty_values_iff.2 hP)
+    rintro v ⟨_, hv2, hv3⟩
+    rw [le_neg]
+    apply csSup_le ((P.Dual).nonempty_values_iff.2 hD)
+    rintro w ⟨_, hw2, hw3⟩
+    rw [← hv3, ← hw3, le_neg]
+    apply P.weak_duality_aux hv2 hw2
 
 -- def SlaterCondition := ∃ v : P.K, P.b - P.A v ∈ interior P.L
-
--- example (x y : ℕ) : x ≤ y → y ≤ x → x = y := by exact fun a a_1 ↦ Nat.le_antisymm a a_1
 
 -- theorem Value_eq_SubValue  (fs : P.IsFeasible) (bdd : BddAbove P.SubValues)
 --   (sl : P.SlaterCondition) : P.Value = P.SubValue := by
