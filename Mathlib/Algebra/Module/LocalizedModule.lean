@@ -1148,9 +1148,7 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
   use g'
   have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ := by
     ext
-    intros
-    rw [LinearMap.restrictScalars_apply]
-    iterate 2 rw [← LinearMap.toFun_eq_coe]
+    simp [LinearMap.restrictScalars_apply, LinearMap.toFun_eq_coe]
   constructor
   · dsimp only
     rwa [g'_extends_scalars]
@@ -1159,7 +1157,7 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
     rw [← g'_extends_scalars] at this
     ext x
     apply_fun fun f => f x at this
-    simpa only [LinearMap.restrictScalars_apply, this]
+    simpa [LinearMap.restrictScalars_apply]
 
 end IsLocalizedModule
 
