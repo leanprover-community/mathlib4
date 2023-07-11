@@ -12,12 +12,17 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Basic
 
 /-!
-# `align` for lemmas about lean3/mathlib3 versions of d_array and array
+Porting note:
+Following the discussion on [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-
+mathlib4/topic/porting.20.60.2Earray.60.20files.20whose.20PR's.20were.20closed.3F), these
+will wait until Std4 has finalized `DArray` and `Array'` types so we can translates
+apples to apples.
+
+`align` for lemmas about lean3/mathlib3 versions of d_array and array with mathport output
 -/
 
 universe u v w
 
--- Porting note: `DArray` and `Array'` do not exist in std4/mathlib4; return when they do
 namespace DArray
 
 -- variable {n : ℕ} {α : Fin n → Type u}
