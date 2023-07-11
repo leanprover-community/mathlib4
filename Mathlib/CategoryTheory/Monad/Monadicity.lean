@@ -274,7 +274,7 @@ monadicity theorem, the converse is given in `monadic_of_creates_G_split_coequal
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
-    -- Porting note: apparently cannot do synth failures here?
+    -- Porting note: apparently cannot do synth failures = true here?
   · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
     infer_instance
@@ -333,12 +333,12 @@ coequalizers, and `C` has them.
 -/
 def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair G]
     [PreservesColimitOfIsSplitPair G] [ReflectsColimitOfIsSplitPair G] : MonadicRightAdjoint G := by
-  let L : (Adjunction.ofRightAdjoint G).toMonad.Algebra ⥤ D := leftAdjointComparison
   let i : IsRightAdjoint (comparison (ofRightAdjoint G)) := ⟨_, comparisonAdjunction⟩
   constructor
   let _ : ∀ X : (ofRightAdjoint G).toMonad.Algebra,
       IsIso ((ofRightAdjoint (comparison (ofRightAdjoint G))).unit.app X) := by
     intro X
+    -- Porting note: passing instances through
     apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (ofRightAdjoint G).toMonad) ?_ _
     · change IsIso (comparisonAdjunction.unit.app X).f
       rw [comparisonAdjunction_unit_f]
@@ -351,9 +351,11 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)
     rw [comparisonAdjunction_counit_app]
-    change IsIso (IsColimit.coconePointUniqueUpToIso _ _).hom
+    -- Porting note: passing instances through
+    change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
     infer_instance
-    apply counitCoequalizerOfReflectsCoequalizer _
+    -- Porting note: passing instances through
+    apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ ?_
     letI _ :
       G.IsSplitPair ((leftAdjoint G).map (G.map ((Adjunction.ofRightAdjoint G).counit.app Y)))
         ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj (G.obj Y))) :=
@@ -429,6 +431,9 @@ variable [HasReflexiveCoequalizers D] [ReflectsIsomorphisms G]
 class PreservesColimitOfIsReflexivePair (G : C ⥤ D) where
   out :∀ ⦃A B⦄ (f g : A ⟶ B) [IsReflexivePair f g], PreservesColimit (parallelPair f g) G
 
+instance {A B} (f g : A ⟶  B) [IsReflexivePair f g] [PreservesColimitOfIsReflexivePair G] :
+  PreservesColimit (parallelPair f g) G := PreservesColimitOfIsReflexivePair.out f g
+
 instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra (toMonad (ofRightAdjoint G)),
     PreservesColimit (parallelPair (F.map X.a)
       (NatTrans.app MonadicityInternal.adj.counit ((leftAdjoint G).obj X.A))) G :=
@@ -440,7 +445,6 @@ variable [PreservesColimitOfIsReflexivePair G]
 reflexive coequalizers and `G` reflects isomorphisms, then `G` is monadic.
 -/
 def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRightAdjoint G := by
-  let L : (Adjunction.ofRightAdjoint G).toMonad.Algebra ⥤ D := leftAdjointComparison
   letI i : IsRightAdjoint (comparison (Adjunction.ofRightAdjoint G)) :=
     ⟨_, comparisonAdjunction⟩
   constructor
@@ -465,9 +469,11 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)
     rw [comparisonAdjunction_counit_app]
-    change IsIso (IsColimit.coconePointUniqueUpToIso _ _).hom
+    -- Porting note: passing instances through
+    change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
     infer_instance
-    apply counitCoequalizerOfReflectsCoequalizer _
+    -- Porting note: passing instances through
+    apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ ?_
     apply reflectsColimitOfReflectsIsomorphisms
   exact Adjunction.isRightAdjointToIsEquivalence
 #align category_theory.monad.monadic_of_has_preserves_reflexive_coequalizers_of_reflects_isomorphisms CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms
