@@ -138,6 +138,8 @@ instance : UniformAddGroup (E →ᵇ[𝕜, n] F) := by
   refine uniformAddGroup_iInf (fun i ↦ ?_)
   exact uniformAddGroup_comap _
 
+#check Equiv.prodUnique
+
 protected noncomputable def BoundedContDiffMap.seminorm (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
   (normSeminorm 𝕜 <| E →ᵇ (E [×i]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ i)
 
@@ -146,11 +148,11 @@ protected noncomputable def BoundedContDiffMap.seminorm' (i : ℕ) : Seminorm �
     (normSeminorm 𝕜 <| E →ᵇ (E [×j]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ j)
 
 theorem BoundedContDiffMap.withSeminorms :
-    WithSeminorms (BoundedContDiffMap.seminorm : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) :=
-  (withSeminorms_iff_topologicalSpace_eq_iInf _).mpr <| by
-    refine iInf_congr (fun i ↦ ?_)
-    rw [BoundedContDiffMap.seminorm, Seminorm.toTopologicalSpace_comp,
-        normSeminorm_toTopologicalSpace]
+    WithSeminorms (BoundedContDiffMap.seminorm : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) := by
+  let p : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ((n : ℕ) × Unit) := fun ⟨i, _⟩ ↦
+    (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[𝕜] F))).comp (BoundedContDiffMap.iteratedFDerivₗ i)
+  suffices : WithSeminorms p
+  ·
 
 theorem BoundedContDiffMap.withSeminorms' :
     WithSeminorms (BoundedContDiffMap.seminorm' : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) := by
