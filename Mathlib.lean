@@ -1272,6 +1272,7 @@ import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
+import Mathlib.Data.Array.Lemmas
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Bitvec.Lemmas
