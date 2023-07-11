@@ -606,7 +606,7 @@ variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
 variable [Nonempty ι] [Nonempty ι']
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
-    [TopologicalSpace F] [TopologicalAddGroup E] (hq : WithSeminorms q)
+    [TopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i, Continuous ((q i).comp f)) : Continuous f := by
   haveI : TopologicalAddGroup F := hq.topologicalAddGroup
   refine' continuous_of_continuousAt_zero f _
@@ -618,8 +618,8 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
 #align seminorm.continuous_of_continuous_comp Seminorm.continuous_of_continuous_comp
 
 theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [TopologicalSpace E]
-    [TopologicalAddGroup E] [TopologicalSpace F]
-    (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) : Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
+    [TopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
+    Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
     -- Porting note: if we *don't* use dot notation for `Continuous.comp`, Lean tries to show
     -- continuity of `((q i).comp f) ∘ id` because it doesn't see that `((q i).comp f)` is
     -- actually a composition of functions.
@@ -627,9 +627,8 @@ theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [Topol
 #align seminorm.continuous_iff_continuous_comp Seminorm.continuous_iff_continuous_comp
 
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}
-    {_ : TopologicalSpace E} (hp : WithSeminorms p) {_ : TopologicalSpace F}
-    (hq : WithSeminorms q) (f : E →ₛₗ[τ₁₂] F)
-    (hf : Seminorm.IsBounded p q f) : Continuous f := by
+    {_ : TopologicalSpace E} (hp : WithSeminorms p) {_ : TopologicalSpace F} (hq : WithSeminorms q)
+    (f : E →ₛₗ[τ₁₂] F) (hf : Seminorm.IsBounded p q f) : Continuous f := by
   haveI : TopologicalAddGroup E := hp.topologicalAddGroup
   haveI : ContinuousSMul 𝕝 E := hp.continuousSMul
   haveI : ContinuousSMul 𝕝₂ F := hq.continuousSMul
@@ -702,6 +701,13 @@ protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : Sem
     refine ⟨{i}, 1, ?_⟩
     rw [Finset.sup_singleton, one_smul]
     exact (Finset.le_sup (Finset.mem_Iic.mpr le_rfl) : p i ≤ (Finset.Iic i).sup p)
+
+protected theorem congr_equiv {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
+    (hp : WithSeminorms p) (e : ι' ≃ ι) : WithSeminorms (p ∘ e) := by
+  refine hp.congr ?_ ?_ <;>
+  intro i <;>
+  [use {e i}, 1; use {e.symm i}, 1] <;>
+  simp
 
 end WithSeminorms
 
@@ -882,12 +888,13 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonemp
 
 variable {p : SeminormFamily 𝕜 E ι}
 
-variable [TopologicalSpace E] [TopologicalAddGroup E]
+variable [TopologicalSpace E]
 
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology
 is first countable. -/
 theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
     TopologicalSpace.FirstCountableTopology E := by
+  haveI := hp.topologicalAddGroup
   letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
   haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
