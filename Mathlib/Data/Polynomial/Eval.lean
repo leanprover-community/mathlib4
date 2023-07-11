@@ -763,7 +763,8 @@ protected theorem map_nat_cast (n : ℕ) : (n : R[X]).map f = n :=
 
 --Porting note: new theorem
 @[simp]
-protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).map f = OfNat.ofNat n :=
+protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
   show (n : R[X]).map f = n by rw [Polynomial.map_nat_cast]
 
 set_option linter.deprecated false in
