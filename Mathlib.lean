@@ -631,6 +631,7 @@ import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.Distribution.AEEqZero
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
