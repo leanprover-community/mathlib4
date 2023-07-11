@@ -219,6 +219,8 @@ theorem uniqueProd_symm_apply [Unique β] (x : α) :
   rfl
 #align equiv.unique_prod_symm_apply Equiv.uniqueProd_symm_apply
 
+/-- Any family of `Unique` types is a right identity for dependent type product up to
+equivalence. -/
 def sigmaUnique (α) (β : α → Type _) [∀ a, Unique (β a)] : (a : α) × (β a) ≃ α :=
   (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
 
