@@ -1,13 +1,17 @@
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.Ergodic.AddCircle
 
-open MeasureTheory Filter Metric
+open MeasureTheory Filter Metric Function
 open scoped omegaLimit
+
+set_option autoImplicit false
 
 /- For every objective, first write down a statement that Lean understands, with a proof given
 by `sorry`. Then try to prove it! -/
 
 section Topological_Dynamics
+
+/- TODO: at some point translate to topological spaces -/
 
 /- We could do everything in a topological space, using filters and neighborhoods, but it will
 be more comfortable with a metric space. -/
@@ -20,10 +24,23 @@ def nonWanderingSet (f : α → α) : Set α :=
 variable [CompactSpace α] (f : α → α) (hf : Continuous f)
 
 /- Show that periodic points belong to the non-wandering set -/
-
+theorem periodicpts_is_mem
+    (x : α) (n : ℕ) (nnz: n ≠ 0) (pp: IsPeriodicPt f n x)
+    : x ∈ nonWanderingSet f := by
+  intro ε hε
+  use x, n
+  -- unfold IsPeriodicPt at pp
+  -- unfold IsFixedPt at pp
+  refine' ⟨_, _, _⟩
+  . exact mem_ball_self hε
+  . rw [pp]
+    exact mem_ball_self hε
+  . exact nnz
+  done
 
 /- Show that, if `x` belongs to the non-wandering set, there are points `y` arbitrarily close to `x`
 and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
+
 
 
 /- Show that the non-wandering set of `f` is closed. -/
