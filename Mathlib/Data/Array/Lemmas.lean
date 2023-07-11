@@ -8,8 +8,8 @@ Authors: Leonardo de Moura, Mario Carneiro
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Fin.Basic
-import Mathbin.Data.List.Basic
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.List.Basic
 
 universe u v w
 
@@ -184,8 +184,7 @@ theorem toList_nth_le' (a : Array' n α) (i : Fin n) (h') : List.nthLe a.toList 
   cases i <;> apply to_list_nth_le
 #align array.to_list_nth_le' Array'.toList_nth_le'
 
-theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v :=
-  by
+theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i, h⟩ = v := by
   rw [List.get?_eq_some']
   have ll := to_list_length a
   constructor <;> intro h <;> cases' h with h e <;> subst v
@@ -194,8 +193,7 @@ theorem toList_get? {i v} : List.get? a.toList i = some v ↔ ∃ h, a.read ⟨i
 #align array.to_list_nth Array'.toList_get?
 
 theorem write_toList {i v} : (a.write i v).toList = a.toList.set i v :=
-  List.ext_nthLe (by simp) fun j h₁ h₂ =>
-    by
+  List.ext_nthLe (by simp) fun j h₁ h₂ => by
     have h₃ : j < n := by simpa using h₁
     rw [to_list_nth_le _ h₃]
     refine'
@@ -265,8 +263,7 @@ theorem pushBack_rev_list_aux :
 #align array.push_back_rev_list_aux Array'.pushBack_rev_list_aux
 
 @[simp]
-theorem pushBack_revList : (a.pushBack v).revList = v :: a.revList :=
-  by
+theorem pushBack_revList : (a.pushBack v).revList = v :: a.revList := by
   unfold push_back rev_list foldl iterate DArray.iterate
   dsimp [DArray.iterateAux, read, DArray.read, push_back]
   rw [dif_pos (Eq.refl n)]
@@ -280,16 +277,14 @@ theorem pushBack_toList : (a.pushBack v).toList = a.toList ++ [v] := by
 #align array.push_back_to_list Array'.pushBack_toList
 
 @[simp]
-theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i.cast_succ = a.read i :=
-  by
+theorem read_pushBack_left (i : Fin n) : (a.pushBack v).read i.cast_succ = a.read i := by
   cases' i with i hi
   have : ¬i = n := ne_of_lt hi
   simp [push_back, this, Fin.castSuccEmb, Fin.castAdd, Fin.castLE, Fin.castLT, read, DArray.read]
 #align array.read_push_back_left Array'.read_pushBack_left
 
 @[simp]
-theorem read_pushBack_right : (a.pushBack v).read (Fin.last _) = v :=
-  by
+theorem read_pushBack_right : (a.pushBack v).read (Fin.last _) = v := by
   cases' hn : Fin.last n with k hk
   have : k = n := by simpa [Fin.eq_iff_veq] using hn.symm
   simp [push_back, this, Fin.castSuccEmb, Fin.castAdd, Fin.castLE, Fin.castLT, read, DArray.read]
