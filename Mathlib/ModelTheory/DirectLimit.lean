@@ -398,7 +398,7 @@ theorem lift_unique (F : DirectLimit G f ↪[L] P) (x) :
 #align first_order.language.direct_limit.lift_unique FirstOrder.Language.DirectLimit.lift_unique
 
 /-- The direct limit of countably many countably generated structures is countably generated. -/
-theorem cG {ι : Type _} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
+theorem cg {ι : Type _} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     (h : ∀ i, Structure.CG L (G i)) [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) := by
@@ -413,13 +413,13 @@ theorem cG {ι : Type _} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)
     · rw [(Classical.choose_spec (h (out x).1).out).2]
       trivial
     · simp only [Embedding.coe_toHom, DirectLimit.of_apply, Sigma.eta, Quotient.out_eq]
-#align first_order.language.direct_limit.cg FirstOrder.Language.DirectLimit.cG
+#align first_order.language.direct_limit.cg FirstOrder.Language.DirectLimit.cg
 
 instance cg' {ι : Type _} [Encodable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
     {G : ι → Type w} [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [h : ∀ i, Structure.CG L (G i)] [DirectedSystem G fun i j h => f i j h] :
     Structure.CG L (DirectLimit G f) :=
-  cG f h
+  cg f h
 #align first_order.language.direct_limit.cg' FirstOrder.Language.DirectLimit.cg'
 
 end DirectLimit
