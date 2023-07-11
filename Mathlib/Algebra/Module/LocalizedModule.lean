@@ -1125,23 +1125,20 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
         conv_lhs =>
           rw [← one_smul (Localization S) (ℓ.toFun _), ← Localization.mk_self s, ← mul_one r, ←
             @mul_one R _ ↑s]
-          conv =>
-            pattern (occs := 1 2) Localization.mk _ s <;>
-              (rw [← smul_eq_mul R, ← Localization.smul_mk])
-          conv =>
-            pattern (r • _) • _
+          conv in (occs := 1 2) Localization.mk _ s =>
+            all_goals
+            rw [← smul_eq_mul R, ← Localization.smul_mk]
+          conv in (r • _) • _ =>
             rw [smul_assoc]
           rw [ℓ.map_smul', RingHom.id_apply]
-          conv =>
-            pattern (↑s • _) • _
+          conv in (↑s • _) • _ =>
             rw [smul_comm]
-          conv =>
-            pattern (↑s • _) • _
+          conv in (↑s • _) • _ =>
             rw [smul_assoc, smul_comm]
           dsimp
           rw [← ℓ.map_smul (↑s : ↑ S)]
-          conv =>
-            pattern (occs := 1) _ • _ • _; (rw [← smul_assoc])
+          conv in (occs := 1) _ • _ • _ =>
+            rw [← smul_assoc]
           arg 2; rw [← smul_assoc]
         iterate 2 rw [Localization.smul_mk, smul_eq_mul, mul_one]
         rw [Localization.mk_self, one_smul]; rfl }
