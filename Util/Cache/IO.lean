@@ -69,7 +69,10 @@ def mathlibDepPath : FilePath :=
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
-  ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
+  -- Note that this prevents downstream projects from using a top-level `Util` directory.
+  -- I'm not sure a good way around this for now, but hopefully it will be made obsolete
+  -- by a new `cache` before it affects anyone.
+  ("Util", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
   ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
@@ -82,7 +85,7 @@ def getPackageDir (path : FilePath) : IO FilePath :=
   match path.withExtension "" |>.components.head? with
   | none => throw $ IO.userError "Can't find package directory for empty path"
   | some pkg => match pkgDirs.find? pkg with
-    | none => throw $ IO.userError s!"Unknown package directory for {pkg}"
+    | none => throw $ IO.userError s!"Unknown package directory for {pkg}, {path}"
     | some path => return path
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
@@ -206,8 +209,8 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   match path.components with
   | "Mathlib" :: _ => true
   | ["Mathlib.lean"] => true
-  | "MathlibExtras" :: _ => true
-  | ["MathlibExtras.lean"] => true
+  | "Util" :: "TacticCaches" :: _ => true
+  | ["Util", "TacticCaches.lean"] => true
   | _ => false
 
 /-- Decompresses build files into their respective folders -/

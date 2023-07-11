@@ -10,7 +10,7 @@ import Mathlib.Algebra.Group.Basic
 -- Recall that `rw?` caches the discrimination tree on disk.
 -- If you are modifying the way that `rewrites` indexes lemmas,
 -- while testing you will probably want to delete
--- `build/lib/MathlibExtras/Rewrites.extra`
+-- `build/lib/Util/TacticCaches/Rewrites.extra`
 -- so that the cache is rebuilt.
 
 /--
