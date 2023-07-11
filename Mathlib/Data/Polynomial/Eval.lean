@@ -557,7 +557,7 @@ theorem nat_cast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_nat_c
 
 --Porting note: new theorem
 @[simp]
-theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : R[X]).comp p = n :=
+theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   nat_cast_comp
 
 @[simp]
