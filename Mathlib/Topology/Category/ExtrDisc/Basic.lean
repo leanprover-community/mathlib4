@@ -209,7 +209,8 @@ If `Z` is extremally disconnected, X, Y are compact Hausdorff, if `f : X ⟶ Y` 
 `Z ⟶ X`. It exists because `Z` is a projective object in `CompHaus`.
 -/
 noncomputable
-def lift {X Y : CompHaus} {Z : ExtrDisc} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] : Z.compHaus ⟶ X :=
+def lift {X Y : CompHaus} {Z : ExtrDisc} (e : Z.compHaus ⟶ Y) (f : X ⟶ Y) [Epi f] :
+    Z.compHaus ⟶ X :=
   Projective.factorThru e f
 
 @[simp, reassoc]
