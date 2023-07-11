@@ -863,7 +863,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     · intro hx; refine' ⟨x ^ (1 / p), rpow_pos_of_pos hx _, _⟩
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
   have := integral_image_eq_integral_abs_deriv_smul measurableSet_Ioi a1 a2 g
-  rw [a3] at this ; rw [this]
+  rw [a3] at this; rw [this]
   refine' set_integral_congr measurableSet_Ioi _
   intro x hx; dsimp only
   rw [abs_mul, abs_of_nonneg (rpow_nonneg_of_nonneg (le_of_lt hx) _)]

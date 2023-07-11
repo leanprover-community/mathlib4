@@ -523,7 +523,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     congr 1 with n : 1
     simp only [iInf_eq_if, htr n, id, if_true, iSup_and']
   · rw [iInf_eq_if, if_neg htr]
-    push_neg at htr ; rcases htr with ⟨n, hn⟩
+    push_neg at htr; rcases htr with ⟨n, hn⟩
     refine' ENNReal.tsum_eq_top_of_eq_top ⟨n, _⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     exact hn.not_le

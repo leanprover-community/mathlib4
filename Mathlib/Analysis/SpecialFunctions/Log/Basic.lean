@@ -104,7 +104,7 @@ theorem log_one : log 1 = 0 :=
 #align real.log_one Real.log_one
 
 @[simp]
-theorem log_abs (x : ℝ) : log (|x|) = log x := by
+theorem log_abs (x : ℝ) : log |x| = log x := by
   by_cases h : x = 0
   · simp [h]
   · rw [← exp_eq_exp, exp_log_eq_abs h, exp_log_eq_abs (abs_pos.2 h).ne', abs_abs]

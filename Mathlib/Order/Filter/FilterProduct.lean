@@ -248,7 +248,7 @@ theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min 
 #align filter.germ.const_min Filter.Germ.const_min
 
 @[simp]
-theorem const_abs [LinearOrderedAddCommGroup β] (x : β) : (↑(|x|) : β*) = |↑x| := by
+theorem const_abs [LinearOrderedAddCommGroup β] (x : β) : (↑|x| : β*) = |↑x| := by
   rw [abs_def, map_const]
 #align filter.germ.const_abs Filter.Germ.const_abs
 

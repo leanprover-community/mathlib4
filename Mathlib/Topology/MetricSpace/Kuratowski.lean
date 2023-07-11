@@ -150,10 +150,10 @@ theorem LipschitzOnWith.extend_lp_infty [PseudoMetricSpace α] {s : Set α} {f :
     exact LipschitzOnWith.extend_real (hfl i) -- use the nonlinear Hahn-Banach theorem here!
   choose g hgl hgeq using this
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀_in_s⟩
-  . exact ⟨0, LipschitzWith.const' 0, by simp⟩
+  · exact ⟨0, LipschitzWith.const' 0, by simp⟩
   · -- Show that the extensions are uniformly bounded
     have hf_extb : ∀ a : α, Memℓp (swap g a) ∞
-    . apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
+    · apply LipschitzWith.uniformly_bounded (swap g) hgl a₀
       use ‖f a₀‖
       rintro - ⟨i, rfl⟩
       simp_rw [←hgeq i ha₀_in_s]

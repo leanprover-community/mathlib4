@@ -242,7 +242,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine' (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => _
-  replace hg : (∑ i, ‖g i - f i‖₊) < K⁻¹
+  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹
   · rw [← NNReal.coe_lt_coe]
     push_cast
     exact hg
@@ -285,7 +285,7 @@ theorem Basis.op_nnnorm_le {ι : Type _} [Fintype ι] (v : Basis ι 𝕜 E) {u :
       _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by
         gcongr
         calc
-          (∑ i, ‖v.equivFun e i‖₊) ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
+          ∑ i, ‖v.equivFun e i‖₊ ≤ Fintype.card ι • ‖φ e‖₊ := Pi.sum_nnnorm_apply_le_nnnorm _
           _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) := nsmul_le_nsmul_of_le_right (φ.le_op_nnnorm e) _
       _ = Fintype.card ι • ‖φ‖₊ * M * ‖e‖₊ := by simp only [smul_mul_assoc, mul_right_comm]
 #align basis.op_nnnorm_le Basis.op_nnnorm_le

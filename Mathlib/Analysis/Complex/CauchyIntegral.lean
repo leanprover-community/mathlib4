@@ -15,6 +15,7 @@ import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.FDerivAnalytic
 import Mathlib.Data.Real.Cardinality
 
 /-!
@@ -189,7 +190,7 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
       neg_sub]
   set R : Set (ℝ × ℝ) := [[z.re, w.re]] ×ˢ [[w.im, z.im]]
   set t : Set (ℝ × ℝ) := e ⁻¹' s
-  rw [uIcc_comm z.im] at Hc Hi ; rw [min_comm z.im, max_comm z.im] at Hd
+  rw [uIcc_comm z.im] at Hc Hi; rw [min_comm z.im, max_comm z.im] at Hd
   have hR : e ⁻¹' ([[z.re, w.re]] ×ℂ [[w.im, z.im]]) = R := rfl
   have htc : ContinuousOn F R := Hc.comp e.continuousOn hR.ge
   have htd :
@@ -605,11 +606,22 @@ theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : D
     (hs : IsOpen s) : AnalyticOn ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
 #align differentiable_on.analytic_on DifferentiableOn.analyticOn
 
+/-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
+differentiable on `s`. -/
+protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E}
+    (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
+  (hd.analyticOn hs).contDiffOn
+
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
     AnalyticAt ℂ f z :=
   hf.differentiableOn.analyticAt univ_mem
 #align differentiable.analytic_at Differentiable.analyticAt
+
+/-- A complex differentiable function `f : ℂ → E` is continuously differentiable at every point. -/
+protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Differentiable ℂ f) {n : ℕ∞} :
+    ContDiff ℂ n f :=
+  contDiff_iff_contDiffAt.mpr $ fun z ↦ (hf.analyticAt z).contDiffAt
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
 series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with  `0 < R`. -/

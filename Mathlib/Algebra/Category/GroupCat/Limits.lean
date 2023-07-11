@@ -67,7 +67,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.sections_add_subgroup AddGroupCat.sectionsAddSubgroup
 
 @[to_additive]
-instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
+noncomputable instance limitGroup (F : J ⥤ GroupCatMax.{v, u}) :
     Group (Types.limitCone.{v, u} (F ⋙ forget GroupCat)).pt := by
   change Group (sectionsSubgroup.{v, u} F)
   infer_instance
@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
-    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext ; rfl
+    (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker_hom_comp_subtype AddCommGroupCat.kernelIsoKer_hom_comp_subtype
 
