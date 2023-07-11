@@ -142,7 +142,7 @@ def shrink {α β} [DecidableEq α] [Shrinkable α] [Shrinkable β] :
   | ⟨m, x⟩ => (Shrinkable.shrink (m, x)).map fun ⟨m', x'⟩ => ⟨List.dedupKeys m', x'⟩
 #align slim_check.total_function.shrink SlimCheck.TotalFunction.shrink
 
-variable [Repr α] [Repr β]
+variable [Repr α]
 
 instance Pi.sampleableExt : SampleableExt (α → β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
@@ -204,9 +204,9 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
       · simp
 #align slim_check.total_function.apply_finsupp SlimCheck.TotalFunction.applyFinsupp
 
-variable [SampleableExt α] [SampleableExt β]
+variable [SampleableExt α] [SampleableExt β] [Repr α]
 
-instance Finsupp.sampleableExt [Repr α] [Repr β] : SampleableExt (α →₀ β) where
+instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
   interp := fun f => (f.comp SampleableExt.interp).applyFinsupp
   sample := SampleableExt.sample (α := α → β)
@@ -215,7 +215,7 @@ instance Finsupp.sampleableExt [Repr α] [Repr β] : SampleableExt (α →₀ β
 #align slim_check.total_function.finsupp.sampleable_ext SlimCheck.TotalFunction.Finsupp.sampleableExt
 
 -- TODO: support a non-constant codomain type
-instance Dfinsupp.sampleableExt [Repr α] [Repr β] : SampleableExt (Π₀ _ : α, β) where
+instance Dfinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
   interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDfinsupp
   sample := SampleableExt.sample (α := α → β)
@@ -433,7 +433,7 @@ The sizes of the slice being removed start at `n` (with `n` the length
 of the list) and then `n / 2`, then `n / 4`, etc down to 1. The slices
 will be taken at index `0`, `n / k`, `2n / k`, `3n / k`, etc.
 -/
-protected def shrinkPerm {α : Type} [DecidableEq α] [SizeOf α] :
+protected def shrinkPerm {α : Type} [DecidableEq α] :
     (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup) → List (Σ' xs ys : List α, xs ~ ys ∧ ys.Nodup)
   | xs => do
     let k := xs.1.length
@@ -452,7 +452,7 @@ protected def shrinkPerm {α : Type} [DecidableEq α] [SizeOf α] :
 the corresponding elements in the codomain, hence maintaining the property that
 one is a permutation of the other.
 -/
-protected def shrink {α : Type} [SizeOf α] [DecidableEq α] :
+protected def shrink {α : Type} [DecidableEq α] :
     InjectiveFunction α → List (InjectiveFunction α)
   | ⟨xs, h₀, h₁⟩ => do
     let ⟨xs', ys', h₀, h₁⟩ ← InjectiveFunction.shrinkPerm ⟨_, _, h₀, h₁⟩
@@ -509,7 +509,7 @@ instance PiInjective.sampleableExt : SampleableExt { f : ℤ → ℤ // Function
     let r : InjectiveFunction ℤ :=
       InjectiveFunction.mk.{0} xs' ys.1 ys.2 (ys.2.nodup_iff.1 <| (List.nodup_range _).map Hinj)
     pure r
-  shrink := {shrink := @InjectiveFunction.shrink ℤ _ _ }
+  shrink := {shrink := @InjectiveFunction.shrink ℤ _ }
 #align slim_check.injective_function.pi_injective.sampleable_ext SlimCheck.InjectiveFunction.PiInjective.sampleableExt
 
 end InjectiveFunction
