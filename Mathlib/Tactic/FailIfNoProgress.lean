@@ -110,12 +110,53 @@ structure MVarIdComparisonConfig where
   `none`, the decls are ignored and not accessed. -/
   compareMetavarDecls? : Option MetavarDeclComparisonConfig := some {}
 deriving Repr, Inhabited
--- !! Generalize with filtering and mustNotLose,mustNotGain list/array config stuff? Generalize into a goal list config?
 
+/-! ## Preset Configs -/
 
+/-! ### Any Changes -/
 
+/-- Check for any changes whatsoever. -/
+def LocalDeclComparisonConfig.anyChanges : LocalDeclComparisonConfig where
+  checkIndex := true
+  checkFVarId := true
+  checkLocalDeclKind := true
 
--- allow custom functions for comparing `Expr`s etc.? It'd be cool if every comparison function could be overridden, and really was stored in a structure. It'd be neat to do the custom elaborator thing.
+/-- Check for any changes whatsoever. -/
+def LocalContextComparisonConfig.anyChanges : LocalContextComparisonConfig where
+  includeAuxDecls := true
+  includeImplDetails := true
+  toLocalDeclComparisonConfig := .anyChanges
+
+/-- Check for any changes whatsoever. -/
+def MetavarDeclComparisonConfig.anyChanges : MetavarDeclComparisonConfig where
+  checkIndex := true
+  compareLocalContexts? := some .anyChanges
+
+/-- Check for any changes whatsoever. -/
+def MVarIdComparisonConfig.anyChanges : MVarIdComparisonConfig where
+  checkMVarId := true
+  compareMetavarDecls? := some .anyChanges
+
+/-! ### Only expressions -/
+
+/-- Only compare expressions appearing in a local decl. -/
+def LocalDeclComparisonConfig.onlyExprs : LocalDeclComparisonConfig where
+  checkUserName := false
+  checkBinderInfo := false
+
+/-- Only compare expressions appearing in the local context. (Checks local instances.) -/
+def LocalContextComparisonConfig.onlyExprs : LocalContextComparisonConfig where
+  toLocalDeclComparisonConfig := .onlyExprs
+
+/-- Only compare expressions appearing in the target and local context. (Does not include implementation details; does check local instances.) -/
+def MetavarDeclComparisonConfig.onlyExprs : MetavarDeclComparisonConfig where
+  checkUserName := false
+  checkMetavarKind := false
+  compareLocalContexts? := some .onlyExprs
+
+/-- Only compare expressions appearing in the target and local context. (Does not include implementation details; does check local instances.) -/
+def MVarIdComparisonConfig.onlyExprs : MVarIdComparisonConfig where
+  compareMetavarDecls? := some .onlyExprs
 
 
 
@@ -247,7 +288,14 @@ structure Config extends ExprComparisonConfig, MVarIdComparisonConfig where
   mode : FailIfNoProgress.Mode := .normal
 deriving Repr, Inhabited
 
-/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. Return the resulting list of goals otherwise. -/
+/-! ## Preset configs -/
+
+/-- Check for any changes whatsoever. -/
+def Config.anyChanges : Config := { MVarIdComparisonConfig.anyChanges with eqKind := .beq }
+
+/-- Only compare expressions in the target and local context. (Does not include implementation details; does check local instances.) -/
+def Config.onlyExprs : Config := { MVarIdComparisonConfig.onlyExprs with }
+
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
     (cfg : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
   let decl ← goal.getDecl
