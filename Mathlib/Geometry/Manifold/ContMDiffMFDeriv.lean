@@ -400,8 +400,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       exact h
   /- Second step: check that all functions are smooth, and use the chain rule to write the bundled
     derivative as a composition of a function between model spaces and of charts.
-    Convention: statements about the differentiability of `a ∘ b ∘ c` are named `diff_abc`. Statements
-    about differentiability in the bundle have a `_lift` suffix. -/
+    Convention: statements about the differentiability of `a ∘ b ∘ c` are named `diff_abc`.
+    Statements about differentiability in the bundle have a `_lift` suffix. -/
   have U' : UniqueMDiffOn I s' := by
     apply UniqueMDiffOn.inter _ l.open_source
     rw [ho, inter_comm]
@@ -411,7 +411,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
   have diff_r : ContMDiffOn I' I' n r r.source := contMDiffOn_chart
   have diff_rf : ContMDiffOn I I' n (r ∘ f) s' := by
     refine ContMDiffOn.comp diff_r diff_f fun x hx => ?_
-    simp only [mfld_simps] at hx ; simp only [hx, mfld_simps]
+    simp only [mfld_simps] at hx; simp only [hx, mfld_simps]
   have diff_l : ContMDiffOn I I n l.symm s'l :=
     haveI A : ContMDiffOn I I n l.symm l.target := contMDiffOn_chart_symm
     A.mono (by mfld_set_tac)
@@ -467,7 +467,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         simp only [hq, mfld_simps]
       · apply diff_l.mdifferentiableOn one_le_n
         simp only [hq, mfld_simps]
-      · simp only [mfld_simps] at hp ; simp only [hp, mfld_simps]
+      · simp only [mfld_simps] at hp; simp only [hp, mfld_simps]
     have B : tangentMapWithin I I l.symm s'l (il.symm (Dl q)) = q := by
       have : tangentMapWithin I I l.symm s'l (il.symm (Dl q)) =
         tangentMap I I l.symm (il.symm (Dl q))
