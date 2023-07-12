@@ -204,8 +204,8 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
     (hx : ∀ k ∈ x.support, k ≤ i) :
     DirectSum.toModule R ι (G j) (fun k => totalize G f k j) x =
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
-  rw [← @Dfinsupp.sum_single ι G _ _ _ x]
-  unfold Dfinsupp.sum
+  rw [← @DFinsupp.sum_single ι G _ _ _ x]
+  unfold DFinsupp.sum
   simp only [LinearMap.map_sum]
   refine' Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
@@ -225,8 +225,8 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
           subst hxy
           constructor
           · intro i0 hi0
-            rw [Dfinsupp.mem_support_iff, DirectSum.sub_apply, ← DirectSum.single_eq_lof, ←
-              DirectSum.single_eq_lof, Dfinsupp.single_apply, Dfinsupp.single_apply] at hi0
+            rw [DFinsupp.mem_support_iff, DirectSum.sub_apply, ← DirectSum.single_eq_lof, ←
+              DirectSum.single_eq_lof, DFinsupp.single_apply, DFinsupp.single_apply] at hi0
             split_ifs at hi0 with hi hj hj
             · rwa [hi] at hik
             · rwa [hi] at hik
@@ -240,7 +240,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
       (fun x y ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, fun l hl =>
-          (Finset.mem_union.1 (Dfinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
+          (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
           -- Porting note: this had been
           -- simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,

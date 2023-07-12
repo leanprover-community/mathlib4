@@ -88,11 +88,11 @@ theorem withSign.not_injective :
     DirectSum.lof ℕ _ (fun i => withSign i) 1 p1 + DirectSum.lof ℕ _ (fun i => withSign i) (-1) n1
   have : z ≠ 0 := by
     intro h
-    -- porting note: `Dfinsupp.singleAddHom_apply` doesn't work so we have to unfold
-    dsimp [DirectSum.lof_eq_of, DirectSum.of, Dfinsupp.singleAddHom] at h
-    replace h := Dfinsupp.ext_iff.mp h 1
-    rw [Dfinsupp.zero_apply, Dfinsupp.add_apply, Dfinsupp.single_eq_same,
-      Dfinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
+    -- porting note: `DFinsupp.singleAddHom_apply` doesn't work so we have to unfold
+    dsimp [DirectSum.lof_eq_of, DirectSum.of, DFinsupp.singleAddHom] at h
+    replace h := DFinsupp.ext_iff.mp h 1
+    rw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,
+      DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
       Submodule.coe_zero] at h
     apply zero_ne_one h.symm
   apply hinj.ne this

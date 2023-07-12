@@ -11,7 +11,7 @@ Authors: Simon Hudon
 import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Finsupp.ToDfinsupp
+import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
@@ -215,13 +215,13 @@ instance Finsupp.sampleableExt : SampleableExt (α →₀ β) where
 #align slim_check.total_function.finsupp.sampleable_ext SlimCheck.TotalFunction.Finsupp.sampleableExt
 
 -- TODO: support a non-constant codomain type
-instance Dfinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
+instance DFinsupp.sampleableExt : SampleableExt (Π₀ _ : α, β) where
   proxy := TotalFunction α (SampleableExt.proxy β)
-  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDfinsupp
+  interp := fun f => (f.comp SampleableExt.interp).applyFinsupp.toDFinsupp
   sample := SampleableExt.sample (α := α → β)
   -- note: no way of shrinking the domain without an inverse to `interp`
   shrink := { shrink := letI : Shrinkable α := {}; TotalFunction.shrink }
-#align slim_check.total_function.dfinsupp.sampleable_ext SlimCheck.TotalFunction.Dfinsupp.sampleableExt
+#align slim_check.total_function.dfinsupp.sampleable_ext SlimCheck.TotalFunction.DFinsupp.sampleableExt
 
 end Finsupp
 

@@ -544,17 +544,17 @@ theorem Finsupp.inner_sum {ι : Type _} (l : ι →₀ 𝕜) (v : ι → E) (x :
   simp only [inner_smul_right, Finsupp.sum, smul_eq_mul]
 #align finsupp.inner_sum Finsupp.inner_sum
 
-theorem Dfinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.sum_inner {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪l.sum f, x⟫ = l.sum fun i a => ⟪f i a, x⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.sum_inner, smul_eq_mul]
-#align dfinsupp.sum_inner Dfinsupp.sum_inner
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.sum_inner, smul_eq_mul]
+#align dfinsupp.sum_inner DFinsupp.sum_inner
 
-theorem Dfinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
+theorem DFinsupp.inner_sum {ι : Type _} [dec : DecidableEq ι] {α : ι → Type _}
     [∀ i, AddZeroClass (α i)] [∀ (i) (x : α i), Decidable (x ≠ 0)] (f : ∀ i, α i → E)
     (l : Π₀ i, α i) (x : E) : ⟪x, l.sum f⟫ = l.sum fun i a => ⟪x, f i a⟫ := by
-  simp (config := { contextual := true }) only [Dfinsupp.sum, _root_.inner_sum, smul_eq_mul]
-#align dfinsupp.inner_sum Dfinsupp.inner_sum
+  simp (config := { contextual := true }) only [DFinsupp.sum, _root_.inner_sum, smul_eq_mul]
+#align dfinsupp.inner_sum DFinsupp.inner_sum
 
 @[simp]
 theorem inner_zero_left (x : E) : ⟪0, x⟫ = 0 := by
@@ -2013,12 +2013,12 @@ theorem OrthogonalFamily.inner_right_dfinsupp (l : ⨁ i, G i) (i : ι) (v : G i
     ⟪V i v, l.sum fun j => V j⟫ = ⟪v, l i⟫ :=
   calc
     ⟪V i v, l.sum fun j => V j⟫ = l.sum fun j => fun w => ⟪V i v, V j w⟫ :=
-      Dfinsupp.inner_sum (fun j => V j) l (V i v)
+      DFinsupp.inner_sum (fun j => V j) l (V i v)
     _ = l.sum fun j => fun w => ite (i = j) ⟪V i v, V j w⟫ 0 :=
       (congr_arg l.sum <| funext fun j => funext <| hV.eq_ite v)
     _ = ⟪v, l i⟫ := by
-      simp only [Dfinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
-        Dfinsupp.mem_support_toFun]
+      simp only [DFinsupp.sum, Submodule.coe_inner, Finset.sum_ite_eq, ite_eq_left_iff,
+        DFinsupp.mem_support_toFun]
       split_ifs with h
       · simp only [LinearIsometry.inner_map_map]
       · simp only [of_not_not h, inner_zero_right]
@@ -2166,8 +2166,8 @@ theorem OrthogonalFamily.independent {V : ι → Submodule 𝕜 E}
   ext i
   suffices ⟪(v i : E), v i⟫ = 0 by simpa only [inner_self_eq_zero] using this
   calc
-    ⟪(v i : E), v i⟫ = ⟪(v i : E), Dfinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
-      simpa only [Dfinsupp.sumAddHom_apply, Dfinsupp.lsum_apply_apply] using
+    ⟪(v i : E), v i⟫ = ⟪(v i : E), DFinsupp.lsum ℕ (fun i => (V i).subtype) v⟫ := by
+      simpa only [DFinsupp.sumAddHom_apply, DFinsupp.lsum_apply_apply] using
         (hV.inner_right_dfinsupp v i (v i)).symm
     _ = 0 := by simp only [hv, inner_zero_right]
 #align orthogonal_family.independent OrthogonalFamily.independent
