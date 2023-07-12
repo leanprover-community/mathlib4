@@ -96,3 +96,6 @@ theorem ae_eq_of_integral_smul_contDiff_eq
     ∀ᵐ x ∂μ, f x = f' x := by
   have : ∀ᵐ x ∂μ, (f - f') x = 0 := by
     apply ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf.sub h'f)
+    intro g g_diff g_supp
+    simp only [Pi.sub_apply, smul_sub]
+    rw [integral_sub]

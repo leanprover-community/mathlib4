@@ -302,6 +302,26 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
+theorem LocallyIntegrable.integrable_smul_of_hasCompactSupport
+    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X]
+    (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    Integrable (fun x ↦ g x • f x) μ := by
+  let K := tsupport g
+  have hK : IsCompact K := h'g
+  have : K.indicator (fun x ↦ g x • f x) = (fun x ↦ g x • f x) := by
+    apply indicator_eq_self.2
+    apply support_subset_iff'.2
+    intros x hx
+    simp [image_eq_zero_of_nmem_tsupport hx]
+  rw [← this, indicator_smul]
+  apply Integrable.smul_of_top_right
+  · rw [integrable_indicator_iff hK.measurableSet]
+    exact hf.integrableOn_isCompact hK
+  · exact hg.memℒp_top_of_hasCompactSupport h'g
+
+#exit
+
+
 end MeasureTheory
 
 open MeasureTheory
