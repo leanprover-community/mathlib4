@@ -25,7 +25,9 @@ open Qq
 def rewriteEquiv (α : Q(Sort u)) (β : Q(Sort v)) (eqv : Q($α ≃ $β)) : TacticM Unit := do
   let mut genArgs : Array GeneralizeArg := #[]
   let mut clearIds : Array FVarId := #[]
-  for decl in ←getLCtx do
+
+  let ctx ← getLCtx
+  for decl in ctx do
     if ←isDefEq decl.type α then
       -- HACK: `Qq` doesn't like it if the following is `let` instead of `have`
       have var : Q($α) := decl.toExpr
@@ -45,6 +47,9 @@ def rewriteEquiv (α : Q(Sort u)) (β : Q(Sort v)) (eqv : Q($α ≃ $β)) : Tact
       }
       clearIds := clearIds.push decl.fvarId
 
+  if genArgs.isEmpty then
+    throwError "tactic `rw_equiv` failed, did not find any local variables of type\n\t{α}"
+
   -- Perform the generalizations recorded in `genArgs`, and clear the variables in `clear`
   withMainContext <| do
     let (_, _, mvarId) ← (←getMainGoal).generalizeHyp genArgs (←getLCtx).getFVarIds
@@ -54,7 +59,7 @@ def rewriteEquiv (α : Q(Sort u)) (β : Q(Sort v)) (eqv : Q($α ≃ $β)) : Tact
 /-- Rewrite the type of variables `x : α` in the local context along an equivalence `α ≃ β` -/
 elab "rw_equiv " "[" eqvs:term,* "]" : tactic => do
   for eqv in eqvs.getElems do
-    withMainContext <| do
+    withMainContext <| withRef eqv <| do
       let u ← mkFreshLevelMVar;
       let v ← mkFreshLevelMVar;
       let α : Q(Sort u) ← mkFreshExprMVarQ q(Sort u);
