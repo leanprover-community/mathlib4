@@ -60,10 +60,7 @@ variable [Category.{v₁} C] [Category.{v₁} D]
 
 variable {G : D ⥤ C} [IsRightAdjoint G]
 
--- Porting note: these were `local notation` in mathlib3. However, `abbrev` is not always
--- sufficient for synthesizing the right instances, so some occurrences have been inlined as a
--- temporary measure. All occurrences of `leftAdjoint G` and `Adjunction.ofRightAdjoint G` are the
--- result of inlining.
+-- Porting note: had to turn off hygiene
 set_option hygiene false
 scoped notation "F" => leftAdjoint G
 
