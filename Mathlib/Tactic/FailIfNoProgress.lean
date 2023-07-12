@@ -40,24 +40,29 @@ namespace Mathlib.Meta
 
 open Lean Meta Elab
 
-/-- Specifies which type of equality check to use. Either `.beq` or `.defEq`. -/
-inductive EqKind where | beq | defEq
+/-- Specifies which type of equality check to use on `Expr`s: either `.beq` or `.defEq`. -/
+inductive EqKind where
+/-- Compare `Expr`s with the instance of `BEq Expr`. -/
+| beq
+/-- Compare `Expr`s with `isDefEq`. -/
+| defEq
 deriving Repr, Inhabited
 
-/-- Returns `true` if its argument is `.beq` and `false` if `.defEq`. -/
+/-- Returns `true` if using `BEq` (`.beq`) and `false` if using `isDefEq` (`.defEq`). -/
 def EqKind.isBEq : EqKind → Bool
-  | .beq   => true
-  | .defEq => false
+| .beq   => true
+| .defEq => false
 
 /-- Config data for comparing expressions. -/
 structure ExprComparisonConfig where
-  /-- Which kind of equality check to use. -/
+  /-- Which kind of equality check to use on `Expr`s: either `.beq` for `BEq` or `.defEq` for
+  `isDefEq`. -/
   eqKind       : EqKind := .defEq
-  /-- What transparency to use for equality checks. -/
+  /-- The transparency to use for equality checks. -/
   transparency : TransparencyMode := .reducible
 deriving Repr, Inhabited
 
-/-- Config data for comparing local contexts. -/
+/-- Config data for comparing `LocalDecl`s. -/
 structure LocalDeclComparisonConfig where
   /-- Whether to compare the userNames of two `LocalDecl`s. -/
   checkUserName      : Bool := true
@@ -75,11 +80,11 @@ structure LocalDeclComparisonConfig where
   checkLocalDeclKind : Bool := false
 deriving Repr, Inhabited
 
--- Merge?
-/-- Config data for comparing local contexts. -/
+/-- Config data for comparing local contexts. `include*` fields allow filtering of the local
+context's list of decls. -/
 structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
-  -- Filtering options
-  /-- Whether to include implementation detail decls. -/
+  /-- Whether to include `implDetail` decls. (Note that `(·.isImplementationDetail)` refers to both
+  `.implDetail`s and `.auxDecl`s; see `includeAuxDecls`.) -/
   includeImplDetails  : Bool := false
   /-- Whether to include auxiliary decls. -/
   includeAuxDecls     : Bool := false
@@ -92,13 +97,20 @@ structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
 deriving Repr, Inhabited
 
 
---!! docs
+/-- Config data for comparing the `MetavarDecl`s of two metavariables. -/
 structure MetavarDeclComparisonConfig where
+  /-- Whether to compare the `userName` of two metavariables. -/
   checkUserName : Bool := true
+  /-- Whether to compare the local contexts of two metavariable decls. -/
   compareLocalContexts? : Option LocalContextComparisonConfig := some {}
+  /-- Whether to compare the target (type) of two metavariable decls. -/
   checkTarget : Bool := true
+  /-- Whether to compare the local instances of two metavariable decls. (Uses `BEq` on
+  `LocalInstance`.)-/
   checkLocalInstances : Bool := true
+  /-- Whether to compare the kinds of two metavariables. -/
   checkMetavarKind : Bool := true
+  /-- Whether to compare the indices of two metavariables. -/
   checkIndex : Bool := false
 deriving Repr, Inhabited
 
@@ -296,6 +308,7 @@ def Config.anyChanges : Config := { MVarIdComparisonConfig.anyChanges with eqKin
 /-- Only compare expressions in the target and local context. (Does not include implementation details; does check local instances.) -/
 def Config.onlyExprs : Config := { MVarIdComparisonConfig.onlyExprs with }
 
+/-! ## TacticM implementations -/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
     (cfg : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
   let decl ← goal.getDecl
@@ -336,6 +349,7 @@ def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
     throwError "no progress made on goal{pluralization}; {resultMsg}"
 
 
+/-! ## Tactic syntax implementation -/
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the list of
 goals. This compares each of their types and local contexts before and after `tacs` is run.
