@@ -3211,7 +3211,7 @@ import Mathlib.Topology.Order.Hom.Esakia
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Order.LowerTopology
 import Mathlib.Topology.Order.Priestley
-import Mathlib.Topology.Order.UpperSetTopology
+import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Paracompact
 import Mathlib.Topology.Partial
 import Mathlib.Topology.PartitionOfUnity
