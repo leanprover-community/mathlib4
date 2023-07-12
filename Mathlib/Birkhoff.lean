@@ -157,6 +157,30 @@ def recurrentSet {α : Type _} [TopologicalSpace α] (f : α → α) : Set α :=
   { x | x ∈ ω⁺ (fun n ↦ f^[n]) ({x}) }
 
 /- Show that periodic points belong to the recurrent set. -/
+theorem periodicpts_mem_recurrentSet
+    (x : α) (n : ℕ) (nnz: n ≠ 0) (hx: IsPeriodicPt f n x)
+    : x ∈ recurrentSet f := by
+  -- unfold IsPeriodicPt at hx
+  -- unfold IsFixedPt at hx
+  -- unfold recurrentSet
+  have : x ∈ ω⁺ (fun n ↦ f^[n]) ({x} : Set α) := by
+    rw [mem_omegaLimit_iff_frequently]
+    intro U hU
+    simp [frequently_atTop]
+    intro a
+    have hb : ∃ b, a ≤ b ∧ f^[b] x ∈ U := by
+      use a * n
+      constructor
+      . exact Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero nnz)
+      . have : f^[a * n] x = x := by
+          exact Function.IsPeriodicPt.const_mul hx a
+        rw [this]
+        exact mem_of_mem_nhds hU
+        done
+      done
+    apply hb
+  apply this
+  done
 
 
 /- Show that the recurrent set is included in the non-wandering set -/
