@@ -1,7 +1,7 @@
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Dfinsupp.Basic
+import Mathlib.Data.DFinsupp.Basic
 
 -- Porting note:
 -- These are the tests from mathlib3, updated to Lean 4 syntax.
