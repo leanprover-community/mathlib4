@@ -247,7 +247,7 @@ theorem even_iff_exists_two_mul (m : α) : Even m ↔ ∃ c, m = 2 * c := by
   simp [even_iff_exists_two_nsmul]
 #align even_iff_exists_two_mul even_iff_exists_two_mul
 
-theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
+theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, dvd_iff, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
 alias even_iff_two_dvd ↔ Even.two_dvd _
