@@ -296,6 +296,54 @@ other checks are performed. -/
 | quick
 deriving Repr, Inhabited
 
+/--
+Config data for `failIfNoProgress`, `fail_if_no_progress`, and `runAndFailIfNoProgress`. This
+determines which aspects of two lists of goals are compared and the nature of the checks made. Any
+difference in the compared aspects indicates "progress".
+
+By default, we only compare "observable" properties; internal bookkeeping like `MVarId`s and
+`FVarId`s are not checked by default. The following are the fields of this config and its
+subconfigs, together with their default values and interpretations.
+
+* `mode := .normal` – If `mode := .normal`, the rest of the config is used to determined equality
+as described. If `mode := .quick`, the rest of the config is ignored, and `fail_if_no_progress`
+only checks if any of the original goals have been assigned. If not, no progress is considered to
+have been made.
+* `eqKind := .defEq` – either `.beq` or `.defEq`. `.beq` uses the instance of `BEq Expr` to
+  compare expressions, and `.defEq` uses `isDefEq`. Controls all expression comparisons.
+* `transparency := .reducible` – the `TransparencyMode` at which to compare expressions; relevant
+only if `eqKind := .defEq`. Controls all expression comparisons.
+* `checkMVarId := false` – whether to compare the `MVarId`s of two goals.
+* `compareMetavarDecls? : Option MetavarDeclComparisonConfig := some {}` – whether to compare the
+decl's of two `MVarId`'s, and if so, how. If `none`, the decl's are ignored.
+
+### `MetavarDeclComparisonConfig`
+
+* Properties of the goal's decl to compare:
+  * `checkUserName := true`
+  * `checkTarget := true`
+  * `checkLocalInstances := true`
+  * `checkMetavarKind := true`
+  * `checkIndex := false`
+* `compareLocalContexts? : Option LocalContextComparisonConfig := some {}` – whether to compare the local contexts of two metavariables, and if so, how. If `none`, the local contexts are ignored.
+
+### `LocalContextComparisonConfig`
+
+* Filtering options:
+  * `includeCDecls := true`
+  * `includeLDecls := true`
+  * `includeDefaultDecls := true`
+  * `includeAuxDecls := false`
+  * `includeImplDetails := false` – note that this refers exclusively to `.implDetail` `LocalDecl`s, whereas `(·.isImplementationDetail)` refers to both `.implDetail`s and `auxDecl`s.
+* Properties of `LocalDecl`s to compare (via extending `LocalDeclComparisonConfig`):
+  * `checkUserName := true`
+  * `checkType := true`
+  * `checkLetValue := true`
+  * `checkBinderInfo := true`
+  * `checkIndex := false`
+  * `checkFVarId := false`
+  * `checkLocalDeclKind := false`
+-/
 structure Config extends ExprComparisonConfig, MVarIdComparisonConfig where
   mode : FailIfNoProgress.Mode := .normal
 deriving Repr, Inhabited
