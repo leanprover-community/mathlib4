@@ -1258,7 +1258,6 @@ import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.Bitvec.BitVector.Defs
-import Mathlib.Data.Bitvec.BitVector.Equiv
 import Mathlib.Data.Bitvec.BitVector.Lemmas
 import Mathlib.Data.Bool.AllAny
 import Mathlib.Data.Bool.Basic
