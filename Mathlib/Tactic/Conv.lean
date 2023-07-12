@@ -27,6 +27,22 @@ macro_rules
 macro "run_conv" e:doSeq : conv => `(conv| tactic' => run_tac $e)
 
 /--
+`conv in pat => cs` runs the `conv` tactic sequence `cs`
+on the first subexpression matching the pattern `pat` in the target.
+The converted expression becomes the new target subgoal, like `conv => cs`.
+
+The arguments `in` are the same as those as the in `pattern`.
+In fact, `conv in pat => cs` is a macro for `conv => pattern pat; cs`.
+
+The syntax also supports the `occs` clause. Example:
+```lean
+conv in (occs := *) x + y => rw [add_comm]
+```
+-/
+macro "conv" " in " occs?:(occs)? p:term " => " code:convSeq : conv =>
+  `(conv| conv => pattern $[$occs?]? $p; ($code:convSeq))
+
+/--
 * `discharge => tac` is a conv tactic which rewrites target `p` to `True` if `tac` is a tactic
   which proves the goal `⊢ p`.
 * `discharge` without argument returns `⊢ p` as a subgoal.

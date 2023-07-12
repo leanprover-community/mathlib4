@@ -62,12 +62,14 @@ theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃
   (f.symm.image_eq_preimage S).symm
 #align set.preimage_equiv_eq_image_symm Set.preimage_equiv_eq_image_symm
 
-/- Porting note: Removed `simp` attribute. LHS not in normal form -/
+-- Porting note: increased priority so this fires before `image_subset_iff`
+@[simp high]
 protected theorem subset_image {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     e.symm '' t ⊆ s ↔ t ⊆ e '' s := by rw [image_subset_iff, e.image_eq_preimage]
 #align equiv.subset_image Equiv.subset_image
 
-/- Porting note: Removed `simp` attribute. LHS not in normal form  -/
+-- Porting note: increased priority so this fires before `image_subset_iff`
+@[simp high]
 protected theorem subset_image' {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
     s ⊆ e.symm '' t ↔ e '' s ⊆ t :=
   calc
@@ -664,9 +666,10 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type _} {β : α → Type _}
   refine' forall_congr' fun i => _
   dsimp only [Subtype.coe_mk]
   -- Porting note: Two lines below were `by_cases hi <;> simp [hi]`
+  -- This regression is https://github.com/leanprover/lean4/issues/1926
   by_cases hi : p i
-  . simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
-  . simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
+  · simp [forall_prop_of_true hi, forall_prop_of_false (not_not.2 hi), hi]
+  · simp [forall_prop_of_false hi, hi, forall_prop_of_true hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi
 
 -- See also `Equiv.sigmaFiberEquiv`.

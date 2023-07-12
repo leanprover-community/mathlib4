@@ -1190,8 +1190,7 @@ theorem isGLB_sInf' {β : Type _} [ConditionallyCompleteLattice β] {s : Set (Wi
         intro b hb
         exact Set.mem_singleton_iff.2 (top_le_iff.1 (ha hb))
       · refine' some_le_some.2 (le_csInf _ _)
-        ·
-          classical
+        · classical
             contrapose! h
             rintro (⟨⟩ | a) ha
             · exact mem_singleton ⊤

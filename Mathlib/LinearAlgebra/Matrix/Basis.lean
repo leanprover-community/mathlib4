@@ -117,7 +117,7 @@ theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι �
 #align basis.to_matrix_is_unit_smul Basis.toMatrix_isUnitSMul
 
 @[simp]
-theorem sum_toMatrix_smul_self [Fintype ι] : (∑ i : ι, e.toMatrix v i j • e i) = v j := by
+theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 #align basis.sum_to_matrix_smul_self Basis.sum_toMatrix_smul_self
 

@@ -105,7 +105,7 @@ instance monoid {G : Type _} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
 #align smooth_map.monoid SmoothMap.monoid
 #align smooth_map.add_monoid SmoothMap.addMonoid
 
-/-- Coercion to a function as an `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
+/-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) "Coercion to a function as an `AddMonoidHom`.
   Similar to `AddMonoidHom.coeFn`."]
 def coeFnMonoidHom {G : Type _} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
