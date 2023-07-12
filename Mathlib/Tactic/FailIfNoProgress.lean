@@ -9,28 +9,32 @@ import Std
 /-!
 # Fail if no progress
 
-This implements the `fail_if_no_progress` tactic, which fails if no actual progress is made by the
-following tactic sequence.
+This implements the `fail_if_no_progress` tactic (and its internal versions), which fail if no
+progress is made by the tactic sequence provided to it.
 
-"Actual progress" means that either the number of goals has changed, that the
-number or presence of expressions in the context has changed, or that the type of some expression
-in the context or the type of the goal is no longer definitionally equal to what it used to be at
-reducible transparency.
-
-This means that, for example, `1 - 1` changing to `0` does not count as actual progress, since
-```lean
-example : (1 - 1 = 0) := by with_reducible rfl
-```
+"Progress" here means a change between the list of goals before the tactics and the list of goals
+afterwards, as specified by the settings in `FailIfNoProgress.Config`. By default, only
+"observable" changes are checked; this file also provides the preset configs `.anyChanges` and
+`.onlyExprs` which check for any changes whatsoever and only compare expressions appearing in the
+target and local context, respectively.
 
 This tactic is useful in situations where we want to stop iterating some tactics if they're not
 having any  effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 
+## Possible future features
 
-
-
-
-
+* Tracing to show what progress was made when `fail_if_no_progress` succeeds
+(i.e. `fail_if_no_progress?`)
+* Different `ExprComparisonConfig`s for each location expressions are compared, ideally with
+default propagation from the top level when writing configs, one way or another
+* Configs to tweak list comparisons: canLose, canGain, orderless
+* Custom overrides for comparison and preprocessing functions via configs
 -/
+
+
+
+
+
 
 
 
