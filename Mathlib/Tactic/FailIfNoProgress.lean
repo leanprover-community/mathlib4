@@ -102,6 +102,14 @@ structure MetavarDeclComparisonConfig where
   checkIndex : Bool := false
 deriving Repr, Inhabited
 
+/-- Config data for comparing two `MVarId`s and, potentially, their decls. -/
+structure MVarIdComparisonConfig where
+  /-- Whether to compare two `MVarId`s (with `BEq`). -/
+  checkMVarId : Bool := false
+  /-- Whether to compare the `MetavarDecl`s associated with the `MVarId`s, and if so, how. If
+  `none`, the decls are ignored and not accessed. -/
+  compareMetavarDecls? : Option MetavarDeclComparisonConfig := some {}
+deriving Repr, Inhabited
 -- !! Generalize with filtering and mustNotLose,mustNotGain list/array config stuff? Generalize into a goal list config?
 inductive FailIfNoProgress.Mode where
 /-- Compares the goal lists before and after the tactic. -/
