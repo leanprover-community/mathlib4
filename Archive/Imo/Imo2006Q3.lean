@@ -9,6 +9,7 @@ Authors: Tian Chen
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.Tactic.Polyrith
 
 /-!
 # IMO 2006 Q3
@@ -39,61 +40,49 @@ namespace Imo2006Q3
 /-- Replacing `x` and `y` with their average increases the left side. -/
 theorem lhs_ineq {x y : ℝ} (hxy : 0 ≤ x * y) :
     16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 3 := by
-  conv_rhs => rw [pow_succ']
-  refine' mul_le_mul_of_nonneg_right _ (sq_nonneg _)
-  apply le_of_sub_nonneg
-  calc
-    ((x + y) ^ 2) ^ 2 - 16 * x ^ 2 * y ^ 2 = (x - y) ^ 2 * ((x + y) ^ 2 + 4 * (x * y)) := by ring
-    _ ≥ 0 := mul_nonneg (sq_nonneg _) <| add_nonneg (sq_nonneg _) <| mul_nonneg zero_lt_four.le hxy
+  have : (x - y) ^ 2 * ((x + y) ^ 2 + 4 * (x * y)) ≥ 0 := by positivity
+  calc 16 * x ^ 2 * y ^ 2 * (x + y) ^ 2 ≤ ((x + y) ^ 2) ^ 2 * (x + y) ^ 2 := by gcongr; linarith
+    _ = ((x + y) ^ 2) ^ 3 := by ring
 #align imo2006_q3.lhs_ineq Imo2006Q3.lhs_ineq
 
-theorem four_pow_four_pos : (0 : ℝ) < 4 ^ 4 :=
-  pow_pos zero_lt_four _
+theorem four_pow_four_pos : (0 : ℝ) < 4 ^ 4 := by norm_num
 #align imo2006_q3.four_pow_four_pos Imo2006Q3.four_pow_four_pos
 
-theorem mid_ineq {s t : ℝ} : s * t ^ 3 ≤ (3 * t + s) ^ 4 / 4 ^ 4 :=
-  (le_div_iff four_pow_four_pos).mpr <|
-    le_of_sub_nonneg <|
-      calc
-        (3 * t + s) ^ 4 - s * t ^ 3 * 4 ^ 4 = (s - t) ^ 2 * ((s + 7 * t) ^ 2 + 2 * (4 * t) ^ 2) :=
-          by ring
-        _ ≥ 0 :=
-          mul_nonneg (sq_nonneg _) <|
-            add_nonneg (sq_nonneg _) <| mul_nonneg zero_le_two (sq_nonneg _)
+theorem mid_ineq {s t : ℝ} : s * t ^ 3 ≤ (3 * t + s) ^ 4 / 4 ^ 4 := by
+  rw [le_div_iff four_pow_four_pos]
+  have : 0 ≤ (s - t) ^ 2 * ((s + 7 * t) ^ 2 + 2 * (4 * t) ^ 2) := by positivity
+  linarith
 #align imo2006_q3.mid_ineq Imo2006Q3.mid_ineq
 
 /-- Replacing `x` and `y` with their average decreases the right side. -/
-theorem rhs_ineq {x y : ℝ} : 3 * (x + y) ^ 2 ≤ 2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) :=
-  le_of_sub_nonneg <|
-    calc
-      _ = (x - y) ^ 2 := by ring
-      _ ≥ 0 := sq_nonneg _
+theorem rhs_ineq {x y : ℝ} : 3 * (x + y) ^ 2 ≤ 2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) := by
+  have : 0 ≤ (x - y) ^ 2 := by positivity
+  linarith
 #align imo2006_q3.rhs_ineq Imo2006Q3.rhs_ineq
 
 theorem zero_lt_32 : (0 : ℝ) < 32 := by norm_num
 #align imo2006_q3.zero_lt_32 Imo2006Q3.zero_lt_32
 
 theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
-    32 * |x * y * z * s| ≤ sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 :=
-  have hz : (x + y) ^ 2 = z ^ 2 := neg_eq_of_add_eq_zero_right hxyz ▸ (neg_sq _).symm
-  have hs : 0 ≤ 2 * s ^ 2 := mul_nonneg zero_le_two (sq_nonneg s)
+    32 * |x * y * z * s| ≤ sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
+  have hz : (x + y) ^ 2 = z ^ 2 := by linear_combination (x + y - z) * hxyz
   have this :=
     calc
-      2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2) ≤ (3 * (x + y) ^ 2 + 2 * s ^ 2) ^ 4 / 4 ^ 4 :=
-        le_trans (mul_le_mul_of_nonneg_left (lhs_ineq hxy) hs) mid_ineq
-      _ ≤ (2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4 :=
-        div_le_div_of_le four_pow_four_pos.le <|
-          pow_le_pow_of_le_left (add_nonneg (mul_nonneg zero_lt_three.le (sq_nonneg _)) hs)
-            (add_le_add_right rhs_ineq _) _
-  le_of_pow_le_pow _ (mul_nonneg (sqrt_nonneg _) (sq_nonneg _)) Nat.succ_pos' <|
-    calc
-      (32 * |x * y * z * s|) ^ 2 = 32 * (2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)) := by
-        rw [mul_pow, sq_abs, hz]; ring
-      _ ≤ 32 * ((2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4) :=
-        (mul_le_mul_of_nonneg_left this zero_lt_32.le)
-      _ = (sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2) ^ 2 := by
-        rw [mul_pow, sq_sqrt zero_le_two, hz, ← pow_mul, ← mul_add, mul_pow, ← mul_comm_div,
-          ← mul_assoc, show 32 / 4 ^ 4 * 2 ^ 4 = (2 : ℝ) by norm_num, show 2 * 2 = 4 by rfl]
+      2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)
+        ≤ _ * _ ^ 3 := by gcongr; exact lhs_ineq hxy
+      _ ≤ (3 * (x + y) ^ 2 + 2 * s ^ 2) ^ 4 / 4 ^ 4 := mid_ineq
+      _ ≤ (2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4 := by
+          gcongr (?_ + _) ^ 4 / _
+          apply rhs_ineq
+  refine le_of_pow_le_pow 2 (by positivity) (by positivity) ?_
+  calc
+    (32 * |x * y * z * s|) ^ 2 = 32 * (2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)) := by
+      rw [mul_pow, sq_abs, hz]; ring
+    _ ≤ 32 * ((2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4) := by gcongr
+    _ = (sqrt 2 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2) ^ 2 := by
+      field_simp
+      rw [mul_pow, sq_sqrt zero_le_two, hz]
+      ring
 #align imo2006_q3.subst_wlog Imo2006Q3.subst_wlog
 
 /-- Proof that `M = 9 * sqrt 2 / 32` works with the substitution. -/
@@ -103,26 +92,16 @@ theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
   · rw [div_mul_eq_mul_div, le_div_iff' zero_lt_32]
     exact subst_wlog h' hxyz
   cases' (mul_nonneg_of_three x y z).resolve_left h' with h h
-  · specialize this y z x _ h
-    · rw [← hxyz]; ring
-    · convert this using 2 <;> ring
-  · specialize this z x y _ h
-    · rw [← hxyz]; ring
-    · convert this using 2 <;> ring
+  · convert this y z x _ h using 2 <;> linarith
+  · convert this z x y _ h using 2 <;> linarith
 #align imo2006_q3.subst_proof₁ Imo2006Q3.subst_proof₁
-
-theorem lhs_identity (a b c : ℝ) :
-    a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2) =
-      (a - b) * (b - c) * (c - a) * -(a + b + c) :=
-  by ring
-#align imo2006_q3.lhs_identity Imo2006Q3.lhs_identity
 
 theorem proof₁ {a b c : ℝ} :
     |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
       9 * sqrt 2 / 32 * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2 :=
   calc
-    _ = _ := congr_arg _ <| lhs_identity a b c
-    _ ≤ _ := (subst_proof₁ (a - b) (b - c) (c - a) (-(a + b + c)) (by ring))
+    _ = |(a - b) * (b - c) * (c - a) * -(a + b + c)| := by ring_nf
+    _ ≤ _ := subst_proof₁ (a - b) (b - c) (c - a) (-(a + b + c)) (by ring)
     _ = _ := by ring
 #align imo2006_q3.proof₁ Imo2006Q3.proof₁
 
@@ -131,18 +110,19 @@ theorem proof₂ (M : ℝ)
       |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
         M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
     9 * sqrt 2 / 32 ≤ M := by
-  have h₁ :
-    ∀ x : ℝ,
-      (2 - 3 * x - 2) * (2 - (2 + 3 * x)) * (2 + 3 * x - (2 - 3 * x)) *
-          -(2 - 3 * x + 2 + (2 + 3 * x)) =
-        -(18 ^ 2 * x ^ 2 * x) :=
-    by intro; ring
-  have h₂ : ∀ x : ℝ, (2 - 3 * x) ^ 2 + 2 ^ 2 + (2 + 3 * x) ^ 2 = 18 * x ^ 2 + 12 := by intro; ring
-  have := h (2 - 3 * sqrt 2) 2 (2 + 3 * sqrt 2)
-  rw [lhs_identity, h₁, h₂, sq_sqrt zero_le_two, abs_neg, abs_eq_self.mpr, ← div_le_iff] at this
-  · convert this using 1; ring
-  · apply pow_pos; norm_num
-  · exact mul_nonneg (mul_nonneg (sq_nonneg _) zero_le_two) (sqrt_nonneg _)
+  set α := sqrt (2:ℝ)
+  have hα : α ^ 2 = 2 := sq_sqrt (by norm_num)
+  let a := 2 - 3 * α
+  let c := 2 + 3 * α
+  calc _ = 18 ^ 2 * 2 * α / 48 ^ 2 := by ring
+    _ ≤ M := ?_
+  rw [div_le_iff (by positivity)]
+  calc 18 ^ 2 * 2 * α
+      = 18 ^ 2 * α ^ 2 * α := by linear_combination -324 * α * hα
+    _ = abs (-(18 ^ 2 * α ^ 2 * α)) := by rw [abs_neg, abs_of_nonneg]; positivity
+    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf
+    _ ≤ M * (a ^ 2 + 2 ^ 2 + c ^ 2) ^ 2 := by apply h
+    _ = M * 48 ^ 2 := by linear_combination (324 * α ^ 2 + 1080) * M * hα
 #align imo2006_q3.proof₂ Imo2006Q3.proof₂
 
 end Imo2006Q3
@@ -154,5 +134,5 @@ theorem imo2006_q3 (M : ℝ) :
         |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
           M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) ↔
       9 * sqrt 2 / 32 ≤ M :=
-  ⟨proof₂ M, fun h _ _ _ => le_trans proof₁ <| mul_le_mul_of_nonneg_right h <| sq_nonneg _⟩
+  ⟨proof₂ M, fun h _ _ _ => proof₁.trans (by gcongr)⟩
 #align imo2006_q3 imo2006_q3

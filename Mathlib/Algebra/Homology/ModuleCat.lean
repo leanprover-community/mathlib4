@@ -117,7 +117,8 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
     ModuleCat.toKernelSubobject_arrow, imageToKernel_arrow_apply, imageSubobject_arrow_comp_apply]
   rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i, LinearMap.add_apply,
     LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext, comp_apply, comp_apply,
-    x.2, map_zero, zero_add]
+    x.2, map_zero]
+  dsimp
   abel
 
 end ModuleCat

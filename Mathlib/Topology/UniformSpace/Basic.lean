@@ -149,7 +149,7 @@ def compRel (r₁ r₂ : Set (α × α)) :=
 #align comp_rel compRel
 
 @[inherit_doc]
-scoped[Uniformity] infixl:55 " ○ " => compRel
+scoped[Uniformity] infixl:62 " ○ " => compRel
 open Uniformity
 
 @[simp]
@@ -199,7 +199,7 @@ theorem subset_comp_self {s : Set (α × α)} (h : idRel ⊆ s) : s ⊆ s ○ s 
 #align subset_comp_self subset_comp_self
 
 theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ) :
-    t ⊆ ((· ○ ·) s^[n]) t := by
+    t ⊆ (s ○ ·)^[n] t := by
   induction' n with n ihn generalizing t
   exacts [Subset.rfl, (right_subset_compRel h).trans ihn]
 #align subset_iterate_comp_rel subset_iterate_compRel
@@ -463,8 +463,8 @@ theorem comp_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) : ∃
 /-- If `s ∈ 𝓤 α`, then for any natural `n`, for a subset `t` of a sufficiently small set in `𝓤 α`,
 we have `t ○ t ○ ... ○ t ⊆ s` (`n` compositions). -/
 theorem eventually_uniformity_iterate_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 α) (n : ℕ) :
-    ∀ᶠ t in (𝓤 α).smallSets, ((· ○ ·) t^[n]) t ⊆ s := by
-  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ ((· ○ ·) t^[n]) t ⊆ s
+    ∀ᶠ t in (𝓤 α).smallSets, (t ○ ·)^[n] t ⊆ s := by
+  suffices : ∀ᶠ t in (𝓤 α).smallSets, t ⊆ s ∧ (t ○ ·)^[n] t ⊆ s
   exact (eventually_and.1 this).2
   induction' n with n ihn generalizing s; · simpa
   rcases comp_mem_uniformity_sets hs with ⟨t, htU, hts⟩
@@ -922,7 +922,7 @@ theorem nhds_le_uniformity (x : α) : 𝓝 (x, x) ≤ 𝓤 α := by
 #align nhds_le_uniformity nhds_le_uniformity
 
 /-- Entourages are neighborhoods of the diagonal. -/
-theorem iSup_nhds_le_uniformity : (⨆ x : α, 𝓝 (x, x)) ≤ 𝓤 α :=
+theorem iSup_nhds_le_uniformity : ⨆ x : α, 𝓝 (x, x) ≤ 𝓤 α :=
   iSup_le nhds_le_uniformity
 #align supr_nhds_le_uniformity iSup_nhds_le_uniformity
 
@@ -1019,7 +1019,7 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
-    (⋃ x ∈ s, ball x U) = univ := by
+    ⋃ x ∈ s, ball x U = univ := by
   refine' iUnion₂_eq_univ_iff.2 fun y => _
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
@@ -1173,7 +1173,7 @@ instance : InfSet (UniformSpace α) :=
 
 protected theorem UniformSpace.sInf_le {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : t ∈ tt) : sInf tt ≤ t :=
-  show (⨅ u ∈ tt, 𝓤[u]) ≤ 𝓤[t] from iInf₂_le t h
+  show ⨅ u ∈ tt, 𝓤[u] ≤ 𝓤[t] from iInf₂_le t h
 
 protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : UniformSpace α}
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
@@ -1843,7 +1843,7 @@ theorem lebesgue_number_lemma {α : Type u} [UniformSpace α] {s : Set α} {ι} 
     apply (𝓤 α).sets_of_superset hm'
     rintro ⟨x, y⟩ hp rfl
     refine' ⟨i, m', hm', fun z hz => h (monotone_id.compRel monotone_const mm' _)⟩
-    dsimp [-mem_compRel] at hz⊢
+    dsimp [-mem_compRel] at hz ⊢
     rw [compRel_assoc]
     exact ⟨y, hp, hz⟩
   have hu₂ : s ⊆ ⋃ n ∈ 𝓤 α, u n := fun x hx => by

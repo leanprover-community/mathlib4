@@ -167,8 +167,8 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       (op ((Opens.map (F.map g).base).obj ((Opens.map (colimit.ι (F ⋙ forget C) j₃)).obj U.unop)))
       (op ((Opens.map (colimit.ι (F ⋙ PresheafedSpace.forget C) j₂)).obj (unop U)))
       _]
-    -- Now we show the open sets are equal.
     swap
+    -- Now we show the open sets are equal.
     · apply unop_injective
       rw [← Opens.map_comp_obj]
       congr
@@ -212,11 +212,12 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         { base := colimit.ι (F ⋙ PresheafedSpace.forget C) j
           c := limit.π _ (op j) }
       naturality := fun {j j'} f => by
-        fapply PresheafedSpace.ext
+        ext1
+        -- See https://github.com/leanprover/std4/pull/158
+        swap
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
-        · ext U
-          rcases U with ⟨U, hU⟩
+        · ext ⟨U, hU⟩
           dsimp
           rw [PresheafedSpace.id_c_app, map_id]
           erw [id_comp]
@@ -303,11 +304,12 @@ set_option linter.uppercaseLean3 false in
 
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
-  fapply PresheafedSpace.ext
+  ext U
+  -- See https://github.com/leanprover/std4/pull/158
+  swap
   · simp [desc]
   · -- Porting note : the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
-    ext U
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
     simp only [eqToHom_app, op_obj, Opens.map_comp_obj, eqToHom_map, Functor.leftOp, assoc]
@@ -331,14 +333,14 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
     have t :
       m.base =
         colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) := by
-      apply CategoryTheory.Limits.colimit.hom_ext
-      intro j
-      apply ContinuousMap.ext
-      intro x
+      dsimp
+      ext j
       rw [colimit.ι_desc, mapCocone_ι_app, ← w j]
       simp
-    fapply PresheafedSpace.ext
+    ext : 1
+    swap
     -- could `ext` please not reorder goals?
+    -- See https://github.com/leanprover/std4/pull/158
     · exact t
     · refine NatTrans.ext _ _ (funext fun U => limit_obj_ext fun j => ?_)
       dsimp only [colimitCocone_pt, colimit_carrier, leftOp_obj, pushforwardDiagramToColimit_obj,

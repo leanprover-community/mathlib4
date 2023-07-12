@@ -501,7 +501,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
         dsimp
         rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
       · intro y y' h h'
-        dsimp at h h'⊢
+        dsimp at h h' ⊢
         rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
         -- no longer works for some reason
     smul_def' := fun r x => by
@@ -731,11 +731,11 @@ algEquivOfLinearEquivTensorProduct f (fun x₁ x₂ c₁ c₂ => by
   try
     intros
     trivial
-  . intros ab₁ ab₂ h₁ h₂ a b
+  · intros ab₁ ab₂ h₁ h₂ a b
     rw [mul_add, add_tmul, map_add, h₁, h₂, map_add, mul_add]
-  . intros a b ab₁ ab₂ h₁ h₂
+  · intros a b ab₁ ab₂ h₁ h₂
     rw [add_mul, add_tmul, map_add, h₁, h₂, map_add, add_mul]
-  . intros ab₁ ab₂ _ _ x y hx hy
+  · intros ab₁ ab₂ _ _ x y hx hy
     rw [add_mul, add_tmul, map_add, hx, hy, map_add, map_add, mul_add, mul_add, add_mul, mul_add])
   w₂
 #align algebra.tensor_product.alg_equiv_of_linear_equiv_triple_tensor_product Algebra.TensorProduct.algEquivOfLinearEquivTripleTensorProduct
@@ -1094,7 +1094,7 @@ def endTensorEndAlgHom : End R M ⊗[R] End R N →ₐ[R] End R (M ⊗[R] N) := 
     simp only [homTensorHomMap_apply, TensorProduct.map_mul]
   · intro r
     simp only [homTensorHomMap_apply]
-    ext (m n)
+    ext m n
     simp [smul_tmul]
 #align module.End_tensor_End_alg_hom Module.endTensorEndAlgHom
 

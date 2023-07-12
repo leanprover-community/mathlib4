@@ -561,7 +561,7 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
 
 @[to_additive]
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
-    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (fun y : α => y * x) ⁻¹' s := by
+    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) ⁻¹' s := by
   ext x
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
     Set.mem_image, ← eq_inv_mul_iff_mul_eq]
@@ -570,6 +570,12 @@ theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
       ⟨x * z, hxz, by simpa using hz⟩⟩
 #align quotient_group.preimage_image_coe QuotientGroup.preimage_image_mk
 #align quotient_add_group.preimage_image_coe QuotientAddGroup.preimage_image_mk
+
+@[to_additive]
+theorem preimage_image_mk_eq_iUnion_image (N : Subgroup α) (s : Set α) :
+    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) '' s := by
+  rw [preimage_image_mk, iUnion_congr_of_surjective (·⁻¹) inv_surjective]
+  exact fun x ↦ image_mul_right'
 
 end QuotientGroup
 

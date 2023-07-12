@@ -55,7 +55,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
     where
   card := xs.length
   Equiv :=
-    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length] ; apply h⟩, fun ⟨i, h⟩ =>
+    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, fun ⟨i, h⟩ =>
       xs.nthLe _ h, fun x => by simp, fun ⟨i, h⟩ => by
       simp [*]⟩
 #align fin_enum.of_nodup_list FinEnum.ofNodupList
@@ -74,17 +74,17 @@ open Function
 
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
-  simp [toList] ; exists Equiv x ; simp
+  simp [toList]; exists Equiv x; simp
 #align fin_enum.mem_to_list FinEnum.mem_toList
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
-  simp [toList] ; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
+  simp [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 #align fin_enum.nodup_to_list FinEnum.nodup_toList
 
 /-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
-  ofList ((toList β).map f) (by intro ; simp ; exact h _)
+  ofList ((toList β).map f) (by intro; simp; exact h _)
 #align fin_enum.of_surjective FinEnum.ofSurjective
 
 /-- create a `FinEnum` instance using an injection -/
@@ -107,12 +107,12 @@ instance empty : FinEnum Empty :=
 #align fin_enum.empty FinEnum.empty
 
 instance punit : FinEnum PUnit :=
-  ofList [PUnit.unit] fun x => by cases x ; simp
+  ofList [PUnit.unit] fun x => by cases x; simp
 #align fin_enum.punit FinEnum.punit
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 instance prod {β} [FinEnum α] [FinEnum β] : FinEnum (α × β) :=
-  ofList (toList α ×ˢ toList β) fun x => by cases x ; simp
+  ofList (toList α ×ˢ toList β) fun x => by cases x; simp
 #align fin_enum.prod FinEnum.prod
 
 instance sum {β} [FinEnum α] [FinEnum β] : FinEnum (Sum α β) :=
@@ -148,7 +148,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         apply h
         subst a
         exact hx
-      · simp only [h', mem_union, mem_singleton] at hx⊢
+      · simp only [h', mem_union, mem_singleton] at hx ⊢
         cases' hx with hx hx'
         · exact Or.inl hx
         · exact Or.inr (h _ hx')
@@ -172,17 +172,17 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
 #align fin_enum.finset.mem_enum FinEnum.Finset.mem_enum
 
 instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
-  ofList (Finset.enum (toList α)) (by intro ; simp)
+  ofList (Finset.enum (toList α)) (by intro; simp)
 #align fin_enum.finset.fin_enum FinEnum.Finset.finEnum
 
 instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
-    (by rintro ⟨x, h⟩ ; simp ; exists x ; simp [*])
+    (by rintro ⟨x, h⟩; simp; exists x; simp [*])
 #align fin_enum.subtype.fin_enum FinEnum.Subtype.finEnum
 
 instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=
   ofList ((toList α).bind fun a => (toList (β a)).map <| Sigma.mk a)
-    (by intro x ; cases x ; simp)
+    (by intro x; cases x; simp)
 
 instance PSigma.finEnum [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Σ'a, β a) :=
   FinEnum.ofEquiv _ (Equiv.psigmaEquivSigma _)
@@ -202,13 +202,13 @@ instance PSigma.finEnumPropRight {β : α → Prop} [FinEnum α] [∀ a, Decidab
 
 instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :
     FinEnum (Σ'a, β a) :=
-  if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by rintro ⟨⟩ ; simp)
+  if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by rintro ⟨⟩; simp)
   else ofList [] fun a => (h ⟨a.fst, a.snd⟩).elim
 #align fin_enum.psigma.fin_enum_prop_prop FinEnum.PSigma.finEnumPropProp
 
 instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map (Equiv).symm.toEmbedding
-  complete := by intros ; simp
+  complete := by intros; simp
 
 /-- For `Pi.cons x xs y f` create a function where every `i ∈ xs` is mapped to `f i` and
 `x` is mapped to `y`  -/
@@ -233,14 +233,14 @@ def pi {β : α → Type max u v} [DecidableEq α] :
 theorem mem_pi {β : α → Type _} [FinEnum α] [∀ a, FinEnum (β a)] (xs : List α)
     (f : ∀ a, a ∈ xs → β a) : f ∈ pi xs fun x => toList (β x) := by
   induction' xs with xs_hd xs_tl xs_ih <;> simp [pi, -List.map_eq_map, monad_norm, functor_norm]
-  · ext (a⟨⟩)
+  · ext a ⟨⟩
   · exists Pi.cons xs_hd xs_tl (f _ (List.mem_cons_self _ _))
     constructor
     exact ⟨_, rfl⟩
     exists Pi.tail f
     constructor
     · apply xs_ih
-    · ext (x h)
+    · ext x h
       simp [Pi.cons]
       split_ifs
       · subst x
@@ -254,7 +254,7 @@ def pi.enum (β : α → Type (max u v)) [FinEnum α] [∀ a, FinEnum (β a)] : 
 #align fin_enum.pi.enum FinEnum.pi.enum
 
 theorem pi.mem_enum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] (f : ∀ a, β a) :
-    f ∈ pi.enum.{u, v} β := by simp [pi.enum] ; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
+    f ∈ pi.enum.{u, v} β := by simp [pi.enum]; refine' ⟨fun a _ => f a, mem_pi _ _, rfl⟩
 #align fin_enum.pi.mem_enum FinEnum.pi.mem_enum
 
 instance pi.finEnum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (β a)] :
@@ -265,8 +265,8 @@ instance pi.finEnum {β : α → Type (max u v)} [FinEnum α] [∀ a, FinEnum (�
 instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum (α hp)] :
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then
-    ofList ((toList (α hp)).map fun x _ => x) (by intro x ; simp ; exact ⟨x hp, rfl⟩)
-  else ofList [fun hp' => (hp hp').elim] (by intro ; simp ; ext hp' ; cases hp hp')
+    ofList ((toList (α hp)).map fun x _ => x) (by intro x; simp; exact ⟨x hp, rfl⟩)
+  else ofList [fun hp' => (hp hp').elim] (by intro; simp; ext hp'; cases hp hp')
 #align fin_enum.pfun_fin_enum FinEnum.pfunFinEnum
 
 end FinEnum

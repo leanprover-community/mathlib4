@@ -20,7 +20,7 @@ a restricted measure.
 
 ## Main result
 
-* `MeasureTheory.condexp_indicator`: If `s` is a `m`-measurable set, then the conditional
+* `MeasureTheory.condexp_indicator`: If `s` is an `m`-measurable set, then the conditional
   expectation of the indicator function of `s` is almost everywhere equal to the indicator
   of `s` of the conditional expectation. Namely, `𝔼[s.indicator f | m] = s.indicator 𝔼[f | m]` a.e.
 
@@ -63,11 +63,11 @@ theorem condexp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
 #align measure_theory.condexp_ae_eq_restrict_zero MeasureTheory.condexp_ae_eq_restrict_zero
 
 /-- Auxiliary lemma for `condexp_indicator`. -/
-theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict (sᶜ)] 0) :
+theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict sᶜ] 0) :
     μ[s.indicator f|m] =ᵐ[μ] s.indicator (μ[f|m]) := by
   by_cases hm : m ≤ m0
   swap; · simp_rw [condexp_of_not_le hm, Set.indicator_zero']; rfl
-  have hsf_zero : ∀ g : α → E, g =ᵐ[μ.restrict (sᶜ)] 0 → s.indicator g =ᵐ[μ] g := fun g =>
+  have hsf_zero : ∀ g : α → E, g =ᵐ[μ.restrict sᶜ] 0 → s.indicator g =ᵐ[μ] g := fun g =>
     indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs)
   refine' ((hsf_zero (μ[f|m]) (condexp_ae_eq_restrict_zero hs.compl hf)).trans _).symm
   exact condexp_congr_ae (hsf_zero f hf).symm
@@ -143,7 +143,7 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
   · exact (stronglyMeasurable_condexp.indicator hs_m).aeStronglyMeasurable'
 #align measure_theory.condexp_restrict_ae_eq_restrict MeasureTheory.condexp_restrict_ae_eq_restrict
 
-/-- If the restriction to a `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
+/-- If the restriction to an `m`-measurable set `s` of a σ-algebra `m` is equal to the restriction
 to `s` of another σ-algebra `m₂` (hypothesis `hs`), then `μ[f | m] =ᵐ[μ.restrict s] μ[f | m₂]`. -/
 theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableSpace α}
     {μ : Measure α} (hm : m ≤ m0) (hm₂ : m₂ ≤ m0) [SigmaFinite (μ.trim hm)]
@@ -170,11 +170,11 @@ theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
     suffices ∫ x in sᶜ, (μ[s.indicator f|m]) x ∂μ.restrict t = 0 by
       rw [this, add_zero, Measure.restrict_restrict (hm _ hs_m)]
     rw [Measure.restrict_restrict (MeasurableSet.compl (hm _ hs_m))]
-    suffices μ[s.indicator f|m] =ᵐ[μ.restrict (sᶜ)] 0 by
+    suffices μ[s.indicator f|m] =ᵐ[μ.restrict sᶜ] 0 by
       rw [Set.inter_comm, ← Measure.restrict_restrict (hm₂ _ ht)]
       calc
-        ∫ x : α in t, (μ[s.indicator f|m]) x ∂μ.restrict (sᶜ) =
-            ∫ x : α in t, 0 ∂μ.restrict (sᶜ) := by
+        ∫ x : α in t, (μ[s.indicator f|m]) x ∂μ.restrict sᶜ =
+            ∫ x : α in t, 0 ∂μ.restrict sᶜ := by
           refine' set_integral_congr_ae (hm₂ _ ht) _
           filter_upwards [this] with x hx _ using hx
         _ = 0 := integral_zero _ _

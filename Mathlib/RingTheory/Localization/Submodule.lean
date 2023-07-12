@@ -99,7 +99,7 @@ variable [IsLocalization M S]
 section
 
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h⊢
+  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 #align is_localization.is_noetherian_ring IsLocalization.isNoetherianRing
 

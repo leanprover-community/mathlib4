@@ -78,8 +78,6 @@ theorem zero_comp [HasZeroMorphisms C] {X : C} {Y Z : C} {f : Y ⟶ Z} :
   HasZeroMorphisms.zero_comp X f
 #align category_theory.limits.zero_comp CategoryTheory.Limits.zero_comp
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 instance hasZeroMorphismsPEmpty : HasZeroMorphisms (Discrete PEmpty) where
   Zero := by aesop_cat
 #align category_theory.limits.has_zero_morphisms_pempty CategoryTheory.Limits.hasZeroMorphismsPEmpty

@@ -313,7 +313,7 @@ The topology given by the closure operator `J.close` on a Grothendieck topology 
 -/
 theorem topologyOfClosureOperator_self :
     (topologyOfClosureOperator J₁.closureOperator fun X Y => J₁.pullback_close) = J₁ := by
-  ext (X S)
+  ext X S
   apply GrothendieckTopology.close_eq_top_iff_mem
 #align category_theory.topology_of_closure_operator_self CategoryTheory.topologyOfClosureOperator_self
 

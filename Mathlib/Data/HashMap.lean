@@ -7,7 +7,7 @@ import Std.Data.HashMap
 import Std.Data.RBMap
 
 /-!
-# Additional API for `RBMap`.
+# Additional API for `HashMap` and `RBSet`.
 
 These should be replaced by proper implementations in Std.
 -/
@@ -35,7 +35,7 @@ end Std.HashMap
 namespace Std.RBSet
 
 /-- Insert all elements of a list into an `RBSet`. -/
-def insertList (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
+def insertList {cmp} (m : RBSet α cmp) (L : List α) : RBSet α cmp :=
   L.foldl (fun m a => m.insert a) m
 
 end Std.RBSet

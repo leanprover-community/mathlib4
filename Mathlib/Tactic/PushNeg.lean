@@ -84,7 +84,7 @@ def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
       return none
   | _ => match ex with
           | .forallE name ty body binfo => do
-              if (← isProp ty) then
+              if (← isProp ty) && !body.hasLooseBVars then
                 return mkSimpStep (← mkAppM ``And #[ty, mkNot body])
                   (← mkAppM ``not_implies_eq #[ty, body])
               else
