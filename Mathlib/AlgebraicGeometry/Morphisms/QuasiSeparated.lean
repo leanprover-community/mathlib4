@@ -18,7 +18,7 @@ A morphism of schemes `f : X ⟶ Y` is quasi-separated if the diagonal morphism 
 quasi-compact.
 
 A scheme is quasi-separated if the intersections of any two affine open sets is quasi-compact.
-(`algebraic_geometry.quasi_separated_space_iff_affine`)
+(`AlgebraicGeometry.quasiSeparatedSpace_iff_affine`)
 
 We show that a morphism is quasi-separated if the preimage of every affine open is quasi-separated.
 
@@ -26,7 +26,7 @@ We also show that this property is local at the target,
 and is stable under compositions and base-changes.
 
 ## Main result
-- `is_localization_basic_open_of_qcqs` (**Qcqs lemma**):
+- `AlgebraicGeometry.is_localization_basicOpen_of_qcqs` (**Qcqs lemma**):
   If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 
 -/
@@ -44,14 +44,14 @@ namespace AlgebraicGeometry
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-/-- A morphism is `quasi_separated` if diagonal map is quasi-compact. -/
+/-- A morphism is `QuasiSeparated` if diagonal map is quasi-compact. -/
 @[mk_iff]
 class QuasiSeparated (f : X ⟶ Y) : Prop where
-  /-- A morphism is `quasi_separated` if diagonal map is quasi-compact. -/
+  /-- A morphism is `QuasiSeparated` if diagonal map is quasi-compact. -/
   diagonalQuasiCompact : QuasiCompact (pullback.diagonal f)
 #align algebraic_geometry.quasi_separated AlgebraicGeometry.QuasiSeparated
 
-/-- The `affine_target_morphism_property` corresponding to `quasi_separated`, asserting that the
+/-- The `AffineTargetMorphismProperty` corresponding to `QuasiSeparated`, asserting that the
 domain is a quasi-separated scheme. -/
 def QuasiSeparated.affineProperty : AffineTargetMorphismProperty := fun X _ _ _ =>
   QuasiSeparatedSpace X.carrier
@@ -68,7 +68,7 @@ theorem quasiSeparatedSpace_iff_affine (X : Scheme) :
         IsCompact (U ⊓ V).1
       by intro U V hU hU' hV hV'; exact this ⟨U, hU⟩ hU' ⟨V, hV⟩ hV'
     intro U hU V hV
-    -- Porting note : it complains "unable to find motive", but telling Lean that motive is
+    -- Porting note: it complains "unable to find motive", but telling Lean that motive is
     -- underscore is actually sufficient, weird
     apply compact_open_induction_on (P := _) V hV
     · simp
@@ -96,7 +96,7 @@ theorem quasi_compact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsA
     haveI : IsAffine _ := V.2
     let g : pullback (X.ofRestrict U.1.openEmbedding) (X.ofRestrict V.1.openEmbedding) ⟶ X :=
       pullback.fst ≫ X.ofRestrict _
-    -- Porting note : `infer_instance` does not work here
+    -- Porting note: `inferInstance` does not work here
     have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
     have e := Homeomorph.ofEmbedding _ this.base_open.toEmbedding
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
@@ -105,7 +105,7 @@ theorem quasi_compact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsA
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
   · introv H h₁ h₂
     let g : pullback f₁ f₂ ⟶ X := pullback.fst ≫ f₁
-    -- Porting note : `infer_instance` does not work here
+    -- Porting note: `inferInstance` does not work here
     have : IsOpenImmersion g := PresheafedSpace.IsOpenImmersion.comp _ _
     have e := Homeomorph.ofEmbedding _ this.base_open.toEmbedding
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
@@ -169,9 +169,8 @@ theorem quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparate
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ quasiCompact_respectsIso.diagonal
 #align algebraic_geometry.quasi_separated_respects_iso AlgebraicGeometry.quasiSeparated_respectsIso
 
-open List in
 theorem QuasiSeparated.affine_openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    TFAE
+    List.TFAE
       [QuasiSeparated f,
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
           ∀ i : 𝒰.J, QuasiSeparatedSpace (pullback f (𝒰.map i)).carrier,
@@ -195,9 +194,8 @@ theorem QuasiSeparated.is_local_at_target : PropertyIsLocalAtTarget @QuasiSepara
     QuasiCompact.affineProperty_isLocal.diagonal.targetAffineLocallyIsLocal
 #align algebraic_geometry.quasi_separated.is_local_at_target AlgebraicGeometry.QuasiSeparated.is_local_at_target
 
-open List in
-theorem QuasiSeparated.openCover_tFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    TFAE
+theorem QuasiSeparated.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    List.TFAE
       [QuasiSeparated f,
         ∃ 𝒰 : Scheme.OpenCover.{u} Y,
           ∀ i : 𝒰.J, QuasiSeparated (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
@@ -209,7 +207,7 @@ theorem QuasiSeparated.openCover_tFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
         ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤),
           ∀ i, QuasiSeparated (f ∣_ U i)] :=
   QuasiSeparated.is_local_at_target.openCover_TFAE f
-#align algebraic_geometry.quasi_separated.open_cover_tfae AlgebraicGeometry.QuasiSeparated.openCover_tFAE
+#align algebraic_geometry.quasi_separated.open_cover_tfae AlgebraicGeometry.QuasiSeparated.openCover_TFAE
 
 theorem quasiSeparated_over_affine_iff {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y] :
     QuasiSeparated f ↔ QuasiSeparatedSpace X.carrier := by
@@ -252,7 +250,7 @@ theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
   rw [quasiSeparatedSpace_iff_quasiSeparated] at hY ⊢
   have : f ≫ terminal.from Y = terminal.from X := terminalIsTerminal.hom_ext _ _
   rw [← this]
-  skip; infer_instance
+  infer_instance
 #align algebraic_geometry.quasi_separated_space_of_quasi_separated AlgebraicGeometry.quasiSeparatedSpace_of_quasiSeparated
 
 instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
@@ -280,11 +278,11 @@ theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X.carrier} (hU : I
 
 theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
-  -- Porting note : rewrite `(QuasiSeparated.affine_openCover_TFAE f).out 0 1` directly fails, but
+  -- Porting note: rewrite `(QuasiSeparated.affine_openCover_TFAE f).out 0 1` directly fails, but
   -- give it a name works
   have h01 := (QuasiSeparated.affine_openCover_TFAE f).out 0 1
   rw [h01]; clear h01
-  -- Porting note : rewrite `(QuasiSeparated.affine_openCover_TFAE ...).out 0 2` directly fails, but
+  -- Porting note: rewrite `(QuasiSeparated.affine_openCover_TFAE ...).out 0 2` directly fails, but
   -- give it a name works
   have h02 := (QuasiSeparated.affine_openCover_TFAE (f ≫ g)).out 0 2
   rw [h02] at H; clear h02
@@ -299,7 +297,7 @@ theorem quasiSeparatedOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [H : Q
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
       (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
   · apply (config := {allowSynthFailures := true}) AlgebraicGeometry.quasiSeparatedOfMono
-    -- Porting note : this instance was automatic
+    -- Porting note: this instance was automatic
     apply mono_comp
 #align algebraic_geometry.quasi_separated_of_comp AlgebraicGeometry.quasiSeparatedOfComp
 
@@ -346,7 +344,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
           (X.presheaf.map (homOfLE le_sup_left).op f ^ n₂ * y₁))
         (X.presheaf.map (homOfLE <| h₂).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ n₁ * y₂))).mp <| by
-    -- Porting note : was just a `simp`, but know as some lemmas need `erw`, just a `simp` does not
+    -- Porting note: was just a `simp`, but know as some lemmas need `erw`, just a `simp` does not
     -- leave the goal in a desired form
     rw [RingHom.algebraMap_toAlgebra, map_mul, map_mul, map_pow, map_pow, map_mul, map_pow, map_mul]
     erw [map_pow]
@@ -382,7 +380,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     ∃ (n : ℕ) (y : X.presheaf.obj (op U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
   delta TopCat.Presheaf.restrictOpen TopCat.Presheaf.restrict
   revert hU' f x
-  -- Porting note : complains `expected type is not available`, but tell Lean that it is underscore
+  -- Porting note: complains `expected type is not available`, but tell Lean that it is underscore
   -- is sufficient
   apply compact_open_induction_on (P := _) U hU
   · intro _ f x
@@ -417,12 +415,12 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
       intro i; change (i : Opens X.carrier) ≤ S
       refine' le_trans _ inf_le_left; swap; exact U.1; erw [hs]
-      -- Porting note : have to add argument explicitly
+      -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : Opens X.carrier) ≤ U
       refine' le_trans _ inf_le_right; swap; exact S; erw [hs]
-      -- Porting note : have to add argument explicitly
+      -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
     -- for some `n` since `f ^ n₂ * y₁ = f ^ (n₁ + n₂) * x = f ^ n₁ * y₂` on `X_f`.
@@ -447,7 +445,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply TopCat.Sheaf.eq_of_locally_eq' X.sheaf fun i : s => i.1.1
       · refine' fun i => homOfLE _; erw [hs];
-        -- Porting note : have to add argument explicitly
+        -- Porting note: have to add argument explicitly
         exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
       · exact le_of_eq hs
       · intro i
@@ -479,18 +477,18 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       erw [← inf_sup_right]
       refine' le_inf_iff.mpr ⟨X.basicOpen_le f, le_of_eq rfl⟩
     · convert congr_arg (X.presheaf.map
-        -- Porting note : needs to be explicit here
+        -- Porting note: needs to be explicit here
         (homOfLE (by restrict_tac :
           X.basicOpen (X.presheaf.map (homOfLE (le_sup_left : S ≤ S ⊔ U.1)).op f) ≤ S)).op)
         (X.sheaf.objSupIsoProdEqLocus_inv_fst S U.1 ⟨⟨_ * _, _ * _⟩, this⟩) using 1
       · delta Scheme.sheaf SheafedSpace.sheaf
-        -- Porting note : was just a single `simp only [...]`
+        -- Porting note: was just a single `simp only [...]`
         simp only
         erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
         simp only [← Functor.map_comp, ← op_comp]
         congr 1
       · delta Scheme.sheaf SheafedSpace.sheaf
-        -- Porting note : was just a single `simp only [...]`
+        -- Porting note: was just a single `simp only [...]`
         simp only [map_pow, map_mul]
         erw [← comp_apply, ← comp_apply]
         simp only [← Functor.map_comp, ← op_comp, mul_assoc, pow_add]
@@ -503,13 +501,13 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       pick_goal 3
       · rw [X.basicOpen_res]; restrict_tac
       · delta Scheme.sheaf SheafedSpace.sheaf
-        -- Porting note : was just a single `simp only [...]`
+        -- Porting note: was just a single `simp only [...]`
         simp only
         erw [← comp_apply, ← comp_apply, ← comp_apply, ← comp_apply]
         simp only [← Functor.map_comp, ← op_comp]
         congr 1
       · delta Scheme.sheaf SheafedSpace.sheaf
-        -- Porting note : was just a single `simp only [...]`
+        -- Porting note: was just a single `simp only [...]`
         simp only [map_pow, map_mul]
         erw [← comp_apply, ← comp_apply]
         simp only [← Functor.map_comp, ← op_comp, mul_assoc, pow_add]
@@ -541,7 +539,7 @@ theorem is_localization_basicOpen_of_qcqs {X : Scheme} {U : Opens X.carrier} (hU
     · rintro ⟨⟨_, n, rfl⟩, e : f ^ n * z = 0⟩
       rw [← ((RingedSpace.isUnit_res_basicOpen _ f).pow n).mul_right_inj, MulZeroClass.mul_zero, ←
         map_pow]
-      -- Porting note : this one lemma needs `erw`
+      -- Porting note: this one lemma needs `erw`
       erw [← map_mul]
       rw [e, map_zero]
 #align algebraic_geometry.is_localization_basic_open_of_qcqs AlgebraicGeometry.is_localization_basicOpen_of_qcqs
