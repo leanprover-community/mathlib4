@@ -98,6 +98,16 @@ example : true := by
     -- success
   trivial
 
+-- Making sure that the context is used
+example : true := by
+  have : ∀ n : ℕ, n = n
+  · intro n
+    cases n
+    · slim_check (config := { randomSeed := some 257, quiet := true })
+    · rfl
+    -- success
+  trivial
+
 open Function SlimCheck
 
 -- Porting note: the "small" functor provided in mathlib3's `Sampleable.lean` was not ported,
