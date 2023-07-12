@@ -464,14 +464,14 @@ end TendstoCompAddSub
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
-/-- Extension for the `positivity` tactic: `Real.log` of a natural number is always positive. -/
+/-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
 def evalLogNatCast : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℕ))) ← withReducible (whnf e) | throwError "not Real.log"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
   pure (.nonnegative (q(Real.log_nat_cast_nonneg $a) : Lean.Expr))
 
-/-- Extension for the `positivity` tactic: `Real.log` of an integer is always positive. -/
+/-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
 def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℤ))) ← withReducible (whnf e) | throwError "not Real.log"
