@@ -38,9 +38,9 @@ Some important results are as follows.
   the Gauss sum to the `p`th power (where `p` is the characteristic of
   the target ring `R'`) multiplies it by `χ p`.
 * `Char.card_pow_card`: When `F` and `F'` are finite fields and `χ : F → F'`
-  is a nontrivial quadratic character, then `(χ (-1) * #F)^(#F'/2) = χ (#F')`.
+  is a nontrivial quadratic character, then `(χ (-1) * #F)^(#F'/2) = χ #F'`.
 * `FiniteField.two_pow_card`: For every finite field `F` of odd characteristic,
-  we have `2^(#F/2) = χ₈(#F)` in `F`.
+  we have `2^(#F/2) = χ₈#F` in `F`.
 
 This machinery can be used to derive (a generalization of) the Law of
 Quadratic Reciprocity.
@@ -163,7 +163,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
--- Porting note: TODO
+-- Porting note: Added `nonrec` to avoid error `failed to prove termination`
 nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
@@ -250,9 +250,9 @@ section GaussSumTwo
 
 This section proves the following result.
 
-For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈(#F)` in `F`.
+For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`.
 This can be used to show that the quadratic character of `F` takes the value
-`χ₈(#F)` at `2`.
+`χ₈#F` at `2`.
 
 The proof uses the Gauss sum of `χ₈` and a primitive additive character on `ℤ/8ℤ`;
 in this way, the result is reduced to `card_pow_char_pow`.
@@ -264,7 +264,7 @@ open ZMod
 -- Porting note: This proof is _really_ slow, maybe it should be broken into several lemmas
 -- See  https://github.com/leanprover-community/mathlib4/issues/5028
 set_option maxHeartbeats 1800000 in
-/-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈(#F)` in `F`. -/
+/-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
   have hp2 : ∀ n : ℕ, (2 ^ n : F) ≠ 0 := fun n => pow_ne_zero n (Ring.two_ne_zero hF)

@@ -14,7 +14,7 @@ import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.LinearMap
-import Mathlib.Data.Dfinsupp.Basic
+import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -324,7 +324,7 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
 @[simp]
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = (f^[n]) m := by
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := by
   induction' n with n ih
   · rfl
   · simp only [Function.comp_apply, Function.iterate_succ, LinearMap.mul_apply, pow_succ, ih]
@@ -1132,9 +1132,9 @@ theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ�
 
 end Finsupp
 
-section Dfinsupp
+section DFinsupp
 
-open Dfinsupp
+open DFinsupp
 
 variable {γ : ι → Type _} [DecidableEq ι]
 
@@ -1172,7 +1172,7 @@ theorem map_dfinsupp_sumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ
 
 end SumAddHom
 
-end Dfinsupp
+end DFinsupp
 
 variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 
@@ -1928,9 +1928,9 @@ theorem map_finsupp_sum (f : M ≃ₛₗ[τ₁₂] M₂) {t : ι →₀ γ} {g :
 
 end Finsupp
 
-section Dfinsupp
+section DFinsupp
 
-open Dfinsupp
+open DFinsupp
 
 variable [Semiring R] [Semiring R₂]
 
@@ -1958,7 +1958,7 @@ theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ�
   f.toAddEquiv.map_dfinsupp_sumAddHom _ _
 #align linear_equiv.map_dfinsupp_sum_add_hom LinearEquiv.map_dfinsupp_sumAddHom
 
-end Dfinsupp
+end DFinsupp
 
 section Uncurry
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
 
 ! This file was ported from Lean 3 source module algebraic_geometry.structure_sheaf
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -854,7 +854,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
     ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
-  . convert ht_cover using 2
+  · convert ht_cover using 2
     exact funext fun j => by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
@@ -862,9 +862,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     -- Porting note : simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
       ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
-    . convert ht_cover
-      . rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
-      . simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
+    · convert ht_cover
+      · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
+      · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [Set.compl_subset_comm] at ht_cover
     -- Why doesn't `simp_rw` do this?
     simp_rw [Set.compl_iUnion, compl_compl, ← PrimeSpectrum.zeroLocus_iUnion,

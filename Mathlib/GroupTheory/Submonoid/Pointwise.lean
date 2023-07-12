@@ -530,7 +530,7 @@ variable [NonUnitalNonAssocSemiring R]
 /-- Multiplication of additive submonoids of a semiring R. The additive submonoid `S * T` is the
 smallest R-submodule of `R` containing the elements `s * t` for `s ∈ S` and `t ∈ T`. -/
 protected def mul : Mul (AddSubmonoid R) :=
-  ⟨fun M N => ⨆ s : M, N.map <| AddMonoidHom.mul s.1⟩
+  ⟨fun M N => ⨆ s : M, N.map (AddMonoidHom.mul s.1)⟩
 scoped[Pointwise] attribute [instance] AddSubmonoid.mul
 
 theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=

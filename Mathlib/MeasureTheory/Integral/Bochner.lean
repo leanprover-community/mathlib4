@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 
 ! This file was ported from Lean 3 source module measure_theory.integral.bochner
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetToL1
-import Mathlib.MeasureTheory.Integral.IntegralSimps
 
 /-!
 # Bochner integral
@@ -702,21 +701,25 @@ theorem integral_zero : integral (0 : α →₁[μ] E) = 0 := by
 
 variable {α E}
 
+@[integral_simps]
 theorem integral_add (f g : α →₁[μ] E) : integral (f + g) = integral f + integral g := by
   simp only [integral]
   exact map_add integralCLM f g
 #align measure_theory.L1.integral_add MeasureTheory.L1.integral_add
 
+@[integral_simps]
 theorem integral_neg (f : α →₁[μ] E) : integral (-f) = -integral f := by
   simp only [integral]
   exact map_neg integralCLM f
 #align measure_theory.L1.integral_neg MeasureTheory.L1.integral_neg
 
+@[integral_simps]
 theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - integral g := by
   simp only [integral]
   exact map_sub integralCLM f g
 #align measure_theory.L1.integral_sub MeasureTheory.L1.integral_sub
 
+@[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
@@ -875,6 +878,7 @@ theorem integral_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀
   exact setToFun_finset_sum (dominatedFinMeasAdditive_weightedSMul _) s hf
 #align measure_theory.integral_finset_sum MeasureTheory.integral_finset_sum
 
+@[integral_simps]
 theorem integral_neg (f : α → E) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
   simp only [integral, L1.integral]
   exact setToFun_neg (dominatedFinMeasAdditive_weightedSMul μ) f
@@ -895,6 +899,7 @@ theorem integral_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
   integral_sub hf hg
 #align measure_theory.integral_sub' MeasureTheory.integral_sub'
 
+@[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α → E) : ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
   simp only [integral, L1.integral]
   exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
@@ -1187,7 +1192,7 @@ theorem integral_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : 
     ∫ a, (f a).toReal ∂μ = (∫⁻ a, f a ∂μ).toReal := by
   rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable]
   · rw [lintegral_congr_ae]; refine' hf.mp (eventually_of_forall _)
-    intro x hx; rw [lt_top_iff_ne_top] at hx ; simp [hx]
+    intro x hx; rw [lt_top_iff_ne_top] at hx; simp [hx]
   · exact eventually_of_forall fun x => ENNReal.toReal_nonneg
 #align measure_theory.integral_to_real MeasureTheory.integral_toReal
 
@@ -1468,12 +1473,12 @@ theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ
 #align measure_theory.has_sum_integral_measure MeasureTheory.hasSum_integral_measure
 
 theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
-    (hf : Integrable f (Measure.sum μ)) : (∫ a, f a ∂Measure.sum μ) = ∑' i, ∫ a, f a ∂μ i :=
+    (hf : Integrable f (Measure.sum μ)) : ∫ a, f a ∂Measure.sum μ = ∑' i, ∫ a, f a ∂μ i :=
   (hasSum_integral_measure hf).tsum_eq.symm
 #align measure_theory.integral_sum_measure MeasureTheory.integral_sum_measure
 
 theorem integral_tsum {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hf' : (∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ) ≠ ∞) :
+    (hf' : ∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ ≠ ∞) :
     ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
   have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
@@ -1505,7 +1510,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AES
 
 @[simp]
 theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
-    (∫ x, f x ∂c • μ) = c.toReal • ∫ x, f x ∂μ := by
+    ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
   · rw [ENNReal.top_toReal, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
@@ -1519,7 +1524,7 @@ theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
 #align measure_theory.integral_smul_measure MeasureTheory.integral_smul_measure
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
-    {f : β → E} (hfm : StronglyMeasurable f) : (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ := by
+    {f : β → E} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
   by_cases hfi : Integrable f (Measure.map φ μ); swap
   · rw [integral_undef hfi, integral_undef]
     exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)
@@ -1541,10 +1546,10 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
 
 theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasurable φ μ) {f : β → E}
     (hfm : AEStronglyMeasurable f (Measure.map φ μ)) :
-    (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ :=
+    ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   let g := hfm.mk f
   calc
-    (∫ y, f y ∂Measure.map φ μ) = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
+    ∫ y, f y ∂Measure.map φ μ = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
     _ = ∫ y, g y ∂Measure.map (hφ.mk φ) μ := by congr 1; exact Measure.map_congr hφ.ae_eq_mk
     _ = ∫ x, g (hφ.mk φ x) ∂μ :=
       (integral_map_of_stronglyMeasurable hφ.measurable_mk hfm.stronglyMeasurable_mk)
@@ -1553,7 +1558,7 @@ theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasura
 #align measure_theory.integral_map MeasureTheory.integral_map
 
 theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f : α → β}
-    (hf : MeasurableEmbedding f) (g : β → E) : (∫ y, g y ∂Measure.map f μ) = ∫ x, g (f x) ∂μ := by
+    (hf : MeasurableEmbedding f) (g : β → E) : ∫ y, g y ∂Measure.map f μ = ∫ x, g (f x) ∂μ := by
   by_cases hgm : AEStronglyMeasurable g (Measure.map f μ)
   · exact MeasureTheory.integral_map hf.measurable.aemeasurable hgm
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
@@ -1562,12 +1567,12 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
 
 theorem _root_.ClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : ClosedEmbedding φ)
-    (f : β → E) : (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ :=
+    (f : β → E) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 #align closed_embedding.integral_map ClosedEmbedding.integral_map
 
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → E) :
-    (∫ y, f y ∂Measure.map e μ) = ∫ x, f (e x) ∂μ :=
+    ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
   e.measurableEmbedding.integral_map f
 #align measure_theory.integral_map_equiv MeasureTheory.integral_map_equiv
 
@@ -1585,25 +1590,25 @@ theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : Measur
 
 @[simp]
 theorem integral_dirac' [MeasurableSpace α] (f : α → E) (a : α) (hfm : StronglyMeasurable f) :
-    (∫ x, f x ∂Measure.dirac a) = f a := by
+    ∫ x, f x ∂Measure.dirac a = f a := by
   borelize E
   calc
-    (∫ x, f x ∂Measure.dirac a) = ∫ _, f a ∂Measure.dirac a :=
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a :=
       integral_congr_ae <| ae_eq_dirac' hfm.measurable
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac' MeasureTheory.integral_dirac'
 
 @[simp]
 theorem integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α) :
-    (∫ x, f x ∂Measure.dirac a) = f a :=
+    ∫ x, f x ∂Measure.dirac a = f a :=
   calc
-    (∫ x, f x ∂Measure.dirac a) = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac MeasureTheory.integral_dirac
 
 theorem set_integral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
     {s : Set α} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    (∫ x in s, f x ∂Measure.dirac a) = if a ∈ s then f a else 0 := by
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac' hs]
   split_ifs
   · exact integral_dirac' _ _ hf
@@ -1612,7 +1617,7 @@ theorem set_integral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : Stro
 
 theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
     (s : Set α) [Decidable (a ∈ s)] :
-    (∫ x in s, f x ∂Measure.dirac a) = if a ∈ s then f a else 0 := by
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac]
   split_ifs
   · exact integral_dirac _ _
@@ -1722,9 +1727,6 @@ set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
 end Properties
-
-attribute [integral_simps] integral_neg integral_smul L1.integral_add L1.integral_sub
-  L1.integral_smul L1.integral_neg
 
 section IntegralTrim
 

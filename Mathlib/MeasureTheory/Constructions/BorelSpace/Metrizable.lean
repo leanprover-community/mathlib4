@@ -111,8 +111,7 @@ theorem aemeasurable_of_tendsto_metrizable_ae {ι} {μ : Measure α} {f : ι →
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
       exact @aeSeq.fun_prop_of_mem_aeSeqSet _ α β _ _ _ _ _ h'f x hx
     · exact tendsto_const_nhds
-  ·
-    exact
+  · exact
       (ite_ae_eq_of_measure_compl_zero g (fun x => (⟨f (v 0) x⟩ : Nonempty β).some) (aeSeqSet h'f p)
           (aeSeq.measure_compl_aeSeqSet_eq_zero h'f hp)).symm
 #align ae_measurable_of_tendsto_metrizable_ae aemeasurable_of_tendsto_metrizable_ae
@@ -153,15 +152,14 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
     ∃ (f_lim : α → β) (hf_lim_meas : Measurable f_lim),
       ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
   inhabit ι
-  rcases eq_or_ne L ⊥ with (rfl | hL)
+  rcases eq_or_neBot L with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, eventually_of_forall fun x => tendsto_bot⟩
-  haveI : NeBot L := ⟨hL⟩
   let p : α → (ι → β) → Prop := fun x f' => ∃ l : β, Tendsto (fun n => f' n) L (𝓝 l)
   have hp_mem : ∀ x ∈ aeSeqSet hf p, p x fun n => f n x := fun x hx =>
     aeSeq.fun_prop_of_mem_aeSeqSet hf hx
   have h_ae_eq : ∀ᵐ x ∂μ, ∀ n, aeSeq hf p n x = f n x := aeSeq.aeSeq_eq_fun_ae hf h_ae_tendsto
   set f_lim : α → β := fun x => dite (x ∈ aeSeqSet hf p) (fun h => (hp_mem x h).choose)
-    fun h => (⟨f default x⟩ : Nonempty β).some
+    fun _ => (⟨f default x⟩ : Nonempty β).some
   have hf_lim : ∀ x, Tendsto (fun n => aeSeq hf p n x) L (𝓝 (f_lim x)) := by
     intro x
     simp only [aeSeq]
