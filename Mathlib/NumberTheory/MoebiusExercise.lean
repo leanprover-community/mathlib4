@@ -16,7 +16,7 @@ the workshop "Machine-Checked Mathematics" at Lorentz Center, Leiden, 10-14 July
 -/
 
 /- ## Lemmas
-We first prove a number of lemmas that might be put elsewhere (and some may already be in Mathlib). -/
+We first prove two lemmas that might be put elsewhere. -/
 
 @[simp]
 /- Natural number division coincides with the floor of rational division. -/
@@ -41,7 +41,8 @@ lemma moebius_mul_floor_div_sum_eq_one (N : ℕ) (hN : 0 < N) :
 calc
   ∑ n in Ioc 0 N, (μ n * ⌊N / (n : ℚ)⌋ : ℚ) =
   ∑ n in Ioc 0 N, (⌊N / (n : ℚ)⌋  * μ n : ℚ) := by congr; ext1 n; ring
-  _ = ∑ n in Ioc 0 N, ∑ _m in (Ioc 0 N).filter (fun x ↦ n ∣ x), μ n := by norm_cast; apply sum_congr rfl; simp
+  _ = ∑ n in Ioc 0 N, ∑ _m in (Ioc 0 N).filter (fun x ↦ n ∣ x), μ n := by
+    norm_cast; apply sum_congr rfl; simp
   _ = ∑ n in Ioc 0 N, ∑ m in Ioc 0 N, if n ∣ m then μ n else 0 := by simp_rw [sum_filter]
   _ = ∑ m in Ioc 0 N, ∑ n in Ioc 0 N, if n ∣ m then μ n else 0 := by rw [sum_comm]
   _ = ∑ m in Ioc 0 N, ∑ n in m.divisors, μ n := by
@@ -66,7 +67,8 @@ calc
       · linarith
     · simp
   _ = ∑ m in Ioc 0 N, (μ * ζ) m                  := by simp_rw [coe_mul_zeta_apply]
-  _ = ∑ m in Ioc 0 N, if m = 1 then 1 else 0     := by simp_rw [moebius_mul_coe_zeta, one_apply]; simp
+  _ = ∑ m in Ioc 0 N, if m = 1 then 1 else 0     := by
+                                                    simp_rw [moebius_mul_coe_zeta, one_apply]; simp
   _ = 1                                          := by simp [hN.ne']
 
 /- ## The sum of fractional parts
@@ -84,10 +86,12 @@ lemma moebius_le_one (n : ℕ) (q : ℚ): |μ n * (Int.fract q)| ≤ 1 := by
 
 /- It follows that the absolute value of the sum of the Möbius function times the
    fractional parts of N/n is at most N-1, since it is 0 for n = 1. -/
-theorem fract_sum_le_N_minus_one (N : ℕ) (hN : 0 < N) : |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))| ≤ N - 1 :=
+theorem fract_sum_le_N_minus_one (N : ℕ) (hN : 0 < N) :
+  |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))| ≤ N - 1 :=
 calc
  |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))|
-   = |μ 1 * (Int.fract ((N / (1 : ℚ)))) + ∑ n in Ioc 1 N, (μ n * (Int.fract ((N/n) : ℚ)))| := by congr; apply (split_off_first _ N hN)
+   = |μ 1 * (Int.fract ((N / (1 : ℚ)))) + ∑ n in Ioc 1 N, (μ n * (Int.fract ((N/n) : ℚ)))| := by
+                                                          congr; apply (split_off_first _ N hN)
  _ = |∑ n in Ioc 1 N, (μ n * (Int.fract ((N/n) : ℚ)))| := by simp
  _ ≤ ∑ n in Ioc 1 N, |(μ n * (Int.fract ((N/n) : ℚ)))| := by apply abs_sum_le_sum_abs
  _ ≤ ∑ n in Ioc 1 N, 1 := sum_le_sum (fun n _ ↦ moebius_le_one _ _)
@@ -102,17 +106,20 @@ theorem abs_of_moebius_sum_le_one : ∀ N, |∑ n in Ioc 0 N, (μ n / (n:ℚ))| 
   · simp_rw [hz]
   · have key : |∑ n in Ioc 0 N, (μ n / (n:ℚ))| * N ≤ N :=
     calc |∑ n in Ioc 0 N, (μ n / (n:ℚ))| * N
-        = |∑ n in Ioc 0 N, (μ n / (n:ℚ))| * |(N:ℚ)|                         := by congr; rw [abs_cast]
-      _ = |∑ n in Ioc 0 N, (μ n / (n:ℚ)) * N|                               := by rw [←abs_mul]; rw [sum_mul]
-      _ = |∑ n in Ioc 0 N, (μ n * (N / (n:ℚ)))|                             := by congr; ext1 n; ring
-      _ = |∑ n in Ioc 0 N, (μ n * (⌊N / (n:ℚ)⌋ + (Int.fract ((N/n) : ℚ))))| := by congr; ext1 n; simp; left; rw [←Int.floor_add_fract (N / (n : ℚ))]; simp[hnz]
+        = |∑ n in Ioc 0 N, (μ n / (n:ℚ))| * |(N:ℚ)|      := by congr; rw [abs_cast]
+      _ = |∑ n in Ioc 0 N, (μ n / (n:ℚ)) * N|            := by rw [←abs_mul]; rw [sum_mul]
+      _ = |∑ n in Ioc 0 N, (μ n * (N / (n:ℚ)))|          := by congr; ext1 n; ring
+      _ = |∑ n in Ioc 0 N, (μ n * (⌊N / (n:ℚ)⌋ + (Int.fract ((N/n) : ℚ))))| := by
+            congr; ext1 n; simp; left; rw [←Int.floor_add_fract (N / (n : ℚ))]; simp[hnz]
       _ = |(∑ n in Ioc 0 N, (μ n * ⌊N / (n:ℚ)⌋):ℚ) +
-                ∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))|            := by congr; rw [← sum_add_distrib]; congr; ext1 n; ring
+                ∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))|  := by
+                                            congr; rw [← sum_add_distrib]; congr; ext1 n; ring
       _ ≤ |((∑ n in Ioc 0 N, (μ n * ⌊N / (n:ℚ)⌋)):ℚ)| +
-                |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))|           := abs_add _ _
-      _ ≤ 1 + |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))|             := by rw [moebius_mul_floor_div_sum_eq_one N hnz]; rfl
-      _ ≤ 1 + (N-1)                                                         := by linarith [fract_sum_le_N_minus_one N hnz]
-      _ = N                                                                 := by ring
+                |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))| := abs_add _ _
+      _ ≤ 1 + |∑ n in Ioc 0 N, (μ n * (Int.fract ((N/n) : ℚ)))|   := by
+                                            rw [moebius_mul_floor_div_sum_eq_one N hnz]; rfl
+      _ ≤ 1 + (N-1)   := by linarith [fract_sum_le_N_minus_one N hnz]
+      _ = N           := by ring
     rw [←le_div_iff] at key
     apply le_trans key
     rw [div_self]
