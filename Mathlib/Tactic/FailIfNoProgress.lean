@@ -24,21 +24,12 @@ having any  effect, e.g. `repeat (fail_if_no_progress simp <;> ring_nf)`.
 ## Possible future features
 
 * Tracing to show what progress was made when `fail_if_no_progress` succeeds
-(i.e. `fail_if_no_progress?`)
+  (i.e. `fail_if_no_progress?`)
 * Different `ExprComparisonConfig`s for each location expressions are compared, ideally with
 default propagation from the top level when writing configs, one way or another
 * Configs to tweak list comparisons: canLose, canGain, orderless
 * Custom overrides for comparison and preprocessing functions via configs
 -/
-
-
-
-
-
-
-
-
-
 
 namespace Mathlib.Meta
 
@@ -100,7 +91,6 @@ structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
   includeCDecls       : Bool := true
 deriving Repr, Inhabited
 
-
 /-- Config data for comparing the `MetavarDecl`s of two metavariables. -/
 structure MetavarDeclComparisonConfig where
   /-- Whether to compare the `userName` of two metavariables. -/
@@ -129,7 +119,7 @@ deriving Repr, Inhabited
 
 /-! ## Preset Configs -/
 
-/-! ### Any Changes -/
+/-! ### Any changes -/
 
 /-- Check for any changes whatsoever. -/
 def LocalDeclComparisonConfig.anyChanges : LocalDeclComparisonConfig where
@@ -164,17 +154,17 @@ def LocalDeclComparisonConfig.onlyExprs : LocalDeclComparisonConfig where
 def LocalContextComparisonConfig.onlyExprs : LocalContextComparisonConfig where
   toLocalDeclComparisonConfig := .onlyExprs
 
-/-- Only compare expressions appearing in the target and local context. (Does not include implementation details; does check local instances.) -/
+/-- Only compare expressions appearing in the target and local context. (Does not include
+implementation details; does check local instances.) -/
 def MetavarDeclComparisonConfig.onlyExprs : MetavarDeclComparisonConfig where
   checkUserName := false
   checkMetavarKind := false
   compareLocalContexts? := some .onlyExprs
 
-/-- Only compare expressions appearing in the target and local context. (Does not include implementation details; does check local instances.) -/
+/-- Only compare expressions appearing in the target and local context. (Does not include
+implementation details; does check local instances.) -/
 def MVarIdComparisonConfig.onlyExprs : MVarIdComparisonConfig where
   compareMetavarDecls? := some .onlyExprs
-
-
 
 end Mathlib.Meta
 
@@ -182,7 +172,8 @@ namespace Lean
 
 open Lean Meta Mathlib.Meta
 
-/-- Compares two expressions according to the given `ExprComparisonConfig`. See the documentation for `ExprComparisonConfig` for more information. -/
+/-- Compares two expressions according to the given `ExprComparisonConfig`. See the documentation
+for `ExprComparisonConfig` for more information. -/
 def Expr.compare (e₁ e₂ : Expr) (config : ExprComparisonConfig := {}) : MetaM Bool :=
   match config with
   | ⟨.beq, _⟩ => pure (e₁ == e₂)
@@ -196,7 +187,6 @@ private def compareListM (eq : α → α → MetaM Bool) (l₁ l₂ : List α) :
 be used when comparing expressions. -/
 def LocalDecl.compare (l₁ l₂ : LocalDecl) (cfg : LocalDeclComparisonConfig := {})
     (ecfg : ExprComparisonConfig) : MetaM Bool :=
-  -- withTraceNode `Meta.compare (fun _ => pure "comparing LocalDecls:") <|
   (pure <| (! cfg.checkFVarId   || l₁.fvarId   == l₂.fvarId)
     && (! cfg.checkIndex    || l₁.index    == l₂.index)
     && (! cfg.checkUserName || l₁.userName == l₂.userName)
@@ -209,8 +199,8 @@ def LocalDecl.compare (l₁ l₂ : LocalDecl) (cfg : LocalDeclComparisonConfig :
 be used when comparing expressions. -/
 def LocalContext.compare (lctx₁ lctx₂ : LocalContext)
     (cfg : LocalContextComparisonConfig) (ecfg : ExprComparisonConfig) : MetaM Bool := do
-  -- !! Would be slightly better if we could normalize this function given cfg in advance somehow.
-  -- Likewise elsewhere. And also not filter at all if they're all true.
+  -- Would be just slightly better if we could normalize this function given cfg in advance somehow,
+  -- and avoid filtering at all if all true. Likewise elsewhere.
   let f (d : LocalDecl) :=
     (cfg.includeImplDetails || ! d.kind == .implDetail)
     && (cfg.includeAuxDecls || ! d.isAuxDecl)
@@ -222,7 +212,6 @@ def LocalContext.compare (lctx₁ lctx₂ : LocalContext)
   if l₁.length ≠ l₂.length then return false
   compareListM (·.compare · cfg.toLocalDeclComparisonConfig ecfg) l₁ l₂
 
--- !! move?
 instance : BEq MetavarKind where beq
   | .natural, .natural | .synthetic, .synthetic | .syntheticOpaque, .syntheticOpaque => true
   | _, _ => false
@@ -329,7 +318,8 @@ decl's of two `MVarId`'s, and if so, how. If `none`, the decl's are ignored.
   * `checkLocalInstances := true`
   * `checkMetavarKind := true`
   * `checkIndex := false`
-* `compareLocalContexts? : Option LocalContextComparisonConfig := some {}` – whether to compare the local contexts of two metavariables, and if so, how. If `none`, the local contexts are ignored.
+* `compareLocalContexts? : Option LocalContextComparisonConfig := some {}` – whether to compare the
+  local contexts of two metavariables, and if so, how. If `none`, the local contexts are ignored.
 
 ### `LocalContextComparisonConfig`
 
@@ -338,7 +328,8 @@ decl's of two `MVarId`'s, and if so, how. If `none`, the decl's are ignored.
   * `includeLDecls := true`
   * `includeDefaultDecls := true`
   * `includeAuxDecls := false`
-  * `includeImplDetails := false` – note that this refers exclusively to `.implDetail` `LocalDecl`s, whereas `(·.isImplementationDetail)` refers to both `.implDetail`s and `auxDecl`s.
+  * `includeImplDetails := false` – note that this refers exclusively to `.implDetail`
+    `LocalDecl`s, whereas `(·.isImplementationDetail)` refers to both `.implDetail`s and `auxDecl`s.
 * Properties of `LocalDecl`s to compare (via extending `LocalDeclComparisonConfig`):
   * `checkUserName := true`
   * `checkType := true`
@@ -357,7 +348,8 @@ deriving Repr, Inhabited
 /-- Check for any changes whatsoever. -/
 def Config.anyChanges : Config := { MVarIdComparisonConfig.anyChanges with eqKind := .beq }
 
-/-- Only compare expressions in the target and local context. (Does not include implementation details; does check local instances.) -/
+/-- Only compare expressions in the target and local context. (Does not include implementation
+details; does check local instances.) -/
 def Config.onlyExprs : Config := { MVarIdComparisonConfig.onlyExprs with }
 
 /-! ## TacticM implementations -/
@@ -433,15 +425,20 @@ def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
 /-! ## Tactic syntax implementation -/
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the list of
-goals. By default, this compares each of their types and local contexts before and after `tacs` is run; if any changes are seen, "progress" has been made, and the tactics succeed. Otherwise, we fail.
+goals. By default, this compares each of their types and local contexts before and after `tacs` is
+run; if any changes are seen, "progress" has been made, and the tactics succeed. Otherwise, we fail.
 
 `fail_if_no_progress (config := { ... }) tacs` can be used to specify what kind of comparison to
-perform when checking for "progress". By default, only "observable" changes are checked. For instance, internal `MVarId`s and `FVarId`s are not checked, and implementation details are ignored. Expressions are by default compared with `isDefEq` at reducible transparency. Any change in the order or number of goals counts as progress.
+perform when checking for "progress". By default, only "observable" changes are checked. For
+instance, internal `MVarId`s and `FVarId`s are not checked, and implementation details are ignored.
+Expressions are by default compared with `isDefEq` at reducible transparency. Any change in the
+order or number of goals counts as progress.
 
-The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any change; `FailIfNoProgress.Config.onlyExprs` will only compare expressions in the target and local context.
+The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any change;
+`FailIfNoProgress.Config.onlyExprs` will only compare expressions in the target and local context.
 
 For more information, see the documentation for `FailIfNoProgress.Config`.
- -/
+-/
 syntax (name := failIfNoProgressSyntax) "fail_if_no_progress " (config)? tacticSeq : tactic
 
 /-- Elaborates `FailIfNoProgress.Config`. -/
