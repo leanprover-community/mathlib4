@@ -160,6 +160,11 @@ theorem HasCompactMulSupport.intro [T2Space α] {K : Set α} (hK : IsCompact K)
 #align has_compact_support.intro HasCompactSupport.intro
 
 @[to_additive]
+theorem HasCompactMulSupport.of_mulSupport_subset_isCompact [T2Space α] {K : Set α}
+    (hK : IsCompact K) (h : mulSupport f ⊆ K) : HasCompactMulSupport f :=
+  isCompact_closure_of_subset_compact hK h
+
+@[to_additive]
 theorem HasCompactMulSupport.isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
   hf
 #align has_compact_mul_support.is_compact HasCompactMulSupport.isCompact
