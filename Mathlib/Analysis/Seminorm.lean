@@ -942,9 +942,10 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
   exact hr.trans_le (map_nonneg _ _)
 #align seminorm.closed_ball_eq_emptyset Seminorm.closedBall_eq_emptyset
 
-theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+-- Porting note: TODO: make that an `iff`
+theorem neg_mem_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
   simpa only [mem_ball_zero, map_neg_eq_map] using hx
-#align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
+#align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
 
 @[simp]
 theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
@@ -1131,7 +1132,7 @@ variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [
 
 variable [Module 𝕝 E]
 
-/-- A seminorm is continuous at `0` if `p.closedBall 0 r` for *all* `r > 0`.
+/-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
 theorem continuousAt_zero_of_forall' [TopologicalSpace E] {p : Seminorm 𝕝 E}
@@ -1157,7 +1158,7 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
   exact p.mem_closedBall_zero.mp hx
 #align seminorm.continuous_at_zero' Seminorm.continuousAt_zero'
 
-/-- A seminorm is continuous at `0` if `p.ball 0 r` for *all* `r > 0`.
+/-- A seminorm is continuous at `0` if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
 theorem continuousAt_zero_of_forall [TopologicalSpace E] {p : Seminorm 𝕝 E}
@@ -1188,7 +1189,7 @@ protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [Topologi
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 #align seminorm.continuous_of_continuous_at_zero Seminorm.continuous_of_continuousAt_zero
 
-/-- A seminorm is uniformly continuous if `p.ball 0 r` for *all* `r > 0`.
+/-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.uniformContinuous`. -/
 protected theorem uniformContinuous_of_forall [UniformSpace E] [UniformAddGroup E]
@@ -1202,7 +1203,7 @@ protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [Contin
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.uniform_continuous Seminorm.uniformContinuous
 
-/-- A seminorm is uniformly continuous if `p.closedBall 0 r` for *all* `r > 0`.
+/-- A seminorm is uniformly continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.uniformContinuous'`. -/
 protected theorem uniform_continuous_of_forall' [UniformSpace E] [UniformAddGroup E]
@@ -1216,7 +1217,7 @@ protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [Cont
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.uniform_continuous' Seminorm.uniform_continuous'
 
-/-- A seminorm is continuous if `p.ball 0 r` for *all* `r > 0`.
+/-- A seminorm is continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous`. -/
 protected theorem continuous_of_forall [TopologicalSpace E] [TopologicalAddGroup E]
@@ -1229,7 +1230,7 @@ protected theorem continuous [TopologicalSpace E] [TopologicalAddGroup E] [Conti
   Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.continuous Seminorm.continuous
 
-/-- A seminorm is continuous if `p.closedBall 0 r` for *all* `r > 0`.
+/-- A seminorm is continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.continuous'`. -/
 protected theorem continuous_of_forall' [TopologicalSpace E] [TopologicalAddGroup E]
