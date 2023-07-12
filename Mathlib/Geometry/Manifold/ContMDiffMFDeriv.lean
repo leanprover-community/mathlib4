@@ -14,14 +14,14 @@ import Mathlib.Geometry.Manifold.ContMDiffMap
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
 
-We give the relation between `mdifferentiable`, `cont_mdiff`, `mfderiv`, `tangent_map`
+We give the relation between `MDifferentiable`, `ContMDiff`, `mfderiv`, `tangentMap`
 and related notions.
 
 ## Main statements
 
-* `cont_mdiff_on.cont_mdiff_on_tangent_map_within` states that the bundled derivative
+* `ContMDiffOn.contMDiffOn_tangentMapWithin` states that the bundled derivative
   of a `Cⁿ` function in a domain is `Cᵐ` when `m + 1 ≤ n`.
-* `cont_mdiff.cont_mdiff_tangent_map` states that the bundled derivative
+* `ContMDiff.contMDiff_tangentMap` states that the bundled derivative
   of a `Cⁿ` function is `Cᵐ` when `m + 1 ≤ n`.
 -/
 
@@ -73,10 +73,10 @@ where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^n` at `(x₀, g(x₀))` for `n ≥ m + 1` and `g` is `C^m` at `x₀`.
 We have to insert a coordinate change from `x₀` to `x` to make the derivative sensible.
 This result is used to show that maps into the 1-jet bundle and cotangent bundle are smooth.
-`cont_mdiff_at.mfderiv_id` and `cont_mdiff_at.mfderiv_const` are special cases of this.
+`cont_mdiff_at.mfderiv_id` and `ContMDiffAt.mfderiv_const` are special cases of this.
 
-This result should be generalized to a `cont_mdiff_within_at` for `mfderiv_within`.
-If we do that, we can deduce `cont_mdiff_on.cont_mdiff_on_tangent_map_within` from this.
+This result should be generalized to a `ContMDiffWithinAt` for `mfderivWithin`.
+If we do that, we can deduce `ContMDiffOn.contMDiffOn_tangentMapWithin` from this.
 -/
 protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N → M)
     (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (x₀, g x₀)) (hg : ContMDiffAt J I m g x₀)
@@ -145,7 +145,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     refine' extChartAt_preimage_mem_nhds' _ _ hx₂ _
     exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
   /- The conclusion is equal to the following, when unfolding coord_change of
-      `tangent_bundle_core` -/
+      `tangentBundleCore` -/
   -- Porting note: added
   letI _inst : ∀ x, NormedAddCommGroup (TangentSpace I (g x)) :=
     fun _ => inferInstanceAs (NormedAddCommGroup E)
@@ -189,7 +189,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
 /-- The derivative `D_yf(y)` is `C^m` at `x₀`, where the derivative is taken as a continuous
 linear map. We have to assume that `f` is `C^n` at `x₀` for some `n ≥ m + 1`.
 We have to insert a coordinate change from `x₀` to `x` to make the derivative sensible.
-This is a special case of `cont_mdiff_at.mfderiv` where `f` does not contain any parameters and
+This is a special case of `ContMDiffAt.mfderiv` where `f` does not contain any parameters and
 `g = id`.
 -/
 theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I I' n f x₀)
@@ -205,7 +205,7 @@ theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I 
 We have to assume that `f` is `C^(n+1)` at `(x₀, g(x₀))` and `g` is `C^n` at `x₀`.
 We have to insert a coordinate change from `x₀` to `g₁(x)` to make the derivative sensible.
 
-This is  similar to `cont_mdiff_at.mfderiv`, but where the continuous linear map is applied to a
+This is  similar to `ContMDiffAt.mfderiv`, but where the continuous linear map is applied to a
 (variable) vector.
 -/
 theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M) (g₁ : N' → N) (g₂ : N' → E)
@@ -227,7 +227,7 @@ section tangentMap
 /-- If a function is `C^n` with `1 ≤ n` on a domain with unique derivatives, then its bundled
 derivative is continuous. In this auxiliary lemma, we prove this fact when the source and target
 space are model spaces in models with corners. The general fact is proved in
-`cont_mdiff_on.continuous_on_tangent_map_within`-/
+`ContMDiffOn.continuousOn_tangentMapWithin`-/
 theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) (hs : UniqueMDiffOn I s) :
     ContinuousOn (tangentMapWithin I I' f s) (π E (TangentSpace I) ⁻¹' s) := by
@@ -290,7 +290,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative is
 `C^m` when `m+1 ≤ n`. In this auxiliary lemma, we prove this fact when the source and target space
 are model spaces in models with corners. The general fact is proved in
-`cont_mdiff_on.cont_mdiff_on_tangent_map_within` -/
+`ContMDiffOn.contMDiffOn_tangentMapWithin` -/
 theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n) (hs : UniqueMDiffOn I s) :
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s)
