@@ -162,6 +162,7 @@ which maps each of these intersections of kernels to the next.
 def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
+  -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
   map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
   map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
 set_option linter.uppercaseLean3 false in
