@@ -12,14 +12,22 @@ import Mathlib.Tactic.Basic
 import Mathlib.Control.Traversable.Lemmas
 
 /-!
-## Automation to construct `Traversable` instances
+# Deriving handler for `Traversable` instances
+
+This module gives deriving handlers for `Functor`, `LawfulFunctor`, `Traversable`, and
+`LawfulTraversable`. These deriving handlers automatically derive their dependencies, for
+example `deriving LawfulTraversable` all by itself gives all four.
 -/
 
 namespace Mathlib.Deriving.Traversable
 
 open Lean Meta Elab Term Command Tactic Match List Monad Functor
 
-/-- similar to `nestedTraverse` but for `Functor` -/
+/-- `nestedMap f α (List (Array (List α)))` synthesizes the expression
+`Functor.map (Functor.map (Functor.map f))`. `nestedMap` assumes that `α` appears in
+`(List (Array (List α)))`.
+
+(Similar to `nestedTraverse` but for `Functor`.) -/
 partial def nestedMap (f v t : Expr) : TermElabM Expr := do
   let t ← instantiateMVars t
   if ← withNewMCtxDepth <| isDefEq t v then
@@ -53,7 +61,7 @@ def mapField (n : Name) (cl f α β e : Expr) : TermElabM Expr := do
 multiple declaraions it will throw. -/
 def getAuxDefOfDeclName : TermElabM FVarId := do
   let some declName ← getDeclName? | throwError "no 'declName?'"
-  let auxDeclMap ← Term.Context.auxDeclToFullName <$> read
+  let auxDeclMap := (← read).auxDeclToFullName
   let fvars := auxDeclMap.fold (init := []) fun fvars fvar fullName =>
     if fullName = declName then fvars.concat fvar else fvars
   match fvars with
@@ -84,9 +92,9 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
   let matcherName ← getDeclName? >>= (fun n? => Lean.mkAuxName (n?.getD type ++ "match") 1)
   let matchType ← generalizeTelescope (indices.concat val).toArray fun iargs =>
     mkForallFVars iargs (motive.beta iargs)
-  let .inductInfo iinfo ← getConstInfo type | throwError m!"'{type}' is not an inductive type"
+  let iinfo ← getConstInfoInduct type
   let lhss ← iinfo.ctors.mapM fun ctor => do
-    let .ctorInfo cinfo ← getConstInfo ctor | unreachable!
+    let cinfo ← getConstInfoCtor ctor
     let catype ←
       instantiateForall (cinfo.type.instantiateLevelParams cinfo.levelParams levels) params.toArray
     forallBoundedTelescope catype cinfo.numFields fun cargs _ => do
@@ -112,14 +120,14 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
         mkLambdaFVars (fields.map Expr.fvar).toArray rhsBody
   return mkAppN mres.matcher (motive :: indices ++ [val] ++ rhss).toArray
 
-/-- Get `FVarId`s which is not implimation details in the current context. -/
+/-- Get `FVarId`s which is not implementation details in the current context. -/
 def getFVarIdsNotImplementationDetails : MetaM (List FVarId) := do
   let lctx ← getLCtx
   return lctx.decls.foldl (init := []) fun r decl? => match decl? with
     | some decl => if decl.isImplementationDetail then r else r.concat decl.fvarId
     | none      => r
 
-/-- Get `Expr`s of `FVarId`s which is not implimation details in the current context. -/
+/-- Get `Expr`s of `FVarId`s which is not implementation details in the current context. -/
 def getFVarsNotImplementationDetails : MetaM (List Expr) :=
   List.map Expr.fvar <$> getFVarIdsNotImplementationDetails
 
@@ -138,7 +146,7 @@ def mkMap (type : Name) (m : MVarId) : TermElabM Unit := do
           let m ← mkFreshExprSyntheticOpaqueMVar target
           let args := fields.map Expr.fvar
           let args₀ ← args.mapM fun a => do
-            let b ← xtype.occurs <$> inferType a
+            let b := xtype.occurs (← inferType a)
             return (b, a)
           mapConstructor
             ctor type (.fvar f) (.fvar α) (.fvar β) (vars.concat (.fvar β)) args₀ m.mvarId!
@@ -247,7 +255,8 @@ def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
     DerivingHandlerNoArgs := fun a => do
   let #[n] := a | return false -- mutually inductive types are not supported yet
-  deps.forM fun f : DerivingHandlerNoArgs => discard <| f a
+  let ok ← deps.mapM fun f => f a
+  unless ok.and do return false
   liftTermElabM <| mkOneInstance n cls tac mkInst
   return true
 
@@ -356,7 +365,7 @@ where
     | (true, x) :: xs =>
       let n ← mkFreshUserName `x
       let t ← inferType x
-      withLocalDecl n .default t.appArg! fun y => mkFunCtor c xs (fvars.push y) (aargs.push y)
+      withLocalDeclD n t.appArg! fun y => mkFunCtor c xs (fvars.push y) (aargs.push y)
     | (false, x) :: xs => mkFunCtor c xs fvars (aargs.push x)
     | [] => liftM <| mkAppOptM c (aargs.map some) >>= mkLambdaFVars fvars
 
@@ -375,7 +384,7 @@ def mkTraverse (type : Name) (m : MVarId) : TermElabM Unit := do
           let m ← mkFreshExprSyntheticOpaqueMVar target
           let args := fields.map Expr.fvar
           let args₀ ← args.mapM fun a => do
-            let b ← xtype.occurs <$> inferType a
+            let b := xtype.occurs (← inferType a)
             return (b, a)
           traverseConstructor
             ctor type (.fvar applInst) (.fvar f) (.fvar α) (.fvar β)
