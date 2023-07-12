@@ -67,7 +67,7 @@ def processLemma (name : Name) (constInfo : ConstantInfo) :
 /-- Insert a lemma into the discrimination tree. -/
 -- Recall that `apply?` caches the discrimination tree on disk.
 -- If you are modifying this file, you will probably want to delete
--- `build/lib/Util/TacticCaches/LibrarySearch.extra`
+-- `build/lib/MathlibExtras/LibrarySearch.extra`
 -- so that the cache is rebuilt.
 def addLemma (name : Name) (constInfo : ConstantInfo)
     (lemmas : DiscrTree (Name × DeclMod) true) : MetaM (DiscrTree (Name × DeclMod) true) := do
@@ -92,9 +92,9 @@ open System (FilePath)
 
 def cachePath : IO FilePath :=
   try
-    return (← findOLean `TacticCaches.LibrarySearch).withExtension "extra"
+    return (← findOLean `MathlibExtras.LibrarySearch).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "Util" / "TacticCaches" / "LibrarySearch.extra"
+    return "build" / "lib" / "MathlibExtras" / "LibrarySearch.extra"
 
 initialize cachedData : CachedData (Name × DeclMod) ← unsafe do
   let path ← cachePath
