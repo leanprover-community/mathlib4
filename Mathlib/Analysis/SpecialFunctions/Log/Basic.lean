@@ -213,6 +213,26 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
   (log_nonpos_iff' hx).2 h'x
 #align real.log_nonpos Real.log_nonpos
 
+theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
+  by_cases hn : n = 0
+  case pos => simp [hn]
+  case neg =>
+    have : (1 : ℝ) ≤ n := by exact_mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
+    exact log_nonneg this
+
+theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
+  cases lt_trichotomy 0 n with
+  | inl hn =>
+      have : (1 : ℝ) ≤ n := by exact_mod_cast hn
+      exact log_nonneg this
+  | inr hn =>
+      cases hn with
+      | inl hn => simp [hn.symm]
+      | inr hn =>
+          have : (1 : ℝ) ≤ -n := by rw [←neg_zero, ←lt_neg] at hn; exact_mod_cast hn
+          rw [←log_neg_eq_log]
+          exact log_nonneg this
+
 theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => log_lt_log hx hxy
 #align real.strict_mono_on_log Real.strictMonoOn_log
 
@@ -440,3 +460,22 @@ theorem tendsto_log_nat_add_one_sub_log : Tendsto (fun k : ℕ => log (k + 1) - 
 end Real
 
 end TendstoCompAddSub
+
+namespace Mathlib.Meta.Positivity
+open Lean.Meta Qq
+
+/-- Extension for the `positivity` tactic: `Real.log` of a natural number is always positive. -/
+@[positivity Real.log (Nat.cast _)]
+def evalLogNatCast : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℕ))) ← withReducible (whnf e) | throwError "not Real.log"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
+  pure (.nonnegative (q(Real.log_nat_cast_nonneg $a) : Lean.Expr))
+
+/-- Extension for the `positivity` tactic: `Real.log` of an integer is always positive. -/
+@[positivity Real.log (Int.cast _)]
+def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℤ))) ← withReducible (whnf e) | throwError "not Real.log"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
+  pure (.nonnegative (q(Real.log_int_cast_nonneg $a) : Lean.Expr))
+
+end Mathlib.Meta.Positivity

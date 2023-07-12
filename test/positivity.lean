@@ -2,6 +2,7 @@ import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-! # Tests for the `positivity` tactic
 
@@ -252,6 +253,9 @@ example (n : ℕ) : 0 < n ! := by positivity
 -- example {α : Type _} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by positivity
 
 example {r : ℝ} : 0 < Real.exp r := by positivity
+
+example {n : ℕ} : 0 ≤ Real.log n := by positivity
+example {n : ℤ} : 0 ≤ Real.log n := by positivity
 
 example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
 example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
