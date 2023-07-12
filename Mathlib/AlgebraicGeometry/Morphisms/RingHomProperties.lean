@@ -337,7 +337,6 @@ namespace RingHom.PropertyIsLocal
 
 variable {P} (hP : RingHom.PropertyIsLocal @P)
 
-#print isLocalization_basicOpen
 theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y]
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, P (Scheme.Γ.map (𝒰.map i ≫ f).op)) :
     sourceAffineLocally (@P) f := by
@@ -418,7 +417,7 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
   · intro H; refine' ⟨X.affineCover, inferInstance, H _⟩
   tfae_have 2 → 1
   · rintro ⟨𝒰, _, h𝒰⟩
-    exact sourceAffineLocally_of_source_openCover f 𝒰 h𝒰
+    exact sourceAffineLocally_of_source_openCover hP f 𝒰 h𝒰
   tfae_finish
 #align ring_hom.property_is_local.affine_open_cover_tfae RingHom.PropertyIsLocal.affine_openCover_TFAE
 
