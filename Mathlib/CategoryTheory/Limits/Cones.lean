@@ -192,8 +192,7 @@ namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
-def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X
-    where
+def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X where
   hom c := ⟨op c.pt, c.π⟩
   inv c :=
     { pt := c.1.unop
@@ -223,8 +222,7 @@ def extend (c : Cone F) {X : C} (f : X ⟶ c.pt) : Cone F :=
 
 /-- Whisker a cone by precomposition of a functor. -/
 @[simps]
-def whisker (E : K ⥤ J) (c : Cone F) : Cone (E ⋙ F)
-    where
+def whisker (E : K ⥤ J) (c : Cone F) : Cone (E ⋙ F) where
   pt := c.pt
   π := whiskerLeft E c.π
 #align category_theory.limits.cone.whisker CategoryTheory.Limits.Cone.whisker
@@ -234,8 +232,7 @@ end Cone
 namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
-def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X
-    where
+def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X where
   hom c := ⟨c.pt, c.ι⟩
   inv c :=
     { pt := c.1
@@ -860,16 +857,14 @@ def Cone.op (c : Cone F) : Cocone F.op where
 
 /-- Change a `Cocone F.op` into a `Cone F`. -/
 @[simps]
-def Cocone.unop (c : Cocone F.op) : Cone F
-    where
+def Cocone.unop (c : Cocone F.op) : Cone F where
   pt := Opposite.unop c.pt
   π := NatTrans.removeOp c.ι
 #align category_theory.limits.cocone.unop CategoryTheory.Limits.Cocone.unop
 
 /-- Change a `Cone F.op` into a `Cocone F`. -/
 @[simps]
-def Cone.unop (c : Cone F.op) : Cocone F
-    where
+def Cone.unop (c : Cone F.op) : Cocone F where
   pt := Opposite.unop c.pt
   ι := NatTrans.removeOp c.π
 #align category_theory.limits.cone.unop CategoryTheory.Limits.Cone.unop
