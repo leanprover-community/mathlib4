@@ -1,8 +1,9 @@
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.Ergodic.AddCircle
 
-open MeasureTheory Filter Metric
+open MeasureTheory Filter Metric Function
 open scoped omegaLimit
+set_option autoImplicit false
 
 /- For every objective, first write down a statement that Lean understands, with a proof given
 by `sorry`. Then try to prove it! -/
@@ -20,14 +21,26 @@ def nonWanderingSet (f : α → α) : Set α :=
 variable [CompactSpace α] (f : α → α) (hf : Continuous f)
 
 /- Show that periodic points belong to the non-wandering set -/
-
+theorem Function.IsPeriodicPt.mem_nonWanderingSet
+    (x : α) (n : ℕ) (hn : n ≠ 0) (hf : IsPeriodicPt f n x) :
+    x ∈ nonWanderingSet f := by
+  refine' fun ε εpos ↦ ⟨x, n, mem_ball_self εpos, _, hn⟩
+  rw [hf]
+  exact mem_ball_self εpos
 
 /- Show that, if `x` belongs to the non-wandering set, there are points `y` arbitrarily close to `x`
 and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
-
+theorem exists_large_times_of_mem_nonWanderingSet (x : α) (hx : x ∈ nonWanderingSet f) (N : ℕ)
+    {ε : ℝ} (εpos : 0 < ε) :
+    ∃ y n, y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ N < n := by
+  sorry
 
 /- Show that the non-wandering set of `f` is closed. -/
 
+theorem zou : IsClosed (nonWanderingSet f) := by
+  rw [← isSeqClosed_iff_isClosed]
+  intros u x hu u_lim
+  rw [tendsto_atTop_nhds] at u_lim
 
 /- Show that the non-wandering set of `f` is compact. -/
 
