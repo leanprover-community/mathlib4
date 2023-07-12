@@ -33,7 +33,7 @@ variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Complete
 variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
 variable (P : ConeProgram V W)
 
-def Objective (v : V) := ⟪P.obj, v⟫_ℝ
+def Objective (v : V) := ⟪v, P.obj⟫_ℝ
 
 def IsSolution (v : V) := v ∈ P.K ∧ P.rhs - P.lhs v ∈ P.L
 
@@ -75,7 +75,7 @@ lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ =
   simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
 
 @[simp] lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
-  limsup_const (inner P.obj x)
+  limsup_const _
 
 def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
 
@@ -116,25 +116,33 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
     rcases hv with ⟨seqW, hseqV, hseqW, htends⟩
     rcases hw with ⟨hw1, hw2⟩
     dsimp [Dual] at hw2
-    have h : ∀ n, 0 ≤ ⟪w, P.lhs (seqV n) + seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := fun n => by
+    have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := fun n => by
       calc 0
-        ≤ ⟪adjoint P.lhs w - P.obj, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ := by {
+        ≤ ⟪seqV n, adjoint P.lhs w - P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by {
           refine' add_nonneg _ _
           . specialize hw2 (seqV n) (hseqV n)
-            rwa [sub_neg_eq_add, neg_add_eq_sub, real_inner_comm _ _] at hw2
-          . specialize hw1 (seqW n) (hseqW n)
-            rwa [real_inner_comm _ _] }
-      _ = ⟪adjoint P.lhs w, seqV n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ := by rw [← inner_sub_left]
-      _ = ⟪adjoint P.lhs w, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [add_sub_right_comm]
-      _ = ⟪w, P.lhs (seqV n)⟫_ℝ + ⟪w, seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [ContinuousLinearMap.adjoint_inner_left]
-      _ = ⟪w, P.lhs (seqV n) + seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [inner_add_right]
-    have : P.SubObjective seqV ≤ ⟪w, P.rhs⟫_ℝ := by
+            rwa [sub_neg_eq_add, neg_add_eq_sub] at hw2
+          . exact hw1 (seqW n) (hseqW n) }
+      _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by rw [← inner_sub_right]
+      _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [add_sub_right_comm]
+      _ = ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [ContinuousLinearMap.adjoint_inner_right]
+      _ = ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [inner_add_left]
+    simp_rw [sub_nonneg] at h
+    have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) := htends.inner tendsto_const_nhds
+    have : P.SubObjective seqV ≤ ⟪P.rhs, w⟫_ℝ := by
       calc
         P.SubObjective seqV
           = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
-          = limsup (fun n => ⟪P.obj, seqV n⟫_ℝ) atTop := by rfl
-        _ ≤ ⟪w, P.rhs⟫_ℝ := by sorry
-    rwa [Objective, Dual, inner_neg_left, neg_neg, real_inner_comm]
+        _ = limsup (fun n => ⟪seqV n, P.obj⟫_ℝ) atTop := by rfl
+        _ ≤ limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop := by
+            apply limsup_le_limsup
+            apply eventually_of_forall
+            exact h
+            sorry
+            sorry
+        _ = ⟪P.rhs, w⟫_ℝ := (htends.inner tendsto_const_nhds).limsup_eq
+        -- _ = ⟪w, P.rhs⟫_ℝ := real_inner_comm _ _
+    rw [Objective, Dual, inner_neg_right, neg_neg]
 
 theorem weak_duality (hP : P.IsSubFeasible) (hD : (P.Dual).IsFeasible) :
   P.SubValue ≤ -(P.Dual).Value := by
