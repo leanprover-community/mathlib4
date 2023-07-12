@@ -67,12 +67,16 @@ def mathlibDepPath : FilePath :=
   LAKEPACKAGESDIR / "mathlib"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
+-- TODO This data is used in two different ways, by `getFileImports` and `getPackageDir`.
+-- The files in `Util/TacticCaches/` are unfortunately looked up under `Util` by `getPackageDir`,
+-- but under `TacticCaches` by `getFileImports`.
 def getPackageDirs : IO PackageDirs := return .ofList [
   ("Mathlib", if ← isMathlibRoot then "." else mathlibDepPath),
   -- Note that this prevents downstream projects from using a top-level `Util` directory.
   -- I'm not sure a good way around this for now, but hopefully it will be made obsolete
   -- by a new `cache` before it affects anyone.
   ("Util", if ← isMathlibRoot then "." else mathlibDepPath),
+  ("TacticCaches", if ← isMathlibRoot then "Util" else mathlibDepPath / "Util"),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
   ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),

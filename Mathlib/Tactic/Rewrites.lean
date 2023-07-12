@@ -91,7 +91,7 @@ def cachePath : IO FilePath :=
   try
     return (← findOLean `TacticCaches.Rewrites).withExtension "extra"
   catch _ =>
-    return "build" / "lib" / "Util" / "TacticCaches" / "Rewrites.extra"
+    return "build" / "lib" / "TacticCaches" / "Rewrites.extra"
 
 initialize cachedData : CachedData (Name × Bool × Nat) ← unsafe do
   let path ← cachePath
