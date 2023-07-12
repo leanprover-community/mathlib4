@@ -443,7 +443,7 @@ protected lemma monotone_iff_continuous {t₁ : TopologicalSpace α} [LowerSetTo
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
 
-lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
+lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
     [LowerSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
   rw [continuous_def]
