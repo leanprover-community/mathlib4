@@ -147,3 +147,6 @@ def preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat :
     (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl)
 set_option linter.uppercaseLean3 false in
 #align Preord_to_PartOrd_comp_to_dual_iso_to_dual_comp_Preord_to_PartOrd preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat
+
+-- Porting note : this auto-generated lemma's proof is `rfl`, so should not concern `simpNF` linter
+attribute [nolint simpNF] preordCatToPartOrdCatCompToDualIsoToDualCompPreordCatToPartOrdCat_hom_app_coe
