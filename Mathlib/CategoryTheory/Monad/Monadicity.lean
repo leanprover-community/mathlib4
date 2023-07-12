@@ -55,18 +55,16 @@ noncomputable section
 namespace MonadicityInternal
 
 variable {C : Type u₁} {D : Type u₂}
-
 variable [Category.{v₁} C] [Category.{v₁} D]
-
 variable {G : D ⥤ C} [IsRightAdjoint G]
 
--- Porting note: had to turn off hygiene
--- These notations still require parentheses around them, unlike in mathlib3.
-set_option hygiene false in
-scoped notation "F" => leftAdjoint G
-
-set_option hygiene false in
-scoped notation "adj" => Adjunction.ofRightAdjoint G
+-- An unfortunate consequence of the local notation is that it is only recognised if there
+-- is some syntax to separate it from dot notation.
+-- Porting note: in Lean 3 you could write `F .map A.a` for example, but in Lean 4 that would
+-- mean passing two arguments to `F` (`.map` and `A.a`). We write `(F).map A.a` instead.
+-- As a warning, this pretty prints as `F.map A.a`.
+local notation3 "F" => leftAdjoint G
+local notation3 "adj" => Adjunction.ofRightAdjoint G
 
 /-- The "main pair" for an algebra `(A, α)` is the pair of morphisms `(F α, ε_FA)`. It is always a
 reflexive pair, and will be used to construct the left adjoint to the comparison functor and show it
@@ -247,18 +245,10 @@ theorem comparisonAdjunction_counit_app
 
 end MonadicityInternal
 
-open CategoryTheory
-
-open Adjunction
-
-open Monad
-
-open MonadicityInternal
+open CategoryTheory Adjunction Monad MonadicityInternal
 
 variable {C : Type u₁} {D : Type u₂}
-
 variable [Category.{v₁} C] [Category.{v₁} D]
-
 variable {G : D ⥤ C}
 
 /--
@@ -281,6 +271,10 @@ set_option linter.uppercaseLean3 false in
 variable [IsRightAdjoint G]
 
 section BeckMonadicity
+
+-- Porting note: these local notations were not used in this section before
+local notation3 "F" => leftAdjoint G
+local notation3 "adj" => Adjunction.ofRightAdjoint G
 
 -- Porting note: added these to replace parametric instances lean4#2311
 -- When this is fixed the proofs below that struggle with instances should be reviewed.
@@ -415,6 +409,10 @@ end BeckMonadicity
 section ReflexiveMonadicity
 
 variable [HasReflexiveCoequalizers D] [ReflectsIsomorphisms G]
+
+-- Porting note: these local notations were not used in this section before
+local notation3 "F" => leftAdjoint G
+local notation3 "adj" => Adjunction.ofRightAdjoint G
 
 -- Porting note: added these to replace parametric instances lean4#2311
 -- [∀ ⦃A B⦄ (f g : A ⟶ B) [G.IsReflexivePair f g], PreservesColimit (parallelPair f g) G] :
