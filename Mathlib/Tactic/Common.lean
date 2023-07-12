@@ -42,6 +42,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.GeneralizeProofs

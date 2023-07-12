@@ -425,7 +425,7 @@ theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : U
 
 @[simp]
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
-    (fun a => sup fun n : ℕ => (f^[n]) a) = nfp f := by
+    (fun a => sup fun n : ℕ => f^[n] a) = nfp f := by
   refine' funext fun a => le_antisymm _ (sup_le fun l => _)
   · rw [sup_le_iff]
     intro n
@@ -435,7 +435,7 @@ theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) :
     exact le_sup _ _
 #align ordinal.sup_iterate_eq_nfp Ordinal.sup_iterate_eq_nfp
 
-theorem iterate_le_nfp (f a n) : (f^[n]) a ≤ nfp f a := by
+theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
   rw [← sup_iterate_eq_nfp]
   exact le_sup _ n
 #align ordinal.iterate_le_nfp Ordinal.iterate_le_nfp
@@ -444,17 +444,17 @@ theorem le_nfp (f a) : a ≤ nfp f a :=
   iterate_le_nfp f a 0
 #align ordinal.le_nfp Ordinal.le_nfp
 
-theorem lt_nfp {a b} : a < nfp f b ↔ ∃ n, a < (f^[n]) b := by
+theorem lt_nfp {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
   rw [← sup_iterate_eq_nfp]
   exact lt_sup
 #align ordinal.lt_nfp Ordinal.lt_nfp
 
-theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, (f^[n]) a ≤ b := by
+theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
   rw [← sup_iterate_eq_nfp]
   exact sup_le_iff
 #align ordinal.nfp_le_iff Ordinal.nfp_le_iff
 
-theorem nfp_le {a b} : (∀ n, (f^[n]) a ≤ b) → nfp f a ≤ b :=
+theorem nfp_le {a b} : (∀ n, f^[n] a ≤ b) → nfp f a ≤ b :=
   nfp_le_iff.2
 #align ordinal.nfp_le Ordinal.nfp_le
 
@@ -567,7 +567,7 @@ end
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
   simp_rw [← sup_iterate_eq_nfp, ← sup_mul_nat]
-  congr ; funext n
+  congr; funext n
   induction' n with n hn
   · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
   · nth_rw 2 [Nat.succ_eq_one_add]
@@ -636,7 +636,7 @@ theorem nfp_mul_zero (a : Ordinal) : nfp (a * .) 0 = 0 := by
 @[simp]
 theorem nfp_zero_mul : nfp (HMul.hMul 0) = id := by
   rw [← sup_iterate_eq_nfp]
-  refine' funext fun a => (sup_le fun n => _).antisymm (le_sup (fun n => ((· * ·) 0^[n]) a) 0)
+  refine' funext fun a => (sup_le fun n => _).antisymm (le_sup (fun n => (0 * ·)^[n] a) 0)
   induction' n with n _
   · rfl
   rw [Function.iterate_succ']

@@ -175,7 +175,7 @@ theorem cylinder_eq_cylinder_of_le_firstDiff (x y : ∀ n, E n) {n : ℕ} (hn : 
 #align pi_nat.cylinder_eq_cylinder_of_le_first_diff PiNat.cylinder_eq_cylinder_of_le_firstDiff
 
 theorem iUnion_cylinder_update (x : ∀ n, E n) (n : ℕ) :
-    (⋃ k, cylinder (update x n k) (n + 1)) = cylinder x n := by
+    ⋃ k, cylinder (update x n k) (n + 1) = cylinder x n := by
   ext y
   simp only [mem_cylinder_iff, mem_iUnion]
   constructor
@@ -793,7 +793,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type _) [Met
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
     have E :
-      (⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n)) =
+      ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (x n)) ((1 / 2) ^ n) =
         ⋂ (n : ℕ) (H : n ≤ N), closedBall (u (y n)) ((1 / 2) ^ n) := by
       refine iInter_congr fun n ↦ iInter_congr fun hn ↦ ?_
       have : x n = y n := apply_eq_of_dist_lt (mem_ball'.1 hxy) hn
@@ -877,8 +877,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
               min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
           min_le_right _ _
-    calc dist x z ≤ ∑' i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
+    calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
+          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
         tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
       _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
@@ -911,14 +911,14 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         calc
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i in K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
-                ∑' i : ↑((K : Set ι)ᶜ), min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
+                ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
             (sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i in K, dist (x i) (y i)) +
-                ∑' i : ↑((K : Set ι)ᶜ), ((1 / 2) ^ encode (i : ι) : ℝ) := by
+                ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
             refine' add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) _
             refine' tsum_le_tsum (fun i => min_le_left _ _) _ _
-            · apply Summable.subtype (dist_summable x y) ((↑K : Set ι)ᶜ)
-            · apply Summable.subtype summable_geometric_two_encode ((↑K : Set ι)ᶜ)
+            · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
+            · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
           _ < (∑ _i in K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le

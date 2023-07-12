@@ -146,7 +146,7 @@ theorem integral_comp_polarCoord_symm {E : Type _} [NormedAddCommGroup E] [Norme
     ring
   symm
   calc
-    (∫ p, f p) = ∫ p in polarCoord.source, f p := by
+    ∫ p, f p = ∫ p in polarCoord.source, f p := by
       rw [← integral_univ]
       apply set_integral_congr_set_ae
       exact polarCoord_source_ae_eq_univ.symm
