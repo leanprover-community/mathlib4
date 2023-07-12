@@ -151,8 +151,10 @@ theorem nonWandering_nonempty [hα : Nonempty α] : Set.Nonempty (nonWanderingSe
   done
 
 
-/- Define the recurrent set of `f`. -/
-def recurrentSet {α : Type _} [TopologicalSpace α] (f : α → α) : Set α := sorry
+/- Define the recurrent set of `f`. The recurrent set is the set of points that are recurrent,
+   i.e. that belong to their omega-limit set. -/
+def recurrentSet {α : Type _} [TopologicalSpace α] (f : α → α) : Set α :=
+  { x | x ∈ ω⁺ (fun n ↦ f^[n]) ({x}) }
 
 /- Show that periodic points belong to the recurrent set. -/
 
