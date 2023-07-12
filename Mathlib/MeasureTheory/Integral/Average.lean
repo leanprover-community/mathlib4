@@ -262,7 +262,7 @@ theorem setAverage_setAverage_sub (hs : μ s ≠ ∞) (hf : IntegrableOn f s μ)
 end NormedAddCommGroup
 
 theorem ofReal_average {f : α → ℝ} (hf : Integrable f μ) (hf₀ : 0 ≤ᵐ[μ] f) :
-    ENNReal.ofReal (⨍ x, f x ∂μ) = ∫⁻ x, ENNReal.ofReal (f x) ∂μ / μ univ := by
+    ENNReal.ofReal (⨍ x, f x ∂μ) = (∫⁻ x, ENNReal.ofReal (f x) ∂μ) / μ univ := by
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
   · rw [average_eq, smul_eq_mul, ← toReal_inv, ofReal_mul toReal_nonneg,
