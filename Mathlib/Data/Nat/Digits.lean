@@ -352,10 +352,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     rename ℕ => m
-    -- Porting note: Added `have`
-    have : ∀ v, List.getLast (digits (succ zero) (succ v)) (by simp [digits, digitsAux1]) = 1 := by
-      intros v; induction v <;> simp; assumption
-    simp only [digits_one, List.getLast_replicate_succ m 1, this]
+    simp only [digits_one, List.getLast_replicate_succ m 1]
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn

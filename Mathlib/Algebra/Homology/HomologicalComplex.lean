@@ -541,15 +541,21 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 #align homological_complex.hom.next_eq HomologicalComplex.Hom.next_eq
 
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 #align homological_complex.hom.comm_from HomologicalComplex.Hom.comm_from
 
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+attribute [simp 1100] comm_from_assoc
+attribute [simp] comm_from_apply
+
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 #align homological_complex.hom.comm_to HomologicalComplex.Hom.comm_to
+
+attribute [simp 1100] comm_to_assoc
+attribute [simp] comm_to_apply
 
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
