@@ -631,11 +631,12 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
     [TopologicalSpace E] (hp : WithSeminorms p) [TopologicalSpace F] (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : Seminorm.IsBounded p q f) : Continuous f := by
   have : TopologicalAddGroup E := hp.topologicalAddGroup
-  have : ContinuousSMul 𝕝 E := hp.continuousSMul
-  have : ContinuousSMul 𝕝₂ F := hq.continuousSMul
-  refine continuous_of_continuous_comp hq _ fun i => ?_ -- Seminorm.continuous_of_le _ (hf i)
+  refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
   rw [← Seminorm.finset_sup_smul] at hC
+  -- Note: we deduce continuouty of `s.sup (C • p)` from that of `∑ i in s, C • p i`.
+  -- The reason is that there is no `continuous_finset_sup`, and even if it were we couldn't
+  -- really use it since `ℝ` is not an `OrderBot`.
   refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
   change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i in s, C • p i) x)
   simp_rw [map_sum, Finset.sum_apply]
