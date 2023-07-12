@@ -453,7 +453,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep.ihom_ev_app_hom Rep.ihom_ev_app_hom
 
 /- Porting note: needs extra heartbeats. -/
-set_option maxHeartbeats 230000 in
+set_option maxHeartbeats 240000 in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.coev A).app B) = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl

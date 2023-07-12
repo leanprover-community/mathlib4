@@ -289,7 +289,9 @@ variable {F : Type _} [NormedAddCommGroup F] [NormedSpace α F]
 
 open NormedField
 
-/-- While this may appear identical to `NormedSpace.toModule`, it contains an implicit argument
+/-
+Porting note: This is not required in mathlib4:
+While this may appear identical to `NormedSpace.toModule`, it contains an implicit argument
 involving `NormedAddCommGroup.toSeminormedAddCommGroup` that typeclass inference has trouble
 inferring.
 
@@ -302,10 +304,13 @@ example
 ```
 
 [This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
-gives some more context. -/
+gives some more context.
+
+```lean
 instance (priority := 100) NormedSpace.toModule' : Module α F :=
   NormedSpace.toModule
-#align normed_space.to_module' NormedSpace.toModule'
+```
+-/
 
 section Surj
 
