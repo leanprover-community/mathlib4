@@ -266,6 +266,10 @@ def iso (Δ : SimplexCategoryᵒᵖ) : coprod s.N Δ ≅ X.obj Δ :=
 theorem iso_hom (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).hom = Splitting.map X s.ι Δ :=
   rfl
 
+@[simp]
+theorem iso_inv (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).inv = inv (Splitting.map X s.ι Δ) :=
+  rfl
+
 /-- Via the isomorphism `s.iso Δ`, this is the inclusion of a summand
 in the direct sum decomposition given by the splitting `s : Splitting X`. -/
 def ιSummand {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) : s.N A.1.unop.len ⟶ X.obj Δ :=
