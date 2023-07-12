@@ -258,10 +258,13 @@ attribute [instance] Splitting.map_isIso
 #align simplicial_object.splitting.map_is_iso SimplicialObject.Splitting.map_isIso
 
 /-- The isomorphism on simplices given by the axiom `Splitting.map_isIso` -/
-@[simps (config := { rhsMd := .default })]
 def iso (Δ : SimplexCategoryᵒᵖ) : coprod s.N Δ ≅ X.obj Δ :=
   asIso (Splitting.map X s.ι Δ)
 #align simplicial_object.splitting.iso SimplicialObject.Splitting.iso
+
+@[simp]
+theorem iso_hom (Δ : SimplexCategoryᵒᵖ) : (iso s Δ).hom = Splitting.map X s.ι Δ :=
+  rfl
 
 /-- Via the isomorphism `s.iso Δ`, this is the inclusion of a summand
 in the direct sum decomposition given by the splitting `s : Splitting X`. -/

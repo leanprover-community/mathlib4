@@ -518,7 +518,6 @@ section
 
 /-- An auxiliary construction for `mkInductive`.
 -/
-@[simp]
 def mkInductiveAux₂ :
     ∀ n, Σ' (f : P.xNext n ⟶ Q.X n) (f' : P.X n ⟶ Q.xPrev n), e.f n = P.dFrom n ≫ f + f' ≫ Q.dTo n
   | 0 => ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩
@@ -527,6 +526,21 @@ def mkInductiveAux₂ :
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
 #align homotopy.mk_inductive_aux₂ Homotopy.mkInductiveAux₂
+
+theorem mkInductiveAux₂_zero :
+    mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
+      ⟨0, zero ≫ (Q.xPrevIso rfl).inv, mkInductiveAux₂.proof_2 e zero comm_zero⟩ :=
+  rfl
+
+theorem mkInductiveAux₂_add_one (n) :
+    mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
+      let I := mkInductiveAux₁ e zero one comm_one succ n
+      ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv,
+        mkInductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
+  rfl
+
+attribute [eqns mkInductiveAux₂_zero mkInductiveAux₂_add_one] mkInductiveAux₂
+attribute [simp] mkInductiveAux₂
 
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom =
@@ -551,7 +565,7 @@ def mkInductive : Homotopy e 0 where
     else 0
   zero i j w := by dsimp; rw [dif_neg]; exact w
   comm i := by
-    dsimp [-mkInductiveAux₂]
+    dsimp
     simp only [add_zero]
     refine' (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
     congr
@@ -559,7 +573,7 @@ def mkInductive : Homotopy e 0 where
       · dsimp [fromNext, mkInductiveAux₂]
         rw [dif_neg]
         simp only
-      · dsimp [fromNext, -mkInductiveAux₂]
+      · dsimp [fromNext]
         simp only [ChainComplex.next_nat_succ, dite_true]
         rw [mkInductiveAux₃ e zero comm_zero one comm_one succ]
         dsimp [xNextIso]
@@ -643,7 +657,6 @@ section
 
 /-- An auxiliary construction for `mkInductive`.
 -/
-@[simp]
 def mkCoinductiveAux₂ :
     ∀ n, Σ' (f : P.X n ⟶ Q.xPrev n) (f' : P.xNext n ⟶ Q.X n), e.f n = f ≫ Q.dTo n + P.dFrom n ≫ f'
   | 0 => ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩
@@ -651,6 +664,21 @@ def mkCoinductiveAux₂ :
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
 #align homotopy.mk_coinductive_aux₂ Homotopy.mkCoinductiveAux₂
+
+theorem mkCoinductiveAux₂_zero :
+    mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
+      ⟨0, (P.xNextIso rfl).hom ≫ zero, mkCoinductiveAux₂.proof_2 e zero comm_zero⟩ :=
+  rfl
+
+theorem mkCoinductiveAux₂_add_one (n) :
+    mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
+      let I := mkCoinductiveAux₁ e zero one comm_one succ n
+      ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1,
+        mkCoinductiveAux₂.proof_5 e zero one comm_one succ n⟩ :=
+  rfl
+
+attribute [eqns mkCoinductiveAux₂_zero mkCoinductiveAux₂_add_one] mkCoinductiveAux₂
+attribute [simp] mkCoinductiveAux₂
 
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
     (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.1 =
@@ -675,7 +703,7 @@ def mkCoinductive : Homotopy e 0 where
     else 0
   zero i j w := by dsimp; rw [dif_neg]; exact w
   comm i := by
-    dsimp [-mkCoinductiveAux₂]
+    dsimp
     simp only [add_zero]
     rw [add_comm]
     refine' (mkCoinductiveAux₂ e zero comm_zero one comm_one succ i).2.2.trans _
@@ -684,7 +712,7 @@ def mkCoinductive : Homotopy e 0 where
       · dsimp [toPrev, mkCoinductiveAux₂]
         rw [dif_neg]
         simp only
-      · dsimp [toPrev, -mkCoinductiveAux₂]
+      · dsimp [toPrev]
         simp only [CochainComplex.prev_nat_succ, dite_true]
         rw [mkCoinductiveAux₃ e zero comm_zero one comm_one succ]
         dsimp [xPrevIso]
