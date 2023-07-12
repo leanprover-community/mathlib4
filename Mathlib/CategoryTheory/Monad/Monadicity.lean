@@ -429,9 +429,11 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
     ⟨_, comparisonAdjunction⟩
   constructor
   let _ : ∀ X : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
-      IsIso ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X) := by
+      IsIso ((Adjunction.ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).unit.app X)
+    := by
     intro X
-    apply @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad) ?_ _
+    apply
+      @isIso_of_reflects_iso _ _ _ _ _ _ _ (Monad.forget (Adjunction.ofRightAdjoint G).toMonad) ?_ _
     · change IsIso (comparisonAdjunction.unit.app X).f
       rw [comparisonAdjunction_unit_f]
       change
@@ -439,7 +441,8 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
           (IsColimit.coconePointUniqueUpToIso (beckCoequalizer X)
               (unitColimitOfPreservesCoequalizer X)).hom
       apply IsIso.of_iso (IsColimit.coconePointUniqueUpToIso _ _)
-  let _ : ∀ Y : D, IsIso ((ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).counit.app Y) := by
+  let _ : ∀ Y : D,
+      IsIso ((ofRightAdjoint (comparison (Adjunction.ofRightAdjoint G))).counit.app Y) := by
     intro Y
     change IsIso (comparisonAdjunction.counit.app Y)
     rw [comparisonAdjunction_counit_app]
