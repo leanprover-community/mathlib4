@@ -232,6 +232,14 @@ instance [Preorder α] : LowerTopology (WithLowerTopology α) :=
 instance [Preorder α] : UpperTopology (WithUpperTopology α) :=
   ⟨rfl⟩
 
+def toOrderDualHomeomorph [Preorder α] : WithLowerTopology α ≃ₜ WithUpperTopology αᵒᵈ where
+  toFun := OrderDual.toDual
+  invFun := OrderDual.ofDual
+  left_inv := OrderDual.toDual_ofDual
+  right_inv := OrderDual.ofDual_toDual
+  continuous_toFun := continuous_coinduced_rng
+  continuous_invFun := continuous_coinduced_rng
+
 namespace LowerTopology
 
 /-- The complements of the upper closures of finite sets are a collection of lower sets
