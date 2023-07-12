@@ -2912,6 +2912,7 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveToExpr
+import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.Existsi
 import Mathlib.Tactic.Explode
@@ -3031,6 +3032,7 @@ import Mathlib.Tactic.Variable
 import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Widget.CommDiag
 import Mathlib.Tactic.Zify
+import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Testing.SlimCheck.Gen
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
