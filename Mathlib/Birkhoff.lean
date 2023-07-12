@@ -138,6 +138,16 @@ theorem omegaLimit_nonwandering (x : α) : (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (
   done
 
 /- Show that the non-wandering set is non-empty -/
+theorem nonWandering_nonempty [hα : Nonempty α] : Set.Nonempty (nonWanderingSet f) := by
+  -- have (A: Set α) (B: Set α) : A ⊆ B -> Set.Nonempty A -> Set.Nonempty B := by
+  --   exact fun a a_1 ↦ Set.Nonempty.mono a a_1
+  have (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x})) -> Set.Nonempty (nonWanderingSet f) := by
+    apply Set.Nonempty.mono
+    apply omegaLimit_nonwandering
+  apply this
+  apply omegaLimit_nonempty f
+  apply Nonempty.some hα
+  done
 
 
 /- Define the recurrent set of `f`. -/
