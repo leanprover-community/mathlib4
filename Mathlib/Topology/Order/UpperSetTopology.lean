@@ -242,30 +242,20 @@ lemma upperSetTopology_coinduced {t₁ : TopologicalSpace α} [UpperSetTopology 
 
 open Topology
 
-lemma Monotone_tfae {t₁ : TopologicalSpace α} [UpperSetTopology α]
+protected lemma monotone_iff_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
     {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
-    List.TFAE
-    [ Monotone f,
-      Continuous f,
-      coinduced f t₁ ≤ t₂,
-      t₁ ≤ induced f t₂ ] := by
-  tfae_have 1 → 3
-  · intro hf s hs
-    rw [IsOpen_iff_IsUpperSet] at hs
-    exact upperSetTopology_coinduced hf _ hs
-  tfae_have 2 → 1
-  · intros hf a b hab
+    Monotone f ↔ Continuous f := by
+  constructor
+  · intro hf
+    simp_rw [continuous_def, IsOpen_iff_IsUpperSet]
+    exact fun _ hs ↦ IsUpperSet.preimage hs hf
+  · intro hf a b hab
     rw [← mem_Iic, ← closure_singleton, ← mem_preimage]
     apply (Continuous.closure_preimage_subset hf {f b})
     rw [← mem_Iic, ← closure_singleton] at hab
     apply mem_of_mem_of_subset hab
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
-  tfae_have 2 ↔ 4
-  · exact continuous_iff_le_induced
-  tfae_have 2 ↔ 3
-  · exact continuous_iff_coinduced_le
-  tfae_finish
 
 lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
     [UpperSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → βᵒᵈ} (hf : Monotone f) :
