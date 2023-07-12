@@ -337,6 +337,7 @@ namespace RingHom.PropertyIsLocal
 
 variable {P} (hP : RingHom.PropertyIsLocal @P)
 
+set_option maxHeartbeats 0 in
 theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y]
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, P (Scheme.Γ.map (𝒰.map i ≫ f).op)) :
     sourceAffineLocally (@P) f := by
@@ -364,15 +365,17 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
     rwa [← Scheme.Γ.map_comp, ← op_comp, IsOpenImmersion.isoOfRangeEq_inv,
       IsOpenImmersion.lift_fac_assoc] at H
   · intro U r H
-    set φ : Scheme.Γ.obj (Opposite.op (X.restrict <| Opens.openEmbedding U.val)) →+*
-      Scheme.Γ.obj (Opposite.op (X.restrict <| Opens.openEmbedding (X.affineBasicOpen r).val)) := by
-      refine' X.presheaf.map
+    -- Porting note: failing on instance synthesis for an (unspecified) meta variable
+    -- made φ explicit and forced to use dsimp in the proof
+    convert hP.StableUnderComposition
+      (S := Scheme.Γ.obj (Opposite.op (X.restrict <| Opens.openEmbedding U.val)))
+      (T := Scheme.Γ.obj (Opposite.op (X.restrict <| Opens.openEmbedding (X.basicOpen r))))
+      ?_ ?_ H ?_ using 1
+    swap
+    · refine' X.presheaf.map
           (@homOfLE _ _ ((IsOpenMap.functor _).obj _) ((IsOpenMap.functor _).obj _) _).op
       rw [unop_op, unop_op, Opens.openEmbedding_obj_top, Opens.openEmbedding_obj_top]
       exact X.basicOpen_le _
-    -- Porting note: failing on instance synthesis for an (unspecified) meta variable
-    -- made φ explicit and forced to use dsimp in the proof
-    convert hP.StableUnderComposition ?_ φ H ?_ using 1
     · rw [op_comp, op_comp, Functor.map_comp, Functor.map_comp]
       refine' (Eq.trans _ (Category.assoc (obj := CommRingCat) _ _ _).symm : _)
       congr 1
@@ -380,40 +383,30 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
       refine' Eq.trans _ (X.presheaf.map_comp _ _)
       change X.presheaf.map _ = _
       congr!
-    rw [(RingHom.algebraMap_toAlgebra φ).symm]
-    have := RingHom.toAlgebra φ
-    -- Porting note: used to be a convert
-    apply @HoldsForLocalizationAway _ hP _ _ _ _ (_)
-      (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) ?_
-    dsimp [Scheme.Γ]
-    have aff := U.2
-    rw [← U.1.openEmbedding_obj_top] at aff
     have eq : (X.basicOpen r).openEmbedding.isOpenMap.functor.obj ⊤ =
         X.basicOpen (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) := by
       rw [Opens.openEmbedding_obj_top]
       exact (Scheme.basicOpen_res_eq _ _ _).symm
-    have alg' : Algebra
-            (X.presheaf.obj (Opposite.op <| U.1.openEmbedding.isOpenMap.functor.obj ⊤))
-      (X.presheaf.obj
-          (Opposite.op (Scheme.basicOpen X <| X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r))) := inferInstance
-    have : (toAlgebra (X.presheaf.map
-      (homOfLE
-          (_ :
-            (IsOpenMap.functor (_ : IsOpenMap ↑(Opens.inclusion (Scheme.basicOpen X r)))).obj ⊤ ≤
-              (IsOpenMap.functor (_ : IsOpenMap ↑(Opens.inclusion ↑U))).obj ⊤)).op)) :
-
-    -- have foo : @IsLocalization.Away _ _ (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r)
-        -- (X.presheaf.obj (Opposite.op (Scheme.basicOpen X <| X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r))) _ alg := sorry
-    suffices ∀ (alg : Algebra _ _), @IsLocalization.Away _ _ (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) (X.presheaf.obj <| Opposite.op <| (X.basicOpen r).openEmbedding.isOpenMap.functor.obj ⊤) _ alg from this _
-    rw [eq]
-    intro
-    let f : (X.presheaf.obj (Opposite.op _)) := X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r
-    -- dsimp at f
-    convert isLocalization_basicOpen aff f
-    dsimp
+    -- Porting note: used to be a convert
+    let sec : X.presheaf.obj _ := X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r
+    convert @HoldsForLocalizationAway _ hP _
+      (Scheme.Γ.obj (Opposite.op (X.restrict (X.basicOpen r).openEmbedding)))
+      _ _ ?_ sec ?_
+    · sorry-- exact RingHom.algebraMap_toAlgebra _|>.symm
+    · sorry
+    -- · have := algebra_section_section_basicOpen sec
+    --   dsimp
+    --   erw [←eq] at this
+    --   infer_instance
+    -- · dsimp [Scheme.Γ]
+    · dsimp
+      have aff := U.2
+      rw [← U.1.openEmbedding_obj_top] at aff
+      rw [eq]
+      convert isLocalization_basicOpen aff sec
+      sorry
 #align ring_hom.property_is_local.source_affine_locally_of_source_open_cover RingHom.PropertyIsLocal.sourceAffineLocally_of_source_openCover
-#check isLocalization_basicOpen
-#exit
+
 theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
     List.TFAE
       [sourceAffineLocally (@P) f,
