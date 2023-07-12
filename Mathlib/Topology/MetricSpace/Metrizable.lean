@@ -142,6 +142,12 @@ instance metrizableSpace_pi [∀ i, MetrizableSpace (π i)] : MetrizableSpace (�
   infer_instance
 #align topological_space.metrizable_space_pi TopologicalSpace.metrizableSpace_pi
 
+theorem IsSeparable.secondCountableTopology [PseudoMetrizableSpace X] {s : Set X}
+    (hs : IsSeparable s) : SecondCountableTopology s := by
+  letI := pseudoMetrizableSpacePseudoMetric X
+  have := hs.separableSpace
+  exact UniformSpace.secondCountable_of_separable s
+
 variable (X)
 variable [T3Space X] [SecondCountableTopology X]
 

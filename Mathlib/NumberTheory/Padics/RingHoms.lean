@@ -663,7 +663,7 @@ theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZModPow n).comp g = f 
 theorem lift_self (z : ℤ_[p]) : @lift p _ ℤ_[p] _ toZModPow zmod_cast_comp_toZModPow z = z := by
   show _ = RingHom.id _ z
   rw [@lift_unique p _ ℤ_[p] _ _ zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
-  intro ; rw [RingHom.comp_id]
+  intro; rw [RingHom.comp_id]
 #align padic_int.lift_self PadicInt.lift_self
 
 end lift
