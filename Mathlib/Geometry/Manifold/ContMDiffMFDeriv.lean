@@ -302,19 +302,20 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       using hs (I.symm y) hy.2
   rw [contMDiffOn_iff]
   refine' ⟨hf.continuousOn_tangentMapWithin_aux one_le_n hs, fun p q => _⟩
-  have A :
-    range I ×ˢ univ ∩
-        ((TotalSpace.toProd H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd)) ⁻¹'
-          (π E (TangentSpace I) ⁻¹' s) =
-      (range I ∩ I.symm ⁻¹' s) ×ˢ univ :=
-    by ext ⟨x, v⟩; simp only [mfld_simps]
   suffices h :
     ContDiffOn 𝕜 m
       (((fun p : H' × E' => (I' p.fst, p.snd)) ∘ TotalSpace.toProd H' E') ∘
         tangentMapWithin I I' f s ∘
           (TotalSpace.toProd H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd))
       ((range I ∩ I.symm ⁻¹' s) ×ˢ univ)
-  · simpa [(· ∘ ·)] using h
+  · -- Porting note: was `simpa [(· ∘ ·)] using h`
+    -- have h₁
+    convert h using 1
+    · ext1 ⟨x, y⟩
+      simp only [mfld_simps]; rfl
+    · simp only [mfld_simps]
+      rw [inter_prod, prod_univ, prod_univ]
+      rfl
   change
     ContDiffOn 𝕜 m
       (fun p : E × E =>
@@ -341,9 +342,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
     have : ContDiffOn 𝕜 n (I' ∘ f ∘ I.symm) (range I ∩ I.symm ⁻¹' s) := by
       simpa only [mfld_simps] using hf'.2 (I.symm 0) (I'.symm 0)
     simpa only [inter_comm] using this.fderivWithin U' hmn
-  have := D.comp contDiff_fst.contDiffOn (prod_subset_preimage_fst _ _)
-  have := ContDiffOn.prod this contDiff_snd.contDiffOn
-  exact is_bounded_bilinearMap_apply.contDiff.comp_contDiffOn this
+  refine ContDiffOn.clm_apply ?_ contDiffOn_snd
+  exact D.comp contDiff_fst.contDiffOn (prod_subset_preimage_fst _ _)
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within_aux ContMDiffOn.contMDiffOn_tangentMapWithin_aux
 
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
@@ -369,7 +369,6 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     follows that they are smooth. The composition of all these maps is `Tf`, and is therefore smooth
     as a composition of smooth maps.
     -/
-  have m_le_n : m ≤ n := (le_add_right le_rfl).trans hmn
   have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
   -- First step: local reduction on the space, to a set `s'` which is contained in chart domains.
   refine' contMDiffOn_of_locally_contMDiffOn fun p hp => _
@@ -425,13 +424,15 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
   have diff_irrfl_lift :
     ContMDiffOn I.tangent I'.tangent m (ir ∘ tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l) s'l_lift :=
     haveI A : ContMDiffOn I'.tangent I'.tangent m ir ir.source := contMDiffOn_chart
-    ContMDiffOn.comp A diff_rfl_lift fun p hp => by simp only [mfld_simps]
+    ContMDiffOn.comp A diff_rfl_lift fun p _ => by simp only [mfld_simps]
   have diff_Drirrfl_lift :
     ContMDiffOn I.tangent I'.tangent m (Dr.symm ∘ ir ∘ tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l)
       s'l_lift := by
     have A : ContMDiffOn I'.tangent I'.tangent m Dr.symm Dr.target := contMDiffOn_chart_symm
     refine ContMDiffOn.comp A diff_irrfl_lift fun p hp => ?_
     simp only [mfld_simps] at hp
+    -- Porting note: added `rw` because `simp` can't see through some `ModelProd _ _ = _ × _`
+    rw [mem_preimage, TangentBundle.mem_chart_target_iff]
     simp only [hp, mfld_simps]
   -- conclusion of this step: the composition of all the maps above is smooth
   have diff_DrirrflilDl :
@@ -444,16 +445,16 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       simp only [hp, mfld_simps]
     have B : ContMDiffOn I.tangent I.tangent m il.symm il.target := contMDiffOn_chart_symm
     have C : ContMDiffOn I.tangent I.tangent m (il.symm ∘ Dl) s'_lift :=
-      ContMDiffOn.comp B A' fun p hp => by simp only [mfld_simps]
-    refine ContMDiffOn.comp diff_Drirrfl_lift C fun p hp => ?_
+      ContMDiffOn.comp B A' fun p _ => by simp only [mfld_simps]
+    refine diff_Drirrfl_lift.comp C fun p hp => ?_
     simp only [mfld_simps] at hp
     simp only [hp, TotalSpace.proj, mfld_simps]
   /- Third step: check that the composition of all the maps indeed coincides with the derivative we
     are looking for -/
   have eq_comp :
-    ∀ q ∈ s'_lift,
-      tangentMapWithin I I' f s q =
-        (Dr.symm ∘ ir ∘ tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l ∘ il.symm ∘ Dl) q := by
+      ∀ q ∈ s'_lift,
+        tangentMapWithin I I' f s q =
+          (Dr.symm ∘ ir ∘ tangentMapWithin I I' (r ∘ f ∘ l.symm) s'l ∘ il.symm ∘ Dl) q := by
     intro q hq
     simp only [mfld_simps] at hq
     have U'q : UniqueMDiffWithinAt I s' q.1 := by apply U'; simp only [hq, mfld_simps]
@@ -497,8 +498,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
           tangentMap I' I' r (tangentMapWithin I I' f s' q) := by
         apply tangentMapWithin_eq_tangentMap
         · apply IsOpen.uniqueMDiffWithinAt _ r.open_source; simp [hq]
-        · refine' mdifferentiableAt_atlas _ (chart_mem_atlas _ _) _
-          simp only [hq, mfld_simps]
+        · exact mdifferentiableAt_atlas I' (chart_mem_atlas H' (f p.proj)) hq.1.1
       have : f p.proj = (tangentMapWithin I I' f s p).1 := rfl
       rw [A]
       dsimp
@@ -514,7 +514,8 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
       refine' tangentMapWithin_subset (by mfld_set_tac) U'q _
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
-    simp only [(· ∘ ·), A, B, C, D, E.symm]
+    dsimp only [(· ∘ ·)] at A B C D E ⊢
+    simp only [A, B, C, D, ← E]
   exact diff_DrirrflilDl.congr eq_comp
 #align cont_mdiff_on.cont_mdiff_on_tangent_map_within ContMDiffOn.contMDiffOn_tangentMapWithin
 
@@ -592,7 +593,7 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
     Function.comp, ContinuousLinearMap.map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
-  congr 2
+  congr 1
   refine' fderivWithin_congr (fun y hy => _) _
   · simp only [mfld_simps] at hy
     simp only [hy, Prod.mk.inj_iff, mfld_simps]
