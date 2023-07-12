@@ -35,6 +35,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
 
  * `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
  * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
+ * `WeierstrassCurve.VariableChange`: a change of variable of Weierstrass curves.
  * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
  * `WeierstrassCurve.baseChange`: the Weierstrass curve base changed over an algebra.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
@@ -205,8 +206,10 @@ def variableChange : WeierstrassCurve R where
   a₁ := ↑C.u⁻¹ * (W.a₁ + 2 * C.s)
   a₂ := ↑C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
   a₃ := ↑C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
-  a₄ := ↑C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂ - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2 - 2 * C.s * C.t)
-  a₆ := ↑C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2 - C.r * C.t * W.a₁)
+  a₄ := ↑C.u⁻¹ ^ 4 * (W.a₄ - C.s * W.a₃ + 2 * C.r * W.a₂
+    - (C.t + C.r * C.s) * W.a₁ + 3 * C.r ^ 2 - 2 * C.s * C.t)
+  a₆ := ↑C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂
+    + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2 - C.r * C.t * W.a₁)
 #align weierstrass_curve.variable_change WeierstrassCurve.variableChange
 
 @[simp]
@@ -233,7 +236,8 @@ lemma variableChange_b₆ :
 @[simp]
 lemma variableChange_b₈ :
     (W.variableChange C).b₈ =
-      (↑C.u⁻¹ : R) ^ 8 * (W.b₈ + 3 * C.r * W.b₆ + 3 * C.r ^ 2 * W.b₄ + C.r ^ 3 * W.b₂ + 3 * C.r ^ 4) := by
+      (↑C.u⁻¹ : R) ^ 8 * (W.b₈ + 3 * C.r * W.b₆ + 3 * C.r ^ 2 * W.b₄
+        + C.r ^ 3 * W.b₂ + 3 * C.r ^ 4) := by
   simp only [b₂, b₄, b₆, b₈, variableChange_a₁, variableChange_a₂, variableChange_a₃,
     variableChange_a₄, variableChange_a₆]
   ring1
