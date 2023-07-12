@@ -152,6 +152,17 @@ theorem locallyIntegrableOn_iff [LocallyCompactSpace X] [T2Space X] (hs : IsClos
     simpa only [IsOpen.nhdsWithin_eq hs hx, interior_eq_nhds'] using h2K
 #align measure_theory.locally_integrable_on_iff MeasureTheory.locallyIntegrableOn_iff
 
+protected theorem LocallyIntegrableOn.add
+    (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
+    LocallyIntegrableOn (f + g) s μ := fun x hx ↦ (hf x hx).add (hg x hx)
+
+protected theorem LocallyIntegrableOn.sub
+    (hf : LocallyIntegrableOn f s μ) (hg : LocallyIntegrableOn g s μ) :
+    LocallyIntegrableOn (f - g) s μ := fun x hx ↦ (hf x hx).sub (hg x hx)
+
+protected theorem LocallyIntegrableOn.neg (hf : LocallyIntegrableOn f s μ) :
+    LocallyIntegrableOn (-f) s μ := fun x hx ↦ (hf x hx).neg
+
 end LocallyIntegrableOn
 
 /-- A function `f : X → E` is *locally integrable* if it is integrable on a neighborhood of every
@@ -281,6 +292,15 @@ theorem locallyIntegrable_map_homeomorph [BorelSpace X] [BorelSpace Y] (e : X �
     ext x
     simp only [mem_preimage, Homeomorph.symm_apply_apply]
 #align measure_theory.locally_integrable_map_homeomorph MeasureTheory.locallyIntegrable_map_homeomorph
+
+protected theorem LocallyIntegrable.add (hf : LocallyIntegrable f μ) (hg : LocallyIntegrable g μ) :
+    LocallyIntegrable (f + g) μ := fun x ↦ (hf x).add (hg x)
+
+protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : LocallyIntegrable g μ) :
+    LocallyIntegrable (f - g) μ := fun x ↦ (hf x).sub (hg x)
+
+protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
+    LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
 end MeasureTheory
 
