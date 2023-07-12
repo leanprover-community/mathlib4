@@ -908,5 +908,3 @@ theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
 #align with_seminorms.first_countable WithSeminorms.first_countable
 
 end TopologicalProperties
-
-#lint
