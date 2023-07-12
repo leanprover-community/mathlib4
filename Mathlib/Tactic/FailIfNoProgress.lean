@@ -357,6 +357,22 @@ def Config.anyChanges : Config := { MVarIdComparisonConfig.anyChanges with eqKin
 def Config.onlyExprs : Config := { MVarIdComparisonConfig.onlyExprs with }
 
 /-! ## TacticM implementations -/
+
+/-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. Return the resulting list
+of goals otherwise. By default, this compares each of their types and local contexts before and
+after `tacs` is run; if any changes are seen, "progress" has been made, and the tactics succeed.
+Otherwise, we fail.
+
+`cfg` can be used to specify what kind of comparison to perform when checking for "progress". By
+default, only "observable" changes are checked. For instance, internal `MVarId`s and `FVarId`s are
+not checked, and implementation details are ignored. Expressions are by default compared with
+`isDefEq` at reducible transparency. Any change in the order or number of goals counts as progress.
+
+The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any change;
+`FailIfNoProgress.Config.onlyExprs` will only compare expressions in the target and local context.
+
+For more information, see the documentation for `FailIfNoProgress.Config`.
+-/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
     (cfg : FailIfNoProgress.Config := {}) : TacticM (List MVarId) := do
   let decl ← goal.getDecl
@@ -375,7 +391,20 @@ def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit)
   | .normal => do pure m!"obtained\n{← getGoals}"
   throwError "no progress made on goal; {resultMsg}"
 
-/-- Run `tacs`, and fail if no progress is made. Return the result otherwise. -/
+/-- Run `tacs`, and fail if no progress is made. Return the result otherwise. By default, this
+compares each of their types and local contexts before and after `tacs` is run; if any changes are
+seen, "progress" has been made, and the tactics succeed. Otherwise, we fail.
+
+`cfg` can be used to specify what kind of comparison to perform when checking for "progress". By
+default, only "observable" changes are checked. For instance, internal `MVarId`s and `FVarId`s are
+not checked, and implementation details are ignored. Expressions are by default compared with
+`isDefEq` at reducible transparency. Any change in the order or number of goals counts as progress.
+
+The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any change;
+`FailIfNoProgress.Config.onlyExprs` will only compare expressions in the target and local context.
+
+For more information, see the documentation for `FailIfNoProgress.Config`.
+-/
 def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
     TacticM α := do
   let goals₁ ← getGoals
@@ -400,16 +429,14 @@ def failIfNoProgress (tacs : TacticM α) (cfg : FailIfNoProgress.Config := {}) :
 /-! ## Tactic syntax implementation -/
 
 /-- `fail_if_no_progress tacs` evaluates `tacs`, and fails if no progress is made on the list of
-goals. This compares each of their types and local contexts before and after `tacs` is run.
-
-By default, expressions are compared with `isDefEq` at reducible transparency. Any change in the
-order or number of goals counts as progress.
+goals. By default, this compares each of their types and local contexts before and after `tacs` is run; if any changes are seen, "progress" has been made, and the tactics succeed. Otherwise, we fail.
 
 `fail_if_no_progress (config := { ... }) tacs` can be used to specify what kind of comparison to
-perform. Transparency can be set via the field `transparency`, and the instance for `BEq Expr` can
-be used instead of `isDefEq` by specifying `eqKind := .beq`. `BEq` is weaker than `isDefEq`, and
-will therefore cause more minor changes to count as "progress". For more configuration options see
-`FailIfNoProgress.Config`.
+perform when checking for "progress". By default, only "observable" changes are checked. For instance, internal `MVarId`s and `FVarId`s are not checked, and implementation details are ignored. Expressions are by default compared with `isDefEq` at reducible transparency. Any change in the order or number of goals counts as progress.
+
+The config preset `FailIfNoProgress.Config.anyChanges` can be used to detect any change; `FailIfNoProgress.Config.onlyExprs` will only compare expressions in the target and local context.
+
+For more information, see the documentation for `FailIfNoProgress.Config`.
  -/
 syntax (name := failIfNoProgressSyntax) "fail_if_no_progress " (config)? tacticSeq : tactic
 
