@@ -840,19 +840,19 @@ alias le_compl_comm ← le_compl_iff_le_compl
 alias le_compl_comm ↔ le_compl_of_le_compl _
 #align le_compl_of_le_compl le_compl_of_le_compl
 
-theorem disjoint_compl_left : Disjoint (aᶜ) a :=
+theorem disjoint_compl_left : Disjoint aᶜ a :=
   disjoint_iff_inf_le.mpr <| le_himp_iff.1 (himp_bot _).ge
 #align disjoint_compl_left disjoint_compl_left
 
-theorem disjoint_compl_right : Disjoint a (aᶜ) :=
+theorem disjoint_compl_right : Disjoint a aᶜ :=
   disjoint_compl_left.symm
 #align disjoint_compl_right disjoint_compl_right
 
-theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint (aᶜ) b :=
+theorem LE.le.disjoint_compl_left (h : b ≤ a) : Disjoint aᶜ b :=
   disjoint_compl_left.mono_right h
 #align has_le.le.disjoint_compl_left LE.le.disjoint_compl_left
 
-theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a (bᶜ) :=
+theorem LE.le.disjoint_compl_right (h : a ≤ b) : Disjoint a bᶜ :=
   disjoint_compl_right.mono_left h
 #align has_le.le.disjoint_compl_right LE.le.disjoint_compl_right
 
@@ -913,12 +913,12 @@ theorem compl_compl_compl (a : α) : aᶜᶜᶜ = aᶜ :=
 #align compl_compl_compl compl_compl_compl
 
 @[simp]
-theorem disjoint_compl_compl_left_iff : Disjoint (aᶜᶜ) b ↔ Disjoint a b := by
+theorem disjoint_compl_compl_left_iff : Disjoint aᶜᶜ b ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_left, compl_compl_compl]
 #align disjoint_compl_compl_left_iff disjoint_compl_compl_left_iff
 
 @[simp]
-theorem disjoint_compl_compl_right_iff : Disjoint a (bᶜᶜ) ↔ Disjoint a b := by
+theorem disjoint_compl_compl_right_iff : Disjoint a bᶜᶜ ↔ Disjoint a b := by
   simp_rw [← le_compl_iff_disjoint_right, compl_compl_compl]
 #align disjoint_compl_compl_right_iff disjoint_compl_compl_right_iff
 
@@ -953,12 +953,12 @@ instance : CoheytingAlgebra αᵒᵈ :=
     top_sdiff := @himp_bot α _ }
 
 @[simp]
-theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = ofDual aᶜ :=
+theorem ofDual_hnot (a : αᵒᵈ) : ofDual (￢a) = (ofDual a)ᶜ :=
   rfl
 #align of_dual_hnot ofDual_hnot
 
 @[simp]
-theorem toDual_compl (a : α) : toDual (aᶜ) = ￢toDual a :=
+theorem toDual_compl (a : α) : toDual aᶜ = ￢toDual a :=
   rfl
 #align to_dual_compl toDual_compl
 
@@ -1133,7 +1133,7 @@ instance : HeytingAlgebra αᵒᵈ :=
     himp_bot := @top_sdiff' α _ }
 
 @[simp]
-theorem ofDual_compl (a : αᵒᵈ) : ofDual (aᶜ) = ￢ofDual a :=
+theorem ofDual_compl (a : αᵒᵈ) : ofDual aᶜ = ￢ofDual a :=
   rfl
 #align of_dual_compl ofDual_compl
 
@@ -1143,7 +1143,7 @@ theorem ofDual_himp (a b : αᵒᵈ) : ofDual (a ⇨ b) = ofDual b \ ofDual a :=
 #align of_dual_himp ofDual_himp
 
 @[simp]
-theorem toDual_hnot (a : α) : toDual (￢a) = toDual aᶜ :=
+theorem toDual_hnot (a : α) : toDual (￢a) = (toDual a)ᶜ :=
   rfl
 #align to_dual_hnot toDual_hnot
 
@@ -1261,7 +1261,7 @@ protected def Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α] [
 protected def Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [Bot α]
     [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
-    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f (aᶜ) = f aᶜ)
+    (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
   { hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp, ‹Bot α›, ‹HasCompl α› with
     bot_le := fun a => by
@@ -1294,7 +1294,7 @@ protected def Function.Injective.biheytingAlgebra [Sup α] [Inf α] [Top α] [Bo
     [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
-    (map_compl : ∀ a, f (aᶜ) = f aᶜ) (map_hnot : ∀ a, f (￢a) = ￢f a)
+    (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_hnot : ∀ a, f (￢a) = ￢f a)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) :
     BiheytingAlgebra α :=
   { hf.heytingAlgebra f map_sup map_inf map_top map_bot map_compl map_himp,

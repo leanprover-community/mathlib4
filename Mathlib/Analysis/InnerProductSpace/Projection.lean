@@ -280,7 +280,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         _ = ‖u - w‖ * ‖u - w‖ := by
           have : u - v - (w - v) = u - w := by abel
           rw [this, sq]
-    · show (⨅ w : K, ‖u - w‖) ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
+    · show ⨅ w : K, ‖u - w‖ ≤ (fun w : K => ‖u - w‖) ⟨v, hv⟩
       apply ciInf_le
       use 0
       rintro y ⟨z, rfl⟩

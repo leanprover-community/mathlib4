@@ -242,8 +242,8 @@ set_option linter.uppercaseLean3 false in
 /-- The group homomorphism from a given module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_smul' := by intros ; apply Quot.sound ; apply Relation.smul
-  map_add' := by intros ; apply Quot.sound ; apply Relation.add
+  map_smul' := by intros; apply Quot.sound; apply Relation.smul
+  map_add' := by intros; apply Quot.sound; apply Relation.add
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_morphism ModuleCat.Colimits.coconeMorphism
 
@@ -341,8 +341,8 @@ set_option linter.uppercaseLean3 false in
 /-- The group homomorphism from the colimit module to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
-  map_smul' s x := by rcases x ; rfl
-  map_add' x y := by rcases x ; rcases y ; rfl
+  map_smul' s x := by rcases x; rfl
+  map_add' x y := by rcases x; rcases y; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_morphism ModuleCat.Colimits.descMorphism
 

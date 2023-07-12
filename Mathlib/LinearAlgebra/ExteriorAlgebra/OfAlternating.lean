@@ -35,9 +35,10 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N] [AddCommGroup N']
 variable [Module R M] [Module R N] [Module R N']
 
 -- This instance can't be found where it's needed if we don't remind lean that it exists.
-instance AlternatingMap.ModuleAddCommGroup {ι : Type _} : Module R (AlternatingMap R M N ι) := by
+instance AlternatingMap.instModuleAddCommGroup {ι : Type _} :
+    Module R (AlternatingMap R M N ι) := by
   infer_instance
-#align alternating_map.module_add_comm_group AlternatingMap.ModuleAddCommGroup
+#align alternating_map.module_add_comm_group AlternatingMap.instModuleAddCommGroup
 
 namespace ExteriorAlgebra
 

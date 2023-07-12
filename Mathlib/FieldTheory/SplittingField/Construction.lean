@@ -186,7 +186,7 @@ protected theorem splits (n : ℕ) :
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
     rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
-      ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf ; cases hf]
+      ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
 #align polynomial.splitting_field_aux.splits Polynomial.SplittingFieldAux.splits
 
@@ -202,8 +202,8 @@ theorem adjoin_rootSet (n : ℕ) :
               Set (SplittingFieldAux n f)) = ⊤)
     n (fun {K} _ f _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
     fun n ih {K} _ f hfn => by
-    have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn ; cases hfn
-    have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf ; exact hndf rfl
+    have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
+    have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
     have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
     rw [algebraMap_succ, ←map_map, ←X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
     rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
