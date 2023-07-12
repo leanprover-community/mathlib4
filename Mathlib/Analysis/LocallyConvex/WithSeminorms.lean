@@ -270,8 +270,8 @@ section Topology
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Nonempty ι]
 
 /-- The proposition that the topology of `E` is induced by a family of seminorms `p`. -/
-structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [t : TopologicalSpace E] : Prop where
-  topology_eq_withSeminorms : t = p.moduleFilterBasis.topology
+structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSpace E] : Prop where
+  topology_eq_withSeminorms : topology = p.moduleFilterBasis.topology
 #align with_seminorms WithSeminorms
 
 theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
@@ -446,8 +446,7 @@ each seminorm individually. We express this as a characterization of `WithSemino
 theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [TopologicalAddGroup E]
     (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔
-      t = ⨅ i,
-        (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
+      t = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace.toTopologicalSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     TopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
@@ -455,7 +454,7 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [TopologicalAd
   refine Eq.to_iff ?_
   congr
   funext i
-  exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
 #align seminorm_family.with_seminorms_iff_topological_space_eq_infi SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf
 
 theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p)
@@ -472,8 +471,7 @@ induced by each seminorm individually. We express this as a characterization of
 `WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace E]
     [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
-    WithSeminorms p ↔
-    u = ⨅ i, (p i).toAddGroupSeminorm.toSeminormedAddCommGroup.toUniformSpace := by
+    WithSeminorms p ↔ u = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     toTopologicalSpace_iInf, nhds_iInf]
@@ -800,8 +798,7 @@ variable [TopologicalSpace F]
 
 theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι}
     (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
-    @WithSeminorms 𝕜 E ι _ _ _ _ (q.comp f) (induced f inferInstance) := by
-  haveI := hq.topologicalAddGroup
+    WithSeminorms (topology := induced f inferInstance) (q.comp f) := by
   letI : TopologicalSpace E := induced f inferInstance
   haveI : TopologicalAddGroup E := topologicalAddGroup_induced f
   rw [(q.comp f).withSeminorms_iff_nhds_eq_iInf, nhds_induced, map_zero,
@@ -815,6 +812,20 @@ theorem Inducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F
   rw [hf.induced]
   exact f.withSeminorms_induced hq
 #align inducing.with_seminorms Inducing.withSeminorms
+
+/-- (Disjoint) union of seminorm families. -/
+protected def SeminormFamily.sigma {κ : ι → Type _} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
+    SeminormFamily 𝕜 E ((i : ι) × κ i) :=
+  fun ⟨i, k⟩ => p i k
+
+theorem withSeminorms_iInf {κ : ι → Type _} [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)]
+    {p : (i : ι) → SeminormFamily 𝕜 E (κ i)} {t : ι → TopologicalSpace E}
+    [∀ i, @TopologicalAddGroup E (t i) _] (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
+    WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
+  haveI : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf (fun i ↦ inferInstance)
+  simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
+  rw [iInf_sigma]
+  exact iInf_congr hp
 
 end TopologicalConstructions
 
