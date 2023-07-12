@@ -12,7 +12,6 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Lattice
-import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Instances.EReal
@@ -834,25 +833,6 @@ theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure
 theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
-
-theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
-    (hf_surj : Function.Surjective f) {μ : Measure β} [μ.IsOpenPosMeasure] :
-    (Measure.map f μ).IsOpenPosMeasure := by
-  refine' ⟨fun U hUo hUne => _⟩
-  rw [Measure.map_apply hf.measurable hUo.measurableSet]
-  exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
-#align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
-
-theorem IsClosed.ae_eq_univ_iff_eq {μ : Measure α} [μ.IsOpenPosMeasure]
-    {F : Set α} (hF : IsClosed F) :
-    F =ᵐ[μ] univ ↔ F = univ := by
-  refine' ⟨fun h ↦ _, fun h ↦ by rw [h]⟩
-  rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
-
-theorem IsClosed.measure_eq_univ_iff_eq {μ : Measure α} [μ.IsOpenPosMeasure] [IsFiniteMeasure μ]
-    {F : Set α} (hF : IsClosed F) :
-    μ F = μ univ ↔ F = univ := by
-  rw [← ae_eq_univ_iff_measure_eq hF.measurableSet.nullMeasurableSet, hF.ae_eq_univ_iff_eq]
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
