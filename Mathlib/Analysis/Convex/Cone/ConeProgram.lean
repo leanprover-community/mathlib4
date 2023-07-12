@@ -15,7 +15,7 @@ import Mathlib.Analysis.Convex.Cone.Proper
 
 -/
 
-open Filter Set Topology
+open Filter Set Topology ContinuousLinearMap
 
 structure ConeProgram
   (V : Type _) [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -24,8 +24,8 @@ structure ConeProgram
   K : ProperCone ℝ V
   L : ProperCone ℝ W
   obj : V
-  rhs : W
   lhs : V →L[ℝ] W
+  rhs : W
 
 namespace ConeProgram
 
@@ -35,19 +35,7 @@ variable (P : ConeProgram V W)
 
 def Objective (v : V) := ⟪P.obj, v⟫_ℝ
 
-
--- def ConvexConePreorder {K : ConvexCone 𝕜 E} (hK : K.Pointed) : Preorder E where
---   le := fun x y => ∃ k ∈ K, x + k = y
---   le_refl := fun x => ⟨0, by simpa⟩
---   le_trans := fun x y z ⟨k, hk1, hk2⟩ ⟨l, hl1, hl2⟩ =>
---     ⟨k + l, ⟨K.add_mem hk1 hl1, by rw [← add_assoc, hk2, hl2]⟩⟩
-
--- set_option quotPrecheck false in
--- notation x "≼[" K "] " y => K.ConvexConePreorder.le x y
-
-scoped[ConeProgram] notation x "≼[" L "] " y => y - x ∈ L
-
-def IsSolution (v : V) := v ∈ P.K ∧ P.lhs v ≼[P.L] P.rhs
+def IsSolution (v : V) := v ∈ P.K ∧ P.rhs - P.lhs v ∈ P.L
 
 -- TODO: Show that the set `Solutions := { v | P.IsSolution v }` is itself a `ConvexCone`.
 
@@ -62,8 +50,7 @@ def IsOptimalSolution (v : V) :=
 def Values := P.Objective '' { v | P.IsSolution v }
 
 @[simp] lemma nonempty_values_iff : (P.Values).Nonempty ↔ P.IsFeasible := by
-    unfold Values
-    rw [nonempty_image_iff]
+    rw [Values, nonempty_image_iff]
     exact Iff.symm nonempty_coe_sort
 
 noncomputable def Value := sSup <| P.Values
@@ -92,21 +79,25 @@ lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ =
 
 def IsSubFeasible := Nonempty { x : ℕ → V | P.IsSubSolution x }
 
-lemma subfeasible_of_feasible (h : P.IsFeasible) : P.IsSubFeasible :=
+lemma subFeasible_of_feasible (h : P.IsFeasible) : P.IsSubFeasible :=
   let ⟨v, hv⟩ := h
   ⟨fun _ => v, P.subSolution_of_solution hv⟩
 
 def SubValues := P.SubObjective '' { seqV | P.IsSubSolution seqV }
 
+@[simp] lemma nonempty_subValues_iff : (P.SubValues).Nonempty ↔ P.IsSubFeasible := by
+    rw [SubValues, nonempty_image_iff]
+    exact Iff.symm nonempty_coe_sort
+
 noncomputable def SubValue := sSup <| P.SubValues
 
 ----------------------------------------------------------------------------------------------------
 
-@[simp] lemma Values_subset_SubValues : P.Values ⊆ P.SubValues := fun r ⟨v, hv, hvr⟩ =>
+@[simp] lemma values_subset_subValues : P.Values ⊆ P.SubValues := fun r ⟨v, hv, hvr⟩ =>
   ⟨fun _ => v, P.subSolution_of_solution hv, by rwa [P.subSolution_of_solution_value]⟩
 
-lemma Value_le_Subvalue (fs : P.IsFeasible) (bdd : BddAbove P.SubValues) :
-  P.Value ≤ P.SubValue := csSup_le_csSup bdd (P.nonempty_values_iff.2 fs) P.Values_subset_SubValues
+lemma value_le_subValue (fs : P.IsFeasible) (bdd : BddAbove P.SubValues) :
+  P.Value ≤ P.SubValue := csSup_le_csSup bdd (P.nonempty_values_iff.2 fs) P.values_subset_subValues
 
 ----------------------------------------------------------------------------------------------------
 
@@ -114,63 +105,58 @@ noncomputable def Dual : ConeProgram W V where
   K := (P.L).dual
   L := (P.K).dual
   obj := -P.rhs
+  lhs := -adjoint P.lhs
   rhs := -P.obj
-  lhs := -ContinuousLinearMap.adjoint (P.lhs)
 
-theorem weak_duality_aux (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
-  P.Objective v ≤ - (P.Dual).Objective w := by
-    rcases hv with ⟨hv1, hv2⟩
-    rcases hw with ⟨hw1, hw2⟩
-    specialize @hw2 v hv1
-    dsimp [Dual, Objective] at *
-    simp_rw [inner_sub_right, inner_neg_right, sub_nonneg, ContinuousLinearMap.adjoint_inner_right,
-      neg_le, neg_neg] at hw2
-    specialize hw1 (P.rhs - P.lhs v) hv2
-    rw [inner_sub_left, sub_nonneg] at hw1
-    rw [inner_neg_left, neg_neg, real_inner_comm v P.obj]
-    exact le_trans hw2 hw1
+theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual] ; simp
 
-theorem weak_duality (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
-  P.Value ≤ -(P.Dual).Value := by
-    apply csSup_le (P.nonempty_values_iff.2 hP)
-    rintro v ⟨_, hv2, hv3⟩
-    rw [le_neg]
-    apply csSup_le ((P.Dual).nonempty_values_iff.2 hD)
-    rintro w ⟨_, hw2, hw3⟩
-    rw [← hv3, ← hw3, le_neg]
-    exact P.weak_duality_aux hv2 hw2
-
-theorem weak_duality_aux' (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
+theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
   P.SubObjective seqV ≤ - (P.Dual).Objective w := by
     rcases hv with ⟨seqW, hseqV, hseqW, htends⟩
     rcases hw with ⟨hw1, hw2⟩
-    dsimp [Objective, SubObjective]
-    apply limsSup_le_of_le sorry
-    dsimp [Dual] at *
+    dsimp [Dual] at hw2
+    have h : ∀ n, 0 ≤ ⟪w, P.lhs (seqV n) + seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := fun n => by
+      calc 0
+        ≤ ⟪adjoint P.lhs w - P.obj, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ := by {
+          refine' add_nonneg _ _
+          . specialize hw2 (seqV n) (hseqV n)
+            rwa [sub_neg_eq_add, neg_add_eq_sub, real_inner_comm _ _] at hw2
+          . specialize hw1 (seqW n) (hseqW n)
+            rwa [real_inner_comm _ _] }
+      _ = ⟪adjoint P.lhs w, seqV n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ := by rw [← inner_sub_left]
+      _ = ⟪adjoint P.lhs w, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [add_sub_right_comm]
+      _ = ⟪w, P.lhs (seqV n)⟫_ℝ + ⟪w, seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [ContinuousLinearMap.adjoint_inner_left]
+      _ = ⟪w, P.lhs (seqV n) + seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [inner_add_right]
+    have : P.SubObjective seqV ≤ ⟪w, P.rhs⟫_ℝ := by sorry
+    rwa [Objective, Dual, inner_neg_left, neg_neg, real_inner_comm]
+
+theorem weak_duality (hP : P.IsSubFeasible) (hD : (P.Dual).IsFeasible) :
+  P.SubValue ≤ -(P.Dual).Value := by
+    apply csSup_le <| P.nonempty_subValues_iff.2 hP
+    rintro x ⟨v, hv1, hv2⟩
+    rw [le_neg]
+    apply csSup_le <| (P.Dual).nonempty_values_iff.2 hD
+    rintro y ⟨w, hw1, hw2⟩
     simp at *
-    simp only [inner_add_right, inner_neg_right, le_neg_add_iff_add_le, add_zero, ContinuousLinearMap.adjoint_inner_right] at hw2
-    use 0 -- fix this
-    rintro n hn
-    specialize @hw1 (seqW n) (hseqW n)
-    specialize @hw2 (seqV n) (hseqV n)
-    rw [real_inner_comm (seqV n) _]
-    have htends' : Tendsto (fun n => ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) := by sorry
-    simp_rw [Metric.tendsto_atTop] at htends'
-    -- have :  ⟪P.lhs (seqV n), w⟫_ℝ ≤ ⟪P.rhs, w⟫_ℝ := by sorry
+    rw [← hv2, ← hw2, le_neg]
+    apply P.weak_duality_aux v hv1 hw1
 
-    exact le_trans hw2 this
+theorem weak_duality_aux' (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
+  P.Objective v ≤ - (P.Dual).Objective w := by
+    rw [← subSolution_of_solution_value]
+    apply weak_duality_aux
+    apply P.subSolution_of_solution hv
+    exact hw
 
-theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsSubFeasible) :
-  P.Value ≤ -(P.Dual).SubValue := by sorry
-
-example (seq : ℕ → ℝ) (c : ℝ) (h : Tendsto seq atTop (nhds c)) (f : ℝ → ℝ) (hf : ContinuousAt f c) :
-  Tendsto (fun n => f (seq n)) atTop (nhds (f c)) := by sorry
-
-
-
-example (c : ℝ) (U : Set ℝ) (hc : c ∈ U) (hU : IsOpen U) :
-  ∃ δ, ∀ y, |x - y| ≤ δ → y ∈ U := by rw [Metric.tendsto_nhds]
-
+theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
+  P.Value ≤ -(P.Dual).Value := by
+    apply csSup_le <| P.nonempty_values_iff.2 hP
+    rintro v ⟨_, hv2, hv3⟩
+    rw [le_neg]
+    apply csSup_le <| (P.Dual).nonempty_values_iff.2 hD
+    rintro w ⟨_, hw2, hw3⟩
+    rw [← hv3, ← hw3, le_neg]
+    exact P.weak_duality_aux' hv2 hw2
 
 -- def SlaterCondition := ∃ v : P.K, P.rhs - P.lhs v ∈ interior P.L
 
@@ -180,5 +166,3 @@ example (c : ℝ) (U : Set ℝ) (hc : c ∈ U) (hU : IsOpen U) :
 --   by_contra'
 
 end ConeProgram
-
--- local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
