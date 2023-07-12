@@ -117,7 +117,7 @@ theorem omegaLimit_nonwandering (x : α) : (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (
     intro U hU
     apply Filter.extraction_of_frequently_atTop (hz U hU)
     done
-  unfold nonWanderingSet
+  -- unfold nonWanderingSet
   intro ε hε
   have ball_in_nbd : ball z ε ∈ nhds z := by
     exact ball_mem_nhds z hε
@@ -146,6 +146,7 @@ theorem nonWandering_nonempty [hα : Nonempty α] : Set.Nonempty (nonWanderingSe
     apply omegaLimit_nonwandering
   apply this
   apply omegaLimit_nonempty f
+  -- Can we avoid using the axiom of choice here?
   apply Nonempty.some hα
   done
 
