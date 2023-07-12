@@ -126,7 +126,10 @@ theorem omegaLimit_nonwandering (x : α) : (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (
   refine' ⟨_, _, _⟩
   . exact (hf 1)
   . have : f^[φ 2 - φ 1] (f^[φ 1] x) = f^[φ 2] x := by
-      sorry
+      rw [ <-Function.iterate_add_apply, Nat.sub_add_cancel ]
+      apply le_of_lt
+      apply hφ
+      group
     rw [this]
     apply (hf 2)
   . simp
