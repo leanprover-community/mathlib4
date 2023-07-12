@@ -59,10 +59,6 @@ deriving Repr, Inhabited
 
 /-- Config data for comparing local contexts. -/
 structure LocalDeclComparisonConfig where
-  /-- Whether to compare the indices of two `LocalDecl`s. -/
-  checkIndex         : Bool := true
-  /-- Whether to compare the `FVarIds` of two `LocalDecl`s. -/
-  checkFVarId        : Bool := true
   /-- Whether to compare the userNames of two `LocalDecl`s. -/
   checkUserName      : Bool := true
   /-- Whether to compare the types of two `LocalDecl`s. -/
@@ -71,8 +67,12 @@ structure LocalDeclComparisonConfig where
   checkLetValue      : Bool := true
   /-- Whether to compare the binderInfos of two `cdecl`s. -/
   checkBinderInfo    : Bool := true
+  /-- Whether to compare the indices of two `LocalDecl`s. -/
+  checkIndex         : Bool := false
+  /-- Whether to compare the `FVarIds` of two `LocalDecl`s. -/
+  checkFVarId        : Bool := false
   /-- Whether to compare the declKinds of a `LocalDecl`. -/
-  checkLocalDeclKind : Bool := true
+  checkLocalDeclKind : Bool := false
 deriving Repr, Inhabited
 
 -- Merge?
@@ -82,7 +82,7 @@ structure LocalContextComparisonConfig extends LocalDeclComparisonConfig where
   /-- Whether to include implementation detail decls. -/
   includeImplDetails  : Bool := false
   /-- Whether to include auxiliary decls. -/
-  includeAuxDecls     : Bool := true
+  includeAuxDecls     : Bool := false
   /-- Whether to include default decls. -/
   includeDefaultDecls : Bool := true
   /-- Whether to include `ldecls`. -/
