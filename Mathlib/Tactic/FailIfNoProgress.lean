@@ -94,18 +94,18 @@ deriving Repr, Inhabited
 /-- Config data for comparing the `MetavarDecl`s of two metavariables. -/
 structure MetavarDeclComparisonConfig where
   /-- Whether to compare the `userName` of two metavariables. -/
-  checkUserName : Bool := true
+  checkUserName       : Bool := true
   /-- Whether to compare the local contexts of two metavariable decls. -/
   compareLocalContexts? : Option LocalContextComparisonConfig := some {}
   /-- Whether to compare the target (type) of two metavariable decls. -/
-  checkTarget : Bool := true
+  checkTarget         : Bool := true
   /-- Whether to compare the local instances of two metavariable decls. (Uses `BEq` on
   `LocalInstance`.)-/
   checkLocalInstances : Bool := true
   /-- Whether to compare the kinds of two metavariables. -/
-  checkMetavarKind : Bool := true
+  checkMetavarKind    : Bool := true
   /-- Whether to compare the indices of two metavariables. -/
-  checkIndex : Bool := false
+  checkIndex          : Bool := false
 deriving Repr, Inhabited
 
 /-- Config data for comparing two `MVarId`s and, potentially, their decls. -/
@@ -123,13 +123,13 @@ deriving Repr, Inhabited
 
 /-- Check for any changes whatsoever. -/
 def LocalDeclComparisonConfig.anyChanges : LocalDeclComparisonConfig where
-  checkIndex := true
-  checkFVarId := true
+  checkIndex         := true
+  checkFVarId        := true
   checkLocalDeclKind := true
 
 /-- Check for any changes whatsoever. -/
 def LocalContextComparisonConfig.anyChanges : LocalContextComparisonConfig where
-  includeAuxDecls := true
+  includeAuxDecls    := true
   includeImplDetails := true
   toLocalDeclComparisonConfig := .anyChanges
 
@@ -147,7 +147,7 @@ def MVarIdComparisonConfig.anyChanges : MVarIdComparisonConfig where
 
 /-- Only compare expressions appearing in a local decl. -/
 def LocalDeclComparisonConfig.onlyExprs : LocalDeclComparisonConfig where
-  checkUserName := false
+  checkUserName   := false
   checkBinderInfo := false
 
 /-- Only compare expressions appearing in the local context. (Checks local instances.) -/
@@ -157,7 +157,7 @@ def LocalContextComparisonConfig.onlyExprs : LocalContextComparisonConfig where
 /-- Only compare expressions appearing in the target and local context. (Does not include
 implementation details; does check local instances.) -/
 def MetavarDeclComparisonConfig.onlyExprs : MetavarDeclComparisonConfig where
-  checkUserName := false
+  checkUserName    := false
   checkMetavarKind := false
   compareLocalContexts? := some .onlyExprs
 
