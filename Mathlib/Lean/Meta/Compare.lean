@@ -9,18 +9,28 @@ import Std
 /-!
 # Configurable comparisons in MetaM
 
-This file defines a number of *configurable comparisons* among elements of common types encountered in metaprogramming.
+This file defines a number of *configurable comparisons* among elements of common types encountered
+in metaprogramming.
 
-These structures are often comprised of multiple different fields or components (e.g. a `LocalContext`) or have multiple ways of comparing them (such as using `BEq` or `isDefEq` on `Expr`s), and different circumstances require different notions of equality.
+These structures are often comprised of multiple different fields or components (e.g. a
+`LocalContext`) or have multiple ways of comparing them (such as using `BEq` or `isDefEq` on
+`Expr`s), and different circumstances require different notions of equality.
 
 When comparing an element of an atomic type, e.g. `Expr` or `LocalContext`,
-`← a₁.compare a₂ cfg` will return `true` if `a₁` is equivalent to `a₂` in the aspects specified by `cfg`. Comparisons among most types also take in an `ecfg : ExprComparisonConfig` specifying how to compare any expressions encountered.
+`← a₁.compare a₂ cfg` will return `true` if `a₁` is equivalent to `a₂` in the aspects specified by
+`cfg`. Comparisons among most types also take in an `ecfg : ExprComparisonConfig` specifying how to
+compare any expressions encountered.
 
-Comparisons may also take in optional state-dependent values to override those inferred in the current state: e.g. `MVarId.compare` can be optionally provided with `MetavarDecl`s for each metavariable, which it will use in lieu of inferring the decl with `(·.getDecl)`.
+Comparisons may also take in optional state-dependent values to override those inferred in the
+current state: e.g. `MVarId.compare` can be optionally provided with `MetavarDecl`s for each
+metavariable, which it will use in lieu of inferring the decl with `(·.getDecl)`.
 
 ## Presets
 
-By default, the configs defined here test "user-observable" properties. For instance, actual `MVarId`s and `FVarId`s are ignored by default, as are implementation detail ldecls in the local context. We also provide `.anyChanges` and `.onlyExprs` constructors for all configs, which compare every aspect of the objects and only the expressions appearing in the object, respectively.
+By default, the configs defined here test "user-observable" properties. For instance, actual
+`MVarId`s and `FVarId`s are ignored by default, as are implementation detail ldecls in the local
+context. We also provide `.anyChanges` and `.onlyExprs` constructors for all configs, which compare
+every aspect of the objects and only the expressions appearing in the object, respectively.
 
 ## Possible future features
 
