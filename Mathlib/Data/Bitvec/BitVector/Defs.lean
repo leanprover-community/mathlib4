@@ -8,6 +8,7 @@ Authors: Joe Hendrix, Sebastian Ullrich
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Data.Bitvec.Defs
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Pow
 import Init.Data.Format.Basic
