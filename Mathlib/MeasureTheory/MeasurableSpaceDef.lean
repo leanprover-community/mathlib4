@@ -402,6 +402,16 @@ theorem generateFrom_measurableSet [MeasurableSpace α] :
   le_antisymm (generateFrom_le fun _ => id) fun _ => measurableSet_generateFrom
 #align measurable_space.generate_from_measurable_set MeasurableSpace.generateFrom_measurableSet
 
+theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
+    (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
+  refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
+  apply generateFrom_induction
+  · exact H
+  · rfl
+  · exact fun _ ↦ Iff.not
+  · intro f hf
+    simp only [mem_iUnion, hf]
+
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
 the same sets as `g`, then `g` was already a `σ`-algebra. -/
 protected def mkOfClosure (g : Set (Set α)) (hg : { t | MeasurableSet[generateFrom g] t } = g) :

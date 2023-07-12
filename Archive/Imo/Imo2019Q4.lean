@@ -42,7 +42,7 @@ namespace Imo2019Q4
 
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i in range n, ((2:ℤ) ^ n - (2:ℤ) ^ i)) : n < 6 := by
-  have h2 : (∑ i in range n, i) < k
+  have h2 : ∑ i in range n, i < k
   · suffices multiplicity 2 (k ! : ℤ) = ↑(∑ i in range n, i : ℕ) by
       rw [← PartENat.coe_lt_coe, ← this]; change multiplicity ((2 : ℕ) : ℤ) _ < _
       simp_rw [Int.coe_nat_multiplicity, multiplicity_two_factorial_lt hk.lt.ne.symm]
