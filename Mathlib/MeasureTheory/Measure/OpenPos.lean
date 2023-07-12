@@ -90,7 +90,7 @@ theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
   rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
 
 theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0) : U = ∅ :=
-  hU.measure_zero_iff_eq_empty.mp h₀
+  (hU.measure_eq_zero_iff μ).mp h₀
 #align is_open.eq_empty_of_measure_zero IsOpen.eq_empty_of_measure_zero
 
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
