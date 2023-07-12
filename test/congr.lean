@@ -261,3 +261,7 @@ example : { f : Nat → Nat // f = id } :=
     congr! (config := { closePre := false, closePost := false })
     ext x
     exact Nat.zero_add x⟩
+
+-- Regression test. From fixing a "declaration has metavariables" bug
+example (h : z = y) : (x = y ∨ x = z) → x = y := by
+  congr! with (rfl|rfl)
