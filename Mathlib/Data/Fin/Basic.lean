@@ -41,9 +41,9 @@ This file expands on the development in the core library.
   `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
   `Fin.castAdd n i` and `Fin.natAdd m i`;
-* `Fin.succAbove_cases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
+* `Fin.succAboveCases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
   handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
-  as eliminator and works for `Sort*`. -- Porting note: this is in another file
+  as eliminator and works for `Sort _`. -- Porting note: this is in another file
 
 ### Order embeddings and an order isomorphism
 
@@ -51,32 +51,28 @@ This file expands on the development in the core library.
 * `Fin.valEmbedding` : coercion to natural numbers as an `Embedding`;
 * `Fin.valOrderEmbedding` : coercion to natural numbers as an `OrderEmbedding`;
 * `Fin.succEmbedding` : `Fin.succ` as an `OrderEmbedding`;
-* `Fin.castLE h` : embed `Fin n` into `Fin m`, `h : n ≤ m`;
-* `Fin.castIso` : order isomorphism between `Fin n` and `Fin m` provided that `n = m`,
-  see also `Equiv.finCongr`;
-* `Fin.castAdd m` : embed `Fin n` into `Fin (n+m)`;
-* `Fin.castSuccEmb` : embed `Fin n` into `Fin (n+1)`;
-* `Fin.succAbove p` : embed `Fin n` into `Fin (n + 1)` with a hole around `p`;
-* `Fin.addNat m i` : add `m` on `i` on the right, generalizes `Fin.succ`;
-* `Fin.natAdd n i` adds `n` on `i` on the left;
+* `Fin.castLEEmb h` : `Fin.castLE` as an `OrderEmbedding`, embed `Fin n` into `Fin m`, `h : n ≤ m`;
+* `Fin.castIso` : `Fin.cast` as an `OrderIso`, order isomorphism between `Fin n` and `Fin m`
+  provided that `n = m`, see also `Equiv.finCongr`;
+* `Fin.castAddEmb m` : `Fin.castAdd` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+m)`;
+* `Fin.castSuccEmb` : `Fin.castSucc` as an `OrderEmbedding`, embed `Fin n` into `Fin (n+1)`;
+* `Fin.succAboveEmb p` : `Fin.auccAbove` as an `OrderEmbedding`, embed `Fin n` into `Fin (n + 1)`
+  with a hole around `p`;
+* `Fin.addNatEmb m i` : `Fin.addNat` as an `OrderEmbedding`, add `m` on `i` on the right,
+  generalizes `Fin.succ`;
+* `Fin.natAddEmb n i` : `Fin.natAdd` as an `OrderEmbedding`, adds `n` on `i` on the left;
 
 ### Other casts
 
 * `Fin.ofNat'`: given a positive number `n` (deduced from `[NeZero n]`), `Fin.ofNat' i` is
   `i % n` interpreted as an element of `Fin n`;
-* `Fin.castLT i h` : embed `i` into a `Fin` where `h` proves it belongs into;
-* `Fin.predAbove (p : Fin n) i` : embed `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`;
-* `Fin.castPred` : embed `Fin (n + 2)` into `Fin (n + 1)` by mapping `Fin.last (n + 1)` to
-  `Fin.last n`;
-* `Fin.subNat i h` : subtract `m` from `i ≥ m`, generalizes `Fin.pred`;
-* `Fin.clamp n m` : `min n m` as an element of `Fin (m + 1)`;
 * `Fin.divNat i` : divides `i : Fin (m * n)` by `n`;
 * `Fin.modNat i` : takes the mod of `i : Fin (m * n)` by `n`;
 
 ### Misc definitions
 
-* `Fin.last n` : The greatest value of `Fin (n+1)`.
-* `Fin.rev : Fin n → Fin n` : the antitone involution given by `i ↦ n-(i+1)`
+* `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
+  by `i ↦ n-(i+1)`
 
 -/
 
@@ -442,7 +438,8 @@ theorem eq_succ_of_ne_zero {n : ℕ} {i : Fin (n + 1)} (hi : i ≠ 0) : ∃ j : 
   (eq_zero_or_eq_succ i).resolve_left hi
 #align fin.eq_succ_of_ne_zero Fin.eq_succ_of_ne_zero
 
-/-- The antitone involution `Fin n → Fin n` given by `i ↦ n-(i+1)`. -/
+/-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
+`i ↦ n-(i+1)`. -/
 def revPerm : Equiv.Perm (Fin n) :=
   (Involutive.toPerm fun i => ⟨n - (i + 1), tsub_lt_self i.pos (Nat.succ_pos _)⟩) fun i =>
     ext <| by
@@ -1011,7 +1008,7 @@ theorem castLT_mk (i n m : ℕ) (hn : i < n) (hm : i < m) : castLT ⟨i, hn⟩ h
 theorem strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m) :=
   fun _ _ h => h
 
-/-- `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
+/-- `Fin.castLE` as an `OrderEmbedding`, `castLEEmb h i` embeds `i` into a larger `Fin` type.  -/
 @[simps! apply toEmbedding]
 def castLEEmb (h : n ≤ m) : Fin n ↪o Fin m :=
   OrderEmbedding.ofStrictMono (castLE h) (strictMono_castLE h)
@@ -1061,7 +1058,8 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
-/-- `castIso eq i` embeds `i` into an equal `Fin` type, see also `Equiv.finCongr`. -/
+/-- `Fin.cast` as an `OrderIso`, `castIso eq i` embeds `i` into an equal `Fin` type,
+see also `Equiv.finCongr`. -/
 def castIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨castLE eq.le, castLE eq.symm.le, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
   map_rel_iff' := Iff.rfl
@@ -1126,8 +1124,8 @@ theorem castIso_eq_cast (h : n = m) : (castIso h : Fin n → Fin m) = cast (h �
 theorem strictMono_castAdd (m) : StrictMono (castAdd m : Fin n → Fin (n + m)) :=
   strictMono_castLE (Nat.le_add_right n m)
 
-/-- `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`. See also `Fin.natAddEmb` and
-`Fin.addNatEmb`. -/
+/-- `Fin.castAdd` as an `OrderEmbedding`, `castAddEmb m i` embeds `i : Fin n` in `Fin (n+m)`.
+See also `Fin.natAddEmb` and `Fin.addNatEmb`. -/
 @[simps! apply toEmbedding]
 def castAddEmb (m) : Fin n ↪o Fin (n + m) :=
   OrderEmbedding.ofStrictMono (castAdd m) (strictMono_castAdd m)
@@ -1208,7 +1206,7 @@ theorem succ_castIso_eq {n' : ℕ} (i : Fin n) (h : n = n') :
 theorem strictMono_castSucc : StrictMono (castSucc : Fin n → Fin (n + 1)) :=
   strictMono_castAdd 1
 
-/-- `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
+/-- `Fin.castSucc` as an `OrderEmbedding`, `castSuccEmb i` embeds `i : Fin n` in `Fin (n+1)`. -/
 @[simps! apply toEmbedding]
 def castSuccEmb : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono castSucc strictMono_castSucc
@@ -1354,7 +1352,8 @@ theorem succ_castSucc {n : ℕ} (i : Fin n) : i.castSucc.succ = castSucc i.succ 
 theorem strictMono_addNat (m) : StrictMono ((addNat · m) : Fin n → Fin (n + m)) :=
   fun i j h => add_lt_add_right (show i.val < j.val from h) _
 
-/-- `addNatEmb m i` adds `m` to `i`, generalizes `Fin.succ`. -/
+/-- `Fin.addNat` as an `OrderEmbedding`, `addNatEmb m i` adds `m` to `i`, generalizes
+`Fin.succ`. -/
 @[simps! apply toEmbedding]
 def addNatEmb (m) : Fin n ↪o Fin (n + m) :=
   OrderEmbedding.ofStrictMono (addNat · m) (strictMono_addNat m)
@@ -1407,7 +1406,7 @@ theorem castIso_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
 theorem strictMono_natAdd (n) {m} : StrictMono (natAdd n : Fin m → Fin (n + m)) :=
   fun i j h => add_lt_add_left (show i.val < j.val from h) _
 
-/-- `natAddEmb n i` adds `n` to `i` "on the left". -/
+/-- `Fin.natAdd` as an `OrderEmbedding`, `natAddEmb n i` adds `n` to `i` "on the left". -/
 @[simps! apply toEmbedding]
 def natAddEmb (n) {m} : Fin m ↪o Fin (n + m) :=
   OrderEmbedding.ofStrictMono (natAdd n) (strictMono_natAdd n)
@@ -2028,7 +2027,8 @@ theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
     (castSucc_lt_succ i).le
 #align fin.succ_above_aux Fin.strictMono_succAbove
 
-/-- `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
+/--  `Fin.auccAbove` as an `OrderEmbedding`, `succAboveEmb p i` embeds `Fin n` into `Fin (n + 1)`
+with a hole around `p`. -/
 @[simps! apply toEmbedding]
 def succAboveEmb (p : Fin (n + 1)) : Fin n ↪o Fin (n + 1) :=
   OrderEmbedding.ofStrictMono (succAbove p) (strictMono_succAbove p)
