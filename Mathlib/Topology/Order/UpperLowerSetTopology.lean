@@ -359,3 +359,99 @@ lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
 end maps
 
 end UpperSetTopology
+
+namespace LowerSetTopology
+
+section Preorder
+
+variable (α)
+variable [Preorder α] [TopologicalSpace α] [LowerSetTopology α] {s : Set α}
+
+lemma topology_eq : ‹_› = lowerSetTopology' α := topology_eq_lowerSetTopology
+
+variable {α}
+
+/-- If `α` is equipped with the lower set topology, then it is homeomorphic to
+`WithLowerSetTopology α`.
+-/
+def withLowerSetTopologyHomeomorph : WithLowerSetTopology α ≃ₜ α :=
+  WithLowerSetTopology.ofLowerSet.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+
+lemma IsOpen_iff_IsLowerSet : IsOpen s ↔ IsLowerSet s := by
+  rw [topology_eq α]
+  rfl
+
+-- Alexandrov property, set formulation
+theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
+  rw [IsOpen_iff_IsLowerSet]
+  apply isLowerSet_sInter
+  intros s hs
+  rw [← IsOpen_iff_IsLowerSet]
+  exact hf _ hs
+
+-- Alexandrov property, index formulation
+theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
+  rw [IsOpen_iff_IsLowerSet]
+  apply isLowerSet_iInter
+  intros i
+  rw [← IsOpen_iff_IsLowerSet]
+  exact hf i
+
+lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
+  rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet,
+    isUpperSet_compl.symm, compl_compl]
+
+lemma isClosed_isUpper {s : Set α} : IsClosed s → IsUpperSet s := fun h =>
+  (isClosed_iff_isUpper.mp h)
+
+lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s := by
+  rw [subset_antisymm_iff]
+  constructor
+  · apply closure_minimal subset_upperClosure _
+    rw [isClosed_iff_isUpper]
+    exact UpperSet.upper (upperClosure s)
+  · apply upperClosure_min subset_closure (isClosed_isUpper isClosed_closure)
+
+/--
+The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
+interval (-∞,a].
+-/
+@[simp] lemma closure_singleton {a : α} : closure {a} = Ici a := by
+  rw [closure_eq_upperClosure, upperClosure_singleton]
+  rfl
+
+end Preorder
+
+section maps
+
+variable [Preorder α] [Preorder β]
+
+open Topology
+
+protected lemma monotone_iff_continuous {t₁ : TopologicalSpace α} [LowerSetTopology α]
+    {t₂ : TopologicalSpace β} [LowerSetTopology β] {f : α → β} :
+    Monotone f ↔ Continuous f := by
+  constructor
+  · intro hf
+    simp_rw [continuous_def, IsOpen_iff_IsLowerSet]
+    exact fun _ hs ↦ IsLowerSet.preimage hs hf
+  · intro hf a b hab
+    rw [← mem_Ici, ← closure_singleton, ← mem_preimage]
+    apply Continuous.closure_preimage_subset hf
+    rw [← mem_Ici, ← closure_singleton] at hab
+    apply mem_of_mem_of_subset hab
+    apply closure_mono
+    rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
+
+lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
+    [LowerSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → β} (hf : Monotone f) :
+    Continuous f := by
+  rw [continuous_def]
+  intro s hs
+  rw [IsOpen_iff_IsLowerSet]
+  apply IsLowerSet.preimage _ hf
+  apply LowerTopology.isLowerSet_of_isOpen hs
+
+end maps
+
+end LowerSetTopology
