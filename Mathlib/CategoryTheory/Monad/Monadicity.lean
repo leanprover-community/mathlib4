@@ -22,15 +22,15 @@ show three versions of Beck's monadicity theorem, and the reflexive (crude) mona
 `G` is a monadic right adjoint if it has a right adjoint, and:
 
 * `D` has, `G` preserves and reflects `G`-split coequalizers, see
-  `category_theory.monad.monadic_of_has_preserves_reflects_G_split_coequalizers`
+  `CategoryTheory.Monad.monadicOfHasPreservesReflectsGSplitCoequalizers`
 * `G` creates `G`-split coequalizers, see
-  `category_theory.monad.monadic_of_creates_G_split_coequalizers`
+  `CategoryTheory.Monad.monadicOfCreatesGSplitCoequalizers`
   (The converse of this is also shown, see
-   `category_theory.monad.creates_G_split_coequalizers_of_monadic`)
+   `CategoryTheory.Monad.createsGSplitCoequalizersOfMonadic`)
 * `D` has and `G` preserves `G`-split coequalizers, and `G` reflects isomorphisms, see
-  `category_theory.monad.monadic_of_has_preserves_G_split_coequalizers_of_reflects_isomorphisms`
+  `CategoryTheory.Monad.monadicOfHasPreservesGSplitCoequalizersOfReflectsIsomorphisms`
 * `D` has and `G` preserves reflexive coequalizers, and `G` reflects isomorphisms, see
-  `category_theory.monad.monadic_of_has_preserves_reflexive_coequalizers_of_reflects_isomorphisms`
+  `CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms`
 
 ## Tags
 
@@ -40,9 +40,6 @@ Beck, monadicity, descent
 
 Dualise to show comonadicity theorems.
 -/
-
--- Porting note: TODO remove
-set_option autoImplicit false
 
 universe v₁ v₂ u₁ u₂
 
@@ -70,6 +67,7 @@ variable {G : D ⥤ C} [IsRightAdjoint G]
 -- temporary measure. All occurrences of `leftAdjoint G` and `Adjunction.ofRightAdjoint G` are the
 -- result of inlining.
 abbrev F := leftAdjoint G
+
 abbrev adj := Adjunction.ofRightAdjoint G
 
 /-- The "main pair" for an algebra `(A, α)` is the pair of morphisms `(F α, ε_FA)`. It is always a
@@ -108,7 +106,6 @@ def comparisonLeftAdjointObj (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra)
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
 -/
--- Porting note: changed `simps` to `simps!`
 @[simps!]
 def comparisonLeftAdjointHomEquiv (A : (Adjunction.ofRightAdjoint G).toMonad.Algebra) (B : D)
     [HasCoequalizer ((leftAdjoint G).map A.a) (adj.counit.app (F.obj A.A))] :
@@ -155,7 +152,6 @@ def leftAdjointComparison
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
 -/
--- Porting note: changed `simps` to `simps!`
 @[simps! counit]
 def comparisonAdjunction
     [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra, HasCoequalizer ((leftAdjoint G).map A.a)
@@ -177,7 +173,6 @@ theorem comparisonAdjunction_unit_f_aux
 /-- This is a cofork which is helpful for establishing monadicity: the morphism from the Beck
 coequalizer to this cofork is the unit for the adjunction on the comparison functor.
 -/
--- Porting note: changed `simps` to `simps!`
 @[simps! pt]
 def unitCofork (A : adj.toMonad.Algebra) [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
     Cofork (G.map (F.map A.a)) (G.map (adj.counit.app ((leftAdjoint G).obj A.A))) :=
@@ -210,7 +205,6 @@ theorem comparisonAdjunction_unit_f
 /-- The cofork which describes the counit of the adjunction: the morphism from the coequalizer of
 this pair to this morphism is the counit.
 -/
--- Porting note: changed `simps` to `simps!`
 @[simps!]
 def counitCofork (B : D) :
     Cofork ((leftAdjoint G).map (G.map ((Adjunction.ofRightAdjoint G).counit.app B)))
@@ -244,7 +238,7 @@ instance [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
     ((leftAdjoint G).map ((comparison (Adjunction.ofRightAdjoint G)).obj B).a)
     ((Adjunction.ofRightAdjoint G).counit.app ((leftAdjoint G).obj
       ((comparison (Adjunction.ofRightAdjoint G)).obj B).A))
-  --
+
 theorem comparisonAdjunction_counit_app
     [∀ A : (Adjunction.ofRightAdjoint G).toMonad.Algebra,
       HasCoequalizer ((leftAdjoint G).map A.a) ((Adjunction.ofRightAdjoint G).counit.app
@@ -273,12 +267,12 @@ variable (G : D ⥤ C)
 
 /--
 If `G` is monadic, it creates colimits of `G`-split pairs. This is the "boring" direction of Beck's
-monadicity theorem, the converse is given in `monadic_of_creates_G_split_coequalizers`.
+monadicity theorem, the converse is given in `monadicOfCreatesGSplitCoequalizers`.
 -/
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
   apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
-    -- Porting note: apparently cannot do synth failures = true here?
+    -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
   · apply @preservesColimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
     infer_instance
@@ -385,7 +379,7 @@ instance [CreatesColimitOfIsSplitPair G] : ∀ (A: Algebra (toMonad (ofRightAdjo
 /--
 Beck's monadicity theorem. If `G` has a right adjoint and creates coequalizers of `G`-split pairs,
 then it is monadic.
-This is the converse of `creates_G_split_of_monadic`.
+This is the converse of `createsGSplitOfMonadic`.
 -/
 def monadicOfCreatesGSplitCoequalizers [CreatesColimitOfIsSplitPair G] :
     MonadicRightAdjoint G := by
