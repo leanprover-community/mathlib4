@@ -22,10 +22,10 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 - `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
-See `ring_theory.derivation.lie` for
+See `RingTheory.Derivation.Lie` for
 - `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
-and `ring_theory.derivation.to_square_zero` for
+and `RingTheory.Derivation.ToSquareZero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 

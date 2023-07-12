@@ -28,7 +28,7 @@ The construction proceeds by recursively defining a sequence of coefficients as 
 polynomial equation in `k`. We must define these as generic polynomials using Witt vector API
 (`WittVector.wittMul`, `wittPolynomial`) to show that they satisfy the desired equation.
 
-Preliminary work is done in the dependency `ring_theory.witt_vector.mul_coeff`
+Preliminary work is done in the dependency `RingTheory.WittVector.MulCoeff`
 to isolate the `n+1`st coefficients of `x` and `y` in the `n+1`st coefficient of `x*y`.
 
 This construction is described in Dupuis, Lewis, and Macbeth,
