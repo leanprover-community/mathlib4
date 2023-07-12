@@ -44,18 +44,18 @@ def IsFeasible := Nonempty { v | P.IsSolution v }
 def IsOptimalSolution (v : V) :=
   P.IsSolution v ∧ IsGreatest (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
 
-@[simp] lemma solution_of_optimalSolution (v : V) (h : P.IsOptimalSolution x) :
+lemma solution_of_optimalSolution (v : V) (h : P.IsOptimalSolution x) :
   P.IsSolution x := h.1
 
 def Values := P.Objective '' { v | P.IsSolution v }
 
-@[simp] lemma nonempty_values_iff : (P.Values).Nonempty ↔ P.IsFeasible := by
+lemma nonempty_values_iff_feasible : (P.Values).Nonempty ↔ P.IsFeasible := by
     rw [Values, nonempty_image_iff]
     exact Iff.symm nonempty_coe_sort
 
 noncomputable def Value := sSup <| P.Values
 
-@[simp] lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v := by
+lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v := by
   apply IsLUB.csSup_eq <| IsGreatest.isLUB h.2
   rw [nonempty_image_iff]
   exact ⟨v, h.1⟩
@@ -85,7 +85,7 @@ lemma subFeasible_of_feasible (h : P.IsFeasible) : P.IsSubFeasible :=
 
 def SubValues := P.SubObjective '' { seqV | P.IsSubSolution seqV }
 
-@[simp] lemma nonempty_subValues_iff : (P.SubValues).Nonempty ↔ P.IsSubFeasible := by
+lemma nonempty_subValues_iff_subFeasible : (P.SubValues).Nonempty ↔ P.IsSubFeasible := by
     rw [SubValues, nonempty_image_iff]
     exact Iff.symm nonempty_coe_sort
 
@@ -97,7 +97,8 @@ noncomputable def SubValue := sSup <| P.SubValues
   ⟨fun _ => v, P.subSolution_of_solution hv, by rwa [P.subSolution_of_solution_value]⟩
 
 lemma value_le_subValue (fs : P.IsFeasible) (bdd : BddAbove P.SubValues) :
-  P.Value ≤ P.SubValue := csSup_le_csSup bdd (P.nonempty_values_iff.2 fs) P.values_subset_subValues
+  P.Value ≤ P.SubValue :=
+  csSup_le_csSup bdd (P.nonempty_values_iff_feasible.2 fs) P.values_subset_subValues
 
 ----------------------------------------------------------------------------------------------------
 
@@ -127,15 +128,20 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
       _ = ⟪adjoint P.lhs w, seqV n⟫_ℝ + ⟪w, seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [add_sub_right_comm]
       _ = ⟪w, P.lhs (seqV n)⟫_ℝ + ⟪w, seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [ContinuousLinearMap.adjoint_inner_left]
       _ = ⟪w, P.lhs (seqV n) + seqW n⟫_ℝ - ⟪P.obj, seqV n⟫_ℝ := by rw [inner_add_right]
-    have : P.SubObjective seqV ≤ ⟪w, P.rhs⟫_ℝ := by sorry
+    have : P.SubObjective seqV ≤ ⟪w, P.rhs⟫_ℝ := by
+      calc
+        P.SubObjective seqV
+          = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
+          = limsup (fun n => ⟪P.obj, seqV n⟫_ℝ) atTop := by rfl
+        _ ≤ ⟪w, P.rhs⟫_ℝ := by sorry
     rwa [Objective, Dual, inner_neg_left, neg_neg, real_inner_comm]
 
 theorem weak_duality (hP : P.IsSubFeasible) (hD : (P.Dual).IsFeasible) :
   P.SubValue ≤ -(P.Dual).Value := by
-    apply csSup_le <| P.nonempty_subValues_iff.2 hP
+    apply csSup_le <| P.nonempty_subValues_iff_subFeasible.2 hP
     rintro x ⟨v, hv1, hv2⟩
     rw [le_neg]
-    apply csSup_le <| (P.Dual).nonempty_values_iff.2 hD
+    apply csSup_le <| (P.Dual).nonempty_values_iff_feasible.2 hD
     rintro y ⟨w, hw1, hw2⟩
     simp at *
     rw [← hv2, ← hw2, le_neg]
@@ -150,10 +156,10 @@ theorem weak_duality_aux' (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
 
 theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
   P.Value ≤ -(P.Dual).Value := by
-    apply csSup_le <| P.nonempty_values_iff.2 hP
+    apply csSup_le <| P.nonempty_values_iff_feasible.2 hP
     rintro v ⟨_, hv2, hv3⟩
     rw [le_neg]
-    apply csSup_le <| (P.Dual).nonempty_values_iff.2 hD
+    apply csSup_le <| (P.Dual).nonempty_values_iff_feasible.2 hD
     rintro w ⟨_, hw2, hw3⟩
     rw [← hv3, ← hw3, le_neg]
     exact P.weak_duality_aux' hv2 hw2
@@ -164,5 +170,17 @@ theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
 --   (sl : P.SlaterCondition) : P.Value = P.SubValue := by
 --   apply le_antisymm (P.Value_le_Subvalue fs bdd)
 --   by_contra'
+
+-- example
+--   (v w : V)
+--   (seq : ℕ → V)
+--   (htends : Tendsto (fun n => seq n) atTop (nhds v)) :
+--   Tendsto (fun n => ⟪seq n, w⟫_ℝ) atTop (nhds ⟪v, w⟫_ℝ) := htends.inner tendsto_const_nhds
+
+-- example
+--   (v w : V)
+--   (seq : ℕ → V)
+--   (htends : Tendsto (fun n => seq n) atTop (nhds v)) :
+--   limsup (fun n => ⟪seq n, w⟫_ℝ) atTop = ⟪v, w⟫_ℝ := (htends.inner tendsto_const_nhds).limsup_eq
 
 end ConeProgram
