@@ -222,6 +222,15 @@ def toLowerSetOrderIso : OrderIso α (WithLowerSetTopology α) :=
 
 end WithLowerSetTopology
 
+def UpperLowerSet_toOrderDualHomeomorph [Preorder α] :
+    WithUpperSetTopology α ≃ₜ WithLowerSetTopology αᵒᵈ where
+  toFun := OrderDual.toDual
+  invFun := OrderDual.ofDual
+  left_inv := OrderDual.toDual_ofDual
+  right_inv := OrderDual.ofDual_toDual
+  continuous_toFun := continuous_coinduced_rng
+  continuous_invFun := continuous_coinduced_rng
+
 /--
 The upper set topology is the topology where the open sets are the upper sets. In general the upper
 set topology does not coincide with the upper topology.
