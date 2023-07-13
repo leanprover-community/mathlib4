@@ -190,4 +190,16 @@ theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ 
   simp only [←Functor.map_comp]
   exact openEmbedding_iff_isIso_comp f g
 
+/-- The image of a totally disconnected space under an isomorphism is totally disconneced. -/
+theorem totallyDisconnectedSpace_ofIsIso
+    {X Y : TopCat} [TotallyDisconnectedSpace X] (f : X ≅ Y) :
+    TotallyDisconnectedSpace Y := by
+  have h : _root_.IsTotallyDisconnected
+    ((TopCat.homeoOfIso f).symm '' (Set.univ) : Set X)
+  · simp only [Set.image_univ]
+    rw [Function.Surjective.range_eq (TopCat.homeoOfIso f).symm.surjective]
+    exact TotallyDisconnectedSpace.isTotallyDisconnected_univ
+  constructor
+  exact (TopCat.homeoOfIso f).symm.embedding.isTotallyDisconnected h
+
 end TopCat

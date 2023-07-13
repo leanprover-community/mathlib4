@@ -358,4 +358,12 @@ theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Funct
 set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 
+/-- The image of a totally disconnected space under an isomorphism is totally disconnected. -/
+lemma totallyDisconnectedSpace_ofIsIso
+    {X Y : CompHaus} [TotallyDisconnectedSpace X] (f : X ≅ Y) :
+    TotallyDisconnectedSpace Y := by
+  -- TODO: This `have` looks like a bug
+  have : TotallyDisconnectedSpace (compHausToTop.obj X) := by assumption
+  exact TopCat.totallyDisconnectedSpace_ofIsIso (compHausToTop.mapIso f)
+
 end CompHaus
