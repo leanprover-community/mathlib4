@@ -205,10 +205,13 @@ abbrev cyclesMap (f : C₁ ⟶ C₂) (i : ι) : (C₁.cycles i : V) ⟶ (C₂.cy
 #align cycles_map cyclesMap
 
 -- Porting note: Originally `@[simp, reassoc.1, elementwise]`
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem cyclesMap_arrow (f : C₁ ⟶ C₂) (i : ι) :
     cyclesMap f i ≫ (C₂.cycles i).arrow = (C₁.cycles i).arrow ≫ f.f i := by simp
 #align cycles_map_arrow cyclesMap_arrow
+
+attribute [simp 1100] cyclesMap_arrow_assoc
+attribute [simp] cyclesMap_arrow_apply
 
 @[simp]
 theorem cyclesMap_id (i : ι) : cyclesMap (𝟙 C₁) i = 𝟙 _ := by

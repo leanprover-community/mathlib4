@@ -1054,8 +1054,7 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
-  -- Porting note: `exact ..` is required.
-  toFinsupp_injective <| by simp; exact Finsupp.erase_zero n
+  toFinsupp_injective <| by simp
 #align polynomial.erase_zero Polynomial.erase_zero
 
 @[simp]
