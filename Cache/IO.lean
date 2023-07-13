@@ -178,7 +178,8 @@ def validateLeanTar : IO Unit := do
   let target ← if win then
     pure "x86_64-pc-windows-msvc"
   else
-    let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+    let mut arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+    if arch = "arm64" then arch := "aarch64"
     unless arch ∈ ["x86_64", "aarch64"] do
       throw $ IO.userError s!"unsupported architecture {arch}"
     pure <|
