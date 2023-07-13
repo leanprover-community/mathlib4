@@ -100,8 +100,8 @@ theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁
     fun a s _ ih ↦ by rw [insert_union, lcm_insert, lcm_insert, ih, lcm_assoc]
 #align finset.lcm_union Finset.lcm_union
 
-theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a)
-    : s₁.lcm f = s₂.lcm g := by
+theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
+    s₁.lcm f = s₂.lcm g := by
   subst hs
   exact Finset.fold_congr hfg
 #align finset.lcm_congr Finset.lcm_congr

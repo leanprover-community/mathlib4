@@ -133,7 +133,7 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
 #align language.nil_mem_kstar Language.nil_mem_kstar
 
-instance : Semiring (Language α) where
+instance instSemiring : Semiring (Language α) where
   add := (· + ·)
   add_assoc := union_assoc
   zero := 0
@@ -182,16 +182,11 @@ theorem kstar_def_nonempty (l : Language α) :
   constructor
   · rintro ⟨S, rfl, h⟩
     refine' ⟨S.filter fun l ↦ ¬List.isEmpty l, by simp, fun y hy ↦ _⟩
-    simp [mem_filter, List.isEmpty_iff_eq_nil] at hy
     -- Porting note: The previous code was:
-    -- exact ⟨h y hy.1, hy.2⟩
-    --
-    -- The goal `y ≠ []` for the second argument cannot be resolved
-    -- by `hy.2 : isEmpty y = False`.
-    let ⟨hyl, hyr⟩ := hy
-    apply And.intro (h y hyl)
-    cases y <;> simp only [ne_eq, not_true, not_false_iff]
-    contradiction
+    -- rw [mem_filter, empty_iff_eq_nil] at hy
+    rw [mem_filter, decide_not, Bool.decide_coe, Bool.not_eq_true', ← Bool.bool_iff_false,
+      isEmpty_iff_eq_nil] at hy
+    exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 #align language.kstar_def_nonempty Language.kstar_def_nonempty
@@ -241,15 +236,8 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     constructor
     · rintro rfl
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
-    · -- Porting note: The previous code was:
-      -- rintro ⟨_, rfl, rfl, _⟩
-      -- rfl
-      --
-      -- The code reports an error for the second `rfl`.
-      rintro ⟨_, rfl, h₀, _⟩
-      simp; intros _ h₁
-      rw [h₀] at h₁
-      contradiction
+    · rintro ⟨_, rfl, rfl, _⟩
+      rfl
   · simp only [pow_succ, mem_mul, ihn]
     constructor
     · rintro ⟨a, b, ha, ⟨S, rfl, rfl, hS⟩, rfl⟩
@@ -292,7 +280,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
 #align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
 instance : KleeneAlgebra (Language α) :=
-  { Language.instSemiringLanguage, Set.completeAtomicBooleanAlgebra with
+  { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a l hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,

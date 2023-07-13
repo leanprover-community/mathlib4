@@ -242,7 +242,7 @@ instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   using the sup norm. -/
 instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
     NonUnitalSeminormedRing (α × β) :=
-  { Prod.seminormedAddCommGroup, instNonUnitalRingProd with
+  { seminormedAddCommGroup, instNonUnitalRing with
     norm_mul := fun x y =>
       calc
         ‖x * y‖ = ‖(x.1 * y.1, x.2 * y.2)‖ := rfl
@@ -393,7 +393,7 @@ instance ULift.seminormedRing : SeminormedRing (ULift α) :=
 /-- Seminormed ring structure on the product of two seminormed rings,
   using the sup norm. -/
 instance Prod.seminormedRing [SeminormedRing β] : SeminormedRing (α × β) :=
-  { Prod.nonUnitalSeminormedRing, instRingProd with }
+  { nonUnitalSeminormedRing, instRing with }
 #align prod.semi_normed_ring Prod.seminormedRing
 
 /-- Seminormed ring structure on the product of finitely many seminormed rings,
@@ -452,7 +452,7 @@ instance ULift.normedRing : NormedRing (ULift α) :=
 
 /-- Normed ring structure on the product of two normed rings, using the sup norm. -/
 instance Prod.normedRing [NormedRing β] : NormedRing (α × β) :=
-  { Prod.nonUnitalNormedRing, instRingProd with }
+  { nonUnitalNormedRing, instRing with }
 #align prod.normed_ring Prod.normedRing
 
 /-- Normed ring structure on the product of finitely many normed rings, using the sup norm. -/
