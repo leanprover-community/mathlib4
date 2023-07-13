@@ -22,6 +22,44 @@ def setHomeoSubtype {X : Type _} [TopologicalSpace X] (s : Set X) : s ≃ₜ {x 
     intro x
     dsimp }
 
+section Monad
+
+variable {α : Type _} {β : Set α} {γ : Set β}
+
+/-! ## Monadic coercion lemmas -/
+
+theorem mem_coe_of_mem {a : α} (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
+  ⟨_, ⟨⟨_, rfl⟩, _, ⟨ha', rfl⟩, rfl⟩⟩
+
+theorem coe_subset : (γ : Set α) ⊆ β := by
+  intro _ ⟨_, ⟨⟨⟨_, ha⟩, rfl⟩, _, ⟨_, rfl⟩, _⟩⟩; convert ha
+
+theorem mem_of_mem_coe {a : α} (ha : a ∈ (γ : Set α)) : ⟨a, coe_subset ha⟩ ∈ γ := by
+  rcases ha with ⟨_, ⟨_, rfl⟩, _, ⟨ha, rfl⟩, _⟩; convert ha
+
+theorem eq_univ_of_coe_eq (hγ : (γ : Set α) = β) : γ = Set.univ :=
+  Set.eq_univ_of_forall fun ⟨_, ha⟩ => mem_of_mem_coe <| hγ.symm ▸ ha
+
+theorem image_coe_eq_restrict_image {δ : Type _} {f : α → δ} : f '' γ = β.restrict f '' γ :=
+  Set.ext fun _ =>
+    ⟨fun ⟨_, h, ha⟩ => ⟨_, mem_of_mem_coe h, ha⟩, fun ⟨_, h, ha⟩ => ⟨_, mem_coe_of_mem _ h, ha⟩⟩
+
+variable [TopologicalSpace α]
+
+theorem IsOpen.trans (hγ : IsOpen γ) (hβ : IsOpen β) : IsOpen (γ : Set α) := by
+  rcases isOpen_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsOpen.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+theorem IsClosed.trans (hγ : IsClosed γ) (hβ : IsClosed β) : IsClosed (γ : Set α) := by
+  rcases isClosed_induced_iff.mp hγ with ⟨δ, hδ, rfl⟩
+  convert IsClosed.inter hβ hδ
+  ext
+  exact ⟨fun h => ⟨coe_subset h, mem_of_mem_coe h⟩, fun ⟨hβ, hδ⟩ => mem_coe_of_mem hβ hδ⟩
+
+end Monad
+
 namespace Function
 
 open Classical
@@ -2675,287 +2713,6 @@ lemma GoodProducts.huw : Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr = w C hsC ho 
 
 def C'' : Set {i // i ∈ C} := {f | f.val ∈ C' C ho}
 
-lemma isOpen_resOnSubset_C0' : IsOpen ((ResOnSubset C o) '' (C0' C ho)) := by
-  have h : C0' C ho = Subtype.val ⁻¹' {f | f (term I ho) = false}
-  · ext x
-    exact ⟨fun hx ↦ hx.2, fun hx ↦ ⟨x.prop, hx⟩⟩
-  rw [h]
-  sorry
-
-lemma isOpenMap_swapFalse : IsOpenMap (SwapFalse o : (WithTop I → Bool) → (WithTop I → Bool)) := by
-  sorry
-
-lemma swapFalse_mem_res {x : WithTop I → Bool} (hx : x ∈ C) : SwapFalse o x ∈ Res C o := sorry
-
-lemma isOpenMap_resOnSubset : IsOpenMap (ResOnSubset C o) := by
-  intro U hU
-  rw [isOpen_induced_iff] at hU
-  obtain ⟨t,ht⟩ := hU
-  rw [← ht.2]
-  rw [isOpen_induced_iff]
-  have h : ResOnSubset C o = fun x ↦ ⟨SwapFalse o x.val, swapFalse_mem_res C x.prop⟩ := sorry
-  rw [h]
-  sorry
-  -- have : Subtype.val ∘ ResOnSubset C o = SwapFalse o ∘ Subtype.val := sorry
-  -- refine' ⟨SwapTrue o ⁻¹' t, ⟨IsOpen.preimage (continuous_swapTrue _) ht.1, _⟩⟩
-  -- refine' ⟨SwapFalse o '' t, ⟨isOpenMap_swapFalse t ht.1, _⟩⟩
-  -- ext f
-  -- constructor
-  -- <;> intro hf
-  -- · simp only [Set.mem_preimage] at hf
-  --   suffices : f.val ∈ Subtype.val '' ((ResOnSubset C o) '' (Subtype.val ⁻¹' t))
-  --   · obtain ⟨f', hf'⟩ := this
-  --     suffices ff' : f = f'
-  --     · rw [ff']
-  --       exact hf'.1
-  --     rw [Subtype.ext_iff]
-  --     exact hf'.2.symm
-  --   convert hf
-  --   have : Subtype.val ∘ ResOnSubset C o = SwapFalse o ∘ Subtype.val := sorry
-  --   rw [← Set.image_comp, this, Set.image_comp]
-
-  --   -- obtain ⟨x, ⟨hxt, hxf⟩⟩ := hf
-  --   -- use ⟨x, ?_⟩
-  --   -- ·
-  --   -- · simp only [Set.mem_preimage]
-  --   --   refine' ⟨hxt, _⟩
-  --   --   apply Subtype.ext
-  --   --   rw [← hxf]
-  --   --   ext i
-  --   --   dsimp [ResOnSubset, ProjOrd, SwapFalse]
-  --   --   split_ifs with hi
-  --   --   · sorry
-  --   --   · sorry
-  --   --   · sorry
-  --   --   · sorry
-  -- · sorry
-
-lemma isClopen_rC1' : IsClopen (rC1' C ho) := by
-  let V : Set (Res C o) := ResOnSubset C o '' (rC1' C ho) -- {f | f.val ∈ C' C ho}
-  have hV : IsClopen V
-  · constructor
-    · have : V = ResOnSubset C o '' (C0' C ho) ∩ ResOnSubset C o '' (C1' C ho)
-      · ext f
-        dsimp
-        constructor
-        <;> intro hf
-        · obtain ⟨g, hg⟩ := hf
-          have hg' : g.val ∈ C' C ho
-          · dsimp [C']
-            exact ⟨rC1_subset_C0 C ho hg.1, hg.1⟩
-          refine' ⟨⟨g, ⟨rC1_subset_C0 C ho hg.1, hg.2⟩⟩ ,⟨⟨SwapTrue o g.val, swapTrue_mem_C C hsC ho
-            ⟨g, hg'⟩⟩,⟨_, _⟩⟩⟩
-          · dsimp [C1', C1]
-            refine' ⟨swapTrue_mem_C C hsC ho ⟨g, hg'⟩, _⟩
-            dsimp [SwapTrue]
-            simp only [ite_eq_left_iff]
-            intro hfalse
-            dsimp [ord, term] at hfalse
-            simp only [Ordinal.typein_enum, not_true] at hfalse
-          · ext i
-            dsimp [ResOnSubset, SwapTrue, ProjOrd]
-            split_ifs with hi hi'
-            · exfalso
-              exact ne_of_lt hi hi'
-            · rw [← hg.2]
-              dsimp [ResOnSubset, ProjOrd]
-              apply Eq.symm
-              simp only [ite_eq_left_iff, not_lt]
-              intro hfalse
-              simp only [← not_lt] at hfalse
-              exfalso
-              exact hfalse hi
-            · rw [← hg.2]
-              dsimp [ResOnSubset, ProjOrd]
-              apply Eq.symm
-              simp only [ite_eq_right_iff]
-              intro hfalse
-              exfalso
-              exact hi hfalse
-        · obtain ⟨g, hg⟩ := hf.1
-          obtain ⟨r, hr⟩ := hf.2
-          dsimp [rC1', Res]
-          dsimp [C1'] at hr
-          use ⟨ProjOrd o r.val, ?_⟩
-          · dsimp [ResOnSubset] at hr
-            have hr' : ProjOrd o r.val = f.val
-            · rw [Subtype.ext_iff] at hr
-              exact hr.2
-            rw [hr']
-            have hg' : ProjOrd o g.val = f.val
-            · rw [Subtype.ext_iff] at hg
-              exact hg.2
-            rw [← hg']
-            suffices : g.val = ProjOrd o g.val
-            · rw [← this]
-              exact g.prop
-            ext i
-            dsimp [ProjOrd]
-            split_ifs with hi
-            · rfl
-            · simp only [not_lt] at hi
-              by_cases hi' : i = term I ho
-              · rw [hi']
-                exact hg.1.2
-              · dsimp [Support] at hsC
-                simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp]
-                    at hsC
-                specialize hsC i g.val g.prop
-                rw [← not_imp_not] at hsC
-                simp only [not_le, Bool.not_eq_true] at hsC
-                apply hsC
-                refine' lt_of_le_of_ne hi _
-                intro hoi
-                apply hi'
-                dsimp [term]
-                simp_rw [hoi]
-                dsimp [ord]
-                simp only [Ordinal.enum_typein]
-          · simp only [Set.mem_image, Set.mem_setOf_eq]
-            refine' ⟨⟨r.val, ⟨hr.1, rfl⟩⟩, _⟩
-            simp_rw [← hr.2]
-            dsimp [ResOnSubset]
-            simp only [Subtype.mk.injEq]
-            set r' := ProjOrd o r.val with hr'
-            ext i
-            unfold ProjOrd
-            split_ifs with hi
-            · rfl
-            · rw [hr']
-              dsimp [ProjOrd]
-              apply Eq.symm
-              simp only [ite_eq_right_iff]
-              intro hfalse
-              exfalso
-              exact hi hfalse
-      rw [this]
-      apply IsOpen.inter
-      · sorry
-      · sorry
-    · apply IsCompact.isClosed
-      refine' IsCompact.image _ (continuous_ResOnSubset _ _)
-      have CsC : CompactSpace {i // i ∈ C}
-      · rw [← isCompact_iff_compactSpace]
-        exact hC.isCompact
-      apply IsClosed.isCompact
-      exact isClosed_rC1' _ hC _
-  suffices : rC1' C ho = ((ResOnSubset C o) ⁻¹' V) ∩ (C0' C ho)
-  · rw [this]
-    exact IsClopen.inter (IsClopen.preimage hV (continuous_ResOnSubset _ _)) (isClopen_C0' C hC ho)
-  dsimp
-  have hf : Set.InjOn (ResOnSubset C o) (C0' C ho)
-  · intro a ha b hb h
-    dsimp [C0', C0] at ha hb
-    ext i
-    dsimp [ResOnSubset] at h
-    simp only [Subtype.mk.injEq] at h
-    have ht := @trichotomous _ (·<·) inferInstance (ord I i) o
-    cases' ht with ht ht
-    · dsimp [ProjOrd] at h
-      have h' := congr_fun h i
-      split_ifs at h' with h''
-      · exact h'
-      · exfalso
-        exact h'' ht
-    cases' ht with ht ht
-    · have hi : i = term I ho
-      · dsimp [term]
-        simp_rw [← ht]
-        dsimp [ord]
-        simp only [Ordinal.enum_typein]
-      rw [hi, ha.2, hb.2]
-    · dsimp [Support] at hsC
-      simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
-      have ha' := hsC i a.val a.prop
-      have hb' := hsC i b.val b.prop
-      rw [← not_imp_not] at ha' hb'
-      simp only [not_le, Bool.not_eq_true] at ha' hb'
-      rw [ha' ht, hb' ht]
-  exact (Set.InjOn.preimage_image_inter hf (rC1_subset_C0 C ho)).symm
-  -- ext f
-  -- constructor
-  -- <;> intro hf
-  -- · dsimp [ResOnSubset]
-  --   dsimp [C0]
-  --   have : (ProjOrd o f.val) (term I ho) = false
-  --   · dsimp [ProjOrd, ord, term]
-  --     simp only [Ordinal.typein_enum, lt_self_iff_false, ite_false]
-  --   have hs : ProjOrd o f.val = f.val
-  --   · dsimp [ProjOrd]
-  --     ext i
-  --     split_ifs with hi
-  --     · rfl
-  --     · by_cases hi' : i = term I ho
-  --       · rw [hi']
-  --         exact (rC1_subset_C0 C ho hf).2.symm
-  --       · have gt_succ : ¬(ord I i < Order.succ o)
-  --         · simp only [Order.lt_succ_iff, not_le]
-  --           simp only [not_lt] at hi
-  --           refine' lt_of_le_of_ne hi _
-  --           intro hoi
-  --           apply hi'
-  --           dsimp [term]
-  --           simp_rw [hoi]
-  --           dsimp [ord]
-  --           simp only [Ordinal.enum_typein]
-  --         dsimp [Support] at hsC
-  --         simp only [Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index, and_imp] at hsC
-  --         specialize hsC i f.val f.prop
-  --         rw [← not_imp_not] at hsC
-  --         simp only [Order.lt_succ_iff] at gt_succ
-  --         convert hsC gt_succ
-  --         simp only [Bool.not_eq_true]
-  --         tauto
-  --   refine' ⟨⟨_, this⟩ , _⟩
-  --   · rw [hs]
-  --     exact Subtype.mem f
-  --   · rw [hs]
-  --     dsimp [Res]
-  --     use (SwapTrue o f)
-  --     refine' ⟨swapTrue_mem_C1 C hsC ho ⟨f,hf⟩, _⟩
-  --     dsimp [ProjOrd ,SwapTrue]
-  --     ext i
-  --     split_ifs with hi hi'
-  --     · exfalso
-  --       exact ne_of_lt hi hi'
-  --     · rfl
-  --     · rw [← hs]
-  --       dsimp [ProjOrd]
-  --       apply Eq.symm
-  --       simp only [ite_eq_right_iff]
-  --       intro hi'
-  --       exfalso
-  --       exact hi hi'
-  -- · simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq] at hf
-  --   dsimp [rC1']
-  --   dsimp [C'] at hf
-  --   dsimp [Res]
-  --   dsimp [ResOnSubset, Res] at hf
-  --   obtain ⟨g,hg⟩ := hf.2
-  --   use SwapTrue o (ProjOrd o f)
-  --   sorry
-  -- suffices : rC1' C ho = p ⁻¹' (C1' C ho)
-  -- · rw [this]
-  --   refine' IsClopen.preimage (isClopen_C1' C hC ho) _
-  --   sorry
-  -- sorry
-  -- ext x
-  -- constructor
-  -- · sorry
-  -- · have := IsClosed.preimage (continuous_subtype_val : Continuous (fun (i : {i // i ∈ C}) ↦ i.val))
-  --     (isClosed_Res _ o (isClosed_C1 C hC ho))
-  --   suffices h : rC1' C ho = Subtype.val ⁻¹' (Res (C1 C ho) o)
-  --   · rw [h]
-  --     exact this
-  --   rfl
-
-lemma isClopen_C'' : IsClopen (C'' C ho) := by sorry
-  -- suffices : C'' C ho = C0' C ho ∩ rC1' C ho
-  -- · rw [this]
-  --   exact IsClopen.inter (isClopen_C0' _ hC _) (isClopen_rC1' _ hC _)
-  -- dsimp [C'', C', C0', rC1']
-  -- rfl
-
 lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
   intro f
   let e : {i // i ∈ C' C ho} → {i // i ∈ C1' C ho} :=
@@ -2977,22 +2734,34 @@ lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
     rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
     dsimp [LocallyConstant.piecewise, Set.piecewise', Function.ExtendBy, CC'₀, CC'₁]
     rw [Set.piecewise_eq_of_not_mem _ _ _ ?_]
-    rw [Set.piecewise_eq_of_not_mem _ _ _ ?_]
+    rw [Set.piecewise_eq_of_mem _ _ _ ?_]
     · split_ifs with h₁ h₂
       · dsimp [LocallyConstant.emb_lift, LocallyConstant.ExtendBy, Function.ExtendBy]
-        split_ifs
-        · sorry
+        split_ifs with h
         · dsimp [LocallyConstant.equiv]
-          sorry
-        · sorry
-        · sorry
-      · sorry
-      · sorry
-      · sorry
-    · sorry
-    · sorry
-
-
+          rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+          simp only [sub_zero]
+          congr
+          dsimp [Homeomorph.ofEmbedding]
+          rw [Equiv.symm_apply_eq]
+          rfl
+        · simp only [Set.mem_range, Subtype.mk.injEq, exists_apply_eq_apply, not_true] at h
+      · exfalso
+        exact h₂ x.prop.1
+      · exfalso
+        apply h₁
+        dsimp [C1', C1]
+        refine' ⟨swapTrue_mem_C C hsC ho x, _⟩
+        simp only [Set.mem_setOf_eq, SwapTrue, ord, term, Ordinal.typein_enum, ite_true]
+      · exfalso
+        apply h₁
+        dsimp [C1', C1]
+        refine' ⟨swapTrue_mem_C C hsC ho x, _⟩
+        simp only [Set.mem_setOf_eq, SwapTrue, ord, term, Ordinal.typein_enum, ite_true]
+    · exact x.prop.1
+    · intro h
+      simp only [C0', C0, Set.mem_inter_iff, Subtype.coe_prop, Set.mem_setOf_eq, true_and,
+        SwapTrue, term, ord, Ordinal.typein_enum, ite_true] at h
 
 lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := by
   intro y
@@ -3018,24 +2787,95 @@ lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := b
     · rfl
   · rfl
 
+noncomputable
+def C0_homeo : C0 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C0 C ho) o} where
+  toFun := fun x ↦ ⟨⟨x.val, sorry⟩, sorry⟩
+  invFun := fun x ↦ ⟨x.val.val, sorry⟩
+  left_inv := sorry
+  right_inv := sorry
+  continuous_toFun := sorry
+  continuous_invFun := sorry
+
+noncomputable
+def C1_homeo : C1 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} where
+  toFun := fun x ↦ ⟨⟨SwapFalse o x.val, sorry⟩, sorry⟩
+  invFun := fun x ↦ ⟨SwapTrue o x.val.val, sorry⟩
+  left_inv := sorry
+  right_inv := sorry
+  continuous_toFun := sorry
+  continuous_invFun := sorry
+
 lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, Linear_ResC C o y = f := by
   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁] at hf
   rw [sub_eq_zero] at hf
   dsimp [LocallyConstant.comapLinear] at hf
-  sorry
-  -- constructor
-  -- · ext x
-  --   rw [LocallyConstant.ext_iff] at hf
-  --   by_cases hx : x.val ∈ C' C ho
-  --   · specialize hf ⟨x,hx⟩
-  --     rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)] at hf
-  --     rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)] at hf
-  --     dsimp [CC'₀, CC'₁] at hf
-  --     sorry
-  --   · sorry
-  -- · sorry
-
+  rw [← LocallyConstant.coe_inj] at hf
+  -- rw [LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _)] at hf
+  -- rw [LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
+  have hC₀' : IsClosed (Res (C0 C ho) o) := isClosed_Res (C0 C ho) o (isClosed_C0 C hC ho)
+  have hC₁' : IsClosed (Res (C1 C ho) o) := isClosed_Res (C1 C ho) o (isClosed_C1 C hC ho)
+  have hC₀ : IsClosed {i : Res C o | i.val ∈ Res (C0 C ho) o}
+  · rw [isClosed_induced_iff]
+    exact ⟨Res (C0 C ho) o, ⟨hC₀', rfl⟩⟩
+  have hC₁ : IsClosed {i : Res C o | i.val ∈ Res (C1 C ho) o}
+  · rw [isClosed_induced_iff]
+    exact ⟨Res (C1 C ho) o, ⟨hC₁', rfl⟩⟩
+  let e₀ : C0 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C0 C ho) o} := C0_homeo C ho
+  let E₀ : LocallyConstant (C0 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.equiv e₀
+  let e₁ : C1 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} := C1_homeo C ho
+  let E₁ : LocallyConstant (C1 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.equiv e₁
+  let C₀C : C0 C ho → {i // i ∈ C} := fun x ↦ ⟨x.val, x.prop.1⟩
+  have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
+  let C₁C : C1 C ho → {i // i ∈ C} := fun x ↦ ⟨x.val, x.prop.1⟩
+  have h₁ : Continuous C₁C := Continuous.subtype_mk continuous_induced_dom _
+  use LocallyConstant.piecewise hC₀ hC₁ ?_ (E₀ (f.comap C₀C)) (E₁ (f.comap C₁C)) ?_ 0
+  · ext ⟨x, hx⟩
+    simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_univ, iff_true]
+    obtain ⟨y, ⟨hyC, hy⟩⟩ := hx
+    by_cases hyt : y (term I ho) = true
+    · right
+      rw [← hy]
+      refine' ⟨y, ⟨⟨hyC, hyt⟩, rfl⟩⟩
+    · left
+      simp only [Bool.not_eq_true] at hyt
+      rw [← hy]
+      refine' ⟨y, ⟨⟨hyC, hyt⟩, rfl⟩⟩
+  · rintro ⟨x, hrx⟩ hx
+    -- by_cases hx' : x ∈ C' C ho
+    dsimp [LocallyConstant.equiv, C0_homeo, C1_homeo]
+    rw [LocallyConstant.coe_comap_apply _ _ sorry]
+    rw [LocallyConstant.coe_comap_apply _ _ sorry]
+    rw [LocallyConstant.coe_comap_apply _ _ sorry]
+    rw [LocallyConstant.coe_comap_apply _ _ sorry]
+    sorry
+    -- congr 1
+    -- ext i
+    -- dsimp
+  · dsimp [Linear_ResC, LocallyConstant.comapLinear]
+    ext x
+    -- something like: -- by_cases hx' : x ∈ C' C ho
+    rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+    dsimp [LocallyConstant.piecewise, Set.piecewise', Set.piecewise]
+    split_ifs with h
+    · dsimp [Function.ExtendBy, LocallyConstant.equiv, C0_homeo]
+      split_ifs
+      rw [LocallyConstant.coe_comap_apply _ _ sorry]
+      rw [LocallyConstant.coe_comap_apply _ _ sorry]
+      congr 1
+      ext i
+      dsimp [ResOnSubset] at h ⊢
+      sorry
+    · dsimp [Function.ExtendBy, LocallyConstant.equiv, C1_homeo]
+      split_ifs
+      · rw [LocallyConstant.coe_comap_apply _ _ sorry]
+        rw [LocallyConstant.coe_comap_apply _ _ sorry]
+        congr 1
+        ext i
+        dsimp [ResOnSubset]
+        sorry
+      sorry
+    -- rw [Set.piecewise_eq_of_mem _ _ _ ?_]
 
 lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
     (ModuleCat.ofHom (Linear_ResC C o))
@@ -3057,7 +2897,7 @@ lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
       rw [← hy]
       dsimp [ModuleCat.ofHom]
       exact CC_comp_zero _ _ _ y
-    · exact CC_exact _ _ _ hf }
+    · exact CC_exact _ hC _ ho hf }
 
 lemma swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
   intro x
