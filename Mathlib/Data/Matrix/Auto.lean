@@ -44,7 +44,7 @@ def _root_.PiFin.toExprQ {u : Level} {α : Q(Type u)} :
   | 0, _v => q(![])
   | _n + 1, v => q(Matrix.vecCons $(v 0) $(PiFin.toExprQ <| Matrix.vecTail v))
 
-/-- Prove a statement of the form `∀ A : matrix m n α, A = !![A 0 0, ...]`.
+/-- Prove a statement of the form `∀ {α} A : Matrix m n α, A = !![A 0 0, ...]`.
 Returns an assigned metavariable whose type is this statement. -/
 def prove (m n : ℕ) : MetaM Expr := do
   let u ← mkFreshLevelMVar
@@ -52,10 +52,9 @@ def prove (m n : ℕ) : MetaM Expr := do
   -- the type is easily inferred. Is there a metavariable instantiation bug?
   withLocalDeclQ `α .implicit q(Type u) fun (α : Q(Type u)) =>
   withLocalDeclDQ `A q(Matrix (Fin $m) (Fin $n) $α) fun A => do
-    let entries : Fin m → Fin n → Q($α) := fun (i : Fin m) (j : Fin n) => q($A $i $j)
     let entry_vals : Q(Fin $m → Fin $n → $α) :=
-      PiFin.toExprQ (u := u) (fun i => PiFin.toExprQ (fun j => entries i j))
-    let A_eta: Q(Matrix (Fin $m) (Fin $n) $α) := q(@Matrix.of (Fin $m) (Fin $n) $α $entry_vals)
+      PiFin.toExprQ (u := u) (fun i : Fin m => PiFin.toExprQ (fun j : Fin n => q($A $i $j)))
+    let A_eta : Q(Matrix (Fin $m) (Fin $n) $α) := q(Matrix.of $entry_vals)
     let forall_A_eq : Q(Prop) ← mkForallFVars #[α, A] q($A = $A_eta)
     let heq : Q(Matrix.etaExpand $A = $A_eta) := (q(Eq.refl $A_eta) : Expr)
     let some pf ← checkTypeQ (ty := forall_A_eq) <| ← mkLambdaFVars #[α, A]
@@ -83,7 +82,7 @@ elab:max "fin_eta% " mStx:term:max nStx:term:max A?:(term)? : term => do
   let some m ← (evalNat m).run
     | throwErrorAt mStx "Expecting a natural number, have{indentD m}"
   let some n ← (evalNat n).run
-    | throwErrorAt mStx "Expecting a natural number, have{indentD n}"
+    | throwErrorAt nStx "Expecting a natural number, have{indentD n}"
   let pf ← FinEta.prove m n
   if let some A := A? then
     Term.elabAppArgs pf #[] #[.expr A] none false false
@@ -105,12 +104,6 @@ example : true := by
   have := fin_eta% _ _ B
   have : B = B := by rw [this]
   trivial
-
-#exit
-#eval (show MetaM Unit from do
-  let mut m ← FinEta.prove 2 2
-  dbg_trace f!"{← Meta.ppExpr m}"
-  dbg_trace f!"{←inferType  m>>= Meta.ppExpr}")
 
 #exit
 
