@@ -367,27 +367,21 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
       refine' Eq.trans _ (X.presheaf.map_comp _ _)
       change X.presheaf.map _ = _
       congr!
-    -- have eq : (X.basicOpen r).openEmbedding.isOpenMap.functor.obj ⊤ =
-    --     X.basicOpen (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) := by
-    --   rw [Opens.openEmbedding_obj_top]
-    --   exact (Scheme.basicOpen_res_eq _ _ _).symm
-    -- -- Porting note: used to be a convert
-    let sec : X.presheaf.obj _ := X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r
+    -- Porting note: need to pass Algebra through explicitly
     convert @HoldsForLocalizationAway _ hP _
-      -- _
-      -- (X.presheaf.obj (Opposite.op <| X.basicOpen sec))
-      (Scheme.Γ.obj (Opposite.op (X.restrict (X.basicOpen r).openEmbedding)))
-      -- _ _ (algebra_section_section_basicOpen sec) sec ?_
-      _ _ ?_ sec ?_
+      (Scheme.Γ.obj (Opposite.op (X.restrict (X.basicOpen r).openEmbedding))) _ _ ?_
+      (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) ?_
     · exact RingHom.algebraMap_toAlgebra
-        (R := X.presheaf.obj <| Opposite.op (U.1.openEmbedding.isOpenMap.functor.obj ⊤))
-        (S := X.presheaf.obj (Opposite.op ((X.affineBasicOpen r).1.openEmbedding.isOpenMap.functor.obj ⊤))) _|>.symm
+        (R := Scheme.Γ.obj <| Opposite.op <| X.restrict (U.1.openEmbedding))
+        (S := Scheme.Γ.obj (Opposite.op <| X.restrict (X.affineBasicOpen r).1.openEmbedding)) _|>.symm
     · dsimp [Scheme.Γ]
       have := U.2
       rw [← U.1.openEmbedding_obj_top] at this
-      -- rw [eq]
-      convert isLocalization_basicOpen this ?_ using 6 <;> rw [Opens.openEmbedding_obj_top]
-        <;> exact (Scheme.basicOpen_res_eq _)
+      -- Porting note: convert generated type equalities previously and basisOpen_res_eq needs
+      -- to be more explicit
+      convert (config := { typeEqs := true, transparency := .default })
+        isLocalization_basicOpen this ?_ using 6 <;> rw [Opens.openEmbedding_obj_top]
+          <;> symm <;> exact Scheme.basicOpen_res_eq _ _ (eqToHom U.1.openEmbedding_obj_top).op
   · introv hs hs'
     exact sourceAffineLocally_of_source_open_cover_aux hP.respectsIso hP.2 _ _ _ hs hs'
   · rw [Set.eq_univ_iff_forall]
