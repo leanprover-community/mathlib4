@@ -43,21 +43,21 @@ def IsSolution (v : V) := v ∈ P.K ∧ P.rhs - P.lhs v ∈ P.L
 
 def HasSolutions := Nonempty { v | P.IsSolution v }
 
-def IsOptimalSolution (v : V) :=
-  P.IsSolution v ∧ IsLeast (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
+-- def IsOptimalSolution (v : V) :=
+--   P.IsSolution v ∧ IsLeast (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
 
-lemma solution_of_optimalSolution (h : P.IsOptimalSolution v) : P.IsSolution v := h.1
+-- lemma solution_of_optimalSolution (h : P.IsOptimalSolution v) : P.IsSolution v := h.1
 
 def Values := P.Objective '' { v | P.IsSolution v }
 
-lemma nonempty_values_iff_feasible : (P.Values).Nonempty ↔ P.HasSolutions := by
-  rw [Values, nonempty_image_iff]
-  exact Iff.symm nonempty_coe_sort
+-- lemma nonempty_values_iff_feasible : (P.Values).Nonempty ↔ P.HasSolutions := by
+--   rw [Values, nonempty_image_iff]
+--   exact Iff.symm nonempty_coe_sort
 
 noncomputable def Value := sInf <| P.Values
 
-lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v :=
-  IsGLB.sInf_eq <| IsLeast.isGLB <| h.2
+-- lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v :=
+--   IsGLB.sInf_eq <| IsLeast.isGLB <| h.2
 
 ----------------------------------------------------------------------------------------------------
 
@@ -73,20 +73,20 @@ lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ =
   let ⟨hx1, _⟩ := hx
   ⟨fun _ => P.rhs - P.lhs x, fun _ => hx1, by simpa⟩
 
-@[simp] lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
+lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
   liminf_const _
 
-def HasSubSolutions := Nonempty { x : ℕ → V | P.IsSubSolution x }
+-- def HasSubSolutions := Nonempty { x : ℕ → V | P.IsSubSolution x }
 
-lemma subFeasible_of_feasible (h : P.HasSolutions) : P.HasSubSolutions :=
-  let ⟨v, hv⟩ := h
-  ⟨fun _ => v, P.subSolution_of_solution hv⟩
+-- lemma subFeasible_of_feasible (h : P.HasSolutions) : P.HasSubSolutions :=
+--   let ⟨v, hv⟩ := h
+--   ⟨fun _ => v, P.subSolution_of_solution hv⟩
 
 def SubValues := P.SubObjective '' { seqV | P.IsSubSolution seqV }
 
-lemma nonempty_subValues_iff_subFeasible : (P.SubValues).Nonempty ↔ P.HasSubSolutions := by
-    rw [SubValues, nonempty_image_iff]
-    exact Iff.symm nonempty_coe_sort
+-- lemma nonempty_subValues_iff_subFeasible : (P.SubValues).Nonempty ↔ P.HasSubSolutions := by
+--     rw [SubValues, nonempty_image_iff]
+--     exact Iff.symm nonempty_coe_sort
 
 noncomputable def SubValue := sInf <| P.SubValues
 
@@ -110,10 +110,22 @@ theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual]; simp
 
 theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
   -(P.Dual).Objective w ≤ P.SubObjective seqV := by
+
     rcases hv with ⟨seqW, hseqV, hseqW, htends⟩
+    have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) :=
+      htends.inner tendsto_const_nhds
+    rw [← EReal.tendsto_coe] at htends'
+
     rcases hw with ⟨hw1, hw2⟩
     dsimp [Dual] at hw2
-    sorry
+
+    have h : ∀ n, ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ ≤ 0 := by sorry
+    simp_rw [sub_nonneg, ← EReal.coe_le_coe_iff] at h
+
+    rw [Objective, Dual, inner_neg_right, real_inner_comm _ _,
+      EReal.neg_le, EReal.coe_neg, EReal.neg_le_neg_iff]
+
+    calc EReal.toReal ⟪P.rhs, w⟫_ℝ ≤ P.SubObjective seqV := sorry
     -- have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := fun n => by
     --   calc 0
     --     ≤ ⟪seqV n, adjoint P.lhs w - P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by {
