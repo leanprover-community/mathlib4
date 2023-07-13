@@ -87,6 +87,11 @@ instance compactOpen : TopologicalSpace C(α, β) :=
     { m | ∃ (s : Set α) (_ : IsCompact s) (u : Set β) (_ : IsOpen u), m = CompactOpen.gen s u }
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
+/-- Definition of `ContinuousMap.compactOpen` in terms of `Set.image2`. -/
+theorem compactOpen_eq : @compactOpen α β _ _ =
+    .generateFrom (Set.image2 CompactOpen.gen {s | IsCompact s} {t | IsOpen t}) :=
+  congr_arg TopologicalSpace.generateFrom <| Set.ext fun _ ↦ by simp [eq_comm]
+
 protected theorem isOpen_gen {s : Set α} (hs : IsCompact s) {u : Set β} (hu : IsOpen u) :
     IsOpen (CompactOpen.gen s u) :=
   TopologicalSpace.GenerateOpen.basic _ (by dsimp [mem_setOf_eq]; tauto)
@@ -96,18 +101,29 @@ section Functorial
 
 variable (g : C(β, γ))
 
-private theorem preimage_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpen u) :
+private theorem preimage_gen {s : Set α} {u : Set γ} :
     ContinuousMap.comp g ⁻¹' CompactOpen.gen s u = CompactOpen.gen s (g ⁻¹' u) := by
   ext ⟨f, _⟩
   change g ∘ f '' s ⊆ u ↔ f '' s ⊆ g ⁻¹' u
   rw [image_comp, image_subset_iff]
---#align continuous_map.preimage_gen ContinuousMap.preimage_gen
 
 /-- C(α, -) is a functor. -/
 theorem continuous_comp : Continuous (ContinuousMap.comp g : C(α, β) → C(α, γ)) :=
   continuous_generateFrom fun m ⟨s, hs, u, hu, hm⟩ => by
-    rw [hm, preimage_gen g hs hu]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
+    rw [hm, preimage_gen g]; exact ContinuousMap.isOpen_gen hs (hu.preimage g.2)
 #align continuous_map.continuous_comp ContinuousMap.continuous_comp
+
+/-- If `g : C(β, γ)` is a topology inducing map, then the composition
+`ContinuousMap.comp g : C(α, β) → C(α, γ)` is a topology inducing map too. -/
+theorem inducing_comp (hg : Inducing g) : Inducing (g.comp : C(α, β) → C(α, γ)) where
+  induced := by
+    simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, preimage_gen,
+      hg.setOf_isOpen, image2_image_right]
+
+/-- If `g : C(β, γ)` is a topological embedding, then the composition
+`ContinuousMap.comp g : C(α, β) → C(α, γ)` is an embedding too. -/
+theorem embedding_comp (hg : Embedding g) : Embedding (g.comp : C(α, β) → C(α, γ)) :=
+  ⟨inducing_comp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
 
 variable (f : C(α, β))
 
@@ -116,7 +132,6 @@ private theorem image_gen {s : Set α} (_ : IsCompact s) {u : Set γ} (_ : IsOpe
   ext ⟨g, _⟩
   change g ∘ f '' s ⊆ u ↔ g '' (f '' s) ⊆ u
   rw [Set.image_comp]
---#align continuous_map.image_gen continuous_map.image_gen
 
 /-- C(-, γ) is a functor. -/
 theorem continuous_comp_left : Continuous (fun g => g.comp f : C(β, γ) → C(α, γ)) :=
@@ -184,30 +199,36 @@ theorem continuous_eval' [LocallyCompactSpace α] : Continuous fun p : C(α, β)
       mem_nhds_iff.mpr ⟨w, by assumption, by assumption, by assumption⟩
 #align continuous_map.continuous_eval' ContinuousMap.continuous_eval'
 
-/-- See also `ContinuousMap.continuous_eval_const` -/
-theorem continuous_eval_const' [LocallyCompactSpace α] (a : α) :
-    Continuous fun f : C(α, β) => f a :=
-  continuous_eval'.comp (continuous_id.prod_mk continuous_const)
-#align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const'
+/-- Evaluation of a continuous map `f` at a point `a` is continuous in `f`.
 
-/-- See also `ContinuousMap.continuous_coe` -/
-theorem continuous_coe' [LocallyCompactSpace α] : @Continuous C(α, β) (α → β) _ _ (↑) :=
-  continuous_pi continuous_eval_const'
-#align continuous_map.continuous_coe' ContinuousMap.continuous_coe'
+Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
+assumptions. -/
+@[continuity]
+theorem continuous_eval_const (a : α) :
+    Continuous fun f : C(α, β) => f a := by
+  refine continuous_def.2 fun U hU ↦ ?_
+  convert ContinuousMap.isOpen_gen (isCompact_singleton (a := a)) hU using 1
+  ext; simp [CompactOpen.gen]
+#align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
+#align continuous_map.continuous_eval_const ContinuousMap.continuous_eval_const
+
+/-- Coercion from `C(α, β)` with compact-open topology to `α → β` with pointwise convergence
+topology is a continuous map.
+
+Porting note: merged `continuous_coe` with `continuous_coe'` removing unneeded assumptions. -/
+theorem continuous_coe : Continuous ((⇑) : C(α, β) → (α → β)) :=
+  continuous_pi continuous_eval_const
+#align continuous_map.continuous_coe' ContinuousMap.continuous_coe
+#align continuous_map.continuous_coe ContinuousMap.continuous_coe
+
+instance [T0Space β] : T0Space C(α, β) :=
+  t0Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
+
+instance [T1Space β] : T1Space C(α, β) :=
+  t1Space_of_injective_of_continuous FunLike.coe_injective continuous_coe
 
 instance [T2Space β] : T2Space C(α, β) :=
-  ⟨by
-    intro f₁ f₂ h
-    obtain ⟨x, hx⟩ := not_forall.mp (mt (FunLike.ext f₁ f₂) h)
-    obtain ⟨u, v, hu, hv, hxu, hxv, huv⟩ := t2_separation hx
-    refine'
-      ⟨CompactOpen.gen {x} u, CompactOpen.gen {x} v,
-        ContinuousMap.isOpen_gen isCompact_singleton hu,
-        ContinuousMap.isOpen_gen isCompact_singleton hv, _, _, _⟩
-    · rwa [CompactOpen.gen, mem_setOf_eq, image_singleton, singleton_subset_iff]
-    · rwa [CompactOpen.gen, mem_setOf_eq, image_singleton, singleton_subset_iff]
-    · rw [disjoint_iff_inter_eq_empty, ← gen_inter, huv.inter_eq,
-        gen_empty_right (singleton_nonempty _)]⟩
+  .of_injective_continuous FunLike.coe_injective continuous_coe
 
 end Ev
 
@@ -274,7 +295,7 @@ theorem tendsto_compactOpen_iff_forall {ι : Type _} {l : Filter ι} (F : ι →
 
 /-- A family `F` of functions in `C(α, β)` converges in the compact-open topology, if and only if
 it converges in the compact-open topology on each compact subset of `α`. -/
-theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space α] [T2Space β]
+theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space β]
     {ι : Type _} {l : Filter ι} [Filter.NeBot l] (F : ι → C(α, β)) :
     (∃ f, Filter.Tendsto F l (𝓝 f)) ↔
     ∀ (s : Set α) (hs : IsCompact s), ∃ f, Filter.Tendsto (fun i => (F i).restrict s) l (𝓝 f) := by
@@ -291,8 +312,8 @@ theorem exists_tendsto_compactOpen_iff_forall [LocallyCompactSpace α] [T2Space 
       rintro s₁ hs₁ s₂ hs₂ x hxs₁ hxs₂
       haveI := isCompact_iff_compactSpace.mp hs₁
       haveI := isCompact_iff_compactSpace.mp hs₂
-      have h₁ := (continuous_eval_const' (⟨x, hxs₁⟩ : s₁)).continuousAt.tendsto.comp (hf s₁ hs₁)
-      have h₂ := (continuous_eval_const' (⟨x, hxs₂⟩ : s₂)).continuousAt.tendsto.comp (hf s₂ hs₂)
+      have h₁ := (continuous_eval_const (⟨x, hxs₁⟩ : s₁)).continuousAt.tendsto.comp (hf s₁ hs₁)
+      have h₂ := (continuous_eval_const (⟨x, hxs₂⟩ : s₂)).continuousAt.tendsto.comp (hf s₂ hs₂)
       exact tendsto_nhds_unique h₁ h₂
     -- So glue the `f s hs` together and prove that this glued function `f₀` is a limit on each
     -- compact set `s`
@@ -411,7 +432,7 @@ theorem continuous_uncurry [LocallyCompactSpace α] [LocallyCompactSpace β] :
 
 /-- The family of constant maps: `β → C(α, β)` as a continuous map. -/
 def const' : C(β, C(α, β)) :=
-  curry ⟨Prod.fst, continuous_fst⟩
+  curry ContinuousMap.fst
 #align continuous_map.const' ContinuousMap.const'
 
 @[simp]
@@ -444,8 +465,7 @@ def curry [LocallyCompactSpace α] [LocallyCompactSpace β] : C(α × β, γ) �
 #align homeomorph.curry Homeomorph.curry
 
 /-- If `α` has a single element, then `β` is homeomorphic to `C(α, β)`. -/
-def continuousMapOfUnique [Unique α] : β ≃ₜ C(α, β)
-    where
+def continuousMapOfUnique [Unique α] : β ≃ₜ C(α, β) where
   toFun := const α
   invFun f := f default
   left_inv a := rfl
@@ -454,7 +474,7 @@ def continuousMapOfUnique [Unique α] : β ≃ₜ C(α, β)
     rw [Unique.eq_default a]
     rfl
   continuous_toFun := continuous_const'
-  continuous_invFun := continuous_eval'.comp (continuous_id.prod_mk continuous_const)
+  continuous_invFun := continuous_eval_const _
 #align homeomorph.continuous_map_of_unique Homeomorph.continuousMapOfUnique
 
 @[simp]

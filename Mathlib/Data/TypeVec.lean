@@ -175,8 +175,8 @@ theorem eq_of_drop_last_eq {α β : TypeVec (n + 1)} {f g : α ⟹ β} (h₀ : d
   -- porting note: FIXME: congr_fun h₀ <;> ext1 ⟨⟩ <;> apply_assumption
   refine funext (fun x => ?_)
   cases x
-  . apply h₁
-  . apply congr_fun h₀
+  · apply h₁
+  · apply congr_fun h₀
 #align typevec.eq_of_drop_last_eq TypeVec.eq_of_drop_last_eq
 
 @[simp]
@@ -675,9 +675,9 @@ theorem append_prod_appendFun {n} {α α' β β' : TypeVec.{u} n} {φ φ' ψ ψ'
     ((f₀ ⊗' g₀) ::: (_root_.Prod.map f₁ g₁)) = ((f₀ ::: f₁) ⊗' (g₀ ::: g₁)) := by
   ext i a
   cases i
-  . cases a
+  · cases a
     rfl
-  . rfl
+  · rfl
 #align typevec.append_prod_append_fun TypeVec.append_prod_appendFun
 
 end Liftp'
@@ -782,8 +782,8 @@ theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ �
 theorem subtypeVal_diagSub {α : TypeVec n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction' i with _ _ _ i_ih
-  . simp [comp, diagSub, subtypeVal, prod.diag]
-  . simp [prod.diag]
+  · simp [comp, diagSub, subtypeVal, prod.diag]
+  · simp [prod.diag]
     simp [comp, diagSub, subtypeVal, prod.diag] at *
     apply @i_ih (drop _)
 #align typevec.subtype_val_diag_sub TypeVec.subtypeVal_diagSub
