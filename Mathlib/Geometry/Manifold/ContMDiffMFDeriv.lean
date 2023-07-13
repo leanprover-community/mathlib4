@@ -309,7 +309,6 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
           (TotalSpace.toProd H E).symm ∘ fun p : E × E => (I.symm p.fst, p.snd))
       ((range I ∩ I.symm ⁻¹' s) ×ˢ univ)
   · -- Porting note: was `simpa [(· ∘ ·)] using h`
-    -- have h₁
     convert h using 1
     · ext1 ⟨x, y⟩
       simp only [mfld_simps]; rfl
