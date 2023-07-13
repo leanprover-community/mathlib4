@@ -669,6 +669,13 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
+/-- Two families of seminorms `p` and `q` on the same space generate the same topology
+if each `p i` is bounded by some `C • Finset.sup s q` and vice-versa.
+
+We formulate these boundedness assumptions as `Seminorm.IsBounded q p LinearMap.id` (and
+vice-versa) to reuse the API. Furthermore, we don't actually state it as an equality of topologies
+but as a way to deduce `WithSeminorms q` from `WithSeminorms p`, since this should be more
+useful in practice. -/
 protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 E ι'}
     [t : TopologicalSpace E] (hp : WithSeminorms p) (hpq : Seminorm.IsBounded p q LinearMap.id)
     (hqp : Seminorm.IsBounded q p LinearMap.id) : WithSeminorms q := by
