@@ -25,9 +25,9 @@ Given a linearly ordered type `α`, in this file we define
 * `Set.IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined
   as `f ∘ projIcc a b h`.
 * `Set.IciExtend {a : α} (f : Ici a → β)` to be the extension of `f` to `α` defined
-  as `f ∘ proj_Ici a`.
+  as `f ∘ projIci a`.
 * `Set.IicExtend {b : α} (f : Iic b → β)` to be the extension of `f` to `α` defined
-  as `f ∘ proj_Iic b`.
+  as `f ∘ projIic b`.
 
 We also prove some trivial properties of these maps.
 -/
@@ -78,7 +78,7 @@ theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc
 
 
 theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
-  simp [proj_Icc, hx, h]
+  simp [projIcc, hx, h]
 #align set.proj_Icc_of_right_le Set.projIcc_of_right_le
 -/
 
@@ -100,24 +100,24 @@ theorem projIcc_right : projIcc a b h b = ⟨b, right_mem_Icc.2 h⟩ :=
   projIcc_of_right_le h le_rfl
 #align set.proj_Icc_right Set.projIcc_right
 
-theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [proj_Ici, Subtype.ext_iff]
+theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [projIci, Subtype.ext_iff]
 #align set.proj_Ici_eq_self Set.projIci_eq_self
 
-theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [proj_Iic, Subtype.ext_iff]
+theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
 #align set.proj_Iic_eq_self Set.projIic_eq_self
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
-  simp [proj_Icc, Subtype.ext_iff, h.not_le]
+  simp [projIcc, Subtype.ext_iff, h.not_le]
 #align set.proj_Icc_eq_left Set.projIcc_eq_left
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
-  by simp [proj_Icc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
+  by simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
 #align set.proj_Icc_eq_right Set.projIcc_eq_right
 
-theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [proj_Ici]
+theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 #align set.proj_Ici_of_mem Set.projIci_of_mem
 
-theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [proj_Iic]
+theorem projIic_of_mem (hx : x ∈ Iic b) : projIic b x = ⟨x, hx⟩ := by simpa [projIic]
 #align set.proj_Iic_of_mem Set.projIic_of_mem
 
 theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := by
@@ -181,11 +181,11 @@ theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
 #align set.monotone_proj_Icc Set.monotone_projIcc
 
 theorem strictMonoOn_projIci : StrictMonoOn (projIci a) (Ici a) := fun x hx y hy hxy => by
-  simpa only [proj_Ici_of_mem, hx, hy]
+  simpa only [projIci_of_mem, hx, hy]
 #align set.strict_mono_on_proj_Ici Set.strictMonoOn_projIci
 
 theorem strictMonoOn_projIic : StrictMonoOn (projIic b) (Iic b) := fun x hx y hy hxy => by
-  simpa only [proj_Iic_of_mem, hx, hy]
+  simpa only [projIic_of_mem, hx, hy]
 #align set.strict_mono_on_proj_Iic Set.strictMonoOn_projIic
 
 theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x hx y hy hxy => by
