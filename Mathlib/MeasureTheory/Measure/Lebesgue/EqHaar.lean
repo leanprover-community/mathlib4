@@ -19,24 +19,24 @@ import Mathlib.MeasureTheory.Measure.Doubling
 # Relationship between the Haar and Lebesgue measures
 
 We prove that the Haar measure and Lebesgue measure are equal on `ℝ` and on `ℝ^ι`, in
-`measure_theory.addHaar_measure_eq_volume` and `measure_theory.addHaar_measure_eq_volume_pi`.
+`MeasureTheory.addHaarMeasure_eq_volume` and `MeasureTheory.addHaarMeasure_eq_volume_pi`.
 
 We deduce basic properties of any Haar measure on a finite dimensional real vector space:
-* `map_linear_map_addHaar_eq_smul_addHaar`: a linear map rescales the Haar measure by the
+* `map_linearMap_addHaar_eq_smul_addHaar`: a linear map rescales the Haar measure by the
   absolute value of its determinant.
-* `addHaar_preimage_linear_map` : when `f` is a linear map with nonzero determinant, the measure
+* `addHaar_preimage_linearMap` : when `f` is a linear map with nonzero determinant, the measure
   of `f ⁻¹' s` is the measure of `s` multiplied by the absolute value of the inverse of the
   determinant of `f`.
-* `addHaar_image_linear_map` : when `f` is a linear map, the measure of `f '' s` is the
+* `addHaar_image_linearMap` : when `f` is a linear map, the measure of `f '' s` is the
   measure of `s` multiplied by the absolute value of the determinant of `f`.
 * `addHaar_submodule` : a strict submodule has measure `0`.
 * `addHaar_smul` : the measure of `r • s` is `|r| ^ dim * μ s`.
 * `addHaar_ball`: the measure of `ball x r` is `r ^ dim * μ (ball 0 1)`.
-* `addHaar_closed_ball`: the measure of `closed_ball x r` is `r ^ dim * μ (ball 0 1)`.
-* `addHaar_sphere`: spheres have zero measure.
+* `add_haar_closedBall`: the measure of `closedBall x r` is `r ^ dim * μ (ball 0 1)`.
+* `add_haar_sphere`: spheres have zero measure.
 
 This makes it possible to associate a Lebesgue measure to an `n`-alternating map in dimension `n`.
-This measure is called `alternating_map.measure`. Its main property is
+This measure is called `AlternatingMap.measure`. Its main property is
 `ω.measure_parallelepiped v`, stating that the associated measure of the parallelepiped spanned
 by vectors `v₁, ..., vₙ` is given by `|ω v|`.
 
@@ -48,7 +48,7 @@ small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
 
-assert_not_exists measure_theory.integral
+assert_not_exists MeasureTheory.integral
 
 open TopologicalSpace Set Filter Metric
 
@@ -221,7 +221,7 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
 theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) :
     Measure.map f μ = ENNReal.ofReal |(LinearMap.det f)⁻¹| • μ := by
   -- we reduce to the case of `E = ι → ℝ`, for which we have already proved the result using
-  -- matrices in `map_linear_map_addHaar_pi_eq_smul_addHaar`.
+  -- matrices in `map_linearMap_addHaar_pi_eq_smul_addHaar`.
   let ι := Fin (finrank ℝ E)
   haveI : FiniteDimensional ℝ (ι → ℝ) := by infer_instance
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp
@@ -340,7 +340,9 @@ theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
   calc
     μ ((· • ·) r ⁻¹' s) = Measure.map ((· • ·) r) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
-    _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by rw [map_addHaar_smul μ hr]; rfl
+    _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
+      rw [map_addHaar_smul μ hr, smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
+        smul_eq_mul]
 #align measure_theory.measure.add_haar_preimage_smul MeasureTheory.Measure.addHaar_preimage_smul
 
 /-- Rescaling a set by a factor `r` multiplies its measure by `abs (r ^ dim)`. -/
@@ -369,7 +371,7 @@ theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
 variable {μ} {s : Set E}
 
 -- Note: We might want to rename this once we acquire the lemma corresponding to
--- `measurable_set.const_smul`
+-- `MeasurableSet.const_smul`
 theorem NullMeasurableSet.const_smul (hs : NullMeasurableSet s μ) (r : ℝ) :
     NullMeasurableSet (r • s) μ := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
@@ -427,8 +429,8 @@ theorem addHaar_ball_of_pos (x : E) {r : ℝ} (hr : 0 < r) :
 
 theorem addHaar_ball_mul [Nontrivial E] (x : E) {r : ℝ} (hr : 0 ≤ r) (s : ℝ) :
     μ (ball x (r * s)) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 s) := by
-  rcases LE.le.eq_or_lt hr with (h | h)
-  · simp only [← h, zero_pow (finrank_pos (K := ℝ) (V := E)), measure_empty, zero_mul,
+  rcases hr.eq_or_lt with (rfl | h)
+  · simp only [zero_pow (finrank_pos (K := ℝ) (V := E)), measure_empty, zero_mul,
       ENNReal.ofReal_zero, ball_zero]
   · exact addHaar_ball_mul_of_pos μ x h s
 #align measure_theory.measure.add_haar_ball_mul MeasureTheory.Measure.addHaar_ball_mul
@@ -453,7 +455,7 @@ theorem addHaar_closedBall_mul (x : E) {r : ℝ} (hr : 0 ≤ r) {s : ℝ} (hs : 
 #align measure_theory.measure.add_haar_closed_ball_mul MeasureTheory.Measure.addHaar_closedBall_mul
 
 /-- The measure of a closed ball can be expressed in terms of the measure of the closed unit ball.
-Use instead `addHaar_closed_ball`, which uses the measure of the open unit ball as a standard
+Use instead `addHaar_closedBall`, which uses the measure of the open unit ball as a standard
 form. -/
 theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall 0 1) := by
@@ -548,12 +550,8 @@ theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     -- porting note: was `congr 1 with i` but Lean 4 `congr` applies `ext` first
     refine congr_arg _ <| funext fun i ↦ ?_
     exact (b.constr_basis ℕ v i).symm
-  rw [A, addHaar_image_linearMap]
-  -- Porting note: this used to be a big `rw`, but one intermediate `erw` was needed
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [b.addHaar_self]
-  rw [mul_one, ← LinearMap.det_toMatrix b, ← Basis.toMatrix_eq_toMatrix_constr]
-  rfl
+  rw [A, addHaar_image_linearMap, b.addHaar_self, mul_one, ← LinearMap.det_toMatrix b,
+    ← Basis.toMatrix_eq_toMatrix_constr, Basis.det_apply]
 #align measure_theory.measure.add_haar_parallelepiped MeasureTheory.Measure.addHaar_parallelepiped
 
 variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
@@ -587,8 +585,8 @@ end
 
 Besicovitch covering theorem ensures that, for any locally finite measure on a finite-dimensional
 real vector space, almost every point of a set `s` is a density point, i.e.,
-`μ (s ∩ closed_ball x r) / μ (closed_ball x r)` tends to `1` as `r` tends to `0`
-(see `besicovitch.ae_tendsto_measure_inter_div`).
+`μ (s ∩ closedBall x r) / μ (closedBall x r)` tends to `1` as `r` tends to `0`
+(see `Besicovitch.ae_tendsto_measure_inter_div`).
 When `μ` is a Haar measure, one can deduce the same property for any rescaling sequence of sets,
 of the form `{x} + r • t` where `t` is a set with positive finite measure, instead of the sequence
 of closed balls.
@@ -603,7 +601,7 @@ Then for a general set `t`, by cutting it into a bounded part and a part with sm
 Going to the complement, one obtains the desired property at points of density `1`, first when
 `s` is measurable in `tendsto_addHaar_inter_smul_one_of_density_one_aux`, and then without this
 assumption in `tendsto_addHaar_inter_smul_one_of_density_one` by applying the previous lemma to
-the measurable hull `to_measurable μ s`
+the measurable hull `toMeasurable μ s`
 -/
 
 theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)

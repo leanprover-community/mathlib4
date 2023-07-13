@@ -32,7 +32,7 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 
 Note that a version of Statement (1) in
 [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV) can be found in
-`ring_theory/noetherian` under the name
+`RingTheory.Noetherian` under the name
 `Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul`
 
 ## References

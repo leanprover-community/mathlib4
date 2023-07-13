@@ -213,7 +213,7 @@ theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Clos
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
-    NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ
+    NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ (α := α)
   refine hSf.subset fun s hs => ?_
   lift S to Finset (Set α) using hSf
   rcases isIrreducible_iff_sUnion_closed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
