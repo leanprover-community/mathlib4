@@ -1,7 +1,7 @@
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.Ergodic.AddCircle
 
-open MeasureTheory Filter Metric Function Set Topology
+open MeasureTheory Filter Metric Function Set
 open scoped omegaLimit
 set_option autoImplicit false
 
@@ -59,10 +59,10 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
   have h1 : IsOpen (ball x (ε / 2)) := by
     exact isOpen_ball
   have h2 : ∃ (z : α), z ∈ ball x (ε/ 2) ∧ z ∈ nonWanderingSet f := by
-    let k1 := ulim (ball x (ε / 2))
+    have k1 := ulim (ball x (ε / 2))
     have k2 : x ∈ (ball x (ε / 2)) := by
       exact mem_ball_self e2pos
-    let ⟨N, k3⟩ := k1 k2 h1
+    obtain ⟨N, k3⟩ := k1 k2 h1
     have k4 : u N ∈ ball x (ε / 2) := by
       have k5 : N ≤ N := by
         exact Nat.le_refl N
@@ -71,8 +71,9 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
   rcases h2 with ⟨z, h3, h4⟩
   have h5 : ∃ (y : α), ∃ (n : ℕ), y ∈ ball z (ε / 2) ∧ f^[n] y ∈ ball z (ε / 2) ∧ n ≠ 0 := by
     simp [nonWanderingSet] at h4
-    let l1 := h4 (ε / 2) e2pos
-    rcases l1 with ⟨y, l1, ⟨n, l2, l3⟩⟩
+    -- let l1 := h4 (ε / 2) e2pos
+    -- rcases l1 with ⟨y, l1, ⟨n, l2, l3⟩⟩
+    obtain ⟨y, l1, ⟨n, l2, l3⟩⟩ := h4 (ε / 2) e2pos
     use y, n -- note 'use y, n' which is the same as 'use y' and 'use n'
     simp
     exact ⟨l1, l2, l3⟩
@@ -126,14 +127,15 @@ theorem omegaLimit_nonwandering (x : α) :
   intro ε hε
   have ball_in_nbd : ball z ε ∈ nhds z := by
     exact ball_mem_nhds z hε
-  let ⟨φ, hφ, hf⟩ := subsequence (ball z ε) ball_in_nbd
+  -- let ⟨φ, hφ, hf⟩ := subsequence (ball z ε) ball_in_nbd
+  obtain ⟨φ, hφ, hf⟩ : ∃ φ, StrictMono φ ∧ ∀ (n : ℕ), f^[φ n] x ∈ ball z ε :=
+    subsequence (ball z ε) ball_in_nbd
   use f^[φ 1] x, φ 2 - φ 1
   refine' ⟨_, _, _⟩
   . exact (hf 1)
   . have : f^[φ 2 - φ 1] (f^[φ 1] x) = f^[φ 2] x := by
       rw [ <-Function.iterate_add_apply, Nat.sub_add_cancel ]
-      apply le_of_lt
-      apply hφ
+      apply le_of_lt; apply hφ
       group
     rw [this]
     apply (hf 2)
@@ -170,7 +172,7 @@ theorem recurrentSet_iff_accumulation_point (x : α) :
     simp at recur_x
     rw [mem_omegaLimit_iff_frequently] at recur_x
     intro ε N hε
-    let recur_x_in_ball := recur_x (ball x ε) (ball_mem_nhds x hε)
+    have recur_x_in_ball := recur_x (ball x ε) (ball_mem_nhds x hε)
     simp [frequently_atTop] at recur_x_in_ball
     exact recur_x_in_ball N
   . intro hf
@@ -180,7 +182,7 @@ theorem recurrentSet_iff_accumulation_point (x : α) :
     intro U hU
     simp [frequently_atTop]
     -- same as 'rcases Metric.mem_nhds_iff.mp hU with ⟨ε, hε, rest⟩' but nicer
-    obtain ⟨ε, hε, ball_in_U⟩ := Metric.mem_nhds_iff.mp hU
+    obtain ⟨ε, hε, ball_in_U⟩ : ∃ ε, ε > 0 ∧ ball x ε ⊆ U := Metric.mem_nhds_iff.mp hU
     intro a
     obtain ⟨m, hm, fm_in_ball⟩ := (hf ε a hε)
     exact ⟨m, hm, mem_of_subset_of_mem ball_in_U fm_in_ball⟩
@@ -208,7 +210,7 @@ theorem periodicpts_mem_recurrentSet
         exact mem_of_mem_nhds hU
         done
       done
-    apply hb
+    exact hb
   apply this
   done
 
@@ -235,19 +237,21 @@ theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
   have : ∀ (x : α) (ε : ℝ) (N : ℕ), ε > 0
          -> ∃ m : ℕ, m ≥ N ∧ f^[m] x ∈ ball x ε := by
     intro x ε N hε
-    rcases (hf x (f^[N] x) ε hε) with ⟨n, hball⟩
+    -- rcases (hf x (f^[N] x) ε hε) with ⟨n, hball⟩
+    obtain ⟨n, hball⟩ : ∃ n, f^[n] (f^[N] x) ∈ ball x ε := hf x (f^[N] x) ε hε
     refine' ⟨n + N, _, _⟩
     . linarith
     . rw [ <-Function.iterate_add_apply ] at hball
       exact hball
     done
-  apply Iff.mpr (recurrentSet_iff_accumulation_point f z)
+  apply (recurrentSet_iff_accumulation_point f z).mpr
   exact this z
   done
 
 
 /- Give an example of a continuous dynamics on a compact space in which the recurrent set is all
 the space, but the dynamics is not minimal -/
+
 
 /- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense -/
 
