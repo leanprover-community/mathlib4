@@ -3,12 +3,10 @@ Copyright (c) 2023 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour, Nima Rasekh
 -/
-
 import Mathlib.Topology.Category.ExtrDisc.ExplicitLimits
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
-
 # Effective epimorphic families in `ExtrDisc`
 
 Let `π a : X a ⟶ B` be a family of morphisms in `ExtrDisc` indexed by a finite type `α`.
@@ -16,9 +14,14 @@ In this file, we show that the following are all equivalent:
 - The family `π` is effective epimorphic.
 - The induced map `∐ X ⟶ B` is epimorphic.
 - The family `π` is jointly surjective.
-This is the main result of this file, which can be found in `ExtrDisc.effectiveEpiFamily_tfae`
 
-As a consequence, we also show that `ExtrDisc` is precoherent.
+## Main results
+- `ExtrDisc.effectiveEpiFamily_tfae`: characterise being an effective epimorphic family.
+- `ExtrDisc.instPrecoherent`: `ExtrDisc` is precoherent.
+
+## Implementation notes
+The entire section `EffectiveEpiFamily` comprises exclusively a technical construction for
+the main proof and does not contain any statements that would be useful in other contexts.
 
 -/
 
@@ -26,7 +29,7 @@ open CategoryTheory Limits
 
 namespace ExtrDisc
 
--- Assume we have `X a → B` which are jointly surjective.
+/- Assume we have a family `X a → B` which is jointly surjective. -/
 variable {α : Type} [Fintype α] {B : ExtrDisc}
   {X : α → ExtrDisc} (π : (a : α) → (X a ⟶ B))
   (surj : ∀ b : B, ∃ (a : α) (x : X a), π a x = b)
@@ -49,7 +52,7 @@ lemma epi_iff_surjective {X Y : ExtrDisc} (f : X ⟶ Y) :
   constructor
   · dsimp [Function.Surjective]
     contrapose!
-    rintro ⟨y,hy⟩ h
+    rintro ⟨y, hy⟩ h
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ
@@ -67,18 +70,19 @@ lemma epi_iff_surjective {X Y : ExtrDisc} (f : X ⟶ Y) :
     let h : Y ⟶ ExtrDisc.two := ⟨fun _ => ⟨1⟩, continuous_const⟩
     have H : h = g := by
       rw [← cancel_epi f]
-      apply ContinuousMap.ext; intro x
+      apply ContinuousMap.ext
+      intro x
       apply ULift.ext
       change 1 =  _
       dsimp [LocallyConstant.ofClopen]
       -- BUG: Should not have to provide instance `(ExtrDisc.instTopologicalSpace Y)` explicitely
       rw [comp_apply, @ContinuousMap.coe_mk _ _ (ExtrDisc.instTopologicalSpace Y),
       Function.comp_apply, if_neg]
-      refine' mt (fun α => hVU α) _
+      refine mt (hVU ·) ?_
       simp only [Set.mem_compl_iff, Set.mem_range, not_exists, not_forall, not_not]
       exact ⟨x, rfl⟩
     apply_fun fun e => (e y).down at H
-    dsimp [LocallyConstant.ofClopen] at H
+    dsimp only [LocallyConstant.ofClopen] at H
     change 1 = ite _ _ _ at H
     rw [if_pos hyV] at H
     exact top_ne_bot H
@@ -92,25 +96,32 @@ lemma epi_iff_surjective {X Y : ExtrDisc} (f : X ⟶ Y) :
     rwa [← cancel_epi (toCompHaus.map f)]
 
 /-!
-Everything in this section is only used for the proof of
-`effectiveEpiFamily_of_jointly_surjective`
+This section contains exclusively technical definitions and results that are used
+in the proof of `ExtrDisc.effectiveEpiFamily_of_jointly_surjective`.
 -/
 namespace EffectiveEpiFamily
 
-/--
-Abbreviation for the fully faithful functor `ExtrDisc ⥤ CompHaus` called `ExtrDisc.toCompHaus`
--/
+/-- Implementation: Abbreviation for the fully faithful functor `ExtrDisc ⥤ CompHaus`. -/
 abbrev F := ExtrDisc.toCompHaus
 
-/-- A helper lemma lifting the condition
+/-- Implementation: A helper lemma lifting the condition
+
 ```
 ∀ {Z : ExtrDisc} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
   g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
 ```
-from `Z : ExtrDisc` to `Z : CompHaus`. This condition is used in
-the definition of `EffectiveEpiFamily.dec`, etc.
+
+from `Z : ExtrDisc` to `Z : CompHaus`.
+
+The descent `EffectiveEpiFamily.dec` along an effective epi family in a category `C`
+takes this condition (for all `Z` in `C`) as an assumption.
+
+In the construction in this file we start with this descent condition for all `Z : ExtrDisc` but
+to apply the analogue result on `CompHaus` we need extend this condition to all
+`Z : CompHaus`. We do this by considering the Stone-Czech compactification `βZ → Z`
+which is an epi in `CompHaus` covering `Z` where `βZ` lies in the image of `ExtrDisc`.
 -/
-lemma helper {W : ExtrDisc} {e : (a : α) → X a ⟶ W}
+lemma lift_desc_condition {W : ExtrDisc} {e : (a : α) → X a ⟶ W}
     (h : ∀ {Z : ExtrDisc} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π a₁ = g₂ ≫ π a₂ → g₁ ≫ e a₁ = g₂ ≫ e a₂)
     : ∀ {Z : CompHaus} (a₁ a₂ : α) (g₁ : Z ⟶ F.obj (X a₁)) (g₂ : Z ⟶ F.obj (X a₂)),
@@ -124,37 +135,38 @@ lemma helper {W : ExtrDisc} {e : (a : α) → X a ⟶ W}
   apply Epi.left_cancellation (f := Z.presentationπ)
   -- By definition `g₁' = presentationπ ≫ g₁` and `g₂' = presentationπ ≫ g₂`
   change g₁' ≫ e a₁ = g₂' ≫ e a₂
-  -- use assumption in `ExtrDisc`
+  -- use the condition in `ExtrDisc`
   apply h
   change CompHaus.presentationπ Z ≫ g₁ ≫ π a₁ = CompHaus.presentationπ Z ≫ g₂ ≫ π a₂
   simp [hg]
 
-/-- Implementation: The structure for the `EffectiveEpiFamily X π` -/
+/-- Implementation: The structure for the `EffectiveEpiFamily X π`. -/
 noncomputable
 def struct : EffectiveEpiFamilyStruct X π where
   desc := fun {W} e h => ExtrDisc.toCompHaus.preimage <|
     -- Use the `EffectiveEpiFamily F(X) F(π)` on `CompHaus`
-    (CompHaus.effectiveEpiFamily_of_jointly_surjective (fun (a : α) => F.obj (X a)) π surj).desc
-    (fun (a : α) => F.map (e a)) (helper π h)
+    (CompHaus.effectiveEpiFamily_of_jointly_surjective (F.obj <| X ·) π surj).desc
+    (fun (a : α) => F.map (e a)) (lift_desc_condition π h)
   fac := by
-    intro W e he a
     -- The `EffectiveEpiFamily F(X) F(π)` on `CompHaus`
-    have : EffectiveEpiFamily (fun a => F.obj (X a)) π :=
-      CompHaus.effectiveEpiFamily_of_jointly_surjective (fun a => F.obj (X a)) π surj
+    let fam : EffectiveEpiFamily (F.obj <| X ·) π :=
+      CompHaus.effectiveEpiFamily_of_jointly_surjective (F.obj <| X ·) π surj
+    intro W e he a
     -- The `fac` on `CompHaus`
-    have fac₁ := EffectiveEpiFamily.fac (fun (a : α) => F.obj (X a)) π e (helper π he) a
-    change F.map (π a ≫ _) = F.map (e a) at fac₁
+    have fac₁ :  F.map (π a ≫ _) = F.map (e a) :=
+      EffectiveEpiFamily.fac (F.obj <| X ·) π e (lift_desc_condition π he) a
     replace fac₁ := Faithful.map_injective fac₁
     exact fac₁
   uniq := by
+    -- The `EffectiveEpiFamily F(X) F(π)` on `CompHaus`
+    let fam : EffectiveEpiFamily (F.obj <| X ·) π :=
+      CompHaus.effectiveEpiFamily_of_jointly_surjective (F.obj <| X ·) π surj
     intro W e he m hm
     have Fhm : ∀ (a : α), π a ≫ F.map m = e a
-    · aesop_cat
-    have : EffectiveEpiFamily (fun a => F.obj (X a)) π :=
-      CompHaus.effectiveEpiFamily_of_jointly_surjective (fun a => F.obj (X a)) π surj
-    have uniq₁ :=
-      EffectiveEpiFamily.uniq (fun (a : α) => F.obj (X a)) π e (helper π he) (F.map m) Fhm
-    change F.map m = F.map _ at uniq₁
+    · intro a
+      simp_all only [toCompHaus_map]
+    have uniq₁ : F.map m = F.map _ :=
+      EffectiveEpiFamily.uniq (F.obj <| X ·) π e (lift_desc_condition π he) (F.map m) Fhm
     replace uniq₁ := Faithful.map_injective uniq₁
     exact uniq₁
 
@@ -162,7 +174,7 @@ end EffectiveEpiFamily
 
 section JointlySurjective
 
-/-- On direction of `effectiveEpiFamily_tfae` -/
+/-- One direction of `effectiveEpiFamily_tfae`. -/
 theorem effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Fintype α] {B : ExtrDisc}
     (X : α → ExtrDisc) (π : (a : α) → (X a ⟶ B))
@@ -172,41 +184,43 @@ theorem effectiveEpiFamily_of_jointly_surjective
 
 open List in
 /--
-For a finite family of extremally disconnected spaces `πₐ : Xₐ → B` the following are equivalent:
-* they are an effective epi family
-* the map `∐ πₐ ⟶ B` is an epimorphism
-* they are jointly surjective
+For a finite family of extremally spaces `π a : X a → B` the following are equivalent:
+* `π` is an effective epimorphic family
+* the map `∐ π a ⟶ B` is an epimorphism
+* `π` is jointly surjective
 -/
 theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : ExtrDisc}
-    (X : α → ExtrDisc)
-    (π : (a : α) → (X a ⟶ B)) :
+    (X : α → ExtrDisc) (π : (a : α) → (X a ⟶ B)) :
     TFAE [
       EffectiveEpiFamily X π,
       Epi (Limits.Sigma.desc π),
-      ∀ (b : B), ∃ (a : α) (x : X a), π a x = b
-    ] := by
+      ∀ (b : B), ∃ (a : α) (x : X a), π a x = b ] := by
   tfae_have 1 → 2
-  · intro; infer_instance
+  · intro
+    infer_instance
   tfae_have 1 → 2
-  · intro; infer_instance
+  · intro
+    infer_instance
   tfae_have 2 → 3
   · intro e
     rw [epi_iff_surjective] at e
     intro b
-    obtain ⟨t,rfl⟩ := e b
+    obtain ⟨t, rfl⟩ := e b
     let q := (FromFiniteCoproductIso X).inv t
-    refine ⟨q.1,q.2,?_⟩
+    refine ⟨q.1, q.2, ?_⟩
     rw [← (FromFiniteCoproductIso X).inv_hom_id_apply t]
     show _ = ((FromFiniteCoproductIso X).hom ≫ Sigma.desc π) ((FromFiniteCoproductIso X).inv t)
-    suffices (FromFiniteCoproductIso X).hom ≫ Sigma.desc π = finiteCoproduct.desc X π by
-      rw [this]; rfl
+    suffices : (FromFiniteCoproductIso X).hom ≫ Sigma.desc π = finiteCoproduct.desc X π
+    · rw [this]
+      rfl
     apply Eq.symm
     rw [← Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
     simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       FromFiniteCoproductIso, colimit.comp_coconePointUniqueUpToIso_inv_assoc]
-    ext; rfl
+    ext
+    rfl
   tfae_have 3 → 1
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
@@ -220,22 +234,22 @@ open CompHaus Functor
 theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
     {α : Type} [Fintype α] {B : ExtrDisc.{u}}
     {X : α → ExtrDisc.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
-    EffectiveEpiFamily (fun a => toCompHaus.obj (X a) ) (fun a => toCompHaus.map (π a)) := by
+    EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by
   refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
   exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
-instance : Precoherent ExtrDisc.{u} := by
+instance instPrecoherent: Precoherent ExtrDisc.{u} := by
   constructor
   intro B₁ B₂ f α _ X₁ π₁ h₁
-  refine' ⟨α, inferInstance, fun a => (pullback f (π₁ a)).presentation, fun a =>
-    toCompHaus.preimage (presentationπ _ ≫ (pullback.fst _ _)), _, id, fun a =>
-    toCompHaus.preimage (presentationπ _ ≫ (pullback.snd _ _ )), fun a => _⟩
-  · refine' ((effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
+  refine ⟨α, inferInstance, fun a => (pullback f (π₁ a)).presentation, fun a =>
+    toCompHaus.preimage (presentationπ _ ≫ (pullback.fst _ _)), ?_, id, fun a =>
+    toCompHaus.preimage (presentationπ _ ≫ (pullback.snd _ _ )), fun a => ?_⟩
+  · refine ((effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
     have h₁' := ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).1 h₁.toCompHaus
     obtain ⟨a, x, h⟩ := h₁' (f b)
     obtain ⟨c, hc⟩ := (CompHaus.epi_iff_surjective _).1
       (epiPresentπ (CompHaus.pullback f (π₁ a))) ⟨⟨b, x⟩, h.symm⟩
-    refine' ⟨a, c, _⟩
+    refine ⟨a, c, ?_⟩
     change toCompHaus.map (toCompHaus.preimage _) _ = _
     simp only [image_preimage, toCompHaus_obj, comp_apply, hc]
     rfl
