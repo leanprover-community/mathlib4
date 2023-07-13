@@ -49,12 +49,14 @@ inductive MyTree (α : Type)
   | node : MyTree α → MyTree α → α → MyTree α
   deriving LawfulTraversable
 
-inductive MyTree (α : Type)
-  | leaf : MyTree α
-  | node : MyTree α → α → MyTree α → MyTree α
+#guard_msgs (drop info) in #synth LawfulTraversable MyTree
+
+inductive MyTree' (α : Type)
+  | leaf : MyTree' α
+  | node : MyTree' α → α → MyTree' α → MyTree' α
   deriving LawfulTraversable
 
-#guard_msgs (drop info) in #synth LawfulTraversable MyTree
+#guard_msgs (drop info) in #synth LawfulTraversable MyTree'
 
 section
 open MyTree hiding traverse
