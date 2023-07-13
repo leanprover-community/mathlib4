@@ -11,8 +11,6 @@ Authors: Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Ordering.Basic
 
-universe u v
-
 /-!
 # Unbundled algebra classes
 
@@ -66,6 +64,8 @@ Mario made the following analysis of uses in mathlib3:
 * `is_trichotomous`: some usage
 * `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
+
+universe u v
 
 -- porting note: removed `outParam`
 class IsSymmOp (α : Type u) (β : Type v) (op : α → α → β) : Prop where
