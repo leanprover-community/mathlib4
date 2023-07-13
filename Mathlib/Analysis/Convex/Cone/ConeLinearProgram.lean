@@ -19,7 +19,7 @@ import Mathlib.Topology.Instances.EReal
 
 open Filter Set Topology ContinuousLinearMap
 
-structure ConeProgram
+structure ConeLinearProgram
   (V : Type _) [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
   (W : Type _) [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
   where
@@ -29,11 +29,11 @@ structure ConeProgram
   lhs : V →L[ℝ] W
   rhs : W
 
-namespace ConeProgram
+namespace ConeLinearProgram
 
 variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
 variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
-variable (P : ConeProgram V W)
+variable (P : ConeLinearProgram V W)
 
 def Objective (v : V) := Real.toEReal ⟪v, P.cost⟫_ℝ
 
@@ -99,7 +99,7 @@ lemma value_le_subValue : P.SubValue ≤ P.Value  := sInf_le_sInf P.values_subse
 
 ----------------------------------------------------------------------------------------------------
 
-noncomputable def Dual : ConeProgram W V where
+noncomputable def Dual : ConeLinearProgram W V where
   K := (P.slack_cone).dual
   L := (P.decision_cone).dual
   obj := -P.rhs
@@ -184,4 +184,4 @@ theorem weak_duality : -(P.Dual).Value ≤ P.SubValue := le_sInf <| by
 
 def SlaterCondition := ∃ v : P.decision_cone, P.rhs - P.lhs v ∈ interior P.slack_cone
 
-end ConeProgram
+end ConeLinearProgram
