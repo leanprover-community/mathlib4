@@ -95,10 +95,6 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
   exact ⟨y, n, h9, h10, h8⟩
   done
 
-theorem zou : IsClosed (nonWanderingSet f) := by
-  rw [← isSeqClosed_iff_isClosed]
-  intros u x hu u_lim
-  rw [tendsto_atTop_nhds] at u_lim
 
 /- Show that the non-wandering set of `f` is compact. -/
 theorem is_cpt : IsCompact (nonWanderingSet f : Set α) := by
@@ -219,15 +215,10 @@ using Zorn lemma. -/
 
 
 /- Show that the recurrent set of `f` is nonempty -/
-
-
-
-
+theorem recurrentSet_nonempty : Set.Nonempty (recurrentSet f) := by
+  sorry
 
 end Topological_Dynamics
-
-
-
 
 section Ergodic_Theory
 
