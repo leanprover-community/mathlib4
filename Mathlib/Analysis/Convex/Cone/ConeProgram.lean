@@ -44,8 +44,8 @@ def IsFeasible := Nonempty { v | P.IsSolution v }
 def IsOptimalSolution (v : V) :=
   P.IsSolution v ∧ IsGreatest (P.Objective ''  { v | P.IsSolution v }) (P.Objective v)
 
-lemma solution_of_optimalSolution (v : V) (h : P.IsOptimalSolution x) :
-  P.IsSolution x := h.1
+lemma solution_of_optimalSolution (h : P.IsOptimalSolution v) :
+  P.IsSolution v := h.1
 
 def Values := P.Objective '' { v | P.IsSolution v }
 
@@ -64,15 +64,23 @@ lemma value_optimal (h : P.IsOptimalSolution v) : P.Value = P.Objective v := by
 
 def IsSubSolution (seqV : ℕ → V) :=
   ∃ seqW : ℕ → W,
-  (∀ n, seqV n ∈ P.K) ∧
-  (∀ n, seqW n ∈ P.L) ∧
-  (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (𝓝 P.rhs))
+  (∀ n, seqV n ∈ P.K)
+  ∧ (∀ n, seqW n ∈ P.L)
+  ∧ (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (𝓝 P.rhs))
+  ∧ (IsCoboundedUnder (· ≤ ·) atTop (fun n => P.Objective (seqV n)))
 
 noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
 lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
-  use fun _ => P.rhs - P.lhs x
-  simpa only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, and_true]
+  refine' ⟨fun _ => P.rhs - P.lhs x, fun _ => hx.1, _⟩
+  simp only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, true_and]
+  refine' ⟨hx.2, _⟩
+  use P.Objective x
+  simp_rw [eventually_map, eventually_atTop, ge_iff_le, forall_exists_index]
+  rintro _ n h
+  specialize h n
+  simp only [le_refl, forall_true_left] at h
+  assumption
 
 @[simp] lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
   limsup_const _
@@ -113,7 +121,7 @@ theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual] ; simp
 
 theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
   P.SubObjective seqV ≤ - (P.Dual).Objective w := by
-    rcases hv with ⟨seqW, hseqV, hseqW, htends⟩
+    rcases hv with ⟨seqW, hseqV, hseqW, htends, hcob⟩
     rcases hw with ⟨hw1, hw2⟩
     dsimp [Dual] at hw2
     have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := fun n => by
@@ -123,26 +131,23 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
           . specialize hw2 (seqV n) (hseqV n)
             rwa [sub_neg_eq_add, neg_add_eq_sub] at hw2
           . exact hw1 (seqW n) (hseqW n) }
-      _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by rw [← inner_sub_right]
-      _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [add_sub_right_comm]
-      _ = ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [ContinuousLinearMap.adjoint_inner_right]
+      _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by
+        rw [← inner_sub_right]
+      _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by
+        rw [add_sub_right_comm]
+      _ = ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by
+        rw [ContinuousLinearMap.adjoint_inner_right]
       _ = ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [inner_add_left]
     simp_rw [sub_nonneg] at h
     have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) := htends.inner tendsto_const_nhds
     have : P.SubObjective seqV ≤ ⟪P.rhs, w⟫_ℝ := by
-      calc
-        P.SubObjective seqV
+      calc P.SubObjective seqV
           = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
         _ = limsup (fun n => ⟪seqV n, P.obj⟫_ℝ) atTop := by rfl
-        _ ≤ limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop := by
-            apply limsup_le_limsup
-            apply eventually_of_forall
-            exact h
-            sorry
-            sorry
+        _ ≤ limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop :=
+            limsup_le_limsup (eventually_of_forall h) hcob (Tendsto.isBoundedUnder_le htends')
         _ = ⟪P.rhs, w⟫_ℝ := (htends.inner tendsto_const_nhds).limsup_eq
-        -- _ = ⟪w, P.rhs⟫_ℝ := real_inner_comm _ _
-    rw [Objective, Dual, inner_neg_right, neg_neg]
+    rwa [Objective, Dual, inner_neg_right, neg_neg, real_inner_comm _ _]
 
 theorem weak_duality (hP : P.IsSubFeasible) (hD : (P.Dual).IsFeasible) :
   P.SubValue ≤ -(P.Dual).Value := by
@@ -172,23 +177,8 @@ theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
     rw [← hv3, ← hw3, le_neg]
     exact P.weak_duality_aux' hv2 hw2
 
--- def SlaterCondition := ∃ v : P.K, P.rhs - P.lhs v ∈ interior P.L
+----------------------------------------------------------------------------------------------------
 
--- theorem Value_eq_SubValue  (fs : P.IsFeasible) (bdd : BddAbove P.SubValues)
---   (sl : P.SlaterCondition) : P.Value = P.SubValue := by
---   apply le_antisymm (P.Value_le_Subvalue fs bdd)
---   by_contra'
-
--- example
---   (v w : V)
---   (seq : ℕ → V)
---   (htends : Tendsto (fun n => seq n) atTop (nhds v)) :
---   Tendsto (fun n => ⟪seq n, w⟫_ℝ) atTop (nhds ⟪v, w⟫_ℝ) := htends.inner tendsto_const_nhds
-
--- example
---   (v w : V)
---   (seq : ℕ → V)
---   (htends : Tendsto (fun n => seq n) atTop (nhds v)) :
---   limsup (fun n => ⟪seq n, w⟫_ℝ) atTop = ⟪v, w⟫_ℝ := (htends.inner tendsto_const_nhds).limsup_eq
+def SlaterCondition := ∃ v : P.K, P.rhs - P.lhs v ∈ interior P.L
 
 end ConeProgram
