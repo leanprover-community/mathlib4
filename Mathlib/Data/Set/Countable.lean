@@ -116,6 +116,9 @@ theorem countable_univ [Countable α] : (univ : Set α).Countable :=
   to_countable univ
 #align set.countable_univ Set.countable_univ
 
+theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
+  countable_coe_iff.symm.trans (Equiv.Set.univ _).countable_iff
+
 /-- If `s : Set α` is a nonempty countable set, then there exists a map
 `f : ℕ → α` such that `s = range f`. -/
 theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty) :

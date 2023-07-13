@@ -906,11 +906,12 @@ theorem div_pos {b c : Ordinal} (h : c ≠ 0) : 0 < b / c ↔ c ≤ b := by simp
 #align ordinal.div_pos Ordinal.div_pos
 
 theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b := by
-  apply limitRecOn a
-  · simp only [mul_zero, Ordinal.zero_le]
-  · intros
-    rw [succ_le_iff, lt_div c0]
-  · simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, iff_self_iff,
+  induction a using limitRecOn with
+  | H₁ => simp only [mul_zero, Ordinal.zero_le]
+  | H₂ _ _ => rw [succ_le_iff, lt_div c0]
+  | H₃ _ h₁ h₂ =>
+    revert h₁ h₂
+    simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, iff_self_iff,
       forall_true_iff]
 #align ordinal.le_div Ordinal.le_div
 
@@ -1990,9 +1991,8 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
-      apply a.limitRecOn
-      assumption'
-      intro o ho H
+      induction' a using limitRecOn with _ _ _ ho H
+      any_goals solve_by_elim
       rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
       congr
       ext b hb
@@ -2477,11 +2477,11 @@ theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
 #align ordinal.add_mul_limit_aux Ordinal.add_mul_limit_aux
 
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
-  apply limitRecOn c
-  · simp only [succ_zero, mul_one]
-  · intro c IH
+  induction c using limitRecOn with
+  | H₁ => simp only [succ_zero, mul_one]
+  | H₂ c IH =>
     rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
-  · intro c l IH
+  | H₃ c l IH =>
     -- Porting note: Unused.
     -- have := add_mul_limit_aux ba l IH
     rw [mul_succ, add_mul_limit_aux ba l IH, mul_succ, add_assoc]

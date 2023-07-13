@@ -339,7 +339,7 @@ theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
 --Porting note: new theorem
 @[simp]
 theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
-    star (OfNat.ofNat n : R) = OfNat.ofNat n :=
+    star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
   star_natCast _
 
 section
