@@ -43,16 +43,16 @@ Which will download the cache for:
 * Every Lean file inside 'Mathlib/Data/'
 * Everything that's needed for the above"
 
-open System in
+open Lean System in
 /-- Note that this normalizes the path strings, which is needed when running from a unix shell
 (which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
 match. -/
-def toPaths (args : List String) : List FilePath :=
-  args.map fun arg =>
+def toPaths (args : List String) : IO (List FilePath) :=
+  args.mapM fun arg =>
     if arg.endsWith ".lean" then
-      FilePath.mk arg |>.normalize
-    else
-      mkFilePath (arg.splitOn ".") |>.withExtension "lean"
+      return FilePath.mk arg |>.normalize
+    else do
+      return mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
@@ -66,9 +66,9 @@ def main (args : List String) : IO Unit := do
   | ["get"] => getFiles hashMap false goodCurl true
   | ["get!"] => getFiles hashMap true goodCurl true
   | ["get-"] => getFiles hashMap false goodCurl false
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl true
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true goodCurl true
-  | "get-"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl false
+  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (← toPaths args)) false goodCurl true
+  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (← toPaths args)) true goodCurl true
+  | "get-"  :: args => getFiles (← hashMemo.filterByFilePaths (← toPaths args)) false goodCurl false
   | ["pack"] => discard $ packCache hashMap false
   | ["pack!"] => discard $ packCache hashMap true
   | ["unpack"] => unpackCache hashMap
