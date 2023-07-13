@@ -183,6 +183,28 @@ theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by
   induction y using WithTop.recTopCoe <;> simp [← coe_add]
 #align with_top.coe_add_eq_top_iff WithTop.coe_add_eq_top_iff
 
+theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
+  lift a to α using ha
+  obtain rfl | hb := (eq_or_ne b ⊤)
+  · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
+  lift b to α using hb
+  simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
+    exists_eq_left, add_left_inj, exists_eq_right, eq_comm]
+
+theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (hle : b + a = c + a) : b = c :=
+  (WithTop.add_right_cancel_iff ha).1 hle
+
+theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
+  lift a to α using ha
+  obtain rfl | hb := (eq_or_ne b ⊤)
+  · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
+  lift b to α using hb
+  simp_rw [←WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
+    exists_and_left, exists_eq_left', add_right_inj, exists_eq_right']
+
+theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊤) (hle : a + b = a + c) : b = c :=
+  (WithTop.add_left_cancel_iff ha).1 hle
+
 instance covariantClass_add_le [LE α] [CovariantClass α α (· + ·) (· ≤ ·)] :
     CovariantClass (WithTop α) (WithTop α) (· + ·) (· ≤ ·) :=
   ⟨fun a b c h => by
