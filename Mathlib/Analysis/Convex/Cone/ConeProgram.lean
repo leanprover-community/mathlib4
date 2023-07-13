@@ -67,7 +67,7 @@ def IsSubSolution (seqV : ℕ → V) :=
   (∀ n, seqV n ∈ P.K)
   ∧ (∀ n, seqW n ∈ P.L)
   ∧ (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (𝓝 P.rhs))
-  ∧ (IsCoboundedUnder (· ≤ ·) atTop (fun n => P.Objective (seqV n)))
+  ∧ (IsCoboundedUnder (· ≤ ·) atTop fun n => P.Objective <| seqV n)
 
 noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
@@ -80,7 +80,7 @@ lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ =
   rintro _ n h
   specialize h n
   simp only [le_refl, forall_true_left] at h
-  assumption
+  exact h
 
 @[simp] lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
   limsup_const _
