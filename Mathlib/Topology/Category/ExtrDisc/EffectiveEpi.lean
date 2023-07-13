@@ -217,7 +217,8 @@ section Coherent
 
 open CompHaus Functor
 
-theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus {α : Type} [Fintype α] {B : ExtrDisc.{u}}
+theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
+    {α : Type} [Fintype α] {B : ExtrDisc.{u}}
     {X : α → ExtrDisc.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
     EffectiveEpiFamily (fun a => toCompHaus.obj (X a) ) (fun a => toCompHaus.map (π a)) := by
   refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
