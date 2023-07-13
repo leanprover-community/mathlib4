@@ -2,7 +2,7 @@
 import Mathlib
 
 
-/-
+/- Floris notes from 12 July
 fun (a,b,c,D) ↦
 conditions: sign(a) = - sign(c), a ≠ 0, D = b^2 - 4ac
 
@@ -37,13 +37,32 @@ structure Coefficients : Type where
   a : ℤ
   b : ℤ
   c : ℤ
-  D := b^2 - 4*a*c
+  D : ℤ := b^2 - 4*a*c
   hD : D = b^2 - 4*a*c := by rfl
 deriving Repr
 
+def quad_form (f : Coefficients) (t : ℝ) : ℝ :=
+  f.a * t * t + f.b * t + f.c
+
+structure Roots (f : Coefficients) : Type where
+  xp : ℝ
+  xm : ℝ
+  hxp : quad_form f xp = 0
+  hxm : quad_form f xm = 0
+  hle : xm < xp
+
 def brouckner (f : Coefficients) : Coefficients × ℤ :=
   let m := (-f.b + f.D.sqrt) / (2 * f.a)
-  ({a := -(f.a*m^2+f.b*m+f.c), b := -(2*f.a*m+f.b), c:=-f.a, D := f.D, hD := by rw [f.hD]; ring}, m)
+  ({a := -(f.a*m^2+f.b*m+f.c),
+    b := -(2*f.a*m+f.b),
+    c:= -f.a,
+    D := f.D,
+    hD := by rw [f.hD]; ring},
+    m)
+
+theorem roots_stay (f : Coefficients) (r : Roots f) (hxm : r.xm < 0) (hxp : r.xp > 1)
+(r' : Roots (brouckner f).fst) :
+  -1 < r'.xm ∧ r.xm < 0 ∧ r.xp > 1 := by sorry
 
 def iterate_brouckner (f : Coefficients) (l : List (Coefficients × ℤ)) :
     (n : ℕ) → List (Coefficients × ℤ)
@@ -55,8 +74,16 @@ def iterate_brouckner (f : Coefficients) (l : List (Coefficients × ℤ)) :
     else
       iterate_brouckner f ((f,m)::l) n
 
--- theorem bouckner_preserves_sign (ha : 0 < a) (hc : c < 0) :
---   let (a',b',c',d') := (brouckner a b c D) ;;
+
+
+-- theorem bouckner_preserves_sign (f : Coefficients) (ha : 0 < f.a) (hc : f.c < 0) :
+--   0 < (brouckner f).fst.a ∧ (brouckner f).fst.c < 0 := by
+--     constructor
+--     · simp [brouckner]
+--       let m := (-f.b + f.D.sqrt) / (2 * f.a)
+--       have : f.a * m^2 + f.b * m + f.c < 0 := by sorry
+--       simp at this; linarith
+--     · simp [brouckner, f.hD]; ring_nf; assumption
 
 #eval iterate_brouckner ⟨1,0, (-19), (4 * 19), by norm_num⟩ [] 20
 
