@@ -69,20 +69,12 @@ def IsSubSolution (seqV : ℕ → V) :=
   (∀ n, seqV n ∈ P.K)
   ∧ (∀ n, seqW n ∈ P.L)
   ∧ (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (𝓝 P.rhs))
-  ∧ (IsCoboundedUnder (· ≤ ·) atTop fun n => P.Objective <| seqV n)
 
 noncomputable def SubObjective (seqV : ℕ → V) := limsup (fun n => P.Objective (seqV n)) atTop
 
-lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x := by
-  refine' ⟨fun _ => P.rhs - P.lhs x, fun _ => hx.1, _⟩
-  simp only [forall_const, add_sub_cancel'_right, tendsto_const_nhds_iff, true_and]
-  refine' ⟨hx.2, _⟩
-  use P.Objective x
-  simp_rw [eventually_map, eventually_atTop, ge_iff_le, forall_exists_index]
-  rintro _ n h
-  specialize h n
-  simp only [le_refl, forall_true_left] at h
-  exact h
+lemma subSolution_of_solution (hx : P.IsSolution x) : P.IsSubSolution <| fun _ => x :=
+  let ⟨hx1, _⟩ := hx
+  ⟨fun _ => P.rhs - P.lhs x, fun _ => hx1, by simpa⟩
 
 @[simp] lemma subSolution_of_solution_value : P.SubObjective (fun _ => x) = P.Objective x :=
   limsup_const _
@@ -123,7 +115,7 @@ theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual]; simp
 
 theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
   P.SubObjective seqV ≤ - (P.Dual).Objective w := by
-    rcases hv with ⟨seqW, hseqV, hseqW, htends, hcob⟩
+    rcases hv with ⟨seqW, hseqV, hseqW, htends⟩
     rcases hw with ⟨hw1, hw2⟩
     dsimp [Dual] at hw2
     have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := fun n => by
@@ -142,9 +134,7 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
     simp_rw [sub_nonneg, ← EReal.coe_le_coe_iff] at h
     have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) :=
       htends.inner tendsto_const_nhds
-    have t : limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop = ⟪P.rhs, w⟫_ℝ := sorry
-    -- (htends'.inner tendsto_const_nhds).limsup_eq
-    -- rw [← EReal.tendsto_coe] at htends'
+    rw [← EReal.tendsto_coe] at htends'
     have : P.SubObjective seqV ≤ ⟪P.rhs, w⟫_ℝ := by
       calc P.SubObjective seqV
           = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
@@ -152,18 +142,9 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
         _ ≤ limsup (fun n => Real.toEReal ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop := by
             norm_cast
             refine' limsup_le_limsup (eventually_of_forall h) isCobounded_le_of_bot isBounded_le_of_top
-            -- limsup_le_limsup (eventually_of_forall h) hcob (Tendsto.isBoundedUnder_le htends')
-        _ = ⟪P.rhs, w⟫_ℝ := by
-                rw [EReal.tendsto_coe]
-
-                -- have := (htends'.inner tendsto_const_nhds).limsup_eq
-                -- have t : limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop = ⟪P.rhs, w⟫_ℝ := (htends'.inner tendsto_const_nhds).limsup_eq
-                  -- := (htends'.inner tendsto_const_nhds).limsup_eq
-                sorry
-        --norm_cast ; exact (htends'.inner tendsto_const_nhds).limsup_eq
+        _ = ⟪P.rhs, w⟫_ℝ := htends'.limsup_eq
     rw [Objective, Dual, inner_neg_right, real_inner_comm _ _]
     simpa
-
 
 theorem weak_duality (hP : P.IsSubFeasible) (hD : (P.Dual).IsFeasible) :
   P.SubValue ≤ -(P.Dual).Value := by
