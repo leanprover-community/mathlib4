@@ -207,6 +207,8 @@ instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTo
     MulAction R (Seminorm 𝕜 E) :=
   FunLike.coe_injective.mulAction _ (by intros; rfl)
 
+noncomputable instance instMulAction' : MulAction ℝ≥0 (Seminorm 𝕜 E) := inferInstance
+
 variable (𝕜 E)
 
 /-- `coeFn` as an `AddMonoidHom`. Helper definition for showing that `Seminorm 𝕜 E` is a module. -/

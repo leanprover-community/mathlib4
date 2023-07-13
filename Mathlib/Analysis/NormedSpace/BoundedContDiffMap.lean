@@ -119,26 +119,37 @@ noncomputable def iteratedFDerivₗ (i : ℕ) :
 
 @[simp]
 theorem iteratedFDerivₗ_apply (i : ℕ) (f : E →ᵇ[𝕜, n] F) (x : E) :
-    BoundedContDiffMap.iteratedFDerivₗ i f x = if i ≤ n then iteratedFDeriv 𝕜 i f x else 0 := by
-  rw [BoundedContDiffMap.iteratedFDerivₗ]
+    iteratedFDerivₗ i f x = if i ≤ n then iteratedFDeriv 𝕜 i f x else 0 := by
+  rw [iteratedFDerivₗ]
   split_ifs <;> rfl
 
+@[simp]
+theorem iteratedFDerivₗ_apply_of_le {i : ℕ} (hin : i ≤ n) (f : E →ᵇ[𝕜, n] F) (x : E) :
+    iteratedFDerivₗ i f x = iteratedFDeriv 𝕜 i f x := by
+  rw [iteratedFDerivₗ_apply]
+  exact dif_pos hin
+
 theorem iteratedFDerivₗ_of_gt {i : ℕ} (hin : i > n) :
-    (BoundedContDiffMap.iteratedFDerivₗ i : (E →ᵇ[𝕜, n] F) →ₗ[𝕜] (E →ᵇ (E [×i]→L[𝕜] F))) = 0 :=
+    (iteratedFDerivₗ i : (E →ᵇ[𝕜, n] F) →ₗ[𝕜] (E →ᵇ (E [×i]→L[𝕜] F))) = 0 :=
   dif_neg (not_le_of_gt hin)
+
+theorem iteratedFDerivₗ_apply_of_gt {i : ℕ} (hin : i > n) (f : E →ᵇ[𝕜, n] F) (x : E) :
+    (iteratedFDerivₗ i f x) = 0 := by
+  rw [iteratedFDerivₗ_apply]
+  exact dif_neg (not_le_of_gt hin)
 
 section Topology
 
 instance : TopologicalSpace (E →ᵇ[𝕜, n] F) :=
-  ⨅ (i : ℕ), induced (BoundedContDiffMap.iteratedFDerivₗ i) inferInstance
+  ⨅ (i : ℕ), induced (iteratedFDerivₗ i) inferInstance
 
 noncomputable instance : UniformSpace (E →ᵇ[𝕜, n] F) := .replaceTopology
-  (⨅ (i : ℕ), UniformSpace.comap (BoundedContDiffMap.iteratedFDerivₗ i) inferInstance)
+  (⨅ (i : ℕ), UniformSpace.comap (iteratedFDerivₗ i) inferInstance)
   toTopologicalSpace_iInf.symm
 
 protected theorem BoundedContDiffMap.uniformSpace_eq_iInf :
     (instUniformSpaceBoundedContDiffMap : UniformSpace (E →ᵇ[𝕜, n] F)) =
-    ⨅ (i : ℕ), UniformSpace.comap (BoundedContDiffMap.iteratedFDerivₗ i) inferInstance :=
+    ⨅ (i : ℕ), UniformSpace.comap (iteratedFDerivₗ i) inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
 instance : UniformAddGroup (E →ᵇ[𝕜, n] F) := by
@@ -148,42 +159,52 @@ instance : UniformAddGroup (E →ᵇ[𝕜, n] F) := by
 
 noncomputable def iteratedFDerivL (i : ℕ) :
     (E →ᵇ[𝕜, n] F) →L[𝕜] (E →ᵇ (E [×i]→L[𝕜] F)) :=
-  { BoundedContDiffMap.iteratedFDerivₗ i with
+  { iteratedFDerivₗ i with
     cont := continuous_iInf_dom continuous_induced_dom }
 
 @[simp]
 theorem iteratedFDerivL_apply (i : ℕ) (f : E →ᵇ[𝕜, n] F) (x : E) :
-    BoundedContDiffMap.iteratedFDerivL i f x = if i ≤ n then iteratedFDeriv 𝕜 i f x else 0 := by
-  simp [BoundedContDiffMap.iteratedFDerivL]
+    iteratedFDerivL i f x = if i ≤ n then iteratedFDeriv 𝕜 i f x else 0 := by
+  simp [iteratedFDerivL]
+
+@[simp]
+theorem iteratedFDerivL_apply_of_le {i : ℕ} (hin : i ≤ n) (f : E →ᵇ[𝕜, n] F) (x : E) :
+    iteratedFDerivL i f x = iteratedFDeriv 𝕜 i f x := by
+  rw [iteratedFDerivL_apply]
+  exact dif_pos hin
 
 theorem iteratedFDerivL_of_gt {i : ℕ} (hin : i > n) :
-    (BoundedContDiffMap.iteratedFDerivL i : (E →ᵇ[𝕜, n] F) →L[𝕜] (E →ᵇ (E [×i]→L[𝕜] F))) = 0 :=
-  ContinuousLinearMap.coe_injective (BoundedContDiffMap.iteratedFDerivₗ_of_gt hin)
+    (iteratedFDerivL i : (E →ᵇ[𝕜, n] F) →L[𝕜] (E →ᵇ (E [×i]→L[𝕜] F))) = 0 :=
+  ContinuousLinearMap.coe_injective (iteratedFDerivₗ_of_gt hin)
+
+theorem iteratedFDerivL_apply_of_gt {i : ℕ} (hin : i > n) (f : E →ᵇ[𝕜, n] F) (x : E) :
+    (iteratedFDerivL i f x) = 0 := by
+  rw [iteratedFDerivL_apply]
+  exact dif_neg (not_le_of_gt hin)
 
 /-- This is mostly for dot notation. Should I keep it? -/
 protected noncomputable abbrev iteratedFDeriv (i : ℕ) (f : E →ᵇ[𝕜, n] F) : E →ᵇ (E [×i]→L[𝕜] F) :=
-  BoundedContDiffMap.iteratedFDerivL i f
+  iteratedFDerivL i f
 
 protected theorem continuous_iff {X : Type _} [TopologicalSpace X] (φ : X → E →ᵇ[𝕜, n] F) :
   Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
     ((BoundedContDiffMap.iteratedFDeriv i) ∘ φ) :=
-⟨ fun hφ i _ ↦ (BoundedContDiffMap.iteratedFDerivL i).continuous.comp hφ,
+⟨ fun hφ i _ ↦ (iteratedFDerivL i).continuous.comp hφ,
   fun h ↦ continuous_iInf_rng.mpr fun i ↦ continuous_induced_rng.mpr <| by
     by_cases hin : i ≤ n
     · exact h i hin
     · simpa [iteratedFDerivₗ_of_gt (lt_of_not_ge hin)] using continuous_zero ⟩
 
-protected noncomputable def BoundedContDiffMap.seminorm (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
-  (normSeminorm 𝕜 <| E →ᵇ (E [×i]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ i)
-
-protected noncomputable def BoundedContDiffMap.seminorm' (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
-  (Finset.Iic i).sup fun j ↦
-    (normSeminorm 𝕜 <| E →ᵇ (E [×j]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ j)
-
 variable (𝕜 E F n)
 
-theorem BoundedContDiffMap.withSeminorms :
-    WithSeminorms (BoundedContDiffMap.seminorm : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) := by
+protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
+  (normSeminorm 𝕜 <| E →ᵇ (E [×i]→L[𝕜] F)).comp (iteratedFDerivₗ i)
+
+protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 (E →ᵇ[𝕜, n] F) :=
+  (Finset.Iic i).sup (BoundedContDiffMap.seminorm 𝕜 E F n)
+
+protected theorem withSeminorms :
+    WithSeminorms (BoundedContDiffMap.seminorm 𝕜 E F n) := by
   let p : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ((_ : ℕ) × Fin 1) :=
     SeminormFamily.sigma fun i ↦ fun _ ↦
       (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[𝕜] F))).comp (BoundedContDiffMap.iteratedFDerivₗ i)
@@ -191,15 +212,28 @@ theorem BoundedContDiffMap.withSeminorms :
     withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
   exact this.congr_equiv (Equiv.sigmaUnique _ _).symm
 
-theorem BoundedContDiffMap.withSeminorms' :
-    WithSeminorms (BoundedContDiffMap.seminorm' : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) :=
+protected theorem withSeminorms' :
+    WithSeminorms (BoundedContDiffMap.seminorm' 𝕜 E F n) :=
   (BoundedContDiffMap.withSeminorms 𝕜 E F n).partial_sups
+
+variable {𝕜 E F n}
+
+protected theorem seminorm_apply (i : ℕ) (f : E →ᵇ[𝕜, n] F) :
+    BoundedContDiffMap.seminorm 𝕜 E F n i f = ‖f.iteratedFDeriv i‖ :=
+  rfl
+
+protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
+    BoundedContDiffMap.seminorm 𝕜 E F n i = ⊥ := by
+  ext f
+  rw [BoundedContDiffMap.seminorm_apply, BoundedContDiffMap.iteratedFDeriv,
+      iteratedFDerivL_of_gt hin, ContinuousLinearMap.zero_apply, norm_zero]
+  rfl
 
 end Topology
 
 section fderiv
 
-noncomputable def fderivL (n : ℕ∞) : (E →ᵇ[𝕜, n+1] F) →L[𝕜] (E →ᵇ[𝕜, n] (E →L[𝕜] F)) where
+noncomputable def fderivₗ' (n : ℕ∞) : (E →ᵇ[𝕜, n+1] F) →ₗ[𝕜] (E →ᵇ[𝕜, n] (E →L[𝕜] F)) where
   toFun f :=
   { toFun := fderiv 𝕜 f
     contDiff' := f.contDiff.fderiv_right le_rfl
@@ -216,14 +250,86 @@ noncomputable def fderivL (n : ℕ∞) : (E →ᵇ[𝕜, n+1] F) →L[𝕜] (E �
   map_smul' c f := by
     ext : 1
     exact fderiv_const_smul (f.contDiff.differentiable le_add_self).differentiableAt c
-  cont := by
-    refine Seminorm.continuous_from_bounded
-      (BoundedContDiffMap.withSeminorms 𝕜 E (E →L[𝕜] F) n) ?_
-      (BoundedContDiffMap.withSeminorms 𝕜 E F (n+1)) ?_
-    intro i
-    convert ((BoundedContDiffMap.withSeminorms (𝕜 := 𝕜) (E := E) (F := F) (n := n+1)).continuous_seminorm (i+1))
 
+@[simp]
+theorem fderivₗ'_apply (n : ℕ∞) (f : E →ᵇ[𝕜, n+1] F) (x : E) :
+    fderivₗ' n f x = fderiv 𝕜 f x :=
+  rfl
+
+theorem seminorm_fderivₗ' (i : ℕ) (f : E →ᵇ[𝕜, n+1] F) :
+    BoundedContDiffMap.seminorm 𝕜 E (E →L[𝕜] F) n i (fderivₗ' n f) =
+      BoundedContDiffMap.seminorm 𝕜 E F (n+1) (i+1) f := by
+  rw [BoundedContDiffMap.seminorm_apply, BoundedContDiffMap.seminorm_apply,
+      BoundedContinuousFunction.norm_eq_of_nonempty, BoundedContinuousFunction.norm_eq_of_nonempty]
+  refine congr_arg _ (Set.ext fun C ↦ forall_congr' fun x ↦ iff_of_eq <| congrArg₂ _ ?_ rfl)
+  rcases le_or_gt (i : ℕ∞) n with (hin|hin)
+  · have hin' : (i + 1 : ℕ) ≤ n + 1 := add_le_add_right hin _
+    rw [iteratedFDerivL_apply_of_le hin, iteratedFDerivL_apply_of_le hin',
+        ← norm_iteratedFDeriv_fderiv]
+    rfl
+  · have hin' : (i + 1 : ℕ) > n + 1 := WithTop.add_lt_add_right WithTop.one_ne_top hin
+    rw [iteratedFDerivL_apply_of_gt hin, iteratedFDerivL_apply_of_gt hin', norm_zero, norm_zero]
+
+noncomputable def fderivL' (n : ℕ∞) : (E →ᵇ[𝕜, n+1] F) →L[𝕜] (E →ᵇ[𝕜, n] (E →L[𝕜] F)) where
+  toLinearMap := fderivₗ' n
+  cont := by
+    refine Seminorm.continuous_from_bounded  (τ₁₂ := RingHom.id 𝕜)
+      (BoundedContDiffMap.withSeminorms 𝕜 E F (n+1))
+      (BoundedContDiffMap.withSeminorms 𝕜 E (E →L[𝕜] F) n) ?_ ?_
+    refine fun i ↦ ⟨{i+1}, 1, fun f ↦ ?_⟩
+    rw [Finset.sup_singleton, one_smul]
+    exact (seminorm_fderivₗ' i f).le
+
+@[simp]
+theorem fderivL'_apply (n : ℕ∞) (f : E →ᵇ[𝕜, n+1] F) (x : E) :
+    fderivL' n f x = fderiv 𝕜 f x :=
+  rfl
+
+section infinite
+
+noncomputable def fderivₗ : (E →ᵇ[𝕜, ⊤] F) →ₗ[𝕜] (E →ᵇ[𝕜, ⊤] (E →L[𝕜] F)) :=
+  fderivₗ' ⊤
+
+@[simp]
+theorem fderivₗ_apply (f : E →ᵇ[𝕜, ⊤] F) (x : E) : fderivₗ f x = fderiv 𝕜 f x :=
+  rfl
+
+noncomputable def fderivL : (E →ᵇ[𝕜, ⊤] F) →L[𝕜] (E →ᵇ[𝕜, ⊤] (E →L[𝕜] F)) :=
+  fderivL' ⊤
+
+@[simp]
+theorem fderivL_apply (n : ℕ∞) (f : E →ᵇ[𝕜, n+1] F) (x : E) :
+    fderivL' n f x = fderiv 𝕜 f x :=
+  rfl
+
+end infinite
 
 end fderiv
 
+section finite
+
+variable {n : ℕ}
+
+protected theorem withSeminorms_of_finite : WithSeminorms
+    (fun _ : Fin 1 ↦ (BoundedContDiffMap.seminorm' 𝕜 E F n n)) := by
+  refine (BoundedContDiffMap.withSeminorms 𝕜 E F n).congr ?_ ?_
+  · intro _
+    use Finset.Iic n, 1
+    rw [one_smul]
+    rfl
+  · intro i
+    use {0}, 1
+    rw [one_smul, Finset.sup_singleton, Seminorm.comp_id]
+    rcases le_or_gt i n with (hin|hin)
+    · rw [← Finset.mem_Iic] at hin
+      exact Finset.le_sup (α := Seminorm 𝕜 (E →ᵇ[𝕜, n] F)) hin
+    · rw [BoundedContDiffMap.seminorm_eq_bot (by exact_mod_cast hin)]
+      exact bot_le
+
+end finite
+
 end BoundedContDiffMap
+
+instance {E F} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] :
+    LocallyConvexSpace ℝ (E →ᵇ[ℝ, n] F) :=
+  locallyConvexSpace_iInf fun _ ↦ locallyConvexSpace_induced _
