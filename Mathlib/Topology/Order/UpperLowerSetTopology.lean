@@ -262,8 +262,6 @@ instance [Preorder α] : @LowerSetTopology α (lowerSetTopology' α) _ := by
   letI := lowerSetTopology' α
   exact ⟨rfl⟩
 
-instance  [Preorder α] [TopologicalSpace α] [LowerSetTopology α] : UpperSetTopology (αᵒᵈ) := sorry
-
 namespace UpperSetTopology
 
 section Preorder
@@ -373,6 +371,11 @@ variable [Preorder α] [TopologicalSpace α] [LowerSetTopology α] {s : Set α}
 lemma topology_eq : ‹_› = lowerSetTopology' α := topology_eq_lowerSetTopology
 
 variable {α}
+
+instance  [Preorder α] [TopologicalSpace α] [LowerSetTopology α] : UpperSetTopology (αᵒᵈ) where
+  topology_eq_upperSetTopology := by
+    refine topologicalSpace_eq ?_
+    rw [(LowerSetTopology.topology_eq (α))]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to
 `WithLowerSetTopology α`.
