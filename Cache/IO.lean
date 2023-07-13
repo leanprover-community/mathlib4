@@ -7,7 +7,6 @@ Authors: Arthur Paulino
 import Lean.Data.HashMap
 import Lean.Data.RBMap
 import Lean.Data.RBTree
-import Lean.Data.Json.Printer
 
 /-- Removes a parent path from the beginning of a path -/
 def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
@@ -17,15 +16,8 @@ def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
     | x, [] => x
   mkFilePath $ aux path.components parent.components
 
-def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
-  | 0, s => s
-  | len+1, s =>
-    let b := UInt8.ofNat (n >>> (len * 8))
-    Nat.toHexDigits n len <|
-      s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
-
-def UInt64.asLTar (n : UInt64) : String :=
-  s!"{Nat.toHexDigits n.toNat 8}.ltar"
+def UInt64.asTarGz (n : UInt64) : String :=
+  s!"{n}.tar.gz"
 
 namespace Cache.IO
 
@@ -59,22 +51,11 @@ def CURLBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
   IO.CACHEDIR / s!"curl-{CURLVERSION}"
 
-/-- leantar version at https://github.com/digama0/leangz -/
-def LEANTARVERSION :=
-  "0.1.1"
-
-def LEANTARBIN :=
-  -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}"
-
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
 
 def getCurl : IO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
-
-def getLeanTar : IO String := do
-  return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
@@ -155,44 +136,6 @@ def validateCurl : IO Bool := do
     | _ => throw $ IO.userError "Invalidly formatted version of `curl`"
   | _ => throw $ IO.userError "Invalidly formatted response from `curl --version`"
 
-def Version := Nat × Nat × Nat
-  deriving Inhabited, DecidableEq
-
-instance : Ord Version := let _ := @lexOrd; lexOrd
-instance : LE Version := leOfOrd
-
-def parseVersion (s : String) : Option Version := do
-  let [maj, min, patch] := s.splitOn "." | none
-  some (maj.toNat!, min.toNat!, patch.toNat!)
-
-def validateLeanTar : IO Unit := do
-  if (← LEANTARBIN.pathExists) then return
-  if let some version ← some <$> runCmd "leantar" #["--version"] <|> pure none then
-    let "leantar" :: v :: _ := version.splitOn " "
-      | throw $ IO.userError "Invalidly formatted response from `leantar --version`"
-    let some v := parseVersion v | throw $ IO.userError "Invalidly formatted version of `leantar`"
-    -- currently we need exactly one version of leantar, change this to reflect compatibility
-    if v = (parseVersion LEANTARVERSION).get! then return
-  let win := System.Platform.getIsWindows ()
-  let target ← if win then
-    pure "x86_64-pc-windows-msvc"
-  else
-    let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
-    unless arch ∈ ["x86_64", "aarch64"] do
-      throw $ IO.userError s!"unsupported architecture {arch}"
-    pure <|
-      if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
-      else s!"{arch}-unknown-linux-gnu"
-  IO.println s!"leantar is too old; downloading more recent version"
-  IO.FS.createDirAll IO.CACHEDIR
-  let ext := if win then "zip" else "tar.xz"
-  let _ ← runCmd "curl" #[
-    s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
-    "-L", "-o", s!"{LEANTARBIN}.{ext}"]
-  let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
-    "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar").toString, LEANTARBIN.toString]
-
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
   (fp : FilePath) (extension : String) (acc : Array FilePath := #[]) :
@@ -207,7 +150,7 @@ namespace HashMap
 
 def filter (hashMap : HashMap) (set : Lean.RBTree String compare) (keep : Bool) : HashMap :=
   hashMap.fold (init := default) fun acc path hash =>
-    let contains := set.contains hash.asLTar
+    let contains := set.contains hash.asTarGz
     let add := if keep then contains else !contains
     if add then acc.insert path hash else acc
 
@@ -226,9 +169,9 @@ Each build file also has a `Bool` indicating whether that file is required for c
 def mkBuildPaths (path : FilePath) : IO $ Array (FilePath × Bool) := do
   let packageDir ← getPackageDir path
   return #[
-    (packageDir / LIBDIR / path.withExtension "trace", true),
     (packageDir / LIBDIR / path.withExtension "olean", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
+    (packageDir / LIBDIR / path.withExtension "trace", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
 
@@ -242,25 +185,21 @@ def allExist (paths : Array (FilePath × Bool)) : IO Bool := do
 def packCache (hashMap : HashMap) (overwrite : Bool) : IO $ Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
-  let mut acc := #[]
-  let mut tasks := #[]
+  let mut acc := default
   for (path, hash) in hashMap.toList do
-    let zip := hash.asLTar
+    let zip := hash.asTarGz
     let zipPath := CACHEDIR / zip
     let buildPaths ← mkBuildPaths path
     if ← allExist buildPaths then
       if overwrite || !(← zipPath.pathExists) then
-        tasks := tasks.push <| ← IO.asTask do
-          runCmd (← getLeanTar) $ #[zipPath.toString] ++
-            ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
+        discard $ runCmd "tar" $ #["-I", "gzip -9", "-cf", zipPath.toString] ++
+          ((← buildPaths.filterM (·.1.pathExists)) |>.map (·.1.toString))
       acc := acc.push zip
-  for task in tasks do
-    _ ← IO.ofExcept task.get
   return acc
 
 /-- Gets the set of all cached files -/
 def getLocalCacheSet : IO $ Lean.RBTree String compare := do
-  let paths ← getFilesWithExtension CACHEDIR "ltar"
+  let paths ← getFilesWithExtension CACHEDIR "gz"
   return .fromList (paths.data.map (·.withoutParent CACHEDIR |>.toString)) _
 
 def isPathFromMathlib (path : FilePath) : Bool :=
@@ -276,22 +215,19 @@ def unpackCache (hashMap : HashMap) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
-    let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
-    let child ← IO.Process.spawn
-      { cmd := ← getLeanTar, args := #["-x", "-j", "-"], stdin := .piped }
-    let (stdin, child) ← child.takeStdin
-    let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
-      let pathStr := s!"{CACHEDIR / hash.asLTar}"
+    hashMap.forM fun path hash => do
+      let _ ← IO.asTask do
+      match path.parent with
+      | none | some path => do
+        let packageDir ← getPackageDir path
+        mkDir $ packageDir / LIBDIR / path
+        mkDir $ packageDir / IRDIR / path
       if isMathlibRoot || !isPathFromMathlib path then
-        config.push <| .str pathStr
+        runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}"]
       else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath.toString)]
-    stdin.putStr <| Lean.Json.compress <| .arr config
-    let exitCode ← child.wait
-    if exitCode != 0 then throw $ IO.userError s!"leantar failed with error code {exitCode}"
-    IO.println s!"unpacked in {(← IO.monoMsNow) - now} ms"
+        runCmd "tar" #["-xzf", s!"{CACHEDIR / hash.asTarGz}", "-C", mathlibDepPath.toString]
   else IO.println "No cache files to decompress"
 
 /-- Retrieves the azure token from the environment -/
@@ -305,7 +241,7 @@ instance : Ord FilePath where
 
 /-- Removes all cache files except for what's in the `keep` set -/
 def cleanCache (keep : Lean.RBTree FilePath compare := default) : IO Unit := do
-  for path in ← getFilesWithExtension CACHEDIR "ltar" do
+  for path in ← getFilesWithExtension CACHEDIR "gz" do
     if !keep.contains path then IO.FS.removeFile path
 
 end Cache.IO
