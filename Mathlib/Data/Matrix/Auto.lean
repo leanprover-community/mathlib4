@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Expr
 import Mathlib.Data.Matrix.Reflection
 import Mathlib.Data.Vector
+import Mathlib.Control.Monad.Cont
 
 /-! # Automatically generated lemmas for working with concrete matrices
 
@@ -78,7 +79,7 @@ elab:max "fin_eta% " mStx:term:max nStx:term:max A?:(term)? : term => do
     | some A => do
       let u ← mkFreshLevelMVar
       let α : Q(Type u) ← mkFreshExprMVarQ q(Type u)
-      some <$> Term.elabTermEnsuringType A q(Fin $m → Fin $n → $α)
+      some <$> Term.elabTermEnsuringType A q(Matrix (Fin $m) (Fin $n) $α)
     | none => pure none
   let some m ← (evalNat m).run
     | throwErrorAt mStx "Expecting a natural number, have{indentD m}"
@@ -157,69 +158,82 @@ theorem of_mul_of_fin_aux (l m n : ℕ) ⦃α⦄ [Mul α] [AddCommMonoid α] :
       A.mul B = A.mulᵣ B :=
 by simp_rw [forall_iff, mulᵣ_eq, eq_self_iff_true, forall_const]
 
+#eval Name.appendAfter `Test "int"
+
 /-- Prove a statement of the form
 ```
 ∀ α [has_mul α] [add_comm_monoid α] (a₁₁ ... aₗₘ b₁₁ ... bₘₙ : α),
    !![a₁₁ ⋱ aₗₘ] ⬝ !![b₁₁ ⋱ bₘₙ] = !![⋱]
 ```
 Returns the type of this statement and its proof. -/
-def of_mul_of_fin.prove (l m n : ℕ) : MetaM Expr :=
+def prove (l m n : ℕ) : MetaM Expr :=
 do
   let u ← mkFreshLevelMVar
   -- Note: Qq seems to need type ascriptions on `fun` binders even though
   -- the type is easily inferred. Is there a metavariable instantiation bug?
   withLocalDeclQ `α .implicit q(Type u) fun (α : Q(Type u)) => do
   withLocalDeclQ `inst_1 .instImplicit q(Mul $α) fun (instMulα : Q(Mul $α)) => do
-  withLocalDeclQ `inst_2 .instImplicit q(Mul $α) fun (instAddCommMonoidα : Q(AddCommMonoid $α)) => do
-    -- todo: convert CPS into a monad?
-    let a : Fin l → Fin m → Q($α) ← (Fin.mapM $ fun i : Fin l => Fin.mapM $ fun j : Fin m =>
-        tactic.mk_local' ((`a).append_suffix (nameSuffix i j)) binder_info.default α)
-    let b : Fin m → Fin n → Q($α)  ← (Fin.mapM $ fun i : Fin m => Fin.mapM $ fun j : Fin n =>
-        tactic.mk_local' ((`b).append_suffix (nameSuffix i j)) binder_info.default α)
-    let a_flat := (List.finRange l).bind (fun i => (List.finRange m).map $ fun j => a i j)
-    let b_flat := (List.finRange m).bind (fun i=> (List.finRange n).map $ fun j => b i j)
-    let args := (#[α, instMulα, instAddCommMonoidα] : Array Expr) ++
-      (show Array Expr from a_flat.toArray) ++ (show Array Expr from b_flat.toArray)
+  withLocalDeclQ `inst_2 .instImplicit q(AddCommMonoid $α) fun (instAddCommMonoidα : Q(AddCommMonoid $α)) => do
+    -- clever trick: create algebraic instances on `expr` so that we can use `matrix.mul` or
+    -- `matrix.mulᵣ` to build the expression we want to end up with. It doesn't matter which we pick,
+    -- but the typeclasses are easier to create for the latter.
+    let _zero := Expr.instZero α (←synthInstanceQ q(Zero $α))
+    let _add := Expr.instAdd α (←synthInstanceQ q(Add $α))
+    let _mul := Expr.instMul α (←synthInstanceQ q(Mul $α))
 
-    -- build the matrices out of the coefficients
-    let A := Matrix.fin_to_pexpr a
-    let B := Matrix.fin_to_pexpr b
-    -- -- get an instance cache holding all the instances needed for matrix multiplication. There must
-    -- -- be a better way to do this.
-    -- t ← tactic.mk_instance_cache α,
-    -- has_add_α ← tactic.mk_app `has_add [α] >>= (λ t, prod.snd <$> @tactic.solve_aux unit t (do
-    -- { tmp2 ← tactic.pose `_inst_2' none add_comm_monoid_α,
-    --   tactic.reset_instance_cache,
-    --   tactic.apply_instance })),
-    -- has_zero_α ← tactic.mk_app `has_zero [α] >>= (λ t, prod.snd <$> @tactic.solve_aux unit t (do
-    -- { tmp2 ← tactic.pose `_inst_2' none add_comm_monoid_α,
-    --   tactic.reset_instance_cache,
-    --   tactic.apply_instance })),
-    -- let t := {inst := [
-    --   (`has_mul, has_mul_α),
-    --   (`has_add, has_add_α),
-    --   (`has_zero, has_zero_α),
-    --   (`add_comm_monoid, add_comm_monoid_α)].foldl (λ n x, n.insert x.1 x.2) t.inst,
-    --   ..t},
+    (ContT.run · pure) do
+      -- introduce variables for each coefficient
+      let a : Fin l → Fin m → Q($α) ← (Fin.mapM $ fun i : Fin l => Fin.mapM $ fun j : Fin m =>
+          show ContT _ MetaM _ from withLocalDeclDQ ((`a).appendAfter (nameSuffix i j)) _)
+      let b : Fin m → Fin n → Q($α) ← (Fin.mapM $ fun i : Fin m => Fin.mapM $ fun j : Fin n =>
+          show ContT _ MetaM _ from withLocalDeclDQ ((`b).appendAfter (nameSuffix i j)) _)
+      let a_flat := (List.finRange l).bind (fun i => (List.finRange m).map $ fun j => a i j)
+      let b_flat := (List.finRange m).bind (fun i=> (List.finRange n).map $ fun j => b i j)
+      let args := (#[α, instMulα, instAddCommMonoidα] : Array Expr) ++
+        (show Array Expr from a_flat.toArray) ++ (show Array Expr from b_flat.toArray)
 
-    -- -- clever trick: create algebraic instances on `expr` so that we can use `matrix.mul` or
-    -- -- `matrix.mulᵣ` to build the expression we want to end up with. It doesn't matter which we pick,
-    -- -- but the typeclasses are easier to create for the latter.
-    -- (t, has_mul_αe) ← expr.has_mul t,
-    -- (t, has_add_αe) ← expr.has_add t,
-    -- (t, has_zero_αe) ← expr.has_zero t,
-    -- let ab := @matrix.mulᵣ _ _ _ _ has_mul_αe has_add_αe has_zero_αe a b,
-    -- let AB := matrix.fin_to_pexpr (matrix.map ab to_pexpr),
+      -- build the matrices out of the coefficients
+      let A := Matrix.fin_to_pexpr a
+      let B := Matrix.fin_to_pexpr b
+      let AB := Matrix.fin_to_pexpr (Matrix.mulᵣ a b)
 
-    -- -- State and prove the equality, noting the RHS is defeq to `mulᵣ A B`.
-    -- A_eq ← tactic.to_expr ``(@matrix.mul _ _ _ _ _ %%has_mul_α %%add_comm_monoid_α %%A %%B = %%AB),
+      -- State and prove the equality, noting the RHS is defeq to `mulᵣ A B`.
+      let forall_A_eq : Q(Prop) ← mkForallFVars args q($A ⬝ $B = $AB)
+      let heq : Q(Matrix.mulᵣ $A $B = $AB) := (q(Eq.refl $AB) : Expr)
+      let pf' ← mkLambdaFVars args <|
+        (show Q($A ⬝ $B = $AB) from (q((Matrix.mulᵣ_eq $A $B).symm) : Expr))
+      -- let some pf ← checkTypeQ (ty := forall_A_eq) <| pf'
+      --       | throwError "(internal error) fin_mul% generated proof with incorrect type."
+      mkExpectedTypeHint pf' forall_A_eq
+
+
+#check Expr
+
     -- t ← tactic.pis args A_eq,
     -- let pr := (expr.const `matrix.of_mul_of_fin_aux [u]).mk_app [`(l), `(m), `(n)],
     -- -- This seems to create a metavariable then assign it, which ensures `pr` carries the right type.
     -- ((), pr) ← tactic.solve_aux t $ tactic.exact pr,
 
-    -- pure (t, pr)
-    sorry
+elab:max "of_mul_of_fin% " lStx:term:max mStx:term:max nStx:term:max : term => do
+  let l : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
+  let m : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
+  let n : Q(Nat) ← Term.elabTermEnsuringType nStx (mkConst ``Nat)
+  let some l ← (evalNat l).run
+    | throwErrorAt lStx "Expecting a natural number, have{indentD l}"
+  let some m ← (evalNat m).run
+    | throwErrorAt mStx "Expecting a natural number, have{indentD m}"
+  let some n ← (evalNat n).run
+    | throwErrorAt nStx "Expecting a natural number, have{indentD n}"
+  prove l m n
+
+#check (of_mul_of_fin% 1 2 1)
+
+example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
+    !![a₁₁, a₁₂;
+      a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
+                      b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
+                                    a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
+  by rw [of_mul_of_fin% 2 2 2]
 
 open scoped Matrix
 
