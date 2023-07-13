@@ -948,7 +948,6 @@ theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p �
 #align nat.card_multiples Nat.card_multiples
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
-@[simp]
 theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : ((Ioc 0 n).filter fun x => p ∣ x).card = n / p := by
   induction' n with n IH
   · simp
