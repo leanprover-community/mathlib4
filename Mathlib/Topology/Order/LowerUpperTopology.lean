@@ -232,6 +232,8 @@ instance [Preorder α] : LowerTopology (WithLowerTopology α) :=
 instance [Preorder α] : UpperTopology (WithUpperTopology α) :=
   ⟨rfl⟩
 
+instance  [Preorder α] [TopologicalSpace α] [UpperTopology α] : LowerTopology (αᵒᵈ) := sorry
+
 def toOrderDualHomeomorph [Preorder α] : WithLowerTopology α ≃ₜ WithUpperTopology αᵒᵈ where
   toFun := OrderDual.toDual
   invFun := OrderDual.ofDual
@@ -374,18 +376,12 @@ theorem isClosed_Iic (a : α) : IsClosed (Iic a) :=
   isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩
 
 /-- The lower closure of a finite set is closed in the upper topology. -/
-theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) := by
-  simp only [← LowerSet.iSup_Iic, LowerSet.coe_iSup]
-  exact isClosed_biUnion h fun a _ => isClosed_Iic a
+theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
+  @LowerTopology.isClosed_upperClosure αᵒᵈ _ _ _ _ h
 
 /-- Every set open in the upper topology is a upper set. -/
-theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s := by
-  replace h := isOpen_iff_generate_Iic_compl.1 h
-  induction h
-  case basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isLowerSet_Iic a).compl
-  case univ => exact isUpperSet_univ
-  case inter u v _ _ hu2 hv2 => exact hu2.inter hv2
-  case sUnion _ _ ih => exact isUpperSet_sUnion ih
+theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
+  @LowerTopology.isLowerSet_of_isOpen αᵒᵈ _ _ _ _ h
 
 theorem isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
   isUpperSet_compl.1 <| isUpperSet_of_isOpen h.isOpen_compl
@@ -396,33 +392,18 @@ The closure of a singleton `{a}` in the upper topology is the left-infinite righ
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Iic a :=
-  Subset.antisymm ((closure_minimal fun _ h => h.le) <| isClosed_Iic a) <|
-    (isLowerSet_of_isClosed isClosed_closure).Iic_subset <| subset_closure rfl
+  @LowerTopology.closure_singleton αᵒᵈ _ _ _ _
 
-protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) := by
-  convert isTopologicalBasis_of_subbasis (topology_eq α)
-  simp_rw [upperBasis, coe_lowerClosure, compl_iUnion]
-  ext s
-  constructor
-  · rintro ⟨F, hF, rfl⟩
-    refine' ⟨(fun a => (Iic a)ᶜ) '' F, ⟨hF.image _, image_subset_iff.2 fun _ _ => ⟨_, rfl⟩⟩, _⟩
-    simp only [sInter_image]
-  · rintro ⟨F, ⟨hF, hs⟩, rfl⟩
-    haveI := hF.to_subtype
-    rw [subset_def, Subtype.forall'] at hs
-    choose f hf using hs
-    exact ⟨_, finite_range f, by simp_rw [biInter_range, hf, sInter_eq_iInter]⟩
+protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
+  @LowerTopology.isTopologicalBasis αᵒᵈ _ _ _
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous provided that the
 preimage of every interval `Set.Iic a` is a closed set.
 
 TODO: upgrade to an `iff`. -/
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
-    Continuous f := by
-  obtain rfl := UpperTopology.topology_eq α
-  refine continuous_generateFrom ?_
-  rintro _ ⟨a, rfl⟩
-  exact (h a).isOpen_compl
+    Continuous f :=
+  @LowerTopology.continuous_of_Ici αᵒᵈ _ _ _ _ _ _ h
 
 end Preorder
 
