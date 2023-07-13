@@ -228,10 +228,10 @@ is, `IsPreorder X r` and `IsSymm X r`. -/
 class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
 #align is_equiv IsEquiv
 
-/-- `IsPer X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
-is, `IsSymm X r` and `IsTrans X r`. -/
-class IsPer (α : Type u) (r : α → α → Prop) extends IsSymm α r, IsTrans α r : Prop
-#align is_per IsPer
+-- /-- `IsPer X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
+-- is, `IsSymm X r` and `IsTrans X r`. -/
+-- class IsPer (α : Type u) (r : α → α → Prop) extends IsSymm α r, IsTrans α r : Prop
+#noalign is_per -- IsPer
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `IsIrrefl X r` and `IsTrans X r`. -/
@@ -239,7 +239,7 @@ class IsStrictOrder (α : Type u) (r : α → α → Prop) extends IsIrrefl α r
 #align is_strict_order IsStrictOrder
 
 /-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
-`λ a b, ¬ lt a b ∧ ¬ lt b a` is transitive. -/
+`fun a b => ¬ lt a b ∧ ¬ lt b a` is transitive. -/
 class IsIncompTrans (α : Type u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 #align is_incomp_trans IsIncompTrans
@@ -263,8 +263,7 @@ class IsStrictTotalOrder (α : Type u) (lt : α → α → Prop) extends IsTrich
 #align is_strict_total_order IsStrictTotalOrder
 
 /-- Equality is an equivalence relation. -/
-instance eq_isEquiv (α : Type u) : IsEquiv α (· = ·)
-    where
+instance eq_isEquiv (α : Type u) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
   trans := @Eq.trans _
   refl := Eq.refl
