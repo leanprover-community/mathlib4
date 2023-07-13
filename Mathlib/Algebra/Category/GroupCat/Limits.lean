@@ -419,7 +419,7 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     { toFun := fun g => ⟨kernel.ι f g, FunLike.congr_fun (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
-        simpa using (AddSubgroup.coe_zero _).symm
+        simp [(AddSubgroup.coe_zero _).symm]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
         change _ = _ + _

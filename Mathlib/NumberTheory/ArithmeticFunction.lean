@@ -567,7 +567,6 @@ theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul
   ext x
   simp_rw [ppow_apply (Nat.succ_pos k), pow_succ] -- porting note: was `rw [..., pow_succ]`
   induction k <;> simp
-  · exact pow_one _       -- porting note: added
   · exact pow_succ'' _ _  -- porting note: added
 #align nat.arithmetic_function.ppow_succ Nat.ArithmeticFunction.ppow_succ
 

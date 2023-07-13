@@ -155,7 +155,7 @@ namespace Fin
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLE (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
+    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
       (by
         intro x
         ext
@@ -163,8 +163,8 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
 #align fin.cycle_range Fin.cycleRange
 
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n.succ} (h : i < j) : cycleRange i j = j := by
-  rw [cycleRange, ofLeftInverse'_eq_ofInjective, ←
-    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
+  rw [cycleRange, ofLeftInverse'_eq_ofInjective,
+    ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
     viaFintypeEmbedding_apply_not_mem_range]
   simpa
 #align fin.cycle_range_of_gt Fin.cycleRange_of_gt
@@ -174,12 +174,12 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
   cases n
   · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
-    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ :=
-    by simp
+    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext
   erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, coe_castLE, coe_finRotate]
+    viaFintypeEmbedding_apply_image, castLEEmb_toEmbedding, Function.Embedding.coeFn_mk,
+    coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl
@@ -256,16 +256,16 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
   cases n
   · rcases j with ⟨_, ⟨⟩⟩
   rcases lt_trichotomy j i with (hlt | heq | hgt)
-  · have : castSuccEmb (j + 1) = j.succ := by
+  · have : castSucc (j + 1) = j.succ := by
       ext
-      rw [coe_castSuccEmb, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
+      rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_below, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
     · rw [Fin.lt_iff_val_lt_val]
       simpa [this] using hlt
-  · rw [heq, Fin.cycleRange_self, Fin.succAbove_below, swap_apply_right, Fin.castSuccEmb_zero]
-    · rw [Fin.castSuccEmb_zero]
+  · rw [heq, Fin.cycleRange_self, Fin.succAbove_below, swap_apply_right, Fin.castSucc_zero]
+    · rw [Fin.castSucc_zero]
       apply Fin.succ_pos
   · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_above, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
@@ -276,9 +276,9 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 @[simp]
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
-  cases' lt_or_ge (castSuccEmb j) i with h h
+  cases' lt_or_ge (castSucc j) i with h h
   · rw [Fin.succAbove_below _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
-  · rw [Fin.succAbove_above _ _ h, Fin.cycleRange_of_gt (Fin.le_castSuccEmb_iff.mp h)]
+  · rw [Fin.succAbove_above _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 #align fin.cycle_range_succ_above Fin.cycleRange_succAbove
 
 @[simp]

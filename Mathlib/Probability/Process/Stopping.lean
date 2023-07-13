@@ -367,7 +367,7 @@ theorem measurableSpace_le' [IsCountablyGenerated (atTop : Filter ι)] [(atTop :
     (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m := by
   intro s hs
   change ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
-  obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := atTop.exists_seq_tendsto
+  obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := (atTop : Filter ι).exists_seq_tendsto
   rw [(_ : s = ⋃ n, s ∩ {ω | τ ω ≤ seq n})]
   · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
   · ext ω; constructor <;> rw [Set.mem_iUnion]

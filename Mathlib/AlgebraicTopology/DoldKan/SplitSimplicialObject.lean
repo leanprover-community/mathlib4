@@ -47,7 +47,7 @@ noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A
 @[reassoc (attr := simp)]
 theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     s.ιSummand A ≫ s.πSummand A = 𝟙 _ := by
-  dsimp [ιSummand, πSummand]
+  dsimp only [ιSummand, iso_hom, πSummand, iso_inv, summand]
   simp only [summand, assoc, IsIso.hom_inv_id_assoc]
   erw [colimit.ι_desc, Cofan.mk_ι_app]
   dsimp
@@ -57,7 +57,7 @@ theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A 
 @[reassoc (attr := simp)]
 theorem ι_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : s.ιSummand A ≫ s.πSummand B = 0 := by
-  dsimp [ιSummand, πSummand]
+  dsimp only [ιSummand, iso_hom, πSummand, iso_inv, summand]
   simp only [summand, assoc, IsIso.hom_inv_id_assoc]
   erw [colimit.ι_desc, Cofan.mk_ι_app]
   exact dif_neg h.symm

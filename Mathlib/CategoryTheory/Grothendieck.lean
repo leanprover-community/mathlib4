@@ -114,14 +114,14 @@ instance : Category (Grothendieck F) where
   id X := Grothendieck.id X
   comp := @fun X Y Z f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
-    dsimp; ext; swap
+    dsimp; ext
     · simp
     · dsimp
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
   id_comp := @fun X Y f => by dsimp; ext <;> simp
   assoc := @fun W X Y Z f g h => by
-    dsimp; ext; swap
+    dsimp; ext
     · simp
     · dsimp
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]

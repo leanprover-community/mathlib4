@@ -149,7 +149,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
     discr K (hζ.powerBasis K).basis =
       (-1) ^ ((p ^ k : ℕ).totient / 2) * p ^ ((p : ℕ) ^ (k - 1) * ((p - 1) * k - 1)) := by
   cases' k with k k
-  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen, totient_one, mul_zero, mul_one,
+  · simp only [coe_basis, _root_.pow_zero, powerBasis_gen _ hζ, totient_one, mul_zero, mul_one,
       show 1 / 2 = 0 by rfl, discr, traceMatrix]
     have hζone : ζ = 1 := by simpa using hζ
     rw [hζ.powerBasis_dim _, hζone, ← (algebraMap K L).map_one,

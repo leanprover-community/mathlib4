@@ -459,12 +459,12 @@ theorem beth_le {o₁ o₂ : Ordinal} : beth o₁ ≤ beth o₂ ↔ o₁ ≤ o�
 #align cardinal.beth_le Cardinal.beth_le
 
 theorem aleph_le_beth (o : Ordinal) : aleph o ≤ beth o := by
-  apply limitRecOn o
-  · simp
-  · intro o h
+  induction o using limitRecOn with
+  | H₁ => simp
+  | H₂ o h =>
     rw [aleph_succ, beth_succ, succ_le_iff]
     exact (cantor _).trans_le (power_le_power_left two_ne_zero h)
-  · intro o ho IH
+  | H₃ o ho IH =>
     rw [aleph_limit ho, beth_limit ho]
     exact ciSup_mono (bddAbove_of_small _) fun x => IH x.1 x.2
 #align cardinal.aleph_le_beth Cardinal.aleph_le_beth

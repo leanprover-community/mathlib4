@@ -235,7 +235,8 @@ theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
 
 --Porting note: new theorem
 @[simp]
-theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] : derivative (OfNat.ofNat n : R[X]) = 0 :=
+theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
+    derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
   derivative_nat_cast
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :

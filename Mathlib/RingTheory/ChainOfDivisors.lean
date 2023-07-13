@@ -133,7 +133,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
       _ hp.irreducible
   · simpa [Fin.succ_lt_succ_iff, Fin.lt_iff_val_lt_val] using hi
   · refine' Associates.dvdNotUnit_iff_lt.2 (h₁ _)
-    simpa only [Fin.coe_eq_castSuccEmb] using Fin.lt_succ
+    simpa only [Fin.coe_eq_castSucc] using Fin.lt_succ
 #align divisor_chain.eq_second_of_chain_of_prime_dvd DivisorChain.eq_second_of_chain_of_prime_dvd
 
 theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}

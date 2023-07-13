@@ -824,10 +824,10 @@ theorem Fin.image_succ_univ (n : ℕ) : (univ : Finset (Fin n)).image Fin.succ =
 #align fin.image_succ_univ Fin.image_succ_univ
 
 @[simp]
-theorem Fin.image_castSuccEmb (n : ℕ) :
-    (univ : Finset (Fin n)).image Fin.castSuccEmb = {Fin.last n}ᶜ := by
+theorem Fin.image_castSucc (n : ℕ) :
+    (univ : Finset (Fin n)).image Fin.castSucc = {Fin.last n}ᶜ := by
   rw [← Fin.succAbove_last, Fin.image_succAbove_univ]
-#align fin.image_cast_succ Fin.image_castSuccEmb
+#align fin.image_cast_succ Fin.image_castSucc
 
 /- The following three lemmas use `Finset.cons` instead of `insert` and `Finset.map` instead of
 `Finset.image` to reduce proof obligations downstream. -/
@@ -848,7 +848,8 @@ theorem Fin.univ_castSuccEmb (n : ℕ) :
 /-- Embed `Fin n` into `Fin (n + 1)` by inserting
 around a specified pivot `p : Fin (n + 1)` into the `univ` -/
 theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
-    (univ : Finset (Fin (n + 1))) = cons p (univ.map <| (Fin.succAbove p).toEmbedding) (by simp) :=
+    (univ : Finset (Fin (n + 1))) =
+      cons p (univ.map <| (Fin.succAboveEmb p).toEmbedding) (by simp) :=
   by simp [map_eq_image]
 #align fin.univ_succ_above Fin.univ_succAbove
 

@@ -185,7 +185,7 @@ theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
-  simp [piPremeasure_pi']; rfl
+  simp only [eval, piPremeasure_pi']; rfl
 #align measure_theory.pi_premeasure_pi_eval MeasureTheory.piPremeasure_pi_eval
 
 namespace OuterMeasure

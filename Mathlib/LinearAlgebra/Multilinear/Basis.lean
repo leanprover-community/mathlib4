@@ -39,10 +39,7 @@ theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n
     (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g := by
   induction' n with m hm
   · ext x
-    convert h finZeroElim <;>
-    -- Porting note: added below
-    · rename_i x
-      apply finZeroElim x
+    convert h finZeroElim
   · apply Function.LeftInverse.injective uncurry_curryLeft
     refine' Basis.ext (e 0) _
     intro i

@@ -305,7 +305,7 @@ theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.
   apply le_csInf (colorable_set_nonempty_of_colorable hc)
   intro m hm
   by_contra h'
-  simp only [not_le, Nat.lt_one_iff] at h'
+  simp only [not_le] at h'
   obtain ⟨i, hi⟩ := hm.some (Classical.arbitrary V)
   have h₁: i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
   exact Nat.not_lt_zero _ h₁

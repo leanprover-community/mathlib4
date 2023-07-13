@@ -103,21 +103,21 @@ namespace OfNat
 
 variable [AddMonoidWithOne R] [CharZero R]
 
-@[simp] lemma ofNat_ne_zero (n : ℕ) [h : n.AtLeastTwo] : (ofNat n : R) ≠ 0 :=
+@[simp] lemma ofNat_ne_zero (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 0 :=
   Nat.cast_ne_zero.2 <| ne_of_gt <| lt_trans Nat.one_pos h.prop
 
-@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (ofNat n : R) :=
+@[simp] lemma zero_ne_ofNat (n : ℕ) [n.AtLeastTwo] : 0 ≠ (no_index (ofNat n) : R) :=
   (ofNat_ne_zero n).symm
 
-@[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (ofNat n : R) ≠ 1 := by
+@[simp] lemma ofNat_ne_one (n : ℕ) [h : n.AtLeastTwo] : (no_index (ofNat n) : R) ≠ 1 := by
   rw [← Nat.cast_eq_ofNat, ← @Nat.cast_one R, Ne.def, Nat.cast_inj]
   exact ne_of_gt h.prop
 
-@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ ofNat n :=
+@[simp] lemma one_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (1 : R) ≠ no_index (ofNat n) :=
   (ofNat_ne_one n).symm
 
 @[simp] lemma ofNat_eq_ofNat {m n : ℕ} [m.AtLeastTwo] [n.AtLeastTwo] :
-    (ofNat m : R) = ofNat n ↔ (ofNat m : ℕ) = ofNat n :=
+    (no_index (ofNat m) : R) = no_index (ofNat n) ↔ (ofNat m : ℕ) = ofNat n :=
   Nat.cast_inj
 
 end OfNat

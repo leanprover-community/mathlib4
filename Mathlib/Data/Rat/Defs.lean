@@ -238,7 +238,6 @@ theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
-    rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
 @[simp]
@@ -246,7 +245,6 @@ theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
     simp
-    rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
 theorem divInt_one (n : ℤ) : n /. 1 = n :=

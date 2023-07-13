@@ -190,8 +190,6 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
         toOpen R U ≫ β.c.app (op U)) :
     α = β := by
   ext : 1
-  -- See https://github.com/leanprover/std4/pull/158
-  swap
   · exact w
   · apply
       ((TopCat.Sheaf.pushforward β.base).obj X.sheaf).hom_ext _ PrimeSpectrum.isBasis_basic_opens
