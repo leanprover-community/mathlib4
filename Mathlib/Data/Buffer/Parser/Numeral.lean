@@ -13,8 +13,3 @@ As the parsing framework has completely changed in Lean 4
 there is no point porting these files directly.
 They can be rewritten from scratch as needed, just as for tactics.
 -/
-
--- Porting note:
--- As the parsing framework has completely changed in Lean 4
--- there is no point porting these files directly.
--- They can be rewritten from scratch as needed, just as for tactics.
