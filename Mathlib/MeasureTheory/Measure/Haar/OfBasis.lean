@@ -206,11 +206,10 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
     rwa [← Homeomorph.image_interior, nonempty_image_iff]
 #align basis.parallelepiped Basis.parallelepiped
 
--- Porting note: lint complains that this result is a tautology and thus unnecessary
--- @[simp]
--- theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
---    (b.parallelepiped : Set E) = parallelepiped b := rfl
--- #align basis.coe_parallelepiped Basis.coe_parallelepiped
+@[simp]
+theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+   (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+#align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
 theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
@@ -242,7 +241,7 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 #align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (parallelepiped b) = 1 := by
+theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 
