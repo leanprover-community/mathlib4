@@ -66,7 +66,7 @@ theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := 
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
-  obtain ⟨a, h, e⟩ := decode_inv n
+  obtain ⟨a, h, e⟩ := decode_inv (α := α) n
   rwa [ofNat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_ofNat
 
