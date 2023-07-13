@@ -26,7 +26,7 @@ The homomorphism `GaussianInt.toComplex` into the complex numbers is also define
 
 ## See also
 
-See `number_theory.zsqrtd.gaussian_int` for:
+See `NumberTheory.Zsqrtd.QuadraticReciprocity` for:
 * `prime_iff_mod_four_eq_three_of_nat_prime`:
   A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 

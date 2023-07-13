@@ -52,7 +52,7 @@ instance (α : Type _) [MulZeroClass α] : Zero α := MulZeroClass.toZero
 
 theorem GradedAlgebra.ι_sq_zero (m : M) : GradedAlgebra.ι R M m * GradedAlgebra.ι R M m = 0 := by
   rw [GradedAlgebra.ι_apply, DirectSum.of_mul_of]
-  refine Dfinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
+  refine DFinsupp.single_eq_zero.mpr (Subtype.ext <| ExteriorAlgebra.ι_sq_zero _)
 #align exterior_algebra.graded_algebra.ι_sq_zero ExteriorAlgebra.GradedAlgebra.ι_sq_zero
 
 set_option maxHeartbeats 400000 in
