@@ -111,7 +111,7 @@ theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mp
 #align set.proj_Icc_eq_left Set.projIcc_eq_left
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
-  by simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
+  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
 #align set.proj_Icc_eq_right Set.projIcc_eq_right
 
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
