@@ -2,7 +2,15 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
+
+! This file was ported from Lean 3 source module data.set.pairwise.lattice
+! leanprover-community/mathlib commit c4c2ed622f43768eff32608d4a0f8a6cec1c047d
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
+-- As `HashMap` has been completely reimplemented in `Std`,
+-- nothing from the mathlib3 file `data.hash_map` is reflected here.
+-- The porting header is just here to mark that no further work on `data.hash_map` is desired.
 import Std.Data.HashMap
 import Std.Data.RBMap
 
