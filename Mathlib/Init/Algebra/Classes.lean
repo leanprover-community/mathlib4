@@ -92,13 +92,13 @@ class IsRightId (α : Type u) (op : α → α → α) (o : outParam α) : Prop w
   right_id : ∀ a, op a o = a
 #align is_right_id IsRightId
 
-class IsLeftNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
-  left_null : ∀ a, op o a = o
-#align is_left_null IsLeftNull
+-- class IsLeftNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
+--   left_null : ∀ a, op o a = o
+#noalign is_left_null -- IsLeftNull
 
-class IsRightNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
-  right_null : ∀ a, op a o = o
-#align is_right_null IsRightNull
+-- class IsRightNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
+--   right_null : ∀ a, op a o = o
+#noalign is_right_null -- IsRightNull
 
 class IsLeftCancel (α : Type u) (op : α → α → α) : Prop where
   left_cancel : ∀ a b c, op a b = op a c → b = c
@@ -112,37 +112,37 @@ class IsIdempotent (α : Type u) (op : α → α → α) : Prop where
   idempotent : ∀ a, op a a = a
 #align is_idempotent IsIdempotent
 
-class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
-  left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)
-#align is_left_distrib IsLeftDistrib
+-- class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
+--   left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)
+#noalign is_left_distrib -- IsLeftDistrib
 
-class IsRightDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
-  right_distrib : ∀ a b c, op₁ (op₂ a b) c = op₂ (op₁ a c) (op₁ b c)
-#align is_right_distrib IsRightDistrib
+-- class IsRightDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
+--   right_distrib : ∀ a b c, op₁ (op₂ a b) c = op₂ (op₁ a c) (op₁ b c)
+#noalign is_right_distrib -- IsRightDistrib
 
-class IsLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
-    Prop where
-  left_inv : ∀ a, op (inv a) a = o
-#align is_left_inv IsLeftInv
+-- class IsLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
+--     Prop where
+--   left_inv : ∀ a, op (inv a) a = o
+#noalign is_left_inv -- IsLeftInv
 
-class IsRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
-    Prop where
-  right_inv : ∀ a, op a (inv a) = o
-#align is_right_inv IsRightInv
+-- class IsRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α) :
+--     Prop where
+--   right_inv : ∀ a, op a (inv a) = o
+#noalign is_right_inv -- IsRightInv
 
-class IsCondLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
-    (p : outParam <| α → Prop) : Prop where
-  left_inv : ∀ a, p a → op (inv a) a = o
-#align is_cond_left_inv IsCondLeftInv
+-- class IsCondLeftInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
+--     (p : outParam <| α → Prop) : Prop where
+--   left_inv : ∀ a, p a → op (inv a) a = o
+#noalign is_cond_left_inv -- IsCondLeftInv
 
-class IsCondRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
-    (p : outParam <| α → Prop) : Prop where
-  right_inv : ∀ a, p a → op a (inv a) = o
-#align is_cond_right_inv IsCondRightInv
+-- class IsCondRightInv (α : Type u) (op : α → α → α) (inv : outParam <| α → α) (o : outParam α)
+--     (p : outParam <| α → Prop) : Prop where
+--   right_inv : ∀ a, p a → op a (inv a) = o
+#noalign is_cond_right_inv -- IsCondRightInv
 
-class IsDistinct (α : Type u) (a : α) (b : α) : Prop where
-  distinct : a ≠ b
-#align is_distinct IsDistinct
+-- class IsDistinct (α : Type u) (a : α) (b : α) : Prop where
+--   distinct : a ≠ b
+#noalign is_distinct -- IsDistinct
 
 /-
 -- The following type class doesn't seem very useful, a regular simp lemma should work for this.
@@ -274,37 +274,38 @@ section
 
 variable {α : Type u} {r : α → α → Prop}
 
-local infixl:50 "≺" => r
+local infixl:50 " ≺ " => r
 
-theorem irrefl [IsIrrefl α r] (a : α) : ¬a≺a :=
+theorem irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   IsIrrefl.irrefl a
 #align irrefl irrefl
 
-theorem refl [IsRefl α r] (a : α) : a≺a :=
+theorem refl [IsRefl α r] (a : α) : a ≺ a :=
   IsRefl.refl a
 #align refl refl
 
-theorem trans [IsTrans α r] {a b c : α} : a≺b → b≺c → a≺c :=
+theorem trans [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   IsTrans.trans _ _ _
 #align trans trans
 
-theorem symm [IsSymm α r] {a b : α} : a≺b → b≺a :=
+theorem symm [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   IsSymm.symm _ _
 #align symm symm
 
-theorem antisymm [IsAntisymm α r] {a b : α} : a≺b → b≺a → a = b :=
+theorem antisymm [IsAntisymm α r] {a b : α} : a ≺ b → b ≺ a → a = b :=
   IsAntisymm.antisymm _ _
 #align antisymm antisymm
 
-theorem asymm [IsAsymm α r] {a b : α} : a≺b → ¬b≺a :=
+theorem asymm [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   IsAsymm.asymm _ _
 #align asymm asymm
 
-theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a≺b ∨ a = b ∨ b≺a :=
+theorem trichotomous [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   IsTrichotomous.trichotomous
 #align trichotomous trichotomous
 
-theorem incomp_trans [IsIncompTrans α r] {a b c : α} : ¬a≺b ∧ ¬b≺a → ¬b≺c ∧ ¬c≺b → ¬a≺c ∧ ¬c≺a :=
+theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
+    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   IsIncompTrans.incomp_trans _ _ _
 #align incomp_trans incomp_trans
 
@@ -318,42 +319,42 @@ section ExplicitRelationVariants
 variable (r)
 
 @[elab_without_expected_type]
-theorem irrefl_of [IsIrrefl α r] (a : α) : ¬a≺a :=
+theorem irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a :=
   irrefl a
 #align irrefl_of irrefl_of
 
 @[elab_without_expected_type]
-theorem refl_of [IsRefl α r] (a : α) : a≺a :=
+theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
   refl a
 #align refl_of refl_of
 
 @[elab_without_expected_type]
-theorem trans_of [IsTrans α r] {a b c : α} : a≺b → b≺c → a≺c :=
+theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
   trans
 #align trans_of trans_of
 
 @[elab_without_expected_type]
-theorem symm_of [IsSymm α r] {a b : α} : a≺b → b≺a :=
+theorem symm_of [IsSymm α r] {a b : α} : a ≺ b → b ≺ a :=
   symm
 #align symm_of symm_of
 
 @[elab_without_expected_type]
-theorem asymm_of [IsAsymm α r] {a b : α} : a≺b → ¬b≺a :=
+theorem asymm_of [IsAsymm α r] {a b : α} : a ≺ b → ¬b ≺ a :=
   asymm
 #align asymm_of asymm_of
 
 @[elab_without_expected_type]
-theorem total_of [IsTotal α r] (a b : α) : a≺b ∨ b≺a :=
+theorem total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a :=
   IsTotal.total _ _
 #align total_of total_of
 
 @[elab_without_expected_type]
-theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a≺b ∨ a = b ∨ b≺a :=
+theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   trichotomous
 #align trichotomous_of trichotomous_of
 
 @[elab_without_expected_type]
-theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} : ¬a≺b ∧ ¬b≺a → ¬b≺c ∧ ¬c≺b → ¬a≺c ∧ ¬c≺a :=
+theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} : ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   incomp_trans
 #align incomp_trans_of incomp_trans_of
 
@@ -367,10 +368,10 @@ section
 
 variable {α : Type u} {r : α → α → Prop}
 
-local infixl:50 "≺" => r
+local infixl:50 " ≺ " => r
 
 def Equiv (a b : α) : Prop :=
-  ¬a≺b ∧ ¬b≺a
+  ¬a ≺ b ∧ ¬b ≺ a
 #align strict_weak_order.equiv StrictWeakOrder.Equiv
 
 variable [IsStrictWeakOrder α r]
@@ -388,10 +389,10 @@ theorem etrans {a b c : α} : a ≈ b → b ≈ c → a ≈ c :=
   incomp_trans
 #align strict_weak_order.etrans StrictWeakOrder.etrans
 
-theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a≺b := fun h => h.1
+theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a ≺ b := fun h => h.1
 #align strict_weak_order.not_lt_of_equiv StrictWeakOrder.not_lt_of_equiv
 
-theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b≺a := fun h => h.2
+theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b ≺ a := fun h => h.2
 #align strict_weak_order.not_lt_of_equiv' StrictWeakOrder.not_lt_of_equiv'
 
 instance isEquiv : IsEquiv α (@Equiv _ r) where
