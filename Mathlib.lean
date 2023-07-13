@@ -1285,6 +1285,7 @@ import Mathlib.Data.Bool.Set
 import Mathlib.Data.Bracket
 import Mathlib.Data.Buffer.Basic
 import Mathlib.Data.Buffer.Parser.Basic
+import Mathlib.Data.Buffer.Parser.Defs
 import Mathlib.Data.Buffer.Parser.Numeral
 import Mathlib.Data.Bundle
 import Mathlib.Data.ByteArray
