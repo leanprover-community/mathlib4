@@ -51,7 +51,7 @@ lemma epi_iff_surjective {X Y : ExtrDisc} (f : X ⟶ Y) :
     let h : Y ⟶ ExtrDisc.two := ⟨fun _ => ⟨1⟩, continuous_const⟩
     have H : h = g := by
       rw [← cancel_epi f]
-      apply ContinuousMap.ext ; intro x
+      apply ContinuousMap.ext; intro x
       apply ULift.ext
       change 1 =  _
       dsimp [LocallyConstant.ofClopen]
@@ -168,9 +168,9 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : ExtrDisc}
       ∀ (b : B), ∃ (a : α) (x : X a), π a x = b
     ] := by
   tfae_have 1 → 2
-  · intro ; infer_instance
+  · intro; infer_instance
   tfae_have 1 → 2
-  · intro ; infer_instance
+  · intro; infer_instance
   tfae_have 2 → 3
   · intro e
     rw [epi_iff_surjective] at e
@@ -181,14 +181,14 @@ theorem effectiveEpiFamily_tfae {α : Type} [Fintype α] {B : ExtrDisc}
     rw [← (FromFiniteCoproductIso X).inv_hom_id_apply t]
     show _ = ((FromFiniteCoproductIso X).hom ≫ Sigma.desc π) ((FromFiniteCoproductIso X).inv t)
     suffices (FromFiniteCoproductIso X).hom ≫ Sigma.desc π = finiteCoproduct.desc X π by
-      rw [this] ; rfl
+      rw [this]; rfl
     apply Eq.symm
     rw [← Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
     simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       FromFiniteCoproductIso, colimit.comp_coconePointUniqueUpToIso_inv_assoc]
-    ext ; rfl
+    ext; rfl
   tfae_have 3 → 1
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
