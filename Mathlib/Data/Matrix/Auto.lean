@@ -34,9 +34,9 @@ def Fin.mapM {α : Type u} {n : ℕ} {m : Type u → Type v} [Monad m] (f : Fin 
 
 namespace Matrix
 
-section FinEta
+namespace FinEta
 
-open Lean Lean.Meta Qq
+open Lean Lean.Meta Elab Qq
 
 /-- Convert a vector of Exprs to the Expr constructing that vector.-/
 def _root_.PiFin.toExprQ {u : Level} {α : Q(Type u)} :
@@ -46,8 +46,7 @@ def _root_.PiFin.toExprQ {u : Level} {α : Q(Type u)} :
 
 /-- Prove a statement of the form `∀ A : matrix m n α, A = !![A 0 0, ...]`.
 Returns an assigned metavariable whose type is this statement. -/
-def FinEta.prove (m n : ℕ) : MetaM Expr :=
-do
+def prove (m n : ℕ) : MetaM Expr := do
   let u ← mkFreshLevelMVar
   -- Note: Qq seems to need type ascriptions on `fun` binders even though
   -- the type is easily inferred. Is there a metavariable instantiation bug?
@@ -64,7 +63,6 @@ do
           | throwError "(internal error) fin_eta% generated proof with incorrect type."
     mkExpectedTypeHint pf forall_A_eq
 
-open Lean.Elab.Tactic in
 /-- `fin_eta% m n` for `m` and `n` natural number literals generates an eta expansion theorem,
 for example
 ```lean
@@ -72,18 +70,39 @@ fin_eta% 2 3 : ∀ {α : Type u_1} (A : Matrix (Fin 2) (Fin 3) α),
                   A = ↑of ![![A 0 0, A 0 1, A 0 2],
                             ![A 1 0, A 1 1, A 1 2]]
 ``` -/
-elab:max "fin_eta% " m:num n:num : term => FinEta.prove m.getNat n.getNat
+elab:max "fin_eta% " mStx:term:max nStx:term:max A?:(term)? : term => do
+  let m : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
+  let n : Q(Nat) ← Term.elabTermEnsuringType nStx (mkConst ``Nat)
+  let A? ←
+    match A? with
+    | some A => do
+      let u ← mkFreshLevelMVar
+      let α : Q(Type u) ← mkFreshExprMVarQ q(Type u)
+      some <$> Term.elabTermEnsuringType A q(Fin $m → Fin $n → $α)
+    | none => pure none
+  let some m ← (evalNat m).run
+    | throwErrorAt mStx "Expecting a natural number, have{indentD m}"
+  let some n ← (evalNat n).run
+    | throwErrorAt mStx "Expecting a natural number, have{indentD n}"
+  let pf ← FinEta.prove m n
+  if let some A := A? then
+    Term.elabAppArgs pf #[] #[.expr A] none false false
+  else
+    return pf
 
 variable (α : Type u) (A : Matrix (Fin _) (Fin _) α) in
 #check (fin_eta% 2 3 A : A = of ![![A 0 0, A 0 1, A 0 2], ![A 1 0, A 1 1, A 1 2]])
 
+variable (α : Type u) (A : Matrix (Fin _) (Fin _) α) in
+#check (fin_eta% _ _ A : A = of ![![A 0 0, A 0 1, A 0 2], ![A 1 0, A 1 1, A 1 2]])
+
 example (A : Matrix (Fin 2) (Fin 3) ℕ) : A = 0 := by
-  rw [fin_eta% 2 3 A]
+  rw [fin_eta% _ _ A]
   dsimp
 
 example : true := by
   let B : Matrix (Fin 20) (Fin 20) ℕ := 0
-  have := fin_eta% 20 20 B
+  have := fin_eta% _ _ B
   have : B = B := by rw [this]
   trivial
 
