@@ -43,7 +43,7 @@ deriving Repr
 
 def brouckner (f : Coefficients) : Coefficients × ℤ :=
   let m := (-f.b + f.D.sqrt) / (2 * f.a)
-  ({a := -(f.a*m^2+f.b*m+f.c), b := -(2*f.a*m+f.b), c:=-f.a, D := f.D, hD := sorry}, m)
+  ({a := -(f.a*m^2+f.b*m+f.c), b := -(2*f.a*m+f.b), c:=-f.a, D := f.D, hD := by rw [f.hD]; ring}, m)
 
 def iterate_brouckner (f : Coefficients) (l : List (Coefficients × ℤ)) :
     (n : ℕ) → List (Coefficients × ℤ)
