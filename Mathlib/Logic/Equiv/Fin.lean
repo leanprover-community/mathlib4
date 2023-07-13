@@ -243,7 +243,7 @@ theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) 
 /-- `Fin.succAbove` as an order isomorphism between `Fin n` and `{x : Fin (n + 1) // x ≠ p}`. -/
 def finSuccAboveEquiv (p : Fin (n + 1)) : Fin n ≃o { x : Fin (n + 1) // x ≠ p } :=
   { Equiv.optionSubtype p ⟨(finSuccEquiv' p).symm, rfl⟩ with
-    map_rel_iff' := p.succAbove.map_rel_iff' }
+    map_rel_iff' := p.succAboveEmb.map_rel_iff' }
 #align fin_succ_above_equiv finSuccAboveEquiv
 
 theorem finSuccAboveEquiv_apply (p : Fin (n + 1)) (i : Fin n) :
@@ -280,7 +280,8 @@ theorem finSuccEquivLast_last : finSuccEquivLast (Fin.last n) = none := by
 #align fin_succ_equiv_last_last finSuccEquivLast_last
 
 @[simp]
-theorem finSuccEquivLast_symm_some (i : Fin n) : finSuccEquivLast.symm (some i) = Fin.castSucc i :=
+theorem finSuccEquivLast_symm_some (i : Fin n) :
+    finSuccEquivLast.symm (some i) = Fin.castSucc i :=
   finSuccEquiv'_symm_some_below i.2
 #align fin_succ_equiv_last_symm_some finSuccEquivLast_symm_some
 #align fin_succ_equiv_last_symm_coe finSuccEquivLast_symm_some
@@ -535,7 +536,7 @@ def Fin.castLEOrderIso {n m : ℕ} (h : n ≤ m) : Fin n ≃o { i : Fin m // (i 
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  map_rel_iff' := by simp
+  map_rel_iff' := by simp [(strictMono_castLE h).le_iff_le]
 #align fin.cast_le_order_iso Fin.castLEOrderIso
 #align fin.cast_le_order_iso_apply Fin.castLEOrderIso_apply
 #align fin.cast_le_order_iso_symm_apply Fin.castLEOrderIso_symm_apply

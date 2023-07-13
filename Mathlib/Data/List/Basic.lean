@@ -8,7 +8,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
@@ -490,35 +490,6 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 #align list.replicate_left_inj List.replicate_left_inj
 
 /-! ### pure -/
-
--- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
-instance : Monad List := { pure := @List.ret, bind := @List.bind, map := @List.map }
-
--- Porting note: simp can prove this
--- @[simp]
-theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
-  append_nil (f x)
-#align list.bind_singleton List.bind_singleton
-
-@[simp] theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
-  induction l <;> simp [*]
-#align list.bind_singleton' List.bind_singleton'
-
-theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
-  simp_rw [←map_singleton]
-  rw [← bind_singleton' l, bind_map, bind_singleton']
-#align list.map_eq_bind List.map_eq_bind
-
-theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
-    (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
-#align list.bind_assoc List.bind_assoc
-
--- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
-instance : LawfulMonad List := LawfulMonad.mk'
-  (id_map := map_id)
-  (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := List.bind_assoc)
-  (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
 
 @[simp]
 theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
@@ -2415,6 +2386,16 @@ theorem foldr_cons (f : α → β → β) (b : β) (a : α) (l : List α) :
 #align list.foldl_append List.foldl_append
 
 #align list.foldr_append List.foldr_append
+
+theorem foldl_concat
+    (f : β → α → β) (b : β) (x : α) (xs : List α) :
+    List.foldl f b (xs ++ [x]) = f (List.foldl f b xs) x := by
+  simp only [List.foldl_append, List.foldl]
+
+theorem foldr_concat
+    (f : α → β → β) (b : β) (x : α) (xs : List α) :
+    List.foldr f b (xs ++ [x]) = (List.foldr f (f x b) xs) := by
+  simp only [List.foldr_append, List.foldr]
 
 theorem foldl_fixed' {f : α → β → α} {a : α} (hf : ∀ b, f a b = a) : ∀ l : List β, foldl f a l = a
   | [] => rfl

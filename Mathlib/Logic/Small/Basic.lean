@@ -28,12 +28,11 @@ universe u w v
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
 -/
+@[mk_iff, pp_with_univ]
 class Small (α : Type v) : Prop where
   /-- If a type is `Small.{w}`, then there exists an equivalence with some `S : Type w` -/
   equiv_small : ∃ S : Type w, Nonempty (α ≃ S)
 #align small Small
-
-pp_with_univ Small
 
 /-- Constructor for `Small α` from an explicit witness type and equivalence.
 -/
@@ -52,6 +51,11 @@ def Shrink (α : Type v) [Small.{w} α] : Type w :=
 noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 #align equiv_shrink equivShrink
+
+@[ext]
+theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
+    (w : (equivShrink _).symm x = (equivShrink _).symm y) : x = y := by
+  simpa using w
 
 -- It would be nice to mark this as `aesop cases` if
 -- https://github.com/JLimperg/aesop/issues/59

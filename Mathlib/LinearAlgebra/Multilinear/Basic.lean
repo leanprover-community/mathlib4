@@ -362,7 +362,8 @@ theorem cons_smul (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M i.succ) (c
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
 an element of `∀ (i : Fin (n+1)), M i` using `snoc`, one can express directly the additivity of a
 multilinear map along the first variable. -/
-theorem snoc_add (f : MultilinearMap R M M₂) (m : ∀ i : Fin n, M (castSucc i)) (x y : M (last n)) :
+theorem snoc_add (f : MultilinearMap R M M₂)
+    (m : ∀ i : Fin n, M (castSucc i)) (x y : M (last n)) :
     f (snoc m (x + y)) = f (snoc m x) + f (snoc m y) := by
   simp_rw [← update_snoc_last x m (x + y), f.map_add, update_snoc_last]
 #align multilinear_map.snoc_add MultilinearMap.snoc_add
@@ -1220,7 +1221,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
       simp only [update_same, map_add, tail_update_zero, MultilinearMap.add_apply]
     · simp_rw [update_noteq (Ne.symm h)]
       revert x y
-      rw [← succ_pred i h]
+      rw [← succ_pred i (Fin.vne_of_ne h)]
       intro x y
       rw [tail_update_succ, MultilinearMap.map_add, tail_update_succ, tail_update_succ]
   map_smul' := @fun dec m i c x => by
@@ -1231,7 +1232,7 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
       simp only [update_same, map_smul, tail_update_zero, MultilinearMap.smul_apply]
     · simp_rw [update_noteq (Ne.symm h)]
       revert x
-      rw [← succ_pred i h]
+      rw [← succ_pred i (Fin.vne_of_ne h)]
       intro x
       rw [tail_update_succ, tail_update_succ, MultilinearMap.map_smul]
 #align linear_map.uncurry_left LinearMap.uncurryLeft
@@ -1354,8 +1355,8 @@ def MultilinearMap.uncurryRight
 
 @[simp]
 theorem MultilinearMap.uncurryRight_apply
-    (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂)) (m : ∀ i, M i) :
-    f.uncurryRight m = f (init m) (m (last n)) :=
+    (f : MultilinearMap R (fun i : Fin n => M (castSucc i)) (M (last n) →ₗ[R] M₂))
+    (m : ∀ i, M i) : f.uncurryRight m = f (init m) (m (last n)) :=
   rfl
 #align multilinear_map.uncurry_right_apply MultilinearMap.uncurryRight_apply
 
