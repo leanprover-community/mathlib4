@@ -106,7 +106,7 @@ def OrderIso.finTwoArrowIso (α : Type _) [Preorder α] : (Fin 2 → α) ≃o α
 
 /-- The 'identity' equivalence between `Fin n` and `Fin m` when `n = m`. -/
 def finCongr (h : m = n) : Fin m ≃ Fin n :=
-  (Fin.castIso h).toEquiv
+  (Fin.cast h).toEquiv
 #align fin_congr finCongr
 
 @[simp] theorem finCongr_apply_mk (h : m = n) (k : ℕ) (w : k < m) :
