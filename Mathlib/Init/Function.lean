@@ -17,7 +17,7 @@ import Mathlib.Init.Logic
 -/
 
 
-universe u₁ u₂ u₃ u₄
+universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
