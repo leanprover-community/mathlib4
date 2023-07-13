@@ -72,25 +72,36 @@ class IsSymmOp (α : Type u) (β : Type v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 #align is_symm_op IsSymmOp
 
+/-- A commutative binary operation. -/
 class IsCommutative (α : Type u) (op : α → α → α) : Prop where
   comm : ∀ a b, op a b = op b a
 #align is_commutative IsCommutative
+
+instance {op} [IsCommutative α op] : Lean.IsCommutative op where
+  comm := IsCommutative.comm
 
 instance (priority := 100) isSymmOp_of_isCommutative (α : Type u) (op : α → α → α)
     [IsCommutative α op] : IsSymmOp α α op where symm_op := IsCommutative.comm
 #align is_symm_op_of_is_commutative isSymmOp_of_isCommutative
 
+/-- An associative binary operation. -/
 class IsAssociative (α : Type u) (op : α → α → α) : Prop where
   and_assoc : ∀ a b c, op (op a b) c = op a (op b c)
 #align is_associative IsAssociative
 
+/-- A binary operation with a left identity. -/
 class IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
   left_id : ∀ a, op o a = a
 #align is_left_id IsLeftId
 
+/-- A binary operation with a right identity. -/
 class IsRightId (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
   right_id : ∀ a, op a o = a
 #align is_right_id IsRightId
+
+instance {op} [IsLeftId α op o] [IsRightId α op o] : Lean.IsNeutral op o where
+  left_neutral := IsLeftId.left_id
+  right_neutral := IsRightId.right_id
 
 -- class IsLeftNull (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
 --   left_null : ∀ a, op o a = o
@@ -111,6 +122,9 @@ class IsRightCancel (α : Type u) (op : α → α → α) : Prop where
 class IsIdempotent (α : Type u) (op : α → α → α) : Prop where
   idempotent : ∀ a, op a a = a
 #align is_idempotent IsIdempotent
+
+instance {op} [IsIdempotent α op] : Lean.IsIdempotent op where
+  idempotent := IsIdempotent.idempotent
 
 -- class IsLeftDistrib (α : Type u) (op₁ : α → α → α) (op₂ : outParam <| α → α → α) : Prop where
 --   left_distrib : ∀ a b c, op₁ a (op₂ b c) = op₂ (op₁ a b) (op₁ a c)
@@ -190,6 +204,12 @@ class IsAntisymm (α : Type u) (r : α → α → Prop) : Prop where
 class IsTrans (α : Type u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 #align is_trans IsTrans
+
+instance {α : Type u} {r : α → α → Prop} [IsTrans α r] : Trans r r r :=
+  ⟨IsTrans.trans _ _ _⟩
+
+instance {α : Type u} {r : α → α → Prop} [Trans r r r] : IsTrans α r :=
+  ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`.-/
