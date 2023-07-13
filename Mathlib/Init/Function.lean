@@ -8,10 +8,9 @@ Author: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Data.Prod
-import Leanbin.Init.Funext
-import Leanbin.Init.Logic
+import Mathlib.Mathport.Rename
+import Mathlib.Init.Data.Prod
+import Mathlib.Init.Logic
 
 /-!
 # General operations on functions
@@ -24,9 +23,6 @@ namespace Function
 
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₁}
 
-/-- Composition of functions: `(f ∘ g) x = f (g x)`. -/
-@[inline, reducible]
-def comp (f : β → φ) (g : α → β) : α → φ := fun x => f (g x)
 #align function.comp Function.comp
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
@@ -58,9 +54,6 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
   op (f x y) (g x y)
 #align function.combine Function.combine
 
-/-- Constant `λ _, a`. -/
-@[reducible]
-def const (β : Sort u₂) (a : α) : β → α := fun x => a
 #align function.const Function.const
 
 @[reducible]
@@ -84,9 +77,6 @@ theorem right_id (f : α → β) : f ∘ id = f :=
   rfl
 #align function.right_id Function.right_id
 
-@[simp]
-theorem comp_apply (f : β → φ) (g : α → β) (a : α) : (f ∘ g) a = f (g a) :=
-  rfl
 #align function.comp_app Function.comp_apply
 
 theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
@@ -113,7 +103,7 @@ def Injective (f : α → β) : Prop :=
 #align function.injective Function.Injective
 
 theorem Injective.comp {g : β → φ} {f : α → β} (hg : Injective g) (hf : Injective f) :
-    Injective (g ∘ f) := fun a₁ a₂ => fun h => hf (hg h)
+    Injective (g ∘ f) := fun _a₁ _a₂ => fun h => hf (hg h)
 #align function.injective.comp Function.Injective.comp
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
@@ -168,7 +158,7 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
 #align function.left_inverse.injective Function.LeftInverse.injective
 
 theorem HasLeftInverse.injective {f : α → β} : HasLeftInverse f → Injective f := fun h =>
-  Exists.elim h fun finv inv => inv.Injective
+  Exists.elim h fun _finv inv => inv.injective
 #align function.has_left_inverse.injective Function.HasLeftInverse.injective
 
 theorem rightInverse_of_injective_of_leftInverse {f : α → β} {g : β → α} (injf : Injective f)
@@ -182,7 +172,7 @@ theorem RightInverse.surjective {f : α → β} {g : β → α} (h : RightInvers
 #align function.right_inverse.surjective Function.RightInverse.surjective
 
 theorem HasRightInverse.surjective {f : α → β} : HasRightInverse f → Surjective f
-  | ⟨finv, inv⟩ => inv.Surjective
+  | ⟨_finv, inv⟩ => inv.surjective
 #align function.has_right_inverse.surjective Function.HasRightInverse.surjective
 
 theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α} (surjf : Surjective f)
@@ -194,7 +184,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 
-theorem injective_id : Injective (@id α) := fun a₁ a₂ h => h
+theorem injective_id : Injective (@id α) := fun _a₁ _a₂ h => h
 #align function.injective_id Function.injective_id
 
 theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
@@ -227,7 +217,7 @@ theorem curry_uncurry (f : α → β → φ) : curry (uncurry f) = f :=
 
 @[simp]
 theorem uncurry_curry (f : α × β → φ) : uncurry (curry f) = f :=
-  funext fun ⟨a, b⟩ => rfl
+  funext fun ⟨_a, _b⟩ => rfl
 #align function.uncurry_curry Function.uncurry_curry
 
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
