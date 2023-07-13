@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module measure_theory.measure.haar.of_basis
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
+! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -130,24 +130,13 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
 
 theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
-  -- TODO: add `convex.sum` to match `Convex.add`
-  let A : AddSubmonoid (Set E) :=
-    { carrier := { s | Convex ℝ s }
-      zero_mem' := convex_singleton _
-      add_mem' := Convex.add }
-  refine A.sum_mem (fun i _hi => convex_segment _ _)
+  exact convex_sum _ fun i hi => convex_segment _ _
 #align convex_parallelepiped convex_parallelepiped
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
 theorem parallelepiped_eq_convexHull (v : ι → E) :
     parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) := by
-  -- TODO: add `convex_hull_sum` to match `convexHull_add`
-  let A : Set E →+ Set E :=
-    { toFun := convexHull ℝ
-      map_zero' := convexHull_singleton _
-      map_add' := convexHull_add }
-  simp_rw [parallelepiped_eq_sum_segment, ← convexHull_pair]
-  exact (A.map_sum _ _).symm
+  simp_rw [convexHull_sum, convexHull_pair, parallelepiped_eq_sum_segment]
 #align parallelepiped_eq_convex_hull parallelepiped_eq_convexHull
 
 /-- The axis aligned parallelepiped over `ι → ℝ` is a cuboid. -/
