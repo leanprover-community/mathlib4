@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 
 ! This file was ported from Lean 3 source module data.buffer.parser
-! leanprover-community/mathlib commit 2220b0cbab795e73674b8191170b0cc68c6b54a8
+! leanprover-community/lean commit 549e2fed50b361d0d49a3dd1e7ccb6de9440059b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 
