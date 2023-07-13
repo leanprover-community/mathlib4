@@ -130,22 +130,22 @@ theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijecti
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 #align function.bijective.comp Function.Bijective.comp
 
-/-- `left_inverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
+/-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
 def LeftInverse (g : β → α) (f : α → β) : Prop :=
   ∀ x, g (f x) = x
 #align function.left_inverse Function.LeftInverse
 
-/-- `has_left_inverse f` means that `f` has an unspecified left inverse. -/
+/-- `HasLeftInverse f` means that `f` has an unspecified left inverse. -/
 def HasLeftInverse (f : α → β) : Prop :=
   ∃ finv : β → α, LeftInverse finv f
 #align function.has_left_inverse Function.HasLeftInverse
 
-/-- `right_inverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
+/-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop :=
   LeftInverse f g
 #align function.right_inverse Function.RightInverse
 
-/-- `has_right_inverse f` means that `f` has an unspecified right inverse. -/
+/-- `HasRightInverse f` means that `f` has an unspecified right inverse. -/
 def HasRightInverse (f : α → β) : Prop :=
   ∃ finv : β → α, RightInverse finv f
 #align function.has_right_inverse Function.HasRightInverse
