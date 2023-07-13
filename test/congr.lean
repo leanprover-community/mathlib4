@@ -242,3 +242,7 @@ example : n = m → 3 + n = m + 3 := by
   congr! 0 with rfl
   guard_target = 3 + n = n + 3
   apply add_comm
+
+example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
+    (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + g + b := by
+  ac_change a + d + e + f + c + g + b ≤ _; rfl

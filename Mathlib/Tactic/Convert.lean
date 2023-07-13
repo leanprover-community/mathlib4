@@ -134,3 +134,17 @@ macro_rules
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+
+/--
+`ac_change g using n` is `convert_to g using n` followed by `ac_rfl`. It is useful for
+rearranging/reassociating e.g. sums:
+```lean
+example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
+  ac_change a + d + e + f + c + g + b ≤ _
+  -- ⊢ a + d + e + f + c + g + b ≤ N
+```
+-/
+syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+
+macro_rules
+| `(tactic| ac_change $t $[using $n]?) => `(tactic| convert_to $t:term $[using $n]?; try ac_rfl)
