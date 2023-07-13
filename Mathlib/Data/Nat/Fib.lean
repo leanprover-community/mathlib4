@@ -291,7 +291,7 @@ theorem fib_dvd (m n : ℕ) (h : m ∣ n) : fib m ∣ fib n := by
 
 theorem fib_succ_eq_sum_choose :
     ∀ n : ℕ, fib (n + 1) = ∑ p in Finset.Nat.antidiagonal n, choose p.1 p.2 :=
-  two_step_induction rfl rfl fun n h1 h2 => by
+  twoStepInduction rfl rfl fun n h1 h2 => by
     rw [fib_add_two, h1, h2, Finset.Nat.antidiagonal_succ_succ', Finset.Nat.antidiagonal_succ']
     simp [choose_succ_succ, Finset.sum_add_distrib, add_left_comm]
 #align nat.fib_succ_eq_sum_choose Nat.fib_succ_eq_sum_choose
