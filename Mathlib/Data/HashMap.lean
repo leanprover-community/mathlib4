@@ -23,6 +23,9 @@ These should be replaced by proper implementations in Std.
 
 namespace Std.HashMap
 
+-- not an exact match, different typeclass requirements
+#align hash_map Std.HashMapₓ
+
 variable [BEq α] [Hashable α]
 
 /-- The list of keys in a `HashMap`. -/
