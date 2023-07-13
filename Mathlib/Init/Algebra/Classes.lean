@@ -8,26 +8,67 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Leanbin.Init.Logic
-import Leanbin.Init.Data.Ordering.Basic
+import Mathlib.Init.Logic
+import Mathlib.Init.Data.Ordering.Basic
 
 universe u v
 
 /-!
 # Unbundled algebra classes
 
-These classes and the `@[algebra]` attribute are part of an incomplete refactor described
+These classes are part of an incomplete refactor described
 [here on the github Wiki](https://github.com/leanprover/lean/wiki/Refactoring-structures#encoding-the-algebraic-hierarchy-1).
+However a subset of them are widely used in mathlib3,
+and it has been tricky to clean this up as this file was in core Lean 3.
 
-By themselves, these classes are not good replacements for the `monoid` / `group` etc structures
+By themselves, these classes are not good replacements for the `Monoid` / `Group` etc structures
 provided by mathlib, as they are not discoverable by `simp` unlike the current lemmas due to there
-being little to index on. The Wiki page linked above describes an algebraic normalizer, but it is not
-implemented.
+being little to index on.
+
+## Porting notes:
+This file is ancient, and it would be good to replace it with a clean version
+that provides what mathlib4 actually needs.
+
+I've omitted all the `@[algebra]` attributes, as they are not used elsewhere.
+
+The section `StrictWeakOrder` has been omitted, but I've left the mathport output in place.
+Please delete if cleaning up.
+
+I've commented out some classes which we think are completely unused in mathlib.
+
+I've added many of the declarations to `nolints.json`.
+If you clean up this file, please add documentation to classes that we are keeping.
+
+Mario made the following analysis of uses in mathlib3:
+* `is_symm_op`: unused except for some instances
+* `is_commutative`: used a fair amount via some theorems about folds
+  (also assuming `is_associative`)
+* `is_associative`: ditto, also used in `noncomm_fold`
+* `is_left_id`, `is_right_id`: unused except in the mathlib class `is_unital` and in `mono`
+  (which looks like it could use `is_unital`)
+* `is_left_null`, `is_right_null`: unused
+* `is_left_cancel`, `is_right_cancel`: unused except for instances
+* `is_idempotent`: this one is actually used to prove things not directly about `is_idempotent`
+* `is_left_distrib`, `is_right_distrib`, `is_left_inv`, `is_right_inv`, `is_cond_left_inv`,
+  `is_cond_right_inv`: unused
+* `is_distinct`: unused (although we reinvented this one as `nontrivial`)
+* `is_irrefl`, `is_refl`, `is_symm`, `is_trans`: significant usage
+* `is_asymm`, `is_antisymm`, `is_total`, `is_strict_order`: a lot of uses but all in order theory
+  and it's unclear how much could not be transferred to another typeclass
+* `is_preorder`: unused except for instances
+  (except `antisymmetrization`, maybe it could be transferred)
+* `is_total_preorder`, `is_partial_order`: unused except for instances
+* `is_linear_order`: unused except for instances
+* `is_equiv`: unused except for instances (most uses can use `equivalence` instead)
+* `is_per`: unused
+* `is_incomp_trans`: unused
+* `is_strict_weak_order`: significant usage (most of it on `rbmap`, could be transferred)
+* `is_trichotomous`: some usage
+* `is_strict_total_order`: looks like the only usage is in `rbmap` again
 -/
 
-
-class IsSymmOp (α : Type u) (β : outParam (Type v)) (op : α → α → β) : Prop where
+-- porting note: removed `outParam`
+class IsSymmOp (α : Type u) (β : Type v) (op : α → α → β) : Prop where
   symm_op : ∀ a b, op a b = op b a
 #align is_symm_op IsSymmOp
 
@@ -111,12 +152,13 @@ class is_inv (α : Type u) (β : Type v) (f : α → β) (g : out β → α) : P
 -- The following one can also be handled using a regular simp lemma
 class is_idempotent (α : Type u) (f : α → α) : Prop :=
 (idempotent : ∀ a, f (f a) = f a)
+-/
+
 /-- `is_irrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
 class IsIrrefl (α : Type u) (r : α → α → Prop) : Prop where
   irrefl : ∀ a, ¬r a a
 #align is_irrefl IsIrrefl
--/
 
 /-- `is_refl X r` means the binary relation `r` on `X` is reflexive. -/
 class IsRefl (α : Type u) (r : α → α → Prop) : Prop where
@@ -152,7 +194,7 @@ class IsTrans (α : Type u) (r : α → α → Prop) : Prop where
 /-- `is_total X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`.-/
 class IsTotal (α : Type u) (r : α → α → Prop) : Prop where
-  Total : ∀ a b, r a b ∨ r b a
+  total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal
 
 /-- `is_preorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
@@ -268,7 +310,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} : ¬a≺b ∧ ¬b≺a →
 
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a b h₁ h₂ => absurd (trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _b h₁ h₂ => absurd (trans h₁ h₂) (irrefl a)⟩
 #align is_asymm_of_is_trans_of_is_irrefl isAsymm_of_isTrans_of_isIrrefl
 
 section ExplicitRelationVariants
@@ -323,7 +365,7 @@ namespace StrictWeakOrder
 
 section
 
-parameter {α : Type u} {r : α → α → Prop}
+variable {α : Type u} {r : α → α → Prop}
 
 local infixl:50 "≺" => r
 
@@ -331,9 +373,9 @@ def Equiv (a b : α) : Prop :=
   ¬a≺b ∧ ¬b≺a
 #align strict_weak_order.equiv StrictWeakOrder.Equiv
 
-parameter [IsStrictWeakOrder α r]
+variable [IsStrictWeakOrder α r]
 
-local infixl:50 " ≈ " => Equiv
+local infixl:50 " ≈ " => @Equiv _ r
 
 theorem erefl (a : α) : a ≈ a :=
   ⟨irrefl a, irrefl a⟩
@@ -352,10 +394,10 @@ theorem not_lt_of_equiv {a b : α} : a ≈ b → ¬a≺b := fun h => h.1
 theorem not_lt_of_equiv' {a b : α} : a ≈ b → ¬b≺a := fun h => h.2
 #align strict_weak_order.not_lt_of_equiv' StrictWeakOrder.not_lt_of_equiv'
 
-instance isEquiv : IsEquiv α Equiv where
+instance isEquiv : IsEquiv α (@Equiv _ r) where
   refl := erefl
-  trans := @etrans
-  symm := @esymm
+  trans _ _ _ := etrans
+  symm _ _:= esymm
 #align strict_weak_order.is_equiv StrictWeakOrder.isEquiv
 
 end
@@ -366,7 +408,7 @@ a " ≈[" lt "]" b:50 => @Equiv _ lt a b
 end StrictWeakOrder
 
 theorem isStrictWeakOrder_of_isTotalPreorder {α : Type u} {le : α → α → Prop} {lt : α → α → Prop}
-    [DecidableRel le] [s : IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
+    [DecidableRel le] [IsTotalPreorder α le] (h : ∀ a b, lt a b ↔ ¬le b a) :
     IsStrictWeakOrder α lt :=
   { trans := fun a b c hab hbc =>
       have nba : ¬le b a := Iff.mp (h _ _) hab
@@ -389,7 +431,7 @@ theorem isStrictWeakOrder_of_isTotalPreorder {α : Type u} {le : α → α → P
 
 theorem lt_of_lt_of_incomp {α : Type u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
-  fun a b c hab ⟨nbc, ncb⟩ =>
+  @fun a b c hab ⟨nbc, ncb⟩ =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
   Decidable.by_contradiction fun nac : ¬lt a c =>
     have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
@@ -398,7 +440,7 @@ theorem lt_of_lt_of_incomp {α : Type u} {lt : α → α → Prop} [IsStrictWeak
 
 theorem lt_of_incomp_of_lt {α : Type u} {lt : α → α → Prop} [IsStrictWeakOrder α lt]
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
-  fun a b c ⟨nab, nba⟩ hbc =>
+  @fun a b c ⟨nab, nba⟩ hbc =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
   Decidable.by_contradiction fun nac : ¬lt a c =>
     have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
