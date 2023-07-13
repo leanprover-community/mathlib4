@@ -597,15 +597,11 @@ theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : M →
   exact Submodule.mem_map_of_mem h
 #align submodule.apply_mem_span_image_of_mem_span Submodule.apply_mem_span_image_of_mem_span
 
-theorem mem_span_of_apply_mem_span_image [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {x : M}
-    {s : Set M} (hf : Function.Injective f) (h : f x ∈ Submodule.span R₂ (f '' s)) :
-    x ∈ Submodule.span R s := by
-  rwa [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf] at h
-
 theorem apply_mem_span_image_iff_mem_span [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {x : M}
     {s : Set M} (hf : Function.Injective f) :
     f x ∈ Submodule.span R₂ (f '' s) ↔ x ∈ Submodule.span R s :=
-  ⟨fun h => Submodule.mem_span_of_apply_mem_span_image hf h,
+  ⟨fun h => by
+    rwa [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf] at h,
     fun h => Submodule.apply_mem_span_image_of_mem_span _ h⟩
 
 @[simp]
