@@ -318,7 +318,7 @@ theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
     _root_.cast h = Fin.cast (fin_injective h) := by
   cases fin_injective h
   rfl
-#align fin.cast_eq_cast' Fin.cast_eq_cast'
+#align fin.cast_eq_cast' Fin.cast_eq_cast'ₓ
 
 theorem card_finset_fin_le {n : ℕ} (s : Finset (Fin n)) : s.card ≤ n := by
   simpa only [Fintype.card_fin] using s.card_le_univ

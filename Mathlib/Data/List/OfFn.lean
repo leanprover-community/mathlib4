@@ -105,7 +105,7 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
     ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
   subst h
   simp_rw [Fin.cast_refl, id]
-#align list.of_fn_congr List.ofFn_congr
+#align list.of_fn_congr List.ofFn_congrₓ
 
 /-- `ofFn` on an empty domain is the empty list. -/
 @[simp]

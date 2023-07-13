@@ -260,7 +260,7 @@ that `vecAppend ho u v 0` is valid. `Fin.append u v 0` is not valid in this case
 no `Zero (Fin (m + n))` instance. -/
 def vecAppend {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) : Fin o → α :=
   Fin.append u v ∘ Fin.cast ho
-#align matrix.vec_append Matrix.vecAppend
+#align matrix.vec_append Matrix.vecAppendₓ
 
 theorem vecAppend_eq_ite {α : Type _} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i : Fin o =>

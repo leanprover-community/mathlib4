@@ -191,8 +191,8 @@ theorem prod_congr' {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h
     (∏ i : Fin a, f (cast h i)) = ∏ i : Fin b, f i := by
   subst h
   congr
-#align fin.prod_congr' Fin.prod_congr'
-#align fin.sum_congr' Fin.sum_congr'
+#align fin.prod_congr' Fin.prod_congr'ₓ
+#align fin.sum_congr' Fin.sum_congr'ₓ
 
 @[to_additive]
 theorem prod_univ_add {M : Type _} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M) :

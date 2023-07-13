@@ -117,7 +117,7 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
-#align vector.nth_eq_nth_le Vector.get_eq_get
+#align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
 -- porting notes: `nthLe` deprecated for `get`
 @[deprecated get_eq_get]

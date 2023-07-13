@@ -81,7 +81,7 @@ theorem decomposition_Q (n q : ℕ) :
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop
 set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Q
+#align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Qₓ
 
 variable (X)
 
@@ -105,7 +105,7 @@ variable {X} {n : ℕ} {Z Z' : C} (f : MorphComponents X n Z) (g : X' ⟶ X) (h 
 def φ {Z : C} (f : MorphComponents X n Z) : X _[n + 1] ⟶ Z :=
   PInfty.f (n + 1) ≫ f.a + ∑ i : Fin (n + 1), (P i).f (n + 1) ≫ X.δ i.rev.succ ≫
     f.b (Fin.rev i)
-#align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φ
+#align algebraic_topology.dold_kan.morph_components.φ AlgebraicTopology.DoldKan.MorphComponents.φₓ
 
 variable (X n)
 

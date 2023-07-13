@@ -112,7 +112,7 @@ def cast {i j} (h : i = j) : (⨂[R]^i) M ≃ₗ[R] (⨂[R]^j) M :=
 theorem cast_tprod {i j} (h : i = j) (a : Fin i → M) :
     cast R M h (tprod R a) = tprod R (a ∘ Fin.cast h.symm) :=
   reindex_tprod _ _
-#align tensor_power.cast_tprod TensorPower.cast_tprod
+#align tensor_power.cast_tprod TensorPower.cast_tprodₓ
 
 @[simp]
 theorem cast_refl {i} (h : i = i) : cast R M h = LinearEquiv.refl _ _ :=
@@ -146,13 +146,12 @@ theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M
   rw [← Fin.castIso_to_equiv, ← h2]
 #align tensor_power.graded_monoid_eq_of_cast TensorPower.gradedMonoid_eq_of_cast
 
--- named to match `Fin.cast_eq_cast`, which is now `Fin.cast_eq_cast`
 theorem cast_eq_cast {i j} (h : i = j) :
     ⇑(cast R M h) = _root_.cast (congrArg (fun i => (⨂[R]^i) M) h) := by
   subst h
   rw [cast_refl]
   rfl
-#align tensor_power.cast_eq_cast TensorPower.cast_eq_cast
+#align tensor_power.cast_eq_cast TensorPower.cast_eq_castₓ
 
 variable (R)
 

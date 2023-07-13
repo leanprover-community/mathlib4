@@ -455,29 +455,29 @@ def revPerm : Equiv.Perm (Fin n) :=
 @[simp]
 theorem val_rev (i : Fin n) : (rev i : ℕ) = n - (i + 1) :=
   rfl
-#align fin.coe_rev Fin.val_rev
+#align fin.coe_rev Fin.val_revₓ
 
 theorem rev_injective : Injective (@rev n) :=
   rev_involutive.injective
-#align fin.rev_injective Fin.rev_injective
+#align fin.rev_injective Fin.rev_injectiveₓ
 
 theorem rev_surjective : Surjective (@rev n) :=
   rev_involutive.surjective
-#align fin.rev_surjective Fin.rev_surjective
+#align fin.rev_surjective Fin.rev_surjectiveₓ
 
 theorem rev_bijective : Bijective (@rev n) :=
   rev_involutive.bijective
-#align fin.rev_bijective Fin.rev_bijective
+#align fin.rev_bijective Fin.rev_bijectiveₓ
 
 @[simp]
 theorem rev_inj {i j : Fin n} : rev i = rev j ↔ i = j :=
   rev_injective.eq_iff
-#align fin.rev_inj Fin.rev_inj
+#align fin.rev_inj Fin.rev_injₓ
 
 @[simp]
 theorem rev_rev (i : Fin n) : rev (rev i) = i :=
   rev_involutive _
-#align fin.rev_rev Fin.rev_rev
+#align fin.rev_rev Fin.rev_revₓ
 
 @[simp]
 theorem revPerm_symm : (@revPerm n).symm = revPerm :=
@@ -492,18 +492,18 @@ theorem rev_eq {n a : ℕ} (i : Fin (n + 1)) (h : n = a + i) :
     congr
     rw [h]
   rw [add_assoc, add_tsub_cancel_right]
-#align fin.rev_eq Fin.rev_eq
+#align fin.rev_eq Fin.rev_eqₓ
 
 @[simp]
 theorem rev_le_rev {i j : Fin n} : rev i ≤ rev j ↔ j ≤ i := by
   simp only [le_iff_val_le_val, val_rev, tsub_le_tsub_iff_left (Nat.add_one_le_iff.2 j.is_lt),
     add_le_add_iff_right, iff_self]
-#align fin.rev_le_rev Fin.rev_le_rev
+#align fin.rev_le_rev Fin.rev_le_revₓ
 
 @[simp]
 theorem rev_lt_rev {i j : Fin n} : rev i < rev j ↔ j < i :=
   lt_iff_lt_of_le_iff_le rev_le_rev
-#align fin.rev_lt_rev Fin.rev_lt_rev
+#align fin.rev_lt_rev Fin.rev_lt_revₓ
 
 /-- `Fin.rev n` as an order-reversing isomorphism. -/
 @[simps! apply toEquiv]
@@ -516,7 +516,7 @@ def revOrderIso {n} : (Fin n)ᵒᵈ ≃o Fin n :=
 @[simp]
 theorem revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) :=
   rfl
-#align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_apply
+#align fin.rev_order_iso_symm_apply Fin.revOrderIso_symm_applyₓ
 
 #align fin.last Fin.last
 
@@ -1072,7 +1072,7 @@ see also `Equiv.finCongr`. -/
 def castIso (eq : n = m) : Fin n ≃o Fin m where
   toEquiv := ⟨cast eq, cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
   map_rel_iff' := cast_le_cast eq
-#align fin.cast Fin.castIso
+#align fin.cast Fin.castIsoₓ
 
 @[simp]
 theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
@@ -1080,46 +1080,46 @@ theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
 
 @[simp]
 theorem coe_cast (h : n = m) (i : Fin n) : (cast h i : ℕ) = i := rfl
-#align fin.coe_cast Fin.coe_cast
+#align fin.coe_cast Fin.coe_castₓ
 
 @[simp]
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
     by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
   ext rfl
-#align fin.cast_zero Fin.cast_zero
+#align fin.cast_zero Fin.cast_zeroₓ
 
 @[simp]
 theorem cast_last {n' : ℕ} {h : n + 1 = n' + 1} : cast h (last n) = last n' :=
   ext (by rw [coe_cast, val_last, val_last, Nat.succ_injective h])
-#align fin.cast_last Fin.cast_last
+#align fin.cast_last Fin.cast_lastₓ
 
 @[simp]
 theorem cast_mk (h : n = m) (i : ℕ) (hn : i < n) :
     cast h ⟨i, hn⟩ = ⟨i, lt_of_lt_of_le hn h.le⟩ :=
   rfl
-#align fin.cast_mk Fin.cast_mk
+#align fin.cast_mk Fin.cast_mkₓ
 
 @[simp]
 theorem cast_trans {k : ℕ} (h : n = m) (h' : m = k) {i : Fin n} :
     cast h' (cast h i) = cast (Eq.trans h h') i :=
   rfl
-#align fin.cast_trans Fin.cast_trans
+#align fin.cast_trans Fin.cast_transₓ
 
 @[simp]
 theorem cast_refl (h : n = n := rfl) : cast h = id := by
   ext
   rfl
-#align fin.cast_refl Fin.cast_refl
 
 @[simp]
 theorem castIso_refl (h : n = n := rfl) : castIso h = OrderIso.refl (Fin n) := by
   ext
   simp
+#align fin.cast_refl Fin.castIso_refl
 
 theorem castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} :
     (castLE h' : Fin m → Fin n) = Fin.cast h :=
   funext fun _ => rfl
-#align fin.cast_le_of_eq Fin.castLE_of_eq
+#align fin.cast_le_of_eq Fin.castLE_of_eqₓ
 
 /-- While in many cases `Fin.castIso` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
@@ -1134,7 +1134,7 @@ theorem cast_eq_cast (h : n = m) : (cast h : Fin n → Fin m) = _root_.cast (h �
   subst h
   ext
   rfl
-#align fin.cast_eq_cast Fin.cast_eq_cast
+#align fin.cast_eq_cast Fin.cast_eq_castₓ
 
 theorem strictMono_castAdd (m) : StrictMono (castAdd m : Fin n → Fin (n + m)) :=
   strictMono_castLE (Nat.le_add_right n m)
@@ -1156,7 +1156,7 @@ theorem castAdd_zero : (castAdd 0 : Fin n → Fin (n + 0)) = cast rfl := by
   ext
   simp only [Nat.add_zero, cast_refl, OrderIso.refl_apply]
   rfl
-#align fin.cast_add_zero Fin.castAdd_zero
+#align fin.cast_add_zero Fin.castAdd_zeroₓ
 
 theorem castAdd_lt {m : ℕ} (n : ℕ) (i : Fin m) : (castAdd n i : ℕ) < m := by
   simp
@@ -1184,26 +1184,26 @@ theorem castLT_castAdd (m : ℕ) (i : Fin n) : castLT (castAdd m i) (castAdd_lt 
 theorem castAdd_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
     castAdd m (Fin.cast h i) = Fin.cast (congr_arg (. + m) h) (castAdd m i) :=
   ext rfl
-#align fin.cast_add_cast Fin.castAdd_cast
+#align fin.cast_add_cast Fin.castAdd_castₓ
 
 theorem cast_castAdd_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
     cast h (castAdd m i) = castAdd m (cast (add_right_cancel h) i) := by
   ext
   rfl
-#align fin.cast_cast_add_left Fin.cast_castAdd_left
+#align fin.cast_cast_add_left Fin.cast_castAdd_leftₓ
 
 @[simp]
 theorem cast_castAdd_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
     cast h (castAdd m' i) = castAdd m i := by
   ext
   rfl
-#align fin.cast_cast_add_right Fin.cast_castAdd_right
+#align fin.cast_cast_add_right Fin.cast_castAdd_rightₓ
 
 theorem castAdd_castAdd {m n p : ℕ} (i : Fin m) :
     castAdd p (castAdd n i) = cast (add_assoc _ _ _).symm (castAdd (n + p) i) := by
   ext
   rfl
-#align fin.cast_add_cast_add Fin.castAdd_castAdd
+#align fin.cast_add_cast_add Fin.castAdd_castAddₓ
 
 /-- The cast of the successor is the successor of the cast.
 See `Fin.succ_cast_eq` for rewriting in the reverse direction. -/
@@ -1211,12 +1211,12 @@ See `Fin.succ_cast_eq` for rewriting in the reverse direction. -/
 theorem cast_succ_eq {n' : ℕ} (i : Fin n) (h : n.succ = n'.succ) :
     cast h i.succ = (cast (Nat.succ.inj h) i).succ :=
   ext rfl
-#align fin.cast_succ_eq Fin.cast_succ_eq
+#align fin.cast_succ_eq Fin.cast_succ_eqₓ
 
 theorem succ_cast_eq {n' : ℕ} (i : Fin n) (h : n = n') :
     (cast h i).succ = cast (by rw [h]) i.succ :=
   ext <| by simp
-#align fin.succ_cast_eq Fin.succ_cast_eq
+#align fin.succ_cast_eq Fin.succ_cast_eqₓ
 
 theorem strictMono_castSucc : StrictMono (castSucc : Fin n → Fin (n + 1)) :=
   strictMono_castAdd 1
@@ -1242,7 +1242,7 @@ theorem cast_castSucc {n' : ℕ} {h : n + 1 = n' + 1} {i : Fin n} :
     cast h (castSucc i) = castSucc (cast (Nat.succ_injective h) i) := by
   ext
   simp only [coe_cast, coe_castSucc]
-#align fin.cast_cast_succ Fin.cast_castSucc
+#align fin.cast_cast_succ Fin.cast_castSuccₓ
 
 theorem castSucc_lt_succ (i : Fin n) : Fin.castSucc i < i.succ :=
   lt_iff_val_lt_val.2 <| by simp only [coe_castSucc, val_succ, Nat.lt_succ_self]
@@ -1398,25 +1398,25 @@ theorem addNat_mk (n i : ℕ) (hi : i < m) : addNat ⟨i, hi⟩ n = ⟨i + n, ad
 theorem cast_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
     cast h (addNat i 0) = cast ((add_zero _).symm.trans h) i :=
   ext <| add_zero _
-#align fin.cast_add_nat_zero Fin.cast_addNat_zero
+#align fin.cast_add_nat_zero Fin.cast_addNat_zeroₓ
 
 /-- For rewriting in the reverse direction, see `Fin.cast_addNat_left`. -/
 theorem addNat_cast {n n' m : ℕ} (i : Fin n') (h : n' = n) :
     addNat (cast h i) m = cast (congr_arg (. + m) h) (addNat i m) :=
   ext rfl
-#align fin.add_nat_cast Fin.addNat_cast
+#align fin.add_nat_cast Fin.addNat_castₓ
 
 theorem cast_addNat_left {n n' m : ℕ} (i : Fin n') (h : n' + m = n + m) :
     cast h (addNat i m) = addNat (cast (add_right_cancel h) i) m := by
   ext
   rfl
-#align fin.cast_add_nat_left Fin.cast_addNat_left
+#align fin.cast_add_nat_left Fin.cast_addNat_leftₓ
 
 @[simp]
 theorem cast_addNat_right {n m m' : ℕ} (i : Fin n) (h : n + m' = n + m) :
     cast h (addNat i m') = addNat i m :=
   ext <| (congr_arg ((· + ·) (i : ℕ)) (add_left_cancel h) : _)
-#align fin.cast_add_nat_right Fin.cast_addNat_right
+#align fin.cast_add_nat_right Fin.cast_addNat_rightₓ
 
 theorem strictMono_natAdd (n) {m} : StrictMono (natAdd n : Fin m → Fin (n + m)) :=
   fun i j h => add_lt_add_left (show i.val < j.val from h) _
@@ -1444,61 +1444,61 @@ theorem le_coe_natAdd (m : ℕ) (i : Fin n) : m ≤ natAdd m i :=
 theorem natAdd_zero {n : ℕ} : Fin.natAdd 0 = Fin.cast (zero_add n).symm := by
   ext
   simp
-#align fin.nat_add_zero Fin.natAdd_zero
+#align fin.nat_add_zero Fin.natAdd_zeroₓ
 
 /-- For rewriting in the reverse direction, see `Fin.cast_natAdd_right`. -/
 theorem natAdd_cast {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
     natAdd m (cast h i) = cast (congr_arg _ h) (natAdd m i) := by
   ext
   rfl
-#align fin.nat_add_cast Fin.natAdd_cast
+#align fin.nat_add_cast Fin.natAdd_castₓ
 
 theorem cast_natAdd_right {n n' m : ℕ} (i : Fin n') (h : m + n' = m + n) :
     cast h (natAdd m i) = natAdd m (cast (add_left_cancel h) i) := by
   ext
   rfl
-#align fin.cast_nat_add_right Fin.cast_natAdd_right
+#align fin.cast_nat_add_right Fin.cast_natAdd_rightₓ
 
 @[simp]
 theorem cast_natAdd_left {n m m' : ℕ} (i : Fin n) (h : m' + n = m + n) :
     cast h (natAdd m' i) = natAdd m i :=
   ext <| (congr_arg (· + (i : ℕ)) (add_right_cancel h) : _)
-#align fin.cast_nat_add_left Fin.cast_natAdd_left
+#align fin.cast_nat_add_left Fin.cast_natAdd_leftₓ
 
 theorem castAdd_natAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
     castAdd p (natAdd m i) = cast (add_assoc _ _ _).symm (natAdd m (castAdd p i)) := by
   ext
   rfl
-#align fin.cast_add_nat_add Fin.castAdd_natAdd
+#align fin.cast_add_nat_add Fin.castAdd_natAddₓ
 
 theorem natAdd_castAdd (p m : ℕ) {n : ℕ} (i : Fin n) :
     natAdd m (castAdd p i) = cast (add_assoc _ _ _) (castAdd p (natAdd m i)) := by
   ext
   rfl
-#align fin.nat_add_cast_add Fin.natAdd_castAdd
+#align fin.nat_add_cast_add Fin.natAdd_castAddₓ
 
 theorem natAdd_natAdd (m n : ℕ) {p : ℕ} (i : Fin p) :
     natAdd m (natAdd n i) = cast (add_assoc _ _ _) (natAdd (m + n) i) :=
   ext <| (add_assoc _ _ _).symm
-#align fin.nat_add_nat_add Fin.natAdd_natAdd
+#align fin.nat_add_nat_add Fin.natAdd_natAddₓ
 
 @[simp]
 theorem cast_natAdd_zero {n n' : ℕ} (i : Fin n) (h : 0 + n = n') :
     cast h (natAdd 0 i) = cast ((zero_add _).symm.trans h) i :=
   ext <| zero_add _
-#align fin.cast_nat_add_zero Fin.cast_natAdd_zero
+#align fin.cast_nat_add_zero Fin.cast_natAdd_zeroₓ
 
 @[simp]
 theorem cast_natAdd (n : ℕ) {m : ℕ} (i : Fin m) :
     cast (add_comm _ _) (natAdd n i) = addNat i n :=
   ext <| add_comm _ _
-#align fin.cast_nat_add Fin.cast_natAdd
+#align fin.cast_nat_add Fin.cast_natAddₓ
 
 @[simp]
 theorem cast_addNat {n : ℕ} (m : ℕ) (i : Fin n) :
     cast (add_comm _ _) (addNat i m) = natAdd m i :=
   ext <| add_comm _ _
-#align fin.cast_add_nat Fin.cast_addNat
+#align fin.cast_add_nat Fin.cast_addNatₓ
 
 @[simp]
 theorem natAdd_last {m n : ℕ} : natAdd n (last m) = last (n + m) :=
@@ -1629,7 +1629,7 @@ theorem subNat_addNat (i : Fin n) (m : ℕ) (h : m ≤ addNat i m := le_coe_addN
 @[simp]
 theorem natAdd_subNat_cast {i : Fin (n + m)} (h : n ≤ i) :
     natAdd n (subNat n (cast (add_comm _ _) i) h) = i := by simp [← cast_addNat]
-#align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_cast
+#align fin.nat_add_sub_nat_cast Fin.natAdd_subNat_castₓ
 
 end Pred
 
@@ -2030,7 +2030,7 @@ theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
-#align fin.last_sub Fin.last_sub
+#align fin.last_sub Fin.last_subₓ
 
 end AddGroup
 
