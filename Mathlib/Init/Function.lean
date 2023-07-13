@@ -50,6 +50,12 @@ from `β` to `α`. -/
 def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 #align function.on_fun Function.onFun
 
+/-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
+produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
+`op` to the results.
+-/
+-- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
+-- have been an oversight.
 @[reducible]
 def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
   op (f x y) (g x y)
@@ -66,6 +72,7 @@ def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
   f x
 #align function.app Function.app
 
+@[inherit_doc onFun]
 infixl:2 " on " => onFun
 
 notation f " -[" op "]- " g => combine f op g
