@@ -97,6 +97,42 @@ instance hasFiniteCoproducts : HasFiniteCoproducts ExtrDisc.{u} where
         cocone := finiteCoproduct.cocone F
         isColimit := finiteCoproduct.isColimit F }⟩ } }
 
+/--
+The coproduct cocone associated to the explicit finite coproduct.
+-/
+@[simps]
+def finiteCoproduct.explicitCocone : Limits.Cocone (Discrete.functor X) where
+  pt := finiteCoproduct X
+  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+
+/--
+The explicit finite coproduct cocone is a colimit cocone.
+-/
+@[simps]
+def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocone X) where
+  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
+  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
+  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
+    specialize hm ⟨a⟩
+    ext t
+    apply_fun (fun q => q t) at hm
+    exact hm
+
+section Iso
+
+noncomputable
+def FromFiniteCoproductIso : finiteCoproduct X ≅ ∐ X :=
+Limits.IsColimit.coconePointUniqueUpToIso
+  (finiteCoproduct.isColimit' X) (Limits.colimit.isColimit _)
+
+theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
+    finiteCoproduct.ι X a = (Limits.Sigma.ι X a) ≫ (FromFiniteCoproductIso X).inv := by
+  dsimp [FromFiniteCoproductIso]
+  simp only [colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.explicitCocone_pt,
+    finiteCoproduct.explicitCocone_ι, Discrete.natTrans_app]
+
+end Iso
+
 end FiniteCoproducts
 
 end ExtrDisc
