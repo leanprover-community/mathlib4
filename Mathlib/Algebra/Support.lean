@@ -218,6 +218,12 @@ theorem mulSupport_comp_eq (g : M → N) (hg : ∀ {x}, g x = 1 ↔ x = 1) (f : 
 #align function.support_comp_eq Function.support_comp_eq
 
 @[to_additive]
+theorem mulSupport_comp_eq_of_range_subset {g : M → N} {s : Set M}
+    (hg : ∀ {x}, x ∈ s → (g x = 1 ↔ x = 1)) {f : α → M} (hf : range f ⊆ s) :
+    mulSupport (g ∘ f) = mulSupport f :=
+  Set.ext fun x ↦ not_congr <| by rw [Function.comp, hg (hf (mem_range_self x))]
+
+@[to_additive]
 theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
     mulSupport (g ∘ f) = f ⁻¹' mulSupport g :=
   rfl
