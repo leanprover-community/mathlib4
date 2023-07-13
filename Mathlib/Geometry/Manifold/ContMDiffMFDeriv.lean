@@ -124,8 +124,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
             (extChartAt I' (f x (g x))).symm ∘
               writtenInExtChartAt I I' (g x) (f x) ∘
                 extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm)
-          (range I) (extChartAt I (g x₀) (g x)))
-      x₀ := by
+          (range I) (extChartAt I (g x₀) (g x))) x₀ := by
     refine' this.congr_of_eventuallyEq _
     filter_upwards [h2g, h2f]
     intro x₂ hx₂ h2x₂
@@ -236,10 +235,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       (fun p : H × E =>
         (f p.fst,
           (fderivWithin 𝕜 (writtenInExtChartAt I I' p.fst f) (I.symm ⁻¹' s ∩ range I)
-                ((extChartAt I p.fst) p.fst) :
-              E →L[𝕜] E')
-            p.snd))
-      (Prod.fst ⁻¹' s)
+                ((extChartAt I p.fst) p.fst) : E →L[𝕜] E') p.snd)) (Prod.fst ⁻¹' s)
   · have A := (tangentBundleModelSpaceHomeomorph H I).continuous
     rw [continuous_iff_continuousOn_univ] at A
     have B :=
