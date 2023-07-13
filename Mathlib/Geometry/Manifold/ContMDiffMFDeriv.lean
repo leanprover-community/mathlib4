@@ -62,7 +62,7 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜]
   {s s₁ t : Set M} {x : M} {m n : ℕ∞}
 
 -- Porting note: section about deducing differentiability from smoothness moved to
--- `Geometry.Manifold.`MFDeriv`
+-- `Geometry.Manifold.MFDeriv`
 
 /-! ### The derivative of a smooth function is smooth -/
 
