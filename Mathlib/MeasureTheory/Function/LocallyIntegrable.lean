@@ -302,6 +302,8 @@ protected theorem LocallyIntegrable.sub (hf : LocallyIntegrable f μ) (hg : Loca
 protected theorem LocallyIntegrable.neg (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
+/-- If `f` is locally integrable and `g` is continuous with compact support,
+then `g • f` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
     [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X]
     (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
@@ -315,6 +317,25 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
     simp [image_eq_zero_of_nmem_tsupport hx]
   rw [← this, indicator_smul]
   apply Integrable.smul_of_top_right
+  · rw [integrable_indicator_iff hK.measurableSet]
+    exact hf.integrableOn_isCompact hK
+  · exact hg.memℒp_top_of_hasCompactSupport h'g μ
+
+/-- If `f` is locally integrable and `g` is continuous with compact support,
+then `f • g` is integrable. -/
+theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
+    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → ℝ} (hf : LocallyIntegrable f μ)
+    {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    Integrable (fun x ↦ f x • g x) μ := by
+  let K := tsupport g
+  have hK : IsCompact K := h'g
+  have : K.indicator (fun x ↦ f x • g x) = (fun x ↦ f x • g x) := by
+    apply indicator_eq_self.2
+    apply support_subset_iff'.2
+    intros x hx
+    simp [image_eq_zero_of_nmem_tsupport hx]
+  rw [← this, indicator_smul_left]
+  apply Integrable.smul_of_top_left
   · rw [integrable_indicator_iff hK.measurableSet]
     exact hf.integrableOn_isCompact hK
   · exact hg.memℒp_top_of_hasCompactSupport h'g μ
