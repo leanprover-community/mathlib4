@@ -33,23 +33,32 @@ Book :
 
 -/
 
+structure Coefficients : Type where
+  a : ℤ
+  b : ℤ
+  c : ℤ
+  D := b^2 - 4*a*c
+  hD : D = b^2 - 4*a*c := by rfl
+deriving Repr
 
+def brouckner (f : Coefficients) : Coefficients × ℤ :=
+  let m := (-f.b + f.D.sqrt) / (2 * f.a)
+  ({a := -(f.a*m^2+f.b*m+f.c), b := -(2*f.a*m+f.b), c:=-f.a, D := f.D, hD := sorry}, m)
 
-def brouckner (a b c D : ℤ) : ℤ × ℤ × ℤ × ℤ :=
-  let m := ⌊ (-b + (D : ℚ).sqrt) / (2 * a) ⌋
-  (-(a*m^2+b*m+c),-(2*a*m+b),-a,m)
-
-def iterate_brouckner (a b c D : ℤ) (l : List (ℤ × ℤ × ℤ × ℤ)) :
-    (n : ℕ) → List (ℤ × ℤ × ℤ × ℤ)
+def iterate_brouckner (f : Coefficients) (l : List (Coefficients × ℤ)) :
+    (n : ℕ) → List (Coefficients × ℤ)
   | 0     => l
   | n + 1 =>
-    let (a, b, c, m) := brouckner a b c D
-    if a = 1 then
-      (a,b,c,m)::l
+    let (f, m) := brouckner f
+    if f.a = 1 then
+      (f,m)::l
     else
-      iterate_brouckner a b c D ((a,b,c,m)::l) n
+      iterate_brouckner f ((f,m)::l) n
 
-#eval iterate_brouckner 1 0 (-19) (4 * 19) [] 20
+-- theorem bouckner_preserves_sign (ha : 0 < a) (hc : c < 0) :
+--   let (a',b',c',d') := (brouckner a b c D) ;;
+
+#eval iterate_brouckner ⟨1,0, (-19), (4 * 19), by norm_num⟩ [] 20
 
 -- example : let (a',b',c',m) := brouckner a b c D;
 --   brouckner (-c') (-b') (-a') D = (-c,-b,-a,sorry) := by
