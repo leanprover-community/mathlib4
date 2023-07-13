@@ -1129,6 +1129,32 @@ theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
   by_cases h : f i ≠ 0 <;> [skip; rw [not_not] at h] <;> simp [h]
 #align dfinsupp.eq_mk_support DFinsupp.eq_mk_support
 
+/-- Equivalence between dependent functions with finite support `s : Finset ι` and functions
+`∀ i, {x : β i // x ≠ 0}`. -/
+@[simps]
+def subtypeSupportEqEquiv (s : Finset ι) :
+    {f : Π₀ i, β i // f.support = s} ≃ ∀ i : s, {x : β i // x ≠ 0} where
+  toFun | ⟨f, hf⟩ => fun ⟨i, hi⟩ ↦ ⟨f i, (f.mem_support_toFun i).1 <| hf.symm ▸ hi⟩
+  invFun f := ⟨mk s fun i ↦ (f i).1, Finset.ext fun i ↦ by
+    -- TODO: `simp` fails to use `(f _).2` inside `∃ _, _`
+    calc
+      i ∈ support (mk s fun i ↦ (f i).1) ↔ ∃ h : i ∈ s, (f ⟨i, h⟩).1 ≠ 0 := by simp
+      _ ↔ ∃ _ : i ∈ s, True := exists_congr fun h ↦ (iff_true _).mpr (f _).2
+      _ ↔ i ∈ s := by simp⟩
+  left_inv := by
+    rintro ⟨f, rfl⟩
+    ext i
+    simpa using Eq.symm
+  right_inv f := by
+    ext1
+    simp [Subtype.eta]; rfl
+
+/-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type type
+of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
+@[simps! apply_fst apply_snd_coe]
+def equivSigmaFinsetFun : (Π₀ i, β i) ≃ Σ s : Finset ι, ∀ i : s, {x : β i // x ≠ 0} :=
+  (Equiv.sigmaFiberEquiv DFinsupp.support).symm.trans (.sigmaCongrRight subtypeSupportEqEquiv)
+
 @[simp]
 theorem support_zero : (0 : Π₀ i, β i).support = ∅ :=
   rfl
