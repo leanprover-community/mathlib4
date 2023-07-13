@@ -76,7 +76,8 @@ def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
 @[inherit_doc onFun]
 infixl:2 " on " => onFun
 
-notation f " -[" op "]- " g => combine f op g
+-- porting note: removed, it was never used
+-- notation f " -[" op "]- " g => combine f op g
 
 theorem left_id (f : α → β) : id ∘ f = f :=
   rfl
