@@ -33,18 +33,18 @@ lemma split_off_first {a : ℕ} (f : ℕ → ℚ) (N : ℕ) (hN : a < N) :
 @[simp]
 lemma abs_moebius_le_one (n : ℕ) : |μ n| ≤ 1 := by by_cases (Squarefree n) <;> simp [h]
 
+theorem sum_divisors_mu : ∑ n in m.divisors, μ n = if m = 1 then 1 else 0 :=
+  by rw [←coe_mul_zeta_apply, moebius_mul_coe_zeta, one_apply]
+
 /- ## The sum of floors
 We first show that the sum of μ(n) * ⌊N/n⌋  as n ranges from 1 to N is equal to 1. -/
-
-lemma sum_divisors_mu : ∑ n in m.divisors, μ n = if m = 1 then 1 else 0 :=
-  by rw [←coe_mul_zeta_apply, moebius_mul_coe_zeta, one_apply]
 
 lemma moebius_mul_floor_div_sum_eq_one (N : ℕ) (hN : 0 < N) :
   ∑ n in Ioc 0 N, μ n * ⌊(N / n : ℚ)⌋ = 1 :=
 calc
   _ = ∑ m in Ioc 0 N, ∑ n in Ioc 0 N, if n ∣ m then μ n else 0 := by
     rw [sum_comm]
-    exact sum_congr rfl fun x _ ↦ by simp [←sum_filter, mul_comm]
+    exact sum_congr rfl fun x _ ↦ by simp [←sum_filter, mul_comm, Ioc_filter_dvd_card_eq_div]
   _ = ∑ m in Ioc 0 N, ∑ n in m.divisors, μ n := by
     refine sum_congr rfl fun x hx => ?_
     rw [mem_Ioc] at hx
@@ -53,8 +53,7 @@ calc
     simp only [divisors, Ico_succ_left, mem_filter, mem_Ioc, mem_Ioo, and_congr_left_iff,
       lt_add_one_iff, and_congr_right_iff, Finset.ext_iff]
     exact fun i h _ => ⟨fun _ => le_of_dvd hx.1 h, fun h' => h'.trans hx.2⟩
-  _ = 1 := by simp [←coe_mul_zeta_apply, moebius_mul_coe_zeta, one_apply, hN.ne']
-
+  _ = 1 := by simp [sum_divisors_mu, hN.ne']
 
 /- ## The sum of fractional parts
 Next, we will show that μ(n) times the fractional part of a rational is at most `1`. -/
