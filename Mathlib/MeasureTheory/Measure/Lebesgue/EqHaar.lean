@@ -32,8 +32,8 @@ We deduce basic properties of any Haar measure on a finite dimensional real vect
 * `addHaar_submodule` : a strict submodule has measure `0`.
 * `addHaar_smul` : the measure of `r • s` is `|r| ^ dim * μ s`.
 * `addHaar_ball`: the measure of `ball x r` is `r ^ dim * μ (ball 0 1)`.
-* `add_haar_closedBall`: the measure of `closedBall x r` is `r ^ dim * μ (ball 0 1)`.
-* `add_haar_sphere`: spheres have zero measure.
+* `addHaar_closedBall`: the measure of `closedBall x r` is `r ^ dim * μ (ball 0 1)`.
+* `addHaar_sphere`: spheres have zero measure.
 
 This makes it possible to associate a Lebesgue measure to an `n`-alternating map in dimension `n`.
 This measure is called `AlternatingMap.measure`. Its main property is
@@ -495,8 +495,8 @@ theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere 
   rcases hr.lt_or_lt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
-        measure_diff ball_subset_closedBall measurableSet_ball measure_ball_lt_top.ne,
-        addHaar_ball_of_pos μ _ h, addHaar_closedBall μ _ h.le, tsub_self]
+      measure_diff ball_subset_closedBall measurableSet_ball measure_ball_lt_top.ne,
+      addHaar_ball_of_pos μ _ h, addHaar_closedBall μ _ h.le, tsub_self]
 #align measure_theory.measure.add_haar_sphere_of_ne_zero MeasureTheory.Measure.addHaar_sphere_of_ne_zero
 
 theorem addHaar_sphere [Nontrivial E] (x : E) (r : ℝ) : μ (sphere x r) = 0 := by
