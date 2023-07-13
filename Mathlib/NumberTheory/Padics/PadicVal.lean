@@ -15,7 +15,7 @@ import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.IntervalCases
 
 /-!
-# p-adic Valuation
+# `p`-adic Valuation
 
 This file defines the `p`-adic valuation on `ℕ`, `ℤ`, and `ℚ`.
 
@@ -33,6 +33,14 @@ This file uses the local notation `/.` for `Rat.mk`.
 
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
 by taking `[Fact p.Prime]` as a type class argument.
+
+## Calculations with `p`-adic valuations
+
+* `padicValNat_choose`: Kummers Theorem. The `p`-adic valuation of `n.choose k`  `n!` is the number
+of carries when `k` and `n - k` are added in base `p`.This sum is expressed over the finset
+`Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
+corresponding theorem on multiplcity.
+
 
 ## References
 
@@ -548,6 +556,12 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
   rw [padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos (p * n), Nat.cast_add,
       padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp
+
+theorem multiplicity_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
+    padicValNat p (choose n k) =
+    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
+  PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos hkn) ▸
+  Prime.multiplicity_choose hp.out hkn hnb
 
 end padicValNat
 
