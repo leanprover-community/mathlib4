@@ -61,11 +61,11 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.1"
+  "0.1.2"
 
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}"
+  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{if System.Platform.isWindows then ".exe" else ""}"
 
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
@@ -91,6 +91,7 @@ def getPackageDirs : IO PackageDirs := return .ofList [
   ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
+  ("Cli", LAKEPACKAGESDIR / "Cli"),
   ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
   ("Qq", LAKEPACKAGESDIR / "Qq")
 ]
