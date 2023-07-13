@@ -22,15 +22,6 @@ variable {α : Type _} [MetricSpace α]
 def nonWanderingSet (f : α → α) : Set α :=
   {x | ∀ ε, 0 < ε → ∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ n ≠ 0}
 
-def nonWanderingSet' (f : α → α) : Set α :=
-  { x | ∀ s : Set α, s ∈ 𝓝 x
-        -> ∃ (n : ℕ), ∃ (t : Set α), t ∈ 𝓝 (f^[n] x) ∧ Set.Nonempty (s ∩ t) }
-
--- def nonWanderingSet'' {τ : Type _} {β γ : Type _ } [TopologicalSpace β] [TopologicalSpace γ]
---   (f : Filter τ) (ϕ : τ → α → β)  : Set α :=
---     { x | ∀ s : Set α, s ∈ 𝓝 x -> ∃ ___, ∃ (t : Set α), t ∈ 𝓝 (f (φ n) x) ∧ Set.Nonempty (s ∩ t) }
-
-
 variable [CompactSpace α] (f : α → α) (hf : Continuous f)
 
 /- Show that periodic points belong to the non-wandering set -/
@@ -170,7 +161,8 @@ theorem omegaLimit_nonempty (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x
   done
 
 /- Show that the omega-limit set of any point is contained in the non-wandering set. -/
-theorem omegaLimit_nonwandering (x : α) : (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (nonWanderingSet f) := by
+theorem omegaLimit_nonwandering (x : α) :
+    (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (nonWanderingSet f) := by
   intro z hz
   rewrite [mem_omegaLimit_iff_frequently] at hz
   simp at hz
@@ -217,10 +209,35 @@ theorem nonWandering_nonempty [hα : Nonempty α] : Set.Nonempty (nonWanderingSe
 def recurrentSet {α : Type _} [TopologicalSpace α] (f : α → α) : Set α :=
   { x | x ∈ ω⁺ (fun n ↦ f^[n]) ({x}) }
 
+theorem recurrentSet_iff_accumulation_point (x : α) :
+    x ∈ recurrentSet f ↔ ∀ (ε : ℝ) (N : ℕ), 0 < ε
+                         -> ∃ m : ℕ, N ≤ m ∧ f^[m] x ∈ ball x ε := by
+  constructor
+  . intro recur_x
+    unfold recurrentSet at recur_x
+    simp at recur_x
+    rw [mem_omegaLimit_iff_frequently] at recur_x
+    intro ε N hε
+    let recur_x_in_ball := recur_x (ball x ε) (ball_mem_nhds x hε)
+    simp [frequently_atTop] at recur_x_in_ball
+    exact recur_x_in_ball N
+  . intro hf
+    unfold recurrentSet
+    simp
+    rw [mem_omegaLimit_iff_frequently]
+    intro U hU
+    simp [frequently_atTop]
+    -- same as 'rcases Metric.mem_nhds_iff.mp hU with ⟨ε, hε, rest⟩' but nicer
+    obtain ⟨ε, hε, ball_in_U⟩ := Metric.mem_nhds_iff.mp hU
+    intro a
+    obtain ⟨m, hm, fm_in_ball⟩ := (hf ε a hε)
+    exact ⟨m, hm, mem_of_subset_of_mem ball_in_U fm_in_ball⟩
+  done
+
 /- Show that periodic points belong to the recurrent set. -/
 theorem periodicpts_mem_recurrentSet
-    (x : α) (n : ℕ) (nnz: n ≠ 0) (hx: IsPeriodicPt f n x)
-    : x ∈ recurrentSet f := by
+    (x : α) (n : ℕ) (nnz: n ≠ 0) (hx: IsPeriodicPt f n x) :
+    x ∈ recurrentSet f := by
   -- unfold IsPeriodicPt at hx
   -- unfold IsFixedPt at hx
   -- unfold recurrentSet
@@ -253,10 +270,28 @@ theorem recurrentSet_nonwandering : recurrentSet f ⊆ (nonWanderingSet f) := by
   done
 
 /- Define a minimal dynamics (all orbits are dense) -/
-def IsMinimal (f : α → α ) : Prop :=
-  ∀ x y : α, ∀ ε : ℝ, ε > 0 -> ∃ n : ℕ, f^[n] y ∈ ball x ε
+def IsMinimal (f : α → α) : Prop :=
+  ∀ (x y : α) (ε : ℝ), ε > 0 -> ∃ n : ℕ, f^[n] y ∈ ball x ε
 
 /- Show that in a minimal dynamics, the recurrent set is all the space -/
+theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
+    ∀ x : α, x ∈ recurrentSet f := by
+  intro z
+  -- unfold recurrentSet
+  -- unfold IsMinimal at hf
+  simp
+  have : ∀ (x : α) (ε : ℝ) (N : ℕ), ε > 0
+         -> ∃ m : ℕ, m ≥ N ∧ f^[m] x ∈ ball x ε := by
+    intro x ε N hε
+    rcases (hf x (f^[N] x) ε hε) with ⟨n, hball⟩
+    refine' ⟨n + N, _, _⟩
+    . linarith
+    . rw [ <-Function.iterate_add_apply ] at hball
+      exact hball
+    done
+  apply Iff.mpr (recurrentSet_iff_accumulation_point f z)
+  exact this z
+  done
 
 
 /- Give an example of a continuous dynamics on a compact space in which the recurrent set is all
