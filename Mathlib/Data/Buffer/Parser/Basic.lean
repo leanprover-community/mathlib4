@@ -3,8 +3,8 @@ Copyright (c) 2020 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 
-! This file was ported from Lean 3 source module data.buffer.parser.numeral
-! leanprover-community/mathlib commit 2220b0cbab795e73674b8191170b0cc68c6b54a8
+! This file was ported from Lean 3 source module data.buffer.parser.basic
+! leanprover-community/mathlib commit bb9d1c5085e0b7ea619806a68c5021927cecb2a6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
