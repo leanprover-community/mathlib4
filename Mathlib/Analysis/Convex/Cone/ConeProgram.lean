@@ -23,9 +23,9 @@ structure ConeProgram
   (V : Type _) [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
   (W : Type _) [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
   where
-  K : ProperCone ℝ V
-  L : ProperCone ℝ W
-  obj : V
+  decision_cone : ProperCone ℝ V
+  slack_cone : ProperCone ℝ W
+  cost : V
   lhs : V →L[ℝ] W
   rhs : W
 
@@ -35,9 +35,9 @@ variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Complete
 variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
 variable (P : ConeProgram V W)
 
-def Objective (v : V) := Real.toEReal ⟪v, P.obj⟫_ℝ
+def Objective (v : V) := Real.toEReal ⟪v, P.cost⟫_ℝ
 
-def IsSolution (v : V) := v ∈ P.K ∧ P.rhs - P.lhs v ∈ P.L
+def IsSolution (v : V) := v ∈ P.decision_cone ∧ P.rhs - P.lhs v ∈ P.slack_cone
 
 -- TODO: Show that the set `Solutions := { v | P.IsSolution v }` is itself a `ConvexCone`.
 
@@ -63,8 +63,8 @@ noncomputable def Value := sInf <| P.Values
 
 def IsSubSolution (seqV : ℕ → V) :=
   ∃ seqW : ℕ → W,
-  (∀ n, seqV n ∈ P.K)
-  ∧ (∀ n, seqW n ∈ P.L)
+  (∀ n, seqV n ∈ P.decision_cone)
+  ∧ (∀ n, seqW n ∈ P.slack_cone)
   ∧ (Tendsto (fun n => P.lhs (seqV n) + (seqW n)) atTop (𝓝 P.rhs))
 
 noncomputable def SubObjective (seqV : ℕ → V) := liminf (fun n => P.Objective (seqV n)) atTop
@@ -100,11 +100,11 @@ lemma value_le_subValue : P.SubValue ≤ P.Value  := sInf_le_sInf P.values_subse
 ----------------------------------------------------------------------------------------------------
 
 noncomputable def Dual : ConeProgram W V where
-  K := (P.L).dual
-  L := (P.K).dual
+  K := (P.slack_cone).dual
+  L := (P.decision_cone).dual
   obj := -P.rhs
   lhs := -adjoint P.lhs
-  rhs := -P.obj
+  rhs := -P.cost
 
 theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual]; simp
 
@@ -119,26 +119,26 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
     rcases hw with ⟨hw1, hw2⟩
     dsimp [Dual] at hw2
 
-    have h : ∀ n, ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ ≤ 0 := by sorry
+    have h : ∀ n, ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.cost⟫_ℝ ≤ 0 := by sorry
     simp_rw [sub_nonneg, ← EReal.coe_le_coe_iff] at h
 
     rw [Objective, Dual, inner_neg_right, real_inner_comm _ _,
       EReal.neg_le, EReal.coe_neg, EReal.neg_le_neg_iff]
 
     calc EReal.toReal ⟪P.rhs, w⟫_ℝ ≤ P.SubObjective seqV := sorry
-    -- have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := fun n => by
+    -- have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.cost⟫_ℝ := fun n => by
     --   calc 0
-    --     ≤ ⟪seqV n, adjoint P.lhs w - P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by {
+    --     ≤ ⟪seqV n, adjoint P.lhs w - P.cost⟫_ℝ + ⟪seqW n, w⟫_ℝ := by {
     --         refine' add_nonneg _ (hw1 (seqW n) (hseqW n))
     --         specialize hw2 (seqV n) (hseqV n)
     --         rwa [sub_neg_eq_add, neg_add_eq_sub] at hw2 }
-    --   _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by
+    --   _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ - ⟪seqV n, P.cost⟫_ℝ + ⟪seqW n, w⟫_ℝ := by
     --     rw [← inner_sub_right]
-    --   _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by
+    --   _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.cost⟫_ℝ := by
     --     rw [add_sub_right_comm]
-    --   _ = ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by
+    --   _ = ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.cost⟫_ℝ := by
     --     rw [ContinuousLinearMap.adjoint_inner_right]
-    --   _ = ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [inner_add_left]
+    --   _ = ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.cost⟫_ℝ := by rw [inner_add_left]
     -- simp_rw [sub_nonneg, ← EReal.coe_le_coe_iff] at h
     -- have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) :=
     --   htends.inner tendsto_const_nhds
@@ -146,7 +146,7 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
     -- have : P.SubObjective seqV ≤ ⟪P.rhs, w⟫_ℝ := by
     --   calc P.SubObjective seqV
     --       = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
-    --     _ = limsup (fun n => Real.toEReal ⟪seqV n, P.obj⟫_ℝ) atTop := by rfl
+    --     _ = limsup (fun n => Real.toEReal ⟪seqV n, P.cost⟫_ℝ) atTop := by rfl
     --     _ ≤ limsup (fun n => Real.toEReal ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop := by
     --         norm_cast
     --         refine' limsup_le_limsup (eventually_of_forall h) isCobounded_le_of_bot isBounded_le_of_top
@@ -182,6 +182,6 @@ theorem weak_duality : -(P.Dual).Value ≤ P.SubValue := le_sInf <| by
 
 ----------------------------------------------------------------------------------------------------
 
-def SlaterCondition := ∃ v : P.K, P.rhs - P.lhs v ∈ interior P.L
+def SlaterCondition := ∃ v : P.decision_cone, P.rhs - P.lhs v ∈ interior P.slack_cone
 
 end ConeProgram
