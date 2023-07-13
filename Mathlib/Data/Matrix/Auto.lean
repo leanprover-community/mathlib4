@@ -67,10 +67,12 @@ do
     ← mkForallFVars #[α] <| ←mkForallFVars #[A] (binderInfoForMVars := BinderInfo.default)
       q($A = $A_eta)
   let proof_A_eq : Q($forall_A_eq) ← mkFreshExprMVarQ q($forall_A_eq)
+  -- TODO: is there a nicer way to force a type cast?
   let _eq : $A_eta =Q Matrix.etaExpand $A := ⟨⟩
+  let heq : Q($A_eta = Matrix.etaExpand $A) := q(rfl)
   proof_A_eq.mvarId!.assignIfDefeq <|
     ← mkLambdaFVars #[α] <| ←mkLambdaFVars #[A] (binderInfoForMVars := BinderInfo.default)
-      <| q((Matrix.etaExpand_eq $A).symm)
+      <| q((Matrix.etaExpand_eq $A).symm.trans ($heq).symm)
   pure proof_A_eq
 
 open Lean.Elab.Tactic in
@@ -79,6 +81,10 @@ elab "fin_eta% " m:num n:num : term => FinEta.prove m.getNat n.getNat
 -- TODO: why is the RHS `etaExpand` and not the manually expanded version?
 variable (A)
 #check (fin_eta% 1 2) (A : Matrix _ _ ℕ)
+
+example (A : Matrix (Fin 2) (Fin 3) ℕ) : A = 0 := by
+  rw [(fin_eta% 2 3) A]
+  dsimp
 
 #exit
 #eval (show MetaM Unit from do
