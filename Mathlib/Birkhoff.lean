@@ -189,6 +189,13 @@ theorem periodicpts_mem_recurrentSet
 
 
 /- Show that the recurrent set is included in the non-wandering set -/
+theorem recurrentSet_nonwandering : recurrentSet f ⊆ (nonWanderingSet f) := by
+  intro z hz
+  unfold recurrentSet at hz
+  simp at hz
+  apply omegaLimit_nonwandering
+  apply hz
+  done
 
 
 /- Show that the recurrent set of `f` is nonempty (the math proof is not trivial, maybe better
