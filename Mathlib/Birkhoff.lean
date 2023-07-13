@@ -40,13 +40,160 @@ theorem periodicpts_is_mem (x : α) (n : ℕ) (nnz: n ≠ 0) (pp: IsPeriodicPt f
   done
 
 
-/- Show that, if `x` belongs to the non-wandering set, there are points `y` arbitrarily close to `x`
-and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
-theorem arbitrary_return
-    (x : α) (hx: x ∈ nonWanderingSet f) (N : ℕ) (hN: N ≠ 0) (ε : ℝ) (hε: 0 < ε) :
-    ∃ z : α, ∃ n : ℕ, n > N ∧ z ∈ ball x ε ∧ (f^[n] z) ∈ ball x ε := by
-  unfold nonWanderingSet at hx
-  sorry
+
+lemma periodic_arbitrary_large_time (N : ℕ) (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) (x : α)
+(hx : IsPeriodicPt f m x) :
+∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ N ≤ n :=
+  by
+  use x
+  use m * N
+  refine' ⟨_,_,_⟩
+  · exact mem_ball_self hε
+  · rw [IsPeriodicPt.mul_const hx N]
+    exact mem_ball_self hε
+  · exact Nat.le_mul_of_pos_left hm
+  done
+
+open Set
+
+lemma small_inter_empty (A : Set α) (B: Set α) (C : Set α) (D: Set α) :
+(A ⊆ C) → (B ⊆ D) → (C ∩ D = ∅) → (A ∩ B = ∅) := by
+intro hAC hBD hCD
+have hincl : A ∩ B ⊆ C ∩ D := inter_subset_inter hAC hBD
+rw [hCD] at hincl
+exact Iff.mp subset_empty_iff hincl
+done
+
+/- Un lemme d'exercice: boules separees  -/
+lemma separated_balls (x : α) (hfx : x ≠ f x) :  ∃ ε, 0 < ε ∧ (ball x ε) ∩ (f '' (ball x ε)) = ∅ := by
+   have hfC : ContinuousAt f x := Continuous.continuousAt hf
+   rw [Metric.continuousAt_iff] at hfC
+   have h00 : 0 < ((dist x (f x))/4) := by
+     apply div_pos
+     rw [dist_pos]
+     exact hfx
+     exact four_pos
+   have hfCp := hfC ((dist x (f x))/4) h00
+   rcases hfCp with ⟨a, b, c⟩
+   use min a ((dist x (f x))/4)
+   refine' ⟨_,_⟩
+   · exact lt_min b h00
+   · rw [Set.ext_iff]
+     intro y
+     constructor
+     · intro ⟨hy1,hy2⟩
+       unfold ball at hy1
+       dsimp at hy1
+       have hha : min a (dist x (f x) / 4) ≤ a := min_le_left a (dist x (f x) / 4)
+       have hy3 : dist y x < a := hy1.trans_le hha
+       unfold ball at hy2
+       rw [mem_image] at hy2
+       rcases hy2 with ⟨z , hz1, hz2⟩
+       dsimp at hz1
+       have hz3 : dist z x < a := hz1.trans_le hha
+       have hy4 := c hz3
+       rw [hz2] at hy4
+       have hha2 : min a (dist x (f x) / 4) ≤ (dist x (f x) / 4) := min_le_right a (dist x (f x) / 4)
+       have hy5 : dist y x < (dist x (f x) / 4) := hy1.trans_le hha2
+       rw [dist_comm] at hy5
+       exfalso
+       have gg := dist_triangle x y (f x)
+       linarith
+     · exfalso
+   done
+
+
+
+lemma non_periodic_arbitrary_large_time (N : ℕ) (ε0 : ℝ) (hε0 : 0 < ε0) (x : α) (hfx : IsNotPeriodicPt f x) (hxf : x ∈ nonWanderingSet f)
+: ∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε0 ∧ f^[n] y ∈ ball x ε0 ∧ N+1 < n :=
+by
+  unfold IsNotPeriodicPt at hfx
+  unfold nonWanderingSet at hxf
+  dsimp at hxf
+  have hkill : forall (n : ℕ), 0 < n → ∃ ε, 0 < ε ∧ (ball x ε) ∩ (f^[n] '' (ball x ε)) = ∅ := by
+    intro n1 hn1
+    have hfx2 := hfx n1 hn1
+    have hfnC : Continuous f^[n1] := Continuous.iterate hf n1
+    have hfx2' : x ≠ f^[n1] x := Ne.symm hfx2
+    exact separated_balls (f^[n1]) hfnC x hfx2'
+  choose! ε2 hε2 h'ε2 using hkill
+  have A : Finset.Nonempty ((Finset.Icc 1 (N+1)).image ε2) := by simp
+  let δ := ((Finset.Icc 1 (N+1)).image ε2).min' A
+  let δ2 := min δ ε0
+  have δmem: δ ∈ (Finset.Icc 1 (N+1)).image ε2 := Finset.min'_mem _ _
+  simp at δmem
+  rcases δmem with ⟨n, ⟨npos, nleN⟩, h'n⟩
+  change ε2 n = δ at h'n
+  have hδ0 : 0 < δ := by
+    rw [← h'n]
+    exact hε2 n npos
+  have hδ20 : 0 < δ2 := by
+    rw [lt_min_iff]
+    constructor
+    exact hδ0
+    exact hε0
+  have hδ2ε0 : δ2 ≤ ε0 := min_le_right δ ε0
+  have hδ2δ : δ2 ≤ δ := min_le_left δ ε0
+  have hδ : ∀ (n : ℕ), (0 < n) → (n ≤ N + 1) → (ball x δ) ∩ (f^[n] '' ball x δ) = ∅ := by
+    intro n2 hn21 hn22
+    have hA : δ ≤ ε2 n2 := by
+      apply Finset.min'_le
+      simp
+      use n2
+      refine' ⟨⟨hn21,hn22⟩,rfl⟩
+    have hbigball := h'ε2 n2 hn21
+    apply small_inter_empty (ball x δ) (f^[n2] '' ball x δ) (ball x (ε2 n2)) (f^[n2] '' ball x (ε2 n2))
+    · exact ball_subset_ball (x := x) hA
+    · exact image_subset (f^[n2]) (ball_subset_ball (x := x) hA)
+    · exact hbigball
+  have hxfδ := hxf δ2 hδ20
+  rcases hxfδ with ⟨y,⟨n3,hy1,hy2,hy3⟩⟩
+  have hsmallball : ball x δ2 ⊆ ball x δ := ball_subset_ball hδ2δ
+  have hsmallimball : f^[n3] '' ball x δ2 ⊆ f^[n3] '' ball x δ := image_subset (f^[n3]) hsmallball
+  have hsmall1 : y ∈ ball x δ := ball_subset_ball hδ2δ hy1
+  use y
+  use n3
+  refine' ⟨ball_subset_ball hδ2ε0 hy1,⟨ball_subset_ball hδ2ε0 hy2,_⟩⟩
+  contrapose! hδ
+  use n3
+  refine' ⟨_,⟨hδ,_⟩⟩
+  exact Nat.pos_of_ne_zero hy3
+  dsimp
+  intro stupido
+  have hstupido : f^[n3] y ∈ ∅ := by
+    rw [←stupido]
+    apply mem_inter
+    · exact hsmallball hy2
+    · rw [mem_image]
+      use y
+      refine' ⟨hsmall1,rfl⟩
+  assumption
+  done
+
+theorem arbitrary_large_time (N : ℕ) (ε : ℝ) (hε : 0 < ε) (x : α) (hx : x ∈ nonWanderingSet f) :
+∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ N+1 < n :=
+by
+  by_cases hfx : IsNotPeriodicPt f x
+  -- hard case: if x is non-periodic, we use continuity of f
+  · exact non_periodic_arbitrary_large_time f hf N ε hε x hfx hx
+  -- easy case: if x is periodic, then y = x is a good candidate
+  · unfold IsNotPeriodicPt at hfx
+    push_neg at hfx
+    obtain ⟨n, hn, hn2⟩ := hfx
+    -- rcases hfx with ⟨n, hn⟩ also works
+    use x
+    use n * (N+2)
+    refine' ⟨_,_,_⟩
+    · exact mem_ball_self hε
+    · have h4 : IsPeriodicPt f n x := by
+        unfold IsPeriodicPt
+        unfold IsFixedPt
+        exact hn2
+      rw [IsPeriodicPt.mul_const h4 (N+2)]
+      exact mem_ball_self hε
+    · exact Nat.le_mul_of_pos_left hn
+  done
+
 
 /- Show that the non-wandering set of `f` is closed. -/
 theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
