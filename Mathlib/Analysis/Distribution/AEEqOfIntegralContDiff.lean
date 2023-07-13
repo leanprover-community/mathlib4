@@ -11,7 +11,10 @@ import Mathlib.Analysis.Calculus.BumpFunctionFindim
 In a finite dimensional normed real vector space endowed with a Borel measure, consider a locally
 integrable function whose integral against compactly supported smooth functions vanishes. Then
 the function is almost everywhere zero.
-This is proved in `ae_eq_zero_of_integral_smul_contDiff_eq_zero`
+This is proved in `ae_eq_zero_of_integral_smul_contDiff_eq_zero`.
+
+A version for two functions having the same integral when multiplied by smooth compactly supported
+functions is also given in `ae_eq_of_integral_smul_contDiff_eq`.
 -/
 
 open MeasureTheory Filter Metric Function Set
@@ -90,12 +93,19 @@ theorem ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf : LocallyIntegrable f �
     simpa [g_supp] using vK n
   simpa [this] using L
 
+/-- If two locally integrable functions have the same integral when multiplied by any
+smooth compactly supported function, then they coincide almost everywhere. -/
 theorem ae_eq_of_integral_smul_contDiff_eq
-    (hf : LocallyIntegrable f μ) (h'f : LocallyIntegrable f' μ) (h : ∀ (g : E → ℝ),
+    (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : E → ℝ),
       ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x := by
   have : ∀ᵐ x ∂μ, (f - f') x = 0 := by
-    apply ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf.sub h'f)
+    apply ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf.sub hf')
     intro g g_diff g_supp
     simp only [Pi.sub_apply, smul_sub]
-    rw [integral_sub]
+    rw [integral_sub, sub_eq_zero]
+    · exact h g g_diff g_supp
+    · exact hf.integrable_smul_left_of_hasCompactSupport g_diff.continuous g_supp
+    · exact hf'.integrable_smul_left_of_hasCompactSupport g_diff.continuous g_supp
+  filter_upwards [this] with x hx
+  simpa [sub_eq_zero] using hx
