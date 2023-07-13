@@ -1,6 +1,76 @@
-
 import Mathlib
 
+namespace PellAlg
+
+/-- An (a,b,c) triple, used for defining a quadratic.-/
+structure Triple : Type where
+  a : ℤ
+  b : ℤ
+  c : ℤ
+deriving Repr
+
+/-- The floor of the positive root of the triple. -/
+def fpr (t : Triple) : ℤ := (-t.b + (discrim t.a t.b t.c).toNat.sqrt) / (2 * t.a)
+
+/-- The quadratic form defined by the triple, and its fpr-translation. -/
+def qf (t : Triple) (x : ℝ) := t.a * x * x + t.b * x + t.c
+
+def qf_fpr_translate (t : Triple) (w : ℝ) := qf t (fpr t + w)
+
+lemma qf_fpr_translate_root (t : Triple) (z : ℝ) (hz : qf t z = 0) :
+  qf_fpr_translate t (z - fpr t) = 0 := by rw [qf_fpr_translate, add_sub_cancel'_right]; exact hz
+
+/-- The Brouckner transform. -/
+def brouckner (t : Triple) : Triple :=
+  { a := -(t.a * (fpr t) * (fpr t) + t.b * (fpr t) + t.c),
+    b := -(2 * t.a * (fpr t) + t.b),
+    c := -t.a }
+
+/-- Iterating the Brouckner transform on triples until a becomes 1. -/
+def iterate_brouckner (t : Triple) (l : List (Triple × ℤ)) : (n : ℕ) → List (Triple × ℤ)
+  | 0     => l
+  | n + 1 =>
+    let t := brouckner t
+    if t.a = 1 then
+      (t, fpr t) :: l
+    else
+      iterate_brouckner t ((t, fpr t) :: l) n
+
+-- Example
+-- #eval iterate_brouckner ⟨1,0, (-19)⟩ [] 20
+
+/-- Swap a and c in a triple. -/
+def swapac (t : Triple) : Triple := {a := t.c, b := t.b, c := t.a}
+
+/-- Swapping twice gives the original triple. -/
+lemma swapac_twice (t : Triple) : t = swapac (swapac t) := by simp [swapac]
+
+/-- The inverse of a root is a root of the quadratic with a and c swapped. -/
+lemma swapac_root (t: Triple) (z : ℝ) (hz : qf t z = 0) (hz' : z ≠ 0) :
+  qf (swapac t) (1 / z) = 0 := by
+  simp_rw [qf, swapac]
+  rw [← zero_div (z * z), eq_div_iff (mul_ne_zero hz' hz')]
+  simp only [add_mul]
+  have : t.c * (1 / z) * (1 / z) * (z * z) + t.b * (1 / z) * (z * z) + t.a * (z * z) = qf t z :=
+    by rw[qf]; field_simp; ring
+  rwa [this]
+
+/-- The swapped Brouckner transform is the negation of the fpr-translation. -/
+lemma neg_qf_fpr_translate_eq_brouckner (t : Triple) (w : ℝ) :
+  -qf_fpr_translate t w = qf (swapac (brouckner t)) w := by
+  rw [swapac, brouckner, qf_fpr_translate, qf, qf]
+  simp only [Int.cast_add, Int.cast_neg, Int.cast_mul]
+  ring
+
+/-- First key fact: from a non-integer root, we can obtain a root of the Brouckner transform. -/
+theorem brouckner_root (t: Triple) (z : ℝ) (hz : qf t z = 0) (hz' : z ≠ fpr t) :
+  qf (brouckner t) (1 / (z - fpr t)) = 0 := by
+  rw [swapac_twice (brouckner t)]
+  have h2 : -qf_fpr_translate t (z - fpr t) = 0 := by rw[qf_fpr_translate_root _ _ hz, neg_zero]
+  rw [neg_qf_fpr_translate_eq_brouckner] at h2
+  apply swapac_root _ _ h2 (sub_ne_zero.mpr hz')
+
+end PellAlg
 
 /- Floris notes from 12 July
 fun (a,b,c,D) ↦
@@ -33,67 +103,6 @@ Book :
 
 -/
 
-structure Coefficients : Type where
-  a : ℤ
-  b : ℤ
-  c : ℤ
-  D : ℤ := b^2 - 4*a*c
-  hD : D = b^2 - 4*a*c := by rfl
-deriving Repr
-
-def quad_form (f : Coefficients) (t : ℝ) : ℝ :=
-  f.a * t * t + f.b * t + f.c
-
-structure Roots (f : Coefficients) : Type where
-  xp : ℝ
-  xm : ℝ
-  hxp : quad_form f xp = 0
-  hxm : quad_form f xm = 0
-  hle : xm < xp
-
-def brouckner (f : Coefficients) : Coefficients × ℤ :=
-  let m := (-f.b + f.D.sqrt) / (2 * f.a)
-  ({a := -(f.a*m^2+f.b*m+f.c),
-    b := -(2*f.a*m+f.b),
-    c:= -f.a,
-    D := f.D,
-    hD := by rw [f.hD]; ring},
-    m)
-
-theorem roots_stay (f : Coefficients) (r : Roots f) (hxm : r.xm < 0) (hxp : r.xp > 1)
-(r' : Roots (brouckner f).fst) :
-  -1 < r'.xm ∧ r.xm < 0 ∧ r.xp > 1 := by sorry
-
-def iterate_brouckner (f : Coefficients) (l : List (Coefficients × ℤ)) :
-    (n : ℕ) → List (Coefficients × ℤ)
-  | 0     => l
-  | n + 1 =>
-    let (f, m) := brouckner f
-    if f.a = 1 then
-      (f,m)::l
-    else
-      iterate_brouckner f ((f,m)::l) n
-
-
-
--- theorem bouckner_preserves_sign (f : Coefficients) (ha : 0 < f.a) (hc : f.c < 0) :
---   0 < (brouckner f).fst.a ∧ (brouckner f).fst.c < 0 := by
---     constructor
---     · simp [brouckner]
---       let m := (-f.b + f.D.sqrt) / (2 * f.a)
---       have : f.a * m^2 + f.b * m + f.c < 0 := by sorry
---       simp at this; linarith
---     · simp [brouckner, f.hD]; ring_nf; assumption
-
-#eval iterate_brouckner ⟨1,0, (-19), (4 * 19), by norm_num⟩ [] 20
-
--- example : let (a',b',c',m) := brouckner a b c D;
---   brouckner (-c') (-b') (-a') D = (-c,-b,-a,sorry) := by
---   simp [brouckner]
---   constructor
---   field_simp
-
-
 /-
 1 compute x and y and that they are a solution
 2 show that a > 0 and c < 0 in intermdiate steps
@@ -108,7 +117,7 @@ def iterate_brouckner (f : Coefficients) (l : List (Coefficients × ℤ)) :
 -/
 
 -- #reduce (54 : ℤ).sqrt
-example : (50 : ℕ).sqrt = 7 := by norm_num
-example : (123456789 : ℕ).sqrt = 11111 := by norm_num
-example : (2340276615670 ^ 2 : ℕ).sqrt = 2340276615670 := by
-  norm_num
+-- example : (50 : ℕ).sqrt = 7 := by norm_num
+-- example : (123456789 : ℕ).sqrt = 11111 := by norm_num
+-- example : (2340276615670 ^ 2 : ℕ).sqrt = 2340276615670 := by
+--   norm_num
