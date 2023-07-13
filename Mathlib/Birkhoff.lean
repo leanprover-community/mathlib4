@@ -40,11 +40,16 @@ theorem periodicpts_is_mem
 
 /- Show that, if `x` belongs to the non-wandering set, there are points `y` arbitrarily close to `x`
 and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
-
-
+theorem arbitrary_return
+    (x : α) (hx: x ∈ nonWanderingSet f) (N : ℕ) (hN: N ≠ 0)
+    (ε : ℝ) (hε: 0 < ε) : ∃ z : α, ∃ n : ℕ,
+      n > N ∧ z ∈ ball x ε ∧ (f^[n] z) ∈ ball x ε
+     := by
+     unfold nonWanderingSet at hx
+     sorry
 
 /- Show that the non-wandering set of `f` is closed. -/
-example : IsClosed (nonWanderingSet f) := by
+theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
   rw [← isSeqClosed_iff_isClosed]
   unfold IsSeqClosed
   intro u x hu ulim
@@ -184,6 +189,13 @@ theorem periodicpts_mem_recurrentSet
 
 
 /- Show that the recurrent set is included in the non-wandering set -/
+theorem recurrentSet_nonwandering : recurrentSet f ⊆ (nonWanderingSet f) := by
+  intro z hz
+  unfold recurrentSet at hz
+  simp at hz
+  apply omegaLimit_nonwandering
+  apply hz
+  done
 
 
 /- Show that the recurrent set of `f` is nonempty (the math proof is not trivial, maybe better
