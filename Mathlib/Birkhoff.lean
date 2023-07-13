@@ -1,3 +1,4 @@
+import Mathlib.Tactic
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.Ergodic.AddCircle
 
@@ -251,6 +252,36 @@ theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
 
 /- Give an example of a continuous dynamics on a compact space in which the recurrent set is all
 the space, but the dynamics is not minimal -/
+noncomputable def doubling_map (x : unitInterval) : unitInterval :=
+  ⟨Int.fract (2 * x), by exact unitInterval.fract_mem (2 * x)⟩
+
+-- set_option pp.all true
+
+example : ¬IsMinimal (id : unitInterval -> unitInterval) := by
+  unfold IsMinimal
+  -- 'push_neg' pushes negations as deep as possible into the conclusion of a hypothesis
+  push_neg
+  have dist_pos : 0 < dist (1 : unitInterval) 0 := by
+    apply dist_pos.mpr
+    apply unitInterval.coe_ne_zero.mp; norm_num -- 1 ≠ 0
+    done
+  use 0, 1, (dist (1 : unitInterval) (0 : unitInterval))/2
+  constructor
+  . apply div_pos
+    apply dist_pos
+    linarith -- 0 < 2
+  . intro n
+    simp
+    exact le_of_lt dist_pos
+  done
+
+example (x : unitInterval) :
+    x ∈ recurrentSet (id : unitInterval -> unitInterval) := by
+  unfold recurrentSet
+  apply periodicpts_mem_recurrentSet _ _ 1
+  . linarith
+  . exact is_periodic_id 1 x
+  done
 
 
 /- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense -/
