@@ -86,7 +86,7 @@ instance (priority := 100) isSymmOp_of_isCommutative (α : Type u) (op : α → 
 
 /-- An associative binary operation. -/
 class IsAssociative (α : Type u) (op : α → α → α) : Prop where
-  and_assoc : ∀ a b c, op (op a b) c = op a (op b c)
+  assoc : ∀ a b c, op (op a b) c = op a (op b c)
 #align is_associative IsAssociative
 
 /-- A binary operation with a left identity. -/
@@ -373,7 +373,8 @@ theorem trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b 
 #align trichotomous_of trichotomous_of
 
 @[elab_without_expected_type]
-theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} : ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
+theorem incomp_trans_of [IsIncompTrans α r] {a b c : α} :
+    ¬a ≺ b ∧ ¬b ≺ a → ¬b ≺ c ∧ ¬c ≺ b → ¬a ≺ c ∧ ¬c ≺ a :=
   incomp_trans
 #align incomp_trans_of incomp_trans_of
 
