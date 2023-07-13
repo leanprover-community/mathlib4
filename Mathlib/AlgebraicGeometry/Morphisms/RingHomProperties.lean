@@ -377,11 +377,11 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
     · dsimp [Scheme.Γ]
       have := U.2
       rw [← U.1.openEmbedding_obj_top] at this
-      -- Porting note: convert generated type equalities previously and basisOpen_res_eq needs
-      -- to be more explicit
-      convert (config := { typeEqs := true, transparency := .default })
-        isLocalization_basicOpen this ?_ using 6 <;> rw [Opens.openEmbedding_obj_top]
-          <;> symm <;> exact Scheme.basicOpen_res_eq _ _ (eqToHom U.1.openEmbedding_obj_top).op
+      -- Porting note: the second argument of `IsLocalization.Away` is a type, and we want
+      -- to generate an equality, so using `typeEqs := true` to force allowing type equalities.
+      convert (config := {typeEqs := true, transparency := .default})
+          isLocalization_basicOpen this _ using 5
+      all_goals rw [Opens.openEmbedding_obj_top]; exact (Scheme.basicOpen_res_eq _ _ _).symm
   · introv hs hs'
     exact sourceAffineLocally_of_source_open_cover_aux hP.respectsIso hP.2 _ _ _ hs hs'
   · rw [Set.eq_univ_iff_forall]
