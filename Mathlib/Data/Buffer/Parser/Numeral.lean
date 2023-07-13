@@ -8,7 +8,7 @@ Authors: Yakov Pechersky
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Buffer.Parser.Basic
+import Mathlib.Data.Buffer.Parser.Basic
 
 /-!
 # Numeral parsers
