@@ -284,7 +284,12 @@ example (x : unitInterval) :
   done
 
 
-/- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense -/
+/- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense.
+   Note that `IsInvariant.isInvariant_iff_image` proves the equivalence between `MapsTo f U U` and
+   `IsInvariant f U` -/
+def minimalSubset (f : α → α) (U : Set α)
+    (hinv: MapsTo f U U) :=
+    (IsClosed U) ∧ IsMinimal (Set.MapsTo.restrict f U U hinv)
 
 
 /- Show that every point in a minimal subset is recurrent -/
