@@ -10,81 +10,82 @@ import Mathlib.Data.Vector
 /-! # Automatically generated lemmas for working with concrete matrices
 
 This file contains "magic" lemmas which autogenerate to the correct size of matrix. For instance,
-`matrix.of_mul_of_fin` can be used as:
+`Matrix.of_mul_of_fin` can be used as:
 ```lean
-example {α} [add_comm_monoid α] [has_mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
+example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
      a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
                     b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
-                                   a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
-begin
-  rw of_mul_of_fin,
-end
+                                   a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
+  rw of_mul_of_fin
 ```
 
 ## Main results
 
-* `matrix.fin_eta`
-* `matrix.of_mul_of_fin`
+* `Matrix.fin_eta`
+* `Matrix.of_mul_of_fin`
 
 -/
 
-/-- Like `list.mmap` but for a vector. -/
-def Fin.mmap.{u,v} {α : Type u} {n : ℕ} {m : Type u → Type v} [Monad m] (f : Fin n → m α) :
-  m (Fin n → α) :=
-Vector.get <$> Vector.mmap f ⟨List.finRange n, List.length_finRange _⟩
+/-- Like `List.mapM` but for a vector. -/
+def Fin.mapM {α : Type u} {n : ℕ} {m : Type u → Type v} [Monad m] (f : Fin n → m α) :
+    m (Fin n → α) :=
+  Vector.get <$> Vector.mmap f ⟨List.finRange n, List.length_finRange _⟩
 
-namespace matrix
+namespace Matrix
 
-section fin_eta
+section FinEta
 
 open Lean Lean.Meta Qq
 
-/-- Convert a vector of exprs to the pexpr constructing that vector.-/
+/-- Convert a vector of Exprs to the Expr constructing that vector.-/
 def _root_.PiFin.toExprQ {u : Level} {α : Q(Type u)} :
     ∀ {n : ℕ}, (Fin n → Q($α)) → Q(Fin $n → $α)
   | 0, _v => q(![])
   | _n + 1, v => q(Matrix.vecCons $(v 0) $(PiFin.toExprQ <| Matrix.vecTail v))
-#align pi_fin.to_pexpr PiFin.toExprQ
 
 /-- Prove a statement of the form `∀ A : matrix m n α, A = !![A 0 0, ...]`.
 Returns an assigned metavariable whose type is this statement. -/
 def FinEta.prove (m n : ℕ) : MetaM Expr :=
 do
   let u ← mkFreshLevelMVar
-  -- Qq seems to force me to repeat the types
-  let α : Q(Type u)
-    ← mkFreshExprMVarQ q(Type u) (userName := `α)
-  let A : Q(Matrix.{0,0,u} (Fin $m) (Fin $n) $α)
-    ← mkFreshExprMVar q(Matrix.{0,0,u} (Fin $m) (Fin $n) $α) (userName := `A)
-  let entries : Fin m → Fin n → Q($α) :=
-    fun (i : Fin m) (j : Fin n) => mkApp2 A q($i) q($j)
-  let entry_vals : Q(Fin $m → Fin $n → $α) :=
-    PiFin.toExprQ (u := u) (fun i => PiFin.toExprQ (fun j => entries i j))
-  let A_eta: Q(Matrix.{0,0,u} (Fin $m) (Fin $n) $α) :=
-    q(@Matrix.of.{u} (Fin $m) (Fin $n) $α $entry_vals)
-  let forall_A_eq : Q(Prop)
-    ← mkForallFVars #[α] <| ←mkForallFVars #[A] (binderInfoForMVars := BinderInfo.default)
-      q($A = $A_eta)
-  let proof_A_eq : Q($forall_A_eq) ← mkFreshExprMVarQ q($forall_A_eq)
-  -- TODO: is there a nicer way to force a type cast?
-  let _eq : $A_eta =Q Matrix.etaExpand $A := ⟨⟩
-  let heq : Q($A_eta = Matrix.etaExpand $A) := q(rfl)
-  proof_A_eq.mvarId!.assignIfDefeq <|
-    ← mkLambdaFVars #[α] <| ←mkLambdaFVars #[A] (binderInfoForMVars := BinderInfo.default)
-      <| q((Matrix.etaExpand_eq $A).symm.trans ($heq).symm)
-  pure proof_A_eq
+  -- Note: Qq seems to need type ascriptions on `fun` binders even though
+  -- the type is easily inferred. Is there a metavariable instantiation bug?
+  withLocalDeclQ `α .implicit q(Type u) fun (α : Q(Type u)) =>
+  withLocalDeclDQ `A q(Matrix (Fin $m) (Fin $n) $α) fun A => do
+    let entries : Fin m → Fin n → Q($α) := fun (i : Fin m) (j : Fin n) => q($A $i $j)
+    let entry_vals : Q(Fin $m → Fin $n → $α) :=
+      PiFin.toExprQ (u := u) (fun i => PiFin.toExprQ (fun j => entries i j))
+    let A_eta: Q(Matrix (Fin $m) (Fin $n) $α) := q(@Matrix.of (Fin $m) (Fin $n) $α $entry_vals)
+    let forall_A_eq : Q(Prop) ← mkForallFVars #[α, A] q($A = $A_eta)
+    let heq : Q(Matrix.etaExpand $A = $A_eta) := (q(Eq.refl $A_eta) : Expr)
+    let some pf ← checkTypeQ (ty := forall_A_eq) <| ← mkLambdaFVars #[α, A]
+                                                        q((Matrix.etaExpand_eq $A).symm.trans $heq)
+          | throwError "(internal error) fin_eta% generated proof with incorrect type."
+    mkExpectedTypeHint pf forall_A_eq
 
 open Lean.Elab.Tactic in
-elab "fin_eta% " m:num n:num : term => FinEta.prove m.getNat n.getNat
+/-- `fin_eta% m n` for `m` and `n` natural number literals generates an eta expansion theorem,
+for example
+```lean
+fin_eta% 2 3 : ∀ {α : Type u_1} (A : Matrix (Fin 2) (Fin 3) α),
+                  A = ↑of ![![A 0 0, A 0 1, A 0 2],
+                            ![A 1 0, A 1 1, A 1 2]]
+``` -/
+elab:max "fin_eta% " m:num n:num : term => FinEta.prove m.getNat n.getNat
 
--- TODO: why is the RHS `etaExpand` and not the manually expanded version?
-variable (A)
-#check (fin_eta% 1 2) (A : Matrix _ _ ℕ)
+variable (α : Type u) (A : Matrix (Fin _) (Fin _) α) in
+#check (fin_eta% 2 3 A : A = of ![![A 0 0, A 0 1, A 0 2], ![A 1 0, A 1 1, A 1 2]])
 
 example (A : Matrix (Fin 2) (Fin 3) ℕ) : A = 0 := by
-  rw [(fin_eta% 2 3) A]
+  rw [fin_eta% 2 3 A]
   dsimp
+
+example : true := by
+  let B : Matrix (Fin 20) (Fin 20) ℕ := 0
+  have := fin_eta% 20 20 B
+  have : B = B := by rw [this]
+  trivial
 
 #exit
 #eval (show MetaM Unit from do
