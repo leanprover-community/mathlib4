@@ -154,18 +154,18 @@ class is_idempotent (α : Type u) (f : α → α) : Prop :=
 (idempotent : ∀ a, f (f a) = f a)
 -/
 
-/-- `is_irrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
+/-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
 class IsIrrefl (α : Type u) (r : α → α → Prop) : Prop where
   irrefl : ∀ a, ¬r a a
 #align is_irrefl IsIrrefl
 
-/-- `is_refl X r` means the binary relation `r` on `X` is reflexive. -/
+/-- `IsRefl X r` means the binary relation `r` on `X` is reflexive. -/
 class IsRefl (α : Type u) (r : α → α → Prop) : Prop where
   refl : ∀ a, r a a
 #align is_refl IsRefl
 
-/-- `is_symm X r` means the binary relation `r` on `X` is symmetric. -/
+/-- `IsSymm X r` means the binary relation `r` on `X` is symmetric. -/
 class IsSymm (α : Type u) (r : α → α → Prop) : Prop where
   symm : ∀ a b, r a b → r b a
 #align is_symm IsSymm
@@ -175,34 +175,34 @@ instance (priority := 100) isSymmOp_of_isSymm (α : Type u) (r : α → α → P
     IsSymmOp α Prop r where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
 #align is_symm_op_of_is_symm isSymmOp_of_isSymm
 
-/-- `is_asymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
+/-- `IsAsymm X r` means that the binary relation `r` on `X` is asymmetric, that is,
 `r a b → ¬ r b a`. -/
 class IsAsymm (α : Type u) (r : α → α → Prop) : Prop where
   asymm : ∀ a b, r a b → ¬r b a
 #align is_asymm IsAsymm
 
-/-- `is_antisymm X r` means the binary relation `r` on `X` is antisymmetric. -/
+/-- `IsAntisymm X r` means the binary relation `r` on `X` is antisymmetric. -/
 class IsAntisymm (α : Type u) (r : α → α → Prop) : Prop where
   antisymm : ∀ a b, r a b → r b a → a = b
 #align is_antisymm IsAntisymm
 
-/-- `is_trans X r` means the binary relation `r` on `X` is transitive. -/
+/-- `IsTrans X r` means the binary relation `r` on `X` is transitive. -/
 class IsTrans (α : Type u) (r : α → α → Prop) : Prop where
   trans : ∀ a b c, r a b → r b c → r a c
 #align is_trans IsTrans
 
-/-- `is_total X r` means that the binary relation `r` on `X` is total, that is, that for any
+/-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
 `x y : X` we have `r x y` or `r y x`.-/
 class IsTotal (α : Type u) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal
 
-/-- `is_preorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
+/-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
 class IsPreorder (α : Type u) (r : α → α → Prop) extends IsRefl α r, IsTrans α r : Prop
 #align is_preorder IsPreorder
 
-/-- `is_total_preorder X r` means that the binary relation `r` on `X` is total and a preorder. -/
+/-- `IsTotalPreorder X r` means that the binary relation `r` on `X` is total and a preorder. -/
 class IsTotalPreorder (α : Type u) (r : α → α → Prop) extends IsTrans α r, IsTotal α r : Prop
 #align is_total_preorder IsTotalPreorder
 
@@ -213,51 +213,51 @@ instance isTotalPreorder_isPreorder (α : Type u) (r : α → α → Prop) [s : 
   refl a := Or.elim (@IsTotal.total _ r _ a a) id id
 #align is_total_preorder_is_preorder isTotalPreorder_isPreorder
 
-/-- `is_partial_order X r` means that the binary relation `r` on `X` is a partial order, that is,
-`is_preorder X r` and `is_antisymm X r`. -/
+/-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
+`IsPreorder X r` and `IsAntisymm X r`. -/
 class IsPartialOrder (α : Type u) (r : α → α → Prop) extends IsPreorder α r, IsAntisymm α r : Prop
 #align is_partial_order IsPartialOrder
 
-/-- `is_linear_order X r` means that the binary relation `r` on `X` is a linear order, that is,
-`is_partial_order X r` and `is_total X r`. -/
+/-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
+`IsPartialOrder X r` and `IsTotal X r`. -/
 class IsLinearOrder (α : Type u) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
 #align is_linear_order IsLinearOrder
 
-/-- `is_equiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
-is, `is_preorder X r` and `is_symm X r`. -/
+/-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
+is, `IsPreorder X r` and `IsSymm X r`. -/
 class IsEquiv (α : Type u) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
 #align is_equiv IsEquiv
 
-/-- `is_per X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
-is, `is_symm X r` and `is_trans X r`. -/
+/-- `IsPer X r` means that the binary relation `r` on `X` is a partial equivalence relation, that
+is, `IsSymm X r` and `IsTrans X r`. -/
 class IsPer (α : Type u) (r : α → α → Prop) extends IsSymm α r, IsTrans α r : Prop
 #align is_per IsPer
 
-/-- `is_strict_order X r` means that the binary relation `r` on `X` is a strict order, that is,
-`is_irrefl X r` and `is_trans X r`. -/
+/-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
+`IsIrrefl X r` and `IsTrans X r`. -/
 class IsStrictOrder (α : Type u) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
 #align is_strict_order IsStrictOrder
 
-/-- `is_incomp_trans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
+/-- `IsIncompTrans X lt` means that for `lt` a binary relation on `X`, the incomparable relation
 `λ a b, ¬ lt a b ∧ ¬ lt b a` is transitive. -/
 class IsIncompTrans (α : Type u) (lt : α → α → Prop) : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 #align is_incomp_trans IsIncompTrans
 
-/-- `is_strict_weak_order X lt` means that the binary relation `lt` on `X` is a strict weak order,
-that is, `is_strict_order X lt` and `is_incomp_trans X lt`. -/
+/-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
+that is, `IsStrictOrder X lt` and `IsIncompTrans X lt`. -/
 class IsStrictWeakOrder (α : Type u) (lt : α → α → Prop) extends IsStrictOrder α lt,
     IsIncompTrans α lt : Prop
 #align is_strict_weak_order IsStrictWeakOrder
 
-/-- `is_trichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
+/-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
 either `lt a b` or `a = b` or `lt b a` for any `a` and `b`. -/
 class IsTrichotomous (α : Type u) (lt : α → α → Prop) : Prop where
   trichotomous : ∀ a b, lt a b ∨ a = b ∨ lt b a
 #align is_trichotomous IsTrichotomous
 
-/-- `is_strict_total_order X lt` means that the binary relation `lt` on `X` is a strict total order,
-that is, `is_trichotomous X lt` and `is_strict_order X lt`. -/
+/-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
+that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Type u) (lt : α → α → Prop) extends IsTrichotomous α lt,
     IsStrictOrder α lt : Prop
 #align is_strict_total_order IsStrictTotalOrder
