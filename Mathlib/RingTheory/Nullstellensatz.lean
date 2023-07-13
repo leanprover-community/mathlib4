@@ -15,15 +15,15 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 /-!
 # Nullstellensatz
-This file establishes a version of Hilbert's classical Nullstellensatz for `mv_polynomial`s.
-The main statement of the theorem is `vanishing_ideal_zero_locus_eq_radical`.
+This file establishes a version of Hilbert's classical Nullstellensatz for `MvPolynomial`s.
+The main statement of the theorem is `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`.
 
-The statement is in terms of new definitions `vanishing_ideal` and `zero_locus`.
+The statement is in terms of new definitions `vanishingIdeal` and `zeroLocus`.
 Mathlib already has versions of these in terms of the prime spectrum of a ring,
   but those are not well-suited for expressing this result.
 Suggestions for better ways to state this theorem or organize things are welcome.
 
-The machinery around `vanishing_ideal` and `zero_locus` is also minimal, I only added lemmas
+The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only added lemmas
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
 
