@@ -330,7 +330,7 @@ theorem incomp_trans [IsIncompTrans α r] {a b c : α} :
 
 instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrrefl α r] :
     IsAsymm α r :=
-  ⟨fun a _b h₁ h₂ => absurd (trans h₁ h₂) (irrefl a)⟩
+  ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 #align is_asymm_of_is_trans_of_is_irrefl isAsymm_of_isTrans_of_isIrrefl
 
 section ExplicitRelationVariants
@@ -349,7 +349,7 @@ theorem refl_of [IsRefl α r] (a : α) : a ≺ a :=
 
 @[elab_without_expected_type]
 theorem trans_of [IsTrans α r] {a b c : α} : a ≺ b → b ≺ c → a ≺ c :=
-  trans
+  _root_.trans
 #align trans_of trans_of
 
 @[elab_without_expected_type]
@@ -482,7 +482,7 @@ theorem eq_of_eqv_lt {α : Type u} {lt : α → α → Prop} [IsTrichotomous α 
 
 theorem incomp_iff_eq {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
     ¬lt a b ∧ ¬lt b a ↔ a = b :=
-  Iff.intro eq_of_incomp fun hab => Eq.subst hab (And.intro (irrefl_of lt a) (irrefl_of lt a))
+  Iff.intro eq_of_incomp fun hab => hab ▸ And.intro (irrefl_of lt a) (irrefl_of lt a)
 #align incomp_iff_eq incomp_iff_eq
 
 theorem eqv_lt_iff_eq {α : Type u} {lt : α → α → Prop} [IsTrichotomous α lt] [IsIrrefl α lt] (a b) :
