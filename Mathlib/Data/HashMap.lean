@@ -12,6 +12,7 @@ As `HashMap` has been completely reimplemented in `Std`,
 nothing from the mathlib3 file `data.hash_map` is reflected here.
 The porting header is just here to mark that no further work on `data.hash_map` is desired.
 -/
+import Mathlib.Init.Align
 import Std.Data.HashMap
 import Std.Data.RBMap
 
@@ -23,7 +24,7 @@ These should be replaced by proper implementations in Std.
 
 namespace Std.HashMap
 
--- not an exact match, different typeclass requirements
+-- not an exact match, the Lean3 version was dependently-typed
 #align hash_map Std.HashMapₓ
 
 variable [BEq α] [Hashable α]
