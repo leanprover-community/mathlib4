@@ -1,13 +1,17 @@
 import Mathlib.Dynamics.OmegaLimit
 import Mathlib.Dynamics.Ergodic.AddCircle
 
-open MeasureTheory Filter Metric
+open MeasureTheory Filter Metric Function
 open scoped omegaLimit
+
+set_option autoImplicit false
 
 /- For every objective, first write down a statement that Lean understands, with a proof given
 by `sorry`. Then try to prove it! -/
 
 section Topological_Dynamics
+
+/- TODO: at some point translate to topological spaces -/
 
 /- We could do everything in a topological space, using filters and neighborhoods, but it will
 be more comfortable with a metric space. -/
@@ -20,10 +24,23 @@ def nonWanderingSet (f : α → α) : Set α :=
 variable [CompactSpace α] (f : α → α) (hf : Continuous f)
 
 /- Show that periodic points belong to the non-wandering set -/
-
+theorem periodicpts_is_mem
+    (x : α) (n : ℕ) (nnz: n ≠ 0) (pp: IsPeriodicPt f n x)
+    : x ∈ nonWanderingSet f := by
+  intro ε hε
+  use x, n
+  -- unfold IsPeriodicPt at pp
+  -- unfold IsFixedPt at pp
+  refine' ⟨_, _, _⟩
+  . exact mem_ball_self hε
+  . rw [pp]
+    exact mem_ball_self hε
+  . exact nnz
+  done
 
 /- Show that, if `x` belongs to the non-wandering set, there are points `y` arbitrarily close to `x`
 and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
+
 
 
 /- Show that the non-wandering set of `f` is closed. -/
@@ -77,24 +94,93 @@ example : IsClosed (nonWanderingSet f) := by
 
 
 /- Show that the non-wandering set of `f` is compact. -/
-
+theorem is_cpt : IsCompact (nonWanderingSet f : Set α) := by
+  apply isCompact_of_isClosed_bounded
+  . exact is_closed f
+  . exact bounded_of_compactSpace
+  done
 
 /- Show that the omega-limit set of any point is nonempty. -/
 /- Click F12 on ω⁺ below to go to its definition, and browse a little bit the file to get a
 feel of what is already there. -/
 theorem omegaLimit_nonempty (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x})) := by
-  sorry
+  apply nonempty_omegaLimit atTop (fun n ↦ f^[n]) {x}
+  exact Set.singleton_nonempty x
+  done
 
 /- Show that the omega-limit set of any point is contained in the non-wandering set. -/
-
+theorem omegaLimit_nonwandering (x : α) : (ω⁺ (fun n ↦ f^[n]) ({x})) ⊆ (nonWanderingSet f) := by
+  intro z hz
+  rewrite [mem_omegaLimit_iff_frequently] at hz
+  simp at hz
+  have subsequence : ∀ U ∈ nhds z, ∃ φ, StrictMono φ ∧ ∀ (n : ℕ), f^[φ n] x ∈ U := by
+    intro U hU
+    apply Filter.extraction_of_frequently_atTop (hz U hU)
+    done
+  -- unfold nonWanderingSet
+  intro ε hε
+  have ball_in_nbd : ball z ε ∈ nhds z := by
+    exact ball_mem_nhds z hε
+  let ⟨φ, hφ, hf⟩ := subsequence (ball z ε) ball_in_nbd
+  use f^[φ 1] x, φ 2 - φ 1
+  refine' ⟨_, _, _⟩
+  . exact (hf 1)
+  . have : f^[φ 2 - φ 1] (f^[φ 1] x) = f^[φ 2] x := by
+      rw [ <-Function.iterate_add_apply, Nat.sub_add_cancel ]
+      apply le_of_lt
+      apply hφ
+      group
+    rw [this]
+    apply (hf 2)
+  . simp
+    apply hφ
+    norm_num
+  done
 
 /- Show that the non-wandering set is non-empty -/
+theorem nonWandering_nonempty [hα : Nonempty α] : Set.Nonempty (nonWanderingSet f) := by
+  -- have (A: Set α) (B: Set α) : A ⊆ B -> Set.Nonempty A -> Set.Nonempty B := by
+  --   exact fun a a_1 ↦ Set.Nonempty.mono a a_1
+  have (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x})) -> Set.Nonempty (nonWanderingSet f) := by
+    apply Set.Nonempty.mono
+    apply omegaLimit_nonwandering
+  apply this
+  apply omegaLimit_nonempty f
+  -- Can we avoid using the axiom of choice here?
+  apply Nonempty.some hα
+  done
 
 
-/- Define the recurrent set of `f`. -/
-def recurrentSet {α : Type _} [TopologicalSpace α] (f : α → α) : Set α := sorry
+/- Define the recurrent set of `f`. The recurrent set is the set of points that are recurrent,
+   i.e. that belong to their omega-limit set. -/
+def recurrentSet {α : Type _} [TopologicalSpace α] (f : α → α) : Set α :=
+  { x | x ∈ ω⁺ (fun n ↦ f^[n]) ({x}) }
 
 /- Show that periodic points belong to the recurrent set. -/
+theorem periodicpts_mem_recurrentSet
+    (x : α) (n : ℕ) (nnz: n ≠ 0) (hx: IsPeriodicPt f n x)
+    : x ∈ recurrentSet f := by
+  -- unfold IsPeriodicPt at hx
+  -- unfold IsFixedPt at hx
+  -- unfold recurrentSet
+  have : x ∈ ω⁺ (fun n ↦ f^[n]) ({x} : Set α) := by
+    rw [mem_omegaLimit_iff_frequently]
+    intro U hU
+    simp [frequently_atTop]
+    intro a
+    have hb : ∃ b, a ≤ b ∧ f^[b] x ∈ U := by
+      use a * n
+      constructor
+      . exact Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero nnz)
+      . have : f^[a * n] x = x := by
+          exact Function.IsPeriodicPt.const_mul hx a
+        rw [this]
+        exact mem_of_mem_nhds hU
+        done
+      done
+    apply hb
+  apply this
+  done
 
 
 /- Show that the recurrent set is included in the non-wandering set -/
