@@ -180,6 +180,8 @@ protected noncomputable def BoundedContDiffMap.seminorm' (i : ℕ) : Seminorm �
   (Finset.Iic i).sup fun j ↦
     (normSeminorm 𝕜 <| E →ᵇ (E [×j]→L[𝕜] F)).comp (BoundedContDiffMap.iteratedFDerivₗ j)
 
+variable (𝕜 E F n)
+
 theorem BoundedContDiffMap.withSeminorms :
     WithSeminorms (BoundedContDiffMap.seminorm : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) := by
   let p : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ((_ : ℕ) × Fin 1) :=
@@ -191,7 +193,7 @@ theorem BoundedContDiffMap.withSeminorms :
 
 theorem BoundedContDiffMap.withSeminorms' :
     WithSeminorms (BoundedContDiffMap.seminorm' : SeminormFamily 𝕜 (E →ᵇ[𝕜, n] F) ℕ) :=
-  BoundedContDiffMap.withSeminorms.partial_sups
+  (BoundedContDiffMap.withSeminorms 𝕜 E F n).partial_sups
 
 end Topology
 
@@ -206,9 +208,21 @@ noncomputable def fderivL (n : ℕ∞) : (E →ᵇ[𝕜, n+1] F) →L[𝕜] (E �
       refine ⟨C, fun x ↦ ?_⟩
       rw [norm_iteratedFDeriv_fderiv]
       exact hC x }
-  map_add' f₁ f₂ := sorry
-  map_smul' := sorry
-  cont := sorry
+  map_add' f₁ f₂ := by
+    ext : 1
+    exact fderiv_add
+      (f₁.contDiff.differentiable le_add_self).differentiableAt
+      (f₂.contDiff.differentiable le_add_self).differentiableAt
+  map_smul' c f := by
+    ext : 1
+    exact fderiv_const_smul (f.contDiff.differentiable le_add_self).differentiableAt c
+  cont := by
+    refine Seminorm.continuous_from_bounded
+      (BoundedContDiffMap.withSeminorms 𝕜 E (E →L[𝕜] F) n) ?_
+      (BoundedContDiffMap.withSeminorms 𝕜 E F (n+1)) ?_
+    intro i
+    convert ((BoundedContDiffMap.withSeminorms (𝕜 := 𝕜) (E := E) (F := F) (n := n+1)).continuous_seminorm (i+1))
+
 
 end fderiv
 

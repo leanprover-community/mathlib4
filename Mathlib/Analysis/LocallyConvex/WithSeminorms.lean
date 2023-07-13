@@ -603,7 +603,7 @@ variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 variable {τ₁₂ : 𝕝 →+* 𝕝₂} [RingHomIsometric τ₁₂]
 
-variable [Nonempty ι] [Nonempty ι']
+variable {_ : Nonempty ι} {_ : Nonempty ι'}
 
 theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
     [TopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q)
