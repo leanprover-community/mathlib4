@@ -412,8 +412,7 @@ set_option synthInstance.maxHeartbeats 1500000 in
 -- But lean times-out if this is given explicitly.
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
-noncomputable def KaehlerDifferential.endEquivDerivation' :
-    Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S _ :=
+noncomputable def KaehlerDifferential.endEquivDerivation' :=
   @LinearEquiv.compDer R _ S _ _ (Ω[S⁄R]) _ _ _ (KaehlerDifferential.ideal R S).cotangentIdeal
     _ _ _ _ _ ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 #align kaehler_differential.End_equiv_derivation' KaehlerDifferential.endEquivDerivation'
