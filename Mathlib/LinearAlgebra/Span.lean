@@ -296,7 +296,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
   (Submodule.gi R M).gc.le_u_l_trans hUV hVW
 #align submodule.subset_span_trans Submodule.subset_span_trans
 
-/-- See `submodule.span_smul_eq` (in `ring_theory.ideal.operations`) for
+/-- See `submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm

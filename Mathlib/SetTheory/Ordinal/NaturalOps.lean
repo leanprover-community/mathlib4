@@ -323,11 +323,11 @@ theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
 #align ordinal.nat_nadd Ordinal.nat_nadd
 
 theorem add_le_nadd : a + b ≤ a ♯ b := by
-  apply b.limitRecOn
-  · simp
-  · intro c h
+  induction b using limitRecOn with
+  | H₁ => simp
+  | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
-  · intro c hc H
+  | H₃ c hc H =>
     simp_rw [← IsNormal.blsub_eq.{u, u} (add_isNormal a) hc, blsub_le_iff]
     exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
 #align ordinal.add_le_nadd Ordinal.add_le_nadd

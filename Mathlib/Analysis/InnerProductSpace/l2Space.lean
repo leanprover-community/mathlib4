@@ -251,7 +251,7 @@ protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι,
     hV.linearIsometry (∑ i in W₀.support, lp.single 2 i (W₀ i)) =
       ∑ i in W₀.support, hV.linearIsometry (lp.single 2 i (W₀ i)) :=
     hV.linearIsometry.toLinearMap.map_sum
-  simp (config := { contextual := true }) [Dfinsupp.sum, this]
+  simp (config := { contextual := true }) [DFinsupp.sum, this]
 #align orthogonal_family.linear_isometry_apply_dfinsupp_sum_single OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
@@ -374,7 +374,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp (config := { contextual := true }) [Dfinsupp.sum, lp.single_apply]
+  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
 #align is_hilbert_sum.linear_isometry_equiv_apply_dfinsupp_sum_single IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`

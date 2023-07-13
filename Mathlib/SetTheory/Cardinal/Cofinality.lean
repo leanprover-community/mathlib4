@@ -1164,15 +1164,18 @@ theorem derivFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : 
   have hω : ℵ₀ < c.ord.cof := by
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
-  apply a.limitRecOn
-  · rw [derivFamily_zero]
+  induction a using limitRecOn with
+  | H₁ =>
+    rw [derivFamily_zero]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-  · intro b hb hb'
+  | H₂ b hb =>
+    intro hb'
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
         ((ord_isLimit hc.1).2 _ (hb ((lt_succ b).trans hb')))
-  · intro b hb H hb'
+  | H₃ b hb H =>
+    intro hb'
     rw [derivFamily_limit f hb]
     exact
       bsup_lt_ord_of_isRegular.{u, v} hc (ord_lt_ord.1 ((ord_card_le b).trans_lt hb')) fun o' ho' =>

@@ -32,7 +32,7 @@ class FinEnum (α : Sort _) where
   card : ℕ
   /-- `FinEnum.Equiv` states that type `α` is in bijection with `Fin card`,
     the size of the `FinEnum` -/
-  Equiv : α ≃ Fin card
+  equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 #align fin_enum FinEnum
 
@@ -46,15 +46,15 @@ variable {α : Type u} {β : α → Type v}
 def ofEquiv (α) {β} [FinEnum α] (h : β ≃ α) : FinEnum β
     where
   card := card α
-  Equiv := h.trans (Equiv)
-  decEq := (h.trans (Equiv)).decidableEq
+  equiv := h.trans (equiv)
+  decEq := (h.trans (equiv)).decidableEq
 #align fin_enum.of_equiv FinEnum.ofEquiv
 
 /-- create a `FinEnum` instance from an exhaustive list without duplicates -/
 def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' : List.Nodup xs) : FinEnum α
     where
   card := xs.length
-  Equiv :=
+  equiv :=
     ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, fun ⟨i, h⟩ =>
       xs.nthLe _ h, fun x => by simp, fun ⟨i, h⟩ => by
       simp [*]⟩
@@ -67,14 +67,14 @@ def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum 
 
 /-- create an exhaustive list of the values of a given type -/
 def toList (α) [FinEnum α] : List α :=
-  (List.finRange (card α)).map (Equiv).symm
+  (List.finRange (card α)).map (equiv).symm
 #align fin_enum.to_list FinEnum.toList
 
 open Function
 
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
-  simp [toList]; exists Equiv x; simp
+  simp [toList]; exists equiv x; simp
 #align fin_enum.mem_to_list FinEnum.mem_toList
 
 @[simp]
@@ -207,7 +207,7 @@ instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [�
 #align fin_enum.psigma.fin_enum_prop_prop FinEnum.PSigma.finEnumPropProp
 
 instance (priority := 100) [FinEnum α] : Fintype α where
-  elems := univ.map (Equiv).symm.toEmbedding
+  elems := univ.map (equiv).symm.toEmbedding
   complete := by intros; simp
 
 /-- For `Pi.cons x xs y f` create a function where every `i ∈ xs` is mapped to `f i` and

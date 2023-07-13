@@ -324,6 +324,12 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
+/-- `Sigma.mk i` as a bundled continuous map. -/
+@[simps apply]
+def sigmaMk {ι : Type _} {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] (i : ι) :
+    C(Y i, Σ i, Y i) where
+  toFun := Sigma.mk i
+
 section Pi
 
 variable {I A : Type _} {X Y : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
