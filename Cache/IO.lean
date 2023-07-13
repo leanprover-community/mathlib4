@@ -186,7 +186,7 @@ def validateLeanTar : IO Unit := do
       else s!"{arch}-unknown-linux-gnu"
   IO.println s!"leantar is too old; downloading more recent version"
   IO.FS.createDirAll IO.CACHEDIR
-  let ext := if win then "zip" else "tar.xz"
+  let ext := if win then "zip" else "tar.gz"
   let _ ← runCmd "curl" #[
     s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
