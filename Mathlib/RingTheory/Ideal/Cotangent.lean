@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 
 ! This file was ported from Lean 3 source module ring_theory.ideal.cotangent
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a TODO
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -50,16 +50,12 @@ instance Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent := by
-  delta Cotangent
-  constructor
-  intro s s' x
-  rw [← @IsScalarTower.algebraMap_smul S' R, ← @IsScalarTower.algebraMap_smul S' R, ← smul_assoc, ←
-    IsScalarTower.toAlgHom_apply S S' R, map_smul]
-  rfl
+instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
+  Submodule.Quotient.isScalarTower _ _
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
-instance [IsNoetherian R I] : IsNoetherian R I.Cotangent := by delta Cotangent; infer_instance
+instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
+  Submodule.Quotient.isNoetherian _
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps!] --  (config := lemmasOnly) apply -- Porting note: this option does not exist anymore
