@@ -21,7 +21,8 @@ universe u₁ u₂ u₃ u₄
 
 namespace Function
 
-variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₁}
+-- porting note: fix the universe of `ζ`, it used to be `u₁`
+variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 #align function.comp Function.comp
 
