@@ -74,8 +74,9 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
     simp [nonWanderingSet] at h4
     -- let l1 := h4 (ε / 2) e2pos
     -- rcases l1 with ⟨y, l1, ⟨n, l2, l3⟩⟩
+    -- obtain below is equivalent to the above two lines
     obtain ⟨y, l1, ⟨n, l2, l3⟩⟩ := h4 (ε / 2) e2pos
-    use y, n -- note 'use y, n' which is the same as 'use y' and 'use n'
+    use y, n -- note `use y, n` which is the same as `use y` and `use n`
     simp
     exact ⟨l1, l2, l3⟩
   rcases h5 with ⟨y, n, h6, h7, h8⟩
@@ -128,7 +129,7 @@ theorem omegaLimit_nonwandering (x : α) :
   intro ε hε
   have ball_in_nbd : ball z ε ∈ nhds z := by
     exact ball_mem_nhds z hε
-  -- let ⟨φ, hφ, hf⟩ := subsequence (ball z ε) ball_in_nbd
+  -- same as `let ⟨φ, hφ, hf⟩ := subsequence (ball z ε) ball_in_nbd` but nicer
   obtain ⟨φ, hφ, hf⟩ : ∃ φ, StrictMono φ ∧ ∀ (n : ℕ), f^[φ n] x ∈ ball z ε :=
     subsequence (ball z ε) ball_in_nbd
   use f^[φ 1] x, φ 2 - φ 1
@@ -147,14 +148,11 @@ theorem omegaLimit_nonwandering (x : α) :
 
 /- Show that the non-wandering set is non-empty -/
 theorem nonWandering_nonempty [hα : Nonempty α] : Set.Nonempty (nonWanderingSet f) := by
-  -- have (A: Set α) (B: Set α) : A ⊆ B -> Set.Nonempty A -> Set.Nonempty B := by
-  --   exact fun a a_1 ↦ Set.Nonempty.mono a a_1
   have (x : α) : Set.Nonempty (ω⁺ (fun n ↦ f^[n]) ({x})) -> Set.Nonempty (nonWanderingSet f) := by
     apply Set.Nonempty.mono
     apply omegaLimit_nonwandering
   apply this
   apply omegaLimit_nonempty f
-  -- Can we avoid using the axiom of choice here?
   apply Nonempty.some hα
   done
 
@@ -182,7 +180,7 @@ theorem recurrentSet_iff_accumulation_point (x : α) :
     rw [mem_omegaLimit_iff_frequently]
     intro U hU
     simp [frequently_atTop]
-    -- same as 'rcases Metric.mem_nhds_iff.mp hU with ⟨ε, hε, rest⟩' but nicer
+    -- same as `rcases Metric.mem_nhds_iff.mp hU with ⟨ε, hε, rest⟩` but nicer
     obtain ⟨ε, hε, ball_in_U⟩ : ∃ ε, ε > 0 ∧ ball x ε ⊆ U := Metric.mem_nhds_iff.mp hU
     intro a
     obtain ⟨m, hm, fm_in_ball⟩ := (hf ε a hε)
@@ -259,7 +257,7 @@ noncomputable def doubling_map (x : unitInterval) : unitInterval :=
 
 example : ¬IsMinimal (id : unitInterval -> unitInterval) := by
   unfold IsMinimal
-  -- 'push_neg' pushes negations as deep as possible into the conclusion of a hypothesis
+  -- `push_neg` pushes negations as deep as possible into the conclusion of a hypothesis
   push_neg
   have dist_pos : 0 < dist (1 : unitInterval) 0 := by
     apply dist_pos.mpr
