@@ -63,7 +63,8 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-variable (μ) {f g : α → E}
+variable (μ)
+variable {f g : α → E}
 
 /-- Average value of a function `f` w.r.t. a measure `μ`, notation: `⨍ x, f x ∂μ`. It is defined as
 `(μ univ).toReal⁻¹ • ∫ x, f x ∂μ`, so it is equal to zero if `f` is not integrable or if `μ` is an
