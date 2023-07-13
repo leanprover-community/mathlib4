@@ -1,8 +1,8 @@
 /-
 Copyright (c) 2023 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damien Thomine-/
-
+Authors: Damien Thomine
+-/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Topology.Instances.EReal
 
@@ -32,8 +32,8 @@ ENNReal, EReal, logarithm
 
 namespace ENNReal
 
-/-! ### Definition -/
 
+/-! ### Definition -/
 
 section Definition
 
@@ -207,8 +207,8 @@ theorem log_one_le_iff {x : ENNReal} :
 
 end Monotonicity
 
-/-! ### Algebraic properties -/
 
+/-! ### Algebraic properties -/
 
 section Morphism
 
@@ -305,7 +305,5 @@ Continuous log :=
   Homeomorph.continuous log_Homeomorph
 
 end Continuity
-
-#lint
 
 end ENNReal
