@@ -89,6 +89,9 @@ class IsAssociative (α : Type u) (op : α → α → α) : Prop where
   assoc : ∀ a b c, op (op a b) c = op a (op b c)
 #align is_associative IsAssociative
 
+instance {op} [IsAssociative α op] : Lean.IsAssociative op where
+  assoc := IsAssociative.assoc
+
 /-- A binary operation with a left identity. -/
 class IsLeftId (α : Type u) (op : α → α → α) (o : outParam α) : Prop where
   left_id : ∀ a, op o a = a
