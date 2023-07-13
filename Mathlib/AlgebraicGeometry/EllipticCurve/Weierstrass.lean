@@ -36,7 +36,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve`: a Weierstrass curve over a commutative ring.
  * `WeierstrassCurve.Δ`: the discriminant of a Weierstrass curve.
  * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
- * `WeierstrassCurve.changeCurve`: the Weierstrass curve induced by a change of variables.
+ * `WeierstrassCurve.variableChange`: the Weierstrass curve induced by a change of variables.
  * `WeierstrassCurve.baseChange`: the Weierstrass curve base changed over an algebra.
  * `WeierstrassCurve.twoTorsionPolynomial`: the 2-torsion polynomial of a Weierstrass curve.
  * `WeierstrassCurve.polynomial`: the polynomial associated to a Weierstrass curve.
@@ -59,7 +59,7 @@ splitting field of `R` are precisely the $X$-coordinates of the non-zero 2-torsi
  * `WeierstrassCurve.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an element
     in the coordinate ring in terms of the power basis.
  * `EllipticCurve.nonsingular`: an elliptic curve is nonsingular at every point.
- * `EllipticCurve.changeCurve_j`: the j-invariant of an elliptic curve is invariant under an
+ * `EllipticCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
     admissible linear change of variables.
 
 ## Implementation notes
@@ -202,7 +202,7 @@ variable (C : VariableChange R)
 /-- The Weierstrass curve over `R` induced by an admissible linear change of variables
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$. -/
 @[simps]
-def changeCurve : WeierstrassCurve R where
+def variableChange : WeierstrassCurve R where
   a₁ := ↑C.u⁻¹ * (W.a₁ + 2 * C.s)
   a₂ := ↑C.u⁻¹ ^ 2 * (W.a₂ - C.s * W.a₁ + 3 * C.r - C.s ^ 2)
   a₃ := ↑C.u⁻¹ ^ 3 * (W.a₃ + C.r * W.a₁ + 2 * C.t)
@@ -210,57 +210,57 @@ def changeCurve : WeierstrassCurve R where
     - 2 * C.s * C.t)
   a₆ := ↑C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
     - C.r * C.t * W.a₁)
-#align weierstrass_curve.variable_change WeierstrassCurve.changeCurve
+#align weierstrass_curve.variable_change WeierstrassCurve.variableChange
 
 @[simp]
-lemma changeCurve_b₂ : (W.changeCurve C).b₂ = (↑C.u⁻¹ : R) ^ 2 * (W.b₂ + 12 * C.r) := by
-  simp only [b₂, changeCurve_a₁, changeCurve_a₂]
+lemma variableChange_b₂ : (W.variableChange C).b₂ = (↑C.u⁻¹ : R) ^ 2 * (W.b₂ + 12 * C.r) := by
+  simp only [b₂, variableChange_a₁, variableChange_a₂]
   ring1
-#align weierstrass_curve.variable_change_b₂ WeierstrassCurve.changeCurve_b₂
+#align weierstrass_curve.variable_change_b₂ WeierstrassCurve.variableChange_b₂
 
 @[simp]
-lemma changeCurve_b₄ :
-    (W.changeCurve C).b₄ = (↑C.u⁻¹ : R) ^ 4 * (W.b₄ + C.r * W.b₂ + 6 * C.r ^ 2) := by
-  simp only [b₂, b₄, changeCurve_a₁, changeCurve_a₃, changeCurve_a₄]
+lemma variableChange_b₄ :
+    (W.variableChange C).b₄ = (↑C.u⁻¹ : R) ^ 4 * (W.b₄ + C.r * W.b₂ + 6 * C.r ^ 2) := by
+  simp only [b₂, b₄, variableChange_a₁, variableChange_a₃, variableChange_a₄]
   ring1
-#align weierstrass_curve.variable_change_b₄ WeierstrassCurve.changeCurve_b₄
+#align weierstrass_curve.variable_change_b₄ WeierstrassCurve.variableChange_b₄
 
 @[simp]
-lemma changeCurve_b₆ :
-    (W.changeCurve C).b₆ =
+lemma variableChange_b₆ :
+    (W.variableChange C).b₆ =
       (↑C.u⁻¹ : R) ^ 6 * (W.b₆ + 2 * C.r * W.b₄ + C.r ^ 2 * W.b₂ + 4 * C.r ^ 3) := by
-  simp only [b₂, b₄, b₆, changeCurve_a₃, changeCurve_a₆]
+  simp only [b₂, b₄, b₆, variableChange_a₃, variableChange_a₆]
   ring1
-#align weierstrass_curve.variable_change_b₆ WeierstrassCurve.changeCurve_b₆
+#align weierstrass_curve.variable_change_b₆ WeierstrassCurve.variableChange_b₆
 
 @[simp]
-lemma changeCurve_b₈ :
-    (W.changeCurve C).b₈ =
+lemma variableChange_b₈ :
+    (W.variableChange C).b₈ =
       (↑C.u⁻¹ : R) ^ 8 * (W.b₈ + 3 * C.r * W.b₆ + 3 * C.r ^ 2 * W.b₄ + C.r ^ 3 * W.b₂
         + 3 * C.r ^ 4) := by
-  simp only [b₂, b₄, b₆, b₈, changeCurve_a₁, changeCurve_a₂, changeCurve_a₃,
-    changeCurve_a₄, changeCurve_a₆]
+  simp only [b₂, b₄, b₆, b₈, variableChange_a₁, variableChange_a₂, variableChange_a₃,
+    variableChange_a₄, variableChange_a₆]
   ring1
-#align weierstrass_curve.variable_change_b₈ WeierstrassCurve.changeCurve_b₈
+#align weierstrass_curve.variable_change_b₈ WeierstrassCurve.variableChange_b₈
 
 @[simp]
-lemma changeCurve_c₄ : (W.changeCurve C).c₄ = (↑C.u⁻¹ : R) ^ 4 * W.c₄ := by
-  simp only [c₄, changeCurve_b₂, changeCurve_b₄]
+lemma variableChange_c₄ : (W.variableChange C).c₄ = (↑C.u⁻¹ : R) ^ 4 * W.c₄ := by
+  simp only [c₄, variableChange_b₂, variableChange_b₄]
   ring1
-#align weierstrass_curve.variable_change_c₄ WeierstrassCurve.changeCurve_c₄
+#align weierstrass_curve.variable_change_c₄ WeierstrassCurve.variableChange_c₄
 
 @[simp]
-lemma changeCurve_c₆ : (W.changeCurve C).c₆ = (↑C.u⁻¹ : R) ^ 6 * W.c₆ := by
-  simp only [c₆, changeCurve_b₂, changeCurve_b₄, changeCurve_b₆]
+lemma variableChange_c₆ : (W.variableChange C).c₆ = (↑C.u⁻¹ : R) ^ 6 * W.c₆ := by
+  simp only [c₆, variableChange_b₂, variableChange_b₄, variableChange_b₆]
   ring1
-#align weierstrass_curve.variable_change_c₆ WeierstrassCurve.changeCurve_c₆
+#align weierstrass_curve.variable_change_c₆ WeierstrassCurve.variableChange_c₆
 
 @[simp]
-lemma changeCurve_Δ : (W.changeCurve C).Δ = (↑C.u⁻¹ : R) ^ 12 * W.Δ := by
-  simp only [b₂, b₄, b₆, b₈, Δ, changeCurve_a₁, changeCurve_a₂, changeCurve_a₃,
-    changeCurve_a₄, changeCurve_a₆]
+lemma variableChange_Δ : (W.variableChange C).Δ = (↑C.u⁻¹ : R) ^ 12 * W.Δ := by
+  simp only [b₂, b₄, b₆, b₈, Δ, variableChange_a₁, variableChange_a₂, variableChange_a₃,
+    variableChange_a₄, variableChange_a₆]
   ring1
-#align weierstrass_curve.variable_change_Δ WeierstrassCurve.changeCurve_Δ
+#align weierstrass_curve.variable_change_Δ WeierstrassCurve.variableChange_Δ
 
 end VariableChange
 
@@ -472,12 +472,12 @@ lemma equation_zero : W.equation 0 0 ↔ W.a₆ = 0 := by
   rw [WeierstrassCurve.equation, C_0, eval_polynomial_zero, neg_eq_zero]
 #align weierstrass_curve.equation_zero WeierstrassCurve.equation_zero
 
-lemma equation_iff_changeCurve (x y : R) :
-    W.equation x y ↔ (W.changeCurve ⟨1, x, 0, y⟩).equation 0 0 := by
-  rw [equation_iff', ← neg_eq_zero, equation_zero, changeCurve_a₆, inv_one, Units.val_one]
+lemma equation_iff_variableChange (x y : R) :
+    W.equation x y ↔ (W.variableChange ⟨1, x, 0, y⟩).equation 0 0 := by
+  rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
   ring1
-#align weierstrass_curve.equation_iff_variable_change WeierstrassCurve.equation_iff_changeCurve
+#align weierstrass_curve.equation_iff_variable_change WeierstrassCurve.equation_iff_variableChange
 
 lemma equation_iff_baseChange [Nontrivial A] [NoZeroSMulDivisors R A] (x y : R) :
     W.equation x y ↔ (W.baseChange A).equation (algebraMap R A x) (algebraMap R A y) := by
@@ -571,13 +571,13 @@ lemma nonsingular_zero : W.nonsingular 0 0 ↔ W.a₆ = 0 ∧ (W.a₃ ≠ 0 ∨ 
     eval_polynomialY_zero, or_comm]
 #align weierstrass_curve.nonsingular_zero WeierstrassCurve.nonsingular_zero
 
-lemma nonsingular_iff_changeCurve (x y : R) :
-    W.nonsingular x y ↔ (W.changeCurve ⟨1, x, 0, y⟩).nonsingular 0 0 := by
-  rw [nonsingular_iff', equation_iff_changeCurve, equation_zero, ← neg_ne_zero, or_comm,
-    nonsingular_zero, changeCurve_a₃, changeCurve_a₄, inv_one, Units.val_one]
-  simp only [changeCurve]
+lemma nonsingular_iff_variableChange (x y : R) :
+    W.nonsingular x y ↔ (W.variableChange ⟨1, x, 0, y⟩).nonsingular 0 0 := by
+  rw [nonsingular_iff', equation_iff_variableChange, equation_zero, ← neg_ne_zero, or_comm,
+    nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
+  simp only [variableChange]
   congr! 3 <;> ring1
-#align weierstrass_curve.nonsingular_iff_variable_change WeierstrassCurve.nonsingular_iff_changeCurve
+#align weierstrass_curve.nonsingular_iff_variable_change WeierstrassCurve.nonsingular_iff_variableChange
 
 lemma nonsingular_iff_baseChange [Nontrivial A] [NoZeroSMulDivisors R A] (x y : R) :
     W.nonsingular x y ↔ (W.baseChange A).nonsingular (algebraMap R A x) (algebraMap R A y) := by
@@ -604,9 +604,9 @@ lemma nonsingular_zero_of_Δ_ne_zero (h : W.equation 0 0) (hΔ : W.Δ ≠ 0) : W
 
 /-- A Weierstrass curve is nonsingular at every point if its discriminant is non-zero. -/
 lemma nonsingular_of_Δ_ne_zero {x y : R} (h : W.equation x y) (hΔ : W.Δ ≠ 0) : W.nonsingular x y :=
-  (W.nonsingular_iff_changeCurve x y).mpr <|
-    nonsingular_zero_of_Δ_ne_zero _ ((W.equation_iff_changeCurve x y).mp h) <| by
-      rwa [changeCurve_Δ, inv_one, Units.val_one, one_pow, one_mul]
+  (W.nonsingular_iff_variableChange x y).mpr <|
+    nonsingular_zero_of_Δ_ne_zero _ ((W.equation_iff_variableChange x y).mp h) <| by
+      rwa [variableChange_Δ, inv_one, Units.val_one, one_pow, one_mul]
 #align weierstrass_curve.nonsingular_of_Δ_ne_zero WeierstrassCurve.nonsingular_of_Δ_ne_zero
 
 /-! ### Ideals in the coordinate ring -/
@@ -945,27 +945,27 @@ variable (C : WeierstrassCurve.VariableChange R)
 $(X, Y) \mapsto (u^2X + r, u^3Y + u^2sX + t)$ for some $u \in R^\times$ and some $r, s, t \in R$.
 When `R` is a field, any two Weierstrass equations isomorphic to `E` are related by this. -/
 @[simps (config := { rhsMd := .default }) a₁ a₂ a₃ a₄ a₆ Δ' toWeierstrassCurve]
-def changeCurve : EllipticCurve R :=
-  ⟨E.toWeierstrassCurve.changeCurve C, C.u⁻¹ ^ 12 * E.Δ', by
-    rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.changeCurve_Δ]⟩
-#align elliptic_curve.variable_change EllipticCurve.changeCurve
+def variableChange : EllipticCurve R :=
+  ⟨E.toWeierstrassCurve.variableChange C, C.u⁻¹ ^ 12 * E.Δ', by
+    rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.variableChange_Δ]⟩
+#align elliptic_curve.variable_change EllipticCurve.variableChange
 
-lemma coe_changeCurve_Δ' : (↑(E.changeCurve C).Δ' : R) = (↑C.u⁻¹ : R) ^ 12 * E.Δ' := by
-  rw [changeCurve_Δ', Units.val_mul, Units.val_pow_eq_pow_val]
-#align elliptic_curve.coe_variable_change_Δ' EllipticCurve.coe_changeCurve_Δ'
+lemma coe_variableChange_Δ' : (↑(E.variableChange C).Δ' : R) = (↑C.u⁻¹ : R) ^ 12 * E.Δ' := by
+  rw [variableChange_Δ', Units.val_mul, Units.val_pow_eq_pow_val]
+#align elliptic_curve.coe_variable_change_Δ' EllipticCurve.coe_variableChange_Δ'
 
-lemma coe_inv_changeCurve_Δ' :
-    (↑(E.changeCurve C).Δ'⁻¹ : R) = (C.u : R) ^ 12 * ↑E.Δ'⁻¹ := by
-  rw [changeCurve_Δ', mul_inv, inv_pow, inv_inv, Units.val_mul, Units.val_pow_eq_pow_val]
-#align elliptic_curve.coe_inv_variable_change_Δ' EllipticCurve.coe_inv_changeCurve_Δ'
+lemma coe_inv_variableChange_Δ' :
+    (↑(E.variableChange C).Δ'⁻¹ : R) = (C.u : R) ^ 12 * ↑E.Δ'⁻¹ := by
+  rw [variableChange_Δ', mul_inv, inv_pow, inv_inv, Units.val_mul, Units.val_pow_eq_pow_val]
+#align elliptic_curve.coe_inv_variable_change_Δ' EllipticCurve.coe_inv_variableChange_Δ'
 
 @[simp]
-lemma changeCurve_j : (E.changeCurve C).j = E.j := by
-  rw [j, coe_inv_changeCurve_Δ']
+lemma variableChange_j : (E.variableChange C).j = E.j := by
+  rw [j, coe_inv_variableChange_Δ']
   have hu : (C.u * ↑C.u⁻¹ : R) ^ 12 = 1 := by rw [C.u.mul_inv, one_pow]
-  linear_combination (norm := (rw [changeCurve_toWeierstrassCurve,
-    WeierstrassCurve.changeCurve_c₄, j]; ring1)) E.j * hu
-#align elliptic_curve.variable_change_j EllipticCurve.changeCurve_j
+  linear_combination (norm := (rw [variableChange_toWeierstrassCurve,
+    WeierstrassCurve.variableChange_c₄, j]; ring1)) E.j * hu
+#align elliptic_curve.variable_change_j EllipticCurve.variableChange_j
 
 end VariableChange
 
