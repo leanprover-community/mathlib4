@@ -493,6 +493,13 @@ def ExtendBy {C : Set X} (hC : IsClopen C) (f : LocallyConstant {i // i ∈ C} Z
     · rw [Function.extendBy_preimage_of_junk_ne_mem _ _ _ hj]
       exact IsOpen.isOpenMap_subtype_val hC.1 (f.toFun ⁻¹' s) (f.isLocallyConstant s)   }
 
+noncomputable
+def emb_lift {e : X → Y} (hoe : OpenEmbedding e) (hce : ClosedEmbedding e)
+    (f : LocallyConstant X Z) (junk : Z) : LocallyConstant Y Z :=
+  let E : LocallyConstant X Z ≃ LocallyConstant (Set.range e) Z :=
+    equiv (Homeomorph.ofEmbedding e hoe.toEmbedding)
+  (E f).ExtendBy ⟨hoe.open_range, hce.closed_range⟩ junk
+
 variable {R : Type _} [Ring R] [AddCommMonoid Z] [Module R Z]
 
 noncomputable
@@ -2951,23 +2958,41 @@ lemma isClopen_C'' : IsClopen (C'' C ho) := by sorry
 
 lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
   intro f
-  have : {i // i ∈ C' C ho} = ↑(C' C ho) := by rfl
-  simp_rw [this] at f
+  let e : {i // i ∈ C' C ho} → {i // i ∈ C1' C ho} :=
+    fun x ↦ ⟨CC'₁ C hsC ho x, swapTrue_mem_C1 C hsC ho ⟨x.1, x.2.2⟩⟩
+  have hoe : OpenEmbedding e := sorry
+  have hce : ClosedEmbedding e := sorry
   use LocallyConstant.piecewise (isClopen_C0' C hC ho).2 (isClopen_C1' C hC ho).2
-    (union_C0'C1'_eq_univ C ho) ?_ ?_ ?_ 0
-  · sorry
-    -- let f' : LocallyConstant (C'' C ho) ℤ := sorry
-    -- use f'.ExtendBy (isClopen_C'' _ hC _) (0 : ℤ)
-    -- let g := ((LocallyConstant.equiv (setHomeoSubtype (C'' C ho))).toFun f).ExtendBy (isClopen_C'' _ hC _) (0 : ℤ)
-  · sorry
-  · sorry
-  · sorry
-  -- constructor
-  -- · ext x
-  --   dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.comapLinear]
-  --   rw [LocallyConstant.sub_apply]
-  --   · sorry
-  --   · sorry
+    (union_C0'C1'_eq_univ C ho) (LocallyConstant.const _ 0) ((f.emb_lift hoe hce 0)) ?_ 0
+  · intro x hx
+    dsimp [C0', C1', C0, C1] at hx
+    simp only [Set.mem_inter_iff, Subtype.coe_prop, Set.mem_setOf_eq, true_and] at hx
+    rw [Bool.eq_false_iff] at hx
+    exfalso
+    exact hx.1 hx.2
+  · ext x
+    dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.comapLinear]
+    rw [LocallyConstant.sub_apply]
+    rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
+    rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
+    dsimp [LocallyConstant.piecewise, Set.piecewise', Function.ExtendBy, CC'₀, CC'₁]
+    rw [Set.piecewise_eq_of_not_mem _ _ _ ?_]
+    rw [Set.piecewise_eq_of_not_mem _ _ _ ?_]
+    · split_ifs with h₁ h₂
+      · dsimp [LocallyConstant.emb_lift, LocallyConstant.ExtendBy, Function.ExtendBy]
+        split_ifs
+        · sorry
+        · dsimp [LocallyConstant.equiv]
+          sorry
+        · sorry
+        · sorry
+      · sorry
+      · sorry
+      · sorry
+    · sorry
+    · sorry
+
+
 
 lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := by
   intro y
