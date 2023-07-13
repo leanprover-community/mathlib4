@@ -88,7 +88,7 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
 instance : LinearOrderedCommRing ℤ[ε] :=
   { IntWithEpsilon.linearOrder, IntWithEpsilon.commRing, IntWithEpsilon.orderedAddCommGroup,
     IntWithEpsilon.nontrivial with
-    zero_le_one := Or.inr ⟨0, by simp; rw [coeff_zero, coeff_one_zero]; linarith⟩
+    zero_le_one := Or.inr ⟨0, by simp⟩
     mul_pos := fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos}
 
 instance : FloorRing ℤ[ε] :=
