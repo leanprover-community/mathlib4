@@ -9,7 +9,6 @@ Authors: Sébastien Gouëzel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Tactic.CongrConfig
 
 /-!
 
