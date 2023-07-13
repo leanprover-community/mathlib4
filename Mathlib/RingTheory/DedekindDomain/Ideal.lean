@@ -1027,8 +1027,8 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
   constructor
   by_cases hR : IsField R
   · rcases Function.bijective_iff_has_inverse.mp
-      (IsField.localization_map_bijective (flip nonZeroDivisors.ne_zero rfl : 0 ∉ R⁰) hR) with
-      ⟨algebra_map_inv, _, algebra_map_right_inv⟩
+      (IsField.localization_map_bijective (Rₘ := K) (flip nonZeroDivisors.ne_zero rfl : 0 ∉ R⁰) hR)
+      with ⟨algebra_map_inv, _, algebra_map_right_inv⟩
     exact fun _ => Algebra.mem_bot.mpr ⟨algebra_map_inv x, algebra_map_right_inv x⟩
   all_goals rw [← MaximalSpectrum.iInf_localization_eq_bot, Algebra.mem_iInf]
   · exact fun hx ⟨v, hv⟩ => hx ((equivMaximalSpectrum hR).symm ⟨v, hv⟩)
