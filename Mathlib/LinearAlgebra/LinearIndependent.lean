@@ -189,6 +189,13 @@ theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependen
         · simp [h])
 #align linear_independent.ne_zero LinearIndependent.ne_zero
 
+lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, y])
+    {s t : R} (h' : s • x + t • y = 0) : s = 0 ∧ t = 0:= by
+  have := linearIndependent_iff'.1 h Finset.univ ![s, t]
+  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, h',
+    Finset.mem_univ, forall_true_left] at this
+  exact ⟨this 0, this 1⟩
+
 /-- A subfamily of a linearly independent family (i.e., a composition with an injective map) is a
 linearly independent family. -/
 theorem LinearIndependent.comp (h : LinearIndependent R v) (f : ι' → ι) (hf : Injective f) :
