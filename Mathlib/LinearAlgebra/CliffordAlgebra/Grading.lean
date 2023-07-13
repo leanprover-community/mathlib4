@@ -121,7 +121,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   | h0 =>
     rw [AlgHom.map_zero]
     apply Eq.symm
-    apply Dfinsupp.single_eq_zero.mpr; rfl
+    apply DFinsupp.single_eq_zero.mpr; rfl
   | hadd x y hx hy ihx ihy =>
     rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
