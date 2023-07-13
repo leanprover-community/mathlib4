@@ -38,54 +38,6 @@ theorem periodicpts_is_mem (x : α) (n : ℕ) (nnz: n ≠ 0) (pp: IsPeriodicPt f
   . exact nnz
   done
 
--- lemma periodic_arbitrary_large_time (N : ℕ) (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε)
---     (x : α) (hx : IsPeriodicPt f m x)
---     : ∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ N ≤ n := by
---   use x
---   use m * N
---   refine' ⟨_,_,_⟩
---   · exact mem_ball_self hε
---   · rw [IsPeriodicPt.mul_const hx N]
---     exact mem_ball_self hε
---   · exact Nat.le_mul_of_pos_left hm
---   done
-
--- lemma separated_balls (x : α) (hfx : x ≠ f x) :  ∃ ε, 0 < ε ∧ (ball x ε) ∩ (f '' (ball x ε)) = ∅ := by
---    have hfC : ContinuousAt f x := Continuous.continuousAt hf
---    rw [Metric.continuousAt_iff] at hfC
---    have h00 : 0 < ((dist x (f x))/4) := by
---      apply div_pos
---      rw [dist_pos]
---      exact hfx
---      exact four_pos
---    have hfCp := hfC ((dist x (f x))/4) h00
---    rcases hfCp with ⟨a, b, c⟩
---    use min a ((dist x (f x))/4)
---    refine' ⟨_,_⟩
---    · exact lt_min b h00
---    · rw [Set.ext_iff]
---      intro y
---      constructor
---      · intro ⟨hy1,hy2⟩
---        unfold ball at hy1
---        dsimp at hy1
---        have hha : min a (dist x (f x) / 4) ≤ a := min_le_left a (dist x (f x) / 4)
---        have hy3 : dist y x < a := hy1.trans_le hha
---        unfold ball at hy2
---        rw [mem_image] at hy2
---        rcases hy2 with ⟨z , hz1, hz2⟩
---        dsimp at hz1
---        have hz3 : dist z x < a := hz1.trans_le hha
---        have hy4 := c hz3
---        rw [hz2] at hy4
---        have hha2 : min a (dist x (f x) / 4) ≤ (dist x (f x) / 4) := min_le_right a (dist x (f x) / 4)
---        have hy5 : dist y x < (dist x (f x) / 4) := hy1.trans_le hha2
---        rw [dist_comm] at hy5
---        exfalso
---        have gg := dist_triangle x y (f x)
---        linarith
---      · exfalso
---    done
 
 /- Show that, if `x` belongs to the non-wandering set, there are points `y` arbitrarily close to `x`
 and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
