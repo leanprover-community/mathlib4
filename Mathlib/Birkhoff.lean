@@ -27,6 +27,53 @@ and arbitrarily large times for which `f^[n] y` comes back close to `x`. -/
 
 
 /- Show that the non-wandering set of `f` is closed. -/
+example : IsClosed (nonWanderingSet f) := by
+  rw [← isSeqClosed_iff_isClosed]
+  unfold IsSeqClosed
+  intro u x hu ulim
+  rw [tendsto_atTop_nhds] at ulim
+  intro ε hepos
+  have e2pos : 0 < ε / 2 := by
+    linarith
+  have h1 : IsOpen (ball x (ε / 2)) := by
+    exact isOpen_ball
+  have h2 : ∃ (z : α), z ∈ ball x (ε/ 2) ∧ z ∈ nonWanderingSet f := by
+    let k1 := ulim (ball x (ε / 2))
+    have k2 : x ∈ (ball x (ε / 2)) := by
+      exact mem_ball_self e2pos
+    let ⟨N, k3⟩ := k1 k2 h1
+    have k4 : u N ∈ ball x (ε / 2) := by
+      have k5 : N ≤ N := by
+        exact Nat.le_refl N
+      exact k3 N k5 -- it seems not to be necessary??
+    exact ⟨u N, k4, hu N⟩
+  rcases h2 with ⟨z, h3, h4⟩
+  have h5 : ∃ (y : α), ∃ (n : ℕ), y ∈ ball z (ε / 2) ∧ f^[n] y ∈ ball z (ε / 2) ∧ n ≠ 0 := by
+    simp [nonWanderingSet] at h4
+    let l1 := h4 (ε / 2) e2pos
+    rcases l1 with ⟨y, l1, ⟨n, l2, l3⟩⟩
+    use y, n -- note 'use y, n' which is the same as 'use y' and 'use n'
+    simp
+    exact ⟨l1, l2, l3⟩
+  rcases h5 with ⟨y, n, h6, h7, h8⟩
+  have h9 : y ∈ ball x ε := by
+    simp
+    have m1 : dist y z + dist z x < ε := by
+      rw [mem_ball] at h3 h6
+      linarith
+    have : dist y x ≤ dist y z + dist z x := by
+      exact dist_triangle _ _ _  -- why can I omit argument, but I can't in the line below?
+    exact lt_of_le_of_lt this m1
+  have h10 : f^[n] y ∈ ball x ε := by
+    simp
+    have p1 : dist (f^[n] y) z + dist z x < ε := by
+      rw [mem_ball] at h7 h3
+      linarith
+    have : dist (f^[n] y) x ≤ dist (f^[n] y) z + dist z x := by
+      exact dist_triangle _ _ _  -- why can I omit argument, but I can't in the line below?
+    exact lt_of_le_of_lt this p1
+  exact ⟨y, n, h9, h10, h8⟩
+  done
 
 
 /- Show that the non-wandering set of `f` is compact. -/
