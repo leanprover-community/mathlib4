@@ -635,7 +635,7 @@ def Derivation.compAlgebraMap [Module A M] [Module B M] [IsScalarTower A B M]
 #align derivation.comp_algebra_map Derivation.compAlgebraMap
 
 variable (R B)
-variables [SMulCommClass S A B]
+variable [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` given a square
 A --→ B
