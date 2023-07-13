@@ -76,9 +76,12 @@ theorem LocallyIntegrableOn.integrableOn_compact_subset (hf : LocallyIntegrableO
   (hf.mono hst).integrableOn_isCompact ht
 #align measure_theory.locally_integrable_on.integrable_on_compact_subset MeasureTheory.LocallyIntegrableOn.integrableOn_compact_subset
 
+/-- If a function `f` is locally integrable on a set `s` in a second countable topological space,
+then there exist countably many open sets `u` covering `s` such that `f` is integrable on each
+set `u ∩ s`. -/
 theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopology X]
-      (hf : LocallyIntegrableOn f s μ) : ∃ T : Set (Set X), T.Countable ∧
-      (∀ u ∈ T, IsOpen u) ∧ (s ⊆ ⋃ u ∈ T, u) ∧ (∀ u ∈ T, IntegrableOn f (u ∩ s) μ) := by
+    (hf : LocallyIntegrableOn f s μ) : ∃ T : Set (Set X), T.Countable ∧
+    (∀ u ∈ T, IsOpen u) ∧ (s ⊆ ⋃ u ∈ T, u) ∧ (∀ u ∈ T, IntegrableOn f (u ∩ s) μ) := by
   have : ∀ x : s, ∃ u, IsOpen u ∧ x.1 ∈ u ∧ IntegrableOn f (u ∩ s) μ := by
     rintro ⟨x, hx⟩
     rcases hf x hx with ⟨t, ht, h't⟩
@@ -95,12 +98,12 @@ theorem LocallyIntegrableOn.exists_countable_integrableOn [SecondCountableTopolo
   · rintro v ⟨w, -, rfl⟩
     exact hu _
 
-/-- If a function is locally integrable on a set `s` in a second countable topological space,
-then there exists a sequence of open sets `u n` covering `s` such that it is integrable on each
+/-- If a function `f` is locally integrable on a set `s` in a second countable topological space,
+then there exists a sequence of open sets `u n` covering `s` such that `f` is integrable on each
 set `u n ∩ s`. -/
 theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
-      (hf : LocallyIntegrableOn f s μ) : ∃ u : ℕ → Set X,
-      (∀ n, IsOpen (u n)) ∧ (s ⊆ ⋃ n, u n) ∧ (∀ n, IntegrableOn f (u n ∩ s) μ) := by
+    (hf : LocallyIntegrableOn f s μ) : ∃ u : ℕ → Set X,
+    (∀ n, IsOpen (u n)) ∧ (s ⊆ ⋃ n, u n) ∧ (∀ n, IntegrableOn f (u n ∩ s) μ) := by
   rcases hf.exists_countable_integrableOn with ⟨T, T_count, T_open, sT, hT⟩
   let T' : Set (Set X) := insert ∅ T
   have T'_count : T'.Countable := Countable.insert ∅ T_count
