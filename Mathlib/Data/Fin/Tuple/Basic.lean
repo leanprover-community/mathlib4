@@ -388,7 +388,7 @@ theorem repeat_zero {α : Type _} (a : Fin n → α) :
 theorem repeat_one {α : Type _} (a : Fin n → α) : Fin.repeat 1 a = a ∘ cast (one_mul _) := by
   generalize_proofs h
   apply funext
-  rw [(Fin.cast h.symm).surjective.forall]
+  rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   intro i
   simp [modNat, Nat.mod_eq_of_lt i.is_lt]
 #align fin.repeat_one Fin.repeat_one
@@ -398,7 +398,7 @@ theorem repeat_succ {α : Type _} (a : Fin n → α) (m : ℕ) :
       append a (Fin.repeat m a) ∘ cast ((Nat.succ_mul _ _).trans (add_comm _ _)) := by
   generalize_proofs h
   apply funext
-  rw [(Fin.cast h.symm).surjective.forall]
+  rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine' Fin.addCases (fun l => _) fun r => _
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat]
@@ -409,7 +409,7 @@ theorem repeat_add {α : Type _} (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repe
     append (Fin.repeat m₁ a) (Fin.repeat m₂ a) ∘ cast (add_mul _ _ _) := by
   generalize_proofs h
   apply funext
-  rw [(Fin.cast h.symm).surjective.forall]
+  rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine' Fin.addCases (fun l => _) fun r => _
   · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
   · simp [modNat, Nat.add_mod]

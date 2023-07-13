@@ -104,7 +104,7 @@ theorem map_ofFn {β : Type _} {n : ℕ} (f : Fin n → α) (g : α → β) :
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
     ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
   subst h
-  simp_rw [Fin.cast_refl, OrderIso.refl_apply]
+  simp_rw [Fin.cast_refl, id]
 #align list.of_fn_congr List.ofFn_congr
 
 /-- `ofFn` on an empty domain is the empty list. -/
@@ -226,8 +226,8 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 @[simp]
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
-  simp only [pairwise_iff_get, (Fin.cast (length_ofFn f)).surjective.forall, get_ofFn,
-    OrderIso.lt_iff_lt]
+  simp only [pairwise_iff_get, (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, get_ofFn,
+    lt_iff_not_le, Fin.cast_le_cast]
 #align list.pairwise_of_fn List.pairwise_ofFn
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/

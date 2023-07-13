@@ -1057,18 +1057,28 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
   funext (castLE_castLE km mn)
 #align fin.cast_le_comp_cast_le Fin.castLE_comp_castLE
 
+theorem leftInverse_cast (eq : n = m) : LeftInverse (cast eq.symm) (cast eq) :=
+  fun _ => eq_of_veq rfl
+
+theorem rightInverse_cast (eq : n = m) : RightInverse (cast eq.symm) (cast eq) :=
+  fun _ => eq_of_veq rfl
+
+theorem cast_le_cast (eq : n = m) {a b : Fin n} : cast eq a ≤ cast eq b ↔ a ≤ b :=
+  Iff.rfl
+
 /-- `Fin.cast` as an `OrderIso`, `castIso eq i` embeds `i` into an equal `Fin` type,
 see also `Equiv.finCongr`. -/
 @[simps]
 def castIso (eq : n = m) : Fin n ≃o Fin m where
-  toEquiv := ⟨cast eq, cast eq.symm, fun _ => eq_of_veq rfl, fun _ => eq_of_veq rfl⟩
-  map_rel_iff' := Iff.rfl
+  toEquiv := ⟨cast eq, cast eq.symm, leftInverse_cast eq, rightInverse_cast eq⟩
+  map_rel_iff' := cast_le_cast eq
 #align fin.cast Fin.castIso
 
 @[simp]
 theorem symm_castIso (h : n = m) : (castIso h).symm = castIso h.symm := by simp
 #align fin.symm_cast Fin.symm_castIso
 
+@[simp]
 theorem coe_cast (h : n = m) (i : Fin n) : (cast h i : ℕ) = i := rfl
 #align fin.coe_cast Fin.coe_cast
 
@@ -1434,7 +1444,6 @@ theorem le_coe_natAdd (m : ℕ) (i : Fin n) : m ≤ natAdd m i :=
 theorem natAdd_zero {n : ℕ} : Fin.natAdd 0 = Fin.cast (zero_add n).symm := by
   ext
   simp
-  rfl
 #align fin.nat_add_zero Fin.natAdd_zero
 
 /-- For rewriting in the reverse direction, see `Fin.cast_natAdd_right`. -/

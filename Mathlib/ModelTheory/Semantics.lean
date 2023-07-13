@@ -421,7 +421,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       by_cases k < m
       · rw [if_pos h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
-        simp only [coe_orderIso_apply, coe_castAdd, val_last, self_eq_add_right]
+        simp only [coe_cast, coe_castAdd, val_last, self_eq_add_right]
         refine'
           le_antisymm (le_of_add_le_add_left ((hmn.trans (Nat.succ_le_of_lt h)).trans _)) n'.zero_le
         rw [add_zero]
@@ -430,7 +430,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
         simp
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine' (congr rfl (ext _)).trans (snoc_castSucc _ _ _)
-      simp only [coe_castSucc, coe_orderIso_apply]
+      simp only [coe_castSucc, coe_cast]
       split_ifs <;> simp
 #align first_order.language.bounded_formula.realize_lift_at FirstOrder.Language.BoundedFormula.realize_liftAt
 
@@ -679,8 +679,7 @@ theorem realize_relabel {φ : L.Formula α} {g : α → β} {v : β → M} :
 theorem realize_relabel_sum_inr (φ : L.Formula (Fin n)) {v : Empty → M} {x : Fin n → M} :
     (BoundedFormula.relabel Sum.inr φ).Realize v x ↔ φ.Realize x := by
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
-    cast_refl, OrderIso.coe_refl, Function.comp.right_id,
-    Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
+    cast_refl, Function.comp.right_id, Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 #align first_order.language.formula.realize_relabel_sum_inr FirstOrder.Language.Formula.realize_relabel_sum_inr
 
 @[simp]
