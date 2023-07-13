@@ -7,9 +7,9 @@ Authors: Yakov Pechersky
 ! leanprover-community/mathlib commit bb9d1c5085e0b7ea619806a68c5021927cecb2a6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
--/
 
--- Porting note:
--- As the parsing framework has completely changed in Lean 4
--- there is no point porting these files directly.
--- They can be rewritten from scratch as needed, just as for tactics.
+Porting note:
+As the parsing framework has completely changed in Lean 4
+there is no point porting these files directly.
+They can be rewritten from scratch as needed, just as for tactics.
+-/
