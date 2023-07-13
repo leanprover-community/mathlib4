@@ -67,15 +67,18 @@ do
     ← mkForallFVars #[α] <| ←mkForallFVars #[A] (binderInfoForMVars := BinderInfo.default)
       q($A = $A_eta)
   let proof_A_eq : Q($forall_A_eq) ← mkFreshExprMVarQ q($forall_A_eq)
-  proof_A_eq.mvarId!.assign <|
-    ← mkForallFVars #[α] <| ←mkForallFVars #[A] (binderInfoForMVars := BinderInfo.default)
-      q((Matrix.etaExpand_eq $A).symm)
+  let _eq : $A_eta =Q Matrix.etaExpand $A := ⟨⟩
+  proof_A_eq.mvarId!.assignIfDefeq <|
+    ← mkLambdaFVars #[α] <| ←mkLambdaFVars #[A] (binderInfoForMVars := BinderInfo.default)
+      <| q((Matrix.etaExpand_eq $A).symm)
   pure proof_A_eq
 
 open Lean.Elab.Tactic in
 elab "fin_eta% " m:num n:num : term => FinEta.prove m.getNat n.getNat
 
-#check fin_eta% 1 2
+-- TODO: why is the RHS `etaExpand` and not the manually expanded version?
+variable (A)
+#check (fin_eta% 1 2) (A : Matrix _ _ ℕ)
 
 #exit
 #eval (show MetaM Unit from do
