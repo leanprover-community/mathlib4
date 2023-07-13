@@ -169,8 +169,9 @@ theorem quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparate
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸ quasiCompact_respectsIso.diagonal
 #align algebraic_geometry.quasi_separated_respects_iso AlgebraicGeometry.quasiSeparated_respectsIso
 
+open List in
 theorem QuasiSeparated.affine_openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    List.TFAE
+    TFAE
       [QuasiSeparated f,
         ∃ (𝒰 : Scheme.OpenCover.{u} Y) (_ : ∀ i, IsAffine (𝒰.obj i)),
           ∀ i : 𝒰.J, QuasiSeparatedSpace (pullback f (𝒰.map i)).carrier,
@@ -194,8 +195,9 @@ theorem QuasiSeparated.is_local_at_target : PropertyIsLocalAtTarget @QuasiSepara
     QuasiCompact.affineProperty_isLocal.diagonal.targetAffineLocallyIsLocal
 #align algebraic_geometry.quasi_separated.is_local_at_target AlgebraicGeometry.QuasiSeparated.is_local_at_target
 
+open List in
 theorem QuasiSeparated.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    List.TFAE
+    TFAE
       [QuasiSeparated f,
         ∃ 𝒰 : Scheme.OpenCover.{u} Y,
           ∀ i : 𝒰.J, QuasiSeparated (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
