@@ -35,7 +35,7 @@ This file uses the local notation `/.` for `Rat.mk`.
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
 by taking `[Fact p.Prime]` as a type class argument.
 
-## Multiplicity calculations
+## Calculations with `p`-adic valuations
 
 * `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
 quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
