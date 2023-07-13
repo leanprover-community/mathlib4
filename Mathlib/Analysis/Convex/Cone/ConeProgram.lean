@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Analysis.Convex.Cone.Proper
+import Mathlib.Data.Real.EReal
+import Mathlib.Topology.Instances.EReal
 
 /-!
 
@@ -33,7 +35,7 @@ variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Complete
 variable {W : Type _} [NormedAddCommGroup W] [InnerProductSpace ℝ W] [CompleteSpace W]
 variable (P : ConeProgram V W)
 
-def Objective (v : V) := ⟪v, P.obj⟫_ℝ
+def Objective (v : V) := Real.toEReal ⟪v, P.obj⟫_ℝ
 
 def IsSolution (v : V) := v ∈ P.K ∧ P.rhs - P.lhs v ∈ P.L
 
@@ -137,27 +139,42 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
       _ = ⟪P.lhs (seqV n), w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by
         rw [ContinuousLinearMap.adjoint_inner_right]
       _ = ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [inner_add_left]
-    simp_rw [sub_nonneg] at h
+    simp_rw [sub_nonneg, ← EReal.coe_le_coe_iff] at h
     have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) :=
       htends.inner tendsto_const_nhds
+    have t : limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop = ⟪P.rhs, w⟫_ℝ := sorry
+    -- (htends'.inner tendsto_const_nhds).limsup_eq
+    -- rw [← EReal.tendsto_coe] at htends'
     have : P.SubObjective seqV ≤ ⟪P.rhs, w⟫_ℝ := by
       calc P.SubObjective seqV
           = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
-        _ = limsup (fun n => ⟪seqV n, P.obj⟫_ℝ) atTop := by rfl
-        _ ≤ limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop :=
-            limsup_le_limsup (eventually_of_forall h) hcob (Tendsto.isBoundedUnder_le htends')
-        _ = ⟪P.rhs, w⟫_ℝ := (htends.inner tendsto_const_nhds).limsup_eq
-    rwa [Objective, Dual, inner_neg_right, neg_neg, real_inner_comm _ _]
+        _ = limsup (fun n => Real.toEReal ⟪seqV n, P.obj⟫_ℝ) atTop := by rfl
+        _ ≤ limsup (fun n => Real.toEReal ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop := by
+            norm_cast
+            refine' limsup_le_limsup (eventually_of_forall h) isCobounded_le_of_bot isBounded_le_of_top
+            -- limsup_le_limsup (eventually_of_forall h) hcob (Tendsto.isBoundedUnder_le htends')
+        _ = ⟪P.rhs, w⟫_ℝ := by
+                rw [EReal.tendsto_coe]
+
+                -- have := (htends'.inner tendsto_const_nhds).limsup_eq
+                -- have t : limsup (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop = ⟪P.rhs, w⟫_ℝ := (htends'.inner tendsto_const_nhds).limsup_eq
+                  -- := (htends'.inner tendsto_const_nhds).limsup_eq
+                sorry
+        --norm_cast ; exact (htends'.inner tendsto_const_nhds).limsup_eq
+    rw [Objective, Dual, inner_neg_right, real_inner_comm _ _]
+    simpa
+
 
 theorem weak_duality (hP : P.IsSubFeasible) (hD : (P.Dual).IsFeasible) :
   P.SubValue ≤ -(P.Dual).Value := by
     apply csSup_le <| P.nonempty_subValues_iff_subFeasible.2 hP
     rintro x ⟨v, hv1, hv2⟩
-    rw [le_neg]
+    apply EReal.le_neg_of_le_neg
     apply csSup_le <| (P.Dual).nonempty_values_iff_feasible.2 hD
     rintro y ⟨w, hw1, hw2⟩
     simp at *
-    rw [← hv2, ← hw2, le_neg]
+    rw [← hv2, ← hw2]
+    apply EReal.le_neg_of_le_neg
     apply P.weak_duality_aux v hv1 hw1
 
 theorem weak_duality_aux' (hv : P.IsSolution v) (hw : (P.Dual).IsSolution w) :
@@ -171,10 +188,11 @@ theorem weak_duality' (hP : P.IsFeasible) (hD : (P.Dual).IsFeasible) :
   P.Value ≤ -(P.Dual).Value := by
     apply csSup_le <| P.nonempty_values_iff_feasible.2 hP
     rintro v ⟨_, hv2, hv3⟩
-    rw [le_neg]
+    apply EReal.le_neg_of_le_neg
     apply csSup_le <| (P.Dual).nonempty_values_iff_feasible.2 hD
     rintro w ⟨_, hw2, hw3⟩
-    rw [← hv3, ← hw3, le_neg]
+    rw [← hv3, ← hw3]
+    apply EReal.le_neg_of_le_neg
     exact P.weak_duality_aux' hv2 hw2
 
 ----------------------------------------------------------------------------------------------------
