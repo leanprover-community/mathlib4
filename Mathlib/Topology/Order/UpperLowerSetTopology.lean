@@ -8,6 +8,7 @@ import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Order.LowerTopology
+import Mathlib.Topology.Order.Basic
 
 /-!
 # UpperSet and LowerSet topologies
@@ -261,6 +262,8 @@ instance [Preorder α] : @LowerSetTopology α (lowerSetTopology' α) _ := by
   letI := lowerSetTopology' α
   exact ⟨rfl⟩
 
+instance  [Preorder α] [TopologicalSpace α] [LowerSetTopology α] : UpperSetTopology (αᵒᵈ) := sorry
+
 namespace UpperSetTopology
 
 section Preorder
@@ -330,8 +333,8 @@ variable [Preorder α] [Preorder β]
 
 open Topology
 
-protected lemma monotone_iff_continuous {t₁ : TopologicalSpace α} [UpperSetTopology α]
-    {t₂ : TopologicalSpace β} [UpperSetTopology β] {f : α → β} :
+protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology α]
+    [TopologicalSpace β] [UpperSetTopology β] {f : α → β} :
     Monotone f ↔ Continuous f := by
   constructor
   · intro hf
@@ -382,35 +385,21 @@ lemma IsOpen_iff_IsLowerSet : IsOpen s ↔ IsLowerSet s := by
   rfl
 
 -- Alexandrov property, set formulation
-theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) := by
-  rw [IsOpen_iff_IsLowerSet]
-  apply isLowerSet_sInter
-  intros s hs
-  rw [← IsOpen_iff_IsLowerSet]
-  exact hf _ hs
+theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
+  @UpperSetTopology.IsOpen_sInter αᵒᵈ _ _ _ _ (fun s a ↦ hf s a)
 
 -- Alexandrov property, index formulation
-theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) := by
-  rw [IsOpen_iff_IsLowerSet]
-  apply isLowerSet_iInter
-  intros i
-  rw [← IsOpen_iff_IsLowerSet]
-  exact hf i
+theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
+  @UpperSetTopology.isOpen_iInter αᵒᵈ _ _ _ _ _ hf
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
-  rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet,
-    isUpperSet_compl.symm, compl_compl]
+  rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet, isUpperSet_compl.symm, compl_compl]
 
 lemma isClosed_isUpper {s : Set α} : IsClosed s → IsUpperSet s := fun h =>
   (isClosed_iff_isUpper.mp h)
 
-lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s := by
-  rw [subset_antisymm_iff]
-  constructor
-  · apply closure_minimal subset_upperClosure _
-    rw [isClosed_iff_isUpper]
-    exact UpperSet.upper (upperClosure s)
-  · apply upperClosure_min subset_closure (isClosed_isUpper isClosed_closure)
+lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
+  @UpperSetTopology.closure_eq_lowerClosure αᵒᵈ _ _ _ _
 
 /--
 The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
@@ -428,8 +417,8 @@ variable [Preorder α] [Preorder β]
 
 open Topology
 
-protected lemma monotone_iff_continuous {t₁ : TopologicalSpace α} [LowerSetTopology α]
-    {t₂ : TopologicalSpace β} [LowerSetTopology β] {f : α → β} :
+protected lemma monotone_iff_continuous [TopologicalSpace α] [LowerSetTopology α]
+    [TopologicalSpace β] [LowerSetTopology β] {f : α → β} :
     Monotone f ↔ Continuous f := by
   constructor
   · intro hf
