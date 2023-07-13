@@ -326,7 +326,7 @@ end TangentBundleInstances
 
 
 /-- In the tangent bundle to the model space, the charts are just the canonical identification
-between a product type and a sigma type, a.k.a. `Equiv.sigmaEquivProd`. -/
+between a product type and a sigma type, a.k.a. `TotalSpace.toProd`. -/
 @[simp, mfld_simps]
 theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
     (chartAt (ModelProd H E) p).toLocalEquiv = (TotalSpace.toProd H E).toLocalEquiv := by
