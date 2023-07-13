@@ -98,7 +98,7 @@ instance hasFiniteCoproducts : HasFiniteCoproducts ExtrDisc.{u} where
         isColimit := finiteCoproduct.isColimit F }⟩ } }
 
 /--
-The coproduct cocone associated to the explicit finite coproduct.
+A coproduct cocone associated to the explicit finite coproduct with cone point `finiteCoproduct X`.
 -/
 @[simps]
 def finiteCoproduct.explicitCocone : Limits.Cocone (Discrete.functor X) where
@@ -106,7 +106,7 @@ def finiteCoproduct.explicitCocone : Limits.Cocone (Discrete.functor X) where
   ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
 
 /--
-The explicit finite coproduct cocone is a colimit cocone.
+The more explicit finite coproduct cocone is a colimit cocone.
 -/
 @[simps]
 def finiteCoproduct.isColimit' : Limits.IsColimit (finiteCoproduct.explicitCocone X) where
