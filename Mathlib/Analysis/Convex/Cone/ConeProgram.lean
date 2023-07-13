@@ -117,7 +117,7 @@ noncomputable def Dual : ConeProgram W V where
   lhs := -adjoint P.lhs
   rhs := -P.obj
 
-theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual] ; simp
+theorem dual_dual : (P.Dual).Dual = P := by dsimp [Dual]; simp
 
 theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P.Dual).IsSolution w) :
   P.SubObjective seqV ≤ - (P.Dual).Objective w := by
@@ -127,10 +127,9 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
     have h : ∀ n, 0 ≤ ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := fun n => by
       calc 0
         ≤ ⟪seqV n, adjoint P.lhs w - P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by {
-          refine' add_nonneg _ _
-          . specialize hw2 (seqV n) (hseqV n)
-            rwa [sub_neg_eq_add, neg_add_eq_sub] at hw2
-          . exact hw1 (seqW n) (hseqW n) }
+            refine' add_nonneg _ (hw1 (seqW n) (hseqW n))
+            specialize hw2 (seqV n) (hseqV n)
+            rwa [sub_neg_eq_add, neg_add_eq_sub] at hw2 }
       _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ + ⟪seqW n, w⟫_ℝ := by
         rw [← inner_sub_right]
       _ = ⟪seqV n, adjoint P.lhs w⟫_ℝ + ⟪seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by
@@ -139,7 +138,8 @@ theorem weak_duality_aux (seqV : ℕ → V) (hv : P.IsSubSolution seqV) (hw : (P
         rw [ContinuousLinearMap.adjoint_inner_right]
       _ = ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ - ⟪seqV n, P.obj⟫_ℝ := by rw [inner_add_left]
     simp_rw [sub_nonneg] at h
-    have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) := htends.inner tendsto_const_nhds
+    have htends' : Tendsto (fun n => ⟪P.lhs (seqV n) + seqW n, w⟫_ℝ) atTop (𝓝 ⟪P.rhs, w⟫_ℝ) :=
+      htends.inner tendsto_const_nhds
     have : P.SubObjective seqV ≤ ⟪P.rhs, w⟫_ℝ := by
       calc P.SubObjective seqV
           = limsup (fun n => P.Objective (seqV n)) atTop := by rfl
