@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Ricardo Prado Cunha. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ricardo Prado Cunha
+-/
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Projection
