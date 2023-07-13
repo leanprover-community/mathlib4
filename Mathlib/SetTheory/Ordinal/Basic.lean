@@ -11,6 +11,7 @@ Authors: Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Sum.Order
 import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -150,6 +151,7 @@ instance Ordinal.isEquivalent : Setoid WellOrder
 #align ordinal.is_equivalent Ordinal.isEquivalent
 
 /-- `Ordinal.{u}` is the type of well orders in `Type u`, up to order isomorphism. -/
+@[pp_with_univ]
 def Ordinal : Type (u + 1) :=
   Quotient Ordinal.isEquivalent
 #align ordinal Ordinal
@@ -606,14 +608,14 @@ def card : Ordinal → Cardinal :=
 #align ordinal.card Ordinal.card
 
 @[simp]
-theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = (#α) :=
+theorem card_type (r : α → α → Prop) [IsWellOrder α r] : card (type r) = #α :=
   rfl
 #align ordinal.card_type Ordinal.card_type
 
 -- Porting note: nolint, simpNF linter falsely claims the lemma never applies
 @[simp, nolint simpNF]
 theorem card_typein {r : α → α → Prop} [IsWellOrder α r] (x : α) :
-    (#{ y // r y x }) = (typein r x).card :=
+    #{ y // r y x } = (typein r x).card :=
   rfl
 #align ordinal.card_typein Ordinal.card_typein
 
@@ -799,7 +801,7 @@ theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
   Cardinal.inductionOn c
     (fun α =>
       inductionOn b fun β s _ e' => by
-        rw [card_type, ← Cardinal.lift_id'.{max u v, u} (#β), ← Cardinal.lift_umax.{u, v},
+        rw [card_type, ← Cardinal.lift_id'.{max u v, u} #β, ← Cardinal.lift_umax.{u, v},
           lift_mk_eq.{u, max u v, max u v}] at e'
         cases' e' with f
         have g := RelIso.preimage f s
@@ -1267,7 +1269,7 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
   ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine' fun b => inductionOn b _; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · rw [← lift_id (type s)] at h⊢
+    · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
       exists a
@@ -1320,7 +1322,7 @@ namespace Cardinal
 open Ordinal
 
 @[simp]
-theorem mk_ordinal_out (o : Ordinal) : (#o.out.α) = o.card :=
+theorem mk_ordinal_out (o : Ordinal) : #o.out.α = o.card :=
   (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_lt]
 #align cardinal.mk_ordinal_out Cardinal.mk_ordinal_out
 
@@ -1342,16 +1344,16 @@ def ord (c : Cardinal) : Ordinal :=
           (Quot.sound ⟨RelIso.preimage f i.1⟩))
 #align cardinal.ord Cardinal.ord
 
-theorem ord_eq_Inf (α : Type u) : ord (#α) = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
+theorem ord_eq_Inf (α : Type u) : ord #α = ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2 :=
   rfl
 #align cardinal.ord_eq_Inf Cardinal.ord_eq_Inf
 
-theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord (#α) = @type α r wo :=
+theorem ord_eq (α) : ∃ (r : α → α → Prop) (wo : IsWellOrder α r), ord #α = @type α r wo :=
   let ⟨r, wo⟩ := ciInf_mem fun r : { r // IsWellOrder α r } => @type α r.1 r.2
   ⟨r.1, r.2, wo.symm⟩
 #align cardinal.ord_eq Cardinal.ord_eq
 
-theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord (#α) ≤ type r :=
+theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
 #align cardinal.ord_le_type Cardinal.ord_le_type
 
@@ -1444,11 +1446,11 @@ theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
   · rw [ord_le, ← lift_card, card_ord]
 #align cardinal.lift_ord Cardinal.lift_ord
 
-theorem mk_ord_out (c : Cardinal) : (#c.ord.out.α) = c := by simp
+theorem mk_ord_out (c : Cardinal) : #c.ord.out.α = c := by simp
 #align cardinal.mk_ord_out Cardinal.mk_ord_out
 
-theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord (#α) = type r) :
-    card (typein r x) < (#α) := by
+theorem card_typein_lt (r : α → α → Prop) [IsWellOrder α r] (x : α) (h : ord #α = type r) :
+    card (typein r x) < #α := by
   rw [← lt_ord, h]
   apply typein_lt_type
 #align cardinal.card_typein_lt Cardinal.card_typein_lt
@@ -1483,10 +1485,10 @@ theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = o
   as an element of `Cardinal.{v}` (when `u < v`). -/
 @[nolint checkUnivs]
 def univ :=
-  lift.{v, u + 1} (#Ordinal)
+  lift.{v, u + 1} #Ordinal
 #align cardinal.univ Cardinal.univ
 
-theorem univ_id : univ.{u, u + 1} = (#Ordinal) :=
+theorem univ_id : univ.{u, u + 1} = #Ordinal :=
   lift_id _
 #align cardinal.univ_id Cardinal.univ_id
 
@@ -1538,7 +1540,7 @@ theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c
 #align cardinal.lt_univ' Cardinal.lt_univ'
 
 theorem small_iff_lift_mk_lt_univ {α : Type u} :
-    Small.{v} α ↔ Cardinal.lift.{v+1,_} (#α) < univ.{v, max u (v + 1)} := by
+    Small.{v} α ↔ Cardinal.lift.{v+1,_} #α < univ.{v, max u (v + 1)} := by
   rw [lt_univ']
   constructor
   · rintro ⟨β, e⟩

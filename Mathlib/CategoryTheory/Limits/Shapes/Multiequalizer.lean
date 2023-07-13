@@ -491,7 +491,6 @@ noncomputable def toPiForkFunctor : Multifork I ⥤ Fork I.fstPiMap I.sndPiMap w
       w := by
         rintro (_ | _)
         · apply limit.hom_ext
-          dsimp
           simp
         · apply limit.hom_ext
           intros j
@@ -645,7 +644,7 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp
         · simp
         · simp
-        · dsimp ; rw [c.condition] ; simp
+        · dsimp; rw [c.condition]; simp
         · simp }
 #align category_theory.limits.multicofork.of_sigma_cofork CategoryTheory.Limits.Multicofork.ofSigmaCofork
 

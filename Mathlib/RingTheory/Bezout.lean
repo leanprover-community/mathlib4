@@ -98,8 +98,8 @@ end Gcd
 
 attribute [local instance] toGCDDomain
 
--- Note that the proof, despite being `inferInstance`, depends on the `local attribute [instance]`
--- lemma above, and is thus necessary to be restated.
+-- Note that the proof depends on the `local attribute [instance]` above, and is thus necessary to
+-- be stated.
 instance (priority := 100) [IsDomain R] [IsBezout R] : IsIntegrallyClosed R := by
   classical exact GCDMonoid.toIsIntegrallyClosed
 

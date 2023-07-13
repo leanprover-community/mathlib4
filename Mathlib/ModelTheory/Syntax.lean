@@ -248,7 +248,7 @@ instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
 
 /-- Raises all of the `Fin`-indexed variables of a term greater than or equal to `m` by `n'`. -/
 def liftAt {n : ℕ} (n' m : ℕ) : L.Term (Sum α (Fin n)) → L.Term (Sum α (Fin (n + n'))) :=
-  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat n' i)
+  relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
 #align first_order.language.term.lift_at FirstOrder.Language.Term.liftAt
 
 --Porting note: universes in different order
@@ -1116,7 +1116,8 @@ def nonemptyTheory : L.Theory :=
 
 /-- A theory indicating that each of a set of constants is distinct. -/
 def distinctConstantsTheory (s : Set α) : L[[α]].Theory :=
-  (fun ab : α × α => ((L.con ab.1).term.equal (L.con ab.2).term).not) '' (s ×ˢ s ∩ Set.diagonal αᶜ)
+  (fun ab : α × α => ((L.con ab.1).term.equal (L.con ab.2).term).not) ''
+  (s ×ˢ s ∩ (Set.diagonal α)ᶜ)
 #align first_order.language.distinct_constants_theory FirstOrder.Language.distinctConstantsTheory
 
 variable {L}

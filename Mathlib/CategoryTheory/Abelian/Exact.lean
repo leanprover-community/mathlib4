@@ -152,7 +152,7 @@ def isColimitCoimage (h : Exact f g) :
       (by rw [← cokernel.π_desc f u hu, ← Category.assoc, h.2, zero_comp]))
     (by aesop_cat) _
   intros _ _ _ _ hm
-  apply coequalizer.hom_ext
+  ext
   rw [hm, cokernel.π_desc]
 #align category_theory.abelian.is_colimit_coimage CategoryTheory.Abelian.isColimitCoimage
 

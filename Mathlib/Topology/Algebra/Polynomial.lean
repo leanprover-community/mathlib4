@@ -19,8 +19,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 
 In this file we prove the following lemmas.
 
-* `Polynomial.continuous_eval₂: `Polynomial.eval₂` defines a continuous function.
-* `Polynomial.continuous_aeval: `Polynomial.aeval` defines a continuous function;
+* `Polynomial.continuous_eval₂`: `Polynomial.eval₂` defines a continuous function.
+* `Polynomial.continuous_aeval`: `Polynomial.aeval` defines a continuous function;
   we also prove convenience lemmas `Polynomial.continuousAt_aeval`,
   `Polynomial.continuousWithinAt_aeval`, `Polynomial.continuousOn_aeval`.
 * `Polynomial.continuous`:  `Polynomial.eval` defines a continuous functions;

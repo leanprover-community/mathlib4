@@ -51,7 +51,6 @@ open Homeomorph
 
 noncomputable section
 
--- mathport name: «exprI^ »
 scoped[Topology] notation "I^" N => N → I
 
 namespace Cube
@@ -95,7 +94,7 @@ def LoopSpace :=
 #align loop_space LoopSpace
 
 -- mathport name: exprΩ
-scoped[Topology] notation "Ω" => LoopSpace
+scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -108,15 +107,15 @@ def GenLoop : Set C(I^N, X) :=
   {p | ∀ y ∈ Cube.boundary N, p y = x}
 #align gen_loop GenLoop
 
--- mathport name: «exprΩ^»
-scoped[Topology] notation "Ω^" => GenLoop
+scoped[Topology.Homotopy] notation "Ω^" => GenLoop
+
+open Topology.Homotopy
 
 variable {N X x}
 
 namespace GenLoop
 
-instance funLike : FunLike (Ω^ N X x) (I^N) fun _ => X
-    where
+instance funLike : FunLike (Ω^ N X x) (I^N) fun _ => X where
   coe f := f.1
   coe_injective' := fun ⟨⟨f, _⟩, _⟩ ⟨⟨g, _⟩, _⟩ _ => by congr
 #align gen_loop.fun_like GenLoop.funLike
@@ -256,7 +255,7 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
 
 /-- The `n+1`-dimensional loops are in bijection with the loops in the space of
   `n`-dimensional loops with base point `const`.
-  We allow an arbitrary indexing type `N` in place of `fin n` here. -/
+  We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 @[simps]
 def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
     where
@@ -278,7 +277,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
   rfl
 #align gen_loop.from_loop_apply GenLoop.fromLoop_apply
 
-/-- Composition with `cube.insert_at` as a continuous map. -/
+/-- Composition with `Cube.insertAt` as a continuous map. -/
 @[reducible]
 def cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f => f.comp (Cube.insertAt i).toContinuousMap,
@@ -427,18 +426,17 @@ def HomotopyGroup.Pi (n) (X : Type _) [TopologicalSpace X] (x : X) :=
 scoped[Topology] notation "π_" => HomotopyGroup.Pi
 
 /-- The 0-dimensional generalized loops based at `x` are in bijection with `X`. -/
-def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X
-    where
+def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
   right_inv _ := rfl
-  continuous_toFun := (ContinuousMap.continuous_eval_const' (0 : N → I)).comp continuous_induced_dom
+  continuous_toFun := (ContinuousMap.continuous_eval_const (0 : N → I)).comp continuous_induced_dom
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 #align gen_loop_homeo_of_is_empty genLoopHomeoOfIsEmpty
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
-  the path components of `X`, aka the `zeroth_homotopy`. -/
+  the path components of `X`, aka the `ZerothHomotopy`. -/
 def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
     HomotopyGroup N X x ≃ ZerothHomotopy X :=
   Quotient.congr (genLoopHomeoOfIsEmpty N x).toEquiv
@@ -456,14 +454,13 @@ def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
             prop' := fun _ _ ⟨i, _⟩ => isEmptyElim i }⟩])
 #align homotopy_group_equiv_zeroth_homotopy_of_is_empty homotopyGroupEquivZerothHomotopyOfIsEmpty
 
-/-- The 0th homotopy "group" is in bijection with `zeroth_homotopy`. -/
+/-- The 0th homotopy "group" is in bijection with `ZerothHomotopy`. -/
 def HomotopyGroup.pi0EquivZerothHomotopy : π_ 0 X x ≃ ZerothHomotopy X :=
   homotopyGroupEquivZerothHomotopyOfIsEmpty (Fin 0) x
 #align homotopy_group.pi_0_equiv_zeroth_homotopy HomotopyGroup.pi0EquivZerothHomotopy
 
 /-- The 1-dimensional generalized loops based at `x` are in bijection with loops at `x`. -/
-def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x
-    where
+def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   toFun p :=
     Path.mk ⟨fun t => p fun _ => t, by continuity⟩
       (GenLoop.boundary _ (fun _ => 0) ⟨default, Or.inl rfl⟩)

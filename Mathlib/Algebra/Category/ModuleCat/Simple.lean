@@ -29,9 +29,9 @@ theorem simple_iff_isSimpleModule : Simple (of R M) ↔ IsSimpleModule R M :=
   (simple_iff_subobject_isSimpleOrder _).trans (subobjectModule (of R M)).isSimpleOrder_iff
 #align simple_iff_is_simple_module simple_iff_isSimpleModule
 
-theorem simple_iff_is_simple_module' (M : ModuleCat R) : Simple M ↔ IsSimpleModule R M :=
+theorem simple_iff_isSimpleModule' (M : ModuleCat R) : Simple M ↔ IsSimpleModule R M :=
   (Simple.iff_of_iso (ofSelfIso M).symm).trans simple_iff_isSimpleModule
-#align simple_iff_is_simple_module' simple_iff_is_simple_module'
+#align simple_iff_is_simple_module' simple_iff_isSimpleModule'
 
 /-- A simple module is a simple object in the category of modules. -/
 instance simple_of_isSimpleModule [IsSimpleModule R M] : Simple (of R M) :=
@@ -50,5 +50,5 @@ attribute [local instance] moduleOfAlgebraModule isScalarTower_of_algebra_module
 /-- Any `k`-algebra module which is 1-dimensional over `k` is simple. -/
 theorem simple_of_finrank_eq_one {k : Type _} [Field k] [Algebra k R] {V : ModuleCat R}
     (h : finrank k V = 1) : Simple V :=
-  (simple_iff_is_simple_module' V).mpr (is_simple_module_of_finrank_eq_one h)
+  (simple_iff_isSimpleModule' V).mpr (is_simple_module_of_finrank_eq_one h)
 #align simple_of_finrank_eq_one simple_of_finrank_eq_one

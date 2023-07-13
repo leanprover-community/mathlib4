@@ -161,7 +161,7 @@ variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
 
 theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by
-  simp_rw [rootSet, Finset.mem_coe, Multiset.mem_toFinset] at hF
+  simp_rw [rootSet_def, Finset.mem_coe, Multiset.mem_toFinset] at hF
   rw [splits_iff_exists_multiset]
   refine' ⟨Multiset.pmap Subtype.mk _ hF, map_injective _ (algebraMap F L).injective _⟩
   conv_lhs =>

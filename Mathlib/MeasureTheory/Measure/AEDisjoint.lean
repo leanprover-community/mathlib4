@@ -157,11 +157,11 @@ theorem of_null_left (h : μ s = 0) : AEDisjoint μ s t :=
 
 end AEDisjoint
 
-theorem aedisjoint_compl_left : AEDisjoint μ (sᶜ) s :=
+theorem aedisjoint_compl_left : AEDisjoint μ sᶜ s :=
   (@disjoint_compl_left _ _ s).aedisjoint
 #align measure_theory.ae_disjoint_compl_left MeasureTheory.aedisjoint_compl_left
 
-theorem aedisjoint_compl_right : AEDisjoint μ s (sᶜ) :=
+theorem aedisjoint_compl_right : AEDisjoint μ s sᶜ :=
   (@disjoint_compl_right _ _ s).aedisjoint
 #align measure_theory.ae_disjoint_compl_right MeasureTheory.aedisjoint_compl_right
 

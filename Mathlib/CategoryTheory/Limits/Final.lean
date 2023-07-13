@@ -309,7 +309,7 @@ theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
   dsimp [isColimitWhiskerEquiv]
   apply P.hom_ext
   intro j
-  dsimp; simp
+  simp
 #align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
 
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by

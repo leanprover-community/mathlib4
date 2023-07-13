@@ -2,7 +2,13 @@
 Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
+
+! This file was ported from Lean 3 source module control.random
+! leanprover-community/mathlib commit fdc286cc6967a012f41b87f76dcd2797b53152af
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
+
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Data.Int.Order
@@ -11,17 +17,23 @@ import Mathlib.Data.Nat.Basic
 
 /-!
 # Rand Monad and Random Class
+
 This module provides tools for formulating computations guided by randomness and for
 defining objects that can be created randomly.
+
 ## Main definitions
-  * `Rand` and `RandG` monad for computations guided by randomness;
-  * `Random` class for objects that can be generated randomly;
-    * `random` to generate one object;
-  * `BoundedRandom` class for objects that can be generated randomly inside a range;
-    * `randomR` to generate one object inside a range;
-  * `IO.runRand` to run a randomized computation inside the `IO` monad;
+
+* `Rand` and `RandG` monad for computations guided by randomness;
+* `Random` class for objects that can be generated randomly;
+  * `random` to generate one object;
+* `BoundedRandom` class for objects that can be generated randomly inside a range;
+  * `randomR` to generate one object inside a range;
+* `IO.runRand` to run a randomized computation inside the `IO` monad;
+
 ## References
-  * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
+
+* Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
+
 -/
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/

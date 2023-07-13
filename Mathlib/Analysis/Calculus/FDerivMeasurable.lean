@@ -18,14 +18,14 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 In this file we prove that the derivative of any function with complete codomain is a measurable
 function. Namely, we prove:
 
-* `measurable_set_of_differentiable_at`: the set `{x | differentiable_at 𝕜 f x}` is measurable;
+* `measurableSet_of_differentiableAt`: the set `{x | DifferentiableAt 𝕜 f x}` is measurable;
 * `measurable_fderiv`: the function `fderiv 𝕜 f` is measurable;
 * `measurable_fderiv_apply_const`: for a fixed vector `y`, the function `fun x ↦ fderiv 𝕜 f x y`
   is measurable;
 * `measurable_deriv`: the function `deriv f` is measurable (for `f : 𝕜 → F`).
 
 We also show the same results for the right derivative on the real line
-(see `measurable_deriv_within_Ici` and ``measurable_deriv_within_Ioi`), following the same
+(see `measurable_derivWithin_Ici` and `measurable_derivWithin_Ioi`), following the same
 proof strategy.
 
 ## Implementation
@@ -295,7 +295,7 @@ theorem d_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) := by gcongr
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0), ne_of_gt cpos] ; ring
+      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0), ne_of_gt cpos]; ring
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -657,7 +657,7 @@ theorem d_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := (mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num))
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)] ; ring
+      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]; ring
 
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=

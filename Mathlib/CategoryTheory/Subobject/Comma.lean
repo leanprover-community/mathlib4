@@ -112,8 +112,8 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
     refine' ⟨fun h => Subobject.mk_le_mk_of_comm _ _, fun h => _⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
-    . aesop_cat
-    . refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
+    · aesop_cat
+    · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right _
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 #align category_theory.structured_arrow.subobject_equiv CategoryTheory.StructuredArrow.subobjectEquiv
 
@@ -224,7 +224,7 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
       dsimp
       simp only [← S.map_comp_assoc, unop_left_comp_ofMkLEMk_unop, unop_op, CommaMorphism.w,
         Functor.const_obj_obj, right_eq_id, Functor.const_obj_map, Category.comp_id]
-    . apply Quiver.Hom.unop_inj
+    · apply Quiver.Hom.unop_inj
       ext
       exact unop_left_comp_ofMkLEMk_unop _
     · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op _

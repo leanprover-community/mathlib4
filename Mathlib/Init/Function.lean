@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Mathport.Rename
+import Mathlib.Tactic.Attr.Register
 -- a port of core Lean `init/function.lean`
 
 /-!
@@ -53,9 +54,9 @@ theorem right_id (f : α → β) : f ∘ id = f := rfl
 
 theorem comp.assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ (g ∘ h) := rfl
 
-@[simp] theorem comp.left_id (f : α → β) : id ∘ f = f := rfl
+@[simp, mfld_simps] theorem comp.left_id (f : α → β) : id ∘ f = f := rfl
 
-@[simp] theorem comp.right_id (f : α → β) : f ∘ id = f := rfl
+@[simp, mfld_simps] theorem comp.right_id (f : α → β) : f ∘ id = f := rfl
 
 theorem comp_const_right (f : β → φ) (b : β) : f ∘ (const α b) = const α (f b) := rfl
 
@@ -68,7 +69,7 @@ fun _ _ h ↦ hf (hg h)
 
 /-- A function `f : α → β` is called surjective if every `b : β` is equal to `f a`
 for some `a : α`. -/
-@[reducible] def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
+def Surjective (f : α → β) : Prop := ∀ b, ∃ a, f a = b
 
 theorem Surjective.comp {g : β → φ} {f : α → β} (hg : Surjective g) (hf : Surjective f) :
   Surjective (g ∘ f) :=

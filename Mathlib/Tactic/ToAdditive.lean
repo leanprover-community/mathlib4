@@ -95,7 +95,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -106,7 +106,7 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `reorder` attribute is not given manually -/
 register_option linter.toAdditiveReorder : Bool := {
   defValue := true
   descr := "Linter to check that the reorder attribute is not given manually." }
@@ -118,7 +118,7 @@ register_option linter.existingAttributeWarning : Bool := {
   descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration " ++
     "doesn't have certain attributes" }
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `to_additive` attribute is not given manually -/
 register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++

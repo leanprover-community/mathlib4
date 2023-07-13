@@ -202,7 +202,7 @@ theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
-  simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx⊢
+  simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
   tauto
 #align language.le_mul_congr Language.le_mul_congr
 
@@ -248,7 +248,6 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       -- The code reports an error for the second `rfl`.
       rintro ⟨_, rfl, h₀, _⟩
       simp; intros _ h₁
-      rw [length_eq_zero] at h₀
       rw [h₀] at h₁
       contradiction
   · simp only [pow_succ, mem_mul, ihn]
