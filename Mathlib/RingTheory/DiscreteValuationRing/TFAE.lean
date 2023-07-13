@@ -176,9 +176,9 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     exact ⟨inferInstance, ((DiscreteValuationRing.iff_pid_with_one_nonzero_prime R).mp H).2⟩
   tfae_have 4 → 3
   · rintro ⟨h₁, h₂⟩;
-    exact
-      ⟨inferInstance, ⟨fun hI hI' =>
-        ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸ maximalIdeal.isMaximal R⟩, h₁⟩
+    exact { h₁ with
+      maximalOfPrime := fun hI hI' => ExistsUnique.unique h₂ ⟨ne_bot, inferInstance⟩ ⟨hI, hI'⟩ ▸
+        maximalIdeal.isMaximal R, }
   tfae_have 3 → 5
   · intro h; exact maximalIdeal_isPrincipal_of_isDedekindDomain R
   tfae_have 5 → 6
@@ -236,8 +236,11 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     intro H
     constructor
     intro I J
-    by_cases hI : I = ⊥; · subst hI; left; exact bot_le
-    by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
+    -- FIXME: by_cases gives an error "could not synthesize `Ideal R → Ideal R → LinearOrder (Ideal R)`"???
+    cases' eq_or_ne I ⊥ with hI hI
+    · subst hI; left; exact bot_le
+    cases' eq_or_ne J ⊥ with hJ hJ
+    · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
     cases' le_total m n with h' h'
