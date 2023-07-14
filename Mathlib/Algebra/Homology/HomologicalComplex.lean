@@ -64,8 +64,7 @@ structure HomologicalComplex (c : ComplexShape ι) where
   d_comp_d' : ∀ i j k, c.Rel i j → c.Rel j k → d i j ≫ d j k = 0 := by aesop_cat
 #align homological_complex HomologicalComplex
 
-pp_extended_field_notation HomologicalComplex.X
-pp_extended_field_notation HomologicalComplex.d
+attribute [pp_dot] HomologicalComplex.X HomologicalComplex.d
 
 namespace HomologicalComplex
 

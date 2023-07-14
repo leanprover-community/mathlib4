@@ -204,8 +204,7 @@ namespace SpectralObject
 
 section
 
-pp_extended_field_notation H
-pp_extended_field_notation δ
+attribute [pp_dot] H δ
 
 attribute [reassoc (attr := simp)] zero₁ zero₂ zero₃
 
@@ -254,32 +253,26 @@ lemma zero₃' {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
     . exact hφ₂
   refine' X.zero₃ n₀ n₁ hn₁ _
 
-@[simps]
+@[simps, pp_dot]
 def shortComplex₁ : ShortComplex (Arrow₂ ι ⥤ C):=
   ShortComplex.mk (X.δ n₀ n₁ hn₁) (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₁))
      (by
       ext D
       exact X.zero₁ n₀ n₁ hn₁ D)
 
-pp_extended_field_notation shortComplex₁
-
-@[simps]
+@[simps, pp_dot]
 def shortComplex₂ : ShortComplex (Arrow₂ ι ⥤ C):=
   ShortComplex.mk (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀))
     (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀)) (by
       ext D
       exact X.zero₂ n₀ D)
 
-pp_extended_field_notation shortComplex₂
-
-@[simps]
+@[simps, pp_dot]
 def shortComplex₃ : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk  (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₀)) (X.δ n₀ n₁ hn₁)
      (by
       ext D
       exact X.zero₃ n₀ n₁ hn₁ D)
-
-pp_extended_field_notation shortComplex₃
 
 lemma shortComplex₁_exact : (X.shortComplex₁ n₀ n₁ hn₁).Exact := by
   rw [exact_iff_exact_evaluation]
@@ -296,6 +289,7 @@ lemma shortComplex₃_exact : (X.shortComplex₃ n₀ n₁ hn₁).Exact := by
   intro i
   apply X.exact₃
 
+@[pp_dot]
 def shortComplex₄ : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
   ShortComplex₄.mk
     (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀))
@@ -304,6 +298,7 @@ def shortComplex₄ : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
     (X.shortComplex₂ n₀).zero
     (X.shortComplex₃ n₀ n₁ hn₁).zero
 
+@[pp_dot]
 def shortComplex₄' : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
   ShortComplex₄.mk
     (X.δ n₀ n₁ hn₁)
@@ -311,9 +306,6 @@ def shortComplex₄' : ShortComplex₄ (Arrow₂ ι ⥤ C) :=
     (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁))
     (X.shortComplex₁ n₀ n₁ hn₁).zero
     (X.shortComplex₂ n₁).zero
-
-pp_extended_field_notation shortComplex₄
-pp_extended_field_notation shortComplex₄'
 
 lemma shortComplex₄_exact : (X.shortComplex₄ n₀ n₁ hn₁).Exact where
   exact₂ := X.shortComplex₂_exact n₀
@@ -323,6 +315,7 @@ lemma shortComplex₄'_exact : (X.shortComplex₄' n₀ n₁ hn₁).Exact where
   exact₂ := X.shortComplex₁_exact n₀ n₁ hn₁
   exact₃ := X.shortComplex₂_exact n₁
 
+@[pp_dot]
 def shortComplexE : ShortComplex (Arrow₃ ι ⥤ C) where
   X₁ := Arrow₃.hMor ⋙ X.H n₀
   X₂ := Arrow₃.gMor ⋙ X.H n₁
@@ -360,8 +353,7 @@ def shortComplexEObj (D : Arrow₃ ι) : ShortComplex C :=
     ((X.δ n₁ n₂ hn₂).app (Arrow₂.mk D.f D.g))
     (congr_app (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).zero D)
 
-pp_extended_field_notation shortComplexE
-
+@[pp_dot]
 noncomputable def E : Arrow₃ ι ⥤ C := (X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).homology
 
 noncomputable def EIsoOfEq (n₀' n₁' n₂' : ℤ) (hn₁' : n₀' + 1 = n₁') (hn₂' : n₁' + 1 = n₂')
@@ -376,13 +368,10 @@ lemma EIsoOfEq_refl : (X.EIsoOfEq n₀ n₁ n₂ hn₁ hn₂ n₀ n₁ n₂ hn�
   simp only [ShortComplex.homologyMapIso_hom, Iso.refl_hom, ShortComplex.homologyMap_id]
   rfl
 
-pp_extended_field_notation E
-
+@[pp_dot]
 noncomputable def EObjIso (D : Arrow₃ ι) :
     (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅ (X.shortComplexEObj n₀ n₁ n₂ hn₁ hn₂ D).homology :=
   ((X.shortComplexE n₀ n₁ n₂ hn₁ hn₂).mapHomologyIso ((evaluation (Arrow₃ ι) C).obj D)).symm
-
-pp_extended_field_notation EObjIso
 
 lemma isZero_E_of_isZero_H (D : Arrow₃ ι) (h : IsZero ((X.H n₁).obj (Arrow.mk D.g))) :
     IsZero ((X.E n₀ n₁ n₂ hn₁ hn₂).obj D) := by
@@ -391,25 +380,22 @@ lemma isZero_E_of_isZero_H (D : Arrow₃ ι) (h : IsZero ((X.H n₁).obj (Arrow.
   exact ShortComplex.exact_of_isZero_X₂ _ h
 
 -- this is helpful in order to compute the initial page of the spectral sequence
+@[pp_dot]
 noncomputable def EObjIsoH (D : Arrow₃ ι) (h₁ : IsIso D.f) (h₂ : IsIso D.h) :
     (X.E n₀ n₁ n₂ hn₁ hn₂).obj D ≅ (X.H n₁).obj (Arrow.mk D.g) :=
   X.EObjIso n₀ n₁ n₂ hn₁ hn₂ D ≪≫
     (ShortComplex.HomologyData.ofZeros (X.shortComplexEObj n₀ n₁ n₂ hn₁ hn₂ D)
       (X.δ_app_eq_zero' n₀ n₁ hn₁ _ h₂) ((X.δ_app_eq_zero n₁ n₂ hn₂ _ h₁))).left.homologyIso
 
-pp_extended_field_notation EObjIsoH
-
+@[pp_dot]
 noncomputable def cycles : Arrow₂ ι ⥤ C := kernel (X.δ n₀ n₁ hn₁)
+@[pp_dot]
 noncomputable def opcycles : Arrow₂ ι ⥤ C := cokernel (X.δ n₀ n₁ hn₁)
 
-pp_extended_field_notation cycles
-pp_extended_field_notation opcycles
-
+@[pp_dot]
 noncomputable def iCycles : X.cycles n₀ n₁ hn₁ ⟶ Arrow₂.δ₀ ⋙ X.H n₀ := kernel.ι _
+@[pp_dot]
 noncomputable def pOpcycles : Arrow₂.δ₂ ⋙ X.H n₁ ⟶ X.opcycles n₀ n₁ hn₁ := cokernel.π _
-
-pp_extended_field_notation iCycles
-pp_extended_field_notation pOpcycles
 
 @[reassoc (attr := simp)]
 lemma iCycles_comp_δ : X.iCycles n₀ n₁ hn₁ ≫ X.δ n₀ n₁ hn₁ = 0 :=
@@ -429,16 +415,13 @@ lemma δ_comp_pOpcycles_app (D : Arrow₂ ι) :
     (X.δ n₀ n₁ hn₁).app D ≫ (X.pOpcycles n₀ n₁ hn₁).app D = 0 :=
   congr_app (X.δ_comp_pOpcycles n₀ n₁ hn₁) D
 
-@[simps]
+@[simps, pp_dot]
 noncomputable def kernelSequenceCycles : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.iCycles_comp_δ n₀ n₁ hn₁)
 
-@[simps]
+@[simps, pp_dot]
 noncomputable def cokernelSequenceOpcycles : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.δ_comp_pOpcycles n₀ n₁ hn₁)
-
-pp_extended_field_notation cokernelSequenceOpcycles
-pp_extended_field_notation kernelSequenceCycles
 
 lemma kernelSequenceCycles_exact :
     (X.kernelSequenceCycles n₀ n₁ hn₁).Exact :=
@@ -472,26 +455,23 @@ instance : Epi (X.cokernelSequenceOpcycles n₀ n₁ hn₁).g := by
   dsimp only [cokernelSequenceOpcycles]
   infer_instance
 
+@[pp_dot]
 noncomputable def cokernelIsoCycles :
     cokernel (whiskerRight Arrow₂.δ₂Toδ₁ (X.H n₀)) ≅ X.cycles n₀ n₁ hn₁ :=
   (X.shortComplex₄_exact n₀ n₁ hn₁).cokerIsoKer
 
+@[pp_dot]
 noncomputable def opcyclesIsoKernel :
     X.opcycles n₀ n₁ hn₁ ≅ kernel (whiskerRight Arrow₂.δ₁Toδ₀ (X.H n₁)) :=
   (X.shortComplex₄'_exact n₀ n₁ hn₁).cokerIsoKer
 
-pp_extended_field_notation cokernelIsoCycles
-pp_extended_field_notation opcyclesIsoKernel
-
+@[pp_dot]
 noncomputable def Hδ₁ToCycles : Arrow₂.δ₁ ⋙ X.H n₀ ⟶ X.cycles n₀ n₁ hn₁ :=
   cokernel.π _ ≫ (X.cokernelIsoCycles n₀ n₁ hn₁).hom
 
-pp_extended_field_notation Hδ₁ToCycles
-
+@[pp_dot]
 noncomputable def opcyclesToHδ₁ : X.opcycles n₀ n₁ hn₁ ⟶ Arrow₂.δ₁ ⋙ X.H n₁ :=
   (X.opcyclesIsoKernel n₀ n₁ hn₁).hom ≫ kernel.ι _
-
-pp_extended_field_notation opcyclesToHδ₁
 
 instance : Epi (X.Hδ₁ToCycles n₀ n₁ hn₁) := by
   dsimp [Hδ₁ToCycles]
@@ -556,9 +536,6 @@ noncomputable def cokernelSequenceCycles : ShortComplex (Arrow₂ ι ⥤ C) :=
 noncomputable def kernelSequenceOpcycles : ShortComplex (Arrow₂ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.opcyclesToHδ₁_Hδ₁Toδ₀ n₀ n₁ hn₁)
 
-pp_extended_field_notation cokernelSequenceCycles
-pp_extended_field_notation kernelSequenceOpcycles
-
 instance : Epi (X.cokernelSequenceCycles n₀ n₁ hn₁).g := by
   dsimp only [cokernelSequenceCycles]
   infer_instance
@@ -601,12 +578,10 @@ lemma kernelSequenceOpcyclesObj_exact (D : Arrow₂ ι) :
     (X.kernelSequenceOpcyclesObj n₀ n₁ hn₁ D).Exact :=
   (X.kernelSequenceOpcycles_exact n₀ n₁ hn₁).map ((evaluation _ _).obj D)
 
-@[simps!]
+@[simps!, pp_dot]
 noncomputable def δ₀PullbackCokernelSequenceCycles :
     ShortComplex (Arrow₃ ι ⥤ C) :=
   (X.cokernelSequenceCycles n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
-
-pp_extended_field_notation δ₀PullbackCokernelSequenceCycles
 
 instance : Epi (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).g := by
   dsimp [δ₀PullbackCokernelSequenceCycles]
@@ -616,6 +591,7 @@ lemma δ₀PullbackCokernelSequenceCycles_exact :
     (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).Exact :=
   (X.cokernelSequenceCycles_exact n₀ n₁ hn₁).map (((whiskeringLeft _ _ C).obj (Arrow₃.δ₀)))
 
+@[pp_dot]
 noncomputable def Ψ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ Arrow₃.δ₃ ⋙ X.opcycles n₀ n₁ hn₁ :=
   (X.δ₀PullbackCokernelSequenceCycles_exact n₀ n₁ hn₁).desc
     (whiskerLeft Arrow₃.δ₂ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.pOpcycles n₀ n₁ hn₁)) (by
@@ -623,8 +599,6 @@ noncomputable def Ψ : Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁ ⟶ Arrow₃.
       dsimp
       erw [reassoc_of% ((X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₃Toδ₂.app A)), Functor.map_id]
       rw [id_comp, ← NatTrans.comp_app, δ_comp_pOpcycles, zero_app])
-
-pp_extended_field_notation Ψ
 
 lemma comp_Ψ : (X.δ₀PullbackCokernelSequenceCycles n₀ n₁ hn₁).g ≫ X.Ψ n₀ n₁ hn₁ =
     (whiskerLeft Arrow₃.δ₂ (X.δ n₀ n₁ hn₁) ≫ whiskerLeft Arrow₃.δ₃ (X.pOpcycles n₀ n₁ hn₁)) :=
@@ -644,7 +618,7 @@ lemma ψ_comp_app (D : Arrow₃ ι) :
     pOpcycles_opcyclesToHδ₁_app, Hδ₁ToCycles_iCycles_app_assoc]
   exact ((X.δ n₀ n₁ hn₁).naturality (Arrow₃.δ₂Toδ₁.app D)).symm
 
-@[simps]
+@[simps, pp_dot]
 noncomputable def shortComplex₄Ψ : ShortComplex₄ (Arrow₃ ι ⥤ C) where
   X₁ := Arrow₃.δ₁ ⋙ X.cycles n₀ n₁ hn₁
   X₂ := Arrow₃.δ₀ ⋙ X.cycles n₀ n₁ hn₁
@@ -667,8 +641,6 @@ noncomputable def shortComplex₄Ψ : ShortComplex₄ (Arrow₃ ι ⥤ C) where
     simp only [zero_app, comp_zero, NatTrans.comp_app, comp_ψ_app_assoc, whiskerRight_app,
       ← NatTrans.naturality, Functor.comp_map, Arrow₃.δ₂_map_δ₃Toδ₂_app, Functor.map_id,
       Functor.comp_obj, id_comp, δ_comp_pOpcycles_app]
-
-pp_extended_field_notation shortComplex₄Ψ
 
 attribute [local instance] epi_comp
 
@@ -791,16 +763,13 @@ lemma fromTgtΦ_comp_app (D : Arrow₃ ι) :
     (X.fromTgtΦ n₀ n₁ hn₁).app D ≫ (X.opcycles n₀ n₁ hn₁).map (Arrow₃.δ₃Toδ₂.app D) = 0 :=
   congr_app (X.fromTgtΦ_comp n₀ n₁ hn₁) D
 
-@[simps]
+@[simps, pp_dot]
 noncomputable def cokernelSequenceSrcΦ : ShortComplex (Arrow₃ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.comp_toSrcΦ n₀ n₁ hn₁)
 
-@[simps]
+@[simps, pp_dot]
 noncomputable def kernelSequenceTgtΦ : ShortComplex (Arrow₃ ι ⥤ C) :=
   ShortComplex.mk _ _ (X.fromTgtΦ_comp n₀ n₁ hn₁)
-
-pp_extended_field_notation cokernelSequenceSrcΦ
-pp_extended_field_notation kernelSequenceTgtΦ
 
 lemma cokernelSequenceSrcΦ_exact :
     (X.cokernelSequenceSrcΦ n₀ n₁ hn₁).Exact :=
@@ -818,6 +787,7 @@ instance : Epi (X.cokernelSequenceSrcΦ n₀ n₁ hn₁).g := by
   dsimp [cokernelSequenceSrcΦ]
   infer_instance
 
+@[pp_dot]
 noncomputable def Φ : X.srcΦ n₀ n₁ hn₁ ≅ X.tgtΦ n₀ n₁ hn₁ :=
   (X.shortComplex₄Ψ_exact n₀ n₁ hn₁).cokerIsoKer
 
@@ -831,8 +801,6 @@ lemma toSrcΦ_Φ_hom_fromTgtΦ_app (D : Arrow₃ ι) :
   (X.toSrcΦ n₀ n₁ hn₁).app D ≫ (X.Φ n₀ n₁ hn₁).hom.app D ≫ (X.fromTgtΦ n₀ n₁ hn₁).app D =
     (X.Ψ n₀ n₁ hn₁).app D :=
   congr_app (X.toSrcΦ_Φ_hom_fromTgtΦ n₀ n₁ hn₁) D
-
-pp_extended_field_notation Φ
 
 @[simps!]
 noncomputable def δ₃PullbackKernelSequenceCycles : ShortComplex (Arrow₃ ι ⥤ C) :=
@@ -1137,13 +1105,12 @@ lemma dFromTgtΦ_opcyclesι_app (D : Arrow₄ ι) :
     ← cancel_epi ((X.toSrcΦ n₀ n₁ hn₁).app (Arrow₄.δ₀.obj D)),
     dFromSrcΦ_fac_app, toSrcΦ_Φ_hom_fromTgtΦ_app]
 
+@[pp_dot]
 noncomputable def d : Arrow₅.δ₀ ⋙ Arrow₄.δ₀ ⋙ X.E n₀ n₁ n₂ hn₁ hn₂ ⟶
     Arrow₅.δ₅ ⋙ Arrow₄.δ₄ ⋙ X.E n₁ n₂ n₃ hn₂ hn₃ :=
   whiskerLeft Arrow₅.δ₀ (X.dToSrcΦ n₀ n₁ n₂ hn₁ hn₂) ≫
     whiskerLeft (Arrow₅.δ₀ ⋙ Arrow₄.δ₄) (X.Φ n₁ n₂ hn₂).hom ≫
     whiskerLeft Arrow₅.δ₅ (X.dFromTgtΦ n₁ n₂ n₃ hn₂ hn₃)
-
-pp_extended_field_notation d
 
 noncomputable def EιH : X.E n₀ n₁ n₂ hn₁ hn₂ ⟶ Arrow₃.δ₀ ⋙ Arrow₂.δ₁ ⋙ X.H n₁ :=
   X.opcyclesι n₀ n₁ n₂ hn₁ hn₂ ≫ whiskerLeft Arrow₃.δ₀ (X.opcyclesToHδ₁ n₀ n₁ hn₁)
@@ -1581,7 +1548,7 @@ noncomputable def EObjIsoImage (D : Arrow₃ ι) :
       Abelian.image ((X.H n₁).map (Arrow₃.δ₃δ₁Toδ₂δ₀.app D)) :=
   Abelian.isoImageOfFac _ _ _ (X.HπE_EιH_app n₀ n₁ n₂ hn₁ hn₂ D)
 
-@[simps]
+@[simps, pp_dot]
 def imagesLemmaInput (D : Arrow₃ ι) : Abelian.ImagesLemmaInput C where
   Y := (X.H n₀).obj (Arrow.mk (D.f ≫ D.g))
   S := (X.shortComplex₂ n₀).map ((evaluation _ _).obj (Arrow₃.δ₂.obj D))
@@ -1602,8 +1569,6 @@ def imagesLemmaInput (D : Arrow₃ ι) : Abelian.ImagesLemmaInput C where
     simp only [← Functor.map_comp]
     congr 1
     ext <;> dsimp <;> simp
-
-pp_extended_field_notation imagesLemmaInput
 
 lemma imagesLemmaInput_shortComplex_shortExact (D : Arrow₃ ι) :
     (X.imagesLemmaInput n₀ D).shortComplex.ShortExact :=
@@ -1628,13 +1593,11 @@ section Convergence
 variable {C ι : Type _} [Category C] [Abelian C] [Preorder ι] [OrderBot ι] [OrderTop ι]
   (X : SpectralObject C ι) (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
 
+@[pp_dot]
 noncomputable def EInfty : (Arrow ι ⥤ C) := Arrow₃.ιArrow ι ⋙ X.E n₀ n₁ n₂ hn₁ hn₂
 
-pp_extended_field_notation EInfty
-
+@[pp_dot]
 noncomputable def abutment (n : ℤ) : C := (X.H n).obj (Arrow.mkOfLE ⊥ ⊤ bot_le)
-
-pp_extended_field_notation abutment
 
 noncomputable def EInftyIsoAbutment :
     (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mkOfLE ⊥ ⊤ bot_le) ≅ X.abutment n₁ :=
@@ -1642,6 +1605,7 @@ noncomputable def EInftyIsoAbutment :
     (by change IsIso (𝟙 _) ; infer_instance)
     (by change IsIso (𝟙 _) ; infer_instance)
 
+@[pp_dot]
 noncomputable def overAbutment (n : ℤ) : ι ⥤ Over (X.abutment n) where
   obj i := Over.mk ((X.H n).map ((Arrow.ιOfOrderBot ι).map (homOfLE le_top)))
   map {i j} φ := Over.homMk ((X.H n).map ((Arrow.ιOfOrderBot ι).map φ)) (by
@@ -1651,24 +1615,21 @@ noncomputable def overAbutment (n : ℤ) : ι ⥤ Over (X.abutment n) where
   map_id _ := by ext ; dsimp ; simp
   map_comp _ _ := by ext ; dsimp ; simp
 
-pp_extended_field_notation overAbutment
-
+@[pp_dot]
 noncomputable def filtration' (n : ℤ) : ι ⥤ MonoOver (X.abutment n) :=
   X.overAbutment n ⋙ Over.abelianImageFunctor _
 
+@[pp_dot]
 noncomputable def filtration (n : ℤ) : ι ⥤ C :=
   X.filtration' n ⋙ MonoOver.forget _ ⋙ Over.forget _
 
+@[pp_dot]
 noncomputable def filtrationι (n : ℤ) (i : ι) : (X.filtration n).obj i ⟶ X.abutment n :=
   ((X.filtration' n ⋙ MonoOver.forget _).obj i).hom
 
 instance (n : ℤ) (i : ι) : Mono (X.filtrationι n i) := by
   dsimp [filtrationι]
   infer_instance
-
-pp_extended_field_notation filtration'
-pp_extended_field_notation filtration
-pp_extended_field_notation filtrationι
 
 noncomputable def filtrationπ (i j : ι) (φ : i ⟶ j) :
     (X.filtration n₁).obj j ⟶ (X.EInfty n₀ n₁ n₂ hn₁ hn₂).obj (Arrow.mk φ) :=

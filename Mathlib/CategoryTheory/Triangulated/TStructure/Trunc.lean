@@ -1463,7 +1463,7 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) 
       apply t.to_truncLT_obj_ext
       dsimp
       apply t.from_truncGE_obj_ext
-      rw [natTransTruncGELETruncLEGE_app_pentagon, liftTruncLT_ι]
+      simp_rw [natTransTruncGELETruncLEGE_app_pentagon, liftTruncLT_ι]
       exact H.comm₁
     rw [← eq']
     have fac : (t.truncLTι b).app ((t.truncGE a).obj ((t.truncLT b).obj X)) ≫

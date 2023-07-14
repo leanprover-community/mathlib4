@@ -171,13 +171,12 @@ noncomputable def iso (r r' : ℤ) (hr : 2 ≤ r) (hr' : r + 1 = r') (pq pq' pq'
 
 end ToE₂CohomologicalSpectralSequence
 
+@[pp_dot]
 noncomputable def toE₂CohomologicalSpectralSequence : E₂CohomologicalSpectralSequence C where
   page' := ToE₂CohomologicalSpectralSequence.page X
   d' := ToE₂CohomologicalSpectralSequence.d X
   d_comp_d' := ToE₂CohomologicalSpectralSequence.d_comp_d X
   iso' := ToE₂CohomologicalSpectralSequence.iso X
-
-pp_extended_field_notation toE₂CohomologicalSpectralSequence
 
 noncomputable def toE₂CohomologicalSpectralSequencePageIso (r : ℤ)
     [X.toE₂CohomologicalSpectralSequence.HasPage r] (pq : ℤ × ℤ)

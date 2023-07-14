@@ -70,10 +70,9 @@ namespace SpectralSequence
 variable {C r₀ degrees}
 variable (E : SpectralSequence C degrees r₀)
 
+@[pp_dot]
 class HasPage (E : SpectralSequence C degrees r₀) (r : ℤ) : Prop where
   le' : r₀ ≤ r
-
-pp_extended_field_notation HasPage
 
 instance : E.HasPage r₀ where
   le' := by rfl
@@ -96,15 +95,13 @@ instance [E.HasPage 2] : E.HasPage 3 := E.hasPage_of_le 2 3 (by simp)
 instance [E.HasPage 3] : E.HasPage 4 := E.hasPage_of_le 3 4 (by simp)
 instance [E.HasPage 4] : E.HasPage 5 := E.hasPage_of_le 4 5 (by simp)
 
+@[pp_dot]
 def page (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ):= E.page' r (E.le_of_hasPage r) pq
 
-pp_extended_field_notation page
-
+@[pp_dot]
 def d (r : ℤ) [E.HasPage r] (pq pq' : ℤ × ℤ) (hpq' : pq + degrees r = pq') :
     E.page r pq ⟶ E.page r pq' :=
   E.d' r (E.le_of_hasPage r) pq pq' hpq'
-
-pp_extended_field_notation d
 
 @[reassoc (attr := simp)]
 lemma d_comp_d (r : ℤ) [E.HasPage r] (pq₁ pq₂ pq₃ : ℤ × ℤ)
@@ -139,11 +136,10 @@ def shortComplex'Iso (r : ℤ) [E.HasPage r] (pq₁ pq₂ pq₃ pq₁' pq₂' pq
 def shortComplex (r : ℤ) [E.HasPage r] (pq : ℤ × ℤ) : ShortComplex C :=
   E.shortComplex' r (pq - degrees r) pq (pq + degrees r) (by simp) (by simp)
 
+@[pp_dot]
 def iso (r r' : ℤ) [E.HasPage r] [E.HasPage r'] (hr' : r + 1 = r') (pq : ℤ × ℤ) :
   (E.shortComplex r pq).homology ≅ E.page r' pq :=
   E.iso' r r' (E.le_of_hasPage r) hr' _ pq _ _ _
-
-pp_extended_field_notation iso
 
 /-- This means that the differential to an object E_r^{p,q} is zero (both r and (p,q) fixed) -/
 class HasEdgeMonoAt (pq : ℤ × ℤ) (r : ℤ) [E.HasPage r] : Prop where
@@ -155,13 +151,12 @@ lemma d_eq_zero_of_hasEdgeMonoAt (r : ℤ) (pq pq' : ℤ × ℤ)
     E.d r pq' pq hpq' = 0 :=
   HasEdgeMonoAt.zero _ _
 
+@[pp_dot]
 noncomputable def edgeMonoStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r')
   [E.HasPage r] [E.HasPage r'] [E.HasEdgeMonoAt pq r] :
   E.page r' pq ⟶ E.page r pq :=
       (E.iso r r' hr pq).inv ≫ (ShortComplex.asIsoHomologyπ  _
           (by apply E.d_eq_zero_of_hasEdgeMonoAt)).inv ≫ ShortComplex.iCycles _
-
-pp_extended_field_notation edgeMonoStep
 
 instance (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
     [E.HasEdgeMonoAt pq r] :
@@ -211,14 +206,13 @@ lemma d_eq_zero_of_hasEdgeEpiAt (r : ℤ) (pq pq' : ℤ × ℤ)
     E.d r pq pq' hpq' = 0 :=
   HasEdgeEpiAt.zero _ _
 
+@[pp_dot]
 noncomputable def edgeEpiStep (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r]
     [E.HasPage r'] [E.HasEdgeEpiAt pq r] :
     E.page r pq ⟶
       E.page r' pq :=
       (E.shortComplex r pq).pOpcycles ≫ (ShortComplex.asIsoHomologyι _
         (by apply E.d_eq_zero_of_hasEdgeEpiAt)).inv ≫ (E.iso r r' hr pq).hom
-
-pp_extended_field_notation edgeEpiStep
 
 instance (pq : ℤ × ℤ) (r r' : ℤ) (hr : r + 1 = r') [E.HasPage r] [E.HasPage r']
     [E.HasEdgeEpiAt pq r] : Epi (E.edgeEpiStep pq r r' hr) := by
@@ -385,24 +379,21 @@ lemma isoPageOfLE_eq
 
 end
 
+@[pp_dot]
 noncomputable def pageInfinity (pq : ℤ × ℤ) : C := by
   by_cases E.HasInfinityPageAt pq
   . exact E.page (E.rMin pq) pq
   . exact 0
 
-pp_extended_field_notation pageInfinity
-
+@[pp_dot]
 noncomputable def pageInfinityIso (pq : ℤ × ℤ) [E.HasInfinityPageAt pq] :
     E.pageInfinity pq ≅ E.page (E.rMin pq) pq := eqToIso (dif_pos _)
 
-pp_extended_field_notation pageInfinityIso
-
+@[pp_dot]
 noncomputable def isoPageInfinityOfLE (pq : ℤ × ℤ) [E.HasInfinityPageAt pq]
     (r : ℤ) (hr : E.rMin pq ≤ r) [E.HasPage r] :
     E.page r pq ≅ E.pageInfinity pq :=
   Iso.symm (E.pageInfinityIso pq ≪≫ E.isoPageOfLE pq _ _ (by rfl) hr)
-
-pp_extended_field_notation isoPageInfinityOfLE
 
 structure ConvergenceStripes where
   stripe : ℤ × ℤ → ℤ
