@@ -13,7 +13,8 @@ import Mathlib.Data.Polynomial.Degree.Definitions
 This file defines the tactic `compute_degree_le`.
 
 Using `compute_degree_le` when the goal is of the form `natDegree f ≤ d` or `degree f ≤ d`,
-tries to solve the goal.  It may leave side-goals, in case it is not entirely successful.
+tries to solve the goal.
+It may leave a side-goal of the form `d' ≤ d`, in case it is not entirely successful.
 
 See the doc-string for more details.
 
@@ -36,12 +37,17 @@ section Tactic
 open Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
-/-!
-The lemmas in the next sections prove an inequality of the form `natDegree f ≤ d` and use
-assumptions of the same shape.  This allows a recursive application of the `compute_degree_le`
-tactic, on a goal and on all the resulting subgoals.
--/
+
 section mylemmas
+
+/-!
+###  Simple lemmas about `natDegree`
+
+The lemmas in this section deduce inequalities of the form `natDegree f ≤ d`, using
+inequalities of the same shape.
+This allows a recursive application of the `compute_degree_le` tactic on a goal,
+and on all the resulting subgoals.
+-/
 
 variable {R : Type _}
 
@@ -85,6 +91,10 @@ end mylemmas
 
 open Lean Meta Elab.Tactic
 
+/-!
+Four helper lemmas to build `Expr`essions: `mkMax, mkPow, mkNatDegree, mkDegree`.
+-/
+
 /-- Return `max a b` using `Max.max`. This method assumes `a` and `b` have the same type. -/
 def mkMax (a b : Expr) : MetaM Expr := mkAppM ``Max.max #[a, b]
 
@@ -93,13 +103,16 @@ def mkPow (a b : Expr) : MetaM Expr := mkAppM ``HPow.hPow #[a, b]
 
 /-- Returns `natDegree pol`. -/
 def mkNatDegree (pol : Expr) : MetaM Expr := mkAppM ``natDegree #[pol]
+
 /-- Returns `degree pol`. -/
 def mkDegree (pol : Expr) : MetaM Expr := mkAppM ``degree #[pol]
 
-/-- `isDegLE e` checks whether `e` is an `Expr`ession representing
-*  `natDegree f ≤ d`, in which case it returns `(true,  f, R, instSemiRing)`;
-*  `degree f ≤ d`,    in which case it returns `(false, f, R, instSemiRing)`;
-*  anything else, in which case it throws an error.
+/-- `isDegLE e` checks whether `e` is an `Expr`ession is an inequality whose LHS is
+the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
+If `e` represents
+*  `natDegree f ≤ d`, then it returns `(true,  f, d, R, instSemiRing)`;
+*  `degree f ≤ d`,    then it returns `(false, f, d, R, instSemiRing)`;
+*  anything else, then it throws an error.
 
 Returning `R` and its `Semiring` instance is useful for simplifying `cDegCore`.
 -/
@@ -167,7 +180,16 @@ match pol.getAppFnArgs with
   | _ => mkAppOptM ``le_rfl #[none, none, ← mkNatDegree pol]
 
 /--
-`compute_degree_le` is a tactic to solve goals of the form `natDegree f ≤ d`.
+`compute_degree_le` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
+
+The tactic first replaces `natDegree f ≤ d` with `d' ≤ d`,
+where `d'` is an internally computed guess for which the tactic proves the inequality
+`natDegree f ≤ d'`.
+
+Next, it applies `norm_num` to `d'`, in the hope of closing also the `d' ≤ d` goal.
+
+The variant `compute_degree_le!` first applies `compute_degree_le`.
+Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption`.
 -/
 elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus do
   let tgt := ← getMainTarget
@@ -194,20 +216,10 @@ elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus do
   -- in the remaining goal, carried around by `new[1]`, we find and clear the hypothesis `ineq`
   let ineq := ← new[1]!.withContext ineq[0]!.findDecl?
   setGoals [← (new[1]!).clear ineq.get!.fvarId]
-  let _ := ← evalTactic (← `(tactic| conv_lhs => norm_num))
+  evalTactic (← `(tactic| conv_lhs => norm_num))
 
+@[inherit_doc computeDegreeLE]
 elab (name := computeDegreeLE!) "compute_degree_le!" : tactic => focus do
   evalTactic (← `(tactic| compute_degree_le <;> norm_num <;> try assumption))
-
-variable {n : Nat} {z : Int} {f : Int[X]} (h : natDegree f ≤ 5)
-example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
-    NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
---  apply Iff.mp natDegree_le_iff_degree_le
---  rw [← natDegree_le_iff_degree_le]
-  compute_degree_le!
-
-example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
-    NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
-  compute_degree_le!
 
 end Mathlib.Tactic.ComputeDegree
