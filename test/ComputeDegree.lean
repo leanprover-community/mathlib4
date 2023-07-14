@@ -4,11 +4,12 @@ open Polynomial
 
 variable {n : Nat} {z : Int} {f : Int[X]} (h : natDegree f ≤ 5)
 
-/--  This example flows through all the matches in `direct`. -/
+/--  This example flows through all the matches in `direct` with a `natDegree` goal. -/
 example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
   compute_degree_le!
 
+/--  This example flows through all the matches in `direct` with a `degree` goal. -/
 example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
   compute_degree_le!
