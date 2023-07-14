@@ -66,9 +66,9 @@ def Summable (f : β → α) : Prop :=
 
 /-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise -/
 irreducible_def tsum {β} (f : β → α) :=
-  if h : Summable f then (
+  if h : Summable f then
     if (support f).Finite then finsum f
-    else Classical.choose h)
+    else Classical.choose h
   else 0
 #align tsum tsum
 
@@ -464,7 +464,6 @@ section tsum
 
 variable [AddCommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
 
-
 theorem tsum_congr_subtype (f : β → α) {s t : Set β} (h : s = t) :
     ∑' x : s, f x = ∑' x : t, f x := by rw [h]
 #align tsum_congr_subtype tsum_congr_subtype
@@ -493,7 +492,7 @@ theorem tsum_empty [IsEmpty β] : ∑' b, f b = 0 := by
   rw [tsum_eq_sum (s := (∅ : Finset β))] <;> simp
 #align tsum_empty tsum_empty
 
-theorem tsum_congr {α β : Type _} [AddCommMonoid α] [TopologicalSpace α] {f g : β → α}
+theorem tsum_congr {f g : β → α}
     (hfg : ∀ b, f b = g b) : ∑' b, f b = ∑' b, g b :=
   congr_arg tsum (funext hfg)
 #align tsum_congr tsum_congr
