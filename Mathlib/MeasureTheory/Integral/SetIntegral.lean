@@ -455,7 +455,7 @@ theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set α⦄ (s_m
 #align measure_theory.integral_indicator_const MeasureTheory.integral_indicator_const
 
 @[simp]
-theorem integral_indicator_one [CompleteSpace E] ⦃s : Set α⦄ (hs : MeasurableSet s) :
+theorem integral_indicator_one ⦃s : Set α⦄ (hs : MeasurableSet s) :
     ∫ a, s.indicator 1 a ∂μ = (μ s).toReal :=
   (integral_indicator_const 1 hs).trans ((smul_eq_mul _).trans (mul_one _))
 #align measure_theory.integral_indicator_one MeasureTheory.integral_indicator_one
