@@ -2713,12 +2713,102 @@ lemma GoodProducts.huw : Linear_CC' C hsC ho ∘ u C o ∘ Sum.inr = w C hsC ho 
 
 def C'' : Set {i // i ∈ C} := {f | f.val ∈ C' C ho}
 
+lemma swapTrue_swapFalse (x : WithTop I → Bool) (hx : x ∈ Res (C1 C ho) o) : SwapFalse o (SwapTrue o x) = x := by
+  ext i
+  dsimp [SwapTrue, SwapFalse]
+  split_ifs with h
+  · obtain ⟨y, hy⟩ := hx
+    rw [← hy.2]
+    dsimp [ProjOrd]
+    split_ifs with h'
+    · exfalso
+      exact (ne_of_lt h') h
+    · rfl
+  · rfl
+
+noncomputable
+def C'C1' : {i // i ∈ C' C ho} → {i // i ∈ C1' C ho} :=
+  fun x ↦ ⟨CC'₁ C hsC ho x, swapTrue_mem_C1 C hsC ho ⟨x.1, x.2.2⟩⟩
+
+lemma injective_C'C1' : Function.Injective (C'C1' C hsC ho) := by
+  intro a b h
+  dsimp [C'C1', CC'₁] at h
+  ext
+  rw [← swapTrue_swapFalse C ho a.val a.prop.2]
+  rw [← swapTrue_swapFalse C ho b.val b.prop.2]
+  congr 1
+  rw [Subtype.ext_iff] at h
+  rw [Subtype.ext_iff] at h
+  exact h
+
+noncomputable
+def C'C1'_equiv := Equiv.ofInjective (C'C1' C hsC ho) (injective_C'C1' C hsC ho)
+
+lemma continuous_C'C1' : Continuous (C'C1'_equiv C hsC ho) := by
+  refine' Continuous.subtype_mk _ _
+  refine' Continuous.subtype_mk _ _
+  exact continuous_CC'₁ _ _ _
+
+noncomputable
+def C'C1'_homeo :=
+haveI : CompactSpace {i // i ∈ C' C ho} := by
+  rw [← isCompact_iff_compactSpace]
+  apply IsClosed.isCompact
+  exact isClosed_C' C hC ho
+(continuous_C'C1' C hsC ho).homeoOfEquivCompactToT2
+
+lemma embedding_C'C1' : Embedding (C'C1' C hsC ho) where
+  induced := by
+    rw [← inducing_iff]
+    suffices : C'C1' C hsC ho = Subtype.val ∘ C'C1'_homeo C hC hsC ho
+    · rw [this]
+      exact Inducing.comp inducing_subtype_val (Homeomorph.inducing _)
+    rfl
+  inj := injective_C'C1' C hsC ho
+
+noncomputable
+def C1_homeo' : {i // i ∈ Res (C1 C ho) o} ≃ₜ {i // i ∈ C1' C ho} := sorry
+
+lemma openEmbedding_C'C1' : OpenEmbedding (C'C1' C hsC ho) where
+  toEmbedding := embedding_C'C1' C hC hsC ho
+  open_range := by
+    rw [isOpen_induced_iff]
+    -- refine' ⟨{x : C | SwapFalse o x.val ∈ C},⟨_, _⟩⟩
+    -- · sorry
+    -- · sorry
+    refine' ⟨C'' C ho, ⟨_, _⟩⟩
+    · sorry
+    · ext x
+      constructor
+      <;> intro hx
+      · sorry
+      · sorry
+    -- let e : {i // i ∈ C1' C ho} → C := sorry
+    -- have he : Continuous e := sorry
+    -- suffices : Set.range (C'C1' C hsC ho) = e ⁻¹' (C0' C ho)
+    -- · rw [this]
+    --   apply IsOpen.preimage he
+    --   exact (isClopen_C0' C hC ho).1
+    -- sorry
+
+lemma closedEmbedding_C'C1' : ClosedEmbedding (C'C1' C hsC ho) where
+  toEmbedding := embedding_C'C1' C hC hsC ho
+  closed_range := by
+    apply IsCompact.isClosed
+    simp only [← Set.image_univ]
+    apply IsCompact.image
+    · rw [isCompact_univ_iff]
+      rw [← isCompact_iff_compactSpace]
+      apply IsClosed.isCompact
+      exact isClosed_C' C hC ho
+    · exact (embedding_C'C1' C hC hsC ho).continuous
+
 lemma CC_surjective : Function.Surjective (Linear_CC' C hsC ho) := by
   intro f
   let e : {i // i ∈ C' C ho} → {i // i ∈ C1' C ho} :=
     fun x ↦ ⟨CC'₁ C hsC ho x, swapTrue_mem_C1 C hsC ho ⟨x.1, x.2.2⟩⟩
-  have hoe : OpenEmbedding e := sorry
-  have hce : ClosedEmbedding e := sorry
+  have hoe : OpenEmbedding e := openEmbedding_C'C1' C hC hsC ho
+  have hce : ClosedEmbedding e := closedEmbedding_C'C1' C hC hsC ho
   use LocallyConstant.piecewise (isClopen_C0' C hC ho).2 (isClopen_C1' C hC ho).2
     (union_C0'C1'_eq_univ C ho) (LocallyConstant.const _ 0) ((f.emb_lift hoe hce 0)) ?_ 0
   · intro x hx
@@ -2902,19 +2992,6 @@ lemma mem_resC1_of_mem_C1 : ∀ x, x ∈ C1 C ho → SwapFalse o x ∈ Res (C1 C
   refine' ⟨x, ⟨hx, _⟩⟩
   exact projOrd_eq_swapFalse C hsC x hx.1
 
-lemma swapTrue_swapFalse (x : WithTop I → Bool) (hx : x ∈ Res (C1 C ho) o) : SwapFalse o (SwapTrue o x) = x := by
-  ext i
-  dsimp [SwapTrue, SwapFalse]
-  split_ifs with h
-  · obtain ⟨y, hy⟩ := hx
-    rw [← hy.2]
-    dsimp [ProjOrd]
-    split_ifs with h'
-    · exfalso
-      exact (ne_of_lt h') h
-    · rfl
-  · rfl
-
 lemma swapFalse_swapTrue (x : WithTop I → Bool) (hx : x ∈ C1 C ho) :
     SwapTrue o (SwapFalse o x) = x := by
   ext i
@@ -2950,11 +3027,12 @@ def C1_homeo : C1 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} where
     rfl
   continuous_toFun := by
     refine' Continuous.subtype_mk _ _
-    refine' Continuous.comp _ (continuous_swapFalse o)
+    refine' Continuous.subtype_mk _ _
+    refine' Continuous.comp (continuous_swapFalse o) continuous_subtype_val
   continuous_invFun := by
     refine' Continuous.subtype_mk _ _
-    sorry
-    -- exact Continuous.comp continuous_subtype_val continuous_subtype_val
+    exact Continuous.comp (continuous_swapTrue o) (Continuous.comp continuous_subtype_val
+      continuous_subtype_val)
 
 lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, Linear_ResC C o y = f := by
