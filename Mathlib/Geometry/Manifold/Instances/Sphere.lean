@@ -559,7 +559,8 @@ section circle
 
 open Complex
 
-instance : Fact (finrank ℝ ℂ = 2) where
+-- Porting note: 1+1 = 2 except when synthing instances
+local instance : Fact (finrank ℝ ℂ = 1 + 1) where
   out := by simp
 
 attribute [local instance] finrank_real_complex_fact
@@ -568,21 +569,18 @@ attribute [local instance] finrank_real_complex_fact
 follows by definition from the corresponding result for `metric.sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
   chartedSpace
-  --Metric.sphere.chartedSpace
 
 instance : SmoothManifoldWithCorners (𝓡 1) circle :=
-  have : Fact (finrank ℝ ℂ = 1 + 1) := inferInstanceAs <| Fact (finrank ℝ ℂ = 2)
   smoothMfldWithCorners (E := ℂ)
-  -- Metric.sphere.smoothManifoldWithCorners
 
 /-- The unit circle in `ℂ` is a Lie group. -/
 instance : LieGroup (𝓡 1) circle where
   smooth_mul := by
     apply ContMDiff.codRestrict_sphere
-    let c : circle → ℂ := coe
-    have h₂ : ContMDiff (𝓘(ℝ, ℂ).Prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ∞ fun z : ℂ × ℂ => z.fst * z.snd := by
+    let c : circle → ℂ := (↑)
+    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ∞ fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
-      exact ⟨continuous_mul, fun x y => contDiff_mul.contDiff_on⟩
+      exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
     suffices h₁ : ContMDiff _ _ _ (Prod.map c c)
     · apply h₂.comp h₁
     -- this elaborates much faster with `apply`
@@ -591,7 +589,7 @@ instance : LieGroup (𝓡 1) circle where
   smooth_inv := by
     apply ContMDiff.codRestrict_sphere
     simp only [← coe_inv_circle, coe_inv_circle_eq_conj]
-    exact complex.conj_cle.contDiff.contMDiff.comp contMDiff_coe_sphere
+    exact Complex.conjCle.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `λ t, exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
 theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=
