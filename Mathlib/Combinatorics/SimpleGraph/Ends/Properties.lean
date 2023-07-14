@@ -23,14 +23,13 @@ variable {V : Type} (G : SimpleGraph V)
 
 namespace SimpleGraph
 
-instance [Finite V] : IsEmpty G.end :=
-  ⟨by
+instance [Finite V] : IsEmpty G.end where
+  false := by
     rintro ⟨s, _⟩
     cases nonempty_fintype V
     obtain ⟨v, h⟩ := (s <| Opposite.op Finset.univ).nonempty
-    exact
-      Set.disjoint_iff.mp (s _).disjoint_right
-        ⟨by simp only [Opposite.unop_op, Finset.coe_univ, Set.mem_univ], h⟩⟩
+    exact Set.disjoint_iff.mp (s _).disjoint_right
+        ⟨by simp only [Opposite.unop_op, Finset.coe_univ, Set.mem_univ], h⟩
 
 /-- The `component_compl`s chosen by an end are all infinite. -/
 lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
@@ -40,7 +39,7 @@ lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
   exact ⟨e.val (Opposite.op L), (e.prop (CategoryTheory.opHomOfLE h))⟩
 
 instance compononentComplFunctor_nonempty_of_infinite [Infinite V] (K : (Finset V)ᵒᵖ) :
-  Nonempty (G.componentComplFunctor.obj K) := G.componentCompl_nonempty_of_infinite K.unop
+    Nonempty (G.componentComplFunctor.obj K) := G.componentCompl_nonempty_of_infinite K.unop
 
 instance component_compl_functor_finite [LocallyFinite G] [Fact G.Preconnected]
     (K : (Finset V)ᵒᵖ) : Finite (G.componentComplFunctor.obj K) := G.componentCompl_finite K.unop
