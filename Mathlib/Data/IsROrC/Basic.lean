@@ -640,15 +640,16 @@ theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofRe
 #align is_R_or_C.nat_cast_im IsROrC.natCast_im
 
 @[simp, isROrC_simps]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (OfNat.ofNat n : K) = OfNat.ofNat n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
   natCast_re n
 
 @[simp, isROrC_simps]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (OfNat.ofNat n : K) = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
   natCast_im n
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : K) = OfNat.ofNat n :=
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
   ofReal_natCast n
 
 theorem ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
@@ -698,7 +699,7 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 #align is_R_or_C.norm_nat_cast IsROrC.norm_natCast
 
 @[simp, isROrC_simps]
-theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(OfNat.ofNat n : K)‖ = OfNat.ofNat n :=
+theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
