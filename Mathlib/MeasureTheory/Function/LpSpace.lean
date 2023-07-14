@@ -10,6 +10,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.MeasureTheory.Function.LpSeminorm
+import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.ContinuousFunction.Compact
 
 /-!

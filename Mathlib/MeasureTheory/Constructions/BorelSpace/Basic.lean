@@ -12,7 +12,6 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Lattice
-import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Instances.EReal
@@ -838,14 +837,6 @@ theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure
 theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
-
-theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
-    (hf_surj : Function.Surjective f) {μ : Measure β} [μ.IsOpenPosMeasure] :
-    (Measure.map f μ).IsOpenPosMeasure := by
-  refine' ⟨fun U hUo hUne => _⟩
-  rw [Measure.map_apply hf.measurable hUo.measurableSet]
-  exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
-#align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
