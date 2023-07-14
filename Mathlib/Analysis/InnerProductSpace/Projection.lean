@@ -869,8 +869,8 @@ theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [HasOrtho
 #align orthogonal_projection_mem_subspace_orthogonal_complement_eq_zero orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
-theorem Submodule.IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E} [HasOrthogonalProjection U]
-    (h : U ⟂ V) : orthogonalProjection U ∘L V.subtypeL = 0 :=
+theorem Submodule.IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}
+    [HasOrthogonalProjection U] (h : U ⟂ V) : orthogonalProjection U ∘L V.subtypeL = 0 :=
   ContinuousLinearMap.ext fun v =>
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero <| h.symm v.prop
 set_option linter.uppercaseLean3 false in
@@ -908,8 +908,8 @@ theorem reflection_mem_subspace_orthogonalComplement_eq_neg [HasOrthogonalProjec
 #align reflection_mem_subspace_orthogonal_complement_eq_neg reflection_mem_subspace_orthogonalComplement_eq_neg
 
 /-- The orthogonal projection onto `Kᗮ` of an element of `K` is zero. -/
-theorem orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero [HasOrthogonalProjection Kᗮ] {v : E}
-    (hv : v ∈ K) : orthogonalProjection Kᗮ v = 0 :=
+theorem orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
+    [HasOrthogonalProjection Kᗮ] {v : E} (hv : v ∈ K) : orthogonalProjection Kᗮ v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
 #align orthogonal_projection_mem_subspace_orthogonal_precomplement_eq_zero orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero
 
