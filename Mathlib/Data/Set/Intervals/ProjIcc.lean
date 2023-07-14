@@ -80,7 +80,6 @@ theorem projIcc_of_le_left (hx : x ≤ a) : projIcc a b h x = ⟨a, left_mem_Icc
 theorem projIcc_of_right_le (hx : b ≤ x) : projIcc a b h x = ⟨b, right_mem_Icc.2 h⟩ := by
   simp [projIcc, hx, h]
 #align set.proj_Icc_of_right_le Set.projIcc_of_right_le
--/
 
 @[simp]
 theorem projIci_self (a : α) : projIci a a = ⟨a, le_rfl⟩ := projIci_of_le le_rfl
@@ -125,11 +124,11 @@ theorem projIcc_of_mem (hx : x ∈ Icc a b) : projIcc a b h x = ⟨x, hx⟩ := b
 #align set.proj_Icc_of_mem Set.projIcc_of_mem
 
 @[simp]
-theorem projIci_coe (x : Ici a) : projIci a x = x := by cases x; apply proj_Ici_of_mem
+theorem projIci_coe (x : Ici a) : projIci a x = x := by cases x; apply projIci_of_mem
 #align set.proj_Ici_coe Set.projIci_coe
 
 @[simp]
-theorem projIic_coe (x : Iic b) : projIic b x = x := by cases x; apply proj_Iic_of_mem
+theorem projIic_coe (x : Iic b) : projIic b x = x := by cases x; apply projIic_of_mem
 #align set.proj_Iic_coe Set.projIic_coe
 
 @[simp]
@@ -170,10 +169,10 @@ theorem range_projIcc : range (projIcc a b h) = univ :=
   Function.Surjective.range_eq (projIcc_surjective h)
 #align set.range_proj_Icc Set.range_projIcc
 
-theorem monotone_projIci : Monotone (projIci a) := fun x y => max_le_max le_rfl
+theorem monotone_projIci : Monotone (projIci a) := fun _ _ => max_le_max le_rfl
 #align set.monotone_proj_Ici Set.monotone_projIci
 
-theorem monotone_projIic : Monotone (projIic a) := fun x y => min_le_min le_rfl
+theorem monotone_projIic : Monotone (projIic a) := fun _ _ => min_le_min le_rfl
 #align set.monotone_proj_Iic Set.monotone_projIic
 
 theorem monotone_projIcc : Monotone (projIcc a b h) := fun _ _ hxy =>
@@ -207,12 +206,10 @@ def IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β) : α → β :=
   f ∘ projIcc a b h
 #align set.Icc_extend Set.IccExtend
 
-@[simp]
 theorem IciExtend_apply (f : Ici a → β) (x : α) : IciExtend f x = f ⟨max a x, le_max_left _ _⟩ :=
   rfl
 #align set.Ici_extend_apply Set.IciExtend_apply
 
-@[simp]
 theorem IicExtend_apply (f : Iic b → β) (x : α) : IicExtend f x = f ⟨min b x, min_le_left _ _⟩ :=
   rfl
 #align set.Iic_extend_apply Set.IicExtend_apply
@@ -223,12 +220,12 @@ theorem iccExtend_apply (h : a ≤ b) (f : Icc a b → β) (x : α) :
 
 @[simp]
 theorem range_IciExtend (f : Ici a → β) : range (IciExtend f) = range f := by
-  simp only [Ici_extend, range_comp f, range_proj_Ici, range_id']
+  simp only [IciExtend, range_comp f, range_projIci, range_id', image_univ]
 #align set.range_Ici_extend Set.range_IciExtend
 
 @[simp]
 theorem range_IicExtend (f : Iic b → β) : range (IicExtend f) = range f := by
-  simp only [Iic_extend, range_comp f, range_proj_Iic, range_id']
+  simp only [IicExtend, range_comp f, range_projIic, range_id', image_univ]
 #align set.range_Iic_extend Set.range_IicExtend
 
 @[simp]
@@ -349,15 +346,15 @@ theorem StrictMono.strictMonoOn_IccExtend (hf : StrictMono f) :
 
 protected theorem Set.OrdConnected.IciExtend {s : Set (Ici a)} (hs : s.OrdConnected) :
     {x | IciExtend (· ∈ s) x}.OrdConnected :=
-  ⟨fun x hx y hy z hz => hs.out hx hy ⟨max_le_max le_rfl hz.1, max_le_max le_rfl hz.2⟩⟩
+  ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨max_le_max le_rfl hz.1, max_le_max le_rfl hz.2⟩⟩
 #align set.ord_connected.Ici_extend Set.OrdConnected.IciExtend
 
 protected theorem Set.OrdConnected.IicExtend {s : Set (Iic b)} (hs : s.OrdConnected) :
     {x | IicExtend (· ∈ s) x}.OrdConnected :=
-  ⟨fun x hx y hy z hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
+  ⟨fun _ hx _ hy _ hz => hs.out hx hy ⟨min_le_min le_rfl hz.1, min_le_min le_rfl hz.2⟩⟩
 #align set.ord_connected.Iic_extend Set.OrdConnected.IicExtend
 
 protected theorem Set.OrdConnected.restrict (hs : s.OrdConnected) :
     {x | restrict t (· ∈ s) x}.OrdConnected :=
-  ⟨fun x hx y hy z hz => hs.out hx hy hz⟩
+  ⟨fun _ hx _ hy _ hz => hs.out hx hy hz⟩
 #align set.ord_connected.restrict Set.OrdConnected.restrict
