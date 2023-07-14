@@ -1006,10 +1006,10 @@ def SwapFalse (o : Ordinal) : (WithTop I → Bool) → WithTop I → Bool :=
 fun f i ↦ if ord I i = o then false else f i
 
 lemma continuous_swapFalse (o : Ordinal) :
-    Continuous (SwapTrue o : (WithTop I → Bool) → WithTop I → Bool) := by
+    Continuous (SwapFalse o : (WithTop I → Bool) → WithTop I → Bool) := by
   refine' continuous_pi _
   intro i
-  dsimp [SwapTrue]
+  dsimp [SwapFalse]
   split_ifs
   · exact continuous_const
   · exact continuous_apply _
@@ -2787,23 +2787,174 @@ lemma CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((Linear_ResC C o) y) = 0 := b
     · rfl
   · rfl
 
+lemma C0_projOrd : ∀ x, x ∈ C0 C ho → ProjOrd o x = x := by
+  intro x hx
+  ext i
+  simp only [ProjOrd, ite_eq_left_iff, not_lt]
+  intro hi
+  rw [le_iff_lt_or_eq] at hi
+  cases' hi with hi hi
+  · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
+      and_imp] at hsC
+    specialize hsC i x hx.1
+    rw [← not_imp_not] at hsC
+    simp only [not_le, Bool.not_eq_true] at hsC
+    exact (hsC hi).symm
+  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
+    rw [← hx.2]
+    congr 1
+    dsimp [term]
+    simp_rw [hi]
+    simp only [ord, Ordinal.enum_typein]
+
+lemma C1_projOrd : ∀ x, x ∈ C1 C ho → SwapTrue o (ProjOrd o x) = x := by
+  intro x hx
+  ext i
+  dsimp [SwapTrue, ProjOrd]
+  split_ifs with hi h
+  · rw [hx.2.symm]
+    congr
+    dsimp [term]
+    simp_rw [← hi]
+    simp only [ord, Ordinal.enum_typein]
+  · rfl
+  · simp only [not_lt] at h
+    have h' : o < ord I i := lt_of_le_of_ne h (Ne.symm hi)
+    simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
+      and_imp] at hsC
+    specialize hsC i x hx.1
+    rw [← not_imp_not] at hsC
+    simp only [not_le, Bool.not_eq_true] at hsC
+    exact (hsC h').symm
+
+lemma C0_eq_res : C0 C ho = Res (C0 C ho) o := by
+  ext y
+  constructor
+  <;> intro hy
+  · exact ⟨y, ⟨hy, C0_projOrd C hsC ho y hy⟩⟩
+  · obtain ⟨z, hz⟩ := hy
+    rw [← hz.2]
+    simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq]
+    constructor
+    · rw [C0_projOrd C hsC ho z hz.1]
+      exact hz.1.1
+    · simp only [ProjOrd, ord, term, Ordinal.typein_enum, lt_self_iff_false, ite_false]
+
+lemma mem_res_of_mem_C0 : ∀ x, x ∈ C0 C ho → x ∈ Res C o := by
+  intro x hx
+  exact ⟨x, ⟨hx.1,C0_projOrd C hsC ho x hx⟩⟩
+
+lemma mem_resC0_of_mem_C0 : ∀ x, x ∈ C0 C ho → x ∈ Res (C0 C ho) o := by
+  intro x hx
+  rwa [← C0_eq_res C hsC ho]
+
+lemma mem_C0_of_mem_resC0 : ∀ x, x ∈ Res (C0 C ho) o → x ∈ C0 C ho := by
+  intro x hx
+  rwa [C0_eq_res C hsC ho]
+
 noncomputable
 def C0_homeo : C0 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C0 C ho) o} where
-  toFun := fun x ↦ ⟨⟨x.val, sorry⟩, sorry⟩
-  invFun := fun x ↦ ⟨x.val.val, sorry⟩
-  left_inv := sorry
-  right_inv := sorry
-  continuous_toFun := sorry
-  continuous_invFun := sorry
+  toFun := fun x ↦ ⟨⟨x.val, mem_res_of_mem_C0 C hsC ho x.val x.prop⟩,
+    mem_resC0_of_mem_C0 C hsC ho x.val x.prop⟩
+  invFun := fun x ↦ ⟨x.val.val, mem_C0_of_mem_resC0 C hsC ho x.val.val x.prop⟩
+  left_inv := by
+    intro x
+    dsimp
+  right_inv := by
+    intro x
+    dsimp
+    apply Subtype.ext
+    apply Subtype.ext
+    rfl
+  continuous_toFun := Continuous.subtype_mk (Continuous.subtype_mk continuous_induced_dom _) _
+  continuous_invFun := by
+    refine' Continuous.subtype_mk _ _
+    exact Continuous.comp continuous_subtype_val continuous_subtype_val
+
+lemma projOrd_eq_swapFalse : ∀ x, x ∈ C → ProjOrd o x = SwapFalse o x := by
+  intro x hx
+  ext i
+  dsimp [ProjOrd, SwapFalse]
+  split_ifs with hi hi' hi'
+  · exfalso
+    exact (ne_of_lt hi) hi'
+  · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
+      and_imp] at hsC
+    specialize hsC i x hx
+    rw [← not_imp_not] at hsC
+  · rfl
+  · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
+      and_imp] at hsC
+    specialize hsC i x hx
+    rw [← not_imp_not] at hsC
+    simp only [not_le, Bool.not_eq_true] at hsC
+    apply Eq.symm ∘ hsC
+    simp only [not_lt] at hi
+    exact lt_of_le_of_ne hi (Ne.symm hi')
+
+lemma mem_res_of_mem_C1 : ∀ x, x ∈ C1 C ho → SwapFalse o x ∈ Res C o := by
+  intro x hx
+  refine' ⟨x, ⟨hx.1, _⟩⟩
+  exact projOrd_eq_swapFalse C hsC x hx.1
+
+lemma mem_resC1_of_mem_C1 : ∀ x, x ∈ C1 C ho → SwapFalse o x ∈ Res (C1 C ho) o := by
+  intro x hx
+  refine' ⟨x, ⟨hx, _⟩⟩
+  exact projOrd_eq_swapFalse C hsC x hx.1
+
+lemma swapTrue_swapFalse (x : WithTop I → Bool) (hx : x ∈ Res (C1 C ho) o) : SwapFalse o (SwapTrue o x) = x := by
+  ext i
+  dsimp [SwapTrue, SwapFalse]
+  split_ifs with h
+  · obtain ⟨y, hy⟩ := hx
+    rw [← hy.2]
+    dsimp [ProjOrd]
+    split_ifs with h'
+    · exfalso
+      exact (ne_of_lt h') h
+    · rfl
+  · rfl
+
+lemma swapFalse_swapTrue (x : WithTop I → Bool) (hx : x ∈ C1 C ho) :
+    SwapTrue o (SwapFalse o x) = x := by
+  ext i
+  dsimp [SwapTrue, SwapFalse]
+  split_ifs with h
+  · rw [← hx.2]
+    congr
+    dsimp [term]
+    simp_rw [← h]
+    simp only [ord, Ordinal.enum_typein]
+  · rfl
+
+lemma mem_C1_of_mem_resC1 : ∀ x, x ∈ Res (C1 C ho) o → SwapTrue o x ∈ C1 C ho := by
+  intro x hx
+  obtain ⟨y, hy⟩ := hx
+  rw [← hy.2, projOrd_eq_swapFalse C hsC y hy.1.1, swapFalse_swapTrue C ho y hy.1]
+  exact hy.1
 
 noncomputable
 def C1_homeo : C1 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} where
-  toFun := fun x ↦ ⟨⟨SwapFalse o x.val, sorry⟩, sorry⟩
-  invFun := fun x ↦ ⟨SwapTrue o x.val.val, sorry⟩
-  left_inv := sorry
-  right_inv := sorry
-  continuous_toFun := sorry
-  continuous_invFun := sorry
+  toFun := fun x ↦ ⟨⟨SwapFalse o x.val, mem_res_of_mem_C1 C hsC ho x.val x.prop⟩,
+    mem_resC1_of_mem_C1 C hsC ho x.val x.prop⟩
+  invFun := fun x ↦ ⟨SwapTrue o x.val.val, mem_C1_of_mem_resC1 C hsC ho x.val.val x.prop⟩
+  left_inv := by
+    intro x
+    simp_rw [swapFalse_swapTrue C ho x.val x.prop]
+  right_inv := by
+    intro x
+    dsimp
+    simp_rw [swapTrue_swapFalse C ho x.val x.prop]
+    apply Subtype.ext
+    apply Subtype.ext
+    rfl
+  continuous_toFun := by
+    refine' Continuous.subtype_mk _ _
+    refine' Continuous.comp _ (continuous_swapFalse o)
+  continuous_invFun := by
+    refine' Continuous.subtype_mk _ _
+    sorry
+    -- exact Continuous.comp continuous_subtype_val continuous_subtype_val
 
 lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     ∃ y, Linear_ResC C o y = f := by
@@ -2821,9 +2972,9 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
   have hC₁ : IsClosed {i : Res C o | i.val ∈ Res (C1 C ho) o}
   · rw [isClosed_induced_iff]
     exact ⟨Res (C1 C ho) o, ⟨hC₁', rfl⟩⟩
-  let e₀ : C0 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C0 C ho) o} := C0_homeo C ho
+  let e₀ : C0 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C0 C ho) o} := C0_homeo C hsC ho
   let E₀ : LocallyConstant (C0 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.equiv e₀
-  let e₁ : C1 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} := C1_homeo C ho
+  let e₁ : C1 C ho ≃ₜ {i : Res C o | i.val ∈ Res (C1 C ho) o} := C1_homeo C hsC ho
   let E₁ : LocallyConstant (C1 C ho) ℤ ≃ LocallyConstant _ ℤ := LocallyConstant.equiv e₁
   let C₀C : C0 C ho → {i // i ∈ C} := fun x ↦ ⟨x.val, x.prop.1⟩
   have h₀ : Continuous C₀C := Continuous.subtype_mk continuous_induced_dom _
@@ -2844,63 +2995,13 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
   · rintro ⟨x, hrx⟩ hx
     have hx' : x ∈ C' C ho
     · refine' ⟨_, hx.2⟩
-      suffices : C0 C ho = Res (C0 C ho) o
-      · rw [this]
-        exact hx.1
-      ext y
-      constructor
-      <;> intro hy
-      · refine' ⟨y, ⟨hy, _⟩⟩
-        ext i
-        simp only [ProjOrd, ite_eq_left_iff, not_lt]
-        intro hi
-        rw [le_iff_lt_or_eq] at hi
-        cases' hi with hi hi
-        · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
-            and_imp] at hsC
-          specialize hsC i y hy.1
-          rw [← not_imp_not] at hsC
-          simp only [not_le, Bool.not_eq_true] at hsC
-          exact (hsC hi).symm
-        · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hy
-          rw [← hy.2]
-          congr 1
-          dsimp [term]
-          simp_rw [hi]
-          simp only [ord, Ordinal.enum_typein]
-      · obtain ⟨z, hz⟩ := hy
-        rw [← hz.2]
-        simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq]
-        constructor
-        · suffices : ProjOrd o z = z
-          · rw [this]
-            rw [← UnionEq C ho]
-            exact Set.mem_union_left _ hz.1
-          ext i
-          simp only [ProjOrd, ite_eq_left_iff, not_lt]
-          intro hi
-          rw [le_iff_lt_or_eq] at hi
-          cases' hi with hi hi
-          · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
-              and_imp] at hsC
-            specialize hsC i z ?_
-            · rw [← UnionEq C ho]
-              exact Set.mem_union_left _ hz.1
-            rw [← not_imp_not] at hsC
-            simp only [not_le, Bool.not_eq_true] at hsC
-            exact (hsC hi).symm
-          · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hz
-            rw [← hz.1.2]
-            congr 1
-            dsimp [term]
-            simp_rw [hi]
-            simp only [ord, Ordinal.enum_typein]
-        · simp only [ProjOrd, ord, term, Ordinal.typein_enum, lt_self_iff_false, ite_false]
+      rw [C0_eq_res C hsC ho]
+      exact hx.1
     dsimp [LocallyConstant.equiv]
     rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
-    rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+    rw [LocallyConstant.coe_comap_apply _ _ h₀]
     rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
-    rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+    rw [LocallyConstant.coe_comap_apply _ _ h₁]
     exact (congrFun hf ⟨x, hx'⟩).symm
   · dsimp [Linear_ResC, LocallyConstant.comapLinear]
     ext ⟨x,hx⟩
@@ -2912,38 +3013,53 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
       · dsimp [Function.ExtendBy, LocallyConstant.equiv]
         split_ifs
         rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
-        rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+        rw [LocallyConstant.coe_comap_apply _ _ h₀]
         congr 1
         ext i
         dsimp [ResOnSubset] at h ⊢
         dsimp [C0_homeo]
-        sorry -- obvious
+        rw [C0_projOrd C hsC ho x hx₀]
       · dsimp [Function.ExtendBy, LocallyConstant.equiv]
-        split_ifs
+        split_ifs with h'
         · rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
-          rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
-          dsimp [C1_homeo]
-          sorry -- use hf
-        · sorry --exfalso
+          rw [LocallyConstant.coe_comap_apply _ _ h₁]
+          have hx' : x ∈ C' C ho
+          · refine' ⟨hx₀, _⟩
+            rwa [← C0_projOrd C hsC ho x hx₀]
+          dsimp [ResOnSubset]
+          simp_rw [C0_projOrd C hsC ho x hx₀]
+          exact congrFun hf ⟨x, hx'⟩
+        · exfalso
+          apply h
+          exact ⟨x, ⟨hx₀, rfl⟩⟩
     · rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
       dsimp [LocallyConstant.piecewise, Set.piecewise', Set.piecewise]
       split_ifs with h
       · dsimp [Function.ExtendBy, LocallyConstant.equiv]
         split_ifs
         rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
-        rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+        rw [LocallyConstant.coe_comap_apply _ _ h₀]
         dsimp [C0_homeo]
-        sorry -- use hf
+        have hx' : ProjOrd o x ∈ C' C ho
+        · refine' ⟨_, ⟨x, ⟨hx₁, rfl⟩⟩⟩
+          rwa [C0_eq_res C hsC ho]
+        have := congrFun hf ⟨ProjOrd o x, hx'⟩
+        dsimp [ResOnSubset]
+        dsimp [CC'₁] at this
+        simp_rw [C1_projOrd C hsC ho x hx₁] at this
+        exact this.symm
       · dsimp [Function.ExtendBy, LocallyConstant.equiv]
-        split_ifs
+        split_ifs with h'
         · rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
-          rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+          rw [LocallyConstant.coe_comap_apply _ _ h₁]
           congr 1
           ext i
           dsimp [ResOnSubset] at h ⊢
           dsimp [C1_homeo]
-          sorry --obvious
-        · sorry -- exfalso
+          rw [C1_projOrd C hsC ho x hx₁]
+        · exfalso
+          apply h'
+          exact ⟨x, ⟨hx₁, rfl⟩⟩
 
 lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
     (ModuleCat.ofHom (Linear_ResC C o))
