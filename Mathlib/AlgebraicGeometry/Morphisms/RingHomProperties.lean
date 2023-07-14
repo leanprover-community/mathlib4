@@ -525,6 +525,8 @@ theorem affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.Ope
     (forall_congr' fun i => hP.source_affine_openCover_iff _ (𝒰' i))
 #align ring_hom.property_is_local.affine_open_cover_iff RingHom.PropertyIsLocal.affine_openCover_iff
 
+-- Porting note: doesn't build without the `IsAffine` instance but the linter complains
+@[nolint unusedHavesSuffices]
 theorem source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X) :
     affineLocally (@P) f ↔ ∀ i, affineLocally (@P) (𝒰.map i ≫ f) := by
   constructor
