@@ -36,7 +36,7 @@ import Mathlib.Logic.Function.Conjugate
   and the codomain to `t`.
 -/
 
-variable {α β γ : Type _} {ι : Sort _} {π : α → Type _}
+variable {α β γ δ : Type _} {ι : Sort _} {π : α → Type _}
 
 open Equiv Equiv.Perm Function
 
@@ -238,6 +238,11 @@ theorem EqOn.union (h₁ : EqOn f₁ f₂ s₁) (h₂ : EqOn f₁ f₂ s₂) : E
 theorem EqOn.comp_left (h : s.EqOn f₁ f₂) : s.EqOn (g ∘ f₁) (g ∘ f₂) := fun _ ha =>
   congr_arg _ <| h ha
 #align set.eq_on.comp_left Set.EqOn.comp_left
+
+theorem EqOn.comp_left₂ {op : α → β → δ} {a₁ a₂ : γ → α} {b₁ b₂ : γ → β} {s : Set γ}
+    (ha : s.EqOn a₁ a₂) (hb : s.EqOn b₁ b₂) :
+    s.EqOn (fun x ↦ op (a₁ x) (b₁ x)) (fun x ↦ op (a₂ x) (b₂ x)) := fun _ hx =>
+  congr_arg₂ _ (ha hx) (hb hx)
 
 @[simp]
 theorem eqOn_range {ι : Sort _} {f : ι → α} {g₁ g₂ : α → β} :
