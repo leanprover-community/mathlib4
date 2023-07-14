@@ -78,7 +78,7 @@ theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k
   by_cases hij : c.Rel i j
   · by_cases hjk : c.Rel j k
     · exact C.d_comp_d' i j k hij hjk
-    . rw [C.shape j k hjk, comp_zero]
+    · rw [C.shape j k hjk, comp_zero]
   · rw [C.shape i j hij, zero_comp]
 #align homological_complex.d_comp_d HomologicalComplex.d_comp_d
 
@@ -94,8 +94,8 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   simp only [mk.injEq, heq_eq_eq, true_and]
   ext i j
   by_cases hij: c.Rel i j
-  . simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
-  . rw [s₁ i j hij, s₂ i j hij]
+  · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
+  · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
 
 def XIsoOfEq (K : HomologicalComplex V c) {p q : ι} (h : p = q) :
@@ -220,7 +220,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
     f.f i ≫ B.d i j = A.d i j ≫ f.f j := by
   by_cases hij : c.Rel i j
   · exact f.comm' i j hij
-  . rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
+  · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 #align homological_complex.hom.comm HomologicalComplex.Hom.comm
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
@@ -581,15 +581,21 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 #align homological_complex.hom.next_eq HomologicalComplex.Hom.next_eq
 
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 #align homological_complex.hom.comm_from HomologicalComplex.Hom.comm_from
 
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+attribute [simp 1100] comm_from_assoc
+attribute [simp] comm_from_apply
+
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 #align homological_complex.hom.comm_to HomologicalComplex.Hom.comm_to
+
+attribute [simp 1100] comm_to_assoc
+attribute [simp] comm_to_apply
 
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
@@ -903,7 +909,6 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm (n + 1) n⟩).1 := by
   dsimp [mkHom, mkHomAux]
-  induction n <;> congr
 #align chain_complex.mk_hom_f_succ_succ ChainComplex.mkHom_f_succ_succ
 
 end MkHom
@@ -1153,7 +1158,6 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm n (n + 1)⟩).1 := by
   dsimp [mkHom, mkHomAux]
-  induction n <;> congr
 #align cochain_complex.mk_hom_f_succ_succ CochainComplex.mkHom_f_succ_succ
 
 end MkHom

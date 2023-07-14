@@ -262,7 +262,7 @@ theorem truncateFun_add (x y : 𝕎 R) :
 @[simp]
 theorem truncateFun_mul (x y : 𝕎 R) :
     truncateFun n (x * y) = truncateFun n x * truncateFun n y := by
-witt_truncateFun_tac
+  witt_truncateFun_tac
 #align witt_vector.truncate_fun_mul WittVector.truncateFun_mul
 
 theorem truncateFun_neg (x : 𝕎 R) : truncateFun n (-x) = -truncateFun n x := by
@@ -471,7 +471,7 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   ext i
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
-  congr with _
+  congr 1 with _
 #align witt_vector.truncate_lift_fun WittVector.truncate_liftFun
 
 variable (f)

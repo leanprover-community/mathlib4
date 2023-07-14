@@ -877,8 +877,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
         _ ≤ min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
               min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
           min_le_right _ _
-    calc dist x z ≤ ∑' i, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
-          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i)) :=
+    calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
+          min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
         tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
       _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _

@@ -154,6 +154,20 @@ theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, 
   ((@span_le (p := ⟨ ⟨⟨p, by intros x y; exact H1 x y⟩, H0⟩, H2⟩)) s).2 Hs h
 #align submodule.span_induction Submodule.span_induction
 
+/-- An induction principle for span membership. This is a version of `Submodule.span_induction`
+for binary predicates. -/
+theorem span_induction₂ {p : M → M → Prop} (ha : a ∈ Submodule.span R s)
+    (hb : b ∈ Submodule.span R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y)
+    (H0_left : ∀ y, p 0 y) (H0_right : ∀ x, p x 0)
+    (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
+    (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
+    (Hsmul_left : ∀ (r : R) x y, p x y → p (r • x) y)
+    (Hsmul_right : ∀ (r : R) x y, p x y → p x (r • y)) : p a b :=
+  Submodule.span_induction ha
+    (fun x hx => Submodule.span_induction hb (Hs x hx) (H0_right x) (Hadd_right x) fun r =>
+      Hsmul_right r x)
+    (H0_left b) (fun x₁ x₂ => Hadd_left x₁ x₂ b) fun r x => Hsmul_left r x b
+
 /-- A dependent version of `Submodule.span_induction`. -/
 theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
@@ -282,7 +296,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
   (Submodule.gi R M).gc.le_u_l_trans hUV hVW
 #align submodule.subset_span_trans Submodule.subset_span_trans
 
-/-- See `submodule.span_smul_eq` (in `ring_theory.ideal.operations`) for
+/-- See `submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
@@ -582,6 +596,11 @@ theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : M →
   rw [Submodule.span_image]
   exact Submodule.mem_map_of_mem h
 #align submodule.apply_mem_span_image_of_mem_span Submodule.apply_mem_span_image_of_mem_span
+
+theorem apply_mem_span_image_iff_mem_span [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {x : M}
+    {s : Set M} (hf : Function.Injective f) :
+    f x ∈ Submodule.span R₂ (f '' s) ↔ x ∈ Submodule.span R s := by
+  rw [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf]
 
 @[simp]
 theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :

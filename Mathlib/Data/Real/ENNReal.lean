@@ -384,7 +384,8 @@ theorem coe_mul : ↑(r * p) = (r : ℝ≥0∞) * p :=
 #noalign ennreal.coe_bit1
 
 @[simp, norm_cast] -- porting note: new
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
 
 -- porting note: todo: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
@@ -699,7 +700,7 @@ theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 #align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
 
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.ofReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   ofReal_coe_nat n
 
 @[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.nat_ne_top n
@@ -722,7 +723,7 @@ theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.toReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    ENNReal.toReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toReal_nat n
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
@@ -1229,26 +1230,26 @@ section Sum
 open Finset
 
 /-- A product of finite numbers is still finite -/
-theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : (∏ a in s, f a) < ∞ :=
+theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a in s, f a < ∞ :=
   WithTop.prod_lt_top h
 #align ennreal.prod_lt_top ENNReal.prod_lt_top
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : (∑ a in s, f a) < ∞ :=
+theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∑ a in s, f a < ∞ :=
   WithTop.sum_lt_top h
 #align ennreal.sum_lt_top ENNReal.sum_lt_top
 
 /-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : (∑ a in s, f a) < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
+theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ a in s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
   WithTop.sum_lt_top_iff
 #align ennreal.sum_lt_top_iff ENNReal.sum_lt_top_iff
 
 /-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : (∑ x in s, f x) = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
+theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ x in s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
   WithTop.sum_eq_top_iff
 #align ennreal.sum_eq_top_iff ENNReal.sum_eq_top_iff
 
-theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : (∑ x in s, f x) ≠ ∞) {a : α}
+theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x in s, f x ≠ ∞) {a : α}
     (ha : a ∈ s) : f a < ∞ :=
   sum_lt_top_iff.1 h.lt_top a ha
 #align ennreal.lt_top_of_sum_ne_top ENNReal.lt_top_of_sum_ne_top
@@ -1277,7 +1278,7 @@ theorem ofReal_sum_of_nonneg {s : Finset α} {f : α → ℝ} (hf : ∀ i, i ∈
 #align ennreal.of_real_sum_of_nonneg ENNReal.ofReal_sum_of_nonneg
 
 theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
-    (Hlt : ∀ i ∈ s, f i < g i) : (∑ i in s, f i) < ∑ i in s, g i := by
+    (Hlt : ∀ i ∈ s, f i < g i) : ∑ i in s, f i < ∑ i in s, g i := by
   induction' hs using Finset.Nonempty.cons_induction with a a s as _ IH
   · simp [Hlt _ (Finset.mem_singleton_self _)]
   · simp only [as, Finset.sum_cons, not_false_iff]
@@ -1287,7 +1288,7 @@ theorem sum_lt_sum_of_nonempty {s : Finset α} (hs : s.Nonempty) {f g : α → �
 #align ennreal.sum_lt_sum_of_nonempty ENNReal.sum_lt_sum_of_nonempty
 
 theorem exists_le_of_sum_le {s : Finset α} (hs : s.Nonempty) {f g : α → ℝ≥0∞}
-    (Hle : (∑ i in s, f i) ≤ ∑ i in s, g i) : ∃ i ∈ s, f i ≤ g i := by
+    (Hle : ∑ i in s, f i ≤ ∑ i in s, g i) : ∃ i ∈ s, f i ≤ g i := by
   contrapose! Hle
   apply ENNReal.sum_lt_sum_of_nonempty hs Hle
 #align ennreal.exists_le_of_sum_le ENNReal.exists_le_of_sum_le
