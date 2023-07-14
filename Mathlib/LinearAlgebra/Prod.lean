@@ -784,7 +784,7 @@ theorem prodProdProdComm_symm :
 
 @[simp]
 theorem prodProdProdComm_toAddEquiv :
-    (prodProdProdComm R M M₂ M₃ M₄).toAddEquiv = AddEquiv.prodProdProdComm M M₂ M₃ M₄ :=
+    (prodProdProdComm R M M₂ M₃ M₄ : _ ≃+ _) = AddEquiv.prodProdProdComm M M₂ M₃ M₄ :=
   rfl
 #align linear_equiv.prod_prod_prod_comm_to_add_equiv LinearEquiv.prodProdProdComm_toAddEquiv
 

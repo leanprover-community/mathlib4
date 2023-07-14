@@ -722,7 +722,7 @@ def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
 
 @[to_additive (attr := simp) prodProdProdComm_toEquiv]
 theorem prodProdProdComm_toEquiv :
-    (prodProdProdComm M N M' N').toEquiv = Equiv.prodProdProdComm M N M' N' :=
+    (prodProdProdComm M N M' N' : _ ≃ _) = Equiv.prodProdProdComm M N M' N' :=
   rfl
 #align mul_equiv.prod_prod_prod_comm_to_equiv MulEquiv.prodProdProdComm_toEquiv
 #align add_equiv.sum_sum_sum_comm_to_equiv AddEquiv.prodProdProdComm_toEquiv

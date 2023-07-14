@@ -322,19 +322,19 @@ theorem prodProdProdComm_symm : (prodProdProdComm R R' S S').symm = prodProdProd
 
 @[simp]
 theorem prodProdProdComm_toAddEquiv :
-    (prodProdProdComm R R' S S').toAddEquiv = AddEquiv.prodProdProdComm R R' S S' :=
+    (prodProdProdComm R R' S S' : _ ≃+ _) = AddEquiv.prodProdProdComm R R' S S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_to_add_equiv RingEquiv.prodProdProdComm_toAddEquiv
 
 @[simp]
 theorem prodProdProdComm_toMulEquiv :
-    (prodProdProdComm R R' S S').toMulEquiv = MulEquiv.prodProdProdComm R R' S S' :=
+    (prodProdProdComm R R' S S' : _ ≃* _) = MulEquiv.prodProdProdComm R R' S S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_to_mul_equiv RingEquiv.prodProdProdComm_toMulEquiv
 
 @[simp]
 theorem prodProdProdComm_toEquiv :
-    (prodProdProdComm R R' S S').toEquiv = Equiv.prodProdProdComm R R' S S' :=
+    (prodProdProdComm R R' S S' : _ ≃ _) = Equiv.prodProdProdComm R R' S S' :=
   rfl
 #align ring_equiv.prod_prod_prod_comm_to_equiv RingEquiv.prodProdProdComm_toEquiv
 
