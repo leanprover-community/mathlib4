@@ -95,7 +95,7 @@ theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace �
     [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
     (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
-  have := @MeasurableEmbedding.set_integral_map _ _ _ _ volume _ _ _ _ _  A f (Ici (-c))
+  have := MeasurableEmbedding.set_integral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
 #align integral_comp_neg_Iic integral_comp_neg_Iic
