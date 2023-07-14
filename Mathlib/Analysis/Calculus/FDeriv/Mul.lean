@@ -604,8 +604,7 @@ theorem fderiv_inv' {x : R} (hx : x ≠ 0) : fderiv 𝕜 Inv.inv x = -mulLeftRig
 
 /-- Non-commutative version of `fderiv_within_inv` -/
 theorem fderivWithin_inv' {s : Set R} {x : R} (hx : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ :=
-  by
+    fderivWithin 𝕜 (fun x => x⁻¹) s x = -mulLeftRight 𝕜 R x⁻¹ x⁻¹ := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv' hx) hxs]
   exact fderiv_inv' hx
 #align fderiv_within_inv' fderivWithin_inv'
