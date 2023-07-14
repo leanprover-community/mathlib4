@@ -595,9 +595,8 @@ instance instSMul [SMul R M] [ContinuousConstSMul R M] : SMul R C(α, M) :=
 #align continuous_map.has_vadd ContinuousMap.instVAdd
 
 @[to_additive]
-instance [LocallyCompactSpace α] [SMul R M] [ContinuousConstSMul R M] :
-    ContinuousConstSMul R C(α, M) :=
-  ⟨fun γ => continuous_of_continuous_uncurry _ (continuous_eval'.const_smul γ)⟩
+instance [SMul R M] [ContinuousConstSMul R M] : ContinuousConstSMul R C(α, M) :=
+  ⟨fun γ => ContinuousMap.continuous_comp ⟨fun m ↦ γ • m, continuous_const_smul γ⟩⟩
 
 @[to_additive]
 instance [LocallyCompactSpace α] [TopologicalSpace R] [SMul R M] [ContinuousSMul R M] :

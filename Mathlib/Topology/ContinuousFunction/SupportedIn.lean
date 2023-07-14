@@ -40,12 +40,12 @@ namespace ContinuousMapSupportedIn
 
 open ContinuousMapSupportedInClass
 
-variable {F X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
+variable {F X Y Z : Type _} [TopologicalSpace X] [TopologicalSpace Y] [UniformSpace Z]
 
 section Zero
 
 -- We need to keep the order of arguments until `initialize_simps_projections`
-variable [Zero Y] {K : Compacts X} [ContinuousMapSupportedInClass F X Y K]
+variable [Zero Y] [Zero Z] {K : Compacts X} [ContinuousMapSupportedInClass F X Y K]
 
 instance toContinuousMapSupportedInClass :
     ContinuousMapSupportedInClass C(K; X, Y) X Y K where
@@ -116,6 +116,24 @@ protected def of_support_subset {f : X → Y} (hf : Continuous f) (hsupp : suppo
   continuous_toFun := hf
   zero_on_compl_toFun := support_subset_iff'.mp hsupp
 
+instance : TopologicalSpace C(K; X, Y) :=
+  induced ((↑) : C(K; X, Y) → C(X, Y)) ContinuousMap.compactOpen
+
+protected theorem embedding_coe : Embedding ((↑) : C(K; X, Y) → C(X, Y)) where
+  induced := rfl
+  inj f g hfg := by ext x _; exact congr_fun (congr_arg (↑) hfg) x
+
+protected theorem embedding_restrict_coe :
+    Embedding ((ContinuousMap.restrict K) ∘ ((↑) : C(K; X, Y) → C(X, Y))) where
+  induced := sorry
+  inj f g hfg := by ext x hx; rw [FunLike.ext_iff] at hfg; exact hfg ⟨x, hx⟩
+
+instance : UniformSpace C(K; X, Z) :=
+  UniformSpace.comap ((↑) : C(K; X, Z) → C(X, Z)) ContinuousMap.compactConvergenceUniformSpace
+
+protected theorem uniformInducing_coe : UniformInducing ((↑) : C(K; X, Z) → C(X, Z)) where
+  comap_uniformity := rfl
+
 instance : Zero C(K; X, Y) where
   zero := ContinuousMapSupportedIn.mk 0 fun _ _ ↦ rfl
 
@@ -158,6 +176,9 @@ lemma coe_smul (c : R) (f : C(K; X, Y)) : (c • f : X → Y) = c • (f : X →
 instance : SMulZeroClass R C(K; X, Y) :=
   coe_injective.smulZeroClass ⟨(↑), coe_zero⟩ coe_smul
 
+instance : ContinuousConstSMul R C(K; X, Y) where
+  continuous_const_smul c := continuous_induced_rng.mpr (continuous_induced_dom.const_smul c)
+
 end SMulZeroClass
 
 section NegZeroClass
@@ -187,58 +208,34 @@ instance [AddCommMonoid Y] [ContinuousAdd Y] : AddCommMonoid C(K; X, Y) :=
 
 end AddMonoid
 
-section SubNegZeroMonoid
+section AddGroup
 
-variable [SubNegZeroMonoid Y] [ContinuousSub Y]
+variable [AddGroup Y] [TopologicalAddGroup Y]
 
 instance : Sub C(K; X, Y) where
   sub f g := ContinuousMapSupportedIn.mk (f - g) <| by
     rw [← sub_zero 0]
-    exact f.zero_on_compl.comp_left
+    exact f.zero_on_compl.comp_left₂ g.zero_on_compl
 
-end SubNegZeroMonoid
-
-instance [AddGroup Y] [ContinuousAdd Y] : AddGroup C(K; X, Y) :=
-  coe_injective.addGroup _ _
-
-end OtherAlgebraicStrutures
-
-section AddGroup
-
-variable [AddGroup Y] {K : Compacts X} [ContinuousMapSupportedInClass F X Y K]
-  [TopologicalAddGroup Y]
+lemma coe_sub (f g : C(K; X, Y)) : (f - g : C(K; X, Y)) = (f : X → Y) - g :=
+  by ext; rfl
 
 instance : AddGroup C(K; X, Y) :=
-  { inferInstanceAs (AddMonoid C(K; X, Y)) with
-    neg := fun f ↦ ContinuousMapSupportedIn.mk (-f) <| by
-      rw [← neg_zero]
-      exact f.zero_on_compl.comp_left
-    add_left_neg := fun f ↦ by ext; exact add_left_neg _ }
+  coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub
+    (forall_swap.mpr coe_smul) (forall_swap.mpr coe_smul)
+
+instance [AddCommGroup Z] [TopologicalSpace Z] [TopologicalAddGroup Z] : AddCommGroup C(K; X, Z) :=
+  coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
+    (forall_swap.mpr coe_smul) (forall_swap.mpr coe_smul)
 
 end AddGroup
 
-section AddCommMonoid
-
-variable [AddCommMonoid Y] {K : Compacts X} [ContinuousMapSupportedInClass F X Y K]
-  [ContinuousAdd Y]
-
-instance : AddCommMonoid C(K; X, Y) :=
-  { inferInstanceAs (AddMonoid C(K; X, Y)) with
-    add_comm := fun f₁ f₂ ↦ by ext; exact add_comm _ _ }
-
-end AddCommMonoid
-
-section AddCommGroup
-
-variable [AddCommGroup Y] {K : Compacts X} [ContinuousMapSupportedInClass F X Y K]
-  [TopologicalAddGroup Y]
-
-instance : AddCommGroup C(K; X, Y) :=
-  { inferInstanceAs (AddGroup C(K; X, Y)), inferInstanceAs (AddCommMonoid C(K; X, Y)) with }
-
-end AddCommGroup
-
 section Module
+
+instance {R : Type _} [Semiring R] [AddCommMonoid Y] [ContinuousAdd Y] [Module R Y]
+    [ContinuousConstSMul R Y] :
+    Module R C(K; X, Y) :=
+  coe_injective.module R ⟨⟨(↑), _⟩, _⟩ _
 
 end Module
 
