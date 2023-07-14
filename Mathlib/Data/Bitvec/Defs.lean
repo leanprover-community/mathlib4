@@ -72,6 +72,8 @@ def shl (x : Bitvec n) (i : ℕ) : Bitvec n :=
   shiftLeftFill x i false
 #align bitvec.shl Bitvec.shl
 
+#noalign bitvec.fill_shr
+
 /-- unsigned shift right -/
 def ushr (x : Bitvec n) (i : ℕ) : Bitvec n :=
   shiftRightFill x i false
