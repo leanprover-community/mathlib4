@@ -8,7 +8,7 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.ENat.Lattice
+import Mathlib.Data.EENat
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Tactic.TFAE
 
@@ -55,80 +55,80 @@ variable {α β : Type _}
 
 namespace Set
 
-section LT
+section Rel
 
-variable [LT α] [LT β] (s t : Set α)
+variable (s t : Set α) (r : α → α → Prop)
 
 /-- The set of strictly ascending lists of `α` contained in a `Set α`. -/
 def subchain : Set (List α) :=
-  { l | l.Chain' (· < ·) ∧ ∀ i ∈ l, i ∈ s }
-#align set.subchain Set.subchain
+  { l | l.Chain' r ∧ ∀ i ∈ l, i ∈ s }
+-- #align set.subchain Set.subchain
 
 @[simp] -- porting note: new `simp`
-theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ fun.⟩
+theorem nil_mem_subchain : [] ∈ s.subchain r := ⟨trivial, fun _ ↦ fun.⟩
 #align set.nil_mem_subchain Set.nil_mem_subchain
 
 variable {s} {l : List α} {a : α}
 
 theorem cons_mem_subchain_iff :
-    (a::l) ∈ s.subchain ↔ a ∈ s ∧ l ∈ s.subchain ∧ ∀ b ∈ l.head?, a < b := by
+    (a::l) ∈ s.subchain r ↔ a ∈ s ∧ l ∈ s.subchain r ∧ ∀ b ∈ l.head?, r a b := by
   simp only [subchain, mem_setOf_eq, forall_mem_cons, chain'_cons', and_left_comm, and_comm,
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
 
 @[simp] -- porting note: new lemma + `simp`
-theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
+theorem singleton_mem_subchain_iff : [a] ∈ s.subchain r ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
-instance : Nonempty s.subchain :=
-  ⟨⟨[], s.nil_mem_subchain⟩⟩
+instance : Nonempty <| s.subchain r :=
+  ⟨⟨[], s.nil_mem_subchain r⟩⟩
 
 variable (s)
 
 /-- The maximal length of a strictly ascending sequence in a partial order. -/
-noncomputable def chainHeight : ℕ∞ :=
-  ⨆ l ∈ s.subchain, length l
+noncomputable abbrev chainHeight : ℕ±∞ :=
+  ⨆ l ∈ s.subchain r, length l
 #align set.chain_height Set.chainHeight
 
-theorem chainHeight_eq_iSup_subtype : s.chainHeight = ⨆ l : s.subchain, ↑l.1.length :=
+theorem chainHeight_eq_iSup_subtype : s.chainHeight r = ⨆ l : s.subchain r, ↑l.1.length :=
   iSup_subtype'
 #align set.chain_height_eq_supr_subtype Set.chainHeight_eq_iSup_subtype
 
-theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
-    ∃ l ∈ s.subchain, length l = n := by
-  cases' (le_top : s.chainHeight ≤ ⊤).eq_or_lt with ha ha <;>
-    rw [chainHeight_eq_iSup_subtype] at ha
+theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight r) :
+    ∃ l ∈ s.subchain r, length l = n := by
+  cases' (le_top : s.chainHeight r ≤ ⊤).eq_or_lt with ha ha <;>
+    rw [s.chainHeight_eq_iSup_subtype r] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
-      not_bddAbove_iff'.mp ((WithTop.iSup_coe_eq_top _).mp ha) n
+      not_bddAbove_iff'.mp ((EENat.iSup_coe_eq_top _).mp ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
       (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
-  · rw [ENat.iSup_coe_lt_top] at ha
+  · rw [EENat.iSup_coe_lt_top] at ha
     obtain ⟨⟨l, h₁, h₂⟩, e : l.length = _⟩ := Nat.sSup_mem (Set.range_nonempty _) ha
     refine'
       ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
         (l.length_take n).trans <| min_eq_left <| _⟩
-    rwa [e, ← Nat.cast_le (α := ℕ∞), sSup_range, ENat.coe_iSup ha, ← chainHeight_eq_iSup_subtype]
+    rwa [e, ← Nat.cast_le (α := ℕ±∞), sSup_range, EENat.coe_iSup _ ha, ← s.chainHeight_eq_iSup_subtype r]
 #align set.exists_chain_of_le_chain_height Set.exists_chain_of_le_chainHeight
 
 theorem le_chainHeight_TFAE (n : ℕ) :
-    TFAE [↑n ≤ s.chainHeight, ∃ l ∈ s.subchain, length l = n, ∃ l ∈ s.subchain, n ≤ length l] := by
-  tfae_have 1 → 2; · exact s.exists_chain_of_le_chainHeight
+    TFAE [(n : ℕ±∞) ≤ s.chainHeight r, ∃ l ∈ s.subchain r, length l = n, ∃ l ∈ s.subchain r, n ≤ length l] := by
+  tfae_have 1 → 2; · exact s.exists_chain_of_le_chainHeight r
   tfae_have 2 → 3; · rintro ⟨l, hls, he⟩; exact ⟨l, hls, he.ge⟩
-  tfae_have 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (WithTop.coe_le_coe.2 hn)
+  tfae_have 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (EENat.coe_le_coe.2 hn)
   tfae_finish
 #align set.le_chain_height_tfae Set.le_chainHeight_TFAE
 
 variable {s t}
 
-theorem le_chainHeight_iff {n : ℕ} : ↑n ≤ s.chainHeight ↔ ∃ l ∈ s.subchain, length l = n :=
-  (le_chainHeight_TFAE s n).out 0 1
+theorem le_chainHeight_iff {n : ℕ} : ↑n ≤ s.chainHeight r ↔ ∃ l ∈ s.subchain r, length l = n :=
+  (le_chainHeight_TFAE s r n).out 0 1
 #align set.le_chain_height_iff Set.le_chainHeight_iff
 
-theorem length_le_chainHeight_of_mem_subchain (hl : l ∈ s.subchain) : ↑l.length ≤ s.chainHeight :=
-  le_chainHeight_iff.mpr ⟨l, hl, rfl⟩
+theorem length_le_chainHeight_of_mem_subchain (hl : l ∈ s.subchain r) : ↑l.length ≤ s.chainHeight r :=
+  (le_chainHeight_iff r).mpr ⟨l, hl, rfl⟩
 #align set.length_le_chain_height_of_mem_subchain Set.length_le_chainHeight_of_mem_subchain
 
-theorem chainHeight_eq_top_iff : s.chainHeight = ⊤ ↔ ∀ n, ∃ l ∈ s.subchain, length l = n := by
-  refine' ⟨fun h n ↦ le_chainHeight_iff.1 (le_top.trans_eq h.symm), fun h ↦ _⟩
+theorem chainHeight_eq_top_iff : s.chainHeight = ⊤ ↔ ∀ n, ∃ l ∈ s.subchain r, length l = n := by
+  refine' ⟨fun h n ↦ (le_chainHeight_iff r).1 (le_top.trans_eq h.symm), fun h ↦ _⟩
   contrapose! h; obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 h
   exact ⟨n + 1, fun l hs ↦ (Nat.lt_succ_iff.2 <| Nat.cast_le.1 <|
     (length_le_chainHeight_of_mem_subchain hs).trans_eq hn.symm).ne⟩
