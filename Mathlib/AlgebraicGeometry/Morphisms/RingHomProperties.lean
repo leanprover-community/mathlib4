@@ -285,21 +285,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
 
 variable (hP : RingHom.PropertyIsLocal @P)
 
-/-- Porting note: this here because the `erw` in `sourceAffineLocally_of_source_open_cover_aux`
-  now requires us to explicitly specify the `Localization` -/
-def aux_loc {X : Scheme} (U : X.affineOpens) (r : X.presheaf.obj (op U.1)) :
-     @IsLocalization (Scheme.Γ.obj (op (X.restrict (U.1.openEmbedding)))) CommRing.toCommSemiring
-     (Submonoid.powers
-       ((X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) r))
-     (Scheme.Γ.obj (op ((X.restrict U.1.openEmbedding).restrict
-       (((X.restrict U.1.openEmbedding).basicOpen
-         ((X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) r))).openEmbedding)))
-     CommRing.toCommSemiring
-     (ΓRestrictAlgebra
-       (((X.restrict U.1.openEmbedding).basicOpen
-         ((X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op) r))).openEmbedding) := sorry
-
--- Porting note: the terms here are getting huge ~ 1/2 Gb for the goal midway
+-- Porting note: the terms here are getting huge ~ 1/2 Gb for the goal midway (with `pp.explicit`)
 set_option maxHeartbeats 13000000 in
 theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso @P)
     (h₃ : RingHom.OfLocalizationSpanTarget @P) {X Y : Scheme} (f : X ⟶ Y) (U : X.affineOpens)
@@ -310,6 +296,8 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply h₃ _ _ hs
   rintro ⟨s, r, hr, hs⟩
+  -- Porting note: unused variable linter is complaining here despite being used
+  let _loc := @AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 s
   have := (@Localization.algEquiv _ _ _ _ _ _
     (@AlgebraicGeometry.Γ_restrict_isLocalization _ U.2 s)).toRingEquiv.toCommRingCatIso
   refine (h₁.cancel_right_isIso _ (@Localization.algEquiv _ _ _ _ _ _
@@ -317,31 +305,47 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
   subst hs
   rw [CommRingCat.comp_eq_ring_hom_comp, ← RingHom.comp_assoc]
   -- Porting note: here is where it gets bad; previously `erw [IsLocalization.map_comp]`
-  -- ask Lean to synthesize instances and it runs aways as far as I can tell
-  -- we also have to pass through the `Localization` instance now (and not before)
+  -- ask Lean to synthesize instances and it runs away
+  -- we also have to pass in one `Localization` instance now (and not before)
   erw [@IsLocalization.map_comp _ _ _ _ _ (_)
     (Scheme.Γ.obj (Opposite.op (X.restrict U.1.openEmbedding))) _ (_) _
     (Submonoid.powers (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r))
     ((Scheme.Γ.obj (Opposite.op ((X.restrict U.1.openEmbedding).restrict
     ((X.restrict U.1.openEmbedding).basicOpen (X.presheaf.map
-      (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))) _ (le_of_eq rfl) (_) ?_]
-  · erw [RingHom.comp_id]
-    rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp,
-      Scheme.Γ_map_op, Scheme.Γ_map_op, Scheme.Γ_map_op, Category.assoc]
-    erw [← X.presheaf.map_comp]
-    rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]
-    convert hs' ⟨r, hr⟩ using 1
-    · erw [Category.assoc]
-      rw [← X.presheaf.map_comp, op_comp, Scheme.Γ.map_comp, Scheme.Γ_map_op, Scheme.Γ_map_op]
-      congr!
-      all_goals
-      · dsimp [Functor.op]
-        conv_lhs => rw [Opens.openEmbedding_obj_top]
-        conv_rhs => rw [Opens.openEmbedding_obj_top]
-        erw [Scheme.image_basicOpen (X.ofRestrict U.1.openEmbedding)]
-        erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp_apply]
-        rw [Scheme.basicOpen_res_eq]
-  · apply aux_loc
+      (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))) _ (le_of_eq rfl) (_) loc]
+  erw [RingHom.comp_id]
+  rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp,
+    Scheme.Γ_map_op, Scheme.Γ_map_op, Scheme.Γ_map_op, Category.assoc]
+  erw [← X.presheaf.map_comp]
+  rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]
+  convert hs' ⟨r, hr⟩ using 1
+  · erw [Category.assoc]
+    rw [← X.presheaf.map_comp, op_comp, Scheme.Γ.map_comp, Scheme.Γ_map_op, Scheme.Γ_map_op]
+    congr!
+    all_goals
+    · dsimp [Functor.op]
+      conv_lhs => rw [Opens.openEmbedding_obj_top]
+      conv_rhs => rw [Opens.openEmbedding_obj_top]
+      erw [Scheme.image_basicOpen (X.ofRestrict U.1.openEmbedding)]
+      erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp_apply]
+      rw [Scheme.basicOpen_res_eq]
+  -- · erw [RingHom.comp_id]
+  --   rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp,
+  --     Scheme.Γ_map_op, Scheme.Γ_map_op, Scheme.Γ_map_op, Category.assoc]
+  --   erw [← X.presheaf.map_comp]
+  --   rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]
+  --   convert hs' ⟨r, hr⟩ using 1
+  --   · erw [Category.assoc]
+  --     rw [← X.presheaf.map_comp, op_comp, Scheme.Γ.map_comp, Scheme.Γ_map_op, Scheme.Γ_map_op]
+  --     congr!
+  --     all_goals
+  --     · dsimp [Functor.op]
+  --       conv_lhs => rw [Opens.openEmbedding_obj_top]
+  --       conv_rhs => rw [Opens.openEmbedding_obj_top]
+  --       erw [Scheme.image_basicOpen (X.ofRestrict U.1.openEmbedding)]
+  --       erw [PresheafedSpace.IsOpenImmersion.ofRestrict_invApp_apply]
+  --       rw [Scheme.basicOpen_res_eq]
+  -- · apply aux_loc
 #align algebraic_geometry.source_affine_locally_of_source_open_cover_aux AlgebraicGeometry.sourceAffineLocally_of_source_open_cover_aux
 
 theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsIso @P)
