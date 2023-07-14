@@ -18,33 +18,46 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
      a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
                     b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
                                    a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] := by
-  rw of_mul_of_fin
+  rw [of_mul_of_fin% 2 2 2]
 ```
 
 ## Main results
 
-* `Matrix.fin_eta`
-* `Matrix.of_mul_of_fin`
+* `Matrix.fin_eta.elab`: the elaborator `fin_eta% m n A` which expands a matrix into coefficients
+* `Matrix.of_mul_of_fin.elab`: the elaborator `of_mul_of_fin% l m n` which produces a lemma
+  about matrix multiplication.
 
 -/
 
-/-- Like `List.mapM` but for a vector. -/
-def Fin.mapM {α : Type u} {n : ℕ} {m : Type u → Type v} [Monad m] (f : Fin n → m α) :
+open Lean Lean.Meta Elab Qq
+
+/-- Like `List.mapM` but for a tuple. -/
+def PiFin.mapM {α : Type u} {n : ℕ} {m : Type u → Type v} [Monad m] (f : Fin n → m α) :
     m (Fin n → α) :=
   Vector.get <$> Vector.mmap f ⟨List.finRange n, List.length_finRange _⟩
 
-open Lean Lean.Meta Elab Qq
-
-namespace Matrix
-
-namespace fin_eta
-
-
 /-- Convert a vector of Exprs to the Expr constructing that vector.-/
-def _root_.PiFin.toExprQ {u : Level} {α : Q(Type u)} :
+def PiFin.toExprQ {u : Level} {α : Q(Type u)} :
     ∀ {n : ℕ}, (Fin n → Q($α)) → Q(Fin $n → $α)
   | 0, _v => q(![])
   | _n + 1, v => q(Matrix.vecCons $(v 0) $(PiFin.toExprQ <| Matrix.vecTail v))
+
+
+namespace Matrix
+
+/-- Like `PiFin.mapM` but for a matrix. -/
+def mapM {α : Type u} {n o : ℕ} {m : Type u → Type v} [Monad m]
+    (f : Matrix (Fin n) (Fin o) (m α)) :
+    m (Matrix (Fin n) (Fin o) α) :=
+  Matrix.of <$> (PiFin.mapM <| fun i => PiFin.mapM <| fun j => f i j)
+
+/-- `PiFin.toExprQ` but for matrices -/
+def toExprQ {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Matrix (Fin m) (Fin n) Q($α)) :
+  Q(Matrix (Fin $m) (Fin $n) $α) :=
+q(Matrix.of $(PiFin.toExprQ (u := u) fun i : Fin m => PiFin.toExprQ fun j : Fin n => A i j))
+
+namespace fin_eta
+
 
 /-- Prove a statement of the form `∀ {α} A : Matrix m n α, A = !![A 0 0, ...]`.
 Returns an assigned metavariable whose type is this statement. -/
@@ -71,7 +84,7 @@ fin_eta% 2 3 : ∀ {α : Type u_1} (A : Matrix (Fin 2) (Fin 3) α),
                   A = ↑of ![![A 0 0, A 0 1, A 0 2],
                             ![A 1 0, A 1 1, A 1 2]]
 ``` -/
-elab:max "fin_eta% " mStx:term:max nStx:term:max A?:(term)? : term => do
+elab:max (name := «elab») "fin_eta% " mStx:term:max nStx:term:max A?:(term)? : term => do
   let m : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
   let n : Q(Nat) ← Term.elabTermEnsuringType nStx (mkConst ``Nat)
   let A? ←
@@ -90,23 +103,6 @@ elab:max "fin_eta% " mStx:term:max nStx:term:max A?:(term)? : term => do
     Term.elabAppArgs pf #[] #[.expr A] none false false
   else
     return pf
-
-variable (α : Type u) (A : Matrix (Fin _) (Fin _) α) in
-#check (fin_eta% 2 3 A : A = of ![![A 0 0, A 0 1, A 0 2], ![A 1 0, A 1 1, A 1 2]])
-
-variable (α : Type u) (A : Matrix (Fin _) (Fin _) α) in
-#check (fin_eta% _ _ A : A = of ![![A 0 0, A 0 1, A 0 2], ![A 1 0, A 1 1, A 1 2]])
-
-example (A : Matrix (Fin 2) (Fin 3) ℕ) : A = 0 := by
-  rw [fin_eta% _ _ A]
-  dsimp
-
-example : true := by
-  let B : Matrix (Fin 20) (Fin 20) ℕ := 0
-  have := fin_eta% _ _ B
-  have : B = B := by rw [this]
-  trivial
-
 
 -- /-- Helper tactic used as an `auto_param` for `matrix.fin_eta` -/
 -- meta def fin_eta.derive : tactic unit :=
@@ -140,25 +136,11 @@ section of_mul_of_fin
 
 /-- Choose a name suffix for a matrix index -/
 private def nameSuffix {m n : ℕ} : Fin m → Fin n → String :=
-let chars := "₀₁₂₃₄₅₆₇₈₉".data
-if h : m ≤ 10 ∧ n ≤ 10
-then (fun i j => [
-  chars.get <| i.castLE (i.prop.trans_le h.1), chars.get <| j.castLE (j.prop.trans_le h.2)].asString)
-else (fun i j => "_" ++ toString i ++ "_" ++ toString j)
-
-/-- `pi_fin.to_pexpr` but for matrices -/
-def fin_to_pexpr {u : Level} {m n : ℕ} {α : Q(Type u)} (A : Matrix (Fin m) (Fin n) Q($α)) :
-  Q(Matrix (Fin $m) (Fin $n) $α) :=
-q(Matrix.of $(PiFin.toExprQ (u := u) fun i : Fin m => PiFin.toExprQ fun j : Fin n => A i j))
-
-/-- This statement is defeq to `of_mul_of_fin`, but syntactically worse-/
-theorem of_mul_of_fin_aux (l m n : ℕ) ⦃α⦄ [Mul α] [AddCommMonoid α] :
-  Forall $ fun A : Matrix (Fin l) (Fin m) α =>
-    Forall $ fun B : Matrix (Fin m) (Fin n) α =>
-      A.mul B = A.mulᵣ B :=
-by simp_rw [forall_iff, mulᵣ_eq, eq_self_iff_true, forall_const]
-
-#eval Name.appendAfter `Test "int"
+  let chars := "₀₁₂₃₄₅₆₇₈₉".data
+  if h : m ≤ 10 ∧ n ≤ 10
+  then (fun i j => [chars.get <| i.castLE (i.prop.trans_le h.1),
+                    chars.get <| j.castLE (j.prop.trans_le h.2)].asString)
+  else (fun i j => "_" ++ toString i ++ "_" ++ toString j)
 
 /-- Prove a statement of the form
 ```
@@ -174,47 +156,40 @@ do
   withLocalDeclQ `α .implicit q(Type u) fun (α : Q(Type u)) => do
   withLocalDeclQ `inst_1 .instImplicit q(Mul $α) fun (instMulα : Q(Mul $α)) => do
   withLocalDeclQ `inst_2 .instImplicit q(AddCommMonoid $α) fun (instAddCommMonoidα : Q(AddCommMonoid $α)) => do
-    -- clever trick: create algebraic instances on `expr` so that we can use `matrix.mul` or
-    -- `matrix.mulᵣ` to build the expression we want to end up with. It doesn't matter which we pick,
-    -- but the typeclasses are easier to create for the latter.
+    -- trick: create algebraic instances on `Expr` so that we can use `Matrix.mul` or
+    -- `Matrix.mulᵣ` to build the expression we want to end up with. It doesn't matter which we
+    -- pick but the typeclasses are easier to create for the latter.
     let _zero := Expr.instZero α (←synthInstanceQ q(Zero $α))
     let _add := Expr.instAdd α (←synthInstanceQ q(Add $α))
     let _mul := Expr.instMul α (←synthInstanceQ q(Mul $α))
 
+    -- moving to `ContT` lets us use `withLocalDeclDQ` with `Matrix.mapM`
     (ContT.run · pure) do
       -- introduce variables for each coefficient
-      let a : Fin l → Fin m → Q($α) ← (Fin.mapM $ fun i : Fin l => Fin.mapM $ fun j : Fin m =>
-          show ContT _ MetaM _ from withLocalDeclDQ ((`a).appendAfter (nameSuffix i j)) _)
-      let b : Fin m → Fin n → Q($α) ← (Fin.mapM $ fun i : Fin m => Fin.mapM $ fun j : Fin n =>
-          show ContT _ MetaM _ from withLocalDeclDQ ((`b).appendAfter (nameSuffix i j)) _)
-      let a_flat := (List.finRange l).bind (fun i => (List.finRange m).map $ fun j => a i j)
-      let b_flat := (List.finRange m).bind (fun i=> (List.finRange n).map $ fun j => b i j)
+      let a : Matrix (Fin l) (Fin m) Q($α) ← Matrix.mapM <| fun i j =>
+          withLocalDeclDQ ((`a).appendAfter (nameSuffix i j)) _
+      let b : Matrix (Fin m) (Fin n) Q($α) ← Matrix.mapM <| fun i j =>
+          withLocalDeclDQ ((`b).appendAfter (nameSuffix i j)) _
+      let a_flat := (List.finRange l).bind <| fun i => (List.finRange m).map <| fun j => a i j
+      let b_flat := (List.finRange m).bind <| fun i => (List.finRange n).map <| fun j => b i j
       let args := (#[α, instMulα, instAddCommMonoidα] : Array Expr) ++
-        (show Array Expr from a_flat.toArray) ++ (show Array Expr from b_flat.toArray)
+        (show Array Expr from a_flat.toArray ++ b_flat.toArray : Array Expr)
 
       -- build the matrices out of the coefficients
-      let A := Matrix.fin_to_pexpr a
-      let B := Matrix.fin_to_pexpr b
-      let AB := Matrix.fin_to_pexpr (Matrix.mulᵣ a b)
+      let A := Matrix.toExprQ a
+      let B := Matrix.toExprQ b
+      let AB := Matrix.toExprQ (Matrix.mulᵣ a b)
 
       -- State and prove the equality, noting the RHS is defeq to `mulᵣ A B`.
       let forall_A_eq : Q(Prop) ← mkForallFVars args q($A ⬝ $B = $AB)
-      let heq : Q(Matrix.mulᵣ $A $B = $AB) := (q(Eq.refl $AB) : Expr)
       let pf' ← mkLambdaFVars args <|
         (show Q($A ⬝ $B = $AB) from (q((Matrix.mulᵣ_eq $A $B).symm) : Expr))
-      -- let some pf ← checkTypeQ (ty := forall_A_eq) <| pf'
-      --       | throwError "(internal error) fin_mul% generated proof with incorrect type."
-      mkExpectedTypeHint pf' forall_A_eq
+      let some pf ← checkTypeQ (ty := forall_A_eq) <| pf'
+            | throwError "(internal error) of_mul_of_fin% generated proof with incorrect type."
+      mkExpectedTypeHint pf forall_A_eq
 
-
-#check Expr
-
-    -- t ← tactic.pis args A_eq,
-    -- let pr := (expr.const `matrix.of_mul_of_fin_aux [u]).mk_app [`(l), `(m), `(n)],
-    -- -- This seems to create a metavariable then assign it, which ensures `pr` carries the right type.
-    -- ((), pr) ← tactic.solve_aux t $ tactic.exact pr,
-
-elab:max "of_mul_of_fin% " lStx:term:max mStx:term:max nStx:term:max : term => do
+elab:max (name := of_mul_of_fin_elab)
+    "of_mul_of_fin% " lStx:term:max mStx:term:max nStx:term:max : term => do
   let l : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
   let m : Q(Nat) ← Term.elabTermEnsuringType mStx (mkConst ``Nat)
   let n : Q(Nat) ← Term.elabTermEnsuringType nStx (mkConst ``Nat)
@@ -226,8 +201,6 @@ elab:max "of_mul_of_fin% " lStx:term:max mStx:term:max nStx:term:max : term => d
     | throwErrorAt nStx "Expecting a natural number, have{indentD n}"
   prove l m n
 
-#check (of_mul_of_fin% 1 2 1)
-
 example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂;
       a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
@@ -235,37 +208,32 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
                                     a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
   by rw [of_mul_of_fin% 2 2 2]
 
-open scoped Matrix
+-- /-- Helper tactic used as an `auto_param` for `matrix.of_mul_of_fin` -/
+-- meta def of_mul_of_fin.derive : tactic unit :=
+-- do
+--   target@`(@matrix.mul (fin %%l) (fin %%m) (fin %%n) %%α %%_ %%i1 %%i2 %%A %%B = %%AB)
+--     ← tactic.target,
+--   some (l, m, n) ← pure (prod.mk <$> l.to_nat <*> (prod.mk <$> m.to_nat <*> n.to_nat)) |
+--     fail!"Dimensions {l}, {m} {n} are not numerals",
+--   (t,pr) ← of_mul_of_fin.prove l m n,
+--   tactic.apply (pr α i1 i2) {},
+--   tactic.done
+--   -- TODO: should we be extracting the coefficients manually so we can do a full invocation as
+--   -- something like:
+--   --   tactic.unify target (t.instantiate_pis [α, A']),
+--   --   tactic.exact (pr α A')
 
-#exit
-
-
-/-- Helper tactic used as an `auto_param` for `matrix.of_mul_of_fin` -/
-meta def of_mul_of_fin.derive : tactic unit :=
-do
-  target@`(@matrix.mul (fin %%l) (fin %%m) (fin %%n) %%α %%_ %%i1 %%i2 %%A %%B = %%AB)
-    ← tactic.target,
-  some (l, m, n) ← pure (prod.mk <$> l.to_nat <*> (prod.mk <$> m.to_nat <*> n.to_nat)) |
-    fail!"Dimensions {l}, {m} {n} are not numerals",
-  (t,pr) ← of_mul_of_fin.prove l m n,
-  tactic.apply (pr α i1 i2) {},
-  tactic.done
-  -- TODO: should we be extracting the coefficients manually so we can do a full invocation as
-  -- something like:
-  --   tactic.unify target (t.instantiate_pis [α, A']),
-  --   tactic.exact (pr α A')
-
-/-- This lemma assumes that `a_coeffs` and `b_coeffs` refer to expressions of the form
-`![![x₀₀, x₀₁], ![x₁₀, x₁₁]]`. It then uses an `auto_param` to populate `ab_coeffs` with an
-expression of the same form, containing the appropriate expressions in terms of `+`, `*`, `aᵢⱼ`,
-and `bⱼₖ`. -/
-theorem of_mul_of_fin {α} [has_mul α] [add_comm_monoid α] {l m n : ℕ}
-  {a_coeffs : fin l → fin m → α}
-  {b_coeffs : fin m → fin n → α}
-  {ab_coeffs : fin l → fin n → α}
-  (h : of a_coeffs ⬝ of b_coeffs = of ab_coeffs . of_mul_of_fin.derive) :
-    of a_coeffs ⬝ of b_coeffs = of ab_coeffs := h
+-- /-- This lemma assumes that `a_coeffs` and `b_coeffs` refer to expressions of the form
+-- `![![x₀₀, x₀₁], ![x₁₀, x₁₁]]`. It then uses an `auto_param` to populate `ab_coeffs` with an
+-- expression of the same form, containing the appropriate expressions in terms of `+`, `*`, `aᵢⱼ`,
+-- and `bⱼₖ`. -/
+-- theorem of_mul_of_fin {α} [has_mul α] [add_comm_monoid α] {l m n : ℕ}
+--   {a_coeffs : fin l → fin m → α}
+--   {b_coeffs : fin m → fin n → α}
+--   {ab_coeffs : fin l → fin n → α}
+--   (h : of a_coeffs ⬝ of b_coeffs = of ab_coeffs . of_mul_of_fin.derive) :
+--     of a_coeffs ⬝ of b_coeffs = of ab_coeffs := h
 
 end of_mul_of_fin
 
-end matrix
+end Matrix
