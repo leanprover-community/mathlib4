@@ -1017,11 +1017,11 @@ end
 
 section Basis
 
-variable {k : Type _} [CommRing k] (R : Type _) [Ring R] [Algebra k R] {M : Type _}
-  [AddCommMonoid M] [Module k M] {ι : Type _} (b : Basis ι k M)
-
 -- porting note: need to make a universe explicit for some reason in the next declaration
 universe u_5
+variable {k : Type _} [CommRing k] (R : Type _) [Ring R] [Algebra k R] {M : Type _}
+  [AddCommMonoid M] [Module k M] {ι : Type u_5} (b : Basis ι k M)
+
 
 /-- Given a `k`-algebra `R` and a `k`-basis of `M,` this is a `k`-linear isomorphism
 `R ⊗[k] M ≃ (ι →₀ R)` (which is in fact `R`-linear). -/
@@ -1047,10 +1047,9 @@ theorem basisAux_map_smul (r : R) (x : R ⊗[k] M) : basisAux R b (r • x) = r 
 
 variable (R)
 
--- porting note: need to make a universe explicit. Is there a problem with `basisAux`?
 /-- Given a `k`-algebra `R`, this is the `R`-basis of `R ⊗[k] M` induced by a `k`-basis of `M`. -/
 noncomputable def basis : Basis ι R (R ⊗[k] M) where
-  repr := { basisAux.{u_5} R b with map_smul' := basisAux_map_smul b }
+  repr := { basisAux R b with map_smul' := basisAux_map_smul b }
 #align algebra.tensor_product.basis Algebra.TensorProduct.basis
 
 variable {R}
