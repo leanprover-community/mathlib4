@@ -2811,8 +2811,8 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
   rw [sub_eq_zero] at hf
   dsimp [LocallyConstant.comapLinear] at hf
   rw [← LocallyConstant.coe_inj] at hf
-  -- rw [LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _)] at hf
-  -- rw [LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
+  rw [LocallyConstant.coe_comap _ _ (continuous_CC'₁ _ _ _)] at hf
+  rw [LocallyConstant.coe_comap _ _ (continuous_CC'₀ _ _)] at hf
   have hC₀' : IsClosed (Res (C0 C ho) o) := isClosed_Res (C0 C ho) o (isClosed_C0 C hC ho)
   have hC₁' : IsClosed (Res (C1 C ho) o) := isClosed_Res (C1 C ho) o (isClosed_C1 C hC ho)
   have hC₀ : IsClosed {i : Res C o | i.val ∈ Res (C0 C ho) o}
@@ -2842,40 +2842,108 @@ lemma CC_exact {f : LocallyConstant {i // i ∈ C} ℤ} (hf : Linear_CC' C hsC h
       rw [← hy]
       refine' ⟨y, ⟨⟨hyC, hyt⟩, rfl⟩⟩
   · rintro ⟨x, hrx⟩ hx
-    -- by_cases hx' : x ∈ C' C ho
-    dsimp [LocallyConstant.equiv, C0_homeo, C1_homeo]
-    rw [LocallyConstant.coe_comap_apply _ _ sorry]
-    rw [LocallyConstant.coe_comap_apply _ _ sorry]
-    rw [LocallyConstant.coe_comap_apply _ _ sorry]
-    rw [LocallyConstant.coe_comap_apply _ _ sorry]
-    sorry
-    -- congr 1
-    -- ext i
-    -- dsimp
+    have hx' : x ∈ C' C ho
+    · refine' ⟨_, hx.2⟩
+      suffices : C0 C ho = Res (C0 C ho) o
+      · rw [this]
+        exact hx.1
+      ext y
+      constructor
+      <;> intro hy
+      · refine' ⟨y, ⟨hy, _⟩⟩
+        ext i
+        simp only [ProjOrd, ite_eq_left_iff, not_lt]
+        intro hi
+        rw [le_iff_lt_or_eq] at hi
+        cases' hi with hi hi
+        · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
+            and_imp] at hsC
+          specialize hsC i y hy.1
+          rw [← not_imp_not] at hsC
+          simp only [not_le, Bool.not_eq_true] at hsC
+          exact (hsC hi).symm
+        · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hy
+          rw [← hy.2]
+          congr 1
+          dsimp [term]
+          simp_rw [hi]
+          simp only [ord, Ordinal.enum_typein]
+      · obtain ⟨z, hz⟩ := hy
+        rw [← hz.2]
+        simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq]
+        constructor
+        · suffices : ProjOrd o z = z
+          · rw [this]
+            rw [← UnionEq C ho]
+            exact Set.mem_union_left _ hz.1
+          ext i
+          simp only [ProjOrd, ite_eq_left_iff, not_lt]
+          intro hi
+          rw [le_iff_lt_or_eq] at hi
+          cases' hi with hi hi
+          · simp only [Support, Order.lt_succ_iff, Set.setOf_subset_setOf, forall_exists_index,
+              and_imp] at hsC
+            specialize hsC i z ?_
+            · rw [← UnionEq C ho]
+              exact Set.mem_union_left _ hz.1
+            rw [← not_imp_not] at hsC
+            simp only [not_le, Bool.not_eq_true] at hsC
+            exact (hsC hi).symm
+          · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hz
+            rw [← hz.1.2]
+            congr 1
+            dsimp [term]
+            simp_rw [hi]
+            simp only [ord, Ordinal.enum_typein]
+        · simp only [ProjOrd, ord, term, Ordinal.typein_enum, lt_self_iff_false, ite_false]
+    dsimp [LocallyConstant.equiv]
+    rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+    rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+    rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+    rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+    exact (congrFun hf ⟨x, hx'⟩).symm
   · dsimp [Linear_ResC, LocallyConstant.comapLinear]
-    ext x
-    -- something like: -- by_cases hx' : x ∈ C' C ho
-    rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
-    dsimp [LocallyConstant.piecewise, Set.piecewise', Set.piecewise]
-    split_ifs with h
-    · dsimp [Function.ExtendBy, LocallyConstant.equiv, C0_homeo]
-      split_ifs
-      rw [LocallyConstant.coe_comap_apply _ _ sorry]
-      rw [LocallyConstant.coe_comap_apply _ _ sorry]
-      congr 1
-      ext i
-      dsimp [ResOnSubset] at h ⊢
-      sorry
-    · dsimp [Function.ExtendBy, LocallyConstant.equiv, C1_homeo]
-      split_ifs
-      · rw [LocallyConstant.coe_comap_apply _ _ sorry]
-        rw [LocallyConstant.coe_comap_apply _ _ sorry]
+    ext ⟨x,hx⟩
+    rw [← UnionEq C ho] at hx
+    cases' hx with hx₀ hx₁
+    · rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+      dsimp [LocallyConstant.piecewise, Set.piecewise', Set.piecewise]
+      split_ifs with h
+      · dsimp [Function.ExtendBy, LocallyConstant.equiv]
+        split_ifs
+        rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+        rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
         congr 1
         ext i
-        dsimp [ResOnSubset]
-        sorry
-      sorry
-    -- rw [Set.piecewise_eq_of_mem _ _ _ ?_]
+        dsimp [ResOnSubset] at h ⊢
+        dsimp [C0_homeo]
+        sorry -- obvious
+      · dsimp [Function.ExtendBy, LocallyConstant.equiv]
+        split_ifs
+        · rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+          rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+          dsimp [C1_homeo]
+          sorry -- use hf
+        · sorry --exfalso
+    · rw [LocallyConstant.coe_comap_apply _ _ (continuous_ResOnSubset _ _)]
+      dsimp [LocallyConstant.piecewise, Set.piecewise', Set.piecewise]
+      split_ifs with h
+      · dsimp [Function.ExtendBy, LocallyConstant.equiv]
+        split_ifs
+        rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+        rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+        dsimp [C0_homeo]
+        sorry -- use hf
+      · dsimp [Function.ExtendBy, LocallyConstant.equiv]
+        split_ifs
+        · rw [LocallyConstant.coe_comap_apply _ _ (Homeomorph.continuous _)]
+          rw [LocallyConstant.coe_comap_apply _ _ (Continuous.subtype_mk continuous_subtype_val _)]
+          congr 1
+          ext i
+          dsimp [ResOnSubset] at h ⊢
+          dsimp [C1_homeo]
+          sorry --obvious
+        · sorry -- exfalso
 
 lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
     (ModuleCat.ofHom (Linear_ResC C o))
