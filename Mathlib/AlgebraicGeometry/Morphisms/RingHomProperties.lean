@@ -227,7 +227,8 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
       · congr 1; apply e'.symm
       · -- Porting note: makes instance metavariable like in Lean 3
-        apply (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
+        apply
+          (@isAffineOpen_iff_of_isOpenImmersion _ _ (@Scheme.ofRestrict _ X U'.inclusion _) ?_ _).mp
         -- Porting note: was convert V.2
         erw [e']
         apply V.2
@@ -325,7 +326,7 @@ theorem sourceAffineLocally_of_source_open_cover_aux (h₁ : RingHom.RespectsIso
     ((X.restrict U.1.openEmbedding).basicOpen (X.presheaf.map
       (eqToHom U.1.openEmbedding_obj_top).op r)).openEmbedding)))) _ (le_of_eq rfl) (_) ?_]
   · erw [RingHom.comp_id]
-    rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ← CommRingCat.comp_eq_ring_hom_comp,
+    rw [RingHom.algebraMap_toAlgebra, op_comp, Functor.map_comp, ←CommRingCat.comp_eq_ring_hom_comp,
       Scheme.Γ_map_op, Scheme.Γ_map_op, Scheme.Γ_map_op, Category.assoc]
     erw [← X.presheaf.map_comp]
     rw [← h₁.cancel_right_isIso _ (X.presheaf.map (eqToHom _))]
@@ -398,7 +399,8 @@ theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [Is
       (X.presheaf.map (eqToHom U.1.openEmbedding_obj_top).op r) ?_
     · exact RingHom.algebraMap_toAlgebra
         (R := Scheme.Γ.obj <| Opposite.op <| X.restrict (U.1.openEmbedding))
-        (S := Scheme.Γ.obj (Opposite.op <| X.restrict (X.affineBasicOpen r).1.openEmbedding)) _|>.symm
+        (S :=
+          Scheme.Γ.obj (Opposite.op <| X.restrict (X.affineBasicOpen r).1.openEmbedding)) _|>.symm
     · dsimp [Scheme.Γ]
       have := U.2
       rw [← U.1.openEmbedding_obj_top] at this
@@ -585,7 +587,9 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
     have := hP.HoldsForLocalizationAway
     convert @this esto eso _ _ ?_ ?_ ?_
     · exact 1
-    · refine' @IsLocalization.away_of_isUnit_of_bijective _ _ _ _ (_) _ isUnit_one Function.bijective_id
+    -- Porting note: again we have to bypass TC synthesis to keep Lean from running away
+    · refine'
+        @IsLocalization.away_of_isUnit_of_bijective _ _ _ _ (_) _ isUnit_one Function.bijective_id
   · intro; exact H
 #align ring_hom.property_is_local.affine_locally_of_is_open_immersion RingHom.PropertyIsLocal.affineLocally_of_isOpenImmersion
 
@@ -660,7 +664,8 @@ theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderCom
       have := (hP.isLocal_sourceAffineLocally.affine_openCover_TFAE f).out 0 3
       rw [this] at hf
       -- Porting note: needed to help Lean with this instance (same as above)
-      have : IsOpenImmersion <| ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) :=
+      have : IsOpenImmersion <|
+          ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) :=
         LocallyRingedSpace.IsOpenImmersion.comp _ _
       specialize hf ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)
       -- Porting note: again strange behavior of TFAE
