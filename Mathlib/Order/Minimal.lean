@@ -93,6 +93,42 @@ theorem eq_of_mem_minimals (ha : a ∈ minimals r s) (hb : b ∈ s) (h : r b a) 
   antisymm (ha.2 hb h) h
 #align eq_of_mem_minimals eq_of_mem_minimals
 
+lemma mem_maximals_iff : x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r x y → x = y := by
+  simp only [maximals, Set.mem_sep_iff, and_congr_right_iff]
+  refine' fun _ ↦ ⟨fun h y hys hxy ↦ antisymm hxy (h hys hxy), fun h y hys hxy ↦ _⟩
+  convert hxy <;> rw [h hys hxy]
+
+lemma mem_maximals_setOf_iff : x ∈ maximals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r x y → x = y :=
+  mem_maximals_iff
+
+lemma mem_minimals_iff : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ∈ s → r y x → x = y :=
+  @mem_maximals_iff _ _ _ (IsAntisymm.swap r) _
+
+lemma mem_minimals_setOf_iff : x ∈ minimals r (setOf P) ↔ P x ∧ ∀ ⦃y⦄, P y → r y x → x = y :=
+  mem_minimals_iff
+
+lemma mem_minimals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsTrans α r]
+    [IsNonstrictStrictOrder α r rlt] : x ∈ minimals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt y x → y ∉ s := by
+  simp [minimals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+
+lemma mem_maximals_iff_forall_lt_not_mem' (rlt : α → α → Prop) [IsAntisymm α r] [IsTrans α r]
+    [IsNonstrictStrictOrder α r rlt] :
+    x ∈ maximals r s ↔ x ∈ s ∧ ∀ ⦃y⦄, rlt x y → y ∉ s := by
+  simp [maximals, right_iff_left_not_left_of r rlt, not_imp_not, imp.swap (a := _ ∈ _)]
+
+lemma minimals_eq_minimals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
+    (h : ∀ x ∈ s, ∃ y ∈ t, r y x) : minimals r s = minimals r t := by
+  refine Set.ext fun a ↦ ⟨fun ⟨has, hmin⟩ ↦ ⟨?_,fun b hbt ↦ hmin (hts hbt)⟩,
+    fun ⟨hat, hmin⟩ ↦ ⟨hts hat, fun b hbs hba ↦ ?_⟩⟩
+  · obtain ⟨a', ha', haa'⟩ := h _ has
+    rwa [antisymm (hmin (hts ha') haa') haa']
+  obtain ⟨b', hb't, hb'b⟩ := h b hbs
+  rwa [antisymm (hmin hb't (Trans.trans hb'b hba)) (Trans.trans hb'b hba)]
+
+lemma maximals_eq_maximals_of_subset_of_forall [IsTrans α r] (hts : t ⊆ s)
+    (h : ∀ x ∈ s, ∃ y ∈ t, r x y) : maximals r s = maximals r t :=
+  @minimals_eq_minimals_of_subset_of_forall _ _ _ _ (IsAntisymm.swap r) (IsTrans.swap r) hts h
+
 variable (r s)
 
 theorem maximals_antichain : IsAntichain r (maximals r s) := fun _a ha _b hb hab h =>
@@ -105,6 +141,22 @@ theorem minimals_antichain : IsAntichain r (minimals r s) :=
 #align minimals_antichain minimals_antichain
 
 end IsAntisymm
+
+lemma mem_minimals_iff_forall_ssubset_not_mem (s : Set (Set α)) :
+    x ∈ minimals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y ⊂ x → y ∉ s :=
+  mem_minimals_iff_forall_lt_not_mem' (· ⊂ ·)
+
+lemma mem_minimals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
+    x ∈ minimals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, y < x → y ∉ s :=
+  mem_minimals_iff_forall_lt_not_mem' (· < ·)
+
+lemma mem_maximals_iff_forall_ssubset_not_mem {s : Set (Set α)} :
+    x ∈ maximals (· ⊆ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x ⊂ y → y ∉ s :=
+  mem_maximals_iff_forall_lt_not_mem' (· ⊂ ·)
+
+lemma mem_maximals_iff_forall_lt_not_mem [PartialOrder α] {s : Set α} :
+    x ∈ maximals (· ≤ ·) s ↔ x ∈ s ∧ ∀ ⦃y⦄, x < y → y ∉ s :=
+  mem_maximals_iff_forall_lt_not_mem' (· < ·)
 
 -- porting note: new lemma
 theorem maximals_of_symm [IsSymm α r] : maximals r s = s :=
@@ -243,3 +295,85 @@ theorem IsAntichain.maximals_lowerClosure (hs : IsAntichain (· ≤ ·) s) :
     maximals (· ≤ ·) (lowerClosure s : Set α) = s :=
   hs.to_dual.minimals_upperClosure
 #align is_antichain.maximals_lower_closure IsAntichain.maximals_lowerClosure
+
+section Image
+
+variable {f : α → β} {r : α → α → Prop} {s : β → β → Prop}
+
+theorem minimals_image_of_rel_iff_rel (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) :
+    minimals s (f '' x) = f '' (minimals r x) := by
+  ext a
+  simp only [minimals, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  constructor
+  · rintro ⟨⟨a, ha, rfl⟩ , h⟩
+    exact ⟨a, ⟨ha, fun y hy hya ↦ (hf ha hy).mpr (h _ hy ((hf hy ha).mp hya))⟩, rfl⟩
+  rintro ⟨a,⟨⟨ha,h⟩,rfl⟩⟩
+  exact ⟨⟨_, ha, rfl⟩, fun y hy hya ↦ (hf ha hy).mp (h hy ((hf hy ha).mpr hya))⟩
+
+theorem maximals_image_of_rel_iff_rel_on
+    (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) :
+    maximals s (f '' x) = f '' (maximals r x) :=
+minimals_image_of_rel_iff_rel (fun _ _ a_1 a_2 ↦ hf a_2 a_1)
+
+theorem RelEmbedding.minimals_image_eq (f : r ↪r s) (x : Set α) :
+    minimals s (f '' x) = f '' (minimals r x) := by
+  rw [minimals_image_of_rel_iff_rel]; simp [f.map_rel_iff]
+
+theorem RelEmbedding.maximals_image_eq (f : r ↪r s) (x : Set α) :
+    maximals s (f '' x) = f '' (maximals r x) :=
+  (f.swap).minimals_image_eq x
+
+lemma inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
+    (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
+    x ∩ f ⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) := by
+  ext a
+  simp only [minimals, mem_inter_iff, mem_image, and_imp, forall_exists_index,
+    forall_apply_eq_imp_iff₂, preimage_setOf_eq, mem_setOf_eq, mem_preimage]
+  exact ⟨fun ⟨hax,⟨_,hay⟩,h2⟩ ↦ ⟨⟨hax, hay⟩, fun a₁ ha₁ ha₁y ha₁a ↦
+          (hf hax ha₁).mpr (h2 _ ha₁ ha₁y ((hf ha₁ hax).mp ha₁a))⟩ ,
+        fun ⟨⟨hax,hay⟩,h⟩ ↦ ⟨hax, ⟨⟨_, hax, rfl⟩, hay⟩, fun a' ha' ha'y hsa' ↦
+          (hf hax ha').mp (h ha' ha'y ((hf ha' hax).mpr hsa'))⟩⟩
+
+lemma inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset
+    (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
+    x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
+  rw [←inter_eq_self_of_subset_right hy, inter_minimals_preimage_inter_eq_of_rel_iff_rel_on hf,
+    preimage_inter, ←inter_assoc, inter_eq_self_of_subset_left (subset_preimage_image f x)]
+
+lemma RelEmbedding.inter_preimage_minimals_eq (f : r ↪r s) (x : Set α) (y : Set β) :
+    x ∩ f⁻¹' (minimals s ((f '' x) ∩ y)) = minimals r (x ∩ f ⁻¹' y) :=
+  inter_minimals_preimage_inter_eq_of_rel_iff_rel_on (by simp [f.map_rel_iff]) y
+
+lemma RelEmbedding.inter_preimage_minimals_eq_of_subset (f : r ↪r s) (h : y ⊆ f '' x) :
+    x ∩ f ⁻¹' (minimals s y) = minimals r (x ∩ f ⁻¹' y) := by
+  rw [inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
+
+lemma RelEmbedding.minimals_preimage_eq (f : r ↪r s) (y : Set β) :
+  minimals r (f ⁻¹' y) = f ⁻¹' minimals s (y ∩ range f) := by
+  convert (f.inter_preimage_minimals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
+
+lemma inter_maximals_preimage_inter_eq_of_rel_iff_rel_on
+    (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (y : Set β) :
+    x ∩ f ⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) := by
+  apply inter_minimals_preimage_inter_eq_of_rel_iff_rel_on
+  exact fun _ _ a b ↦ hf b a
+
+lemma inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset
+    (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) (hy : y ⊆ f '' x) :
+    x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
+  apply inter_preimage_minimals_eq_of_rel_iff_rel_on_of_subset _ hy
+  exact fun _ _ a b ↦ hf b a
+
+lemma RelEmbedding.inter_preimage_maximals_eq (f : r ↪r s) (x : Set α) (y : Set β) :
+    x ∩ f⁻¹' (maximals s ((f '' x) ∩ y)) = maximals r (x ∩ f ⁻¹' y) :=
+  inter_minimals_preimage_inter_eq_of_rel_iff_rel_on (by simp [f.map_rel_iff]) y
+
+lemma RelEmbedding.inter_preimage_maximals_eq_of_subset (f : r ↪r s) (h : y ⊆ f '' x) :
+    x ∩ f ⁻¹' (maximals s y) = maximals r (x ∩ f ⁻¹' y) := by
+  rw [inter_preimage_maximals_eq_of_rel_iff_rel_on_of_subset _ h]; simp [f.map_rel_iff]
+
+lemma RelEmbedding.maximals_preimage_eq (f : r ↪r s) (y : Set β) :
+    maximals r (f ⁻¹' y) = f ⁻¹' maximals s (y ∩ range f) := by
+  convert (f.inter_preimage_maximals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
+
+end Image
