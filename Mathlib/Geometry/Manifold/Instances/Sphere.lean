@@ -141,7 +141,7 @@ theorem stereoInvFunAux_mem (hv : ‖v‖ = 1) {w : E} (hw : w ∈ (ℝ ∙ v)�
       abs_of_pos h₁, stereoInvFunAux_apply, inv_mul_cancel h₁.ne']
   suffices : ‖(4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v‖ ^ 2 = (‖w‖ ^ 2 + 4) ^ 2
   · simpa [sq_eq_sq_iff_abs_eq_abs, abs_of_pos h₁] using this
-  rw [Submodule.mem_orthogonal_singleton_iff_inner_left] at hw 
+  rw [Submodule.mem_orthogonal_singleton_iff_inner_left] at hw
   simp [norm_add_sq_real, norm_smul, inner_smul_left, inner_smul_right, hw, mul_pow,
     Real.norm_eq_abs, hv]
   ring
@@ -216,6 +216,7 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
 
 variable [CompleteSpace E]
 
+set_option maxHeartbeats 0 in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
@@ -226,11 +227,12 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have split : ↑x = a • v + ↑y := by
     convert eq_sum_orthogonalProjection_self_orthogonalComplement (ℝ ∙ v) x
     exact (orthogonalProjection_unit_singleton ℝ hv x).symm
-  have hvy : ⟪v, y⟫_ℝ = 0 := submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
+  have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp [inner_smul_left, hvy]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
-    · simp [← split]
+    -- Porting note: was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
+    · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
   -- two facts which will be helpful for clearing denominators in the main calculation
@@ -240,7 +242,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have : 2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2 ≠ 0 := by
     refine' ne_of_gt _
     have := norm_nonneg (y : E)
-    have : 0 < (1 - a) ^ 2 := sq_pos_of_ne_zero (1 - a) ha
+    have : (0 : ℝ) < (1 - a) ^ 2 := sq_pos_of_ne_zero (1 - a) ha
     nlinarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
@@ -273,7 +275,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
     have h₂ : orthogonalProjection (ℝ ∙ v)ᗮ w = w := orthogonalProjection_mem_subspace_eq_self w
-    have h₃ : innerSL _ v w = (0 : ℝ) := submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+    have h₃ : innerSL _ v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have h₄ : innerSL _ v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
     simp [h₁, h₂, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
   · simp
@@ -282,7 +284,7 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`; this
 is the version as a local homeomorphism. -/
 def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ ∙ v)ᗮ where
-  toFun := stereoToFun v ∘ coe
+  toFun := stereoToFun v ∘ (↑)
   invFun := stereoInvFun hv
   source := {⟨v, by simp [hv]⟩}ᶜ
   target := Set.univ
@@ -373,7 +375,7 @@ theorem stereographic'_target {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphe
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a charted space
 modelled on the Euclidean space of dimension `n`. -/
-instance {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance chartedSpace {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ChartedSpace (EuclideanSpace ℝ (Fin n)) (sphere (0 : E) 1) where
   atlas := {f | ∃ v : sphere (0 : E) 1, f = stereographic' n v}
   chartAt v := stereographic' n (-v)
@@ -394,7 +396,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
       let U : (ℝ ∙ (v : E))ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) :=
         (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr
       (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm x : E) +
-        (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v :=
+        (‖(U.symm x : E)‖ ^ 2 + 4)⁻¹ • (‖(U.symm x : E)‖ ^ 2 - 4) • v.val :=
   by simp [real_inner_comm, stereographic, stereographic', ← Submodule.coe_norm]
 #align stereographic'_symm_apply stereographic'_symm_apply
 
@@ -403,7 +405,7 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a smooth manifold,
 modelled on the Euclidean space of dimension `n`. -/
-instance {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
+instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     SmoothManifoldWithCorners (𝓡 n) (sphere (0 : E) 1) :=
   smoothManifoldWithCorners_of_contDiffOn (𝓡 n) (sphere (0 : E) 1)
     (by
@@ -440,7 +442,7 @@ instance {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ (coe : sphere (0 : E) 1 → E) := by
+    ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
   rw [contMDiff_iff]
   constructor
   · exact continuous_subtype_val
@@ -450,7 +452,7 @@ theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
           OrthonormalBasis.fromOrthogonalSpanSingleton
           n (ne_zero_of_mem_unit_sphere (-v))).repr
     exact
-      ((contDiff_stereo_inv_fun_aux.comp (ℝ ∙ (-v : E))ᗮ.subtypeL.contDiff).comp
+      ((contDiff_stereoInvFunAux.comp (ℝ ∙ (-v : E))ᗮ.subtypeL.contDiff).comp
           U.symm.contDiff).contDiffOn
 #align cont_mdiff_coe_sphere contMDiff_coe_sphere
 
@@ -481,7 +483,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
     have hfx : ‖f x‖ = 1 := by simpa using hf' x
     rw [inner_eq_one_iff_of_norm_one hfx]
     exact norm_eq_of_mem_sphere (-v)
-  dsimp [chart_at]
+  dsimp [chartAt]
   simp [not_iff_not, Subtype.ext_iff, hfxv, real_inner_comm]
 #align cont_mdiff.cod_restrict_sphere ContMDiff.codRestrict_sphere
 
@@ -502,7 +504,7 @@ Note that there is an abuse here of the defeq between `E` and the tangent space 
 In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
 canonical. -/
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    (mfderiv (𝓡 n) 𝓘(ℝ, E) (coe : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E).range =
+    LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E) =
       (ℝ ∙ (v : E))ᗮ := by
   rw [((contMDiff_coe_sphere v).MDifferentiableAt le_top).mfderiv]
   simp only [chart_at, stereographic', stereographic_neg_apply, fderivWithin_univ,
@@ -535,7 +537,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `tangent_space (𝓡 n) v` to `E`.  This map is injective. -/
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) (coe : sphere (0 : E) 1 → E) v) := by
+    Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
   rw [((contMDiff_coe_sphere v).MDifferentiableAt le_top).mfderiv]
   simp only [chart_at, stereographic', stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
@@ -557,15 +559,21 @@ section circle
 
 open Complex
 
+instance : Fact (finrank ℝ ℂ = 2) where
+  out := by simp
+
 attribute [local instance] finrank_real_complex_fact
 
 /-- The unit circle in `ℂ` is a charted space modelled on `euclidean_space ℝ (fin 1)`.  This
 follows by definition from the corresponding result for `metric.sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
-  Metric.sphere.chartedSpace
+  chartedSpace
+  --Metric.sphere.chartedSpace
 
 instance : SmoothManifoldWithCorners (𝓡 1) circle :=
-  Metric.sphere.smoothManifoldWithCorners
+  have : Fact (finrank ℝ ℂ = 1 + 1) := inferInstanceAs <| Fact (finrank ℝ ℂ = 2)
+  smoothMfldWithCorners (E := ℂ)
+  -- Metric.sphere.smoothManifoldWithCorners
 
 /-- The unit circle in `ℂ` is a Lie group. -/
 instance : LieGroup (𝓡 1) circle where
