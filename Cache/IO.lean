@@ -61,7 +61,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.2"
+  "0.1.3"
 
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
@@ -184,7 +184,7 @@ def validateLeanTar : IO Unit := do
       throw $ IO.userError s!"unsupported architecture {arch}"
     pure <|
       if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
-      else s!"{arch}-unknown-linux-gnu"
+      else s!"{arch}-unknown-linux-musl"
   IO.println s!"leantar is too old; downloading more recent version"
   IO.FS.createDirAll IO.CACHEDIR
   let ext := if win then "zip" else "tar.gz"
