@@ -3199,7 +3199,7 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 
 @[simp]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
-  simp only [to_finset_eq_empty, Ne.def, Finset.nonempty_iff_ne_empty]
+  simp only [toFinset_eq_empty, Ne.def, Finset.nonempty_iff_ne_empty]
 #align multiset.to_finset_nonempty Multiset.toFinset_nonempty
 
 @[simp]
