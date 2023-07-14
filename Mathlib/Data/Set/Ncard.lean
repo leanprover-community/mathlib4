@@ -23,7 +23,7 @@ smoother interactions with the `Set` API.
 takes values in a less convenient type. It is probably the right choice in settings where one is
 concerned with the cardinalities of sets that may or may not be infinite.
 
-`ncard` has a nicer codomain, but when using it, `Finite` hypotheses are normally needed to make
+`ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to make
 sure its values are meaningful.  More generally, `ncard` is intended to be used over the obvious
 alternative `Finset.card` when finiteness is 'propositional' rather than  'structural'. When working
 with sets that are finite by virtue of their definition, then `Finset.card` probably makes more
@@ -123,7 +123,7 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_lt_top_iff : s.encard < ⊤ ↔ s.Finite :=
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
-@[simp] theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
+theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   rw [←WithTop.lt_top_iff_ne_top, encard_lt_top_iff]
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
@@ -412,8 +412,6 @@ theorem encard_le_encard_of_injOn {t : Set β} (hf : ∀ a ∈ s, f a ∈ t) (f_
   exact hf _ hx
 
 end Function
-
-
 
 section ncard
 
