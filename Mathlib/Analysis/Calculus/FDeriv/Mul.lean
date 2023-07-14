@@ -527,15 +527,15 @@ theorem hasFDerivAt_ring_inverse (x : Rˣ) :
 
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :
     DifferentiableAt 𝕜 (@Ring.inverse R _) x :=
-  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).DifferentiableAt
+  let ⟨u, hu⟩ := hx; hu ▸ (hasFDerivAt_ring_inverse u).differentiableAt
 
 theorem differentiableWithinAt_inverse {x : R} (hx : IsUnit x) (s : Set R) :
     DifferentiableWithinAt 𝕜 (@Ring.inverse R _) s x :=
-  (differentiableAt_inverse hx).DifferentiableWithinAt
+  (differentiableAt_inverse hx).differentiableWithinAt
 #align differentiable_within_at_inverse differentiableWithinAt_inverse
 
 theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x | IsUnit x} :=
-  fun x hx => differentiableWithinAt_inverse hx _
+  fun _x hx => differentiableWithinAt_inverse hx _
 #align differentiable_on_inverse differentiableOn_inverse
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
@@ -585,15 +585,15 @@ theorem hasFDerivAt_inv' {x : R} (hx : x ≠ 0) : HasFDerivAt Inv.inv (-mulLeftR
 #align has_fderiv_at_inv' hasFDerivAt_inv'
 
 theorem differentiableAt_inv' {x : R} (hx : x ≠ 0) : DifferentiableAt 𝕜 Inv.inv x :=
-  (hasFDerivAt_inv' hx).DifferentiableAt
+  (hasFDerivAt_inv' hx).differentiableAt
 #align differentiable_at_inv' differentiableAt_inv'
 
 theorem differentiableWithinAt_inv' {x : R} (hx : x ≠ 0) (s : Set R) :
     DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
-  (differentiableAt_inv' hx).DifferentiableWithinAt
+  (differentiableAt_inv' hx).differentiableWithinAt
 #align differentiable_within_at_inv' differentiableWithinAt_inv'
 
-theorem differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun x hx =>
+theorem differentiableOn_inv' : DifferentiableOn 𝕜 (fun x : R => x⁻¹) {x | x ≠ 0} := fun _x hx =>
   differentiableWithinAt_inv' hx _
 #align differentiable_on_inv' differentiableOn_inv'
 
