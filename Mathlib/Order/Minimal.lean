@@ -315,7 +315,7 @@ theorem minimals_image_of_rel_iff_rel (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x
 theorem maximals_image_of_rel_iff_rel_on
     (hf : ∀ ⦃a a'⦄, a ∈ x → a' ∈ x → (r a a' ↔ s (f a) (f a'))) :
     maximals s (f '' x) = f '' (maximals r x) :=
-minimals_image_of_rel_iff_rel (fun _ _ a_1 a_2 ↦ hf a_2 a_1)
+  minimals_image_of_rel_iff_rel (fun _ _ a_1 a_2 ↦ hf a_2 a_1)
 
 theorem RelEmbedding.minimals_image_eq (f : r ↪r s) (x : Set α) :
     minimals s (f '' x) = f '' (minimals r x) := by
@@ -379,4 +379,3 @@ theorem RelEmbedding.maximals_preimage_eq (f : r ↪r s) (y : Set β) :
   convert (f.inter_preimage_maximals_eq univ y).symm; simp [univ_inter]; simp [inter_comm]
 
 end Image
-#lint
