@@ -141,43 +141,40 @@ and `iR : Option Expr`, representing the Ring instance on `R`, if there is one.
 `natDegree f ≤ d`, where `d` is an appropriately constructed natural number.
 
 Hopefully, the tactic should not really fail when the inputs are as specified.
+
+The optional `db` flag is for debugging: if `db = true`, then the tactic prints useful information.
 -/
 partial
-def cDegCore (pol R iSR : Expr) (iR : Option Expr) : MetaM Expr := do
+def cDegCore (pol R iSR : Expr) (iR : Option Expr) (db : Bool := false) : MetaM Expr := do
+let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM ppExpr
+if db then
+  if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
+  else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
 match pol.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, f, g]) => do
-    mkAppOptM ``add #[R, iSR, none, none, none, none, ← cDegCore f R iSR iR, ← cDegCore g R iSR iR]
-  | (``HSub.hSub, #[_, _, _, _, f, g]) => do
-    mkAppOptM ``sub #[R, iR, none, none, none, none, ← cDegCore f R iSR iR, ← cDegCore g R iSR iR]
-  | (``HMul.hMul, #[_, _, _, _, f, g]) => do
-    mkAppOptM ``mul #[R, iSR, none, none, none, none, ← cDegCore f R iSR iR, ← cDegCore g R iSR iR]
-  | (``HPow.hPow, #[_, (.const ``Nat []), _, _, f, n]) => do
-    mkAppOptM ``pow #[R, iSR, none, n, none, ← cDegCore f R iSR iR]
-  | (``Neg.neg,   #[_, _, f]) => do
-    mkAppOptM ``neg #[R, iR, none, none, ← cDegCore f R iSR iR]
-  | (``Polynomial.X, _) => do
-    mkAppOptM ``natDegree_X_le #[R, iSR]
+  | (``HAdd.hAdd, #[_, _, _, _, f, g]) =>
+    mkAppOptM ``add #[R, iSR, none, none, f, g, ← cDegCore f R iSR iR db, ← cDegCore g R iSR iR db]
+  | (``HSub.hSub, #[_, _, _, _, f, g]) =>
+    mkAppOptM ``sub
+      #[R, iR, none, none, f, g, ← cDegCore f R iSR iR db, ← cDegCore g R iSR iR db]
+  | (``HMul.hMul, #[_, _, _, _, f, g]) =>
+    mkAppOptM ``mul
+      #[R, iSR, none, none, f, g, ← cDegCore f R iSR iR db, ← cDegCore g R iSR iR db]
+  | (``HPow.hPow, #[_, (.const ``Nat []), _, _, f, n]) =>
+    mkAppOptM ``pow #[R, iSR, none, n, f, ← cDegCore f R iSR iR db]
+  | (``Neg.neg,   #[_, _, f]) => mkAppOptM ``neg #[R, iR, none, f, ← cDegCore f R iSR iR db]
+  | (``Polynomial.X, _)                          => mkAppOptM ``natDegree_X_le #[R, iSR]
   -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => do
-    mkAppOptM ``zero_le #[R, iSR]
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => do
-    mkAppOptM ``one_le #[R, iSR]
-  | (``OfNat.ofNat, #[_, n, _]) => do
-    mkAppOptM ``nat_cast_le #[R, iSR, n]
-  | (``Nat.cast, #[_, _, n]) => do
-    mkAppOptM ``nat_cast_le #[R, iSR, n]
-  | (``NatCast.natCast, #[_, _, n]) => do
-    (mkAppOptM ``nat_cast_le #[R, iSR, n])
-  | (``Int.cast, #[_, _, n]) => do
-    mkAppOptM ``int_cast_le #[R, iR, n]
-  | (``IntCast.intCast, #[_, _, n]) => do
-    mkAppOptM ``int_cast_le #[R, iR, n]
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => mkAppOptM ``zero_le #[R, iSR]
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => mkAppOptM ``one_le #[R, iSR]
+  | (``OfNat.ofNat, #[_, n, _])                  => mkAppOptM ``nat_cast_le #[R, iSR, n]
+  | (``Nat.cast, #[_, _, n])                     => mkAppOptM ``nat_cast_le #[R, iSR, n]
+  | (``NatCast.natCast, #[_, _, n])              => mkAppOptM ``nat_cast_le #[R, iSR, n]
+  | (``Int.cast, #[_, _, n])                     => mkAppOptM ``int_cast_le #[R, iR, n]
+  | (``IntCast.intCast, #[_, _, n])              => mkAppOptM ``int_cast_le #[R, iR, n]
   -- deal with `monomial` and `C`
   | (``FunLike.coe, #[_, _, _, _, polFun, c]) => match polFun.getAppFnArgs with
-    | (``Polynomial.monomial, #[_, _, n]) => do
-      mkAppOptM ``natDegree_monomial_le #[R, iSR, c, n]
-    | (``Polynomial.C, _) => do
-      mkAppOptM ``C_le #[R, iSR, c]
+    | (``Polynomial.monomial, #[_, _, n]) => mkAppOptM ``natDegree_monomial_le #[R, iSR, c, n]
+    | (``Polynomial.C, _)                 => mkAppOptM ``C_le #[R, iSR, c]
     | _ => do let ppP ← ppExpr polFun;
               throwError m!"'compute_degree_le' is not implemented for {ppP}"
   -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
@@ -194,8 +191,11 @@ Next, it applies `norm_num` to `d'`, in the hope of closing also the `d' ≤ d` 
 
 The variant `compute_degree_le!` first applies `compute_degree_le`.
 Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption`.
+
+There is also a "debug-mode", where the tactic prints some information.
+This is activated by using `compute_degree_le -debug` or `compute_degree_le! -debug`.
 -/
-elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus do
+elab (name := computeDegreeLE) "compute_degree_le" debug:"-debug"? : tactic => focus do
   let tgt := ← getMainTarget
   let (isNatDeg?, lhs, rhs, R, instSR) := ← isDegLE tgt
   let goal := ← getMainGoal
@@ -207,13 +207,16 @@ elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus do
     f!"'compute_degree_le': unexpected number of goals -- {natDegGoal.length} instead of 1!"
   let RR := ← mkAppM ``Ring #[R]
   let new := match ← trySynthInstance RR with | .some inst => some inst | _=> none
-  let nfle_pf := ← cDegCore (← instantiateMVars lhs) R instSR new
+  let nfle_pf := ← cDegCore (← instantiateMVars lhs) R instSR new (db := debug.isSome)
+  if debug.isSome then logInfo m!"Computed proof:\n{nfle_pf}"
   let nfle_typ := ← inferType nfle_pf
   let hDeg := ← getUnusedUserName `hDeg
   let newMVarId := ← (natDegGoal[0]!).assert hDeg nfle_typ nfle_pf
   let (ineq, new) := ← newMVarId.introN 1 [hDeg]
   -- `new` is a list of three `MVarId`s with goals `⊢ natDegree f ≤ ?_`, `⊢ ?_ ≤ d` and `⊢ ℕ`
   let new := ← new.apply (← mkConstWithFreshMVarLevels ``le_trans)
+  guard (new.length = 3) <|> throwError
+    f!"'compute_degree_le': unexpected number of goals -- {natDegGoal.length} instead of 3!"
   -- the first `MVarId` unifies with `ineq`; this also assigns `⊢ ℕ`
   let ineq1 := ← new[0]!.withContext ineq[0]!.findDecl?
   let _ := ← (new[0]!).apply ineq1.get!.toExpr
@@ -223,7 +226,10 @@ elab (name := computeDegreeLE) "compute_degree_le" : tactic => focus do
   evalTactic (← `(tactic| conv_lhs => norm_num))
 
 @[inherit_doc computeDegreeLE]
-elab (name := computeDegreeLE!) "compute_degree_le!" : tactic => focus do
-  evalTactic (← `(tactic| compute_degree_le <;> norm_num <;> try assumption))
+elab (name := computeDegreeLE!) "compute_degree_le!" debug:"-debug"? : tactic => focus do
+  if debug.isSome then
+    evalTactic (← `(tactic| compute_degree_le -debug <;> norm_num <;> try assumption))
+  else
+    evalTactic (← `(tactic| compute_degree_le <;> norm_num <;> try assumption))
 
 end Mathlib.Tactic.ComputeDegree
