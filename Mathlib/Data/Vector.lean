@@ -94,7 +94,7 @@ def toList (v : Vector α n) : List α :=
 -- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
+  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
@@ -166,7 +166,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p] ; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
 #align vector.remove_nth Vector.removeNth
 
 /-- Vector of length `n` from a function on `Fin n`. -/
@@ -265,7 +265,7 @@ theorem toList_length (v : Vector α n) : (toList v).length = n :=
 the `cons` of the list obtained by `toList` and the element -/
 @[simp]
 theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
-  cases v ; rfl
+  cases v; rfl
 #align vector.to_list_cons Vector.toList_cons
 
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
