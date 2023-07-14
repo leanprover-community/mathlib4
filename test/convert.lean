@@ -16,21 +16,19 @@ example (m n : Nat) (h : m = n) (b : Fin n) : Nat × Nat × Nat × Fin m := by
   convert (37, 57, 2, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × α := by
-  convert (config := { typeEqs := true }) (37, b)
+  -- type eq ok since arguments to `Prod` are explicit
+  convert (37, b)
 
 example (α β : Type) (h : β = α) (b : β) : Nat × α := by
-  convert (config := { typeEqs := true }) ← (37, b)
+  convert ← (37, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (config := { typeEqs := true }) (37, 57, 2, b)
+  convert (37, 57, 2, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (config := { typeEqs := true }) (37, 57, 2, b) using 2
+  convert (37, 57, 2, b) using 2
   guard_target = (Nat × α) = (Nat × β)
-  congr
-
-example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (config := { typeEqs := true }) (37, 57, 2, b)
+  congr!
 
 example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ := by
   have : {x} ∩ {y} = (∅ : Set α) := by simpa [ne_comm] using h
