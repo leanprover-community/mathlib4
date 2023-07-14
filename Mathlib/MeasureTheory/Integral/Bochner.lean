@@ -1458,7 +1458,8 @@ theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integ
     have hν_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul ν : Set α → G →L[ℝ] G) 1 :=
       DominatedFinMeasAdditive.add_measure_left μ ν (dominatedFinMeasAdditive_weightedSMul ν)
         zero_le_one
-    rw [← setToFun_congr_measure_of_add_right hμ_dfma (dominatedFinMeasAdditive_weightedSMul μ) f hfi,
+    rw [← setToFun_congr_measure_of_add_right hμ_dfma
+          (dominatedFinMeasAdditive_weightedSMul μ) f hfi,
       ← setToFun_congr_measure_of_add_left hν_dfma (dominatedFinMeasAdditive_weightedSMul ν) f hfi]
     refine' setToFun_add_left' _ _ _ (fun s _ hμνs => _) f
     rw [Measure.coe_add, Pi.add_apply, add_lt_top] at hμνs
