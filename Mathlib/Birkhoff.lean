@@ -470,7 +470,7 @@ theorem minimalSubset_mem_recurrentSet (U : Set α) (hU: IsMinimalSubset f U) :
 using Zorn lemma. -/
 theorem nonempty_invariant_closed_subset_has_minimalSubset
     (U : Set α) (hne: Nonempty U) (hC: IsClosed U) (hI: IsInvariant (fun n x => f^[n] x) U) :
-    ∃ V : Set α, V ⊆ U -> (hinv: MapsTo f U U) -> minimalSubset f U hinv :=
+    ∃ V : Set α, V ⊆ U -> (hinv: MapsTo f U U) -> IsMinimalSubset f U :=
   sorry
 
 
