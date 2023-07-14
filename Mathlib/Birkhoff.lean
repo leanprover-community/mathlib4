@@ -39,14 +39,10 @@ theorem periodicpts_is_mem (x : α) (n : ℕ) (nnz: n ≠ 0) (pp: IsPeriodicPt f
   . exact nnz
   done
 
-
-
 lemma periodic_arbitrary_large_time (N : ℕ) (m : ℕ) (hm : 0 < m) (ε : ℝ) (hε : 0 < ε) (x : α)
-(hx : IsPeriodicPt f m x) :
-∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ N ≤ n :=
-  by
-  use x
-  use m * N
+    (hx : IsPeriodicPt f m x) :
+    ∃ (y : α), ∃ (n : ℕ), y ∈ ball x ε ∧ f^[n] y ∈ ball x ε ∧ N ≤ n := by
+  use x, m * N
   refine' ⟨_,_,_⟩
   · exact mem_ball_self hε
   · rw [IsPeriodicPt.mul_const hx N]
@@ -54,14 +50,13 @@ lemma periodic_arbitrary_large_time (N : ℕ) (m : ℕ) (hm : 0 < m) (ε : ℝ) 
   · exact Nat.le_mul_of_pos_left hm
   done
 
-
-lemma small_inter_empty (A : Set α) (B: Set α) (C : Set α) (D: Set α) :
+lemma inter_subset_empty_of_inter_empty (A : Set α) (B: Set α) (C : Set α) (D: Set α) :
 (A ⊆ C) → (B ⊆ D) → (C ∩ D = ∅) → (A ∩ B = ∅) := by
-intro hAC hBD hCD
-have hincl : A ∩ B ⊆ C ∩ D := inter_subset_inter hAC hBD
-rw [hCD] at hincl
-exact Iff.mp subset_empty_iff hincl
-done
+  intro hAC hBD hCD
+  have hincl : A ∩ B ⊆ C ∩ D := inter_subset_inter hAC hBD
+  rw [hCD] at hincl
+  exact Iff.mp subset_empty_iff hincl
+  done
 
 /- Un lemme d'exercice: boules separees  -/
 lemma separated_balls (x : α) (hfx : x ≠ f x) :  ∃ ε, 0 < ε ∧ (ball x ε) ∩ (f '' (ball x ε)) = ∅ := by
@@ -101,7 +96,7 @@ lemma separated_balls (x : α) (hfx : x ≠ f x) :  ∃ ε, 0 < ε ∧ (ball x �
      · exfalso
    done
 
-
+-- Perhaps this should go inside Mathlib.Dynamics.PeriodicPts.lean
 def IsNotPeriodicPt (f : α → α)  (x : α) := ∀ n : ℕ, 0 < n -> ¬IsPeriodicPt f n x
 
 lemma non_periodic_arbitrary_large_time (N : ℕ) (ε0 : ℝ) (hε0 : 0 < ε0) (x : α) (hfx : IsNotPeriodicPt f x) (hxf : x ∈ nonWanderingSet f)
@@ -122,7 +117,7 @@ by
   let δ2 := min δ ε0
   have δmem: δ ∈ (Finset.Icc 1 (N+1)).image ε2 := Finset.min'_mem _ _
   simp at δmem
-  rcases δmem with ⟨n, ⟨npos, nleN⟩, h'n⟩
+  rcases δmem with ⟨n, ⟨npos, _⟩, h'n⟩
   change ε2 n = δ at h'n
   have hδ0 : 0 < δ := by
     rw [← h'n]
@@ -142,14 +137,13 @@ by
       use n2
       refine' ⟨⟨hn21,hn22⟩,rfl⟩
     have hbigball := h'ε2 n2 hn21
-    apply small_inter_empty (ball x δ) (f^[n2] '' ball x δ) (ball x (ε2 n2)) (f^[n2] '' ball x (ε2 n2))
+    apply inter_subset_empty_of_inter_empty (ball x δ) (f^[n2] '' ball x δ) (ball x (ε2 n2)) (f^[n2] '' ball x (ε2 n2))
     · exact ball_subset_ball (x := x) hA
     · exact image_subset (f^[n2]) (ball_subset_ball (x := x) hA)
     · exact hbigball
   have hxfδ := hxf δ2 hδ20
   rcases hxfδ with ⟨y,⟨n3,hy1,hy2,hy3⟩⟩
   have hsmallball : ball x δ2 ⊆ ball x δ := ball_subset_ball hδ2δ
-  have hsmallimball : f^[n3] '' ball x δ2 ⊆ f^[n3] '' ball x δ := image_subset (f^[n3]) hsmallball
   have hsmall1 : y ∈ ball x δ := ball_subset_ball hδ2δ hy1
   use y
   use n3
@@ -202,10 +196,8 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
   intro u x hu ulim
   rw [tendsto_atTop_nhds] at ulim
   intro ε hepos
-  have e2pos : 0 < ε / 2 := by
-    linarith
-  have h1 : IsOpen (ball x (ε / 2)) := by
-    exact isOpen_ball
+  have e2pos : 0 < ε / 2 := by linarith
+  have h1 : IsOpen (ball x (ε / 2)) := isOpen_ball
   have h2 : ∃ (z : α), z ∈ ball x (ε/ 2) ∧ z ∈ nonWanderingSet f := by
     have k1 := ulim (ball x (ε / 2))
     have k2 : x ∈ (ball x (ε / 2)) := by
@@ -224,11 +216,11 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
     -- obtain below is equivalent to the above two lines
     obtain ⟨y, l1, ⟨n, l2, l3⟩⟩ := h4 (ε / 2) e2pos
     use y, n -- note `use y, n` which is the same as `use y` and `use n`
-    simp
+    -- simp -- was repeatedly doing `mem_ball.mp: y ∈ ball x ε -> dist y x < ε `
     exact ⟨l1, l2, l3⟩
   rcases h5 with ⟨y, n, h6, h7, h8⟩
   have h9 : y ∈ ball x ε := by
-    simp
+    -- simp -- was doing `mem_ball.mp: y ∈ ball x ε -> dist y x < ε `
     have m1 : dist y z + dist z x < ε := by
       rw [mem_ball] at h3 h6
       linarith
@@ -236,7 +228,7 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
       exact dist_triangle _ _ _  -- why can I omit argument, but I can't in the line below?
     exact lt_of_le_of_lt this m1
   have h10 : f^[n] y ∈ ball x ε := by
-    simp
+    -- simp -- was doing `mem_ball.mp: y ∈ ball x ε -> dist y x < ε `
     have p1 : dist (f^[n] y) z + dist z x < ε := by
       rw [mem_ball] at h7 h3
       linarith
@@ -315,7 +307,10 @@ theorem recurrentSet_iff_accumulation_point (x : α) :
   constructor
   . intro recur_x
     unfold recurrentSet at recur_x
-    simp at recur_x
+    -- simp is fine as well, but we only need
+    -- `x ∈ { y | p y } = p x` here
+    -- I hope that being explicit makes compilation faster
+    simp only [mem_setOf_eq] at recur_x
     rw [mem_omegaLimit_iff_frequently] at recur_x
     intro ε N hε
     have recur_x_in_ball := recur_x (ball x ε) (ball_mem_nhds x hε)
@@ -323,10 +318,10 @@ theorem recurrentSet_iff_accumulation_point (x : α) :
     exact recur_x_in_ball N
   . intro hf
     unfold recurrentSet
-    simp
+    simp only [mem_setOf_eq] -- `x ∈ { y | p y } = p x`
     rw [mem_omegaLimit_iff_frequently]
     intro U hU
-    simp [frequently_atTop]
+    simp [frequently_atTop] -- reduces the goal to `∀ (a : ℕ), ∃ b, a ≤ b ∧ f^[b] x ∈ U`
     -- same as `rcases Metric.mem_nhds_iff.mp hU with ⟨ε, hε, rest⟩` but nicer
     obtain ⟨ε, hε, ball_in_U⟩ : ∃ ε, ε > 0 ∧ ball x ε ⊆ U := Metric.mem_nhds_iff.mp hU
     intro a
@@ -341,7 +336,7 @@ theorem periodicpts_mem_recurrentSet
   -- unfold IsPeriodicPt at hx
   -- unfold IsFixedPt at hx
   -- unfold recurrentSet
-  have : x ∈ ω⁺ (fun n ↦ f^[n]) ({x} : Set α) := by
+  have x_in_omegaLimit : x ∈ ω⁺ (fun n ↦ f^[n]) ({x} : Set α) := by
     rw [mem_omegaLimit_iff_frequently]
     intro U hU
     simp [frequently_atTop]
@@ -350,36 +345,37 @@ theorem periodicpts_mem_recurrentSet
       use a * n
       constructor
       . exact Nat.le_mul_of_pos_right (Nat.pos_of_ne_zero nnz)
-      . have : f^[a * n] x = x := by
-          exact Function.IsPeriodicPt.const_mul hx a
-        rw [this]
+      . -- have : f^[a * n] x = x := by
+        --  exact Function.IsPeriodicPt.const_mul hx a
+        -- rw [this]
+        rw [Function.IsPeriodicPt.const_mul hx a]
         exact mem_of_mem_nhds hU
-        done
       done
     exact hb
-  apply this
+    done
+  apply x_in_omegaLimit
   done
 
 /- Show that the recurrent set is included in the non-wandering set -/
 theorem recurrentSet_nonwandering : recurrentSet f ⊆ (nonWanderingSet f) := by
   intro z hz
   unfold recurrentSet at hz
-  simp at hz
+  simp only [mem_setOf_eq] at hz -- `x ∈ { y | p y } = p x`
   apply omegaLimit_nonwandering
-  apply hz
+  exact hz
   done
 
 /- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense.
-   Note that `IsInvariant.isInvariant_iff_image` proves the equivalence between `MapsTo f U U` and
-   `IsInvariant f U` -/
+   Note that `IsInvariant.isInvariant_iff_image` is a useful function when we use `invariant`.
+   Using a structure here allows us to get the various properties via dot notation,
+   search e.g. for `hf.minimal` below -/
 structure IsMinimalSubset (f : α → α) (U : Set α) : Prop :=
   (closed : IsClosed U)
   (invariant: IsInvariant (fun n x => f^[n] x) U)
   (minimal: ∀ (x y : α) (_: x ∈ U) (_: y ∈ U) (ε : ℝ), ε > 0 -> ∃ n : ℕ, f^[n] y ∈ ball x ε)
 
 /- Define a minimal dynamics (all orbits are dense) -/
-def IsMinimal (f : α → α) : Prop :=
-  IsMinimalSubset f univ
+def IsMinimal (f : α → α) : Prop := IsMinimalSubset f univ
 
 /- Show that in a minimal dynamics, the recurrent set is all the space -/
 theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
@@ -387,7 +383,7 @@ theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
   intro z
   -- unfold recurrentSet
   -- unfold IsMinimal at hf
-  simp
+  -- simp
   have : ∀ (x : α) (ε : ℝ) (N : ℕ), ε > 0
          -> ∃ m : ℕ, m ≥ N ∧ f^[m] x ∈ ball x ε := by
     intro x ε N hε
@@ -403,37 +399,36 @@ theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
   exact this z
   done
 
-
-/- Give an example of a continuous dynamics on a compact space in which the recurrent set is all
-the space, but the dynamics is not minimal -/
+-- An example to learn to define maps on the unit interval
 noncomputable def doubling_map (x : unitInterval) : unitInterval :=
   ⟨Int.fract (2 * x), by exact unitInterval.fract_mem (2 * x)⟩
 
--- set_option pp.all true
-
+/- Give an example of a continuous dynamics on a compact space in which the recurrent set is all
+the space, but the dynamics is not minimal -/
 example : ¬IsMinimal (id : unitInterval -> unitInterval) := by
-  have dist_pos : 0 < dist (1 : unitInterval) 0 := by
-    apply dist_pos.mpr
-    apply unitInterval.coe_ne_zero.mp; norm_num -- 1 ≠ 0
-    done
   intro H
   have minimality := H.minimal
   contrapose minimality
   -- `push_neg` pushes negations as deep as possible into the conclusion of a hypothesis
   push_neg
   use 0, 1, (mem_univ 0), (mem_univ 1), (dist (1 : unitInterval) (0 : unitInterval))/2
+  -- we need this helper twice below
+  have dist_pos : 0 < dist (1 : unitInterval) 0 := by
+    apply dist_pos.mpr
+    apply unitInterval.coe_ne_zero.mp; norm_num -- 1 ≠ 0
   constructor
-  . apply div_pos
-    apply dist_pos
+  . apply div_pos dist_pos
     linarith -- 0 < 2
   . intro n
+    -- `simp` is necessary to go from `¬id^[n] 1 ∈ ball 0 (dist 1 0 / 2)`
+    -- to `0 ≤ dist 1 0`
     simp
     exact le_of_lt dist_pos
   done
 
 example (x : unitInterval) :
     x ∈ recurrentSet (id : unitInterval -> unitInterval) := by
-  unfold recurrentSet
+  -- unfold recurrentSet
   apply periodicpts_mem_recurrentSet _ _ 1
   . linarith
   . exact is_periodic_id 1 x
@@ -444,24 +439,26 @@ example (x : unitInterval) :
 theorem minimalSubset_mem_recurrentSet (U : Set α) (hU: IsMinimalSubset f U) :
       U ⊆ recurrentSet f := by
   intro x hx
-  obtain ⟨hC, hInv, hMin⟩ := hU
+  obtain ⟨_, hInv, hMin⟩ := hU
   apply (recurrentSet_iff_accumulation_point f x).mpr
   intro ε N hε
-  have map_sub : ∀ n : ℕ, f^[n] x ∈ U := by
-    unfold IsInvariant at hInv
+  have iterates_in_U : ∀ n : ℕ, f^[n] x ∈ U := by
+    -- unfold IsInvariant at hInv
     intro n
-    let f' := hInv n
-    simp at f'
-    apply Set.mapsTo'.mp f'
-    simp
-    use x
-    constructor
-    . exact hx
-    . rfl
+    -- let f' := hInv n; simp at f'
+    -- apply Set.mapsTo'.mp at f'
+    -- leads us to `f^[n] x ∈ (fun n x ↦ f^[n] x) n '' U`
+    -- which simplifies to `∃ x', x' ∈ U ∧ f^[n] x' = f^[n] x`
+    -- as one can check with `simp`
+    apply Set.mapsTo'.mp (hInv n)
+    -- once we `use x`
+    -- we get the statement from `exact ⟨hx, rfl⟩`
+    -- this can be summarized to
+    exact ⟨x, hx, rfl⟩
   obtain ⟨n, hball⟩ : ∃ n, f^[n] (f^[N] x) ∈ ball x ε := by
-    apply hMin x (f^[N] x) hx (map_sub N) ε hε
+    apply hMin x (f^[N] x) hx (iterates_in_U N) ε hε
   refine' ⟨n + N, _, _⟩
-  . linarith
+  . exact le_add_self -- N ≤ n + N
   . rw [ <-Function.iterate_add_apply ] at hball
     exact hball
   done
