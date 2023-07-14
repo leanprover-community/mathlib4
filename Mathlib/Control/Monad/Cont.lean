@@ -118,15 +118,12 @@ instance : LawfulMonadCont (ContT r m) where
 
 /-- Note that `tryCatch` does not have correct behavior in this monad:
 ```
-def foo : ContT Bool Lean.MetaM Bool := do
-  let x ← try
-    pure true
-  catch _ =>
-    return false
-  throwError "oh no {x}"
+def foo : ContT Bool (Except String) Bool := do
+  let x ← try pure true catch _ => return false
+  throw s!"oh no {x}"
 
 #eval foo.run pure
--- false, no error
+-- `Except.ok false`, no error
 ```
 Here, the `throwError` is being run inside the `try`.
 -/
