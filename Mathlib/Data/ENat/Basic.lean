@@ -95,6 +95,10 @@ instance canLift : CanLift ℕ∞ ℕ (↑) fun n => n ≠ ⊤ :=
   WithTop.canLift
 #align enat.can_lift ENat.canLift
 
+instance : WellFoundedRelation ℕ∞ where
+  rel := (· < ·)
+  wf := IsWellFounded.wf
+
 /-- Conversion of `ℕ∞` to `ℕ` sending `∞` to `0`. -/
 def toNat : MonoidWithZeroHom ℕ∞ ℕ
     where
@@ -204,6 +208,9 @@ theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
 theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
   Order.le_of_lt_succ <| n.succ_def.symm ▸ h
 #align enat.le_of_lt_add_one ENat.le_of_lt_add_one
+
+theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
+  WithTop.le_coe_iff
 
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)

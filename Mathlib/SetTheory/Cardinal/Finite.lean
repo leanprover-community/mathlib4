@@ -149,6 +149,11 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
   mk_toPartENat_of_infinite
 #align part_enat.card_eq_top_of_infinite PartENat.card_eq_top_of_infinite
 
+@[simp]
+theorem card_sum (α β : Type _) :
+    PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
+  simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
+
 theorem card_congr {α : Type _} {β : Type _} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
   Cardinal.toPartENat_congr f
 #align part_enat.card_congr PartENat.card_congr
