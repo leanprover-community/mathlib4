@@ -30,10 +30,12 @@ lemma split_off_first {a : ℕ} (f : ℕ → ℚ) (N : ℕ) (hN : a < N) :
   · simp only [mem_Ioc, lt_self_iff_false, false_and, not_false_eq_true]
   exact hN
 
+/-- The absolute value of the Möbius function is bounded above by 1. -/
 @[simp]
 lemma abs_moebius_le_one (n : ℕ) : |μ n| ≤ 1 := by by_cases (Squarefree n) <;> simp [h]
 
-theorem sum_divisors_mu : ∑ n in m.divisors, μ n = if m = 1 then 1 else 0 :=
+/-- The sum of the Möbius function over all divisors of `m` is the indicator function of `1`.-/
+theorem sum_divisors_mu (m : ℕ) : ∑ n in m.divisors, μ n = if m = 1 then 1 else 0 :=
   by rw [←coe_mul_zeta_apply, moebius_mul_coe_zeta, one_apply]
 
 /- ## The sum of floors
