@@ -17,8 +17,8 @@ def qf (t : Triple) (x : ℝ) := t.a * x * x + t.b * x + t.c
 
 def qf_fpr_translate (t : Triple) (w : ℝ) := qf t (fpr t + w)
 
-lemma qf_fpr_translate_root (t : Triple) (z : ℝ) (hz : qf t z = 0) :
-  qf_fpr_translate t (z - fpr t) = 0 := by rw [qf_fpr_translate, add_sub_cancel'_right]; exact hz
+lemma root_iff_translate_root (t : Triple) (z : ℝ) :
+  qf t z = 0 ↔ qf_fpr_translate t (z - fpr t) = 0 := by rw [qf_fpr_translate, add_sub_cancel'_right]
 
 /-- The Brouckner transform. -/
 def brouckner (t : Triple) : Triple :=
@@ -46,14 +46,15 @@ def swapac (t : Triple) : Triple := {a := t.c, b := t.b, c := t.a}
 lemma swapac_twice (t : Triple) : t = swapac (swapac t) := by simp [swapac]
 
 /-- The inverse of a root is a root of the quadratic with a and c swapped. -/
-lemma swapac_root (t: Triple) (z : ℝ) (hz : qf t z = 0) (hz' : z ≠ 0) :
-  qf (swapac t) (1 / z) = 0 := by
-  simp_rw [qf, swapac]
-  rw [← zero_div (z * z), eq_div_iff (mul_ne_zero hz' hz')]
-  simp only [add_mul]
-  have : t.c * (1 / z) * (1 / z) * (z * z) + t.b * (1 / z) * (z * z) + t.a * (z * z) = qf t z :=
-    by rw[qf]; field_simp; ring
-  rwa [this]
+lemma swapac_root (t: Triple) (z : ℝ) (hz : z ≠ 0) :
+  qf t z = 0 ↔ qf (swapac t) (1 / z) = 0 := by
+    simp_rw [qf, swapac]
+    field_simp
+    have : t.c * z + t.b * (z * z) + t.a * (z * z * z) = (qf t z) * z := by
+      rw [qf]; ring
+    rw [this, qf]
+    simp [mul_ne_zero_iff, hz]
+
 
 /-- The swapped Brouckner transform is the negation of the fpr-translation. -/
 lemma neg_qf_fpr_translate_eq_brouckner (t : Triple) (w : ℝ) :
@@ -62,13 +63,11 @@ lemma neg_qf_fpr_translate_eq_brouckner (t : Triple) (w : ℝ) :
   simp only [Int.cast_add, Int.cast_neg, Int.cast_mul]
   ring
 
-/-- First key fact: from a non-integer root, we can obtain a root of the Brouckner transform. -/
-theorem brouckner_root (t: Triple) (z : ℝ) (hz : qf t z = 0) (hz' : z ≠ fpr t) :
-  qf (brouckner t) (1 / (z - fpr t)) = 0 := by
-  rw [swapac_twice (brouckner t)]
-  have h2 : -qf_fpr_translate t (z - fpr t) = 0 := by rw[qf_fpr_translate_root _ _ hz, neg_zero]
-  rw [neg_qf_fpr_translate_eq_brouckner] at h2
-  apply swapac_root _ _ h2 (sub_ne_zero.mpr hz')
+/-- Relates root of original form to root of Brouckner transform. -/
+theorem brouckner_root (t: Triple) (z : ℝ) (hz : z ≠ fpr t) :
+  qf t z = 0 ↔ qf (brouckner t) (1 / (z - fpr t)) = 0 := by
+  rw [swapac_twice (brouckner t), ← swapac_root _ _ (sub_ne_zero.mpr hz),
+  ←neg_qf_fpr_translate_eq_brouckner, neg_eq_zero,←root_iff_translate_root]
 
 end PellAlg
 
