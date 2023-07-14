@@ -121,8 +121,8 @@ instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   tryCatch act h f := tryCatch (act f) fun e => h e f
 
 instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
-  throw e _ := throw e
-  tryCatch act h f := tryCatch (act f) fun e => h e f
+  throw e := throw e
+  tryCatch act h := tryCatch act h
 
 instance (r m) [Monad m] [Lean.AddErrorMessageContext m] :
     Lean.AddErrorMessageContext (ContT r m) where
@@ -130,7 +130,9 @@ instance (r m) [Monad m] [Lean.AddErrorMessageContext m] :
 
 instance (r m) [Monad m] [Lean.MonadRef m] : Lean.MonadRef (ContT r m) where
   getRef := monadLift <| Lean.MonadRef.getRef
-  withRef stx h := Lean.MonadRef.withRef stx ∘ h
+  withRef stx h := fun f => do
+    let oldStx ← Lean.MonadRef.getRef
+    Lean.MonadRef.withRef stx (h <| Lean.MonadRef.withRef oldStx ∘ f)
 
 instance (r m) [Monad m] [Lean.MonadError m] : Lean.MonadError (ContT r m) where
 
