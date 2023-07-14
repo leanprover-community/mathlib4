@@ -7,11 +7,11 @@ Authors: Anatole Dedecker
 import Mathlib.Analysis.Distribution.BoundedContDiffMap
 import Mathlib.Topology.Sets.Compacts
 
-open TopologicalSpace SeminormFamily Set
+open TopologicalSpace SeminormFamily Set Function
 open scoped BoundedContinuousFunction Topology
 
 variable (𝕜 E F : Type _) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {n : ℕ∞}
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {n : ℕ∞} {K : Compacts E}
 
 structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   protected toFun : E → F
@@ -82,30 +82,45 @@ theorem coe_copy (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) (f' : E → F) (h : f' = f) 
 theorem copy_eq (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 
-#check EqOn.comp_left
-
 instance : AddCommGroup (𝓓[𝕜]^(n)_(K)⟮E, F⟯) where
-  add f g := ContDiffMapSupportedIn.mk (f + g) (f.contDiff.add g.contDiff) fun x hx ↦ by
-    sorry
+  add f g := ContDiffMapSupportedIn.mk (f + g) (f.contDiff.add g.contDiff) <| by
+    rw [← add_zero 0]
+    exact f.zero_on_compl.comp_left₂ g.zero_on_compl
   add_assoc f₁ f₂ f₃ := by ext; exact add_assoc _ _ _
   add_comm f g := by ext; exact add_comm _ _
-  zero := ContDiffMapSupportedIn.mk 0 contDiff_zero_fun fun i _ ↦ by
-    sorry
+  zero := ContDiffMapSupportedIn.mk 0 contDiff_zero_fun fun _ _ ↦ rfl
   zero_add f := by ext; exact zero_add _
   add_zero f := by ext; exact add_zero _
-  neg f := ContDiffMapSupportedIn.mk (-f) (f.contDiff.neg) fun i hi ↦ by
-    sorry
+  neg f := ContDiffMapSupportedIn.mk (-f) (f.contDiff.neg) <| by
+    rw [← neg_zero]
+    exact f.zero_on_compl.comp_left
   add_left_neg f := by ext; exact add_left_neg _
 
 instance : Module 𝕜 (𝓓[𝕜]^(n)_(K)⟮E, F⟯) where
-  smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) fun i hi ↦ by
-    sorry
+  smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
+    rw [← smul_zero c]
+    exact f.zero_on_compl.comp_left
   one_smul f := by ext; exact one_smul _ _
   mul_smul c₁ c₂ f := by ext; exact mul_smul _ _ _
   smul_zero c := by ext; exact smul_zero _
   smul_add c f g := by ext; exact smul_add _ _ _
   add_smul c₁ c₂ f := by ext; exact add_smul _ _ _
   zero_smul f := by ext; exact zero_smul _ _
+
+protected theorem support_subset (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : support f ⊆ K :=
+  support_subset_iff'.mpr f.zero_on_compl
+
+protected theorem tsupport_subset (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : tsupport f ⊆ K :=
+  closure_minimal f.support_subset K.2.isClosed
+
+protected theorem hasCompactSupport (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) :  HasCompactSupport f :=
+  HasCompactSupport.intro K.2 f.zero_on_compl
+
+protected def of_support_subset {f : E → F} (hf : ContDiff 𝕜 n f) (hsupp : support f ⊆ K) :
+    𝓓[𝕜]^(n)_(K)⟮E, F⟯ where
+  toFun := f
+  contDiff' := hf
+  zero_on_compl' := support_subset_iff'.mp hsupp
 
 noncomputable def iteratedFDerivₗ (i : ℕ) :
     (E →ᵇ[𝕜, n] F) →ₗ[𝕜] (E →ᵇ (E [×i]→L[𝕜] F)) :=
