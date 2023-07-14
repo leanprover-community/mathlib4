@@ -201,13 +201,6 @@ elab:max (name := of_mul_of_fin_elab)
     | throwErrorAt nStx "Expecting a natural number, have{indentD n}"
   prove l m n
 
-example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
-    !![a₁₁, a₁₂;
-      a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
-                      b₂₁, b₂₂] = !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
-                                    a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
-  by rw [of_mul_of_fin% 2 2 2]
-
 -- /-- Helper tactic used as an `auto_param` for `matrix.of_mul_of_fin` -/
 -- meta def of_mul_of_fin.derive : tactic unit :=
 -- do
