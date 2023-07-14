@@ -115,7 +115,7 @@ protected theorem support_subset (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : support f 
 protected theorem tsupport_subset (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : tsupport f ⊆ K :=
   closure_minimal f.support_subset K.2.isClosed
 
-protected theorem hasCompactSupport (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) :  HasCompactSupport f :=
+protected theorem hasCompactSupport (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : HasCompactSupport f :=
   HasCompactSupport.intro K.2 f.zero_on_compl
 
 protected def of_support_subset {f : E → F} (hf : ContDiff 𝕜 n f) (hsupp : support f ⊆ K) :
@@ -124,8 +124,28 @@ protected def of_support_subset {f : E → F} (hf : ContDiff 𝕜 n f) (hsupp : 
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
 
+protected theorem bounded (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) :
+    ∃ C, ∀ x, ‖f x‖ ≤ C :=
+  f.contDiff.continuous.bounded_above_of_compact_support f.hasCompactSupport
+
+#check HasCompactSupport.iteratedFDeriv
+
+protected theorem support_iteratedFDeriv_subset (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) {i : ℕ} (hi : i ≤ n) :
+    support (iteratedFDeriv 𝕜 i f) ⊆ K := by
+  rw [support_subset_iff']
+
+protected theorem tsupport_subset (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : tsupport f ⊆ K :=
+  closure_minimal f.support_subset K.2.isClosed
+
+protected theorem hasCompactSupport (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) : HasCompactSupport f :=
+  HasCompactSupport.intro K.2 f.zero_on_compl
+
+protected theorem bounded (f : 𝓓[𝕜]^(n)_(K)⟮E, F⟯) {i : ℕ} (hi : i ≤ n) :
+    ∃ C, ∀ x, ‖iteratedFDeriv 𝕜 i f x‖ ≤ C := by
+  refine Continuous.bounded_
+
 noncomputable def iteratedFDerivₗ (i : ℕ) :
-    (E →ᵇ[𝕜, n] F) →ₗ[𝕜] (E →ᵇ (E [×i]→L[𝕜] F)) :=
+    𝓓[𝕜]^(n)_(K)⟮E, F⟯ →ₗ[𝕜] (E →ᵇ (E [×i]→L[𝕜] F)) :=
   if hi : i ≤ n then
   { toFun := fun f ↦ .ofNormedAddCommGroup (iteratedFDeriv 𝕜 i f)
       (f.contDiff.continuous_iteratedFDeriv hi) (f.bounded i hi).choose
