@@ -2027,4 +2027,11 @@ end Iso
 
 end Maps
 
+/-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
+@[simps!]
+def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
+  toEquiv := Equiv.Set.univ V
+  map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_Adj, Embedding.coe_subtype,
+                                Subtype.forall, Set.mem_univ, forall_true_left, implies_true]
+
 end SimpleGraph
