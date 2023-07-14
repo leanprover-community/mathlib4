@@ -330,10 +330,10 @@ theorem fix_fwd {f : α →. Sum β α} {b : β} {a a' : α} (hb : b ∈ f.fix a
 @[elab_as_elim]
 def fixInduction {C : α → Sort _} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') : C a := by
-  have h₂ := (Part.mem_assert_iff.1 h).snd;
+  have h₂ := (Part.mem_assert_iff.1 h).snd
   -- Porting note: revert/intro trick required to address `generalize_proofs` bug
   revert h₂
-  generalize_proofs h₁;
+  generalize_proofs h₁
   intro h₂; clear h
   induction' h₁ with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
