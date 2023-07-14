@@ -521,6 +521,25 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
 
+instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
+    simp only [Prod.mk_lt_mk] at w
+    rcases w with ⟨a_lt, _⟩ | ⟨a_le, b_lt⟩
+    · left
+      assumption
+    · rcases eq_or_lt_of_le a_le with rfl | a_lt
+      · right
+        assumption
+      · left
+        assumption
+
+instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+    WellFoundedGT (α × β) :=
+  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
+
 namespace Set
 
 /-- An unbounded or cofinal set. -/
