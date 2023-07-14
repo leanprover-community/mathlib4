@@ -773,7 +773,7 @@ def prodProdProdComm : ((M × M₂) × M₃ × M₄) ≃ₗ[R] (M × M₃) × M�
   { AddEquiv.prodProdProdComm M M₂ M₃ M₄ with
     toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
     invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
-    map_smul' := fun c mnmn => rfl }
+    map_smul' := fun _c _mnmn => rfl }
 #align linear_equiv.prod_prod_prod_comm LinearEquiv.prodProdProdComm
 
 @[simp]
