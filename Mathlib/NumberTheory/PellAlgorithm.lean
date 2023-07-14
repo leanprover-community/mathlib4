@@ -1,4 +1,7 @@
 import Mathlib
+--.Algebra.QuadraticDiscriminant
+-- import Mathlib.Data.Int
+
 
 namespace PellAlg
 
@@ -55,7 +58,6 @@ lemma swapac_root (t: Triple) (z : ℝ) (hz : z ≠ 0) :
     rw [this, qf]
     simp [mul_ne_zero_iff, hz]
 
-
 /-- The swapped Brouckner transform is the negation of the fpr-translation. -/
 lemma neg_qf_fpr_translate_eq_brouckner (t : Triple) (w : ℝ) :
   -qf_fpr_translate t w = qf (swapac (brouckner t)) w := by
@@ -69,7 +71,8 @@ theorem brouckner_root (t: Triple) (z : ℝ) (hz : z ≠ fpr t) :
   rw [swapac_twice (brouckner t), ← swapac_root _ _ (sub_ne_zero.mpr hz),
   ←neg_qf_fpr_translate_eq_brouckner, neg_eq_zero,←root_iff_translate_root]
 
-/- First, I will show: if a z² + b z + c = 0 has
+/- Harald wrote:
+First, I will show: if a z² + b z + c = 0 has
 a negative root z_- and
 a positive root z_+>1,
 and a>0, c<0, then
@@ -92,10 +95,19 @@ noncomputable def brouckner_roots (t : Triple) (r : Roots t)
    h1 := ((brouckner_root t r.x2) hne2).mp r.h2,
    h2 := ((brouckner_root t r.x1) hne1).mp r.h1}
 
-#check quadratic_eq_zero_iff
+lemma discrim_ge_zero_of_root (ha : a ≠ 0) (h : ∃x, a * x * x + b * x + c = 0) [NeZero (2 : K)] :
+  0 ≤ discrim a b c := by
+  obtain ⟨x, hx⟩ := h
+  rw [quadratic_eq_zero_iff_discrim_eq_sq] at hx
+  rw [hx]
+  positivity
+  assumption
 
+example (a b c : ℤ) (h : a + b = 0) : a = -b := by exact (add_eq_zero_iff_eq_neg.mp h)
 lemma lem1 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0) (hc : T.c < 0) :
-  0 < T.a * z + T.b := by sorry
+  0 < z * (T.a * z + T.b) := by
+  -- have h : 0 = 0 * z := by exact?
+-- apply mul_lt_mul_of_pos_left
 
 lemma lem2 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0) (hc : T.c < 0)
   (t : ℝ) (ht1 : t < z) (ht2 : 1 ≤ t) : (qf T t < 0) := by
@@ -141,6 +153,7 @@ lemma square_sqrt_le_self_of_nonneg (x : ℤ) (hx : 0 ≤ x) : x.sqrt * x.sqrt �
   norm_cast
   exact Nat.sqrt_le n
 
+
 lemma fpr_le_pos_root (T : Triple) (r : Roots T) (h : r.x1 ≤ r.x2) (ha : 0 < T.a) :
   (fpr T) ≤ r.x2 := by
   have key : (discrim T.a T.b T.c).sqrt ≤ 2 * T.a * r.x2 + T.b
@@ -149,16 +162,15 @@ lemma fpr_le_pos_root (T : Triple) (r : Roots T) (h : r.x1 ≤ r.x2) (ha : 0 < T
   sorry
   norm_num
   rw [←Int.cast_mul]
-  have := Int.cast_le.mpr (square_sqrt_le_self_of_nonneg ?_ ?_)
-  apply le_trans  (square_sqrt_le_self_of_nonneg)
-  rw [←Int.cast_le]
-
-
-  --   let s := (discrim t.a t.b t.c : ℝ).sqrt
-  --   have : s * s = discrim t.a t.b t.c :=
-  --     by apply (sqrt_eq_iff_mul_self_eq)
-  --   x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a)
-  -- sorry
+  apply le_trans
+  · apply ((@Int.cast_le ℝ _ _ _ _).mpr (square_sqrt_le_self_of_nonneg (discrim T.a T.b T.c) ?_))
+    sorry
+  · rw [← sq]
+    have := discrim_bound T r.x2 ?_
+    rw [← Real.rpow_two]
+    exact this
+    sorry
+  rw [fpr]
 
 lemma brouckner_root_signs (t : Triple) (r : Roots t) (h1 : r.x1 < 0) (h2 : r.x2 > 1)
   (h3 : 0 < t.a) (h4 : t.c < 0)  : 0 < (brouckner t).a := by
