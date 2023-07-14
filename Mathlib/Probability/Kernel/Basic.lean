@@ -673,5 +673,3 @@ end Piecewise
 end kernel
 
 end ProbabilityTheory
-
-#lint
