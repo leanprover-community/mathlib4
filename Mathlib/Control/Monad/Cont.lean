@@ -116,6 +116,20 @@ instance : LawfulMonadCont (ContT r m) where
   callCC_bind_left := by intros; ext; rfl
   callCC_dummy := by intros; ext; rfl
 
+/-- Note that `tryCatch` does not have correct behavior in this monad:
+```
+def foo : ContT Bool Lean.MetaM Bool := do
+  let x ← try
+    pure true
+  catch _ =>
+    return false
+  throwError "oh no {x}"
+
+#eval foo.run pure
+-- false, no error
+```
+Here, the `throwError` is being run inside the `try`.
+-/
 instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
   tryCatch act h f := tryCatch (act f) fun e => h e f
