@@ -214,7 +214,7 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
     have k4 : u N ∈ ball x (ε / 2) := by
       have k5 : N ≤ N := by
         exact Nat.le_refl N
-      exact k3 N k5 -- it seems not to be necessary??
+      exact k3 N k5
     exact ⟨u N, k4, hu N⟩
   rcases h2 with ⟨z, h3, h4⟩
   have h5 : ∃ (y : α), ∃ (n : ℕ), y ∈ ball z (ε / 2) ∧ f^[n] y ∈ ball z (ε / 2) ∧ n ≠ 0 := by
@@ -369,9 +369,17 @@ theorem recurrentSet_nonwandering : recurrentSet f ⊆ (nonWanderingSet f) := by
   apply hz
   done
 
+/- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense.
+   Note that `IsInvariant.isInvariant_iff_image` proves the equivalence between `MapsTo f U U` and
+   `IsInvariant f U` -/
+structure IsMinimalSubset (f : α → α) (U : Set α) : Prop :=
+  (closed : IsClosed U)
+  (invariant: IsInvariant (fun n x => f^[n] x) U)
+  (minimal: ∀ (x y : α) (_: x ∈ U) (_: y ∈ U) (ε : ℝ), ε > 0 -> ∃ n : ℕ, f^[n] y ∈ ball x ε)
+
 /- Define a minimal dynamics (all orbits are dense) -/
 def IsMinimal (f : α → α) : Prop :=
-  ∀ (x y : α) (ε : ℝ), ε > 0 -> ∃ n : ℕ, f^[n] y ∈ ball x ε
+  IsMinimalSubset f univ
 
 /- Show that in a minimal dynamics, the recurrent set is all the space -/
 theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
@@ -384,7 +392,8 @@ theorem recurrentSet_of_minimal_is_all_space (hf: IsMinimal f) :
          -> ∃ m : ℕ, m ≥ N ∧ f^[m] x ∈ ball x ε := by
     intro x ε N hε
     -- rcases (hf x (f^[N] x) ε hε) with ⟨n, hball⟩
-    obtain ⟨n, hball⟩ : ∃ n, f^[n] (f^[N] x) ∈ ball x ε := hf x (f^[N] x) ε hε
+    obtain ⟨n, hball⟩ : ∃ n, f^[n] (f^[N] x) ∈ ball x ε :=
+      hf.minimal x (f^[N] x) (mem_univ _) (mem_univ _) ε hε
     refine' ⟨n + N, _, _⟩
     . linarith
     . rw [ <-Function.iterate_add_apply ] at hball
@@ -403,14 +412,16 @@ noncomputable def doubling_map (x : unitInterval) : unitInterval :=
 -- set_option pp.all true
 
 example : ¬IsMinimal (id : unitInterval -> unitInterval) := by
-  unfold IsMinimal
-  -- `push_neg` pushes negations as deep as possible into the conclusion of a hypothesis
-  push_neg
   have dist_pos : 0 < dist (1 : unitInterval) 0 := by
     apply dist_pos.mpr
     apply unitInterval.coe_ne_zero.mp; norm_num -- 1 ≠ 0
     done
-  use 0, 1, (dist (1 : unitInterval) (0 : unitInterval))/2
+  intro H
+  have minimality := H.minimal
+  contrapose minimality
+  -- `push_neg` pushes negations as deep as possible into the conclusion of a hypothesis
+  push_neg
+  use 0, 1, (mem_univ 0), (mem_univ 1), (dist (1 : unitInterval) (0 : unitInterval))/2
   constructor
   . apply div_pos
     apply dist_pos
@@ -429,29 +440,50 @@ example (x : unitInterval) :
   done
 
 
-/- Define minimal subsets for `f`, as closed invariant subsets in which all orbits are dense.
-   Note that `IsInvariant.isInvariant_iff_image` proves the equivalence between `MapsTo f U U` and
-   `IsInvariant f U` -/
-def minimalSubset (f : α → α) (U : Set α)
-    (hinv: MapsTo f U U) :=
-    (IsClosed U) ∧ IsMinimal (Set.MapsTo.restrict f U U hinv)
-
-
 /- Show that every point in a minimal subset is recurrent -/
-
+theorem minimalSubset_mem_recurrentSet (U : Set α) (hU: IsMinimalSubset f U) :
+      U ⊆ recurrentSet f := by
+  intro x hx
+  obtain ⟨hC, hInv, hMin⟩ := hU
+  apply (recurrentSet_iff_accumulation_point f x).mpr
+  intro ε N hε
+  have map_sub : ∀ n : ℕ, f^[n] x ∈ U := by
+    unfold IsInvariant at hInv
+    intro n
+    let f' := hInv n
+    simp at f'
+    apply Set.mapsTo'.mp f'
+    simp
+    use x
+    constructor
+    . exact hx
+    . rfl
+  obtain ⟨n, hball⟩ : ∃ n, f^[n] (f^[N] x) ∈ ball x ε := by
+    apply hMin x (f^[N] x) hx (map_sub N) ε hε
+  refine' ⟨n + N, _, _⟩
+  . linarith
+  . rw [ <-Function.iterate_add_apply ] at hball
+    exact hball
+  done
 
 /- Show that every invariant nonempty closed subset contains at least a minimal invariant subset,
 using Zorn lemma. -/
+theorem nonempty_invariant_closed_subset_has_minimalSubset
+    (U : Set α) (hne: Nonempty U) (hC: IsClosed U) (hI: IsInvariant (fun n x => f^[n] x) U) :
+    ∃ V : Set α, V ⊆ U -> (hinv: MapsTo f U U) -> IsMinimalSubset f U :=
+  sorry
 
 
 
 /- Show that the recurrent set of `f` is nonempty -/
-theorem recurrentSet_nonempty : Set.Nonempty (recurrentSet f) := by
+theorem recurrentSet_nonempty [Nonempty α]: Set.Nonempty (recurrentSet f) := by
   sorry
 
 end Topological_Dynamics
 
 section Ergodic_Theory
+
+open BigOperators
 
 /- standing assumptions: `f` is a measure preserving map of a probability space `(α, μ)`, and
 `g : α → ℝ` is integrable. -/
@@ -462,7 +494,8 @@ variable {α : Type _} [MetricSpace α] [CompactSpace α] [MeasurableSpace α] [
 
 
 /- Define Birkhoff sums. -/
-def birkhoffSum {α : Type _} (f : α → α) (g : α → ℝ) (n : ℕ) (x : α) : ℝ := sorry
+noncomputable def birkhoffSum {α : Type _} (f : α → α) (g : α → ℝ) (n : ℕ) (x : α) : ℝ :=
+  1 / n * (∑ i in Finset.range n, g (f^[i] x))
 
 
 /- Define the invariant sigma-algebra of `f` -/
