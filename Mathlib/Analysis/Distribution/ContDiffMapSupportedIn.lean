@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 
-import Mathlib.Analysis.Distribution.BoundedContDiffMap
+import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Sets.Compacts
 
 open TopologicalSpace SeminormFamily Set Function
