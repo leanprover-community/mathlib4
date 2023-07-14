@@ -16,10 +16,10 @@ import Mathlib.Data.Set.Intervals.OrdConnected
 
 Given a linearly ordered type `α`, in this file we define
 
-* `Set.projIci (a : α)` to be the map `α → [a, ∞[` sending `]-∞, a]` to `a`, and each point
-   `x ∈ [a, ∞[` to itself;
-* `Set.projIic (b : α)` to be the map `α → ]-∞, b[` sending `[b, ∞[` to `b`, and each point
-   `x ∈ ]-∞, b]` to itself;
+* `Set.projIci (a : α)` to be the map `α → [a, ∞)` sending `(-∞, a]` to `a`, and each point
+   `x ∈ [a, ∞)` to itself;
+* `Set.projIic (b : α)` to be the map `α → (-∞, b[` sending `[b, ∞)` to `b`, and each point
+   `x ∈ (-∞, b]` to itself;
 * `Set.projIcc (a b : α) (h : a ≤ b)` to be the map `α → [a, b]` sending `(-∞, a]` to `a`, `[b, ∞)`
   to `b`, and each point `x ∈ [a, b]` to itself;
 * `Set.IccExtend {a b : α} (h : a ≤ b) (f : Icc a b → β)` to be the extension of `f` to `α` defined
@@ -39,11 +39,11 @@ open Function
 
 namespace Set
 
-/-- Projection of `α` to the closed interval `[a, ∞[`. -/
+/-- Projection of `α` to the closed interval `[a, ∞)`. -/
 def projIci (a x : α) : Ici a := ⟨max a x, le_max_left _ _⟩
 #align set.proj_Ici Set.projIci
 
-/-- Projection of `α` to the closed interval `]-∞, b]`. -/
+/-- Projection of `α` to the closed interval `(-∞, b]`. -/
 def projIic (b x : α) : Iic b := ⟨min b x, min_le_left _ _⟩
 #align set.proj_Iic Set.projIic
 
@@ -192,12 +192,12 @@ theorem strictMonoOn_projIcc : StrictMonoOn (projIcc a b h) (Icc a b) := fun x h
   simpa only [projIcc_of_mem, hx, hy]
 #align set.strict_mono_on_proj_Icc Set.strictMonoOn_projIcc
 
-/-- Extend a function `[a, ∞[ → β` to a map `α → β`. -/
+/-- Extend a function `[a, ∞) → β` to a map `α → β`. -/
 def IciExtend (f : Ici a → β) : α → β :=
   f ∘ projIci a
 #align set.Ici_extend Set.IciExtend
 
-/-- Extend a function `]-∞, b] → β` to a map `α → β`. -/
+/-- Extend a function `(-∞, b] → β` to a map `α → β`. -/
 def IicExtend (f : Iic b → β) : α → β :=
   f ∘ projIic b
 #align set.Iic_extend Set.IicExtend
