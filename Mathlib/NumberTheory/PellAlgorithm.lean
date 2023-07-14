@@ -1,7 +1,4 @@
 import Mathlib
---.Algebra.QuadraticDiscriminant
--- import Mathlib.Data.Int
-
 
 namespace PellAlg
 
@@ -71,14 +68,6 @@ theorem brouckner_root (t: Triple) (z : ℝ) (hz : z ≠ fpr t) :
   rw [swapac_twice (brouckner t), ← swapac_root _ _ (sub_ne_zero.mpr hz),
   ←neg_qf_fpr_translate_eq_brouckner, neg_eq_zero,←root_iff_translate_root]
 
-/- Harald wrote:
-First, I will show: if a z² + b z + c = 0 has
-a negative root z_- and
-a positive root z_+>1,
-and a>0, c<0, then
-a' z² + b' z + c' has a root in (-1,0) and a root>1, and a'>0, and c'<0.
-That c'<0 is trivial (because c' = - a). Since a>0, we see that a z² + b z + c is <0 for z in (z_-,z_+); since m is both < z_+ and >= 1 > z_-, we see that a m² + b m + c < 0, and so a'>0.-/
-
 structure Roots (t : Triple) : Type where
   x1 : ℝ
   x2 : ℝ
@@ -94,17 +83,17 @@ noncomputable def brouckner_roots (t : Triple) (r : Roots t)
    h1 := ((brouckner_root t r.x2) hne2).mp r.h2,
    h2 := ((brouckner_root t r.x1) hne1).mp r.h1}
 
-lemma discrim_ge_zero_of_root (T : Triple) (ha : T.a ≠ 0) (h : ∃x, T.a * x * x + T.b * x + T.c = 0):
-  0 ≤ discrim T.a T.b T.c := by
+lemma discrim_ge_zero_of_root (T : Triple) (ha : T.a ≠ 0)
+  (h : ∃x : ℝ, T.a * x * x + T.b * x + T.c = 0) :
+  0 ≤ discrim (T.a : ℝ) T.b T.c := by
   obtain ⟨x, hx⟩ := h
   have : NeZero 2 := inferInstance
   rw [quadratic_eq_zero_iff_discrim_eq_sq] at hx
   rw [hx]
   positivity
-  assumption
+  norm_cast
 
-example (a c : ℤ) (hc : c < 0) : a + c < a := by exact Iff.mpr add_lt_iff_neg_left hc
-lemma lem1 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (hc : T.c < 0) :
+lemma linear_pos (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (hc : T.c < 0) :
   0 < T.a * z + T.b := by
   have : 0 < z * (T.a * z + T.b) := by
     rw [qf] at hz1
@@ -115,8 +104,8 @@ lemma lem1 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (hc : T.c < 0
   have : 0 < z := by linarith
   nlinarith
 
-lemma lem2 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0) (hc : T.c < 0)
-  (t : ℝ) (ht1 : t < z) (ht2 : 1 ≤ t) : (qf T t < 0) := by
+lemma qf_neg_between_one_and_pos_root (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z)
+(ha : T.a > 0) (hc : T.c < 0) (t : ℝ) (ht1 : t < z) (ht2 : 1 ≤ t) : (qf T t < 0) := by
   rw [←hz1, qf, qf]
   simp only [add_lt_add_iff_right]
   rw [← add_mul, ← add_mul]
@@ -130,7 +119,7 @@ lemma lem2 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0
   exact ht1.le
   exact lt_of_lt_of_le zero_lt_one ht2
   apply le_of_lt
-  apply lem1 T z hz1 hz2 hc
+  apply linear_pos T z hz1 hz2 hc
 
 lemma discrim_bound (T: Triple) (z : ℝ) (hz : qf T z = 0) :
   (discrim T.a T.b T.c ≤ (2 * T.a * z + T.b) ^ 2) := by
@@ -158,6 +147,52 @@ lemma square_sqrt_le_self_of_nonneg (x : ℤ) (hx : 0 ≤ x) : x.sqrt * x.sqrt �
   simp only [Int.toNat_ofNat]
   norm_cast
   exact Nat.sqrt_le n
+
+theorem fpr_correct (T : Triple) (ha : 0 < T.a) (hc : T.c < 0) (z : ℝ)
+(hz1 : qf T z = 0) (hz2 : 0 ≤ z) : fpr T = Int.floor z := by
+  rw [qf] at hz1
+  have : NeZero 2 := by infer_instance
+  let s := Real.sqrt (discrim T.a T.b T.c)
+  have a := discrim_ge_zero_of_root T ?_ ?_
+  have : s * s = discrim T.a T.b T.c := by
+    simp
+    rw [Real.mul_self_sqrt]
+    rw [discrim, discrim]
+    norm_num
+    sorry
+  · rw [fpr]
+    suffices : Int.sqrt (discrim T.a T.b T.c) = ⌊ z ⌋ * 2 * T.a + T.b
+    rw[this]
+    ring_nf
+    rw [mul_assoc]
+    exact Int.mul_ediv_cancel ⌊z⌋ (by linarith)
+    sorry
+  · exact ha.ne'
+  · use z; exact hz1
+
+lemma fpr_le_pos_root (T : Triple) (r : Roots T) (h : r.x1 ≤ r.x2) (ha : 0 < T.a) :
+  (fpr T) ≤ r.x2 := by sorry
+
+lemma fpr_ge_one (T : Triple) (r : Roots T) (h : r.x2 > 1) : 1 ≤ r.x2 := by sorry
+
+lemma qf_fpr_neg (T : Triple) (r : Roots T) (h1 : r.x1 < 0) (h2 : r.x2 > 1)
+  (h3 : 0 < T.a) (h4 : T.c < 0) (h5 : ↑(fpr T) ≠ r.x2 ) : qf T (fpr T) < 0 := by
+    apply qf_neg_between_one_and_pos_root T r.x2
+    all_goals try assumption
+    exact r.h2
+    rw [lt_iff_le_and_ne]; constructor
+    apply fpr_le_pos_root _ _ (by linarith) h3
+    exact h5
+    sorry
+
+
+/- Harald wrote:
+First, I will show: if a z² + b z + c = 0 has
+a negative root z_- and
+a positive root z_+>1,
+and a>0, c<0, then
+a' z² + b' z + c' has a root in (-1,0) and a root>1, and a'>0, and c'<0.
+That c'<0 is trivial (because c' = - a). Since a>0, we see that a z² + b z + c is <0 for z in (z_-,z_+); since m is both < z_+ and >= 1 > z_-, we see that a m² + b m + c < 0, and so a'>0.-/
 
 lemma brouckner_root_signs (t : Triple) (r : Roots t) (h1 : r.x1 < 0) (h2 : r.x2 > 1)
   (h3 : 0 < t.a) (h4 : t.c < 0)  : 0 < (brouckner t).a := by
