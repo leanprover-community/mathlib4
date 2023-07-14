@@ -243,6 +243,29 @@ example : n = m → 3 + n = m + 3 := by
   guard_target = 3 + n = n + 3
   apply add_comm
 
+example (x y x' y' : Nat) (hx : x = x') (hy : y = y') : x + y = x' + y' := by
+  congr! (config := { closePre := false, closePost := false })
+  exact hx
+  exact hy
+
+example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
+  congr!
+
+example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
+  congr! (config := { closePost := false })
+  exact hx
+
+example : { f : Nat → Nat // f = id } :=
+  ⟨?_, by
+    -- prevents `rfl` from solving for `?m` in `?m = id`:
+    congr! (config := { closePre := false, closePost := false })
+    ext x
+    exact Nat.zero_add x⟩
+
+-- Regression test. From fixing a "declaration has metavariables" bug
+example (h : z = y) : (x = y ∨ x = z) → x = y := by
+  congr! with (rfl|rfl)
+
 example {α} [AddCommMonoid α] [PartialOrder α] {a b c d e f g : α} :
     (a + b) + (c + d) + (e + f) + g ≤ a + d + e + f + c + g + b := by
   ac_change a + d + e + f + c + g + b ≤ _; rfl

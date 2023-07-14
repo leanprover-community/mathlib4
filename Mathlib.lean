@@ -647,6 +647,7 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
+import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.PiL2
@@ -2017,6 +2018,7 @@ import Mathlib.Init.Control.Lawful
 import Mathlib.Init.Core
 import Mathlib.Init.Data.Bool.Basic
 import Mathlib.Init.Data.Bool.Lemmas
+import Mathlib.Init.Data.Buffer.Parser
 import Mathlib.Init.Data.Fin.Basic
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.Data.Int.Bitwise
