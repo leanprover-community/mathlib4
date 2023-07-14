@@ -1,4 +1,7 @@
-import Mathlib
+import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Order.Sub.Canonical
+import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Data.Real.NNReal
 
 instance Prod.orderedSub
     [Preorder α] [Add α] [Sub α] [OrderedSub α] [Sub β] [Preorder β] [Add β] [OrderedSub β] :
@@ -21,8 +24,8 @@ example : OrderedSub ((n : ℕ) → (m : Fin n) → ℕ) := inferInstance
 
 theorem tsub_lt_tsub_left
     [AddCommMonoid α] [PartialOrder α] [Sub α] [OrderedSub α] [ExistsAddOfLE α]
-    [CovariantClass α α ((· : α) + ·) (· ≤ · )] [ContravariantClass α α ((· : α) + ·) (· ≤ · )]
-    [CovariantClass α α ((· : α) + ·) (· < · )] [ContravariantClass α α ((· : α) + ·) (· < · )]
+    [CovariantClass α α ((· : α) + ·) (· ≤ ·)] [ContravariantClass α α ((· : α) + ·) (· ≤ ·)]
+    [CovariantClass α α ((· : α) + ·) (· < ·)] [ContravariantClass α α ((· : α) + ·) (· < ·)]
     {a b c : α} (w : c < b) (h : b ≤ a) : a - b < a - c := by
   rw [tsub_lt_iff_right h]
   obtain ⟨d, rfl⟩ := exists_add_of_le w.le
