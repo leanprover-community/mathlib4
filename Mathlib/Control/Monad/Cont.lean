@@ -120,6 +120,20 @@ instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
   tryCatch act h f := tryCatch (act f) fun e => h e f
 
+instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (ContT r m) where
+  throw e _ := throw e
+  tryCatch act h f := tryCatch (act f) fun e => h e f
+
+instance (r m) [Monad m] [Lean.AddErrorMessageContext m] :
+    Lean.AddErrorMessageContext (ContT r m) where
+  add stx msg := monadLift <| Lean.AddErrorMessageContext.add stx msg
+
+instance (r m) [Monad m] [Lean.MonadRef m] : Lean.MonadRef (ContT r m) where
+  getRef := monadLift <| Lean.MonadRef.getRef
+  withRef stx h := Lean.MonadRef.withRef stx ∘ h
+
+instance (r m) [Monad m] [Lean.MonadError m] : Lean.MonadError (ContT r m) where
+
 end ContT
 
 variable {m : Type u → Type v} [Monad m]
