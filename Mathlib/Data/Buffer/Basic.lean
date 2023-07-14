@@ -14,9 +14,9 @@ there is no point porting these files directly.
 They can be rewritten from scratch as needed, just as for tactics.
 -/
 
-/-! # Empty placeholder for Mathlib3's `buffer` -/
-
 import Mathlib.Init.Align
+
+/-! # Empty placeholder for Mathlib3's `buffer` -/
 
 #noalign buffer.ext
 #noalign buffer.ext_iff
