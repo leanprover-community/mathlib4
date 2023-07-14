@@ -85,9 +85,8 @@ structure Roots (t : Triple) : Type where
   h1 : qf t x1 = 0
   h2 : qf t x2 = 0
 
-/-- Computes the roots of `brouckner t` given the roots of `t`, provided that `t` has no integer
+/-- Gives the roots of `brouckner t` given the roots of `t`, provided that `t` has no integer
 roots. -/
-
 noncomputable def brouckner_roots (t : Triple) (r : Roots t)
 (hne1 : r.x1 ≠ fpr t) (hne2 : r.x2 ≠ fpr t) : Roots (brouckner t) :=
   {x1 := 1 / (r.x2 - fpr t),
@@ -95,19 +94,26 @@ noncomputable def brouckner_roots (t : Triple) (r : Roots t)
    h1 := ((brouckner_root t r.x2) hne2).mp r.h2,
    h2 := ((brouckner_root t r.x1) hne1).mp r.h1}
 
-lemma discrim_ge_zero_of_root (ha : a ≠ 0) (h : ∃x, a * x * x + b * x + c = 0) [NeZero (2 : K)] :
-  0 ≤ discrim a b c := by
+lemma discrim_ge_zero_of_root (T : Triple) (ha : T.a ≠ 0) (h : ∃x, T.a * x * x + T.b * x + T.c = 0):
+  0 ≤ discrim T.a T.b T.c := by
   obtain ⟨x, hx⟩ := h
+  have : NeZero 2 := inferInstance
   rw [quadratic_eq_zero_iff_discrim_eq_sq] at hx
   rw [hx]
   positivity
   assumption
 
-example (a b c : ℤ) (h : a + b = 0) : a = -b := by exact (add_eq_zero_iff_eq_neg.mp h)
-lemma lem1 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0) (hc : T.c < 0) :
-  0 < z * (T.a * z + T.b) := by
-  -- have h : 0 = 0 * z := by exact?
--- apply mul_lt_mul_of_pos_left
+example (a c : ℤ) (hc : c < 0) : a + c < a := by exact Iff.mpr add_lt_iff_neg_left hc
+lemma lem1 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (hc : T.c < 0) :
+  0 < T.a * z + T.b := by
+  have : 0 < z * (T.a * z + T.b) := by
+    rw [qf] at hz1
+    calc
+    0 = T.a * z * z + T.b * z + T.c := by rw[hz1]
+    _ = z * (T.a * z + T.b) + T.c := by ring
+    _ < z * (T.a * z + T.b) := by apply add_lt_iff_neg_left.mpr; norm_cast
+  have : 0 < z := by linarith
+  nlinarith
 
 lemma lem2 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0) (hc : T.c < 0)
   (t : ℝ) (ht1 : t < z) (ht2 : 1 ≤ t) : (qf T t < 0) := by
@@ -124,7 +130,7 @@ lemma lem2 (T : Triple) (z : ℝ) (hz1 : qf T z = 0) (hz2 : 1 < z) (ha : T.a > 0
   exact ht1.le
   exact lt_of_lt_of_le zero_lt_one ht2
   apply le_of_lt
-  apply lem1 T z hz1 hz2 ha hc
+  apply lem1 T z hz1 hz2 hc
 
 lemma discrim_bound (T: Triple) (z : ℝ) (hz : qf T z = 0) :
   (discrim T.a T.b T.c ≤ (2 * T.a * z + T.b) ^ 2) := by
@@ -153,7 +159,16 @@ lemma square_sqrt_le_self_of_nonneg (x : ℤ) (hx : 0 ≤ x) : x.sqrt * x.sqrt �
   norm_cast
   exact Nat.sqrt_le n
 
+lemma brouckner_root_signs (t : Triple) (r : Roots t) (h1 : r.x1 < 0) (h2 : r.x2 > 1)
+  (h3 : 0 < t.a) (h4 : t.c < 0)  : 0 < (brouckner t).a := by
+  have ne1 : r.x1 ≠ fpr t := by sorry
+  have ne2 : r.x2 ≠ fpr t := by sorry
+  have br : Roots (brouckner t) := brouckner_roots t r ne1 ne2;
+  sorry
 
+end PellAlg
+
+/- TODO
 lemma fpr_le_pos_root (T : Triple) (r : Roots T) (h : r.x1 ≤ r.x2) (ha : 0 < T.a) :
   (fpr T) ≤ r.x2 := by
   have key : (discrim T.a T.b T.c).sqrt ≤ 2 * T.a * r.x2 + T.b
@@ -172,16 +187,8 @@ lemma fpr_le_pos_root (T : Triple) (r : Roots T) (h : r.x1 ≤ r.x2) (ha : 0 < T
     sorry
   rw [fpr]
 
-lemma brouckner_root_signs (t : Triple) (r : Roots t) (h1 : r.x1 < 0) (h2 : r.x2 > 1)
-  (h3 : 0 < t.a) (h4 : t.c < 0)  : 0 < (brouckner t).a := by
-  have ne1 : r.x1 ≠ fpr t := by sorry
-  have ne2 : r.x2 ≠ fpr t := by sorry
-  have br : Roots (brouckner t) := brouckner_roots t r ne1 ne2;
+-/
 
-
-    done
-
-end PellAlg
 
 /- Floris notes from 12 July
 fun (a,b,c,D) ↦
