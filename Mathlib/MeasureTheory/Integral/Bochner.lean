@@ -847,6 +847,7 @@ theorem integral_non_aestronglyMeasurable {f : α → G} (h : ¬AEStronglyMeasur
 
 variable (α G)
 
+@[simp]
 theorem integral_zero : ∫ _ : α, (0 : G) ∂μ = 0 := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]

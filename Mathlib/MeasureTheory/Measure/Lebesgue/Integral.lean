@@ -92,7 +92,7 @@ of finite integrals, see `intervalIntegral.integral_comp_neg`.
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
 theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
+    (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
     (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
   have := MeasurableEmbedding.set_integral_map (μ := volume) A f (Ici (-c))
@@ -103,7 +103,7 @@ theorem integral_comp_neg_Iic {E : Type _} [NormedAddCommGroup E] [NormedSpace �
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
 theorem integral_comp_neg_Ioi {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
+    (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]
 #align integral_comp_neg_Ioi integral_comp_neg_Ioi

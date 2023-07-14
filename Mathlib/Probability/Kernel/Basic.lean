@@ -455,13 +455,13 @@ theorem set_lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {
 #align probability_theory.kernel.set_lintegral_const ProbabilityTheory.kernel.set_lintegral_const
 
 @[simp]
-theorem integral_const {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+theorem integral_const {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {μ : Measure β} {a : α} : ∫ x, f x ∂kernel.const α μ a = ∫ x, f x ∂μ := by
   rw [kernel.const_apply]
 #align probability_theory.kernel.integral_const ProbabilityTheory.kernel.integral_const
 
 @[simp]
-theorem set_integral_const {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+theorem set_integral_const {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {μ : Measure β} {a : α} {s : Set β} :
     ∫ x in s, f x ∂kernel.const α μ a = ∫ x in s, f x ∂μ := by rw [kernel.const_apply]
 #align probability_theory.kernel.set_integral_const ProbabilityTheory.kernel.set_integral_const
@@ -518,7 +518,7 @@ theorem set_lintegral_restrict (κ : kernel α β) (hs : MeasurableSet s) (a : �
 
 @[simp]
 theorem set_integral_restrict {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] {f : β → E} {a : α} (hs : MeasurableSet s) (t : Set β) :
+    {f : β → E} {a : α} (hs : MeasurableSet s) (t : Set β) :
     ∫ x in t, f x ∂kernel.restrict κ hs a = ∫ x in t ∩ s, f x ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
 #align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.set_integral_restrict
@@ -655,14 +655,14 @@ theorem set_lintegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.set_lintegral_piecewise ProbabilityTheory.kernel.set_lintegral_piecewise
 
-theorem integral_piecewise {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+theorem integral_piecewise {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (a : α) (g : β → E) :
     ∫ b, g b ∂piecewise hs κ η a = if a ∈ s then ∫ b, g b ∂κ a else ∫ b, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.integral_piecewise ProbabilityTheory.kernel.integral_piecewise
 
 theorem set_integral_piecewise {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (a : α) (g : β → E) (t : Set β) :
+    (a : α) (g : β → E) (t : Set β) :
     ∫ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
@@ -673,3 +673,5 @@ end Piecewise
 end kernel
 
 end ProbabilityTheory
+
+#lint
