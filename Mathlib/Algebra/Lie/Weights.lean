@@ -136,7 +136,7 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
       LinearMap.sub_apply, LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply,
       curry_apply, LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
     abel
-  rsuffices ⟨k, hk⟩ : ∃ k, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
+  rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
     change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, LinearMap.commute_pow_left_of_commute h_comm_square,
