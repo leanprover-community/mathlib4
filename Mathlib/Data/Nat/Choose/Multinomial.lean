@@ -252,11 +252,6 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-      simp only [zero_eq, Sym.val_eq_coe]
-      unfold Multiset.multinomial
-      unfold Finsupp.multinomial
-      unfold Finsupp.prod
-      simp only [factorial, prod_const_one, zero_lt_one, Nat.div_self]
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) :=

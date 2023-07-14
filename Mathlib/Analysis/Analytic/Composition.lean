@@ -350,7 +350,7 @@ theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F 
 theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖₊ ≤ ‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊ := by
-  rw [← NNReal.coe_le_coe]; push_cast ; exact q.compAlongComposition_norm p c
+  rw [← NNReal.coe_le_coe]; push_cast; exact q.compAlongComposition_norm p c
 #align formal_multilinear_series.comp_along_composition_nnnorm FormalMultilinearSeries.compAlongComposition_nnnorm
 
 /-!
@@ -707,7 +707,7 @@ theorem compPartialSumTarget_tendsto_atTop :
     aesop
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
-    obtain ⟨n, hn⟩ : BddAbove ↑(Finset.univ.image fun i : Fin c.length => c.blocksFun i) :=
+    obtain ⟨n, hn⟩ : BddAbove ((Finset.univ.image fun i : Fin c.length => c.blocksFun i) : Set ℕ) :=
       Finset.bddAbove _
     refine'
       ⟨max n c.length + 1, bot_le, lt_of_le_of_lt (le_max_right n c.length) (lt_add_one _), fun j =>

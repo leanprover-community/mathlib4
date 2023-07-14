@@ -111,7 +111,7 @@ def ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y := f
 #align Magma.of_hom MagmaCat.ofHom
 #align AddMagma.of_hom AddMagmaCat.ofHom
 
-/-- Typecheck a `AddHom` as a morphism in `AddMagmaCat`. -/
+/-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/
 add_decl_doc AddMagmaCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself
@@ -197,7 +197,7 @@ def ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X �
 #align Semigroup.of_hom SemigroupCat.ofHom
 #align AddSemigroup.of_hom AddSemigroupCat.ofHom
 
-/-- Typecheck a `AddHom` as a morphism in `AddSemigroupCat`. -/
+/-- Typecheck an `AddHom` as a morphism in `AddSemigroupCat`. -/
 add_decl_doc AddSemigroupCat.ofHom
 
 @[to_additive] -- Porting note: simp removed, simpNF says LHS simplifies to itself

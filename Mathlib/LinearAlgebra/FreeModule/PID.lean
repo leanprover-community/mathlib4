@@ -220,7 +220,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type _} [AddCommGroup O] [Mo
     refine' Finset.sum_congr rfl fun i _ ↦ _
     rw [← mul_smul, ← hc]
     rfl
-  -- We found an `y` and an `a`!
+  -- We found a `y` and an `a`!
   refine' ⟨y', y'M, a, a_smul_y'.symm ▸ yN, _⟩
   have ϕy'_eq : ϕ ⟨y', y'M⟩ = 1 :=
     mul_left_cancel₀ a_zero
@@ -488,11 +488,11 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
     (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
   refine'
-    ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLE hno).toEmbedding, a,
+    ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLEEmb hno).toEmbedding, a,
       fun i ↦ _⟩
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
-    Submodule.coe_smul_of_tower, RelEmbedding.coe_toEmbedding]
+    Submodule.coe_smul_of_tower, RelEmbedding.coe_toEmbedding, Fin.castLEEmb_apply]
 #align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLE
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free

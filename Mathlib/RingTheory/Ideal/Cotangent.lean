@@ -50,13 +50,14 @@ instance Cotangent.moduleOfTower : Module S I.Cotangent :=
   Submodule.Quotient.module' _
 #align ideal.cotangent.module_of_tower Ideal.Cotangent.moduleOfTower
 
-instance : IsScalarTower S S' I.Cotangent := by
+instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent := by
   delta Cotangent
   constructor
   intro s s' x
   rw [← @IsScalarTower.algebraMap_smul S' R, ← @IsScalarTower.algebraMap_smul S' R, ← smul_assoc, ←
     IsScalarTower.toAlgHom_apply S S' R, map_smul]
   rfl
+#align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent := by delta Cotangent; infer_instance
 
@@ -186,12 +187,12 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     exact f.map_algebraMap r
 #align alg_hom.ker_square_lift AlgHom.kerSquareLift
 
-theorem _root_.AlgHom.ker_ker_sqare_lift (f : A →ₐ[R] B) :
+theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
     RingHom.ker f.kerSquareLift.toRingHom = f.toRingHom.ker.cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx
-#align alg_hom.ker_ker_sqare_lift AlgHom.ker_ker_sqare_lift
+#align alg_hom.ker_ker_sqare_lift AlgHom.ker_kerSquareLift
 
 /-- The quotient ring of `I ⧸ I ^ 2` is `R ⧸ I`. -/
 def quotCotangent : (R ⧸ I ^ 2) ⧸ I.cotangentIdeal ≃+* R ⧸ I := by
