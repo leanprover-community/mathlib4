@@ -553,7 +553,7 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
 @[to_additive]
 theorem _root_.Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α} :
     s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
-  simpa [eventually_eq, eventually_iff, measure.ae, compl_set_of]
+  simp [EventuallyEq, eventually_iff, Measure.ae, compl_setOf]; rfl
 #align set.mul_indicator_ae_eq_one Set.mulIndicator_ae_eq_one
 #align set.indicator_ae_eq_zero Set.indicator_ae_eq_zero
 
