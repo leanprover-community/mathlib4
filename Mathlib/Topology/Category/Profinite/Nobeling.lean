@@ -324,7 +324,7 @@ lemma linearIndependent_sum_prod : LinearIndependent R
   exact h
 
 variable {M : ModuleCat R} {u : I ⊕ J → M} (hu : Function.Injective u) {f : N ⟶ M}
-  {g : M ⟶ P} (hse : ShortExact f g) (huv : u ∘ Sum.inl = f ∘ v) (huw : g ∘ u ∘ Sum.inr = w)
+  {g : M ⟶ P} (hse : Mono f ∧ Exact f g) (huv : u ∘ Sum.inl = f ∘ v) (huw : g ∘ u ∘ Sum.inr = w)
 
 lemma linearIndependent_shortExact : LinearIndependent R u := by
   rw [linearIndependent_sum]
@@ -333,12 +333,12 @@ lemma linearIndependent_shortExact : LinearIndependent R u := by
     refine' (LinearMap.linearIndependent_iff (f : N →ₗ[R] M) _).mpr hv
     rw [LinearMap.ker_eq_bot]
     rw [← mono_iff_injective]
-    exact hse.mono
+    exact hse.1
   · rw [← huw] at hw
     refine' LinearIndependent.of_comp g _
     exact hw
   · rw [huv]
-    have he := hse.exact
+    have he := hse.2
     rw [exact_iff] at he
     rw [Submodule.disjoint_def]
     intro m hml hmr
@@ -3161,6 +3161,26 @@ lemma LocallyConstant.ShortExact : CategoryTheory.ShortExact
       exact CC_comp_zero _ _ _ y
     · exact CC_exact _ hC _ ho hf }
 
+lemma LocallyConstant.ShortExact' : CategoryTheory.Mono (ModuleCat.ofHom (Linear_ResC C o)) ∧
+  CategoryTheory.Exact
+    (ModuleCat.ofHom (Linear_ResC C o))
+    (ModuleCat.ofHom (Linear_CC' C hsC ho)) :=
+{ left := by
+    rw [ModuleCat.mono_iff_injective]
+    exact LocallyConstant.comap_injective (ResOnSubset C o)
+      (continuous_ResOnSubset C o) (surjective_ResOnSubset C o)
+  right := by
+    rw [ModuleCat.exact_iff]
+    ext f
+    rw [LinearMap.mem_ker, LinearMap.mem_range]
+    constructor
+    <;> intro hf
+    · obtain ⟨y,hy⟩ := hf
+      rw [← hy]
+      dsimp [ModuleCat.ofHom]
+      exact CC_comp_zero _ _ _ y
+    · exact CC_exact _ hC _ ho hf }
+
 lemma swapTrue_eq_true : ∀ x, SwapTrue o x (term I ho) = true := by
   intro x
   dsimp [SwapTrue]
@@ -3434,7 +3454,7 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
         · exact this
         -- Why so slow?
         refine' ModuleCat.linearIndependent_shortExact _ _ _
-            (LocallyConstant.ShortExact C hC hsC ho) (huv C o) (huw C hsC ho)
+            (LocallyConstant.ShortExact' C hC hsC ho) (huv C o) (huw C hsC ho)
         · exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
         · rw [← hw C hsC ho]
           exact h (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
@@ -3482,6 +3502,8 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
     specialize h o' ho' (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
     rw [ModProducts.smaller_linear_independent_iff] at h
     exact h
+
+#print axioms GoodProducts.linearIndependentAux
 
 lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
   rw [QIffQ I i]
