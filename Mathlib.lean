@@ -2009,7 +2009,7 @@ import Mathlib.Init.Algebra.Classes
 import Mathlib.Init.Algebra.Functions
 import Mathlib.Init.Algebra.Order
 import Mathlib.Init.Align
-import Mathlib.Init.CcLemmas
+import Mathlib.Init.CCLemmas
 import Mathlib.Init.Classes.Order
 import Mathlib.Init.Classical
 import Mathlib.Init.Control.Combinators
