@@ -214,7 +214,7 @@ theorem is_closed : IsClosed (nonWanderingSet f : Set α) := by
     have k4 : u N ∈ ball x (ε / 2) := by
       have k5 : N ≤ N := by
         exact Nat.le_refl N
-      exact k3 N k5 -- it seems not to be necessary??
+      exact k3 N k5
     exact ⟨u N, k4, hu N⟩
   rcases h2 with ⟨z, h3, h4⟩
   have h5 : ∃ (y : α), ∃ (n : ℕ), y ∈ ball z (ε / 2) ∧ f^[n] y ∈ ball z (ε / 2) ∧ n ≠ 0 := by
