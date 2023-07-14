@@ -1253,6 +1253,24 @@ theorem InjOn.invFunOn_image [Nonempty α] (h : InjOn f s₂) (ht : s₁ ⊆ s�
   h.leftInvOn_invFunOn.image_image' ht
 #align set.inj_on.inv_fun_on_image Set.InjOn.invFunOn_image
 
+theorem invFunOn_injOn_image [Nonempty α] (f : α → β) (s : Set α) :
+    InjOn (invFunOn f s) (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨x', hx', rfl⟩ he
+  rw [←invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
+
+theorem invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
+    (invFunOn f s) '' (f '' s) ⊆ s := by
+  rintro _ ⟨_, ⟨x,hx,rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
+
+theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] {f : α → β} {s : Set α} :
+    InjOn f s ↔ (invFunOn f s) '' (f '' s) = s := by
+  refine' ⟨fun h ↦ _, fun h ↦ _⟩
+  · rw [h.invFunOn_image Subset.rfl]
+  rw [InjOn, ←h]
+  rintro _ ⟨_, ⟨x,hx,rfl⟩, rfl⟩ _ ⟨_, ⟨x',hx',rfl⟩, rfl⟩ h
+  rw [invFunOn_apply_eq (f := f) hx, invFunOn_apply_eq (f := f) hx'] at h
+  rw [h]
+
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
     RightInvOn (invFunOn f s) f t := fun _y hy => invFunOn_eq <| h hy
 #align set.surj_on.right_inv_on_inv_fun_on Set.SurjOn.rightInvOn_invFunOn
