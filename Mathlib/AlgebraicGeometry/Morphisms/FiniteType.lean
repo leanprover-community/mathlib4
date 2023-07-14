@@ -8,8 +8,8 @@ Authors: Andrew Yang
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathbin.RingTheory.RingHom.FiniteType
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+import Mathlib.RingTheory.RingHom.FiniteType
 
 /-!
 # Morphisms of finite type
@@ -44,8 +44,7 @@ class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
       (f.appLe e).FiniteType
 #align algebraic_geometry.locally_of_finite_type AlgebraicGeometry.LocallyOfFiniteType
 
-theorem locallyOfFiniteType_eq : @LocallyOfFiniteType = affineLocally @RingHom.FiniteType :=
-  by
+theorem locallyOfFiniteType_eq : @LocallyOfFiniteType = affineLocally @RingHom.FiniteType := by
   ext X Y f
   rw [locally_of_finite_type_iff, affine_locally_iff_affine_opens_le]
   exact RingHom.finiteType_respectsIso
@@ -67,8 +66,7 @@ instance locallyOfFiniteTypeComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
 #align algebraic_geometry.locally_of_finite_type_comp AlgebraicGeometry.locallyOfFiniteTypeComp
 
 theorem locallyOfFiniteTypeOfComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [hf : LocallyOfFiniteType (f ≫ g)] : LocallyOfFiniteType f :=
-  by
+    [hf : LocallyOfFiniteType (f ≫ g)] : LocallyOfFiniteType f := by
   revert hf
   rw [locally_of_finite_type_eq]
   apply ring_hom.finite_type_is_local.affine_locally_of_comp
