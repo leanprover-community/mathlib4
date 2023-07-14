@@ -238,16 +238,16 @@ radical containing `J`. This uses noetherianness. -/
 instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
-    { apply (config := {allowSynthFailures := true }) zigzag_isConnected
-      · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
-        exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
-      · intro j1 j2
-        apply Relation.ReflTransGen.single
-        -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
-        -- which exponent is larger.
-        cases' le_total (unop j1.left) (unop j2.left) with h h
-        right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
-        left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩ }
+    apply (config := {allowSynthFailures := true }) zigzag_isConnected
+    · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
+      exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
+    · intro j1 j2
+      apply Relation.ReflTransGen.single
+      -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
+      -- which exponent is larger.
+      cases' le_total (unop j1.left) (unop j2.left) with h h
+      right; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
+      left; exact ⟨CostructuredArrow.homMk (homOfLE h).op (AsTrue.get trivial)⟩
 #align local_cohomology.ideal_powers_initial localCohomology.ideal_powers_initial
 
 -- FIXME again, this instance is not found by `inferInstance`, but `#synth` finds it just fine.
