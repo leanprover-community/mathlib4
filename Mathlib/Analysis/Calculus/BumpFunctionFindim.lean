@@ -314,11 +314,9 @@ theorem IsOpen.exists_smooth_support_eq_eq_one
   compose it with a smooth function equal to `1` on `[1, ∞)`. -/
   rcases hs.exists_smooth_support_eq_le_one ht h with ⟨f, f_supp, f_diff, f_nonneg, ft⟩
   refine ⟨Real.smoothTransition ∘ f, ?_, ?_, ?_, ?_⟩
-  · rwa [support_comp_eq_of_range_subset _ (Ici 0)]
-    · rintro x (hx : 0 ≤ x)
-      simpa using LE.le.le_iff_eq hx
-    · rintro - ⟨y, rfl⟩
-      exact f_nonneg y
+  · rw [support_comp_eq_of_forall_mem_range, f_supp]
+    rintro - ⟨x, rfl⟩
+    simp [LE.le.le_iff_eq (f_nonneg x)]
   · exact Real.smoothTransition.contDiff.comp f_diff
   · apply (range_comp_subset_range _ _).trans
     rintro - ⟨y, rfl⟩
