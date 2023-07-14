@@ -157,9 +157,11 @@ match pol.getAppFnArgs with
     mkAppOptM ``neg #[R, iR, none, none, ← cDegCore f R iSR iR]
   | (``Polynomial.X, _) => do
     mkAppOptM ``natDegree_X_le #[R, iSR]
-  -- can I avoid splitting `n = 0` from generic `n`?
+  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
   | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => do
     mkAppOptM ``zero_le #[R, iSR]
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => do
+    mkAppOptM ``one_le #[R, iSR]
   | (``OfNat.ofNat, #[_, n, _]) => do
     mkAppOptM ``nat_cast_le #[R, iSR, n]
   | (``Nat.cast, #[_, _, n]) => do
