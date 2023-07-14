@@ -647,6 +647,7 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 import Mathlib.Analysis.InnerProductSpace.LaxMilgram
 import Mathlib.Analysis.InnerProductSpace.LinearPMap
+import Mathlib.Analysis.InnerProductSpace.OfNorm
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.PiL2

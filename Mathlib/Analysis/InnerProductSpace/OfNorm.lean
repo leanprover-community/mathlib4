@@ -8,8 +8,8 @@ Authors: Heather Macbeth
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Topology.Algebra.Algebra
-import Mathbin.Analysis.InnerProductSpace.Basic
+import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Inner product space derived from a norm
@@ -105,8 +105,7 @@ private def innerProp (r : 𝕜) : Prop :=
 
 variable {E}
 
-theorem innerProp_neg_one : InnerProp E ((-1 : ℤ) : 𝕜) :=
-  by
+theorem innerProp_neg_one : InnerProp E ((-1 : ℤ) : 𝕜) := by
   intro x y
   simp only [inner_, neg_mul_eq_neg_mul, one_mul, Int.cast_one, one_smul, RingHom.map_one, map_neg,
     Int.cast_neg, neg_smul, neg_one_mul]
@@ -125,11 +124,9 @@ theorem Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by unfold inner_; continuity
 #align inner_product_spaceable.continuous.inner_ InnerProductSpaceable.Continuous.inner_
 
-theorem Inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) :=
-  by
+theorem Inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_]
-  have h₁ : norm_sq (4 : 𝕜) = 16 :=
-    by
+  have h₁ : norm_sq (4 : 𝕜) = 16 := by
     have : ((4 : ℝ) : 𝕜) = (4 : 𝕜) := by simp only [of_real_one, of_real_bit0]
     rw [← this, norm_sq_eq_def', IsROrC.norm_of_nonneg (by norm_num : (0 : ℝ) ≤ 4)]
     norm_num
@@ -141,8 +138,7 @@ theorem Inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) :=
   ring
 #align inner_product_spaceable.inner_.norm_sq InnerProductSpaceable.Inner_.norm_sq
 
-theorem Inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
-  by
+theorem Inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_]
   have h4 : conj (4⁻¹ : 𝕜) = 4⁻¹ := by
     rw [IsROrC.conj_inv, ← of_real_one, ← of_real_bit0, ← of_real_bit0, conj_of_real]
@@ -152,13 +148,11 @@ theorem Inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   rw [add_comm y x, norm_sub_rev]
   by_cases hI : (I : 𝕜) = 0
   · simp only [hI, neg_zero, MulZeroClass.zero_mul]
-  have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ :=
-    by
+  have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     trans ‖(I : 𝕜) • ((I : 𝕜) • y - x)‖
     · rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
     · rw [smul_sub, smul_smul, I_mul_I_of_nonzero hI, neg_one_smul, ← neg_add', add_comm, norm_neg]
-  have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ :=
-    by
+  have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
     trans ‖(I : 𝕜) • ((I : 𝕜) • y + x)‖
     · rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
     · rw [smul_add, smul_smul, I_mul_I_of_nonzero hI, neg_one_smul, ← neg_add_eq_sub]
@@ -170,15 +164,13 @@ variable [InnerProductSpaceable E]
 
 private theorem add_left_aux1 (x y z : E) :
     ‖x + y + z‖ * ‖x + y + z‖ =
-      (‖2 • x + y‖ * ‖2 • x + y‖ + ‖2 • z + y‖ * ‖2 • z + y‖) / 2 - ‖x - z‖ * ‖x - z‖ :=
-  by
+      (‖2 • x + y‖ * ‖2 • x + y‖ + ‖2 • z + y‖ * ‖2 • z + y‖) / 2 - ‖x - z‖ * ‖x - z‖ := by
   rw [eq_sub_iff_add_eq, eq_div_iff (two_ne_zero' ℝ), mul_comm _ (2 : ℝ), eq_comm]
   convert parallelogram_identity (x + y + z) (x - z) using 4 <;> · rw [two_smul]; abel
 
 private theorem add_left_aux2 (x y z : E) :
     ‖x + y - z‖ * ‖x + y - z‖ =
-      (‖2 • x + y‖ * ‖2 • x + y‖ + ‖y - 2 • z‖ * ‖y - 2 • z‖) / 2 - ‖x + z‖ * ‖x + z‖ :=
-  by
+      (‖2 • x + y‖ * ‖2 • x + y‖ + ‖y - 2 • z‖ * ‖y - 2 • z‖) / 2 - ‖x + z‖ * ‖x + z‖ := by
   rw [eq_sub_iff_add_eq, eq_div_iff (two_ne_zero' ℝ), mul_comm _ (2 : ℝ), eq_comm]
   have h₀ := parallelogram_identity (x + y - z) (x + z)
   convert h₀ using 4 <;> · rw [two_smul]; abel
@@ -190,14 +182,12 @@ private theorem add_left_aux2' (x y z : E) :
   by rw [add_left_aux1, add_left_aux2]; ring
 
 private theorem add_left_aux3 (y z : E) :
-    ‖2 • z + y‖ * ‖2 • z + y‖ = 2 * (‖y + z‖ * ‖y + z‖ + ‖z‖ * ‖z‖) - ‖y‖ * ‖y‖ :=
-  by
+    ‖2 • z + y‖ * ‖2 • z + y‖ = 2 * (‖y + z‖ * ‖y + z‖ + ‖z‖ * ‖z‖) - ‖y‖ * ‖y‖ := by
   apply eq_sub_of_add_eq
   convert parallelogram_identity (y + z) z using 4 <;> · try rw [two_smul]; abel
 
 private theorem add_left_aux4 (y z : E) :
-    ‖y - 2 • z‖ * ‖y - 2 • z‖ = 2 * (‖y - z‖ * ‖y - z‖ + ‖z‖ * ‖z‖) - ‖y‖ * ‖y‖ :=
-  by
+    ‖y - 2 • z‖ * ‖y - 2 • z‖ = 2 * (‖y - z‖ * ‖y - z‖ + ‖z‖ * ‖z‖) - ‖y‖ * ‖y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity (y - z) z
   convert h₀ using 4 <;> · try rw [two_smul]; abel
@@ -212,8 +202,7 @@ private theorem add_left_aux5 (x y z : E) :
       (‖(i : 𝕜) • (2 • x + y)‖ * ‖(i : 𝕜) • (2 • x + y)‖ +
             ‖(i : 𝕜) • y + 2 • z‖ * ‖(i : 𝕜) • y + 2 • z‖) /
           2 -
-        ‖(i : 𝕜) • x - z‖ * ‖(i : 𝕜) • x - z‖ :=
-  by
+        ‖(i : 𝕜) • x - z‖ * ‖(i : 𝕜) • x - z‖ := by
   rw [eq_sub_iff_add_eq, eq_div_iff (two_ne_zero' ℝ), mul_comm _ (2 : ℝ), eq_comm]
   have h₀ := parallelogram_identity ((I : 𝕜) • (x + y) + z) ((I : 𝕜) • x - z)
   convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
@@ -223,30 +212,26 @@ private theorem add_left_aux6 (x y z : E) :
       (‖(i : 𝕜) • (2 • x + y)‖ * ‖(i : 𝕜) • (2 • x + y)‖ +
             ‖(i : 𝕜) • y - 2 • z‖ * ‖(i : 𝕜) • y - 2 • z‖) /
           2 -
-        ‖(i : 𝕜) • x + z‖ * ‖(i : 𝕜) • x + z‖ :=
-  by
+        ‖(i : 𝕜) • x + z‖ * ‖(i : 𝕜) • x + z‖ := by
   rw [eq_sub_iff_add_eq, eq_div_iff (two_ne_zero' ℝ), mul_comm _ (2 : ℝ), eq_comm]
   have h₀ := parallelogram_identity ((I : 𝕜) • (x + y) - z) ((I : 𝕜) • x + z)
   convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
 
 private theorem add_left_aux7 (y z : E) :
     ‖(i : 𝕜) • y + 2 • z‖ * ‖(i : 𝕜) • y + 2 • z‖ =
-      2 * (‖(i : 𝕜) • y + z‖ * ‖(i : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(i : 𝕜) • y‖ * ‖(i : 𝕜) • y‖ :=
-  by
+      2 * (‖(i : 𝕜) • y + z‖ * ‖(i : 𝕜) • y + z‖ + ‖z‖ * ‖z‖) - ‖(i : 𝕜) • y‖ * ‖(i : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq
   have h₀ := parallelogram_identity ((I : 𝕜) • y + z) z
   convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
 
 private theorem add_left_aux8 (y z : E) :
     ‖(i : 𝕜) • y - 2 • z‖ * ‖(i : 𝕜) • y - 2 • z‖ =
-      2 * (‖(i : 𝕜) • y - z‖ * ‖(i : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(i : 𝕜) • y‖ * ‖(i : 𝕜) • y‖ :=
-  by
+      2 * (‖(i : 𝕜) • y - z‖ * ‖(i : 𝕜) • y - z‖ + ‖z‖ * ‖z‖) - ‖(i : 𝕜) • y‖ * ‖(i : 𝕜) • y‖ := by
   apply eq_sub_of_add_eq'
   have h₀ := parallelogram_identity ((I : 𝕜) • y - z) z
   convert h₀ using 4 <;> · try simp only [two_smul, smul_add]; abel
 
-theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z :=
-  by
+theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   simp only [inner_, ← mul_add]
   congr
   simp only [mul_assoc, ← map_mul, add_sub_assoc, ← mul_sub, ← map_sub]
@@ -259,8 +244,7 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
     ring
 #align inner_product_spaceable.add_left InnerProductSpaceable.add_left
 
-theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y :=
-  by
+theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
   induction' n with n ih
   ·
     simp only [inner_, Nat.zero_eq, zero_sub, Nat.cast_zero, MulZeroClass.zero_mul,
@@ -272,8 +256,7 @@ theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) 
 private theorem nat_prop (r : ℕ) : InnerProp E (r : 𝕜) := fun x y => by simp only [map_natCast];
   exact Nat r x y
 
-private theorem int_prop (n : ℤ) : InnerProp E (n : 𝕜) :=
-  by
+private theorem int_prop (n : ℤ) : InnerProp E (n : 𝕜) := by
   intro x y
   rw [← n.sign_mul_nat_abs]
   simp only [Int.cast_ofNat, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
@@ -289,19 +272,16 @@ private theorem int_prop (n : ℤ) : InnerProp E (n : 𝕜) :=
     simp only [one_mul, mul_eq_mul_left_iff, true_or_iff, Int.natAbs_eq_zero, eq_self_iff_true,
       Int.cast_one, one_smul, Nat.cast_eq_zero, Nat]
 
-private theorem rat_prop (r : ℚ) : InnerProp E (r : 𝕜) :=
-  by
+private theorem rat_prop (r : ℚ) : InnerProp E (r : 𝕜) := by
   intro x y
-  have : (r.denom : 𝕜) ≠ 0 :=
-    by
+  have : (r.denom : 𝕜) ≠ 0 := by
     haveI : CharZero 𝕜 := IsROrC.charZero_isROrC
     exact_mod_cast r.pos.ne'
   rw [← r.num_div_denom, ← mul_right_inj' this, ← Nat r.denom _ y, smul_smul, Rat.cast_div]
   simp only [map_natCast, Rat.cast_coe_nat, map_intCast, Rat.cast_coe_int, map_div₀]
   rw [← mul_assoc, mul_div_cancel' _ this, int_prop _ x, map_intCast]
 
-private theorem real_prop (r : ℝ) : InnerProp E (r : 𝕜) :=
-  by
+private theorem real_prop (r : ℝ) : InnerProp E (r : 𝕜) := by
   intro x y
   revert r
   rw [← Function.funext_iff]
@@ -310,8 +290,7 @@ private theorem real_prop (r : ℝ) : InnerProp E (r : 𝕜) :=
   · exact (continuous_conj.comp continuous_of_real).mul continuous_const
   · simp only [Function.comp_apply, IsROrC.ofReal_ratCast, rat_prop _ _]
 
-private theorem I_prop : InnerProp E (i : 𝕜) :=
-  by
+private theorem I_prop : InnerProp E (i : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
   · rw [hI, ← Nat.cast_zero]; exact nat_prop _
   intro x y
