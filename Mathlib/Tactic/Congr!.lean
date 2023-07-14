@@ -289,7 +289,7 @@ partial def Congr!.mkHCongrThm (fType : Expr) (info : FunInfo)
 where
   /-- Similar to doing `forallBoundedTelescope` twice, but makes use of the `fixed` array, which
   is used as a hint for whether both variables should be the same. This is only a hint though,
-  since we only respect it only if the binding domains are equal.
+  since we respect it only if the binding domains are equal.
   We affix `'` to the second list of variables, and all the variables are introduced
   with default binder info. Calls `k` with the xs, ys, and a revised `fixed` array -/
   doubleTelescope {α} (fty : Expr) (numVars : Nat) (fixed : Array Bool)
