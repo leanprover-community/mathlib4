@@ -322,7 +322,7 @@ theorem add_sub_one_le_mul (hm : m ≠ 0) (hn : n ≠ 0) : m + n - 1 ≤ m * n :
   cases m
   · cases hm rfl
   · rw [succ_add, succ_sub_one, succ_mul]
-    exact add_le_add_right (le_mul_of_one_le_right' <| pos_iff_ne_zero.2 hn) _
+    exact add_le_add_right (le_mul_of_one_le_right' $ succ_le_iff.2 $ pos_iff_ne_zero.2 hn) _
 #align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
 
 /-!
