@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.list.dedup
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
+! leanprover-community/mathlib commit d9e96a3e3e0894e93e10aff5244f4c96655bac1c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -76,9 +76,45 @@ theorem nodup_dedup : ∀ l : List α, Nodup (dedup l) :=
   pairwise_pwFilter
 #align list.nodup_dedup List.nodup_dedup
 
+theorem headI_dedup [Inhabited α] (l : List α) :
+    l.dedup.headI = if l.headI ∈ l.tail then l.tail.dedup.headI else l.headI :=
+  match l with
+  | [] => rfl
+  | a :: l => by by_cases ha : a ∈ l <;> simp [ha, List.dedup_cons_of_mem]
+#align list.head_dedup List.headI_dedup
+
+theorem tail_dedup [Inhabited α] (l : List α) :
+    l.dedup.tail = if l.headI ∈ l.tail then l.tail.dedup.tail else l.tail.dedup :=
+  match l with
+  | [] => rfl
+  | a :: l => by by_cases ha : a ∈ l <;> simp [ha, List.dedup_cons_of_mem]
+#align list.tail_dedup List.tail_dedup
+
 theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
   pwFilter_eq_self
 #align list.dedup_eq_self List.dedup_eq_self
+
+theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
+    l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
+  refine' ⟨fun h => _, fun h => _⟩
+  · refine' ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => _, by rw [h, tail_cons]⟩
+    have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
+    rw [h, count_cons_self, add_le_iff_nonpos_left] at this
+    exact not_le_of_lt (count_pos.2 ha) this
+  · have := @cons_head_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
+    have hal : a ∈ l.dedup := mem_dedup.2 h.1
+    rw [← this, mem_cons_iff, or_iff_not_imp_right] at hal
+    exact this ▸ h.2.2.symm ▸ cons_eq_cons.2 ⟨(hal (h.2.2.symm ▸ h.2.1)).symm, rfl⟩
+#align list.dedup_eq_cons List.dedup_eq_cons
+
+@[simp]
+theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
+  induction' l with a l hl
+  · exact Iff.rfl
+  · by_cases h : a ∈ l
+    · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h]
+    · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
+#align list.dedup_eq_nil List.dedup_eq_nil
 
 protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=
   List.dedup_eq_self.2 h
