@@ -1296,6 +1296,12 @@ theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G
   rw [map_le_iff_le_comap]
 #align simple_graph.map_comap_le SimpleGraph.map_comap_le
 
+lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f := by
+  intros v w; simp [Subsingleton.elim v w]
+
+lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
+  rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton
+
 /-! ## Induced graphs -/
 
 /- Given a set `s` of vertices, we can restrict a graph to those vertices by restricting its
@@ -1308,6 +1314,9 @@ outside the set. This is a wrapper around `SimpleGraph.comap`. -/
 def induce (s : Set V) (G : SimpleGraph V) : SimpleGraph s :=
   G.comap (Function.Embedding.subtype _)
 #align simple_graph.induce SimpleGraph.induce
+
+@[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
+  rw [eq_top_iff]; apply le_comap_of_subsingleton
 
 /-- Given a graph on a set of vertices, we can make it be a `SimpleGraph V` by
 adding in the remaining vertices without adding in any additional edges.
@@ -1864,34 +1873,55 @@ theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f 
 
 end Embedding
 
-section InduceHom
+section induceHom
 
 variable {G G'} {G'' : SimpleGraph X} {s : Set V} {t : Set W} {r : Set X}
          (φ : G →g G') (φst : Set.MapsTo φ s t) (ψ : G' →g G'') (ψtr : Set.MapsTo ψ t r)
 
 /-- The restriction of a morphism of graphs to induced subgraphs. -/
-def InduceHom : G.induce s →g G'.induce t where
+def induceHom : G.induce s →g G'.induce t where
   toFun := Set.MapsTo.restrict φ s t φst
   map_rel' := φ.map_rel'
-#align simple_graph.induce_hom SimpleGraph.InduceHom
+#align simple_graph.induce_hom SimpleGraph.induceHom
 
-@[simp, norm_cast] lemma coe_induceHom : ⇑(InduceHom φ φst) = Set.MapsTo.restrict φ s t φst :=
+@[simp, norm_cast] lemma coe_induceHom : ⇑(induceHom φ φst) = Set.MapsTo.restrict φ s t φst :=
   rfl
 #align simple_graph.coe_induce_hom SimpleGraph.coe_induceHom
 
 @[simp] lemma induceHom_id (G : SimpleGraph V) (s) :
-    InduceHom (Hom.id : G →g G) (Set.mapsTo_id s) = Hom.id := by
+    induceHom (Hom.id : G →g G) (Set.mapsTo_id s) = Hom.id := by
   ext x
   rfl
 #align simple_graph.induce_hom_id SimpleGraph.induceHom_id
 
 @[simp] lemma induceHom_comp :
-    (InduceHom ψ ψtr).comp (InduceHom φ φst) = InduceHom (ψ.comp φ) (ψtr.comp φst) := by
+    (induceHom ψ ψtr).comp (induceHom φ φst) = induceHom (ψ.comp φ) (ψtr.comp φst) := by
   ext x
   rfl
 #align simple_graph.induce_hom_comp SimpleGraph.induceHom_comp
 
-end InduceHom
+lemma induceHom_injective (hi : Set.InjOn φ s) :
+    Function.Injective (induceHom φ φst) := by
+  erw [Set.MapsTo.restrict_inj] <;> assumption
+
+end induceHom
+
+section induceHomLE
+variable {s s' : Set V} (h : s ≤ s')
+
+/-- Given an inclusion of vertex subsets, the induced embedding on induced graphs.
+This is not an abbreviation for `induceHom` since we get an embedding in this case. -/
+def induceHomOfLE (h : s ≤ s') : G.induce s ↪g G.induce s' where
+  toEmbedding := Set.embeddingOfSubset s s' h
+  map_rel_iff' := by simp
+
+@[simp] lemma induceHomOfLE_apply (v : s) : (G.induceHomOfLE h) v = Set.inclusion h v := rfl
+
+@[simp] lemma induceHomOfLE_toHom :
+    (G.induceHomOfLE h).toHom = induceHom (.id : G →g G) ((Set.mapsTo_id s).mono_right h) := by
+  ext; simp
+
+end induceHomLE
 
 namespace Iso
 

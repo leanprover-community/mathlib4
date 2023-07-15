@@ -55,9 +55,6 @@ counterparts in [Chou1994].
   on simple graphs for whether every vertex can be reached from every other,
   and in the latter case, whether the vertex type is nonempty.
 
-* `SimpleGraph.Subgraph.Connected` gives subgraphs the connectivity
-  predicate via `SimpleGraph.subgraph.coe`.
-
 * `SimpleGraph.ConnectedComponent` is the type of connected components of
   a given graph.
 
@@ -1905,6 +1902,10 @@ protected theorem Reachable.map {G : SimpleGraph V} {G' : SimpleGraph V'} (f : G
   h.elim fun p => ⟨p.map f⟩
 #align simple_graph.reachable.map SimpleGraph.Reachable.map
 
+@[mono]
+protected lemma Reachable.mono  {G G' : SimpleGraph V} (h : G ≤ G') (Guv : G.Reachable u v) :
+    G'.Reachable u v := Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
+
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
   ⟨fun r => φ.left_inv u ▸ φ.left_inv v ▸ r.map φ.symm.toHom, Reachable.map φ.toHom⟩
@@ -1934,6 +1935,13 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
   hf.forall₂.2 fun _ _ => Nonempty.map (Walk.map _) <| hG _ _
 #align simple_graph.preconnected.map SimpleGraph.Preconnected.map
 
+@[mono]
+protected lemma Preconnected.mono  {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
+    G'.Preconnected := fun u v => (hG u v).mono h
+
+lemma top_preconnected : (⊤ : SimpleGraph V).Preconnected := fun x y => by
+  if h : x = y then rw [h] else exact Adj.reachable h
+
 theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Preconnected ↔ H.Preconnected :=
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
@@ -1951,6 +1959,14 @@ structure Connected : Prop where
   protected [nonempty : Nonempty V]
 #align simple_graph.connected SimpleGraph.Connected
 
+lemma connected_iff_exists_forall_reachable : G.Connected ↔ ∃ v, ∀ w, G.Reachable v w := by
+  rw [connected_iff]
+  constructor
+  · rintro ⟨hp, ⟨v⟩⟩
+    exact ⟨v, fun w => hp v w⟩
+  · rintro ⟨v, h⟩
+    exact ⟨fun u w => (h u).symm.trans (h w), ⟨v⟩⟩
+
 instance : CoeFun G.Connected fun _ => ∀ u v : V, G.Reachable u v := ⟨fun h => h.preconnected⟩
 
 theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (hf : Surjective f)
@@ -1958,6 +1974,15 @@ theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (h
   haveI := hG.nonempty.map f
   ⟨hG.preconnected.map f hf⟩
 #align simple_graph.connected.map SimpleGraph.Connected.map
+
+@[mono]
+protected lemma Connected.mono {G G' : SimpleGraph V} (h : G ≤ G')
+    (hG : G.Connected) : G'.Connected where
+  preconnected := hG.preconnected.mono h
+  nonempty := hG.nonempty
+
+lemma top_connected [Nonempty V] : (⊤ : SimpleGraph V).Connected where
+  preconnected := top_preconnected
 
 theorem Iso.connected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃g H) :
     G.Connected ↔ H.Connected :=
@@ -2176,28 +2201,6 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
 
 end ConnectedComponent
 
-/-- A subgraph is connected if it is connected as a simple graph. -/
-abbrev Subgraph.Connected (H : G.Subgraph) : Prop :=
-  H.coe.Connected
-#align simple_graph.subgraph.connected SimpleGraph.Subgraph.Connected
-
-theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
-  constructor
-  rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
-  subst_vars
-  rfl
-#align simple_graph.singleton_subgraph_connected SimpleGraph.singletonSubgraph_connected
-
-@[simp]
-theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
-  constructor
-  rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [subgraphOfAdj_verts, Set.mem_insert_iff, Set.mem_singleton_iff] at ha hb
-  obtain rfl | rfl := ha <;> obtain rfl | rfl := hb <;>
-    first | rfl | (apply Adj.reachable; simp)
-#align simple_graph.subgraph_of_adj_connected SimpleGraph.subgraphOfAdj_connected
-
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty := by
   rw [← Set.nonempty_iff_univ_nonempty]
@@ -2234,6 +2237,12 @@ theorem mem_verts_toSubgraph (p : G.Walk u v) : w ∈ p.toSubgraph.verts ↔ w �
       ⟨by rintro (rfl | h) <;> simp [*], by simp (config := { contextual := true })⟩
     simp [ih, or_assoc, this]
 #align simple_graph.walk.mem_verts_to_subgraph SimpleGraph.Walk.mem_verts_toSubgraph
+
+lemma start_mem_verts_toSubgraph (p : G.Walk u v) : u ∈ p.toSubgraph.verts := by
+  simp [mem_verts_toSubgraph]
+
+lemma end_mem_verts_toSubgraph (p : G.Walk u v) : v ∈ p.toSubgraph.verts := by
+  simp [mem_verts_toSubgraph]
 
 @[simp]
 theorem verts_toSubgraph (p : G.Walk u v) : p.toSubgraph.verts = { w | w ∈ p.support } :=
@@ -2288,6 +2297,11 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
     refine Set.Finite.subset ?_ (neighborSet_subgraphOfAdj_subset ha)
     apply Set.toFinite
 #align simple_graph.walk.finite_neighbor_set_to_subgraph SimpleGraph.Walk.finite_neighborSet_toSubgraph
+
+lemma toSubgraph_le_induce_support (p : G.Walk u v) :
+    p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
+  convert Subgraph.le_induce_top_verts
+  exact p.verts_toSubgraph.symm
 
 end Walk
 
