@@ -2,126 +2,170 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
--/
 
-import Mathlib.Init.Algebra.Order
+! This file was ported from Lean 3 source module init.algebra.functions
+! leanprover-community/lean commit c2bcdbcbe741ed37c361a30d38e179182b989f76
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
+-/
+prelude
+import Leanbin.Init.Algebra.Order
+import Leanbin.Init.Meta.Default
 
 universe u
 
+export LinearOrder (min max)
+
 section
+
+open Decidable Tactic
 
 variable {α : Type u} [LinearOrder α]
 
-lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min_def ..
+theorem min_def (a b : α) : min a b = if a ≤ b then a else b := by
+  rw [congr_fun LinearOrder.min_def a, minDefault]
+#align min_def min_def
 
-lemma min_le_left (a b : α) : min a b ≤ a := by
-  if h : a ≤ b
-  then simp [min_def, if_pos h, le_refl]
-  else simp [min_def, if_neg h]; exact le_of_not_le h
+theorem max_def (a b : α) : max a b = if a ≤ b then b else a := by
+  rw [congr_fun LinearOrder.max_def a, maxDefault]
+#align max_def max_def
 
-lemma min_le_right (a b : α) : min a b ≤ b := by
-  if h : a ≤ b
-  then simp [min_def, if_pos h]; exact h
-  else simp [min_def, if_neg h, le_refl]
+/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
+/- ./././Mathport/Syntax/Translate/Expr.lean:336:4: warning: unsupported (TODO): `[tacs] -/
+private unsafe def min_tac_step : tactic Unit :=
+  solve1 <| (((intros >> sorry) >> try sorry) >> try sorry) >> try sorry
 
-lemma le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  if h : a ≤ b
-  then simp [min_def, if_pos h]; exact h₁
-  else simp [min_def, if_neg h]; exact h₂
+-- PLEASE REPORT THIS TO MATHPORT DEVS, THIS SHOULD NOT HAPPEN.
+-- failed to format: unknown constant 'term.pseudo.antiquot'
+unsafe
+  def
+    tactic.interactive.min_tac
+    ( a b : interactive.parse lean.parser.pexpr ) : tactic Unit
+    := andthen ( interactive.by_cases ( none , ` `( $ ( a ) ≤ $ ( b ) ) ) ) min_tac_step
+#align tactic.interactive.min_tac tactic.interactive.min_tac
 
-lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def ..
+theorem min_le_left (a b : α) : min a b ≤ a :=
+  minTac.1 a b
+#align min_le_left min_le_left
 
-lemma le_max_left (a b : α) : a ≤ max a b := by
-  if h : a ≤ b
-  then simp [max_def, if_pos h]; exact h
-  else simp [max_def, if_neg h, le_refl]
+theorem min_le_right (a b : α) : min a b ≤ b :=
+  minTac.1 a b
+#align min_le_right min_le_right
 
-lemma le_max_right (a b : α) : b ≤ max a b := by
-  if h : a ≤ b
-  then simp [max_def, if_pos h, le_refl]
-  else simp [max_def, if_neg h]; exact le_of_not_le h
+theorem le_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b :=
+  minTac.1 a b
+#align le_min le_min
 
-lemma max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
-  if h : a ≤ b
-  then simp [max_def, if_pos h]; exact h₂
-  else simp [max_def, if_neg h]; exact h₁
+theorem le_max_left (a b : α) : a ≤ max a b :=
+  minTac.1 a b
+#align le_max_left le_max_left
 
-lemma eq_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀{d}, d ≤ a → d ≤ b → d ≤ c) :
-  c = min a b :=
-le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
+theorem le_max_right (a b : α) : b ≤ max a b :=
+  minTac.1 a b
+#align le_max_right le_max_right
 
-lemma min_comm (a b : α) : min a b = min b a :=
-  eq_min (min_le_right a b) (min_le_left a b) (λ {_} h₁ h₂ => le_min h₂ h₁)
+theorem max_le {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c :=
+  minTac.1 a b
+#align max_le max_le
 
-lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
+theorem eq_min {a b c : α} (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) :
+    c = min a b :=
+  le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))
+#align eq_min eq_min
+
+theorem min_comm (a b : α) : min a b = min b a :=
+  eq_min (min_le_right a b) (min_le_left a b) fun c h₁ h₂ => le_min h₂ h₁
+#align min_comm min_comm
+
+theorem min_assoc (a b c : α) : min (min a b) c = min a (min b c) :=
+  by
   apply eq_min
   · apply le_trans; apply min_le_left; apply min_le_left
   · apply le_min; apply le_trans; apply min_le_left; apply min_le_right; apply min_le_right
-  · intros d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
+  · intro d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
     apply le_trans h₂; apply min_le_right
+#align min_assoc min_assoc
 
-lemma min_left_comm : @LeftCommutative α α min :=
-  left_comm min (@min_comm α _) (@min_assoc α _)
+theorem min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
+  left_comm (@min α _) (@min_comm α _) (@min_assoc α _)
+#align min_left_comm min_left_comm
 
 @[simp]
-lemma min_self (a : α) : min a a = a := by simp [min_def]
+theorem min_self (a : α) : min a a = a :=
+  minTac.1 a a
+#align min_self min_self
 
-lemma min_eq_left {a b : α} (h : a ≤ b) : min a b = a := by
-  apply Eq.symm; apply eq_min (le_refl _) h; intros; assumption
+@[ematch]
+theorem min_eq_left {a b : α} (h : a ≤ b) : min a b = a := by apply Eq.symm;
+  apply eq_min (le_refl _) h; intros; assumption
+#align min_eq_left min_eq_left
 
-lemma min_eq_right {a b : α} (h : b ≤ a) : min a b = b := by
-  rw [min_comm]
-  exact min_eq_left h
+@[ematch]
+theorem min_eq_right {a b : α} (h : b ≤ a) : min a b = b :=
+  Eq.subst (min_comm b a) (min_eq_left h)
+#align min_eq_right min_eq_right
 
-lemma eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀{d}, a ≤ d → b ≤ d → c ≤ d) :
+theorem eq_max {a b c : α} (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b ≤ d → c ≤ d) :
     c = max a b :=
-le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
+  le_antisymm (h₃ (le_max_left a b) (le_max_right a b)) (max_le h₁ h₂)
+#align eq_max eq_max
 
-lemma max_comm (a b : α) : max a b = max b a :=
-  eq_max (le_max_right a b) (le_max_left a b) (λ {_} h₁ h₂ => max_le h₂ h₁)
+theorem max_comm (a b : α) : max a b = max b a :=
+  eq_max (le_max_right a b) (le_max_left a b) fun c h₁ h₂ => max_le h₂ h₁
+#align max_comm max_comm
 
-lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
+theorem max_assoc (a b c : α) : max (max a b) c = max a (max b c) :=
+  by
   apply eq_max
   · apply le_trans; apply le_max_left a b; apply le_max_left
   · apply max_le; apply le_trans; apply le_max_right a b; apply le_max_left; apply le_max_right
-  · intros d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
+  · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
     apply le_trans (le_max_right _ _) h₂
+#align max_assoc max_assoc
 
-lemma max_left_comm : ∀ (a b c : α), max a (max b c) = max b (max a c) :=
-  left_comm max (@max_comm α _) (@max_assoc α _)
+theorem max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
+  left_comm (@max α _) (@max_comm α _) (@max_assoc α _)
+#align max_left_comm max_left_comm
 
-@[simp] lemma max_self (a : α) : max a a = a := by simp [max_def]
+@[simp]
+theorem max_self (a : α) : max a a = a :=
+  minTac.1 a a
+#align max_self max_self
 
-lemma max_eq_left {a b : α} (h : b ≤ a) : max a b = a := by
-  apply Eq.symm; apply eq_max (le_refl _) h; intros; assumption
+theorem max_eq_left {a b : α} (h : b ≤ a) : max a b = a := by apply Eq.symm;
+  apply eq_max (le_refl _) h; intros; assumption
+#align max_eq_left max_eq_left
 
-lemma max_eq_right {a b : α} (h : a ≤ b) : max a b = b := by
-  rw [←max_comm b a]; exact max_eq_left h
+theorem max_eq_right {a b : α} (h : a ≤ b) : max a b = b :=
+  Eq.subst (max_comm b a) (max_eq_left h)
+#align max_eq_right max_eq_right
 
-/- these rely on lt_of_lt -/
-
-lemma min_eq_left_of_lt {a b : α} (h : a < b) : min a b = a :=
+-- these rely on lt_of_lt
+theorem min_eq_left_of_lt {a b : α} (h : a < b) : min a b = a :=
   min_eq_left (le_of_lt h)
+#align min_eq_left_of_lt min_eq_left_of_lt
 
-lemma min_eq_right_of_lt {a b : α} (h : b < a) : min a b = b :=
+theorem min_eq_right_of_lt {a b : α} (h : b < a) : min a b = b :=
   min_eq_right (le_of_lt h)
+#align min_eq_right_of_lt min_eq_right_of_lt
 
-lemma max_eq_left_of_lt {a b : α} (h : b < a) : max a b = a :=
+theorem max_eq_left_of_lt {a b : α} (h : b < a) : max a b = a :=
   max_eq_left (le_of_lt h)
+#align max_eq_left_of_lt max_eq_left_of_lt
 
-lemma max_eq_right_of_lt {a b : α} (h : a < b) : max a b = b :=
+theorem max_eq_right_of_lt {a b : α} (h : a < b) : max a b = b :=
   max_eq_right (le_of_lt h)
+#align max_eq_right_of_lt max_eq_right_of_lt
 
-/- these use the fact that it is a linear ordering -/
+-- these use the fact that it is a linear ordering
+theorem lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
+  Or.elim (le_or_gt b c) (fun h : b ≤ c => minTac.1 b c) fun h : b > c => minTac.1 b c
+#align lt_min lt_min
 
-lemma lt_min {a b c : α} (h₁ : a < b) (h₂ : a < c) : a < min b c :=
-  Or.elim (le_or_gt b c)
-    (λ h : b ≤ c => by rwa [min_eq_left h])
-    (λ h : b > c => by rwa [min_eq_right_of_lt h])
-
-lemma max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
-  Or.elim (le_or_gt a b)
-    (λ h : a ≤ b => by rwa [max_eq_right h])
-    (λ h : a > b => by rwa [max_eq_left_of_lt h])
+theorem max_lt {a b c : α} (h₁ : a < c) (h₂ : b < c) : max a b < c :=
+  Or.elim (le_or_gt a b) (fun h : a ≤ b => minTac.1 b a) fun h : a > b => minTac.1 a b
+#align max_lt max_lt
 
 end
