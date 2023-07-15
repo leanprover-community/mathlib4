@@ -9,7 +9,6 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Geometry.Euclidean.PerpBisector
 
 /-!
 # Inversion in an affine space
@@ -199,58 +198,6 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
   convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
 #align euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist
-
-/-!
-### Images of spheres and hyperplanes
-
-In this section we prove that the inversion with center `c` and radius `R ≠ 0` maps a sphere passing
-through the center to a hyperplane. More precisely, it maps a sphere with center `y ≠ c` and radius
-`dist y c` to the hyperplane `AffineSubspace.perpBisector c (EuclideanGeometry.inversion c R y)`.
-
--/
-
-/-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
-hyperplane. -/
-theorem inversion_mem_perpBisector_inversion_iff (hR : R ≠ 0) (hx : x ≠ c) (hy : y ≠ c) :
-    inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c := by
-  rw [mem_perpBisector_iff_dist_eq, dist_inversion_inversion hx hy, dist_inversion_center]
-  have hx' := dist_ne_zero.2 hx
-  have hy' := dist_ne_zero.2 hy
-  field_simp [mul_assoc, mul_comm, hx, hx.symm, eq_comm]
-
-/-- The inversion with center `c` and radius `R` maps a sphere passing through the center to a
-hyperplane. -/
-theorem inversion_mem_perpBisector_inversion_iff' (hR : R ≠ 0) (hy : y ≠ c) :
-    inversion c R x ∈ perpBisector c (inversion c R y) ↔ dist x y = dist y c ∧ x ≠ c := by
-  rcases eq_or_ne x c with rfl | hx
-  · simp [*]
-  · simp [inversion_mem_perpBisector_inversion_iff hR hx hy, hx]
-
-theorem preimage_inversion_perpBisector_inversion (hR : R ≠ 0) (hy : y ≠ c) :
-    inversion c R ⁻¹' perpBisector c (inversion c R y) = sphere y (dist y c) \ {c} :=
-  Set.ext fun _ ↦ inversion_mem_perpBisector_inversion_iff' hR hy
-
-theorem preimage_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
-    inversion c R ⁻¹' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
-  rw [← dist_inversion_center, ← preimage_inversion_perpBisector_inversion hR,
-    inversion_inversion] <;> simp [*]
-
-theorem image_inversion_perpBisector (hR : R ≠ 0) (hy : y ≠ c) :
-    inversion c R '' perpBisector c y = sphere (inversion c R y) (R ^ 2 / dist y c) \ {c} := by
-  rw [image_eq_preimage_of_inverse (inversion_involutive _ hR) (inversion_involutive _ hR),
-    preimage_inversion_perpBisector hR hy]
-
-theorem preimage_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
-    inversion c R ⁻¹' sphere y (dist y c) =
-      insert c (perpBisector c (inversion c R y) : Set P) := by
-  ext x
-  rcases eq_or_ne x c with rfl | hx; · simp [dist_comm]
-  rw [mem_preimage, mem_sphere, ← inversion_mem_perpBisector_inversion_iff hR] <;> simp [*]
-
-theorem image_inversion_sphere_dist_center (hR : R ≠ 0) (hy : y ≠ c) :
-    inversion c R '' sphere y (dist y c) = insert c (perpBisector c (inversion c R y) : Set P) := by
-  rw [image_eq_preimage_of_inverse (inversion_involutive _ hR) (inversion_involutive _ hR),
-    preimage_inversion_sphere_dist_center hR hy]
 
 end EuclideanGeometry
 
