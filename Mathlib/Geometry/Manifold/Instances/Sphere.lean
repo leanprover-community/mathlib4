@@ -243,26 +243,43 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     refine' ne_of_gt _
     have := norm_nonneg (y : E)
     have : (0 : ℝ) < (1 - a) ^ 2 := sq_pos_of_ne_zero (1 - a) ha
+    -- Porting note: nlinarith needed a little help
+    change 0 < 4 * _ + 4 * _
     nlinarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
     field_simp
     simp only [Submodule.coe_norm] at *
     nlinarith
+  -- have help (b : ℝ) (w : E) (h' : (2 ^ 2 / (1 - b) ^ 2 * ‖w‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - b)) = 1) :
+  --     (2 ^ 2 / (1 - b) ^ 2 * ‖w‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - b) ^ 2 * ‖w‖ ^ 2 - 4) = b := by
+  --   field_simp
+  --   trans (1 - b) ^ 2 * (b * (2 ^ 2 * ‖w‖ ^ 2 + 4 * (1 - b) ^ 2))
+  --   · congr
+  --     simp only [Submodule.coe_norm] at *
+  --     nlinarith
+  --   ring
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
+    -- Porting note: field_simp is not behaving as in ml3
     field_simp
     trans (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
     · congr
       simp only [Submodule.coe_norm] at *
       nlinarith
+    -- rw [split, inner_add_right, inner_smul_right, y.property, add_zero, real_inner_self_eq_norm_sq, hv, one_pow]
+    -- conv_rhs => rw [←h₁]
+    -- change (1 - a) ^ 2 * (a * (4 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2)) = a
+    -- rw [←mul_add]
+    --simp [y.property]
     ring
   -- deduce the result
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  ·
-    simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
+  · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
-    ·  simp [split, add_comm]
+    -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
+    · rw [split, add_comm]
+      ac_rfl
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
@@ -515,12 +532,13 @@ canonical. -/
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E) =
       (ℝ ∙ (v : E))ᗮ := by
-  rw [((contMDiff_coe_sphere v).MDifferentiableAt le_top).mfderiv]
-  simp only [chart_at, stereographic', stereographic_neg_apply, fderivWithin_univ,
+  rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
+  simp only [stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
-  let U := (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere (-v))).repr
-  change (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ coe) ∘ U.symm) 0).range = (ℝ ∙ (v : E))ᗮ
+  let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n
+    (ne_zero_of_mem_unit_sphere (-v))).repr
+  change LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
@@ -547,12 +565,12 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 linear map from `tangent_space (𝓡 n) v` to `E`.  This map is injective. -/
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
-  rw [((contMDiff_coe_sphere v).MDifferentiableAt le_top).mfderiv]
-  simp only [chart_at, stereographic', stereographic_neg_apply, fderivWithin_univ,
+  rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
+  simp only [chartAt, stereographic', stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
-  let U := (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere (-v))).repr
-  change injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ coe) ∘ U.symm) 0)
+  let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
+  change Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0)
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
