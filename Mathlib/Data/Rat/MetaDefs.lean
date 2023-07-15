@@ -8,8 +8,8 @@ Authors: Robert Y. Lewis
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Rat.Defs
-import Mathbin.Tactic.Core
+import Mathlib.Data.Rat.Defs
+import Mathlib.Tactic.Core
 
 /-!
 # Meta operations on ℚ
