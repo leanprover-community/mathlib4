@@ -3255,9 +3255,139 @@ lemma GoodProducts.max_eq_eval_unapply :
   ext1 l
   exact max_eq_eval _ _ _ _
 
-lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o) : (MaxTail C l).isGood (C' C ho) := by
+lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o)
+    (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o)))) : (MaxTail C l).isGood (C' C ho) := by
   intro h
-  sorry
+  rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h
+  obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
+  rw [Finsupp.total_apply] at hmsum
+  --rw [Finsupp.mem_supported] at hmmem
+  -- (l.1.map (e C)).prod
+  have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
+    (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod)
+  · rw [← hmsum]
+    simp only [LinearMap.map_finsupp_sum]
+    apply Finsupp.sum_congr
+    intro q hq
+    rw [LinearMap.map_smul]
+    have : ∃ (p : StartingWithMax C o), q = MaxTail C p := sorry
+    obtain ⟨p, hp⟩ := this
+    rw [hp, ← max_eq_eval C hsC ho]
+    dsimp [Products.eval]
+    rw [max_eq_o_cons_tail C ho]
+    rfl
+  have hse := (LocallyConstant.LeftExact C hC hsC ho).2
+  rw [ModuleCat.exact_iff] at hse
+  dsimp [ModuleCat.ofHom] at hse
+  rw [← LinearMap.sub_mem_ker_iff, ← hse] at this
+  obtain ⟨(n : LocallyConstant {i // i ∈ Res C o} ℤ), hn⟩ := this
+  rw [eq_sub_iff_add_eq] at hn
+  have hn' := h₁ (Submodule.mem_top : n ∈ ⊤)
+  rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn'
+  obtain ⟨w,hc⟩ := hn'
+  rw [← hc, map_finsupp_sum] at hn
+  have lgood : l.val.isGood C
+  · suffices : l.val ∈ GoodProducts C
+    · exact this
+    rw [union_succ C o hsC]
+    right
+    exact l.prop
+  apply lgood
+  rw [← hn]
+  apply Submodule.add_mem
+  · sorry
+  · rw [Finsupp.mem_span_image_iff_total]
+    let f : Products (WithTop I) → List (WithTop I) := fun q ↦ term I ho :: q.val
+    have hfi : Function.Injective f
+    · intro a b hab
+      exact Subtype.ext (List.tail_eq_of_cons_eq hab)
+    let m' : List (WithTop I) →₀ ℤ := m.mapDomain f
+    let g : Products (WithTop I) → List (WithTop I) := fun q ↦ q.val
+    have hg : Function.Injective g
+    · intro a b hab
+      exact Subtype.ext hab
+    let c : Products (WithTop I) →₀ ℤ := m'.comapDomain g (hg.injOn _)
+    refine' ⟨c,⟨_, _⟩⟩
+    · rw [Finsupp.mem_supported] at hmmem ⊢
+      simp only [Finsupp.comapDomain_support, Finset.coe_preimage]
+      have hm' : m'.support ⊆ Finset.image _ m.support := Finsupp.mapDomain_support
+      refine' subset_trans (Set.preimage_mono hm') _
+      simp only [Finset.image_val, Multiset.mem_dedup, Multiset.mem_map, Finset.mem_val]
+      intro q hq
+      simp only [Set.mem_preimage] at hq
+      obtain ⟨a, ha⟩ := hq
+      have ha' : a < MaxTail C l := hmmem ha.1
+      simp only [Set.mem_setOf_eq, gt_iff_lt]
+      suffices hql : q.val < l.val.val
+      · exact hql
+      rw [← ha.2, max_eq_o_cons_tail C ho]
+      exact List.Lex.cons ha'
+    · rw [Finsupp.total_apply]
+      dsimp
+      have hf : Set.BijOn g (g ⁻¹' m'.support) m'.support
+      · refine' ⟨_,_,_⟩
+        · intro x hx
+          exact hx
+        · exact Function.Injective.injOn hg _
+        · intro x hx
+          rw [Finsupp.mapDomain_support_of_injOn m (Function.Injective.injOn hfi _)] at hx ⊢
+          simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe] at hx
+          obtain ⟨x', hx'⟩ := hx
+          rw [Finsupp.mem_supported] at hmmem
+          have hx'' : x' < MaxTail C l := hmmem hx'.1
+          sorry
+      let g' := fun (i : List (WithTop I)) (a : ℤ) ↦ a • (i.map (e C)).prod
+      have hf' : (fun (i : Products (WithTop I)) (a : ℤ) ↦ a • i.eval C) = g' ∘ g := by rfl
+      rw [hf']
+      rw [Finsupp.sum_comapDomain g m' _ hf]
+      dsimp
+      rw [Finsupp.sum_mapDomain_index_inj hfi]
+      rfl
+
+  -- · rw [Finsupp.mem_span_range_iff_exists_finsupp]
+  --   use cn.mapDomain (Sum.inl)
+  --   rw [Finsupp.sum_mapDomain_index_inj Sum.inl_injective]
+  -- · rw [Finsupp.mem_span_range_iff_exists_finsupp]
+  --   use cm.mapDomain (Sum.inr)
+  --   rw [Finsupp.sum_mapDomain_index_inj Sum.inr_injective]
+
+  -- have : ∃ n : LocallyConstant {i // i ∈ Res C o} ℤ, LinearRes
+  -- have hm : ∀ m, m < MaxTail C l → List.Chain' (·>·) (term I ho :: m.val)
+  -- · sorry
+  -- have hmp : ∀ m (hm' : m < MaxTail C l), ⟨term I ho :: m.val, hm m hm'⟩ < l.val
+  -- · sorry
+  -- have hF : Finsupp.sum m fun i a ↦ a • i.eval (C' C ho) =
+  --   Finsupp.sum m fun i a ↦ a • ((Linear_CC' C hsC ho) ((⟨term I ho :: i.val, hm i ?_⟩
+  --     : Products (WithTop I)).eval C))
+
+
+
+
+  -- rw [Finsupp.mem_span_image_iff_total]
+  -- let f : Products (WithTop I) → List (WithTop I) := fun q ↦ term I ho :: q.val
+  -- let m' : List (WithTop I) →₀ ℤ := m.mapDomain f
+  -- let g : Products (WithTop I) → List (WithTop I) := fun q ↦ q.val
+  -- have hg : Function.Injective g
+  -- · intro a b hab
+  --   exact Subtype.ext hab
+  -- let c : Products (WithTop I) →₀ ℤ := m'.comapDomain g (hg.injOn _)
+  -- refine' ⟨c,⟨_, _⟩⟩
+  -- · rw [Finsupp.mem_supported] at hmmem ⊢
+  --   simp only [Finsupp.comapDomain_support, Finset.coe_preimage]
+  --   have hm' : m'.support ⊆ Finset.image _ m.support := Finsupp.mapDomain_support
+  --   refine' subset_trans (Set.preimage_mono hm') _
+  --   simp only [Finset.image_val, Multiset.mem_dedup, Multiset.mem_map, Finset.mem_val]
+  --   intro q hq
+  --   simp only [Set.mem_preimage] at hq
+  --   obtain ⟨a, ha⟩ := hq
+  --   have ha' : a < MaxTail C l := hmmem ha.1
+  --   simp only [Set.mem_setOf_eq, gt_iff_lt]
+  --   suffices hql : q.val < l.val.val
+  --   · exact hql
+  --   rw [← ha.2, max_eq_o_cons_tail C ho]
+  --   exact List.Lex.cons ha'
+  -- · dsimp
+  --   sorry
 
 lemma Products.head_lt_ord_of_isGood' {l : Products (WithTop I)}
     (h : l.isGood (C' C ho)) : l.val ≠ [] → ord I (l.val.head!) < o := by
@@ -3318,8 +3448,9 @@ lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     simp only [Ordinal.typein_enum]
 
 noncomputable
-def GoodProducts.StartingWithMaxEquivGood' : StartingWithMax C o ≃ GoodProducts (C' C ho) :=
-{ toFun := fun l ↦ ⟨MaxTail C l, maxTail_isGood C ho l⟩
+def GoodProducts.StartingWithMaxEquivGood' (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o)))) :
+    StartingWithMax C o ≃ GoodProducts (C' C ho) :=
+{ toFun := fun l ↦ ⟨MaxTail C l, maxTail_isGood C hC hsC ho l h₁⟩
   invFun := fun l ↦ ⟨⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩,
     cons_o_mem_startingWithMax C ho l⟩
   left_inv := by
@@ -3331,13 +3462,13 @@ def GoodProducts.StartingWithMaxEquivGood' : StartingWithMax C o ≃ GoodProduct
     intro l
     rfl }
 
-lemma GoodProducts.hw :
+lemma GoodProducts.hw (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o)))) :
     LinearIndependent ℤ (eval (C' C ho)) ↔ LinearIndependent ℤ (w C hsC ho) := by
   dsimp [w, u, w']
   rw [max_eq_eval_unapply C hsC ho]
-  exact (linearIndependent_equiv (StartingWithMaxEquivGood' C ho)).symm
+  exact (linearIndependent_equiv (StartingWithMaxEquivGood' C hC hsC ho h₁)).symm
 
-lemma GoodProducts.hw' :
+lemma GoodProducts.hw' (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o)))) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (C' C ho))) ↔
     ⊤ ≤ Submodule.span ℤ (Set.range (w C hsC ho)) := by
   suffices : Set.range (eval (C' C ho)) = Set.range (w C hsC ho)
@@ -3349,15 +3480,97 @@ lemma GoodProducts.hw' :
   constructor
   <;> intro hf
   · obtain ⟨l, hl⟩ := hf
-    use (StartingWithMaxEquivGood' C ho).symm l
+    use (StartingWithMaxEquivGood' C hC hsC ho h₁).symm l
     rw [← hl]
     rfl
   · obtain ⟨l, hl⟩ := hf
-    use (StartingWithMaxEquivGood' C ho) l
+    use (StartingWithMaxEquivGood' C hC hsC ho h₁) l
     rw [← hl]
     rfl
 
 end Successor
+
+lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
+  rw [QIffQ I i]
+  apply Ordinal.limitRecOn
+  · dsimp [Q']
+    intro _ C _ hsC
+    dsimp [Support] at hsC
+    have : C ⊆ {(fun _ ↦ false)}
+    · intro c hc
+      simp
+      ext x
+      simp at hsC
+      specialize hsC x c hc
+      rw [Bool.eq_false_iff]
+      intro ht
+      apply Ordinal.not_lt_zero (ord I x)
+      exact hsC ht
+    rw [Set.subset_singleton_iff_eq] at this
+    rcases this
+    · subst C
+      exact spanEmpty
+    · subst C
+      exact spanSingleton
+  · intro o h
+    dsimp [Q'] at *
+    intro ho C hC hsC
+    simp only [Order.succ_le_iff] at ho
+    by_cases hnC : Nonempty C
+    · have h₁ := h (le_of_lt ho) (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
+      have h₂ := h (le_of_lt ho) (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
+      have := ModuleCat.span_leftExact
+        (LocallyConstant.LeftExact C hC hsC ho) (huv C o) (huw C hsC ho)
+      dsimp [v] at this
+      rw [hw' C hC hsC ho h₁] at h₂
+      rw [span_sum C o hsC]
+      exact this h₁ h₂
+    · rw [Set.nonempty_coe_sort, Set.not_nonempty_iff_eq_empty] at hnC
+      subst hnC
+      specialize h (le_of_lt ho) ∅ hC
+      apply h
+      dsimp [Support]
+      intro i hi
+      simp only [Set.mem_empty_iff_false, false_and, exists_false, Set.setOf_false] at hi
+  · intro o ho h
+    dsimp [Q'] at *
+    intro hto C hC hsC
+    have hr : ∀ (s : Set (WithTop I → Bool)), Set.range (eval s) = ModProducts s
+    · intro
+      rfl
+    rw [hr C, ModProducts.union C ho hsC, Submodule.span_iUnion]
+    intro f _
+    haveI : Nonempty {o' // o' < o} := nonempty_downset ho
+    simp only [Submodule.mem_iSup_of_directed _ (DirectedSubmodules C o)]
+    dsimp [ModProducts.smaller]
+    simp only [Submodule.span_image, Submodule.mem_map, Subtype.exists]
+    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hto hC hsC f
+    use o'
+    use ho'
+    use g
+    refine' ⟨_,hg⟩
+    specialize h o' ho' (le_of_lt (lt_of_lt_of_le ho' hto)) (Res C o') (isClosed_Res C o' hC)
+      (support_Res_le_o C o')
+    rw [hr (Res C o'), top_le_iff] at h
+    rw [h]
+    exact Submodule.mem_top
+
+#print axioms GoodProducts.spanAux
+
+lemma GoodProducts.h_one {o : Ordinal} (hC : IsClosed C)
+    (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
+    ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o))) := by
+  have := spanAux (term I ho) (Res C o)
+  apply this
+  · exact isClosed_Res C o hC
+  · refine' subset_trans (support_Res_le_o C o) _
+    intro j hj
+    simp only [Set.mem_setOf_eq] at hj ⊢
+    have ho' : o = ord I (term I ho)
+    · simp only [ord, term, Ordinal.typein_enum]
+    rw [ho'] at hj
+    simp only [ord, Ordinal.typein_lt_typein] at hj
+    exact hj
 
 lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
   rw [PIffP I i]
@@ -3392,7 +3605,8 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
         refine' ModuleCat.linearIndependent_leftExact _ _ _
             (LocallyConstant.LeftExact C hC hsC ho) (huv C o) (huw C hsC ho)
         · exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
-        · rw [← hw C hsC ho]
+        · have h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o))) := h_one _ hC ho
+          rw [← hw C hC hsC ho h₁]
           exact h (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
         · exact injective_u C o hsC
       · have hsC' : Support C ⊆ {j | ord I j < o}
@@ -3422,73 +3636,6 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by
     exact h
 
 #print axioms GoodProducts.linearIndependentAux
-
-lemma GoodProducts.spanAux (i : WithTop I) : Q i := by
-  rw [QIffQ I i]
-  apply Ordinal.limitRecOn
-  · dsimp [Q']
-    intro _ C _ hsC
-    dsimp [Support] at hsC
-    have : C ⊆ {(fun _ ↦ false)}
-    · intro c hc
-      simp
-      ext x
-      simp at hsC
-      specialize hsC x c hc
-      rw [Bool.eq_false_iff]
-      intro ht
-      apply Ordinal.not_lt_zero (ord I x)
-      exact hsC ht
-    rw [Set.subset_singleton_iff_eq] at this
-    rcases this
-    · subst C
-      exact spanEmpty
-    · subst C
-      exact spanSingleton
-  · intro o h
-    dsimp [Q'] at *
-    intro ho C hC hsC
-    simp only [Order.succ_le_iff] at ho
-    by_cases hnC : Nonempty C
-    · have h₁ := h (le_of_lt ho) (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
-      have h₂ := h (le_of_lt ho) (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
-      have := ModuleCat.span_leftExact
-        (LocallyConstant.LeftExact C hC hsC ho) (huv C o) (huw C hsC ho)
-      dsimp [v] at this
-      rw [hw' C hsC] at h₂
-      rw [span_sum C o hsC]
-      exact this h₁ h₂
-    · rw [Set.nonempty_coe_sort, Set.not_nonempty_iff_eq_empty] at hnC
-      subst hnC
-      specialize h (le_of_lt ho) ∅ hC
-      apply h
-      dsimp [Support]
-      intro i hi
-      simp only [Set.mem_empty_iff_false, false_and, exists_false, Set.setOf_false] at hi
-  · intro o ho h
-    dsimp [Q'] at *
-    intro hto C hC hsC
-    have hr : ∀ (s : Set (WithTop I → Bool)), Set.range (eval s) = ModProducts s
-    · intro
-      rfl
-    rw [hr C, ModProducts.union C ho hsC, Submodule.span_iUnion]
-    intro f _
-    haveI : Nonempty {o' // o' < o} := nonempty_downset ho
-    simp only [Submodule.mem_iSup_of_directed _ (DirectedSubmodules C o)]
-    dsimp [ModProducts.smaller]
-    simp only [Submodule.span_image, Submodule.mem_map, Subtype.exists]
-    obtain ⟨o',⟨ho',⟨g, hg⟩⟩⟩ := comapLinearJointlySurjective C ho hto hC hsC f
-    use o'
-    use ho'
-    use g
-    refine' ⟨_,hg⟩
-    specialize h o' ho' (le_of_lt (lt_of_lt_of_le ho' hto)) (Res C o') (isClosed_Res C o' hC)
-      (support_Res_le_o C o')
-    rw [hr (Res C o'), top_le_iff] at h
-    rw [h]
-    exact Submodule.mem_top
-
-#print axioms GoodProducts.spanAux
 
 variable {C₁ : Set (I → Bool)}
 
