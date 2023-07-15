@@ -538,6 +538,8 @@ canonical. -/
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E) =
       (ℝ ∙ (v : E))ᗮ := by
+  -- Porting note: need to remind that `E` is finite-dimensional
+  have := findim (E := E) (n := n)
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   dsimp [chartAt]
   -- rw [LinearIsometryEquiv.toHomeomorph_symm]
@@ -547,7 +549,14 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     LinearIsometryEquiv.map_zero, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n
     (ne_zero_of_mem_unit_sphere (-v))).repr
-  change LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ
+  -- Porting note: this `suffices` was a `change`
+  suffices :
+    LinearMap.range (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0) = (ℝ ∙ (v : E))ᗮ
+  · convert this using 3
+    show stereographic' n (-v) v = 0
+    dsimp [stereographic']
+    simp only [AddEquivClass.map_eq_zero_iff]
+    apply stereographic_neg_apply
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
@@ -634,4 +643,3 @@ theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCir
 #align cont_mdiff_exp_map_circle contMDiff_expMapCircle
 
 end circle
-
