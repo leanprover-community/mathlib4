@@ -19,18 +19,22 @@ Porting note: This has been rewritten to use `Qq` instead of `Expr`.
 -/
 open Qq
 
+/-- Produce a `One` instance for `Q($α)` such that `1 : Q($α)` is `q(1 : $α)`. -/
 def Expr.instOne {u : Lean.Level} (α : Q(Type u)) (_ : Q(One $α)) : One Q($α) where
   one := q(1 : $α)
 #align expr.has_one Expr.instOneₓ
 
+/-- Produce a `Zero` instance for `Q($α)` such that `0 : Q($α)` is `q(0 : $α)`. -/
 def Expr.instZero {u : Lean.Level} (α : Q(Type u)) (_ : Q(Zero $α)) : Zero Q($α) where
   zero := q(0 : $α)
 #align expr.has_zero Expr.instZeroₓ
 
+/-- Produce a `Mul` instance for `Q($α)` such that `x * y : Q($α)` is `q($x * $y)`. -/
 def Expr.instMul {u : Lean.Level} (α : Q(Type u)) (_ : Q(Mul $α)) : Mul Q($α) where
   mul x y := q($x * $y)
 #align expr.has_mul Expr.instMulₓ
 
+/-- Produce an `Add` instance for `Q($α)` such that `x + y : Q($α)` is `q($x + $y)`. -/
 def Expr.instAdd {u : Lean.Level} (α : Q(Type u)) (_ : Q(Add $α)) : Add Q($α) where
   add x y := q($x + $y)
 #align expr.has_add Expr.instAddₓ
