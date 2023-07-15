@@ -71,20 +71,20 @@ instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 instance : Neg (BitVec w) := ⟨BitVec.neg⟩
 
 
-@[norm_cast, simp]
+@[norm_cast]
 theorem val_bitvec_eq {a b : BitVec w} : a.val = b.val ↔ a = b :=
   ⟨(match a, b, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
 
 /-- `a < b` as natural numbers if and only if `a < b` in `Fin n`. -/
 -- why is this a simp lemma?
-@[norm_cast, simp]
-theorem val_bitvec_lt {a b : BitVec w} : (a.val : ℕ) < (b.val : ℕ) ↔ a < b := by
+@[norm_cast]
+theorem val_bitvec_lt {a b : BitVec w} : a.val < b.val ↔ a < b := by
   simp [LT.lt, BitVec.lt]
 
 /-- `a ≠ b` as natural numbers if and only if `a != b` in `Fin n`. -/
-@[norm_cast, simp]
+@[norm_cast]
 theorem val_bitvec_bne {a b : BitVec w} : a.val ≠ b.val ↔ a != b := by
-  simp [bne]
+  simp [bne, val_bitvec_eq]
 
 protected def complement (x : BitVec w) : BitVec w :=
   0 - (x + .ofNat w 1)

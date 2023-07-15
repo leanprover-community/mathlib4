@@ -184,7 +184,7 @@ theorem bit_zero : bit false 0 = 0 :=
 @[simp] lemma bit_0 (b : Bool) : Nat.bit b 0 = b.toNat := by
   cases' b <;> simp
 
-@[simp] lemma bit_1 (b : Bool) (_ : Nat) : Nat.bit b 1 = 2 + b.toNat:= by
+@[simp] lemma bit_1 (b : Bool) : Nat.bit b 1 = 2 + b.toNat:= by
   cases' b <;> simp
 
 /--`shiftl' b m n` performs a left shift of `m` `n` times
