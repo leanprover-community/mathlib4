@@ -582,12 +582,19 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 linear map from `tangent_space (𝓡 n) v` to `E`.  This map is injective. -/
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
+  -- Porting note: need to remind that `E` is finite-dimensional
+  have := findim (E := E) (n := n)
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   simp only [chartAt, stereographic', stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
-  change Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0)
+  suffices : Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0)
+  · convert this using 3
+    show stereographic' n (-v) v = 0
+    dsimp [stereographic']
+    simp only [AddEquivClass.map_eq_zero_iff]
+    apply stereographic_neg_apply
   have :
     HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
