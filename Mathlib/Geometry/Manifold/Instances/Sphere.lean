@@ -262,7 +262,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   ·
     simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
       mul_pow, Real.norm_eq_abs, sq_abs, norm_smul]
-  · simp [split, add_comm]
+    ·  simp [split, add_comm]
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
@@ -289,14 +289,20 @@ def stereographic (hv : ‖v‖ = 1) : LocalHomeomorph (sphere (0 : E) 1) (ℝ �
   source := {⟨v, by simp [hv]⟩}ᶜ
   target := Set.univ
   map_source' := by simp
-  map_target' w _ := stereoInvFun_ne_north_pole hv w
-  left_inv' _ hx := stereo_left_inv hv fun h => hx (Subtype.ext h)
+  map_target' {w} _ := fun h => (stereoInvFun_ne_north_pole hv w) (Set.eq_of_mem_singleton h)
+  left_inv' x hx := stereo_left_inv hv fun h => hx (by
+    rw [←h] at hv
+    apply Subtype.ext
+    dsimp
+    exact h)
   right_inv' w _ := stereo_right_inv hv w
   open_source := isOpen_compl_singleton
   open_target := isOpen_univ
   continuous_toFun :=
-    continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h =>
-      h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
+    continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
+      dsimp
+      exact
+        h ∘ Subtype.ext ∘ Eq.symm ∘ (inner_eq_one_iff_of_norm_one hv (by simp)).mp
   continuous_invFun := (continuous_stereoInvFun hv).continuousOn
 #align stereographic stereographic
 
@@ -351,6 +357,10 @@ fixed normed space.  This could be proved in general by a simple case of Gram-Sc
 orthogonalization, but in the finite-dimensional case it follows more easily by dimension-counting.
 -/
 
+-- Porting note: unnecessary in Lean 3
+set_option synthInstance.checkSynthOrder false
+local instance findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
+  fact_finiteDimensional_of_finrank_eq_succ n
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
 space `E`.  This version has codomain the Euclidean space of dimension `n`, and is obtained by
@@ -402,7 +412,6 @@ theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : 
 
 /-! ### Smooth manifold structure on the sphere -/
 
-
 /-- The unit sphere in an `n + 1`-dimensional inner product space `E` is a smooth manifold,
 modelled on the Euclidean space of dimension `n`. -/
 instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
@@ -412,25 +421,20 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
       rintro _ _ ⟨v, rfl⟩ ⟨v', rfl⟩
       let U :=
         (-- Removed type ascription, and this helped for some reason with timeout issues?
-            OrthonormalBasis.fromOrthogonalSpanSingleton
+            OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v)).repr
       let U' :=
         (-- Removed type ascription, and this helped for some reason with timeout issues?
-            OrthonormalBasis.fromOrthogonalSpanSingleton
+            OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ)
             n (ne_zero_of_mem_unit_sphere v')).repr
-      have hUv :
-        stereographic' n v =
-          stereographic (norm_eq_of_mem_sphere v) ≫ₕ U.to_homeomorph.to_local_homeomorph :=
-        rfl
-      have hU'v' :
-        stereographic' n v' =
-          (stereographic (norm_eq_of_mem_sphere v')).trans U'.to_homeomorph.to_local_homeomorph :=
-        rfl
+      -- Porting note: trouble synth instances
+      have := findim (E := E) n
       have H₁ := U'.contDiff.comp_contDiffOn contDiffOn_stereoToFun
-      have H₂ :=
-        (contDiff_stereo_inv_fun_aux.comp (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
+      -- Porting note: need to help with implicit variables again
+      have H₂ := (contDiff_stereoInvFunAux (v := v.val)|>.comp
+        (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
-      -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
+      -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
       simp only [LocalHomeomorph.trans_toLocalEquiv, LocalHomeomorph.symm_toLocalEquiv,
         LocalEquiv.trans_source, LocalEquiv.symm_source, stereographic'_target,
         stereographic'_source]
@@ -443,6 +447,8 @@ instance smoothMfldWithCorners {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
     ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
+  -- Porting note: trouble with filling these implicit variables in the instance
+  have := smoothMfldWithCorners (E := E) (n := n)
   rw [contMDiff_iff]
   constructor
   · exact continuous_subtype_val
@@ -475,6 +481,8 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
         OrthonormalBasis.fromOrthogonalSpanSingleton
         n (ne_zero_of_mem_unit_sphere (-v))).repr
   have h : ContDiffOn ℝ ⊤ _ Set.univ := U.contDiff.contDiffOn
+  -- Porting note: again need to remind of FiniteDimensional
+  have := findim (E := E) (n := n)
   have H₁ := (h.comp' contDiffOn_stereoToFun).contMDiffOn
   have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
@@ -483,7 +491,8 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
     have hfx : ‖f x‖ = 1 := by simpa using hf' x
     rw [inner_eq_one_iff_of_norm_one hfx]
     exact norm_eq_of_mem_sphere (-v)
-  dsimp [chartAt]
+  -- Porting note: unfold more
+  dsimp [chartAt, Set.codRestrict, ChartedSpace.chartAt]
   simp [not_iff_not, Subtype.ext_iff, hfxv, real_inner_comm]
 #align cont_mdiff.cod_restrict_sphere ContMDiff.codRestrict_sphere
 
