@@ -224,10 +224,12 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   set a : ℝ := innerSL _ v x
   set y := orthogonalProjection (ℝ ∙ v)ᗮ x
   have split : ↑x = a • v + ↑y := by
-    convert eq_sum_orthogonalProjection_self_orthogonalComplement (ℝ ∙ v) x
+    symm
+    convert orthogonalProjection_add_orthogonalProjection_orthogonal (ℝ ∙ v) x
     exact (orthogonalProjection_unit_singleton ℝ hv x).symm
   have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
+    clear_value y
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp [inner_smul_left, hvy]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
     -- Porting note: was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
