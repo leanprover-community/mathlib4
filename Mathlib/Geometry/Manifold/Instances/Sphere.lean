@@ -562,20 +562,21 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  rw [(this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv]
+  convert congrArg LinearMap.range (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
+  symm
   convert
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
-      (ℝ ∙ (↑(-v) : E))ᗮ.Subtype using 1
+      (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
   -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
   apply Submodule.span_eq_span
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [← Submodule.neg_mem_iff]
-    exact Submodule.mem_span_singleton_self (-v)
+    exact Submodule.mem_span_singleton_self (-v : E)
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [Submodule.neg_mem_iff]
-    exact Submodule.mem_span_singleton_self v
+    exact Submodule.mem_span_singleton_self (v:E)
 #align range_mfderiv_coe_sphere range_mfderiv_coe_sphere
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
