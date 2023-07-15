@@ -373,8 +373,8 @@ lemma bitwise_eq_bitwise' (f: Bool → Bool → Bool ) (h: f false false = false
   <;> by_cases h2: y= 0
   · unfold bitwise
     simp [h1, h2, h]
-  · unfold bitwise bitwise' ; simp[h1]; aesop
-  · unfold bitwise ; simp [h2]; aesop
+  · unfold bitwise bitwise'; simp[h1]; aesop
+  · unfold bitwise; simp [h2]; aesop
   · rw [← bit_decomp x, ← bit_decomp y]
     unfold bitwise
     rw [bit_decomp, bit_decomp, mod_two_of_bodd, mod_two_of_bodd]
