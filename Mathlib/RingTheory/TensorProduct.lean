@@ -1018,15 +1018,15 @@ end
 section Basis
 
 -- porting note: need to make a universe explicit for some reason in the next declaration
-universe u_5
-variable {k : Type _} [CommRing k] (R : Type _) [Ring R] [Algebra k R] {M : Type _}
-  [AddCommMonoid M] [Module k M] {ι : Type u_5} (b : Basis ι k M)
+universe uk uR uM uι
+variable {k : Type uk} [CommRing k] (R : Type uR) [Ring R] [Algebra k R] {M : Type uM}
+  [AddCommMonoid M] [Module k M] {ι : Type uι} (b : Basis ι k M)
 
 
 /-- Given a `k`-algebra `R` and a `k`-basis of `M,` this is a `k`-linear isomorphism
 `R ⊗[k] M ≃ (ι →₀ R)` (which is in fact `R`-linear). -/
 noncomputable def basisAux : R ⊗[k] M ≃ₗ[k] ι →₀ R :=
-  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique k R PUnit.{u_5+1}).symm b.repr ≪≫ₗ
+  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique k R PUnit.{uι+1}).symm b.repr ≪≫ₗ
     (finsuppTensorFinsupp k R k PUnit ι).trans
       (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid k R))
 #align algebra.tensor_product.basis_aux Algebra.TensorProduct.basisAux
