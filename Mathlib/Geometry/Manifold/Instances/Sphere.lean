@@ -34,32 +34,32 @@ here are obtained by composing the local homeomorphisms `stereographic` with arb
 from `(ℝ ∙ v)ᗮ` to Euclidean space.
 
 We prove two lemmas about smooth maps:
-* `cont_mdiff_coe_sphere` states that the coercion map from the sphere into `E` is smooth;
+* `contMDiff_coe_sphere` states that the coercion map from the sphere into `E` is smooth;
   this is a useful tool for constructing smooth maps *from* the sphere.
-* `cont_mdiff.cod_restrict_sphere` states that a map from a manifold into the sphere is
+* `contMDiff.codRestrict_sphere` states that a map from a manifold into the sphere is
   smooth if its lift to a map to `E` is smooth; this is a useful tool for constructing smooth maps
   *to* the sphere.
 
-As an application we prove `cont_mdiff_neg_sphere`, that the antipodal map is smooth.
+As an application we prove `contMdiffNegSphere`, that the antipodal map is smooth.
 
-Finally, we equip the `circle` (defined in `analysis.complex.circle` to be the sphere in `ℂ`
+Finally, we equip the `circle` (defined in `Analysis.Complex.Circle` to be the sphere in `ℂ`
 centred at `0` of radius `1`) with the following structure:
-* a charted space with model space `euclidean_space ℝ (fin 1)` (inherited from `metric.sphere`)
+* a charted space with model space `EuclideanSpace ℝ (Fin 1)` (inherited from `Metric.Sphere`)
 * a Lie group with model with corners `𝓡 1`
 
-We furthermore show that `exp_map_circle` (defined in `analysis.complex.circle` to be the natural
+We furthermore show that `expMapCircle` (defined in `Analysis.Complex.Circle` to be the natural
 map `λ t, exp (t * I)` from `ℝ` to `circle`) is smooth.
 
 
 ## Implementation notes
 
-The model space for the charted space instance is `euclidean_space ℝ (fin n)`, where `n` is a
-natural number satisfying the typeclass assumption `[fact (finrank ℝ E = n + 1)]`.  This may seem a
+The model space for the charted space instance is `EuclideanSpace ℝ (Fin n)`, where `n` is a
+natural number satisfying the typeclass assumption `[Fact (finrank ℝ E = n + 1)]`.  This may seem a
 little awkward, but it is designed to circumvent the problem that the literal expression for the
 dimension of the model space (up to definitional equality) determines the type.  If one used the
-naive expression `euclidean_space ℝ (fin (finrank ℝ E - 1))` for the model space, then the sphere in
-`ℂ` would be a manifold with model space `euclidean_space ℝ (fin (2 - 1))` but not with model space
-`euclidean_space ℝ (fin 1)`.
+naive expression `EuclideanSpace ℝ (Fin (finrank ℝ E - 1))` for the model space, then the sphere in
+`ℂ` would be a manifold with model space `EuclideanSpace ℝ (Fin (2 - 1))` but not with model space
+`EuclideanSpace ℝ (Fin 1)`.
 
 ## TODO
 
@@ -120,7 +120,7 @@ variable (v)
 projection.  This is a map from the orthogonal complement of a unit vector `v` in an inner product
 space `E` to `E`; we will later prove that it takes values in the unit sphere.
 
-For most purposes, use `stereo_inv_fun`, not `stereo_inv_fun_aux`. -/
+For most purposes, use `stereoInvFun`, not `stereoInvFunAux`. -/
 def stereoInvFunAux (w : E) : E :=
   (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v)
 #align stereo_inv_fun_aux stereoInvFunAux
@@ -216,7 +216,6 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
 
 variable [CompleteSpace E]
 
-set_option maxHeartbeats 0 in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
@@ -244,7 +243,6 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     linarith
   have : 2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2 ≠ 0 := by
     refine' ne_of_gt _
-    have := norm_nonneg (y : E)
     have : (0 : ℝ) < (1 - a) ^ 2 := sq_pos_of_ne_zero (1 - a) ha
     -- Porting note: nlinarith needed a little help
     change 0 < 4 * _ + 4 * _
@@ -295,12 +293,11 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
   convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
-    have h₂ : orthogonalProjection (ℝ ∙ v)ᗮ w = w := orthogonalProjection_mem_subspace_eq_self w
     -- Porting note: was innerSL _ and now just inner
     have h₃ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     -- Porting note: was innerSL _ and now just inner
     have h₄ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
-    simp [h₁, h₂, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
+    simp [h₁, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
   · simp
 #align stereo_right_inv stereo_right_inv
 
@@ -381,7 +378,9 @@ orthogonalization, but in the finite-dimensional case it follows more easily by 
 -/
 
 -- Porting note: unnecessary in Lean 3
+-- nolinted as this obviously should go away
 set_option synthInstance.checkSynthOrder false
+@[nolint defLemma]
 local instance findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
   fact_finiteDimensional_of_finrank_eq_succ n
 
@@ -529,15 +528,17 @@ theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
 #align cont_mdiff_neg_sphere contMDiff_neg_sphere
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
-linear map from `tangent_space (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
+linear map from `TangentSpace (𝓡 n) v` to `E`.  The range of this map is the orthogonal complement
 of `v` in `E`.
 
 Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E`).
 In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
 canonical. -/
+-- Porting note: complains that findim no needed but doesn't build otherwise
+@[nolint unusedHavesSuffices]
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
-    LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E) =
-      (ℝ ∙ (v : E))ᗮ := by
+    LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v :
+    TangentSpace (𝓡 n) v →L[ℝ] E) = (ℝ ∙ (v : E))ᗮ := by
   -- Porting note: need to remind that `E` is finite-dimensional
   have := findim (E := E) (n := n)
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
@@ -558,28 +559,30 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     simp only [AddEquivClass.map_eq_zero_iff]
     apply stereographic_neg_apply
   have :
-    HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
+    HasFDerivAt (stereoInvFunAux (-v : E) ∘ ((↑) : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  rw [(this.comp 0 U.symm.to_continuous_linear_equiv.has_fderiv_at).fderiv]
+  rw [(this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv]
   convert
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
-      (ℝ ∙ (↑(-v) : E))ᗮ.Subtype using 1
+      (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
   -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
   apply Submodule.span_eq_span
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [← Submodule.neg_mem_iff]
-    exact Submodule.mem_span_singleton_self (-v)
+    exact Submodule.mem_span_singleton_self (-v.val)
   · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
     rw [Submodule.neg_mem_iff]
-    exact Submodule.mem_span_singleton_self v
+    exact Submodule.mem_span_singleton_self v.val
 #align range_mfderiv_coe_sphere range_mfderiv_coe_sphere
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
-linear map from `tangent_space (𝓡 n) v` to `E`.  This map is injective. -/
+linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
+-- Porting note: complains that findim no needed but doesn't build otherwise
+@[nolint unusedHavesSuffices]
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
   -- Porting note: need to remind that `E` is finite-dimensional
@@ -588,7 +591,8 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
   simp only [chartAt, stereographic', stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
-  let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
+  let U := (OrthonormalBasis.fromOrthogonalSpanSingleton
+      (𝕜 := ℝ) n (ne_zero_of_mem_unit_sphere (-v))).repr
   suffices : Injective (fderiv ℝ ((stereoInvFunAux (-v : E) ∘ (↑)) ∘ U.symm) 0)
   · convert this using 3
     show stereographic' n (-v) v = 0
@@ -596,12 +600,13 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
     simp only [AddEquivClass.map_eq_zero_iff]
     apply stereographic_neg_apply
   have :
-    HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
+    HasFDerivAt (stereoInvFunAux (-v : E) ∘ ((↑) : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  rw [(this.comp 0 U.symm.to_continuous_linear_equiv.has_fderiv_at).fderiv]
-  simpa using Subtype.coe_injective
+  rw [(this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv]
+  rw [LinearIsometryEquiv.coe_toContinuousLinearEquiv]
+  simp [Subtype.coe_injective]
 #align mfderiv_coe_sphere_injective mfderiv_coe_sphere_injective
 
 end SmoothManifold
@@ -611,13 +616,14 @@ section circle
 open Complex
 
 -- Porting note: 1+1 = 2 except when synthing instances
+@[nolint defLemma]
 local instance : Fact (finrank ℝ ℂ = 1 + 1) where
   out := by simp
 
 attribute [local instance] finrank_real_complex_fact
 
-/-- The unit circle in `ℂ` is a charted space modelled on `euclidean_space ℝ (fin 1)`.  This
-follows by definition from the corresponding result for `metric.sphere`. -/
+/-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
+follows by definition from the corresponding result for `Metric.Sphere`. -/
 instance : ChartedSpace (EuclideanSpace ℝ (Fin 1)) circle :=
   chartedSpace
 
@@ -650,3 +656,4 @@ theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCir
 #align cont_mdiff_exp_map_circle contMDiff_expMapCircle
 
 end circle
+
