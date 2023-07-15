@@ -48,7 +48,7 @@ centred at `0` of radius `1`) with the following structure:
 * a Lie group with model with corners `𝓡 1`
 
 We furthermore show that `expMapCircle` (defined in `Analysis.Complex.Circle` to be the natural
-map `λ t, exp (t * I)` from `ℝ` to `circle`) is smooth.
+map `fun t ↦ exp (t * I)` from `ℝ` to `circle`) is smooth.
 
 
 ## Implementation notes
@@ -88,19 +88,19 @@ variable (v : E)
 the orthogonal complement of an element `v` of `E`. It is smooth away from the affine hyperplane
 through `v` parallel to the orthogonal complement.  It restricts on the sphere to the stereographic
 projection. -/
-def stereoToFun [CompleteSpace E] (x : E) : (ℝ ∙ v)ᗮ :=
+def stereoToFun (x : E) : (ℝ ∙ v)ᗮ :=
   (2 / ((1 : ℝ) - innerSL ℝ v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x
 #align stereo_to_fun stereoToFun
 
 variable {v}
 
 @[simp]
-theorem stereoToFun_apply [CompleteSpace E] (x : E) :
+theorem stereoToFun_apply (x : E) :
     stereoToFun v x = (2 / ((1 : ℝ) - innerSL ℝ v x)) • orthogonalProjection (ℝ ∙ v)ᗮ x :=
   rfl
 #align stereo_to_fun_apply stereoToFun_apply
 
-theorem contDiffOn_stereoToFun [CompleteSpace E] :
+theorem contDiffOn_stereoToFun :
     ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine' ContDiffOn.smul _ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine' contDiff_const.contDiffOn.div _ _
@@ -109,9 +109,9 @@ theorem contDiffOn_stereoToFun [CompleteSpace E] :
     exact h (sub_eq_zero.mp h').symm
 #align cont_diff_on_stereo_to_fun contDiffOn_stereoToFun
 
-theorem continuousOn_stereoToFun [CompleteSpace E] :
+theorem continuousOn_stereoToFun :
     ContinuousOn (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} :=
-  (@contDiffOn_stereoToFun E _ _ v _).continuousOn
+  contDiffOn_stereoToFun.continuousOn
 #align continuous_on_stereo_to_fun continuousOn_stereoToFun
 
 variable (v)
@@ -214,8 +214,6 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
   continuous_induced_rng.2 (contDiff_stereoInvFunAux.continuous.comp continuous_subtype_val)
 #align continuous_stereo_inv_fun continuous_stereoInvFun
 
-variable [CompleteSpace E]
-
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
@@ -224,11 +222,11 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   set a : ℝ := innerSL _ v x
   set y := orthogonalProjection (ℝ ∙ v)ᗮ x
   have split : ↑x = a • v + ↑y := by
-    convert eq_sum_orthogonalProjection_self_orthogonalComplement (ℝ ∙ v) x
+    convert (orthogonalProjection_add_orthogonalProjection_orthogonal (ℝ ∙ v) x).symm
     exact (orthogonalProjection_unit_singleton ℝ hv x).symm
   have hvy : ⟪v, y⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp y.2
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
-    have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp [inner_smul_left, hvy]
+    have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
     -- Porting note: was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
     · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
@@ -378,10 +376,7 @@ orthogonalization, but in the finite-dimensional case it follows more easily by 
 -/
 
 -- Porting note: unnecessary in Lean 3
--- nolinted as this obviously should go away
-set_option synthInstance.checkSynthOrder false
-@[nolint defLemma]
-local instance findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
+private theorem findim (n : ℕ) [Fact (finrank ℝ E = n + 1)] : FiniteDimensional ℝ E :=
   fact_finiteDimensional_of_finrank_eq_succ n
 
 /-- Variant of the stereographic projection, for the sphere in an `n + 1`-dimensional inner product
@@ -503,8 +498,6 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
         OrthonormalBasis.fromOrthogonalSpanSingleton
         n (ne_zero_of_mem_unit_sphere (-v))).repr
   have h : ContDiffOn ℝ ⊤ _ Set.univ := U.contDiff.contDiffOn
-  -- Porting note: again need to remind of FiniteDimensional
-  have := findim (E := E) (n := n)
   have H₁ := (h.comp' contDiffOn_stereoToFun).contMDiffOn
   have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
@@ -534,13 +527,9 @@ of `v` in `E`.
 Note that there is an abuse here of the defeq between `E` and the tangent space to `E` at `(v:E`).
 In general this defeq is not canonical, but in this case (the tangent space of a vector space) it is
 canonical. -/
--- Porting note: complains that findim no needed but doesn't build otherwise
-@[nolint unusedHavesSuffices]
 theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v :
     TangentSpace (𝓡 n) v →L[ℝ] E) = (ℝ ∙ (v : E))ᗮ := by
-  -- Porting note: need to remind that `E` is finite-dimensional
-  have := findim (E := E) (n := n)
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   dsimp [chartAt]
   -- rw [LinearIsometryEquiv.toHomeomorph_symm]
@@ -582,12 +571,8 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
 
 /-- Consider the differential of the inclusion of the sphere in `E` at the point `v` as a continuous
 linear map from `TangentSpace (𝓡 n) v` to `E`.  This map is injective. -/
--- Porting note: complains that findim no needed but doesn't build otherwise
-@[nolint unusedHavesSuffices]
 theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1) :
     Injective (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v) := by
-  -- Porting note: need to remind that `E` is finite-dimensional
-  have := findim (E := E) (n := n)
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
   simp only [chartAt, stereographic', stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
@@ -618,11 +603,10 @@ section circle
 open Complex
 
 -- Porting note: 1+1 = 2 except when synthing instances
-@[nolint defLemma]
-local instance : Fact (finrank ℝ ℂ = 1 + 1) where
-  out := by simp
+theorem finrank_real_complex_fact' : Fact (finrank ℝ ℂ = 1 + 1) :=
+  finrank_real_complex_fact
 
-attribute [local instance] finrank_real_complex_fact
+attribute [local instance] finrank_real_complex_fact'
 
 /-- The unit circle in `ℂ` is a charted space modelled on `EuclideanSpace ℝ (Fin 1)`.  This
 follows by definition from the corresponding result for `Metric.Sphere`. -/
@@ -641,9 +625,7 @@ instance : LieGroup (𝓡 1) circle where
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
-    suffices h₁ : ContMDiff
-        (𝓘(ℝ, EuclideanSpace ℝ (Fin 1)).prod 𝓘(ℝ, EuclideanSpace ℝ (Fin 1)))
-        (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ⊤ (Prod.map c c)
+    suffices h₁ : ContMDiff ((𝓡 1).prod (𝓡 1)) (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ⊤ (Prod.map c c)
     · apply h₂.comp h₁
     · apply ContMDiff.prod_map <;>
       exact contMDiff_coe_sphere
@@ -652,7 +634,7 @@ instance : LieGroup (𝓡 1) circle where
     simp only [← coe_inv_circle, coe_inv_circle_eq_conj]
     exact Complex.conjCle.contDiff.contMDiff.comp contMDiff_coe_sphere
 
-/-- The map `λ t, exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
+/-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
 theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCircle :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 #align cont_mdiff_exp_map_circle contMDiff_expMapCircle
