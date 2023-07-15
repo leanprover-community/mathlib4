@@ -558,11 +558,11 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     simp only [AddEquivClass.map_eq_zero_iff]
     apply stereographic_neg_apply
   have :
-    HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
+    HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  rw [(this.comp 0 U.symm.to_continuous_linear_equiv.has_fderiv_at).fderiv]
+  rw [(this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv]
   convert
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
       (ℝ ∙ (↑(-v) : E))ᗮ.Subtype using 1
@@ -596,11 +596,11 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
     simp only [AddEquivClass.map_eq_zero_iff]
     apply stereographic_neg_apply
   have :
-    HasFDerivAt (stereoInvFunAux (-v : E) ∘ (coe : (ℝ ∙ (↑(-v) : E))ᗮ → E))
+    HasFDerivAt (stereoInvFunAux (-v : E) ∘ (Subtype.val : (ℝ ∙ (↑(-v) : E))ᗮ → E))
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  rw [(this.comp 0 U.symm.to_continuous_linear_equiv.has_fderiv_at).fderiv]
+  rw [(this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv]
   simpa using Subtype.coe_injective
 #align mfderiv_coe_sphere_injective mfderiv_coe_sphere_injective
 
