@@ -203,6 +203,28 @@ lemma isOrtho_orthogonal_right {s : AffineSubspace 𝕜 P} (b : P) : s.IsOrtho (
 lemma isOrtho_orthogonal_left {s : AffineSubspace 𝕜 P} (b : P) : (s.orthogonal b).IsOrtho s :=
   IsOrtho.symm (isOrtho_orthogonal_right b)
 
+lemma IsOrtho.le {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) :
+    ∃ (b : P), s ≤ t.orthogonal b := by
+  by_cases hs : s = ⊥
+  · cases (AddTorsor.Nonempty : Nonempty P) with | intro b =>
+    use b
+    rw [hs]
+    exact bot_le
+  · push_neg at hs
+    rw [← nonempty_iff_ne_bot] at hs
+    use hs.some
+    rw [le_def', orthogonal]
+    intro p hp
+    use p -ᵥ hs.some
+    apply And.intro
+    · rw [IsOrtho] at h
+      apply h.le
+      exact vsub_mem_direction hp hs.some_mem
+    · rw [vsub_vadd]
+
+lemma IsOrtho.ge {s t : AffineSubspace 𝕜 P} (h : s.IsOrtho t) : ∃ (b : P), t ≤ s.orthogonal b :=
+  h.symm.le
+
 @[simp]
 lemma isOrtho_top_right {s : AffineSubspace 𝕜 P} : s.IsOrtho ⊤ ↔ s.direction = ⊥ := by
   rw [IsOrtho, direction_top]
