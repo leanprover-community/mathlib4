@@ -38,30 +38,35 @@ open Qq
 /-- `Int.toExprQ α _ z _` embeds `q` as a numeral expression inside a type with `OfNat` and `-`.
 -/
 def Int.toExprQ {u : Lean.Level} (α : Q(Type u)) (_ : Q(Neg $α)) (z : ℤ)
-  (_ : Q(OfNat $α $(z.natAbs))) : Q($α) :=
-  if 0 ≤ z then q($z.natAbs : $α) else q(-$z.natAbs : $α)
+  (_ : let zna := z.natAbs; by exact Q(OfNat $α $zna)) : Q($α) :=
+  letI zna := z.natAbs; by exact
+    if 0 ≤ z then q(OfNat.ofNat $zna : $α) else q(-OfNat.ofNat $zna : $α)
+
 /-- `Rat.toExprQ α _ _ q _ _` embeds `q` as a numeral expression inside a type with `OfNat`, `-`, and `/`.
 -/
 def Rat.toExprQ {u : Lean.Level} (α : Q(Type u)) (_ : Q(Neg $α)) (_ : Q(Div $α)) (q : ℚ)
-  (_ : Q(OfNat $α $(q.num.natAbs)))
-  (_ : Q(OfNat $α $(q.den))) : Q($α) :=
+  (_ : let qnna := q.num.natAbs; by exact Q(OfNat $α $qnna))
+  (i3 : let qd := q.den; by exact Q(OfNat $α $qd)) : Q($α) :=
   let num : ℤ := q.num
-  let nume := num.toExprQ α ‹_›
-  if q.den = 1 then nume
-  else
-    let dene := q($(q.den) : $α)
-    q($nume / $dene)
-#align rat.mk_numeral rat.toExprQₓ
+  let den : ℕ := q.den
+  let nume := Int.toExprQ α ‹_› num ‹_›
+  if q.den = 1
+    then nume
+    else
+      let dene : Q($α) := q(@OfNat.ofNat $α $den $i3 : $α)
+      q($nume / $dene)
+#align rat.mk_numeral Rat.toExprQₓ
 
 section
 
 
-/-- `rat.reflect q` represents the rational number `q` as a numeral expression of type `ℚ`. -/
+/-- `Lean.toExpr q` represents the rational number `q` as a numeral expression of type `ℚ`. -/
 instance Rat.instToExpr : Lean.ToExpr ℚ where
   toTypeExpr := q(ℚ)
-  toExpr q := q.toExprQ q(ℚ) _ _
+  toExpr q := @Rat.toExprQ Lean.Level.zero
+    q(ℚ) q(inferInstance) q(inferInstance) q q(inferInstance) q(inferInstance)
 
-#align rat.reflect Rat.instToExpr
+#align rat.reflect Rat.instToExprₓ
 
 end
 
@@ -72,112 +77,85 @@ The `pexpr` does not hold any typing information:
 -/
 #noalign rat.to_pexpr
 
+partial def Qq.toNat {u : Lean.Level} {α : Q(Type u)} : Q($α) → Lean.MetaM ℕ
+  | ~q(@Zero.zero _ (_)) => pure 0
+  | ~q(@One.one _ (_)) => pure 1
+  | ~q(@OfNat.ofNat _ $n (_)) => match n with
+    | .lit (.natVal n) => pure n
+    | _ => failure
+  | _ => failure
+
 -- PLEASE REPORT THIS TO MATHPORT DEVS, THIS SHOULD NOT HAPPEN.
 -- failed to format: unknown constant 'term.pseudo.antiquot'
 /--
       Evaluates an expression as a rational number,
       if that expression represents a numeral or the quotient of two numerals. -/
-    protected
-    unsafe
-  def
-    expr.to_nonneg_rat
-    : expr → Option ℚ
-    |
-        q( $ ( e₁ ) / $ ( e₂ ) )
-        =>
-        do
-          let m ← e₁ . toNat
-            let n ← e₂ . toNat
-            if
-              c
-              :
-              m n
-              then
-              if h : 1 < n then return ⟨ m , n , lt_trans zero_lt_one h , c ⟩ else none
-              else
-              none
-      | e => do let n ← e . toNat return n
-#align expr.to_nonneg_rat expr.to_nonneg_rat
+partial def Qq.toNonnegRat {u : Lean.Level} {α : Q(Type u)} : Q($α) → Lean.MetaM ℚ
+  | ~q(@HDiv.hDiv $α $α _ (_) $e₁ $e₂) => do
+    let m ← Qq.toNat e₁
+    let n ← Qq.toNat e₂
+    if c : Nat.coprime m n then
+      if h : 1 < n then return ⟨m, n, (Nat.zero_lt_one.trans h).ne', c⟩ else failure
+      else failure
+  | e => do let n ← Qq.toNat e return n
+#align expr.to_nonneg_rat Qq.toNonnegRatₓ
 
 /-- Evaluates an expression as a rational number,
 if that expression represents a numeral, the quotient of two numerals,
 the negation of a numeral, or the negation of the quotient of two numerals. -/
-protected unsafe def expr.to_rat : expr → Option ℚ
-  | q(Neg.neg $(e)) => do
-    let q ← e.to_nonneg_rat
-    some (-q)
-  | e => e.to_nonneg_rat
-#align expr.to_rat expr.to_rat
+protected unsafe def Qq.toRat {u : Lean.Level} {α : Q(Type u)} : Q($α) → Lean.MetaM ℚ
+  | ~q(@Neg.neg _ (_) $(e)) => do
+    let q ← Qq.toNonnegRat e
+    pure (-q)
+  | e => Qq.toNonnegRat e
+#align expr.to_rat Qq.toRat
 
--- PLEASE REPORT THIS TO MATHPORT DEVS, THIS SHOULD NOT HAPPEN.
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      Evaluates an expression into a rational number, if that expression is built up from
-        numerals, +, -, *, /, ⁻¹  -/
-    protected
-    unsafe
-  def
-    expr.eval_rat
-    : expr → Option ℚ
-    | q( Zero.zero ) => some 0
-      | q( One.one ) => some 1
-      | q( bit0 $ ( q ) ) => ( · * · ) 2 <$> q . eval_rat
-      | q( bit1 $ ( q ) ) => ( · + · ) 1 <$> ( · * · ) 2 <$> q . eval_rat
-      | q( $ ( a ) + $ ( b ) ) => ( · + · ) <$> a . eval_rat <*> b . eval_rat
-      | q( $ ( a ) - $ ( b ) ) => Sub.sub <$> a . eval_rat <*> b . eval_rat
-      | q( $ ( a ) * $ ( b ) ) => ( · * · ) <$> a . eval_rat <*> b . eval_rat
-      | q( $ ( a ) / $ ( b ) ) => ( · / · ) <$> a . eval_rat <*> b . eval_rat
-      | q( - $ ( a ) ) => Neg.neg <$> a . eval_rat
-      | q( $ ( a ) ⁻¹ ) => Inv.inv <$> a . eval_rat
-      | _ => none
-#align expr.eval_rat expr.eval_rat
+/-- Evaluates an expression into a rational number, if that expression is built up from
+numerals, +, -, *, /, ⁻¹  -/
+partial def Qq.evalRat {u : Lean.Level} {α : Q(Type u)} : Q($α) → Lean.MetaM ℚ
+  | ~q(@Zero.zero _ (_)) => pure 0
+  | ~q(@One.one _ (_)) => pure 1
+  | ~q(@OfNat.ofNat _ $n (_)) => match n with
+    | .lit (.natVal n) => pure n
+    | _ => failure
+  | ~q(@HAdd.hAdd $α $α _ (_) $a $b) => (· + ·) <$> Qq.evalRat a <*> Qq.evalRat b
+  | ~q(@HSub.hSub $α $α _ (_) $a $b) => (· - ·) <$> Qq.evalRat a <*> Qq.evalRat b
+  | ~q(@HMul.hMul $α $α _ (_) $a $b) => (· * ·) <$> Qq.evalRat a <*> Qq.evalRat b
+  | ~q(@HDiv.hDiv $α $α _ (_) $a $b) => (· / ·) <$> Qq.evalRat a <*> Qq.evalRat b
+  | ~q(@Neg.neg _ (_) $a) => Neg.neg <$> Qq.evalRat a
+  | ~q(@Inv.inv _ (_) $a) => Inv.inv <$> Qq.evalRat a
+  | _ => failure
+#align expr.eval_rat Qq.evalRatₓ
 
-/-- `expr.of_rat α q` embeds `q` as a numeral expression inside the type `α`.
-Lean will try to infer the correct type classes on `α`, and the tactic will fail if it cannot.
-This function is similar to `rat.mk_numeral` but it takes fewer hypotheses and is tactic valued.
--/
-protected unsafe def expr.of_rat (α : expr) : ℚ → tactic expr
-  | ⟨(n : ℕ), d, h, c⟩ => do
-    let e₁ ← expr.of_nat α n
-    if d = 1 then return e₁
+-- /-- `expr.of_rat α q` embeds `q` as a numeral expression inside the type `α`.
+-- Lean will try to infer the correct type classes on `α`, and the tactic will fail if it cannot.
+-- This function is similar to `rat.mk_numeral` but it takes fewer hypotheses and is tactic valued.
+-- -/
+def Qq.ofRat {u : Lean.Level} (α : Q(Type u)) : ℚ → Lean.MetaM Q($α)
+  | ⟨(n : ℕ), d, _h, _c⟩ => do
+    let _i : Q(OfNat $α $n) ← synthInstanceQ q(OfNat $α $n)
+    let e₁ := q(OfNat.ofNat $n : $α)
+    if d = 1
+      then pure e₁
       else do
-        let e₂ ← expr.of_nat α d
-        tactic.mk_app `` Div.div [e₁, e₂]
-  | ⟨-[n+1], d, h, c⟩ => do
-    let e₁ ← expr.of_nat α (n + 1)
-    let e ←
-      if d = 1 then return e₁
+        let _i ← synthInstanceQ q(OfNat $α $d)
+        let _i ← synthInstanceQ q(Div $α)
+        let e₂ : Q($α) := q(OfNat.ofNat $d : $α)
+        pure q($e₁ / $e₂)
+  | ⟨Int.negSucc n, d, _h, _c⟩ => do
+    let nSucc : ℕ := n.succ
+    let _i ← synthInstanceQ q(OfNat $α $nSucc)
+    let e₁ := q(OfNat.ofNat $nSucc : $α)
+    let e ← if d = 1
+        then pure e₁
         else do
-          let e₂ ← expr.of_nat α d
-          tactic.mk_app `` Div.div [e₁, e₂]
-    tactic.mk_app `` Neg.neg [e]
-#align expr.of_rat expr.of_rat
+          let _i ← synthInstanceQ q(OfNat $α $d)
+          let _i ← synthInstanceQ q(Div $α)
+          let e₂ : Q($α) := q(OfNat.ofNat $d : $α)
+          pure q($e₁ / $e₂)
+    let _i : Q(Neg $α) ← synthInstanceQ q(Neg $α)
+    pure q(-$e)
+#align expr.of_rat Qq.ofRatₓ
 
-namespace Tactic
-
-namespace InstanceCache
-
-/-- `c.of_rat q` embeds `q` as a numeral expression inside the type `α`.
-Lean will try to infer the correct type classes on `c.α`, and the tactic will fail if it cannot.
-This function is similar to `rat.mk_numeral` but it takes fewer hypotheses and is tactic valued.
--/
-protected unsafe def of_rat (c : instance_cache) : ℚ → tactic (instance_cache × expr)
-  | ⟨(n : ℕ), d, _, _⟩ =>
-    if d = 1 then c.ofNat n
-    else do
-      let (c, e₁) ← c.ofNat n
-      let (c, e₂) ← c.ofNat d
-      c `` Div.div [e₁, e₂]
-  | ⟨-[n+1], d, _, _⟩ => do
-    let (c, e) ←
-      if d = 1 then c.ofNat (n + 1)
-        else do
-          let (c, e₁) ← c.ofNat (n + 1)
-          let (c, e₂) ← c.ofNat d
-          c `` Div.div [e₁, e₂]
-    c `` Neg.neg [e]
-#align tactic.instance_cache.of_rat tactic.instance_cache.of_rat
-
-end InstanceCache
-
-end Tactic
+-- instance cache is no more
+#noalign tactic.instance_cache.of_rat

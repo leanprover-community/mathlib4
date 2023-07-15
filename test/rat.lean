@@ -1,16 +1,21 @@
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Rat.MetaDefs
 
-#eval
-  let q : ℚ := 3/15 in
-  guard <| (toExpr q) = q((1/5 : ℚ))
+open Lean Qq
 
-constants (α : Type) (h : Field α)
+#eval
+  let q : ℚ := 3/15
+  guard <| toExpr q = q((1/5 : ℚ))
+
+axiom α : Type
+axiom h : Field α
 
 attribute [instance] h
 
-#eval
-  guard <| Expr.evalRat `(1/3 - 100/6 : α) = some (-49/3)
+#eval do
+  let val ← Qq.evalRat q(1/3 - 100/6 : α)
+  guard <| val = -49/3
 
-#eval
-  guard <| (Expr.evalRat $ toExpr (-(5/3) : ℚ)) = some (-5/3)
+#eval do
+  let val ← Qq.evalRat $ (show Q(ℚ) from toExpr (-(5/3) : ℚ))
+  guard <| val = -5/3
