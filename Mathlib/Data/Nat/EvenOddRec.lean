@@ -8,7 +8,7 @@ Authors: Stuart Presnell
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Parity
 import Mathlib.Init.Data.Nat.Bitwise
 /-! # A recursion principle based on even and odd numbers. -/
 
@@ -22,7 +22,6 @@ namespace Nat
 extend from `P i` to both `P (2 * i)` and `P (2 * i + 1)`, then we have `P n` for all `n : ℕ`.
 This is nothing more than a wrapper around `Nat.binaryRec`, to avoid having to switch to
 dealing with `bit0` and `bit1`. -/
-
 @[elab_as_elim]
 def evenOddRec {P : ℕ → Sort _} (h0 : P 0) (h_even : ∀ (n) (_ : P n), P (2 * n))
     (h_odd : ∀ (n) (_ : P n), P (2 * n + 1)) (n : ℕ) : P n :=
@@ -56,5 +55,38 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i
     | _, rfl => by rw [evenOddRec, binaryRec_eq]; apply eq_rec_heq; exact H
   eq_of_heq (this _ (bit1_val _))
 #align nat.even_odd_rec_odd Nat.evenOddRec_odd
+
+/-- Strong recursion principle on even and odd numbers: if for all `i : ℕ` we can prove `P (2 * i)`
+from `P j` for all `j < 2 * i` and we can prove `P (2 * i + 1)` from `P j` for all `j < 2 * i + 1`,
+then we have `P n` for all `n : ℕ`. -/
+noncomputable
+def evenOddStrongRec {p : Sort _} (n : ℕ)
+    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p) → p)
+    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p) → p) : p :=
+n.strongRecOn' <| fun m ih => m.even_or_odd'.choose_spec.by_cases
+  (fun hm => peven m.even_or_odd'.choose <| fun k hk => ih k <| hm.symm ▸ hk)
+  (fun hm => podd m.even_or_odd'.choose <| fun k hk => ih k <| hm.symm ▸ hk)
+
+@[simp]
+lemma evenOddStrongRec_even {p : Sort _} (m : ℕ)
+    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p) → p)
+    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p) → p) :
+    (2 * m).evenOddStrongRec peven podd =
+      peven m (fun k _ => k.evenOddStrongRec peven podd) := by
+  rcases (2 * m).even_or_odd'.choose_spec with h | h
+  · rw [evenOddStrongRec, strongRecOn'_beta, Or.by_cases, dif_pos h]
+    conv_rhs => rw [mul_left_cancel₀ two_ne_zero h]
+  · exact (two_mul_ne_two_mul_add_one h).elim
+
+@[simp]
+lemma evenOddStrongRec_odd {p : Sort _} (m : ℕ)
+    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p) → p)
+    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p) → p) :
+    (2 * m + 1).evenOddStrongRec peven podd =
+      podd m (fun k _ => k.evenOddStrongRec peven podd) := by
+  rcases (2 * m + 1).even_or_odd'.choose_spec with h | h
+  · exact (two_mul_ne_two_mul_add_one h.symm).elim
+  · rw [evenOddStrongRec, strongRecOn'_beta, Or.by_cases, dif_neg two_mul_ne_two_mul_add_one.symm]
+    conv_rhs => rw [mul_left_cancel₀ two_ne_zero <| succ_injective h]
 
 end Nat
