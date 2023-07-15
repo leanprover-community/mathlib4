@@ -80,7 +80,7 @@ theorem exists_smooth_tsupport_subset {x : E} (hs : s ∈ 𝓝 x) :
 /-- Given an open set `s` in a finite-dimensional real normed vector space, there exists a smooth
 function with values in `[0, 1]` whose support is exactly `s`.
 For a stronger version ensuring that the function is equal to `1` on a given closed set inside `s`,
-see `IsOpen.exists_smooth_support_eq_eq_one_of_isClosed` -/
+see `IsOpen.exists_smooth_support_eq_eq_one_iff` -/
 theorem IsOpen.exists_smooth_support_eq (hs : IsOpen s) :
     ∃ f : E → ℝ, f.support = s ∧ ContDiff ℝ ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   /- For any given point `x` in `s`, one can construct a smooth function with support in `s` and
@@ -204,7 +204,7 @@ theorem IsOpen.exists_smooth_support_eq (hs : IsOpen s) :
 /-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
 vector space, there exists a smooth function with values in `[0, 1]` whose support is
 contained in `s` and equal to `1` on `t`.
-Superseded by `IsOpen.exists_smooth_support_eq_eq_one_of_iff`, ensuring that the support is
+Superseded by `IsOpen.exists_smooth_support_eq_eq_one_iff`, ensuring that the support is
 exactly `s`. -/
 theorem IsOpen.exists_smooth_support_subset (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
     ∃ f : E → ℝ, f.support ⊆ s ∧ ContDiff ℝ ⊤ f ∧ (∀ x, 0 ≤ f x)
