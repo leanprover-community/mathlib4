@@ -10,6 +10,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.Data.Rat.Defs
 import Mathlib.Tactic.Core
+import Qq
 
 /-!
 # Meta operations on ℚ
@@ -32,56 +33,44 @@ want to import `data.rat.basic` there.
 
 -/
 
+open Qq
 
-/-- `rat.mk_numeral q` embeds `q` as a numeral expression inside a type with 0, 1, +, -, and /
-
-`type`: an expression representing the target type. This must live in Type 0.
-`has_zero`, `has_one`, `has_add`: expressions of the type `has_zero %%type`, etc.
-
-This function is similar to `expr.of_rat` but takes more hypotheses and is not tactic valued.
- -/
-unsafe def rat.mk_numeral (type has_zero has_one has_add has_neg has_div : expr) : ℚ → expr
-  | ⟨Num, denom, _, _⟩ =>
-    let nume := Num.mk_numeral type Zero One Add Neg
-    if denom = 1 then nume
-    else
-      let dene := denom.mk_numeral type Zero One Add
-      q(@Div.div.{0} $(type) $(Div) $(nume) $(dene))
-#align rat.mk_numeral rat.mk_numeral
+/-- `Int.toExprQ α _ z _` embeds `q` as a numeral expression inside a type with `OfNat` and `-`.
+-/
+def Int.toExprQ {u : Lean.Level} (α : Q(Type u)) (_ : Q(Neg $α)) (z : ℤ)
+  (_ : Q(OfNat $α $(z.natAbs))) : Q($α) :=
+  if 0 ≤ z then q($z.natAbs : $α) else q(-$z.natAbs : $α)
+/-- `Rat.toExprQ α _ _ q _ _` embeds `q` as a numeral expression inside a type with `OfNat`, `-`, and `/`.
+-/
+def Rat.toExprQ {u : Lean.Level} (α : Q(Type u)) (_ : Q(Neg $α)) (_ : Q(Div $α)) (q : ℚ)
+  (_ : Q(OfNat $α $(q.num.natAbs)))
+  (_ : Q(OfNat $α $(q.den))) : Q($α) :=
+  let num : ℤ := q.num
+  let nume := num.toExprQ α ‹_›
+  if q.den = 1 then nume
+  else
+    let dene := q($(q.den) : $α)
+    q($nume / $dene)
+#align rat.mk_numeral rat.toExprQₓ
 
 section
 
--- Note that here we are disabling the "safety" of reflected, to allow us to reuse `rat.mk_numeral`.
--- The usual way to provide the required `reflected` instance would be via rewriting to prove that
--- the expression we use here is equivalent.
-attribute [local semireducible] reflected
 
 /-- `rat.reflect q` represents the rational number `q` as a numeral expression of type `ℚ`. -/
-unsafe instance rat.reflect : has_reflect ℚ :=
-  rat.mk_numeral q(ℚ) q((by infer_instance : Zero ℚ)) q((by infer_instance : One ℚ))
-    q((by infer_instance : Add ℚ)) q((by infer_instance : Neg ℚ)) q((by infer_instance : Div ℚ))
-#align rat.reflect rat.reflect
+instance Rat.instToExpr : Lean.ToExpr ℚ where
+  toTypeExpr := q(ℚ)
+  toExpr q := q.toExprQ q(ℚ) _ _
+
+#align rat.reflect Rat.instToExpr
 
 end
 
--- PLEASE REPORT THIS TO MATHPORT DEVS, THIS SHOULD NOT HAPPEN.
--- failed to format: unknown constant 'term.pseudo.antiquot'
-/--
-      `rat.to_pexpr q` creates a `pexpr` that will evaluate to `q`.
-      The `pexpr` does not hold any typing information:
-      `to_expr ``((%%(rat.to_pexpr (3/4)) : K))` will create a native `K` numeral `(3/4 : K)`.
-      -/
-    unsafe
-  def
-    rat.to_pexpr
-    ( q : ℚ ) : pexpr
-    :=
-      let
-        n := q . num
-        let
-          d := q . den
-          if d = 1 then n . to_pexpr else ` `( $ ( n . to_pexpr ) / $ ( d . to_pexpr ) )
-#align rat.to_pexpr rat.to_pexpr
+/-
+`rat.to_pexpr q` creates a `pexpr` that will evaluate to `q`.
+The `pexpr` does not hold any typing information:
+`to_expr ``((%%(rat.to_pexpr (3/4)) : K))` will create a native `K` numeral `(3/4 : K)`.
+-/
+#noalign rat.to_pexpr
 
 -- PLEASE REPORT THIS TO MATHPORT DEVS, THIS SHOULD NOT HAPPEN.
 -- failed to format: unknown constant 'term.pseudo.antiquot'
@@ -192,4 +181,3 @@ protected unsafe def of_rat (c : instance_cache) : ℚ → tactic (instance_cach
 end InstanceCache
 
 end Tactic
-
