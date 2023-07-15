@@ -175,10 +175,6 @@ namespace AffineSubspace
 /-- The proposition that two affine subspaces are orthogonal. -/
 def IsOrtho (s t : AffineSubspace 𝕜 P) : Prop := s.direction ⟂ t.direction
 
-/- Ambiguous
-@[inherit_doc]
-infixl:50 " ⟂ᵥ " => IsOrtho -/
-
 @[symm]
 lemma IsOrtho.symm {s t : AffineSubspace 𝕜 P} : s.IsOrtho t → t.IsOrtho s :=
   Submodule.IsOrtho.symm
