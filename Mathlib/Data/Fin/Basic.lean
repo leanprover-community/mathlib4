@@ -2548,7 +2548,7 @@ instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
   toExpr := match n with
     | 0 => finZeroElim
     | k + 1 => fun i => show Q(Fin $n) from
-      have i : Q(Nat) := Lean.mkNatLit i -- raw literal to avoid ofNat-double-wrapping
+      have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
       have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
       q(OfNat.ofNat $i)
 #align fin.reflect Fin.toExprₓ
