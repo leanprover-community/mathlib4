@@ -1152,7 +1152,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
 @[simps! apply_fst apply_snd_coe]
-def equivSigmaFinsetFun : (Π₀ i, β i) ≃ Σ s : Finset ι, ∀ i : s, {x : β i // x ≠ 0} :=
+def sigmaFinsetFunEquiv : (Π₀ i, β i) ≃ Σ s : Finset ι, ∀ i : s, {x : β i // x ≠ 0} :=
   (Equiv.sigmaFiberEquiv DFinsupp.support).symm.trans (.sigmaCongrRight subtypeSupportEqEquiv)
 
 @[simp]

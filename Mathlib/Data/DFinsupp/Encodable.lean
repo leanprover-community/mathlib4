@@ -18,7 +18,7 @@ instance [Encodable ι] [∀ i, Encodable (α i)] [∀ i (x : α i), Decidable (
   letI : DecidableEq ι := Encodable.decidableEqOfEncodable _
   letI : ∀ s : Finset ι, Encodable (∀ i : s, {x : α i // x ≠ 0}) := fun _ ↦
     .ofEquiv _ <| .piCongrLeft' _ Encodable.fintypeEquivFin
-  .ofEquiv _ DFinsupp.equivSigmaFinsetFun
+  .ofEquiv _ DFinsupp.sigmaFinsetFunEquiv
 
 instance [Countable ι] [∀ i, Countable (α i)] : Countable (Π₀ i, α i) := by
   classical
