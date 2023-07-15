@@ -1,355 +1,245 @@
 /-
-Copyright (c) 2015 Joe Hendrix. All rights reserved.
+Copyright (c) 2022 by the authors listed in the file AUTHORS and their
+institutional affiliations. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joe Hendrix, Sebastian Ullrich
-
-! This file was ported from Lean 3 source module data.bitvec.core
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
+Authors: Harun Khan, Abdalrhman M Mohamed, Wojciech Nawrocki, Joe Hendrix,
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Nat.Pow
-import Init.Data.Format.Basic
-import Mathlib.Init.Data.Nat.Lemmas
+
+import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Nat.Bitwise
+
+
 /-!
-# Basic operations on bitvectors
+We define bitvectors. We choose the `Fin` representation over others for its relative efficiency
+(Lean has special support for `Nat`), alignment with `UIntXY` types which are also represented
+with `Fin`, and the fact that bitwise operations on `Fin` are already defined. Some other possible
+representations are `List Bool`, `{ l : List Bool // l.length = w}`, `Fin w → Bool`.
 
-This is a work-in-progress, and contains additions to other theories.
-
-This file was moved to mathlib from core Lean in the switch to Lean 3.20.0c.
-It is not fully in compliance with mathlib style standards.
+We also define many bitvector operations from the
+[`QF_BV` logic](https://smtlib.cs.uiowa.edu/logics-all.shtml#QF_BV).
+of SMT-LIBv2.
 -/
 
-/-- `Bitvec n` is a `Vector` of `Bool` with length `n`. -/
-@[reducible]
-def Bitvec (n : ℕ) :=
-  Vector Bool n
-#align bitvec Bitvec
+/-- A bitvector of the specified width. This is represented as the underlying `Nat` number
+in both the runtime and the kernel, inheriting all the special support for `Nat`. -/
 
-namespace Bitvec
+def BitVec (w : Nat) := Fin (2^w)
+
+instance : DecidableEq (BitVec w) :=
+  inferInstanceAs (DecidableEq (Fin _))
+
+namespace BitVec
+
+protected def zero (w : Nat) : BitVec w :=
+  ⟨0, Nat.two_pow_pos w⟩
+
+/-- The bitvector `n mod 2^w`. -/
+protected def ofNat (w : Nat) (n : Nat) : BitVec w :=
+  Fin.ofNat' n (Nat.two_pow_pos w)
+
+instance : Inhabited (BitVec w) := ⟨BitVec.zero w⟩
+
+instance : OfNat (BitVec w) (nat_lit 0) :=
+  ⟨BitVec.zero w⟩
+
+-- We inherit `Fin` implementations when fast but write mod/div
+-- ourselves to avoid the extra modulo operation.
+protected def add (x y : BitVec w) : BitVec w := Fin.add x y
+protected def sub (x y : BitVec w) : BitVec w := Fin.sub x y
+protected def mul (x y : BitVec w) : BitVec w := Fin.mul x y
+protected def neg (x : BitVec w) : BitVec w := (Fin.neg (2^w)).neg x
+
+protected def mod (x y : BitVec w) : BitVec w :=
+  ⟨x.val % y.val, Nat.lt_of_le_of_lt (Nat.mod_le _ _) x.isLt⟩
+protected def div (x y : BitVec w) : BitVec w :=
+  ⟨x.val / y.val, Nat.lt_of_le_of_lt (Nat.div_le_self _ _) x.isLt⟩
+--when `y = 0` its the bitvectors of all `1s`
+protected def lt (x y : BitVec w) : Bool :=
+  x.val < y.val
+protected def le (x y : BitVec w) : Bool :=
+  x.val ≤ y.val
+
+
+
+instance : Add (BitVec w) := ⟨BitVec.add⟩
+instance : Sub (BitVec w) := ⟨BitVec.sub⟩
+instance : Mul (BitVec w) := ⟨BitVec.mul⟩
+instance : Mod (BitVec w) := ⟨BitVec.mod⟩
+instance : Div (BitVec w) := ⟨BitVec.div⟩
+instance : LT (BitVec w)  := ⟨fun x y => BitVec.lt x y⟩
+instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
+instance : Neg (BitVec w) := ⟨BitVec.neg⟩
+
+
+@[norm_cast, simp]
+theorem val_bitvec_eq {a b : BitVec w} : a.val = b.val ↔ a = b :=
+  ⟨(match a, b, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
+
+/-- `a < b` as natural numbers if and only if `a < b` in `Fin n`. -/
+-- why is this a simp lemma?
+@[norm_cast, simp]
+theorem val_bitvec_lt {a b : BitVec w} : (a.val : ℕ) < (b.val : ℕ) ↔ a < b := by
+  simp [LT.lt, BitVec.lt]
+
+/-- `a ≠ b` as natural numbers if and only if `a != b` in `Fin n`. -/
+@[norm_cast, simp]
+theorem val_bitvec_bne {a b : BitVec w} : a.val ≠ b.val ↔ a != b := by
+  simp [bne]
+
+protected def complement (x : BitVec w) : BitVec w :=
+  0 - (x + .ofNat w 1)
+
+protected def and (x y : BitVec w) : BitVec w :=
+  ⟨x.val &&& y.val, by simp [HAnd.hAnd, AndOp.and, Nat.land, Nat.bitwise_lt]⟩
+
+protected def or (x y : BitVec w) : BitVec w :=
+  ⟨x.val ||| y.val, by simp [HOr.hOr, OrOp.or, Nat.lor, Nat.bitwise_lt]⟩
+
+protected def xor (x y : BitVec w) : BitVec w :=
+  ⟨x.val ^^^ y.val, by simp [HXor.hXor, Xor.xor, Nat.xor, Nat.bitwise_lt]⟩
+
+protected def shiftLeft (x : BitVec w) (n : Nat) : BitVec w :=
+  .ofNat w (x.val <<< n)
+
+protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
+  ⟨x.val >>> n, by
+      simp only [Nat.shiftRight_eq_shiftr, Nat.shiftr_eq_div_pow]
+      exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt) ⟩
+
+protected def slt (x y : BitVec w) : Prop :=
+  if x.val >>> (w-1) < y.val >>> (w-1) then True
+  else x.val >>> (w-1) = y.val >>> (w-1) ∧ x.val >>> 1 < y.val >>> 1
+
+protected def sle (x y : BitVec w) : Prop :=
+  if (x.val >>> (w-1)) < (y.val >>> (w-1)) then True
+  else (x.val >>> (w-1) = y.val >>> (w-1)) ∧ (x.val >>> 1 ≤ y.val >>> 1)
+
+protected def sgt (x y : BitVec w) : Prop := BitVec.slt y x
+
+protected def sge (x y : BitVec w) : Prop := BitVec.sle y x
+
+instance : Complement (BitVec w) := ⟨BitVec.complement⟩
+instance : AndOp (BitVec w) := ⟨BitVec.and⟩
+instance : OrOp (BitVec w) := ⟨BitVec.or⟩
+instance : Xor (BitVec w) := ⟨BitVec.xor⟩
+instance : HShiftLeft (BitVec w) Nat (BitVec w) := ⟨BitVec.shiftLeft⟩
+instance : HShiftRight (BitVec w) Nat (BitVec w) := ⟨BitVec.shiftRight⟩
+
+def rotateLeft (x : BitVec w) (n : Nat) : BitVec w :=
+  x <<< n ||| x >>> (w - n)
+
+def rotateRight (x : BitVec w) (n : Nat) : BitVec w :=
+  x >>> n ||| x <<< (w - n)
+
+protected def append (x : BitVec w) (y : BitVec v) : BitVec (w+v) :=
+  ⟨x.val <<< v ||| y.val, Nat.add_comm _ _ ▸ Nat.append_lt y.isLt x.isLt⟩
+
+instance : HAppend (BitVec w) (BitVec v) (BitVec (w+v)) := ⟨BitVec.append⟩
+
+@[simp] def extract (i j : Nat) (x : BitVec w) : BitVec (i - j + 1) :=
+  BitVec.ofNat _ (x.val >>> j)
+
+def repeat_ : (i : Nat) → BitVec w → BitVec (w*i)
+  | 0,   _ => 0
+  | n+1, x =>
+    have hEq : w + w*n = w*(n + 1) := by
+      rw [Nat.mul_add, Nat.add_comm, Nat.mul_one]
+    hEq ▸ (x ++ repeat_ n x)
+
+def zeroExtend (i : Nat) (x : BitVec w) : BitVec (w+i) :=
+  have hEq : w+i = i+w := Nat.add_comm _ _
+  hEq ▸ ((0 : BitVec i) ++ x)
+
+def signExtend (i : Nat) (x : BitVec w) : BitVec (w+i) :=
+  have hEq : ((w-1) - (w-1) + 1)*i + w = w+i := by
+    rw [Nat.sub_self, Nat.zero_add, Nat.one_mul, Nat.add_comm]
+  hEq ▸ ((repeat_ i (extract (w-1) (w-1) x)) ++ x)
+
+-- `prefix` may be a better name
+def shrink (v : Nat) (x : BitVec w) : BitVec v :=
+  if hZero : 0 < v then
+    have hEq : v - 1 + 0 + 1 = v := by
+      rw [Nat.add_zero]
+      exact Nat.sub_add_cancel hZero
+    hEq ▸ x.extract (v - 1) 0
+  else 0
+
+/-- Return the `i`-th least significant bit. -/
+@[simp] def lsbGet (x : BitVec w) (i : Nat) : Bool :=
+  x.extract i i != 0
+
+theorem lsbGet_eq_testBit {x : BitVec w} : x.lsbGet i = x.val.testBit i := by
+  cases' h: Nat.bodd (Nat.shiftr (x.val) i)
+  <;> simp [Nat.testBit, BitVec.ofNat, Fin.ofNat',
+            h, Nat.mod_two_of_bodd, Nat.shiftRight, Nat.shiftRight_eq_shiftr]
+  aesop
+
+instance : GetElem (BitVec w) Nat Bool (fun _ i => i < w) where
+  getElem x i _ := Nat.testBit x.val i
 
 open Nat
 
-open Vector
-
--- mathport name: «expr ++ₜ »
-local infixl:65 "++ₜ" => Vector.append
-
-/-- Create a zero bitvector -/
-@[reducible]
-protected def zero (n : ℕ) : Bitvec n :=
-  replicate n false
-#align bitvec.zero Bitvec.zero
-
-/-- Create a bitvector of length `n` whose `n-1`st entry is 1 and other entries are 0. -/
-@[reducible]
-protected def one : ∀ n : ℕ, Bitvec n
-  | 0 => nil
-  | succ n => replicate n false++ₜtrue ::ᵥ nil
-#align bitvec.one Bitvec.one
+lemma testBit_eq_ofNat {x: BitVec w} :
+  Bool.toNat (testBit (x.val) k) = (BitVec.ofNat 1 (x.val >>> k)).val:= by
+  simp only [BitVec.ofNat, Fin.ofNat', testBit, shiftRight_eq_shiftr, mod_two_of_bodd, pow_one]
+  aesop
 
-/-- Create a bitvector from another with a provably equal length. -/
-protected def cong {a b : ℕ} (h : a = b) : Bitvec a → Bitvec b
-  | ⟨x, p⟩ => ⟨x, h ▸ p⟩
-#align bitvec.cong Bitvec.cong
+lemma val_to_ofNat (h: m < 2^w) : (BitVec.ofNat w m).val = m := by
+  simp [BitVec.ofNat, Fin.ofNat', mod_eq_of_lt h]
 
-/-- `Bitvec` specific version of `Vector.append` -/
-def append {m n} : Bitvec m → Bitvec n → Bitvec (m + n) :=
-  Vector.append
-#align bitvec.append Bitvec.append
+lemma ofNat_to_val (x : BitVec w) : BitVec.ofNat w x.val = x := by
+  simp [BitVec.ofNat, Fin.ofNat', mod_eq_of_lt x.isLt]
 
-/-! ### Shift operations -/
+lemma ofNat_to_val' (x : BitVec w) (h : v = w):
+  HEq x (BitVec.ofNat v x.val) := h ▸ heq_of_eq (ofNat_to_val x).symm
 
+theorem concat_ext {x : BitVec a} {y : BitVec b} :
+  (x ++ y).val = x.val <<< b ||| y.val := rfl
 
-section Shift
+theorem extract_ext : (extract i j x).val = x.val/2^j % (2^(i - j + 1)) := by
+  simp [extract, BitVec.ofNat, Fin.ofNat', shiftRight_eq_shiftr, shiftr_eq_div_pow]
 
-variable {n : ℕ}
+theorem testBit_eq_rep {x: BitVec w} (i : Nat) (h: i< w): x[i] = testBit x.val i := by rfl
 
-/-- `shl x i` is the bitvector obtained by left-shifting `x` `i` times and padding with `false`.
-If `x.length < i` then this will return the all-`false`s bitvector. -/
-def shl (x : Bitvec n) (i : ℕ) : Bitvec n :=
-  Bitvec.cong (by simp) <| drop i x++ₜreplicate (min n i) false
-#align bitvec.shl Bitvec.shl
+theorem testBit_eq_rep' {x: Nat} (i : Nat) (h: i< w) (h2: x< 2^w):
+  (BitVec.ofNat w x)[i] = testBit x i := by
+  simp [BitVec.ofNat, GetElem.getElem, lsbGet, extract, Fin.ofNat', mod_eq_of_lt, h2]
 
-/-- `fill_shr x i fill` is the bitvector obtained by right-shifting `x` `i` times and then
-padding with `fill : Bool`. If `x.length < i` then this will return the constant `fill`
-bitvector. -/
-def fillShr (x : Bitvec n) (i : ℕ) (fill : Bool) : Bitvec n :=
-  Bitvec.cong
-      (by
-        by_cases h : i ≤ n
-        · have h₁ := Nat.sub_le n i
-          rw [min_eq_right h]
-          rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
-        · have h₁ := le_of_not_ge h
-          rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
-    replicate (min n i) fill++ₜtake (n - i) x
-#align bitvec.fill_shr Bitvec.fillShr
-
-/-- unsigned shift right -/
-def ushr (x : Bitvec n) (i : ℕ) : Bitvec n :=
-  fillShr x i false
-#align bitvec.ushr Bitvec.ushr
+def bbT (bs : List Bool) : BitVec bs.length :=
+  ⟨ofBits (λ i => bs[i]!) 0 bs.length, @ofBits_lt _ (bs.length)⟩
 
-/-- signed shift right -/
-def sshr : ∀ {m : ℕ}, Bitvec m → ℕ → Bitvec m
-  | 0, _, _ => nil
-  | succ _, x, i => head x ::ᵥ fillShr (tail x) i (head x)
-#align bitvec.sshr Bitvec.sshr
 
-end Shift
+/-! ### Equivalence between bitwise and BitVec operations -/
 
-/-! ### Bitwise operations -/
-
+theorem BV_add {x y : BitVec w}: bitadd x.val y.val w = (x + y).val := by
+  rw [bitadd_eq_add]
+  norm_cast
 
-section Bitwise
-
-variable {n : ℕ}
+-- theorem BV_neg {x : BitVec w}: bitwise_neg x.val w = x.neg.val := by
+--   simp only [bitwise_neg_eq_neg, x.isLt]
+--   norm_cast
 
--- porting note: added protected, since now this clashes with `_root_.not` (formerly `bnot`)
-/-- bitwise not -/
-protected def not (bv : Bitvec n) : Bitvec n :=
-  map not bv
-#align bitvec.not Bitvec.not
+-- theorem BV_mul {x y : BitVec w} (h : 0 < w): bitwise_mul x.val y.val w = (x * y).val := by
+--   rw [bitwise_mul_eq_mul h]
+--   norm_cast
 
--- porting note: added protected, since now this clashes with `_root_.and` (formerly `band`)
-/-- bitwise and -/
-protected def and : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ and
-#align bitvec.and Bitvec.and
+-- theorem BV_extract {x : BitVec w} : bitwise_extract x.val i j = (extract i j x).val := by
+--   rw [bitwise_extract_eq_extract]
+--   norm_cast
 
--- porting note: added protected, since now this clashes with `_root_.or` (formerly `bor`)
-/-- bitwise or -/
-protected def or : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ or
-#align bitvec.or Bitvec.or
+-- theorem BV_concat {x : BitVec w} {y : BitVec v} :
+--  bitwise_concat y.val x.val v w  = (x ++ y).val := by
+--   rw [bitwise_concat_eq_concat y.isLt x.isLt]
+--   norm_cast
 
--- porting note: added protected, since now this clashes with `_root_.xor` (formerly `bxor`)
-/-- bitwise xor -/
-protected def xor : Bitvec n → Bitvec n → Bitvec n :=
-  map₂ xor
-#align bitvec.xor Bitvec.xor
+-- theorem BV_eq {x y : BitVec w} (h: 0 < w): bitwise_eq x.val y.val w = (x = y) := by
+--   simp [← bitwise_eq_eq h x.isLt y.isLt]
 
-instance : Complement (Bitvec n) :=
-⟨Bitvec.not⟩
+theorem BV_ult {x y : BitVec w} (h1: x < y) :
+  bitult x.val y.val w:= bitult_of_ult y.isLt (val_bitvec_lt.mpr h1)
 
-instance : AndOp (Bitvec n) :=
-⟨Bitvec.and⟩
+-- theorem BV_slt {x y : BitVec w} (h1: x < y) : bitwise_slt x.val y.val w:= sorry
 
-instance : OrOp (Bitvec n) :=
-⟨Bitvec.or⟩
-
-instance : Xor (Bitvec n) :=
-⟨Bitvec.xor⟩
-
-end Bitwise
-
-/-! ### Arithmetic operators -/
-
-
-section Arith
-
-variable {n : ℕ}
-
-/-- `neg x` is the two's complement of `x`. -/
-protected def neg (x : Bitvec n) : Bitvec n :=
-  let f y c := (y || c, xor y c)
-  Prod.snd (mapAccumr f x false)
-#align bitvec.neg Bitvec.neg
-
-/-- Add with carry (no overflow) -/
-def adc (x y : Bitvec n) (c : Bool) : Bitvec (n + 1) :=
-  let f x y c := (Bool.carry x y c, Bool.xor3 x y c)
-  let ⟨c, z⟩ := Vector.mapAccumr₂ f x y c
-  c ::ᵥ z
-#align bitvec.adc Bitvec.adc
-
-/-- The sum of two bitvectors -/
-protected def add (x y : Bitvec n) : Bitvec n :=
-  tail (adc x y false)
-#align bitvec.add Bitvec.add
-
-/-- Subtract with borrow -/
-def sbb (x y : Bitvec n) (b : Bool) : Bool × Bitvec n :=
-  let f x y c := (Bool.carry (not x) y c, Bool.xor3 x y c)
-  Vector.mapAccumr₂ f x y b
-#align bitvec.sbb Bitvec.sbb
-
-/-- The difference of two bitvectors -/
-protected def sub (x y : Bitvec n) : Bitvec n :=
-  Prod.snd (sbb x y false)
-#align bitvec.sub Bitvec.sub
-
-instance : Zero (Bitvec n) :=
-  ⟨Bitvec.zero n⟩
-
-instance : One (Bitvec n) :=
-  ⟨Bitvec.one n⟩
-
-instance : Add (Bitvec n) :=
-  ⟨Bitvec.add⟩
-
-instance : Sub (Bitvec n) :=
-  ⟨Bitvec.sub⟩
-
-instance : Neg (Bitvec n) :=
-  ⟨Bitvec.neg⟩
-
-/-- The product of two bitvectors -/
-protected def mul (x y : Bitvec n) : Bitvec n :=
-  let f r b := cond b (r + r + y) (r + r)
-  (toList x).foldl f 0
-#align bitvec.mul Bitvec.mul
-
-instance : Mul (Bitvec n) :=
-  ⟨Bitvec.mul⟩
-
-end Arith
-
-/-! ### Comparison operators -/
-
-
-section Comparison
-
-variable {n : ℕ}
-
-/-- `uborrow x y` returns `true` iff the "subtract with borrow" operation on `x`, `y` and `false`
-required a borrow. -/
-def uborrow (x y : Bitvec n) : Bool :=
-  Prod.fst (sbb x y false)
-#align bitvec.uborrow Bitvec.uborrow
-
-/-- unsigned less-than proposition -/
-def Ult (x y : Bitvec n) : Prop :=
-  uborrow x y
-#align bitvec.ult Bitvec.Ult
-
-/-- unsigned greater-than proposition -/
-def Ugt (x y : Bitvec n) : Prop :=
-  Ult y x
-#align bitvec.ugt Bitvec.Ugt
-
-/-- unsigned less-than-or-equal-to proposition -/
-def Ule (x y : Bitvec n) : Prop :=
-  ¬Ult y x
-#align bitvec.ule Bitvec.Ule
-
-/-- unsigned greater-than-or-equal-to proposition -/
-def Uge (x y : Bitvec n) : Prop :=
-  Ule y x
-#align bitvec.uge Bitvec.Uge
-
-/-- `sborrow x y` returns `true` iff `x < y` as two's complement integers -/
-def sborrow : ∀ {n : ℕ}, Bitvec n → Bitvec n → Bool
-  | 0, _, _ => false
-  | succ _, x, y =>
-    match (head x, head y) with
-    | (true, false) => true
-    | (false, true) => false
-    | _ => uborrow (tail x) (tail y)
-#align bitvec.sborrow Bitvec.sborrow
-
-/-- signed less-than proposition -/
-def Slt (x y : Bitvec n) : Prop :=
-  sborrow x y
-#align bitvec.slt Bitvec.Slt
-
-/-- signed greater-than proposition -/
-def Sgt (x y : Bitvec n) : Prop :=
-  Slt y x
-#align bitvec.sgt Bitvec.Sgt
-
-/-- signed less-than-or-equal-to proposition -/
-def Sle (x y : Bitvec n) : Prop :=
-  ¬Slt y x
-#align bitvec.sle Bitvec.Sle
-
-/-- signed greater-than-or-equal-to proposition -/
-def Sge (x y : Bitvec n) : Prop :=
-  Sle y x
-#align bitvec.sge Bitvec.Sge
-
-end Comparison
-
-/-! ### Conversion to `nat` and `int` -/
-
-
-section Conversion
-
-variable {α : Type}
-
-/-- Create a bitvector from a `nat` -/
-protected def ofNat : ∀ n : ℕ, Nat → Bitvec n
-  | 0, _ => nil
-  | succ n, x => Bitvec.ofNat n (x / 2)++ₜdecide (x % 2 = 1) ::ᵥ nil
-#align bitvec.of_nat Bitvec.ofNat
-
-/-- Create a bitvector from an `Int`. The ring homomorphism from Int to bitvectors. -/
-protected def ofInt : ∀ n : ℕ, Int → Bitvec n
-  | n, Int.ofNat m => Bitvec.ofNat n m
-  | n, Int.negSucc m => (Bitvec.ofNat n m).not
-
-/-- `add_lsb r b` is `r + r + 1` if `b` is `true` and `r + r` otherwise. -/
-def addLsb (r : ℕ) (b : Bool) :=
-  r + r + cond b 1 0
-#align bitvec.add_lsb Bitvec.addLsb
-
-/-- Given a `List` of `Bool`s, return the `nat` they represent as a list of binary digits. -/
-def bitsToNat (v : List Bool) : Nat :=
-  v.foldl addLsb 0
-#align bitvec.bits_to_nat Bitvec.bitsToNat
-
-/-- Return the natural number encoded by the input bitvector -/
-protected def toNat {n : Nat} (v : Bitvec n) : Nat :=
-  bitsToNat (toList v)
-#align bitvec.to_nat Bitvec.toNat
-
-instance (n : ℕ) : Preorder (Bitvec n) :=
-  Preorder.lift Bitvec.toNat
-
-/-- convert `fin` to `Bitvec` -/
-def ofFin {n : ℕ} (i : Fin <| 2 ^ n) : Bitvec n :=
-  Bitvec.ofNat _ i.val
-#align bitvec.of_fin Bitvec.ofFin
-
-/-- convert `Bitvec` to `fin` -/
-def toFin {n : ℕ} (i : Bitvec n) : Fin (2 ^ n) :=
-  i.toNat
-#align bitvec.to_fin Bitvec.toFin
-
-
-/-- Return the integer encoded by the input bitvector -/
-protected def toInt : ∀ {n : Nat}, Bitvec n → Int
-  | 0, _ => 0
-  | succ _, v =>
-    cond (head v) (Int.negSucc <| Bitvec.toNat <| Bitvec.not <| tail v)
-      (Int.ofNat <| Bitvec.toNat <| tail v)
-#align bitvec.to_int Bitvec.toInt
-
-end Conversion
-
-/-! ### Miscellaneous instances -/
-
-
-private def repr {n : Nat} : Bitvec n → String
-  | ⟨bs, _⟩ => "0b" ++ (bs.map fun b : Bool => if b then '1' else '0').asString
-
-instance (n : Nat) : Repr (Bitvec n) where
-  reprPrec (b : Bitvec n) _ := Std.Format.text (repr b)
-
-end Bitvec
-
-instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ult x y) :=
-  decEq _ _
-
-instance {n} {x y : Bitvec n} : Decidable (Bitvec.Ugt x y) :=
-  decEq _ _
-
-instance {n} : HShiftLeft (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.shl⟩
-
-instance {n} : HShiftRight (Bitvec n) Nat (Bitvec n) := ⟨Bitvec.ushr⟩
-
-instance {n} : ShiftLeft (Bitvec n) := ⟨fun x y => x <<< y.toNat⟩
-
-instance {n} : ShiftRight (Bitvec n) := ⟨fun x y => x >>> y.toNat⟩
+-- theorem BV_signExtend {x : BitVec w} (h: 0 < w) :
+-- (signExtend i x).val = bitwise_ext x.val w i := sorry
+end BitVec

@@ -252,6 +252,12 @@ theorem testBit_two_pow_add (h : i < w) :
 theorem testBit_two_pow_add' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
   mul_one (2^w) ▸ Bool.toNat_true ▸ (@testBit_two_pow_mul_toNat_add n w true h)
 
+theorem eq_of_testBit_eq_lt
+  (h0: x < 2^i) (h1: y< 2^i) (h: ∀ (j : Nat), j < i → x.testBit j = y.testBit j): x = y := by
+  apply eq_of_testBit_eq
+  intro k
+  apply Nat.lt_ge_by_cases (h k) (fun h2 => by simp [testBit_eq_false_of_lt sorry, *])
+
 /-- Generic method to create a natural number by appending bits tail-recursively.
 It takes a boolean function `f` on each bit and `z` the starting point and the number of bits `i`.
 It is almost always specialized with `z = 0` and `i = w`; the length of the binary representation.
@@ -357,6 +363,51 @@ theorem bitwise'_comm {f : Bool → Bool → Bool} (hf : ∀ b b', f b b' = f b'
     bitwise' f = bitwise' (swap f) := congr_arg _ <| funext fun _ => funext <| hf _
     _ = swap (bitwise' f) := bitwise'_swap hf'
 #align nat.bitwise_comm Nat.bitwise'_comm
+
+lemma bitwise_eq_bitwise' (f: Bool → Bool → Bool ) (h: f false false = false) :
+  bitwise f = bitwise' f := by
+  funext x y
+  have ⟨k, hk⟩ : ∃ k, k = x+y := by use x+y
+  induction' k using Nat.strongInductionOn with k ih generalizing x y
+  by_cases h1: x= 0
+  <;> by_cases h2: y= 0
+  · unfold bitwise
+    simp [h1, h2, h]
+  · unfold bitwise bitwise' ; simp[h1]; aesop
+  · unfold bitwise ; simp [h2]; aesop
+  · rw [← bit_decomp x, ← bit_decomp y]
+    unfold bitwise
+    rw [bit_decomp, bit_decomp, mod_two_of_bodd, mod_two_of_bodd]
+    nth_rewrite 8 [← bit_decomp x]
+    nth_rewrite 8 [← bit_decomp y]
+    rw [bitwise'_bit (show _ by simp[h])]
+    cases' hx: bodd x
+    <;> cases' hy: bodd y
+    <;> ring_nf
+    <;> rw [ih (div2 x + div2 y)
+            (by rw [hk, div2_val, div2_val]
+                simp[add_lt_add (bitwise_rec_lemma h1) (bitwise_rec_lemma h2)])
+            (x/2) (y/2) (by simp[div2_val])]
+    <;> simp [h1, h2, hx, hy, bit_val, div2_val, mul_comm, add_comm, h]
+    <;> aesop
+
+theorem bitwise_lt (hx : x < 2^n) (hy: y< 2^n) (h: f false false = false): bitwise f x y < 2^n := by
+  rw [bitwise_eq_bitwise' f h]
+  apply lt_of_testBit n (by simp [testBit_bitwise' h x y n,
+                                  testBit_eq_false_of_lt hx,
+                                  testBit_eq_false_of_lt hy, h])
+                        (testBit_two_pow_self n)
+  intro j hj; rw [testBit_bitwise' h x y j]
+  rw [testBit_eq_false_of_lt (lt_trans hx (pow_lt_pow_of_lt_right (by decide) hj))]
+  rw [testBit_eq_false_of_lt (lt_trans hy (pow_lt_pow_of_lt_right (by decide) hj)), h]
+  rw [testBit_two_pow_of_ne (ne_of_lt hj)]
+
+lemma append_lt (hx : x < 2^n) (hy: y< 2^m) : y <<< n ||| x < 2^(n+m) := by
+  have H: x < 2^(n+m) ∧ y*2^n < 2^(n+m):= by
+    apply And.intro
+    · exact lt_of_lt_of_le hx ((pow_add 2 n m).symm ▸ le_mul_of_one_le_right' (by linarith))
+    · rw [pow_add, mul_comm]; simp[hy, mul_lt_mul_left (two_pow_pos n)]
+  simp only [lor, shiftLeft_eq]; exact bitwise_lt H.2 H.1 rfl
 
 theorem lor'_comm (n m : ℕ) : lor' n m = lor' m n :=
   bitwise'_comm Bool.or_comm rfl n m

@@ -181,6 +181,12 @@ theorem bit_zero : bit false 0 = 0 :=
   rfl
 #align nat.bit_zero Nat.bit_zero
 
+@[simp] lemma bit_0 (b : Bool) : Nat.bit b 0 = b.toNat := by
+  cases' b <;> simp
+
+@[simp] lemma bit_1 (b : Bool) (_ : Nat) : Nat.bit b 1 = 2 + b.toNat:= by
+  cases' b <;> simp
+
 /--`shiftl' b m n` performs a left shift of `m` `n` times
  and adds the bit `b` as the least significant bit each time.
  Returns the corresponding natural number-/
@@ -220,6 +226,11 @@ theorem shiftr_zero : ∀ n, shiftr 0 n = 0 := by
   case succ =>
     rw [shiftr, div2, IH]
     rfl
+
+theorem shiftRight_eq_shiftr: n >>> m = Nat.shiftr n m := by
+  simp only [HShiftRight.hShiftRight, ShiftRight.shiftRight]
+  induction' m with m hm generalizing n
+  <;> simp [Nat.shiftr, Nat.shiftRight, Nat.div2_val, *]
 
 /-- `testBit m n` returns whether the `(n+1)ˢᵗ` least significant bit is `1` or `0`-/
 def testBit (m n : ℕ) : Bool :=
