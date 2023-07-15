@@ -64,9 +64,12 @@ def Summable (f : β → α) : Prop :=
   ∃ a, HasSum f a
 #align summable Summable
 
-/-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise -/
+/-- `∑' i, f i` is the sum of `f` it exists, or 0 otherwise. -/
 irreducible_def tsum {β} (f : β → α) :=
   if h : Summable f then
+  /- Note that the sum might not be uniquely defined if the topology is not separated.
+  When the support of `f` is finite, we make the most reasonable choice to use the finite sum over
+  the support. Otherwise, we choose arbitrarily an `a` satisfying `HasSum f a`. -/
     if (support f).Finite then finsum f
     else Classical.choose h
   else 0
