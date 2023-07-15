@@ -834,7 +834,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
 Solves the dependent type problem where `p = G.Walk.nil` typechecks
 only if `p` has defeq endpoints. -/
 inductive Nil : {v w : V} → G.Walk v w → Prop
-| nil {u : V} : Nil (nil : G.Walk u u)
+  | nil {u : V} : Nil (nil : G.Walk u u)
 
 @[simp] lemma nil_nil : (nil : G.Walk u u).Nil := Nil.nil
 
@@ -861,8 +861,7 @@ lemma not_nil_iff {p : G.Walk v w} :
 
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort _}
-    (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
-        motive (cons h q) not_nil_cons)
+    (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
     (p : G.Walk u w) : (hp : ¬ p.Nil) → motive p hp :=
   match p with
   | nil => fun hp => absurd .nil hp
