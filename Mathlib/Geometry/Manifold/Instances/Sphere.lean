@@ -235,6 +235,9 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
+  -- Porting note : added to work around cancel_denoms and nlinarith failures
+  have duh : ‖y.val‖ ^ 2 = 1 - a ^ 2 := by
+    rw [←Submodule.coe_norm, pythag]; ring
   -- two facts which will be helpful for clearing denominators in the main calculation
   have ha : 1 - a ≠ 0 := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
@@ -248,31 +251,27 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     nlinarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
+    -- Porting note: used to be `field_simp; simp only [Submodule.coe_norm] at *; nlinarith`
+    -- but cancel_denoms does not seem to be working and
+    -- nlinarith cannot close the goal even if it did
+    -- clear_value because field_simp does zeta-reduction (by design?) and is annoying
+    clear_value a y
     field_simp
-    simp only [Submodule.coe_norm] at *
-    nlinarith
-  -- have help (b : ℝ) (w : E) (h' : (2 ^ 2 / (1 - b) ^ 2 * ‖w‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - b)) = 1) :
-  --     (2 ^ 2 / (1 - b) ^ 2 * ‖w‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - b) ^ 2 * ‖w‖ ^ 2 - 4) = b := by
-  --   field_simp
-  --   trans (1 - b) ^ 2 * (b * (2 ^ 2 * ‖w‖ ^ 2 + 4 * (1 - b) ^ 2))
-  --   · congr
-  --     simp only [Submodule.coe_norm] at *
-  --     nlinarith
-  --   ring
+    rw [div_eq_iff, duh]
+    · ring
+    · apply mul_ne_zero_iff.mpr ⟨?_,ha⟩
+      convert this using 2; rw [Submodule.coe_norm]; ring
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
     -- Porting note: field_simp is not behaving as in ml3
+    -- see porting note above; previous proof used trans and was comparably complicated
+    clear_value a y
     field_simp
-    trans (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
-    · congr
-      simp only [Submodule.coe_norm] at *
-      nlinarith
-    -- rw [split, inner_add_right, inner_smul_right, y.property, add_zero, real_inner_self_eq_norm_sq, hv, one_pow]
-    -- conv_rhs => rw [←h₁]
-    -- change (1 - a) ^ 2 * (a * (4 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2)) = a
-    -- rw [←mul_add]
-    --simp [y.property]
-    ring
-  -- deduce the result
+    rw [div_eq_iff, duh]
+    ring_nf
+    -- Porting note: shouldn't repeat myself but getting the coercion right is annoying
+    apply mul_ne_zero_iff.mpr ⟨?_,?_⟩
+    · convert this using 2; rw [Submodule.coe_norm]; ring
+    · apply pow_ne_zero _ ha
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
   · simp [inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
@@ -280,6 +279,11 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
     · rw [split, add_comm]
       ac_rfl
+  -- Porting note: this branch did not exit in ml3
+  · rw [split, add_comm]
+    congr!
+    dsimp
+    rw [one_smul]
 #align stereo_left_inv stereo_left_inv
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
@@ -288,12 +292,14 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
     have : (4 : ℝ) + 4 ≠ 0 := by nlinarith
     field_simp
     ring
-  convert congr_arg (fun c => c • w) this
+  convert congr_arg (· • w) this
   · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
       orthogonalProjection_orthogonalComplement_singleton_eq_zero v
     have h₂ : orthogonalProjection (ℝ ∙ v)ᗮ w = w := orthogonalProjection_mem_subspace_eq_self w
-    have h₃ : innerSL _ v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-    have h₄ : innerSL _ v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
+    -- Porting note: was innerSL _ and now just inner
+    have h₃ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+    -- Porting note: was innerSL _ and now just inner
+    have h₄ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
     simp [h₁, h₂, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
   · simp
 #align stereo_right_inv stereo_right_inv
@@ -533,7 +539,10 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
     LinearMap.range (mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) v : TangentSpace (𝓡 n) v →L[ℝ] E) =
       (ℝ ∙ (v : E))ᗮ := by
   rw [((contMDiff_coe_sphere v).mdifferentiableAt le_top).mfderiv]
-  simp only [stereographic_neg_apply, fderivWithin_univ,
+  dsimp [chartAt]
+  -- rw [LinearIsometryEquiv.toHomeomorph_symm]
+  -- rw [←LinearIsometryEquiv.coe_toHomeomorph]
+  simp only [chartAt, stereographic_neg_apply, fderivWithin_univ,
     LinearIsometryEquiv.toHomeomorph_symm, LinearIsometryEquiv.coe_toHomeomorph,
     LinearIsometryEquiv.map_zero, mfld_simps]
   let U := (OrthonormalBasis.fromOrthogonalSpanSingleton (𝕜 := ℝ) n
@@ -547,8 +556,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   rw [(this.comp 0 U.symm.to_continuous_linear_equiv.has_fderiv_at).fderiv]
   convert
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
-      (ℝ ∙ (↑(-v) : E))ᗮ.Subtype using
-    1
+      (ℝ ∙ (↑(-v) : E))ᗮ.Subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
   -- we must show `submodule.span ℝ {v} = submodule.span ℝ {-v}`
@@ -608,10 +616,12 @@ instance : LieGroup (𝓡 1) circle where
     have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ∞ fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
-    suffices h₁ : ContMDiff _ _ _ (Prod.map c c)
+    -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
+    suffices h₁ : ContMDiff
+        (𝓘(ℝ, EuclideanSpace ℝ (Fin 1)).prod 𝓘(ℝ, EuclideanSpace ℝ (Fin 1)))
+        (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ⊤ (Prod.map c c)
     · apply h₂.comp h₁
-    -- this elaborates much faster with `apply`
-      apply ContMDiff.prod_map <;>
+    · apply ContMDiff.prod_map <;>
       exact contMDiff_coe_sphere
   smooth_inv := by
     apply ContMDiff.codRestrict_sphere
