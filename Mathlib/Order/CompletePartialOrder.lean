@@ -76,7 +76,7 @@ def Set.ToDirectedSet [Lattice α] [DecidableEq α] (s : Set α) : DirectedSet �
         · exact hFb.1
       · obtain ⟨hnFa,ha⟩ := hFa.2
         obtain ⟨hnFb,hb⟩ := hFb.2
-        use (by sorry)
+        use (Finset.Nonempty_union hnFa)
         rw [le_antisymm_iff]
         constructor
         · simp
