@@ -252,12 +252,6 @@ theorem testBit_two_pow_add (h : i < w) :
 theorem testBit_two_pow_add' (h : n < 2^w) : Nat.testBit (2^w + n) w = true :=
   mul_one (2^w) ▸ Bool.toNat_true ▸ (@testBit_two_pow_mul_toNat_add n w true h)
 
-theorem eq_of_testBit_eq_lt
-  (h0: x < 2^i) (h1: y< 2^i) (h: ∀ (j : Nat), j < i → x.testBit j = y.testBit j): x = y := by
-  apply eq_of_testBit_eq
-  intro k
-  apply Nat.lt_ge_by_cases (h k) (fun h2 => by simp [testBit_eq_false_of_lt sorry, *])
-
 /-- Generic method to create a natural number by appending bits tail-recursively.
 It takes a boolean function `f` on each bit and `z` the starting point and the number of bits `i`.
 It is almost always specialized with `z = 0` and `i = w`; the length of the binary representation.
