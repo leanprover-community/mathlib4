@@ -21,7 +21,8 @@ and it has been tricky to clean this up as this file was in core Lean 3.
 
 By themselves, these classes are not good replacements for the `Monoid` / `Group` etc structures
 provided by mathlib, as they are not discoverable by `simp` unlike the current lemmas due to there
-being little to index on.
+being little to index on. The Wiki page linked above describes an algebraic normalizer, but it was
+never implemented in Lean 3.
 
 ## Porting notes:
 This file is ancient, and it would be good to replace it with a clean version
