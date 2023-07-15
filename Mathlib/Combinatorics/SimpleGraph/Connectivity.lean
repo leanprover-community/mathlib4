@@ -886,7 +886,7 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   snd := p.sndOfNotNil hp
   is_adj := p.adj_sndOfNotNil hp
 
-def edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
+lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = ⟦(v, p.sndOfNotNil hp)⟧ := rfl
 
 @[simp] lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
