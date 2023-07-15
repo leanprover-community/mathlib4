@@ -284,7 +284,7 @@ variable {R}
 
 @[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
-  starAddEquiv.map_eq_zero_iff
+  starAddEquiv.map_eq_zero_iff (M := R)
 #align star_eq_zero star_eq_zero
 
 theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
