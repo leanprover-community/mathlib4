@@ -977,7 +977,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ←@Finite.toFinset_subset_toFinset _ _ _ hs ht, ←Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2 ; simp
+    convert Iff.rfl using 2; simp
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
   simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]
