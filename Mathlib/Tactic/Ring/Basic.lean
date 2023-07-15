@@ -637,8 +637,9 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
   | .const _ _ =>
     -- it must be positive because it is a nonzero nat literal
     have lit : Q(ℕ) := a.appArg!
-    let p : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-    some (q(const_pos $lit $p) : Expr)
+    have : $a =Q Nat.rawCast $lit := ⟨⟩
+    have p : Nat.ble 1 $lit =Q true := ⟨⟩
+    by exact some (q(const_pos $lit $p))
   | .mul (e := ea₁) vxa₁ _ va₂ => do
     let pa₁ ← vxa₁.evalPos
     let pa₂ ← va₂.evalPos
@@ -781,7 +782,9 @@ Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
 partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
   match va, vb with
-  | _, .const 1 => ⟨_, va, (q(pow_one_cast $a) : Expr)⟩
+  | va, .const 1 =>
+    have : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
+    ⟨_, va, by exact q(pow_one_cast $a)⟩
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
     | none => evalPowAtom sα (.sum .zero) vb
@@ -827,9 +830,9 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
 /-- Create a new cache for `α` by doing the necessary instance searches. -/
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
   return {
-    rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
-    dα := (← trySynthInstanceQ (q(DivisionRing $α) : Q(Type u))).toOption
-    czα := (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption }
+    rα := (← trySynthInstanceQ q(Ring $α)).toOption
+    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
+    czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
