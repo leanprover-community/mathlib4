@@ -84,13 +84,11 @@ namespace EuclideanGeometry
 
 variable {a b c d x y z : F} {r R : ℝ}
 
-#check Pi.one_apply
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
     HasFDerivAt (inversion c R)
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
-  replace hx : ‖x‖ ^ 2 ≠ 0 := by simpa using hx
   have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x)
   · simp_rw [inversion, dist_eq_norm, div_pow, div_eq_mul_inv]
     have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
@@ -100,11 +98,11 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
   refine this.congr_fderiv (LinearMap.ext_on_codisjoint
     (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
     (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
-  · field_simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq]
-    
-  -- ext y
-  -- simp [reflection_orthogonal_apply, reflection_singleton_apply]
-  
-  
--- (((hR.div (hx.dist ℝ hc hne) (dist_ne_zero.2 hne)).pow _).smul (hx.sub hc)).add hc
+  · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹
+    · rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
+    simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq,
+      two_mul, this, div_eq_mul_inv, mul_add, add_smul, mul_pow]
+  · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
+      reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
+
 end EuclideanGeometry
