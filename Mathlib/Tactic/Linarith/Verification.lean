@@ -32,10 +32,9 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
   | 1 => q(1 : $α)
   | k+2 =>
     have lit : Q(ℕ) := mkRawNatLit n
-    let k : Q(ℕ) := mkRawNatLit k
-    let _x : Q(Nat.AtLeastTwo $lit) :=
-      (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
-    q(OfNat.ofNat $lit)
+    have k : Q(ℕ) := mkRawNatLit k
+    have : $lit =Q $k + 2 := ⟨⟩
+    by exact q(OfNat.ofNat $lit)
 
 end Qq
 

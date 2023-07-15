@@ -915,7 +915,7 @@ def ExProd.evalInv (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
   match va with
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
-    match NormNum.evalInv.core q($a⁻¹) a ra dα czα with
+    match NormNum.evalInv.core q($a⁻¹) a ra dα czα (⟨⟩ : $a⁻¹ =Q $a⁻¹) with
     | some rc =>
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
       let ⟨c, pc⟩ := rc.toRawEq
