@@ -182,7 +182,7 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
   --have 𝓕meas : NullMeasurableSet 𝓕 volume := h𝓕.nullMeasurableSet
   rw [@QuotientVolumeEqVolumePreimage.eq_map_restrict (s := 𝓕) (G := Subgroup.opposite Γ) _
     _ _ _ _ _ _ meas_𝓕 h𝓕 μ _]
-  haveI : Fact (volume 𝓕 < ⊤) := by
+  have : Fact (volume 𝓕 < ⊤) := by
     apply Fact.mk
     convert h
     rw [covolume_eq_volume]
@@ -227,9 +227,27 @@ theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
     QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ where
       projection_respects_measure := by
         intro 𝓕 h𝓕 meas_𝓕 U meas_U
---- STOPPED HERE 7/10/23
+        let π := @QuotientGroup.mk G _ Γ
+        let μ' := Measure.map π (volume.restrict 𝓕)
+        suffices : μ U =  μ' U
+        · rw [this]
+          rw [Measure.map_apply]
+          · rw [Measure.restrict_apply]
+            · rfl
+            · exact @measurable_quotient_mk' _ _ (MulAction.orbitRel (Subgroup.opposite Γ) G) U
+                meas_U
+          · exact @measurable_quotient_mk' _ _ (MulAction.orbitRel (Subgroup.opposite Γ) G)
+          · exact meas_U
+        · have : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ' :=
+            quotientVolumeEqVolumePreimage_map_restrict (G := (Subgroup.opposite Γ)) G 𝓕 meas_𝓕 h𝓕
+          have : μ'.IsMulLeftInvariant :=
+            MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotient
 
 
+
+--- STOPPED HERE 7/14/23
+
+--- Key question: uniqueness of Haar measure of one is not assumed to be regular???
 
 end HaarIsQuotientVolumeEqVolumePreimage
 
@@ -252,7 +270,7 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar [Subgroup.
     [HasFundamentalDomain (Subgroup.opposite Γ) G] [IsMulRightInvariant (volume : Measure G)]
     (h : covolume (Subgroup.opposite Γ) G < ⊤) :
     μ = μ K • MeasureTheory.Measure.haarMeasure K := by
-  haveI : IsFiniteMeasure μ := QuotientVolumeEqVolumePreimage.Finite_quotient h
+  have : IsFiniteMeasure μ := QuotientVolumeEqVolumePreimage.Finite_quotient h
   rw [Measure.haarMeasure_unique μ K, Measure.smul_apply, Measure.haarMeasure_self]
   simp
 
@@ -265,6 +283,7 @@ the issue of the existence of a member of the positive compacts. )
 Maybe this is a new route to making Haar measure?
 ----/
 
+#exit
 
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is
@@ -328,7 +347,7 @@ theorem MeasurePreservingQuotientGroup.mk'' [Subgroup.Normal Γ]
     MeasurePreserving (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
       (c • MeasureTheory.Measure.haarMeasure K) := by
   set μ := c • haarMeasure K --Measure.map (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
-  haveI : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := sorry
+  have : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := sorry
   --   quotientVolumeEqVolumePreimage_map_restrict (Subgroup.opposite Γ) G 𝓕 meas_𝓕 h𝓕
   convert MeasurePreservingQuotientGroup.mk' K 𝓕 h𝓕 meas_𝓕 h𝓕_finite μ
 --   trans (c : ENNReal) • haarMeasure K
