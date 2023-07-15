@@ -7,6 +7,13 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Projection
 
+/-!
+# Orthogonal complements of affine subspaces
+
+In this file, the `orthogonal` complement of an affine subspace `P` is defined, and basic API is
+established. The API is made to emulate that of `Submodule.orthogonal`.
+-/
+
 
 open Affine
 
@@ -153,6 +160,14 @@ lemma orthogonal_of_parallel_eq (s t : AffineSubspace 𝕜 P) (b : P) (h : s ∥
   exact h.direction_eq
 
 end AffineSubspace
+
+/-!
+### Orthogonality of affine subspaces
+
+In this section we define `AffineSubspace.IsOrtho`.
+
+The API emulates that of `Submodule.IsOrtho`.
+-/
 
 
 namespace AffineSubspace
