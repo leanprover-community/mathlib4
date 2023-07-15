@@ -104,18 +104,15 @@ instance : EssSurj (Functor.mapArrow (Qh : _ ⥤ DerivedCategory C)) := by
   dsimp only [Qh, DerivedCategory, HomotopyCategory.qis]
   infer_instance
 
-lemma Qh_obj_surjective (X : DerivedCategory C) :
-    ∃ (K : HomotopyCategory _ _), X = Qh.obj K := by
-  obtain ⟨K, rfl⟩ := MorphismProperty.Q'_obj_surjective  (HomotopyCategory.qis C) X
-  exact ⟨_, rfl⟩
+instance : EssSurj (Qh : _ ⥤ DerivedCategory C) :=
+  Localization.essSurj _ (HomotopyCategory.qis _)
 
 def Q : CochainComplex C ℤ ⥤ DerivedCategory C :=
   (HomotopyCategory.quotient _ _ ) ⋙ Qh
 
-lemma Q_obj_surjective (X : DerivedCategory C) :
-    ∃ (K : CochainComplex C ℤ), X = Q.obj K := by
-  obtain ⟨⟨K⟩, rfl⟩ := Qh_obj_surjective X
-  exact ⟨_, rfl⟩
+instance : EssSurj (Q : _ ⥤ DerivedCategory C) := by
+  dsimp only [Q]
+  infer_instance
 
 instance : (Q : CochainComplex C ℤ ⥤ _).Additive := by
   dsimp only [Q]
@@ -165,6 +162,12 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     refine' isomorphic_distinguished _ (Qh.map_distinguished _ _) _
       (e ≪≫ (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+lemma induction_Q_obj (P : DerivedCategory C → Prop)
+    (hP₁ : ∀ (X : CochainComplex C ℤ), P (Q.obj X))
+    (hP₂ : ∀ ⦃X Y : DerivedCategory C⦄ (_ : X ≅ Y), P X → P Y)
+    (X : DerivedCategory C) : P X :=
+  hP₂ (Q.objObjPreimageIso X) (hP₁ _)
 
 variable (C)
 
@@ -269,18 +272,18 @@ lemma isIso_iff {K L : DerivedCategory C} (f : K ⟶ L) :
   . intro hf n
     infer_instance
   . intro hf
-    obtain ⟨K, rfl⟩ := Qh_obj_surjective K
-    obtain ⟨L, rfl⟩ := Qh_obj_surjective L
-    obtain ⟨Z, g, s, hs, rfl⟩ :=
-      MorphismProperty.HasLeftCalculusOfFractions.fac Qh
-        (HomotopyCategory.qis C) f
-    have : IsIso (Qh.map g) := by
-      rw [isIso_Qh_map_iff, HomotopyCategory.mem_qis_iff]
-      intro n
-      rw [← NatIso.isIso_map_iff (homologyFunctorFactorsh C n) g]
-      simp only [Functor.map_comp] at hf
-      exact @IsIso.of_isIso_comp_right _ _ _ _ _ _ _ _ (hf n)
-    infer_instance
+    let g := (Functor.mapArrow Qh).objPreimage (Arrow.mk f)
+    refine' ((MorphismProperty.RespectsIso.isomorphisms (DerivedCategory C)).arrow_iso_iff
+      ((Functor.mapArrow Qh).objObjPreimageIso (Arrow.mk f))).1 _
+    change IsIso (Qh.map g.hom)
+    rw [isIso_Qh_map_iff, HomotopyCategory.mem_qis_iff]
+    intro n
+    have e : Arrow.mk ((homologyFunctor C n).map f) ≅
+        Arrow.mk ((HomotopyCategory.newHomologyFunctor _ _ n).map g.hom) :=
+      ((homologyFunctor C n).mapArrow.mapIso
+        (((Functor.mapArrow Qh).objObjPreimageIso (Arrow.mk f)).symm)) ≪≫
+        ((Functor.mapArrowFunctor _ _).mapIso (homologyFunctorFactorsh C n)).app (Arrow.mk g.hom)
+    exact ((MorphismProperty.RespectsIso.isomorphisms C).arrow_iso_iff e).1 (hf n)
 
 lemma isZero_iff (K : DerivedCategory C) :
     IsZero K ↔ ∀ (n : ℤ), IsZero ((homologyFunctor C n).obj K) := by

@@ -122,19 +122,19 @@ lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
 
 lemma exists_iso_Q_obj_of_isLE (X : DerivedCategory C) (n : ℤ) [X.IsLE n] :
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyLE n), Nonempty (X ≅ Q.obj K) := by
-  obtain ⟨X, rfl⟩ := Q_obj_surjective X
-  have : X.IsLE n := by
+  have : (Q.objPreimage X).IsLE n := by
     rw [← isLE_Q_obj_iff]
-    infer_instance
-  exact ⟨X.truncLE n, inferInstance, ⟨(asIso (Q.map (X.truncLEι n))).symm⟩⟩
+    exact isLE_of_iso (Q.objObjPreimageIso X).symm n
+  exact ⟨(Q.objPreimage X).truncLE n, inferInstance,
+    ⟨(Q.objObjPreimageIso X).symm ≪≫ (asIso (Q.map ((Q.objPreimage X).truncLEι n))).symm⟩⟩
 
 lemma exists_iso_Q_obj_of_isGE (X : DerivedCategory C) (n : ℤ) [X.IsGE n] :
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n), Nonempty (X ≅ Q.obj K) := by
-  obtain ⟨X, rfl⟩ := Q_obj_surjective X
-  have : X.IsGE n := by
+  have : (Q.objPreimage X).IsGE n := by
     rw [← isGE_Q_obj_iff]
-    infer_instance
-  exact ⟨X.truncGE n, inferInstance, ⟨(asIso (Q.map (X.truncGEπ n)))⟩⟩
+    exact isGE_of_iso (Q.objObjPreimageIso X).symm n
+  exact ⟨(Q.objPreimage X).truncGE n, inferInstance,
+    ⟨(Q.objObjPreimageIso X).symm ≪≫ (asIso (Q.map ((Q.objPreimage X).truncGEπ n)))⟩⟩
 
 lemma exists_iso_Q_obj_of_isGE_of_isLE (X : DerivedCategory C) (a b : ℤ) [X.IsGE a] [X.IsLE b] :
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE a) (_ : K.IsStrictlyLE b),

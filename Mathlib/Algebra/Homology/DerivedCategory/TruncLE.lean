@@ -424,9 +424,14 @@ noncomputable abbrev truncLE (X : DerivedCategory C) (n : ℤ) := (functorTruncL
 
 lemma isZero_homology_truncLE (X : DerivedCategory C) (n i : ℤ) (hi : n < i) :
     IsZero ((homologyFunctor C i).obj (X.truncLE n)) := by
-  obtain ⟨K, rfl⟩ := Q_obj_surjective X
-  exact IsZero.of_iso (K.isZero_homology_truncLE n i hi)
-    ((QCompFunctorTruncLECompHomologyFunctorIso C n i).app K)
+  revert n i hi X
+  apply induction_Q_obj
+  . intro K n i hi
+    exact IsZero.of_iso (K.isZero_homology_truncLE n i hi)
+      ((QCompFunctorTruncLECompHomologyFunctorIso C n i).app K)
+  . intros X Y e hX n i hi
+    exact IsZero.of_iso (hX n i hi) ((homologyFunctor _ _).mapIso
+      ((functorTruncLE C n).mapIso e.symm))
 
 noncomputable abbrev truncLEι (X : DerivedCategory C) (n : ℤ) :=
   (natTransTruncLEι C n).app X
@@ -446,13 +451,19 @@ lemma truncLEι_app (K : CochainComplex C ℤ) (n : ℤ) :
 
 lemma isIso_homologyMap_truncLEι (X : DerivedCategory C) (n i : ℤ) (hi : i ≤ n) :
     IsIso ((homologyFunctor C i).map (X.truncLEι n)) := by
-  obtain ⟨K, rfl⟩ := Q_obj_surjective X
-  rw [truncLEι_app, Functor.map_comp]
-  have : IsIso ((homologyFunctor C i).map ((functorTruncLEFactors C n).hom.app K)) := inferInstance
-  have : IsIso ((homologyFunctor C i).map (Q.map (K.truncLEι n))) := by
-    erw [NatIso.isIso_map_iff (homologyFunctorFactors C i) (K.truncLEι n)]
-    exact K.isIso_homologyMap_truncLEι n i hi
-  apply IsIso.comp_isIso
+  revert n i hi X
+  apply induction_Q_obj
+  . intro K n i hi
+    rw [truncLEι_app, Functor.map_comp]
+    have : IsIso ((homologyFunctor C i).map ((functorTruncLEFactors C n).hom.app K)) := inferInstance
+    have : IsIso ((homologyFunctor C i).map (Q.map (K.truncLEι n))) := by
+      erw [NatIso.isIso_map_iff (homologyFunctorFactors C i) (K.truncLEι n)]
+      exact K.isIso_homologyMap_truncLEι n i hi
+    apply IsIso.comp_isIso
+  . intros X Y e hX n i hi
+    exact ((MorphismProperty.RespectsIso.isomorphisms C).arrow_iso_iff
+      ((homologyFunctor C i).mapArrow.mapIso
+        ((NatTrans.functorArrow (natTransTruncLEι C n)).mapIso e))).1 (hX n i hi)
 
 lemma isIso_truncLEι_iff (X : DerivedCategory C) (n : ℤ) :
     IsIso (X.truncLEι n) ↔ X.IsLE n := by
@@ -497,9 +508,13 @@ instance (X : DerivedCategory C) (n : ℤ) [X.IsLE n] : IsIso (X.truncLEι n) :=
   infer_instance
 
 instance (X : DerivedCategory C) (n : ℤ) : (X.truncLE n).IsLE n := by
-  obtain ⟨K, rfl⟩ := Q_obj_surjective X
-  have e : _ ≅ Q.obj (K.truncLE n) := (functorTruncLEFactors C n).app K
-  apply isLE_of_iso e.symm n
+  revert X
+  apply induction_Q_obj
+  . intro K
+    have e : _ ≅ Q.obj (K.truncLE n) := (functorTruncLEFactors C n).app K
+    apply isLE_of_iso e.symm n
+  . intros X Y e hX
+    exact isLE_of_iso ((functorTruncLE C n).mapIso e) n
 
 lemma right_fac_of_isStrictlyLE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) (n : ℤ)
     [X.IsStrictlyLE n] :

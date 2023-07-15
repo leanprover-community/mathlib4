@@ -373,4 +373,16 @@ lemma isIso_iff_of_arrow_mk_iso {C : Type _} [Category C] {X₁ X₂ Y₁ Y₂ :
   {f : X₁ ⟶ X₂} {g : Y₁ ⟶ Y₂} (e : Arrow.mk f ≅ Arrow.mk g) :
   IsIso f ↔ IsIso g := isIso_iff_of_arrow_iso e
 
+namespace NatTrans
+
+@[simps]
+def functorArrow {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (τ : F ⟶ G) :
+    C ⥤ Arrow D where
+  obj X := Arrow.mk (τ.app X)
+  map f :=
+    { left := F.map f
+      right := G.map f }
+
+end NatTrans
+
 end CategoryTheory

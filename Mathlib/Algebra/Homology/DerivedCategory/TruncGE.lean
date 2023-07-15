@@ -426,9 +426,14 @@ noncomputable abbrev truncGE (X : DerivedCategory C) (n : ℤ) := (functorTruncG
 
 lemma isZero_homology_truncGE (X : DerivedCategory C) (n i : ℤ) (hi : i < n) :
     IsZero ((homologyFunctor C i).obj (X.truncGE n)) := by
-  obtain ⟨K, rfl⟩ := Q_obj_surjective X
-  exact IsZero.of_iso (K.isZero_homology_truncGE n i hi)
-    ((QCompFunctorTruncGECompHomologyFunctorIso C n i).app K)
+  revert n i hi X
+  apply induction_Q_obj
+  . intro K n i hi
+    exact IsZero.of_iso (K.isZero_homology_truncGE n i hi)
+      ((QCompFunctorTruncGECompHomologyFunctorIso C n i).app K)
+  . intros X Y e hX n i hi
+    exact IsZero.of_iso (hX n i hi) ((homologyFunctor _ _).mapIso
+      ((functorTruncGE C n).mapIso e.symm))
 
 noncomputable abbrev truncGEπ (X : DerivedCategory C) (n : ℤ) :=
   (natTransTruncGEπ C n).app X
@@ -448,13 +453,19 @@ lemma truncGEπ_app (K : CochainComplex C ℤ) (n : ℤ) :
 
 lemma isIso_homologyMap_truncGEπ (X : DerivedCategory C) (n i : ℤ) (hi : n ≤ i) :
     IsIso ((homologyFunctor C i).map (X.truncGEπ n)) := by
-  obtain ⟨K, rfl⟩ := Q_obj_surjective X
-  rw [truncGEπ_app, Functor.map_comp]
-  have : IsIso ((homologyFunctor C i).map ((functorTruncGEFactors C n).inv.app K)) := inferInstance
-  have : IsIso ((homologyFunctor C i).map (Q.map (K.truncGEπ n))) := by
-    erw [NatIso.isIso_map_iff (homologyFunctorFactors C i) (K.truncGEπ n)]
-    exact K.isIso_homologyMap_truncGEπ n i hi
-  apply IsIso.comp_isIso
+  revert n i hi X
+  apply induction_Q_obj
+  . intro K n i hi
+    rw [truncGEπ_app, Functor.map_comp]
+    have : IsIso ((homologyFunctor C i).map ((functorTruncGEFactors C n).inv.app K)) := inferInstance
+    have : IsIso ((homologyFunctor C i).map (Q.map (K.truncGEπ n))) := by
+      erw [NatIso.isIso_map_iff (homologyFunctorFactors C i) (K.truncGEπ n)]
+      exact K.isIso_homologyMap_truncGEπ n i hi
+    apply IsIso.comp_isIso
+  . intros X Y e hX n i hi
+    exact ((MorphismProperty.RespectsIso.isomorphisms C).arrow_iso_iff
+      ((homologyFunctor C i).mapArrow.mapIso
+        ((NatTrans.functorArrow (natTransTruncGEπ C n)).mapIso e))).1 (hX n i hi)
 
 lemma isIso_truncGEπ_iff (X : DerivedCategory C) (n : ℤ) :
     IsIso (X.truncGEπ n) ↔ X.IsGE n := by
@@ -499,9 +510,13 @@ instance (X : DerivedCategory C) (n : ℤ) [X.IsGE n] : IsIso (X.truncGEπ n) :=
   infer_instance
 
 instance (X : DerivedCategory C) (n : ℤ) : (X.truncGE n).IsGE n := by
-  obtain ⟨K, rfl⟩ := Q_obj_surjective X
-  have e : _ ≅ Q.obj (K.truncGE n) := (functorTruncGEFactors C n).app K
-  apply isGE_of_iso e.symm n
+  revert X
+  apply induction_Q_obj
+  . intro K
+    have e : _ ≅ Q.obj (K.truncGE n) := (functorTruncGEFactors C n).app K
+    apply isGE_of_iso e.symm n
+  . intros X Y e hX
+    exact isGE_of_iso ((functorTruncGE C n).mapIso e) n
 
 lemma left_fac_of_isStrictlyGE (X Y : CochainComplex C ℤ) (f : Q.obj X ⟶ Q.obj Y) (n : ℤ)
     [Y.IsStrictlyGE n] :

@@ -174,4 +174,10 @@ instance instEssSurjId : EssSurj (𝟭 C) where
 theorem Iso.map_essSurj {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
   mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
 
+instance instEssSurjComp {E : Type _} [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) [EssSurj F] [EssSurj G] :
+    EssSurj (F ⋙ G) where
+  mem_essImage Z := ⟨F.objPreimage (G.objPreimage Z),
+    ⟨G.mapIso (F.objObjPreimageIso (G.objPreimage Z)) ≪≫ G.objObjPreimageIso Z⟩⟩
+
 end CategoryTheory
