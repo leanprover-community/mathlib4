@@ -605,7 +605,9 @@ theorem mfderiv_coe_sphere_injective {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v
       (ℝ ∙ (↑(-v) : E))ᗮ.subtypeL (U.symm 0) := by
     convert hasFDerivAt_stereoInvFunAux_comp_coe (-v : E)
     simp
-  rw [(this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv]
+  have := congr_arg FunLike.coe <| (this.comp 0 U.symm.toContinuousLinearEquiv.hasFDerivAt).fderiv
+  refine Eq.subst this.symm ?_
+  rw [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe]
   simpa using Subtype.coe_injective
 #align mfderiv_coe_sphere_injective mfderiv_coe_sphere_injective
 
@@ -656,4 +658,3 @@ theorem contMDiff_expMapCircle : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ expMapCir
 #align cont_mdiff_exp_map_circle contMDiff_expMapCircle
 
 end circle
-
