@@ -22,8 +22,10 @@ space in this file.
 inversion, derivative
 -/
 
+local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See Lean 4 issue #2220
+
 open Metric Function AffineMap Set AffineSubspace
-open scoped Topology
+open scoped Topology RealInnerProductSpace
 
 variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -82,9 +84,27 @@ namespace EuclideanGeometry
 
 variable {a b c d x y z : F} {r R : ℝ}
 
+#check Pi.one_apply
 /-- Formula for the Fréchet derivative of `EuclideanGeometry.inversion c R`. -/
 theorem hasFDerivAt_inversion (hx : x ≠ c) :
-    HasFDerivAt (inversion c R) ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
-  refine ?_
-
+    HasFDerivAt (inversion c R)
+      ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
+  rcases add_left_surjective c x with ⟨x, rfl⟩
+  replace hx : ‖x‖ ^ 2 ≠ 0 := by simpa using hx
+  have : HasFDerivAt (inversion c R) (_ : F →L[ℝ] F) (c + x)
+  · simp_rw [inversion, dist_eq_norm, div_pow, div_eq_mul_inv]
+    have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
+    have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul
+      (R ^ 2)
+    exact (B.smul A).add_const c
+  refine this.congr_fderiv (LinearMap.ext_on_codisjoint
+    (Submodule.isCompl_orthogonal_of_completeSpace (K := ℝ ∙ x)).codisjoint
+    (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
+  · field_simp [reflection_orthogonalComplement_singleton_eq_neg, real_inner_self_eq_norm_sq]
+    
+  -- ext y
+  -- simp [reflection_orthogonal_apply, reflection_singleton_apply]
+  
+  
+-- (((hR.div (hx.dist ℝ hc hne) (dist_ne_zero.2 hne)).pow _).smul (hx.sub hc)).add hc
 end EuclideanGeometry

@@ -54,3 +54,4 @@ lean_lib ImportGraph where
 
 lean_exe graph where
   root := `ImportGraph.Main
+  supportInterpreter := true

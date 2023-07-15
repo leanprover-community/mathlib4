@@ -747,6 +747,10 @@ theorem reflection_orthogonal : reflection Kᗮ = .trans (reflection K) (.neg _)
 
 variable {K}
 
+theorem reflection_singleton_apply (u v : E) :
+    reflection (𝕜 ∙ u) v = 2 • (⟪u, v⟫ / ((‖u‖ : 𝕜) ^ 2)) • u - v := by
+  rw [reflection_apply, orthogonalProjection_singleton, ofReal_pow]
+
 /-- A point is its own reflection if and only if it is in the subspace. -/
 theorem reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by
   rw [← orthogonalProjection_eq_self_iff, reflection_apply, sub_eq_iff_eq_add', ← two_smul 𝕜,
