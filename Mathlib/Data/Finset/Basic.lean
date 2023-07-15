@@ -1455,7 +1455,7 @@ theorem Nonempty_union {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :
   Nonempty.mono (subset_union_left s t) h
 
 theorem union_Nonempty {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
-    Nonempty.mono (subset_union_right s t) h
+  Nonempty.mono (subset_union_right s t) h
 
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl

@@ -384,7 +384,8 @@ theorem coe_mul : ↑(r * p) = (r : ℝ≥0∞) * p :=
 #noalign ennreal.coe_bit1
 
 @[simp, norm_cast] -- porting note: new
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
 
 -- porting note: todo: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
@@ -699,7 +700,7 @@ theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 #align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
 
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.ofReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   ofReal_coe_nat n
 
 @[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.nat_ne_top n
@@ -722,7 +723,7 @@ theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.toReal (OfNat.ofNat n) = OfNat.ofNat n :=
+    ENNReal.toReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   toReal_nat n
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff

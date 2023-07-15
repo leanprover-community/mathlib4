@@ -256,9 +256,9 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
     ⟨Σ i, Fin (this i).choose, inferInstance, fun ⟨i, _⟩ => p i, fun ⟨i, _⟩ => hp i, fun ⟨i, j⟩ =>
       (this i).choose_spec.choose j,
       ⟨(LinearEquiv.ofBijective (DirectSum.coeLinearMap _) h).symm.trans <|
-          (Dfinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
+          (DFinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
             (DirectSum.sigmaLcurryEquiv R).symm.trans
-              (Dfinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ _)⟩⟩
+              (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ _)⟩⟩
   cases' i with i j
   simp only
 #align module.equiv_direct_sum_of_is_torsion Module.equiv_directSum_of_isTorsion
