@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module data.hash_map
-! leanprover-community/mathlib commit 2220b0cbab795e73674b8191170b0cc68c6b54a8
+! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 
