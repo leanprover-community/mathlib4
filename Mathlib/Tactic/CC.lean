@@ -3030,7 +3030,7 @@ def mkUsingHsCore (cfg : CCConfig) : TacticM CCState := do
   let (_, c) ← CCM.run (ctx.forM fun dcl => do
     unless dcl.isImplementationDetail do
       if (← isProp dcl.type) then
-       add dcl.type dcl.toExpr 0) { state := (mkCore cfg) }
+       add dcl.type dcl.toExpr 0) { state := mkCore cfg }
   return c.state
 #align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
