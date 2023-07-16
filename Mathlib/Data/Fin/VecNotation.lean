@@ -202,10 +202,13 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   `cons_val_succ`, because `1 : Fin 1 = 0 : Fin 1`.
 -/
 @[simp]
-theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u := by
-  rw [← Fin.succ_zero_eq_one, cons_val_succ]
+theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead u :=
   rfl
 #align matrix.cons_val_one Matrix.cons_val_one
+
+@[simp]
+theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
+  rfl
 
 @[simp]
 theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons x u i = x := by
