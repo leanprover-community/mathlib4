@@ -7,7 +7,7 @@ import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.LowerTopology
+import Mathlib.Topology.Order.LowerUpperTopology
 import Mathlib.Topology.Order.Basic
 
 /-!
@@ -28,8 +28,8 @@ topology does not coincide with the lower topology.
 - `UpperSetTopology.closure_eq_lowerClosure` - topological closure coincides with lower closure
 - `UpperSetTopology.Monotone_tfae` - the continuous functions are characterised as the monotone
   functions
-- `UpperSetTopology.Monotone_to_LowerTopology_Dual_Continuous` - a `Monotone` map from a `Preorder`
-  with the `UpperSetTopology` to the dual of a `Preorder` with the `LowerTopology` is `Continuous`
+- `UpperSetTopology.Monotone_to_UpperTopology_Continuous` - a `Monotone` map from a `Preorder`
+  with the `UpperSetTopology` to `Preorder` with the `UpperTopology` is `Continuous`
 
 ## Implementation notes
 
@@ -346,16 +346,14 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [UpperSetTopology 
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]
 
-lemma Monotone_to_LowerTopology_Dual_Continuous [TopologicalSpace α]
-    [UpperSetTopology α] [TopologicalSpace β] [LowerTopology β] {f : α → βᵒᵈ} (hf : Monotone f) :
+lemma Monotone_to_UpperTopology_Continuous [TopologicalSpace α]
+    [UpperSetTopology α] [TopologicalSpace β] [UpperTopology β] {f : α → β} (hf : Monotone f) :
     Continuous f := by
   rw [continuous_def]
   intro s hs
   rw [IsOpen_iff_IsUpperSet]
   apply IsUpperSet.preimage _ hf
-  rw [← isLowerSet_preimage_toDual_iff]
-  apply LowerTopology.isLowerSet_of_isOpen
-  exact hs
+  apply UpperTopology.isUpperSet_of_isOpen hs
 
 end maps
 
