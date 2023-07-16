@@ -159,7 +159,6 @@ let (pols, na) := ← match pol.getAppFnArgs with
   | _ => return ([], ``le_rfl)
 let once := pols.zip (← mv.applyConst na)
 return (← once.mapM fun x => cDegCore x db).join
-return (← once.mapM fun x => cDegCore x db).join
 
 /-- Allows the syntax expressions
 * `compute_degree_le`,
