@@ -11,6 +11,16 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.Calculus.BumpFunction.Basic
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.SmoothTransition
+/-!
+# Smooth bump functions in inner product spaces
+
+In this file we prove that a real inner product space has smooth bump functions,
+see `hasContDiffBump_of_innerProductSpace`.
+
+## Keywords
+
+smooth function, bump function, inner product space
+-/
 
 open Function Real
 open scoped Topology
