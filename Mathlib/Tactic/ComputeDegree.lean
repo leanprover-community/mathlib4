@@ -73,10 +73,6 @@ theorem nat_cast_le (n : Nat) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cas
 theorem zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
-theorem deg {d : Nat} {f : R[X]} (hf : natDegree f ≤ d) : degree (f) ≤ d := by
-  exact degree_le_of_natDegree_le hf
-
-
 end semiring
 
 section ring
