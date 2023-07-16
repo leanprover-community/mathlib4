@@ -70,8 +70,8 @@ natDegree_pow_le.trans (Nat.mul_le_mul rfl.le ‹_›)
 
 theorem C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 theorem nat_cast_le (n : Nat) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
-theorem zero_le : natDegree (↑0 : R[X]) ≤ 0 := natDegree_zero.le
-theorem one_le : natDegree (↑1 : R[X]) ≤ 0 := natDegree_one.le
+theorem zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
+theorem one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
 end semiring
 
@@ -180,6 +180,17 @@ match pol.getAppFnArgs with
   -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
   | _ => mkAppOptM ``le_rfl #[none, none, ← mkNatDegree pol]
 
+/-- Allows the syntax expressions
+* `compute_degree_le`,
+* `compute_degree_le !`,
+* `compute_degree_le -debug`
+* `compute_degree_le ! - debug`.
+-/
+syntax (name := computeDegreeLE) "compute_degree_le" "!"? "-debug"? : tactic
+
+/--  Allows writing `compute_degree_le!` with no space preceding `!`. -/
+macro "compute_degree_le!" dbg:"-debug"? : tactic => `(tactic| compute_degree_le ! $[-debug%$dbg]?)
+
 /--
 `compute_degree_le` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
 
@@ -195,7 +206,7 @@ Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption
 There is also a "debug-mode", where the tactic prints some information.
 This is activated by using `compute_degree_le -debug` or `compute_degree_le! -debug`.
 -/
-elab (name := computeDegreeLE) "compute_degree_le" debug:"-debug"? : tactic => focus do
+elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) => focus do
   let tgt := ← getMainTarget
   let (isNatDeg?, lhs, rhs, R, instSR) := ← isDegLE tgt
   let goal := ← getMainGoal
@@ -223,13 +234,9 @@ elab (name := computeDegreeLE) "compute_degree_le" debug:"-debug"? : tactic => f
   -- in the remaining goal, carried around by `new[1]`, we find and clear the hypothesis `ineq`
   let ineq := ← new[1]!.withContext ineq[0]!.findDecl?
   setGoals [← (new[1]!).clear ineq.get!.fvarId]
-  evalTactic (← `(tactic| conv_lhs => norm_num))
+  if str.isSome then evalTactic (← `(tactic| norm_num <;> try assumption))
+                else evalTactic (← `(tactic| conv_lhs => norm_num))
 
-@[inherit_doc computeDegreeLE]
-elab (name := computeDegreeLE!) "compute_degree_le!" debug:"-debug"? : tactic => focus do
-  if debug.isSome then
-    evalTactic (← `(tactic| compute_degree_le -debug <;> norm_num <;> try assumption))
-  else
-    evalTactic (← `(tactic| compute_degree_le <;> norm_num <;> try assumption))
+
 
 end Mathlib.Tactic.ComputeDegree
