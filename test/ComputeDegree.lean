@@ -14,6 +14,7 @@ example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCas
 /--  This example flows through all the matches in `direct` with a `degree` goal. -/
 example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
+  set k := f with _h₀
   compute_degree_le!
 
 /-!  The following examples exhaust all the match-leaves in `direct`. -/
