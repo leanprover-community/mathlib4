@@ -31,12 +31,14 @@ section
 variable (C)
 
 /-- Class for having all cofiltered limits of a given size. -/
+@[pp_with_univ]
 class HasCofilteredLimitsOfSize : Prop where
   /-- For all filtered types of size `w`, we have limits -/
   HasLimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsCofiltered I], HasLimitsOfShape I C
 #align category_theory.limits.has_cofiltered_limits_of_size CategoryTheory.Limits.HasCofilteredLimitsOfSize
 
 /-- Class for having all filtered colimits of a given size. -/
+@[pp_with_univ]
 class HasFilteredColimitsOfSize : Prop where
   /-- For all filtered types of a size `w`, we have colimits -/
   HasColimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsFiltered I], HasColimitsOfShape I C
@@ -57,4 +59,3 @@ instance (priority := 100) hasColimitsOfShape_of_has_filtered_colimits
 #align category_theory.limits.has_colimits_of_shape_of_has_filtered_colimits CategoryTheory.Limits.hasColimitsOfShape_of_has_filtered_colimits
 
 end CategoryTheory.Limits
-

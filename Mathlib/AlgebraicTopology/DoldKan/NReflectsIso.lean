@@ -74,9 +74,9 @@ theorem compatibility_N₂_N₁_karoubi :
   refine' CategoryTheory.Functor.ext (fun P => _) fun P Q f => _
   · refine' HomologicalComplex.ext _ _
     · ext n
+      · rfl
       · dsimp
         simp only [karoubi_PInfty_f, comp_id, PInfty_f_naturality, id_comp, eqToHom_refl]
-      . rfl
     · rintro _ n (rfl : n + 1 = _)
       ext
       have h := (AlternatingFaceMapComplex.map P.p).comm (n + 1) n

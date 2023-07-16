@@ -44,7 +44,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
   · exact mem_of_superset hmem' (disjoint_left.1 H)
   · simp only [Set.disjoint_left, not_forall, Classical.not_not] at H
     rcases H with ⟨c, ⟨hac, hcb⟩, hc⟩
-    have hsub' : Icc a b ⊆ ordConnectedComponent (tᶜ) a :=
+    have hsub' : Icc a b ⊆ ordConnectedComponent tᶜ a :=
       subset_ordConnectedComponent (left_mem_Icc.2 hab) hsub
     have hd : Disjoint s (ordConnectedSection (ordSeparatingSet s t)) :=
       disjoint_left_ordSeparatingSet.mono_right ordConnectedSection_subset

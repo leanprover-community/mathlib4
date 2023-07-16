@@ -43,6 +43,12 @@ to form the Dirichlet ring.
  * `sum_eq_iff_sum_smul_moebius_eq` for functions to an `AddCommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq` for functions to a `CommGroup`
  * `prod_eq_iff_prod_pow_moebius_eq_of_nonzero` for functions to a `CommGroupWithZero`
+ * And variants that apply when the equalities only hold on a set `S : Set ℕ` such that
+  `m ∣ n → n ∈ S → m ∈ S`:
+ * `sum_eq_iff_sum_mul_moebius_eq_on` for functions to a `CommRing`
+ * `sum_eq_iff_sum_smul_moebius_eq_on` for functions to an `AddCommGroup`
+ * `prod_eq_iff_prod_pow_moebius_eq_on` for functions to a `CommGroup`
+ * `prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero` for functions to a `CommGroupWithZero`
 
 ## Notation
 The arithmetic functions `ζ` and `σ` have Greek letter names, which are localized notation in
@@ -232,8 +238,8 @@ instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (Arithmeti
   { ArithmeticFunction.instAddMonoid,
     ArithmeticFunction.one with
     natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext ; simp  ;
-    natCast_succ := fun n => by ext x ; by_cases h : x = 1 <;> simp [h] }
+    natCast_zero := by ext; simp
+    natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
 -- porting note: have I aligned this correctly?
 #align nat.arithmetic_function.add_monoid_with_one Nat.ArithmeticFunction.instAddMonoidWithOne
 
@@ -561,8 +567,7 @@ theorem ppow_succ {f : ArithmeticFunction R} {k : ℕ} : f.ppow (k + 1) = f.pmul
   ext x
   simp_rw [ppow_apply (Nat.succ_pos k), pow_succ] -- porting note: was `rw [..., pow_succ]`
   induction k <;> simp
-  . exact pow_one _       -- porting note: added
-  . exact pow_succ'' _ _  -- porting note: added
+  · exact pow_succ'' _ _  -- porting note: added
 #align nat.arithmetic_function.ppow_succ Nat.ArithmeticFunction.ppow_succ
 
 theorem ppow_succ' {f : ArithmeticFunction R} {k : ℕ} {kpos : 0 < k} :
@@ -613,19 +618,19 @@ theorem map_prod {ι : Type _} [CommMonoidWithZero R] (g : ι → ℕ) {f : Nat.
 theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
-  ⟨by simp [h], fun {m n} cop => by cases h ; rename_i j h; simp [h cop]⟩
+  ⟨by simp [h], fun {m n} cop => by cases h; rename_i j h; simp [h cop]⟩
 #align nat.arithmetic_function.is_multiplicative.nat_cast Nat.ArithmeticFunction.IsMultiplicative.nat_cast
 
 theorem int_cast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- porting note: was `by simp [cop, h]`
-  ⟨by simp [h], fun {m n} cop => by cases h ; rename_i j h; simp [h cop]⟩
+  ⟨by simp [h], fun {m n} cop => by cases h; rename_i j h; simp [h cop]⟩
 #align nat.arithmetic_function.is_multiplicative.int_cast Nat.ArithmeticFunction.IsMultiplicative.int_cast
 
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hg : g.IsMultiplicative) : IsMultiplicative (f * g) :=
   ⟨by -- porting note was `simp [hf, hg]`.
-      have f1 := hf.left ; have g1 := hg.left
+      have f1 := hf.left; have g1 := hg.left
       simp only [mul_apply, divisorsAntidiagonal_one, ZeroHom.toFun_eq_coe, sum_singleton]
       rw [f1, g1, mul_one], by
     simp only [mul_apply]
@@ -660,22 +665,19 @@ theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicati
           rw [← hcd.1.1, h.1, Nat.gcd_mul_left,
             cop.coprime_mul_left.coprime_mul_right_right.gcd_eq_one, mul_one]
       · trans Nat.gcd (a1 * a2) (a2 * b2)
-        ·
-          rw [mul_comm, Nat.gcd_mul_left, cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one,
+        · rw [mul_comm, Nat.gcd_mul_left, cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one,
             mul_one]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.1.1, h.2, mul_comm, Nat.gcd_mul_left,
             cop.coprime_mul_right.coprime_mul_left_right.gcd_eq_one, mul_one]
       · trans Nat.gcd (b1 * b2) (a1 * b1)
-        ·
-          rw [mul_comm, Nat.gcd_mul_right,
+        · rw [mul_comm, Nat.gcd_mul_right,
             cop.coprime_mul_right.coprime_mul_left_right.symm.gcd_eq_one, one_mul]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.2.1, h.1, mul_comm c1 d1, Nat.gcd_mul_left,
             cop.coprime_mul_right.coprime_mul_left_right.symm.gcd_eq_one, mul_one]
       · trans Nat.gcd (b1 * b2) (a2 * b2)
-        ·
-          rw [Nat.gcd_mul_right, cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one,
+        · rw [Nat.gcd_mul_right, cop.coprime_mul_left.coprime_mul_right_right.symm.gcd_eq_one,
             one_mul]
         · rw [← hcd.1.1, ← hcd.2.1] at cop
           rw [← hcd.2.1, h.2, Nat.gcd_mul_right,
@@ -1084,8 +1086,8 @@ end CommRing
 
 /-- Möbius inversion for functions to an `add_comm_group`. -/
 theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
-    (∀ n : ℕ, 0 < n → (∑ i in n.divisors, f i) = g n) ↔
-      ∀ n : ℕ, 0 < n → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+    (∀ n > 0, ∑ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd = f n := by
   let f' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else f x, if_pos rfl⟩
   let g' : ArithmeticFunction R := ⟨fun x => if x = 0 then 0 else g x, if_pos rfl⟩
   trans (ζ : ArithmeticFunction ℤ) • f' = g'
@@ -1123,8 +1125,8 @@ theorem sum_eq_iff_sum_smul_moebius_eq [AddCommGroup R] {f g : ℕ → R} :
 
 /-- Möbius inversion for functions to a `Ring`. -/
 theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
-    (∀ n : ℕ, 0 < n → (∑ i in n.divisors, f i) = g n) ↔
-      ∀ n : ℕ, 0 < n → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
+    (∀ n > 0, ∑ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq]
   apply forall_congr'
   refine' fun a => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
@@ -1133,16 +1135,16 @@ theorem sum_eq_iff_sum_mul_moebius_eq [Ring R] {f g : ℕ → R} :
 
 /-- Möbius inversion for functions to a `CommGroup`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq [CommGroup R] {f g : ℕ → R} :
-    (∀ n : ℕ, 0 < n → (∏ i in n.divisors, f i) = g n) ↔
-      ∀ n : ℕ, 0 < n → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
+    (∀ n > 0, ∏ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n :=
   @sum_eq_iff_sum_smul_moebius_eq (Additive R) _ _ _
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq Nat.ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq
 
 /-- Möbius inversion for functions to a `CommGroupWithZero`. -/
 theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : ℕ → R}
     (hf : ∀ n : ℕ, 0 < n → f n ≠ 0) (hg : ∀ n : ℕ, 0 < n → g n ≠ 0) :
-    (∀ n : ℕ, 0 < n → (∏ i in n.divisors, f i) = g n) ↔
-      ∀ n : ℕ, 0 < n → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n := by
+    (∀ n > 0, ∏ i in n.divisors, f i = g n) ↔
+      ∀ n > 0, ∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst = f n := by
   refine'
       Iff.trans
         (Iff.trans (forall_congr' fun n => _)
@@ -1163,6 +1165,92 @@ theorem prod_eq_iff_prod_pow_moebius_eq_of_nonzero [CommGroupWithZero R] {f g : 
     rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 #align nat.arithmetic_function.prod_eq_iff_prod_pow_moebius_eq_of_nonzero Nat.ArithmeticFunction.prod_eq_iff_prod_pow_moebius_eq_of_nonzero
+
+/-- Möbius inversion for functions to an `add_comm_group`, where the equalities only hold on a
+well-behaved set. -/
+theorem sum_eq_iff_sum_smul_moebius_eq_on [AddCommGroup R] {f g : ℕ → R}
+    (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
+    (∀ n > 0, n ∈ s → (∑ i in n.divisors, f i) = g n) ↔
+      ∀ n > 0, n ∈ s → (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+  constructor
+  · intro h
+    let G := fun (n:ℕ) => (∑ i in n.divisors, f i)
+    intro n hn hnP
+    suffices ∑ d in n.divisors, μ (n/d) • G d = f n from by
+      rw [Nat.sum_divisorsAntidiagonal' (f:= fun x y => μ x • g y), ←this, sum_congr rfl]
+      intro d hd
+      rw [←h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
+    rw [←Nat.sum_divisorsAntidiagonal' (f:= fun x y => μ x • G y)]
+    apply sum_eq_iff_sum_smul_moebius_eq.mp _ n hn
+    intro _ _; rfl
+  · intro h
+    let F := fun (n:ℕ) => ∑ x : ℕ × ℕ in n.divisorsAntidiagonal, μ x.fst • g x.snd
+    intro n hn hnP
+    suffices ∑ d in n.divisors, F d = g n from by
+      rw [←this, sum_congr rfl]
+      intro d hd
+      rw [←h d (Nat.pos_of_mem_divisors hd) $ hs d n (Nat.dvd_of_mem_divisors hd) hnP]
+    apply sum_eq_iff_sum_smul_moebius_eq.mpr _ n hn
+    intro _ _; rfl
+
+theorem sum_eq_iff_sum_smul_moebius_eq_on' [AddCommGroup R] {f g : ℕ → R}
+    (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) (hs₀ : 0 ∉ s) :
+    (∀ n ∈ s, (∑ i in n.divisors, f i) = g n) ↔
+     ∀ n ∈ s, (∑ x in n.divisorsAntidiagonal, μ x.fst • g x.snd) = f n := by
+  have : ∀ P : ℕ → Prop, ((∀ n ∈ s, P n) ↔ (∀ n > 0, n ∈ s → P n)) := fun P ↦ by
+    refine' forall_congr' (fun n ↦ ⟨fun h _ ↦ h, fun h hn ↦ h _ hn⟩)
+    contrapose! hs₀
+    simpa [nonpos_iff_eq_zero.mp hs₀] using hn
+  simpa only [this] using sum_eq_iff_sum_smul_moebius_eq_on s hs
+
+/-- Möbius inversion for functions to a `Ring`, where the equalities only hold on a well-behaved
+set. -/
+theorem sum_eq_iff_sum_mul_moebius_eq_on [Ring R] {f g : ℕ → R}
+    (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
+    (∀ n > 0, n ∈ s → (∑ i in n.divisors, f i) = g n) ↔
+      ∀ n > 0, n ∈ s →
+        (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
+  rw [sum_eq_iff_sum_smul_moebius_eq_on s hs]
+  apply forall_congr'
+  intro a; refine' imp_congr_right _
+  refine' fun _ => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
+  rw [zsmul_eq_mul]
+
+/-- Möbius inversion for functions to a `CommGroup`, where the equalities only hold on a
+well-behaved set. -/
+theorem prod_eq_iff_prod_pow_moebius_eq_on [CommGroup R] {f g : ℕ → R}
+    (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) :
+    (∀ n > 0, n ∈ s → (∏ i in n.divisors, f i) = g n) ↔
+      ∀ n > 0, n ∈ s → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n :=
+  @sum_eq_iff_sum_smul_moebius_eq_on (Additive R) _ _ _ s hs
+
+/-- Möbius inversion for functions to a `CommGroupWithZero`, where the equalities only hold on
+a well-behaved set. -/
+theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
+    (s : Set ℕ) (hs : ∀ m n, m ∣ n → n ∈ s → m ∈ s) {f g : ℕ → R}
+    (hf : ∀ n > 0, f n ≠ 0) (hg : ∀ n > 0, g n ≠ 0):
+    (∀ n > 0, n ∈ s → (∏ i in n.divisors, f i) = g n) ↔
+      ∀ n > 0, n ∈ s → (∏ x : ℕ × ℕ in n.divisorsAntidiagonal, g x.snd ^ μ x.fst) = f n := by
+  refine'
+      Iff.trans
+        (Iff.trans (forall_congr' fun n => _)
+          (@prod_eq_iff_prod_pow_moebius_eq_on Rˣ _
+            (fun n => if h : 0 < n then Units.mk0 (f n) (hf n h) else 1)
+            (fun n => if h : 0 < n then Units.mk0 (g n) (hg n h) else 1)
+            s hs) )
+        (forall_congr' fun n => _) <;>
+    refine' imp_congr_right fun hn => _
+  · dsimp
+    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+      prod_congr rfl _]
+    intro x hx
+    rw [dif_pos (Nat.pos_of_mem_divisors hx), Units.coeHom_apply, Units.val_mk0]
+  · dsimp
+    rw [dif_pos hn, ← Units.eq_iff, ← Units.coeHom_apply, map_prod, Units.val_mk0,
+      prod_congr rfl _]
+    intro x hx
+    rw [dif_pos (Nat.pos_of_mem_divisors (Nat.snd_mem_divisors_of_mem_antidiagonal hx)),
+      Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 
 end SpecialFunctions
 

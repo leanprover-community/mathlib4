@@ -35,7 +35,8 @@ instance Pi.uniformSpace : UniformSpace (∀ i, α i) :=
     Eq.symm toTopologicalSpace_iInf
 #align Pi.uniform_space Pi.uniformSpace
 
-theorem Pi.uniformity : 𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a => (a.1 i, a.2 i)) <| 𝓤 (α i) :=
+theorem Pi.uniformity :
+    𝓤 (∀ i, α i) = ⨅ i : ι, (Filter.comap fun a => (a.1 i, a.2 i)) (𝓤 (α i)) :=
   iInf_uniformity
 #align Pi.uniformity Pi.uniformity
 

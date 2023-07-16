@@ -20,6 +20,70 @@ This file sets up the basic `positivity` extensions tagged with the `@[positivit
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq Function
 
+section ite
+variable [Zero α] (p : Prop) [Decidable p] {a b : α}
+
+private lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b :=
+by by_cases p <;> simp [*]
+
+private lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
+by by_cases p <;> simp [*]
+
+private lemma ite_nonneg_of_pos_of_nonneg [Preorder α] (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
+ite_nonneg _ ha.le hb
+
+private lemma ite_nonneg_of_nonneg_of_pos [Preorder α] (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b :=
+ite_nonneg _ ha hb.le
+
+private lemma ite_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by by_cases p <;> simp [*]
+
+private lemma ite_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) :
+  ite p a b ≠ 0 :=
+ite_ne_zero _ ha.ne' hb
+
+private lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
+  ite p a b ≠ 0 :=
+ite_ne_zero _ ha hb.ne'
+
+end ite
+
+/-- The `positivity` extension which identifies expressions of the form `ite p a b`,
+such that `positivity` successfully recognises both `a` and `b`. -/
+@[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
+  let .app (.app (.app (.app (f : Q(Prop → $α → $α)) (p : Q(Prop))) _) (a : Q($α))) (b : Q($α))
+    ← withReducible (whnf e) | throwError "not ite"
+  let ra ← core zα pα a; let rb ← core zα pα b
+  let _a ← synthInstanceQ (q(Decidable $p) : Q(Type))
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
+  match ra, rb with
+  | .positive pa, .positive pb =>
+    pure (.positive (q(ite_pos $p $pa $pb) : Expr))
+  | .positive pa, .nonnegative pb =>
+    let _b ← synthInstanceQ (q(Preorder $α) : Q(Type u))
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 ≤ $b) := pb
+    pure (.nonnegative (q(ite_nonneg_of_pos_of_nonneg $p $pa' $pb') : Expr))
+  | .nonnegative pa, .positive pb =>
+    let _b ← synthInstanceQ (q(Preorder $α) : Q(Type u))
+    have pa' : Q(by clear! «$pα»; exact 0 ≤ $a) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.nonnegative (q(ite_nonneg_of_nonneg_of_pos $p $pa' $pb') : Expr))
+  | .nonnegative pa, .nonnegative pb =>
+    pure (.nonnegative (q(ite_nonneg $p $pa $pb) : Expr))
+  | .positive pa, .nonzero pb =>
+    let _b ← synthInstanceQ (q(Preorder $α) : Q(Type u))
+    have pa' : Q(by clear! «$pα»; exact 0 < $a) := pa
+    have pb' : Q(by clear! «$pα»; exact $b ≠ 0) := pb
+    pure (.nonzero (q(ite_ne_zero_of_pos_of_ne_zero $p $pa' $pb') : Expr))
+  | .nonzero pa, .positive pb =>
+    let _b ← synthInstanceQ (q(Preorder $α) : Q(Type u))
+    have pa' : Q(by clear! «$pα»; exact $a ≠ 0) := pa
+    have pb' : Q(by clear! «$pα»; exact 0 < $b) := pb
+    pure (.nonzero (q(ite_ne_zero_of_ne_zero_of_pos $p $pa' $pb') : Expr))
+  | .nonzero pa, .nonzero pb =>
+    pure (.nonzero (q(ite_ne_zero $p $pa $pb) : Expr))
+  | _, _ => pure .none
+
 section LinearOrder
 variable [LinearOrder R] {a b c : R}
 
