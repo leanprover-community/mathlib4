@@ -186,7 +186,7 @@ There is also a "debug-mode", where the tactic prints some information.
 This is activated by using `compute_degree_le -debug` or `compute_degree_le! -debug`.
 -/
 elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) => focus do
-  let (isNatDeg?, lhs, _rhs, _R, _instSR) := ← isDegLE (← getMainTarget)
+  let (isNatDeg?, lhs) := ← isDegLE (← getMainTarget)
   let goal := ← getMainGoal
   let natDegGoal := ← match isNatDeg? with
     | true => do pure [goal]
