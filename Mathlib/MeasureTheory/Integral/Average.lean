@@ -621,9 +621,9 @@ theorem measure_le_set_laverage_pos (hμ : μ s ≠ 0) (hμ₁ : μ s ≠ ∞)
   obtain h | h := eq_or_ne (∫⁻ a in s, f a ∂μ) ∞
   · simpa [mul_top, hμ₁, laverage, h, top_div_of_ne_top hμ₁, pos_iff_ne_zero] using hμ
   have := measure_le_set_average_pos hμ hμ₁ (integrable_to_real_of_lintegral_ne_top hf h)
-  rw [←set_of_inter_eq_sep, ←measure.restrict_apply₀
+  rw [←setOf_inter_eq_sep, ←measure.restrict_apply₀
     (hf.ae_strongly_measurable.null_measurable_set_le ae_strongly_measurable_const)]
-  rw [←set_of_inter_eq_sep, ←measure.restrict_apply₀
+  rw [←setOf_inter_eq_sep, ←measure.restrict_apply₀
     (hf.ennreal_to_real.ae_strongly_measurable.null_measurable_set_le ae strongly_measurable_const),
     ←measure_diff_null (measure_eq_top_of_lintegral_ne_top hf h)] at this
   refine' this.trans_le (measure_mono _)
@@ -645,8 +645,8 @@ theorem measure_set_laverage_le_pos (hμ : μ s ≠ 0) (hs : NullMeasurableSet s
   rw [hfg] at hint
   have :=
     measure_set_average_le_pos hμ hμ₁ (integrable_to_real_of_lintegral_ne_top hg.e_measurable hint)
-  simp_rw [←set_of_inter_eq_sep, ←measure.restrict_apply₀' hs, hfg']
-  rw [←set_of_inter_eq_sep, ←measure.restrict_apply₀' hs, ←
+  simp_rw [←setOf_inter_eq_sep, ←measure.restrict_apply₀' hs, hfg']
+  rw [←setOf_inter_eq_sep, ←measure.restrict_apply₀' hs, ←
     measure_diff_null (measure_eq_top_of_lintegral_ne_top hg.ae_measurable hint)] at this
   refine' this.trans_le (measure_mono _)
   rintro x ⟨hfx, hx⟩
