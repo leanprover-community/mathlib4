@@ -134,29 +134,31 @@ let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM ppExpr
 if db then
   if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
   else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
-let once := ← match pol.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, f, g])  => return [f,g].zip (← mv.applyConst ``add)
-  | (``HSub.hSub, #[_, _, _, _, f, g])  => return [f,g].zip (← mv.applyConst ``sub)
-  | (``HMul.hMul, #[_, _, _, _, f, g])  => return [f,g].zip (← mv.applyConst ``mul)
-  | (``HPow.hPow, #[_, _, _, _, f, _n]) => return [f].zip (← mv.applyConst ``pow)
-  | (``Neg.neg,   #[_, _, f])           => return [f].zip (← mv.applyConst ``neg)
-  | (``Polynomial.X, _)                 => return [].zip (← mv.applyConst ``natDegree_X_le)
+let (pols, na) := ← match pol.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, f, g])  => return ([f,g], ``add)
+  | (``HSub.hSub, #[_, _, _, _, f, g])  => return ([f,g], ``sub)
+  | (``HMul.hMul, #[_, _, _, _, f, g])  => return ([f,g], ``mul)
+  | (``HPow.hPow, #[_, _, _, _, f, _n]) => return ([f], ``pow)
+  | (``Neg.neg,   #[_, _, f])           => return ([f], ``neg)
+  | (``Polynomial.X, _)                 => return ([], ``natDegree_X_le)
   --  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => return [].zip (← mv.applyConst ``zero_le)
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => return [].zip (← mv.applyConst ``one_le)
-  | (``OfNat.ofNat, _)                  => return [].zip (← mv.applyConst ``nat_cast_le)
-  | (``Nat.cast, _)                     => return [].zip (← mv.applyConst ``nat_cast_le)
-  | (``NatCast.natCast, _)              => return [].zip (← mv.applyConst ``nat_cast_le)
-  | (``Int.cast, _)                     => return [].zip (← mv.applyConst ``int_cast_le)
-  | (``IntCast.intCast, _)              => return [].zip (← mv.applyConst ``int_cast_le)
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => return ([], ``zero_le)
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => return ([], ``one_le)
+  | (``OfNat.ofNat, _)                  => return ([], ``nat_cast_le)
+  | (``Nat.cast, _)                     => return ([], ``nat_cast_le)
+  | (``NatCast.natCast, _)              => return ([], ``nat_cast_le)
+  | (``Int.cast, _)                     => return ([], ``int_cast_le)
+  | (``IntCast.intCast, _)              => return ([], ``int_cast_le)
   -- deal with `monomial` and `C`
   | (``FunLike.coe, #[_, _, _, _, polFun, _c]) => do match polFun.getAppFnArgs with
-    | (``Polynomial.monomial, _)        => return [].zip (← mv.applyConst ``natDegree_monomial_le)
-    | (``Polynomial.C, _)               =>  return [].zip (← mv.applyConst ``C_le)
+    | (``Polynomial.monomial, _)        => return ([], ``natDegree_monomial_le)
+    | (``Polynomial.C, _)               =>  return ([], ``C_le)
     | _ => do let ppP ← ppExpr polFun;
               throwError m!"'compute_degree_le' is not implemented for {ppP}"
   -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
-  | _ => return [].zip (← mv.applyConst ``le_rfl)
+  | _ => return ([], ``le_rfl)
+let once := pols.zip (← mv.applyConst na)
+return (← once.mapM fun x => cDegCore x db).join
 return (← once.mapM fun x => cDegCore x db).join
 
 /-- Allows the syntax expressions
