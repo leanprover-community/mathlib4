@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Author: Leonardo de Moura
+Authors: Leonardo de Moura
 
 ! This file was ported from Lean 3 source module init.data.sigma.lex
 ! leanprover-community/lean commit 9af482290ef68e8aaa5ead01aa7b09b7be7019fd
@@ -10,12 +10,16 @@ Author: Leonardo de Moura
 -/
 import Mathlib.Init.Data.Sigma.Basic
 
+/-!
+# Well-foundedness of orders of well-founded relations
+
+Porting note: many declarations that were here in mathlib3 have been moved to `Init.WF`
+in Lean 4 core. The ones below are all the exceptions.
+-/
+
 universe u v
 
 namespace PSigma
-
--- Porting note: many declarations that were here in mathlib3 have been moved to `Init.WF`
--- in Lean 4 core. The ones below are all the exceptions.
 
 section
 
