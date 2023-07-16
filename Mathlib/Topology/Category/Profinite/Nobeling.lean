@@ -3407,7 +3407,39 @@ lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈ StartingWithMax C o := by
   dsimp [StartingWithMax]
   refine' ⟨_,_,_⟩
-  · sorry
+  · intro h
+    apply l.prop
+    let m : Products (WithTop I) := ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩
+    have hlt : l.val = m.Tail
+    · simp only [Products.Tail, List.tail_cons, Subtype.coe_eta]
+    have hm : m.val ≠ []
+    · simp only [ne_eq, not_false_eq_true]
+    have hmh : m.val.head! = term I ho
+    · simp only [List.head!_cons]
+    rw [hlt, ← Products.max_eq_eval C hsC ho m hm hmh]
+    have hh : m.eval C ∈ Submodule.span ℤ (Products.eval C '' {q | q < m}) := h
+    have hmi := Submodule.apply_mem_span_image_of_mem_span (Linear_CC' C hsC ho) hh
+    suffices hmi' : (Linear_CC' C hsC ho) '' (Products.eval C '' {q | q < m}) ⊆
+        Products.eval (C' C ho) '' {q | q < m.Tail}
+    · exact Submodule.span_mono hmi' hmi
+    intro x hx
+    rw [← Set.image_comp] at hx
+    obtain ⟨y, hy⟩ := hx
+    -- let z : Products (WithTop I) := ⟨term I ho :: y.Tail.val, sorry⟩
+    -- have hz := Products.max_eq_eval C hsC ho z (by simp) (by simp)
+    -- by_cases hyt : y.val.head! = term I ho
+    refine' ⟨y.Tail, ⟨_, _⟩⟩
+    · rw [← hlt]
+      simp only [Set.mem_setOf_eq]
+      sorry
+    · rw [← hy.2]
+      dsimp
+      rw [Products.max_eq_eval C hsC ho _ ?_ ?_]
+      · sorry
+      · sorry
+    -- rw [← max_eq_eval_unapply C hsC ho]
+    -- rw [Finsupp.mem_span_image_iff_total] at hh ⊢
+    -- obtain ⟨c, ⟨hcmem, hcsum⟩⟩ := hh
   · simp only [not_false_eq_true]
   · dsimp [ord, term]
     simp only [Ordinal.typein_enum]
@@ -3614,7 +3646,7 @@ def GoodProducts.StartingWithMaxEquivGood' (h₁: ⊤ ≤ Submodule.span ℤ (Se
     StartingWithMax C o ≃ GoodProducts (C' C ho) :=
 { toFun := fun l ↦ ⟨MaxTail C l, maxTail_isGood C hC hsC ho l h₁⟩
   invFun := fun l ↦ ⟨⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩,
-    cons_o_mem_startingWithMax C ho l⟩
+    cons_o_mem_startingWithMax C hsC ho l⟩
   left_inv := by
     intro l
     dsimp
