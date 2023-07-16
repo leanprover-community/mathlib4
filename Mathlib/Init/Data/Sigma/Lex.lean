@@ -9,8 +9,8 @@ Author: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Data.Sigma.Basic
-import Leanbin.Init.Meta.Default
+import Mathlib.Init.Data.Sigma.Basic
+import Mathlib.Init.Meta.Default
 
 universe u v
 
@@ -56,8 +56,7 @@ theorem lex_accessible {a} (aca : Acc r a) (acb : ∀ a, WellFounded (s a)) :
             (fun (a₁ : α) (b₁ : β a₁) (a₂ : α) (b₂ : β a₂) (h : r a₁ a₂) (eq₂ : a₂ = xa)
                 (eq₃ : HEq b₂ xb) =>
               by subst eq₂; exact iha a₁ h b₁)
-            fun (a : α) (b₁ b₂ : β a) (h : s a b₁ b₂) (eq₂ : a = xa) (eq₃ : HEq b₂ xb) =>
-            by
+            fun (a : α) (b₁ b₂ : β a) (h : s a b₁ b₂) (eq₂ : a = xa) (eq₃ : HEq b₂ xb) => by
             subst eq₂
             have new_eq₃ := eq_of_hEq eq₃
             subst new_eq₃
@@ -162,8 +161,7 @@ theorem mk_skipLeft {α : Type u} {β : Type v} {b₁ b₂ : β} {s : β → β 
 end
 
 instance hasWellFounded {α : Type u} {β : α → Type v} [s₁ : WellFoundedRelation α]
-    [s₂ : ∀ a, WellFoundedRelation (β a)] : WellFoundedRelation (PSigma β)
-    where
+    [s₂ : ∀ a, WellFoundedRelation (β a)] : WellFoundedRelation (PSigma β) where
   R := Lex s₁.R fun a => (s₂ a).R
   wf := lex_wf s₁.wf fun a => (s₂ a).wf
 #align psigma.has_well_founded PSigma.hasWellFounded
