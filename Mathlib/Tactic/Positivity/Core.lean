@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Std.Lean.Parser
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.HaveI
 import Mathlib.Order.Basic
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Defs
@@ -171,7 +172,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       let _a ← synthInstanceQ q(StrictOrderedSemiring $α)
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
-      have p' : Nat.ble 1 $lit =Q true := ⟨⟩
+      haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
       pure (.positive q(@pos_of_isNat $α _ _ _ $p $p'))
     else
       let _a ← synthInstanceQ q(OrderedSemiring $α)
@@ -182,20 +183,20 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     let _a ← synthInstanceQ q(StrictOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
-    have p' : Nat.ble 1 $lit =Q true := ⟨⟩
-    pure (.nonzero (q(nz_of_isNegNat $p $p') : Expr))
+    haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+    pure (.nonzero q(nz_of_isNegNat $p $p'))
   | .isRat _i q n d p =>
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsRat $e $n $d) := p
     if 0 < q then
-      have w : decide (0 < $n) =Q true := ⟨⟩
+      haveI' w : decide (0 < $n) =Q true := ⟨⟩
       pure (.positive q(pos_of_isRat $p $w))
     else if q = 0 then -- should not be reachable, but just in case
-      let w : decide ($n = 0) =Q true := ⟨⟩
+      haveI' w : decide ($n = 0) =Q true := ⟨⟩
       pure (.nonnegative q(nonneg_of_isRat $p $w))
     else
-      have w : decide ($n < 0) =Q true := ⟨⟩
+      haveI' w : decide ($n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddMonoid`. -/

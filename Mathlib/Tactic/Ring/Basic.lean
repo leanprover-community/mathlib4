@@ -637,8 +637,8 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
   | .const _ _ =>
     -- it must be positive because it is a nonzero nat literal
     have lit : Q(ℕ) := a.appArg!
-    have : $a =Q Nat.rawCast $lit := ⟨⟩
-    have p : Nat.ble 1 $lit =Q true := ⟨⟩
+    haveI : $a =Q Nat.rawCast $lit := ⟨⟩
+    haveI p : Nat.ble 1 $lit =Q true := ⟨⟩
     by exact some (q(const_pos $lit $p))
   | .mul (e := ea₁) vxa₁ _ va₂ => do
     let pa₁ ← vxa₁.evalPos
@@ -717,7 +717,7 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       let ra := Result.ofRawRat za a ha
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
-      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) _ b lit rb q(CommSemiring.toSemiring) ra
+      let rc ← NormNum.evalPow.core q($a ^ $b) q($a) q($b) lit rb q(CommSemiring.toSemiring) ra
       let ⟨zc, hc⟩ ← rc.toRatNZ
       let ⟨c, pc⟩ := rc.toRawEq
       some ⟨c, .const zc hc, pc⟩
@@ -783,7 +783,7 @@ Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
   match va, vb with
   | va, .const 1 =>
-    have : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
+    haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
     ⟨_, va, by exact q(pow_one_cast $a)⟩
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩

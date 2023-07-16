@@ -7,6 +7,7 @@ import Std.Lean.Parser
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.Field.Basic
 import Qq
@@ -52,7 +53,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
     ← withReducible (whnf e) | throwError "not ite"
-  have : $e =Q ite $p $a $b := ⟨⟩
+  haveI' : $e =Q ite $p $a $b := ⟨⟩
   let ra ← core zα pα a; let rb ← core zα pα b
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   match ra, rb with
@@ -338,19 +339,19 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
-    have : $b =Q bit0 $m := ⟨⟩
+    haveI' : $b =Q bit0 $m := ⟨⟩
     let _a ← synthInstanceQ q(LinearOrderedRing $α)
-    have : $e =Q $a ^ $b := ⟨⟩
+    haveI' : $e =Q $a ^ $b := ⟨⟩
     assumeInstancesCommute
     pure (by exact .nonnegative q(pow_bit0_nonneg $a $m))
   orElse result do
     let ra ← core zα pα a
     let ofNonneg (pa : Q(0 ≤ $a)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
-      have : $e =Q $a ^ $b := ⟨⟩
+      haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (by exact .nonnegative (q(pow_nonneg $pa $b)))
     let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(OrderedSemiring $α)) : MetaM (Strictness zα pα e) := do
-      have : $e =Q $a ^ $b := ⟨⟩
+      haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       let _a ← synthInstanceQ q(NoZeroDivisors $α)
       pure (.nonzero (by exact q(pow_ne_zero $b $pa)))
@@ -358,7 +359,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     | .positive pa =>
       try
         let _a ← synthInstanceQ (q(StrictOrderedSemiring $α) : Q(Type u))
-        have : $e =Q $a ^ $b := ⟨⟩
+        haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
         pure (by exact .positive (q(pow_pos $pa $b)))
       catch e : Exception =>
@@ -419,7 +420,7 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   let pα' : Q(PartialOrder Nat) := q(inferInstance)
   let ra ← core zα' pα' a
   let _oα ← synthInstanceQ q(OrderedSemiring $α)
-  have : $e =Q Nat.cast $a := ⟨⟩
+  haveI' : $e =Q Nat.cast $a := ⟨⟩
   assumeInstancesCommute
   match ra with
   | .positive pa =>
@@ -439,17 +440,17 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
     let _oα ← synthInstanceQ (q(OrderedRing $α) : Q(Type u))
     let _nt ← synthInstanceQ (q(Nontrivial $α))
     assumeInstancesCommute
-    have : $e =Q Int.cast $a := ⟨⟩
+    haveI' : $e =Q Int.cast $a := ⟨⟩
     pure (.positive q(Int.cast_pos.mpr $pa))
   | .nonnegative pa =>
     let _oα ← synthInstanceQ (q(OrderedRing $α))
     let _nt ← synthInstanceQ (q(Nontrivial $α))
     assumeInstancesCommute
-    have : $e =Q Int.cast $a := ⟨⟩
+    haveI' : $e =Q Int.cast $a := ⟨⟩
     pure (.nonnegative q(Int.cast_nonneg.mpr $pa))
   | .nonzero pa =>
     let _oα ← synthInstanceQ (q(AddGroupWithOne $α) : Q(Type $u))
-    have : $e =Q Int.cast $a := ⟨⟩
+    haveI' : $e =Q Int.cast $a := ⟨⟩
     let _nt ← synthInstanceQ (q(CharZero $α) : Q(Prop))
     assumeInstancesCommute
     pure (.nonzero q(Int.cast_ne_zero.mpr $pa))
