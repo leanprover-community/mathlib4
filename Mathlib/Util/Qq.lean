@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Alex J. Best
 -/
 import Qq
+import Mathlib.Tactic.ToLevel
 
 /-!
 # Extra `Qq` helpers
@@ -27,3 +28,20 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
 theorem QE.rfl : @QE u α a a := ⟨⟩
 
 end Qq
+
+open scoped Qq
+
+/-- `Lean.toTypeExpr` with Qq support. -/
+def Lean.toTypeExprQ (α : Type u) [Lean.ToLevel.{u}] [Lean.ToExpr α] :
+  Q(Type $(Lean.toLevel.{u})) := Lean.toTypeExpr α
+
+/-- `Lean.toExpr` with Qq support. -/
+def Lean.toExprQ {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] (x : α) :
+  Q($(toTypeExprQ α)) := Lean.toExpr x
+
+/-- `Lean.toExpr` with Qq support. -/
+def Lean.ToExpr.mkQ.{u} {α : Type u} [Lean.ToLevel.{u}]
+    (toTypeExprQ : Q(Type $(Lean.toLevel.{u}))) (toExprQ : α → Q($toTypeExprQ)) :
+    ToExpr α where
+  toTypeExpr := toTypeExprQ
+  toExpr x := toExprQ x
