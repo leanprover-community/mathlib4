@@ -1052,7 +1052,7 @@ open scoped Classical
 variable {F : Type u} [Field F] (j : F)
 
 /-- For any element $j$ of a field $F$, there exists an elliptic curve over $F$
-with $j$-invariant equal to $j$. Its coefficients are written in an explicit way. -/
+with $j$-invariant equal to $j$. Its coefficients are given explicitly. -/
 noncomputable def ofJInvariant : EllipticCurve F := by
   by_cases hj0 : j = 0
   · by_cases hchar3 : (3 : F) = 0
@@ -1088,12 +1088,10 @@ lemma ofJInvariant_j : (ofJInvariant j).j = j := by
       simp only [ofJInvariant, hj0, hchar3, dite_true]
       have := ofJInvariant1728_j F
       rw [calc (1728 : F) = (3 : F) * (576 : F) := by norm_num, hchar3, zero_mul] at this
-      -- FIXME: 'exact this' does not work
-      sorry
+      convert this
     · have : Invertible (3 : F) := invertibleOfNonzero hchar3
       simp only [ofJInvariant, hj0, hchar3, dite_true, dite_false]
-      -- FIXME: 'exact ofJInvariant0_j F' does not work
-      sorry
+      convert ofJInvariant0_j F
   · by_cases hj1728 : j = 1728
     · have : Invertible (2 : F) := by
         apply invertibleOfNonzero
@@ -1102,13 +1100,11 @@ lemma ofJInvariant_j : (ofJInvariant j).j = j := by
         exact hj0 hj1728
       simp only [ofJInvariant, hj0, dite_false]
       simp only [hj1728, dite_true]
-      -- FIXME: 'exact ofJInvariant1728_j F' does not work
-      sorry
+      convert ofJInvariant1728_j F
     · have : Invertible j := invertibleOfNonzero hj0
       have : Invertible (j - 1728) := invertibleOfNonzero (Iff.mpr sub_ne_zero hj1728)
       simp only [ofJInvariant, hj0, hj1728, dite_false]
-      -- FIXME: 'exact ofJInvariant'_j j' does not work
-      sorry
+      convert ofJInvariant'_j j
 
 end ModelsWithJInvariant
 
