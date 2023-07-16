@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
 ! This file was ported from Lean 3 source module data.multiset.interval
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
+! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -33,48 +33,52 @@ open Finset DFinsupp Function
 
 open BigOperators Pointwise
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type _}
 
 namespace Multiset
 
-variable [DecidableEq α] (f g : Multiset α)
+variable [DecidableEq α] (s t : Multiset α)
 
 instance : LocallyFiniteOrder (Multiset α) :=
   LocallyFiniteOrder.ofIcc (Multiset α)
-    (fun f g =>
-      (Finset.Icc (Multiset.toDFinsupp f) (Multiset.toDFinsupp g)).map
+    (fun s t => (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
       Multiset.equivDFinsupp.toEquiv.symm.toEmbedding)
-    fun f g x => by simp
+    fun s t x => by simp
 
 theorem Icc_eq :
-    Finset.Icc f g =
-      (Finset.Icc (Multiset.toDFinsupp f) (Multiset.toDFinsupp g)).map
+    Finset.Icc s t = (Finset.Icc (toDFinsupp s) (toDFinsupp t)).map
       Multiset.equivDFinsupp.toEquiv.symm.toEmbedding :=
   rfl
 #align multiset.Icc_eq Multiset.Icc_eq
 
+theorem uIcc_eq :
+    uIcc s t =
+      (uIcc (toDFinsupp s) (toDFinsupp t)).map Multiset.equivDFinsupp.toEquiv.symm.toEmbedding :=
+  (Icc_eq _ _).trans <| by simp [uIcc]
+#align multiset.uIcc_eq Multiset.uIcc_eq
+
 theorem card_Icc :
-    (Finset.Icc f g).card = ∏ i in f.toFinset ∪ g.toFinset, (g.count i + 1 - f.count i) := by
+    (Finset.Icc s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) := by
   simp_rw [Icc_eq, Finset.card_map, DFinsupp.card_Icc, Nat.card_Icc, Multiset.toDFinsupp_apply,
     toDFinsupp_support]
 #align multiset.card_Icc Multiset.card_Icc
 
 theorem card_Ico :
-    (Finset.Ico f g).card = ∏ i in f.toFinset ∪ g.toFinset, (g.count i + 1 - f.count i) - 1 := by
+    (Finset.Ico s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 1 := by
   rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
 #align multiset.card_Ico Multiset.card_Ico
 
 theorem card_Ioc :
-    (Finset.Ioc f g).card = ∏ i in f.toFinset ∪ g.toFinset, (g.count i + 1 - f.count i) - 1 := by
+    (Finset.Ioc s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 1 := by
   rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
 #align multiset.card_Ioc Multiset.card_Ioc
 
 theorem card_Ioo :
-    (Finset.Ioo f g).card = ∏ i in f.toFinset ∪ g.toFinset, (g.count i + 1 - f.count i) - 2 := by
+    (Finset.Ioo s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 2 := by
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align multiset.card_Ioo Multiset.card_Ioo
 
-theorem card_Iic : (Finset.Iic f).card = ∏ i in f.toFinset, (f.count i + 1) := by
+theorem card_Iic : (Finset.Iic s).card = ∏ i in s.toFinset, (s.count i + 1) := by
   simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero, tsub_zero]
 #align multiset.card_Iic Multiset.card_Iic
 
