@@ -12,7 +12,6 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Lattice
-import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Instances.EReal
@@ -134,13 +133,13 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
     rintro _ ⟨a, rfl | rfl⟩ <;> [skip; apply H]
     by_cases h : ∃ a', ∀ b, a < b ↔ a' ≤ b
     · rcases h with ⟨a', ha'⟩
-      rw [(_ : Ioi a = Iio a'ᶜ)]
+      rw [(_ : Ioi a = (Iio a')ᶜ)]
       · exact (H _).compl
       simp [Set.ext_iff, ha']
     · rcases isOpen_iUnion_countable (fun a' : { a' : α // a < a' } => { b | a'.1 < b }) fun a' =>
           isOpen_lt' _ with ⟨v, ⟨hv⟩, vu⟩
       simp [Set.ext_iff] at vu
-      have : Ioi a = ⋃ x : v, Iio x.1.1ᶜ := by
+      have : Ioi a = ⋃ x : v, (Iio x.1.1)ᶜ := by
         simp [Set.ext_iff]
         refine' fun x => ⟨fun ax => _, fun ⟨a', ⟨h, _⟩, ax⟩ => lt_of_lt_of_le h ax⟩
         rcases (vu x).2 (by
@@ -293,7 +292,7 @@ instance (priority := 100) BorelSpace.countablyGenerated {α : Type _} [Topologi
 
 theorem MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
     {C : Set α → Prop} (h_open : ∀ U, IsOpen U → C U)
-    (h_compl : ∀ t, MeasurableSet t → C t → C (tᶜ))
+    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
     (h_union :
       ∀ f : ℕ → Set α,
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :
@@ -311,6 +310,10 @@ variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [T
 theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
+
+instance (priority := 500) {s : Set α} [HasCountableSeparatingOn α IsOpen s] :
+    HasCountableSeparatingOn α MeasurableSet s :=
+  .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
@@ -835,18 +838,10 @@ theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Me
   hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
 
-theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
-    (hf_surj : Function.Surjective f) {μ : Measure β} [μ.IsOpenPosMeasure] :
-    (Measure.map f μ).IsOpenPosMeasure := by
-  refine' ⟨fun U hUo hUne => _⟩
-  rw [Measure.map_apply hf.measurable hUo.measurableSet]
-  exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
-#align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
-
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
-    (hf : ContinuousOn f s) (hg : ContinuousOn g (sᶜ)) (hs : MeasurableSet s) :
+    (hf : ContinuousOn f s) (hg : ContinuousOn g sᶜ) (hs : MeasurableSet s) :
     Measurable (s.piecewise f g) := by
   refine' measurable_of_isOpen fun t ht => _
   rw [piecewise_preimage, Set.ite]
@@ -946,7 +941,7 @@ theorem ContinuousMap.measurable (f : C(α, γ)) : Measurable f :=
 #align continuous_map.measurable ContinuousMap.measurable
 
 theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} (a : α)
-    (hf : ContinuousOn f ({a}ᶜ)) : Measurable f :=
+    (hf : ContinuousOn f {a}ᶜ) : Measurable f :=
   measurable_of_measurable_on_compl_singleton a
     (continuousOn_iff_continuous_restrict.1 hf).measurable
 #align measurable_of_continuous_on_compl_singleton measurable_of_continuousOn_compl_singleton
@@ -1732,7 +1727,7 @@ theorem borel_eq_generateFrom_Iio_rat : borel ℝ = .generateFrom (⋃ a : ℚ, 
           refine' fun _ => ⟨fun h => _, fun ⟨i, hai, hix⟩ => (Rat.cast_lt.2 hai).trans_le hix⟩
           rcases exists_rat_btwn h with ⟨c, ac, cx⟩
           exact ⟨c, Rat.cast_lt.1 ac, cx.le⟩
-            : Ioo (a : ℝ) b = (⋃ c > a, Iio (c : ℝ)ᶜ) ∩ Iio (b : ℝ))]
+            : Ioo (a : ℝ) b = (⋃ c > a, (Iio (c : ℝ))ᶜ) ∩ Iio (b : ℝ))]
     · have hg : ∀ q : ℚ, MeasurableSet[g] (Iio (q : ℝ)) := fun q =>
         GenerateMeasurable.basic (Iio (q : ℝ)) (by simp)
       refine' @MeasurableSet.inter _ g _ _ _ (hg _)

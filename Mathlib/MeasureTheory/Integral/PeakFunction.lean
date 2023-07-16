@@ -56,7 +56,7 @@ variable {α E ι : Type _} {hm : MeasurableSpace α} {μ : Measure α} [Topolog
 `g` is integrable and continuous at `x₀`, then `φᵢ • g` is eventually integrable. -/
 theorem integrableOn_peak_smul_of_integrableOn_of_continuousWithinAt (hs : MeasurableSet s)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
-    (hiφ : ∀ᶠ i in l, (∫ x in s, φ i x ∂μ) = 1) (hmg : IntegrableOn g s μ)
+    (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ)
     (hcg : ContinuousWithinAt g s x₀) : ∀ᶠ i in l, IntegrableOn (fun x => φ i x • g x) s μ := by
   obtain ⟨u, u_open, x₀u, hu⟩ : ∃ u, IsOpen u ∧ x₀ ∈ u ∧ ∀ x ∈ u ∩ s, g x ∈ ball (g x₀) 1
   exact mem_nhdsWithin.1 (hcg (ball_mem_nhds _ zero_lt_one))
@@ -88,7 +88,7 @@ where one assumes additionally `g x₀ = 0`. -/
 theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
     (hs : MeasurableSet s) (hnφ : ∀ᶠ i in l, ∀ x ∈ s, 0 ≤ φ i x)
     (hlφ : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 l (s \ u))
-    (hiφ : ∀ᶠ i in l, (∫ x in s, φ i x ∂μ) = 1) (hmg : IntegrableOn g s μ) (h'g : g x₀ = 0)
+    (hiφ : ∀ᶠ i in l, ∫ x in s, φ i x ∂μ = 1) (hmg : IntegrableOn g s μ) (h'g : g x₀ = 0)
     (hcg : ContinuousWithinAt g s x₀) :
     Tendsto (fun i : ι => ∫ x in s, φ i x • g x ∂μ) l (𝓝 0) := by
   refine' Metric.tendsto_nhds.2 fun ε εpos => _
@@ -228,7 +228,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
       _root_.continuousOn_iff.1 hc x₀ h₀ (Ioi (0 : ℝ)) isOpen_Ioi hnc₀
     apply (hμ u u_open x₀_u).trans_le
     exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
-  have hiφ : ∀ n, (∫ x in s, φ n x ∂μ) = 1 := fun n => by
+  have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
     rw [integral_mul_left, inv_mul_cancel (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
     intro u u_open x₀u
