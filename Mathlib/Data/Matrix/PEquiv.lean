@@ -104,7 +104,7 @@ theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l
 
 theorem toPEquiv_mul_matrix [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
     (M : Matrix m n α) : f.toPEquiv.toMatrix ⬝ M = fun i => M (f i) := by
-  ext (i j)
+  ext i j
   rw [mul_matrix_apply, Equiv.toPEquiv_apply]
 #align pequiv.to_pequiv_mul_matrix PEquiv.toPEquiv_mul_matrix
 
@@ -117,7 +117,7 @@ theorem mul_toPEquiv_toMatrix {m n α : Type _} [Fintype n] [DecidableEq n] [Sem
 
 theorem toMatrix_trans [Fintype m] [DecidableEq m] [DecidableEq n] [Semiring α] (f : l ≃. m)
     (g : m ≃. n) : ((f.trans g).toMatrix : Matrix l n α) = f.toMatrix ⬝ g.toMatrix := by
-  ext (i j)
+  ext i j
   rw [mul_matrix_apply]
   dsimp [toMatrix, PEquiv.trans]
   cases f i <;> simp

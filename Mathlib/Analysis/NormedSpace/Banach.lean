@@ -85,7 +85,7 @@ For further use, we will only need such an element whose image
 is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
-  have A : (⋃ n : ℕ, closure (f '' ball 0 n)) = Set.univ := by
+  have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
     refine' Subset.antisymm (subset_univ _) fun y _ => _
     rcases surj y with ⟨x, hx⟩
     rcases exists_nat_gt ‖x‖ with ⟨n, hn⟩
@@ -185,7 +185,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     rw [← dist_eq_norm, dist_comm]
     exact (hg y).1
   refine' ⟨2 * C + 1, by linarith, fun y => _⟩
-  have hnle : ∀ n : ℕ, ‖(h^[n]) y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
+  have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction' n with n IH
     · simp only [one_div, Nat.zero_eq, one_mul, iterate_zero_apply, pow_zero, le_rfl]
@@ -194,12 +194,12 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       rw [pow_succ, mul_assoc]
       apply mul_le_mul_of_nonneg_left IH
       norm_num
-  let u n := g ((h^[n]) y)
+  let u n := g (h^[n] y)
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := by
     intro n
     apply le_trans (hg _).2 _
     calc
-      C * ‖(h^[n]) y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
+      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine' summable_of_nonneg_of_le (fun n => norm_nonneg _) ule _
@@ -215,7 +215,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := (le_add_of_nonneg_right (norm_nonneg y))
       _ = (2 * C + 1) * ‖y‖ := by ring
-  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - (h^[n]) y := by
+  have fsumeq : ∀ n : ℕ, f (∑ i in Finset.range n, u i) = y - h^[n] y := by
     intro n
     induction' n with n IH
     · simp [f.map_zero]
@@ -224,7 +224,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have L₁ : Tendsto (fun n => f (∑ i in Finset.range n, u i)) atTop (𝓝 (f x)) :=
     (f.continuous.tendsto _).comp this
   simp only [fsumeq] at L₁
-  have L₂ : Tendsto (fun n => y - (h^[n]) y) atTop (𝓝 (y - 0)) := by
+  have L₂ : Tendsto (fun n => y - h^[n] y) atTop (𝓝 (y - 0)) := by
     refine' tendsto_const_nhds.sub _
     rw [tendsto_iff_norm_tendsto_zero]
     simp only [sub_zero]
@@ -329,7 +329,7 @@ theorem continuous_symm (e : E ≃ₗ[𝕜] F) (h : Continuous e) : Continuous e
   rw [continuous_def]
   intro s hs
   rw [← e.image_eq_preimage]
-  rw [← e.coe_coe] at h⊢
+  rw [← e.coe_coe] at h ⊢
   exact ContinuousLinearMap.isOpenMap (𝕜 := 𝕜) ⟨↑e, h⟩ e.surjective s hs
 #align linear_equiv.continuous_symm LinearEquiv.continuous_symm
 
@@ -404,7 +404,7 @@ variable [CompleteSpace E]
 /-- Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
-This is `f.coprod G.subtypeL` as an `ContinuousLinearEquiv`. -/
+This is `f.coprod G.subtypeL` as a `ContinuousLinearEquiv`. -/
 noncomputable def coprodSubtypeLEquivOfIsCompl (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl (LinearMap.range f) G) [CompleteSpace G] (hker : ker f = ⊥) : (E × G) ≃L[𝕜] F :=
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)

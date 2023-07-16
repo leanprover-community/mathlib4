@@ -28,7 +28,7 @@ We give instances of this construction for emetric spaces, metric spaces, normed
 spaces.
 
 To avoid conflicting instances, all these are defined on a copy of the original Π-type, named
-`PiLp p α`. The assumpion `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
+`PiLp p α`. The assumption `[Fact (1 ≤ p)]` is required for the metric and normed space instances.
 
 We ensure that the topology, bornology and uniform structure on `PiLp p α` are (defeq to) the
 product topology, product bornology and product uniformity, to be able to use freely continuity
@@ -490,7 +490,7 @@ instance [∀ i, EMetricSpace (α i)] : EMetricSpace (PiLp p α) :=
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoMetricSpace (β i)] : PseudoMetricSpace (PiLp p β) :=
   ((pseudoMetricAux p β).replaceUniformity (aux_uniformity_eq p β).symm).replaceBornology fun s =>
-    Filter.ext_iff.1 (aux_cobounded_eq p β).symm (sᶜ)
+    Filter.ext_iff.1 (aux_cobounded_eq p β).symm sᶜ
 
 /-- metric space instance on the product of finitely many metric spaces, using the `L^p` distance,
 and having as uniformity the product uniformity. -/

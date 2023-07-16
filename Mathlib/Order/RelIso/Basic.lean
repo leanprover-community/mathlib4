@@ -331,7 +331,7 @@ def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
 #align rel_embedding.preimage RelEmbedding.preimage
 
 theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
-  ext (a b)
+  ext a b
   exact f.map_rel_iff.symm
 #align rel_embedding.eq_preimage RelEmbedding.eq_preimage
 
@@ -493,7 +493,7 @@ alias wellFounded_liftOn₂'_iff ↔ WellFounded.of_quotient_liftOn₂' WellFoun
 
 namespace RelEmbedding
 
-/-- To define an relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
+/-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
 def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
@@ -589,7 +589,7 @@ def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
 #align rel_embedding.sum_lex_map RelEmbedding.sumLexMap
 #align rel_embedding.sum_lex_map_apply RelEmbedding.sumLexMap_apply
 
-/-- `λ b, Prod.mk a b` as a relation embedding. -/
+/-- `fun b ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.Lex r s where
   toFun := Prod.mk a
@@ -598,7 +598,7 @@ def prodLexMkLeft (s : β → β → Prop) {a : α} (h : ¬r a a) : s ↪r Prod.
 #align rel_embedding.prod_lex_mk_left RelEmbedding.prodLexMkLeft
 #align rel_embedding.prod_lex_mk_left_apply RelEmbedding.prodLexMkLeft_apply
 
-/-- `λ a, Prod.mk a b` as a relation embedding. -/
+/-- `fun a ↦ Prod.mk a b` as a relation embedding. -/
 @[simps]
 def prodLexMkRight (r : α → α → Prop) {b : β} (h : ¬s b b) : r ↪r Prod.Lex r s where
   toFun a := (a, b)
@@ -629,7 +629,7 @@ infixl:25 " ≃r " => RelIso
 
 namespace RelIso
 
-/-- Convert an `RelIso` to a `RelEmbedding`. This function is also available as a coercion
+/-- Convert a `RelIso` to a `RelEmbedding`. This function is also available as a coercion
 but often it is easier to write `f.toRelEmbedding` than to write explicitly `r` and `s`
 in the target type. -/
 def toRelEmbedding (f : r ≃r s) : r ↪r s :=
@@ -843,7 +843,7 @@ lexicographic orders on the sum.
 def sumLexCongr {α₁ α₂ β₁ β₂ r₁ r₂ s₁ s₂} (e₁ : @RelIso α₁ β₁ r₁ s₁) (e₂ : @RelIso α₂ β₂ r₂ s₂) :
     Sum.Lex r₁ r₂ ≃r Sum.Lex s₁ s₂ :=
   ⟨Equiv.sumCongr e₁.toEquiv e₂.toEquiv, @fun a b => by
-    cases' e₁ with f hf ; cases' e₂ with g hg ; cases a <;> cases b <;> simp [hf, hg]⟩
+    cases' e₁ with f hf; cases' e₂ with g hg; cases a <;> cases b <;> simp [hf, hg]⟩
 #align rel_iso.sum_lex_congr RelIso.sumLexCongr
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the

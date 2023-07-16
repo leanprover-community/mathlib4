@@ -182,7 +182,7 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.m
 def toPreimages : J ⥤ Type v where
   obj j := ⋂ f : j ⟶ i, F.map f ⁻¹' s
   map g := MapsTo.restrict (F.map g) _ _ fun x h => by
-    rw [mem_iInter] at h⊢
+    rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
     convert h (g ≫ f); rw [F.map_comp]; rfl
@@ -203,7 +203,7 @@ variable [IsCofilteredOrEmpty J]
 
 theorem eventualRange_mapsTo (f : j ⟶ i) :
     (F.eventualRange j).MapsTo (F.map f) (F.eventualRange i) := fun x hx => by
-  rw [mem_eventualRange_iff] at hx⊢
+  rw [mem_eventualRange_iff] at hx ⊢
   intro k f'
   obtain ⟨l, g, g', he⟩ := cospan f f'
   obtain ⟨x, rfl⟩ := hx g

@@ -54,7 +54,7 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
 
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
-  /-- Multiplicatin by a nonzero element is left cancellative. -/
+  /-- Multiplication by a nonzero element is left cancellative. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a b c : M₀}, a ≠ 0 → a * b = a * c → b = c
 #align is_left_cancel_mul_zero IsLeftCancelMulZero
 
@@ -200,8 +200,6 @@ class CommGroupWithZero (G₀ : Type _) extends CommMonoidWithZero G₀, GroupWi
 #align comm_group_with_zero CommGroupWithZero
 
 section NeZero
-
-attribute [field_simps] two_ne_zero three_ne_zero four_ne_zero
 
 variable [MulZeroOneClass M₀] [Nontrivial M₀] {a b : M₀}
 

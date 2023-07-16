@@ -821,7 +821,7 @@ theorem evaln_sound : ∀ {k c n x}, x ∈ evaln k c n → x ∈ eval c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
     induction' c with cf cg hf hg cf cg hf hg cf cg hf hg cf hf generalizing x n <;>
-        simp [eval, evaln, Bind.bind, Seq.seq] at h⊢ <;>
+        simp [eval, evaln, Bind.bind, Seq.seq] at h ⊢ <;>
       cases' h with _ h
     iterate 4 simpa [pure, PFun.pure, eq_comm] using h
     · -- pair cf cg

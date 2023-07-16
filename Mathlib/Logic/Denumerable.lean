@@ -66,7 +66,7 @@ theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := 
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
-  obtain ⟨a, h, e⟩ := decode_inv n
+  obtain ⟨a, h, e⟩ := decode_inv (α := α) n
   rwa [ofNat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_ofNat
 
@@ -346,7 +346,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>
             ⟨h.1.trans (lt_succ_self _), h.2⟩⟩
-    simp only [toFunAux_eq, ofNat, range_succ] at ih⊢
+    simp only [toFunAux_eq, ofNat, range_succ] at ih ⊢
     conv =>
       rhs
       rw [← ih, ← card_insert_of_not_mem h₁, ← h₂]

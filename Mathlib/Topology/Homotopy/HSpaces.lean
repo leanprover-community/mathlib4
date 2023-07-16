@@ -37,7 +37,7 @@ equal to the product of `H-space` structures on `G` and `G'`.
 
 ## To Do
 * Prove that for every `normed_add_torsor Z` and every `z : Z`, the operation
-`λ x y, midpoint x y` defines a `H-space` structure with `z` as a "neutral element".
+`λ x y, midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
 first three inherit the structure because they are topological groups (they are Lie groups,
 actually), isomorphic to the invertible elements in `ℤ`, in `ℂ` and in the quaternion; and the
@@ -73,7 +73,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 #align H_space HSpace
 
 -- mathport name: H_space.Hmul
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on a H-space
+-- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 -- porting note: opening `HSpaces` so that the above notation works
@@ -286,7 +286,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
-/-- The loop space at x carries a structure of a `H-space`. Note that the field `eHmul`
+/-- The loop space at x carries a structure of an `H-space`. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/

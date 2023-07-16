@@ -80,32 +80,32 @@ def opEquiv : Set α ≃ Set αᵒᵖ :=
 theorem singleton_op (x : α) : ({x} : Set α).op = {op x} := by
   ext
   constructor
-  . apply unop_injective
-  . apply op_injective
+  · apply unop_injective
+  · apply op_injective
 #align set.singleton_op Set.singleton_op
 
 @[simp]
 theorem singleton_unop (x : αᵒᵖ) : ({x} : Set αᵒᵖ).unop = {unop x} := by
   ext
   constructor
-  . apply op_injective
-  . apply unop_injective
+  · apply op_injective
+  · apply unop_injective
 #align set.singleton_unop Set.singleton_unop
 
 @[simp 1100]
 theorem singleton_op_unop (x : α) : ({op x} : Set αᵒᵖ).unop = {x} := by
   ext
   constructor
-  . apply op_injective
-  . apply unop_injective
+  · apply op_injective
+  · apply unop_injective
 #align set.singleton_op_unop Set.singleton_op_unop
 
 @[simp 1100]
 theorem singleton_unop_op (x : αᵒᵖ) : ({unop x} : Set α).op = {x} := by
   ext
   constructor
-  . apply unop_injective
-  . apply op_injective
+  · apply unop_injective
+  · apply op_injective
 #align set.singleton_unop_op Set.singleton_unop_op
 
 end Set

@@ -44,7 +44,7 @@ section
 
 variable (k G V : Type _) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
-/-- A representation of `G` on the `k`-module `V` is an homomorphism `G →* (V →ₗ[k] V)`.
+/-- A representation of `G` on the `k`-module `V` is a homomorphism `G →* (V →ₗ[k] V)`.
 -/
 abbrev Representation :=
   G →* V →ₗ[k] V
@@ -262,11 +262,11 @@ variable (k : Type _) [CommSemiring k] (G : Type _) [Monoid G] (H : Type _) [Mul
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
   toFun g := Finsupp.lmapDomain k k ((· • ·) g)
   map_one' := by
-    ext (x y)
+    ext x y
     dsimp
     simp
   map_mul' x y := by
-    ext (z w)
+    ext z w
     simp [mul_smul]
 #align representation.of_mul_action Representation.ofMulAction
 
@@ -468,4 +468,3 @@ theorem dualTensorHom_comm (g : G) :
 end LinearHom
 
 end Representation
-

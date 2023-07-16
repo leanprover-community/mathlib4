@@ -247,7 +247,7 @@ instance : Top (Submonoid M) :=
       one_mem' := Set.mem_univ 1
       mul_mem' := fun _ _ => Set.mem_univ _ }⟩
 
-/-- The trivial submonoid `{1}` of an monoid `M`. -/
+/-- The trivial submonoid `{1}` of a monoid `M`. -/
 @[to_additive "The trivial `AddSubmonoid` `{0}` of an `AddMonoid` `M`."]
 instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
@@ -554,7 +554,7 @@ theorem mem_iSup {ι : Sort _} (p : ι → Submonoid M) {m : M} :
 
 @[to_additive]
 theorem iSup_eq_closure {ι : Sort _} (p : ι → Submonoid M) :
-    (⨆ i, p i) = Submonoid.closure (⋃ i, (p i : Set M)) := by
+    ⨆ i, p i = Submonoid.closure (⋃ i, (p i : Set M)) := by
   simp_rw [Submonoid.closure_iUnion, Submonoid.closure_eq]
 #align submonoid.supr_eq_closure Submonoid.iSup_eq_closure
 #align add_submonoid.supr_eq_closure AddSubmonoid.iSup_eq_closure

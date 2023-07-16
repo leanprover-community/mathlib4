@@ -207,8 +207,7 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
-is not an instance because it depends on `V` to define a `MetricSpace
-P`. -/
+is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -223,8 +222,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
 #align pseudo_metric_space_of_normed_add_comm_group_of_add_torsor pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor
 
 /-- The distance defines a metric space structure on the torsor. This
-is not an instance because it depends on `V` to define a `MetricSpace
-P`. -/
+is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
@@ -289,16 +287,20 @@ theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g)
 #align continuous.vsub Continuous.vsub
 
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
-  (hg : ContinuousAt g x) :
+    (hg : ContinuousAt g x) :
     ContinuousAt (f -ᵥ g) x :=
   hf.vsub hg
 #align continuous_at.vsub ContinuousAt.vsub
 
 nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
-  (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (f -ᵥ g) s x :=
   hf.vsub hg
 #align continuous_within_at.vsub ContinuousWithinAt.vsub
+
+theorem ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g s) : ContinuousOn (f -ᵥ g) s := fun x hx ↦
+  (hf x hx).vsub (hg x hx)
 
 end
 
@@ -319,3 +321,21 @@ theorem Filter.Tendsto.midpoint [Invertible (2 : R)] {l : Filter α} {f₁ f₂ 
 #align filter.tendsto.midpoint Filter.Tendsto.midpoint
 
 end
+
+section Pointwise
+
+open Pointwise
+
+theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed s)
+    (ht : IsCompact t) : IsClosed (s +ᵥ t) := by
+  -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
+  -- but we don't yet have a nice way to state it.
+  refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
+  choose! a v hav using husv
+  rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
+  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
+  convert (hav (φ n)).1 using 1
+  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+
+end Pointwise

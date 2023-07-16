@@ -19,9 +19,9 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 
 `argmax f l` returns `some a`, where `a` of `l` that maximises `f a`. If there are `a b` such that
   `f a = f b`, it returns whichever of `a` or `b` comes first in the list.
-  `argmax f []` = none`
+  `argmax f [] = none`
 
-`minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
+`minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
 
@@ -95,14 +95,14 @@ variable [Preorder β] [@DecidableRel β (· < ·)] {f : α → β} {l : List α
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
-whichever of `a` or `b` comes first in the list. `argmax f []` = none`. -/
+whichever of `a` or `b` comes first in the list. `argmax f [] = none`. -/
 def argmax (f : α → β) (l : List α) : Option α :=
   l.foldl (argAux fun b c => f c < f b) none
 #align list.argmax List.argmax
 
 /-- `argmin f l` returns `some a`, where `f a` is minimal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f b < f a`. If `a`, `b` are such that `f a = f b`, it returns
-whichever of `a` or `b` comes first in the list. `argmin f []` = none`. -/
+whichever of `a` or `b` comes first in the list. `argmin f [] = none`. -/
 def argmin (f : α → β) (l : List α) :=
   l.foldl (argAux fun b c => f b < f c) none
 #align list.argmin List.argmin
@@ -208,7 +208,7 @@ theorem index_of_argmax :
     ∀ {l : List α} {m : α}, m ∈ argmax f l → ∀ {a}, a ∈ l → f m ≤ f a → l.indexOf m ≤ l.indexOf a
   | [], m, _, _, _, _ => by simp
   | hd :: tl, m, hm, a, ha, ham => by
-    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm⊢
+    simp only [indexOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl
     · rw [h] at hm
       simp_all
@@ -217,11 +217,11 @@ theorem index_of_argmax :
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
     · cases not_le_of_lt ‹_› ‹_›
     · rw [if_pos rfl]
-    . rw [if_neg, if_neg]
+    · rw [if_neg, if_neg]
       exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
       · exact ne_of_apply_ne f (lt_of_lt_of_le ‹_› ‹_›).ne'
       · exact ne_of_apply_ne _ ‹f hd < f _›.ne'
-    . rw [if_pos rfl]
+    · rw [if_pos rfl]
       exact Nat.zero_le _
 #align list.index_of_argmax List.index_of_argmax
 
@@ -270,13 +270,13 @@ section Preorder
 
 variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
 
-/-- `maximum l` returns an `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
+/-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
 def maximum (l : List α) : WithBot α :=
   argmax id l
 #align list.maximum List.maximum
 
-/-- `minimum l` returns an `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
+/-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`  -/
 def minimum (l : List α) : WithTop α :=
   argmin id l
@@ -390,6 +390,18 @@ theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m 
 theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a :=
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 #align list.minimum_eq_coe_iff List.minimum_eq_coe_iff
+
+theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [List.maximum_cons, ih]
+
+theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
+  induction l with
+  | nil => simp
+  | cons h t ih =>
+    simp [List.minimum_cons, ih]
 
 end LinearOrder
 

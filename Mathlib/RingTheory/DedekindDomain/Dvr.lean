@@ -61,7 +61,7 @@ This is equivalent to `IsDedekindDomain`.
 TODO: prove the equivalence.
 -/
 structure IsDedekindDomainDvr : Prop where
-  IsNoetherianRing : IsNoetherianRing A
+  isNoetherianRing : IsNoetherianRing A
   is_dvr_at_nonzero_prime :
     ∀ (P) (_ : P ≠ (⊥ : Ideal A)) (_ : P.IsPrime), DiscreteValuationRing (Localization.AtPrime P)
 #align is_dedekind_domain_dvr IsDedekindDomainDvr
@@ -150,7 +150,7 @@ theorem IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain [IsDedek
 are also Dedekind domains in the sense of Noetherian domains where the localization at every
 nonzero prime ideal is a DVR. -/
 theorem IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDomainDvr A :=
-  { IsNoetherianRing := IsDedekindDomain.isNoetherianRing
+  { isNoetherianRing := IsDedekindDomain.isNoetherianRing
     is_dvr_at_nonzero_prime := fun _ hP _ =>
       IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain A hP _ }
 #align is_dedekind_domain.is_dedekind_domain_dvr IsDedekindDomain.isDedekindDomainDvr

@@ -91,6 +91,9 @@ ring subexpressions of type `ℕ`.
 -/
 def sℕ : Q(CommSemiring ℕ) := q(instCommSemiringNat)
 
+-- In this file, we would like to use multi-character auto-implicits.
+set_option relaxedAutoImplicit true
+
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
@@ -119,8 +122,8 @@ inductive ExProd : ∀ {α : Q(Type u)}, Q(CommSemiring $α) → (e : Q($α)) �
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   | const (value : ℚ) (hyp : Option Expr := none) : ExProd sα e
-  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is a `ExBase`
-  and `e` is a `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
+  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
   | mul {α : Q(Type u)} {sα : Q(CommSemiring $α)} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase sα x → ExProd sℕ e → ExProd sα b → ExProd sα q($x ^ $e * $b)
@@ -249,14 +252,14 @@ def ExProd.mkRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℤ)) (d : Q(ℕ)) (
 section
 variable {sα}
 
-/-- Embed an exponent (a `ExBase, ExProd` pair) as a `ExProd` by multiplying by 1. -/
+/-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
   ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
 
-/-- Get the leading coefficient of a `ExProd`. -/
+/-- Get the leading coefficient of an `ExProd`. -/
 def ExProd.coeff : ExProd sα e → ℚ
   | .const q _ => q
   | .mul _ _ v => v.coeff

@@ -184,7 +184,7 @@ theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTricho
     <| irrefl b
 #align extensional_of_trichotomous_of_irrefl extensional_of_trichotomous_of_irrefl
 
-/-- Construct a partial order from a `isStrictOrder` relation.
+/-- Construct a partial order from an `isStrictOrder` relation.
 
 See note [reducible non-instances]. -/
 @[reducible]
@@ -469,7 +469,7 @@ noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder 
   linearOrderOfSTO r
 #align is_well_order.linear_order IsWellOrder.linearOrder
 
-/-- Derive a `WellFoundedRelation` instance from a `IsWellOrder` instance. -/
+/-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
 def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
@@ -513,7 +513,7 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
-instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
+instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
 theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
@@ -862,7 +862,7 @@ instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
 instance [PartialOrder α] : IsPartialOrder α (· ≥ ·) where
 
-instance [LinearOrder α] : IsTotal α (· ≤ ·) :=
+instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
   ⟨le_total⟩
 
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=

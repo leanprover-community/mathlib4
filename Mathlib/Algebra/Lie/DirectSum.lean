@@ -28,7 +28,7 @@ universe u v w w₁
 
 namespace DirectSum
 
-open Dfinsupp
+open DFinsupp
 
 open scoped DirectSum
 
@@ -51,13 +51,13 @@ variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 instance : LieRingModule L (⨁ i, M i) where
   bracket x m := m.mapRange (fun i m' => ⁅x, m'⁆) fun i => lie_zero x
   add_lie x y m := by
-    refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
     simp only [mapRange_apply, add_apply, add_lie]
   lie_add x m n := by
-    refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
     simp only [mapRange_apply, add_apply, lie_add]
   leibniz_lie x y m := by
-    refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
     simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
 
 @[simp]
@@ -67,10 +67,10 @@ theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ 
 
 instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by
-    refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext i`
+    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext i`
     simp only [smul_lie, lie_module_bracket_apply, smul_apply]
   lie_smul t x m := by
-    refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext i`
+    refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext i`
     simp only [lie_smul, lie_module_bracket_apply, smul_apply]
 
 variable (R ι L M)
@@ -79,7 +79,7 @@ variable (R ι L M)
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
     map_lie' := fun {x m} => by
-      refine' Dfinsupp.ext fun i => _ -- Porting note: Originally `ext i`
+      refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp
       · simp [lof, lsingle, h] }
@@ -106,16 +106,16 @@ instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
     bracket := zipWith (fun i => fun x y => ⁅x, y⁆) fun i => lie_zero 0
     add_lie := fun x y z => by
-      refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, add_lie]
     lie_add := fun x y z => by
-      refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, lie_add]
     lie_self := fun x => by
-      refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by
-      refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
       simp only [sub_apply, zipWith_apply, add_apply, zero_apply]
       apply leibniz_lie }
 #align direct_sum.lie_ring DirectSum.lieRing
@@ -128,7 +128,7 @@ theorem bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i�
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
-      refine' Dfinsupp.ext fun _ => _ -- Porting note: Originally `ext`
+      refine' DFinsupp.ext fun _ => _ -- Porting note: Originally `ext`
       simp only [zipWith_apply, smul_apply, bracket_apply, lie_smul] }
 #align direct_sum.lie_algebra DirectSum.lieAlgebra
 
@@ -140,7 +140,7 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
   { lof R ι L j with
     toFun := of L j
     map_lie' := fun {x y} => by
-      refine' Dfinsupp.ext fun i => _ -- Porting note: Originally `ext i`
+      refine' DFinsupp.ext fun i => _ -- Porting note: Originally `ext i`
       by_cases h : j = i
       · rw [← h]; simp [of, singleAddHom]
       · simp [of, singleAddHom, h] }
@@ -157,7 +157,7 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
 @[ext]
 theorem lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
-  Dfinsupp.ext h
+  DFinsupp.ext h
 #align direct_sum.lie_algebra_ext DirectSum.lieAlgebra_ext
 
 theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : j ≠ i) (x : L i) (y : L j) :
@@ -207,7 +207,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
             ⁅toModule R ι L' f' x, toModule R ι L' f' (of L i y)⁆ by
         simp only [← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
-        congr; clear y; ext (i y); exact this i y
+        congr; clear y; ext i y; exact this i y
       -- Similarly, we can reduce to the case that `x` has only one non-zero component.
       suffices ∀ (i j) (y : L i) (x : L j),
           toModule R ι L' f' ⁅of L j x, of L i y⁆ =
@@ -216,7 +216,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
         rw [← lie_skew x, ← lie_skew (toModule R ι L' f' x)]
         simp only [LinearMap.map_neg, neg_inj, ← LieAlgebra.ad_apply R]
         rw [← LinearMap.comp_apply, ← LinearMap.comp_apply]
-        congr; clear x; ext (j x); exact this j i x y
+        congr; clear x; ext j x; exact this j i x y
       -- Tidy up and use `lie_of`.
       intro i j y x
       simp only [lie_of R, lieAlgebraOf_apply, LieHom.coe_toLinearMap, toAddMonoid_of,

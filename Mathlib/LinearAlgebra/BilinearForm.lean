@@ -9,7 +9,6 @@ Authors: Andreas Swerdlow, Kexing Ying
 ! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Bilinear form
@@ -641,8 +640,7 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
     (hᵣ : Function.Surjective r) : B₁.comp l r = B₂.comp l r ↔ B₁ = B₂ := by
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
-    ext x
-    intro y
+    ext x y
     cases' hₗ x with x' hx
     subst hx
     cases' hᵣ y with y' hy
@@ -943,8 +941,7 @@ theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
 theorem isSymm_iff_flip' [Algebra R₂ R] : B.IsSymm ↔ flipHom R₂ B = B := by
   constructor
   · intro h
-    ext x
-    intro y
+    ext x y
     exact h y x
   · intro h x y
     conv_lhs => rw [← h]
@@ -1210,7 +1207,7 @@ theorem span_singleton_inf_orthogonal_eq_bot {B : BilinForm K V} {x : V} (hx : �
   refine' eq_bot_iff.2 fun y h => _
   rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
   have := h.2 x ?_
-  · rw [Finset.sum_singleton] at this⊢
+  · rw [Finset.sum_singleton] at this ⊢
     suffices hμzero : μ x = 0
     · rw [hμzero, zero_smul, Submodule.mem_bot]
     change B x (μ x • x) = 0 at this

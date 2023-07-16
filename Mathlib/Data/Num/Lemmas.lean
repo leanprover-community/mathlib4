@@ -614,7 +614,7 @@ instance commMonoid : CommMonoid PosNum := by
     { mul := (· * ·)
       one := (1 : PosNum)
       npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩,.. } <;>
-  try { intros ; rfl } <;>
+  try { intros; rfl } <;>
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
@@ -933,24 +933,25 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
 
 @[simp, norm_cast]
 theorem lor'_to_nat : ∀ m n, (lor m n : ℕ) = Nat.lor' m n := by
-  -- Porting note: An name of an implicit local hypothesis is not available so
+  -- Porting note: A name of an implicit local hypothesis is not available so
   --               `cases_type*` is used.
-  apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat fun x y => pos (PosNum.lor x y) <;>
+   intros <;> (try cases_type* Bool) <;> rfl
 #align num.lor_to_nat Num.lor'_to_nat
 
 @[simp, norm_cast]
 theorem land'_to_nat : ∀ m n, (land m n : ℕ) = Nat.land' m n := by
-  apply bitwise'_to_nat PosNum.land <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.land <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.land_to_nat Num.land'_to_nat
 
 @[simp, norm_cast]
 theorem ldiff'_to_nat : ∀ m n, (ldiff m n : ℕ) = Nat.ldiff' m n := by
-  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.ldiff <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.ldiff_to_nat Num.ldiff'_to_nat
 
 @[simp, norm_cast]
 theorem lxor'_to_nat : ∀ m n, (lxor m n : ℕ) = Nat.lxor' m n := by
-  apply bitwise'_to_nat PosNum.lxor <;> intros <;> cases_type* Bool <;> rfl
+  apply bitwise'_to_nat PosNum.lxor <;> intros <;> (try cases_type* Bool) <;> rfl
 #align num.lxor_to_nat Num.lxor'_to_nat
 
 @[simp, norm_cast]
@@ -966,7 +967,7 @@ theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
 
 @[simp, norm_cast]
 theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n := by
-  cases' m with m <;> dsimp only [shiftr];
+  cases' m with m <;> dsimp only [shiftr]
   · symm
     apply Nat.zero_shiftr
   induction' n with n IH generalizing m
@@ -1683,7 +1684,7 @@ theorem gcd_to_nat_aux :
     · rfl
     · rw [← le_to_nat, mod_to_nat]
       exact le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))
-    rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h⊢
+    rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h ⊢
     rw [mod_to_nat, mul_comm]
     rw [pow_succ', ← Nat.mod_add_div b (pos a)] at h
     refine' lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)

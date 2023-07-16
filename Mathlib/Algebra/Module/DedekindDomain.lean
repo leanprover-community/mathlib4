@@ -14,7 +14,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 /-!
 # Modules over a Dedekind domain
 
-Over a Dedekind domain, a `I`-torsion module is the internal direct sum of its `p i ^ e i`-torsion
+Over a Dedekind domain, an `I`-torsion module is the internal direct sum of its `p i ^ e i`-torsion
 submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime ideals.
 Therefore, as any finitely generated torsion module is `I`-torsion for some `I`, it is an internal
 direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.
@@ -37,7 +37,7 @@ open UniqueFactorizationMonoid
 
 open scoped Classical
 
-/-- Over a Dedekind domain, a `I`-torsion module is the internal direct sum of its `p i ^ e i`-
+/-- Over a Dedekind domain, an `I`-torsion module is the internal direct sum of its `p i ^ e i`-
 torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime ideals.-/
 theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI : I ≠ ⊥)
     (hM : Module.IsTorsionBySet R M I) :
@@ -73,7 +73,7 @@ theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsio
   have hM' := Module.isTorsionBySet_annihilator_top R M
   have hI := Submodule.annihilator_top_inter_nonZeroDivisors hM
   refine' isInternal_prime_power_torsion_of_is_torsion_by_ideal _ hM'
-  rw [← Set.nonempty_iff_ne_empty] at hI ; rw [Submodule.ne_bot_iff]
+  rw [← Set.nonempty_iff_ne_empty] at hI; rw [Submodule.ne_bot_iff]
   obtain ⟨x, H, hx⟩ := hI; exact ⟨x, H, nonZeroDivisors.ne_zero hx⟩
 #align submodule.is_internal_prime_power_torsion Submodule.isInternal_prime_power_torsion
 

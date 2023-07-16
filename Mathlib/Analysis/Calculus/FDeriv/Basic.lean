@@ -68,11 +68,11 @@ The simplifier is set up to prove automatically that some functions are differen
 differentiable at a point (but not differentiable on a set or within a set at a point, as checking
 automatically that the good domains are mapped one to the other when using composition is not
 something the simplifier can easily do). This means that one can write
-`example (x : ℝ) : Differentiable ℝ (λ x, sin (exp (3 + x^2)) - 5 * cos x) := by simp`.
+`example (x : ℝ) : Differentiable ℝ (fun x ↦ sin (exp (3 + x^2)) - 5 * cos x) := by simp`.
 If there are divisions, one needs to supply to the simplifier proofs that the denominators do
 not vanish, as in
 ```lean
-example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (λ x, exp x / (1 + sin x)) x :=
+example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x / (1 + sin x)) x :=
 by simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
@@ -107,7 +107,7 @@ functions is differentiable, as well as their product, their cartesian product, 
 exception is the chain rule: we do not mark as a simp lemma the fact that, if `f` and `g` are
 differentiable, then their composition also is: `simp` would always be able to match this lemma,
 by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `exp`),
-we add a lemma that if `f` is differentiable then so is `(λ x, exp (f x))`. This means adding
+we add a lemma that if `f` is differentiable then so is `(fun x ↦ exp (f x))`. This means adding
 some boilerplate lemmas, but these can also be useful in their own right.
 
 Tests for this ability of the simplifier (with more examples) are provided in
@@ -1029,6 +1029,7 @@ theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 #align differentiable_on_id differentiableOn_id
 
+@[simp]
 theorem fderiv_id : fderiv 𝕜 id x = id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
 #align fderiv_id fderiv_id

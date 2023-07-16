@@ -120,7 +120,7 @@ instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass 
   NoZeroDivisors.to_isDomain _
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `Orderedring` is an `Orderedring`. -/
+/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
     OrderedRing s :=
   Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
@@ -384,7 +384,7 @@ protected theorem multiset_prod_mem {R} [CommRing R] (s : Subring R) (m : Multis
   multiset_prod_mem _
 #align subring.multiset_prod_mem Subring.multiset_prod_mem
 
-/-- Sum of a multiset of elements in an `Subring` of a `Ring` is
+/-- Sum of a multiset of elements in a `Subring` of a `Ring` is
 in the `Subring`. -/
 protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R) :
     (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
@@ -1147,7 +1147,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
       (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
       (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by intro h; simpa using (this h)
+  suffices ⨆ i, S i ≤ U by intro h; simpa using (this h)
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 
@@ -1215,6 +1215,7 @@ theorem range_top_iff_surjective {f : R →+* S} :
 #align ring_hom.range_top_iff_surjective RingHom.range_top_iff_surjective
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
+@[simp]
 theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_top_iff_surjective.2 hf

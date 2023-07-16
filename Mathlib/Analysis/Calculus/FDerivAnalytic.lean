@@ -161,6 +161,11 @@ theorem AnalyticOn.contDiffOn [CompleteSpace F] (h : AnalyticOn 𝕜 f s) {n : �
     exact iteratedFDerivWithin_of_isOpen _ t_open hx
 #align analytic_on.cont_diff_on AnalyticOn.contDiffOn
 
+theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+    ContDiffAt 𝕜 n f x := by
+  obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOn
+  exact hf.contDiffOn.contDiffAt hs
+
 end fderiv
 
 section deriv
@@ -191,7 +196,7 @@ theorem AnalyticOn.deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) : AnalyticO
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOn.iterated_deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 ((_root_.deriv^[n]) f) s := by
+    AnalyticOn 𝕜 (_root_.deriv^[n] f) s := by
   induction' n with n IH
   · exact h
   · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv

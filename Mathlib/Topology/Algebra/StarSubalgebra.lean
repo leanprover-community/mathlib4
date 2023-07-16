@@ -107,6 +107,21 @@ theorem topologicalClosure_mono : Monotone (topologicalClosure : _ → StarSubal
   topologicalClosure_minimal (h.trans <| le_topologicalClosure S₂) (isClosed_topologicalClosure S₂)
 #align star_subalgebra.topological_closure_mono StarSubalgebra.topologicalClosure_mono
 
+theorem topologicalClosure_map_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedMap φ) :
+    (map φ s).topologicalClosure ≤ map φ s.topologicalClosure :=
+  hφ.closure_image_subset _
+
+theorem map_topologicalClosure_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : Continuous φ) :
+    map φ s.topologicalClosure ≤ (map φ s).topologicalClosure :=
+  image_closure_subset_closure_image hφ
+
+theorem topologicalClosure_map [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : ClosedEmbedding φ) :
+    (map φ s).topologicalClosure = map φ s.topologicalClosure :=
+  SetLike.coe_injective <| hφ.closure_image_eq _
+
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
 @[reducible]
@@ -124,7 +139,7 @@ def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace
   s.toSubalgebra.commRingTopologicalClosure hs
 #align star_subalgebra.comm_ring_topological_closure StarSubalgebra.commRingTopologicalClosure
 
-/-- Continuous `StarAlgHom`s from the the topological closure of a `StarSubalgebra` whose
+/-- Continuous `StarAlgHom`s from the topological closure of a `StarSubalgebra` whose
 compositions with the `StarSubalgebra.inclusion` map agree are, in fact, equal. -/
 theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra R A}
     {φ ψ : S.topologicalClosure →⋆ₐ[R] B} (hφ : Continuous φ) (hψ : Continuous ψ)

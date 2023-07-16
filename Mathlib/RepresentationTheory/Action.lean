@@ -119,7 +119,7 @@ namespace Hom
 attribute [reassoc] comm
 attribute [local simp] comm comm_assoc
 
-/-- The identity morphism on a `Action V G`. -/
+/-- The identity morphism on an `Action V G`. -/
 @[simps]
 def id (M : Action V G) : Action.Hom M M where hom := 𝟙 M.V
 set_option linter.uppercaseLean3 false in
@@ -172,7 +172,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w ; simp [w] }
+      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
 set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
@@ -321,10 +321,12 @@ def functorCategoryEquivalenceCompEvaluation :
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_equivalence_comp_evaluation Action.functorCategoryEquivalenceCompEvaluation
 
-noncomputable instance [HasLimits V] : Limits.PreservesLimits (forget V G) :=
+noncomputable instance instPreservesLimitsForget [HasLimits V] :
+    Limits.PreservesLimits (forget V G) :=
   Limits.preservesLimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
-noncomputable instance [HasColimits V] : PreservesColimits (forget V G) :=
+noncomputable instance instPreservesColimitsForget [HasColimits V] :
+    PreservesColimits (forget V G) :=
   preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
 -- TODO construct categorical images?

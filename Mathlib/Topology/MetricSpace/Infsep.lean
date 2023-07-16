@@ -159,7 +159,7 @@ theorem einfsep_pair_le_left (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edi
 #align set.einfsep_pair_le_left Set.einfsep_pair_le_left
 
 theorem einfsep_pair_le_right (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edist y x := by
-  rw [pair_comm] ; exact einfsep_pair_le_left hxy.symm
+  rw [pair_comm]; exact einfsep_pair_le_left hxy.symm
 #align set.einfsep_pair_le_right Set.einfsep_pair_le_right
 
 theorem einfsep_pair_eq_inf (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y ⊓ edist y x :=

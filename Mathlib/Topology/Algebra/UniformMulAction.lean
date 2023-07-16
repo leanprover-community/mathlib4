@@ -34,7 +34,7 @@ noncomputable section
 variable (R : Type u) (M : Type v) (N : Type w) (X : Type x) (Y : Type y) [UniformSpace X]
   [UniformSpace Y]
 
-/-- An additive action such that for all `c`, the map `λ x, c +ᵥ x` is uniformly continuous. -/
+/-- An additive action such that for all `c`, the map `fun x ↦ c +ᵥ x` is uniformly continuous. -/
 class UniformContinuousConstVAdd [VAdd M X] : Prop where
   uniformContinuous_const_vadd : ∀ c : M, UniformContinuous ((· +ᵥ ·) c : X → X)
 #align has_uniform_continuous_const_vadd UniformContinuousConstVAdd
@@ -154,14 +154,16 @@ theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·
 instance : UniformContinuousConstSMul M (Completion X) :=
   ⟨fun _ => uniformContinuous_map⟩
 
-@[to_additive]
-instance [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
+@[to_additive instVAddAssocClass]
+instance instIsScalarTower [SMul N X] [SMul M N] [UniformContinuousConstSMul M X]
     [UniformContinuousConstSMul N X] [IsScalarTower M N X] : IsScalarTower M N (Completion X) :=
   ⟨fun m n x => by
     have : _ = (_ : Completion X → Completion X) :=
       map_comp (uniformContinuous_const_smul m) (uniformContinuous_const_smul n)
     refine' Eq.trans _ (congr_fun this.symm x)
     exact congr_arg (fun f => Completion.map f x) (funext (smul_assoc _ _))⟩
+#align uniform_space.completion.is_scalar_tower UniformSpace.Completion.instIsScalarTower
+#align uniform_space.completion.vadd_assoc_class UniformSpace.Completion.instVAddAssocClass
 
 @[to_additive]
 instance [SMul N X] [SMulCommClass M N X] [UniformContinuousConstSMul M X]
@@ -189,8 +191,8 @@ theorem coe_smul (c : M) (x : X) : (↑(c • x) : Completion X) = c • (x : Co
 end SMul
 
 @[to_additive]
-instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] : MulAction M (Completion X)
-    where
+noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
+    MulAction M (Completion X) where
   smul := (· • ·)
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=

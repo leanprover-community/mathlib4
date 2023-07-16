@@ -344,10 +344,8 @@ instance (priority := 200) toModule : Module R A where
   zero_smul := by simp [smul_def']
 #align algebra.to_module Algebra.toModule
 
--- From now on, we don't want to use the following instance anymore.
--- Unfortunately, leaving it in place caused deterministic timeouts later in mathlib3.
--- porting note: todo: is it still required in Mathlib 4?
-attribute [instance 0] Algebra.toSMul
+-- porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
+-- attribute [instance 0] Algebra.toSMul
 
 theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
   Algebra.smul_def' r x
@@ -924,7 +922,7 @@ variable (R)
 #align linear_map.coe_coe_is_scalar_tower LinearMap.coe_restrictScalars
 
 -- porting note: todo: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce a `R`-linear map from `M` to `A` to a function, given an algebra `A` over
+/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
     [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where

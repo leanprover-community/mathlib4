@@ -148,7 +148,8 @@ noncomputable instance : LinearOrder (ValueGroup A K) where
   le_total := ValuationRing.le_total _ _
   decidableLE := by classical infer_instance
 
-noncomputable instance : LinearOrderedCommGroupWithZero (ValueGroup A K) where
+noncomputable instance linearOrderedCommGroupWithZero :
+    LinearOrderedCommGroupWithZero (ValueGroup A K) where
   mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]; apply Setoid.refl'
   one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]; apply Setoid.refl'
   mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]; apply Setoid.refl'
@@ -247,7 +248,7 @@ section
 
 variable (A : Type u) [CommRing A] [IsDomain A] [ValuationRing A]
 
-instance (priority := 100) : LocalRing A :=
+instance (priority := 100) localRing : LocalRing A :=
   LocalRing.of_isUnit_or_isUnit_one_sub_self
     (by
       intro a

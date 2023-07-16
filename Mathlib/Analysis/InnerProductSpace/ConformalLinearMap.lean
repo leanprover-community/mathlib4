@@ -29,8 +29,8 @@ open LinearIsometry ContinuousLinearMap
 open RealInnerProductSpace
 
 /-- A map between two inner product spaces is a conformal map if and only if it preserves inner
-products up to a scalar factor, i.e., there exists a positive `c : ℝ` such that `⟪f u, f v⟫ = c *
-⟪u, v⟫` for all `u`, `v`. -/
+products up to a scalar factor, i.e., there exists a positive `c : ℝ` such that
+`⟪f u, f v⟫ = c * ⟪u, v⟫` for all `u`, `v`. -/
 theorem isConformalMap_iff (f : E →L[ℝ] F) :
     IsConformalMap f ↔ ∃ c : ℝ, 0 < c ∧ ∀ u v : E, ⟪f u, f v⟫ = c * ⟪u, v⟫ := by
   constructor

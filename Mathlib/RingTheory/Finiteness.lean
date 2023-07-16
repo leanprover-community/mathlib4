@@ -107,7 +107,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type _} [CommR
   apply ih
   rcases H with ⟨r, hr1, hrn, hs⟩
   rw [← Set.singleton_union, span_union, smul_sup] at hrn
-  rw [Set.insert_subset] at hs
+  rw [Set.insert_subset_iff] at hs
   have : ∃ c : R, c - 1 ∈ I ∧ c • i ∈ I • span R s := by
     specialize hrn hs.1
     rw [mem_comap, mem_sup] at hrn
@@ -251,7 +251,7 @@ theorem fg_pi {ι : Type _} {M : ι → Type _} [Finite ι] [∀ i, AddCommMonoi
     [∀ i, Module R (M i)] {p : ∀ i, Submodule R (M i)} (hsb : ∀ i, (p i).FG) :
     (Submodule.pi Set.univ p).FG := by
   classical
-    simp_rw [fg_def] at hsb⊢
+    simp_rw [fg_def] at hsb ⊢
     choose t htf hts using hsb
     -- Porting note: `refine'` doesn't work here
     refine
@@ -394,7 +394,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
     -- Introduce shorthand for span of an element
     let sp : M → Submodule R M := fun a => span R {a}
     -- Trivial rewrite lemma; a small hack since simp (only) & rw can't accomplish this smoothly.
-    have supr_rw : ∀ t : Finset M, (⨆ x ∈ t, sp x) = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
+    have supr_rw : ∀ t : Finset M, ⨆ x ∈ t, sp x = ⨆ x ∈ (↑t : Set M), sp x := fun t => by rfl
     constructor
     · rintro ⟨t, rfl⟩
       rw [span_eq_iSup_of_singleton_spans, ← supr_rw, ← Finset.sup_eq_iSup t sp]
@@ -585,7 +585,7 @@ variable (M)
 theorem of_restrictScalars_finite (R A M : Type _) [CommSemiring R] [Semiring A] [AddCommMonoid M]
     [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] :
     Finite A M := by
-  rw [finite_def, Submodule.fg_def] at hM⊢
+  rw [finite_def, Submodule.fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine' ⟨S, hSfin, eq_top_iff.2 _⟩
   have := Submodule.span_le_restrictScalars R A S

@@ -338,7 +338,7 @@ theorem diagramIso_inv_app_right (i : D.J) :
 
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
--- porting note: commented out omi
+-- porting note: commented out omit
 -- omit H
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=

@@ -723,7 +723,7 @@ theorem Ideal.prime_iff_isPrime {P : Ideal A} (hP : P ≠ ⊥) : Prime P ↔ IsP
   ⟨Ideal.isPrime_of_prime, Ideal.prime_of_isPrime hP⟩
 #align ideal.prime_iff_is_prime Ideal.prime_iff_isPrime
 
-/-- In a Dedekind domain, the the prime ideals are the zero ideal together with the prime elements
+/-- In a Dedekind domain, the prime ideals are the zero ideal together with the prime elements
 of the monoid with zero `Ideal A`. -/
 theorem Ideal.isPrime_iff_bot_or_prime {P : Ideal A} : IsPrime P ↔ P = ⊥ ∨ Prime P :=
   ⟨fun hp => (eq_or_ne P ⊥).imp_right fun hp0 => Ideal.prime_of_isPrime hp0 hp, fun hp =>
@@ -982,20 +982,20 @@ variable [IsDomain R] [IsDedekindDomain R]
 @[ext, nolint unusedArguments]
 structure HeightOneSpectrum where
   asIdeal : Ideal R
-  IsPrime : asIdeal.IsPrime
+  isPrime : asIdeal.IsPrime
   ne_bot : asIdeal ≠ ⊥
 #align is_dedekind_domain.height_one_spectrum IsDedekindDomain.HeightOneSpectrum
 
-attribute [instance] HeightOneSpectrum.IsPrime
+attribute [instance] HeightOneSpectrum.isPrime
 
 variable (v : HeightOneSpectrum R) {R}
 
 namespace HeightOneSpectrum
 
-instance isMaximal : v.asIdeal.IsMaximal := dimensionLEOne v.asIdeal v.ne_bot v.IsPrime
+instance isMaximal : v.asIdeal.IsMaximal := dimensionLEOne v.asIdeal v.ne_bot v.isPrime
 #align is_dedekind_domain.height_one_spectrum.is_maximal IsDedekindDomain.HeightOneSpectrum.isMaximal
 
-theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.IsPrime
+theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 #align is_dedekind_domain.height_one_spectrum.prime IsDedekindDomain.HeightOneSpectrum.prime
 
 theorem irreducible : Irreducible v.asIdeal :=
@@ -1008,7 +1008,7 @@ theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
 
 /-- An equivalence between the height one and maximal spectra for rings of Krull dimension 1. -/
 def equivMaximalSpectrum (hR : ¬IsField R) : HeightOneSpectrum R ≃ MaximalSpectrum R where
-  toFun v := ⟨v.asIdeal, dimensionLEOne v.asIdeal v.ne_bot v.IsPrime⟩
+  toFun v := ⟨v.asIdeal, dimensionLEOne v.asIdeal v.ne_bot v.isPrime⟩
   invFun v :=
     ⟨v.asIdeal, v.IsMaximal.isPrime, Ring.ne_bot_of_isMaximal_of_not_isField v.IsMaximal hR⟩
   left_inv := fun ⟨_, _, _⟩ => rfl
@@ -1027,8 +1027,8 @@ theorem iInf_localization_eq_bot [Algebra R K] [hK : IsFractionRing R K] :
   constructor
   by_cases hR : IsField R
   · rcases Function.bijective_iff_has_inverse.mp
-      (IsField.localization_map_bijective (flip nonZeroDivisors.ne_zero rfl : 0 ∉ R⁰) hR) with
-      ⟨algebra_map_inv, _, algebra_map_right_inv⟩
+      (IsField.localization_map_bijective (Rₘ := K) (flip nonZeroDivisors.ne_zero rfl : 0 ∉ R⁰) hR)
+      with ⟨algebra_map_inv, _, algebra_map_right_inv⟩
     exact fun _ => Algebra.mem_bot.mpr ⟨algebra_map_inv x, algebra_map_right_inv x⟩
   all_goals rw [← MaximalSpectrum.iInf_localization_eq_bot, Algebra.mem_iInf]
   · exact fun hx ⟨v, hv⟩ => hx ((equivMaximalSpectrum hR).symm ⟨v, hv⟩)
@@ -1262,7 +1262,7 @@ theorem Ideal.pow_le_prime_iff {I P : Ideal R} [_hP : P.IsPrime] {n : ℕ} (hn :
 #align ideal.pow_le_prime_iff Ideal.pow_le_prime_iff
 
 theorem Ideal.prod_le_prime {ι : Type _} {s : Finset ι} {f : ι → Ideal R} {P : Ideal R}
-    [hP : P.IsPrime] : (∏ i in s, f i) ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
+    [hP : P.IsPrime] : ∏ i in s, f i ≤ P ↔ ∃ i ∈ s, f i ≤ P := by
   by_cases hP0 : P = ⊥
   · simp only [hP0, le_bot_iff]
     rw [← Ideal.zero_eq_bot, Finset.prod_eq_zero_iff]
@@ -1305,7 +1305,7 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type _} (s : Finset ι) (f 
 `∏ i, P i ^ e i`, then `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`. -/
 noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type _} [Fintype ι] (I : Ideal R)
     (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i, Prime (P i)) (coprime : ∀ i j, i ≠ j → P i ≠ P j)
-    (prod_eq : (∏ i, P i ^ e i) = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
+    (prod_eq : ∏ i, P i ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ P i ^ e i :=
   (Ideal.quotEquivOfEq
     (by
       simp only [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ, ciInf_pos,
@@ -1366,7 +1366,7 @@ the product to a finite subset `s` of a potentially infinite indexing type `ι`.
 noncomputable def IsDedekindDomain.quotientEquivPiOfFinsetProdEq {ι : Type _} {s : Finset ι}
     (I : Ideal R) (P : ι → Ideal R) (e : ι → ℕ) (prime : ∀ i ∈ s, Prime (P i))
     (coprime : ∀ (i) (_ : i ∈ s) (j) (_ : j ∈ s), i ≠ j → P i ≠ P j)
-    (prod_eq : (∏ i in s, P i ^ e i) = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
+    (prod_eq : ∏ i in s, P i ^ e i = I) : R ⧸ I ≃+* ∀ i : s, R ⧸ P i ^ e i :=
   IsDedekindDomain.quotientEquivPiOfProdEq I (fun i : s => P i) (fun i : s => e i)
     (fun i => prime i i.2) (fun i j h => coprime i i.2 j j.2 (Subtype.coe_injective.ne h))
     (_root_.trans (Finset.prod_coe_sort s fun i => P i ^ e i) prod_eq)

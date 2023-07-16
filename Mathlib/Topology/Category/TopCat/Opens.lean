@@ -355,10 +355,10 @@ theorem adjunction_counit_app_self {X : TopCat} (U : Opens X) :
 theorem inclusion_top_functor (X : TopCat) :
     (@Opens.openEmbedding X ⊤).isOpenMap.functor = map (inclusionTopIso X).inv := by
   refine' CategoryTheory.Functor.ext _ _
-  . intro U
+  · intro U
     ext x
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
-  . intros U V f
+  · intros U V f
     apply Subsingleton.elim
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
@@ -377,9 +377,9 @@ lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     Set.range ((forget TopCat).map (inclusion U)) = (U : Set X) := by
   ext x
   constructor
-  . rintro ⟨x, rfl⟩
+  · rintro ⟨x, rfl⟩
     exact x.2
-  . intro h
+  · intro h
     exact ⟨⟨x, h⟩, rfl⟩
 
 @[simp]
@@ -387,7 +387,7 @@ theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion).obj V) = V ⊓ U := by
   ext1
   refine' Set.image_preimage_eq_inter_range.trans _
-  rw [set_range_forget_map_inclusion U]
+  erw [set_range_forget_map_inclusion U]
   rfl
 #align topological_space.opens.functor_map_eq_inf TopologicalSpace.Opens.functor_map_eq_inf
 
@@ -405,7 +405,7 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
-      eqToHom (by dsimp ; rw [map_functor_eq V]) :=
+      eqToHom (by dsimp; rw [map_functor_eq V]) :=
   by apply Subsingleton.elim
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 

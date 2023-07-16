@@ -7,10 +7,10 @@ Authors: Floris van Doorn
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Lean.Message
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Data.String.Defs
 import Mathlib.Data.KVMap
 import Mathlib.Tactic.Simps.NotationClass
 import Std.Classes.Dvd
+import Std.Data.String.Basic
 import Std.Util.LibraryNote
 import Mathlib.Tactic.RunCmd -- not necessary, but useful for debugging
 import Mathlib.Lean.Linter
@@ -431,7 +431,7 @@ inductive ProjectionRule where
     which is used to declare hover information. -/
   | rename (oldName : Name) (oldStx : Syntax) (newName : Name) (newStx : Syntax) :
       ProjectionRule
-  /-- A adding rule `+fieldName` -/
+  /-- An adding rule `+fieldName` -/
   | add : Name → Syntax → ProjectionRule
   /-- A hiding rule `-fieldName` -/
   | erase : Name → Syntax → ProjectionRule
@@ -487,7 +487,7 @@ partial def getCompositeOfProjectionsAux
     throwError "{e} doesn't have a structure as type"
   let projs := getStructureFieldsFlattened env structName
   let projInfo := projs.toList.map fun p ↦ do
-    (← (p.getString ++ "_").isPrefixOf? proj, p)
+    ((← proj.dropPrefix? (p.getString ++ "_")).toString, p)
   let some (projRest, projName) := projInfo.reduceOption.getLast? |
     throwError "Failed to find constructor {proj.dropRight 1} in structure {structName}."
   let newE ← mkProjection e projName
@@ -834,7 +834,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd, `Opposite]
+  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   deriving Inhabited
@@ -1117,7 +1117,7 @@ partial def addProjections (nm : Name) (type lhs rhs : Expr)
   let nms ← projInfo.concatMapM fun ⟨newRhs, proj, projExpr, projNrs, isDefault, isPrefix⟩ ↦ do
     let newType ← inferType newRhs
     let newTodo := todo.filterMap
-      fun (x, stx) ↦ ((proj.getString ++ "_").isPrefixOf? x).map (·, stx)
+      fun (x, stx) ↦ (x.dropPrefix? (proj.getString ++ "_")).map (·.toString, stx)
     -- we only continue with this field if it is default or mentioned in todo
     if !(isDefault && todo.isEmpty) && newTodo.isEmpty then return #[]
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]

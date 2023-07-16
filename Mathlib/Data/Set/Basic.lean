@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 
 ! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -226,7 +226,7 @@ theorem Subtype.mem {α : Type _} {s : Set α} (p : s) : (p : α) ∈ s :=
 
 /-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
 theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  fun h₁ _ h₂ => by rw [← h₁] ; exact h₂
+  fun h₁ _ h₂ => by rw [← h₁]; exact h₂
 #align eq.subset Eq.subset
 
 namespace Set
@@ -254,7 +254,7 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-@[simp] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
+@[simp, mfld_simps] theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 #align set.mem_set_of_eq Set.mem_setOf_eq
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
@@ -544,8 +544,9 @@ theorem Nonempty.to_subtype : s.Nonempty → Nonempty (↥s) :=
 theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x⟩
 #align set.nonempty.to_type Set.Nonempty.to_type
 
-instance [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
+instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
+#align set.univ.nonempty Set.univ.nonempty
 
 theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
   nonempty_subtype.mp ‹_›
@@ -660,7 +661,7 @@ theorem setOf_true : { _x : α | True } = univ :=
   rfl
 #align set.set_of_true Set.setOf_true
 
-@[simp]
+@[simp, mfld_simps]
 theorem mem_univ (x : α) : x ∈ @univ α :=
   trivial
 #align set.mem_univ Set.mem_univ
@@ -890,7 +891,7 @@ theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a 
   rfl
 #align set.inter_def Set.inter_def
 
-@[simp]
+@[simp, mfld_simps]
 theorem mem_inter_iff (x : α) (a b : Set α) : x ∈ a ∩ b ↔ x ∈ a ∧ x ∈ b :=
   Iff.rfl
 #align set.mem_inter_iff Set.mem_inter_iff
@@ -946,7 +947,7 @@ theorem inter_right_comm (s₁ s₂ s₃ : Set α) : s₁ ∩ s₂ ∩ s₃ = s�
   ext fun _ => and_right_comm
 #align set.inter_right_comm Set.inter_right_comm
 
-@[simp]
+@[simp, mfld_simps]
 theorem inter_subset_left (s t : Set α) : s ∩ t ⊆ s := fun _ => And.left
 #align set.inter_subset_left Set.inter_subset_left
 
@@ -997,12 +998,12 @@ theorem inter_eq_inter_iff_right : s ∩ u = t ∩ u ↔ t ∩ u ⊆ s ∧ s ∩
   inf_eq_inf_iff_right
 #align set.inter_eq_inter_iff_right Set.inter_eq_inter_iff_right
 
-@[simp]
+@[simp, mfld_simps]
 theorem inter_univ (a : Set α) : a ∩ univ = a :=
   inf_top_eq
 #align set.inter_univ Set.inter_univ
 
-@[simp]
+@[simp, mfld_simps]
 theorem univ_inter (a : Set α) : univ ∩ a = a :=
   top_inf_eq
 #align set.univ_inter Set.univ_inter
@@ -1152,9 +1153,12 @@ theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not
 #align set.insert_ne_self Set.insert_ne_self
 
-theorem insert_subset : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
+theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
   simp only [subset_def, mem_insert_iff, or_imp, forall_and, forall_eq]
-#align set.insert_subset Set.insert_subset
+#align set.insert_subset Set.insert_subset_iff
+
+theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
+  insert_subset_iff.mpr ⟨ha, hs⟩
 
 theorem insert_subset_insert (h : s ⊆ t) : insert a s ⊆ insert a t := fun _ => Or.imp_right (@h _)
 #align set.insert_subset_insert Set.insert_subset_insert
@@ -1170,7 +1174,7 @@ theorem subset_insert_iff_of_not_mem (ha : a ∉ s) : s ⊆ insert a t ↔ s ⊆
 #align set.subset_insert_iff_of_not_mem Set.subset_insert_iff_of_not_mem
 
 theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ (a : α) (_ : a ∉ s), insert a s ⊆ t := by
-  simp only [insert_subset, exists_and_right, ssubset_def, not_subset]
+  simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   simp only [exists_prop, and_comm]
 #align set.ssubset_iff_insert Set.ssubset_iff_insert
 
@@ -1389,8 +1393,8 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
 -- Porting note: first branch after `constructor` used to be by `tauto!`.
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp only [Set.Subset.antisymm_iff, Set.insert_subset, Set.mem_insert_iff, Set.mem_singleton_iff,
-    Set.singleton_subset_iff]
+  simp only [Set.Subset.antisymm_iff, Set.insert_subset_iff, Set.mem_insert_iff,
+    Set.mem_singleton_iff, Set.singleton_subset_iff]
   constructor
   · rintro ⟨⟨rfl | rfl, rfl | rfl⟩, ⟨h₁, h₂⟩⟩ <;> simp [h₁, h₂] at * <;> simp [h₁, h₂]
   · rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp
@@ -1582,9 +1586,10 @@ lemma disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint 
 #align set.disjoint_univ Set.disjoint_univ
 
 lemma disjoint_sdiff_left : Disjoint (t \ s) s := disjoint_sdiff_self_left
+#align set.disjoint_sdiff_left Set.disjoint_sdiff_left
+
 lemma disjoint_sdiff_right : Disjoint s (t \ s) := disjoint_sdiff_self_right
 #align set.disjoint_sdiff_right Set.disjoint_sdiff_right
-#align set.disjoint_sdiff_left Set.disjoint_sdiff_left
 
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut
@@ -1743,11 +1748,11 @@ theorem subset_compl_iff_disjoint_right : s ⊆ tᶜ ↔ Disjoint s t :=
   @le_compl_iff_disjoint_right (Set α) _ _ _
 #align set.subset_compl_iff_disjoint_right Set.subset_compl_iff_disjoint_right
 
-theorem disjoint_compl_left_iff_subset : Disjoint (sᶜ) t ↔ t ⊆ s :=
+theorem disjoint_compl_left_iff_subset : Disjoint sᶜ t ↔ t ⊆ s :=
   disjoint_compl_left_iff
 #align set.disjoint_compl_left_iff_subset Set.disjoint_compl_left_iff_subset
 
-theorem disjoint_compl_right_iff_subset : Disjoint s (tᶜ) ↔ s ⊆ t :=
+theorem disjoint_compl_right_iff_subset : Disjoint s tᶜ ↔ s ⊆ t :=
   disjoint_compl_right_iff
 #align set.disjoint_compl_right_iff_subset Set.disjoint_compl_right_iff_subset
 
@@ -2183,8 +2188,8 @@ theorem powerset_singleton (x : α) : 𝒫({x} : Set α) = {∅, {x}} := by
 theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
     (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h := by
   split_ifs with hp
-  . exact ⟨fun hx => ⟨fun _ => hx, fun hnp => (hnp hp).elim⟩, fun hx => hx.1 hp⟩
-  . exact ⟨fun hx => ⟨fun h => (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
+  · exact ⟨fun hx => ⟨fun _ => hx, fun hnp => (hnp hp).elim⟩, fun hx => hx.1 hp⟩
+  · exact ⟨fun hx => ⟨fun h => (hp h).elim, fun _ => hx⟩, fun hx => hx.2 hp⟩
 
 --Porting note: Old proof was `split_ifs; simp [h]`
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
@@ -2472,7 +2477,7 @@ theorem nontrivial_of_pair_subset {x y} (hxy : x ≠ y) (h : {x, y} ⊆ s) : s.N
 
 theorem Nontrivial.pair_subset (hs : s.Nontrivial) : ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
-  ⟨x, y, hxy, insert_subset.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
+  ⟨x, y, hxy, insert_subset_iff.2 ⟨hx, singleton_subset_iff.2 hy⟩⟩
 #align set.nontrivial.pair_subset Set.Nontrivial.pair_subset
 
 theorem nontrivial_iff_pair_subset : s.Nontrivial ↔ ∃ (x y : _) (_ : x ≠ y), {x, y} ⊆ s :=

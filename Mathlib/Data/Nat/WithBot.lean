@@ -23,6 +23,10 @@ namespace Nat
 
 namespace WithBot
 
+instance : WellFoundedRelation (WithBot ℕ) where
+  rel := (· < ·)
+  wf := IsWellFounded.wf
+
 theorem add_eq_zero_iff {n m : WithBot ℕ} : n + m = 0 ↔ n = 0 ∧ m = 0 := by
   rcases n, m with ⟨_ | _, _ | _⟩
   any_goals (exact ⟨fun h => Option.noConfusion h, fun h => Option.noConfusion h.1⟩)
