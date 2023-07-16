@@ -57,21 +57,20 @@ partial def moduleNamesIn (dir : FilePath) (ext := "lean") : IO (Array Name) :=
   dir.readDir >>= Array.concatMapM fun entry ↦ do
     if (← entry.path.isDir) then
       let n := entry.fileName.toName
-      let r := FilePath.withExtension entry.fileName ext
-      if (← r.pathExists) then
-        (Array.push (v := n)) <$> (Array.map (n ++ ·) <$> moduleNamesIn entry.path ext)
-      else return #[]
+      let mods ← Array.map (n ++ ·) <$> moduleNamesIn entry.path ext
+      if mods.isEmpty then
+        return #[]
+      else
+        return mods.push n
     else if entry.path.extension == some ext then
       return #[FilePath.withExtension entry.fileName "" |>.toString.toName]
     else return #[]
 
 def importsForLib (dir : FilePath) (root : Name) : IO String := do
-  let toImportString (fileName : Name) := fileName.toString
-    |>.takeWhile (· != FilePath.extSeparator)
-    |>.map <| fun c ↦ if c = FilePath.pathSeparator then '.' else c
-  moduleNamesIn (dir / root.toString) >>= Array.foldlM (init := "")
-    fun imports fileName ↦
-      return imports ++ s!"import {toImportString fileName}\n"
+  moduleNamesIn (dir / root.toString) >>=
+    Array.mapM (return .mkSimple root.toString ++ ·) >>=
+    Array.foldlM (init := "") fun imports fileName ↦
+      return imports ++ s!"import {fileName.toString}\n"
 
 script import_all do
   let pkg ← Workspace.root <$> getWorkspace
