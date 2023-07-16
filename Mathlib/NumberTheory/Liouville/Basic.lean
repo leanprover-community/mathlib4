@@ -9,8 +9,10 @@ Authors: Damiano Testa, Jujian Zhang
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Data.Polynomial.DenomsClearable
 import Mathlib.Data.Real.Irrational
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 

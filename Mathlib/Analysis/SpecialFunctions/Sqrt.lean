@@ -9,6 +9,7 @@ Authors: Yury G. Kudryashov
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
+import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Smoothness of `Real.sqrt`

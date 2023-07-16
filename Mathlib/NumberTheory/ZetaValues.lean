@@ -10,6 +10,7 @@ Authors: David Loeffler
 -/
 import Mathlib.NumberTheory.BernoulliPolynomials
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.PSeries
 

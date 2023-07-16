@@ -10,6 +10,8 @@ Authors: Chris Hughes, Junyan Xu
 -/
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # The fundamental theorem of algebra

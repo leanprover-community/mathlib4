@@ -9,12 +9,14 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.Calculus.ExtendDeriv
 import Mathlib.Analysis.Calculus.IteratedDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Infinitely smooth bump function

@@ -9,8 +9,8 @@ Authors: Luke Mantle, Jake Levinson
 ! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
-import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
