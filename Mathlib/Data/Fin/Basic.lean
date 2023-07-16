@@ -10,6 +10,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.WithZero
+import Mathlib.Util.Qq
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
@@ -2570,14 +2571,14 @@ protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
-  toTypeExpr := q(Fin $n)
-  toExpr := match n with
+instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) := Lean.ToExpr.mkQ.{0}
+  (toTypeExprQ := q(Fin $n))
+  (toExprQ := match n with
     | 0 => finZeroElim
-    | k + 1 => fun i => show Q(Fin $n) from
+    | k + 1 => fun i =>
       have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
       have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
-      q(OfNat.ofNat $i)
+      q(OfNat.ofNat $i))
 #align fin.reflect Fin.toExprₓ
 
 end Fin
