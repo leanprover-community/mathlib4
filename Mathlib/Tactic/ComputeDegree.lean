@@ -93,22 +93,6 @@ end mylemmas
 
 open Lean Meta Elab.Tactic
 
-/-!
-Four helper lemmas to build `Expr`essions: `mkMax, mkPow, mkNatDegree, mkDegree`.
--/
-
-/-- Return `max a b` using `Max.max`. This method assumes `a` and `b` have the same type. -/
-def mkMax (a b : Expr) : MetaM Expr := mkAppM ``Max.max #[a, b]
-
-/-- Return `a ^ b` using `HPow.hPow`. -/
-def mkPow (a b : Expr) : MetaM Expr := mkAppM ``HPow.hPow #[a, b]
-
-/-- Returns `natDegree pol`. -/
-def mkNatDegree (pol : Expr) : MetaM Expr := mkAppM ``natDegree #[pol]
-
-/-- Returns `degree pol`. -/
-def mkDegree (pol : Expr) : MetaM Expr := mkAppM ``degree #[pol]
-
 /-- `isDegLE e` checks whether `e` is an `Expr`ession is an inequality whose LHS is
 the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
 If `e` represents
