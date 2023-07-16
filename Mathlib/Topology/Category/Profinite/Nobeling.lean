@@ -3136,6 +3136,9 @@ fun f ↦ f x
 def Products.Apply (l : Products (WithTop I)) (x : {i // i ∈ C}) : List ℤ :=
 List.map ((LC_eval C x) ∘ (e C)) l.val
 
+def List.Apply (l : List (WithTop I)) (x : {i // i ∈ C}) : List ℤ :=
+List.map ((LC_eval C x) ∘ (e C)) l
+
 lemma Products.eval_apply (l : Products (WithTop I)) (x : {i // i ∈ C}) :
     l.eval C x = List.prod (Apply C l x) := by
   dsimp [eval, Apply, LC_eval]
@@ -3149,6 +3152,19 @@ lemma Products.eval_apply (l : Products (WithTop I)) (x : {i // i ∈ C}) :
       left
       exact ih
 
+def List.eval (l : List (WithTop I)) := (l.map (e C)).prod
+
+lemma List.eval_apply (l : List (WithTop I)) (x : {i // i ∈ C}) :
+    eval C l x = List.prod (Apply C l x) := by
+  dsimp [eval, Apply, LC_eval]
+  induction l with
+  | nil => rfl
+  | cons a as ih =>
+    · simp only [List.map, List.prod_cons, LocallyConstant.coe_mul, Pi.mul_apply,
+        Function.comp_apply, mul_eq_mul_left_iff]
+      left
+      exact ih
+
 lemma Products.eval_eq (l : Products (WithTop I)) (x : {i // i ∈ C}) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   rw [eval_apply]
@@ -3156,6 +3172,31 @@ lemma Products.eval_eq (l : Products (WithTop I)) (x : {i // i ∈ C}) :
   · dsimp [Apply]
     suffices : ∀ y, y ∈ List.map (LC_eval C x ∘ e C) l.val → y = 1
     · exact List.prod_eq_one this
+    intro y hy
+    simp only [List.mem_map, Function.comp_apply] at hy
+    obtain ⟨i,hi⟩ := hy
+    specialize h i hi.1
+    dsimp [LC_eval, e, BoolToZ] at hi
+    rw [← hi.2]
+    simp only [ite_eq_left_iff]
+    exact fun hx ↦ hx h
+  · simp only [List.prod_eq_zero_iff]
+    dsimp [Apply]
+    simp only [List.mem_map, Function.comp_apply]
+    push_neg at h
+    obtain ⟨i,hi⟩ := h
+    use i
+    refine' ⟨hi.1,_⟩
+    dsimp [LC_eval, e, BoolToZ]
+    simp only [ite_eq_right_iff]
+    exact hi.2
+
+lemma List.eval_eq (l : List (WithTop I)) (x : {i // i ∈ C}) :
+    eval C l x = if ∀ i, i ∈ l → (x.val i = true) then 1 else 0 := by
+  rw [eval_apply]
+  split_ifs with h
+  · dsimp [Apply]
+    apply List.prod_eq_one
     intro y hy
     simp only [List.mem_map, Function.comp_apply] at hy
     obtain ⟨i,hi⟩ := hy
@@ -3285,6 +3326,38 @@ lemma Products.max_eq_eval (l : Products (WithTop I)) (hl : l.val ≠ [])
     exfalso
     apply hi.2
     rwa [← hi']
+  · rfl
+
+lemma Products.max_eq_eval_unapply :
+    Set.restrict {l : Products (WithTop I) | term I ho ∉ l.val} (Products.eval (C' C ho)) =
+    Linear_CC' C hsC ho ∘ (fun (l : {l : Products (WithTop I) | term I ho ∉ l.val}) ↦
+    (List.eval C (term I ho :: l.val.val)))
+    := by
+  ext l x
+  dsimp [Linear_CC', Linear_CC'₁, Linear_CC'₀, LocallyConstant.comapLinear]
+  rw [LocallyConstant.sub_apply]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
+  rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
+  dsimp [CC'₀, CC'₁]
+  simp only [List.prod_cons, LocallyConstant.coe_mul, Pi.mul_apply]
+  rw [Products.eval_eq]
+  rw [List.eval_eq]
+  rw [List.eval_eq]
+  simp only [ite_mul, one_mul, zero_mul]
+  split_ifs with h₁ h₂ h₂ h₃ h₄ h₅ h₆
+  <;> dsimp [e, BoolToZ]
+  · exfalso
+    sorry -- use h₂
+  · rfl
+  · exfalso
+    sorry -- use h₃ (term I ho)
+  · exfalso
+    sorry -- combination of h₁ and h₃
+  · rfl
+  · push_neg at h₁
+    sorry -- wrong...
+  · exfalso
+    sorry -- combination of h₁ and h₆
   · rfl
 
 -- lemma Products.max_eq_eval' (l : Products (WithTop I)) (hl : l.val ≠ []) (x : {i // i ∈ C' C ho}) :
@@ -3500,6 +3573,13 @@ lemma GoodProducts.cons_o_chain' (l : GoodProducts (C' C ho)) :
   --   rw [← Bool.not_eq_false] at hi
   --   exact hi i.prop.1.2
 
+-- lemma GoodProducts.cons_o_mem_startingWithMax_helper (l : GoodProducts (C' C ho)) :
+--     ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈ GoodProducts (C1 C ho) := by
+--   dsimp [GoodProducts]
+--   intro h
+--   rw [Products.evalCons (C1 C ho) (cons_o_chain' C ho l)] at h
+--   apply l.prop
+
 lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈ StartingWithMax C o := by
   dsimp [StartingWithMax]
@@ -3515,25 +3595,59 @@ lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     · simp only [List.head!_cons]
     rw [hlt, ← Products.max_eq_eval C hsC ho m hm hmh]
     have hh : m.eval C ∈ Submodule.span ℤ (Products.eval C '' {q | q < m}) := h
-    let smaller_set := {p : Products (WithTop I) | p.val ≠ [] ∧ p.val.head! = term I ho ∧ p < m}
-    have hss : Submodule.span ℤ (Products.eval C '' smaller_set) =
-        Submodule.span ℤ (Products.eval C '' {q | q < m}) := sorry
-    rw [← hss] at hh
-    have hmi := Submodule.apply_mem_span_image_of_mem_span (Linear_CC' C hsC ho) hh
-    suffices hmi' : (Linear_CC' C hsC ho) '' (Products.eval C '' smaller_set) ⊆
-        Products.eval (C' C ho) '' {q | q < m.Tail}
-    · exact Submodule.span_mono hmi' hmi
-    intro x hx
-    rw [← Set.image_comp] at hx
-    obtain ⟨y, hy⟩ := hx
-    have smaller_set_sub : Products.Tail '' smaller_set ⊆ {q | q < m.Tail} := sorry
-    have image_sss : Products.eval (C' C ho) '' (Products.Tail '' smaller_set) ⊆
-      Products.eval (C' C ho) '' {q | q < m.Tail} := Set.image_subset _ smaller_set_sub
-    apply image_sss
-    rw [← hy.2]
-    refine' ⟨y.Tail, ⟨⟨y, ⟨hy.1, rfl⟩⟩, _⟩⟩
-    dsimp
-    rw [Products.max_eq_eval C hsC ho _ hy.1.1 hy.1.2.1]
+    have : Products.eval (C' C ho) '' {m_1 | m_1 < m.Tail} =
+        Set.restrict {l : Products (WithTop I) | term I ho ∉ l.val} (Products.eval (C' C ho)) ''
+        {m_1 | m_1.val < m.Tail} := sorry
+    rw [this, Products.max_eq_eval_unapply C hsC ho, Set.image_comp, Submodule.span_image,
+      Submodule.mem_map]
+    sorry
+    /- Plan: for all `x ∈ C` such that `x (term I ho) = true`, any `q < m` such that
+       `term I ho ∉ q` satisfies `q.eval C x = 0`. On the other hand for all `x ∈ C` such that
+       `x (term I ho) = false`, `m.eval C x = 0`. Therefore, those `q`'s don't contribute to
+       the linear combination, and can be dropped. The remaining ones are of the form
+       `term I ho :: q.Tail` for `q.Tail < m.Tail` and this gives the desired linear combination. -/
+
+    -- refine' ⟨Products.eval C m, ⟨_, rfl⟩⟩
+    -- simp only [Submodule.mem_map] at hh
+
+    -- let smaller_set := {p : Products (WithTop I) | p.val ≠ [] ∧ p.val.head! = term I ho ∧ p < m}
+    -- have smaller_set_sub : Products.Tail '' smaller_set ⊆ {q | q < m.Tail}
+    -- · intro x hx
+    --   obtain ⟨y, hy⟩ := hx
+    --   rw [← hy.2]
+    --   simp only [Set.mem_setOf_eq]
+    --   have := hy.1.2.2
+    --   sorry
+    -- have smaller_set_sub' : smaller_set ⊆ {q | q < m}
+    -- · intro x hx
+    --   exact hx.2.2
+    -- have image_sss' : Products.eval C '' (smaller_set) ⊆
+    --   Products.eval C '' {q | q < m} := Set.image_subset _ smaller_set_sub'
+    -- have submodule_sss : Submodule.span ℤ (Products.eval C '' smaller_set)
+    --   ≤ Submodule.span ℤ (Products.eval C '' {q | q < m}) := Submodule.span_mono image_sss'
+    -- have hss : Submodule.span ℤ (Products.eval C '' smaller_set) =
+    --     Submodule.span ℤ (Products.eval C '' {q | q < m})
+    -- · ext x
+    --   constructor
+    --   <;> intro hx
+    --   · exact submodule_sss hx
+    --   · sorry
+    -- rw [← hss] at hh
+    -- have hmi := Submodule.apply_mem_span_image_of_mem_span (Linear_CC' C hsC ho) hh
+    -- suffices hmi' : (Linear_CC' C hsC ho) '' (Products.eval C '' smaller_set) ⊆
+    --     Products.eval (C' C ho) '' {q | q < m.Tail}
+    -- · exact Submodule.span_mono hmi' hmi
+    -- intro x hx
+    -- rw [← Set.image_comp] at hx
+    -- obtain ⟨y, hy⟩ := hx
+    -- have image_sss : Products.eval (C' C ho) '' (Products.Tail '' smaller_set) ⊆
+    --   Products.eval (C' C ho) '' {q | q < m.Tail} := Set.image_subset _ smaller_set_sub
+    -- apply image_sss
+    -- rw [← hy.2]
+    -- refine' ⟨y.Tail, ⟨⟨y, ⟨hy.1, rfl⟩⟩, _⟩⟩
+    -- dsimp
+    -- rw [Products.max_eq_eval C hsC ho _ hy.1.1 hy.1.2.1]
+
     -- · rw [← hlt]
     --   simp only [Set.mem_setOf_eq]
     --   suffices : List.Lex (·<·) (term I ho :: y.Tail.val) (term I ho :: l.val.val)
