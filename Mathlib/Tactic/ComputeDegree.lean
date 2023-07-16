@@ -100,13 +100,13 @@ If `e` represents
 *  `degree f ≤ d`,    then it returns `(false, f)`;
 *  anything else, then it throws an error.
 -/
-def isDegLE (e : Expr) : CoreM (Bool × Expr × Expr × Expr × Expr) := do
+def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
   match e.consumeMData.getAppFnArgs with
     -- check that the target is an inequality `≤`...
-    | (``LE.le, #[_, _, lhs, rhs]) => match lhs.getAppFnArgs with
+    | (``LE.le, #[_, _, lhs, _rhs]) => match lhs.getAppFnArgs with
       -- and that the LHS is `natDegree ...` or `degree ...`
-      | (``degree, #[R, iSR, pol])    => return (false, pol, rhs, R, iSR)
-      | (``natDegree, #[R, iSR, pol]) => return (true, pol, rhs, R, iSR)
+      | (``degree, #[_R, _iSR, pol])    => return (false, pol)
+      | (``natDegree, #[_R, _iSR, pol]) => return (true, pol)
       | (na, _) => throwError (f!"Expected an inequality of the form\n\n" ++
         f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
     | _ => throwError m!"Expected an inequality instead of '{e.getAppFnArgs.1}', '{e}'"
