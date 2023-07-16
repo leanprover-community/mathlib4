@@ -393,7 +393,7 @@ theorem ofElement_top {α : Type _} (r : α → α → Prop) (a : α) : (ofEleme
   rfl
 #align principal_seg.of_element_top PrincipalSeg.ofElement_top
 
-/-- Any principal segment of a well order is order-isomorphic to a `Subrel` -/
+/-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
 @[simps! symm_apply]
 noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
   RelIso.symm
