@@ -23,7 +23,6 @@ See the doc-string for more details.
 * Currently, the tactic does not handle goals of the form `degree f ≤ d`, where `d` is not the
   coercion of a `Nat`.  This should be fixed.
 * Deal with equalities, instead of inequalities (i.e. implement `compute_degree`).
-* Add functionality to deal with (some) exponents that are not closed natural numbers.
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree` and `natDegree` are equally supported.
 
