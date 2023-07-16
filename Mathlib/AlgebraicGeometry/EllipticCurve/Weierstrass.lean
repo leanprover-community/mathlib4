@@ -1047,8 +1047,6 @@ end ModelsWithJInvariant'
 
 section ModelsWithJInvariant
 
-open scoped Classical
-
 variable {F : Type u} [Field F] (j : F)
 
 /-- For any element $j$ of a field $F$, there exists an elliptic curve over $F$
