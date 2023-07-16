@@ -96,11 +96,9 @@ open Lean Meta Elab.Tactic
 /-- `isDegLE e` checks whether `e` is an `Expr`ession is an inequality whose LHS is
 the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
 If `e` represents
-*  `natDegree f ≤ d`, then it returns `(true,  f, d, R, instSemiRing)`;
-*  `degree f ≤ d`,    then it returns `(false, f, d, R, instSemiRing)`;
+*  `natDegree f ≤ d`, then it returns `(true,  f)`;
+*  `degree f ≤ d`,    then it returns `(false, f)`;
 *  anything else, then it throws an error.
-
-Returning `R` and its `Semiring` instance is useful for simplifying `cDegCore`.
 -/
 def isDegLE (e : Expr) : CoreM (Bool × Expr × Expr × Expr × Expr) := do
   match e.consumeMData.getAppFnArgs with
