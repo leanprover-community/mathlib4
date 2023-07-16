@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.nat.order.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
+! leanprover-community/mathlib commit 3ed3f98a1e836241990d3d308f1577e434977130
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -115,26 +115,11 @@ theorem zero_max : max 0 n = n :=
 #align nat.zero_max Nat.zero_max
 
 @[simp]
-theorem min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := by
-  constructor
-  · intro h
-    cases' le_total m n with H H
-    · simpa [H] using Or.inl h
-    · simpa [H] using Or.inr h
-  · rintro (rfl | rfl) <;> simp
+theorem min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := min_eq_bot
 #align nat.min_eq_zero_iff Nat.min_eq_zero_iff
 
 @[simp]
-theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := by
-  constructor
-  · intro h
-    cases' le_total m n with H H
-    · simp only [H, max_eq_right] at h
-      exact ⟨le_antisymm (H.trans h.le) (zero_le _), h⟩
-    · simp only [H, max_eq_left] at h
-      exact ⟨h, le_antisymm (H.trans h.le) (zero_le _)⟩
-  · rintro ⟨rfl, rfl⟩
-    simp
+theorem max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := max_eq_bot
 #align nat.max_eq_zero_iff Nat.max_eq_zero_iff
 
 theorem add_eq_max_iff : m + n = max m n ↔ m = 0 ∨ n = 0 := by
@@ -332,6 +317,13 @@ theorem lt_mul_self_iff : ∀ {n : ℕ}, n < n * n ↔ 1 < n
   | 0 => iff_of_false (lt_irrefl _) zero_le_one.not_lt
   | n + 1 => lt_mul_iff_one_lt_left n.succ_pos
 #align nat.lt_mul_self_iff Nat.lt_mul_self_iff
+
+theorem add_sub_one_le_mul (hm : m ≠ 0) (hn : n ≠ 0) : m + n - 1 ≤ m * n := by
+  cases m
+  · cases hm rfl
+  · rw [succ_add, succ_sub_one, succ_mul]
+    exact add_le_add_right (le_mul_of_one_le_right' $ succ_le_iff.2 $ pos_iff_ne_zero.2 hn) _
+#align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
 
 /-!
 ### Recursion and induction principles
