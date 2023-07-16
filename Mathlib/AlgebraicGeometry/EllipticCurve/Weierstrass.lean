@@ -181,6 +181,54 @@ lemma c_relation : 1728 * W.Δ = W.c₄ ^ 3 - W.c₆ ^ 2 := by
 
 end Quantity
 
+section ModelsWithJInvariant_0_1728
+
+variable (R : Type u) [CommRing R]
+
+/-- The Weierstrass curve $Y^2 + Y = X^3$. -/
+def ofJInvariant0 : WeierstrassCurve R :=
+  ⟨0, 0, 1, 0, 0⟩
+
+lemma ofJInvariant0_c₄ : (ofJInvariant0 R).c₄ = 0 := by
+  simp only [ofJInvariant0, c₄, b₂, b₄]
+  ring1
+
+lemma ofJInvariant0_Δ : (ofJInvariant0 R).Δ = -27 := by
+  simp only [ofJInvariant0, Δ, b₂, b₄, b₆, b₈]
+  ring1
+
+/-- The Weierstrass curve $Y^2 = X^3 + X$. -/
+def ofJInvariant1728 : WeierstrassCurve R :=
+  ⟨0, 0, 0, 1, 0⟩
+
+lemma ofJInvariant1728_c₄ : (ofJInvariant1728 R).c₄ = -48 := by
+  simp only [ofJInvariant1728, c₄, b₂, b₄]
+  ring1
+
+lemma ofJInvariant1728_Δ : (ofJInvariant1728 R).Δ = -64 := by
+  simp only [ofJInvariant1728, Δ, b₂, b₄, b₆, b₈]
+  ring1
+
+end ModelsWithJInvariant_0_1728
+
+section ModelsWithJInvariant
+
+variable {R : Type u} [CommRing R] (j : R)
+
+/-- The Weierstrass curve $Y^2 + (j-1728)XY = X^3 - 36(j-1728)^3X - (j-1728)^5$. -/
+def ofJInvariant : WeierstrassCurve R :=
+  ⟨j - 1728, 0, 0, -36 * (j - 1728) ^ 3, -(j - 1728) ^ 5⟩
+
+lemma ofJInvariant_c₄ : (ofJInvariant j).c₄ = j * (j - 1728) ^ 3 := by
+  simp only [ofJInvariant, c₄, b₂, b₄]
+  ring1
+
+lemma ofJInvariant_Δ : (ofJInvariant j).Δ = j ^ 2 * (j - 1728) ^ 9 := by
+  simp only [ofJInvariant, Δ, b₂, b₄, b₆, b₈]
+  ring1
+
+end ModelsWithJInvariant
+
 section VariableChange
 
 /-! ### Variable changes -/
@@ -917,6 +965,152 @@ lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] :
 lemma nonsingular [Nontrivial R] {x y : R} (h : E.equation x y) : E.nonsingular x y :=
   E.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
 #align elliptic_curve.nonsingular EllipticCurve.nonsingular
+
+section ModelsWithJInvariant_0_1728
+
+variable (R : Type u) [CommRing R]
+
+/-- The elliptic curve $Y^2 + Y = X^3$ when $3$ is invertible. -/
+def ofJInvariant0 [Invertible (3 : R)] : EllipticCurve R :=
+  ⟨
+    WeierstrassCurve.ofJInvariant0 R,
+    ⟨-27, -(⅟3) ^ 3,
+      by
+        rw [calc (27 : R) = (3 : R) ^ 3 := by norm_num]
+        simp only [mul_neg, neg_mul, neg_neg]
+        exact pow_mul_pow_eq_one 3 (mul_invOf_self (3 : R))
+      , by
+        rw [calc (27 : R) = (3 : R) ^ 3 := by norm_num]
+        simp only [mul_neg, neg_mul, neg_neg]
+        exact pow_mul_pow_eq_one 3 (invOf_mul_self (3 : R))
+    ⟩,
+    by rw [WeierstrassCurve.ofJInvariant0_Δ R]
+  ⟩
+
+lemma ofJInvariant0_j [Invertible (3 : R)] : (ofJInvariant0 R).j = 0 := by
+  simp only [j, ofJInvariant0, WeierstrassCurve.ofJInvariant0_c₄]
+  ring1
+
+/-- The elliptic curve $Y^2 = X^3 + X$ when $2$ is invertible. -/
+def ofJInvariant1728 [Invertible (2 : R)] : EllipticCurve R :=
+  ⟨
+    WeierstrassCurve.ofJInvariant1728 R,
+    ⟨-64, -(⅟2) ^ 6,
+      by
+        rw [calc (64 : R) = (2 : R) ^ 6 := by norm_num]
+        simp only [mul_neg, neg_mul, neg_neg]
+        exact pow_mul_pow_eq_one 6 (mul_invOf_self (2 : R))
+      , by
+        rw [calc (64 : R) = (2 : R) ^ 6 := by norm_num]
+        simp only [mul_neg, neg_mul, neg_neg]
+        exact pow_mul_pow_eq_one 6 (invOf_mul_self (2 : R))
+    ⟩,
+    by rw [WeierstrassCurve.ofJInvariant1728_Δ R]
+  ⟩
+
+lemma ofJInvariant1728_j [Invertible (2 : R)] : (ofJInvariant1728 R).j = 1728 := by
+  simp only [j, ofJInvariant1728, WeierstrassCurve.ofJInvariant1728_c₄]
+  field_simp
+  ring1
+
+end ModelsWithJInvariant_0_1728
+
+section ModelsWithJInvariant'
+
+variable {R : Type u} [CommRing R] (j : R) [Invertible j] [Invertible (j - 1728)]
+
+/-- The elliptic curve $Y^2 + (j-1728)XY = X^3 - 36(j-1728)^3X - (j-1728)^5$
+when $j$ and $j-1728$ are both invertible. -/
+def ofJInvariant' : EllipticCurve R :=
+  ⟨
+    WeierstrassCurve.ofJInvariant j,
+    ⟨j ^ 2 * (j - 1728) ^ 9, ⅟j ^ 2 * ⅟(j - 1728) ^ 9,
+      by rw [←mul_assoc, mul_assoc (j ^ 2) ((j - 1728) ^ 9) (⅟j ^ 2),
+        mul_comm ((j - 1728) ^ 9) (⅟j ^ 2), ←mul_assoc, mul_assoc,
+        pow_mul_pow_eq_one 2 (mul_invOf_self _),
+        pow_mul_pow_eq_one 9 (mul_invOf_self _), mul_one]
+      , by rw [←mul_assoc, mul_assoc (⅟j ^ 2) (⅟(j - 1728) ^ 9) (j ^ 2),
+        mul_comm (⅟(j - 1728) ^ 9) (j ^ 2), ←mul_assoc, mul_assoc,
+        pow_mul_pow_eq_one 2 (invOf_mul_self _),
+        pow_mul_pow_eq_one 9 (invOf_mul_self _), mul_one]
+    ⟩,
+    by rw [WeierstrassCurve.ofJInvariant_Δ j]
+  ⟩
+
+lemma ofJInvariant'_j : (ofJInvariant' j).j = j := by
+  simp only [EllipticCurve.j, ofJInvariant', WeierstrassCurve.ofJInvariant_c₄]
+  field_simp
+  -- do not use 'ring1' otherwise (j - 1728) ^ 9 will be expanded
+  rw [mul_pow, ←pow_mul, ←mul_assoc, ←pow_succ]
+
+end ModelsWithJInvariant'
+
+section ModelsWithJInvariant
+
+open scoped Classical
+
+variable {F : Type u} [Field F] (j : F)
+
+/-- For any element $j$ of a field $F$, there exists an elliptic curve over $F$
+with $j$-invariant equal to $j$. Its coefficients are written in an explicit way. -/
+noncomputable def ofJInvariant : EllipticCurve F := by
+  by_cases hj0 : j = 0
+  · by_cases hchar3 : (3 : F) = 0
+    · have : Invertible (2 : F) := by
+        apply invertibleOfNonzero
+        rw [←hchar3]
+        apply_fun (· - 2)
+        norm_num
+        exact zero_ne_one
+      exact ofJInvariant1728 F
+    · have : Invertible (3 : F) := invertibleOfNonzero hchar3
+      exact ofJInvariant0 F
+  · by_cases hj1728 : j = 1728
+    · have : Invertible (2 : F) := by
+        apply invertibleOfNonzero
+        intro h
+        rw [calc (1728 : F) = (2 : F) * (864 : F) := by norm_num, h, zero_mul] at hj1728
+        exact hj0 hj1728
+      exact ofJInvariant1728 F
+    · have : Invertible j := invertibleOfNonzero hj0
+      have : Invertible (j - 1728) := invertibleOfNonzero (Iff.mpr sub_ne_zero hj1728)
+      exact ofJInvariant' j
+
+lemma ofJInvariant_j : (ofJInvariant j).j = j := by
+  by_cases hj0 : j = 0
+  · by_cases hchar3 : (3 : F) = 0
+    · have : Invertible (2 : F) := by
+        apply invertibleOfNonzero
+        rw [←hchar3]
+        apply_fun (· - 2)
+        norm_num
+        exact zero_ne_one
+      simp only [ofJInvariant, hj0, hchar3, dite_true]
+      have := ofJInvariant1728_j F
+      rw [calc (1728 : F) = (3 : F) * (576 : F) := by norm_num, hchar3, zero_mul] at this
+      -- FIXME: 'exact this' does not work
+      sorry
+    · have : Invertible (3 : F) := invertibleOfNonzero hchar3
+      simp only [ofJInvariant, hj0, hchar3, dite_true, dite_false]
+      -- FIXME: 'exact ofJInvariant0_j F' does not work
+      sorry
+  · by_cases hj1728 : j = 1728
+    · have : Invertible (2 : F) := by
+        apply invertibleOfNonzero
+        intro h
+        rw [calc (1728 : F) = (2 : F) * (864 : F) := by norm_num, h, zero_mul] at hj1728
+        exact hj0 hj1728
+      simp only [ofJInvariant, hj0, dite_false]
+      simp only [hj1728, dite_true]
+      -- FIXME: 'exact ofJInvariant1728_j F' does not work
+      sorry
+    · have : Invertible j := invertibleOfNonzero hj0
+      have : Invertible (j - 1728) := invertibleOfNonzero (Iff.mpr sub_ne_zero hj1728)
+      simp only [ofJInvariant, hj0, hj1728, dite_false]
+      -- FIXME: 'exact ofJInvariant'_j j' does not work
+      sorry
+
+end ModelsWithJInvariant
 
 section VariableChange
 
