@@ -24,7 +24,7 @@ This set is used in the proof of Fermat's Theorem (see below), and can be used t
 
 For each theorem name listed below,
 we also prove similar theorems for `min`, `extr` (if applicable),
-and `(f)deriv` instead of `has_fderiv`.
+and `fderiv`/`deriv` instead of `HasFDerivAt`/`HasDerivAt`.
 
 * `IsLocalMaxOn.hasFDerivWithinAt_nonpos` : `f' y ≤ 0` whenever `a` is a local maximum
   of `f` on `s`, `f` has derivative `f'` at `a` within `s`, and `y` belongs to the positive tangent
@@ -36,10 +36,6 @@ and `(f)deriv` instead of `has_fderiv`.
 * `IsLocalMax.hasFDerivAt_eq_zero` :
   [Fermat's Theorem](https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points)),
   the derivative of a differentiable function at a local extremum point equals zero.
-
-* `exists_hasDerivAt_eq_zero` :
-  [Rolle's Theorem](https://en.wikipedia.org/wiki/Rolle's_theorem): given a function `f` continuous
-  on `[a, b]` and differentiable on `(a, b)`, there exists `c ∈ (a, b)` such that `f' c = 0`.
 
 ## Implementation notes
 
@@ -54,12 +50,11 @@ due to the fact that `fderiv` and `deriv` are defined to be zero for non-differe
 ## References
 
 * [Fermat's Theorem](https://en.wikipedia.org/wiki/Fermat's_theorem_(stationary_points));
-* [Rolle's Theorem](https://en.wikipedia.org/wiki/Rolle's_theorem);
 * [Tangent cone](https://en.wikipedia.org/wiki/Tangent_cone);
 
 ## Tags
 
-local extremum, Fermat's Theorem, Rolle's Theorem
+local extremum, tangent cone, Fermat's Theorem
 -/
 
 
@@ -72,6 +67,10 @@ open scoped Topology Classical
 section Module
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {a : E} {f' : E →L[ℝ] ℝ}
+
+/-!
+### Positive tangent cone
+-/
 
 /-- "Positive" tangent cone to `s` at `x`; the only difference from `tangentConeAt`
 is that we require `c n → ∞` instead of `‖c n‖ → ∞`. One can think about `posTangentConeAt`
@@ -107,6 +106,10 @@ theorem mem_posTangentConeAt_of_segment_subset' {s : Set E} {x y : E}
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
   eq_univ_of_forall fun _ => mem_posTangentConeAt_of_segment_subset' (subset_univ _)
 #align pos_tangent_cone_at_univ posTangentConeAt_univ
+
+/-!
+### Fermat's Theorem (vector space)
+-/
 
 /-- If `f` has a local max on `s` at `a`, `f'` is the derivative of `f` at `a` within `s`, and
 `y` belongs to the positive tangent cone of `s` at `a`, then `f' y ≤ 0`. -/
@@ -218,6 +221,10 @@ theorem IsLocalExtr.fderiv_eq_zero (h : IsLocalExtr f a) : fderiv ℝ f a = 0 :=
 #align is_local_extr.fderiv_eq_zero IsLocalExtr.fderiv_eq_zero
 
 end Module
+
+/-!
+### Fermat's Theorem
+-/
 
 section Real
 

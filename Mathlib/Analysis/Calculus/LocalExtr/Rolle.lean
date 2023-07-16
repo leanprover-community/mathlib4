@@ -6,6 +6,40 @@ Authors: Yury Kudryashov, Anatole Dedecker
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Topology.Algebra.Order.Rolle
 
+/-!
+# Rolle's Theorem
+
+In this file we prove Rolle's Theorem. The theorem says that for a function `f : ℝ → ℝ` such that
+
+* $f$ is differentiable on an open interval $(a, b)$, $a < b$;
+* $f$ is continuous on the corresponding closed interval $[a, b]$;
+* $f(a) = f(b)$,
+
+there exists a point $c∈(a, b)$ such that $f'(c)=0$.
+
+We prove four versions of this theorem.
+
+* `exists_hasDerivAt_eq_zero` is closest to the statement given above. It assumes that at every
+  point $x ∈ (a, b)$ function $f$ has derivative $f'(x)$, then concludes that $f'(c)=0$ for some
+  $c∈(a, b)$.
+* `exists_deriv_eq_zero` deals with `deriv f` instead of an arbitrary function `f'` and a predicate
+  `has_deriv_at`; since we use zero as the "junk" value for `deriv f c`, this version does not
+  assume that `f` is differentiable on the open interval.
+* `exists_hasDerivAt_eq_zero'` is similar to `exists_hasDerivAt_eq_zero` but instead of assuming
+  continuity on the closed interval $[a, b]$ it assumes that $f$ tends to the same limit as $x$
+  tends to $a$ from the right and as $x$ tends to $b$ from the left.
+* `exists_deriv_eq_zero'` relates to `exists_deriv_eq_zero` as `exists_hasDerivAt_eq_zero'`
+  relates to ``exists_hasDerivAt_eq_zero`.
+
+## References
+
+* [Rolle's Theorem](https://en.wikipedia.org/wiki/Rolle's_theorem);
+
+## Tags
+
+local extremum, Rolle's Theorem
+-/
+
 open Set Filter Topology
 
 variable {f f' : ℝ → ℝ} {a b l : ℝ}
