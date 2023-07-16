@@ -1303,6 +1303,7 @@ import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Countable.Small
 import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Encodable
 import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Data.DFinsupp.Multiset
@@ -1369,6 +1370,7 @@ import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.BigOperators
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Encodable
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Finsupp.Indicator
