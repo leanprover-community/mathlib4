@@ -132,7 +132,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
     · intro j
       simp
     · intro i j
-      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSuccEmb, Pi.smul_apply]
+      simp only [smul_eq_mul, Pi.add_apply, Fin.val_succ, Fin.coe_castSucc, Pi.smul_apply]
       rw [Finset.sum_range_succ, add_comm, tsub_self, pow_zero, mul_one, Finset.mul_sum]
       congr 1
       refine' Finset.sum_congr rfl fun i' hi' => _

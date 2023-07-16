@@ -511,6 +511,30 @@ theorem indicator_const_smul (s : Set α) (r : M) (f : α → A) :
 
 end DistribMulAction
 
+section SMulWithZero
+
+variable {A : Type _} [Zero A] [Zero M] [SMulWithZero M A]
+
+theorem indicator_smul_apply_left (s : Set α) (r : α → M) (f : α → A) (x : α) :
+    indicator s (fun x => r x • f x) x = indicator s r x • f x := by
+  dsimp only [indicator]
+  split_ifs
+  exacts [rfl, (zero_smul _ (f x)).symm]
+
+theorem indicator_smul_left (s : Set α) (r : α → M) (f : α → A) :
+    (indicator s fun x : α => r x • f x) = fun x : α => indicator s r x • f x :=
+  funext <| indicator_smul_apply_left s r f
+
+theorem indicator_smul_const_apply (s : Set α) (r : α → M) (a : A) (x : α) :
+    indicator s (fun x => r x • a) x = indicator s r x • a :=
+  indicator_smul_apply_left s r (fun _ => a) x
+
+theorem indicator_smul_const (s : Set α) (r : α → M) (a : A) :
+    (indicator s fun x : α => r x • a) = fun x : α => indicator s r x • a :=
+  funext <| indicator_smul_const_apply s r a
+
+end SMulWithZero
+
 section Group
 
 variable {G : Type _} [Group G] {s t : Set α} {f g : α → G} {a : α}

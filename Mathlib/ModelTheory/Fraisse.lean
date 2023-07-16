@@ -232,7 +232,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   -- Poting note: was
   -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
-    refine DirectedSystem.natLeRec (G' := fun i => (G i).val) (L := L) ?_
+    refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
     dsimp only
     exact (fun n => (hP _ n).some)
   have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by
