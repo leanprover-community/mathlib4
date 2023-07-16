@@ -8,6 +8,7 @@ Authors: Aaron Anderson
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
@@ -880,7 +881,7 @@ require it to be well-founded on fibers of `f`.-/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     WellFounded (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
-  refine' (PSigma.lex_wf (well_founded_on_range.2 hι) fun a => hπ a).onFun.mono fun c c' h => _
+  refine' (PSigma.lex_wf (wellFoundedOn_range.2 hι) fun a => hπ a).onFun.mono fun c c' h => _
   exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
   obtain h' | ⟨h', h''⟩ := Sigma.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
@@ -891,7 +892,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
     · dsimp only [Subtype.coe_mk] at *
       revert h'
       generalize f c = d
-      rintro rfl _
+      rintro rfl h''
       exact h''
 #align well_founded.sigma_lex_of_well_founded_on_fiber WellFounded.sigma_lex_of_wellFoundedOn_fiber
 
