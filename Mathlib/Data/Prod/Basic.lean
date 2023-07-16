@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.prod.basic
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
+! leanprover-community/mathlib commit d07245fd37786daa997af4f1a73a49fa3b748408
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -135,6 +135,7 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 #align prod.id_prod Prod.id_prod
 
+@[simp]
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
 #align prod.map_id Prod.map_id
