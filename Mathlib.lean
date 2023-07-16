@@ -1884,6 +1884,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 import Mathlib.Geometry.Euclidean.Basic
 import Mathlib.Geometry.Euclidean.Circumcenter
 import Mathlib.Geometry.Euclidean.Inversion.Basic
+import Mathlib.Geometry.Euclidean.Inversion.Calculus
 import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
 import Mathlib.Geometry.Euclidean.MongePoint
 import Mathlib.Geometry.Euclidean.PerpBisector
