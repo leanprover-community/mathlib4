@@ -370,6 +370,9 @@ def toFinsuppIso : R[X] ≃+* AddMonoidAlgebra R ℕ where
 #align polynomial.to_finsupp_iso_apply Polynomial.toFinsuppIso_apply
 #align polynomial.to_finsupp_iso_symm_apply Polynomial.toFinsuppIso_symm_apply
 
+instance [DecidableEq R] : DecidableEq (R[X]) :=
+  @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.decidableEq)
+
 end AddMonoidAlgebra
 
 theorem ofFinsupp_sum {ι : Type _} (s : Finset ι) (f : ι → AddMonoidAlgebra R ℕ) :
