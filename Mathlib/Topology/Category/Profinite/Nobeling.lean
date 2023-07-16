@@ -3287,6 +3287,89 @@ lemma Products.max_eq_eval (l : Products (WithTop I)) (hl : l.val ≠ [])
     rwa [← hi']
   · rfl
 
+-- lemma Products.max_eq_eval' (l : Products (WithTop I)) (hl : l.val ≠ []) (x : {i // i ∈ C' C ho}) :
+--     Linear_CC' C hsC ho (l.eval C) x =
+--     (1 - e (C' C ho) (l.val.head!) x) * l.Tail.eval (C' C ho) x := by
+--   set t := l.val.head! with hlh
+--   have hl' : l.val = t :: l.Tail.val --:= max_eq_o_cons_tail ho l hl hlh
+--   · dsimp [Tail]
+--     rw [List.cons_head!_tail hl]
+--   have hlc : (t :: l.Tail.val).Chain' (·>·)
+--   · rw [← hl']
+--     exact l.prop
+--   have hl : l = ⟨t :: l.Tail.val, hlc⟩
+--   · simp_rw [← hl']
+--     rfl
+--   rw [hl]
+--   rw [Products.evalCons]
+--   -- ext x
+--   dsimp [Linear_CC', Linear_CC'₁, Linear_CC'₀, LocallyConstant.comapLinear]
+--   rw [LocallyConstant.sub_apply]
+--   rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₀ _ _)]
+--   rw [LocallyConstant.coe_comap_apply _ _ (continuous_CC'₁ _ _ _)]
+--   dsimp [CC'₀, CC'₁]
+--   rw [Products.eval_eq]
+--   rw [Products.eval_eq]
+--   rw [Products.eval_eq]
+--   simp only [mul_ite, mul_one, mul_zero]
+--   have hi' : ∀ i, i ∈ l.Tail.val → (x.val i = SwapTrue (ord I t) x.val i)
+--   · intro i hi
+--     dsimp [SwapTrue]
+--     split_ifs with h₁
+--     · exfalso
+--       simp only [ord, Ordinal.typein_inj] at h₁
+--       suffices : i < t
+--       · rw [h₁] at this
+--         simp only [lt_self_iff_false] at this
+--       rw [← gt_iff_lt]
+--       apply List.Chain.rel _ hi
+--       exact hlc
+--     · rfl
+--   split_ifs with h₁ h₂ h₃ h₄ h₅ h₆ h₇
+--   <;> dsimp [e, BoolToZ]
+--   · split_ifs with hh₁ hh₂ hh₃
+--     · rfl
+--     · rfl
+--     · sorry
+--     · sorry
+--   · split_ifs with hh₁
+--   · push_neg at h₂
+--     obtain ⟨i, hi⟩ := h₂
+--     specialize h₁ i hi.1
+--     specialize hi' i hi.1
+--     exfalso
+--     apply hi.2
+--     rwa [hi']
+--   · push_neg at h₂
+--     obtain ⟨i, hi⟩ := h₂
+--     specialize h₁ i hi.1
+--     specialize hi' i hi.1
+--     exfalso
+--     apply hi.2
+--     rwa [hi']
+--   · push_neg at h₁
+--     obtain ⟨i, hi⟩ := h₁
+--     specialize h₄ i hi.1
+--     specialize hi' i hi.1
+--     exfalso
+--     apply hi.2
+--     rwa [← hi']
+--   · push_neg at h₁
+--     obtain ⟨i, hi⟩ := h₁
+--     specialize h₄ i hi.1
+--     specialize hi' i hi.1
+--     exfalso
+--     apply hi.2
+--     rwa [← hi']
+--   · push_neg at h₁
+--     obtain ⟨i, hi⟩ := h₁
+--     specialize h₆ i hi.1
+--     specialize hi' i hi.1
+--     exfalso
+--     apply hi.2
+--     rwa [← hi']
+--   · rfl
+
 lemma GoodProducts.max_eq_eval (l : StartingWithMax C o) :
     Linear_CC' C hsC ho (l.val.eval C) = (MaxTail C l).eval (C' C ho) := by
   have hl' : l.val.val = (term I ho) :: (MaxTail C l).val := max_eq_o_cons_tail C ho l
@@ -3402,6 +3485,20 @@ lemma GoodProducts.cons_o_chain' (l : GoodProducts (C' C ho)) :
     dsimp [ord] at h
     simpa only [List.head!_cons, Ordinal.typein_enum]
 
+-- lemma GoodProducts.zero_mem (l : GoodProducts (C' C ho)) :
+--     0 ∈ Products.eval (C' C ho) '' {q | q < l.val} := by
+--   sorry
+  -- refine' ⟨⟨[term I ho],_⟩, ⟨_,_⟩⟩
+  -- · simp only [List.chain'_singleton]
+  -- · sorry -- not true ...
+  -- · dsimp [Products.eval]
+  --   simp only [List.prod_cons, List.prod_nil, mul_one]
+  --   ext i
+  --   dsimp [e, BoolToZ]
+  --   simp only [ite_eq_right_iff]
+  --   intro hi
+  --   rw [← Bool.not_eq_false] at hi
+  --   exact hi i.prop.1.2
 
 lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈ StartingWithMax C o := by
@@ -3418,28 +3515,75 @@ lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     · simp only [List.head!_cons]
     rw [hlt, ← Products.max_eq_eval C hsC ho m hm hmh]
     have hh : m.eval C ∈ Submodule.span ℤ (Products.eval C '' {q | q < m}) := h
+    let smaller_set := {p : Products (WithTop I) | p.val ≠ [] ∧ p.val.head! = term I ho ∧ p < m}
+    have hss : Submodule.span ℤ (Products.eval C '' smaller_set) =
+        Submodule.span ℤ (Products.eval C '' {q | q < m}) := sorry
+    rw [← hss] at hh
     have hmi := Submodule.apply_mem_span_image_of_mem_span (Linear_CC' C hsC ho) hh
-    suffices hmi' : (Linear_CC' C hsC ho) '' (Products.eval C '' {q | q < m}) ⊆
+    suffices hmi' : (Linear_CC' C hsC ho) '' (Products.eval C '' smaller_set) ⊆
         Products.eval (C' C ho) '' {q | q < m.Tail}
     · exact Submodule.span_mono hmi' hmi
     intro x hx
     rw [← Set.image_comp] at hx
     obtain ⟨y, hy⟩ := hx
-    -- let z : Products (WithTop I) := ⟨term I ho :: y.Tail.val, sorry⟩
-    -- have hz := Products.max_eq_eval C hsC ho z (by simp) (by simp)
-    -- by_cases hyt : y.val.head! = term I ho
-    refine' ⟨y.Tail, ⟨_, _⟩⟩
-    · rw [← hlt]
-      simp only [Set.mem_setOf_eq]
-      sorry
-    · rw [← hy.2]
-      dsimp
-      rw [Products.max_eq_eval C hsC ho _ ?_ ?_]
-      · sorry
-      · sorry
-    -- rw [← max_eq_eval_unapply C hsC ho]
-    -- rw [Finsupp.mem_span_image_iff_total] at hh ⊢
-    -- obtain ⟨c, ⟨hcmem, hcsum⟩⟩ := hh
+    have smaller_set_sub : Products.Tail '' smaller_set ⊆ {q | q < m.Tail} := sorry
+    have image_sss : Products.eval (C' C ho) '' (Products.Tail '' smaller_set) ⊆
+      Products.eval (C' C ho) '' {q | q < m.Tail} := Set.image_subset _ smaller_set_sub
+    apply image_sss
+    rw [← hy.2]
+    refine' ⟨y.Tail, ⟨⟨y, ⟨hy.1, rfl⟩⟩, _⟩⟩
+    dsimp
+    rw [Products.max_eq_eval C hsC ho _ hy.1.1 hy.1.2.1]
+    -- · rw [← hlt]
+    --   simp only [Set.mem_setOf_eq]
+    --   suffices : List.Lex (·<·) (term I ho :: y.Tail.val) (term I ho :: l.val.val)
+    --   · rw [List.Lex.cons_iff] at this
+    --     exact this
+    --   rw [← hyt]
+    --   dsimp [Products.Tail]
+    --   rw [List.cons_head!_tail hynil, hyt, ← hmh, hlt, Products.Tail, List.cons_head!_tail hm]
+    --   exact hy.1
+    -- · dsimp
+    --   rw [Products.max_eq_eval C hsC ho _ hynil hyt]
+
+
+    -- by_cases hynil : y.val = []
+    -- · dsimp [Products.eval]
+    --   rw [hynil]
+    --   dsimp
+    --   have hL : Linear_CC' C hsC ho 1 = 0
+    --   · ext i
+    --     dsimp [Linear_CC', Linear_CC'₁, Linear_CC'₀, LocallyConstant.comapLinear, CC'₁, CC'₀]
+    --     rw [LocallyConstant.sub_apply]
+    --     rw [LocallyConstant.coe_comap_apply _ _ _]
+    --     rw [LocallyConstant.coe_comap_apply _ _ _]
+    --     · simp only [LocallyConstant.coe_one, Pi.one_apply, sub_self]
+    --     · refine' Continuous.subtype_mk _ _
+    --       exact continuous_subtype_val
+    --     · refine' Continuous.subtype_mk _ _
+    --       exact Continuous.comp (continuous_swapTrue o) continuous_subtype_val
+    --   rw [hL]
+    --   simp only [Products.Tail, List.tail_cons]
+    --   exact zero_mem C ho l
+    -- · by_cases hyt : y.val.head! = term I ho
+    --   · refine' ⟨y.Tail, ⟨_, _⟩⟩
+    --     · rw [← hlt]
+    --       simp only [Set.mem_setOf_eq]
+    --       suffices : List.Lex (·<·) (term I ho :: y.Tail.val) (term I ho :: l.val.val)
+    --       · rw [List.Lex.cons_iff] at this
+    --         exact this
+    --       rw [← hyt]
+    --       dsimp [Products.Tail]
+    --       rw [List.cons_head!_tail hynil, hyt, ← hmh, hlt, Products.Tail, List.cons_head!_tail hm]
+    --       exact hy.1
+    --     · dsimp
+    --       rw [Products.max_eq_eval C hsC ho _ hynil hyt]
+    --   · dsimp
+    --     rw [Products.max_eq_eval' C hsC ho y hynil hyt]
+    --     exact zero_mem C ho l
+      -- rw [← max_eq_eval_unapply C hsC ho]
+      -- rw [Finsupp.mem_span_image_iff_total] at hh ⊢
+      -- obtain ⟨c, ⟨hcmem, hcsum⟩⟩ := hh
   · simp only [not_false_eq_true]
   · dsimp [ord, term]
     simp only [Ordinal.typein_enum]
@@ -3674,6 +3818,7 @@ lemma GoodProducts.hw' (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C
   constructor
   <;> intro hf
   · obtain ⟨l, hl⟩ := hf
+    -- refine' ⟨⟨⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩, _⟩, _⟩
     use (StartingWithMaxEquivGood' C hC hsC ho h₁).symm l
     rw [← hl]
     rfl
