@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.convex.hull
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
+! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -130,6 +130,11 @@ theorem segment_subset_convexHull (hx : x ∈ s) (hy : y ∈ s) : segment 𝕜 x
 theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
   (convex_singleton x).convexHull_eq
 #align convex_hull_singleton convexHull_singleton
+
+@[simp]
+theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
+  convexHull_singleton 0
+#align convex_hull_zero convexHull_zero
 
 @[simp]
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
