@@ -66,8 +66,8 @@ namespace Functor
 
 variable (F : J ⥤ C)
 
-/-- `F.cones` is the functor assigning to an object `X` the type of
-natural transformations from the constant functor with value `X` to `F`.
+/-- If `F : J ⥤ C` then `F.cones` is the functor assigning to an object `X : C` the
+type of natural transformations from the constant functor with value `X` to `F`.
 An object representing this functor is a limit of `F`.
 -/
 @[simps!]
@@ -75,8 +75,8 @@ def cones : Cᵒᵖ ⥤ Type max u₁ v₃ :=
   (const J).op ⋙ yoneda.obj F
 #align category_theory.functor.cones CategoryTheory.Functor.cones
 
-/-- `F.cocones` is the functor assigning to an object `X` the type of
-natural transformations from `F` to the constant functor with value `X`.
+/-- If `F : J ⥤ C` then `F.cocones` is the functor assigning to an object `(X : C)`
+the type of natural transformations from `F` to the constant functor with value `X`.
 An object corepresenting this functor is a colimit of `F`.
 -/
 @[simps!]
@@ -118,6 +118,10 @@ section
 * an object `c.pt` and
 * a natural transformation `c.π : c.pt ⟶ F` from the constant `c.pt` functor to `F`.
 
+Example: if `J` is a category coming from a poset then the data required to make
+a term of type `Cone F` is morphisms `πⱼ : c.pt ⟶ F j` for all `j : J` and,
+for all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πᵢ`.
+
 `Cone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cones.obj X`.
 -/
 structure Cone (F : J ⥤ C) where
@@ -151,6 +155,10 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
 /-- A `c : Cocone F` is
 * an object `c.pt` and
 * a natural transformation `c.ι : F ⟶ c.pt` from `F` to the constant `c.pt` functor.
+
+For example, if the source `J` of `F` is a partially ordered set, then to give
+`c : Cocone F` is to give a collection of morphisms `ιⱼ : F j ⟶ c.pt` and, for
+all `j ≤ k` in `J`, morphisms `ιⱼₖ : F j ⟶ F k` such that `Fⱼₖ ≫ Fₖ = Fⱼ` for all `j ≤ k`.
 
 `Cocone F` is equivalent, via `Cone.equiv` below, to `Σ X, F.cocones.obj X`.
 -/
