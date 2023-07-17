@@ -611,8 +611,8 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
 #align add_subgroup.is_closed_of_discrete AddSubgroup.isClosed_of_discrete
 
 @[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete
-    [T2Space G] [LocallyCompactSpace G] {H : Subgroup G} [DiscreteTopology H] :
+lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] [LocallyCompactSpace G]
+    {H : Subgroup G} [DiscreteTopology H] :
     Tendsto ((↑) : H → G) cofinite (cocompact _) := by
   rw [IsClosed.tendsto_coe_cofinite_iff] <;> infer_instance
 
