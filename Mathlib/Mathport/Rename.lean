@@ -208,15 +208,6 @@ syntax (name := lookup3) "#lookup3 " ident : command
 
 open Lean Lean.Parser Lean.PrettyPrinter
 
-def hexsha : Parser := withAntiquot (mkAntiquot "hexsha" `hexsha)
-  { fn := fun c s => Id.run do
-      let startPos := s.pos
-      let s := takeWhile1Fn ("abcdef0123456789".contains) "expected hex character" c s
-      if s.pos - startPos ≠ String.Pos.mk 40 then
-        s.mkUnexpectedError "SHA must be 40 characters"
-      else
-        mkNodeToken `hexsha startPos c s  }
-
 @[combinator_formatter hexsha]
 def hexsha.formatter : Formatter :=
   Formatter.visitAtom `hexsha
@@ -225,12 +216,20 @@ def hexsha.formatter : Formatter :=
 def hexsha.parenthesizer : Parenthesizer :=
   Parenthesizer.visitToken
 
-/-- Declare the corresponding mathlib4 module to a mathlib3 module. -/
-syntax (name := alignImport) "#align_import " ident ppSpace ident " from " str "@"hexsha : command
+/-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
+syntax (name := alignImport) "#align_import " ident " from " str "@" str : command
 
 /-- Elaborate a `#align_import` command.
 
 TODO: do something with this information beyond ignore it. -/
 @[command_elab alignImport] def elabAlignImport : CommandElab
-  | `(#align_import $_f3:ident $_f4:ident from $_repo:str @$_sha:hexsha ) => pure ()
+  | `(#align_import $f3:ident from $_repo:str @ $sha:str ) => do
+    if !sha.getString.all ("abcdef0123456789".contains) then
+      throwErrorAt sha "not a valid hex sha, bad digits"
+    else if sha.getString.length ≠ 40 then
+      throwErrorAt sha "must be a full sha"
+    else
+      let _f3 : Name := f3.getId
+      let _f4 := (← getEnv).mainModule
+      pure ()
   | _ => throwUnsupportedSyntax
