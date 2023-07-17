@@ -707,7 +707,7 @@ theorem compPartialSumTarget_tendsto_atTop :
     aesop
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
-    obtain ⟨n, hn⟩ : BddAbove ↑(Finset.univ.image fun i : Fin c.length => c.blocksFun i) :=
+    obtain ⟨n, hn⟩ : BddAbove ((Finset.univ.image fun i : Fin c.length => c.blocksFun i) : Set ℕ) :=
       Finset.bddAbove _
     refine'
       ⟨max n c.length + 1, bot_le, lt_of_le_of_lt (le_max_right n c.length) (lt_add_one _), fun j =>

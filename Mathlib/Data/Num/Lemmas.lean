@@ -967,7 +967,7 @@ theorem shiftl_to_nat (m n) : (shiftl m n : ℕ) = Nat.shiftl m n := by
 
 @[simp, norm_cast]
 theorem shiftr_to_nat (m n) : (shiftr m n : ℕ) = Nat.shiftr m n := by
-  cases' m with m <;> dsimp only [shiftr];
+  cases' m with m <;> dsimp only [shiftr]
   · symm
     apply Nat.zero_shiftr
   induction' n with n IH generalizing m

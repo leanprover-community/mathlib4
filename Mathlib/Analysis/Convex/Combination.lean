@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov
 
 ! This file was ported from Lean 3 source module analysis.convex.combination
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
+! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -431,9 +431,36 @@ theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + c
     convexHull_prod]
 #align convex_hull_add convexHull_add
 
+variable (R E)
+
+-- porting note: needs `noncomputable` due to `OrderHom.toFun`!?
+/-- `convex_hull` is an additive monoid morphism under pointwise addition. -/
+@[simps]
+noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
+  toFun := convexHull R
+  map_add' := convexHull_add
+  map_zero' := convexHull_zero
+#align convex_hull_add_monoid_hom convexHullAddMonoidHom
+
+variable {R E}
+
 theorem convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - convexHull R t := by
   simp_rw [sub_eq_add_neg, convexHull_add, convexHull_neg]
 #align convex_hull_sub convexHull_sub
+
+theorem convexHull_list_sum (l : List (Set E)) : convexHull R l.sum = (l.map <| convexHull R).sum :=
+  map_list_sum (convexHullAddMonoidHom R E) l
+#align convex_hull_list_sum convexHull_list_sum
+
+theorem convexHull_multiset_sum (s : Multiset (Set E)) :
+    convexHull R s.sum = (s.map <| convexHull R).sum :=
+  map_multiset_sum (convexHullAddMonoidHom R E) s
+#align convex_hull_multiset_sum convexHull_multiset_sum
+
+theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
+    convexHull R (∑ i in s, t i) = ∑ i in s, convexHull R (t i) :=
+  map_sum (convexHullAddMonoidHom R E) _ _
+#align convex_hull_sum convexHull_sum
 
 /-! ### `stdSimplex` -/
 
