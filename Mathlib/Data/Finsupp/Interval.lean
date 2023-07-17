@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.finsupp.interval
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
+! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -103,12 +103,12 @@ instance : LocallyFiniteOrder (ι →₀ α) :=
       simp_rw [mem_rangeIcc_apply_iff]
       exact forall_and
 
-theorem icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
-#align finsupp.Icc_eq Finsupp.icc_eq
+theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
+#align finsupp.Icc_eq Finsupp.Icc_eq
 
 -- porting note: removed [DecidableEq ι]
 theorem card_Icc : (Icc f g).card = ∏ i in f.support ∪ g.support, (Icc (f i) (g i)).card := by
-  simp_rw [icc_eq, card_finsupp, coe_rangeIcc]
+  simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 #align finsupp.card_Icc Finsupp.card_Icc
 
 -- porting note: removed [DecidableEq ι]
@@ -127,6 +127,17 @@ theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i
 #align finsupp.card_Ioo Finsupp.card_Ioo
 
 end PartialOrder
+
+section Lattice
+variable [Lattice α] [Zero α] [LocallyFiniteOrder α] (f g : ι →₀ α)
+
+-- porting note: removed [DecidableEq ι]
+theorem card_uIcc :
+    (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
+  rw [← support_inf_union_support_sup]; exact card_Icc (_ : ι →₀ α) _
+#align finsupp.card_uIcc Finsupp.card_uIcc
+
+end Lattice
 
 section CanonicallyOrdered
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
 
 ! This file was ported from Lean 3 source module data.finsupp.order
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
+! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -119,6 +119,18 @@ instance lattice [Lattice α] : Lattice (ι →₀ α) :=
   { Finsupp.semilatticeInf, Finsupp.semilatticeSup with }
 #align finsupp.lattice Finsupp.lattice
 
+section Lattice
+variable [DecidableEq ι] [Lattice α] (f g : ι →₀ α)
+
+theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
+  coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
+#align finsupp.support_inf_union_support_sup Finsupp.support_inf_union_support_sup
+
+theorem support_sup_union_support_inf : (f ⊔ g).support ∪ (f ⊓ g).support = f.support ∪ g.support :=
+  (union_comm _ _).trans <| support_inf_union_support_sup _ _
+#align finsupp.support_sup_union_support_inf Finsupp.support_sup_union_support_inf
+
+end Lattice
 end Zero
 
 /-! ### Algebraic order structures -/
