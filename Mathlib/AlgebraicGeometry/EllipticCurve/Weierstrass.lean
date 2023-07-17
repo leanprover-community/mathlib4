@@ -972,20 +972,13 @@ variable (R : Type u) [CommRing R]
 
 /-- The elliptic curve $Y^2 + Y = X^3$ when $3$ is invertible. -/
 def ofJInvariant0 [Invertible (3 : R)] : EllipticCurve R :=
-  ⟨
-    WeierstrassCurve.ofJInvariant0 R,
-    ⟨-27, -(⅟3) ^ 3,
-      by
-        rw [calc (27 : R) = (3 : R) ^ 3 := by norm_num]
-        simp only [mul_neg, neg_mul, neg_neg]
-        exact pow_mul_pow_eq_one 3 (mul_invOf_self (3 : R))
-      , by
-        rw [calc (27 : R) = (3 : R) ^ 3 := by norm_num]
-        simp only [mul_neg, neg_mul, neg_neg]
-        exact pow_mul_pow_eq_one 3 (invOf_mul_self (3 : R))
-    ⟩,
-    by rw [WeierstrassCurve.ofJInvariant0_Δ R]
-  ⟩
+  ⟨WeierstrassCurve.ofJInvariant0 R,
+    ⟨-27, -⅟3 ^ 3,
+      by rw [neg_mul_neg, show (27 : R) = 3 ^ 3 by norm_num1,
+        pow_mul_pow_eq_one 3 <| mul_invOf_self 3],
+      by rw [neg_mul_neg, show (27 : R) = 3 ^ 3 by norm_num1,
+        pow_mul_pow_eq_one 3 <| invOf_mul_self 3]⟩,
+    by rw [WeierstrassCurve.ofJInvariant0_Δ R]⟩
 
 lemma ofJInvariant0_j [Invertible (3 : R)] : (ofJInvariant0 R).j = 0 := by
   simp only [j, ofJInvariant0, WeierstrassCurve.ofJInvariant0_c₄]
@@ -993,24 +986,16 @@ lemma ofJInvariant0_j [Invertible (3 : R)] : (ofJInvariant0 R).j = 0 := by
 
 /-- The elliptic curve $Y^2 = X^3 + X$ when $2$ is invertible. -/
 def ofJInvariant1728 [Invertible (2 : R)] : EllipticCurve R :=
-  ⟨
-    WeierstrassCurve.ofJInvariant1728 R,
-    ⟨-64, -(⅟2) ^ 6,
-      by
-        rw [calc (64 : R) = (2 : R) ^ 6 := by norm_num]
-        simp only [mul_neg, neg_mul, neg_neg]
-        exact pow_mul_pow_eq_one 6 (mul_invOf_self (2 : R))
-      , by
-        rw [calc (64 : R) = (2 : R) ^ 6 := by norm_num]
-        simp only [mul_neg, neg_mul, neg_neg]
-        exact pow_mul_pow_eq_one 6 (invOf_mul_self (2 : R))
-    ⟩,
-    by rw [WeierstrassCurve.ofJInvariant1728_Δ R]
-  ⟩
+  ⟨WeierstrassCurve.ofJInvariant1728 R,
+    ⟨-64, -⅟2 ^ 6,
+      by rw [neg_mul_neg, show (64 : R) = 2 ^ 6 by norm_num1,
+        pow_mul_pow_eq_one 6 <| mul_invOf_self 2],
+      by rw [neg_mul_neg, show (64 : R) = 2 ^ 6 by norm_num1,
+        pow_mul_pow_eq_one 6 <| invOf_mul_self 2]⟩,
+    by rw [WeierstrassCurve.ofJInvariant1728_Δ R]⟩
 
 lemma ofJInvariant1728_j [Invertible (2 : R)] : (ofJInvariant1728 R).j = 1728 := by
-  simp only [j, ofJInvariant1728, WeierstrassCurve.ofJInvariant1728_c₄]
-  field_simp
+  field_simp [j, ofJInvariant1728, WeierstrassCurve.ofJInvariant1728_c₄]
   ring1
 
 end ModelsWithJInvariant_0_1728
@@ -1022,26 +1007,17 @@ variable {R : Type u} [CommRing R] (j : R) [Invertible j] [Invertible (j - 1728)
 /-- The elliptic curve $Y^2 + (j-1728)XY = X^3 - 36(j-1728)^3X - (j-1728)^5$
 when $j$ and $j-1728$ are both invertible. -/
 def ofJInvariant' : EllipticCurve R :=
-  ⟨
-    WeierstrassCurve.ofJInvariant j,
+  ⟨WeierstrassCurve.ofJInvariant j,
     ⟨j ^ 2 * (j - 1728) ^ 9, ⅟j ^ 2 * ⅟(j - 1728) ^ 9,
-      by rw [←mul_assoc, mul_assoc (j ^ 2) ((j - 1728) ^ 9) (⅟j ^ 2),
-        mul_comm ((j - 1728) ^ 9) (⅟j ^ 2), ←mul_assoc, mul_assoc,
-        pow_mul_pow_eq_one 2 (mul_invOf_self _),
-        pow_mul_pow_eq_one 9 (mul_invOf_self _), mul_one]
-      , by rw [←mul_assoc, mul_assoc (⅟j ^ 2) (⅟(j - 1728) ^ 9) (j ^ 2),
-        mul_comm (⅟(j - 1728) ^ 9) (j ^ 2), ←mul_assoc, mul_assoc,
-        pow_mul_pow_eq_one 2 (invOf_mul_self _),
-        pow_mul_pow_eq_one 9 (invOf_mul_self _), mul_one]
-    ⟩,
-    by rw [WeierstrassCurve.ofJInvariant_Δ j]
-  ⟩
+      by rw [← mul_assoc, mul_assoc (j ^ 2), mul_comm (_ ^ 9), ← mul_assoc, mul_assoc,
+        pow_mul_pow_eq_one 2 (mul_invOf_self _), pow_mul_pow_eq_one 9 (mul_invOf_self _), mul_one],
+      by rw [← mul_assoc, mul_assoc (⅟j ^ 2), mul_comm (_ ^ 9), ← mul_assoc, mul_assoc,
+        pow_mul_pow_eq_one 2 (invOf_mul_self _), pow_mul_pow_eq_one 9 (invOf_mul_self _), mul_one]⟩,
+    by rw [WeierstrassCurve.ofJInvariant_Δ j]⟩
 
 lemma ofJInvariant'_j : (ofJInvariant' j).j = j := by
-  simp only [EllipticCurve.j, ofJInvariant', WeierstrassCurve.ofJInvariant_c₄]
-  field_simp
-  -- do not use 'ring1' otherwise (j - 1728) ^ 9 will be expanded
-  rw [mul_pow, ←pow_mul, ←mul_assoc, ←pow_succ]
+  field_simp [EllipticCurve.j, ofJInvariant', WeierstrassCurve.ofJInvariant_c₄]
+  ring1
 
 end ModelsWithJInvariant'
 
