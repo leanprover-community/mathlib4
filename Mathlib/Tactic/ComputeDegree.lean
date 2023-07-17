@@ -92,7 +92,7 @@ section Tactic
 
 open Lean
 
-/-- `isDegLE e` checks whether `e` is an `Expr`ession is an inequality whose LHS is
+/-- `isDegLE e` checks whether `e` is an `Expr`ession representing an inequality whose LHS is
 the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
 If `e` represents
 *  `natDegree f ≤ d`, then it returns `(true,  f)`;
