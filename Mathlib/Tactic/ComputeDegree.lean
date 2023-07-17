@@ -106,9 +106,9 @@ def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
       -- and that the LHS is `natDegree ...` or `degree ...`
       | (``degree, #[_R, _iSR, pol])    => return (false, pol)
       | (``natDegree, #[_R, _iSR, pol]) => return (true, pol)
-      | (na, _) => throwError (f!"Expected an inequality of the form\n\n" ++
+      | (na, _) => throwError (m!"Expected an inequality of the form\n\n" ++
         f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
-    | _ => throwError m!"Expected an inequality instead of '{e.getAppFnArgs.1}', '{e}'"
+    |  (na, _)  => throwError m!"Expected an inequality instead of '{na}', '{e}'"
 
 /--  `getPolsName pol` takes the `Expr`ession `pol` as input,
 assuming that it represents a `Polynomial`.
