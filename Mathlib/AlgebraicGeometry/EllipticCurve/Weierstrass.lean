@@ -190,8 +190,8 @@ def ofJInvariant0 : WeierstrassCurve R :=
   ⟨0, 0, 1, 0, 0⟩
 
 lemma ofJInvariant0_c₄ : (ofJInvariant0 R).c₄ = 0 := by
-  simp only [ofJInvariant0, c₄, b₂, b₄]
-  ring1
+  rw [ofJInvariant0, c₄, b₂, b₄]
+  norm_num1
 
 lemma ofJInvariant0_Δ : (ofJInvariant0 R).Δ = -27 := by
   simp only [ofJInvariant0, Δ, b₂, b₄, b₆, b₈]
