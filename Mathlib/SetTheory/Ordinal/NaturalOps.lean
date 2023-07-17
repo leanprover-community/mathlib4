@@ -9,6 +9,7 @@ Authors: Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Tactic.Abel
 
 /-!
 # Natural operations on ordinals
@@ -39,7 +40,6 @@ between both types, we attempt to prove and state most results on `Ordinal`.
 
 # Todo
 
-- Define natural multiplication and provide a basic API.
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
 -/
@@ -50,6 +50,8 @@ universe u v
 open Function Order
 
 noncomputable section
+
+/-! ### Basic casts between `ordinal` and `nat_ordinal` -/
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
@@ -73,9 +75,9 @@ def NatOrdinal.toOrdinal : NatOrdinal ≃o Ordinal :=
   OrderIso.refl _
 #align nat_ordinal.to_ordinal NatOrdinal.toOrdinal
 
-open Ordinal
-
 namespace NatOrdinal
+
+open Ordinal
 
 variable {a b c : NatOrdinal.{u}}
 

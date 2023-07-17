@@ -579,15 +579,6 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
 
-/-
-If
-structure AB extends A
-structure AC extends A
-structure ABC extends AB, AC
-then AB.toA should have higher priority than AC.toA
-Todo: write linter.
--/
-
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
 

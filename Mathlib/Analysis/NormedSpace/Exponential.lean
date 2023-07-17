@@ -121,7 +121,7 @@ theorem expSeries_apply_zero (n : ℕ) :
 #align exp_series_apply_zero expSeries_apply_zero
 
 @[simp]
-theorem exp_zero [T2Space 𝔸] : exp 𝕂 (0 : 𝔸) = 1 := by
+theorem exp_zero : exp 𝕂 (0 : 𝔸) = 1 := by
   simp_rw [exp_eq_tsum, ← expSeries_apply_eq, expSeries_apply_zero, tsum_pi_single]
 #align exp_zero exp_zero
 
