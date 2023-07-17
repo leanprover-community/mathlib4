@@ -151,6 +151,11 @@ end Ring
 
 end AddSubgroup
 
+@[simp] lemma Int.range_castAddHom {A : Type _} [AddGroupWithOne A] :
+    (Int.castAddHom A).range = AddSubgroup.zmultiples 1 := by
+  ext a
+  simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
+
 @[to_additive (attr := simp) map_zmultiples]
 theorem MonoidHom.map_zpowers (f : G →* N) (x : G) :
     (Subgroup.zpowers x).map f = Subgroup.zpowers (f x) := by

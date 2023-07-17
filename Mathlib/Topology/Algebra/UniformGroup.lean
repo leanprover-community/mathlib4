@@ -13,6 +13,7 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.DiscreteSubset
 import Mathlib.Tactic.Abel
 
 /-!
@@ -608,6 +609,20 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   exact (eq_of_div_eq_one this).symm
 #align subgroup.is_closed_of_discrete Subgroup.isClosed_of_discrete
 #align add_subgroup.is_closed_of_discrete AddSubgroup.isClosed_of_discrete
+
+@[to_additive]
+lemma Subgroup.tendsto_coe_cofinite_of_discrete
+    [T2Space G] [LocallyCompactSpace G] {H : Subgroup G} [DiscreteTopology H] :
+    Tendsto ((↑) : H → G) cofinite (cocompact _) := by
+  rw [IsClosed.tendsto_coe_cofinite_iff] <;> infer_instance
+
+@[to_additive]
+lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] [LocallyCompactSpace G]
+    {H : Type _} [Group H] {f : H →* G}
+    (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
+    Tendsto f cofinite (cocompact _) := by
+  replace hf : Function.Injective f.rangeRestrict := by simpa
+  exact (f.range.tendsto_coe_cofinite_of_discrete).comp hf.tendsto_cofinite
 
 @[to_additive]
 theorem TopologicalGroup.tendstoUniformly_iff {ι α : Type _} (F : ι → α → G) (f : α → G)

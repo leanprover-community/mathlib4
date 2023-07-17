@@ -166,7 +166,8 @@ theorem frontier_sphere [NormedSpace ℝ E] (x : E) {r : ℝ} (hr : r ≠ 0) :
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
 #align frontier_sphere frontier_sphere
 
-instance {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
+instance NormedSpace.discreteTopology_zmultiples
+    {E : Type _} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   rcases eq_or_ne e 0 with (rfl | he)
   · rw [AddSubgroup.zmultiples_zero_eq_bot]
