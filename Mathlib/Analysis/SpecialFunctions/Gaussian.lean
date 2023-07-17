@@ -299,8 +299,8 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
   have : ∀ c : ℝ, ∫ x in (0 : ℝ)..c, cexp (-b * (x : ℂ) ^ 2) =
       ∫ x in -c..0, cexp (-b * (x : ℂ) ^ 2) := by
     intro c
-    have :=
-      @intervalIntegral.integral_comp_sub_left _ _ _ _ 0 c (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
+    have := intervalIntegral.integral_comp_sub_left (a := 0) (b := c)
+      (fun x => cexp (-b * (x : ℂ) ^ 2)) 0
     simpa [zero_sub, neg_sq, neg_zero] using this
   have t1 :=
     intervalIntegral_tendsto_integral_Ioi 0 (integrable_cexp_neg_mul_sq hb).integrableOn tendsto_id

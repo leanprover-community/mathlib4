@@ -100,7 +100,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
   -- rw [integral_add_right_eq_self (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
   --       ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
   -- Unfortunately now we need to specify `volume`, and call `dsimp`.
-  have := @integral_add_right_eq_self _ _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
+  have := @integral_add_right_eq_self _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
     ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
   erw [this] -- Porting note, we can avoid `erw` by first calling `dsimp at this ⊢`.
   simp only [neg_smul, integral_neg]

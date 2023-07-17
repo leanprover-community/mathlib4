@@ -387,7 +387,7 @@ theorem _root_.ProbabilityMeasure.toFiniteMeasure_normalize_eq_self {m0 : Measur
 /-- Averaging with respect to a finite measure is the same as integrating against
 `MeasureTheory.FiniteMeasure.normalize`. -/
 theorem average_eq_integral_normalize {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [CompleteSpace E] (nonzero : μ ≠ 0) (f : Ω → E) :
+    (nonzero : μ ≠ 0) (f : Ω → E) :
     average (μ : Measure Ω) f = ∫ ω, f ω ∂(μ.normalize : Measure Ω) := by
   rw [μ.toMeasure_normalize_eq_of_nonzero nonzero, average]
   congr
