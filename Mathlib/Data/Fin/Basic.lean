@@ -950,9 +950,7 @@ theorem one_lt_succ_succ (a : Fin n) : (1 : Fin (n + 2)) < a.succ.succ := by
     exact succ_pos a
 #align fin.one_lt_succ_succ Fin.one_lt_succ_succ
 
--- attempt at dirty linter hack
-set_option synthInstance.maxHeartbeats 40000 in
-@[simp]
+--@[simp]
 theorem add_one_lt_iff {n : ℕ} {k : Fin (n + 2)} : k + 1 < k ↔ k = last _ := by
   simp only [lt_iff_val_lt_val, val_add, val_last, ext_iff]
   cases' k with k hk
@@ -980,7 +978,7 @@ theorem last_le_iff {n : ℕ} {k : Fin (n + 1)} : last n ≤ k ↔ k = last n :=
   top_le_iff
 #align fin.last_le_iff Fin.last_le_iff
 
-@[simp]
+--@[simp]
 theorem lt_add_one_iff {n : ℕ} {k : Fin (n + 1)} : k < k + 1 ↔ k < last n := by
   rw [← not_iff_not]
   simp
@@ -2010,7 +2008,7 @@ theorem le_sub_one_iff {n : ℕ} {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   simp
 #align fin.le_sub_one_iff Fin.le_sub_one_iff
 
-@[simp]
+--@[simp]
 theorem sub_one_lt_iff {n : ℕ} {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
   not_iff_not.1 <| by simp only [not_lt, le_sub_one_iff, le_zero_iff]
 #align fin.sub_one_lt_iff Fin.sub_one_lt_iff
