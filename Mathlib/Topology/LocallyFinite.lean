@@ -194,10 +194,17 @@ theorem exists_forall_eventually_atTop_eventuallyEq {f : ℕ → X → α}
 #align locally_finite.exists_forall_eventually_at_top_eventually_eq LocallyFinite.exists_forall_eventually_atTop_eventuallyEq
 
 theorem preimage_continuous {g : Y → X} (hf : LocallyFinite f) (hg : Continuous g) :
-    LocallyFinite fun i => g ⁻¹' f i := fun x =>
+    LocallyFinite (g ⁻¹' f ·) := fun x =>
   let ⟨s, hsx, hs⟩ := hf (g x)
   ⟨g ⁻¹' s, hg.continuousAt hsx, hs.subset fun _ ⟨y, hy⟩ => ⟨g y, hy⟩⟩
 #align locally_finite.preimage_continuous LocallyFinite.preimage_continuous
+
+theorem prod_right (hf : LocallyFinite f) (g : ι → Set Y) : LocallyFinite (fun i ↦ f i ×ˢ g i) :=
+  (hf.preimage_continuous continuous_fst).subset fun _ ↦ prod_subset_preimage_fst _ _
+
+theorem prod_left {g : ι → Set Y} (hg : LocallyFinite g) (f : ι → Set Y) :
+    LocallyFinite (fun i ↦ f i ×ˢ g i) :=
+  (hg.preimage_continuous continuous_snd).subset fun _ ↦ prod_subset_preimage_snd _ _
 
 end LocallyFinite
 
