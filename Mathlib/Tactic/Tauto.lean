@@ -189,8 +189,27 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
   | ~q(True) => pure true
   | _ => pure false
 
+-- TODO: move me
+open Lean.Elab Term in
+/--
+Like `focusAndDone` but takes a scope (e.g. tactic name) as an argument to
+produce more detailed error messages
+-/
+def focusAndDoneWithScope (scope : MessageData) (tactic : TacticM α) : TacticM α :=
+  focus do
+    let a ← tactic
+
+    -- This is essentially the code of `done` with an additional error message
+    let gs ← getUnsolvedGoals
+    unless gs.isEmpty do
+      logError m!"{scope} failed to solve some goals.\n"
+      reportUnsolvedGoals gs
+      throwAbortTactic
+
+    pure a
+
 /-- Implementation of the `tauto` tactic. -/
-def tautology : TacticM Unit := focusAndDone do
+def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
   evalTactic (← `(tactic| classical!))
   tautoCore
   allGoals (iterateUntilFailure
