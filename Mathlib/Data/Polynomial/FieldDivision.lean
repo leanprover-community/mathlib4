@@ -554,5 +554,3 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type _} [Field K] (
 end Field
 
 end Polynomial
-
-#lint
