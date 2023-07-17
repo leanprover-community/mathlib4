@@ -40,7 +40,8 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe u v w
+-- porting note: changed universe order as `v` is usually passed explicitly
+universe v u w
 
 noncomputable section
 
