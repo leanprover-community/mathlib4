@@ -33,8 +33,6 @@ Recurse into `f` breaking apart sums, products and powers.  Take care of numeral
 `C a, X (^ n), monomial a n` separately.
 -/
 
-section Tactic
-
 open Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
@@ -90,7 +88,9 @@ end ring
 
 end mylemmas
 
-open Lean Meta Elab.Tactic
+section Tactic
+
+open Lean
 
 /-- `isDegLE e` checks whether `e` is an `Expr`ession is an inequality whose LHS is
 the `natDegree/degree` of a polynomial with coefficients in a semiring `R`.
@@ -117,7 +117,7 @@ If `pol` is an `.app`, then it returns the list of arguments of `pol` that also 
 
 The only exception is when `pol` represents `↑(polFun _) : α → Polynomial _`,
 and `polFun` is not `monomial` or `C`.
-In this case, the output is data for error reporting in cDegCore.
+In this case, the output is data for error-reporting in `cDegCore`.
 -/
 def getPolsName (pol : Expr) : List Expr × Name :=
 match pol.getAppFnArgs with
@@ -143,8 +143,6 @@ match pol.getAppFnArgs with
   -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
   | _ => ([], ``le_rfl)
 
-open Lean Elab Term MVarId
-
 /-- `cDegCore (pol, mv)` takes as input a pair of an `Expr`ession `pol` and an `MVarId` `mv`, where
 *  `pol` represents a polynomial;
 *  `mv` represents a goal.
@@ -162,12 +160,12 @@ The optional `db` flag is for debugging: if `db = true`, then the tactic prints 
 partial
 def cDegCore (polMV : Expr × MVarId) (db : Bool := false) : MetaM (List (Expr × MVarId)) := do
 let (pol, mv) := polMV
-let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM ppExpr
+let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM Meta.ppExpr
 if db then
   if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
   else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
 let (pols, na) := getPolsName pol
-if na.isAnonymous then throwError m!"'compute_degree_le' is not implemented for {← ppExpr pols[0]!}"
+if na.isAnonymous then throwError m!"'compute_degree_le' is undefined for {← Meta.ppExpr pols[0]!}"
 let once := pols.zip (← mv.applyConst na)
 return (← once.mapM fun x => cDegCore x db).join
 
@@ -182,6 +180,7 @@ syntax (name := computeDegreeLE) "compute_degree_le" "!"? "-debug"? : tactic
 /--  Allows writing `compute_degree_le!` with no space preceding `!`. -/
 macro "compute_degree_le!" dbg:"-debug"? : tactic => `(tactic| compute_degree_le ! $[-debug%$dbg]?)
 
+open Elab.Tactic in
 /--
 `compute_degree_le` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
 
@@ -213,5 +212,7 @@ elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) 
   if debug.isSome then logInfo m!"Computed proof:\n{nfle_pf}"
   if str.isSome then evalTactic (← `(tactic| norm_num <;> try assumption))
   else evalTactic (← `(tactic| conv_lhs => norm_num))
+
+end Tactic
 
 end Mathlib.Tactic.ComputeDegree
