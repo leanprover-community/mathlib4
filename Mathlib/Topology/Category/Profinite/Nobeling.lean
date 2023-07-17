@@ -3344,21 +3344,67 @@ lemma Products.max_eq_eval_unapply :
   rw [List.eval_eq]
   rw [List.eval_eq]
   simp only [ite_mul, one_mul, zero_mul]
+  have htx : x.val (term I ho) = false := x.prop.1.2
+  have hxs : ∀ i, i ∈ l.val.val → x.val i = SwapTrue o x i
+  · intro i hi
+    dsimp [SwapTrue]
+    split_ifs with h₁
+    · exfalso
+      suffices : i ≠ term I ho
+      · apply this
+        dsimp [term]
+        simp_rw [← h₁]
+        simp only [ord, Ordinal.enum_typein]
+      intro hit
+      apply l.prop
+      simp_rw [← hit]
+      exact hi
+    · rfl
+  have hst : SwapTrue o x (term I ho) = true
+  · dsimp [SwapTrue]
+    split_ifs with h
+    · rfl
+    · exfalso
+      apply h
+      simp only [ord, term, Ordinal.typein_enum]
   split_ifs with h₁ h₂ h₂ h₃ h₄ h₅ h₆
   <;> dsimp [e, BoolToZ]
   · exfalso
-    sorry -- use h₂
+    specialize h₂ (term I ho) (by simp only [List.mem_cons, true_or])
+    rw [Bool.eq_false_iff] at htx
+    exact htx h₂
   · rfl
   · exfalso
-    sorry -- use h₃ (term I ho)
+    specialize h₃ (term I ho) (by simp only [List.mem_cons, true_or])
+    rw [Bool.eq_false_iff] at htx
+    exact htx h₃
   · exfalso
-    sorry -- combination of h₁ and h₃
+    apply h₂
+    intro i hi
+    simp only [List.find?, List.mem_cons] at hi
+    cases' hi with hi hi
+    · rw [hi]
+      exact hst
+    · rw [← hxs i hi]
+      exact h₁ i hi
   · rfl
   · push_neg at h₁
     exfalso
-    sorry -- combination of l.prop, h₄ and h₁
+    obtain ⟨i, ⟨hi, hit⟩⟩ := h₁
+    apply hit
+    rw [hxs i hi]
+    apply h₄
+    right
+    exact hi
   · exfalso
-    sorry -- combination of h₁ and h₆
+    apply h₄
+    intro i hi
+    simp only [List.find?, List.mem_cons] at hi
+    cases' hi with hi hi
+    · rw [hi]
+      exact hst
+    · rw [← hxs i hi]
+      exact h₆ i (List.mem_cons_of_mem _ hi)
   · rfl
 
 lemma GoodProducts.max_eq_eval (l : StartingWithMax C o) :
@@ -3476,6 +3522,76 @@ lemma GoodProducts.cons_o_chain' (l : GoodProducts (C' C ho)) :
     dsimp [ord] at h
     simpa only [List.head!_cons, Ordinal.typein_enum]
 
+lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
+    (hh : Products.eval C ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈
+    Submodule.span ℤ (Products.eval C '' {q | q <
+    ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩})) :
+    Products.eval C ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈
+    Submodule.span ℤ ((fun (r : {r : Products (WithTop I) | term I ho ∉ r.val}) ↦
+    List.eval C (term I ho :: r.val.val)) '' {m_1 | m_1.val < l.val}) := by
+  sorry
+
+/- Plan: for all `x ∈ C` such that `x (term I ho) = true`, any `q < m` such that
+       `term I ho ∉ q` satisfies `q.eval C x = 0`. On the other hand for all `x ∈ C` such that
+       `x (term I ho) = false`, `m.eval C x = 0`. Therefore, those `q`'s don't contribute to
+       the linear combination, and can be dropped. The remaining ones are of the form
+       `term I ho :: q.Tail` for `q.Tail < m.Tail` and this gives the desired linear combination. -/
+
+lemma GoodProducts.term_not_mem (l : GoodProducts (C' C ho)) (y : Products (WithTop I))
+    (hy : y < l.val) : term I ho ∉ y.val := by
+  cases' y with y hh
+  induction y with
+  | nil =>
+    · simp only [List.not_mem_nil, not_false_eq_true]
+  | cons a as ih =>
+    · rw [List.mem_cons, not_or]
+      refine' ⟨_,_⟩
+      · intro h
+        have hy : a :: as < l.val.val := hy
+        by_cases hlnil : l.val.val = []
+        · rw [hlnil] at hy
+          exact List.Lex.not_nil_right _ _ hy
+        · rw [← h, ← List.cons_head!_tail hlnil] at hy
+          suffices : List.head! l.val.val :: List.tail l.val.val < term I ho :: as
+          · simp only [← not_le] at this
+            exact this (le_of_lt hy)
+          apply List.Lex.rel
+          have hlc := cons_o_chain' C ho l
+          rw [← List.cons_head!_tail hlnil] at hlc
+          have := List.Chain'.rel_head hlc
+          exact this
+      · have := List.Chain'.tail hh
+        simp only [List.tail_cons] at this
+        specialize ih this
+        apply ih
+        refine' lt_trans _ hy
+        suffices : as < a :: as
+        · exact this
+        by_cases has : as = []
+        · rw [has]
+          apply List.Lex.nil
+        · rw [← List.cons_head!_tail has] at hh ⊢
+          apply List.Lex.rel
+          have := List.Chain'.rel_head hh
+          exact this
+
+lemma GoodProducts.cons_o_mem_startingWithMax_range (l : GoodProducts (C' C ho)) :
+    Products.eval (C' C ho) '' {m_1 | m_1 < l.val} =
+    Set.restrict {l : Products (WithTop I) | term I ho ∉ l.val} (Products.eval (C' C ho)) ''
+    {m_1 : {l : Products (WithTop I) | term I ho ∉ l.val} | m_1.val < l.val} := by
+  ext x
+  constructor
+  <;> intro hx
+  · obtain ⟨y, hy⟩ := hx
+    have hy' : term I ho ∉ y.val := term_not_mem C ho l y hy.1
+    refine' ⟨⟨y, hy'⟩, ⟨hy.1,_⟩⟩
+    rw [← hy.2]
+    rfl
+  · obtain ⟨y, hy⟩ := hx
+    refine' ⟨y.val, ⟨hy.1, _⟩⟩
+    rw [← hy.2]
+    rfl
+
 lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈ StartingWithMax C o := by
   dsimp [StartingWithMax]
@@ -3493,17 +3609,14 @@ lemma GoodProducts.cons_o_mem_startingWithMax (l : GoodProducts (C' C ho)) :
     have hh : m.eval C ∈ Submodule.span ℤ (Products.eval C '' {q | q < m}) := h
     have : Products.eval (C' C ho) '' {m_1 | m_1 < m.Tail} =
         Set.restrict {l : Products (WithTop I) | term I ho ∉ l.val} (Products.eval (C' C ho)) ''
-        {m_1 | m_1.val < m.Tail} := sorry
+        {m_1 | m_1.val < m.Tail}
+    · rw [← hlt]
+      exact cons_o_mem_startingWithMax_range C ho l
     rw [this, Products.max_eq_eval_unapply C hsC ho, Set.image_comp, Submodule.span_image,
       Submodule.mem_map]
     refine' ⟨m.eval C, ⟨_, rfl⟩⟩
-    sorry
-    /- Plan: for all `x ∈ C` such that `x (term I ho) = true`, any `q < m` such that
-       `term I ho ∉ q` satisfies `q.eval C x = 0`. On the other hand for all `x ∈ C` such that
-       `x (term I ho) = false`, `m.eval C x = 0`. Therefore, those `q`'s don't contribute to
-       the linear combination, and can be dropped. The remaining ones are of the form
-       `term I ho :: q.Tail` for `q.Tail < m.Tail` and this gives the desired linear combination. -/
-
+    rw [← hlt]
+    exact cons_o_mem_startingWithMax_aux C ho l hh
   · simp only [not_false_eq_true]
   · dsimp [ord, term]
     simp only [Ordinal.typein_enum]
