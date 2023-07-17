@@ -181,39 +181,33 @@ lemma c_relation : 1728 * W.Δ = W.c₄ ^ 3 - W.c₆ ^ 2 := by
 
 end Quantity
 
-section ModelsWithJInvariant_0_1728
-
-variable (R : Type u) [CommRing R]
+section ModelsWithJInvariant
 
 /-- The Weierstrass curve $Y^2 + Y = X^3$. -/
-def ofJInvariant0 : WeierstrassCurve R :=
+def ofJInvariant0 (R) : WeierstrassCurve R :=
   ⟨0, 0, 1, 0, 0⟩
 
-lemma ofJInvariant0_c₄ : (ofJInvariant0 R).c₄ = 0 := by
+lemma ofJInvariant0_c₄ (R) : (ofJInvariant0 R).c₄ = 0 := by
   rw [ofJInvariant0, c₄, b₂, b₄]
   norm_num1
 
-lemma ofJInvariant0_Δ : (ofJInvariant0 R).Δ = -27 := by
+lemma ofJInvariant0_Δ (R) : (ofJInvariant0 R).Δ = -27 := by
   simp only [ofJInvariant0, Δ, b₂, b₄, b₆, b₈]
   ring1
 
 /-- The Weierstrass curve $Y^2 = X^3 + X$. -/
-def ofJInvariant1728 : WeierstrassCurve R :=
+def ofJInvariant1728 (R) : WeierstrassCurve R :=
   ⟨0, 0, 0, 1, 0⟩
 
-lemma ofJInvariant1728_c₄ : (ofJInvariant1728 R).c₄ = -48 := by
+lemma ofJInvariant1728_c₄ (R) : (ofJInvariant1728 R).c₄ = -48 := by
   simp only [ofJInvariant1728, c₄, b₂, b₄]
   ring1
 
-lemma ofJInvariant1728_Δ : (ofJInvariant1728 R).Δ = -64 := by
+lemma ofJInvariant1728_Δ (R) : (ofJInvariant1728 R).Δ = -64 := by
   simp only [ofJInvariant1728, Δ, b₂, b₄, b₆, b₈]
   ring1
 
-end ModelsWithJInvariant_0_1728
-
-section ModelsWithJInvariant
-
-variable {R : Type u} [CommRing R] (j : R)
+variable (j : R)
 
 /-- The Weierstrass curve $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$. -/
 def ofJInvariant : WeierstrassCurve R :=
@@ -966,12 +960,10 @@ lemma nonsingular [Nontrivial R] {x y : R} (h : E.equation x y) : E.nonsingular 
   E.nonsingular_of_Δ_ne_zero h <| E.coe_Δ' ▸ E.Δ'.ne_zero
 #align elliptic_curve.nonsingular EllipticCurve.nonsingular
 
-section ModelsWithJInvariant_0_1728
-
-variable (R : Type u) [CommRing R]
+section ModelsWithJInvariant
 
 /-- The elliptic curve $Y^2 + Y = X^3$ when $3$ is invertible. -/
-def ofJInvariant0 [Invertible (3 : R)] : EllipticCurve R :=
+def ofJInvariant0 (R) [Invertible (3 : R)] : EllipticCurve R :=
   ⟨WeierstrassCurve.ofJInvariant0 R,
     ⟨-27, -⅟3 ^ 3,
       by rw [neg_mul_neg, show (27 : R) = 3 ^ 3 by norm_num1,
@@ -980,12 +972,12 @@ def ofJInvariant0 [Invertible (3 : R)] : EllipticCurve R :=
         pow_mul_pow_eq_one 3 <| invOf_mul_self 3]⟩,
     by rw [WeierstrassCurve.ofJInvariant0_Δ R]⟩
 
-lemma ofJInvariant0_j [Invertible (3 : R)] : (ofJInvariant0 R).j = 0 := by
+lemma ofJInvariant0_j (R) [Invertible (3 : R)] : (ofJInvariant0 R).j = 0 := by
   simp only [j, ofJInvariant0, WeierstrassCurve.ofJInvariant0_c₄]
   ring1
 
 /-- The elliptic curve $Y^2 = X^3 + X$ when $2$ is invertible. -/
-def ofJInvariant1728 [Invertible (2 : R)] : EllipticCurve R :=
+def ofJInvariant1728 (R) [Invertible (2 : R)] : EllipticCurve R :=
   ⟨WeierstrassCurve.ofJInvariant1728 R,
     ⟨-64, -⅟2 ^ 6,
       by rw [neg_mul_neg, show (64 : R) = 2 ^ 6 by norm_num1,
@@ -994,19 +986,13 @@ def ofJInvariant1728 [Invertible (2 : R)] : EllipticCurve R :=
         pow_mul_pow_eq_one 6 <| invOf_mul_self 2]⟩,
     by rw [WeierstrassCurve.ofJInvariant1728_Δ R]⟩
 
-lemma ofJInvariant1728_j [Invertible (2 : R)] : (ofJInvariant1728 R).j = 1728 := by
+lemma ofJInvariant1728_j (R) [Invertible (2 : R)] : (ofJInvariant1728 R).j = 1728 := by
   field_simp [j, ofJInvariant1728, WeierstrassCurve.ofJInvariant1728_c₄]
   ring1
 
-end ModelsWithJInvariant_0_1728
-
-section ModelsWithJInvariant'
-
-variable {R : Type u} [CommRing R] (j : R) [Invertible j] [Invertible (j - 1728)]
-
 /-- The elliptic curve $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$
 when $j$ and $j - 1728$ are both invertible. -/
-def ofJInvariant' : EllipticCurve R :=
+def ofJInvariant' (j : R) [Invertible j] [Invertible (j - 1728)] : EllipticCurve R :=
   ⟨WeierstrassCurve.ofJInvariant j,
     ⟨j ^ 2 * (j - 1728) ^ 9, ⅟j ^ 2 * ⅟(j - 1728) ^ 9,
       by rw [← mul_assoc, mul_assoc (j ^ 2), mul_comm (_ ^ 9), ← mul_assoc, mul_assoc,
@@ -1015,13 +1001,9 @@ def ofJInvariant' : EllipticCurve R :=
         pow_mul_pow_eq_one 2 (invOf_mul_self _), pow_mul_pow_eq_one 9 (invOf_mul_self _), mul_one]⟩,
     by rw [WeierstrassCurve.ofJInvariant_Δ j]⟩
 
-lemma ofJInvariant'_j : (ofJInvariant' j).j = j := by
+lemma ofJInvariant'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJInvariant' j).j = j := by
   field_simp [EllipticCurve.j, ofJInvariant', WeierstrassCurve.ofJInvariant_c₄]
   ring1
-
-end ModelsWithJInvariant'
-
-section ModelsWithJInvariant
 
 variable {F : Type u} [Field F] (j : F)
 
