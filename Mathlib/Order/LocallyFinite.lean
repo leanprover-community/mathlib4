@@ -1388,3 +1388,59 @@ theorem Set.finite_iff_bddBelow_bddAbove [Nonempty α] [Lattice α] [LocallyFini
     fun ⟨⟨a,ha⟩,⟨b,hb⟩⟩ ↦ (Set.finite_Icc a b).subset (fun x hx ↦ ⟨ha hx,hb hx⟩ )⟩
 
 end Finite
+
+noncomputable instance [Preorder α] [LocallyFiniteOrder α] :
+    LocallyFiniteOrder { x : α // x ≤ y } :=
+  LocallyFiniteOrder.ofFiniteIcc fun a b =>
+    Set.Finite.of_finite_image
+      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
+      Set.injOn_subtype_val
+
+noncomputable instance [Preorder α] [LocallyFiniteOrder α] :
+    LocallyFiniteOrder { x : α // x < y } :=
+  LocallyFiniteOrder.ofFiniteIcc fun a b =>
+    Set.Finite.of_finite_image
+      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
+      Set.injOn_subtype_val
+
+noncomputable instance [Preorder α] [LocallyFiniteOrder α] :
+    LocallyFiniteOrder { x : α // y ≤ x } :=
+  LocallyFiniteOrder.ofFiniteIcc fun a b =>
+    Set.Finite.of_finite_image
+      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
+      Set.injOn_subtype_val
+
+noncomputable instance [Preorder α] [LocallyFiniteOrder α] :
+    LocallyFiniteOrder { x : α // y < x } :=
+  LocallyFiniteOrder.ofFiniteIcc fun a b =>
+    Set.Finite.of_finite_image
+      (Set.Finite.subset (Set.finite_Icc ↑a ↑b) (Set.image_subtype_val_Icc_subset a b))
+      Set.injOn_subtype_val
+
+instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Iic y).finite_toSet using 1
+  ext
+  simp
+  rfl
+
+instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Iio y).finite_toSet using 1
+  ext
+  simp
+  rfl
+
+instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y ≤ x } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Ici y).finite_toSet using 1
+  ext
+  simp
+  rfl
+
+instance [Preorder α] [LocallyFiniteOrderTop α] : Finite { x : α // y < x } := by
+  apply Set.Finite.to_subtype
+  convert (Finset.Ioi y).finite_toSet using 1
+  ext
+  simp
+  rfl
