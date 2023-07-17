@@ -919,6 +919,12 @@ theorem Preorder.wellFounded_gt [Preorder α] : WellFounded ((· > ·) : α → 
   wellFounded_of_trans_of_irrefl _
 #align finite.preorder.well_founded_gt Finite.Preorder.wellFounded_gt
 
+instance [Preorder α] : WellFoundedLT α where
+  wf := Preorder.wellFounded_lt
+
+instance [Preorder α] : WellFoundedGT α where
+  wf := Preorder.wellFounded_gt
+
 instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·)
     where wf := Preorder.wellFounded_lt
 #align finite.linear_order.is_well_order_lt Finite.LinearOrder.isWellOrder_lt
