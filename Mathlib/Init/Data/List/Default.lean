@@ -8,9 +8,3 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Mathlib.Init.Data.List.Basic
-import Mathlib.Init.Data.List.Instances
-import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Init.Data.List.Qsort
-
