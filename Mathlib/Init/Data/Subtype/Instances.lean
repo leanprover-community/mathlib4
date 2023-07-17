@@ -9,8 +9,8 @@ Author: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Meta.MkDecEqInstance
-import Leanbin.Init.Data.Subtype.Basic
+import Mathlib.Init.Meta.MkDecEqInstance
+import Mathlib.Init.Data.Subtype.Basic
 
 open Tactic Subtype
 
