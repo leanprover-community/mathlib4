@@ -173,7 +173,7 @@ return (← once.mapM fun x => cDegCore x db).join
 * `compute_degree_le`,
 * `compute_degree_le !`,
 * `compute_degree_le -debug`
-* `compute_degree_le ! - debug`.
+* `compute_degree_le ! -debug`.
 -/
 syntax (name := computeDegreeLE) "compute_degree_le" "!"? "-debug"? : tactic
 
@@ -200,11 +200,10 @@ elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) 
   let (isNatDeg?, lhs) := ← isDegLE (← getMainTarget)
   let goal := ← getMainGoal
   let natDegGoal := ← match isNatDeg? with
-    | true => do pure [goal]
-    | false => do
-      goal.applyConst ``degree_le_of_natDegree_le
+    | true  => return [goal]
+    | false => goal.applyConst ``degree_le_of_natDegree_le
   guard (natDegGoal.length = 1) <|> throwError
-    f!"'compute_degree_le': unexpected number of goals -- {natDegGoal.length} instead of 1!"
+    m!"'compute_degree_le': expected 1 goal instead of {natDegGoal.length}!"
   let le_goals := ← (natDegGoal[0]!).applyConst ``le_trans
   let goal := le_goals[0]!
   let nfle_pf := ← cDegCore (← instantiateMVars lhs, goal) (db := debug.isSome)
