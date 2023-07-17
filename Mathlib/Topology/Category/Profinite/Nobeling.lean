@@ -707,25 +707,32 @@ open BigOperators
 
 variable {α M : Type _} [Zero M]
 
+noncomputable
+instance (r : Finset α) (p : α → Prop) : Fintype ({x | x ∈ r ∧ p x}) := by
+  haveI : ∀ a, Decidable (p a) := fun a ↦ Classical.dec _
+  have : Fintype {x : r // p x.val} := Subtype.fintype _
+  let f : {x | x ∈ r ∧ p x} → {x : r // p x.val} := fun x ↦ ⟨⟨x.val, x.prop.1⟩, x.prop.2⟩
+  have hf : f.Injective
+  · intro a b hab
+    rw [Subtype.ext_iff, Subtype.ext_iff] at hab
+    exact Subtype.ext hab
+  exact Fintype.ofInjective f hf
+
 /--
 `erase' s f` is the finitely supported function equal to `f` except at `a ∈ s` where it is
 equal to `0`.
 -/
 noncomputable
-def erase' (s : Finset α) (f : α →₀ M) : α →₀ M where
-  support :=
-    haveI := Classical.decEq α
-    f.support \ s
+def erase' (s : Set α) (f : α →₀ M) : α →₀ M where
+  support := {x | x ∈ f.support ∧ x ∉ s}.toFinset
   toFun a :=
-    haveI := Classical.decEq α
+    haveI : Decidable (a ∈ s) := Classical.dec _
     if a ∈ s then 0 else f a
   mem_support_toFun a := by
     classical
-    rw [mem_sdiff, mem_support_iff]; dsimp
-    split_ifs with h
-    · simp only [not_true, iff_false, not_and, not_not]
-      exact fun _ ↦ h
-    · exact and_iff_left h
+    simp only [mem_support_iff, ne_eq, Set.mem_toFinset, Set.mem_setOf_eq, ite_eq_left_iff, not_forall,
+      exists_prop]
+    rw [and_comm]
 
 end Finsupp
 
@@ -3246,6 +3253,14 @@ lemma List.eval_eq (l : List (WithTop I)) (x : {i // i ∈ C}) :
     simp only [ite_eq_right_iff]
     exact hi.2
 
+lemma List.eval_eq_unapply (x : {i // i ∈ C}) :
+    (fun (l : {q : Products (WithTop I) | term I ho ∉ q.val}) (a : ℤ) ↦
+    a • (eval C (term I ho :: l.val.val) x)) =
+    fun l a ↦ a * (if ∀ i, i ∈ (term I ho :: l.val.val) → (x.val i = true) then 1 else 0) := by
+  ext l
+  rw [eval_eq C (term I ho :: l.val.val) x]
+  simp
+
 def Products.Tail (l : Products (WithTop I)) : Products (WithTop I) :=
 ⟨l.val.tail, List.Chain'.tail l.prop⟩
 
@@ -3552,6 +3567,26 @@ lemma GoodProducts.cons_o_chain' (l : GoodProducts (C' C ho)) :
     dsimp [ord] at h
     simpa only [List.head!_cons, Ordinal.typein_enum]
 
+def LocconstEval (x : {i // i ∈ C}) : LocallyConstant {i // i ∈ C} ℤ →ₗ[ℤ]  ℤ where
+  toFun f := f x
+  map_add' := by
+    intro f g
+    simp only [LocallyConstant.coe_add, Pi.add_apply]
+  map_smul' := by
+    intro a f
+    simp only [zsmul_eq_mul, LocallyConstant.coe_mul, Pi.mul_apply, eq_intCast, Int.cast_id,
+      smul_eq_mul, mul_eq_mul_right_iff]
+    left
+    rfl
+
+noncomputable
+def GoodProducts.finsupp (c : List (WithTop I) →₀ ℤ) :
+    {q : Products (WithTop I) | term I ho ∉ q.val} →₀ ℤ where
+  support := sorry
+  toFun := fun q ↦ if term I ho :: q.val.val ∈ c.support then
+      c (term I ho :: q.val.val) else (if q.val.val ∈ c.support then c q.val.val else 0)
+  mem_support_toFun := sorry
+
 lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
     (hh : Products.eval C ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈
     Submodule.span ℤ (Products.eval C '' {q | q <
@@ -3571,20 +3606,149 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
   obtain ⟨c, ⟨hcmem, hcsum⟩⟩ := h
   rw [Finsupp.mem_supported] at hcmem
   rw [Finsupp.total_apply] at hcsum
-  sorry
-  -- Finsupp.erase' !!
-  -- let f : {q | q < m ∧ term I ho ∈ q.val} → {q | q < m} := fun q ↦ ⟨q.val, q.prop.1⟩
-  -- have hf : f.Injective
-  -- · intro a b hab
-  --   rw [Subtype.ext_iff] at hab
-  --   exact Subtype.ext hab
-  -- let d : Products (WithTop I) →₀ ℤ := c.comapDomain f
+  let f := (Subtype.val : Products (WithTop I) → List (WithTop I))
+  have hf : f.Injective := Subtype.coe_injective
+  let d := GoodProducts.finsupp ho (c.mapDomain f)
+  have hd : (d.support : Set {q : Products (WithTop I) | ¬term I ho ∈ q.val}) ⊆
+      {m_1 | m_1.val < l.val} := sorry
+  refine' ⟨d, ⟨_,_⟩⟩
+  · rw [Finsupp.mem_supported]
+    exact hd
+  · rw [Finsupp.total_apply]
+    ext x
+    have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ C} ℤ) (d : α →₀ ℤ),
+        (d.sum (fun i (a : ℤ) ↦ a • map i)) x =
+        d.sum (fun i a ↦ a • map i x)
+    · intro α map d
+      exact map_finsupp_sum (LocconstEval C x) _ _
+    by_cases ht : x.val (term I ho) = true
+    · have he : e C (term I ho) x = 1
+      · dsimp [e, BoolToZ]
+        simp only [ite_eq_left_iff, Bool.not_eq_true]
+        intro htf
+        rw [← Bool.not_eq_true] at htf
+        exact htf ht
+      rw [← hcsum]
+      rw [hhh, hhh]
+      dsimp [Finsupp.sum, finsupp, List.eval]
+      simp only [Finsupp.mem_support_iff, ne_eq, ite_not, List.prod_cons,
+        LocallyConstant.coe_mul, Pi.mul_apply, ite_mul, zero_mul]
+      rw [he]
+      simp only [one_mul]
 
-/- Plan: for all `x ∈ C` such that `x (term I ho) = true`, any `q < m` such that
-       `term I ho ∉ q` satisfies `q.eval C x = 0`. On the other hand for all `x ∈ C` such that
-       `x (term I ho) = false`, `m.eval C x = 0`. Therefore, those `q`'s don't contribute to
-       the linear combination, and can be dropped. The remaining ones are of the form
-       `term I ho :: q.Tail` for `q.Tail < m.Tail` and this gives the desired linear combination. -/
+      sorry
+      -- rw [List.eval_eq_unapply C ho x]
+      -- rw [Finsupp.sum_ite_eq]
+      -- rw [hhh, hhh]
+      -- dsimp [Finsupp.sum]
+      -- sorry
+    · rw [Products.eval_eq]
+      split_ifs with hi
+      · exfalso
+        apply ht
+        apply hi (term I ho)
+        rw [← List.cons_head!_tail hm, hmh]
+        exact List.mem_cons_self (term I ho) _
+      · rw [hhh _]
+        dsimp [Finsupp.sum]
+        apply Finset.sum_eq_zero
+        simp only [Finset.mem_preimage, Subtype.forall]
+        intro a _ _
+        simp only [mul_eq_zero]
+        right
+        rw [List.eval_eq]
+        split_ifs with hh'
+        · exfalso
+          apply ht
+          specialize hh' (term I ho)
+          apply hh'
+          simp only [List.find?, List.mem_cons, true_or]
+        · rfl
+
+    -- rw [Finsupp.total_apply, ← hcsum]
+    -- dsimp [finsupp]
+    -- sorry
+
+  -- let s : {q : Products (WithTop I) | term I ho ∉ q.val} → List (WithTop I) :=
+  --   fun r ↦ term I ho :: r.val.val
+  -- have hs : s.Injective
+  -- · intro a b hab
+  --   apply Subtype.ext
+  --   rw [List.cons_eq_cons] at hab
+  --   exact Subtype.ext hab.2
+  -- let f := (Subtype.val : Products (WithTop I) → List (WithTop I))
+  -- have hf : f.Injective := Subtype.coe_injective
+  -- let d := (c.mapDomain f).comapDomain s (hs.injOn _)
+  -- have hd : (d.support : Set {q : Products (WithTop I) | ¬term I ho ∈ q.val}) ⊆
+  --     {m_1 | m_1.val < l.val}
+  -- · simp only [Set.coe_setOf, Set.mem_setOf_eq, Finsupp.comapDomain_support, Finset.coe_preimage]
+  --   intro x hx
+  --   rw [Finsupp.mapDomain_support_of_injective hf] at hx
+  --   simp only [Finset.coe_image] at hx
+  --   obtain ⟨y, hy⟩ := hx
+  --   have hy' := hcmem hy.1
+  --   simp only [Set.mem_setOf_eq] at hy' ⊢
+  --   have hy'val : y.val < term I ho :: l.val.val := hy'
+  --   rw [hy.2] at hy'val
+  --   exact List.Lex.cons_iff.mp hy'val
+  -- refine' ⟨d, ⟨_,_⟩⟩
+  -- · rw [Finsupp.mem_supported]
+  --   exact hd
+  -- · rw [Finsupp.total_apply]
+  --   ext x
+  --   have hhh : ∀ α (map : α → LocallyConstant {i // i ∈ C} ℤ) (d : α →₀ ℤ),
+  --       (d.sum (fun i (a : ℤ) ↦ a • map i)) x =
+  --       d.sum (fun i a ↦ a • map i x)
+  --   · intro α map d
+  --     have : LocconstEval C x (d.sum (fun i a ↦ a • map i)) =
+  --         d.sum (fun i a ↦ a • map i x) :=
+  --       map_finsupp_sum (LocconstEval C x) _ _
+  --     exact this
+  --   by_cases ht : x.val (term I ho) = true
+  --   · rw [← hcsum]
+  --     rw [hhh, hhh]
+  --     sorry
+  --     -- rw [List.eval_eq_unapply C ho x]
+  --     -- rw [Finsupp.sum_ite_eq]
+  --     -- rw [hhh, hhh]
+  --     -- dsimp [Finsupp.sum]
+  --     -- sorry
+  --   · rw [Products.eval_eq]
+  --     split_ifs with hi
+  --     · exfalso
+  --       apply ht
+  --       apply hi (term I ho)
+  --       rw [← List.cons_head!_tail hm, hmh]
+  --       exact List.mem_cons_self (term I ho) _
+  --     · rw [hhh _]
+  --       dsimp [Finsupp.sum]
+  --       apply Finset.sum_eq_zero
+  --       simp only [Finset.mem_preimage, Subtype.forall]
+  --       intro a _ _
+  --       simp only [mul_eq_zero]
+  --       right
+  --       rw [List.eval_eq]
+  --       split_ifs with hh'
+  --       · exfalso
+  --         apply ht
+  --         specialize hh' (term I ho)
+  --         apply hh'
+  --         simp only [List.find?, List.mem_cons, true_or]
+  --       · rfl
+    -- rw [Finsupp.total_apply]
+    -- let g' := fun (i : List (WithTop I)) (a : ℤ) ↦ a • List.eval C i
+    -- have hs' : (fun (i : {q : Products (WithTop I) | term I ho ∉ q.val}) (a : ℤ) ↦
+    --   a • List.eval C (term I ho :: i.val.val)) = g' ∘ s := by rfl
+    -- erw [hs']
+    -- erw [Finsupp.sum_comapDomain _ _ _ ?_]
+    -- · rw [← hcsum, Finsupp.sum_mapDomain_index_inj hf]
+    --   rfl
+    -- · refine' ⟨_,_,_⟩
+    --   · intro x hx
+    --     exact hx
+    --   · exact hs.injOn _
+    --   · intro x hx
+    --     sorry
 
 lemma GoodProducts.term_not_mem (l : GoodProducts (C' C ho)) (y : Products (WithTop I))
     (hy : y < l.val) : term I ho ∉ y.val := by
