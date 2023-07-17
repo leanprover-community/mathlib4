@@ -26,11 +26,11 @@ family as a basis of neighborhoods of zero. In particular the given subgroups be
 (`RingSubgroupsBasis.nonarchimedean`).
 
 A special case of this construction is given by `SubmodulesBasis` where the subgroups are
-sub-modules in a commutative algebra. This important example gives rises to the adic topology
+sub-modules in a commutative algebra. This important example gives rise to the adic topology
 (studied in its own file).
 -/
 
-open Set Filter Function Lattice AddGroupWithZeroNhd
+open Set Filter Function Lattice
 
 open Topology Filter Pointwise
 
@@ -364,7 +364,7 @@ end SubmodulesBasis
 section
 
 /-
-In this section, we check that in a `R`-algebra `A` over a ring equipped with a topology,
+In this section, we check that in an `R`-algebra `A` over a ring equipped with a topology,
 a basis of `R`-submodules which is compatible with the topology on `R` is also a submodule basis
 in the sense of `R`-modules (forgetting about the ring structure on `A`) and those two points of
 view definitionaly gives the same topology on `A`.
@@ -383,7 +383,7 @@ example [Nonempty ι] : hB.topology = (hB.toSubmodulesBasis hsmul).topology :=
 end
 
 /-- Given a ring filter basis on a commutative ring `R`, define a compatibility condition
-on a family of submodules of a `R`-module `M`. This compatibility condition allows to get
+on a family of submodules of an `R`-module `M`. This compatibility condition allows to get
 a topological module structure. -/
 structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → Submodule R M) :
     Prop where

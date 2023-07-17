@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.nat.interval
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
+! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -80,8 +80,12 @@ theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup
   rfl
 #align nat.Ioo_eq_range' Nat.Ioo_eq_range'
 
+theorem uIcc_eq_range' :
+    uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range' _ _⟩ := rfl
+#align nat.uIcc_eq_range' Nat.uIcc_eq_range'
+
 theorem Iio_eq_range : Iio = range := by
-  ext (b x)
+  ext b x
   rw [mem_Iio, mem_range]
 #align nat.Iio_eq_range Nat.Iio_eq_range
 
@@ -112,6 +116,20 @@ theorem card_Ioc : (Ioc a b).card = b - a :=
 theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
   List.length_range' _ _ _
 #align nat.card_Ioo Nat.card_Ioo
+
+@[simp]
+theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
+  refine' (card_Icc _ _).trans (Int.ofNat.inj _)
+  change ((↑) : ℕ → ℤ) _ = _
+  rw [sup_eq_max, inf_eq_min, Int.ofNat_sub]
+  · rw [add_comm, Int.ofNat_add, add_sub_assoc]
+    -- porting note: `norm_cast` puts a `Int.subSubNat` in the goal
+    -- norm_cast
+    change _ = ↑(Int.natAbs (b - a) + 1)
+    push_cast
+    rw [max_sub_min_eq_abs, add_comm]
+  · exact min_le_max.trans le_self_add
+#align nat.card_uIcc Nat.card_uIcc
 
 @[simp]
 theorem card_Iic : (Iic b).card = b + 1 := by rw [Iic_eq_Icc, card_Icc, bot_eq_zero, tsub_zero]
@@ -211,11 +229,11 @@ theorem image_sub_const_Ico (h : c ≤ a) :
   rw [mem_image]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    rw [mem_Ico] at hx⊢
+    rw [mem_Ico] at hx ⊢
     exact ⟨tsub_le_tsub_right hx.1 _, tsub_lt_tsub_right_of_le (h.trans hx.1) hx.2⟩
   · rintro h
     refine' ⟨x + c, _, add_tsub_cancel_right _ _⟩
-    rw [mem_Ico] at h⊢
+    rw [mem_Ico] at h ⊢
     exact ⟨tsub_le_iff_right.1 h.1, lt_tsub_iff_right.1 h.2⟩
 #align nat.image_sub_const_Ico Nat.image_sub_const_Ico
 

@@ -136,7 +136,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact F.congr_arg (Multiset.sum_map_singleton x')
 
-/-- Lift a map `α → R` to a additive group homomorphism `FreeCommRing α → R`. -/
+/-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
   Equiv.trans liftToMultiset FreeAbelianGroup.liftMonoid
 #align free_comm_ring.lift FreeCommRing.lift
@@ -258,7 +258,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       norm_cast
   specialize this (of p) hps
   rw [lift_of] at this
-  split_ifs  at this with h
+  split_ifs at this with h
   · exact h
   exfalso
   apply Ne.symm Int.zero_ne_one

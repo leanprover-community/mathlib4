@@ -94,7 +94,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       mem_compl_singleton_iff.mpr <| Ne.symm <| norm_ne_zero_iff.mp hξ₀.ne.symm
     -- Thus, its balanced core `𝓑` is too. Let's show that the closed ball of radius `ε` contains
     -- `𝓑`, which will imply that the closed ball is indeed a `𝓣`-neighborhood of 0.
-    have : balancedCore 𝕜 ({ξ₀}ᶜ) ∈ @nhds 𝕜 t 0 := balancedCore_mem_nhds_zero this
+    have : balancedCore 𝕜 {ξ₀}ᶜ ∈ @nhds 𝕜 t 0 := balancedCore_mem_nhds_zero this
     refine' mem_of_superset this fun ξ hξ => _
     -- Let `ξ ∈ 𝓑`. We want to show `‖ξ‖ < ε`. If `ξ = 0`, this is trivial.
     by_cases hξ0 : ξ = 0
@@ -104,7 +104,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       -- Now suppose `ξ ≠ 0`. By contradiction, let's assume `ε < ‖ξ‖`, and show that
       -- `ξ₀ ∈ 𝓑 ⊆ {ξ₀}ᶜ`, which is a contradiction.
       by_contra' h
-      suffices (ξ₀ * ξ⁻¹) • ξ ∈ balancedCore 𝕜 ({ξ₀}ᶜ) by
+      suffices (ξ₀ * ξ⁻¹) • ξ ∈ balancedCore 𝕜 {ξ₀}ᶜ by
         rw [smul_eq_mul 𝕜, mul_assoc, inv_mul_cancel hξ0, mul_one] at this
         exact not_mem_compl_iff.mpr (mem_singleton ξ₀) ((balancedCore_subset _) this)
       -- For that, we use that `𝓑` is balanced : since `‖ξ₀‖ < ε < ‖ξ‖`, we have `‖ξ₀ / ξ‖ ≤ 1`,
@@ -112,7 +112,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @TopologicalAd
       refine' (balancedCore_balanced _).smul_mem _ hξ
       rw [norm_mul, norm_inv, mul_inv_le_iff (norm_pos_iff.mpr hξ0), mul_one]
       exact (hξ₀ε.trans h).le
-  · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (λ x, x • 1)` is continuous from
+  · -- Finally, to show `𝓣₀ ≤ 𝓣`, we simply argue that `id = (fun x ↦ x • 1)` is continuous from
     -- `(𝕜, 𝓣₀)` to `(𝕜, 𝓣)` because `(•) : (𝕜, 𝓣₀) × (𝕜, 𝓣) → (𝕜, 𝓣)` is continuous.
     calc
       @nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0 =
@@ -189,7 +189,7 @@ theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : S
     (hs₂ : s.Nonempty) (hs₃ : ∀ x ∈ s, l x ≠ 0) : Continuous l := by
   refine' l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => _)
   rcases hs₂ with ⟨x, hx⟩
-  have : x ∈ interior ((LinearMap.ker l : Set E)ᶜ) := by
+  have : x ∈ interior (LinearMap.ker l : Set E)ᶜ := by
     rw [mem_interior_iff_mem_nhds]
     exact mem_of_superset (hs₁.mem_nhds hx) hs₃
   rwa [hl.interior_compl] at this

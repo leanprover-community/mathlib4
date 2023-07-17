@@ -9,6 +9,7 @@ Authors: Violeta Hernández Palacios
 ! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Tactic.Abel
 
 /-!
 # Natural operations on ordinals
@@ -39,7 +40,6 @@ between both types, we attempt to prove and state most results on `Ordinal`.
 
 # Todo
 
-- Define natural multiplication and provide a basic API.
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
 -/
@@ -50,6 +50,8 @@ universe u v
 open Function Order
 
 noncomputable section
+
+/-! ### Basic casts between `ordinal` and `nat_ordinal` -/
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
@@ -73,9 +75,9 @@ def NatOrdinal.toOrdinal : NatOrdinal ≃o Ordinal :=
   OrderIso.refl _
 #align nat_ordinal.to_ordinal NatOrdinal.toOrdinal
 
-open Ordinal
-
 namespace NatOrdinal
+
+open Ordinal
 
 variable {a b c : NatOrdinal.{u}}
 
@@ -270,15 +272,14 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
     apply mem_brange_self
 #align ordinal.blsub_nadd_of_mono Ordinal.blsub_nadd_of_mono
 
-theorem nadd_assoc : ∀ a b c, a ♯ b ♯ c = a ♯ (b ♯ c)
-  | a, b, c => by
-    rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
-    · congr <;> ext (d hd) <;> apply nadd_assoc
-    · exact fun  _ _ h => nadd_le_nadd_left h a
-    · exact fun  _ _ h => nadd_le_nadd_right h c
-    termination_by' PSigma.lex (inferInstance) (fun _ ↦ inferInstance)
-    -- Porting note: above lines replaces
-    -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
+theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
+  rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
+  · congr <;> ext (d hd) <;> apply nadd_assoc
+  · exact fun  _ _ h => nadd_le_nadd_left h a
+  · exact fun  _ _ h => nadd_le_nadd_right h c
+termination_by _ => (a, b, c)
+-- Porting note: above lines replaces
+-- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]
 #align ordinal.nadd_assoc Ordinal.nadd_assoc
 
 @[simp]
@@ -324,11 +325,11 @@ theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
 #align ordinal.nat_nadd Ordinal.nat_nadd
 
 theorem add_le_nadd : a + b ≤ a ♯ b := by
-  apply b.limitRecOn
-  · simp
-  · intro c h
+  induction b using limitRecOn with
+  | H₁ => simp
+  | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]
-  · intro c hc H
+  | H₃ c hc H =>
     simp_rw [← IsNormal.blsub_eq.{u, u} (add_isNormal a) hc, blsub_le_iff]
     exact fun i hi => (H i hi).trans_lt (nadd_lt_nadd_left hi a)
 #align ordinal.add_le_nadd Ordinal.add_le_nadd

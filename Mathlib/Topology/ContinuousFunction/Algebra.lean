@@ -335,7 +335,7 @@ instance [LocallyCompactSpace α] [Mul β] [ContinuousMul β] : ContinuousMul C(
       continuous_eval'.comp (continuous_snd.prod_map continuous_id)
     exact h1.mul h2⟩
 
-/-- Coercion to a function as an `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
+/-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps)
   "Coercion to a function as an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`." ]
 def coeFnMonoidHom [Monoid β] [ContinuousMul β] : C(α, β) →* α → β where
@@ -424,21 +424,21 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
 /-- If `α` is locally compact, and an infinite sum of functions in `C(α, β)`
 converges to `g` (for the compact-open topology), then the pointwise sum converges to `g x` for
 all `x ∈ α`. -/
-theorem hasSum_apply {γ : Type _} [LocallyCompactSpace α] [AddCommMonoid β] [ContinuousAdd β]
-  {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) :
-  HasSum (fun i : γ => f i x) (g x) := by
-  let evₓ : AddMonoidHom C(α, β) β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
-  exact hf.map evₓ (ContinuousMap.continuous_eval_const' x)
+theorem hasSum_apply {γ : Type _} [AddCommMonoid β] [ContinuousAdd β]
+    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasSum f g) (x : α) :
+    HasSum (fun i : γ => f i x) (g x) := by
+  let ev : C(α, β) →+ β := (Pi.evalAddMonoidHom _ x).comp coeFnAddMonoidHom
+  exact hf.map ev (ContinuousMap.continuous_eval_const x)
 #align continuous_map.has_sum_apply ContinuousMap.hasSum_apply
 
-theorem summable_apply [LocallyCompactSpace α] [AddCommMonoid β] [ContinuousAdd β] {γ : Type _}
-    {f : γ → C(α, β)} (hf : Summable f) (x : α) : Summable fun i : γ => f i x :=
+theorem summable_apply [AddCommMonoid β] [ContinuousAdd β] {γ : Type _} {f : γ → C(α, β)}
+    (hf : Summable f) (x : α) : Summable fun i : γ => f i x :=
   (hasSum_apply hf.hasSum x).summable
 #align continuous_map.summable_apply ContinuousMap.summable_apply
 
-theorem tsum_apply [LocallyCompactSpace α] [T2Space β] [AddCommMonoid β] [ContinuousAdd β]
-    {γ : Type _} {f : γ → C(α, β)} (hf : Summable f) (x : α) :
-    (∑' i : γ, f i x) = (∑' i : γ, f i) x :=
+theorem tsum_apply [T2Space β] [AddCommMonoid β] [ContinuousAdd β] {γ : Type _} {f : γ → C(α, β)}
+    (hf : Summable f) (x : α) :
+    ∑' i : γ, f i x = (∑' i : γ, f i) x :=
   (hasSum_apply hf.hasSum x).tsum_eq
 #align continuous_map.tsum_apply ContinuousMap.tsum_apply
 
@@ -1047,8 +1047,8 @@ section Periodicity
 /-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
 (This is true without any convergence conditions, since if the sum doesn't converge it is taken to
 be the zero map, which is periodic.) -/
-theorem periodic_tsum_comp_add_zsmul [LocallyCompactSpace X] [AddCommGroup X]
-    [TopologicalAddGroup X] [AddCommMonoid Y] [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
+theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [AddCommMonoid Y]
+    [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
     Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
   intro x
   by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))

@@ -100,7 +100,7 @@ def upperCentralSeriesStep : Subgroup G where
     group
   inv_mem' {x hx y} := by
     specialize hx y⁻¹
-    rw [mul_assoc, inv_inv] at hx⊢
+    rw [mul_assoc, inv_inv] at hx ⊢
     exact Subgroup.Normal.mem_comm inferInstance hx
 #align upper_central_series_step upperCentralSeriesStep
 
@@ -250,12 +250,12 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   cases' hdesc with h0 hH
   refine' ⟨hn, fun x m hx g => _⟩
-  dsimp only at hx⊢
+  dsimp only at hx ⊢
   by_cases hm : n ≤ m
   · have hnm : n - m = 0 := tsub_eq_zero_iff_le.mpr hm
     rw [hnm, h0]
     exact mem_top _
-  · push_neg  at hm
+  · push_neg at hm
     convert hH x _ hx g using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_sub_succ]
 #align is_ascending_rev_series_of_is_descending is_ascending_rev_series_of_is_descending
@@ -468,7 +468,7 @@ instance Subgroup.isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpoten
   exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
 #align subgroup.is_nilpotent Subgroup.isNilpotent
 
-/-- A the nilpotency class of a subgroup is less or equal the the nilpotency class of the group -/
+/-- A the nilpotency class of a subgroup is less or equal to the nilpotency class of the group -/
 theorem Subgroup.nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
     Group.nilpotencyClass H ≤ Group.nilpotencyClass G := by
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
@@ -712,8 +712,7 @@ theorem lowerCentralSeries_prod (n : ℕ) :
     lowerCentralSeries (G₁ × G₂) n = (lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n) := by
   induction' n with n ih
   · simp
-  ·
-    calc
+  · calc
       lowerCentralSeries (G₁ × G₂) n.succ = ⁅lowerCentralSeries (G₁ × G₂) n, ⊤⁆ := rfl
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), ⊤⁆ := by rw [ih]
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ :=
@@ -755,8 +754,7 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
-  ·
-    calc
+  · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_mono ih (le_refl _))
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
@@ -790,8 +788,7 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
-  ·
-    calc
+  · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]

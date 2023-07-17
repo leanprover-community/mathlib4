@@ -11,7 +11,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
-import Mathlib.Util.WhatsNew
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -522,13 +521,13 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 #align function.surjective_to_subsingleton Function.surjective_to_subsingleton
 
-/-- Composition by an surjective function on the left is itself surjective. -/
+/-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective ((· ∘ ·) g : (α → β) → α → γ) := fun f ↦
   ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
 #align function.surjective.comp_left Function.Surjective.comp_left
 
-/-- Composition by an bijective function on the left is itself bijective. -/
+/-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
     Bijective ((· ∘ ·) g : (α → β) → α → γ) :=
   ⟨hg.injective.comp_left, hg.surjective.comp_left⟩
@@ -603,14 +602,16 @@ theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 #align function.eq_update_iff Function.eq_update_iff
 
 @[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
-@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
-#align function.eq_update_self_iff Function.eq_update_self_iff
 #align function.update_eq_self_iff Function.update_eq_self_iff
 
+@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
+#align function.eq_update_self_iff Function.eq_update_self_iff
+
 lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
+#align function.ne_update_self_iff Function.ne_update_self_iff
+
 lemma update_ne_self_iff : update f a b ≠ f ↔ b ≠ f a := update_eq_self_iff.not
 #align function.update_ne_self_iff Function.update_ne_self_iff
-#align function.ne_update_self_iff Function.ne_update_self_iff
 
 @[simp]
 theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
@@ -824,7 +825,7 @@ def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
   f (g a) (h b)
 #align function.bicompl Function.bicompl
 
-/-- Compose an unary function `f` with a binary function `g`. -/
+/-- Compose a unary function `f` with a binary function `g`. -/
 def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
   f (g a b)
 #align function.bicompr Function.bicompr
@@ -990,7 +991,7 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
   fun i ↦ if i ∈ s then f i else g i
 #align set.piecewise Set.piecewise
 
-/-! ### Bijectivity of `eq.rec`, `eq.mp`, `eq.mpr`, and `cast` -/
+/-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
 
 
 theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
@@ -1000,7 +1001,7 @@ theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :
 
 theorem eq_mp_bijective {α β : Sort _} (h : α = β) : Function.Bijective (Eq.mp h) := by
   -- TODO: mathlib3 uses `eq_rec_on_bijective`, difference in elaboration here
-  -- due to `@[macro_inline] possibly?
+  -- due to `@[macro_inline]` possibly?
   cases h
   refine ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_mp_bijective eq_mp_bijective

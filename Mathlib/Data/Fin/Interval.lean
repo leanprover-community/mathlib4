@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
 ! This file was ported from Lean 3 source module data.fin.interval
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
+! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -18,6 +18,27 @@ This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardi
 intervals as Finsets and Fintypes.
 -/
 
+namespace Fin
+
+variable {n : ℕ} (a b : Fin n)
+
+@[simp, norm_cast]
+theorem coe_sup : ↑(a ⊔ b) = (a ⊔ b : ℕ) := rfl
+#align fin.coe_sup Fin.coe_sup
+
+@[simp, norm_cast]
+theorem coe_inf : ↑(a ⊓ b) = (a ⊓ b : ℕ) := rfl
+#align fin.coe_inf Fin.coe_inf
+
+@[simp, norm_cast]
+theorem coe_max : ↑(max a b) = (max a b : ℕ) := rfl
+#align fin.coe_max Fin.coe_max
+
+@[simp, norm_cast]
+theorem coe_min : ↑(min a b) = (min a b : ℕ) := rfl
+#align fin.coe_min Fin.coe_min
+
+end Fin
 
 open Finset Fin Function
 
@@ -55,6 +76,9 @@ theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n :=
   rfl
 #align fin.Ioo_eq_finset_subtype Fin.Ioo_eq_finset_subtype
 
+theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := rfl
+#align fin.uIcc_eq_finset_subtype Fin.uIcc_eq_finset_subtype
+
 @[simp]
 theorem map_valEmbedding_Icc : (Icc a b).map Fin.valEmbedding = Icc ↑a ↑b := by
   simp [Icc_eq_finset_subtype, Finset.fin, Finset.map_map, Icc_filter_lt_of_lt_right]
@@ -76,6 +100,11 @@ theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo ↑a ↑b :=
 #align fin.map_subtype_embedding_Ioo Fin.map_valEmbedding_Ioo
 
 @[simp]
+theorem map_subtype_embedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
+  map_valEmbedding_Icc _ _
+#align fin.map_subtype_embedding_uIcc Fin.map_subtype_embedding_uIcc
+
+@[simp]
 theorem card_Icc : (Icc a b).card = b + 1 - a := by
   rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
 #align fin.card_Icc Fin.card_Icc
@@ -94,6 +123,11 @@ theorem card_Ioc : (Ioc a b).card = b - a := by
 theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
   rw [← Nat.card_Ioo, ← map_valEmbedding_Ioo, card_map]
 #align fin.card_Ioo Fin.card_Ioo
+
+@[simp]
+theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
+  rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
+#align fin.card_uIcc Fin.card_uIcc
 
 -- Porting note: simp can prove this
 -- @[simp]
@@ -119,6 +153,10 @@ theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 #align fin.card_fintype_Ioo Fin.card_fintypeIoo
 
+theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
+  rw [← card_uIcc, Fintype.card_ofFinset]
+#align fin.card_fintype_uIcc Fin.card_fintype_uIcc
+
 theorem Ici_eq_finset_subtype : Ici a = (Icc (a : ℕ) n).fin n := by
   ext
   simp
@@ -139,6 +177,9 @@ theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n :=
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
+-- Porting note: without `clear b` Lean includes `b` in the statement (because the `rfl`) in the
+-- `rintro` below acts on it.
+  clear b
   ext x
   simp only [exists_prop, Embedding.coe_subtype, mem_Ici, mem_map, mem_Icc]
   constructor
@@ -151,6 +192,9 @@ theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) :
 
 @[simp]
 theorem map_valEmbedding_Ioi : (Ioi a).map Fin.valEmbedding = Ioc ↑a (n - 1) := by
+-- Porting note: without `clear b` Lean includes `b` in the statement (because the `rfl`) in the
+-- `rintro` below acts on it.
+  clear b
   ext x
   simp only [exists_prop, Embedding.coe_subtype, mem_Ioi, mem_map, mem_Ioc]
   constructor
@@ -173,17 +217,17 @@ theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
 
 @[simp]
 theorem card_Ici : (Ici a).card = n - a := by
+-- Porting note: without `clear b` Lean includes `b` in the statement.
+  clear b
   cases n with
   | zero => exact Fin.elim0 a
   | succ =>
     rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.succ_sub_one]
-    assumption
 #align fin.card_Ici Fin.card_Ici
 
 @[simp]
 theorem card_Ioi : (Ioi a).card = n - 1 - a := by
   rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
-  assumption
 #align fin.card_Ioi Fin.card_Ioi
 
 @[simp]
@@ -200,14 +244,12 @@ theorem card_Iio : (Iio b).card = b := by
 -- @[simp]
 theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by
   rw [Fintype.card_ofFinset, card_Ici]
-  assumption
 #align fin.card_fintype_Ici Fin.card_fintypeIci
 
 -- Porting note: simp can prove this
 -- @[simp]
 theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by
   rw [Fintype.card_ofFinset, card_Ioi]
-  assumption
 #align fin.card_fintype_Ioi Fin.card_fintypeIoi
 
 -- Porting note: simp can prove this

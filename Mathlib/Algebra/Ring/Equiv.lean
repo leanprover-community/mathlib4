@@ -604,12 +604,6 @@ theorem toNonUnitalRingHom_injective :
   RingEquiv.ext (NonUnitalRingHom.ext_iff.1 h)
 #align ring_equiv.to_non_unital_ring_hom_injective RingEquiv.toNonUnitalRingHom_injective
 
-/- The instance priority is lowered here so that in the case when `R` and `S` are both unital, Lean
-will first find and use `RingEquiv.instCoeToRingHom`. -/
-instance (priority := 900) instCoeToNonUnitalRingHom : Coe (R ≃+* S) (R →ₙ+* S) :=
-  ⟨RingEquiv.toNonUnitalRingHom⟩
-#align ring_equiv.has_coe_to_non_unital_ring_hom RingEquiv.instCoeToNonUnitalRingHom
-
 theorem toNonUnitalRingHom_eq_coe (f : R ≃+* S) : f.toNonUnitalRingHom = ↑f :=
   rfl
 #align ring_equiv.to_non_unital_ring_hom_eq_coe RingEquiv.toNonUnitalRingHom_eq_coe
@@ -677,11 +671,7 @@ theorem toRingHom_injective : Function.Injective (toRingHom : R ≃+* S → R �
   RingEquiv.ext (RingHom.ext_iff.1 h)
 #align ring_equiv.to_ring_hom_injective RingEquiv.toRingHom_injective
 
-instance instCoeToRingHom : Coe (R ≃+* S) (R →+* S) :=
-  ⟨RingEquiv.toRingHom⟩
-#align ring_equiv.has_coe_to_ring_hom RingEquiv.instCoeToRingHom
-
-theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
+@[simp] theorem toRingHom_eq_coe (f : R ≃+* S) : f.toRingHom = ↑f :=
   rfl
 #align ring_equiv.to_ring_hom_eq_coe RingEquiv.toRingHom_eq_coe
 
@@ -718,7 +708,7 @@ theorem toAddMonoidMom_commutes (f : R ≃+* S) :
   rfl
 #align ring_equiv.to_add_monoid_hom_commutes RingEquiv.toAddMonoidMom_commutes
 
-/-- The two paths coercion can take to an `MonoidHom` are equivalent -/
+/-- The two paths coercion can take to a `MonoidHom` are equivalent -/
 theorem toMonoidHom_commutes (f : R ≃+* S) :
     (f : R →+* S).toMonoidHom = (f : R ≃* S).toMonoidHom :=
   rfl
@@ -744,13 +734,13 @@ theorem toAddMonoidHom_refl : (RingEquiv.refl R).toAddMonoidHom = AddMonoidHom.i
   rfl
 #align ring_equiv.to_add_monoid_hom_refl RingEquiv.toAddMonoidHom_refl
 
-@[simp]
+-- Porting note : Now other `simp` can do this, so removed `simp` attribute
 theorem toRingHom_apply_symm_toRingHom_apply (e : R ≃+* S) :
     ∀ y : S, e.toRingHom (e.symm.toRingHom y) = y :=
   e.toEquiv.apply_symm_apply
 #align ring_equiv.to_ring_hom_apply_symm_to_ring_hom_apply RingEquiv.toRingHom_apply_symm_toRingHom_apply
 
-@[simp]
+-- Porting note : Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_apply_toRingHom_apply (e : R ≃+* S) :
     ∀ x : R, e.symm.toRingHom (e.toRingHom x) = x :=
   Equiv.symm_apply_apply e.toEquiv
@@ -762,14 +752,14 @@ theorem toRingHom_trans (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
   rfl
 #align ring_equiv.to_ring_hom_trans RingEquiv.toRingHom_trans
 
-@[simp]
+-- Porting note : Now other `simp` can do this, so removed `simp` attribute
 theorem toRingHom_comp_symm_toRingHom (e : R ≃+* S) :
     e.toRingHom.comp e.symm.toRingHom = RingHom.id _ := by
   ext
   simp
 #align ring_equiv.to_ring_hom_comp_symm_to_ring_hom RingEquiv.toRingHom_comp_symm_toRingHom
 
-@[simp]
+-- Porting note : Now other `simp` can do this, so removed `simp` attribute
 theorem symm_toRingHom_comp_toRingHom (e : R ≃+* S) :
     e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
   ext

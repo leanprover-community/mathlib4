@@ -49,7 +49,7 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
 add_decl_doc Submodule.toAddSubmonoid
 #align submodule.to_add_submonoid Submodule.toAddSubmonoid
 
-/-- Reinterpret a `Submodule` as an `SubMulAction`. -/
+/-- Reinterpret a `Submodule` as a `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
 #align submodule.to_sub_mul_action Submodule.toSubMulAction
 
@@ -189,6 +189,15 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
 instance (priority := 75) toModule : Module R S' :=
   Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
 #align submodule_class.to_module SMulMemClass.toModule
+
+/-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
+this to manually derive `Module` on specific types. -/
+def toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
+    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
+    Module R' s :=
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R  A
+  SMulMemClass.toModule s
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
 protected def subtype : S' →ₗ[R] M where

@@ -113,6 +113,7 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
 #align algebra.adjoin_induction₂ Algebra.adjoin_induction₂
 
 /-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 theorem adjoin_induction' {p : adjoin R s → Prop} (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
     (Halg : ∀ r, p (algebraMap R _ r)) (Hadd : ∀ x y, p x → p y → p (x + y))
     (Hmul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
@@ -225,7 +226,7 @@ theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjo
 theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adjoin R (insert x s) :=
   le_antisymm
     (adjoin_le
-      (Set.insert_subset.mpr
+      (Set.insert_subset_iff.mpr
         ⟨subset_adjoin (Set.mem_insert _ _), adjoin_mono (Set.subset_insert _ _)⟩))
     (Algebra.adjoin_mono (Set.insert_subset_insert Algebra.subset_adjoin))
 #align algebra.adjoin_insert_adjoin Algebra.adjoin_insert_adjoin
@@ -253,8 +254,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
-  ·
-    simp only [adjoin_le_iff, Set.insert_subset, Subalgebra.zero_mem, Subalgebra.one_mem,
+  · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
       subset_adjoin,-- the rest comes from `squeeze_simp`
       Set.union_subset_iff,
       LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,

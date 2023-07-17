@@ -309,7 +309,7 @@ theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
   dsimp [isColimitWhiskerEquiv]
   apply P.hom_ext
   intro j
-  dsimp; simp
+  simp
 #align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
 
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
@@ -646,5 +646,69 @@ end
 end Initial
 
 end Functor
+
+section Filtered
+open Functor
+
+variable {C : Type u₁} [Category.{v₁} C]
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Final functors preserve filteredness.
+
+This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
+adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
+-/
+theorem IsFilteredOrEmpty.of_final (F : C ⥤ D) [Final F] [IsFilteredOrEmpty C] :
+    IsFilteredOrEmpty D where
+  cocone_objs X Y := ⟨F.obj (IsFiltered.max (Final.lift F X) (Final.lift F Y)),
+    Final.homToLift F X ≫ F.map (IsFiltered.leftToMax _ _),
+    ⟨Final.homToLift F Y ≫ F.map (IsFiltered.rightToMax _ _), trivial⟩⟩
+  cocone_maps {X Y} f g := by
+    let P : StructuredArrow X F → Prop := fun h => ∃ (Z : C) (q₁ : h.right ⟶ Z)
+      (q₂ : Final.lift F Y ⟶ Z), h.hom ≫ F.map q₁ = f ≫ Final.homToLift F Y ≫ F.map q₂
+    rsuffices ⟨Z, q₁, q₂, h⟩ : Nonempty (P (StructuredArrow.mk (g ≫ Final.homToLift F Y)))
+    · refine' ⟨F.obj (IsFiltered.coeq q₁ q₂),
+        Final.homToLift F Y ≫ F.map (q₁ ≫ IsFiltered.coeqHom q₁ q₂), _⟩
+      conv_lhs => rw [IsFiltered.coeq_condition]
+      simp only [F.map_comp, ← reassoc_of% h, StructuredArrow.mk_hom_eq_self, Category.assoc]
+    have h₀ : P (StructuredArrow.mk (f ≫ Final.homToLift F Y)) := ⟨_, 𝟙 _, 𝟙 _, by simp⟩
+    refine' isPreconnected_induction P _ _ h₀ _
+    · rintro U V h ⟨Z, q₁, q₂, hq⟩
+      obtain ⟨W, q₃, q₄, hq'⟩ := IsFiltered.span q₁ h.right
+      refine' ⟨W, q₄, q₂ ≫ q₃, _⟩
+      rw [F.map_comp, ← reassoc_of% hq, ← F.map_comp, hq', F.map_comp, StructuredArrow.w_assoc]
+    · rintro U V h ⟨Z, q₁, q₂, hq⟩
+      exact ⟨Z, h.right ≫ q₁, q₂, by simp only [F.map_comp, StructuredArrow.w_assoc, hq]⟩
+
+/-- Final functors preserve filteredness.
+
+This can be seen as a generalization of `IsFiltered.of_right_adjoint` (which states that right
+adjoints preserve filteredness), as right adjoints are always final, see `final_of_adjunction`.
+-/
+theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered D :=
+{ IsFilteredOrEmpty.of_final F with
+  Nonempty := Nonempty.map F.obj IsFiltered.Nonempty }
+
+/-- Initial functors preserve cofilteredness.
+
+This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
+adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
+-/
+theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
+  IsCofilteredOrEmpty D :=
+  have : IsFilteredOrEmpty Dᵒᵖ := IsFilteredOrEmpty.of_final F.op
+  isCofilteredOrEmpty_of_isFilteredOrEmpty_op _
+
+/-- Initial functors preserve cofilteredness.
+
+This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
+adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
+-/
+theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
+  have : IsFiltered Dᵒᵖ := IsFiltered.of_final F.op
+  isCofiltered_of_isFiltered_op _
+
+end Filtered
 
 end CategoryTheory

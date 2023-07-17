@@ -94,7 +94,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
 
 end Adjunction
 
-/-- Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
+/-- Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Monad.comparison R`
 sending objects `Y : D` to Eilenberg-Moore algebras for `L ⋙ R` with underlying object `R.obj X`.
 
 We later show that this is full when `R` is full, faithful when `R` is faithful,
@@ -142,7 +142,7 @@ instance (T : Monad C) : EssSurj (Monad.comparison T.adj) where
     ⟨Monad.Algebra.isoMk (Iso.refl _)⟩⟩
 
 /--
-Gven any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
+Given any adjunction `L ⊣ R`, there is a comparison functor `CategoryTheory.Comonad.comparison L`
 sending objects `X : C` to Eilenberg-Moore coalgebras for `L ⋙ R` with underlying object
 `L.obj X`.
 -/

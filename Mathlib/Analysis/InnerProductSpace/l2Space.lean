@@ -147,7 +147,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
     add_left := fun f₁ f₂ g => by
       calc
         _ = ∑' i, ⟪(f₁ + f₂) i, g i⟫ := ?_
-        _ = ∑' i, ⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫ := by
+        _ = ∑' i, (⟪f₁ i, g i⟫ + ⟪f₂ i, g i⟫) := by
           simp only [inner_add_left, Pi.add_apply, coeFn_add]
         _ = (∑' i, ⟪f₁ i, g i⟫) + ∑' i, ⟪f₂ i, g i⟫ := (tsum_add ?_ ?_)
         _ = _ := by congr
@@ -251,7 +251,7 @@ protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι,
     hV.linearIsometry (∑ i in W₀.support, lp.single 2 i (W₀ i)) =
       ∑ i in W₀.support, hV.linearIsometry (lp.single 2 i (W₀ i)) :=
     hV.linearIsometry.toLinearMap.map_sum
-  simp (config := { contextual := true }) [Dfinsupp.sum, this]
+  simp (config := { contextual := true }) [DFinsupp.sum, this]
 #align orthogonal_family.linear_isometry_apply_dfinsupp_sum_single OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single
 
 /-- The canonical linear isometry from the `lp 2` of a mutually orthogonal family of subspaces of
@@ -374,7 +374,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i
-  simp (config := { contextual := true }) [Dfinsupp.sum, lp.single_apply]
+  simp (config := { contextual := true }) [DFinsupp.sum, lp.single_apply]
 #align is_hilbert_sum.linear_isometry_equiv_apply_dfinsupp_sum_single IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
 
 /-- Given a total orthonormal family `v : ι → E`, `E` is a Hilbert sum of `fun i : ι => 𝕜`
@@ -503,7 +503,7 @@ protected theorem summable_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E
 #align hilbert_basis.summable_inner_mul_inner HilbertBasis.summable_inner_mul_inner
 
 protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
-    (∑' i, ⟪x, b i⟫ * ⟪b i, y⟫) = ⟪x, y⟫ :=
+    ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 #align hilbert_basis.tsum_inner_mul_inner HilbertBasis.tsum_inner_mul_inner
 
@@ -575,7 +575,7 @@ protected theorem coe_mkOfOrthogonalEqBot (hsp : (span 𝕜 (Set.range v))ᗮ = 
 
 -- Note : this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
-/-- An orthonormal basis is an Hilbert basis. -/
+/-- An orthonormal basis is a Hilbert basis. -/
 protected def _root_.OrthonormalBasis.toHilbertBasis [Fintype ι] (b : OrthonormalBasis ι 𝕜 E) :
     HilbertBasis ι 𝕜 E :=
   HilbertBasis.mk b.orthonormal <| by

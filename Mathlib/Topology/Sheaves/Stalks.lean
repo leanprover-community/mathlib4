@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Justus Springer
 
 ! This file was ported from Lean 3 source module topology.sheaves.stalks
-! leanprover-community/mathlib commit e2e38c005fc6f715502490da6cb0ec84df9ed228
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -106,7 +106,6 @@ def germ (F : X.Presheaf C) {U : Opens X} (x : U) : F.obj (op U) ⟶ stalk F x :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ TopCat.Presheaf.germ
 
-@[elementwise (attr := simp)]
 theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
     F.map i.op ≫ germ F x = germ F (i x : V) :=
   let i' : (⟨U, x.2⟩ : OpenNhds x.1) ⟶ ⟨V, (i x : V).2⟩ := i
@@ -114,9 +113,16 @@ theorem germ_res (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.germ_res TopCat.Presheaf.germ_res
 
+-- Porting note : `@[elementwise]` did not generate the best lemma when applied to `germ_res`
+theorem germ_res_apply (F : X.Presheaf C) {U V : Opens X} (i : U ⟶ V) (x : U) [ConcreteCategory C]
+  (s) : germ F x (F.map i.op s) = germ F (i x) s := by rw [←comp_apply, germ_res]
+set_option linter.uppercaseLean3 false in
+#align Top.presheaf.germ_res_apply TopCat.Presheaf.germ_res_apply
+
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
 composition with the `germ` morphisms.
 -/
+@[ext]
 theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ Y}
     (ih : ∀ (U : Opens X) (hxU : x ∈ U), F.germ ⟨x, hxU⟩ ≫ f₁ = F.germ ⟨x, hxU⟩ ≫ f₂) : f₁ = f₂ :=
   colimit.hom_ext fun U => by
@@ -167,9 +173,8 @@ set_option linter.uppercaseLean3 false in
 -- (colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) ℱ) :
 --   colim.obj ((OpenNhds.inclusion (f x) ⋙ Opens.map f).op ⋙ ℱ) ⟶ _) ≫
 -- colimit.pre ((OpenNhds.inclusion x).op ⋙ ℱ) (OpenNhds.map f x).op
-namespace stalkPushforward
 
--- Porting note: TODO: attribute [local tidy] tactic.op_induction'
+namespace stalkPushforward
 
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
@@ -177,13 +182,10 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
   -- Porting note: We need to this to help ext tactic.
   change (_ : colimit _ ⟶  _) = (_ : colimit _ ⟶  _)
   ext1 j
-  induction' j using Opposite.rec with j
-  -- Porting note: unsupported non-interactive tactic tactic.op_induction'
-  -- run_tac
-  --   tactic.op_induction'
+  induction' j with j
   rcases j with ⟨⟨_, _⟩, _⟩
   erw [colimit.ι_map_assoc]
-  simpa [stalkFunctor, stalkPushforward] using by rfl
+  simp [stalkFunctor, stalkPushforward]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_pushforward.id TopCat.Presheaf.stalkPushforward.id
 
@@ -341,16 +343,18 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem stalkSpecializes_refl {C : Type _} [Category C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ :=
-  F.stalk_hom_ext fun _ _ => by dsimp; simp
+    (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
+  ext
+  simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_refl TopCat.Presheaf.stalkSpecializes_refl
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_comp {C : Type _} [Category C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
-    F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') :=
-  F.stalk_hom_ext fun _ _ => by simp
+    F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
+  ext
+  simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.stalk_specializes_comp TopCat.Presheaf.stalkSpecializes_comp
 
@@ -640,7 +644,8 @@ set_option linter.uppercaseLean3 false in
 
 end Concrete
 
-instance (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) : Algebra (F.obj <| op U) (F.stalk x) :=
+instance algebra_section_stalk (F : X.Presheaf CommRingCat) {U : Opens X} (x : U) :
+    Algebra (F.obj <| op U) (F.stalk x) :=
   (F.germ x).toAlgebra
 
 @[simp]

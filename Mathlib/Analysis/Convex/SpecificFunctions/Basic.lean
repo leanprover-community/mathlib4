@@ -18,12 +18,12 @@ import Mathlib.Tactic.LinearCombination
 In this file we prove that the following functions are convex or strictly convex:
 
 * `strictConvexOn_exp` : The exponential function is strictly convex.
-* `Even.convexOn_pow`: For an even `n : ℕ`, `λ x, x ^ n` is convex.
-* `convexOn_pow`: For `n : ℕ`, `λ x, x ^ n` is convex on $[0, +∞)$.
-* `convexOn_zpow`: For `m : ℤ`, `λ x, x ^ m` is convex on $[0, +∞)$.
+* `Even.convexOn_pow`: For an even `n : ℕ`, `fun x ↦ x ^ n` is convex.
+* `convexOn_pow`: For `n : ℕ`, `fun x ↦ x ^ n` is convex on $[0, +∞)$.
+* `convexOn_zpow`: For `m : ℤ`, `fun x ↦ x ^ m` is convex on $[0, +∞)$.
 * `strictConcaveOn_log_Ioi`, `strictConcaveOn_log_Iio`: `Real.log` is strictly concave on
   $(0, +∞)$ and $(-∞, 0)$ respectively.
-* `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `λ x, x ^ p` is convex on $[0, +∞)$ when
+* `convexOn_rpow`, `strictConvexOn_rpow` : For `p : ℝ`, `fun x ↦ x ^ p` is convex on $[0, +∞)$ when
   `1 ≤ p` and strictly convex when `1 < p`.
 
 The proofs in this file are deliberately elementary, *not* by appealing to the sign of the second
@@ -33,7 +33,7 @@ theory.
 
 ## TODO
 
-For `p : ℝ`, prove that `λ x, x ^ p` is concave when `0 ≤ p ≤ 1` and strictly concave when
+For `p : ℝ`, prove that `fun x ↦ x ^ p` is concave when `0 ≤ p ≤ 1` and strictly concave when
 `0 < p < 1`.
 -/
 
@@ -231,7 +231,7 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
 #align one_add_mul_self_le_rpow_one_add one_add_mul_self_le_rpow_one_add
 
-/- For `p : ℝ` with `1 < p`, `λ x, x ^ p` is strictly convex on $[0, +∞)$.
+/- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$.
 
 We give an elementary proof rather than using the second derivative test, since this lemma is
 needed early in the analysis library. -/
@@ -241,7 +241,7 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
   have hy : 0 < y := by linarith
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
   have H1 : y ^ (p - 1 + 1) = y ^ (p - 1) * y := rpow_add_one hy.ne' _
-  ring_nf  at H1
+  ring_nf at H1
   trans p * y ^ (p - 1)
   · have h3 : 0 < y - x := by linarith only [hxy]
     have hyx'' : x / y < 1 := by rwa [div_lt_one hy]

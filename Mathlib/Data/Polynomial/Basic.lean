@@ -31,7 +31,7 @@ There are often two natural variants of lemmas involving sums, depending on whet
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
 the polynomials. For instance,
 * `sum_add_index` states that `(p + q).sum f = p.sum f + q.sum f`;
-* `sum_add` states that `p.sum (λ n x, f n x + g n x) = p.sum f + p.sum g`.
+* `sum_add` states that `p.sum (fun n x ↦ f n x + g n x) = p.sum f + p.sum g`.
 * Notation to refer to `Polynomial R`, as `R[X]` or `R[t]`.
 
 ## Implementation
@@ -1054,8 +1054,7 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
-  -- Porting note: `exact ..` is required.
-  toFinsupp_injective <| by simp; exact Finsupp.erase_zero n
+  toFinsupp_injective <| by simp
 #align polynomial.erase_zero Polynomial.erase_zero
 
 @[simp]

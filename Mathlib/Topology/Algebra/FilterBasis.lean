@@ -192,7 +192,7 @@ theorem nhds_eq (B : GroupFilterBasis G) {x₀ : G} : @nhds G B.topology x₀ = 
     rcases GroupFilterBasis.mul V_in with ⟨W, W_in, hW⟩
     use (fun y ↦ x * y) '' W, image_mem_map (FilterBasis.mem_filter_of_mem _ W_in)
     constructor
-    · rw [image_subset_iff] at H⊢
+    · rw [image_subset_iff] at H ⊢
       exact ((B.prod_subset_self W_in).trans hW).trans H
     · rintro y ⟨t, tW, rfl⟩
       rw [(B.hasBasis _).mem_iff]

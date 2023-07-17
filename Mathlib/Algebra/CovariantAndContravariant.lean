@@ -256,14 +256,14 @@ theorem Covariant.monotone_of_const [CovariantClass M N μ (· ≤ ·)] (m : M) 
 #align covariant.monotone_of_const Covariant.monotone_of_const
 
 /-- A monotone function remains monotone when composed with the partial application
-of a covariant operator. E.g., `∀ (m : ℕ), Monotone f → Monotone (λ n, f (m + n))`. -/
+of a covariant operator. E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (m + n))`. -/
 theorem Monotone.covariant_of_const [CovariantClass M N μ (· ≤ ·)] (hf : Monotone f) (m : M) :
     Monotone fun n ↦ f (μ m n) :=
   fun _ _ x ↦ hf (Covariant.monotone_of_const m x)
 #align monotone.covariant_of_const Monotone.covariant_of_const
 
 /-- Same as `Monotone.covariant_of_const`, but with the constant on the other side of
-the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (λ n, f (n + m))`. -/
+the operator.  E.g., `∀ (m : ℕ), Monotone f → Monotone (fun n ↦ f (n + m))`. -/
 theorem Monotone.covariant_of_const' {μ : N → N → N} [CovariantClass N N (swap μ) (· ≤ ·)]
     (hf : Monotone f) (m : N) : Monotone fun n ↦ f (μ n m) :=
   fun _ _ x ↦ hf (@Covariant.monotone_of_const _ _ (swap μ) _ _ m _ _ x)

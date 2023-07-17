@@ -15,7 +15,7 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 # Spectrum mapping theorem
 
 This file develops proves the spectral mapping theorem for polynomials over algebraically closed
-fields. In particular, if `a` is an element of an `𝕜`-algebra `A` where `𝕜` is a field, and
+fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
 spectrum of `a` under `(λ k, Polynomial.eval k p)`. When `𝕜` is algebraically closed, these are in
 fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial has positive
@@ -23,7 +23,7 @@ degree), which is the **spectral mapping theorem**.
 
 In addition, this file contains the fact that every element of a finite dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
-`module.End.exists_eigenvalue` to show that every linear map from a vector space to itself has an
+`Module.End.exists_eigenvalue` to show that every linear map from a vector space to itself has an
 eigenvalue.
 
 ## Main statements
@@ -61,10 +61,10 @@ local notation "↑ₐ" => algebraMap R A
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by
-  rw [← Multiset.prod_toList, AlgHom.map_list_prod] at h 
+  rw [← Multiset.prod_toList, AlgHom.map_list_prod] at h
   replace h := mt List.prod_isUnit h
   simp only [not_forall, exists_prop, aeval_C, Multiset.mem_toList, List.mem_map, aeval_X,
-    exists_exists_and_eq_and, Multiset.mem_map, AlgHom.map_sub] at h 
+    exists_exists_and_eq_and, Multiset.mem_map, AlgHom.map_sub] at h
   rcases h with ⟨r, r_mem, r_nu⟩
   exact ⟨r, by rwa [mem_iff, ← IsUnit.sub_iff], (mem_roots'.1 r_mem).2⟩
 #align spectrum.exists_mem_of_not_is_unit_aeval_prod spectrum.exists_mem_of_not_isUnit_aeval_prodₓ
@@ -89,7 +89,7 @@ theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ 
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
   have hroot : IsRoot q k := by simp only [eval_C, eval_sub, sub_self, IsRoot.def]
-  rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot 
+  rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
     simp only [aeval_C, AlgHom.map_sub, sub_left_inj]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
@@ -160,8 +160,8 @@ over an algebraically closed field `𝕜` has non-empty spectrum. -/
 theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontrivial A]
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
-  have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p ; rw [h_eval_p]; simp
-  rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu 
+  have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
+  rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu
   obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
   exact ⟨k, hk⟩
 #align spectrum.nonempty_of_is_alg_closed_of_finite_dimensional spectrum.nonempty_of_isAlgClosed_of_finiteDimensional

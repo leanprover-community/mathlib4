@@ -17,8 +17,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 This file shows that the reals are unique, or, more formally, given a type satisfying the common
 axioms of the reals (field, conditionally complete, linearly ordered) that there is an isomorphism
-preserving these properties to the reals. This is `rat.induced_order_ring_iso`. Moreover this
-isomorphism is unique.
+preserving these properties to the reals. This is `LinearOrderedField.inducedOrderRingIso` for `ℚ`.
+Moreover this isomorphism is unique.
 
 We introduce definitions of conditionally complete linear ordered fields, and show all such are
 archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
@@ -79,7 +79,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
 
 /-- The reals are a conditionally complete linearly ordered field. -/
 instance : ConditionallyCompleteLinearOrderedField ℝ :=
-  { (inferInstance : LinearOrderedField  ℝ),
+  { (inferInstance : LinearOrderedField ℝ),
     (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
 
 namespace LinearOrderedField
@@ -290,8 +290,8 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
 variable (α β)
 
 /-- `inducedMap` as an additive homomorphism. -/
-def inducedAddHom : α →+ β := by
-  refine ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
+def inducedAddHom : α →+ β :=
+  ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
 #align linear_ordered_field.induced_add_hom LinearOrderedField.inducedAddHom
 
 /-- `inducedMap` as an `OrderRingHom`. -/

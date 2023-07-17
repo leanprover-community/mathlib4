@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 
 ! This file was ported from Lean 3 source module topology.sheaves.presheaf
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -55,8 +55,19 @@ variable {C}
 
 namespace Presheaf
 
+-- Porting note: added an `ext` lemma,
+-- since `NatTrans.ext` can not see through the definition of `Presheaf`.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma ext {P Q : Presheaf C X} {f g : P ⟶ Q} (w : ∀ U : Opens X, f.app (op U) = g.app (op U)) :
+    f = g := by
+  apply NatTrans.ext
+  ext U
+  induction U with | _ U => ?_
+  apply w
+
 attribute [local instance] CategoryTheory.ConcreteCategory.hasCoeToSort
-  CategoryTheory.ConcreteCategory.hasCoeToFun
+  CategoryTheory.ConcreteCategory.funLike
 
 /-- attribute `sheaf_restrict` to mark lemmas related to restricting sheaves -/
 macro "sheaf_restrict" : attr =>
@@ -223,12 +234,17 @@ theorem id_hom_app' (U) (p) : (id ℱ).hom.app (op ⟨U, p⟩) = ℱ.map (𝟙 (
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app' TopCat.Presheaf.Pushforward.id_hom_app'
 
--- porting note: TODO: attribute [local tidy] tactic.op_induction'
+-- Porting note:
+-- the proof below could be `by aesop_cat` if
+-- https://github.com/JLimperg/aesop/issues/59
+-- can be resolved, and we add:
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opposite
+attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 
 @[simp]
 theorem id_hom_app (U) : (id ℱ).hom.app U = ℱ.map (eqToHom (Opens.op_map_id_obj U)) := by
-  -- was `tidy`
-  induction' U with U
+  -- was `tidy`, see porting note above.
+  induction U
   apply id_hom_app'
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pushforward.id_hom_app TopCat.Presheaf.Pushforward.id_hom_app
@@ -311,10 +327,10 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     { lift := fun s ↦ by
         fapply CostructuredArrow.homMk
         change op (unop _) ⟶ op (⟨_, H⟩ : Opens _)
-        . refine' (homOfLE _).op
+        · refine' (homOfLE _).op
           apply (Set.image_subset f s.pt.hom.unop.le).trans
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
-        . simp
+        · simp
       -- porting note : add `fac`, `uniq` manually
       fac := fun _ _ => by ext; simp
       uniq := fun _ _ _ => by ext; simp }
@@ -381,9 +397,8 @@ set_option linter.uppercaseLean3 false in
 theorem id_pushforward {X : TopCat.{w}} : pushforward C (𝟙 X) = 𝟭 (X.Presheaf C) := by
   apply CategoryTheory.Functor.ext
   · intros a b f
-    -- porting note : `ext` does not see this
-    refine NatTrans.ext _ _ (funext fun U => ?_)
-    . erw [NatTrans.congr f (Opens.op_map_id_obj U)]
+    ext U
+    · erw [NatTrans.congr f (Opens.op_map_id_obj (op U))]
       simp only [Functor.op_obj, eqToHom_refl, CategoryTheory.Functor.map_id,
         Category.comp_id, Category.id_comp, Functor.id_obj, Functor.id_map]
       apply Pushforward.id_eq

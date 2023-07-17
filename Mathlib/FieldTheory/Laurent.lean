@@ -16,14 +16,14 @@ import Mathlib.FieldTheory.RatFunc
 
 ## Main declarations
 
-* `ratfunc.laurent`: the Laurent expansion of the rational function `f` at `r`, as an `alg_hom`.
-* `ratfunc.laurent_injective`: the Laurent expansion at `r` is unique
+* `RatFunc.laurent`: the Laurent expansion of the rational function `f` at `r`, as an `AlgHom`.
+* `RatFunc.laurent_injective`: the Laurent expansion at `r` is unique
 
 ## Implementation details
 
 Implemented as the quotient of two Taylor expansions, over domains.
-An auxiliary definition is provided first to make the construction of the `alg_hom` easier,
-  which works on `comm_ring` which are not necessarily domains.
+An auxiliary definition is provided first to make the construction of the `AlgHom` easier,
+  which works on `CommRing` which are not necessarily domains.
 -/
 
 
@@ -49,7 +49,7 @@ theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰
 #align ratfunc.taylor_mem_non_zero_divisors RatFunc.taylor_mem_nonZeroDivisors
 
 /-- The Laurent expansion of rational functions about a value.
-Auxiliary definition, usage when over integral domains should prefer `ratfunc.laurent`. -/
+Auxiliary definition, usage when over integral domains should prefer `RatFunc.laurent`. -/
 def laurentAux : RatFunc R →+* RatFunc R :=
   RatFunc.mapRingHom
     ( { toFun := taylor r

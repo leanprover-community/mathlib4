@@ -68,8 +68,7 @@ def imageObjIso : (Abelian.image α).obj X ≅ Abelian.image (α.app X) :=
 theorem coimageImageComparison_app :
     coimageImageComparison (α.app X) =
       (coimageObjIso α X).inv ≫ (coimageImageComparison α).app X ≫ (imageObjIso α X).hom := by
-  apply coequalizer.hom_ext
-  apply equalizer.hom_ext
+  ext
   dsimp
   dsimp [imageObjIso, coimageObjIso, cokernel.map]
   simp only [coimage_image_factorisation, PreservesKernel.iso_hom, Category.assoc,

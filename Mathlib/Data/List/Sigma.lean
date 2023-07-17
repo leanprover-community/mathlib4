@@ -285,8 +285,8 @@ theorem head?_lookupAll (a : α) : ∀ l : List (Sigma β), head? (lookupAll a l
   | [] => by simp
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
-    . subst h; simp
-    . rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
+    · subst h; simp
+    · rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
 #align list.head_lookup_all List.head?_lookupAll
 
 theorem mem_lookupAll {a : α} {b : β a} :
@@ -296,7 +296,7 @@ theorem mem_lookupAll {a : α} {b : β a} :
     by_cases h : a = a'
     · subst h
       simp [*, mem_lookupAll]
-    . simp [*, mem_lookupAll]
+    · simp [*, mem_lookupAll]
 #align list.mem_lookup_all List.mem_lookupAll
 
 theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).map (Sigma.mk a) <+ l
@@ -348,7 +348,7 @@ theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
     rintro ⟨a', b'⟩ h; dsimp; split_ifs
     · subst a'
       exact H _ h
-    . rfl
+    · rfl
 #align list.kreplace_of_forall_not List.kreplace_of_forall_not
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys l)
@@ -383,7 +383,7 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
   perm_lookmap _ <| by
     refine' nd.pairwise_ne.imp _
     intro x y h z h₁ w h₂
-    split_ifs  at h₁ h₂ with h_2 h_1 <;> cases h₁ <;> cases h₂
+    split_ifs at h₁ h₂ with h_2 h_1 <;> cases h₁ <;> cases h₂
     exact (h (h_2.symm.trans h_1)).elim
 #align list.perm.kreplace List.Perm.kreplace
 

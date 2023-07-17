@@ -27,7 +27,7 @@ open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
 
 section Limits
 
@@ -95,7 +95,8 @@ theorem Concrete.multiequalizer_ext {I : MulticospanIndex.{w} C} [HasMultiequali
   apply Concrete.limit_ext
   rintro (a | b)
   · apply h
-  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), comp_apply, comp_apply, h]
+  · rw [← limit.w I.multicospan (WalkingMulticospan.Hom.fst b), comp_apply, comp_apply]
+    simp [h]
 #align category_theory.limits.concrete.multiequalizer_ext CategoryTheory.Limits.Concrete.multiequalizer_ext
 
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below.-/
@@ -115,18 +116,15 @@ def Concrete.multiequalizerEquivAux (I : MulticospanIndex C) :
         | WalkingMulticospan.right b => I.fst b (x.1 _)
       property := by
         rintro (a | b) (a' | b') (f | f | f)
-        · change (I.multicospan.map (𝟙 _)) _ = _
-          simp
+        · simp
         · rfl
         · dsimp
-          erw [← x.2 b']
-        · change (I.multicospan.map (𝟙 _)) _ = _
-          simp }
+          exact (x.2 b').symm
+        · simp }
   left_inv := by
     intro x; ext (a | b)
     · rfl
-    · change _ = x.val _
-      rw [← x.2 (WalkingMulticospan.Hom.fst b)]
+    · rw [← x.2 (WalkingMulticospan.Hom.fst b)]
       rfl
   right_inv := by
     intro x
@@ -164,9 +162,8 @@ section Colimits
 theorem cokernel_funext {C : Type _} [Category C] [HasZeroMorphisms C] [ConcreteCategory C]
     {M N K : C} {f : M ⟶ N} [HasCokernel f] {g h : cokernel f ⟶ K}
     (w : ∀ n : N, g (cokernel.π f n) = h (cokernel.π f n)) : g = h := by
-  apply coequalizer.hom_ext
-  apply ConcreteCategory.hom_ext _ _
-  simpa using w
+  ext x
+  simpa using w x
 #align category_theory.limits.cokernel_funext CategoryTheory.Limits.cokernel_funext
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C] {J : Type v} [SmallCategory J]
@@ -316,8 +313,10 @@ theorem Concrete.widePushout_exists_rep {B : C} {α : Type _} {X : α → C} (f 
   obtain ⟨_ | j, y, rfl⟩ := Concrete.colimit_exists_rep _ x
   · left
     use y
+    rfl
   · right
     use j, y
+    rfl
 #align category_theory.limits.concrete.wide_pushout_exists_rep CategoryTheory.Limits.Concrete.widePushout_exists_rep
 
 theorem Concrete.widePushout_exists_rep' {B : C} {α : Type _} [Nonempty α] {X : α → C}

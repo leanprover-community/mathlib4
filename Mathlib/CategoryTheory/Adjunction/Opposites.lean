@@ -48,13 +48,17 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_unit, homEquiv_unit]
       simp
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X Y Y' f g
       dsimp [opEquiv]
-      erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_counit, homEquiv_counit]
       simp }
 #align category_theory.adjunction.adjoint_of_op_adjoint_op CategoryTheory.Adjunction.adjointOfOpAdjointOp
 
@@ -87,13 +91,17 @@ def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      erw [homEquiv_unit, homEquiv_unit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_unit, homEquiv_unit]
       simp
     homEquiv_naturality_right := by
       -- Porting note: This proof was handled by `obviously` in mathlib3.
       intros X' X Y f g
       dsimp [opEquiv]
-      erw [homEquiv_counit, homEquiv_counit] -- Porting note: Why is `erw` needed here?
+      -- Porting note: Why is `erw` needed here?
+      -- https://github.com/leanprover-community/mathlib4/issues/5164
+      erw [homEquiv_counit, homEquiv_counit]
       simp }
 #align category_theory.adjunction.op_adjoint_op_of_adjoint CategoryTheory.Adjunction.opAdjointOpOfAdjoint
 
@@ -152,7 +160,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
-  by rw [← unit_leftAdjointUniq_hom adj1 adj2] ; rfl
+  by rw [← unit_leftAdjointUniq_hom adj1 adj2]; rfl
 #align category_theory.adjunction.unit_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
 
 @[reassoc (attr := simp)]
@@ -228,7 +236,9 @@ theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (a
   -- Porting note: was `simpa`
   simp only [opAdjointOpOfAdjoint, Functor.op_obj, Opposite.unop_op, mkOfHomEquiv_unit_app,
     Equiv.trans_apply, homEquiv_counit, Functor.id_obj]
-  erw [F.map_id] -- Porting note: Yet another `erw`...
+  -- Porting note: Yet another `erw`...
+  -- https://github.com/leanprover-community/mathlib4/issues/5164
+  erw [F.map_id]
   rw [Category.id_comp]
   rfl
 #align category_theory.adjunction.hom_equiv_symm_right_adjoint_uniq_hom_app CategoryTheory.Adjunction.homEquiv_symm_rightAdjointUniq_hom_app

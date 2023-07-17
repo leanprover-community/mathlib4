@@ -197,7 +197,7 @@ end IsExposed
 
 variable (𝕜)
 
-/-- A point is exposed with respect to `A` iff there exists an hyperplane whose intersection with
+/-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }

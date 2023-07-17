@@ -32,7 +32,7 @@ variable {α : Sort u₁} {β : Sort u₂} {γ : Sort v₁} {δ : Sort v₂}
 variable (R : α → β → Prop) (S : γ → δ → Prop)
 
 /-- The binary relations `R : α → β → Prop` and `S : γ → δ → Prop` induce a binary
-    relation on functions `LiftFun : (f : α → γ) (g : β → δ) : Prop'. -/
+    relation on functions `LiftFun : (f : α → γ) (g : β → δ) : Prop`. -/
 def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀⦃a b⦄, R a b → S (f a) (g b)
 #align relator.lift_fun Relator.LiftFun

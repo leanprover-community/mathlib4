@@ -35,7 +35,7 @@ Our star rings are actually star semirings, but of course we can prove
 assert_not_exists Finset
 assert_not_exists Subgroup
 
-universe u v
+universe u v w
 
 open MulOpposite
 
@@ -57,7 +57,7 @@ export Star (star)
 add_decl_doc star
 
 /-- `StarMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under star. -/
-class StarMemClass (S R : Type _) [Star R] [SetLike S R] where
+class StarMemClass (S R : Type _) [Star R] [SetLike S R] : Prop where
   /-- Closure under star. -/
   star_mem : ∀ {s : S} {r : R}, r ∈ s → star r ∈ s
 #align star_mem_class StarMemClass
@@ -66,7 +66,7 @@ export StarMemClass (star_mem)
 
 namespace StarMemClass
 
-variable {S : Type u} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
+variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
 nonrec instance star : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
@@ -323,7 +323,7 @@ instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalSemiring R] [StarR
     StarAddMonoid R where star_add := StarRing.star_add
 #align star_ring.to_star_add_monoid StarRing.toStarAddMonoid
 
-/-- `star` as an `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
+/-- `star` as a `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
 def starRingEquiv [NonUnitalSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
   { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
@@ -339,7 +339,7 @@ theorem star_natCast [Semiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
 --Porting note: new theorem
 @[simp]
 theorem star_ofNat [Semiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
-    star (OfNat.ofNat n : R) = OfNat.ofNat n :=
+    star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
   star_natCast _
 
 section

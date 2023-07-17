@@ -119,12 +119,13 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       apply congrArg
       ext1 he
       -- Porting note: needed more hand holding here
-      change (forget TopCat).map (D.π.app e)⁻¹' U e =
-        (forget TopCat).map (D.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
+      change (D.π.app e)⁻¹' U e =
+        (D.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
       rw [dif_pos he, ← Set.preimage_comp]
       apply congrFun
       apply congrArg
       rw [←coe_comp, D.w]
+      rfl
 #align Top.is_topological_basis_cofiltered_limit TopCat.isTopologicalBasis_cofiltered_limit
 
 end CofilteredLimit

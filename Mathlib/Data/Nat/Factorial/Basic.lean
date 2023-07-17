@@ -10,6 +10,7 @@ Authors: Mario Carneiro, Chris Hughes, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Pow
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Factorial and variants
@@ -106,6 +107,9 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * m.succ ^ n ≤ (
 theorem monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 #align nat.monotone_factorial Nat.monotone_factorial
 
+@[gcongr]
+lemma factorial_le_of_le {m n : ℕ} (h : n ≤ m) : n ! ≤ m ! := monotone_factorial h
+
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
   refine' ⟨fun h => not_le.mp fun hmn => not_le_of_lt h (factorial_le hmn), fun h => _⟩
   have : ∀ {n}, 0 < n → n ! < n.succ ! := by
@@ -116,6 +120,9 @@ theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
   · exact this hn
   · exact (ih hn).trans (this <| hn.trans <| lt_of_succ_le hnk)
 #align nat.factorial_lt Nat.factorial_lt
+
+@[gcongr]
+lemma factorial_lt_of_lt {m n : ℕ} (hn : 0 < n) (h : n < m) : n ! < m ! := (factorial_lt hn).mpr h
 
 theorem one_lt_factorial : 1 < n ! ↔ 1 < n :=
   factorial_lt one_pos
