@@ -104,7 +104,7 @@ theorem lt_blsub₂ (op : Ordinal.{u} → Ordinal.{u} → Ordinal.{max u v})
   convert lt_lsub.{v, u}
       (fun x : (Quotient.out.{u+2} o).α × (Quotient.out.{u+2} o).α =>
         op (typein.{u} LT.lt x.fst) (typein.{u} LT.lt x.snd))
-      (Prod.mk.{u, u} (enum.{u} LT.lt a (by rwa [type_lt])) (enum.{u} LT.lt b (by rwa [type_lt])))
+      (Prod.mk.{u, u} (enum.{u} LT.lt ⟨a, by rwa [type_lt]⟩) (enum.{u} LT.lt ⟨b, by rwa [type_lt]⟩))
   <;> simp only [typein_enum]
 #align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
 

@@ -8,6 +8,7 @@ Authors: Mario Carneiro, Floris van Doorn
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
+import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
 /-!
@@ -391,6 +392,24 @@ theorem ofElement_apply {α : Type _} (r : α → α → Prop) (a : α) (b) : of
 theorem ofElement_top {α : Type _} (r : α → α → Prop) (a : α) : (ofElement r a).top = a :=
   rfl
 #align principal_seg.of_element_top PrincipalSeg.ofElement_top
+
+/-- Any principal segment of a well order is order-isomorphic to a `Subrel` -/
+@[simps! symm_apply]
+noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
+  RelIso.symm
+  { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
+      (funext fun _ ↦ propext f.down.symm))),
+    map_rel_iff' := f.map_rel_iff }
+
+@[simp]
+theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
+    f (f.subrelIso b) = b :=
+  Equiv.apply_ofInjective_symm f.injective _
+
+@[simp]
+theorem subrelIso_apply (f : r ≺i s) (a : α) :
+    f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
+  Equiv.ofInjective_symm_apply f.injective _
 
 /-- Restrict the codomain of a principal segment -/
 def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
