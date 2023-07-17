@@ -56,7 +56,8 @@ theorem mul_add_mul_le_mul_add_mul (hab : a ≤ b) (hcd : c ≤ d) : a * d + b *
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
   obtain ⟨d, rfl⟩ := exists_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right _).1 hcd) _
+  -- had to add `c` in instance prio refactor
+  exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right c).1 hcd) _
 #align mul_add_mul_le_mul_add_mul mul_add_mul_le_mul_add_mul
 
 /-- Binary **rearrangement inequality**. -/
