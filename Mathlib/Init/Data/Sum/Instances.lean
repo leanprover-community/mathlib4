@@ -9,7 +9,7 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Meta.MkDecEqInstance
+import Mathlib.Init.Meta.MkDecEqInstance
 
 universe u v
 
