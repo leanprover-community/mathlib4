@@ -12,6 +12,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # IMO 2013 Q5
@@ -44,20 +45,18 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
   have hxmy : 0 < x - y := sub_pos.mpr hxy
   have hn : ∀ n : ℕ, 0 < n → (x - y) * (n : ℝ) ≤ x ^ n - y ^ n := by
     intro n _
-    have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i) := by
-      intro i _
-      have hx' : 1 ≤ x ^ i := one_le_pow_of_one_le hx.le i
-      have hy' : 1 ≤ y ^ (n - 1 - i) := one_le_pow_of_one_le hy.le (n - 1 - i)
+    have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i)
+    · intro i _
       calc
-        1 ≤ x ^ i := hx'
-        _ = x ^ i * 1 := (mul_one _).symm
-        _ ≤ x ^ i * y ^ (n - 1 - i) := mul_le_mul_of_nonneg_left hy' (zero_le_one.trans hx')
+        1 ≤ x ^ i := one_le_pow_of_one_le hx.le i
+        _ = x ^ i * 1 := by ring
+        _ ≤ x ^ i * y ^ (n - 1 - i) := by gcongr; apply one_le_pow_of_one_le hy.le
     calc
-      (x - y) * (n : ℝ) = (n : ℝ) * (x - y) := mul_comm _ _
+      (x - y) * (n : ℝ) = (n : ℝ) * (x - y) := by ring
       _ = (∑ _i : ℕ in Finset.range n, (1 : ℝ)) * (x - y) := by
         simp only [mul_one, Finset.sum_const, nsmul_eq_mul, Finset.card_range]
-      _ ≤ (∑ i : ℕ in Finset.range n, x ^ i * y ^ (n - 1 - i)) * (x - y) :=
-        ((mul_le_mul_right hxmy).mpr (Finset.sum_le_sum hterm))
+      _ ≤ (∑ i : ℕ in Finset.range n, x ^ i * y ^ (n - 1 - i)) * (x - y) := by
+        gcongr with i hi; apply hterm i hi
       _ = x ^ n - y ^ n := geom_sum₂_mul x y n
   -- Choose n larger than 1 / (x - y).
   obtain ⟨N, hN⟩ := exists_nat_gt (1 / (x - y))
@@ -65,7 +64,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
   have :=
     calc
       1 = (x - y) * (1 / (x - y)) := by field_simp [ne_of_gt hxmy]
-      _ < (x - y) * N := ((mul_lt_mul_left hxmy).mpr hN)
+      _ < (x - y) * N := by gcongr
       _ ≤ x ^ N - y ^ N := hn N hNp
   linarith [h N hNp]
 #align imo2013_q5.le_of_all_pow_lt_succ Imo2013Q5.le_of_all_pow_lt_succ
@@ -78,22 +77,20 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
   by_contra' hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
   let y' := (x + 1) / 2
-  have h_y'_lt_x : y' < x := by
-    have hh : (x + 1) / 2 < x * 2 / 2 := by linarith
+  have h_y'_lt_x : y' < x :=
     calc
-      y' < x * 2 / 2 := hh
+      (x + 1) / 2 < x * 2 / 2 := by linarith
       _ = x := by field_simp
-  have h1_lt_y' : 1 < y' := by
-    have hh' : 1 * 2 / 2 < (x + 1) / 2 := by linarith
+  have h1_lt_y' : 1 < y' :=
     calc
       1 = 1 * 2 / 2 := by field_simp
-      _ < y' := hh'
-  have h_y_lt_y' : y < y' := hy''.trans_lt h1_lt_y'
-  have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n := by
-    intro n hn
+      _ < (x + 1) / 2 := by linarith
+  have h_y_lt_y' : y < y' := by linarith
+  have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n
+  · intro n hn
     calc
       x ^ n - 1 < y ^ n := h n hn
-      _ ≤ y' ^ n := pow_le_pow_of_le_left hy.le h_y_lt_y'.le n
+      _ ≤ y' ^ n := by gcongr
   exact h_y'_lt_x.not_le (le_of_all_pow_lt_succ hx h1_lt_y' hh)
 #align imo2013_q5.le_of_all_pow_lt_succ' Imo2013Q5.le_of_all_pow_lt_succ'
 
@@ -130,7 +127,7 @@ theorem fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
     (x - 1 : ℝ) < f ⌊x⌋₊ := hx0
     _ < f (x - ⌊x⌋₊) + f ⌊x⌋₊ := (lt_add_of_pos_left _ (f_pos_of_pos (sub_pos.mpr h_lt) H1 H4))
     _ ≤ f (x - ⌊x⌋₊ + ⌊x⌋₊) := (H2 _ _ (sub_pos.mpr h_lt) (Nat.cast_pos.2 (Nat.floor_pos.2 hx)))
-    _ = f x := by rw [sub_add_cancel]
+    _ = f x := by ring_nf
 #align imo2013_q5.fx_gt_xm1 Imo2013Q5.fx_gt_xm1
 
 theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 1 < x)
@@ -145,7 +142,7 @@ theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 
   have hxp : 0 < x := by positivity
   calc
     f (x ^ (pn + 1) * x) ≤ f (x ^ (pn + 1)) * f x := H1 (x ^ (pn + 1)) x (pow_pos hxp (pn + 1)) hxp
-    _ ≤ f x ^ (pn + 1) * f x := (mul_le_mul_right (f_pos_of_pos hxp H1 H4)).mpr hpn'
+    _ ≤ f x ^ (pn + 1) * f x := by gcongr; exact (f_pos_of_pos hxp H1 H4).le
 #align imo2013_q5.pow_f_le_f_pow Imo2013Q5.pow_f_le_f_pow
 
 theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
@@ -169,14 +166,13 @@ theorem fixed_point_of_gt_1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 < x)
   have h_big_enough : (1 : ℚ) < a ^ N - x := lt_sub_iff_add_lt.mpr hN
   have h1 :=
     calc
-      (x : ℝ) + (a ^ N - x : ℚ) ≤ f x + (a ^ N - x : ℚ) := add_le_add_right (H5 x hx) _
-      _ ≤ f x + f (a ^ N - x) := add_le_add_left (H5 _ h_big_enough) _
+      (x : ℝ) + (a ^ N - x : ℚ) ≤ f x + (a ^ N - x : ℚ) := by gcongr; exact H5 x hx
+      _ ≤ f x + f (a ^ N - x) := by gcongr; exact H5 _ h_big_enough
   have hxp : 0 < x := by positivity
   have hNp : 0 < N := by by_contra' H; rw [le_zero_iff.mp H] at hN; linarith
   have h2 :=
     calc
-      f x + f (a ^ N - x) ≤ f (x + (a ^ N - x)) :=
-        H2 x (a ^ N - x) hxp (zero_lt_one.trans h_big_enough)
+      f x + f (a ^ N - x) ≤ f (x + (a ^ N - x)) := H2 x (a ^ N - x) hxp (by positivity)
       _ = f (a ^ N) := by ring_nf
       _ = a ^ N := (fixed_point_of_pos_nat_pow hNp H1 H4 H5 ha1 hae)
       _ = x + (a ^ N - x) := by ring
@@ -200,18 +196,16 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     · norm_num
     calc
       ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
-      _ = ((pn : ℝ) + 1) * f x + 1 * f x := (add_mul (↑pn + 1) 1 (f x))
-      _ = (↑pn + 1) * f x + f x := by rw [one_mul]
+      _ = (↑pn + 1) * f x + f x := by ring
       _ ≤ f (↑pn.succ * x) + f x := by exact_mod_cast add_le_add_right (hpn pn.succ_pos) (f x)
       _ ≤ f ((↑pn + 1) * x + x) := by exact_mod_cast H2 _ _ (mul_pos pn.cast_add_one_pos hx) hx
-      _ = f ((↑pn + 1) * x + 1 * x) := by rw [one_mul]
-      _ = f ((↑pn + 1 + 1) * x) := (congr_arg f (add_mul (↑pn + 1) 1 x).symm)
+      _ = f ((↑pn + 1 + 1) * x) := by ring_nf
       _ = f (↑(pn + 2) * x) := by norm_cast
   have H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n := by
     intro n hn
     have hf1 : 1 ≤ f 1 := by
       have a_pos : (0 : ℝ) < a := Rat.cast_pos.mpr (zero_lt_one.trans ha1)
-      suffices : ↑a * 1 ≤ ↑a * f 1; exact (mul_le_mul_left a_pos).mp this
+      suffices : ↑a * 1 ≤ ↑a * f 1; rwa [← mul_le_mul_left a_pos]
       calc
         ↑a * 1 = ↑a := mul_one (a : ℝ)
         _ = f a := hae.symm
@@ -220,7 +214,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
         _ = ↑a * f 1 := by rw [hae]
     calc
       (n : ℝ) = (n : ℝ) * 1 := (mul_one _).symm
-      _ ≤ (n : ℝ) * f 1 := (mul_le_mul_of_nonneg_left hf1 (Nat.cast_nonneg _))
+      _ ≤ (n : ℝ) * f 1 := by gcongr
       _ ≤ f (n * 1) := (H3 1 zero_lt_one n hn)
       _ = f n := by rw [mul_one]
   have H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x := by
@@ -253,37 +247,22 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   -- we need the top of the fraction to be strictly greater than 1 in order
   -- to apply `fixed_point_of_gt_1`.
   intro x hx
-  let x2denom := 2 * x.den
-  let x2num := 2 * x.num
-  have hx2pos :=
-    calc
-      0 < x.den := x.pos
-      _ < x.den + x.den := (lt_add_of_pos_left x.den x.pos)
-      _ = 2 * x.den := by ring
-  have hxcnez : (x.den : ℚ) ≠ (0 : ℚ) := ne_of_gt (Nat.cast_pos.mpr x.pos)
-  have hx2cnezr : (x2denom : ℝ) ≠ (0 : ℝ) := Nat.cast_ne_zero.mpr (ne_of_gt hx2pos)
-  have hrat_expand2 :=
-    calc
-      x = x.num / x.den := by exact_mod_cast Rat.num_den.symm
-      _ = x2num / x2denom := by field_simp; linarith
-  have h_denom_times_fx :=
-    calc
-      (x2denom : ℝ) * f x = f (x2denom * x) :=
-        (h_f_commutes_with_pos_nat_mul x2denom hx2pos x hx).symm
-      _ = f (x2denom * (x2num / x2denom)) := by rw [hrat_expand2]
-      _ = f x2num := by congr; field_simp; ring
-  have h_fx2num_fixed : f x2num = x2num := by
-    have hx2num_gt_one : (1 : ℚ) < (2 * x.num : ℤ) := by
-      norm_cast; linarith [Rat.num_pos_iff_pos.mpr hx]
-    have hh := fixed_point_of_gt_1 hx2num_gt_one H1 H2 H4 H5 ha1 hae
-    rwa [Rat.cast_coe_int x2num] at hh
+  have H₀ : x * x.den = x.num := Rat.mul_den_eq_num
+  have H : x * (↑(2 * x.den) : ℚ) = (↑(2 * x.num) : ℚ) := by push_cast; linear_combination 2 * H₀
+  set x2denom := 2 * x.den
+  set x2num := 2 * x.num
+  have := x.pos
+  have hx2pos : 0 < 2 * x.den := by positivity
+  have hx2cnezr : (x2denom : ℝ) ≠ (0 : ℝ) := by positivity
+  have : 0 < x.num := by rwa [Rat.num_pos_iff_pos]
+  have hx2num_gt_one : (1 : ℚ) < (2 * x.num : ℤ) := by norm_cast; linarith
+  apply mul_left_cancel₀ hx2cnezr
   calc
-    f x = f x * 1 := (mul_one (f x)).symm
-    _ = f x * (x2denom / x2denom) := by rw [← div_self hx2cnezr]
-    _ = f x * x2denom / x2denom := (mul_div_assoc' (f x) _ _)
-    _ = x2denom * f x / x2denom := by rw [mul_comm]
-    _ = f x2num / x2denom := by rw [h_denom_times_fx]
-    _ = x2num / x2denom := by rw [h_fx2num_fixed]
-    _ = (((x2num : ℚ) / (x2denom : ℚ) : ℚ) : ℝ) := by norm_cast
-    _ = x := by rw [← hrat_expand2]
+    x2denom * f x = f (x2denom * x) :=
+        (h_f_commutes_with_pos_nat_mul x2denom hx2pos x hx).symm
+    _ = f x2num := by congr; linear_combination H
+    _ = x2num := fixed_point_of_gt_1 hx2num_gt_one H1 H2 H4 H5 ha1 hae
+    _ = ((x2num : ℚ) : ℝ) := by norm_cast
+    _ = (↑(x2denom * x) : ℝ) := by congr; linear_combination -H
+    _ = x2denom * x := by push_cast; rfl
 #align imo2013_q5 imo2013_q5
