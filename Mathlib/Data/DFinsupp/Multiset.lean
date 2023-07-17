@@ -123,15 +123,16 @@ theorem toDFinsupp_union (s t : Multiset α) : toDFinsupp (s ∪ t) = toDFinsupp
 
 end Multiset
 
-@[simp]
-theorem DFinsupp.toMultiset_toDFinsupp [DecidableEq α] (f : Π₀ _ : α, ℕ) :
-    Multiset.toDFinsupp (DFinsupp.toMultiset f) = f :=
-  Multiset.equivDFinsupp.apply_symm_apply f
-#align dfinsupp.to_multiset_to_dfinsupp DFinsupp.toMultiset_toDFinsupp
 
 namespace DFinsupp
 
 variable [DecidableEq α] {f g : Π₀ _a : α, ℕ}
+
+@[simp]
+theorem toMultiset_toDFinsupp [DecidableEq α] (f : Π₀ _ : α, ℕ) :
+    Multiset.toDFinsupp (DFinsupp.toMultiset f) = f :=
+  Multiset.equivDFinsupp.apply_symm_apply f
+#align dfinsupp.to_multiset_to_dfinsupp DFinsupp.toMultiset_toDFinsupp
 
 theorem toMultiset_injective : Injective (toMultiset : (Π₀ _a, ℕ) → Multiset α) :=
   Multiset.equivDFinsupp.symm.injective
