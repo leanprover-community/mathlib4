@@ -220,6 +220,10 @@ theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
     have : (1 : ℝ) ≤ n := by exact_mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
+theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
+  rw [←log_neg_eq_log, neg_neg]
+  exact log_nat_cast_nonneg _
+
 theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
   | inl hn =>
@@ -464,6 +468,31 @@ end TendstoCompAddSub
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
+lemma one_lt_of_isNat
+    (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) : 1 < (e : ℝ) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  simpa using w
+
+lemma one_le_of_isNat [StrictOrderedSemiring A]
+    (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 1 ≤ (e : A) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  simpa using w
+
+lemma log_nonneg_of_isNat (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
+  rw [NormNum.IsNat.to_eq h rfl]
+  exact Real.log_nat_cast_nonneg _
+
+lemma log_nonneg_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) : 0 ≤ Real.log (e : ℝ) := by
+  rw [NormNum.IsInt.neg_to_eq h rfl]
+  exact Real.log_neg_nat_cast_nonneg _
+
+lemma log_pos_of_isNegNat (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n = true) :
+    0 < Real.log (e : ℝ) := by
+  rw [NormNum.IsInt.neg_to_eq h rfl]
+  rw [Real.log_neg_eq_log]
+  apply Real.log_pos
+  simpa using w
+
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
 def evalLogNatCast : PositivityExt where eval {_ _} _zα _pα e := do
@@ -477,5 +506,29 @@ def evalLogIntCast : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (f : Q(ℝ → ℝ)) (.app _ (a : Q(ℤ))) ← withReducible (whnf e) | throwError "not Real.log"
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
   pure (.nonnegative (q(Real.log_int_cast_nonneg $a) : Lean.Expr))
+
+/-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
+@[positivity Real.log _]
+def evalLogNatLit : PositivityExt where eval {_ _} _zα _pα e := do
+  let .app (f : Q(ℝ → ℝ)) (a : Q(ℝ)) ← withReducible (whnf e) | throwError "not Real.log"
+  guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(Real.log)
+  match ←NormNum.derive a with
+  | .isNat (_ : Q(AddMonoidWithOne ℝ)) lit p =>
+    assumeInstancesCommute
+    have p : Q(NormNum.IsNat $a $lit) := p
+    if 1 < lit.natLit! then
+      let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
+      pure (.positive (q(Real.log_pos (one_lt_of_isNat $p $p')) : Lean.Expr))
+    else
+      pure (.nonnegative (q(log_nonneg_of_isNat $p) : Lean.Expr))
+  | .isNegNat _ lit p =>
+    assumeInstancesCommute
+    have p : Q(NormNum.IsInt $a (Int.negOfNat $lit)) := p
+    if 1 < lit.natLit! then
+      let p' : Q(Nat.blt 1 $lit = true) := (q(Eq.refl true) : Lean.Expr)
+      pure (.positive (q(log_pos_of_isNegNat $p $p') : Lean.Expr))
+    else
+      pure (.nonnegative (q(log_nonneg_of_isNegNat $p) : Lean.Expr))
+  | _ => failure
 
 end Mathlib.Meta.Positivity
