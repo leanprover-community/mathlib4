@@ -197,6 +197,85 @@ u^2s & u^3 & t \cr
 structure VariableChange (R : Type u) [CommRing R] where
   (u : Rˣ) (r s t : R)
 
+namespace VariableChange
+
+section Group
+
+variable {R : Type u} [CommRing R]
+
+def one : VariableChange R where
+  u := 1
+  r := 0
+  s := 0
+  t := 0
+
+def mul (C C' : VariableChange R) : VariableChange R where
+  u := C.u * C'.u
+  r := C.r * ↑C'.u ^ 2 + C'.r
+  s := ↑C'.u * C.s + C'.s
+  t := C.t * ↑C'.u ^ 3 + C.r * C'.s * ↑C'.u ^ 2 + C'.t
+
+def inv (C : VariableChange R) : VariableChange R where
+  u := C.u⁻¹
+  r := -C.r * ↑C.u⁻¹ ^ 2
+  s := -C.s * ↑C.u⁻¹
+  t := (C.r * C.s - C.t) * ↑C.u⁻¹ ^ 3
+
+lemma one_mul (C : VariableChange R) : mul one C = C := by
+  simp only [mul, one,
+    _root_.one_mul, zero_mul, zero_add, mul_zero, add_zero]
+
+lemma mul_one (C : VariableChange R) : mul C one = C := by
+  simp only [mul, one,
+    _root_.mul_one, Units.val_one, one_pow, add_zero, _root_.one_mul, mul_zero]
+
+lemma mul_left_inv (C : VariableChange R) : mul (inv C) C = one := by
+  simp only [mul, one, inv]
+  ext
+  · simp only [_root_.mul_left_inv, Units.val_one]
+  · dsimp only
+    rw [mul_assoc (-C.r)]
+    norm_cast
+    rw [pow_mul_pow_eq_one 2 (_root_.mul_left_inv C.u)]
+    simp only [Units.val_one, _root_.mul_one, add_left_neg]
+  · dsimp only
+    rw [mul_comm (-C.s), ←mul_assoc]
+    norm_cast
+    rw [_root_.mul_right_inv]
+    simp only [Units.val_one, _root_.one_mul, add_left_neg]
+  · dsimp only
+    rw [mul_assoc (C.r * C.s - C.t)]
+    rw [mul_assoc (-C.r) _ C.s, mul_comm ((↑C.u⁻¹ : R) ^ 2) C.s]
+    rw [←mul_assoc (-C.r), mul_assoc (-C.r * C.s)]
+    norm_cast
+    rw [pow_mul_pow_eq_one 2 (_root_.mul_left_inv C.u)]
+    rw [pow_mul_pow_eq_one 3 (_root_.mul_left_inv C.u)]
+    norm_cast
+    ring1
+
+lemma mul_assoc (C C' C'' : VariableChange R) : mul (mul C C') C'' = mul C (mul C' C'') := by
+  simp only [mul]
+  have : (↑(C'.u * C''.u) : R) = (↑C'.u : R) * (↑C''.u : R) := rfl
+  rw [this]
+  ext
+  · rw [_root_.mul_assoc]
+  · ring1
+  · ring1
+  · ring1
+
+instance instGroupVariableChange : Group (VariableChange R) where
+  one := one
+  inv := inv
+  mul := mul
+  one_mul := one_mul
+  mul_one := mul_one
+  mul_left_inv := mul_left_inv
+  mul_assoc := mul_assoc
+
+end Group
+
+end VariableChange
+
 variable (C : VariableChange R)
 
 /-- The Weierstrass curve over `R` induced by an admissible linear change of variables
