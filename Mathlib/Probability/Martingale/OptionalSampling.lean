@@ -38,7 +38,7 @@ open scoped MeasureTheory BigOperators ENNReal
 
 open TopologicalSpace
 
--- TODO after the port: move to `Topology/Instances/Discrete`
+-- Porting note: move to `Topology/Instances/Discrete`
 instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable {α : Type _}
     [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   @DiscreteTopology.secondCountableTopology_of_encodable _ _ _ (Encodable.ofCountable _)

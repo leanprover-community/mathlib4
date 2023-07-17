@@ -38,8 +38,6 @@ open CategoryTheory.Limits
 
 universe u
 
-set_option autoImplicit false -- **TODO** delete this later
-
 variable {J : Type u} [SmallCategory J] [IsCofiltered J] {F : J ⥤ Profinite.{u}} (C : Cone F)
 
 -- include hC
@@ -86,7 +84,7 @@ theorem exists_clopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsClop
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.2.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
   -- Porting note: same remark as after `hB`
-  -- We thus obtain a finite set `G : finset J` and a clopen set of `F.obj j` for each
+  -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each
   -- `j ∈ G` such that `U` is the union of the preimages of these clopen sets.
   obtain ⟨G, hG⟩ := this
   -- Since `J` is cofiltered, we can find a single `j0` dominating all the `j ∈ G`.

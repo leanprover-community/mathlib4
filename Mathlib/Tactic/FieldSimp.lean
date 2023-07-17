@@ -9,7 +9,6 @@ import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.Set
 import Qq
 
 /-!

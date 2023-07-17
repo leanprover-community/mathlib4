@@ -102,7 +102,7 @@ theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
 end Examples
 
 theorem derivative_bernoulli_add_one (k : ℕ) :
-    Polynomial.derivative (bernoulli (k + 1))= (k + 1) * bernoulli k := by
+    Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
   rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, MulZeroClass.mul_zero,
@@ -115,6 +115,13 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
   rw [(choose_mul_succ_eq k m).symm, mul_comm]
 #align polynomial.derivative_bernoulli_add_one Polynomial.derivative_bernoulli_add_one
 
+theorem derivative_bernoulli (k : ℕ) :
+  Polynomial.derivative (bernoulli k) = k * bernoulli (k - 1) := by
+  cases k with
+  | zero => rw [Nat.cast_zero, MulZeroClass.zero_mul, bernoulli_zero, derivative_one]
+  | succ k => exact_mod_cast derivative_bernoulli_add_one k
+#align polynomial.derivative_bernoulli Polynomial.derivative_bernoulli
+
 @[simp]
 nonrec theorem sum_bernoulli (n : ℕ) :
     (∑ k in range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
@@ -124,11 +131,11 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
-    . skip
-    . conv =>
+    · skip
+    · conv =>
       apply_congr
-      . skip
-      . rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
+      · skip
+      · rw [← Nat.cast_mul, choose_mul ((le_tsub_iff_left <| mem_range_le (by assumption)).1 <|
             mem_range_le (by assumption)) (le.intro rfl),
           Nat.cast_mul, add_tsub_cancel_left, mul_assoc, mul_comm, ← smul_eq_mul, ←
           smul_monomial]
@@ -196,17 +203,17 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
     bernoulli_eq_sub_sum, eval_sub, eval_finset_sum]
   conv_lhs =>
     congr
-    . skip
-    . apply_congr
-      . skip
-      . rw [eval_smul, hd _ (mem_range.1 (by assumption))]
+    · skip
+    · apply_congr
+      · skip
+      · rw [eval_smul, hd _ (mem_range.1 (by assumption))]
   rw [eval_sub, eval_finset_sum]
   simp_rw [eval_smul, smul_add]
   rw [sum_add_distrib, sub_add, sub_eq_sub_iff_sub_eq_sub, _root_.add_sub_sub_cancel]
   conv_rhs =>
     congr
-    . skip
-    . congr
+    · skip
+    · congr
       rw [succ_eq_add_one, ← choose_succ_self_right d]
   rw [Nat.cast_succ, ← smul_eq_mul, ← sum_range_succ _ d, eval_monomial_one_add_sub]
   simp_rw [smul_eq_mul]

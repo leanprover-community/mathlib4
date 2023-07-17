@@ -9,6 +9,7 @@ Authors: Kevin Lacker, Heather Macbeth
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Tactic.Polyrith
 
 /-!
 # IMO 1962 Q4
@@ -108,19 +109,14 @@ We now present a second solution.  The key to this solution is that, when the id
 converted to an identity which is polynomial in `a` := `cos x`, it can be rewritten as a product of
 terms, `a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3)`, being equal to zero.
 -/
-/-- Someday, when there is a Grobner basis tactic, try to automate this proof. (A little tricky --
-the ideals are not the same but their Jacobson radicals are.) -/
 theorem formula {R : Type _} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
     a ^ 2 + ((2 : R) * a ^ 2 - (1 : R)) ^ 2 + ((4 : R) * a ^ 3 - 3 * a) ^ 2 = 1 ↔
-      ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 :=
-  calc
-    a ^ 2 + (2 * a ^ 2 - 1) ^ 2 + (4 * a ^ 3 - 3 * a) ^ 2 = 1 ↔
-        a ^ 2 + (2 * a ^ 2 - 1) ^ 2 + (4 * a ^ 3 - 3 * a) ^ 2 - 1 = 0 := by rw [← sub_eq_zero]
-    _ ↔ 2 * a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3) = 0 := by
-      constructor <;> intro h <;> convert h using 1 <;> ring
-    _ ↔ a * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3) = 0 := by simp
-    _ ↔ (2 * a ^ 2 - (1 : R)) * (4 * a ^ 3 - 3 * a) = 0 := by
-      constructor <;> intro h <;> convert h using 1 <;> ring
+      ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 := by
+  constructor <;> intro h
+  · apply pow_eq_zero (n := 2)
+    apply mul_left_injective₀ (b := 2) (by norm_num)
+    linear_combination (8 * a ^ 4 - 10 * a ^ 2 + 3) * h
+  · linear_combination 2 * a * h
 #align imo1962_q4.formula Imo1962Q4.formula
 
 /-

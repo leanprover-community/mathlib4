@@ -75,7 +75,7 @@ variable {ι ι' : Type _} {α : ι → Type _}
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
     IsPiSystem (pi univ '' pi univ C) := by
   rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
-  rw [← pi_inter_distrib] at hst⊢; rw [univ_pi_nonempty_iff] at hst
+  rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty_iff] at hst
   exact mem_image_of_mem _ fun i _ => hC i _ (hs₁ i (mem_univ i)) _ (hs₂ i (mem_univ i)) (hst i)
 #align is_pi_system.pi IsPiSystem.pi
 
@@ -185,7 +185,7 @@ theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
-  simp [piPremeasure_pi']; rfl
+  simp only [eval, piPremeasure_pi']; rfl
 #align measure_theory.pi_premeasure_pi_eval MeasureTheory.piPremeasure_pi_eval
 
 namespace OuterMeasure

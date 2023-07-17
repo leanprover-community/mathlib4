@@ -141,8 +141,6 @@ section
 
 variable {F : C ⥤ D}
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- Given a left adjoint to `G`, we can construct an initial object in each structured arrow
 category on `G`. -/
 def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :

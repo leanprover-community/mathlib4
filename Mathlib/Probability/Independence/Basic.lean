@@ -276,7 +276,7 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} [MeasurableSpace Ω] {μ 
     have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true, eq_self_iff_true]
     have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
     have h_inter :
-      (⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂) =
+      ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
         ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ :=
       by simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
     have h_prod :
@@ -874,7 +874,7 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem [IsProbabilityMeasure μ] {ι 
       fun a (j : ({i} : Finset ι)) => f j a := rfl
     have h_meas_right : Measurable fun p : ∀ _j : ({i} : Finset ι), β
       => p ⟨i, Finset.mem_singleton_self i⟩ := measurable_pi_apply ⟨i, Finset.mem_singleton_self i⟩
-    have h_left : (∏ j in s, f j) = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
+    have h_left : ∏ j in s, f j = (fun p : ∀ _j : s, β => ∏ j, p j) ∘ fun a (j : s) => f j a := by
       ext1 a
       simp only [Function.comp_apply]
       have : (∏ j : ↥s, f (↑j) a) = (∏ j : ↥s, f ↑j) a := by rw [Finset.prod_apply]
@@ -907,7 +907,7 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
     rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
     rintro S π _hπ
     simp_rw [Set.indicator_const_preimage_eq_union]
-    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s iᶜ) ∅) fun i _hi => _
+    refine' @hs S (fun i => ite (1 ∈ π i) (s i) ∅ ∪ ite ((0 : β) ∈ π i) (s i)ᶜ ∅) fun i _hi => _
     have hsi : MeasurableSet[generateFrom {s i}] (s i) :=
       measurableSet_generateFrom (Set.mem_singleton _)
     refine'

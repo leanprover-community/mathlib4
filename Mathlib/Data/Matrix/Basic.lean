@@ -1203,14 +1203,18 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
 
 end NonUnitalNonAssocRing
 
-instance [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
+instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
+#align matrix.non_unital_ring Matrix.instNonUnitalRing
 
-instance [Fintype n] [DecidableEq n] [NonAssocRing α] : NonAssocRing (Matrix n n α) :=
+instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
+    NonAssocRing (Matrix n n α) :=
   { Matrix.nonAssocSemiring, Matrix.addCommGroup with }
+#align matrix.non_assoc_ring Matrix.instNonAssocRing
 
-instance [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
+instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
   { Matrix.semiring, Matrix.addCommGroup with }
+#align matrix.ring Matrix.instRing
 
 section Semiring
 
@@ -1301,12 +1305,13 @@ variable [Fintype n] [DecidableEq n]
 
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
-instance : Algebra R (Matrix n n α) :=
+instance instAlgebra : Algebra R (Matrix n n α) :=
   { (Matrix.scalar n).comp (algebraMap R α) with
     commutes' := fun r x => by
       ext
       simp [Matrix.scalar, Matrix.mul_apply, Matrix.one_apply, Algebra.commutes, smul_ite]
     smul_def' := fun r x => by ext; simp [Matrix.scalar, Algebra.smul_def r] }
+#align matrix.algebra Matrix.instAlgebra
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
@@ -2587,13 +2592,13 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
   rw [submatrix_mul_equiv, submatrix_id_id]
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
-/-- The left `n × l` part of a `n × (l+r)` matrix. -/
+/-- The left `n × l` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
-/-- The right `n × r` part of a `n × (l+r)` matrix. -/
+/-- The right `n × r` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
