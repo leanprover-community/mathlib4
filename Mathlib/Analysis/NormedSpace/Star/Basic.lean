@@ -106,7 +106,7 @@ instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
     · simp only [htriv, star_zero]
     · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
       have hnt_star : 0 < ‖x⋆‖ :=
-        norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv).mpr htriv)
+        norm_pos_iff.mpr ((AddEquiv.map_ne_zero_iff starAddEquiv (M := E)).mpr htriv)
       have h₁ :=
         calc
           ‖x‖ * ‖x‖ = ‖x⋆ * x‖ := norm_star_mul_self.symm
