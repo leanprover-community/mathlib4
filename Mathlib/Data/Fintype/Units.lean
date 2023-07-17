@@ -37,20 +37,18 @@ instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
 
 instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
-noncomputable instance [Monoid α] [Fintype α] : Fintype αˣ := Fintype.ofFinite αˣ
-
-theorem Fintype.card_units_add_one [GroupWithZero α] [Fintype α] :
+theorem Fintype.card_units_add_one [GroupWithZero α] [Fintype α] [Fintype αˣ] :
     Fintype.card α = Fintype.card αˣ + 1 := by
   classical
     rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
     have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
     rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
 
-theorem Fintype.nat_card_units_add_one [GroupWithZero α] [Fintype α] :
+theorem Fintype.nat_card_units_add_one [GroupWithZero α] [Fintype α] [Fintype αˣ] :
     Nat.card α = Nat.card αˣ + 1 := by
   rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_units_add_one]
 
-theorem Fintype.card_units [GroupWithZero α] [Fintype α] :
+theorem Fintype.card_units [GroupWithZero α] [Fintype α] [Fintype αˣ] :
     Fintype.card αˣ = Fintype.card α - 1 := by
   rw [@Fintype.card_units_add_one α, Nat.add_sub_cancel]
 #align fintype.card_units Fintype.card_units
