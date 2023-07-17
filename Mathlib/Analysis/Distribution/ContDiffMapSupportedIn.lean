@@ -229,7 +229,7 @@ noncomputable def iteratedFDerivₗ (i : ℕ) :
 `ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
 of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
 takes a long time to infer the type of `to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
-noncomputable abbrev iteratedFDeriv_to_bcfₗ (i : ℕ) :
+noncomputable def iteratedFDeriv_to_bcfₗ (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i
 
@@ -297,11 +297,10 @@ protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
       iteratedFDeriv_of_gt hin]
   exact norm_zero
 
-@[simps!]
 noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
   { to_bcfₗ 𝕜 with
     cont := show Continuous (to_bcfₗ 𝕜) by
-      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
+      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
         (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
       rw [Seminorm.comp_apply, coe_normSeminorm, coe_to_bcfₗ, one_smul, Finset.sup_singleton,
           ContDiffMapSupportedIn.seminorm_apply,
