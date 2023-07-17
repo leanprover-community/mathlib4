@@ -13,6 +13,7 @@ import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
+import Mathlib.Data.Set.Countable
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
@@ -122,6 +123,9 @@ theorem graph_zero : graph (0 : α →₀ M) = ∅ := by simp [graph]
 theorem graph_eq_empty {f : α →₀ M} : f.graph = ∅ ↔ f = 0 :=
   (graph_injective α M).eq_iff' graph_zero
 #align finsupp.graph_eq_empty Finsupp.graph_eq_empty
+
+instance [Countable α] [Countable M] :
+    Countable (α →₀ M) := Function.Injective.countable (Finsupp.graph_injective α M)
 
 end Graph
 
