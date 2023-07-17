@@ -110,6 +110,39 @@ def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
         f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
     | _ => throwError m!"Expected an inequality instead of '{e.getAppFnArgs.1}', '{e}'"
 
+/--  `getPolsName pol` takes the `Expr`ession `pol` as input,
+assuming that it represents a `Polynomial`.
+If `pol` is an `.app`, then it returns the list of arguments of `pol` that also represent
+`Polynomial`s, together with the `Name` of the theorem that `cDegCore` applies.
+
+The only exception is when `pol` represents `↑(polFun _) : α → Polynomial _`,
+and `polFun` is not `monomial` or `C`.
+In this case, the output is data for error reporting in cDegCore.
+-/
+def getPolsName (pol : Expr) : List Expr × Name :=
+match pol.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, f, g])           => ([f,g], ``add)
+  | (``HSub.hSub, #[_, _, _, _, f, g])           => ([f,g], ``sub)
+  | (``HMul.hMul, #[_, _, _, _, f, g])           => ([f,g], ``mul)
+  | (``HPow.hPow, #[_, _, _, _, f, _n])          => ([f], ``pow)
+  | (``Neg.neg,   #[_, _, f])                    => ([f], ``neg)
+  | (``Polynomial.X, _)                          => ([], ``natDegree_X_le)
+  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => ([], ``zero_le)
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => ([], ``one_le)
+  | (``OfNat.ofNat, _)                           => ([], ``nat_cast_le)
+  | (``Nat.cast, _)                              => ([], ``nat_cast_le)
+  | (``NatCast.natCast, _)                       => ([], ``nat_cast_le)
+  | (``Int.cast, _)                              => ([], ``int_cast_le)
+  | (``IntCast.intCast, _)                       => ([], ``int_cast_le)
+  -- deal with `monomial` and `C`
+  | (``FunLike.coe, #[_, _, _, _, polFun, _c]) => match polFun.getAppFnArgs with
+    | (``Polynomial.monomial, _)                 => ([], ``natDegree_monomial_le)
+    | (``Polynomial.C, _)                        => ([], ``C_le)
+    | _                                          => ([polFun], .anonymous)
+  -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
+  | _ => ([], ``le_rfl)
+
 open Lean Elab Term MVarId
 
 /-- `cDegCore (pol, mv)` takes as input a pair of an `Expr`ession `pol` and an `MVarId` `mv`, where
@@ -133,29 +166,8 @@ let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM ppExpr
 if db then
   if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
   else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
-let (pols, na) := ← match pol.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, f, g])  => return ([f,g], ``add)
-  | (``HSub.hSub, #[_, _, _, _, f, g])  => return ([f,g], ``sub)
-  | (``HMul.hMul, #[_, _, _, _, f, g])  => return ([f,g], ``mul)
-  | (``HPow.hPow, #[_, _, _, _, f, _n]) => return ([f], ``pow)
-  | (``Neg.neg,   #[_, _, f])           => return ([f], ``neg)
-  | (``Polynomial.X, _)                 => return ([], ``natDegree_X_le)
-  --  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => return ([], ``zero_le)
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => return ([], ``one_le)
-  | (``OfNat.ofNat, _)                  => return ([], ``nat_cast_le)
-  | (``Nat.cast, _)                     => return ([], ``nat_cast_le)
-  | (``NatCast.natCast, _)              => return ([], ``nat_cast_le)
-  | (``Int.cast, _)                     => return ([], ``int_cast_le)
-  | (``IntCast.intCast, _)              => return ([], ``int_cast_le)
-  -- deal with `monomial` and `C`
-  | (``FunLike.coe, #[_, _, _, _, polFun, _c]) => do match polFun.getAppFnArgs with
-    | (``Polynomial.monomial, _)        => return ([], ``natDegree_monomial_le)
-    | (``Polynomial.C, _)               =>  return ([], ``C_le)
-    | _ => do let ppP ← ppExpr polFun;
-              throwError m!"'compute_degree_le' is not implemented for {ppP}"
-  -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
-  | _ => return ([], ``le_rfl)
+let (pols, na) := getPolsName pol
+if na.isAnonymous then throwError m!"'compute_degree_le' is not implemented for {← ppExpr pols[0]!}"
 let once := pols.zip (← mv.applyConst na)
 return (← once.mapM fun x => cDegCore x db).join
 
