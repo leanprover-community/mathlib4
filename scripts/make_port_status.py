@@ -186,7 +186,7 @@ for node in sorted(graph.nodes):
             status += f" mathlib4#{pr_info['pr']} {sha}"
     try:
         comment_data = comments_dict[node]
-    except KeyError:
+    except: # KeyError:
         pass
     else:
         if isinstance(comment_data, str):
