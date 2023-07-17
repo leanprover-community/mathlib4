@@ -950,6 +950,8 @@ theorem one_lt_succ_succ (a : Fin n) : (1 : Fin (n + 2)) < a.succ.succ := by
     exact succ_pos a
 #align fin.one_lt_succ_succ Fin.one_lt_succ_succ
 
+-- attempt at dirty linter hack
+set_option synthInstance.maxHeartbeats 40000 in
 @[simp]
 theorem add_one_lt_iff {n : ℕ} {k : Fin (n + 2)} : k + 1 < k ↔ k = last _ := by
   simp only [lt_iff_val_lt_val, val_add, val_last, ext_iff]
