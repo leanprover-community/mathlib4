@@ -2571,12 +2571,10 @@ protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 open Qq in
-protected def Fin.toExprQ : Fin n → Q(Fin $n) :=
-  match n with
-  | 0 => finZeroElim
-  | _k + 1 => fun i =>
-    have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
-    q(OfNat.ofNat $i)
+protected def Fin.toExprQ (i : Fin n) : Q(Fin $n) :=
+  have : Q(NeZero $n) := match n with | _ + 1 => q(NeZero.succ)
+  have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
+  q(OfNat.ofNat $i)
 
 open Qq in
 instance toExpr (n : ℕ) : ToExprQ (Fin n) where
