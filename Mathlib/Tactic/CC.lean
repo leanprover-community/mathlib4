@@ -9,10 +9,6 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 import Mathlib.Init.CCLemmas
-import Mathlib.Tactic.RunCmd
-import Mathlib.Data.Vector
-import Mathlib.Data.Set.Basic
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 ## Congruence closures
@@ -20,19 +16,49 @@ import Mathlib.Algebra.Ring.Defs
 
 universe u
 
-syntax (name := Lean.Parser.Tactic.cc) "cc" : tactic
-
-namespace Mathlib.Tactic.CC
-
 open Lean Meta Elab Tactic Parser.Tactic Std
 
-initialize registerTraceClass `Meta.Tactic.cc
+syntax (name := Lean.Parser.Tactic.cc) "cc" : tactic
+
+def Lean.Expr.isNum : Expr → Bool
+  | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal _))) _ => true
+  | .lit (.natVal _) => true
+  | _ => false
+
+def Lean.Expr.isSignedNum (e : Expr) : Bool :=
+  if e.isNum then true
+  else if let .app (.app (.app (.const ``Neg.neg _) _) _) r := e then r.isNum
+  else false
+
+/-- Return true if `e` represents a value (numeral, character, or string). -/
+def Lean.Expr.isValue (e : Expr) : Bool :=
+  e.isSignedNum || e.isCharLit || e.isStringLit
+
+/-- Return true if `e` represents a value (nat/int numereal, character, or string). -/
+def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
+  if e.isCharLit || e.isStringLit then
+    return true
+  else if e.isSignedNum then
+    isDefEq e (.const ``Nat []) <||> isDefEq e (.const ``Int [])
+  else
+    return false
 
 /-- Ordering on `Expr`. -/
-def Expr.quickCmp (a b : Expr) : Ordering :=
+def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
   if Expr.quickLt a b then .lt else if a.eqv b then .eq else .gt
 
 abbrev RBExprMap (α : Type u) := Std.RBMap Expr α Expr.quickCmp
+
+private def Lean.Expr.isNotOrNe : Expr → Bool × Expr
+  | .app (.const ``Not []) a => (true, a)
+  | .forallE _ a (.const ``False []) _ => (true, a)
+  | .app (.app (.app (.const ``Ne [u]) α) lhs) rhs =>
+    (true, .app (.app (.app (.const ``Eq [u]) α) lhs) rhs)
+  | e => (false, e)
+
+namespace Mathlib.Tactic.CC
+
+initialize registerTraceClass `Meta.Tactic.cc
 
 abbrev UInt64Map (α : Type u) := Std.RBMap UInt64 α compare
 
@@ -49,7 +75,8 @@ structure CCConfig where
   /-- If `true`, then use excluded middle -/
   em : Bool := true
   /-- If `true`, we treat values as atomic symbols -/
-  values := true
+  values : Bool := true
+  deriving Inhabited
 #align cc_config Mathlib.Tactic.CC.CCConfig
 
 /-
@@ -2970,39 +2997,19 @@ structure CCState where
   frozePartitions : Bool := false
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
       in it.-/
-  inconsistent := false
+  inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
   gmt : Nat := 0
   config : CCConfig
+  deriving Inhabited
 #align cc_state Mathlib.Tactic.CC.CCState
 #align cc_state.inconsistent Mathlib.Tactic.CC.CCState.inconsistent
 #align cc_state.gmt Mathlib.Tactic.CC.CCState.gmt
 
-structure CC where
-  state : CCState
-  todo : Array TodoEntry := #[]
-  /- Porting note: `congruence_closure` in Mathlib3 has more member variables but they're almost
-     the copies from `tactic_state`. We translate methods of `congruence_closure` using `TacticM` so
-     they are not needed. -/
-
-abbrev CCM := StateRefT CC TacticM
-
-namespace CCM
-
-@[inline]
-def run {α : Type} (x : CCM α) (c : CC) : TacticM (α × CC) := StateRefT'.run x c
-
-def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := sorry
-
-end CCM
-
-namespace CCState
-
-open CCM
-
-def mkEntryCore (s : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool) (gen : Nat) :
-    CCState :=
+def CCState.mkEntryCore (s : CCState) (e : Expr) (interpreted : Bool) (constructor : Bool)
+    (gen : Nat) : CCState :=
+  assert! s.entries.find? e |>.isNone
   let n : Entry :=
     { next := e
       root := e
@@ -3017,6 +3024,150 @@ def mkEntryCore (s : CCState) (e : Expr) (interpreted : Bool) (constructor : Boo
       fo := false
       generation := gen }
   { s with entries := s.entries.insert e n }
+
+structure CC where
+  state : CCState
+  todo : Array TodoEntry := #[]
+  /- Porting note: `congruence_closure` in Mathlib3 has more member variables but they're almost
+     the copies from `tactic_state`. We translate methods of `congruence_closure` using `TacticM` so
+     they are not needed. -/
+  deriving Inhabited
+
+abbrev CCM := StateRefT CC TacticM
+
+namespace CCM
+
+@[inline]
+def run {α : Type} (x : CCM α) (c : CC) : TacticM (α × CC) := StateRefT'.run x c
+
+def getEntry (e : Expr) : CCM (Option Entry) := do
+  return (← get).state.entries.find? e
+
+def getGenerationOf (e : Expr) : CCM Nat := do
+  if let some it ← getEntry e then
+    return it.generation
+  else
+    return 0
+
+/-
+```c++
+void congruence_closure::process_subsingleton_elem(expr const & e) {
+    expr type = m_ctx.infer(e);
+    optional<expr> ss = m_ctx.mk_subsingleton_instance(type);
+    if (!ss) return; /* type is not a subsingleton */
+    type = normalize(type);
+    /* Make sure type has been internalized */
+    internalize_core(type, none_expr(), get_generation_of(e));
+    /* Try to find representative */
+    if (auto it = m_state.m_subsingleton_reprs.find(type)) {
+        push_subsingleton_eq(e, *it);
+    } else {
+        m_state.m_subsingleton_reprs.insert(type, e);
+    }
+    expr type_root     = get_root(type);
+    if (type_root == type)
+        return;
+    if (auto it2 = m_state.m_subsingleton_reprs.find(type_root)) {
+        push_subsingleton_eq(e, *it2);
+    } else {
+        m_state.m_subsingleton_reprs.insert(type_root, e);
+    }
+}
+```
+-/
+
+def processSubsingletonElem (e : Expr) : CCM Unit := sorry
+
+def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
+  if (← getEntry e).isSome then return
+  let constructor := e.isConstructorApp (← getEnv)
+  modify fun cc => { cc with state := cc.state.mkEntryCore e interpreted constructor gen }
+  processSubsingletonElem e
+
+def pushReflEq (lhs rhs : Expr) : CCM Unit := sorry
+
+def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := sorry
+
+def probagateImpUp (e : Expr) : CCM Unit := sorry
+
+def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := sorry
+
+def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit := do
+  assert! !e.hasLooseBVars
+  /- We allow metavariables after partitions have been frozen. -/
+  if e.hasExprMVar && !(← get).state.frozePartitions then
+    return
+  /- Check whether `e` has already been internalized. -/
+  if (← getEntry e).isNone then
+    match e with
+    | .bvar _ => unreachable!
+    | .sort _ => pure ()
+    | .const _ _ | .mvar _ => mkEntry e false gen
+    | .lam _ _ _ _ | .letE _ _ _ _ _ => mkEntry e false gen
+    | .fvar f =>
+      mkEntry e false gen
+      if let some v ← f.getValue? then
+        pushReflEq e v
+    | .mdata _ e' =>
+      mkEntry e false gen
+      pushReflEq e e'
+    | .forallE _ t b _ =>
+      if e.isArrow then
+        if (← isProp t) && (← isProp b) then
+          internalizeCore t e gen
+          internalizeCore b e gen
+          addOccurrence e t false
+          addOccurrence e b false
+          probagateImpUp e
+      if ← isProp e then
+        mkEntry e false gen
+    | .app _ _ | .lit _ | .proj _ _ _ => internalizeApp e gen
+
+def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := sorry
+
+def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
+  if (← get).state.inconsistent then return
+  modify fun cc => { cc with todo := #[] }
+  let (isNeg, p) := type.isNotOrNe
+  match p with
+  | .app (.app (.app (.const ``Eq _) _) lhs) rhs =>
+    if isNeg then
+      internalizeCore p none gen
+      addEqvCore p (.const ``False []) (← mkEqFalse proof) false
+    else
+      internalizeCore lhs none gen
+      internalizeCore rhs none gen
+      addEqvCore lhs rhs proof false
+  | .app (.app (.app (.app (.const ``HEq _) _) lhs) _) rhs =>
+    if isNeg then
+      internalizeCore p none gen
+      addEqvCore p (.const ``False []) (← mkEqFalse proof) false
+    else
+      internalizeCore lhs none gen
+      internalizeCore rhs none gen
+      addEqvCore lhs rhs proof true
+  | .app (.app (.const ``Iff _) lhs) rhs =>
+    if isNeg then
+      let neqProof ← mkAppM ``neq_of_not_iff #[proof]
+      internalizeCore p none gen
+      addEqvCore p (.const ``False []) (← mkEqFalse neqProof) false
+    else
+      internalizeCore lhs none gen
+      internalizeCore rhs none gen
+      addEqvCore lhs rhs (mkApp3 (.const ``propext []) lhs rhs proof) false
+  | _ =>
+    if isNeg || (← isProp p) then
+      internalizeCore p none gen
+      if isNeg then
+        addEqvCore p (.const ``False []) (← mkEqFalse proof) false
+      else
+        addEqvCore p (.const ``True []) (← mkEqTrue proof) false
+
+end CCM
+
+namespace CCState
+
+open CCM
 
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config }
@@ -3176,7 +3327,7 @@ def ccCore (cfg : CCConfig) : TacticM Unit := do
           let pr ← s.eqvProof t tr
           mkAppM ``of_eq_true #[pr] >>= closeMainGoal
         else
-          let dbg ← getBoolOption `trace.cc.failure false
+          let dbg ← getBoolOption `trace.Meta.Tactic.cc.failure false
           if dbg then
             throwError m!"cc tactic failed, equivalence classes: {s}"
           else
