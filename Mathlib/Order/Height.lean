@@ -287,7 +287,7 @@ theorem chainHeight_eq_iSup_Iic :
   rfl
 #align set.chain_height_eq_supr_Iic Set.chainHeight_eq_iSup_Iic
 
-variable {s}
+variable {s t}
 
 theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
     (insert a s).chainHeight (. < .) = s.chainHeight (. < .) + 1 := by
@@ -347,7 +347,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
     exact Set.chainHeight_mono _ (Set.subset_union_right _ _)
   apply le_antisymm
   · rw [← h]
-    exact chainHeight_union_le (. < . : α → α → Prop) _ _
+    exact chainHeight_union_le
   rw [WithTop.some_eq_coe, ← add_zero (s ∪ t).chainHeight]
   dsimp
   rw [← WithTop.coe_zero, ENat.some_eq_coe, chainHeight_add_le_chainHeight_add]
@@ -389,3 +389,5 @@ theorem wellFoundedLT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight (. 
 end Preorder
 
 end Set
+def krullDim (r : α → α → Prop) : ℕ±∞ :=
+  Order.pred (some <| (Set.univ : Set α).chainHeight r)
