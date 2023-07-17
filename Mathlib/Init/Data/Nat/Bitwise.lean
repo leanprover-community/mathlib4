@@ -413,8 +413,8 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
 @[simp]
 theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
     bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero];
-    exact bitwise'_bit_aux h
+  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero]
+  exact bitwise'_bit_aux h
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
 
 @[simp]
