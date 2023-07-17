@@ -608,6 +608,9 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 #align monoid.npow_zero' Monoid.npow_zero
 #align monoid.npow_succ' Monoid.npow_succ
 
+attribute [instance 150] Semigroup.toMul
+attribute [instance 50] MulOneClass.toMul
+
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
@@ -661,6 +664,9 @@ end Monoid
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 #align add_comm_monoid AddCommMonoid
+
+attribute [instance 150] AddMonoid.toAddSemigroup
+attribute [instance 50] AddCommSemigroup.toAddSemigroup
 
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
