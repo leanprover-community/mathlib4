@@ -31,7 +31,6 @@ open Set Filter Function Topology
 
 variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
-/-- See also `tendsto_cofinite_cocompact_iff'` for a useful variant when `f` is injective. -/
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
   refine' ⟨fun h K hK ↦ _, fun h U hU ↦ _⟩
