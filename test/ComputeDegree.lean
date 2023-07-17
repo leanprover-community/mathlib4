@@ -4,7 +4,7 @@ open Polynomial
 
 section native_mathlib4_tests
 
-variable {n : Nat} {z : Int} {f : Int[X]} (h : natDegree f ≤ 5)
+variable {n : Nat} {z : Int} {f : Int[X]} (hn : natDegree f ≤ 5) (hd : degree f ≤ 5)
 
 /--  This example flows through all the matches in `direct` with a `natDegree` goal. -/
 example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
@@ -15,6 +15,9 @@ example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCas
 example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
     NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
   set k := f with _h₀
+  compute_degree_le!
+
+example {N : WithBot Nat} (nN : n ≤ N) : degree (- C z * X ^ n) ≤ N := by
   compute_degree_le!
 
 /-!  The following examples exhaust all the match-leaves in `direct`. -/

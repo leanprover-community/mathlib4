@@ -20,8 +20,6 @@ See the doc-string for more details.
 
 ##  Future work
 
-* Currently, the tactic does not handle goals of the form `degree f ≤ d`, where `d` is not the
-  coercion of a `Nat`.  This should be fixed.
 * Deal with equalities, instead of inequalities (i.e. implement `compute_degree`).
 * Add support for proving goals of the from `natDegree f ≠ 0` and `degree f ≠ 0`.
 * Make sure that `degree` and `natDegree` are equally supported.
@@ -40,10 +38,10 @@ namespace Mathlib.Tactic.ComputeDegree
 section mylemmas
 
 /-!
-###  Simple lemmas about `natDegree`
+###  Simple lemmas about `natDegree` and `degree`
 
-The lemmas in this section deduce inequalities of the form `natDegree f ≤ d`, using
-inequalities of the same shape.
+The lemmas in this section deduce inequalities of the form `natDegree f ≤ d` and `degree f ≤ d`,
+using inequalities of the same shape.
 This allows a recursive application of the `compute_degree_le` tactic on a goal,
 and on all the resulting subgoals.
 -/
@@ -70,6 +68,27 @@ theorem nat_cast_le (n : Nat) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cas
 theorem zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
+theorem addD {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
+    degree (f + g) ≤ max a b :=
+(f.degree_add_le g).trans $ max_le_max ‹_› ‹_›
+
+theorem mulD {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
+    degree (f * g) ≤ a + b :=
+(f.degree_mul_le _).trans $ add_le_add ‹_› ‹_›
+
+theorem powD {a : WithBot Nat} (b : Nat) {f : R[X]} (hf : degree f ≤ a) :
+    degree (f ^ b) ≤ b * a := by
+  apply (degree_pow_le _ _).trans
+  rw [nsmul_eq_mul]
+  induction b with
+    | zero => simp [degree_one_le]
+    | succ n hn =>
+      rw [Nat.cast_succ, add_mul, add_mul, one_mul, one_mul]
+      exact (add_le_add_left hf _).trans (add_le_add_right hn _)
+
+theorem nat_cast_leD (n : Nat) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+theorem zero_leD : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree_le_zero.mp rfl
+
 end semiring
 
 section ring
@@ -83,6 +102,15 @@ theorem sub {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g 
 (f.natDegree_sub_le g).trans $ max_le_max ‹_› ‹_›
 
 theorem int_cast_le (n : Int) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
+
+theorem negD {a : WithBot Nat} {f : R[X]} (hf : degree f ≤ a) : degree (- f) ≤ a :=
+(degree_neg f).le.trans ‹_›
+
+theorem subD {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
+    degree (f - g) ≤ max a b :=
+(f.degree_sub_le g).trans $ max_le_max ‹_› ‹_›
+
+theorem int_cast_leD (n : Int) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 end ring
 
@@ -110,8 +138,11 @@ def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
         f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
     |  (na, _)  => throwError m!"Expected an inequality instead of '{na}', '{e}'"
 
-/--  `getPolsName pol` takes the `Expr`ession `pol` as input,
-assuming that it represents a `Polynomial`.
+/--  `getPolsName pol π` takes as input
+*  the `Expr`ession `pol`, assuming that it represents a `Polynomial`;
+*  the function `π : Name × Name → Name`, typically `π` equals `Prod.fst` for a goal of type
+   `natDegree f ≤ d` or `π` equals `Prod.snd` for a goal of type `degree f ≤ d`.
+
 If `pol` is an `.app`, then it returns the list of arguments of `pol` that also represent
 `Polynomial`s, together with the `Name` of the theorem that `cDegCore` applies.
 
@@ -119,55 +150,59 @@ The only exception is when `pol` represents `↑(polFun _) : α → Polynomial _
 and `polFun` is not `monomial` or `C`.
 In this case, the output is data for error-reporting in `cDegCore`.
 -/
-def getPolsName (pol : Expr) : List Expr × Name :=
+def getPolsName (pol : Expr) (π : Name × Name → Name) : List Expr × Name :=
 match pol.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, f, g])           => ([f,g], ``add)
-  | (``HSub.hSub, #[_, _, _, _, f, g])           => ([f,g], ``sub)
-  | (``HMul.hMul, #[_, _, _, _, f, g])           => ([f,g], ``mul)
-  | (``HPow.hPow, #[_, _, _, _, f, _n])          => ([f], ``pow)
-  | (``Neg.neg,   #[_, _, f])                    => ([f], ``neg)
-  | (``Polynomial.X, _)                          => ([], ``natDegree_X_le)
+  | (``HAdd.hAdd, #[_, _, _, _, f, g])           => ([f,g], π (``add, ``addD))
+  | (``HSub.hSub, #[_, _, _, _, f, g])           => ([f,g], π (``sub, ``subD))
+  | (``HMul.hMul, #[_, _, _, _, f, g])           => ([f,g], π (``mul, ``mulD))
+  | (``HPow.hPow, #[_, _, _, _, f, _n])          => ([f], π (``pow, ``powD))
+  | (``Neg.neg,   #[_, _, f])                    => ([f], π (``neg, ``negD))
+  | (``Polynomial.X, _)                          => ([], π (``natDegree_X_le, ``degree_X_le))
   -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => ([], ``zero_le)
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => ([], ``one_le)
-  | (``OfNat.ofNat, _)                           => ([], ``nat_cast_le)
-  | (``Nat.cast, _)                              => ([], ``nat_cast_le)
-  | (``NatCast.natCast, _)                       => ([], ``nat_cast_le)
-  | (``Int.cast, _)                              => ([], ``int_cast_le)
-  | (``IntCast.intCast, _)                       => ([], ``int_cast_le)
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => ([], π (``zero_le, ``zero_leD))
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => ([], π (``one_le, ``degree_one_le))
+  | (``OfNat.ofNat, _)                           => ([], π (``nat_cast_le, ``nat_cast_leD))
+  | (``Nat.cast, _)                              => ([], π (``nat_cast_le, ``nat_cast_leD))
+  | (``NatCast.natCast, _)                       => ([], π (``nat_cast_le, ``nat_cast_leD))
+  | (``Int.cast, _)                              => ([], π (``int_cast_le, ``int_cast_leD))
+  | (``IntCast.intCast, _)                       => ([], π (``int_cast_le, ``int_cast_leD))
   -- deal with `monomial` and `C`
   | (``FunLike.coe, #[_, _, _, _, polFun, _c]) => match polFun.getAppFnArgs with
-    | (``Polynomial.monomial, _)                 => ([], ``natDegree_monomial_le)
-    | (``Polynomial.C, _)                        => ([], ``C_le)
-    | _                                          => ([polFun], .anonymous)
+    | (``monomial, _) => ([], π (``natDegree_monomial_le, ``degree_monomial_le))
+    | (``C, _)        => ([], π (``C_le, ``degree_C_le))
+    | _               => ([polFun], .anonymous)
   -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
-  | _ => ([], ``le_rfl)
+  | _ => ([], π (``le_rfl, ``le_rfl))
 
-/-- `cDegCore (pol, mv)` takes as input a pair of an `Expr`ession `pol` and an `MVarId` `mv`, where
-*  `pol` represents a polynomial;
-*  `mv` represents a goal.
+/-- `cDegCore (pol, mv) π` takes as input
+*  a pair of an `Expr`ession `pol` and an `MVarId` `mv`, where
+*  *  `pol` represents a polynomial;
+*  *  `mv` represents a goal;
+*  a function `π : Name × Name → Name`, typically `π` equals `Prod.fst` for a goal of type
+   `natDegree f ≤ d` or `π` equals `Prod.snd` for a goal of type `degree f ≤ d`.
 
-`cDegCore` assumes that `mv` has type `natDegree f ≤ ?_`.
+`cDegCore` assumes that `mv` has type `natDegree f ≤ ?_` or `degree f ≤ ?_`.
 Note that the RHS of the inequality is a meta-variable: the exact value of `?_` is determined
 along the way.
-`cDegCore`  recurses into the shape of `pol` to produce a proof of `natDegree f ≤ d`,
-where `d` is an appropriately constructed natural number.
+`cDegCore`  recurses into the shape of `pol` to produce a proof of `natDegree f ≤ d` or of
+`degree f ≤ d`, where `d` is an appropriately constructed element of `ℕ` or `WithBot ℕ`.
 
 Hopefully, the tactic should not really fail when the inputs are as specified.
 
 The optional `db` flag is for debugging: if `db = true`, then the tactic prints useful information.
 -/
 partial
-def cDegCore (polMV : Expr × MVarId) (db : Bool := false) : MetaM (List (Expr × MVarId)) := do
+def cDegCore (polMV : Expr × MVarId) (π : Name × Name → Name) (db : Bool := false) :
+    MetaM (List (Expr × MVarId)) := do
 let (pol, mv) := polMV
 let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM Meta.ppExpr
 if db then
   if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
   else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
-let (pols, na) := getPolsName pol
+let (pols, na) := getPolsName pol π
 if na.isAnonymous then throwError m!"'compute_degree_le' is undefined for {← Meta.ppExpr pols[0]!}"
 let once := pols.zip (← mv.applyConst na)
-return (← once.mapM fun x => cDegCore x db).join
+return (← once.mapM fun x => cDegCore x π db).join
 
 /-- Allows the syntax expressions
 * `compute_degree_le`,
@@ -198,15 +233,13 @@ This is activated by using `compute_degree_le -debug` or `compute_degree_le! -de
 -/
 elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) => focus do
   let (isNatDeg?, lhs) := ← isDegLE (← getMainTarget)
-  let goal := ← getMainGoal
-  let natDegGoal := ← match isNatDeg? with
-    | true  => return [goal]
-    | false => goal.applyConst ``degree_le_of_natDegree_le
-  guard (natDegGoal.length = 1) <|> throwError
-    m!"'compute_degree_le': expected 1 goal instead of {natDegGoal.length}!"
-  let le_goals := ← (natDegGoal[0]!).applyConst ``le_trans
-  let goal := le_goals[0]!
-  let nfle_pf := ← cDegCore (← instantiateMVars lhs, goal) (db := debug.isSome)
+  let π := if isNatDeg? then Prod.fst else Prod.snd
+  -- * if the original goal is `natDegree f ≤ d`, then
+  --   `le_goals = [⊢ natDegree f ≤ ?_,  ⊢ ?_ ≤ d,  ⊢ ℕ]`
+  -- * if the original goal is `degree f ≤ d`, then
+  --   `le_goals = [⊢ degree f ≤ ?_,     ⊢ ?_ ≤ d,  ⊢ WithBot ℕ]`
+  let le_goals := ← (← getMainGoal).applyConst ``le_trans
+  let nfle_pf := ← cDegCore (← instantiateMVars lhs, le_goals[0]!) π (db := debug.isSome)
   setGoals [le_goals[1]!]
   if debug.isSome then logInfo m!"Computed proof:\n{nfle_pf}"
   if str.isSome then evalTactic (← `(tactic| norm_num <;> try assumption))
