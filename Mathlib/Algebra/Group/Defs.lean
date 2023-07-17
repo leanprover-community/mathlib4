@@ -675,6 +675,8 @@ class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
 
 attribute [to_additive existing] CommMonoid.toCommSemigroup
 
+attribute [instance 150] Monoid.toSemigroup
+attribute [instance 50] CommSemigroup.toSemigroup
 section LeftCancelMonoid
 
 /-- An additive monoid in which addition is left-cancellative.
