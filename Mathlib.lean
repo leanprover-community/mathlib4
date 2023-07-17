@@ -2034,6 +2034,7 @@ import Mathlib.Init.Data.Int.DivMod
 import Mathlib.Init.Data.Int.Lemmas
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Default
 import Mathlib.Init.Data.List.Instances
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Init.Data.Nat.Basic

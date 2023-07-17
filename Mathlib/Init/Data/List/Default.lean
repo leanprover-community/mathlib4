@@ -9,8 +9,8 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Data.List.Basic
-import Leanbin.Init.Data.List.Instances
-import Leanbin.Init.Data.List.Lemmas
-import Leanbin.Init.Data.List.Qsort
+import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
+import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Init.Data.List.Qsort
 
