@@ -59,7 +59,7 @@ theorem add {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g 
 
 theorem mul {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
     natDegree (f * g) ≤ a + b :=
-(f.natDegree_mul_le).trans $ add_le_add ‹_› ‹_›
+natDegree_mul_le.trans $ add_le_add ‹_› ‹_›
 
 theorem pow {a : Nat} (b : Nat) {f : R[X]} (hf : natDegree f ≤ a) :
     natDegree (f ^ b) ≤ b * a :=
