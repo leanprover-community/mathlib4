@@ -5,11 +5,12 @@ Authors: Kyle Miller
 -/
 import Lean
 import Mathlib.Tactic.ToLevel
+import Mathlib.Util.Qq
 
 /-!
-# A `ToExpr` derive handler
+# A `ToExprQ` derive handler
 
-This module defines a `ToExpr` derive handler for inductive types. It supports mutually inductive
+This module defines a `ToExprQ` derive handler for inductive types. It supports mutually inductive
 types as well.
 
 The `ToExpr` derive handlers support universe level polymorphism. This is implemented using the
@@ -26,10 +27,11 @@ namespace Mathlib.Deriving.ToExpr
 
 open Lean Elab Lean.Parser.Term
 open Meta Command Deriving
+open Qq
 
 def mkToExprHeader (indVal : InductiveVal) : TermElabM Header := do
   -- The auxiliary functions we produce are `indtype -> Expr`.
-  let header ← mkHeader ``ToExpr 1 indVal
+  let header ← mkHeader ``ToExprQ 1 indVal
   return header
 
 /-- Give a term that is equivalent to `(term| mkAppN $f #[$args,*])`.
@@ -37,7 +39,7 @@ As an optimization, `mkAppN` is pre-expanded out to use `Expr.app` directly. -/
 def mkAppNTerm (f : Term) (args : Array Term) : MetaM Term :=
   args.foldlM (fun a b => `(Expr.app $a $b)) f
 
-def mkToExprBody (header : Header) (indVal : InductiveVal) (auxFunName : Name) :
+def mkToExprQBody (header : Header) (indVal : InductiveVal) (auxFunName : Name) :
     TermElabM Term := do
   let discrs ← mkDiscrs header indVal
   let alts ← mkAlts
@@ -58,9 +60,9 @@ where
           if (← inferType x).isAppOf indVal.name then
             `($(mkIdent auxFunName) $a)
           else if ← Meta.isType x then
-            `(toTypeExpr $a)
+            `(toTypeExprQ $a)
           else
-            `(toExpr $a)
+            `(toExprQ $a)
         -- add `_` pattern for inductive parameters, which are inaccessible
         for i in [:ctorInfo.numParams] do
           let a := mkIdent header.argNames[i]!
@@ -86,10 +88,32 @@ def mkToTypeExpr (argNames : Array Name) (indVal : InductiveVal) : TermElabM Ter
       let x := xs[i]!
       let a := mkIdent argNames[i]!
       if ← Meta.isType x then
-        args := args.push <| ← `(toTypeExpr $a)
+        args := args.push <| ← `(toTypeExprQ $a)
       else
-        args := args.push <| ← `(toExpr $a)
+        args := args.push <| ← `(toExprQ $a)
     mkAppNTerm (← `((Expr.const $(quote indVal.name) [$levels,*]))) args
+
+def mkLevel (argNames : Array Name) (indVal : InductiveVal) : MetaM Term :=
+  forallTelescopeReducing indVal.type fun xs ty => do
+  let mut alreadyProvided : HashMap Name Name := {}
+  for x in xs, n in argNames do
+    if let .sort u ← whnf (← inferType x) then
+      if let .some (.param u) := u.dec then
+        alreadyProvided := alreadyProvided.insert u n
+  let rec quoteLvl : Level → MetaM Term
+    | .param u =>
+      if let some n := alreadyProvided.find? u then
+        `(ToExprQ.level $(mkIdent n))
+      else
+        `(toLevel.{$(mkIdent u)})
+    | .succ u => do `(Level.succ $(← quoteLvl u))
+    | .max u v => do `(Level.max $(← quoteLvl u) $(← quoteLvl v))
+    | .imax u v => do `(Level.imax $(← quoteLvl u) $(← quoteLvl v))
+    | .mvar _ => unreachable!
+    | .zero => `(Level.zero)
+  let .sort u ← whnf ty | throwError "ToExprQ derive handler only supports inductives in Type"
+  let .some u := u.dec | throwError "ToExprQ derive handler only supports inductives in Type"
+  quoteLvl u
 
 def mkLocalInstanceLetDecls (ctx : Deriving.Context) (argNames : Array Name) :
     TermElabM (Array (TSyntax ``Parser.Term.letDecl)) := do
@@ -106,8 +130,9 @@ def mkLocalInstanceLetDecls (ctx : Deriving.Context) (argNames : Array Name) :
     let instName     ← mkFreshUserName `localinst
     let toTypeExpr   ← mkToTypeExpr argNames indVal
     let letDecl      ← `(Parser.Term.letDecl| $(mkIdent instName):ident $binders:implicitBinder* :
-                            ToExpr $indType :=
-                          { toExpr := $(mkIdent auxFunName), toTypeExpr := $toTypeExpr })
+                            ToExprQ $indType :=
+                          { level := $(← mkLevel argNames indVal),
+                            toExprQ := $(mkIdent auxFunName), toTypeExprQ := $toTypeExpr })
     letDecls := letDecls.push letDecl
   return letDecls
 
@@ -119,16 +144,33 @@ def fixIndType (indVal : InductiveVal) (t : Term) : TermElabM Term :=
     `(@$f.{$levels,*} $args*)
   | _ => throwError "(internal error) expecting output of `mkInductiveApp`"
 
-/-- Make `ToLevel` instance binders for all the level variables. -/
-def mkToLevelBinders (indVal : InductiveVal) : TermElabM (TSyntaxArray ``instBinderF) := do
-  indVal.levelParams.toArray.mapM (fun u => `(instBinderF| [ToLevel.{$(mkIdent u)}]))
+/--
+Make `ToLevel` instance binders for all the level variables
+that are not already provided by `[ToExprQ α]` for some parameter `α`.
+-/
+def mkToLevelBinders (indVal : InductiveVal) : MetaM (TSyntaxArray ``instBinderF) := do
+  let alreadyProvided ← forallTelescopeReducing indVal.type fun xs _ =>
+    xs.filterMapM fun x => do
+      if let .sort u ← whnf (← inferType x) then
+        if let .some (.param u) := u.dec then
+          return some u
+      return none
+  indVal.levelParams.toArray
+    |>.filter (!alreadyProvided.contains ·)
+    |>.mapM (fun u => `(instBinderF| [ToLevel.{$(mkIdent u)}]))
+
+def addLocalToLevelInsts (argNames : Array Name) (term : Term) : MetaM Term := do
+  let mut term := term
+  for n in argNames do
+    term ← `(have _ := ToExprQ.toToLevel $(mkIdent n); $term)
+  return term
 
 open TSyntax.Compat in
 def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
   let auxFunName := ctx.auxFunNames[i]!
   let indVal     := ctx.typeInfos[i]!
   let header     ← mkToExprHeader indVal
-  let mut body   ← mkToExprBody header indVal auxFunName
+  let mut body   ← mkToExprQBody header indVal auxFunName
   if ctx.usePartial then
     let letDecls ← mkLocalInstanceLetDecls ctx header.argNames
     body ← mkLet letDecls body
@@ -141,6 +183,7 @@ def mkAuxFunction (ctx : Deriving.Context) (i : Nat) : TermElabM Command := do
   let binders := header.binders.pop
     ++ (← mkToLevelBinders indVal)
     ++ #[← addLevels header.binders.back]
+  body ← addLocalToLevelInsts header.argNames body
   let levels := indVal.levelParams.toArray.map mkIdent
   if ctx.usePartial then
     `(private partial def $(mkIdent auxFunName):ident.{$levels,*} $binders:bracketedBinder* :
@@ -165,21 +208,22 @@ def mkInstanceCmds (ctx : Deriving.Context) (typeNames : Array Name) :
       let auxFunName   := ctx.auxFunNames[i]!
       let argNames     ← mkInductArgNames indVal
       let binders      ← mkImplicitBinders argNames
-      let binders      := binders ++ (← mkInstImplicitBinders ``ToExpr indVal argNames)
+      let binders      := binders ++ (← mkInstImplicitBinders ``ToExprQ indVal argNames)
       let binders      := binders ++ (← mkToLevelBinders indVal)
       let indType      ← fixIndType indVal (← mkInductiveApp indVal argNames)
-      let toTypeExpr   ← mkToTypeExpr argNames indVal
+      let toTypeExpr   ← addLocalToLevelInsts argNames (← mkToTypeExpr argNames indVal)
       let levels       := indVal.levelParams.toArray.map mkIdent
-      let instCmd ← `(instance $binders:implicitBinder* : ToExpr $indType where
-                        toExpr := $(mkIdent auxFunName).{$levels,*}
-                        toTypeExpr := $toTypeExpr)
+      let instCmd ← `(instance $binders:implicitBinder* : ToExprQ $indType where
+                        level := $(← mkLevel argNames indVal)
+                        toExprQ := $(mkIdent auxFunName).{$levels,*}
+                        toTypeExprQ := $toTypeExpr)
       instances := instances.push instCmd
   return instances
 
 def mkToExprInstanceCmds (declNames : Array Name) : TermElabM (Array Syntax) := do
   let ctx ← mkContext "toExpr" declNames[0]!
   let cmds := #[← mkMutualBlock ctx] ++ (← mkInstanceCmds ctx declNames)
-  trace[Elab.Deriving.toExpr] "\n{cmds}"
+  trace[Elab.Deriving.toExprQ] "\n{cmds}"
   return cmds
 
 def mkToExprInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
@@ -191,7 +235,7 @@ def mkToExprInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
     return false
 
 initialize
-  registerDerivingHandler `Lean.ToExpr mkToExprInstanceHandler
-  registerTraceClass `Elab.Deriving.toExpr
+  registerDerivingHandler ``ToExprQ mkToExprInstanceHandler
+  registerTraceClass `Elab.Deriving.toExprQ
 
 end Mathlib.Deriving.ToExpr

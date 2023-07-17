@@ -5,58 +5,60 @@ Authors: Kyle Miller
 -/
 import Mathlib.Tactic.DeriveToExpr
 
-/-! # `ToExpr` instances for Mathlib
+/-! # `ToExprQ` instances for Mathlib
 
-This module should be imported by any module that intends to define `ToExpr` instances.
+This module should be imported by any module that intends to define `ToExprQ` instances.
 It provides necessary dependencies (the `Lean.ToLevel` class) and it also overrides the instances
 that come from core Lean 4 that do not handle universe polymorphism.
-(See the module `Lean.ToExpr` for the instances that are overridden.)
+(See the module `Lean.ToExprQ` for the instances that are overridden.)
 
-In addition, we provide some additional `ToExpr` instances for core definitions.
+In addition, we provide some additional `ToExprQ` instances for core definitions.
 -/
 
 section override
 namespace Lean
+open Qq
 
 attribute [-instance] Lean.instToExprOption
 
-deriving instance ToExpr for Option
+deriving instance ToExprQ for Option
 
 attribute [-instance] Lean.instToExprList
 
-deriving instance ToExpr for List
+deriving instance ToExprQ for List
 
 attribute [-instance] Lean.instToExprArray
 
-instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
-  let type := toTypeExpr α
-  { toExpr     := fun as => mkApp2 (mkConst ``List.toArray [toLevel.{u}]) type (toExpr as.toList)
-    toTypeExpr := mkApp (mkConst ``Array [toLevel.{u}]) type }
+instance {α : Type u} [ToExprQ α] : ToExprQ (Array α) where
+  level := ToExprQ.level α
+  toTypeExprQ := q(Array $(toTypeExprQ α))
+  toExprQ as := q(List.toArray $(toExprQ as.toList))
 
 attribute [-instance] Lean.instToExprProd
 
-deriving instance ToExpr for Prod
+deriving instance ToExprQ for Prod
 
 end Lean
 end override
 
 namespace Mathlib
-open Lean
+open Lean Qq
 
-deriving instance ToExpr for Int
+deriving instance ToExprQ for Int
 
-deriving instance ToExpr for ULift
+deriving instance ToExprQ for ULift
 
 /-- Hand-written instance since `PUnit` is a `Sort` rather than a `Type`. -/
-instance [ToLevel.{u}] : ToExpr PUnit.{u+1} where
-  toExpr _ := mkConst ``PUnit.unit [toLevel.{u+1}]
-  toTypeExpr := mkConst ``PUnit [toLevel.{u+1}]
+instance [ToLevel.{u}] : ToExprQ PUnit.{u+1} where
+  level := toLevel.{u}
+  toExprQ _ := mkConst ``PUnit.unit [toLevel.{u+1}]
+  toTypeExprQ := mkConst ``PUnit [toLevel.{u+1}]
 
-deriving instance ToExpr for String.Pos
-deriving instance ToExpr for Substring
-deriving instance ToExpr for SourceInfo
-deriving instance ToExpr for Syntax.Preresolved
-deriving instance ToExpr for Syntax
+deriving instance ToExprQ for String.Pos
+deriving instance ToExprQ for Substring
+deriving instance ToExprQ for SourceInfo
+deriving instance ToExprQ for Syntax.Preresolved
+deriving instance ToExprQ for Syntax
 
 open DataValue in
 private def toExprMData (md : MData) : Expr := Id.run do
@@ -72,16 +74,17 @@ private def toExprMData (md : MData) : Expr := Id.run do
           | ofSyntax v => mkApp3 (mkConst ``KVMap.setSyntax) e k (toExpr v)
   return e
 
-instance : ToExpr MData where
-  toExpr := toExprMData
-  toTypeExpr := mkConst ``MData
+instance : ToExprQ MData where
+  level := toLevel.{0}
+  toExprQ := toExprMData
+  toTypeExprQ := mkConst ``MData
 
-deriving instance ToExpr for FVarId
-deriving instance ToExpr for MVarId
-deriving instance ToExpr for LevelMVarId
-deriving instance ToExpr for Level
-deriving instance ToExpr for BinderInfo
-deriving instance ToExpr for Literal
-deriving instance ToExpr for Expr
+deriving instance ToExprQ for FVarId
+deriving instance ToExprQ for MVarId
+deriving instance ToExprQ for LevelMVarId
+deriving instance ToExprQ for Level
+deriving instance ToExprQ for BinderInfo
+deriving instance ToExprQ for Literal
+deriving instance ToExprQ for Expr
 
 end Mathlib

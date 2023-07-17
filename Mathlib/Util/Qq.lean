@@ -27,21 +27,32 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
 
 theorem QE.rfl : @QE u α a a := ⟨⟩
 
-end Qq
+class ToExprQ (α : Type u) where
+  level : Level
+  toTypeExprQ : Q(Type level)
+  toExprQ : α → Q($toTypeExprQ)
+export Qq.ToExprQ (toExprQ)
 
-open scoped Qq
+def toTypeExprQ (α : Type u) [ToExprQ α] : Q(Type $(ToExprQ.level α)) :=
+  ToExprQ.toTypeExprQ (α := α)
 
-/-- `Lean.toTypeExpr` with Qq support. -/
-def Lean.toTypeExprQ (α : Type u) [Lean.ToLevel.{u}] [Lean.ToExpr α] :
-  Q(Type $(Lean.toLevel.{u})) := Lean.toTypeExpr α
+def ToExprQ.toToLevel (α : Type u) [ToExprQ α] : ToLevel.{u} where
+  toLevel := ToExprQ.level α
 
-/-- `Lean.toExpr` with Qq support. -/
-def Lean.toExprQ {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] (x : α) :
-  Q($(toTypeExprQ α)) := Lean.toExpr x
+instance [ToExprQ α] : ToExpr α where
+  toExpr := toExprQ
+  toTypeExpr := toTypeExprQ α
 
-/-- `Lean.toExpr` with Qq support. -/
-def Lean.ToExpr.mkQ.{u} {α : Type u} [Lean.ToLevel.{u}]
-    (toTypeExprQ : Q(Type $(Lean.toLevel.{u}))) (toExprQ : α → Q($toTypeExprQ)) :
-    ToExpr α where
-  toTypeExpr := toTypeExprQ
-  toExpr x := toExprQ x
+abbrev ToExprQ.ofToExpr {α : Type u} (_ : ToLevel.{u} := by infer_instance) [ToExpr α] :
+    ToExprQ α where
+  level := toLevel.{u}
+  toTypeExprQ := toTypeExpr α
+  toExprQ a := toExpr a
+
+instance : ToExprQ Nat := .ofToExpr
+instance : ToExprQ Int := .ofToExpr
+instance : ToExprQ Bool := .ofToExpr
+instance : ToExprQ Char := .ofToExpr
+instance : ToExprQ String := .ofToExpr
+instance : ToExprQ Name := .ofToExpr
+instance : ToExprQ Unit := .ofToExpr
