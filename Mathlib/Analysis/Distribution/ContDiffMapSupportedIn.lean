@@ -9,11 +9,11 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Sets.Compacts
 
-open TopologicalSpace SeminormFamily Set Function
+open TopologicalSpace SeminormFamily Set Function Seminorm
 open scoped BoundedContinuousFunction Topology
 
 -- Think `𝕜 = ℝ` or `𝕜 = ℂ`
-variable (𝕜 E F : Type _) [NormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable (𝕜 E F : Type _) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   {n : ℕ∞} {K : Compacts E}
 
@@ -22,10 +22,10 @@ structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   protected contDiff' : ContDiff ℝ n toFun
   protected zero_on_compl' : EqOn toFun 0 Kᶜ
 
-scoped[Distributions] notation "𝓓^" n "_"K"(" E ", " F ")" =>
+scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
-scoped[Distributions] notation "𝓓_"K"(" E ", " F ")" =>
+scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
 open Distributions
@@ -59,7 +59,7 @@ instance (B : Type _) (E F : outParam <| Type _)
 namespace ContDiffMapSupportedIn
 
 instance toContDiffMapSupportedInClass :
-    ContDiffMapSupportedInClass 𝓓^(n)_(K)(E, F) E F n K where
+    ContDiffMapSupportedInClass 𝓓^{n}_{K}(E, F) E F n K where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
@@ -67,39 +67,39 @@ instance toContDiffMapSupportedInClass :
 
 variable {E F}
 
-protected theorem contDiff (f : 𝓓^(n)_(K)(E, F)) : ContDiff ℝ n f := map_contDiff f
-protected theorem zero_on_compl (f : 𝓓^(n)_(K)(E, F)) : EqOn f 0 Kᶜ :=
+protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
+protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ :=
   map_zero_on_compl f
 
 @[simp]
-theorem toFun_eq_coe {f : 𝓓^(n)_(K)(E, F)} : f.toFun = (f : E → F) :=
+theorem toFun_eq_coe {f : 𝓓^{n}_{K}(E, F)} : f.toFun = (f : E → F) :=
   rfl
 
 /-- See note [custom simps projection]. -/
-def Simps.apply (f : 𝓓^(n)_(K)(E, F)) : E →F  := f
+def Simps.apply (f : 𝓓^{n}_{K}(E, F)) : E →F  := f
 
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContDiffMapSupportedIn (toFun → apply)
 
 @[ext]
-theorem ext {f g : 𝓓^(n)_(K)(E, F)} (h : ∀ a, f a = g a) : f = g :=
+theorem ext {f g : 𝓓^{n}_{K}(E, F)} (h : ∀ a, f a = g a) : f = g :=
   FunLike.ext _ _ h
 
 /-- Copy of a `BoundedContDiffMap` with a new `toFun` equal to the old one. Useful to fix
 definitional equalities. -/
-protected def copy (f : 𝓓^(n)_(K)(E, F)) (f' : E → F) (h : f' = f) : 𝓓^(n)_(K)(E, F) where
+protected def copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : 𝓓^{n}_{K}(E, F) where
   toFun := f'
   contDiff' := h.symm ▸ f.contDiff
   zero_on_compl' := h.symm ▸ f.zero_on_compl
 
 @[simp]
-theorem coe_copy (f : 𝓓^(n)_(K)(E, F)) (f' : E → F) (h : f' = f) : ⇑(f.copy f' h) = f' :=
+theorem coe_copy (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 
-theorem copy_eq (f : 𝓓^(n)_(K)(E, F)) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
+theorem copy_eq (f : 𝓓^{n}_{K}(E, F)) (f' : E → F) (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 
-instance : AddCommGroup 𝓓^(n)_(K)(E, F) where
+instance : AddCommGroup 𝓓^{n}_{K}(E, F) where
   add f g := ContDiffMapSupportedIn.mk (f + g) (f.contDiff.add g.contDiff) <| by
     rw [← add_zero 0]
     exact f.zero_on_compl.comp_left₂ g.zero_on_compl
@@ -114,7 +114,7 @@ instance : AddCommGroup 𝓓^(n)_(K)(E, F) where
   add_left_neg f := by ext; exact add_left_neg _
 
 instance [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^(n)_(K)(E, F) where
+    Module R 𝓓^{n}_{K}(E, F) where
   smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
@@ -126,85 +126,91 @@ instance [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul 
   zero_smul f := by ext; exact zero_smul _ _
 
 @[simp]
-lemma coe_add (f g : 𝓓^(n)_(K)(E, F)) : (f + g : 𝓓^(n)_(K)(E, F)) = (f : E → F) + g :=
+lemma coe_add (f g : 𝓓^{n}_{K}(E, F)) : (f + g : 𝓓^{n}_{K}(E, F)) = (f : E → F) + g :=
   rfl
 
 @[simp]
-lemma add_apply (f g : 𝓓^(n)_(K)(E, F)) (x : E) : (f + g) x = f x + g x :=
+lemma add_apply (f g : 𝓓^{n}_{K}(E, F)) (x : E) : (f + g) x = f x + g x :=
   rfl
 
 @[simp]
 lemma coe_smul [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^(n)_(K)(E, F)) : (c • f : 𝓓^(n)_(K)(E, F)) = c • (f : E → F) :=
+    (c : R) (f : 𝓓^{n}_{K}(E, F)) : (c • f : 𝓓^{n}_{K}(E, F)) = c • (f : E → F) :=
   rfl
 
 @[simp]
 lemma smul_apply [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^(n)_(K)(E, F)) (x : E) : (c • f) x = c • (f x) :=
+    (c : R) (f : 𝓓^{n}_{K}(E, F)) (x : E) : (c • f) x = c • (f x) :=
   rfl
 
-protected theorem support_subset (f : 𝓓^(n)_(K)(E, F)) : support f ⊆ K :=
+protected theorem support_subset (f : 𝓓^{n}_{K}(E, F)) : support f ⊆ K :=
   support_subset_iff'.mpr f.zero_on_compl
 
-protected theorem tsupport_subset (f : 𝓓^(n)_(K)(E, F)) : tsupport f ⊆ K :=
+protected theorem tsupport_subset (f : 𝓓^{n}_{K}(E, F)) : tsupport f ⊆ K :=
   closure_minimal f.support_subset K.2.isClosed
 
-protected theorem hasCompactSupport (f : 𝓓^(n)_(K)(E, F)) : HasCompactSupport f :=
+protected theorem hasCompactSupport (f : 𝓓^{n}_{K}(E, F)) : HasCompactSupport f :=
   HasCompactSupport.intro K.2 f.zero_on_compl
 
 protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : support f ⊆ K) :
-    𝓓^(n)_(K)(E, F) where
+    𝓓^{n}_{K}(E, F) where
   toFun := f
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
 
-protected theorem bounded_iteratedFDeriv (f : 𝓓^(n)_(K)(E, F)) {i : ℕ} (hi : i ≤ n) :
+protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi : i ≤ n) :
     ∃ C, ∀ x, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
   refine Continuous.bounded_above_of_compact_support (f.contDiff.continuous_iteratedFDeriv hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
-noncomputable def to_bcfₗ : 𝓓^(n)_(K)(E, F) →ₗ[𝕜] (E →ᵇ F) where
-  toFun := (↑)
+noncomputable def to_bcfₗ : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F  where
+  toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 @[simp]
-theorem coe_to_bcfₗ (f : 𝓓^(n)_(K)(E, F)) :
+theorem coe_to_bcfₗ (f : 𝓓^{n}_{K}(E, F)) :
     to_bcfₗ 𝕜 f = f :=
   rfl
 
 @[simp]
-theorem to_bcfₗ_apply (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+theorem to_bcfₗ_apply (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     to_bcfₗ 𝕜 f x = f x :=
   rfl
 
-protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) :
-    𝓓^(n-i)_(K)(E, E [×i]→L[ℝ] F) :=
+protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
   if hi : i ≤ n then .of_support_subset
     sorry
     ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
   else 0
 
 @[simp]
-theorem iteratedFDeriv_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+lemma iteratedFDeriv_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     f.iteratedFDeriv i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
   rw [ContDiffMapSupportedIn.iteratedFDeriv]
   split_ifs <;> rfl
 
 @[simp]
-theorem iteratedFDerivₗ_apply_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+lemma iteratedFDeriv_apply_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     f.iteratedFDeriv i x = iteratedFDeriv ℝ i f x := by
   rw [iteratedFDeriv_apply]
   exact dif_pos hin
 
-theorem iteratedFDerivₗ_apply_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+lemma iteratedFDeriv_apply_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     f.iteratedFDeriv i x = 0 := by
   rw [iteratedFDeriv_apply]
   exact dif_neg (not_le_of_gt hin)
 
+lemma iteratedFDeriv_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) :
+    f.iteratedFDeriv i = 0 := by
+  ext x
+  rw [iteratedFDeriv_apply_of_gt hin]
+  rfl
+
 @[simps]
 noncomputable def iteratedFDerivₗ (i : ℕ) :
-    𝓓^(n)_(K)(E, F) →ₗ[𝕜] 𝓓^(n-i)_(K)(E, E [×i]→L[ℝ] F) where
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) where
   toFun f := f.iteratedFDeriv i
   map_add' f g := by
     ext : 1
@@ -224,45 +230,49 @@ noncomputable def iteratedFDerivₗ (i : ℕ) :
 of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
 takes a long time to infer the type of `to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
 noncomputable abbrev iteratedFDeriv_to_bcfₗ (i : ℕ) :
-    𝓓^(n)_(K)(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
   to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i
 
 section Topology
 
-instance topologicalSpace : TopologicalSpace 𝓓^(n)_(K)(E, F) :=
+instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
   ⨅ (i : ℕ), induced (iteratedFDeriv_to_bcfₗ ℝ i) inferInstance
 
-noncomputable instance uniformSpace : UniformSpace 𝓓^(n)_(K)(E, F) := .replaceTopology
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replaceTopology
   (⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_to_bcfₗ ℝ i) inferInstance)
   toTopologicalSpace_iInf.symm
 
-protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^(n)_(K)(E, F)) =
+protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
     ⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_to_bcfₗ ℝ i)
       inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
-instance : UniformAddGroup 𝓓^(n)_(K)(E, F) := by
+instance : UniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
   refine uniformAddGroup_iInf (fun i ↦ ?_)
   exact uniformAddGroup_comap _
 
-instance : ContinuousSMul 𝕜 𝓓^(n)_(K)(E, F) := by
+instance : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
   refine continuousSMul_iInf (fun i ↦ continuousSMul_induced (iteratedFDeriv_to_bcfₗ 𝕜 i))
 
-instance : LocallyConvexSpace ℝ 𝓓^(n)_(K)(E, F) :=
+instance : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   locallyConvexSpace_iInf fun _ ↦ locallyConvexSpace_induced _
+
+lemma continuous_iff_comp [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ i, Continuous (iteratedFDeriv_to_bcfₗ ℝ i ∘ φ) := by
+  simp_rw [continuous_iInf_rng, continuous_induced_rng]
 
 variable (E F n K)
 
-protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^(n)_(K)(E, F) :=
+protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
   (normSeminorm 𝕜 <| E →ᵇ (E [×i]→L[ℝ] F)).comp (iteratedFDeriv_to_bcfₗ 𝕜 i)
 
-protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^(n)_(K)(E, F) :=
+protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
   (Finset.Iic i).sup (ContDiffMapSupportedIn.seminorm 𝕜 E F n K)
 
 protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
-  let p : SeminormFamily 𝕜 𝓓^(n)_(K)(E, F) ((_ : ℕ) × Fin 1) :=
+  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
     SeminormFamily.sigma fun i ↦ fun _ ↦
       (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (iteratedFDeriv_to_bcfₗ 𝕜 i)
   have : WithSeminorms p :=
@@ -275,7 +285,7 @@ protected theorem withSeminorms' :
 
 variable {E F n K}
 
-protected theorem seminorm_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) :
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
       ‖(f.iteratedFDeriv i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
@@ -284,40 +294,69 @@ protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
   ext f
   rw [ContDiffMapSupportedIn.seminorm_apply,
-      iteratedFDeriv_of_gt hin, ContinuousLinearMap.zero_apply, norm_zero]
-  rfl
+      iteratedFDeriv_of_gt hin]
+  exact norm_zero
 
+@[simps!]
+noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
+  { to_bcfₗ 𝕜 with
+    cont := show Continuous (to_bcfₗ 𝕜) by
+      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K)
+        (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
+      rw [Seminorm.comp_apply, coe_normSeminorm, coe_to_bcfₗ, one_smul, Finset.sup_singleton,
+          ContDiffMapSupportedIn.seminorm_apply,
+          BoundedContinuousFunction.norm_le_of_nonempty]
+      refine fun x ↦ le_trans ?_ (BoundedContinuousFunction.norm_coe_le_norm _ x)
+      rw [BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
+          BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
+          iteratedFDeriv_apply_of_le, norm_iteratedFDeriv_zero]
+      positivity }
+
+@[simps!]
 noncomputable def iteratedFDerivL (i : ℕ) :
-    𝓓^(n)_(K)(E, F) →L[ℝ] E →ᵇ (E [×i]→L[ℝ] F) :=
-  { iteratedFDerivₗ i with
-    cont := continuous_iInf_dom continuous_induced_dom }
+    𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n-i}_{K}(E, E [×i]→L[ℝ] F) :=
+  { iteratedFDerivₗ 𝕜 i with
+    cont := show Continuous (iteratedFDerivₗ 𝕜 i) by
+      rcases le_or_gt (↑i) n with (hin|hin)
+      · refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms 𝕜 E _ _ K)
+          (ContDiffMapSupportedIn.withSeminorms 𝕜 E _ _ K) _ (fun k ↦ ⟨{k+i}, 1, fun f ↦ ?_⟩)
+        rw [Seminorm.comp_apply, one_smul, Finset.sup_singleton,
+            ContDiffMapSupportedIn.seminorm_apply,
+            ContDiffMapSupportedIn.seminorm_apply,
+            BoundedContinuousFunction.norm_le_of_nonempty]
+        refine fun x ↦ le_trans ?_ (BoundedContinuousFunction.norm_coe_le_norm _ x)
+        rw [BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
+            BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
+            iteratedFDeriv_apply_of_le] }
+
+#exit
 
 @[simp]
-theorem iteratedFDerivL_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+theorem iteratedFDerivL_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     iteratedFDerivL i f x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
   simp [iteratedFDerivL]
 
 @[simp]
-theorem iteratedFDerivL_apply_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+theorem iteratedFDerivL_apply_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     iteratedFDerivL i f x = iteratedFDeriv ℝ i f x := by
   rw [iteratedFDerivL_apply]
   exact dif_pos hin
 
 theorem iteratedFDerivL_of_gt {i : ℕ} (hin : i > n) :
-    (iteratedFDerivL i : 𝓓^(n)_(K)(E, F) →L[ℝ] (E →ᵇ (E [×i]→L[ℝ] F))) = 0 :=
+    (iteratedFDerivL i : 𝓓^{n}_{K}(E, F) →L[ℝ] (E →ᵇ (E [×i]→L[ℝ] F))) = 0 :=
   ContinuousLinearMap.coe_injective (iteratedFDerivₗ_of_gt hin)
 
-theorem iteratedFDerivL_apply_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+theorem iteratedFDerivL_apply_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^{n}_{K}(E, F)) (x : E) :
     (iteratedFDerivL i f x) = 0 := by
   rw [iteratedFDerivL_apply]
   exact dif_neg (not_le_of_gt hin)
 
 /-- This is mostly for dot notation. Should I keep it? -/
-protected noncomputable abbrev iteratedFDeriv (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) :
+protected noncomputable abbrev iteratedFDeriv (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     E →ᵇ (E [×i]→L[ℝ] F) :=
   iteratedFDerivL i f
 
-protected theorem continuous_iff {X : Type _} [TopologicalSpace X] (φ : X → 𝓓^(n)_(K)(E, F)) :
+protected theorem continuous_iff {X : Type _} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
   Continuous φ ↔ ∀ (i : ℕ) (_ : ↑i ≤ n), Continuous
     ((ContDiffMapSupportedIn.iteratedFDeriv i) ∘ φ) :=
 ⟨ fun hφ i _ ↦ (iteratedFDerivL i).continuous.comp hφ,
@@ -328,15 +367,15 @@ protected theorem continuous_iff {X : Type _} [TopologicalSpace X] (φ : X → �
 
 variable (E F n K)
 
-protected noncomputable def seminorm (i : ℕ) : Seminorm ℝ 𝓓^(n)_(K)(E, F) :=
+protected noncomputable def seminorm (i : ℕ) : Seminorm ℝ 𝓓^{n}_{K}(E, F) :=
   (normSeminorm ℝ <| E →ᵇ (E [×i]→L[ℝ] F)).comp (iteratedFDerivₗ i)
 
-protected noncomputable def seminorm' (i : ℕ) : Seminorm ℝ 𝓓^(n)_(K)(E, F) :=
+protected noncomputable def seminorm' (i : ℕ) : Seminorm ℝ 𝓓^{n}_{K}(E, F) :=
   (Finset.Iic i).sup (ContDiffMapSupportedIn.seminorm E F n K)
 
 protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm E F n K) := by
-  let p : SeminormFamily ℝ 𝓓^(n)_(K)(E, F) ((_ : ℕ) × Fin 1) :=
+  let p : SeminormFamily ℝ 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
     SeminormFamily.sigma fun i ↦ fun _ ↦
       (normSeminorm ℝ (E →ᵇ (E [×i]→L[ℝ] F))).comp (iteratedFDerivₗ i)
   have : WithSeminorms p :=
@@ -349,7 +388,7 @@ protected theorem withSeminorms' :
 
 variable {E F n K}
 
-protected theorem seminorm_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) :
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm E F n K i f = ‖f.iteratedFDeriv i‖ :=
   rfl
 
@@ -366,7 +405,7 @@ section fderiv
 
 open Distributions
 
-noncomputable def fderivₗ' (n : ℕ∞) : 𝓓^(n+1)_(K)(E, F) →ₗ[ℝ] 𝓓^(n)_(K)(E, E →L[ℝ] F) where
+noncomputable def fderivₗ' (n : ℕ∞) : 𝓓^(n+1)_(K)(E, F) →ₗ[ℝ] 𝓓^{n}_{K}(E, E →L[ℝ] F) where
   toFun f := .of_support_subset (f.contDiff.fderiv_right le_rfl)
     ((support_fderiv_subset ℝ).trans f.tsupport_subset)
   map_add' f₁ f₂ := by
@@ -397,7 +436,7 @@ theorem seminorm_fderivₗ' (i : ℕ) (f : 𝓓^(n+1)_(K)(E, F)) :
   · have hin' : (i + 1 : ℕ) > n + 1 := WithTop.add_lt_add_right WithTop.one_ne_top hin
     rw [iteratedFDerivL_apply_of_gt hin, iteratedFDerivL_apply_of_gt hin', norm_zero, norm_zero]
 
-noncomputable def fderivL' (n : ℕ∞) : 𝓓^(n+1)_(K)(E, F) →L[ℝ] 𝓓^(n)_(K)(E, E →L[ℝ] F) where
+noncomputable def fderivL' (n : ℕ∞) : 𝓓^(n+1)_(K)(E, F) →L[ℝ] 𝓓^{n}_{K}(E, E →L[ℝ] F) where
   toLinearMap := fderivₗ' n
   cont := by
     refine Seminorm.continuous_from_bounded  (τ₁₂ := RingHom.id ℝ)
@@ -449,7 +488,7 @@ protected theorem withSeminorms_of_finite : WithSeminorms
     rw [one_smul, Finset.sup_singleton, Seminorm.comp_id]
     rcases le_or_gt i n with (hin|hin)
     · rw [← Finset.mem_Iic] at hin
-      exact Finset.le_sup (α := Seminorm ℝ 𝓓^(n)_(K)(E, F)) hin
+      exact Finset.le_sup (α := Seminorm ℝ 𝓓^{n}_{K}(E, F)) hin
     · rw [ContDiffMapSupportedIn.seminorm_eq_bot (by exact_mod_cast hin)]
       exact bot_le
 
@@ -458,5 +497,5 @@ end finite
 end ContDiffMapSupportedIn
 
 instance {E F} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    {K : Compacts E} : LocallyConvexSpace ℝ 𝓓^(n)_(K)(E, F) :=
+    {K : Compacts E} : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   locallyConvexSpace_iInf fun _ ↦ locallyConvexSpace_induced _

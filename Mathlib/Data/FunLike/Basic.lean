@@ -159,7 +159,7 @@ instance (priority := 100) hasCoeToFun : CoeFun F fun _ ↦ ∀ a : α, β a whe
 theorem coe_eq_coe_fn : (FunLike.coe (F := F)) = (fun f => ↑f) := rfl
 #align fun_like.coe_eq_coe_fn FunLike.coe_eq_coe_fn
 
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
+theorem coe_injective : Function.Injective ((↑) : F → (∀ a : α, β a)) :=
   FunLike.coe_injective'
 #align fun_like.coe_injective FunLike.coe_injective
 

@@ -92,6 +92,14 @@ instance : CoeFun (α →ᵇ β) fun _ => α → β :=
   continuous_toFun := map_continuous f
   map_bounded' := map_bounded f
 
+instance [BoundedContinuousMapClass F α β] : CoeTC F (α →ᵇ β) :=
+  ⟨BoundedContinuousMapClass.toBoundedContinuousFunction⟩
+
+lemma _root_.BoundedContinuousMapClass.coe_toBoundedContinuousFunction
+    [BoundedContinuousMapClass F α β] (f : F) :
+    (f : α →ᵇ β) = (f : α → β) :=
+  rfl
+
 @[simp]
 theorem coe_to_continuous_fun (f : α →ᵇ β) : (f.toContinuousMap : α → β) = f := rfl
 #align bounded_continuous_function.coe_to_continuous_fun BoundedContinuousFunction.coe_to_continuous_fun
