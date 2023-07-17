@@ -98,10 +98,10 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
   | x, y =>
     let (d, a, b) := Nat.xgcdAux x 1 0 y 0 1
     if d = x then
-      have pq : Q(Nat.mod $ey $ex = 0) := (q(@Eq.refl Nat 0) : Expr)
+      have pq : Q(Nat.mod $ey $ex = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
       ⟨ex, q(nat_gcd_helper_dvd_left $ex $ey $pq)⟩
     else if d = y then
-      have pq : Q(Nat.mod $ex $ey = 0) := (q(@Eq.refl Nat 0) : Expr)
+      have pq : Q(Nat.mod $ex $ey = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
       ⟨ey, q(nat_gcd_helper_dvd_right $ex $ey $pq)⟩
     else
       have ea' : Q(ℕ) := mkRawNatLit a.natAbs
@@ -115,8 +115,8 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
           ⟨mkRawNatLit 1, q(nat_gcd_helper_1' $ex $ey $ea' $eb' $pt)⟩
       else
         have ed : Q(ℕ) := mkRawNatLit d
-        have pu : Q(Nat.mod $ex $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
-        have pv : Q(Nat.mod $ey $ed = 0) := (q(@Eq.refl Nat 0) : Expr)
+        have pu : Q(Nat.mod $ex $ed = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
+        have pv : Q(Nat.mod $ey $ed = 0) := (q(Eq.refl (nat_lit 0)) : Expr)
         if a ≥ 0 then
           have pt : Q($ex * $ea' = $ey * $eb' + $ed) := (q(Eq.refl ($ex * $ea')) : Expr)
           ⟨ed, q(nat_gcd_helper_2 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
@@ -175,9 +175,8 @@ def proveIntGCD (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.gcd $ex $ey = $ed) :=
 def evalIntGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
-  let ⟨ex, p⟩ ← deriveInt x
-  let ⟨ey, q⟩ ← deriveInt y
+  let ⟨ex, p⟩ ← deriveInt x _
+  let ⟨ey, q⟩ ← deriveInt y _
   let ⟨ed, pf⟩ := proveIntGCD ex ey
   have pf : Q(Int.gcd $ex $ey = $ed) := pf
   have pf' : Q(IsNat (Int.gcd $x $y) $ed) := q(isInt_gcd $p $q $pf)
@@ -196,9 +195,8 @@ def proveIntLCM (ex ey : Q(ℤ)) : (ed : Q(ℕ)) × Q(Int.lcm $ex $ey = $ed) :=
 def evalIntLCM : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℤ))) (y : Q(ℤ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let sℤ : Q(Ring ℤ) := q(Int.instRingInt)
-  let ⟨ex, p⟩ ← deriveInt x
-  let ⟨ey, q⟩ ← deriveInt y
+  let ⟨ex, p⟩ ← deriveInt x _
+  let ⟨ey, q⟩ ← deriveInt y _
   let ⟨ed, pf⟩ := proveIntLCM ex ey
   have pf : Q(Int.lcm $ex $ey = $ed) := pf
   have pf' : Q(IsNat (Int.lcm $x $y) $ed) := q(isInt_lcm $p $q $pf)
