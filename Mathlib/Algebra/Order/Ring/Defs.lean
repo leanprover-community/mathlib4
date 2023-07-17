@@ -456,7 +456,7 @@ end Monotone
 
 theorem le_iff_exists_nonneg_add (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c :=
   ⟨fun h => ⟨b - a, sub_nonneg.mpr h, by simp⟩, fun ⟨c, hc, h⟩ => by
-    rw [h, le_add_iff_nonneg_right]
+    rw [h, le_add_iff_nonneg_right a]
     exact hc⟩
 #align le_iff_exists_nonneg_add le_iff_exists_nonneg_add
 
