@@ -9,7 +9,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Core
+import Mathlib.Init.Core
 
 universe u v w
 
