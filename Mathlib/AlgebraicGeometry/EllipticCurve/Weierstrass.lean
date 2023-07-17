@@ -215,7 +215,7 @@ section ModelsWithJInvariant
 
 variable {R : Type u} [CommRing R] (j : R)
 
-/-- The Weierstrass curve $Y^2 + (j-1728)XY = X^3 - 36(j-1728)^3X - (j-1728)^5$. -/
+/-- The Weierstrass curve $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$. -/
 def ofJInvariant : WeierstrassCurve R :=
   ⟨j - 1728, 0, 0, -36 * (j - 1728) ^ 3, -(j - 1728) ^ 5⟩
 
@@ -1004,8 +1004,8 @@ section ModelsWithJInvariant'
 
 variable {R : Type u} [CommRing R] (j : R) [Invertible j] [Invertible (j - 1728)]
 
-/-- The elliptic curve $Y^2 + (j-1728)XY = X^3 - 36(j-1728)^3X - (j-1728)^5$
-when $j$ and $j-1728$ are both invertible. -/
+/-- The elliptic curve $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$
+when $j$ and $j - 1728$ are both invertible. -/
 def ofJInvariant' : EllipticCurve R :=
   ⟨WeierstrassCurve.ofJInvariant j,
     ⟨j ^ 2 * (j - 1728) ^ 9, ⅟j ^ 2 * ⅟(j - 1728) ^ 9,
