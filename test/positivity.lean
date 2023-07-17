@@ -256,6 +256,15 @@ example {r : ℝ} : 0 < Real.exp r := by positivity
 
 example {n : ℕ} : 0 ≤ Real.log n := by positivity
 example {n : ℤ} : 0 ≤ Real.log n := by positivity
+example : 0 < Real.log 2 := by positivity
+example : 0 < Real.log 1.01 := by positivity
+example : 0 ≠ Real.log 0.99 := by positivity
+example : 0 < Real.log (-2) := by positivity
+example : 0 < Real.log (-1.01) := by positivity
+example : 0 ≠ Real.log (-0.99) := by positivity
+example : 0 ≤ Real.log 1 := by positivity
+example : 0 ≤ Real.log 0 := by positivity
+example : 0 ≤ Real.log (-1) := by positivity
 
 example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
 example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity

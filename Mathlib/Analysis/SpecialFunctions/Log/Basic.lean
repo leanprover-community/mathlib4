@@ -513,16 +513,16 @@ lemma log_pos_of_isRat_neg :
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
-lemma log_nz_of_isRat :
-    (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d)) → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
+lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
+    → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
     rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
     have h₁' : 0 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h₁
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
-lemma log_nz_of_isRat_neg :
-    (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ))) → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
+lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
+      → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
     rw [eq, invOf_eq_inv, ←div_eq_mul_inv]
     have h₁' : (n : ℝ) / d < 0 := by exact_mod_cast of_decide_eq_true h₁
