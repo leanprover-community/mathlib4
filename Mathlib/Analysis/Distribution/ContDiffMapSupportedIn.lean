@@ -12,8 +12,10 @@ import Mathlib.Topology.Sets.Compacts
 open TopologicalSpace SeminormFamily Set Function
 open scoped BoundedContinuousFunction Topology
 
-variable (E F : Type _) [NormedAddCommGroup E] [NormedAddCommGroup F]
-  [NormedSpace ℝ E] [NormedSpace ℝ F] {n : ℕ∞} {K : Compacts E}
+-- Think `𝕜 = ℝ` or `𝕜 = ℂ`
+variable (𝕜 E F : Type _) [NormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  {n : ℕ∞} {K : Compacts E}
 
 structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
   protected toFun : E → F
@@ -29,11 +31,30 @@ scoped[Distributions] notation "𝓓_"K"(" E ", " F ")" =>
 open Distributions
 
 class ContDiffMapSupportedInClass (B : Type _) (E F : outParam <| Type _)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]
-    [NormedSpace ℝ F] (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E (fun _ ↦ F) where
-  protected contDiff (f : B) : ContDiff ℝ n f
-  protected zero_on_compl (f : B) : EqOn f 0 Kᶜ
+  map_contDiff (f : B) : ContDiff ℝ n f
+  map_zero_on_compl (f : B) : EqOn f 0 Kᶜ
+
+open ContDiffMapSupportedInClass
+
+instance (B : Type _) (E F : outParam <| Type _)
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    [ContDiffMapSupportedInClass B E F n K] :
+    ContinuousMapClass B E F where
+  map_continuous f := (map_contDiff f).continuous
+
+instance (B : Type _) (E F : outParam <| Type _)
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+    [ContDiffMapSupportedInClass B E F n K] :
+    BoundedContinuousMapClass B E F where
+  map_bounded f := by
+    have := HasCompactSupport.intro K.2 (map_zero_on_compl f)
+    rcases (map_continuous f).bounded_above_of_compact_support this with ⟨C, hC⟩
+    exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
 
 namespace ContDiffMapSupportedIn
 
@@ -41,14 +62,14 @@ instance toContDiffMapSupportedInClass :
     ContDiffMapSupportedInClass 𝓓^(n)_(K)(E, F) E F n K where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
-  contDiff f := f.contDiff'
-  zero_on_compl f := f.zero_on_compl'
+  map_contDiff f := f.contDiff'
+  map_zero_on_compl f := f.zero_on_compl'
 
 variable {E F}
 
-protected theorem contDiff (f : 𝓓^(n)_(K)(E, F)) : ContDiff ℝ n f := f.contDiff'
+protected theorem contDiff (f : 𝓓^(n)_(K)(E, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem zero_on_compl (f : 𝓓^(n)_(K)(E, F)) : EqOn f 0 Kᶜ :=
-  f.zero_on_compl'
+  map_zero_on_compl f
 
 @[simp]
 theorem toFun_eq_coe {f : 𝓓^(n)_(K)(E, F)} : f.toFun = (f : E → F) :=
@@ -92,7 +113,8 @@ instance : AddCommGroup 𝓓^(n)_(K)(E, F) where
     exact f.zero_on_compl.comp_left
   add_left_neg f := by ext; exact add_left_neg _
 
-instance : Module ℝ 𝓓^(n)_(K)(E, F) where
+instance [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^(n)_(K)(E, F) where
   smul c f := ContDiffMapSupportedIn.mk (c • (f : E → F)) (f.contDiff.const_smul c) <| by
     rw [← smul_zero c]
     exact f.zero_on_compl.comp_left
@@ -102,6 +124,24 @@ instance : Module ℝ 𝓓^(n)_(K)(E, F) where
   smul_add c f g := by ext; exact smul_add _ _ _
   add_smul c₁ c₂ f := by ext; exact add_smul _ _ _
   zero_smul f := by ext; exact zero_smul _ _
+
+@[simp]
+lemma coe_add (f g : 𝓓^(n)_(K)(E, F)) : (f + g : 𝓓^(n)_(K)(E, F)) = (f : E → F) + g :=
+  rfl
+
+@[simp]
+lemma add_apply (f g : 𝓓^(n)_(K)(E, F)) (x : E) : (f + g) x = f x + g x :=
+  rfl
+
+@[simp]
+lemma coe_smul [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    (c : R) (f : 𝓓^(n)_(K)(E, F)) : (c • f : 𝓓^(n)_(K)(E, F)) = c • (f : E → F) :=
+  rfl
+
+@[simp]
+lemma smul_apply [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    (c : R) (f : 𝓓^(n)_(K)(E, F)) (x : E) : (c • f) x = c • (f x) :=
+  rfl
 
 protected theorem support_subset (f : 𝓓^(n)_(K)(E, F)) : support f ⊆ K :=
   support_subset_iff'.mpr f.zero_on_compl
@@ -118,66 +158,134 @@ protected def of_support_subset {f : E → F} (hf : ContDiff ℝ n f) (hsupp : s
   contDiff' := hf
   zero_on_compl' := support_subset_iff'.mp hsupp
 
-protected theorem bounded (f : 𝓓^(n)_(K)(E, F)) {i : ℕ} (hi : i ≤ n) :
+protected theorem bounded_iteratedFDeriv (f : 𝓓^(n)_(K)(E, F)) {i : ℕ} (hi : i ≤ n) :
     ∃ C, ∀ x, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
   refine Continuous.bounded_above_of_compact_support (f.contDiff.continuous_iteratedFDeriv hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
-noncomputable def iteratedFDerivₗ (i : ℕ) :
-    𝓓^(n)_(K)(E, F) →ₗ[ℝ] (E →ᵇ (E [×i]→L[ℝ] F)) :=
-  if hi : i ≤ n then
-  { toFun := fun f ↦ .ofNormedAddCommGroup (iteratedFDeriv ℝ i f)
-      (f.contDiff.continuous_iteratedFDeriv hi) (f.bounded hi).choose
-      (fun x ↦ (f.bounded hi).choose_spec x),
-    map_add' := by
-      intro f g
-      ext : 1
-      exact iteratedFDeriv_add_apply (f.contDiff.of_le hi) (g.contDiff.of_le hi),
-    map_smul' := by
-      intro c f
-      ext : 1
-      exact iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi) }
+noncomputable def to_bcfₗ : 𝓓^(n)_(K)(E, F) →ₗ[𝕜] (E →ᵇ F) where
+  toFun := (↑)
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem coe_to_bcfₗ (f : 𝓓^(n)_(K)(E, F)) :
+    to_bcfₗ 𝕜 f = f :=
+  rfl
+
+@[simp]
+theorem to_bcfₗ_apply (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+    to_bcfₗ 𝕜 f x = f x :=
+  rfl
+
+protected noncomputable def iteratedFDeriv (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) :
+    𝓓^(n-i)_(K)(E, E [×i]→L[ℝ] F) :=
+  if hi : i ≤ n then .of_support_subset
+    sorry
+    ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
   else 0
 
 @[simp]
-theorem iteratedFDerivₗ_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
-    iteratedFDerivₗ i f x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
-  rw [iteratedFDerivₗ]
+theorem iteratedFDeriv_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
+    f.iteratedFDeriv i x = if i ≤ n then iteratedFDeriv ℝ i f x else 0 := by
+  rw [ContDiffMapSupportedIn.iteratedFDeriv]
   split_ifs <;> rfl
 
 @[simp]
 theorem iteratedFDerivₗ_apply_of_le {i : ℕ} (hin : i ≤ n) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
-    iteratedFDerivₗ i f x = iteratedFDeriv ℝ i f x := by
-  rw [iteratedFDerivₗ_apply]
+    f.iteratedFDeriv i x = iteratedFDeriv ℝ i f x := by
+  rw [iteratedFDeriv_apply]
   exact dif_pos hin
 
-theorem iteratedFDerivₗ_of_gt {i : ℕ} (hin : i > n) :
-    (iteratedFDerivₗ i : 𝓓^(n)_(K)(E, F) →ₗ[ℝ] (E →ᵇ (E [×i]→L[ℝ] F))) = 0 :=
-  dif_neg (not_le_of_gt hin)
-
 theorem iteratedFDerivₗ_apply_of_gt {i : ℕ} (hin : i > n) (f : 𝓓^(n)_(K)(E, F)) (x : E) :
-    (iteratedFDerivₗ i f x) = 0 := by
-  rw [iteratedFDerivₗ_apply]
+    f.iteratedFDeriv i x = 0 := by
+  rw [iteratedFDeriv_apply]
   exact dif_neg (not_le_of_gt hin)
+
+@[simps]
+noncomputable def iteratedFDerivₗ (i : ℕ) :
+    𝓓^(n)_(K)(E, F) →ₗ[𝕜] 𝓓^(n-i)_(K)(E, E [×i]→L[ℝ] F) where
+  toFun f := f.iteratedFDeriv i
+  map_add' f g := by
+    ext : 1
+    simp only [iteratedFDeriv_apply, add_apply]
+    split_ifs with hin
+    · exact iteratedFDeriv_add_apply (f.contDiff.of_le hin) (g.contDiff.of_le hin)
+    · rw [add_zero]
+  map_smul' c f := by
+    ext : 1
+    simp only [iteratedFDeriv_apply, RingHom.id_apply, smul_apply]
+    split_ifs with hin
+    · exact iteratedFDeriv_const_smul_apply (f.contDiff.of_le hin)
+    · rw [smul_zero]
+
+/-- The composition of `ContDiffMapSupportedIn.to_bcfₗ` and
+`ContDiffMapSupportedIn.iteratedFDerivₗ`. We define this as a separate `abbrev` because this family
+of maps is used a lot for defining and using the topology on `ContDiffMapSupportedIn`, and Lean
+takes a long time to infer the type of `to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i`. -/
+noncomputable abbrev iteratedFDeriv_to_bcfₗ (i : ℕ) :
+    𝓓^(n)_(K)(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
+  to_bcfₗ 𝕜 ∘ₗ iteratedFDerivₗ 𝕜 i
 
 section Topology
 
-instance : TopologicalSpace 𝓓^(n)_(K)(E, F) :=
-  ⨅ (i : ℕ), induced (iteratedFDerivₗ i) inferInstance
+instance topologicalSpace : TopologicalSpace 𝓓^(n)_(K)(E, F) :=
+  ⨅ (i : ℕ), induced (iteratedFDeriv_to_bcfₗ ℝ i) inferInstance
 
-noncomputable instance : UniformSpace 𝓓^(n)_(K)(E, F) := .replaceTopology
-  (⨅ (i : ℕ), UniformSpace.comap (iteratedFDerivₗ i) inferInstance)
+noncomputable instance uniformSpace : UniformSpace 𝓓^(n)_(K)(E, F) := .replaceTopology
+  (⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_to_bcfₗ ℝ i) inferInstance)
   toTopologicalSpace_iInf.symm
 
-protected theorem uniformSpace_eq_iInf :
-    (instUniformSpaceContDiffMapSupportedIn : UniformSpace 𝓓^(n)_(K)(E, F)) =
-    ⨅ (i : ℕ), UniformSpace.comap (iteratedFDerivₗ i) inferInstance :=
+protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^(n)_(K)(E, F)) =
+    ⨅ (i : ℕ), UniformSpace.comap (iteratedFDeriv_to_bcfₗ ℝ i)
+      inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
 instance : UniformAddGroup 𝓓^(n)_(K)(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
   refine uniformAddGroup_iInf (fun i ↦ ?_)
   exact uniformAddGroup_comap _
+
+instance : ContinuousSMul 𝕜 𝓓^(n)_(K)(E, F) := by
+  refine continuousSMul_iInf (fun i ↦ continuousSMul_induced (iteratedFDeriv_to_bcfₗ 𝕜 i))
+
+instance : LocallyConvexSpace ℝ 𝓓^(n)_(K)(E, F) :=
+  locallyConvexSpace_iInf fun _ ↦ locallyConvexSpace_induced _
+
+variable (E F n K)
+
+protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^(n)_(K)(E, F) :=
+  (normSeminorm 𝕜 <| E →ᵇ (E [×i]→L[ℝ] F)).comp (iteratedFDeriv_to_bcfₗ 𝕜 i)
+
+protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^(n)_(K)(E, F) :=
+  (Finset.Iic i).sup (ContDiffMapSupportedIn.seminorm 𝕜 E F n K)
+
+protected theorem withSeminorms :
+    WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
+  let p : SeminormFamily 𝕜 𝓓^(n)_(K)(E, F) ((_ : ℕ) × Fin 1) :=
+    SeminormFamily.sigma fun i ↦ fun _ ↦
+      (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (iteratedFDeriv_to_bcfₗ 𝕜 i)
+  have : WithSeminorms p :=
+    withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
+  exact this.congr_equiv (Equiv.sigmaUnique _ _).symm
+
+protected theorem withSeminorms' :
+    WithSeminorms (ContDiffMapSupportedIn.seminorm' 𝕜 E F n K) :=
+  (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K).partial_sups
+
+variable {E F n K}
+
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^(n)_(K)(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
+      ‖(f.iteratedFDeriv i : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+  rfl
+
+protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
+  ext f
+  rw [ContDiffMapSupportedIn.seminorm_apply,
+      iteratedFDeriv_of_gt hin, ContinuousLinearMap.zero_apply, norm_zero]
+  rfl
 
 noncomputable def iteratedFDerivL (i : ℕ) :
     𝓓^(n)_(K)(E, F) →L[ℝ] E →ᵇ (E [×i]→L[ℝ] F) :=
