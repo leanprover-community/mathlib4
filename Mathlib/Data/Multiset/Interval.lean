@@ -78,6 +78,12 @@ theorem card_Ioo :
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align multiset.card_Ioo Multiset.card_Ioo
 
+theorem card_uIcc :
+    (uIcc s t).card = ∏ i in s.toFinset ∪ t.toFinset, ((t.count i - s.count i : ℤ).natAbs + 1) := by
+  simp_rw [uIcc_eq, Finset.card_map, DFinsupp.card_uIcc, Nat.card_uIcc, Multiset.toDFinsupp_apply,
+    toDFinsupp_support]
+#align multiset.card_uIcc Multiset.card_uIcc
+
 theorem card_Iic : (Finset.Iic s).card = ∏ i in s.toFinset, (s.count i + 1) := by
   simp_rw [Iic_eq_Icc, card_Icc, bot_eq_zero, toFinset_zero, empty_union, count_zero, tsub_zero]
 #align multiset.card_Iic Multiset.card_Iic

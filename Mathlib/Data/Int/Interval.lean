@@ -171,7 +171,6 @@ theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 #align int.card_fintype_Ioo Int.card_fintype_Ioo
 
-@[simp]
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
 #align int.card_fintype_uIcc Int.card_fintype_uIcc
