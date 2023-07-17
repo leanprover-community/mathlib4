@@ -58,12 +58,13 @@ end
 section
 
 #align psigma.skip_left PSigma.SkipLeft
-#align psigma.mk_skip_left PSigma.mkSkipLeft
 
 theorem skipLeft_wf (α : Type u) {β : Type v} {s : β → β → Prop} (hb : WellFounded s) :
     WellFounded (SkipLeft α s) :=
   revLex_wf emptyWf.wf hb
 #align psigma.skip_left_wf PSigma.skipLeft_wf
+
+#align psigma.mk_skip_left PSigma.mkSkipLeft
 
 end
 
