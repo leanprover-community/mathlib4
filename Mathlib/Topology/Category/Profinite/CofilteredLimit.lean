@@ -229,7 +229,7 @@ theorem exists_locallyConstant {α : Type _} (hC : IsLimit C) (f : LocallyConsta
       (inferInstance : T2Space (F.obj j))
     haveI : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : CompactSpace (F.obj j))
-    have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
+    have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{_,u}
       (F ⋙ Profinite.toTopCat)
     suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
