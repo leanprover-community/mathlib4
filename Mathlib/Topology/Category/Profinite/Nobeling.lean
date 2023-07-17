@@ -699,6 +699,36 @@ lemma nil_le (l : List α) : List.Lex r [] l ∨ [] = l := by
 end Lex
 end List
 
+namespace Finsupp
+
+open Finset Function
+
+open BigOperators
+
+variable {α M : Type _} [Zero M]
+
+/--
+`erase' s f` is the finitely supported function equal to `f` except at `a ∈ s` where it is
+equal to `0`.
+-/
+noncomputable
+def erase' (s : Finset α) (f : α →₀ M) : α →₀ M where
+  support :=
+    haveI := Classical.decEq α
+    f.support \ s
+  toFun a :=
+    haveI := Classical.decEq α
+    if a ∈ s then 0 else f a
+  mem_support_toFun a := by
+    classical
+    rw [mem_sdiff, mem_support_iff]; dsimp
+    split_ifs with h
+    · simp only [not_true, iff_false, not_and, not_not]
+      exact fun _ ↦ h
+    · exact and_iff_left h
+
+end Finsupp
+
 namespace NobelingProof
 
 variable {I : Type u} [LinearOrder I] [IsWellOrder I (·<·)] (C : Set ((WithTop I) → Bool))
@@ -3529,7 +3559,26 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
     Products.eval C ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈
     Submodule.span ℤ ((fun (r : {r : Products (WithTop I) | term I ho ∉ r.val}) ↦
     List.eval C (term I ho :: r.val.val)) '' {m_1 | m_1.val < l.val}) := by
+  set m : Products (WithTop I) := ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ with hhm
+  have hlt : l.val = m.Tail
+  · simp only [Products.Tail, List.tail_cons, Subtype.coe_eta]
+  have hm : m.val ≠ []
+  · simp only [ne_eq, not_false_eq_true]
+  have hmh : m.val.head! = term I ho
+  · simp only [List.head!_cons]
+  have h : m.eval C ∈ Submodule.span ℤ (Products.eval C '' {q | q < m}) := hh
+  rw [Finsupp.mem_span_image_iff_total] at h ⊢
+  obtain ⟨c, ⟨hcmem, hcsum⟩⟩ := h
+  rw [Finsupp.mem_supported] at hcmem
+  rw [Finsupp.total_apply] at hcsum
   sorry
+  -- Finsupp.erase' !!
+  -- let f : {q | q < m ∧ term I ho ∈ q.val} → {q | q < m} := fun q ↦ ⟨q.val, q.prop.1⟩
+  -- have hf : f.Injective
+  -- · intro a b hab
+  --   rw [Subtype.ext_iff] at hab
+  --   exact Subtype.ext hab
+  -- let d : Products (WithTop I) →₀ ℤ := c.comapDomain f
 
 /- Plan: for all `x ∈ C` such that `x (term I ho) = true`, any `q < m` such that
        `term I ho ∉ q` satisfies `q.eval C x = 0`. On the other hand for all `x ∈ C` such that
