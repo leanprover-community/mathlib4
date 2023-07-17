@@ -332,8 +332,8 @@ theorem eval₂_gcd_eq_zero [CommSemiring k] [DecidableEq R]
     Polynomial.eval₂_mul, hf, hg, MulZeroClass.zero_mul, MulZeroClass.zero_mul, zero_add]
 #align polynomial.eval₂_gcd_eq_zero Polynomial.eval₂_gcd_eq_zero
 
-theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R} (hf : f.eval α = 0) (hg : g.eval α = 0) :
-    (EuclideanDomain.gcd f g).eval α = 0 :=
+theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
+  (hf : f.eval α = 0) (hg : g.eval α = 0) : (EuclideanDomain.gcd f g).eval α = 0 :=
   eval₂_gcd_eq_zero hf hg
 #align polynomial.eval_gcd_eq_zero Polynomial.eval_gcd_eq_zero
 
@@ -554,3 +554,5 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type _} [Field K] (
 end Field
 
 end Polynomial
+
+#lint
