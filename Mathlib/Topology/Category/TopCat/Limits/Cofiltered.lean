@@ -11,7 +11,7 @@ Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
-# Cofiltered limits in Top.
+# Cofiltered limits in the category of topological spaces
 
 Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
