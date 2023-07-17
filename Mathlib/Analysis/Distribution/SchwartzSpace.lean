@@ -198,7 +198,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n ((f : E → F) + (g : E → F)) x‖ ≤
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
-  refine' mul_le_mul_of_nonneg_left _ (by positivity)
+  gcongr
   rw [iteratedFDeriv_add_apply (f.smooth _) (g.smooth _)]
   exact norm_add_le _ _
 #align schwartz_map.decay_add_le_aux SchwartzMap.decay_add_le_aux
@@ -526,6 +526,8 @@ theorem schwartzSeminormFamily_apply_zero :
 
 variable {𝕜 E F}
 
+attribute [gcongr] Nat.choose_le_choose
+
 /-- A more convenient version of `le_sup_seminorm_apply`.
 
 The set `Finset.Iic m` is the set of all pairs `(k', n')` with `k' ≤ m.1` and `n' ≤ m.2`.
@@ -543,16 +545,15 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
     rwa [Finset.range_subset, add_le_add_iff_right]
   refine' le_trans (Finset.sum_le_sum_of_subset_of_nonneg hk' fun _ _ _ => by positivity) _
-  refine' Finset.sum_le_sum fun i hi => _
+  gcongr Finset.sum _ ?_ with i hi
   rw [mul_comm (‖x‖ ^ i), mul_assoc]
-  refine' mul_le_mul _ _ (by positivity) (by positivity)
-  · exact_mod_cast Nat.choose_le_choose i hk
-  · trans
-    · exact le_seminorm 𝕜 i n f x
-    · apply Seminorm.le_def.1
-      exact
-        Finset.le_sup_of_le (Finset.mem_Iic.2 <|
-          Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl
+  gcongr
+  trans
+  · exact le_seminorm 𝕜 i n f x
+  · apply Seminorm.le_def.1
+    exact
+      Finset.le_sup_of_le (Finset.mem_Iic.2 <|
+        Prod.mk_le_mk.2 ⟨Finset.mem_range_succ_iff.mp hi, hn⟩) le_rfl
 #align schwartz_map.one_add_le_sup_seminorm_apply SchwartzMap.one_add_le_sup_seminorm_apply
 
 end Seminorms
@@ -717,7 +718,7 @@ protected def evalCLM (m : E) : 𝓢(E, E →L[ℝ] F) →L[𝕜] 𝓢(E, F) :=
             (by positivity))
           _
       rw [← mul_assoc, ← mul_comm ‖m‖, mul_assoc]
-      refine' mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+      gcongr
       simp only [Finset.sup_singleton, schwartzSeminormFamily_apply, le_seminorm])
 #align schwartz_map.eval_clm SchwartzMap.evalCLM
 
@@ -757,7 +758,7 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       refine' le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) _
       rw [← mul_assoc (‖x‖ ^ k), mul_comm (‖x‖ ^ k)]
       simp_rw [mul_assoc ‖B‖]
-      refine' mul_le_mul_of_nonneg_left _ (by positivity)
+      gcongr _ * ?_
       rw [Finset.mul_sum]
       have : (∑ _x : ℕ in Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
       repeat rw [mul_assoc ((n : ℝ) + 1)]
@@ -765,23 +766,22 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
       refine' Finset.sum_le_sum fun i hi => _
       simp only [one_mul]
       rw [← mul_assoc, mul_comm (‖x‖ ^ k), mul_assoc, mul_assoc, mul_assoc]
-      refine' mul_le_mul _ _ (by positivity) (by positivity)
+      gcongr ?_ * ?_
       · norm_cast
         exact i.choose_le_middle n
       specialize hgrowth (n - i) (by simp only [tsub_le_self]) x
       rw [← mul_assoc]
       refine' le_trans (mul_le_mul_of_nonneg_left hgrowth (by positivity)) _
       rw [mul_comm _ (C * _), mul_assoc, mul_assoc C]
-      refine' mul_le_mul_of_nonneg_left _ hC
+      gcongr _ * ?_
       rw [mul_comm _ (‖x‖ ^ k)]
       rw [← mul_assoc]
       rw [Finset.mem_range_succ_iff] at hi
       change i ≤ (l + k, n).snd at hi
       refine' le_trans _ (one_add_le_sup_seminorm_apply le_rfl hi f x)
-      refine' mul_le_mul_of_nonneg_right _ (norm_nonneg _)
+      gcongr
       rw [pow_add]
-      refine' mul_le_mul_of_nonneg_left _ (by positivity)
-      refine' pow_le_pow_of_le_left (norm_nonneg _) _ _
+      gcongr
       simp only [zero_le_one, le_add_iff_nonneg_left])
 #align schwartz_map.bilin_left_clm SchwartzMap.bilinLeftCLM
 
@@ -823,11 +823,12 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       let seminorm_f := ((Finset.Iic (k', n)).sup (schwartzSeminormFamily 𝕜 _ _)) f
       have hg_upper'' : (1 + ‖x‖) ^ (k + l * n) ≤ (1 + Cg) ^ (k + l * n) * (1 + ‖g x‖) ^ k' := by
         rw [pow_mul, ← mul_pow]
-        refine' pow_le_pow_of_le_left (by positivity) _ _
+        gcongr
         rw [add_mul]
         refine' add_le_add _ (hg_upper' x)
         nth_rw 1 [← one_mul (1 : ℝ)]
-        refine' mul_le_mul (le_refl _) (one_le_pow_of_one_le _ _) zero_le_one zero_le_one
+        gcongr
+        refine' one_le_pow_of_one_le _ _
         simp only [le_add_iff_nonneg_right, norm_nonneg]
       have hbound :
         ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
@@ -842,13 +843,13 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         refine' (hgrowth N hN₂ x).trans _
         rw [mul_pow]
         have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
-        refine' mul_le_mul _ _ (by positivity) (by positivity)
+        gcongr
         · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
         · refine' le_self_pow (one_le_pow_of_one_le _ l) hN₁'
           simp only [le_add_iff_nonneg_right, norm_nonneg]
       have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
-      have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
-        pow_le_pow_of_le_left (norm_nonneg _) (by simp only [zero_le_one, le_add_iff_nonneg_left]) _
+      have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k := by
+        gcongr; simp only [zero_le_one, le_add_iff_nonneg_left]
       refine' le_trans (mul_le_mul hxk this (by positivity) (by positivity)) _
       have rearrange :
         (1 + ‖x‖) ^ k *
@@ -860,9 +861,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       rw [rearrange]
       have hgxk' : 0 < (1 + ‖g x‖) ^ k' := by positivity
       rw [← div_le_iff hgxk'] at hg_upper''
-      have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by
-        have : 0 ≤ seminorm_f := map_nonneg _ _
-        positivity
+      have hpos : (0 : ℝ) ≤ (C + 1) ^ n * n ! * 2 ^ k' * seminorm_f := by positivity
       refine' le_trans (mul_le_mul_of_nonneg_right hg_upper'' hpos) _
       rw [← mul_assoc])
 #align schwartz_map.comp_clm SchwartzMap.compCLM

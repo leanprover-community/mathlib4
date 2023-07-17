@@ -114,13 +114,14 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
       ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ ≤ ∫ x in s ∩ u, ‖φ i x • g x‖ ∂μ :=
         norm_integral_le_integral_norm _
       _ ≤ ∫ x in s ∩ u, ‖φ i x‖ * δ ∂μ := by
-        refine' set_integral_mono_on _ _ (hs.inter u_open.measurableSet) fun x hx => _
+        gcongr with x hx
         · exact IntegrableOn.mono_set h''i.norm (inter_subset_left _ _)
         · exact
             IntegrableOn.mono_set ((integrable_of_integral_eq_one h'i).norm.mul_const _)
               (inter_subset_left _ _)
+        · exact hs.inter u_open.measurableSet
         rw [norm_smul]
-        apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+        gcongr
         rw [inter_comm, h'g] at hu
         exact (mem_ball_zero_iff.1 (hu x hx)).le
       _ ≤ ∫ x in s, ‖φ i x‖ * δ ∂μ := by
@@ -137,15 +138,17 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
       ‖∫ x in s \ u, φ i x • g x ∂μ‖ ≤ ∫ x in s \ u, ‖φ i x • g x‖ ∂μ :=
         norm_integral_le_integral_norm _
       _ ≤ ∫ x in s \ u, δ * ‖g x‖ ∂μ := by
-        refine' set_integral_mono_on _ _ (hs.diff u_open.measurableSet) fun x hx => _
+        gcongr with x hx
         · exact IntegrableOn.mono_set h''i.norm (diff_subset _ _)
         · exact IntegrableOn.mono_set (hmg.norm.const_mul _) (diff_subset _ _)
+        · exact hs.diff u_open.measurableSet
         rw [norm_smul]
-        apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
+        gcongr
         simpa only [Pi.zero_apply, dist_zero_left] using (hi x hx).le
       _ ≤ δ * ∫ x in s, ‖g x‖ ∂μ := by
         rw [integral_mul_left]
-        apply mul_le_mul_of_nonneg_left (set_integral_mono_set hmg.norm _ _) δpos.le
+        gcongr _ * ?_
+        apply set_integral_mono_set hmg.norm
         · exact eventually_of_forall fun x => norm_nonneg _
         · apply eventually_of_forall; exact diff_subset s u
   calc
@@ -154,8 +157,8 @@ theorem tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
       conv_lhs => rw [← diff_union_inter s u]
       rw [integral_union (disjoint_sdiff_inter _ _) (hs.inter u_open.measurableSet)
           (h''i.mono_set (diff_subset _ _)) (h''i.mono_set (inter_subset_left _ _))]
-    _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := (norm_add_le _ _)
-    _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + δ := add_le_add C B
+    _ ≤ ‖∫ x in s \ u, φ i x • g x ∂μ‖ + ‖∫ x in s ∩ u, φ i x • g x ∂μ‖ := norm_add_le ..
+    _ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + δ := by gcongr
 #align tendsto_set_integral_peak_smul_of_integrable_on_of_continuous_within_at_aux tendsto_set_integral_peak_smul_of_integrableOn_of_continuousWithinAt_aux
 
 /- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
@@ -227,7 +230,8 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
     obtain ⟨u, u_open, x₀_u, hu⟩ : ∃ u : Set α, IsOpen u ∧ x₀ ∈ u ∧ u ∩ s ⊆ c ⁻¹' Ioi 0 :=
       _root_.continuousOn_iff.1 hc x₀ h₀ (Ioi (0 : ℝ)) isOpen_Ioi hnc₀
     apply (hμ u u_open x₀_u).trans_le
-    exact measure_mono fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
+    gcongr μ ?_
+    exact fun x hx => ⟨ne_of_gt (pow_pos (a := c x) (hu hx) _), hx.2⟩
   have hiφ : ∀ n, ∫ x in s, φ n x ∂μ = 1 := fun n => by
     rw [integral_mul_left, inv_mul_cancel (P n).ne']
   have A : ∀ u : Set α, IsOpen u → x₀ ∈ u → TendstoUniformlyOn φ 0 atTop (s \ u) := by
@@ -253,20 +257,21 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_measure_
             simp only [integral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
               Algebra.id.smul_eq_mul, mul_comm]
           _ ≤ ∫ y in v ∩ s, c y ^ n ∂μ := by
-            apply set_integral_mono_on _ _ (v_open.measurableSet.inter hs.measurableSet) _
+            gcongr with x hx
             · apply integrableOn_const.2 (Or.inr _)
               exact lt_of_le_of_lt (measure_mono (inter_subset_right _ _)) hs.measure_lt_top
             · exact (I n).mono (inter_subset_right _ _) le_rfl
-            · intro x hx
-              exact pow_le_pow_of_le_left t'_pos.le (le_of_lt (hv hx)) _
+            · exact v_open.measurableSet.inter hs.measurableSet
+            · exact le_of_lt (hv hx)
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             set_integral_mono_set (I n) (J n) (eventually_of_forall (inter_subset_right _ _))
       simp_rw [← div_eq_inv_mul, div_pow, div_div]
-      apply div_le_div (pow_nonneg t_pos n) _ _ B
-      · exact pow_le_pow_of_le_left (hnc _ hx.1) (ht x hx) _
+      gcongr
       · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
         have : μ (v ∩ s) ≤ μ s := measure_mono (inter_subset_right _ _)
         exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
+      · exact hnc _ hx.1
+      · exact ht x hx
     have N :
       Tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
         (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by
@@ -309,7 +314,7 @@ theorem tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrab
   calc
     0 < μ (u ∩ interior s) :=
       (u_open.inter isOpen_interior).measure_pos μ (_root_.mem_closure_iff.1 h₀ u u_open x₀_u)
-    _ ≤ μ (u ∩ s) := measure_mono (inter_subset_inter_right _ interior_subset)
+    _ ≤ μ (u ∩ s) := by gcongr; apply interior_subset
 #align tendsto_set_integral_pow_smul_of_unique_maximum_of_is_compact_of_integrable_on tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_integrableOn
 
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,

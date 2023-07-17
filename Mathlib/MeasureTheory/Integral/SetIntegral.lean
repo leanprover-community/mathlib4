@@ -697,6 +697,11 @@ theorem set_integral_mono_on (hs : MeasurableSet s) (h : ∀ x ∈ s, f x ≤ g 
     (by simp [hs, EventuallyLE, eventually_inf_principal, ae_of_all _ h])
 #align measure_theory.set_integral_mono_on MeasureTheory.set_integral_mono_on
 
+-- this variant exists for the use of `gcongr`
+@[gcongr] theorem set_integral_mono_on' (hs : MeasurableSet s) (h : ∀ x ∈ s, f x ≤ g x) :
+    integral (μ.restrict s) f ≤ integral (μ.restrict s) g :=
+  set_integral_mono_on hf hg hs h
+
 theorem set_integral_mono_on_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x ≤ g x) :
     (∫ a in s, f a ∂μ) ≤ ∫ a in s, g a ∂μ := by
   refine' set_integral_mono_ae_restrict hf hg _; rwa [EventuallyLE, ae_restrict_iff' hs]
