@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 
 ! This file was ported from Lean 3 source module analysis.normed_space.continuous_linear_map
-! leanprover-community/mathlib commit 6285167a053ad0990fc88e56c48ccd9fae6550eb
+! leanprover-community/mathlib commit 41bef4ae1254365bc190aee63b947674d2977f01
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -142,7 +142,7 @@ theorem antilipschitz_of_bound (f : E →SL[σ] F) {K : ℝ≥0} (h : ∀ x, ‖
 
 theorem bound_of_antilipschitz (f : E →SL[σ] F) {K : ℝ≥0} (h : AntilipschitzWith K f) (x) :
     ‖x‖ ≤ K * ‖f x‖ :=
-  AddMonoidHomClass.bound_of_antilipschitz _ h x
+  ZeroHomClass.bound_of_antilipschitz _ h x
 #align continuous_linear_map.bound_of_antilipschitz ContinuousLinearMap.bound_of_antilipschitz
 
 end ContinuousLinearMap
