@@ -208,14 +208,6 @@ syntax (name := lookup3) "#lookup3 " ident : command
 
 open Lean Lean.Parser Lean.PrettyPrinter
 
-@[combinator_formatter hexsha]
-def hexsha.formatter : Formatter :=
-  Formatter.visitAtom `hexsha
-
-@[combinator_parenthesizer hexsha]
-def hexsha.parenthesizer : Parenthesizer :=
-  Parenthesizer.visitToken
-
 /-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
 syntax (name := alignImport) "#align_import " ident " from " str "@" str : command
 
