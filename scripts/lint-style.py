@@ -220,7 +220,7 @@ def regular_check(lines, path):
         if words[0] == "/-!":
             break
         # final case: words[0] == "import"
-        if len(words) > 2:
+        if words[0] == "import" and len(words) > 2:
             if words[2] != "--":
                 errors += [(ERR_IMP, line_nr, path)]
     return errors
