@@ -9,8 +9,8 @@ Author: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Logic
-import Leanbin.Init.Wf
+import Mathlib.Init.Logic
+import Mathlib.Init.Wf
 
 universe u v
 
