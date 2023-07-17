@@ -85,7 +85,7 @@ instance : Nonempty <| s.subchain r :=
 variable (s)
 
 /-- The maximal length of a strictly ascending sequence in a partial order. -/
-noncomputable abbrev chainHeight : ℕ±∞ :=
+noncomputable def chainHeight : ℕ∞ :=
   ⨆ l ∈ s.subchain r, length l
 #align set.chain_height Set.chainHeight
 
@@ -98,22 +98,22 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight r)
   cases' (le_top : s.chainHeight r ≤ ⊤).eq_or_lt with ha ha <;>
     rw [s.chainHeight_eq_iSup_subtype r] at ha
   · obtain ⟨_, ⟨⟨l, h₁, h₂⟩, rfl⟩, h₃⟩ :=
-      not_bddAbove_iff'.mp ((EENat.iSup_coe_eq_top _).mp ha) n
+      not_bddAbove_iff'.mp ((WithTop.iSup_coe_eq_top _).mp ha) n
     exact ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
       (l.length_take n).trans <| min_eq_left <| le_of_not_ge h₃⟩
-  · rw [EENat.iSup_coe_lt_top] at ha
+  · rw [ENat.iSup_coe_lt_top] at ha
     obtain ⟨⟨l, h₁, h₂⟩, e : l.length = _⟩ := Nat.sSup_mem (Set.range_nonempty _) ha
     refine'
       ⟨l.take n, ⟨h₁.take _, fun x h ↦ h₂ _ <| take_subset _ _ h⟩,
         (l.length_take n).trans <| min_eq_left <| _⟩
-    rwa [e, ← Nat.cast_le (α := ℕ±∞), sSup_range, EENat.coe_iSup _ ha, ← s.chainHeight_eq_iSup_subtype r]
+    rwa [e, ← Nat.cast_le (α := ℕ∞), sSup_range, ENat.coe_iSup ha, ← s.chainHeight_eq_iSup_subtype]
 #align set.exists_chain_of_le_chain_height Set.exists_chain_of_le_chainHeight
 
 theorem le_chainHeight_TFAE (n : ℕ) :
-    TFAE [(n : ℕ±∞) ≤ s.chainHeight r, ∃ l ∈ s.subchain r, length l = n, ∃ l ∈ s.subchain r, n ≤ length l] := by
+    TFAE [(n : ℕ∞) ≤ s.chainHeight r, ∃ l ∈ s.subchain r, length l = n, ∃ l ∈ s.subchain r, n ≤ length l] := by
   tfae_have 1 → 2; · exact s.exists_chain_of_le_chainHeight r
   tfae_have 2 → 3; · rintro ⟨l, hls, he⟩; exact ⟨l, hls, he.ge⟩
-  tfae_have 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (EENat.coe_le_coe.2 hn)
+  tfae_have 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (WithTop.coe_le_coe.2 hn)
   tfae_finish
 #align set.le_chain_height_tfae Set.le_chainHeight_TFAE
 
@@ -127,95 +127,100 @@ theorem length_le_chainHeight_of_mem_subchain (hl : l ∈ s.subchain r) : ↑l.l
   (le_chainHeight_iff r).mpr ⟨l, hl, rfl⟩
 #align set.length_le_chain_height_of_mem_subchain Set.length_le_chainHeight_of_mem_subchain
 
-theorem chainHeight_eq_top_iff : s.chainHeight = ⊤ ↔ ∀ n, ∃ l ∈ s.subchain r, length l = n := by
+theorem chainHeight_eq_top_iff : s.chainHeight r = ⊤ ↔ ∀ n, ∃ l ∈ s.subchain r, length l = n := by
   refine' ⟨fun h n ↦ (le_chainHeight_iff r).1 (le_top.trans_eq h.symm), fun h ↦ _⟩
   contrapose! h; obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 h
   exact ⟨n + 1, fun l hs ↦ (Nat.lt_succ_iff.2 <| Nat.cast_le.1 <|
-    (length_le_chainHeight_of_mem_subchain hs).trans_eq hn.symm).ne⟩
+    (length_le_chainHeight_of_mem_subchain r hs).trans_eq hn.symm).ne⟩
 #align set.chain_height_eq_top_iff Set.chainHeight_eq_top_iff
 
 @[simp]
-theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight ↔ s.Nonempty := by
+theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight r ↔ s.Nonempty := by
   rw [← Nat.cast_one, Set.le_chainHeight_iff]
   simp only [length_eq_one, @and_comm (_ ∈ _), @eq_comm _ _ [_], exists_exists_eq_and,
     singleton_mem_subchain_iff, Set.Nonempty]
 #align set.one_le_chain_height_iff Set.one_le_chainHeight_iff
 
 @[simp]
-theorem chainHeight_eq_zero_iff : s.chainHeight = 0 ↔ s = ∅ := by
+theorem chainHeight_eq_zero_iff : s.chainHeight r = 0 ↔ s = ∅ := by
   rw [← not_iff_not, ← Ne.def, ← ENat.one_le_iff_ne_zero, one_le_chainHeight_iff,
     nonempty_iff_ne_empty]
 #align set.chain_height_eq_zero_iff Set.chainHeight_eq_zero_iff
 
 @[simp]
-theorem chainHeight_empty : (∅ : Set α).chainHeight = 0 :=
-  chainHeight_eq_zero_iff.2 rfl
+theorem chainHeight_empty : (∅ : Set α).chainHeight r = ⊥ :=
+  (chainHeight_eq_zero_iff r).2 rfl
 #align set.chain_height_empty Set.chainHeight_empty
 
 @[simp]
-theorem chainHeight_of_isEmpty [IsEmpty α] : s.chainHeight = 0 :=
-  chainHeight_eq_zero_iff.mpr (Subsingleton.elim _ _)
+theorem chainHeight_of_isEmpty [IsEmpty α] : s.chainHeight r = 0 :=
+  (chainHeight_eq_zero_iff r).mpr (Subsingleton.elim _ _)
 #align set.chain_height_of_is_empty Set.chainHeight_of_isEmpty
 
 theorem le_chainHeight_add_nat_iff {n m : ℕ} :
-    ↑n ≤ s.chainHeight + m ↔ ∃ l ∈ s.subchain, n ≤ length l + m := by
-  simp_rw [← tsub_le_iff_right, ← ENat.coe_sub, (le_chainHeight_TFAE s (n - m)).out 0 2]
+    ↑n ≤ s.chainHeight r + m ↔ ∃ l ∈ s.subchain r, n ≤ length l + m := by
+  simp_rw [← tsub_le_iff_right, ← ENat.coe_sub, (le_chainHeight_TFAE s r (n - m)).out 0 2]
 #align set.le_chain_height_add_nat_iff Set.le_chainHeight_add_nat_iff
 
+variable (r' : β → β → Prop)
+
 theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ) :
-    s.chainHeight + n ≤ t.chainHeight + m ↔
-      ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l + n ≤ length l' + m := by
+    s.chainHeight r + n ≤ t.chainHeight r' + m ↔
+      ∀ l ∈ s.subchain r, ∃ l' ∈ t.subchain r', length l + n ≤ length l' + m := by
   refine'
     ⟨fun e l h ↦
-      le_chainHeight_add_nat_iff.1
-        ((add_le_add_right (length_le_chainHeight_of_mem_subchain h) _).trans e),
+      (le_chainHeight_add_nat_iff r').1
+        ((add_le_add_right (length_le_chainHeight_of_mem_subchain r h) _).trans e),
       fun H ↦ _⟩
-  by_cases s.chainHeight = ⊤
-  · suffices t.chainHeight = ⊤ by
+  by_cases s.chainHeight r = ⊤
+  · suffices t.chainHeight r' = ⊤ by
       rw [this, top_add]
       exact le_top
     rw [chainHeight_eq_top_iff] at h ⊢
     intro k
-    have := (le_chainHeight_TFAE t k).out 1 2
+    have := (le_chainHeight_TFAE t r' k).out 1 2
     rw [this]
     obtain ⟨l, hs, hl⟩ := h (k + m)
     obtain ⟨l', ht, hl'⟩ := H l hs
     exact ⟨l', ht, (add_le_add_iff_right m).1 <| _root_.trans (hl.symm.trans_le le_self_add) hl'⟩
   · obtain ⟨k, hk⟩ := WithTop.ne_top_iff_exists.1 h
-    obtain ⟨l, hs, hl⟩ := le_chainHeight_iff.1 hk.le
+    obtain ⟨l, hs, hl⟩ := (le_chainHeight_iff r).1 hk.le
     rw [← hk, ← hl]
-    exact le_chainHeight_add_nat_iff.2 (H l hs)
+    exact (le_chainHeight_add_nat_iff r').2 (H l hs)
 #align set.chain_height_add_le_chain_height_add Set.chainHeight_add_le_chainHeight_add
 
 theorem chainHeight_le_chainHeight_TFAE (s : Set α) (t : Set β) :
-    TFAE [s.chainHeight ≤ t.chainHeight, ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l = length l',
-      ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l ≤ length l'] := by
+    TFAE [s.chainHeight r ≤ t.chainHeight r',
+      ∀ l ∈ s.subchain r, ∃ l' ∈ t.subchain r', length l = length l',
+      ∀ l ∈ s.subchain r, ∃ l' ∈ t.subchain r', length l ≤ length l'] := by
   tfae_have 1 ↔ 3
-  · convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
+  · convert ← chainHeight_add_le_chainHeight_add r r' s t 0 0 <;> apply add_zero
   tfae_have 2 ↔ 3
   · refine' forall₂_congr fun l hl ↦ _
-    simp_rw [← (le_chainHeight_TFAE t l.length).out 1 2, eq_comm]
+    simp_rw [← (le_chainHeight_TFAE t r' l.length).out 1 2, eq_comm]
   tfae_finish
 #align set.chain_height_le_chain_height_tfae Set.chainHeight_le_chainHeight_TFAE
 
 theorem chainHeight_le_chainHeight_iff {t : Set β} :
-    s.chainHeight ≤ t.chainHeight ↔ ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l = length l' :=
-  (chainHeight_le_chainHeight_TFAE s t).out 0 1
+    s.chainHeight r ≤ t.chainHeight r' ↔
+    ∀ l ∈ s.subchain r, ∃ l' ∈ t.subchain r', length l = length l' :=
+  (chainHeight_le_chainHeight_TFAE r r' s t).out 0 1
 #align set.chain_height_le_chain_height_iff Set.chainHeight_le_chainHeight_iff
 
 theorem chainHeight_le_chainHeight_iff_le {t : Set β} :
-    s.chainHeight ≤ t.chainHeight ↔ ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l ≤ length l' :=
-  (chainHeight_le_chainHeight_TFAE s t).out 0 2
+    s.chainHeight r ≤ t.chainHeight r' ↔
+    ∀ l ∈ s.subchain r, ∃ l' ∈ t.subchain r', length l ≤ length l' :=
+  (chainHeight_le_chainHeight_TFAE r r' s t).out 0 2
 #align set.chain_height_le_chain_height_iff_le Set.chainHeight_le_chainHeight_iff_le
 
-theorem chainHeight_mono (h : s ⊆ t) : s.chainHeight ≤ t.chainHeight :=
-  chainHeight_le_chainHeight_iff.2 fun l hl ↦ ⟨l, ⟨hl.1, fun i hi ↦ h <| hl.2 i hi⟩, rfl⟩
+theorem chainHeight_mono (h : s ⊆ t) : s.chainHeight r ≤ t.chainHeight r :=
+  (chainHeight_le_chainHeight_iff r r).2 fun l hl ↦ ⟨l, ⟨hl.1, fun i hi ↦ h <| hl.2 i hi⟩, rfl⟩
 #align set.chain_height_mono Set.chainHeight_mono
 
-theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) (s : Set α) :
-    (f '' s).chainHeight = s.chainHeight := by
+theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, r x y ↔ r' (f x) (f y)) (s : Set α) :
+    (f '' s).chainHeight r' = s.chainHeight r := by
   apply le_antisymm <;> rw [chainHeight_le_chainHeight_iff]
-  · suffices ∀ l ∈ (f '' s).subchain, ∃ l' ∈ s.subchain, map f l' = l by
+  · suffices ∀ l ∈ (f '' s).subchain r', ∃ l' ∈ s.subchain r, map f l' = l by
       intro l hl
       obtain ⟨l', h₁, rfl⟩ := this l hl
       exact ⟨l', h₁, length_map _ _⟩
@@ -226,7 +231,7 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
       rw [cons_mem_subchain_iff] at h
       obtain ⟨⟨x, hx', rfl⟩, h₁, h₂⟩ := h
       obtain ⟨l', h₃, rfl⟩ := hx h₁
-      refine' ⟨x::l', Set.cons_mem_subchain_iff.mpr ⟨hx', h₃, _⟩, rfl⟩
+      refine' ⟨x::l', (Set.cons_mem_subchain_iff r).mpr ⟨hx', h₃, _⟩, rfl⟩
       cases l'
       · simp
       · simpa [← hf] using h₂
@@ -243,7 +248,7 @@ theorem chainHeight_image (f : α → β) (hf : ∀ {x y}, x < y ↔ f x < f y) 
 variable (s)
 
 @[simp]
-theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
+theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight (flip r) = s.chainHeight r := by
   apply le_antisymm <;>
   · rw [chainHeight_le_chainHeight_iff]
     rintro l ⟨h₁, h₂⟩
@@ -251,18 +256,19 @@ theorem chainHeight_dual : (ofDual ⁻¹' s).chainHeight = s.chainHeight := by
       (length_reverse _).symm⟩
 #align set.chain_height_dual Set.chainHeight_dual
 
-end LT
+end Rel
 
 section Preorder
 
 variable (s t : Set α) [Preorder α]
 
-theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i).chainHeight := by
+theorem chainHeight_eq_iSup_Ici :
+    s.chainHeight (. < .) = ⨆ i ∈ s, (s ∩ Set.Ici i).chainHeight (. < .) := by
   apply le_antisymm
   · refine' iSup₂_le _
     rintro (_ | ⟨x, xs⟩) h
     · exact zero_le _
-    · apply le_trans _ (le_iSup₂ x (cons_mem_subchain_iff.mp h).1)
+    · apply le_trans _ (le_iSup₂ x ((cons_mem_subchain_iff (. < .)).mp h).1)
       apply length_le_chainHeight_of_mem_subchain
       refine' ⟨h.1, fun i hi ↦ ⟨h.2 i hi, _⟩⟩
       cases hi
@@ -270,25 +276,27 @@ theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i)
       rename_i hi
       cases' chain'_iff_pairwise.mp h.1 with _ _ h'
       exact (h' _ hi).le
-  · exact iSup₂_le fun i _ ↦ chainHeight_mono <| Set.inter_subset_left _ _
+  · exact iSup₂_le fun i _ ↦ chainHeight_mono (. < .) <| Set.inter_subset_left _ _
 #align set.chain_height_eq_supr_Ici Set.chainHeight_eq_iSup_Ici
 
-theorem chainHeight_eq_iSup_Iic : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Iic i).chainHeight := by
+theorem chainHeight_eq_iSup_Iic :
+    s.chainHeight (. < .) = ⨆ i ∈ s, (s ∩ Set.Iic i).chainHeight (. < .) := by
   simp_rw [← chainHeight_dual (_ ∩ _)]
-  rw [← chainHeight_dual, chainHeight_eq_iSup_Ici]
+  rw [← chainHeight_dual]
+  erw [chainHeight_eq_iSup_Ici]
   rfl
 #align set.chain_height_eq_supr_Iic Set.chainHeight_eq_iSup_Iic
 
-variable {s t}
+variable {s}
 
 theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
-    (insert a s).chainHeight = s.chainHeight + 1 := by
+    (insert a s).chainHeight (. < .) = s.chainHeight (. < .) + 1 := by
   rw [← add_zero (insert a s).chainHeight]
-  change (insert a s).chainHeight + (0 : ℕ) = s.chainHeight + (1 : ℕ)
+  change (insert a s).chainHeight (. < .) + (0 : ℕ) = s.chainHeight (. < .) + (1 : ℕ)
   apply le_antisymm <;> rw [chainHeight_add_le_chainHeight_add]
   · rintro (_ | ⟨y, ys⟩) h
-    · exact ⟨[], nil_mem_subchain _, zero_le _⟩
-    · have h' := cons_mem_subchain_iff.mp h
+    · exact ⟨[], nil_mem_subchain _ _, zero_le _⟩
+    · have h' := (cons_mem_subchain_iff _).mp h
       refine' ⟨ys, ⟨h'.2.1.1, fun i hi ↦ _⟩, by simp⟩
       apply (h'.2.1.2 i hi).resolve_left
       rintro rfl
@@ -310,20 +318,20 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
 #align set.chain_height_insert_of_forall_gt Set.chainHeight_insert_of_forall_gt
 
 theorem chainHeight_insert_of_forall_lt (a : α) (ha : ∀ b ∈ s, b < a) :
-    (insert a s).chainHeight = s.chainHeight + 1 := by
+    (insert a s).chainHeight (. < .) = s.chainHeight (. < .) + 1 := by
   rw [← chainHeight_dual, ← chainHeight_dual s]
-  exact chainHeight_insert_of_forall_gt _ ha
+  exact chainHeight_insert_of_forall_gt (α := αᵒᵈ) (hx := ha)
 #align set.chain_height_insert_of_forall_lt Set.chainHeight_insert_of_forall_lt
 
-theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chainHeight := by
+theorem chainHeight_union_le [IsTrans α r] : (s ∪ t).chainHeight r ≤ s.chainHeight r + t.chainHeight r := by
   classical
     refine' iSup₂_le fun l hl ↦ _
     let l₁ := l.filter (· ∈ s)
     let l₂ := l.filter (· ∈ t)
-    have hl₁ : ↑l₁.length ≤ s.chainHeight := by
+    have hl₁ : ↑l₁.length ≤ s.chainHeight r := by
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
-    have hl₂ : ↑l₂.length ≤ t.chainHeight := by
+    have hl₂ : ↑l₂.length ≤ t.chainHeight r := by
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
     refine' le_trans _ (add_le_add hl₁ hl₂)
@@ -333,17 +341,18 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
 #align set.chain_height_union_le Set.chainHeight_union_le
 
 theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b) :
-    (s ∪ t).chainHeight = s.chainHeight + t.chainHeight := by
-  cases h : t.chainHeight
+    (s ∪ t).chainHeight (. < .) = s.chainHeight (. < .) + t.chainHeight (. < .) := by
+  cases h : t.chainHeight (. < .)
   · rw [WithTop.none_eq_top, add_top, eq_top_iff, ← WithTop.none_eq_top, ← h]
-    exact Set.chainHeight_mono (Set.subset_union_right _ _)
+    exact Set.chainHeight_mono _ (Set.subset_union_right _ _)
   apply le_antisymm
   · rw [← h]
-    exact chainHeight_union_le
-  rw [WithTop.some_eq_coe, ← add_zero (s ∪ t).chainHeight, ← WithTop.coe_zero,
-    ENat.some_eq_coe, chainHeight_add_le_chainHeight_add]
+    exact chainHeight_union_le (. < . : α → α → Prop) _ _
+  rw [WithTop.some_eq_coe, ← add_zero (s ∪ t).chainHeight]
+  dsimp
+  rw [← WithTop.coe_zero, ENat.some_eq_coe, chainHeight_add_le_chainHeight_add]
   intro l hl
-  obtain ⟨l', hl', rfl⟩ := exists_chain_of_le_chainHeight t h.symm.le
+  obtain ⟨l', hl', rfl⟩ := exists_chain_of_le_chainHeight t _ h.symm.le
   refine' ⟨l ++ l', ⟨Chain'.append hl.1 hl'.1 fun x hx y hy ↦ _, fun i hi ↦ _⟩, by simp⟩
   · exact H x (hl.2 _ <| mem_of_mem_getLast? hx) y (hl'.2 _ <| mem_of_mem_head? hy)
   · rw [mem_append] at hi
@@ -351,7 +360,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
     exacts [Or.inl (hl.2 _ hi), Or.inr (hl'.2 _ hi)]
 #align set.chain_height_union_eq Set.chainHeight_union_eq
 
-theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :
+theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight (. < .)  ≠ ⊤) :
     WellFoundedGT s := by
   -- Porting note: added
   haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
@@ -372,9 +381,9 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
     exact le_rfl
 #align set.well_founded_gt_of_chain_height_ne_top Set.wellFoundedGT_of_chainHeight_ne_top
 
-theorem wellFoundedLT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :
+theorem wellFoundedLT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight (. < .) ≠ ⊤) :
     WellFoundedLT s :=
-  wellFoundedGT_of_chainHeight_ne_top (ofDual ⁻¹' s) <| by rwa [chainHeight_dual]
+  wellFoundedGT_of_chainHeight_ne_top (ofDual ⁻¹' s) <| by erw [chainHeight_dual]; exact hs
 #align set.well_founded_lt_of_chain_height_ne_top Set.wellFoundedLT_of_chainHeight_ne_top
 
 end Preorder
