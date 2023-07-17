@@ -165,6 +165,8 @@ def import_only_check(lines, path):
         imports = line.split()
         if imports[0] == "--":
             continue
+        if imports[0] == "#align_import":
+            continue
         if imports[0] != "import":
             import_only_file = False
             break
