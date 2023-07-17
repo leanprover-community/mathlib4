@@ -96,7 +96,7 @@ theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
 theorem nonempty_of_encard_ne_zero (h : s.encard ≠ 0) : s.Nonempty := by
   rwa [nonempty_iff_ne_empty, Ne.def, ←encard_eq_zero]
 
-@[simp] theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
+theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
   rw [ne_eq, encard_eq_zero, nonempty_iff_ne_empty]
 
 @[simp] theorem encard_pos : 0 < s.encard ↔ s.Nonempty := by
@@ -158,9 +158,6 @@ theorem encard_diff_add_encard_of_subset (h : s ⊆ t) : (t \ s).encard + s.enca
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne.def, ←encard_eq_zero, ENat.one_le_iff_ne_zero]
-
-@[simp] theorem encard_pos_iff_nonempty : 0 < s.encard ↔ s.Nonempty := by
-  rw [←ENat.one_le_iff_pos, one_le_encard_iff_nonempty]
 
 theorem encard_diff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
