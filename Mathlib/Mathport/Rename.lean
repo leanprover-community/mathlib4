@@ -116,7 +116,7 @@ that a specific definition is in fact being called. Or a specific definition may
 name altogether because the existing name is already taken in lean 4 for something else. For
 these reasons, you should use `#align` on any theorem that needs to be renamed from the default.
 -/
-syntax (name := align) "#align " ident ppSpace ident : command
+syntax (name := align) (docComment)? "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
@@ -143,7 +143,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
 
 /-- Elaborate an `#align` command. -/
 @[command_elab align] def elabAlign : CommandElab
-  | `(#align $id3:ident $id4:ident) => do
+  | `($[$doc:docComment]? #align $id3:ident $id4:ident) => do
     if (← getInfoState).enabled then
       addCompletionInfo <| CompletionInfo.id id4 id4.getId (danglingDot := false) {} none
       let c := removeX id4.getId
@@ -165,7 +165,9 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
             "If the Lean 3 name is correct, then above this line, add:\n" ++
             "set_option linter.uppercaseLean3 false in\n"
     withRef id3 <| ensureUnused id3.getId
-    liftCoreM <| addNameAlignment id3.getId id4.getId
+    liftCoreM <| addNameAlignment id3.getId id4.getId (dubious := match doc with
+      | none => ""
+      | some d => d.getDocString.trim)
   | _ => throwUnsupportedSyntax
 
 /--
