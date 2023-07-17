@@ -9,10 +9,10 @@ Author: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 prelude
-import Leanbin.Init.Logic
-import Leanbin.Init.Data.Nat.Basic
-import Leanbin.Init.Data.Bool.Basic
-import Leanbin.Init.Propext
+import Mathlib.Init.Logic
+import Mathlib.Init.Data.Nat.Basic
+import Mathlib.Init.Data.Bool.Basic
+import Mathlib.Init.Propext
 
 open Decidable List
 
