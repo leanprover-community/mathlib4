@@ -8,13 +8,6 @@ Authors: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Mathlib.Init.Meta.MkDecEqInstance
+import Mathlib.Init.Align
 
-universe u v
-
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic tactic.mk_dec_eq_instance -/
-instance {α : Type u} {β : Type v} [DecidableEq α] [DecidableEq β] : DecidableEq (Sum α β) := by
-  run_tac
-    tactic.mk_dec_eq_instance
-
+#align sum.decidable_eq instDecidableEqSum
