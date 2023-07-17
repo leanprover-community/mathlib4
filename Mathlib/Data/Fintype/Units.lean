@@ -11,6 +11,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Units
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # fintype instances relating to units
@@ -44,6 +45,10 @@ theorem Fintype.card_units_add_one [GroupWithZero α] [Fintype α] :
     rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
     have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
     rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
+
+theorem Fintype.nat_card_units_add_one [GroupWithZero α] [Fintype α] :
+    Nat.card α = Nat.card αˣ + 1 := by
+  rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_units_add_one]
 
 theorem Fintype.card_units [GroupWithZero α] [Fintype α] :
     Fintype.card αˣ = Fintype.card α - 1 := by
