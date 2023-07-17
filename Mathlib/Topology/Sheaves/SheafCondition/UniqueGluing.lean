@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 
 ! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.unique_gluing
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -20,8 +20,8 @@ We provide an alternative formulation of the sheaf condition in terms of unique 
 
 We work with sheaves valued in a concrete category `C` admitting all limits, whose forgetful
 functor `C ⥤ Type` preserves limits and reflects isomorphisms. The usual categories of algebraic
-structures, such as `Mon`, `AddCommGroup`, `Ring`, `CommRing` etc. are all examples of this kind of
-category.
+structures, such as `MonCat`, `AddCommGroupCat`, `RingCat`, `CommRingCat` etc. are all examples of
+this kind of category.
 
 A presheaf `F : presheaf C X` satisfies the sheaf condition if and only if, for every
 compatible family of sections `sf : Π i : ι, F.obj (op (U i))`, there exists a unique gluing
@@ -35,30 +35,16 @@ We show that the sheaf condition in terms of unique gluings is equivalent to the
 in terms of equalizers. Our approach is as follows: First, we show them to be equivalent for
 `Type`-valued presheaves. Then we use that composing a presheaf with a limit-preserving and
 isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
-`topology/sheaves/forget.lean`.
+`Mathlib/Topology/Sheaves/Forget.lean`.
 
 -/
 
-
 noncomputable section
 
-open TopCat
+open TopCat TopCat.Presheaf TopCat.Presheaf.SheafConditionEqualizerProducts CategoryTheory
+  CategoryTheory.Limits TopologicalSpace TopologicalSpace.Opens Opposite
 
-open TopCat.Presheaf
-
-open TopCat.Presheaf.SheafConditionEqualizerProducts
-
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open TopologicalSpace
-
-open TopologicalSpace.Opens
-
-open Opposite
-
-universe u v
+universe v u x
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
 
@@ -68,9 +54,9 @@ namespace Presheaf
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
-variable {X : TopCat.{v}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{x}} (F : Presheaf C X) {ι : Type x} (U : ι → Opens X)
 
 /-- A family of sections `sf` is compatible, if the restrictions of `sf i` and `sf j` to `U i ⊓ U j`
 agree, for all `i` and `j`
@@ -94,10 +80,10 @@ condition if and only if, for every compatible family of sections `sf : Π i : �
 there exists a unique gluing `s : F.obj (op (supr U))`.
 
 We prove this to be equivalent to the usual one below in
-`is_sheaf_iff_is_sheaf_unique_gluing`
+`TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing`
 -/
 def IsSheafUniqueGluing : Prop :=
-  ∀ ⦃ι : Type v⦄ (U : ι → Opens X) (sf : ∀ i : ι, F.obj (op (U i))),
+  ∀ ⦃ι : Type x⦄ (U : ι → Opens X) (sf : ∀ i : ι, F.obj (op (U i))),
     IsCompatible F U sf → ∃! s : F.obj (op (iSup U)), IsGluing F U sf s
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unique_gluing TopCat.Presheaf.IsSheafUniqueGluing
@@ -106,54 +92,59 @@ end
 
 section TypeValued
 
-variable {X : TopCat.{v}} (F : Presheaf (Type v) X) {ι : Type v} (U : ι → Opens X)
+variable {X : TopCat.{x}} (F : Presheaf (Type u) X) {ι : Type x} (U : ι → Opens X) [UnivLE.{x, u}]
 
-/-- For presheaves of types, terms of `pi_opens F U` are just families of sections.
+/-- For presheaves of types, terms of `piOpens F U` are just families of sections.
 -/
-def piOpensIsoSectionsFamily : piOpens F U ≅ ∀ i : ι, F.obj (op (U i)) :=
-  Limits.IsLimit.conePointUniqueUpToIso
-    (limit.isLimit (Discrete.functor fun i : ι => F.obj (op (U i))))
-    (Types.productLimitCone.{v, v} fun i : ι => F.obj (op (U i))).isLimit
+def piOpensIsoSectionsFamily : piOpens F U ≃ ∀ i : ι, F.obj (op (U i)) :=
+  (Types.UnivLE.productIso _).toEquiv.trans (equivShrink _).symm
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.pi_opens_iso_sections_family TopCat.Presheaf.piOpensIsoSectionsFamily
 
-/-- Under the isomorphism `pi_opens_iso_sections_family`, compatibility of sections is the same
-as being equalized by the arrows `left_res` and `right_res` of the equalizer diagram.
+@[simp]
+theorem piOpensIsoSectionsFamily_apply (sf : piOpens F U) (i : ι) :
+    piOpensIsoSectionsFamily F U sf i = Pi.π (fun i => F.obj (op (U i))) i sf := by
+  simp [piOpensIsoSectionsFamily]
+
+/-- Under the isomorphism `piOpensIsoSectionsFamily`, compatibility of sections is the same
+as being equalized by the arrows `leftRes` and `rightRes` of the equalizer diagram.
 -/
 theorem compatible_iff_leftRes_eq_rightRes (sf : piOpens F U) :
-    IsCompatible F U ((piOpensIsoSectionsFamily F U).hom sf) ↔
+    IsCompatible F U (piOpensIsoSectionsFamily F U sf) ↔
     leftRes F U sf = rightRes F U sf := by
   constructor <;> intro h
   · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
-    refine Types.limit_ext' _ _ _ fun ⟨i, j⟩ => ?_
-    rw [leftRes, Types.Limit.lift_π_apply', Fan.mk_π_app, rightRes, Types.Limit.lift_π_apply',
+    refine Types.limit_ext _ _ _ fun ⟨i, j⟩ => ?_
+    rw [leftRes, Types.Limit.lift_π_apply, Fan.mk_π_app, rightRes, Types.Limit.lift_π_apply,
       Fan.mk_π_app]
-    exact h i j
+    simpa using h i j
   · intro i j
     convert congr_arg (Limits.Pi.π (fun p : ι × ι => F.obj (op (U p.1 ⊓ U p.2))) (i, j)) h
-    · rw [leftRes, Types.pi_lift_π_apply]
+    · rw [leftRes, Types.pi_lift_π_apply, piOpensIsoSectionsFamily_apply]
       rfl
     · rw [rightRes, Types.pi_lift_π_apply]
+      simp only [piOpensIsoSectionsFamily_apply]
       rfl
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.compatible_iff_left_res_eq_right_res TopCat.Presheaf.compatible_iff_leftRes_eq_rightRes
 
-/-- Under the isomorphism `pi_opens_iso_sections_family`, being a gluing of a family of
+/-- Under the isomorphism `piOpensIsoSectionsFamily`, being a gluing of a family of
 sections `sf` is the same as lying in the preimage of `res` (the leftmost arrow of the
 equalizer diagram).
 -/
 @[simp]
 theorem isGluing_iff_eq_res (sf : piOpens F U) (s : F.obj (op (iSup U))) :
-    IsGluing F U ((piOpensIsoSectionsFamily F U).hom sf) s ↔ res F U s = sf := by
+    IsGluing F U (piOpensIsoSectionsFamily F U sf) s ↔ res F U s = sf := by
   constructor <;> intro h
   · -- Porting note : Lean can't use `Types.limit_ext'` as an `ext` lemma
-    refine Types.limit_ext' _ _ _ fun ⟨i⟩ => ?_
-    rw [res, Types.Limit.lift_π_apply', Fan.mk_π_app]
-    exact h i
+    refine Types.limit_ext _ _ _ fun ⟨i⟩ => ?_
+    rw [res, Types.Limit.lift_π_apply, Fan.mk_π_app]
+    simpa using h i
   · intro i
     convert congr_arg (Limits.Pi.π (fun i : ι => F.obj (op (U i))) i) h
     rw [res, Types.pi_lift_π_apply]
-    rfl
+    · rfl
+    · simp
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_gluing_iff_eq_res TopCat.Presheaf.isGluing_iff_eq_res
 
@@ -166,17 +157,18 @@ theorem isSheaf_of_isSheafUniqueGluing_types (Fsh : F.IsSheafUniqueGluing) : F.I
   refine' ⟨Fork.IsLimit.mk' _ _⟩
   intro s
   have h_compatible :
-    ∀ x : s.pt, F.IsCompatible U ((F.piOpensIsoSectionsFamily U).hom (s.ι x)) := by
+    ∀ x : s.pt, F.IsCompatible U (piOpensIsoSectionsFamily F U (s.ι x)) := by
     intro x
     rw [compatible_iff_leftRes_eq_rightRes]
     convert congr_fun s.condition x
   choose m m_spec m_uniq using fun x : s.pt =>
-    Fsh U ((piOpensIsoSectionsFamily F U).hom (s.ι x)) (h_compatible x)
+    Fsh U (piOpensIsoSectionsFamily F U (s.ι x)) (h_compatible x)
   refine' ⟨m, _, _⟩
-  · -- Porting note : Lean can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext fun ⟨i⟩ => funext fun x => ?_
     simp [res]
-    exact m_spec x i
+    simpa using m_spec x i
   · intro l hl
     ext x
     apply m_uniq
@@ -191,20 +183,20 @@ set_option linter.uppercaseLean3 false in
 theorem isSheafUniqueGluing_of_isSheaf_types (Fsh : F.IsSheaf) : F.IsSheafUniqueGluing := by
   rw [isSheaf_iff_isSheafEqualizerProducts] at Fsh
   intro ι U sf hsf
-  let sf' := (piOpensIsoSectionsFamily F U).inv sf
+  let sf' := (piOpensIsoSectionsFamily F U).symm sf
   have hsf' : leftRes F U sf' = rightRes F U sf' := by
-    rwa [← compatible_iff_leftRes_eq_rightRes F U sf', inv_hom_id_apply]
+    rwa [← compatible_iff_leftRes_eq_rightRes F U sf', Equiv.apply_symm_apply]
   choose s s_spec s_uniq using Types.unique_of_type_equalizer _ _ (Fsh U).some sf' hsf'
   use s
   dsimp
   constructor
-  · convert(isGluing_iff_eq_res F U sf' _).mpr s_spec
-    rw [inv_hom_id_apply]
+  · convert (isGluing_iff_eq_res F U sf' _).mpr s_spec
+    simp only [Equiv.apply_symm_apply]
   · intro y hy
     apply s_uniq
     rw [← isGluing_iff_eq_res F U]
     convert hy
-    rw [inv_hom_id_apply]
+    simp only [Equiv.apply_symm_apply]
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.is_sheaf_unique_gluing_of_is_sheaf_types TopCat.Presheaf.isSheafUniqueGluing_of_isSheaf_types
 
@@ -220,7 +212,7 @@ end TypeValued
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (forget C)] [PreservesLimits (forget C)]
 
@@ -248,7 +240,7 @@ open CategoryTheory
 
 section
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
 
 variable [HasLimits C] [ReflectsIsomorphisms (ConcreteCategory.forget (C := C))]
 
@@ -332,7 +324,9 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
       constructor
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up True)
       · convert le_iSup (fun t : ULift Bool => if t.1 then U₁ else U₂) (ULift.up False)
-    · rintro ⟨_ | _⟩ <;> simp [h₁, h₂]
+    · rintro ⟨_ | _⟩
+      any_goals exact h₁
+      any_goals exact h₂
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.eq_of_locally_eq₂ TopCat.Sheaf.eq_of_locally_eq₂
 

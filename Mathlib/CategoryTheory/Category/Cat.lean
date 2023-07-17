@@ -164,8 +164,7 @@ instance : Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
-instance : Full typeToCat.{u}
-    where
+instance : Full typeToCat.{u} where
   preimage F := Discrete.as ∘ F.obj ∘ Discrete.mk
   witness := by
     intro X Y F

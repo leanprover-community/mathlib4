@@ -19,7 +19,7 @@ We define sheaves on a topological space, with values in an arbitrary category.
 
 A presheaf on a topological space `X` is a sheaf precisely when it is a sheaf under the
 grothendieck topology on `opens X`, which expands out to say: For each open cover `{ Uᵢ }` of
-`U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an `A : X`, there exists an unique
+`U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an `A : X`, there exists a unique
 gluing `A ⟶ F(U)` compatible with the restriction.
 
 See the docstring of `TopCat.Presheaf.IsSheaf` for an explanation on the design decisions and a list
@@ -54,7 +54,7 @@ The equivalent formulations of the sheaf condition on `presheaf C X` are as foll
 1. `TopCat.Presheaf.IsSheaf`: (the official definition)
   It is a sheaf with respect to the grothendieck topology on `opens X`, which is to say:
   For each open cover `{ Uᵢ }` of `U`, and a family of compatible functions `A ⟶ F(Uᵢ)` for an
-  `A : X`, there exists an unique gluing `A ⟶ F(U)` compatible with the restriction.
+  `A : X`, there exists a unique gluing `A ⟶ F(U)` compatible with the restriction.
 
 2. `TopCat.Presheaf.IsSheafEqualizerProducts`: (requires `C` to have all products)
   For each open cover `{ Uᵢ }` of `U`, `F(U) ⟶ ∏ F(Uᵢ)` is the equalizer of the two morphisms

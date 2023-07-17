@@ -14,7 +14,7 @@ import Mathlib.Order.Hom.Lattice
 /-!
 # Complete lattice homomorphisms
 
-This file defines frame homorphisms and complete lattice homomorphisms.
+This file defines frame homomorphisms and complete lattice homomorphisms.
 
 We use the `FunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.
@@ -35,7 +35,7 @@ be satisfied by itself and all stricter types.
 
 ## Concrete homs
 
-* `Completelattice.setPreimage`: `Set.preimage` as a complete lattice homomorphism.
+* `CompleteLatticeHom.setPreimage`: `Set.preimage` as a complete lattice homomorphism.
 
 ## TODO
 
@@ -934,7 +934,7 @@ theorem setPreimage_id : setPreimage (id : α → α) = CompleteLatticeHom.id _ 
   rfl
 #align complete_lattice_hom.set_preimage_id CompleteLatticeHom.setPreimage_id
 
--- This lemma can't be `simp` because `g ∘ f` matches anything (`id ∘ f = f` synctatically)
+-- This lemma can't be `simp` because `g ∘ f` matches anything (`id ∘ f = f` syntactically)
 theorem setPreimage_comp (g : β → γ) (f : α → β) :
     setPreimage (g ∘ f) = (setPreimage f).comp (setPreimage g) :=
   rfl

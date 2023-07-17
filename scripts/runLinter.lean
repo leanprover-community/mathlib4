@@ -52,7 +52,7 @@ unsafe def main (args : List String) : IO Unit := do
       if failed then
         let fmtResults ←
           formatLinterResults results decls (groupByFilename := true)
-            "in mathlib" (runSlowLinters := true) .medium linters.size
+            "in mathlib" (runSlowLinters := true) (useErrorFormat := true) .medium linters.size
         IO.print (← fmtResults.toString)
         IO.Process.exit 1
       else

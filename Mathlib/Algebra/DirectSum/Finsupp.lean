@@ -9,7 +9,7 @@ Authors: Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finsupp.ToDfinsupp
+import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Results on direct sums and finitely supported functions.
@@ -35,22 +35,22 @@ variable (R M) (ι : Type _) [DecidableEq ι]
 
 /-- The finitely supported functions `ι →₀ M` are in linear equivalence with the direct sum of
 copies of M indexed by ι. -/
-def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _i : ι, M :=
+def finsuppLEquivDirectSum : (ι →₀ M) ≃ₗ[R] ⨁ _ : ι, M :=
   haveI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
-  finsuppLequivDfinsupp R
+  finsuppLequivDFinsupp R
 #align finsupp_lequiv_direct_sum finsuppLEquivDirectSum
 
 @[simp]
 theorem finsuppLEquivDirectSum_single (i : ι) (m : M) :
     finsuppLEquivDirectSum R M ι (Finsupp.single i m) = DirectSum.lof R ι _ i m :=
-  Finsupp.toDfinsupp_single i m
+  Finsupp.toDFinsupp_single i m
 #align finsupp_lequiv_direct_sum_single finsuppLEquivDirectSum_single
 
 @[simp]
 theorem finsuppLEquivDirectSum_symm_lof (i : ι) (m : M) :
     (finsuppLEquivDirectSum R M ι).symm (DirectSum.lof R ι _ i m) = Finsupp.single i m :=
   letI : ∀ m : M, Decidable (m ≠ 0) := Classical.decPred _
-  Dfinsupp.toFinsupp_single i m
+  DFinsupp.toFinsupp_single i m
 #align finsupp_lequiv_direct_sum_symm_lof finsuppLEquivDirectSum_symm_lof
 
 end finsuppLequivDirectSum

@@ -9,6 +9,7 @@ Authors: Anatole Dedecker
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.Normed.Order.Basic
 
 /-!
@@ -94,6 +95,12 @@ theorem IsEquivalent.isBigO_symm (h : u ~[l] v) : v =O[l] u := by
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_equivalent.is_O_symm Asymptotics.IsEquivalent.isBigO_symm
 
+theorem IsEquivalent.isTheta (h : u ~[l] v) : u =Θ[l] v :=
+  ⟨h.isBigO, h.isBigO_symm⟩
+
+theorem IsEquivalent.isTheta_symm (h : u ~[l] v) : v =Θ[l] u :=
+  ⟨h.isBigO_symm, h.isBigO⟩
+
 @[refl]
 theorem IsEquivalent.refl : u ~[l] u := by
   rw [IsEquivalent, sub_self]
@@ -154,9 +161,9 @@ theorem IsEquivalent.tendsto_nhds {c : β} (huv : u ~[l] v) (hu : Tendsto u l (�
     Tendsto v l (𝓝 c) := by
   by_cases h : c = 0
   · subst c
-    rw [← isLittleO_one_iff ℝ] at hu⊢
+    rw [← isLittleO_one_iff ℝ] at hu ⊢
     simpa using (huv.symm.isLittleO.trans hu).add hu
-  · rw [← isEquivalent_const_iff_tendsto h] at hu⊢
+  · rw [← isEquivalent_const_iff_tendsto h] at hu ⊢
     exact huv.symm.trans hu
 #align asymptotics.is_equivalent.tendsto_nhds Asymptotics.IsEquivalent.tendsto_nhds
 
@@ -262,10 +269,8 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
   refine' hφ.mp (huv.mp <| hCuv.mono fun x hCuvx huvx hφx ↦ _)
   have key :=
     calc
-      ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ :=
-        mul_le_mul_of_nonneg_right hφx.le (norm_nonneg <| u x)
-      _ ≤ c / 2 / C * (C * ‖v x‖) :=
-        (mul_le_mul_of_nonneg_left hCuvx (div_pos (div_pos hc zero_lt_two) hC).le)
+      ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ := by gcongr
+      _ ≤ c / 2 / C * (C * ‖v x‖) := by gcongr
       _ = c / 2 * ‖v x‖ := by
         field_simp [hC.ne.symm]
         ring
@@ -274,8 +279,8 @@ theorem IsEquivalent.smul {α E 𝕜 : Type _} [NormedField 𝕜] [NormedAddComm
       simp [sub_smul, sub_add]
     _ ≤ ‖(φ x - 1) • u x‖ + ‖u x - v x‖ := (norm_add_le _ _)
     _ = ‖φ x - 1‖ * ‖u x‖ + ‖u x - v x‖ := by rw [norm_smul]
-    _ ≤ c / 2 * ‖v x‖ + ‖u x - v x‖ := (add_le_add_right key _)
-    _ ≤ c / 2 * ‖v x‖ + c / 2 * ‖v x‖ := (add_le_add_left huvx _)
+    _ ≤ c / 2 * ‖v x‖ + ‖u x - v x‖ := by gcongr
+    _ ≤ c / 2 * ‖v x‖ + c / 2 * ‖v x‖ := by gcongr; exact huvx
     _ = c * ‖v x‖ := by ring
 #align asymptotics.is_equivalent.smul Asymptotics.IsEquivalent.smul
 
@@ -340,8 +345,88 @@ open Filter Asymptotics
 
 open Asymptotics
 
-variable {α β : Type _} [NormedAddCommGroup β]
+variable {α β β₂ : Type _} [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
 
-theorem Filter.EventuallyEq.isEquivalent {u v : α → β} {l : Filter α} (h : u =ᶠ[l] v) : u ~[l] v :=
+theorem Filter.EventuallyEq.isEquivalent {u v : α → β} (h : u =ᶠ[l] v) : u ~[l] v :=
   IsEquivalent.congr_right (isLittleO_refl_left _ _) h
 #align filter.eventually_eq.is_equivalent Filter.EventuallyEq.isEquivalent
+
+@[trans]
+theorem Filter.EventuallyEq.trans_isEquivalent {f g₁ g₂ : α → β} (h : f =ᶠ[l] g₁)
+    (h₂ : g₁ ~[l] g₂) : f ~[l] g₂ :=
+  h.isEquivalent.trans h₂
+
+namespace Asymptotics
+
+instance transIsEquivalentIsEquivalent :
+    @Trans (α → β) (α → β) (α → β) (IsEquivalent l) (IsEquivalent l) (IsEquivalent l) where
+  trans := IsEquivalent.trans
+
+instance transEventuallyEqIsEquivalent :
+    @Trans (α → β) (α → β) (α → β) (EventuallyEq l) (IsEquivalent l) (IsEquivalent l) where
+  trans := EventuallyEq.trans_isEquivalent
+
+@[trans]
+theorem IsEquivalent.trans_eventuallyEq {f g₁ g₂ : α → β} (h : f ~[l] g₁)
+    (h₂ : g₁ =ᶠ[l] g₂) : f ~[l] g₂ :=
+  h.trans h₂.isEquivalent
+
+instance transIsEquivalentEventuallyEq :
+    @Trans (α → β) (α → β) (α → β) (IsEquivalent l) (EventuallyEq l) (IsEquivalent l) where
+  trans := IsEquivalent.trans_eventuallyEq
+
+@[trans]
+theorem IsEquivalent.trans_isBigO {f g₁ : α → β} {g₂ : α → β₂} (h : f ~[l] g₁) (h₂ : g₁ =O[l] g₂) :
+    f =O[l] g₂ :=
+  IsBigO.trans h.isBigO h₂
+
+instance transIsEquivalentIsBigO :
+    @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsBigO l) (IsBigO l) where
+  trans := IsEquivalent.trans_isBigO
+
+@[trans]
+theorem IsBigO.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h : f =O[l] g₁) (h₂ : g₁ ~[l] g₂) :
+    f =O[l] g₂ :=
+  IsBigO.trans h h₂.isBigO
+
+instance transIsBigOIsEquivalent :
+    @Trans (α → β₂) (α → β) (α → β) (IsBigO l) (IsEquivalent l) (IsBigO l) where
+  trans := IsBigO.trans_isEquivalent
+
+@[trans]
+theorem IsEquivalent.trans_isLittleO {f g₁ : α → β} {g₂ : α → β₂} (h : f ~[l] g₁)
+    (h₂ : g₁ =o[l] g₂) : f =o[l] g₂ :=
+  IsBigO.trans_isLittleO h.isBigO h₂
+
+instance transIsEquivalentIsLittleO :
+    @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsLittleO l) (IsLittleO l) where
+  trans := IsEquivalent.trans_isLittleO
+
+@[trans]
+theorem IsLittleO.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h : f =o[l] g₁)
+    (h₂ : g₁ ~[l] g₂) : f =o[l] g₂ :=
+  IsLittleO.trans_isBigO h h₂.isBigO
+
+instance transIsLittleOIsEquivalent :
+    @Trans (α → β₂) (α → β) (α → β) (IsLittleO l) (IsEquivalent l) (IsLittleO l) where
+  trans := IsLittleO.trans_isEquivalent
+
+@[trans]
+theorem IsEquivalent.trans_isTheta {f g₁ : α → β} {g₂ : α → β₂} (h : f ~[l] g₁)
+    (h₂ : g₁ =Θ[l] g₂) : f =Θ[l] g₂ :=
+  IsTheta.trans h.isTheta h₂
+
+instance transIsEquivalentIsTheta :
+    @Trans (α → β) (α → β) (α → β₂) (IsEquivalent l) (IsTheta l) (IsTheta l) where
+  trans := IsEquivalent.trans_isTheta
+
+@[trans]
+theorem IsTheta.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h : f =Θ[l] g₁)
+    (h₂ : g₁ ~[l] g₂) : f =Θ[l] g₂ :=
+  IsTheta.trans h h₂.isTheta
+
+instance transIsThetaIsEquivalent :
+    @Trans (α → β₂) (α → β) (α → β) (IsTheta l) (IsEquivalent l) (IsTheta l) where
+  trans := IsTheta.trans_isEquivalent
+
+end Asymptotics

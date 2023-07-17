@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.convex.hull
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
+! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -44,7 +44,7 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
 def convexHull : ClosureOperator (Set E) :=
-  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t) (Convex 𝕜)
+  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t) (Convex 𝕜)
     (fun _ =>
       Set.subset_iInter fun _ => Set.subset_iInter fun hst => Set.subset_iInter fun _ => hst)
     (fun _ => convex_iInter fun _ => convex_iInter fun _ => convex_iInter id) fun _ t hst ht =>
@@ -62,7 +62,7 @@ theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) :=
 #align convex_convex_hull convex_convexHull
 
 theorem convexHull_eq_iInter : convexHull 𝕜 s =
-    ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t :=
+    ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t :=
   rfl
 #align convex_hull_eq_Inter convexHull_eq_iInter
 
@@ -132,10 +132,15 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 #align convex_hull_singleton convexHull_singleton
 
 @[simp]
+theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
+  convexHull_singleton 0
+#align convex_hull_zero convexHull_zero
+
+@[simp]
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
   refine (convexHull_min ?_ <| convex_segment _ _).antisymm
     (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
-  rw [insert_subset, singleton_subset_iff]
+  rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
 

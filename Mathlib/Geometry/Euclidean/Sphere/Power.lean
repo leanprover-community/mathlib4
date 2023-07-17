@@ -129,7 +129,7 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}
   obtain ⟨-, k₂, -, hcd₁⟩ := angle_eq_zero_iff.mp hcpd
   refine' mul_dist_eq_mul_dist_of_cospherical h ⟨k₁, _, hab₁⟩ ⟨k₂, _, hcd₁⟩ <;> by_contra hnot <;>
     simp_all only [Classical.not_not, one_smul]
-  exacts[hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
+  exacts [hab (vsub_left_cancel hab₁).symm, hcd (vsub_left_cancel hcd₁).symm]
 #align euclidean_geometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero
 
 end EuclideanGeometry

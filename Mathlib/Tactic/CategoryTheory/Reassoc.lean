@@ -8,7 +8,7 @@ import Mathlib.Util.AddRelatedDecl
 import Mathlib.Lean.Meta.Simp
 
 /-!
-# The `reasoc` attribute
+# The `reassoc` attribute
 
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`,
 where `f g : X ⟶ Y` in some category
@@ -49,7 +49,7 @@ def reassocExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType categorySimp (← mkAppM ``eq_whisker' #[e])) e
 
 /-- Syntax for the `reassoc` attribute -/
-syntax (name := reassoc) "reassoc" ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `reassoc

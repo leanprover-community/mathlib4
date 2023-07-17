@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 
 ! This file was ported from Lean 3 source module data.prod.basic
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
+! leanprover-community/mathlib commit d07245fd37786daa997af4f1a73a49fa3b748408
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -57,7 +57,7 @@ theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Func
   rfl
 #align prod.fst_comp_mk Prod.fst_comp_mk
 
-@[simp]
+@[simp, mfld_simps]
 theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
   rfl
 #align prod.map_mk Prod.map_mk
@@ -113,9 +113,10 @@ theorem mk.inj_right {α β : Type _} (b : β) :
 #align prod.mk.inj_right Prod.mk.inj_right
 
 lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+#align prod.mk_inj_left Prod.mk_inj_left
+
 lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 #align prod.mk_inj_right Prod.mk_inj_right
-#align prod.mk_inj_left Prod.mk_inj_left
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
   rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
@@ -134,6 +135,7 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 #align prod.id_prod Prod.id_prod
 
+@[simp]
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
 #align prod.map_id Prod.map_id
@@ -257,7 +259,7 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRef
   ⟨Lex.refl_right _ _⟩
 
 instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
-⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
+  ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :

@@ -217,7 +217,7 @@ protected theorem multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) �
   multiset_prod_mem m
 #align intermediate_field.multiset_prod_mem IntermediateField.multiset_prod_mem
 
-/-- Sum of a multiset of elements in a `IntermediateField` is in the `IntermediateField`. -/
+/-- Sum of a multiset of elements in an `IntermediateField` is in the `IntermediateField`. -/
 protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.sum ∈ S :=
   multiset_sum_mem m
 #align intermediate_field.multiset_sum_mem IntermediateField.multiset_sum_mem
@@ -229,7 +229,7 @@ protected theorem prod_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀
   prod_mem h
 #align intermediate_field.prod_mem IntermediateField.prod_mem
 
-/-- Sum of elements in a `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
+/-- Sum of elements in an `IntermediateField` indexed by a `Finset` is in the `IntermediateField`.
 -/
 protected theorem sum_mem {ι : Type _} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∑ i in t, f i) ∈ S :=

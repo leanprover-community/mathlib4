@@ -104,12 +104,12 @@ theorem IsBoundedBilinearMap.differentiableWithinAt (h : IsBoundedBilinearMap �
   (h.differentiableAt p).differentiableWithinAt
 #align is_bounded_bilinear_map.differentiable_within_at IsBoundedBilinearMap.differentiableWithinAt
 
-theorem IsBoundedBilinearMap.fderiv (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
+protected theorem IsBoundedBilinearMap.fderiv (h : IsBoundedBilinearMap 𝕜 b) (p : E × F) :
     fderiv 𝕜 b p = h.deriv p :=
   HasFDerivAt.fderiv (h.hasFDerivAt p)
 #align is_bounded_bilinear_map.fderiv IsBoundedBilinearMap.fderiv
 
-theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap 𝕜 b) (p : E × F)
+protected theorem IsBoundedBilinearMap.fderivWithin (h : IsBoundedBilinearMap 𝕜 b) (p : E × F)
     (hxs : UniqueDiffWithinAt 𝕜 u p) : fderivWithin 𝕜 b u p = h.deriv p := by
   rw [DifferentiableAt.fderivWithin (h.differentiableAt p) hxs]
   exact h.fderiv p

@@ -40,12 +40,12 @@ open CategoryTheory
 
 section theorems
 
-theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : (forget (Type u)).map f = f := rfl
-
 theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
   (∀ (x : (forget (Type u)).obj α), p x) ↔ ∀ (x : α), p x := Iff.rfl
 
-attribute [local instance] ConcreteCategory.hasCoeToFun ConcreteCategory.hasCoeToSort
+attribute [local instance] ConcreteCategory.funLike ConcreteCategory.hasCoeToSort
+
+theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : FunLike.coe f = f := rfl
 
 theorem hom_elementwise [Category C] [ConcreteCategory C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : X) : f x = g x := by rw [h]
@@ -71,7 +71,7 @@ with compositions fully right associated and identities removed.
 Returns the proof of the new theorem along with (optionally) a new level metavariable
 for the first universe parameter to `ConcreteCategory`.
 
-The `simpSides` option controles whether to simplify both sides of the equality, for simpNF
+The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
 def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
@@ -178,7 +178,7 @@ The name of the produced lemma can be specified with `@[elementwise other_lemma_
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
  -/
 syntax (name := elementwise) "elementwise"
-  "nosimp"? ("(" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+  " nosimp"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise
@@ -228,7 +228,7 @@ elab "elementwise_of% " t:term : term => do
   return pf
 
 -- TODO: elementwise tactic
-syntax "elementwise" (ppSpace (colGt ident))* : tactic
-syntax "elementwise!" (ppSpace (colGt ident))* : tactic
+syntax "elementwise" (ppSpace colGt ident)* : tactic
+syntax "elementwise!" (ppSpace colGt ident)* : tactic
 
 end Tactic.Elementwise

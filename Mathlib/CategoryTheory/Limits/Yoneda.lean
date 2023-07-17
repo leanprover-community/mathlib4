@@ -20,13 +20,7 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
 
--- import Mathlib.Tactic.AssertExists -- Porting note: see end of file
-
-open Opposite
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open Opposite CategoryTheory Limits
 
 universe w v u
 
@@ -41,8 +35,7 @@ variable {C : Type v} [SmallCategory C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := by aesop_cat
-         naturality := by aesop_cat }
+  ι := { app := by aesop_cat }
 #align category_theory.coyoneda.colimit_cocone CategoryTheory.Coyoneda.colimitCocone
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.

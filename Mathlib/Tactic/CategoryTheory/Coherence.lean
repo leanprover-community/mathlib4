@@ -9,6 +9,7 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
+import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 
 /-!
 # A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
@@ -40,6 +41,7 @@ open CategoryTheory FreeMonoidalCategory
 namespace Mathlib.Tactic.Coherence
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
+open scoped MonoidalCategory
 
 noncomputable section lifting
 
@@ -212,7 +214,7 @@ def exception' (msg : MessageData) : TacticM Unit := do
     -- There might not be any goals
     throwError msg
 
-/-- Auxilliary definition for `monoidal_coherence`. -/
+/-- Auxiliary definition for `monoidal_coherence`. -/
 -- We could construct this expression directly without using `elabTerm`,
 -- but it would require preparing many implicit arguments by hand.
 def mkProjectMapExpr (e : Expr) : TermElabM Expr := do
@@ -241,6 +243,8 @@ def monoidal_coherence (g : MVarId) : TermElabM Unit := g.withContext do
 Use `pure_coherence` instead, which is a frontend to this one. -/
 elab "monoidal_coherence" : tactic => do monoidal_coherence (← getMainGoal)
 
+open Mathlib.Tactic.BicategoryCoherence
+
 /--
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
@@ -255,12 +259,9 @@ which can also cope with identities of the form
 `a ≫ f ≫ b ≫ g ≫ c = a' ≫ f ≫ b' ≫ g ≫ c'`
 where `a = a'`, `b = b'`, and `c = c'` can be proved using `pure_coherence`
 -/
-macro (name := pure_coherence) "pure_coherence" : tactic =>
-  `(tactic| monoidal_coherence)
-
--- Porting note: restore this when `category_theory.bicategory.coherence` is ported.
--- macro (name := pure_coherence') "pure_coherence" : tactic =>
---   `(tactic| bicategory_coherence)
+elab (name := pure_coherence) "pure_coherence" : tactic => do
+  let g ← getMainGoal
+  monoidal_coherence g <|> bicategory_coherence g
 
 /--
 Auxiliary simp lemma for the `coherence` tactic:
@@ -271,7 +272,7 @@ built out of unitors and associators.
 -- They are intentional, to ensure that `simp only [assoc_LiftHom]` only left associates
 -- monoidal structural morphisms.
 @[nolint unusedArguments]
-lemma assoc_LiftHom {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y]
+lemma assoc_liftHom {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y]
     (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z) [LiftHom f] [LiftHom g] :
     f ≫ (g ≫ h) = (f ≫ g) ≫ h :=
   (Category.assoc _ _ _).symm
@@ -283,20 +284,21 @@ Rewrites an equation `f = g` as `f₀ ≫ f₁ = g₀ ≫ g₁`,
 where `f₀` and `g₀` are maximal prefixes of `f` and `g` (possibly after reassociating)
 which are "liftable" (i.e. expressible as compositions of unitors and associators).
 -/
-macro (name := liftable_prefixes) "liftable_prefixes" : tactic => do
-  -- TODO we used to set the max instance search depth higher. Is this still needed?
-  `(tactic|
+elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
+  withOptions (fun opts => synthInstance.maxSize.set opts
+    (max 256 (synthInstance.maxSize.get opts))) do
+  evalTactic (← `(tactic|
     simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    -- TODO add `Bicategory.Coherence.assoc_LiftHom₂` when
-    -- `category_theory.bicategory.coherence` is ported.
-    simp only [assoc_LiftHom])
+    simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
 
-lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) : f = g :=
-by simpa using w
+lemma insert_id_lhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+    f = g := by
+  simpa using w
 
-lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) : f = g :=
-by simpa using w
+lemma insert_id_rhs {C : Type _} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+    f = g := by
+  simpa using w
 
 /-- If either the lhs or rhs is not a composition, compose it on the right with an identity. -/
 def insertTrailingIds (g : MVarId) : MetaM MVarId := do
@@ -331,7 +333,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
     -- and now we have two goals `f₀ = g₀` and `f₁ = g₁`.
     -- Discharge the first using `coherence`,
     evalTactic (← `(tactic| { pure_coherence })) <|>
-      exception' "`coherence` tactic failed, subgoal not true in the free monoidal_category"
+      exception' "`coherence` tactic failed, subgoal not true in the free monoidal category"
     -- Then check that either `g₀` is identically `g₁`,
     evalTactic (← `(tactic| rfl)) <|> do
       -- or that both are compositions,
@@ -363,10 +365,8 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    -- Porting note: restore this when `category_theory.bicategory.coherence` is ported.
-    -- simp only [bicategorical_comp];
-    simp only [monoidalComp]
-    -- Porting note: restore this when `category_theory.bicategory.coherence` is ported.
-    -- try bicategory.whisker_simps
+    simp only [bicategoricalComp];
+    simp only [monoidalComp];
+    try whisker_simps
     ))
   coherence_loop

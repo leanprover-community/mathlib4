@@ -24,7 +24,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 -- Perhaps in the future we could redefine `Functor` in terms of this, but that isn't the
 -- immediate plan.
-/-- A unbundled functor. -/
+/-- An unbundled functor. -/
 class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   /-- A functorial map extends to an action on morphisms. -/
   map' : ∀ {X Y : C}, (X ⟶ Y) → (F X ⟶ F Y)

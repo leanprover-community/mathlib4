@@ -55,7 +55,7 @@ theorem zpow_trick_one' {G : Type _} [Group G] (a b : G) (n : ℤ) :
 #align tactic.group.zsmul_trick_zero' Mathlib.Tactic.Group.zsmul_trick_zero'
 
 /-- Auxiliary tactic for the `group` tactic. Calls the simplifier only. -/
-syntax (name := aux_group₁) "aux_group₁" (ppSpace location)? : tactic
+syntax (name := aux_group₁) "aux_group₁" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₁ $[at $location]?) =>
@@ -71,7 +71,7 @@ macro_rules
   $[at $location]?)
 
 /-- Auxiliary tactic for the `group` tactic. Calls `ring_nf` to normalize exponents. -/
-syntax (name := aux_group₂) "aux_group₂" (ppSpace location)? : tactic
+syntax (name := aux_group₂) "aux_group₂" (location)? : tactic
 
 macro_rules
 | `(tactic| aux_group₂ $[at $location]?) =>
@@ -93,7 +93,7 @@ begin
 end
 ```
 -/
-syntax (name := group) "group" (ppSpace location)? : tactic
+syntax (name := group) "group" (location)? : tactic
 
 macro_rules
 | `(tactic| group $[$loc]?) =>

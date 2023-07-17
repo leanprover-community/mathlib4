@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
 
 ! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
+! leanprover-community/mathlib commit cd391184c85986113f8c00844cfe6dda1d34be3d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -62,7 +62,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
--- porting note: in Lean 3 this had @[congr]`
+-- porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
@@ -142,6 +142,21 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 #align equiv.prod_assoc Equiv.prodAssoc
 #align equiv.prod_assoc_symm_apply Equiv.prodAssoc_symm_apply
 #align equiv.prod_assoc_apply Equiv.prodAssoc_apply
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm (α β γ δ : Type _) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
+  toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
+  invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
+  left_inv := fun ⟨⟨_a, _b⟩, ⟨_c, _d⟩⟩ => rfl
+  right_inv := fun ⟨⟨_a, _c⟩, ⟨_b, _d⟩⟩ => rfl
+#align equiv.prod_prod_prod_comm Equiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm (α β γ δ : Type _) :
+    (prodProdProdComm α β γ δ).symm = prodProdProdComm α γ β δ :=
+  rfl
+#align equiv.prod_prod_prod_comm_symm Equiv.prodProdProdComm_symm
 
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
 @[simps (config := { fullyApplied := false })]
@@ -507,9 +522,9 @@ def sumCompl {α : Type _} (p : α → Prop) [DecidablePred p] :
   toFun := Sum.elim Subtype.val Subtype.val
   invFun a := if h : p a then Sum.inl ⟨a, h⟩ else Sum.inr ⟨a, h⟩
   left_inv := by
-    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp;
-    { rw [dif_pos] }
-    { rw [dif_neg] }
+    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp
+    · rw [dif_pos]
+    · rw [dif_neg]
   right_inv a := by
     dsimp
     split_ifs <;> rfl
@@ -1028,7 +1043,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
-/-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
+/-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
 def natSumPUnitEquivNat : Sum ℕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 #align equiv.nat_sum_punit_equiv_nat Equiv.natSumPUnitEquivNat
@@ -1315,7 +1330,7 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
-    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
+    exacts [dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
   left_inv f := by
     ext x
     dsimp only
@@ -1430,7 +1445,7 @@ where `p : β → Prop`, permuting only the `b : β` that satisfy `p b`.
 This can be used to extend the domain across a function `f : α → β`,
 keeping everything outside of `Set.range f` fixed. For this use-case `Equiv` given by `f` can
 be constructed by `Equiv.of_leftInverse'` or `Equiv.of_leftInverse` when there is a known
-inverse, or `Equiv.ofInjective` in the general case.`.
+inverse, or `Equiv.ofInjective` in the general case.
 -/
 def Perm.extendDomain : Perm β' :=
   (permCongr f e).subtypeCongr (Equiv.refl _)

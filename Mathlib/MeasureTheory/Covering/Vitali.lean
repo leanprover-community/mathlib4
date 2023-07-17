@@ -128,7 +128,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
   -- we claim that `u ∪ {a'}` still belongs to `T`, contradicting the maximality of `u`.
   refine' ⟨insert a' u, ⟨_, _, _⟩, subset_insert _ _, (ne_insert_of_not_mem _ a'_ne_u).symm⟩
   · -- check that `u ∪ {a'}` is made of elements of `t`.
-    rw [insert_subset]
+    rw [insert_subset_iff]
     exact ⟨a'A.1, uT.1⟩
   · -- Check that `u ∪ {a'}` is a disjoint family. This follows from the fact that `a'` does not
     -- intersect `u`.
@@ -204,7 +204,7 @@ Then one can extract from `t` a disjoint subfamily that covers almost all `s`.
 For more flexibility, we give a statement with a parameterized family of sets.
 -/
 theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
     (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
     (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
     (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
@@ -332,7 +332,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   have M : (s \ ⋃ a ∈ u, B a) ∩
       ball x (R x) ⊆ ⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a) := by
     intro z hz
-    set k := ⋃ (a : v) (ha : a ∈ w), B a
+    set k := ⋃ (a : v) (_ : a ∈ w), B a
     have k_closed : IsClosed k := isClosed_biUnion w.finite_toSet fun i _ => h't _ (ut (vu i.2))
     have z_notmem_k : z ∉ k := by
       simp only [not_exists, exists_prop, mem_iUnion, mem_sep_iff, forall_exists_index,
@@ -403,7 +403,7 @@ doubling. Then the set of closed sets `a` with nonempty interior contained in `c
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
 This is essentially a restatement of the measurable Vitali theorem. -/
 protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    [SecondCountableTopology α] (μ : Measure α) [LocallyFiniteMeasure μ] (C : ℝ≥0)
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : ℝ≥0)
     (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
     VitaliFamily μ where
   setsAt x := { a | IsClosed a ∧ (interior a).Nonempty ∧

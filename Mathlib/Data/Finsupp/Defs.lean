@@ -472,7 +472,7 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
-    f.support = {a} ↔ ∃ (b : _)(_ : b ≠ 0), f = single a b :=
+    f.support = {a} ↔ ∃ (b : _) (_ : b ≠ 0), f = single a b :=
   ⟨fun h =>
     let h := support_eq_singleton.1 h
     ⟨_, h.1, h.2⟩,
@@ -486,7 +486,7 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
 /- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
   warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
-    card f.support = 1 ↔ ∃ (a : _)(b : _)(_ : b ≠ 0), f = single a b := by
+    card f.support = 1 ↔ ∃ (a : _) (b : _) (_ : b ≠ 0), f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
 #align finsupp.card_support_eq_one' Finsupp.card_support_eq_one'
 

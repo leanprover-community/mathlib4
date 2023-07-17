@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
+! leanprover-community/mathlib commit c8734e8953e4b439147bd6f75c2163f6d27cdce6
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -61,7 +61,7 @@ In the definitions below, we use the following notation:
 
 Recall that if `Y` has a zero, then `X →₀ Y` is the type of functions from `X` to `Y` with finite
 support, i.e. such that only finitely many elements of `X` get sent to non-zero terms in `Y`.
-The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R` ; here `σ →₀ ℕ` denotes the space of all
+The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R`; here `σ →₀ ℕ` denotes the space of all
 monomials in the variables, and the function to `R` sends a monomial to its coefficient in
 the polynomial being represented.
 
@@ -144,11 +144,15 @@ instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
--- Register with high priority to avoid timeout in `Data.MvPolynomial.PDeriv`
-instance isScalarTower' [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
+instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  IsScalarTower.right
-#align mv_polynomial.is_scalar_tower' MvPolynomial.isScalarTower'
+  AddMonoidAlgebra.isScalarTower_self _
+#align mv_polynomial.is_scalar_tower_right MvPolynomial.isScalarTower_right
+
+instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
+    SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
+  AddMonoidAlgebra.smulCommClass_self _
+#align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
@@ -1289,7 +1293,7 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
 theorem map_injective (hf : Function.Injective f) :
     Function.Injective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := by
   intro p q h
-  simp only [ext_iff, coeff_map] at h⊢
+  simp only [ext_iff, coeff_map] at h ⊢
   intro m
   exact hf (h m)
 #align mv_polynomial.map_injective MvPolynomial.map_injective

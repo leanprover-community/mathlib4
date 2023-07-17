@@ -70,6 +70,10 @@ theorem cast_commute [NonAssocSemiring α] (n : ℕ) (x : α) : Commute (n : α)
   | succ n ihn => rw [Nat.cast_succ]; exact ihn.add_left (Commute.one_left x)
 #align nat.cast_commute Nat.cast_commute
 
+theorem _root_.Commute.ofNat_left [NonAssocSemiring α] (n : ℕ) [n.AtLeastTwo] (x : α) :
+    Commute (OfNat.ofNat n) x :=
+  n.cast_commute x
+
 theorem cast_comm [NonAssocSemiring α] (n : ℕ) (x : α) : (n : α) * x = x * n :=
   (cast_commute n x).eq
 #align nat.cast_comm Nat.cast_comm
@@ -77,6 +81,10 @@ theorem cast_comm [NonAssocSemiring α] (n : ℕ) (x : α) : (n : α) * x = x * 
 theorem commute_cast [NonAssocSemiring α] (x : α) (n : ℕ) : Commute x n :=
   (n.cast_commute x).symm
 #align nat.commute_cast Nat.commute_cast
+
+theorem _root_.Commute.ofNat_right [NonAssocSemiring α] (x : α) (n : ℕ) [n.AtLeastTwo] :
+    Commute x (OfNat.ofNat n) :=
+  n.commute_cast x
 
 section OrderedSemiring
 
@@ -259,7 +267,7 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
 --Porting note: new theorem
 @[simp]
 theorem map_ofNat [RingHomClass F R S] (f : F)  (n : ℕ) [Nat.AtLeastTwo n] :
-    (f (OfNat.ofNat n) : S) = OfNat.ofNat n :=
+    (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n
 
 theorem ext_nat [RingHomClass F ℕ R] (f g : F) : f = g :=
@@ -319,6 +327,9 @@ theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.coe_nat
+
+@[simp]
+theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
 end Pi
 

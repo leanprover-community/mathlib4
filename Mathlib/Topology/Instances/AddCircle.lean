@@ -69,7 +69,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   intro s h
   rw [Filter.mem_map, mem_nhdsWithin_iff_exists_mem_nhds_inter]
   haveI : Nontrivial 𝕜 := ⟨⟨0, p, hp.ne⟩⟩
-  simp_rw [mem_nhds_iff_exists_Ioo_subset] at h⊢
+  simp_rw [mem_nhds_iff_exists_Ioo_subset] at h ⊢
   obtain ⟨l, u, hxI, hIs⟩ := h
   let d := toIcoDiv hp a x • p
   have hd := toIcoMod_mem_Ico hp a x
@@ -80,7 +80,7 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
   · rintro ⟨h, h'⟩
     apply hIs
     rw [← toIcoMod_sub_zsmul, (toIcoMod_eq_self _).2]
-    exacts[⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
+    exacts [⟨h.1, h.2.2⟩, ⟨hd.1.trans (sub_le_sub_right h' _), h.2.1⟩]
 #align continuous_right_to_Ico_mod continuous_right_toIcoMod
 
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
@@ -239,7 +239,7 @@ theorem coe_eq_coe_iff_of_mem_Ico {x y : 𝕜} (hx : x ∈ Ico a (a + p)) (hy : 
     (x : AddCircle p) = y ↔ x = y := by
   refine' ⟨fun h => _, by tauto⟩
   suffices (⟨x, hx⟩ : Ico a (a + p)) = ⟨y, hy⟩ by exact Subtype.mk.inj this
-  apply_fun equivIco p a  at h
+  apply_fun equivIco p a at h
   rw [← (equivIco p a).right_inv ⟨x, hx⟩, ← (equivIco p a).right_inv ⟨y, hy⟩]
   exact h
 #align add_circle.coe_eq_coe_iff_of_mem_Ico AddCircle.coe_eq_coe_iff_of_mem_Ico
@@ -403,7 +403,7 @@ theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
   induction m
-  · simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.natAbs_ofNat] at h⊢
+  · simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.natAbs_ofNat] at h ⊢
     exact addOrderOf_div_of_gcd_eq_one hn h
   · simp only [Int.cast_negSucc, neg_div, neg_mul, coe_neg, addOrderOf_neg]
     exact addOrderOf_div_of_gcd_eq_one hn h
@@ -473,7 +473,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
           rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
           refine' Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨_, _⟩) <;>
             apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
-          exacts[m₁.2.1, m₂.2.1]
+          exacts [m₁.2.1, m₂.2.1]
         obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
         exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
 #align add_circle.set_add_order_of_equiv AddCircle.setAddOrderOfEquiv

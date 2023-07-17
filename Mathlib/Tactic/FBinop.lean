@@ -8,7 +8,7 @@ import Mathlib.Tactic.ToExpr
 /-! # Elaborator for functorial binary operators
 
 `fbinop% f x y` elaborates `f x y` for `x : S α` and `y : S' β`, taking into account
-any coercions that the "functors" `S` and `S'` posess.
+any coercions that the "functors" `S` and `S'` possess.
 
 While `binop%` tries to solve for a single minimal type, `fbinop%` tries to solve
 the parameterized problem of solving for a single minimal "functor."
@@ -18,7 +18,7 @@ The code is drawn from the Lean 4 core `binop%` elaborator. Two simplifications 
    (think `Set.prod : Set α → Set β → Set (α × β)`).
 2. It is assumed that there are no "non-homogeneous" default instances.
 
-It also makes the assumption that the binop wants to be as homegenous as possible.
+It also makes the assumption that the binop wants to be as homogeneous as possible.
 For example, when the type of an argument is unknown it will try to unify the argument's type
 with `S _`, which can help certain elaboration problems proceed (like for `{a,b,c}` notation).
 
@@ -31,8 +31,8 @@ open Lean Elab Term Meta
 initialize registerTraceClass `Elab.fbinop
 
 /-- `fbinop% f x y` elaborates `f x y` for `x : S α` and `y : S' β`, taking into account
-any coercions that the "functors" `S` and `S'` posess. -/
-syntax:max (name := prodSyntax) "fbinop% " ident term:max term:max : term
+any coercions that the "functors" `S` and `S'` possess. -/
+syntax:max (name := prodSyntax) "fbinop% " ident ppSpace term:max ppSpace term:max : term
 
 /-- Tree recording the structure of the `fbinop%` expression. -/
 private inductive Tree where

@@ -41,8 +41,8 @@ namespace Projectivization
 /-- A linearly independent family of nonzero vectors gives an independent family of points
 in projective space. -/
 inductive Independent : (ι → ℙ K V) → Prop
-| mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
-  Independent fun i => mk K (f i) (hf i)
+  | mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (hl : LinearIndependent K f) :
+    Independent fun i => mk K (f i) (hf i)
 #align projectivization.independent Projectivization.Independent
 
 /-- A family of points in a projective space is independent if and only if the representative
@@ -77,8 +77,8 @@ theorem independent_iff_completeLattice_independent :
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/
 inductive Dependent : (ι → ℙ K V) → Prop
-| mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
-  Dependent fun i => mk K (f i) (hf i)
+  | mk (f : ι → V) (hf : ∀ i : ι, f i ≠ 0) (h : ¬LinearIndependent K f) :
+    Dependent fun i => mk K (f i) (hf i)
 #align projectivization.dependent Projectivization.Dependent
 
 /-- A family of points in a projective space is dependent if and only if their

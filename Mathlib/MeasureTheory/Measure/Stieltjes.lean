@@ -15,7 +15,7 @@ import Mathlib.Topology.Algebra.Order.LeftRightLim
 # Stieltjes measures on the real line
 
 Consider a function `f : ℝ → ℝ` which is monotone and right-continuous. Then one can define a
-corrresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
+corresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
 
 ## Main definitions
 
@@ -36,7 +36,7 @@ section MoveThis
 open Filter Set Topology
 
 theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f '' Ioi x))
-    (hf_mono : Monotone f) : (⨅ r : Ioi x, f r) = ⨅ q : { q' : ℚ // x < q' }, f q := by
+    (hf_mono : Monotone f) : ⨅ r : Ioi x, f r = ⨅ q : { q' : ℚ // x < q' }, f q := by
   refine' le_antisymm _ _
   · have : Nonempty { r' : ℚ // x < ↑r' } := by
       obtain ⟨r, hrx⟩ := exists_rat_gt x
@@ -87,7 +87,7 @@ theorem exists_seq_monotone_tendsto_atTop_atTop (α : Type _) [SemilatticeSup α
     rw [Finset.sup'_le_iff]
     intro k hk
     refine' Finset.le_sup'_of_le _ _ le_rfl
-    rw [Finset.mem_range] at hk⊢
+    rw [Finset.mem_range] at hk ⊢
     exact hk.trans_le (add_le_add_right hij _)
   refine' ⟨xs, h_mono, _⟩
   · refine' tendsto_atTop_atTop_of_monotone h_mono _
@@ -112,7 +112,7 @@ theorem exists_seq_antitone_tendsto_atTop_atBot (α : Type _) [SemilatticeInf α
 -- todo after the port: move to topology/algebra/order/monotone_convergence
 theorem iSup_eq_iSup_subseq_of_antitone {ι₁ ι₂ α : Type _} [Preorder ι₂] [CompleteLattice α]
     {l : Filter ι₁} [l.NeBot] {f : ι₂ → α} {φ : ι₁ → ι₂} (hf : Antitone f)
-    (hφ : Tendsto φ l atBot) : (⨆ i, f i) = ⨆ i, f (φ i) :=
+    (hφ : Tendsto φ l atBot) : ⨆ i, f i = ⨆ i, f (φ i) :=
   le_antisymm
     (iSup_mono' fun i =>
       Exists.imp (fun j (hj : φ j ≤ i) => hf hj) (hφ.eventually <| eventually_le_atBot i).exists)
@@ -235,7 +235,7 @@ theorem rightLim_eq (f : StieltjesFunction) (x : ℝ) : Function.rightLim f x = 
   exact f.right_continuous' x
 #align stieltjes_function.right_lim_eq StieltjesFunction.rightLim_eq
 
-theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : (⨅ r : Ioi x, f r) = f x := by
+theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : ⨅ r : Ioi x, f r = f x := by
   suffices Function.rightLim f x = ⨅ r : Ioi x, f r by rw [← this, f.rightLim_eq]
   rw [rightLim_eq_sInf f.mono, sInf_image']
   rw [← neBot_iff]
@@ -243,7 +243,7 @@ theorem iInf_Ioi_eq (f : StieltjesFunction) (x : ℝ) : (⨅ r : Ioi x, f r) = f
 #align stieltjes_function.infi_Ioi_eq StieltjesFunction.iInf_Ioi_eq
 
 theorem iInf_rat_gt_eq (f : StieltjesFunction) (x : ℝ) :
-    (⨅ r : { r' : ℚ // x < r' }, f r) = f x := by
+    ⨅ r : { r' : ℚ // x < r' }, f r = f x := by
   rw [← iInf_Ioi_eq f x]
   refine' (iInf_Ioi_eq_iInf_rat_gt _ _ f.mono).symm
   refine' ⟨f x, fun y => _⟩
@@ -310,7 +310,7 @@ theorem countable_leftLim_ne (f : StieltjesFunction) : Set.Countable { x | leftL
 /-- Length of an interval. This is the largest monotone function which correctly measures all
 intervals. -/
 def length (s : Set ℝ) : ℝ≥0∞ :=
-  ⨅ (a) (b) (_h : s ⊆ Ioc a b), ofReal (f b - f a)
+  ⨅ (a) (b) (_ : s ⊆ Ioc a b), ofReal (f b - f a)
 #align stieltjes_function.length StieltjesFunction.length
 
 @[simp]
@@ -357,7 +357,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
     rcases isCompact_Icc.elim_finite_subcover_image
         (fun (i : ℕ) (_ : i ∈ univ) => @isOpen_Ioo _ _ _ _ (c i) (d i)) (by simpa using ss) with
       ⟨s, _, hf, hs⟩
-    have e : (⋃ i ∈ (hf.toFinset : Set ℕ), Ioo (c i) (d i)) = ⋃ i ∈ s, Ioo (c i) (d i) := by
+    have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Ioo (c i) (d i) = ⋃ i ∈ s, Ioo (c i) (d i) := by
       simp only [ext_iff, exists_prop, Finset.set_biUnion_coe, mem_iUnion, forall_const,
         iff_self_iff, Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
@@ -437,14 +437,14 @@ theorem outer_Ioc (a b : ℝ) : f.outer (Ioc a b) = ofReal (f b - f a) := by
   calc
     ofReal (f b - f a) = ofReal (f b - f a' + (f a' - f a)) := by rw [sub_add_sub_cancel]
     _ ≤ ofReal (f b - f a') + ofReal (f a' - f a) := ENNReal.ofReal_add_le
-    _ ≤ (∑' i, ofReal (f (g i).2 - f (g i).1)) + ofReal δ :=
+    _ ≤ ∑' i, ofReal (f (g i).2 - f (g i).1) + ofReal δ :=
       (add_le_add (f.length_subadditive_Icc_Ioo I_subset) (ENNReal.ofReal_le_ofReal ha'.le))
-    _ ≤ (∑' i, f.length (s i) + ε' i) + δ :=
+    _ ≤ ∑' i, (f.length (s i) + ε' i) + δ :=
       (add_le_add (ENNReal.tsum_le_tsum fun i => (hg i).2.le)
         (by simp only [ENNReal.ofReal_coe_nnreal, le_rfl]))
-    _ = (∑' i, f.length (s i)) + (∑' i, (ε' i : ℝ≥0∞)) + δ := by rw [ENNReal.tsum_add]
-    _ ≤ (∑' i, f.length (s i)) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
-    _ = (∑' i : ℕ, f.length (s i)) + ε := by simp [add_assoc, ENNReal.add_halves]
+    _ = ∑' i, f.length (s i) + ∑' i, (ε' i : ℝ≥0∞) + δ := by rw [ENNReal.tsum_add]
+    _ ≤ ∑' i, f.length (s i) + δ + δ := (add_le_add (add_le_add le_rfl hε.le) le_rfl)
+    _ = ∑' i : ℕ, f.length (s i) + ε := by simp [add_assoc, ENNReal.add_halves]
 #align stieltjes_function.outer_Ioc StieltjesFunction.outer_Ioc
 
 theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
@@ -609,8 +609,8 @@ theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
 #align stieltjes_function.measure_univ StieltjesFunction.measure_univ
 
-instance instLocallyFiniteMeasure : LocallyFiniteMeasure f.measure :=
+instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure :=
   ⟨fun x => ⟨Ioo (x - 1) (x + 1), Ioo_mem_nhds (by linarith) (by linarith), by simp⟩⟩
-#align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instLocallyFiniteMeasure
+#align stieltjes_function.measure.measure_theory.is_locally_finite_measure StieltjesFunction.instIsLocallyFiniteMeasure
 
 end StieltjesFunction

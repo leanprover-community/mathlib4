@@ -50,7 +50,7 @@ class IsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
   protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
 #align has_isometric_smul IsometricSMul
 
--- Porting note: Lean 4 doesn' support `[]` in classes, so make a lemma instead of `export`ing
+-- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
 @[to_additive]
 theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X]
     [IsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=
@@ -424,6 +424,15 @@ theorem nndist_div_left [Group G] [PseudoMetricSpace G] [IsometricSMul G G]
 #align nndist_sub_left nndist_sub_left
 
 namespace Metric
+
+/-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
+multiplication by `c : G` is bounded. See also `Metric.Bounded.smul₀` for a similar lemma about
+normed spaces. -/
+@[to_additive "Given an additive isometric action of `G` on `X`, the image of a bounded set in `X`
+under translation by `c : G` is bounded"]
+theorem Bounded.smul [PseudoMetricSpace X] [SMul G X] [IsometricSMul G X] {s : Set X}
+    (hs : Bounded s) (c : G) : Bounded (c • s) :=
+  (isometry_smul X c).lipschitz.bounded_image hs
 
 variable [PseudoMetricSpace X] [Group G] [MulAction G X] [IsometricSMul G X]
 

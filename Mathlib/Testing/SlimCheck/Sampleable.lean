@@ -2,16 +2,23 @@
 Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
+
+! This file was ported from Lean 3 source module testing.slim_check.sampleable
+! leanprover-community/mathlib commit fdc286cc6967a012f41b87f76dcd2797b53152af
+! Please do not edit these lines, except to modify the commit id
+! if you have ported upstream changes.
 -/
 import Mathlib.Testing.SlimCheck.Gen
 import Qq
 
 /-!
 # `SampleableExt` Class
+
 This class permits the creation samples of a given type
-controlling the size of those values using the `Gen` monad`.
+controlling the size of those values using the `Gen` monad.
 
 # `Shrinkable` Class
+
 This class helps minimize examples by creating smaller versions of
 given values.
 
@@ -21,18 +28,20 @@ When testing a proposition like `∀ n : ℕ, prime n → n ≤ 100`,
 `SampleableExt` to generate small examples of ℕ and progressively increase
 in size. For each example `n`, `prime n` is tested. If it is false,
 the example will be rejected (not a test success nor a failure) and
-`SlimCheck` will move on to other examples. If `prime n` is true, `n
-≤ 100` will be tested. If it is false, `n` is a counter-example of `∀
-n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
+`SlimCheck` will move on to other examples. If `prime n` is true,
+`n ≤ 100` will be tested. If it is false, `n` is a counter-example of
+`∀ n : ℕ, prime n → n ≤ 100` and the test fails. If `n ≤ 100` is true,
 the test passes and `SlimCheck` moves on to trying more examples.
 
 This is a port of the Haskell QuickCheck library.
 
 ## Main definitions
-  * `SampleableExt` class
-  * `Shrinkable` class
+
+* `SampleableExt` class
+* `Shrinkable` class
 
 ### `SampleableExt`
+
 `SampleableExt` can be used in two ways. The first (and most common)
 is to simply generate values of a type directly using the `Gen` monad,
 if this is what you want to do then `SampleableExt.mkSelfContained` is
@@ -48,11 +57,13 @@ as interpreted (using `interp`) as an object of the right type. If you
 are using it in the first way, this proxy type will simply be the type
 itself and the `interp` function `id`.
 
-### `Shrinkable
+### `Shrinkable`
+
 Given an example `x : α`, `Shrinkable α` gives us a way to shrink it
 and suggest simpler examples.
 
 ## Shrinking
+
 Shrinking happens when `SlimCheck` find a counter-example to a
 property.  It is likely that the example will be more complicated than
 necessary so `SlimCheck` proceeds to shrink it as much as
@@ -72,7 +83,9 @@ argument, we know that `SlimCheck` is guaranteed to terminate.
 random testing
 
 ## References
-  * https://hackage.haskell.org/package/QuickCheck
+
+* https://hackage.haskell.org/package/QuickCheck
+
 -/
 
 namespace SlimCheck
@@ -158,6 +171,13 @@ instance Prod.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
     let shrink2 := shrB.shrink snd |>.map fun x ↦ (fst, x)
     shrink1 ++ shrink2
 
+instance Sigma.shrinkable [shrA : Shrinkable α] [shrB : Shrinkable β] :
+    Shrinkable ((_ : α) × β) where
+  shrink := λ ⟨fst,snd⟩ =>
+    let shrink1 := shrA.shrink fst |>.map fun x ↦ ⟨x, snd⟩
+    let shrink2 := shrB.shrink snd |>.map fun x ↦ ⟨fst, x⟩
+    shrink1 ++ shrink2
+
 open Shrinkable
 
 /-- Shrink a list of a shrinkable type, either by discarding an element or shrinking an element. -/
@@ -205,7 +225,7 @@ def Char.sampleable (length : Nat) (chars : List Char) (pos : 0 < chars.length) 
 instance Char.sampleableDefault : SampleableExt Char :=
   Char.sampleable 3 " 0123abcABC:,;`\\/".toList (by decide)
 
-instance Prod.sampleableExt {α β : Type u} [SampleableExt α] [SampleableExt β] :
+instance Prod.sampleableExt {α : Type u} {β : Type v} [SampleableExt α] [SampleableExt β] :
     SampleableExt (α × β) where
   proxy := Prod (proxy α) (proxy β)
   proxyRepr := inferInstance

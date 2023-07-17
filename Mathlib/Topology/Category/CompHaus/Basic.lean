@@ -101,15 +101,15 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: Adding instance
 instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
-show TopologicalSpace X.toTop from inferInstance
+  show TopologicalSpace X.toTop from inferInstance
 
 -- Porting note: Adding instance
 instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
-show CompactSpace X.toTop from inferInstance
+  show CompactSpace X.toTop from inferInstance
 
 -- Porting note: Adding instance
 instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
-show T2Space X.toTop from inferInstance
+  show T2Space X.toTop from inferInstance
 
 /-- Any continuous function on compact Hausdorff spaces is a closed map. -/
 theorem isClosedMap {X Y : CompHaus.{u}} (f : X ⟶ Y) : IsClosedMap f := fun _ hC =>
@@ -153,21 +153,21 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
 instance : Full compHausToTop :=
-show Full <| inducedFunctor _ from inferInstance
+  show Full <| inducedFunctor _ from inferInstance
 
 instance : Faithful compHausToTop :=
-show Faithful <| inducedFunctor _ from inferInstance
+  show Faithful <| inducedFunctor _ from inferInstance
 
 -- Porting note: Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
-show CompactSpace X.toTop from inferInstance
+  show CompactSpace X.toTop from inferInstance
 
 -- Porting note: Adding instance
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
-show T2Space X.toTop from inferInstance
+  show T2Space X.toTop from inferInstance
 
 instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
-  ⟨by intro A B f hf ; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+  ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
@@ -235,12 +235,12 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.creates_limits compHausToTop.createsLimits
 
 instance CompHaus.hasLimits : Limits.HasLimits CompHaus :=
-  has_limits_of_has_limits_creates_limits compHausToTop
+  hasLimits_of_hasLimits_createsLimits compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_limits CompHaus.hasLimits
 
 instance CompHaus.hasColimits : Limits.HasColimits CompHaus :=
-  has_colimits_of_reflective compHausToTop
+  hasColimits_of_reflective compHausToTop
 set_option linter.uppercaseLean3 false in
 #align CompHaus.has_colimits CompHaus.hasColimits
 
@@ -351,7 +351,7 @@ theorem mono_iff_injective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Mono f ↔ Funct
       ext
       exact h
     rw [cancel_mono] at this
-    apply_fun fun e => e PUnit.unit  at this
+    apply_fun fun e => e PUnit.unit at this
     exact this
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget CompHaus).mono_of_mono_map

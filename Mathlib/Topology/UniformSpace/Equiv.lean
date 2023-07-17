@@ -380,7 +380,7 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
 /-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
 -- Porting note: made `α` explicit
 @[simps! (config := { fullyApplied := false })]
-def finTwoArrow (α : Type _) [UniformSpace α]: (Fin 2 → α) ≃ᵤ α × α :=
+def finTwoArrow (α : Type _) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
 

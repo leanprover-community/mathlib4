@@ -73,7 +73,7 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
         refine ENNReal.tsum_le_tsum fun p => ?_
         refine ENNReal.tsum_le_tsum fun q => measure_mono ?_
         exact inter_subset_inter_left _ (biInter_subset_of_mem q.2)
-      _ = ∑' (p : s) (_q : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
+      _ = ∑' (p : s) (_ : ↥(s ∩ Ioi p)), (0 : ℝ≥0∞) := by
         congr
         ext1 p
         congr

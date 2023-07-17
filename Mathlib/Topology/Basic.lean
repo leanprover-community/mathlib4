@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 
 ! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit e8da5f215e815d9ed3455f0216ef52b53e05438a
+! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -87,7 +87,7 @@ def TopologicalSpace.ofClosed {α : Type u} (T : Set (Set α)) (empty_mem : ∅ 
     (union_mem : ∀ A, A ∈ T → ∀ B, B ∈ T → A ∪ B ∈ T) : TopologicalSpace α where
   IsOpen X := Xᶜ ∈ T
   isOpen_univ := by simp [empty_mem]
-  isOpen_inter s t hs ht := by simpa only [compl_inter] using union_mem (sᶜ) hs (tᶜ) ht
+  isOpen_inter s t hs ht := by simpa only [compl_inter] using union_mem sᶜ hs tᶜ ht
   isOpen_sUnion s hs := by
     simp only [Set.compl_sUnion]
     exact sInter_mem (compl '' s) fun z ⟨y, hy, hz⟩ => hz ▸ hs y hy
@@ -191,14 +191,14 @@ theorem IsOpen.and : IsOpen { a | p₁ a } → IsOpen { a | p₂ a } → IsOpen 
 /-- A set is closed if its complement is open -/
 class IsClosed (s : Set α) : Prop where
   /-- The complement of a closed set is an open set. -/
-  isOpen_compl : IsOpen (sᶜ)
+  isOpen_compl : IsOpen sᶜ
 #align is_closed IsClosed
 
 set_option quotPrecheck false in
 /-- Notation for `IsClosed` with respect to a non-standard topology. -/
 scoped[Topology] notation (name := IsClosed_of) "IsClosed[" t "]" => @IsClosed _ t
 
-@[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen (sᶜ) ↔ IsClosed s :=
+@[simp] theorem isOpen_compl_iff {s : Set α} : IsOpen sᶜ ↔ IsClosed s :=
   ⟨fun h => ⟨h⟩, fun h => h.isOpen_compl⟩
 #align is_open_compl_iff isOpen_compl_iff
 
@@ -229,7 +229,7 @@ theorem isClosed_biInter {s : Set β} {f : β → Set α} (h : ∀ i ∈ s, IsCl
 #align is_closed_bInter isClosed_biInter
 
 @[simp]
-theorem isClosed_compl_iff {s : Set α} : IsClosed (sᶜ) ↔ IsOpen s := by
+theorem isClosed_compl_iff {s : Set α} : IsClosed sᶜ ↔ IsOpen s := by
   rw [← isOpen_compl_iff, compl_compl]
 #align is_closed_compl_iff isClosed_compl_iff
 
@@ -411,6 +411,10 @@ def closure (s : Set α) : Set α :=
   ⋂₀ { t | IsClosed t ∧ s ⊆ t }
 #align closure closure
 
+set_option quotPrecheck false in
+/-- Notation for `closure` with respect to a non-standard topology. -/
+scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
+
 @[simp]
 theorem isClosed_closure {s : Set α} : IsClosed (closure s) :=
   isClosed_sInter fun _ => And.left
@@ -542,18 +546,18 @@ theorem interior_subset_closure {s : Set α} : interior s ⊆ closure s :=
   Subset.trans interior_subset subset_closure
 #align interior_subset_closure interior_subset_closure
 
-theorem closure_eq_compl_interior_compl {s : Set α} : closure s = interior (sᶜ)ᶜ := by
+theorem closure_eq_compl_interior_compl {s : Set α} : closure s = (interior sᶜ)ᶜ := by
   rw [interior, closure, compl_sUnion, compl_image_set_of]
   simp only [compl_subset_compl, isOpen_compl_iff]
 #align closure_eq_compl_interior_compl closure_eq_compl_interior_compl
 
 @[simp]
-theorem interior_compl {s : Set α} : interior (sᶜ) = closure sᶜ := by
+theorem interior_compl {s : Set α} : interior sᶜ = (closure s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
 #align interior_compl interior_compl
 
 @[simp]
-theorem closure_compl {s : Set α} : closure (sᶜ) = interior sᶜ := by
+theorem closure_compl {s : Set α} : closure sᶜ = (interior s)ᶜ := by
   simp [closure_eq_compl_interior_compl]
 #align closure_compl closure_compl
 
@@ -608,11 +612,11 @@ theorem dense_iff_closure_eq {s : Set α} : Dense s ↔ closure s = univ :=
 alias dense_iff_closure_eq ↔ Dense.closure_eq _
 #align dense.closure_eq Dense.closure_eq
 
-theorem interior_eq_empty_iff_dense_compl {s : Set α} : interior s = ∅ ↔ Dense (sᶜ) := by
+theorem interior_eq_empty_iff_dense_compl {s : Set α} : interior s = ∅ ↔ Dense sᶜ := by
   rw [dense_iff_closure_eq, closure_compl, compl_univ_iff]
 #align interior_eq_empty_iff_dense_compl interior_eq_empty_iff_dense_compl
 
-theorem Dense.interior_compl {s : Set α} (h : Dense s) : interior (sᶜ) = ∅ :=
+theorem Dense.interior_compl {s : Set α} (h : Dense s) : interior sᶜ = ∅ :=
   interior_eq_empty_iff_dense_compl.2 <| by rwa [compl_compl]
 #align dense.interior_compl Dense.interior_compl
 
@@ -707,7 +711,7 @@ theorem self_diff_frontier (s : Set α) : s \ frontier s = interior s := by
     inter_eq_self_of_subset_right interior_subset, empty_union]
 #align self_diff_frontier self_diff_frontier
 
-theorem frontier_eq_closure_inter_closure {s : Set α} : frontier s = closure s ∩ closure (sᶜ) := by
+theorem frontier_eq_closure_inter_closure {s : Set α} : frontier s = closure s ∩ closure sᶜ := by
   rw [closure_compl, frontier, diff_eq]
 #align frontier_eq_closure_inter_closure frontier_eq_closure_inter_closure
 
@@ -729,7 +733,7 @@ theorem frontier_interior_subset {s : Set α} : frontier (interior s) ⊆ fronti
 
 /-- The complement of a set has the same frontier as the original set. -/
 @[simp]
-theorem frontier_compl (s : Set α) : frontier (sᶜ) = frontier s := by
+theorem frontier_compl (s : Set α) : frontier sᶜ = frontier s := by
   simp only [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
 #align frontier_compl frontier_compl
 
@@ -749,8 +753,8 @@ theorem frontier_inter_subset (s t : Set α) :
 #align frontier_inter_subset frontier_inter_subset
 
 theorem frontier_union_subset (s t : Set α) :
-    frontier (s ∪ t) ⊆ frontier s ∩ closure (tᶜ) ∪ closure (sᶜ) ∩ frontier t := by
-  simpa only [frontier_compl, ← compl_union] using frontier_inter_subset (sᶜ) (tᶜ)
+    frontier (s ∪ t) ⊆ frontier s ∩ closure tᶜ ∪ closure sᶜ ∩ frontier t := by
+  simpa only [frontier_compl, ← compl_union] using frontier_inter_subset sᶜ tᶜ
 #align frontier_union_subset frontier_union_subset
 
 theorem IsClosed.frontier_eq {s : Set α} (hs : IsClosed s) : frontier s = s \ interior s := by
@@ -798,12 +802,12 @@ theorem Disjoint.frontier_right (hs : IsOpen s) (hd : Disjoint s t) : Disjoint s
 #align disjoint.frontier_right Disjoint.frontier_right
 
 theorem frontier_eq_inter_compl_interior {s : Set α} :
-    frontier s = interior sᶜ ∩ interior (sᶜ)ᶜ := by
+    frontier s = (interior s)ᶜ ∩ (interior sᶜ)ᶜ := by
   rw [← frontier_compl, ← closure_compl]; rfl
 #align frontier_eq_inter_compl_interior frontier_eq_inter_compl_interior
 
 theorem compl_frontier_eq_union_interior {s : Set α} :
-    frontier sᶜ = interior s ∪ interior (sᶜ) := by
+    (frontier s)ᶜ = interior s ∪ interior sᶜ := by
   rw [frontier_eq_inter_compl_interior]
   simp only [compl_inter, compl_compl]
 #align compl_frontier_eq_union_interior compl_frontier_eq_union_interior
@@ -835,7 +839,7 @@ scoped[Topology] notation "𝓝" => nhds
 scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
 
 /-- Notation for the filter of punctured neighborhoods of a point. -/
-scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x ({x}ᶜ)
+scoped[Topology] notation "𝓝[≠] " x:100 => nhdsWithin x {x}ᶜ
 
 /-- Notation for the filter of right neighborhoods of a point. -/
 scoped[Topology] notation "𝓝[≥] " x:100 => nhdsWithin x (Set.Ici x)
@@ -851,7 +855,7 @@ scoped[Topology] notation "𝓝[<] " x:100 => nhdsWithin x (Set.Iio x)
 
 end
 
-theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_hs : IsOpen s) (_ha : a ∈ s), 𝓟 s := by
+theorem nhds_def' (a : α) : 𝓝 a = ⨅ (s : Set α) (_ : IsOpen s) (_ : a ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (a ∈ _), iInf_and]
 #align nhds_def' nhds_def'
 
@@ -1169,7 +1173,7 @@ def AccPt (x : α) (F : Filter α) : Prop :=
   NeBot (𝓝[≠] x ⊓ F)
 #align acc_pt AccPt
 
-theorem acc_iff_cluster (x : α) (F : Filter α) : AccPt x F ↔ ClusterPt x (𝓟 ({x}ᶜ) ⊓ F) := by
+theorem acc_iff_cluster (x : α) (F : Filter α) : AccPt x F ↔ ClusterPt x (𝓟 {x}ᶜ ⊓ F) := by
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
 
@@ -1192,7 +1196,7 @@ theorem accPt_iff_frequently (x : α) (C : Set α) : AccPt x (𝓟 C) ↔ ∃ᶠ
 #align acc_pt_iff_frequently accPt_iff_frequently
 
 /-- If `x` is an accumulation point of `F` and `F ≤ G`, then
-`x` is an accumulation point of `D. -/
+`x` is an accumulation point of `D`. -/
 theorem AccPt.mono {x : α} {F G : Filter α} (h : AccPt x F) (hFG : F ≤ G) : AccPt x G :=
   NeBot.mono h (inf_le_inf_left _ hFG)
 #align acc_pt.mono AccPt.mono
@@ -1284,7 +1288,7 @@ of a sequence is closed. -/
 theorem isClosed_setOf_clusterPt {f : Filter α} : IsClosed { x | ClusterPt x f } := by
   simp only [ClusterPt, inf_neBot_iff_frequently_left, setOf_forall, imp_iff_not_or]
   refine' isClosed_iInter fun p => IsClosed.union _ _ <;> apply isClosed_compl_iff.2
-  exacts[isOpen_setOf_eventually_nhds, isOpen_const]
+  exacts [isOpen_setOf_eventually_nhds, isOpen_const]
 #align is_closed_set_of_cluster_pt isClosed_setOf_clusterPt
 
 theorem mem_closure_iff_clusterPt {s : Set α} {a : α} : a ∈ closure s ↔ ClusterPt a (𝓟 s) :=
@@ -1311,7 +1315,7 @@ theorem dense_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : S
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
 -- porting note: was a `@[simp]` lemma but `simp` can prove it
-theorem closure_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : closure ({x}ᶜ) = (univ : Set α) :=
+theorem closure_compl_singleton (x : α) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set α) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton
 
@@ -1433,8 +1437,8 @@ theorem Dense.inter_nhds_nonempty {s t : Set α} (hs : Dense s) {x : α} (ht : t
 
 theorem closure_diff {s t : Set α} : closure s \ closure t ⊆ closure (s \ t) :=
   calc
-    closure s \ closure t = closure tᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
-    _ ⊆ closure (closure tᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
+    closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [diff_eq, inter_comm]
+    _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
     _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
 #align closure_diff closure_diff
@@ -1469,7 +1473,7 @@ Then `f` tends to `a` along `l` restricted to `s` if and only if it tends to `a`
 theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : β → α} {l : Filter β} {s : Set β} {a : α}
     (h : ∀ (x) (_ : x ∉ s), f x = a) : Tendsto f (l ⊓ 𝓟 s) (𝓝 a) ↔ Tendsto f l (𝓝 a) := by
   rw [tendsto_iff_comap, tendsto_iff_comap]
-  replace h : 𝓟 (sᶜ) ≤ comap f (𝓝 a)
+  replace h : 𝓟 sᶜ ≤ comap f (𝓝 a)
   · rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
@@ -1643,7 +1647,7 @@ theorem Continuous.comp {g : β → γ} {f : α → β} (hg : Continuous g) (hf 
 theorem Continuous.comp' {g : β → γ} {f : α → β} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
-theorem Continuous.iterate {f : α → α} (h : Continuous f) (n : ℕ) : Continuous (f^[n]) :=
+theorem Continuous.iterate {f : α → α} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
   Nat.recOn n continuous_id fun _ ihn => ihn.comp h
 #align continuous.iterate Continuous.iterate
 
@@ -1651,6 +1655,11 @@ nonrec theorem ContinuousAt.comp {g : β → γ} {f : α → β} {x : α} (hg : 
     (hf : ContinuousAt f x) : ContinuousAt (g ∘ f) x :=
   hg.comp hf
 #align continuous_at.comp ContinuousAt.comp
+
+/-- See note [comp_of_eq lemmas] -/
+theorem ContinuousAt.comp_of_eq {g : β → γ} {f : α → β} {x : α} {y : β} (hg : ContinuousAt g y)
+    (hf : ContinuousAt f x) (hy : f x = y) : ContinuousAt (g ∘ f) x := by subst hy; exact hg.comp hf
+#align continuous_at.comp_of_eq ContinuousAt.comp_of_eq
 
 theorem Continuous.tendsto {f : α → β} (hf : Continuous f) (x) : Tendsto f (𝓝 x) (𝓝 (f x)) :=
   ((nhds_basis_opens x).tendsto_iff <| nhds_basis_opens <| f x).2 fun t ⟨hxt, ht⟩ =>
@@ -1697,7 +1706,7 @@ theorem continuousAt_id {x : α} : ContinuousAt id x :=
 #align continuous_at_id continuousAt_id
 
 theorem ContinuousAt.iterate {f : α → α} {x : α} (hf : ContinuousAt f x) (hx : f x = x) (n : ℕ) :
-    ContinuousAt (f^[n]) x :=
+    ContinuousAt f^[n] x :=
   Nat.recOn n continuousAt_id fun n ihn =>
     show ContinuousAt (f^[n] ∘ f) x from ContinuousAt.comp (hx.symm ▸ ihn) hf
 #align continuous_at.iterate ContinuousAt.iterate
@@ -1882,7 +1891,7 @@ Note: for the most part this note also applies to other properties
 ### The traditional way
 As an example, let's look at addition `(+) : M → M → M`. We can state that this is continuous
 in different definitionally equal ways (omitting some typing information)
-* `Continuous (λ p, p.1 + p.2)`;
+* `Continuous (fun p ↦ p.1 + p.2)`;
 * `Continuous (Function.uncurry (+))`;
 * `Continuous ↿(+)`. (`↿` is notation for recursively uncurrying a function)
 
@@ -1915,9 +1924,9 @@ This has the following advantages
 * `Continuous.add _ _` is recognized correctly by the elaborator and gives useful new goals.
 * It works generally, since the domain is a variable.
 
-As an example for an unary operation, we have `Continuous.neg`.
+As an example for a unary operation, we have `Continuous.neg`.
 ```
-Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (λ x, -f x)
+Continuous.neg {f : α → G} (hf : Continuous f) : Continuous (fun x ↦ -f x)
 ```
 For unary functions, the elaborator is not confused when applying the traditional lemma
 (like `continuous_neg`), but it's still convenient to have the short version available (compare
@@ -1933,7 +1942,7 @@ The correct continuity principle for this operation is something like this:
 {f : X → F} {γ γ' : ∀ x, Path (f x) (f x)} {t₀ s : X → I}
   (hγ : Continuous ↿γ) (hγ' : Continuous ↿γ')
   (ht : Continuous t₀) (hs : Continuous s) :
-  Continuous (λ x, strans (γ x) (γ' x) (t x) (s x))
+  Continuous (fun x ↦ strans (γ x) (γ' x) (t x) (s x))
 ```
 Note that *all* arguments of `strans` are indexed over `X`, even the basepoint `x`, and the last
 argument `s` that arises since `Path x x` has a coercion to `I → F`. The paths `γ` and `γ'` (which
@@ -1963,8 +1972,36 @@ of the conclusion)
 ```
 lemma ContinuousOn.comp_fract {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → ℝ → Y} {g : X → ℝ} (hf : Continuous ↿f) (hg : Continuous g) (h : ∀ s, f s 0 = f s 1) :
-  Continuous (λ x, f x (fract (g x)))
+  Continuous (fun x ↦ f x (fract (g x)))
 ```
 With `ContinuousAt` you can be even more precise about what to prove in case of discontinuities,
 see e.g. `ContinuousAt.comp_div_cases`.
+-/
+
+library_note "comp_of_eq lemmas"/--
+Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
+two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
+`ContMDiffWithinAt.comp`. The reason is that a lemma like this looks like
+`ContinuousAt g (f x) → ContinuousAt f x → ContinuousAt (g ∘ f) x`.
+Since Lean's elaborator elaborates the arguments from left-to-right, when you write `hg.comp hf`,
+the elaborator will try to figure out *both* `f` and `g` from the type of `hg`. It tries to figure
+out `f` just from the point where `g` is continuous. For example, if `hg : ContinuousAt g (a, x)`
+then the elaborator will assign `f` to the function `Prod.mk a`, since in that case `f x = (a, x)`.
+This is undesirable in most cases where `f` is not a variable. There are some ways to work around
+this, for example by giving `f` explicitly, or to force Lean to elaborate `hf` before elaborating
+`hg`, but this is annoying.
+Another better solution is to reformulate composition lemmas to have the following shape
+`ContinuousAt g y → ContinuousAt f x → f x = y → ContinuousAt (g ∘ f) x`.
+This is even useful if the proof of `f x = y` is `rfl`.
+The reason that this works better is because the type of `hg` doesn't mention `f`.
+Only after elaborating the two `ContinuousAt` arguments, Lean will try to unify `f x` with `y`,
+which is often easy after having chosen the correct functions for `f` and `g`.
+Here is an example that shows the difference:
+```
+example [TopologicalSpace α] [TopologicalSpace β] {x₀ : α} (f : α → α → β)
+    (hf : ContinuousAt (Function.uncurry f) (x₀, x₀)) :
+    ContinuousAt (fun x ↦ f x x) x₀ :=
+  -- hf.comp (continuousAt_id.prod continuousAt_id) -- type mismatch
+  -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
+```
 -/

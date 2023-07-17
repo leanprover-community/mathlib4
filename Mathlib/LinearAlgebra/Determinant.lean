@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 
 ! This file was ported from Lean 3 source module linear_algebra.determinant
-! leanprover-community/mathlib commit b1c23399f01266afe392a0d8f71f599a0dad4f7b
+! leanprover-community/mathlib commit bd65478311e4dfd41f48bf38c7e3b02fb75d0163
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -539,7 +539,7 @@ theorem Basis.det_self : e.det e = 1 := by simp [e.det_apply]
 #align basis.det_self Basis.det_self
 
 @[simp]
-theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R M 1 := by
+theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R M ι 1 := by
   ext v
   exact Matrix.det_isEmpty
 #align basis.det_is_empty Basis.det_isEmpty
@@ -555,7 +555,7 @@ theorem is_basis_iff_det {v : ι → M} :
     set v' := Basis.mk hli hspan.ge
     rw [e.det_apply]
     convert LinearEquiv.isUnit_det (LinearEquiv.refl R M) v' e using 2
-    ext (i j)
+    ext i j
     simp
   · intro h
     rw [Basis.det_apply, Basis.toMatrix_eq_toMatrix_constr] at h
@@ -610,7 +610,7 @@ theorem Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M
     b'.det (f ∘ b) = LinearMap.det (f ∘ₗ (b'.equiv b (Equiv.refl ι) : M' →ₗ[A] M)) := by
   rw [Basis.det_apply, ← LinearMap.det_toMatrix b', LinearMap.toMatrix_comp _ b, Matrix.det_mul,
     LinearMap.toMatrix_basis_equiv, Matrix.det_one, mul_one]
-  congr 1; ext (i j)
+  congr 1; ext i j
   rw [Basis.toMatrix_apply, LinearMap.toMatrix_apply, Function.comp_apply]
 #align basis.det_comp_basis Basis.det_comp_basis
 

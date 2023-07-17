@@ -69,7 +69,7 @@ theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
 /-- `digits b n` gives the digits, in little-endian order,
 of a natural number `n` in a specified base `b`.
 
-In any base, we have `ofDigits b L = L.foldr (λ x y, x + b * y) 0`.
+In any base, we have `ofDigits b L = L.foldr (fun x y ↦ x + b * y) 0`.
 * For any `2 ≤ b`, we have `l < b` for any `l ∈ digits b n`,
   and the last digit is not zero.
   This uniquely specifies the behaviour of `digits b`.
@@ -310,7 +310,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · norm_num at h
   rcases n with (_ | n)
   · norm_num at w
-  . simp only [digits_add_two_add_one, ne_eq]
+  · simp only [digits_add_two_add_one, ne_eq]
 #align nat.digits_eq_cons_digits_div Nat.digits_eq_cons_digits_div
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
@@ -352,10 +352,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     rename ℕ => m
-    -- Porting note: Added `have`
-    have : ∀ v, List.getLast (digits (succ zero) (succ v)) (by simp [digits, digitsAux1]) = 1 := by
-      intros v; induction v <;> simp; assumption
-    simp only [digits_one, List.getLast_replicate_succ m 1, this]
+    simp only [digits_one, List.getLast_replicate_succ m 1]
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn
@@ -381,8 +378,8 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    . apply Nat.div_lt_self <;> simp
-    . assumption
+    · apply Nat.div_lt_self <;> simp
+    · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
@@ -480,7 +477,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · simp; trivial
+  · simp
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]

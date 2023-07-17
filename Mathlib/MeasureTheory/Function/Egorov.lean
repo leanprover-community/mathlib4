@@ -44,7 +44,7 @@ set of elements such that `f k x` and `g x` are separated by at least `1 / (n + 
 
 This definition is useful for Egorov's theorem. -/
 def notConvergentSeq [Preorder ι] (f : ι → α → β) (g : α → β) (n : ℕ) (j : ι) : Set α :=
-  ⋃ (k) (_hk : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
+  ⋃ (k) (_ : j ≤ k), { x | 1 / (n + 1 : ℝ) < dist (f k x) (g x) }
 #align measure_theory.egorov.not_convergent_seq MeasureTheory.Egorov.notConvergentSeq
 
 variable {n : ℕ} {i j : ι} {s : Set α} {ε : ℝ} {f : ι → α → β} {g : α → β}
@@ -131,7 +131,7 @@ theorem notConvergentSeqLtIndex_spec (hε : 0 < ε) (hf : ∀ n, StronglyMeasura
 #align measure_theory.egorov.not_convergent_seq_lt_index_spec MeasureTheory.Egorov.notConvergentSeqLtIndex_spec
 
 /-- Given some `ε > 0`, `iUnionNotConvergentSeq` is the union of `notConvergentSeq` with
-specific indicies such that `iUnionNotConvergentSeq` has measure less equal than `ε`.
+specific indices such that `iUnionNotConvergentSeq` has measure less equal than `ε`.
 
 This definition is useful for Egorov's theorem. -/
 def iUnionNotConvergentSeq (hε : 0 < ε) (hf : ∀ n, StronglyMeasurable (f n))
@@ -183,7 +183,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   obtain ⟨hxs, hx⟩ := hx
   specialize hx hxs N
   rw [Egorov.mem_notConvergentSeq_iff] at hx
-  push_neg  at hx
+  push_neg at hx
   rw [dist_comm]
   exact lt_of_le_of_lt (hx n hn) hN
 #align measure_theory.egorov.tendsto_uniformly_on_diff_Union_not_convergent_seq MeasureTheory.Egorov.tendstoUniformlyOn_diff_iUnionNotConvergentSeq
@@ -213,10 +213,10 @@ theorem tendstoUniformlyOn_of_ae_tendsto (hf : ∀ n, StronglyMeasurable (f n))
 #align measure_theory.tendsto_uniformly_on_of_ae_tendsto MeasureTheory.tendstoUniformlyOn_of_ae_tendsto
 
 /-- Egorov's theorem for finite measure spaces. -/
-theorem tendstoUniformlyOn_of_ae_tendsto' [FiniteMeasure μ] (hf : ∀ n, StronglyMeasurable (f n))
+theorem tendstoUniformlyOn_of_ae_tendsto' [IsFiniteMeasure μ] (hf : ∀ n, StronglyMeasurable (f n))
     (hg : StronglyMeasurable g) (hfg : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x))) {ε : ℝ}
     (hε : 0 < ε) :
-    ∃ t, MeasurableSet t ∧ μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop (tᶜ) := by
+    ∃ t, MeasurableSet t ∧ μ t ≤ ENNReal.ofReal ε ∧ TendstoUniformlyOn f g atTop tᶜ := by
   have ⟨t, _, ht, htendsto⟩ := tendstoUniformlyOn_of_ae_tendsto hf hg MeasurableSet.univ
     (measure_ne_top μ Set.univ) (by filter_upwards [hfg] with _ htendsto _ using htendsto) hε
   refine' ⟨_, ht, _⟩

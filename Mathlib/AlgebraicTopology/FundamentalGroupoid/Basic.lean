@@ -22,6 +22,7 @@ homotopy equivalence. With this, the fundamental group of `X` based at `x` is ju
 group of `x`.
 -/
 
+open CategoryTheory
 
 universe u v
 
@@ -345,8 +346,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
       map_id := fun X => rfl
       map_comp := fun {x y z} p q => by
         refine' Quotient.inductionOn₂ p q fun a b => _
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans]
-        rfl }
+        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
     change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)

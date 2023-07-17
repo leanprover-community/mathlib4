@@ -26,7 +26,7 @@ This set is used in the proof of Fermat's Theorem (see below), and can be used t
 ## Main statements
 
 For each theorem name listed below,
-we also prove similar theorems for `min`, `extr` (if applicable)`,
+we also prove similar theorems for `min`, `extr` (if applicable),
 and `(f)deriv` instead of `has_fderiv`.
 
 * `IsLocalMaxOn.hasFDerivWithinAt_nonpos` : `f' y ≤ 0` whenever `a` is a local maximum
@@ -97,7 +97,7 @@ theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segmen
   show x + d n ∈ segment ℝ x y
   · rw [segment_eq_image']
     refine' ⟨(c n)⁻¹, ⟨_, _⟩, rfl⟩
-    exacts[inv_nonneg.2 (pow_nonneg zero_le_two _), inv_le_one (one_le_pow_of_one_le one_le_two _)]
+    exacts [inv_nonneg.2 (pow_nonneg zero_le_two _), inv_le_one (one_le_pow_of_one_le one_le_two _)]
   show Tendsto (fun n => c n • d n) atTop (𝓝 (y - x))
   · exact tendsto_const_nhds.congr fun n ↦ (smul_inv_smul₀ (pow_ne_zero _ two_ne_zero) _).symm
 #align mem_pos_tangent_cone_at_of_segment_subset mem_posTangentConeAt_of_segment_subset
@@ -282,9 +282,9 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
       refine ⟨c', hc', Or.inl fun x hx ↦ ?_⟩
       simp only [mem_setOf_eq, this x hx, this c' (Ioo_subset_Icc_self hc'), le_rfl]
     · refine' ⟨C, ⟨lt_of_le_of_ne Cmem.1 <| mt _ hC, lt_of_le_of_ne Cmem.2 <| mt _ hC⟩, Or.inr Cge⟩
-      exacts[fun h => by rw [h], fun h => by rw [h, hfI]]
+      exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
   · refine' ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt _ hc, lt_of_le_of_ne cmem.2 <| mt _ hc⟩, Or.inl cle⟩
-    exacts[fun h => by rw [h], fun h => by rw [h, hfI]]
+    exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
 #align exists_Ioo_extr_on_Icc exists_Ioo_extr_on_Icc
 
 /-- A continuous function on a closed interval with `f a = f b` has a local extremum at some
@@ -340,7 +340,7 @@ theorem exists_deriv_eq_zero' (hab : a < b) (hfa : Tendsto f (𝓝[>] a) (𝓝 l
       show ∃ c ∈ Ioo a b, deriv f c = 0 from
         exists_hasDerivAt_eq_zero' hab hfa hfb fun x hx => (h x hx).hasDerivAt)
     fun h : ¬∀ x ∈ Ioo a b, DifferentiableAt ℝ f x =>
-    have h : ∃ x, x ∈ Ioo a b ∧ ¬DifferentiableAt ℝ f x := by push_neg  at h; exact h
+    have h : ∃ x, x ∈ Ioo a b ∧ ¬DifferentiableAt ℝ f x := by push_neg at h; exact h
     let ⟨c, hc, hcdiff⟩ := h
     ⟨c, hc, deriv_zero_of_not_differentiableAt hcdiff⟩
 #align exists_deriv_eq_zero' exists_deriv_eq_zero'

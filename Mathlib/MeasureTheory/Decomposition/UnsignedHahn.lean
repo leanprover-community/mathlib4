@@ -36,7 +36,7 @@ namespace MeasureTheory
 variable {α : Type _} [MeasurableSpace α] {μ ν : Measure α}
 
 /-- **Hahn decomposition theorem** -/
-theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
+theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s,
       MeasurableSet s ∧
         (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧ ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
@@ -118,7 +118,7 @@ theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
             simp only [pow_add, pow_one, le_sub_iff_add_le]
             linarith
           _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
-            simp only [sub_eq_add_neg] ; abel
+            simp only [sub_eq_add_neg]; abel
           _ ≤ d (e (n + 1)) + d (f m n) := (add_le_add (le_of_lt <| he₂ _) ih)
           _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
             rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (hf _ _) (he₁ _), add_assoc]
@@ -161,7 +161,7 @@ theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
     have : 0 ≤ d t :=
       (add_le_add_iff_left γ).1 <|
         calc
-          γ + 0 ≤ d s := by rw [add_zero] ; exact γ_le_d_s
+          γ + 0 ≤ d s := by rw [add_zero]; exact γ_le_d_s
           _ = d (s \ t) + d t := by rw [d_split _ _ hs ht, inter_eq_self_of_subset_right hts]
           _ ≤ γ + d t := add_le_add (d_le_γ _ (hs.diff ht)) le_rfl
 
@@ -175,7 +175,7 @@ theorem hahn_decomposition [FiniteMeasure μ] [FiniteMeasure ν] :
           _ = d (s ∪ t) := by
             rw [d_split _ _ (hs.union ht) ht, union_diff_right, union_inter_cancel_right,
               (subset_compl_iff_disjoint_left.1 hts).sdiff_eq_left]
-          _ ≤ γ + 0 := by rw [add_zero] ; exact d_le_γ _ (hs.union ht)
+          _ ≤ γ + 0 := by rw [add_zero]; exact d_le_γ _ (hs.union ht)
 
     rw [← to_nnreal_μ, ← to_nnreal_ν, ENNReal.coe_le_coe, ← NNReal.coe_le_coe]
     simpa only [sub_le_iff_le_add, zero_add] using this

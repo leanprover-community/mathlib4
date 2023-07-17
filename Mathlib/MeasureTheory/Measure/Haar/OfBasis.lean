@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 
 ! This file was ported from Lean 3 source module measure_theory.measure.haar.of_basis
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
+! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -49,7 +49,7 @@ def parallelepiped (v : ι → E) : Set E :=
 #align parallelepiped parallelepiped
 
 theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
-    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ)(_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
+    x ∈ parallelepiped v ↔ ∃ (t : ι → ℝ) (_ht : t ∈ Icc (0 : ι → ℝ) 1), x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
 
@@ -130,24 +130,13 @@ theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i,
 
 theorem convex_parallelepiped (v : ι → E) : Convex ℝ (parallelepiped v) := by
   rw [parallelepiped_eq_sum_segment]
-  -- TODO: add `convex.sum` to match `Convex.add`
-  let A : AddSubmonoid (Set E) :=
-    { carrier := { s | Convex ℝ s }
-      zero_mem' := convex_singleton _
-      add_mem' := Convex.add }
-  refine A.sum_mem (fun i _hi => convex_segment _ _)
+  exact convex_sum _ fun _i _hi => convex_segment _ _
 #align convex_parallelepiped convex_parallelepiped
 
 /-- A `parallelepiped` is the convex hull of its vertices -/
 theorem parallelepiped_eq_convexHull (v : ι → E) :
     parallelepiped v = convexHull ℝ (∑ i, {(0 : E), v i}) := by
-  -- TODO: add `convex_hull_sum` to match `convexHull_add`
-  let A : Set E →+ Set E :=
-    { toFun := convexHull ℝ
-      map_zero' := convexHull_singleton _
-      map_add' := convexHull_add }
-  simp_rw [parallelepiped_eq_sum_segment, ← convexHull_pair]
-  exact (A.map_sum _ _).symm
+  simp_rw [convexHull_sum, convexHull_pair, parallelepiped_eq_sum_segment]
 #align parallelepiped_eq_convex_hull parallelepiped_eq_convexHull
 
 /-- The axis aligned parallelepiped over `ι → ℝ` is a cuboid. -/
@@ -206,11 +195,10 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
     rwa [← Homeomorph.image_interior, nonempty_image_iff]
 #align basis.parallelepiped Basis.parallelepiped
 
--- Porting note: lint complains that this result is a tautology and thus unnecessary
--- @[simp]
--- theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
---    (b.parallelepiped : Set E) = parallelepiped b := rfl
--- #align basis.coe_parallelepiped Basis.coe_parallelepiped
+@[simp]
+theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+   (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
+#align basis.coe_parallelepiped Basis.coe_parallelepiped
 
 @[simp]
 theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
@@ -238,12 +226,11 @@ irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 #align basis.add_haar Basis.addHaar
 
--- Porting note: `is_add_haar_measure` is now called `AddHaarMeasure` in Mathlib4
-instance AddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : AddHaarMeasure b.addHaar := by
-  rw [Basis.addHaar]; exact Measure.addHaarMeasure_addHaarMeasure _
-#align is_add_haar_measure_basis_add_haar AddHaarMeasure_basis_addHaar
+instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
+  rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
+#align is_add_haar_measure_basis_add_haar IsAddHaarMeasure_basis_addHaar
 
-theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (parallelepiped b) = 1 := by
+theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 #align basis.add_haar_self Basis.addHaar_self
 
@@ -257,6 +244,10 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 #align measure_space_of_inner_product_space measureSpaceOfInnerProductSpace
+
+instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+    [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
+  IsAddHaarMeasure_basis_addHaar _
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/

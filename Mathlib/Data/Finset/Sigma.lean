@@ -126,7 +126,7 @@ def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) 
 
 theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β)
     (x : Sigma γ) :
-    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1)(hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
+    x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1) (hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
   obtain ⟨⟨i, a⟩, j, b⟩ := a, b
   obtain rfl | h := Decidable.eq_or_ne i j
   · constructor
@@ -175,14 +175,14 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  . simp [h, forall_prop_of_true h]
-  . simp [h, forall_prop_of_false h]
+  · simp [h, forall_prop_of_true h]
+  · simp [h, forall_prop_of_false h]
 #align finset.sigma_lift_eq_empty Finset.sigmaLift_eq_empty
 
 theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σi, α i) (b : Σi, β i) :
     sigmaLift f a b ⊆ sigmaLift g a b := by
   rintro x hx
-  rw [mem_sigmaLift] at hx⊢
+  rw [mem_sigmaLift] at hx ⊢
   obtain ⟨ha, hb, hx⟩ := hx
   exact ⟨ha, hb, h hx⟩
 #align finset.sigma_lift_mono Finset.sigmaLift_mono

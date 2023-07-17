@@ -124,37 +124,37 @@ theorem coe_iSup {ι : Sort _} [CompleteLattice β] (f : ι → α →o β) :
 
 instance [CompleteLattice β] : CompleteLattice (α →o β) :=
   { (_ : Lattice (α →o β)), OrderHom.orderTop, OrderHom.orderBot with
-    -- sSup := SupSet.sSup   -- Porting note: removed, unecessary?
+    -- sSup := SupSet.sSup   -- Porting note: removed, unnecessary?
     -- Porting note: Added `by apply`, was `fun s f hf x => le_iSup_of_le f (le_iSup _ hf)`
     le_sSup := fun s f hf x => le_iSup_of_le f (by apply le_iSup _ hf)
     sSup_le := fun s f hf x => iSup₂_le fun g hg => hf g hg x
-    --inf := sInf      -- Porting note: removed, unecessary?
+    --inf := sInf      -- Porting note: removed, unnecessary?
     le_sInf := fun s f hf x => le_iInf₂ fun g hg => hf g hg x
     sInf_le := fun s f hf x => iInf_le_of_le f (iInf_le _ hf)
     }
 
 theorem iterate_sup_le_sup_iff {α : Type _} [SemilatticeSup α] (f : α →o α) :
-    (∀ n₁ n₂ a₁ a₂, (f^[n₁ + n₂]) (a₁ ⊔ a₂) ≤ (f^[n₁]) a₁ ⊔ (f^[n₂]) a₂) ↔
+    (∀ n₁ n₂ a₁ a₂, f^[n₁ + n₂] (a₁ ⊔ a₂) ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂) ↔
       ∀ a₁ a₂, f (a₁ ⊔ a₂) ≤ f a₁ ⊔ a₂ := by
   constructor <;> intro h
   · exact h 1 0
   · intro n₁ n₂ a₁ a₂
-    have h' : ∀ n a₁ a₂, (f^[n]) (a₁ ⊔ a₂) ≤ (f^[n]) a₁ ⊔ a₂ := by
+    have h' : ∀ n a₁ a₂, f^[n] (a₁ ⊔ a₂) ≤ f^[n] a₁ ⊔ a₂ := by
       intro n
       induction' n with n ih <;> intro a₁ a₂
       · rfl
       · calc
-          (f^[n + 1]) (a₁ ⊔ a₂) = (f^[n]) (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
-          _ ≤ (f^[n]) (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
-          _ ≤ (f^[n]) (f a₁) ⊔ a₂ := ih _ _
-          _ = (f^[n + 1]) a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
+          f^[n + 1] (a₁ ⊔ a₂) = f^[n] (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
+          _ ≤ f^[n] (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
+          _ ≤ f^[n] (f a₁) ⊔ a₂ := ih _ _
+          _ = f^[n + 1] a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
     calc
-      (f^[n₁ + n₂]) (a₁ ⊔ a₂) = (f^[n₁]) ((f^[n₂]) (a₁ ⊔ a₂)) :=
+      f^[n₁ + n₂] (a₁ ⊔ a₂) = f^[n₁] (f^[n₂] (a₁ ⊔ a₂)) :=
         Function.iterate_add_apply f n₁ n₂ _
-      _ = (f^[n₁]) ((f^[n₂]) (a₂ ⊔ a₁)) := by rw [sup_comm]
-      _ ≤ (f^[n₁]) ((f^[n₂]) a₂ ⊔ a₁) := f.mono.iterate n₁ (h' n₂ _ _)
-      _ = (f^[n₁]) (a₁ ⊔ (f^[n₂]) a₂) := by rw [sup_comm]
-      _ ≤ (f^[n₁]) a₁ ⊔ (f^[n₂]) a₂ := h' n₁ a₁ _
+      _ = f^[n₁] (f^[n₂] (a₂ ⊔ a₁)) := by rw [sup_comm]
+      _ ≤ f^[n₁] (f^[n₂] a₂ ⊔ a₁) := f.mono.iterate n₁ (h' n₂ _ _)
+      _ = f^[n₁] (a₁ ⊔ f^[n₂] a₂) := by rw [sup_comm]
+      _ ≤ f^[n₁] a₁ ⊔ f^[n₂] a₂ := h' n₁ a₁ _
 #align order_hom.iterate_sup_le_sup_iff OrderHom.iterate_sup_le_sup_iff
 
 end Preorder

@@ -1468,7 +1468,7 @@ nonrec def pmap {p : α → Prop} (f : ∀ a, p a → β) (s : Multiset α) : (�
       have H₁ : ∀ a ∈ l₁, p a := fun a h => H₂ a (pp.subset h)
       have : ∀ {s₂ e H}, @Eq.ndrec (Multiset α) l₁ (fun s => (∀ a ∈ s, p a) → Multiset β)
           (fun _ => ↑(pmap f l₁ H₁)) s₂ e H = ↑(pmap f l₁ H₁) := by
-        intro s₂ e _ ; subst e; rfl
+        intro s₂ e _; subst e; rfl
       this.trans <| Quot.sound <| pp.pmap f
 #align multiset.pmap Multiset.pmap
 
@@ -1549,7 +1549,7 @@ theorem mem_attach (s : Multiset α) : ∀ x, x ∈ s.attach :=
 
 @[simp]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {s H b} :
-    b ∈ pmap f s H ↔ ∃ (a : _)(h : a ∈ s), f a (H a h) = b :=
+    b ∈ pmap f s H ↔ ∃ (a : _) (h : a ∈ s), f a (H a h) = b :=
   Quot.inductionOn s (fun _l _H => List.mem_pmap) H
 #align multiset.mem_pmap Multiset.mem_pmap
 
@@ -1608,7 +1608,7 @@ protected def decidableExistsMultiset {p : α → Prop} [DecidablePred p] : Deci
 #align multiset.decidable_exists_multiset Multiset.decidableExistsMultiset
 
 instance decidableDexistsMultiset {p : ∀ a ∈ m, Prop} [_hp : ∀ (a) (h : a ∈ m), Decidable (p a h)] :
-    Decidable (∃ (a : _)(h : a ∈ m), p a h) :=
+    Decidable (∃ (a : _) (h : a ∈ m), p a h) :=
   @decidable_of_iff _ _
     (Iff.intro (fun ⟨⟨a, ha₁⟩, _, ha₂⟩ => ⟨a, ha₁, ha₂⟩) fun ⟨a, ha₁, ha₂⟩ =>
       ⟨⟨a, ha₁⟩, mem_attach _ _, ha₂⟩)

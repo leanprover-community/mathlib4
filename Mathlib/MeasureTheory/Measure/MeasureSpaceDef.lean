@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.measure_space_def
-! leanprover-community/mathlib commit 146a2eed7ad5887ade571e073d0805d2ac618043
+! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -155,7 +155,7 @@ end Measure
 theorem measure_eq_trim (s : Set α) : μ s = μ.toOuterMeasure.trim s := by rw [μ.trimmed]
 #align measure_theory.measure_eq_trim MeasureTheory.measure_eq_trim
 
-theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_st : s ⊆ t) (_ht : MeasurableSet t), μ t := by
+theorem measure_eq_iInf (s : Set α) : μ s = ⨅ (t) (_ : s ⊆ t) (_ : MeasurableSet t), μ t := by
   rw [measure_eq_trim, OuterMeasure.trim_eq_iInf]
 #align measure_theory.measure_eq_infi MeasureTheory.measure_eq_iInf
 
@@ -353,25 +353,25 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def Measure.ae {α} {m : MeasurableSpace α} (μ : Measure α) : Filter α where
-  sets := { s | μ (sᶜ) = 0 }
+  sets := { s | μ sᶜ = 0 }
   univ_sets := by simp
   inter_sets hs ht := by simp only [compl_inter, mem_setOf_eq]; exact measure_union_null hs ht
   sets_of_superset hs hst := measure_mono_null (Set.compl_subset_compl.2 hst) hs
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
 -- mathport name: «expr∀ᵐ ∂ , »
-notation3"∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
+notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
 -- mathport name: «expr∃ᵐ ∂ , »
-notation3"∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
+notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
 -- mathport name: «expr =ᵐ[ ] »
-notation:50 f " =ᵐ[" μ:50 "] " g:50 => f =ᶠ[Measure.ae μ] g
+notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
 
 -- mathport name: «expr ≤ᵐ[ ] »
-notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => f ≤ᶠ[Measure.ae μ] g
+notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (Measure.ae μ) f g
 
-theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ (sᶜ) = 0 :=
+theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ sᶜ = 0 :=
   Iff.rfl
 #align measure_theory.mem_ae_iff MeasureTheory.mem_ae_iff
 
@@ -445,7 +445,7 @@ theorem ae_eq_empty : s =ᵐ[μ] (∅ : Set α) ↔ μ s = 0 :=
 
 -- Porting note: The priority should be higher than `eventuallyEq_univ`.
 @[simp high]
-theorem ae_eq_univ : s =ᵐ[μ] (univ : Set α) ↔ μ (sᶜ) = 0 :=
+theorem ae_eq_univ : s =ᵐ[μ] (univ : Set α) ↔ μ sᶜ = 0 :=
   eventuallyEq_univ
 #align measure_theory.ae_eq_univ MeasureTheory.ae_eq_univ
 
@@ -551,11 +551,11 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
 @[to_additive]
-theorem Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α}
-    (h : s.mulIndicator f =ᵐ[μ] 1) : μ (s ∩ Function.mulSupport f) = 0 := by
-  simpa [Filter.EventuallyEq, ae_iff] using h
-#align set.mul_indicator_ae_eq_one MeasureTheory.Set.mulIndicator_ae_eq_one
-#align set.indicator_ae_eq_zero MeasureTheory.Set.indicator_ae_eq_zero
+theorem _root_.Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α} :
+    s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
+  simp [EventuallyEq, eventually_iff, Measure.ae, compl_setOf]; rfl
+#align set.mul_indicator_ae_eq_one Set.mulIndicator_ae_eq_one
+#align set.indicator_ae_eq_zero Set.indicator_ae_eq_zero
 
 /-- If `s ⊆ t` modulo a set of measure `0`, then `μ s ≤ μ t`. -/
 @[mono]
@@ -598,7 +598,7 @@ irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
 
 theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable μ s := by
   rw [toMeasurable_def]; split_ifs with hs h's
-  exacts[hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
+  exacts [hs.choose_spec.fst, h's.choose_spec.fst, (exists_measurable_superset μ s).choose_spec.1]
 #align measure_theory.subset_to_measurable MeasureTheory.subset_toMeasurable
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
@@ -637,16 +637,15 @@ add_decl_doc volume
 section MeasureSpace
 
 -- mathport name: «expr∀ᵐ , »
-notation3"∀ᵐ "(...)", "r:(scoped P =>
-  Filter.Eventually P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
+notation3 "∀ᵐ "(...)", "r:(scoped P =>
+  Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 -- mathport name: «expr∃ᵐ , »
-notation3"∃ᵐ "(...)", "r:(scoped P =>
-  Filter.Frequently P MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
-
+notation3 "∃ᵐ "(...)", "r:(scoped P =>
+  Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
 /-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
-macro "volume_tac": tactic =>
+macro "volume_tac" : tactic =>
   `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
 
 end MeasureSpace

@@ -109,13 +109,13 @@ theorem continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, 
   hf.continuousOn_iUnion' fun i x hx ↦ h_cont i x <| (h_cl i).closure_subset hx
 #align locally_finite.continuous_on_Union LocallyFinite.continuousOn_iUnion
 
-protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : (⋃ i, f i) = univ)
+protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion' hc
 #align locally_finite.continuous' LocallyFinite.continuous'
 
-protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : (⋃ i, f i) = univ)
+protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (h_cl : ∀ i, IsClosed (f i)) (h_cont : ∀ i, ContinuousOn g (f i)) :
     Continuous g :=
   continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
@@ -142,7 +142,7 @@ theorem isClosed_iUnion (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) :
 /-- If `f : β → Set α` is a locally finite family of closed sets, then for any `x : α`, the
 intersection of the complements to `f i`, `x ∉ f i`, is a neighbourhood of `x`. -/
 theorem iInter_compl_mem_nhds (hf : LocallyFinite f) (hc : ∀ i, IsClosed (f i)) (x : X) :
-    (⋂ (i) (_hi : x ∉ f i), f iᶜ) ∈ 𝓝 x := by
+    (⋂ (i) (_ : x ∉ f i), (f i)ᶜ) ∈ 𝓝 x := by
   refine' IsOpen.mem_nhds _ (mem_iInter₂.2 fun i => id)
   suffices IsClosed (⋃ i : { i // x ∉ f i }, f i) by
     rwa [← isOpen_compl_iff, compl_iUnion, iInter_subtype] at this

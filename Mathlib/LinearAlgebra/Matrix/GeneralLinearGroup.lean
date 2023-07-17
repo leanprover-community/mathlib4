@@ -75,6 +75,7 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 #align matrix.general_linear_group.det Matrix.GeneralLinearGroup.det
+#align matrix.general_linear_group.coe_det_apply Matrix.GeneralLinearGroup.det_apply_val
 
 /-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
@@ -270,7 +271,7 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
 set_option linter.uppercaseLean3 false in
 #align matrix.special_linear_group.to_GL_pos_injective Matrix.SpecialLinearGroup.toGLPos_injective
 
-/-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing striaght to
+/-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
 a matrix. -/
 @[simp]
 theorem coe_GLPos_coe_GL_coe_matrix (g : SpecialLinearGroup n R) :

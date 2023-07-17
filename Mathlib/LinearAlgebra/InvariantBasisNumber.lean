@@ -103,7 +103,7 @@ theorem strongRankCondition_iff_succ :
   · by_contra H
     exact
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
-        (hf.comp (Function.extend_injective (RelEmbedding.injective _) _))
+        (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type _} [Fintype α] [Fintype β]
@@ -223,7 +223,7 @@ variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 /-- Any nontrivial noetherian ring satisfies the strong rank condition.
 
 An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for some left-noetherian `R`
-would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPunitOfProdInjective`),
+would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPUnitOfProdInjective`),
 which is not the case!
 -/
 instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
@@ -240,7 +240,7 @@ instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCond
           (LinearEquiv.funCongrLeft R R e)).toLinearMap
   have i' : Injective f' := i.comp (LinearEquiv.injective _)
   apply @zero_ne_one (Fin (1 + m) → R) _ _
-  apply (IsNoetherian.equivPunitOfProdInjective f' i').injective
+  apply (IsNoetherian.equivPUnitOfProdInjective f' i').injective
   ext
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 

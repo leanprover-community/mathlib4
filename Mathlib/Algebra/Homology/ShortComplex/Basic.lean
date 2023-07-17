@@ -208,7 +208,8 @@ def _root_.CategoryTheory.Functor.mapShortComplex (F : C ⥤ D) [F.PreservesZero
 /-- A constructor for isomorphisms in the category `ShortComplex C`-/
 @[simps]
 def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e₃ : S₁.X₃ ≅ S₂.X₃)
-    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom) (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom) :
+    (comm₁₂ : e₁.hom ≫ S₂.f = S₁.f ≫ e₂.hom := by aesop_cat)
+    (comm₂₃ : e₂.hom ≫ S₂.g = S₁.g ≫ e₃.hom := by aesop_cat) :
     S₁ ≅ S₂ where
   hom := ⟨e₁.hom, e₂.hom, e₃.hom, comm₁₂, comm₂₃⟩
   inv := homMk e₁.inv e₂.inv e₃.inv
@@ -218,12 +219,12 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
           ← comm₂₃, e₂.inv_hom_id_assoc])
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
-  IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃) (by aesop_cat) (by aesop_cat))
+  IsIso.of_iso (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃))
 
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
-  mk S.g.op S.f.op (by simp only [← op_comp, S.zero] ; rfl)
+  mk S.g.op S.f.op (by simp only [← op_comp, S.zero]; rfl)
 
 /-- The opposite morphism in `ShortComplex Cᵒᵖ` associated to a morphism in `ShortComplex C` -/
 @[simps]
@@ -244,7 +245,7 @@ lemma opMap_id : opMap (𝟙 S) = 𝟙 S.op := rfl
 /-- The `ShortComplex` in `C` associated to a short complex in `Cᵒᵖ`. -/
 @[simps]
 def unop (S : ShortComplex Cᵒᵖ) : ShortComplex C :=
-  mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero] ; rfl)
+  mk S.g.unop S.f.unop (by simp only [← unop_comp, S.zero]; rfl)
 
 /-- The morphism in `ShortComplex C` associated to a morphism in `ShortComplex Cᵒᵖ` -/
 @[simps]
@@ -286,10 +287,10 @@ def opEquiv : (ShortComplex C)ᵒᵖ ≌ ShortComplex Cᵒᵖ where
 
 variable {C}
 
-/-- the canonical isomorphism `S.unop.op ≅ S` for a short complex `S` in `Cᵒᵖ` -/
+/-- The canonical isomorphism `S.unop.op ≅ S` for a short complex `S` in `Cᵒᵖ` -/
 abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counitIso.app S
 
-/-- the canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
+/-- The canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
 abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
   Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
 

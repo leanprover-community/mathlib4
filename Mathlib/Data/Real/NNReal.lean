@@ -15,6 +15,7 @@ import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Nonnegative real numbers
@@ -358,7 +359,8 @@ protected theorem coe_nat_cast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 #align nnreal.coe_nat_cast NNReal.coe_nat_cast
 
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
   rfl
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
@@ -381,6 +383,9 @@ protected theorem coe_pos {r : ℝ≥0} : (0 : ℝ) < r ↔ 0 < r :=
 protected theorem coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 #align nnreal.coe_mono NNReal.coe_mono
 
+@[gcongr]
+theorem _root_.NNReal.toReal_le_toReal {x y : NNReal} (h : x ≤ y) : (x : ℝ) ≤ y := NNReal.coe_mono h
+
 protected theorem _root_.Real.toNNReal_mono : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max h (le_refl 0)
 #align real.to_nnreal_mono Real.toNNReal_mono
@@ -395,10 +400,16 @@ theorem mk_coe_nat (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_nat_cast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_coe_nat
 
+-- Porting note: place this in the `Real` namespace
 @[simp]
 theorem toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
 #align nnreal.to_nnreal_coe_nat NNReal.toNNReal_coe_nat
+
+@[simp]
+theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    Real.toNNReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+  toNNReal_coe_nat n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 noncomputable def gi : GaloisInsertion Real.toNNReal (↑) :=
@@ -924,18 +935,18 @@ nonrec theorem sSup_of_not_bddAbove {s : Set ℝ≥0} (hs : ¬BddAbove s) : SupS
   exact sSup_of_not_bddAbove hs
 #align nnreal.Sup_of_not_bdd_above NNReal.sSup_of_not_bddAbove
 
-theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : (⨆ i, f i) = 0 :=
+theorem iSup_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 #align nnreal.supr_of_not_bdd_above NNReal.iSup_of_not_bddAbove
 
-theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨆ i, f i) = 0 := ciSup_of_empty f
+theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_of_empty f
 
-theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : (⨅ i, f i) = 0 := by
+theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align nnreal.infi_empty NNReal.iInf_empty
 
 @[simp]
-theorem iInf_const_zero {α : Sort _} : (⨅ _i : α, (0 : ℝ≥0)) = 0 := by
+theorem iInf_const_zero {α : Sort _} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
   rw [← NNReal.coe_eq, coe_iInf]
   exact Real.ciInf_const_zero
 #align nnreal.infi_const_zero NNReal.iInf_const_zero

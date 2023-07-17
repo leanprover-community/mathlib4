@@ -63,7 +63,7 @@ theorem inv_def (x : α) (y : β) : r.inv y x ↔ r x y :=
 #align rel.inv_def Rel.inv_def
 
 theorem inv_inv : inv (inv r) = r := by
-  ext (x y)
+  ext x y
   rfl
 #align rel.inv_inv Rel.inv_inv
 
@@ -118,12 +118,12 @@ theorem comp_left_id (r : Rel α β) : @Eq α • r = r := by
 #align rel.comp_left_id Rel.comp_left_id
 
 theorem inv_id : inv (@Eq α) = @Eq α := by
-  ext (x y)
+  ext x y
   constructor <;> apply Eq.symm
 #align rel.inv_id Rel.inv_id
 
 theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv r := by
-  ext (x z)
+  ext x z
   simp [comp, inv, flip, and_comm]
 #align rel.inv_comp Rel.inv_comp
 

@@ -53,14 +53,12 @@ See
 instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunction.unit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.unit h) fun X =>
     @Yoneda.isIso _ _ _ _ ((Adjunction.unit h).app X)
-      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f),
-          naturality := fun X Y f => by
-            funext x -- porting note: `aesop_cat` is not able to do `funext` automatically
-            aesop_cat },
+      ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
           ⟨by
             ext x
             apply L.map_injective
-            aesop_cat, by
+            aesop_cat,
+           by
             ext x
             dsimp
             simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
@@ -77,14 +75,12 @@ instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunct
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.counit h) fun X =>
     @isIso_of_op _ _ _ _ _ <|
       @Coyoneda.isIso _ _ _ _ ((Adjunction.counit h).app X).op
-        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f),
-            naturality := fun X Y f => by
-              funext x
-              aesop_cat },
+        ⟨⟨{ app := fun Y f => R.preimage ((h.homEquiv (R.obj X) Y) f) },
             ⟨by
               ext x
               apply R.map_injective
-              simp, by
+              simp,
+             by
               ext x
               dsimp
               simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
@@ -220,8 +216,8 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
       homEquiv_naturality_right := fun {X Y' Y} f g => by
         apply iC.map_injective
         suffices : R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g)
-        . simp [Trans.trans, this]
-        . apply comm2.hom.naturality g }
+        · simp [Trans.trans, this]
+        · apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory

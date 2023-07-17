@@ -65,10 +65,10 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
 #align int.coe_nat_abs Int.coe_natAbs
 
 lemma _root_.Nat.cast_natAbs {α : Type _} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-by rw [←coe_natAbs, Int.cast_ofNat]
+  by rw [←coe_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
-theorem natAbs_abs (a : ℤ) : natAbs (|a|) = natAbs a := by rw [abs_eq_natAbs] ; rfl
+theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
 #align int.nat_abs_abs Int.natAbs_abs
 
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by

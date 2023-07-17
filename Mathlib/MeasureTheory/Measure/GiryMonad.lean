@@ -49,7 +49,7 @@ variable [MeasurableSpace α] [MeasurableSpace β]
 
 /-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
 instance instMeasurableSpace : MeasurableSpace (Measure α) :=
-  ⨆ (s : Set α) (_hs : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
+  ⨆ (s : Set α) (_ : MeasurableSet s), (borel ℝ≥0∞).comap fun μ => μ s
 #align measure_theory.measure.measurable_space MeasureTheory.Measure.instMeasurableSpace
 
 theorem measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ : Measure α => μ s :=
@@ -127,13 +127,13 @@ theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α
 #align measure_theory.measure.measurable_join MeasureTheory.Measure.measurable_join
 
 theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : Measurable f) :
-    (∫⁻ x, f x ∂join m) = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
+    ∫⁻ x, f x ∂join m = ∫⁻ μ, ∫⁻ x, f x ∂μ ∂m := by
   simp_rw [lintegral_eq_iSup_eapprox_lintegral hf, SimpleFunc.lintegral,
     join_apply (SimpleFunc.measurableSet_preimage _ _)]
   suffices
     ∀ (s : ℕ → Finset ℝ≥0∞) (f : ℕ → ℝ≥0∞ → Measure α → ℝ≥0∞), (∀ n r, Measurable (f n r)) →
       Monotone (fun n μ => ∑ r in s n, r * f n r μ) →
-      (⨆ n, ∑ r in s n, r * ∫⁻ μ, f n r μ ∂m) = ∫⁻ μ, ⨆ n, ∑ r in s n, r * f n r μ ∂m by
+      ⨆ n, ∑ r in s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r in s n, r * f n r μ ∂m by
     refine'
       this (fun n => SimpleFunc.range (SimpleFunc.eapprox f n))
         (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) _ _
@@ -184,7 +184,7 @@ theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurabl
 #align measure_theory.measure.measurable_bind' MeasureTheory.Measure.measurable_bind'
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)
-    (hf : Measurable f) : (∫⁻ x, f x ∂bind m μ) = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
+    (hf : Measurable f) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map (measurable_lintegral hf) hμ)
 #align measure_theory.measure.lintegral_bind MeasureTheory.Measure.lintegral_bind
 

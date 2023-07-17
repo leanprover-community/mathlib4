@@ -123,7 +123,7 @@ theorem empty : μ ⊥ = 0 := by
   obtain a function defined on all open sets, by taking the supremum of the content of all compact
   subsets. -/
 def innerContent (U : Opens G) : ℝ≥0∞ :=
-  ⨆ (K : Compacts G) (_h : (K : Set G) ⊆ U), μ K
+  ⨆ (K : Compacts G) (_ : (K : Set G) ⊆ U), μ K
 #align measure_theory.content.inner_content MeasureTheory.Content.innerContent
 
 theorem le_innerContent (K : Compacts G) (U : Opens G) (h2 : (K : Set G) ⊆ U) :
@@ -277,7 +277,7 @@ theorem le_outerMeasure_compacts (K : Compacts G) : μ K ≤ μ.outerMeasure K :
 #align measure_theory.content.le_outer_measure_compacts MeasureTheory.Content.le_outerMeasure_compacts
 
 theorem outerMeasure_eq_iInf (A : Set G) :
-    μ.outerMeasure A = ⨅ (U : Set G) (hU : IsOpen U) (_h : A ⊆ U), μ.innerContent ⟨U, hU⟩ :=
+    μ.outerMeasure A = ⨅ (U : Set G) (hU : IsOpen U) (_ : A ⊆ U), μ.innerContent ⟨U, hU⟩ :=
   inducedOuterMeasure_eq_iInf _ μ.innerContent_iUnion_nat μ.innerContent_mono A
 #align measure_theory.content.outer_measure_eq_infi MeasureTheory.Content.outerMeasure_eq_iInf
 
@@ -287,7 +287,7 @@ theorem outerMeasure_interior_compacts (K : Compacts G) : μ.outerMeasure (inter
 
 theorem outerMeasure_exists_compact {U : Opens G} (hU : μ.outerMeasure U ≠ ∞) {ε : ℝ≥0}
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.outerMeasure U ≤ μ.outerMeasure K + ε := by
-  rw [μ.outerMeasure_opens] at hU⊢
+  rw [μ.outerMeasure_opens] at hU ⊢
   rcases μ.innerContent_exists_compact hU hε with ⟨K, h1K, h2K⟩
   exact ⟨K, h1K, le_trans h2K <| add_le_add_right (μ.le_outerMeasure_compacts K) _⟩
 #align measure_theory.content.outer_measure_exists_compact MeasureTheory.Content.outerMeasure_exists_compact
@@ -396,7 +396,7 @@ instance regular [LocallyCompactSpace G] : μ.measure.Regular := by
     rcases hr with ⟨U, hUo, hAU, hr⟩
     rw [← μ.outerMeasure_of_isOpen U hUo, ← μ.measure_apply hUo.measurableSet] at hr
     exact ⟨U, hAU, hUo, hr⟩
-  have : FiniteMeasureOnCompacts μ.measure := by
+  have : IsFiniteMeasureOnCompacts μ.measure := by
     refine' ⟨fun K hK => _⟩
     rw [measure_apply _ hK.measurableSet]
     exact μ.outerMeasure_lt_top_of_isCompact hK
@@ -416,7 +416,7 @@ section RegularContents
   `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54-/
 def ContentRegular :=
   ∀ ⦃K : TopologicalSpace.Compacts G⦄,
-    μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_hK : (K : Set G) ⊆ interior (K' : Set G)), μ K'
+    μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_ : (K : Set G) ⊆ interior (K' : Set G)), μ K'
 #align measure_theory.content.content_regular MeasureTheory.Content.ContentRegular
 
 theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSpace.Compacts G)
@@ -425,7 +425,7 @@ theorem contentRegular_exists_compact (H : ContentRegular μ) (K : TopologicalSp
   by_contra hc
   simp only [not_exists, not_and, not_le] at hc
   have lower_bound_iInf : μ K + ε ≤
-      ⨅ (K' : TopologicalSpace.Compacts G) (_h : (K : Set G) ⊆ interior (K' : Set G)), μ K' :=
+      ⨅ (K' : TopologicalSpace.Compacts G) (_ : (K : Set G) ⊆ interior (K' : Set G)), μ K' :=
     le_iInf fun K' => le_iInf fun K'_hyp => le_of_lt (hc K' K'_hyp)
   rw [← H] at lower_bound_iInf
   exact (lt_self_iff_false (μ K)).mp (lt_of_le_of_lt' lower_bound_iInf

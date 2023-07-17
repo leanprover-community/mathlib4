@@ -183,10 +183,6 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
     (L X (L Y Z).cone.pt).isLimit
 #align category_theory.limits.binary_fan.associator_of_limit_cone CategoryTheory.Limits.BinaryFan.associatorOfLimitCone
 
--- Porting note: no tidy
--- attribute [local tidy] tactic.discrete_cases
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- Construct a left unitor from specified limit cones.
 -/
 @[simps]
@@ -202,6 +198,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
             -- `PEmpty.rec x x` should not even typecheck.
             { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
         (𝟙 X))
+  -- Porting note: this should be automatable:
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩

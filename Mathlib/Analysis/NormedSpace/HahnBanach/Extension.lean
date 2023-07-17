@@ -68,7 +68,7 @@ open IsROrC
 
 variable {𝕜 : Type _} [IsROrC 𝕜] {F : Type _} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisyfing `IsROrC 𝕜`. -/
+/-- Hahn-Banach theorem for continuous linear functions over `𝕜` satisfying `IsROrC 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 F) (f : p →L[𝕜] 𝕜) :
     ∃ g : F →L[𝕜] 𝕜, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : Module ℝ F := RestrictScalars.module ℝ 𝕜 F

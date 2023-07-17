@@ -48,7 +48,7 @@ The field `app` provides the components of the natural transformation.
 
 Naturality is expressed by `α.naturality`.
 -/
-@[ext]
+@[ext, pp_dot]
 structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
   /-- The component of a natural transformation. -/
   app : ∀ X : C, F.obj X ⟶ G.obj X
@@ -58,11 +58,6 @@ structure NatTrans (F G : C ⥤ D) : Type max u₁ v₂ where
 #align category_theory.nat_trans.naturality CategoryTheory.NatTrans.naturality
 #align category_theory.nat_trans.ext_iff CategoryTheory.NatTrans.ext_iff
 #align category_theory.nat_trans.ext CategoryTheory.NatTrans.ext
-
-pp_extended_field_notation NatTrans.app
-
--- TODO Perhaps we should just turn on `ext` in aesop?
-attribute [aesop safe apply (rule_sets [CategoryTheory])] NatTrans.ext
 
 -- Rather arbitrarily, we say that the 'simpler' form is
 -- components of natural transformations moving earlier.

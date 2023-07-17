@@ -54,7 +54,7 @@ because the more bundled version usually does not work with dot notation.
 * `Pi.evalOrderHom`: evaluation of a function at a point `Function.eval i` as a bundled
   monotone map;
 * `OrderHom.coeFnHom`: coercion to function as a bundled monotone map;
-* `OrderHom.apply`: application of a `OrderHom` at a point as a bundled monotone map;
+* `OrderHom.apply`: application of an `OrderHom` at a point as a bundled monotone map;
 * `OrderHom.pi`: combine a family of monotone maps `f i : α →o π i` into a monotone map
   `α →o Π i, π i`;
 * `OrderHom.piIso`: order isomorphism between `α →o Π i, π i` and `Π i, α →o π i`;
@@ -81,7 +81,7 @@ variable {F α β γ δ : Type _}
 
 /-- Bundled monotone (aka, increasing) function -/
 structure OrderHom (α β : Type _) [Preorder α] [Preorder β] where
-  /-- The underlying funcrion of an `OrderHom`. -/
+  /-- The underlying function of an `OrderHom`. -/
   toFun : α → β
   /-- The underlying function of an `OrderHom` is monotone. -/
   monotone' : Monotone toFun
@@ -136,7 +136,7 @@ attribute [simp] map_le_map_iff
 `OrderIso`. This is declared as the default coercion from `F` to `α ≃o β`. -/
 @[coe]
 def OrderIsoClass.toOrderIso [LE α] [LE β] [OrderIsoClass F α β] (f : F) : α ≃o β :=
-{ EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
+  { EquivLike.toEquiv f with map_rel_iff' := map_le_map_iff f }
 
 /-- Any type satisfying `OrderIsoClass` can be cast into `OrderIso` via
 `OrderIsoClass.toOrderIso`. -/
@@ -335,7 +335,7 @@ def curry : (α × β →o γ) ≃o (α →o β →o γ) where
     ext ⟨x, y⟩
     rfl
   right_inv f := by
-    ext (x y)
+    ext x y
     rfl
   map_rel_iff' := by simp [le_def]
 #align order_hom.curry OrderHom.curry
@@ -381,7 +381,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
   rfl
 #align order_hom.id_comp OrderHom.id_comp
 
-/-- Constant function bundled as a `OrderHom`. -/
+/-- Constant function bundled as an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
@@ -426,7 +426,7 @@ def prodₘ : (α →o β) →o (α →o γ) →o α →o β × γ :=
 #align order_hom.prodₘ OrderHom.prodₘ
 #align order_hom.prodₘ_coe_coe_coe OrderHom.prodₘ_coe_coe_coe
 
-/-- Diagonal embedding of `α` into `α × α` as a `OrderHom`. -/
+/-- Diagonal embedding of `α` into `α × α` as an `OrderHom`. -/
 @[simps!]
 def diag : α →o α × α :=
   id.prod id
@@ -440,14 +440,14 @@ def onDiag (f : α →o α →o β) : α →o β :=
 #align order_hom.on_diag OrderHom.onDiag
 #align order_hom.on_diag_coe OrderHom.onDiag_coe
 
-/-- `Prod.fst` as a `OrderHom`. -/
+/-- `Prod.fst` as an `OrderHom`. -/
 @[simps]
 def fst : α × β →o α :=
   ⟨Prod.fst, fun _ _ h => h.1⟩
 #align order_hom.fst OrderHom.fst
 #align order_hom.fst_coe OrderHom.fst_coe
 
-/-- `Prod.snd` as a `OrderHom`. -/
+/-- `Prod.snd` as an `OrderHom`. -/
 @[simps]
 def snd : α × β →o β :=
   ⟨Prod.snd, fun _ _ h => h.2⟩
@@ -483,7 +483,7 @@ def prodIso : (α →o β × γ) ≃o (α →o β) × (α →o γ) where
 #align order_hom.prod_iso_apply OrderHom.prodIso_apply
 #align order_hom.prod_iso_symm_apply OrderHom.prodIso_symm_apply
 
-/-- `Prod.map` of two `OrderHom`s as a `OrderHom`. -/
+/-- `Prod.map` of two `OrderHom`s as an `OrderHom`. -/
 @[simps]
 def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
   ⟨Prod.map f g, fun _ _ h => ⟨f.mono h.1, g.mono h.2⟩⟩
@@ -492,7 +492,7 @@ def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
 
 variable {ι : Type _} {π : ι → Type _} [∀ i, Preorder (π i)]
 
-/-- Evaluation of an unbundled function at a point (`Function.eval`) as a `OrderHom`. -/
+/-- Evaluation of an unbundled function at a point (`Function.eval`) as an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def _root_.Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
   ⟨Function.eval i, Function.monotone_eval i⟩
@@ -531,10 +531,10 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   toFun f i := (Pi.evalOrderHom i).comp f
   invFun := pi
   left_inv f := by
-    ext (x i)
+    ext x i
     rfl
   right_inv f := by
-    ext (x i)
+    ext x i
     rfl
   map_rel_iff' := forall_swap
 #align order_hom.pi_iso OrderHom.piIso
@@ -735,7 +735,7 @@ def subtype (p : α → Prop) : Subtype p ↪o α :=
 #align order_embedding.subtype OrderEmbedding.subtype
 #align order_embedding.subtype_apply OrderEmbedding.subtype_apply
 
-/-- Convert an `OrderEmbedding` to a `OrderHom`. -/
+/-- Convert an `OrderEmbedding` to an `OrderHom`. -/
 @[simps (config := { fullyApplied := false })]
 def toOrderHom {X Y : Type _} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
   toFun := f

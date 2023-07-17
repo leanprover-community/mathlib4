@@ -262,7 +262,7 @@ theorem mk_le_mk_of_comm {B A₁ A₂ : C} {f₁ : A₁ ⟶ B} {f₂ : A₂ ⟶ 
 theorem mk_arrow (P : Subobject X) : mk P.arrow = P :=
   Quotient.inductionOn' P fun Q => by
     obtain ⟨e⟩ := @Quotient.mk_out' _ (isIsomorphicSetoid _) Q
-    exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _) (by aesop_cat) ≪≫ e⟩
+    exact Quotient.sound' ⟨MonoOver.isoMk (Iso.refl _)  ≪≫ e⟩
 #align category_theory.subobject.mk_arrow CategoryTheory.Subobject.mk_arrow
 
 theorem le_of_comm {B : C} {X Y : Subobject B} (f : (X : C) ⟶ (Y : C)) (w : f ≫ Y.arrow = X.arrow) :
@@ -610,14 +610,14 @@ def mapIsoToOrderIso (e : X ≅ Y) : Subobject X ≃o Subobject Y where
   map_rel_iff' {A B} := by
     dsimp
     constructor
-    . intro h
+    · intro h
       apply_fun (map e.inv).obj at h
-      . simpa only [← map_comp, e.hom_inv_id, map_id] using h
-      . apply Functor.monotone
-    . intro h
+      · simpa only [← map_comp, e.hom_inv_id, map_id] using h
+      · apply Functor.monotone
+    · intro h
       apply_fun (map e.hom).obj at h
-      . exact h
-      . apply Functor.monotone
+      · exact h
+      · apply Functor.monotone
 #align category_theory.subobject.map_iso_to_order_iso CategoryTheory.Subobject.mapIsoToOrderIso
 
 @[simp]

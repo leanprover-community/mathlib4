@@ -25,7 +25,7 @@ variable {V : Type u} [Category.{v} V]
 
 namespace ChainComplex
 
-/-- The truncation of a `ℕ`-indexed chain complex,
+/-- The truncation of an `ℕ`-indexed chain complex,
 deleting the object at `0` and shifting everything else down.
 -/
 @[simps]
@@ -204,7 +204,7 @@ end ChainComplex
 
 namespace CochainComplex
 
-/-- The truncation of a `ℕ`-indexed cochain complex,
+/-- The truncation of an `ℕ`-indexed cochain complex,
 deleting the object at `0` and shifting everything else down.
 -/
 @[simps]
@@ -345,8 +345,7 @@ def augmentTruncate (C : CochainComplex V ℕ) :
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
             -- Porting note: simp can't handle this now but aesop does
-            aesop
-    }
+            aesop }
   hom_inv_id := by
     ext i
     cases i <;>
@@ -395,4 +394,3 @@ def fromSingle₀AsComplex [HasZeroObject V] (C : CochainComplex V ℕ) (X : V)
 #align cochain_complex.from_single₀_as_complex CochainComplex.fromSingle₀AsComplex
 
 end CochainComplex
-

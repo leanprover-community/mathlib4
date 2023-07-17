@@ -53,13 +53,11 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 ## Main theorems
 
-`sum_bernoulli : ∑ k in finset.range n, (n.choose k : ℚ) * bernoulli k = 0`
+`sum_bernoulli : ∑ k in Finset.range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
 -/
 
 
-open Nat BigOperators
-
-open Finset Nat Finset.Nat PowerSeries
+open Nat BigOperators Finset Finset.Nat PowerSeries
 
 variable (A : Type _) [CommRing A] [Algebra ℚ A]
 
@@ -191,7 +189,7 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
       simp only [PowerSeries.ext_iff, evalNegHom, coeff_X] at h
     · apply eq_zero_of_neg_eq
       specialize h n
-      split_ifs  at h <;> simp_all [h_odd.neg_one_pow, factorial_ne_zero]
+      split_ifs at h <;> simp_all [h_odd.neg_one_pow, factorial_ne_zero]
     · simpa using h 1
   have h : B * (exp ℚ - 1) = X * exp ℚ := by
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
@@ -264,7 +262,7 @@ theorem bernoulli_spec' (n : ℕ) :
   -- key equation: the corresponding fact for `bernoulli'`
   have H := bernoulli'_spec' n.succ
   -- massage it to match the structure of the goal, then convert piece by piece
-  rw [sum_eq_add_sum_diff_singleton h₁] at H⊢
+  rw [sum_eq_add_sum_diff_singleton h₁] at H ⊢
   apply add_eq_of_eq_sub'
   convert eq_sub_of_add_eq' H using 1
   · refine' sum_congr rfl fun p h => _
@@ -288,7 +286,8 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
     coeff_one, coeff_exp, LinearMap.map_sub, factorial, if_pos, cast_succ, cast_one, cast_mul,
     sub_zero, RingHom.map_one, add_eq_zero_iff, if_false, _root_.inv_one, zero_add, one_ne_zero,
     MulZeroClass.mul_zero, and_false_iff, sub_self, ← RingHom.map_mul, ← map_sum]
-  cases' n with n; · simp
+  cases' n with n
+  · simp
   rw [if_neg n.succ_succ_ne_one]
   have hfact : ∀ m, (m ! : ℚ) ≠ 0 := fun m => by exact_mod_cast factorial_ne_zero m
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
@@ -323,7 +322,7 @@ theorem sum_range_pow (n p : ℕ) :
           bernoulli i * (p + 1).choose i * (n : ℚ) ^ (p + 1 - i) / (p + 1)! := by
     ext q : 1
     let f a b := bernoulli a / a ! * coeff ℚ (b + 1) (exp ℚ ^ n)
-    -- key step: use `power_series.coeff_mul` and then rewrite sums
+    -- key step: use `PowerSeries.coeff_mul` and then rewrite sums
     simp only [coeff_mul, coeff_mk, cast_mul, sum_antidiagonal_eq_sum_range_succ f]
     apply sum_congr rfl
     intros m h

@@ -74,6 +74,9 @@ instance : SecondCountableTopology ℝ≥0 :=
 instance : OrderTopology ℝ≥0 :=
   orderTopology_of_ordConnected (t := Ici 0)
 
+instance : CompleteSpace ℝ≥0 :=
+  isClosed_Ici.completeSpace_coe
+
 section coe
 
 variable {α : Type _}
@@ -133,7 +136,7 @@ theorem _root_.tendsto_real_toNNReal_atTop : Tendsto Real.toNNReal atTop atTop :
   exact tendsto_atTop_mono Real.le_coe_toNNReal tendsto_id
 #align tendsto_real_to_nnreal_at_top tendsto_real_toNNReal_atTop
 
-theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_h : a ≠ 0), 𝓟 (Iio a) :=
+theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (Iio a) :=
   nhds_bot_order.trans <| by simp only [bot_lt_iff_ne_bot]; rfl
 #align nnreal.nhds_zero NNReal.nhds_zero
 
@@ -191,11 +194,11 @@ theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 #align nnreal.coe_tsum_of_nonneg NNReal.coe_tsum_of_nonneg
 
-nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : (∑' x, a * f x) = a * ∑' x, f x :=
+nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
 #align nnreal.tsum_mul_left NNReal.tsum_mul_left
 
-nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : (∑' x, f x * a) = (∑' x, f x) * a :=
+nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
   NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
 #align nnreal.tsum_mul_right NNReal.tsum_mul_right
 
@@ -221,12 +224,12 @@ nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} 
 #align nnreal.has_sum_nat_add_iff NNReal.hasSum_nat_add_iff
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
-    (∑' i, f i) = (∑ i in range k, f i) + ∑' i, f (i + k) :=
+    ∑' i, f i = (∑ i in range k, f i) + ∑' i, f (i + k) :=
   (sum_add_tsum_nat_add' <| (summable_nat_add_iff k).2 hf).symm
 #align nnreal.sum_add_tsum_nat_add NNReal.sum_add_tsum_nat_add
 
 theorem iInf_real_pos_eq_iInf_nnreal_pos [CompleteLattice α] {f : ℝ → α} :
-    (⨅ (n : ℝ) (_h : 0 < n), f n) = ⨅ (n : ℝ≥0) (_h : 0 < n), f n :=
+    ⨅ (n : ℝ) (_ : 0 < n), f n = ⨅ (n : ℝ≥0) (_ : 0 < n), f n :=
   le_antisymm (iInf_mono' fun r => ⟨r, le_rfl⟩) (iInf₂_mono' fun r hr => ⟨⟨r, hr.le⟩, hr, le_rfl⟩)
 #align nnreal.infi_real_pos_eq_infi_nnreal_pos NNReal.iInf_real_pos_eq_iInf_nnreal_pos
 

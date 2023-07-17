@@ -239,7 +239,7 @@ instance : CstarRing (E →L[𝕜] E) :=
       refine' op_norm_le_bound _ (Real.sqrt_nonneg _) fun x => _
       have :=
         calc
-          re ⟪(A† * A) x, x⟫ ≤ ‖(A† * A) x‖ * ‖x‖ := re_inner_le_norm 𝕜 _ _
+          re ⟪(A† * A) x, x⟫ ≤ ‖(A† * A) x‖ * ‖x‖ := re_inner_le_norm _ _
           _ ≤ ‖A† * A‖ * ‖x‖ * ‖x‖ := mul_le_mul_of_nonneg_right (le_op_norm _ _) (norm_nonneg _)
       calc
         ‖A x‖ = Real.sqrt (re ⟪(A† * A) x, x⟫) := by rw [apply_norm_eq_sqrt_inner_adjoint_left]
@@ -292,7 +292,7 @@ theorem isSymmetric {A : E →L[𝕜] E} (hA : IsSelfAdjoint A) : (A : E →ₗ[
 /-- Conjugating preserves self-adjointness. -/
 theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[𝕜] F) :
     IsSelfAdjoint (S ∘L T ∘L ContinuousLinearMap.adjoint S) := by
-  rw [isSelfAdjoint_iff'] at hT⊢
+  rw [isSelfAdjoint_iff'] at hT ⊢
   simp only [hT, adjoint_comp, adjoint_adjoint]
   exact ContinuousLinearMap.comp_assoc _ _ _
 #align is_self_adjoint.conj_adjoint IsSelfAdjoint.conj_adjoint
@@ -300,7 +300,7 @@ theorem conj_adjoint {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : E →L[�
 /-- Conjugating preserves self-adjointness. -/
 theorem adjoint_conj {T : E →L[𝕜] E} (hT : IsSelfAdjoint T) (S : F →L[𝕜] E) :
     IsSelfAdjoint (ContinuousLinearMap.adjoint S ∘L T ∘L S) := by
-  rw [isSelfAdjoint_iff'] at hT⊢
+  rw [isSelfAdjoint_iff'] at hT ⊢
   simp only [hT, adjoint_comp, adjoint_adjoint]
   exact ContinuousLinearMap.comp_assoc _ _ _
 #align is_self_adjoint.adjoint_conj IsSelfAdjoint.adjoint_conj

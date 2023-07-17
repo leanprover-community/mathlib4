@@ -121,7 +121,7 @@ This implements the coercion `FractionalIdeal S P → Submodule R P`.
 -/
 @[coe]
 def coeToSubmodule (I : FractionalIdeal S P) : Submodule R P :=
-I.val
+  I.val
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
 
@@ -610,7 +610,7 @@ theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
 #align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
 
-instance : CommSemiring (FractionalIdeal S P) :=
+instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
 
@@ -1487,7 +1487,7 @@ theorem div_spanSingleton (J : FractionalIdeal R₁⁰ K) (d : K) :
 #align fractional_ideal.div_span_singleton FractionalIdeal.div_spanSingleton
 
 theorem exists_eq_spanSingleton_mul (I : FractionalIdeal R₁⁰ K) :
-    ∃ (a : R₁)(aI : Ideal R₁), a ≠ 0 ∧ I = spanSingleton R₁⁰ (algebraMap R₁ K a)⁻¹ * aI := by
+    ∃ (a : R₁) (aI : Ideal R₁), a ≠ 0 ∧ I = spanSingleton R₁⁰ (algebraMap R₁ K a)⁻¹ * aI := by
   obtain ⟨a_inv, nonzero, ha⟩ := I.isFractional
   have nonzero := mem_nonZeroDivisors_iff_ne_zero.mp nonzero
   have map_a_nonzero : algebraMap R₁ K a_inv ≠ 0 :=
@@ -1582,7 +1582,7 @@ theorem isNoetherian_spanSingleton_inv_to_map_mul (x : R₁) {I : FractionalIdea
   have h_gx : algebraMap R₁ K x ≠ 0 :=
     mt ((injective_iff_map_eq_zero (algebraMap R₁ K)).mp (IsFractionRing.injective _ _) x) hx
   have h_spanx : spanSingleton R₁⁰ (algebraMap R₁ K x) ≠ 0 := spanSingleton_ne_zero_iff.mpr h_gx
-  rw [isNoetherian_iff] at hI⊢
+  rw [isNoetherian_iff] at hI ⊢
   intro J hJ
   rw [← div_spanSingleton, le_div_iff_mul_le h_spanx] at hJ
   obtain ⟨s, hs⟩ := hI _ hJ

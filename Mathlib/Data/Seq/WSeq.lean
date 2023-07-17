@@ -893,8 +893,8 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
 
 theorem get?_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
     Terminates (get? s n) → Terminates (get? s m) := by
-  induction' h with m' _ IH <;> [exact id;
-    exact fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
+  induction' h with m' _ IH
+  exacts [id, fun T => IH (@head_terminates_of_head_tail_terminates _ _ T)]
 #align stream.wseq.nth_terminates_le Stream'.WSeq.get?_terminates_le
 
 theorem head_terminates_of_get?_terminates {s : WSeq α} {n} :
@@ -1442,10 +1442,10 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
   intro ss h; apply mem_rec_on h <;> [intro b ss o; intro ss IH] <;> intro s S
   · induction' s using WSeq.recOn with b' s s <;>
       [induction' S using WSeq.recOn with s S S; skip; skip] <;>
-      intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;> simp at this;
-      try cases this; try contradiction
+      intro ej m <;> simp at ej <;> have := congr_arg Seq.destruct ej <;>
+      simp at this; try cases this; try contradiction
     substs b' ss
-    simp at m⊢
+    simp at m ⊢
     cases' o with e IH
     · simp [e]
     cases' m with e m
@@ -1466,7 +1466,7 @@ theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S →
       simp at m
       rcases (IH nil S (by simp) (by simp [m])).resolve_left (not_mem_nil _) with ⟨s, sS, as⟩
       exact ⟨s, by simp [sS], as⟩
-    · simp at m IH⊢
+    · simp at m IH ⊢
       apply IH _ _ rfl m
 #align stream.wseq.exists_of_mem_join Stream'.WSeq.exists_of_mem_join
 
@@ -1817,10 +1817,10 @@ instance monad : Monad WSeq where
   this type of construction.
 
 instance lawfulMonad : LawfulMonad WSeq :=
-{ id_map := @map_id,
-  bind_pure_comp := @bind_ret,
-  pure_bind := @ret_bind,
-  bind_assoc := @bind_assoc }
+  { id_map := @map_id,
+    bind_pure_comp := @bind_ret,
+    pure_bind := @ret_bind,
+    bind_assoc := @bind_assoc }
 -/
 end WSeq
 

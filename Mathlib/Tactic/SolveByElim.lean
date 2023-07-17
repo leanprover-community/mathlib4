@@ -96,24 +96,24 @@ namespace Config
 
 /-- Create or modify a `Config` which allows a class of goals to be returned as subgoals. -/
 def accept (cfg : Config := {}) (test : MVarId → MetaM Bool) : Config :=
-{ cfg with
-  discharge := fun g => do
-    if (← test g) then
-      pure none
-    else
-      cfg.discharge g }
+  { cfg with
+    discharge := fun g => do
+      if (← test g) then
+        pure none
+      else
+        cfg.discharge g }
 
 /--
 Create or modify a `Config` which runs a tactic on the main goal.
 If that tactic fails, fall back to the `proc` behaviour of `cfg`.
 -/
 def mainGoalProc (cfg : Config := {}) (proc : MVarId → MetaM (List MVarId)) : Config :=
-{ cfg with
-  proc := fun orig goals => match goals with
-  | [] => cfg.proc orig []
-  | g :: gs => try
-      return (← proc g) ++ gs
-    catch _ => cfg.proc orig goals }
+  { cfg with
+    proc := fun orig goals => match goals with
+    | [] => cfg.proc orig []
+    | g :: gs => try
+        return (← proc g) ++ gs
+      catch _ => cfg.proc orig goals }
 
 /-- Create or modify a `Config` which calls `intro` on each goal before applying lemmas. -/
 -- Because `SolveByElim` works on each goal in sequence, even though
@@ -151,10 +151,10 @@ Create or modify a `Config` which rejects branches for which `test`,
 applied to the instantiations of the original goals, fails or returns `false`.
 -/
 def testPartialSolutions (cfg : Config := {}) (test : List Expr → MetaM Bool) : Config :=
-{ cfg with
-  proc := fun orig goals => do
-    let .true ← test (← orig.mapM fun m => m.withContext do instantiateMVars (.mvar m)) | failure
-    cfg.proc orig goals }
+  { cfg with
+    proc := fun orig goals => do
+      let .true ← test (← orig.mapM fun m => m.withContext do instantiateMVars (.mvar m)) | failure
+      cfg.proc orig goals }
 
 /--
 Create or modify a `Config` which rejects complete solutions for which `test`,
@@ -183,7 +183,7 @@ See `mkAssumptionSet` for an explanation of why this is needed.
 -/
 def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr)) :
     MetaM (List Expr) := do
-  g.withContext (Elab.Term.TermElabM.run' do pure ((← lemmas.mapM id) ++ (← ctx)))
+  g.withContext (Elab.Term.TermElabM.run' do pure ((← ctx) ++ (← lemmas.mapM id)))
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
 def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
@@ -340,7 +340,7 @@ syntax star := "*"
 /-- Syntax for adding or removing a term, or `*`, in `solve_by_elim`. -/
 syntax arg := star <|> erase <|> term
 /-- Syntax for adding and removing terms in `solve_by_elim`. -/
-syntax args := " [" SolveByElim.arg,* "] "
+syntax args := " [" SolveByElim.arg,* "]"
 /-- Syntax for using all lemmas labelled with an attribute in `solve_by_elim`. -/
 syntax using_ := " using " ident,*
 

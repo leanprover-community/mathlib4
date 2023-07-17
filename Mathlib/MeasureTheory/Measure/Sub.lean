@@ -71,7 +71,7 @@ theorem sub_self : μ - μ = 0 :=
 
 /-- This application lemma only works in special circumstances. Given knowledge of
 when `μ ≤ ν` and `ν ≤ μ`, a more general application lemma can be written. -/
-theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
+theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ) :
     (μ - ν) s = μ s - ν s := by
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α := MeasureTheory.Measure.ofMeasurable
@@ -99,7 +99,7 @@ theorem sub_apply [FiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ μ)
   apply Measure.ofMeasurable_apply _ h₁
 #align measure_theory.measure.sub_apply MeasureTheory.Measure.sub_apply
 
-theorem sub_add_cancel_of_le [FiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
+theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
   rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
@@ -114,7 +114,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     intro ν' h_ν'_in
     rw [mem_setOf_eq] at h_ν'_in
     refine' ⟨ν'.restrict s, _, restrict_le_self⟩
-    refine' ⟨ν' + (⊤ : Measure α).restrict (sᶜ), _, _⟩
+    refine' ⟨ν' + (⊤ : Measure α).restrict sᶜ, _, _⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
       repeat' rw [← measure_inter_add_diff t h_meas_s]
@@ -141,9 +141,9 @@ theorem sub_apply_eq_zero_of_restrict_le_restrict (h_le : μ.restrict s ≤ ν.r
   rw [← restrict_apply_self, restrict_sub_eq_restrict_sub_restrict, sub_eq_zero_of_le] <;> simp [*]
 #align measure_theory.measure.sub_apply_eq_zero_of_restrict_le_restrict MeasureTheory.Measure.sub_apply_eq_zero_of_restrict_le_restrict
 
-instance finiteMeasure_sub [FiniteMeasure μ] : FiniteMeasure (μ - ν) :=
-  finiteMeasureOfLe μ sub_le
-#align measure_theory.measure.is_finite_measure_sub MeasureTheory.Measure.finiteMeasure_sub
+instance isFiniteMeasure_sub [IsFiniteMeasure μ] : IsFiniteMeasure (μ - ν) :=
+  isFiniteMeasure_of_le μ sub_le
+#align measure_theory.measure.is_finite_measure_sub MeasureTheory.Measure.isFiniteMeasure_sub
 
 end Measure
 

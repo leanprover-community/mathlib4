@@ -71,7 +71,7 @@ and they more frequently lead to the desired result.
 
 We set up the simplifier so that it can compute the derivative of simple functions. For instance,
 ```lean
-example (x : ℝ) : deriv (λ x, cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
+example (x : ℝ) : deriv (fun x ↦ cos (sin x) * exp x) x = (cos(sin(x))-sin(sin(x))*cos(x))*exp(x) :=
 by { simp, ring }
 ```
 
@@ -229,9 +229,8 @@ alias hasDerivAt_iff_hasFDerivAt ↔ HasDerivAt.hasFDerivAt _
 theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     derivWithin f s x = 0 := by
   unfold derivWithin
-  rw [fderivWithin_zero_of_not_differentiableWithinAt]
+  rw [fderivWithin_zero_of_not_differentiableWithinAt h]
   simp
-  assumption
 #align deriv_within_zero_of_not_differentiable_within_at derivWithin_zero_of_not_differentiableWithinAt
 
 theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠ 0) :
@@ -241,9 +240,8 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
 
 theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
   unfold deriv
-  rw [fderiv_zero_of_not_differentiableAt]
+  rw [fderiv_zero_of_not_differentiableAt h]
   simp
-  assumption
 #align deriv_zero_of_not_differentiable_at deriv_zero_of_not_differentiableAt
 
 theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
@@ -731,4 +729,3 @@ protected theorem HasDerivAt.continuousOn {f f' : 𝕜 → F} (hderiv : ∀ x �
 #align has_deriv_at.continuous_on HasDerivAt.continuousOn
 
 end Continuous
-

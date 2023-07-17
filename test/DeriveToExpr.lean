@@ -60,10 +60,10 @@ deriving instance ToExpr for Bar
 
 mutual
 inductive A
-| a
+  | a
 deriving ToExpr
 inductive B
-| b
+  | b
 deriving ToExpr
 end
 
@@ -73,10 +73,10 @@ end
 
 mutual
 inductive C
-| c (x : List D)
+  | c (x : List D)
 deriving ToExpr
 inductive D
-| b (y : List C)
+  | b (y : List C)
 deriving ToExpr
 end
 

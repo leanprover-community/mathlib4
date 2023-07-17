@@ -82,7 +82,7 @@ class Pretriangulated where
   /-- any morphism `X ⟶ Y` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
   distinguished_cocone_triangle :
     ∀ (X Y : C) (f : X ⟶ Y),
-      ∃ (Z : C)(g : Y ⟶ Z)(h : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distinguishedTriangles
+      ∃ (Z : C) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distinguishedTriangles
   /-- a triangle is distinguished iff it is so after rotating it -/
   rotate_distinguished_triangle :
     ∀ T : Triangle C, T ∈ distinguishedTriangles ↔ T.rotate ∈ distinguishedTriangles

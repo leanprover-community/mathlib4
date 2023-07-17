@@ -89,9 +89,7 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
 theorem factorization_eq_factors_multiset (n : ℕ) :
     n.factorization = Multiset.toFinsupp (n.factors : Multiset ℕ) := by
   ext p
-  -- porting note: previously closed with `simp`
-  simp only [Multiset.toFinsupp_apply, Multiset.mem_coe, Multiset.coe_nodup, Multiset.coe_count]
-  rw [@factors_count_eq n p] -- porting note: TODO: why doesn't `factors_count_eq` take here?
+  simp
 #align nat.factorization_eq_factors_multiset Nat.factorization_eq_factors_multiset
 
 theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) (hn : n ≠ 0) :
@@ -506,8 +504,6 @@ theorem exists_factorization_lt_of_lt {a b : ℕ} (ha : a ≠ 0) (hab : a < b) :
     ∃ p : ℕ, a.factorization p < b.factorization p := by
   have hb : b ≠ 0 := (ha.bot_lt.trans hab).ne'
   contrapose! hab
-  -- Porting note: `push_neg` fails to push the negation
-  simp_rw [not_exists, not_lt] at hab
   rw [← Finsupp.le_def, factorization_le_iff_dvd hb ha] at hab
   exact le_of_dvd ha.bot_lt hab
 #align nat.exists_factorization_lt_of_lt Nat.exists_factorization_lt_of_lt
@@ -799,7 +795,7 @@ we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {P : ℕ → Sort _} (h0 : P 0) (h1 : P 1)
     (h : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → P a → P (p ^ n * a)) : ∀ a : ℕ, P a := fun a =>
-  Nat.strong_rec_on a fun n =>
+  Nat.strongRecOn a fun n =>
     match n with
     | 0 => fun _ => h0
     | 1 => fun _ => h1

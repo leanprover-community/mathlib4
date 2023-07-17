@@ -377,7 +377,7 @@ theorem exists_gcd_one {m n : ℤ} (H : 0 < gcd m n) :
 #align int.exists_gcd_one Int.exists_gcd_one
 
 theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
-    ∃ (g : ℕ)(m' n' : ℤ), 0 < g ∧ gcd m' n' = 1 ∧ m = m' * g ∧ n = n' * g :=
+    ∃ (g : ℕ) (m' n' : ℤ), 0 < g ∧ gcd m' n' = 1 ∧ m = m' * g ∧ n = n' * g :=
   let ⟨m', n', h⟩ := exists_gcd_one H
   ⟨_, m', n', H, h⟩
 #align int.exists_gcd_one' Int.exists_gcd_one'

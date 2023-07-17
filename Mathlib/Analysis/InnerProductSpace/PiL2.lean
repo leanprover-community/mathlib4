@@ -28,7 +28,7 @@ between `E` and `EuclideanSpace 𝕜 ι`. Then `stdOrthonormalBasis` shows that 
 always exists if `E` is finite dimensional. We provide language for converting between a basis
 that is orthonormal and an orthonormal basis (e.g. `Basis.toOrthonormalBasis`). We show that
 orthonormal bases for each summand in a direct sum of spaces can be combined into an orthonormal
-basis for the the whole sum in `DirectSum.IsInternal.subordinateOrthonormalBasis`. In
+basis for the whole sum in `DirectSum.IsInternal.subordinateOrthonormalBasis`. In
 the last section, various properties of matrices are explored.
 
 ## Main definitions
@@ -38,7 +38,7 @@ the last section, various properties of matrices are explored.
   that it is a finite-dimensional inner product space).
 
 - `OrthonormalBasis 𝕜 ι`: defined to be an isometry to Euclidean space from a given
-  finite-dimensional innner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
+  finite-dimensional inner product space, `E ≃ₗᵢ[𝕜] EuclideanSpace 𝕜 ι`.
 
 - `Basis.toOrthonormalBasis`: constructs an `OrthonormalBasis` for a finite-dimensional
   Euclidean space from a `Basis` which is `Orthonormal`.
@@ -207,8 +207,8 @@ theorem DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply [DecidableE
     let e₂ := LinearEquiv.ofBijective (DirectSum.coeLinearMap V) hV
     suffices ∀ v : ⨁ i, V i, e₂ v = ∑ i, e₁ v i by exact this (e₁.symm w)
     intro v
-    -- Porting note: added `Dfinsupp.lsum`
-    simp [DirectSum.coeLinearMap, DirectSum.toModule, Dfinsupp.lsum, Dfinsupp.sumAddHom_apply]
+    -- Porting note: added `DFinsupp.lsum`
+    simp [DirectSum.coeLinearMap, DirectSum.toModule, DFinsupp.lsum, DFinsupp.sumAddHom_apply]
 #align direct_sum.is_internal.isometry_L2_of_orthogonal_family_symm_apply DirectSum.IsInternal.isometryL2OfOrthogonalFamily_symm_apply
 
 end
@@ -436,17 +436,17 @@ protected theorem coe_toBasis_repr_apply (b : OrthonormalBasis ι 𝕜 E) (x : E
     LinearIsometryEquiv.coe_toLinearEquiv]
 #align orthonormal_basis.coe_to_basis_repr_apply OrthonormalBasis.coe_toBasis_repr_apply
 
-protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : (∑ i, b.repr x i • b i) = x := by
+protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.repr x i • b i = x := by
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]
   exact b.toBasis.sum_repr x
 #align orthonormal_basis.sum_repr OrthonormalBasis.sum_repr
 
 protected theorem sum_repr_symm (b : OrthonormalBasis ι 𝕜 E) (v : EuclideanSpace 𝕜 ι) :
-    (∑ i, v i • b i) = b.repr.symm v := by simpa using (b.toBasis.equivFun_symm_apply v).symm
+    ∑ i, v i • b i = b.repr.symm v := by simpa using (b.toBasis.equivFun_symm_apply v).symm
 #align orthonormal_basis.sum_repr_symm OrthonormalBasis.sum_repr_symm
 
 protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E) :
-    (∑ i, ⟪x, b i⟫ * ⟪b i, y⟫) = ⟪x, y⟫ := by
+    ∑ i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ := by
   have := congr_arg (innerSL 𝕜 x) (b.sum_repr y)
   rw [map_sum] at this
   convert this
@@ -537,7 +537,7 @@ protected theorem coe_mk (hon : Orthonormal 𝕜 v) (hsp : ⊤ ≤ Submodule.spa
   classical rw [OrthonormalBasis.mk, _root_.Basis.coe_toOrthonormalBasis, Basis.coe_mk]
 #align orthonormal_basis.coe_mk OrthonormalBasis.coe_mk
 
-/-- Any finite subset of a orthonormal family is an `OrthonormalBasis` for its span. -/
+/-- Any finite subset of an orthonormal family is an `OrthonormalBasis` for its span. -/
 protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s : Finset ι') :
     OrthonormalBasis s 𝕜 (span 𝕜 (s.image v' : Set E)) :=
   let e₀' : Basis s 𝕜 _ :=
@@ -694,7 +694,7 @@ variable (a b : OrthonormalBasis ι 𝕜 E)
 theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
     a.toBasis.toMatrix b ∈ Matrix.unitaryGroup ι 𝕜 := by
   rw [Matrix.mem_unitaryGroup_iff']
-  ext (i j)
+  ext i j
   convert a.repr.inner_map_map (b i) (b j)
   rw [orthonormal_iff_ite.mp b.orthonormal i j]
   rfl
@@ -768,7 +768,7 @@ variable [FiniteDimensional 𝕜 E]
 /-- In a finite-dimensional `InnerProductSpace`, any orthonormal subset can be extended to an
 orthonormal basis. -/
 theorem Orthonormal.exists_orthonormalBasis_extension (hv : Orthonormal 𝕜 ((↑) : v → E)) :
-    ∃ (u : Finset E)(b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
+    ∃ (u : Finset E) (b : OrthonormalBasis u 𝕜 E), v ⊆ u ∧ ⇑b = ((↑) : u → E) := by
   obtain ⟨u₀, hu₀s, hu₀, hu₀_max⟩ := exists_maximal_orthonormal hv
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hu₀] at hu₀_max
   have hu₀_finite : u₀.Finite := hu₀.linearIndependent.finite
@@ -806,7 +806,7 @@ variable (𝕜 E)
 
 /-- A finite-dimensional inner product space admits an orthonormal basis. -/
 theorem _root_.exists_orthonormalBasis :
-    ∃ (w : Finset E)(b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
+    ∃ (w : Finset E) (b : OrthonormalBasis w 𝕜 E), ⇑b = ((↑) : w → E) :=
   let ⟨w, hw, _, hw''⟩ := (orthonormal_empty 𝕜 E).exists_orthonormalBasis_extension
   ⟨w, hw, hw''⟩
 #align exists_orthonormal_basis exists_orthonormalBasis

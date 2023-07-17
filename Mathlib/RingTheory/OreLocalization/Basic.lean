@@ -11,6 +11,7 @@ Authors: Jakob von Raumer, Kevin Klinge
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.Tactic.NoncommRing
 
 /-!
 
@@ -25,7 +26,7 @@ localization at `R - {0}` results in a division ring.
 ## Notations
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
-subset `S`. Also defines a new heterogeneos division notation `r /ₒ s` for a numerator `r : R` and
+subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and
 a denominator `s : S`.
 
 ## References
@@ -110,7 +111,7 @@ protected theorem ind {β : R[S⁻¹] → Prop} (c : ∀ (r : R) (s : S), β (r 
 #align ore_localization.ind OreLocalization.ind
 
 theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
-    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S)(v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
+    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
   Quotient.eq''
 #align ore_localization.ore_div_eq_iff OreLocalization.oreDiv_eq_iff
 
@@ -121,7 +122,7 @@ protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
   refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
-/-- A fraction is equal to its expansion by an factor from s. -/
+/-- A fraction is equal to its expansion by a factor from s. -/
 protected theorem expand' (r : R) (s s' : S) : r /ₒ s = r * s' /ₒ (s * s') :=
   OreLocalization.expand r s s' (by norm_cast; apply SetLike.coe_mem)
 #align ore_localization.expand' OreLocalization.expand'
@@ -167,7 +168,7 @@ theorem liftExpand_of {C : Sort _} {P : R → S → C}
 #align ore_localization.lift_expand_of OreLocalization.liftExpand_of
 
 /-- A version of `liftExpand` used to simultaneously lift functions with two arguments
-in ``R[S⁻¹]`.-/
+in `R[S⁻¹]`. -/
 def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
     (hP :
       ∀ (r₁ t₁ : R) (s₁ : S) (ht₁ : (s₁ : R) * t₁ ∈ S) (r₂ t₂ : R) (s₂ : S)
@@ -521,11 +522,11 @@ private theorem add''_char (r₁ : R) (s₁ : S) (r₂ : R) (s₂ : S) (rb : R) 
   use sc * sd
   use rc * sd
   constructor <;> simp only [Submonoid.coe_mul]
-  · simp only [right_distrib, mul_assoc]
+  · noncomm_ring
     rw [← mul_assoc (a := rb), hd, ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
   · rw [mul_assoc (a := (s₁ : R)), ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
 
 attribute [local instance] OreLocalization.oreEqv
 
@@ -734,7 +735,7 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   induction' x using OreLocalization.ind with r₁ s₁
   induction' y using OreLocalization.ind with r₂ s₂
   induction' z using OreLocalization.ind with r₃ s₃
-  rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast  at ha
+  rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast at ha
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
@@ -786,7 +787,7 @@ def universalHom : R[S⁻¹] →+* T :=
       congr 1
       rw [mul_assoc]
       congr 1
-      norm_cast  at h₃
+      norm_cast at h₃
       have h₃' := Subtype.coe_eq_of_eq_mk h₃
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       have hs₂r₃ : ↑s₂ * r₃ ∈ S := by

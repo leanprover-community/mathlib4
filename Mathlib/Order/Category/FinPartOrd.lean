@@ -105,8 +105,8 @@ def dual : FinPartOrd ⥤ FinPartOrd where
 @[simps! functor inverse]
 def dualEquiv : FinPartOrd ≌ FinPartOrd :=
   CategoryTheory.Equivalence.mk dual dual
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl)
-    (NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) fun _ => rfl)
+    (NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X)
+    (NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X)
 #align FinPartOrd.dual_equiv FinPartOrd.dualEquiv
 
 end FinPartOrd

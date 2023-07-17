@@ -106,7 +106,7 @@ theorem infEdist_lt_iff {r : ℝ≥0∞} : infEdist x s < r ↔ ∃ y ∈ s, edi
 the edist from `x` to `y` -/
 theorem infEdist_le_infEdist_add_edist : infEdist x s ≤ infEdist y s + edist x y :=
   calc
-    (⨅ z ∈ s, edist x z) ≤ ⨅ z ∈ s, edist y z + edist x y :=
+    ⨅ z ∈ s, edist x z ≤ ⨅ z ∈ s, edist y z + edist x y :=
       iInf₂_mono fun z _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
     _ = (⨅ z ∈ s, edist y z) + edist x y := by simp only [ENNReal.iInf_add]
 #align emetric.inf_edist_le_inf_edist_add_edist EMetric.infEdist_le_infEdist_add_edist
@@ -205,19 +205,19 @@ theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s :
 #align emetric.inf_edist_vadd EMetric.infEdist_vadd
 
 theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
-    ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ (⋃ n, F n) = U ∧ Monotone F := by
+    ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
   obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
-  let F := fun n : ℕ => (fun x => infEdist x (Uᶜ)) ⁻¹' Ici (a ^ n)
+  let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
   have F_subset : ∀ n, F n ⊆ U := fun n x hx ↦ by
     by_contra h
-    have : infEdist x (Uᶜ) ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
+    have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
   refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
-  show (⋃ n, F n) = U
+  show ⋃ n, F n = U
   · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
-    have B : 0 < infEdist x (Uᶜ) := by simpa [pos_iff_ne_zero] using this
+    have B : 0 < infEdist x Uᶜ := by simpa [pos_iff_ne_zero] using this
     have : Filter.Tendsto (fun n => a ^ n) atTop (𝓝 0) :=
       ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 a_lt_one
     rcases((tendsto_order.1 this).2 _ B).exists with ⟨n, hn⟩
@@ -225,7 +225,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     exact ⟨n, hn.le⟩
   show Monotone F
   · intro m n hmn x hx
-    simp only [mem_Ici, mem_preimage] at hx⊢
+    simp only [mem_Ici, mem_preimage] at hx ⊢
     apply le_trans (pow_le_pow_of_le_one' a_lt_one.le hmn) hx
 #align is_open.exists_Union_is_closed IsOpen.exists_iUnion_isClosed
 
@@ -542,7 +542,7 @@ theorem ball_infDist_subset_compl : ball x (infDist x s) ⊆ sᶜ :=
   (disjoint_ball_infDist (s := s)).subset_compl_right
 #align metric.ball_inf_dist_subset_compl Metric.ball_infDist_subset_compl
 
-theorem ball_infDist_compl_subset : ball x (infDist x (sᶜ)) ⊆ s :=
+theorem ball_infDist_compl_subset : ball x (infDist x sᶜ) ⊆ s :=
   ball_infDist_subset_compl.trans_eq (compl_compl s)
 #align metric.ball_inf_dist_compl_subset Metric.ball_infDist_compl_subset
 
@@ -1311,7 +1311,7 @@ theorem cthickening_eq_iInter_cthickening' {δ : ℝ} (s : Set ℝ) (hsδ : s �
 #align metric.cthickening_eq_Inter_cthickening' Metric.cthickening_eq_iInter_cthickening'
 
 theorem cthickening_eq_iInter_cthickening {δ : ℝ} (E : Set α) :
-    cthickening δ E = ⋂ (ε : ℝ) (_h : δ < ε), cthickening ε E := by
+    cthickening δ E = ⋂ (ε : ℝ) (_ : δ < ε), cthickening ε E := by
   apply cthickening_eq_iInter_cthickening' (Ioi δ) rfl.subset
   simp_rw [inter_eq_right_iff_subset.mpr Ioc_subset_Ioi_self]
   exact fun _ hε => nonempty_Ioc.mpr hε
@@ -1329,14 +1329,14 @@ theorem cthickening_eq_iInter_thickening' {δ : ℝ} (δ_nn : 0 ≤ δ) (s : Set
 #align metric.cthickening_eq_Inter_thickening' Metric.cthickening_eq_iInter_thickening'
 
 theorem cthickening_eq_iInter_thickening {δ : ℝ} (δ_nn : 0 ≤ δ) (E : Set α) :
-    cthickening δ E = ⋂ (ε : ℝ) (_h : δ < ε), thickening ε E := by
+    cthickening δ E = ⋂ (ε : ℝ) (_ : δ < ε), thickening ε E := by
   apply cthickening_eq_iInter_thickening' δ_nn (Ioi δ) rfl.subset
   simp_rw [inter_eq_right_iff_subset.mpr Ioc_subset_Ioi_self]
   exact fun _ hε => nonempty_Ioc.mpr hε
 #align metric.cthickening_eq_Inter_thickening Metric.cthickening_eq_iInter_thickening
 
 theorem cthickening_eq_iInter_thickening'' (δ : ℝ) (E : Set α) :
-    cthickening δ E = ⋂ (ε : ℝ) (_h : max 0 δ < ε), thickening ε E := by
+    cthickening δ E = ⋂ (ε : ℝ) (_ : max 0 δ < ε), thickening ε E := by
   rw [← cthickening_max_zero, cthickening_eq_iInter_thickening]
   exact le_max_left _ _
 #align metric.cthickening_eq_Inter_thickening'' Metric.cthickening_eq_iInter_thickening''
@@ -1358,7 +1358,7 @@ theorem closure_eq_iInter_cthickening' (E : Set α) (s : Set ℝ)
 
 /-- The closure of a set equals the intersection of its closed thickenings of positive radii. -/
 theorem closure_eq_iInter_cthickening (E : Set α) :
-    closure E = ⋂ (δ : ℝ) (_h : 0 < δ), cthickening δ E := by
+    closure E = ⋂ (δ : ℝ) (_ : 0 < δ), cthickening δ E := by
   rw [← cthickening_zero]
   exact cthickening_eq_iInter_cthickening E
 #align metric.closure_eq_Inter_cthickening Metric.closure_eq_iInter_cthickening
@@ -1373,7 +1373,7 @@ theorem closure_eq_iInter_thickening' (E : Set α) (s : Set ℝ) (hs₀ : s ⊆ 
 
 /-- The closure of a set equals the intersection of its (open) thickenings of positive radii. -/
 theorem closure_eq_iInter_thickening (E : Set α) :
-    closure E = ⋂ (δ : ℝ) (_h : 0 < δ), thickening δ E := by
+    closure E = ⋂ (δ : ℝ) (_ : 0 < δ), thickening δ E := by
   rw [← cthickening_zero]
   exact cthickening_eq_iInter_thickening rfl.ge E
 #align metric.closure_eq_Inter_thickening Metric.closure_eq_iInter_thickening

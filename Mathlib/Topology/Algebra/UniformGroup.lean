@@ -1010,7 +1010,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
 #align quotient_add_group.complete_space' QuotientAddGroup.completeSpace'
 
 /-- The quotient `G ⧸ N` of a complete first countable uniform group `G` by a normal subgroup
-is itself complete. In constrast to `QuotientGroup.completeSpace'`, in this version `G` is
+is itself complete. In contrast to `QuotientGroup.completeSpace'`, in this version `G` is
 already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
@@ -1020,7 +1020,7 @@ In the most common use cases, this coincides (definitionally) with the uniform s
 quotient obtained via other means.  -/
 @[to_additive "The quotient `G ⧸ N` of a complete first countable uniform additive group
 `G` by a normal additive subgroup is itself complete. Consequently, quotients of Banach spaces by
-subspaces are complete. In constrast to `QuotientAddGroup.completeSpace'`, in this version
+subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in this version
 `G` is already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 

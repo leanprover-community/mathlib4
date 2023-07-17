@@ -127,7 +127,8 @@ theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : ModuleCat R} (f�
   by convert associator_naturality_aux f₁ f₂ f₃ using 1
 #align Module.monoidal_category.associator_naturality ModuleCat.MonoidalCategory.associator_naturality
 
-set_option maxHeartbeats 0 in
+-- Porting note: very slow!
+set_option maxHeartbeats 1600000 in
 theorem pentagon (W X Y Z : ModuleCat R) :
     tensorHom (associator W X Y).hom (𝟙 Z) ≫
         (associator W (tensorObj X Y) Z).hom ≫ tensorHom (𝟙 W) (associator X Y Z).hom =
@@ -300,4 +301,3 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
       LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 
 end ModuleCat
-

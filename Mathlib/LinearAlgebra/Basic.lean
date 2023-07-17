@@ -14,7 +14,7 @@ import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.LinearMap
-import Mathlib.Data.Dfinsupp.Basic
+import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -272,7 +272,7 @@ def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂
   map_zero' := rfl
 #align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
 
-/-- `linear_map.toAddMonoidHom` promoted to an `toAddMonoidHom` -/
+/-- `linear_map.toAddMonoidHom` promoted to a `toAddMonoidHom` -/
 def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂
     where
   toFun := toAddMonoidHom
@@ -324,7 +324,7 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
 @[simp]
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = (f^[n]) m := by
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := by
   induction' n with n ih
   · rfl
   · simp only [Function.comp_apply, Function.iterate_succ, LinearMap.mul_apply, pow_succ, ih]
@@ -1080,7 +1080,7 @@ theorem map_smul (f : V →ₗ[K] V₂) (p : Submodule K V) (a : K) (h : a ≠ 0
     (by rw [map_le_iff_le_comap, ← comap_smul f _ a h, ← map_le_iff_le_comap])
 #align submodule.map_smul Submodule.map_smul
 
--- Porting note: `⨅ h : a ≠ 0, p.comap f` gets a `unusedVariables` lint, but
+-- Porting note: `⨅ h : a ≠ 0, p.comap f` gets an `unusedVariables` lint, but
 -- `⨅ _ : a ≠ 0, p.comap f` is ill-formed. So, this is written `iInf (fun _ : a ≠ 0 => p.comap f)`.
 theorem comap_smul' (f : V →ₗ[K] V₂) (p : Submodule K V₂) (a : K) :
     p.comap (a • f) = iInf (fun _ : a ≠ 0 => p.comap f) := by
@@ -1132,9 +1132,9 @@ theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ�
 
 end Finsupp
 
-section Dfinsupp
+section DFinsupp
 
-open Dfinsupp
+open DFinsupp
 
 variable {γ : ι → Type _} [DecidableEq ι]
 
@@ -1172,7 +1172,7 @@ theorem map_dfinsupp_sumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ
 
 end SumAddHom
 
-end Dfinsupp
+end DFinsupp
 
 variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 
@@ -1257,28 +1257,41 @@ theorem range_neg {R : Type _} {R₂ : Type _} {M : Type _} {M₂ : Type _} [Sem
 #align linear_map.range_neg LinearMap.range_neg
 
 /-- A linear map version of `toAddMonoidHom.eqLocus` -/
-def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
-  { f.toAddMonoidHom.eqLocusM g.toAddMonoidHom with
+def eqLocus (f g : F) : Submodule R M :=
+  { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
     smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
-      simpa only [LinearMap.map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
+      simpa only [map_smulₛₗ] using congr_arg ((· • ·) (τ₁₂ r)) hx }
 #align linear_map.eq_locus LinearMap.eqLocus
 
 @[simp]
-theorem mem_eqLocus {x : M} {f g : M →ₛₗ[τ₁₂] M₂} : x ∈ f.eqLocus g ↔ f x = g x :=
+theorem mem_eqLocus {x : M} {f g : F} : x ∈ eqLocus f g ↔ f x = g x :=
   Iff.rfl
 #align linear_map.mem_eq_locus LinearMap.mem_eqLocus
 
-theorem eqLocus_toAddSubmonoid (f g : M →ₛₗ[τ₁₂] M₂) :
-    (f.eqLocus g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
+theorem eqLocus_toAddSubmonoid (f g : F) :
+    (eqLocus f g).toAddSubmonoid = (f : M →+ M₂).eqLocusM g :=
   rfl
 #align linear_map.eq_locus_to_add_submonoid LinearMap.eqLocus_toAddSubmonoid
 
 @[simp]
-theorem eqLocus_same (f : M →ₛₗ[τ₁₂] M₂) : f.eqLocus f = ⊤ :=
-  SetLike.ext fun _ => by
-    simp only [mem_eqLocus, mem_top]
+theorem eqLocus_eq_top {f g : F} : eqLocus f g = ⊤ ↔ f = g := by
+    simp [SetLike.ext_iff, FunLike.ext_iff]
+
+@[simp]
+theorem eqLocus_same (f : F) : eqLocus f f = ⊤ := eqLocus_eq_top.2 rfl
 #align linear_map.eq_locus_same LinearMap.eqLocus_same
+
+theorem le_eqLocus {f g : F} {S : Submodule R M} : S ≤ eqLocus f g ↔ Set.EqOn f g S := Iff.rfl
+
+theorem eqOn_sup {f g : F} {S T : Submodule R M} (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
+    Set.EqOn f g ↑(S ⊔ T) := by
+  rw [← le_eqLocus] at hS hT ⊢
+  exact sup_le hS hT
+
+theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
+    (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
+  FunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
 end
 
@@ -1481,7 +1494,7 @@ theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgro
   rfl
 #align linear_map.ker_to_add_subgroup LinearMap.ker_toAddSubgroup
 
-theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : f.eqLocus g = ker (f - g) :=
+theorem eqLocus_eq_ker_sub (f g : M →ₛₗ[τ₁₂] M₂) : eqLocus f g = ker (f - g) :=
   SetLike.ext fun _ => sub_eq_zero.symm
 #align linear_map.eq_locus_eq_ker_sub LinearMap.eqLocus_eq_ker_sub
 
@@ -1545,7 +1558,7 @@ theorem ker_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : ker (a • f) = 
   Submodule.comap_smul f _ a h
 #align linear_map.ker_smul LinearMap.ker_smul
 
-theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ _h : a ≠ 0, ker f :=
+theorem ker_smul' (f : V →ₗ[K] V₂) (a : K) : ker (a • f) = ⨅ _ : a ≠ 0, ker f :=
   Submodule.comap_smul' f _ a
 #align linear_map.ker_smul' LinearMap.ker_smul'
 
@@ -1554,7 +1567,7 @@ theorem range_smul (f : V →ₗ[K] V₂) (a : K) (h : a ≠ 0) : range (a • f
 #align linear_map.range_smul LinearMap.range_smul
 
 theorem range_smul' (f : V →ₗ[K] V₂) (a : K) :
-    range (a • f) = ⨆ _h : a ≠ 0, range f := by
+    range (a • f) = ⨆ _ : a ≠ 0, range f := by
   simpa only [range_eq_map] using Submodule.map_smul' f _ a
 #align linear_map.range_smul' LinearMap.range_smul'
 
@@ -1744,7 +1757,7 @@ theorem mem_submoduleImage {M' : Type _} [AddCommMonoid M'] [Module R M'] {O : S
 
 theorem mem_submoduleImage_of_le {M' : Type _} [AddCommMonoid M'] [Module R M'] {O : Submodule R M}
     {ϕ : O →ₗ[R] M'} {N : Submodule R M} (hNO : N ≤ O) {x : M'} :
-    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _)(yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
+    x ∈ ϕ.submoduleImage N ↔ ∃ (y : _) (yN : y ∈ N), ϕ ⟨y, hNO yN⟩ = x := by
   refine' mem_submoduleImage.trans ⟨_, _⟩
   · rintro ⟨y, yO, yN, h⟩
     exact ⟨y, yN, h⟩
@@ -1928,9 +1941,9 @@ theorem map_finsupp_sum (f : M ≃ₛₗ[τ₁₂] M₂) {t : ι →₀ γ} {g :
 
 end Finsupp
 
-section Dfinsupp
+section DFinsupp
 
-open Dfinsupp
+open DFinsupp
 
 variable [Semiring R] [Semiring R₂]
 
@@ -1958,7 +1971,7 @@ theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ�
   f.toAddEquiv.map_dfinsupp_sumAddHom _ _
 #align linear_equiv.map_dfinsupp_sum_add_hom LinearEquiv.map_dfinsupp_sumAddHom
 
-end Dfinsupp
+end DFinsupp
 
 section Uncurry
 
@@ -2168,7 +2181,7 @@ theorem ker_comp (l : M →ₛₗ[σ₁₂] M₂) :
 
 variable {f g}
 
-/-- An linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
+/-- A linear map `f : M →ₗ[R] M₂` with a left-inverse `g : M₂ →ₗ[R] M` defines a linear
 equivalence between `M` and `f.range`.
 
 This is a computable alternative to `LinearEquiv.ofInjective`, and a bidirectional version of
@@ -2387,7 +2400,7 @@ theorem conj_comp (e : M ≃ₗ[R] M₂) (f g : Module.End R M) :
 
 theorem conj_trans (e₁ : M ≃ₗ[R] M₂) (e₂ : M₂ ≃ₗ[R] M₃) :
     e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := by
-  ext (f x)
+  ext f x
   rfl
 #align linear_equiv.conj_trans LinearEquiv.conj_trans
 

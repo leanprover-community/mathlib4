@@ -51,7 +51,7 @@ def normalMono (hf : Mono f) : NormalMono f where
           (LinearEquiv.toModuleIso'
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
               (LinearMap.quotKerEquivRange f ≪≫ₗ
-              LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext ; rfl
+              LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.normal_mono ModuleCat.normalMono
 
@@ -73,7 +73,7 @@ def normalEpi (hf : Epi f) : NormalEpi f where
           (LinearEquiv.toModuleIso'
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
                 LinearMap.quotKerEquivRange f ≪≫ₗ
-              LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext ; rfl
+              LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.normal_epi ModuleCat.normalEpi
 
@@ -88,18 +88,18 @@ set_option linter.uppercaseLean3 false in
 section ReflectsLimits
 
 -- porting note: added to make the following definitions work
-instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{u, v, w} R) := ModuleCat.hasLimitsOfSize
+instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) := ModuleCat.hasLimitsOfSize
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
 instance forgetReflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{u, v, w} R)) :=
+    ReflectsLimitsOfSize.{v, v} (forget (ModuleCatMax.{v, w} R)) :=
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
 #align Module.forget_reflects_limits_of_size ModuleCat.forgetReflectsLimitsOfSize
 
 instance forget₂ReflectsLimitsOfSize :
-    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{u, v, w} R) AddCommGroupCat.{max v w}) :=
+    ReflectsLimitsOfSize.{v, v} (forget₂ (ModuleCatMax.{v, w} R) AddCommGroupCat.{max v w}) :=
   reflectsLimitsOfReflectsIsomorphisms
 set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits_of_size ModuleCat.forget₂ReflectsLimitsOfSize

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module topology.sheaves.forget
-! leanprover-community/mathlib commit 85d6221d32c37e68f05b2e42cde6cee658dae5e9
+! leanprover-community/mathlib commit 5dc6092d09e5e489106865241986f7f2ad28d4c8
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -72,22 +72,26 @@ def diagramCompPreservesLimits : diagram F U ⋙ G ≅ diagram.{v} (F ⋙ G) U :
   exact PreservesProduct.iso _ _
   exact PreservesProduct.iso _ _
   rintro ⟨⟩ ⟨⟩ ⟨⟩
-  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext (fun j => ?_)
     simp
-  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext (fun j => ?_)
     -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
     dsimp [diagram, leftRes, rightRes]
     simp [limit.lift_π, Functor.comp_map, map_lift_piComparison, Fan.mk_π_app,
       PreservesProduct.iso_hom, parallelPair_map_left, Functor.map_comp, Category.assoc]
-  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext (fun j => ?_)
     -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
     dsimp [diagram, leftRes, rightRes]
     simp [limit.lift_π, Functor.comp_map, map_lift_piComparison, Fan.mk_π_app,
       PreservesProduct.iso_hom, parallelPair_map_left, Functor.map_comp, Category.assoc]
-  · -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+  · -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+    -- See https://github.com/leanprover-community/mathlib4/issues/5229
     refine limit.hom_ext (fun j => ?_)
     simp [diagram, leftRes, rightRes]
 set_option linter.uppercaseLean3 false in
@@ -105,12 +109,14 @@ def mapConeFork :
   Cones.ext (Iso.refl _) fun j => by
     dsimp; simp [diagramCompPreservesLimits]; cases j <;> dsimp
     · rw [Iso.eq_comp_inv]
-      -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+      -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       refine limit.hom_ext (fun j => ?_)
       -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
       simp [diagram, leftRes, rightRes, res]
     · rw [Iso.eq_comp_inv]
-      -- Porting note : can't use `limit.hom_ext` as an `ext` lemma
+      -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       refine limit.hom_ext (fun j => ?_)
       -- Porting note : `attribute [local reducible]` doesn't work, this is its replacement
       dsimp [diagram, leftRes, rightRes, res]
@@ -189,7 +195,7 @@ theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F �
       exact asIso f
       rintro ⟨_ | _⟩ <;>
         · simp
-    · -- Returning to the task of shwoing that `G.map f` is an isomorphism,
+    · -- Returning to the task of showing that `G.map f` is an isomorphism,
       -- we note that `G.map f` is almost but not quite (see below) a morphism
       -- from the sheaf condition cone for `F ⋙ G` to the
       -- image under `G` of the equalizer cone for the sheaf condition diagram.
@@ -211,6 +217,8 @@ theorem isSheaf_iff_isSheaf_comp : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F �
       let f' : c ⟶ d' := Fork.mkHom (G.map f) (by
         dsimp only [diagramCompPreservesLimits, res]
         dsimp only [Fork.ι]
+        -- Porting note : `ext` can't see `limit.hom_ext` applies here:
+        -- See https://github.com/leanprover-community/mathlib4/issues/5229
         refine limit.hom_ext fun j => ?_
         dsimp
         simp only [Category.assoc, ← Functor.map_comp_assoc, equalizer.lift_ι,

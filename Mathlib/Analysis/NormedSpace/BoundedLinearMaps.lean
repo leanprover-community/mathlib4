@@ -49,7 +49,7 @@ to currently deserve its own treatment.
 `IsBoundedLinearMap` is effectively an unbundled version of `ContinuousLinearMap` (defined
 in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
 `Analysis.NormedSpace.OperatorNorm`), albeit the name disparity. A bundled
-`ContinuousLinearMap` is to be preferred over a `IsBoundedLinearMap` hypothesis. Historical
+`ContinuousLinearMap` is to be preferred over an `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.
 -/
 
@@ -268,7 +268,7 @@ section BilinearMap
 namespace ContinuousLinearMap
 
 /-! We prove some computation rules for continuous (semi-)bilinear maps in their first argument.
-  If `f` is a continuuous bilinear map, to use the corresponding rules for the second argument, use
+  If `f` is a continuous bilinear map, to use the corresponding rules for the second argument, use
   `(f _).map_add` and similar.
 
 We have to assume that `F` and `G` are normed spaces in this section, to use
@@ -438,30 +438,30 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_right (h : IsBoundedBilinearMap 
   (h.toContinuousLinearMap x).isBoundedLinearMap
 #align is_bounded_bilinear_map.is_bounded_linear_map_right IsBoundedBilinearMap.isBoundedLinearMap_right
 
-theorem isBoundedBilinearMapSmul {𝕜' : Type _} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type _}
+theorem isBoundedBilinearMap_smul {𝕜' : Type _} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] {E : Type _}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × E => p.1 • p.2 :=
   (lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E).isBoundedBilinearMap
-#align is_bounded_bilinear_map_smul isBoundedBilinearMapSmul
+#align is_bounded_bilinear_map_smul isBoundedBilinearMap_smul
 
-theorem isBoundedBilinearMapMul : IsBoundedBilinearMap 𝕜 fun p : 𝕜 × 𝕜 => p.1 * p.2 := by
+theorem isBoundedBilinearMap_mul : IsBoundedBilinearMap 𝕜 fun p : 𝕜 × 𝕜 => p.1 * p.2 := by
   simp_rw [← smul_eq_mul]
-  exact isBoundedBilinearMapSmul
-#align is_bounded_bilinear_map_mul isBoundedBilinearMapMul
+  exact isBoundedBilinearMap_smul
+#align is_bounded_bilinear_map_mul isBoundedBilinearMap_mul
 
-theorem isBoundedBilinearMapComp :
+theorem isBoundedBilinearMap_comp :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × (E →L[𝕜] F) => p.1.comp p.2 :=
   (compL 𝕜 E F G).isBoundedBilinearMap
-#align is_bounded_bilinear_map_comp isBoundedBilinearMapComp
+#align is_bounded_bilinear_map_comp isBoundedBilinearMap_comp
 
 theorem ContinuousLinearMap.isBoundedLinearMap_comp_left (g : F →L[𝕜] G) :
     IsBoundedLinearMap 𝕜 fun f : E →L[𝕜] F => ContinuousLinearMap.comp g f :=
-  isBoundedBilinearMapComp.isBoundedLinearMap_right _
+  isBoundedBilinearMap_comp.isBoundedLinearMap_right _
 #align continuous_linear_map.is_bounded_linear_map_comp_left ContinuousLinearMap.isBoundedLinearMap_comp_left
 
 theorem ContinuousLinearMap.isBoundedLinearMap_comp_right (f : E →L[𝕜] F) :
     IsBoundedLinearMap 𝕜 fun g : F →L[𝕜] G => ContinuousLinearMap.comp g f :=
-  isBoundedBilinearMapComp.isBoundedLinearMap_left _
+  isBoundedBilinearMap_comp.isBoundedLinearMap_left _
 #align continuous_linear_map.is_bounded_linear_map_comp_right ContinuousLinearMap.isBoundedLinearMap_comp_right
 
 theorem isBoundedBilinearMapApply : IsBoundedBilinearMap 𝕜 fun p : (E →L[𝕜] F) × E => p.1 p.2 :=
@@ -471,26 +471,26 @@ theorem isBoundedBilinearMapApply : IsBoundedBilinearMap 𝕜 fun p : (E →L[�
 /-- The function `ContinuousLinearMap.smulRight`, associating to a continuous linear map
 `f : E → 𝕜` and a scalar `c : F` the tensor product `f ⊗ c` as a continuous linear map from `E` to
 `F`, is a bounded bilinear map. -/
-theorem isBoundedBilinearMapSmulRight :
+theorem isBoundedBilinearMap_smulRight :
     IsBoundedBilinearMap 𝕜 fun p =>
       (ContinuousLinearMap.smulRight : (E →L[𝕜] 𝕜) → F → E →L[𝕜] F) p.1 p.2 :=
   (smulRightL 𝕜 E F).isBoundedBilinearMap
-#align is_bounded_bilinear_map_smul_right isBoundedBilinearMapSmulRight
+#align is_bounded_bilinear_map_smul_right isBoundedBilinearMap_smulRight
 
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
-theorem isBoundedBilinearMapCompMultilinear {ι : Type _} {E : ι → Type _} [Fintype ι]
+theorem isBoundedBilinearMap_compMultilinear {ι : Type _} {E : ι → Type _} [Fintype ι]
     [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F =>
       p.1.compContinuousMultilinearMap p.2 :=
   (compContinuousMultilinearMapL 𝕜 E F G).isBoundedBilinearMap
-#align is_bounded_bilinear_map_comp_multilinear isBoundedBilinearMapCompMultilinear
+#align is_bounded_bilinear_map_comp_multilinear isBoundedBilinearMap_compMultilinear
 
 /-- Definition of the derivative of a bilinear map `f`, given at a point `p` by
 `q ↦ f(p.1, q.2) + f(q.1, p.2)` as in the standard formula for the derivative of a product.
 We define this function here as a linear map `E × F →ₗ[𝕜] G`, then `IsBoundedBilinearMap.deriv`
 strengthens it to a continuous linear map `E × F →L[𝕜] G`.
-``. -/
+-/
 def IsBoundedBilinearMap.linearDeriv (h : IsBoundedBilinearMap 𝕜 f) (p : E × F) : E × F →ₗ[𝕜] G :=
   (h.toContinuousLinearMap.deriv₂ p).toLinearMap
 #align is_bounded_bilinear_map.linear_deriv IsBoundedBilinearMap.linearDeriv
@@ -512,11 +512,11 @@ variable (𝕜)
 
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRightIsBoundedBilinear (𝕜' : Type _) [NormedRing 𝕜']
+theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type _) [NormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
-#align continuous_linear_map.mul_left_right_is_bounded_bilinear ContinuousLinearMap.mulLeftRightIsBoundedBilinear
+#align continuous_linear_map.mul_left_right_is_bounded_bilinear ContinuousLinearMap.mulLeftRight_isBoundedBilinear
 
 variable {𝕜}
 
@@ -551,12 +551,11 @@ In this section we establish that the set of continuous linear equivalences betw
 spaces is an open subset of the space of linear maps between them.
 -/
 
-
 protected theorem isOpen [CompleteSpace E] : IsOpen (range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F)) := by
   rw [isOpen_iff_mem_nhds, forall_range_iff]
   refine' fun e => IsOpen.mem_nhds _ (mem_range_self _)
   let O : (E →L[𝕜] F) → E →L[𝕜] E := fun f => (e.symm : F →L[𝕜] E).comp f
-  have h_O : Continuous O := isBoundedBilinearMapComp.continuous_right
+  have h_O : Continuous O := isBoundedBilinearMap_comp.continuous_right
   convert show IsOpen (O ⁻¹' { x | IsUnit x }) from Units.isOpen.preimage h_O using 1
   ext f'
   constructor

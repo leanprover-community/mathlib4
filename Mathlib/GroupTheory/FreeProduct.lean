@@ -137,7 +137,7 @@ theorem ext_hom (f g : FreeProduct M →* N) (h : ∀ i, f.comp (of : M i →* _
 #align free_product.ext_hom FreeProduct.ext_hom
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
-universal property of the free product, charaterizing it as a categorical coproduct. -/
+universal property of the free product, characterizing it as a categorical coproduct. -/
 @[simps symm_apply]
 def lift : (∀ i, M i →* N) ≃ (FreeProduct M →* N) where
   toFun fi :=
@@ -155,7 +155,7 @@ def lift : (∀ i, M i →* N) ≃ (FreeProduct M →* N) where
   invFun f i := f.comp of
   left_inv := by
     intro fi
-    ext (i x)
+    ext i x
     rw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
@@ -428,8 +428,8 @@ theorem of_smul_def (i) (w : Word M) (m : M i) :
 theorem cons_eq_smul {i} {m : M i} {ls h1 h2} :
     Word.mk (⟨i, m⟩::ls) h1 h2 = of m • mkAux ls h1 h2 := by
   rw [cons_eq_rcons, of_smul_def, equivPair_eq_of_fstIdx_ne _]
-  . simp
-  . rw [fstIdx_ne_iff]
+  · simp
+  · rw [fstIdx_ne_iff]
     exact (List.chain'_cons'.1 h2).1
 #align free_product.word.cons_eq_smul FreeProduct.Word.cons_eq_smul
 
@@ -484,7 +484,7 @@ variable (M)
 
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
-concatentation, and thus provides a useful induction principle. -/
+concatenation, and thus provides a useful induction principle. -/
 --@[nolint has_nonempty_instance] Porting note: commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
@@ -566,8 +566,8 @@ def toWord {i j} (w : NeWord M i j) : Word M
 #align free_product.neword.to_word FreeProduct.NeWord.toWord
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
-theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _)(w' : NeWord M i j), w'.toWord = w := by
-  suffices : ∃ (i j : _)(w' : NeWord M i j), w'.toWord.toList = w.toList
+theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
+  suffices : ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList
   · rcases this with ⟨i, j, w, h⟩
     refine' ⟨i, j, w, _⟩
     ext
@@ -709,7 +709,7 @@ variable {H : ι → Type _} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
 
 -- We need many groups or one group with many elements
-variable (hcard : 3 ≤ (#ι) ∨ ∃ i, 3 ≤ (#H i))
+variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type _} [MulAction G α]
@@ -752,7 +752,7 @@ theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) : lift 
   exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hk hk
 #align free_product.lift_word_prod_nontrivial_of_head_eq_last FreeProduct.lift_word_prod_nontrivial_of_head_eq_last
 
-theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ (#H i))
+theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j) (hcard : 3 ≤ #(H i))
     (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
   obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
@@ -884,9 +884,9 @@ variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
 
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 
-variable (hX : ∀ i, a i • Y iᶜ ⊆ X i)
+variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 
-variable (hY : ∀ i, a⁻¹ i • X iᶜ ⊆ Y i)
+variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
 --include hXnonempty hXdisj hYdisj hXYdisj hX hY Porting note: commented out
 
@@ -945,44 +945,44 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     cases' (lt_or_gt_of_ne hnne0).symm with hlt hgt
     · have h1n : 1 ≤ n := hlt
       calc
-        a i ^ n • X' j ⊆ a i ^ n • Y iᶜ :=
+        a i ^ n • X' j ⊆ a i ^ n • (Y i)ᶜ :=
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          refine Int.le_induction (P := fun n => a i ^ n • Y iᶜ ⊆ X i) ?_ ?_ n h1n
-          . dsimp
+          refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
+          · dsimp
             rw [zpow_one]
             exact hX i
-          . dsimp
+          · dsimp
             intro n _hle hi
             calc
-              a i ^ (n + 1) • Y iᶜ = (a i ^ n * a i) • Y iᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • Y iᶜ := (MulAction.mul_smul _ _ _)
+              a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
+              _ = a i ^ n • a i • (Y i)ᶜ := (MulAction.mul_smul _ _ _)
               _ ⊆ a i ^ n • X i := (smul_set_mono <| hX i)
-              _ ⊆ a i ^ n • Y iᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
+              _ ⊆ a i ^ n • (Y i)ᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
               _ ⊆ X i := hi
         _ ⊆ X' i := Set.subset_union_left _ _
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
       calc
-        a i ^ n • X' j ⊆ a i ^ n • X iᶜ :=
+        a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine' Int.le_induction_down (P := fun n => a i ^ n • X iᶜ ⊆ Y i) _ _ _ h1n
+          refine' Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) _ _ _ h1n
           · dsimp
             rw [zpow_neg, zpow_one]
             exact hY i
           · dsimp
             intro n _ hi
             calc
-              a i ^ (n - 1) • X iᶜ = (a i ^ n * (a i)⁻¹) • X iᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • X iᶜ := (MulAction.mul_smul _ _ _)
+              a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := (MulAction.mul_smul _ _ _)
               _ ⊆ a i ^ n • Y i := (smul_set_mono <| hY i)
-              _ ⊆ a i ^ n • X iᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
+              _ ⊆ a i ^ n • (X i)ᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
-  show _ ∨ ∃ i, 3 ≤ (#H i)
+  show _ ∨ ∃ i, 3 ≤ #(H i)
   · inhabit ι
     right
     use Inhabited.default

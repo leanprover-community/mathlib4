@@ -91,7 +91,7 @@ protected def directSum :
                   DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂))
         (DirectSum.toModule R _ _ fun i => map (DirectSum.lof R _ _ _) (DirectSum.lof R _ _ _)) _
         _ <;>
-    [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
+    [ext ⟨i₁, i₂⟩ x₁ x₂ : 4, ext i₁ i₂ x₁ x₂ : 5]
   repeat'
     first
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
@@ -114,7 +114,7 @@ protected def directSum :
           (N := (⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂)
           (φ := fun i : ι₁ × ι₂ => map (DirectSum.lof R _ M₁ i.1) (DirectSum.lof R _ M₂ i.2))) _
         _ <;>
-    [ext (⟨i₁, i₂⟩x₁ x₂) : 4, ext (i₁ i₂ x₁ x₂) : 5]
+    [ext ⟨i₁, i₂⟩ x₁ x₂ : 4, ext i₁ i₂ x₁ x₂ : 5]
   repeat'
     first
       |rw [compr₂_apply]|rw [comp_apply]|rw [id_apply]|rw [mk_apply]|rw [DirectSum.toModule_lof]
@@ -146,7 +146,7 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
 /-- Tensor products distribute over a direct sum on the right. -/
 def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
   TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R M₂ M₁' ≪≫ₗ
-    Dfinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
+    DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
 #align tensor_product.direct_sum_right TensorProduct.directSumRight
 
 variable {M₁ M₁' M₂ M₂'}
@@ -180,7 +180,7 @@ theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
     DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
   dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
   rw [directSumLeft_tmul_lof]
-  exact Dfinsupp.mapRange_single (hf := fun _ => rfl)
+  exact DFinsupp.mapRange_single (hf := fun _ => rfl)
 #align tensor_product.direct_sum_right_tmul_lof TensorProduct.directSumRight_tmul_lof
 
 @[simp]

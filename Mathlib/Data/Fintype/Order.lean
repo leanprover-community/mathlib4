@@ -204,6 +204,10 @@ theorem Fintype.exists_le [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)
   directed_id.fintype_le _
 #align fintype.exists_le Fintype.exists_le
 
+theorem Fintype.exists_ge [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type _} [Fintype β]
+    (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+  directed_id.fintype_le (r := (· ≥ ·)) _
+
 theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· ≤ ·)] {β : Type _}
     [Fintype β] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Fintype.exists_le f
@@ -211,3 +215,10 @@ theorem Fintype.bddAbove_range [Nonempty α] [Preorder α] [IsDirected α (· �
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 #align fintype.bdd_above_range Fintype.bddAbove_range
+
+theorem Fintype.bddBelow_range [Nonempty α] [Preorder α] [IsDirected α (· ≥ ·)] {β : Type _}
+    [Fintype β] (f : β → α) : BddBelow (Set.range f) := by
+  obtain ⟨M, hM⟩ := Fintype.exists_ge f
+  refine' ⟨M, fun a ha => _⟩
+  obtain ⟨b, rfl⟩ := ha
+  exact hM b

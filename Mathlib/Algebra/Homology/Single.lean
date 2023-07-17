@@ -20,7 +20,7 @@ Similarly `single₀ V : V ⥤ ChainComplex V ℕ` is the special case for
 `ℕ`-indexed chain complexes, with the object supported in degree `0`,
 but with better definitional properties.
 
-In `toSingle₀Equiv` we characterize chain maps to a `ℕ`-indexed complex concentrated in degree 0;
+In `toSingle₀Equiv` we characterize chain maps to an `ℕ`-indexed complex concentrated in degree 0;
 they are equivalent to `{ f : C.X 0 ⟶ X // C.d 1 0 ≫ f = 0 }`.
 (This is useful translating between a projective resolution and
 an augmented exact complex of projectives.)
@@ -55,8 +55,8 @@ def single (j : ι) : V ⥤ HomologicalComplex V c where
     { X := fun i => if i = j then A else 0
       d := fun i j => 0 }
   map f :=
-    { f := fun i => if h : i = j then eqToHom (by dsimp ; rw [if_pos h]) ≫ f ≫
-              eqToHom (by dsimp ; rw [if_pos h]) else 0 }
+    { f := fun i => if h : i = j then eqToHom (by dsimp; rw [if_pos h]) ≫ f ≫
+              eqToHom (by dsimp; rw [if_pos h]) else 0 }
   map_id A := by
     ext
     dsimp
@@ -136,12 +136,12 @@ def single₀ : V ⥤ ChainComplex V ℕ where
         | n + 1 => 0 }
   map_id X := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
   map_comp f g := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
 #align chain_complex.single₀ ChainComplex.single₀
 
 @[simp]
@@ -199,6 +199,7 @@ is the same as doing nothing.
 noncomputable def homologyFunctor0Single₀ : single₀ V ⋙ homologyFunctor V _ 0 ≅ 𝟭 V :=
   NatIso.ofComponents (fun X => homology.congr _ _ (by simp) (by simp) ≪≫ homologyZeroZero)
     fun f => by
+      -- Porting note: why can't `aesop_cat` do this?
       dsimp
       ext
       simp
@@ -220,7 +221,7 @@ end
 
 variable {V}
 
-/-- Morphisms from a `ℕ`-indexed chain complex `C`
+/-- Morphisms from an `ℕ`-indexed chain complex `C`
 to a single object chain complex with `X` concentrated in degree 0
 are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
 -/
@@ -238,10 +239,10 @@ def toSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
         | n + 1 => 0
       comm' := fun i j h => by
         rcases i with (_|_|i) <;> cases j <;> simp only [single₀_obj_X_d, comp_zero]
-        . rw [C.shape, zero_comp]
+        · rw [C.shape, zero_comp]
           simp
-        . exact f.2.symm
-        . rw [C.shape, zero_comp]
+        · exact f.2.symm
+        · rw [C.shape, zero_comp]
           exact i.succ_succ_ne_one.symm }
   left_inv f := by
     ext i
@@ -262,7 +263,7 @@ theorem to_single₀_ext {C : ChainComplex V ℕ} {X : V} (f g : C ⟶ (single�
 #align chain_complex.to_single₀_ext ChainComplex.to_single₀_ext
 
 /-- Morphisms from a single object chain complex with `X` concentrated in degree 0
-to a `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X`.
+to an `ℕ`-indexed chain complex `C` are the same as morphisms `f : X → C.X`.
 -/
 @[simps]
 def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) : ((single₀ V).obj X ⟶ C) ≃ (X ⟶ C.X 0) where
@@ -296,9 +297,9 @@ def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
         hom_inv_id := to_single₀_ext _ _ (by simp)
         inv_hom_id := by
           ext (_|_)
-          . dsimp
+          · dsimp
             simp
-          . dsimp
+          · dsimp
             rw [Category.comp_id] })
     fun f => by ext (_|_) <;> aesop_cat
 #align chain_complex.single₀_iso_single ChainComplex.single₀IsoSingle
@@ -332,12 +333,12 @@ def single₀ : V ⥤ CochainComplex V ℕ where
         | n + 1 => 0 }
   map_id X := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
   map_comp f g := by
     ext (_|_)
-    . rfl
-    . simp
+    · rfl
+    · simp
 #align cochain_complex.single₀ CochainComplex.single₀
 
 @[simp]
@@ -395,6 +396,7 @@ is the same as doing nothing.
 noncomputable def homologyFunctor0Single₀ : single₀ V ⋙ homologyFunctor V _ 0 ≅ 𝟭 V :=
   NatIso.ofComponents (fun X => homology.congr _ _ (by simp) (by simp) ≪≫ homologyZeroZero)
     fun f => by
+      -- Porting note: why can't `aesop_cat` do this?
       dsimp
       ext
       simp
@@ -417,7 +419,7 @@ end
 variable {V}
 
 /-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
-to a `ℕ`-indexed cochain complex `C`
+to an `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`.
 -/
 def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
@@ -434,10 +436,10 @@ def fromSingle₀Equiv (C : CochainComplex V ℕ) (X : V) :
       comm' := fun i j h => by
         rcases f with ⟨f, hf⟩
         rcases j with (_|_|j) <;> cases i <;> simp only [single₀_obj_X_d, zero_comp]
-        . rw [C.shape, comp_zero]
+        · rw [C.shape, comp_zero]
           simp
-        . exact hf
-        . rw [C.shape, comp_zero]
+        · exact hf
+        · rw [C.shape, comp_zero]
           simp
           exact j.succ_succ_ne_one.symm }
   left_inv f := by
@@ -462,19 +464,17 @@ variable (V)
 
 /-- `single₀` is the same as `single V _ 0`. -/
 def single₀IsoSingle : single₀ V ≅ single V _ 0 :=
-  NatIso.ofComponents
-    (fun X =>
-      { hom := { f := fun i => by cases i <;> exact 𝟙 _ }
-        inv := { f := fun i => by cases i <;> exact 𝟙 _ }
-        hom_inv_id := from_single₀_ext _ _ (by simp)
-        inv_hom_id := by
-          ext (_|_)
-          . dsimp
-            simp
-          . dsimp
-            rw [Category.id_comp]
-            rfl })
-    fun f => by ext; simp
+  NatIso.ofComponents fun X =>
+    { hom := { f := fun i => by cases i <;> exact 𝟙 _ }
+      inv := { f := fun i => by cases i <;> exact 𝟙 _ }
+      hom_inv_id := from_single₀_ext _ _ (by simp)
+      inv_hom_id := by
+        ext (_|_)
+        · dsimp
+          simp
+        · dsimp
+          rw [Category.id_comp]
+          rfl }
 #align cochain_complex.single₀_iso_single CochainComplex.single₀IsoSingle
 
 instance : Faithful (single₀ V) :=

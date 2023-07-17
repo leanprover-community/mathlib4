@@ -75,7 +75,7 @@ of negative measure, hence proving our claim.
 In the case that the sequence does not terminate, it is easy to see that
 $i \setminus \bigcup_{k = 0}^\infty A_k$ is the required negative set.
 
-To implement this in Lean, we define several auxilary definitions.
+To implement this in Lean, we define several auxiliary definitions.
 
 - given the sets `i` and the natural number `n`, `ExistsOneDivLT s i n` is the property that
   there exists a measurable set `k ⊆ i` such that `1 / (n + 1) < s k`.
@@ -194,7 +194,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
     exact lt_trans Nat.one_div_pos_of_nat h
   | succ n =>
     rw [restrictNonposSeq_succ]
-    have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_H : k ≤ n), restrictNonposSeq s i k] 0 := by
+    have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
       refine' mt (restrict_le_zero_subset _ _ (by simp [Nat.lt_succ_iff]; rfl)) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
@@ -228,10 +228,10 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
   by_cases s ≤[i] 0; · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
-  push_neg  at hn
+  push_neg at hn
   set k := Nat.find hn
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
-  have hmeas : MeasurableSet (⋃ (l : ℕ) (_H : l < k), restrictNonposSeq s i l) :=
+  have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
     MeasurableSet.iUnion fun _ => MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   refine' ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset _ _, hk₂, _⟩
   rw [of_diff hmeas hi₁, s.of_disjoint_iUnion_nat]
@@ -242,7 +242,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       exact
         MeasurableSet.iUnion fun _ =>
           MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
-    suffices 0 ≤ ∑' l : ℕ, s (⋃ _H : l < k, restrictNonposSeq s i l) by
+    suffices 0 ≤ ∑' l : ℕ, s (⋃ _ : l < k, restrictNonposSeq s i l) by
       rw [sub_neg]
       exact lt_of_lt_of_le hi₂ this
     refine' tsum_nonneg _
@@ -254,7 +254,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     · convert le_of_eq s.empty.symm
       ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false_iff]
       exact fun h' => False.elim (h h')
-  · intro ; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
+  · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   · intro a b hab
     refine' Set.disjoint_iUnion_left.mpr fun _ => _
     refine' Set.disjoint_iUnion_right.mpr fun _ => _
@@ -307,7 +307,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     hi₁.diff (MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _)
   refine' ⟨A, A_meas, Set.diff_subset _ _, _, h₂.trans_lt hi⟩
   by_contra hnn
-  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg  at hnn
+  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg at hnn
   obtain ⟨E, hE₁, hE₂, hE₃⟩ := hnn
   have : ∃ k, 1 ≤ bdd k ∧ 1 / (bdd k : ℝ) < s E := by
     rw [tendsto_atTop_atTop] at h₄
@@ -411,7 +411,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
   · exact restrict_le_restrict_union _ _ hA₁ hA₂ hD₁ hD₂
 #align measure_theory.signed_measure.exists_compl_positive_negative MeasureTheory.SignedMeasure.exists_compl_positive_negative
 
-/-- **The Hahn decomposition thoerem**: Given a signed measure `s`, there exist
+/-- **The Hahn decomposition theorem**: Given a signed measure `s`, there exist
 complement measurable sets `i` and `j` such that `i` is positive, `j` is negative. -/
 theorem exists_isCompl_positive_negative (s : SignedMeasure α) :
     ∃ i j : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ MeasurableSet j ∧ s ≤[j] 0 ∧ IsCompl i j :=

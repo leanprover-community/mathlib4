@@ -104,7 +104,7 @@ propositions concerning `z` will still be over `ℤ`. `zify` changes proposition
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)?
-  (" with " ident (colGt ident)? (colGt ident)?)? : tactic
+  (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic
 
 /-- Generate instance for the `lift` tactic. -/
 def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do

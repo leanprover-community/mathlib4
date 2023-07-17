@@ -84,7 +84,7 @@ theorem set_subsingleton (A B : Finset G) (a0 b0 : G) (h : UniqueMul A B a0 b0) 
 --  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/
 @[to_additive]
 theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
-    UniqueMul A B a0 b0 ↔ ∃! (ab : _)(_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = a0 * b0 :=
+    UniqueMul A B a0 b0 ↔ ∃! (ab : _) (_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = a0 * b0 :=
   ⟨fun _ ↦ ⟨(a0, b0), ⟨Finset.mem_product.mpr ⟨aA, bB⟩, rfl, by simp⟩, by simpa⟩,
     fun h ↦ h.elim₂
       (by
@@ -99,7 +99,7 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
 @[to_additive]
 theorem exists_iff_exists_existsUnique :
     (∃ a0 b0 : G, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0) ↔
-      ∃ g : G, ∃! (ab : _)(_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = g :=
+      ∃ g : G, ∃! (ab : _) (_ : ab ∈ A ×ˢ B), ab.1 * ab.2 = g :=
   ⟨fun ⟨a0, b0, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
@@ -214,7 +214,7 @@ theorem eq_and_eq_of_le_of_le_of_mul_le {A} [Mul A] [LinearOrder A]
   haveI := Mul.to_covariantClass_right A
   have ha' : ¬a0 * b0 < a * b → ¬a0 < a := mt fun h ↦ mul_lt_mul_of_lt_of_le h hb
   have hb' : ¬a0 * b0 < a * b → ¬b0 < b := mt fun h ↦ mul_lt_mul_of_le_of_lt ha h
-  push_neg  at ha' hb'
+  push_neg at ha' hb'
   exact ⟨ha.antisymm' (ha' ab), hb.antisymm' (hb' ab)⟩
 #align eq_and_eq_of_le_of_le_of_mul_le eq_and_eq_of_le_of_le_of_mul_le
 #align eq_and_eq_of_le_of_le_of_add_le eq_and_eq_of_le_of_le_of_add_le

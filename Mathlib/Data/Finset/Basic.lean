@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 
 ! This file was ported from Lean 3 source module data.finset.basic
-! leanprover-community/mathlib commit 9ac7c0c8c4d7a535ec3e5b34b8859aab9233b2f4
+! leanprover-community/mathlib commit d9e96a3e3e0894e93e10aff5244f4c96655bac1c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -101,7 +101,7 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 * `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.product`: Given finsets of `α` and `β`, defines finsets of `α × β`.
   For arbitrary dependent products, see `Mathlib.Data.Finset.Pi`.
-* `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and a
+* `Finset.biUnion`: Finite unions of finsets; given an indexing function `f : α → Finset β` and an
   `s : Finset α`, `s.biUnion f` is the union of all finsets of the form `f a` for `a ∈ s`.
 * `Finset.bInter`: TODO: Implement finite intersections.
 
@@ -266,7 +266,7 @@ protected theorem forall_coe {α : Type _} (s : Finset α) (p : s → Prop) :
 
 -- Porting note: @[simp] can prove this
 protected theorem exists_coe {α : Type _} (s : Finset α) (p : s → Prop) :
-    (∃ x : s, p x) ↔ ∃ (x : α)(h : x ∈ s), p ⟨x, h⟩ :=
+    (∃ x : s, p x) ↔ ∃ (x : α) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.exists
 #align finset.exists_coe Finset.exists_coe
 
@@ -855,6 +855,12 @@ theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
   simp only [mem_cons, or_imp, forall_and, forall_eq]
 #align finset.forall_mem_cons Finset.forall_mem_cons
 
+/-- Useful in proofs by induction. -/
+theorem forall_of_forall_cons {p : α → Prop} {h : a ∉ s} (H : ∀ x, x ∈ cons a s h → p x) (x)
+    (h : x ∈ s) : p x :=
+  H _ <| mem_cons.2 <| Or.inr h
+#align finset.forall_of_forall_cons Finset.forall_of_forall_cons
+
 @[simp]
 theorem mk_cons {s : Multiset α} (h : (a ::ₘ s).Nodup) :
     (⟨a ::ₘ s, h⟩ : Finset α) = cons a ⟨s, (nodup_cons.1 h).2⟩ (nodup_cons.1 h).1 :=
@@ -894,7 +900,7 @@ theorem cons_subset_cons {hs ht} : s.cons a hs ⊆ t.cons a ht ↔ s ⊆ t := by
   rwa [← coe_subset, coe_cons, coe_cons, Set.insert_subset_insert_iff, coe_subset]
 #align finset.cons_subset_cons Finset.cons_subset_cons
 
-theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _)(h : a ∉ s), s.cons a h ⊆ t := by
+theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), s.cons a h ⊆ t := by
   refine' ⟨fun h => _, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
@@ -1157,22 +1163,25 @@ theorem ne_insert_of_not_mem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ in
   simp [h]
 #align finset.ne_insert_of_not_mem Finset.ne_insert_of_not_mem
 
-theorem insert_subset : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
+theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
   simp only [subset_iff, mem_insert, forall_eq, or_imp, forall_and]
-#align finset.insert_subset Finset.insert_subset
+#align finset.insert_subset Finset.insert_subset_iff
+
+theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
+  insert_subset_iff.mpr ⟨ha,hs⟩
 
 theorem subset_insert (a : α) (s : Finset α) : s ⊆ insert a s := fun _b => mem_insert_of_mem
 #align finset.subset_insert Finset.subset_insert
 
 theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a s ⊆ insert a t :=
-  insert_subset.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
+  insert_subset_iff.2 ⟨mem_insert_self _ _, Subset.trans h (subset_insert _ _)⟩
 #align finset.insert_subset_insert Finset.insert_subset_insert
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 #align finset.insert_inj Finset.insert_inj
 
-theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) (sᶜ) := fun _ h _ _ =>
+theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
 #align finset.insert_inj_on Finset.insert_inj_on
 
@@ -1230,7 +1239,7 @@ theorem induction_on' {α : Type _} {p : Finset α → Prop} [DecidableEq α] (S
     (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → p s → p (insert a s)) : p S :=
   @Finset.induction_on α (fun T => T ⊆ S → p T) _ S (fun _ => h₁)
     (fun _ _ has hqs hs =>
-      let ⟨hS, sS⟩ := Finset.insert_subset.1 hs
+      let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
       h₂ hS sS has (hqs sS))
     (Finset.Subset.refl S)
 #align finset.induction_on' Finset.induction_on'
@@ -1539,7 +1548,7 @@ theorem _root_.Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type
       obtain ⟨j, hbj⟩ : ∃ j, b ∈ f j := by simpa [Set.mem_iUnion₂] using hbtc (t.mem_insert_self b)
       rcases h j i with ⟨k, hk, hk'⟩
       use k
-      rw [coe_insert, Set.insert_subset]
+      rw [coe_insert, Set.insert_subset_iff]
       exact ⟨hk hbj, _root_.trans hti hk'⟩
 #align directed.exists_mem_subset_of_finset_subset_bUnion Directed.exists_mem_subset_of_finset_subset_biUnion
 
@@ -2190,7 +2199,7 @@ theorem insert_sdiff_insert (s t : Finset α) (x : α) : insert x s \ insert x t
 
 theorem sdiff_insert_of_not_mem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   refine' Subset.antisymm (sdiff_subset_sdiff (Subset.refl _) (subset_insert _ _)) fun y hy => _
-  simp only [mem_sdiff, mem_insert, not_or] at hy⊢
+  simp only [mem_sdiff, mem_insert, not_or] at hy ⊢
   exact ⟨hy.1, fun hxy => h <| hxy ▸ hy.1, hy.2⟩
 #align finset.sdiff_insert_of_not_mem Finset.sdiff_insert_of_not_mem
 
@@ -2621,13 +2630,13 @@ instance decidableEqPiFinset {β : α → Type _} [_h : ∀ a, DecidableEq (β a
 #align finset.decidable_eq_pi_finset Finset.decidableEqPiFinset
 
 instance decidableDexistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
-    Decidable (∃ (a : _)(h : a ∈ s), p a h) :=
+    Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset
 #align finset.decidable_dexists_finset Finset.decidableDexistsFinset
 
 instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
     Decidable (∃ a ∈ s, p a) :=
-  decidable_of_iff (∃ (a : _)(_ : a ∈ s), p a) (by simp)
+  decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
 
 end DecidablePiExists
 
@@ -3082,6 +3091,12 @@ theorem forall_mem_insert [DecidableEq α] (a : α) (s : Finset α) (p : α → 
   simp only [mem_insert, or_imp, forall_and, forall_eq]
 #align finset.forall_mem_insert Finset.forall_mem_insert
 
+/-- Useful in proofs by induction. -/
+theorem forall_of_forall_insert [DecidableEq α] {p : α → Prop} {a : α} {s : Finset α}
+    (H : ∀ x, x ∈ insert a s → p x) (x) (h : x ∈ s) : p x :=
+  H _ <| mem_insert_of_mem h
+#align finset.forall_of_forall_insert Finset.forall_of_forall_insert
+
 end Finset
 
 /-- Equivalence between the set of natural numbers which are `≥ k` and `ℕ`, given by `n → n - k`. -/
@@ -3181,6 +3196,11 @@ theorem toFinset_union (s t : Multiset α) : (s ∪ t).toFinset = s.toFinset ∪
 theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
   Finset.val_inj.symm.trans Multiset.dedup_eq_zero
 #align multiset.to_finset_eq_empty Multiset.toFinset_eq_empty
+
+@[simp]
+theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
+  simp only [toFinset_eq_empty, Ne.def, Finset.nonempty_iff_ne_empty]
+#align multiset.to_finset_nonempty Multiset.toFinset_nonempty
 
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -3333,6 +3353,11 @@ theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l
 theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
   cases l <;> simp
 #align list.to_finset_eq_empty_iff List.toFinset_eq_empty_iff
+
+@[simp]
+theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
+  simp [Finset.nonempty_iff_ne_empty]
+#align list.to_finset_nonempty_iff List.toFinset_nonempty_iff
 
 end List
 

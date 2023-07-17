@@ -15,7 +15,7 @@ import Mathlib.Tactic.NormNum.Basic
 /-!
 # `norm_num` extensions on natural numbers
 
-This file provides a `norm_num` extention to prove that natural numbers are prime and compute
+This file provides a `norm_num` extension to prove that natural numbers are prime and compute
 its minimal factor. Todo: compute the list of all factors.
 
 
@@ -26,7 +26,7 @@ that is thousands of levels deep, and the Lean kernel seems to raise a stack ove
 type-checking that proof. If we want an implementation that works for larger primes, we should
 generate a proof that has a smaller depth.
 
-Note: `evalMinFac.aux` does not raise an stack overflow, which can be checked by replacing the
+Note: `evalMinFac.aux` does not raise a stack overflow, which can be checked by replacing the
 `prf'` in the recursive call by something like `(.sort .zero)`
 -/
 

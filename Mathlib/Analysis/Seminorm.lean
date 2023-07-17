@@ -39,7 +39,7 @@ seminorm, locally convex, LCTVS
 -/
 
 
-open NormedField Set
+open NormedField Set Filter
 
 open BigOperators NNReal Pointwise Topology
 
@@ -399,12 +399,31 @@ theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
       NNReal.coe_max, coe_mk, ih]
 #align seminorm.finset_sup_apply Seminorm.finset_sup_apply
 
+theorem exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) {s : Finset ι} (hs : s.Nonempty) (x : E) :
+    ∃ i ∈ s, s.sup p x = p i x := by
+  rcases Finset.exists_mem_eq_sup s hs (fun i ↦ (⟨p i x, map_nonneg _ _⟩ : ℝ≥0)) with ⟨i, hi, hix⟩
+  rw [finset_sup_apply]
+  exact ⟨i, hi, congr_arg _ hix⟩
+
+theorem zero_or_exists_apply_eq_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
+    s.sup p x = 0 ∨ ∃ i ∈ s, s.sup p x = p i x := by
+  rcases Finset.eq_empty_or_nonempty s with (rfl|hs)
+  · left; rfl
+  · right; exact exists_apply_eq_finset_sup p hs x
+
+theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥0) :
+    s.sup (C • p) = C • s.sup p := by
+  ext x
+  rw [smul_apply, finset_sup_apply, finset_sup_apply]
+  symm
+  exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, map_nonneg _ _⟩))
+
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i in s, p i := by
   classical
-    refine' Finset.sup_le_iff.mpr _
-    intro i hi
-    rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
-    exact bot_le
+  refine' Finset.sup_le_iff.mpr _
+  intro i hi
+  rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
+  exact bot_le
 #align seminorm.finset_sup_le_sum Seminorm.finset_sup_le_sum
 
 theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 ≤ a)
@@ -413,6 +432,10 @@ theorem finset_sup_apply_le {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E}
   rw [finset_sup_apply, NNReal.coe_le_coe]
   exact Finset.sup_le h
 #align seminorm.finset_sup_apply_le Seminorm.finset_sup_apply_le
+
+theorem le_finset_sup_apply {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {i : ι}
+    (hi : i ∈ s) : p i x ≤ s.sup p x :=
+  (Finset.le_sup hi : p i ≤ s.sup p) x
 
 theorem finset_sup_apply_lt {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 < a)
     (h : ∀ i, i ∈ s → p i x < a) : s.sup p x < a := by
@@ -460,7 +483,7 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {p q : Seminorm �
 theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
   ⟨0, by
     rintro _ ⟨x, rfl⟩
-    dsimp ; positivity⟩
+    dsimp; positivity⟩
 #align seminorm.bdd_below_range_add Seminorm.bddBelow_range_add
 
 noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
@@ -886,8 +909,9 @@ theorem ball_smul_ball (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   rw [Set.mem_smul] at hx
   rcases hx with ⟨a, y, ha, hy, hx⟩
   rw [← hx, mem_ball_zero, map_smul_eq_mul]
-  exact
-    mul_lt_mul'' (mem_ball_zero_iff.mp ha) (p.mem_ball_zero.mp hy) (norm_nonneg a) (map_nonneg p y)
+  gcongr
+  · exact mem_ball_zero_iff.mp ha
+  · exact p.mem_ball_zero.mp hy
 #align seminorm.ball_smul_ball Seminorm.ball_smul_ball
 
 theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
@@ -898,7 +922,9 @@ theorem closedBall_smul_closedBall (p : Seminorm 𝕜 E) (r₁ r₂ : ℝ) :
   rcases hx with ⟨a, y, ha, hy, hx⟩
   rw [← hx, mem_closedBall_zero, map_smul_eq_mul]
   rw [mem_closedBall_zero_iff] at ha
-  exact mul_le_mul ha (p.mem_closedBall_zero.mp hy) (map_nonneg _ y) ((norm_nonneg a).trans ha)
+  gcongr
+  · exact (norm_nonneg a).trans ha
+  · exact p.mem_closedBall_zero.mp hy
 #align seminorm.closed_ball_smul_closed_ball Seminorm.closedBall_smul_closedBall
 
 @[simp]
@@ -915,6 +941,17 @@ theorem closedBall_eq_emptyset (p : Seminorm 𝕜 E) {x : E} {r : ℝ} (hr : r <
   rw [Seminorm.mem_closedBall, Set.mem_empty_iff_false, iff_false_iff, not_le]
   exact hr.trans_le (map_nonneg _ _)
 #align seminorm.closed_ball_eq_emptyset Seminorm.closedBall_eq_emptyset
+
+-- Porting note: TODO: make that an `iff`
+theorem neg_mem_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r := by
+  simpa only [mem_ball_zero, map_neg_eq_map] using hx
+#align seminorm.symmetric_ball_zero Seminorm.neg_mem_ball_zero
+
+@[simp]
+theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
+  ext
+  rw [Set.mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
+#align seminorm.neg_ball Seminorm.neg_ball
 
 end Module
 
@@ -953,7 +990,7 @@ theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
   rintro x ⟨y, hy, h⟩
   rw [Seminorm.mem_closedBall_zero, ← h, map_smul_eq_mul]
   rw [Seminorm.mem_closedBall_zero] at hy
-  exact mul_le_mul_of_nonneg_left hy (norm_nonneg _)
+  gcongr
 #align seminorm.smul_closed_ball_subset Seminorm.smul_closedBall_subset
 
 theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 < ‖k‖) :
@@ -973,7 +1010,7 @@ theorem ball_zero_absorbs_ball_zero (p : Seminorm 𝕜 E) {r₁ r₂ : ℝ} (hr�
   refine' ⟨r, hr₀, fun a ha x hx => _⟩
   rw [smul_ball_zero (norm_pos_iff.1 <| hr₀.trans_le ha), p.mem_ball_zero]
   rw [p.mem_ball_zero] at hx
-  exact hx.trans (hr.trans_le <| mul_le_mul_of_nonneg_right ha hr₁.le)
+  exact hx.trans (hr.trans_le <| by gcongr)
 #align seminorm.ball_zero_absorbs_ball_zero Seminorm.ball_zero_absorbs_ball_zero
 
 /-- Seminorm-balls at the origin are absorbent. -/
@@ -1001,17 +1038,6 @@ protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedB
   rw [p.mem_closedBall_zero] at hy
   exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 #align seminorm.absorbent_closed_ball Seminorm.absorbent_closedBall
-
-theorem symmetric_ball_zero (r : ℝ) (hx : x ∈ ball p 0 r) : -x ∈ ball p 0 r :=
-  balanced_ball_zero p r (-1) (by rw [norm_neg, norm_one]) ⟨x, hx, by
-    simp only [neg_smul, one_smul]⟩ -- Porting note: was `rw` instead of `simp only`
-#align seminorm.symmetric_ball_zero Seminorm.symmetric_ball_zero
-
-@[simp]
-theorem neg_ball (p : Seminorm 𝕜 E) (r : ℝ) (x : E) : -ball p x r = ball p (-x) r := by
-  ext
-  rw [mem_neg, mem_ball, mem_ball, ← neg_add', sub_neg_eq_add, map_neg_eq_map]
-#align seminorm.neg_ball Seminorm.neg_ball
 
 @[simp]
 theorem smul_ball_preimage (p : Seminorm 𝕜 E) (y : E) (r : ℝ) (a : 𝕜) (ha : a ≠ 0) :
@@ -1106,24 +1132,44 @@ variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [
 
 variable [Module 𝕝 E]
 
-theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
-    (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
-  refine' Metric.nhds_basis_closedBall.tendsto_right_iff.mpr _
+/-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
+theorem continuousAt_zero_of_forall' [TopologicalSpace E] {p : Seminorm 𝕝 E}
+    (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    ContinuousAt p 0 := by
+  simp_rw [Seminorm.closedBall_zero_eq_preimage_closedBall] at hp
+  rwa [ContinuousAt, Metric.nhds_basis_closedBall.tendsto_right_iff, map_zero]
+
+theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E}
+    {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
+  let r' := max 1 r
+  have hr' : 0 < r' := lt_max_of_lt_left one_pos
+  have hp' : p.closedBall 0 r' ∈ (𝓝 0 : Filter E) :=
+    mem_of_superset hp (closedBall_mono <| le_max_right _ _)
+  refine' continuousAt_zero_of_forall' _
   intro ε hε
-  rw [map_zero]
-  suffices p.closedBall 0 ε ∈ (𝓝 0 : Filter E) by
-    rwa [Seminorm.closedBall_zero_eq_preimage_closedBall] at this
-  rcases exists_norm_lt 𝕜 (div_pos hε hr) with ⟨k, hk0, hkε⟩
+  rcases exists_norm_lt 𝕜 (div_pos hε hr') with ⟨k, hk0, hkε⟩
   have hk0' := norm_pos_iff.mp hk0
-  have := (set_smul_mem_nhds_zero_iff hk0').mpr hp
+  have := (set_smul_mem_nhds_zero_iff hk0').mpr hp'
   refine' Filter.mem_of_superset this (smul_set_subset_iff.mpr fun x hx => _)
-  rw [mem_closedBall_zero, map_smul_eq_mul, ← div_mul_cancel ε hr.ne.symm]
-  exact mul_le_mul hkε.le (p.mem_closedBall_zero.mp hx) (map_nonneg _ _) (div_nonneg hε.le hr.le)
+  rw [mem_closedBall_zero, map_smul_eq_mul, ← div_mul_cancel ε hr'.ne.symm]
+  gcongr
+  exact p.mem_closedBall_zero.mp hx
 #align seminorm.continuous_at_zero' Seminorm.continuousAt_zero'
 
+/-- A seminorm is continuous at `0` if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuousAt_zero'`. -/
+theorem continuousAt_zero_of_forall [TopologicalSpace E] {p : Seminorm 𝕝 E}
+    (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    ContinuousAt p 0 :=
+  continuousAt_zero_of_forall'
+    (fun r hr ↦ Filter.mem_of_superset (hp r hr) <| p.ball_subset_closedBall _ _)
+
 theorem continuousAt_zero [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
-    (hr : 0 < r) (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
-  continuousAt_zero' hr (Filter.mem_of_superset hp <| p.ball_subset_closedBall _ _)
+    (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
+  continuousAt_zero' (Filter.mem_of_superset hp <| p.ball_subset_closedBall _ _)
 #align seminorm.continuous_at_zero Seminorm.continuousAt_zero
 
 protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [UniformAddGroup E]
@@ -1143,40 +1189,150 @@ protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [Topologi
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 #align seminorm.continuous_of_continuous_at_zero Seminorm.continuous_of_continuousAt_zero
 
-protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+/-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.uniformContinuous`. -/
+protected theorem uniformContinuous_of_forall [UniformSpace E] [UniformAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
-  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hr hp)
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
+
+protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    UniformContinuous p :=
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.uniform_continuous Seminorm.uniformContinuous
 
-protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+/-- A seminorm is uniformly continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.uniformContinuous'`. -/
+protected theorem uniform_continuous_of_forall' [UniformSpace E] [UniformAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
-  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hr hp)
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
+
+protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    UniformContinuous p :=
+  Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.uniform_continuous' Seminorm.uniform_continuous'
 
+/-- A seminorm is continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuous`. -/
+protected theorem continuous_of_forall [TopologicalSpace E] [TopologicalAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
+
 protected theorem continuous [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
-  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hr hp)
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : Continuous p :=
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero hp)
 #align seminorm.continuous Seminorm.continuous
 
-protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hr : 0 < r) (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+/-- A seminorm is continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
+Over a `NontriviallyNormedField` it is actually enough to check that this is true
+for *some* `r`, see `Seminorm.continuous'`. -/
+protected theorem continuous_of_forall' [TopologicalSpace E] [TopologicalAddGroup E]
+    {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     Continuous p :=
-  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hr hp)
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
+
+protected theorem continuous' [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+    Continuous p :=
+  Seminorm.continuous_of_continuousAt_zero (continuousAt_zero' hp)
 #align seminorm.continuous' Seminorm.continuous'
 
-theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p q : Seminorm 𝕜 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
-  refine'
-    Seminorm.continuous one_pos
-      (Filter.mem_of_superset (IsOpen.mem_nhds _ <| q.mem_ball_self zero_lt_one)
-        (ball_antitone hpq))
+theorem continuous_of_le [TopologicalSpace E] [TopologicalAddGroup E]
+    {p q : Seminorm 𝕝 E} (hq : Continuous q) (hpq : p ≤ q) : Continuous p := by
+  refine Seminorm.continuous_of_forall (fun r hr ↦ Filter.mem_of_superset
+    (IsOpen.mem_nhds ?_ <| q.mem_ball_self hr) (ball_antitone hpq))
   rw [ball_zero_eq]
   exact isOpen_lt hq continuous_const
 #align seminorm.continuous_of_le Seminorm.continuous_of_le
 
+lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
+    (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) :=
+  have this : Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp.tendsto 0
+  by simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
+
 end Continuity
+
+section ShellLemmas
+
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+/-- Let `p` be a seminorm on a vector space over a `NormedField`.
+If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be
+moved by scalar multiplication to any `p`-shell of width `‖c‖`. Also recap information on the
+value of `p` on the rescaling element that shows up in applications. -/
+lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ}
+    (εpos : 0 < ε) {x : E} (hx : p x ≠ 0) : ∃ n : ℤ, c^n ≠ 0 ∧
+    p (c^n • x) < ε ∧ (ε / ‖c‖ ≤ p (c^n • x)) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) := by
+  have xεpos : 0 < (p x)/ε := div_pos ((Ne.symm hx).le_iff_lt.1 (map_nonneg p x)) εpos
+  rcases exists_mem_Ico_zpow xεpos hc with ⟨n, hn⟩
+  have cpos : 0 < ‖c‖ := lt_trans (zero_lt_one : (0 :ℝ) < 1) hc
+  have cnpos : 0 < ‖c^(n+1)‖ := by rw [norm_zpow]; exact lt_trans xεpos hn.2
+  refine ⟨-(n+1), ?_, ?_, ?_, ?_⟩
+  · show c ^ (-(n + 1)) ≠ 0; exact zpow_ne_zero _ (norm_pos_iff.1 cpos)
+  · show p ((c ^ (-(n + 1))) • x) < ε
+    rw [map_smul_eq_mul, zpow_neg, norm_inv, ← div_eq_inv_mul, div_lt_iff cnpos, mul_comm,
+        norm_zpow]
+    exact (div_lt_iff εpos).1 (hn.2)
+  · show ε / ‖c‖ ≤ p (c ^ (-(n + 1)) • x)
+    rw [zpow_neg, div_le_iff cpos, map_smul_eq_mul, norm_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos),
+        zpow_one, mul_inv_rev, mul_comm, ← mul_assoc, ← mul_assoc, mul_inv_cancel (ne_of_gt cpos),
+        one_mul, ← div_eq_inv_mul, le_div_iff (zpow_pos_of_pos cpos _), mul_comm]
+    exact (le_div_iff εpos).1 hn.1
+  · show ‖(c ^ (-(n + 1)))‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x
+    have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
+    rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
+        ← div_eq_inv_mul]
+    exact mul_le_mul_of_nonneg_right hn.1 (norm_nonneg _)
+
+/-- Let `p` be a seminorm on a vector space over a `NormedField`.
+If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be
+moved by scalar multiplication to any `p`-shell of width `‖c‖`. Also recap information on the
+value of `p` on the rescaling element that shows up in applications. -/
+lemma rescale_to_shell (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
+    (hx : p x ≠ 0) :
+    ∃d:𝕜, d ≠ 0 ∧ p (d • x) < ε ∧ (ε/‖c‖ ≤ p (d • x)) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * p x) :=
+let ⟨_, hn⟩ := p.rescale_to_shell_zpow hc εpos hx; ⟨_, hn⟩
+
+/-- Let `p` and `q` be two seminorms on a vector space over a `nontrivially_normed_field`.
+If we have `q x ≤ C * p x` on some shell of the form `{x | ε/‖c‖ ≤ p x < ε}` (where `ε > 0`
+and `‖c‖ > 1`), then we also have `q x ≤ C * p x` for all `x` such that `p x ≠ 0`. -/
+lemma bound_of_shell
+    (p q : Seminorm 𝕜 E) {ε C : ℝ} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
+    (hf : ∀ x, ε / ‖c‖ ≤ p x → p x < ε → q x ≤ C * p x) {x : E} (hx : p x ≠ 0) :
+    q x ≤ C * p x := by
+  rcases p.rescale_to_shell hc ε_pos hx with ⟨δ, hδ, δxle, leδx, -⟩
+  simpa only [map_smul_eq_mul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ)]
+    using hf (δ • x) leδx δxle
+
+/-- A version of `Seminorm.bound_of_shell` expressed using pointwise scalar multiplication of
+seminorms. -/
+lemma bound_of_shell_smul
+    (p q : Seminorm 𝕜 E) {ε : ℝ} {C : ℝ≥0} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
+    (hf : ∀ x, ε / ‖c‖ ≤ p x → p x < ε → q x ≤ (C • p) x) {x : E} (hx : p x ≠ 0) :
+    q x ≤ (C • p) x :=
+  Seminorm.bound_of_shell p q ε_pos hc hf hx
+
+lemma bound_of_shell_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι)
+    (q : Seminorm 𝕜 E) {ε : ℝ} {C : ℝ≥0} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
+    (hf : ∀ x, (∀ i ∈ s, p i x < ε) → ∀ j ∈ s, ε / ‖c‖ ≤ p j x → q x ≤ (C • p j) x)
+    {x : E} (hx : ∃ j, j ∈ s ∧ p j x ≠ 0) :
+    q x ≤ (C • s.sup p) x := by
+  rcases hx with ⟨j, hj, hjx⟩
+  have : (s.sup p) x ≠ 0 :=
+    ne_of_gt ((hjx.symm.lt_of_le $ map_nonneg _ _).trans_le (le_finset_sup_apply hj))
+  refine (s.sup p).bound_of_shell_smul q ε_pos hc (fun y hle hlt ↦ ?_) this
+  rcases exists_apply_eq_finset_sup p ⟨j, hj⟩ y with ⟨i, hi, hiy⟩
+  rw [smul_apply, hiy]
+  exact hf y (fun k hk ↦ (le_finset_sup_apply hk).trans_lt hlt) i hi (hiy ▸ hle)
+
+end ShellLemmas
 
 end Seminorm
 
@@ -1199,7 +1355,7 @@ theorem coe_normSeminorm : ⇑(normSeminorm 𝕜 E) = norm :=
 
 @[simp]
 theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball := by
-  ext (x r y)
+  ext x r y
   simp only [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
 #align ball_norm_seminorm ball_normSeminorm
 
@@ -1222,6 +1378,39 @@ theorem balanced_ball_zero : Balanced 𝕜 (Metric.ball (0 : E) r) := by
   rw [← ball_normSeminorm 𝕜]
   exact (normSeminorm _ _).balanced_ball_zero r
 #align balanced_ball_zero balanced_ball_zero
+
+/-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
+moved by scalar multiplication to any shell of width `‖c‖`. Also recap information on the norm of
+the rescaling element that shows up in applications. -/
+lemma rescale_to_shell_semi_normed_zpow {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε) {x : E}
+    (hx : ‖x‖ ≠ 0) :
+    ∃ n : ℤ, c^n ≠ 0 ∧ ‖c^n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c^n • x‖) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+  (normSeminorm 𝕜 E).rescale_to_shell_zpow hc εpos hx
+#align rescale_to_shell_semi_normed_zpow rescale_to_shell_semi_normed_zpow
+
+/-- If there is a scalar `c` with `‖c‖>1`, then any element with nonzero norm can be
+moved by scalar multiplication to any shell of width `‖c‖`. Also recap information on the norm of
+the rescaling element that shows up in applications. -/
+lemma rescale_to_shell_semi_normed {c : 𝕜} (hc : 1 < ‖c‖) {ε : ℝ} (εpos : 0 < ε)
+    {x : E} (hx : ‖x‖ ≠ 0) :
+    ∃d:𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+  (normSeminorm 𝕜 E).rescale_to_shell hc εpos hx
+#align rescale_to_shell_semi_normed rescale_to_shell_semi_normed
+
+lemma rescale_to_shell_zpow [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
+    {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
+    ∃ n : ℤ, c^n ≠ 0 ∧ ‖c^n • x‖ < ε ∧ (ε / ‖c‖ ≤ ‖c^n • x‖) ∧ (‖c^n‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+  rescale_to_shell_semi_normed_zpow hc εpos (norm_ne_zero_iff.mpr hx)
+#align rescale_to_shell_zpow rescale_to_shell_zpow
+
+/-- If there is a scalar `c` with `‖c‖>1`, then any element can be moved by scalar multiplication to
+any shell of width `‖c‖`. Also recap information on the norm of the rescaling element that shows
+up in applications. -/
+lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (hc : 1 < ‖c‖)
+    {ε : ℝ} (εpos : 0 < ε) {x : F} (hx : x ≠ 0) :
+    ∃d:𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
+  rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
+#align rescale_to_shell rescale_to_shell
 
 end normSeminorm
 

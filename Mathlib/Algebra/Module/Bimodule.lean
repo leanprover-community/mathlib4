@@ -32,8 +32,8 @@ Note that the corresponding result holds for the canonically isomorphic ring `R 
 preferable to use the `R ⊗[ℕ] Sᵐᵒᵖ` instance since it works without additive inverses.
 
 Bimodules are thus just a special case of `Module`s and most of their properties follow from the
-theory of `Module`s`. In particular a two-sided Submodule of a bimodule is simply a term of type
-`submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
+theory of `Module`s. In particular a two-sided Submodule of a bimodule is simply a term of type
+`Submodule (R ⊗[ℕ] Sᵐᵒᵖ) M`.
 
 This file is a place to collect results which are specific to bimodules.
 

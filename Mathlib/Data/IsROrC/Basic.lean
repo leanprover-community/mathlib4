@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 
 ! This file was ported from Lean 3 source module data.is_R_or_C.basic
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
+! leanprover-community/mathlib commit baa88307f3e699fa7054ef04ec79fa4f056169cb
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.IsROrC.Attr
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 
@@ -641,15 +640,16 @@ theorem natCast_im (n : ℕ) : im (n : K) = 0 := by rw [← ofReal_natCast, ofRe
 #align is_R_or_C.nat_cast_im IsROrC.natCast_im
 
 @[simp, isROrC_simps]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (OfNat.ofNat n : K) = OfNat.ofNat n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : re (no_index (OfNat.ofNat n) : K) = OfNat.ofNat n :=
   natCast_re n
 
 @[simp, isROrC_simps]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (OfNat.ofNat n : K) = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : im (no_index (OfNat.ofNat n) : K) = 0 :=
   natCast_im n
 
 @[simp, isROrC_simps, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : K) = OfNat.ofNat n :=
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ) : K) = OfNat.ofNat n :=
   ofReal_natCast n
 
 theorem ofNat_mul_re (n : ℕ) [n.AtLeastTwo] (z : K) :
@@ -699,7 +699,7 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
 #align is_R_or_C.norm_nat_cast IsROrC.norm_natCast
 
 @[simp, isROrC_simps]
-theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(OfNat.ofNat n : K)‖ = OfNat.ofNat n :=
+theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
@@ -757,6 +757,12 @@ theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
   exact div_le_one_of_le (abs_im_le_norm _) (norm_nonneg _)
 #align is_R_or_C.abs_im_div_norm_le_one IsROrC.abs_im_div_norm_le_one
+
+theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
+  rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
+    I_mul_I_of_nonzero hI, norm_neg, norm_one]
+set_option linter.uppercaseLean3 false in
+#align is_R_or_C.norm_I_of_ne_zero IsROrC.norm_I_of_ne_zero
 
 theorem re_eq_norm_of_mul_conj (x : K) : re (x * conj x) = ‖x * conj x‖ := by
   rw [mul_conj, ofReal_re, norm_ofReal, abs_of_nonneg (normSq_nonneg _)]
@@ -868,7 +874,7 @@ end CleanupLemmas
 
 section LinearMaps
 
-/-- The real part in a `IsROrC` field, as a linear map. -/
+/-- The real part in an `IsROrC` field, as a linear map. -/
 def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 #align is_R_or_C.re_lm IsROrC.reLm
@@ -878,7 +884,7 @@ theorem reLm_coe : (reLm : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_lm_coe IsROrC.reLm_coe
 
-/-- The real part in a `IsROrC` field, as a continuous linear map. -/
+/-- The real part in an `IsROrC` field, as a continuous linear map. -/
 noncomputable def reClm : K →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by
     rw [one_mul]
@@ -900,7 +906,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reClm.continuous
 #align is_R_or_C.continuous_re IsROrC.continuous_re
 
-/-- The imaginary part in a `IsROrC` field, as a linear map. -/
+/-- The imaginary part in an `IsROrC` field, as a linear map. -/
 def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 #align is_R_or_C.im_lm IsROrC.imLm
@@ -910,7 +916,7 @@ theorem imLm_coe : (imLm : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_lm_coe IsROrC.imLm_coe
 
-/-- The imaginary part in a `IsROrC` field, as a continuous linear map. -/
+/-- The imaginary part in an `IsROrC` field, as a continuous linear map. -/
 noncomputable def imClm : K →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by
     rw [one_mul]

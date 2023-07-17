@@ -60,6 +60,7 @@ deriving instance LargeCategory for SemiRingCat
 
 --Porting note: deriving fails for ConcreteCategory, adding instance manually.
 --deriving instance LargeCategory, ConcreteCategory for SemiRingCat
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 
 instance : ConcreteCategory SemiRingCat := by
   dsimp [SemiRingCat]
@@ -68,11 +69,17 @@ instance : ConcreteCategory SemiRingCat := by
 instance : CoeSort SemiRingCat (Type _) where
   coe X := X.α
 
-instance (X : SemiRingCat) : Semiring X := X.str
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
+  (forget SemiRingCat).obj R ≟ R
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : SemiRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+instance instSemiring (X : SemiRingCat) : Semiring X := X.str
+
+instance instSemiring' (X : SemiRingCat) : Semiring <| (forget SemiRingCat).obj X := X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : SemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : SemiRingCat} : (𝟙 X : X → X) = id := rfl
@@ -97,6 +104,12 @@ theorem coe_of (R : Type u) [Semiring R] : (SemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.coe_of SemiRingCat.coe_of
+
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (SemiRingCat.of X ⟶ SemiRingCat.of Y) _ (fun _ => (forget SemiRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
 
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
@@ -124,13 +137,18 @@ def ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom SemiRingCat.ofHom
 
-@[simp]
+-- Porting note: `simpNF` should not trigger on `rfl` lemmas.
+-- see https://github.com/leanprover-community/mathlib4/issues/5081
+@[simp, nolint simpNF]
 theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
     ofHom f x = f x :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
+/--
+Ring equivalence are isomorphisms in category of semirings
+-/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
@@ -159,6 +177,7 @@ instance : BundledHom.ParentProjection @Ring.toSemiring :=
 
 -- Porting note: Another place where mathlib had derived a concrete category
 -- but this does not work here, so we add the instance manually.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for RingCat
 
 instance : ConcreteCategory RingCat := by
@@ -170,9 +189,17 @@ instance : CoeSort RingCat (Type _) where
 
 instance (X : RingCat) : Ring X := X.str
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : RingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
+  (forget RingCat).obj R ≟ R
+
+instance instRing (X : RingCat) : Ring X := X.str
+
+instance instRing' (X : RingCat) : Ring <| (forget RingCat).obj X := X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : RingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : RingCat} : (𝟙 X : X → X) = id := rfl
@@ -217,6 +244,12 @@ theorem coe_of (R : Type u) [Ring R] : (RingCat.of R : Type u) = R :=
 set_option linter.uppercaseLean3 false in
 #align Ring.coe_of RingCat.coe_of
 
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [Ring X] [Ring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (RingCat.of X ⟶ RingCat.of Y) _ (fun _ => (forget RingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
+
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
@@ -239,12 +272,13 @@ def CommSemiRingCat : Type (u + 1) :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing CommSemiRingCat
 
-namespace CommSemiRing
+namespace CommSemiRingCat
 
 instance : BundledHom.ParentProjection @CommSemiring.toSemiring :=
   ⟨⟩
 
 -- Porting note: again, deriving fails for concrete category instances.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommSemiRingCat
 
 instance : ConcreteCategory CommSemiRingCat := by
@@ -256,9 +290,18 @@ instance : CoeSort CommSemiRingCat (Type _) where
 
 instance (X : CommSemiRingCat) : CommSemiring X := X.str
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : CommSemiRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
+  (forget CommSemiRingCat).obj R ≟ R
+
+instance instCommSemiring (X : CommSemiRingCat) : CommSemiring X := X.str
+
+instance instCommSemiring' (X : CommSemiRingCat) : CommSemiring <| (forget CommSemiRingCat).obj X :=
+  X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : CommSemiRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : CommSemiRingCat} : (𝟙 X : X → X) = id := rfl
@@ -276,13 +319,20 @@ lemma ext {X Y : CommSemiRingCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f
 def of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
   Bundled.of R
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.of CommSemiRing.of
+#align CommSemiRing.of CommSemiRingCat.of
 
 /-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
 def ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
   f
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.of_hom CommSemiRing.ofHom
+#align CommSemiRing.of_hom CommSemiRingCat.ofHom
+
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+    (@FunLike.coe (CommSemiRingCat.of X ⟶ CommSemiRingCat.of Y) _
+      (fun _ => (forget CommSemiRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
 
 -- Porting note: I think this is now redundant.
 -- @[simp]
@@ -299,15 +349,15 @@ instance (R : CommSemiRingCat) : CommSemiring R :=
   R.str
 
 @[simp]
-theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRing.of R : Type u) = R :=
+theorem coe_of (R : Type u) [CommSemiring R] : (CommSemiRingCat.of R : Type u) = R :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.coe_of CommSemiRing.coe_of
+#align CommSemiRing.coe_of CommSemiRingCat.coe_of
 
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat :=
   BundledHom.forget₂ _ _
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.has_forget_to_SemiRing CommSemiRing.hasForgetToSemiRingCat
+#align CommSemiRing.has_forget_to_SemiRing CommSemiRingCat.hasForgetToSemiRingCat
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
@@ -315,9 +365,11 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
     -- Porting note: `(_ := _)` trick
     (fun {R₁ R₂} f => RingHom.toMonoidHom (α := R₁) (β := R₂) f) (by rfl)
 set_option linter.uppercaseLean3 false in
-#align CommSemiRing.has_forget_to_CommMon CommSemiRing.hasForgetToCommMonCat
+#align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
-
+/--
+Ring equivalence are isomorphisms in category of commutative semirings
+-/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
@@ -331,7 +383,7 @@ instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
     let e : X ≃+* Y := { ff, i.toEquiv with }
     exact ⟨(IsIso.of_iso e.toSemiRingCatIso).1⟩
 
-end CommSemiRing
+end CommSemiRingCat
 
 /-- The category of commutative rings. -/
 def CommRingCat : Type (u + 1) :=
@@ -345,6 +397,7 @@ instance : BundledHom.ParentProjection @CommRing.toRing :=
   ⟨⟩
 
 -- Porting note: deriving fails for concrete category.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory for CommRingCat
 
 instance : ConcreteCategory CommRingCat := by
@@ -354,11 +407,17 @@ instance : ConcreteCategory CommRingCat := by
 instance : CoeSort CommRingCat (Type _) where
   coe X := X.α
 
-instance (X : CommRingCat) : CommRing X := X.str
+-- Porting note : Hinting to Lean that `forget R` and `R` are the same
+unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
+  (forget CommRingCat).obj R ≟ R
 
--- porting note: this instance was not necessary in mathlib
-instance {X Y : CommRingCat} : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe (f : X →+* Y) := f
+instance instCommRing (X : CommRingCat) : CommRing X := X.str
+
+instance instCommRing' (X : CommRingCat) : CommRing <| (forget CommRingCat).obj X := X.str
+
+-- Porting note: added
+instance instRingHomClass {X Y : CommRingCat} : RingHomClass (X ⟶ Y) X Y :=
+  RingHom.instRingHomClass
 
 -- porting note: added
 lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
@@ -383,6 +442,12 @@ def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of
   f
 set_option linter.uppercaseLean3 false in
 #align CommRing.of_hom CommRingCat.ofHom
+
+@[simp]
+lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
+    (@FunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
+      ConcreteCategory.funLike (e : X →+* Y) : X → Y) = ↑e :=
+  rfl
 
 -- Porting note: I think this is now redundant.
 -- @[simp]
@@ -411,7 +476,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
-  HasForget₂.mk' (fun R : CommRingCat => CommSemiRing.of R) (fun R => rfl)
+  HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
     (fun {R₁ R₂} f => f) (by rfl)
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
@@ -457,8 +522,8 @@ def ringCatIsoToRingEquiv {X Y : RingCat} (i : X ≅ Y) : X ≃+* Y
   -- Porting note: All these proofs were much easier in lean3.
   left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
   right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom ; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom ; ii.map_mul x y
+  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
+  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.Ring_iso_to_ring_equiv CategoryTheory.Iso.ringCatIsoToRingEquiv
 
@@ -470,12 +535,13 @@ def commRingCatIsoToRingEquiv {X Y : CommRingCat} (i : X ≅ Y) : X ≃+* Y
   -- Porting note: All these proofs were much easier in lean3.
   left_inv := fun x => show (i.hom ≫ i.inv) x = x by rw [i.hom_inv_id]; rfl
   right_inv := fun x => show (i.inv ≫ i.hom) x = x by rw [i.inv_hom_id]; rfl
-  map_add' := fun x y => let ii : X →+* Y := i.hom ; ii.map_add x y
-  map_mul' := fun x y => let ii : X →+* Y := i.hom ; ii.map_mul x y
+  map_add' := fun x y => let ii : X →+* Y := i.hom; ii.map_add x y
+  map_mul' := fun x y => let ii : X →+* Y := i.hom; ii.map_mul x y
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv CategoryTheory.Iso.commRingCatIsoToRingEquiv
 
-@[simp]
+-- Porting note : make this high priority to short circuit simplifier
+@[simp (high)]
 theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.toRingHom = i.hom := by
   ext
@@ -483,7 +549,8 @@ theorem commRingIsoToRingEquiv_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.CommRing_iso_to_ring_equiv_to_ring_hom CategoryTheory.Iso.commRingIsoToRingEquiv_toRingHom
 
-@[simp]
+-- Porting note : make this high priority to short circuit simplifier
+@[simp (high)]
 theorem commRingIsoToRingEquiv_symm_toRingHom {X Y : CommRingCat} (i : X ≅ Y) :
     i.commRingCatIsoToRingEquiv.symm.toRingHom = i.inv := by
   ext
