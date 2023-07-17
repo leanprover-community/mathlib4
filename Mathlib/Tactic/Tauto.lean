@@ -197,6 +197,7 @@ produce more detailed error messages
 -/
 def focusAndDoneWithScope (scope : MessageData) (tactic : TacticM α) : TacticM α :=
   focus do
+    -- TODO: Should add error message with the scope if the tactic (block) fails
     let a ← tactic
 
     -- This is essentially the code of `done` with an additional error message
