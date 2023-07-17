@@ -205,3 +205,32 @@ syntax (name := lookup3) "#lookup3 " ident : command
           | none | some (_, []) => msg
           | some (n, l) => m!"{msg} (aliases {n :: l})"
   | _ => throwUnsupportedSyntax
+
+open Lean Lean.Parser Lean.PrettyPrinter
+
+def hexsha : Parser := withAntiquot (mkAntiquot "hexsha" `hexsha)
+  { fn := fun c s => Id.run do
+      let startPos := s.pos
+      let s := takeWhile1Fn ("abcdef0123456789".contains) "expected hex character" c s
+      if s.pos - startPos ≠ String.Pos.mk 40 then
+        s.mkUnexpectedError "SHA must be 40 characters"
+      else
+        mkNodeToken `hexsha startPos c s  }
+
+@[combinator_formatter hexsha]
+def hexsha.formatter : Formatter :=
+  Formatter.visitAtom `hexsha
+
+@[combinator_parenthesizer hexsha]
+def hexsha.parenthesizer : Parenthesizer :=
+  Parenthesizer.visitToken
+
+/-- Declare the corresponding mathlib4 module to a mathlib3 module. -/
+syntax (name := alignImport) "#align_import " ident ppSpace ident " from " str "@"hexsha : command
+
+/-- Elaborate a `#align_import` command.
+
+TODO: do something with this information beyond ignore it. -/
+@[command_elab alignImport] def elabAlignImport : CommandElab
+  | `(#align_import $_f3:ident $_f4:ident from $_repo:str @$_sha:hexsha ) => pure ()
+  | _ => throwUnsupportedSyntax
