@@ -8,16 +8,6 @@ Author: Leonardo de Moura
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-prelude
-import Mathlib.Init.Meta.MkDecEqInstance
 import Mathlib.Init.Data.Subtype.Basic
 
-open Tactic Subtype
-
-universe u
-
-/- ./././Mathport/Syntax/Translate/Tactic/Builtin.lean:69:18: unsupported non-interactive tactic tactic.mk_dec_eq_instance -/
-instance {α : Type u} {p : α → Prop} [DecidableEq α] : DecidableEq { x : α // p x } := by
-  run_tac
-    mk_dec_eq_instance
-
+#align subtype.decidable_eq Subtype.instDecidableEqSubtype
