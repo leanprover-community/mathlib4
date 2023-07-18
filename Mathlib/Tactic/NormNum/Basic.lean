@@ -941,7 +941,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
-  let rec intArm (_ : Unit) : MetaM (Result e) := do
+  let rec intArm : MetaM (Result e) := do
     let _i ← inferOrderedRing α
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
@@ -955,7 +955,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isInt_le_false $pa $pb $r)
     else
       failure
-  let rec ratArm (_ : Unit) : MetaM (Result e) := do
+  let rec ratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     let _i ← inferLinearOrderedField α
     guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
@@ -971,8 +971,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isRat_le_false $pa $pb $r)
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
-  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm ()
+  | .isRat _ .., _ | _, .isRat _ .. => ratArm
+  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let _i ← inferOrderedSemiring α
     haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
@@ -986,7 +986,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       let r : Q(Nat.ble $na $nb = false) := (q(Eq.refl false) : Expr)
       return .isFalse q(isNat_le_false $pa $pb $r)
     else -- Nats can appear in an `OrderedRing` without `CharZero`.
-      intArm ()
+      intArm
 
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
@@ -995,7 +995,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
-  let rec intArm (_ : Unit) : MetaM (Result e) := do
+  let rec intArm : MetaM (Result e) := do
     let _i ← inferOrderedRing α
     assumeInstancesCommute
     guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
@@ -1011,7 +1011,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else
       let r : Q(decide ($nb ≤ $na) = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isInt_lt_false $pa $pb $r)
-  let rec ratArm (_ : Unit) : MetaM (Result e) := do
+  let rec ratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     let _i ← inferLinearOrderedField α
     assumeInstancesCommute
@@ -1027,8 +1027,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isRat_lt_false $pa $pb $r)
   match ra, rb with
   | .isBool .., _ | _, .isBool .. => failure
-  | .isRat _ .., _ | _, .isRat _ .. => ratArm ()
-  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm ()
+  | .isRat _ .., _ | _, .isRat _ .. => ratArm
+  | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let _i ← inferOrderedSemiring α
     haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
@@ -1040,7 +1040,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
         let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)
         return .isTrue q(isNat_lt_true $pa $pb $r)
       else -- Nats can appear in an `OrderedRing` without `CharZero`.
-        intArm ()
+        intArm
     else
       let r : Q(Nat.ble $nb $na = true) := (q(Eq.refl true) : Expr)
       return .isFalse q(isNat_lt_false $pa $pb $r)
