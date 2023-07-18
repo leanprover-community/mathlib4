@@ -221,9 +221,9 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
 #align homeomorph_unit_ball homeomorphUnitBall
 
--- Porting note: simp can prove this; removed simp
+@[simp]
 theorem coe_homeomorphUnitBall_apply_zero [NormedSpace ℝ E] :
-    (homeomorphUnitBall (0 : E) : E) = 0 := by simp
+    (homeomorphUnitBall (0 : E) : E) = 0 := by simp [homeomorphUnitBall_apply_coe]
 #align coe_homeomorph_unit_ball_apply_zero coe_homeomorphUnitBall_apply_zero
 
 open NormedField
