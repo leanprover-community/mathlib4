@@ -8,11 +8,9 @@ import Mathlib.Data.Nat.Set
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Basic
-
-#align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
-
 import Mathlib.Mathport.Notation
 
+#align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
 
 /-!
 # Theory of complete lattices
