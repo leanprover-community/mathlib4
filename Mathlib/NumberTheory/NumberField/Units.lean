@@ -65,15 +65,26 @@ section coe
 /-- The `MonoidHom` from the group of units `(𝓞 K)ˣ` to the field `K`. -/
 def coe_to_field : (𝓞 K)ˣ →* K := (Units.coeHom K).comp (map (algebraMap (𝓞 K) K))
 
+variable {K}
+
+@[coe] def to_field (x : (𝓞 K)ˣ) : K := coe_to_field K x
+
+variable (K)
+
 theorem coe_to_field_injective : Function.Injective (coe_to_field K) :=
   fun _ _ h => Units.eq_iff.mp (SetCoe.ext h)
 
 /-- There is a natural coercion from `(𝓞 K)ˣ` to `(𝓞 K)` and then from `(𝓞 K)` to `K` but it is
 useful to also have a direct one from `(𝓞 K)ˣ` to `K`. -/
-instance : Coe (𝓞 K)ˣ K := ⟨coe_to_field K⟩
+instance : Coe (𝓞 K)ˣ K := ⟨to_field⟩
 
 @[ext]
 theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
+
+theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
+  _root_.map_pow (coe_to_field K) x n
+
+theorem map_one : ((1 : (𝓞 K)ˣ) : K) = 1 := rfl
 
 end coe
 
@@ -136,6 +147,6 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsion_order K), (torsion_order K).prop, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) ⟨ζ, h⟩ _ _)
+  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
 
 end NumberField.units
