@@ -86,7 +86,7 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   | .ok stx => return stx
   | .error err => throwError m!"Failed to parse tactic output: {tryThis}\n{err}"
 
-syntax (name := says) tactic " says" (tacticSeq)? : tactic
+syntax (name := says) tactic " says" (colGt tacticSeq)? : tactic
 
 elab_rules : tactic
   | `(tactic| $tac:tactic says%$tk $[$result:tacticSeq]?) => do

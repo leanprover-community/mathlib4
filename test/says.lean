@@ -43,8 +43,7 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
 
 -- Now that with `says.verify` `says` will reverify that the left-hand-side constructs
 -- the right-hand-side.
-set_option says.verify true
-
+set_option says.verify true in
 /--
 error: Tactic `simp?` produced `simp only [List.length_append]`,
 but was expecting it to produce `simp only []`!
@@ -52,3 +51,26 @@ but was expecting it to produce `simp only []`!
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
+
+/- Now we check that `says` does not consume following tactics unless they are indented. -/
+set_option linter.unreachableTactic false
+/--
+error: Tactic `simp` did not produce any messages.
+-/
+#guard_msgs in
+example : True := by
+  simp says
+  trivial
+
+example : True := by
+  simp says
+    trivial
+
+set_option says.verify true in
+/--
+error: Tactic `simp` did not produce any messages.
+-/
+#guard_msgs in
+example : True := by
+  simp says
+    trivial
