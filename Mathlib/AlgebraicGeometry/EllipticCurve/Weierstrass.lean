@@ -221,47 +221,24 @@ def inv (C : VariableChange R) : VariableChange R where
   s := -C.s * ↑C.u⁻¹
   t := (C.r * C.s - C.t) * ↑C.u⁻¹ ^ 3
 
-lemma one_mul (C : VariableChange R) : mul one C = C := by
-  simp only [mul, one,
-    _root_.one_mul, zero_mul, zero_add, mul_zero, add_zero]
+lemma id_comp (C : VariableChange R) : comp id C = C := by
+  simp only [comp, id, zero_add, zero_mul, mul_zero, one_mul]
 
-lemma mul_one (C : VariableChange R) : mul C one = C := by
-  simp only [mul, one,
-    _root_.mul_one, Units.val_one, one_pow, add_zero, _root_.one_mul, mul_zero]
+lemma comp_id (C : VariableChange R) : comp C id = C := by
+  simp only [comp, id, add_zero, mul_zero, one_mul, mul_one, one_pow, Units.val_one]
 
-lemma mul_left_inv (C : VariableChange R) : mul (inv C) C = one := by
-  simp only [mul, one, inv]
+lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
+  rw [comp, id, inv]
   ext
-  · simp only [_root_.mul_left_inv, Units.val_one]
-  · dsimp only
-    rw [mul_assoc (-C.r)]
-    norm_cast
-    rw [pow_mul_pow_eq_one 2 (_root_.mul_left_inv C.u)]
-    simp only [Units.val_one, _root_.mul_one, add_left_neg]
-  · dsimp only
-    rw [mul_comm (-C.s), ←mul_assoc]
-    norm_cast
-    rw [_root_.mul_right_inv]
-    simp only [Units.val_one, _root_.one_mul, add_left_neg]
-  · dsimp only
-    rw [mul_assoc (C.r * C.s - C.t)]
-    rw [mul_assoc (-C.r) _ C.s, mul_comm ((↑C.u⁻¹ : R) ^ 2) C.s]
-    rw [←mul_assoc (-C.r), mul_assoc (-C.r * C.s)]
-    norm_cast
-    rw [pow_mul_pow_eq_one 2 (_root_.mul_left_inv C.u)]
-    rw [pow_mul_pow_eq_one 3 (_root_.mul_left_inv C.u)]
-    norm_cast
-    ring1
+  · exact C.u.inv_mul
+  · linear_combination (norm := (simp only; ring1)) -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
+  · linear_combination (norm := (simp only; ring1)) -C.s * C.u.inv_mul
+  · linear_combination (norm := (simp only; ring1))
+      (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
+        + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
 
-lemma mul_assoc (C C' C'' : VariableChange R) : mul (mul C C') C'' = mul C (mul C' C'') := by
-  simp only [mul]
-  have : (↑(C'.u * C''.u) : R) = (↑C'.u : R) * (↑C''.u : R) := rfl
-  rw [this]
-  ext
-  · rw [_root_.mul_assoc]
-  · ring1
-  · ring1
-  · ring1
+lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (comp C' C'') := by
+  ext <;> simp only [comp, Units.val_mul] <;> ring1
 
 instance instGroupVariableChange : Group (VariableChange R) where
   one := one
