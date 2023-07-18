@@ -266,14 +266,16 @@ theorem int_cast_cast (i : ZMod n) : ((i : ℤ) : R) = i :=
 #align zmod.int_cast_cast ZMod.int_cast_cast
 
 theorem coe_add_eq_ite {n : ℕ} (a b : ZMod n) :
-    (↑(a + b) : ℤ) = if (n : ℤ) ≤ a + b then a + b - n else a + b := by
-  cases n
-  · simp
-  simp only [Fin.val_add_eq_ite, ← Int.ofNat_add, ← Int.ofNat_succ, Int.ofNat_le]
+    (↑(a + b) : ℤ) = if (n : ℤ) ≤ a + b then (a : ℤ) + b - n else a + b := by
+  cases' n with n
+  · simp; rfl
+  change Fin (n + 1) at a b
+  change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
+  simp only [Fin.val_add_eq_ite, Int.ofNat_succ, Int.ofNat_le]--, ← Int.ofNat_add, ← Int.ofNat_succ, Int.ofNat_le]
+  norm_cast
   split_ifs with h
-  · norm_cast
+  · rw [Nat.cast_sub h]
     congr
-    simp
   · rfl
 #align zmod.coe_add_eq_ite ZMod.coe_add_eq_ite
 
