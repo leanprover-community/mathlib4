@@ -980,7 +980,7 @@ instance {S : Type _} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S
           intros
           simp only [Localization.smul_mk, add_smul, add_mk_self] }
 
-instance {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
+instance algebra {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
     where
   toRingHom :=
     RingHom.comp

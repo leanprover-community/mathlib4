@@ -237,7 +237,7 @@ def toMultilinearAddHom : M [Λ^ι]→L[R] N →+ ContinuousMultilinearMap R (fu
 
 end ContinuousAdd
 
-/-- If `f` is a continuous alternating map, then `f.to_continuous_linear_map m i` is the continuous
+/-- If `f` is a continuous alternating map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
 @[simps! apply]
@@ -524,7 +524,7 @@ instance : Module R (M [Λ^ι]→L[A] N) :=
   Function.Injective.module _ toMultilinearAddHom toContinuousMultilinearMap_injective fun _ _ =>
     rfl
 
-/-- Linear map version of the map `to_multilinear_map` associating to a continuous alternating map
+/-- Linear map version of the map `toMultilinearMap` associating to a continuous alternating map
 the corresponding multilinear map. -/
 @[simps]
 def toContinuousMultilinearMapLinear :
@@ -551,7 +551,7 @@ variable {R A M N ι : Type _} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid
   [Module R N] [TopologicalSpace R] [TopologicalSpace M] [TopologicalSpace N] [ContinuousSMul R N]
   (f : M [Λ^ι]→L[R] R) (z : N)
 
-/-- Given a continuous `R`-alternating map `f` taking values in `R`, `f.smul_right z` is the
+/-- Given a continuous `R`-alternating map `f` taking values in `R`, `f.smulRight z` is the
 continuous alternating map sending `m` to `f m • z`. -/
 @[simps! toContinuousMultilinearMap apply]
 def smulRight : M [Λ^ι]→L[R] N :=
