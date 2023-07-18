@@ -3641,6 +3641,17 @@ def GoodProducts.finsupp (c : List (WithTop I) →₀ ℤ) :
         exact hq rfl
 }
 
+-- def Products.isGood (l : Products (WithTop I)) : Prop :=
+--   l.eval C ∉ Submodule.span ℤ ((Products.eval C) '' {m | m < l})
+
+-- def GoodProducts := {l : Products (WithTop I) | l.isGood C}
+
+-- def GoodProducts.eval (l : {l : Products (WithTop I) // l.isGood C}) :
+--   LocallyConstant {i // i ∈ C} ℤ := Products.eval C l.1
+
+lemma Products.isGood_imp (l : Products (WithTop I)) : l.isGood C →
+  l.eval C ∉ Submodule.span ℤ ((GoodProducts.eval C) '' {m | m.val < l}) := sorry
+
 lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
     (hh : Products.eval C ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈
     Submodule.span ℤ (Products.eval C '' {q | q <
@@ -3696,21 +3707,73 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
         map_finsupp_sum (LocconstEval C x) _ _
       exact this
     by_cases ht : x.val (term I ho) = true
-    · have he : e C (term I ho) x = 1
-      · dsimp [e, BoolToZ]
-        simp only [ite_eq_left_iff, Bool.not_eq_true]
-        intro htf
-        rw [← Bool.not_eq_true] at htf
-        exact htf ht
-      rw [← hcsum]
+    · rw [← hcsum]
       rw [hhh, hhh]
       dsimp [Finsupp.sum]
-      dsimp [List.eval]
-      simp only [Finsupp.mem_support_iff, ne_eq, ite_not, List.prod_cons,
-        LocallyConstant.coe_mul, Pi.mul_apply, ite_mul, zero_mul]
-      rw [he]
-      simp only [one_mul]
+      simp only [Set.coe_setOf, Set.mem_setOf_eq, Finsupp.comapDomain_support,
+        Finset.coe_preimage] at hd
+      rw [Finsupp.mapDomain_support_of_injOn _ (hf.injOn _)] at hd
+      simp only [Finset.coe_image] at hd
       rw [Finsupp.mapDomain_support_of_injOn _ (hf.injOn _)]
+      let s₁ : Finset (Products (WithTop I)) := {l | l ∈ c.support ∧ term I ho ∈ l.val}.toFinset
+      let s₂ : Finset (Products (WithTop I)) := {l | l ∈ c.support ∧ term I ho ∉ l.val}.toFinset
+      have hcu : c.support = s₁ ∪ s₂ := sorry
+      have hssd : Disjoint s₁ s₂ := sorry
+      rw [hcu, Finset.image_union s₁ s₂, Finset.preimage_union ?_]
+      swap
+      exact hs.injOn _
+      rw [Finset.sum_union hssd, Finset.sum_union ?_]
+      · congr 1
+        · let g : List (WithTop I) → ℤ := fun l ↦ (c.mapDomain f) l * (List.eval C l x)
+          have hg : g ∘ s = fun a ↦
+              (c.mapDomain Subtype.val) (term I ho :: a.val.val) * (List.eval C (term I ho :: a.val.val) x) := rfl
+          erw [← hg]
+          have hg' : g ∘ s = fun x ↦ g (s x) := rfl
+          rw [hg']
+          erw [Finset.sum_preimage s (Finset.image f s₁) (hs.injOn _) g]
+          simp only [Finsupp.mem_support_iff, ne_eq, Subtype.forall, Subtype.mk.injEq, imp_self, implies_true,
+            forall_const, Finset.sum_image]
+          congr
+          ext
+          rw [Finsupp.mapDomain_apply Subtype.coe_injective]
+          congr
+          intro y hyf hys
+          simp only [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right] at hyf
+          obtain ⟨z, hz⟩ := hyf
+          exfalso
+          apply hys
+          refine' ⟨⟨Products.Tail ⟨y, z⟩, _⟩, _⟩
+          · sorry
+          · sorry
+        · have : Finset.preimage (Finset.image f s₂) s (hs.injOn _) = ∅ := sorry
+          dsimp at this
+          rw [this]
+          rw [Finset.sum_empty]
+          apply Eq.symm
+          apply Finset.sum_eq_zero
+          sorry
+      · rw [Finset.disjoint_iff_ne]
+        intro a ha b hb
+        simp only [Finset.mem_preimage, Finset.mem_image, Set.mem_toFinset,
+          Set.mem_setOf_eq] at hb
+        obtain ⟨y,hy⟩ := hb
+        exfalso
+        apply hy.1.2
+        rw [hy.2]
+        simp only [List.find?, List.mem_cons, true_or]
+      -- have he : e C (term I ho) x = 1
+      -- · dsimp [e, BoolToZ]
+      --   simp only [ite_eq_left_iff, Bool.not_eq_true]
+      --   intro htf
+      --   rw [← Bool.not_eq_true] at htf
+      --   exact htf ht
+
+      -- dsimp [List.eval]
+      -- simp only [Finsupp.mem_support_iff, ne_eq, ite_not, List.prod_cons,
+      --   LocallyConstant.coe_mul, Pi.mul_apply, ite_mul, zero_mul]
+      -- rw [he]
+      -- simp only [one_mul]
+
 
       -- let g : List (WithTop I) → ℤ := fun l ↦ (c.mapDomain f) l * (List.eval C l x)
       -- have hg : g ∘ s = fun a ↦
@@ -3719,14 +3782,14 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
       -- have hg' : g ∘ s = fun x ↦ g (s x) := rfl
       -- rw [hg']
       -- erw [Finset.sum_preimage s (Finset.image f c.support) (hs.injOn _) g]
-      simp only [Finsupp.mem_support_iff, ne_eq, Subtype.forall, Subtype.mk.injEq, imp_self, implies_true,
-        forall_const, Finset.sum_image]
+      -- simp only [Finsupp.mem_support_iff, ne_eq, Subtype.forall, Subtype.mk.injEq, imp_self, implies_true,
+      --   forall_const, Finset.sum_image]
       -- congr
       -- ext
       -- rw [Finsupp.mapDomain_apply]
       -- congr
 
-      sorry
+
       -- rw [List.eval_eq_unapply C ho x]
       -- rw [Finsupp.sum_ite_eq]
       -- rw [hhh, hhh]
