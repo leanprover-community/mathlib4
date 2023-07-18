@@ -185,7 +185,7 @@ in Lean 4 core.
   than the congruence lemma that the `congr` tactic might generate. (Mathlib)
 
 * `slice i j` (for category theory) reassociates a composition of morphisms to focus on
-  the composition of morphisms `i` through `j`.
+  the composition of morphisms `i` through `j`. (Mathlib)
 
 ### Reductions
 
