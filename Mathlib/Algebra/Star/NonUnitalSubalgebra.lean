@@ -21,22 +21,32 @@ In this file we define `NonUnitalStarSubalgebra`s and the usual operations on th
 
 namespace StarMemClass
 
+/-- If a type carries an involutive star, then any star-closed subset does too. -/
 instance instInvolutiveStar {S R : Type _} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
     (s : S) : InvolutiveStar s where
   star_involutive r := Subtype.ext <| star_star (r : R)
 
-instance instStarSemigroup{S R : Type _} [Semigroup R] [StarSemigroup R] [SetLike S R]
+/-- In a star semigroup (i.e., a semigroup with an antimultiplicative involutive star operation),
+any star-closed subset which is also closed under multiplication is itself a star semigroup. -/
+instance instStarSemigroup {S R : Type _} [Semigroup R] [StarSemigroup R] [SetLike S R]
     [MulMemClass S R] [StarMemClass S R] (s : S) : StarSemigroup s where
   star_mul _ _ := Subtype.ext <| star_mul _ _
 
+/-- In a `StarAddMonoid` (i.e., an additive monoid with an additive involutive star operation), any
+star-closed subset which is also closed under addition and contains zero is itself a
+`StarAddMonoid`. -/
 instance instStarAddMonoid {S R : Type _} [AddMonoid R] [StarAddMonoid R] [SetLike S R]
     [AddSubmonoidClass S R] [StarMemClass S R] (s : S) : StarAddMonoid s where
   star_add _ _ := Subtype.ext <| star_add _ _
 
+/-- In a star ring (i.e., a non-unital semiring with an additive, antimultiplicative, involutive
+star operation), an star-closed non-unital subsemiring is itself a star ring. -/
 instance instStarRing {S R : Type _} [NonUnitalSemiring R] [StarRing R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] [StarMemClass S R] (s : S) : StarRing s :=
   { StarMemClass.instStarSemigroup s, StarMemClass.instStarAddMonoid s with }
 
+/-- In a star `R`-module (i.e., `star (r • m) = (star r) • m`) any star-closed subset which is also
+closed under the scalar action by `R` is itself a star `R`-module. -/
 instance instStarModule {S : Type _} (R : Type _) {M : Type _} [Star R] [Star M] [SMul R M]
     [StarModule R M] [SetLike S M] [SMulMemClass S R M] [StarMemClass S M] (s : S) :
     StarModule R s where
@@ -452,13 +462,6 @@ def equalizer (ϕ ψ : F) : NonUnitalStarSubalgebra R A where
 theorem mem_equalizer (φ ψ : F) (x : A) :
     x ∈ NonUnitalStarAlgHom.equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
-
-/-- The range of a morphism of non-unital star algebras is a fintype, if the domain is a fintype.
-
-Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
-instance fintypeRange [Fintype A] [DecidableEq B] (φ : F) :
-    Fintype (NonUnitalAlgHom.range φ) :=
-  Set.fintypeRange φ
 
 end NonUnitalStarAlgHom
 
