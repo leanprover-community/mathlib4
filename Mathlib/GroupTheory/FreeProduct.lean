@@ -2,11 +2,6 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
-
-! This file was ported from Lean 3 source module group_theory.free_product
-! leanprover-community/mathlib commit 9114ddffa023340c9ec86965e00cdd6fe26fcdf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.GroupTheory.Congruence
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.IsFreeGroup
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Data.Set.Pointwise.SMul
+
+#align_import group_theory.free_product from "leanprover-community/mathlib"@"9114ddffa023340c9ec86965e00cdd6fe26fcdf6"
 
 /-!
 # The free product of groups or monoids

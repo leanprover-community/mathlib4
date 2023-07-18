@@ -2,15 +2,12 @@
 Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module group_theory.commensurable
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
+
+#align_import group_theory.commensurable from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Commensurability for subgroups

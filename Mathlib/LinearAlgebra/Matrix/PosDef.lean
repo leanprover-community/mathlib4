@@ -2,14 +2,11 @@
 Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.pos_def
-! leanprover-community/mathlib commit 07992a1d1f7a4176c6d3f160209608be4e198566
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+#align_import linear_algebra.matrix.pos_def from "leanprover-community/mathlib"@"07992a1d1f7a4176c6d3f160209608be4e198566"
 
 /-! # Positive Definite Matrices
 This file defines positive (semi)definite matrices and connects the notion to positive definiteness

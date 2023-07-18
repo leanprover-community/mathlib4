@@ -2,14 +2,11 @@
 Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.ring_invo
-! leanprover-community/mathlib commit ec2dfcae3677bcdc0d8e906831b1d251dfcbc0f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Opposite
+
+#align_import ring_theory.ring_invo from "leanprover-community/mathlib"@"ec2dfcae3677bcdc0d8e906831b1d251dfcbc0f1"
 
 /-!
 # Ring involutions

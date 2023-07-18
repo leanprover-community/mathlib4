@@ -2,16 +2,13 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.constructions.prod.basic
-! leanprover-community/mathlib commit 00abe0695d8767201e6d008afa22393978bb324d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.GiryMonad
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Measure.OpenPos
+
+#align_import measure_theory.constructions.prod.basic from "leanprover-community/mathlib"@"00abe0695d8767201e6d008afa22393978bb324d"
 
 /-!
 # The product measure

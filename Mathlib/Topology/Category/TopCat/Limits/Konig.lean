@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.konig
-! leanprover-community/mathlib commit 8195826f5c428fc283510bc67303dd4472d78498
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+#align_import topology.category.Top.limits.konig from "leanprover-community/mathlib"@"8195826f5c428fc283510bc67303dd4472d78498"
 
 /-!
 ## Topological Kőnig's lemma

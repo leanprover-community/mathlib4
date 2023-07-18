@@ -2,17 +2,14 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.group.opposite
-! leanprover-community/mathlib commit 0372d31fb681ef40a687506bc5870fd55ebc8bb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
+
+#align_import algebra.group.opposite from "leanprover-community/mathlib"@"0372d31fb681ef40a687506bc5870fd55ebc8bb9"
 
 /-!
 # Group structures on the multiplicative and additive opposites

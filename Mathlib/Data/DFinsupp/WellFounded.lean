@@ -2,16 +2,13 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module data.dfinsupp.well_founded
-! leanprover-community/mathlib commit e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import data.dfinsupp.well_founded from "leanprover-community/mathlib"@"e9b8651eb1ad354f4de6be35a38ef31efcd2cfaa"
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`
