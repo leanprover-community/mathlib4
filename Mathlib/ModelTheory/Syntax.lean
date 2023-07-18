@@ -1160,7 +1160,7 @@ variable (op op' : L.Functions 2) (un : L.Functions 1) (c c' : L.Constants)
 
 /-- `op.assoc` is the `Sentence` saying that `op` is associative -/
 protected def assoc : L.Sentence :=
-  ∀' ∀' ∀' ((op.apply₂ &0 (op.apply₂ &1 &2)) =' (op.apply₂ (op.apply₂ &0 &1) &2))
+  ∀' ∀' ∀' ((op.apply₂ (op.apply₂ &0 &1) &2) =' (op.apply₂ &0 (op.apply₂ &1 &2)))
 
 /-- `op.comm` is the `Sentence` saying that `op` is commutative -/
 protected def comm : L.Sentence :=

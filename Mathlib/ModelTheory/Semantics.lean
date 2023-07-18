@@ -1099,8 +1099,8 @@ variable (op op' : L.Functions 2) (un : L.Functions 1) (c c' : L.Constants)
 
 @[simp]
 theorem realize_assoc : M ⊨ op.assoc ↔
-    ∀ x y z : M, funMap op ![x, funMap op ![y, z] ] =
-      funMap op ![funMap op ![x, y] , z] :=
+    ∀ x y z : M, funMap op ![funMap op ![x, y] , z] =
+      funMap op ![x, funMap op ![y, z] ] :=
   forall_congr' fun x =>
     forall_congr' fun y =>
       forall_congr' fun z => by
