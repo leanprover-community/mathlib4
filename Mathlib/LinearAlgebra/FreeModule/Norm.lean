@@ -63,8 +63,14 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out
   -- original proof: (AdjoinRoot.powerBasis <| I.smithCoeffs_ne_zero b hI i).FiniteDimensional
+  -- The first tactic takes over 10 seconds, spending a lot of time in checking
+  -- that instances on the quotient commute.  My guess is that we unfold
+  -- operations to the `Quotient.lift` level and then end up comparing huge
+  -- terms.  We should probably make most of the quotient operations
+  -- irreducible so that they don't expose `Quotient.lift` accidentally.
   refine PowerBasis.finiteDimensional ?_
-  exact AdjoinRoot.powerBasis (I.smithCoeffs_ne_zero b hI i)
+  refine AdjoinRoot.powerBasis ?_
+  refine I.smithCoeffs_ne_zero b hI i
 
 -- Porting note: this proof was already slow in mathlib3 and it is even slower now
 -- See: https://github.com/leanprover-community/mathlib4/issues/5028
