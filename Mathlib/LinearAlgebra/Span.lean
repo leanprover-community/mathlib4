@@ -154,6 +154,20 @@ theorem span_induction {p : M → Prop} (h : x ∈ span R s) (Hs : ∀ x ∈ s, 
   ((@span_le (p := ⟨ ⟨⟨p, by intros x y; exact H1 x y⟩, H0⟩, H2⟩)) s).2 Hs h
 #align submodule.span_induction Submodule.span_induction
 
+/-- An induction principle for span membership. This is a version of `Submodule.span_induction`
+for binary predicates. -/
+theorem span_induction₂ {p : M → M → Prop} (ha : a ∈ Submodule.span R s)
+    (hb : b ∈ Submodule.span R s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y)
+    (H0_left : ∀ y, p 0 y) (H0_right : ∀ x, p x 0)
+    (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
+    (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
+    (Hsmul_left : ∀ (r : R) x y, p x y → p (r • x) y)
+    (Hsmul_right : ∀ (r : R) x y, p x y → p x (r • y)) : p a b :=
+  Submodule.span_induction ha
+    (fun x hx => Submodule.span_induction hb (Hs x hx) (H0_right x) (Hadd_right x) fun r =>
+      Hsmul_right r x)
+    (H0_left b) (fun x₁ x₂ => Hadd_left x₁ x₂ b) fun r x => Hsmul_left r x b
+
 /-- A dependent version of `Submodule.span_induction`. -/
 theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (Hs : ∀ (x) (h : x ∈ s), p x (subset_span h))
@@ -282,7 +296,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
   (Submodule.gi R M).gc.le_u_l_trans hUV hVW
 #align submodule.subset_span_trans Submodule.subset_span_trans
 
-/-- See `submodule.span_smul_eq` (in `ring_theory.ideal.operations`) for
+/-- See `submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm
@@ -582,6 +596,11 @@ theorem apply_mem_span_image_of_mem_span [RingHomSurjective σ₁₂] (f : M →
   rw [Submodule.span_image]
   exact Submodule.mem_map_of_mem h
 #align submodule.apply_mem_span_image_of_mem_span Submodule.apply_mem_span_image_of_mem_span
+
+theorem apply_mem_span_image_iff_mem_span [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} {x : M}
+    {s : Set M} (hf : Function.Injective f) :
+    f x ∈ Submodule.span R₂ (f '' s) ↔ x ∈ Submodule.span R s := by
+  rw [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf]
 
 @[simp]
 theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :
@@ -941,33 +960,38 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂]
 
-variable {σ₁₂ : R →+* R₂}
+variable {F : Type _} {σ₁₂ : R →+* R₂} [SemilinearMapClass F σ₁₂ M M₂]
 
-/-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
-
-See also `LinearMap.eqOn_span'` for a version using `Set.EqOn`. -/
-theorem eqOn_span {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ span R s) :
-    f x = g x := by refine' span_induction h H _ _ _ <;> simp (config := { contextual := true })
-#align linear_map.eq_on_span LinearMap.eqOn_span
+/-- Two linear maps are equal on `Submodule.span s` iff they are equal on `s`. -/
+theorem eqOn_span_iff {s : Set M} {f g : F} : Set.EqOn f g (span R s) ↔ Set.EqOn f g s := by
+  rw [← le_eqLocus, span_le]; rfl
 
 /-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
 
 This version uses `Set.EqOn`, and the hidden argument will expand to `h : x ∈ (span R s : Set M)`.
 See `LinearMap.eqOn_span` for a version that takes `h : x ∈ span R s` as an argument. -/
-theorem eqOn_span' {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (H : Set.EqOn f g s) :
+theorem eqOn_span' {s : Set M} {f g : F} (H : Set.EqOn f g s) :
     Set.EqOn f g (span R s : Set M) :=
-  eqOn_span H
+  eqOn_span_iff.2 H
 #align linear_map.eq_on_span' LinearMap.eqOn_span'
+
+/-- If two linear maps are equal on a set `s`, then they are equal on `Submodule.span s`.
+
+See also `LinearMap.eqOn_span'` for a version using `Set.EqOn`. -/
+theorem eqOn_span {s : Set M} {f g : F} (H : Set.EqOn f g s) ⦃x⦄ (h : x ∈ span R s) :
+    f x = g x :=
+  eqOn_span' H h
+#align linear_map.eq_on_span LinearMap.eqOn_span
 
 /-- If `s` generates the whole module and linear maps `f`, `g` are equal on `s`, then they are
 equal. -/
-theorem ext_on {s : Set M} {f g : M →ₛₗ[σ₁₂] M₂} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
-  LinearMap.ext fun _ => eqOn_span h (eq_top_iff'.1 hv _)
+theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) : f = g :=
+  FunLike.ext _ _ fun _ => eqOn_span h (eq_top_iff'.1 hv _)
 #align linear_map.ext_on LinearMap.ext_on
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
 each `v i`, then they are equal. -/
-theorem ext_on_range {ι : Type _} {v : ι → M} {f g : M →ₛₗ[σ₁₂] M₂} (hv : span R (Set.range v) = ⊤)
+theorem ext_on_range {ι : Type _} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
     (h : ∀ i, f (v i) = g (v i)) : f = g :=
   ext_on hv (Set.forall_range_iff.2 h)
 #align linear_map.ext_on_range LinearMap.ext_on_range

@@ -56,7 +56,7 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   split_ifs with h
   · simp [pair, h, sm]
   · have hl : n - s * s - s ≤ s :=
-      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc] ; apply sqrt_le_add)
+      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc]; apply sqrt_le_add)
     simp [pair, hl.not_lt, add_assoc, add_tsub_cancel_of_le (le_of_not_gt h), sm]
 #align nat.mkpair_unpair Nat.pair_unpair
 
@@ -96,7 +96,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp [unpair];
+  simp [unpair]
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
@@ -138,7 +138,7 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
     simp [not_lt_of_gt (lt_of_le_of_lt h₁ h)]
     apply add_lt_add
     exact mul_self_lt_mul_self h
-    apply add_lt_add_right ; assumption
+    apply add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by

@@ -96,7 +96,7 @@ as required.
 Implementationwise, we have `tendsto_of_no_upcrossings` which shows that
 a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
 for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
-that the realizations are bounded almost everywhere. Indeed, suppose $(|f_n(\omega)|)$ is not
+that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
 bounded, then either $f_n(\omega) \to \pm \infty$ or one of $\limsup f_n(\omega)$ or
 $\liminf f_n(\omega)$ equals $\pm \infty$ while the other is finite. But the first case
 contradicts $\liminf |f_n(\omega)| < \infty$ while the second case contradicts finite upcrossings.
@@ -311,7 +311,7 @@ required.
 Similar to the a.e. martingale convergence theorem, rather than showing the existence of the
 limiting process, we phrase the L¹-martingale convergence theorem by proving that a submartingale
 does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. martingale convergence
-theorem, we do not need to introduce a L¹ version of `Filtration.limitProcess` as the L¹ limit
+theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
 
 -/
@@ -366,7 +366,7 @@ theorem Martingale.ae_eq_condexp_limitProcess (hf : Martingale f ℱ μ)
     (hf.submartingale.tendsto_snorm_one_limitProcess hbdd) n
 #align measure_theory.martingale.ae_eq_condexp_limit_process MeasureTheory.Martingale.ae_eq_condexp_limitProcess
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given a integrable function `g` which
+/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges almost everywhere to `g`.
 
@@ -406,8 +406,8 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht
   · rintro t htmeas ht -
-    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ _ htmeas (hg.trim hle hgmeas)
-    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ _ htmeas
+    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
+    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
     rw [set_integral_trim hle hgmeas htmeas.compl,
@@ -422,7 +422,7 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 #align measure_theory.integrable.tendsto_ae_condexp MeasureTheory.Integrable.tendsto_ae_condexp
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given a integrable function `g` which
+/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
 

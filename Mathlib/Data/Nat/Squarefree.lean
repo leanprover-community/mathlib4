@@ -257,6 +257,11 @@ theorem squarefree_two : Squarefree 2 := by
   · norm_num
 #align nat.squarefree_two Nat.squarefree_two
 
+theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    n.divisors.filter Squarefree = n.divisors :=
+  Finset.ext fun d => ⟨@Finset.filter_subset _ _ _ _ d, fun hd =>
+    Finset.mem_filter.mpr ⟨hd, hn.squarefree_of_dvd (Nat.dvd_of_mem_divisors hd) ⟩⟩
+
 open UniqueFactorizationMonoid
 
 theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
@@ -315,7 +320,7 @@ open BigOperators
 
 theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type _} [AddCommMonoid α]
     {f : ℕ → α} :
-    (∑ i in n.divisors.filter Squarefree, f i) =
+    ∑ i in n.divisors.filter Squarefree, f i =
       ∑ i in (UniqueFactorizationMonoid.normalizedFactors n).toFinset.powerset, f i.val.prod := by
   rw [Finset.sum_eq_multiset_sum, divisors_filter_squarefree h0, Multiset.map_map,
     Finset.sum_eq_multiset_sum]
@@ -373,6 +378,14 @@ theorem squarefree_mul {m n : ℕ} (hmn : m.coprime n) :
   refine' ball_congr fun p hp => _
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
+
+theorem coprime_of_squarefree_mul {m n : ℕ} (h : Squarefree (m * n)) : m.coprime n :=
+  coprime_of_dvd fun p hp hm hn => squarefree_iff_prime_squarefree.mp h p hp (mul_dvd_mul hm hn)
+
+theorem squarefree_mul_iff {m n : ℕ} :
+    Squarefree (m * n) ↔ m.coprime n ∧ Squarefree m ∧ Squarefree n :=
+  ⟨fun h => ⟨coprime_of_squarefree_mul h, (squarefree_mul $ coprime_of_squarefree_mul h).mp h⟩,
+    fun h => (squarefree_mul h.1).mpr h.2⟩
 
 end Nat
 

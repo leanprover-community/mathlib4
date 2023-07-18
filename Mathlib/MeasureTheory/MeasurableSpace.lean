@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit 3905fa80e62c0898131285baab35559fbc4e5cda
+! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -14,6 +14,7 @@ import Mathlib.GroupTheory.Coset
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpaceDef
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
 
@@ -254,7 +255,7 @@ theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : 
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align measurable_of_subsingleton_codomain measurable_of_subsingleton_codomain
 
-@[to_additive]
+@[measurability, to_additive]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 #align measurable_one measurable_one
@@ -1664,42 +1665,29 @@ instance [MeasurableSpace α] [CountablyGenerated α] [MeasurableSpace β] [Coun
     CountablyGenerated (α × β) :=
   .sup (.comap Prod.fst) (.comap Prod.snd)
 
+instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [MeasurableSingletonClass s] :
+    HasCountableSeparatingOn α MeasurableSet s := by
+  suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
+  rcases h.1 with ⟨b, hbc, hb⟩
+  refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, fun x _ y _ h ↦ ?_⟩⟩
+  rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
+  simpa using h {y}
+
 variable (α)
 
 open Classical
 
-/-- If a measurable space is countably generated, it admits a measurable injection
-into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
+/-- If a measurable space is countably generated and separates points, it admits a measurable
+injection into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
 theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
-    [h : CountablyGenerated α] [MeasurableSingletonClass α] :
+    [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
-  obtain ⟨b, bct, hb⟩ := h.isCountablyGenerated
-  obtain ⟨e, he⟩ := Set.Countable.exists_eq_range (bct.insert ∅) (insert_nonempty _ _)
-  rw [← generateFrom_insert_empty, he] at hb
-  refine' ⟨fun x n => x ∈ e n, _, _⟩
-  . rw [measurable_pi_iff]
-    intro n
-    apply measurable_to_bool
-    simp only [preimage, mem_singleton_iff, Bool.decide_iff]
-    rw [hb]
-    apply measurableSet_generateFrom
-    exact ⟨n, rfl⟩
-  intro x y hxy
-  have : ∀ s : Set α, MeasurableSet s → (x ∈ s ↔ y ∈ s) := fun s => by
-    rw [hb]
-    apply generateFrom_induction
-    · rintro - ⟨n, rfl⟩
-      rw [← decide_eq_decide]
-      rw [funext_iff] at hxy
-      exact hxy n
-    · tauto
-    · intro t
-      tauto
-    intro t ht
-    simp_rw [mem_iUnion, ht]
-  specialize this {y} measurableSet_eq
-  simp only [mem_singleton, iff_true_iff] at this
-  exact this
+  rcases exists_seq_separating α MeasurableSet.empty univ with ⟨e, hem, he⟩
+  refine ⟨(· ∈ e ·), ?_, ?_⟩
+  · rw [measurable_pi_iff]
+    refine fun n ↦ measurable_to_bool ?_
+    simpa only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq] using hem n
+  · exact fun x y h ↦ he x trivial y trivial fun n ↦ decide_eq_decide.1 <| congr_fun h _
 #align measurable_space.measurable_injection_nat_bool_of_countably_generated MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated
 
 end MeasurableSpace

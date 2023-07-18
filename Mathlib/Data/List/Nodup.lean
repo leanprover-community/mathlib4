@@ -99,9 +99,9 @@ theorem nodup_iff_injective_get {l : List α} :
     ⟨fun h i j hg => by
       cases' i with i hi; cases' j with j hj
       rcases lt_trichotomy i j with (hij | rfl | hji)
-      . exact (h ⟨i, hi⟩ ⟨j, hj⟩ hij hg).elim
-      . rfl
-      . exact (h ⟨j, hj⟩ ⟨i, hi⟩ hji hg.symm).elim,
+      · exact (h ⟨i, hi⟩ ⟨j, hj⟩ hij hg).elim
+      · rfl
+      · exact (h ⟨j, hj⟩ ⟨i, hi⟩ hji hg.symm).elim,
       fun hinj i j hij h => Nat.ne_of_lt hij (Fin.veq_of_eq (hinj h))⟩
 
 set_option linter.deprecated false in
@@ -128,10 +128,10 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   rw [Nodup, pairwise_iff_get]
   constructor
-  . intro h i j hij hj
+  · intro h i j hij hj
     rw [get?_eq_get (lt_trans hij hj), get?_eq_get hj, Ne.def, Option.some_inj]
     exact h _ _ hij
-  . intro h i j hij
+  · intro h i j hij
     rw [Ne.def, ← Option.some_inj, ← get?_eq_get, ← get?_eq_get]
     exact h i j hij j.2
 #align list.nodup_iff_nth_ne_nth List.nodup_iff_get?_ne_get?

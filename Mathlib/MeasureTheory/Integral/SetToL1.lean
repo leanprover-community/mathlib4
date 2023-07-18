@@ -1426,7 +1426,7 @@ theorem setToFun_congr_ae (hT : DominatedFinMeasAdditive μ T C) (h : f =ᵐ[μ]
   by_cases hfi : Integrable f μ
   · have hgi : Integrable g μ := hfi.congr h
     rw [setToFun_eq hT hfi, setToFun_eq hT hgi, (Integrable.toL1_eq_toL1_iff f g hfi hgi).2 h]
-  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi ; exact hfi
+  · have hgi : ¬Integrable g μ := by rw [integrable_congr h] at hfi; exact hfi
     rw [setToFun_undef hT hfi, setToFun_undef hT hgi]
 #align measure_theory.set_to_fun_congr_ae MeasureTheory.setToFun_congr_ae
 

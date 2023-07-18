@@ -774,7 +774,7 @@ instance instAdd [MeasurableSpace α] : Add (Measure α) :=
   ⟨fun μ₁ μ₂ =>
     { toOuterMeasure := μ₁.toOuterMeasure + μ₂.toOuterMeasure
       m_iUnion := fun s hs hd =>
-        show μ₁ (⋃ i, s i) + μ₂ (⋃ i, s i) = ∑' i, μ₁ (s i) + μ₂ (s i) by
+        show μ₁ (⋃ i, s i) + μ₂ (⋃ i, s i) = ∑' i, (μ₁ (s i) + μ₂ (s i)) by
           rw [ENNReal.tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
       trimmed := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
 #align measure_theory.measure.has_add MeasureTheory.Measure.instAdd
@@ -2026,7 +2026,7 @@ def sum (f : ι → Measure α) : Measure α :=
       (OuterMeasure.le_sum_caratheodory _)
 #align measure_theory.measure.sum MeasureTheory.Measure.sum
 
-theorem le_sum_apply (f : ι → Measure α) (s : Set α) : (∑' i, f i s) ≤ sum f s :=
+theorem le_sum_apply (f : ι → Measure α) (s : Set α) : ∑' i, f i s ≤ sum f s :=
   le_toMeasure_apply _ _ _
 #align measure_theory.measure.le_sum_apply MeasureTheory.Measure.le_sum_apply
 
@@ -2116,7 +2116,7 @@ theorem sum_add_sum_compl (s : Set ι) (μ : ι → Measure α) :
     ((sum fun i : s => μ i) + sum fun i : ↥sᶜ => μ i) = sum μ := by
   ext1 t ht
   simp only [add_apply, sum_apply _ ht]
-  exact @tsum_add_tsum_compl ℝ≥0∞ ι _ _ _ (fun i => μ i t) _ s ENNReal.summable ENNReal.summable
+  exact tsum_add_tsum_compl (f := fun i => μ i t) ENNReal.summable ENNReal.summable
 #align measure_theory.measure.sum_add_sum_compl MeasureTheory.Measure.sum_add_sum_compl
 
 theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ = sum ν :=
@@ -2185,7 +2185,7 @@ def count : Measure α :=
   sum dirac
 #align measure_theory.measure.count MeasureTheory.Measure.count
 
-theorem le_count_apply : (∑' _ : s, 1 : ℝ≥0∞) ≤ count s :=
+theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
     _ ≤ ∑' i, dirac i s := (ENNReal.tsum_le_tsum fun _ => le_dirac_apply)
@@ -2937,7 +2937,7 @@ theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
 /-- A version of the **Borel-Cantelli lemma**: if `pᵢ` is a sequence of predicates such that
 `∑ μ {x | pᵢ x}` is finite, then the measure of `x` such that `pᵢ x` holds frequently as `i → ∞` (or
 equivalently, `pᵢ x` holds for infinitely many `i`) is equal to zero. -/
-theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : (∑' i, μ { x | p i x }) ≠ ∞) :
+theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i, μ { x | p i x } ≠ ∞) :
     μ { x | ∃ᶠ n in atTop, p n x } = 0 := by
   simpa only [limsup_eq_iInf_iSup_of_nat, frequently_atTop, ← bex_def, setOf_forall,
     setOf_exists] using measure_limsup_eq_zero hp
