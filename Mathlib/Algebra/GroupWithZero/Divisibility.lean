@@ -208,6 +208,6 @@ lemma mul_divide_cancel_right [IsRightCancelMulZero M₀] {x y : M₀} (hy : y �
 end Ring
 
 lemma IsUnit.divide_eq_mul_inverse {M₀ : Type _} [Nontrivial M₀] [CommMonoidWithZero M₀]
-  [IsLeftCancelMul M₀] {x y : M₀} (hy : IsUnit y) : Ring.divide x y = x * Ring.inverse y := by
+  {x y : M₀} (hy : IsUnit y) : Ring.divide x y = x * Ring.inverse y := by
   rw [Ring.divide_dvd hy.ne_zero hy.dvd, ← hy.mul_right_inj, ← hy.dvd.choose_spec, mul_comm,
     Ring.inverse_mul_cancel_right _ _ hy]
