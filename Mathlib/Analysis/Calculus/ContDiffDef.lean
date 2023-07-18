@@ -166,8 +166,11 @@ open Classical BigOperators NNReal Topology Filter
 
 local notation "∞" => (⊤ : ℕ∞)
 
+/-
+Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
   NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+-/
 
 open Set Fin Filter Function
 
@@ -1558,15 +1561,21 @@ theorem fderiv_iteratedFDeriv {n : ℕ} :
   simp only [Function.comp_apply, LinearIsometryEquiv.symm_apply_apply]
 #align fderiv_iterated_fderiv fderiv_iteratedFDeriv
 
-theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
-    HasCompactSupport (iteratedFDeriv 𝕜 n f) := by
+theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜 n f) ⊆ tsupport f := by
   induction' n with n IH
   · rw [iteratedFDeriv_zero_eq_comp]
-    apply hf.comp_left
-    exact LinearIsometryEquiv.map_zero _
+    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+      subset_closure) isClosed_closure
   · rw [iteratedFDeriv_succ_eq_comp_left]
-    apply (IH.fderiv 𝕜).comp_left
-    exact LinearIsometryEquiv.map_zero _
+    exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
+      ((support_fderiv_subset 𝕜).trans IH)) isClosed_closure
+
+theorem support_iteratedFDeriv_subset (n : ℕ) : support (iteratedFDeriv 𝕜 n f) ⊆ tsupport f :=
+  subset_closure.trans (tsupport_iteratedFDeriv_subset n)
+
+theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
+    HasCompactSupport (iteratedFDeriv 𝕜 n f) :=
+  isCompact_of_isClosed_subset hf isClosed_closure (tsupport_iteratedFDeriv_subset n)
 #align has_compact_support.iterated_fderiv HasCompactSupport.iteratedFDeriv
 
 theorem norm_fderiv_iteratedFDeriv {n : ℕ} :

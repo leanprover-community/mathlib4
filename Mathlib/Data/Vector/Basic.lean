@@ -381,14 +381,14 @@ theorem scanl_head : (scanl f b v).head = b := by
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
 vector `v : Vector α n` at `i.succ`, is equal to the application
-function `f : β → α → β` of the `castSuccEmb i` element of
+function `f : β → α → β` of the `castSucc i` element of
 `scanl f b v` and `get v i`.
 
 This lemma is the `get` version of `scanl_cons`.
 -/
 @[simp]
 theorem scanl_get (i : Fin n) :
-    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSuccEmb i)) (v.get i) := by
+    (scanl f b v).get i.succ = f ((scanl f b v).get (Fin.castSucc i)) (v.get i) := by
   cases' n with n
   · exact i.elim0
   induction' n with n hn generalizing b
@@ -396,9 +396,9 @@ theorem scanl_get (i : Fin n) :
     simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
-    · simp only [get_zero, scanl_head, Fin.castSuccEmb_zero, head_cons]
+    · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
-      simp only [hn, Fin.castSuccEmb_fin_succ, get_cons_succ]
+      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
 #align vector.scanl_nth Vector.scanl_get
 
 end Scan
@@ -593,10 +593,10 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
-      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSuccEmb i)
+      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine' Subtype.eq _
-    simp only [insertNth_val, Fin.val_succ, Fin.castSuccEmb, Fin.coe_castAdd]
+    simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertNth_comm
     · assumption
     · rw [hl]
@@ -706,7 +706,7 @@ variable [LawfulApplicative F] [LawfulApplicative G]
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
--- the `IsLawfulTraversable` instance below expects a particular signature.
+-- the `LawfulTraversable` instance below expects a particular signature.
 @[nolint unusedArguments]
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
@@ -739,7 +739,7 @@ instance : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
-instance : IsLawfulTraversable.{u} (flip Vector n) where
+instance : LawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
   comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n
@@ -809,8 +809,6 @@ theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → 
     cases i using Fin.cases
     · simp only [get_zero, head_cons]
     · simp only [get_cons_succ, ih]
-
-
 
 @[simp]
 theorem mapAccumr_cons :

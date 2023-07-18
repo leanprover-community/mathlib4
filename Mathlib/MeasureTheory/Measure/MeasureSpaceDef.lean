@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measure.measure_space_def
-! leanprover-community/mathlib commit 146a2eed7ad5887ade571e073d0805d2ac618043
+! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -551,11 +551,11 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
 #align measure_theory.inter_ae_eq_empty_of_ae_eq_empty_right MeasureTheory.inter_ae_eq_empty_of_ae_eq_empty_right
 
 @[to_additive]
-theorem Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α}
-    (h : s.mulIndicator f =ᵐ[μ] 1) : μ (s ∩ Function.mulSupport f) = 0 := by
-  simpa [Filter.EventuallyEq, ae_iff] using h
-#align set.mul_indicator_ae_eq_one MeasureTheory.Set.mulIndicator_ae_eq_one
-#align set.indicator_ae_eq_zero MeasureTheory.Set.indicator_ae_eq_zero
+theorem _root_.Set.mulIndicator_ae_eq_one {M : Type _} [One M] {f : α → M} {s : Set α} :
+    s.mulIndicator f =ᵐ[μ] 1 ↔ μ (s ∩ f.mulSupport) = 0 := by
+  simp [EventuallyEq, eventually_iff, Measure.ae, compl_setOf]; rfl
+#align set.mul_indicator_ae_eq_one Set.mulIndicator_ae_eq_one
+#align set.indicator_ae_eq_zero Set.indicator_ae_eq_zero
 
 /-- If `s ⊆ t` modulo a set of measure `0`, then `μ s ≤ μ t`. -/
 @[mono]

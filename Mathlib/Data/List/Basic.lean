@@ -8,7 +8,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Data.List.Instances
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Init.Core
@@ -490,35 +490,6 @@ theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
 #align list.replicate_left_inj List.replicate_left_inj
 
 /-! ### pure -/
-
--- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
-instance : Monad List := { pure := @List.ret, bind := @List.bind, map := @List.map }
-
--- Porting note: simp can prove this
--- @[simp]
-theorem bind_singleton (f : α → List β) (x : α) : [x].bind f = f x :=
-  append_nil (f x)
-#align list.bind_singleton List.bind_singleton
-
-@[simp] theorem bind_singleton' (l : List α) : (l.bind fun x => [x]) = l := by
-  induction l <;> simp [*]
-#align list.bind_singleton' List.bind_singleton'
-
-theorem map_eq_bind {α β} (f : α → β) (l : List α) : map f l = l.bind fun x => [f x] := by
-  simp_rw [←map_singleton]
-  rw [← bind_singleton' l, bind_map, bind_singleton']
-#align list.map_eq_bind List.map_eq_bind
-
-theorem bind_assoc {α β} (l : List α) (f : α → List β) (g : β → List γ) :
-    (l.bind f).bind g = l.bind fun x => (f x).bind g := by induction l <;> simp [*]
-#align list.bind_assoc List.bind_assoc
-
--- ADHOC Porting note: TODO this is from Lean3 core, so doesn't belong here
-instance : LawfulMonad List := LawfulMonad.mk'
-  (id_map := map_id)
-  (pure_bind := fun _ _ => List.append_nil _)
-  (bind_assoc := List.bind_assoc)
-  (bind_pure_comp := fun _ _ => (map_eq_bind _ _).symm)
 
 @[simp]
 theorem mem_pure {α} (x y : α) : x ∈ (pure y : List α) ↔ x = y :=
@@ -1198,10 +1169,9 @@ theorem indexOf_of_not_mem {l : List α} {a : α} : a ∉ l → indexOf a l = le
 theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := by
   induction' l with b l ih; · rfl
   simp only [length, indexOf_cons]
-  by_cases h : a = b;
-  · rw [if_pos h]
-    exact Nat.zero_le _
-  rw [if_neg h]; exact succ_le_succ ih
+  by_cases h : a = b
+  · rw [if_pos h]; exact Nat.zero_le _
+  · rw [if_neg h]; exact succ_le_succ ih
 #align list.index_of_le_length List.indexOf_le_length
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
@@ -2998,7 +2968,7 @@ theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.spli
   cases' h' : splitOnP (· == x) tl with hd' tl'; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
-  split_ifs with h;
+  split_ifs with h
   · rw [beq_iff_eq] at h
     subst h
     simp [ih, join, h']
@@ -3142,9 +3112,9 @@ theorem attach_map_val (l : List α) : l.attach.map Subtype.val = l :=
 @[simp]
 theorem mem_attach (l : List α) : ∀ x, x ∈ l.attach
   | ⟨a, h⟩ => by
-    have := mem_map.1 (by rw [attach_map_val] <;> exact h);
-      · rcases this with ⟨⟨_, _⟩, m, rfl⟩
-        exact m
+    have := mem_map.1 (by rw [attach_map_val] <;> exact h)
+    rcases this with ⟨⟨_, _⟩, m, rfl⟩
+    exact m
 #align list.mem_attach List.mem_attach
 
 @[simp]

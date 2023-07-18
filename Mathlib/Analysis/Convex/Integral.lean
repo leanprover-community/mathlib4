@@ -248,7 +248,7 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
     rw [restrict_congr_set h₀', restrict_univ, measure_congr h₀', measure_smul_average]
   have := average_mem_openSegment_compl_self ht.nullMeasurableSet h₀ h₀' hfi
   rw [← H t ht h₀ h₀', openSegment_same, mem_singleton_iff] at this
-  rw [this, measure_smul_set_average _ (measure_ne_top μ _)]
+  rw [this, measure_smul_setAverage _ (measure_ne_top μ _)]
 #align ae_eq_const_or_exists_average_ne_compl ae_eq_const_or_exists_average_ne_compl
 
 /-- If an integrable function `f : α → E` takes values in a convex set `s` and for some set `t` of
