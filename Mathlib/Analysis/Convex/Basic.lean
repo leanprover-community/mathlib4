@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov, Yaël Dillies
 
 ! This file was ported from Lean 3 source module analysis.convex.basic
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
+! leanprover-community/mathlib commit 92bd7b1ffeb306a89f450bee126ddd8a284c259d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -124,7 +124,7 @@ theorem convex_pi {ι : Type _} {E : ι → Type _} [∀ i, AddCommMonoid (E i)]
 theorem Directed.convex_iUnion {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hc : ∀ ⦃i : ι⦄, Convex 𝕜 (s i)) : Convex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy a b ha hb hab
-  rw [mem_iUnion] at hx hy⊢
+  rw [mem_iUnion] at hx hy ⊢
   obtain ⟨i, hx⟩ := hx
   obtain ⟨j, hy⟩ := hy
   obtain ⟨k, hik, hjk⟩ := hdir i j
@@ -175,6 +175,10 @@ theorem convex_singleton (c : E) : Convex 𝕜 ({c} : Set E) :=
   subsingleton_singleton.convex
 #align convex_singleton convex_singleton
 
+theorem convex_zero : Convex 𝕜 (0 : Set E) :=
+  convex_singleton _
+#align convex_zero convex_zero
+
 theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
   rintro p ⟨ap, bp, hap, hbp, habp, rfl⟩ q ⟨aq, bq, haq, hbq, habq, rfl⟩ a b ha hb hab
   refine'
@@ -213,6 +217,40 @@ theorem Convex.add {t : Set E} (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) : Conve
   rw [← add_image_prod]
   exact (hs.prod ht).is_linear_image IsLinearMap.isLinearMap_add
 #align convex.add Convex.add
+
+variable (𝕜 E)
+
+/-- The convex sets form an additive submonoid under pointwise addition. -/
+def convexAddSubmonoid : AddSubmonoid (Set E) where
+  carrier := {s : Set E | Convex 𝕜 s}
+  zero_mem' := convex_zero
+  add_mem' := Convex.add
+#align convex_add_submonoid convexAddSubmonoid
+
+@[simp, norm_cast]
+theorem coe_convexAddSubmonoid : ↑(convexAddSubmonoid 𝕜 E) = {s : Set E | Convex 𝕜 s} :=
+  rfl
+#align coe_convex_add_submonoid coe_convexAddSubmonoid
+
+variable {𝕜 E}
+
+@[simp]
+theorem mem_convexAddSubmonoid {s : Set E} : s ∈ convexAddSubmonoid 𝕜 E ↔ Convex 𝕜 s :=
+  Iff.rfl
+#align mem_convex_add_submonoid mem_convexAddSubmonoid
+
+theorem convex_list_sum {l : List (Set E)} (h : ∀ i ∈ l, Convex 𝕜 i) : Convex 𝕜 l.sum :=
+  (convexAddSubmonoid 𝕜 E).list_sum_mem h
+#align convex_list_sum convex_list_sum
+
+theorem convex_multiset_sum {s : Multiset (Set E)} (h : ∀ i ∈ s, Convex 𝕜 i) : Convex 𝕜 s.sum :=
+  (convexAddSubmonoid 𝕜 E).multiset_sum_mem _ h
+#align convex_multiset_sum convex_multiset_sum
+
+theorem convex_sum {ι} {s : Finset ι} (t : ι → Set E) (h : ∀ i ∈ s, Convex 𝕜 (t i)) :
+    Convex 𝕜 (∑ i in s, t i) :=
+  (convexAddSubmonoid 𝕜 E).sum_mem h
+#align convex_sum convex_sum
 
 theorem Convex.vadd (hs : Convex 𝕜 s) (z : E) : Convex 𝕜 (z +ᵥ s) := by
   simp_rw [← image_vadd, vadd_eq_add, ← singleton_add]
@@ -616,10 +654,10 @@ variable (𝕜) (ι : Type _) [OrderedSemiring 𝕜] [Fintype ι]
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
 coordinates with total sum `1`. This is the free object in the category of convex spaces. -/
 def stdSimplex : Set (ι → 𝕜) :=
-  { f | (∀ x, 0 ≤ f x) ∧ (∑ x, f x) = 1 }
+  { f | (∀ x, 0 ≤ f x) ∧ ∑ x, f x = 1 }
 #align std_simplex stdSimplex
 
-theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | (∑ x, f x) = 1 } := by
+theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) ∩ { f | ∑ x, f x = 1 } := by
   ext f
   simp only [stdSimplex, Set.mem_inter_iff, Set.mem_iInter, Set.mem_setOf_eq]
 #align std_simplex_eq_inter stdSimplex_eq_inter

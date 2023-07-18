@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis
+Authors: Robert Y. Lewis, Matthew Robert Ballard
 
 ! This file was ported from Lean 3 source module number_theory.padics.padic_val
 ! leanprover-community/mathlib commit 60fa54e778c9e85d930efae172435f42fb0d71f7
@@ -10,6 +10,9 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Data.Nat.MaxPowDiv
+import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # p-adic Valuation
@@ -94,6 +97,37 @@ theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 #align padic_val_nat.eq_zero_of_not_dvd padicValNat.eq_zero_of_not_dvd
+
+open Nat.maxPowDiv
+
+theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+    p.maxPowDiv n = multiplicity p n := by
+  apply multiplicity.unique <| pow_dvd p n
+  intro h
+  apply Nat.not_lt.mpr <| le_of_dvd hp hn h
+  simp
+
+theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : Finite p n) :
+    p.maxPowDiv n = (multiplicity p n).get h := by
+  rw [PartENat.get_eq_iff_eq_coe.mpr]
+  apply maxPowDiv_eq_multiplicity hp hn|>.symm
+
+/-- Allows for more efficient code for `padicValNat` -/
+@[csimp]
+theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
+  ext p n
+  by_cases (1 < p ∧ 0 < n)
+  · dsimp [padicValNat]
+    rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
+  · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
+    apply h.elim
+    · intro h
+      interval_cases p
+      · simp [Classical.em]
+      · dsimp [padicValNat, maxPowDiv]
+        rw [go_eq, if_neg, dif_neg] <;> simp
+    · intro h
+      simp [h]
 
 end padicValNat
 
@@ -385,11 +419,11 @@ open BigOperators
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
-    (hn0 : (∑ i in Finset.range n, F i) ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
+    (hn0 : ∑ i in Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
   induction' n with d hd
   · exact False.elim (hn0 rfl)
-  · rw [Finset.sum_range_succ] at hn0⊢
-    by_cases h : (∑ x : ℕ in Finset.range d, F x) = 0
+  · rw [Finset.sum_range_succ] at hn0 ⊢
+    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
@@ -506,6 +540,14 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
   exact (Nat.one_lt_pow _ _ k.succ_pos hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
+
+/-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
+theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
+    padicValNat p (p * n) ! = padicValNat p n ! + n :=  by
+  refine' PartENat.natCast_inj.mp _
+  rw [padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos (p * n), Nat.cast_add,
+      padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
+  exact Prime.multiplicity_factorial_mul hp
 
 end padicValNat
 

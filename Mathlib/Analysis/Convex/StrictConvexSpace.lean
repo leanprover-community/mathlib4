@@ -159,7 +159,7 @@ theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall 
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closedBall_zero, mem_singleton_iff] at hx hy
     exact (hne (hx.trans hy.symm)).elim
-  · simp only [← interior_closedBall _ hr] at hx hy⊢
+  · simp only [← interior_closedBall _ hr] at hx hy ⊢
     exact strictConvex_closedBall ℝ z r hx hy hne ha hb hab
 #align combo_mem_ball_of_ne combo_mem_ball_of_ne
 
@@ -174,7 +174,7 @@ theorem openSegment_subset_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ cl
 and `y` with positive coefficients has norm strictly less than `r`. -/
 theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x ≠ y) (ha : 0 < a) (hb : 0 < b)
     (hab : a + b = 1) : ‖a • x + b • y‖ < r := by
-  simp only [← mem_ball_zero_iff, ← mem_closedBall_zero_iff] at hx hy⊢
+  simp only [← mem_ball_zero_iff, ← mem_closedBall_zero_iff] at hx hy ⊢
   exact combo_mem_ball_of_ne hx hy hne ha hb hab
 #align norm_combo_lt_of_ne norm_combo_lt_of_ne
 
@@ -195,7 +195,7 @@ theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x�
 #align norm_add_lt_of_not_same_ray norm_add_lt_of_not_sameRay
 
 theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
-  nth_rw 1 [← sub_add_cancel x y] at h⊢
+  nth_rw 1 [← sub_add_cancel x y] at h ⊢
   exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
 #align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 

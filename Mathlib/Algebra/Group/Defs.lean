@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 
 ! This file was ported from Lean 3 source module algebra.group.defs
-! leanprover-community/mathlib commit 2e0975f6a25dd3fbfb9e41556a77f075f6269748
+! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -114,23 +114,18 @@ class Inv (α : Type u) where
 @[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
 
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
-
 section Mul
 
 variable [Mul G]
 
 /-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive "`left_add g` denotes left addition by `g`"]
+@[to_additive "`leftAdd g` denotes left addition by `g`"]
 def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 #align left_mul leftMul
 #align left_add leftAdd
 
 /-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive "`right_add g` denotes right addition by `g`"]
+@[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 #align right_mul rightMul
 #align right_add rightAdd
@@ -583,6 +578,9 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
+
+attribute [instance 150] AddSemigroup.toAdd
+attribute [instance 50] AddZeroClass.toAdd
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ

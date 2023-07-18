@@ -174,7 +174,7 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
   · suffices t.chainHeight = ⊤ by
       rw [this, top_add]
       exact le_top
-    rw [chainHeight_eq_top_iff] at h⊢
+    rw [chainHeight_eq_top_iff] at h ⊢
     intro k
     have := (le_chainHeight_TFAE t k).out 1 2
     rw [this]

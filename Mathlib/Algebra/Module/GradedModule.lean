@@ -134,7 +134,7 @@ private theorem mul_smul' [DecidableEq ι] [GSemiring A] [Gmodule A M] (a b : �
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
     from-- `fun a b c ↦ a • (b • c)` as a bundled hom
       FunLike.congr_fun (FunLike.congr_fun (FunLike.congr_fun this a) b) c
-  ext (ai ax bi bx ci cx) : 6
+  ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
   rw [smulAddMonoidHom_apply_of_of, smulAddMonoidHom_apply_of_of, DirectSum.mulHom_of_of,
     smulAddMonoidHom_apply_of_of]
@@ -225,7 +225,7 @@ def isModule [DecidableEq ι] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
 -/
 def linearEquiv [DecidableEq ι] [GradedRing 𝓐] [DirectSum.Decomposition 𝓜] :
     @LinearEquiv A A _ _ (RingHom.id A) (RingHom.id A) _ _ M (⨁ i, 𝓜 i) _
-    _ _ (by letI := isModule 𝓐 𝓜 ; infer_instance) := by
+    _ _ (by letI := isModule 𝓐 𝓜; infer_instance) := by
   letI h := isModule 𝓐 𝓜
   refine ⟨⟨(DirectSum.decomposeAddEquiv 𝓜).toAddHom, ?_⟩,
     (DirectSum.decomposeAddEquiv 𝓜).symm.toFun, (DirectSum.decomposeAddEquiv 𝓜).left_inv,

@@ -363,9 +363,7 @@ set_option linter.uppercaseLean3 false in
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by
-    apply int_hom_ext
-    simpa using h
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 set_option linter.uppercaseLean3 false in

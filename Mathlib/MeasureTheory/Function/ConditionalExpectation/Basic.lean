@@ -203,12 +203,12 @@ theorem condexp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
       (condexp_ae_eq_condexpL1 hm g).symm)
 #align measure_theory.condexp_congr_ae MeasureTheory.condexp_congr_ae
 
-theorem condexp_of_aEStronglyMeasurable' (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] {f : α → F'}
+theorem condexp_of_aestronglyMeasurable' (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] {f : α → F'}
     (hf : AEStronglyMeasurable' m f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
   refine' ((condexp_congr_ae hf.ae_eq_mk).trans _).trans hf.ae_eq_mk.symm
   rw [condexp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
-#align measure_theory.condexp_of_ae_strongly_measurable' MeasureTheory.condexp_of_aEStronglyMeasurable'
+#align measure_theory.condexp_of_ae_strongly_measurable' MeasureTheory.condexp_of_aestronglyMeasurable'
 
 theorem integrable_condexp : Integrable (μ[f|m]) μ := by
   by_cases hm : m ≤ m0
@@ -230,7 +230,7 @@ theorem set_integral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : In
 theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
   suffices ∫ x in Set.univ, (μ[f|m]) x ∂μ = ∫ x in Set.univ, f x ∂μ by
-    simp_rw [integral_univ] at this ; exact this
+    simp_rw [integral_univ] at this; exact this
   exact set_integral_condexp hm hf (@MeasurableSet.univ _ m)
 #align measure_theory.integral_condexp MeasureTheory.integral_condexp
 

@@ -95,7 +95,7 @@ Id.run do
   if (s.get i₁).isUpper then
     if let some strs := endCapitalNames.find? (s.extract 0 i₁) then
       if let some (pref, newS) := strs.findSome?
-        fun x ↦ x.isPrefixOf? (s.extract i₁ s.endPos) |>.map (x, ·) then
+        fun x ↦ (s.extract i₁ s.endPos).dropPrefix? x |>.map (x, ·.toString) then
         return splitCase newS 0 <| (s.extract 0 i₁ ++ pref)::r
     if !(s.get i₀).isUpper then
       return splitCase (s.extract i₁ s.endPos) 0 <| (s.extract 0 i₁)::r
@@ -106,7 +106,7 @@ namespace ToAdditive
 initialize registerTraceClass `to_additive
 initialize registerTraceClass `to_additive_detail
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `reorder` attribute is not given manually -/
 register_option linter.toAdditiveReorder : Bool := {
   defValue := true
   descr := "Linter to check that the reorder attribute is not given manually." }
@@ -118,7 +118,7 @@ register_option linter.existingAttributeWarning : Bool := {
   descr := "Linter, mostly used by `@[to_additive]`, that checks that the source declaration " ++
     "doesn't have certain attributes" }
 
-/-- Linter to check that the reorder attribute is not given manually -/
+/-- Linter to check that the `to_additive` attribute is not given manually -/
 register_option linter.toAdditiveGenerateName : Bool := {
   defValue := true
   descr := "Linter used by `@[to_additive]` that checks if `@[to_additive]` automatically " ++
@@ -286,15 +286,13 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Bool :=
-  let size := cacheSize
   let rec visit (e : Expr) (inApp := false) : OptionT FindM Unit := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
       else
         return
-    if ← visited e size then
-      failure
+    checkVisited e
     match e with
     | x@(.app e a)       =>
         visit e true <|> do
@@ -311,7 +309,7 @@ unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
     | _                  => failure
-  Option.isNone <| Id.run <| (visit e).run' initCache
+  Option.isNone <| Id.run <| (visit e).run' mkPtrSet
 
 /--
 `additiveTest e` tests whether the expression `e` contains no constant

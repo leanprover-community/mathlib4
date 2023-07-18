@@ -287,7 +287,7 @@ theorem countable_not_continuousAt [TopologicalSpace.SecondCountableTopology β]
   refine' compl_subset_compl.1 _
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
-  simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x⊢
+  simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x ⊢
   exact continuousAt_iff_continuous_left'_right'.2 ⟨h'x, hx⟩
 #align monotone.countable_not_continuous_at Monotone.countable_not_continuousAt
 

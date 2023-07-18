@@ -78,7 +78,7 @@ theorem acc_iff_no_decreasing_seq {x} :
       | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
     obtain ⟨f, h⟩ := Classical.axiom_of_choice this
     refine' fun E =>
-      by_contradiction fun hx => E.elim' ⟨natGt (fun n => ((f^[n]) ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
+      by_contradiction fun hx => E.elim' ⟨natGt (fun n => (f^[n] ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
     simp only [Function.iterate_succ']
     apply h
 #align rel_embedding.acc_iff_no_decreasing_seq RelEmbedding.acc_iff_no_decreasing_seq

@@ -31,8 +31,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
-
 /-- Construct a cone for the empty diagram given an object. -/
 @[simps]
 def asEmptyCone (X : C) : Cone (Functor.empty.{0} C) :=
@@ -464,8 +462,7 @@ def limitConstTerminal {J : Type _} [Category J] {C : Type _} [Category C] [HasT
 theorem limitConstTerminal_inv_π {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
-      terminal.from _ := by
-  apply Limits.limit.hom_ext; aesop_cat
+      terminal.from _ := by aesop_cat
 #align category_theory.limits.limit_const_terminal_inv_π CategoryTheory.Limits.limitConstTerminal_inv_π
 
 instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
@@ -491,7 +488,7 @@ def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [Has
 theorem ι_colimitConstInitial_hom {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
-      initial.to _ := by apply Limits.colimit.hom_ext; aesop_cat
+      initial.to _ := by aesop_cat
 #align category_theory.limits.ι_colimit_const_initial_hom CategoryTheory.Limits.ι_colimitConstInitial_hom
 
 /-- A category is an `InitialMonoClass` if the canonical morphism of an initial object is a

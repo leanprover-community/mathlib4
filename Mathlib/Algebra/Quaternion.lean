@@ -1312,7 +1312,7 @@ section Field
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
-@[simps (config := { attrs := [] })]
+@[simps (config := { isSimp := false })]
 instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 
@@ -1376,7 +1376,7 @@ theorem coe_rat_cast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) :=
   rfl
 #align quaternion.coe_rat_cast Quaternion.coe_rat_cast
 
--- porting note: moved below `coe_rat_cast`, added this lemma to the `rw`s
+-- porting note: moved below `coe_rat_cast`, as `coe_rat_cast` is needed in the `rw`s
 instance : DivisionRing ℍ[R] :=
   { Quaternion.instGroupWithZero,
     Quaternion.instRing with
@@ -1421,29 +1421,29 @@ section QuaternionAlgebra
 
 variable {R : Type _} (c₁ c₂ : R)
 
-private theorem pow_four [Infinite R] : (#R) ^ℕ 4 = (#R) :=
+private theorem pow_four [Infinite R] : #R ^ℕ 4 = #R :=
   power_nat_eq (aleph0_le_mk R) <| by simp
 
 /-- The cardinality of a quaternion algebra, as a type. -/
-theorem mk_quaternionAlgebra : (#ℍ[R,c₁,c₂]) = (#R) ^ℕ 4 := by
+theorem mk_quaternionAlgebra : #(ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
   rw [mk_congr (QuaternionAlgebra.equivProd c₁ c₂)]
   simp only [mk_prod, lift_id]
   ring
 #align cardinal.mk_quaternion_algebra Cardinal.mk_quaternionAlgebra
 
 @[simp]
-theorem mk_quaternionAlgebra_of_infinite [Infinite R] : (#ℍ[R,c₁,c₂]) = (#R) := by
+theorem mk_quaternionAlgebra_of_infinite [Infinite R] : #(ℍ[R,c₁,c₂]) = #R := by
   rw [mk_quaternionAlgebra, pow_four]
 #align cardinal.mk_quaternion_algebra_of_infinite Cardinal.mk_quaternionAlgebra_of_infinite
 
 /-- The cardinality of a quaternion algebra, as a set. -/
-theorem mk_univ_quaternionAlgebra : (#(Set.univ : Set ℍ[R,c₁,c₂])) = (#R) ^ℕ 4 := by
+theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂]) = #R ^ℕ 4 := by
   rw [mk_univ, mk_quaternionAlgebra]
 #align cardinal.mk_univ_quaternion_algebra Cardinal.mk_univ_quaternionAlgebra
 
 --@[simp] Porting note: `simp` can prove it
 theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
-    (#(Set.univ : Set ℍ[R,c₁,c₂])) = (#R) := by rw [mk_univ_quaternionAlgebra, pow_four]
+    #(Set.univ : Set ℍ[R,c₁,c₂]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 #align cardinal.mk_univ_quaternion_algebra_of_infinite Cardinal.mk_univ_quaternionAlgebra_of_infinite
 
 end QuaternionAlgebra
@@ -1454,23 +1454,23 @@ variable (R : Type _) [One R] [Neg R]
 
 /-- The cardinality of the quaternions, as a type. -/
 @[simp]
-theorem mk_quaternion : (#ℍ[R]) = (#R) ^ℕ 4 :=
+theorem mk_quaternion : #(ℍ[R]) = #R ^ℕ 4 :=
   mk_quaternionAlgebra _ _
 #align cardinal.mk_quaternion Cardinal.mk_quaternion
 
---@[simp] Porting note: LHS can be simplified to `(#R)^4`
-theorem mk_quaternion_of_infinite [Infinite R] : (#ℍ[R]) = (#R) :=
+--@[simp] Porting note: LHS can be simplified to `#R^4`
+theorem mk_quaternion_of_infinite [Infinite R] : #(ℍ[R]) = #R :=
   mk_quaternionAlgebra_of_infinite _ _
 #align cardinal.mk_quaternion_of_infinite Cardinal.mk_quaternion_of_infinite
 
 /-- The cardinality of the quaternions, as a set. -/
 --@[simp] Porting note: `simp` can prove it
-theorem mk_univ_quaternion : (#(Set.univ : Set ℍ[R])) = (#R) ^ℕ 4 :=
+theorem mk_univ_quaternion : #(Set.univ : Set ℍ[R]) = #R ^ℕ 4 :=
   mk_univ_quaternionAlgebra _ _
 #align cardinal.mk_univ_quaternion Cardinal.mk_univ_quaternion
 
---@[simp] Porting note: LHS can be simplified to `(#R)^4`
-theorem mk_univ_quaternion_of_infinite [Infinite R] : (#(Set.univ : Set ℍ[R])) = (#R) :=
+--@[simp] Porting note: LHS can be simplified to `#R^4`
+theorem mk_univ_quaternion_of_infinite [Infinite R] : #(Set.univ : Set ℍ[R]) = #R :=
   mk_univ_quaternionAlgebra_of_infinite _ _
 #align cardinal.mk_univ_quaternion_of_infinite Cardinal.mk_univ_quaternion_of_infinite
 

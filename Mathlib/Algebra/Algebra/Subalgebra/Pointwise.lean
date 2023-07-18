@@ -62,7 +62,7 @@ theorem mul_toSubmodule {R : Type _} {A : Type _} [CommSemiring R] [CommSemiring
     · rw [← one_mul x]
       exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) hxT
   · rw [← one_mul (algebraMap _ _ _)]
-    exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem _ _)
+    exact Submodule.mul_mem_mul (show (1 : A) ∈ S from one_mem S) (algebraMap_mem T _)
   have := Submodule.mul_mem_mul hx hy
   rwa [mul_assoc, mul_comm _ (Subalgebra.toSubmodule T), ← mul_assoc _ _ (Subalgebra.toSubmodule S),
     mul_self, mul_comm (Subalgebra.toSubmodule T), ← mul_assoc, mul_self] at this

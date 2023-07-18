@@ -56,12 +56,10 @@ def kernelOpUnop : (kernel f.op).unop ≅ cokernel f where
   hom_inv_id := by
     rw [← unop_id, ← (cokernel.desc f _ _).unop_op, ← unop_comp]
     congr 1
-    dsimp
-    apply equalizer.hom_ext
+    ext
     simp [← op_comp]
   inv_hom_id := by
-    dsimp
-    apply coequalizer.hom_ext
+    ext
     simp [← unop_comp]
 #align category_theory.kernel_op_unop CategoryTheory.kernelOpUnop
 
@@ -78,12 +76,10 @@ def cokernelOpUnop : (cokernel f.op).unop ≅ kernel f where
   hom_inv_id := by
     rw [← unop_id, ← (kernel.lift f _ _).unop_op, ← unop_comp]
     congr 1
-    dsimp
-    apply coequalizer.hom_ext
+    ext
     simp [← op_comp]
   inv_hom_id := by
-    dsimp
-    apply equalizer.hom_ext
+    ext
     simp [← unop_comp]
 #align category_theory.cokernel_op_unop CategoryTheory.cokernelOpUnop
 

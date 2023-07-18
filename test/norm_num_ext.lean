@@ -3,11 +3,13 @@ Copyright (c) 2021 Mario Carneiro All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.NormNum.LegendreSymbol
 
 /-!
 # Tests for `norm_num` extensions
@@ -347,15 +349,29 @@ example : (Multiset.range 10).sum = 45 := by norm_num only
 example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num only
 
 -- Finsets:
+example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (λ x => x) = 2 := by norm_num1
+example : Finset.prod
+    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (by norm_num))
+    (λ x => x) =
+  12 := by norm_num1
+
+example (f : ℕ → α) : ∏ i in Finset.range 0, f i = 1 := by norm_num1
+example (f : Fin 0 → α) : ∏ i : Fin 0, f i = 1 := by norm_num1
+example (f : Fin 0 → α) : ∑ i : Fin 0, f i = 0 := by norm_num1
+example (f : ℕ → α) : ∑ i in (∅ : Finset ℕ), f i = 0 := by norm_num1
+example : ∑ i : Fin 3, 1 = 3 := by norm_num1
 /-
-example (f : Fin 0 → α) : ∑ i : Fin 0, f i = 0 := by norm_num
-example (f : ℕ → α) : ∑ i in (∅ : Finset ℕ), f i = 0 := by norm_num
+example : ∑ i : Fin 3, (i : ℕ) = 3 := by norm_num1
+example : ((0 : Fin 3) : ℕ) = 0 := by norm_num1
 example (f : Fin 3 → α) : ∑ i : Fin 3, f i = f 0 + f 1 + f 2 := by norm_num <;> ring
 example (f : Fin 4 → α) : ∑ i : Fin 4, f i = f 0 + f 1 + f 2 + f 3 := by norm_num <;> ring
 example (f : ℕ → α) : ∑ i in {0, 1, 2}, f i = f 0 + f 1 + f 2 := by norm_num; ring
 example (f : ℕ → α) : ∑ i in {0, 2, 2, 3, 1, 0}, f i = f 0 + f 1 + f 2 + f 3 := by norm_num; ring
 example (f : ℕ → α) : ∑ i in {0, 2, 2 - 3, 3 - 1, 1, 0}, f i = f 0 + f 1 + f 2 := by norm_num; ring
-example : (∑ i in Finset.range 10, (i^2 : ℕ)) = 285 := by norm_num
+-/
+example : (∑ i in Finset.range 10, (i^2 : ℕ)) = 285 := by norm_num1
+example : (∏ i in Finset.range 4, ((i+1)^2 : ℕ)) = 576 := by norm_num1
+/-
 example : (∑ i in Finset.Icc 5 10, (i^2 : ℕ)) = 355 := by norm_num
 example : (∑ i in Finset.Ico 5 10, (i^2 : ℕ)) = 255 := by norm_num
 example : (∑ i in Finset.Ioc 5 10, (i^2 : ℕ)) = 330 := by norm_num
@@ -367,38 +383,34 @@ example (f : ℕ → α) : ∑ i in Finset.mk {0, 1, 2} dec_trivial, f i = f 0 +
 
 -- Combined with other `norm_num` extensions:
 /-
-example : ∏ i in Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num
-example : ∏ i in {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num
-example : ∏ i in Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num
--/
+example : ∏ i in Finset.range 9, Nat.sqrt (i + 1) = 96 := by norm_num1
+example : ∏ i in {1, 4, 9, 16}, Nat.sqrt i = 24 := by norm_num1
+example : ∏ i in Finset.Icc 0 8, Nat.sqrt (i + 1) = 96 := by norm_num1
 
 -- Nested operations:
-/-
-example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num
+example : ∑ i : Fin 2, ∑ j : Fin 2, ![![0, 1], ![2, 3]] i j = 6 := by norm_num1
 -/
 
 end big_operators
 
-/-
 section jacobi
 
 -- Jacobi and Legendre symbols
 
-open_locale number_theory_symbols
+open scoped NumberTheorySymbols
 
-example : J(123 | 335) = -1 := by norm_num
-example : J(-2345 | 6789) = -1 := by norm_num
-example : J(-1 | 1655801) = 1 := by norm_num
-example : J(-102334155 | 165580141) = -1 := by norm_num
+example : J(123 | 335) = -1 := by norm_num1
+example : J(-2345 | 6789) = -1 := by norm_num1
+example : J(-1 | 1655801) = 1 := by norm_num1
+example : J(-102334155 | 165580141) = -1 := by norm_num1
 
 example : J(58378362899022564339483801989973056405585914719065 |
-            53974350278769849773003214636618718468638750007307) = -1 := by norm_num
+            53974350278769849773003214636618718468638750007307) = -1 := by norm_num1
 
-example : J(3 + 4 | 3 * 5) = -1 := by norm_num
-example : J(J(-1 | 7) | 11) = -1 := by norm_num
+example : J(3 + 4 | 3 * 5) = -1 := by norm_num1
+example : J(J(-1 | 7) | 11) = -1 := by norm_num1
 
-instance prime_1000003 : fact (Nat.Prime 1000003) := ⟨by norm_num⟩
-example : legendre_sym 1000003 7 = -1 := by norm_num
+instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
+example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
--/

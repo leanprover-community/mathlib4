@@ -18,6 +18,9 @@ An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here to minimize imports to `data.rat.order` for porting purposes.
 -/
 
+instance : WellFoundedRelation (WithTop ℕ) where
+  rel := (· < ·)
+  wf := IsWellFounded.wf
 
 theorem Nat.cast_withTop (n : ℕ) :  Nat.cast n = WithTop.some n :=
   rfl

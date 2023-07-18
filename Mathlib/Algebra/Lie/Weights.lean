@@ -128,7 +128,7 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
   let f₁ : Module.End R (M₁ ⊗[R] M₂) := (toEndomorphism R L M₁ x - χ₁ x • ↑1).rTensor M₂
   let f₂ : Module.End R (M₁ ⊗[R] M₂) := (toEndomorphism R L M₂ x - χ₂ x • ↑1).lTensor M₁
   have h_comm_square : F ∘ₗ ↑g = (g : M₁ ⊗[R] M₂ →ₗ[R] M₃).comp (f₁ + f₂) := by
-    ext (m₁ m₂);
+    ext m₁ m₂;
     simp only [← g.map_lie x (m₁ ⊗ₜ m₂), add_smul, sub_tmul, tmul_sub, smul_tmul, lie_tmul_right,
       tmul_smul, toEndomorphism_apply_apply, LieModuleHom.map_smul, LinearMap.one_apply,
       LieModuleHom.coe_toLinearMap, LinearMap.smul_apply, Function.comp_apply, LinearMap.coe_comp,
@@ -136,7 +136,7 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
       LinearMap.sub_apply, LinearMap.lTensor_tmul, AlgebraTensorModule.curry_apply,
       curry_apply, LinearMap.toFun_eq_coe, LinearMap.coe_restrictScalars]
     abel
-  rsuffices ⟨k, hk⟩ : ∃ k, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
+  rsuffices ⟨k, hk⟩ : ∃ k : ℕ, ((f₁ + f₂) ^ k) (m₁ ⊗ₜ m₂) = 0
   · use k
     change (F ^ k) (g.toLinearMap (m₁ ⊗ₜ[R] m₂)) = 0
     rw [← LinearMap.comp_apply, LinearMap.commute_pow_left_of_commute h_comm_square,
@@ -152,7 +152,7 @@ protected theorem weight_vector_multiplication (M₁ : Type w₁) (M₂ : Type w
   -- It's now just an application of the binomial theorem.
   use k₁ + k₂ - 1
   have hf_comm : Commute f₁ f₂ := by
-    ext (m₁ m₂)
+    ext m₁ m₂
     simp only [LinearMap.mul_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
       AlgebraTensorModule.curry_apply, LinearMap.toFun_eq_coe, LinearMap.lTensor_tmul,
       curry_apply, LinearMap.coe_restrictScalars]

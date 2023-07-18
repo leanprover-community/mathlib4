@@ -139,8 +139,8 @@ end
 variable (f g)
 
 /--
-The pair `f,g` is a split pair if there is a `h : Y ⟶ Z` so that `f, g, h` forms a split coequalizer
-in `C`.
+The pair `f,g` is a split pair if there is an `h : Y ⟶ Z` so that `f, g, h` forms a split
+coequalizer in `C`.
 -/
 class HasSplitCoequalizer : Prop where
   /-- There is some split coequalizer -/
@@ -148,7 +148,7 @@ class HasSplitCoequalizer : Prop where
 #align category_theory.has_split_coequalizer CategoryTheory.HasSplitCoequalizer
 
 /--
-The pair `f,g` is a `G`-split pair if there is a `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
+The pair `f,g` is a `G`-split pair if there is an `h : G Y ⟶ Z` so that `G f, G g, h` forms a split
 coequalizer in `D`.
 -/
 abbrev Functor.IsSplitPair : Prop :=

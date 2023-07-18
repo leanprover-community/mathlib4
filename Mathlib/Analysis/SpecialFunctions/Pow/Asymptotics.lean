@@ -68,7 +68,7 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
         tendsto_log_atTop)
   apply eventuallyEq_of_mem (Ioi_mem_atTop (0 : ℝ))
   intro x hx
-  simp only [Set.mem_Ioi, Function.comp_apply] at hx⊢
+  simp only [Set.mem_Ioi, Function.comp_apply] at hx ⊢
   rw [exp_log hx, ← exp_log (rpow_pos_of_pos hx (a / (b * x + c))), log_rpow hx (a / (b * x + c))]
   field_simp
 #align tendsto_rpow_div_mul_add tendsto_rpow_div_mul_add
@@ -161,7 +161,7 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
     (fun x => Real.exp (arg (f x) * im (g x))) =Θ[l] fun _ => (1 : ℝ) := by
   rcases hl with ⟨b, hb⟩
   refine' Real.isTheta_exp_comp_one.2 ⟨π * b, _⟩
-  rw [eventually_map] at hb⊢
+  rw [eventually_map] at hb ⊢
   refine' hb.mono fun x hx => _
   erw [abs_mul]
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le

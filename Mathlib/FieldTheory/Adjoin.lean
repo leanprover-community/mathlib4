@@ -397,7 +397,7 @@ theorem adjoin_insert_adjoin (x : E) :
     adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
   le_antisymm
     (adjoin_le_iff.mpr
-      (Set.insert_subset.mpr
+      (Set.insert_subset_iff.mpr
         ⟨subset_adjoin _ _ (Set.mem_insert _ _),
           adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
     (adjoin.mono _ _ _ (Set.insert_subset_insert (subset_adjoin _ _)))
@@ -567,7 +567,7 @@ open scoped BigOperators
 
 /-- A compositum of splitting fields is a splitting field -/
 theorem isSplittingField_iSup {ι : Type _} {t : ι → IntermediateField F E} {p : ι → F[X]}
-    {s : Finset ι} (h0 : (∏ i in s, p i) ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField F (t i)) :
+    {s : Finset ι} (h0 : ∏ i in s, p i ≠ 0) (h : ∀ i ∈ s, (p i).IsSplittingField F (t i)) :
     (∏ i in s, p i).IsSplittingField F (⨆ i ∈ s, t i : IntermediateField F E) := by
   let K : IntermediateField F E := ⨆ i ∈ s, t i
   have hK : ∀ i ∈ s, t i ≤ K := fun i hi => le_iSup_of_le i (le_iSup (fun _ => t i) hi)
@@ -865,7 +865,6 @@ noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
   (AdjoinRoot.powerBasis (minpoly.ne_zero hx)).basis.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
 #align intermediate_field.power_basis_aux IntermediateField.powerBasisAux
 
-set_option maxHeartbeats 300000 in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 @[simps]
@@ -1098,7 +1097,7 @@ theorem Lifts.exists_upper_bound (c : Set (Lifts F E K)) (hc : IsChain (· ≤ �
       exact congr_arg z.2 (Subtype.ext hst)⟩
 #align intermediate_field.lifts.exists_upper_bound IntermediateField.Lifts.exists_upper_bound
 
-set_option maxHeartbeats 410000 in
+set_option maxHeartbeats 350000 in
 -- Porting note: instance `alg` added by hand. The proof is very slow.
 /-- Extend a lift `x : Lifts F E K` to an element `s : E` whose conjugates are all in `K` -/
 noncomputable def Lifts.liftOfSplits (x : Lifts F E K) {s : E} (h1 : IsIntegral F s)
@@ -1159,7 +1158,8 @@ theorem Lifts.exists_lift_of_splits (x : Lifts F E K) {s : E} (h1 : IsIntegral F
 theorem algHom_mk_adjoin_splits
     (hK : ∀ s ∈ S, IsIntegral F (s : E) ∧ (minpoly F s).Splits (algebraMap F K)) :
     Nonempty (adjoin F S →ₐ[F] K) := by
-  obtain ⟨x : Lifts F E K, hx⟩ := zorn_partialOrder Lifts.exists_upper_bound
+  obtain ⟨x, hx⟩ : ∃ m : Lifts F E K, ∀ a, m ≤ a → a = m :=
+    zorn_partialOrder Lifts.exists_upper_bound
   refine'
     ⟨{ toFun := (fun s => x.2 ⟨s, adjoin_le_iff.mpr (fun s hs => _) s.mem⟩)
        map_one' := x.2.map_one
@@ -1245,7 +1245,7 @@ instance finiteDimensional_iSup_of_finset {ι : Type _} {f : ι → Intermediate
     {s : Finset ι} [h : ∀ i, FiniteDimensional K (f i)] :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i
-  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+  have : ⨆ i ∈ s, f i = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite
@@ -1257,7 +1257,7 @@ theorem finiteDimensional_iSup_of_finset' {ι : Type _} {f : ι → Intermediate
     {s : Finset ι} (h : ∀ i, i ∈ s → FiniteDimensional K (f i)) :
     FiniteDimensional K (⨆ i ∈ s, f i : IntermediateField K L) := by
   haveI : ∀ i : { i // i ∈ s }, FiniteDimensional K (f i) := fun i => h i i.2
-  have : (⨆ i ∈ s, f i) = ⨆ i : { i // i ∈ s }, f i :=
+  have : ⨆ i ∈ s, f i = ⨆ i : { i // i ∈ s }, f i :=
     le_antisymm (iSup_le fun i => iSup_le fun h => le_iSup (fun i : { i // i ∈ s } => f i) ⟨i, h⟩)
       (iSup_le fun i => le_iSup_of_le i (le_iSup_of_le i.2 le_rfl))
   exact this.symm ▸ IntermediateField.finiteDimensional_iSup_of_finite

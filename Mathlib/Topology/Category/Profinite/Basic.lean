@@ -405,7 +405,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
         simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
-      apply_fun fun e => (e y).down  at H
+      apply_fun fun e => (e y).down at H
       dsimp [LocallyConstant.ofClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
@@ -418,9 +418,7 @@ theorem mono_iff_injective {X Y : Profinite.{u}} (f : X ⟶ Y) : Mono f ↔ Func
   · intro h
     haveI : Limits.PreservesLimits profiniteToCompHaus := inferInstance
     haveI : Mono (profiniteToCompHaus.map f) := inferInstance
-    -- Porting note: now need `erw`?
-    -- https://github.com/leanprover-community/mathlib4/issues/5164
-    erw [← CompHaus.mono_iff_injective]
+    rw [← CompHaus.mono_iff_injective]
     assumption
   · rw [← CategoryTheory.mono_iff_injective]
     apply (forget Profinite).mono_of_mono_map

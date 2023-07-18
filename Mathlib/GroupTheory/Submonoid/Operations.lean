@@ -1072,7 +1072,8 @@ theorem mrange_top_iff_surjective {f : F} : mrange f = (⊤ : Submonoid N) ↔ F
 #align add_monoid_hom.mrange_top_iff_surjective AddMonoidHom.mrange_top_iff_surjective
 
 /-- The range of a surjective monoid hom is the whole of the codomain. -/
-@[to_additive "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
+@[to_additive (attr := simp)
+  "The range of a surjective `AddMonoid` hom is the whole of the codomain."]
 theorem mrange_top_of_surjective (f : F) (hf : Function.Surjective f) :
     mrange f = (⊤ : Submonoid N) :=
   mrange_top_iff_surjective.2 hf
