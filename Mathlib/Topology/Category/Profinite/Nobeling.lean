@@ -3581,11 +3581,65 @@ def LocconstEval (x : {i // i ∈ C}) : LocallyConstant {i // i ∈ C} ℤ →�
 
 noncomputable
 def GoodProducts.finsupp (c : List (WithTop I) →₀ ℤ) :
-    {q : Products (WithTop I) | term I ho ∉ q.val} →₀ ℤ where
-  support := sorry
+    {q : Products (WithTop I) | term I ho ∉ q.val} →₀ ℤ :=
+    let f : {q : {q : Products (WithTop I) | term I ho ∉ q.val} |
+        term I ho :: q.val.val ∈ c.support} → c.support :=
+      fun q ↦ ⟨term I ho :: q.val.val.val, q.prop⟩
+    have hf : f.Injective := by
+      intro a b hab
+      ext
+      rw [Subtype.ext_iff, List.cons_eq_cons] at hab
+      exact Subtype.ext hab.2
+    let g : {q : {q : Products (WithTop I) | term I ho ∉ q.val} |
+        q.val.val ∈ c.support ∧ term I ho :: q.val.val ∉ c.support} → c.support :=
+      fun q ↦ ⟨q.val.val.val, q.prop.1⟩
+    have hg : g.Injective := by
+      intro a b hab
+      ext
+      rw [Subtype.ext_iff] at hab
+      exact Subtype.ext hab
+    haveI hFf : Fintype {q : {q : Products (WithTop I) | term I ho ∉ q.val} |
+        term I ho :: q.val.val ∈ c.support} :=
+      Fintype.ofInjective f hf
+    haveI hFg : Fintype {q : {q : Products (WithTop I) | term I ho ∉ q.val} |
+        q.val.val ∈ c.support ∧ term I ho :: q.val.val ∉ c.support} :=
+      Fintype.ofInjective g hg
+{ support :=
+  {q | term I ho :: q.val.val ∈ c.support}.toFinset ∪
+  {q | q.val.val ∈ c.support ∧ term I ho :: q.val.val ∉ c.support}.toFinset
   toFun := fun q ↦ if term I ho :: q.val.val ∈ c.support then
       c (term I ho :: q.val.val) else (if q.val.val ∈ c.support then c q.val.val else 0)
-  mem_support_toFun := sorry
+  mem_support_toFun := by
+    intro q
+    constructor
+    <;> intro hq
+    · dsimp at *
+      split_ifs with h hh
+      · simp only [Finsupp.mem_support_iff, ne_eq] at h
+        exact h
+      · simp only [Finsupp.mem_support_iff, ne_eq] at hh
+        exact hh
+      · simp only [Finset.mem_union] at hq
+        cases' hq with hq hq
+        · exfalso
+          have := @Set.mem_toFinset _ _ hFf q
+          exact h (this.mp hq)
+        · exfalso
+          have := @Set.mem_toFinset _ _ hFg q
+          exact hh (this.mp hq).1
+    · dsimp at *
+      split_ifs at hq with h hh
+      · simp only [Finset.mem_union]
+        left
+        have := @Set.mem_toFinset _ _ hFf q
+        exact this.mpr h
+      · simp only [Finset.mem_union]
+        right
+        have := @Set.mem_toFinset _ _ hFg q
+        exact this.mpr ⟨hh, h⟩
+      · exfalso
+        exact hq rfl
+}
 
 lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
     (hh : Products.eval C ⟨(term I ho :: l.val.val), cons_o_chain' C ho l⟩ ∈
@@ -3606,11 +3660,28 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
   obtain ⟨c, ⟨hcmem, hcsum⟩⟩ := h
   rw [Finsupp.mem_supported] at hcmem
   rw [Finsupp.total_apply] at hcsum
+  let s : {q : Products (WithTop I) | term I ho ∉ q.val} → List (WithTop I) :=
+    fun r ↦ term I ho :: r.val.val
+  have hs : s.Injective
+  · intro a b hab
+    apply Subtype.ext
+    rw [List.cons_eq_cons] at hab
+    exact Subtype.ext hab.2
   let f := (Subtype.val : Products (WithTop I) → List (WithTop I))
   have hf : f.Injective := Subtype.coe_injective
-  let d := GoodProducts.finsupp ho (c.mapDomain f)
+  let d := (c.mapDomain f).comapDomain s (hs.injOn _)
   have hd : (d.support : Set {q : Products (WithTop I) | ¬term I ho ∈ q.val}) ⊆
-      {m_1 | m_1.val < l.val} := sorry
+      {m_1 | m_1.val < l.val}
+  · simp only [Set.coe_setOf, Set.mem_setOf_eq, Finsupp.comapDomain_support, Finset.coe_preimage]
+    intro x hx
+    rw [Finsupp.mapDomain_support_of_injective hf] at hx
+    simp only [Finset.coe_image] at hx
+    obtain ⟨y, hy⟩ := hx
+    have hy' := hcmem hy.1
+    simp only [Set.mem_setOf_eq] at hy' ⊢
+    have hy'val : y.val < term I ho :: l.val.val := hy'
+    rw [hy.2] at hy'val
+    exact List.Lex.cons_iff.mp hy'val
   refine' ⟨d, ⟨_,_⟩⟩
   · rw [Finsupp.mem_supported]
     exact hd
@@ -3620,7 +3691,10 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
         (d.sum (fun i (a : ℤ) ↦ a • map i)) x =
         d.sum (fun i a ↦ a • map i x)
     · intro α map d
-      exact map_finsupp_sum (LocconstEval C x) _ _
+      have : LocconstEval C x (d.sum (fun i a ↦ a • map i)) =
+          d.sum (fun i a ↦ a • map i x) :=
+        map_finsupp_sum (LocconstEval C x) _ _
+      exact this
     by_cases ht : x.val (term I ho) = true
     · have he : e C (term I ho) x = 1
       · dsimp [e, BoolToZ]
@@ -3630,11 +3704,27 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
         exact htf ht
       rw [← hcsum]
       rw [hhh, hhh]
-      dsimp [Finsupp.sum, finsupp, List.eval]
+      dsimp [Finsupp.sum]
+      dsimp [List.eval]
       simp only [Finsupp.mem_support_iff, ne_eq, ite_not, List.prod_cons,
         LocallyConstant.coe_mul, Pi.mul_apply, ite_mul, zero_mul]
       rw [he]
       simp only [one_mul]
+      rw [Finsupp.mapDomain_support_of_injOn _ (hf.injOn _)]
+
+      -- let g : List (WithTop I) → ℤ := fun l ↦ (c.mapDomain f) l * (List.eval C l x)
+      -- have hg : g ∘ s = fun a ↦
+      --     (c.mapDomain Subtype.val) (term I ho :: a.val.val) * (List.eval C (term I ho :: a.val.val) x) := rfl
+      -- erw [← hg]
+      -- have hg' : g ∘ s = fun x ↦ g (s x) := rfl
+      -- rw [hg']
+      -- erw [Finset.sum_preimage s (Finset.image f c.support) (hs.injOn _) g]
+      simp only [Finsupp.mem_support_iff, ne_eq, Subtype.forall, Subtype.mk.injEq, imp_self, implies_true,
+        forall_const, Finset.sum_image]
+      -- congr
+      -- ext
+      -- rw [Finsupp.mapDomain_apply]
+      -- congr
 
       sorry
       -- rw [List.eval_eq_unapply C ho x]
@@ -3665,32 +3755,12 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
           simp only [List.find?, List.mem_cons, true_or]
         · rfl
 
-    -- rw [Finsupp.total_apply, ← hcsum]
-    -- dsimp [finsupp]
-    -- sorry
 
-  -- let s : {q : Products (WithTop I) | term I ho ∉ q.val} → List (WithTop I) :=
-  --   fun r ↦ term I ho :: r.val.val
-  -- have hs : s.Injective
-  -- · intro a b hab
-  --   apply Subtype.ext
-  --   rw [List.cons_eq_cons] at hab
-  --   exact Subtype.ext hab.2
   -- let f := (Subtype.val : Products (WithTop I) → List (WithTop I))
   -- have hf : f.Injective := Subtype.coe_injective
-  -- let d := (c.mapDomain f).comapDomain s (hs.injOn _)
+  -- let d := GoodProducts.finsupp ho (c.mapDomain f)
   -- have hd : (d.support : Set {q : Products (WithTop I) | ¬term I ho ∈ q.val}) ⊆
-  --     {m_1 | m_1.val < l.val}
-  -- · simp only [Set.coe_setOf, Set.mem_setOf_eq, Finsupp.comapDomain_support, Finset.coe_preimage]
-  --   intro x hx
-  --   rw [Finsupp.mapDomain_support_of_injective hf] at hx
-  --   simp only [Finset.coe_image] at hx
-  --   obtain ⟨y, hy⟩ := hx
-  --   have hy' := hcmem hy.1
-  --   simp only [Set.mem_setOf_eq] at hy' ⊢
-  --   have hy'val : y.val < term I ho :: l.val.val := hy'
-  --   rw [hy.2] at hy'val
-  --   exact List.Lex.cons_iff.mp hy'val
+  --     {m_1 | m_1.val < l.val} := sorry
   -- refine' ⟨d, ⟨_,_⟩⟩
   -- · rw [Finsupp.mem_supported]
   --   exact hd
@@ -3700,19 +3770,22 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
   --       (d.sum (fun i (a : ℤ) ↦ a • map i)) x =
   --       d.sum (fun i a ↦ a • map i x)
   --   · intro α map d
-  --     have : LocconstEval C x (d.sum (fun i a ↦ a • map i)) =
-  --         d.sum (fun i a ↦ a • map i x) :=
-  --       map_finsupp_sum (LocconstEval C x) _ _
-  --     exact this
+  --     exact map_finsupp_sum (LocconstEval C x) _ _
   --   by_cases ht : x.val (term I ho) = true
-  --   · rw [← hcsum]
+  --   · have he : e C (term I ho) x = 1
+  --     · dsimp [e, BoolToZ]
+  --       simp only [ite_eq_left_iff, Bool.not_eq_true]
+  --       intro htf
+  --       rw [← Bool.not_eq_true] at htf
+  --       exact htf ht
+  --     rw [← hcsum]
   --     rw [hhh, hhh]
+  --     dsimp [Finsupp.sum, finsupp, List.eval]
+  --     simp only [Finsupp.mem_support_iff, ne_eq, ite_not, List.prod_cons,
+  --       LocallyConstant.coe_mul, Pi.mul_apply, ite_mul, zero_mul]
+  --     rw [he]
+  --     simp only [one_mul]
   --     sorry
-  --     -- rw [List.eval_eq_unapply C ho x]
-  --     -- rw [Finsupp.sum_ite_eq]
-  --     -- rw [hhh, hhh]
-  --     -- dsimp [Finsupp.sum]
-  --     -- sorry
   --   · rw [Products.eval_eq]
   --     split_ifs with hi
   --     · exfalso
@@ -3735,6 +3808,9 @@ lemma GoodProducts.cons_o_mem_startingWithMax_aux (l : GoodProducts (C' C ho))
   --         apply hh'
   --         simp only [List.find?, List.mem_cons, true_or]
   --       · rfl
+
+
+
     -- rw [Finsupp.total_apply]
     -- let g' := fun (i : List (WithTop I)) (a : ℤ) ↦ a • List.eval C i
     -- have hs' : (fun (i : {q : Products (WithTop I) | term I ho ∉ q.val}) (a : ℤ) ↦
