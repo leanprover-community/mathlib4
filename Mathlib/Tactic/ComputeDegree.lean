@@ -33,9 +33,8 @@ Recurse into `f` breaking apart sums, products and powers.  Take care of numeral
 
 open Polynomial
 
-namespace Mathlib.Tactic.ComputeDegree
-
 section mylemmas
+namespace Polynomial
 
 /-!
 ###  Simple lemmas about `natDegree` and `degree`
@@ -123,7 +122,11 @@ theorem natDegree_int_cast_le (n : Int) : natDegree (n : R[X]) ≤ 0 := (natDegr
 
 end ring
 
+end Polynomial
+
 end mylemmas
+
+namespace Mathlib.Tactic.ComputeDegree
 
 section Tactic
 
@@ -147,6 +150,152 @@ def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
         f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
     |  (na, _)  => throwError m!"Expected an inequality instead of '{na}', '{e}'"
 
+/--
+`DegInfo` is a type whose terms encode the part of the syntax tree of a polynomial that currently
+plays a role in the computation of its degree.
+-/
+inductive DegInfo where
+  /-- `.rest` is the leaf usually associated to an `fvar`. -/
+  | rest     : DegInfo
+  /-- `.X` is the leaf associated to `X`. -/
+  | X        : DegInfo
+  /-- `.natCast` is a leaf associated to a `Nat`. -/
+  | natCast  : DegInfo
+  /-- `.intCast` is a leaf associated to an `Int`. -/
+  | intCast  : DegInfo
+  /-- `.ofNat0` is a leaf associated to the literal `0`. -/
+  | ofNat0   : DegInfo
+  /-- `.ofNat1` is a leaf associated to the literal `1`. -/
+  | ofNat1   : DegInfo
+  /-- `.ofNatN` is a leaf associated to a "generic" natural number. -/
+  | ofNatN   : DegInfo
+  /-- `.C` is the leaf associated to `C x`. -/
+  | C        : DegInfo
+  /-- `.monomial` is the leaf associated to `↑(monomial n) _`. -/
+  | monomial : DegInfo
+  /-- `.neg pol` is a node associated to `- pol`. -/
+  | neg      : DegInfo → DegInfo
+  /-- `.add f g` is a node associated to `f + g`. -/
+  | add      : DegInfo → DegInfo → DegInfo
+  /-- `.sub f g` is a node associated to `f - g`. -/
+  | sub      : DegInfo → DegInfo → DegInfo
+  /-- `.mul f g` is a node associated to `f * g`. -/
+  | mul      : DegInfo → DegInfo → DegInfo
+  /-- `.pow f` is a node associated to `f ^ n`. -/
+  | pow      : DegInfo → DegInfo
+  /-- `.err e` is a leaf for error-management. The `Expr`ession `e` is used to report an error. -/
+  | err      : Expr → DegInfo
+  deriving BEq, Inhabited, ToExpr
+
+namespace DegInfo
+
+def getArgs : DegInfo → List DegInfo
+  | neg f    => [f]
+  | add f g  => [f, g]
+  | sub f g  => [f, g]
+  | mul f g  => [f, g]
+  | pow f    => [f]
+  | _     => []
+
+def getErr? : DegInfo → Option Expr
+  | err e => some e
+  | _ => none
+
+def dict : DegInfo → Name × Name
+  | rest     => (``le_rfl, ``le_rfl)
+  | X        => (``natDegree_X_le,         ``degree_X_le)
+  | natCast  => (``natDegree_nat_cast_le,  ``degree_nat_cast_le)
+  | intCast  => (``natDegree_int_cast_le,  ``degree_int_cast_le)
+  | ofNat0   => (``natDegree_zero_le,      ``degree_zero_le)
+  | ofNat1   => (``natDegree_one_le,       ``degree_one_le)
+  | ofNatN   => (``natDegree_nat_cast_le,  ``degree_nat_cast_le)
+  | C        => (``natDegree_C_le,         ``degree_C_le)
+  | monomial => (``natDegree_monomial_le,  ``degree_monomial_le)
+  | neg ..   => (``natDegree_neg_le_of_le, ``degree_neg_le_of_le)
+  | add ..   => (``natDegree_add_le_of_le, ``degree_add_le_of_le)
+  | sub ..   => (``natDegree_sub_le_of_le, ``degree_sub_le_of_le)
+  | mul ..   => (``natDegree_mul_le_of_le, ``degree_mul_le_of_le)
+  | pow ..   => (``natDegree_pow_le_of_le, ``degree_pow_le_of_le)
+  | err ..   => (.anonymous, .anonymous)
+
+def ctorName : DegInfo → String
+  | rest     => "rest"
+  | X        => "X"
+  | natCast  => "natCast"
+  | intCast  => "intCast"
+  | ofNat0   => "ofNat0"
+  | ofNat1   => "ofNat1"
+  | ofNatN   => "ofNatN"
+  | C        => "C"
+  | monomial => "monomial"
+  | neg ..   => "neg"
+  | add ..   => "add"
+  | sub ..   => "sub"
+  | mul ..   => "mul"
+  | pow ..   => "pow"
+  | err ..   => "err"
+
+partial
+def toDegInfo (pol : Expr) : DegInfo :=
+match pol.numeral? with
+  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
+  | some 0 => .ofNat0
+  | some 1 => .ofNat1
+  | some _ => .ofNatN
+  | none => match pol.getAppFnArgs with
+    | (``HAdd.hAdd, #[_, _, _, _, f, g]) => .add (toDegInfo f) (toDegInfo g)
+    | (``HSub.hSub, #[_, _, _, _, f, g]) => .sub (toDegInfo f) (toDegInfo g)
+    | (``HMul.hMul, #[_, _, _, _, f, g]) => .mul (toDegInfo f) (toDegInfo g)
+    | (``HPow.hPow, #[_, _, _, _, f, _]) => .pow (toDegInfo f)
+    | (``Neg.neg,   #[_, _, f]) => .neg (toDegInfo f)
+    | (``Polynomial.X, _) => .X
+    | (``Nat.cast, _) => .natCast
+    | (``NatCast.natCast, _) => .natCast
+    | (``Int.cast, _) => .intCast
+    | (``IntCast.intCast, _) => .intCast
+    -- deal with `monomial` and `C`
+    | (``FunLike.coe, #[_, _, _, _, polFun, _]) => match polFun.getAppFnArgs with
+      | (``Polynomial.monomial, _) => .monomial
+      | (``Polynomial.C, _) => .C
+      | _ => dbg_trace f!"{polFun.getAppFnArgs}"; .err polFun
+    -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
+    | _ => .rest
+
+/-
+def expand (di : DegInfo) (n : Nat := 0) (indent: String := "") (sep : String := "-|") : String :=
+let args := di.getArgs.map (expand · (n + 1) (indent ++ sep))
+(if n == 0 then "" else "\n") ++ indent ++ di.ctorName ++ match args with
+  | [] => ""
+  | [a]
+-/
+
+def expand (di : DegInfo) (n : Nat := 0) (indent: String := "") (sep : String := "-|") : String :=
+let new := match di with
+  | (.add f g)    =>
+    let fe := expand f (n + 1) (indent ++ sep)
+    let ge := expand g (n + 1) (indent ++ sep)
+    fe ++ ge
+  | (.sub f g) =>
+    let fe := expand f (n + 1) (indent ++ sep)
+    let ge := expand g (n + 1) (indent ++ sep)
+    fe ++ ge
+  | (.mul f g) =>
+    let fe := expand f (n + 1) (indent ++ sep)
+    let ge := expand g (n + 1) (indent ++ sep)
+    fe ++ ge
+  | (.pow f) => expand f (n + 1) (indent ++ sep)
+  | (.neg f) => expand f (n+1) (indent ++ sep)
+  | (.err f) => "or:\n" ++ String.replicate indent.length ' ' ++ s!"{f}"
+  | _       => ""
+(if n == 0 then "" else "\n") ++ indent ++ di.ctorName ++ new
+
+instance : ToString DegInfo where
+  toString := expand
+
+end DegInfo
+
+open DegInfo
+
 /--  `getPolsName pol π` takes as input
 *  the `Expr`ession `pol`, assuming that it represents a `Polynomial`;
 *  the function `π : Name × Name → Name`, typically `π` equals `Prod.fst` for a goal of type
@@ -159,29 +308,15 @@ The only exception is when `pol` represents `↑(polFun _) : α → Polynomial _
 and `polFun` is not `monomial` or `C`.
 In this case, the output is data for error-reporting in `cDegCore`.
 -/
-def getPolsName (pol : Expr) (π : Name × Name → Name) : List Expr × Name :=
-match pol.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, f, g])           => ([f,g], π (``natDegree_add_le_of_le, ``degree_add_le_of_le))
-  | (``HSub.hSub, #[_, _, _, _, f, g])           => ([f,g], π (``natDegree_sub_le_of_le, ``degree_sub_le_of_le))
-  | (``HMul.hMul, #[_, _, _, _, f, g])           => ([f,g], π (``natDegree_mul_le_of_le, ``degree_mul_le_of_le))
-  | (``HPow.hPow, #[_, _, _, _, f, _n])          => ([f], π (``natDegree_pow_le_of_le, ``degree_pow_le_of_le))
-  | (``Neg.neg,   #[_, _, f])                    => ([f], π (``natDegree_neg_le_of_le, ``degree_neg_le_of_le))
-  | (``Polynomial.X, _)                          => ([], π (``natDegree_X_le, ``degree_X_le))
-  -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => ([], π (``natDegree_zero_le, ``degree_zero_le))
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => ([], π (``natDegree_one_le, ``degree_one_le))
-  | (``OfNat.ofNat, _)                           => ([], π (``natDegree_nat_cast_le, ``degree_nat_cast_le))
-  | (``Nat.cast, _)                              => ([], π (``natDegree_nat_cast_le, ``degree_nat_cast_le))
-  | (``NatCast.natCast, _)                       => ([], π (``natDegree_nat_cast_le, ``degree_nat_cast_le))
-  | (``Int.cast, _)                              => ([], π (``natDegree_int_cast_le, ``degree_int_cast_le))
-  | (``IntCast.intCast, _)                       => ([], π (``natDegree_int_cast_le, ``degree_int_cast_le))
-  -- deal with `monomial` and `C`
-  | (``FunLike.coe, #[_, _, _, _, polFun, _c]) => match polFun.getAppFnArgs with
-    | (``monomial, _) => ([], π (``natDegree_monomial_le, ``degree_monomial_le))
-    | (``C, _)        => ([], π (``natDegree_C_le, ``degree_C_le))
-    | _               => ([polFun], .anonymous)
-  -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
-  | _ => ([], π (``le_rfl, ``le_rfl))
+def getPolsName (pol : DegInfo) (π : Name × Name → Name) : List DegInfo × Name :=
+let lexp := match pol with
+  | .neg f    => [f]
+  | .add f g  => [f, g]
+  | .sub f g  => [f, g]
+  | .mul f g  => [f, g]
+  | .pow f    => [f]
+  | _         => []
+(lexp, π (dict pol))
 
 /-- `cDegCore (pol, mv) π` takes as input
 *  a pair of an `Expr`ession `pol` and an `MVarId` `mv`, where
@@ -201,15 +336,17 @@ Hopefully, the tactic should not really fail when the inputs are as specified.
 The optional `db` flag is for debugging: if `db = true`, then the tactic prints useful information.
 -/
 partial
-def cDegCore (polMV : Expr × MVarId) (π : Name × Name → Name) (db : Bool := false) :
+def cDegCore (polMV : DegInfo × MVarId) (π : Name × Name → Name) (db : Bool := false) :
     MetaM (List (Expr × MVarId)) := do
 let (pol, mv) := polMV
-let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM Meta.ppExpr
-if db then
-  if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
-  else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
+--let polEx := ← (pol.getAppFn :: pol.getAppArgs.toList).mapM Meta.ppExpr
+--if db then
+--  logInfo (expand pol)
+--  if pol.ctorName != "app" then logInfo m!"* pol.ctorName: {pol.ctorName}\n"
+--  else logInfo m!"* getAppFnArgs\n{polEx}\n* pol head app\n{pol.getAppFnArgs.1}"
 let (pols, na) := getPolsName pol π
-if na.isAnonymous then throwError m!"'compute_degree_le' is undefined for {← Meta.ppExpr pols[0]!}"
+--if na.isAnonymous then
+--  throwError m!"'compute_degree_le' is undefined for {← Meta.ppExpr pols[0]!.getErr?.get!}"
 let once := pols.zip (← mv.applyConst na)
 return (← once.mapM fun x => cDegCore x π db).join
 
@@ -248,7 +385,9 @@ elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) 
   -- * if the original goal is `degree f ≤ d`, then
   --   `le_goals = [⊢ degree f ≤ ?_,     ⊢ ?_ ≤ d,  ⊢ WithBot ℕ]`
   let le_goals := ← (← getMainGoal).applyConst ``le_trans
-  let nfle_pf := ← cDegCore (← instantiateMVars lhs, le_goals[0]!) π (db := debug.isSome)
+  let di := toDegInfo (← instantiateMVars lhs)
+  if debug.isSome then logInfo m!"{di}"
+  let nfle_pf := ← cDegCore (di, le_goals[0]!) π (db := debug.isSome)
   setGoals [le_goals[1]!]
   if debug.isSome then logInfo m!"Computed proof:\n{nfle_pf}"
   if str.isSome then evalTactic (← `(tactic| norm_num <;> try assumption))
