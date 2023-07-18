@@ -135,8 +135,8 @@ def toProfinite : ExtrDisc.{u} ⥤ Profinite.{u} where
   map f := f
 
 /-- The functor from extremally disconnected spaces to profinite spaces is full. -/
-instance : Full toProfinite := by
-  fconstructor; intro X Y f; exact f; simp
+instance : Full toProfinite where
+  preimage f := f
 
 /-- The functor from extremally disconnected spaces to profinite spaces is faithful. -/
 instance : Faithful toProfinite := by
