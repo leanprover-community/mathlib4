@@ -50,7 +50,7 @@ attribute [nolint docBlame] ExtrDisc.compHaus ExtrDisc.extrDisc
 
 namespace CompHaus
 
-/-- Projective implies ExtrDisc. -/
+/-- `Projective` implies `ExtrDisc`. -/
 @[simps!]
 def toExtrDisc (X : CompHaus.{u}) [Projective X] :
     ExtrDisc where
