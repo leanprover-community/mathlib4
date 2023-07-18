@@ -12,7 +12,7 @@ import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 
 /-!
-# Infinitely continuous "bump" functions
+# Infinitely smooth "bump" functions
 
 A smooth bump function is an infinitely smooth function `f : E → ℝ` supported on a ball
 that is equal to `1` on a ball of smaller radius.
