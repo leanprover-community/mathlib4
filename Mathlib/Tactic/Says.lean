@@ -3,12 +3,22 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
-import Lean.Elab.Command
-import Std.Tactic.TryThis
-import Std.Tactic.ShowTerm
 import Std.Data.String.Basic
 import Std.Tactic.GuardMsgs
-import Mathlib.Util.WhatsNew
+
+/-!
+# The `says` tactic combinator.
+
+If you write `X says`, where `X` is a tactic that produces a "Try this: Y" message,
+then you will get a message "Try this: X says Y".
+Once you've clicked to replace `X says` with `X says Y`,
+afterwards `X says Y` will only run `Y`.
+
+The typical usage case is:
+```
+simp? [X] says simp only [X, Y, Z]
+```
+-/
 
 open Lean Elab Tactic
 open Std.Tactic.TryThis
