@@ -71,7 +71,7 @@ theorem nnnorm_eq [NumberField K] (x : K) :
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
-  · obtain ⟨φ : K →+* ℂ⟩ := (inferInstance : Nonempty _)
+  · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
     exact (hr.trans_le (norm_nonneg _)).not_le
     exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
@@ -91,9 +91,9 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-      intro x ; rw [← norm_le_iff, mem_closedBall_zero_iff]
+      intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
-    ext ; constructor
+    ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
@@ -106,7 +106,7 @@ noncomputable def latticeBasis [NumberField K] :
     Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℂ ((K →+* ℂ) → ℂ) := by
   classical
   -- Let `B` be the canonical basis of `(K →+* ℂ) → ℂ`. We prove that the determinant of
-  -- the image by `canonicalEmbedding` of the integral basis of `K` is non-zero. This
+  -- the image by `canonicalEmbedding` of the integral basis of `K` is nonzero. This
   -- will imply the result.
     let B := Pi.basisFun ℂ (K →+* ℂ)
     let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
@@ -118,11 +118,11 @@ noncomputable def latticeBasis [NumberField K] :
         ((linearIndependent_equiv e.symm).mpr this.1) ?_
       rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_fintype_fun_eq_card,
         Embeddings.card]
-  -- In order to prove that the determinant is non-zero, we show that it is equal to the
+  -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
-    rw [show M = N.transpose by { ext : 2 ; rfl }]
+    rw [show M = N.transpose by { ext:2; rfl }]
     rw [Matrix.det_transpose, ← @pow_ne_zero_iff ℂ _ _ _ 2 (by norm_num)]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
@@ -140,10 +140,10 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp] ; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext ; exact mem_span_integralBasis K]
+    ext; exact mem_span_integralBasis K]
   rfl
 
 end NumberField.canonicalEmbedding
