@@ -26,11 +26,11 @@ Both hold for all (non-minimal) elements in a linear order.
 
 ## Main declarations
 
-* `sup_irred a`: Sup-irreducibility, `a` isn't minimal and `a = b ⊔ c → a = b ∨ a = c`
-* `inf_irred a`: Inf-irreducibility, `a` isn't maximal and `a = b ⊓ c → a = b ∨ a = c`
-* `sup_prime a`: Sup-primality, `a` isn't minimal and `a ≤ b ⊔ c → a ≤ b ∨ a ≤ c`
-* `inf_irred a`: Inf-primality, `a` isn't maximal and `a ≥ b ⊓ c → a ≥ b ∨ a ≥ c`
-* `exists_sup_irred_decomposition`/`exists_inf_irred_decomposition`: Decomposition into irreducibles
+* `SupIrred a`: Sup-irreducibility, `a` isn't minimal and `a = b ⊔ c → a = b ∨ a = c`
+* `InfIrred a`: Inf-irreducibility, `a` isn't maximal and `a = b ⊓ c → a = b ∨ a = c`
+* `SupPrime a`: Sup-primality, `a` isn't minimal and `a ≤ b ⊔ c → a ≤ b ∨ a ≤ c`
+* `InfIrred a`: Inf-primality, `a` isn't maximal and `a ≥ b ⊓ c → a ≥ b ∨ a ≥ c`
+* `exists_supIrred_decomposition`/`exists_infIrred_decomposition`: Decomposition into irreducibles
   in a well-founded semilattice.
 -/
 
