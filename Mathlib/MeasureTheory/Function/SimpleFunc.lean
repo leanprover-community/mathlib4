@@ -1118,7 +1118,7 @@ theorem le_sup_lintegral (f g : α →ₛ ℝ≥0∞) : f.lintegral μ ⊔ g.lin
 #align measure_theory.simple_func.le_sup_lintegral MeasureTheory.SimpleFunc.le_sup_lintegral
 
 /-- `SimpleFunc.lintegral` is monotone both in function and in measure. -/
-@[mono]
+@[mono, gcongr]
 theorem lintegral_mono {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) (hμν : μ ≤ ν) :
     f.lintegral μ ≤ g.lintegral ν :=
   calc
@@ -1127,6 +1127,18 @@ theorem lintegral_mono {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) (hμν : μ 
     _ = g.lintegral μ := by rw [sup_of_le_right hfg]
     _ ≤ g.lintegral ν :=
       Finset.sum_le_sum fun y _ => ENNReal.mul_left_mono <| hμν _ (g.measurableSet_preimage _)
+
+/-- `SimpleFunc.lintegral` is monotone both in function and in measure. -/
+@[mono, gcongr]
+theorem lintegral_mono_function {f g : α →ₛ ℝ≥0∞} (hfg : f ≤ g) :
+    f.lintegral μ ≤ g.lintegral μ :=
+  lintegral_mono hfg le_rfl
+
+/-- `SimpleFunc.lintegral` is monotone in measure. -/
+@[mono, gcongr]
+theorem lintegral_mono_measure {f : α →ₛ ℝ≥0∞} (hμν : μ ≤ ν) :
+    f.lintegral μ ≤ f.lintegral ν :=
+  lintegral_mono le_rfl hμν
 
 #align measure_theory.simple_func.lintegral_mono MeasureTheory.SimpleFunc.lintegral_mono
 

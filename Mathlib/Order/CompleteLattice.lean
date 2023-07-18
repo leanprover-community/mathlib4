@@ -837,10 +837,12 @@ theorem iInf_le_iInf₂ (κ : ι → Sort _) (f : ι → α) : ⨅ i, f i ≤ �
   le_iInf₂ fun i _ => iInf_le f i
 #align infi_le_infi₂ iInf_le_iInf₂
 
+@[gcongr]
 theorem iSup_mono (h : ∀ i, f i ≤ g i) : iSup f ≤ iSup g :=
   iSup_le fun i => le_iSup_of_le i <| h i
 #align supr_mono iSup_mono
 
+@[gcongr]
 theorem iInf_mono (h : ∀ i, f i ≤ g i) : iInf f ≤ iInf g :=
   le_iInf fun i => iInf_le_of_le i <| h i
 #align infi_mono iInf_mono

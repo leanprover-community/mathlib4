@@ -832,15 +832,18 @@ theorem union_subset_iff {s t u : Set α} : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ 
   (forall_congr' fun _ => or_imp).trans forall_and
 #align set.union_subset_iff Set.union_subset_iff
 
-@[gcongr] theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
+@[gcongr]
+theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
     s₁ ∪ t₁ ⊆ s₂ ∪ t₂ := fun _ => Or.imp (@h₁ _) (@h₂ _)
 #align set.union_subset_union Set.union_subset_union
 
-@[gcongr] theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
+@[gcongr]
+theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
 #align set.union_subset_union_left Set.union_subset_union_left
 
-@[gcongr] theorem union_subset_union_right (s) {t₁ t₂ : Set α} (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
+@[gcongr]
+theorem union_subset_union_right (s) {t₁ t₂ : Set α} (h : t₁ ⊆ t₂) : s ∪ t₁ ⊆ s ∪ t₂ :=
   union_subset_union Subset.rfl h
 #align set.union_subset_union_right Set.union_subset_union_right
 
@@ -1009,15 +1012,18 @@ theorem univ_inter (a : Set α) : univ ∩ a = a :=
   top_inf_eq
 #align set.univ_inter Set.univ_inter
 
-@[gcongr] theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
+@[gcongr]
+theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
     s₁ ∩ s₂ ⊆ t₁ ∩ t₂ := fun _ => And.imp (@h₁ _) (@h₂ _)
 #align set.inter_subset_inter Set.inter_subset_inter
 
-@[gcongr] theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
+@[gcongr]
+theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter H Subset.rfl
 #align set.inter_subset_inter_left Set.inter_subset_inter_left
 
-@[gcongr] theorem inter_subset_inter_right {s t : Set α} (u : Set α) (H : s ⊆ t) : u ∩ s ⊆ u ∩ t :=
+@[gcongr]
+theorem inter_subset_inter_right {s t : Set α} (u : Set α) (H : s ⊆ t) : u ∩ s ⊆ u ∩ t :=
   inter_subset_inter Subset.rfl H
 #align set.inter_subset_inter_right Set.inter_subset_inter_right
 

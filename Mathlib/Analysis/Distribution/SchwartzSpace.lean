@@ -526,8 +526,6 @@ theorem schwartzSeminormFamily_apply_zero :
 
 variable {𝕜 E F}
 
-attribute [gcongr] Nat.choose_le_choose
-
 /-- A more convenient version of `le_sup_seminorm_apply`.
 
 The set `Finset.Iic m` is the set of all pairs `(k', n')` with `k' ≤ m.1` and `n' ≤ m.2`.

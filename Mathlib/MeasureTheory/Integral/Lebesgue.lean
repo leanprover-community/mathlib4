@@ -388,16 +388,16 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       refine' mt _ this
       intro h
       rw [h, MulZeroClass.mul_zero]
-    have : (rs.map c) x < ⨆ n : ℕ, f n x := by
-      refine' lt_of_lt_of_le (ENNReal.coe_lt_coe.2 _) (hsf x)
-      suffices : r * s x < 1 * s x
-      simpa
-      exact mul_lt_mul_of_pos_right ha (pos_iff_ne_zero.2 this)
+    have : (rs.map c) x < ⨆ n : ℕ, f n x
+    · calc (↑(r * s x) : ℝ≥0∞) < ↑(1 * s x) := ENNReal.coe_lt_coe.2 <| by gcongr
+        _ = s x := by simp
+        _ ≤ ⨆ n : ℕ, f n x := hsf x
     rcases lt_iSup_iff.1 this with ⟨i, hi⟩
     exact mem_iUnion.2 ⟨i, le_of_lt hi⟩
   have mono : ∀ r : ℝ≥0∞, Monotone fun n => rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a } := by
     intro r i j h
-    refine' inter_subset_inter (Subset.refl _) _
+    dsimp
+    gcongr
     intro x (hx : r ≤ f i x)
     exact le_trans hx (h_mono h x)
   have h_meas : ∀ n, MeasurableSet { a : α | (⇑(map c rs)) a ≤ f n a } := fun n =>
@@ -413,16 +413,18 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     _ = ⨆ n, ∑ r in (rs.map c).range, r * μ (rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a }) := by
       rw [ENNReal.finset_sum_iSup_nat]
       intro p i j h
-      exact mul_le_mul_left' (measure_mono <| mono p h) _
+      dsimp
+      gcongr _ * μ ?_
+      exact mono p h
     _ ≤ ⨆ n : ℕ, ((rs.map c).restrict { a | (rs.map c) a ≤ f n a }).lintegral μ := by
-      refine' iSup_mono fun n => _
+      gcongr with n
       rw [restrict_lintegral _ (h_meas n)]
       · refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
         congr 2 with a
         refine' and_congr_right _
         simp (config := { contextual := true })
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
-      refine' iSup_mono fun n => _
+      gcongr with n
       rw [← SimpleFunc.lintegral_eq_lintegral]
       refine' lintegral_mono fun a => _
       simp only [map_apply] at h_meas
@@ -497,14 +499,18 @@ theorem exists_pos_set_lintegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : �
     (map (↑) ψ).lintegral (μ.restrict s) ≤
         (map (↑) φ).lintegral (μ.restrict s) + (map (↑) (ψ - φ)).lintegral (μ.restrict s) := by
       rw [← SimpleFunc.add_lintegral, ← SimpleFunc.map_add @ENNReal.coe_add]
-      refine' SimpleFunc.lintegral_mono (fun x => _) le_rfl
+      gcongr
+      intro x
       simp only [add_tsub_eq_max, le_max_right, coe_map, Function.comp_apply, SimpleFunc.coe_add,
         SimpleFunc.coe_sub, Pi.add_apply, Pi.sub_apply, WithTop.coe_max (φ x) (ψ x), ENNReal.some]
     _ ≤ (map (↑) φ).lintegral (μ.restrict s) + ε₁ := by
-      refine' add_le_add le_rfl (le_trans _ (hφ _ hψ).le)
-      exact SimpleFunc.lintegral_mono le_rfl Measure.restrict_le_self
-    _ ≤ (SimpleFunc.const α (C : ℝ≥0∞)).lintegral (μ.restrict s) + ε₁ :=
-      (add_le_add (SimpleFunc.lintegral_mono (fun x => by exact coe_le_coe.2 (hC x)) le_rfl) le_rfl)
+      gcongr
+      refine' le_trans _ (hφ _ hψ).le
+      gcongr
+      exact Measure.restrict_le_self
+    _ ≤ (SimpleFunc.const α (C : ℝ≥0∞)).lintegral (μ.restrict s) + ε₁ := by
+      gcongr SimpleFunc.lintegral ?_ _ + _
+      exact fun x => by exact coe_le_coe.2 (hC x)
     _ = C * μ s + ε₁ := by
       simp only [← SimpleFunc.lintegral_eq_lintegral, coe_const, lintegral_const,
         Measure.restrict_apply, MeasurableSet.univ, univ_inter, Function.const]
@@ -821,7 +827,7 @@ theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hl
       by rw [hφ_eq]
     _ ≤ ∫⁻ x, φ x ∂μ + ε * μ { x | φ x + ε ≤ g x } := by
       gcongr
-      exact measure_mono fun x => (add_le_add_right (hφ_le _) _).trans
+      exact fun x => (add_le_add_right (hφ_le _) _).trans
     _ = ∫⁻ x, φ x + indicator { x | φ x + ε ≤ g x } (fun _ => ε) x ∂μ := by
       rw [lintegral_add_left hφm, lintegral_indicator₀, set_lintegral_const]
       exact measurableSet_le (hφm.nullMeasurable.measurable'.add_const _) hg.nullMeasurable
