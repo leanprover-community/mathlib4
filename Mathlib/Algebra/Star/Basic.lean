@@ -178,9 +178,7 @@ theorem star_mul' [CommSemigroup R] [StarSemigroup R] (x y : R) : star (x * y) =
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
 def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
-  {
-    (InvolutiveStar.star_involutive.toPerm star).trans
-      opEquiv with
+  { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
     toFun := fun x => MulOpposite.op (star x)
     map_mul' := fun x y => by simp only [star_mul, op_mul] }
 #align star_mul_equiv starMulEquiv
@@ -189,9 +187,7 @@ def starMulEquiv [Semigroup R] [StarSemigroup R] : R ≃* Rᵐᵒᵖ :=
 /-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
 def starMulAut [CommSemigroup R] [StarSemigroup R] : MulAut R :=
-  {
-    InvolutiveStar.star_involutive.toPerm
-      star with
+  { InvolutiveStar.star_involutive.toPerm star with
     toFun := star
     map_mul' := star_mul' }
 #align star_mul_aut starMulAut
@@ -265,9 +261,7 @@ attribute [simp] star_add
 /-- `star` as an `AddEquiv` -/
 @[simps apply]
 def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
-  {
-    InvolutiveStar.star_involutive.toPerm
-      star with
+  { InvolutiveStar.star_involutive.toPerm star with
     toFun := star
     map_add' := star_add }
 #align star_add_equiv starAddEquiv
@@ -284,7 +278,7 @@ variable {R}
 
 @[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
-  starAddEquiv.map_eq_zero_iff
+  starAddEquiv.map_eq_zero_iff (M := R)
 #align star_eq_zero star_eq_zero
 
 theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
@@ -320,7 +314,8 @@ class StarRing (R : Type u) [NonUnitalSemiring R] extends StarSemigroup R where
 #align star_ring StarRing
 
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalSemiring R] [StarRing R] :
-    StarAddMonoid R where star_add := StarRing.star_add
+    StarAddMonoid R where
+  star_add := StarRing.star_add
 #align star_ring.to_star_add_monoid StarRing.toStarAddMonoid
 
 /-- `star` as a `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
@@ -378,7 +373,6 @@ def starRingEnd [CommSemiring R] [StarRing R] : R →+* R :=
 
 variable {R}
 
--- mathport name: star_ring_end
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
 
@@ -403,8 +397,7 @@ theorem starRingEnd_self_apply [CommSemiring R] [StarRing R] (x : R) :
 #align star_ring_end_self_apply starRingEnd_self_apply
 
 instance RingHom.involutiveStar {S : Type _} [NonAssocSemiring S] [CommSemiring R] [StarRing R] :
-    InvolutiveStar (S →+* R)
-    where
+    InvolutiveStar (S →+* R) where
   toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
   star_involutive := by
     intro
@@ -529,8 +522,7 @@ namespace Units
 
 variable [Monoid R] [StarSemigroup R]
 
-instance : StarSemigroup Rˣ
-    where
+instance : StarSemigroup Rˣ where
   star u :=
     { val := star u
       inv := star ↑u⁻¹
@@ -602,17 +594,17 @@ theorem op_star [Star R] (r : R) : op (star r) = star (op r) :=
   rfl
 #align mul_opposite.op_star MulOpposite.op_star
 
-instance [InvolutiveStar R] : InvolutiveStar Rᵐᵒᵖ
-    where star_involutive r := unop_injective (star_star r.unop)
+instance [InvolutiveStar R] : InvolutiveStar Rᵐᵒᵖ where
+  star_involutive r := unop_injective (star_star r.unop)
 
-instance [Monoid R] [StarSemigroup R] : StarSemigroup Rᵐᵒᵖ
-    where star_mul x y := unop_injective (star_mul y.unop x.unop)
+instance [Monoid R] [StarSemigroup R] : StarSemigroup Rᵐᵒᵖ where
+  star_mul x y := unop_injective (star_mul y.unop x.unop)
 
-instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ
-    where star_add x y := unop_injective (star_add x.unop y.unop)
+instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
+  star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ
-  where star_add x y := unop_injective (star_add x.unop y.unop)
+instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
+  star_add x y := unop_injective (star_add x.unop y.unop)
 
 end MulOpposite
 

@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
 
 ! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
+! leanprover-community/mathlib commit cd391184c85986113f8c00844cfe6dda1d34be3d
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -143,6 +143,21 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 #align equiv.prod_assoc_symm_apply Equiv.prodAssoc_symm_apply
 #align equiv.prod_assoc_apply Equiv.prodAssoc_apply
 
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm (α β γ δ : Type _) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
+  toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
+  invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
+  left_inv := fun ⟨⟨_a, _b⟩, ⟨_c, _d⟩⟩ => rfl
+  right_inv := fun ⟨⟨_a, _c⟩, ⟨_b, _d⟩⟩ => rfl
+#align equiv.prod_prod_prod_comm Equiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm (α β γ δ : Type _) :
+    (prodProdProdComm α β γ δ).symm = prodProdProdComm α γ β δ :=
+  rfl
+#align equiv.prod_prod_prod_comm_symm Equiv.prodProdProdComm_symm
+
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
 @[simps (config := { fullyApplied := false })]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
@@ -173,6 +188,11 @@ def punitProd (α) : PUnit × α ≃ α :=
 #align equiv.punit_prod Equiv.punitProd
 #align equiv.punit_prod_symm_apply Equiv.punitProd_symm_apply
 #align equiv.punit_prod_apply Equiv.punitProd_apply
+
+/-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
+@[simps]
+def sigmaPUnit (α) : (_ : α) × PUnit ≃ α :=
+  ⟨fun p => p.1, fun a => ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
@@ -213,6 +233,25 @@ theorem uniqueProd_symm_apply [Unique β] (x : α) :
     (uniqueProd α β).symm x = (default, x) :=
   rfl
 #align equiv.unique_prod_symm_apply Equiv.uniqueProd_symm_apply
+
+/-- Any family of `Unique` types is a right identity for dependent type product up to
+equivalence. -/
+def sigmaUnique (α) (β : α → Type _) [∀ a, Unique (β a)] : (a : α) × (β a) ≃ α :=
+  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
+
+@[simp]
+theorem coe_sigmaUnique {β : α → Type _} [∀ a, Unique (β a)] :
+    (⇑(sigmaUnique α β) : (a : α) × (β a) → α) = Sigma.fst :=
+  rfl
+
+theorem sigmaUnique_apply {β : α → Type _} [∀ a, Unique (β a)] (x : (a : α) × β a) :
+    sigmaUnique α β x = x.1 :=
+  rfl
+
+@[simp]
+theorem sigmaUnique_symm_apply {β : α → Type _} [∀ a, Unique (β a)] (x : α) :
+    (sigmaUnique α β).symm x = ⟨x, default⟩ :=
+  rfl
 
 /-- `Empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α) : α × Empty ≃ Empty :=
