@@ -148,7 +148,7 @@ namespace Ring
 
 open Classical
 
-variable {M₀ : Type u} [MonoidWithZero M₀]
+variable {M₀ : Type _} [MonoidWithZero M₀]
 
 /-- Introduce a binary function `divide` on monoids with zero `M₀`, which sends `x` and `y` to
 `x / y` if `y` is non-zero and divides `x`, and to `0` otherwise. This definition is somewhat
@@ -178,7 +178,7 @@ lemma zero_divide [NoZeroDivisors M₀] (y : M₀) : divide 0 y = 0 := by
   · rw [divide_dvd hy <| dvd_zero y]
     exact (eq_zero_or_eq_zero_of_mul_eq_zero (dvd_zero y).choose_spec.symm).resolve_left hy
 
-lemma one_divide {M₀ : Type u} [CommMonoidWithZero M₀] (y : M₀) : divide 1 y = inverse y := by
+lemma one_divide {M₀ : Type _} [CommMonoidWithZero M₀] (y : M₀) : divide 1 y = inverse y := by
   by_cases hy : y = 0
   · rw [hy, divide_zero, inverse_zero]
   · by_cases hy' : y ∣ 1
@@ -195,7 +195,7 @@ lemma mul_divide_cancel_left [IsLeftCancelMulZero M₀] {x y : M₀} (hx : x ≠
   rw [divide_dvd hx <| dvd_mul_right x y]
   exact mul_left_cancel₀ hx (dvd_mul_right x y).choose_spec.symm
 
-variable {M₀ : Type u} [CommMonoidWithZero M₀]
+variable {M₀ : Type _} [CommMonoidWithZero M₀]
 
 lemma divide_mul_cancel {x y : M₀} (hy : y ≠ 0) (hx : y ∣ x) : divide x y * y = x := by
   rw [mul_comm, mul_divide_cancel hy hx]
@@ -206,3 +206,8 @@ lemma mul_divide_cancel_right [IsRightCancelMulZero M₀] {x y : M₀} (hy : y �
   exact mul_right_cancel₀ hy <| mul_comm _ y ▸ (dvd_mul_left y x).choose_spec.symm
 
 end Ring
+
+lemma IsUnit.divide_eq_mul_inverse {M₀ : Type _} [Nontrivial M₀] [CommMonoidWithZero M₀]
+  [IsLeftCancelMul M₀] {x y : M₀} (hy : IsUnit y) : Ring.divide x y = x * Ring.inverse y := by
+  rw [Ring.divide_dvd hy.ne_zero hy.dvd, ← hy.mul_right_inj, ← hy.dvd.choose_spec, mul_comm,
+    Ring.inverse_mul_cancel_right _ _ hy]
