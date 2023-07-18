@@ -557,7 +557,7 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
       padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp
 
-theorem multiplicity_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
+theorem padicValNat_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     padicValNat p (choose n k) =
     ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
   PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos hkn) ▸
