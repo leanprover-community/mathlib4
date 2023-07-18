@@ -472,3 +472,53 @@ instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
 #align has_smooth_add_self hasSmoothAddSelf
 
 end
+
+section DivConst
+
+variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H] {E : Type _}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {G : Type _} [DivInvMonoid G] [TopologicalSpace G] [ChartedSpace H G] [SmoothMul I G]
+  {E' : Type _} [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {H' : Type _} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
+  {M : Type _} [TopologicalSpace M] [ChartedSpace H' M]
+
+variable {f : M → G} {s : Set M} {x : M} {n : ℕ∞} (c : G)
+
+@[to_additive]
+theorem ContMDiffWithinAt.div_const (hf : ContMDiffWithinAt I' I n f s x) :
+    ContMDiffWithinAt I' I n (fun x ↦ f x / c) s x := by
+  simpa only [div_eq_mul_inv] using hf.mul contMDiffWithinAt_const
+
+@[to_additive]
+nonrec theorem ContMDiffAt.div_const (hf : ContMDiffAt I' I n f x) :
+    ContMDiffAt I' I n (fun x ↦ f x / c) x :=
+  hf.div_const c
+
+@[to_additive]
+theorem ContMDiffOn.div_const (hf : ContMDiffOn I' I n f s) :
+    ContMDiffOn I' I n (fun x ↦ f x / c) s := fun x hx => (hf x hx).div_const c
+
+@[to_additive]
+theorem ContMDiff.div_const (hf : ContMDiff I' I n f) :
+    ContMDiff I' I n (fun x ↦ f x / c) := fun x => (hf x).div_const c
+
+@[to_additive]
+nonrec theorem SmoothWithinAt.div_const (hf : SmoothWithinAt I' I f s x) :
+  SmoothWithinAt I' I (fun x ↦ f x / c) s x :=
+  hf.div_const c
+
+@[to_additive]
+nonrec theorem SmoothAt.div_const (hf : SmoothAt I' I f x) :
+    SmoothAt I' I (fun x ↦ f x / c) x :=
+  hf.div_const c
+
+@[to_additive]
+nonrec theorem SmoothOn.div_const (hf : SmoothOn I' I f s) :
+    SmoothOn I' I (fun x ↦ f x / c) s :=
+  hf.div_const c
+
+@[to_additive]
+nonrec theorem Smooth.div_const (hf : Smooth I' I f) : Smooth I' I (fun x ↦ f x / c) :=
+  hf.div_const c
+
+end DivConst
