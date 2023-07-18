@@ -285,7 +285,7 @@ theorem natDegree_nat_cast (n : ℕ) : natDegree (n : R[X]) = 0 := by
   simp only [← C_eq_nat_cast, natDegree_C]
 #align polynomial.nat_degree_nat_cast Polynomial.natDegree_nat_cast
 
-theorem degree_nat_cast_le (n : Nat) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+theorem degree_nat_cast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
@@ -539,7 +539,7 @@ theorem coeff_mul_X_sub_C {p : R[X]} {r : R} {a : ℕ} :
 theorem degree_neg (p : R[X]) : degree (-p) = degree p := by unfold degree; rw [support_neg]
 #align polynomial.degree_neg Polynomial.degree_neg
 
-theorem degree_neg_le_of_le {a : WithBot Nat} {p : R[X]} (hp : degree p ≤ a) : degree (- p) ≤ a :=
+theorem degree_neg_le_of_le {a : WithBot ℕ} {p : R[X]} (hp : degree p ≤ a) : degree (- p) ≤ a :=
 p.degree_neg.le.trans ‹_›
 
 @[simp]
@@ -653,7 +653,7 @@ theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) 
   (degree_add_le p q).trans <| max_le hp hq
 #align polynomial.degree_add_le_of_degree_le Polynomial.degree_add_le_of_degree_le
 
-theorem degree_add_le_of_le {a b : WithBot Nat} (hp : degree p ≤ a) (hq : degree q ≤ b) :
+theorem degree_add_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p + q) ≤ max a b :=
 (p.degree_add_le q).trans <| max_le_max ‹_› ‹_›
 
@@ -800,7 +800,7 @@ theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q :=
       exact add_le_add (le_degree_of_ne_zero ha) (le_degree_of_ne_zero hb)
 #align polynomial.degree_mul_le Polynomial.degree_mul_le
 
-theorem degree_mul_le_of_le {a b : WithBot Nat} (hp : degree p ≤ a) (hq : degree q ≤ b) :
+theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p * q) ≤ a + b :=
 (p.degree_mul_le _).trans <| add_le_add ‹_› ‹_›
 
@@ -813,7 +813,7 @@ theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree 
       _ ≤ _ := by rw [succ_nsmul]; exact add_le_add le_rfl (degree_pow_le _ _)
 #align polynomial.degree_pow_le Polynomial.degree_pow_le
 
-theorem degree_pow_le_of_le {a : WithBot Nat} (b : Nat) (hp : degree p ≤ a) :
+theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
     degree (p ^ b) ≤ b * a := by
   apply (degree_pow_le _ _).trans
   rw [nsmul_eq_mul]
@@ -1078,7 +1078,7 @@ theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natD
     exact add_le_add_left hi _
 #align polynomial.nat_degree_pow_le Polynomial.natDegree_pow_le
 
-theorem natDegree_pow_le_of_le (n : Nat) (hp : natDegree p ≤ m) :
+theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
     natDegree (p ^ n) ≤ n * m :=
 natDegree_pow_le.trans (Nat.mul_le_mul rfl.le ‹_›)
 
@@ -1336,7 +1336,7 @@ theorem degree_sub_le (p q : R[X]) : degree (p - q) ≤ max (degree p) (degree q
   simpa only [degree_neg q] using degree_add_le p (-q)
 #align polynomial.degree_sub_le Polynomial.degree_sub_le
 
-theorem degree_sub_le_of_le {a b : WithBot Nat} (hp : degree p ≤ a) (hq : degree q ≤ b) :
+theorem degree_sub_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p - q) ≤ max a b :=
 (p.degree_sub_le q).trans <| max_le_max ‹_› ‹_›
 
