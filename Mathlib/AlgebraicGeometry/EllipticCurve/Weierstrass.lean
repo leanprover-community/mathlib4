@@ -195,27 +195,39 @@ u^2s & u^3 & t \cr
 \end{pmatrix}$. -/
 @[ext]
 structure VariableChange (R : Type u) [CommRing R] where
-  (u : Rˣ) (r s t : R)
+  (u : Rˣ)
+  (r s t : R)
 
 namespace VariableChange
 
-section Group
+/-- The `u` coefficient of an admissible linear change of variables, which must be a unit. -/
+add_decl_doc u
 
-variable {R : Type u} [CommRing R]
+/-- The `r` coefficient of an admissible linear change of variables. -/
+add_decl_doc r
 
-def one : VariableChange R where
-  u := 1
-  r := 0
-  s := 0
-  t := 0
+/-- The `s` coefficient of an admissible linear change of variables. -/
+add_decl_doc s
 
-def mul (C C' : VariableChange R) : VariableChange R where
+/-- The `t` coefficient of an admissible linear change of variables. -/
+add_decl_doc t
+
+variable (C C' C'' : VariableChange R)
+
+/-- The identity linear change of variables. As a matrix, it is just identity matrix. -/
+def id : VariableChange R :=
+  ⟨1, 0, 0, 0⟩
+
+/-- The composition of two linear change of variables. As matrices, it is just matrix
+multiplcation. -/
+def comp : VariableChange R where
   u := C.u * C'.u
   r := C.r * ↑C'.u ^ 2 + C'.r
   s := ↑C'.u * C.s + C'.s
   t := C.t * ↑C'.u ^ 3 + C.r * C'.s * ↑C'.u ^ 2 + C'.t
 
-def inv (C : VariableChange R) : VariableChange R where
+/-- The inverse of a linear change of variables. As a matrix, it is just matrix inverse. -/
+def inv : VariableChange R where
   u := C.u⁻¹
   r := -C.r * ↑C.u⁻¹ ^ 2
   s := -C.s * ↑C.u⁻¹
@@ -241,15 +253,13 @@ lemma comp_assoc (C C' C'' : VariableChange R) : comp (comp C C') C'' = comp C (
   ext <;> simp only [comp, Units.val_mul] <;> ring1
 
 instance instGroupVariableChange : Group (VariableChange R) where
-  one := one
+  one := id
   inv := inv
-  mul := mul
-  one_mul := one_mul
-  mul_one := mul_one
-  mul_left_inv := mul_left_inv
-  mul_assoc := mul_assoc
-
-end Group
+  mul := comp
+  one_mul := id_comp
+  mul_one := comp_id
+  mul_left_inv := comp_left_inv
+  mul_assoc := comp_assoc
 
 end VariableChange
 
