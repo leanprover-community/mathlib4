@@ -56,8 +56,13 @@ lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
   convert hf
   rw [cocompact_eq_cofinite X]
 
+lemma IsClosed.tendsto_coe_cofinite_of_discreteTopology
+    {s : Set X} (hs : IsClosed s) (_hs' : DiscreteTopology s) :
+    Tendsto ((↑) : s → X) cofinite (cocompact _) :=
+  tendsto_cofinite_cocompact_of_discrete hs.closedEmbedding_subtype_val.tendsto_cocompact
+
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [LocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) ↔ DiscreteTopology s :=
   ⟨continuous_subtype_val.discrete_of_tendsto_cofinite_cocompact,
-   fun _ ↦ tendsto_cofinite_cocompact_of_discrete hs.closedEmbedding_subtype_val.tendsto_cocompact⟩
+   fun _ ↦ hs.tendsto_coe_cofinite_of_discreteTopology inferInstance⟩
