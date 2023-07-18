@@ -989,16 +989,15 @@ lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
 /-- When $2$ is invertible, $Y^2 = X^3 + X$ is an elliptic curve.
 It is of $j$-invariant $1728$ (see `EllipticCurve.ofJ1728_j`). -/
 def ofJ1728 [Invertible (2 : R)] : EllipticCurve R :=
-  ⟨WeierstrassCurve.ofJ1728 R,
-    ⟨-64, -⅟2 ^ 6,
-      by rw [neg_mul_neg, show (64 : R) = 2 ^ 6 by norm_num1,
-        pow_mul_pow_eq_one 6 <| mul_invOf_self 2],
-      by rw [neg_mul_neg, show (64 : R) = 2 ^ 6 by norm_num1,
-        pow_mul_pow_eq_one 6 <| invOf_mul_self 2]⟩,
-    by rw [WeierstrassCurve.ofJ1728_Δ R]⟩
+  have := invertibleNeg (2 ^ 6 : R)
+  ⟨WeierstrassCurve.ofJ1728 R, unitOfInvertible (-2 ^ 6 : R),
+    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
   field_simp [j, ofJ1728, WeierstrassCurve.ofJ1728_c₄]
+  have := invertibleNeg (2 ^ 6 : R)
+  have := unitOfInvertible_val (-2 ^ 6 : R)
+  rw [unitOfInvertible_val (-2 ^ 6 : R)] -- strange, rw [this] does not work
   ring1
 
 variable {R}
@@ -1007,16 +1006,15 @@ variable {R}
 $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$ is an elliptic curve.
 It is of $j$-invariant $j$ (see `EllipticCurve.ofJ'_j`). -/
 def ofJ' (j : R) [Invertible j] [Invertible (j - 1728)] : EllipticCurve R :=
-  ⟨WeierstrassCurve.ofJ j,
-    ⟨j ^ 2 * (j - 1728) ^ 9, ⅟j ^ 2 * ⅟(j - 1728) ^ 9,
-      by rw [← mul_assoc, mul_assoc (j ^ 2), mul_comm (_ ^ 9), ← mul_assoc, mul_assoc,
-        pow_mul_pow_eq_one 2 (mul_invOf_self _), pow_mul_pow_eq_one 9 (mul_invOf_self _), mul_one],
-      by rw [← mul_assoc, mul_assoc (⅟j ^ 2), mul_comm (_ ^ 9), ← mul_assoc, mul_assoc,
-        pow_mul_pow_eq_one 2 (invOf_mul_self _), pow_mul_pow_eq_one 9 (invOf_mul_self _), mul_one]⟩,
-    by rw [WeierstrassCurve.ofJ_Δ j]⟩
+  have := invertibleMul (j ^ 2) ((j - 1728) ^ 9)
+  ⟨WeierstrassCurve.ofJ j, unitOfInvertible <| j ^ 2 * (j - 1728) ^ 9,
+    (WeierstrassCurve.ofJ_Δ j).symm⟩
 
 lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := by
   field_simp [EllipticCurve.j, ofJ', WeierstrassCurve.ofJ_c₄]
+  have := invertibleMul (j ^ 2) ((j - 1728) ^ 9)
+  have := unitOfInvertible_val <| j ^ 2 * (j - 1728) ^ 9
+  rw [unitOfInvertible_val <| j ^ 2 * (j - 1728) ^ 9]
   ring1
 
 variable {F : Type u} [Field F] (j : F)
