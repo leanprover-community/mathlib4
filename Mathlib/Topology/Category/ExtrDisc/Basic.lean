@@ -102,11 +102,7 @@ instance : Full toCompHaus where
 
 
 /-- The forgetful functor `ExtrDisc ⥤ CompHaus` is faithful. -/
-instance : Faithful toCompHaus where
-  map_injective := by
-    intro X Y a b h
-    simp only [inducedFunctor_obj, inducedFunctor_map] at h
-    exact h
+instance : Faithful toCompHaus := {}
 
 /-- Extremally disconnected spaces are a concrete category. -/
 instance : ConcreteCategory ExtrDisc where
