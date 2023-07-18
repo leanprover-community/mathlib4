@@ -450,6 +450,12 @@ theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {
   by simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
 #align filter.tendsto_prod_iff Filter.tendsto_prod_iff
 
+theorem le_prod {f : Filter (α × β)} {g : Filter α} {g' : Filter β} :
+    (f ≤ g ×ˢ g') ↔ Tendsto Prod.fst f g ∧ Tendsto Prod.snd f g' := by
+  dsimp only [SProd.sprod]
+  unfold Filter.prod
+  simp only [le_inf_iff, ← map_le_iff_le_comap, Tendsto]
+
 theorem tendsto_prod_iff' {f : Filter α} {g : Filter β} {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
   dsimp only [SProd.sprod]
