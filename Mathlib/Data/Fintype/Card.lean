@@ -2,21 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-<<<<<<< HEAD
-=======
-
-! This file was ported from Lean 3 source module data.fintype.card
-! leanprover-community/mathlib commit bf2428c9486c407ca38b5b3fb10b87dad0bc99fa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
->>>>>>> origin/master
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Tactic.Positivity
 
-#align_import data.fintype.card from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
+#align_import data.fintype.card from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
 /-!
 # Cardinalities of finite types
