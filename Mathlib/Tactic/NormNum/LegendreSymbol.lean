@@ -411,11 +411,11 @@ open Lean Elab Tactic Qq Mathlib.Meta.NormNum
 
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols. -/
 @[norm_num jacobiSym _ _]
-def evalJacobiSym : NormNumExt where
-  eval {u α} (e : Q(ℤ)) : MetaM (Result e) := do
+def evalJacobiSym : NormNumExt where eval {u α} e := do
     let .app (.app _ (a : Q(ℤ))) (b : Q(ℕ)) ← Meta.whnfR e | failure
     let ⟨ea, pa⟩ ← deriveInt a _
     let ⟨eb, pb⟩ ← deriveNat b _
+    haveI' : u =QL 0 := ⟨⟩ haveI' : $α =Q ℤ := ⟨⟩
     have ⟨er, pr⟩ := proveJacobiSym ea eb
     haveI' : $e =Q jacobiSym $a $b := ⟨⟩
     return .isInt _ er er.intLit! q(isInt_jacobiSym $pa $pb $pr)
@@ -423,23 +423,23 @@ def evalJacobiSym : NormNumExt where
 
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols on natural numbers. -/
 @[norm_num jacobiSymNat _ _]
-def evalJacobiSymNat : NormNumExt where
-  eval {u α} (e : Q(ℤ)) : MetaM (Result e) := do
+def evalJacobiSymNat : NormNumExt where eval {u α} e := do
     let .app (.app _ (a : Q(ℕ))) (b : Q(ℕ)) ← Meta.whnfR e | failure
     let ⟨ea, pa⟩ ← deriveNat a _
     let ⟨eb, pb⟩ ← deriveNat b _
+    haveI' : u =QL 0 := ⟨⟩ haveI' : $α =Q ℤ := ⟨⟩
     have ⟨er, pr⟩ := proveJacobiSymNat ea eb
     haveI' : $e =Q jacobiSymNat $a $b := ⟨⟩
     return .isInt _ er er.intLit!  q(isInt_jacobiSymNat $pa $pb $pr)
 
 /-- This is the `norm_num` plug-in that evaluates Legendre symbols. -/
 @[norm_num legendreSym _ _]
-def evalLegendreSym : NormNumExt where
-  eval {u α} (e : Q(ℤ)) : MetaM (Result e) := do
+def evalLegendreSym : NormNumExt where eval {u α} e := do
     let .app (.app (.app _ (p : Q(ℕ))) (fp : Q(Fact (Nat.Prime $p)))) (a : Q(ℤ)) ← Meta.whnfR e |
       failure
     let ⟨ea, pa⟩ ← deriveInt a _
     let ⟨ep, pp⟩ ← deriveNat p _
+    haveI' : u =QL 0 := ⟨⟩ haveI' : $α =Q ℤ := ⟨⟩
     have ⟨er, pr⟩ := proveJacobiSym ea ep
     haveI' : $e =Q legendreSym $p $a := ⟨⟩
     return .isInt _ er er.intLit!

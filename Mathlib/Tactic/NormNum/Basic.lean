@@ -60,9 +60,9 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 
 /-- The `norm_num` extension which identifies the constructor application `Int.ofNat n` such that
 `norm_num` successfully recognizes `n`, returning `n`. -/
-@[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where
-  eval {u α} (e : Q(ℤ)) : MetaM (Result e) := do
+@[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.ofNat _) (n : Q(ℕ)) ← whnfR e | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Int := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
@@ -761,10 +761,11 @@ to rat casts if the scientific notation is inherited from the one for rationals.
 
 /-- The `norm_num` extension which identifies expressions of the form `¬a`,
 such that `norm_num` successfully recognises `a`. -/
-@[norm_num ¬_] def evalNot : NormNumExt where eval {u α} (e : Q(Prop)) : MetaM (Result q($e)) := do
+@[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
   let .app (.const ``Not _) (a : Q(Prop)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
   let .isBool b p ← derive q($a) | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
   haveI' : $e =Q ¬ $a := ⟨⟩
   if b then
     have p : Q($a) := p
@@ -879,7 +880,7 @@ theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb
 /-- The `norm_num` extension which identifies expressions of the form `a = b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ = _, Eq _ _] def evalEq : NormNumExt where eval {v β} e := do
-  have e : Q(Prop) := e
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
@@ -936,7 +937,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ ≤ _] def evalLE : NormNumExt where eval (e : Q(Prop)) := do
+@[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
@@ -990,7 +992,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ < _] def evalLT : NormNumExt where eval (e : Q(Prop)) := do
+@[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
@@ -1053,10 +1056,10 @@ theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
 such that `norm_num` successfully recognises `a`. -/
-@[norm_num Nat.succ _] def evalNatSucc :
-    NormNumExt where eval {u α} (e : Q(ℕ)) : MetaM (Result q($e)) := do
+@[norm_num Nat.succ _] def evalNatSucc : NormNumExt where eval {u α} e := do
   let .app f (a : Q(ℕ)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq f q(Nat.succ)
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.succ $a := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨na, pa⟩ ← deriveNat a sℕ
@@ -1071,10 +1074,11 @@ theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `Nat.sub a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) - _, Sub.sub (_ : ℕ) _, Nat.sub _ _] def evalNatSub :
-    NormNumExt where eval {u α} (e : Q(ℕ)) : MetaM (Result e) := do
+    NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   -- We trust that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := ℕ))
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a - $b := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
@@ -1089,8 +1093,9 @@ theorem isNat_natMod : {a b : ℕ} → {a' b' c : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `Nat.mod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) % _, Mod.mod (_ : ℕ) _, Nat.mod _ _] def evalNatMod :
-    NormNumExt where eval {u α} (e : Q(ℕ)) : MetaM (Result q($e)) := do
+    NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a % $b := ⟨⟩
   -- We trust that the default instance for `HMod` is `Nat.mod` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℕ))
@@ -1107,8 +1112,9 @@ theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
 /-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) / _, Div.div (_ : ℕ) _, Nat.div _ _] def evalNatDiv :
-    NormNumExt where eval {u α} (e : Q(ℕ)) : MetaM (Result q($e)) := do
+    NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q $a / $b := ⟨⟩
   -- We trust that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℕ))
