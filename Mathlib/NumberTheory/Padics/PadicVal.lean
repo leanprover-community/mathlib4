@@ -549,7 +549,7 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) [hp : Fact p.Prime]:
       padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos n]
   exact Prime.multiplicity_factorial_mul hp.out
 
-/-- The `p`-adic valuation of `m` equals zero if it is between `n * k` and `n * (k + 1)` for
+/-- The `p`-adic valuation of `m` equals zero if it is between `p * k` and `p * (k + 1)` for
 some `k`. -/
 theorem padicValNat_eq_zero_of_mem_Ioo {m p k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
