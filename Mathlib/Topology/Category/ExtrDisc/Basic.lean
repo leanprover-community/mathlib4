@@ -99,7 +99,6 @@ def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 /-- The forgetful functor `ExtrDisc ⥤ CompHaus` is full. -/
 instance : Full toCompHaus where
   preimage := fun f => f
-  witness := fun f => by simp
 
 
 /-- The forgetful functor `ExtrDisc ⥤ CompHaus` is faithful. -/
