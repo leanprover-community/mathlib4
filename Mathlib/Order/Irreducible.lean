@@ -8,8 +8,8 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathbin.Data.Finset.Lattice
-import Mathbin.Data.Fintype.Card
+import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Irreducible and prime elements in an order
@@ -73,8 +73,7 @@ theorem IsMin.not_supPrime (ha : IsMin a) : ¬SupPrime a := fun h => h.1 ha
 #align is_min.not_sup_prime IsMin.not_supPrime
 
 @[simp]
-theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a :=
-  by
+theorem not_supIrred : ¬SupIrred a ↔ IsMin a ∨ ∃ b c, b ⊔ c = a ∧ b < a ∧ c < a := by
   rw [SupIrred, not_and_or]
   push_neg
   rw [exists₂_congr]
