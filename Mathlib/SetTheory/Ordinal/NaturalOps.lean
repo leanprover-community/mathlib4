@@ -743,11 +743,19 @@ theorem nmul_assoc : ∀ a b c, a ⨳ b ⨳ c = a ⨳ (b ⨳ c)
     apply le_antisymm
     · rw [nmul_le_iff₃]
       intro a' ha b' hb c' hc
-      repeat' rw [nmul_assoc]
+      -- Porting note: the next line was just
+      -- repeat' rw [nmul_assoc]
+      -- but we need to spell out the arguments for the termination checker.
+      rw [nmul_assoc a' b c, nmul_assoc a b' c, nmul_assoc a b c', nmul_assoc a' b' c',
+        nmul_assoc a' b' c, nmul_assoc a' b c', nmul_assoc a b' c']
       exact nmul_nadd_lt₃' ha hb hc
     · rw [nmul_le_iff₃']
       intro a' ha b' hb c' hc
-      repeat' rw [← nmul_assoc]
+      -- Porting note: the next line was just
+      -- repeat' rw [← nmul_assoc]
+      -- but we need to spell out the arguments for the termination checker.
+      rw [← nmul_assoc a' b c, ← nmul_assoc a b' c, ← nmul_assoc a b c', ← nmul_assoc a' b' c',
+        ← nmul_assoc a' b' c, ← nmul_assoc a' b c', ← nmul_assoc a b' c']
       exact nmul_nadd_lt₃ ha hb hc
 termination_by nmul_assoc a b c => (a, b, c)
 #align ordinal.nmul_assoc Ordinal.nmul_assoc
