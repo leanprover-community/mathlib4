@@ -188,7 +188,7 @@ In many cases the actual implementation is not important, so we don't mark the p
 
 See also `contDiff_homeomorphUnitBall` and `contDiffOn_homeomorphUnitBall_symm` for
 smoothness properties that hold when `E` is an inner-product space. -/
-@[simps (config := { attrs := [] })]
+@[simps (config := { isSimp := false })]
 noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E) 1 where
   toFun x :=
     ⟨(1 + ‖x‖ ^ 2).sqrt⁻¹ • x, by
