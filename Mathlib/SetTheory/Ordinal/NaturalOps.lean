@@ -708,7 +708,8 @@ theorem lt_nmul_iff₃ :
     simpa only [nadd_assoc]
   · rintro ⟨a', ha, b', hb, c', hc, h⟩
     have := h.trans_lt (nmul_nadd_lt₃ ha hb hc)
-    repeat' rwa [nadd_lt_nadd_iff_right] at this
+    repeat' rw [nadd_lt_nadd_iff_right] at this
+    assumption
 #align ordinal.lt_nmul_iff₃ Ordinal.lt_nmul_iff₃
 
 theorem nmul_le_iff₃ :
