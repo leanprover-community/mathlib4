@@ -17,8 +17,7 @@ Given a topological space `X` together with a subset `s ⊆ X`, there are two di
       tends to the cocompact filter along the cofinite filter on `s`).
 
 When `s` is closed, the two conditions are equivalent provided `X` is locally compact and T1,
-see `IsClosed.tendsto_coe_cofinite_iff`. In general however (i) and (ii) are different and it is
-(ii) that is most useful, see e.g., `Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite`.
+see `IsClosed.tendsto_coe_cofinite_iff`.
 
 ## Main definitions
 
