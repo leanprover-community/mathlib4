@@ -37,13 +37,12 @@ if `f` satsifies `P` and `P` is preserved on permutations of `f` when swapping t
 antitone values. -/
 theorem bubble_sort_induction' {n : ℕ} {α : Type _} [LinearOrder α] {f : Fin n → α}
     {P : (Fin n → α) → Prop} (hf : P f)
-    (h :
-      ∀ (σ : Equiv.Perm (Fin n)) (i j : Fin n),
-        i < j → (f ∘ σ) j < (f ∘ σ) i → P (f ∘ σ) → P (f ∘ σ ∘ Equiv.swap i j)) :
+    (h : ∀ (σ : Equiv.Perm (Fin n)) (i j : Fin n),
+      i < j → (f ∘ σ) j < (f ∘ σ) i → P (f ∘ σ) → P (f ∘ σ ∘ Equiv.swap i j)) :
     P (f ∘ sort f) := by
   letI := @Preorder.lift _ (Lex (Fin n → α)) _ fun σ : Equiv.Perm (Fin n) => toLex (f ∘ σ)
   refine'
-    @WellFounded.induction_bot' _ _ _ (@Finite.Preorder.wellFounded_lt (Equiv.Perm (Fin n)) _ _)
+    @WellFounded.induction_bot' _ _ _ (IsWellFounded.wf : WellFounded (· < ·))
       (Equiv.refl _) (sort f) P (fun σ => f ∘ σ) (fun σ hσ hfσ => _) hf
   obtain ⟨i, j, hij₁, hij₂⟩ := antitone_pair_of_not_sorted' hσ
   exact ⟨σ * Equiv.swap i j, Pi.lex_desc hij₁ hij₂, h σ i j hij₁ hij₂ hfσ⟩
