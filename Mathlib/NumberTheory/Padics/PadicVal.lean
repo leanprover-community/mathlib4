@@ -566,8 +566,8 @@ theorem padicValNat_factorial_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h :
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
 the largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
-theorem padicValNat_factorial_div {p : ℕ} (n : ℕ)  [hp : Fact p.Prime]:
-   padicValNat p n ! = padicValNat p (p * (n / p))! := by
+@[simp] theorem padicValNat_mul_div_factorial {p : ℕ} (n : ℕ) [hp : Fact p.Prime] :
+    padicValNat p (p * (n / p))! = padicValNat p n ! := by
   nth_rw 1 [← div_add_mod n p]
   exact padicValNat_factorial_add (n / p) <| mod_lt n <|Prime.pos hp.out
 
