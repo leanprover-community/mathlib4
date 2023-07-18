@@ -60,7 +60,8 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 
 /-- The `norm_num` extension which identifies the constructor application `Int.ofNat n` such that
 `norm_num` successfully recognizes `n`, returning `n`. -/
-@[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} (e : Q(ℤ)) : MetaM (Result e) := do
+@[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where
+  eval {u α} (e : Q(ℤ)) : MetaM (Result e) := do
   let .app (.const ``Int.ofNat _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let sℤ : Q(AddMonoidWithOne ℤ) := q(AddGroupWithOne.toAddMonoidWithOne)
