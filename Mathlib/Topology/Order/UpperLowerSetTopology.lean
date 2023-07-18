@@ -355,6 +355,11 @@ lemma Monotone_to_UpperTopology_Continuous [TopologicalSpace α]
   apply IsUpperSet.preimage _ hf
   apply UpperTopology.isUpperSet_of_isOpen hs
 
+lemma UpperSetLEUpper {t₁ : TopologicalSpace α} [@UpperSetTopology α t₁ _]
+    {t₂ : TopologicalSpace α} [@UpperTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
+  rw [@IsOpen_iff_IsUpperSet α _ t₁]
+  exact UpperTopology.isUpperSet_of_isOpen hs
+
 end maps
 
 end UpperSetTopology
@@ -441,6 +446,11 @@ lemma Monotone_to_LowerTopology_Continuous [TopologicalSpace α]
   rw [IsOpen_iff_IsLowerSet]
   apply IsLowerSet.preimage _ hf
   apply LowerTopology.isLowerSet_of_isOpen hs
+
+lemma LowerSetLELower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
+    {t₂ : TopologicalSpace α} [@LowerTopology α t₂ _] : t₁ ≤ t₂ := fun s hs => by
+  rw [@IsOpen_iff_IsLowerSet α _ t₁]
+  exact LowerTopology.isLowerSet_of_isOpen hs
 
 end maps
 
