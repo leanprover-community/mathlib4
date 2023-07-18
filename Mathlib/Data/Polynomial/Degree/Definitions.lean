@@ -815,13 +815,11 @@ theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree 
 
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :
     degree (p ^ b) ≤ b * a := by
-  apply (degree_pow_le _ _).trans
-  rw [nsmul_eq_mul]
   induction b with
-    | zero => simp [degree_one_le]
-    | succ n hn =>
-      rw [Nat.cast_succ, add_mul, add_mul, one_mul, one_mul]
-      exact (add_le_add_left hp _).trans (add_le_add_right hn _)
+  | zero => simp [degree_one_le]
+  | succ n hn =>
+      rw [Nat.cast_succ, add_mul, one_mul, pow_succ']
+      exact degree_mul_le_of_le hn hp
 
 @[simp]
 theorem leadingCoeff_monomial (a : R) (n : ℕ) : leadingCoeff (monomial n a) = a := by
