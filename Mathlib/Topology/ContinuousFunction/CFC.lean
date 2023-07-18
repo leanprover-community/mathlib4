@@ -1,8 +1,76 @@
+/-
+Copyright (c) 2023 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.MetricSpace.EMetricParacompact
+
+/-! # Continuous Functional Calculus
+
+This file develops an API for an abstract *continuous functional calculus*. A continuous functional
+calculus for an element `a : A` in a topological `R`-algebra is a continuous extension of the
+polynomial functional calculus (i.e., `Polynomial.aeval`) to continuous `R`-valued functions on
+`spectrum R a`. More precisely, it is a continuous star algebra homomorphism
+`cfc₁ : C(spectrum R a, R) →⋆ₐ[R] A` that sends `(X : R[X]).toContinuousMapOn (spectrum R a)` to
+`a`, (or, if you prefer, the equivalent `(ContinuousMap.id R).restrict (spectrum R a)` is mapped to
+`a`). This is the data contained in `CFCCoreClass` and in many cases (e.g., when `spectrum R a` is
+compact and `R` is `ℝ≥0`, `ℝ`, or `ℂ`), this is sufficient to uniquely determine the continuous
+functional calculus.
+
+However, there are other properties enjoyed by the usual continuous functional calculus (i.e., for
+normal elements in a C⋆-algebra), in particular, it is a closed embedding and the range of
+`f : C(spectrum R a, R)` coincides with the spectrum of `cfc₁ R a f`. By the Stone-Weierstrass
+theorem, when `R` is either `ℝ` or `ℂ` and `spectrum R a` is compact, the closed embedding condition
+is sufficient to establish an equivalence `C(spectrum R a, R) ≃⋆ₐ[R] elementalStarAlgebra R a`.
+The spectral mapping property is essential to establish the composition property (see `cfc₁_comp`)
+of the continuous functional calculus. We encode these additional conditions in `CFCClass`. The
+reason for the separation between `CFCCorecClass` and `CFCClass` is precisely to prove the
+composition property.
+
+We keep track of two homomorphisms `cfc₁ : C(spectrum R a, R) →⋆ₐ[R] A` and
+`cfc₂ : C(R, R) →⋆ₐ[R] A`, and the latter is just given by composing the former with the natural
+map `C(R, R) →⋆ₐ[R] C(spectrum R a, R)` given by precomposition with `Subtype.val`. We duplicate the
+API for both for a few reasons. The former map is injective and, in certain relevant cases, every
+element of `C(spectrum R a, R)` is a limit of polynomials by the Stone-Weierstrass theorem, both of
+which are particularly useful. On the other hand, the composition property is much easier to use
+for the latter (compare `cfc₁_comp` with `cfc₂_comp`, for example), and it avoids needing to
+continually write `f.restrict (spectrum R a)` for `f : C(R, R)`, since we will usually have
+continuous functions defined on the full type.
+
+
+
+## Main definitions
+
+* `CFCCoreClass`: a class for the (generally unique) continuous star algebra homomorphism from
+  `C(spectrum R a, R)` to `A` sending the restriction of the identity to `a`.
+* `CFCClass`: a stronger class than `CFCCoreClass` which further requires the homomorphism to be
+  a closed embedding such that the spectrum of the image of `f : C(spectrum R a, R)` under this map
+  is the range of `f`.
+* `cfc₁ R a : C(spectrum R a, R) →⋆ₐ[R] A`: the morphism from `CFCCoreClass`
+* `cfc₂ R a : C(R, R) →⋆ₐ[R] A`: this is `cfc₁` composed with the natural map
+  `C(R, R) →⋆ₐ[R] C(spectrum R a, R)` given by precomposition with `Subtype.val`.
+* `SpectrumRestricts a f`: this is a proposition stating that for `a : A` with `A` an `S`-algebra,
+  and where `S` is an `R`-algebra with `f : S → R`, that (a) `f ∘ algebraMap R S = id` and
+  (b) `(algebraMap R S ∘ f) x = x` for `x ∈ spectrum S a`.
+* `cfcℝ a : C(ℝ, ℝ) →ₗ[ℝ] selfAdjoint A`: this is just `cfc₂` upgraded to a map into the subtype
+  `selfAdjoint A` when `a : selfAdjoint A`. It is no longer multiplicative because `selfAdjoint A`
+  doesn't have any multiplicative structure (unless `A` is commutative).
+
+## Main theorems
+
+* `cfc₁_comp`, `cfc₁₂_comp`, `cfc₂_comp`, `selfAdjoint.cfc₂_comp`, `selfAdjoint.cfc₂_comp_coe_mk`,
+  `cfcℝ_comp`: various versions of the composition property of the continuous functional calculus.
+
+## Implementation details
+
+
+
+
+-/
 
 open scoped Polynomial
 
@@ -127,9 +195,9 @@ instance {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] 
         h₁.hom_map_X.trans h₂.hom_map_X.symm
 
 /-- The `star_alg_hom` underlying an instance of the continuous functional calculus. -/
-def cfc₁ (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R] [TopologicalSemiring R]
-    [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A] (a : A)
-    [CFCCoreClass R a] : C(spectrum R a, R) →⋆ₐ[R] A :=
+def cfc₁ (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+    [Algebra R A] (a : A) [CFCCoreClass R a] : C(spectrum R a, R) →⋆ₐ[R] A :=
   CFCCoreClass.toStarAlgHom
 #align cfc₁ cfc₁
 
@@ -457,29 +525,41 @@ theorem cfc₂_map_spectrum' {R A : Type _} [CommSemiring R] [StarRing R] [Topol
     exact ⟨⟨x, hx⟩, rfl⟩
 #align cfc₂_map_spectrum' cfc₂_map_spectrum'
 
-theorem cfc₂_comp {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+lemma cfc₁_comp {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
-    [Algebra R A] (a : A) [CFCClass R a] (f g : C(R, R)) [CFCCoreClass R (cfc₂ R a f)]
-    [Subsingleton (CFCCoreClass R (cfc₂ R a f))] : cfc₂ R a (g.comp f) = cfc₂ R (cfc₂ R a f) g := by
-  let f' : C(spectrum R a, spectrum R (cfc₂ R a f)) :=
-    ⟨fun r => ⟨f r, cfc₂_map_spectrum a f r.prop⟩,
-      ((map_continuous f).comp continuous_induced_dom).subtype_mk fun x =>
-        cfc₂_map_spectrum a f x.prop⟩
-  let cfc₃ : C(spectrum R (cfc₂ R a f), R) →⋆ₐ[R] A := (cfc₁ R a).comp (f'.compStarAlgHom' R R)
-  let this : CFCCoreClass R (cfc₂ R a f) :=
+    [Algebra R A] (a : A) [CFCClass R a] (f : C(spectrum R a, R)) [CFCCoreClass R (cfc₁ R a f)]
+    [Subsingleton (CFCCoreClass R (cfc₁ R a f))] (g : C(spectrum R (cfc₁ R a f), R))
+    (f' : C(spectrum R a, spectrum R (cfc₁ R a f))) (hff' : ∀ x, (f' x : R) = f x) :
+    cfc₁ R a (g.comp f') = cfc₁ R (cfc₁ R a f) g := by
+  let cfc₃ : C(spectrum R (cfc₁ R a f), R) →⋆ₐ[R] A := (cfc₁ R a).comp (f'.compStarAlgHom' R R)
+  let this : CFCCoreClass R (cfc₁ R a f) :=
     { toStarAlgHom := cfc₃
       hom_continuous := CFCClass.hom_closedEmbedding.continuous.comp f'.continuous_comp_left
       hom_map_X := by
         simp only [cfc₂, StarAlgHom.coe_comp, Function.comp_apply]
         congr 1
         ext x
-        simp only [toContinuousMapOnAlgHom_apply, ContinuousMap.compStarAlgHom'_apply,
-          ContinuousMap.comp_apply, ContinuousMap.coe_mk, toContinuousMapOn_apply,
-          Subtype.coe_mk, toContinuousMap_apply, eval_X, ContinuousMap.compStarAlgHom'_apply,
-          ContinuousMap.restrict_apply, ContinuousMap.coe_id, id.def] }
-  exact
-    FunLike.congr_fun ((CFCCoreClass.ext_iff _ _).mp (Subsingleton.elim this _))
-      (g.restrict (spectrum R (cfc₂ R a f)))
+        simp [hff' x] }
+  exact FunLike.congr_fun ((CFCCoreClass.ext_iff _ _).mp (Subsingleton.elim this _)) g
+
+theorem cfc₁₂_comp {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+    [Algebra R A] (a : A) [CFCClass R a] (f : C(spectrum R a, R)) [CFCCoreClass R (cfc₁ R a f)]
+    [Subsingleton (CFCCoreClass R (cfc₁ R a f))] (g : C(R, R)) :
+    cfc₁ R a (g.comp f) = cfc₂ R (cfc₁ R a f) g :=
+  let f' : C(spectrum R a, spectrum R (cfc₁ R a f)) :=
+    ⟨fun r => ⟨f r, cfc₁_map_spectrum R a f ▸ Set.mem_range_self r (f := f)⟩,
+      (map_continuous f).subtype_mk _⟩
+  cfc₁_comp a f (g.restrict (spectrum R (cfc₁ R a f))) f' (fun _ => rfl)
+
+theorem cfc₂_comp {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+    [Algebra R A] (a : A) [CFCClass R a] (f g : C(R, R)) [hf₁ : CFCCoreClass R (cfc₂ R a f)]
+    [hf₂ : Subsingleton (CFCCoreClass R (cfc₂ R a f))] :
+    cfc₂ R a (g.comp f) = cfc₂ R (cfc₂ R a f) g := by
+  have : CFCCoreClass R (cfc₁ R a (f.restrict (spectrum R a))) := hf₁
+  have : Subsingleton (CFCCoreClass R (cfc₁ R a (f.restrict (spectrum R a)))) := hf₂
+  convert cfc₁₂_comp a (f.restrict (spectrum R a)) g
 #align cfc₂_comp cfc₂_comp
 
 /-!
