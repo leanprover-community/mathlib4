@@ -9,7 +9,8 @@ Authors: Sébastien Gouëzel
 ! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Series
-import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Data.Set.Pointwise.Support
