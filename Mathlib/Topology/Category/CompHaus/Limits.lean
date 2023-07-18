@@ -219,6 +219,7 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
   intro x
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
+-- `elementwise` should work here, but doesn't
 
 end FiniteCoproducts
 
