@@ -142,17 +142,6 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
     exact hx.1
 #align compact_t2.projective.extremally_disconnected CompactT2.Projective.extremallyDisconnected
 
--- This section contains helper lemmas about the sigma-type `Σ i, π i`.
-section Sigma
-
-lemma sigma_mk_preimage_image' (h : i ≠ j) : Sigma.mk j ⁻¹' (Sigma.mk i '' U) = ∅ := by
-  change Sigma.mk j ⁻¹' {⟨i, u⟩ | u ∈ U} = ∅
-  simp [h]
-
-lemma sigma_mk_preimage_image_eq_self : Sigma.mk i ⁻¹' (Sigma.mk i '' U) = U := by
-  change Sigma.mk i ⁻¹' {⟨i, u⟩ | u ∈ U} = U
-  simp
-
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconneted spaces is extremally disconnected -/
 instance instExtremallyDisconnected
@@ -179,5 +168,3 @@ instance instExtremallyDisconnected
     · rw [sigma_mk_preimage_image' ij]
       apply isOpen_empty
   · continuity
-
-end Sigma
