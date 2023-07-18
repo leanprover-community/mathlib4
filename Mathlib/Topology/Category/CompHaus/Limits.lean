@@ -111,17 +111,17 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
 section Isos
 
 noncomputable
-def FromExplicitIso : CompHaus.pullback f g ≅ Limits.pullback f g :=
+def pullbackIsoPullback : CompHaus.pullback f g ≅ Limits.pullback f g :=
 Limits.IsLimit.conePointUniqueUpToIso (pullback.isLimit f g) (Limits.limit.isLimit _)
 
 theorem explicit_fst_eq :
-    CompHaus.pullback.fst f g = (FromExplicitIso f g).hom ≫ Limits.pullback.fst := by
-  dsimp [FromExplicitIso]
+    CompHaus.pullback.fst f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.fst := by
+  dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 theorem explicit_snd_eq :
-    CompHaus.pullback.snd f g = (FromExplicitIso f g).hom ≫ Limits.pullback.snd := by
-  dsimp [FromExplicitIso]
+    CompHaus.pullback.snd f g = (pullbackIsoPullback f g).hom ≫ Limits.pullback.snd := by
+  dsimp [pullbackIsoPullback]
   simp only [Limits.limit.conePointUniqueUpToIso_hom_comp, pullback.cone_pt, pullback.cone_π]
 
 end Isos
@@ -192,18 +192,18 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) wher
 section Iso
 
 noncomputable
-def FromFiniteCoproductIso : finiteCoproduct X ≅ ∐ X :=
+def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.colimit.isColimit _)
 
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
-    finiteCoproduct.ι X a = (Limits.Sigma.ι X a) ≫ (FromFiniteCoproductIso X).inv := by
-  dsimp [FromFiniteCoproductIso]
+    finiteCoproduct.ι X a = (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv := by
+  dsimp [coproductIsoCoproduct]
   simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
     finiteCoproduct.cocone_ι, Discrete.natTrans_app]
 
 noncomputable
-def ToFiniteCoproductHomeo : finiteCoproduct X ≃ₜ (∐ X : _) :=
-CompHaus.homeoOfIso (FromFiniteCoproductIso X)
+def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
+CompHaus.homeoOfIso (coproductIsoCoproduct X)
 
 end Iso
 
