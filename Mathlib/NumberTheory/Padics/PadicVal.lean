@@ -551,9 +551,9 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) [hp : Fact p.Prime]:
 
 /-- The `p`-adic valuation of `m` equals zero if it is between `n * k` and `n * (k + 1)` for
 some `k`. -/
-theorem padicValNat_eq_zero_between_consec_multiples {m p k : ℕ}
-    (h1 : p * k < m) (h2 : m < p * (k + 1)) : padicValNat p m = 0 :=
-  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples h1 h2
+theorem padicValNat_eq_zero_of_mem_Ioo {m p k : ℕ}
+    (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
+  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
 
 theorem padicValNat_factorial_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p):
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
