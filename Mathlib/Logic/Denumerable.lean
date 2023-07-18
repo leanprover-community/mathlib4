@@ -382,6 +382,10 @@ theorem nonempty_denumerable (α : Type _) [Countable α] [Infinite α] : Nonemp
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
 
+theorem nonempty_denumerable_iff {α : Type _} :
+    Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
+  ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
+
 instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
     Nonempty (α ≃ β) := by
   cases nonempty_denumerable α
