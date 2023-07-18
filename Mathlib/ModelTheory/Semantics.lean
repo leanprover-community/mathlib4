@@ -1093,6 +1093,82 @@ theorem card_le_of_model_distinctConstantsTheory (s : Set α) (M : Type w) [L[[�
 
 end Cardinality
 
+namespace Functions
+
+variable (op op' : L.Functions 2) (un : L.Functions 1) (c c' : L.Constants)
+
+@[simp]
+theorem realize_assoc : M ⊨ op.assoc ↔
+    ∀ x y z : M, funMap op ![x, funMap op ![y, z] ] =
+      funMap op ![funMap op ![x, y] , z] :=
+  forall_congr' fun x =>
+    forall_congr' fun y =>
+      forall_congr' fun z => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_comm : M ⊨ op.comm ↔
+    ∀ x y : M, funMap op ![x, y] = funMap op ![y, x] :=
+  forall_congr' fun x =>
+    forall_congr' fun y => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_leftId : M ⊨ op.leftId c ↔
+    ∀ x : M, funMap op ![↑c, x] = x :=
+  forall_congr' fun x => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_rightId : M ⊨ op.rightId c ↔
+    ∀ x : M, funMap op ![x, ↑c] = x :=
+  forall_congr' fun x => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_leftDistrib : M ⊨ op.leftDistrib op' ↔
+    ∀ x y z : M, funMap op ![x, funMap op' ![y, z] ] =
+      funMap op' ![funMap op ![x, y] , funMap op ![x, z] ] :=
+  forall_congr' fun x =>
+    forall_congr' fun y =>
+      forall_congr' fun z => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_rightDistrib : M ⊨ op.rightDistrib op' ↔
+    ∀ x y z : M, funMap op ![funMap op' ![x, y] , z] =
+      funMap op' ![funMap op ![x, z] , funMap op ![y, z] ] :=
+  forall_congr' fun x =>
+    forall_congr' fun y =>
+      forall_congr' fun z => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_leftInv : M ⊨ op.leftInv un c ↔
+    ∀ x : M, funMap op ![funMap un ![x], x] = ↑c :=
+  forall_congr' fun x => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_rightInv : M ⊨ op.rightInv un c ↔
+    ∀ x : M, funMap op ![x, funMap un ![x] ] = ↑c :=
+  forall_congr' fun x => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_leftNeZeroInv : M ⊨ op.leftNeZeroInv un c c' ↔
+    ∀ x : M, x ≠ ↑c → funMap op ![funMap un ![x], x] = ↑c' :=
+  forall_congr' fun x => by
+  simp [Fin.snoc]
+
+@[simp]
+theorem realize_rightNeZeroInv : M ⊨ op.rightNeZeroInv un c c' ↔
+    ∀ x : M, x ≠ ↑c → funMap op ![x, funMap un ![x] ] = ↑c' :=
+  forall_congr' fun x => by
+  simp [Fin.snoc]
+
+end Functions
+
 namespace ElementarilyEquivalent
 
 @[symm]

@@ -1185,7 +1185,7 @@ protected def leftDistrib : L.Sentence :=
 /-- `op.rightDistrib op'` is the `Sentence` saying that `op` distributes over `op'` on the right,
   i.e. `op (op' a b) c = op (op' a c) (op' b c)` -/
 protected def rightDistrib : L.Sentence :=
-  ∀' ∀' ∀' ((op'.apply₂ (op.apply₂ &0 &1) &2) ='
+  ∀' ∀' ∀' ((op.apply₂ (op'.apply₂ &0 &1) &2) ='
     (op'.apply₂ (op.apply₂ &0 &2) (op.apply₂ &1 &2)))
 
 /-- `op.leftInv un c` is the `Sentence` saying that `un` is a left inverse for `op`, with `c`
