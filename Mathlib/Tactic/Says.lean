@@ -25,6 +25,12 @@ open Std.Tactic.TryThis
 
 namespace Mathlib.Tactic.Says
 
+register_option says.verify : Bool :=
+  { defValue := false
+    group := "says"
+    descr := "For every appearance of the `X says Y` combinator," ++
+      " re-verify that running `X` produces `Try this: Y`." }
+
 /-- Run `evalTactic`, capturing any new messages.-/
 def evalTacticCapturingMessages (tac : TSyntax `tactic) : TacticM MessageLog := do
   let initMsgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
@@ -52,8 +58,10 @@ syntax (name := says) tactic " says" (tacticSeq)? : tactic
 
 elab_rules : tactic
   | `(tactic| $tac:tactic says%$tk $[$result:tacticSeq]?) => do
-  match result with
-  | none =>
+  let verify := says.verify.get (← getOptions)
+  match result, verify with
+  | some _, true
+  | none, _ =>
     let msgs ← evalTacticCapturingMessages tac
     let S ← match msgs.toList with
     | [] => throwError m!"Tactic `{tac}` did not produce any message."
@@ -65,9 +73,16 @@ elab_rules : tactic
     let stx ← match parseAsTacticSeq (← getEnv) S with
     | .ok stx => pure stx
     | .error msg => throwError m!"Failed to parse tactic output: {S}\n{msg}"
+    match result with
+    | some r =>
+        let stx' := (← Lean.PrettyPrinter.ppTactic ⟨stx⟩).pretty
+        let r' := (← Lean.PrettyPrinter.ppTactic ⟨r⟩).pretty
+        if stx' != r' then
+          throwError m!"Tactic `{tac}` produced `{stx'}`, but was expecting it to produce `{r'}`!"
+    | none =>
     let stx : TSyntax ``tacticSeq := ⟨stx⟩
     addSuggestion tk (← `(tactic| $tac says $stx)) (origSpan? := (← `(tactic| $tac says)))
-  | some result =>
+  | some result, false =>
     evalTactic result
 
 initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says

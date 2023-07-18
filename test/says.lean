@@ -35,3 +35,17 @@ error: Tactic output did not begin with 'Try this:': hi!
 #guard_msgs in
 example : true := by
   (run_tac do Lean.logInfo "hi!") says
+
+-- Check that with the default settings `says` does not reverify the right-hand-side.
+example (x y : List α) : (x ++ y).length = x.length + y.length := by
+  simp? says simp only []
+  simp
+
+set_option says.verify true
+
+/--
+error: Tactic `simp?` produced `simp only [List.length_append]`, but was expecting it to produce `simp only []`!
+-/
+#guard_msgs in
+example (x y : List α) : (x ++ y).length = x.length + y.length := by
+  simp? says simp only []
