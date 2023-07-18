@@ -555,7 +555,7 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m p k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
   padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
 
-theorem padicValNat_factorial_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p):
+theorem padicValNat_factorial_mul_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
   induction' n with n hn
   · rw [zero_eq, add_zero]
