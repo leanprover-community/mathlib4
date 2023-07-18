@@ -33,6 +33,8 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   try m.congrN! depth config patterns
   catch _ => return [m]
 
+namespace Mathlib.Tactic
+
 /--
 The `exact e` and `refine e` tactics require a term `e` whose type is
 definitionally equal to the goal. `convert e` is similar to `refine e`,
@@ -134,3 +136,5 @@ macro_rules
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+
+end Mathlib.Tactic
