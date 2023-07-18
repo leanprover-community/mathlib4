@@ -189,8 +189,6 @@ end Quantity
 
 section ModelsWithJ
 
-section
-
 variable (R)
 
 /-- The Weierstrass curve $Y^2 + Y = X^3$.
@@ -219,9 +217,7 @@ lemma ofJ1728_Δ : (ofJ1728 R).Δ = -64 := by
   simp only [ofJ1728, Δ, b₂, b₄, b₆, b₈]
   ring1
 
-end
-
-variable (j : R)
+variable {R} (j : R)
 
 /-- The Weierstrass curve $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$.
 It is of $j$-invariant $j$ if it is an elliptic curve. -/
@@ -977,8 +973,6 @@ lemma nonsingular [Nontrivial R] {x y : R} (h : E.equation x y) : E.nonsingular 
 
 section ModelsWithJ
 
-section
-
 variable (R)
 
 /-- When $3$ is invertible, $Y^2 + Y = X^3$ is an elliptic curve.
@@ -1011,7 +1005,7 @@ lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
   field_simp [j, ofJ1728, WeierstrassCurve.ofJ1728_c₄]
   ring1
 
-end
+variable {R}
 
 /-- When $j$ and $j - 1728$ are both invertible,
 $Y^2 + (j - 1728)XY = X^3 - 36(j - 1728)^3X - (j - 1728)^5$ is an elliptic curve.
