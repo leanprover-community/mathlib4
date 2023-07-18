@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.natural_ops
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
+! leanprover-community/mathlib commit 31b269b60935483943542d547a6dd83a66b37dc7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -616,8 +616,8 @@ theorem nmul_le_nmul_of_nonneg_right (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a ⨳ c
 
 theorem nmul_nadd : ∀ a b c, a ⨳ (b ♯ c) = a ⨳ b ♯ a ⨳ c
   | a, b, c => by
-    refine
-      le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_) (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
+    refine le_antisymm (nmul_le_iff.2 fun a' ha d hd => ?_)
+      (nadd_le_iff.2 ⟨fun d hd => ?_, fun d hd => ?_⟩)
     · -- Porting note: adding arguments to `nmul_nadd` for the termination checker.
       rw [nmul_nadd a' b c]
       rcases lt_nadd_iff.1 hd with (⟨b', hb, hd⟩ | ⟨c', hc, hd⟩)
