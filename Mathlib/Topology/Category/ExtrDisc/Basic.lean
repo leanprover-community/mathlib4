@@ -14,46 +14,45 @@ This file develops some of the basic theory of extremally disconnected sets.
 
 ## Overview
 
-This file defines the type `ExtrDisc` of all extremally (note: not "extremely"!)
-disconnected spaces, and gives it the structure of a large category.
+This file defines the type `Stonean` of all extremally (note: not "extremely"!)
+disconnected compact Hausdorff spaces, and gives it the structure of a large category.
 
-The Lean implementation: a term of type `ExtrDisc` is a pair, considering of
+The Lean implementation: a term of type `Stonean` is a pair, considering of
 a term of type `CompHaus` (i.e. a compact Hausdorff topological space) plus
 a proof that the space is extremally disconnected.
 This is equivalent to the assertion that the term is projective in `CompHaus`,
 in the sense of category theory (i.e., such that morphisms out of the object
 can be lifted along epimorphisms).
 
-This file defines the type of all extremally disconnected spaces, gives it the
+This file defines the type of all Stonean spaces, gives it the
 structure of a large category, and proves some basic observations about this
 category and various functors from it.
 
 ## Main definitions
 
-* `ExtrDisc` : the category of extremally disconnected spaces.
-* `ExtrDisc.toCompHaus` : the forgetful functor `ExtrDisc ⥤ CompHaus` from extremally disconnected
+* `Stonean` : the category of extremally disconnected compact Hausdorff spaces.
+* `Stonean.toCompHaus` : the forgetful functor `Stonean ⥤ CompHaus` from Stonean
   spaces to compact Hausdorff spaces
-* `ExtrDisc.toProfinite` : the functor from extremally disconnected spaces to profinite spaces.
+* `Stonean.toProfinite` : the functor from Stonean spaces to profinite spaces.
 
 -/
 universe u
 
 open CategoryTheory
 
-/-- `ExtrDisc` is the category of extremally disconnected spaces. -/
-structure ExtrDisc where
+/-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
+structure Stonean where
+  /-- The underlying compact Hausdorff space of a Stonean space. -/
   compHaus : CompHaus.{u}
+  /-- A Stonean space is extremally disconnected -/
   [extrDisc : ExtremallyDisconnected compHaus]
-
--- the fields of the structure don't need docstrings
-attribute [nolint docBlame] ExtrDisc.compHaus ExtrDisc.extrDisc
 
 namespace CompHaus
 
-/-- `Projective` implies `ExtrDisc`. -/
+/-- `Projective` implies `Stonean`. -/
 @[simps!]
-def toExtrDisc (X : CompHaus.{u}) [Projective X] :
-    ExtrDisc where
+def toStonean (X : CompHaus.{u}) [Projective X] :
+    Stonean where
   compHaus := X
   extrDisc := by
     apply CompactT2.Projective.extremallyDisconnected
@@ -78,73 +77,73 @@ def toExtrDisc (X : CompHaus.{u}) [Projective X] :
 
 end CompHaus
 
-namespace ExtrDisc
+namespace Stonean
 
-/-- Extremally disconnected spaces form a large category. -/
-instance : LargeCategory ExtrDisc.{u} :=
+/-- Stonean spaces form a large category. -/
+instance : LargeCategory Stonean.{u} :=
   show Category (InducedCategory CompHaus (·.compHaus)) from inferInstance
 
-/-- The (forgetful) functor from extremally disconnected spaces to compact Hausdorff spaces. -/
+/-- The (forgetful) functor from Stonean spaces to compact Hausdorff spaces. -/
 @[simps!]
-def toCompHaus : ExtrDisc.{u} ⥤ CompHaus.{u} :=
+def toCompHaus : Stonean.{u} ⥤ CompHaus.{u} :=
   inducedFunctor _
 
-/-- Construct a term of `ExtrDisc` from a type endowed with the structure of a
-compact, Hausdorff and totally disconnected topological space.
+/-- Construct a term of `Stonean` from a type endowed with the structure of a
+compact, Hausdorff and extremally disconnected topological space.
 -/
 def of (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
-    [ExtremallyDisconnected X] : ExtrDisc :=
+    [ExtremallyDisconnected X] : Stonean :=
   ⟨⟨⟨X, inferInstance⟩⟩⟩
 
-/-- The forgetful functor `ExtrDisc ⥤ CompHaus` is full. -/
+/-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
 instance : Full toCompHaus where
   preimage := fun f => f
 
 
-/-- The forgetful functor `ExtrDisc ⥤ CompHaus` is faithful. -/
+/-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
 instance : Faithful toCompHaus := {}
 
-/-- Extremally disconnected spaces are a concrete category. -/
-instance : ConcreteCategory ExtrDisc where
+/-- Stonean spaces are a concrete category. -/
+instance : ConcreteCategory Stonean where
   forget := toCompHaus ⋙ forget _
 
-instance : CoeSort ExtrDisc.{u} (Type u) := ConcreteCategory.hasCoeToSort _
-instance {X Y : ExtrDisc.{u}} : FunLike (X ⟶ Y) X (fun _ => Y) := ConcreteCategory.funLike
+instance : CoeSort Stonean.{u} (Type u) := ConcreteCategory.hasCoeToSort _
+instance {X Y : Stonean.{u}} : FunLike (X ⟶ Y) X (fun _ => Y) := ConcreteCategory.funLike
 
-/-- Extremally disconnected spaces are topological spaces. -/
-instance instTopologicalSpace (X : ExtrDisc.{u}) : TopologicalSpace X :=
+/-- Stonean spaces are topological spaces. -/
+instance instTopologicalSpace (X : Stonean.{u}) : TopologicalSpace X :=
   show TopologicalSpace X.compHaus from inferInstance
 
-/-- Extremally disconnected spaces are compact. -/
-instance (X : ExtrDisc.{u}) : CompactSpace X :=
+/-- Stonean spaces are compact. -/
+instance (X : Stonean.{u}) : CompactSpace X :=
   show CompactSpace X.compHaus from inferInstance
 
-/-- Extremally disconnected spaces are Hausdorff. -/
-instance (X : ExtrDisc.{u}) : T2Space X :=
+/-- Stonean spaces are Hausdorff. -/
+instance (X : Stonean.{u}) : T2Space X :=
   show T2Space X.compHaus from inferInstance
 
-instance (X : ExtrDisc.{u}) : ExtremallyDisconnected X :=
+instance (X : Stonean.{u}) : ExtremallyDisconnected X :=
   X.2
 
-/-- The functor from extremally disconnected spaces to profinite spaces. -/
+/-- The functor from Stonean spaces to profinite spaces. -/
 @[simps]
-def toProfinite : ExtrDisc.{u} ⥤ Profinite.{u} where
-  obj X := 
+def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
+  obj X :=
   { toCompHaus := X.compHaus,
     IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
-/-- The functor from extremally disconnected spaces to profinite spaces is full. -/
+/-- The functor from Stonean spaces to profinite spaces is full. -/
 instance : Full toProfinite where
   preimage f := f
 
-/-- The functor from extremally disconnected spaces to profinite spaces is faithful. -/
+/-- The functor from Stonean spaces to profinite spaces is faithful. -/
 instance : Faithful toProfinite := by
   fconstructor; intro X Y f g h; assumption
 
-/-- The functor from extremally disconnected spaces to compact Hausdorff spaces
+/-- The functor from Stonean spaces to compact Hausdorff spaces
     factors through profinite spaces. -/
-instance : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
+example : toProfinite ⋙ profiniteToCompHaus = toCompHaus :=
   rfl
 
-end ExtrDisc
+end Stonean
