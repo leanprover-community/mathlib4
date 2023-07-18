@@ -978,13 +978,9 @@ variable (R)
 /-- When $3$ is invertible, $Y^2 + Y = X^3$ is an elliptic curve.
 It is of $j$-invariant $0$ (see `EllipticCurve.ofJ0_j`). -/
 def ofJ0 [Invertible (3 : R)] : EllipticCurve R :=
-  ⟨WeierstrassCurve.ofJ0 R,
-    ⟨-27, -⅟3 ^ 3,
-      by rw [neg_mul_neg, show (27 : R) = 3 ^ 3 by norm_num1,
-        pow_mul_pow_eq_one 3 <| mul_invOf_self 3],
-      by rw [neg_mul_neg, show (27 : R) = 3 ^ 3 by norm_num1,
-        pow_mul_pow_eq_one 3 <| invOf_mul_self 3]⟩,
-    by rw [WeierstrassCurve.ofJ0_Δ R]⟩
+  have := invertibleNeg (3 ^ 3 : R)
+  ⟨WeierstrassCurve.ofJ0 R, unitOfInvertible (-3 ^ 3 : R),
+    by rw [unitOfInvertible_val, WeierstrassCurve.ofJ0_Δ R]; norm_num1⟩
 
 lemma ofJ0_j [Invertible (3 : R)] : (ofJ0 R).j = 0 := by
   simp only [j, ofJ0, WeierstrassCurve.ofJ0_c₄]
