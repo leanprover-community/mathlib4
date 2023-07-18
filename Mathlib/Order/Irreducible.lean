@@ -192,12 +192,12 @@ theorem InfPrime.inf_le (ha : InfPrime a) : b ⊓ c ≤ a ↔ b ≤ a ∨ c ≤ 
 
 variable [OrderTop α] {s : Finset ι} {f : ι → α}
 
-@[simp]
+-- @[simp] Porting note: simp can prove this.
 theorem not_infIrred_top : ¬InfIrred (⊤ : α) :=
   isMax_top.not_infIrred
 #align not_inf_irred_top not_infIrred_top
 
-@[simp]
+-- @[simp] Porting note: simp can prove this.
 theorem not_infPrime_top : ¬InfPrime (⊤ : α) :=
   isMax_top.not_infPrime
 #align not_inf_prime_top not_infPrime_top
