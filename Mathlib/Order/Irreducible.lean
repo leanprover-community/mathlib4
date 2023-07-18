@@ -333,12 +333,12 @@ section LinearOrder
 
 variable [LinearOrder α] {a : α}
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem supPrime_iff_not_isMin : SupPrime a ↔ ¬IsMin a :=
   and_iff_left <| by simp
 #align sup_prime_iff_not_is_min supPrime_iff_not_isMin
 
-@[simp]
+-- @[simp] Porting note: simp can prove this
 theorem infPrime_iff_not_isMax : InfPrime a ↔ ¬IsMax a :=
   and_iff_left <| by simp
 #align inf_prime_iff_not_is_max infPrime_iff_not_isMax
