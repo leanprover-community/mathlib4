@@ -326,6 +326,9 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 #align comm_group.torsion_eq_torsion_submonoid CommGroup.torsion_eq_torsion_submonoid
 #align add_comm_group.add_torsion_eq_add_torsion_submonoid AddCommGroup.add_torsion_eq_add_torsion_submonoid
 
+@[to_additive]
+ theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
+ 
 variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-primary component is the subgroup of elements with order prime-power of `p`. -/
@@ -441,4 +444,3 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
-
