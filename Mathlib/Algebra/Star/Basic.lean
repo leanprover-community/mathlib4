@@ -65,7 +65,7 @@ namespace StarMemClass
 
 variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
-nonrec instance star : Star s where
+instance instStar : Star s where
   star r := ⟨star (r : R), star_mem r.prop⟩
 
 end StarMemClass

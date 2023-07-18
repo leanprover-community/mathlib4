@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.Series
-import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.Data.Set.Pointwise.Support

@@ -436,6 +436,22 @@ theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (
   monotone_nat_of_le_succ (digits_len_le_digits_len_succ b) h
 #align nat.le_digits_len_le Nat.le_digits_len_le
 
+@[mono]
+theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
+  induction' L with _ _ hi
+  · rfl
+  · simp only [ofDigits, cast_id, add_le_add_iff_left]
+    exact Nat.mul_le_mul h hi
+
+theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
+  induction' n with n
+  · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
+  · induction' p with p
+    · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
+    · nth_rw 2 [← ofDigits_digits p.succ n.succ]
+      rw [← ofDigits_one <| digits p.succ n.succ]
+      exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
+
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
   rw [← List.dropLast_append_getLast hl]
