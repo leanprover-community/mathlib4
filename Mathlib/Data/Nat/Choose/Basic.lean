@@ -109,8 +109,8 @@ theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | 0, _, hk => by rw [Nat.eq_zero_of_le_zero hk]; decide
   | n + 1, 0, _ => by simp
   | n + 1, k + 1, hk => by
-    rw [choose_succ_succ];
-      exact add_pos_of_pos_of_nonneg (choose_pos (le_of_succ_le_succ hk)) (Nat.zero_le _)
+    rw [choose_succ_succ]
+    exact add_pos_of_pos_of_nonneg (choose_pos (le_of_succ_le_succ hk)) (Nat.zero_le _)
 #align nat.choose_pos Nat.choose_pos
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
@@ -132,13 +132,13 @@ theorem choose_mul_factorial_mul_factorial : ∀ {n k}, k ≤ n → choose n k *
   | n + 1, succ k, hk => by
     cases' lt_or_eq_of_le hk with hk₁ hk₁
     · have h : choose n k * k.succ ! * (n - k)! = (k + 1) * n ! := by
-        rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)];
-          simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
+        rw [← choose_mul_factorial_mul_factorial (le_of_succ_le_succ hk)]
+        simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
       have h₁ : (n - k)! = (n - k) * (n - k.succ)! := by
         rw [← succ_sub_succ, succ_sub (le_of_lt_succ hk₁), factorial_succ]
       have h₂ : choose n (succ k) * k.succ ! * ((n - k) * (n - k.succ)!) = (n - k) * n ! := by
-        rw [← choose_mul_factorial_mul_factorial (le_of_lt_succ hk₁)];
-          simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
+        rw [← choose_mul_factorial_mul_factorial (le_of_lt_succ hk₁)]
+        simp [factorial_succ, mul_comm, mul_left_comm, mul_assoc]
       have h₃ : k * n ! ≤ n * n ! := Nat.mul_le_mul_right _ (le_of_succ_le_succ hk)
       rw [choose_succ_succ, add_mul, add_mul, succ_sub_succ, h, h₁, h₂, add_mul, tsub_mul,
         factorial_succ, ← add_tsub_assoc_of_le h₃, add_assoc, ← add_mul, add_tsub_cancel_left,

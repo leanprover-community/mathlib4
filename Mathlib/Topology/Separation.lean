@@ -2079,9 +2079,9 @@ instance ConnectedComponents.t2 [T2Space α] [CompactSpace α] : T2Space (Connec
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set α) (V : Set (ConnectedComponents α)),
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
-    have h := by
-      refine isClosed_connectedComponent.isCompact.elim_finite_subfamily_closed ?_ _ h
-      exact fun Z => Z.2.1.2
+    have h :=
+      (isClosed_connectedComponent (α := α)).isCompact.elim_finite_subfamily_closed
+        _ (fun Z : { Z : Set α // IsClopen Z ∧ b ∈ Z } => Z.2.1.2) h
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
     set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (_ : i ∈ fin_a), i

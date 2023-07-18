@@ -49,14 +49,14 @@ abbrev Two :=
   WithZero Unit
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
-instance Two.LinearOrder : LinearOrder Two :=
+instance Two.instLinearOrder : LinearOrder Two :=
   inferInstance
 
-instance Two.AddCommMonoid : AddCommMonoid Two :=
+instance Two.instAddCommMonoid : AddCommMonoid Two :=
   inferInstance
 
 instance : LinearOrderedAddCommMonoid Two :=
-  { Two.LinearOrder, Two.AddCommMonoid with
+  { Two.instLinearOrder, Two.instAddCommMonoid with
     add_le_add_left := by
       delta Two WithZero; decide }
 section
@@ -107,7 +107,7 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
     of (grading R ·) 0 ⟨(zz.1, zz.1), rfl⟩ +
     of (grading R ·) 1 ⟨(0, zz.2 - zz.1), rfl⟩
   map_zero' := by
-    refine' Dfinsupp.ext (fun (i : Two) =>
+    refine' DFinsupp.ext (fun (i : Two) =>
         Option.casesOn i _ (fun (i_1 : Unit) => PUnit.casesOn i_1 _)) <;> rfl
   map_add' := by
     rintro ⟨a1, b1⟩ ⟨a2, b2⟩
