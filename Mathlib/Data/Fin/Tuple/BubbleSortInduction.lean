@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 
 ! This file was ported from Lean 3 source module data.fin.tuple.bubble_sort_induction
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
+! leanprover-community/mathlib commit bf2428c9486c407ca38b5b3fb10b87dad0bc99fa
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
