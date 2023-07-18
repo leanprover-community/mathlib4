@@ -294,7 +294,7 @@ section Centralizer
 
 variable (R) -- porting note: redundant binder annotation update
 
-/-- The centralizer, or commutant, of a *-closed set as star subalgebra. -/
+/-- The centralizer, or commutant, of the star-closure of a set as a star subalgebra. -/
 def centralizer (s : Set A) : StarSubalgebra R A where
   toSubalgebra := Subalgebra.centralizer R (s ∪ star s)
   star_mem' := Set.star_mem_centralizer
