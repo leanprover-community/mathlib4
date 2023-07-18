@@ -1152,6 +1152,8 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
       exact ⟨is, js⟩
 #align first_order.language.distinct_constants_theory_eq_Union FirstOrder.Language.distinctConstantsTheory_eq_iUnion
 
+end Cardinality
+
 namespace Functions
 
 variable (op op' : L.Functions 2) (un : L.Functions 1) (c c' : L.Constants)
@@ -1196,12 +1198,17 @@ protected def leftInv : L.Sentence :=
 protected def rightInv : L.Sentence :=
   ∀' ((op.apply₂ &0 (un.apply₁ &0)) =' c.term)
 
+/-- `op.leftNeZeroInv un zero one` is the sentence saying that
+`∀ x, x ≠ zero → op (un x) x = one` -/
 protected def leftNeZeroInv : L.Sentence :=
-  ∀' ()
+  ∀' (∼(&0 =' c.term) ⟹ ((op.apply₂ (un.apply₁ &0) &0) =' c'.term))
+
+/-- `op.rightNeZeroInv un zero one` is the sentence saying that
+`∀ x, x ≠ zero → op x (un x) = one` -/
+protected def rightNeZeroInv : L.Sentence :=
+  ∀' (∼(&0 =' c.term) ⟹ ((op.apply₂ &0 (un.apply₁ &0)) =' c'.term))
 
 end Functions
-
-end Cardinality
 
 end Language
 
