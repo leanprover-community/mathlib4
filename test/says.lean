@@ -23,7 +23,7 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only [List.length_append]
 
 /--
-error: Tactic `have := 0` did not produce any message.
+error: Tactic `have := 0` did not produce any messages.
 -/
 #guard_msgs in
 example : true := by
@@ -41,10 +41,13 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
   simp
 
+-- Now that with `says.verify` `says` will reverify that the left-hand-side constructs
+-- the right-hand-side.
 set_option says.verify true
 
 /--
-error: Tactic `simp?` produced `simp only [List.length_append]`, but was expecting it to produce `simp only []`!
+error: Tactic `simp?` produced `simp only [List.length_append]`,
+but was expecting it to produce `simp only []`!
 -/
 #guard_msgs in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
