@@ -51,32 +51,33 @@ variable {R : Type _}
 section semiring
 variable [Semiring R]
 
-theorem add {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
+theorem natDegree_add_le_of_le {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
     natDegree (f + g) ≤ max a b :=
 (f.natDegree_add_le g).trans $ max_le_max ‹_› ‹_›
 
-theorem mul {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
+theorem natDegree_mul_le_of_le {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
     natDegree (f * g) ≤ a + b :=
 natDegree_mul_le.trans $ add_le_add ‹_› ‹_›
 
-theorem pow {a : Nat} (b : Nat) {f : R[X]} (hf : natDegree f ≤ a) :
+theorem natDegree_pow_le_of_le {a : Nat} (b : Nat) {f : R[X]} (hf : natDegree f ≤ a) :
     natDegree (f ^ b) ≤ b * a :=
 natDegree_pow_le.trans (Nat.mul_le_mul rfl.le ‹_›)
 
-theorem C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
-theorem nat_cast_le (n : Nat) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
-theorem zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
-theorem one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
+theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
+theorem natDegree_nat_cast_le (n : Nat) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
+theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
+theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
+theorem degree_zero_le : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree_le_zero.mp rfl
 
-theorem addD {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
+theorem degree_add_le_of_le {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
     degree (f + g) ≤ max a b :=
 (f.degree_add_le g).trans $ max_le_max ‹_› ‹_›
 
-theorem mulD {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
+theorem degree_mul_le_of_le {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
     degree (f * g) ≤ a + b :=
 (f.degree_mul_le _).trans $ add_le_add ‹_› ‹_›
 
-theorem powD {a : WithBot Nat} (b : Nat) {f : R[X]} (hf : degree f ≤ a) :
+theorem degree_pow_le_of_le {a : WithBot Nat} (b : Nat) {f : R[X]} (hf : degree f ≤ a) :
     degree (f ^ b) ≤ b * a := by
   apply (degree_pow_le _ _).trans
   rw [nsmul_eq_mul]
@@ -86,31 +87,30 @@ theorem powD {a : WithBot Nat} (b : Nat) {f : R[X]} (hf : degree f ≤ a) :
       rw [Nat.cast_succ, add_mul, add_mul, one_mul, one_mul]
       exact (add_le_add_left hf _).trans (add_le_add_right hn _)
 
-theorem nat_cast_leD (n : Nat) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-theorem zero_leD : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree_le_zero.mp rfl
+theorem degree_nat_cast_le (n : Nat) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 end semiring
 
 section ring
 variable [Ring R]
 
-theorem neg {a : Nat} {f : R[X]} (hf : natDegree f ≤ a) : natDegree (- f) ≤ a :=
+theorem natDegree_neg_le_of_le {a : Nat} {f : R[X]} (hf : natDegree f ≤ a) : natDegree (- f) ≤ a :=
 (natDegree_neg f).le.trans ‹_›
 
-theorem sub {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
+theorem natDegree_sub_le_of_le {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
     natDegree (f - g) ≤ max a b :=
 (f.natDegree_sub_le g).trans $ max_le_max ‹_› ‹_›
 
-theorem int_cast_le (n : Int) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
+theorem natDegree_int_cast_le (n : Int) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
 
-theorem negD {a : WithBot Nat} {f : R[X]} (hf : degree f ≤ a) : degree (- f) ≤ a :=
+theorem degree_neg_le_of_le {a : WithBot Nat} {f : R[X]} (hf : degree f ≤ a) : degree (- f) ≤ a :=
 (degree_neg f).le.trans ‹_›
 
-theorem subD {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
+theorem degree_sub_le_of_le {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
     degree (f - g) ≤ max a b :=
 (f.degree_sub_le g).trans $ max_le_max ‹_› ‹_›
 
-theorem int_cast_leD (n : Int) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+theorem degree_int_cast_le (n : Int) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 end ring
 
@@ -152,24 +152,24 @@ In this case, the output is data for error-reporting in `cDegCore`.
 -/
 def getPolsName (pol : Expr) (π : Name × Name → Name) : List Expr × Name :=
 match pol.getAppFnArgs with
-  | (``HAdd.hAdd, #[_, _, _, _, f, g])           => ([f,g], π (``add, ``addD))
-  | (``HSub.hSub, #[_, _, _, _, f, g])           => ([f,g], π (``sub, ``subD))
-  | (``HMul.hMul, #[_, _, _, _, f, g])           => ([f,g], π (``mul, ``mulD))
-  | (``HPow.hPow, #[_, _, _, _, f, _n])          => ([f], π (``pow, ``powD))
-  | (``Neg.neg,   #[_, _, f])                    => ([f], π (``neg, ``negD))
+  | (``HAdd.hAdd, #[_, _, _, _, f, g])           => ([f,g], π (``natDegree_add_le_of_le, ``degree_add_le_of_le))
+  | (``HSub.hSub, #[_, _, _, _, f, g])           => ([f,g], π (``natDegree_sub_le_of_le, ``degree_sub_le_of_le))
+  | (``HMul.hMul, #[_, _, _, _, f, g])           => ([f,g], π (``natDegree_mul_le_of_le, ``degree_mul_le_of_le))
+  | (``HPow.hPow, #[_, _, _, _, f, _n])          => ([f], π (``natDegree_pow_le_of_le, ``degree_pow_le_of_le))
+  | (``Neg.neg,   #[_, _, f])                    => ([f], π (``natDegree_neg_le_of_le, ``degree_neg_le_of_le))
   | (``Polynomial.X, _)                          => ([], π (``natDegree_X_le, ``degree_X_le))
   -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => ([], π (``zero_le, ``zero_leD))
-  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => ([], π (``one_le, ``degree_one_le))
-  | (``OfNat.ofNat, _)                           => ([], π (``nat_cast_le, ``nat_cast_leD))
-  | (``Nat.cast, _)                              => ([], π (``nat_cast_le, ``nat_cast_leD))
-  | (``NatCast.natCast, _)                       => ([], π (``nat_cast_le, ``nat_cast_leD))
-  | (``Int.cast, _)                              => ([], π (``int_cast_le, ``int_cast_leD))
-  | (``IntCast.intCast, _)                       => ([], π (``int_cast_le, ``int_cast_leD))
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 0)), _]) => ([], π (``natDegree_zero_le, ``degree_zero_le))
+  | (``OfNat.ofNat, #[_, (.lit (.natVal 1)), _]) => ([], π (``natDegree_one_le, ``degree_one_le))
+  | (``OfNat.ofNat, _)                           => ([], π (``natDegree_nat_cast_le, ``degree_nat_cast_le))
+  | (``Nat.cast, _)                              => ([], π (``natDegree_nat_cast_le, ``degree_nat_cast_le))
+  | (``NatCast.natCast, _)                       => ([], π (``natDegree_nat_cast_le, ``degree_nat_cast_le))
+  | (``Int.cast, _)                              => ([], π (``natDegree_int_cast_le, ``degree_int_cast_le))
+  | (``IntCast.intCast, _)                       => ([], π (``natDegree_int_cast_le, ``degree_int_cast_le))
   -- deal with `monomial` and `C`
   | (``FunLike.coe, #[_, _, _, _, polFun, _c]) => match polFun.getAppFnArgs with
     | (``monomial, _) => ([], π (``natDegree_monomial_le, ``degree_monomial_le))
-    | (``C, _)        => ([], π (``C_le, ``degree_C_le))
+    | (``C, _)        => ([], π (``natDegree_C_le, ``degree_C_le))
     | _               => ([polFun], .anonymous)
   -- possibly, all that's left is the case where `pol` is an `fvar` and its `Name` is `.anonymous`
   | _ => ([], π (``le_rfl, ``le_rfl))
