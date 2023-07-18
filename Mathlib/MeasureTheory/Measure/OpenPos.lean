@@ -50,6 +50,9 @@ theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U 
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
 
+@[simp] lemma zero_lt_measure_univ [Nonempty X] : 0 < μ univ :=
+  isOpen_univ.measure_pos μ univ_nonempty
+
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
 #align is_open.measure_pos_iff IsOpen.measure_pos_iff
@@ -223,9 +226,17 @@ theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ (nonempty_ball.2 hr)
 #align metric.measure_ball_pos Metric.measure_ball_pos
 
+/-- See also `Metric.measure_closedBall_pos_iff`. -/
 theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
+
+@[simp] lemma measure_closedBall_pos_iff {X : Type _} [MetricSpace X] {m : MeasurableSpace X}
+    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    0 < μ (closedBall x r) ↔ 0 < r := by
+  refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
+  contrapose! h
+  rw [(subsingleton_closedBall x h).measure_zero μ]
 
 end Metric
 
