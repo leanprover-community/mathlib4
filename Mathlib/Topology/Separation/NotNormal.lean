@@ -25,7 +25,7 @@ The proof follows
 https://en.wikipedia.org/wiki/Moore_plane#Proof_that_the_Moore_plane_is_not_normal -/
 theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
     [DiscreteTopology s] : #s < 𝔠 := by
-  -- Proof by contradiction: assum `𝔠 ≤ #s`
+  -- Proof by contradiction: assume `𝔠 ≤ #s`
   by_contra' h
   -- Choose a countable dense set `t : Set X`
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
@@ -38,7 +38,7 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
       rw [(ContinuousMap.equivFnOfDiscrete _ _).cardinal_eq, mk_arrow, mk_real, lift_continuum,
         lift_uzero]
       exact (power_le_power_left two_ne_zero h).trans (power_le_power_right (nat_lt_continuum 2).le)
-    -- By Tietze Extension Theorem, any function `f : C(s, ℝ)` can be extended to `C(X, ℝ)`, hence
+    -- By the Tietze Extension Theorem, any function `f : C(s, ℝ)` can be extended to `C(X, ℝ)`, hence
     -- `#C(s, ℝ) ≤ #C(X, ℝ)`
     _ ≤ #C(X, ℝ) := by
       choose f hf using (ContinuousMap.exists_restrict_eq_of_closed · hs)
