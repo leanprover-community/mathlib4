@@ -134,8 +134,8 @@ instance (X : ExtrDisc.{u}) : ExtremallyDisconnected X :=
 /-- The functor from extremally disconnected spaces to profinite spaces. -/
 @[simps]
 def toProfinite : ExtrDisc.{u} ⥤ Profinite.{u} where
-  obj X := {
-    toCompHaus := X.compHaus,
+  obj X := 
+  { toCompHaus := X.compHaus,
     IsTotallyDisconnected := show TotallyDisconnectedSpace X from inferInstance }
   map f := f
 
