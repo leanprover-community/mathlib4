@@ -138,8 +138,7 @@ instance : Full toProfinite where
   preimage f := f
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
-instance : Faithful toProfinite := by
-  fconstructor; intro X Y f g h; assumption
+instance : Faithful toProfinite := {}
 
 /-- The functor from Stonean spaces to compact Hausdorff spaces
     factors through profinite spaces. -/
