@@ -265,14 +265,8 @@ namespace AddSubgroup
 /-- The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its
 intersection with compact sets is finite. -/
 theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
-    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) := by
-  rcases eq_or_ne a 0 with rfl | ha
-  · rw [zmultiples_zero_eq_bot, cofinite_eq_bot]; exact tendsto_bot
-  · calc cofinite.map (zmultiples a).subtype
-      ≤ .map (zmultiples a).subtype (.map (rangeFactorization (· • a)) (@cofinite ℤ)) :=
-        Filter.map_mono surjective_onto_range.le_map_cofinite
-    _ = (@cofinite ℤ).map (zmultiplesHom ℝ a) := Filter.map_map
-    _ ≤ cocompact ℝ := Int.tendsto_zmultiplesHom_cofinite ha
+    Tendsto (zmultiples a).subtype cofinite (cocompact ℝ) :=
+  (zmultiples a).tendsto_coe_cofinite_of_discrete
 #align add_subgroup.tendsto_zmultiples_subtype_cofinite AddSubgroup.tendsto_zmultiples_subtype_cofinite
 
 end AddSubgroup
