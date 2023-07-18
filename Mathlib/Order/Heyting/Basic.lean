@@ -892,6 +892,20 @@ theorem compl_top : (⊤ : α)ᶜ = ⊥ :=
 theorem compl_bot : (⊥ : α)ᶜ = ⊤ := by rw [← himp_bot, himp_self]
 #align compl_bot compl_bot
 
+@[simp] theorem le_compl_self : a ≤ aᶜ ↔ a = ⊥ := by
+  rw [le_compl_iff_disjoint_left, disjoint_self]
+
+@[simp] theorem ne_compl_self [Nontrivial α] : a ≠ aᶜ := by
+  intro h
+  cases le_compl_self.1 (le_of_eq h)
+  simp at h
+
+@[simp] theorem compl_ne_self [Nontrivial α] : aᶜ ≠ a :=
+  ne_comm.1 ne_compl_self
+
+@[simp] theorem lt_compl_self [Nontrivial α] : a < aᶜ ↔ a = ⊥ := by
+  rw [lt_iff_le_and_ne]; simp
+
 theorem le_compl_compl : a ≤ aᶜᶜ :=
   disjoint_compl_right.le_compl_right
 #align le_compl_compl le_compl_compl

@@ -1507,10 +1507,16 @@ theorem exp_strictMono : StrictMono exp := fun x y h => by
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 #align real.exp_strict_mono Real.exp_strictMono
 
+@[gcongr]
+theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
+
 @[mono]
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 #align real.exp_monotone Real.exp_monotone
+
+@[gcongr]
+theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
 theorem exp_lt_exp {x y : ℝ} : exp x < exp y ↔ x < y :=
@@ -2003,16 +2009,16 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
 
 end Real
 
-namespace Tactic
+namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : Mathlib.Meta.Positivity.PositivityExt where eval {_ _} _ _ e := do
+def evalExp : PositivityExt where eval {_ _} _ _ e := do
   let (.app _ (a : Q(ℝ))) ← withReducible (whnf e) | throwError "not Real.exp"
   pure (.positive (q(Real.exp_pos $a) : Lean.Expr))
 
-end Tactic
+end Mathlib.Meta.Positivity
 
 namespace Complex
 

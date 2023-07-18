@@ -8,8 +8,6 @@ import Mathlib.GroupTheory.QuotientGroup
 
 #align_import algebra.modeq from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
-#align_import algebra.modeq from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
-
 /-!
 # Equality modulo an element
 

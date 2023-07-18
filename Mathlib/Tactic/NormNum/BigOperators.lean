@@ -66,7 +66,7 @@ def Nat.unifyZeroOrSucc (n : Q(ℕ)) : MetaM (Nat.UnifyZeroOrSuccResult n) := do
     let n' : Q(ℕ) ← mkFreshExprMVar q(ℕ)
     let ⟨(_pf : $n =Q Nat.succ $n')⟩ ← assertDefEqQ n q(Nat.succ $n')
     let (.some (n'_val : Q(ℕ))) ← getExprMVarAssignment? n'.mvarId! |
-      throwError "could not figure out value of `?n` from `{n} =?= nat.succ ?n`"
+      throwError "could not figure out value of `?n` from `{n} =?= Nat.succ ?n`"
     pure (.succ n'_val ⟨⟩)
 
 /-- This represents the result of trying to determine whether the given expression

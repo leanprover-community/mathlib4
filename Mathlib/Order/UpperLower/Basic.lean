@@ -496,8 +496,8 @@ instance : SupSet (UpperSet α) :=
 instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
-instance : CompleteDistribLattice (UpperSet α) :=
-  (toDual.injective.comp SetLike.coe_injective).completeDistribLattice _ (fun _ _ => rfl)
+instance : CompletelyDistribLattice (UpperSet α) :=
+  (toDual.injective.comp SetLike.coe_injective).completelyDistribLattice _ (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) rfl rfl
 
 instance : Inhabited (UpperSet α) :=
@@ -645,8 +645,8 @@ instance : SupSet (LowerSet α) :=
 instance : InfSet (LowerSet α) :=
   ⟨fun S => ⟨⋂ s ∈ S, ↑s, isLowerSet_iInter₂ fun s _ => s.lower⟩⟩
 
-instance : CompleteDistribLattice (LowerSet α) :=
-  SetLike.coe_injective.completeDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+instance : CompletelyDistribLattice (LowerSet α) :=
+  SetLike.coe_injective.completelyDistribLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ => rfl) rfl rfl
 
 instance : Inhabited (LowerSet α) :=

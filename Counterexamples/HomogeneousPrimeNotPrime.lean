@@ -49,14 +49,14 @@ abbrev Two :=
   WithZero Unit
 #align counterexample.counterexample_not_prime_but_homogeneous_prime.two Counterexample.CounterexampleNotPrimeButHomogeneousPrime.Two
 
-instance Two.LinearOrder : LinearOrder Two :=
+instance Two.instLinearOrder : LinearOrder Two :=
   inferInstance
 
-instance Two.AddCommMonoid : AddCommMonoid Two :=
+instance Two.instAddCommMonoid : AddCommMonoid Two :=
   inferInstance
 
 instance : LinearOrderedAddCommMonoid Two :=
-  { Two.LinearOrder, Two.AddCommMonoid with
+  { Two.instLinearOrder, Two.instAddCommMonoid with
     add_le_add_left := by
       delta Two WithZero; decide }
 section

@@ -23,8 +23,9 @@ for `Set α`, and some more set constructions.
 * `Set.sUnion`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `Set.completeBooleanAlgebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
-  `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
+* `Set.completeAtomicBooleanAlgebra`: `Set α` is a `CompleteAtomicBooleanAlgebra` with `≤ = ⊆`,
+  `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
+  See `Set.BooleanAlgebra`.
 * `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
@@ -173,14 +174,13 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
   mem_iInter₂.2 h
 #align set.mem_Inter₂_of_mem Set.mem_iInter₂_of_mem
 
-instance : CompleteBooleanAlgebra (Set α) :=
+instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
     sInf_le := fun s t t_in a h => h _ t_in
-    iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
-    inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
+    iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
 section GaloisConnection
 

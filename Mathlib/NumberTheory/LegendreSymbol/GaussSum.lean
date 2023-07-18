@@ -261,7 +261,7 @@ open ZMod
 
 -- Porting note: This proof is _really_ slow, maybe it should be broken into several lemmas
 -- See  https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 1800000 in
+set_option maxHeartbeats 800000 in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
@@ -269,7 +269,12 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
 
   -- we work in `FF`, the eighth cyclotomic field extension of `F`
-  let FF := (Polynomial.cyclotomic 8 F).SplittingField
+  -- Porting note: was
+  -- let FF := (Polynomial.cyclotomic 8 F).SplittingField
+  -- but we want to unify with `CyclotomicField` below.
+  let FF := CyclotomicField 8 F
+  haveI : Polynomial.IsSplittingField F FF (Polynomial.cyclotomic 8 F) :=
+    Polynomial.IsSplittingField.splittingField _
   haveI : FiniteDimensional F FF :=
     Polynomial.IsSplittingField.finiteDimensional FF (Polynomial.cyclotomic 8 F)
   haveI : Fintype FF := FiniteDimensional.fintypeOfFintype F FF
@@ -286,13 +291,17 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
 
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
-  let τ : FF := ψ₈.char 1
+  -- Porting note: The type is actually `PrimitiveAddChar (ZMod (8 : ℕ+)) F`, but this seems faster.
+  let ψ₈ : PrimitiveAddChar (ZMod 8) F :=
+    primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
+  -- Porting note: unifying this is very slow, so only do it once.
+  let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
+  let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
-    · rw [← pow_mul, ← map_nsmul_pow ψ₈.char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← pow_mul, ← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
       decide
-    · rw [← map_nsmul_pow ψ₈.char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
       decide
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`
@@ -301,12 +310,12 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   have hq : IsQuadratic χ := isQuadratic_χ₈.comp _
 
   -- we now show that the Gauss sum of `χ` and `ψ₈` has the relevant property
-  have hg : gaussSum χ ψ₈.char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
+  have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     have _ := congr_arg (· ^ 2) (Fin.sum_univ_eight fun x => (χ₈ x : FF) * τ ^ x.1)
-    have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈.char a)) := by
+    have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈char a)) := by
       -- Porting note: original proof
       -- ext; congr; apply pow_one
-      ext (x : Fin 8); rw [← map_nsmul_pow ψ₈.char]; congr 2;
+      ext (x : Fin 8); rw [← map_nsmul_pow ψ₈char]; congr 2;
       rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
         8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
@@ -356,7 +365,7 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
     rfl
 
   -- this allows us to apply `card_pow_char_pow` to our situation
-  have h := Char.card_pow_char_pow hq ψ₈.char (ringChar FF) n hu hFF hg
+  have h := Char.card_pow_char_pow (R := ZMod 8) hq ψ₈char (ringChar FF) n hu hFF hg
   rw [ZMod.card, ← hchar, hχ, one_mul, ← hc, ← Nat.cast_pow (ringChar F), ← hc] at h
 
   -- finally, we change `2` to `8` on the left hand side
