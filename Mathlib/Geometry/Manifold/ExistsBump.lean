@@ -18,7 +18,8 @@ universe uι uE uH uM
 
 variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [FiniteDimensional ℝ E] {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {M : Type uM} [TopologicalSpace M] [T2Space M] [SigmaCompactSpace M]
+  [ChartedSpace H M] [SmoothManifoldWithCorners I M]
   {s t : Set M}
 open Function Filter FiniteDimensional Set
 
@@ -28,10 +29,10 @@ noncomputable section
 
 variable (I)
 theorem IsOpen.exists_smooth_support_eq' (hs : IsOpen s) :
-    ∃ f : M → ℝ, f.support = s ∧ ContMDiff I 𝓘(ℝ) ⊤ f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+    ∃ f : M → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ Set.range f ⊆ Set.Icc 0 1 := by
   sorry
 
-variables [NormalSpace M]
+-- variable [NormalSpace M]
 
 /-- Given an open set `s` containing a closed subset `t` in a finite-dimensional real normed
 vector space, there exists a smooth function with values in `[0, 1]` whose support is
@@ -45,6 +46,9 @@ theorem IsOpen.exists_smooth_support_subset (hs : IsOpen s) (ht : IsClosed t) (h
   `s \ t`. Then `f / (f + g)` works. The only nontrivial fact is that it is smooth. This follows
   from the fact that `f + g` is strictly positive on a neighborhood of the topological support of
   `f`, by construction. -/
+  have : LocallyCompactSpace H := I.locally_compact
+  have : LocallyCompactSpace M := ChartedSpace.locallyCompact H M
+  have : NormalSpace M := normal_of_paracompact_t2
   obtain ⟨u, u_open, tu, us⟩ : ∃ u, IsOpen u ∧ t ⊆ u ∧ closure u ⊆ s :=
     normal_exists_closure_subset ht hs h
   rcases u_open.exists_smooth_support_eq' I with ⟨f, f_supp, f_diff, f_range⟩
@@ -65,7 +69,8 @@ theorem IsOpen.exists_smooth_support_subset (hs : IsOpen s) (ht : IsClosed t) (h
     have : 0 ≤ f x := (f_range (mem_range_self (i := x))).1
     have : 0 ≤ g x := (g_range (mem_range_self (i := x))).1
     by_cases H : x ∈ s
-    · apply f_diff.contMDiffAt.div (f_diff.contMDiffAt.add g_diff.contMDiffAt)
+    · apply f_diff.contMDiffAt.div₀ (f_diff.contMDiffAt.add g_diff.contMDiffAt)
+      simp only [Pi.add_apply]
       apply ne_of_gt
       by_cases H' : x ∈ t
       · have : f x ≠ 0 := by rw [← mem_support, f_supp]; exact tu H'
