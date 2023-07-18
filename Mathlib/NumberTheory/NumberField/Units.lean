@@ -8,13 +8,9 @@ Authors: Xavier Roblot
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Module.Zlattice
-import Mathlib.GroupTheory.Torsion
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Ideal.Norm
-import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Units of a number field
