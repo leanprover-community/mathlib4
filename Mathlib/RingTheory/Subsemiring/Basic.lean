@@ -920,6 +920,19 @@ theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s)
   (@closure_le _ _ _ ⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩).2 Hs h
 #align subsemiring.closure_induction Subsemiring.closure_induction
 
+@[elab_as_elim]
+theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
+    (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_closure h⟩) (H0 : p 0) (H1 : p 1)
+    (Hadd : ∀ x y, p x → p y → p (x + y)) (Hmul : ∀ x y, p x → p y → p (x * y)) : p a :=
+  Subtype.recOn a fun b hb => by
+    refine Exists.elim ?_ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
+    refine closure_induction hb (fun x hx => ⟨subset_closure hx, Hs x hx⟩)
+        ⟨zero_mem (closure s), H0⟩ ⟨one_mem (closure s), H1⟩ ?_ ?_
+    · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
+      exact ⟨add_mem hx hy, Hadd _ _ hpx hpy⟩
+    · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
+      exact ⟨mul_mem hx hy, Hmul _ _ hpx hpy⟩
+
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
 theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {x} {y : R} (hx : x ∈ closure s)
