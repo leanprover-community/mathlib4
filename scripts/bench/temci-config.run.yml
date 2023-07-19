@@ -27,7 +27,9 @@
       echo -n '.lean|lines: ' &&
       find Mathlib -name '*.lean' -print0 | wc -l --files0-from=- | tail -1 | cut -d' ' -f 1
       echo -n '.olean|bytes: ' &&
-      find build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1
+      find build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1 &&
+      echo -n 'porting notes|lines: ' &&
+      grep --ignore-case "porting note" -r Mathlib | wc -l
       "
     max_runs: 1
     runner: output
