@@ -84,7 +84,7 @@ def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
       | (``natDegree, #[_R, _iSR, pol]) => return (true, pol)
       | (na, _) => throwError (m!"Expected an inequality of the form\n\n" ++
         f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
-    |  (na, _)  => throwError m!"Expected an inequality instead of '{na}', '{e}'"
+    | (na, _)  => throwError m!"Expected an inequality instead of '{na}', '{e}'"
 
 /--
 `DegInfo` is a type whose terms encode the part of the syntax tree of a polynomial that currently
