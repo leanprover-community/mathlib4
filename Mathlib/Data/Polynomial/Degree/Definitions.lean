@@ -720,6 +720,9 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   · rw [not_le, degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
     exact natDegree_add_eq_left_of_natDegree_lt hpd
 
+@[simp] theorem natDegree_C_add {a : R} : (C a + p).natDegree = p.natDegree := by
+  simp [add_comm _ p]
+
 theorem degree_add_eq_of_leadingCoeff_add_ne_zero (h : leadingCoeff p + leadingCoeff q ≠ 0) :
     degree (p + q) = max p.degree q.degree :=
   le_antisymm (degree_add_le _ _) <|
