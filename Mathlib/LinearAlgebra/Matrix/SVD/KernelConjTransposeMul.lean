@@ -7,12 +7,7 @@ Authors: Mohanad Ahmed
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 
-/-! # Block Matrices from Rows and Columns
-In a field with a star operation such that star(v)*v = 0 ↔ v = 0, the product of the conjugate
-transpose of a matrix and itself is zero if and only if the matrix itself is zero. Further the
-the kernel of a matrix `A` and its conjugate transpose multiplied by itself `AᴴA` are the same.
-Similar relation exists between the kernel of `Aᴴ` and `AAᴴ`.
--/
+/-! # Kernel of the products of a Matrix Conjugate Transpose of a Matrix -/
 open Matrix BigOperators
 
 namespace Matrix
