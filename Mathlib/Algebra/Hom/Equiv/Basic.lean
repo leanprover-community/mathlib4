@@ -38,9 +38,9 @@ variable {F α β A B M N P Q G H : Type _}
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/  
 @[to_additive] def OneHom.inverse {R S : Type _} [One R] [One S] 
-  (f : OneHom R S) (g : S → R) 
-  (h₁ : Function.LeftInverse g f) (_ : Function.RightInverse g f) : 
-  OneHom S R := 
+    (f : OneHom R S) (g : S → R) 
+    (h₁ : Function.LeftInverse g f) (_ : Function.RightInverse g f) : 
+    OneHom S R := 
   { toFun := g,
     map_one' := by rw [← f.map_one, h₁] }
 
