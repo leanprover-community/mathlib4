@@ -142,13 +142,6 @@ if π names == .anonymous then
   throwError m!"'compute_degree_le' is not implemented for {← ppExpr fg[0]!}"
 return (← (fg.zip (← mv.applyConst (π names))).mapM fun (p, m) => computeDegreeLECore p m π).join
 
-/-- Allows the syntax expression `compute_degree_le !`, with optional `!`. -/
-syntax (name := computeDegreeLE) "compute_degree_le" "!"? : tactic
-
-/-- Allows writing `compute_degree_le!` with no space preceding `!`. -/
-macro "compute_degree_le!" : tactic => `(tactic| compute_degree_le !)
-
-open Elab.Tactic in
 /--
 `compute_degree_le` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
 
@@ -161,6 +154,13 @@ Next, it applies `norm_num` to `d'`, in the hope of closing also the `d' ≤ d` 
 The variant `compute_degree_le!` first applies `compute_degree_le`.
 Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption`.
 -/
+syntax (name := computeDegreeLE) "compute_degree_le" "!"? : tactic
+
+@[inherit_doc computeDegreeLE]
+macro "compute_degree_le!" : tactic => `(tactic| compute_degree_le !)
+
+open Elab.Tactic in
+
 elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]?) => focus do
   let (isNatDeg?, lhs) := ← isDegLE (← getMainTarget)
   let π := if isNatDeg? then Prod.fst else Prod.snd
