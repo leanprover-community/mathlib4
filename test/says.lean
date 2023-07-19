@@ -36,12 +36,13 @@ error: Tactic output did not begin with 'Try this:': hi!
 example : true := by
   (run_tac do Lean.logInfo "hi!") says
 
--- Check that with the default settings `says` does not reverify the right-hand-side.
+-- Check that `says` does not reverify the right-hand-side.
+set_option says.no_verify_in_CI true in
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
   simp
 
--- Now that with `says.verify` `says` will reverify that the left-hand-side constructs
+-- Check that with `says.verify` `says` will reverify that the left-hand-side constructs
 -- the right-hand-side.
 set_option says.verify true in
 /--
@@ -52,8 +53,8 @@ but was expecting it to produce `simp only []`!
 example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
 
-/- Now we check that `says` does not consume following tactics unless they are indented. -/
 set_option linter.unreachableTactic false
+-- Now we check that `says` does not consume following tactics unless they are indented.
 /--
 error: Tactic `simp` did not produce any messages.
 -/
@@ -62,6 +63,7 @@ example : True := by
   simp says
   trivial
 
+set_option says.no_verify_in_CI true in
 example : True := by
   simp says
     trivial
@@ -74,3 +76,10 @@ error: Tactic `simp` did not produce any messages.
 example : True := by
   simp says
     trivial
+
+-- Check that if the CI environment variable is set, we reverify all `says` statements.
+example : True := by
+  fail_if_success
+    run_tac do guard (← IO.getEnv "CI").isSome
+    simp says trivial
+  trivial
