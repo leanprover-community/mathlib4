@@ -227,10 +227,10 @@ theorem disjoint_span_comm_map_ker [NumberField K]:
       rw [eq_comm, ← Complex.conj_eq_iff_re, canonicalEmbedding.conj_apply _ h_mem,
         ComplexEmbedding.isReal_iff.mp hφ], ← Complex.ofReal_zero]
     congr
-    rw [← ComplexEmbeddings.IsReal.embedding_mk hφ, ← comm_map_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
+    rw [← ComplexEmbedding.IsReal.embedding_mk hφ, ← comm_map_apply_of_isReal K x ⟨φ, hφ, rfl⟩]
     exact congrFun (congrArg (fun x => x.1) h_zero) ⟨InfinitePlace.mk φ, _⟩
   · have := congrFun (congrArg (fun x => x.2) h_zero) ⟨InfinitePlace.mk φ, ⟨φ, hφ, rfl⟩⟩
-    cases ComplexEmbeddings.embedding_mk φ with
+    cases ComplexEmbedding.embedding_mk φ with
     | inl h => rwa [← h, ← comm_map_apply_of_isComplex K x ⟨φ, hφ, rfl⟩]
     | inr h =>
         apply RingHom.injective (starRingEnd ℂ)
@@ -334,8 +334,7 @@ theorem constant_factor_lt_top : (constant_factor K) < ⊤ := by
 
 set_option maxHeartbeats 400000 in
 theorem convex_body_volume :
-    volume (convex_body K f) = (constant_factor K) *
-      ∏ w : InfinitePlace K, ite (IsReal w) ↑(f w) ↑(f w ^ 2) := by
+    volume (convex_body K f) = (constant_factor K) * ∏ w, (f w) ^ (mult K w) := by
   rw [volume_eq_prod, convex_body, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
   conv_lhs =>
     congr; congr; next => skip
@@ -349,7 +348,10 @@ theorem convex_body_volume :
       ofReal_coe_nnreal, mul_comm]
   rw [Finset.prod_mul_distrib, Finset.prod_mul_distrib, Finset.prod_const, Finset.prod_const,
     Finset.card_univ, Finset.card_univ, mul_assoc, mul_comm, ← mul_assoc, mul_assoc, ofReal_ofNat,
-    ← constant_factor, Finset.prod_ite]
+    ← constant_factor]
+  simp_rw [mult, pow_ite, pow_one]
+  rw [Finset.prod_ite]
+  simp_rw [coe_mul, coe_finset_prod]
   simp_rw [show (fun w : InfinitePlace K ↦ ¬IsReal w) = (fun w ↦ IsComplex w)
     by funext; rw [not_isReal_iff_isComplex]]
   congr 1; rw [mul_comm]; congr 1
@@ -357,6 +359,24 @@ theorem convex_body_volume :
   · rw [← Finset.prod_subtype_eq_prod_filter]
     congr; ext
     exact ⟨fun _ =>  Finset.mem_subtype.mpr (Finset.mem_univ _), fun _ => Finset.mem_univ _⟩
+
+variable {f}
+
+/-- This is a technical result: quite often, we want to impose conditions at all infinite places
+but one and choose the value at the remaining place so that we can apply
+`exists_ne_zero_mem_ring_of_integers_lt`. -/
+theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁→ f w ≠ 0) :
+    ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult K w = B := by
+  let S := ∏ w in Finset.univ.erase w₁, (f w) ^ mult K w
+  refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult K w₁ : ℝ)⁻¹), ?_, ?_⟩
+  · exact fun w hw => Function.update_noteq hw _ f
+  · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
+      Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],
+      ← NNReal.rpow_nat_cast, ← NNReal.rpow_mul, inv_mul_cancel, NNReal.rpow_one, mul_assoc,
+      inv_mul_cancel, mul_one]
+    · rw [Finset.prod_ne_zero_iff]
+      exact fun w hw => pow_ne_zero _ (hf w (Finset.ne_of_mem_erase hw))
+    · rw [mult]; split_ifs <;> norm_num
 
 end convex_body
 

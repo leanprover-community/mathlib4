@@ -182,6 +182,9 @@ def IsReal (φ : K →+* ℂ) : Prop :=
 theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff
 #align number_field.complex_embedding.is_real_iff NumberField.ComplexEmbedding.isReal_iff
 
+theorem isReal_iff_isReal_conj {φ : K →+* ℂ} :
+    IsReal φ ↔ IsReal (conjugate φ) := by rw [IsReal, IsReal, IsSelfAdjoint.star_iff]
+
 /-- A real embedding as a ring homomorphism from `K` to `ℝ` . -/
 def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   toFun x := (φ x).re
@@ -352,21 +355,21 @@ def IsComplex (w : InfinitePlace K) : Prop :=
 #align number_field.infinite_place.is_complex NumberField.InfinitePlace.IsComplex
 
 @[simp]
-theorem _root_.NumberField.ComplexEmbeddings.IsReal.embedding_mk {φ : K →+* ℂ}
+theorem _root_.NumberField.ComplexEmbedding.IsReal.embedding_mk {φ : K →+* ℂ}
     (h : ComplexEmbedding.IsReal φ) : embedding (mk φ) = φ := by
   have := mk_eq_iff.mp (mk_embedding (mk φ)).symm
   rwa [ComplexEmbedding.isReal_iff.mp h, or_self_iff, eq_comm] at this
-#align number_field.complex_embeddings.is_real.embedding_mk NumberField.ComplexEmbeddings.IsReal.embedding_mk
+#align number_field.complex_embeddings.is_real.embedding_mk NumberField.ComplexEmbedding.IsReal.embedding_mk
 
 @[simp]
-theorem _root_.NumberField.ComplexEmbeddings.embedding_mk (φ : K →+* ℂ) :
+theorem _root_.NumberField.ComplexEmbedding.embedding_mk (φ : K →+* ℂ) :
     embedding (mk φ) = φ ∨ embedding (mk φ) = ComplexEmbedding.conjugate φ := by
   rw [@eq_comm _ _ φ, @eq_comm _ _ (ComplexEmbedding.conjugate φ), ← mk_eq_iff, mk_embedding]
 
 theorem isReal_iff {w : InfinitePlace K} : IsReal w ↔ ComplexEmbedding.IsReal (embedding w) := by
   constructor
   · rintro ⟨φ, ⟨hφ, rfl⟩⟩
-    rwa [_root_.NumberField.ComplexEmbeddings.IsReal.embedding_mk hφ]
+    rwa [_root_.NumberField.ComplexEmbedding.IsReal.embedding_mk hφ]
   · exact fun h => ⟨embedding w, h, mk_embedding w⟩
 #align number_field.infinite_place.is_real_iff NumberField.InfinitePlace.isReal_iff
 
@@ -382,10 +385,23 @@ theorem isComplex_iff {w : InfinitePlace K} :
   · exact fun h => ⟨embedding w, h, mk_embedding w⟩
 #align number_field.infinite_place.is_complex_iff NumberField.InfinitePlace.isComplex_iff
 
+theorem _root_.NumberField.ComplexEmbedding.isReal_mk_iff {φ : K →+* ℂ} :
+    IsReal (mk φ) ↔ ComplexEmbedding.IsReal φ := by
+  refine ⟨fun h => ?_, fun h => ⟨φ, h, rfl⟩⟩
+  · rw [isReal_iff] at h
+    cases ComplexEmbedding.embedding_mk φ with
+    | inl hφ => rwa [← hφ]
+    | inr hφ => rwa [ComplexEmbedding.isReal_iff_isReal_conj, ← hφ]
+
 @[simp]
 theorem not_isReal_iff_isComplex {w : InfinitePlace K} : ¬IsReal w ↔ IsComplex w := by
   rw [isComplex_iff, isReal_iff]
 #align number_field.infinite_place.not_is_real_iff_is_complex NumberField.InfinitePlace.not_isReal_iff_isComplex
+
+theorem _root_.NumberField.ComplexEmbedding.not_isReal_mk_iff {φ : K →+* ℂ} :
+    ¬ ComplexEmbedding.IsReal φ ↔ IsComplex (mk φ) := by
+  convert (ComplexEmbedding.isReal_mk_iff (φ := φ)).symm.not
+  exact not_isReal_iff_isComplex.symm
 
 @[simp]
 theorem not_isComplex_iff_isReal {w : InfinitePlace K} : ¬IsComplex w ↔ IsReal w := by
@@ -416,12 +432,18 @@ theorem IsReal.abs_embedding_apply {w : InfinitePlace K} (hw : IsReal w) (x : K)
 
 variable (K)
 
+/-- The multiplicity of an infinite place, that is the number of distinct complex embeddings that
+defines it, see ` mult_eq`. -/
+noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2
+
+variable {K}
+
 /-- The map from real embeddings to real infinite places as an equiv -/
 noncomputable def mkReal :
     { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } ≃ { w : InfinitePlace K // IsReal w } where
   toFun := Subtype.map mk fun φ hφ => ⟨φ, hφ, rfl⟩
   invFun w := ⟨w.1.embedding, isReal_iff.1 w.2⟩
-  left_inv φ := Subtype.ext_iff.2 (NumberField.ComplexEmbeddings.IsReal.embedding_mk φ.2)
+  left_inv φ := Subtype.ext_iff.2 (NumberField.ComplexEmbedding.IsReal.embedding_mk φ.2)
   right_inv w := Subtype.ext_iff.2 (mk_embedding w.1)
 #align number_field.infinite_place.mk_real NumberField.InfinitePlace.mkReal
 
@@ -431,36 +453,38 @@ noncomputable def mkComplex :
   Subtype.map mk fun φ hφ => ⟨φ, hφ, rfl⟩
 #align number_field.infinite_place.mk_complex NumberField.InfinitePlace.mkComplex
 
+variable (K)
+
 theorem mkComplex_embedding (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) :
-    (mkComplex K φ : InfinitePlace K).embedding = φ ∨
-      (mkComplex K φ : InfinitePlace K).embedding = ComplexEmbedding.conjugate φ :=
-  NumberField.ComplexEmbeddings.embedding_mk  φ.1
+    (mkComplex φ : InfinitePlace K).embedding = φ ∨
+      (mkComplex φ : InfinitePlace K).embedding = ComplexEmbedding.conjugate φ :=
+  NumberField.ComplexEmbedding.embedding_mk  φ.1
 #align number_field.infinite_place.mk_complex_embedding NumberField.InfinitePlace.mkComplex_embedding
 
 @[simp]
 theorem mkReal_coe (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) :
-    (mkReal K φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
+    (mkReal φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
 #align number_field.infinite_place.mk_real_coe NumberField.InfinitePlace.mkReal_coe
 
 @[simp]
 theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) :
-    (mkComplex K φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
+    (mkComplex φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
 #align number_field.infinite_place.mk_complex_coe NumberField.InfinitePlace.mkComplex_coe
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mkReal.apply (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) (x : K) :
-    (mkReal K φ).val x = Complex.abs (φ.val x) := rfl
+    (mkReal φ).val x = Complex.abs (φ.val x) := rfl
 #align number_field.infinite_place.mk_real.apply NumberField.InfinitePlace.mkReal.apply
 
 -- @[simp] -- Porting note: not in simpNF
 theorem mkComplex.apply (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) (x : K) :
-    (mkComplex K φ).val x = Complex.abs (φ.val x) := rfl
+    (mkComplex φ).val x = Complex.abs (φ.val x) := rfl
 #align number_field.infinite_place.mk_complex.apply NumberField.InfinitePlace.mkComplex.apply
 
 variable [NumberField K]
 
 theorem mkComplex.filter (w : { w : InfinitePlace K // w.IsComplex }) :
-    (Finset.univ.filter fun φ => mkComplex K φ = w) =
+    (Finset.univ.filter fun φ => mkComplex φ = w) =
       {⟨w.1.embedding, isComplex_iff.1 w.2⟩,
         ⟨ComplexEmbedding.conjugate w.1.embedding,
           ComplexEmbedding.isReal_conjugate_iff.not.2 (isComplex_iff.1 w.2)⟩} := by
@@ -472,7 +496,7 @@ theorem mkComplex.filter (w : { w : InfinitePlace K // w.IsComplex }) :
 #align number_field.infinite_place.mk_complex.filter NumberField.InfinitePlace.mkComplex.filter
 
 theorem mkComplex.filter_card (w : { w : InfinitePlace K // w.IsComplex }) :
-    (Finset.univ.filter fun φ => mkComplex K φ = w).card = 2 := by
+    (Finset.univ.filter fun φ => mkComplex φ = w).card = 2 := by
   rw [mkComplex.filter]
   exact Finset.card_doubleton
       (Subtype.mk_eq_mk.not.2 <|
@@ -483,11 +507,12 @@ noncomputable instance NumberField.InfinitePlace.fintype : Fintype (InfinitePlac
   Set.fintypeRange _
 #align number_field.infinite_place.number_field.infinite_place.fintype NumberField.InfinitePlace.NumberField.InfinitePlace.fintype
 
+open scoped BigOperators
+
 /-- The infinite part of the product formula : for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where
 `‖·‖_w` is the normalized absolute value for `w`.  -/
 theorem prod_eq_abs_norm (x : K) :
-    (Finset.univ.prod fun w : InfinitePlace K => ite w.IsReal (w x) (w x ^ 2)) =
-      abs (Algebra.norm ℚ x) := by
+    ∏ w : InfinitePlace K, ite w.IsReal (w x) (w x ^ 2) = abs (Algebra.norm ℚ x) := by
   convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
   · rw [map_prod, ← Equiv.prod_comp' RingHom.equivRatAlgHom (fun f => Complex.abs (f x))
         (fun φ => Complex.abs (φ x)) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
@@ -499,13 +524,13 @@ theorem prod_eq_abs_norm (x : K) :
     rw [Finset.prod_ite, Finset.prod_ite]
     refine congr (congr_arg Mul.mul ?_) ?_
     · rw [← Finset.prod_subtype_eq_prod_filter, ← Finset.prod_subtype_eq_prod_filter]
-      convert (Equiv.prod_comp' (mkReal K) (fun φ => Complex.abs (φ.val x))
+      convert (Equiv.prod_comp' mkReal (fun φ => Complex.abs (φ.val x))
         (fun w => w.val x) _).symm
       any_goals ext; simp only [Finset.mem_subtype, Finset.mem_univ]
       exact fun φ => mkReal.apply K φ x
     · rw [Finset.filter_congr fun (w : InfinitePlace K) _ => @not_isReal_iff_isComplex K _ w,
         ← Finset.prod_subtype_eq_prod_filter, ← Finset.prod_subtype_eq_prod_filter]
-      convert Finset.prod_fiberwise Finset.univ (fun φ => mkComplex K φ)
+      convert Finset.prod_fiberwise Finset.univ (fun φ => mkComplex φ)
         (fun φ => Complex.abs (φ.val x)) using 2 with w
       · ext; simp only [Finset.mem_subtype, Finset.mem_univ, not_isReal_iff_isComplex]
       · rw [@Finset.prod_congr _ _ _ _ _ (fun _ => w.val x) _ (Eq.refl _) fun φ hφ =>
@@ -515,11 +540,18 @@ theorem prod_eq_abs_norm (x : K) :
   · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
+/-- A version of `prod_eq_abs_norm` that uses `mult`. -/
+theorem prod_mult_eq_abs_norm (x : K) :
+    ∏ w : InfinitePlace K, w x ^ mult K w = abs (Algebra.norm ℚ x) := by
+  convert prod_eq_abs_norm K x using 2
+  rw [mult]
+  split_ifs <;> simp
+
 open Fintype
 
 theorem card_real_embeddings :
     card { φ : K →+* ℂ // ComplexEmbedding.IsReal φ } = card { w : InfinitePlace K // IsReal w } :=
-  by convert (Fintype.ofEquiv_card (mkReal K)).symm
+  by convert (Fintype.ofEquiv_card (mkReal (K := K))).symm
 #align number_field.infinite_place.card_real_embeddings NumberField.InfinitePlace.card_real_embeddings
 
 theorem card_complex_embeddings :
@@ -531,7 +563,7 @@ theorem card_complex_embeddings :
     ext x
     rw [← mkComplex.filter_card K x]
   simp_rw [Finset.card_eq_sum_ones]
-  exact (Finset.sum_fiberwise Finset.univ (fun φ => mkComplex K φ) fun _ => 1).symm
+  exact (Finset.sum_fiberwise Finset.univ (fun φ => mkComplex φ) fun _ => 1).symm
 #align number_field.infinite_place.card_complex_embeddings NumberField.InfinitePlace.card_complex_embeddings
 
 end NumberField.InfinitePlace
