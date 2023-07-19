@@ -257,6 +257,11 @@ theorem squarefree_two : Squarefree 2 := by
   · norm_num
 #align nat.squarefree_two Nat.squarefree_two
 
+theorem divisors_filter_squarefree_of_squarefree {n : ℕ} (hn : Squarefree n) :
+    n.divisors.filter Squarefree = n.divisors :=
+  Finset.ext fun d => ⟨@Finset.filter_subset _ _ _ _ d, fun hd =>
+    Finset.mem_filter.mpr ⟨hd, hn.squarefree_of_dvd (Nat.dvd_of_mem_divisors hd) ⟩⟩
+
 open UniqueFactorizationMonoid
 
 theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :

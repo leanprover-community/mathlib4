@@ -33,100 +33,32 @@ Recurse into `f` breaking apart sums, products and powers.  Take care of numeral
 
 open Polynomial
 
-section mylemmas
-namespace Polynomial
+namespace Mathlib.Tactic.ComputeDegree
 
+section leaf_lemmas
 /-!
-###  Simple lemmas about `natDegree` and `degree`
+###  Simple lemmas about `natDegree`
 
-The lemmas in this section deduce inequalities of the form `natDegree f ≤ d` and `degree f ≤ d`,
-using inequalities of the same shape.
-This allows a recursive application of the `compute_degree_le` tactic on a goal,
-and on all the resulting subgoals.
+The lemmas in this section all have the form `natDegree <some form of cast> ≤ 0`.
+Their proofs are weakenings of the stronger lemmas `natDegree <same> = 0`.
+These are the lemmas called by `compute_degree_le` on (almost) all the leaves of its recursion.
 -/
-
 variable {R : Type _}
 
 section semiring
 variable [Semiring R]
 
-section Lemmas__in_a_dependent_PR
-
-theorem natDegree_add_le_of_le {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
-    natDegree (f + g) ≤ max a b :=
-(f.natDegree_add_le g).trans $ max_le_max ‹_› ‹_›
-
-theorem natDegree_mul_le_of_le {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
-    natDegree (f * g) ≤ a + b :=
-natDegree_mul_le.trans $ add_le_add ‹_› ‹_›
-
-theorem natDegree_pow_le_of_le {a : Nat} (b : Nat) {f : R[X]} (hf : natDegree f ≤ a) :
-    natDegree (f ^ b) ≤ b * a :=
-natDegree_pow_le.trans (Nat.mul_le_mul rfl.le ‹_›)
-
-theorem degree_add_le_of_le {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
-    degree (f + g) ≤ max a b :=
-(f.degree_add_le g).trans $ max_le_max ‹_› ‹_›
-
-theorem degree_mul_le_of_le {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
-    degree (f * g) ≤ a + b :=
-(f.degree_mul_le _).trans $ add_le_add ‹_› ‹_›
-
-theorem degree_pow_le_of_le {a : WithBot Nat} (b : Nat) {f : R[X]} (hf : degree f ≤ a) :
-    degree (f ^ b) ≤ b * a := by
-  apply (degree_pow_le _ _).trans
-  rw [nsmul_eq_mul]
-  induction b with
-    | zero => simp [degree_one_le]
-    | succ n hn =>
-      rw [Nat.cast_succ, add_mul, add_mul, one_mul, one_mul]
-      exact (add_le_add_left hf _).trans (add_le_add_right hn _)
-
-theorem degree_nat_cast_le (n : Nat) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-
-theorem degree_zero_le : degree (0 : R[X]) ≤ 0 := natDegree_eq_zero_iff_degree_le_zero.mp rfl
-
-end Lemmas__in_a_dependent_PR
-
 theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
-theorem natDegree_nat_cast_le (n : Nat) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
+theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
 end semiring
 
-section ring
-variable [Ring R]
+variable [Ring R] in
+theorem natDegree_int_cast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
 
-section Lemmas__in_a_dependent_PR
-
-theorem natDegree_neg_le_of_le {a : Nat} {f : R[X]} (hf : natDegree f ≤ a) : natDegree (- f) ≤ a :=
-f.natDegree_neg.le.trans ‹_›
-
-theorem natDegree_sub_le_of_le {a b : Nat} {f g : R[X]} (hf : natDegree f ≤ a) (hg : natDegree g ≤ b) :
-    natDegree (f - g) ≤ max a b :=
-(f.natDegree_sub_le g).trans $ max_le_max ‹_› ‹_›
-
-theorem degree_neg_le_of_le {a : WithBot Nat} {f : R[X]} (hf : degree f ≤ a) : degree (- f) ≤ a :=
-f.degree_neg.le.trans ‹_›
-
-theorem degree_sub_le_of_le {a b : WithBot Nat} {f g : R[X]} (hf : degree f ≤ a) (hg : degree g ≤ b) :
-    degree (f - g) ≤ max a b :=
-(f.degree_sub_le g).trans $ max_le_max ‹_› ‹_›
-
-theorem degree_int_cast_le (n : Int) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
-
-end Lemmas__in_a_dependent_PR
-
-theorem natDegree_int_cast_le (n : Int) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
-
-end ring
-
-end Polynomial
-
-end mylemmas
-
-namespace Mathlib.Tactic.ComputeDegree
+end leaf_lemmas
 
 section Tactic
 
