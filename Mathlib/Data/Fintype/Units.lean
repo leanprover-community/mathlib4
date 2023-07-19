@@ -39,10 +39,9 @@ instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ex
 
 theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card α = Fintype.card αˣ + 1 := by
-  classical
-    rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
-    have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
-    rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
+  rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
+  have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
+  rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
 
 theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
     Nat.card α = Nat.card αˣ + 1 := by
