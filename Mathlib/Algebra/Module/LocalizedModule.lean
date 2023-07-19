@@ -503,7 +503,7 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
     x.inductionOn <| by
       intro
       dsimp only
-      change liftOn (mk _ _) _ _  = r • (liftOn (mk _ _) _ _)
+      change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
       simp [LocalizedModule.liftOn_mk, smul'_mk]
 #align localized_module.div_by LocalizedModule.divBy
 

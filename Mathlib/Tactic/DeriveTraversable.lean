@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 
 ! This file was ported from Lean 3 source module control.traversable.derive
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
+! leanprover-community/mathlib commit b01d6eb9d0a308807af54319b264d0994b91774b
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/

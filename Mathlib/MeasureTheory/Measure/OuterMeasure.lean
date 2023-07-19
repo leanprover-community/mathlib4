@@ -761,8 +761,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ <| subset_union_left _ _) (hI _ <| subset_union_right _ _)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (@tsum_union_disjoint _ _ _ _ _ (fun i => μ (f i)) _ _ _ hd ENNReal.summable
-          ENNReal.summable).symm
+      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
       (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
         ENNReal.summable ENNReal.summable)
@@ -1722,7 +1721,7 @@ a measurable set `t ⊇ s` such that `μ i t = (μ i).trim s` for all `i`. -/
 theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι → OuterMeasure α)
     (s : Set α) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = (μ i).trim s := by
   choose t hst ht hμt using fun i => (μ i).exists_measurable_superset_eq_trim s
-  replace hst := subset_iInter  hst
+  replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
   refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
   exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]

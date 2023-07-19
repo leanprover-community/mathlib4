@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 
 ! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit 3905fa80e62c0898131285baab35559fbc4e5cda
+! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -255,7 +255,7 @@ theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : 
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align measurable_of_subsingleton_codomain measurable_of_subsingleton_codomain
 
-@[to_additive]
+@[measurability, to_additive]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 #align measurable_one measurable_one
@@ -1462,7 +1462,7 @@ def sumProdSum (α β γ δ) [MeasurableSpace α] [MeasurableSpace β] [Measurab
 variable {π π' : δ' → Type _} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
-  between  `Π a, β₁ a` and `Π a, β₂ a`. -/
+  between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
   toEquiv := .piCongrRight fun a => (e a).toEquiv
   measurable_toFun :=

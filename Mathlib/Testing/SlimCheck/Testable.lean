@@ -88,7 +88,7 @@ namespace SlimCheck
 
 /-- Result of trying to disprove `p`
 The constructors are:
-*  `success : (PSum Unit p) → TestResult p`
+* `success : (PSum Unit p) → TestResult p`
   succeed when we find another example satisfying `p`
   In `success h`, `h` is an optional proof of the proposition.
   Without the proof, all we know is that we found one example

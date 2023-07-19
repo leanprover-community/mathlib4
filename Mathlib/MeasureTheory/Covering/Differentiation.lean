@@ -902,7 +902,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : Integrable f μ) :
   simp only [ENNReal.zero_toReal] at this
   apply Tendsto.congr' _ this
   filter_upwards [h'x, v.eventually_measure_lt_top x] with a _ h'a
-  simp only [Function.comp_apply, ENNReal.toReal_div, set_average_eq, div_eq_inv_mul]
+  simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (hf.integrableOn.sub (integrableOn_const.2 (Or.inr h'a))).norm
@@ -922,8 +922,8 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E} 
   rw [tendsto_iff_norm_tendsto_zero]
   refine' squeeze_zero' (eventually_of_forall fun a => norm_nonneg _) _ hx
   filter_upwards [h'x, v.eventually_measure_lt_top x] with a ha h'a
-  nth_rw 1 [← set_average_const ha.ne' h'a.ne (f x)]
-  simp_rw [set_average_eq']
+  nth_rw 1 [← setAverage_const ha.ne' h'a.ne (f x)]
+  simp_rw [setAverage_eq']
   rw [← integral_sub]
   · exact norm_integral_le_integral_norm _
   · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 hf.integrableOn

@@ -126,12 +126,12 @@ theorem finite_integral_one_add_norm [MeasureSpace E] [BorelSpace E]
   · -- We use estimates from auxiliary lemmas to deal with integral from `0` to `1`
     have h_int' : ∀ t ∈ Ioc (0 : ℝ) 1,
         f t = ENNReal.ofReal ((t ^ (-r⁻¹) - 1) ^ finrank ℝ E) * mB := fun t ht ↦ by
-      refine' volume.add_haar_closedBall (0 : E) _
+      refine' volume.addHaar_closedBall (0 : E) _
       rw [sub_nonneg]
       exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos ht.1 ht.2 (by simp [hr.le])
     rw [set_lintegral_congr_fun measurableSet_Ioc (ae_of_all _ h_int'),
       lintegral_mul_const' _ _ measure_ball_lt_top.ne]
-    exact ENNReal.mul_lt_top 
+    exact ENNReal.mul_lt_top
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr).ne measure_ball_lt_top.ne
   · -- The integral from 1 to ∞ is zero:
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
@@ -162,7 +162,6 @@ theorem integrable_rpow_neg_one_add_norm_sq [MeasureSpace E] [BorelSpace E]
     ?_ (eventually_of_forall fun x => ?_)
   · -- porting note: was `measurability`
     exact (((measurable_id.norm.pow_const _).const_add _).pow_const _).aestronglyMeasurable
-  refine (abs_of_pos ?_).trans_le  (rpow_neg_one_add_norm_sq_le x hr)
+  refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq
-

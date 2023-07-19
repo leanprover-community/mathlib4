@@ -909,7 +909,7 @@ section LocalRing
 
 variable {S : Type _} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
 
--- Thanks to the linter for informing us that  this instance does
+-- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map `A[[X]] → B[[X]]` induced by a local ring hom `A → B` is local -/
 instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=

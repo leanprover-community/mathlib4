@@ -127,7 +127,7 @@ theorem nodup_permsOfList : ∀ {l : List α} (_ : l.Nodup), (permsOfList l).Nod
       let ⟨g, hg⟩ := List.mem_map.1 hx'
       have hgxa : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
       have hxa : x ≠ a := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
-      exact  (List.nodup_cons.1 hl).1 <|
+      exact (List.nodup_cons.1 hl).1 <|
           hgxa ▸ mem_of_mem_permsOfList hg.1 _ (by rwa [apply_inv_self, hgxa])
 #align nodup_perms_of_list nodup_permsOfList
 

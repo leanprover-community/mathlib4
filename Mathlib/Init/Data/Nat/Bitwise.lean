@@ -285,7 +285,7 @@ def land' : ℕ → ℕ → ℕ :=
 
 /--`ldiff' a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ  ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
+  boolean operation `aᵢ ∧ bᵢ` to obtain the `iᵗʰ` bit of the result.-/
 def ldiff' : ℕ → ℕ → ℕ :=
   bitwise' fun a b => a && not b
 #align nat.ldiff Nat.ldiff'
@@ -413,8 +413,8 @@ theorem bitwise'_zero_left (f : Bool → Bool → Bool) (n) :
 @[simp]
 theorem bitwise'_zero_right (f : Bool → Bool → Bool) (h : f false false = false) (m) :
     bitwise' f m 0 = cond (f true false) m 0 := by
-  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero];
-    exact bitwise'_bit_aux h
+  unfold bitwise'; apply bitCasesOn m; intros; rw [binaryRec_eq, binaryRec_zero]
+  exact bitwise'_bit_aux h
 #align nat.bitwise_zero_right Nat.bitwise'_zero_right
 
 @[simp]

@@ -1099,7 +1099,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
 theorem lift_sInf (s : Set Cardinal) : lift.{u,v} (sInf s) = sInf (lift.{u,v} '' s) := by
   rcases eq_empty_or_nonempty s with (rfl | hs)
   · simp
-  · exact  lift_monotone.map_csInf hs
+  · exact lift_monotone.map_csInf hs
 #align cardinal.lift_Inf Cardinal.lift_sInf
 
 -- Porting note: Inserted .{u,v} below

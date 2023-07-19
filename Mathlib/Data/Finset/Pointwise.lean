@@ -1599,7 +1599,7 @@ theorem mem_smul_finset {x : β} : x ∈ a • s ↔ ∃ y, y ∈ s ∧ a • y 
 #align finset.mem_vadd_finset Finset.mem_vadd_finset
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s)  = a • (↑s : Set β) :=
+theorem coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Set β) :=
   coe_image
 #align finset.coe_smul_finset Finset.coe_smul_finset
 #align finset.coe_vadd_finset Finset.coe_vadd_finset

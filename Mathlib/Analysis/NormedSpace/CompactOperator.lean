@@ -45,7 +45,7 @@ coercing from continuous linear maps to linear maps often needs type ascriptions
 
 ## References
 
-* Bourbaki, *Spectral Theory*, chapters 3 to 5, to be published (2022)
+* [N. Bourbaki, *Théories Spectrales*, Chapitre 3][bourbaki2023]
 
 ## Tags
 
