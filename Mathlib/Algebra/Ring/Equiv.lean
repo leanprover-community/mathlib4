@@ -57,7 +57,7 @@ variable {F α β R S S' : Type _}
 @[simps] def RingHom.inverse [NonAssocSemiring R] [NonAssocSemiring S]
     (f : RingHom R S) (g : S → R)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : S →+* R :=
-  { (f : OneHom R S).inverse g h₁ h₂, 
+  { (f : OneHom R S).inverse g h₁, 
     (f : MulHom R S).inverse g h₁ h₂,
     (f : R →+ S).inverse g h₁ h₂ with toFun := g }
 
