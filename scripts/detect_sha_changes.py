@@ -97,7 +97,7 @@ if __name__ == '__main__':
                     pass
                 elif a_info.module == b_info.module:
                     mod_path = a_info.module.replace('.', '/')
-                    msg = f"See\nhttps://leanprover-community.github.io/mathlib-port-status/file/{mod_path}?range={a_info.commit}..{b_info.commit}"
+                    msg = f"See review instructions and diff at\nhttps://leanprover-community.github.io/mathlib-port-status/file/{mod_path}?range={a_info.commit}..{b_info.commit}"
                     print(f"::notice file={diff.b_blob.path},line={b_info.commit_line_no},title=Synchronization::{encode_msg_text_for_github(msg)}")
 
     if any_errors:
