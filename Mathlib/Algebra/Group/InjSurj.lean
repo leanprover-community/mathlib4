@@ -216,7 +216,19 @@ protected def involutiveInv {M₁ : Type _} [Inv M₁] [InvolutiveInv M₂] (f :
 #align function.injective.has_involutive_inv Function.Injective.involutiveInv
 #align function.injective.has_involutive_neg Function.Injective.involutiveNeg
 
-variable [Inv M₁] [Div M₁] [Pow M₁ ℤ]
+variable [Inv M₁]
+
+/-- A type endowed with `1` and `⁻¹` is a `InvOneClass`, if it admits an injective map that
+preserves `1` and `⁻¹` to a `InvOneClass`.  See note [reducible non-instances]. -/
+@[to_additive (attr := reducible)
+"A type endowed with `0` and unary `-` is an `NegZeroClass`, if it admits an
+injective map that preserves `0` and unary `-` to an `NegZeroClass`."]
+protected def invOneClass [InvOneClass M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
+    (inv : ∀ x, f (x⁻¹) = (f x)⁻¹) : InvOneClass M₁ :=
+  { ‹One M₁›, ‹Inv M₁› with
+    inv_one := hf <| by erw [inv, one, inv_one] }
+
+variable [Div M₁] [Pow M₁ ℤ]
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvMonoid` if it admits an injective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvMonoid`. See note [reducible non-instances]. -/
@@ -237,6 +249,20 @@ protected def divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Injecti
     div_eq_mul_inv := fun x y => hf <| by erw [div, mul, inv, div_eq_mul_inv] }
 #align function.injective.div_inv_monoid Function.Injective.divInvMonoid
 #align function.injective.sub_neg_monoid Function.Injective.subNegMonoid
+
+/-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivInvOneMonoid` if it admits an injective
+map that preserves `1`, `*`, `⁻¹`, and `/` to a `DivInvOneMonoid`. See note
+[reducible non-instances]. -/
+@[to_additive (attr := reducible) subNegZeroMonoid
+"A type endowed with `0`, `+`, unary `-`, and binary `-` is a
+`SubNegZeroMonoid` if it admits an injective map that preserves `0`, `+`, unary `-`, and binary
+`-` to a `SubNegZeroMonoid`. This version takes custom `nsmul` and `zsmul` as `[SMul ℕ M₁]` and
+`[SMul ℤ M₁]` arguments."]
+protected def divInvOneMonoid [DivInvOneMonoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
+    (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
+    (div : ∀ x y, f (x / y) = f x / f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : DivInvOneMonoid M₁ :=
+  { hf.divInvMonoid f one mul inv div npow zpow, hf.invOneClass f one inv with }
 
 /-- A type endowed with `1`, `*`, `⁻¹`, and `/` is a `DivisionMonoid` if it admits an injective map
 that preserves `1`, `*`, `⁻¹`, and `/` to a `DivisionMonoid`. See note [reducible non-instances] -/
