@@ -552,7 +552,7 @@ lemma isIso_rightHomologyι (hg : S.g = 0) : IsIso S.rightHomologyι :=
 
 /-- When `S.g = 0`, this is the canonical isomorphism `S.opcycles ≅ S.rightHomology` induced
 by `S.rightHomologyι`. -/
-@[simps! hom]
+@[simps! inv]
 noncomputable def opcyclesIsoRightHomology (hg : S.g = 0) : S.opcycles ≅ S.rightHomology := by
   have := S.isIso_rightHomologyι hg
   exact (asIso S.rightHomologyι).symm
