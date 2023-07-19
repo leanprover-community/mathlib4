@@ -571,8 +571,7 @@ theorem padicValNat_factorial {p n b : ℕ} [hp : Fact p.Prime] (hnb : log p n <
 
 The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
-`log p n`
--/
+`log p n`. -/
 theorem padicValNat_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     padicValNat p (choose n k) =
     ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
