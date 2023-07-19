@@ -1214,13 +1214,6 @@ theorem natDegree_quadratic (ha : a ≠ 0) : natDegree (C a * X ^ 2 + C b * X + 
 #align polynomial.nat_degree_quadratic Polynomial.natDegree_quadratic
 
 @[simp]
-theorem natDegree_quadratic_linear (ha : a ≠ 0) : natDegree (C a * X ^ 2 + C b * X) = 2 := by
-  have : C a * X ^ 2 + C b * X = C a * X ^ 2 + C b * X + C 0 := by
-    simp only [map_zero, add_zero]
-  rw [this]
-  exact natDegree_quadratic ha
-
-@[simp]
 theorem leadingCoeff_quadratic (ha : a ≠ 0) : leadingCoeff (C a * X ^ 2 + C b * X + C c) = a := by
   rw [add_assoc, add_comm, leadingCoeff_add_of_degree_lt <| degree_linear_lt_degree_C_mul_X_sq ha,
     leadingCoeff_C_mul_X_pow]
