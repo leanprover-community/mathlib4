@@ -37,7 +37,7 @@ topological space, group, topological group
 -/
 
 
-open Classical Set Filter TopologicalSpace Function Topology Pointwise
+open Classical Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
 universe u v w x
 
@@ -1252,6 +1252,58 @@ theorem subset_interior_smul : interior s • interior t ⊆ interior (s • t) 
 
 end ContinuousConstSMul
 
+section ContinuousSMul
+
+variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
+  [ContinuousSMul α β] {s : Set α} {t : Set β}
+
+@[to_additive]
+theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+    IsClosed (s • t) := by
+  have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
+    intro x ⟨g, y, hgs, hyt, hgyx⟩
+    refine ⟨g, hgs, ?_⟩
+    convert hyt
+    rwa [inv_smul_eq_iff, eq_comm]
+  choose! f hf using this
+  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
+  rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
+  have : Ultrafilter.map f u ≤ 𝓟 s :=
+    calc Ultrafilter.map f u ≤ map f (𝓟 (s • t)) := map_mono (le_principal_iff.mpr hust)
+      _ = 𝓟 (f '' (s • t)) := map_principal
+      _ ≤ 𝓟 s := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
+  rcases hs.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨g, hg, hug⟩
+  suffices g⁻¹ • x ∈ t from
+    ⟨g, g⁻¹ • x, hg, this, smul_inv_smul _ _⟩
+  exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
+    (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
+
+/-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
+closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
+`ℚ` acting on `ℝ` by translation, and let `s : set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
+closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
+closed in `ℝ`.
+To fix the proof, we would need to make two additional assumptions:
+- for any `x ∈ t`, `s • {x}` is closed
+- for any `x ∈ t`, there is a continuous function `g : s • {x} → s` such that, for all
+  `y ∈ s • {x}`, we have `y = (g y) • x`
+These are fairly specific hypotheses so we don't state this version of the lemmas, but an
+interesting fact is that these two assumptions are verified in the case of a `NormedAddTorsor`
+(or really, any `AddTorsor` with continuous `-ᵥ`). We prove this special case in
+`IsClosed.vadd_right_of_isCompact`. -/
+
+@[to_additive]
+theorem MulAction.isClosedMap_quotient [CompactSpace α] :
+    letI := orbitRel α β
+    IsClosedMap (Quotient.mk' : β → Quotient (orbitRel α β)) := by
+  intro t ht
+  rw [← quotientMap_quotient_mk'.isClosed_preimage, MulAction.quotient_preimage_image_eq_union_mul]
+  convert ht.smul_left_of_isCompact (isCompact_univ (α := α))
+  rw [← biUnion_univ, ← iUnion_smul_left_image]
+  rfl
+
+end ContinuousSMul
+
 section ContinuousConstSMul
 
 variable [TopologicalSpace α] [Group α] [ContinuousConstSMul α α] {s t : Set α}
@@ -1391,6 +1443,26 @@ theorem IsOpen.closure_div (ht : IsOpen t) (s : Set α) : closure s / t = s / t 
   simp_rw [div_eq_mul_inv, ht.inv.closure_mul]
 #align is_open.closure_div IsOpen.closure_div
 #align is_open.closure_sub IsOpen.closure_sub
+
+@[to_additive]
+theorem IsClosed.mul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) : IsClosed (s * t) :=
+  ht.smul_left_of_isCompact hs
+
+@[to_additive]
+theorem IsClosed.mul_right_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
+    IsClosed (t * s) := by
+  rw [← image_op_smul]
+  exact IsClosed.smul_left_of_isCompact ht (hs.image continuous_op)
+
+@[to_additive]
+theorem QuotientGroup.isClosedMap_coe {H : Subgroup α} (hH : IsCompact (H : Set α)) :
+    IsClosedMap ((↑) : α → α ⧸ H) := by
+  intro t ht
+  rw [← quotientMap_quotient_mk'.isClosed_preimage]
+  convert ht.mul_right_of_isCompact hH
+  refine (QuotientGroup.preimage_image_mk_eq_iUnion_image _ _).trans ?_
+  rw [iUnion_subtype, ← iUnion_mul_right_image]
+  rfl
 
 end TopologicalGroup
 
@@ -1666,7 +1738,7 @@ variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 @[to_additive]
 theorem nhds_mul (x y : G) : 𝓝 (x * y) = 𝓝 x * 𝓝 y :=
   calc
-    𝓝 (x * y) = map ((· * ·) x) (map (fun a => a * y) (𝓝 1 * 𝓝 1)) := by simp
+    𝓝 (x * y) = map (x * ·) (map (· * y) (𝓝 1 * 𝓝 1)) := by simp
     _ = map₂ (fun a b => x * (a * b * y)) (𝓝 1) (𝓝 1) := by rw [← map₂_mul, map_map₂, map_map₂]
     _ = map₂ (fun a b => x * a * (b * y)) (𝓝 1) (𝓝 1) := by simp only [mul_assoc]
     _ = 𝓝 x * 𝓝 y :=

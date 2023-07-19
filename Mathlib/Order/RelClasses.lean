@@ -513,13 +513,31 @@ instance [IsWellOrder α r] [IsWellOrder β s] : IsWellOrder (α × β) (Prod.Le
 instance (r : α → α → Prop) [IsWellFounded α r] (f : β → α) : IsWellFounded _ (InvImage r f) :=
   ⟨InvImage.wf f IsWellFounded.wf⟩
 
-instance (f : α → ℕ) : IsWellFounded _ (Measure f) :=
+instance (f : α → ℕ) : IsWellFounded _ (InvImage (· < ·) f) :=
   ⟨(measure f).wf⟩
 
 theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] {s : α → α → Prop}
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 #align subrelation.is_well_founded Subrelation.isWellFounded
+
+instance Prod.wellFoundedLT [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    refine @Subrelation.wf (α × β) (Prod.Lex (· < ·) (· < ·)) (· < ·) ?_ IsWellFounded.wf
+    rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ w
+    simp only [Prod.mk_lt_mk] at w
+    rcases eq_or_ne a₁ a₂ with rfl | ha
+    · right
+      simpa using w
+    · left
+      rcases w with ⟨a_lt, _⟩ | ⟨a_le, _⟩
+      · assumption
+      · exact Ne.lt_of_le ha a_le
+
+instance Prod.wellFoundedGT [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
+    WellFoundedGT (α × β) :=
+  @Prod.wellFoundedLT αᵒᵈ βᵒᵈ _ _ _ _
 
 namespace Set
 

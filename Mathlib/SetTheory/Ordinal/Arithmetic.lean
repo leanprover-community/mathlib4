@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 
 ! This file was ported from Lean 3 source module set_theory.ordinal.arithmetic
-! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
+! leanprover-community/mathlib commit 31b269b60935483943542d547a6dd83a66b37dc7
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -386,7 +386,7 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
 #align ordinal.type_subrel_lt Ordinal.type_subrel_lt
 
 theorem mk_initialSeg (o : Ordinal.{u}) :
-    (#{ o' : Ordinal | o' < o }) = Cardinal.lift.{u + 1} o.card := by
+    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := by
   rw [lift_card, ← type_subrel_lt, card_type]
 #align ordinal.mk_initial_seg Ordinal.mk_initialSeg
 
@@ -703,7 +703,7 @@ theorem lift_mul (a b : Ordinal.{v}) : lift.{u} (a * b) = lift.{u} a * lift.{u} 
 
 @[simp]
 theorem card_mul (a b) : card (a * b) = card a * card b :=
-  Quotient.inductionOn₂ a b fun ⟨α, _r, _⟩ ⟨β, _s, _⟩ => mul_comm (#β) (#α)
+  Quotient.inductionOn₂ a b fun ⟨α, _r, _⟩ ⟨β, _s, _⟩ => mul_comm #β #α
 #align ordinal.card_mul Ordinal.card_mul
 
 instance leftDistribClass : LeftDistribClass Ordinal.{u} :=
@@ -906,11 +906,11 @@ theorem div_pos {b c : Ordinal} (h : c ≠ 0) : 0 < b / c ↔ c ≤ b := by simp
 #align ordinal.div_pos Ordinal.div_pos
 
 theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b := by
-  apply limitRecOn a
-  · simp only [mul_zero, Ordinal.zero_le]
-  · intros
-    rw [succ_le_iff, lt_div c0]
-  ·
+  induction a using limitRecOn with
+  | H₁ => simp only [mul_zero, Ordinal.zero_le]
+  | H₂ _ _ => rw [succ_le_iff, lt_div c0]
+  | H₃ _ h₁ h₂ =>
+    revert h₁ h₂
     simp (config := { contextual := true }) only [mul_le_of_limit, limit_le, iff_self_iff,
       forall_true_iff]
 #align ordinal.le_div Ordinal.le_div
@@ -1710,7 +1710,7 @@ theorem lsub_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) :
   h.not_lt (lt_lsub f i)
 #align ordinal.lsub_not_mem_range Ordinal.lsub_not_mem_range
 
-theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : Set.range fᶜ.Nonempty :=
+theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
   ⟨_, lsub_not_mem_range.{_, v} f⟩
 #align ordinal.nonempty_compl_range Ordinal.nonempty_compl_range
 
@@ -1991,21 +1991,35 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
-      apply a.limitRecOn
-      assumption'
-      intro o ho H
+      induction' a using limitRecOn with _ _ _ ho H
+      any_goals solve_by_elim
       rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
       congr
       ext b hb
       exact H b hb⟩
 #align ordinal.is_normal.eq_iff_zero_and_succ Ordinal.IsNormal.eq_iff_zero_and_succ
 
+/-- A two-argument version of `Ordinal.blsub`.
+We don't develop a full API for this, since it's only used in a handful of existence results. -/
+def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
+    Ordinal :=
+  lsub (fun x : o₁.out.α × o₂.out.α => op (typein_lt_self x.1) (typein_lt_self x.2))
+#align ordinal.blsub₂ Ordinal.blsub₂
+
+theorem lt_blsub₂ {o₁ o₂ : Ordinal}
+    (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) {a b : Ordinal}
+    (ha : a < o₁) (hb : b < o₂) : op ha hb < blsub₂ o₁ o₂ op := by
+  convert lt_lsub _ (Prod.mk (enum (· < · ) a (by rwa [type_lt]))
+    (enum (· < · ) b (by rwa [type_lt])))
+  simp only [typein_enum]
+#align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
+
 /-! ### Minimum excluded ordinals -/
 
 
 /-- The minimum excluded ordinal in a family of ordinals. -/
 def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
-  sInf (Set.range fᶜ)
+  sInf (Set.range f)ᶜ
 #align ordinal.mex Ordinal.mex
 
 theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
@@ -2044,19 +2058,19 @@ theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β →
 #align ordinal.mex_monotone Ordinal.mex_monotone
 
 theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
-    mex.{_, u} f < (succ (#ι)).ord := by
+    mex.{_, u} f < (succ #ι).ord := by
   by_contra' h
-  apply (lt_succ (#ι)).not_le
+  apply (lt_succ #ι).not_le
   have H := fun a => exists_of_lt_mex ((typein_lt_self a).trans_le h)
-  let g : (succ (#ι)).ord.out.α → ι := fun a => Classical.choose (H a)
+  let g : (succ #ι).ord.out.α → ι := fun a => Classical.choose (H a)
   have hg : Injective g := fun a b h' => by
     have Hf : ∀ x, f (g x) =
-        typein ((· < ·) : (succ (#ι)).ord.out.α → (succ (#ι)).ord.out.α → Prop) x :=
+        typein ((· < ·) : (succ #ι).ord.out.α → (succ #ι).ord.out.α → Prop) x :=
       fun a => Classical.choose_spec (H a)
     apply_fun f at h'
     rwa [Hf, Hf, typein_inj] at h'
   convert Cardinal.mk_le_of_injective hg
-  rw [Cardinal.mk_ord_out (succ (#ι))]
+  rw [Cardinal.mk_ord_out (succ #ι)]
 #align ordinal.mex_lt_ord_succ_mk Ordinal.mex_lt_ord_succ_mk
 
 /-- The minimum excluded ordinal of a family of ordinals indexed by the set of ordinals less than
@@ -2190,7 +2204,7 @@ theorem enumOrd_strictMono (hS : Unbounded (· < ·) S) : StrictMono (enumOrd S)
 /-- A more workable definition for `enumOrd`. -/
 theorem enumOrd_def (o) : enumOrd S o = sInf (S ∩ { b | ∀ c, c < o → enumOrd S c < b }) := by
   rw [enumOrd_def']
-  congr ; ext
+  congr; ext
   exact ⟨fun h a hao => (lt_blsub.{u, u} _ _ hao).trans_le h, blsub_le⟩
 #align ordinal.enum_ord_def Ordinal.enumOrd_def
 
@@ -2478,11 +2492,11 @@ theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
 #align ordinal.add_mul_limit_aux Ordinal.add_mul_limit_aux
 
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
-  apply limitRecOn c
-  · simp only [succ_zero, mul_one]
-  · intro c IH
+  induction c using limitRecOn with
+  | H₁ => simp only [succ_zero, mul_one]
+  | H₂ c IH =>
     rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
-  · intro c l IH
+  | H₃ c l IH =>
     -- Porting note: Unused.
     -- have := add_mul_limit_aux ba l IH
     rw [mul_succ, add_mul_limit_aux ba l IH, mul_succ, add_assoc]
