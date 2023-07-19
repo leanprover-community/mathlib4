@@ -668,12 +668,13 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
       (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
 #align ideal.dvd_not_unit_iff_lt Ideal.dvdNotUnit_iff_lt
 
-instance : WfDvdMonoid (Ideal A) where wellFounded_dvdNotUnit := by
-  have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
-    isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.isNoetherianRing)
-  convert this
-  ext
-  rw [Ideal.dvdNotUnit_iff_lt]
+instance : WfDvdMonoid (Ideal A) where
+  wellFounded_dvdNotUnit := by
+    have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
+      isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.isNoetherianRing)
+    convert this
+    ext
+    rw [Ideal.dvdNotUnit_iff_lt]
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
