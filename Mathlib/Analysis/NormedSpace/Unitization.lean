@@ -118,7 +118,7 @@ variable {𝕜 A}
 
 section Aux
 
-/-- Pull back the normed ring structure from `(A →L[𝕜] A) × 𝕜` to `Unitization 𝕜 A` using the
+/-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.leftRegRep 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
@@ -130,7 +130,7 @@ noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
 
 attribute [local instance] Unitization.normedRingAux
 
-/-- Pull back the normed algebra structure from `(A →L[𝕜] A) × 𝕜` to `Unitization 𝕜 A` using the
+/-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.leftRegRep 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one.-/
 @[reducible]
@@ -262,3 +262,5 @@ correct ones. -/
 example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniformSpace := rfl
+
+end Unitization
