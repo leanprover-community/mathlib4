@@ -83,7 +83,7 @@ Here are a more ways to navigate expressions:
 * `arg @i` navigates to the `i`th argument, counting both explicit and implicit arguments.
 * `enter [...]`, where the `...` consists of a list of arguments appropriate for `arg` or `ext`,
   and then runs the corresponding `arg` and `ext` commands.
-  For example, `enter [1,@2,x,3]` is the same as `arg 1, arg @2, ext x, arg 3`.
+  For example, `enter [1,@2,x,3]` is the same as `arg 1; arg @2; ext x; arg 3`.
 
 ## Pattern matching
 
@@ -158,7 +158,7 @@ example (a b : ℕ) :
 Besides rewriting using `rw`, one can use `simp`, `dsimp`, `change`, `ring`, `norm_num`,
 `push_neg`, `unfold`, among others.
 
-See the [`conv` guide](https://leanprover-community.github.io/mathlib4_docs/Docs/Conv/Guide.html)
+See the [`conv` guide](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Guide.html)
 for a more in-depth overview.
 
 -/
