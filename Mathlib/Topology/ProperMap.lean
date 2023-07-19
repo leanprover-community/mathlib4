@@ -164,6 +164,10 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   (h.prod_map isProperMap_id).isClosedMap
 
+example {a b c d : X} (h : (a, b) = (c, d)) : a = c := by
+  rcases h with ⟨rfl, rfl⟩
+  rfl
+
 theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
     IsProperMap f ↔ Continuous f ∧ IsClosedMap
@@ -172,23 +176,17 @@ theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [Topologica
   · exact ⟨H.continuous, H.universally_closed _⟩
   · rw [isProperMap_iff_ultrafilter]
     refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-    let F : Set (X × Filter X) := closure {xℱ | xℱ.2 = 𝓝 xℱ.1}
+    let F : Set (X × Filter X) := closure {xℱ | xℱ.2 = pure xℱ.1}
     have := H.2 F isClosed_closure
-    · let φ := Homeomorph.prodPUnit.{u, u} X
-      let ψ := Homeomorph.prodPUnit.{v, u} Y
-      exact ψ.isClosedMap.comp <| (H.2 PUnit).comp φ.symm.isClosedMap
-    · rw [isCompact_iff_compactSpace]
-      set Z' : Type u := Filter <| Discrete <| f ⁻¹' {y}
-      have := (H.2 Z').restrictPreimage ({y} ×ˢ univ)
-      let φ : ({y} ×ˢ univ : Set (Y × Z')) ≃ₜ Z' :=
-        (Homeomorph.Set.prod _ _).trans <|
-        (Homeomorph.prodCongr (.homeomorphOfUnique _ _) (.Set.univ _)).trans <|
-        (Homeomorph.punitProd.{u, u} _)
-      let ψ : ((f ⁻¹' {y}) ×ˢ univ : Set (X × Z')) ≃ₜ (f ⁻¹' {y}) × Z' :=
-        (Homeomorph.Set.prod _ _).trans
-        (Homeomorph.prodCongr (.refl _) (Homeomorph.Set.univ _))
-      refine compactSpace_of_isClosedMap_snd_filter ?_
-      exact φ.isClosedMap.comp <| this.comp ψ.symm.isClosedMap
+    have : (y, ↑𝒰) ∈ Prod.map f id '' F :=
+      this.mem_of_tendsto (hy.prod_mk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
+        (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
+    rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩ -- I don't even understand how this works!
+    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_not_mem_iff.mp fun hUc ↦ ?_⟩
+    rw [mem_closure_iff_nhds] at hx
+    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hUc)) with
+      ⟨⟨y, 𝒢⟩, ⟨⟨hy : y ∈ U, hy' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure y⟩⟩
+    exact hy' hy
 
 theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
