@@ -14,7 +14,6 @@ import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.Discriminant
 
-
 /-!
 # Canonical embedding of a number field
 
@@ -33,6 +32,9 @@ radius is finite.
 `φ_₁,...,φ_r₁` are its real embeddings and `ψ_₁,..., ψ_r₂` are its complex embeddings (up to
 complex conjugation).
 
+* `exists_ne_zero_mem_ringOfIntegers_lt`: let `f : InfinitePlace K → ℝ≥0`, if the product
+`∏_w f w` is large enough, proves that there exists a nonzero algebraic integer `a` such
+that `w a < f w` for all infinite places `w`.
 
 ## Tags
 
@@ -60,7 +62,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) :
 open scoped ComplexConjugate
 
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
-that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
+that `conj x_φ = x_(conj φ)` for all `φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
@@ -73,14 +75,13 @@ theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     exact congrArg ((a : ℂ) * ·) hx
 
 theorem nnnorm_eq [NumberField K] (x : K) :
-    ‖canonicalEmbedding K x‖₊ =
-      Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
+    ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
-  · obtain ⟨φ : K →+* ℂ⟩ := (inferInstance : Nonempty (K →+* ℂ))
+  · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
     refine iff_of_false ?_ ?_
     exact (hr.trans_le (norm_nonneg _)).not_le
     exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
@@ -100,9 +101,9 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
   · simp [Metric.closedBall_eq_empty.2 hr]
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
-      intro x ; rw [← norm_le_iff, mem_closedBall_zero_iff]
+      intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
-    ext ; constructor
+    ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨↑x, ⟨SetLike.coe_mem x, fun φ => (heq x).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
@@ -115,7 +116,7 @@ noncomputable def latticeBasis [NumberField K] :
     Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℂ ((K →+* ℂ) → ℂ) := by
   classical
   -- Let `B` be the canonical basis of `(K →+* ℂ) → ℂ`. We prove that the determinant of
-  -- the image by `canonicalEmbedding` of the integral basis of `K` is non-zero. This
+  -- the image by `canonicalEmbedding` of the integral basis of `K` is nonzero. This
   -- will imply the result.
     let B := Pi.basisFun ℂ (K →+* ℂ)
     let e : (K →+* ℂ) ≃ Free.ChooseBasisIndex ℤ (𝓞 K) :=
@@ -127,11 +128,11 @@ noncomputable def latticeBasis [NumberField K] :
         ((linearIndependent_equiv e.symm).mpr this.1) ?_
       rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_fintype_fun_eq_card,
         Embeddings.card]
-  -- In order to prove that the determinant is non-zero, we show that it is equal to the
+  -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
       RingHom.equivRatAlgHom
-    rw [show M = N.transpose by { ext : 2 ; rfl }]
+    rw [show M = N.transpose by { ext:2; rfl }]
     rw [Matrix.det_transpose, ← @pow_ne_zero_iff ℂ _ _ _ 2 (by norm_num)]
     convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
       (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
@@ -149,10 +150,10 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp] ; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext ; exact mem_span_integralBasis K]
+    ext; exact mem_span_integralBasis K]
   rfl
 
 end NumberField.canonicalEmbedding
@@ -208,7 +209,7 @@ theorem comm_map_canonical_eq_mixed (x : K) :
     mixedEmbedding, RingHom.prod_apply, Prod.mk.injEq]
   exact ⟨rfl, rfl⟩
 
-/-- This is technical result to ensure that the image of the `ℂ`-basis of `ℂ^n`, defined in
+/-- This is a technical result to ensure that the image of the `ℂ`-basis of `ℂ^n` defined in
 `canonicalEmbedding.latticeBasis` is a `ℝ`-basis of `ℝ^r₁ × ℂ^r₂`,
 see `mixedEmbedding.latticeBasis`. -/
 theorem disjoint_span_comm_map_ker [NumberField K]:
@@ -270,10 +271,10 @@ theorem mem_span_latticeBasis [NumberField K] (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ mixedEmbedding K '' (𝓞 K) := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp] ; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext ; exact mem_span_integralBasis K]
+    ext; exact mem_span_integralBasis K]
   rfl
 
 end integerLattice
@@ -285,7 +286,7 @@ open Metric ENNReal NNReal
 variable (f : InfinitePlace K → ℝ≥0)
 
 /-- The convex body defined by `f`: the set of points `x : E` such that `‖x w‖ < f w` for all
-infinite place `w`. -/
+infinite places `w`. -/
 def convex_body : Set (E K) :=
   (Set.pi Set.univ (fun w : { w : InfinitePlace K // IsReal w } => ball 0 (f w))) ×ˢ
   (Set.pi Set.univ (fun w : { w : InfinitePlace K // IsComplex w } => ball 0 (f w)))
@@ -336,12 +337,12 @@ theorem convex_body_volume :
     volume (convex_body K f) = (constant_factor K) * ∏ w, (f w) ^ (mult K w) := by
   rw [volume_eq_prod, convex_body, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi]
   conv_lhs =>
-    congr ; congr ; next => skip
+    congr; congr; next => skip
     ext
     rw [Real.volume_ball, ofReal_mul (by norm_num), ofReal_coe_nnreal, mul_comm]
   conv_lhs =>
-    congr ; next => skip
-    congr ; next => skip
+    congr; next => skip
+    congr; next => skip
     ext i
     rw [addHaar_ball _ _ (by exact (f i).prop), Complex.finrank_real_complex, ← NNReal.coe_pow,
       ofReal_coe_nnreal, mul_comm]
@@ -352,12 +353,13 @@ theorem convex_body_volume :
   rw [Finset.prod_ite]
   simp_rw [coe_mul, coe_finset_prod]
   simp_rw [show (fun w : InfinitePlace K ↦ ¬IsReal w) = (fun w ↦ IsComplex w)
-    by funext ; rw [not_isReal_iff_isComplex]]
-  congr 1 ; rw [mul_comm] ; congr 1
+    by funext; rw [not_isReal_iff_isComplex]]
+  congr 1; rw [mul_comm]; congr 1
   all_goals
   · rw [← Finset.prod_subtype_eq_prod_filter]
-    congr ; ext
+    congr; ext
     exact ⟨fun _ =>  Finset.mem_subtype.mpr (Finset.mem_univ _), fun _ => Finset.mem_univ _⟩
+
 
 variable {f}
 
@@ -395,7 +397,7 @@ theorem minkowski_bound_lt_top : minkowski_bound K < ⊤ := by
   · exact ne_of_lt (Zspan.fundamentalDomain_bounded (latticeBasis K)).measure_lt_top
   · exact ne_of_lt (pow_lt_top (lt_top_iff_ne_top.mpr two_ne_top) _)
 
-theorem exists_ne_zero_mem_ring_of_integers_lt (h : minkowski_bound K < volume (convex_body K f)) :
+theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowski_bound K < volume (convex_body K f)) :
     ∃ (a : 𝓞 K), a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   have : @IsAddHaarMeasure (E K) _ _ _ volume := prod.instIsAddHaarMeasure volume volume
   have h_fund := Zspan.isAddFundamentalDomain (latticeBasis K) volume

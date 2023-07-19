@@ -314,7 +314,7 @@ theorem seq.next {x : 𝓞 K} (hx : x ≠ 0) :
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
-    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ring_of_integers_lt (f := g)
+    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
       (by rw [convex_body_volume]; convert hB; exact congrArg ((↑): NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_coe_nat]
