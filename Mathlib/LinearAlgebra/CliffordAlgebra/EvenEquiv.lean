@@ -8,9 +8,7 @@ import Mathlib.LinearAlgebra.CliffordAlgebra.Even
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
 import Mathlib.Tactic.LiftLets
 
-#align_import linear_algebra.clifford_algebra.even_equiv from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
-
-#align_import linear_algebra.clifford_algebra.bar from "leanprover-community/mathlib"@"9264b15ee696b7ca83f13c8ad67c83d6eb70b730"
+#align_import linear_algebra.clifford_algebra.even_equiv from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Isomorphisms with the even subalgebra of a Clifford algebra
