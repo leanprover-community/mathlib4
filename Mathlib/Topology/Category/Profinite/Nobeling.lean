@@ -388,6 +388,11 @@ end LinearIndependent
 
 section Span
 
+lemma span_biprod (x : (N ⊞ P).carrier) (s : Set (N ⊞ P).carrier)
+    (hN : (biprod.fst : N ⊞ P ⟶ N) x ∈ Submodule.span R ((biprod.inl : N ⟶ N ⊞ P) ⁻¹' s))
+    (hP : (biprod.snd : N ⊞ P ⟶ P) x ∈ Submodule.span R ((biprod.inr : P ⟶ N ⊞ P) ⁻¹' s)) :
+    x ∈ Submodule.span R s := sorry
+
 variable {M : ModuleCat R} {u : I ⊕ J → M} {f : N ⟶ M} {g : M ⟶ P}
 
 lemma span_leftExact (hse : Mono f ∧ Exact f g) (huv : u ∘ Sum.inl = f ∘ v)
@@ -4213,6 +4218,216 @@ lemma GoodProducts.maxTail_isGood (l : StartingWithMax C o)
       rw [Finsupp.sum_mapDomain_index_inj hfi]
       rfl
 
+-- TODO: bump mathlib to get this theorem
+theorem Submodule.apply_mem_span_image_iff_mem_span {R : Type _}  {R₂ : Type _}
+    {M : Type _}  {M₂ : Type _} [inst : Semiring R]  [inst : AddCommMonoid M]
+    [inst : Module R M] [inst : Semiring R₂]  {σ₁₂ : R →+* R₂}
+    [inst : AddCommMonoid M₂] [inst : Module R₂ M₂][RingHomSurjective σ₁₂]
+    {f : M →ₛₗ[σ₁₂] M₂} {x : M}
+    {s : Set M} (hf : Function.Injective f) :
+    f x ∈ Submodule.span R₂ (f '' s) ↔ x ∈ Submodule.span R s := by
+  rw [← Submodule.mem_comap, ← Submodule.map_span, Submodule.comap_map_eq_of_injective hf]
+
+lemma GoodProducts.maxTail_isGood' (l : StartingWithMax C o) :
+    (MaxTail C l).isGood (C' C ho) := by
+  intro h
+  rw [Finsupp.mem_span_image_iff_total, ← max_eq_eval C hsC ho] at h
+  obtain ⟨m, ⟨hmmem, hmsum⟩⟩ := h
+  rw [Finsupp.total_apply] at hmsum
+  have : (Linear_CC' C hsC ho) (l.val.eval C) = (Linear_CC' C hsC ho)
+    (Finsupp.sum m fun i a ↦ a • ((term I ho :: i.1).map (e C)).prod)
+  · rw [← hmsum]
+    simp only [LinearMap.map_finsupp_sum]
+    apply Finsupp.sum_congr
+    intro q hq
+    rw [LinearMap.map_smul]
+    rw [Finsupp.mem_supported] at hmmem
+    have hx'' : q < MaxTail C l := hmmem hq
+    have : ∃ (p : Products (WithTop I)), p.val ≠ [] ∧ p.val.head! = term I ho ∧ q = p.Tail
+    · refine' ⟨⟨term I ho :: q.val, _⟩, ⟨_, _, _⟩⟩
+      · rw [List.chain'_cons']
+        refine' ⟨_, q.prop⟩
+        cases' q with x' x'prop
+        induction x' with
+        | nil =>
+          · intro y hy
+            simp only [List.head?_nil, Option.mem_def] at hy
+        | cons a as _ =>
+          · intro y hy
+            simp only [List.head?_cons, Option.mem_def, Option.some.injEq] at hy
+            rw [← hy]
+            by_cases hM : (MaxTail C l).val = []
+            · have : a :: as < []
+              · rw [← hM]
+                exact hx''
+              exfalso
+              exact List.Lex.not_nil_right _ _ this
+            · obtain ⟨b, L, hbL⟩ := List.exists_cons_of_ne_nil hM
+              have : a :: as < b :: L
+              · rw [← hbL]
+                exact hx''
+              have hab : a ≤ b
+              · by_contra hab
+                simp only [not_le] at hab
+                have habs : b :: L < a :: as := List.Lex.rel hab
+                simp only [← not_le] at habs
+                exact habs (le_of_lt this)
+              refine' lt_of_le_of_lt hab _
+              have hll : l.val.val = term I ho :: b :: L
+              · rw [max_eq_o_cons_tail C ho l, hbL]
+              have hlp := l.val.prop
+              rw [hll, List.chain'_cons] at hlp
+              exact hlp.1
+      · exact List.cons_ne_nil _ _
+      · simp only [List.head!_cons]
+      · simp only [Products.Tail, List.tail_cons, Subtype.coe_eta]
+    obtain ⟨p, hp⟩ := this
+    rw [hp.2.2, ← Products.max_eq_eval C hsC ho p hp.1 hp.2.1]
+    dsimp [Products.eval]
+    rw [Products.max_eq_o_cons_tail ho p hp.1 hp.2.1]
+    rfl
+  have hse := (LocallyConstant.LeftExact C hC hsC ho).2
+  rw [ModuleCat.exact_iff] at hse
+  dsimp [ModuleCat.ofHom] at hse
+  rw [← LinearMap.sub_mem_ker_iff, ← hse] at this
+  obtain ⟨(n : LocallyConstant {i // i ∈ Res C o} ℤ), hn⟩ := this
+  rw [eq_sub_iff_add_eq] at hn
+  -- have hn' := h₁ (Submodule.mem_top : n ∈ ⊤)
+  -- rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn'
+  -- -- rw [mem_span_set] at hn'
+  -- obtain ⟨w,hc⟩ := hn'
+  -- rw [← hc, map_finsupp_sum] at hn
+  have lgood : l.val.isGood C
+  · suffices : l.val ∈ GoodProducts C
+    · exact this
+    rw [union_succ C o hsC]
+    right
+    exact l.prop
+  apply lgood
+  rw [← hn]
+  apply Submodule.add_mem
+  · have := fun q ↦ @Products.eval_comapFacC _ _ _ C q o
+    sorry
+    -- rw [Finsupp.mem_span_image_iff_total]
+    -- let f : GoodProducts (Res C o) → Products (WithTop I) := fun l ↦ l.val
+    -- have hfi : f.Injective := fun _ _ h ↦ Subtype.ext h
+
+    -- let v : Products (WithTop I) →₀ ℤ := w.mapDomain f
+    -- refine' ⟨v, ⟨_, _⟩⟩
+    -- · rw [Finsupp.mem_supported, Finsupp.mapDomain_support_of_injective hfi]
+    --   intro x hx
+    --   simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Finsupp.mem_support_iff,
+    --     ne_eq, Subtype.exists, exists_and_right, exists_eq_right] at hx
+    --   simp only [Set.mem_setOf_eq]
+    --   obtain ⟨hx, hx'⟩ := hx
+    --   by_cases hxnil : x.val = []
+    --   · cases' x with x _
+    --     suffices : [] < l.val.val
+    --     · rw [← hxnil] at this
+    --       exact this
+    --     rw [max_eq_o_cons_tail C ho l]
+    --     exact List.Lex.nil
+    --   · have := Products.head_lt_ord_of_isGood C hx hxnil
+    --     suffices : x.val < l.val.val
+    --     · exact this
+    --     rw [max_eq_o_cons_tail C ho l, ← List.cons_head!_tail hxnil]
+    --     apply List.Lex.rel
+    --     have hto : ord I (term I ho) = o
+    --     · simp only [ord, term, Ordinal.typein_enum]
+    --     rw [← hto] at this
+    --     simp only [ord, Ordinal.typein_lt_typein] at this
+    --     exact this
+    -- · rw [Finsupp.total_apply, Finsupp.sum_mapDomain_index_inj hfi]
+    --   congr
+    --   ext q r x
+    --   rw [LinearMap.map_smul]
+    --   dsimp [Linear_ResC, LocallyConstant.comapLinear]
+    --   rw [← Products.eval_comapFacC C q.prop]
+    --   rfl
+  · rw [Finsupp.mem_span_image_iff_total]
+    let f : Products (WithTop I) → List (WithTop I) := fun q ↦ term I ho :: q.val
+    have hfi : Function.Injective f
+    · intro a b hab
+      exact Subtype.ext (List.tail_eq_of_cons_eq hab)
+    let m' : List (WithTop I) →₀ ℤ := m.mapDomain f
+    let g : Products (WithTop I) → List (WithTop I) := fun q ↦ q.val
+    have hg : Function.Injective g
+    · intro a b hab
+      exact Subtype.ext hab
+    let c : Products (WithTop I) →₀ ℤ := m'.comapDomain g (hg.injOn _)
+    refine' ⟨c,⟨_, _⟩⟩
+    · rw [Finsupp.mem_supported] at hmmem ⊢
+      simp only [Finsupp.comapDomain_support, Finset.coe_preimage]
+      have hm' : m'.support ⊆ Finset.image _ m.support := Finsupp.mapDomain_support
+      refine' subset_trans (Set.preimage_mono hm') _
+      simp only [Finset.image_val, Multiset.mem_dedup, Multiset.mem_map, Finset.mem_val]
+      intro q hq
+      simp only [Set.mem_preimage] at hq
+      obtain ⟨a, ha⟩ := hq
+      have ha' : a < MaxTail C l := hmmem ha.1
+      simp only [Set.mem_setOf_eq, gt_iff_lt]
+      suffices hql : q.val < l.val.val
+      · exact hql
+      rw [← ha.2, max_eq_o_cons_tail C ho]
+      exact List.Lex.cons ha'
+    · rw [Finsupp.total_apply]
+      dsimp
+      have hf : Set.BijOn g (g ⁻¹' m'.support) m'.support
+      · refine' ⟨_,_,_⟩
+        · intro x hx
+          exact hx
+        · exact Function.Injective.injOn hg _
+        · intro x hx
+          rw [Finsupp.mapDomain_support_of_injOn m (Function.Injective.injOn hfi _)] at hx ⊢
+          simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe] at hx
+          obtain ⟨x', hx'⟩ := hx
+          rw [Finsupp.mem_supported] at hmmem
+          have hx'' : x' < MaxTail C l := hmmem hx'.1
+          refine' ⟨⟨x,_⟩,⟨_,_⟩⟩
+          · rw [← hx'.2, List.chain'_cons']
+            refine' ⟨_, x'.prop⟩
+            cases' x' with x' x'prop
+            induction x' with
+            | nil =>
+              · intro y hy
+                simp only [List.head?_nil, Option.mem_def] at hy
+            | cons a as _ =>
+              · intro y hy
+                simp only [List.head?_cons, Option.mem_def, Option.some.injEq] at hy
+                rw [← hy]
+                by_cases hM : (MaxTail C l).val = []
+                · have : a :: as < []
+                  · rw [← hM]
+                    exact hx''
+                  exfalso
+                  exact List.Lex.not_nil_right _ _ this
+                · obtain ⟨b, L, hbL⟩ := List.exists_cons_of_ne_nil hM
+                  have : a :: as < b :: L
+                  · rw [← hbL]
+                    exact hx''
+                  have hab : a ≤ b
+                  · by_contra hab
+                    simp only [not_le] at hab
+                    have habs : b :: L < a :: as := List.Lex.rel hab
+                    simp only [← not_le] at habs
+                    exact habs (le_of_lt this)
+                  refine' lt_of_le_of_lt hab _
+                  have hll : l.val.val = term I ho :: b :: L
+                  · rw [max_eq_o_cons_tail C ho l, hbL]
+                  have hlp := l.val.prop
+                  rw [hll, List.chain'_cons] at hlp
+                  exact hlp.1
+          · simp only [Finset.coe_image, Set.mem_preimage, Set.mem_image, Finset.mem_coe]
+            refine' ⟨x', hx'⟩
+          · rfl
+      let g' := fun (i : List (WithTop I)) (a : ℤ) ↦ a • (i.map (e C)).prod
+      have hf' : (fun (i : Products (WithTop I)) (a : ℤ) ↦ a • i.eval C) = g' ∘ g := by rfl
+      rw [hf']
+      rw [Finsupp.sum_comapDomain g m' _ hf]
+      dsimp
+      rw [Finsupp.sum_mapDomain_index_inj hfi]
+      rfl
+
 noncomputable
 def GoodProducts.StartingWithMaxEquivGood' (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o)))) :
     StartingWithMax C o ≃ GoodProducts (C' C ho) :=
@@ -4254,6 +4469,102 @@ lemma GoodProducts.hw' (h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C
     use (StartingWithMaxEquivGood' C hC hsC ho h₁) l
     rw [← hl]
     rfl
+
+-- lemma GoodProducts.isGood_C1_startingWithMax (l : GoodProducts (C1 C ho)) :
+--     l.val ∈ StartingWithMax C o := by
+--   refine' ⟨_,_,_⟩
+--   · sorry
+--   · simp only [not_false_eq_true]
+--   · dsimp [ord, term]
+--     simp only [Ordinal.typein_enum]
+
+
+  -- by_cases hr : ∃ (r₁ : LocallyConstant {i // i ∈ (C1 C ho)} ℤ), r =
+  --   r₁.comap (fun x : C1 C ho)
+
+
+-- lemma GoodProducts.span_C1 (h : )
+
+-- section IsGoodMono
+
+-- variable (U V : Set (WithTop I → Bool))
+--   (f : LocallyConstant {i // i ∈ U} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ V} ℤ)
+--   (hf : f.toFun.Injective)
+--   (l : GoodProducts U) (hl : l.val.eval V = f (l.val.eval U))
+
+-- lemma Products.isGoodMono' : (l.val.isGood V) := by
+--   intro h
+--   apply l.prop
+--   rw [hl] at h
+--   sorry
+--   -- , Set.image_comp, Function.comp_apply, Submodule.apply_mem_span_image_iff_mem_span hf] at h
+
+-- end IsGoodMono
+
+-- def C0C : LocallyConstant {i // i ∈ C0 C ho} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ := sorry
+-- def C1C : LocallyConstant {i // i ∈ C1 C ho} ℤ →ₗ[ℤ] LocallyConstant {i // i ∈ C} ℤ := sorry
+
+-- lemma hC0C : (C0C C ho).toFun.Injective := sorry
+-- lemma hC1C : (C1C C ho).toFun.Injective := sorry
+
+-- lemma hl0 (l : GoodProducts (C0 C ho)) : l.val.eval C = (C0C C ho) (l.val.eval (C0 C ho)) := sorry
+-- lemma hl1 : Products.eval C = (C1C C ho) ∘ Products.eval (C1 C ho) := sorry
+
+-- lemma sum_C (r : LocallyConstant {i // i ∈ C} ℤ) : ∃ (r₀ : LocallyConstant {i // i ∈ C0 C ho} ℤ)
+--     (r₁ : LocallyConstant {i // i ∈ C1 C ho} ℤ), r = C0C C ho r₀ + C1C C ho r₁ := sorry
+
+-- def G0 : GoodProducts (C0 C ho) → GoodProducts C := fun l ↦
+--     ⟨l.val, l.val.isGoodMono' (C0 C ho) C (C0C C ho) (hC0C C ho) (hl0 C ho) l.prop⟩
+
+-- def G1 : GoodProducts (C1 C ho) → GoodProducts C := fun l ↦
+--     ⟨l.val, l.val.isGoodMono' (C1 C ho) C (C1C C ho) (hC1C C ho) (hl1 C ho) l.prop⟩
+
+-- lemma hG0 : (G0 C ho).Injective := by
+--   intro a b h
+--   rw [Subtype.ext_iff] at h
+--   exact Subtype.ext h
+
+-- lemma hG1 : (G1 C ho).Injective := by
+--   intro a b h
+--   rw [Subtype.ext_iff] at h
+--   exact Subtype.ext h
+
+-- lemma GoodProducts.spanC1_of_res (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res (C1 C ho) o)))) :
+--     ⊤ ≤ Submodule.span ℤ (Set.range (eval (C1 C ho))) := sorry
+
+-- lemma GoodProducts.span_successor_step (h₀: ⊤ ≤ Submodule.span ℤ (Set.range (eval (C0 C ho))))
+--     (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res (C1 C ho) o)))) :
+--     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
+--   intro r _
+--   obtain ⟨r₀, r₁, h⟩ := sum_C C ho r
+--   have hr₀ : r₀ ∈ Submodule.span ℤ (Set.range (eval (C0 C ho))) := h₀ trivial
+--   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hr₀
+--   obtain ⟨c₀, hc₀⟩  := hr₀
+--   have hr₁ : r₁ ∈ Submodule.span ℤ (Set.range (eval (C1 C ho))) :=
+--     (spanC1_of_res C ho h₁) trivial
+--   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hr₁
+--   obtain ⟨c₁, hc₁⟩  := hr₁
+--   rw [h]
+--   apply Submodule.add_mem
+--   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
+--     refine' ⟨c₀.mapDomain (G0 C ho), _⟩
+--     rw [Finsupp.sum_mapDomain_index_inj (hG0 C ho)]
+--     dsimp [eval]
+--     rw [hl0 C ho, ← hc₀, map_finsupp_sum]
+--     congr
+--     ext
+--     rw [(C0C C ho).map_smul]
+--     rfl
+--   · rw [Finsupp.mem_span_range_iff_exists_finsupp]
+--     refine' ⟨c₁.mapDomain (G1 C ho), _⟩
+--     rw [Finsupp.sum_mapDomain_index_inj (hG1 C ho)]
+--     dsimp [eval]
+--     rw [hl1 C ho, ← hc₁, map_finsupp_sum]
+--     congr
+--     ext
+--     rw [(C1C C ho).map_smul]
+--     rfl
+
 
 end Successor
 
