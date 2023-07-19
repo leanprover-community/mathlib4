@@ -60,14 +60,12 @@ noncomputable def NonUnitalAlgHom.Lmul : A →ₙₐ[𝕜] A →L[𝕜] A :=
     toFun := fun a => mul 𝕜 A a
     map_mul' := fun a b => by ext x; simp [mul_assoc a b x]
     map_zero' := by ext x; simp only [map_zero] }
-set_option linter.uppercaseLean3 false in
 
 variable {𝕜 A}
 
 @[simp]
 theorem NonUnitalAlgHom.coe_Lmul : ⇑(NonUnitalAlgHom.Lmul 𝕜 A) = mul 𝕜 A :=
   rfl
-set_option linter.uppercaseLean3 false in
 
 variable (𝕜 A)
 
@@ -82,7 +80,6 @@ here we need an `AlgHom`. In addition, the first coordinate of `Unitization.left
 should just be `k`. See `Unitization.leftRegRep_apply` also. -/
 noncomputable def leftRegRep : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
   (lift 0).prod (lift <| NonUnitalAlgHom.Lmul 𝕜 A)
-set_option linter.uppercaseLean3 false in
 
 variable {𝕜 A}
 
@@ -90,7 +87,6 @@ variable {𝕜 A}
 theorem leftRegRep_apply (x : Unitization 𝕜 A) :
     leftRegRep 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
   show (x.fst + 0, _) = (x.fst, _) by rw [add_zero]; rfl
-set_option linter.uppercaseLean3 false in
 
 /-- this lemma establishes that if `ContinuousLinearMap.mul 𝕜 A` is injective, then so is
 `Unitization.leftRegRep 𝕜 A`. When `A` is a `RegularNormedAlgebra`, then
@@ -109,7 +105,6 @@ theorem leftRegRep_injective_of_clm_mul_injective
   simp only [map_zero, zero_add, inl_zero] at hx ⊢
   rw [← map_zero (mul 𝕜 A)] at hx
   rw [h hx, inr_zero]
-set_option linter.uppercaseLean3 false in
 
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
@@ -118,7 +113,6 @@ variable (𝕜 A)
 to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -/
 theorem leftRegRep_injective : Function.Injective (leftRegRep 𝕜 A) :=
   leftRegRep_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
-set_option linter.uppercaseLean3 false in
 
 variable {𝕜 A}
 
