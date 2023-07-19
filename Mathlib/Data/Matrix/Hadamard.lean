@@ -2,13 +2,10 @@
 Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
-
-! This file was ported from Lean 3 source module data.matrix.hadamard
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Trace
+
+#align_import data.matrix.hadamard from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Hadamard product of matrices
@@ -27,7 +24,7 @@ and contains basic properties about them.
 
 ## References
 
-*  <https://en.wikipedia.org/wiki/hadamard_product_(matrices)>
+* <https://en.wikipedia.org/wiki/hadamard_product_(matrices)>
 
 ## Tags
 

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
-
-! This file was ported from Lean 3 source module dynamics.flow
-! leanprover-community/mathlib commit 717c073262cd9d59b1a1dcda7e8ab570c5b63370
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Logic.Function.Iterate
+
+#align_import dynamics.flow from "leanprover-community/mathlib"@"717c073262cd9d59b1a1dcda7e8ab570c5b63370"
 
 /-!
 # Flows and invariant sets

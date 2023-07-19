@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.natural_ops
-! leanprover-community/mathlib commit 31b269b60935483943542d547a6dd83a66b37dc7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
+
+#align_import set_theory.ordinal.natural_ops from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 # Natural operations on ordinals
@@ -295,8 +292,8 @@ theorem blsub_nadd_of_mono {f : ∀ c < a ♯ b, Ordinal.{max u v}}
 theorem nadd_assoc (a b c) : a ♯ b ♯ c = a ♯ (b ♯ c) := by
   rw [nadd_def a (b ♯ c), nadd_def, blsub_nadd_of_mono, blsub_nadd_of_mono, max_assoc]
   · congr <;> ext (d hd) <;> apply nadd_assoc
-  · exact fun  _ _ h => nadd_le_nadd_left h a
-  · exact fun  _ _ h => nadd_le_nadd_right h c
+  · exact fun _ _ h => nadd_le_nadd_left h a
+  · exact fun _ _ h => nadd_le_nadd_right h c
 termination_by _ => (a, b, c)
 -- Porting note: above lines replaces
 -- decreasing_by solve_by_elim [PSigma.Lex.left, PSigma.Lex.right]

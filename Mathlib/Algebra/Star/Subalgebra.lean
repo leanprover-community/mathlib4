@@ -2,11 +2,6 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.subalgebra
-! leanprover-community/mathlib commit 160ef3e338a2a4f21a280e4c152d4016156e516d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.StarAlgHom
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Module
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import algebra.star.subalgebra from "leanprover-community/mathlib"@"160ef3e338a2a4f21a280e4c152d4016156e516d"
 
 /-!
 # Star subalgebras

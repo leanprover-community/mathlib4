@@ -2,14 +2,11 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.submodule
-! leanprover-community/mathlib commit 9822b65bfc4ac74537d77ae318d27df1df662471
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.RingTheory.Noetherian
+
+#align_import algebra.lie.submodule from "leanprover-community/mathlib"@"9822b65bfc4ac74537d77ae318d27df1df662471"
 
 /-!
 # Lie submodules of a Lie algebra
@@ -498,7 +495,7 @@ theorem mem_sup (x : M) : x ∈ N ⊔ N' ↔ ∃ y ∈ N, ∃ z ∈ N', y + z = 
   rw [← mem_coeSubmodule, sup_coe_toSubmodule, Submodule.mem_sup]; exact Iff.rfl
 #align lie_submodule.mem_sup LieSubmodule.mem_sup
 
-nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff];  exact Iff.rfl
+nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff]; exact Iff.rfl
 #align lie_submodule.eq_bot_iff LieSubmodule.eq_bot_iff
 
 instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by

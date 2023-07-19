@@ -2,13 +2,10 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.acyclic
-! leanprover-community/mathlib commit b07688016d62f81d14508ff339ea3415558d6353
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+
+#align_import combinatorics.simple_graph.acyclic from "leanprover-community/mathlib"@"b07688016d62f81d14508ff339ea3415558d6353"
 
 /-!
 

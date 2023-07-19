@@ -2,14 +2,11 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
-
-! This file was ported from Lean 3 source module algebra.order.ring.lemmas
-! leanprover-community/mathlib commit 44e29dbcff83ba7114a464d592b8c3743987c1e5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Algebra.GroupWithZero.Defs
+
+#align_import algebra.order.ring.lemmas from "leanprover-community/mathlib"@"44e29dbcff83ba7114a464d592b8c3743987c1e5"
 
 /-!
 # Multiplication by ·positive· elements is monotonic
