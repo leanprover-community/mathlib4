@@ -34,6 +34,7 @@ theorem IsClosedMap.mapClusterPt_iff_lift'_closure [TopologicalSpace X] [Topolog
   rw [MapClusterPt, clusterPt_iff_lift'_closure', ← f_closed.map_lift'_closure_eq f_cont,
       ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]
 
+-- Not needed anymore :tada:
 lemma IsClosedMap.restrictPreimage [TopologicalSpace X] [TopologicalSpace Y]
     {f : X → Y} (hcl : IsClosedMap f) (T : Set Y) :
     IsClosedMap (T.restrictPreimage f) := by
@@ -142,31 +143,9 @@ theorem isProperMap_iff_isClosedMap_and_compact_fibers :
     rw [← clusterPt_lift'_closure_iff]
     exact hx.mono inf_le_left
 
-theorem compactSpace_of_isClosedMap_snd_filter
-    (h : IsClosedMap (snd : X × Filter X → Filter X)) :
-    CompactSpace X where
-  isCompact_univ := by
-    let F : Set (X × Filter X) := closure {xℱ | xℱ.2 = pure xℱ.1}
-    specialize h F isClosed_closure
-    rw [IsCompact]
-    intro ℱ _ _
-    have : ℱ ∈ snd '' F := h.mem_of_tendsto (Filter.tendsto_pure_self ℱ)
-      (eventually_of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
-    rcases this with ⟨⟨x, _⟩, hx, rfl⟩
-    refine ⟨x, trivial, clusterPt_iff.mpr fun U hU V hV ↦ ?_⟩
-    rw [mem_closure_iff_nhds] at hx
-    rcases hx (U ×ˢ {𝒢 | V ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hV)) with
-      ⟨⟨y, 𝒢⟩, ⟨⟨hy : y ∈ U, h𝒢 : V ∈ 𝒢⟩, hy𝒢 : 𝒢 = pure y⟩⟩
-    rw [hy𝒢, mem_pure] at h𝒢
-    exact ⟨y, hy, h𝒢⟩
-
 theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   (h.prod_map isProperMap_id).isClosedMap
-
-example {a b c d : X} (h : (a, b) = (c, d)) : a = c := by
-  rcases h with ⟨rfl, rfl⟩
-  rfl
 
 theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [TopologicalSpace X]
     [TopologicalSpace Y] {f : X → Y} :
@@ -194,20 +173,5 @@ theorem isProperMap_iff_universally_closed {X : Type u} {Y : Type v} [Topologica
       IsClosedMap (Prod.map f id : X × Z → Y × Z) := by
   constructor <;> intro H
   · exact ⟨H.continuous, fun Z ↦ H.universally_closed _⟩
-  · rw [isProperMap_iff_isClosedMap_and_compact_fibers]
-    refine ⟨H.1, ?_, fun y ↦ ?_⟩
-    · let φ := Homeomorph.prodPUnit.{u, u} X
-      let ψ := Homeomorph.prodPUnit.{v, u} Y
-      exact ψ.isClosedMap.comp <| (H.2 PUnit).comp φ.symm.isClosedMap
-    · rw [isCompact_iff_compactSpace]
-      set Z' : Type u := Filter <| Discrete <| f ⁻¹' {y}
-      have := (H.2 Z').restrictPreimage ({y} ×ˢ univ)
-      let φ : ({y} ×ˢ univ : Set (Y × Z')) ≃ₜ Z' :=
-        (Homeomorph.Set.prod _ _).trans <|
-        (Homeomorph.prodCongr (.homeomorphOfUnique _ _) (.Set.univ _)).trans <|
-        (Homeomorph.punitProd.{u, u} _)
-      let ψ : ((f ⁻¹' {y}) ×ˢ univ : Set (X × Z')) ≃ₜ (f ⁻¹' {y}) × Z' :=
-        (Homeomorph.Set.prod _ _).trans
-        (Homeomorph.prodCongr (.refl _) (Homeomorph.Set.univ _))
-      refine compactSpace_of_isClosedMap_snd_filter ?_
-      exact φ.isClosedMap.comp <| this.comp ψ.symm.isClosedMap
+  · rw [isProperMap_iff_isClosedMap_filter]
+    exact ⟨H.1, H.2 _⟩
