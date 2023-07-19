@@ -127,7 +127,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           rw [set₁_eq] at not_mem
           simp only [not_and, Classical.not_not, Ne.def, mem_filter] at not_mem
           exact Ideal.mul_mem_right _ I (not_mem H₂)
-        · -- in this case  `max₂ < j`, then `yⱼ ∈ I`; for otherwise `j ∈ set₂`, then `j ≤ max₂`.
+        · -- in this case `max₂ < j`, then `yⱼ ∈ I`; for otherwise `j ∈ set₂`, then `j ≤ max₂`.
           have not_mem : j ∉ set₂ := fun h =>
             lt_irrefl _ ((max'_lt_iff set₂ (nonempty y rid₂)).mp max_lt j h)
           rw [set₂_eq] at not_mem

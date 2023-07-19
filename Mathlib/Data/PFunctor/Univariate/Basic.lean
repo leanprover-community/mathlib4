@@ -90,7 +90,7 @@ such that `P.B a` is empty to yield a finite tree -/
 
 variable {P}
 
-/-- root element  of a W tree -/
+/-- root element of a W tree -/
 def W.head : W P → P.A
   | ⟨a, _f⟩ => a
 #align pfunctor.W.head PFunctor.W.head

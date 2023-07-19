@@ -23,7 +23,7 @@ This file defines the bundled structures for monoid and group homomorphisms. Nam
 `MonoidHom` (resp., `AddMonoidHom`) to be bundled homomorphisms between multiplicative (resp.,
 additive) monoids or groups.
 
-We also define coercion to a function, and  usual operations: composition, identity homomorphism,
+We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
 
 This file also defines the lesser-used (and notation-less) homomorphism types which are used as

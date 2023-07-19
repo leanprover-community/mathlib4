@@ -104,8 +104,8 @@ variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
   homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp  _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add  _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
+  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
 #align category_theory.preadditive.induced_category CategoryTheory.Preadditive.inducedCategory
 
 end InducedCategory

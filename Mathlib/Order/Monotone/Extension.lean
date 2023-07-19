@@ -29,7 +29,7 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     (hu : BddAbove (f '' s)) : ∃ g : α → β, Monotone g ∧ EqOn f g s := by
   classical
     /- The extension is defined by `f x = f a` for `x ≤ a`, and `f x` is the supremum of the values
-      of `f`  to the left of `x` for `x ≥ a`. -/
+      of `f` to the left of `x` for `x ≥ a`. -/
     rcases hl with ⟨a, ha⟩
     have hu' : ∀ x, BddAbove (f '' (Iic x ∩ s)) := fun x =>
       hu.mono (image_subset _ (inter_subset_right _ _))

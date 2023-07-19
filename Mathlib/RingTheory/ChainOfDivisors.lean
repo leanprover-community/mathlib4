@@ -243,7 +243,7 @@ theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates 
     conv_rhs => rw [← factor_orderIso_map_one_eq_bot d.symm]
     congr, fun hu => by
     simp_rw [hu]
-    conv_rhs =>  rw [← factor_orderIso_map_one_eq_bot d]⟩
+    conv_rhs => rw [← factor_orderIso_map_one_eq_bot d]⟩
 #align coe_factor_order_iso_map_eq_one_iff coe_factor_orderIso_map_eq_one_iff
 
 section

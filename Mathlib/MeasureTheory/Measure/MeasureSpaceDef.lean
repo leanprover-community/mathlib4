@@ -631,7 +631,7 @@ class MeasureSpace (α : Type _) extends MeasurableSpace α where
 
 export MeasureSpace (volume)
 
-/-- `volume` is the canonical  measure on `α`. -/
+/-- `volume` is the canonical measure on `α`. -/
 add_decl_doc volume
 
 section MeasureSpace

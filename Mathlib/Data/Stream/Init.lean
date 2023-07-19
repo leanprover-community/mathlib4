@@ -318,7 +318,7 @@ theorem nth_of_bisim (bisim : IsBisimulation R) :
 #align stream.nth_of_bisim Stream'.nth_of_bisim
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun  r =>
+theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
   Stream'.ext fun n => And.left (nth_of_bisim R bisim n r)
 #align stream.eq_of_bisim Stream'.eq_of_bisim
 

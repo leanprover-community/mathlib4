@@ -494,7 +494,7 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
 
 end OnePoint
 
-/-- A concrete counterexample shows that  `Continuous.homeoOfEquivCompactToT2`
+/-- A concrete counterexample shows that `Continuous.homeoOfEquivCompactToT2`
 cannot be generalized from `T2Space` to `T1Space`.
 
 Let `α = OnePoint ℕ` be the one-point compactification of `ℕ`, and let `β` be the same space

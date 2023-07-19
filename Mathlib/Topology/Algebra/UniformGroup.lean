@@ -220,7 +220,7 @@ variable [Group β]
 theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
     @UniformGroup β (sInf us) _ :=
   -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
-  @UniformGroup.mk β (_) _  <|
+  @UniformGroup.mk β (_) _ <|
     uniformContinuous_sInf_rng fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
 #align uniform_group_Inf uniformGroup_sInf
@@ -559,7 +559,7 @@ commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for 
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl :=  (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
+  refl := (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap

@@ -395,7 +395,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
 theorem coeff_iterate_derivative_as_prod_Ico {k} (p : R[X]) : ∀ m : ℕ,
     (derivative^[k] p).coeff m = (∏ i in Ico m.succ (m + k.succ), i) • p.coeff (m + k) := by
   induction' k with k ih
-  · simp  [add_zero, forall_const, one_smul, Ico_self, eq_self_iff_true,
+  · simp [add_zero, forall_const, one_smul, Ico_self, eq_self_iff_true,
       Function.iterate_zero_apply, prod_empty]
   · intro m
     rw [Function.iterate_succ_apply', coeff_derivative, ih (m + 1), ← Nat.cast_add_one, ←

@@ -59,9 +59,9 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type _} [NormedAddCommGroup E]
     (hf : Summable fun n : ℤ => ‖(f.comp <| ContinuousMap.addRight n).restrict (Icc 0 1)‖) :
     Integrable f := by
   refine'
-    @integrable_of_summable_norm_restrict ℝ ℤ E _ volume  _ _ _ _ _ _ _ _
+    @integrable_of_summable_norm_restrict ℝ ℤ E _ volume _ _ _ _ _ _ _ _
       (summable_of_nonneg_of_le
-        (fun n : ℤ =>  mul_nonneg (norm_nonneg
+        (fun n : ℤ => mul_nonneg (norm_nonneg
             (f.restrict (⟨Icc (n : ℝ) ((n : ℝ) + 1), isCompact_Icc⟩ : Compacts ℝ)))
             ENNReal.toReal_nonneg)
         (fun n => _) hf) _

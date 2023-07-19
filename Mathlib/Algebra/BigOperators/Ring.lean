@@ -152,7 +152,7 @@ theorem prod_add (f g : α → β) (s : Finset α) :
             (fun a _ => a.1) (by simp) (by simp)
             (fun a ha => ⟨a, (mem_sdiff.1 ha).1⟩) (fun a ha => by simp at ha; simp; tauto)
             (by simp) (by simp))
-        (fun t _ a  _ => a ∈ t)
+        (fun t _ a _ => a ∈ t)
         (by simp [Classical.em])
         (by simp [Function.funext_iff]; tauto)
         (by simp [Finset.ext_iff, @mem_filter _ _ (id _)]; tauto)
