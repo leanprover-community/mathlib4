@@ -558,17 +558,6 @@ theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ 
   exact comp_le_of_monotoneOn _ ψ hψ ψts
 #align evariation_on.comp_eq_of_monotone_on eVariationOn.comp_eq_of_monotoneOn
 
--- porting note: move to file `data.set.intervals.basic` once the port is over,
--- and use it in theorem `polynomialFunctions_closure_eq_top`
--- in the file `topology/continuous_function/weierstrass.lean`
-theorem _root_.Set.subsingleton_Icc_of_ge {α : Type _} [PartialOrder α] {a b : α} (h : b ≤ a) :
-    Set.Subsingleton (Icc a b) := by
-  rintro c ⟨ac, cb⟩ d ⟨ad, db⟩
-  cases le_antisymm (cb.trans h) ac
-  cases le_antisymm (db.trans h) ad
-  rfl
-#align set.subsingleton_Icc_of_ge Set.subsingleton_Icc_of_ge
-
 theorem comp_inter_Icc_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t)
     {x y : β} (hx : x ∈ t) (hy : y ∈ t) :
     eVariationOn (f ∘ φ) (t ∩ Icc x y) = eVariationOn f (φ '' t ∩ Icc (φ x) (φ y)) := by
