@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.order.hom.esakia
-! leanprover-community/mathlib commit 9822b65bfc4ac74537d77ae318d27df1df662471
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Topology.Order.Hom.Basic
+
+#align_import topology.order.hom.esakia from "leanprover-community/mathlib"@"9822b65bfc4ac74537d77ae318d27df1df662471"
 
 /-!
 # Esakia morphisms

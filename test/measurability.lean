@@ -28,7 +28,7 @@ example : Measurable f → Measurable f := by measurability
 
 -- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
 
-example  {F : ℕ → α → β} (hF : ∀ i, Measurable (F i)) : Measurable (F 0) := by measurability
+example {F : ℕ → α → β} (hF : ∀ i, Measurable (F i)) : Measurable (F 0) := by measurability
 
 example {ι} [Encodable ι] {S₁ S₂ : ι → Set α} (hS₁ : ∀ i, MeasurableSet (S₁ i))
     (hS₂ : ∀ i, MeasurableSet (S₂ i)) : MeasurableSet (⋃ i, (S₁ i) ∪ (S₂ i)) := by measurability
@@ -51,7 +51,7 @@ variable [TopologicalSpace β] [PseudoMetrizableSpace β] [BorelSpace β]
 
 -- Test the use of apply_assumption to get (h i) from a hypothesis (h : ∀ i, ...).
 
-example  {F : ℕ → α → β} (hF : ∀ i, StronglyMeasurable (F i)) : Measurable (F 0) := by
+example {F : ℕ → α → β} (hF : ∀ i, StronglyMeasurable (F i)) : Measurable (F 0) := by
   measurability
 
 example [Zero β] {F : ℕ → α → β} (hF : ∀ i, AEFinStronglyMeasurable (F i) μ) :
