@@ -1173,9 +1173,8 @@ theorem natDegree_linear_le : natDegree (C a * X + C b) ≤ 1 :=
   natDegree_le_of_degree_le degree_linear_le
 #align polynomial.nat_degree_linear_le Polynomial.natDegree_linear_le
 
-@[simp]
-theorem natDegree_linear (ha : a ≠ 0) : natDegree (C a * X + C b) = 1 :=
-  natDegree_eq_of_degree_eq_some <| degree_linear ha
+theorem natDegree_linear (ha : a ≠ 0) : natDegree (C a * X + C b) = 1 := by
+  rw [natDegree_add_C, natDegree_C_mul_X a ha]
 #align polynomial.nat_degree_linear Polynomial.natDegree_linear
 
 @[simp]
@@ -1210,10 +1209,16 @@ theorem natDegree_quadratic_le : natDegree (C a * X ^ 2 + C b * X + C c) ≤ 2 :
   natDegree_le_of_degree_le degree_quadratic_le
 #align polynomial.nat_degree_quadratic_le Polynomial.natDegree_quadratic_le
 
-@[simp]
 theorem natDegree_quadratic (ha : a ≠ 0) : natDegree (C a * X ^ 2 + C b * X + C c) = 2 :=
   natDegree_eq_of_degree_eq_some <| degree_quadratic ha
 #align polynomial.nat_degree_quadratic Polynomial.natDegree_quadratic
+
+@[simp]
+theorem natDegree_quadratic_linear (ha : a ≠ 0) : natDegree (C a * X ^ 2 + C b * X) = 2 := by
+  have : C a * X ^ 2 + C b * X = C a * X ^ 2 + C b * X + C 0 := by
+    simp only [map_zero, add_zero]
+  rw [this]
+  exact natDegree_quadratic ha
 
 @[simp]
 theorem leadingCoeff_quadratic (ha : a ≠ 0) : leadingCoeff (C a * X ^ 2 + C b * X + C c) = a := by
@@ -1248,7 +1253,6 @@ theorem natDegree_cubic_le : natDegree (C a * X ^ 3 + C b * X ^ 2 + C c * X + C 
   natDegree_le_of_degree_le degree_cubic_le
 #align polynomial.nat_degree_cubic_le Polynomial.natDegree_cubic_le
 
-@[simp]
 theorem natDegree_cubic (ha : a ≠ 0) : natDegree (C a * X ^ 3 + C b * X ^ 2 + C c * X + C d) = 3 :=
   natDegree_eq_of_degree_eq_some <| degree_cubic ha
 #align polynomial.nat_degree_cubic Polynomial.natDegree_cubic
@@ -1378,7 +1382,6 @@ theorem degree_X_add_C (a : R) : degree (X + C a) = 1 := by
   rw [degree_add_eq_left_of_degree_lt this, degree_X]
 #align polynomial.degree_X_add_C Polynomial.degree_X_add_C
 
-@[simp]
 theorem natDegree_X_add_C (x : R) : (X + C x).natDegree = 1 :=
   natDegree_eq_of_degree_eq_some <| degree_X_add_C x
 #align polynomial.nat_degree_X_add_C Polynomial.natDegree_X_add_C
