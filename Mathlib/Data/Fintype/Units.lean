@@ -37,7 +37,7 @@ instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
 
 instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
-theorem Fintype.card_units_add_one [GroupWithZero α] [Fintype α] [Fintype αˣ] :
+theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card α = Fintype.card αˣ + 1 := by
   classical
     rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
