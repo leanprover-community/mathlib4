@@ -11,6 +11,7 @@ Authors: Xavier Roblot
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.Ideal.Norm
+import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Units of a number field
@@ -66,15 +67,35 @@ section coe
 /-- The `MonoidHom` from the group of units `(𝓞 K)ˣ` to the field `K`. -/
 def coe_to_field : (𝓞 K)ˣ →* K := (Units.coeHom K).comp (map (algebraMap (𝓞 K) K))
 
+variable {K}
+
+/-- The coercion of `x : (𝓞 K)ˣ` into `K`. -/
+@[coe] def to_field (x : (𝓞 K)ˣ) : K := coe_to_field K x
+
+variable (K)
+
 theorem coe_to_field_injective : Function.Injective (coe_to_field K) :=
   fun _ _ h => Units.eq_iff.mp (SetCoe.ext h)
 
 /-- There is a natural coercion from `(𝓞 K)ˣ` to `(𝓞 K)` and then from `(𝓞 K)` to `K` but it is
 useful to also have a direct one from `(𝓞 K)ˣ` to `K`. -/
-instance : Coe (𝓞 K)ˣ K := ⟨coe_to_field K⟩
+instance : Coe (𝓞 K)ˣ K := ⟨to_field⟩
 
-theorem ext {x y : (𝓞 K)ˣ} : x = y ↔ (x : K) = (y : K) := (coe_to_field_injective K).eq_iff.symm
+@[ext]
+theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
 
+@[simp]
+theorem map_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) :=
+  _root_.map_mul (coe_to_field K) x y
+
+@[simp]
+theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
+  _root_.map_pow (coe_to_field K) x n
+
+@[simp]
+theorem map_one : ((1 : (𝓞 K)ˣ) : K) = 1 := rfl
+
+@[simp]
 theorem ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
   Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
 
@@ -94,8 +115,7 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   · refine norm_map_one_of_pow_eq_one φ.toMonoidHom (k := ⟨n, h_pos⟩) ?_
     rw [PNat.mk_coe, ← map_pow, h_eq, map_one]
   · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-    exact ⟨n, hn, by rwa [ext, map_pow, map_one]⟩
-end torsion
+    exact ⟨n, hn, by ext; rwa [map_pow, map_one]⟩
 
 instance : Nonempty (torsion K) := ⟨1⟩
 
@@ -115,6 +135,33 @@ instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup as positive integer. -/
 def torsion_order [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
+
+/-- If `k` does not divide `torsion_order` then there are no nontrivial roots of unity of
+  order dividing `k`. -/
+theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.coprime k (torsion_order K)) :
+    ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
+  rw [mem_rootsOfUnity]
+  refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
+  refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
+  · exact orderOf_dvd_of_pow_eq_one h
+  · have hζ : ζ ∈ torsion K := by
+      rw [torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+      exact ⟨k, k.prop, h⟩
+    rw [orderOf_submonoid (⟨ζ, hζ⟩ : torsion K)]
+    exact orderOf_dvd_card_univ
+
+/-- The group of roots of unity of order dividing `torsion_order` is equal to the torsion
+group. -/
+theorem rootsOfUnity_eq_torsion [NumberField K] :
+    rootsOfUnity (torsion_order K) (𝓞 K) = torsion K := by
+  ext ζ
+  rw [torsion, mem_rootsOfUnity]
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
+    exact ⟨↑(torsion_order K), (torsion_order K).prop, h⟩
+  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
+
+end torsion
 
 namespace dirichlet
 -- This section is devoted to the proof of Dirichlet's unit theorem
@@ -326,7 +373,7 @@ theorem seq.norm_bdd (n : ℕ) :
       have : 1 ≤ B := by
         contrapose! hB
         simp only [Nat.lt_one_iff.mp hB, CharP.cast_eq_zero, mul_zero, zero_le]
-      simp only [ne_eq, seq, map_one, Int.natAbs_one, le_refl, this, and_self]
+      simp only [ne_eq, seq, _root_.map_one, Int.natAbs_one, le_refl, this, and_self]
   | succ n =>
       refine ⟨Nat.succ_le_iff.mpr (Int.natAbs_pos.mpr ?_), ?_⟩
       · exact Algebra.norm_ne_zero_iff.mpr (seq K w₁ hB n.succ).prop
@@ -352,7 +399,7 @@ theorem exists_unit (w₁ : InfinitePlace K ) :
     · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero]
     · calc
         _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := ?_
-        _ = w (seq K w₁ hB m) * w (seq K w₁ hB n)⁻¹         := map_mul _ _ _
+        _ = w (seq K w₁ hB m) * w (seq K w₁ hB n)⁻¹         := _root_.map_mul _ _ _
         _ < 1                                               := ?_
       · rw [← congrArg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul, ← mul_assoc,
           inv_mul_cancel (seq.ne_zero K w₁ hB n), one_mul]
