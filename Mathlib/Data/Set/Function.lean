@@ -353,10 +353,6 @@ def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t)
   Subtype.map f h
 #align set.maps_to.restrict Set.MapsTo.restrict
 
-theorem MapsTo.restrict_commutes (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
-    Subtype.val ∘ h.restrict f s t = f ∘ Subtype.val :=
-  rfl
-
 @[simp]
 theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t x : β) = f x :=
   rfl

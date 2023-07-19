@@ -15,6 +15,8 @@ import Mathlib.Order.Filter.Cofinite
 open Filter Topology Function Set
 open Prod (fst snd)
 
+#check MapsTo
+
 theorem IsClosedMap.image_closure_eq_of_continuous [TopologicalSpace X] [TopologicalSpace Y]
     {f : X → Y} (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set X) :
     f '' closure s = closure (f '' s) :=
