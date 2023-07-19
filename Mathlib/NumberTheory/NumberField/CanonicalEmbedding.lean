@@ -150,10 +150,10 @@ theorem mem_span_latticeBasis [NumberField K] (x : (K →+* ℂ) → ℂ) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ canonicalEmbedding K '' (𝓞 K) := by
   rw [show Set.range (latticeBasis K) =
       (canonicalEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp] ; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext ; exact mem_span_integralBasis K]
+    ext; exact mem_span_integralBasis K]
   rfl
 
 end NumberField.canonicalEmbedding
@@ -271,10 +271,10 @@ theorem mem_span_latticeBasis [NumberField K] (x : (E K)) :
     x ∈ Submodule.span ℤ (Set.range (latticeBasis K)) ↔ x ∈ mixedEmbedding K '' (𝓞 K) := by
   rw [show Set.range (latticeBasis K) =
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
-    rw [← Set.range_comp] ; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
+    rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show (Submodule.span ℤ (Set.range (integralBasis K)) : Set K) = 𝓞 K by
-    ext ; exact mem_span_integralBasis K]
+    ext; exact mem_span_integralBasis K]
   rfl
 
 end integerLattice
