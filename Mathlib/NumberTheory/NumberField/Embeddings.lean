@@ -129,7 +129,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
     rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
     refine h.resolve_right fun hp => ?_
     specialize hx (IsAlgClosed.lift (NumberField.isAlgebraic K)).toRingHom
-    rw [pow_eq_zero hp, map_zero, norm_zero] at hx ; norm_num at hx
+    rw [pow_eq_zero hp, map_zero, norm_zero] at hx; norm_num at hx
 #align number_field.embeddings.pow_eq_one_of_norm_eq_one NumberField.Embeddings.pow_eq_one_of_norm_eq_one
 
 end Bounded
@@ -173,7 +173,7 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
   ext; simp only [place_apply, norm_eq_abs, abs_conj, conjugate_coe_eq]
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
-/-- A embedding into `ℂ` is real if it is fixed by complex conjugation. -/
+/-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
 @[reducible]
 def IsReal (φ : K →+* ℂ) : Prop :=
   IsSelfAdjoint φ

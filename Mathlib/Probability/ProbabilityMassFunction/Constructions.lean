@@ -239,7 +239,8 @@ end OfFintype
 
 section normalize
 
-/-- Given a `f` with non-zero and non-infinite sum, get a `Pmf` by normalizing `f` by its `tsum`. -/
+/-- Given an `f` with non-zero and non-infinite sum, get a `Pmf` by normalizing `f` by its `tsum`.
+-/
 def normalize (f : α → ℝ≥0∞) (hf0 : tsum f ≠ 0) (hf : tsum f ≠ ∞) : Pmf α :=
   ⟨fun a => f a * (∑' x, f x)⁻¹,
     ENNReal.summable.hasSum_iff.2 (ENNReal.tsum_mul_right.trans (ENNReal.mul_inv_cancel hf0 hf))⟩

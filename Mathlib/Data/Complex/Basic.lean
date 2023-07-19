@@ -449,7 +449,7 @@ instance commRing : CommRing ℂ :=
     mul_assoc := by intros; ext <;> simp [mul_assoc] <;> ring
     one_mul := by intros; ext <;> simp [one_mul]
     mul_one := by intros; ext <;> simp [mul_one]
-    mul_comm := by intros; ext <;> simp [mul_comm] ; ring }
+    mul_comm := by intros; ext <;> simp [mul_comm]; ring }
 
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
@@ -504,15 +504,16 @@ set_option linter.uppercaseLean3 false in
 
 --Porting note: new theorem
 @[simp, norm_cast]
-theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℝ) : ℂ) = OfNat.ofNat n :=
+theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n) : ℝ) : ℂ) = OfNat.ofNat n :=
   rfl
 
 @[simp]
-theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).re = OfNat.ofNat n :=
+theorem re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n :=
   rfl
 
 @[simp]
-theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ℂ).im = 0 :=
+theorem im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 :=
   rfl
 
 end
@@ -574,7 +575,7 @@ theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
 #align complex.conj_eq_iff_real Complex.conj_eq_iff_real
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩ ; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
 #align complex.conj_eq_iff_re Complex.conj_eq_iff_re
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
@@ -682,7 +683,7 @@ theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
 #align complex.norm_sq_mul Complex.normSq_mul
 
 theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
-  dsimp [normSq] ; ring
+  dsimp [normSq]; ring
 #align complex.norm_sq_add Complex.normSq_add
 
 theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
@@ -1331,18 +1332,18 @@ theorem lim_eq_lim_im_add_lim_re (f : CauSeq ℂ Complex.abs) :
 #align complex.lim_eq_lim_im_add_lim_re Complex.lim_eq_lim_im_add_lim_re
 
 theorem lim_re (f : CauSeq ℂ Complex.abs) : lim (cauSeqRe f) = (lim f).re := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_re Complex.lim_re
 
 theorem lim_im (f : CauSeq ℂ Complex.abs) : lim (cauSeqIm f) = (lim f).im := by
-  rw [lim_eq_lim_im_add_lim_re] ; simp [ofReal']
+  rw [lim_eq_lim_im_add_lim_re]; simp [ofReal']
 #align complex.lim_im Complex.lim_im
 
 theorem isCauSeq_conj (f : CauSeq ℂ Complex.abs) :
   IsCauSeq Complex.abs fun n => conj (f n) := fun ε ε0 =>
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    rw [← RingHom.map_sub, abs_conj] ; exact hi j hj⟩
+    rw [← RingHom.map_sub, abs_conj]; exact hi j hj⟩
 #align complex.is_cau_seq_conj Complex.isCauSeq_conj
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
@@ -1352,7 +1353,7 @@ noncomputable def cauSeqConj (f : CauSeq ℂ Complex.abs) : CauSeq ℂ Complex.a
 
 theorem lim_conj (f : CauSeq ℂ Complex.abs) : lim (cauSeqConj f) = conj (lim f) :=
   Complex.ext (by simp [cauSeqConj, (lim_re _).symm, cauSeqRe])
-    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm] ; rfl)
+    (by simp [cauSeqConj, (lim_im _).symm, cauSeqIm, (lim_neg _).symm]; rfl)
 #align complex.lim_conj Complex.lim_conj
 
 /-- The absolute value of a complex Cauchy sequence, as a real Cauchy sequence. -/

@@ -51,8 +51,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align has_forget_to_AddSemigroup hasForgetToAddSemigroup
 
-/-- The adjoin_one-forgetful adjunction from `SemigroupCat` to `MonCat`.-/
-@[to_additive "The adjoin_one-forgetful adjunction from `AddSemigroupCat` to `AddMonCat`"]
+/-- The `adjoinOne`-forgetful adjunction from `SemigroupCat` to `MonCat`.-/
+@[to_additive "The `adjoinZero`-forgetful adjunction from `AddSemigroupCat` to `AddMonCat`"]
 def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun S M => WithOne.lift.symm
@@ -62,8 +62,8 @@ def adjoinOneAdj : adjoinOne ⊣ forget₂ MonCat.{u} SemigroupCat.{u} :=
         simp only [Equiv.symm_symm, adjoinOne_map, coe_comp]
         simp_rw [WithOne.map]
         cases x
-        . rfl
-        . simp
+        · rfl
+        · simp
           rfl }
 #align adjoin_one_adj adjoinOneAdj
 #align adjoin_zero_adj adjoinZeroAdj

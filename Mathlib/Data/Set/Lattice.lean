@@ -26,8 +26,9 @@ for `Set α`, and some more set constructions.
 * `Set.sUnion`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
-* `Set.completeBooleanAlgebra`: `Set α` is a `CompleteBooleanAlgebra` with `≤ = ⊆`, `< = ⊂`,
-  `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference. See `Set.BooleanAlgebra`.
+* `Set.completeAtomicBooleanAlgebra`: `Set α` is a `CompleteAtomicBooleanAlgebra` with `≤ = ⊆`,
+  `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
+  See `Set.BooleanAlgebra`.
 * `Set.kern_image`: For a function `f : α → β`, `s.kern_image f` is the set of `y` such that
   `f ⁻¹ y ⊆ s`.
 * `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
@@ -40,7 +41,7 @@ for `Set α`, and some more set constructions.
 In lemma names,
 * `⋃ i, s i` is called `iUnion`
 * `⋂ i, s i` is called `iInter`
-* `⋃ i j, s i j` is called `iUnion₂`. This is a `iUnion` inside a `iUnion`.
+* `⋃ i j, s i j` is called `iUnion₂`. This is an `iUnion` inside an `iUnion`.
 * `⋂ i j, s i j` is called `iInter₂`. This is an `iInter` inside an `iInter`.
 * `⋃ i ∈ s, t i` is called `biUnion` for "bounded `iUnion`". This is the special case of `iUnion₂`
   where `j : i ∈ s`.
@@ -176,14 +177,13 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
   mem_iInter₂.2 h
 #align set.mem_Inter₂_of_mem Set.mem_iInter₂_of_mem
 
-instance : CompleteBooleanAlgebra (Set α) :=
+instance Set.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
     le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
     sInf_le := fun s t t_in a h => h _ t_in
-    iInf_sup_le_sup_sInf := fun s S x => Iff.mp <| by simp [forall_or_left]
-    inf_sSup_le_iSup_inf := fun s S x => Iff.mp <| by simp [exists_and_left] }
+    iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
 section GaloisConnection
 
@@ -272,6 +272,15 @@ theorem nonempty_of_union_eq_top_of_nonempty {ι : Type _} (t : Set ι) (s : ι 
   obtain ⟨x, m, -⟩ := exists_set_mem_of_union_eq_top t s w H.some
   exact ⟨x, m⟩
 #align set.nonempty_of_union_eq_top_of_nonempty Set.nonempty_of_union_eq_top_of_nonempty
+
+theorem nonempty_of_nonempty_iUnion
+    {s : ι → Set α} (h_Union : (⋃ i, s i).Nonempty) : Nonempty ι := by
+  obtain ⟨x, hx⟩ := h_Union
+  exact ⟨Classical.choose $ mem_iUnion.mp hx⟩
+
+theorem nonempty_of_nonempty_iUnion_eq_univ
+    {s : ι → Set α} [Nonempty α] (h_Union : ⋃ i, s i = univ) : Nonempty ι :=
+  nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
   ext fun _ => mem_iUnion.symm

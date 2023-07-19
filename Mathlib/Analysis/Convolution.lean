@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 
 ! This file was ported from Lean 3 source module analysis.convolution
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
+! leanprover-community/mathlib commit 8905e5ed90859939681a725b00f6063e65096d95
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -88,7 +88,7 @@ The following notations are localized in the locale `convolution`:
   This might require a generalization of `MeasureTheory.Memℒp.smul` where `smul` is generalized
   to a continuous bilinear map.
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255K)
-* The convolution is a `AEStronglyMeasurable` function
+* The convolution is an `AEStronglyMeasurable` function
   (see e.g. [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2], 255I).
 * Prove properties about the convolution if both functions are rapidly decreasing.
 * Use `@[to_additive]` everywhere
@@ -471,7 +471,7 @@ theorem convolution_lsmul [Sub G] {f : G → 𝕜} {g : G → F} :
 #align convolution_lsmul convolution_lsmul
 
 /-- The definition of convolution where the bilinear operator is multiplication. -/
-theorem convolution_mul [Sub G] [NormedSpace ℝ 𝕜] [CompleteSpace 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
+theorem convolution_mul [Sub G] [NormedSpace ℝ 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
     (f ⋆[mul 𝕜 𝕜, μ] g) x = ∫ t, f t * g (x - t) ∂μ :=
   rfl
 #align convolution_mul convolution_mul
@@ -793,7 +793,7 @@ theorem convolution_lsmul_swap {f : G → 𝕜} {g : G → F} :
 #align convolution_lsmul_swap convolution_lsmul_swap
 
 /-- The symmetric definition of convolution where the bilinear operator is multiplication. -/
-theorem convolution_mul_swap [NormedSpace ℝ 𝕜] [CompleteSpace 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
+theorem convolution_mul_swap [NormedSpace ℝ 𝕜] {f : G → 𝕜} {g : G → 𝕜} :
     (f ⋆[mul 𝕜 𝕜, μ] g) x = ∫ t, f (x - t) * g t ∂μ :=
   convolution_eq_swap _
 #align convolution_mul_swap convolution_mul_swap
@@ -843,7 +843,7 @@ variable [SeminormedAddCommGroup G]
 on `Metric.ball x₀ R`.
 
 We can simplify the RHS further if we assume `f` is integrable, but also if `L = (•)` or more
-generally if `L` has a `AntilipschitzWith`-condition. -/
+generally if `L` has an `AntilipschitzWith`-condition. -/
 theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 : G) R)
     (hg : ∀ x ∈ ball x₀ R, g x = g x₀) : (f ⋆[L, μ] g) x₀ = ∫ t, L (f t) (g x₀) ∂μ := by
   have h2 : ∀ t, L (f t) (g (x₀ - t)) = L (f t) (g x₀) := fun t ↦ by
@@ -1528,9 +1528,8 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     ext1 a
     simp only [(· ∘ ·), ContinuousLinearEquiv.apply_symm_apply, coe_comp',
       ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.map_sub,
-      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply_toFun,
-      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply,
-      LinearEquiv.invFun_eq_symm, ContinuousLinearEquiv.arrowCongrₛₗ_symm_apply, eq_self_iff_true]
+      ContinuousLinearEquiv.arrowCongr, ContinuousLinearEquiv.arrowCongrSL_symm_apply,
+      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearEquiv.apply_symm_apply]
   simp_rw [this] at A
   exact A
 #align cont_diff_on_convolution_right_with_param contDiffOn_convolution_right_with_param

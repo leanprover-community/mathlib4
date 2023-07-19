@@ -20,7 +20,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 
 ## Main definitions
 
-* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as a extended
+* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as an extended
   non-negative real.
 * `ProbabilityTheory.variance`: the variance of a real-valued random variable as a real number.
 
@@ -214,11 +214,8 @@ theorem variance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Me
   · apply hX.integrable_sq.add
     convert @integrable_const Ω ℝ (_) ℙ _ _ (𝔼[X] ^ 2)
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp [integral_mul_right]
-  have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNat a = (2 : ℝ) := fun a => rfl
-  conv_lhs => enter [2, 1, 2, a]; rw [this]
-  simp only [integral_mul_left (2 : ℝ)]
-  ring_nf
+  simp [integral_mul_right, integral_mul_left]
+  ring
 #align probability_theory.variance_def' ProbabilityTheory.variance_def'
 
 theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ}

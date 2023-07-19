@@ -158,7 +158,7 @@ theorem short_birthday (x : PGame.{u}) : [Short x] → x.birthday < Ordinal.omeg
     intro hs
     rcases hs with ⟨sL, sR⟩
     rw [birthday, max_lt_iff]
-    constructor;
+    constructor
     all_goals
       rw [← Cardinal.ord_aleph0]
       refine'
@@ -260,7 +260,7 @@ instance shortNat : ∀ n : ℕ, Short n
   | n + 1 => @PGame.shortAdd _ _ (shortNat n) PGame.short1
 #align pgame.short_nat PGame.shortNat
 
-instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (OfNat.ofNat n) := shortNat n
+instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
 
 -- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
 set_option linter.deprecated false in

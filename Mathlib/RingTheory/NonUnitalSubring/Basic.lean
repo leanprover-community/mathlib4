@@ -288,7 +288,7 @@ protected theorem sub_mem {x y : R} (hx : x ∈ s) (hy : y ∈ s) : x - y ∈ s 
 protected theorem list_sum_mem {l : List R} : (∀ x ∈ l, x ∈ s) → l.sum ∈ s :=
   list_sum_mem
 
-/-- Sum of a multiset of elements in an `NonUnitalSubring` of a `NonUnitalRing` is
+/-- Sum of a multiset of elements in a `NonUnitalSubring` of a `NonUnitalRing` is
 in the `NonUnitalSubring`. -/
 protected theorem multiset_sum_mem {R} [NonUnitalNonAssocRing R] (s : NonUnitalSubring R)
     (m : Multiset R) : (∀ a ∈ m, a ∈ s) → m.sum ∈ s :=
