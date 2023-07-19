@@ -329,6 +329,14 @@ theorem hasStrictDerivAt_const_rpow {a : ℝ} (ha : 0 < a) (x : ℝ) :
   simpa using (hasStrictDerivAt_const _ _).rpow (hasStrictDerivAt_id x) ha
 #align real.has_strict_deriv_at_const_rpow Real.hasStrictDerivAt_const_rpow
 
+lemma differentiableAt_rpow_const_of_ne (p : ℝ) {x : ℝ} (hx : x ≠ 0) :
+    DifferentiableAt ℝ (fun x => x ^ p) x :=
+  (hasStrictDerivAt_rpow_const_of_ne hx p).differentiableAt
+
+lemma differentiableOn_rpow_const (p : ℝ) :
+    DifferentiableOn ℝ (fun x => x ^ p) {0}ᶜ :=
+  fun _ hx => (Real.differentiableAt_rpow_const_of_ne p hx).differentiableWithinAt
+
 /-- This lemma says that `fun x => a ^ x` is strictly differentiable for `a < 0`. Note that these
 values of `a` are outside of the "official" domain of `a ^ x`, and we may redefine `a ^ x`
 for negative `a` if some other definition will be more convenient. -/
@@ -600,6 +608,20 @@ theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 �
     deriv (fun x => f x ^ p) x = deriv f x * p * f x ^ (p - 1) :=
   (hf.hasDerivAt.rpow_const hx).deriv
 #align deriv_rpow_const deriv_rpow_const
+
+lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
+    deriv (fun (x:ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
+  by_cases hp : p = 0
+  case pos =>
+    simp [hp, zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  case neg =>
+    push_neg at hp
+    calc deriv (fun (x:ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1)
+            := by filter_upwards [eventually_ne_atTop 0] with x hx
+                  rw [Real.deriv_rpow_const (Or.inl hx)]
+         _ =O[atTop] fun x => x ^ (p-1)
+            := by rw [Asymptotics.isBigO_iff]
+                  exact ⟨‖p‖, eventually_of_forall (fun x => by rw [norm_mul])⟩
 
 end deriv
 

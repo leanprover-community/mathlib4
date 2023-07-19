@@ -417,6 +417,12 @@ theorem isLittleO_log_id_atTop : log =o[atTop] id :=
   isLittleO_pow_log_id_atTop.congr_left fun _ => pow_one _
 #align real.is_o_log_id_at_top Real.isLittleO_log_id_atTop
 
+theorem isLittleO_const_log_atTop {c : ℝ} (hc : c ≠ 0) : (fun _ => c) =o[atTop] log := by
+  refine Asymptotics.isLittleO_of_tendsto' ?_
+    <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  aesop (add safe forward log_pos)
+
 end Real
 
 section Continuity
