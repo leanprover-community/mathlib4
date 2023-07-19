@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Init.Algebra.Order
 import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.ULift
 
 #align_import order.lattice from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
@@ -1468,6 +1469,26 @@ protected def Function.Injective.distribLattice [Sup α] [Inf α] [DistribLattic
 #align function.injective.distrib_lattice Function.Injective.distribLattice
 
 end lift
+
+namespace ULift
+
+instance [SemilatticeSup α] : SemilatticeSup (ULift.{v} α) :=
+  ULift.down_injective.semilatticeSup _ down_sup
+
+instance [SemilatticeInf α] : SemilatticeInf (ULift.{v} α) :=
+  ULift.down_injective.semilatticeInf _ down_inf
+
+instance [Lattice α] : Lattice (ULift.{v} α) :=
+  ULift.down_injective.lattice _ down_sup down_inf
+
+instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
+  ULift.down_injective.distribLattice _ down_sup down_inf
+
+instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
+  LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
+    fun _x _y => (down_compare _ _).symm
+
+end ULift
 
 --To avoid noncomputability poisoning from `Bool.completeBooleanAlgebra`
 instance : DistribLattice Bool :=
