@@ -201,8 +201,8 @@ lemma ofJ0_c₄ : (ofJ0 R).c₄ = 0 := by
   norm_num1
 
 lemma ofJ0_Δ : (ofJ0 R).Δ = -27 := by
-  simp only [ofJ0, Δ, b₂, b₄, b₆, b₈]
-  ring1
+  rw [ofJ0, Δ, b₂, b₄, b₆, b₈]
+  norm_num1
 
 /-- The Weierstrass curve $Y^2 = X^3 + X$.
 It is of $j$-invariant $1728$ if it is an elliptic curve. -/
@@ -210,12 +210,12 @@ def ofJ1728 : WeierstrassCurve R :=
   ⟨0, 0, 0, 1, 0⟩
 
 lemma ofJ1728_c₄ : (ofJ1728 R).c₄ = -48 := by
-  simp only [ofJ1728, c₄, b₂, b₄]
-  ring1
+  rw [ofJ1728, c₄, b₂, b₄]
+  norm_num1
 
 lemma ofJ1728_Δ : (ofJ1728 R).Δ = -64 := by
-  simp only [ofJ1728, Δ, b₂, b₄, b₆, b₈]
-  ring1
+  rw [ofJ1728, Δ, b₂, b₄, b₆, b₈]
+  norm_num1
 
 variable {R} (j : R)
 
@@ -994,11 +994,9 @@ def ofJ1728 [Invertible (2 : R)] : EllipticCurve R :=
     by rw [unitOfInvertible_val, WeierstrassCurve.ofJ1728_Δ R]; norm_num1⟩
 
 lemma ofJ1728_j [Invertible (2 : R)] : (ofJ1728 R).j = 1728 := by
-  field_simp [j, ofJ1728, WeierstrassCurve.ofJ1728_c₄]
-  have := invertibleNeg (2 ^ 6 : R)
-  have := unitOfInvertible_val (-2 ^ 6 : R)
-  rw [unitOfInvertible_val (-2 ^ 6 : R)] -- strange, rw [this] does not work
-  ring1
+  field_simp [j, ofJ1728, @unitOfInvertible_val _ _ _ <| invertibleNeg _,
+    WeierstrassCurve.ofJ1728_c₄]
+  norm_num1
 
 variable {R}
 
@@ -1011,70 +1009,45 @@ def ofJ' (j : R) [Invertible j] [Invertible (j - 1728)] : EllipticCurve R :=
     (WeierstrassCurve.ofJ_Δ j).symm⟩
 
 lemma ofJ'_j (j : R) [Invertible j] [Invertible (j - 1728)] : (ofJ' j).j = j := by
-  field_simp [EllipticCurve.j, ofJ', WeierstrassCurve.ofJ_c₄]
-  have := invertibleMul (j ^ 2) ((j - 1728) ^ 9)
-  have := unitOfInvertible_val <| j ^ 2 * (j - 1728) ^ 9
-  rw [unitOfInvertible_val <| j ^ 2 * (j - 1728) ^ 9]
+  field_simp [EllipticCurve.j, ofJ', @unitOfInvertible_val _ _ _ <| invertibleMul _ _,
+    WeierstrassCurve.ofJ_c₄]
   ring1
 
+open scoped Classical
+
 variable {F : Type u} [Field F] (j : F)
+
+private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
+  Ne.ne_or_ne 0 <| ne_of_apply_ne (· - 2) <| by
+    simpa only [← two_add_one_eq_three, add_sub_cancel', sub_self] using zero_ne_one
 
 /-- For any element $j$ of a field $F$, there exists an elliptic curve over $F$
 with $j$-invariant equal to $j$ (see `EllipticCurve.ofJ_j`).
 Its coefficients are given explicitly (see `EllipticCurve.ofJ0`, `EllipticCurve.ofJ1728`
 and `EllipticCurve.ofJ'`). -/
-noncomputable def ofJ : EllipticCurve F := by
-  by_cases hj0 : j = 0
-  · by_cases hchar3 : (3 : F) = 0
-    · have : Invertible (2 : F) := by
-        apply invertibleOfNonzero
-        rw [←hchar3]
-        apply_fun (· - 2)
-        norm_num
-        exact zero_ne_one
-      exact ofJ1728 F
-    · have : Invertible (3 : F) := invertibleOfNonzero hchar3
-      exact ofJ0 F
-  · by_cases hj1728 : j = 1728
-    · have : Invertible (2 : F) := by
-        apply invertibleOfNonzero
-        intro h
-        rw [calc (1728 : F) = (2 : F) * (864 : F) := by norm_num, h, zero_mul] at hj1728
-        exact hj0 hj1728
-      exact ofJ1728 F
-    · have : Invertible j := invertibleOfNonzero hj0
-      have : Invertible (j - 1728) := invertibleOfNonzero (Iff.mpr sub_ne_zero hj1728)
-      exact ofJ' j
+noncomputable def ofJ : EllipticCurve F :=
+  if h0 : j = 0 then
+    if h3 : (3 : F) = 0 then @ofJ1728 _ _ <| invertibleOfNonzero <|
+      two_or_three_ne_zero.neg_resolve_right h3
+    else @ofJ0 _ _ <| invertibleOfNonzero h3
+  else if h1728 : j = 1728 then
+    @ofJ1728 _ _ <| invertibleOfNonzero fun h => h0 <|
+    by rw [h1728, show (1728 : F) = 2 * 864 by norm_num1, h, zero_mul]
+  else @ofJ' _ _ j (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)
 
 lemma ofJ_j : (ofJ j).j = j := by
-  by_cases hj0 : j = 0
-  · by_cases hchar3 : (3 : F) = 0
-    · have : Invertible (2 : F) := by
-        apply invertibleOfNonzero
-        rw [←hchar3]
-        apply_fun (· - 2)
-        norm_num
-        exact zero_ne_one
-      simp only [ofJ, hj0, hchar3, dite_true]
-      have := ofJ1728_j F
-      rw [calc (1728 : F) = (3 : F) * (576 : F) := by norm_num, hchar3, zero_mul] at this
-      convert this
-    · have : Invertible (3 : F) := invertibleOfNonzero hchar3
-      simp only [ofJ, hj0, hchar3, dite_true, dite_false]
-      convert ofJ0_j F
-  · by_cases hj1728 : j = 1728
-    · have : Invertible (2 : F) := by
-        apply invertibleOfNonzero
-        intro h
-        rw [calc (1728 : F) = (2 : F) * (864 : F) := by norm_num, h, zero_mul] at hj1728
-        exact hj0 hj1728
-      simp only [ofJ, hj0, dite_false]
-      simp only [hj1728, dite_true]
-      convert ofJ1728_j F
-    · have : Invertible j := invertibleOfNonzero hj0
-      have : Invertible (j - 1728) := invertibleOfNonzero (Iff.mpr sub_ne_zero hj1728)
-      simp only [ofJ, hj0, hj1728, dite_false]
-      convert ofJ'_j j
+  by_cases h0 : j = 0
+  · by_cases h3 : (3 : F) = 0
+    · rw [h0, ofJ_0_of_three_eq_zero h3,
+        @ofJ1728_j _ _ <| invertibleOfNonzero <| two_or_three_ne_zero.neg_resolve_right h3,
+        show (1728 : F) = 3 * 576 by norm_num1, h3, zero_mul]
+    · rw [h0, ofJ_0_of_three_ne_zero h3, @ofJ0_j _ _ <| invertibleOfNonzero h3]
+  · by_cases h1728 : j = 1728
+    · have h2 : (2 : F) ≠ 0 :=
+        fun h => h0 <| by rw [h1728, show (1728 : F) = 2 * 864 by norm_num1, h, zero_mul]
+      rw [h1728, ofJ_1728_of_two_ne_zero h2, @ofJ1728_j _ _ <| invertibleOfNonzero h2]
+    · rw [ofJ_ne_0_ne_1728 h0 h1728,
+        @ofJ'_j _ _ _ (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)]
 
 end ModelsWithJ
 
