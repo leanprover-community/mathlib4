@@ -6,6 +6,8 @@ Authors: Yury Kudryashov, Anatole Dedecker
 import Mathlib.Analysis.Calculus.LocalExtr.Basic
 import Mathlib.Topology.Algebra.Order.Rolle
 
+#align_import analysis.calculus.local_extr from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
+
 /-!
 # Rolle's Theorem
 
