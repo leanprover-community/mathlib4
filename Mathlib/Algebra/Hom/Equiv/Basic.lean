@@ -47,7 +47,8 @@ def OneHom.inverse [One M] [One N]
     map_one' := by rw [← f.map_one, h₁] }
 
 /-- Makes a multiplicative inverse from a bijection which preserves multiplication. -/
-@[to_additive (attr := simps) "Makes an additive inverse from a bijection which preserves addition."]
+@[to_additive (attr := simps) 
+  "Makes an additive inverse from a bijection which preserves addition."]
 def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) 
     (h₁ : Function.LeftInverse g f)
     (h₂ : Function.RightInverse g f) : N →ₙ* M where
