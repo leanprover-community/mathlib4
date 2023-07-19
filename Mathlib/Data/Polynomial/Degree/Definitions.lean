@@ -712,7 +712,7 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
 #align polynomial.degree_add_C Polynomial.degree_add_C
 
-theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
+@[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
   by_cases hpd : p.degree ≤ 0
