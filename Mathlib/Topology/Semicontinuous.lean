@@ -68,7 +68,7 @@ variable {α : Type _} [TopologicalSpace α] {β : Type _} [Preorder β] {f g : 
 
 
 /-- A real function `f` is lower semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
-`x'` close enough to `x` in  `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
+`x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in a general
 preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
 def LowerSemicontinuousWithinAt (f : α → β) (s : Set α) (x : α) :=
   ∀ y < f x, ∀ᶠ x' in 𝓝[s] x, y < f x'
@@ -96,7 +96,7 @@ def LowerSemicontinuous (f : α → β) :=
 #align lower_semicontinuous LowerSemicontinuous
 
 /-- A real function `f` is upper semicontinuous at `x` within a set `s` if, for any `ε > 0`, for all
-`x'` close enough to `x` in  `s`, then `f x'` is at most `f x + ε`. We formulate this in a general
+`x'` close enough to `x` in `s`, then `f x'` is at most `f x + ε`. We formulate this in a general
 preordered space, using an arbitrary `y > f x` instead of `f x + ε`. -/
 def UpperSemicontinuousWithinAt (f : α → β) (s : Set α) (x : α) :=
   ∀ y, f x < y → ∀ᶠ x' in 𝓝[s] x, f x' < y

@@ -388,6 +388,6 @@ theorem forall_liouvilleWith_iff {x : ℝ} : (∀ p, LiouvilleWith p x) ↔ Liou
   refine ⟨fun H n => ?_, Liouville.liouvilleWith⟩
   rcases ((eventually_gt_atTop 1).and_frequently
     ((H (n + 1)).frequently_lt_rpow_neg (lt_add_one (n : ℝ)))).exists
-    with  ⟨b, hb, a, hne, hlt⟩
+    with ⟨b, hb, a, hne, hlt⟩
   exact ⟨a, b, by exact_mod_cast hb, hne, by simpa [rpow_neg] using hlt⟩
 #align forall_liouville_with_iff forall_liouvilleWith_iff

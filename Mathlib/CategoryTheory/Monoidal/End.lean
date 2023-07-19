@@ -89,7 +89,7 @@ attribute [local instance] endofunctorMonoidalCategory
 def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C) :=
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
-    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom  }
+    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
     μ_natural := fun f g => by
       ext Z
       dsimp

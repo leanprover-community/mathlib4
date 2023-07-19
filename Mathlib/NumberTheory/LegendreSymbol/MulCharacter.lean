@@ -76,7 +76,7 @@ structure MulChar extends MonoidHom R R' where
 
 instance funLike : FunLike (MulChar R R') R (fun _ => R') :=
   ⟨fun χ => χ.toFun,
-    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply  MonoidHom.ext (fun _ => congr_fun h _)⟩
+    fun χ₀ χ₁ h => by cases χ₀; cases χ₁; congr; apply MonoidHom.ext (fun _ => congr_fun h _)⟩
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type _) (R R' : outParam <| Type _) [CommMonoid R]

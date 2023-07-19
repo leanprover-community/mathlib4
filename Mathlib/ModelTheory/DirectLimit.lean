@@ -303,7 +303,7 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     rfl
   map_rel' := by
     intro n R x
-    change RelMap R (fun a =>  (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
+    change RelMap R (fun a => (⟦.mk f i (x a)⟧ : DirectLimit G f)) ↔ _
     simp only [relMap_quotient_mk'_sigma_mk']
 
 

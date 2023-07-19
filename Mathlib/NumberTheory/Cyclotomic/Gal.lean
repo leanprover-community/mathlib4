@@ -101,7 +101,7 @@ noncomputable def Aut.commGroup : CommGroup (L ≃ₐ[K] L) :=
 variable (h : Irreducible (cyclotomic n K)) {K} (L)
 
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
-  `f μ = μ ^ k` for any root of unity `μ`. A  strengthening of `IsPrimitiveRoot.autToPow`. -/
+  `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
 @[simps]
 noncomputable def autEquivPow : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L

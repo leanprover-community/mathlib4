@@ -46,7 +46,7 @@ variable [HasZeroMorphisms C] [HasZeroMorphisms D]
 
 /-- A functor preserves zero morphisms if it sends zero morphisms to zero morphisms. -/
 class PreservesZeroMorphisms (F : C ⥤ D) : Prop where
-  /-- For any pair objects `F (0: X ⟶  Y) = (0 : F X ⟶  F Y)` -/
+  /-- For any pair objects `F (0: X ⟶ Y) = (0 : F X ⟶ F Y)` -/
   map_zero : ∀ X Y : C, F.map (0 : X ⟶ Y) = 0 := by aesop
 #align category_theory.functor.preserves_zero_morphisms CategoryTheory.Functor.PreservesZeroMorphisms
 

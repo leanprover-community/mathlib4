@@ -171,7 +171,7 @@ instance : IsScalarTower S (S ⊗[R] S) (Ω[S⁄R]) :=
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type _} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) := by
-  convert  RestrictScalars.isScalarTower R₁ R₂ (Ω[S⁄R]) using 1
+  convert RestrictScalars.isScalarTower R₁ R₂ (Ω[S⁄R]) using 1
   ext (x m)
   show algebraMap R₁ S x • m = algebraMap R₂ S (algebraMap R₁ R₂ x) • m
   rw [← IsScalarTower.algebraMap_apply]
@@ -275,7 +275,7 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
     refine Submodule.smul_induction_on hx ?_ ?_
     · rintro x (hx : _ = _) y -
       dsimp
-      rw [show ↑(x • y) = x * ↑y  by rfl, Derivation.tensorProductTo_mul, hx, y.prop, zero_smul,
+      rw [show ↑(x • y) = x * ↑y by rfl, Derivation.tensorProductTo_mul, hx, y.prop, zero_smul,
         zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
 #align derivation.lift_kaehler_differential Derivation.liftKaehlerDifferential

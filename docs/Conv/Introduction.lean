@@ -124,7 +124,7 @@ using the `all_goals` combinator.
 The following performs rewriting only for the second and third occurrences of `b * c`:
 ```lean
 example (b c : ℕ) :
-    (b * c) * (b * c) * (b * c) = (b * c) * (c * b)  * (c * b) := by
+    (b * c) * (b * c) * (b * c) = (b * c) * (c * b) * (c * b) := by
   conv in (occs := 2 3) b * c =>
     all_goals rw [mul_comm]
 ```
@@ -133,7 +133,7 @@ in normal tactic mode, `t1 <;> t2` means to run `t1` and then run `t2` for every
 produced by it.
 ```
 example (b c : ℕ) :
-    (b * c) * (b * c) * (b * c) = (b * c) * (c * b)  * (c * b) := by
+    (b * c) * (b * c) * (b * c) = (b * c) * (c * b) * (c * b) := by
   conv => pattern (occs := 2 3) b * c <;> rw [mul_comm]
 ```
 

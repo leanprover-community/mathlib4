@@ -49,7 +49,7 @@ variable {C D}
 -- had to be defined separately as `Functor.obj` in order to speed up the compilation
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
-def Functor.obj (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D  where
+def Functor.obj (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
   obj X :=
     { X := A.X.obj X
       one := A.one.app X

@@ -87,7 +87,7 @@ theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n
 
 theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx f p P = n := by
-  let Q : ℕ → Prop := fun m =>  ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
+  let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
     intro k hk
     refine le_of_not_lt fun hnk => ?_
@@ -219,7 +219,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   refine' Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => _
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
-    ← Ideal.Quotient.algebraMap_eq,  ← IsScalarTower.algebraMap_apply]
+    ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
 #align ideal.inertia_deg_algebra_map Ideal.inertiaDeg_algebraMap
 
 end DecEq

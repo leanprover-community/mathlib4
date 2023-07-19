@@ -69,7 +69,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_eq, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [hom_ext_iff, biproduct.ι_map, biproduct.map_π, comp_f, assoc, ne_eq,
-        biproduct.ι_π_ne_assoc  _ h, comp_zero, zero_comp]
+        biproduct.ι_π_ne_assoc _ h, comp_zero, zero_comp]
 #align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
 
 end Biproducts

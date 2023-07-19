@@ -450,7 +450,7 @@ section
 
 /-
   In the special case of a normed space over the reals,
-  we can use  scalar multiplication in the `tendsto` characterization
+  we can use scalar multiplication in the `tendsto` characterization
   of the Fréchet derivative.
 -/
 variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]

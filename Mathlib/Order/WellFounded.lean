@@ -265,7 +265,7 @@ theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r
 #align acc.induction_bot Acc.induction_bot
 
 /-- Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
-let `C : β → Prop`, and  let `bot : α`.
+let `C : β → Prop`, and let `bot : α`.
 This induction principle shows that `C (f bot)` holds, given that
 * some `a` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`

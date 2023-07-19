@@ -183,7 +183,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
   -- porting note: used to work without explicitly having 6 → 7
   tfae_have 6 → 7
-  · exact fun h ↦  tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
+  · exact fun h ↦ tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
   tfae_finish
 #align tfae_exists_lt_is_o_pow TFAE_exists_lt_isLittleO_pow
 

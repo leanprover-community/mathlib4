@@ -79,7 +79,7 @@ open Rand
 def rand (α : Type u) [Random α] [RandomGen g] : RandG g α := Random.random
 
 /-- Generate a random value of type `α` between `x` and `y` inclusive. -/
-def randBound (α : Type u) [Preorder α]  [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] :
+def randBound (α : Type u) [Preorder α] [BoundedRandom α] (lo hi : α) (h : lo ≤ hi) [RandomGen g] :
     RandG g {a // lo ≤ a ∧ a ≤ hi} :=
   BoundedRandom.randomR lo hi h
 

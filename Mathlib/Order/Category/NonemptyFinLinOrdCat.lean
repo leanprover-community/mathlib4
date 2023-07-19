@@ -153,8 +153,8 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrdCat.of (ULift (Fin 1))
-  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _  _ => by rfl⟩
-  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _  _ => by rfl⟩
+  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
+  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext

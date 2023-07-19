@@ -400,7 +400,7 @@ instance : Div (RatFunc K) :=
 -- that does not close the goal
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
     ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := by
-  simp only [Div.div, HDiv.hDiv,  RatFunc.div]
+  simp only [Div.div, HDiv.hDiv, RatFunc.div]
 #align ratfunc.of_fraction_ring_div RatFunc.ofFractionRing_div
 
 /-- Multiplicative inverse of a rational function. -/

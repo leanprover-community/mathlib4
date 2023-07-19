@@ -89,7 +89,7 @@ involving the cost function `d`.
 
 This lemma collects the properties used in the proof of `exists_pos_real_of_irrational_root`.
 It is stated in more general form than needed: in the intended application, `Z = ℤ`, `N = ℕ`,
-`R = ℝ`, `d a = (a + 1) ^ f.nat_degree`, `j z a  = z / (a + 1)`, `f ∈ ℤ[x]`, `α` is an irrational
+`R = ℝ`, `d a = (a + 1) ^ f.nat_degree`, `j z a = z / (a + 1)`, `f ∈ ℤ[x]`, `α` is an irrational
 root of `f`, `ε` is small, `M` is a bound on the Lipschitz constant of `f` near `α`, `n` is
 the degree of the polynomial `f`.
 -/
@@ -189,7 +189,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
     exists_pos_real_of_irrational_root lx.irrational f0 ef0
   -- Since the real numbers are Archimedean, a power of `2` exceeds `A`: `hn : A < 2 ^ r`.
   rcases pow_unbounded_of_one_lt A (lt_add_one 1) with ⟨r, hn⟩
-  -- Use the Liouville property, with exponent `r +  deg f`.
+  -- Use the Liouville property, with exponent `r + deg f`.
   obtain ⟨a, b, b1, -, a1⟩ : ∃ a b : ℤ, 1 < b ∧ x ≠ a / b ∧
       |x - a / b| < 1 / (b : ℝ) ^ (r + f.natDegree) :=
     lx (r + f.natDegree)
