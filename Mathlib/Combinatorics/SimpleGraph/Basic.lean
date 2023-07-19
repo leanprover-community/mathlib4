@@ -46,9 +46,9 @@ finitely many vertices.
   graph isomorphisms. Note that a graph embedding is a stronger notion than an
   injective graph homomorphism, since its image is an induced subgraph.
 
-* `CompleteBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
-  `CompleteBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs of
-  the complete graph.
+* `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
+  `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
+  of the complete graph.
 
 ## Notations
 
@@ -343,7 +343,7 @@ instance distribLattice : DistribLattice (SimpleGraph V) :=
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
   { SimpleGraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -372,9 +372,7 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (SimpleGraph V) :=
     sInf := sInf
     sInf_le := fun s G hG a b hab => hab.1 hG
     le_sInf := fun s G hG a b hab => ⟨fun H hH => hG _ hH hab, hab.ne⟩
-    inf_sSup_le_iSup_inf := fun G s a b hab => by simpa using hab
-    iInf_sup_le_sup_sInf := fun G s a b hab => by
-      simpa [forall_and, forall_or_left, or_and_right, and_iff_left_of_imp Adj.ne] using hab }
+    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
 
 @[simp]
 theorem top_adj (v w : V) : (⊤ : SimpleGraph V).Adj v w ↔ v ≠ w :=
