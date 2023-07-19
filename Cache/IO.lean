@@ -61,7 +61,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.3"
+  "0.1.4"
 
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
@@ -274,15 +274,15 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) : IO Unit := do
+def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
-    let child ← IO.Process.spawn
-      { cmd := ← getLeanTar, args := #["-x", "-j", "-"], stdin := .piped }
+    let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
+    let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
