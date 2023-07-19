@@ -140,33 +140,15 @@ def getErr? : DegInfo → Option Expr
   | err e => some e
   | _ => none
 
-/-- `ctorName di` reports the name of the head-constructor of `di : DegInfo`. -/
-def ctorName : DegInfo → String
-  | rest     => "rest"
-  | X        => "X"
-  | natCast  => "natCast"
-  | intCast  => "intCast"
-  | ofNat0   => "ofNat0"
-  | ofNat1   => "ofNat1"
-  | ofNatN   => "ofNatN"
-  | C        => "C"
-  | monomial => "monomial"
-  | neg ..   => "neg"
-  | add ..   => "add"
-  | sub ..   => "sub"
-  | mul ..   => "mul"
-  | pow ..   => "pow"
-  | err ..   => "err"
-
 /-- `expand di` converts `di : DegInfo` into a `String` for printing the tree-structure.
 Mostly useful for debugging. -/
 partial
 def expand (di : DegInfo) (n : Nat := 0) (indent: String := "") (sep : String := "-|") : String :=
+let ctor := ((toString (toExpr di)).takeWhile (· != ' ')).takeRightWhile (· != '.')
 let expandArgs := di.getArgs.map (expand · (n + 1) (indent ++ sep))
-(if n == 0 then "" else "\n") ++ indent ++ di.ctorName ++ String.join expandArgs
+(if n == 0 then "" else "\n") ++ indent ++ ctor ++ String.join expandArgs
 
-instance : ToString DegInfo where
-  toString := expand
+instance : ToString DegInfo where toString := expand
 
 /-- `toLemmas di` assigns to `di : DegInfo` the pair of lemma names that apply for a polynomial
 whose head symbol matches the head symbol of `di`. -/
