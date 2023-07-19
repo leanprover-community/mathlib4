@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.ramification_inertia
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.RingTheory.DedekindDomain.Ideal
+
+#align_import number_theory.ramification_inertia from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Ramification index and inertia degree
@@ -87,7 +84,7 @@ theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n
 
 theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx f p P = n := by
-  let Q : ℕ → Prop := fun m =>  ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
+  let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
     intro k hk
     refine le_of_not_lt fun hnk => ?_
@@ -219,7 +216,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   refine' Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => _
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
-    ← Ideal.Quotient.algebraMap_eq,  ← IsScalarTower.algebraMap_apply]
+    ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
 #align ideal.inertia_deg_algebra_map Ideal.inertiaDeg_algebraMap
 
 end DecEq

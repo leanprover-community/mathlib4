@@ -2,11 +2,6 @@
 Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.multiplicity
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.GeomSum
@@ -15,6 +10,8 @@ import Mathlib.Data.Nat.Log
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Prime
 import Mathlib.RingTheory.Multiplicity
+
+#align_import data.nat.multiplicity from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
 /-!
 # Natural number multiplicity
@@ -30,8 +27,9 @@ coefficients.
   for this result stated in the language of `p`-adic valuations.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
-* `Nat.Prime.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries
-   when `k` and`n - k` are added in base `p`.
+* `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
+   number of carries  when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
+   same result but stated in the language of `p`-adic valuations.
 
 ## Other declarations
 

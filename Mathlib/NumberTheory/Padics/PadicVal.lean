@@ -2,11 +2,6 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_val
-! leanprover-community/mathlib commit 60fa54e778c9e85d930efae172435f42fb0d71f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
@@ -14,8 +9,10 @@ import Mathlib.Data.Nat.MaxPowDiv
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Tactic.IntervalCases
 
+#align_import number_theory.padics.padic_val from "leanprover-community/mathlib"@"60fa54e778c9e85d930efae172435f42fb0d71f7"
+
 /-!
-# p-adic Valuation
+# `p`-adic Valuation
 
 This file defines the `p`-adic valuation on `ℕ`, `ℤ`, and `ℚ`.
 
@@ -34,12 +31,17 @@ This file uses the local notation `/.` for `Rat.mk`.
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
 by taking `[Fact p.Prime]` as a type class argument.
 
-## Multiplicity calculations
+## Calculations with `p`-adic valuations
 
 * `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
 quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
 greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
 language of prime multiplicity.
+
+* `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
+of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
+`Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
+same result but stated in the language of prime multiplicity.
 
 ## References
 
@@ -550,7 +552,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
 theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
-    padicValNat p (p * n) ! = padicValNat p n ! + n :=  by
+    padicValNat p (p * n) ! = padicValNat p n ! + n := by
   refine' PartENat.natCast_inj.mp _
   rw [padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos (p * n), Nat.cast_add,
       padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]
@@ -564,6 +566,18 @@ theorem padicValNat_factorial {p n b : ℕ} [hp : Fact p.Prime] (hnb : log p n <
     padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
+
+/-- **Kummer's Theorem**
+
+The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
+in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
+`log p n`
+-/
+theorem padicValNat_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
+    padicValNat p (choose n k) =
+    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
+  PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos hkn) ▸
+  Prime.multiplicity_choose hp.out hkn hnb
 
 end padicValNat
 

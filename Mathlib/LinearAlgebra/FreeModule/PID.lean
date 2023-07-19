@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.pid
-! leanprover-community/mathlib commit d87199d51218d36a0a42c66c82d147b5a7ff87b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dimension
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.Finiteness
+
+#align_import linear_algebra.free_module.pid from "leanprover-community/mathlib"@"d87199d51218d36a0a42c66c82d147b5a7ff87b3"
 
 /-! # Free modules over PID
 
@@ -488,11 +485,11 @@ noncomputable def Submodule.smithNormalFormOfLE [Finite ι] (b : Basis ι R M) (
     (N_le_O : N ≤ O) : Σo n : ℕ, Basis.SmithNormalForm (N.comap O.subtype) (Fin o) n := by
   choose n o hno bO bN a snf using N.exists_smith_normal_form_of_le b O N_le_O
   refine'
-    ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLE hno).toEmbedding, a,
+    ⟨o, n, bO, bN.map (comapSubtypeEquivOfLe N_le_O).symm, (Fin.castLEEmb hno).toEmbedding, a,
       fun i ↦ _⟩
   ext
   simp only [snf, Basis.map_apply, Submodule.comapSubtypeEquivOfLe_symm_apply,
-    Submodule.coe_smul_of_tower, RelEmbedding.coe_toEmbedding]
+    Submodule.coe_smul_of_tower, RelEmbedding.coe_toEmbedding, Fin.castLEEmb_apply]
 #align submodule.smith_normal_form_of_le Submodule.smithNormalFormOfLE
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free

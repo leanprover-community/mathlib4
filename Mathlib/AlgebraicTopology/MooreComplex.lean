@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_topology.Moore_complex
-! leanprover-community/mathlib commit 0bd2ea37bcba5769e14866170f251c9bc64e35d7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Abelian.Basic
+
+#align_import algebraic_topology.Moore_complex from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
 
 /-!
 ## Moore complex
@@ -60,12 +57,21 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
-@[simp]
 def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex.obj_X AlgebraicTopology.NormalizedMooreComplex.objX
+
+theorem objX_zero : objX X 0 = ⊤ :=
+  rfl
+
+theorem objX_add_one (n) :
+    objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
+  rfl
+
+attribute [eqns objX_zero objX_add_one] objX
+attribute [simp] objX
 
 /-- The differentials in the normalized Moore complex.
 -/
@@ -153,8 +159,9 @@ which maps each of these intersections of kernels to the next.
 def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
-  map_id X := by ext (_ | _) <;> aesop_cat
-  map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> aesop_cat
+  -- Porting note: Why `aesop_cat` can't do `dsimp` steps?
+  map_id X := by ext (_ | _) <;> dsimp <;> aesop_cat
+  map_comp f g := by ext (_ | _) <;> apply Subobject.eq_of_comp_arrow_eq <;> dsimp <;> aesop_cat
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.normalized_Moore_complex AlgebraicTopology.normalizedMooreComplex
 

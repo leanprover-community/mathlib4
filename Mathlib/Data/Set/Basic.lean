@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.set.basic
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SymmDiff
 import Mathlib.Logic.Function.Iterate
+
+#align_import data.set.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Basic properties of sets
@@ -316,7 +313,7 @@ instance : IsTrans (Set α) (· ⊆ ·) :=
   show IsTrans (Set α) (. ≤ .) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (. ≤ .) (. ≤ .)  (. ≤ .) by infer_instance
+  show Trans (. ≤ .) (. ≤ .) (. ≤ .) by infer_instance
 
 instance : IsAntisymm (Set α) (· ⊆ ·) :=
   show IsAntisymm (Set α) (. ≤ .) by infer_instance
@@ -328,13 +325,13 @@ instance : IsTrans (Set α) (· ⊂ ·) :=
   show IsTrans (Set α) (. < .) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. < .)  (. < .) by infer_instance
+  show Trans (. < .) (. < .) (. < .) by infer_instance
 
 instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (. < .) (. ≤ .)  (. < .) by infer_instance
+  show Trans (. < .) (. ≤ .) (. < .) by infer_instance
 
 instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (. ≤ .) (. < .)  (. < .) by infer_instance
+  show Trans (. ≤ .) (. < .) (. < .) by infer_instance
 
 instance : IsAsymm (Set α) (· ⊂ ·) :=
   show IsAsymm (Set α) (. < .) by infer_instance

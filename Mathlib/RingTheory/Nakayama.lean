@@ -2,13 +2,10 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.nakayama
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.JacobsonIdeal
+
+#align_import ring_theory.nakayama from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Nakayama's lemma
@@ -32,7 +29,7 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 
 Note that a version of Statement (1) in
 [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV) can be found in
-`ring_theory/noetherian` under the name
+`RingTheory.Noetherian` under the name
 `Submodule.exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul`
 
 ## References

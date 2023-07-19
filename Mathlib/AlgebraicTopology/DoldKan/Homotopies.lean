@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.homotopies
-! leanprover-community/mathlib commit b12099d3b7febf4209824444dd836ef5ad96db55
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.AlgebraicTopology.DoldKan.Notations
+
+#align_import algebraic_topology.dold_kan.homotopies from "leanprover-community/mathlib"@"b12099d3b7febf4209824444dd836ef5ad96db55"
 
 /-!
 
