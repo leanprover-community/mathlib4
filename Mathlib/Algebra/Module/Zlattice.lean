@@ -35,7 +35,7 @@ the set defined by `Zspan.fundamentalDomain` is a fundamental domain.
 * `Zlattice.module_free`: an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
 `ℤ`-module
 * `Zlattice.rank`:  an addsubgroup of `E` that is discrete and spans `E` over `K` is a free
-`ℤ`-module has `ℤ`-rank equal to the `K`-rank of `E`
+`ℤ`-module of `ℤ`-rank equal to the `K`-rank of `E`
 -/
 
 
@@ -118,7 +118,7 @@ theorem ceil_eq_self_of_mem (m : E) (h : m ∈ span ℤ (Set.range b)) : (ceil b
 #align zspan.ceil_eq_self_of_mem Zspan.ceil_eq_self_of_mem
 
 /-- The map that sends a vector `E` to the `fundamentalDomain` of the lattice,
-see `Zspan.fract_mem_fundamentalDomain` and `fract_restrict` for the map with the codomain
+see `Zspan.fract_mem_fundamentalDomain`, and `fract_restrict` for the map with the codomain
 restricted to `fundamentalDomain`. -/
 def fract (m : E) : E := m - floor b m
 #align zspan.fract Zspan.fract
@@ -243,7 +243,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 #align zspan.exist_unique_vadd_mem_fundamental_domain Zspan.exist_unique_vadd_mem_fundamentalDomain
 
-/-- The map `Zspan.fract` give an equiv map between `E ⧸ span ℤ (Set.range b)`
+/-- The map `Zspan.fract_restrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `Zspan.fundamentalDomain b`. -/
 def QuotientEquiv [Fintype ι] :
     E ⧸ span ℤ (Set.range b) ≃ (fundamentalDomain b) := by
@@ -392,7 +392,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
     have h : LinearIndependent ℤ (fun x : (Set.range b) => (x : E)) := by
       rwa [linearIndependent_subtype_range (Subtype.coe_injective.comp b₀.injective)]
     contrapose! h
-    -- Since `finrank ℤ L ≤ finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
+    -- Since `finrank ℤ L > finrank K E`, there exists a vector `v ∈ b` with `v ∉ e`
     obtain ⟨v, hv⟩ : (Set.range b \ Set.range e).Nonempty := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
       contrapose h
@@ -401,7 +401,7 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       replace h := Finset.card_le_of_subset h
       rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card _ ht_lin]
-    -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then get the contradiction
+    -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndependent ℤ (fun x : ↥(insert v (Set.range e)) => (x : E)) by
       contrapose! this
       refine LinearIndependent.mono ?_ this
@@ -412,8 +412,8 @@ theorem Zlattice.rank : finrank ℤ L = finrank K E := by
       (linearIndependent_insert (Set.not_mem_of_mem_diff hv)),  not_and, not_not]
     intro _
     -- But that follows from the fact that there exist `n, m : ℕ`, `n ≠ m`
-    -- such that `(n - m) • v ∈ span ℤ e` because `n ↦ Zspan.fract e (n • v)` takes value
-    -- into the finite set `fundamentalDomain e ∩ L`
+    -- such that `(n - m) • v ∈ span ℤ e` which is true since `n ↦ Zspan.fract e (n • v)` 
+    -- takes value into the finite set `fundamentalDomain e ∩ L`
     have : Set.MapsTo (fun n : ℤ => Zspan.fract e (n • v)) Set.univ
         (L ∩ Metric.closedBall 0 (∑ i, ‖e i‖)) := by
       rw [Set.mapsTo_inter, Set.maps_univ_to, Set.maps_univ_to]
