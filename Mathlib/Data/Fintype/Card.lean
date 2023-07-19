@@ -921,12 +921,6 @@ instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 #align finite.finite.to_well_founded_gt Finite.to_wellFoundedGT
 
-instance [Preorder α] : WellFoundedLT α where
-  wf := Preorder.wellFounded_lt
-
-instance [Preorder α] : WellFoundedGT α where
-  wf := Preorder.wellFounded_gt
-
 instance (priority := 10) LinearOrder.isWellOrder_lt [LinearOrder α] : IsWellOrder α (· < ·) := {}
 #align finite.linear_order.is_well_order_lt Finite.LinearOrder.isWellOrder_lt
 
