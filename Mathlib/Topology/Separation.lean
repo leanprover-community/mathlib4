@@ -728,7 +728,7 @@ obtains a dense set. -/
 theorem Dense.diff_finset [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Set α} (hs : Dense s)
     (t : Finset α) : Dense (s \ t) := by
   induction t using Finset.induction_on with
-  | empty =>  simpa using hs
+  | empty => simpa using hs
   | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
@@ -1986,7 +1986,7 @@ theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ 
       intro hU
       let N := { Z // IsClopen Z ∧ x ∈ Z }
       suffices : ∃ Z : N, Z.val ⊆ U
-      · rcases this with  ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
+      · rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ Z : N, IsClosed Z.val := fun Z => Z.property.1.2
       have hdir : Directed Superset fun Z : N => Z.val := by

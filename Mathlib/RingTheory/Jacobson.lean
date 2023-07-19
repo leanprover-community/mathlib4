@@ -186,7 +186,7 @@ theorem isMaximal_iff_isMaximal_disjoint [H : IsJacobson R] (J : Ideal S) :
     rw [isPrime_iff_isPrime_disjoint (Submonoid.powers y)] at hJ
     have : y ∉ (comap (algebraMap R S) J).1 := Set.disjoint_left.1 hJ.right (Submonoid.mem_powers _)
     erw [← H.out hJ.left.isRadical, mem_sInf] at this
-    push_neg  at this
+    push_neg at this
     rcases this with ⟨I, hI, hI'⟩
     convert hI.right
     by_cases hJ : J = map (algebraMap R S) I
@@ -515,7 +515,7 @@ theorem isMaximal_comap_C_of_isMaximal [Nontrivial R] (hP' : ∀ x : R, C x ∈ 
       (IsLocalization.map_injective_of_injective M (Localization M) (Localization M')
         quotientMap_injective))]
     refine' isMaximal_comap_of_isIntegral_of_isMaximal' _ _ ⊥ this
-    have isloc : IsLocalization  (Submonoid.map φ M) (Localization M') := by infer_instance
+    have isloc : IsLocalization (Submonoid.map φ M) (Localization M') := by infer_instance
     exact @isIntegral_isLocalization_polynomial_quotient R _
       (Localization M) (Localization M') _ _ P m hmem_P _ _ _ isloc
   rw [(map_bot.symm :

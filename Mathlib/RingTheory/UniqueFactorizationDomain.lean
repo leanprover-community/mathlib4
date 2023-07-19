@@ -1853,7 +1853,7 @@ theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α} (hp : Irreducible 
 
 theorem count_factors_eq_find_of_dvd_pow {a p : Associates α} (hp : Irreducible p)
     [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
-    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩  = p.count a.factors := by
+    @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
   · refine' Nat.find_le ⟨1, _⟩
     rw [mul_one]

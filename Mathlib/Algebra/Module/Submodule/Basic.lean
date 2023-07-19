@@ -196,7 +196,7 @@ def toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
     Module R' s :=
-  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R  A
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
   SMulMemClass.toModule s
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/

@@ -17,7 +17,7 @@ import Mathlib.Order.Filter.Ultrafilter
 
 This file defines pointwise operations on filters. This is useful because usual algebraic operations
 distribute over pointwise operations. For example,
-* `(f₁ * f₂).map m  = f₁.map m * f₂.map m`
+* `(f₁ * f₂).map m = f₁.map m * f₂.map m`
 * `𝓝 (x * y) = 𝓝 x * 𝓝 y`
 
 ## Main declarations
@@ -569,7 +569,7 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
-@[to_additive  existing]
+@[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align filter.has_zpow Filter.instZPow

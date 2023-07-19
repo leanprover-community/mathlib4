@@ -17,7 +17,7 @@ We define
 * the composition-product `κ ⊗ₖ η` of two s-finite kernels `κ : kernel α β` and
   `η : kernel (α × β) γ`, a kernel from `α` to `β × γ`.
 * the map and comap of a kernel along a measurable function.
-* the composition `η ∘ₖ κ` of kernels `κ : kernel α β` and `η : kernel β γ`,  kernel from `α` to
+* the composition `η ∘ₖ κ` of kernels `κ : kernel α β` and `η : kernel β γ`, kernel from `α` to
   `γ`.
 * the product `κ ×ₖ η` of s-finite kernels `κ : kernel α β` and `η : kernel α γ`,
   a kernel from `α` to `β × γ`.

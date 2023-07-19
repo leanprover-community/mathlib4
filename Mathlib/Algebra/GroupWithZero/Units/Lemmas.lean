@@ -37,7 +37,7 @@ theorem eq_mul_inv_iff_mul_eq₀ (hc : c ≠ 0) : a = b * c⁻¹ ↔ a * c = b :
 #align eq_mul_inv_iff_mul_eq₀ eq_mul_inv_iff_mul_eq₀
 
 theorem eq_inv_mul_iff_mul_eq₀ (hb : b ≠ 0) : a = b⁻¹ * c ↔ b * a = c :=
-  IsUnit.eq_inv_mul_iff_mul_eq  hb.isUnit
+  IsUnit.eq_inv_mul_iff_mul_eq hb.isUnit
 #align eq_inv_mul_iff_mul_eq₀ eq_inv_mul_iff_mul_eq₀
 
 theorem inv_mul_eq_iff_eq_mul₀ (ha : a ≠ 0) : a⁻¹ * b = c ↔ b = a * c :=

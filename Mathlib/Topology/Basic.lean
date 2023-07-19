@@ -46,8 +46,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
-*  [I. M. James, *Topologies and Uniformities*][james1999]
+* [N. Bourbaki, *General Topology*][bourbaki1966]
+* [I. M. James, *Topologies and Uniformities*][james1999]
 
 ## Tags
 

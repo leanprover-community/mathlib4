@@ -671,7 +671,7 @@ theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Dar
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
 theorem edges_subset_edgeSet {u v : V} :
     ∀ (p : G.Walk u v) ⦃e : Sym2 V⦄, e ∈ p.edges → e ∈ G.edgeSet
-  | cons h' p', e, h  => by
+  | cons h' p', e, h => by
     cases h
     · exact h'
     next h' => exact edges_subset_edgeSet p' h'
@@ -1699,7 +1699,7 @@ theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
 #align simple_graph.walk.edges_transfer SimpleGraph.Walk.edges_transfer
 
 @[simp]
-theorem support_transfer  (hp) : (p.transfer H hp).support = p.support := by
+theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
   induction p <;> simp [*]
 #align simple_graph.walk.support_transfer SimpleGraph.Walk.support_transfer
 

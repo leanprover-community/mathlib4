@@ -139,9 +139,9 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
   have : infEdist x (closure s) < infEdist x (closure s) + ε / 2 :=
     ENNReal.lt_add_right h.ne ε0.ne'
   rcases infEdist_lt_iff.mp this with ⟨y, ycs, hy⟩
-  -- y : α,  ycs : y ∈ closure s,  hy : edist x y < infEdist x (closure s) + ↑ε / 2
+  -- y : α, ycs : y ∈ closure s, hy : edist x y < infEdist x (closure s) + ↑ε / 2
   rcases EMetric.mem_closure_iff.1 ycs (ε / 2) ε0 with ⟨z, zs, dyz⟩
-  -- z : α,  zs : z ∈ s,  dyz : edist y z < ↑ε / 2
+  -- z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2
   calc
     infEdist x s ≤ edist x z := infEdist_le_edist_of_mem zs
     _ ≤ edist x y + edist y z := (edist_triangle _ _ _)
@@ -323,11 +323,11 @@ theorem infEdist_le_infEdist_add_hausdorffEdist :
     have : infEdist x s < infEdist x s + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).1.ne ε0
     rcases infEdist_lt_iff.mp this with ⟨y, ys, dxy⟩
-    -- y : α,  ys : y ∈ s,  dxy : edist x y < infEdist x s + ↑ε / 2
+    -- y : α, ys : y ∈ s, dxy : edist x y < infEdist x s + ↑ε / 2
     have : hausdorffEdist s t < hausdorffEdist s t + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).2.ne ε0
     rcases exists_edist_lt_of_hausdorffEdist_lt ys this with ⟨z, zt, dyz⟩
-    -- z : α,  zt : z ∈ t,  dyz : edist y z < Hausdorff_edist s t + ↑ε / 2
+    -- z : α, zt : z ∈ t, dyz : edist y z < Hausdorff_edist s t + ↑ε / 2
     calc
       infEdist x t ≤ edist x z := infEdist_le_edist_of_mem zt
       _ ≤ edist x y + edist y z := (edist_triangle _ _ _)

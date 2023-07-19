@@ -392,7 +392,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ι → M) (t : Finset ι) :
   f.toMultilinearMap.map_piecewise_add _ _ _
 
 /-- Additivity of a continuous alternating map along all coordinates at the same time,
-writing `f (m + m')` as the sum  of `f (s.piecewise m m')` over all sets `s`. -/
+writing `f (m + m')` as the sum of `f (s.piecewise m m')` over all sets `s`. -/
 theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
   f.toMultilinearMap.map_add_univ _ _

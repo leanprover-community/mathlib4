@@ -134,7 +134,7 @@ noncomputable instance (J : Type _) :
     PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimitOfPreservesColimitCocone (coproductCofanIsColimit G)
-      ((colimit.isColimit  (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _).ofIsoColimit
+      ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _).ofIsoColimit
         (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts

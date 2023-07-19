@@ -933,7 +933,7 @@ theorem dvd_of_mk_le_mk {a b : α} : Associates.mk a ≤ Associates.mk b → a �
             b = a * c * ↑d := hd.symm
             _ = a * (↑d * c) := by ac_rfl
             ⟩
-    Quotient.inductionOn c' step  hc'
+    Quotient.inductionOn c' step hc'
 #align associates.dvd_of_mk_le_mk Associates.dvd_of_mk_le_mk
 
 theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.mk b := fun ⟨c, hc⟩ =>

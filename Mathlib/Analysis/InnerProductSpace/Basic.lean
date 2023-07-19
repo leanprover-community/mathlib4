@@ -61,8 +61,8 @@ in the second.
 inner product space, Hilbert space, norm
 
 ## References
-*  [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
-*  [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
+* [Clément & Martin, *The Lax-Milgram Theorem. A detailed proof to be formalized in Coq*]
+* [Clément & Martin, *A Coq formal proof of the Lax–Milgram theorem*]
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
@@ -1132,21 +1132,21 @@ theorem parallelogram_law_with_nnnorm (x y : E) :
 
 variable {𝕜}
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : E) :
     re ⟪x, y⟫ = (‖x + y‖ * ‖x + y‖ - ‖x‖ * ‖x‖ - ‖y‖ * ‖y‖) / 2 := by
   rw [@norm_add_mul_self 𝕜]
   ring
 #align re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two re_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two (x y : E) :
     re ⟪x, y⟫ = (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ - ‖x - y‖ * ‖x - y‖) / 2 := by
   rw [@norm_sub_mul_self 𝕜]
   ring
 #align re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two re_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two
 
-/-- Polarization identity: The real part of the  inner product, in terms of the norm. -/
+/-- Polarization identity: The real part of the inner product, in terms of the norm. -/
 theorem re_inner_eq_norm_add_mul_self_sub_norm_sub_mul_self_div_four (x y : E) :
     re ⟪x, y⟫ = (‖x + y‖ * ‖x + y‖ - ‖x - y‖ * ‖x - y‖) / 4 := by
   rw [@norm_add_mul_self 𝕜, @norm_sub_mul_self 𝕜]

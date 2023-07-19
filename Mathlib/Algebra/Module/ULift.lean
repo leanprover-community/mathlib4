@@ -80,7 +80,7 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
 #align ulift.smul_zero_class ULift.smulZeroClass
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
-  smul_zero c := by { ext;  simp [smul_zero] }
+  smul_zero c := by { ext; simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
 instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where

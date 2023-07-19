@@ -296,7 +296,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     rintro x₀ _ ⟨i, rfl⟩
     use B i
     constructor
-    · use  i
+    · use i
     · simp
   smul' := by
     rintro _ ⟨i, rfl⟩

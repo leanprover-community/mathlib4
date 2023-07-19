@@ -55,7 +55,7 @@ instance : LT (Upto p) :=
 satisfying `p`. -/
 protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
   | ⟨x, h⟩ => by
-    suffices Upto.GT p = InvImage  (· < ·) fun y : Nat.Upto p => x - y.val by
+    suffices Upto.GT p = InvImage (· < ·) fun y : Nat.Upto p => x - y.val by
       rw [this]
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩

@@ -141,7 +141,7 @@ theorem eigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     _ = LinearMap.ker (f - b⁻¹ • algebraMap K (End K V) a) := rfl
     _ = LinearMap.ker (b • (f - b⁻¹ • algebraMap K (End K V) a)) := by
         rw [LinearMap.ker_smul _ b hb]
-    _ =  LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
+    _ = LinearMap.ker (b • f - algebraMap K (End K V) a) := by rw [smul_sub, smul_inv_smul₀ hb]
 #align module.End.eigenspace_div Module.End.eigenspace_div
 
 /-- The eigenspaces of a linear operator form an independent family of subspaces of `V`.  That is,
@@ -159,7 +159,7 @@ theorem eigenspaces_independent (f : End K V) : CompleteLattice.Independent f.ei
   suffices ∀ l : Π₀ μ, f.eigenspace μ, S l = 0 → l = 0 by
     rw [CompleteLattice.independent_iff_dfinsupp_lsum_injective]
     change Function.Injective S
-    rw [←  @LinearMap.ker_eq_bot K K (Π₀ μ, f.eigenspace μ) V _ _
+    rw [← @LinearMap.ker_eq_bot K K (Π₀ μ, f.eigenspace μ) V _ _
       (@DFinsupp.addCommGroup K (fun μ => f.eigenspace μ) _)]
     rw [eq_bot_iff]
     exact this

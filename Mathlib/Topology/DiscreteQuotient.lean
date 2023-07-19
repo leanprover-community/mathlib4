@@ -87,7 +87,7 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
 
 /-- Construct a discrete quotient from a clopen set. -/
 def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
-  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl,  Iff.symm,  Iff.trans⟩
+  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
 #align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
 

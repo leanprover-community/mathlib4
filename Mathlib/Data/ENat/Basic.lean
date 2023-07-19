@@ -36,7 +36,7 @@ deriving Zero,
   CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, Top, CanonicallyLinearOrderedAddMonoid, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation, Inhabited
-  -- OrderBot, OrderTop, OrderedSub,  SuccOrder, WellFoundedLt, CharZero
+  -- OrderBot, OrderTop, OrderedSub, SuccOrder, WellFoundedLt, CharZero
 #align enat ENat
 
 -- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having

@@ -140,7 +140,7 @@ do let type := (← getConstInfo c).instantiateTypeLevelParams univs
      let (n, r) ← match bs.filterMap id, eqs with
      | [], [] => do
            pure (some 0, (mkConst `True))
-     | bs', []  => do
+     | bs', [] => do
           let t : Expr ← bs'.getLast!.fvarId!.getType
           let l := (←inferType t).sortLevel!
           if l == Level.zero then do
@@ -164,7 +164,7 @@ match n with
     Tactic.evalTactic (←`(tactic| constructor))
   let [] := subgoals' | throwError "expected no subgoals"
   pure ()
-| n  + 1 => do
+| n + 1 => do
   let (subgoals,_) ← Term.TermElabM.run $ Tactic.run mvar do
     Tactic.evalTactic (←`(tactic| refine ⟨?_,?_⟩))
   let [sg1, sg2] := subgoals | throwError "expected two subgoals"

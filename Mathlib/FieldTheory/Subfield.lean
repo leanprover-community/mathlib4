@@ -655,7 +655,7 @@ instance : CompleteLattice (Subfield K) :=
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun  _ _ _ => And.right
+    inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
 /-! # subfield closure of a subset -/

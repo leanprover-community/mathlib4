@@ -659,7 +659,7 @@ theorem mul_mem_add_closure (ha : a ∈ AddSubmonoid.closure (S : Set R))
     (hb : b ∈ AddSubmonoid.closure (S : Set R)) : a * b ∈ AddSubmonoid.closure (S : Set R) := by
   revert a
   refine' @AddSubmonoid.closure_induction _ _ _
-    (fun z =>  ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddSubmonoid.closure ↑S)
+    (fun z => ∀ {a : R}, a ∈ AddSubmonoid.closure ↑S → a * z ∈ AddSubmonoid.closure ↑S)
       _ hb _ _ _ <;> clear hb b
   · exact fun r hr b hb => MulMemClass.mul_right_mem_add_closure hb hr
   · exact fun _ => by simp only [mul_zero, (AddSubmonoid.closure (S : Set R)).zero_mem]

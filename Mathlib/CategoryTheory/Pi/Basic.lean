@@ -236,7 +236,7 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i := by
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
   intro _ _ _
   · simp

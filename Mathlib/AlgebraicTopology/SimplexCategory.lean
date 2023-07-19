@@ -386,7 +386,7 @@ instance : Faithful skeletalFunctor.{v} where
   map_injective {_ _ f g} h := by
     ext x : 3
     apply ULift.up_injective.{v}
-    change (skeletalFunctor.{v}.map f) ⟨x⟩  = (skeletalFunctor.map g) ⟨x⟩
+    change (skeletalFunctor.{v}.map f) ⟨x⟩ = (skeletalFunctor.map g) ⟨x⟩
     rw [h]
 
 instance : EssSurj skeletalFunctor.{v} where

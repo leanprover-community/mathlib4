@@ -63,7 +63,7 @@ def PFun (α β : Type _) :=
   α → Part β
 #align pfun PFun
 
-/-- `α  →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
+/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
 infixr:25 " →. " => PFun
 
 namespace PFun

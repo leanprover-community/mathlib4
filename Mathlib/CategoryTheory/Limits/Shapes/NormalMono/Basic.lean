@@ -68,7 +68,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
   Z := F.objPreimage hf.Z
   g := Full.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
   w := F.map_injective <| by
-    have reassoc' {W : D} (h : hf.Z ⟶  W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
+    have reassoc' {W : D} (h : hf.Z ⟶ W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
   isLimit :=
@@ -111,7 +111,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   Z := hn.Z
   g := k ≫ hn.g
   w := by
-    have reassoc' {W : C} (h' : S ⟶  W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
+    have reassoc' {W : C} (h' : S ⟶ W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
       simp only [← Category.assoc, eq_whisker comm]
     rw [← reassoc', hn.w, HasZeroMorphisms.comp_zero]
   isLimit := by
@@ -225,7 +225,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   W := gn.W
   g := gn.g ≫ f
   w := by
-    have reassoc' {W : C} (h' : R ⟶  W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
+    have reassoc' {W : C} (h' : R ⟶ W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by

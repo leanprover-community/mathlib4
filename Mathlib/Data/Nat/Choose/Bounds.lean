@@ -31,7 +31,7 @@ variable {α : Type _} [LinearOrderedSemifield α]
 
 namespace Nat
 
-theorem choose_le_pow (r n : ℕ) : (n.choose r : α)  ≤ (n ^ r : α) / r ! := by
+theorem choose_le_pow (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r ! := by
   rw [le_div_iff']
   · norm_cast
     rw [← Nat.descFactorial_eq_factorial_mul_choose]

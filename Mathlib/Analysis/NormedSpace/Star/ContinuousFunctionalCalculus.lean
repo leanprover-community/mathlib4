@@ -23,7 +23,7 @@ Being a star algebra equivalence between C⋆-algebras, this map is continuous (
 and by the Stone-Weierstrass theorem it is the unique star algebra equivalence which extends the
 polynomial functional calculus (i.e., `Polynomial.aeval`).
 
-For any continuous function `f : spectrum ℂ a →  ℂ`, this makes it possible to define an element
+For any continuous function `f : spectrum ℂ a → ℂ`, this makes it possible to define an element
 `f a` (not valid notation) in the original algebra, which heuristically has the same eigenspaces as
 `a` and acts on eigenvector of `a` for an eigenvalue `λ` as multiplication by `f λ`. This
 description is perfectly accurate in finite dimension, but only heuristic in infinite dimension as

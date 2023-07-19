@@ -381,7 +381,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
     simp only [Finset.sum_const]
     congr
     rw [← AlgHom.card L F E]
-    exact Finset.card_univ (α :=  F →ₐ[L] E)
+    exact Finset.card_univ (α := F →ₐ[L] E)
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']

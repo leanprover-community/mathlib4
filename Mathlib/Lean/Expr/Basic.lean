@@ -281,7 +281,7 @@ def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M
 def modifyAppArg (modifier : Expr → Expr) : Expr → Expr :=
   modifyAppArgM (M := Id) modifier
 
-def modifyRevArg (modifier : Expr → Expr) : Nat → Expr  → Expr
+def modifyRevArg (modifier : Expr → Expr) : Nat → Expr → Expr
   | 0 => modifyAppArg modifier
   | (i+1) => modifyAppArg (modifyRevArg modifier i)
 

@@ -1078,7 +1078,7 @@ theorem dvd_iff_mod_eq_zero {a b : Ordinal} : b ∣ a ↔ a % b = 0 :=
 #align ordinal.dvd_iff_mod_eq_zero Ordinal.dvd_iff_mod_eq_zero
 
 @[simp]
-theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x :=  by
+theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · rwa [mod_def, mul_add_div, mul_add, ← sub_sub, add_sub_cancel, mod_def]

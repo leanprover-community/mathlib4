@@ -629,7 +629,7 @@ theorem adjoin_finset_isCompactElement (S : Finset E) :
 -- Porting note: `exact` or `apply` timeout here
     refine' le_antisymm (adjoin_le_iff.mpr fun x hx => SetLike.mem_coe.mpr
       (adjoin_simple_le_iff.mp (le_iSup_of_le x (le_iSup_iff.2 (fun E1 hE1 => hE1 hx)))))
-        (iSup_le fun x => iSup_le fun hx =>  adjoin_simple_le_iff.mpr (subset_adjoin F S hx))
+        (iSup_le fun x => iSup_le fun hx => adjoin_simple_le_iff.mpr (subset_adjoin F S hx))
   rw [key, ← Finset.sup_eq_iSup]
   exact finset_sup_compact_of_compact S fun x _ => adjoin_simple_isCompactElement x
 #align intermediate_field.adjoin_finset_is_compact_element IntermediateField.adjoin_finset_isCompactElement

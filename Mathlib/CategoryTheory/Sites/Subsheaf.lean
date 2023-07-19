@@ -397,7 +397,7 @@ instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ TypeMax.{v, w}} (f : F ⟶ F'
       exact this (congr_arg Subtype.val e : _)
     · rintro ⟨_, ⟨x, rfl⟩⟩
       exact ⟨x, rfl⟩
-  apply  NatIso.isIso_of_isIso_app
+  apply NatIso.isIso_of_isIso_app
 
 /-- The image sheaf of a morphism between sheaves, defined to be the sheafification of
 `image_presheaf`. -/

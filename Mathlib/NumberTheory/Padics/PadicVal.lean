@@ -543,7 +543,7 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
 
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
 theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
-    padicValNat p (p * n) ! = padicValNat p n ! + n :=  by
+    padicValNat p (p * n) ! = padicValNat p n ! + n := by
   refine' PartENat.natCast_inj.mp _
   rw [padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos (p * n), Nat.cast_add,
       padicValNat_def' (Nat.Prime.ne_one hp) <| factorial_pos n]

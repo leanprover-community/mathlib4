@@ -40,7 +40,7 @@ export MonadWriter (tell listen pass)
 variable {M : Type u → Type v} [Monad M]
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
-  tell w :=  (tell w : M _)
+  tell w := (tell w : M _)
   listen x r := listen <| x r
   pass x r := pass <| x r
 

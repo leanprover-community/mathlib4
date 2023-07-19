@@ -333,7 +333,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P  P₂ :=
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun
     inv := fun f => f.invFun
     left_inv := fun f => f.left_inv

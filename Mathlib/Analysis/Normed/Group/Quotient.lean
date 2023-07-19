@@ -349,7 +349,7 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
   protected norm : ∀ x, ‖f x‖ = sInf ((fun m => ‖x + m‖) '' f.ker)
 #align normed_add_group_hom.is_quotient NormedAddGroupHom.IsQuotient
 
-/-- Given  `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
+/-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
 `S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
 noncomputable def lift {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=

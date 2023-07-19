@@ -547,7 +547,7 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let rb := (NormNum.evalMul.core q($m1 * $a) q(HMul.hMul) _ _
       q(CommSemiring.toSemiring) rm ra).get!
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
-    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=  rb.toRawEq
+    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ := rb.toRawEq
     ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃

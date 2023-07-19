@@ -131,7 +131,7 @@ def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙
 a colimit. -/
 def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
-    IsColimit (coconeOfPreserves F t₁ c₂)  where
+    IsColimit (coconeOfPreserves F t₁ c₂) where
   desc s :=
     { left := t₁.desc ((fst L R).mapCocone s)
       right := t₂.desc ((snd L R).mapCocone s)

@@ -201,7 +201,7 @@ end Preorder
 
 instance [PartialOrder α] [PartialOrder β] : PartialOrder (Sum α β) :=
   { instPreorderSum with
-    le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm  }
+    le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm }
 
 instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (Sum α β) :=
   ⟨fun a =>

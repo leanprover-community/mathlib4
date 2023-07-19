@@ -694,7 +694,7 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
 #align nat.eq_or_coprime_of_le_prime Nat.eq_or_coprime_of_le_prime
 
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
-  simp_rw [_root_.dvd_prime_pow  (prime_iff.mp pp)  m, associated_eq_eq]
+  simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 #align nat.dvd_prime_pow Nat.dvd_prime_pow
 
 theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)

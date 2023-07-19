@@ -66,7 +66,7 @@ namespace Adjunction
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
   obj X := (X : Kleisli T)
-  map {X} {Y} f := (f ≫ T.η.app Y : X ⟶  T.obj Y)
+  map {X} {Y} f := (f ≫ T.η.app Y : X ⟶ T.obj Y)
   map_comp {X} {Y} {Z} f g := by
     -- Porting note: hack for missing unfold_projs tactic
     change _ = (f ≫ (Monad.η T).app Y) ≫ T.map (g ≫ (Monad.η T).app Z) ≫ T.μ.app Z

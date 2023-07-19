@@ -21,7 +21,7 @@ of `G`.
 
 ## Main definitions
 
-* `Commensurable`: defines commensurability for two subgroups `H`, `K` of  `G`
+* `Commensurable`: defines commensurability for two subgroups `H`, `K` of `G`
 * `commensurator`: defines the commensurator of a subgroup `H` of `G`.
 
 ## Implementation details

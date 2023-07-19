@@ -114,7 +114,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (p - 1)) := by
       rw [add_right_inj]
-      have : ∀ (x : ℕ), (hx : x ∈ range p) →  a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
+      have : ∀ (x : ℕ), (hx : x ∈ range p) → a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
         intro x hx
         rw [← Nat.add_sub_assoc _ x, Nat.add_sub_cancel_left]
         exact Nat.le_pred_of_lt (Finset.mem_range.mp hx)
@@ -138,7 +138,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         ring1
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
       have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
-          ((Finset.sum (range p) (fun (x : ℕ)  ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
+          ((Finset.sum (range p) (fun (x : ℕ) ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
       simp only [add_left_eq_self, ← Finset.mul_sum, this]
       norm_cast
       simp only [Finset.sum_range_id]

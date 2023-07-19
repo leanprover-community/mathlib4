@@ -131,7 +131,7 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
 -- into two parts
 noncomputable instance : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
-  le_trans :=  by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
+  le_trans := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨e, rfl⟩ ⟨f, rfl⟩; use e * f; rw [mul_smul]
   le_antisymm := by
     rintro ⟨a⟩ ⟨b⟩ ⟨e, rfl⟩ ⟨f, hf⟩
     by_cases hb : b = 0; · simp [hb]

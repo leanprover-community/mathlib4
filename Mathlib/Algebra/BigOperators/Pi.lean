@@ -75,7 +75,7 @@ section MulSingle
 
 variable {I : Type _} [DecidableEq I] {Z : I → Type _}
 
-variable [∀ i, CommMonoid  (Z i)]
+variable [∀ i, CommMonoid (Z i)]
 
 @[to_additive]
 theorem Finset.univ_prod_mulSingle [Fintype I] (f : ∀ i, Z i) :

@@ -188,7 +188,7 @@ theorem coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily (S : Sieve X) :
         EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) )  := by
   constructor
   · intro h
-    induction' h with Y T hS  Y Y R S _ _ a b
+    induction' h with Y T hS Y Y R S _ _ a b
     · rcases hS with ⟨a, h, Y', π, h'⟩
       use a, h, Y', π, by tauto
       intro a'

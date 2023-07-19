@@ -54,7 +54,7 @@ We also show the existence and compute the derivatives of:
   - sum of finitely many functions (in `Add.lean`)
   - negation (in `Add.lean`)
   - subtraction (in `Add.lean`)
-  - star  (in `Star.lean`)
+  - star (in `Star.lean`)
   - multiplication of two functions in `𝕜 → 𝕜` (in `Mul.lean`)
   - multiplication of a function in `𝕜 → 𝕜` and of a function in `𝕜 → E` (in `Mul.lean`)
   - powers of a function (in `Pow.lean` and `ZPow.lean`)

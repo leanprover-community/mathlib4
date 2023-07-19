@@ -69,7 +69,7 @@ structure Inducing [tα : TopologicalSpace α] [tβ : TopologicalSpace β] (f : 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
 
 theorem inducing_induced (f : α → β) : @Inducing α β (TopologicalSpace.induced f ‹_›) _ f :=
-  @Inducing.mk  _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
+  @Inducing.mk _ _ (TopologicalSpace.induced f ‹_›) _ _ rfl
 
 theorem inducing_id : Inducing (@id α) :=
   ⟨induced_id.symm⟩
@@ -551,7 +551,7 @@ structure OpenEmbedding (f : α → β) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   open_range : IsOpen <| range f
 #align open_embedding OpenEmbedding
-#align open_embedding_iff  openEmbedding_iff
+#align open_embedding_iff openEmbedding_iff
 
 theorem OpenEmbedding.isOpenMap {f : α → β} (hf : OpenEmbedding f) : IsOpenMap f :=
   hf.toEmbedding.toInducing.isOpenMap hf.open_range

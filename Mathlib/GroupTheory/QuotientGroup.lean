@@ -210,7 +210,7 @@ theorem lift_mk {φ : G →* H} (HN : ∀ x ∈ N, φ x = 1) (g : G) : lift N φ
 @[to_additive (attr := simp)]
 theorem lift_mk' {φ : G →* H} (HN : ∀ x ∈ N, φ x = 1) (g : G) : lift N φ HN (mk g : Q ) = φ g :=
   rfl
--- TODO: replace `mk` with  `mk'`)
+-- TODO: replace `mk` with `mk'`)
 #align quotient_group.lift_mk' QuotientGroup.lift_mk'
 #align quotient_add_group.lift_mk' QuotientAddGroup.lift_mk'
 

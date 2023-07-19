@@ -31,7 +31,7 @@ namespace DoldKan
 
 variable {C : Type _} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 
-/-- The isomorphism  `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
+/-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
   HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)

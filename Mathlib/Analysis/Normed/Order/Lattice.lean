@@ -220,7 +220,7 @@ theorem isClosed_nonneg {E} [NormedLatticeAddCommGroup E] : IsClosed { x : E | 0
     exact IsClosed.preimage continuous_neg' isClosed_singleton
   ext1 x
   simp only [Set.mem_preimage, Set.mem_singleton_iff, Set.mem_setOf_eq,
-    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)  ]
+    @neg_eq_zero_iff E _ _ (OrderedAddCommGroup.to_covariantClass_left_le E)]
   -- porting note: I'm not sure why Lean couldn't synthesize this instance because it works with
   -- `have : CovariantClass E E (· + ·) (· ≤ ·) := inferInstance`
 #align is_closed_nonneg isClosed_nonneg

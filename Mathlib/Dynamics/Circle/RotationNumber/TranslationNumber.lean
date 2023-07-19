@@ -961,7 +961,7 @@ theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn
 
 /-- Consider two actions `f₁ f₂ : G →* CircleDeg1Lift` of a group on the real line by lifts of
 orientation preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
-`f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift`  such that
+`f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homeomorphismes du cercle et

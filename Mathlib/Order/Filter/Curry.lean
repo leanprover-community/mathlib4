@@ -74,7 +74,7 @@ theorem curry_le_prod {f : Filter α} {g : Filter β} : f.curry g ≤ f.prod g :
 
 theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
     (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
-  fun _s hs => h.mono fun _a ha =>  ha hs
+  fun _s hs => h.mono fun _a ha => ha hs
 #align filter.tendsto.curry Filter.Tendsto.curry
 
 end Filter

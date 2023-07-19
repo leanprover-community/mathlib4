@@ -77,7 +77,7 @@ definition, differentiability implies continuity).
 
 *Warning*: the derivative (even within a subset) is a linear map on the whole tangent space. Suppose
 that one is given a smooth submanifold `N`, and a function which is smooth on `N` (i.e., its
-restriction to the subtype  `N` is smooth). Then, in the whole manifold `M`, the property
+restriction to the subtype `N` is smooth). Then, in the whole manifold `M`, the property
 `MDifferentiableOn I I' f N` holds. However, `mfderivWithin I I' f N` is not uniquely defined
 (what values would one choose for vectors that are transverse to `N`?), which can create issues down
 the road. The problem here is that knowing the value of `f` along `N` does not determine the
@@ -658,7 +658,7 @@ theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
 theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n f s x)
     (hn : 1 ≤ n) : MDifferentiableWithinAt I I' f s x := by
   suffices h : MDifferentiableWithinAt I I' f (s ∩ f ⁻¹' (extChartAt I' (f x)).source) x
-  · rwa [mdifferentiableWithinAt_inter'] at h 
+  · rwa [mdifferentiableWithinAt_inter'] at h
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds I' (f x)
   rw [mdifferentiableWithinAt_iff]

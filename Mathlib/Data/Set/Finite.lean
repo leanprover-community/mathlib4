@@ -1504,7 +1504,7 @@ theorem Finite.iInf_biSup_of_monotone {ι ι' α : Type _} [Preorder ι'] [Nonem
 theorem Finite.iInf_biSup_of_antitone {ι ι' α : Type _} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j :=
-  hs.iSup_biInf_of_monotone (α := αᵒᵈ)  fun i hi => (hf i hi).dual_right
+  hs.iSup_biInf_of_monotone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
 #align set.finite.infi_bsupr_of_antitone Set.Finite.iInf_biSup_of_antitone
 
 theorem iSup_iInf_of_monotone {ι ι' α : Type _} [Finite ι] [Preorder ι'] [Nonempty ι']

@@ -381,7 +381,7 @@ instance partialOrder : PartialOrder ℝ where
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa using lt_iff_le_not_le
-  le_refl a :=  by
+  le_refl a := by
     induction' a using Real.ind_mk with a
     rw [mk_le]
   le_trans a b c := by

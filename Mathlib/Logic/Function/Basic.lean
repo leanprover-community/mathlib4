@@ -553,7 +553,7 @@ by have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=
      by intro h
         rw [eq_rec_constant]
    have h3 : (λ h : a = a' => Eq.rec (motive := λ _ _ => β) b h.symm) =
-             (λ _ : a = a' =>  b) := funext h2
+             (λ _ : a = a' => b) := funext h2
    let f := λ x => dite (a = a') x (λ (_: ¬ a = a') => (f a))
    exact congrArg f h3
 #align function.update_apply Function.update_apply

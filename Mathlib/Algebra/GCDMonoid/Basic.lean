@@ -930,7 +930,7 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
       -- Porting note: Lean4 seems to need help specifying `g₁` and `g₂`
       refine' associated_iff_eq.mp (associated_of_dvd_dvd _ _)
       · exact (@lcm_dvd_iff _ _ g₁ ..).mpr ⟨@dvd_lcm_left _ _ g₂ _ _, @dvd_lcm_right _ _ g₂ _ _⟩
-      · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left  _ _ g₁ _ _, @dvd_lcm_right _ _ g₁  _ _⟩
+      · exact lcm_dvd_iff.mpr ⟨@dvd_lcm_left _ _ g₁ _ _, @dvd_lcm_right _ _ g₁ _ _⟩
     cases g₁
     cases g₂
     dsimp only at hgcd hlcm

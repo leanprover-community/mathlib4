@@ -82,7 +82,7 @@ structure ShiftMkCore where
   zero_add_hom_app : ∀ (n : A) (X : C), (add 0 n).hom.app X =
     eqToHom (by dsimp; rw [zero_add]) ≫ (F n).map (zero.inv.app X) := by aesop_cat
   /-- compatibility with the right addition with 0 -/
-  add_zero_hom_app : ∀ (n : A)  (X : C), (add n 0).hom.app X =
+  add_zero_hom_app : ∀ (n : A) (X : C), (add n 0).hom.app X =
     eqToHom (by dsimp; rw [add_zero]) ≫ zero.inv.app ((F n).obj X) := by aesop_cat
 #align category_theory.shift_mk_core CategoryTheory.ShiftMkCore
 
@@ -253,7 +253,7 @@ lemma shiftFunctorAdd'_add_zero (a : A) :
 lemma shiftFunctorAdd'_assoc (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) :
     shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃]) ≪≫
-      isoWhiskerRight (shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂) _ ≪≫ Functor.associator _ _ _  =
+      isoWhiskerRight (shiftFunctorAdd' C a₁ a₂ a₁₂ h₁₂) _ ≪≫ Functor.associator _ _ _ =
     shiftFunctorAdd' C a₁ a₂₃ a₁₂₃ (by rw [← h₂₃, ← add_assoc, h₁₂₃]) ≪≫
       isoWhiskerLeft _ (shiftFunctorAdd' C a₂ a₃ a₂₃ h₂₃) := by
   subst h₁₂ h₂₃ h₁₂₃
@@ -271,7 +271,7 @@ lemma shiftFunctorAdd'_assoc (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
 
 lemma shiftFunctorAdd_assoc (a₁ a₂ a₃ : A) :
     shiftFunctorAdd C (a₁ + a₂) a₃ ≪≫
-      isoWhiskerRight (shiftFunctorAdd C a₁ a₂) _ ≪≫ Functor.associator _ _ _  =
+      isoWhiskerRight (shiftFunctorAdd C a₁ a₂) _ ≪≫ Functor.associator _ _ _ =
     shiftFunctorAdd' C a₁ (a₂ + a₃) _ (add_assoc a₁ a₂ a₃).symm ≪≫
       isoWhiskerLeft _ (shiftFunctorAdd C a₂ a₃) := by
   ext X

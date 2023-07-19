@@ -109,7 +109,7 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteProducts (F : C ⥤  D) where
+class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
@@ -183,7 +183,7 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteCoproducts (F : C ⥤  D) where
+class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 end CategoryTheory.Limits

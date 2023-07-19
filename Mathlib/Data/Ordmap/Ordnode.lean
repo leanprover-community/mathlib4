@@ -179,7 +179,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α]  (o : Ordnode α) (n : ℕ) : Std.Format :=
+def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>

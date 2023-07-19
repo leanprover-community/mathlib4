@@ -191,7 +191,7 @@ theorem ConcreteCategory.bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
 #align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
 
 @[simp]
-theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶  Y) : CoeFun.coe f = f := rfl
+theorem ConcreteCategory.hasCoeToFun_Type {X Y : Type u} (f : X ⟶ Y) : CoeFun.coe f = f := rfl
 #align category_theory.concrete_category.has_coe_to_fun_Type CategoryTheory.ConcreteCategory.hasCoeToFun_Type
 
 end

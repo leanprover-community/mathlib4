@@ -332,7 +332,7 @@ def limitConeOfUnique : LimitCone (Discrete.functor f)
         apply Subsingleton.elim)) }
   isLimit :=
     { lift := fun s => s.π.app default
-      fac := fun s j  => by
+      fac := fun s j => by
         have h := Subsingleton.elim j default
         subst h
         simp

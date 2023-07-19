@@ -829,7 +829,7 @@ theorem span_pair_mul_span_pair (w x y z : R) :
 #align ideal.span_pair_mul_span_pair Ideal.span_pair_mul_span_pair
 
 /-- The radical of an ideal `I` consists of the elements `r` such that `r ^ n ∈ I` for some `n`. -/
-def radical  (I : Ideal R) : Ideal R where
+def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
   add_mem' :=

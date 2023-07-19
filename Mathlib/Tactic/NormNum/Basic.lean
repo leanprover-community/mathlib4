@@ -620,7 +620,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   generalize Nat.succ n = n at *
   use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
-    Int.cast_ofNat, invOf_eq_inv, inv_neg,  neg_mul, mul_inv_rev, inv_inv]
+    Int.cast_ofNat, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
 
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
@@ -1048,7 +1048,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
-  |  _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
+  | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
 such that `norm_num` successfully recognises `a`. -/

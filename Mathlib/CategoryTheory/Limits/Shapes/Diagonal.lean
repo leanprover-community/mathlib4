@@ -123,7 +123,7 @@ V₁ ×[X ×[Y] U] V₂ ⟶ V₁ ×[U] V₂
         |                 |
         |                 |
         ↓                 ↓
-        X         ⟶  X ×[Y] X
+        X        ⟶ X ×[Y] X
 
 is a pullback square.
 Also see `pullback_fst_map_snd_isPullback`.
@@ -213,10 +213,10 @@ variable
 given `f : X ⟶ T`, `g : Y ⟶ T`, and `i : T ⟶ S`, the diagram
 
 X ×ₜ Y ⟶ X ×ₛ Y
-   |         |
-   |         |
-   ↓         ↓
-   T   ⟶ T ×ₛ T
+  |         |
+  |         |
+  ↓         ↓
+  T  ⟶  T ×ₛ T
 
 is a pullback square.
 Also see `pullback_map_diagonal_isPullback`.
@@ -367,11 +367,11 @@ end
 
 /-- Given the following diagram with `S ⟶ S'` a monomorphism,
 
-    X  ⟶ X'
+    X ⟶ X'
       ↘      ↘
-        S  ⟶ S'
+        S ⟶ S'
       ↗      ↗
-    Y  ⟶ Y'
+    Y ⟶ Y'
 
 This iso witnesses the fact that
 

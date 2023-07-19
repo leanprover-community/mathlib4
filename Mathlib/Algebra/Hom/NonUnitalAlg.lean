@@ -169,7 +169,7 @@ theorem congr_fun {f g : A →ₙₐ[R] B} (h : f = g) (x : A) : f x = g x :=
 #align non_unital_alg_hom.congr_fun NonUnitalAlgHom.congr_fun
 
 @[simp]
-theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B)  = f :=
+theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₙₐ[R] B) = f :=
   rfl
 #align non_unital_alg_hom.coe_mk NonUnitalAlgHom.coe_mk
 

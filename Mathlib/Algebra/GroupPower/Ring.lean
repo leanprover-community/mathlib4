@@ -248,7 +248,7 @@ theorem neg_one_pow_mul_eq_zero_iff {n : ℕ} {r : R} : (-1) ^ n * r = 0 ↔ r =
 
 @[simp]
 theorem mul_neg_one_pow_eq_zero_iff {n : ℕ} {r : R} : r * (-1) ^ n = 0 ↔ r = 0 := by
-  rcases neg_one_pow_eq_or R n with h | h  <;> simp [h]
+  rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
 #align mul_neg_one_pow_eq_zero_iff mul_neg_one_pow_eq_zero_iff
 
 variable [NoZeroDivisors R]

@@ -221,7 +221,7 @@ end IsSupported
 /-- The restriction map from `FreeCommRing α` to `FreeCommRing s` where `s : Set α`, defined
   by sending all variables not in `s` to zero. -/
 def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* FreeCommRing s :=
-  lift (fun a => if H : a ∈ s then of ⟨a, H⟩  else 0)
+  lift (fun a => if H : a ∈ s then of ⟨a, H⟩ else 0)
 #align free_comm_ring.restriction FreeCommRing.restriction
 
 section Restriction

@@ -154,7 +154,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
     map_bot := fun f => by
       rw [← sSup_empty, map_sSup, Set.image_empty]
       -- Porting note: rw [sSup_empty] does not work, but exact sSup_empty does?
-      exact sSup_empty  }
+      exact sSup_empty }
 #align Sup_hom_class.to_sup_bot_hom_class sSupHomClass.toSupBotHomClass
 
 -- See note [lower instance priority]
@@ -167,7 +167,7 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
     map_top := fun f => by
       rw [← sInf_empty, map_sInf, Set.image_empty]
       -- Porting note: rw [sInf_empty] does not work, but exact sInf_empty does?
-      exact sInf_empty  }
+      exact sInf_empty }
 #align Inf_hom_class.to_inf_top_hom_class sInfHomClass.toInfTopHomClass
 
 -- See note [lower instance priority]
@@ -190,7 +190,7 @@ instance (priority := 100) CompleteLatticeHomClass.toFrameHomClass [CompleteLatt
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteLatticeHomClass.toBoundedLatticeHomClass [CompleteLattice α]
-    [CompleteLattice β]  [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
+    [CompleteLattice β] [CompleteLatticeHomClass F α β] : BoundedLatticeHomClass F α β :=
   { sSupHomClass.toSupBotHomClass, sInfHomClass.toInfTopHomClass with }
 #align complete_lattice_hom_class.to_bounded_lattice_hom_class CompleteLatticeHomClass.toBoundedLatticeHomClass
 

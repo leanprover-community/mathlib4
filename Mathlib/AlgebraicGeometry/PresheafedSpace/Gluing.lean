@@ -356,7 +356,7 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπApp
 
 -- Porting note : time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
--- the last congr has a very difficult `rfl : eqToHom _ ≫  eqToHom _ ≫ ... = eqToHom ... `
+-- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
 set_option maxHeartbeats 600000 in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/

@@ -21,7 +21,7 @@ import Mathlib.Data.TypeMax -- Porting note: added for universe issues
 
 * `Module.Injective`: an `R`-module `Q` is injective if and only if every injective `R`-linear
   map descends to a linear map to `Q`, i.e. in the following diagram, if `f` is injective then there
-  is an `R`-linear map `h : Y ⟶  Q` such that `g = h ∘ f`
+  is an `R`-linear map `h : Y ⟶ Q` such that `g = h ∘ f`
   ```
   X --- f ---> Y
   |
@@ -30,7 +30,7 @@ import Mathlib.Data.TypeMax -- Porting note: added for universe issues
   Q
   ```
 * `Module.Baer`: an `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an
-  `Ideal R` extends to an `R`-linear map `R ⟶  Q`
+  `Ideal R` extends to an `R`-linear map `R ⟶ Q`
 
 ## Main statements
 

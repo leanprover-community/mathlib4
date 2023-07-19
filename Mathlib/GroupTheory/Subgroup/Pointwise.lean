@@ -162,7 +162,7 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
   ext x
   refine (exists_congr fun y => ?_).trans exists_swap
   simp only [exists_and_left, @and_left_comm _ (y ∈ s), ← eq_inv_mul_iff_mul_eq (b := y),
-    ← eq_mul_inv_iff_mul_eq  (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
+    ← eq_mul_inv_iff_mul_eq (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
 
 /-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)

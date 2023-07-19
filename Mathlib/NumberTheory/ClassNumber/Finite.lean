@@ -249,7 +249,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [← bS.sum_repr a]
     simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
-      Finset.sum_congr rfl fun i _ =>  _
+      Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i

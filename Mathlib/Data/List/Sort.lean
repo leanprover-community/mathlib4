@@ -51,7 +51,7 @@ protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· 
 
 protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
-  h₁.imp₂ (fun _ _ => lt_of_le_of_ne)  h₂
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=

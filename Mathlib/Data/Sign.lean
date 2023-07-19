@@ -279,7 +279,7 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
   toFun := cast
   map_zero' := rfl
   map_one' := rfl
-  map_mul' x y := by  cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
+  map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
 --Porting note: new theorem

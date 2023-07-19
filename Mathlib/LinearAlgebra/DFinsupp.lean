@@ -261,7 +261,7 @@ section CoprodMap
 
 variable [DecidableEq ι] [∀ x : N, Decidable (x ≠ 0)]
 
-/-- Given a family of linear maps `f i : M i  →ₗ[R] N`, we can form a linear map
+/-- Given a family of linear maps `f i : M i →ₗ[R] N`, we can form a linear map
 `(Π₀ i, M i) →ₗ[R] N` which sends `x : Π₀ i, M i` to the sum over `i` of `f i` applied to `x i`.
 This is the map coming from the universal property of `Π₀ i, M i` as the coproduct of the `M i`.
 See also `LinearMap.coprod` for the binary product version. -/

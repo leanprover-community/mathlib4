@@ -89,7 +89,7 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
         (associator f g h).hom ≫ whiskerLeft f (whiskerLeft g η) ≫ (associator f g h').inv := by
     aesop_cat
   -- axioms for right whiskering:
-  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c),  whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
+  id_whiskerRight : ∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), whiskerRight (𝟙 f) g = 𝟙 (f ≫ g) := by
     aesop_cat
   comp_whiskerRight :
     ∀ {a b c} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h) (i : b ⟶ c),

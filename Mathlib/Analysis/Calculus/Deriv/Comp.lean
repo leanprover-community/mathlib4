@@ -219,7 +219,7 @@ protected theorem HasDerivWithinAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜} (hf :
   rwa [ContinuousLinearMap.smulRight_one_pow] at this
 #align has_deriv_within_at.iterate HasDerivWithinAt.iterate
 
-protected nonrec  theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
+protected nonrec theorem HasStrictDerivAt.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasStrictDerivAt f f' x) (hx : f x = x) (n : ℕ) :
     HasStrictDerivAt f^[n] (f' ^ n) x := by
   have := hf.iterate hx n

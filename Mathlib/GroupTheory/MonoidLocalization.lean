@@ -1366,7 +1366,7 @@ noncomputable def mulEquivOfLocalizations (k : LocalizationMap S P) : N ≃* P :
   invFun := k.lift f.map_units
   left_inv := f.lift_left_inverse
   right_inv := k.lift_left_inverse
-  map_mul' :=  MonoidHom.map_mul _ }
+  map_mul' := MonoidHom.map_mul _ }
 #align submonoid.localization_map.mul_equiv_of_localizations Submonoid.LocalizationMap.mulEquivOfLocalizations
 #align add_submonoid.localization_map.add_equiv_of_localizations AddSubmonoid.LocalizationMap.addEquivOfLocalizations
 

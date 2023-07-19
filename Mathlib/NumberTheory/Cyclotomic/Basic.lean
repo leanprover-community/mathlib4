@@ -126,7 +126,7 @@ variable {A B}
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension ∅ A B := by
 -- Porting note: Lean3 is able to infer `A`.
-  refine'  (iff_adjoin_eq_top _ A _).2
+  refine' (iff_adjoin_eq_top _ A _).2
     ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => _⟩
   rw [← h] at hx
   simpa using hx
@@ -709,8 +709,8 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
       simp only [map_add, map_mul]
     · rintro y z ⟨a, ha⟩ ⟨b, hb⟩
       refine' ⟨⟨a.1 * b.1, a.2 * b.2, mul_mem_nonZeroDivisors.2 ⟨a.2.2, b.2.2⟩⟩, _⟩
-      rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K)  _) ↑a.2), mul_assoc, ←
-        mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K)  _) ↑a.2), ← mul_assoc, ha]
+      rw [RingHom.map_mul, mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), mul_assoc, ←
+        mul_assoc z, hb, ← mul_comm ((algebraMap (CyclotomicRing n A K) _) ↑a.2), ← mul_assoc, ha]
       simp only [map_mul]
   eq_iff_exists' := @fun x y =>
     ⟨fun h => ⟨1, by rw [adjoin_algebra_injective n A K h]⟩, fun ⟨c, hc⟩ => by
