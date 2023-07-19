@@ -97,8 +97,8 @@ def ContinuousMap.complexIm : C(ℂ, ℝ) :=
 #align continuous_map.complex_im ContinuousMap.complexIm
 
 instance ContinuousMap.trivialStar {X R : Type _} [TopologicalSpace X] [TopologicalSpace R] [Star R]
-    [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R)
-    where star_trivial _ := ContinuousMap.ext fun _ => star_trivial _
+    [ContinuousStar R] [TrivialStar R] : TrivialStar C(X, R) where
+  star_trivial _ := ContinuousMap.ext fun _ => star_trivial _
 #align continuous_map.has_trivial_star ContinuousMap.trivialStar
 
 instance {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] [Add Y] [ContinuousAdd Y]
@@ -116,6 +116,8 @@ noncomputable instance Algebra.complexToReal {A : Type _} [Ring A] [Algebra ℂ 
   instAlgebraRestrictScalarsInstSemiringRestrictScalars ℝ ℂ A
 #align algebra.complex_to_real Algebra.complexToReal
 
+/-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
+between space of continuous maps. -/
 @[simps]
 def ContinuousMap.compStarAlgHom (X : Type _) {R B C : Type _} [TopologicalSpace X] [CommSemiring R]
     [Semiring B] [Algebra R B] [Star B] [TopologicalSpace B] [TopologicalSemiring B]
@@ -138,12 +140,14 @@ instance : StarRing ℝ≥0 where
   star_mul := mul_comm
   star_add _ _ := rfl
 
-instance : TrivialStar ℝ≥0 where star_trivial _ := rfl
+instance : TrivialStar ℝ≥0 where
+  star_trivial _ := rfl
 
-instance : ContinuousStar ℝ≥0 where continuous_star := continuous_id
+instance : ContinuousStar ℝ≥0 where
+  continuous_star := continuous_id
 
-instance : StarModule ℝ≥0 ℝ
-    where star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
+instance : StarModule ℝ≥0 ℝ where
+  star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
 
 end prereqs
 
@@ -151,15 +155,16 @@ end prereqs
 ## Definitions
 -/
 
-
-/-- This class exists because under modest hypotheses, we can get a `subsingleton` instance for
-this class. -/
-@[ext]
+/-- This class exists because under modest hypotheses, we can get a `Subsingleton` instance for it.
+In general, one should create instances of `CFCClass` instead as that is in general the more
+useful class. -/
+@[ext (flat := false)]
 class CFCCoreClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
-    [Algebra R A] (a : A) where
-  toStarAlgHom : C(spectrum R a, R) →⋆ₐ[R] A
+    [Algebra R A] (a : A) extends C(spectrum R a, R) →⋆ₐ[R] A where
+  /-- A continuous functional calculus is a continuous map. -/
   hom_continuous : Continuous toStarAlgHom
+  /-- A continuous functional calculus extends the polynomial functional calculus. -/
   hom_map_X : toStarAlgHom (toContinuousMapOnAlgHom (spectrum R a) X) = a
 #align cfc_core_class CFCCoreClass
 
@@ -168,13 +173,15 @@ class CFCCoreClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [Topo
 `R`-valued functions defined on the spectrum of `a : A` into the algebra `A` which is in addiiton
 continuous and extends the polynomial functional calculus. More precisely, this latter statement
 is encapsulated in -/
-@[ext]
+@[ext (flat := false)]
 class CFCClass (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
-    [Algebra R A] (a : A) where
-  toStarAlgHom : C(spectrum R a, R) →⋆ₐ[R] A
+    [Algebra R A] (a : A) extends C(spectrum R a, R) →⋆ₐ[R] A where
+  /-- A continuous functional calculus is a closed embedding. -/
   hom_closedEmbedding : ClosedEmbedding toStarAlgHom
+  /-- A continuous functional calculus extends the polynomial functional calculus. -/
   hom_map_X : toStarAlgHom (toContinuousMapOnAlgHom (spectrum R a) X) = a
+  /-- A continuous functional calculus satisfies the spectral mapping property. -/
   hom_map_spectrum : ∀ f, spectrum R (toStarAlgHom f) = Set.range f
 #align cfc_class CFCClass
 
@@ -186,25 +193,21 @@ instance (priority := 100) CFCClass.toCFCCoreClass (R : Type _) {A : Type _} [Co
     hom_continuous := (‹_› : CFCClass R a).hom_closedEmbedding.continuous }
 #align cfc_class.to_cfc_core_class CFCClass.toCFCCoreClass
 
+/-- A continuous functional calculus (over either `ℝ` or `ℂ`) for an element with compact
+spectrum is unique. This utilizes the Stone-Weierstrass theorem. -/
 instance {𝕜 A : Type _} [IsROrC 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A] [TopologicalSpace A]
     [T2Space A] [StarModule 𝕜 A] {a : A} [CompactSpace (spectrum 𝕜 a)] :
     Subsingleton (CFCCoreClass 𝕜 a) :=
-  Subsingleton.intro fun h₁ h₂ =>
-    h₁.ext h₂ <|
-      ContinuousMap.starAlgHom_ext_map_X h₁.hom_continuous h₂.hom_continuous <|
-        h₁.hom_map_X.trans h₂.hom_map_X.symm
+  Subsingleton.intro fun h₁ h₂ => h₁.ext h₂ <|
+    ContinuousMap.starAlgHom_ext_map_X h₁.hom_continuous h₂.hom_continuous <|
+      h₁.hom_map_X.trans h₂.hom_map_X.symm
 
-/-- The `star_alg_hom` underlying an instance of the continuous functional calculus. -/
+/-- The `StarAlgHom` underlying an instance of the continuous functional calculus. -/
 def cfc₁ (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra R A] (a : A) [CFCCoreClass R a] : C(spectrum R a, R) →⋆ₐ[R] A :=
   CFCCoreClass.toStarAlgHom
 #align cfc₁ cfc₁
-
-section
-
--- needs explicit universes?
-universe u v
 
 /-- This is `cfc₁` composed with the natural star algebra homomorphism from `C(R, R)` into
 `C(spectrum R a, R)` given by precompostion with the embedding of `spectrum R a` into `R`.
@@ -217,14 +220,12 @@ continuous functions with it, as opposed to continually needing to bundle some c
 into the type `C(spectrum R a, R)`.
 
 Throughout the API, we duplicate lemmas for both versions. -/
-def cfc₂ (R : Type u) {A : Type v} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+def cfc₂ (R : Type _) {A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
     [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
     [Algebra R A] (a : A) [CFCCoreClass R a] : C(R, R) →⋆ₐ[R] A :=
   (cfc₁ R a).comp <|
     ContinuousMap.compStarAlgHom' R R <| (ContinuousMap.id R).restrict <| spectrum R a
 #align cfc₂ cfc₂
-
-end
 
 /-!
 ## Basic properties
