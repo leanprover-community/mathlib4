@@ -2,15 +2,12 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module data.set.pointwise.iterate
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Dynamics.FixedPoints.Basic
+
+#align_import data.set.pointwise.iterate from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Results about pointwise operations on sets with iteration.

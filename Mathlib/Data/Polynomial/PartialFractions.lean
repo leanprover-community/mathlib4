@@ -2,11 +2,6 @@
 Copyright (c) Sidharth Hariharan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Sidharth Hariharan
-
-! This file was ported from Lean 3 source module data.polynomial.partial_fractions
-! leanprover-community/mathlib commit 6e70e0d419bf686784937d64ed4bfde866ff229e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Div
 import Mathlib.Data.ZMod.Basic
@@ -14,6 +9,8 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
+
+#align_import data.polynomial.partial_fractions from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
 /-!
 

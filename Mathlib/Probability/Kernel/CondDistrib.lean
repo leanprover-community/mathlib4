@@ -2,14 +2,11 @@
 Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.kernel.cond_distrib
-! leanprover-community/mathlib commit 00abe0695d8767201e6d008afa22393978bb324d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Kernel.Disintegration
 import Mathlib.Probability.Notation
+
+#align_import probability.kernel.cond_distrib from "leanprover-community/mathlib"@"00abe0695d8767201e6d008afa22393978bb324d"
 
 /-!
 # Regular conditional probability distribution

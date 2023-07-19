@@ -2,15 +2,12 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.fraisse
-! leanprover-community/mathlib commit 0602c59878ff3d5f71dea69c2d32ccf2e93e5398
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.FinitelyGenerated
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.Bundled
+
+#align_import model_theory.fraisse from "leanprover-community/mathlib"@"0602c59878ff3d5f71dea69c2d32ccf2e93e5398"
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -232,7 +229,7 @@ theorem exists_cg_is_age_of (hn : K.Nonempty)
   -- Poting note: was
   -- let f : ∀ i j, i ≤ j → G i ↪[L] G j := DirectedSystem.natLeRec fun n => (hP _ n).some
   let f : ∀ (i j : ℕ), i ≤ j → (G i).val ↪[L] (G j).val := by
-    refine DirectedSystem.natLeRec (G' := fun i => (G i).val) (L := L) ?_
+    refine DirectedSystem.natLERec (G' := fun i => (G i).val) (L := L) ?_
     dsimp only
     exact (fun n => (hP _ n).some)
   have : DirectedSystem (fun n ↦ (G n).val) fun i j h ↦ ↑(f i j h) := by

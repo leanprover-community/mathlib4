@@ -2,13 +2,10 @@
 Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.rank
-! leanprover-community/mathlib commit 465d4301d8da5945ef1dc1b29fb34c2f2b315ac4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Dimension
+
+#align_import linear_algebra.free_module.rank from "leanprover-community/mathlib"@"465d4301d8da5945ef1dc1b29fb34c2f2b315ac4"
 
 /-!
 
@@ -66,7 +63,7 @@ theorem rank_directSum {ι : Type v} (M : ι → Type w) [∀ i : ι, AddCommGro
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] :
     Module.rank R (⨁ i, M i) = Cardinal.sum fun i => Module.rank R (M i) := by
   let B i := chooseBasis R (M i)
-  let b : Basis _ R (⨁ i, M i) := Dfinsupp.basis fun i => B i
+  let b : Basis _ R (⨁ i, M i) := DFinsupp.basis fun i => B i
   simp [← b.mk_eq_rank'', fun i => (B i).mk_eq_rank'']
 #align rank_direct_sum rank_directSum
 
