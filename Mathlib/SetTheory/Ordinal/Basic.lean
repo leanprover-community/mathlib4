@@ -565,8 +565,22 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 #align ordinal.rel_iso_enum Ordinal.relIso_enum
 
 theorem lt_wf : @WellFounded Ordinal (· < ·) :=
+/-
   wellFounded_iff_wellFounded_subrel.mpr (·.induction_on fun ⟨_, r, wo⟩ ↦
     RelHomClass.wellFounded (typein.principalSeg r).subrelIso wo.wf)
+-/
+  ⟨fun a =>
+    inductionOn a fun α r wo =>
+      suffices ∀ a, Acc (· < ·) (typein r a) from
+        ⟨_, fun o h =>
+          let ⟨a, e⟩ := typein_surj r h
+          e ▸ this a⟩
+      fun a =>
+      Acc.recOn (wo.wf.apply a) fun x _ IH =>
+        ⟨_, fun o h => by
+          rcases typein_surj r (lt_trans h (typein_lt_type r _)) with ⟨b, rfl⟩
+          exact IH _ ((typein_lt_typein r).1 h)⟩⟩
+#align ordinal.lt_wf Ordinal.lt_wf
 
 instance wellFoundedRelation : WellFoundedRelation Ordinal :=
   ⟨(· < ·), lt_wf⟩
