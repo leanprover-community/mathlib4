@@ -63,9 +63,11 @@ def CURLBIN :=
 def LEANTARVERSION :=
   "0.1.3"
 
+def EXE := if System.Platform.isWindows then ".exe" else ""
+
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{if System.Platform.isWindows then ".exe" else ""}"
+  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
@@ -193,7 +195,7 @@ def validateLeanTar : IO Unit := do
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
     "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar").toString, LEANTARBIN.toString]
+  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar{EXE}").toString, LEANTARBIN.toString]
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
