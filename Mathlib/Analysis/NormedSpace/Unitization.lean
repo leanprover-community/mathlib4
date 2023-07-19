@@ -61,7 +61,6 @@ noncomputable def NonUnitalAlgHom.Lmul : A →ₙₐ[𝕜] A →L[𝕜] A :=
     map_mul' := fun a b => by ext x; simp [mul_assoc a b x]
     map_zero' := by ext x; simp only [map_zero] }
 set_option linter.uppercaseLean3 false in
-#align non_unital_alg_hom.Lmul NonUnitalAlgHom.Lmul
 
 variable {𝕜 A}
 
@@ -69,7 +68,6 @@ variable {𝕜 A}
 theorem NonUnitalAlgHom.coe_Lmul : ⇑(NonUnitalAlgHom.Lmul 𝕜 A) = mul 𝕜 A :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align non_unital_alg_hom.coe_Lmul NonUnitalAlgHom.coe_Lmul
 
 variable (𝕜 A)
 
@@ -85,7 +83,6 @@ should just be `k`. See `Unitization.leftRegRep_apply` also. -/
 noncomputable def leftRegRep : Unitization 𝕜 A →ₐ[𝕜] 𝕜 × (A →L[𝕜] A) :=
   (lift 0).prod (lift <| NonUnitalAlgHom.Lmul 𝕜 A)
 set_option linter.uppercaseLean3 false in
-#align unitization.leftRegRep Unitization.leftRegRep
 
 variable {𝕜 A}
 
@@ -94,7 +91,6 @@ theorem leftRegRep_apply (x : Unitization 𝕜 A) :
     leftRegRep 𝕜 A x = (x.fst, algebraMap 𝕜 (A →L[𝕜] A) x.fst + mul 𝕜 A x.snd) :=
   show (x.fst + 0, _) = (x.fst, _) by rw [add_zero]; rfl
 set_option linter.uppercaseLean3 false in
-#align unitization.leftRegRep_apply Unitization.leftRegRep_apply
 
 /-- this lemma establishes that if `ContinuousLinearMap.mul 𝕜 A` is injective, then so is
 `Unitization.leftRegRep 𝕜 A`. When `A` is a `RegularNormedAlgebra`, then
@@ -114,7 +110,6 @@ theorem leftRegRep_injective_of_clm_mul_injective
   rw [← map_zero (mul 𝕜 A)] at hx
   rw [h hx, inr_zero]
 set_option linter.uppercaseLean3 false in
-#align unitization.leftRegRep_injective_of_clm_mul_injective Unitization.leftRegRep_injective_of_clm_mul_injective
 
 variable [RegularNormedAlgebra 𝕜 A]
 variable (𝕜 A)
@@ -124,7 +119,6 @@ to pull back the norm from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A`. -
 theorem leftRegRep_injective : Function.Injective (leftRegRep 𝕜 A) :=
   leftRegRep_injective_of_clm_mul_injective (isometry_mul 𝕜 A).injective
 set_option linter.uppercaseLean3 false in
-#align unitization.leftRegRep_injective Unitization.leftRegRep_injective
 
 variable {𝕜 A}
 
@@ -138,7 +132,6 @@ it as a local instance to build the real one. -/
 noncomputable def normedRingAux : NormedRing (Unitization 𝕜 A) :=
   @NormedRing.induced _ (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) Unitization.instRing
     Prod.normedRing _ (leftRegRep 𝕜 A) (leftRegRep_injective 𝕜 A)
-#align unitization.normed_ring_aux Unitization.normedRingAux
 -- ummmm... what? why does Lean need me to fill in these instances?
 
 attribute [local instance] Unitization.normedRingAux
@@ -149,13 +142,11 @@ algebra homomorphism `Unitization.leftRegRep 𝕜 A`. This uses the wrong `Norme
 @[reducible]
 noncomputable def normedAlgebraAux : NormedAlgebra 𝕜 (Unitization 𝕜 A) :=
   NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (leftRegRep 𝕜 A)
-#align unitization.normed_algebra_aux Unitization.normedAlgebraAux
 
 attribute [local instance] Unitization.normedAlgebraAux
 
 theorem norm_def (x : Unitization 𝕜 A) : ‖x‖ = ‖leftRegRep 𝕜 A x‖ :=
   rfl
-#align unitization.norm_def Unitization.norm_def
 
 /-- This is often the more useful lemma to rewrite the norm as opposed to `Unitization.norm_def`. -/
 theorem norm_eq_sup (x : Unitization 𝕜 A) :
@@ -167,7 +158,6 @@ variable (𝕜 A)
 /-- The identity map between `Unitization 𝕜 A` and `𝕜 × A` as an `AddEquiv`. -/
 protected def addEquiv : Unitization 𝕜 A ≃+ 𝕜 × A :=
   AddEquiv.refl _
-#align unitization.add_equiv Unitization.addEquiv
 
 variable {𝕜 A}
 
@@ -188,7 +178,6 @@ theorem lipschitzWith_addEquiv :
         simpa only [add_comm _ (mul 𝕜 A x.snd), norm_algebraMap'] using
           norm_le_add_norm_add (mul 𝕜 A x.snd) (algebraMap 𝕜 _ x.fst)
       _ ≤ _ := add_le_add le_sup_right le_sup_left
-#align unitization.lipschitz_with_add_equiv Unitization.lipschitzWith_addEquiv
 
 theorem antilipschitzWith_addEquiv :
     AntilipschitzWith 2 (Unitization.addEquiv 𝕜 A) := by
@@ -204,7 +193,6 @@ theorem antilipschitzWith_addEquiv :
       _ = ‖x.fst‖ + ‖x.snd‖ := by
         rw [norm_algebraMap', (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 A)).mp (isometry_mul 𝕜 A)]
       _ ≤ _ := (add_le_add (le_max_left _ _) (le_max_right _ _)).trans_eq (two_mul _).symm
-#align unitization.antilipschitz_with_add_equiv Unitization.antilipschitzWith_addEquiv
 
 open Bornology Filter
 open scoped Uniformity
@@ -215,7 +203,6 @@ theorem uniformity_eq_aux :
     antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
   exact comap_id.symm
-#align unitization.uniformity_eq_aux Unitization.uniformity_eq_aux
 
 theorem cobounded_eq_aux :
     @cobounded (Unitization 𝕜 A) Prod.instBornology = cobounded (Unitization 𝕜 A) :=
@@ -224,25 +211,21 @@ theorem cobounded_eq_aux :
     _ = cobounded (Unitization 𝕜 A) :=
       le_antisymm lipschitzWith_addEquiv.comap_cobounded_le
         antilipschitzWith_addEquiv.tendsto_cobounded.le_comap
-#align unitization.cobounded_eq_aux Unitization.cobounded_eq_aux
 
 end Aux
 
 /-- The uniformity on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
   instUniformSpaceProd
-#align unitization.uniform_space Unitization.instUniformSpace
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Prod.instBornology
-#align unitization.bornology Unitization.instBornology
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also.  -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
   CompleteSpace.prod
-#align unitization.complete_space Unitization.instCompleteSpace
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.leftRegRep 𝕜 A`, but replace the bornology and the uniformity so
@@ -250,7 +233,6 @@ that they coincide with `𝕜 × A`. -/
 noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
   (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
     fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
-#align unitization.metric_space Unitization.instMetricSpace
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.leftRegRep 𝕜 A`. -/
@@ -259,14 +241,12 @@ noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A)
   dist_eq := normedRingAux.dist_eq
   norm_mul := normedRingAux.norm_mul
   norm := normedRingAux.norm
-#align unitization.normed_ring Unitization.instNormedRing
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.leftRegRep 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul, norm_smul, ← norm_def]
-#align unitization.normed_algebra Unitization.instNormedAlgebra
 
 -- this should go in `Algebra.Algebra.Unitization`
 instance instNontrivial {𝕜 A} [Nontrivial 𝕜] [Nonempty A] :
