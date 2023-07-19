@@ -38,8 +38,8 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 * `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
 quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
-greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the corresponding theorem on
-multiplcity.
+greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
+language of prime multiplicity.
 
 ## References
 
