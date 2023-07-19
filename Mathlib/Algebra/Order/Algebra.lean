@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.order.algebra
-! leanprover-community/mathlib commit f5a600f8102c8bfdbd22781968a20a539304c1b4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Order.SMul
+
+#align_import algebra.order.algebra from "leanprover-community/mathlib"@"f5a600f8102c8bfdbd22781968a20a539304c1b4"
 
 /-!
 # Ordered algebras

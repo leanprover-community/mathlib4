@@ -2,17 +2,14 @@
 Copyright (c) 2018 Reid Barton All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison, David Wärn
-
-! This file was ported from Lean 3 source module category_theory.groupoid
-! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import category_theory.groupoid from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
 /-!
 # Groupoids

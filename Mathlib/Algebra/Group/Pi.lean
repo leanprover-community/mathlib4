@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.group.pi
-! leanprover-community/mathlib commit e4bc74cbaf429d706cb9140902f7ca6c431e75a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Pairwise
 import Mathlib.Algebra.Hom.GroupInstances
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Data.Set.Function
+
+#align_import algebra.group.pi from "leanprover-community/mathlib"@"e4bc74cbaf429d706cb9140902f7ca6c431e75a4"
 
 /-!
 # Pi instances for groups and monoids

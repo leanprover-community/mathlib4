@@ -2,16 +2,13 @@
 Copyright (c) 2019 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.angle
-! leanprover-community/mathlib commit 213b0cff7bc5ab6696ee07cceec80829ce42efec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.Normed.Group.AddCircle
 import Mathlib.Algebra.CharZero.Quotient
 import Mathlib.Topology.Instances.Sign
+
+#align_import analysis.special_functions.trigonometric.angle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
 /-!
 # The type of angles

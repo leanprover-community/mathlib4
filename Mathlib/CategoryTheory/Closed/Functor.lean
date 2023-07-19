@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.closed.functor
-! leanprover-community/mathlib commit cea27692b3fdeb328a2ddba6aabf181754543184
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import category_theory.closed.functor from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
 
 /-!
 # Cartesian closed functors

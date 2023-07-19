@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.normed
-! leanprover-community/mathlib commit a63928c34ec358b5edcda2bf7513c50052a5230f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.NormedSpace.Ray
+
+#align_import analysis.convex.normed from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
 /-!
 # Topological and metric properties of convex sets in normed spaces

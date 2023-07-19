@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.special_functions.exponential
-! leanprover-community/mathlib commit e1a18cad9cd462973d760af7de36b05776b8811c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.Calculus.FDerivAnalytic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+#align_import analysis.special_functions.exponential from "leanprover-community/mathlib"@"e1a18cad9cd462973d760af7de36b05776b8811c"
 
 /-!
 # Calculus results on exponential in a Banach algebra

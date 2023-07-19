@@ -2,15 +2,12 @@
 Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.charpoly.minpoly
-! leanprover-community/mathlib commit 7ae139f966795f684fc689186f9ccbaedd31bf31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.PowerBasis
+
+#align_import linear_algebra.matrix.charpoly.minpoly from "leanprover-community/mathlib"@"7ae139f966795f684fc689186f9ccbaedd31bf31"
 
 /-!
 # The minimal polynomial divides the characteristic polynomial of a matrix.

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.simplicial_object
-! leanprover-community/mathlib commit 5ed51dc37c6b891b79314ee11a50adc2b1df6fd6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Opposites
+
+#align_import algebraic_topology.simplicial_object from "leanprover-community/mathlib"@"5ed51dc37c6b891b79314ee11a50adc2b1df6fd6"
 
 /-!
 # Simplicial objects in a category.

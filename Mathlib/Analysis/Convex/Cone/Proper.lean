@@ -2,14 +2,11 @@
 Copyright (c) 2022 Apurva Nakade All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
-
-! This file was ported from Lean 3 source module analysis.convex.cone.proper
-! leanprover-community/mathlib commit 147b294346843885f952c5171e9606616a8fd869
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+
+#align_import analysis.convex.cone.proper from "leanprover-community/mathlib"@"147b294346843885f952c5171e9606616a8fd869"
 
 /-!
 # Proper cones

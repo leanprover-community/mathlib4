@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.notation
-! leanprover-community/mathlib commit a99f85220eaf38f14f94e04699943e185a5e1d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
 import Mathlib.Algebra.BigOperators.Fin
+
+#align_import data.matrix.notation from "leanprover-community/mathlib"@"a99f85220eaf38f14f94e04699943e185a5e1d1a"
 
 /-!
 # Matrix and vector notation

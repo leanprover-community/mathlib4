@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finsupp.defs
-! leanprover-community/mathlib commit 842328d9df7e96fd90fc424e115679c15fb23a71
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.GroupTheory.Submonoid.Basic
+
+#align_import data.finsupp.defs from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
 /-!
 # Type of functions with finite support

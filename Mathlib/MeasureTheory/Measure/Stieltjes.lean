@@ -2,14 +2,11 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.measure.stieltjes
-! leanprover-community/mathlib commit 20d5763051978e9bc6428578ed070445df6a18b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Algebra.Order.LeftRightLim
+
+#align_import measure_theory.measure.stieltjes from "leanprover-community/mathlib"@"20d5763051978e9bc6428578ed070445df6a18b3"
 
 /-!
 # Stieltjes measures on the real line

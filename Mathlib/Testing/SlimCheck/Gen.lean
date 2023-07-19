@@ -2,17 +2,14 @@
 Copyright (c) 2021 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
-
-! This file was ported from Lean 3 source module testing.slim_check.gen
-! leanprover-community/mathlib commit fdc286cc6967a012f41b87f76dcd2797b53152af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Random
 import Mathlib.Control.ULiftable
 import Mathlib.Data.List.Perm
 import Mathlib.Data.Subtype
 import Mathlib.Data.Nat.Basic
+
+#align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
 /-!
 # `Gen` Monad

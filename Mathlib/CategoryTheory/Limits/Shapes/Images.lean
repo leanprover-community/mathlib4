@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.images
-! leanprover-community/mathlib commit 563aed347eb59dc4181cb732cda0d124d736eaa3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+
+#align_import category_theory.limits.shapes.images from "leanprover-community/mathlib"@"563aed347eb59dc4181cb732cda0d124d736eaa3"
 
 /-!
 # Categorical images

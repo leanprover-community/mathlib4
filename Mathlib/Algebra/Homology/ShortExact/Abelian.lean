@@ -2,14 +2,11 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Andrew Yang, Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module algebra.homology.short_exact.abelian
-! leanprover-community/mathlib commit 356447fe00e75e54777321045cdff7c9ea212e60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ShortExact.Preadditive
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+
+#align_import algebra.homology.short_exact.abelian from "leanprover-community/mathlib"@"356447fe00e75e54777321045cdff7c9ea212e60"
 
 /-!
 # Short exact sequences in abelian categories

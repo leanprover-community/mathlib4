@@ -2,16 +2,13 @@
 Copyright (c) 2021 James Arthur, Benjamin Davidson, Andrew Souther. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Arthur, Benjamin Davidson, Andrew Souther
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.area_of_a_circle
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+
+#align_import wiedijk_100_theorems.area_of_a_circle from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Freek № 9: The Area of a Circle

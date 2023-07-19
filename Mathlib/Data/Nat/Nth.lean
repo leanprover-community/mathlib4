@@ -2,15 +2,12 @@
 Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.nat.nth
-! leanprover-community/mathlib commit 7fdd4f3746cb059edfdb5d52cba98f66fce418c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Set.Intervals.Monotone
 import Mathlib.Order.OrderIsoNat
+
+#align_import data.nat.nth from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"
 
 /-!
 # The `n`th Number Satisfying a Predicate

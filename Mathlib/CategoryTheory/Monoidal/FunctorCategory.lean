@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.functor_category
-! leanprover-community/mathlib commit 73dd4b5411ec8fafb18a9d77c9c826907730af80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.Const
+
+#align_import category_theory.monoidal.functor_category from "leanprover-community/mathlib"@"73dd4b5411ec8fafb18a9d77c9c826907730af80"
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.content
-! leanprover-community/mathlib commit 7a030ab8eb5d99f05a891dccc49c5b5b90c947d3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.Data.Polynomial.EraseLead
 import Mathlib.Data.Polynomial.CancelLeads
+
+#align_import ring_theory.polynomial.content from "leanprover-community/mathlib"@"7a030ab8eb5d99f05a891dccc49c5b5b90c947d3"
 
 /-!
 # GCD structures on polynomials

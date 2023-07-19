@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.basic
-! leanprover-community/mathlib commit 926daa81fd8acb2a04e15572c4ff20af2753c2ae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Polynomial.RationalRoot
+
+#align_import ring_theory.dedekind_domain.basic from "leanprover-community/mathlib"@"926daa81fd8acb2a04e15572c4ff20af2753c2ae"
 
 /-!
 # Dedekind domains

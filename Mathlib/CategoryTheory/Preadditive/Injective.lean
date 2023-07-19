@@ -2,13 +2,10 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
-
-! This file was ported from Lean 3 source module category_theory.preadditive.injective
-! leanprover-community/mathlib commit 3974a774a707e2e06046a14c0eaef4654584fada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.Projective
+
+#align_import category_theory.preadditive.injective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
 /-!
 # Injective objects and categories with enough injectives

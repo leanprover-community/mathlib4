@@ -2,15 +2,12 @@
 Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
-
-! This file was ported from Lean 3 source module analysis.normed.order.lattice
-! leanprover-community/mathlib commit 5dc275ec639221ca4d5f56938eb966f6ad9bc89f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Algebra.Order.LatticeGroup
+
+#align_import analysis.normed.order.lattice from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
 /-!
 # Normed lattice ordered groups

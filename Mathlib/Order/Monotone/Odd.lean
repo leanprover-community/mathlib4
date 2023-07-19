@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.monotone.odd
-! leanprover-community/mathlib commit 9116dd6709f303dcf781632e15fdef382b0fc579
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Monotone.Union
 import Mathlib.Algebra.Order.Group.Instances
+
+#align_import order.monotone.odd from "leanprover-community/mathlib"@"9116dd6709f303dcf781632e15fdef382b0fc579"
 
 /-!
 # Monotonicity of odd functions

@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.enat.basic
-! leanprover-community/mathlib commit ceb887ddf3344dab425292e497fa2af91498437c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Algebra.Order.Ring.WithTop
+
+#align_import data.enat.basic from "leanprover-community/mathlib"@"ceb887ddf3344dab425292e497fa2af91498437c"
 
 /-!
 # Definition and basic properties of extended natural numbers

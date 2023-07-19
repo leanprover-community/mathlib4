@@ -2,16 +2,13 @@
 Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.basic
-! leanprover-community/mathlib commit 8000bbbe2e9d39b84edb993d88781f536a8a3fa8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Bornology.Constructions
+
+#align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8000bbbe2e9d39b84edb993d88781f536a8a3fa8"
 
 /-!
 # Metric spaces

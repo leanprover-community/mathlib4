@@ -2,14 +2,11 @@
 Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
-
-! This file was ported from Lean 3 source module analysis.complex.locally_uniform_limit
-! leanprover-community/mathlib commit fe44cd36149e675eb5dec87acc7e8f1d6568e081
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.RemovableSingularity
 import Mathlib.Analysis.Calculus.Series
+
+#align_import analysis.complex.locally_uniform_limit from "leanprover-community/mathlib"@"fe44cd36149e675eb5dec87acc7e8f1d6568e081"
 
 /-!
 # Locally uniform limits of holomorphic functions

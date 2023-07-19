@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fun_like.equiv
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Embedding
+
+#align_import data.fun_like.equiv from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`

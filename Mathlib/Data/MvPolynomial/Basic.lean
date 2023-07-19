@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit c8734e8953e4b439147bd6f75c2163f6d27cdce6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import data.mv_polynomial.basic from "leanprover-community/mathlib"@"c8734e8953e4b439147bd6f75c2163f6d27cdce6"
 
 /-!
 # Multivariate polynomials

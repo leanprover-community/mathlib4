@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.integral_normalization
-! leanprover-community/mathlib commit 6f401acf4faec3ab9ab13a42789c4f68064a61cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Degree.Lemmas
 import Mathlib.Data.Polynomial.Monic
+
+#align_import data.polynomial.integral_normalization from "leanprover-community/mathlib"@"6f401acf4faec3ab9ab13a42789c4f68064a61cd"
 
 /-!
 # Theory of monic polynomials

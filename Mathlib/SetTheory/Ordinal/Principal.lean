@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.principal
-! leanprover-community/mathlib commit 31b269b60935483943542d547a6dd83a66b37dc7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.FixedPoint
+
+#align_import set_theory.ordinal.principal from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 ### Principal ordinals

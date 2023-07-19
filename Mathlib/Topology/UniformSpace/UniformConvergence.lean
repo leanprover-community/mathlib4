@@ -2,15 +2,12 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.uniform_space.uniform_convergence
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
+
+#align_import topology.uniform_space.uniform_convergence from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Uniform convergence

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.degeneracies
-! leanprover-community/mathlib commit ec1c7d810034d4202b0dd239112d1792be9f6fdc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.Tactic.FinCases
+
+#align_import algebraic_topology.dold_kan.degeneracies from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
 /-!
 

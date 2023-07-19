@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.real.ennreal
-! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.NNReal
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Set.Intervals.WithBotTop
 import Mathlib.Tactic.GCongr.Core
+
+#align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Extended non-negative reals

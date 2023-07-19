@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module order.initial_seg
-! leanprover-community/mathlib commit 730c6d4cab72b9d84fcfb9e95e8796e9cd8f40ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
+
+#align_import order.initial_seg from "leanprover-community/mathlib"@"730c6d4cab72b9d84fcfb9e95e8796e9cd8f40ba"
 /-!
 # Initial and principal segments
 

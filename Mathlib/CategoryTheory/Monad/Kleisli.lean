@@ -2,14 +2,11 @@
 Copyright (c) 2020 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.kleisli
-! leanprover-community/mathlib commit 545f0fb9837ce297da8eae0fec799d70191e97d4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Monad.Basic
+
+#align_import category_theory.monad.kleisli from "leanprover-community/mathlib"@"545f0fb9837ce297da8eae0fec799d70191e97d4"
 
 /-! # Kleisli category on a (co)monad
 

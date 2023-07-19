@@ -2,11 +2,6 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module order.compactly_generated
-! leanprover-community/mathlib commit c813ed7de0f5115f956239124e9b30f3a621966f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Atoms
 import Mathlib.Order.OrderIsoNat
@@ -17,6 +12,8 @@ import Mathlib.Data.Finset.Order
 import Mathlib.Data.Set.Intervals.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
+
+#align_import order.compactly_generated from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 
 /-!
 # Compactness properties for complete lattices

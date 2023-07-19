@@ -2,15 +2,12 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.preadditive.of_biproducts
-! leanprover-community/mathlib commit 061ea99a5610cfc72c286aa930d3c1f47f74f3d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.preadditive.of_biproducts from "leanprover-community/mathlib"@"061ea99a5610cfc72c286aa930d3c1f47f74f3d0"
 /-!
 # Constructing a semiadditive structure from binary biproducts
 

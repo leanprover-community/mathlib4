@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
-
-! This file was ported from Lean 3 source module data.list.sigma
-! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sigma from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 
 /-!
 # Utilities for lists of sigmas

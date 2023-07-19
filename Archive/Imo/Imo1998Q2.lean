@@ -2,17 +2,14 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module imo.imo1998_q2
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Int.Parity
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.NoncommRing
+
+#align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1998 Q2

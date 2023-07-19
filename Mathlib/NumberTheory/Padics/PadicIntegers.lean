@@ -2,14 +2,11 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Mario Carneiro, Johan Commelin
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_integers
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
+
+#align_import number_theory.padics.padic_integers from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # p-adic integers

@@ -3,14 +3,11 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Dilations of emetric and metric spaces
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module topology.metric_space.dilation
-! leanprover-community/mathlib commit 93f880918cb51905fd51b76add8273cbc27718ab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.FunLike.Basic
+
+#align_import topology.metric_space.dilation from "leanprover-community/mathlib"@"93f880918cb51905fd51b76add8273cbc27718ab"
 
 /-!
 # Dilations

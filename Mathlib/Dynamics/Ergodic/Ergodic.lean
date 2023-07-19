@@ -2,13 +2,10 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module dynamics.ergodic.ergodic
-! leanprover-community/mathlib commit 809e920edfa343283cea507aedff916ea0f1bd88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+
+#align_import dynamics.ergodic.ergodic from "leanprover-community/mathlib"@"809e920edfa343283cea507aedff916ea0f1bd88"
 
 /-!
 # Ergodic maps and measures

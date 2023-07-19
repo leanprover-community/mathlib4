@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.module
-! leanprover-community/mathlib commit 2e59a6de168f95d16b16d217b808a36290398c0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+
+#align_import ring_theory.localization.module from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 
 /-!
 # Modules / vector spaces over localizations / fraction fields

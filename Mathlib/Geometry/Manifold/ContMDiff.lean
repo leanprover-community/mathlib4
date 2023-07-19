@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
-
-! This file was ported from Lean 3 source module geometry.manifold.cont_mdiff
-! leanprover-community/mathlib commit e5ab837fc252451f3eb9124ae6e7b6f57455e7b9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
+
+#align_import geometry.manifold.cont_mdiff from "leanprover-community/mathlib"@"e5ab837fc252451f3eb9124ae6e7b6f57455e7b9"
 
 /-!
 # Smooth functions between smooth manifolds

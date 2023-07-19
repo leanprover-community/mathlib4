@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.zfc.basic
-! leanprover-community/mathlib commit f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Logic.Small.Basic
 import Mathlib.Order.WellFounded
+
+#align_import set_theory.zfc.basic from "leanprover-community/mathlib"@"f0b3759a8ef0bd8239ecdaa5e1089add5feebe1a"
 
 /-!
 # A model of ZFC

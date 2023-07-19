@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.biproducts
-! leanprover-community/mathlib commit a176cb1219e300e85793d44583dede42377b51af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
@@ -15,6 +10,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Tactic.Abel
+
+#align_import category_theory.preadditive.biproducts from "leanprover-community/mathlib"@"a176cb1219e300e85793d44583dede42377b51af"
 
 /-!
 # Basic facts about biproducts in preadditive categories.

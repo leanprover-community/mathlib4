@@ -3,14 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.hom.equiv.type_tags
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
+
+#align_import algebra.hom.equiv.type_tags from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.

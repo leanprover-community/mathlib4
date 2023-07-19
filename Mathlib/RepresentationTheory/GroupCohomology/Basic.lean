@@ -2,14 +2,11 @@
 Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module representation_theory.group_cohomology.basic
-! leanprover-community/mathlib commit cc5dd6244981976cc9da7afc4eee5682b037a013
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+
+#align_import representation_theory.group_cohomology.basic from "leanprover-community/mathlib"@"cc5dd6244981976cc9da7afc4eee5682b037a013"
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation

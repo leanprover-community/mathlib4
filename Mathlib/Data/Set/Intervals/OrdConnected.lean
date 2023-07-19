@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.set.intervals.ord_connected
-! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
+
+#align_import data.set.intervals.ord_connected from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
 /-!
 # Order-connected sets

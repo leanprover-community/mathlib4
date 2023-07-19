@@ -2,17 +2,14 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.zero_morphisms
-! leanprover-community/mathlib commit f7707875544ef1f81b32cb68c79e0e24e45a0e76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+
+#align_import category_theory.limits.shapes.zero_morphisms from "leanprover-community/mathlib"@"f7707875544ef1f81b32cb68c79e0e24e45a0e76"
 
 /-!
 # Zero morphisms and zero objects

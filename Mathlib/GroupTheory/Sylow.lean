@@ -2,11 +2,6 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.sylow
-! leanprover-community/mathlib commit bd365b1a4901dbd878e86cb146c2bd86533df468
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.SetLike.Fintype
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Order.Atoms.Finite
+
+#align_import group_theory.sylow from "leanprover-community/mathlib"@"bd365b1a4901dbd878e86cb146c2bd86533df468"
 
 /-!
 # Sylow theorems

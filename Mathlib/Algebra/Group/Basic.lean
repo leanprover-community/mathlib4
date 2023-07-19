@@ -2,13 +2,10 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.basic
-! leanprover-community/mathlib commit a07d750983b94c530ab69a726862c2ab6802b38c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
+
+#align_import algebra.group.basic from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups

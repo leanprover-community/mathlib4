@@ -2,15 +2,12 @@
 Copyright (c) 2021 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module group_theory.group_action.conj_act
-! leanprover-community/mathlib commit d30d31261cdb4d2f5e612eabc3c4bf45556350d5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.ZPowers
 import Mathlib.Algebra.GroupRingAction.Basic
+
+#align_import group_theory.group_action.conj_act from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
 /-!
 # Conjugation action of a group on itself

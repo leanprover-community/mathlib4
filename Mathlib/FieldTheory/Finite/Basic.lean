@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
-
-! This file was ported from Lean 3 source module field_theory.finite.basic
-! leanprover-community/mathlib commit 12a85fac627bea918960da036049d611b1a3ee43
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.Tactic.ApplyFun
+
+#align_import field_theory.finite.basic from "leanprover-community/mathlib"@"12a85fac627bea918960da036049d611b1a3ee43"
 
 /-!
 # Finite fields

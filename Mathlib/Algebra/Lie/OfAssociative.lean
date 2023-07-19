@@ -2,16 +2,13 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.of_associative
-! leanprover-community/mathlib commit f0f3d964763ecd0090c9eb3ae0d15871d08781c4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+#align_import algebra.lie.of_associative from "leanprover-community/mathlib"@"f0f3d964763ecd0090c9eb3ae0d15871d08781c4"
 
 /-!
 # Lie algebras of associative algebras

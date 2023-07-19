@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.basic
-! leanprover-community/mathlib commit 9556784a5b84697562e9c6acb40500d4a82e675a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Counit
 import Mathlib.Data.MvPolynomial.Invertible
 import Mathlib.RingTheory.WittVector.Defs
+
+#align_import ring_theory.witt_vector.basic from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
 
 /-!
 # Witt vectors

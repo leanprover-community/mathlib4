@@ -3,17 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.module.linear_map
-! leanprover-community/mathlib commit cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Ring.CompTypeclasses
+
+#align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
 /-!
 # (Semi)linear maps

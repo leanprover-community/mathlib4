@@ -2,17 +2,14 @@
 Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.algebra.const_mul_action
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Support
+
+#align_import topology.algebra.const_mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Monoid actions continuous in the second variable

@@ -2,13 +2,10 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module geometry.manifold.algebra.lie_group
-! leanprover-community/mathlib commit f9ec187127cc5b381dfcf5f4a22dacca4c20b63d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.Algebra.Monoid
+
+#align_import geometry.manifold.algebra.lie_group from "leanprover-community/mathlib"@"f9ec187127cc5b381dfcf5f4a22dacca4c20b63d"
 
 /-!
 # Lie groups

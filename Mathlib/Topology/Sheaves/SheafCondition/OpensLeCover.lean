@@ -2,13 +2,10 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf_condition.opens_le_cover
-! leanprover-community/mathlib commit 85d6221d32c37e68f05b2e42cde6cee658dae5e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
+
+#align_import topology.sheaves.sheaf_condition.opens_le_cover from "leanprover-community/mathlib"@"85d6221d32c37e68f05b2e42cde6cee658dae5e9"
 
 /-!
 # Another version of the sheaf condition.

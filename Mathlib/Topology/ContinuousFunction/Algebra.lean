@@ -2,11 +2,6 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module topology.continuous_function.algebra
-! leanprover-community/mathlib commit 16e59248c0ebafabd5d071b1cd41743eb8698ffb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Periodic
@@ -20,6 +15,8 @@ import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
+
+#align_import topology.continuous_function.algebra from "leanprover-community/mathlib"@"16e59248c0ebafabd5d071b1cd41743eb8698ffb"
 
 /-!
 # Algebraic structures over continuous functions

@@ -3,17 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.hom.monoid
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Pi.Algebra
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Monoid.WithZero.Defs
 import Mathlib.Order.Hom.Basic
+
+#align_import algebra.order.hom.monoid from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-!
 # Ordered monoid and group homomorphisms

@@ -2,17 +2,14 @@
 Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
-
-! This file was ported from Lean 3 source module data.complex.module
-! leanprover-community/mathlib commit c7bce2818663f456335892ddbdd1809f111a5b72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.SMul
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.FieldTheory.Tower
 import Mathlib.Algebra.CharP.Invertible
+
+#align_import data.complex.module from "leanprover-community/mathlib"@"c7bce2818663f456335892ddbdd1809f111a5b72"
 
 /-!
 # Complex number as a vector space over `ℝ`

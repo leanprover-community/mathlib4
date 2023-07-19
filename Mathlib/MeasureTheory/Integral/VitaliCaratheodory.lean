@@ -2,16 +2,13 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.integral.vitali_caratheodory
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Semicontinuous
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Topology.Instances.EReal
+
+#align_import measure_theory.integral.vitali_caratheodory from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Vitali-Carathéodory theorem

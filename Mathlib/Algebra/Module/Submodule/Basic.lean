@@ -2,16 +2,13 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit 8130e5155d637db35907c272de9aec9dc851c03a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
 /-!
 

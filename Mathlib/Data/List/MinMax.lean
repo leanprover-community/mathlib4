@@ -2,13 +2,10 @@
 Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
-
-! This file was ported from Lean 3 source module data.list.min_max
-! leanprover-community/mathlib commit 6d0adfa76594f304b4650d098273d4366edeb61b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
+
+#align_import data.list.min_max from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
 /-!
 # Minimum and maximum of lists

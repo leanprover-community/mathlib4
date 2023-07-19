@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.morphisms.basic
-! leanprover-community/mathlib commit 434e2fd21c1900747afc6d13d8be7f4eedba7218
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.Data.List.TFAE
+
+#align_import algebraic_geometry.morphisms.basic from "leanprover-community/mathlib"@"434e2fd21c1900747afc6d13d8be7f4eedba7218"
 
 /-!
 # Properties of morphisms between Schemes

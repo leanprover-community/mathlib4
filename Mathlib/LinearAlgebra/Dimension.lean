@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
-
-! This file was ported from Lean 3 source module linear_algebra.dimension
-! leanprover-community/mathlib commit 47a5f8186becdbc826190ced4312f8199f9db6a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.DFinsupp
@@ -15,6 +10,8 @@ import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.SetTheory.Cardinal.Cofinality
+
+#align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 
 /-!
 # Dimension of modules and vector spaces

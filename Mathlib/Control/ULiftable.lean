@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.uliftable
-! leanprover-community/mathlib commit cc8c90d4ac61725a8f6c92691d8abcd2dec88115
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Logic.Equiv.Basic
+
+#align_import control.uliftable from "leanprover-community/mathlib"@"cc8c90d4ac61725a8f6c92691d8abcd2dec88115"
 
 /-!
 # Universe lifting for type families

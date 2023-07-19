@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
-
-! This file was ported from Lean 3 source module data.list.cycle
-! leanprover-community/mathlib commit 7413128c3bcb3b0818e3e18720abc9ea3100fb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.Fintype.List
 import Mathlib.Data.List.Rotate
+
+#align_import data.list.cycle from "leanprover-community/mathlib"@"7413128c3bcb3b0818e3e18720abc9ea3100fb49"
 
 /-!
 # Cycles of a list

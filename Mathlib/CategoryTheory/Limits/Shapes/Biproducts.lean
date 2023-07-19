@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.biproducts
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+#align_import category_theory.limits.shapes.biproducts from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Biproducts and binary biproducts

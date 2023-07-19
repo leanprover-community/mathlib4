@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.galois_connection
-! leanprover-community/mathlib commit c5c7e2760814660967bc27f0de95d190a22297f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Synonym
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.Bounds.Basic
+
+#align_import order.galois_connection from "leanprover-community/mathlib"@"c5c7e2760814660967bc27f0de95d190a22297f3"
 
 /-!
 # Galois connections, insertions and coinsertions
