@@ -73,8 +73,6 @@ variable {𝕜 : Type _} [CommRing 𝕜] {V : Type _} [AddCommGroup V] [Module �
 
 section Defs
 
-variable [CompleteSpace E]
-
 /-- The Fourier transform integral for `f : V → E`, with respect to a bilinear form `L : V × W → 𝕜`
 and an additive character `e`. -/
 def fourierIntegral (e : Multiplicative 𝕜 →* 𝕊) (μ : Measure V) (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E)
@@ -249,7 +247,7 @@ theorem continuous_fourierChar : Continuous Real.fourierChar :=
   (map_continuous expMapCircle).comp (continuous_const.mul continuous_toAdd)
 #align real.continuous_fourier_char Real.continuous_fourierChar
 
-variable {E : Type _} [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℂ E]
+variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type _} [AddCommGroup V] [Module ℝ V]
     [MeasurableSpace V] {W : Type _} [AddCommGroup W] [Module ℝ W] (L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ)
@@ -272,8 +270,8 @@ theorem fourierIntegral_def (f : ℝ → E) (w : ℝ) :
 
 scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
 
-theorem fourierIntegral_eq_integral_exp_smul {E : Type _} [NormedAddCommGroup E] [CompleteSpace E]
-    [NormedSpace ℂ E] (f : ℝ → E) (w : ℝ) :
+theorem fourierIntegral_eq_integral_exp_smul {E : Type _} [NormedAddCommGroup E] [NormedSpace ℂ E]
+    (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
   simp_rw [fourierIntegral_def, Real.fourierChar_apply, mul_neg, neg_mul, mul_assoc]
 #align real.fourier_integral_eq_integral_exp_smul Real.fourierIntegral_eq_integral_exp_smul
