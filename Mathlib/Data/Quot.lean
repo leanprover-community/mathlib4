@@ -414,9 +414,25 @@ instance piSetoid {ι : Sort _} {α : ι → Sort _} [∀ i, Setoid (α i)] : Se
             fun h _ ↦ Setoid.symm (h _),
             fun h₁ h₂ _ ↦ Setoid.trans (h₁ _) (h₂ _)⟩
 
-/-- Given a function `f : Π i, Quotient (S i)`, returns the class of functions `Π i, α i` sending
-each `i` to an element of the class `f i`. -/
-noncomputable def Quotient.choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
+/-- Given a class of functions `q : @Quotient (∀ i, α i) _`, returns the class of `i`-th projection
+`Quotient (S i)`. -/
+def Quotient.proj {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
+    (q : @Quotient (∀ i, α i) (by infer_instance)) (i) :
+    Quotient (S i) :=
+  q.map (· i) (fun _ _ h ↦ by exact h i)
+
+private unsafe def Quotient.choiceImpl {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
+    (∀ i, Quotient (S i)) → @Quotient (∀ i, α i) (by infer_instance) :=
+  unsafeCast
+
+/-- Given a function `f : ∀ i, Quotient (S i)`, returns the class of functions `∀ i, α i` sending
+each `i` to an element of the class `f i`.
+
+This function uses `Classical.choice` to construct data, but it has special support in the runtime.
+For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
+see `Quotient.finChoice`. -/
+@[implemented_by choiceImpl]
+def Quotient.choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) (by infer_instance) :=
   ⟦fun i ↦ (f i).out⟧
@@ -435,6 +451,72 @@ theorem Quotient.induction_on_pi {ι : Type _} {α : ι → Sort _} [s : ∀ i, 
   rw [← (funext fun i ↦ Quotient.out_eq (f i) : (fun i ↦ ⟦(f i).out⟧) = f)]
   apply h
 #align quotient.induction_on_pi Quotient.induction_on_pi
+
+lemma Quotient.proj_choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
+    (f : ∀ i, Quotient (S i)) :
+    proj (choice f) = f :=
+  induction_on_pi f (fun a ↦ by rw [choice_eq]; rfl)
+
+/-- Lift a function on `∀ i, α i` to a function on `∀ i, Quotient (S i)`.
+
+This function uses `Classical.choice` to construct data, but it has special support in the runtime.
+For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
+see `Quotient.finLiftOn`. -/
+def Quotient.liftOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)] {β : Sort _}
+    (q : ∀ i, Quotient (s i))
+    (f : (∀ i, α i) → β)
+    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → f a = f b) : β :=
+  (choice q).liftOn f h
+
+@[simp]
+lemma Quotient.liftOnPi_mk {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)] {β : Sort _}
+    (a : ∀ i, α i) :
+    liftOnPi (β := β) (⟦a ·⟧) = fun f _ ↦ f a := by
+  simp [liftOnPi]
+
+/-- Recursion principle for quotients indexed by a type.
+
+This function uses `Classical.choice` to construct data, but it has special support in the runtime.
+For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
+see `Quotient.finHRecOn`. -/
+@[elab_as_elim]
+def Quotient.hrecOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+    {C : (∀ i, Quotient (s i)) → Sort _}
+    (q : ∀ i, Quotient (s i))
+    (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
+    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → HEq (f a) (f b)) : C q :=
+  proj_choice q ▸ (choice q).hrecOn f h
+
+/-- Recursion principle for quotients indexed by a type.
+
+This function uses `Classical.choice` to construct data, but it has special support in the runtime.
+For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
+see `Quotient.finRecOn`. -/
+@[elab_as_elim]
+def Quotient.recOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+    {C : (∀ i, Quotient (s i)) → Sort _}
+    (q : ∀ i, Quotient (s i))
+    (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
+    (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
+      Eq.ndrec (f a) (funext fun i ↦ sound (h i)) = f b) : C q :=
+  hrecOnPi q f (heq_of_eq_rec_left _ <| h · · ·)
+
+@[simp]
+lemma Quotient.hrecOnPi_mk {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+    {C : (∀ i, Quotient (s i)) → Sort _}
+    (a : ∀ i, α i) :
+    hrecOnPi (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
+  ext f h
+  refine eq_of_heq ((eq_rec_heq _ _).trans ?_)
+  rw [choice_eq]
+  rfl
+
+@[simp]
+lemma Quotient.recOnPi_mk {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+    {C : (∀ i, Quotient (s i)) → Sort _}
+    (a : ∀ i, α i) :
+    recOnPi (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
+  simp [recOnPi]
 
 end Pi
 
