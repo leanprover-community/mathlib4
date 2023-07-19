@@ -2,17 +2,14 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.algebra.unitization
-! leanprover-community/mathlib commit 8f66240cab125b938b327d3850169d490cfbcdd8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Module
+
+#align_import algebra.algebra.unitization from "leanprover-community/mathlib"@"8f66240cab125b938b327d3850169d490cfbcdd8"
 
 /-!
 # Unitization of a non-unital algebra

@@ -3,13 +3,10 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison
 Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.functor.basic
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
+
+#align_import category_theory.functor.basic from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Functors

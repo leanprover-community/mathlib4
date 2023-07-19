@@ -2,13 +2,10 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.bochner
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetToL1
+
+#align_import measure_theory.integral.bochner from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Bochner integral
@@ -1322,7 +1319,7 @@ set_option linter.uppercaseLean3 false in
 theorem Memℒp.snorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1 : p ≠ 0) (hp2 : p ≠ ∞)
     (hf : Memℒp f p μ) :
     snorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
-  have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^  p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
+  have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
     apply lintegral_congr
     intro x
     rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm,

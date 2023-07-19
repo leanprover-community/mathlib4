@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module data.set.pointwise.interval
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
+
+#align_import data.set.pointwise.interval from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # (Pre)images of intervals
