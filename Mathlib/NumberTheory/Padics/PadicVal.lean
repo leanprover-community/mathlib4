@@ -37,9 +37,9 @@ by taking `[Fact p.Prime]` as a type class argument.
 ## Calculations with `p`-adic valuations
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
-of carries when `k` and `n - k` are added in base `p`.This sum is expressed over the finset
+of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
 `Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
-corresponding theorem on multiplcity.
+same result but stated in the language of prime multiplicity.
 
 
 ## References

@@ -31,7 +31,7 @@ coefficients.
   that of `n!`.
 * `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
    number of carries  when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
-   corresponding theorem on `p`-adic valuations.
+   same result but stated in the language of `p`-adic valuations.
 
 ## Other declarations
 
