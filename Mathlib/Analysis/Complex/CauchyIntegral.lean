@@ -624,7 +624,7 @@ protected theorem _root_.Differentiable.contDiff {f : ℂ → E} (hf : Different
   contDiff_iff_contDiffAt.mpr $ fun z ↦ (hf.analyticAt z).contDiffAt
 
 /-- When `f : ℂ → E` is differentiable, the `cauchyPowerSeries f z R` represents `f` as a power
-series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with  `0 < R`. -/
+series centered at `z` in the entirety of `ℂ`, regardless of `R : ℝ≥0`, with `0 < R`. -/
 protected theorem _root_.Differentiable.hasFPowerSeriesOnBall {f : ℂ → E} (h : Differentiable ℂ f)
     (z : ℂ) {R : ℝ≥0} (hR : 0 < R) : HasFPowerSeriesOnBall f (cauchyPowerSeries f z R) z ∞ :=
   (h.differentiableOn.hasFPowerSeriesOnBall hR).r_eq_top_of_exists fun _r hr =>

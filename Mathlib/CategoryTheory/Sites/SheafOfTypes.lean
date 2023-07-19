@@ -372,7 +372,7 @@ theorem FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfE
 The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
 restriction `P.map f.op t = x_f` for every arrow `f` in the presieve `R`.
 
-This is the definition given in  https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents,
+This is the definition given in https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents,
 and https://ncatlab.org/nlab/show/matching+family, as well as [MM92], Chapter III, Section 4,
 equation (2).
 -/
@@ -890,8 +890,8 @@ variable {P R}
 -- porting note: added to ease automation
 @[ext]
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
-    (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₁ =
-      (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₂) : z₁ = z₂ := by
+    (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₁ =
+      (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶ _) z₂) : z₁ = z₂ := by
   apply Limits.Types.limit_ext
   rintro ⟨⟨Y, f, hf⟩⟩
   exact h Y f hf
@@ -940,8 +940,8 @@ variable {P S}
 -- porting note: added to ease automation
 @[ext]
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
-    (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₁ =
-      (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₂) : z₁ = z₂ := by
+    (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₁ =
+      (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶ _) z₂) : z₁ = z₂ := by
   apply Limits.Types.limit_ext
   rintro ⟨⟨Y, Z, g, f, hf⟩⟩
   apply h

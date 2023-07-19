@@ -86,7 +86,7 @@ theorem ker_eq_bot_of_mono [Mono f] : f.ker = ⊥ :=
 
 @[to_additive]
 theorem mono_iff_ker_eq_bot : Mono f ↔ f.ker = ⊥ :=
-  ⟨fun _ => ker_eq_bot_of_mono f,  fun h =>
+  ⟨fun _ => ker_eq_bot_of_mono f, fun h =>
     ConcreteCategory.mono_of_injective _ <| (MonoidHom.ker_eq_bot_iff f).1 h⟩
 #align Group.mono_iff_ker_eq_bot GroupCat.mono_iff_ker_eq_bot
 #align AddGroup.mono_iff_ker_eq_bot AddGroupCat.mono_iff_ker_eq_bot

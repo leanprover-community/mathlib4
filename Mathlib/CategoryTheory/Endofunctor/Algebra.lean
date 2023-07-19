@@ -333,7 +333,7 @@ theorem id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_f CategoryTheory.Endofunctor.Coalgebra.id_f
 
-variable  (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
+variable (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
 
 @[simp]
 theorem comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=

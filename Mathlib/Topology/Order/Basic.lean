@@ -1021,7 +1021,7 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type _} [LinearO
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
 
 /-- A strictly monotone function between linear orders with order topology is a topological
-embedding provided that the range of `f` is  order-connected. -/
+embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=

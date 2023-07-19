@@ -8,9 +8,17 @@ def moreServerArgs := #[
 ]
 
 -- These settings only apply during `lake build`, but not in VSCode editor.
-def moreLeanArgs := #[
-  "-DwarningAsError=true"
-] ++ moreServerArgs
+def moreLeanArgs := moreServerArgs
+
+-- These are additional settings which do not affect the lake hash,
+-- so they can be enabled in CI and disabled locally or vice versa.
+-- Warning: Do not put any options here that actually change the olean files,
+-- or inconsistent behavior may result
+def weakLeanArgs :=
+  if get_config? CI |>.isSome then
+    #["-DwarningAsError=true"]
+  else
+    #[]
 
 package mathlib where
   moreServerArgs := moreServerArgs
@@ -18,6 +26,7 @@ package mathlib where
 @[default_target]
 lean_lib Mathlib where
   moreLeanArgs := moreLeanArgs
+  weakLeanArgs := weakLeanArgs
 
 @[default_target]
 lean_exe runLinter where
@@ -35,6 +44,7 @@ require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
+  weakLeanArgs := weakLeanArgs
   roots := #[`Cache]
 
 lean_exe cache where
@@ -54,3 +64,8 @@ lean_lib ImportGraph where
 
 lean_exe graph where
   root := `ImportGraph.Main
+  supportInterpreter := true
+
+/-- Additional documentation in the form of modules that only contain module docstrings. -/
+lean_lib docs where
+  roots := #[`docs]

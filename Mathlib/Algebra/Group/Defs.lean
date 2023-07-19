@@ -469,7 +469,7 @@ variable {M : Type u}
 -- use `x * npowRec n x` and not `npowRec n x * x` in the definition to make sure that
 -- definitional unfolding of `npowRec` is blocked, to avoid deep recursion issues.
 /-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
-Use instead `a ^ n`,  which has better definitional behavior. -/
+Use instead `a ^ n`, which has better definitional behavior. -/
 def npowRec [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
   | n + 1, a => a * npowRec n a
@@ -578,6 +578,9 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
+
+attribute [instance 150] AddSemigroup.toAdd
+attribute [instance 50] AddZeroClass.toAdd
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
@@ -737,7 +740,7 @@ instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid
 end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
-Use instead `a ^ n`,  which has better definitional behavior. -/
+Use instead `a ^ n`, which has better definitional behavior. -/
 def zpowRec {M : Type _} [One M] [Mul M] [Inv M] : ℤ → M → M
   | Int.ofNat n, a => npowRec n a
   | Int.negSucc n, a => (npowRec n.succ a)⁻¹

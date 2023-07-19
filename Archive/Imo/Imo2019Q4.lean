@@ -90,7 +90,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : k > 0) (hn : n > 0) :
   -- The implication `←` holds.
   constructor
   swap
-  · rintro (h | h) <;> simp [Prod.ext_iff] at h  <;> rcases h with ⟨rfl, rfl⟩ <;>
+  · rintro (h | h) <;> simp [Prod.ext_iff] at h <;> rcases h with ⟨rfl, rfl⟩ <;>
     norm_num [prod_range_succ, succ_mul]
   intro h
   -- We know that n < 6.

@@ -660,7 +660,7 @@ end support
 
 @[simp]
 theorem support_subtype_perm [DecidableEq α] {s : Finset α} (f : Perm α) (h) :
-    ((f.subtypePerm h : Perm { x // x ∈ s }).support)  =
+    ((f.subtypePerm h : Perm { x // x ∈ s }).support) =
     (s.attach.filter ((fun x => decide (f x ≠ x))) : Finset { x // x ∈ s }) := by
   ext
   simp [Subtype.ext_iff]

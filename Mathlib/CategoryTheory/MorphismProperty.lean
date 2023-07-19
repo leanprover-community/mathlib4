@@ -283,11 +283,11 @@ theorem StableUnderCobaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : Stable
 #align category_theory.morphism_property.stable_under_cobase_change.unop CategoryTheory.MorphismProperty.StableUnderCobaseChange.unop
 
 theorem StableUnderBaseChange.op {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
-    StableUnderCobaseChange P.op := fun _ _ _ _ _ _ _ _  sq hf => hP sq.unop hf
+    StableUnderCobaseChange P.op := fun _ _ _ _ _ _ _ _ sq hf => hP sq.unop hf
 #align category_theory.morphism_property.stable_under_base_change.op CategoryTheory.MorphismProperty.StableUnderBaseChange.op
 
 theorem StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUnderBaseChange P) :
-    StableUnderCobaseChange P.unop := fun _ _ _ _ _ _ _ _  sq hf => hP sq.op hf
+    StableUnderCobaseChange P.unop := fun _ _ _ _ _ _ _ _ sq hf => hP sq.op hf
 #align category_theory.morphism_property.stable_under_base_change.unop CategoryTheory.MorphismProperty.StableUnderBaseChange.unop
 
 /-- If `P : MorphismProperty C` and `F : C ⥤ D`, then

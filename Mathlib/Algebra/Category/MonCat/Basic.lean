@@ -58,7 +58,7 @@ add_decl_doc AddMonCat.AssocAddMonoidHom
 
 @[to_additive]
 instance bundledHom : BundledHom AssocMonoidHom where
-  toFun  {X Y} _ _ f := ⇑f
+  toFun {X Y} _ _ f := ⇑f
   id _ := MonoidHom.id _
   comp _ _ _ := MonoidHom.comp
 set_option linter.uppercaseLean3 false in

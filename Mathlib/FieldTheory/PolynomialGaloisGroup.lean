@@ -376,7 +376,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   --    fun _ _ _ h => key2 (key1 h)
   induction p using WfDvdMonoid.induction_on_irreducible with
   | h0 => exact splits_zero _
-  | hu u hu =>  exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
+  | hu u hu => exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
   -- Porting note: using `exact` instead of `apply` times out
   | hi p₁ p₂ _ hp₂ hp₁ => apply key2 (key1 hp₂) hp₁
 #align polynomial.gal.splits_in_splitting_field_of_comp Polynomial.Gal.splits_in_splittingField_of_comp

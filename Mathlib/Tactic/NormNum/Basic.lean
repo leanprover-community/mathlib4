@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
 import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.GroupPower.Lemmas
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Util.Qq
@@ -52,7 +53,7 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
     guard n.isNatLit
     let ⟨a, (pa : Q($n = $e))⟩ ← mkOfNat α sα n
     guard <|← isDefEq a e
-    return .isNat sα n (q(isNat_ofNat $α $pa) : Expr)
+    return .isNat sα n q(isNat_ofNat $α $pa)
 
 theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   | _, _, ⟨rfl⟩ => ⟨rfl⟩
@@ -262,10 +263,10 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
   let .app (f : Q($α → $α)) (a : Q($α)) ← whnfR e | failure
-  have _e_eq : $e =Q $f $a := ⟨⟩
   let ra ← derive a
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q Neg.neg)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
+  haveI' _e_eq : $e =Q -$a := ⟨⟩
   let rec
   /-- Main part of `evalNeg`. -/
   core : Option (Result e) := do
@@ -275,7 +276,7 @@ such that `norm_num` successfully recognises `a`. -/
       have b := mkRawIntLit zb
       let pf : Q($f = Neg.neg) := (q(Eq.refl $f) : Expr)
       let r : Q(Int.neg $na = $b) := (q(Eq.refl $b) : Expr)
-      return (.isInt rα b zb q(isInt_neg $pf $pa $r) : Result q(-$a))
+      return Result.isInt rα b zb q(isInt_neg $pf $pa $r)
     let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toRat'
@@ -283,7 +284,7 @@ such that `norm_num` successfully recognises `a`. -/
       have nb := mkRawIntLit qb.num
       let pf : Q($f = Neg.neg) := (q(Eq.refl $f) : Expr)
       let r : Q(Int.neg $na = $nb) := (q(Eq.refl $nb) : Expr)
-      return (.isRat' dα qb nb da q(isRat_neg $pf $pa $r) : Result q(-$a))
+      return Result.isRat' dα qb nb da q(isRat_neg $pf $pa $r)
     match ra with
     | .isBool _ .. => failure
     | .isNat _ .. => intArm rα
@@ -310,10 +311,10 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ - _, Sub.sub _ _] def evalSub : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
-  have _e_eq : $e =Q $f $a $b := ⟨⟩
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   let ra ← derive a; let rb ← derive b
+  haveI' _e_eq : $e =Q $a - $b := ⟨⟩
   let rec
   /-- Main part of `evalAdd`. -/
   core : Option (Result e) := do
@@ -323,7 +324,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       have c := mkRawIntLit zc
       let pf : Q($f = HSub.hSub) := (q(Eq.refl $f) : Expr)
       let r : Q(Int.sub $na $nb = $c) := (q(Eq.refl $c) : Expr)
-      return (.isInt rα c zc q(isInt_sub $pf $pa $pb $r) : Result q($f $a $b))
+      return Result.isInt rα c zc q(isInt_sub $pf $pa $pb $r)
     let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
       assumeInstancesCommute
       let ⟨qa, na, da, pa⟩ ← ra.toRat'; let ⟨qb, nb, db, pb⟩ ← rb.toRat'
@@ -460,15 +461,15 @@ themselves exceed memory limits.
 -/
 partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
   if b.natLit! = 0 then
-    have _ : $b =Q 0 := ⟨⟩
+    haveI : $b =Q 0 := ⟨⟩
     ⟨q(nat_lit 1), q(natPow_zero)⟩
   else if a.natLit! = 0 then
-    have _ : $a =Q 0 := ⟨⟩
+    haveI : $a =Q 0 := ⟨⟩
     have b' : Q(ℕ) := mkRawNatLit (b.natLit! - 1)
-    have _ : $b =Q Nat.succ $b' := ⟨⟩
+    haveI : $b =Q Nat.succ $b' := ⟨⟩
     ⟨q(nat_lit 0), q(zero_natPow)⟩
   else if a.natLit! = 1 then
-    have _ : $a =Q 1 := ⟨⟩
+    haveI : $a =Q 1 := ⟨⟩
     ⟨q(nat_lit 1), q(one_natPow)⟩
   else if b.natLit! = 1 then
     have _ : QE (α := (q(ℕ) : Q(Type))) b q(1) := ⟨⟩
@@ -521,11 +522,11 @@ theorem intPow_negOfNat_bit1 (h1 : Nat.pow a b' = c')
 partial def evalIntPow (za : ℤ) (a : Q(ℤ)) (b : Q(ℕ)) : ℤ × (c : Q(ℤ)) × Q(Int.pow $a $b = $c) :=
   have a' : Q(ℕ) := a.appArg!
   if 0 ≤ za then
-    have _ : $a =Q .ofNat $a' := ⟨⟩
+    haveI : $a =Q .ofNat $a' := ⟨⟩
     let ⟨c, p⟩ := evalNatPow a' b
     ⟨c.natLit!, q(.ofNat $c), q(intPow_ofNat $p)⟩
   else
-    have _ : $a =Q .negOfNat $a' := ⟨⟩
+    haveI : $a =Q .negOfNat $a' := ⟨⟩
     let b' := b.natLit!
     have b₀ : Q(ℕ) := mkRawNatLit (b' >>> 1)
     let ⟨c₀, p⟩ := evalNatPow a' b₀
@@ -570,31 +571,28 @@ def evalPow : NormNumExt where eval {u α} e := do
   let sα ← inferSemiring α
   let ra ← derive a
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
+  haveI' : $e =Q $a ^ $b := ⟨⟩
+  haveI' : $f =Q HPow.hPow := ⟨⟩
   let rec
   /-- Main part of `evalPow`. -/
-  @[nolint unusedHavesSuffices] -- the =Q assumptions are marked as unused
   core : Option (Result e) := do
     match ra with
     | .isBool .. => failure
     | .isNat sα na pa =>
-      have : $sα =Q AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
+      haveI' : $sα =Q AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
       have ⟨c, r⟩ := evalNatPow na nb
-      let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
-      let pb : Q(IsNat $b $nb) := pb
-      return (.isNat sα c q(isNat_pow $pf $pa $pb $r) : Result q($f $a $b))
+      return by exact .isNat sα c q(isNat_pow rfl $pa $pb $r)
     | .isNegNat rα .. =>
-      have : $sα =Q Ring.toSemiring := ⟨⟩
+      haveI' : $sα =Q Ring.toSemiring := ⟨⟩
       let ⟨za, na, pa⟩ ← ra.toInt
-      let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
       have ⟨zc, c, r⟩ := evalIntPow za na nb
-      return (.isInt rα c zc q(isInt_pow $pf $pa $pb $r) : Result q($f $a $b))
+      return by exact .isInt rα c zc q(isInt_pow rfl $pa $pb $r)
     | .isRat dα qa na da pa =>
-      have : $sα =Q Ring.toSemiring := ⟨⟩
-      let pf : Q($f = HPow.hPow) := (q(Eq.refl $f) : Expr)
+      haveI' : $sα =Q Ring.toSemiring := ⟨⟩
       have ⟨zc, nc, r1⟩ := evalIntPow qa.num na nb
       have ⟨dc, r2⟩ := evalNatPow da nb
       let qc := mkRat zc dc.natLit!
-      return (.isRat' dα qc nc dc q(isRat_pow $pf $pa $pb $r1 $r2) : Result q($f $a $b))
+      return by exact .isRat' dα qc nc dc q(isRat_pow rfl $pa $pb $r1 $r2)
   core
 
 theorem isRat_inv_pos {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} :
@@ -622,7 +620,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   generalize Nat.succ n = n at *
   use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
-    Int.cast_ofNat, invOf_eq_inv, inv_neg,  neg_mul, mul_inv_rev, inv_inv]
+    Int.cast_ofNat, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
 
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
@@ -632,6 +630,8 @@ such that `norm_num` successfully recognises `a`. -/
   let dα ← inferDivisionRing α
   let _i ← inferCharZeroOfDivisionRing? dα
   guard <|← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
+  haveI' : $e =Q $a⁻¹ := ⟨⟩
+  assumeInstancesCommute
   let rec
   /-- Main part of `evalInv`. -/
   core : Option (Result e) := do
@@ -640,31 +640,34 @@ such that `norm_num` successfully recognises `a`. -/
     if qa > 0 then
       if let some _i := _i then
         have lit : Q(ℕ) := na.appArg!
+        haveI : $na =Q Int.ofNat $lit := ⟨⟩
         have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-        let pa : Q(IsRat $a (Int.ofNat (Nat.succ $lit2)) $da) := pa
-        return (.isRat' dα qb q(.ofNat $da) lit
-          (q(isRat_inv_pos (α := $α) $pa) : Expr) : Result q($a⁻¹))
+        haveI : $lit =Q ($lit2).succ := ⟨⟩
+        return .isRat' dα qb q(.ofNat $da) lit q(isRat_inv_pos $pa)
       else
         guard (qa = 1)
-        let .isNat inst n
-          (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 1))) := ra | failure
-        return (.isNat inst n (q(isRat_inv_one $pa) : Expr) : Result q($a⁻¹))
+        let .isNat inst n pa := ra | failure
+        haveI' : $n =Q nat_lit 1 := ⟨⟩
+        assumeInstancesCommute
+        return by exact .isNat inst n (q(isRat_inv_one $pa))
     else if qa < 0 then
       if let some _i := _i then
         have lit : Q(ℕ) := na.appArg!
+        haveI : $na =Q Int.negOfNat $lit := ⟨⟩
         have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
-        let pa : Q(IsRat $a (Int.negOfNat (Nat.succ $lit2)) $da) := pa
-        return (.isRat' dα qb q(.negOfNat $da) lit
-          (q(isRat_inv_neg (α := $α) $pa) : Expr) : Result q($a⁻¹))
+        haveI : $lit =Q ($lit2).succ := ⟨⟩
+        return .isRat' dα qb q(.negOfNat $da) lit q(isRat_inv_neg $pa)
       else
         guard (qa = -1)
-        let .isNegNat inst n
-          (pa : Q(@IsInt _ DivisionRing.toRing $a (.negOfNat 1))) := ra | failure
-        return (.isNegNat inst n (q(isRat_inv_neg_one $pa) : Expr) : Result q($a⁻¹))
+        let .isNegNat inst n pa := ra | failure
+        haveI' : $n =Q nat_lit 1 := ⟨⟩
+        assumeInstancesCommute
+        return by exact .isNegNat inst n q(isRat_inv_neg_one $pa)
     else
-      let .isNat inst n (pa : Q(@IsNat _ AddGroupWithOne.toAddMonoidWithOne $a (nat_lit 0))) := ra
-        | failure
-      return (.isNat inst n (q(isRat_inv_zero $pa) : Expr) : Result q($a⁻¹))
+      let .isNat inst n pa := ra | failure
+      haveI' : $n =Q nat_lit 0 := ⟨⟩
+      assumeInstancesCommute
+      return by exact .isNat inst n q(isRat_inv_zero $pa)
   core
 
 theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
@@ -676,11 +679,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let dα ← inferDivisionRing α
+  haveI' : $e =Q $a / $b := ⟨⟩
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
   let rab ← derive (q($a * $b⁻¹) : Q($α))
   let ⟨qa, na, da, pa⟩ ← rab.toRat'
-  let pa : Q(IsRat ($a * $b⁻¹) $na $da) := pa
-  return (.isRat' dα qa na da q(isRat_div $pa) : Result q($a / $b))
+  assumeInstancesCommute
+  return by exact .isRat' dα qa na da q(isRat_div $pa)
 
 /-! # Constructor-like operations -/
 
@@ -726,15 +730,13 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
   let σα ← inferOfScientific α
   assumeInstancesCommute
-  have lh : Q(@OfScientific.ofScientific $α $σα = (fun m s e ↦ (Rat.ofScientific m s e : $α))) :=
-    (q(Eq.refl (fun m s e ↦ (Rat.ofScientific m s e : $α))) : Expr)
+  haveI' : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
+  haveI' lh : @OfScientific.ofScientific $α $σα =Q (fun m s e ↦ (Rat.ofScientific m s e : $α)) := ⟨⟩
   match b with
   | ~q(true)  =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
     let some ⟨q, n, d, p⟩ := rme.toRat' | failure
-    let p : Q(IsRat (mkRat $m (10 ^ $exp) : $α) $n $d) := p
-    return (.isRat' dα q n d q(isRat_ofScientific_of_true $σα $lh $p) :
-        Result q(@OfScientific.ofScientific $α $σα $m true $exp))
+    return .isRat' dα q n d q(isRat_ofScientific_of_true $σα $lh $p)
   | ~q(false) =>
     let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
     let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)
@@ -744,11 +746,8 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     let exp' := ne.natLit!
     let n' := Nat.mul m' (Nat.pow (10 : ℕ) exp')
     have n : Q(ℕ) := mkRawNatLit n'
-    have r : Q($n = Nat.mul $nm ((10 : ℕ) ^ $ne)) := (q(Eq.refl $n) : Expr)
-    return ((.isNat _ n
-      (q(isNat_ofScientific_of_false $σα $lh $pm $pe $r) :
-          Q(IsNat (@OfScientific.ofScientific $α $σα $m false $exp) $n))) :
-        Result q(@OfScientific.ofScientific $α $σα $m false $exp))
+    haveI : $n =Q Nat.mul $nm ((10 : ℕ) ^ $ne) := ⟨⟩
+    return .isNat _ n q(isNat_ofScientific_of_false $σα $lh $pm $pe rfl)
 
 /-! # Logic -/
 
@@ -1049,7 +1048,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
-  |  _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
+  | _, _,_, ⟨rfl⟩, rfl => ⟨by simp⟩
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.succ a`,
 such that `norm_num` successfully recognises `a`. -/

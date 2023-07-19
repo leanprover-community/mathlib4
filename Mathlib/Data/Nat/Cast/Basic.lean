@@ -266,7 +266,7 @@ theorem map_natCast [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
 
 --Porting note: new theorem
 @[simp]
-theorem map_ofNat [RingHomClass F R S] (f : F)  (n : ℕ) [Nat.AtLeastTwo n] :
+theorem map_ofNat [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n
 
@@ -327,6 +327,9 @@ theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 #align pi.coe_nat Pi.coe_nat
+
+@[simp]
+theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
 
 end Pi
 

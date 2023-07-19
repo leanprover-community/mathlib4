@@ -899,7 +899,7 @@ local macro "localization_tac" : tactic =>
      simp only [add_mk, Localization.mk_mul, ← Localization.mk_zero 1]
      refine mk_eq_mk_iff.mpr (r_of_eq ?_)
      simp only [Submonoid.coe_mul]
-     ring  })
+     ring })
 
 instance : CommSemiring (Localization M) :=
   { (show CommMonoidWithZero (Localization M) by infer_instance) with
@@ -980,7 +980,7 @@ instance {S : Type _} [Semiring S] [Module S R] [IsScalarTower S R R] : Module S
           intros
           simp only [Localization.smul_mk, add_smul, add_mk_self] }
 
-instance {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
+instance algebra {S : Type _} [CommSemiring S] [Algebra S R] : Algebra S (Localization M)
     where
   toRingHom :=
     RingHom.comp

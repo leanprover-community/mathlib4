@@ -402,7 +402,7 @@ of each point in `α` and the functions `φ i` agree pairwise on intersections, 
 construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover : C(α, β) :=
   haveI H : ⋃ i, S i = Set.univ :=
-    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
+    Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
     simpa only [Set.restrict, Set.liftCover_coe] using (φ i).continuous
