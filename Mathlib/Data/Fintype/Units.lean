@@ -50,7 +50,7 @@ theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
   classical
     rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_eq_card_units_add_one]
 
-theorem Fintype.card_units [GroupWithZero α] [Fintype α] [Fintype αˣ] :
+theorem Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
     Fintype.card αˣ = Fintype.card α - 1 := by
-  rw [@Fintype.card_units_add_one α, Nat.add_sub_cancel]
+  rw [@Fintype.card_eq_card_units_add_one α, Nat.add_sub_cancel]
 #align fintype.card_units Fintype.card_units
