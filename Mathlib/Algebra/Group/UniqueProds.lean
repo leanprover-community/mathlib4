@@ -11,7 +11,7 @@ Authors: Damiano Testa
 import Mathlib.Data.Finset.Preimage
 
 /-!
-#  Unique products and related notions
+# Unique products and related notions
 
 A group `G` has *unique products* if for any two non-empty finite subsets `A, B ⊂ G`, there is an
 element `g ∈ A * B` that can be written uniquely as a product of an element of `A` and an element

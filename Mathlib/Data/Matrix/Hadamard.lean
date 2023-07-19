@@ -27,7 +27,7 @@ and contains basic properties about them.
 
 ## References
 
-*  <https://en.wikipedia.org/wiki/hadamard_product_(matrices)>
+* <https://en.wikipedia.org/wiki/hadamard_product_(matrices)>
 
 ## Tags
 

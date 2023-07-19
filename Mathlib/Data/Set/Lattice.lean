@@ -1973,7 +1973,7 @@ theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
 #align set.seq_subset Set.seq_subset
 
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
-    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _  ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
+    seq s₀ t₀ ⊆ seq s₁ t₁ := fun _ ⟨f, hf, a, ha, eq⟩ => ⟨f, hs hf, a, ht ha, eq⟩
 #align set.seq_mono Set.seq_mono
 
 theorem singleton_seq {f : α → β} {t : Set α} : Set.seq ({f} : Set (α → β)) t = f '' t :=

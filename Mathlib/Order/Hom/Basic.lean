@@ -385,7 +385,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
 @[simps (config := { fullyApplied := false })]
 def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
-  monotone' _ _  h _ := h
+  monotone' _ _ h _ := h
 #align order_hom.const OrderHom.const
 #align order_hom.const_coe_coe OrderHom.const_coe_coe
 

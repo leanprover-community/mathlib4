@@ -476,7 +476,7 @@ end Equivalence
 class IsEquivalence (F : C ⥤ D) where mk' ::
   /-- The inverse functor to `F` -/
   inverse : D ⥤ C
-  /-- Composition `F ⋙  inverse` is isomorphic to the identity. -/
+  /-- Composition `F ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ F ⋙ inverse
   /-- Composition `inverse ⋙ F` is isomorphic to the identity. =-/
   counitIso : inverse ⋙ F ≅ 𝟭 D

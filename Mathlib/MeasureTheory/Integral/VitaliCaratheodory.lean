@@ -399,7 +399,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     -- Porting note: need to name identifier (not `this`), because `conv_rhs at this` errors
     have aux := ENNReal.lt_add_right int_f (ENNReal.half_pos ε0).ne'
     conv_rhs at aux => rw [lintegral_eq_nnreal (fun x => (f x : ℝ≥0∞)) μ]
-    erw [ENNReal.biSup_add] at aux  <;> [skip; exact ⟨0, fun x => by simp⟩]
+    erw [ENNReal.biSup_add] at aux <;> [skip; exact ⟨0, fun x => by simp⟩]
     simp only [lt_iSup_iff] at aux
     rcases aux with ⟨fs, fs_le_f, int_fs⟩
     refine' ⟨fs, fun x => by simpa only [ENNReal.coe_le_coe] using fs_le_f x, _⟩

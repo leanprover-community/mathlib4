@@ -159,7 +159,7 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! (b : _) (_ : b ∈ c),
 -- warning: expanding binder collection (b «expr ∈ » c) -/
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! (b : _) (_ : b ∈ c), a ∈ b) {x} :
     { y : α | (mkClasses c H).Rel x y } ∈ c := by
-  convert @Setoid.eqv_class_mem _ _  H x using 3
+  convert @Setoid.eqv_class_mem _ _ H x using 3
   rw [Setoid.comm']
 #align setoid.eqv_class_mem' Setoid.eqv_class_mem'
 

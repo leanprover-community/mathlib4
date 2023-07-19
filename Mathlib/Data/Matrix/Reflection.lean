@@ -57,7 +57,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
-  | 0, n, P => Iff.symm  Fin.forall_fin_zero_pi
+  | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
   | m + 1, n, P => by
     simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi

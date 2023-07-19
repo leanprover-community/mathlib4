@@ -110,7 +110,7 @@ instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass [NonA
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [LE α]
-  [Mul β] [Add β]  [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
+  [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
   { ‹OrderRingIsoClass F α β› with }
 #align order_ring_iso_class.to_order_iso_class OrderRingIsoClass.toOrderIsoClass
 
@@ -129,7 +129,7 @@ instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiri
 `OrderRingHom`. This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
-    [Preorder β] [OrderRingHomClass F α β]  (f : F) : α →+*o β :=
+    [Preorder β] [OrderRingHomClass F α β] (f : F) : α →+*o β :=
 { (f : α →+* β) with monotone' := monotone f}
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via

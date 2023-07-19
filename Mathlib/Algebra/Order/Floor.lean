@@ -369,7 +369,7 @@ theorem preimage_ceil_zero : (Nat.ceil : α → ℕ) ⁻¹' {0} = Iic 0 :=
   ext fun _ => ceil_eq_zero
 #align nat.preimage_ceil_zero Nat.preimage_ceil_zero
 
--- Porting note: in mathlib3 there was no need for the type annotation in  `(↑(n - 1))`
+-- Porting note: in mathlib3 there was no need for the type annotation in `(↑(n - 1))`
 theorem preimage_ceil_of_ne_zero (hn : n ≠ 0) : (Nat.ceil : α → ℕ) ⁻¹' {n} = Ioc (↑(n - 1) : α) n :=
   ext fun _ => ceil_eq_iff hn
 #align nat.preimage_ceil_of_ne_zero Nat.preimage_ceil_of_ne_zero
@@ -793,7 +793,7 @@ theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), (⌊a�
   congr_arg _ <| floor_eq_on_Ico n a ha
 #align int.floor_eq_on_Ico' Int.floor_eq_on_Ico'
 
--- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
+-- Porting note: in mathlib3 there was no need for the type annotation in `(m:α)`
 @[simp]
 theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m : α) (m + 1) :=
   ext fun _ => floor_eq_iff
@@ -987,7 +987,7 @@ theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a *
     abel
 #align int.fract_mul_nat Int.fract_mul_nat
 
--- Porting note: in mathlib3 there was no need for the type annotation in  `(m:α)`
+-- Porting note: in mathlib3 there was no need for the type annotation in `(m:α)`
 theorem preimage_fract (s : Set α) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m:α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
@@ -1228,7 +1228,7 @@ theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 #align int.floor_lt_ceil_of_lt Int.floor_lt_ceil_of_lt
 
--- Porting note: in mathlib3 there was no need for the type annotation in  `(m : α)`
+-- Porting note: in mathlib3 there was no need for the type annotation in `(m : α)`
 @[simp]
 theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc ((m : α) - 1) m :=
   ext fun _ => ceil_eq_iff

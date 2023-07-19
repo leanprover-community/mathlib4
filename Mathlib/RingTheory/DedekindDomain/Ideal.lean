@@ -328,7 +328,7 @@ theorem dimensionLEOne : DimensionLEOne A := by
       _ = M := ?_
     · rw [mul_assoc, ← mul_assoc (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne,
       one_mul, h.inv_mul_eq_one M'_ne]
-    · rw [← mul_assoc  (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne, one_mul]
+    · rw [← mul_assoc (P : FractionalIdeal A⁰ (FractionRing A)), h.mul_inv_eq_one P'_ne, one_mul]
   -- Suppose we have `x ∈ M⁻¹ * P`, then in fact `x = algebraMap _ _ y` for some `y`.
   intro x hx
   have le_one : (M⁻¹ : FractionalIdeal A⁰ (FractionRing A)) * P ≤ 1 := by
@@ -491,10 +491,10 @@ We will use this to show that nonzero fractional ideals are invertible,
 and finally conclude that fractional ideals in a Dedekind domain form a group with zero.
 -/
 theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ ⊥) :
-    I * (I : FractionalIdeal A⁰ K)⁻¹  = 1 := by
+    I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show `1 ≤ J⁻¹ = (I * I⁻¹)⁻¹ ≤ 1`.
   apply mul_inv_cancel_of_le_one hI0
-  by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹  = 0
+  by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹ = 0
   · rw [hJ0, inv_zero']; exact zero_le _
   intro x hx
   -- In particular, we'll show all `x ∈ J⁻¹` are integral.
@@ -668,13 +668,12 @@ theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
       (mt Ideal.dvd_iff_le.mp (not_le_of_lt h))⟩
 #align ideal.dvd_not_unit_iff_lt Ideal.dvdNotUnit_iff_lt
 
-instance : WfDvdMonoid (Ideal A)
-    where wellFounded_dvdNotUnit := by  {
+instance : WfDvdMonoid (Ideal A) where wellFounded_dvdNotUnit := by
   have : WellFounded ((· > ·) : Ideal A → Ideal A → Prop) :=
     isNoetherian_iff_wellFounded.mp (isNoetherianRing_iff.mp IsDedekindDomain.isNoetherianRing)
   convert this
   ext
-  rw [Ideal.dvdNotUnit_iff_lt] }
+  rw [Ideal.dvdNotUnit_iff_lt]
 
 instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :=
   { irreducible_iff_prime := by
@@ -867,7 +866,7 @@ instance : NormalizedGCDMonoid (Ideal A) :=
     lcm_zero_left := fun _ => by simp only [zero_eq_bot, bot_inf_eq]
     lcm_zero_right := fun _ => by simp only [zero_eq_bot, inf_bot_eq]
     gcd_mul_lcm := fun _ _ => by rw [associated_iff_eq, sup_mul_inf]
-    normalize_gcd := fun _ _ =>  normalize_eq _
+    normalize_gcd := fun _ _ => normalize_eq _
     normalize_lcm := fun _ _ => normalize_eq _ }
 
 -- In fact, any lawful gcd and lcm would equal sup and inf respectively.

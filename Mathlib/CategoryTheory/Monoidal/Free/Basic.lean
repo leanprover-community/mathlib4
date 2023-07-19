@@ -280,8 +280,8 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     induction h with
     | refl => rfl
     | symm _ _ _ hfg' => exact hfg'.symm
-    | trans _ _  hfg hgh => exact hfg.trans hgh
-    | comp _ _  hf hg => dsimp only [projectMapAux]; rw [hf, hg]
+    | trans _ _ hfg hgh => exact hfg.trans hgh
+    | comp _ _ hf hg => dsimp only [projectMapAux]; rw [hf, hg]
     | tensor _ _ hfg hfg' => dsimp only [projectMapAux]; rw [hfg, hfg']
     | comp_id => dsimp only [projectMapAux]; rw [Category.comp_id]
     | id_comp => dsimp only [projectMapAux]; rw [Category.id_comp]

@@ -240,13 +240,13 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
           (fun s =>
             (cancel_epi a).1 <| by
               rw [CokernelCofork.π_ofπ] at ha'
-              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : a ≫ a' ≫ h
+              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : a ≫ a' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']
               simp [reassoced , PushoutCocone.condition s])
           (fun s =>
             (cancel_epi b).1 <| by
               rw [CokernelCofork.π_ofπ] at hb'
-              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : b ≫ b' ≫ h
+              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : b ≫ b' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker hb']
               simp [reassoced'])
           fun s m h₁ _ =>
@@ -325,7 +325,7 @@ theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
   ⟨fun u v huv => by
     obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
     obtain ⟨m, hm⟩ := coequalizer.desc' f huv
-    have reassoced {W : C} (h : coequalizer u v ⟶  W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by
+    have reassoced {W : C} (h : coequalizer u v ⟶ W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hw]
     have hwf : w ≫ f = 0 := by rw [← hm, reassoced, zero_comp]
     obtain ⟨n, hn⟩ := KernelFork.IsLimit.lift' l _ hwf

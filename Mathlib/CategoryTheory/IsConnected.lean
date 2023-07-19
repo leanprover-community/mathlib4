@@ -108,7 +108,7 @@ The converse of `any_functor_const_on_obj`.
 -/
 theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
-  { iso_constant := fun  F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩ }
+  { iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩ }
 #align category_theory.is_connected.of_any_functor_const_on_obj CategoryTheory.IsConnected.of_any_functor_const_on_obj
 
 /-- If `J` is connected, then given any function `F` such that the presence of a
@@ -152,7 +152,7 @@ The converse is given in `IsConnected.of_induct`.
 -/
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
-  let aux (j₁ j₂ : J) (f : j₁ ⟶  j₂) := congrArg ULift.up <| (h1 f).to_eq
+  let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up <| (h1 f).to_eq
   injection constant_of_preserves_morphisms (fun k => ULift.up (k ∈ p)) aux j j₀ with i
   rwa [i]
 #align category_theory.induct_on_objects CategoryTheory.induct_on_objects

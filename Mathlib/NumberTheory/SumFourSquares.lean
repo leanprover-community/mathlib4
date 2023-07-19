@@ -60,7 +60,7 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
     calc
       2 * 2 * m = (x - y) ^ 2 + (x + y) ^ 2 := by rw [mul_assoc, h]; ring
       _ = (2 * ((x - y) / 2)) ^ 2 + (2 * ((x + y) / 2)) ^ 2 := by
-        rw [even_iff_two_dvd] at hxsuby hxaddy 
+        rw [even_iff_two_dvd] at hxsuby hxaddy
         rw [Int.mul_ediv_cancel' hxsuby, Int.mul_ediv_cancel' hxaddy]
       _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
@@ -89,7 +89,7 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   rcases Int.modEq_iff_dvd.1 hab.symm with ⟨k, hk⟩
   rw [sub_neg_eq_add, mul_comm] at hk
   have hk₀ : 0 < k
-  · refine pos_of_mul_pos_left  ?_ (Nat.cast_nonneg p)
+  · refine pos_of_mul_pos_left ?_ (Nat.cast_nonneg p)
     rw [← hk]
     positivity
   lift k to ℕ using hk₀.le
@@ -237,7 +237,7 @@ theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + 
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
     exact ⟨_, _, _, _, euler_four_squares _ _ _ _ _ _ _ _⟩
-  
+
 #align nat.sum_four_squares Nat.sum_four_squares
 
 end Nat
