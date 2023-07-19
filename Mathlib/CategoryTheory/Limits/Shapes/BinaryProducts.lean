@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.binary_products
-! leanprover-community/mathlib commit fec1d95fc61c750c1ddbb5b1f7f48b8e811a80d7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Over
+
+#align_import category_theory.limits.shapes.binary_products from "leanprover-community/mathlib"@"fec1d95fc61c750c1ddbb5b1f7f48b8e811a80d7"
 
 /-!
 # Binary (co)products

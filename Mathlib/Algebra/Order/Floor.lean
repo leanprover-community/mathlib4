@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.order.floor
-! leanprover-community/mathlib commit afdb43429311b885a7988ea15d0bac2aac80f69c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Data.Int.Lemmas
@@ -17,6 +12,8 @@ import Mathlib.Init.Meta.WellFoundedTactics
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.floor from "leanprover-community/mathlib"@"afdb43429311b885a7988ea15d0bac2aac80f69c"
 
 /-!
 # Floor and ceil
