@@ -41,7 +41,7 @@ variable {F α β A B M N P Q G H : Type _}
   "Make a `ZeroHom` inverse from the bijective inverse of a `ZeroHom`"] 
 def OneHom.inverse [One M] [One N] 
     (f : OneHom M N) (g : N → M) 
-    (h₁ : Function.LeftInverse g f) (_ : Function.RightInverse g f) : 
+    (h₁ : Function.LeftInverse g f) : 
   OneHom N M := 
   { toFun := g,
     map_one' := by rw [← f.map_one, h₁] }
@@ -66,7 +66,7 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
   "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
 def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
     (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
-  { (f : OneHom A B).inverse g h₁ h₂,
+  { (f : OneHom A B).inverse g h₁,
     (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g } 
 #align monoid_hom.inverse MonoidHom.inverse
 #align add_monoid_hom.inverse AddMonoidHom.inverse
