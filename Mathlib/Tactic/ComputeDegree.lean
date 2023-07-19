@@ -232,9 +232,9 @@ The optional `db` flag is for debugging: if `db = true`, then the tactic prints 
 -/
 -- the tactic should not really fail when the inputs are as specified.
 partial
-def cDegCore (polMV : DegInfo × MVarId) (π : Name × Name → Name) (db : Bool := false) :
+def cDegCore (diMV : DegInfo × MVarId) (π : Name × Name → Name) (db : Bool := false) :
     MetaM (List (Expr × MVarId)) := do
-let (di, mv) := polMV
+let (di, mv) := diMV
 let na := π di.toLemmas
 if na.isAnonymous then throwError m!"'compute_degree_le' is undefined for '{di.getErr?.get!}'"
 let once := di.getArgs.zip (← mv.applyConst na)
