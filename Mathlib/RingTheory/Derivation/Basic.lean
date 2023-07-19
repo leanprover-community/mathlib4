@@ -2,13 +2,10 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.derivation.basic
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import ring_theory.derivation.basic from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
 /-!
 # Derivations
@@ -22,10 +19,10 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 - `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
-See `ring_theory.derivation.lie` for
+See `RingTheory.Derivation.Lie` for
 - `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
 
-and `ring_theory.derivation.to_square_zero` for
+and `RingTheory.Derivation.ToSquareZero` for
 - `derivation_to_square_zero_equiv_lift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 

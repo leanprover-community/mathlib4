@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.discrete_valuation_ring.tfae
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Nakayama
+
+#align_import ring_theory.discrete_valuation_ring.tfae from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 

@@ -2,17 +2,14 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.group.opposite
-! leanprover-community/mathlib commit 0372d31fb681ef40a687506bc5870fd55ebc8bb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Commute
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
+
+#align_import algebra.group.opposite from "leanprover-community/mathlib"@"0372d31fb681ef40a687506bc5870fd55ebc8bb9"
 
 /-!
 # Group structures on the multiplicative and additive opposites
@@ -576,7 +573,7 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
 /-- An additive homomorphism `M →+ N` can equivalently be viewed as an additive homomorphism
 `Mᵐᵒᵖ →+ Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps]
-def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ (Mᵐᵒᵖ →+  Nᵐᵒᵖ) where
+def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ (Mᵐᵒᵖ →+ Nᵐᵒᵖ) where
   toFun f :=
     { toFun := MulOpposite.op ∘ f ∘ MulOpposite.unop, map_zero' := unop_injective f.map_zero,
       map_add' := fun x y => unop_injective (f.map_add x.unop y.unop) }

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
-
-! This file was ported from Lean 3 source module data.finsupp.fin
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+
+#align_import data.finsupp.fin from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
@@ -64,7 +61,7 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
   ext a
   by_cases c_a : a = 0
   · rw [c_a, cons_zero]
-  · rw [← Fin.succ_pred a c_a, cons_succ, ← tail_apply]
+  · rw [← Fin.succ_pred a (Fin.vne_of_ne c_a), cons_succ, ← tail_apply]
 #align finsupp.cons_tail Finsupp.cons_tail
 
 @[simp]
@@ -72,7 +69,7 @@ theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
   ext a
   by_cases c : a = 0
   · simp [c]
-  · rw [← Fin.succ_pred a c, cons_succ]
+  · rw [← Fin.succ_pred a (Fin.vne_of_ne c), cons_succ]
     simp
 #align finsupp.cons_zero_zero Finsupp.cons_zero_zero
 

@@ -2,11 +2,6 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.schwartz_space
-! leanprover-community/mathlib commit e137999b2c6f2be388f4cd3bbf8523de1910cd2b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Analysis.Calculus.IteratedDeriv
@@ -15,6 +10,8 @@ import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+#align_import analysis.schwartz_space from "leanprover-community/mathlib"@"e137999b2c6f2be388f4cd3bbf8523de1910cd2b"
 
 /-!
 # Schwartz space
@@ -949,7 +946,7 @@ theorem iteratedPDeriv_succ_right {n : ℕ} (m : Fin (n + 1) → E) (f : 𝓢(E,
   · rw [iteratedPDeriv_zero, iteratedPDeriv_one]
     rfl
   -- The proof is `∂^{n + 2} = ∂ ∂^{n + 1} = ∂ ∂^n ∂ = ∂^{n+1} ∂`
-  have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSuccEmb_zero]
+  have hmzero : Fin.init m 0 = m 0 := by simp only [Fin.init_def, Fin.castSucc_zero]
   have hmtail : Fin.tail m (Fin.last n) = m (Fin.last n.succ) := by
     simp only [Fin.tail_def, Fin.succ_last]
   -- Porting note: changed to `calc` proof
