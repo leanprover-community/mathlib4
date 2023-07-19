@@ -4,11 +4,11 @@ open Polynomial
 
 section native_mathlib4_tests
 
-variable {n : Nat} {z : Int} {f : Int[X]} (hn : natDegree f ≤ 5) (hd : degree f ≤ 5)
+variable {n : ℕ} {z : ℤ} {f : ℤ[X]} (hn : natDegree f ≤ 5) (hd : degree f ≤ 5)
 
 /--  This example flows through all the matches in `direct` with a `natDegree` goal. -/
 example : natDegree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
-    NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
+    NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X]) + f) ≤ 5 := by
   compute_degree_le!
 
 example [Semiring R] : natDegree (OfNat.ofNat (OfNat.ofNat 0) : R[X]) ≤ 0 := by
@@ -16,41 +16,41 @@ example [Semiring R] : natDegree (OfNat.ofNat (OfNat.ofNat 0) : R[X]) ≤ 0 := b
 
 /--  This example flows through all the matches in `direct` with a `degree` goal. -/
 example : degree (- C z * X ^ 5 + (monomial 2 5) ^ 2 - 0 + 1 + IntCast.intCast 1 +
-    NatCast.natCast 1 + (z : Int[X]) + (n : Int[X]) + f) ≤ 5 := by
+    NatCast.natCast 1 + (z : ℤ[X]) + (n : ℤ[X]) + f) ≤ 5 := by
   set k := f with _h₀
   compute_degree_le!
 
-example {N : WithBot Nat} (nN : n ≤ N) : degree (- C z * X ^ n) ≤ N := by
+example {N : WithBot ℕ} (nN : n ≤ N) : degree (- C z * X ^ n) ≤ N := by
   compute_degree_le!
 
 /-!  The following examples exhaust all the match-leaves in `direct`. -/
 
 --  OfNat.ofNat 0
-example : natDegree (0 : Int[X]) ≤ 5 := by
+example : natDegree (0 : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  OfNat.ofNat (non-zero)
-example : natDegree (1 : Int[X]) ≤ 5 := by
+example : natDegree (1 : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  NatCast.natCast
-example : natDegree (NatCast.natCast 4 : Int[X]) ≤ 5 := by
+example : natDegree (NatCast.natCast 4 : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  Nat.cast
-example : natDegree (n : Int[X]) ≤ 5 := by
+example : natDegree (n : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  IntCast.intCast
-example : natDegree (IntCast.intCast 4 : Int[X]) ≤ 5 := by
+example : natDegree (IntCast.intCast 4 : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  Int.cast
-example : natDegree (z : Int[X]) ≤ 5 := by
+example : natDegree (z : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  Polynomial.X
-example : natDegree (X : Int[X]) ≤ 5 := by
+example : natDegree (X : ℤ[X]) ≤ 5 := by
   compute_degree_le!
 
 --  Polynomial.C
@@ -62,7 +62,7 @@ example (h : n ≤ 5) : natDegree (monomial n (5 + n)) ≤ 5 := by
   compute_degree_le!
 
 --  Expr.fvar
-example {f : Nat[X]} : natDegree f ≤ natDegree f := by
+example {f : ℕ[X]} : natDegree f ≤ natDegree f := by
   compute_degree_le
 
 variable [Ring R]
@@ -156,10 +156,10 @@ example : natDegree (2 : R[X]) ≤ 0 := by
 example : natDegree ((n : Nat) : R[X]) ≤ 0 := by
   compute_degree_le
 
-example {R} [Ring R] {n : Int} : natDegree ((n : Int) : R[X]) ≤ 0 := by
+example {R} [Ring R] {n : ℤ} : natDegree ((n : ℤ) : R[X]) ≤ 0 := by
   compute_degree_le
 
-example {R} [Ring R] {n : Nat} : natDegree ((- n : Int) : R[X]) ≤ 0 := by
+example {R} [Ring R] {n : ℕ} : natDegree ((- n : ℤ) : R[X]) ≤ 0 := by
   compute_degree_le
 
 example : natDegree (monomial 5 c * monomial 1 c + monomial 7 d +
@@ -179,10 +179,10 @@ example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by
   compute_degree_le
 
-example : degree ((X : Int[X]) ^ 4) ≤ 4 := by
+example : degree ((X : ℤ[X]) ^ 4) ≤ 4 := by
   compute_degree_le
 
-example : natDegree ((X : Int[X]) ^ 4) ≤ 40 := by
+example : natDegree ((X : ℤ[X]) ^ 4) ≤ 40 := by
   compute_degree_le!
 
 example : natDegree (C a * C b + X + monomial 3 4 * X) ≤ 4 := by
