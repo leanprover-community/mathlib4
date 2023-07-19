@@ -2193,6 +2193,7 @@ import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Matrix.SVD.ColumnRowBlocks
+import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
