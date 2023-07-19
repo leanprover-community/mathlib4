@@ -26,8 +26,9 @@ coefficients.
   `n/p + ... + n/p^b` for any `b` such that `n/p^(b + 1) = 0`.
 * `Nat.Prime.multiplicity_factorial_mul`: The multiplicity of `p` in `(p * n)!` is `n` more than
   that of `n!`.
-* `Nat.Prime.multiplicity_choose`: The multiplicity of `p` in `n.choose k` is the number of carries
-   when `k` and`n - k` are added in base `p`.
+* `Nat.Prime.multiplicity_choose`: Kummer's Theorem. The multiplicity of `p` in `n.choose k` is the
+   number of carries  when `k` and `n - k` are added in base `p`. See `padicValNat_choose` for the
+   same result but stated in the language of `p`-adic valuations.
 
 ## Other declarations
 
