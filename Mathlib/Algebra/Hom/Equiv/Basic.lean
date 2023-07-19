@@ -64,7 +64,7 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M)
 @[to_additive (attr := simps) 
   "The inverse of a bijective `AddMonoidHom` is an `AddMonoidHom`."]
 def MonoidHom.inverse {A B : Type _} [Monoid A] [Monoid B] (f : A →* B) (g : B → A)
-  (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : B →* A :=
   { (f : OneHom A B).inverse g h₁ h₂,
     (f : A →ₙ* B).inverse g h₁ h₂ with toFun := g } 
 #align monoid_hom.inverse MonoidHom.inverse
