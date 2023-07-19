@@ -19,7 +19,8 @@ We prove results about the group `(𝓞 K)ˣ` of units of the ring of integers `
 field `K`.
 
 ## Main results
-* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`
+* `isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if `|norm ℚ x| = 1`.
+* `mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite places of `K`.
 
 ## Tags
 number field, units
