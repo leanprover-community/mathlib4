@@ -66,6 +66,32 @@ theorem rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg {b : ℝ} (hb : 0 < b) (s : �
   simpa only [mul_comm] using Gamma_integrand_isLittleO s
 #align rpow_mul_exp_neg_mul_sq_is_o_exp_neg rpow_mul_exp_neg_mul_sq_isLittleO_exp_neg
 
+theorem integrableOn_fun_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {f : ℝ → ℝ}
+    (hf : Continuous f) {s : ℝ} (hfs : f =O[atTop] fun x : ℝ => x ^ s) :
+    IntegrableOn (fun x : ℝ => f x * exp (-b * x ^ 2)) (Ioi 0) := by
+  have h := fun {c} => continuous_exp.comp ((continuous_const (b := c)).mul (continuous_pow 2))
+  rw [← Ioc_union_Ioi_eq_Ioi zero_le_one, integrableOn_union]; constructor
+  · rw [← integrableOn_Icc_iff_integrableOn_Ioc]
+    exact (Continuous.continuousOn hf).integrableOn_Icc.mul_continuousOn
+      (Continuous.continuousOn h) isCompact_Icc
+  · have B : (0 : ℝ) < 1 / 2 := by norm_num
+    apply integrable_of_isBigO_exp_neg B (Continuous.continuousOn (Continuous.mul hf h))
+    refine' ((hfs.mul_isLittleO (exp_neg_mul_sq_isLittleO_exp_neg hb)).trans _).isBigO
+    convert Gamma_integrand_isLittleO s using 2; exact mul_comm ..
+
+theorem integrable_fun_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {f : ℝ → ℝ} (hf : Continuous f)
+    {s : ℝ} (hfs : f =O[atTop] fun x : ℝ => x ^ s)
+    (hfs' : (fun x => f (-x)) =O[atTop] fun x : ℝ => x ^ s) :
+    Integrable fun x : ℝ => f x * exp (-b * x ^ 2) := by
+  rw [←integrableOn_univ, ←Iio_union_Ici, integrableOn_union,
+    integrableOn_Ici_iff_integrableOn_Ioi]
+  refine' ⟨_, integrableOn_fun_mul_exp_neg_mul_sq hb hf hfs⟩
+  rw [←MeasureTheory.MeasurePreserving.integrableOn_comp_preimage
+    (Measure.measurePreserving_neg volume)
+    ((Homeomorph.neg ℝ).toMeasurableEquiv.measurableEmbedding)]
+  simp_rw [Function.comp, neg_sq, neg_preimage, preimage_neg_Iio, neg_zero]
+  exact integrableOn_fun_mul_exp_neg_mul_sq hb (Continuous.comp hf continuous_id'.neg) hfs'
+
 theorem integrableOn_rpow_mul_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) {s : ℝ} (hs : -1 < s) :
     IntegrableOn (fun x : ℝ => x ^ s * exp (-b * x ^ 2)) (Ioi 0) := by
   rw [← Ioc_union_Ioi_eq_Ioi (zero_le_one : (0 : ℝ) ≤ 1), integrableOn_union]
