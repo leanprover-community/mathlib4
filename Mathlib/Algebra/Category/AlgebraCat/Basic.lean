@@ -16,9 +16,9 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 /-!
 # Category instance for algebras over a commutative ring
 
-We introduce the bundled category `Algebra` of algebras over a fixed commutative ring `R ` along
-with the forgetful functors to `Ring` and `Module`. We furthermore show that the functor associating
-to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
+We introduce the bundled category `AlgebraCat` of algebras over a fixed commutative ring `R ` along
+with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show that the functor
+associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
 
 set_option linter.uppercaseLean3 false
@@ -38,6 +38,12 @@ structure AlgebraCat where
   [isAlgebra : Algebra R carrier]
 #align Algebra AlgebraCat
 
+-- Porting note: typemax hack to fix universe complaints
+/-- An alias for `AlgebraCat.{max u₁ u₂}`, to deal around unification issues.
+Since the universe the ring lives in can be inferred, we put that last. -/
+@[nolint checkUnivs]
+abbrev AlgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
+
 attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
 
 initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
@@ -54,9 +60,8 @@ instance : Category (AlgebraCat.{v} R) where
   id A := AlgHom.id R A
   comp f g := g.comp f
 
--- simplifies definitions below
-instance {S T : AlgebraCat.{v} R} : FunLike (S ⟶ T) S (fun _ => T) :=
-  ⟨fun f => f.toFun, fun _ _ h => AlgHom.ext (congr_fun h)⟩
+instance {M N : AlgebraCat.{v} R} : AlgHomClass (M ⟶ N) R M N :=
+  AlgHom.algHomClass
 
 instance : ConcreteCategory.{v} (AlgebraCat.{v} R) where
   forget :=
@@ -88,7 +93,7 @@ def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
 #align Algebra.of AlgebraCat.of
 
-/-- Typecheck a `alg_hom` as a morphism in `Algebra R`. -/
+/-- Typecheck a `AlgHom` as a morphism in `AlgebraCat R`. -/
 def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
     (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
   f
@@ -184,7 +189,7 @@ variable {R}
 
 variable {X₁ X₂ : Type u}
 
-/-- Build an isomorphism in the category `Algebra R` from a `alg_equiv` between `algebra`s. -/
+/-- Build an isomorphism in the category `AlgebraCat R` from a `AlgEquiv` between `Algebra`s. -/
 @[simps]
 def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra R X₁} {m₂ : Algebra R X₂}
     (e : X₁ ≃ₐ[R] X₂) : AlgebraCat.of R X₁ ≅ AlgebraCat.of R X₂ where
@@ -196,7 +201,7 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
 
 namespace CategoryTheory.Iso
 
-/-- Build a `alg_equiv` from an isomorphism in the category `Algebra R`. -/
+/-- Build a `AlgEquiv` from an isomorphism in the category `AlgebraCat R`. -/
 @[simps]
 def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
   toFun := i.hom
@@ -218,8 +223,8 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y where
 
 end CategoryTheory.Iso
 
-/-- Algebra equivalences between `algebras`s are the same as (isomorphic to) isomorphisms in
-`Algebra`. -/
+/-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
+`AlgebraCat`. -/
 @[simps]
 def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ AlgebraCat.of R X ≅ AlgebraCat.of R Y where
@@ -233,7 +238,7 @@ instance (X : Type u) [Ring X] [Algebra R X] : CoeOut (Subalgebra R X) (AlgebraC
 
 instance AlgebraCat.forget_reflects_isos : ReflectsIsomorphisms (forget (AlgebraCat.{u} R)) where
   reflects {X Y} f _ := by
-    { let i := asIso ((forget (AlgebraCat.{u} R)).map f)
-      let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
-      exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩ }
+    let i := asIso ((forget (AlgebraCat.{u} R)).map f)
+    let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
+    exact ⟨(IsIso.of_iso e.toAlgebraIso).1⟩
 #align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos

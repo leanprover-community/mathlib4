@@ -792,23 +792,23 @@ Note: This is related to `CategoryTheory.Presheaf.conesEquivSieveCompatibleFamil
  -/
 
 def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElements (yoneda.obj W) R)
-  (hx : FamilyOfElements.Compatible x) :
-     Cocone (R.diagram)  where
+    (hx : FamilyOfElements.Compatible x) :
+    Cocone (R.diagram) where
   pt := W
-  ι  := {
-    app := fun f => x f.obj.hom f.property
-    naturality := by
-      intro g₁ g₂ F
-      simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
+  ι :=
+    { app := fun f => x f.obj.hom f.property
+      naturality := by
+        intro g₁ g₂ F
+        simp only [Functor.id_obj, Functor.comp_obj, fullSubcategoryInclusion.obj, Over.forget_obj,
           Functor.const_obj_obj, Functor.comp_map, fullSubcategoryInclusion.map, Over.forget_map,
           Functor.const_obj_map, Category.comp_id]
-      rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
-      apply hx
-      simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp]
-  }
+        rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
+        apply hx
+        simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
 
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :
-      FamilyOfElements (yoneda.obj s.pt) R := fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
+    FamilyOfElements (yoneda.obj s.pt) R :=
+  fun _ f hf => s.ι.app ⟨Over.mk f, hf⟩
 
 end Presieve
 
@@ -845,21 +845,21 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
   constructor
   · intro H
     refine Nonempty.intro ?_
-    exact {
-    desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+    exact
+    { desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
         (yonedaFamily_fromCocone_compatible S s) |>.choose
-    fac := by
-      intro s f
-      replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
-         (yonedaFamily_fromCocone_compatible S s)
-      have ht := H.choose_spec.1 f.obj.hom f.property
-      aesop_cat
-    uniq := by
-      intro s Fs HFs
-      replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+      fac := by
+        intro s f
+        replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
           (yonedaFamily_fromCocone_compatible S s)
-      apply H.choose_spec.2 Fs
-      exact fun _ f hf => HFs ⟨Over.mk f, hf⟩  }
+        have ht := H.choose_spec.1 f.obj.hom f.property
+        aesop_cat
+      uniq := by
+        intro s Fs HFs
+        replace H := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+          (yonedaFamily_fromCocone_compatible S s)
+        apply H.choose_spec.2 Fs
+        exact fun _ f hf => HFs ⟨Over.mk f, hf⟩ }
   · intro H W x hx
     replace H := Classical.choice H
     let s := compatibleYonedaFamily_toCocone S W x hx
@@ -892,7 +892,7 @@ variable {P R}
 lemma FirstObj.ext (z₁ z₂ : FirstObj P R) (h : ∀ (Y : C) (f : Y ⟶ X)
     (hf : R f), (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₁ =
       (Pi.π _ ⟨Y, f, hf⟩ : FirstObj P R ⟶  _) z₂) : z₁ = z₂ := by
-  apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+  apply Limits.Types.limit_ext
   rintro ⟨⟨Y, f, hf⟩⟩
   exact h Y f hf
 
@@ -942,7 +942,7 @@ variable {P S}
 lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y) (f : Y ⟶ X)
     (hf : S.arrows f), (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₁ =
       (Pi.π _ ⟨Y, Z, g, f, hf⟩ : SecondObj P S ⟶  _) z₂) : z₁ = z₂ := by
-  apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+  apply Limits.Types.limit_ext
   rintro ⟨⟨Y, Z, g, f, hf⟩⟩
   apply h
 
@@ -1057,7 +1057,7 @@ theorem compatible_iff (x : FirstObj P R) :
   rw [Presieve.pullbackCompatible_iff]
   constructor
   · intro t
-    apply Limits.Types.limit_ext.{max u₁ v₁, u₁}
+    apply Limits.Types.limit_ext
     rintro ⟨⟨Y, f, hf⟩, Z, g, hg⟩
     simpa [firstMap, secondMap] using t hf hg
   · intro t Y Z f g hf hg

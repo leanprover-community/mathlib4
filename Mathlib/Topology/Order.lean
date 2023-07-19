@@ -248,6 +248,9 @@ theorem IsClosed.mono (hs : IsClosed[t₂] s) (h : t₁ ≤ t₂) : IsClosed[t�
   (@isOpen_compl_iff α t₁ s).mp <| hs.isOpen_compl.mono h
 #align is_closed.mono IsClosed.mono
 
+theorem closure.mono (h : t₁ ≤ t₂) : closure[t₁] s ⊆ closure[t₂] s :=
+  @closure_minimal _ t₁ s (@closure _ t₂ s) subset_closure (IsClosed.mono isClosed_closure h)
+
 theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) ↔ t₂ ≤ t₁ :=
   Iff.rfl
 #align is_open_implies_is_open_iff isOpen_implies_isOpen_iff
@@ -276,19 +279,27 @@ theorem discreteTopology_bot (α : Type _) : @DiscreteTopology α ⊥ :=
   @DiscreteTopology.mk α ⊥ rfl
 #align discrete_topology_bot discreteTopology_bot
 
+section DiscreteTopology
+
+variable [TopologicalSpace α] [DiscreteTopology α]
+
 @[simp]
-theorem isOpen_discrete [TopologicalSpace α] [DiscreteTopology α] (s : Set α) : IsOpen s :=
-  (@DiscreteTopology.eq_bot α _).symm ▸ trivial
+theorem isOpen_discrete (s : Set α) : IsOpen s := (@DiscreteTopology.eq_bot α _).symm ▸ trivial
 #align is_open_discrete isOpen_discrete
 
-@[simp]
-theorem isClosed_discrete [TopologicalSpace α] [DiscreteTopology α] (s : Set α) : IsClosed s :=
-  ⟨isOpen_discrete _⟩
+@[simp] theorem isClosed_discrete (s : Set α) : IsClosed s := ⟨isOpen_discrete _⟩
 #align is_closed_discrete isClosed_discrete
 
+@[simp] theorem closure_discrete (s : Set α) : closure s = s := (isClosed_discrete _).closure_eq
+
+@[simp] theorem dense_discrete {s : Set α} : Dense s ↔ s = univ := by simp [dense_iff_closure_eq]
+
+@[simp]
+theorem denseRange_discrete {f : ι → α} : DenseRange f ↔ Surjective f := by
+  rw [DenseRange, dense_discrete, range_iff_surjective]
+
 @[nontriviality, continuity]
-theorem continuous_of_discreteTopology [TopologicalSpace α] [DiscreteTopology α]
-    [TopologicalSpace β] {f : α → β} : Continuous f :=
+theorem continuous_of_discreteTopology [TopologicalSpace β] {f : α → β} : Continuous f :=
   continuous_def.2 fun _ _ => isOpen_discrete _
 #align continuous_of_discrete_topology continuous_of_discreteTopology
 
@@ -297,9 +308,11 @@ theorem nhds_discrete (α : Type _) [TopologicalSpace α] [DiscreteTopology α] 
   le_antisymm (fun _ s hs => (isOpen_discrete s).mem_nhds hs) pure_le_nhds
 #align nhds_discrete nhds_discrete
 
-theorem mem_nhds_discrete [TopologicalSpace α] [DiscreteTopology α] {x : α} {s : Set α} :
+theorem mem_nhds_discrete {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ x ∈ s := by rw [nhds_discrete, mem_pure]
 #align mem_nhds_discrete mem_nhds_discrete
+
+end DiscreteTopology
 
 theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
   rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds α t₂]
@@ -319,6 +332,11 @@ theorem forall_open_iff_discrete {X : Type _} [TopologicalSpace X] :
     (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
   ⟨fun h => ⟨eq_bot_of_singletons_open fun _ => h _⟩, @isOpen_discrete _ _⟩
 #align forall_open_iff_discrete forall_open_iff_discrete
+
+theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
+    DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
+  forall_open_iff_discrete.symm.trans <| compl_surjective.forall.trans <| forall_congr' fun _ ↦
+    isOpen_compl_iff
 
 theorem singletons_open_iff_discrete {X : Type _} [TopologicalSpace X] :
     (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=

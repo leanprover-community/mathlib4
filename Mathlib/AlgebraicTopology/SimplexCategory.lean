@@ -203,7 +203,7 @@ one given by the following generators and relations.
 
 /-- The `i`-th face map from `[n]` to `[n+1]` -/
 def δ {n} (i : Fin (n + 2)) : ([n] : SimplexCategory) ⟶ [n + 1] :=
-  mkHom (Fin.succAbove i).toOrderHom
+  mkHom (Fin.succAboveEmb i).toOrderHom
 #align simplex_category.δ SimplexCategory.δ
 
 /-- The `i`-th degeneracy map from `[n+1]` to `[n]` -/
@@ -227,7 +227,9 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 #align simplex_category.δ_comp_δ SimplexCategory.δ_comp_δ
 
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
-    δ i ≫ δ j = δ (j.pred fun hj => by simp [hj, Fin.not_lt_zero] at H) ≫ δ (Fin.castSucc i) := by
+    δ i ≫ δ j =
+      δ (j.pred <| Fin.vne_of_ne fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) ≫
+        δ (Fin.castSucc i) := by
   rw [← δ_comp_δ]
   · rw [Fin.succ_pred]
   · simpa only [Fin.le_iff_val_le_val, ← Nat.lt_succ_iff, Nat.succ_eq_add_one, ← Fin.val_succ,
@@ -326,7 +328,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     δ i ≫ σ j = σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-      δ (i.pred fun hi => by simp only [Fin.not_lt_zero, hi] at H) := by
+      δ (i.pred <| Fin.vne_of_ne fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
   rw [← δ_comp_σ_of_gt]
   · simp
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
@@ -610,7 +612,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     · rwa [eq, ← Fin.le_castSucc_iff]
     rw [eq]
   · simp only [not_le] at h'
-    let y := x.pred (by rintro rfl; simp at h')
+    let y := x.pred <| Fin.vne_of_ne (by rintro (rfl : x = 0); simp at h')
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
     rw [Fin.predAbove_above i y.succ h', Fin.pred_succ]

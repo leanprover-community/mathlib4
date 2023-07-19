@@ -151,7 +151,7 @@ instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarT
 
 instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
     SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  AddMonoidAlgebra.sMulCommClass_self _
+  AddMonoidAlgebra.smulCommClass_self _
 #align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
@@ -1156,6 +1156,15 @@ theorem eval_X : ∀ n, eval f (X n) = f n :=
 theorem smul_eval (x) (p : MvPolynomial σ R) (s) : eval x (s • p) = s * eval x p := by
   rw [smul_eq_C_mul, (eval x).map_mul, eval_C]
 #align mv_polynomial.smul_eval MvPolynomial.smul_eval
+
+theorem eval_add : eval f (p + q) = eval f p + eval f q :=
+  eval₂_add _ _
+
+theorem eval_mul : eval f (p * q) = eval f p * eval f q :=
+  eval₂_mul _ _
+
+theorem eval_pow : ∀ n, eval f (p ^ n) = eval f p ^ n :=
+  fun _ => eval₂_pow _ _
 
 theorem eval_sum {ι : Type _} (s : Finset ι) (f : ι → MvPolynomial σ R) (g : σ → R) :
     eval g (∑ i in s, f i) = ∑ i in s, eval g (f i) :=

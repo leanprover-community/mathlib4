@@ -247,8 +247,8 @@ theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
   run_tac do
     for i in [317, 163, 83, 43, 23, 13, 7, 5, 3, 2] do
       let i : Term := quote i
-      evalTactic
-        (← `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num) (by norm_num) _))
+      evalTactic <| ←
+        `(tactic| refine' exists_prime_lt_and_le_two_mul_succ $i (by norm_num1) (by norm_num1) _)
   exact fun h2 => ⟨2, prime_two, h2, Nat.mul_le_mul_left 2 (Nat.pos_of_ne_zero hn0)⟩
 #align nat.exists_prime_lt_and_le_two_mul Nat.exists_prime_lt_and_le_two_mul
 

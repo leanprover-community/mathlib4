@@ -89,8 +89,8 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
   by_cases h : j = 0
   · rw [h]
     simp [Ne.symm (succ_ne_zero i)]
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
+  · let j' := pred j (Fin.vne_of_ne h)
+    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
     rw [← this, cons_succ]
     by_cases h' : j' = i
     · rw [h']
@@ -126,8 +126,8 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   · rw [h]
     simp
   · simp only [h, update_noteq, Ne.def, not_false_iff]
-    let j' := pred j h
-    have : j'.succ = j := succ_pred j h
+    let j' := pred j (Fin.vne_of_ne h)
+    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
     rw [← this, cons_succ, cons_succ]
 #align fin.update_cons_zero Fin.update_cons_zero
 
@@ -138,8 +138,8 @@ theorem cons_self_tail : cons (q 0) (tail q) = q := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
+  · let j' := pred j (Fin.vne_of_ne h)
+    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
     rw [← this]
     unfold tail
     rw [cons_succ]
@@ -239,8 +239,8 @@ theorem comp_cons {α : Type _} {β : Type _} (g : α → β) (y : α) (q : Fin 
   by_cases h : j = 0
   · rw [h]
     rfl
-  · let j' := pred j h
-    have : j'.succ = j := succ_pred j h
+  · let j' := pred j (Fin.vne_of_ne h)
+    have : j'.succ = j := succ_pred j (Fin.vne_of_ne h)
     rw [← this, cons_succ, comp, comp, cons_succ]
 #align fin.comp_cons Fin.comp_cons
 
@@ -427,7 +427,8 @@ inductively from `Fin n` starting from the left, not from the right. This implie
 more help to realize that elements belong to the right types, i.e., we need to insert casts at
 several places. -/
 
--- Porting note: `i.castSucc` does not work like it did in Lean 3; `(castSucc i)` must be used.
+-- Porting note: `i.castSucc` does not work like it did in Lean 3;
+-- `(castSucc i)` must be used.
 variable {α : Fin (n + 1) → Type u} (x : α (last n)) (q : ∀ i, α i)
   (p : ∀ i : Fin n, α (castSucc i)) (i : Fin n) (y : α (castSucc i)) (z : α (last n))
 
@@ -566,7 +567,7 @@ theorem init_update_castSucc : init (update q (castSucc i) y) = update (init q) 
   by_cases h : j = i
   · rw [h]
     simp [init]
-  · simp [init, h]
+  · simp [init, h, castSucc_inj]
 #align fin.init_update_cast_succ Fin.init_update_castSucc
 
 /-- `tail` and `init` commute. We state this lemma in a non-dependent setting, as otherwise it
@@ -586,7 +587,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
   · rw [h]
     -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
     simp [snoc, castLT]
-  set j := pred i h with ji
+  set j := pred i (Fin.vne_of_ne h) with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
   by_cases h' : j.val < n
@@ -594,6 +595,7 @@ theorem cons_snoc_eq_snoc_cons {β : Type _} (a : β) (q : Fin n → β) (b : β
     have : j = castSucc k := by rw [jk, castSucc_castLT]
     rw [this, ← castSucc_fin_succ, snoc]
     simp [pred, snoc, cons]
+    rfl
   rw [eq_last_of_not_lt h', succ_last]
   simp
 #align fin.cons_snoc_eq_snoc_cons Fin.cons_snoc_eq_snoc_cons
@@ -675,7 +677,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
     rw [castLT_succAbove hlt] at hk; cases hk
     intro; rfl
   · generalize_proofs H₁ H₂; revert H₂
-    generalize hk : pred ((succAbove i).toEmbedding j) H₁ = k
+    generalize hk : pred ((succAboveEmb i).toEmbedding j) H₁ = k
     erw [pred_succAbove (le_of_not_lt hlt)] at hk; cases hk
     intro; rfl
 #align fin.insert_nth_apply_succ_above Fin.insertNth_apply_succAbove
