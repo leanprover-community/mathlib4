@@ -50,7 +50,7 @@ attribute [local instance] NumberField.ringOfIntegersAlgebra
 
 variable {K}
 
-theorem isUnit_iff_norm [NumberField K] (x : 𝓞 K) :
+theorem isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
@@ -58,7 +58,7 @@ theorem isUnit_iff_norm [NumberField K] (x : 𝓞 K) :
 
 end IsUnit
 
-namespace NumberField.units
+namespace NumberField.Units
 
 section coe
 
@@ -67,6 +67,7 @@ def coe_to_field : (𝓞 K)ˣ →* K := (Units.coeHom K).comp (map (algebraMap (
 
 variable {K}
 
+/-- The coercion of `x : (𝓞 K)ˣ` into `K`. -/
 @[coe] def to_field (x : (𝓞 K)ˣ) : K := coe_to_field K x
 
 variable (K)
@@ -81,10 +82,16 @@ instance : Coe (𝓞 K)ˣ K := ⟨to_field⟩
 @[ext]
 theorem ext {x y : (𝓞 K)ˣ} (h : (x : K) = y) : x = y := (coe_to_field_injective K).eq_iff.mp h
 
+@[simp]
 theorem map_pow (x : (𝓞 K)ˣ) (n : ℕ) : (x ^ n : K) = (x : K) ^ n :=
   _root_.map_pow (coe_to_field K) x n
 
+@[simp]
 theorem map_one : ((1 : (𝓞 K)ˣ) : K) = 1 := rfl
+
+@[simp]
+theorem ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
+  Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
 
 end coe
 
@@ -103,7 +110,6 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
     rw [PNat.mk_coe, ← map_pow, h_eq, map_one]
   · obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
     exact ⟨n, hn, by ext; rwa [map_pow, map_one]⟩
-end torsion
 
 instance : Nonempty (torsion K) := ⟨1⟩
 
@@ -148,5 +154,7 @@ theorem rootsOfUnity_eq_torsion [NumberField K] :
   · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
     exact ⟨↑(torsion_order K), (torsion_order K).prop, h⟩
   · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ ⟨ζ, h⟩ _)
+
+end torsion
 
 end NumberField.units
