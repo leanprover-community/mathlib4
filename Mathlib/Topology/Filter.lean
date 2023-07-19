@@ -222,6 +222,11 @@ theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
   inducing_nhds.continuous
 #align filter.continuous_nhds Filter.continuous_nhds
 
+protected theorem tendsto_nhds_self [DiscreteTopology X] (l : Filter X) :
+    Tendsto (𝓝 : X → Filter X) l (𝓝 l) := by
+  rw [Filter.tendsto_nhds]
+  refine fun s hs ↦ Eventually.mono hs fun x ↦ mem_nhds_discrete.mpr
+
 protected theorem Tendsto.nhds {f : α → X} {l : Filter α} {x : X} (h : Tendsto f l (𝓝 x)) :
     Tendsto (𝓝 ∘ f) l (𝓝 (𝓝 x)) :=
   (continuous_nhds.tendsto _).comp h

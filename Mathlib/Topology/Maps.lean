@@ -541,6 +541,11 @@ theorem isClosedMap_iff_closure_image [TopologicalSpace α] [TopologicalSpace β
         _ = f '' c := by rw [hc.closure_eq]⟩
 #align is_closed_map_iff_closure_image isClosedMap_iff_closure_image
 
+theorem isClosedMap_iff_clusterPt [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
+    IsClosedMap f ↔ ∀ s y, MapClusterPt y (𝓟 s) f → ∃ x, f x = y ∧ ClusterPt x (𝓟 s) := by
+  simp [MapClusterPt, isClosedMap_iff_closure_image, subset_def, mem_closure_iff_clusterPt,
+    and_comm]
+
 section OpenEmbedding
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]

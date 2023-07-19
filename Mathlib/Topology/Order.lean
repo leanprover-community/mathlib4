@@ -314,6 +314,18 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 
 end DiscreteTopology
 
+section Discrete
+
+def Discrete (α : Type _) := α
+
+instance : TopologicalSpace (Discrete α) := ⊥
+instance : DiscreteTopology (Discrete α) := ⟨rfl⟩
+
+def Discrete.toDiscrete : α ≃ Discrete α := Equiv.refl α
+def Discrete.ofDiscrete : Discrete α ≃ α := Equiv.refl α
+
+end Discrete
+
 theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
   rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds α t₂]
   exact fun hs a ha => h _ (hs _ ha)
