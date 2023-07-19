@@ -35,6 +35,7 @@ We can push an element on to the queue or pop an element off.
 No guarantees about the order is implied
 (or indeed any relation between pushed and popped elements).
 -/
+-- If this proves useful elsewhere it can be moved up the import hierarchy.
 class Queue (α : outParam (Type u)) (Q : Type u) where
   empty : Q
   push : Q → α → Q
@@ -71,7 +72,7 @@ def rbMapQueue (α β : Type u) [Ord α] (bound : Option Nat := none) :
 
 variable {α : Type u} [Monad m] [Alternative m]
 
-open Std ListM Queue
+open ListM Queue
 
 /--
 Auxiliary function for `bestFirstSearch`, that updates the internal state,
