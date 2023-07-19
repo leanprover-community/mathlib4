@@ -222,14 +222,6 @@ if na.isAnonymous then throwError m!"'compute_degree_le' is undefined for '{di.g
 let once := di.getArgs.zip (← mv.applyConst na)
 return (← once.mapM fun x => cDegCore x π db).join
 
-/-- Allows the syntax expression `compute_degree_le ! -debug`, with `!` and `-debug` independently
-optional. -/
-syntax (name := computeDegreeLE) "compute_degree_le" "!"? "-debug"? : tactic
-
-/-- Allows writing `compute_degree_le!` with no space preceding `!`. -/
-macro "compute_degree_le!" dbg:"-debug"? : tactic => `(tactic| compute_degree_le ! $[-debug%$dbg]?)
-
-open Elab.Tactic in
 /--
 `compute_degree_le` is a tactic to solve goals of the form `natDegree f ≤ d` or `degree f ≤ d`.
 
@@ -245,6 +237,13 @@ Then it uses `norm_num` on the whole inequality `d' ≤ d` and tries `assumption
 There is also a "debug-mode", where the tactic prints some information.
 This is activated by using `compute_degree_le -debug` or `compute_degree_le! -debug`.
 -/
+syntax (name := computeDegreeLE) "compute_degree_le" "!"? "-debug"? : tactic
+
+@[inherit_doc computeDegreeLE]
+macro "compute_degree_le!" dbg:"-debug"? : tactic => `(tactic| compute_degree_le ! $[-debug%$dbg]?)
+
+open Elab.Tactic in
+
 elab_rules : tactic | `(tactic| compute_degree_le $[!%$str]? $[-debug%$debug]?) => focus do
   let (isNatDeg?, lhs) := ← isDegLE (← getMainTarget)
   let π := if isNatDeg? then Prod.fst else Prod.snd
