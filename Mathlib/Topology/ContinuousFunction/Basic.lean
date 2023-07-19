@@ -324,6 +324,12 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
 end Prod
 
+/-- `Sigma.mk i` as a bundled continuous map. -/
+@[simps apply]
+def sigmaMk {ι : Type _} {Y : ι → Type _} [∀ i, TopologicalSpace (Y i)] (i : ι) :
+    C(Y i, Σ i, Y i) where
+  toFun := Sigma.mk i
+
 section Pi
 
 variable {I A : Type _} {X Y : I → Type _} [TopologicalSpace A] [∀ i, TopologicalSpace (X i)]
@@ -395,7 +401,7 @@ variable {ι : Type _} (S : ι → Set α) (φ : ∀ i : ι, C(S i, β))
 of each point in `α` and the functions `φ i` agree pairwise on intersections, can be glued to
 construct a continuous map in `C(α, β)`. -/
 noncomputable def liftCover : C(α, β) :=
-  haveI H : (⋃ i, S i) = Set.univ :=
+  haveI H : ⋃ i, S i = Set.univ :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _  ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]

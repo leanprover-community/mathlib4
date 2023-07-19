@@ -8,7 +8,7 @@ Authors: Junyan Xu
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Data.Dfinsupp.WellFounded
+import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.Finsupp.Lex
 
 /-!
@@ -24,7 +24,7 @@ and `(· < ·)` is well-founded on `N`, then the lexicographic `(· < ·)` is we
 `Finsupp.wellFoundedLT` and `wellFoundedLT_of_finite` state the same results for the product
 order `(· < ·)`, but without the ordering conditions on `α`.
 
-All results are transferred from `Dfinsupp` via `Finsupp.toDfinsupp`.
+All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 -/
 
 
@@ -35,14 +35,14 @@ namespace Finsupp
 variable [Zero N] {r : α → α → Prop} {s : N → N → Prop} (hbot : ∀ ⦃n⦄, ¬s n 0)
   (hs : WellFounded s)
 
-/-- Transferred from `Dfinsupp.Lex.acc`. See the top of that file for an explanation for the
+/-- Transferred from `DFinsupp.Lex.acc`. See the top of that file for an explanation for the
   appearance of the relation `rᶜ ⊓ (≠)`. -/
 theorem Lex.acc (x : α →₀ N) (h : ∀ a ∈ x.support, Acc (rᶜ ⊓ (· ≠ ·)) a) :
     Acc (Finsupp.Lex r s) x := by
   rw [lex_eq_invImage_dfinsupp_lex]
   classical
-    refine' InvImage.accessible toDfinsupp (Dfinsupp.Lex.acc (fun _ => hbot) (fun _ => hs) _ _)
-    simpa only [toDfinsupp_support] using h
+    refine' InvImage.accessible toDFinsupp (DFinsupp.Lex.acc (fun _ => hbot) (fun _ => hs) _ _)
+    simpa only [toDFinsupp_support] using h
 #align finsupp.lex.acc Finsupp.Lex.acc
 
 theorem Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded (Finsupp.Lex r s) :=
@@ -52,7 +52,7 @@ theorem Lex.wellFounded (hr : WellFounded <| rᶜ ⊓ (· ≠ ·)) : WellFounded
 theorem Lex.wellFounded' [IsTrichotomous α r] (hr : WellFounded (Function.swap r)) :
     WellFounded (Finsupp.Lex r s) :=
   (lex_eq_invImage_dfinsupp_lex r s).symm ▸
-    InvImage.wf _ (Dfinsupp.Lex.wellFounded' (fun _ => hbot) (fun _ => hs) hr)
+    InvImage.wf _ (DFinsupp.Lex.wellFounded' (fun _ => hbot) (fun _ => hs) hr)
 #align finsupp.lex.well_founded' Finsupp.Lex.wellFounded'
 
 instance Lex.wellFoundedLT {α N} [LT α] [IsTrichotomous α (· < ·)] [hα : WellFoundedGT α]
@@ -74,7 +74,7 @@ theorem Lex.wellFoundedLT_of_finite [LinearOrder α] [Finite α] [Zero N] [LT N]
 
 protected theorem wellFoundedLT [Zero N] [Preorder N] [WellFoundedLT N] (hbot : ∀ n : N, ¬n < 0) :
     WellFoundedLT (α →₀ N) :=
-  ⟨InvImage.wf toDfinsupp (Dfinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
+  ⟨InvImage.wf toDFinsupp (DFinsupp.wellFoundedLT fun _ a => hbot a).wf⟩
 #align finsupp.well_founded_lt Finsupp.wellFoundedLT
 
 instance wellFoundedLT' {N} [CanonicallyOrderedAddMonoid N] [WellFoundedLT N] :

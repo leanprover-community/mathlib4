@@ -48,7 +48,7 @@ noncomputable def q2 : Seminorm ℝ (ℝ × ℝ) :=
 #align counterexample.seminorm_not_distrib.q2 Counterexample.SeminormNotDistrib.q2
 
 theorem eq_one : (p ⊔ q1 ⊓ q2) (1, 1) = 1 := by
-  suffices (⨅ x : ℝ × ℝ, q1 x + q2 (1 - x)) ≤ 1 by simpa
+  suffices ⨅ x : ℝ × ℝ, q1 x + q2 (1 - x) ≤ 1 by simpa
   apply ciInf_le_of_le bddBelow_range_add ((0, 1) : ℝ × ℝ); dsimp [q1, q2]
   simp only [abs_zero, smul_zero, sub_self, add_zero, zero_le_one]
 #align counterexample.seminorm_not_distrib.eq_one Counterexample.SeminormNotDistrib.eq_one

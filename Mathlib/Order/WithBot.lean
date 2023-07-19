@@ -218,7 +218,7 @@ instance orderBot : OrderBot (WithBot α) :=
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
-  le_top o a ha := by cases ha ; exact ⟨_, rfl, le_top⟩
+  le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
 instance [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
@@ -304,7 +304,7 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
   lt := (· < ·)
   lt_iff_le_not_le := by
     intros a b
-    cases a <;> cases b <;> simp [lt_iff_le_not_le] ; simp [LE.le, LT.lt]
+    cases a <;> cases b <;> simp [lt_iff_le_not_le]; simp [LE.le, LT.lt]
   le_refl o a ha := ⟨a, ha, le_rfl⟩
   le_trans o₁ o₂ o₃ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha
@@ -393,14 +393,14 @@ theorem unbot'_bot_le_iff [LE α] [OrderBot α] {a : WithBot α} {b : α} :
 theorem unbot'_lt_iff [LT α] {a : WithBot α} {b c : α} (ha : a ≠ ⊥) : a.unbot' b < c ↔ a < c := by
   cases a
   · exact (ha rfl).elim
-  . rw [some_eq_coe, unbot'_coe, coe_lt_coe]
+  · rw [some_eq_coe, unbot'_coe, coe_lt_coe]
 #align with_bot.unbot'_lt_iff WithBot.unbot'_lt_iff
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) :=
   { WithBot.partialOrder, @WithBot.orderBot α _ with
     sup := Option.liftOrGet (· ⊔ ·),
-    le_sup_left := fun o₁ o₂ a ha => by cases ha ; cases o₂ <;> simp [Option.liftOrGet],
-    le_sup_right := fun o₁ o₂ a ha => by cases ha ; cases o₁ <;> simp [Option.liftOrGet],
+    le_sup_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp [Option.liftOrGet],
+    le_sup_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp [Option.liftOrGet],
     sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₁ with b <;> cases' o₂ with c <;> cases ha
       · exact h₂ a rfl
@@ -462,7 +462,7 @@ instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (Wit
 #align with_bot.decidable_le WithBot.decidableLE
 
 instance decidableLT [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithBot α) (· < ·)
-  | none, Option.some x => isTrue <| by exists x, rfl ; rintro _ ⟨⟩
+  | none, Option.some x => isTrue <| by exists x, rfl; rintro _ ⟨⟩
   | Option.some x, Option.some y =>
       if h : x < y then isTrue <| by simp [*] else isFalse <| by simp [*]
   | x, none => isFalse <| by rintro ⟨a, ⟨⟨⟩⟩⟩
@@ -835,7 +835,7 @@ instance orderTop : OrderTop (WithTop α) :=
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot := some ⊥
-  bot_le o a ha := by cases ha ; exact ⟨_, rfl, bot_le⟩
+  bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩
 #align with_top.order_bot WithTop.orderBot
 
 instance boundedOrder [OrderBot α] : BoundedOrder (WithTop α) :=
@@ -1156,8 +1156,8 @@ theorem map_le_iff [Preorder α] [Preorder β] (f : α → β) (a b : WithTop α
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
     inf := Option.liftOrGet (· ⊓ ·),
-    inf_le_left := fun o₁ o₂ a ha => by cases ha ; cases o₂ <;> simp [Option.liftOrGet],
-    inf_le_right := fun o₁ o₂ a ha => by cases ha ; cases o₁ <;> simp [Option.liftOrGet],
+    inf_le_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp [Option.liftOrGet],
+    inf_le_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp [Option.liftOrGet],
     le_inf := fun o₁ o₂ o₃ h₁ h₂ a ha => by
       cases' o₂ with b <;> cases' o₃ with c <;> cases ha
       · exact h₂ a rfl
@@ -1289,10 +1289,10 @@ instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) :=
   ⟨by
     rintro (a | a) (b | b)
-    . simp
-    . simp
-    . simp
-    . simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. < .) _ a b⟩
+    · simp
+    · simp
+    · simp
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. < .) _ a b⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
 instance IsWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
@@ -1303,10 +1303,10 @@ instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     IsTrichotomous (WithTop α) (· > ·) :=
   ⟨by
     rintro (a | a) (b | b)
-    . simp
-    . simp
-    . simp
-    . simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. > .) _ a b⟩
+    · simp
+    · simp
+    · simp
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. > .) _ a b⟩
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
 instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :

@@ -94,7 +94,7 @@ theorem iUnion_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)�
 #align set.Union_star Set.iUnion_star
 
 @[simp]
-theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
+theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
 @[simp]
@@ -148,3 +148,10 @@ protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s
 #align set.star_inv' Set.star_inv'
 
 end Set
+
+@[simp]
+lemma StarMemClass.star_coe_eq {S α : Type _} [InvolutiveStar α] [SetLike S α]
+    [StarMemClass S α] (s : S) : star (s : Set α) = s := by
+  ext x
+  simp only [Set.mem_star, SetLike.mem_coe]
+  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩

@@ -10,6 +10,7 @@ Authors: Peter Nelson, Yaël Dillies
 -/
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Finset.Order
+import Mathlib.Order.Atoms.Finite
 
 /-!
 # Order structures on finite types
@@ -34,7 +35,7 @@ On a `Fintype`, we can promote:
 * a `Lattice` to a `CompleteLattice`.
 * a `DistribLattice` to a `CompleteDistribLattice`.
 * a `LinearOrder`  to a `CompleteLinearOrder`.
-* a `BooleanAlgebra` to a `CompleteBooleanAlgebra`.
+* a `BooleanAlgebra` to a `CompleteAtomicBooleanAlgebra`.
 
 Those are marked as `def` to avoid typeclass loops.
 
@@ -148,6 +149,13 @@ noncomputable def toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBoolean
       rfl }
 #align fintype.to_complete_boolean_algebra Fintype.toCompleteBooleanAlgebra
 
+-- See note [reducible non-instances]
+/-- A finite boolean algebra is complete and atomic. -/
+@[reducible]
+noncomputable def toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
+    CompleteAtomicBooleanAlgebra α :=
+  (toCompleteBooleanAlgebra α).toCompleteAtomicBooleanAlgebra
+
 end BoundedOrder
 
 section Nonempty
@@ -186,6 +194,9 @@ noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
 
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
+
+noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
+  Fintype.toCompleteAtomicBooleanAlgebra _
 
 /-! ### Directed Orders -/
 

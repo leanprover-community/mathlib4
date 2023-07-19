@@ -162,7 +162,7 @@ theorem IsTopologicalBasis.isOpen_iff {s : Set α} {b : Set (Set α)} (hb : IsTo
 
 theorem IsTopologicalBasis.nhds_hasBasis {b : Set (Set α)} (hb : IsTopologicalBasis b) {a : α} :
     (𝓝 a).HasBasis (fun t : Set α => t ∈ b ∧ a ∈ t) fun t => t :=
-  ⟨fun s => hb.mem_nhds_iff.trans <| by simp only [exists_prop, and_assoc]⟩
+  ⟨fun s => hb.mem_nhds_iff.trans <| by simp only [and_assoc]⟩
 #align topological_space.is_topological_basis.nhds_has_basis TopologicalSpace.IsTopologicalBasis.nhds_hasBasis
 
 protected theorem IsTopologicalBasis.isOpen {s : Set α} {b : Set (Set α)}
@@ -269,7 +269,7 @@ protected theorem IsTopologicalBasis.inducing {β} [TopologicalSpace β] {f : α
 #align topological_space.is_topological_basis.inducing TopologicalSpace.IsTopologicalBasis.inducing
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
-    (Uc : (⋃ i, U i) = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :
+    (Uc : ⋃ i, U i = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :
     IsTopologicalBasis (⋃ i : ι, image ((↑) : U i → α) '' b i) := by
   refine' isTopologicalBasis_of_open_of_nhds (fun u hu => _) _
   · simp only [mem_iUnion, mem_image] at hu
@@ -304,7 +304,7 @@ deduce `TopologicalSpace.SecondCountableTopology` from `TopologicalSpace.Separab
 
 Porting note: TODO: the previous paragraph describes the state of the art in Lean 3. We can have
 instance cycles in Lean 4 but we might want to postpone adding them till after the port. -/
-class SeparableSpace : Prop where
+@[mk_iff] class SeparableSpace : Prop where
   /-- There exists a countable dense set. -/
   exists_countable_dense : ∃ s : Set α, s.Countable ∧ Dense s
 #align topological_space.separable_space TopologicalSpace.SeparableSpace
@@ -341,14 +341,65 @@ theorem denseRange_denseSeq [SeparableSpace α] [Nonempty α] : DenseRange (dens
 
 variable {α}
 
-instance (priority := 100) Countable.to_separableSpace [Countable α] : SeparableSpace α
-    where exists_countable_dense := ⟨Set.univ, Set.countable_univ, dense_univ⟩
+instance (priority := 100) Countable.to_separableSpace [Countable α] : SeparableSpace α where
+  exists_countable_dense := ⟨Set.univ, Set.countable_univ, dense_univ⟩
 #align topological_space.countable.to_separable_space TopologicalSpace.Countable.to_separableSpace
 
-theorem separableSpace_of_denseRange {ι : Type _} [Countable ι] (u : ι → α) (hu : DenseRange u) :
+/-- If `f` has a dense range and its domain is countable, then its codomain is a separable space.
+See also `DenseRange.separableSpace`. -/
+theorem SeparableSpace.of_denseRange {ι : Sort _} [Countable ι] (u : ι → α) (hu : DenseRange u) :
     SeparableSpace α :=
   ⟨⟨range u, countable_range u, hu⟩⟩
-#align topological_space.separable_space_of_dense_range TopologicalSpace.separableSpace_of_denseRange
+#align topological_space.separable_space_of_dense_range TopologicalSpace.SeparableSpace.of_denseRange
+
+alias SeparableSpace.of_denseRange ← _root_.DenseRange.separableSpace'
+
+/-- If `α` is a separable space and `f : α → β` is a continuous map with dense range, then `β` is
+a separable space as well. E.g., the completion of a separable uniform space is separable. -/
+protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [TopologicalSpace β]
+    {f : α → β} (h : DenseRange f) (h' : Continuous f) : SeparableSpace β :=
+  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
+  ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
+#align dense_range.separable_space DenseRange.separableSpace
+
+theorem _root_.QuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
+    (hf : QuotientMap f) : SeparableSpace β :=
+  hf.surjective.denseRange.separableSpace hf.continuous
+
+/-- The product of two separable spaces is a separable space. -/
+instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
+  rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
+  rcases exists_countable_dense β with ⟨t, htc, htd⟩
+  exact ⟨⟨s ×ˢ t, hsc.prod htc, hsd.prod htd⟩⟩
+
+/-- The product of a countable family of separable spaces is a separable space. -/
+instance {ι : Type _} {X : ι → Type _} [∀ i, TopologicalSpace (X i)] [∀ i, SeparableSpace (X i)]
+    [Countable ι] : SeparableSpace (∀ i, X i) := by
+  choose t htc htd using (exists_countable_dense <| X ·)
+  haveI := fun i ↦ (htc i).to_subtype
+  nontriviality ∀ i, X i; inhabit ∀ i, X i
+  classical
+    set f : (Σ I : Finset ι, ∀ i : I, t i) → ∀ i, X i := fun ⟨I, g⟩ i ↦
+      if hi : i ∈ I then g ⟨i, hi⟩ else (default : ∀ i, X i) i
+    refine ⟨⟨range f, countable_range f, dense_iff_inter_open.2 fun U hU ⟨g, hg⟩ ↦ ?_⟩⟩
+    rcases isOpen_pi_iff.1 hU g hg with ⟨I, u, huo, huU⟩
+    have : ∀ i : I, ∃ y ∈ t i, y ∈ u i := fun i ↦
+      (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
+    choose y hyt hyu using this
+    lift y to ∀ i : I, t i using hyt
+    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self _⟩
+    simp only [dif_pos hi]
+    exact hyu _
+
+instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) :=
+  quotientMap_quot_mk.separableSpace
+
+instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
+  quotientMap_quot_mk.separableSpace
+
+/-- A topological space with discrete topology is separable iff it is countable. -/
+theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
+  simp [SeparableSpace_iff, countable_univ_iff]
 
 /-- In a separable space, a family of nonempty disjoint open sets is countable. -/
 theorem _root_.Set.PairwiseDisjoint.countable_of_isOpen [SeparableSpace α] {ι : Type _}
@@ -493,13 +544,7 @@ theorem isTopologicalBasis_singletons (α : Type _) [TopologicalSpace α] [Discr
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
 #align is_topological_basis_singletons isTopologicalBasis_singletons
 
-/-- If `α` is a separable space and `f : α → β` is a continuous map with dense range, then `β` is
-a separable space as well. E.g., the completion of a separable uniform space is separable. -/
-protected theorem DenseRange.separableSpace {α β : Type _} [TopologicalSpace α] [SeparableSpace α]
-    [TopologicalSpace β] {f : α → β} (h : DenseRange f) (h' : Continuous f) : SeparableSpace β :=
-  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
-  ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
-#align dense_range.separable_space DenseRange.separableSpace
+-- Porting note: moved `DenseRange.separableSpace` up
 
 -- porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type _} [TopologicalSpace α] {s : Set α}
@@ -711,7 +756,7 @@ instance (priority := 100) SecondCountableTopology.to_separableSpace [SecondCoun
 /-- A countable open cover induces a second-countable topology if all open covers
 are themselves second countable. -/
 theorem secondCountableTopology_of_countable_cover {ι} [Encodable ι] {U : ι → Set α}
-    [∀ i, SecondCountableTopology (U i)] (Uo : ∀ i, IsOpen (U i)) (hc : (⋃ i, U i) = univ) :
+    [∀ i, SecondCountableTopology (U i)] (Uo : ∀ i, IsOpen (U i)) (hc : ⋃ i, U i = univ) :
     SecondCountableTopology α :=
   haveI : IsTopologicalBasis (⋃ i, image ((↑) : U i → α) '' countableBasis (U i)) :=
     isTopologicalBasis_of_cover Uo hc fun i => isBasis_countableBasis (U i)
@@ -721,7 +766,7 @@ theorem secondCountableTopology_of_countable_cover {ι} [Encodable ι] {U : ι �
 /-- In a second-countable space, an open set, given as a union of open sets,
 is equal to the union of countably many of those sets. -/
 theorem isOpen_iUnion_countable [SecondCountableTopology α] {ι} (s : ι → Set α)
-    (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ (⋃ i ∈ T, s i) = ⋃ i, s i := by
+    (H : ∀ i, IsOpen (s i)) : ∃ T : Set ι, T.Countable ∧ ⋃ i ∈ T, s i = ⋃ i, s i := by
   let B := { b ∈ countableBasis α | ∃ i, b ⊆ s i }
   choose f hf using fun b : B => b.2.2
   haveI : Encodable B := ((countable_countableBasis α).mono (sep_subset _ _)).toEncodable
@@ -742,10 +787,10 @@ theorem isOpen_sUnion_countable [SecondCountableTopology α] (S : Set (Set α))
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
 `x ∈ s`, cover the whole space. -/
 theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (hf : ∀ x, f x ∈ 𝓝 x) :
-    ∃ s : Set α, s.Countable ∧ (⋃ x ∈ s, f x) = univ := by
+    ∃ s : Set α, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   rcases isOpen_iUnion_countable (fun x => interior (f x)) fun x => isOpen_interior with
     ⟨s, hsc, hsU⟩
-  suffices : (⋃ x ∈ s, interior (f x)) = univ
+  suffices : ⋃ x ∈ s, interior (f x) = univ
   exact ⟨s, hsc, flip eq_univ_of_subset this <| iUnion₂_mono fun _ _ => interior_subset⟩
   simp only [hsU, eq_univ_iff_forall, mem_iUnion]
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩

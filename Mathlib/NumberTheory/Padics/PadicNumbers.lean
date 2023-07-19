@@ -43,7 +43,7 @@ A small special-purpose simplification tactic, `padic_index_simp`, is used to ma
 indices in the proof that the norm extends.
 
 `padicNormE` is the rational-valued `p`-adic norm on `ℚ_[p]`.
-To instantiate `ℚ_[p]` as a normed field, we must cast this into a `ℝ`-valued norm.
+To instantiate `ℚ_[p]` as a normed field, we must cast this into an `ℝ`-valued norm.
 The `ℝ`-valued norm, using notation `‖ ‖` from normed spaces,
 is the canonical representation of this norm.
 

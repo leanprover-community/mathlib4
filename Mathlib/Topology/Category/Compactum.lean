@@ -296,7 +296,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     intro A hA h
     by_contra H
     rw [le_nhds_iff] at cond
-    specialize cond (Aᶜ) H hA.isOpen_compl
+    specialize cond Aᶜ H hA.isOpen_compl
     rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_not_mem] at cond
     contradiction
   -- If A ∈ F, then x ∈ cl A.

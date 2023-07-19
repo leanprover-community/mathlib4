@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 
 ! This file was ported from Lean 3 source module algebraic_geometry.Scheme
-! leanprover-community/mathlib commit 06c75afebd8b612d3b20fe836424298f2387ca53
+! leanprover-community/mathlib commit 88474d1b5af6d37c2ab728b757771bced7f5194c
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
@@ -35,7 +35,7 @@ open Opposite
 
 namespace AlgebraicGeometry
 
-/-- We define `Scheme` as a `X : LocallyRingedSpace`,
+/-- We define `Scheme` as an `X : LocallyRingedSpace`,
 along with a proof that every point has an open neighbourhood `U`
 so that that the restriction of `X` to `U` is isomorphic,
 as a locally ringed space, to `Spec.toLocallyRingedSpace.obj (op R)`
@@ -61,6 +61,10 @@ def Hom (X Y : Scheme) : Type _ :=
 -/
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
+
+-- porting note: added to ease automation
+@[continuity]
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -133,6 +137,11 @@ theorem comp_val_base {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val.base = f.val.base ≫ g.val.base :=
   rfl
 #align algebraic_geometry.Scheme.comp_val_base AlgebraicGeometry.Scheme.comp_val_base
+
+theorem comp_val_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g).val.base x = g.val.base (f.val.base x) := by
+  simp
+#align algebraic_geometry.Scheme.comp_val_base_apply AlgebraicGeometry.Scheme.comp_val_base_apply
 
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_val_c_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
@@ -223,6 +232,9 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
 -- porting note: removed @[simps]
+-- TODO: We need to decide whether `Spec_obj` or `Spec.obj` the simp-normal form.
+-- We probably want `Spec.obj`, but note
+-- `locallyRingedSpaceObj` is currently the simp-normal form of `toLocallyRingedSpace.obj`.
 def Spec : CommRingCatᵒᵖ ⥤ Scheme where
   obj R := specObj (unop R)
   map f := specMap f.unop
@@ -288,6 +300,15 @@ def basicOpen : Opens X.carrier :=
 theorem mem_basicOpen (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ x f) :=
   RingedSpace.mem_basicOpen _ _ _
 #align algebraic_geometry.Scheme.mem_basic_open AlgebraicGeometry.Scheme.mem_basicOpen
+
+@[aesop norm simp (rule_sets [Restrict])]
+theorem mem_basicOpen_top' {U : Opens X} (f : X.presheaf.obj (op U)) (x : X.carrier) :
+    x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ (⟨x, m⟩ : U) f) := by
+  fconstructor
+  · rintro ⟨y, hy1, rfl⟩
+    exact ⟨y.2, hy1⟩
+  · rintro ⟨m, hm⟩
+    exact ⟨⟨x, m⟩, hm, rfl⟩
 
 @[simp]
 theorem mem_basicOpen_top (f : X.presheaf.obj (op ⊤)) (x : X.carrier) :

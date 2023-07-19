@@ -100,7 +100,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
   -- rw [integral_add_right_eq_self (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
   --       ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
   -- Unfortunately now we need to specify `volume`, and call `dsimp`.
-  have := @integral_add_right_eq_self _ _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
+  have := @integral_add_right_eq_self _ _ _ _ _ volume _ _ _ (fun (x : V) ↦ -(e[-⟪x, w⟫]) • f x)
     ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)
   erw [this] -- Porting note, we can avoid `erw` by first calling `dsimp at this ⊢`.
   simp only [neg_smul, integral_neg]
@@ -109,7 +109,7 @@ theorem fourier_integral_half_period_translate {w : V} (hw : w ≠ 0) :
 /-- Rewrite the Fourier integral in a form that allows us to use uniform continuity. -/
 theorem fourier_integral_eq_half_sub_half_period_translate {w : V} (hw : w ≠ 0)
     (hf : Integrable f) :
-    (∫ v : V, e[-⟪v, w⟫] • f v) = (1 / (2 : ℂ)) • ∫ v : V, e[-⟪v, w⟫] • (f v - f (v + i w)) := by
+    ∫ v : V, e[-⟪v, w⟫] • f v = (1 / (2 : ℂ)) • ∫ v : V, e[-⟪v, w⟫] • (f v - f (v + i w)) := by
   simp_rw [smul_sub]
   rw [integral_sub, fourier_integral_half_period_translate hw, sub_eq_add_neg, neg_neg, ←
     two_smul ℂ _, ← @smul_assoc _ _ _ _ _ _ (IsScalarTower.left ℂ), smul_eq_mul]

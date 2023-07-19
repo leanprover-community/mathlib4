@@ -310,7 +310,7 @@ theorem digits_eq_cons_digits_div {b n : ℕ} (h : 1 < b) (w : n ≠ 0) :
   · norm_num at h
   rcases n with (_ | n)
   · norm_num at w
-  . simp only [digits_add_two_add_one, ne_eq]
+  · simp only [digits_add_two_add_one, ne_eq]
 #align nat.digits_eq_cons_digits_div Nat.digits_eq_cons_digits_div
 
 theorem digits_getLast {b : ℕ} (m : ℕ) (h : 1 < b) (p q) :
@@ -352,10 +352,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     rename ℕ => m
-    -- Porting note: Added `have`
-    have : ∀ v, List.getLast (digits (succ zero) (succ v)) (by simp [digits, digitsAux1]) = 1 := by
-      intros v; induction v <;> simp; assumption
-    simp only [digits_one, List.getLast_replicate_succ m 1, this]
+    simp only [digits_one, List.getLast_replicate_succ m 1]
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn
@@ -381,8 +378,8 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    . apply Nat.div_lt_self <;> simp
-    . assumption
+    · apply Nat.div_lt_self <;> simp
+    · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
 /-- The digits in the base b expansion of n are all less than b, if b ≥ 2 -/
@@ -442,6 +439,22 @@ theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (
   monotone_nat_of_le_succ (digits_len_le_digits_len_succ b) h
 #align nat.le_digits_len_le Nat.le_digits_len_le
 
+@[mono]
+theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
+  induction' L with _ _ hi
+  · rfl
+  · simp only [ofDigits, cast_id, add_le_add_iff_left]
+    exact Nat.mul_le_mul h hi
+
+theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
+  induction' n with n
+  · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
+  · induction' p with p
+    · rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
+    · nth_rw 2 [← ofDigits_digits p.succ n.succ]
+      rw [← ofDigits_one <| digits p.succ n.succ]
+      exact ofDigits_monotone (digits p.succ n.succ) <| Nat.succ_pos p
+
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
   rw [← List.dropLast_append_getLast hl]
@@ -480,7 +493,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · simp; trivial
+  · simp
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]
