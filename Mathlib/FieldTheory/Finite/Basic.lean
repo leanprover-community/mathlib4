@@ -181,7 +181,7 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
-theorem sum_pow_units [Fintype Kˣ] (i : ℕ) :
+theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
     { toFun := fun x => x ^ i
