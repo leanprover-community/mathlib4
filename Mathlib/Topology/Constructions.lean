@@ -1033,6 +1033,17 @@ theorem IsOpenMap.restrict {f : α → β} (hf : IsOpenMap f) {s : Set α} (hs :
   hf.comp hs.isOpenMap_subtype_val
 #align is_open_map.restrict IsOpenMap.restrict
 
+lemma IsClosedMap.restrictPreimage {f : α → β} (hcl : IsClosedMap f) (T : Set β) :
+    IsClosedMap (T.restrictPreimage f) := by
+  rw [isClosedMap_iff_clusterPt] at hcl ⊢
+  intro A ⟨y, hyT⟩ hy
+  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
+      map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
+  rcases hcl _ y hy with ⟨x, hxy, hx⟩
+  have hxT : f x ∈ T := hxy ▸ hyT
+  refine ⟨⟨x, hxT⟩, Subtype.ext hxy, ?_⟩
+  rwa [← inducing_subtype_val.mapClusterPt_iff, MapClusterPt, map_principal]
+
 nonrec theorem IsClosed.closedEmbedding_subtype_val {s : Set α} (hs : IsClosed s) :
     ClosedEmbedding ((↑) : s → α) :=
   closedEmbedding_subtype_val hs

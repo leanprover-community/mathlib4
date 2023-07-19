@@ -34,19 +34,6 @@ theorem IsClosedMap.mapClusterPt_iff_lift'_closure [TopologicalSpace X] [Topolog
   rw [MapClusterPt, clusterPt_iff_lift'_closure', ← f_closed.map_lift'_closure_eq f_cont,
       ← comap_principal, ← map_neBot_iff f, Filter.push_pull, principal_singleton]
 
--- Not needed anymore :tada:
-lemma IsClosedMap.restrictPreimage [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} (hcl : IsClosedMap f) (T : Set Y) :
-    IsClosedMap (T.restrictPreimage f) := by
-  rw [isClosedMap_iff_clusterPt] at hcl ⊢
-  intro A ⟨y, hyT⟩ hy
-  rw [restrictPreimage, MapClusterPt, ← inducing_subtype_val.mapClusterPt_iff, MapClusterPt,
-      map_map, MapsTo.restrict_commutes, ← map_map, ← MapClusterPt, map_principal] at hy
-  rcases hcl _ y hy with ⟨x, hxy, hx⟩
-  have hxT : f x ∈ T := hxy ▸ hyT
-  refine ⟨⟨x, hxT⟩, Subtype.ext hxy, ?_⟩
-  rwa [← inducing_subtype_val.mapClusterPt_iff, MapClusterPt, map_principal]
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   {f : X → Y}
 
