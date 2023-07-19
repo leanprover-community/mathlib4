@@ -472,7 +472,7 @@ partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
     haveI : $a =Q 1 := ⟨⟩
     ⟨q(nat_lit 1), q(one_natPow)⟩
   else if b.natLit! = 1 then
-    have _ : QE (α := (q(ℕ) : Q(Type))) b q(1) := ⟨⟩
+    have _ : QuotedDefEq (α := (q(ℕ) : Q(Type))) b q(1) := ⟨⟩
     ⟨a, q(natPow_one)⟩
   else
     let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
@@ -487,13 +487,13 @@ where
       let c₀' := c₀.natLit!
       if b' &&& 1 == 0 then
         have c : Q(ℕ) := mkRawNatLit (c₀' * c₀')
-        have : QE (α := (q(ℕ) : Q(Type))) c q(Nat.mul $c₀ $c₀) := ⟨⟩
-        have : QE (α := (q(ℕ) : Q(Type))) b q(2 * $b₀) := ⟨⟩
+        have : QuotedDefEq (α := (q(ℕ) : Q(Type))) c q(Nat.mul $c₀ $c₀) := ⟨⟩
+        have : QuotedDefEq (α := (q(ℕ) : Q(Type))) b q(2 * $b₀) := ⟨⟩
         ⟨c, q(IsNatPowT.bit0)⟩
       else
         have c : Q(ℕ) := mkRawNatLit (c₀' * (c₀' * a'))
-        have : QE (α := (q(ℕ) : Q(Type))) c q(Nat.mul $c₀ (Nat.mul $c₀ $a)) := ⟨⟩
-        have : QE (α := (q(ℕ) : Q(Type))) b q(2 * $b₀ + 1) := ⟨⟩
+        have : QuotedDefEq (α := (q(ℕ) : Q(Type))) c q(Nat.mul $c₀ (Nat.mul $c₀ $a)) := ⟨⟩
+        have : QuotedDefEq (α := (q(ℕ) : Q(Type))) b q(2 * $b₀ + 1) := ⟨⟩
         ⟨c, q(IsNatPowT.bit1)⟩
     else
       let d := depth >>> 1
