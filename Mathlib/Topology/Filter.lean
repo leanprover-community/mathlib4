@@ -95,6 +95,11 @@ protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Se
   exact h.lift' monotone_principal.Iic
 #align filter.has_basis.nhds Filter.HasBasis.nhds
 
+protected theorem tendsto_pure_self (l : Filter X) :
+    Tendsto (pure : X → Filter X) l (𝓝 l) := by
+  rw [Filter.tendsto_nhds]
+  refine fun s hs ↦ Eventually.mono hs fun x ↦ id
+
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
   let ⟨_b, hb⟩ := l.exists_antitone_basis
@@ -221,11 +226,6 @@ theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
   inducing_nhds.continuous
 #align filter.continuous_nhds Filter.continuous_nhds
-
-protected theorem tendsto_nhds_self [DiscreteTopology X] (l : Filter X) :
-    Tendsto (𝓝 : X → Filter X) l (𝓝 l) := by
-  rw [Filter.tendsto_nhds]
-  refine fun s hs ↦ Eventually.mono hs fun x ↦ mem_nhds_discrete.mpr
 
 protected theorem Tendsto.nhds {f : α → X} {l : Filter α} {x : X} (h : Tendsto f l (𝓝 x)) :
     Tendsto (𝓝 ∘ f) l (𝓝 (𝓝 x)) :=

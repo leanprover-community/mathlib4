@@ -1370,6 +1370,10 @@ theorem clusterPt_iff_lift'_closure [TopologicalSpace X] {F : Filter X} {x : X} 
     (hasBasis_pure _).le_basis_iff F.basis_sets.lift'_closure, id, singleton_subset_iff, true_and,
     exists_const]
 
+theorem clusterPt_iff_lift'_closure' [TopologicalSpace X] {F : Filter X} {x : X} :
+    ClusterPt x F ↔ (F.lift' closure ⊓ pure x).NeBot := by
+  rw [clusterPt_iff_lift'_closure, ← Ultrafilter.coe_pure, inf_comm, Ultrafilter.inf_neBot_iff]
+
 @[simp]
 theorem clusterPt_lift'_closure_iff [TopologicalSpace X] {F : Filter X} {x : X} :
     ClusterPt x (F.lift' closure) ↔ ClusterPt x F := by
