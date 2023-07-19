@@ -50,8 +50,8 @@ theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U 
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
 
-@[simp] lemma zero_lt_measure_univ [Nonempty X] : 0 < μ univ :=
-  isOpen_univ.measure_pos μ univ_nonempty
+@[simp] lemma measure_ne_zero [Nonempty X] : μ ≠ 0 := by
+  simpa only [← measure_univ_pos] using isOpen_univ.measure_pos μ univ_nonempty
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
