@@ -1022,20 +1022,20 @@ def graph (f : L.Functions n) : L.Formula (Fin (n + 1)) :=
   Term.equal (var 0) (func f fun i => var i.succ)
 #align first_order.language.formula.graph FirstOrder.Language.Formula.graph
 
-/-- The negation of a formula. -/
-protected nonrec def not (φ : L.Formula α) : L.Formula α :=
-  φ.not
-#align first_order.language.formula.not FirstOrder.Language.Formula.not
+-- /-- The negation of a formula. -/
+-- protected nonrec def not (φ : L.Formula α) : L.Formula α :=
+--   φ.not
+-- #align first_order.language.formula.not FirstOrder.Language.Formula.not
 
-/-- The implication between formulas, as a formula. -/
-protected def imp : L.Formula α → L.Formula α → L.Formula α :=
-  BoundedFormula.imp
-#align first_order.language.formula.imp FirstOrder.Language.Formula.imp
+-- /-- The implication between formulas, as a formula. -/
+-- protected def imp : L.Formula α → L.Formula α → L.Formula α :=
+--   BoundedFormula.imp
+-- #align first_order.language.formula.imp FirstOrder.Language.Formula.imp
 
-/-- The biimplication between formulas, as a formula. -/
-protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
-  φ.iff ψ
-#align first_order.language.formula.iff FirstOrder.Language.Formula.iff
+-- /-- The biimplication between formulas, as a formula. -/
+-- protected nonrec def iff (φ ψ : L.Formula α) : L.Formula α :=
+--   φ.iff ψ
+-- #align first_order.language.formula.iff FirstOrder.Language.Formula.iff
 
 theorem isAtomic_graph (f : L.Functions n) : (graph f).IsAtomic :=
   BoundedFormula.IsAtomic.equal _ _

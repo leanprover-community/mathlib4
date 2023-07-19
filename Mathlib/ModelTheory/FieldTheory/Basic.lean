@@ -63,8 +63,8 @@ show Set Language.field.Sentence from
   mulFunction.leftNeZeroInv invFunction 0 1,
   mulFunction.rightNeZeroInv invFunction 0 1,
   invFunction.apply₁ 0 =' 0,
-  ∼ (0 =' 1)}
-
+  (0 =' 1).not}
+#print Sentence.Realize
 set_option maxHeartbeats 20000000 in
 def fieldOfModelField {K : Type _} [Language.field.Structure K]
     [Theory.field.Model K] : Field K :=
@@ -114,23 +114,20 @@ def fieldOfModelField {K : Type _} [Language.field.Structure K]
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show addFunction.leftId 0 ∈ Theory.field by simp [Theory.field])
     rwa [Functions.realize_leftId] at h
-  zero_mul := by
-    have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.leftId 0 ∈ Theory.field by simp [Theory.field])
-    rwa [Functions.realize_leftId] at h
-  mul_zero := by
-    have h := Theory.field.realize_sentence_of_mem (M := K)
-      (show mulFunction.rightId 0 ∈ Theory.field by simp [Theory.field])
-    rwa [Functions.realize_rightId] at h
+  zero_mul := sorry,
+  mul_zero := sorry,
   one_mul := by
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show mulFunction.leftId 1 ∈ Theory.field by simp [Theory.field])
     rwa [Functions.realize_leftId] at h
-  exists_pair_ne := ⟨constantMap (L := Language.field) (M := K) 0,
+  exists_pair_ne := ⟨
+    constantMap (L := Language.field) (M := K) 0,
     constantMap (L := Language.field) (M := K) 1, by
     have h := Theory.field.realize_sentence_of_mem (M := K)
       (show ∼ (0 =' 1) ∈ Theory.field by simp [Theory.field])
-    rw [realize_not] at h
+    rw [Sentence.realize_not] at h
+
+
 
     ⟩
   mul_inv_cancel := by
