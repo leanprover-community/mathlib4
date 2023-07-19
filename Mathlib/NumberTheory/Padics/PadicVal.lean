@@ -561,7 +561,7 @@ theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) (hp : p.Prime):
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
 over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
 theorem padicValNat_factorial {p n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
-    (padicValNat p (n !)) = (∑ i in Finset.Ico 1 b, n / p ^ i : ℕ) :=
+    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
   PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
       Prime.multiplicity_factorial hp.out hnb)
 
