@@ -498,7 +498,7 @@ theorem cfc₂_exists_of_mem_elementalStarAlgebra {𝕜 A : Type _} [IsROrC 𝕜
   rwa [← cfc₂_range] at hx
 #align cfc₂_exists_of_mem_elemental_star_algebra cfc₂_exists_of_mem_elementalStarAlgebra
 
-theorem cfc₁_map_spectrum (R : Type _) {A : Type _} [CommSemiring R] [StarRing R]
+theorem cfc₁_map_spectrum {R : Type _} {A : Type _} [CommSemiring R] [StarRing R]
     [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra R A] (a : A) [CFCClass R a] (f : C(spectrum R a, R)) :
     spectrum R (cfc₁ R a f) = Set.range f :=
@@ -549,7 +549,7 @@ theorem cfc₁₂_comp {R A : Type _} [CommSemiring R] [StarRing R] [Topological
     [Subsingleton (CFCCoreClass R (cfc₁ R a f))] (g : C(R, R)) :
     cfc₁ R a (g.comp f) = cfc₂ R (cfc₁ R a f) g :=
   let f' : C(spectrum R a, spectrum R (cfc₁ R a f)) :=
-    ⟨fun r => ⟨f r, cfc₁_map_spectrum R a f ▸ Set.mem_range_self r (f := f)⟩,
+    ⟨fun r => ⟨f r, cfc₁_map_spectrum a f ▸ Set.mem_range_self r (f := f)⟩,
       (map_continuous f).subtype_mk _⟩
   cfc₁_comp a f (g.restrict (spectrum R (cfc₁ R a f))) f' (fun _ => rfl)
 
@@ -562,6 +562,76 @@ theorem cfc₂_comp {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpa
   have : Subsingleton (CFCCoreClass R (cfc₁ R a (f.restrict (spectrum R a)))) := hf₂
   convert cfc₁₂_comp a (f.restrict (spectrum R a)) g
 #align cfc₂_comp cfc₂_comp
+
+set_option autoImplicit false
+
+lemma cfc₁₂_polynomial_comm {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+    [Algebra R A] (a : A) [CFCClass R a] (p : R[X]) [h : CFCCoreClass R (aeval (R := R) a p)]
+    [h' : Subsingleton (CFCCoreClass R (aeval (R := R) a p))] (f : C(R, R)) :
+    cfc₁ R a (f.comp (p.toContinuousMapOn (spectrum R a))) = cfc₂ R (aeval (R := R) a p) f := by
+  have key : (cfc₁ R a (p.toContinuousMapOn (spectrum R a))) = aeval (R := R) a p := by
+    simpa using cfc₁_map_polynomial a p
+  have : CFCCoreClass R (cfc₁ R a (p.toContinuousMapOn (spectrum R a))) := by
+    convert h
+  have : Subsingleton
+      (CFCCoreClass R (cfc₁ R a (p.toContinuousMapOn (spectrum R a)))) := by
+    convert h'
+  rw [cfc₁₂_comp]
+  congr!
+
+lemma cfc₁₂_pow_comm {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+    [Algebra R A] (a : A) [CFCClass R a] (n : ℕ) [h : CFCCoreClass R (a ^ n)]
+    [h' : Subsingleton (CFCCoreClass R (a ^ n))] (f : C(R, R)) :
+    cfc₁ R a (f.comp (((X : R[X]) ^ n).toContinuousMapOn (spectrum R a))) = cfc₂ R (a ^ n) f := by
+  have key : (cfc₁ R a (((X : R[X]) ^ n).toContinuousMapOn (spectrum R a))) = a ^ n := by
+    simpa using cfc₁_map_polynomial a ((X : R[X]) ^ n)
+  have : CFCCoreClass R (cfc₁ R a (((X : R[X]) ^ n).toContinuousMapOn (spectrum R a))) := by
+    convert h
+  have : Subsingleton
+      (CFCCoreClass R (cfc₁ R a (((X : R[X]) ^ n).toContinuousMapOn (spectrum R a)))) := by
+    convert h'
+  rw [cfc₁₂_comp]
+  congr!
+
+lemma cfc₂_pow_comm {R A : Type _} [CommSemiring R] [StarRing R] [TopologicalSpace R]
+    [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+    [Algebra R A] (a : A) [CFCClass R a] (n : ℕ) [h : CFCCoreClass R (a ^ n)]
+    [h' : Subsingleton (CFCCoreClass R (a ^ n))] (f : C(R, R)) :
+    cfc₂ R a (f.comp ((X : R[X]) ^ n).toContinuousMap) = cfc₂ R (a ^ n) f := by
+  exact cfc₁₂_pow_comm a n f
+
+#exit
+theorem cfcℝ_pow_comm (a : selfAdjoint A) (n : ℕ) (f : C(ℝ, ℝ)) :
+    cfcℝ (a ^ n) f = cfcℝ a (f.comp (X ^ n : ℝ[X]).toContinuousMap) := by
+  rw [← toContinuousMapAlgHom_apply, map_pow, cfcℝ_comp, ← cfcℝ_X_pow]; rfl
+#align cfcℝ_pow_comm cfcℝ_pow_comm
+
+theorem cfcℝ_smul_comm (a : selfAdjoint A) (r : ℝ) (f : C(ℝ, ℝ)) :
+    cfcℝ (r • a) f = cfcℝ a (f.comp (r • ContinuousMap.id ℝ)) := by
+  rw [cfcℝ_comp, map_smul, cfcℝ_map_id]
+#align cfcℝ_smul_comm cfcℝ_smul_comm
+
+theorem cfcℝ_one (f : C(ℝ, ℝ)) : cfcℝ (1 : selfAdjoint A) f = f 1 • (1 : selfAdjoint A) := by
+  ext
+  rw [cfcℝ_apply_coe, selfAdjoint.val_smul]
+  conv_rhs =>
+    rw [selfAdjoint.val_one]
+  have := map_one (cfc₂ ℝ ((1 : selfAdjoint A) : A) : C(ℝ, ℝ) →⋆ₐ[ℝ] A)
+  rw [← this, ← map_smul]
+  refine' cfc₂_eq_of_eqOn _ _
+  simp only [ContinuousMap.coe_smul, ContinuousMap.coe_one, selfAdjoint.val_one]
+  nontriviality A
+  rw [spectrum.one_eq, Set.eqOn_singleton]
+  simp [ContinuousMap.smul_apply (f 1)]
+#align cfcℝ_one cfcℝ_one
+
+theorem cfcℝ_neg_comm (a : selfAdjoint A) (f : C(ℝ, ℝ)) :
+    cfcℝ (-a) f = cfcℝ a (f.comp (-ContinuousMap.id ℝ)) := by rw [cfcℝ_comp, map_neg, cfcℝ_map_id]
+#align cfcℝ_neg_comm cfcℝ_neg_comm
+
+#exit
 
 /-!
 ## Restriction of the spectrum
