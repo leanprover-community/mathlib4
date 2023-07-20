@@ -435,11 +435,11 @@ short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such t
 `φ.τ₂ ≫ c₂.π = c₁.π ≫ f`. -/
 @[simps]
 def ofIsColimitCokernelCofork (φ : S₁ ⟶ S₂)
-  (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
-  (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
-  (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
-  RightHomologyMapData φ (RightHomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
-    (RightHomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
+    (hg₁ : S₁.g = 0) (c₁ : CokernelCofork S₁.f) (hc₁ : IsColimit c₁)
+    (hg₂ : S₂.g = 0) (c₂ : CokernelCofork S₂.f) (hc₂ : IsColimit c₂) (f : c₁.pt ⟶ c₂.pt)
+    (comm : φ.τ₂ ≫ c₂.π = c₁.π ≫ f) :
+    RightHomologyMapData φ (RightHomologyData.ofIsColimitCokernelCofork S₁ hg₁ c₁ hc₁)
+      (RightHomologyData.ofIsColimitCokernelCofork S₂ hg₂ c₂ hc₂) where
   φQ := f
   φH := f
   commp := comm.symm
@@ -463,10 +463,10 @@ data (for the identity of `S`) which relates the right homology data `ofZeros` a
 `ofIsColimitCokernelCofork`. -/
 @[simps]
 def compatibilityOfZerosOfIsColimitCokernelCofork (hf : S.f = 0) (hg : S.g = 0)
-  (c : CokernelCofork S.f) (hc : IsColimit c) :
-  RightHomologyMapData (𝟙 S)
-    (RightHomologyData.ofZeros S hf hg)
-    (RightHomologyData.ofIsColimitCokernelCofork S hg c hc) where
+    (c : CokernelCofork S.f) (hc : IsColimit c) :
+    RightHomologyMapData (𝟙 S)
+      (RightHomologyData.ofZeros S hf hg)
+      (RightHomologyData.ofIsColimitCokernelCofork S hg c hc) where
   φQ := c.π
   φH := c.π
 
