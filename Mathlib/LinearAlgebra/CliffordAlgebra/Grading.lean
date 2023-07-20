@@ -241,7 +241,6 @@ theorem even_induction {P : ∀ x, x ∈ evenOdd Q 0 → Prop}
             (zero_add (0 : ZMod 2) ▸ SetLike.mul_mem_graded (ι_mul_ι_mem_evenOdd_zero Q m₁ m₂) hx))
     (x : CliffordAlgebra Q) (hx : x ∈ evenOdd Q 0) : P x hx := by
   refine' evenOdd_induction Q 0 (fun rx => _) (@hadd) hιι_mul x hx
-  simp_rw [ZMod.val_zero, pow_zero]
   rintro ⟨r, rfl⟩
   exact hr r
 #align clifford_algebra.even_induction CliffordAlgebra.even_induction
