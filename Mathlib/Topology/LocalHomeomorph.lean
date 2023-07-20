@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.local_homeomorph
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.local_homeomorph from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-!
 # Local homeomorphisms
@@ -25,14 +22,14 @@ instead of `e.toFun x` and `e.invFun x`.
 
 ## Main definitions
 
-`Homeomorph.toLocalHomeomorph`: associating a local homeomorphism to a homeomorphism, with
-                                  source = target = univ
-`LocalHomeomorph.symm`  : the inverse of a local homeomorphism
+`Homeomorph.toLocalHomeomorph` : associating a local homeomorphism to a homeomorphism, with
+                                 `source = target = Set.univ`;
+`LocalHomeomorph.symm` : the inverse of a local homeomorphism
 `LocalHomeomorph.trans` : the composition of two local homeomorphisms
-`LocalHomeomorph.refl`  : the identity local homeomorphism
-`LocalHomeomorph.ofSet`: the identity on a set `s`
-`eq_on_source`           : equivalence relation describing the "right" notion of equality for local
-                           homeomorphisms
+`LocalHomeomorph.refl` : the identity local homeomorphism
+`LocalHomeomorph.ofSet` : the identity on a set `s`
+`LocalHomeomorph.EqOnSource` : equivalence relation describing the "right" notion of equality
+                               for local homeomorphisms
 
 ## Implementation notes
 
@@ -904,9 +901,10 @@ def transHomeomorph (e' : β ≃ₜ γ) : LocalHomeomorph α γ where
   continuous_invFun := e.symm.continuousOn.comp e'.symm.continuous.continuousOn fun _ => id
 #align local_homeomorph.trans_homeomorph LocalHomeomorph.transHomeomorph
 
-theorem trans_equiv_eq_trans (e' : β ≃ₜ γ) : e.transHomeomorph e' = e.trans e'.toLocalHomeomorph :=
+theorem transHomeomorph_eq_trans (e' : β ≃ₜ γ) :
+    e.transHomeomorph e' = e.trans e'.toLocalHomeomorph :=
   toLocalEquiv_injective <| LocalEquiv.transEquiv_eq_trans _ _
-#align local_homeomorph.trans_equiv_eq_trans LocalHomeomorph.trans_equiv_eq_trans
+#align local_homeomorph.trans_equiv_eq_trans LocalHomeomorph.transHomeomorph_eq_trans
 
 /-- Precompose a local homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/

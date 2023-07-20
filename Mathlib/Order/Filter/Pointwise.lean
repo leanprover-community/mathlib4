@@ -2,22 +2,19 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.filter.pointwise
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.Filter.NAry
 import Mathlib.Order.Filter.Ultrafilter
+
+#align_import order.filter.pointwise from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Pointwise operations on filters
 
 This file defines pointwise operations on filters. This is useful because usual algebraic operations
 distribute over pointwise operations. For example,
-* `(f₁ * f₂).map m  = f₁.map m * f₂.map m`
+* `(f₁ * f₂).map m = f₁.map m * f₂.map m`
 * `𝓝 (x * y) = 𝓝 x * 𝓝 y`
 
 ## Main declarations
@@ -569,7 +566,7 @@ protected def instZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Filter α) :=
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
-@[to_additive  existing]
+@[to_additive existing]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
   ⟨fun s n => zpowRec n s⟩
 #align filter.has_zpow Filter.instZPow
