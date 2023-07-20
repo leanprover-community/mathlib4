@@ -2,11 +2,6 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.bounded_variation
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
@@ -15,6 +10,8 @@ import Mathlib.Analysis.Calculus.Monotone
 import Mathlib.Data.Set.Function
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.WLOG
+
+#align_import analysis.bounded_variation from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Functions of bounded variation

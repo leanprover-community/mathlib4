@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.integer
-! leanprover-community/mathlib commit 9556784a5b84697562e9c6acb40500d4a82e675a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.Basic
+
+#align_import ring_theory.localization.integer from "leanprover-community/mathlib"@"9556784a5b84697562e9c6acb40500d4a82e675a"
 
 /-!
 # Integer elements of a localization

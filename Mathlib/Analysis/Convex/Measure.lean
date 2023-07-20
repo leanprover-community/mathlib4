@@ -2,21 +2,18 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.measure
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.NormedSpace.AddTorsorBases
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+#align_import analysis.convex.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
+
 /-!
 # Convex sets are null-measurable
 
 Let `E` be a finite dimensional real vector space, let `μ` be a Haar measure on `E`, let `s` be a
-convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.add_haar_frontier`), hence
+convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaar_frontier`), hence
 `s` is a `NullMeasurableSet` (see `Convex.nullMeasurableSet`).
 -/
 
@@ -33,11 +30,11 @@ variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpac
 namespace Convex
 
 /-- Haar measure of the frontier of a convex set is zero. -/
-theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
+theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   /- If `s` is included in a hyperplane, then `frontier s ⊆ closure s` is included in the same
     hyperplane, hence it has measure zero. -/
   cases' ne_or_eq (affineSpan ℝ s) ⊤ with hspan hspan
-  · refine' measure_mono_null _ (add_haar_affineSubspace _ _ hspan)
+  · refine' measure_mono_null _ (addHaar_affineSubspace _ _ hspan)
     exact frontier_subset_closure.trans
       (closure_minimal (subset_affineSpan _ _) (affineSpan ℝ s).closed_of_finiteDimensional)
   rw [← hs.interior_nonempty_iff_affineSpan_eq_top] at hspan
@@ -75,7 +72,7 @@ theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     intro r hr
     refine' (measure_mono <|
       hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq _
-    rw [add_haar_image_homothety, ← NNReal.coe_pow, NNReal.abs_eq, ENNReal.ofReal_coe_nnreal]
+    rw [addHaar_image_homothety, ← NNReal.coe_pow, NNReal.abs_eq, ENNReal.ofReal_coe_nnreal]
   have : ∀ᶠ (r : ℝ≥0) in 𝓝[>] 1, μ (closure s) ≤ ↑(r ^ d) * μ (interior s) :=
     mem_of_superset self_mem_nhdsWithin this
   -- Taking the limit as `r → 1`, we get `μ (closure s) ≤ μ (interior s)`.
@@ -83,12 +80,12 @@ theorem add_haar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
   refine' (((ENNReal.continuous_mul_const hb).comp
     (ENNReal.continuous_coe.comp (continuous_pow d))).tendsto' _ _ _).mono_left nhdsWithin_le_nhds
   simp
-#align convex.add_haar_frontier Convex.add_haar_frontier
+#align convex.add_haar_frontier Convex.addHaar_frontier
 
 /-- A convex set in a finite dimensional real vector space is null measurable with respect to an
 additive Haar measure on this space. -/
 protected theorem nullMeasurableSet (hs : Convex ℝ s) : NullMeasurableSet s μ :=
-  nullMeasurableSet_of_null_frontier (hs.add_haar_frontier μ)
+  nullMeasurableSet_of_null_frontier (hs.addHaar_frontier μ)
 #align convex.null_measurable_set Convex.nullMeasurableSet
 
 end Convex
