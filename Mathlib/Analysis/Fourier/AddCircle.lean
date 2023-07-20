@@ -228,7 +228,6 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
 theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : AddCircle T) :
     @fourier T n (x + ↑(T / 2 / n)) = -fourier n x := by
   rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add, coe_mul_unitSphere]
-  have : (n : ℂ) ≠ 0 := by simpa using hn
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, expMapCircle_apply]
     replace hT := Complex.ofReal_ne_zero.mpr hT.ne'
