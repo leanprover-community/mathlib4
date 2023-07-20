@@ -7,7 +7,7 @@ import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
 
-#align_import order.initial_seg from "leanprover-community/mathlib"@"730c6d4cab72b9d84fcfb9e95e8796e9cd8f40ba"
+#align_import order.initial_seg from "leanprover-community/mathlib"@"8ea5598db6caeddde6cb734aa179cc2408dbd345"
 /-!
 # Initial and principal segments
 

@@ -8,7 +8,7 @@ import Mathlib.Order.InitialSeg
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.PPWithUniv
 
-#align_import set_theory.ordinal.basic from "leanprover-community/mathlib"@"8da9e30545433fdd8fe55a0d3da208e5d9263f03"
+#align_import set_theory.ordinal.basic from "leanprover-community/mathlib"@"8ea5598db6caeddde6cb734aa179cc2408dbd345"
 
 /-!
 # Ordinals
