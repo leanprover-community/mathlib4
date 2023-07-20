@@ -1150,6 +1150,15 @@ theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continu
   rw [← image_univ]
   exact isPathConnected_univ.image hf
 
+theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
+  {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
+  rw [pathConnectedSpace_iff_univ, ← range_iff_surjective.mpr hf]
+  exact isPathConnected_range hf'
+
+instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
+    PathConnectedSpace (Quotient s) :=
+  (surjective_quotient_mk X).pathConnectedSpace continuous_coinduced_rng
+
 /-- This is a special case of `NormedSpace.path_connected` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where

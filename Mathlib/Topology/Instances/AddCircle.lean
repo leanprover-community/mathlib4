@@ -506,10 +506,8 @@ end LinearOrderedField
 
 variable (p : ℝ)
 
-instance pathConnectedSpace : PathConnectedSpace $ AddCircle p := by
-  rw [pathConnectedSpace_iff_univ]
-  convert isPathConnected_range (AddCircle.continuous_mk' p)
-  simp
+instance pathConnectedSpace : PathConnectedSpace $ AddCircle p :=
+  (inferInstance : PathConnectedSpace (Quotient _))
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by

@@ -753,12 +753,12 @@ theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=
   ⟨univ_nonempty, isPreconnected_univ⟩
 #align is_connected_univ isConnected_univ
 
-@[simp] lemma IsPreconnected_univ_iff : IsPreconnected (univ : Set α) ↔ PreconnectedSpace α :=
-  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
+lemma preconnectedSpace_iff_univ : PreconnectedSpace α ↔ IsPreconnected (univ : Set α) :=
+  ⟨fun h ↦ h.1, fun h ↦ ⟨h⟩⟩
 
-@[simp] lemma IsConnected_univ_iff : IsConnected (univ : Set α) ↔ ConnectedSpace α :=
-  ⟨fun h ↦ ConnectedSpace.mk (toPreconnectedSpace := ⟨h.2⟩) ⟨h.1.some⟩,
-   fun h ↦ ⟨univ_nonempty, h.1.1⟩⟩
+lemma connectedSpace_iff_univ : ConnectedSpace α ↔ IsConnected (univ : Set α) :=
+  ⟨fun h ↦ ⟨univ_nonempty, h.1.1⟩,
+   fun h ↦ ConnectedSpace.mk (toPreconnectedSpace := ⟨h.2⟩) ⟨h.1.some⟩⟩
 
 theorem isPreconnected_range [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (h : Continuous f) : IsPreconnected (range f) :=
@@ -769,6 +769,15 @@ theorem isConnected_range [TopologicalSpace β] [ConnectedSpace α] {f : α → 
     IsConnected (range f) :=
   ⟨range_nonempty f, isPreconnected_range h⟩
 #align is_connected_range isConnected_range
+
+theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace β]
+  {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
+  rw [connectedSpace_iff_univ, ← range_iff_surjective.mpr hf]
+  exact isConnected_range hf'
+
+instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
+    ConnectedSpace (Quotient s) :=
+  (surjective_quotient_mk _).connectedSpace continuous_coinduced_rng
 
 theorem DenseRange.preconnectedSpace [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (hf : DenseRange f) (hc : Continuous f) : PreconnectedSpace β :=
