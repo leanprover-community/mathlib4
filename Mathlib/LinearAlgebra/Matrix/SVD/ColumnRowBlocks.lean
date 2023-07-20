@@ -53,6 +53,40 @@ lemma fromColumns_toColumns (A: Matrix M (N₁ ⊕ N₂) R):
   cases' j
   all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr])
 
+lemma fromRows_toRows (A: Matrix (M₁ ⊕ M₂) N R):
+  A = fromRows A.toRows₁ A.toRows₂ := by
+  unfold fromRows toRows₁ toRows₂
+  funext i j
+  cases' i
+  all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr])
+
+lemma fromRows_mul (A₁: Matrix M₁ N R)(A₂: Matrix M₂ N R)(B: Matrix N M R):
+  (fromRows A₁ A₂) ⬝ B = fromRows (A₁⬝B) (A₂⬝B) := by
+  unfold fromRows
+  funext i j
+  cases' i with i i
+  all_goals (simp only [mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
+
+lemma mul_fromColumns (A: Matrix M N R)(B₁: Matrix N N₁ R)(B₂: Matrix N N₂ R):
+  A ⬝ (fromColumns B₁ B₂) = fromColumns (A⬝B₁) (A⬝B₂) := by
+  unfold fromColumns
+  funext i j
+  cases' j with j j
+  all_goals (simp only [mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
+
+@[simp]
+lemma fromRows_zero: fromRows (0: Matrix M₁ N R) (0: Matrix M₂ N R) = 0 := by
+  funext i j
+  unfold fromRows
+  simp only [Sum.elim_zero_zero, of_apply, Pi.zero_apply, zero_apply]
+
+@[simp]
+lemma fromColumns_zero: fromColumns (0: Matrix M N₁ R) (0: Matrix M N₂ R) = 0 := by
+  funext i j
+  unfold fromColumns
+  cases' j with j j
+  all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr, zero_apply])
+
 /- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
 lemma fromRows_mul_fromColumns (A₁: Matrix M₁ N R) (A₂: Matrix M₂ N R)
   (B₁: Matrix N N₁ R) (B₂: Matrix N N₂ R) :

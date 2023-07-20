@@ -292,13 +292,30 @@ lemma U₂_conjTranspose_mul_U₂ (A: Matrix (Fin M) (Fin N) 𝕂):
   simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inr.injEq]
   exact hij
 
+lemma U₁'_conjTranspose_mul_U₂ (A: Matrix (Fin M) (Fin N) 𝕂):
+  A.svdU₁'ᴴ ⬝ A.svdU₂ = 0 := by
+  simp_rw [svdU₁', svdU₂, toColumns₁, toColumns₂, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
+    submatrix_apply, id_eq, Matrix.mul, dotProduct, conjTranspose_apply, of_apply,
+    ← conjTranspose_apply, IsHermitian.conjTranspose_eigenvectorMatrix, ← mul_apply,
+    eigenvector_matrix_inv_mul_self]
+  funext i j
+  simp only [ne_eq, EmbeddingLike.apply_eq_iff_eq, not_false_eq_true, one_apply_ne, zero_apply]
+
 lemma mul_V₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   A ⬝ A.svdV₂ = 0 := by
   suffices h : Aᴴ⬝A⬝A.svdV₂ = 0
   · exact (ker_conj_transpose_mul_self_eq_ker _ _).1 h
   rw [reduced_spectral_theorem, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
 
-
+lemma Matrix.left_mul_inj_of_invertible
+  {m n: Type}[Fintype m][DecidableEq m][Fintype n][DecidableEq n]
+  {R: Type}[CommRing R]
+  (P : Matrix m m R) [Invertible P] :
+  Function.Injective (fun (x : Matrix m n R) => P ⬝ x) := by
+  rintro x a hax
+  replace hax := congr_arg (fun (x : Matrix m n R) => P⁻¹ ⬝ x) hax
+  simp only [inv_mul_cancel_left_of_invertible] at hax
+  exact hax
 
 lemma conjTranspose_mul_U₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   Aᴴ ⬝ A.svdU₂ = 0 := by
@@ -308,9 +325,6 @@ lemma conjTranspose_mul_U₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   have spectralAAH := modified_spectral_theorem (hAAH)
   rw [spectralAAH]; clear spectralAAH;
 
-  have rspec := reduced_spectral_theorem Aᴴ
-  simp only [conjTranspose_conjTranspose] at rspec
-
   apply_fun (fun x => hAAH.eigenvectorMatrixInv ⬝ x)
   dsimp; rw [← Matrix.mul_assoc, ← Matrix.mul_assoc, eigenvector_matrix_inv_mul_self,
     Matrix.one_mul, Matrix.mul_zero]
@@ -318,37 +332,24 @@ lemma conjTranspose_mul_U₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   -- unfold svdU₂ toColumns₂
   simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_apply, id_eq]
 
-  apply_fun (fun x => x.submatrix (emz A).symm id)
-  dsimp;
-  rw [← submatrix_mul_equiv _ _ _ (Equiv.refl _) _]
-  rw [← submatrix_mul_equiv _ _ _ (emz A).symm _]
-  rw [← @IsROrC.algebraMap_eq_ofReal 𝕂]
+  -- apply_fun (fun x => x.submatrix (emz A).symm id)
+  apply_fun (fun x => reindex (emz A) (Equiv.refl _) x)
+
+  simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_zero, Pi.zero_apply]
+  rw [← submatrix_mul_equiv _ _ _ (Equiv.refl _) _, ← submatrix_mul_equiv _ _ _ (emz A).symm _,
+    ← @IsROrC.algebraMap_eq_ofReal 𝕂]
   simp_rw [Function.comp]
   rw [← diagonal_map, submatrix_map, ← reindex_apply, S'_block, fromBlocks_map]
   simp only [map_zero, Matrix.map_zero]
   rw [← IsHermitian.conjTranspose_eigenvectorMatrix, ← conjTranspose_submatrix,
     ← Equiv.refl_symm, ← reindex_apply, U_columns' A,
-    conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_mul_fromRows]
-  simp only [Matrix.zero_mul, add_zero]
-  simp only [Equiv.refl_symm, Equiv.coe_refl, submatrix_id_id]
-
-  --   funext i j
-  -- simp only [Equiv.coe_refl, submatrix_id_id, zero_apply]
-  -- cases' i with i i
-  -- simp_rw [mul_apply]
-  -- simp only [submatrix_apply, id_eq, Fintype.sum_sum_type, fromBlocks_apply₁₁, map_apply, fromBlocks_apply₁₂,
-  --   zero_apply, zero_mul, Finset.sum_const_zero, add_zero, of_apply]
-
-
-
-  -- sorry
-  -- simp only [submatrix_apply, id_eq, zero_apply]
-  -- simp_rw [mul_apply, of_apply, Finset.sum_mul, mul_assoc ]
-  -- rw [Finset.sum_comm]
-  -- simp_rw [← Finset.mul_sum]
-  -- conv =>
-  --   enter [@2, 2, x]
-
+    conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_mul_fromRows,
+    Matrix.zero_mul, Matrix.zero_mul,  Matrix.zero_mul, add_zero, zero_add,
+    Equiv.refl_symm, Equiv.coe_refl, submatrix_id_id]
+  rw [fromRows_mul, Matrix.zero_mul, Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂, Matrix.mul_zero,
+    fromRows_zero]
+  simp only [map_zero]
+  apply Matrix.left_mul_inj_of_invertible
 
 
 
