@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.zmod.defs
-! leanprover-community/mathlib commit 3a2b5524a138b5d0b818b858b516d4ac8a484b03
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Lattice
+
+#align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
 # Definition of `ZMod n` + basic results.

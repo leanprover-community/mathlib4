@@ -2,14 +2,11 @@
 Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
-
-! This file was ported from Lean 3 source module set_theory.ordinal.fixed_point
-! leanprover-community/mathlib commit 0dd4319a17376eda5763cd0a7e0d35bbaaa50e83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+
+#align_import set_theory.ordinal.fixed_point from "leanprover-community/mathlib"@"0dd4319a17376eda5763cd0a7e0d35bbaaa50e83"
 
 /-!
 # Fixed points of normal functions
@@ -185,7 +182,7 @@ theorem derivFamily_isNormal (f : ι → Ordinal → Ordinal) : IsNormal (derivF
 
 theorem derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
     f i (derivFamily.{u, v} f o) = derivFamily.{u, v} f o := by
-  induction' o using limitRecOn with o _  o l IH
+  induction' o using limitRecOn with o _ o l IH
   · rw [derivFamily_zero]
     exact nfpFamily_fp H 0
   · rw [derivFamily_succ]

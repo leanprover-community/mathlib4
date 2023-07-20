@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.hom.basic
-! leanprover-community/mathlib commit 62a5626868683c104774de8d85b9855234ac807c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Order.RelIso.Basic
@@ -14,6 +9,8 @@ import Mathlib.Order.Disjoint
 import Mathlib.Order.WithBot
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Util.AssertExists
+
+#align_import order.hom.basic from "leanprover-community/mathlib"@"62a5626868683c104774de8d85b9855234ac807c"
 
 /-!
 # Order homomorphisms
@@ -385,7 +382,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
 @[simps (config := { fullyApplied := false })]
 def const (α : Type _) [Preorder α] {β : Type _} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
-  monotone' _ _  h _ := h
+  monotone' _ _ h _ := h
 #align order_hom.const OrderHom.const
 #align order_hom.const_coe_coe OrderHom.const_coe_coe
 

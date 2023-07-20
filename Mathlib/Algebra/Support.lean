@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.support
-! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Data.Set.Finite
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.Pi
+
+#align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Support of a function
