@@ -401,7 +401,6 @@ theorem Pi.reindex_hom_π (b : β) : (Pi.reindex ε f).hom ≫ Pi.π f (ε b) = 
   simp only [HasLimit.isoOfEquivalence_hom_π, Discrete.equivalence_inverse, Discrete.functor_obj,
     Function.comp_apply, Functor.id_obj, Discrete.equivalence_functor, Functor.comp_obj,
     Discrete.natIso_inv_app, Iso.refl_inv, Category.id_comp]
-  dsimp
   simpa [eqToHom_map]
     using limit.w (Discrete.functor (f ∘ ε)) (Discrete.eqToHom' (ε.symm_apply_apply b))
 #align category_theory.limits.pi.reindex_hom_π CategoryTheory.Limits.Pi.reindex_hom_π

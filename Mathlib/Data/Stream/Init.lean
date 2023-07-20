@@ -360,7 +360,6 @@ theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate 
   induction' n with n' ih
   · rfl
   · unfold map iterate nth
-    dsimp
     rw [map, nth] at ih
     rw [iterate]
     exact congrArg f ih

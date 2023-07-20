@@ -73,7 +73,7 @@ structure ShiftMkCore where
   /-- compatibility with the associativity -/
   assoc_hom_app : ∀ (m₁ m₂ m₃ : A) (X : C),
     (add (m₁ + m₂) m₃).hom.app X ≫ (F m₃).map ((add m₁ m₂).hom.app X) =
-      eqToHom (by dsimp; rw [add_assoc]) ≫ (add m₁ (m₂ + m₃)).hom.app X ≫
+      eqToHom (by rw [add_assoc]) ≫ (add m₁ (m₂ + m₃)).hom.app X ≫
         (add m₂ m₃).hom.app ((F m₁).obj X) := by aesop_cat
   /-- compatibility with the left addition with 0 -/
   zero_add_hom_app : ∀ (n : A) (X : C), (add 0 n).hom.app X =
@@ -93,7 +93,7 @@ attribute [reassoc] assoc_hom_app
 lemma assoc_inv_app (h : ShiftMkCore C A) (m₁ m₂ m₃ : A) (X : C) :
   (h.F m₃).map ((h.add m₁ m₂).inv.app X) ≫ (h.add (m₁ + m₂) m₃).inv.app X =
     (h.add m₂ m₃).inv.app ((h.F m₁).obj X) ≫ (h.add m₁ (m₂ + m₃)).inv.app X ≫
-      eqToHom (by dsimp; rw [add_assoc]) := by
+      eqToHom (by rw [add_assoc]) := by
   rw [← cancel_mono ((h.add (m₁ + m₂) m₃).hom.app X ≫ (h.F m₃).map ((h.add m₁ m₂).hom.app X)),
     Category.assoc, Category.assoc, Category.assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app, Functor.map_id, h.assoc_hom_app, eqToHom_trans_assoc, eqToHom_refl,

@@ -894,7 +894,7 @@ theorem bitwise'_to_nat {f : Num → Num → Num} {g : Bool → Bool → Bool} (
   -- Porting note: `change .. with ..` is now `simp only [show .. = .. from rfl]`.
   intros m n
   cases' m with m <;> cases' n with n <;>
-      simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
+      try simp only [show zero = 0 from rfl, show ((0 : Num) : ℕ) = 0 from rfl]
   · rw [f00, Nat.bitwise'_zero]; rfl
   · unfold Nat.bitwise'
     rw [f0n, Nat.binaryRec_zero]

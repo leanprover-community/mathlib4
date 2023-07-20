@@ -999,7 +999,7 @@ theorem prod_ite_of_false {p : α → Prop} {hp : DecidablePred p} (f g : α →
     ∏ x in s, (if p x then f x else g x) = ∏ x in s, g x := by
   rw [prod_ite, filter_false_of_mem, filter_true_of_mem]
   · simp only [prod_empty, one_mul]
-  all_goals intros; simp; apply h; assumption
+  all_goals intros; apply h; assumption
 #align finset.prod_ite_of_false Finset.prod_ite_of_false
 #align finset.sum_ite_of_false Finset.sum_ite_of_false
 

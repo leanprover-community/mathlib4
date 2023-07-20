@@ -176,7 +176,6 @@ theorem pow_eq_pow_mod {M : Type _} [Monoid M] {x : M} (m : ℕ) {n : ℕ} (h : 
     x ^ m = x ^ (m % n) := by
   have t : x ^ m = x ^ (n * (m / n) + m % n) :=
     congr_arg (fun a => x ^ a) ((Nat.add_comm _ _).trans (Nat.mod_add_div _ _)).symm
-  dsimp at t
   rw [t, pow_add, pow_mul, h, one_pow, one_mul]
 #align pow_eq_pow_mod pow_eq_pow_mod
 #align nsmul_eq_mod_nsmul nsmul_eq_mod_nsmul

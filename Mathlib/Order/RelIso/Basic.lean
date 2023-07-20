@@ -450,7 +450,6 @@ theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
   · exact RelHomClass.acc (Quotient.mkRelHom H) a
   · intro ac
     induction' ac with _ _ IH
-    dsimp at IH
     refine' ⟨_, fun q h => _⟩
     obtain ⟨a', rfl⟩ := q.exists_rep
     exact IH a' h

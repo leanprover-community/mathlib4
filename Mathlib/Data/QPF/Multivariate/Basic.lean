@@ -133,7 +133,7 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
     · rw [← hy, ← abs_repr y, h, ← abs_map]; rfl
     intro i j
     apply (f i j).property
-  rintro ⟨a, f, h₀, h₁⟩; dsimp at *
+  rintro ⟨a, f, h₀, h₁⟩
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
 #align mvqpf.liftp_iff MvQPF.liftP_iff

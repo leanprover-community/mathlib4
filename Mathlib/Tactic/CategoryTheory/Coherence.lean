@@ -285,7 +285,7 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
-    simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom] <;>
+    (try simp only [monoidalComp, Category.assoc, MonoidalCoherence.hom]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     simp only [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂]))
 
@@ -362,8 +362,7 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    simp only [bicategoricalComp];
-    simp only [monoidalComp];
-    try whisker_simps
+    (try simp only [bicategoricalComp, monoidalComp]);
+    whisker_simps
     ))
   coherence_loop

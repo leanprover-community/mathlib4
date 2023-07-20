@@ -134,8 +134,8 @@ instance hasZeroMorphisms : HasZeroMorphisms (DifferentialObject C) where
 def isoApp {X Y : DifferentialObject C} (f : X ≅ Y) : X.obj ≅ Y.obj where
   hom := f.hom.f
   inv := f.inv.f
-  hom_inv_id := by dsimp; rw [← comp_f, Iso.hom_inv_id, id_f]
-  inv_hom_id := by dsimp; rw [← comp_f, Iso.inv_hom_id, id_f]
+  hom_inv_id := by rw [← comp_f, Iso.hom_inv_id, id_f]
+  inv_hom_id := by rw [← comp_f, Iso.inv_hom_id, id_f]
 #align category_theory.differential_object.iso_app CategoryTheory.DifferentialObject.isoApp
 
 @[simp]
@@ -159,7 +159,6 @@ def mkIso {X Y : DifferentialObject C} (f : X.obj ≅ Y.obj) (hf : X.d ≫ f.hom
     X ≅ Y where
   hom := ⟨f.hom, hf⟩
   inv := ⟨f.inv, by
-    dsimp
     rw [← Functor.mapIso_inv, Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, Functor.mapIso_hom,
       hf]⟩
   hom_inv_id := by ext1; dsimp; exact f.hom_inv_id

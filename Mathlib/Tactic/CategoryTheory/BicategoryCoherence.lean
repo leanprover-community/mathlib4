@@ -293,7 +293,7 @@ syntax (name := whisker_simps) "whisker_simps" : tactic
 elab_rules : tactic
 | `(tactic| whisker_simps) => do
   evalTactic (← `(tactic|
-    simp only [Category.assoc, Bicategory.comp_whisker_left, Bicategory.id_whisker_left,
+    try simp only [Category.assoc, Bicategory.comp_whisker_left, Bicategory.id_whisker_left,
       Bicategory.whisker_right_comp, Bicategory.whisker_right_id,
       Bicategory.whisker_left_comp, Bicategory.whisker_left_id,
       Bicategory.comp_whisker_right, Bicategory.id_whisker_right, Bicategory.whisker_assoc]

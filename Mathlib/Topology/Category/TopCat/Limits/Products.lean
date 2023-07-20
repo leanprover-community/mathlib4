@@ -325,8 +325,6 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, _⟩
-      simp only [Functor.map_comp]
-
       erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]

@@ -342,7 +342,6 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, nth]
-  dsimp
   -- porting note: next two lines were `change`...`with`...
   have h: Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
   rw [h]

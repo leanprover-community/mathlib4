@@ -239,11 +239,9 @@ theorem Perm.filterMap (f : α → Option β) {l₁ l₂ : List α} (p : l₁ ~ 
   induction p with
   | nil => simp
   | cons x _p IH =>
-    simp only [filterMap]
     cases h : f x
       <;> simp [h, filterMap, IH, Perm.cons]
   | swap x y l₂ =>
-    simp only [filterMap]
     cases hx : f x
       <;> cases hy : f y
         <;> simp [hx, hy, filterMap, swap]
@@ -1296,8 +1294,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
 
 theorem Perm.permutations' {s t : List α} (p : s ~ t) : permutations' s ~ permutations' t := by
   induction' p with a s t _ IH a b l s t u _ _ IH₁ IH₂; · simp
-  · simp only [permutations']
-    exact IH.bind_right _
+  · exact IH.bind_right _
   · dsimp [permutations']
     rw [bind_assoc, bind_assoc]
     apply Perm.bind_left

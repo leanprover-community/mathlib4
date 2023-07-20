@@ -1640,7 +1640,6 @@ theorem castPred_one : castPred (1 : Fin (n + 2)) = 1 := by
 theorem predAbove_zero {i : Fin (n + 2)} (hi : i ≠ 0) : predAbove 0 i = i.pred hi := by
   dsimp [predAbove]
   rw [dif_pos]
-  simp only [castSucc_zero]
   exact pos_iff_ne_zero.mpr hi
 #align fin.pred_above_zero Fin.predAbove_zero
 

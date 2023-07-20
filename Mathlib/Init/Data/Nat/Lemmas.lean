@@ -828,9 +828,7 @@ lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= 
   | succ n =>
     by_cases hterm : n.succ / 10 = 0
     case pos => simp only [hterm, Nat.toDigitsCore]; assumption
-    case neg =>
-      simp only [hterm]
-      exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
+    case neg => exact to_digits_core_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 end Find
 
