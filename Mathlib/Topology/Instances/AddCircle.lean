@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.PathConnected
 
 #align_import topology.instances.add_circle from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -504,6 +505,11 @@ end FiniteOrderPoints
 end LinearOrderedField
 
 variable (p : ℝ)
+
+instance pathConnectedSpace : PathConnectedSpace $ AddCircle p := by
+  rw [pathConnectedSpace_iff_univ]
+  convert isPathConnected_range (AddCircle.continuous_mk' p)
+  simp
 
 /-- The "additive circle" `ℝ ⧸ (ℤ ∙ p)` is compact. -/
 instance compactSpace [Fact (0 < p)] : CompactSpace <| AddCircle p := by
