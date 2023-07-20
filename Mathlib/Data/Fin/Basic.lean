@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
+import Std.Data.Fin.Basic
 
 #align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
@@ -1319,6 +1320,19 @@ end AddGroup
 
 section SuccAbove
 
+/-- `succAbove p i` embeds `Fin n` into `Fin (n + 1)` with a hole around `p`. -/
+def succAbove (p : Fin (n + 1)) (i : Fin n) : Fin (n + 1) :=
+  if i.1 < p.1 then castSucc i else succ i
+
+/-- `predAbove p i` embeds `i : Fin (n+1)` into `Fin n` by subtracting one if `p < i`. -/
+def predAbove (p : Fin n) (i : Fin (n + 1)) : Fin n :=
+  if h : castSucc p < i then i.pred (Nat.not_eq_zero_of_lt h)
+  else i.castLT (Nat.lt_of_le_of_lt (Nat.ge_of_not_lt h) p.2)
+
+/-- `castPred` embeds `i : Fin (n + 2)` into `Fin (n + 1)`
+by lowering just `last (n + 1)` to `last n`. -/
+def castPred (i : Fin (n + 2)) : Fin (n + 1) := predAbove (last n) i
+
 theorem strictMono_succAbove (p : Fin (n + 1)) : StrictMono (succAbove p) :=
   (castSuccEmb : Fin n ↪o _).strictMono.ite (succEmbedding n).strictMono
     (fun _ _ hij hj => lt_trans ((castSuccEmb : Fin n ↪o _).lt_iff_lt.2 hij) hj) fun i =>
@@ -1789,9 +1803,6 @@ theorem lt_last_iff_coe_castPred {i : Fin (n + 2)} :
 
 end PredAbove
 
-@[simp]
-theorem coe_clamp (n m : ℕ) : (clamp n m : ℕ) = min n m :=
-  rfl
 #align fin.coe_clamp Fin.coe_clamp
 
 @[simp]
@@ -1806,36 +1817,12 @@ section Mul
 ### mul
 -/
 
-theorem val_mul {n : ℕ} : ∀ a b : Fin n, (a * b).val = a.val * b.val % n
-  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.val_mul Fin.val_mul
-
-theorem coe_mul {n : ℕ} : ∀ a b : Fin n, ((a * b : Fin n) : ℕ) = a * b % n
-  | ⟨_, _⟩, ⟨_, _⟩ => rfl
 #align fin.coe_mul Fin.coe_mul
-
-protected theorem mul_one [NeZero n] (k : Fin n) : k * 1 = k := by
-  cases' n with n
-  · simp
-  cases n
-  · simp [fin_one_eq_zero]
-  simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
 #align fin.mul_one Fin.mul_one
-
-protected theorem mul_comm (a b : Fin n) : a * b = b * a :=
-  Fin.eq_of_veq <| by rw [mul_def, mul_def, mul_comm]
 #align fin.mul_comm Fin.mul_comm
-
-
-protected theorem one_mul [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
-  rw [Fin.mul_comm, Fin.mul_one]
 #align fin.one_mul Fin.one_mul
-
-protected theorem mul_zero [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
 #align fin.mul_zero Fin.mul_zero
-
-protected theorem zero_mul [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
-  simp [eq_iff_veq, mul_def]
 #align fin.zero_mul Fin.zero_mul
 
 end Mul
