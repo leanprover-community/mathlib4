@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.function
-! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Function.Conjugate
+
+#align_import data.set.function from "leanprover-community/mathlib"@"996b0ff959da753a555053a480f36e5f264d4207"
 
 /-!
 # Functions over sets
@@ -187,6 +184,11 @@ def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop :=
 @[simp]
 theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => False.elim
 #align set.eq_on_empty Set.eqOn_empty
+
+@[simp]
+theorem eqOn_singleton : Set.EqOn f₁ f₂ {a} ↔ f₁ a = f₂ a := by
+  simp [Set.EqOn]
+#align set.eq_on_singleton Set.eqOn_singleton
 
 @[simp]
 theorem restrict_eq_restrict_iff : restrict s f₁ = restrict s f₂ ↔ EqOn f₁ f₂ s :=

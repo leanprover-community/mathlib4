@@ -2,16 +2,15 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module order.well_founded_set
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Data.Sigma.Lex
+import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.TFAE
+
+#align_import order.well_founded_set from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
 /-!
 # Well-founded sets
@@ -48,7 +47,7 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 -/
 
 
-variable {ι α β : Type _}
+variable {ι α β γ : Type _} {π : ι → Type _}
 
 namespace Set
 
@@ -71,7 +70,7 @@ variable {r r' : α → α → Prop}
 
 section AnyRel
 
-variable {s t : Set α} {x y : α}
+variable {f : β → α} {s t : Set α} {x y : α}
 
 theorem wellFoundedOn_iff :
     s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
@@ -88,6 +87,31 @@ theorem wellFoundedOn_iff :
     exact ⟨m, mt, fun x _ ⟨_, _, ms⟩ => hst ⟨m, ⟨ms, mt⟩⟩⟩
 #align set.well_founded_on_iff Set.wellFoundedOn_iff
 
+@[simp]
+theorem wellFoundedOn_univ : (univ : Set α).WellFoundedOn r ↔ WellFounded r := by
+  simp [wellFoundedOn_iff]
+#align set.well_founded_on_univ Set.wellFoundedOn_univ
+
+theorem _root_.WellFounded.wellFoundedOn : WellFounded r → s.WellFoundedOn r :=
+  InvImage.wf _
+#align well_founded.well_founded_on WellFounded.wellFoundedOn
+
+@[simp]
+theorem wellFoundedOn_range : (range f).WellFoundedOn r ↔ WellFounded (r on f) := by
+  let f' : β → range f := fun c => ⟨f c, c, rfl⟩
+  refine' ⟨fun h => (InvImage.wf f' h).mono fun c c' => id, fun h => ⟨_⟩⟩
+  rintro ⟨_, c, rfl⟩
+  refine' Acc.of_downward_closed f' _ _ _
+  · rintro _ ⟨_, c', rfl⟩ -
+    exact ⟨c', rfl⟩
+  · exact h.apply _
+#align set.well_founded_on_range Set.wellFoundedOn_range
+
+@[simp]
+theorem wellFoundedOn_image {s : Set β} : (f '' s).WellFoundedOn r ↔ s.WellFoundedOn (r on f) := by
+  rw [image_eq_range]; exact wellFoundedOn_range
+#align set.well_founded_on_image Set.wellFoundedOn_image
+
 namespace WellFoundedOn
 
 protected theorem induction (hs : s.WellFoundedOn r) (hx : x ∈ s) {P : α → Prop}
@@ -103,6 +127,11 @@ protected theorem mono (h : t.WellFoundedOn r') (hle : r ≤ r') (hst : s ⊆ t)
   rw [wellFoundedOn_iff] at *
   exact Subrelation.wf (fun xy => ⟨hle _ _ xy.1, hst xy.2.1, hst xy.2.2⟩) h
 #align set.well_founded_on.mono Set.WellFoundedOn.mono
+
+theorem mono' (h : ∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), r' a b → r a b) :
+    s.WellFoundedOn r → s.WellFoundedOn r' :=
+  Subrelation.wf @fun a b => h _ a.2 _ b.2
+#align set.well_founded_on.mono' Set.WellFoundedOn.mono'
 
 theorem subset (h : t.WellFoundedOn r) (hst : s ⊆ t) : s.WellFoundedOn r :=
   h.mono le_rfl hst
@@ -811,3 +840,69 @@ theorem Pi.isPwo {α : ι → Type _} [∀ i, LinearOrder (α i)] [∀ i, IsWell
     refine' ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 _⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
 #align pi.is_pwo Pi.isPwo
+
+section ProdLex
+variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
+
+/-- Stronger version of `prod.lex_wf`. Instead of requiring `rβ on g` to be well-founded, we only
+require it to be well-founded on fibers of `f`.-/
+theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
+    (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
+    WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
+  refine' (PSigma.lex_wf (wellFoundedOn_range.2 hα) fun a => hβ a).onFun.mono fun c c' h => _
+  exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
+  obtain h' | h' := Prod.lex_iff.1 h
+  · exact PSigma.Lex.left _ _ h'
+  · dsimp only [InvImage, (· on ·)] at h' ⊢
+    convert PSigma.Lex.right (⟨_, c', rfl⟩ : range f) _ using 1; swap
+    exacts [⟨c, h'.1⟩, PSigma.subtype_ext (Subtype.ext h'.1) rfl, h'.2]
+#align well_founded.prod_lex_of_well_founded_on_fiber WellFounded.prod_lex_of_wellFoundedOn_fiber
+
+theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn (rα on f))
+    (hβ : ∀ a, (s ∩ f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
+    s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) := by
+  refine' WellFounded.prod_lex_of_wellFoundedOn_fiber hα fun a ↦ (hβ a).onFun.mono (fun b c h ↦ _)
+  swap
+  exact fun _ x => ⟨x, x.1.2, x.2⟩
+  assumption
+#align set.well_founded_on.prod_lex_of_well_founded_on_fiber Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber
+
+end ProdLex
+
+section SigmaLex
+
+variable {rι : ι → ι → Prop} {rπ : ∀ i, π i → π i → Prop} {f : γ → ι} {g : ∀ i, γ → π i} {s : Set γ}
+
+/-- Stronger version of `psigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
+require it to be well-founded on fibers of `f`.-/
+theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
+    (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
+    WellFounded (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
+  refine' (PSigma.lex_wf (wellFoundedOn_range.2 hι) fun a => hπ a).onFun.mono fun c c' h => _
+  exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
+  obtain h' | ⟨h', h''⟩ := Sigma.lex_iff.1 h
+  · exact PSigma.Lex.left _ _ h'
+  · dsimp only [InvImage, (· on ·)] at h' ⊢
+    convert PSigma.Lex.right (⟨_, c', rfl⟩ : range f) _ using 1; swap
+    · exact ⟨c, h'⟩
+    · exact PSigma.subtype_ext (Subtype.ext h') rfl
+    · dsimp only [Subtype.coe_mk] at *
+      revert h'
+      generalize f c = d
+      rintro rfl h''
+      exact h''
+#align well_founded.sigma_lex_of_well_founded_on_fiber WellFounded.sigma_lex_of_wellFoundedOn_fiber
+
+theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedOn (rι on f))
+    (hπ : ∀ i, (s ∩ f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
+    s.WellFoundedOn (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
+  show WellFounded (Sigma.Lex rι rπ on fun c : s => ⟨f c, g (f c) c⟩)
+  refine'
+    @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
+      fun i => (hπ i).onFun.mono (fun b c h => _)
+  swap
+  exact fun _ x => ⟨x, x.1.2, x.2⟩
+  assumption
+#align set.well_founded_on.sigma_lex_of_well_founded_on_fiber Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber
+
+end SigmaLex

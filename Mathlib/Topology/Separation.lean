@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.separation
-! leanprover-community/mathlib commit d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.Connected
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
+
+#align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
 /-!
 # Separation properties of topological spaces.
@@ -728,7 +725,7 @@ obtains a dense set. -/
 theorem Dense.diff_finset [T1Space α] [∀ x : α, NeBot (𝓝[≠] x)] {s : Set α} (hs : Dense s)
     (t : Finset α) : Dense (s \ t) := by
   induction t using Finset.induction_on with
-  | empty =>  simpa using hs
+  | empty => simpa using hs
   | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
     exact ih.diff_singleton _
@@ -1986,7 +1983,7 @@ theorem nhds_basis_clopen (x : α) : (𝓝 x).HasBasis (fun s : Set α => x ∈ 
       intro hU
       let N := { Z // IsClopen Z ∧ x ∈ Z }
       suffices : ∃ Z : N, Z.val ⊆ U
-      · rcases this with  ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
+      · rcases this with ⟨⟨s, hs, hs'⟩, hs''⟩; exact ⟨s, ⟨hs', hs⟩, hs''⟩
       haveI : Nonempty N := ⟨⟨univ, isClopen_univ, mem_univ x⟩⟩
       have hNcl : ∀ Z : N, IsClosed Z.val := fun Z => Z.property.1.2
       have hdir : Directed Superset fun Z : N => Z.val := by
@@ -2079,9 +2076,9 @@ instance ConnectedComponents.t2 [T2Space α] [CompactSpace α] : T2Space (Connec
   -- Now we show that this can be reduced to some clopen containing `↑b` being disjoint to `↑a`
   obtain ⟨U, V, hU, ha, hb, rfl⟩ : ∃ (U : Set α) (V : Set (ConnectedComponents α)),
       IsClopen U ∧ connectedComponent a ∩ U = ∅ ∧ connectedComponent b ⊆ U ∧ (↑) ⁻¹' V = U := by
-    have h := by
-      refine isClosed_connectedComponent.isCompact.elim_finite_subfamily_closed ?_ _ h
-      exact fun Z => Z.2.1.2
+    have h :=
+      (isClosed_connectedComponent (α := α)).isCompact.elim_finite_subfamily_closed
+        _ (fun Z : { Z : Set α // IsClopen Z ∧ b ∈ Z } => Z.2.1.2) h
     cases' h with fin_a ha
     -- This clopen and its complement will separate the connected components of `a` and `b`
     set U : Set α := ⋂ (i : { Z // IsClopen Z ∧ b ∈ Z }) (_ : i ∈ fin_a), i

@@ -2,11 +2,6 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
-
-! This file was ported from Lean 3 source module category_theory.groupoid.subgroupoid
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Order.GaloisConnection
+
+#align_import category_theory.groupoid.subgroupoid from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Subgroupoid
@@ -172,7 +169,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
 #align category_theory.subgroupoid.hom.inj_on_objects CategoryTheory.Subgroupoid.hom.inj_on_objects
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq  hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq hfg
 #align category_theory.subgroupoid.hom.faithful CategoryTheory.Subgroupoid.hom.faithful
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/

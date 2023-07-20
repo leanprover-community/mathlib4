@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.basic
-! leanprover-community/mathlib commit 36b8aa61ea7c05727161f96a0532897bd72aedab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.ULift
@@ -17,6 +12,8 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
 /-!
 # Algebras over commutative semirings
@@ -344,10 +341,8 @@ instance (priority := 200) toModule : Module R A where
   zero_smul := by simp [smul_def']
 #align algebra.to_module Algebra.toModule
 
--- From now on, we don't want to use the following instance anymore.
--- Unfortunately, leaving it in place caused deterministic timeouts later in mathlib3.
--- porting note: todo: is it still required in Mathlib 4?
-attribute [instance 0] Algebra.toSMul
+-- porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
+-- attribute [instance 0] Algebra.toSMul
 
 theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
   Algebra.smul_def' r x

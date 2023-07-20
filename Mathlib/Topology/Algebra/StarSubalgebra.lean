@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.algebra.star_subalgebra
-! leanprover-community/mathlib commit b7f5a77fa29ad9a3ccc484109b0d7534178e7ecd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Star
+
+#align_import topology.algebra.star_subalgebra from "leanprover-community/mathlib"@"b7f5a77fa29ad9a3ccc484109b0d7534178e7ecd"
 
 /-!
 # Topological star (sub)algebras

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.basic
-! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
+
+#align_import data.polynomial.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
 /-!
 # Theory of univariate polynomials
@@ -1054,8 +1051,7 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
-  -- Porting note: `exact ..` is required.
-  toFinsupp_injective <| by simp; exact Finsupp.erase_zero n
+  toFinsupp_injective <| by simp
 #align polynomial.erase_zero Polynomial.erase_zero
 
 @[simp]

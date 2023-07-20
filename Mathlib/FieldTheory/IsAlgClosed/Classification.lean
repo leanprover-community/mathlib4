@@ -2,17 +2,14 @@
 Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module field_theory.is_alg_closed.classification
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.AlgebraicIndependent
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.Data.Polynomial.Cardinal
 import Mathlib.Data.MvPolynomial.Cardinal
 import Mathlib.Data.ZMod.Algebra
+
+#align_import field_theory.is_alg_closed.classification from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Classification of Algebraically closed fields

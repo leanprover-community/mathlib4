@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.lemmas
-! leanprover-community/mathlib commit 3342d1b2178381196f818146ff79bc0e7ccd9e2d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+
+#align_import control.traversable.lemmas from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"
 
 /-!
 # Traversing collections
@@ -25,21 +22,21 @@ Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 
 universe u
 
-open IsLawfulTraversable
+open LawfulTraversable
 
 open Function hiding comp
 
 open Functor
 
-attribute [functor_norm] IsLawfulTraversable.naturality
+attribute [functor_norm] LawfulTraversable.naturality
 
-attribute [simp] IsLawfulTraversable.id_traverse
+attribute [simp] LawfulTraversable.id_traverse
 
 namespace Traversable
 
 variable {t : Type u → Type u}
 
-variable [Traversable t] [IsLawfulTraversable t]
+variable [Traversable t] [LawfulTraversable t]
 
 variable (F G : Type u → Type u)
 
