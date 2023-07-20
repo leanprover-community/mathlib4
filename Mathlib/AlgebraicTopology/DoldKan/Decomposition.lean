@@ -81,7 +81,7 @@ theorem decomposition_Q (n q : ℕ) :
           Finset.mem_erase, ne_eq, Fin.mk.injEq, true_and]
         aesop
 set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Qₓ
+#align algebraic_topology.dold_kan.decomposition_Q AlgebraicTopology.DoldKan.decomposition_Q
 
 variable (X)
 
