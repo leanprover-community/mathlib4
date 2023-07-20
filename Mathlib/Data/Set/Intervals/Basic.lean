@@ -3,14 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 Ported by: Winston Yin, Arien Malec
-
-! This file was ported from Lean 3 source module data.set.intervals.basic
-! leanprover-community/mathlib commit 4367b192b58a665b6f18773f73eb492eb4df7990
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
+
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"4367b192b58a665b6f18773f73eb492eb4df7990"
 
 /-!
 # Intervals

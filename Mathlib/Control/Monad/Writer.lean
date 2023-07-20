@@ -2,14 +2,11 @@
 Copyright (c) 2019 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, E.W.Ayers
-
-! This file was ported from Lean 3 source module control.monad.writer
-! leanprover-community/mathlib commit 9407b03373c8cd201df99d6bc5514fc2db44054f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Equiv.Defs
+
+#align_import control.monad.writer from "leanprover-community/mathlib"@"9407b03373c8cd201df99d6bc5514fc2db44054f"
 
 /-!
 # Writer monads
@@ -40,7 +37,7 @@ export MonadWriter (tell listen pass)
 variable {M : Type u → Type v} [Monad M]
 
 instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
-  tell w :=  (tell w : M _)
+  tell w := (tell w : M _)
   listen x r := listen <| x r
   pass x r := pass <| x r
 
