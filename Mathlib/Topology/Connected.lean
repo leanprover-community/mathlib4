@@ -753,6 +753,13 @@ theorem isConnected_univ [ConnectedSpace α] : IsConnected (univ : Set α) :=
   ⟨univ_nonempty, isPreconnected_univ⟩
 #align is_connected_univ isConnected_univ
 
+@[simp] lemma IsPreconnected_univ_iff : IsPreconnected (univ : Set α) ↔ PreconnectedSpace α :=
+  ⟨fun h ↦ ⟨h⟩, fun h ↦ h.1⟩
+
+@[simp] lemma IsConnected_univ_iff : IsConnected (univ : Set α) ↔ ConnectedSpace α :=
+  ⟨fun h ↦ ConnectedSpace.mk (toPreconnectedSpace := ⟨h.2⟩) ⟨h.1.some⟩,
+   fun h ↦ ⟨univ_nonempty, h.1.1⟩⟩
+
 theorem isPreconnected_range [TopologicalSpace β] [PreconnectedSpace α] {f : α → β}
     (h : Continuous f) : IsPreconnected (range f) :=
   @image_univ _ _ f ▸ isPreconnected_univ.image _ h.continuousOn

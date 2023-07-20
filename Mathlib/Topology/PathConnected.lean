@@ -1142,6 +1142,20 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
     exact ⟨⟨x⟩, by simpa using h'⟩
 #align path_connected_space_iff_univ pathConnectedSpace_iff_univ
 
+theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
+  pathConnectedSpace_iff_univ.mp inferInstance
+
+theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continuous f) :
+    IsPathConnected (range f) := by
+  rw [← image_univ]
+  exact isPathConnected_univ.image hf
+
+/-- This is a special case of `NormedSpace.path_connected` (and
+`TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
+instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
+  Nonempty := inferInstance
+  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]
 #align path_connected_space_iff_eq pathConnectedSpace_iff_eq
