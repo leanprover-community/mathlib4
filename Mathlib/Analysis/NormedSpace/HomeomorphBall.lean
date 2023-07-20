@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Patrick Massot. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl
+Authors: Yury Kudryashov, Oliver Nash
 
 ! This file was ported from Lean 3 source module analysis.normed_space.basic
 ! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
@@ -9,12 +9,31 @@ Authors: Patrick Massot, Johannes Hölzl
 ! if you have ported upstream changes.
 -/
 import Mathlib.Topology.LocalHomeomorph
+import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
 /-!
 # (Local) homeomorphism between a normed space and a ball
+
+In this file we show that a real (semi)normed vector space is homeomorphic to the unit ball.
+
+We formalize it in two ways:
+
+- as a `Homeomorph`, see `Homeomorph.unitBall`;
+- as a `LocalHomeomorph` with `source = Set.univ` and `target = Metric.ball (0 : E) 1`.
+
+While the former approach is more natural, the latter approach provides us
+with a globally defined inverse function which makes it easier to say
+that this homeomorphism is in fact a diffeomorphism.
+
+We also show that the unit ball `Metric.ball (0 : E) 1` is homeomorphic
+to a ball of positive radius in an affine space over `E`, see `LocalHomeomorph.unitBallBall`.
+
+## Tags
+
+homeomorphism, ball
 -/
 
-open Set Metric
+open Set Metric Pointwise
 variable (E : Type _) [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section
@@ -22,7 +41,7 @@ noncomputable section
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps (config := { isSimp := false })]
-def LocalHomeomorph.unitBall : LocalHomeomorph E E where
+protected def LocalHomeomorph.unitBall : LocalHomeomorph E E where
   toFun x := (1 + ‖x‖ ^ 2).sqrt⁻¹ • x
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   source := univ
@@ -54,7 +73,7 @@ def LocalHomeomorph.unitBall : LocalHomeomorph E E where
       nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
     exact ContinuousOn.smul (ContinuousOn.inv₀
       (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
-  
+
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -74,3 +93,17 @@ theorem Homeomorph.coe_unitBall_apply_zero [NormedSpace ℝ E] :
     (Homeomorph.unitBall E 0 : E) = 0 := by
   simp [unitBall_apply_coe, LocalHomeomorph.unitBall_apply]
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
+
+variable {E} {P : Type _}
+variable [PseudoMetricSpace P] [NormedAddTorsor E P]
+
+/-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
+interpreted as a `LocalHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
+@[simps!]
+def LocalHomeomorph.unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
+  ((Homeomorph.smulOfNeZero r hr.ne').trans
+      (IsometryEquiv.vaddConst c).toHomeomorph).toLocalHomeomorphOfImageEq
+      (ball 0 1) isOpen_ball (ball c r) <| by
+    change (IsometryEquiv.vaddConst c) ∘ (r • ·) '' ball (0 : E) 1 = ball c r
+    rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
+    simp [abs_of_pos hr]

@@ -124,6 +124,9 @@ theorem trans_apply (h₁ : α ≃ₜ β) (h₂ : β ≃ₜ γ) (a : α) : h₁.
   rfl
 #align homeomorph.trans_apply Homeomorph.trans_apply
 
+@[simp] theorem symm_trans_apply (f : α ≃ₜ β) (g : β ≃ₜ γ) (a : γ) :
+    (f.trans g).symm a = f.symm (g.symm a) := rfl
+
 @[simp]
 theorem homeomorph_mk_coe_symm (a : Equiv α β) (b c) :
     ((Homeomorph.mk a b c).symm : β → α) = a.symm :=

@@ -322,9 +322,15 @@ theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c •
 
 /-- Scalar multiplication by a non-zero element of a group with zero acting on `α` is a
 homeomorphism from `α` onto itself. -/
+@[simps! (config := .asFn) apply]
 protected def Homeomorph.smulOfNeZero (c : G₀) (hc : c ≠ 0) : α ≃ₜ α :=
   Homeomorph.smul (Units.mk0 c hc)
 #align homeomorph.smul_of_ne_zero Homeomorph.smulOfNeZero
+
+@[simp]
+theorem Homeomorph.smulOfNeZero_symm_apply {c : G₀} (hc : c ≠ 0) :
+    ⇑(Homeomorph.smulOfNeZero c hc).symm = (c⁻¹ • · : α → α) :=
+  rfl
 
 theorem isOpenMap_smul₀ {c : G₀} (hc : c ≠ 0) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isOpenMap
