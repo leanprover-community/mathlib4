@@ -72,11 +72,11 @@ def main (args : List String) : IO Unit := do
   | ["get!"] => getFiles hashMap true true goodCurl true
   | ["get-"] => getFiles hashMap false false goodCurl false
   | "get"  :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl true
+    getFiles (← hashMemo.filterByFilePaths (← toPaths args)) false false goodCurl true
   | "get!" :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
+    getFiles (← hashMemo.filterByFilePaths (← toPaths args)) true true goodCurl true
   | "get-" :: args =>
-    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
+    getFiles (← hashMemo.filterByFilePaths (← toPaths args)) false false goodCurl false
   | ["pack"] => discard $ packCache hashMap false
   | ["pack!"] => discard $ packCache hashMap true
   | ["unpack"] => unpackCache hashMap false
