@@ -41,7 +41,7 @@ noncomputable section
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
 @[simps (config := { isSimp := false })]
-protected def LocalHomeomorph.unitBall : LocalHomeomorph E E where
+def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
   toFun x := (1 + ‖x‖ ^ 2).sqrt⁻¹ • x
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
   source := univ
@@ -74,6 +74,13 @@ protected def LocalHomeomorph.unitBall : LocalHomeomorph E E where
     exact ContinuousOn.smul (ContinuousOn.inv₀
       (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
 
+@[simp]
+theorem LocalHomeomorph.univUnitBall_apply_zero : univUnitBall E 0 = 0 := by
+  simp [LocalHomeomorph.univUnitBall_apply]
+
+@[simp]
+theorem LocalHomeomorph.univUnitBall_symm_apply_zero : (univUnitBall E).symm 0 = 0 := by
+  simp [LocalHomeomorph.univUnitBall_symm_apply]
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
@@ -84,26 +91,64 @@ In many cases the actual implementation is not important, so we don't mark the p
 See also `contDiff_homeomorphUnitBall` and `contDiffOn_homeomorphUnitBall_symm` for
 smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! (config := { isSimp := false })]
-def Homeomorph.unitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E) 1 :=
-  (Homeomorph.Set.univ _).symm.trans (LocalHomeomorph.unitBall E).toHomeomorphSourceTarget
+def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
+  (Homeomorph.Set.univ _).symm.trans (LocalHomeomorph.univUnitBall E).toHomeomorphSourceTarget
 #align homeomorph_unit_ball Homeomorph.unitBall
 
 @[simp]
-theorem Homeomorph.coe_unitBall_apply_zero [NormedSpace ℝ E] :
-    (Homeomorph.unitBall E 0 : E) = 0 := by
-  simp [unitBall_apply_coe, LocalHomeomorph.unitBall_apply]
+theorem Homeomorph.coe_unitBall_apply_zero :
+    (Homeomorph.unitBall E 0 : E) = 0 :=
+  LocalHomeomorph.univUnitBall_apply_zero E
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
 variable {E} {P : Type _}
 variable [PseudoMetricSpace P] [NormedAddTorsor E P]
 
+namespace LocalHomeomorph
+
 /-- Affine homeomorphism `(r • · +ᵥ c)` between a normed space and an add torsor over this space,
 interpreted as a `LocalHomeomorph` between `Metric.ball 0 1` and `Metric.ball c r`. -/
 @[simps!]
-def LocalHomeomorph.unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
+def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
   ((Homeomorph.smulOfNeZero r hr.ne').trans
       (IsometryEquiv.vaddConst c).toHomeomorph).toLocalHomeomorphOfImageEq
       (ball 0 1) isOpen_ball (ball c r) <| by
     change (IsometryEquiv.vaddConst c) ∘ (r • ·) '' ball (0 : E) 1 = ball c r
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
     simp [abs_of_pos hr]
+
+/-- If `r > 0`, then `LocalHomemorph.univBall c r` is a smooth local homeomorphism
+with `source = Set.univ` and `target = Metric.ball c r`.
+Otherwise, it is the translation by `c`. -/
+def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
+  if h : 0 < r then (univUnitBall E).trans' (unitBallBall c r h) rfl
+  else (IsometryEquiv.vaddConst c).toHomeomorph.toLocalHomeomorph
+
+@[simp]
+theorem univBall_source (c : P) (r : ℝ) : (univBall c r).source = univ := by
+  unfold univBall; split_ifs <;> rfl
+
+theorem univBall_target (c : P) {r : ℝ} (hr : 0 < r) : (univBall c r).target = ball c r := by
+  rw [univBall, dif_pos hr]; rfl
+
+theorem ball_subset_univBall_target (c : P) (r : ℝ) : ball c r ⊆ (univBall c r).target := by
+  by_cases hr : 0 < r
+  · rw [univBall_target c hr]
+  · rw [univBall, dif_neg hr]
+    exact subset_univ _
+
+@[simp]
+theorem univBall_apply_zero (c : P) (r : ℝ) : univBall c r 0 = c := by
+  unfold univBall; split_ifs <;> simp
+
+@[simp]
+theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0 := by
+  have : 0 ∈ (univBall c r).source := by simp
+  simpa only [univBall_apply_zero] using (univBall c r).left_inv this
+
+@[continuity]
+theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
+  simpa [continuous_iff_continuousOn_univ] using (univBall c r).continuousOn
+
+theorem continuousOn_univBall_symm (c : P) (r : ℝ) : ContinuousOn (univBall c r).symm (ball c r) :=
+  (univBall c r).symm.continuousOn.mono <| ball_subset_univBall_target c r

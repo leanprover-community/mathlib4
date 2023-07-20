@@ -386,4 +386,3 @@ theorem contDiffOn_homeomorphUnitBall_symm {f : E → E}
 #align cont_diff_on_homeomorph_unit_ball_symm contDiffOn_homeomorphUnitBall_symm
 
 end DiffeomorphUnitBall
-

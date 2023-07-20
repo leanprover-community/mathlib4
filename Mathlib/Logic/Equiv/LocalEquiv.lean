@@ -664,6 +664,7 @@ theorem ofSet_symm (s : Set α) : (LocalEquiv.ofSet s).symm = LocalEquiv.ofSet s
 
 /-- Composing two local equivs if the target of the first coincides with the source of the
 second. -/
+@[simps]
 protected def trans' (e' : LocalEquiv β γ) (h : e.target = e'.source) : LocalEquiv α γ where
   toFun := e' ∘ e
   invFun := e.symm ∘ e'.symm
