@@ -2,16 +2,13 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module algebraic_geometry.projective_spectrum.structure_sheaf
-! leanprover-community/mathlib commit 486cb2f3bda4a67557c6285f5bd0c3348c1eea81
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
+
+#align_import algebraic_geometry.projective_spectrum.structure_sheaf from "leanprover-community/mathlib"@"486cb2f3bda4a67557c6285f5bd0c3348c1eea81"
 
 /-!
 # The structure sheaf on `projective_spectrum 𝒜`.
