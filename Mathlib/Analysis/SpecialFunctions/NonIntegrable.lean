@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.special_functions.non_integrable
-! leanprover-community/mathlib commit 55ec6e9af7d3e0043f57e394cb06a72f6275273e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
+
+#align_import analysis.special_functions.non_integrable from "leanprover-community/mathlib"@"55ec6e9af7d3e0043f57e394cb06a72f6275273e"
 
 /-!
 # Non integrable functions
