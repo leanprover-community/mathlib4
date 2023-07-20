@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
-
-! This file was ported from Lean 3 source module model_theory.syntax
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+
+#align_import model_theory.syntax from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # Basics on First-Order Syntax

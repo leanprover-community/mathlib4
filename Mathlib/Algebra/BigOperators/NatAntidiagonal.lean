@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.big_operators.nat_antidiagonal
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Algebra.BigOperators.Basic
+
+#align_import algebra.big_operators.nat_antidiagonal from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Big operators for `NatAntidiagonal`

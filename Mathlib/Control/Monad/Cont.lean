@@ -2,15 +2,12 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.monad.cont
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Init.Control.Lawful
+
+#align_import control.monad.cont from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # Continuation Monad

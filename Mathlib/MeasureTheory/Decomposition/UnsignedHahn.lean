@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.unsigned_hahn
-! leanprover-community/mathlib commit 0f1becb755b3d008b242c622e248a70556ad19e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
+
+#align_import measure_theory.decomposition.unsigned_hahn from "leanprover-community/mathlib"@"0f1becb755b3d008b242c622e248a70556ad19e6"
 
 /-!
 # Unsigned Hahn decomposition theorem

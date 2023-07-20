@@ -2,14 +2,11 @@
 Copyright (c) 2022 Filippo A. E. Nuccio Mortarino Majno di Capriglio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
-
-! This file was ported from Lean 3 source module topology.homotopy.H_spaces
-! leanprover-community/mathlib commit 729d23f9e1640e1687141be89b106d3c8f9d10c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
 
 /-!
 # H-spaces
