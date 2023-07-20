@@ -251,14 +251,12 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
       Prod.ext (mul_right_cancel (Prod.ext_iff.1 h).1) (mul_right_cancel (Prod.ext_iff.1 h).2) }
 
 @[to_additive]
-instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp }
+instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) where
+  mul_left_cancel := by simp
 
 @[to_additive]
-instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp }
+instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) where
+  mul_right_cancel := by simp
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=

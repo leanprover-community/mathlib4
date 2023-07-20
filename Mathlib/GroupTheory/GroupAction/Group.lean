@@ -24,7 +24,7 @@ section MulAction
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
 @[to_additive " `AddMonoid.toAddAction` is faithful on additive cancellative monoids. "]
 instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
-  ⟨fun h => mul_right_cancel (h 1)⟩
+  ⟨fun h => mul_right_cancel _ _ _ (h 1)⟩
 #align right_cancel_monoid.to_has_faithful_smul RightCancelMonoid.faithfulSMul
 #align add_right_cancel_monoid.to_has_faithful_vadd AddRightCancelMonoid.faithfulVAdd
 

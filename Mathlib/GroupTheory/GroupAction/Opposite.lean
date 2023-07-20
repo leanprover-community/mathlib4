@@ -164,7 +164,7 @@ example [Monoid α] : Monoid.toMulAction αᵐᵒᵖ = MulOpposite.mulAction α 
 @[to_additive "`AddMonoid.toOppositeAddAction` is faithful on cancellative monoids."]
 instance LeftCancelMonoid.toFaithfulSMul_opposite [LeftCancelMonoid α] :
     FaithfulSMul αᵐᵒᵖ α :=
-  ⟨fun h => unop_injective <| mul_left_cancel (h 1)⟩
+  ⟨fun h => unop_injective <| mul_left_cancel _ _ _ (h 1)⟩
 #align left_cancel_monoid.to_has_faithful_opposite_scalar LeftCancelMonoid.toFaithfulSMul_opposite
 #align add_left_cancel_monoid.to_has_faithful_opposite_scalar AddLeftCancelMonoid.toFaithfulVAdd_opposite
 
