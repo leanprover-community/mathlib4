@@ -673,12 +673,15 @@ is useful to define the sum over the empty set, so `AddLeftCancelSemigroup` is n
 class AddLeftCancelMonoid (M : Type u) extends AddMonoid M, AddLeftCancelSemigroup M
 #align add_left_cancel_monoid AddLeftCancelMonoid
 
+attribute [instance 50] AddLeftCancelSemigroup.toAddSemigroup
+
 /-- A monoid in which multiplication is left-cancellative. -/
 @[to_additive]
 class LeftCancelMonoid (M : Type u) extends Monoid M, LeftCancelSemigroup M
 #align left_cancel_monoid LeftCancelMonoid
 
 attribute [to_additive existing] LeftCancelMonoid.toLeftCancelSemigroup
+attribute [instance 50] LeftCancelSemigroup.toSemigroup
 
 end LeftCancelMonoid
 
@@ -690,12 +693,14 @@ is useful to define the sum over the empty set, so `AddRightCancelSemigroup` is 
 class AddRightCancelMonoid (M : Type u) extends AddMonoid M, AddRightCancelSemigroup M
 #align add_right_cancel_monoid AddRightCancelMonoid
 
+attribute [instance 50] AddRightCancelSemigroup.toAddSemigroup
 /-- A monoid in which multiplication is right-cancellative. -/
 @[to_additive]
 class RightCancelMonoid (M : Type u) extends Monoid M, RightCancelSemigroup M
 #align right_cancel_monoid RightCancelMonoid
 
 attribute [to_additive existing] RightCancelMonoid.toRightCancelSemigroup
+attribute [instance 50] RightCancelSemigroup.toSemigroup
 
 end RightCancelMonoid
 
@@ -707,23 +712,31 @@ is useful to define the sum over the empty set, so `AddRightCancelMonoid` is not
 class AddCancelMonoid (M : Type u) extends AddLeftCancelMonoid M, AddRightCancelMonoid M
 #align add_cancel_monoid AddCancelMonoid
 
+attribute [instance 100] AddLeftCancelMonoid.toAddMonoid
+attribute [instance 50] AddRightCancelMonoid.toAddMonoid
+
 /-- A monoid in which multiplication is cancellative. -/
 @[to_additive]
 class CancelMonoid (M : Type u) extends LeftCancelMonoid M, RightCancelMonoid M
 #align cancel_monoid CancelMonoid
 
+attribute [instance 100] LeftCancelMonoid.toMonoid
+attribute [instance 50] RightCancelMonoid.toMonoid
+
 attribute [to_additive existing] CancelMonoid.toRightCancelMonoid
 
 /-- Commutative version of `AddCancelMonoid`. -/
-class AddCancelCommMonoid (M : Type u) extends AddLeftCancelMonoid M, AddCommMonoid M
+class AddCancelCommMonoid (M : Type u) extends AddCommMonoid M, AddLeftCancelMonoid M
 #align add_cancel_comm_monoid AddCancelCommMonoid
 
+attribute [instance 150] AddCommMonoid.toAddMonoid
 /-- Commutative version of `CancelMonoid`. -/
 @[to_additive]
-class CancelCommMonoid (M : Type u) extends LeftCancelMonoid M, CommMonoid M
+class CancelCommMonoid (M : Type u) extends CommMonoid M, LeftCancelMonoid M
 #align cancel_comm_monoid CancelCommMonoid
 
-attribute [to_additive existing] CancelCommMonoid.toCommMonoid
+attribute [to_additive existing] CancelCommMonoid.toLeftCancelMonoid
+attribute [instance 150] CommMonoid.toMonoid
 
 -- see Note [lower instance priority]
 @[to_additive]
