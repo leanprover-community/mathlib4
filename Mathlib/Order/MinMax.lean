@@ -69,13 +69,23 @@ theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
   sup_lt_iff
 #align max_lt_iff max_lt_iff
 
+@[gcongr]
 theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
 #align max_le_max max_le_max
 
+@[gcongr] theorem max_le_max_left (c) (h : a ≤ b) : max c a ≤ max c b := sup_le_sup_left h c
+
+@[gcongr] theorem max_le_max_right (c) (h : a ≤ b) : max a c ≤ max b c := sup_le_sup_right h c
+
+@[gcongr]
 theorem min_le_min : a ≤ c → b ≤ d → min a b ≤ min c d :=
   inf_le_inf
 #align min_le_min min_le_min
+
+@[gcongr] theorem min_le_min_left (c) (h : a ≤ b) : min c a ≤ min c b := inf_le_inf_left c h
+
+@[gcongr] theorem min_le_min_right (c) (h : a ≤ b) : min a c ≤ min b c := inf_le_inf_right c h
 
 theorem le_max_of_le_left : a ≤ b → a ≤ max b c :=
   le_sup_of_le_left
