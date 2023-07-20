@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.special_functions.japanese_bracket
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Integral.Layercake
+
+#align_import analysis.special_functions.japanese_bracket from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Japanese Bracket
@@ -162,6 +159,6 @@ theorem integrable_rpow_neg_one_add_norm_sq [MeasureSpace E] [BorelSpace E]
     ?_ (eventually_of_forall fun x => ?_)
   · -- porting note: was `measurability`
     exact (((measurable_id.norm.pow_const _).const_add _).pow_const _).aestronglyMeasurable
-  refine (abs_of_pos ?_).trans_le  (rpow_neg_one_add_norm_sq_le x hr)
+  refine (abs_of_pos ?_).trans_le (rpow_neg_one_add_norm_sq_le x hr)
   positivity
 #align integrable_rpow_neg_one_add_norm_sq integrable_rpow_neg_one_add_norm_sq

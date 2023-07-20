@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.finite_products_of_binary_products
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Logic.Equiv.Fin
+
+#align_import category_theory.limits.constructions.finite_products_of_binary_products from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Constructing finite products from binary products and terminal.
@@ -112,7 +109,7 @@ theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C := by
   refine' ⟨fun n => ⟨fun K => _⟩⟩
   letI := hasProduct_fin n fun n => K.obj ⟨n⟩
   let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨i⟩ => Iso.refl _
-  apply @hasLimitOfIso  _ _ _ _ _ _ this that
+  apply @hasLimitOfIso _ _ _ _ _ _ this that
 #align category_theory.has_finite_products_of_has_binary_and_terminal CategoryTheory.hasFiniteProducts_of_has_binary_and_terminal
 
 end

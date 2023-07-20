@@ -366,7 +366,7 @@ where
     let pf ← instantiateMVars mvar
     return pf
 
-/-- Returns whether or not it's reasonable to consider an equality between types  `ty1` and `ty2`.
+/-- Returns whether or not it's reasonable to consider an equality between types `ty1` and `ty2`.
 The heuristic is the following:
 
 - If `ty1` and `ty2` are in `Prop`, then yes.
@@ -564,7 +564,7 @@ returns a list of new goals.
 
 Tries a congruence lemma associated to the LHS and then, if that failed, the RHS.
 -/
-def Lean.MVarId.userCongr? (config : Congr!.Config)  (mvarId : MVarId) :
+def Lean.MVarId.userCongr? (config : Congr!.Config) (mvarId : MVarId) :
     MetaM (Option (List MVarId)) :=
   mvarId.withContext do
     mvarId.checkNotAssigned `userCongr?

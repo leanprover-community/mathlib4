@@ -2,15 +2,12 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module data.fin.tuple.bubble_sort_induction
-! leanprover-community/mathlib commit bf2428c9486c407ca38b5b3fb10b87dad0bc99fa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Order.WellFounded
+
+#align_import data.fin.tuple.bubble_sort_induction from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
 /-!
 # "Bubble sort" induction

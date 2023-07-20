@@ -149,7 +149,7 @@ theorem card_map_le (f : α → β) (as : List α) : card (as.map f) ≤ card as
       exact Nat.add_le_add_right ih _
 
 theorem card_map_eq_of_inj_on {f : α → β} {as : List α} :
-    inj_on f as →  card (as.map f) = card as := by
+    inj_on f as → card (as.map f) = card as := by
   induction as with
   | nil => simp
   | cons a as ih =>

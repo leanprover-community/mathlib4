@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jalex Stark, Scott Morrison, Eric Wieser, Oliver Nash
-
-! This file was ported from Lean 3 source module data.matrix.basis
-! leanprover-community/mathlib commit 320df450e9abeb5fc6417971e75acb6ae8bc3794
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.Matrix.Trace
+
+#align_import data.matrix.basis from "leanprover-community/mathlib"@"320df450e9abeb5fc6417971e75acb6ae8bc3794"
 
 /-!
 # Matrices with a single non-zero element.
