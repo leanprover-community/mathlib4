@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.compatible_plus
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.Plus
+
+#align_import category_theory.sites.compatible_plus from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -216,7 +213,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   apply Multiequalizer.hom_ext
   delta Cover.toMultiequalizer
   simp only [diagramCompIso_hom_ι, Category.assoc, ← F.map_comp]
-  simp only [unop_op, limit.lift_π,  Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
+  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
     implies_true]
 #align category_theory.grothendieck_topology.whisker_right_to_plus_comp_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toPlus_comp_plusCompIso_hom
 

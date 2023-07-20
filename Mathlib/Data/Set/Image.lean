@@ -3,13 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module data.set.image
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+
+#align_import data.set.image from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Images and preimages of sets
@@ -155,7 +152,6 @@ theorem preimage_comp_eq : preimage (g ∘ f) = preimage f ∘ preimage g :=
   rfl
 #align set.preimage_comp_eq Set.preimage_comp_eq
 
-@[simp]
 theorem preimage_iterate_eq {f : α → α} {n : ℕ} : Set.preimage f^[n] = (Set.preimage f)^[n] := by
   induction' n with n ih; · simp
   rw [iterate_succ, iterate_succ', Set.preimage_comp_eq, ih]
@@ -1090,7 +1086,7 @@ theorem Sum.elim_range (f : α → γ) (g : β → γ) : range (Sum.elim f g) = 
 
 theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
     range (if p then f else g) ⊆ range f ∪ range g := by
-  by_cases h : p;
+  by_cases h : p
   · rw [if_pos h]
     exact subset_union_left _ _
   · rw [if_neg h]
