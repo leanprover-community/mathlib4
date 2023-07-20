@@ -2,16 +2,13 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.additive_functor
-! leanprover-community/mathlib commit ee89acdf96a0b45afe3eea493bceb2a80a0f2efa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+
+#align_import category_theory.preadditive.additive_functor from "leanprover-community/mathlib"@"ee89acdf96a0b45afe3eea493bceb2a80a0f2efa"
 
 /-!
 # Additive Functors
@@ -178,8 +175,8 @@ instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where
   map_add {X Y f g} := by
-    rw [biprod.add_eq_lift_id_desc,  F.map_comp, ← biprod.lift_mapBiprod,
-      ←  biprod.mapBiprod_hom_desc, Category.assoc, Iso.inv_hom_id_assoc, F.map_id,
+    rw [biprod.add_eq_lift_id_desc, F.map_comp, ← biprod.lift_mapBiprod,
+      ← biprod.mapBiprod_hom_desc, Category.assoc, Iso.inv_hom_id_assoc, F.map_id,
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
 

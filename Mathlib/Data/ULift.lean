@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.ulift
-! leanprover-community/mathlib commit 41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Basic
+
+#align_import data.ulift from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
 
 /-!
 # Extra lemmas about `ULift` and `PLift`

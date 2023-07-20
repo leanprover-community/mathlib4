@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.pi.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.Data.Sum.Basic
+
+#align_import category_theory.pi.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Categories of indexed families of objects.
@@ -244,7 +241,7 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙  Pi.eval C i = f i := by
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
   apply Functor.ext
   intro _ _ _
   · simp

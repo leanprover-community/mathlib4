@@ -844,7 +844,7 @@ noncomputable def iCyclesNatTrans : cyclesFunctor C ⟶ ShortComplex.π₂ where
 noncomputable def toCyclesNatTrans :
     π₁ ⟶ cyclesFunctor C where
   app S := S.toCycles
-  naturality := fun _ _  φ => (toCycles_naturality φ).symm
+  naturality := fun _ _ φ => (toCycles_naturality φ).symm
 
 end
 
