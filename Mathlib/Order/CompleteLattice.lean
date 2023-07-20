@@ -2,20 +2,15 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.complete_lattice
-! leanprover-community/mathlib commit 5709b0d8725255e76f47debca6400c07b5c2d8e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Basic
-
 import Mathlib.Mathport.Notation
 
+#align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
 
 /-!
 # Theory of complete lattices
@@ -393,7 +388,7 @@ instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : Linear
       split_ifs with h
       · simp [h]
       · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
-    max_def :=  fun a b => by
+    max_def := fun a b => by
       split_ifs with h
       · simp [h]
       · simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
