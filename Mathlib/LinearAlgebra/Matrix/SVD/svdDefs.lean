@@ -216,6 +216,28 @@ lemma reduced_spectral_theorem (A: Matrix (Fin M) (Fin N) 𝕂):
   rw [Matrix.mul_assoc]
   rw [map_zero]
 
+lemma reduced_spectral_theorem' (A: Matrix (Fin M) (Fin N) 𝕂):
+  A⬝Aᴴ = A.svdU₁' ⬝ (A.svdμ'.map (algebraMap ℝ 𝕂))⬝ A.svdU₁'ᴴ := by
+  let hAAH := isHermitian_mul_conjTranspose_self A
+  rw [← submatrix_id_id (A⬝Aᴴ), modified_spectral_theorem hAAH,
+    ← IsHermitian.conjTranspose_eigenvectorMatrix]
+  rw [← submatrix_mul_equiv
+    hAAH.eigenvectorMatrix
+    (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues) ⬝ (hAAH.eigenvectorMatrixᴴ)) _ (emz A).symm _]
+  rw [← submatrix_mul_equiv
+    (diagonal (IsROrC.ofReal ∘ hAAH.eigenvalues))
+    (hAAH.eigenvectorMatrixᴴ) _ (emz A).symm _]
+  rw [← @IsROrC.algebraMap_eq_ofReal 𝕂]
+  simp_rw [Function.comp]
+  rw [← diagonal_map, submatrix_map,
+    ← reindex_apply, ← Equiv.coe_refl, ← Equiv.refl_symm, ← reindex_apply,
+    ← conjTranspose_submatrix, ← reindex_apply, S'_block, U_columns',
+    conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_map,
+    fromBlocks_mul_fromRows, fromColumns_mul_fromRows]
+  simp only [map_zero, Matrix.map_zero, Matrix.zero_mul, add_zero, Matrix.mul_zero]
+  rw [Matrix.mul_assoc]
+  rw [map_zero]
+
 lemma svdσ_inv (A: Matrix (Fin M) (Fin N) 𝕂): A.svdσ⁻¹ =
   (reindex (er A) (er A))
   (diagonal (fun (i : {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0}) =>
@@ -321,36 +343,43 @@ lemma conjTranspose_mul_U₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   Aᴴ ⬝ A.svdU₂ = 0 := by
   suffices h : A⬝Aᴴ⬝A.svdU₂ = 0
   · exact (ker_self_mul_conj_transpose_eq_ker_conj_transpose _ _).1 h
-  let hAAH := isHermitian_mul_conjTranspose_self A
-  have spectralAAH := modified_spectral_theorem (hAAH)
-  rw [spectralAAH]; clear spectralAAH;
+  rw [reduced_spectral_theorem', Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂]
+  simp only [Matrix.mul_zero]
+  -- have spectralAAH := modified_spectral_theorem (hAAH)
+  -- rw [spectralAAH]; clear spectralAAH;
 
-  apply_fun (fun x => hAAH.eigenvectorMatrixInv ⬝ x)
-  dsimp; rw [← Matrix.mul_assoc, ← Matrix.mul_assoc, eigenvector_matrix_inv_mul_self,
-    Matrix.one_mul, Matrix.mul_zero]
+  -- apply_fun (fun x => hAAH.eigenvectorMatrixInv ⬝ x)
+  -- dsimp; rw [← Matrix.mul_assoc, ← Matrix.mul_assoc, eigenvector_matrix_inv_mul_self,
+  --   Matrix.one_mul, Matrix.mul_zero]
 
-  -- unfold svdU₂ toColumns₂
-  simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_apply, id_eq]
+  -- -- unfold svdU₂ toColumns₂
+  -- simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_apply, id_eq]
 
-  -- apply_fun (fun x => x.submatrix (emz A).symm id)
-  apply_fun (fun x => reindex (emz A) (Equiv.refl _) x)
+  -- -- apply_fun (fun x => x.submatrix (emz A).symm id)
+  -- apply_fun (fun x => reindex (emz A) (Equiv.refl _) x)
 
-  simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_zero, Pi.zero_apply]
-  rw [← submatrix_mul_equiv _ _ _ (Equiv.refl _) _, ← submatrix_mul_equiv _ _ _ (emz A).symm _,
-    ← @IsROrC.algebraMap_eq_ofReal 𝕂]
-  simp_rw [Function.comp]
-  rw [← diagonal_map, submatrix_map, ← reindex_apply, S'_block, fromBlocks_map]
-  simp only [map_zero, Matrix.map_zero]
-  rw [← IsHermitian.conjTranspose_eigenvectorMatrix, ← conjTranspose_submatrix,
-    ← Equiv.refl_symm, ← reindex_apply, U_columns' A,
-    conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_mul_fromRows,
-    Matrix.zero_mul, Matrix.zero_mul,  Matrix.zero_mul, add_zero, zero_add,
-    Equiv.refl_symm, Equiv.coe_refl, submatrix_id_id]
-  rw [fromRows_mul, Matrix.zero_mul, Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂, Matrix.mul_zero,
-    fromRows_zero]
-  simp only [map_zero]
-  apply Matrix.left_mul_inj_of_invertible
+  -- simp only [reindex_apply, Equiv.refl_symm, Equiv.coe_refl, submatrix_zero, Pi.zero_apply]
+  -- rw [← submatrix_mul_equiv _ _ _ (Equiv.refl _) _, ← submatrix_mul_equiv _ _ _ (emz A).symm _,
+  --   ← @IsROrC.algebraMap_eq_ofReal 𝕂]
+  -- simp_rw [Function.comp]
+  -- rw [← diagonal_map, submatrix_map, ← reindex_apply, S'_block, fromBlocks_map]
+  -- simp only [map_zero, Matrix.map_zero]
+  -- rw [← IsHermitian.conjTranspose_eigenvectorMatrix, ← conjTranspose_submatrix,
+  --   ← Equiv.refl_symm, ← reindex_apply, U_columns' A,
+  --   conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromBlocks_mul_fromRows,
+  --   Matrix.zero_mul, Matrix.zero_mul,  Matrix.zero_mul, add_zero, zero_add,
+  --   Equiv.refl_symm, Equiv.coe_refl, submatrix_id_id]
+  -- rw [fromRows_mul, Matrix.zero_mul, Matrix.mul_assoc, U₁'_conjTranspose_mul_U₂, Matrix.mul_zero,
+  --   fromRows_zero]
+  -- simp only [map_zero]
+  -- apply Matrix.left_mul_inj_of_invertible
 
+lemma U₁_conjTranspose_mul_U₂ (A: Matrix (Fin M) (Fin N) 𝕂): A.svdU₁ᴴ ⬝ A.svdU₂ = 0 := by
+  unfold svdU₁
+  simp_rw [conjTranspose_mul, Matrix.mul_assoc, conjTranspose_mul_U₂_eq_zero, Matrix.mul_zero]
 
+lemma U₂_conjTranspose_mul_U₁ (A: Matrix (Fin M) (Fin N) 𝕂): A.svdU₂ᴴ ⬝ A.svdU₁ = 0 := by
+  rw [← conjTranspose_conjTranspose (A.svdU₁), ← conjTranspose_mul, U₁_conjTranspose_mul_U₂,
+    conjTranspose_zero]
 
 end Matrix
