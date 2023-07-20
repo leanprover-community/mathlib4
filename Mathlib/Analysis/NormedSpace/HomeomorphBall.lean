@@ -34,13 +34,13 @@ homeomorphism, ball
 -/
 
 open Set Metric Pointwise
-variable (E : Type _) [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type _} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 noncomputable section
 
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
-@[simps (config := { isSimp := false })]
+@[simps (config := .lemmasOnly)]
 def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
   toFun x := (1 + ‖x‖ ^ 2).sqrt⁻¹ • x
   invFun y := (1 - ‖(y : E)‖ ^ 2).sqrt⁻¹ • (y : E)
@@ -75,11 +75,11 @@ def LocalHomeomorph.univUnitBall : LocalHomeomorph E E where
       (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
 
 @[simp]
-theorem LocalHomeomorph.univUnitBall_apply_zero : univUnitBall E 0 = 0 := by
+theorem LocalHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_apply]
 
 @[simp]
-theorem LocalHomeomorph.univUnitBall_symm_apply_zero : (univUnitBall E).symm 0 = 0 := by
+theorem LocalHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E) = 0 := by
   simp [LocalHomeomorph.univUnitBall_symm_apply]
 
 /-- A (semi) normed real vector space is homeomorphic to the unit ball in the same space.
@@ -90,19 +90,18 @@ In many cases the actual implementation is not important, so we don't mark the p
 
 See also `contDiff_homeomorphUnitBall` and `contDiffOn_homeomorphUnitBall_symm` for
 smoothness properties that hold when `E` is an inner-product space. -/
-@[simps! (config := { isSimp := false })]
+@[simps! (config := .lemmasOnly)]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
-  (Homeomorph.Set.univ _).symm.trans (LocalHomeomorph.univUnitBall E).toHomeomorphSourceTarget
+  (Homeomorph.Set.univ _).symm.trans LocalHomeomorph.univUnitBall.toHomeomorphSourceTarget
 #align homeomorph_unit_ball Homeomorph.unitBall
 
 @[simp]
 theorem Homeomorph.coe_unitBall_apply_zero :
-    (Homeomorph.unitBall E 0 : E) = 0 :=
-  LocalHomeomorph.univUnitBall_apply_zero E
+    (Homeomorph.unitBall (0 : E) : E) = 0 :=
+  LocalHomeomorph.univUnitBall_apply_zero
 #align coe_homeomorph_unit_ball_apply_zero Homeomorph.coe_unitBall_apply_zero
 
-variable {E} {P : Type _}
-variable [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable {P : Type _} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 namespace LocalHomeomorph
 
@@ -121,7 +120,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`. -/
 def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
-  if h : 0 < r then (univUnitBall E).trans' (unitBallBall c r h) rfl
+  if h : 0 < r then univUnitBall.trans' (unitBallBall c r h) rfl
   else (IsometryEquiv.vaddConst c).toHomeomorph.toLocalHomeomorph
 
 @[simp]
