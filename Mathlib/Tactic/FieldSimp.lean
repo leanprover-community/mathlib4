@@ -30,43 +30,58 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
 /-- Discharge strategy for the field_simp tactic. -/
-partial def discharge (prop : Expr) : SimpM (Option Expr) :=
-  withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
-    if let some r ← Simp.dischargeUsingAssumption? prop then
-      return some r
+partial def discharge (prop : Expr) : SimpM (Option Expr) := do
+  for hyp in (← getLocalHyps) do
+    -- logInfo m!"The goal to discharge in {prop}"
+    -- logInfo m!"We are checking {hyp}"
+    let ty ← inferType hyp
+    -- logInfo m!"This has type {ty}"
+    let r' ← Tactic.NormCast.derive ty
+    let m ← mkFreshMVarId
+    let r ← applySimpResultToProp m hyp ty r'
+    if let some p := r then
+      let r'' ← Tactic.NormCast.derive prop
+      -- logInfo m!"Norm casting {prop} to {r''.expr}"
+      if (← isDefEq r''.expr p.2) then
+        let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
+        -- logInfo m!"This is the symmetric simp result {rsymm.expr}, {←rsymm.getProof}"
+        return some (← Lean.Meta.Simp.mkCast rsymm p.1)
 
-    let prop : Q(Prop) ← (do pure prop)
-    let pf? ← match prop with
-    | ~q(($e : $α) ≠ $b) =>
-        try
-          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
-          match res with
-          | .isTrue pf => pure (some pf)
-          | _ => pure none
-        catch _ =>
-          pure none
-    | _ => pure none
-    if let some pf := pf? then return some pf
+  -- if let some r ← Simp.dischargeUsingAssumption? prop then
+  --   return some r
 
-    let ctx ← read
-    let usedTheorems := (← get).usedTheorems
-
-    -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
-    -- does not explicitly call `simp` recursively like this. It's unclear to me
-    -- whether this is because
-    --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
-    --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
-    --   3) some other reason?
-    let ⟨simpResult, usedTheorems'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
-    set {(← get) with usedTheorems := usedTheorems'}
-    if simpResult.expr.isConstOf ``True then
+  let prop : Q(Prop) ← (do pure prop)
+  let pf? ← match prop with
+  | ~q(($e : $α) ≠ $b) =>
       try
-        return some (← mkOfEqTrue (← simpResult.getProof))
+        let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+        match res with
+        | .isTrue pf => pure (some pf)
+        | _ => pure none
       catch _ =>
-        return none
-    else
+        pure none
+  | _ => pure none
+  if let some pf := pf? then return some pf
+
+  let ctx ← read
+  let usedTheorems := (← get).usedTheorems
+
+  -- Port note: mathlib3's analogous field_simp discharger `field_simp.ne_zero`
+  -- does not explicitly call `simp` recursively like this. It's unclear to me
+  -- whether this is because
+  --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
+  --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
+  --   3) some other reason?
+  let ⟨simpResult, usedTheorems'⟩ ←
+    simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
+  set {(← get) with usedTheorems := usedTheorems'}
+  if simpResult.expr.isConstOf ``True then
+    try
+      return some (← mkOfEqTrue (← simpResult.getProof))
+    catch _ =>
       return none
+  else
+    return none
 
 /--
 The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
@@ -79,6 +94,12 @@ iterating the following steps:
 - if there are several divisions in a product, group them together at the end and write them as a
   single division
 - reduce a sum to a common denominator
+
+If the goal is an equality, this simpset will also clear the denominators, so that the proof
+can normally be concluded by an application of `ring` or `ring_exp`.
+
+`field_simp [hx, hy]` is a short form for
+`simp (discharger := Tactic.FieldSimp.discharge) [-one_div, -mul_eq_zero, hx, hy, field_simps]`
 
 If the goal is an equality, this simpset will also clear the denominators, so that the proof
 can normally be concluded by an application of `ring` or `ring_exp`.
@@ -162,3 +183,4 @@ elab_rules : tactic
   let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
 
   _ ← simpLocation r.ctx dis loc
+

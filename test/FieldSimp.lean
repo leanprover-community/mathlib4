@@ -2,6 +2,7 @@ import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.Rat.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Real.Basic
 
 /-!
 ## `field_simp` tests.
@@ -63,3 +64,7 @@ example (x : ℚ) (h₀ : x ≠ 0) :
 example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * w = z * y := by
   field_simp at h
   assumption
+
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
+  field_simp
+
