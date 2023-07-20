@@ -421,18 +421,16 @@ def Quotient.proj {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
     Quotient (S i) :=
   q.map (· i) (fun _ _ h ↦ by exact h i)
 
-private unsafe def Quotient.choiceImpl {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
+private unsafe def Quotient.unsafeChoice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)] :
     (∀ i, Quotient (S i)) → @Quotient (∀ i, α i) (by infer_instance) :=
   unsafeCast
 
 /-- Given a function `f : ∀ i, Quotient (S i)`, returns the class of functions `∀ i, α i` sending
 each `i` to an element of the class `f i`.
 
-This function uses `Classical.choice` to construct data, but it has special support in the runtime.
-For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
-see `Quotient.finChoice`. -/
-@[implemented_by choiceImpl]
-def Quotient.choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
+For the computable version for quotients indexed by a finite type, see `Quotient.finChoice`. -/
+-- We cannot make it `@[implemented_by Quotient.unsafeChoice]`. See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/quotients.20and.20products.20again/near/187614136
+noncomputable def Quotient.choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid (α i)]
     (f : ∀ i, Quotient (S i)) :
     @Quotient (∀ i, α i) (by infer_instance) :=
   ⟦fun i ↦ (f i).out⟧
@@ -459,10 +457,9 @@ lemma Quotient.proj_choice {ι : Type _} {α : ι → Type _} [S : ∀ i, Setoid
 
 /-- Lift a function on `∀ i, α i` to a function on `∀ i, Quotient (S i)`.
 
-This function uses `Classical.choice` to construct data, but it has special support in the runtime.
-For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
-see `Quotient.finLiftOn`. -/
-def Quotient.liftOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)] {β : Sort _}
+For the computable version for quotients indexed by a finite type, see `Quotient.finLiftOn`. -/
+noncomputable def Quotient.liftOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+    {β : Sort _}
     (q : ∀ i, Quotient (s i))
     (f : (∀ i, α i) → β)
     (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → f a = f b) : β :=
@@ -476,11 +473,9 @@ lemma Quotient.liftOnPi_mk {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid
 
 /-- Recursion principle for quotients indexed by a type.
 
-This function uses `Classical.choice` to construct data, but it has special support in the runtime.
-For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
-see `Quotient.finHRecOn`. -/
+For the computable version for quotients indexed by a finite type, see `Quotient.finHRecOn`. -/
 @[elab_as_elim]
-def Quotient.hrecOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+noncomputable def Quotient.hrecOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
     {C : (∀ i, Quotient (s i)) → Sort _}
     (q : ∀ i, Quotient (s i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
@@ -489,11 +484,9 @@ def Quotient.hrecOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α 
 
 /-- Recursion principle for quotients indexed by a type.
 
-This function uses `Classical.choice` to construct data, but it has special support in the runtime.
-For the version for quotients indexed by a finite type that does not depend on `Classical.choice`,
-see `Quotient.finRecOn`. -/
+For the computable version for quotients indexed by a finite type, see `Quotient.finRecOn`. -/
 @[elab_as_elim]
-def Quotient.recOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
+noncomputable def Quotient.recOnPi {ι : Type _} {α : ι → Sort _} [s : ∀ i, Setoid (α i)]
     {C : (∀ i, Quotient (s i)) → Sort _}
     (q : ∀ i, Quotient (s i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
