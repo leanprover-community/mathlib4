@@ -2,7 +2,7 @@
 Copyright (c) 2022 by the authors listed in the file AUTHORS and their
 institutional affiliations. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Harun Khan, Abdalrhman M Mohamed, Wojciech Nawrocki, Joe Hendrix,
+Authors: Wojciech Nawrocki, Joe Hendrix, Harun Khan, Abdalrhman M Mohamed
 -/
 
 import Mathlib.Data.Fin.Basic
@@ -48,18 +48,14 @@ protected def add (x y : BitVec w) : BitVec w := Fin.add x y
 protected def sub (x y : BitVec w) : BitVec w := Fin.sub x y
 protected def mul (x y : BitVec w) : BitVec w := Fin.mul x y
 protected def neg (x : BitVec w) : BitVec w := (Fin.neg (2^w)).neg x
-
 protected def mod (x y : BitVec w) : BitVec w :=
   ⟨x.val % y.val, Nat.lt_of_le_of_lt (Nat.mod_le _ _) x.isLt⟩
 protected def div (x y : BitVec w) : BitVec w :=
   ⟨x.val / y.val, Nat.lt_of_le_of_lt (Nat.div_le_self _ _) x.isLt⟩
---when `y = 0` its the bitvectors of all `1s`
 protected def lt (x y : BitVec w) : Bool :=
   x.val < y.val
 protected def le (x y : BitVec w) : Bool :=
   x.val ≤ y.val
-
-
 
 instance : Add (BitVec w) := ⟨BitVec.add⟩
 instance : Sub (BitVec w) := ⟨BitVec.sub⟩
@@ -70,13 +66,11 @@ instance : LT (BitVec w)  := ⟨fun x y => BitVec.lt x y⟩
 instance : LE (BitVec w)  := ⟨fun x y => BitVec.le x y⟩
 instance : Neg (BitVec w) := ⟨BitVec.neg⟩
 
-
 @[norm_cast]
 theorem val_bitvec_eq {a b : BitVec w} : a.val = b.val ↔ a = b :=
   ⟨(match a, b, · with | ⟨_, _⟩,⟨_, _⟩, rfl => rfl), (· ▸ rfl)⟩
 
 /-- `a < b` as natural numbers if and only if `a < b` in `Fin n`. -/
--- why is this a simp lemma?
 @[norm_cast]
 theorem val_bitvec_lt {a b : BitVec w} : a.val < b.val ↔ a < b := by
   simp [LT.lt, BitVec.lt]
@@ -106,17 +100,17 @@ protected def shiftRight (x : BitVec w) (n : Nat) : BitVec w :=
       simp only [Nat.shiftRight_eq_shiftr, Nat.shiftr_eq_div_pow]
       exact lt_of_le_of_lt (Nat.div_le_self' _ _) (x.isLt) ⟩
 
-protected def slt (x y : BitVec w) : Prop :=
-  if x.val >>> (w-1) < y.val >>> (w-1) then True
-  else x.val >>> (w-1) = y.val >>> (w-1) ∧ x.val >>> 1 < y.val >>> 1
+protected def slt (x y : BitVec (w + 1)) : Prop :=
+  if (y.val >>> w) < (x.val >>> w) then True
+  else x.val >>> w = y.val >>> w ∧ x.val % 2^w < y.val % 2^w
 
-protected def sle (x y : BitVec w) : Prop :=
-  if (x.val >>> (w-1)) < (y.val >>> (w-1)) then True
-  else (x.val >>> (w-1) = y.val >>> (w-1)) ∧ (x.val >>> 1 ≤ y.val >>> 1)
+protected def sle (x y : BitVec (w + 1)) : Prop :=
+  if (y.val >>> w) < (x.val >>> w) then True
+  else (x.val >>> w = y.val >>> w) ∧ x.val % 2^w ≤ y.val % 2^w
 
-protected def sgt (x y : BitVec w) : Prop := BitVec.slt y x
+protected def sgt (x y : BitVec (w + 1)) : Prop := BitVec.slt y x
 
-protected def sge (x y : BitVec w) : Prop := BitVec.sle y x
+protected def sge (x y : BitVec (w + 1)) : Prop := BitVec.sle y x
 
 instance : Complement (BitVec w) := ⟨BitVec.complement⟩
 instance : AndOp (BitVec w) := ⟨BitVec.and⟩
