@@ -37,7 +37,9 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) := do
 
   /- Next, try to cast all hypotheses and `prop` into normal form before checking -/
   let r'' ← Tactic.NormCast.derive prop
-  for hyp in (← getLocalHyps) do
+  let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
+  -- logInfo m!"Hypotheses {hyps}"
+  for hyp in hyps do
     -- logInfo m!"The goal to discharge in {prop}"
     -- logInfo m!"We are checking {hyp}"
     let ty ← inferType hyp
@@ -52,7 +54,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) := do
     --   logInfo m!"Norm casting {prop} to {r''.expr}"
     --   if (← isDefEq r''.expr p.2) then
         let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
-    --     logInfo m!"This is the symmetric simp result {rsymm.expr}, {←rsymm.getProof}"
+        -- logInfo m!"This is the symmetric simp result {rsymm.expr}, {←rsymm.getProof}"
         return some (← Lean.Meta.Simp.mkCast rsymm p.1)
 
   let prop : Q(Prop) ← (do pure prop)
