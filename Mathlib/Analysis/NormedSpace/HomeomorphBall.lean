@@ -84,10 +84,10 @@ theorem LocalHomeomorph.univUnitBall_symm_apply_zero : univUnitBall.symm (0 : E)
 This homeomorphism sends `x : E` to `(1 + ‖x‖²)^(- ½) • x`.
 
 In many cases the actual implementation is not important, so we don't mark the projection lemmas
-`homeomorphUnitBall_apply_coe` and `homeomorphUnitBall_symm_apply` as `@[simp]`.
+`Homeomorph.unitBall_apply_coe` and `Homeomorph.unitBall_symm_apply` as `@[simp]`.
 
-See also `contDiff_homeomorphUnitBall` and `contDiffOn_homeomorphUnitBall_symm` for
-smoothness properties that hold when `E` is an inner-product space. -/
+See also `Homeomorph.contDiff_unitBall` and `LocalHomeomorph.contDiffOn_unitBall_symm`
+for smoothness properties that hold when `E` is an inner-product space. -/
 @[simps! (config := .lemmasOnly)]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
   (Homeomorph.Set.univ _).symm.trans LocalHomeomorph.univUnitBall.toHomeomorphSourceTarget
@@ -114,7 +114,7 @@ def unitBallBall (c : P) (r : ℝ) (hr : 0 < r) : LocalHomeomorph E P :=
     rw [image_comp, image_smul, smul_unitBall hr.ne', IsometryEquiv.image_ball]
     simp [abs_of_pos hr]
 
-/-- If `r > 0`, then `LocalHomemorph.univBall c r` is a smooth local homeomorphism
+/-- If `r > 0`, then `LocalHomeomorph.univBall c r` is a smooth local homeomorphism
 with `source = Set.univ` and `target = Metric.ball c r`.
 Otherwise, it is the translation by `c`. -/
 def univBall (c : P) (r : ℝ) : LocalHomeomorph E P :=
