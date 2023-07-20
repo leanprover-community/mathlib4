@@ -40,7 +40,7 @@ require std from git "https://github.com/semorrison/std4" @ "simp_failIfUnchange
 require Qq from git "https://github.com/gebner/quote4" @ "master"
 require aesop from git "https://github.com/JLimperg/aesop" @ "master"
 require Cli from git "https://github.com/mhuisi/lean4-cli.git" @ "nightly"
-require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.12"
+require proofwidgets from git "https://github.com/EdAyers/ProofWidgets4" @ "v0.0.13"
 
 lean_lib Cache where
   moreLeanArgs := moreLeanArgs
