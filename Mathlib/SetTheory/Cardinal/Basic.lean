@@ -23,7 +23,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 
 ## Main definitions
 
-* `Cardinal` the type of cardinal numbers (in a given universe).
+* `Cardinal` is the type of cardinal numbers (in a given universe).
 * `Cardinal.mk α` or `#α` is the cardinality of `α`. The notation `#` lives in the locale
   `Cardinal`.
 * Addition `c₁ + c₂` is defined by `Cardinal.add_def α β : #α + #β = #(α ⊕ β)`.
