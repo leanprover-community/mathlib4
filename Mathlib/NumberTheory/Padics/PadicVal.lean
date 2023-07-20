@@ -558,15 +558,15 @@ theorem padicValNat_factorial_mul_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] 
   · rw [zero_eq, add_zero]
   · rw [add_succ, factorial_succ, padicValNat.mul (succ_ne_zero (p * m + n))
         <| factorial_ne_zero (p * m + _), hn <| lt_of_succ_lt h, ← add_succ,
-        padicValNat_eq_zero_between_consec_multiples (Nat.lt_add_of_pos_right <| succ_pos n)
-        (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h)), zero_add]
+        padicValNat_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),
+        (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩ , zero_add]
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
 the largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 @[simp] theorem padicValNat_mul_div_factorial {p : ℕ} (n : ℕ) [hp : Fact p.Prime] :
     padicValNat p (p * (n / p))! = padicValNat p n ! := by
-  nth_rw 1 [← div_add_mod n p]
-  exact padicValNat_factorial_add (n / p) <| mod_lt n <|Prime.pos hp.out
+  nth_rw 2 [← div_add_mod n p]
+  exact (padicValNat_factorial_mul_add (n / p) <| mod_lt n <|Prime.pos hp.out).symm
 
 end padicValNat
 
