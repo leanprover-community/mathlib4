@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.witt_polynomial
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Fintype.BigOperators
@@ -14,6 +9,8 @@ import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Expand
 import Mathlib.Data.ZMod.Basic
+
+#align_import ring_theory.witt_vector.witt_polynomial from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Witt polynomials

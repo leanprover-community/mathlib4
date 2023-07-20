@@ -2,15 +2,12 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
-
-! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit 4c3e1721c58ef9087bbc2c8c38b540f70eda2e53
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.Support
+
+#align_import topology.homeomorph from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
 /-!
 # Homeomorphisms

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
-
-! This file was ported from Lean 3 source module data.list.join
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
+
+#align_import data.list.join from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-!
 # Join of a list of lists

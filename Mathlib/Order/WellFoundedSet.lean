@@ -2,11 +2,6 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module order.well_founded_set
-! leanprover-community/mathlib commit 2c84c2c5496117349007d97104e7bbb471381592
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Sigma.Lex
 import Mathlib.Data.Sigma.Lex
@@ -14,6 +9,8 @@ import Mathlib.Order.Antichain
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.TFAE
+
+#align_import order.well_founded_set from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
 /-!
 # Well-founded sets

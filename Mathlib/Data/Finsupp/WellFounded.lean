@@ -2,14 +2,11 @@
 Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module data.finsupp.well_founded
-! leanprover-community/mathlib commit 5fd3186f1ec30a75d5f65732e3ce5e623382556f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.Finsupp.Lex
+
+#align_import data.finsupp.well_founded from "leanprover-community/mathlib"@"5fd3186f1ec30a75d5f65732e3ce5e623382556f"
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `Finsupp`

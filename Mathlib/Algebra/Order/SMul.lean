@@ -2,11 +2,6 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module algebra.order.smul
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Positivity
+
+#align_import algebra.order.smul from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Ordered scalar product

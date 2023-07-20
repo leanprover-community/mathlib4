@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.group.compact
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.algebra.group.compact from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Additional results on topological groups

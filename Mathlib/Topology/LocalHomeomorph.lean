@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.local_homeomorph
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.LocalEquiv
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.local_homeomorph from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-!
 # Local homeomorphisms

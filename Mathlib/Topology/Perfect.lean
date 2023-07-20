@@ -2,14 +2,11 @@
 Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
-
-! This file was ported from Lean 3 source module topology.perfect
-! leanprover-community/mathlib commit 3905fa80e62c0898131285baab35559fbc4e5cda
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
+
+#align_import topology.perfect from "leanprover-community/mathlib"@"3905fa80e62c0898131285baab35559fbc4e5cda"
 
 /-!
 # Perfect Sets

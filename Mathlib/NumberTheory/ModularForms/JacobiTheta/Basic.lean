@@ -2,16 +2,13 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.jacobi_theta.basic
-! leanprover-community/mathlib commit 57f9349f2fe19d2de7207e99b0341808d977cdcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+
+#align_import number_theory.modular_forms.jacobi_theta.basic from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
 /-! # Jacobi's theta function
 
