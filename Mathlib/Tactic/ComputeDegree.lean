@@ -75,7 +75,7 @@ If `e` represents
 *  `degree f ≤ d`,    then it returns `(false, f)`;
 *  anything else, then it throws an error.
 -/
-def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
+def isDegLE (e : Expr) : MetaM (Bool × Expr) := do
   match e.consumeMData.getAppFnArgs with
     -- check that the target is an inequality `≤`...
     | (``LE.le, #[_, _, lhs, _rhs]) => match lhs.getAppFnArgs with
@@ -83,8 +83,8 @@ def isDegLE (e : Expr) : CoreM (Bool × Expr) := do
       | (``degree, #[_R, _iSR, pol])    => return (false, pol)
       | (``natDegree, #[_R, _iSR, pol]) => return (true, pol)
       | (na, _) => throwError (m!"Expected an inequality of the form\n\n" ++
-        f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, {na} appears on the LHS")
-    | (na, _)  => throwError m!"Expected an inequality instead of '{na}', '{e}'"
+        f!"  'f.natDegree ≤ d'  or  'f.degree ≤ d',\n\ninstead, '{na}' appears on the LHS")
+    | (na, _)  => throwError m!"Expected an inequality instead of '{na}': '{← ppExpr e}'"
 
 /-- `computeDegreeLECore pol mv π` takes as input
 * an `Expr`ession `pol` representing a polynomial;
