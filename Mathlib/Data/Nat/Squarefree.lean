@@ -2,16 +2,13 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module data.nat.squarefree
-! leanprover-community/mathlib commit 3c1368cac4abd5a5cbe44317ba7e87379d51ed88
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Squarefree
 import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Data.Nat.PrimeNormNum
 import Mathlib.RingTheory.Int.Basic
+
+#align_import data.nat.squarefree from "leanprover-community/mathlib"@"3c1368cac4abd5a5cbe44317ba7e87379d51ed88"
 
 /-!
 # Lemmas about squarefreeness of natural numbers

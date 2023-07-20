@@ -2,15 +2,12 @@
 Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.module.character_space
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.algebra.module.character_space from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Character space of a topological algebra

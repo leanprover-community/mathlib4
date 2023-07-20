@@ -2,14 +2,11 @@
 Copyright (c) 2021 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module topology.homotopy.product
-! leanprover-community/mathlib commit 6a51706df6baee825ace37c94dc9f75b64d7f035
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.product from "leanprover-community/mathlib"@"6a51706df6baee825ace37c94dc9f75b64d7f035"
 
 /-!
 # Product of homotopies
