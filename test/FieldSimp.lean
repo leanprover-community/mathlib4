@@ -65,6 +65,7 @@ example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * 
   field_simp at h
   assumption
 
+/-- Test that the discharger can handle some casting -/
 example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
   field_simp
 
