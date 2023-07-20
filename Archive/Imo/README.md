@@ -1,6 +1,6 @@
 # IMO problems
 
-We have a collection of solutions to IMO problems in mathlib, stored under `/archive/imo/`.
+We have a collection of solutions to IMO problems in mathlib, stored under `/Archive/Imo/`.
 
 These are part of mathlib for three purposes:
 * The [IMO Grand Challenge](https://imo-grand-challenge.github.io/) will need training data, and exemplars,
@@ -23,7 +23,7 @@ Thus we'd like authors of IMO pull requests to keep in mind the following points
   [style guide](https://leanprover-community.github.io/contribute/style.html)
   carefully, and try to follow it very closely.
 * Please document your solution thoroughly.
-  Remember everything in `/archive/` should be an exemplar of good mathlib style.
+  Remember everything in `/Archive/` should be an exemplar of good mathlib style.
   There must be a clear human readable account of the solution at the top of the file
   (ideally something that would score 7!) but don't stop there.
   Please write doc-strings on most of your lemmas, explaining what they are doing and why,
@@ -38,7 +38,7 @@ Thus we'd like authors of IMO pull requests to keep in mind the following points
   and you should go look at the others and see if you can make helpful suggestions!
 * If there is a lemma that can be stated more generally than you need for the actual problem,
   but that could be useful for others, be sure to write the more general lemma,
-  and include it in the appropriate part of mathlib (i.e. not under `/archive/`).
+  and include it in the appropriate part of mathlib (i.e. not under `/Archive/`).
   (We're much more interested if you find ways that mathlib could be improved to
   make solving your IMO problem easier, than we are in having another solution.)
 * Although this may be hard for first time contributors,
