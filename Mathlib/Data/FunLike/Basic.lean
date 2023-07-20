@@ -136,11 +136,6 @@ class FunLike (F : Sort _) (α : outParam (Sort _)) (β : outParam <| α → Sor
 -- https://github.com/leanprover/lean4/issues/2096
 compile_def% FunLike.coe
 
-instance Subtype.funLike (F : Sort _) (α : outParam (Sort _)) (β : outParam (α → Sort _))
-  [FunLike F α β] (p : F → Prop) : FunLike (Subtype p) α β :=
-{ coe := FunLike.coe ∘ subtypeCoe.coe,
-  coe_injective' := Function.Injective.comp FunLike.coe_injective' Subtype.coe_injective }
-
 instance (α : Sort _) (β : α → Sort _) (p : ((x : α) → β x) → Prop) :
   FunLike (Subtype p) α β :=
 { coe := fun S x => (S : (x : α) → β x) x
