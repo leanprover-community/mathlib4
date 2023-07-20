@@ -411,10 +411,8 @@ theorem eventually_nhdsWithin (e : LocalHomeomorph α β) {x : α} (p : β → P
 theorem eventually_nhdsWithin' (e : LocalHomeomorph α β) {x : α} (p : α → Prop) {s : Set α}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p (e.symm y)) ↔ ∀ᶠ x in 𝓝[s] x, p x := by
   rw [e.eventually_nhdsWithin _ hx]
-  refine'
-    eventually_congr
-      ((eventually_nhdsWithin_of_eventually_nhds <| e.eventually_left_inverse hx).mono fun y hy =>
-        _)
+  refine eventually_congr <|
+    (eventually_nhdsWithin_of_eventually_nhds <| e.eventually_left_inverse hx).mono fun y hy => ?_
   rw [hy]
 #align local_homeomorph.eventually_nhds_within' LocalHomeomorph.eventually_nhdsWithin'
 
@@ -776,6 +774,7 @@ end
 
 /-- Composition of two local homeomorphisms when the target of the first and the source of
 the second coincide. -/
+@[simps! apply symm_apply toLocalEquiv, simps! (config := .lemmasOnly) source target]
 protected def trans' (h : e.target = e'.source) : LocalHomeomorph α γ where
   toLocalEquiv := LocalEquiv.trans' e.toLocalEquiv e'.toLocalEquiv h
   open_source := e.open_source
