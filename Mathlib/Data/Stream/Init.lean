@@ -328,7 +328,7 @@ theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
     (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃];
+      constructor; exact h₁; rw [← h₂, ← h₃]
       (repeat' constructor) <;> assumption)
     (And.intro hh (And.intro ht₁ ht₂))
 #align stream.bisim_simple Stream'.bisim_simple
@@ -467,13 +467,13 @@ theorem head_even (s : Stream' α) : head (even s) = head s :=
 #align stream.head_even Stream'.head_even
 
 theorem tail_even (s : Stream' α) : tail (even s) = even (tail (tail s)) := by
-  unfold even;
-  rw [corec_eq];
+  unfold even
+  rw [corec_eq]
   rfl
 #align stream.tail_even Stream'.tail_even
 
 theorem even_cons_cons (a₁ a₂ : α) (s : Stream' α) : even (a₁::a₂::s) = a₁::even s := by
-  unfold even;
+  unfold even
   rw [corec_eq]; rfl
 #align stream.even_cons_cons Stream'.even_cons_cons
 
@@ -667,7 +667,7 @@ theorem cycle_singleton (a : α) : cycle [a] (by simp) = const a :=
 #align stream.cycle_singleton Stream'.cycle_singleton
 
 theorem tails_eq (s : Stream' α) : tails s = tail s::tails (tail s) := by
-  unfold tails ; rw [corec_eq] ; rfl
+  unfold tails; rw [corec_eq]; rfl
 #align stream.tails_eq Stream'.tails_eq
 
 @[simp]
@@ -685,13 +685,13 @@ theorem tails_eq_iterate (s : Stream' α) : tails s = iterate tail (tail s) :=
 
 theorem inits_core_eq (l : List α) (s : Stream' α) :
     initsCore l s = l::initsCore (l ++ [head s]) (tail s) := by
-    unfold initsCore corecOn;
+    unfold initsCore corecOn
     rw [corec_eq]
 #align stream.inits_core_eq Stream'.inits_core_eq
 
 theorem tail_inits (s : Stream' α) :
     tail (inits s) = initsCore [head s, head (tail s)] (tail (tail s)) := by
-    unfold inits;
+    unfold inits
     rw [inits_core_eq]; rfl
 #align stream.tail_inits Stream'.tail_inits
 

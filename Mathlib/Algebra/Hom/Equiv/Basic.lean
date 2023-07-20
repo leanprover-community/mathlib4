@@ -204,6 +204,11 @@ theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
 #align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
 #align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
 
+-- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
+@[to_additive (attr := simp)]
+theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
+  rfl
+
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
 #noalign add_equiv.to_fun_eq_coe

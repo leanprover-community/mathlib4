@@ -131,8 +131,8 @@ variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its prime ideals
 viewed as subalgebras of its field of fractions. -/
-theorem iInf_localization_eq_bot : (⨅ v : PrimeSpectrum R,
-    Localization.subalgebra.ofField K _ <| v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
+theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
+    Localization.subalgebra.ofField K _ (v.asIdeal.primeCompl_le_nonZeroDivisors) = ⊥ := by
   ext x
   rw [Algebra.mem_iInf]
   constructor

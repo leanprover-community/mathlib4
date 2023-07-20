@@ -135,10 +135,13 @@ def Comonad.Simps.δ : (G : C ⥤ C) ⟶ (G : C ⥤ C) ⋙ (G : C ⥤ C) :=
   G.δ
 #align category_theory.comonad.simps.δ CategoryTheory.Comonad.Simps.δ
 
-initialize_simps_projections CategoryTheory.Monad (toFunctor → coe, η' → η, μ' → μ)
+initialize_simps_projections CategoryTheory.Monad
+  (obj → obj, map → map, toFunctor → coe, η' → η, μ' → μ)
 
-initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe, ε' → ε, δ' → δ)
+initialize_simps_projections CategoryTheory.Comonad
+  (obj → obj, map → map, toFunctor → coe, ε' → ε, δ' → δ)
 
+-- Porting note: investigate whether this can be a `simp` lemma?
 @[reassoc]
 theorem Monad.assoc (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.μ.app X) ≫ T.μ.app _ = T.μ.app _ ≫ T.μ.app _ :=
@@ -179,7 +182,7 @@ theorem Comonad.right_counit (G : Comonad C) (X : C) :
 @[ext]
 structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ where
   app_η : ∀ X, T₁.η.app X ≫ app X = T₂.η.app X := by aesop_cat
-  app_μ : ∀ X, T₁.μ.app X ≫ app X = ((T₁ : C ⥤ C).map (app X) ≫ app _) ≫ T₂.μ.app X := by
+  app_μ : ∀ X, T₁.μ.app X ≫ app X = (T₁.map (app X) ≫ app _) ≫ T₂.μ.app X := by
     aesop_cat
 #align category_theory.monad_hom CategoryTheory.MonadHom
 
@@ -189,7 +192,7 @@ initialize_simps_projections MonadHom (+toNatTrans, -app)
 @[ext]
 structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
   app_ε : ∀ X, app X ≫ N.ε.app X = M.ε.app X := by aesop_cat
-  app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ (N : C ⥤ C).map (app X) := by aesop_cat
+  app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ N.map (app X) := by aesop_cat
 #align category_theory.comonad_hom CategoryTheory.ComonadHom
 
 initialize_simps_projections ComonadHom (+toNatTrans, -app)

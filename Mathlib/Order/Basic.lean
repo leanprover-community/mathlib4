@@ -757,32 +757,32 @@ class HasCompl (α : Type _) where
 export HasCompl (compl)
 
 @[inherit_doc]
-postfix:999 "ᶜ" => compl
+postfix:1024 "ᶜ" => compl
 
 instance Prop.hasCompl : HasCompl Prop :=
   ⟨Not⟩
 #align Prop.has_compl Prop.hasCompl
 
 instance Pi.hasCompl {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] : HasCompl (∀ i, α i) :=
-  ⟨fun x i ↦ x iᶜ⟩
+  ⟨fun x i ↦ (x i)ᶜ⟩
 #align pi.has_compl Pi.hasCompl
 
 theorem Pi.compl_def {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) :
-    xᶜ = fun i ↦ x iᶜ :=
+    xᶜ = fun i ↦ (x i)ᶜ :=
   rfl
 #align pi.compl_def Pi.compl_def
 
 @[simp]
 theorem Pi.compl_apply {ι : Type u} {α : ι → Type v} [∀ i, HasCompl (α i)] (x : ∀ i, α i) (i : ι) :
-    (xᶜ) i = x iᶜ :=
+    xᶜ i = (x i)ᶜ :=
   rfl
 #align pi.compl_apply Pi.compl_apply
 
-instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α (rᶜ) :=
+instance IsIrrefl.compl (r) [IsIrrefl α r] : IsRefl α rᶜ :=
   ⟨@irrefl α r _⟩
 #align is_irrefl.compl IsIrrefl.compl
 
-instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α (rᶜ) :=
+instance IsRefl.compl (r) [IsRefl α r] : IsIrrefl α rᶜ :=
   ⟨fun a ↦ not_not_intro (refl a)⟩
 #align is_refl.compl IsRefl.compl
 
@@ -1352,7 +1352,6 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
--- Porting note: no `refine_struct` at time of port
 instance linearOrder: LinearOrder PUnit where
   le  := fun _ _ ↦ True
   lt  := fun _ _ ↦ False

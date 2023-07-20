@@ -687,6 +687,15 @@ protected def dual : αᵒᵈ ↪o βᵒᵈ :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 #align order_embedding.dual OrderEmbedding.dual
 
+/-- A preorder which embeds into a well-founded preorder is itself well-founded. -/
+protected theorem wellFoundedLT [WellFoundedLT β] : WellFoundedLT α where
+  wf := f.wellFounded IsWellFounded.wf
+
+/-- A preorder which embeds into a preorder in which `(· > ·)` is well-founded
+also has `(· > ·)` well-founded. -/
+protected theorem wellFoundedGT [WellFoundedGT β] : WellFoundedGT α :=
+  @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ f.dual _
+
 /-- A version of `WithBot.map` for order embeddings. -/
 @[simps (config := { fullyApplied := false })]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β :=

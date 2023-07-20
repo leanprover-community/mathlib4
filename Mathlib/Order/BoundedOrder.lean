@@ -812,6 +812,11 @@ instance top [Top α] [Top β] : Top (α × β) :=
 instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
 
+theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
+theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
+theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
+theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
+
 instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))
   le_top _ := ⟨le_top, le_top⟩

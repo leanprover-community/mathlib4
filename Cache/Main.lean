@@ -53,11 +53,15 @@ def toPaths (args : List String) : List FilePath :=
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
 
+def leanTarArgs : List String :=
+  ["get", "get!", "pack", "pack!", "unpack"]
+
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
-  let goodCurl := !(curlArgs.contains (args.headD "") && !(← validateCurl))
+  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  if leanTarArgs.contains (args.headD "") then validateLeanTar
   match args with
   | ["get"] => getFiles hashMap false goodCurl true
   | ["get!"] => getFiles hashMap true goodCurl true
@@ -69,7 +73,7 @@ def main (args : List String) : IO Unit := do
   | ["pack!"] => discard $ packCache hashMap true
   | ["unpack"] => unpackCache hashMap
   | ["clean"] =>
-    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
+    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
   | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)
