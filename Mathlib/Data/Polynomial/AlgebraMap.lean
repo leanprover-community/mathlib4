@@ -178,6 +178,9 @@ theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.adjoin_X Polynomial.adjoin_X
 
+theorem mem_adjoin_X (f : R[X]) : f ∈ Algebra.adjoin R ({X} : Set R[X]) := by
+  simp only [adjoin_X, Algebra.mem_top]
+
 @[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] A} (h : f X = g X) : f = g :=
   AlgHom.ext_of_adjoin_eq_top adjoin_X fun _p hp => (Set.mem_singleton_iff.1 hp).symm ▸ h
