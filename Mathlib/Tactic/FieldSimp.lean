@@ -31,30 +31,21 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 
 /-- Discharge strategy for the field_simp tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) := do
-  /- If can be discharged quickly using an assumption do it -/
-  if let some r ← Simp.dischargeUsingAssumption? prop then
-    return some r
-
-  /- Next, try to cast all hypotheses and `prop` into normal form before checking -/
+  /- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking -/
   let r'' ← Tactic.NormCast.derive prop
   let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
-  -- logInfo m!"Hypotheses {hyps}"
   for hyp in hyps do
-    -- logInfo m!"The goal to discharge in {prop}"
-    -- logInfo m!"We are checking {hyp}"
+  /- If can be discharged quickly using an assumption do it -/
+    if (← isDefEq (← inferType hyp) prop) then
+      return some hyp
+    /- Otherwise use normCast to normalize and then check -/
     let ty ← inferType hyp
-    -- logInfo m!"This has type {ty}"
     let r' ← Tactic.NormCast.derive ty
-    -- logInfo m!"The derive result is {r'.expr} {←r'.getProof}"
     if (← isDefEq r''.expr r'.expr) then
       let m ← mkFreshMVarId
       let r ← applySimpResultToProp m hyp ty r'
       if let some p := r then
-      -- let r'' ← Tactic.NormCast.derive prop
-    --   logInfo m!"Norm casting {prop} to {r''.expr}"
-    --   if (← isDefEq r''.expr p.2) then
         let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
-        -- logInfo m!"This is the symmetric simp result {rsymm.expr}, {←rsymm.getProof}"
         return some (← Lean.Meta.Simp.mkCast rsymm p.1)
 
   let prop : Q(Prop) ← (do pure prop)
