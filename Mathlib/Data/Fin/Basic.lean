@@ -1143,23 +1143,8 @@ section Rec
 #align fin.exists_fin_two Fin.exists_fin_two
 #align fin.fin_two_eq_of_eq_zero_iff Fin.fin_two_eq_of_eq_zero_iff
 #align fin.reverse_induction Fin.reverseInduction
-
-@[simp]
-theorem reverse_induction_last {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
-    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) :
-    (reverseInduction h0 hs (Fin.last n) : C (Fin.last n)) = h0 := by
-  rw [reverseInduction]; simp
-#align fin.reverse_induction_last Fin.reverse_induction_last
-
-@[simp]
-theorem reverse_induction_castSucc {n : ℕ} {C : Fin (n + 1) → Sort _} (h0 : C (Fin.last n))
-    (hs : ∀ i : Fin n, C i.succ → C (castSucc i)) (i : Fin n) :
-    (reverseInduction h0 hs (castSucc i) :
-    C (castSucc i)) = hs i (reverseInduction h0 hs i.succ) := by
-  rw [reverseInduction, dif_neg (_root_.ne_of_lt (Fin.castSucc_lt_last i))]
-  cases i
-  rfl
-#align fin.reverse_induction_cast_succ Fin.reverse_induction_castSucc
+#align fin.reverse_induction_last Fin.reverseInduction_last
+#align fin.reverse_induction_cast_succ Fin.reverseInduction_castSucc
 
 #align fin.last_cases Fin.lastCases
 #align fin.last_cases_last Fin.lastCases_last
