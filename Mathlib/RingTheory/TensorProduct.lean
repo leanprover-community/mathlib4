@@ -36,7 +36,10 @@ The heterobasic definitions below such as:
  * `TensorProduct.AlgebraTensorModule.lift`
  * `TensorProduct.AlgebraTensorModule.lift.equiv`
  * `TensorProduct.AlgebraTensorModule.mk`
+ * `TensorProduct.AlgebraTensorModule.map`
+ * `TensorProduct.AlgebraTensorModule.congr`
  * `TensorProduct.AlgebraTensorModule.assoc`
+ * `TensorProduct.AlgebraTensorModule.left_comm`
 
 are just more general versions of the definitions already in `LinearAlgebra/TensorProduct`. We
 could thus consider replacing the less general definitions with these ones. If we do this, we
@@ -53,7 +56,7 @@ open TensorProduct
 
 namespace TensorProduct
 
-variable {R A M N P : Type _}
+variable {R A M N P Q : Type _}
 
 /-!
 ### The `A`-module structure on `A ⊗[R] M`
@@ -75,6 +78,8 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 variable [AddCommMonoid N] [Module R N]
 
 variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
+
+variable [AddCommMonoid Q] [Module R Q]
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R M a).rTensor N x :=
   rfl
@@ -124,6 +129,8 @@ variable [AddCommMonoid N] [Module R N]
 
 variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
 
+variable [AddCommMonoid Q] [Module R Q]
+
 /-- Heterobasic version of `TensorProduct.lift`:
 
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
@@ -154,7 +161,7 @@ theorem lift_tmul (f : M →ₗ[A] N →ₗ[R] P) (x : M) (y : N) : lift f (x �
   rfl
 #align tensor_product.algebra_tensor_module.lift_tmul TensorProduct.AlgebraTensorModule.lift_tmul
 
-variable (R A M N P)
+variable (R A M N P Q)
 
 /-- Heterobasic version of `TensorProduct.uncurry`:
 
@@ -199,6 +206,35 @@ nonrec def mk : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
 #align tensor_product.algebra_tensor_module.mk TensorProduct.AlgebraTensorModule.mk
 #align tensor_product.algebra_tensor_module.mk_apply TensorProduct.AlgebraTensorModule.mk_apply
 
+variable {R A M N P Q}
+
+/-- Heterobasic version of `TensorProduct.map` -/
+def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
+  lift $ (show (Q →ₗ[R] P ⊗ Q) →ₗ[A] N →ₗ[R] P ⊗[R] Q from
+  { toFun := fun h => h ∘ₗ g,
+    map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
+    map_smul' := fun c h => LinearMap.smul_comp c h g }) ∘ₗ mk R A P Q ∘ₗ f
+
+@[simp] theorem map_tmul (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (m : M) (n : N) :
+    map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
+  rfl
+
+/-- Heterobasic version of `TensorProduct.congr` -/
+def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
+  LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
+    (ext fun m n => by simp)
+    (ext fun m n => by simp)
+
+@[simp] theorem congr_tmul (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) (m : M) (n : N) :
+    congr f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
+  rfl
+
+@[simp] theorem congr_symm_tmul (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) (p : P) (q : Q) :
+    (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
+  rfl
+
+variable (R A M N P Q)
+
 attribute [local ext high] TensorProduct.ext
 
 /-- Heterobasic version of `TensorProduct.assoc`:
@@ -220,6 +256,25 @@ def assoc : (M ⊗[A] P) ⊗[R] N ≃ₗ[A] M ⊗[A] P ⊗[R] N :=
       -- porting note: was `simp only [...]`
       rfl)
 #align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assoc
+
+/-- Heterobasic version of `TensorProduct.leftComm` -/
+def leftComm : M ⊗[A] (P ⊗[R] Q) ≃ₗ[A] P ⊗[A] (M ⊗[R] Q) :=
+  let e₁ := (assoc R A M Q P).symm
+  let e₂ := congr (TensorProduct.comm A M P) (1 : Q ≃ₗ[R] Q)
+  let e₃ := (assoc R A P Q M)
+  e₁ ≪≫ₗ (e₂ ≪≫ₗ e₃)
+
+variable {M N P Q}
+
+@[simp]
+theorem leftComm_tmul (m : M) (p : P) (q : Q) :
+    leftComm R A M P Q (m ⊗ₜ (p ⊗ₜ q)) = p ⊗ₜ (m ⊗ₜ q) :=
+  rfl
+
+@[simp]
+theorem leftComm_symm_tmul (m : M) (p : P) (q : Q):
+    (leftComm R A M P Q).symm (p ⊗ₜ (m ⊗ₜ q)) = m ⊗ₜ (p ⊗ₜ q) :=
+  rfl
 
 end CommSemiring
 
