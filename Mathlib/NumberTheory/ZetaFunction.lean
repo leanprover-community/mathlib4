@@ -248,7 +248,7 @@ theorem isBigO_zero_zetaKernel₂ : IsBigO (𝓝[>] 0) zetaKernel₂ fun t => ex
   have h4 := h3.mul (isBigO_refl (fun t : ℝ => 1 / (sqrt t : ℂ)) (𝓝[>] 0)).norm_right
   refine h4.congr' ?_ ?_
   · refine eventually_of_mem self_mem_nhdsWithin fun x hx => ?_
-    simp_rw [← mul_assoc]
+    dsimp
     rw [mul_comm, ← mul_assoc, one_div_mul_cancel, one_mul]
     exact ofReal_ne_zero.mpr ((sqrt_ne_zero <| le_of_lt hx).mpr (ne_of_gt hx))
   · refine eventually_of_mem self_mem_nhdsWithin fun x _ => ?_
