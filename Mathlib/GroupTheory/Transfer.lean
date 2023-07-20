@@ -60,7 +60,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
     (prod_congr rfl fun q _ =>
       (ϕ.map_mul _ _).symm.trans
         (congr_arg ϕ
-          (by simp_rw [Subtype.ext_iff, coe_mul, coe_mk, mul_assoc, mul_inv_cancel_left])))
+          (by simp_rw [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left])))
 #align subgroup.left_transversals.diff_mul_diff Subgroup.leftTransversals.diff_mul_diff
 #align add_subgroup.left_transversals.diff_add_diff AddSubgroup.leftTransversals.diff_add_diff
 
@@ -83,7 +83,7 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
     (fun _ _ =>
       congr_arg ϕ
         (by
-          simp_rw [coe_mk, smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
+          simp_rw [smul_apply_eq_smul_apply_inv_smul, smul_eq_mul, mul_inv_rev, mul_assoc,
             inv_mul_cancel_left]))
     (fun q _ => g • q) (fun _ _ => mem_univ _) (fun q _ => smul_inv_smul g q) fun q _ =>
     inv_smul_smul g q

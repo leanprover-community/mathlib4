@@ -291,7 +291,7 @@ def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
     -- Porting note: Added `simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf`
     -- There's probably a better way to do this.
     ext (_ | _ | _ | _ | n) <;> simp only [Nat.zero_eq, Nat.succ_eq_add_one] <;> ring_nf
-      <;> simp only [coeffs]
+      <;> try simp only [coeffs]
     have h3 : 3 < 4 + n := by linarith only
     rw [coeff_eq_zero h3,
       (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2 _ <| WithBot.coe_lt_coe.mpr (by exact h3)]

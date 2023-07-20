@@ -173,7 +173,6 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
   map_id := by
     rintro ⟨x₀, x₁⟩
     simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
-    dsimp
     rfl
   map_comp {x y z} f g :=
     match x, y, z, f, g with

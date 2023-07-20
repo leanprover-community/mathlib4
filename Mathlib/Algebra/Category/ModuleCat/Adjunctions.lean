@@ -124,7 +124,7 @@ theorem left_unitality (X : Type u) :
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, Finsupp.smul_single', mul_one,
+    ModuleCat.MonoidalCategory.leftUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
 #align Module.free.left_unitality ModuleCat.Free.left_unitality
 
@@ -145,7 +145,7 @@ theorem right_unitality (X : Type u) :
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
   simp_rw [finsuppTensorFinsupp'_single_tmul_single,
-    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, Finsupp.smul_single', mul_one,
+    ModuleCat.MonoidalCategory.rightUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.rightUnitor_hom_apply, one_smul]
 #align Module.free.right_unitality ModuleCat.Free.right_unitality
 

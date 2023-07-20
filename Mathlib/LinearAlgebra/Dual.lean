@@ -694,7 +694,6 @@ variable [DecidableEq ι] (h : DualBases e ε)
 
 theorem dual_lc (l : ι →₀ R) (i : ι) : ε i (DualBases.lc e l) = l i := by
   erw [LinearMap.map_sum]
-  simp_rw [map_smul]
   -- Porting note: cannot get at •
   -- simp only [h.eval, map_smul, smul_eq_mul]
   rw [Finset.sum_eq_single i]

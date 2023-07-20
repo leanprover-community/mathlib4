@@ -395,8 +395,8 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F)
 theorem nnnorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ } := by
   ext
   rw [NNReal.coe_sInf, coe_nnnorm, norm_def, NNReal.coe_image]
-  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_setOf_eq, Subtype.coe_mk,
-    exists_prop, NNReal.coe_mk, exists_prop]
+  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnnorm, mem_setOf_eq, NNReal.coe_mk,
+    exists_prop]
 #align continuous_linear_map.nnnorm_def ContinuousLinearMap.nnnorm_def
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/

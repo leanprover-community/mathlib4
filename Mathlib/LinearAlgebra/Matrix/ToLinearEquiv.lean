@@ -162,7 +162,7 @@ theorem exists_mulVec_eq_zero_iff' {A : Type _} (K : Type _) [DecidableEq n] [Co
             ((algebraMap A K).mapMatrix M).mulVec (algebraMap _ K b • v) i := ?_
         _ = 0 := ?_
         _ = algebraMap A K 0 := (RingHom.map_zero _).symm
-      · simp_rw [RingHom.map_mulVec, mulVec, dotProduct, Function.comp_apply, hf, Subtype.coe_mk,
+      · simp_rw [RingHom.map_mulVec, mulVec, dotProduct, Function.comp_apply, hf,
           RingHom.mapMatrix_apply, Pi.smul_apply, smul_eq_mul, Algebra.smul_def]
       · rw [mulVec_smul, mul_eq, Pi.smul_apply, Pi.zero_apply, smul_zero]
 #align matrix.exists_mul_vec_eq_zero_iff' Matrix.exists_mulVec_eq_zero_iff'

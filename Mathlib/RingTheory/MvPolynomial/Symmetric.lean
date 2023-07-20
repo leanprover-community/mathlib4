@@ -233,7 +233,6 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
   have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
   rw [hs, ht] at this
-  simp only [Finsupp.support_single_ne_zero _ one_ne_zero] at this
   · simp only [biUnion_singleton_eq_self] at this
     exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]

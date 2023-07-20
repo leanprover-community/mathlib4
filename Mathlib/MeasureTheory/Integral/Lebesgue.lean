@@ -797,7 +797,6 @@ theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : 
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
   have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
   rw [set_lintegral_congr_fun _ this]
-  dsimp
   rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
   exact hf (measurableSet_singleton r)
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const

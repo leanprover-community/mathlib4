@@ -168,8 +168,6 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
   simp only [Path.trans_apply, not_le, coe_reparam, Function.comp_apply, one_div, Path.refl_apply]
   split_ifs
   · rfl
-  · rfl
-  · simp
   · simp
 #align path.homotopy.trans_refl_reparam Path.Homotopy.trans_refl_reparam
 
@@ -264,8 +262,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
     linarith
   · exfalso
     linarith
-  · simp only [h₁, if_false, dif_neg (show ¬False from id)]
-    congr
+  · congr
     ring
 #align path.homotopy.trans_assoc_reparam Path.Homotopy.trans_assoc_reparam
 

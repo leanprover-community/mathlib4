@@ -221,7 +221,7 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
         Nat.cast_zero, Finset.mem_range, not_lt, eq_self_iff_true, if_true, imp_true_iff]
   induction' n with n ih generalizing i
   · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
-  · dsimp; simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
+  · simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
     Nat.cast_add, coeff_X_add_one_pow]
 set_option linter.uppercaseLean3 false in
 #align polynomial.geom_sum_X_comp_X_add_one_eq_sum Polynomial.geom_sum_X_comp_X_add_one_eq_sum

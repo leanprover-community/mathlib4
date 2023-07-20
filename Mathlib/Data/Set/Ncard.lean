@@ -233,7 +233,6 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
   classical
   rw [ncard_eq_toFinset_card s hs]
   convert @Finset.card_image_le _ _ hs.toFinset f _
-  simp only
   rw [@ncard_eq_toFinset_card _ _ (hs.image f), Finite.toFinset_image]
 #align set.ncard_image_le Set.ncard_image_le
 
@@ -411,7 +410,6 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     apply hinj _ _ hx hy hxy
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
-  simp_rw [ncard_eq_toFinset_card] at hst
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ (by simpa) (by simpa)
   · simp
@@ -435,7 +433,6 @@ theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     exact ⟨_, ha, rfl⟩
   haveI := hs.fintype
   haveI := Fintype.ofSurjective _ hsurj
-  simp_rw [ncard_eq_toFinset_card] at hst
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   exact
     @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''

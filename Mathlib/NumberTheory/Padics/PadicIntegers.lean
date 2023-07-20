@@ -690,7 +690,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
       simp only [map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow, PadicInt.coe_nat_cast,
         Subtype.coe_mk, Nat.cast_pow]
   eq_iff_exists' := by
-    simp_rw [algebraMap_apply, algebraMap_apply, Subtype.coe_inj]
+    simp_rw [algebraMap_apply, Subtype.coe_inj]
     refine ⟨fun h => ⟨1, by rw [h]⟩, ?_⟩
     rintro ⟨⟨c, hc⟩, h⟩
     exact (mul_eq_mul_left_iff.mp h).resolve_right (mem_nonZeroDivisors_iff_ne_zero.mp hc)

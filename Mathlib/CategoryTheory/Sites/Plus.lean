@@ -278,7 +278,6 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   suffices : ∀ X, IsIso ((J.toPlus P).app X)
   · apply NatIso.isIso_of_isIso_app
   intro X
-  dsimp
   suffices : IsIso (colimit.ι (J.diagram P X.unop) (op ⊤))
   · apply IsIso.comp_isIso
   suffices : ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f)
