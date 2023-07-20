@@ -399,12 +399,12 @@ theorem contDiff_unitBallBall (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr
 theorem contDiff_unitBallBall_symm (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr).symm :=
   (contDiff_id.sub contDiff_const).const_smul _
 
-theorem LocalHomeomorph.contDiff_univBall : ContDiff ℝ n (univBall c r) := by
+theorem contDiff_univBall : ContDiff ℝ n (univBall c r) := by
   unfold univBall; split_ifs with h
   · exact (contDiff_unitBallBall h).comp contDiff_univUnitBall
   · exact contDiff_id.add contDiff_const
 
-theorem LocalHomeomorph.contDiffOn_univBall_symm :
+theorem contDiffOn_univBall_symm :
     ContDiffOn ℝ n (univBall c r).symm (ball c r) := by
   unfold univBall; split_ifs with h
   · refine contDiffOn_univUnitBall_symm.comp (contDiff_unitBallBall_symm h).contDiffOn ?_
