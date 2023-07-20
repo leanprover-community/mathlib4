@@ -743,6 +743,10 @@ theorem succ_one_eq_two' : Fin.succ (1 : Fin (n + 2)) = 2 :=
 #align fin.coe_cast_lt Fin.coe_castLT
 #align fin.cast_lt_mk Fin.castLT_mk
 
+-- Move to Std?
+@[simp] theorem cast_refl {n : Nat} (h : n = n) :
+    Fin.cast h = id := rfl
+
 theorem strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m) :=
   fun _ _ h => h
 
@@ -1832,11 +1836,27 @@ section Mul
 
 #align fin.val_mul Fin.val_mul
 #align fin.coe_mul Fin.coe_mul
-#align fin.mul_one Fin.mul_one
+
+protected theorem mul_one' [NeZero n] (k : Fin n) : k * 1 = k := by
+  cases' n with n
+  · simp
+  cases n
+  · simp [fin_one_eq_zero]
+  simp [eq_iff_veq, mul_def, mod_eq_of_lt (is_lt k)]
+#align fin.mul_one Fin.mul_one'
+
 #align fin.mul_comm Fin.mul_comm
-#align fin.one_mul Fin.one_mul
-#align fin.mul_zero Fin.mul_zero
-#align fin.zero_mul Fin.zero_mul
+
+protected theorem one_mul' [NeZero n] (k : Fin n) : (1 : Fin n) * k = k := by
+  rw [Fin.mul_comm, Fin.mul_one']
+#align fin.one_mul Fin.one_mul'
+
+protected theorem mul_zero' [NeZero n] (k : Fin n) : k * 0 = 0 := by simp [eq_iff_veq, mul_def]
+#align fin.mul_zero Fin.mul_zero'
+
+protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
+  simp [eq_iff_veq, mul_def]
+#align fin.zero_mul Fin.zero_mul'
 
 end Mul
 
