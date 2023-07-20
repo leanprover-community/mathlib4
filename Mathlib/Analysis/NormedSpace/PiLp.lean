@@ -599,8 +599,8 @@ theorem norm_sq_eq_of_L2 (β : ι → Type _) [∀ i, SeminormedAddCommGroup (β
 
 theorem dist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
     dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt := by
-  simp_rw [dist_eq_norm, norm_eq_of_L2, Pi.sub_apply]
-  rfl -- Porting note: `Pi.sub_apply` doesn't work
+  simp_rw [dist_eq_norm, norm_eq_of_L2]
+  rfl
 #align pi_Lp.dist_eq_of_L2 PiLp.dist_eq_of_L2
 
 theorem nndist_eq_of_L2 {β : ι → Type _} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
@@ -723,10 +723,9 @@ def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
   -- Porting note: this avoids spurious `x` and `y` arguments
     clear x y
     rcases p.dichotomy with (rfl | h)
-    · simp_rw [norm_eq_ciSup, LinearEquiv.piCongrLeft'_apply 𝕜 (fun _ : ι => E) e x' _]
+    · simp_rw [norm_eq_ciSup]
       exact e.symm.iSup_congr fun _ => rfl
     · simp only [norm_eq_sum (zero_lt_one.trans_le h)]
-      simp_rw [LinearEquiv.piCongrLeft'_apply 𝕜 (fun _ : ι => E) e x' _]
       congr 1
       exact Fintype.sum_equiv e.symm _ _ fun _ => rfl
 #align linear_isometry_equiv.pi_Lp_congr_left LinearIsometryEquiv.piLpCongrLeft

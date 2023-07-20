@@ -1195,7 +1195,7 @@ theorem continuousOn_primitive [NoAtoms μ] (h_int : IntegrableOn f (Icc a b) μ
   by_cases h : a ≤ b
   · have : ∀ x ∈ Icc a b, ∫ t in Ioc a x, f t ∂μ = ∫ t in a..x, f t ∂μ := by
       intro x x_in
-      simp_rw [← uIoc_of_le h, integral_of_le x_in.1]
+      simp_rw [integral_of_le x_in.1]
     rw [continuousOn_congr this]
     intro x₀ _
     refine' continuousWithinAt_primitive (measure_singleton x₀) _

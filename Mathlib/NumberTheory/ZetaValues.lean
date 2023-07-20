@@ -85,7 +85,6 @@ theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
     ∫ x : ℝ in (0)..1, bernoulliFun k x = 0 := by
   rw [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
       ((Polynomial.continuous _).intervalIntegrable _ _)]
-  dsimp only
   rw [bernoulliFun_eval_one]
   split_ifs with h
   · exfalso; exact hk (Nat.succ_inj'.mp h)
