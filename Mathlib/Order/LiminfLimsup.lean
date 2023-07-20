@@ -539,6 +539,7 @@ theorem limsInf_le_limsInf_of_le {f g : Filter α} (h : g ≤ f)
 set_option linter.uppercaseLean3 false in
 #align filter.Liminf_le_Liminf_of_le Filter.limsInf_le_limsInf_of_le
 
+@[gcongr]
 theorem limsup_le_limsup_of_le {α β} [ConditionallyCompleteLattice β] {f g : Filter α} (h : f ≤ g)
     {u : α → β}
     (hf : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault)
@@ -547,6 +548,7 @@ theorem limsup_le_limsup_of_le {α β} [ConditionallyCompleteLattice β] {f g : 
   limsSup_le_limsSup_of_le (map_mono h) hf hg
 #align filter.limsup_le_limsup_of_le Filter.limsup_le_limsup_of_le
 
+@[gcongr]
 theorem liminf_le_liminf_of_le {α β} [ConditionallyCompleteLattice β] {f g : Filter α} (h : g ≤ f)
     {u : α → β}
     (hf : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)

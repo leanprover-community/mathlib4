@@ -153,7 +153,7 @@ theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : ∏ i in s, f i ≤ 1 :=
 #align finset.prod_le_one' Finset.prod_le_one'
 #align finset.sum_nonpos Finset.sum_nonpos
 
-@[to_additive sum_le_sum_of_subset_of_nonneg]
+@[gcongr, to_additive (attr := gcongr) sum_le_sum_of_subset_of_nonneg]
 theorem prod_le_prod_of_subset_of_one_le' (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) :
     ∏ i in s, f i ≤ ∏ i in t, f i := by
   classical calc
@@ -400,7 +400,7 @@ theorem prod_eq_one_iff' : ∏ x in s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
 #align finset.prod_eq_one_iff' Finset.prod_eq_one_iff'
 #align finset.sum_eq_zero_iff Finset.sum_eq_zero_iff
 
-@[to_additive sum_le_sum_of_subset]
+@[to_additive (attr := gcongr) sum_le_sum_of_subset, gcongr]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x in s, f x ≤ ∏ x in t, f x :=
   prod_le_prod_of_subset_of_one_le' h fun _ _ _ ↦ one_le _
 #align finset.prod_le_prod_of_subset' Finset.prod_le_prod_of_subset'
@@ -482,11 +482,11 @@ theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i �
       rw [prod_insert hs]
       exact lt_mul_of_one_lt_left' (∏ j in s, f j) hlt
     _ ≤ ∏ j in t, f j := by
-      apply prod_le_prod_of_subset_of_one_le'
-      · simp [Finset.insert_subset_iff, h, ht]
+      gcongr
       · intro x hx h'x
         simp only [mem_insert, not_or] at h'x
         exact hle x hx h'x.2
+      · simp [Finset.insert_subset_iff, h, ht]
 #align finset.prod_lt_prod_of_subset' Finset.prod_lt_prod_of_subset'
 #align finset.sum_lt_sum_of_subset Finset.sum_lt_sum_of_subset
 

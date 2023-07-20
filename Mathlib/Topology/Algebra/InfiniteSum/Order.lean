@@ -106,6 +106,10 @@ theorem tsum_le_tsum (h : ∀ i, f i ≤ g i) (hf : Summable f) (hg : Summable g
   hasSum_le h hf.hasSum hg.hasSum
 #align tsum_le_tsum tsum_le_tsum
 
+@[gcongr] theorem tsum_le_tsum' (h : ∀ i, f i ≤ g i) (hf : Summable f) (hg : Summable g) :
+    tsum f ≤ tsum g :=
+  tsum_le_tsum h hf hg
+
 @[mono]
 theorem tsum_mono (hf : Summable f) (hg : Summable g) (h : f ≤ g) : ∑' n, f n ≤ ∑' n, g n :=
   tsum_le_tsum h hf hg
