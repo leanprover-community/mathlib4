@@ -46,6 +46,13 @@ def toColumns₂ (A: Matrix M (N₁ ⊕ N₂) R): Matrix M N₂ R :=  of fun i j
 def toRows₁ (A: Matrix (M₁ ⊕ M₂) N R): Matrix M₁ N R :=  of fun i j => (A (Sum.inl i) j)
 def toRows₂ (A: Matrix (M₁ ⊕ M₂) N R): Matrix M₂ N R :=  of fun i j => (A (Sum.inr i) j)
 
+lemma fromColumns_toColumns (A: Matrix M (N₁ ⊕ N₂) R):
+  A = fromColumns A.toColumns₁ A.toColumns₂ := by
+  unfold fromColumns toColumns₁ toColumns₂
+  funext i j
+  cases' j
+  all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr])
+
 /- A row partitioned matrix multiplied by a column partioned matrix gives a 2 by 2 block matrix -/
 lemma fromRows_mul_fromColumns (A₁: Matrix M₁ N R) (A₂: Matrix M₂ N R)
   (B₁: Matrix N N₁ R) (B₂: Matrix N N₂ R) :
