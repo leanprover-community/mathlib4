@@ -35,9 +35,7 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 **unimodular**.
 -/
 
-
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
-
 
 open scoped Pointwise NNReal
 
@@ -89,7 +87,7 @@ variable [Countable Γ] --[MeasureSpace G] -- [MeasureSpace (G ⧸ Γ)]
 --[BorelSpace (G ⧸ Γ)]
 
 
--- more beautiful theorem: if you have ameasure speace downstairs and the downstairs one is smul invariant
+-- more beautiful theorem: if you have a measure speace downstairs and the downstairs one is smul invariant
 -- then fund dom independent
 
 /-- The pushforward to the coset space `G ⧸ Γ` of the restriction of a both left- and right-
@@ -139,6 +137,23 @@ theorem measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
   · assumption
   · assumption
 
+
+---- the quotient measure is finite, assuming the covolume is finite
+theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
+    [IsMulRightInvariant (volume : Measure G)]
+    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
+    (h : covolume (Subgroup.opposite Γ) G ≠ ⊤) :
+    IsFiniteMeasure μ := by
+  obtain ⟨𝓕, h𝓕, meas_𝓕⟩ := hasFun.has_fundamental_domain_characterization
+  rw [@QuotientVolumeEqVolumePreimage.eq_map_restrict (s := 𝓕) (G := Subgroup.opposite Γ) _
+    _ _ _ _ _ _ meas_𝓕 h𝓕 μ _]
+  have : Fact (volume 𝓕 < ⊤) := by
+    apply Fact.mk
+    convert Ne.lt_top h
+    rw [covolume_eq_volume]
+    exact h𝓕
+  exact inferInstance
+
 end smulInvariantMeasure
 
 section mulInvariantMeasure
@@ -171,65 +186,46 @@ instance MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotie
     · exact measurable_const_mul _
     · exact hA
 
----- the quotient measure is finite, assuming the covolume is finite
-theorem MeasureTheory.QuotientVolumeEqVolumePreimage.Finite_quotient
-    --[Subgroup.Normal Γ] -- [IsMulLeftInvariant (volume : Measure G)]
-    [IsMulRightInvariant (volume : Measure G)]
-    [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
-    (h : covolume (Subgroup.opposite Γ) G < ⊤) :
-    IsFiniteMeasure μ := by
-  obtain ⟨𝓕, h𝓕, meas_𝓕⟩ := hasFun.has_fundamental_domain_characterization
-  --have 𝓕meas : NullMeasurableSet 𝓕 volume := h𝓕.nullMeasurableSet
-  rw [@QuotientVolumeEqVolumePreimage.eq_map_restrict (s := 𝓕) (G := Subgroup.opposite Γ) _
-    _ _ _ _ _ _ meas_𝓕 h𝓕 μ _]
-  have : Fact (volume 𝓕 < ⊤) := by
-    apply Fact.mk
-    convert h
-    rw [covolume_eq_volume]
-    exact h𝓕
-  exact inferInstance
-
-
--- /-- If you're Haar upstairs, then you're Haar downstairs -/
--- theorem MeasureTheory.QuotientVolumeEqVolumePreimage.IsHaarMeasure_quotient
---     [Subgroup.Normal Γ] -- [IsMulLeftInvariant (volume : Measure G)]
---     [IsMulRightInvariant (volume : Measure G)]
---     [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
---     (h : covolume (Subgroup.opposite Γ) G < ⊤) :
---     IsHaarMeasure μ where
---       lt_top_of_isCompact := by
---         sorry
---       map_mul_left_eq_self := _
---       open_pos := by
-
-
 end mulInvariantMeasure
 
 section HaarIsQuotientVolumeEqVolumePreimage
 
-
-/-
-7/10/23 notes:
-
-Need a theorem: if `μ` is Haar measure, i.e., satisfies `IsHaarMeasure`, and it has the right
-scaling condition, then it should satisfy `QuotientVolumeEqVolumePreimage`.
--/
-
 variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [TopologicalGroup G]
   [BorelSpace G] {Γ : Subgroup G} [PolishSpace G] [T2Space (G ⧸ Γ)]
-  [SecondCountableTopology (G ⧸ Γ)]
-  [Countable Γ] [Subgroup.Normal Γ] [IsMulLeftInvariant (volume : Measure G)]
-    [IsMulRightInvariant (volume : Measure G)] {μ : Measure (G ⧸ Γ)} [IsHaarMeasure μ]
+  [SecondCountableTopology (G ⧸ Γ)] [Countable Γ] [Subgroup.Normal Γ]
+  [IsMulLeftInvariant (volume : Measure G)] [IsMulRightInvariant (volume : Measure G)]
+  {μ : Measure (G ⧸ Γ)} [IsHaarMeasure μ] [SigmaFinite μ]
+  -- Note: couldn't get uniqueness without sigma finiteness
 
+/-- If a measure `μ` is `IsHaarMeasure` and satisfies the right scaling condition, then it
+  satisfies `QuotientVolumeEqVolumePreimage`. -/
 theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
     [hasFun : HasFundamentalDomain (Subgroup.opposite Γ) G]
-    (h : covolume (Subgroup.opposite Γ) G = μ univ) :
+    (h : covolume (Subgroup.opposite Γ) G = μ univ)
+    (finiteCovol : covolume (Subgroup.opposite Γ) G ≠ ⊤) :
     QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ where
       projection_respects_measure := by
         intro 𝓕 h𝓕 meas_𝓕 U meas_U
         let π := @QuotientGroup.mk G _ Γ
         let μ' := Measure.map π (volume.restrict 𝓕)
-        suffices : μ U =  μ' U
+        have QVEVPμ' : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ' :=
+            quotientVolumeEqVolumePreimage_map_restrict (G := (Subgroup.opposite Γ)) G 𝓕 meas_𝓕 h𝓕
+        have Fin_μ' : IsFiniteMeasure μ' :=
+          QuotientVolumeEqVolumePreimage.Finite_quotient finiteCovol
+        have covol_𝓕 : covolume (Subgroup.opposite Γ) G = volume 𝓕
+        · rw [covolume_eq_volume (Subgroup.opposite Γ) G 𝓕 h𝓕]
+        rw [covol_𝓕] at finiteCovol h
+        by_cases meas_𝓕_ne_zero : volume 𝓕 = 0
+        · trans (0 : ENNReal)
+          · rw [← le_zero_iff]
+            calc μ U ≤ μ univ := measure_mono (Set.subset_univ _)
+                _   = _ := h.symm
+                _   = 0 := meas_𝓕_ne_zero
+          · symm
+            rw [← le_zero_iff]
+            calc _ ≤ volume 𝓕 := measure_mono (Set.inter_subset_right _ _)
+                _   = 0 := meas_𝓕_ne_zero
+        suffices : μ =  μ'
         · rw [this]
           rw [Measure.map_apply]
           · rw [Measure.restrict_apply]
@@ -238,16 +234,23 @@ theorem MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
                 meas_U
           · exact @measurable_quotient_mk' _ _ (MulAction.orbitRel (Subgroup.opposite Γ) G)
           · exact meas_U
-        · have : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ' :=
-            quotientVolumeEqVolumePreimage_map_restrict (G := (Subgroup.opposite Γ)) G 𝓕 meas_𝓕 h𝓕
-          have : μ'.IsMulLeftInvariant :=
+        · have : μ'.IsMulLeftInvariant :=
             MeasureTheory.QuotientVolumeEqVolumePreimage.MulInvariantMeasure_quotient
-
-
-
---- STOPPED HERE 7/14/23
-
---- Key question: uniqueness of Haar measure of one is not assumed to be regular???
+          rw [measure_eq_div_smul (μ := μ') (ν := μ) (s := univ), ← h]
+          simp only
+          rw [Measure.map_apply, Measure.restrict_apply, preimage_univ, Set.univ_inter]
+          rw [ENNReal.div_self, one_smul]
+          · exact meas_𝓕_ne_zero
+          · exact finiteCovol
+          · rw [preimage_univ]
+            exact MeasurableSet.univ
+          · exact QuotientGroup.measurable_coe
+          · exact MeasurableSet.univ
+          · exact MeasurableSet.univ
+          · rw [←h]
+            exact meas_𝓕_ne_zero
+          · rw [←h]
+            exact finiteCovol
 
 end HaarIsQuotientVolumeEqVolumePreimage
 
@@ -261,7 +264,6 @@ variable {G : Type _} [Group G] [MeasureSpace G] [TopologicalSpace G] [Topologic
 
 variable [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] (K : PositiveCompacts (G ⧸ Γ))
 
-
 /-- Given a normal cofinite subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is
   also right-invariant, and a measure `μ` on `G ⧸ Γ` which is compatible under the quotient map
   with the volume on `G`, that measure `μ` is a multiple of Haar measure on `G ⧸ Γ`. -/
@@ -270,102 +272,47 @@ theorem MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar [Subgroup.
     [HasFundamentalDomain (Subgroup.opposite Γ) G] [IsMulRightInvariant (volume : Measure G)]
     (h : covolume (Subgroup.opposite Γ) G < ⊤) :
     μ = μ K • MeasureTheory.Measure.haarMeasure K := by
-  have : IsFiniteMeasure μ := QuotientVolumeEqVolumePreimage.Finite_quotient h
+  have : IsFiniteMeasure μ := QuotientVolumeEqVolumePreimage.Finite_quotient h.ne
   rw [Measure.haarMeasure_unique μ K, Measure.smul_apply, Measure.haarMeasure_self]
   simp
 
-/-
 
-7/10/23 notes:
+--- 7/21/23
+-- Need a lemma about our magic typeclass:
+-- Lemma: behavior under scaling
 
-Conversely, we have `MeasureTheory.QuotientVolumeEqVolumePreimage.quotient_is_haar` above. (Modulo
-the issue of the existence of a member of the positive compacts. )
-Maybe this is a new route to making Haar measure?
-----/
+---- 7/21/23: Add `SigmaFinite.smul`
 
-#exit
-
+--- Keeping or not?
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is
   measure-preserving between appropriate multiples of Haar measure on `G` and `G ⧸ Γ`. -/
-theorem MeasurePreserving_QuotientGroup.mk'_of_IsHaarMeasure [Subgroup.Normal Γ]
+theorem MeasurePreserving_QuotientGroup.foo [Subgroup.Normal Γ]
     [MeasureTheory.Measure.IsHaarMeasure (volume : Measure G)]
-    [IsMulRightInvariant (volume : Measure G)]
-    (𝓕 : Set G)
+    [IsMulRightInvariant (volume : Measure G)] (𝓕 : Set G)
     (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
-    (meas_𝓕 : MeasurableSet 𝓕)
-    (h𝓕_finite : volume 𝓕 < ⊤)
-    (c : ℝ≥0)
-    (h : volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕) = c) :
+    (meas_𝓕 : MeasurableSet 𝓕) (h𝓕_finite : volume 𝓕 ≠ ⊤)
+    (c : ℝ≥0) (h : volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕) = c) :
     MeasurePreserving (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
       (c • MeasureTheory.Measure.haarMeasure K) := by
   set μ := c • haarMeasure K --Measure.map (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
-  haveI : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := sorry
+  haveI : IsHaarMeasure μ := by
+    apply IsHaarMeasure.smul
+    sorry --- why is `c ≠ 0`?? Split into cases
+    sorry -- `c ≠ ⊤`
+  haveI : SigmaFinite μ := by
+    --apply SigmaFinite.smul
+    sorry
+  haveI : HasFundamentalDomain (Subgroup.opposite Γ) G := sorry
+  haveI : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := by
+    apply MeasureTheory.HaarIsQuotientVolumeEqVolumePreimage
+    · sorry
+    · sorry -- Alex homework
   apply measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
+  · exact h𝓕
+  · exact meas_𝓕
 
 
 
-
-/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
-  right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is
-  measure-preserving between appropriate multiples of Haar measure on `G` and `G ⧸ Γ`. -/
-theorem MeasurePreserving_QuotientGroup.mk'_of_IsHaarMeasure [Subgroup.Normal Γ]
-    [MeasureTheory.Measure.IsHaarMeasure (volume : Measure G)]
-    [IsMulRightInvariant (volume : Measure G)]
-    (𝓕 : Set G)
-    (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
-    (meas_𝓕 : MeasurableSet 𝓕)
-    (h𝓕_finite : volume 𝓕 < ⊤)
-    (c : ℝ≥0)
-    (h : volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕) = c) :
-    MeasurePreserving (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
-      (c • MeasureTheory.Measure.haarMeasure K) := by
-  set μ := c • haarMeasure K --Measure.map (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
-  haveI : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := sorry
-  apply measurePreserving_quotientGroup_mk_of_quotientVolumeEqVolumePreimage
-
-
---   set μ := c • haarMeasure K --Measure.map (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
---   haveI : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := sorry
---   --   quotientVolumeEqVolumePreimage_map_restrict (Subgroup.opposite Γ) G 𝓕 meas_𝓕 h𝓕
---   convert MeasurePreservingQuotientGroup.mk' K 𝓕 h𝓕 meas_𝓕 h𝓕_finite μ
--- --   trans (c : ENNReal) • haarMeasure K
-
-
-/-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
-  right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ` is
-  measure-preserving between appropriate multiples of Haar measure on `G` and `G ⧸ Γ`. -/
-theorem MeasurePreservingQuotientGroup.mk'' [Subgroup.Normal Γ]
-    [MeasureTheory.Measure.IsHaarMeasure (volume : Measure G)]
-    [IsMulRightInvariant (volume : Measure G)]
-    (𝓕 : Set G)
-    (h𝓕 : IsFundamentalDomain (Subgroup.opposite Γ) 𝓕)
-    (meas_𝓕 : MeasurableSet 𝓕)
-    (h𝓕_finite : volume 𝓕 < ⊤)
-    (c : ℝ≥0)
-    (h : volume ((QuotientGroup.mk' Γ ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕) = c) :
-    MeasurePreserving (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
-      (c • MeasureTheory.Measure.haarMeasure K) := by
-  set μ := c • haarMeasure K --Measure.map (QuotientGroup.mk' Γ) (volume.restrict 𝓕)
-  have : QuotientVolumeEqVolumePreimage (Subgroup.opposite Γ) G μ := sorry
-  --   quotientVolumeEqVolumePreimage_map_restrict (Subgroup.opposite Γ) G 𝓕 meas_𝓕 h𝓕
-  convert MeasurePreservingQuotientGroup.mk' K 𝓕 h𝓕 meas_𝓕 h𝓕_finite μ
---   trans (c : ENNReal) • haarMeasure K
---   · norm_cast
---   · rw [← h]
---     have := @QuotientVolumeEqVolumePreimage.quotient_is_haar (K := K)
---     rw [h, ← this]
---     exact h𝓕_finite
--- --   · haveI : T2Space (Quotient (MulAction.orbitRel (Subgroup.opposite Γ) G)) := i
---     haveI : SecondCountableTopology (Quotient (MulAction.orbitRel (Subgroup.opposite Γ) G)) :=
---       ii
---     haveI : BorelSpace (Quotient (MulAction.orbitRel (Subgroup.opposite Γ) G)) := Quotient.borelSpace
---     apply IsCompact.measurableSet
---     exact PositiveCompacts.isCompact K
--- · convert h𝓕_finite using 1
---   rw [covolume_eq_volume]
---   exact h𝓕
--- -- #align measure_preserving_quotient_group.mk' MeasurePreservingQuotientGroup.mk'
--- -- #align measure_preserving_quotient_add_group.mk' MeasurePreservingQuotientAddGroup.mk'
 
 end QuotientIsHaar
