@@ -16,7 +16,8 @@ open Matrix BigOperators
 namespace Matrix
 
 lemma rank_mul_IsUnit {m n R: Type}
-  [Fintype m][Fintype n][DecidableEq n][CommRing R]
+  -- [Fintype m] -- not needed according to linter
+  [Fintype n][DecidableEq n][CommRing R]
   (A: Matrix n n R)(B: Matrix m n R)(hA: IsUnit A.det):
   (B⬝A).rank = B.rank := by
   rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top, ←Matrix.rank ]
