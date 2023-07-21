@@ -172,7 +172,7 @@ lemma S_zero_blocks (A: Matrix (Fin M) (Fin N) 𝕂) :
   simp_rw [← Matrix.ext_iff, of_apply, zero_apply, ge_iff_le, implies_true, true_and ]
   intro i j
   by_cases i = j
-  unfold enz equiv_sum_trans
+  unfold enz Equiv.sumCongr
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     Equiv.sumCompl_apply_inr]
   simp_rw [h, diagonal_apply_eq]
@@ -188,7 +188,7 @@ lemma S'_zero_blocks (A: Matrix (Fin M) (Fin N) 𝕂) :
   simp_rw [← Matrix.ext_iff, of_apply, zero_apply, ge_iff_le, implies_true, true_and ]
   intro i j
   by_cases i = j
-  unfold emz equiv_sum_trans
+  unfold emz Equiv.sumCongr
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     Equiv.sumCompl_apply_inr]
   simp_rw [h, diagonal_apply_eq]
@@ -204,7 +204,7 @@ lemma S_σpos_block (A: Matrix (Fin M) (Fin N) 𝕂) :
   funext i j
   by_cases h: i=j
   simp_rw [h]
-  unfold enz er equiv_sum_trans
+  unfold enz er Equiv.sumCongr Sum.map
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
     Sum.elim_inl, Equiv.sumCompl_apply_inl, of_apply,
     diagonal_apply_eq, Function.comp_apply]
@@ -220,7 +220,7 @@ lemma S'_σpos_block (A: Matrix (Fin M) (Fin N) 𝕂) :
   funext i j
   by_cases h: i=j
   simp_rw [h]
-  unfold emz er' equiv_sum_trans
+  unfold emz er' Equiv.sumCongr Sum.map
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk,
     Sum.elim_inl, Equiv.sumCompl_apply_inl, of_apply,
     diagonal_apply_eq, Function.comp_apply]
