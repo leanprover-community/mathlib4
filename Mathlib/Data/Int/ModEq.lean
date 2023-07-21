@@ -286,7 +286,7 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     _ ≡ b [ZMOD n] := by rw [add_zero]
 #align int.modeq_add_fac Int.modEq_add_fac
 
-def Int.modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
+theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
   convert Int.modEq_add_fac (-c) ha using 1
   ring
 
