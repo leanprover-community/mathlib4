@@ -533,7 +533,7 @@ class IsLocalRingHom [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F) : Prop
 
 variable [Monoid R] [Monoid S] [Monoid T] [MonoidHomClass F R S]
 
--- TODO: let's see if this instance is needed. There's no nice way to state this over `FunLike` stuff
+-- TODO: let's see if this instance is needed. There's no nice way to state this w/ `FunLike` stuff
 /-
 instance isLocalRingHom_id (R : Type _) [Monoid R] : IsLocalRingHom (RingHom.id R)
     where map_nonunit _ := id
