@@ -97,22 +97,6 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 -/
 
--- missing?
-
-/-
-lemma map_ringInverse [MonoidWithZero R] [MonoidWithZero S] [MonoidWithZeroHomClass F R S] (f : F)
-    [IsLocalRingHom f] (x : R) : f (Ring.inverse x) = Ring.inverse (f x) := by
-  by_cases IsUnit (f x)
-  · rw [Ring.inverse_isUnit _ h, Ring.inverse_isUnit _ <| h.of_map f x]
-    change (f : R →* S) _ = _
-    rw [← Units.coe_map, map_inv]
-    congr
-    ext
-    simp
-  · simp [Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ (mt (IsUnit.map f) h) ] -/
-
--- it suffices that `f ≠ 1`;
-
 universe u v w u₁ v₁
 
 open BigOperators

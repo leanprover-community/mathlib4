@@ -24,9 +24,6 @@ Define local rings as commutative rings having a unique maximal ideal.
   exists a unique maximal ideal.
 * `LocalRing.maximalIdeal`: The unique maximal ideal for a local rings. Its carrier set is the
   set of non units.
-* `IsLocalRingHom`: A predicate on semiring homomorphisms, requiring that it maps nonunits
-  to nonunits. For local rings, this means that the image of the unique maximal ideal is again
-  contained in the unique maximal ideal.
 * `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
 
 -/

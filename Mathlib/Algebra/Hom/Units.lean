@@ -20,6 +20,11 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 * `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
 * `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
+* `IsLocalRingHom`: A predicate on monoid homomorphisms, requiring that it maps nonunits
+  to nonunits. For local rings, this means that the image of the unique maximal ideal is again
+  contained in the unique maximal ideal. This is developed earlier, and in the generality of
+  monoids, as it allows its use in non-local-ring related contexts, but it does have the
+  strange consequence that it does not require local rings, or even rings.
 
 ## TODO
 
@@ -519,8 +524,8 @@ section IsLocalRingHom
 
 /-- A local ring homomorphism is a homomorphism `f` between monoids such that `a` in the domain
   is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
-  definitions. This concept originates from the theory of local rings, but it is useful in other
-  places, so we allow this generalisation in Mathlib. -/
+  definitions in the local ring case - from where this concept originates, but it is useful in
+  other contexts, so we allow this generalisation in mathlib. -/
 class IsLocalRingHom [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F) : Prop where
   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a

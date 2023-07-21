@@ -24,7 +24,7 @@ section Monoid
 
 variable [Monoid M] [GroupWithZero G₀]
 
--- reviewer note: I'm not sure of the best way to write `hf`.
+-- note to reviewers: I'm not sure of the best way to write `hf`.
 lemma name_suggestions_welcomed [MonoidHomClass F G₀ M] {f : F}
   (hf : (f : G₀ →* M) ≠ 1) : IsLocalRingHom f where
   map_nonunit a h := by
