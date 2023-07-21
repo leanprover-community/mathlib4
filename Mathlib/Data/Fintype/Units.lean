@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Units
+import Mathlib.SetTheory.Cardinal.Finite
 
 #align_import data.fintype.units from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -33,11 +34,19 @@ instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
 
 instance [Monoid α] [Finite α] : Finite αˣ := Finite.of_injective _ Units.ext
 
-theorem Fintype.card_units [GroupWithZero α] [Fintype α] [Fintype αˣ] :
-    Fintype.card αˣ = Fintype.card α - 1 := by
+theorem Fintype.card_eq_card_units_add_one [GroupWithZero α] [Fintype α] [DecidableEq α] :
+    Fintype.card α = Fintype.card αˣ + 1 := by
+  rw [eq_comm, Fintype.card_congr (unitsEquivNeZero α)]
+  have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α)))
+  rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
+
+theorem Nat.card_eq_card_units_add_one [GroupWithZero α] [Finite α] :
+    Nat.card α = Nat.card αˣ + 1 := by
+  have : Fintype α := Fintype.ofFinite α
   classical
-    rw [eq_comm, Nat.sub_eq_iff_eq_add (Fintype.card_pos_iff.2 ⟨(0 : α)⟩),
-      Fintype.card_congr (unitsEquivNeZero α)]
-    have := Fintype.card_congr (Equiv.sumCompl (· = (0 : α))).symm
-    rwa [Fintype.card_sum, add_comm, Fintype.card_subtype_eq] at this
+    rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card, Fintype.card_eq_card_units_add_one]
+
+theorem Fintype.card_units [GroupWithZero α] [Fintype α] [DecidableEq α] :
+    Fintype.card αˣ = Fintype.card α - 1 := by
+  rw [@Fintype.card_eq_card_units_add_one α, Nat.add_sub_cancel]
 #align fintype.card_units Fintype.card_units
