@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
+import Mathlib.CategoryTheory.Limits.Opposites
 
 /-! RightHomology of short complexes
 
@@ -32,7 +33,7 @@ open Category Limits
 namespace ShortComplex
 
 variable {C : Type _} [Category C] [HasZeroMorphisms C]
-  (S : ShortComplex C)
+  (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
@@ -209,8 +210,8 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
 end RightHomologyData
 
 /-- A short complex `S` has right homology when there exists a `S.RightHomologyData` -/
-class HasRightHomology : Prop :=
-(condition : Nonempty S.RightHomologyData)
+class HasRightHomology : Prop where
+  condition : Nonempty S.RightHomologyData
 
 /-- A chosen `S.RightHomologyData` for a short complex `S` that has right homology -/
 noncomputable def rightHomologyData [HasRightHomology S] :
@@ -239,6 +240,173 @@ instance of_zeros (X Y Z : C) :
   HasRightHomology.mk' (RightHomologyData.ofZeros _ rfl rfl)
 
 end HasRightHomology
+
+namespace RightHomologyData
+
+/-- A right homology data for a short complex `S` induces a left homology data for `S.op`. -/
+@[simps]
+def op (h : S.RightHomologyData) : S.op.LeftHomologyData where
+  K := Opposite.op h.Q
+  H := Opposite.op h.H
+  i := h.p.op
+  π := h.ι.op
+  wi := Quiver.Hom.unop_inj h.wp
+  hi := CokernelCofork.IsColimit.ofπOp _ _ h.hp
+  wπ := Quiver.Hom.unop_inj h.wι
+  hπ := KernelFork.IsLimit.ofιOp _ _ h.hι
+
+@[simp] lemma op_f' (h : S.RightHomologyData) :
+    h.op.f' = h.g'.op := rfl
+
+/-- A right homology data for a short complex `S` in the opposite category
+induces a left homology data for `S.unop`. -/
+@[simps]
+def unop {S : ShortComplex Cᵒᵖ} (h : S.RightHomologyData) : S.unop.LeftHomologyData where
+  K := Opposite.unop h.Q
+  H := Opposite.unop h.H
+  i := h.p.unop
+  π := h.ι.unop
+  wi := Quiver.Hom.op_inj h.wp
+  hi := CokernelCofork.IsColimit.ofπUnop _ _ h.hp
+  wπ := Quiver.Hom.op_inj h.wι
+  hπ := KernelFork.IsLimit.ofιUnop _ _ h.hι
+
+@[simp] lemma unop_f' {S : ShortComplex Cᵒᵖ} (h : S.RightHomologyData) :
+    h.unop.f' = h.g'.unop := rfl
+
+end RightHomologyData
+
+namespace LeftHomologyData
+
+/-- A left homology data for a short complex `S` induces a right homology data for `S.op`. -/
+@[simps]
+def op (h : S.LeftHomologyData) : S.op.RightHomologyData where
+  Q := Opposite.op h.K
+  H := Opposite.op h.H
+  p := h.i.op
+  ι := h.π.op
+  wp := Quiver.Hom.unop_inj h.wi
+  hp := KernelFork.IsLimit.ofιOp _ _ h.hi
+  wι := Quiver.Hom.unop_inj h.wπ
+  hι := CokernelCofork.IsColimit.ofπOp _ _ h.hπ
+
+@[simp] lemma op_g' (h : S.LeftHomologyData) :
+    h.op.g' = h.f'.op := rfl
+
+/-- A left homology data for a short complex `S` in the opposite category
+induces a right homology data for `S.unop`. -/
+@[simps]
+def unop {S : ShortComplex Cᵒᵖ} (h : S.LeftHomologyData) : S.unop.RightHomologyData where
+  Q := Opposite.unop h.K
+  H := Opposite.unop h.H
+  p := h.i.unop
+  ι := h.π.unop
+  wp := Quiver.Hom.op_inj h.wi
+  hp := KernelFork.IsLimit.ofιUnop _ _ h.hi
+  wι := Quiver.Hom.op_inj h.wπ
+  hι := CokernelCofork.IsColimit.ofπUnop _ _ h.hπ
+
+@[simp] lemma unop_g' {S : ShortComplex Cᵒᵖ} (h : S.LeftHomologyData) :
+    h.unop.g' = h.f'.unop := rfl
+
+end LeftHomologyData
+
+instance [S.HasLeftHomology] : HasRightHomology S.op :=
+  HasRightHomology.mk' S.leftHomologyData.op
+
+instance [S.HasRightHomology] : HasLeftHomology S.op :=
+  HasLeftHomology.mk' S.rightHomologyData.op
+
+lemma hasLeftHomology_iff_op (S : ShortComplex C) :
+    S.HasLeftHomology ↔ S.op.HasRightHomology :=
+  ⟨fun _ => inferInstance, fun _ => HasLeftHomology.mk' S.op.rightHomologyData.unop⟩
+
+lemma hasRightHomology_iff_op (S : ShortComplex C) :
+    S.HasRightHomology ↔ S.op.HasLeftHomology :=
+  ⟨fun _ => inferInstance, fun _ => HasRightHomology.mk' S.op.leftHomologyData.unop⟩
+
+lemma hasLeftHomology_iff_unop (S : ShortComplex Cᵒᵖ) :
+    S.HasLeftHomology ↔ S.unop.HasRightHomology :=
+  S.unop.hasRightHomology_iff_op.symm
+
+lemma hasRightHomology_iff_unop (S : ShortComplex Cᵒᵖ) :
+    S.HasRightHomology ↔ S.unop.HasLeftHomology :=
+  S.unop.hasLeftHomology_iff_op.symm
+
+section
+
+variable (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
+
+/-- Given right homology data `h₁` and `h₂` for two short complexes `S₁` and `S₂`,
+a `RightHomologyMapData` for a morphism `φ : S₁ ⟶ S₂`
+consists of a description of the induced morphisms on the `Q` (opcycles)
+and `H` (right homology) fields of `h₁` and `h₂`. -/
+structure RightHomologyMapData where
+  /-- the induced map on opcycles -/
+  φQ : h₁.Q ⟶ h₂.Q
+  /-- the induced map on right homology -/
+  φH : h₁.H ⟶ h₂.H
+  /-- commutation with `p` -/
+  commp : h₁.p ≫ φQ = φ.τ₂ ≫ h₂.p := by aesop_cat
+  /-- commutation with `g'` -/
+  commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ := by aesop_cat
+  /-- commutation with `ι` -/
+  commι : φH ≫ h₂.ι = h₁.ι ≫ φQ := by aesop_cat
+
+namespace RightHomologyMapData
+
+attribute [reassoc (attr := simp)] commp commg' commι
+attribute [nolint simpNF] mk.injEq
+
+/-- The right homology map data associated to the zero morphism between two short complexes. -/
+@[simps]
+def zero (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+  RightHomologyMapData 0 h₁ h₂ where
+  φQ := 0
+  φH := 0
+
+/-- The right homology map data associated to the identity morphism of a short complex. -/
+@[simps]
+def id (h : S.RightHomologyData) : RightHomologyMapData (𝟙 S) h h where
+  φQ := 𝟙 _
+  φH := 𝟙 _
+
+/-- The composition of right homology map data. -/
+@[simps]
+def comp {φ : S₁ ⟶ S₂} {φ' : S₂ ⟶ S₃} {h₁ : S₁.RightHomologyData}
+    {h₂ : S₂.RightHomologyData} {h₃ : S₃.RightHomologyData}
+    (ψ : RightHomologyMapData φ h₁ h₂) (ψ' : RightHomologyMapData φ' h₂ h₃) :
+    RightHomologyMapData (φ ≫ φ') h₁ h₃ where
+  φQ := ψ.φQ ≫ ψ'.φQ
+  φH := ψ.φH ≫ ψ'.φH
+
+instance : Subsingleton (RightHomologyMapData φ h₁ h₂) :=
+  ⟨fun ψ₁ ψ₂ => by
+    have hQ : ψ₁.φQ = ψ₂.φQ := by rw [← cancel_epi h₁.p, commp, commp]
+    have hH : ψ₁.φH = ψ₂.φH := by rw [← cancel_mono h₂.ι, commι, commι, hQ]
+    cases ψ₁
+    cases ψ₂
+    congr⟩
+
+instance : Inhabited (RightHomologyMapData φ h₁ h₂) := ⟨by
+  let φQ : h₁.Q ⟶ h₂.Q := h₁.descQ (φ.τ₂ ≫ h₂.p) (by rw [← φ.comm₁₂_assoc, h₂.wp, comp_zero])
+  have commg' : φQ ≫ h₂.g' = h₁.g' ≫ φ.τ₃ :=
+    by rw [← cancel_epi h₁.p, RightHomologyData.p_descQ_assoc, assoc,
+      RightHomologyData.p_g', φ.comm₂₃, RightHomologyData.p_g'_assoc]
+  let φH : h₁.H ⟶ h₂.H := h₂.liftH (h₁.ι ≫ φQ)
+    (by rw [assoc, commg', RightHomologyData.ι_g'_assoc, zero_comp])
+  exact ⟨φQ, φH, by simp, commg', by simp⟩⟩
+
+instance : Unique (RightHomologyMapData φ h₁ h₂) := Unique.mk' _
+
+variable {φ h₁ h₂}
+
+lemma congr_φH {γ₁ γ₂ : RightHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φH = γ₂.φH := by rw [eq]
+lemma congr_φQ {γ₁ γ₂ : RightHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φQ = γ₂.φQ := by rw [eq]
+
+end RightHomologyMapData
+
+end
 
 end ShortComplex
 
