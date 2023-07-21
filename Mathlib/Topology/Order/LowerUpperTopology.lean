@@ -445,19 +445,9 @@ instance [Preorder α] [TopologicalSpace α] [LowerTopology α] [OrderBot α] [P
 instance instUpperTopologyProd [Preorder α] [TopologicalSpace α] [UpperTopology α] [OrderTop α]
     [Preorder β] [TopologicalSpace β] [UpperTopology β] [OrderTop β] : UpperTopology (α × β) where
   topology_eq_upperTopology := by
-    refine' le_antisymm (le_generateFrom _) _
-    · rintro _ ⟨x, rfl⟩
-      exact ((UpperTopology.isClosed_Iic _).prod <| UpperTopology.isClosed_Iic _).isOpen_compl
-    rw [(UpperTopology.isTopologicalBasis.prod UpperTopology.isTopologicalBasis).eq_generateFrom,
-      le_generateFrom_iff_subset_isOpen, image2_subset_iff]
-    rintro _ ⟨s, hs, rfl⟩ _ ⟨t, ht, rfl⟩
-    dsimp
-    simp_rw [coe_lowerClosure, compl_iUnion, prod_eq, preimage_iInter, preimage_compl]
-    -- without `let`, `refine` tries to use the product topology and fails
-    let _ : TopologicalSpace (α × β) := generateFrom { s | ∃ a, (Iic a)ᶜ = s }
-    refine (isOpen_biInter hs fun a _ => ?_).inter (isOpen_biInter ht fun b _ => ?_)
-    · exact GenerateOpen.basic _ ⟨(a, ⊤), by simp [Iic_prod_eq, prod_univ]⟩
-    · exact GenerateOpen.basic _ ⟨(⊤, b), by simp [Iic_prod_eq, univ_prod]⟩
+    suffices : LowerTopology (α × β)ᵒᵈ
+    · exact LowerTopology.topology_eq_lowerTopology (α := (α × β)ᵒᵈ)
+    exact instLowerTopologyProd (α := αᵒᵈ) (β := βᵒᵈ)
 
 section CompleteLattice_LowerTopology
 
