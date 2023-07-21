@@ -41,7 +41,7 @@ lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
 instance compononentComplFunctor_nonempty_of_infinite [Infinite V] (K : (Finset V)ᵒᵖ) :
     Nonempty (G.componentComplFunctor.obj K) := G.componentCompl_nonempty_of_infinite K.unop
 
-instance component_compl_functor_finite [LocallyFinite G] [Fact G.Preconnected]
+instance componentComplFunctor_finite [LocallyFinite G] [Fact G.Preconnected]
     (K : (Finset V)ᵒᵖ) : Finite (G.componentComplFunctor.obj K) := G.componentCompl_finite K.unop
 
 /-- A locally finite preconnected infinite graph has at least one end. -/
