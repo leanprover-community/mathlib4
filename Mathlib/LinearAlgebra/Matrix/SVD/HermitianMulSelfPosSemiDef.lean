@@ -38,7 +38,7 @@ lemma eigenvalues_nonneg_of_pos_semidef {n: Type}
   apply hA.2
 
 lemma sing_vals_ne_zero_pos {m n: Type}
-  [Fintype m][DecidableEq m][Fintype n][DecidableEq n]
+  [Fintype m][Fintype n][DecidableEq n]
   (A: Matrix m n 𝕂)
   (z: {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0 }):
     0 < Real.sqrt ((isHermitian_transpose_mul_self A).eigenvalues z) := by
@@ -49,7 +49,7 @@ lemma sing_vals_ne_zero_pos {m n: Type}
   exact z.prop.symm
 
 lemma eig_vals_ne_zero_pos {m n: Type}
-  [Fintype m][DecidableEq m][Fintype n][DecidableEq n]
+  [Fintype m][Fintype n][DecidableEq n]
   (A: Matrix m n 𝕂)
   (z: {a // (isHermitian_transpose_mul_self A).eigenvalues a ≠ 0 }):
     0 < ((isHermitian_transpose_mul_self A).eigenvalues z) := by
