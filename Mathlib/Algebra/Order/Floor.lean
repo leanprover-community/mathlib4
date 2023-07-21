@@ -490,7 +490,8 @@ theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
   rw [cast_one.symm, ceil_add_nat ha 1]
 #align nat.ceil_add_one Nat.ceil_add_one
 
-theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
+theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
+    ⌈a + OfNat.ofNat n⌉₊ = ⌈a⌉₊ + OfNat.ofNat n :=
   ceil_add_nat ha n
 
 theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
@@ -1471,7 +1472,8 @@ theorem round_sub_nat (x : α) (y : ℕ) : round (x - y) = round x - y := by
 #align round_sub_nat round_sub_nat
 
 @[simp]
-theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] : round (x - n) = round x - n :=
+theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
+    round (x - OfNat.ofNat n) = round x - OfNat.ofNat n :=
   round_sub_nat x n
 
 @[simp]
