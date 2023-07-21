@@ -1039,20 +1039,10 @@ theorem mem_cthickening_iff : x ∈ cthickening δ s ↔ infEdist x s ≤ ENNRea
 closed thickening `δ`-thickening of `E` for small enough positive `δ`. -/
 lemma eventually_not_mem_cthickening_of_inf_edist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
     ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.cthickening δ E := by
--- sgouezel Dec 16, 2022
--- ditto
   obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
-  sorry
-
-
-/-
-lemma eventually_not_mem_cthickening_of_inf_edist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
-    ∀ᶠ δ in 𝓝[>] (0 : ℝ), x ∉ Metric.cthickening δ E := by
-  obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
-  have obs := Ioo_mem_nhdsWithin_Ioi (show (0 : ℝ) ∈ Ico 0 ε by constructor <;> linarith)
-  filter_upwards [obs] with δ hδ
-  simp [cthickening, ((ENNReal.ofReal_lt_ofReal_iff ε_pos).mpr hδ.2).trans ε_lt]
- -/
+  filter_upwards [Iio_mem_nhds ε_pos] with δ hδ
+  simp only [cthickening, mem_setOf_eq, not_le]
+  exact ((ENNReal.ofReal_lt_ofReal_iff ε_pos).mpr hδ).trans ε_lt
 
 theorem mem_cthickening_of_edist_le (x y : α) (δ : ℝ) (E : Set α) (h : y ∈ E)
     (h' : edist x y ≤ ENNReal.ofReal δ) : x ∈ cthickening δ E :=
