@@ -909,26 +909,10 @@ theorem mem_thickening_iff_infEdist_lt : x ∈ thickening δ s ↔ infEdist x s 
 (open) thickening `δ`-thickening of `E` for small enough positive `δ`. -/
 lemma eventually_not_mem_thickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
     ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.thickening δ E := by
---sgouezel Dec 16, 2022
---Suggested change
---  ∀ᶠ δ in 𝓝[>] (0 : ℝ), x ∉ metric.thickening δ E :=
---  ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ metric.thickening δ E :=
---
---This is a stronger statement, and also true as far as I can tell.
   obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
-  --have obs := Ioo_mem_nhdsWithin_Ioi (show (0 : ℝ) ∈ Ico 0 ε by constructor <;> linarith)
-  --filter_upwards [obs] with δ hδ
-  --simp [thickening, (((ENNReal.ofReal_lt_ofReal_iff ε_pos).mpr hδ.2).trans ε_lt).le]
-  sorry
-
-/-
-lemma eventually_not_mem_thickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
-    ∀ᶠ δ in 𝓝[>] (0 : ℝ), x ∉ Metric.thickening δ E := by
-  obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
-  have obs := Ioo_mem_nhdsWithin_Ioi (show (0 : ℝ) ∈ Ico 0 ε by constructor <;> linarith)
-  filter_upwards [obs] with δ hδ
-  simp [thickening, (((ENNReal.ofReal_lt_ofReal_iff ε_pos).mpr hδ.2).trans ε_lt).le]
- -/
+  filter_upwards [Iio_mem_nhds ε_pos] with δ hδ
+  simp only [thickening, mem_setOf_eq, not_lt]
+  exact (((ENNReal.ofReal_lt_ofReal_iff ε_pos).mpr hδ).trans ε_lt).le
 
 /-- The (open) thickening equals the preimage of an open interval under `EMetric.infEdist`. -/
 theorem thickening_eq_preimage_infEdist (δ : ℝ) (E : Set α) :
