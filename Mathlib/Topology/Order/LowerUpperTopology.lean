@@ -383,7 +383,7 @@ theorem isClosed_Iic (a : α) : IsClosed (Iic a) :=
 
 /-- The lower closure of a finite set is closed in the upper topology. -/
 theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α) :=
-  @LowerTopology.isClosed_upperClosure αᵒᵈ _ _ _ _ h
+  LowerTopology.isClosed_upperClosure (α := αᵒᵈ) h
 
 /-- Every set open in the upper topology is a upper set. -/
 theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
