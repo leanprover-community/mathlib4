@@ -48,7 +48,13 @@ Lean cannot apply the Invertible definition. We workaround this were necessary.
 
 Lemma `reduced_spectral_theorem` (`reduced_spectral_theorem'`) shows that AᴴA and AAᴴ, can be
 reduced to products containing only the non-zero singular eigenvectors. This is later used in
-proving the main SVD theroem. A few lemmas are provided about the
+proving the main SVD theroem. A few lemmas are provided about the invertibility of the non-zero
+singular values matrix: `svdσ_inv`, `σ_inv_μ_σ_inv_eq_one`, `IsUnit_det_svdσ`, `IsUnit_det_svdσ_mapK`
+and `svdσ_inv_mapK`.
+
+To make relating left eigenvectors to right eigenvectors easier we define U₁ = AV₁σ⁻¹ while U₂ is
+obtained from the eigenvectors of (AAᴴ). This avoid a lengthy reindexing operation with many proofs.
+The vectors in U₂ have no such issue since they are multiplied by zero singular values anyway.
 
 ## Tags
 Singular Value decomposition, SVD
