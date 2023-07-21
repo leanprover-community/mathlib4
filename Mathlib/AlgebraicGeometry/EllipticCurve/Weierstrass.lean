@@ -241,11 +241,11 @@ lemma comp_id (C : VariableChange R) : comp C id = C := by
 
 lemma comp_left_inv (C : VariableChange R) : comp (inv C) C = id := by
   rw [comp, id, inv]
-  ext
+  ext <;> dsimp only
   · exact C.u.inv_mul
-  · linear_combination (norm := (simp only; ring1)) -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
-  · linear_combination (norm := (simp only; ring1)) -C.s * C.u.inv_mul
-  · linear_combination (norm := (simp only; ring1))
+  · linear_combination (norm := ring1) -C.r * pow_mul_pow_eq_one 2 C.u.inv_mul
+  · linear_combination (norm := ring1) -C.s * C.u.inv_mul
+  · linear_combination (norm := ring1)
       (C.r * C.s - C.t) * pow_mul_pow_eq_one 3 C.u.inv_mul
         + -C.r * C.s * pow_mul_pow_eq_one 2 C.u.inv_mul
 
