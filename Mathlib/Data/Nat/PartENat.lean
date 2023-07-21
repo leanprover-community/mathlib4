@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.nat.part_enat
-! leanprover-community/mathlib commit 3ff3f2d6a3118b8711063de7111a0d77a53219a8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Part
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Tactic.NormNum
+
+#align_import data.nat.part_enat from "leanprover-community/mathlib"@"3ff3f2d6a3118b8711063de7111a0d77a53219a8"
 
 /-!
 # Natural numbers with infinity

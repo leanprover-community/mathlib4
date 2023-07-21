@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.adjoin_root
-! leanprover-community/mathlib commit 5c4b3d41a84bd2a1d79c7d9265e58a891e71be89
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Polynomial.FieldDivision
@@ -17,6 +12,8 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.RingTheory.QuotientNoetherian
+
+#align_import ring_theory.adjoin_root from "leanprover-community/mathlib"@"5c4b3d41a84bd2a1d79c7d9265e58a891e71be89"
 
 /-!
 # Adjoining roots of polynomials
@@ -240,7 +237,7 @@ theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p :=
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
   induction x using AdjoinRoot.induction_on with
-    | ih p =>  exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
+    | ih p => exact (Algebra.adjoin_singleton_eq_range_aeval R (root f)).symm ▸ ⟨p, aeval_eq p⟩
 #align adjoin_root.adjoin_root_eq_top AdjoinRoot.adjoinRoot_eq_top
 
 @[simp]

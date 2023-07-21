@@ -2,17 +2,14 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module analysis.von_neumann_algebra.basic
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Dual
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Algebra.Star.Subalgebra
+
+#align_import analysis.von_neumann_algebra.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Von Neumann algebras
@@ -109,6 +106,16 @@ theorem mem_carrier {S : VonNeumannAlgebra H} {x : H →L[ℂ] H} :
 #align von_neumann_algebra.mem_carrier VonNeumannAlgebra.mem_carrierₓ
 -- porting note: changed the declaration because `simpNF` indicated the LHS simplifies to this.
 
+@[simp]
+theorem coe_toStarSubalgebra (S : VonNeumannAlgebra H) :
+    (S.toStarSubalgebra : Set (H →L[ℂ] H)) = S :=
+  rfl
+
+@[simp]
+theorem coe_mk (S : StarSubalgebra ℂ (H →L[ℂ] H)) (h) :
+    ((⟨S, h⟩ : VonNeumannAlgebra H) : Set (H →L[ℂ] H)) = S :=
+  rfl
+
 @[ext]
 theorem ext {S T : VonNeumannAlgebra H} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
@@ -121,29 +128,28 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
 #align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
 
 /-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`.-/
-def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H :=
-  {
-    StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H)) fun a (ha : a ∈ S) =>
-      (star_mem ha : _) with
-    carrier := Set.centralizer (S : Set (H →L[ℂ] H))
-    centralizer_centralizer' := by rw [S.centralizer_centralizer] }
+def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
+  toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
+  centralizer_centralizer' := by simp
 #align von_neumann_algebra.commutant VonNeumannAlgebra.commutant
 
 @[simp]
 theorem coe_commutant (S : VonNeumannAlgebra H) :
-    ↑S.commutant = Set.centralizer (S : Set (H →L[ℂ] H)) :=
-  rfl
+    ↑S.commutant = Set.centralizer (S : Set (H →L[ℂ] H)) := by
+  simp [commutant]
+
 #align von_neumann_algebra.coe_commutant VonNeumannAlgebra.coe_commutant
 
 @[simp]
 theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
-    z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g :=
-  Iff.rfl
+    z ∈ S.commutant ↔ ∀ g ∈ S, g * z = z * g := by
+  rw [←SetLike.mem_coe, coe_commutant]
+  rfl
 #align von_neumann_algebra.mem_commutant_iff VonNeumannAlgebra.mem_commutant_iff
 
 @[simp]
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
-  SetLike.coe_injective S.centralizer_centralizer'
+  SetLike.coe_injective <| by simp
 #align von_neumann_algebra.commutant_commutant VonNeumannAlgebra.commutant_commutant
 
 end VonNeumannAlgebra

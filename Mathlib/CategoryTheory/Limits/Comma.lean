@@ -2,17 +2,14 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.comma
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.StructuredArrow
+
+#align_import category_theory.limits.comma from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Limits and colimits in comma categories
@@ -131,7 +128,7 @@ def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙
 a colimit. -/
 def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
-    IsColimit (coconeOfPreserves F t₁ c₂)  where
+    IsColimit (coconeOfPreserves F t₁ c₂) where
   desc s :=
     { left := t₁.desc ((fst L R).mapCocone s)
       right := t₂.desc ((snd L R).mapCocone s)

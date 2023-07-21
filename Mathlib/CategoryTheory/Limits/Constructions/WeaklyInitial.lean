@@ -2,15 +2,12 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.weakly_initial
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.limits.constructions.weakly_initial from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Constructions related to weakly initial objects

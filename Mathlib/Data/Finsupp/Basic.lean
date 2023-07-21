@@ -2,17 +2,15 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finsupp.basic
-! leanprover-community/mathlib commit f69db8cecc668e2d5894d7e9bfc491da60db3b9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
+import Mathlib.Data.Set.Countable
+
+#align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
@@ -122,6 +120,9 @@ theorem graph_zero : graph (0 : α →₀ M) = ∅ := by simp [graph]
 theorem graph_eq_empty {f : α →₀ M} : f.graph = ∅ ↔ f = 0 :=
   (graph_injective α M).eq_iff' graph_zero
 #align finsupp.graph_eq_empty Finsupp.graph_eq_empty
+
+instance [Countable α] [Countable M] :
+    Countable (α →₀ M) := Function.Injective.countable (Finsupp.graph_injective α M)
 
 end Graph
 
@@ -306,7 +307,7 @@ variable [Zero M]
 
 namespace Finsupp
 
-/-- Given `f : α ≃ β`, we can map `l : α →₀ M` to  `equivMapDomain f l : β →₀ M` (computably)
+/-- Given `f : α ≃ β`, we can map `l : α →₀ M` to `equivMapDomain f l : β →₀ M` (computably)
 by mapping the support forwards and the function backwards. -/
 def equivMapDomain (f : α ≃ β) (l : α →₀ M) : β →₀ M
     where
@@ -619,7 +620,7 @@ theorem mapDomain_injective {f : α → β} (hf : Function.Injective f) :
   rwa [mapDomain_apply hf, mapDomain_apply hf] at this
 #align finsupp.map_domain_injective Finsupp.mapDomain_injective
 
-/-- When `f` is an embedding we have an embedding `(α →₀ ℕ)  ↪ (β →₀ ℕ)` given by `mapDomain`. -/
+/-- When `f` is an embedding we have an embedding `(α →₀ ℕ) ↪ (β →₀ ℕ)` given by `mapDomain`. -/
 @[simps]
 def mapDomainEmbedding {α β : Type _} (f : α ↪ β) : (α →₀ ℕ) ↪ β →₀ ℕ :=
   ⟨Finsupp.mapDomain f, Finsupp.mapDomain_injective f.injective⟩

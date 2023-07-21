@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.additive
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Split
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+
+#align_import analysis.box_integral.partition.additive from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Box additive functions
@@ -216,7 +213,7 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
         simp only [Box.splitLower_def hx, Box.splitUpper_def hx, Box.splitLower_def hx',
           Box.splitUpper_def hx', ← WithBot.some_eq_coe, Option.elim', Box.face_mk,
           update_noteq (Fin.succAbove_ne _ _).symm, sub_add_sub_comm,
-          update_comp_eq_of_injective _ i.succAbove.injective j x, ← hf]
+          update_comp_eq_of_injective _ (Fin.strictMono_succAbove i).injective j x, ← hf]
         simp only [Box.face])
 #align box_integral.box_additive_map.upper_sub_lower BoxIntegral.BoxAdditiveMap.upperSubLower
 
