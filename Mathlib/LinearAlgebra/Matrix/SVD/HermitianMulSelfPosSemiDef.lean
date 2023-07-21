@@ -22,7 +22,7 @@ lemma conj_transpose_mul_self_is_pos_semidef {m n: Type}
   intro v
   rw [←mulVec_mulVec, dotProduct_mulVec, vecMul_conjTranspose]
   rw [star_star]
-  set z := mulVec A v with hz
+  set z := mulVec A v
   have : 0 ≤ star z ⬝ᵥ z := by
     rw [dotProduct]
     apply Finset.sum_nonneg
