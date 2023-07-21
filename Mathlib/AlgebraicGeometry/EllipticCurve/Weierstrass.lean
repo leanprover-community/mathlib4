@@ -1057,6 +1057,21 @@ def variableChange : EllipticCurve R :=
     rw [Units.val_mul, Units.val_pow_eq_pow_val, coe_Δ', E.variableChange_Δ]⟩
 #align elliptic_curve.variable_change EllipticCurve.variableChange
 
+lemma variableChange_id : E.variableChange WeierstrassCurve.VariableChange.id = E := by
+  simp only [variableChange, WeierstrassCurve.variableChange_id]
+  simp only [WeierstrassCurve.VariableChange.id, inv_one, one_pow, one_mul]
+
+lemma variableChange_comp (C C' : WeierstrassCurve.VariableChange R) (E : EllipticCurve R) :
+    E.variableChange (C.comp C') = (E.variableChange C').variableChange C := by
+  simp only [variableChange, WeierstrassCurve.variableChange_comp]
+  simp only [WeierstrassCurve.VariableChange.comp, mul_inv, mul_pow, ← mul_assoc]
+
+instance instMulActionVariableChange :
+    MulAction (WeierstrassCurve.VariableChange R) (EllipticCurve R) where
+  smul := fun C E => E.variableChange C
+  one_smul := variableChange_id
+  mul_smul := variableChange_comp
+
 lemma coe_variableChange_Δ' : (↑(E.variableChange C).Δ' : R) = (↑C.u⁻¹ : R) ^ 12 * E.Δ' := by
   rw [variableChange_Δ', Units.val_mul, Units.val_pow_eq_pow_val]
 #align elliptic_curve.coe_variable_change_Δ' EllipticCurve.coe_variableChange_Δ'
