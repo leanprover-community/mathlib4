@@ -141,7 +141,8 @@ lemma fromBlocks_mul_fromRows (A₁: Matrix N₁ N R) (A₂: Matrix N₂ N R)
 /- Given that the index set N and the direct sum of the index sets N₁ and N₂ are in bijection then
 the matrix A : N × (N₁ ⊕ N₂) := Cols[A₁ A₂] is actually a "square". Hence, if its product with
 another matrix B : (N₁ ⊕ N₂) × N := Rows[B₁ B₂] matrix is one, the other matrix must be its inverse
-Mulitplication of a matrix by its inverse is commutative. -/
+Mulitplication of a matrix by its inverse is commutative. This is column partioned matrix form of
+`mul_eq_one_comm` -/
 lemma fromColumns_mul_fromRows_eq_one_comm (e: N ≃ N₁ ⊕ N₂)
   (A₁: Matrix N N₁ R)(A₂: Matrix N N₂ R)(B₁: Matrix N₁ N R)(B₂: Matrix N₂ N R):
   fromColumns A₁ A₂ ⬝ fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ ⬝ fromColumns A₁ A₂ = 1 := by
