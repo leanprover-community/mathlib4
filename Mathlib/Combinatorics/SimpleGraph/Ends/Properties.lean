@@ -31,7 +31,7 @@ instance [Finite V] : IsEmpty G.end where
     exact Set.disjoint_iff.mp (s _).disjoint_right
         ⟨by simp only [Opposite.unop_op, Finset.coe_univ, Set.mem_univ], h⟩
 
-/-- The `component_compl`s chosen by an end are all infinite. -/
+/-- The `componentCompl`s chosen by an end are all infinite. -/
 lemma end_componentCompl_infinite (e : G.end) (K : (Finset V)ᵒᵖ) :
     ((e : (j : (Finset V)ᵒᵖ) → G.componentComplFunctor.obj j) K).supp.Infinite := by
   refine (e.val K).infinite_iff_in_all_ranges.mpr (fun L h => ?_)
