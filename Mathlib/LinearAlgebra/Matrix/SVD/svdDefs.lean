@@ -448,7 +448,7 @@ lemma U_inv (A: Matrix (Fin M) (Fin N) 𝕂):
     U₂_conjTranspose_mul_U₁, fromBlocks_one]
 
 lemma V_conjTranspose_mul_inj (A: Matrix (Fin M) (Fin N) 𝕂)
-  {m: Type}[Fintype m]:
+  {m: Type}:
   Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x ⬝ (fromColumns A.svdV₁ A.svdV₂)) := by
   intro X Y h
   replace h := congr_arg (fun x => x⬝(fromColumns A.svdV₁ A.svdV₂)ᴴ) h

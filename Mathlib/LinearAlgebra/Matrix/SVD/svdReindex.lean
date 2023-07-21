@@ -28,8 +28,6 @@ open Matrix BigOperators
 namespace Matrix
 /- ALready in mathlbi as Equiv.sumCongr-/
 def equiv_sum_trans   {a b c d: Type}
-  [Fintype a][Fintype b][Fintype c][Fintype d]
-  [DecidableEq a][DecidableEq b][DecidableEq c][DecidableEq d]
   (e1: a ≃ c)(e2: b ≃ d): (a ⊕ b) ≃ (c ⊕ d) :=
   { toFun := Sum.elim (fun x => Sum.inl (e1 x)) (fun x => Sum.inr (e2 x))
     invFun := Sum.elim (fun x => Sum.inl (e1.symm x)) (fun x => Sum.inr (e2.symm x)),
@@ -71,12 +69,6 @@ noncomputable def emz (A: Matrix (Fin M) (Fin N) 𝕂) : (Fin M) ≃ (Fin A.rank
     apply Fintype.equivFinOfCardEq
     rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose]
   exact Equiv.trans em.symm  (equiv_sum_trans eᵣ' eₘᵣ)
-
--- lemma enz_nr_zero (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)):
---   (isHermitian_transpose_mul_self A).eigenvalues ((enz A).symm (Sum.inr i)) = 0 := by
---   unfold enz equiv_sum_trans
---   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
---     Equiv.sumCompl_apply_inr]
 
 lemma enz_nr_zero (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (N - A.rank)):
   (isHermitian_transpose_mul_self A).eigenvalues ((enz A).symm (Sum.inr i)) = 0 := by

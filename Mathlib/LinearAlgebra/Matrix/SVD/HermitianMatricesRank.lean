@@ -77,14 +77,14 @@ lemma rank_eq_count_non_zero_eigs {n R: Type}[Fintype n][DecidableEq n]
   rw [rank_eq_rank_diagonal hA, rank_diagonal_matrix]
 
 lemma rank_eq_card_pos_eigs_conj_transpose_mul_self {m n R: Type}
-  [Fintype m][Fintype n][DecidableEq m][DecidableEq n][IsROrC R][DecidableEq R]
+  [Fintype m][Fintype n][DecidableEq n][IsROrC R][DecidableEq R]
   (A: Matrix m n R):
   A.rank =  (Fintype.card {i // (Matrix.isHermitian_transpose_mul_self A).eigenvalues i ≠ 0}) := by
   rw [← rank_conjTranspose_mul_self]
   rw [← rank_eq_count_non_zero_eigs ]
 
 lemma rank_eq_card_pos_eigs_self_mul_conj_transpose {m n R: Type}
-  [Fintype m][Fintype n][DecidableEq m][DecidableEq n][IsROrC R][DecidableEq R]
+  [Fintype m][Fintype n][DecidableEq m][IsROrC R][DecidableEq R]
   (A: Matrix m n R): A.rank =
   (Fintype.card {i // (Matrix.isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0}) := by
   rw [← rank_self_mul_conjTranspose]

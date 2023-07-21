@@ -15,7 +15,7 @@ variable {𝕂: Type}[IsROrC 𝕂][DecidableEq 𝕂]
 open Matrix BigOperators
 
 lemma conj_transpose_mul_self_is_pos_semidef {m n: Type}
-  [Fintype m][DecidableEq m][Fintype n][DecidableEq n]
+  [Fintype m][Fintype n]
   (A: Matrix m n 𝕂): Matrix.PosSemidef (Aᴴ⬝A) := by
   constructor
   exact (isHermitian_transpose_mul_self A)
