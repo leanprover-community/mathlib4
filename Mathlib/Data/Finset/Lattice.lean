@@ -885,11 +885,7 @@ theorem sup'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f)
 #align finset.sup'_map Finset.sup'_map
 
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty):
-<<<<<<< HEAD
-    s₁.sup' h₁ f ≤ s₂.sup' (Nonempty.mono h h₁) f :=
-=======
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
->>>>>>> master
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
 
 end Sup'
@@ -989,11 +985,7 @@ theorem inf'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f)
 #align finset.inf'_map Finset.inf'_map
 
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
-<<<<<<< HEAD
-    s₂.inf' (Nonempty.mono h h₁) f ≤ s₁.inf' h₁ f :=
-=======
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
->>>>>>> master
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
 
 end Inf'
