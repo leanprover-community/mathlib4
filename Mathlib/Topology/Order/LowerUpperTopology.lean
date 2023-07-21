@@ -385,7 +385,7 @@ theorem isClosed_lowerClosure (h : s.Finite) : IsClosed (lowerClosure s : Set α
 
 /-- Every set open in the upper topology is a upper set. -/
 theorem isUpperSet_of_isOpen (h : IsOpen s) : IsUpperSet s :=
-  @LowerTopology.isLowerSet_of_isOpen αᵒᵈ _ _ _ _ h
+  LowerTopology.isLowerSet_of_isOpen (α := αᵒᵈ) h
 
 theorem isLowerSet_of_isClosed (h : IsClosed s) : IsLowerSet s :=
   isUpperSet_compl.1 <| isUpperSet_of_isOpen h.isOpen_compl
@@ -396,10 +396,10 @@ The closure of a singleton `{a}` in the upper topology is the left-infinite righ
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Iic a :=
-  @LowerTopology.closure_singleton αᵒᵈ _ _ _ _
+  LowerTopology.closure_singleton (α := αᵒᵈ) _
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (upperBasis α) :=
-  @LowerTopology.isTopologicalBasis αᵒᵈ _ _ _
+  LowerTopology.isTopologicalBasis (α := αᵒᵈ)
 
 /-- A function `f : β → α` with upper topology in the codomain is continuous provided that the
 preimage of every interval `Set.Iic a` is a closed set.
@@ -407,7 +407,7 @@ preimage of every interval `Set.Iic a` is a closed set.
 TODO: upgrade to an `iff`. -/
 lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
     Continuous f :=
-  @LowerTopology.continuous_of_Ici αᵒᵈ _ _ _ _ _ _ h
+  LowerTopology.continuous_of_Ici (α := αᵒᵈ) h
 
 end Preorder
 
@@ -419,7 +419,7 @@ variable [PartialOrder α] [TopologicalSpace α] [UpperTopology α]
 -- see Note [lower instance priority]
 /-- The upper topology on a partial order is T₀. -/
 instance (priority := 90) t0Space : T0Space α :=
-  @LowerTopology.t0Space αᵒᵈ _ _ _
+  LowerTopology.t0Space (α := αᵒᵈ)
 
 end PartialOrder
 
@@ -476,7 +476,7 @@ variable [CompleteLattice α] [CompleteLattice β] [TopologicalSpace α] [UpperT
   [TopologicalSpace β] [UpperTopology β]
 
 protected theorem sSupHom.continuous (f : sSupHom α β) : Continuous f :=
-  @sInfHom.continuous αᵒᵈ βᵒᵈ _ _ _ _ _ _ (sSupHom.dual.toFun f)
+  sInfHom.continuous (α := αᵒᵈ) (β := βᵒᵈ) (sSupHom.dual.toFun f)
 
 -- see Note [lower instance priority]
 instance (priority := 90) UpperTopology.continuousInf : ContinuousSup α :=
