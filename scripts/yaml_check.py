@@ -1,5 +1,11 @@
+"""
+This file is copied from the mathlib3 file of the same name.
+It reads in the three yaml files, and translates them to simpler json files that are easier to
+process in Lean.
+"""
 from typing import Dict, Optional, Union, Tuple, List
 import yaml
+import json
 import sys
 
 TieredDict = Dict[str, Union[Optional[str], 'TieredDict']]
@@ -39,10 +45,11 @@ with open(undergrad_yaml, 'r') as hy:
 hundred_decls:List[Tuple[str, str]] = []
 
 for index, entry in hundred.items():
+  title = entry['title']
   if 'decl' in entry:
-    hundred_decls.append((index, entry['decl']))
+    hundred_decls.append((f'{index} {title}', entry['decl']))
   elif 'decls' in entry:
-    hundred_decls = hundred_decls + [(index, d) for d in entry['decls']]
+    hundred_decls = hundred_decls + [(f'{index} {title}', d) for d in entry['decls']]
 
 overview_decls = tiered_extract(overview)
 assert all(len(n) == 3 for n, _ in overview_decls)
@@ -52,6 +59,9 @@ undergrad_decls = tiered_extract(undergrad)
 assert all(len(n) >= 3 for n, _ in undergrad_decls)
 undergrad_decls = flatten_names(undergrad_decls)
 
-print_list('100.txt', hundred_decls)
-print_list('overview.txt', overview_decls)
-print_list('undergrad.txt', undergrad_decls)
+with open('100.json', 'w', encoding='utf8') as f:
+  json.dump(hundred_decls, f)
+with open('overview.json', 'w', encoding='utf8') as f:
+  json.dump(overview_decls, f)
+with open('undergrad.json', 'w', encoding='utf8') as f:
+  json.dump(undergrad_decls, f)
