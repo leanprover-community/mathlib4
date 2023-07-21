@@ -8,6 +8,8 @@ import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
+/-! # AᴴA is Positive Semidefinite with Non-negative eigenvalues -/
+
 variable {𝕂: Type}[IsROrC 𝕂][DecidableEq 𝕂]
 
 open Matrix BigOperators
