@@ -425,8 +425,8 @@ end PartialOrder
 
 end UpperTopology
 
-instance instLowerTopologyProd [Preorder α] [TopologicalSpace α] [LowerTopology α] [OrderBot α] [Preorder β]
-    [TopologicalSpace β] [LowerTopology β] [OrderBot β] : LowerTopology (α × β) where
+instance instLowerTopologyProd [Preorder α] [TopologicalSpace α] [LowerTopology α] [OrderBot α]
+    [Preorder β] [TopologicalSpace β] [LowerTopology β] [OrderBot β] : LowerTopology (α × β) where
   topology_eq_lowerTopology := by
     refine' le_antisymm (le_generateFrom _) _
     · rintro _ ⟨x, rfl⟩
