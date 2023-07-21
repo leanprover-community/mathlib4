@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.digits
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
@@ -17,6 +12,8 @@ import Mathlib.Data.List.Palindrome
 import Mathlib.Algebra.Parity
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
+
+#align_import data.nat.digits from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Digits of a natural number
@@ -352,10 +349,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     rename ℕ => m
-    -- Porting note: Added `have`
-    have : ∀ v, List.getLast (digits (succ zero) (succ v)) (by simp [digits, digitsAux1]) = 1 := by
-      intros v; induction v <;> simp; assumption
-    simp only [digits_one, List.getLast_replicate_succ m 1, this]
+    simp only [digits_one, List.getLast_replicate_succ m 1]
   revert hm
   apply Nat.strongInductionOn m
   intro n IH hn
@@ -496,7 +490,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1 0 := by
   induction' n using Nat.binaryRecFromOne with b n h ih
   · simp
-  · simp; trivial
+  · simp
   rw [bits_append_bit _ _ fun hn => absurd hn h]
   cases b
   · rw [digits_def' one_lt_two]

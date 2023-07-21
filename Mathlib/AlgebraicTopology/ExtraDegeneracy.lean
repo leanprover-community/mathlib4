@@ -2,17 +2,14 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.extra_degeneracy
-! leanprover-community/mathlib commit 324a7502510e835cdbd3de1519b6c66b51fb2467
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Tactic.FinCases
+
+#align_import algebraic_topology.extra_degeneracy from "leanprover-community/mathlib"@"324a7502510e835cdbd3de1519b6c66b51fb2467"
 
 /-!
 
@@ -149,7 +146,7 @@ namespace StandardSimplex
 /-- When `[HasZero X]`, the shift of a map `f : Fin n → X`
 is a map `Fin (n+1) → X` which sends `0` to `0` and `i.succ` to `f i`. -/
 def shiftFun {n : ℕ} {X : Type _} [Zero X] (f : Fin n → X) (i : Fin (n + 1)) : X :=
-  dite (i = 0) (fun _ => 0) fun h => f (i.pred h)
+  dite (i = 0) (fun _ => 0) fun h => f (i.pred <| Fin.vne_of_ne h)
 set_option linter.uppercaseLean3 false in
 #align sSet.augmented.standard_simplex.shift_fun SSet.Augmented.StandardSimplex.shiftFun
 
@@ -220,8 +217,9 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     by_cases j = 0
     · subst h
       simp only [Fin.succ_succAbove_zero, shiftFun_0]
-    · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero h
-      simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply]
+    · obtain ⟨_, rfl⟩ := Fin.eq_succ_of_ne_zero <| h
+      simp only [Fin.succ_succAbove_succ, shiftFun_succ, Function.comp_apply,
+        Fin.succAboveEmb_apply]
   s_comp_σ n i := by
     ext1 φ
     apply SimplexCategory.Hom.ext
@@ -267,7 +265,9 @@ noncomputable def ExtraDegeneracy.s (n : ℕ) :
     f.cechNerve.obj (op [n]) ⟶ f.cechNerve.obj (op [n + 1]) :=
   WidePullback.lift (WidePullback.base _)
     (fun i =>
-      dite (i = 0) (fun _ => WidePullback.base _ ≫ S.section_) fun h => WidePullback.π _ (i.pred h))
+      dite (i = 0)
+        (fun _ => WidePullback.base _ ≫ S.section_)
+        (fun h => WidePullback.π _ (i.pred <| Fin.vne_of_ne h)))
     fun i => by
       dsimp
       split_ifs with h
