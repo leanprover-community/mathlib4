@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module number_theory.pell_matiyasevic
-! leanprover-community/mathlib commit 795b501869b9fa7aa716d5fdadd00c03f983a605
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Data.Nat.ModEq
 import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.Tactic.Monotonicity
+
+#align_import number_theory.pell_matiyasevic from "leanprover-community/mathlib"@"795b501869b9fa7aa716d5fdadd00c03f983a605"
 
 /-!
 # Pell's equation and Matiyasevic's theorem

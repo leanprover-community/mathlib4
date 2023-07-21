@@ -2,17 +2,14 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module topology.category.Profinite.cofiltered_limit
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+
+#align_import topology.category.Profinite.cofiltered_limit from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Cofiltered limits of profinite sets.
@@ -229,7 +226,7 @@ theorem exists_locallyConstant {α : Type _} (hC : IsLimit C) (f : LocallyConsta
       (inferInstance : T2Space (F.obj j))
     haveI : ∀ j : J, CompactSpace ((F ⋙ Profinite.toTopCat).obj j) := fun j =>
       (inferInstance : CompactSpace (F.obj j))
-    have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u, u}
+    have cond := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u}
       (F ⋙ Profinite.toTopCat)
     suffices : Nonempty C.pt; exact IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C

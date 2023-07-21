@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.function_field
-! leanprover-community/mathlib commit d0259b01c82eed3f50390a60404c63faf9e60b1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
 import Mathlib.NumberTheory.ClassNumber.Finite
 import Mathlib.NumberTheory.FunctionField
+
+#align_import number_theory.class_number.function_field from "leanprover-community/mathlib"@"d0259b01c82eed3f50390a60404c63faf9e60b1f"
 
 /-!
 # Class numbers of function fields

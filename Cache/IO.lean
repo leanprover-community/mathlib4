@@ -61,11 +61,13 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.1"
+  "0.1.4"
+
+def EXE := if System.Platform.isWindows then ".exe" else ""
 
 def LEANTARBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}"
+  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
   ⟨"lake-packages"⟩
@@ -91,6 +93,7 @@ def getPackageDirs : IO PackageDirs := return .ofList [
   ("MathlibExtras", if ← isMathlibRoot then "." else mathlibDepPath),
   ("Aesop", LAKEPACKAGESDIR / "aesop"),
   ("Std", LAKEPACKAGESDIR / "std"),
+  ("Cli", LAKEPACKAGESDIR / "Cli"),
   ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
   ("Qq", LAKEPACKAGESDIR / "Qq")
 ]
@@ -177,21 +180,22 @@ def validateLeanTar : IO Unit := do
   let target ← if win then
     pure "x86_64-pc-windows-msvc"
   else
-    let arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+    let mut arch ← (·.trim) <$> runCmd "uname" #["-m"] false
+    if arch = "arm64" then arch := "aarch64"
     unless arch ∈ ["x86_64", "aarch64"] do
       throw $ IO.userError s!"unsupported architecture {arch}"
     pure <|
       if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
-      else s!"{arch}-unknown-linux-gnu"
+      else s!"{arch}-unknown-linux-musl"
   IO.println s!"leantar is too old; downloading more recent version"
   IO.FS.createDirAll IO.CACHEDIR
-  let ext := if win then "zip" else "tar.xz"
+  let ext := if win then "zip" else "tar.gz"
   let _ ← runCmd "curl" #[
     s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
     "-L", "-o", s!"{LEANTARBIN}.{ext}"]
   let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
     "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar").toString, LEANTARBIN.toString]
+  let _ ← runCmd "mv" #[(IO.CACHEDIR / s!"leantar{EXE}").toString, LEANTARBIN.toString]
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
@@ -272,15 +276,15 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) : IO Unit := do
+def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
   let hashMap := hashMap.filter (← getLocalCacheSet) true
   let size := hashMap.size
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
     let isMathlibRoot ← isMathlibRoot
-    let child ← IO.Process.spawn
-      { cmd := ← getLeanTar, args := #["-x", "-j", "-"], stdin := .piped }
+    let args := (if force then #["-f"] else #[]) ++ #["-x", "-j", "-"]
+    let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"

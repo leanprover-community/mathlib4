@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.perm
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Range
 import Mathlib.Data.Nat.Factorial.Basic
+
+#align_import data.list.perm from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # List Permutations
