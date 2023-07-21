@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.algebra.subalgebra.tower
-! leanprover-community/mathlib commit a35ddf20601f85f78cd57e7f5b09ed528d71b7af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
+
+#align_import algebra.algebra.subalgebra.tower from "leanprover-community/mathlib"@"a35ddf20601f85f78cd57e7f5b09ed528d71b7af"
 
 /-!
 # Subalgebras in towers of algebras

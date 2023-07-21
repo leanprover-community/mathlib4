@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.split_simplicial_object
-! leanprover-community/mathlib commit dd1f8496baa505636a82748e6b652165ea888733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import algebraic_topology.split_simplicial_object from "leanprover-community/mathlib"@"dd1f8496baa505636a82748e6b652165ea888733"
 
 /-!
 

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.open_pos
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+
+#align_import measure_theory.measure.open_pos from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Measures positive on nonempty opens
@@ -49,6 +46,9 @@ theorem _root_.IsOpen.measure_ne_zero (hU : IsOpen U) (hne : U.Nonempty) : μ U 
 theorem _root_.IsOpen.measure_pos (hU : IsOpen U) (hne : U.Nonempty) : 0 < μ U :=
   (hU.measure_ne_zero μ hne).bot_lt
 #align is_open.measure_pos IsOpen.measure_pos
+
+@[simp] lemma measure_ne_zero [Nonempty X] : μ ≠ 0 := by
+  simpa only [← measure_univ_pos] using isOpen_univ.measure_pos μ univ_nonempty
 
 theorem _root_.IsOpen.measure_pos_iff (hU : IsOpen U) : 0 < μ U ↔ U.Nonempty :=
   ⟨fun h => nonempty_iff_ne_empty.2 fun he => h.ne' <| he.symm ▸ measure_empty, hU.measure_pos μ⟩
@@ -223,9 +223,17 @@ theorem measure_ball_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (ball x r) :=
   isOpen_ball.measure_pos μ (nonempty_ball.2 hr)
 #align metric.measure_ball_pos Metric.measure_ball_pos
 
+/-- See also `Metric.measure_closedBall_pos_iff`. -/
 theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBall x r) :=
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 #align metric.measure_closed_ball_pos Metric.measure_closedBall_pos
+
+@[simp] lemma measure_closedBall_pos_iff {X : Type _} [MetricSpace X] {m : MeasurableSpace X}
+    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    0 < μ (closedBall x r) ↔ 0 < r := by
+  refine' ⟨fun h ↦ _, measure_closedBall_pos μ x⟩
+  contrapose! h
+  rw [(subsingleton_closedBall x h).measure_zero μ]
 
 end Metric
 

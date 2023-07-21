@@ -2,14 +2,11 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module init.algebra.classes
-! leanprover-community/lean commit 31f3a46d7c18d6b2255a72df4f9d62644145d83b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Logic
 import Mathlib.Init.Data.Ordering.Basic
+
+#align_import init.algebra.classes from "leanprover-community/lean"@"31f3a46d7c18d6b2255a72df4f9d62644145d83b"
 
 /-!
 # Unbundled algebra classes

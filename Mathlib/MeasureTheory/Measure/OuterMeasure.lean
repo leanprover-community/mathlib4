@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
+
+#align_import measure_theory.measure.outer_measure from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
 
 /-!
 # Outer Measures
@@ -1721,7 +1718,7 @@ a measurable set `t ⊇ s` such that `μ i t = (μ i).trim s` for all `i`. -/
 theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι → OuterMeasure α)
     (s : Set α) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = (μ i).trim s := by
   choose t hst ht hμt using fun i => (μ i).exists_measurable_superset_eq_trim s
-  replace hst := subset_iInter  hst
+  replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
   refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
   exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]

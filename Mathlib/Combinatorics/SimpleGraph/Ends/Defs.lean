@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.ends.defs
-! leanprover-community/mathlib commit b99e2d58a5e6861833fa8de11e51a81144258db4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Data.SetLike.Basic
+
+#align_import combinatorics.simple_graph.ends.defs from "leanprover-community/mathlib"@"b99e2d58a5e6861833fa8de11e51a81144258db4"
 
 /-!
 # Ends

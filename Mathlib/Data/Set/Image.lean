@@ -3,13 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module data.set.image
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
+
+#align_import data.set.image from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Images and preimages of sets
@@ -73,6 +70,7 @@ theorem preimage_congr {f g : α → β} {s : Set β} (h : ∀ x : α, f x = g x
   simp [h]
 #align set.preimage_congr Set.preimage_congr
 
+@[gcongr]
 theorem preimage_mono {s t : Set β} (h : s ⊆ t) : f ⁻¹' s ⊆ f ⁻¹' t := fun _ hx => h hx
 #align set.preimage_mono Set.preimage_mono
 
@@ -298,6 +296,7 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
 
 /-- Image is monotone with respect to `⊆`. See `Set.monotone_image` for the statement in
 terms of `≤`. -/
+@[gcongr]
 theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b := by
   simp only [subset_def, mem_image]
   exact fun x => fun ⟨w, h1, h2⟩ => ⟨w, h h1, h2⟩

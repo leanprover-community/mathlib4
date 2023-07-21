@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.prod
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+
+#align_import analysis.calculus.fderiv.prod from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
 /-!
 # Derivative of the cartesian product of functions
