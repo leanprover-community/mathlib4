@@ -5,8 +5,7 @@ Authors: Mohanad Ahmed
 -/
 
 import Mathlib.Data.Matrix.Rank
-import Mathlib.LinearAlgebra.Matrix.Hermitian
--- import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
+import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-! # Rank of Matrix when left or right multiplied by invertible matrix.
 Rank is unaffected by left or right multiplication by an invertible matrix -/
