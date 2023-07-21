@@ -255,80 +255,58 @@ section indicator
 
 variable {α : Type _} [PseudoEMetricSpace α] {β : Type _} [One β]
 
+/-- Pointwise, the (mul)indicators of δ-thickenings of a set eventually coincide with the
+(mul)-indicator of the set as δ>0 tends to zero. -/
 @[to_additive]
---Collaborator
---@sgouezel sgouezel Dec 16, 2022
---
---add a docstring to this one?
---@kkytola
-
-lemma mul_indicator_thickening_eventually_eq_mul_indicator_closure (f : α → β) (E : Set α) (x : α) :
+lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
     ∀ᶠ δ in 𝓝[>] (0 : ℝ),
       (Metric.thickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
-  --by_cases x_mem_closure : x ∈ closure E,
-  --{ filter_upwards [self_mem_nhds_within] with δ δ_pos,
-  --  simp only [x_mem_closure, closure_subset_thickening δ_pos E x_mem_closure,
-  --             mul_indicator_of_mem], },
-  --{ have obs := eventually_not_mem_thickening_of_inf_edist_pos x_mem_closure,
-  --  filter_upwards [obs] with δ hδ,
-  --  simp only [hδ, x_mem_closure, mul_indicator_of_not_mem, not_false_iff], },
-  sorry
+  by_cases x_mem_closure : x ∈ closure E
+  · filter_upwards [self_mem_nhdsWithin] with δ δ_pos
+    simp only [closure_subset_thickening δ_pos E x_mem_closure, mulIndicator_of_mem, x_mem_closure]
+  · have obs := (eventually_not_mem_thickening_of_infEdist_pos x_mem_closure)
+    filter_upwards [inter_mem (mem_nhdsWithin_of_mem_nhds obs) self_mem_nhdsWithin]
+      with δ ⟨x_notin_thE, δ_pos⟩
+    simp only [mem_setOf_eq] at x_notin_thE
+    have x_notin_clE : x ∉ closure E := fun con ↦ x_notin_thE (closure_subset_thickening δ_pos E con)
+    simp only [x_notin_thE, not_false_eq_true, mulIndicator_of_not_mem, x_notin_clE]
 
+/-- Pointwise, the (mul)indicators of closed δ-thickenings of a set eventually coincide with the
+(mul)-indicator of the set as δ tends to zero. -/
 @[to_additive]
-lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure
-  (f : α → β) (E : Set α) (x : α) :
-  ∀ᶠ δ in 𝓝[>] (0 : ℝ), ∀ᶠ δ in 𝓝[>] (0 : ℝ),
---Collaborator
---@sgouezel sgouezel Dec 16, 2022
---Suggested change
---  ∀ᶠ δ in 𝓝[>] (0 : ℝ),
---  ∀ᶠ δ in 𝓝 (0 : ℝ),
---
---?? Is this stronger version true?
---@kkytola
-    (Metric.cthickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
-  --by_cases x_mem_closure : x ∈ closure E,
-  --{ filter_upwards [univ_mem] with δ rubbish,
-  --  simp only [x_mem_closure, closure_subset_cthickening δ E x_mem_closure,
-  --             mul_indicator_of_mem], },
-  --{ have obs := eventually_not_mem_cthickening_of_inf_edist_pos x_mem_closure,
-  --  filter_upwards [obs] with δ hδ,
-  --  simp only [hδ, x_mem_closure, mul_indicator_of_not_mem, not_false_iff], },
-  sorry
+lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
+    ∀ᶠ δ in 𝓝 (0 : ℝ),
+      (Metric.cthickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
+  by_cases x_mem_closure : x ∈ closure E
+  · filter_upwards [univ_mem] with δ _
+    have obs : x ∈ cthickening δ E := closure_subset_cthickening δ E x_mem_closure
+    rw [mulIndicator_of_mem obs f, mulIndicator_of_mem x_mem_closure f]
+  · filter_upwards [eventually_not_mem_cthickening_of_infEdist_pos x_mem_closure] with δ hδ
+    have x_notin_clE : x ∉ closure E := fun con ↦ hδ (closure_subset_cthickening δ E con)
+    simp only [hδ, not_false_eq_true, mulIndicator_of_not_mem, x_notin_clE]
 
 variable [TopologicalSpace β]
 
+/-- The (mul)indicators of δ-thickenings of a set tend pointwise to the (mul)-indicator of
+the set, as δ>0 tends to zero. -/
 @[to_additive]
 lemma tendsto_mulIndicator_thickening_mulIndicator_closure (f : α → β) (E : Set α) :
-  Tendsto (fun δ ↦ (Metric.thickening δ E).mulIndicator f) (𝓝[>] 0)
-    (𝓝 (mulIndicator (closure E) f)) := by
-  --rw tendsto_pi_nhds,
-  --intro x,
-  --rw tendsto_congr' (mul_indicator_thickening_eventually_eq_mul_indicator_closure f E x),
-  --apply tendsto_const_nhds,
-  sorry
+    Tendsto (fun δ ↦ (Metric.thickening δ E).mulIndicator f) (𝓝[>] 0)
+      (𝓝 ((closure E).mulIndicator f)) := by
+  rw [tendsto_pi_nhds]
+  intro x
+  rw [tendsto_congr' (mulIndicator_thickening_eventually_eq_mulIndicator_closure f E x)]
+  apply tendsto_const_nhds
 
+/-- The (mul)indicators of closed δ-thickenings of a set tend pointwise to the
+(mul)-indicator of the set, as δ tends to zero. -/
 @[to_additive]
-lemma tendsto_mul_indicator_cthickening_mul_indicator_closure (f : α → β) (E : Set α) :
-    Tendsto (fun δ ↦ (Metric.cthickening δ E).mulIndicator f) (𝓝[>] 0)
-      (𝓝 (mulIndicator (closure E) f)) := by
---Collaborator
---@sgouezel sgouezel Dec 16, 2022
---Suggested change
---  tendsto (λ δ, (metric.cthickening δ E).mul_indicator f) (𝓝[>] 0)
---  tendsto (λ δ, (metric.cthickening δ E).mul_indicator f) (𝓝 0)
---
---??
---@kkytola
---Collaborator
---@sgouezel sgouezel Dec 16, 2022
---
---In the rest of the file, you use dot notation for the mul_indicator, so you might as well do it here.
---@kkytola
-  --rw tendsto_pi_nhds,
-  --intro x,
-  --rw tendsto_congr' (mul_indicator_cthickening_eventually_eq_mul_indicator_closure f E x),
-  --apply tendsto_const_nhds,
-  sorry
+lemma tendsto_mul_indicator_cthickening_mulIndicator_closure (f : α → β) (E : Set α) :
+    Tendsto (fun δ ↦ (Metric.cthickening δ E).mulIndicator f) (𝓝 0)
+      (𝓝 ((closure E).mulIndicator f)) := by
+  rw [tendsto_pi_nhds]
+  intro x
+  rw [tendsto_congr' (mulIndicator_cthickening_eventually_eq_mulIndicator_closure f E x)]
+  apply tendsto_const_nhds
 
 end indicator

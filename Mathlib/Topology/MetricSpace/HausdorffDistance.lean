@@ -1037,7 +1037,7 @@ theorem mem_cthickening_iff : x ∈ cthickening δ s ↔ infEdist x s ≤ ENNRea
 
 /-- An exterior point of a subset `E` (i.e., a point outside the closure of `E`) is not in the
 closed thickening `δ`-thickening of `E` for small enough positive `δ`. -/
-lemma eventually_not_mem_cthickening_of_inf_edist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
+lemma eventually_not_mem_cthickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
     ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.cthickening δ E := by
   obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
   filter_upwards [Iio_mem_nhds ε_pos] with δ hδ
