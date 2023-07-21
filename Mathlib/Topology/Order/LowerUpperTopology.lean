@@ -372,10 +372,8 @@ def withUpperTopologyHomeomorph : WithUpperTopology α ≃ₜ α :=
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
-instance  [Preorder α] [TopologicalSpace α] [UpperTopology α] : LowerTopology (αᵒᵈ) where
-  topology_eq_lowerTopology := by
-    refine topologicalSpace_eq ?_
-    rw [(UpperTopology.topology_eq (α))]
+instance [Preorder α] [TopologicalSpace α] [UpperTopology α] : LowerTopology (αᵒᵈ) where
+  topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
 /-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
 theorem isClosed_Iic (a : α) : IsClosed (Iic a) :=
