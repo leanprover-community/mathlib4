@@ -250,13 +250,12 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
 
 end thickenedIndicator
 
-
 section indicator
 
 variable {α : Type _} [PseudoEMetricSpace α] {β : Type _} [One β]
 
 /-- Pointwise, the (mul)indicators of δ-thickenings of a set eventually coincide with the
-(mul)-indicator of the set as δ>0 tends to zero. -/
+(mul)indicator of the set as δ>0 tends to zero. -/
 @[to_additive]
 lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
     ∀ᶠ δ in 𝓝[>] (0 : ℝ),
@@ -272,7 +271,7 @@ lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β)
     simp only [x_notin_thE, not_false_eq_true, mulIndicator_of_not_mem, x_notin_clE]
 
 /-- Pointwise, the (mul)indicators of closed δ-thickenings of a set eventually coincide with the
-(mul)-indicator of the set as δ tends to zero. -/
+(mul)indicator of the set as δ tends to zero. -/
 @[to_additive]
 lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
     ∀ᶠ δ in 𝓝 (0 : ℝ),

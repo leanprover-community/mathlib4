@@ -906,7 +906,7 @@ theorem mem_thickening_iff_infEdist_lt : x ∈ thickening δ s ↔ infEdist x s 
 #align metric.mem_thickening_iff_inf_edist_lt Metric.mem_thickening_iff_infEdist_lt
 
 /-- An exterior point of a subset `E` (i.e., a point outside the closure of `E`) is not in the
-(open) thickening `δ`-thickening of `E` for small enough positive `δ`. -/
+(open) `δ`-thickening of `E` for small enough positive `δ`. -/
 lemma eventually_not_mem_thickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
     ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.thickening δ E := by
   obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
@@ -1036,7 +1036,7 @@ theorem mem_cthickening_iff : x ∈ cthickening δ s ↔ infEdist x s ≤ ENNRea
 #align metric.mem_cthickening_iff Metric.mem_cthickening_iff
 
 /-- An exterior point of a subset `E` (i.e., a point outside the closure of `E`) is not in the
-closed thickening `δ`-thickening of `E` for small enough positive `δ`. -/
+closed `δ`-thickening of `E` for small enough positive `δ`. -/
 lemma eventually_not_mem_cthickening_of_infEdist_pos {E : Set α} {x : α} (h : x ∉ closure E) :
     ∀ᶠ δ in 𝓝 (0 : ℝ), x ∉ Metric.cthickening δ E := by
   obtain ⟨ε, ⟨ε_pos, ε_lt⟩⟩ := exists_real_pos_lt_infEdist_of_not_mem_closure h
