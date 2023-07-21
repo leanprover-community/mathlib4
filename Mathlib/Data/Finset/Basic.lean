@@ -1451,7 +1451,7 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
   ext fun x => mem_union.trans <| by simp
 #align finset.empty_union Finset.empty_union
 
-theorem Nonempty_union {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
+theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
   Nonempty.mono (subset_union_left s t) h
 
 theorem union_Nonempty {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
