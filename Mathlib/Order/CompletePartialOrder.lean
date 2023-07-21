@@ -76,7 +76,7 @@ def Set.ToDirectedSet [Lattice α] [DecidableEq α] (s : Set α) : DirectedSet �
         · exact hFb.1
       · obtain ⟨hnFa,ha⟩ := hFa.2
         obtain ⟨hnFb,hb⟩ := hFb.2
-        use (Finset.Nonempty_union hnFa)
+        use (Finset.Nonempty.inl hnFa)
         rw [le_antisymm_iff]
         constructor
         · simp
@@ -125,5 +125,5 @@ instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
 
 
 instance [Lattice α] (dSup : DirectedSet α → α) (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) :
-  CompleteLattice α where
+    CompleteLattice α where
   sSup := fun s
