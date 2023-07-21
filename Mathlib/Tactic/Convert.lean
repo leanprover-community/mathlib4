@@ -100,15 +100,36 @@ These are passed to `congr!`. See `Congr!.Config` for options.
 syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
+/-- Remove all `.typeClass` metavariables from the `pendingMVars` list. -/
+def clearPendingTypeClassMVars : Term.TermElabM Unit := do
+  let pendingMVars ← (← get).pendingMVars.filterM fun mvarId => do
+    let some decl ← Term.getSyntheticMVarDecl? mvarId | return true
+    match decl.kind with
+    | .typeClass => return false
+    | _ => return true
+  modify fun s => {s with pendingMVars := pendingMVars}
+
 elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
-    let (e, gs) ← elabTermWithHoles (allowNaturalHoles := true) term
-      (← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))) `convert
+    let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
+    let (e, gs) ←
+      withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) <|
+        -- Allow typeclass inference failures since we want to try to capture instances
+        -- from the goal.
+        withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
+          let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
+          -- Use a type hint to ensure we collect goals from the type too
+          mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
+    -- Allow typeclass inference failures because we're OK with having new instance goals
+    withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
+      Term.synthesizeSyntheticMVarsUsingDefault
+    clearPendingTypeClassMVars
+    Term.synthesizeSyntheticMVarsNoPostponing
 
 -- FIXME restore when `add_tactic_doc` is ported.
 -- add_tactic_doc

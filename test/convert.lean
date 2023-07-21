@@ -3,6 +3,8 @@ import Std.Tactic.GuardExpr
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Set.Image
 
+namespace Tests
+
 example (P : Prop) (h : P) : P := by convert h
 
 example (α β : Type) (h : α = β) (b : β) : α := by
@@ -13,7 +15,7 @@ example (α β : Type) (h : ∀ α β : Type, α = β) (b : β) : α := by
   apply h
 
 example (m n : Nat) (h : m = n) (b : Fin n) : Nat × Nat × Nat × Fin m := by
-  convert (37, 57, 2, b)
+  convert (config := { typeEqs := true }) (37, 57, 2, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × α := by
   convert (config := { typeEqs := true }) (37, b)
@@ -76,3 +78,24 @@ example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
   guard_hyp hε : ε > 0
   guard_target = q ε ↔ p ε
   sorry
+
+class Fintype (α : Type _) where
+  card : Nat
+
+axiom Fintype.foo (α : Type _) [Fintype α] : Fintype.card α = 2
+
+axiom instFintypeBool : Fintype Bool
+
+/- Would be "failed to synthesize instance Fintype ?m" without the special handling to
+remove unsolved-for typeclass metavariables from the pendingMVars list. -/
+example : @Fintype.card Bool instFintypeBool = 2 := by
+  convert Fintype.foo _
+
+example : True := by
+  convert_to ?x + ?y = ?z
+  case x => exact 1
+  case y => exact 2
+  case z => exact 3
+  all_goals try infer_instance
+  · simp
+  · simp
