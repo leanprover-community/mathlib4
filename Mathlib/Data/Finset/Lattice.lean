@@ -988,7 +988,7 @@ theorem inf'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f)
 #align finset.inf'_map Finset.inf'_map
 
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
-    s₂.inf' (Nonempty.mono h h₁) f ≤ s₁.inf' h₁ f :=
+    s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
 
 end Inf'
