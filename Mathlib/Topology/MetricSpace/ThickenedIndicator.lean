@@ -263,11 +263,12 @@ lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β)
   by_cases x_mem_closure : x ∈ closure E
   · filter_upwards [self_mem_nhdsWithin] with δ δ_pos
     simp only [closure_subset_thickening δ_pos E x_mem_closure, mulIndicator_of_mem, x_mem_closure]
-  · have obs := (eventually_not_mem_thickening_of_infEdist_pos x_mem_closure)
+  · have obs := eventually_not_mem_thickening_of_infEdist_pos x_mem_closure
     filter_upwards [inter_mem (mem_nhdsWithin_of_mem_nhds obs) self_mem_nhdsWithin]
       with δ ⟨x_notin_thE, δ_pos⟩
     simp only [mem_setOf_eq] at x_notin_thE
-    have x_notin_clE : x ∉ closure E := fun con ↦ x_notin_thE (closure_subset_thickening δ_pos E con)
+    have x_notin_clE : x ∉ closure E :=
+      fun con ↦ x_notin_thE (closure_subset_thickening δ_pos E con)
     simp only [x_notin_thE, not_false_eq_true, mulIndicator_of_not_mem, x_notin_clE]
 
 /-- Pointwise, the (mul)indicators of closed δ-thickenings of a set eventually coincide with the
