@@ -53,30 +53,8 @@ lemma fromColumns_toColumns (A: Matrix M (N₁ ⊕ N₂) R):
   cases' j
   all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr])
 
-lemma fromColumns_eq_iff (A₁: Matrix M N₁ R)(A₂: Matrix M N₂ R) (B₁: Matrix M N₁ R)(B₂: Matrix M N₂ R):
-  fromColumns A₁ A₂ = fromColumns B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := by
-  constructor
-  intro h
-  rw [← Matrix.ext_iff, fromColumns, fromColumns] at h
-  simp only [of_apply, Sum.forall, Sum.elim_inl, Sum.elim_inr] at h
-  rw [← Matrix.ext_iff, ← Matrix.ext_iff]
-  constructor
-  intro i j
-  exact (h i).1 j
-  intro i j
-  exact (h i).2 j
-  unfold fromColumns
-  rw [← Matrix.ext_iff, ← Matrix.ext_iff]
-  simp only [EmbeddingLike.apply_eq_iff_eq, and_imp]
-  intro h1 h2
-  funext i j
-  cases j
-  simp only [Sum.elim_inl]
-  exact (h1 i _)
-  exact (h2 i _)
-
-lemma fromColumns_ext_iff (A₁: Matrix M N₁ R)(A₂: Matrix M N₂ R) (B₁: Matrix M N₁ R)(B₂: Matrix M N₂ R):
-  fromColumns A₁ A₂ = fromColumns B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := by
+lemma fromColumns_ext_iff (A₁: Matrix M N₁ R) (A₂: Matrix M N₂ R) (B₁: Matrix M N₁ R)
+  (B₂: Matrix M N₂ R): fromColumns A₁ A₂ = fromColumns B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := by
   simp_rw [fromColumns, ← Matrix.ext_iff, of_apply]
   simp only [Sum.forall, Sum.elim_inl, Sum.elim_inr]
   exact ⟨ -- Just practicing term mode proofs !!
