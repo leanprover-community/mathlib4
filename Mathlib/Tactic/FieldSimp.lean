@@ -48,6 +48,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) := do
         let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
         return some (← Lean.Meta.Simp.mkCast rsymm p.1)
 
+  /- Next try to use normNum to discharge goals of the for `a ≠ 0` for `a` a "number", eg `2` -/
   let prop : Q(Prop) ← (do pure prop)
   let pf? ← match prop with
   | ~q(($e : $α) ≠ $b) =>
@@ -117,8 +118,8 @@ should be given explicitly. If your expression is not completely reduced by the 
 invocation, check the denominators of the resulting expression and provide proofs that they are
 nonzero to enable further progress.
 
-To check that denominators are nonzero, `field_simp` will look for facts in the context, and
-will try to apply `norm_num` to close numerical goals.
+To check that denominators are nonzero, `field_simp` will look for facts in the context and
+normalize them with `norm_cast` and will try to apply `norm_num` to close numerical goals.
 
 The invocation of `field_simp` removes the lemma `one_div` from the simpset, as this lemma
 works against the algorithm explained above. It also removes
