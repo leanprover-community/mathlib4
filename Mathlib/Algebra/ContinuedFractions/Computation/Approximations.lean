@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.computation.approximations
-! leanprover-community/mathlib commit a7e36e48519ab281320c4d192da6a7b348ce40ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
 import Mathlib.Data.Nat.Fib
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.SolveByElim
+
+#align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
 
 /-!
 # Approximations for Continued Fraction Computations (`GeneralizedContinuedFraction.of`)
@@ -561,7 +558,7 @@ theorem abs_sub_convergents_le' {b : K}
   refine' (abs_sub_convergents_le not_terminated_at_n).trans _
   -- One can show that `0 < (GeneralizedContinuedFraction.of v).denominators n` but it's easier
   -- to consider the case `(GeneralizedContinuedFraction.of v).denominators n = 0`.
-  rcases zero_le_of_denom.eq_or_gt with
+  rcases (zero_le_of_denom (K := K)).eq_or_gt with
     ((hB : (GeneralizedContinuedFraction.of v).denominators n = 0) | hB)
   · simp only [hB, MulZeroClass.mul_zero, MulZeroClass.zero_mul, div_zero, le_refl]
   · apply one_div_le_one_div_of_le

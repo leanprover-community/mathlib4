@@ -2,16 +2,13 @@
 Copyright (c) 2021 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
-
-! This file was ported from Lean 3 source module ring_theory.chain_of_divisors
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Algebra.GCDMonoid.Basic
+
+#align_import ring_theory.chain_of_divisors from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 /-!
 
 # Chains of divisors
@@ -133,7 +130,7 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
       _ hp.irreducible
   · simpa [Fin.succ_lt_succ_iff, Fin.lt_iff_val_lt_val] using hi
   · refine' Associates.dvdNotUnit_iff_lt.2 (h₁ _)
-    simpa only [Fin.coe_eq_castSuccEmb] using Fin.lt_succ
+    simpa only [Fin.coe_eq_castSucc] using Fin.lt_succ
 #align divisor_chain.eq_second_of_chain_of_prime_dvd DivisorChain.eq_second_of_chain_of_prime_dvd
 
 theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
@@ -243,7 +240,7 @@ theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates 
     conv_rhs => rw [← factor_orderIso_map_one_eq_bot d.symm]
     congr, fun hu => by
     simp_rw [hu]
-    conv_rhs =>  rw [← factor_orderIso_map_one_eq_bot d]⟩
+    conv_rhs => rw [← factor_orderIso_map_one_eq_bot d]⟩
 #align coe_factor_order_iso_map_eq_one_iff coe_factor_orderIso_map_eq_one_iff
 
 section

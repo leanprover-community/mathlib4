@@ -2,14 +2,11 @@
 Copyright © 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
-
-! This file was ported from Lean 3 source module topology.vector_bundle.hom
-! leanprover-community/mathlib commit e473c3198bb41f68560cab68a0529c854b618833
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.VectorBundle.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm
+
+#align_import topology.vector_bundle.hom from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
 /-!
 # The vector bundle of continuous (semi)linear maps
@@ -196,8 +193,7 @@ theorem continuousLinearMapCoordChange_apply (b : B)
       (continuousLinearMap σ e₁' e₂' ⟨b, (continuousLinearMap σ e₁ e₂).symm b L⟩).2 := by
   ext v
   simp_rw [continuousLinearMapCoordChange, ContinuousLinearEquiv.coe_coe,
-    ContinuousLinearEquiv.arrowCongrSL_apply, LinearEquiv.toFun_eq_coe,
-    ContinuousLinearEquiv.arrowCongrₛₗ_apply, continuousLinearMap_apply,
+    ContinuousLinearEquiv.arrowCongrSL_apply, continuousLinearMap_apply,
     continuousLinearMap_symm_apply' σ e₁ e₂ hb.1, comp_apply, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.symm_symm, Trivialization.continuousLinearMapAt_apply,
     Trivialization.symmL_apply]
