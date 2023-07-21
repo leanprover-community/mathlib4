@@ -598,7 +598,7 @@ theorem padicValNat_factorial {p n b : ℕ} [hp : Fact p.Prime] (hnb : log p n <
 Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits
 of `n`. -/
 theorem padicValNat_factorial' {p : ℕ} [hp : Fact p.Prime] (n : ℕ):
-    (p - 1) * ((padicValNat p (n !)) : ℕ ) = (n - (p.digits n).sum) := by
+    (p - 1) * padicValNat p n ! = n - (p.digits n).sum := by
   apply Nat.strongInductionOn n
   intro n hn
   by_cases n = 0
