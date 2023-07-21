@@ -87,6 +87,13 @@ lemma V₂_conjTranspose_mul_V₁ (A: Matrix (Fin M) (Fin N) 𝕂): A.svdV₂ᴴ
 lemma V₁_conjTranspose_mul_V₂ (A: Matrix (Fin M) (Fin N) 𝕂): A.svdV₁ᴴ ⬝ A.svdV₂ = 0 :=
   (V_conjTranspose_mul_V A).2.2
 
+lemma V_inv (A: Matrix (Fin M) (Fin N) 𝕂) :
+  (fromColumns A.svdV₁ A.svdV₂)ᴴ⬝(fromColumns A.svdV₁ A.svdV₂) = 1 := by
+  rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
+    V₁_conjTranspose_mul_V₂, V₁_conjTranspose_mul_V₁, V₂_conjTranspose_mul_V₂,
+    V₂_conjTranspose_mul_V₁, fromBlocks_one]
+
+
 -- First we should prove the 12 21 22 blocks are zero
 noncomputable def svdS (A: Matrix (Fin M) (Fin N) 𝕂) :
   Matrix ((Fin A.rank) ⊕ (Fin (N - A.rank))) ((Fin A.rank) ⊕ (Fin (N - A.rank))) ℝ :=
@@ -161,7 +168,6 @@ lemma S'_σpos_block (A: Matrix (Fin M) (Fin N) 𝕂) :
   rw [diagonal_apply_ne, of_apply, diagonal_apply_ne]
   rw [ne_eq, EmbeddingLike.apply_eq_iff_eq, Sum.inl.injEq]
   assumption'
-
 
 lemma S_block (A: Matrix (Fin M) (Fin N) 𝕂) :
   (reindex (enz A) (enz A))
@@ -277,6 +283,18 @@ lemma IsUnit_det_svdσ (A: Matrix (Fin M) (Fin N) 𝕂): IsUnit (A.svdσ.det) :=
   apply (ne_of_gt)
   apply sing_vals_ne_zero_pos
 
+lemma IsUnit_det_svdσ_mapK (A: Matrix (Fin M) (Fin N) 𝕂):
+  IsUnit (det (map A.svdσ (algebraMap ℝ 𝕂))) := by
+  unfold svdσ
+  simp only [ne_eq, reindex_apply, submatrix_diagonal_equiv, map_zero,
+    diagonal_map, Function.comp_apply, det_diagonal]
+  rw [isUnit_iff_ne_zero]
+  rw [Finset.prod_ne_zero_iff]
+  intro i
+  simp only [Finset.mem_univ, ne_eq, map_eq_zero, forall_true_left]
+  apply ne_of_gt
+  apply sing_vals_ne_zero_pos
+
 lemma xw (A: Matrix (Fin M) (Fin N) 𝕂):
   (map (A.svdσ) (algebraMap ℝ 𝕂))⁻¹ = (map (A.svdσ)⁻¹ (algebraMap ℝ 𝕂)) := by
   rw [inv_eq_left_inv]
@@ -329,15 +347,25 @@ lemma mul_V₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   · exact (ker_conj_transpose_mul_self_eq_ker _ _).1 h
   rw [reduced_spectral_theorem, Matrix.mul_assoc, V₁_conjTranspose_mul_V₂, Matrix.mul_zero]
 
-lemma Matrix.left_mul_inj_of_invertible
-  {m n: Type}[Fintype m][DecidableEq m][Fintype n][DecidableEq n]
-  {R: Type}[CommRing R]
-  (P : Matrix m m R) [Invertible P] :
-  Function.Injective (fun (x : Matrix m n R) => P ⬝ x) := by
-  rintro x a hax
-  replace hax := congr_arg (fun (x : Matrix m n R) => P⁻¹ ⬝ x) hax
-  simp only [inv_mul_cancel_left_of_invertible] at hax
-  exact hax
+-- lemma Matrix.left_mul_inj_of_invertible
+--   {m n: Type}[Fintype m][DecidableEq m][Fintype n][DecidableEq n]
+--   {R: Type}[CommRing R]
+--   (P : Matrix m m R) [Invertible P] :
+--   Function.Injective (fun (x : Matrix m n R) => P ⬝ x) := by
+--   rintro x a hax
+--   replace hax := congr_arg (fun (x : Matrix m n R) => P⁻¹ ⬝ x) hax
+--   simp only [inv_mul_cancel_left_of_invertible] at hax
+--   exact hax
+
+-- lemma Matrix.right_mul_inj_of_invertible
+--   {m n: Type}[Fintype m][DecidableEq m][Fintype n][DecidableEq n]
+--   {R: Type}[CommRing R]
+--   (P : Matrix m m R) [Invertible P] :
+--   Function.Injective (fun (x : Matrix n m R) => x ⬝ P) := by
+--   rintro x a hax
+--   replace hax := congr_arg (fun (x : Matrix n m R) => x ⬝ P⁻¹) hax
+--   simp only [mul_inv_cancel_right_of_invertible] at hax
+--   exact hax
 
 lemma conjTranspose_mul_U₂_eq_zero (A: Matrix (Fin M) (Fin N) 𝕂):
   Aᴴ ⬝ A.svdU₂ = 0 := by
@@ -353,5 +381,60 @@ lemma U₁_conjTranspose_mul_U₂ (A: Matrix (Fin M) (Fin N) 𝕂): A.svdU₁ᴴ
 lemma U₂_conjTranspose_mul_U₁ (A: Matrix (Fin M) (Fin N) 𝕂): A.svdU₂ᴴ ⬝ A.svdU₁ = 0 := by
   rw [← conjTranspose_conjTranspose (A.svdU₁), ← conjTranspose_mul, U₁_conjTranspose_mul_U₂,
     conjTranspose_zero]
+
+lemma U_inv (A: Matrix (Fin M) (Fin N) 𝕂):
+  (fromColumns A.svdU₁ A.svdU₂)ᴴ⬝(fromColumns A.svdU₁ A.svdU₂) = 1 := by
+  rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose, fromRows_mul_fromColumns,
+    U₁_conjTranspose_mul_U₂, U₁_conjTranspose_mul_U₁, U₂_conjTranspose_mul_U₂,
+    U₂_conjTranspose_mul_U₁, fromBlocks_one]
+
+lemma V_conjTranspose_mul_inj (A: Matrix (Fin M) (Fin N) 𝕂)
+  {m: Type}[Fintype m]:
+  Function.Injective (fun x : Matrix m (Fin N) 𝕂 => x ⬝ (fromColumns A.svdV₁ A.svdV₂)) := by
+  intro X Y h
+  replace h := congr_arg (fun x => x⬝(fromColumns A.svdV₁ A.svdV₂)ᴴ) h
+  dsimp at h
+  have V_inv' := V_inv A
+  rw [conjTranspose_fromColumns_eq_fromRows_conjTranspose,
+    ← fromColumns_mul_fromRows_eq_one_comm,
+    ← conjTranspose_fromColumns_eq_fromRows_conjTranspose] at V_inv'
+  rw [Matrix.mul_assoc, Matrix.mul_assoc, V_inv', Matrix.mul_one, Matrix.mul_one] at h
+  exact h
+  apply enz
+
+/-- # Main SVD Theorem
+Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
+into three matrices:
+  U: an M × M matrix containing the left eigenvectors of the matrix
+  S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
+  V: an N × N matrix containing the right eigenvectors of the matrix
+  Note that
+  S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
+  - S₁₁: a diagonal r × r matrix and
+  - S₁₂: r × (N - r) zero matrix, S₂₁ : (M - r) × r zero matrix and
+  - S₂₂: (M - r) × (N - r) zero matrix
+  U is a block column matrix U = [U₁ U₂] with
+  - U₁ : a M × r containing left eigenvectors with nonzero singular values.
+  - U₂ : a M × (M - r) containing left eigenvectors with zero singular values.
+  V is a block column matrix V = [V₁ V₂] with
+  - V₁ : a N × r containing right eigenvectors with nonzero singular values.
+  - V₂ : a M × (M - r) containing right eigenvectors with zero singular values.
+
+Further UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv` and `V_inv` together with
+`fromColumns_mul_fromRows_eq_one_comm` and `conjTranspose_fromColumns_eq_fromRows_conjTranspose` -/
+theorem svd_theorem (A: Matrix (Fin M) (Fin N) 𝕂):
+  A =
+    (fromColumns A.svdU₁ A.svdU₂) ⬝
+    (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0) ⬝
+    (fromColumns A.svdV₁ A.svdV₂)ᴴ := by
+  apply_fun (fun x => x⬝(fromColumns A.svdV₁ A.svdV₂))
+  dsimp
+  rw [Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks, mul_fromColumns,
+    mul_V₂_eq_zero]
+  simp only [Matrix.mul_zero, add_zero]
+  rw [fromColumns_ext_iff, eq_self, and_true, svdU₁, Matrix.mul_assoc,
+    nonsing_inv_mul, Matrix.mul_one]
+  exact (IsUnit_det_svdσ_mapK _)
+  exact (V_conjTranspose_mul_inj _)
 
 end Matrix
