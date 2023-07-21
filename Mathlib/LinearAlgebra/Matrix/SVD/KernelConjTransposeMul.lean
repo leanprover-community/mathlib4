@@ -23,7 +23,8 @@ lemma conjTranspose_mul_self_eq_zero_iff (A: Matrix m n 𝕂):
     funext i j
     rw [← Matrix.ext_iff] at h
     specialize h j j
-    simp_rw [mul_apply, Matrix.zero_apply, conjTranspose_apply, IsROrC.star_def, IsROrC.conj_mul] at h
+    simp_rw [mul_apply, Matrix.zero_apply, conjTranspose_apply, IsROrC.star_def,
+      IsROrC.conj_mul] at h
     rw [Finset.sum_eq_zero_iff_of_nonneg] at h
     specialize h i
     simp only [Finset.mem_univ, algebraMap.lift_map_eq_zero_iff, map_eq_zero, forall_true_left] at h

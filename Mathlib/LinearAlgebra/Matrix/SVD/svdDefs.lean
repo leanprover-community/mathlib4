@@ -49,8 +49,8 @@ Lean cannot apply the Invertible definition. We workaround this were necessary.
 Lemma `reduced_spectral_theorem` (`reduced_spectral_theorem'`) shows that AᴴA and AAᴴ, can be
 reduced to products containing only the non-zero singular eigenvectors. This is later used in
 proving the main SVD theroem. A few lemmas are provided about the invertibility of the non-zero
-singular values matrix: `svdσ_inv`, `σ_inv_μ_σ_inv_eq_one`, `IsUnit_det_svdσ`, `IsUnit_det_svdσ_mapK`
-and `svdσ_inv_mapK`.
+singular values matrix: `svdσ_inv`, `σ_inv_μ_σ_inv_eq_one`, `IsUnit_det_svdσ`,
+`IsUnit_det_svdσ_mapK` and `svdσ_inv_mapK`.
 
 To make relating left eigenvectors to right eigenvectors easier we define U₁ = AV₁σ⁻¹ while U₂ is
 obtained from the eigenvectors of (AAᴴ). This avoid a lengthy reindexing operation with many proofs.
@@ -320,8 +320,8 @@ lemma svdσ_inv (A: Matrix (Fin M) (Fin N) 𝕂): A.svdσ⁻¹ =
 lemma σ_inv_μ_σ_inv_eq_one (A: Matrix (Fin M) (Fin N) 𝕂):
   (A.svdσ⁻¹)ᴴ⬝A.svdμ⬝A.svdσ⁻¹ = 1 := by
   rw [svdσ_inv, svdμ]
-  simp only [ne_eq, one_div, reindex_apply, submatrix_diagonal_equiv, diagonal_conjTranspose, star_trivial,
-    diagonal_mul_diagonal, Function.comp_apply]
+  simp only [ne_eq, one_div, reindex_apply, submatrix_diagonal_equiv, diagonal_conjTranspose,
+    star_trivial, diagonal_mul_diagonal, Function.comp_apply]
   rw [← diagonal_one]
   rw [diagonal_eq_diagonal_iff]
   intro i

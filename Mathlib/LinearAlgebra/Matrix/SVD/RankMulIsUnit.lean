@@ -8,7 +8,8 @@ import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 
-/- Rank is unaffected by left or right multiplication by an invertible matrix -/
+/-! # Rank of Matrix when left or right multiplied by invertible matrix.
+Rank is unaffected by left or right multiplication by an invertible matrix -/
 
 open Matrix BigOperators
 

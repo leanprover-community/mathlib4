@@ -85,8 +85,8 @@ lemma rank_eq_card_pos_eigs_conj_transpose_mul_self {m n R: Type}
 
 lemma rank_eq_card_pos_eigs_self_mul_conj_transpose {m n R: Type}
   [Fintype m][Fintype n][DecidableEq m][DecidableEq n][IsROrC R][DecidableEq R]
-  (A: Matrix m n R):
-  A.rank =  (Fintype.card {i // (Matrix.isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0}) := by
+  (A: Matrix m n R): A.rank =
+  (Fintype.card {i // (Matrix.isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0}) := by
   rw [← rank_self_mul_conjTranspose]
   rw [← rank_eq_count_non_zero_eigs]
 

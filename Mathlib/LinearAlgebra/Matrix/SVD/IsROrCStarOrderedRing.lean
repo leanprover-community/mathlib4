@@ -1,9 +1,16 @@
+/-
+Copyright (c) 2023 Mohanad ahmed. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mohanad Ahmed
+-/
+
 import Mathlib.Data.IsROrC.Basic
 
--- set_option trace.profiler true
--- set_option trace.Meta.synthInstance true
--- set_option synthInstance.maxHeartbeats 10000
--- set_option synthInstance.maxSize 400
+/-! # IsROrC Star Ordered Ring
+We  show that the ℝ and ℂ fields can have a partial order by using le definiton. This is needed in
+SVD to so that a vector $v=0$ ↔ $vᴴv = 0$. We also need to compare singular values to zero and claim
+they are positive even when mapped to the field 𝕂 (which could be ℝ or ℂ)
+ -/
 
 variable {K} [IsROrC K]
 

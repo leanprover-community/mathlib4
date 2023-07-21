@@ -1,9 +1,17 @@
+/-
+Copyright (c) 2023 Mohanad ahmed. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mohanad Ahmed
+-/
+
 import Mathlib.LinearAlgebra.Matrix.PosDef
 import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
 import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMatricesRank
 
-/- Given a Fin M × Fin N we wish to define equivlances that allow us to move between the following
+/-! # Reindexing using Non-zero/Zero Partition Eigenvalues of AAᴴ and AᴴA
+
+Given a Fin M × Fin N we wish to define equivlances that allow us to move between the following
 representaions smoothly. Let R be the rank
   Fin N ≃ (Fin R ⊕ Fin (N - R)) which can be achievd through
   Fin N ≃ {Non-zero Eigs} ⊕ (Zero Eigs) ≃ Fin R ⊕ Fin (N - R)
@@ -11,8 +19,7 @@ representaions smoothly. Let R be the rank
   Fin M ≃ (Fin R ⊕ Fin (M - R)) which can be achievd through
   Fin M ≃ {Non-zero Eigs} ⊕ (Zero Eigs) ≃ Fin R ⊕ Fin (M - R)
 
-  Note that we know R ≤ MIN(M, N)
--/
+  Note that we know R ≤ MIN(M, N) -/
 variable {𝕂: Type}[IsROrC 𝕂][DecidableEq 𝕂]
 variable {M N: ℕ}
 
@@ -45,19 +52,22 @@ noncomputable def er' (A: Matrix (Fin M) (Fin N) 𝕂) :
     apply Fintype.equivFinOfCardEq
     rw [rank_eq_card_pos_eigs_self_mul_conj_transpose]
 
-noncomputable def enz (A: Matrix (Fin M) (Fin N) 𝕂) : (Fin N) ≃ (Fin A.rank) ⊕ (Fin (N - A.rank)) := by
+noncomputable def enz (A: Matrix (Fin M) (Fin N) 𝕂) : (Fin N) ≃ (Fin A.rank) ⊕ (Fin (N - A.rank))
+  := by
   let em := Equiv.sumCompl (fun i =>  (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0)
   let eₙᵣ : {i // ¬(isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (N - A.rank) := by
     apply Fintype.equivFinOfCardEq
     rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_conj_transpose_mul_self]
   exact Equiv.trans em.symm  (equiv_sum_trans (er A) eₙᵣ)
 
-noncomputable def emz (A: Matrix (Fin M) (Fin N) 𝕂) : (Fin M) ≃ (Fin A.rank) ⊕ (Fin (M - A.rank)) := by
+noncomputable def emz (A: Matrix (Fin M) (Fin N) 𝕂) : (Fin M) ≃ (Fin A.rank) ⊕ (Fin (M - A.rank))
+  := by
   let em := Equiv.sumCompl (fun i =>  (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0)
   let eᵣ' : {i // (isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin A.rank := by
     apply Fintype.equivFinOfCardEq
     rw [rank_eq_card_pos_eigs_self_mul_conj_transpose]
-  let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) := by
+  let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) :=
+  by
     apply Fintype.equivFinOfCardEq
     rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose]
   exact Equiv.trans em.symm  (equiv_sum_trans eᵣ' eₘᵣ)
@@ -83,7 +93,8 @@ lemma emz_mr_zero (A: Matrix (Fin M) (Fin N) 𝕂) (i: Fin (M - A.rank)):
   unfold emz equiv_sum_trans
   simp only [ne_eq, Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.coe_fn_symm_mk, Sum.elim_inr,
     Equiv.sumCompl_apply_inr]
-  let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) := by
+  let eₘᵣ : {i // ¬(isHermitian_mul_conjTranspose_self A).eigenvalues i ≠ 0} ≃ Fin (M - A.rank) :=
+  by
     apply Fintype.equivFinOfCardEq
     rw [Fintype.card_subtype_compl, Fintype.card_fin, rank_eq_card_pos_eigs_self_mul_conj_transpose]
   exact Iff.mp Function.nmem_support ((eₘᵣ.symm i).prop)
