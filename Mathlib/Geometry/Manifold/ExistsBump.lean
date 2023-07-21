@@ -25,12 +25,68 @@ open Function Filter FiniteDimensional Set
 
 open scoped Topology Manifold Classical Filter BigOperators
 
+open SmoothManifoldWithCorners
+
 noncomputable section
 
 variable (I)
+
+theorem IsOpen.exists_smooth_support_eq_of_model {s : Set H} (hs : IsOpen s) :
+    ∃ f : H → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ Set.range f ⊆ Set.Icc 0 1 := by
+  have h's : IsOpen (I.symm ⁻¹' s) := I.continuous_symm.isOpen_preimage _ hs
+  rcases h's.exists_smooth_support_eq with ⟨f, f_supp, f_diff, f_range⟩
+  refine ⟨f ∘ I, ?_, ?_, ?_⟩
+  · rw [support_comp_eq_preimage, f_supp, ← preimage_comp]
+    simp only [ModelWithCorners.symm_comp_self, preimage_id_eq, id_eq]
+  · exact f_diff.comp_contMDiff contMDiff_model
+  · exact Subset.trans (range_comp_subset_range _ _) f_range
+
+
 theorem IsOpen.exists_smooth_support_eq' (hs : IsOpen s) :
-    ∃ f : M → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ Set.range f ⊆ Set.Icc 0 1 := by
-  sorry
+    ∃ f : M → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ ∀ x, 0 ≤ f x := by
+  have : ∀ x ∈ (univ : Set M), univ ∈ 𝓝 x := fun x hx ↦ univ_mem
+  rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
+  have A : ∀ (c : M), ∃ g : H → ℝ,
+      g.support = (chartAt H c).target ∩ (chartAt H c).symm ⁻¹' s ∧
+      Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1 := by
+    intro i
+    apply IsOpen.exists_smooth_support_eq_of_model
+    exact LocalHomeomorph.preimage_open_of_open_symm _ hs
+  choose g g_supp g_diff hg using A
+  refine ⟨fun x ↦ ∑ᶠ c, f c x * g c (chartAt H c x), ?_, ?_, ?_⟩
+  · refine support_eq_iff.2 ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩
+    · apply ne_of_gt
+      sorry
+    · apply finsum_eq_zero_of_forall_eq_zero
+      intro c
+      by_cases Hx : x ∈ tsupport (f c)
+      · suffices g c (chartAt H c x) = 0 by simp only [this, mul_zero]
+        rw [← nmem_support, g_supp, ← mem_preimage, preimage_inter]
+        contrapose! hx
+        simp only [mem_inter_iff, mem_preimage, (chartAt H c).left_inv (hf c Hx)] at hx
+        exact hx.2
+      · have : x ∉ support (f c) := by contrapose! Hx; exact subset_tsupport _ Hx
+        rw [nmem_support] at this
+        simp [this]
+  · apply SmoothPartitionOfUnity.smooth_finsum_smul
+    intro c x hx
+    apply (g_diff c (chartAt H c x)).comp
+    exact contMDiffAt_of_mem_maximalAtlas (chart_mem_maximalAtlas I _) (hf c hx)
+  · intro x
+    apply finsum_nonneg (fun c ↦ ?_)
+    apply mul_nonneg (f.nonneg c x)
+    exact (hg c (mem_range_self (f := g c) (chartAt H c x))).1
+
+
+
+
+
+
+#exit
+
+contMDiff_finsum_smul
+
+preimage_open_of_open_symm
 
 -- variable [NormalSpace M]
 

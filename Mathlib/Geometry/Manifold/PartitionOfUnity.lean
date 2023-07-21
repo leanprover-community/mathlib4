@@ -78,10 +78,10 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 ### Covering by supports of smooth bump functions
 
 In this section we define `SmoothBumpCovering ι I M s` to be a collection of
-`SmoothBumpFunction`s such that their supports is a locally finite family of sets and for each `x
-∈ s` some function `f i` from the collection is equal to `1` in a neighborhood of `x`. A covering of
-this type is useful to construct a smooth partition of unity and can be used instead of a partition
-of unity in some proofs.
+`SmoothBumpFunction`s such that their supports is a locally finite family of sets and for each
+`x ∈ s` some function `f i` from the collection is equal to `1` in a neighborhood of `x`. A covering
+of this type is useful to construct a smooth partition of unity and can be used instead of a
+partition of unity in some proofs.
 
 We prove that on a smooth finite dimensional real manifold with `σ`-compact Hausdorff topology, for
 any `U : M → Set M` such that `∀ x ∈ s, U x ∈ 𝓝 x` there exists a `SmoothBumpCovering ι I M s`
@@ -500,7 +500,7 @@ instance [Inhabited ι] (s : Set M) : Inhabited (SmoothPartitionOfUnity ι I M s
 variable [T2Space M] [SigmaCompactSpace M]
 
 /-- If `X` is a paracompact normal topological space and `U` is an open covering of a closed set
-`s`, then there exists a `BumpCovering ι X s` that is subordinate to `U`. -/
+`s`, then there exists a `SmoothPartitionOfUnity ι M s` that is subordinate to `U`. -/
 theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (ho : ∀ i, IsOpen (U i))
     (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι I M s, f.IsSubordinate U := by
   haveI : LocallyCompactSpace H := I.locally_compact
@@ -514,6 +514,18 @@ theorem exists_isSubordinate {s : Set M} (hs : IsClosed s) (U : ι → Set M) (h
     rcases exists_smooth_zero_one_of_closed I hs ht hd with ⟨f, hf⟩
     exact ⟨f, f.smooth, hf⟩
 #align smooth_partition_of_unity.exists_is_subordinate SmoothPartitionOfUnity.exists_isSubordinate
+
+theorem exists_isSubordinate_chartAt_source_of_isClosed {s : Set M} (hs : IsClosed s) :
+    ∃ f : SmoothPartitionOfUnity s I M s,
+      f.IsSubordinate (fun x ↦ (chartAt H (x : M)).source) := by
+  apply exists_isSubordinate _ hs _ (fun i ↦ (chartAt H _).open_source) (fun x hx ↦ ?_)
+  exact mem_iUnion_of_mem ⟨x, hx⟩ (mem_chart_source H x)
+
+variable (M)
+theorem exists_isSubordinate_chartAt_source :
+    ∃ f : SmoothPartitionOfUnity M I M univ, f.IsSubordinate (fun x ↦ (chartAt H x).source) := by
+  apply exists_isSubordinate _ isClosed_univ _ (fun i ↦ (chartAt H _).open_source) (fun x _ ↦ ?_)
+  exact mem_iUnion_of_mem x (mem_chart_source H x)
 
 end SmoothPartitionOfUnity
 
@@ -593,4 +605,3 @@ theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [Chart
   rw [← Metric.emetric_closedBall (hδ0 _).le]
   exact hδ i x hx
 #align metric.exists_smooth_forall_closed_ball_subset Metric.exists_smooth_forall_closedBall_subset
-
