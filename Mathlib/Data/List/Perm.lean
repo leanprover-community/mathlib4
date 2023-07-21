@@ -572,7 +572,6 @@ theorem Perm.prod_eq' [M : Monoid α] {l₁ l₂ : List α} (h : l₁ ~ l₂) (h
     rw [mul_assoc z, mul_assoc z, h]
 #align list.perm.prod_eq' List.Perm.prod_eq'
 #align list.perm.sum_eq' List.Perm.sum_eq'
--- Porting note: TODO do I need to do anything to handle the to_additive instance?
 
 variable [CommMonoid α]
 

@@ -696,27 +696,27 @@ open Fintype
 
 /-- Construct an equivalence from functions that are inverse to each other. -/
 @[simps]
-def ofLeftInverseOfCardLe (hβα : card β ≤ card α) (f : α → β) (g : β → α) (h : LeftInverse g f) :
+def ofLeftInverseOfCardLE (hβα : card β ≤ card α) (f : α → β) (g : β → α) (h : LeftInverse g f) :
     α ≃ β where
   toFun := f
   invFun := g
   left_inv := h
   right_inv := h.rightInverse_of_card_le hβα
-#align equiv.of_left_inverse_of_card_le Equiv.ofLeftInverseOfCardLe
-#align equiv.of_left_inverse_of_card_le_symm_apply Equiv.ofLeftInverseOfCardLe_symm_apply
-#align equiv.of_left_inverse_of_card_le_apply Equiv.ofLeftInverseOfCardLe_apply
+#align equiv.of_left_inverse_of_card_le Equiv.ofLeftInverseOfCardLE
+#align equiv.of_left_inverse_of_card_le_symm_apply Equiv.ofLeftInverseOfCardLE_symm_apply
+#align equiv.of_left_inverse_of_card_le_apply Equiv.ofLeftInverseOfCardLE_apply
 
 /-- Construct an equivalence from functions that are inverse to each other. -/
 @[simps]
-def ofRightInverseOfCardLe (hαβ : card α ≤ card β) (f : α → β) (g : β → α) (h : RightInverse g f) :
+def ofRightInverseOfCardLE (hαβ : card α ≤ card β) (f : α → β) (g : β → α) (h : RightInverse g f) :
     α ≃ β where
   toFun := f
   invFun := g
   left_inv := h.leftInverse_of_card_le hαβ
   right_inv := h
-#align equiv.of_right_inverse_of_card_le Equiv.ofRightInverseOfCardLe
-#align equiv.of_right_inverse_of_card_le_symm_apply Equiv.ofRightInverseOfCardLe_symm_apply
-#align equiv.of_right_inverse_of_card_le_apply Equiv.ofRightInverseOfCardLe_apply
+#align equiv.of_right_inverse_of_card_le Equiv.ofRightInverseOfCardLE
+#align equiv.of_right_inverse_of_card_le_symm_apply Equiv.ofRightInverseOfCardLE_symm_apply
+#align equiv.of_right_inverse_of_card_le_apply Equiv.ofRightInverseOfCardLE_apply
 
 end Equiv
 
@@ -743,9 +743,9 @@ noncomputable def Finset.equivOfCardEq {s t : Finset α} (h : s.card = t.card) :
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
 
 @[simp]
-theorem Fintype.card_Prop : Fintype.card Prop = 2 :=
+theorem Fintype.card_prop : Fintype.card Prop = 2 :=
   rfl
-#align fintype.card_Prop Fintype.card_Prop
+#align fintype.card_Prop Fintype.card_prop
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
@@ -776,23 +776,23 @@ This is a formulation of the pigeonhole principle.
 
 Note this cannot be an instance as it needs `h`. -/
 @[simp]
-theorem is_empty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fintype.card α) :
+theorem isEmpty_of_card_lt [Fintype α] [Fintype β] (h : Fintype.card β < Fintype.card α) :
     IsEmpty (α ↪ β) :=
   ⟨fun f =>
     let ⟨_x, _y, ne, feq⟩ := Fintype.exists_ne_map_eq_of_card_lt f h
     ne <| f.injective feq⟩
-#align function.embedding.is_empty_of_card_lt Function.Embedding.is_empty_of_card_lt
+#align function.embedding.is_empty_of_card_lt Function.Embedding.isEmpty_of_card_lt
 
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
-def truncOfCardLe [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
+def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]
     (h : Fintype.card α ≤ Fintype.card β) : Trunc (α ↪ β) :=
   (Fintype.truncEquivFin α).bind fun ea =>
     (Fintype.truncEquivFin β).map fun eb =>
       ea.toEmbedding.trans ((Fin.castLEEmb h).toEmbedding.trans eb.symm.toEmbedding)
-#align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLe
+#align function.embedding.trunc_of_card_le Function.Embedding.truncOfCardLE
 
 theorem nonempty_of_card_le [Fintype α] [Fintype β] (h : Fintype.card α ≤ Fintype.card β) :
-    Nonempty (α ↪ β) := by classical exact (truncOfCardLe h).nonempty
+    Nonempty (α ↪ β) := by classical exact (truncOfCardLE h).nonempty
 #align function.embedding.nonempty_of_card_le Function.Embedding.nonempty_of_card_le
 
 theorem nonempty_iff_card_le [Fintype α] [Fintype β] :
@@ -847,11 +847,10 @@ theorem Fintype.card_subtype_compl [Fintype α] (p : α → Prop) [Fintype { x /
     [Fintype { x // ¬p x }] :
     Fintype.card { x // ¬p x } = Fintype.card α - Fintype.card { x // p x } := by
   classical
-    rw [Fintype.card_of_subtype (Set.toFinset pᶜ), Set.toFinset_compl p,
-      Finset.card_compl, Fintype.card_of_subtype (Set.toFinset p)] <;>
+    rw [Fintype.card_of_subtype (Set.toFinset { x | p x }ᶜ), Set.toFinset_compl,
+      Finset.card_compl, Fintype.card_of_subtype] <;>
     · intro
-      simp only [Set.mem_toFinset, Set.mem_compl_iff]
-      rfl
+      simp only [Set.mem_toFinset, Set.mem_compl_iff, Set.mem_setOf]
 #align fintype.card_subtype_compl Fintype.card_subtype_compl
 
 theorem Fintype.card_subtype_mono (p q : α → Prop) (h : p ≤ q) [Fintype { x // p x }]
@@ -894,18 +893,17 @@ variable [Finite α]
 theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
     WellFounded r := by
   classical
-  cases nonempty_fintype α;
-  exact
-    have :
-      ∀ x y, r x y → (univ.filter fun z => r z x).card < (univ.filter fun z => r z y).card :=
-      fun x y hxy =>
-      Finset.card_lt_card <| by
-        simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
-            Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy];
-        exact
-          ⟨fun z hzx => _root_.trans hzx hxy,
-            not_forall_of_exists_not ⟨x, not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
-    Subrelation.wf (this _ _) (measure _).wf
+  cases nonempty_fintype α
+  have :
+    ∀ x y, r x y → (univ.filter fun z => r z x).card < (univ.filter fun z => r z y).card :=
+    fun x y hxy =>
+    Finset.card_lt_card <| by
+      simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
+          Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy];
+      exact
+        ⟨fun z hzx => _root_.trans hzx hxy,
+          not_forall_of_exists_not ⟨x, not_imp.2 ⟨hxy, irrefl x⟩⟩⟩
+  exact Subrelation.wf (this _ _) (measure _).wf
 #align finite.well_founded_of_trans_of_irrefl Finite.wellFounded_of_trans_of_irrefl
 
 -- See note [lower instance priority]
@@ -932,9 +930,9 @@ protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
 #align fintype.false Fintype.false
 
 @[simp]
-theorem is_empty_fintype {α : Type _} : IsEmpty (Fintype α) ↔ Infinite α :=
+theorem isEmpty_fintype {α : Type _} : IsEmpty (Fintype α) ↔ Infinite α :=
   ⟨fun ⟨h⟩ => ⟨fun h' => (@nonempty_fintype α h').elim h⟩, fun ⟨h⟩ => ⟨fun h' => h h'.finite⟩⟩
-#align is_empty_fintype is_empty_fintype
+#align is_empty_fintype isEmpty_fintype
 
 /-- A non-infinite type is a fintype. -/
 noncomputable def fintypeOfNotInfinite {α : Type _} (h : ¬Infinite α) : Fintype α :=
@@ -947,7 +945,7 @@ open Classical
 
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
-One can obtain the relevant typeclasses via `cases fintypeOrInfinite α; resetI`.
+One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.
 -/
 noncomputable def fintypeOrInfinite (α : Type _) : PSum (Fintype α) (Infinite α) :=
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
@@ -971,14 +969,13 @@ theorem Finset.exists_maximal {α : Type _} [Preorder α] (s : Finset α) (h : s
 namespace Infinite
 
 theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
-  is_empty_fintype.mp ⟨h⟩
+  isEmpty_fintype.mp ⟨h⟩
 #align infinite.of_not_fintype Infinite.of_not_fintype
 
 /-- If `s : Set α` is a proper subset of `α` and `f : α → s` is injective, then `α` is infinite. -/
 theorem of_injective_to_set {s : Set α} (hs : s ≠ Set.univ) {f : α → s} (hf : Injective f) :
     Infinite α :=
   of_not_fintype fun h => by
-    skip
     classical
       refine' lt_irrefl (Fintype.card α) _
       calc
@@ -1220,7 +1217,7 @@ private theorem card_univ_pos (α : Type _) [Fintype α] [Nonempty α] :
     0 < (Finset.univ : Finset α).card :=
   Finset.univ_nonempty.card_pos
 
---Porting note: not porting meta code yet
+--Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
 -- /-- Extension for the `positivity` tactic: `finset.card s` is positive if `s` is nonempty. -/
 -- @[positivity]
 -- unsafe def positivity_finset_card : expr → tactic strictness

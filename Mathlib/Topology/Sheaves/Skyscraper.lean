@@ -227,7 +227,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
   classical exact
     (Presheaf.isSheaf_iso_iff (eqToIso <| skyscraperPresheaf_eq_pushforward p₀ A)).mpr <|
       (Sheaf.pushforward_sheaf_of_sheaf _
-        (Presheaf.isSheaf_on_pUnit_of_isTerminal _ (by
+        (Presheaf.isSheaf_on_punit_of_isTerminal _ (by
           dsimp [skyscraperPresheaf]
           rw [if_neg]
           · exact terminalIsTerminal

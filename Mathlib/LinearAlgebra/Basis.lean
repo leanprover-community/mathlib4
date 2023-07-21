@@ -23,7 +23,7 @@ It is inspired by Isabelle/HOL's linear algebra, and hence indirectly by HOL Lig
 ## Main definitions
 
 All definitions are given for families of vectors, i.e. `v : ι → M` where `M` is the module or
-vector space and `ι : Type*` is an arbitrary indexing type.
+vector space and `ι : Type _` is an arbitrary indexing type.
 
 * `Basis ι R M` is the type of `ι`-indexed `R`-bases for a module `M`,
   represented by a linear equiv `M ≃ₗ[R] ι →₀ R`.
@@ -514,7 +514,7 @@ section Fintype
 
 variable [Fintype ι] [DecidableEq M]
 
-/-- `b.reindex_finset_range` is a basis indexed by `finset.univ.image b`,
+/-- `b.reindexFinsetRange` is a basis indexed by `Finset.univ.image b`,
 the finite set of basis vectors themselves. -/
 def reindexFinsetRange : Basis (Finset.univ.image b) R M :=
   b.reindexRange.reindex ((Equiv.refl M).subtypeEquiv (by simp))
@@ -1087,9 +1087,9 @@ namespace Basis
 /-- Any basis is a maximal linear independent set.
 -/
 theorem maximal [Nontrivial R] (b : Basis ι R M) : b.linearIndependent.Maximal := fun w hi h => by
-  -- If `range w` is strictly bigger than `range b`,
+  -- If `w` is strictly bigger than `range b`,
   apply le_antisymm h
-  -- then choose some `x ∈ range w \ range b`,
+  -- then choose some `x ∈ w \ range b`,
   intro x p
   by_contra q
   -- and write it in terms of the basis.
@@ -1117,10 +1117,7 @@ variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 /-- A linear independent family of vectors spanning the whole module is a basis. -/
 protected noncomputable def mk : Basis ι R M :=
   .ofRepr
-    {
-      hli.repr.comp
-        (LinearMap.id.codRestrict _ fun _ =>
-          hsp Submodule.mem_top) with
+    { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
       invFun := Finsupp.total _ _ _ v
       left_inv := fun x => hli.total_repr ⟨x, _⟩
       right_inv := fun _ => hli.repr_eq rfl }
@@ -1200,7 +1197,7 @@ protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
 
 end Span
 
-theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+theorem groupSMul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → G} :
     Submodule.span R (Set.range (w • v)) = ⊤ := by
   rw [eq_top_iff]
@@ -1211,28 +1208,28 @@ theorem groupSmul_span_eq_top {G : Type _} [Group G] [DistribMulAction G R] [Dis
   obtain ⟨i, rfl⟩ := hu
   have : ((w i)⁻¹ • (1 : R)) • w i • v i ∈ p := p.smul_mem ((w i)⁻¹ • (1 : R)) (hp ⟨i, rfl⟩)
   rwa [smul_one_smul, inv_smul_smul] at this
-#align basis.group_smul_span_eq_top Basis.groupSmul_span_eq_top
+#align basis.group_smul_span_eq_top Basis.groupSMul_span_eq_top
 
 /-- Given a basis `v` and a map `w` such that for all `i`, `w i` are elements of a group,
-`group_smul` provides the basis corresponding to `w • v`. -/
-def groupSmul {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+`groupSMul` provides the basis corresponding to `w • v`. -/
+def groupSMul {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] [SMulCommClass G R M] (v : Basis ι R M) (w : ι → G) : Basis ι R M :=
-  Basis.mk (LinearIndependent.group_smul v.linearIndependent w) (groupSmul_span_eq_top v.span_eq).ge
-#align basis.group_smul Basis.groupSmul
+  Basis.mk (LinearIndependent.group_smul v.linearIndependent w) (groupSMul_span_eq_top v.span_eq).ge
+#align basis.group_smul Basis.groupSMul
 
-theorem groupSmul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
+theorem groupSMul_apply {G : Type _} [Group G] [DistribMulAction G R] [DistribMulAction G M]
     [IsScalarTower G R M] [SMulCommClass G R M] {v : Basis ι R M} {w : ι → G} (i : ι) :
-    v.groupSmul w i = (w • (v : ι → M)) i :=
+    v.groupSMul w i = (w • (v : ι → M)) i :=
   mk_apply (LinearIndependent.group_smul v.linearIndependent w)
-    (groupSmul_span_eq_top v.span_eq).ge i
-#align basis.group_smul_apply Basis.groupSmul_apply
+    (groupSMul_span_eq_top v.span_eq).ge i
+#align basis.group_smul_apply Basis.groupSMul_apply
 
 theorem units_smul_span_eq_top {v : ι → M} (hv : Submodule.span R (Set.range v) = ⊤) {w : ι → Rˣ} :
     Submodule.span R (Set.range (w • v)) = ⊤ :=
-  groupSmul_span_eq_top hv
+  groupSMul_span_eq_top hv
 #align basis.units_smul_span_eq_top Basis.units_smul_span_eq_top
 
-/-- Given a basis `v` and a map `w` such that for all `i`, `w i` is a unit, `smul_of_is_unit`
+/-- Given a basis `v` and a map `w` such that for all `i`, `w i` is a unit, `unitsSMul`
 provides the basis corresponding to `w • v`. -/
 def unitsSMul (v : Basis ι R M) (w : ι → Rˣ) : Basis ι R M :=
   Basis.mk (LinearIndependent.units_smul v.linearIndependent w)
@@ -1264,7 +1261,7 @@ theorem repr_unitsSMul (e : Basis ι R₂ M) (w : ι → R₂ˣ) (v : M) (i : ι
   congr_arg (fun f : M →ₗ[R₂] R₂ => f v) (e.coord_unitsSMul w i)
 #align basis.repr_units_smul Basis.repr_unitsSMul
 
-/-- A version of `smul_of_units` that uses `IsUnit`. -/
+/-- A version of `unitsSMul` that uses `IsUnit`. -/
 def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Basis ι R M :=
   unitsSMul v fun i => (hw i).unit
 #align basis.is_unit_smul Basis.isUnitSMul
@@ -1308,22 +1305,22 @@ theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
 and `y` and `N` together span the whole of `O`, then there is a basis for `O`
 whose basis vectors are given by `Fin.cons y b`. -/
-noncomputable def mkFinConsOfLe {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
+noncomputable def mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O)
     (b : Basis (Fin n) R N) (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) : Basis (Fin (n + 1)) R O :=
   mkFinCons ⟨y, yO⟩ (b.map (Submodule.comapSubtypeEquivOfLe hNO).symm)
     (fun c x hc hx => hli c x (Submodule.mem_comap.mp hc) (congr_arg ((↑) : O → M) hx))
     fun z => hsp z z.2
-#align basis.mk_fin_cons_of_le Basis.mkFinConsOfLe
+#align basis.mk_fin_cons_of_le Basis.mkFinConsOfLE
 
 @[simp]
-theorem coe_mkFinConsOfLe {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
+theorem coe_mkFinConsOfLE {n : ℕ} {N O : Submodule R M} (y : M) (yO : y ∈ O) (b : Basis (Fin n) R N)
     (hNO : N ≤ O) (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0)
     (hsp : ∀ z ∈ O, ∃ c : R, z + c • y ∈ N) :
-    (mkFinConsOfLe y yO b hNO hli hsp : Fin (n + 1) → O) =
+    (mkFinConsOfLE y yO b hNO hli hsp : Fin (n + 1) → O) =
       Fin.cons ⟨y, yO⟩ (Submodule.ofLe hNO ∘ b) :=
   coe_mkFinCons _ _ _ _
-#align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLe
+#align basis.coe_mk_fin_cons_of_le Basis.coe_mkFinConsOfLE
 
 /-- The basis of `R × R` given by the two vectors `(1, 0)` and `(0, 1)`. -/
 protected def finTwoProd (R : Type _) [Semiring R] : Basis (Fin 2) R (R × R) :=

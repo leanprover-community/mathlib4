@@ -244,7 +244,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
   conv_lhs at key => simp only [map_bind₁, map_rename, map_expand, map_wittPolynomial]
   -- clean up and massage
   rw [Nat.succ_eq_add_one, C_dvd_iff_zmod, RingHom.map_sub, sub_eq_zero, map_bind₁]
-  simp only [map_rename, map_wittPolynomial, wittPolynomial_zMod_self]
+  simp only [map_rename, map_wittPolynomial, wittPolynomial_zmod_self]
   rw [key]; clear key IH
   rw [bind₁, aeval_wittPolynomial, map_sum, map_sum, Finset.sum_congr rfl]
   intro k hk

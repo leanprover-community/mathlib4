@@ -1710,9 +1710,7 @@ theorem exists_min_image (s : Finset β) (f : β → α) (h : s.Nonempty) :
 
 end ExistsMaxMin
 
--- TODO names
-
-theorem is_glb_iff_is_least [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
+theorem isGLB_iff_isLeast [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsGLB (s : Set α) i ↔ IsLeast (↑s) i := by
   refine' ⟨fun his => _, IsLeast.isGLB⟩
   suffices i = min' s hs by
@@ -1720,23 +1718,23 @@ theorem is_glb_iff_is_least [LinearOrder α] (i : α) (s : Finset α) (hs : s.No
     exact isLeast_min' s hs
   rw [IsGLB, IsGreatest, mem_lowerBounds, mem_upperBounds] at his
   exact le_antisymm (his.1 (Finset.min' s hs) (Finset.min'_mem s hs)) (his.2 _ (Finset.min'_le s))
-#align finset.is_glb_iff_is_least Finset.is_glb_iff_is_least
+#align finset.is_glb_iff_is_least Finset.isGLB_iff_isLeast
 
-theorem is_lub_iff_is_greatest [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
+theorem isLUB_iff_isGreatest [LinearOrder α] (i : α) (s : Finset α) (hs : s.Nonempty) :
     IsLUB (s : Set α) i ↔ IsGreatest (↑s) i :=
-  @is_glb_iff_is_least αᵒᵈ _ i s hs
-#align finset.is_lub_iff_is_greatest Finset.is_lub_iff_is_greatest
+  @isGLB_iff_isLeast αᵒᵈ _ i s hs
+#align finset.is_lub_iff_is_greatest Finset.isLUB_iff_isGreatest
 
-theorem is_glb_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsGLB (s : Set α) i)
+theorem isGLB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsGLB (s : Set α) i)
     (hs : s.Nonempty) : i ∈ s := by
   rw [← mem_coe]
-  exact ((is_glb_iff_is_least i s hs).mp his).1
-#align finset.is_glb_mem Finset.is_glb_mem
+  exact ((isGLB_iff_isLeast i s hs).mp his).1
+#align finset.is_glb_mem Finset.isGLB_mem
 
-theorem is_lub_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Set α) i)
+theorem isLUB_mem [LinearOrder α] {i : α} (s : Finset α) (his : IsLUB (s : Set α) i)
     (hs : s.Nonempty) : i ∈ s :=
-  @is_glb_mem αᵒᵈ _ i s his hs
-#align finset.is_lub_mem Finset.is_lub_mem
+  @isGLB_mem αᵒᵈ _ i s his hs
+#align finset.is_lub_mem Finset.isLUB_mem
 
 end Finset
 
@@ -1816,16 +1814,16 @@ variable {ι' : Sort _} [CompleteLattice α]
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
 `⨆ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `iSup_eq_iSup_finset'` for a version
-that works for `ι : Sort*`. -/
+that works for `ι : Sort _`. -/
 theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
-    refine le_antisymm ?_ ?_
-    exact iSup_le fun b => le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
-    exact iSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _
+  refine le_antisymm ?_ ?_
+  · exact iSup_le fun b => le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
+  · exact iSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _
 #align supr_eq_supr_finset iSup_eq_iSup_finset
 
 /-- Supremum of `s i`, `i : ι`, is equal to the supremum over `t : Finset ι` of suprema
-`⨆ i ∈ t, s i`. This version works for `ι : Sort*`. See `iSup_eq_iSup_finset` for a version
+`⨆ i ∈ t, s i`. This version works for `ι : Sort _`. See `iSup_eq_iSup_finset` for a version
 that assumes `ι : Type _` but has no `PLift`s. -/
 theorem iSup_eq_iSup_finset' (s : ι' → α) :
     ⨆ i, s i = ⨆ t : Finset (PLift ι'), ⨆ i ∈ t, s (PLift.down i) := by
@@ -1834,13 +1832,13 @@ theorem iSup_eq_iSup_finset' (s : ι' → α) :
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
 `⨅ i ∈ t, s i`. This version assumes `ι` is a `Type _`. See `iInf_eq_iInf_finset'` for a version
-that works for `ι : Sort*`. -/
+that works for `ι : Sort _`. -/
 theorem iInf_eq_iInf_finset (s : ι → α) : ⨅ i, s i = ⨅ (t : Finset ι) (i ∈ t), s i :=
   @iSup_eq_iSup_finset αᵒᵈ _ _ _
 #align infi_eq_infi_finset iInf_eq_iInf_finset
 
 /-- Infimum of `s i`, `i : ι`, is equal to the infimum over `t : Finset ι` of infima
-`⨅ i ∈ t, s i`. This version works for `ι : Sort*`. See `iInf_eq_iInf_finset` for a version
+`⨅ i ∈ t, s i`. This version works for `ι : Sort _`. See `iInf_eq_iInf_finset` for a version
 that assumes `ι : Type _` but has no `PLift`s. -/
 theorem iInf_eq_iInf_finset' (s : ι' → α) :
     ⨅ i, s i = ⨅ t : Finset (PLift ι'), ⨅ i ∈ t, s (PLift.down i) :=
@@ -1855,13 +1853,13 @@ variable {ι' : Sort _}
 
 /-- Union of an indexed family of sets `s : ι → Set α` is equal to the union of the unions
 of finite subfamilies. This version assumes `ι : Type _`. See also `iUnion_eq_iUnion_finset'` for
-a version that works for `ι : Sort*`. -/
+a version that works for `ι : Sort _`. -/
 theorem iUnion_eq_iUnion_finset (s : ι → Set α) : ⋃ i, s i = ⋃ t : Finset ι, ⋃ i ∈ t, s i :=
   iSup_eq_iSup_finset s
 #align set.Union_eq_Union_finset Set.iUnion_eq_iUnion_finset
 
 /-- Union of an indexed family of sets `s : ι → Set α` is equal to the union of the unions
-of finite subfamilies. This version works for `ι : Sort*`. See also `iUnion_eq_iUnion_finset` for
+of finite subfamilies. This version works for `ι : Sort _`. See also `iUnion_eq_iUnion_finset` for
 a version that assumes `ι : Type _` but avoids `PLift`s in the right hand side. -/
 theorem iUnion_eq_iUnion_finset' (s : ι' → Set α) :
     ⋃ i, s i = ⋃ t : Finset (PLift ι'), ⋃ i ∈ t, s (PLift.down i) :=
@@ -1870,13 +1868,13 @@ theorem iUnion_eq_iUnion_finset' (s : ι' → Set α) :
 
 /-- Intersection of an indexed family of sets `s : ι → Set α` is equal to the intersection of the
 intersections of finite subfamilies. This version assumes `ι : Type _`. See also
-`iInter_eq_iInter_finset'` for a version that works for `ι : Sort*`. -/
+`iInter_eq_iInter_finset'` for a version that works for `ι : Sort _`. -/
 theorem iInter_eq_iInter_finset (s : ι → Set α) : ⋂ i, s i = ⋂ t : Finset ι, ⋂ i ∈ t, s i :=
   iInf_eq_iInf_finset s
 #align set.Inter_eq_Inter_finset Set.iInter_eq_iInter_finset
 
 /-- Intersection of an indexed family of sets `s : ι → Set α` is equal to the intersection of the
-intersections of finite subfamilies. This version works for `ι : Sort*`. See also
+intersections of finite subfamilies. This version works for `ι : Sort _`. See also
 `iInter_eq_iInter_finset` for a version that assumes `ι : Type _` but avoids `PLift`s in the right
 hand side. -/
 theorem iInter_eq_iInter_finset' (s : ι' → Set α) :

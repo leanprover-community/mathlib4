@@ -217,7 +217,7 @@ instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
-instance [OrderTop α] : BoundedOrder (WithBot α) :=
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
   { WithBot.orderBot, WithBot.orderTop with }
 
 theorem not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := fun h =>
