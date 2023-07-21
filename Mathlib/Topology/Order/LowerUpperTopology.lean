@@ -442,8 +442,8 @@ instance [Preorder α] [TopologicalSpace α] [LowerTopology α] [OrderBot α] [P
     · exact GenerateOpen.basic _ ⟨(a, ⊥), by simp [Ici_prod_eq, prod_univ]⟩
     · exact GenerateOpen.basic _ ⟨(⊥, b), by simp [Ici_prod_eq, univ_prod]⟩
 
-instance [Preorder α] [TopologicalSpace α] [UpperTopology α] [OrderTop α] [Preorder β]
-    [TopologicalSpace β] [UpperTopology β] [OrderTop β] : UpperTopology (α × β) where
+instance instUpperTopologyProd [Preorder α] [TopologicalSpace α] [UpperTopology α] [OrderTop α]
+    [Preorder β] [TopologicalSpace β] [UpperTopology β] [OrderTop β] : UpperTopology (α × β) where
   topology_eq_upperTopology := by
     refine' le_antisymm (le_generateFrom _) _
     · rintro _ ⟨x, rfl⟩
