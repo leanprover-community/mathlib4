@@ -26,19 +26,6 @@ variable {M N: ℕ}
 open Matrix BigOperators
 
 namespace Matrix
-/- ALready in mathlbi as Equiv.sumCongr-/
-/- def equiv_sum_trans   {a b c d: Type}
-  (e1: a ≃ c)(e2: b ≃ d): (a ⊕ b) ≃ (c ⊕ d) :=
-  { toFun := Sum.elim (fun x => Sum.inl (e1 x)) (fun x => Sum.inr (e2 x))
-    invFun := Sum.elim (fun x => Sum.inl (e1.symm x)) (fun x => Sum.inr (e2.symm x)),
-    left_inv := by
-      intros x
-      cases' x with x x
-      all_goals simp only [Sum.elim_inl, Sum.elim_inr, Equiv.symm_apply_apply]
-    right_inv := by
-      intros x
-      cases' x with x x
-      all_goals simp only [Sum.elim_inl, Sum.elim_inr, Equiv.apply_symm_apply] }  -/
 
 noncomputable def er (A: Matrix (Fin M) (Fin N) 𝕂) :
   {i // (isHermitian_transpose_mul_self A).eigenvalues i ≠ 0} ≃ Fin (A.rank) := by
