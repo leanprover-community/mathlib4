@@ -88,10 +88,6 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   exact ⟨sub_self _, sub_self _, sub_self _, zero_empty.symm⟩
 #align cross_self cross_self
 
--- Porting note: Added this to make `norm_num` work better
-@[simp]
-private theorem vecCons2 (a : R) (v : Fin 2 → R) : vecCons a v 2 = v 1 := rfl
-
 /-- The cross product of two vectors is perpendicular to the first vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
