@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2023 Mohanad ahmed. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mohanad Ahmed
+-/
 
 import Mathlib.LinearAlgebra.Matrix.SVD.ColumnRowBlocks
 import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMatricesRank
@@ -6,6 +11,48 @@ import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMulSelfPosSemiDef
 import Mathlib.LinearAlgebra.Matrix.SVD.KernelConjTransposeMul
 import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
 import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
+
+
+/-! # Singular Value Decomposition
+
+This file provides proves the SVD theorem which decomposes a real/complex matrix into left
+eigenvectors, singular values block diagonal matrix and right eigenvectors.
+
+Any matrix A (M × N) with rank r = A.rank and  with elements in ℝ or ℂ fields can be decompsed
+into three matrices:
+  U: an M × M matrix containing the left eigenvectors of the matrix
+  S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
+  V: an N × N matrix containing the right eigenvectors of the matrix
+  Note that
+  S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
+  - S₁₁: a diagonal r × r matrix and
+  - S₁₂: r × (N - r) zero matrix, S₂₁ : (M - r) × r zero matrix and
+  - S₂₂: (M - r) × (N - r) zero matrix
+  U is a block column matrix U = [U₁ U₂] with
+  - U₁ : a M × r containing left eigenvectors with nonzero singular values.
+  - U₂ : a M × (M - r) containing left eigenvectors with zero singular values.
+  V is a block column matrix V = [V₁ V₂] with
+  - V₁ : a N × r containing right eigenvectors with nonzero singular values.
+  - V₂ : a M × (M - r) containing right eigenvectors with zero singular values.
+
+Since in mathlib the eigenvalues of hermitian matrices are defined in an "arbitrary" undetermined
+order, we begin by partition the singular values into zero and non-zero values. We partition the
+corresponding eigenvectors from AᴴA and AAᴴ using similar rearrangements. These are included in
+`SVD.svdReindex`. The basic API for Column and Row partitioned matrices is from
+`SVD.ColumnRowBlocks`.
+
+We then proceed to transfer some of the lemmas we need about eigenvector matrices (for example that
+they are unitary: i.e. inverse is conjugate transpose.). Note that since invertibility in mathlib is
+defined for square matrices while our matrices are partitioned i.e. N × (N₁ ⊕ N₂) and N ≃ (N ⊕ N₂)
+Lean cannot apply the Invertible definition. We workaround this were necessary.
+
+Lemma `reduced_spectral_theorem` (`reduced_spectral_theorem'`) shows that AᴴA and AAᴴ, can be
+reduced to products containing only the non-zero singular eigenvectors. This is later used in
+proving the main SVD theroem. A few lemmas are provided about the
+
+## Tags
+Singular Value decomposition, SVD
+-/
 
 
 variable {𝕂: Type}[IsROrC 𝕂][DecidableEq 𝕂]
@@ -48,6 +95,12 @@ noncomputable def svdU₁' (A: Matrix (Fin M) (Fin N) 𝕂): Matrix (Fin M) (Fin
 noncomputable def svdU₂ (A: Matrix (Fin M) (Fin N) 𝕂): Matrix (Fin M) (Fin (M - A.rank)) 𝕂 :=
   ((reindex (Equiv.refl (Fin M)) (emz A))
     (isHermitian_mul_conjTranspose_self A).eigenvectorMatrix).toColumns₂
+
+noncomputable def svdU (A: Matrix (Fin M) (Fin N) 𝕂):
+    Matrix (Fin M) (Fin (A.rank) ⊕ Fin (M - A.rank)) 𝕂 := fromColumns A.svdU₁ A.svdU₂
+
+noncomputable def svdV (A: Matrix (Fin M) (Fin N) 𝕂):
+    Matrix (Fin N) (Fin (A.rank) ⊕ Fin (N - A.rank)) 𝕂 := fromColumns A.svdV₁ A.svdV₂
 
 lemma U_columns' (A: Matrix (Fin M) (Fin N) 𝕂) :
   ((reindex (Equiv.refl (Fin M)) (emz A))
@@ -295,7 +348,7 @@ lemma IsUnit_det_svdσ_mapK (A: Matrix (Fin M) (Fin N) 𝕂):
   apply ne_of_gt
   apply sing_vals_ne_zero_pos
 
-lemma xw (A: Matrix (Fin M) (Fin N) 𝕂):
+lemma svdσ_inv_mapK (A: Matrix (Fin M) (Fin N) 𝕂):
   (map (A.svdσ) (algebraMap ℝ 𝕂))⁻¹ = (map (A.svdσ)⁻¹ (algebraMap ℝ 𝕂)) := by
   rw [inv_eq_left_inv]
   rw [← map_mul, nonsing_inv_mul]
@@ -308,7 +361,7 @@ lemma U₁_conjTranspose_mul_U₁ (A: Matrix (Fin M) (Fin N) 𝕂):
     Matrix.mul_assoc, ← Matrix.mul_assoc Aᴴ, reduced_spectral_theorem, Matrix.mul_assoc,
     ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁, Matrix.one_mul,
     Matrix.mul_assoc A.svdV₁, ← Matrix.mul_assoc _ A.svdV₁, V₁_conjTranspose_mul_V₁,
-    Matrix.one_mul, xw, ← conjTranspose_map, ← Matrix.map_mul, ← Matrix.map_mul,
+    Matrix.one_mul, svdσ_inv_mapK, ← conjTranspose_map, ← Matrix.map_mul, ← Matrix.map_mul,
     ← Matrix.mul_assoc, σ_inv_μ_σ_inv_eq_one]
   simp only [map_zero, _root_.map_one, map_one]
   unfold Function.Semiconj
@@ -408,26 +461,16 @@ into three matrices:
   U: an M × M matrix containing the left eigenvectors of the matrix
   S: an M × N matrix with an r × r block in the upper left corner with nonzero singular values
   V: an N × N matrix containing the right eigenvectors of the matrix
-  Note that
-  S is a block matrix S = [S₁₁, S₁₂; S₂₁, S₂₂] with
-  - S₁₁: a diagonal r × r matrix and
-  - S₁₂: r × (N - r) zero matrix, S₂₁ : (M - r) × r zero matrix and
-  - S₂₂: (M - r) × (N - r) zero matrix
-  U is a block column matrix U = [U₁ U₂] with
-  - U₁ : a M × r containing left eigenvectors with nonzero singular values.
-  - U₂ : a M × (M - r) containing left eigenvectors with zero singular values.
-  V is a block column matrix V = [V₁ V₂] with
-  - V₁ : a N × r containing right eigenvectors with nonzero singular values.
-  - V₂ : a M × (M - r) containing right eigenvectors with zero singular values.
 
 Further UUᴴ = UᴴU = 1 and VVᴴ=VᴴV = 1 as can be seen in lemmas `U_inv` and `V_inv` together with
 `fromColumns_mul_fromRows_eq_one_comm` and `conjTranspose_fromColumns_eq_fromRows_conjTranspose` -/
+
 theorem svd_theorem (A: Matrix (Fin M) (Fin N) 𝕂):
-  A =
-    (fromColumns A.svdU₁ A.svdU₂) ⬝
+  A = A.svdU ⬝
     (fromBlocks (map A.svdσ (algebraMap ℝ 𝕂)) 0 0 0) ⬝
-    (fromColumns A.svdV₁ A.svdV₂)ᴴ := by
+    A.svdVᴴ := by
   apply_fun (fun x => x⬝(fromColumns A.svdV₁ A.svdV₂))
+  unfold svdU svdV
   dsimp
   rw [Matrix.mul_assoc, V_inv, Matrix.mul_one, fromColumns_mul_fromBlocks, mul_fromColumns,
     mul_V₂_eq_zero]

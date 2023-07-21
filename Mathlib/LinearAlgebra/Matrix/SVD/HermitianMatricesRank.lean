@@ -1,7 +1,26 @@
+/-
+Copyright (c) 2023 Mohanad ahmed. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mohanad Ahmed
+-/
+
 import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.PosDef
+
+/-! # Hermitian matrices rank
+
+This file proves that the rank of a Hermitian matrix is the same as the count of non-zero
+eigenvaules. To achieve this result we re-express the spectral theorem, as A = V D Vᴴ instead of
+VᴴA = V D as in the current version of `spectral_theroem` in `mathlib`. For convenience, we state
+the left inverse version of `eigenvectorMatrix_mul_inv`. Then we express the rank of the diagonal
+matrix in terms of count of non-zero diagonal entries `rank_diagonal_matrix`(instead of linear maps)
+
+We then use the fact that AAᴴ and AᴴA have the same rank as A to show
+`rank_eq_card_pos_eigs_conj_transpose_mul_self` and `rank_eq_card_pos_eigs_self_mul_conj_transpose`
+to show that the count non-zero eigenvalues are the same as rank of A.
+ -/
 
 open Matrix BigOperators
 
