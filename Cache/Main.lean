@@ -49,11 +49,11 @@ open Lean System in
 (which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
 match. -/
 def toPaths (args : List String) : List FilePath :=
-  args.mapM fun arg =>
+  args.map fun arg =>
     if arg.endsWith ".lean" then
-      return FilePath.mk arg |>.normalize
-    else do
-      return mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
+      FilePath.mk arg |>.normalize
+    else
+      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
