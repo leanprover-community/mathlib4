@@ -101,26 +101,28 @@ lemma XIsoOfEq_rfl (K : HomologicalComplex V c) (p : ι) :
   K.XIsoOfEq (rfl : p = p) = Iso.refl _ := rfl
 
 @[reassoc (attr := simp)]
-lemma XIsoOfEq_trans_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι} (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
-   (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
+lemma XIsoOfEq_trans_hom (K : HomologicalComplex V c) {p₁ p₂ p₃ : ι}
+    (h₁₂ : p₁ = p₂) (h₂₃ : p₂ = p₃) :
+    (K.XIsoOfEq h₁₂).hom ≫ (K.XIsoOfEq h₂₃).hom = (K.XIsoOfEq (h₁₂.trans h₂₃)).hom := by
   dsimp [XIsoOfEq]
   simp [eqToHom_trans]
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_hom_comp_d (K : HomologicalComplex V c) {p₁ p₂ : ι} (h : p₁ = p₂) (p₃ : ι) :
-    (K.XIsoOfEq h).hom ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h ; simp
+    (K.XIsoOfEq h).hom ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
 
 @[reassoc (attr := simp)]
 lemma XIsoOfEq_inv_comp_d (K : HomologicalComplex V c) {p₂ p₁ : ι} (h : p₂ = p₁) (p₃ : ι) :
-    (K.XIsoOfEq h).inv ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h ; simp
+    (K.XIsoOfEq h).inv ≫ K.d p₂ p₃ = K.d p₁ p₃ := by subst h; simp
 
 @[reassoc (attr := simp)]
 lemma d_comp_XIsoOfEq_hom (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₂ = p₃) (p₁ : ι) :
-    K.d p₁ p₂ ≫ (K.XIsoOfEq h).hom = K.d p₁ p₃ := by subst h ; simp
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).hom = K.d p₁ p₃ := by subst h; simp
 
 @[reassoc (attr := simp)]
 lemma d_comp_XIsoOfEq_inv (K : HomologicalComplex V c) {p₂ p₃ : ι} (h : p₃ = p₂) (p₁ : ι) :
-    K.d p₁ p₂ ≫ (K.XIsoOfEq h).inv = K.d p₁ p₃ := by subst h ; simp
+    K.d p₁ p₂ ≫ (K.XIsoOfEq h).inv = K.d p₁ p₃ := by subst h; simp
+
 end HomologicalComplex
 
 /-- An `α`-indexed chain complex is a `HomologicalComplex`
