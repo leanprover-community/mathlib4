@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.iterated_deriv
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Comp
 import Mathlib.Analysis.Calculus.ContDiffDef
+
+#align_import analysis.calculus.iterated_deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # One-dimensional iterated derivatives
@@ -199,7 +196,7 @@ theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) 
 /-- The `n`-th iterated derivative within a set with unique derivatives can be obtained by
 iterating `n` times the differentiation operation. -/
 theorem iteratedDerivWithin_eq_iterate {x : 𝕜} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
-    iteratedDerivWithin n f s x = ((fun g : 𝕜 → F => derivWithin g s)^[n]) f x := by
+    iteratedDerivWithin n f s x = (fun g : 𝕜 → F => derivWithin g s)^[n] f x := by
   induction' n with n IH generalizing x
   · simp
   · rw [iteratedDerivWithin_succ (hs x hx), Function.iterate_succ']
@@ -295,7 +292,7 @@ theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f)
 
 /-- The `n`-th iterated derivative can be obtained by iterating `n` times the
 differentiation operation. -/
-theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = (deriv^[n]) f := by
+theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   ext x
   rw [← iteratedDerivWithin_univ]
   convert iteratedDerivWithin_eq_iterate uniqueDiffOn_univ (F := F) (mem_univ x)

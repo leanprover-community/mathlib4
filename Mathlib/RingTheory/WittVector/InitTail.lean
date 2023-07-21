@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.init_tail
-! leanprover-community/mathlib commit 0798037604b2d91748f9b43925fb7570a5f3256c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
+
+#align_import ring_theory.witt_vector.init_tail from "leanprover-community/mathlib"@"0798037604b2d91748f9b43925fb7570a5f3256c"
 
 /-!
 
@@ -102,7 +99,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
       wittPolynomial p ℤ n by
     apply_fun aeval x.coeff at this
     simpa only [AlgHom.map_add, aeval_bind₁, ← coeff_select]
-  simp only [wittPolynomial_eq_sum_c_mul_x_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
+  simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
     AlgHom.map_mul, bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
   refine' fun m _ => mul_eq_mul_left_iff.mpr (Or.inl _)

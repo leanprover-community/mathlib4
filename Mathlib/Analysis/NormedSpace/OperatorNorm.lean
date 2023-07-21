@@ -2,17 +2,15 @@
 Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
-
-! This file was ported from Lean 3 source module analysis.normed_space.operator_norm
-! leanprover-community/mathlib commit f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
 import Mathlib.Analysis.NormedSpace.LinearIsometry
+import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Topology.Algebra.Module.StrongTopology
+
+#align_import analysis.normed_space.operator_norm from "leanprover-community/mathlib"@"f7ebde7ee0d1505dfccac8644ae12371aa3c1c9f"
 
 /-!
 # Operator norm on the space of continuous linear maps
@@ -51,13 +49,8 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
     (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
-  refine' le_antisymm (le_of_forall_pos_le_add fun ε hε => _) (norm_nonneg (f x))
-  rcases NormedAddCommGroup.tendsto_nhds_nhds.1 (hf.tendsto 0) ε hε with ⟨δ, δ_pos, hδ⟩
-  replace hδ := hδ x
-  rw [sub_zero, hx] at hδ
-  replace hδ := le_of_lt (hδ δ_pos)
-  rw [map_zero, sub_zero] at hδ
-  rwa [zero_add]
+  rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
+  exact hx.map hf
 #align norm_image_of_norm_zero norm_image_of_norm_zero
 
 section
@@ -67,10 +60,9 @@ variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃]
 theorem SemilinearMapClass.bound_of_shell_semi_normed [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
     {ε C : ℝ} (ε_pos : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
     (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) {x : E} (hx : ‖x‖ ≠ 0) :
-    ‖f x‖ ≤ C * ‖x‖ := by
-  rcases rescale_to_shell_semi_normed hc ε_pos hx with ⟨δ, hδ, δxle, leδx, _⟩
-  simpa only [map_smulₛₗ, norm_smul, mul_left_comm C, mul_le_mul_left (norm_pos_iff.2 hδ),
-    RingHomIsometric.is_iso] using hf (δ • x) leδx δxle
+    ‖f x‖ ≤ C * ‖x‖ :=
+  (normSeminorm 𝕜 E).bound_of_shell ((normSeminorm 𝕜₂ F).comp ⟨⟨f, map_add f⟩, map_smulₛₗ f⟩)
+    ε_pos hc hf hx
 #align semilinear_map_class.bound_of_shell_semi_normed SemilinearMapClass.bound_of_shell_semi_normed
 
 /-- A continuous linear map between seminormed spaces is bounded when the field is nontrivially
@@ -78,18 +70,9 @@ normed. The continuity ensures boundedness on a ball of some radius `ε`. The no
 norm is then used to rescale any element into an element of norm in `[ε/C, ε]`, whose image has a
 controlled norm. The norm control for the original element follows by rescaling. -/
 theorem SemilinearMapClass.bound_of_continuous [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕)
-    (hf : Continuous f) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ := by
-  rcases NormedAddCommGroup.tendsto_nhds_nhds.1 (hf.tendsto 0) 1 zero_lt_one with ⟨ε, ε_pos, hε⟩
-  simp only [sub_zero, map_zero] at hε
-  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have : 0 < ‖c‖ / ε := div_pos (zero_lt_one.trans hc) ε_pos
-  refine' ⟨‖c‖ / ε, this, fun x => _⟩
-  by_cases hx : ‖x‖ = 0
-  · rw [hx, MulZeroClass.mul_zero]
-    exact le_of_eq (norm_image_of_norm_zero f hf hx)
-  refine' SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc (fun x hle hlt => _) hx
-  refine' (hε _ hlt).le.trans _
-  rwa [← div_le_iff' this, one_div_div]
+    (hf : Continuous f) : ∃ C, 0 < C ∧ ∀ x : E, ‖f x‖ ≤ C * ‖x‖ :=
+  let φ : E →ₛₗ[σ₁₂] F := ⟨⟨f, map_add f⟩, map_smulₛₗ f⟩
+  ((normSeminorm 𝕜₂ F).comp φ).bound_of_continuous_normedSpace (continuous_norm.comp hf)
 #align semilinear_map_class.bound_of_continuous SemilinearMapClass.bound_of_continuous
 
 end

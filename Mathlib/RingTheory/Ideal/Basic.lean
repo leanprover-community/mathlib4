@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
-
-! This file was ported from Lean 3 source module ring_theory.ideal.basic
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.LinearAlgebra.Basic
@@ -15,6 +10,8 @@ import Mathlib.Order.CompactlyGenerated
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp
+
+#align_import ring_theory.ideal.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 
@@ -780,8 +777,7 @@ division (semi)ring.
 This result actually holds for all division semirings, but we lack the predicate to state it. -/
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
-  ·
-    exact
+  · exact
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
   rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]

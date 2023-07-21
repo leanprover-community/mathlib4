@@ -2,17 +2,14 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.frobenius
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 import Mathlib.FieldTheory.PerfectClosure
+
+#align_import ring_theory.witt_vector.frobenius from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 ## The Frobenius operator
@@ -137,7 +134,7 @@ theorem map_frobeniusPoly.key₂ {n i j : ℕ} (hi : i ≤ n) (hj : j < p ^ (n -
     j - v p ⟨j + 1, j.succ_pos⟩ + n = i + j + (n - i - v p ⟨j + 1, j.succ_pos⟩) := by
   generalize h : v p ⟨j + 1, j.succ_pos⟩ = m
   rsuffices ⟨h₁, h₂⟩ : m ≤ n - i ∧ m ≤ j
-  ·  rw [tsub_add_eq_add_tsub h₂, add_comm i j, add_tsub_assoc_of_le (h₁.trans (Nat.sub_le n i)),
+  · rw [tsub_add_eq_add_tsub h₂, add_comm i j, add_tsub_assoc_of_le (h₁.trans (Nat.sub_le n i)),
       add_assoc, tsub_right_comm, add_comm i,
       tsub_add_cancel_of_le (le_tsub_of_add_le_right ((le_tsub_iff_left hi).mp h₁))]
   have hle : p ^ m ≤ j + 1 := h ▸ Nat.le_of_dvd j.succ_pos (multiplicity.pow_multiplicity_dvd _)
@@ -154,7 +151,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [xInTermsOfW_eq]
   simp only [AlgHom.map_sum, AlgHom.map_sub, AlgHom.map_mul, AlgHom.map_pow, bind₁_C_right]
   have h1 : (p : ℚ) ^ n * ⅟ (p : ℚ) ^ n = 1 := by rw [← mul_pow, mul_invOf_self, one_pow]
-  rw [bind₁_X_right, Function.comp_apply, wittPolynomial_eq_sum_c_mul_x_pow, sum_range_succ,
+  rw [bind₁_X_right, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
     sum_range_succ, tsub_self, add_tsub_cancel_left, pow_zero, pow_one, pow_one, sub_mul, add_mul,
     add_mul, mul_right_comm, mul_right_comm (C ((p : ℚ) ^ (n + 1))), ← C_mul, ← C_mul, pow_succ,
     mul_assoc (p : ℚ) ((p : ℚ) ^ n), h1, mul_one, C_1, one_mul, add_comm _ (X n ^ p), add_assoc,
@@ -256,7 +253,7 @@ def frobenius : 𝕎 R →+* 𝕎 R where
   toFun := frobeniusFun
   map_zero' := by
     -- Porting note: removing the placeholders give an error
-    refine IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p)  WittVector.zeroIsPoly)
+    refine IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.zeroIsPoly)
       (@IsPoly.comp p _ _ WittVector.zeroIsPoly
       (frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_zero, forall_const]

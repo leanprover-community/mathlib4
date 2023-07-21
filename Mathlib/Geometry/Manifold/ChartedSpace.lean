@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.charted_space
-! leanprover-community/mathlib commit 431589bce478b2229eba14b14a283250428217db
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.LocalHomeomorph
+
+#align_import geometry.manifold.charted_space from "leanprover-community/mathlib"@"431589bce478b2229eba14b14a283250428217db"
 
 /-!
 # Charted spaces
@@ -580,7 +577,7 @@ theorem mem_achart_source (x : M) : x ∈ (achart H x).1.source :=
 open TopologicalSpace
 
 theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology H] {s : Set M}
-    (hs : (⋃ (x) (_ : x ∈ s), (chartAt H x).source) = univ) (hsc : s.Countable) :
+    (hs : ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ) (hsc : s.Countable) :
     SecondCountableTopology M := by
   haveI : ∀ x : M, SecondCountableTopology (chartAt H x).source :=
     fun x ↦ (chartAt (H := H) x).secondCountableTopology_source
@@ -593,7 +590,7 @@ variable (M)
 
 theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
-  obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ (⋃ (x) (_ : x ∈ s), (chartAt H x).source) = univ :=
+  obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
     countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
 #align charted_space.second_countable_of_sigma_compact ChartedSpace.secondCountable_of_sigma_compact

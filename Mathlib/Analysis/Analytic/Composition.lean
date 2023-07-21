@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
-
-! This file was ported from Lean 3 source module analysis.analytic.composition
-! leanprover-community/mathlib commit ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Combinatorics.Composition
+
+#align_import analysis.analytic.composition from "leanprover-community/mathlib"@"ce11c3c2a285bbe6937e26d9792fda4e51f3fe1a"
 
 /-!
 # Composition of analytic functions
@@ -350,7 +347,7 @@ theorem compAlongComposition_norm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F 
 theorem compAlongComposition_nnnorm {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n) :
     ‖q.compAlongComposition p c‖₊ ≤ ‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊ := by
-  rw [← NNReal.coe_le_coe]; push_cast ; exact q.compAlongComposition_norm p c
+  rw [← NNReal.coe_le_coe]; push_cast; exact q.compAlongComposition_norm p c
 #align formal_multilinear_series.comp_along_composition_nnnorm FormalMultilinearSeries.compAlongComposition_nnnorm
 
 /-!
@@ -707,7 +704,7 @@ theorem compPartialSumTarget_tendsto_atTop :
     aesop
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
-    obtain ⟨n, hn⟩ : BddAbove ↑(Finset.univ.image fun i : Fin c.length => c.blocksFun i) :=
+    obtain ⟨n, hn⟩ : BddAbove ((Finset.univ.image fun i : Fin c.length => c.blocksFun i) : Set ℕ) :=
       Finset.bddAbove _
     refine'
       ⟨max n c.length + 1, bot_le, lt_of_le_of_lt (le_max_right n c.length) (lt_add_one _), fun j =>
@@ -1131,10 +1128,6 @@ def sigmaEquivSigmaPi (n : ℕ) :
           intro k hk
           refine' ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => _) k hk
           exact Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
-          --sorry
-          --(forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => by
-           -- sorry
-            --Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
         blocks_sum := by dsimp only [Composition.length]; simp [sum_ofFn] }⟩
   left_inv := by
     -- the fact that we have a left inverse is essentially `join_split_wrt_composition`,
@@ -1146,7 +1139,6 @@ def sigmaEquivSigmaPi (n : ℕ) :
     · conv_rhs =>
         rw [← join_splitWrtComposition a.blocks b, ← ofFn_get (splitWrtComposition a.blocks b)]
       have A : length (gather a b) = List.length (splitWrtComposition a.blocks b) := by
-        -- length_map (List.sum (α := List ℕ)) (splitWrtComposition a.blocks b)
         simp only [length, gather, length_map, length_splitWrtComposition]
       congr! 2
       · exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
@@ -1173,15 +1165,15 @@ def sigmaEquivSigmaPi (n : ℕ) :
       simp only [map_ofFn]
       rfl
     · rw [Fin.heq_fun_iff]
-      · intro i
-        dsimp [Composition.sigmaCompositionAux]
-        rw [get_of_eq (splitWrtComposition_join _ _ _)]
-        · simp only [get_ofFn]
-          rfl
-        · simp only [map_ofFn]
-          congr
-        · simp only [map_ofFn]
-          rfl
+      intro i
+      dsimp [Composition.sigmaCompositionAux]
+      rw [get_of_eq (splitWrtComposition_join _ _ _)]
+      · simp only [get_ofFn]
+        rfl
+      · simp only [map_ofFn]
+        congr
+      · simp only [map_ofFn]
+        rfl
 #align composition.sigma_equiv_sigma_pi Composition.sigmaEquivSigmaPi
 
 end Composition

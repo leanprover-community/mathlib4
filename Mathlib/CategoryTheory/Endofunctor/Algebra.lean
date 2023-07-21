@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Rob Lewis, Joseph Hua
-
-! This file was ported from Lean 3 source module category_theory.endofunctor.algebra
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.endofunctor.algebra from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -116,8 +113,7 @@ variable (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
 @[simp]
 theorem comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
   rfl
-#align category_theory.endofunctor.algebra.comp_eq_comp
-       CategoryTheory.Endofunctor.Algebra.comp_eq_comp
+#align category_theory.endofunctor.algebra.comp_eq_comp CategoryTheory.Endofunctor.Algebra.comp_eq_comp
 
 @[simp]
 theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
@@ -334,7 +330,7 @@ theorem id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
   rfl
 #align category_theory.endofunctor.coalgebra.id_f CategoryTheory.Endofunctor.Coalgebra.id_f
 
-variable  (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
+variable (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
 
 @[simp]
 theorem comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=

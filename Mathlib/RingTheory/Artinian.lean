@@ -2,15 +2,12 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module ring_theory.artinian
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Nakayama
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Tactic.RSuffices
+
+#align_import ring_theory.artinian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
 /-!
 # Artinian rings and modules
@@ -344,8 +341,8 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
   haveI := Classical.decEq R
   have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
   refine' @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ _ _ isArtinian_finsupp
-  . exact Finsupp.total (↑s : Set M) N R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
-  . rw [← LinearMap.range_eq_top, eq_top_iff,
+  · exact Finsupp.total (↑s : Set M) N R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
+  · rw [← LinearMap.range_eq_top, eq_top_iff,
        ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
          from Subtype.val_injective), Submodule.map_top, range_subtype,
          ← Submodule.map_top, ← Submodule.map_comp, Submodule.map_top]

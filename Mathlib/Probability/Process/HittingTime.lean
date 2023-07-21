@@ -2,13 +2,10 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.process.hitting_time
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Process.Stopping
+
+#align_import probability.process.hitting_time from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Hitting time
@@ -268,7 +265,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
       ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} := by
     ext x
     simp [← exists_or, ← or_and_right, le_or_lt]
-  have h₂ : (⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) = ∅ := by
+  have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} = ∅ := by
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
       Set.mem_empty_iff_false, iff_false_iff, not_exists, not_and, not_le]

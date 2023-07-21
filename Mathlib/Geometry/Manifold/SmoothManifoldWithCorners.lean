@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.smooth_manifold_with_corners
-! leanprover-community/mathlib commit ddec54a71a0dd025c05445d467f1a2b7d586a3ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Geometry.Manifold.ChartedSpace
+
+#align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -345,7 +342,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this 
     rwa [Function.comp.assoc, I.symm_comp_self] at this 
-  · rw [← I.left_inv x] at h ; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
+  · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
 protected theorem locally_compact [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :

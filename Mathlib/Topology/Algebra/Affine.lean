@@ -2,15 +2,12 @@
 Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.affine
-! leanprover-community/mathlib commit 717c073262cd9d59b1a1dcda7e8ab570c5b63370
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.MulAction
+
+#align_import topology.algebra.affine from "leanprover-community/mathlib"@"717c073262cd9d59b1a1dcda7e8ab570c5b63370"
 
 /-!
 # Topological properties of affine spaces and maps

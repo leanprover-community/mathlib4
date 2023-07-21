@@ -2,17 +2,14 @@
 Copyright (c) 2020 Bhavik Mehta, E. W. Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, E. W. Ayers
-
-! This file was ported from Lean 3 source module category_theory.sites.grothendieck
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
+
+#align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Grothendieck topologies
@@ -53,7 +50,7 @@ between Grothendieck topoi and left exact reflective subcategories of presheaf t
 -/
 
 
-universe w v u
+universe v₁ u₁ v u
 
 namespace CategoryTheory
 
@@ -403,7 +400,8 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
-def Cover (X : C) :=
+-- porting note : Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
+def Cover (X : C) : Type max u v :=
   { S : Sieve X // S ∈ J X } -- deriving Preorder
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
 
@@ -670,7 +668,7 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
 -- This is used extensively in `Plus.lean`, etc.
 -- We place this definition here as it will be used in `Sheaf.lean` as well.
 /-- To every `S : J.Cover X` and presheaf `P`, associate a `MulticospanIndex`. -/
-def index {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
+def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.MulticospanIndex D where
   L := S.Arrow
   R := S.Relation
@@ -687,7 +685,7 @@ Saying that this multifork is a limit is essentially equivalent to the sheaf con
 given object for the given covering sieve. See `Sheaf.lean` for an equivalent sheaf condition
 using this.
 -/
-abbrev multifork {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
+abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.Multifork (S.index P) :=
   Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
     (by
@@ -699,7 +697,7 @@ abbrev multifork {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒ�
 /-- The canonical map from `P.obj (op X)` to the multiequalizer associated to a covering sieve,
 assuming such a multiequalizer exists. This will be used in `Sheaf.lean` to provide an equivalent
 sheaf condition in terms of multiequalizers. -/
-noncomputable abbrev toMultiequalizer {D : Type w} [Category.{max v u} D] (S : J.Cover X)
+noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J.Cover X)
     (P : Cᵒᵖ ⥤ D) [Limits.HasMultiequalizer (S.index P)] :
     P.obj (Opposite.op X) ⟶ Limits.multiequalizer (S.index P) :=
   Limits.Multiequalizer.lift _ _ (fun I => P.map I.f.op)

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.enriched.basic
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
+
+#align_import category_theory.enriched.basic from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # Enriched categories
@@ -20,7 +17,7 @@ We set up the basic theory of `V`-enriched categories,
 for `V` an arbitrary monoidal category.
 
 We do not assume here that `V` is a concrete category,
-so there does not need to be a "honest" underlying category!
+so there does not need to be an "honest" underlying category!
 
 Use `X ⟶[V] Y` to obtain the `V` object of morphisms from `X` to `Y`.
 
@@ -334,7 +331,7 @@ def EnrichedFunctor.forget {C : Type u₁} {D : Type u₂} [EnrichedCategory W C
     · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
         ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, forgetEnrichment_comp]
       rfl
-    · intro f g w; apply_fun ForgetEnrichment.homOf W at w ; simpa using w
+    · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
 #align category_theory.enriched_functor.forget CategoryTheory.EnrichedFunctor.forget
 
 end

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.cubing_a_cube
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Intervals.Disjoint
+
+#align_import wiedijk_100_theorems.cubing_a_cube from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 Proof that a cube (in dimension n ≥ 3) cannot be cubed:
@@ -152,7 +149,7 @@ variable {ι : Type} {cs : ι → Cube (n + 1)} {i i' : ι}
 /-- A finite family of (at least 2) cubes partitioning the unit cube with different sizes -/
 structure Correct (cs : ι → Cube n) : Prop where
   PairwiseDisjoint : Pairwise (Disjoint on Cube.toSet ∘ cs)
-  iUnion_eq : (⋃ i : ι, (cs i).toSet) = unitCube.toSet
+  iUnion_eq : ⋃ i : ι, (cs i).toSet = unitCube.toSet
   Injective : Injective (Cube.w ∘ cs)
   three_le : 3 ≤ n
 #align theorems_100.«82».correct Theorems100.«82».Correct
@@ -575,7 +572,7 @@ theorem cannot_cube_a_cube :
     ∀ {s : Set (Cube n)}, s.Finite →           -- given a finite collection of (hyper)cubes
     s.Nontrivial →                             -- containing at least two elements
     s.PairwiseDisjoint Cube.toSet →            -- which is pairwise disjoint
-    (⋃ c ∈ s, Cube.toSet c) = unitCube.toSet → -- whose union is the unit cube
+    ⋃ c ∈ s, Cube.toSet c = unitCube.toSet → -- whose union is the unit cube
     InjOn Cube.w s →                           -- such that the widths of all cubes are different
     False := by                                -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj

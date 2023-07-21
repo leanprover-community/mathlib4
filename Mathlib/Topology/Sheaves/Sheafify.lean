@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheafify
-! leanprover-community/mathlib commit bb103f356534a9a7d3596a672097e375290a4c3a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.Topology.Sheaves.Stalks
+
+#align_import topology.sheaves.sheafify from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
 
 /-!
 # Sheafification of `Type` valued presheaves
@@ -37,11 +34,7 @@ universe v
 
 noncomputable section
 
-open TopCat
-
-open Opposite
-
-open TopologicalSpace
+open TopCat Opposite TopologicalSpace CategoryTheory
 
 variable {X : TopCat.{v}} (F : Presheaf (Type v) X)
 
@@ -110,9 +103,9 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   rcases hU ⟨x, U.2⟩ with ⟨U', mU, iU, gU, wU⟩
   rcases hV ⟨x, V.2⟩ with ⟨V', mV, iV, gV, wV⟩
   have wUx := wU ⟨x, mU⟩
-  dsimp at wUx ; erw [wUx] at e ; clear wUx
+  dsimp at wUx; erw [wUx] at e; clear wUx
   have wVx := wV ⟨x, mV⟩
-  dsimp at wVx ; erw [wVx] at e ; clear wVx
+  dsimp at wVx; erw [wVx] at e; clear wVx
   rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', (e' : F.map iU'.op gU = F.map iV'.op gV)⟩
   use ⟨W ⊓ (U' ⊓ V'), ⟨mW, mU, mV⟩⟩
   refine' ⟨_, _, _⟩

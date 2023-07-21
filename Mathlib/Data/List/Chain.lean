@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.list.chain
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Pairwise
 import Mathlib.Logic.Relation
+
+#align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Relation chain
@@ -155,7 +152,7 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       cases' i with i
       · apply h0
-      . exact h i (lt_pred_iff.2 <| by simpa using w)
+      · exact h i (lt_pred_iff.2 <| by simpa using w)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp
