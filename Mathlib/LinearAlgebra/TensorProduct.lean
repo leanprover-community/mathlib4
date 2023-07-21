@@ -326,7 +326,18 @@ section
 
 -- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
 variable {R'₂ : Type _} [Monoid R'₂] [DistribMulAction R'₂ M]
-variable [SMulCommClass R R'₂ M] [SMul R'₂ R']
+variable [SMulCommClass R R'₂ M]
+
+/-- `SMulCommClass R' R'₂ M` implies `SMulCommClass R' R'₂ (M ⊗[R] N)` -/
+instance smulCommClass_left [SMulCommClass R' R'₂ M] : SMulCommClass R' R'₂ (M ⊗[R] N) :=
+{ smul_comm := fun r' r'₂ x => TensorProduct.induction_on x
+    (by simp_rw [TensorProduct.smul_zero])
+    (fun m n => by simp_rw [smul_tmul', smul_comm])
+    (fun x y ihx ihy => by simp_rw [TensorProduct.smul_add]; rw [ihx, ihy]) }
+-- TODO: add once https://github.com/leanprover-community/mathlib/pull/19143 is merged
+-- #align tensor_product.smul_comm_class_left TensorProduct.smulCommClass_left
+
+variable [SMul R'₂ R']
 
 /-- `IsScalarTower R'₂ R' M` implies `IsScalarTower R'₂ R' (M ⊗[R] N)` -/
 instance isScalarTower_left [IsScalarTower R'₂ R' M] : IsScalarTower R'₂ R' (M ⊗[R] N) :=
