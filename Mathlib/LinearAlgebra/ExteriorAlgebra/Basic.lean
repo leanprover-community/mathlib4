@@ -164,9 +164,8 @@ theorem algebraMap_eq_one_iff (x : R) : algebraMap R (ExteriorAlgebra R M) x = 1
   map_eq_one_iff (algebraMap _ _) (algebraMap_leftInverse _).injective
 #align exterior_algebra.algebra_map_eq_one_iff ExteriorAlgebra.algebraMap_eq_one_iff
 
-theorem isUnit_algebraMap (r : R) : IsUnit (algebraMap R (ExteriorAlgebra R M) r) ↔ IsUnit r :=
-  isUnit_map_of_leftInverse _ (algebraMap_leftInverse M)
-#align exterior_algebra.is_unit_algebra_map ExteriorAlgebra.isUnit_algebraMap
+instance isLocalRingHom_algebraMap : IsLocalRingHom (algebraMap R (ExteriorAlgebra R M)) :=
+  isLocalRingHom_of_leftInverse _ (algebraMap_leftInverse M)
 
 /-- Invertibility in the exterior algebra is the same as invertibility of the base ring. -/
 @[simps!]

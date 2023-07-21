@@ -229,6 +229,8 @@ theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x 
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
+-- todo: change this to be about `IsLocalRingHom`
+-- Prefer `IsLocalRingHom.of_leftInverse`, but we cannot get rid of this because of `ToAdditive`.
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
   {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
@@ -512,3 +514,49 @@ protected theorem div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
 end DivisionCommMonoid
 
 end IsUnit
+
+section IsLocalRingHom
+
+/-- A local ring homomorphism is a homomorphism `f` between monoids such that `a` in the domain
+  is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
+  definitions. This concept originates from the theory of local rings, but it is useful in other
+  places, so we allow this generalisation in Mathlib. -/
+class IsLocalRingHom [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F) : Prop where
+  /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
+  map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
+#align is_local_ring_hom IsLocalRingHom
+
+variable [Monoid R] [Monoid S] [Monoid T] [MonoidHomClass F R S]
+
+-- TODO: let's see if this instance is needed. There's no nice way to state this over `FunLike` stuff
+/-
+instance isLocalRingHom_id (R : Type _) [Monoid R] : IsLocalRingHom (RingHom.id R)
+    where map_nonunit _ := id
+#align is_local_ring_hom_id isLocalRingHom_id -/
+
+@[simp]
+theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
+  ⟨IsLocalRingHom.map_nonunit a, IsUnit.map f⟩
+#align is_unit_map_iff isUnit_map_iff
+
+-- note to reviewers: how should this be done in `FunLike` ways?
+instance isLocalRingHom_comp (g : S →* T) (f : R →* S) [IsLocalRingHom g] [IsLocalRingHom f] :
+    IsLocalRingHom (g.comp f)
+    where map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
+#align is_local_ring_hom_comp isLocalRingHom_comp
+
+@[simp]
+theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
+  IsLocalRingHom.map_nonunit a h
+#align is_unit_of_map_unit IsUnit.of_map
+
+theorem isLocalRingHom_of_comp (f : R →* S) (g : S →* T) [IsLocalRingHom (g.comp f)] :
+    IsLocalRingHom f :=
+  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp $ ha.map g⟩
+#align is_local_ring_hom_of_comp isLocalRingHom_of_comp
+
+theorem isLocalRingHom_of_leftInverse [MonoidHomClass G S R]
+  {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f
+where map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
+
+end IsLocalRingHom

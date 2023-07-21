@@ -240,6 +240,14 @@ theorem Irreducible.dvd_comm [Monoid α] {p q : α} (hp : Irreducible p) (hq : I
   ⟨hp.dvd_symm hq, hq.dvd_symm hp⟩
 #align irreducible.dvd_comm Irreducible.dvd_comm
 
+theorem Irreducible.of_map [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F)
+  [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
+  ⟨fun hu => hfx.not_unit <| hu.map f,
+   fun p q hx =>
+    let ⟨H⟩ := h
+    Or.imp (H p) (H q) <| hfx.isUnit_or_isUnit <| map_mul f p q ▸ congr_arg f hx⟩
+#align of_irreducible_map Irreducible.of_map
+
 section
 
 variable [Monoid α]

@@ -20,6 +20,28 @@ variable {α M₀ G₀ M₀' G₀' F F' : Type _}
 
 variable [MonoidWithZero M₀]
 
+section Monoid
+
+variable [Monoid M] [GroupWithZero G₀]
+
+-- reviewer note: I'm not sure of the best way to write `hf`.
+lemma name_suggestions_welcomed [MonoidHomClass F G₀ M] {f : F}
+  (hf : (f : G₀ →* M) ≠ 1) : IsLocalRingHom f where
+  map_nonunit a h := by
+    rcases eq_or_ne a 0 with (rfl | h)
+    · refine (hf ?_).elim
+      ext t
+      have := map_mul f t 0
+      rw [←one_mul (f (t * 0)), mul_zero] at this
+      exact (h.mul_right_cancel this).symm
+    · exact ⟨⟨a, a⁻¹, mul_inv_cancel h, inv_mul_cancel h⟩, rfl⟩
+
+instance [GroupWithZero G₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀] (f : F) :
+  IsLocalRingHom f :=
+  name_suggestions_welcomed (fun h ↦ have := congrFun (congrArg (↑) h) 0; by simp at this)
+
+end Monoid
+
 section GroupWithZero
 
 variable [GroupWithZero G₀] {a b c : G₀}

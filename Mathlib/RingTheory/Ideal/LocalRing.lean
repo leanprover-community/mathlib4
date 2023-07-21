@@ -211,49 +211,12 @@ section
 
 variable [Semiring R] [Semiring S] [Semiring T]
 
-instance isLocalRingHom_id (R : Type _) [Semiring R] : IsLocalRingHom (RingHom.id R)
-    where map_nonunit _ := id
-#align is_local_ring_hom_id isLocalRingHom_id
-
-@[simp]
-theorem isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
-  ⟨IsLocalRingHom.map_nonunit a, f.isUnit_map⟩
-#align is_unit_map_iff isUnit_map_iff
-
 -- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
 @[simp (high)]
 theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
     f a ∈ nonunits S ↔ a ∈ nonunits R :=
   ⟨fun h ha => h <| (isUnit_map_iff f a).mpr ha, fun h ha => h <| (isUnit_map_iff f a).mp ha⟩
 #align map_mem_nonunits_iff map_mem_nonunits_iff
-
-instance isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
-    IsLocalRingHom (g.comp f)
-    where map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f a)
-#align is_local_ring_hom_comp isLocalRingHom_comp
-
-instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) where
-  map_nonunit a ha := by
-    convert RingHom.isUnit_map (f.symm : S →+* R) ha
-    exact (RingEquiv.symm_apply_apply f a).symm
-#align is_local_ring_hom_equiv isLocalRingHom_equiv
-
-@[simp]
-theorem isUnit_of_map_unit (f : R →+* S) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
-  IsLocalRingHom.map_nonunit a h
-#align is_unit_of_map_unit isUnit_of_map_unit
-
-theorem of_irreducible_map (f : R →+* S) [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) :
-    Irreducible x :=
-  ⟨fun h => hfx.not_unit <| IsUnit.map f h, fun p q hx =>
-    let ⟨H⟩ := h
-    Or.imp (H p) (H q) <| hfx.isUnit_or_isUnit <| f.map_mul p q ▸ congr_arg f hx⟩
-#align of_irreducible_map of_irreducible_map
-
-theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
-    IsLocalRingHom f :=
-  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
-#align is_local_ring_hom_of_comp isLocalRingHom_of_comp
 
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_localRing {R S : Type _} [CommSemiring R] [CommSemiring S] [H : LocalRing S]
@@ -277,7 +240,7 @@ variable [CommSemiring R] [LocalRing R] [CommSemiring S] [LocalRing S]
 The image of the maximal ideal of the source is contained within the maximal ideal of the target.
 -/
 theorem map_nonunit (f : R →+* S) [IsLocalRingHom f] (a : R) (h : a ∈ maximalIdeal R) :
-    f a ∈ maximalIdeal S := fun H => h <| isUnit_of_map_unit f a H
+    f a ∈ maximalIdeal S := fun H => h <| isUnit_of_isUnit_map f a H
 #align map_nonunit map_nonunit
 
 end
@@ -336,7 +299,7 @@ theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R �
     Function.Surjective (Units.map <| f.toMonoidHom) := by
   intro a
   obtain ⟨b, hb⟩ := hf (a : S)
-  use (isUnit_of_map_unit f b (by rw [hb]; exact Units.isUnit _)).unit
+  use (isUnit_of_isUnit_map f b (by rw [hb]; exact Units.isUnit _)).unit
   ext
   exact hb
 #align local_ring.surjective_units_map_of_local_ring_hom LocalRing.surjective_units_map_of_local_ringHom
@@ -386,7 +349,7 @@ namespace ResidueField
 def lift {R S : Type _} [CommRing R] [LocalRing R] [Field S] (f : R →+* S) [IsLocalRingHom f] :
     LocalRing.ResidueField R →+* S :=
   Ideal.Quotient.lift _ f fun a ha =>
-    by_contradiction fun h => ha (isUnit_of_map_unit f a (isUnit_iff_ne_zero.mpr h))
+    by_contradiction fun h => ha (isUnit_of_isUnit_map f a (isUnit_iff_ne_zero.mpr h))
 #align local_ring.residue_field.lift LocalRing.ResidueField.lift
 
 theorem lift_comp_residue {R S : Type _} [CommRing R] [LocalRing R] [Field S] (f : R →+* S)

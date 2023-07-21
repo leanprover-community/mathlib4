@@ -248,3 +248,11 @@ theorem MulEquiv.inv_symm (G : Type _) [DivisionCommMonoid G] :
   rfl
 #align mul_equiv.inv_symm MulEquiv.inv_symm
 -- porting note: no `add_equiv.neg_symm` in `mathlib3`
+
+instance isLocalRingHom_equiv [Monoid R] [Monoid S] [MulEquivClass F R S] (f : F) :
+  IsLocalRingHom f where
+  map_nonunit a ha := by
+    convert ha.map (f : R ≃* S).symm
+    rw [MulEquiv.eq_symm_apply]
+    rfl -- note to reviewers: ugly `rfl`
+#align is_local_ring_hom_equiv isLocalRingHom_equiv

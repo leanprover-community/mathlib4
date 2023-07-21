@@ -640,6 +640,7 @@ section Semiring
 
 variable [Semiring α] [Semiring β]
 
+-- todo: remove this in favour of `IsUnit.map`
 theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
   IsUnit.map f
 #align ring_hom.is_unit_map RingHom.isUnit_map

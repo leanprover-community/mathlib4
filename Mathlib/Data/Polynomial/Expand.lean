@@ -280,7 +280,7 @@ variable {R}
 theorem of_irreducible_expand {p : ℕ} (hp : p ≠ 0) {f : R[X]} (hf : Irreducible (expand R p f)) :
     Irreducible f :=
   let _ := isLocalRingHom_expand R hp.bot_lt
-  of_irreducible_map (↑(expand R p)) hf
+  hf.of_map (↑(expand R p))
 #align polynomial.of_irreducible_expand Polynomial.of_irreducible_expand
 
 theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} :
