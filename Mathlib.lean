@@ -2192,6 +2192,13 @@ import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Spectrum
+import Mathlib.LinearAlgebra.Matrix.SVD.ColumnRowBlocks
+import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMatricesRank
+import Mathlib.LinearAlgebra.Matrix.SVD.HermitianMulSelfPosSemiDef
+import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
+import Mathlib.LinearAlgebra.Matrix.SVD.KernelConjTransposeMul
+import Mathlib.LinearAlgebra.Matrix.SVD.RankMulIsUnit
+import Mathlib.LinearAlgebra.Matrix.SVD.svdReindex
 import Mathlib.LinearAlgebra.Matrix.SVD.svdDefs
 import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.LinearAlgebra.Matrix.ToLin
