@@ -6,7 +6,7 @@ Authors: Mohanad Ahmed
 
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
+-- import Mathlib.LinearAlgebra.Matrix.SVD.IsROrCStarOrderedRing
 
 /-! # Rank of Matrix when left or right multiplied by invertible matrix.
 Rank is unaffected by left or right multiplication by an invertible matrix -/
@@ -39,7 +39,7 @@ lemma rank_IsUnit_mul {m n R: Type}
   rw [LinearMap.ker_eq_bot]
   simp_rw [Function.Injective, mulVecLin_apply]
   intros x y h
-  replace h := congr_arg (λ x => Matrix.mulVec (A⁻¹) x)  h
+  replace h := congr_arg (fun x => Matrix.mulVec (A⁻¹) x)  h
   simp_rw [mulVec_mulVec, nonsing_inv_mul A hA, one_mulVec] at h
   exact h
 
