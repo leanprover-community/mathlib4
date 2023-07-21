@@ -614,7 +614,7 @@ theorem padicValNat_factorial' {p : ℕ} [hp : Fact p.Prime] (n : ℕ):
       rw [digits_def' (Nat.Prime.one_lt hp.out) (Nat.pos_of_ne_zero h)]
       exact List.foldl_assoc_comm_cons
     rw [add_comm, ← padicValNat_factorial_mul (n / p)]
-    exact padicValNat_factorial_div n
+    exact (padicValNat_mul_div_factorial n).symm
 
 /-- **Kummer's Theorem**
 
