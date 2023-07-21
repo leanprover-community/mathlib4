@@ -2,17 +2,14 @@
 Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
-
-! This file was ported from Lean 3 source module data.fin.basic
-! leanprover-community/mathlib commit 008af8bb14b3ebef7e04ec3b0d63b947dee4d26a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
+
+#align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
 # The finite type with `n` elements
@@ -25,7 +22,7 @@ This file expands on the development in the core library.
 ### Induction principles
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-* `Fin.succRec` : Define `C n i` by induction on  `i : Fin n` interpreted
+* `Fin.succRec` : Define `C n i` by induction on `i : Fin n` interpreted
   as `(0 : Fin (n - i)).succ.succ…`. This function has two arguments: `H0 n` defines
   `0`-th element `C (n+1) 0` of an `(n+1)`-tuple, and `Hs n i` defines `(i+1)`-st element
   of `(n+1)`-tuple based on `n`, `i`, and `i`-th element of `n`-tuple.
@@ -659,6 +656,12 @@ theorem subsingleton_iff_le_one : Subsingleton (Fin n) ↔ n ≤ 1 := by
 
 section Monoid
 
+instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
+  add := (· + ·)
+  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
+  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+#align fin.add_comm_semigroup Fin.addCommSemigroup
+
 --Porting note: removing `simp`, `simp` can prove it with AddCommMonoid instance
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp [eq_iff_veq, add_def, mod_eq_of_lt (is_lt k)]
@@ -683,21 +686,20 @@ instance (n) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   add_comm := by simp [eq_iff_veq, add_def, add_comm]
 
-instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n)
-    where
+instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   add := (· + ·)
-  add_assoc := by simp [eq_iff_veq, add_def, add_assoc]
   zero := 0
   zero_add := Fin.zero_add
   add_zero := Fin.add_zero
-  add_comm := by simp [eq_iff_veq, add_def, add_comm]
+  __ := Fin.addCommSemigroup n
 #align fin.add_comm_monoid Fin.addCommMonoid
 
-instance (n) [NeZero n] : AddMonoidWithOne (Fin n) where
+instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast n := Fin.ofNat'' n
   natCast_zero := rfl
   natCast_succ _ := eq_of_veq (add_mod _ _ _)
+#align fin.add_monoid_with_one Fin.instAddMonoidWithOne
 
 end Monoid
 
@@ -1931,6 +1933,28 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) :=
     sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ =>
       Fin.ext <| show (a + (n - b)) % n = (a + (n - b) % n) % n by simp
     sub := Fin.sub }
+
+/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+instance instInvolutiveNeg (n : ℕ) : InvolutiveNeg (Fin n) where
+  neg := Neg.neg
+  neg_neg := Nat.casesOn n finZeroElim fun _i => neg_neg
+#align fin.involutive_neg Fin.instInvolutiveNeg
+
+/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+instance instIsCancelAdd (n : ℕ) : IsCancelAdd (Fin n) where
+  add_left_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_left_cancel
+  add_right_cancel := Nat.casesOn n finZeroElim fun _i _ _ _ => add_right_cancel
+#align fin.is_cancel_add Fin.instIsCancelAdd
+
+/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :=
+  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
+#align fin.add_left_cancel_semigroup Fin.instAddLeftCancelSemigroup
+
+/-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/
+instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
+  { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
+#align fin.add_right_cancel_semigroup Fin.instAddRightCancelSemigroup
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
