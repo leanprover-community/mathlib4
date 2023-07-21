@@ -12,11 +12,10 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 theorem LinearIsometry.tendsto_inv_smul_sum_range_pow_apply_orthogonalProjection
     (f : E →ₗᵢ[𝕜] E) (x : E) :
     Tendsto (fun N : ℕ ↦ (N : 𝕜)⁻¹ • ∑ n in range N, (f ^ n) x) atTop
-      (𝓝 <| orthogonalProjection (LinearMap.ker (1 - f.toContinuousLinearMap)) x) := by
-  set g := f.toContinuousLinearMap
-  set S := LinearMap.ker (1 - g)
+      (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
+  set S := LinearMap.eqLocus f 1
   set P := orthogonalProjection S
-  have hfp : ∀ y : S, f y = y := fun y ↦ (sub_eq_zero.1 y.2).symm
+  have hfp : ∀ y : S, f y = y := Subtype.prop
   have hfpn : ∀ (y : S) (n : ℕ), (f ^ n) y = y := fun y n ↦ by
     induction n with
     | zero => rfl
@@ -26,15 +25,15 @@ theorem LinearIsometry.tendsto_inv_smul_sum_range_pow_apply_orthogonalProjection
     simp only [map_sub, hfpn, sum_sub_distrib, ← nsmul_eq_sum_const, smul_sub]
     rw [nsmul_eq_smul_cast (R := 𝕜), inv_smul_smul₀ (Nat.cast_ne_zero.2 hN)]
   -- TODO: move to a separate lemma; what's the right generality?
-  have H₁ : (LinearMap.range (1 - g))ᗮ = LinearMap.ker (1 - g)
+  have H₁ : (LinearMap.range (1 - f.toContinuousLinearMap))ᗮ = S
   · ext x
-    suffices : (∀ (a : E), ⟪a, x⟫ = ⟪f a, x⟫) ↔ x = f x
+    suffices : (∀ (a : E), ⟪a, x⟫ = ⟪f a, x⟫) ↔ f x = x
     · simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero]
     refine ⟨fun h ↦ ?_, fun h a ↦ ?_⟩
     · rw [← sub_eq_zero, ← inner_self_eq_zero (𝕜 := 𝕜), inner_sub_right,
-        inner_sub_left, inner_sub_left, ← sub_add, ← h, sub_self, zero_sub, ← inner_conj_symm, ← h,
-        f.inner_map_map, inner_conj_symm, neg_add_self]
-    · rw [← f.inner_map_map, ← h]
+        inner_sub_left, inner_sub_left, f.inner_map_map, ← h, ← inner_conj_symm x (f x), ← h,
+        inner_self_conj, sub_self]
+    · rw [← f.inner_map_map, h]
   have H₂ : (LinearMap.ker (1 - g))ᗮ = (LinearMap.range (1 - g)).topologicalClosure
   · rw [← H₁, Submodule.orthogonal_orthogonal_eq_closure]
   have H₃ : x - P x ∈ closure (LinearMap.range (1 - g))
