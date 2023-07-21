@@ -84,12 +84,18 @@ class Fintype (α : Type _) where
 
 axiom Fintype.foo (α : Type _) [Fintype α] : Fintype.card α = 2
 
+axiom Fintype.foo' (α : Type _) [Fintype α] [Fintype (Option α)] : Fintype.card α = 2
+
 axiom instFintypeBool : Fintype Bool
 
-/- Would be "failed to synthesize instance Fintype ?m" without the special handling to
-remove unsolved-for typeclass metavariables from the pendingMVars list. -/
+/- Would be "failed to synthesize instance Fintype ?m" without allowing TC failure. -/
 example : @Fintype.card Bool instFintypeBool = 2 := by
   convert Fintype.foo _
+
+example : @Fintype.card Bool instFintypeBool = 2 := by
+  convert Fintype.foo' _ using 1
+  guard_target = Fintype (Option Bool)
+  sorry
 
 example : True := by
   convert_to ?x + ?y = ?z

@@ -100,15 +100,6 @@ These are passed to `congr!`. See `Congr!.Config` for options.
 syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
 
-/-- Remove all `.typeClass` metavariables from the `pendingMVars` list. -/
-def clearPendingTypeClassMVars : Term.TermElabM Unit := do
-  let pendingMVars ← (← get).pendingMVars.filterM fun mvarId => do
-    let some decl ← Term.getSyntheticMVarDecl? mvarId | return true
-    match decl.kind with
-    | .typeClass => return false
-    | _ => return true
-  modify fun s => {s with pendingMVars := pendingMVars}
-
 elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
@@ -116,20 +107,17 @@ elab_rules : tactic
     let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ←
-      withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) <|
-        -- Allow typeclass inference failures since we want to try to capture instances
-        -- from the goal.
+      withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do
+        -- Allow typeclass inference failures since these will be inferred by unification
+        -- or else become new goals
         withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
           let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
+          -- Process everything so that tactics get run, but again allow TC failures
+          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
           -- Use a type hint to ensure we collect goals from the type too
           mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
-    -- Allow typeclass inference failures because we're OK with having new instance goals
-    withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) <|
-      Term.synthesizeSyntheticMVarsUsingDefault
-    clearPendingTypeClassMVars
-    Term.synthesizeSyntheticMVarsNoPostponing
 
 -- FIXME restore when `add_tactic_doc` is ported.
 -- add_tactic_doc
