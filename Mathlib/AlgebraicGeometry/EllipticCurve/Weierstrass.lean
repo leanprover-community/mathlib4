@@ -278,15 +278,13 @@ def variableChange : WeierstrassCurve R where
     - C.r * C.t * W.a₁)
 #align weierstrass_curve.variable_change WeierstrassCurve.variableChange
 
-abbrev variableChange' (C : VariableChange R) (W : WeierstrassCurve R) := W.variableChange C
-
-lemma variableChange_id (W : WeierstrassCurve R) : variableChange' VariableChange.id W = W := by
-  rw [VariableChange.id, variableChange', variableChange, inv_one, Units.val_one]
+lemma variableChange_id : W.variableChange VariableChange.id = W := by
+  rw [VariableChange.id, variableChange, inv_one, Units.val_one]
   ext <;> (dsimp only; ring1)
 
 lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
-    variableChange' (C.comp C') W = variableChange' C (variableChange' C' W) := by
-  simp only [VariableChange.comp, variableChange', variableChange]
+    W.variableChange (C.comp C') = (W.variableChange C').variableChange C := by
+  simp only [VariableChange.comp, variableChange]
   ext <;> simp only [mul_inv, Units.val_mul]
   · linear_combination (norm := ring1) ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
   · linear_combination (norm := ring1)
@@ -317,7 +315,7 @@ lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
         + (↑C.u⁻¹ : R) ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
 
 instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
-  smul := variableChange'
+  smul := fun C W => W.variableChange C
   one_smul := variableChange_id
   mul_smul := variableChange_comp
 
