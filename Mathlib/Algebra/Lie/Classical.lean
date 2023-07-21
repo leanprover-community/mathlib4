@@ -2,11 +2,6 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.classical
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Matrix.Basis
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Lie.Abelian
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.Algebra.Lie.SkewAdjoint
 import Mathlib.LinearAlgebra.SymplecticGroup
+
+#align_import algebra.lie.classical from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Classical Lie algebras
@@ -363,9 +360,8 @@ theorem indefiniteDiagonal_assoc :
     indefiniteDiagonal (Sum Unit l) l R =
       Matrix.reindexLieEquiv (Equiv.sumAssoc Unit l l).symm
         (Matrix.fromBlocks 1 0 0 (indefiniteDiagonal l l R)) := by
-  ext (i j)
+  ext ⟨⟨i₁ | i₂⟩ | i₃⟩ ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
   -- Porting note: added `Sum.inl_injective.eq_iff`, `Sum.inr_injective.eq_iff`
-  rcases i with ⟨⟨i₁ | i₂⟩ | i₃⟩ <;> rcases j with ⟨⟨j₁ | j₂⟩ | j₃⟩ <;>
     simp only [indefiniteDiagonal, Matrix.diagonal_apply, Equiv.sumAssoc_apply_inl_inl,
       Matrix.reindexLieEquiv_apply, Matrix.submatrix_apply, Equiv.symm_symm, Matrix.reindex_apply,
       Sum.elim_inl, if_true, eq_self_iff_true, Matrix.one_apply_eq, Matrix.fromBlocks_apply₁₁,

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module topology.algebra.star_subalgebra
-! leanprover-community/mathlib commit b7f5a77fa29ad9a3ccc484109b0d7534178e7ecd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Star
+
+#align_import topology.algebra.star_subalgebra from "leanprover-community/mathlib"@"b7f5a77fa29ad9a3ccc484109b0d7534178e7ecd"
 
 /-!
 # Topological star (sub)algebras
@@ -106,6 +103,21 @@ theorem topologicalClosure_mono : Monotone (topologicalClosure : _ → StarSubal
   fun _ S₂ h =>
   topologicalClosure_minimal (h.trans <| le_topologicalClosure S₂) (isClosed_topologicalClosure S₂)
 #align star_subalgebra.topological_closure_mono StarSubalgebra.topologicalClosure_mono
+
+theorem topologicalClosure_map_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedMap φ) :
+    (map φ s).topologicalClosure ≤ map φ s.topologicalClosure :=
+  hφ.closure_image_subset _
+
+theorem map_topologicalClosure_le [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : Continuous φ) :
+    map φ s.topologicalClosure ≤ (map φ s).topologicalClosure :=
+  image_closure_subset_closure_image hφ
+
+theorem topologicalClosure_map [StarModule R B] [TopologicalSemiring B] [ContinuousStar B]
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : ClosedEmbedding φ) :
+    (map φ s).topologicalClosure = map φ s.topologicalClosure :=
+  SetLike.coe_injective <| hφ.closure_image_eq _
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/

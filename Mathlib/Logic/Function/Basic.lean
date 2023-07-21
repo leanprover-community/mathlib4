@@ -2,16 +2,12 @@
 Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.function.basic
-! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Nonempty
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Set
-import Mathlib.Util.WhatsNew
+
+#align_import logic.function.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -554,7 +550,7 @@ by have h2 : (h : a = a') → Eq.rec (motive := λ _ _ => β) b h.symm = b :=
      by intro h
         rw [eq_rec_constant]
    have h3 : (λ h : a = a' => Eq.rec (motive := λ _ _ => β) b h.symm) =
-             (λ _ : a = a' =>  b) := funext h2
+             (λ _ : a = a' => b) := funext h2
    let f := λ x => dite (a = a') x (λ (_: ¬ a = a') => (f a))
    exact congrArg f h3
 #align function.update_apply Function.update_apply
@@ -603,14 +599,16 @@ theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 #align function.eq_update_iff Function.eq_update_iff
 
 @[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
-@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
-#align function.eq_update_self_iff Function.eq_update_self_iff
 #align function.update_eq_self_iff Function.update_eq_self_iff
 
+@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
+#align function.eq_update_self_iff Function.eq_update_self_iff
+
 lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
+#align function.ne_update_self_iff Function.ne_update_self_iff
+
 lemma update_ne_self_iff : update f a b ≠ f ↔ b ≠ f a := update_eq_self_iff.not
 #align function.update_ne_self_iff Function.update_ne_self_iff
-#align function.ne_update_self_iff Function.ne_update_self_iff
 
 @[simp]
 theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
@@ -990,7 +988,7 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
   fun i ↦ if i ∈ s then f i else g i
 #align set.piecewise Set.piecewise
 
-/-! ### Bijectivity of `eq.rec`, `eq.mp`, `eq.mpr`, and `cast` -/
+/-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
 
 
 theorem eq_rec_on_bijective {α : Sort _} {C : α → Sort _} :

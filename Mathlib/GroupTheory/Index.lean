@@ -2,15 +2,12 @@
 Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.index
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Card
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
+
+#align_import group_theory.index from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Index of a Subgroup
@@ -420,7 +417,7 @@ theorem relindex_ne_zero_trans (hHK : H.relindex K ≠ 0) (hKL : K.relindex L �
 theorem relindex_inf_ne_zero (hH : H.relindex L ≠ 0) (hK : K.relindex L ≠ 0) :
     (H ⊓ K).relindex L ≠ 0 := by
   replace hH : H.relindex (K ⊓ L) ≠ 0 := mt (relindex_eq_zero_of_le_right inf_le_right) hH
-  rw [← inf_relindex_right] at hH hK⊢
+  rw [← inf_relindex_right] at hH hK ⊢
   rw [inf_assoc]
   exact relindex_ne_zero_trans hH hK
 #align subgroup.relindex_inf_ne_zero Subgroup.relindex_inf_ne_zero
@@ -428,7 +425,7 @@ theorem relindex_inf_ne_zero (hH : H.relindex L ≠ 0) (hK : K.relindex L ≠ 0)
 
 @[to_additive]
 theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).index ≠ 0 := by
-  rw [← relindex_top_right] at hH hK⊢
+  rw [← relindex_top_right] at hH hK ⊢
   exact relindex_inf_ne_zero hH hK
 #align subgroup.index_inf_ne_zero Subgroup.index_inf_ne_zero
 #align add_subgroup.index_inf_ne_zero AddSubgroup.index_inf_ne_zero
@@ -473,7 +470,7 @@ theorem relindex_iInf_le {ι : Type _} [Fintype ι] (f : ι → Subgroup G) :
 @[to_additive]
 theorem index_iInf_ne_zero {ι : Type _} [Finite ι] {f : ι → Subgroup G}
     (hf : ∀ i, (f i).index ≠ 0) : (⨅ i, f i).index ≠ 0 := by
-  simp_rw [← relindex_top_right] at hf⊢
+  simp_rw [← relindex_top_right] at hf ⊢
   exact relindex_iInf_ne_zero hf
 #align subgroup.index_infi_ne_zero Subgroup.index_iInf_ne_zero
 #align add_subgroup.index_infi_ne_zero AddSubgroup.index_iInf_ne_zero

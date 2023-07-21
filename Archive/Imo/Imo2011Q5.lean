@@ -2,13 +2,10 @@
 Copyright (c) 2021 Alain Verberkmoes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
-
-! This file was ported from Lean 3 source module imo.imo2011_q5
-! leanprover-community/mathlib commit 5f25c089cb34db4db112556f23c50d12da81b297
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Dvd.Basic
+
+#align_import imo.imo2011_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
 /-!
 # IMO 2011 Q5
@@ -43,7 +40,7 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
         _ ≤ f n - f m := (le_of_dvd (sub_pos.mpr h_fm_lt_fn) ?_)
         _ < f n := sub_lt_self _ (hpos m)
       -- ⊢ f (m - n) ∣ f n - f m
-      rw [← dvd_neg, neg_sub];
+      rw [← dvd_neg, neg_sub]
       exact hdvd m n
     have h_d_eq_zero : d = 0 := by
       obtain hd | hd | hd : d > 0 ∨ d = 0 ∨ d < 0 := trichotomous d 0
@@ -51,7 +48,7 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
         have h₁ : f n ≤ d := le_of_dvd hd h_fn_dvd_d
         have h₂ : ¬f n ≤ d := not_le.mpr h_d_lt_fn
         contradiction
-      ·-- d = 0
+      · -- d = 0
         exact hd
       · -- d < 0
         have h₁ : f n ≤ -d := le_of_dvd (neg_pos.mpr hd) h_fn_dvd_d.neg_right
@@ -59,8 +56,8 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
         contradiction
     have h₁ : f m = f (m - n) := sub_eq_zero.mp h_d_eq_zero
     have h₂ : f (m - n) ∣ f m - f n := hdvd m n
-    rw [← h₁] at h₂ 
+    rw [← h₁] at h₂
     exact (dvd_iff_dvd_of_dvd_sub h₂).mp dvd_rfl
-  ·-- m = n
+  · -- m = n
     rw [h_fm_eq_fn]
 #align imo2011_q5 imo2011_q5

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.cover_lifting
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Limits.KanExtension
 import Mathlib.CategoryTheory.Sites.CoverPreserving
+
+#align_import category_theory.sites.cover_lifting from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Cover-lifting functors between sites.
@@ -258,6 +255,8 @@ set_option linter.uppercaseLean3 false in
 theorem gluedSection_isAmalgamation : x.IsAmalgamation (gluedSection hu ℱ hS hx) := by
   intro V fV hV
   -- porting note: next line was `ext W`
+  -- Now `ext` can't see that `ran` is defined as a limit.
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   refine limit.hom_ext (λ (W : StructuredArrow (op V) G.op) => ?_)
   simp only [Functor.comp_map, limit.lift_pre, coyoneda_obj_map, ran_obj_map, gluedSection]
   erw [limit.lift_π]
@@ -273,6 +272,8 @@ set_option linter.uppercaseLean3 false in
 theorem gluedSection_is_unique (y) (hy : x.IsAmalgamation y) : y = gluedSection hu ℱ hS hx := by
   unfold gluedSection limit.lift
   -- porting note: next line was `ext W`
+  -- Now `ext` can't see that `ran` is defined as a limit.
+  -- See https://github.com/leanprover-community/mathlib4/issues/5229
   refine limit.hom_ext (λ (W : StructuredArrow (op U) G.op) => ?_)
   erw [limit.lift_π]
   convert helper hu ℱ hS hx (𝟙 _) y W _

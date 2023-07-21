@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.lawful_fix
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
+
+#align_import control.lawful_fix from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Lawful fixed point operators
@@ -60,7 +57,7 @@ variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
   | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
-  | succ _ i_ih => intro ; apply f.monotone; apply i_ih
+  | succ _ i_ih => intro; apply f.monotone; apply i_ih
 #align part.fix.approx_mono' Part.Fix.approx_mono'
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
@@ -170,7 +167,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
-  | succ _ i_ih => trans f X; apply f.monotone i_ih ; apply hX
+  | succ _ i_ih => trans f X; apply f.monotone i_ih; apply hX
 #align part.fix_le Part.fix_le
 
 variable {f} (hc : Continuous f)
@@ -249,7 +246,7 @@ variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 open OmegaCompletePartialOrder.Chain
 
 theorem continuous_curry : Continuous <| monotoneCurry α β γ := fun c ↦ by
-  ext (x y)
+  ext x y
   dsimp [curry, ωSup]
   rw [map_comp, map_comp]
   rfl

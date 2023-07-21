@@ -2,15 +2,13 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.star_alg_hom
-! leanprover-community/mathlib commit 35882ddc66524b6980532a123a4ad4166db34c81
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.Algebra.Star.Prod
-import Mathlib.Algebra.Algebra.Prod
+
+#align_import algebra.star.star_alg_hom from "leanprover-community/mathlib"@"35882ddc66524b6980532a123a4ad4166db34c81"
 
 /-!
 # Morphisms of star algebras
@@ -173,6 +171,12 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl
 #align non_unital_star_alg_hom.coe_mk NonUnitalStarAlgHom.coe_mkₓ
+
+-- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
+@[simp]
+theorem coe_mk' (f : A →ₙₐ[R] B) (h) :
+    ((⟨f, h⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
+  rfl
 
 -- porting note: doesn't align with Mathlib 3 because `NonUnitalStarAlgHom.mk` has a new signature
 @[simp]
@@ -408,6 +412,12 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅ h₆) :
     ((⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : A →⋆ₐ[R] B) : A → B) = f :=
   rfl
 #align star_alg_hom.coe_mk StarAlgHom.coe_mkₓ
+
+-- this is probably the more useful lemma for Lean 4 and should likely replace `coe_mk` above
+@[simp]
+theorem coe_mk' (f : A →ₐ[R] B) (h) :
+    ((⟨f, h⟩ : A →⋆ₐ[R] B) : A → B) = f :=
+  rfl
 
 -- porting note: doesn't align with Mathlib 3 because `StarAlgHom.mk` has a new signature
 @[simp]
@@ -742,6 +752,15 @@ instance (priority := 100) (F R A B : Type _) [CommSemiring R] [Semiring A]
     map_one := map_one
     map_zero := map_zero
     commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+
+-- See note [lower instance priority]
+instance (priority := 100) toAlgEquivClass {F R A B : Type _} [CommSemiring R]
+    [Ring A] [Ring B] [Algebra R A] [Algebra R B] [Star A] [Star B] [StarAlgEquivClass F R A B] :
+    AlgEquivClass F R A B :=
+  { StarAlgEquivClass.toRingEquivClass,
+    StarAlgEquivClass.instStarAlgHomClass F R A B with
+    coe := fun f => f
+    inv := fun f => EquivLike.inv f }
 
 end StarAlgEquivClass
 

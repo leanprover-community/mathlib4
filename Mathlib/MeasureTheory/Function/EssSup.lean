@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.ess_sup
-! leanprover-community/mathlib commit bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Order.Filter.ENNReal
+
+#align_import measure_theory.function.ess_sup from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
 
 /-!
 # Essential supremum and infimum
@@ -278,7 +275,7 @@ theorem essSup_indicator_eq_essSup_restrict [Zero β] {s : Set α} {f : α → �
       (limsSup_le_limsSup_of_le (map_restrict_ae_le_map_indicator_ae hs)
         (by isBoundedDefault) (by isBoundedDefault) )
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_restrict_le => _)
-  rw [eventually_map] at h_restrict_le⊢
+  rw [eventually_map] at h_restrict_le ⊢
   rw [ae_restrict_iff' hs] at h_restrict_le
   have hc : 0 ≤ c := by
     rsuffices ⟨x, hx⟩ : ∃ x, 0 ≤ f x ∧ f x ≤ c

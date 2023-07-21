@@ -2,17 +2,14 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.right_derived
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.CategoryTheory.Abelian.Exact
+
+#align_import category_theory.abelian.right_derived from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # Right-derived functors
@@ -218,11 +215,11 @@ def rightDerivedZeroToSelfApp [EnoughInjectives C] [PreservesFiniteLimits F] {X 
       (cokernel.desc _ (𝟙 _) (by simp)) (𝟙 _)
           (by
             -- Porting note: was ext; simp
-            apply coequalizer.hom_ext
+            ext
             dsimp
             simp) ≫
         -- Porting note: isIso_kernel_lift_of_exact_of_mono is no longer allowed as an
-        -- instance for reasons am I not privy to
+        -- instance for reasons I am not privy to
         have : IsIso <| kernel.lift _ _ (exact_of_map_injectiveResolution F P).w :=
           isIso_kernel_lift_of_exact_of_mono _ _ (exact_of_map_injectiveResolution F P)
         (asIso (kernel.lift _ _ (exact_of_map_injectiveResolution F P).w)).inv
@@ -274,8 +271,7 @@ theorem rightDerivedZeroToSelfAppInv_comp [EnoughInjectives C] [PreservesFiniteL
   -- Porting note: this IsIso instance used to be filled automatically
   apply (@IsIso.comp_inv_eq D _ _ _ _ _ ?_ _ _).mpr
   · rw [Category.id_comp]
-    -- Porting note: broken ext
-    apply equalizer.hom_ext
+    ext
     simp only [Limits.kernel.lift_ι_assoc,
       Category.assoc, Limits.kernel.lift_ι, homology.lift]
     rw [← Category.assoc, ← Category.assoc,

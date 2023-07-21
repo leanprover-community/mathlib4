@@ -2,15 +2,12 @@
 Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module measure_theory.covering.density_theorem
-! leanprover-community/mathlib commit 5f6e827d81dfbeb6151d7016586ceeb0099b9655
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.Doubling
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.Differentiation
+
+#align_import measure_theory.covering.density_theorem from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
@@ -118,8 +115,8 @@ theorem tendsto_closedBall_filterAt {K : ℝ} {x : α} {ι : Type _} {l : Filter
   refine' (vitaliFamily μ K).tendsto_filterAt_iff.mpr ⟨_, fun ε hε => _⟩
   · filter_upwards [xmem, δlim self_mem_nhdsWithin] with j hj h'j
     exact closedBall_mem_vitaliFamily_of_dist_le_mul μ hj h'j
-  · by_cases l.NeBot
-    swap; · simp [not_neBot.1 h]
+  · rcases l.eq_or_neBot with rfl | h
+    · simp
     have hK : 0 ≤ K := by
       rcases (xmem.and (δlim self_mem_nhdsWithin)).exists with ⟨j, hj, h'j⟩
       have : 0 ≤ K * δ j := nonempty_closedBall.1 ⟨x, hj⟩

@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Scott Morrison
-
-! This file was ported from Lean 3 source module group_theory.coset
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.MulOpposite
+
+#align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Cosets
@@ -561,7 +558,7 @@ theorem eq_class_eq_leftCoset (s : Subgroup α) (g : α) :
 
 @[to_additive]
 theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
-    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (fun y : α => y * x) ⁻¹' s := by
+    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) ⁻¹' s := by
   ext x
   simp only [QuotientGroup.eq, SetLike.exists, exists_prop, Set.mem_preimage, Set.mem_iUnion,
     Set.mem_image, ← eq_inv_mul_iff_mul_eq]
@@ -570,6 +567,12 @@ theorem preimage_image_mk (N : Subgroup α) (s : Set α) :
       ⟨x * z, hxz, by simpa using hz⟩⟩
 #align quotient_group.preimage_image_coe QuotientGroup.preimage_image_mk
 #align quotient_add_group.preimage_image_coe QuotientAddGroup.preimage_image_mk
+
+@[to_additive]
+theorem preimage_image_mk_eq_iUnion_image (N : Subgroup α) (s : Set α) :
+    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = ⋃ x : N, (· * (x : α)) '' s := by
+  rw [preimage_image_mk, iUnion_congr_of_surjective (·⁻¹) inv_surjective]
+  exact fun x ↦ image_mul_right'
 
 end QuotientGroup
 

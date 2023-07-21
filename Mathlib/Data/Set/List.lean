@@ -2,15 +2,12 @@
 Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.list
-! leanprover-community/mathlib commit 2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Basic
 import Mathlib.Data.Fin.Basic
+
+#align_import data.set.list from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 
 /-!
 # Lemmas about `List`s and `Set.range`
@@ -48,7 +45,7 @@ theorem range_list_nthLe : (range fun k : Fin l.length => l.nthLe k k.2) = { x |
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_nthLe, ← range_comp]
-  refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset.2 ⟨_, _⟩)
+  refine' (range_subset_iff.2 fun n => _).antisymm (insert_subset_iff.2 ⟨_, _⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
     ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 <| fun k => ⟨_, get?_eq_get _⟩]
 #align set.range_list_nth Set.range_list_get?

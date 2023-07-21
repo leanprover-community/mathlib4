@@ -2,15 +2,12 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.yoneda
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.yoneda from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # The Yoneda embedding
@@ -325,6 +322,13 @@ def yonedaPairing : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   Functor.prod yoneda.op (𝟭 (Cᵒᵖ ⥤ Type v₁)) ⋙ Functor.hom (Cᵒᵖ ⥤ Type v₁)
 #align category_theory.yoneda_pairing CategoryTheory.yonedaPairing
 
+-- Porting note: we need to provide this `@[ext]` lemma separately,
+-- as `ext` will not look through the definition.
+-- See https://github.com/leanprover-community/mathlib4/issues/5229
+@[ext]
+lemma yonedaPairingExt {x y : (yonedaPairing C).obj X} (w : ∀ Y, x.app Y = y.app Y) : x = y :=
+  NatTrans.ext _ _ (funext w)
+
 @[simp]
 theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
     (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
@@ -341,26 +345,35 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C where
   hom :=
     { app := fun F x => ULift.up ((x.app F.1) (𝟙 (unop F.1)))
       naturality := by
-        intro X Y f; simp only [yonedaEvaluation]; funext; dsimp
+        intro X Y f
+        simp only [yonedaEvaluation]
+        ext
+        dsimp
         erw [Category.id_comp, ←FunctorToTypes.naturality]
         simp only [Category.comp_id, yoneda_obj_map] }
   inv :=
     { app := fun F x =>
         { app := fun X a => (F.2.map a.op) x.down
           naturality := by
-            intro X Y f; funext; dsimp
+            intro X Y f
+            ext
+            dsimp
             rw [FunctorToTypes.map_comp_apply] }
       naturality := by
-        intro X Y f; simp only [yoneda]; funext; apply NatTrans.ext; funext; funext; dsimp
+        intro X Y f
+        simp only [yoneda]
+        ext
+        dsimp
         rw [←FunctorToTypes.naturality X.snd Y.snd f.snd, FunctorToTypes.map_comp_apply] }
   hom_inv_id := by
-    apply NatTrans.ext; funext; funext;
-    apply NatTrans.ext; funext; funext; dsimp
+    ext
+    dsimp
     erw [← FunctorToTypes.naturality, obj_map_id]
     simp only [yoneda_map_app, Quiver.Hom.unop_op]
     erw [Category.id_comp]
   inv_hom_id := by
-    apply NatTrans.ext; funext; funext; dsimp
+    ext
+    dsimp
     rw [FunctorToTypes.map_id_apply, ULift.up_down]
 #align category_theory.yoneda_lemma CategoryTheory.yonedaLemma
 
@@ -434,23 +447,12 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     eqToIso ?_
   · apply Functor.ext
     · intro X Y f
-      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
-      dsimp
-      apply NatTrans.ext
-      dsimp at *
-      funext F g
-      apply NatTrans.ext
+      ext
       simp
-    · intro X
-      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
-      aesop_cat
+    · aesop_cat
   · apply Functor.ext
     · intro X Y f
-      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
-      dsimp
-      apply NatTrans.ext
-      dsimp at *
-      funext F g
+      ext
       simp
     · intro X
       simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
@@ -466,11 +468,9 @@ def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
     ≪≫ eqToIso ?_
   · apply Functor.ext
     · intro X Y f
-      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
       aesop_cat
   · apply Functor.ext
-    · intro X Y f
-      aesop_cat
+    · aesop_cat
 #align category_theory.curried_yoneda_lemma' CategoryTheory.curriedYonedaLemma'
 
 end CategoryTheory

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module data.sign
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Int.Lemmas
+
+#align_import data.sign from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 /-!
 # Sign function
 
@@ -279,7 +276,7 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α
   toFun := cast
   map_zero' := rfl
   map_one' := rfl
-  map_mul' x y := by  cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
+  map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
 --Porting note: new theorem
@@ -470,11 +467,11 @@ attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 theorem sign_sum {ι : Type _} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
     (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
   cases t
-  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h⊢
+  · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
     exact Finset.sum_eq_zero h
-  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h⊢
+  · simp_rw [neg_eq_neg_one, sign_eq_neg_one_iff] at h ⊢
     exact Finset.sum_neg h hs
-  · simp_rw [pos_eq_one, sign_eq_one_iff] at h⊢
+  · simp_rw [pos_eq_one, sign_eq_one_iff] at h ⊢
     exact Finset.sum_pos h hs
 #align sign_sum sign_sum
 
@@ -504,7 +501,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
       fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, _, _⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
   · intro x hx
-    simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm (|f _|),
+    simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
       sum_attach (s := s) (f := fun y => if y = x then f y else 0)]
 
 /-- We can decompose a sum of absolute value `n` into a sum of `n` signs. -/

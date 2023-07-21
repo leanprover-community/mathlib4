@@ -2,11 +2,6 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
-
-! This file was ported from Lean 3 source module category_theory.groupoid.subgroupoid
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.Groupoid.Basic
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Set.Lattice
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Order.GaloisConnection
+
+#align_import category_theory.groupoid.subgroupoid from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Subgroupoid
@@ -45,8 +42,8 @@ Given a type `C` with associated `groupoid C` instance.
 
 ## Implementation details
 
-The structure of this file is copied from/inspired by `Mathlib/GroupTheory.Subgroup.Basic`
-and `Mathlib/Combinatorics/SimpleGraph/Subgraph`.
+The structure of this file is copied from/inspired by `Mathlib/GroupTheory/Subgroup/Basic.lean`
+and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
 
 ## TODO
 
@@ -172,7 +169,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
 #align category_theory.subgroupoid.hom.inj_on_objects CategoryTheory.Subgroupoid.hom.inj_on_objects
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq  hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq hfg
 #align category_theory.subgroupoid.hom.faithful CategoryTheory.Subgroupoid.hom.faithful
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
@@ -411,7 +408,7 @@ theorem IsNormal.generatedNormal_le {S : Subgroupoid C} (Sn : S.IsNormal) :
   constructor
   · rintro h c d
     have h' := generated_le_generatedNormal X
-    rw [le_iff] at h h' 
+    rw [le_iff] at h h'
     exact ((subset_generated X c d).trans (@h' c d)).trans (@h c d)
   · rintro h
     apply @sInf_le (Subgroupoid C) _
@@ -538,7 +535,7 @@ theorem mem_map_objs_iff (hφ : Function.Injective φ.obj) (d : D) :
   dsimp [objs, map]
   constructor
   · rintro ⟨f, hf⟩
-    change Map.Arrows φ hφ S d d f at hf ; rw [Map.arrows_iff] at hf 
+    change Map.Arrows φ hφ S d d f at hf; rw [Map.arrows_iff] at hf
     obtain ⟨c, d, g, ec, ed, eg, gS, eg⟩ := hf
     exact ⟨c, ⟨mem_objs_of_src S eg, ec⟩⟩
   · rintro ⟨c, ⟨γ, γS⟩, rfl⟩
@@ -581,18 +578,18 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       change Map.Arrows φ hφ S _ _ (𝟙 _); rw [← Functor.map_id]
       constructor; exact Sn.wide c
     conj := fun {d d'} g δ hδ => by
-      rw [mem_map_iff] at hδ 
+      rw [mem_map_iff] at hδ
       obtain ⟨c, c', γ, cd, cd', γS, hγ⟩ := hδ; subst_vars; cases hφ cd'
       have : d' ∈ (im φ hφ).objs := by rw [hφ']; apply mem_top_objs
-      rw [mem_im_objs_iff] at this 
+      rw [mem_im_objs_iff] at this
       obtain ⟨c', rfl⟩ := this
       have : g ∈ (im φ hφ).arrows (φ.obj c) (φ.obj c') := by rw [hφ']; trivial
-      rw [mem_im_iff] at this 
+      rw [mem_im_iff] at this
       obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; subst_vars; cases hφ hb; cases hφ hb'
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by
-        simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this ; exact this
+        simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this; exact this
       · constructor; apply Sn.conj f γS }
 #align category_theory.subgroupoid.is_normal_map CategoryTheory.Subgroupoid.isNormal_map
 
@@ -712,4 +709,3 @@ end Full
 end Subgroupoid
 
 end CategoryTheory
-

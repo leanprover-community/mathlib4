@@ -1,18 +1,18 @@
 /-
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis
-
-! This file was ported from Lean 3 source module number_theory.padics.padic_val
-! leanprover-community/mathlib commit 60fa54e778c9e85d930efae172435f42fb0d71f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
+Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.Data.Nat.MaxPowDiv
+import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Tactic.IntervalCases
+
+#align_import number_theory.padics.padic_val from "leanprover-community/mathlib"@"60fa54e778c9e85d930efae172435f42fb0d71f7"
 
 /-!
-# p-adic Valuation
+# `p`-adic Valuation
 
 This file defines the `p`-adic valuation on `ℕ`, `ℤ`, and `ℚ`.
 
@@ -30,6 +30,18 @@ This file uses the local notation `/.` for `Rat.mk`.
 
 Much, but not all, of this file assumes that `p` is prime. This assumption is inferred automatically
 by taking `[Fact p.Prime]` as a type class argument.
+
+## Calculations with `p`-adic valuations
+
+* `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
+quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
+greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
+language of prime multiplicity.
+
+* `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
+of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
+`Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
+same result but stated in the language of prime multiplicity.
 
 ## References
 
@@ -94,6 +106,37 @@ theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p 
 theorem eq_zero_of_not_dvd {n : ℕ} (h : ¬p ∣ n) : padicValNat p n = 0 :=
   eq_zero_iff.2 <| Or.inr <| Or.inr h
 #align padic_val_nat.eq_zero_of_not_dvd padicValNat.eq_zero_of_not_dvd
+
+open Nat.maxPowDiv
+
+theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
+    p.maxPowDiv n = multiplicity p n := by
+  apply multiplicity.unique <| pow_dvd p n
+  intro h
+  apply Nat.not_lt.mpr <| le_of_dvd hp hn h
+  simp
+
+theorem maxPowDiv_eq_multiplicity_get {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (h : Finite p n) :
+    p.maxPowDiv n = (multiplicity p n).get h := by
+  rw [PartENat.get_eq_iff_eq_coe.mpr]
+  apply maxPowDiv_eq_multiplicity hp hn|>.symm
+
+/-- Allows for more efficient code for `padicValNat` -/
+@[csimp]
+theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
+  ext p n
+  by_cases (1 < p ∧ 0 < n)
+  · dsimp [padicValNat]
+    rw [dif_pos ⟨Nat.ne_of_gt h.1,h.2⟩, maxPowDiv_eq_multiplicity_get h.1 h.2]
+  · simp only [not_and_or,not_gt_eq,le_zero_iff] at h
+    apply h.elim
+    · intro h
+      interval_cases p
+      · simp [Classical.em]
+      · dsimp [padicValNat, maxPowDiv]
+        rw [go_eq, if_neg, dif_neg] <;> simp
+    · intro h
+      simp [h]
 
 end padicValNat
 
@@ -385,11 +428,11 @@ open BigOperators
 /-- A finite sum of rationals with positive `p`-adic valuation has positive `p`-adic valuation
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
-    (hn0 : (∑ i in Finset.range n, F i) ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
+    (hn0 : ∑ i in Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i in Finset.range n, F i) := by
   induction' n with d hd
   · exact False.elim (hn0 rfl)
-  · rw [Finset.sum_range_succ] at hn0⊢
-    by_cases h : (∑ x : ℕ in Finset.range d, F x) = 0
+  · rw [Finset.sum_range_succ] at hn0 ⊢
+    by_cases h : ∑ x : ℕ in Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
@@ -506,6 +549,56 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   refine' ⟨_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
   exact (Nat.one_lt_pow _ _ k.succ_pos hp.out.one_lt).ne'
 #align range_pow_padic_val_nat_subset_divisors' range_pow_padicValNat_subset_divisors'
+
+/-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
+theorem padicValNat_factorial_mul {p : ℕ} (n : ℕ) [hp : Fact p.Prime]:
+    padicValNat p (p * n) ! = padicValNat p n ! + n := by
+  refine' PartENat.natCast_inj.mp _
+  rw [padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos (p * n), Nat.cast_add,
+      padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos n]
+  exact Prime.multiplicity_factorial_mul hp.out
+
+/-- The `p`-adic valuation of `m` equals zero if it is between `p * k` and `p * (k + 1)` for
+some `k`. -/
+theorem padicValNat_eq_zero_of_mem_Ioo {m p k : ℕ}
+    (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
+  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
+
+theorem padicValNat_factorial_mul_add {p n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
+    padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
+  induction' n with n hn
+  · rw [zero_eq, add_zero]
+  · rw [add_succ, factorial_succ, padicValNat.mul (succ_ne_zero (p * m + n))
+        <| factorial_ne_zero (p * m + _), hn <| lt_of_succ_lt h, ← add_succ,
+        padicValNat_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),
+        (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩ , zero_add]
+
+/-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
+the largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
+@[simp] theorem padicValNat_mul_div_factorial {p : ℕ} (n : ℕ) [hp : Fact p.Prime] :
+    padicValNat p (p * (n / p))! = padicValNat p n ! := by
+  nth_rw 2 [← div_add_mod n p]
+  exact (padicValNat_factorial_mul_add (n / p) <| mod_lt n <|Prime.pos hp.out).symm
+
+/-- **Legendre's Theorem**
+
+The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
+over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
+theorem padicValNat_factorial {p n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
+    padicValNat p (n !) = ∑ i in Finset.Ico 1 b, n / p ^ i :=
+  PartENat.natCast_inj.mp ((padicValNat_def' (Nat.Prime.ne_one hp.out) <| factorial_pos _) ▸
+      Prime.multiplicity_factorial hp.out hnb)
+
+/-- **Kummer's Theorem**
+
+The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
+in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
+`log p n`. -/
+theorem padicValNat_choose {p n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
+    padicValNat p (choose n k) =
+    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card :=
+  PartENat.natCast_inj.mp <| (padicValNat_def' (Nat.Prime.ne_one hp.out) <| choose_pos hkn) ▸
+  Prime.multiplicity_choose hp.out hkn hnb
 
 end padicValNat
 

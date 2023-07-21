@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.dense_subsite
-! leanprover-community/mathlib commit 1d650c2e131f500f3c17f33b4d19d2ea15987f2c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.CoverLifting
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+
+#align_import category_theory.sites.dense_subsite from "leanprover-community/mathlib"@"1d650c2e131f500f3c17f33b4d19d2ea15987f2c"
 /-!
 # Dense subsites
 
@@ -311,7 +308,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
       coyoneda ⋙ (whiskeringLeft Dᵒᵖ A (Type _)).obj ℱ'.val where
   app X := presheafHom H (homOver α (unop X))
   naturality X Y f := by
-    ext (U x)
+    ext U x
     change
       appHom H (homOver α (unop Y)) (unop U) (f.unop ≫ x) =
         f.unop ≫ appHom H (homOver α (unop X)) (unop U) x
@@ -346,7 +343,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
       { app := fun X => (α.app X).app U
         naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
   · intro U V i
-    ext (X x)
+    ext X x
     exact congr_fun ((α.app X).naturality i) x
 #align category_theory.cover_dense.sheaf_yoneda_hom CategoryTheory.CoverDense.sheafYonedaHom
 

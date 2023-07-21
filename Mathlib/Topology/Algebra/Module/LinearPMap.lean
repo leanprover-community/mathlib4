@@ -2,14 +2,11 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
-
-! This file was ported from Lean 3 source module topology.algebra.module.linear_pmap
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.module.linear_pmap from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Partially defined linear operators over topological vector spaces
@@ -178,11 +175,10 @@ Note that we don't require that `f` is closable, due to the definition of the cl
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine' ⟨f.le_closure.1, _⟩
   congr
-  ext x
+  ext x y hxy
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
     intro hx
     exact f.le_closure.1 hx
-  intro y hxy
   let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
   have hyz : (y : E) = z := by simp
   rw [f.le_closure.2 hyz]

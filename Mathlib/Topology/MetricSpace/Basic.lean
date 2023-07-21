@@ -2,16 +2,13 @@
 Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.basic
-! leanprover-community/mathlib commit 8000bbbe2e9d39b84edb993d88781f536a8a3fa8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Bornology.Constructions
+
+#align_import topology.metric_space.basic from "leanprover-community/mathlib"@"8000bbbe2e9d39b84edb993d88781f536a8a3fa8"
 
 /-!
 # Metric spaces
@@ -144,7 +141,7 @@ theorem PseudoMetricSpace.ext {α : Type _} {m m' : PseudoMetricSpace α}
   cases' m' with d' _ _ _ ed' hed' U' hU' B' hB'
   obtain rfl : d = d' := h
   congr
-  · ext (x y) : 2
+  · ext x y : 2
     rw [hed, hed']
   · exact uniformSpace_eq (hU.trans hU'.symm)
   · ext : 2
@@ -464,12 +461,12 @@ theorem ball_eq_ball' (ε : ℝ) (x : α) :
 #align metric.ball_eq_ball' Metric.ball_eq_ball'
 
 @[simp]
-theorem iUnion_ball_nat (x : α) : (⋃ n : ℕ, ball x n) = univ :=
+theorem iUnion_ball_nat (x : α) : ⋃ n : ℕ, ball x n = univ :=
   iUnion_eq_univ_iff.2 fun y => exists_nat_gt (dist y x)
 #align metric.Union_ball_nat Metric.iUnion_ball_nat
 
 @[simp]
-theorem iUnion_ball_nat_succ (x : α) : (⋃ n : ℕ, ball x (n + 1)) = univ :=
+theorem iUnion_ball_nat_succ (x : α) : ⋃ n : ℕ, ball x (n + 1) = univ :=
   iUnion_eq_univ_iff.2 fun y => (exists_nat_gt (dist y x)).imp fun _ h => h.trans (lt_add_one _)
 #align metric.Union_ball_nat_succ Metric.iUnion_ball_nat_succ
 
@@ -649,11 +646,11 @@ theorem dist_lt_add_of_nonempty_ball_inter_ball (h : (ball x ε₁ ∩ ball y ε
 #align metric.dist_lt_add_of_nonempty_ball_inter_ball Metric.dist_lt_add_of_nonempty_ball_inter_ball
 
 @[simp]
-theorem iUnion_closedBall_nat (x : α) : (⋃ n : ℕ, closedBall x n) = univ :=
+theorem iUnion_closedBall_nat (x : α) : ⋃ n : ℕ, closedBall x n = univ :=
   iUnion_eq_univ_iff.2 fun y => exists_nat_ge (dist y x)
 #align metric.Union_closed_ball_nat Metric.iUnion_closedBall_nat
 
-theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : (⋃ n : ℕ, s ∩ closedBall x n) = s := by
+theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ closedBall x n = s := by
   rw [← inter_iUnion, iUnion_closedBall_nat, inter_univ]
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
@@ -1150,7 +1147,7 @@ distance coincide. -/
 
 -- porting note: new
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
-    (⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε }) =
+    ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
   simp only [le_antisymm_iff, le_iInf_iff, le_principal_iff]
   refine ⟨fun ε hε => ?_, fun ε hε => ?_⟩
@@ -1235,15 +1232,10 @@ See Note [forgetful inheritance].
 -/
 @[reducible]
 def PseudoMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α where
-  toDist := m.toDist
-  dist_self := dist_self
-  dist_comm := dist_comm
-  dist_triangle := dist_triangle
-  edist := edist
-  edist_dist := edist_dist
-  toUniformSpace := U
-  uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoMetricSpace α :=
+  { m with
+    toUniformSpace := U
+    uniformity_dist := H.trans PseudoMetricSpace.uniformity_dist }
 #align pseudo_metric_space.replace_uniformity PseudoMetricSpace.replaceUniformity
 
 theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
@@ -1251,6 +1243,11 @@ theorem PseudoMetricSpace.replaceUniformity_eq {α} [U : UniformSpace α] (m : P
   ext
   rfl
 #align pseudo_metric_space.replace_uniformity_eq PseudoMetricSpace.replaceUniformity_eq
+
+-- ensure that the bornology is unchanged when replacing the uniformity.
+example {α} [U : UniformSpace α] (m : PseudoMetricSpace α)
+    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) :
+  (PseudoMetricSpace.replaceUniformity m H).toBornology = m.toBornology := rfl
 
 /-- Build a new pseudo metric space from an old one where the bundled topological structure is
 provably (but typically non-definitionaly) equal to some given topological structure.
@@ -1320,6 +1317,11 @@ theorem PseudoMetricSpace.replaceBornology_eq {α} [m : PseudoMetricSpace α] [B
   ext
   rfl
 #align pseudo_metric_space.replace_bornology_eq PseudoMetricSpace.replaceBornology_eq
+
+-- ensure that the uniformity is unchanged when replacing the bornology.
+example {α} [B : Bornology α] (m : PseudoMetricSpace α)
+    (H : ∀ s, @IsBounded _ B s ↔ @IsBounded _ PseudoMetricSpace.toBornology s) :
+  (PseudoMetricSpace.replaceBornology m H).toUniformSpace = m.toUniformSpace := rfl
 
 /-- A very useful criterion to show that a space is complete is to show that all sequences
 which satisfy a bound of the form `dist (u n) (u m) < B N` for all `n m ≥ N` are
@@ -1442,7 +1444,7 @@ theorem squeeze_zero' {α} {f g : α → ℝ} {t₀ : Filter α} (hf : ∀ᶠ t 
 #align squeeze_zero' squeeze_zero'
 
 /-- Special case of the sandwich theorem; see `tendsto_of_tendsto_of_tendsto_of_le_of_le`
-and  `tendsto_of_tendsto_of_tendsto_of_le_of_le'` for the general case. -/
+and `tendsto_of_tendsto_of_tendsto_of_le_of_le'` for the general case. -/
 theorem squeeze_zero {α} {f g : α → ℝ} {t₀ : Filter α} (hf : ∀ t, 0 ≤ f t) (hft : ∀ t, f t ≤ g t)
     (g0 : Tendsto g t₀ (𝓝 0)) : Tendsto f t₀ (𝓝 0) :=
   squeeze_zero' (eventually_of_forall hf) (eventually_of_forall hft) g0
@@ -2393,7 +2395,7 @@ protected theorem Bounded.prod [PseudoMetricSpace β] {s : Set α} {t : Set β} 
 theorem _root_.TotallyBounded.bounded {s : Set α} (h : TotallyBounded s) : Bounded s :=
   -- We cover the totally bounded set by finitely many balls of radius 1,
   -- and then argue that a finite union of bounded sets is bounded
-  let  ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
+  let ⟨_t, fint, subs⟩ := (totallyBounded_iff.mp h) 1 zero_lt_one
   Bounded.mono subs <| (bounded_biUnion fint).2 fun _ _ => bounded_ball
 #align totally_bounded.bounded TotallyBounded.bounded
 
@@ -2611,7 +2613,7 @@ theorem diam_triple :
 #align metric.diam_triple Metric.diam_triple
 
 /-- If the distance between any two points in a set is bounded by some constant `C`,
-then `ENNReal.ofReal C`  bounds the emetric diameter of this set. -/
+then `ENNReal.ofReal C` bounds the emetric diameter of this set. -/
 theorem ediam_le_of_forall_dist_le {C : ℝ} (h : ∀ x ∈ s, ∀ y ∈ s, dist x y ≤ C) :
     EMetric.diam s ≤ ENNReal.ofReal C :=
   EMetric.diam_le fun x hx y hy => (edist_dist x y).symm ▸ ENNReal.ofReal_le_ofReal (h x hx y hy)
@@ -2765,14 +2767,14 @@ theorem nonempty_iInter_of_nonempty_biInter [CompleteSpace α] {s : ℕ → Set 
 
 end Diam
 
-theorem exists_local_min_mem_ball [ProperSpace α] [TopologicalSpace β]
+theorem exists_isLocalMin_mem_ball [ProperSpace α] [TopologicalSpace β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by
   simp_rw [← closedBall_diff_ball] at hf1
-  exact (isCompact_closedBall a r).exists_local_min_mem_open ball_subset_closedBall hf hz hf1
+  exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
-#align metric.exists_local_min_mem_ball Metric.exists_local_min_mem_ball
+#align metric.exists_local_min_mem_ball Metric.exists_isLocalMin_mem_ball
 
 end Metric
 

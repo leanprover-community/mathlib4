@@ -2,11 +2,6 @@
 Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module representation_theory.basic
-! leanprover-community/mathlib commit c04bc6e93e23aa0182aba53661a2211e80b6feac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap
@@ -14,6 +9,8 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.RingTheory.TensorProduct
+
+#align_import representation_theory.basic from "leanprover-community/mathlib"@"c04bc6e93e23aa0182aba53661a2211e80b6feac"
 
 /-!
 # Monoid representations
@@ -262,11 +259,11 @@ variable (k : Type _) [CommSemiring k] (G : Type _) [Monoid G] (H : Type _) [Mul
 noncomputable def ofMulAction : Representation k G (H →₀ k) where
   toFun g := Finsupp.lmapDomain k k ((· • ·) g)
   map_one' := by
-    ext (x y)
+    ext x y
     dsimp
     simp
   map_mul' x y := by
-    ext (z w)
+    ext z w
     simp [mul_smul]
 #align representation.of_mul_action Representation.ofMulAction
 
@@ -455,7 +452,7 @@ theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV 
 
 /-- Given $k$-modules $V, W$, there is a homomorphism $φ : V^* ⊗ W → Hom_k(V, W)$
 (implemented by `LinearAlgebra.Contraction.dualTensorHom`).
-Given representations of $G$ on $V$ and $W$,there are representations of $G$ on  $V^* ⊗ W$ and on
+Given representations of $G$ on $V$ and $W$,there are representations of $G$ on $V^* ⊗ W$ and on
 $Hom_k(V, W)$.
 This lemma says that $φ$ is $G$-linear.
 -/
@@ -468,4 +465,3 @@ theorem dualTensorHom_comm (g : G) :
 end LinearHom
 
 end Representation
-

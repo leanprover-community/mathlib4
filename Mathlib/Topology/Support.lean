@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.support
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.support from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # The topological support of a function
@@ -227,7 +224,7 @@ theorem HasCompactMulSupport.comp_closedEmbedding (hf : HasCompactMulSupport f) 
 theorem HasCompactMulSupport.comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
-  rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂⊢
+  rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
   filter_upwards [hf, hf₂]using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
@@ -318,7 +315,7 @@ theorem exists_finset_nhd_mulSupport_subset {f : ι → X → R}
     let is := hnf.toFinset.filter fun i => x ∈ U i
     let js := hnf.toFinset.filter fun j => x ∉ U j
     refine'
-      ⟨is, (n ∩ ⋂ j ∈ js, mulTSupport (f j)ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn _) _,
+      ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn _) _,
         inter_subset_right _ _, fun z hz => _⟩
     · exact (biInter_finset_mem js).mpr fun j hj => IsClosed.compl_mem_nhds (isClosed_mulTSupport _)
         (Set.not_mem_subset (hso j) (Finset.mem_filter.mp hj).2)
