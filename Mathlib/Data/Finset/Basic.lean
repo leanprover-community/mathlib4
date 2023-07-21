@@ -1452,7 +1452,7 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
 #align finset.empty_union Finset.empty_union
 
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
-  Nonempty.mono (subset_union_left s t) h
+  h.mono $ subset_union_left s t
 
 theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
   h.mono $ subset_union_right s t
