@@ -37,6 +37,7 @@ The heterobasic definitions below such as:
  * `TensorProduct.AlgebraTensorModule.lift.equiv`
  * `TensorProduct.AlgebraTensorModule.mk`
  * `TensorProduct.AlgebraTensorModule.map`
+ * `TensorProduct.AlgebraTensorModule.map_bilinear`
  * `TensorProduct.AlgebraTensorModule.congr`
  * `TensorProduct.AlgebraTensorModule.assoc`
  * `TensorProduct.AlgebraTensorModule.left_comm`
@@ -56,7 +57,7 @@ open TensorProduct
 
 namespace TensorProduct
 
-variable {R A M N P Q : Type _}
+variable {R A B M N P Q : Type _}
 
 /-!
 ### The `A`-module structure on `A ⊗[R] M`
@@ -71,13 +72,15 @@ namespace AlgebraTensorModule
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 
 variable [AddCommMonoid N] [Module R N]
 
-variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
+variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
+variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
 
 variable [AddCommMonoid Q] [Module R Q]
 
@@ -117,20 +120,6 @@ theorem ext {g h : M ⊗[R] N →ₗ[A] P} (H : ∀ x y, g (x ⊗ₜ y) = h (x �
   curry_injective <| LinearMap.ext₂ H
 #align tensor_product.algebra_tensor_module.ext TensorProduct.AlgebraTensorModule.ext
 
-end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring A] [Algebra R A]
-
-variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
-
-variable [AddCommMonoid N] [Module R N]
-
-variable [AddCommMonoid P] [Module R P] [Module A P] [IsScalarTower R A P]
-
-variable [AddCommMonoid Q] [Module R Q]
-
 /-- Heterobasic version of `TensorProduct.lift`:
 
 Constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M →[A] N →[R] P` with the
@@ -161,7 +150,7 @@ theorem lift_tmul (f : M →ₗ[A] N →ₗ[R] P) (x : M) (y : N) : lift f (x �
   rfl
 #align tensor_product.algebra_tensor_module.lift_tmul TensorProduct.AlgebraTensorModule.lift_tmul
 
-variable (R A M N P Q)
+variable (R A B M N P Q)
 
 /-- Heterobasic version of `TensorProduct.uncurry`:
 
@@ -169,33 +158,36 @@ Linearly constructing a linear map `M ⊗[R] N →[A] P` given a bilinear map `M
 with the property that its composition with the canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is
 the given bilinear map `M →[A] N →[R] P`. -/
 @[simps]
-def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[A] M ⊗[R] N →ₗ[A] P where
+def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
   map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
   map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
-#align tensor_product.algebra_tensor_module.uncurry TensorProduct.AlgebraTensorModule.uncurry
+-- porting note: new `B` argument
+#align tensor_product.algebra_tensor_module.uncurry TensorProduct.AlgebraTensorModule.uncurryₓ
 
 /-- Heterobasic version of `TensorProduct.lcurry`:
 
 Given a linear map `M ⊗[R] N →[A] P`, compose it with the canonical
 bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N →[R] P`. -/
 @[simps]
-def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[A] M →ₗ[A] N →ₗ[R] P where
+def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
   toFun := curry
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-#align tensor_product.algebra_tensor_module.lcurry TensorProduct.AlgebraTensorModule.lcurry
+-- porting note: new `B` argument
+#align tensor_product.algebra_tensor_module.lcurry TensorProduct.AlgebraTensorModule.lcurryₓ
 
 /-- Heterobasic version of `TensorProduct.lift.equiv`:
 
 A linear equivalence constructing a linear map `M ⊗[R] N →[A] P` given a
 bilinear map `M →[A] N →[R] P` with the property that its composition with the
 canonical bilinear map `M →[A] N →[R] M ⊗[R] N` is the given bilinear map `M →[A] N →[R] P`. -/
-def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[A] M ⊗[R] N →ₗ[A] P :=
-  LinearEquiv.ofLinear (uncurry R A M N P) (lcurry R A M N P)
+def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
+  LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
     (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
-#align tensor_product.algebra_tensor_module.lift.equiv TensorProduct.AlgebraTensorModule.lift.equiv
+-- porting note: new `B` argument
+#align tensor_product.algebra_tensor_module.lift.equiv TensorProduct.AlgebraTensorModule.lift.equivₓ
 
 /-- Heterobasic version of `TensorProduct.mk`:
 
@@ -219,6 +211,16 @@ def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] 
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
+theorem map_add_left (f₁ f₂ : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (f₁ + f₂) g = map f₁ g + map f₂ g := by
+  ext
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
+    add_apply, add_tmul]
+
+theorem map_add_right (f : M →ₗ[A] P) (g₁ g₂ : N →ₗ[R] Q) : map f (g₁ + g₂) = map f g₁ + map f g₂ := by
+  ext
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, add_apply, map_tmul,
+    add_apply, tmul_add]
+
 /-- Heterobasic version of `TensorProduct.congr` -/
 def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P ⊗[R] Q) :=
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
@@ -233,6 +235,62 @@ def congr (f : M ≃ₗ[A] P) (g : N ≃ₗ[R] Q) : (M ⊗[R] N) ≃ₗ[A] (P �
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
 
+theorem map_smul_right (r : R) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map f (r • g) = r • map f g := by
+  ext
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
+    smul_apply, tmul_smul]
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
+
+variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
+variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
+
+variable [AddCommMonoid N] [Module R N]
+
+variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
+variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
+
+variable [AddCommMonoid Q] [Module R Q]
+
+-- TODO: generalize with https://github.com/leanprover-community/mathlib/pull/19143
+theorem map_smul_left (r : A) (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : map (r • f) g = r • map f g := by
+  ext
+  simp_rw [curry_apply, TensorProduct.curry_apply, restrictScalars_apply, smul_apply, map_tmul,
+    smul_apply, smul_tmul']
+
+variable (R A M N P Q)
+
+/-- Heterobasic version of `TensorProduct.map_bilinear` -/
+def mapBilinear : (M →ₗ[A] P) →ₗ[A] (N →ₗ[R] Q) →ₗ[R] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
+  { toFun := fun f =>
+    { toFun := fun g => map f g
+      map_add' := fun _g₁ _g₂ => map_add_right _ _ _
+      map_smul' := fun _c _g => map_smul_right _ _ _ }
+    map_add' := fun _f₁ _f₂ => LinearMap.ext <| fun _g => map_add_left _ _ _
+    map_smul' := fun _c _f => LinearMap.ext <| fun _g => map_smul_left _ _ _ }
+
+variable {R A M N P Q}
+
+@[simp]
+theorem mapBilinear_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : mapBilinear R A M N P Q f g = map f g :=
+  rfl
+
+variable (R A M N P Q)
+
+/- Heterobasic version of `TensorProduct.homTensorHomMap` -/
+def homTensorHomMap : ((M →ₗ[A] P) ⊗[R] (N →ₗ[R] Q)) →ₗ[A] (M ⊗[R] N →ₗ[A] P ⊗[R] Q) :=
+  lift <| mapBilinear R A M N P Q
+
+variable {R A M N P Q}
+
+@[simp] theorem homTensorHomMap_apply (f : M →ₗ[A] P) (g : N →ₗ[R] Q) :
+    homTensorHomMap R A M N P Q (f ⊗ₜ g) = map f g :=
+  rfl
+
 variable (R A M N P Q)
 
 attribute [local ext high] TensorProduct.ext
@@ -243,9 +301,9 @@ Linear equivalence between `(M ⊗[A] N) ⊗[R] P` and `M ⊗[A] (N ⊗[R] P)`. 
 def assoc : (M ⊗[A] P) ⊗[R] N ≃ₗ[A] M ⊗[A] P ⊗[R] N :=
   LinearEquiv.ofLinear
     (lift <|
-      TensorProduct.uncurry A _ _ _ <| comp (lcurry R A _ _ _) <| TensorProduct.mk A M (P ⊗[R] N))
+      TensorProduct.uncurry A _ _ _ <| comp (lcurry R A A _ _ _) <| TensorProduct.mk A M (P ⊗[R] N))
     (TensorProduct.uncurry A _ _ _ <|
-      comp (uncurry R A _ _ _) <| by
+      comp (uncurry R A A _ _ _) <| by
         apply TensorProduct.curry
         exact mk R A _ _)
     (by
@@ -304,15 +362,8 @@ variable (r : R) (f g : M →ₗ[R] N)
 variable (A)
 
 /-- `base_change A f` for `f : M →ₗ[R] N` is the `A`-linear map `A ⊗[R] M →ₗ[A] A ⊗[R] N`. -/
-def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N where
-  toFun := f.lTensor A
-  map_add' := (f.lTensor A).map_add
-  map_smul' a x :=
-    show
-      (f.lTensor A) (rTensor M (LinearMap.mul R A a) x) =
-        (rTensor N ((LinearMap.mul R A) a)) ((lTensor A f) x) by
-      rw [← comp_apply, ← comp_apply]
-      simp only [lTensor_comp_rTensor, rTensor_comp_lTensor]
+def baseChange (f : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.map (LinearMap.id : A →ₗ[A] A) f
 #align linear_map.base_change LinearMap.baseChange
 
 variable {A}
