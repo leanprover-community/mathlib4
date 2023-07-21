@@ -6,6 +6,7 @@ Authors: Kalle Kytölä
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Order.Filter.IndicatorFunction
 
 #align_import topology.metric_space.thickened_indicator from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -248,3 +249,86 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
 #align thickened_indicator_tendsto_indicator_closure thickenedIndicator_tendsto_indicator_closure
 
 end thickenedIndicator
+
+
+section indicator
+
+variable {α : Type _} [PseudoEMetricSpace α] {β : Type _} [One β]
+
+@[to_additive]
+--Collaborator
+--@sgouezel sgouezel Dec 16, 2022
+--
+--add a docstring to this one?
+--@kkytola
+
+lemma mul_indicator_thickening_eventually_eq_mul_indicator_closure (f : α → β) (E : Set α) (x : α) :
+    ∀ᶠ δ in 𝓝[>] (0 : ℝ),
+      (Metric.thickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
+  --by_cases x_mem_closure : x ∈ closure E,
+  --{ filter_upwards [self_mem_nhds_within] with δ δ_pos,
+  --  simp only [x_mem_closure, closure_subset_thickening δ_pos E x_mem_closure,
+  --             mul_indicator_of_mem], },
+  --{ have obs := eventually_not_mem_thickening_of_inf_edist_pos x_mem_closure,
+  --  filter_upwards [obs] with δ hδ,
+  --  simp only [hδ, x_mem_closure, mul_indicator_of_not_mem, not_false_iff], },
+  sorry
+
+@[to_additive]
+lemma mulIndicator_cthickening_eventually_eq_mulIndicator_closure
+  (f : α → β) (E : Set α) (x : α) :
+  ∀ᶠ δ in 𝓝[>] (0 : ℝ), ∀ᶠ δ in 𝓝[>] (0 : ℝ),
+--Collaborator
+--@sgouezel sgouezel Dec 16, 2022
+--Suggested change
+--  ∀ᶠ δ in 𝓝[>] (0 : ℝ),
+--  ∀ᶠ δ in 𝓝 (0 : ℝ),
+--
+--?? Is this stronger version true?
+--@kkytola
+    (Metric.cthickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
+  --by_cases x_mem_closure : x ∈ closure E,
+  --{ filter_upwards [univ_mem] with δ rubbish,
+  --  simp only [x_mem_closure, closure_subset_cthickening δ E x_mem_closure,
+  --             mul_indicator_of_mem], },
+  --{ have obs := eventually_not_mem_cthickening_of_inf_edist_pos x_mem_closure,
+  --  filter_upwards [obs] with δ hδ,
+  --  simp only [hδ, x_mem_closure, mul_indicator_of_not_mem, not_false_iff], },
+  sorry
+
+variable [TopologicalSpace β]
+
+@[to_additive]
+lemma tendsto_mulIndicator_thickening_mulIndicator_closure (f : α → β) (E : Set α) :
+  Tendsto (fun δ ↦ (Metric.thickening δ E).mulIndicator f) (𝓝[>] 0)
+    (𝓝 (mulIndicator (closure E) f)) := by
+  --rw tendsto_pi_nhds,
+  --intro x,
+  --rw tendsto_congr' (mul_indicator_thickening_eventually_eq_mul_indicator_closure f E x),
+  --apply tendsto_const_nhds,
+  sorry
+
+@[to_additive]
+lemma tendsto_mul_indicator_cthickening_mul_indicator_closure (f : α → β) (E : Set α) :
+    Tendsto (fun δ ↦ (Metric.cthickening δ E).mulIndicator f) (𝓝[>] 0)
+      (𝓝 (mulIndicator (closure E) f)) := by
+--Collaborator
+--@sgouezel sgouezel Dec 16, 2022
+--Suggested change
+--  tendsto (λ δ, (metric.cthickening δ E).mul_indicator f) (𝓝[>] 0)
+--  tendsto (λ δ, (metric.cthickening δ E).mul_indicator f) (𝓝 0)
+--
+--??
+--@kkytola
+--Collaborator
+--@sgouezel sgouezel Dec 16, 2022
+--
+--In the rest of the file, you use dot notation for the mul_indicator, so you might as well do it here.
+--@kkytola
+  --rw tendsto_pi_nhds,
+  --intro x,
+  --rw tendsto_congr' (mul_indicator_cthickening_eventually_eq_mul_indicator_closure f E x),
+  --apply tendsto_const_nhds,
+  sorry
+
+end indicator
