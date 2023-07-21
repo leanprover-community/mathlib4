@@ -604,7 +604,7 @@ theorem padicValNat_factorial' {p : ℕ} [hp : Fact p.Prime] (n : ℕ):
   by_cases n = 0
   · simp only [h, ge_iff_le, factorial, padicValNat.one, mul_zero, ne_eq, digits_zero, List.sum_nil,
         le_refl, tsub_eq_zero_of_le]
-  · suffices padicValNat p (n !) = n / p + padicValNat p ((n/p)!) by
+  · suffices padicValNat p n ! = n / p + padicValNat p (n / p) ! by
       rw [this, mul_add, hn (n / p) (Nat.div_lt_self (Nat.pos_of_ne_zero h) (Prime.one_lt hp.out))]
       suffices (p.digits n).sum = n % p + (digits p (n / p)).sum by
         nth_rw 4 [← div_add_mod' n p]
