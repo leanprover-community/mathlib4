@@ -59,18 +59,17 @@ theorem evenOddRec_odd (n : ℕ) (P : ℕ → Sort _) (h0 : P 0) (h_even : ∀ i
 /-- Strong recursion principle on even and odd numbers: if for all `i : ℕ` we can prove `P (2 * i)`
 from `P j` for all `j < 2 * i` and we can prove `P (2 * i + 1)` from `P j` for all `j < 2 * i + 1`,
 then we have `P n` for all `n : ℕ`. -/
-noncomputable
-def evenOddStrongRec {p : Sort _} (n : ℕ)
-    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p) → p)
-    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p) → p) : p :=
+noncomputable def evenOddStrongRec {p : ℕ → Sort _} (n : ℕ)
+    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p k) → p (2 * m))
+    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p k) → p (2 * m + 1)) : p n :=
 n.strongRecOn' <| fun m ih => m.even_or_odd'.choose_spec.by_cases
-  (fun hm => peven m.even_or_odd'.choose <| fun k hk => ih k <| hm.symm ▸ hk)
-  (fun hm => podd m.even_or_odd'.choose <| fun k hk => ih k <| hm.symm ▸ hk)
+  (fun hm => hm.symm ▸ peven m.even_or_odd'.choose <| hm ▸ ih)
+  (fun hm => hm.symm ▸ podd m.even_or_odd'.choose <| hm ▸ ih)
 
 @[simp]
-lemma evenOddStrongRec_even {p : Sort _} (m : ℕ)
-    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p) → p)
-    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p) → p) :
+lemma evenOddStrongRec_even {p : ℕ → Sort _} (m : ℕ)
+    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p k) → p (2 * m))
+    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p k) → p (2 * m + 1)) :
     (2 * m).evenOddStrongRec peven podd =
       peven m (fun k _ => k.evenOddStrongRec peven podd) := by
   rcases (2 * m).even_or_odd'.choose_spec with h | h
@@ -79,9 +78,9 @@ lemma evenOddStrongRec_even {p : Sort _} (m : ℕ)
   · exact (two_mul_ne_two_mul_add_one h).elim
 
 @[simp]
-lemma evenOddStrongRec_odd {p : Sort _} (m : ℕ)
-    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p) → p)
-    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p) → p) :
+lemma evenOddStrongRec_odd {p : ℕ → Sort _} (m : ℕ)
+    (peven : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m → p k) → p (2 * m))
+    (podd : ∀ m : ℕ, (∀ k : ℕ, k < 2 * m + 1 → p k) → p (2 * m + 1)) :
     (2 * m + 1).evenOddStrongRec peven podd =
       podd m (fun k _ => k.evenOddStrongRec peven podd) := by
   rcases (2 * m + 1).even_or_odd'.choose_spec with h | h
