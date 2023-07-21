@@ -37,10 +37,12 @@ The heterobasic definitions below such as:
  * `TensorProduct.AlgebraTensorModule.lift.equiv`
  * `TensorProduct.AlgebraTensorModule.mk`
  * `TensorProduct.AlgebraTensorModule.map`
- * `TensorProduct.AlgebraTensorModule.map_bilinear`
+ * `TensorProduct.AlgebraTensorModule.mapBilinear`
  * `TensorProduct.AlgebraTensorModule.congr`
+ * `TensorProduct.AlgebraTensorModule.mapBilinear`
+ * `TensorProduct.AlgebraTensorModule.homTensorHomMap`
  * `TensorProduct.AlgebraTensorModule.assoc`
- * `TensorProduct.AlgebraTensorModule.left_comm`
+ * `TensorProduct.AlgebraTensorModule.leftComm`
 
 are just more general versions of the definitions already in `LinearAlgebra/TensorProduct`. We
 could thus consider replacing the less general definitions with these ones. If we do this, we
