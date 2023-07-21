@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.dfinsupp.interval
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.LocallyFinite
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.DFinsupp.Order
+
+#align_import data.dfinsupp.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Finite intervals of finitely supported functions
@@ -159,7 +156,7 @@ theorem card_pi (f : Π₀ i, Finset (α i)) : f.pi.card = f.prod fun i => (f i)
 
 end Pi
 
-section LocallyFinite
+section PartialOrder
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
 
@@ -194,7 +191,17 @@ theorem card_Ioo : (Ioo f g).card = (∏ i in f.support ∪ g.support, (Icc (f i
   rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align dfinsupp.card_Ioo DFinsupp.card_Ioo
 
-end LocallyFinite
+end PartialOrder
+
+section Lattice
+variable [DecidableEq ι] [∀ i, DecidableEq (α i)] [∀ i, Lattice (α i)] [∀ i, Zero (α i)]
+  [∀ i, LocallyFiniteOrder (α i)] (f g : Π₀ i, α i)
+
+theorem card_uIcc : (uIcc f g).card = ∏ i in f.support ∪ g.support, (uIcc (f i) (g i)).card := by
+  rw [←support_inf_union_support_sup]; exact card_Icc _ _
+#align dfinsupp.card_uIcc DFinsupp.card_uIcc
+
+end Lattice
 
 section CanonicallyOrdered
 

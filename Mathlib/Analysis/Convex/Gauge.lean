@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.gauge
-! leanprover-community/mathlib commit 373b03b5b9d0486534edbe94747f23cb3712f93d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.Seminorm
 import Mathlib.Data.IsROrC.Basic
+
+#align_import analysis.convex.gauge from "leanprover-community/mathlib"@"373b03b5b9d0486534edbe94747f23cb3712f93d"
 
 /-!
 # The Minkowski functional
@@ -389,7 +386,7 @@ section IsROrC
 
 variable [IsROrC 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 
-/-- `gauge s` as a seminorm when `s` is  balanced, convex and absorbent. -/
+/-- `gauge s` as a seminorm when `s` is balanced, convex and absorbent. -/
 @[simps!]
 def gaugeSeminorm (hs₀ : Balanced 𝕜 s) (hs₁ : Convex ℝ s) (hs₂ : Absorbent ℝ s) : Seminorm 𝕜 E :=
   Seminorm.of (gauge s) (gauge_add_le hs₁ hs₂) (gauge_smul hs₀)

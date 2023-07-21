@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.measure.complex
-! leanprover-community/mathlib commit 17b3357baa47f48697ca9c243e300eb8cdd16a15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+
+#align_import measure_theory.measure.complex from "leanprover-community/mathlib"@"17b3357baa47f48697ca9c243e300eb8cdd16a15"
 
 /-!
 # Complex measure

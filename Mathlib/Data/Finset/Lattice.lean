@@ -2,11 +2,6 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.finset.lattice
-! leanprover-community/mathlib commit 2d44d6823a96f9c79b7d1ab185918377be663424
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Option
@@ -15,6 +10,8 @@ import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Hom.Lattice
+
+#align_import data.finset.lattice from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Lattice operations on finsets
@@ -888,7 +885,11 @@ theorem sup'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f)
 #align finset.sup'_map Finset.sup'_map
 
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty):
+<<<<<<< HEAD
     s₁.sup' h₁ f ≤ s₂.sup' (Nonempty.mono h h₁) f :=
+=======
+    s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
+>>>>>>> master
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
 
 end Sup'
@@ -988,7 +989,11 @@ theorem inf'_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : (s.map f)
 #align finset.inf'_map Finset.inf'_map
 
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
+<<<<<<< HEAD
     s₂.inf' (Nonempty.mono h h₁) f ≤ s₁.inf' h₁ f :=
+=======
+    s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
+>>>>>>> master
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
 
 end Inf'

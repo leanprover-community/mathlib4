@@ -2,11 +2,6 @@
 Copyright (c) 2022 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen, Mantas Bakšys
-
-! This file was ported from Lean 3 source module number_theory.multiplicity
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Int.Parity
@@ -14,6 +9,8 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Init.Meta.WellFoundedTactics
+
+#align_import number_theory.multiplicity from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Multiplicity in Number Theory
@@ -114,7 +111,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
             (∑ x : ℕ in Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x : ℕ in Finset.range p, a ^ (p - 1)) := by
       rw [add_right_inj]
-      have : ∀ (x : ℕ), (hx : x ∈ range p) →  a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
+      have : ∀ (x : ℕ), (hx : x ∈ range p) → a ^ (x + (p - 1 - x)) = a ^ (p - 1) := by
         intro x hx
         rw [← Nat.add_sub_assoc _ x, Nat.add_sub_cancel_left]
         exact Nat.le_pred_of_lt (Finset.mem_range.mp hx)
@@ -138,7 +135,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
         ring1
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
       have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
-          ((Finset.sum (range p) (fun (x : ℕ)  ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
+          ((Finset.sum (range p) (fun (x : ℕ) ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
       simp only [add_left_eq_self, ← Finset.mul_sum, this]
       norm_cast
       simp only [Finset.sum_range_id]
