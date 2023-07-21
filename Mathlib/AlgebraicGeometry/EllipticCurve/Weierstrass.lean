@@ -278,6 +278,49 @@ def variableChange : WeierstrassCurve R where
     - C.r * C.t * W.a₁)
 #align weierstrass_curve.variable_change WeierstrassCurve.variableChange
 
+abbrev variableChange' (C : VariableChange R) (W : WeierstrassCurve R) := W.variableChange C
+
+lemma variableChange_id (W : WeierstrassCurve R) : variableChange' VariableChange.id W = W := by
+  rw [VariableChange.id, variableChange', variableChange, inv_one, Units.val_one]
+  ext <;> (dsimp only; ring1)
+
+lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
+    variableChange' (C.comp C') W = variableChange' C (variableChange' C' W) := by
+  simp only [VariableChange.comp, variableChange', variableChange]
+  ext <;> simp only [mul_inv, Units.val_mul]
+  · linear_combination (norm := ring1) ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
+  · linear_combination (norm := ring1)
+      C.s * (-C'.s * 2 - W.a₁) * (↑C.u⁻¹ : R) ^ 2 * ↑C'.u⁻¹ * C'.u.inv_mul
+        + (C.r * 3 - C.s ^ 2) * (↑C.u⁻¹ : R) ^ 2 * pow_mul_pow_eq_one 2 C'.u.inv_mul
+  · linear_combination (norm := ring1)
+      C.r * (C'.s * 2 + W.a₁) * (↑C.u⁻¹ : R) ^ 3 * ↑C'.u⁻¹ * pow_mul_pow_eq_one 2 C'.u.inv_mul
+        + C.t * 2 * (↑C.u⁻¹ : R) ^ 3 * pow_mul_pow_eq_one 3 C'.u.inv_mul
+  · linear_combination (norm := ring1)
+      C.s * (-W.a₃ - C'.r * W.a₁ - C'.t * 2) * (↑C.u⁻¹ : R) ^ 4 * (↑C'.u⁻¹ : R) ^ 3 * C'.u.inv_mul
+        + (↑C.u⁻¹ : R) ^ 4 * (↑C'.u⁻¹ : R) ^ 2
+          * (C.r * C'.r * 6 + C.r * W.a₂ * 2 - C'.s * C.r * W.a₁ * 2 - C'.s ^ 2 * C.r * 2)
+          * pow_mul_pow_eq_one 2 C'.u.inv_mul
+        + -(↑C.u⁻¹ : R) ^ 4
+          * ↑C'.u⁻¹ * (C.s * C'.s * C.r * 2 + C.s * C.r * W.a₁ + C'.s * C.t * 2 + C.t * W.a₁)
+          * pow_mul_pow_eq_one 3 C'.u.inv_mul
+        + (↑C.u⁻¹ : R) ^ 4 * (C.r ^ 2 * 3 - C.s * C.t * 2) * pow_mul_pow_eq_one 4 C'.u.inv_mul
+  · linear_combination (norm := ring1)
+      C.r * (↑C.u⁻¹ : R) ^ 6 * (↑C'.u⁻¹ : R) ^ 4 * (C'.r * W.a₂ * 2 - C'.r * C'.s * W.a₁
+          + C'.r ^ 2 * 3 + W.a₄ - C'.s * C'.t * 2 - C'.s * W.a₃ - C'.t * W.a₁)
+          * pow_mul_pow_eq_one 2 C'.u.inv_mul
+        + -(↑C.u⁻¹ : R) ^ 6 * (↑C'.u⁻¹ : R) ^ 3 * C.t * (C'.r * W.a₁ + C'.t * 2 + W.a₃)
+          * pow_mul_pow_eq_one 3 C'.u.inv_mul
+        + C.r ^ 2 * (↑C.u⁻¹ : R) ^ 6 * (↑C'.u⁻¹ : R) ^ 2
+          * (C'.r * 3 + W.a₂ - C'.s * W.a₁ - C'.s ^ 2) * pow_mul_pow_eq_one 4 C'.u.inv_mul
+        + -C.r * C.t * (↑C.u⁻¹ : R) ^ 6 * ↑C'.u⁻¹ * (C'.s * 2 + W.a₁)
+          * pow_mul_pow_eq_one 5 C'.u.inv_mul
+        + (↑C.u⁻¹ : R) ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
+
+instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
+  smul := variableChange'
+  one_smul := variableChange_id
+  mul_smul := variableChange_comp
+
 @[simp]
 lemma variableChange_b₂ : (W.variableChange C).b₂ = (↑C.u⁻¹ : R) ^ 2 * (W.b₂ + 12 * C.r) := by
   simp only [b₂, variableChange_a₁, variableChange_a₂]
