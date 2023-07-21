@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Derivation.Basic
 In this file we prove that a derivation of `MvPolynomial σ R` is determined by its values on all
 monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDerivation` that
 builds a derivation from its values on `X i`s and a linear equivalence
-`MvPolynomial.equivDerivation` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
+`MvPolynomial.mkDerivationEquiv` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
 
 
