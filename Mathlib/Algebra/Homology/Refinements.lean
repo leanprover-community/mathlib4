@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.Refinements
-import Mathlib.Algebra.Homology.NewHomology
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 open CategoryTheory Category
 

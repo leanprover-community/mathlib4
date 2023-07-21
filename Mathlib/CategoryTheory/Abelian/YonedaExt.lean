@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext
-import Mathlib.Algebra.Homology.NewHomology
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 namespace HomologicalComplex
 

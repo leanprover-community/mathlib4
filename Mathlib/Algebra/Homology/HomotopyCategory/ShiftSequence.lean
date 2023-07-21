@@ -1,6 +1,6 @@
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.Homology.NewHomology
+import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 open CategoryTheory Category Preadditive
 
