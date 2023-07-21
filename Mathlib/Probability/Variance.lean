@@ -134,7 +134,9 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
     ENNReal.toReal_ofReal]
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
-  · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
+  · -- Porting note: `μ[X]` without whitespace is ambiguous as it could be GetElem,
+    -- and `convert` cannot disambiguate based on typeclass inference failure.
+    convert (hX.sub <| memℒp_const (μ [X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
       with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
