@@ -145,6 +145,14 @@ theorem weak_duality' : P.Value ≤ -(P.Dual).Value := sSup_le <| fun v ⟨_, hv
 
 ----------------------------------------------------------------------------------------------------
 
-def SlaterCondition := ∃ v : P.decision_cone, P.rhs - P.lhs v ∈ interior P.slack_cone
+-- def SlaterCondition := ∃ v : P.decision_cone, P.rhs - P.lhs v ∈ interior P.slack_cone
+
+-- example (x y : ℕ) (h : x ≤ y) (g : y ≤ x) : x = y := by
+--   exact Nat.le_antisymm h g
+
+theorem regular_duality : P.SubValue = -(P.Dual).Value := le_antisymm P.weak_duality <| by
+  let D := P.Dual
+  let β := -D.Value
+
 
 end MaxConeLinearProgram
