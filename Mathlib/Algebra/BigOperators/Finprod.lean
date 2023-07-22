@@ -593,6 +593,14 @@ theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : �
 #align finprod_eq_one_of_forall_eq_one finprod_eq_one_of_forall_eq_one
 #align finsum_eq_zero_of_forall_eq_zero finsum_eq_zero_of_forall_eq_zero
 
+@[to_additive finsum_pos']
+theorem one_lt_finprod' {M : Type _} [OrderedCancelCommMonoid M] {f : ι → M}
+    (h : ∀ i, 1 ≤ f i) (h' : ∃ i, 1 < f i) (hf : (mulSupport f).Finite) : 1 < ∏ᶠ i, f i := by
+  rcases h' with ⟨i, hi⟩
+  rw [finprod_eq_prod _ hf]
+  refine Finset.one_lt_prod' (fun i _ ↦ h i) ⟨i, ?_, hi⟩
+  simpa only [Finite.mem_toFinset, mem_mulSupport] using ne_of_gt hi
+
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
 -/

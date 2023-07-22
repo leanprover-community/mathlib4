@@ -29,6 +29,10 @@ open SmoothManifoldWithCorners
 
 noncomputable section
 
+namespace finsum
+
+end finsum
+
 variable (I)
 
 theorem IsOpen.exists_smooth_support_eq_of_model {s : Set H} (hs : IsOpen s) :
@@ -41,10 +45,8 @@ theorem IsOpen.exists_smooth_support_eq_of_model {s : Set H} (hs : IsOpen s) :
   · exact f_diff.comp_contMDiff contMDiff_model
   · exact Subset.trans (range_comp_subset_range _ _) f_range
 
-
 theorem IsOpen.exists_smooth_support_eq' (hs : IsOpen s) :
     ∃ f : M → ℝ, f.support = s ∧ Smooth I 𝓘(ℝ) f ∧ ∀ x, 0 ≤ f x := by
-  have : ∀ x ∈ (univ : Set M), univ ∈ 𝓝 x := fun x hx ↦ univ_mem
   rcases SmoothPartitionOfUnity.exists_isSubordinate_chartAt_source I M with ⟨f, hf⟩
   have A : ∀ (c : M), ∃ g : H → ℝ,
       g.support = (chartAt H c).target ∩ (chartAt H c).symm ⁻¹' s ∧
@@ -53,10 +55,24 @@ theorem IsOpen.exists_smooth_support_eq' (hs : IsOpen s) :
     apply IsOpen.exists_smooth_support_eq_of_model
     exact LocalHomeomorph.preimage_open_of_open_symm _ hs
   choose g g_supp g_diff hg using A
+  have h'g : ∀ c x, 0 ≤ g c x := fun c x ↦ (hg c (mem_range_self (f := g c) x)).1
+  have h''g : ∀ c x, 0 ≤ f c x * g c (chartAt H c x) :=
+    fun c x ↦ mul_nonneg (f.nonneg c x) (h'g c _)
   refine ⟨fun x ↦ ∑ᶠ c, f c x * g c (chartAt H c x), ?_, ?_, ?_⟩
   · refine support_eq_iff.2 ⟨fun x hx ↦ ?_, fun x hx ↦ ?_⟩
     · apply ne_of_gt
-      sorry
+      have B : ∃ c, 0 < f c x * g c (chartAt H c x) := by
+        obtain ⟨c, hc⟩ : ∃ c, 0 < f c x := f.exists_pos_of_mem (mem_univ x)
+        refine ⟨c, mul_pos hc ?_⟩
+        apply lt_of_le_of_ne (h'g _ _) (Ne.symm _)
+        rw [← mem_support, g_supp, ← mem_preimage, preimage_inter]
+        have Hx : x ∈ tsupport (f c) := subset_tsupport _ (ne_of_gt hc)
+        simp [(chartAt H c).left_inv (hf c Hx), hx, (chartAt H c).map_source (hf c Hx)]
+      apply finsum_pos' (fun c ↦ h''g c x) B
+      apply (f.locallyFinite.point_finite x).subset
+      apply compl_subset_compl.2
+      rintro c (hc : f c x = 0)
+      simpa only [mul_eq_zero] using Or.inl hc
     · apply finsum_eq_zero_of_forall_eq_zero
       intro c
       by_cases Hx : x ∈ tsupport (f c)
@@ -73,9 +89,7 @@ theorem IsOpen.exists_smooth_support_eq' (hs : IsOpen s) :
     apply (g_diff c (chartAt H c x)).comp
     exact contMDiffAt_of_mem_maximalAtlas (chart_mem_maximalAtlas I _) (hf c hx)
   · intro x
-    apply finsum_nonneg (fun c ↦ ?_)
-    apply mul_nonneg (f.nonneg c x)
-    exact (hg c (mem_range_self (f := g c) (chartAt H c x))).1
+    apply finsum_nonneg (fun c ↦ h''g c x)
 
 
 
