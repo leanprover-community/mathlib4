@@ -334,6 +334,17 @@ theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : 
 #align measure_theory.eventually_div_right_iff MeasureTheory.eventually_div_right_iff
 #align measure_theory.eventually_sub_right_iff MeasureTheory.eventually_sub_right_iff
 
+@[to_additive]
+theorem isMulLeftInvariant_mul [IsMulLeftInvariant μ] (g : G) :
+    IsMulLeftInvariant (map (· * g) μ) := by
+  refine' ⟨fun h => _⟩
+  rw [map_map (measurable_const_mul _) (measurable_mul_const _)]
+  conv_rhs => rw [← map_mul_left_eq_self μ h]
+  rw [map_map (measurable_mul_const _) (measurable_const_mul _)]
+  congr 2
+  ext y
+  simp only [comp_apply, mul_assoc h y g]
+
 end Group
 
 namespace Measure
