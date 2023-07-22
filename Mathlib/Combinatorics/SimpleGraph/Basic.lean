@@ -99,6 +99,15 @@ macro (name := aesop_graph) "aesop_graph" c:Aesop.tactic_clause* : tactic =>
       (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
+Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph`
+-/
+macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
+  `(tactic|
+    aesop $c*
+      (options := { introsTransparency? := some .default, terminal := true })
+      (rule_sets [$(Lean.mkIdent `SimpleGraph):ident]))
+
+/--
 A variant of `aesop_graph` which does not fail if it is unable to solve the
 goal. Use this only for exploration! Nonterminal Aesop is even worse than
 nonterminal `simp`.
