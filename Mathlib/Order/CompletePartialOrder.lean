@@ -57,7 +57,7 @@ def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
         rw [← cn, ← cm]
         apply (c.monotone' (Nat.le_of_lt hmn)) }
 
-def Set.ToDirectedSet [Lattice α] [DecidableEq α] (s : Set α) : DirectedSet α := {
+def Set.ToDirectedSet [SemilatticeSup α] [DecidableEq α] (s : Set α) : DirectedSet α := {
   set := { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   },
   directed := by
     intros a ha b hb
@@ -107,6 +107,52 @@ def Set.ToDirectedSet [Lattice α] [DecidableEq α] (s : Set α) : DirectedSet �
 
 lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
 
+lemma Set_subseteq_DirectedSet [SemilatticeSup α] [DecidableEq α] {s : Set α} :
+    s ⊆ (Set.ToDirectedSet s).set := by
+  intro a ha
+  rw [Set.ToDirectedSet]
+  simp only [id_eq, exists_and_left, Set.mem_setOf_eq]
+  use ({a} : Finset α)
+  constructor
+  · exact Iff.mpr Finset.singleton_subset_set_iff ha
+  · use (Finset.singleton_nonempty a)
+    rfl
+
+lemma Set_DirectedSet_upperBounds [SemilatticeSup α] [DecidableEq α] {s : Set α} :
+    upperBounds (Set.ToDirectedSet s).set = upperBounds s := by
+  rw [subset_antisymm_iff]
+  constructor
+  · exact upperBounds_mono_set Set_subseteq_DirectedSet
+  · intro u hu
+    rw [mem_upperBounds]
+    intro b hb
+    obtain ⟨Fb,⟨H,hFb⟩⟩ := hb
+    rw [hFb.2, Finset.sup'_le_iff]
+    intro c hc
+    rw [id_eq]
+    apply hu
+    apply hFb.1
+    exact hc
+
+lemma Set_DirectedSet_LUB [SemilatticeSup α] [DecidableEq α] {s : Set α} {u : α} : IsLUB s u ↔
+    IsLUB (Set.ToDirectedSet s).set u := by
+  constructor
+  · intro hsu
+    constructor
+    · rw [Set_DirectedSet_upperBounds, mem_upperBounds]
+      exact hsu.1
+    · rw [mem_lowerBounds]
+      intro b hb
+      rw [isLUB_le_iff hsu]
+      apply upperBounds_mono_set Set_subseteq_DirectedSet hb
+  · intro h
+    constructor
+    · rw [← Set_DirectedSet_upperBounds]
+      exact Set.mem_of_mem_inter_left h
+    · intro v hv
+      rw [← Set_DirectedSet_upperBounds] at hv
+      exact Iff.mpr (isLUB_le_iff h) hv
+
 /-
 A complete partial order is a ω-complete partial order
 -/
@@ -123,7 +169,24 @@ instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
     rw [← hi]
     exact h i
 
-
-instance [Lattice α] (dSup : DirectedSet α → α) (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) :
-    CompleteLattice α where
-  sSup := fun s
+instance [SemilatticeSup α] [DecidableEq α] (dSup : DirectedSet α → α)
+    (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
+  sSup := fun s => dSup (Set.ToDirectedSet s)
+  le_sSup := by
+    intros s a ha
+    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
+      rw [← Set_DirectedSet_LUB]
+      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
+    simp only [ge_iff_le]
+    rw [IsLUB, IsLeast] at e1
+    apply e1.1
+    apply Set_subseteq_DirectedSet
+    exact ha
+  sSup_le := by
+    intros s a ha
+    have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
+      rw [← Set_DirectedSet_LUB]
+      exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
+    simp only [ge_iff_le]
+    rw [isLUB_le_iff e1, Set_DirectedSet_upperBounds]
+    exact ha
