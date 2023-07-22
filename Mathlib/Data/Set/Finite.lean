@@ -20,7 +20,7 @@ about finite sets and gives ways to manipulate `Set.Finite` expressions.
 
 * `Set.Finite : Set α → Prop`
 * `Set.Infinite : Set α → Prop`
-* `Set.to_finite` to prove `Set.Finite` for a `Set` from a `Finite` instance.
+* `Set.toFinite` to prove `Set.Finite` for a `Set` from a `Finite` instance.
 * `Set.Finite.toFinset` to noncomputably produce a `Finset` from a `Set.Finite` proof.
   (See `Set.toFinset` for a computable version.)
 

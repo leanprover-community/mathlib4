@@ -25,6 +25,10 @@ infinite distance.
 * `Dilation.ratio f : ℝ≥0`: the value of `r` in the relation above, defaulting to 1 in the case
   where it is not well-defined.
 
+## Notation
+
+- `α →ᵈ β`: notation for `Dilation α β`.
+
 ## Implementation notes
 
 The type of dilations defined in this file are also referred to as "similarities" or "similitudes"
@@ -37,7 +41,7 @@ needed.
 ## TODO
 
 - Introduce dilation equivs.
-- Refactor the `isometry` API to match the `*HomClass` API below.
+- Refactor the `Isometry` API to match the `*HomClass` API below.
 
 ## References
 
@@ -62,6 +66,8 @@ structure Dilation where
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 #align dilation Dilation
 
+infixl:25 " →ᵈ " => Dilation
+
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/
 class DilationClass (F : Type _) (α β : outParam <| Type _) [PseudoEMetricSpace α]
@@ -79,56 +85,56 @@ section Setup
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
 
-instance toDilationClass : DilationClass (Dilation α β) α β where
+instance toDilationClass : DilationClass (α →ᵈ β) α β where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
   edist_eq' f := edist_eq' f
 #align dilation.to_dilation_class Dilation.toDilationClass
 
-instance : CoeFun (Dilation α β) fun _ => α → β :=
+instance : CoeFun (α →ᵈ β) fun _ => α → β :=
   FunLike.hasCoeToFun
 
 @[simp]
-theorem toFun_eq_coe {f : Dilation α β} : f.toFun = (f : α → β) :=
+theorem toFun_eq_coe {f : α →ᵈ β} : f.toFun = (f : α → β) :=
   rfl
 #align dilation.to_fun_eq_coe Dilation.toFun_eq_coe
 
 @[simp]
-theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : Dilation α β) = f :=
+theorem coe_mk (f : α → β) (h) : ⇑(⟨f, h⟩ : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk Dilation.coe_mk
 
-theorem congr_fun {f g : Dilation α β} (h : f = g) (x : α) : f x = g x :=
+theorem congr_fun {f g : α →ᵈ β} (h : f = g) (x : α) : f x = g x :=
   FunLike.congr_fun h x
 #align dilation.congr_fun Dilation.congr_fun
 
-theorem congr_arg (f : Dilation α β) {x y : α} (h : x = y) : f x = f y :=
+theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f y :=
   FunLike.congr_arg f h
 #align dilation.congr_arg Dilation.congr_arg
 
 @[ext]
-theorem ext {f g : Dilation α β} (h : ∀ x, f x = g x) : f = g :=
+theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
   FunLike.ext f g h
 #align dilation.ext Dilation.ext
 
-theorem ext_iff {f g : Dilation α β} : f = g ↔ ∀ x, f x = g x :=
+theorem ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
   FunLike.ext_iff
 #align dilation.ext_iff Dilation.ext_iff
 
 @[simp]
-theorem mk_coe (f : Dilation α β) (h) : Dilation.mk f h = f :=
+theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe Dilation.mk_coe
 
 /-- Copy of a `Dilation` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 @[simps (config := { fullyApplied := false })]
-protected def copy (f : Dilation α β) (f' : α → β) (h : f' = ⇑f) : Dilation α β where
+protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →ᵈ β where
   toFun := f'
   edist_eq' := h.symm ▸ f.edist_eq'
 #align dilation.copy Dilation.copy
 
-theorem copy_eq_self (f : Dilation α β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
+theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f' h = f :=
   FunLike.ext' h
 #align dilation.copy_eq_self Dilation.copy_eq_self
 
@@ -137,6 +143,14 @@ points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
   if ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤ then 1 else (DilationClass.edist_eq' f).choose
 #align dilation.ratio Dilation.ratio
+
+theorem ratio_of_trivial [DilationClass F α β] (f : F)
+    (h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞) : ratio f = 1 :=
+  if_pos h
+
+@[nontriviality]
+theorem ratio_of_subsingleton [Subsingleton α] [DilationClass F α β] (f : F) : ratio f = 1 :=
+  if_pos <| fun x y ↦ by simp [Subsingleton.elim x y]
 
 theorem ratio_ne_zero [DilationClass F α β] (f : F) : ratio f ≠ 0 := by
   rw [ratio]; split_ifs
@@ -199,7 +213,7 @@ theorem ratio_unique_of_dist_ne_zero {α β} {F : Type _} [PseudoMetricSpace α]
 
 /-- Alternative `Dilation` constructor when the distance hypothesis is over `nndist` -/
 def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β)
-    (h : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, nndist (f x) (f y) = r * nndist x y) : Dilation α β where
+    (h : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, nndist (f x) (f y) = r * nndist x y) : α →ᵈ β where
   toFun := f
   edist_eq' := by
     rcases h with ⟨r, hne, h⟩
@@ -209,19 +223,19 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
 
 @[simp]
 theorem coe_mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
-    ⇑(mkOfNNDistEq f h : Dilation α β) = f :=
+    ⇑(mkOfNNDistEq f h : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk_of_nndist_eq Dilation.coe_mkOfNNDistEq
 
 @[simp]
-theorem mk_coe_of_nndist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : Dilation α β)
+theorem mk_coe_of_nndist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β)
     (h) : Dilation.mkOfNNDistEq f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe_of_nndist_eq Dilation.mk_coe_of_nndist_eq
 
 /-- Alternative `Dilation` constructor when the distance hypothesis is over `dist` -/
 def mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β)
-    (h : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, dist (f x) (f y) = r * dist x y) : Dilation α β :=
+    (h : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, dist (f x) (f y) = r * dist x y) : α →ᵈ β :=
   mkOfNNDistEq f <|
     h.imp fun r hr =>
       ⟨hr.1, fun x y => NNReal.eq <| by rw [coe_nndist, hr.2, NNReal.coe_mul, coe_nndist]⟩
@@ -229,12 +243,12 @@ def mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →
 
 @[simp]
 theorem coe_mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :
-    ⇑(mkOfDistEq f h : Dilation α β) = f :=
+    ⇑(mkOfDistEq f h : α →ᵈ β) = f :=
   rfl
 #align dilation.coe_mk_of_dist_eq Dilation.coe_mkOfDistEq
 
 @[simp]
-theorem mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : Dilation α β) (h) :
+theorem mk_coe_of_dist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β) (h) :
     Dilation.mkOfDistEq f h = f :=
   ext fun _ => rfl
 #align dilation.mk_coe_of_dist_eq Dilation.mk_coe_of_dist_eq
@@ -265,12 +279,12 @@ protected theorem injective {α : Type _} [EMetricSpace α] [DilationClass F α 
 #align dilation.injective Dilation.injective
 
 /-- The identity is a dilation -/
-protected def id (α) [PseudoEMetricSpace α] : Dilation α α where
+protected def id (α) [PseudoEMetricSpace α] : α →ᵈ α where
   toFun := id
   edist_eq' := ⟨1, one_ne_zero, fun x y => by simp only [id.def, ENNReal.coe_one, one_mul]⟩
 #align dilation.id Dilation.id
 
-instance : Inhabited (Dilation α α) :=
+instance : Inhabited (α →ᵈ α) :=
   ⟨Dilation.id α⟩
 
 @[simp] -- Porting note: Removed `@[protected]`
@@ -278,90 +292,109 @@ theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 #align dilation.coe_id Dilation.coe_id
 
-theorem id_ratio : ratio (Dilation.id α) = 1 := by
+theorem ratio_id : ratio (Dilation.id α) = 1 := by
   by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · rw [ratio, if_pos h]
   · push_neg at h
     rcases h with ⟨x, y, hne⟩
     refine' (ratio_unique hne.1 hne.2 _).symm
     simp
-#align dilation.id_ratio Dilation.id_ratio
+#align dilation.id_ratio Dilation.ratio_id
 
 /-- The composition of dilations is a dilation -/
-def comp (g : Dilation β γ) (f : Dilation α β) : Dilation α γ where
+def comp (g : β →ᵈ γ) (f : α →ᵈ β) : α →ᵈ γ where
   toFun := g ∘ f
   edist_eq' := ⟨ratio g * ratio f, mul_ne_zero (ratio_ne_zero g) (ratio_ne_zero f),
     fun x y => by simp_rw [Function.comp, edist_eq, ENNReal.coe_mul, mul_assoc]⟩
 #align dilation.comp Dilation.comp
 
-theorem comp_assoc {δ : Type _} [PseudoEMetricSpace δ] (f : Dilation α β) (g : Dilation β γ)
-    (h : Dilation γ δ) : (h.comp g).comp f = h.comp (g.comp f) :=
+theorem comp_assoc {δ : Type _} [PseudoEMetricSpace δ] (f : α →ᵈ β) (g : β →ᵈ γ)
+    (h : γ →ᵈ δ) : (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 #align dilation.comp_assoc Dilation.comp_assoc
 
 @[simp]
-theorem coe_comp (g : Dilation β γ) (f : Dilation α β) : (g.comp f : α → γ) = g ∘ f :=
+theorem coe_comp (g : β →ᵈ γ) (f : α →ᵈ β) : (g.comp f : α → γ) = g ∘ f :=
   rfl
 #align dilation.coe_comp Dilation.coe_comp
 
-theorem comp_apply (g : Dilation β γ) (f : Dilation α β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
+theorem comp_apply (g : β →ᵈ γ) (f : α →ᵈ β) (x : α) : (g.comp f : α → γ) x = g (f x) :=
   rfl
 #align dilation.comp_apply Dilation.comp_apply
 
+-- Porting note: removed `simp` because it's difficult to auto prove `hne`
 /-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
-that the domain `α` of `f` is nontrivial, otherwise `ratio f = ratio (g.comp f) = 1` but `ratio g`
-may have any value. -/
-@[simp]
-theorem comp_ratio {g : Dilation β γ} {f : Dilation α β}
+that there exist two points in `α` at extended distance neither `0` nor `∞` because otherwise
+`Dilation.ratio (g.comp f) = Dilation.ratio f = 1` while `Dilation.ratio g` can by any number. This
+version works for most general spaces, see also `Dilation.ratio_comp` for a version assuming that
+`α` is a nontrivial metric space. -/
+theorem ratio_comp' {g : β →ᵈ γ} {f : α →ᵈ β}
     (hne : ∃ x y : α, edist x y ≠ 0 ∧ edist x y ≠ ⊤) : ratio (g.comp f) = ratio g * ratio f := by
   rcases hne with ⟨x, y, hα⟩
   have hgf := (edist_eq (g.comp f) x y).symm
   simp_rw [coe_comp, Function.comp, edist_eq, ← mul_assoc, ENNReal.mul_eq_mul_right hα.1 hα.2]
     at hgf
   rwa [← ENNReal.coe_eq_coe, ENNReal.coe_mul]
-#align dilation.comp_ratio Dilation.comp_ratio
+#align dilation.comp_ratio Dilation.ratio_comp'
 
 @[simp]
-theorem comp_id (f : Dilation α β) : f.comp (Dilation.id α) = f :=
+theorem comp_id (f : α →ᵈ β) : f.comp (Dilation.id α) = f :=
   ext fun _ => rfl
 #align dilation.comp_id Dilation.comp_id
 
 @[simp]
-theorem id_comp (f : Dilation α β) : (Dilation.id β).comp f = f :=
+theorem id_comp (f : α →ᵈ β) : (Dilation.id β).comp f = f :=
   ext fun _ => rfl
 #align dilation.id_comp Dilation.id_comp
 
-instance : Monoid (Dilation α α) where
+instance : Monoid (α →ᵈ α) where
   one := Dilation.id α
   mul := comp
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc f g h := comp_assoc _ _ _
 
-theorem one_def : (1 : Dilation α α) = Dilation.id α :=
+theorem one_def : (1 : α →ᵈ α) = Dilation.id α :=
   rfl
 #align dilation.one_def Dilation.one_def
 
-theorem mul_def (f g : Dilation α α) : f * g = f.comp g :=
+theorem mul_def (f g : α →ᵈ α) : f * g = f.comp g :=
   rfl
 #align dilation.mul_def Dilation.mul_def
 
 @[simp]
-theorem coe_one : ⇑(1 : Dilation α α) = id :=
+theorem coe_one : ⇑(1 : α →ᵈ α) = id :=
   rfl
 #align dilation.coe_one Dilation.coe_one
 
 @[simp]
-theorem coe_mul (f g : Dilation α α) : ⇑(f * g) = f ∘ g :=
+theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
   rfl
 #align dilation.coe_mul Dilation.coe_mul
 
-theorem cancel_right {g₁ g₂ : Dilation β γ} {f : Dilation α β} (hf : Surjective f) :
+@[simp] theorem ratio_one : ratio (1 : α →ᵈ α) = 1 := ratio_id
+
+@[simp]
+theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
+  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  · simp [ratio_of_trivial, h]
+  push_neg at h
+  exact ratio_comp' h
+
+/-- `Dilation.ratio` as a monoid homomorphism from `α →ᵈ α` to `ℝ≥0`. -/
+@[simps]
+def ratioHom : (α →ᵈ α) →* ℝ≥0 := ⟨⟨ratio, ratio_one⟩, ratio_mul⟩
+
+@[simp]
+theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
+  ratioHom.map_pow _ _
+
+theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => Dilation.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
 #align dilation.cancel_right Dilation.cancel_right
 
-theorem cancel_left {g : Dilation β γ} {f₁ f₂ : Dilation α β} (hg : Injective g) :
+theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => Dilation.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 #align dilation.cancel_left Dilation.cancel_left
@@ -443,6 +476,17 @@ protected theorem closedEmbedding [CompleteSpace α] [EMetricSpace β] [Dilation
 #align dilation.closed_embedding Dilation.closedEmbedding
 
 end EmetricDilation
+
+/-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
+that the domain `α` of `f` is a nontrivial metric space, otherwise
+`Dilation.ratio f = Dilation.ratio (g.comp f) = 1` but `Dilation.ratio g` may have any value.
+
+See also `Dilation.ratio_comp'` for a version that works for more general spaces. -/
+@[simp]
+theorem ratio_comp [MetricSpace α] [Nontrivial α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] {g : β →ᵈ γ} {f : α →ᵈ β} : ratio (g.comp f) = ratio g * ratio f :=
+  ratio_comp' <|
+    let ⟨x, y, hne⟩ := exists_pair_ne α; ⟨x, y, mt edist_eq_zero.1 hne, edist_ne_top _ _⟩
 
 section PseudoMetricDilation
 
