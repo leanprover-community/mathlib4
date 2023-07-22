@@ -2,15 +2,12 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.circumcenter
-! leanprover-community/mathlib commit 2de9c37fa71dde2f1c6feff19876dd6a7b1519f0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Sphere.Basic
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.DeriveFintype
+
+#align_import geometry.euclidean.circumcenter from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
 
 /-!
 # Circumcenter and circumradius
@@ -51,7 +48,7 @@ open AffineSubspace
 /-- `p` is equidistant from two points in `s` if and only if its
 `orthogonalProjection` is. -/
 theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {p1 p2 : P} (p3 : P) (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
+    [HasOrthogonalProjection s.direction] {p1 p2 : P} (p3 : P) (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
     dist p1 p3 = dist p2 p3 ↔
       dist p1 (orthogonalProjection s p3) = dist p2 (orthogonalProjection s p3) := by
   rw [← mul_self_inj_of_nonneg dist_nonneg dist_nonneg, ←
@@ -64,7 +61,7 @@ theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Non
 /-- `p` is equidistant from a set of points in `s` if and only if its
 `orthogonalProjection` is. -/
 theorem dist_set_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
+    [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
     (Set.Pairwise ps fun p1 p2 => dist p1 p = dist p2 p) ↔
       Set.Pairwise ps fun p1 p2 =>
         dist p1 (orthogonalProjection s p) = dist p2 (orthogonalProjection s p) :=
@@ -79,7 +76,7 @@ points of a set of points in `s` if and only if there exists (possibly
 different) `r` such that its `orthogonalProjection` has that distance
 from all the points in that set. -/
 theorem exists_dist_eq_iff_exists_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Nonempty s]
-    [CompleteSpace s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
+    [HasOrthogonalProjection s.direction] {ps : Set P} (hps : ps ⊆ s) (p : P) :
     (∃ r, ∀ p1 ∈ ps, dist p1 p = r) ↔ ∃ r, ∀ p1 ∈ ps, dist p1 ↑(orthogonalProjection s p) = r := by
   have h := dist_set_eq_iff_dist_orthogonalProjection_eq hps p
   simp_rw [Set.pairwise_eq_iff_exists_eq] at h
@@ -93,9 +90,9 @@ subspace whose direction is complete, such that there is a unique
 and a point `p` not in that subspace, there is a unique (circumcenter,
 circumradius) pair for the set with `p` added, in the span of the
 subspace with `p` added. -/
-theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace s.direction]
-    {ps : Set P} (hnps : ps.Nonempty) {p : P} (hps : ps ⊆ s) (hp : p ∉ s)
-    (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
+theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
+    [HasOrthogonalProjection s.direction] {ps : Set P} (hnps : ps.Nonempty) {p : P} (hps : ps ⊆ s)
+    (hp : p ∉ s) (hu : ∃! cs : Sphere P, cs.center ∈ s ∧ ps ⊆ (cs : Set P)) :
     ∃! cs₂ : Sphere P,
       cs₂.center ∈ affineSpan ℝ (insert p (s : Set P)) ∧ insert p ps ⊆ (cs₂ : Set P) := by
   haveI : Nonempty s := Set.Nonempty.to_subtype (hnps.mono hps)
@@ -161,7 +158,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P} [CompleteSpace
         dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp0),
         orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc₃', h',
         dist_of_mem_subset_mk_sphere hp0 hcr, dist_eq_norm_vsub V _ cc, vadd_vsub, norm_smul, ←
-        dist_eq_norm_vsub V p, Real.norm_eq_abs, ← mul_assoc, mul_comm _ (|t₃|), ← mul_assoc,
+        dist_eq_norm_vsub V p, Real.norm_eq_abs, ← mul_assoc, mul_comm _ |t₃|, ← mul_assoc,
         abs_mul_abs_self]
       ring
     replace hcr₃ := dist_of_mem_subset_mk_sphere (Set.mem_insert _ _) hcr₃
@@ -733,7 +730,7 @@ variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ
 that contains a set of points, those points are cospherical if and
 only if they are equidistant from some point in that subspace. -/
 theorem cospherical_iff_exists_mem_of_complete {s : AffineSubspace ℝ P} {ps : Set P} (h : ps ⊆ s)
-    [Nonempty s] [CompleteSpace s.direction] :
+    [Nonempty s] [HasOrthogonalProjection s.direction] :
     Cospherical ps ↔ ∃ center ∈ s, ∃ radius : ℝ, ∀ p ∈ ps, dist p center = radius := by
   constructor
   · rintro ⟨c, hcr⟩

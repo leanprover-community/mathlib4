@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
-
-! This file was ported from Lean 3 source module data.sym.card
-! leanprover-community/mathlib commit 0bd2ea37bcba5769e14866170f251c9bc64e35d7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Fintype.Sum
+
+#align_import data.sym.card from "leanprover-community/mathlib"@"0bd2ea37bcba5769e14866170f251c9bc64e35d7"
 
 /-!
 # Stars and bars

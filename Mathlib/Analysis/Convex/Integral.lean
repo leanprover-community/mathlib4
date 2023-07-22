@@ -2,16 +2,13 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.convex.integral
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 import Mathlib.MeasureTheory.Integral.Average
+
+#align_import analysis.convex.integral from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Jensen's inequality for integrals
@@ -248,7 +245,7 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
     rw [restrict_congr_set h₀', restrict_univ, measure_congr h₀', measure_smul_average]
   have := average_mem_openSegment_compl_self ht.nullMeasurableSet h₀ h₀' hfi
   rw [← H t ht h₀ h₀', openSegment_same, mem_singleton_iff] at this
-  rw [this, measure_smul_set_average _ (measure_ne_top μ _)]
+  rw [this, measure_smul_setAverage _ (measure_ne_top μ _)]
 #align ae_eq_const_or_exists_average_ne_compl ae_eq_const_or_exists_average_ne_compl
 
 /-- If an integrable function `f : α → E` takes values in a convex set `s` and for some set `t` of
@@ -257,7 +254,7 @@ of `f` over the whole space belongs to the interior of `s`. -/
 theorem Convex.average_mem_interior_of_set [IsFiniteMeasure μ] (hs : Convex ℝ s) (h0 : μ t ≠ 0)
     (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) (ht : (⨍ x in t, f x ∂μ) ∈ interior s) :
     (⨍ x, f x ∂μ) ∈ interior s := by
-  rw [← measure_toMeasurable] at h0 ; rw [← restrict_toMeasurable (measure_ne_top μ t)] at ht
+  rw [← measure_toMeasurable] at h0; rw [← restrict_toMeasurable (measure_ne_top μ t)] at ht
   by_cases h0' : μ (toMeasurable μ t)ᶜ = 0
   · rw [← ae_eq_univ] at h0'
     rwa [restrict_congr_set h0', restrict_univ] at ht

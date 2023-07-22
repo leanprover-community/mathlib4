@@ -2,16 +2,13 @@
 Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module order.conditionally_complete_lattice.basic
-! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
+
+#align_import order.conditionally_complete_lattice.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Theory of conditionally complete lattices.
@@ -1190,8 +1187,7 @@ theorem isGLB_sInf' {β : Type _} [ConditionallyCompleteLattice β] {s : Set (Wi
         intro b hb
         exact Set.mem_singleton_iff.2 (top_le_iff.1 (ha hb))
       · refine' some_le_some.2 (le_csInf _ _)
-        ·
-          classical
+        · classical
             contrapose! h
             rintro (⟨⟩ | a) ha
             · exact mem_singleton ⊤

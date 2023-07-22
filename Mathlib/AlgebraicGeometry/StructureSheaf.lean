@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.structure_sheaf
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Topology.Sheaves.LocalPredicate
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebraic_geometry.structure_sheaf from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.
@@ -557,14 +554,14 @@ theorem stalkToFiberRingHom_germ (U : Opens (PrimeSpectrum.Top R)) (x : U)
 
 @[simp]
 theorem toStalk_comp_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
-  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be explicitly typed
     toStalk R x ≫ stalkToFiberRingHom R x = algebraMap R (Localization.AtPrime x.asIdeal) := by
   erw [toStalk, Category.assoc, germ_comp_stalkToFiberRingHom]; rfl
 #align algebraic_geometry.structure_sheaf.to_stalk_comp_stalk_to_fiber_ring_hom AlgebraicGeometry.StructureSheaf.toStalk_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_toStalk (x : PrimeSpectrum.Top R) (f : R) :
-  -- Porting note : now `algebraMap _ _` needs to be  explicitly typed
+  -- Porting note : now `algebraMap _ _` needs to be explicitly typed
     stalkToFiberRingHom R x (toStalk R x f) = algebraMap R (Localization.AtPrime x.asIdeal) f :=
   RingHom.ext_iff.1 (toStalk_comp_stalkToFiberRingHom R x) _
 #align algebraic_geometry.structure_sheaf.stalk_to_fiber_ring_hom_to_stalk AlgebraicGeometry.StructureSheaf.stalkToFiberRingHom_toStalk
@@ -854,7 +851,7 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
   rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
     ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _)
-  . convert ht_cover using 2
+  · convert ht_cover using 2
     exact funext fun j => by rw [Opens.coe_iSup]
   -- Next we show that some power of `f` is a linear combination of the `h i`
   obtain ⟨n, hn⟩ : f ∈ (Ideal.span (h '' ↑t)).radical := by
@@ -862,9 +859,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     -- Porting note : simp with `PrimeSpectrum.basicOpen_eq_zeroLocus_compl` does not work
     replace ht_cover : (PrimeSpectrum.zeroLocus {f})ᶜ ⊆
       ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.zeroLocus {h i})ᶜ
-    . convert ht_cover
-      . rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
-      . simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
+    · convert ht_cover
+      · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
+      · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, PrimeSpectrum.basicOpen_eq_zeroLocus_compl]
     rw [Set.compl_subset_comm] at ht_cover
     -- Why doesn't `simp_rw` do this?
     simp_rw [Set.compl_iUnion, compl_compl, ← PrimeSpectrum.zeroLocus_iUnion,

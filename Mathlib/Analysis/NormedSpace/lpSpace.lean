@@ -2,16 +2,13 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.lp_space
-! leanprover-community/mathlib commit de83b43717abe353f425855fcf0cedf9ea0fe8a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
+
+#align_import analysis.normed_space.lp_space from "leanprover-community/mathlib"@"de83b43717abe353f425855fcf0cedf9ea0fe8a4"
 
 /-!
 # ℓp space
@@ -1236,8 +1233,8 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
     _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
     _ ≤ ↑K * dist a a₀ + M := by
         gcongr
-        . exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
-        . exact hM ⟨i, rfl⟩
+        · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀
+        · exact hM ⟨i, rfl⟩
 
 theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι)) (s : Set α) (K : ℝ≥0) :
     LipschitzOnWith K f s ↔ ∀ i : ι, LipschitzOnWith K (fun a : α ↦ f a i) s := by

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.linear_independent
-! leanprover-community/mathlib commit 9d684a893c52e1d6692a504a118bfccbae04feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.SetTheory.Cardinal.Basic
+
+#align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
 /-!
 
@@ -333,7 +330,7 @@ then the same is true for arbitrary sets of linearly independent vectors.
 -/
 theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
-    ∀ s : Set M, LinearIndependent R ((↑) : s → M) → (#s) ≤ n := by
+    ∀ s : Set M, LinearIndependent R ((↑) : s → M) → #s ≤ n := by
   intro s li
   apply Cardinal.card_le_of
   intro t

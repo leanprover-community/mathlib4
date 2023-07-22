@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.connected
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.SubsetProperties
+
+#align_import topology.connected from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 # Connected subsets of topological spaces
@@ -863,6 +860,53 @@ theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (
   (isClopen_iff.mp h').resolve_left h.ne_empty
 #align is_clopen.eq_univ IsClopen.eq_univ
 
+section disjoint_subsets
+
+variable [PreconnectedSpace α]
+  {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+
+/-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
+element. -/
+lemma subsingleton_of_disjoint_isClopen
+    (h_clopen : ∀ i, IsClopen (s i)) :
+    Subsingleton ι := by
+  replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
+  rw [← not_nontrivial_iff_subsingleton]
+  by_contra contra
+  obtain ⟨i, j, h_ne⟩ := contra
+  replace h_ne : s i ∩ s j = ∅ := by
+    simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
+  cases' isClopen_iff.mp (h_clopen i) with hi hi
+  · exact h_nonempty i hi
+  · rw [hi, univ_inter] at h_ne
+    exact h_nonempty j h_ne
+
+/-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
+element. -/
+lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
+    (h_open : ∀ i, IsOpen (s i)) (h_Union : ⋃ i, s i = univ) :
+    Subsingleton ι := by
+  refine' subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨h_open i, _⟩)
+  rw [← isOpen_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  refine' isOpen_iUnion (fun j ↦ _)
+  rcases eq_or_ne i j with rfl | h_ne
+  · simp
+  · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
+
+/-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
+element. -/
+lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
+    (h_closed : ∀ i, IsClosed (s i)) (h_Union : ⋃ i, s i = univ) :
+    Subsingleton ι := by
+  refine' subsingleton_of_disjoint_isClopen h_nonempty h_disj (fun i ↦ ⟨_, h_closed i⟩)
+  rw [← isClosed_compl_iff, compl_eq_univ_diff, ← h_Union, iUnion_diff]
+  refine' isClosed_iUnion (fun j ↦ _)
+  rcases eq_or_ne i j with rfl | h_ne
+  · simp
+  · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_closed j
+
+end disjoint_subsets
+
 theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
     frontier s = ∅ ↔ s = ∅ ∨ s = univ :=
   isClopen_iff_frontier_eq_empty.symm.trans isClopen_iff
@@ -1146,8 +1190,7 @@ theorem locallyConnectedSpace_iff_open_connected_subsets :
   · exact fun h => ⟨fun U => ⟨fun hU =>
       let ⟨V, hVU, hV⟩ := h U hU
       ⟨V, hV, hVU⟩, fun ⟨V, ⟨hV, hxV, _⟩, hVU⟩ => mem_nhds_iff.mpr ⟨V, hVU, hV, hxV⟩⟩⟩
-#align locally_connected_space_iff_open_connected_subsets
-  locallyConnectedSpace_iff_open_connected_subsets
+#align locally_connected_space_iff_open_connected_subsets locallyConnectedSpace_iff_open_connected_subsets
 
 /-- A space with discrete topology is a locally connected space. -/
 instance (priority := 100) DiscreteTopology.toLocallyConnectedSpace (α) [TopologicalSpace α]
@@ -1196,8 +1239,7 @@ theorem locallyConnectedSpace_iff_connectedComponentIn_open :
           (connectedComponentIn_subset _ _).trans interior_subset, h _ isOpen_interior x _,
           mem_connectedComponentIn _, isConnected_connectedComponentIn_iff.mpr _⟩ <;>
       exact mem_interior_iff_mem_nhds.mpr hU
-#align locally_connected_space_iff_connected_component_in_open
-  locallyConnectedSpace_iff_connectedComponentIn_open
+#align locally_connected_space_iff_connected_component_in_open locallyConnectedSpace_iff_connectedComponentIn_open
 
 theorem locallyConnectedSpace_iff_connected_subsets :
     LocallyConnectedSpace α ↔ ∀ (x : α), ∀ U ∈ 𝓝 x, ∃ V ∈ 𝓝 x, IsPreconnected V ∧ V ⊆ U := by
@@ -1348,14 +1390,12 @@ theorem Continuous.image_connectedComponent_eq_singleton {β : Type _} [Topologi
     f '' connectedComponent a = {f a} :=
   (Set.subsingleton_iff_singleton <| mem_image_of_mem f mem_connectedComponent).mp
     (isPreconnected_connectedComponent.image f h.continuousOn).subsingleton
-#align continuous.image_connected_component_eq_singleton
-  Continuous.image_connectedComponent_eq_singleton
+#align continuous.image_connected_component_eq_singleton Continuous.image_connectedComponent_eq_singleton
 
 theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSpace α] (s : Set α) :
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
-#align is_totally_disconnected_of_totally_disconnected_space
-  isTotallyDisconnected_of_totallyDisconnectedSpace
+#align is_totally_disconnected_of_totally_disconnected_space isTotallyDisconnected_of_totallyDisconnectedSpace
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=

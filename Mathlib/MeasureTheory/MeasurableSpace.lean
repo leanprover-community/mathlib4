@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measurable_space
-! leanprover-community/mathlib commit 3905fa80e62c0898131285baab35559fbc4e5cda
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IndicatorFunction
 import Mathlib.Data.Prod.TProd
@@ -17,6 +12,8 @@ import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Data.Set.UnionLift
+
+#align_import measure_theory.measurable_space from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Measurable spaces and measurable functions
@@ -255,7 +252,7 @@ theorem measurable_of_subsingleton_codomain [Subsingleton β] (f : α → β) : 
   fun s _ => Subsingleton.set_cases MeasurableSet.empty MeasurableSet.univ s
 #align measurable_of_subsingleton_codomain measurable_of_subsingleton_codomain
 
-@[to_additive]
+@[measurability, to_additive]
 theorem measurable_one [One α] : Measurable (1 : β → α) :=
   @measurable_const _ _ _ _ 1
 #align measurable_one measurable_one
@@ -1462,7 +1459,7 @@ def sumProdSum (α β γ δ) [MeasurableSpace α] [MeasurableSpace β] [Measurab
 variable {π π' : δ' → Type _} [∀ x, MeasurableSpace (π x)] [∀ x, MeasurableSpace (π' x)]
 
 /-- A family of measurable equivalences `Π a, β₁ a ≃ᵐ β₂ a` generates a measurable equivalence
-  between  `Π a, β₁ a` and `Π a, β₂ a`. -/
+  between `Π a, β₁ a` and `Π a, β₂ a`. -/
 def piCongrRight (e : ∀ a, π a ≃ᵐ π' a) : (∀ a, π a) ≃ᵐ ∀ a, π' a where
   toEquiv := .piCongrRight fun a => (e a).toEquiv
   measurable_toFun :=
@@ -1677,24 +1674,17 @@ variable (α)
 
 open Classical
 
-/-- If a measurable space is countably generated, it admits a measurable injection
-into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
+/-- If a measurable space is countably generated and separates points, it admits a measurable
+injection into the Cantor space `ℕ → Bool` (equipped with the product sigma algebra). -/
 theorem measurable_injection_nat_bool_of_countablyGenerated [MeasurableSpace α]
-    [h : HasCountableSeparatingOn α MeasurableSet univ] :
+    [HasCountableSeparatingOn α MeasurableSet univ] :
     ∃ f : α → ℕ → Bool, Measurable f ∧ Function.Injective f := by
-  rcases h.1 with ⟨S, hSc, hSm, hS⟩
-  wlog hne : S.Nonempty generalizing S
-  · exact this (insert ∅ S) (hSc.insert ∅) (forall_insert_of_forall hSm .empty)
-      (fun x hx y hy h ↦ hS x hx y hy (forall_of_forall_insert h)) (insert_nonempty _ _)
-  obtain ⟨e, rfl⟩ := Set.Countable.exists_eq_range hSc hne
-  simp only [forall_range_iff] at hSm hS
-  refine ⟨fun x n ↦ x ∈ e n, ?_, ?_⟩
-  . rw [measurable_pi_iff]
-    intro n
-    apply measurable_to_bool
-    simp only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq]
-    apply hSm
-  · exact fun x y h ↦ hS x trivial y trivial fun n ↦ decide_eq_decide.1 <| congr_fun h _
+  rcases exists_seq_separating α MeasurableSet.empty univ with ⟨e, hem, he⟩
+  refine ⟨(· ∈ e ·), ?_, ?_⟩
+  · rw [measurable_pi_iff]
+    refine fun n ↦ measurable_to_bool ?_
+    simpa only [preimage, mem_singleton_iff, Bool.decide_iff, setOf_mem_eq] using hem n
+  · exact fun x y h ↦ he x trivial y trivial fun n ↦ decide_eq_decide.1 <| congr_fun h _
 #align measurable_space.measurable_injection_nat_bool_of_countably_generated MeasurableSpace.measurable_injection_nat_bool_of_countablyGenerated
 
 end MeasurableSpace

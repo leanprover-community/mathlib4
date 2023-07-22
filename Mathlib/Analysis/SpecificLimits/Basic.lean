@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.specific_limits.basic
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Algebra.Algebra
+
+#align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # A collection of specific limit computations
@@ -109,6 +106,22 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
       have := one_lt_inv hr h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n => by simp)
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
+
+@[simp] theorem tendsto_pow_atTop_nhds_0_iff {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+    [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
+  rw [tendsto_zero_iff_abs_tendsto_zero]
+  refine ⟨fun h ↦ by_contra (fun hr_le ↦ ?_), fun h ↦ ?_⟩
+  · by_cases hr : 1 = |r|
+    · replace h : Tendsto (fun n : ℕ ↦ |r|^n) atTop (𝓝 0) := by simpa only [← abs_pow, h]
+      simp only [hr.symm, one_pow] at h
+      exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
+    · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
+      refine (pow_strictMono_right $ lt_of_le_of_ne (le_of_not_lt hr_le)
+        hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
+      obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
+      exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
+  · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg r)) h
 
 theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :

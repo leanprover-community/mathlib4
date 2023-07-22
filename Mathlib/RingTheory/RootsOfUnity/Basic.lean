@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.roots_of_unity.basic
-! leanprover-community/mathlib commit 7fdeecc0d03cd40f7a165e6cf00a4d2286db599f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.NeZero
@@ -18,6 +13,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.Tactic.Zify
+
+#align_import ring_theory.roots_of_unity.basic from "leanprover-community/mathlib"@"7fdeecc0d03cd40f7a165e6cf00a4d2286db599f"
 
 /-!
 # Roots of unity and primitive roots of unity
@@ -488,7 +485,7 @@ protected theorem mem_rootsOfUnity {ζ : Mˣ} {n : ℕ+} (h : IsPrimitiveRoot ζ
   h.pow_eq_one
 #align is_primitive_root.mem_roots_of_unity IsPrimitiveRoot.mem_rootsOfUnity
 
-/-- If there is a `n`-th primitive root of unity in `R` and `b` divides `n`,
+/-- If there is an `n`-th primitive root of unity in `R` and `b` divides `n`,
 then there is a `b`-th primitive root of unity in `R`. -/
 theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod : n = a * b) :
     IsPrimitiveRoot (ζ ^ a) b := by

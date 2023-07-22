@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measure.outer_measure
-! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Fin.VecNotation
+
+#align_import measure_theory.measure.outer_measure from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
 
 /-!
 # Outer Measures
@@ -742,8 +739,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
   refine' le_antisymm (OuterMeasure.union _ _ _) (le_iInf fun f => le_iInf fun hf => _)
   set μ := OuterMeasure.ofFunction m m_empty
   rcases Classical.em (∃ i, (s ∩ f i).Nonempty ∧ (t ∩ f i).Nonempty) with (⟨i, hs, ht⟩ | he)
-  ·
-    calc
+  · calc
       μ s + μ t ≤ ∞ := le_top
       _ = m (f i) := (h (f i) hs ht).symm
       _ ≤ ∑' i, m (f i) := ENNReal.le_tsum i
@@ -762,8 +758,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
     μ s + μ t ≤ (∑' i : I s, μ (f i)) + ∑' i : I t, μ (f i) :=
       add_le_add (hI _ <| subset_union_left _ _) (hI _ <| subset_union_right _ _)
     _ = ∑' i : ↑(I s ∪ I t), μ (f i) :=
-      (@tsum_union_disjoint _ _ _ _ _ (fun i => μ (f i)) _ _ _ hd ENNReal.summable
-          ENNReal.summable).symm
+      (tsum_union_disjoint (f := fun i => μ (f i)) hd ENNReal.summable ENNReal.summable).symm
     _ ≤ ∑' i, μ (f i) :=
       (tsum_le_tsum_of_inj (↑) Subtype.coe_injective (fun _ _ => zero_le _) (fun _ => le_rfl)
         ENNReal.summable ENNReal.summable)
@@ -1007,8 +1002,8 @@ theorem isCaratheodory_iUnion_nat {s : ℕ → Set α} (h : ∀ i, IsCaratheodor
       intro t
       have hp : m (t ∩ ⋃ i, s i) ≤ ⨆ n, m (t ∩ ⋃ i < n, s i) := by
         convert m.iUnion fun i => t ∩ s i using 1
-        . simp [inter_iUnion]
-        . simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
+        · simp [inter_iUnion]
+        · simp [ENNReal.tsum_eq_iSup_nat, isCaratheodory_sum m h hd]
       refine' le_trans (add_le_add_right hp _) _
       rw [ENNReal.iSup_add]
       refine'
@@ -1417,8 +1412,7 @@ theorem extend_iUnion {β} [Countable β] {f : β → Set α} (hd : Pairwise (Di
     (hm : ∀ i, P (f i)) : extend m (⋃ i, f i) = ∑' i, extend m (f i) := by
   cases nonempty_encodable β
   rw [← Encodable.iUnion_decode₂, ← tsum_iUnion_decode₂]
-  ·
-    exact
+  · exact
       extend_iUnion_nat PU (fun n => Encodable.iUnion_decode₂_cases P0 hm)
         (mU _ (Encodable.iUnion_decode₂_disjoint_on hd))
   · exact extend_empty P0 m0
@@ -1724,7 +1718,7 @@ a measurable set `t ⊇ s` such that `μ i t = (μ i).trim s` for all `i`. -/
 theorem exists_measurable_superset_forall_eq_trim {ι} [Countable ι] (μ : ι → OuterMeasure α)
     (s : Set α) : ∃ t, s ⊆ t ∧ MeasurableSet t ∧ ∀ i, μ i t = (μ i).trim s := by
   choose t hst ht hμt using fun i => (μ i).exists_measurable_superset_eq_trim s
-  replace hst := subset_iInter  hst
+  replace hst := subset_iInter hst
   replace ht := MeasurableSet.iInter ht
   refine' ⟨⋂ i, t i, hst, ht, fun i => le_antisymm _ _⟩
   exacts [hμt i ▸ (μ i).mono (iInter_subset _ _), (mono' _ hst).trans_eq ((μ i).trim_eq ht)]

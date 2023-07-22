@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.localization_localization
-! leanprover-community/mathlib commit 831c494092374cfe9f50591ed0ac81a25efc5b86
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.FractionRing
+
+#align_import ring_theory.localization.localization_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
 /-!
 # Localizations of localizations

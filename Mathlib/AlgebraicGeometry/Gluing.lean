@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.gluing
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace.Gluing
 import Mathlib.AlgebraicGeometry.OpenImmersion.Scheme
+
+#align_import algebraic_geometry.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Gluing Schemes
@@ -41,7 +38,7 @@ Given a family of gluing data of schemes, we may glue them together.
   (intersection) of `U i` and `U j` over the glued space.
 * `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff` : `ι i x = ι j y` if and only if they coincide
   when restricted to `V i i`.
-* `AlgebraicGeometry.Scheme.GlueData.isOpen_iff` : An subset of the glued scheme is open iff
+* `AlgebraicGeometry.Scheme.GlueData.isOpen_iff` : A subset of the glued scheme is open iff
   all its preimages in `U i` are open.
 
 ## Implementation details
@@ -69,8 +66,8 @@ namespace Scheme
 
 /-- A family of gluing data consists of
 1. An index type `J`
-2. An scheme `U i` for each `i : J`.
-3. An scheme `V i j` for each `i j : J`.
+2. A scheme `U i` for each `i : J`.
+3. A scheme `V i j` for each `i j : J`.
   (Note that this is `J × J → Scheme` rather than `J → J → Scheme` to connect to the
   limits library easier.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.parity
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Parity
+
+#align_import data.fintype.parity from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # The cardinality of `Fin (bit0 n)` is even.

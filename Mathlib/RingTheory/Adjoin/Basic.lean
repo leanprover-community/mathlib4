@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.adjoin.basic
-! leanprover-community/mathlib commit a35ddf20601f85f78cd57e7f5b09ed528d71b7af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Finsupp
+
+#align_import ring_theory.adjoin.basic from "leanprover-community/mathlib"@"a35ddf20601f85f78cd57e7f5b09ed528d71b7af"
 
 /-!
 # Adjoining elements to form subalgebras
@@ -254,8 +251,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
-  ·
-    simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
+  · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
       subset_adjoin,-- the rest comes from `squeeze_simp`
       Set.union_subset_iff,
       LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,

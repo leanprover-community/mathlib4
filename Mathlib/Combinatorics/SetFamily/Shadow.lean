@@ -2,14 +2,11 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.shadow
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Slice
 import Mathlib.Logic.Function.Iterate
+
+#align_import combinatorics.set_family.shadow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Shadows
@@ -87,7 +84,7 @@ theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Fins
   sup_mono
 #align finset.shadow_monotone Finset.shadow_monotone
 
-/-- `s` is in the shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element to
+/-- `s` is in the shadow of `𝒜` iff there is a `t ∈ 𝒜` from which we can remove one element to
 get `s`. -/
 theorem mem_shadow_iff : s ∈ ∂ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ a ∈ t, erase t a = s := by
   simp only [shadow, mem_sup, mem_image]
@@ -203,7 +200,7 @@ theorem upShadow_monotone : Monotone (upShadow : Finset (Finset α) → Finset (
   fun _ _ => sup_mono
 #align finset.up_shadow_monotone Finset.upShadow_monotone
 
-/-- `s` is in the upper shadow of `𝒜` iff there is an `t ∈ 𝒜` from which we can remove one element
+/-- `s` is in the upper shadow of `𝒜` iff there is a `t ∈ 𝒜` from which we can remove one element
 to get `s`. -/
 theorem mem_upShadow_iff : s ∈ ∂⁺ 𝒜 ↔ ∃ t ∈ 𝒜, ∃ (a : _) (_ : a ∉ t), insert a t = s := by
   simp_rw [upShadow, mem_sup, mem_image, exists_prop, mem_compl]

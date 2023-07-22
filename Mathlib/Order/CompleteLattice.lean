@@ -2,20 +2,15 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.complete_lattice
-! leanprover-community/mathlib commit 5709b0d8725255e76f47debca6400c07b5c2d8e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Set
 import Mathlib.Data.Nat.Set
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Hom.Basic
-
 import Mathlib.Mathport.Notation
 
+#align_import order.complete_lattice from "leanprover-community/mathlib"@"5709b0d8725255e76f47debca6400c07b5c2d8e6"
 
 /-!
 # Theory of complete lattices
@@ -156,6 +151,7 @@ theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_sSup hb)
 #align le_Sup_of_le le_sSup_of_le
 
+@[gcongr]
 theorem sSup_le_sSup (h : s ⊆ t) : sSup s ≤ sSup t :=
   (isLUB_sSup s).mono (isLUB_sSup t) h
 #align Sup_le_Sup sSup_le_sSup
@@ -224,6 +220,7 @@ theorem sInf_le_of_le (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
   le_trans (sInf_le hb) h
 #align Inf_le_of_le sInf_le_of_le
 
+@[gcongr]
 theorem sInf_le_sInf (h : s ⊆ t) : sInf t ≤ sInf s :=
   (isGLB_sInf s).mono (isGLB_sInf t) h
 #align Inf_le_Inf sInf_le_sInf
@@ -391,12 +388,12 @@ instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : Linear
     max := Sup.sup
     min_def := fun a b => by
       split_ifs with h
-      . simp [h]
-      . simp [(CompleteLinearOrder.le_total a b).resolve_left h]
-    max_def :=  fun a b => by
+      · simp [h]
+      · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+    max_def := fun a b => by
       split_ifs with h
-      . simp [h]
-      . simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
+      · simp [h]
+      · simp [(CompleteLinearOrder.le_total a b).resolve_left h] }
 
 namespace OrderDual
 
@@ -837,10 +834,12 @@ theorem iInf_le_iInf₂ (κ : ι → Sort _) (f : ι → α) : ⨅ i, f i ≤ �
   le_iInf₂ fun i _ => iInf_le f i
 #align infi_le_infi₂ iInf_le_iInf₂
 
+@[gcongr]
 theorem iSup_mono (h : ∀ i, f i ≤ g i) : iSup f ≤ iSup g :=
   iSup_le fun i => le_iSup_of_le i <| h i
 #align supr_mono iSup_mono
 
+@[gcongr]
 theorem iInf_mono (h : ∀ i, f i ≤ g i) : iInf f ≤ iInf g :=
   le_iInf fun i => iInf_le_of_le i <| h i
 #align infi_mono iInf_mono
@@ -954,7 +953,7 @@ theorem Antitone.le_map_iInf₂ [CompleteLattice β] {f : α → β} (hf : Antit
 #align antitone.le_map_infi₂ Antitone.le_map_iInf₂
 
 theorem Monotone.le_map_sSup [CompleteLattice β] {s : Set α} {f : α → β} (hf : Monotone f) :
-    ⨆ a ∈ s, f a ≤ f (sSup s) := by rw [sSup_eq_iSup] ; exact hf.le_map_iSup₂ _
+    ⨆ a ∈ s, f a ≤ f (sSup s) := by rw [sSup_eq_iSup]; exact hf.le_map_iSup₂ _
 #align monotone.le_map_Sup Monotone.le_map_sSup
 
 theorem Antitone.le_map_sInf [CompleteLattice β] {s : Set α} {f : α → β} (hf : Antitone f) :
@@ -1265,9 +1264,9 @@ theorem inf_iInf [Nonempty ι] {f : ι → α} {a : α} : (a ⊓ ⨅ x, f x) = �
 theorem biSup_sup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
     (⨆ (i) (h : p i), f i h) ⊔ a = ⨆ (i) (h : p i), f i h ⊔ a := by
   haveI : Nonempty { i // p i } :=
-      let ⟨i, hi⟩ := h
-      ⟨⟨i, hi⟩⟩ ;
-    rw [iSup_subtype', iSup_subtype', iSup_sup]
+    let ⟨i, hi⟩ := h
+    ⟨⟨i, hi⟩⟩
+  rw [iSup_subtype', iSup_subtype', iSup_sup]
 #align bsupr_sup biSup_sup
 
 theorem sup_biSup {p : ι → Prop} {f : ∀ i, p i → α} {a : α} (h : ∃ i, p i) :
@@ -1471,7 +1470,7 @@ theorem iInf_pair {f : β → α} {a b : β} : ⨅ x ∈ ({a, b} : Set β), f x 
 #align infi_pair iInf_pair
 
 theorem iSup_image {γ} {f : β → γ} {g : γ → α} {t : Set β} :
-    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by rw [← sSup_image, ← sSup_image, ← image_comp] ; rfl
+    ⨆ c ∈ f '' t, g c = ⨆ b ∈ t, g (f b) := by rw [← sSup_image, ← sSup_image, ← image_comp]; rfl
 #align supr_image iSup_image
 
 theorem iInf_image :
@@ -1769,7 +1768,7 @@ theorem sInf_apply {α : Type _} {β : α → Type _} [∀ i, InfSet (β i)] {s 
 theorem iSup_apply {α : Type _} {β : α → Type _} {ι : Sort _} [∀ i, SupSet (β i)] {f : ι → ∀ a, β a}
     {a : α} : (⨆ i, f i) a = ⨆ i, f i a := by
   rw [iSup, sSup_apply, iSup, iSup, ← image_eq_range (fun f : ∀ i, β i => f a) (range f), ←
-    range_comp] ; rfl
+    range_comp]; rfl
 #align supr_apply iSup_apply
 
 @[simp]

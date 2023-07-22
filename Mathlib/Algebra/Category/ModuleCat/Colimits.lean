@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.colimits
-! leanprover-community/mathlib commit 5a684ce82399d820475609907c6ef8dba5b1b97c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Module.colimits from "leanprover-community/mathlib"@"5a684ce82399d820475609907c6ef8dba5b1b97c"
 
 /-!
 # The category of R-modules has all colimits.
@@ -242,8 +239,8 @@ set_option linter.uppercaseLean3 false in
 /-- The group homomorphism from a given module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_smul' := by intros ; apply Quot.sound ; apply Relation.smul
-  map_add' := by intros ; apply Quot.sound ; apply Relation.add
+  map_smul' := by intros; apply Quot.sound; apply Relation.smul
+  map_add' := by intros; apply Quot.sound; apply Relation.add
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.cocone_morphism ModuleCat.Colimits.coconeMorphism
 
@@ -341,8 +338,8 @@ set_option linter.uppercaseLean3 false in
 /-- The group homomorphism from the colimit module to the cone point of any other cocone. -/
 def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   toFun := descFun F s
-  map_smul' s x := by rcases x ; rfl
-  map_add' x y := by rcases x ; rcases y ; rfl
+  map_smul' s x := by rcases x; rfl
+  map_add' x y := by rcases x; rcases y; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.colimits.desc_morphism ModuleCat.Colimits.descMorphism
 

@@ -25,7 +25,7 @@ instance [TopologicalSpace X] {s : Set X} [T0Space s] [SecondCountableTopology s
     fun x _ y _ h ↦ ?_⟩⟩
   exact ((isBasis_countableBasis _).inseparable_iff.2 h).eq
 
-/-- If there exists a countbale family of open sets separating points of `s`, then there exists
+/-- If there exists a countable family of open sets separating points of `s`, then there exists
 a countable family of closed sets separating points of `s`. -/
 instance [TopologicalSpace X] {s : Set X} [h : HasCountableSeparatingOn X IsOpen s] :
     HasCountableSeparatingOn X IsClosed s :=

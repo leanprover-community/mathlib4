@@ -2,17 +2,14 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module order.succ_pred.linear_locally_finite
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.LocallyFinite
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
+
+#align_import order.succ_pred.linear_locally_finite from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Linear locally finite orders
@@ -373,7 +370,7 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
-  map_rel_iff' := by intro i j ; exact toZ_le_iff i j
+  map_rel_iff' := by intro i j; exact toZ_le_iff i j
 set_option linter.uppercaseLean3 false in
 #align order_iso_range_to_Z_of_linear_succ_pred_arch orderIsoRangeToZOfLinearSuccPredArch
 
@@ -404,7 +401,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
     · simp_rw [if_neg (not_le.mpr hn)]
       rw [toZ_iterate_pred]
       simp only [hn.le, Int.toNat_of_nonneg, Right.nonneg_neg_iff, neg_neg]
-  map_rel_iff' := by intro i j ; exact toZ_le_iff i j
+  map_rel_iff' := by intro i j; exact toZ_le_iff i j
 #align order_iso_int_of_linear_succ_pred_arch orderIsoIntOfLinearSuccPredArch
 
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/

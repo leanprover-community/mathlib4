@@ -2,11 +2,6 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.nilpotent
-! leanprover-community/mathlib commit 6b0169218d01f2837d79ea2784882009a0da1aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Tactic.Monotonicity
+
+#align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
 /-!
 # Nilpotent Lie algebras
@@ -140,7 +137,7 @@ theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
 theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries R L M 1 = ⊥ := by
   constructor <;> intro h
   · erw [eq_bot_iff, LieSubmodule.lieSpan_le]; rintro m ⟨x, n, hn⟩; rw [← hn, h.trivial]; simp
-  · rw [LieSubmodule.eq_bot_iff] at h ; apply IsTrivial.mk; intro x m; apply h
+  · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
     -- Porting note: was `use x, m; rfl`
     simp only [LieSubmodule.top_coe, Subtype.exists, LieSubmodule.mem_top, exists_prop, true_and,

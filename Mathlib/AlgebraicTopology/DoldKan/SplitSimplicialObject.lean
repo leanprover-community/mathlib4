@@ -2,15 +2,12 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.split_simplicial_object
-! leanprover-community/mathlib commit 31019c2504b17f85af7e0577585fad996935a317
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
 import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+
+#align_import algebraic_topology.dold_kan.split_simplicial_object from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
 
 /-!
 
@@ -40,14 +37,14 @@ noncomputable def πSummand [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A
     X.obj Δ ⟶ s.N A.1.unop.len := by
   refine' (s.iso Δ).inv ≫ Sigma.desc fun B => _
   by_cases B = A
-  · exact eqToHom (by subst h ; rfl)
+  · exact eqToHom (by subst h; rfl)
   · exact 0
 #align simplicial_object.splitting.π_summand SimplicialObject.Splitting.πSummand
 
 @[reassoc (attr := simp)]
 theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     s.ιSummand A ≫ s.πSummand A = 𝟙 _ := by
-  dsimp [ιSummand, πSummand]
+  dsimp only [ιSummand, iso_hom, πSummand, iso_inv, summand]
   simp only [summand, assoc, IsIso.hom_inv_id_assoc]
   erw [colimit.ι_desc, Cofan.mk_ι_app]
   dsimp
@@ -57,7 +54,7 @@ theorem ι_πSummand_eq_id [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A 
 @[reassoc (attr := simp)]
 theorem ι_πSummand_eq_zero [HasZeroMorphisms C] {Δ : SimplexCategoryᵒᵖ} (A B : IndexSet Δ)
     (h : B ≠ A) : s.ιSummand A ≫ s.πSummand B = 0 := by
-  dsimp [ιSummand, πSummand]
+  dsimp only [ιSummand, iso_hom, πSummand, iso_inv, summand]
   simp only [summand, assoc, IsIso.hom_inv_id_assoc]
   erw [colimit.ι_desc, Cofan.mk_ι_app]
   exact dif_neg h.symm

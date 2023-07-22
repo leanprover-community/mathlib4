@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.log.deriv
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+
+#align_import analysis.special_functions.log.deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Derivative and series expansion of real logarithm
@@ -249,7 +246,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
         congr with i
         rw [Nat.cast_succ, mul_div_cancel_left _ (Nat.cast_add_one_pos i).ne']
   -- second step: show that the derivative of `F` is small
-  have B : ∀ y ∈ Icc (-|x|) (|x|), |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
+  have B : ∀ y ∈ Icc (-|x|) |x|, |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
     calc
       |F' y| = |y| ^ n / |1 - y| := by simp [abs_div]
       _ ≤ |x| ^ n / (1 - |x|) := by

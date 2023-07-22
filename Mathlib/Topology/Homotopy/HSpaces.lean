@@ -2,14 +2,11 @@
 Copyright (c) 2022 Filippo A. E. Nuccio Mortarino Majno di Capriglio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
-
-! This file was ported from Lean 3 source module topology.homotopy.H_spaces
-! leanprover-community/mathlib commit 729d23f9e1640e1687141be89b106d3c8f9d10c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Homotopy.Path
+
+#align_import topology.homotopy.H_spaces from "leanprover-community/mathlib"@"729d23f9e1640e1687141be89b106d3c8f9d10c0"
 
 /-!
 # H-spaces
@@ -73,7 +70,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 #align H_space HSpace
 
 -- mathport name: H_space.Hmul
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on a H-space
+-- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 -- porting note: opening `HSpaces` so that the above notation works
@@ -286,7 +283,7 @@ theorem delayReflLeft_one (γ : Path x y) : delayReflLeft 1 γ = γ := by
   simp only [delayReflLeft, delayReflRight_one, Path.symm_symm]
 #align path.delay_refl_left_one Path.delayReflLeft_one
 
-/-- The loop space at x carries a structure of a `H-space`. Note that the field `eHmul`
+/-- The loop space at x carries a structure of an `H-space`. Note that the field `eHmul`
 (resp. `hmulE`) neither implies nor is implied by `Path.Homotopy.reflTrans`
 (resp. `Path.Homotopy.transRefl`).
 -/

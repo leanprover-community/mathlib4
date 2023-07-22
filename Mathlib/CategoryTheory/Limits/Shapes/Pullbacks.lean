@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.pullbacks
-! leanprover-community/mathlib commit 7316286ff2942aa14e540add9058c6b0aa1c8070
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+
+#align_import category_theory.limits.shapes.pullbacks from "leanprover-community/mathlib"@"7316286ff2942aa14e540add9058c6b0aa1c8070"
 
 /-!
 # Pullbacks
@@ -1222,11 +1219,11 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
 
 /-- Given such a diagram, then there is a natural morphism `W ×ₛ X ⟶ Y ×ₜ Z`.
 
-    W  ⟶  Y
+    W ⟶ Y
       ↘      ↘
-        S  ⟶  T
+        S ⟶ T
       ↗      ↗
-    X  ⟶  Z
+    X ⟶ Z
 
 -/
 abbrev pullback.map {W X Y Z S T : C} (f₁ : W ⟶ S) (f₂ : X ⟶ S) [HasPullback f₁ f₂] (g₁ : Y ⟶ T)
@@ -1244,11 +1241,11 @@ abbrev pullback.mapDesc {X Y S T : C} (f : X ⟶ S) (g : Y ⟶ S) (i : S ⟶ T) 
 
 /-- Given such a diagram, then there is a natural morphism `W ⨿ₛ X ⟶ Y ⨿ₜ Z`.
 
-        W  ⟶  Y
+        W ⟶ Y
       ↗      ↗
-    S  ⟶  T
+    S ⟶ T
       ↘      ↘
-        X  ⟶  Z
+        X ⟶ Z
 
 -/
 abbrev pushout.map {W X Y Z S T : C} (f₁ : S ⟶ W) (f₂ : S ⟶ X) [HasPushout f₁ f₂] (g₁ : T ⟶ Y)
@@ -2383,11 +2380,11 @@ theorem hasPullback_assoc_symm [HasPullback f₁ (g₃ ≫ f₂)] : HasPullback 
 
 /- Porting note : these don't seem to be propagating change from
 -- variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ (g₃ ≫ f₂)] -/
-variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)]
+variable [HasPullback (g₂ ≫ f₃) f₄] [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)]
 
 /-- The canonical isomorphism `(X₁ ×[Y₁] X₂) ×[Y₂] X₃ ≅ X₁ ×[Y₁] (X₂ ×[Y₂] X₃)`. -/
 noncomputable def pullbackAssoc [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)] :
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     pullback (pullback.snd ≫ f₃ : pullback f₁ f₂ ⟶ _) f₄ ≅
       pullback f₁ (pullback.fst ≫ f₂ : pullback f₃ f₄ ⟶ _) :=
   (pullbackPullbackLeftIsPullback f₁ f₂ f₃ f₄).conePointUniqueUpToIso
@@ -2396,7 +2393,7 @@ noncomputable def pullbackAssoc [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)]:
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)]:
     (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.fst = pullback.fst := by
   trans l₁' ≫ pullback.fst
   rw [← Category.assoc]
@@ -2407,14 +2404,14 @@ theorem pullbackAssoc_inv_fst_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_hom_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)] :
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.fst = pullback.fst ≫ pullback.fst := by
   rw [← Iso.eq_inv_comp, pullbackAssoc_inv_fst_fst]
 #align category_theory.limits.pullback_assoc_hom_fst CategoryTheory.Limits.pullbackAssoc_hom_fst
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)] : (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] : (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫
     pullback.snd ≫ pullback.fst = pullback.fst ≫ pullback.snd := by
   trans l₂ ≫ pullback.fst
   rw [← Category.assoc]
@@ -2425,7 +2422,7 @@ theorem pullbackAssoc_hom_snd_fst [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)] :
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).hom ≫ pullback.snd ≫ pullback.snd = pullback.snd := by
   trans l₂ ≫ pullback.snd
   rw [← Category.assoc]
@@ -2436,14 +2433,14 @@ theorem pullbackAssoc_hom_snd_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) �
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_fst_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)] :
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.fst ≫ pullback.snd = pullback.snd ≫ pullback.fst :=
   by rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_fst]
 #align category_theory.limits.pullback_assoc_inv_fst_snd CategoryTheory.Limits.pullbackAssoc_inv_fst_snd
 
 @[reassoc (attr := simp)]
 theorem pullbackAssoc_inv_snd [HasPullback ((pullback.snd : Z₁ ⟶ X₂) ≫ f₃) f₄]
-    [HasPullback f₁ ((pullback.fst : Z₂ ⟶  X₂) ≫ f₂)] :
+    [HasPullback f₁ ((pullback.fst : Z₂ ⟶ X₂) ≫ f₂)] :
     (pullbackAssoc f₁ f₂ f₃ f₄).inv ≫ pullback.snd = pullback.snd ≫ pullback.snd := by
   rw [Iso.inv_comp_eq, pullbackAssoc_hom_snd_snd]
 #align category_theory.limits.pullback_assoc_inv_snd CategoryTheory.Limits.pullbackAssoc_inv_snd
@@ -2586,8 +2583,8 @@ theorem hasPushout_assoc_symm [HasPushout g₁ (g₂ ≫ f₃)] : HasPushout (g�
 -- variable [HasPushout (g₃ ≫ f₂) g₄] [HasPushout g₁ (g₂ ≫ f₃)]
 
 /-- The canonical isomorphism `(X₁ ⨿[Z₁] X₂) ⨿[Z₂] X₃ ≅ X₁ ⨿[Z₁] (X₂ ⨿[Z₂] X₃)`. -/
-noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))]:
+noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))]:
     pushout (g₃ ≫ pushout.inr : _ ⟶ pushout g₁ g₂) g₄ ≅
       pushout g₁ (g₂ ≫ pushout.inl : _ ⟶ pushout g₃ g₄) :=
   (pushoutPushoutLeftIsPushout g₁ g₂ g₃ g₄).coconePointUniqueUpToIso
@@ -2595,8 +2592,8 @@ noncomputable def pushoutAssoc [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y�
 #align category_theory.limits.pushout_assoc CategoryTheory.Limits.pushoutAssoc
 
 @[reassoc (attr := simp)]
-theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))] :
+theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
     pushout.inl ≫ pushout.inl ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inl := by
   trans f₁ ≫ l₁
   · congr 1
@@ -2607,8 +2604,8 @@ theorem inl_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  
 #align category_theory.limits.inl_inl_pushout_assoc_hom CategoryTheory.Limits.inl_inl_pushoutAssoc_hom
 
 @[reassoc (attr := simp)]
-theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))] :
+theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
     pushout.inr ≫ pushout.inl ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inl ≫ pushout.inr := by
   trans f₂ ≫ l₁
   · congr 1
@@ -2619,8 +2616,8 @@ theorem inr_inl_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  
 #align category_theory.limits.inr_inl_pushout_assoc_hom CategoryTheory.Limits.inr_inl_pushoutAssoc_hom
 
 @[reassoc (attr := simp)]
-theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))] :
+theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
     pushout.inr ≫ pushout.inr ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inr := by
   trans f₄ ≫ l₂'
   · congr 1
@@ -2631,22 +2628,22 @@ theorem inr_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  
 #align category_theory.limits.inr_inr_pushout_assoc_inv CategoryTheory.Limits.inr_inr_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
-theorem inl_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))] :
+theorem inl_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
     pushout.inl ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inl ≫ pushout.inl := by
   rw [Iso.comp_inv_eq, Category.assoc, inl_inl_pushoutAssoc_hom]
 #align category_theory.limits.inl_pushout_assoc_inv CategoryTheory.Limits.inl_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
-theorem inl_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))] :
+theorem inl_inr_pushoutAssoc_inv [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
     pushout.inl ≫ pushout.inr ≫ (pushoutAssoc g₁ g₂ g₃ g₄).inv = pushout.inr ≫ pushout.inl := by
   rw [← Category.assoc, Iso.comp_inv_eq, Category.assoc, inr_inl_pushoutAssoc_hom]
 #align category_theory.limits.inl_inr_pushout_assoc_inv CategoryTheory.Limits.inl_inr_pushoutAssoc_inv
 
 @[reassoc (attr := simp)]
-theorem inr_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶  Y₁)) g₄]
-    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶  Y₂))] :
+theorem inr_pushoutAssoc_hom [HasPushout (g₃ ≫ (pushout.inr : X₂ ⟶ Y₁)) g₄]
+    [HasPushout g₁ (g₂ ≫ (pushout.inl : X₂ ⟶ Y₂))] :
     pushout.inr ≫ (pushoutAssoc g₁ g₂ g₃ g₄).hom = pushout.inr ≫ pushout.inr := by
   rw [← Iso.eq_comp_inv, Category.assoc, inr_inr_pushoutAssoc_inv]
 #align category_theory.limits.inr_pushout_assoc_hom CategoryTheory.Limits.inr_pushoutAssoc_hom
@@ -2699,6 +2696,13 @@ instance (priority := 100) hasPullbacks_of_hasWidePullbacks (D : Type u) [h : Ca
   haveI I := @hasWidePullbacks_shrink.{0, w} D h h'
   infer_instance
 #align category_theory.limits.has_pullbacks_of_has_wide_pullbacks CategoryTheory.Limits.hasPullbacks_of_hasWidePullbacks
+
+-- see Note [lower instance priority]
+/-- Having wide pushout at any universe level implies having binary pushouts. -/
+instance (priority := 100) hasPushouts_of_hasWidePushouts (D : Type u) [h : Category.{v} D]
+    [h' : HasWidePushouts.{w} D] : HasPushouts.{v,u} D := by
+  haveI I := @hasWidePushouts_shrink.{0, w} D h h'
+  infer_instance
 
 variable {C}
 

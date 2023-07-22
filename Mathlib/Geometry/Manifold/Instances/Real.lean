@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.instances.real
-! leanprover-community/mathlib commit 6a033cb3d188a12ca5c509b33e2eaac1c61916cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 import Mathlib.Analysis.InnerProductSpace.PiL2
+
+#align_import geometry.manifold.instances.real from "leanprover-community/mathlib"@"6a033cb3d188a12ca5c509b33e2eaac1c61916cd"
 
 /-!
 # Constructing examples of manifolds over ℝ
@@ -177,7 +174,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
-    dsimp at hz ; linarith
+    dsimp at hz; linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
@@ -226,7 +223,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
-    dsimp at hz ; linarith
+    dsimp at hz; linarith
   left_inv' := by
     rintro ⟨z, hz⟩ h'z
     simp only [mem_setOf_eq, mem_Icc] at hz h'z
