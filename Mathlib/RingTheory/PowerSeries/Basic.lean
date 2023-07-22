@@ -904,7 +904,7 @@ end CommRing
 
 section LocalRing
 
-variable {S : Type _} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type _} [CommRing R] [Semiring S] (f : R →+* S) [IsLocalRingHom f]
 
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
@@ -916,7 +916,7 @@ instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
     rw [constantCoeff_map] at h
     have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff (↑ψ) ψ.isUnit
     rw [h] at this
-    rcases isUnit_of_isUnit_map f _ this with ⟨c, hc⟩
+    rcases this.of_map with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
 #align mv_power_series.map.is_local_ring_hom MvPowerSeries.map.isLocalRingHom
 
