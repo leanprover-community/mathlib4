@@ -2,17 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.constructions.borel_space.basic
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.MeasureTheory.Lattice
-import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Instances.EReal
@@ -20,6 +14,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+
+#align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # Borel (measurable) space
@@ -838,14 +834,6 @@ theorem Continuous.aemeasurable {f : α → γ} (h : Continuous f) {μ : Measure
 theorem ClosedEmbedding.measurable {f : α → γ} (hf : ClosedEmbedding f) : Measurable f :=
   hf.continuous.measurable
 #align closed_embedding.measurable ClosedEmbedding.measurable
-
-theorem Continuous.isOpenPosMeasure_map {f : β → γ} (hf : Continuous f)
-    (hf_surj : Function.Surjective f) {μ : Measure β} [μ.IsOpenPosMeasure] :
-    (Measure.map f μ).IsOpenPosMeasure := by
-  refine' ⟨fun U hUo hUne => _⟩
-  rw [Measure.map_apply hf.measurable hUo.measurableSet]
-  exact (hUo.preimage hf).measure_ne_zero μ (hf_surj.nonempty_preimage.mpr hUne)
-#align continuous.is_open_pos_measure_map Continuous.isOpenPosMeasure_map
 
 /-- If a function is defined piecewise in terms of functions which are continuous on their
 respective pieces, then it is measurable. -/

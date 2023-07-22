@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module probability.martingale.convergence
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Martingale.Upcrossing
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Constructions.Polish
+
+#align_import probability.martingale.convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 
@@ -406,8 +403,8 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht
   · rintro t htmeas ht -
-    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ _ htmeas (hg.trim hle hgmeas)
-    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ _ htmeas
+    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
+    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
     rw [set_integral_trim hle hgmeas htmeas.compl,

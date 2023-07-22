@@ -2,15 +2,12 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module topology.omega_complete_partial_order
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Basic
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
+
+#align_import topology.omega_complete_partial_order from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Scott Topological Spaces

@@ -2,16 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
-
-! This file was ported from Lean 3 source module topology.basic
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Ultrafilter
 import Mathlib.Algebra.Support
 import Mathlib.Order.Filter.Lift
 import Mathlib.Tactic.Continuity
+
+#align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
 /-!
 # Basic theory of topological spaces.
@@ -46,8 +43,8 @@ Topology in mathlib heavily uses filters (even more than in Bourbaki). See expla
 
 ## References
 
-*  [N. Bourbaki, *General Topology*][bourbaki1966]
-*  [I. M. James, *Topologies and Uniformities*][james1999]
+* [N. Bourbaki, *General Topology*][bourbaki1966]
+* [I. M. James, *Topologies and Uniformities*][james1999]
 
 ## Tags
 

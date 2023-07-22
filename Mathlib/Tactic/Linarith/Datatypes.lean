@@ -282,7 +282,7 @@ def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPrep
 tracing the result if `trace.linarith` is on.
 -/
 def GlobalBranchingPreprocessor.process (pp : GlobalBranchingPreprocessor)
-  (g : MVarId) (l : List Expr) : MetaM (List Branch) := do
+  (g : MVarId) (l : List Expr) : MetaM (List Branch) := g.withContext do
   let branches ← pp.transform g l
   if branches.length > 1 then
     trace[linarith] "Preprocessing: {pp.name} has branched, with branches:"
@@ -305,7 +305,7 @@ A `CertificateOracle` is a function
 `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in `hyps`
 by eliminating all variables ≤ `max_var`.
 If successful, it returns a map `coeff : Nat → Nat` as a certificate.
-This map represents that we can find a contradiction by taking the sum  `∑ (coeff i) * hyps[i]`.
+This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 
 The default `CertificateOracle` used by `linarith` is
 `Linarith.FourierMotzkin.produceCertificate`.

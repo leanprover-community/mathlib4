@@ -2,14 +2,11 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Eric Rodriguez
-
-! This file was ported from Lean 3 source module number_theory.number_field.norm
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Norm
+
+#align_import number_theory.number_field.norm from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Norm in number fields
