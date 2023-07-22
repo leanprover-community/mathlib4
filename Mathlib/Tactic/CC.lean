@@ -34,6 +34,17 @@ def Lean.Expr.isSignedNum (e : Expr) : Bool :=
 def Lean.Expr.isValue (e : Expr) : Bool :=
   e.isSignedNum || e.isCharLit || e.isStringLit
 
+private def Lean.Expr.getAppAppsAux : Expr → Array Expr → Nat → Array Expr
+  | .app f a, as, i => getAppAppsAux f (as.set! i (.app f a)) (i-1)
+  | _,       as, _ => as
+
+/--  Given `f a b c`, return `#[f a, f a b, f a b c]`.
+    Remark: this procedure is very similar to `getAppArgs`. -/
+@[inline] def Lean.Expr.getAppApps (e : Expr) : Array Expr :=
+  let dummy := mkSort levelZero
+  let nargs := e.getAppNumArgs
+  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+
 /-- Return true if `e` represents a value (nat/int numereal, character, or string). -/
 def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
@@ -48,6 +59,15 @@ def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
   if Expr.quickLt a b then .lt else if a.eqv b then .eq else .gt
 
 abbrev RBExprMap (α : Type u) := Std.RBMap Expr α Expr.quickCmp
+
+structure Lean.Meta.ExtCongrTheorem where
+  /-- The basic `CongrTheorem` object defined at `Lean.Meta.CongrTheorems` -/
+  congrTheorem : CongrTheorem
+  /-- If `heqResult` is true, then lemma is based on heterogeneous equality
+      and the conclusion is a heterogeneous equality. -/
+  heqResult : Bool := false
+  /-- If `heqTheorem` is true, then lemma was created using `mkHCongrTheorem`. -/
+  heqTheorem : Bool := false
 
 private def Lean.Expr.isNotOrNe : Expr → Bool × Expr
   | .app (.const ``Not []) a => (true, a)
@@ -3090,6 +3110,22 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := sorry
 
 def probagateImpUp (e : Expr) : CCM Unit := sorry
 
+def isSymmRelation (e : Expr) : CCM (Option (Name × Expr × Expr)) := do
+  if let some (_, lhs, rhs) := e.eq? then
+    return (``Eq, lhs, rhs)
+  if let some (lhs, rhs) := e.iff? then
+    return (``Iff, lhs, rhs)
+  if let .app (.app rel lhs) rhs := e then
+    unless (← (symmExt.getState (← getEnv)).getMatch rel).isEmpty do
+      match rel.getAppFn.constName? with
+      | some n => return some (n, lhs, rhs)
+      | none => return none
+  return none
+
+def addSymmCongruenceTable (e : Expr) : CCM Unit := sorry
+
+def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := sorry
+
 /-
 ```c++
 void congruence_closure::internalize_app(expr const & e, unsigned gen) {
@@ -3181,16 +3217,29 @@ void congruence_closure::internalize_app(expr const & e, unsigned gen) {
 ```
 -/
 
-def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
+mutual
+partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   if ← isInterpretedValue e then
     mkEntry e true gen
     if (← get).state.config.values then return -- we treat values as atomic symbols
   else
     mkEntry e false gen
     if (← get).state.config.values && e.isValue then return -- we treat values as atomic symbols
+  if let some (_, lhs, rhs) ← isSymmRelation e then
+    internalizeCore lhs (some e) gen
+    internalizeCore rhs (some e) gen
+    addOccurrence e lhs true
+    addOccurrence e rhs true
+    addSymmCongruenceTable e
+  else if (← mkExtCongrTheorem e).isSome then
+    let fn := e.getAppFn
+    let apps := e.getAppApps
+    assert! apps.size > 0
+    assert! apps.back == e
+    sorry
   sorry
 
-def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit := do
+partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit := do
   assert! !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
   if e.hasExprMVar && !(← get).state.frozePartitions then
@@ -3200,7 +3249,7 @@ def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit :=
     match e with
     | .bvar _ => unreachable!
     | .sort _ => pure ()
-    | .const _ _ | .mvar _ => mkEntry e false gen
+    | .const _ _ | .mvar _ | .proj _ _ _ => mkEntry e false gen
     | .lam _ _ _ _ | .letE _ _ _ _ _ => mkEntry e false gen
     | .fvar f =>
       mkEntry e false gen
@@ -3219,7 +3268,8 @@ def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit :=
           probagateImpUp e
       if ← isProp e then
         mkEntry e false gen
-    | .app _ _ | .lit _ | .proj _ _ _ => internalizeApp e gen
+    | .app _ _ | .lit _ => internalizeApp e gen
+end
 
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := sorry
 
