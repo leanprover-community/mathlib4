@@ -92,14 +92,10 @@ def Set.ToDirectedSet [SemilatticeSup α] [DecidableEq α] (s : Set α) : Direct
           cases' hc with h₁ h₂
           · apply le_sup_of_le_left
             rw [ha]
-            apply Finset.le_sup'_of_le
-            exact h₁
-            exact Eq.le rfl
+            exact Finset.le_sup'_of_le _ h₁ (Eq.le rfl)
           · apply le_sup_of_le_right
             rw [hb]
-            apply Finset.le_sup'_of_le
-            exact h₂
-            exact Eq.le rfl
+            exact Finset.le_sup'_of_le _ h₂ (Eq.le rfl)
     · constructor
       · exact le_sup_left
       · exact le_sup_right
@@ -129,10 +125,7 @@ lemma Set_DirectedSet_upperBounds [SemilatticeSup α] [DecidableEq α] {s : Set 
     obtain ⟨Fb,⟨H,hFb⟩⟩ := hb
     rw [hFb.2, Finset.sup'_le_iff]
     intro c hc
-    rw [id_eq]
-    apply hu
-    apply hFb.1
-    exact hc
+    exact hu (hFb.1 hc)
 
 lemma Set_DirectedSet_LUB [SemilatticeSup α] [DecidableEq α] {s : Set α} {u : α} : IsLUB s u ↔
     IsLUB (Set.ToDirectedSet s).set u := by
@@ -144,7 +137,7 @@ lemma Set_DirectedSet_LUB [SemilatticeSup α] [DecidableEq α] {s : Set α} {u :
     · rw [mem_lowerBounds]
       intro b hb
       rw [isLUB_le_iff hsu]
-      apply upperBounds_mono_set Set_subseteq_DirectedSet hb
+      exact upperBounds_mono_set Set_subseteq_DirectedSet hb
   · intro h
     constructor
     · rw [← Set_DirectedSet_upperBounds]
@@ -179,9 +172,7 @@ instance [SemilatticeSup α] [DecidableEq α] (dSup : DirectedSet α → α)
       exact Iff.mpr Set_DirectedSet_LUB (h (Set.ToDirectedSet s))
     simp only [ge_iff_le]
     rw [IsLUB, IsLeast] at e1
-    apply e1.1
-    apply Set_subseteq_DirectedSet
-    exact ha
+    exact e1.1 (Set_subseteq_DirectedSet ha)
   sSup_le := by
     intros s a ha
     have e1: IsLUB (Set.ToDirectedSet s).set (dSup (Set.ToDirectedSet s)) := by
