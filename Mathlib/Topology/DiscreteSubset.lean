@@ -19,7 +19,7 @@ Given a topological space `X` together with a subset `s ⊆ X`, there are two di
 When `s` is closed, the two conditions are equivalent provided `X` is locally compact and T1,
 see `IsClosed.tendsto_coe_cofinite_iff`.
 
-## Main definitions
+## Main statements
 
  * `tendsto_cofinite_cocompact_iff`:
  * `IsClosed.tendsto_coe_cofinite_iff`:
@@ -32,12 +32,9 @@ variable {X Y : Type _} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
 
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
-  refine' ⟨fun h K hK ↦ _, fun h U hU ↦ _⟩
-  · replace h : Kᶜ ∈ map f cofinite := h hK.compl_mem_cocompact
-    rwa [mem_map, mem_cofinite, preimage_compl, compl_compl] at h
-  · obtain ⟨t, ht : IsCompact t, ht' : Uᶜ ⊆ t⟩ := mem_cocompact'.mp hU
-    replace h : Set.Finite (f ⁻¹' Uᶜ) := (h t ht).subset (preimage_mono ht')
-    rwa [mem_map, mem_cofinite, ← preimage_compl]
+  rw [hasBasis_cocompact.tendsto_right_iff]
+  refine' forall₂_congr (fun K _ ↦ _)
+  simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [LocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
