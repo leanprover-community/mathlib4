@@ -1104,6 +1104,10 @@ instance : Inhabited (Function.End α) :=
 
 variable {α}
 
+theorem Function.End.pow_eq_iterate (f : Function.End α) : ∀ n, f ^ n = f^[n]
+| 0 => rfl
+| n + 1 => by rw [pow_succ', pow_eq_iterate f n]; rfl
+
 /-- The tautological action by `Function.End α` on `α`.
 
 This is generalized to bundled endomorphisms by:
