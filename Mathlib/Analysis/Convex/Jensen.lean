@@ -2,14 +2,11 @@
 Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudriashov
-
-! This file was ported from Lean 3 source module analysis.convex.jensen
-! leanprover-community/mathlib commit bfad3f455b388fbcc14c49d0cac884f774f14d20
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Function
+
+#align_import analysis.convex.jensen from "leanprover-community/mathlib"@"bfad3f455b388fbcc14c49d0cac884f774f14d20"
 
 /-!
 # Jensen's inequality and maximum principle for convex functions

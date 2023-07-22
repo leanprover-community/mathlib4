@@ -2,16 +2,13 @@
 Copyright (c) 2021 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Kyle Miller, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.cross_product
-! leanprover-community/mathlib commit 91288e351d51b3f0748f0a38faa7613fb0ae2ada
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Matrix.Determinant
 import Mathlib.Algebra.Lie.Basic
+
+#align_import linear_algebra.cross_product from "leanprover-community/mathlib"@"91288e351d51b3f0748f0a38faa7613fb0ae2ada"
 
 /-!
 # Cross products
@@ -90,10 +87,6 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
   simp_rw [cross_apply, mul_comm, cons_eq_zero_iff]
   exact ⟨sub_self _, sub_self _, sub_self _, zero_empty.symm⟩
 #align cross_self cross_self
-
--- Porting note: Added this to make `norm_num` work better
-@[simp]
-private theorem vecCons2 (a : R) (v : Fin 2 → R) : vecCons a v 2 = v 1 := rfl
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
