@@ -84,13 +84,11 @@ lemma mul_fromColumns (A: Matrix M N R)(B₁: Matrix N N₁ R)(B₂: Matrix N N�
   cases' j with j j
   all_goals (simp only [mul_apply, of_apply, Sum.elim_inl, Sum.elim_inr] )
 
--- @[simp]
 lemma fromRows_zero: fromRows (0: Matrix M₁ N R) (0: Matrix M₂ N R) = 0 := by
   funext i j
   unfold fromRows
   simp only [Sum.elim_zero_zero, of_apply, Pi.zero_apply, zero_apply]
 
--- @[simp]
 lemma fromColumns_zero: fromColumns (0: Matrix M N₁ R) (0: Matrix M N₂ R) = 0 := by
   funext i j
   unfold fromColumns
