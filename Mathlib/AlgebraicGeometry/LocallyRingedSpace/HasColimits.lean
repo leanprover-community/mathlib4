@@ -297,7 +297,10 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     change IsLocalRingHom h
     suffices : IsLocalRingHom ((PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _).comp h)
     · apply isLocalRingHom_of_comp _ (PresheafedSpace.stalkMap (coequalizerCofork f g).π.1 _)
-    change IsLocalRingHom (_ ≫ PresheafedSpace.stalkMap (coequalizerCofork f g).π.val y)
+    -- note to reviewers: this `change` is now more brittle because it now has to fully resolve
+    -- the type to be able to search for `MonoidHomClass`, even though of course all homs in
+    -- `CommRingCat` are clearly such
+    change IsLocalRingHom (h ≫ PresheafedSpace.stalkMap (coequalizerCofork f g).π.val y)
     erw [← PresheafedSpace.stalkMap.comp]
     apply isLocalRingHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
     infer_instance
