@@ -301,7 +301,7 @@ lemma tendsto_mulIndicator_thickening_mulIndicator_closure (f : α → β) (E : 
 /-- The (mul)indicators of closed δ-thickenings of a set tend pointwise to the
 (mul)-indicator of the set, as δ tends to zero. -/
 @[to_additive]
-lemma tendsto_mul_indicator_cthickening_mulIndicator_closure (f : α → β) (E : Set α) :
+lemma tendsto_mulIndicator_cthickening_mulIndicator_closure (f : α → β) (E : Set α) :
     Tendsto (fun δ ↦ (Metric.cthickening δ E).mulIndicator f) (𝓝 0)
       (𝓝 ((closure E).mulIndicator f)) := by
   rw [tendsto_pi_nhds]
