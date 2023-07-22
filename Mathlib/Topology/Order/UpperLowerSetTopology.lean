@@ -392,11 +392,11 @@ lemma IsOpen_iff_IsLowerSet : IsOpen s ↔ IsLowerSet s := by
 
 -- Alexandrov property, set formulation
 theorem IsOpen_sInter {S : Set (Set α)} (hf : ∀ s ∈ S, IsOpen s) : IsOpen (⋂₀ S) :=
-  @UpperSetTopology.IsOpen_sInter αᵒᵈ _ _ _ _ (fun s a ↦ hf s a)
+  UpperSetTopology.IsOpen_sInter (α := αᵒᵈ) (fun s a ↦ hf s a)
 
 -- Alexandrov property, index formulation
 theorem isOpen_iInter {f : ι → Set α} (hf : ∀ i, IsOpen (f i)) : IsOpen (⋂ i, f i) :=
-  @UpperSetTopology.isOpen_iInter αᵒᵈ _ _ _ _ _ hf
+  UpperSetTopology.isOpen_iInter (α := αᵒᵈ) hf
 
 lemma isClosed_iff_isUpper {s : Set α} : IsClosed s ↔ (IsUpperSet s) := by
   rw [← isOpen_compl_iff, IsOpen_iff_IsLowerSet, isUpperSet_compl.symm, compl_compl]
@@ -405,8 +405,7 @@ lemma isClosed_isUpper {s : Set α} : IsClosed s → IsUpperSet s := fun h =>
   (isClosed_iff_isUpper.mp h)
 
 lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
-  @UpperSetTopology.closure_eq_lowerClosure αᵒᵈ _ _ _ _
-
+  UpperSetTopology.closure_eq_lowerClosure (α := αᵒᵈ)
 /--
 The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
 interval (-∞,a].
