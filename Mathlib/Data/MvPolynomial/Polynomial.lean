@@ -2,14 +2,11 @@
 Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module data.mv_polynomial.polynomial
-! leanprover-community/mathlib commit 0b89934139d3be96f9dab477f10c20f9f93da580
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.Polynomial.Eval
+
+#align_import data.mv_polynomial.polynomial from "leanprover-community/mathlib"@"0b89934139d3be96f9dab477f10c20f9f93da580"
 
 /-!
 # Some lemmas relating polynomials and multivariable polynomials.
