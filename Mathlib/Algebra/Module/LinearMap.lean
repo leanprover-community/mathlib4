@@ -89,15 +89,18 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 maps is available with the predicate `IsLinearMap`, but it should be avoided most of the time. -/
 structure LinearMap {R : Type _} {S : Type _} [Semiring R] [Semiring S] (σ : R →+* S) (M : Type _)
     (M₂ : Type _) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends
-    AddHom M M₂ where
-  /-- A linear map preserves scalar multiplication.
-  We prefer the spelling `_root_.map_smul` instead. -/
-  map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
+    AddHom M M₂, MulActionHom σ M M₂ 
+--  /-- A linear map preserves scalar multiplication.
+--  We prefer the spelling `_root_.map_smul` instead. -/
+--  map_smul' : ∀ (r : R) (x : M), toFun (r • x) = σ r • toFun x
 #align linear_map LinearMap
 
 /-- The `AddHom` underlying a `LinearMap`. -/
 add_decl_doc LinearMap.toAddHom
 #align linear_map.to_add_hom LinearMap.toAddHom
+
+/-- The `MulActionHom` underlying a `LinearMap`. -/
+add_decl_doc LinearMap.toMulActionHom
 
 -- mathport name: «expr →ₛₗ[ ] »
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
@@ -118,12 +121,16 @@ See also `LinearMapClass F R M M₂` for the case where `σ` is the identity map
 A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
-class SemilinearMapClass (F : Type _) {R S : outParam (Type _)} [Semiring R] [Semiring S]
-  (σ : outParam (R →+* S)) (M M₂ : outParam (Type _)) [AddCommMonoid M] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂] extends AddHomClass F M M₂ where
-  /-- A semilinear map preserves scalar multiplication up to some ring homomorphism `σ`.
-  See also `_root_.map_smul` for the case where `σ` is the identity. -/
-  map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
+class SemilinearMapClass (F : Type _) 
+  {R S : outParam (Type _)} [Semiring R] [Semiring S]
+  (σ : outParam (R →+* S)) 
+  (M M₂ : outParam (Type _)) [AddCommMonoid M] [AddCommMonoid M₂]
+  [Module R M] [Module S M₂] 
+  extends AddHomClass F M M₂, MulActionHomClass F σ M M₂
+  -- where
+  -- /-- A semilinear map preserves scalar multiplication up to some ring -- homomorphism `σ`.
+  -- See also `_root_.map_smul` for the case where `σ` is the identity. -/
+  -- map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 #align semilinear_map_class SemilinearMapClass
 
 end
@@ -132,9 +139,9 @@ end
 -- `σ` becomes a metavariable but that's fine because it's an `outParam`
 -- attribute [nolint dangerousInstance] SemilinearMapClass.toAddHomClass
 
-export SemilinearMapClass (map_smulₛₗ)
+export SemilinearMapClass (map_smul)
 
-attribute [simp] map_smulₛₗ
+attribute [simp] SemilinearMapClass.map_smul
 
 /-- `LinearMapClass F R M M₂` asserts `F` is a type of bundled `R`-linear maps `M → M₂`.
 
@@ -154,6 +161,11 @@ variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
+abbrev map_smulₛₗ {F : Type _} {R S : outParam (Type _)} 
+  [Semiring R] [Semiring S] {σ : outParam (R →+* S)} 
+  {M M₂ : outParam (Type _)} [AddCommMonoid M] [AddCommMonoid M₂]
+  [Module R M] [Module S M₂]  [SemilinearMapClass F σ R S] (f : F) := map_smul f
+
 -- Porting note: the `dangerousInstance` linter has become smarter about `outParam`s
 instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
@@ -161,7 +173,7 @@ instance (priority := 100) addMonoidHomClass [SemilinearMapClass F σ M M₃] :
     coe := fun f ↦ (f : M → M₃)
     map_zero := fun f ↦
       show f 0 = 0 by
-        rw [← zero_smul R (0 : M), map_smulₛₗ]
+        rw [← zero_smul R (0 : M), map_smul]
         simp }
 
 instance (priority := 100) distribMulActionHomClass [LinearMapClass F R M M₂] :
