@@ -264,7 +264,7 @@ noncomputable def coequalizer : LocallyRingedSpace where
   localRing x := by
     obtain ⟨y, rfl⟩ :=
       (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x
-    exact (PresheafedSpace.stalkMap (coequalizer.π f.val g.val : _) y).domain_localRing
+    exact map_local_ring (PresheafedSpace.stalkMap (coequalizer.π f.val g.val : _) y)
 #align algebraic_geometry.LocallyRingedSpace.coequalizer AlgebraicGeometry.LocallyRingedSpace.coequalizer
 
 /-- The explicit coequalizer cofork of locally ringed spaces. -/

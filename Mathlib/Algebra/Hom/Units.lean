@@ -234,7 +234,6 @@ theorem of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M] {f : F} {x 
 #align is_unit.of_left_inverse IsUnit.of_leftInverse
 #align is_add_unit.of_left_inverse IsAddUnit.of_leftInverse
 
--- todo: change this to be about `IsLocalRingHom`
 -- Prefer `IsLocalRingHom.of_leftInverse`, but we cannot get rid of this because of `ToAdditive`.
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
@@ -533,22 +532,10 @@ class IsLocalRingHom [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F) : Prop
 
 variable [Monoid R] [Monoid S] [Monoid T] [MonoidHomClass F R S]
 
--- TODO: let's see if this instance is needed. There's no nice way to state this w/ `FunLike` stuff
-/-
-instance isLocalRingHom_id (R : Type _) [Monoid R] : IsLocalRingHom (RingHom.id R)
-    where map_nonunit _ := id
-#align is_local_ring_hom_id isLocalRingHom_id -/
-
 @[simp]
 theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
   ⟨IsLocalRingHom.map_nonunit a, IsUnit.map f⟩
 #align is_unit_map_iff isUnit_map_iff
-
--- note to reviewers: how should this be done in `FunLike` ways?
-instance isLocalRingHom_comp (g : S →* T) (f : R →* S) [IsLocalRingHom g] [IsLocalRingHom f] :
-    IsLocalRingHom (g.comp f)
-    where map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
-#align is_local_ring_hom_comp isLocalRingHom_comp
 
 @[simp]
 theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=

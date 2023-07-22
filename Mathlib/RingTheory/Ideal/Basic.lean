@@ -843,6 +843,13 @@ theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
 #align one_not_mem_nonunits one_not_mem_nonunits
 
+-- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
+@[simp (high)]
+theorem map_mem_nonunits_iff [Monoid M] [Monoid N] [MonoidHomClass F M N] (f : F)
+    [IsLocalRingHom f] (a) : f a ∈ nonunits N ↔ a ∈ nonunits M :=
+  ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
+#align map_mem_nonunits_iff map_mem_nonunits_iff
+
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu
 #align coe_subset_nonunits coe_subset_nonunits
