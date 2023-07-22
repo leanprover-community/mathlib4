@@ -71,7 +71,12 @@ structure Lean.Meta.ExtCongrTheorem where
   /-- If `heqTheorem` is true, then lemma was created using `mkHCongrTheorem`. -/
   heqTheorem : Bool := false
 
-private def Lean.Expr.isNotOrNe : Expr → Bool × Expr
+def Lean.Expr.isNot : Expr → Bool × Expr
+  | .app (.const ``Not []) a => (true, a)
+  | .forallE _ a (.const ``False []) _ => (true, a)
+  | e => (false, e)
+
+def Lean.Expr.isNotOrNe : Expr → Bool × Expr
   | .app (.const ``Not []) a => (true, a)
   | .forallE _ a (.const ``False []) _ => (true, a)
   | .app (.app (.app (.const ``Ne [u]) α) lhs) rhs =>
@@ -3145,8 +3150,6 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   ps := ps.insert { expr := parent, symmTable }
   modifyState fun state => { state with parents := state.parents.insert childRoot ps }
 
-def propagateImpUp (e : Expr) : CCM Unit := sorry
-
 def isSymmRelation (e : Expr) : CCM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
     return (``Eq, lhs, rhs)
@@ -3204,6 +3207,32 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
     let some AEqB ← getEqProof A B | unreachable!
     let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
     pushHEq a b proof
+
+def isEqv (e₁ e₂ : Expr) : CCM Bool := do
+  let some n₁ ← getEntry e₁ | return false
+  let some n₂ ← getEntry e₂ | return false
+  return n₁.root == n₂.root
+
+def isEqTrue (e : Expr) : CCM Bool :=
+  isEqv e (.const ``True [])
+
+def isEqFalse (e : Expr) : CCM Bool :=
+  isEqv e (.const ``False [])
+
+def getEqTrueProof (e : Expr) : CCM Expr := do
+  assert! ← isEqTrue e
+  let some p ← getEqProof e (.const ``True []) | unreachable!
+  return p
+
+def getEqFalseProof (e : Expr) : CCM Expr := do
+  assert! ← isEqFalse e
+  let some p ← getEqProof e (.const ``False []) | unreachable!
+  return p
+
+def getPropEqProof (a b : Expr) : CCM Expr := do
+  assert! ← isEqv a b
+  let some p ← getEqProof a b | unreachable!
+  return p
 
 mutual
 partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
@@ -3298,6 +3327,36 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
       if ← isProp e then
         mkEntry e false gen
     | .app _ _ | .lit _ => internalizeApp e gen
+
+partial def propagateImpUp (e : Expr) : CCM Unit := do
+  assert! e.isArrow
+  let .forallE _ a b _ := e | unreachable!
+  if ← isEqTrue a then
+    -- `a = True  → (a → b) = b`
+    pushEq e b (mkApp3 (.const ``imp_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqFalse a then
+    -- `a = False → (a → b) = True`
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``imp_eq_of_eq_false_left []) a b (← getEqFalseProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (a → b) = True`
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``imp_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqFalse b then
+    if let (true, arg) := a.isNot then
+      if (← getState).config.em then
+        -- `b = False → (Not a → b) = a`
+        pushEq e arg
+          (mkApp3 (.const ``not_imp_eq_of_eq_false_right []) arg b (← getEqFalseProof b))
+    else
+      -- `b = False → (a → b) = Not a`
+      let notA := mkApp (.const ``Not []) a
+      internalizeCore notA none (← getGenerationOf e)
+      pushEq e notA
+        (mkApp3 (.const ``imp_eq_of_eq_false_right []) a b (← getEqFalseProof b))
+  else if ← isEqv a b then
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``imp_eq_true_of_eq []) a b (← getPropEqProof a b))
 
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
@@ -3436,7 +3495,9 @@ def add : CCState → Expr → TacticM CCState := sorry
 #align cc_state.add Mathlib.Tactic.CC.CCState.add
 
 /-- Check whether two expressions are in the same equivalence class. -/
-def isEqv : CCState → Expr → Expr → TacticM Bool := sorry
+def isEqv (state : CCState) (e₁ e₂ : Expr) : TacticM Bool := do
+  let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { state }
+  return b
 #align cc_state.is_eqv Mathlib.Tactic.CC.CCState.isEqv
 
 /-- Check whether two expressions are not in the same equivalence class. -/
