@@ -772,7 +772,7 @@ theorem isConnected_range [TopologicalSpace β] [ConnectedSpace α] {f : α → 
 
 theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace β]
   {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
-  rw [connectedSpace_iff_univ, ← range_iff_surjective.mpr hf]
+  rw [connectedSpace_iff_univ, ← hf.range_eq]
   exact isConnected_range hf'
 
 instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :

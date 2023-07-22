@@ -1152,7 +1152,7 @@ theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continu
 
 theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
   {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
-  rw [pathConnectedSpace_iff_univ, ← range_iff_surjective.mpr hf]
+  rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
   exact isPathConnected_range hf'
 
 instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
