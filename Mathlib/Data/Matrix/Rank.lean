@@ -281,7 +281,6 @@ section MulNonsingInv
 
 /-- Pre (Left) multiplying by an invertible matrix does not change the rank -/
 lemma rank_mul_IsUnit {m n R: Type}
-  -- [Fintype m] -- not needed according to linter
   [Fintype n][DecidableEq n][CommRing R]
   (A: Matrix n n R)(B: Matrix m n R)(hA: IsUnit A.det):
   (B⬝A).rank = B.rank := by
