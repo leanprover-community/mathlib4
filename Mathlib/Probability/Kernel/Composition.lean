@@ -189,9 +189,10 @@ theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : ke
 
 open Classical
 
-/-- Composition-Product of kernels. It verifies
+/-- Composition-Product of kernels. For s-finite kernels, it satisfies
 `∫⁻ bc, f bc ∂(compProd κ η a) = ∫⁻ b, ∫⁻ c, f (b, c) ∂(η (a, b)) ∂(κ a)`
-(see `lintegral_compProd`). -/
+(see `lintegral_compProd`).
+If one of the kernels is not s-finite, `compProd` is given the arbitrary value 0. -/
 noncomputable def compProd (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ) :=
 if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
 { val := λ a ↦
