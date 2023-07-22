@@ -3090,7 +3090,105 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := sorry
 
 def probagateImpUp (e : Expr) : CCM Unit := sorry
 
-def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := sorry
+/-
+```c++
+void congruence_closure::internalize_app(expr const & e, unsigned gen) {
+    if (is_interpreted_value(e)) {
+        bool interpreted = true;
+        mk_entry(e, interpreted, gen);
+        if (m_state.m_config.m_values) {
+            /* we treat values as atomic symbols */
+            return;
+        }
+    } else {
+        bool interpreted = false;
+        mk_entry(e, interpreted, gen);
+        if (m_state.m_config.m_values && is_value(e)) {
+            /* we treat values as atomic symbols */
+            return;
+        }
+    }
+
+    expr lhs, rhs;
+    if (is_symm_relation(e, lhs, rhs)) {
+        internalize_core(lhs, some_expr(e), gen);
+        internalize_core(rhs, some_expr(e), gen);
+        bool symm_table = true;
+        add_occurrence(e, lhs, symm_table);
+        add_occurrence(e, rhs, symm_table);
+        add_symm_congruence_table(e);
+    } else if (auto lemma = mk_ext_congr_lemma(e)) {
+        bool symm_table = false;
+        buffer<expr> apps;
+        expr const & fn = get_app_apps(e, apps);
+        lean_assert(apps.size() > 0);
+        lean_assert(apps.back() == e);
+        list<param_info> pinfos;
+        if (m_state.m_config.m_ignore_instances)
+            pinfos = get_fun_info(m_ctx, fn, apps.size()).get_params_info();
+        if (!m_state.m_config.m_all_ho && is_constant(fn) && !m_state.m_ho_fns.contains(const_name(fn))) {
+            for (unsigned i = 0; i < apps.size(); i++) {
+                expr const & arg = app_arg(apps[i]);
+                add_occurrence(e, arg, symm_table);
+                if (pinfos && head(pinfos).is_inst_implicit()) {
+                    /* We do not recurse on instances when m_state.m_config.m_ignore_instances is true. */
+                    bool interpreted = false;
+                    mk_entry(arg, interpreted, gen);
+                    propagate_inst_implicit(arg);
+                } else {
+                    internalize_core(arg, some_expr(e), gen);
+                }
+                if (pinfos) pinfos = tail(pinfos);
+            }
+            internalize_core(fn, some_expr(e), gen);
+            add_occurrence(e, fn, symm_table);
+            set_fo(e);
+            add_congruence_table(e);
+        } else {
+            /* Expensive case where we store a quadratic number of occurrences,
+               as described in the paper "Congruence Closure in Internsional Type Theory" */
+            for (unsigned i = 0; i < apps.size(); i++) {
+                expr const & curr = apps[i];
+                lean_assert(is_app(curr));
+                expr const & curr_arg  = app_arg(curr);
+                expr const & curr_fn   = app_fn(curr);
+                if (i < apps.size() - 1) {
+                    bool interpreted = false;
+                    mk_entry(curr, interpreted, gen);
+                }
+                for (unsigned j = i; j < apps.size(); j++) {
+                    add_occurrence(apps[j], curr_arg, symm_table);
+                    add_occurrence(apps[j], curr_fn, symm_table);
+                }
+                if (pinfos && head(pinfos).is_inst_implicit()) {
+                    /* We do not recurse on instances when m_state.m_config.m_ignore_instances is true. */
+                    bool interpreted = false;
+                    mk_entry(curr_arg, interpreted, gen);
+                    mk_entry(curr_fn, interpreted, gen);
+                    propagate_inst_implicit(curr_arg);
+                } else {
+                    internalize_core(curr_arg, some_expr(e), gen);
+                    bool interpreted = false;
+                    mk_entry(curr_fn, interpreted, gen);
+                }
+                if (pinfos) pinfos = tail(pinfos);
+                add_congruence_table(curr);
+            }
+        }
+    }
+    apply_simple_eqvs(e);
+}
+```
+-/
+
+def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
+  if ← isInterpretedValue e then
+    mkEntry e true gen
+    if (← get).state.config.values then return -- we treat values as atomic symbols
+  else
+    mkEntry e false gen
+    if (← get).state.config.values && e.isValue then return -- we treat values as atomic symbols
+  sorry
 
 def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit := do
   assert! !e.hasLooseBVars
