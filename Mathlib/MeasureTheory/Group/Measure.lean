@@ -10,6 +10,7 @@ import Mathlib.MeasureTheory.Measure.OpenPos
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.Topology.ContinuousFunction.CocompactMap
+import Mathlib.Topology.Homeomorph
 
 #align_import measure_theory.group.measure from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -250,7 +251,10 @@ section Monoid
 
 variable [Monoid G] [MeasurableMul G]
 
-@[to_additive]
+/-- The image of a left invariant measure under right multiplication is left invariant.
+-/
+@[to_additive isAddLeftInvariant_radd
+"The image of a left invariant measure under right addition is left invariant."]
 theorem isMulLeftInvariant_rmul [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) := by
   refine' ⟨fun h => _⟩
@@ -777,6 +781,23 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _} [Grou
     toIsOpenPosMeasure := hf.isOpenPosMeasure_map h_surj }
 #align measure_theory.measure.is_haar_measure_map MeasureTheory.Measure.isHaarMeasure_map
 #align measure_theory.measure.is_add_haar_measure_map MeasureTheory.Measure.isAddHaarMeasure_map
+
+/-- The image of a Haar measure under right multiplication is again
+a Haar measure. -/
+@[to_additive isAddHaarMeasure_radd
+"The image of a Haar measure under right addition is again a Haar measure"]
+theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G)
+  : IsHaarMeasure (Measure.map (· * g) μ) :=
+{
+  toIsMulLeftInvariant := isMulLeftInvariant_rmul g
+  lt_top_of_isCompact := by
+    intro K hK
+    rw [map_apply (measurable_mul_const _) hK.measurableSet]
+    apply IsCompact.measure_lt_top _
+    rwa [← Homeomorph.coe_mulRight g, Homeomorph.isCompact_preimage _]
+  toIsOpenPosMeasure := by
+    exact (continuous_mul_right g).isOpenPosMeasure_map (mul_right_surjective g)
+}
 
 /-- A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`. -/
 @[to_additive "A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`."]
