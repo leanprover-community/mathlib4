@@ -542,11 +542,6 @@ theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit
   IsLocalRingHom.map_nonunit a h
 #align is_unit_of_map_unit IsUnit.of_map
 
-theorem isLocalRingHom_of_comp (f : R →* S) (g : S →* T) [IsLocalRingHom (g.comp f)] :
-    IsLocalRingHom f :=
-  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp $ ha.map g⟩
-#align is_local_ring_hom_of_comp isLocalRingHom_of_comp
-
 theorem isLocalRingHom_of_leftInverse [MonoidHomClass G S R]
   {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f
 where map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
