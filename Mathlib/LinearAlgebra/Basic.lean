@@ -321,11 +321,8 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
 @[simp]
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := by
-  induction' n with n ih
-  · rfl
-  · simp only [Function.comp_apply, Function.iterate_succ, LinearMap.mul_apply, pow_succ, ih]
-    exact (Function.Commute.iterate_self _ _ m).symm
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m :=
+  congr_fun (hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _) m
 #align linear_map.pow_apply LinearMap.pow_apply
 
 theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
