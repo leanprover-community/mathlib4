@@ -985,6 +985,9 @@ theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotie
   range_quot_mk _
 #align set.range_quotient_mk' Set.range_quotient_mk'
 
+@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+  range_quotient_mk
+
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
     (range fun x : Quotient s => Quotient.liftOn' x f hf) = range f :=
