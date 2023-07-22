@@ -108,10 +108,10 @@ mismatch, so I used `library_search`. -/
 instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
   inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
-/- Porting note:
-`theorem to_fun_eq_coe {f : CentroidHom α} : f.toFun = (f : α → α) := rfl`
-removed because it is now a tautology -/
-#noalign centroid_hom.to_fun_eq_coe
+-- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
+-- the LHS simplifies to the RHS anyway.)
+theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
+#align centroid_hom.to_fun_eq_coe CentroidHom.toFun_eq_coe
 
 @[ext]
 theorem ext {f g : CentroidHom α} (h : ∀ a, f a = g a) : f = g :=
