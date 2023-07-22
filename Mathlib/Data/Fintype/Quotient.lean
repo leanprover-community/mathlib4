@@ -116,10 +116,15 @@ theorem finChoice_eq (a : ∀ i, α i) :
   rfl
 #align quotient.fin_choice_eq Quotient.finChoice_eq
 
+lemma proj_finChoice [S : ∀ i, Setoid (α i)]
+    (f : ∀ i, Quotient (S i)) :
+    proj (finChoice f) = f :=
+  fin_induction_on f (fun a ↦ by rw [finChoice_eq]; rfl)
+
 /-- Lift a function on `∀ i, α i` to a function on `∀ i, Quotient (S i)`. -/
 def finLiftOn (q : ∀ i, Quotient (S i)) (f : (∀ i, α i) → β)
     (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → f a = f b) : β :=
-  Quotient.lift f h (finChoice q)
+  (finChoice q).liftOn f h
 
 @[simp]
 lemma finLiftOn_empty [e : IsEmpty ι] (q : ∀ i, Quotient (S i)) :
@@ -151,36 +156,14 @@ def finChoiceEquiv :
     induction q using Quotient.ind
     exact finChoice_eq _
 
-section finRec
-variable {C : (∀ i, Quotient (S i)) → Sort _} (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
-
-@[reducible]
-private def finRec.indep (a : ∀ i, α i) : PSigma C :=
-  ⟨(⟦a ·⟧), f a⟩
-
-variable (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
-  Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b)
-
-private lemma finRec.indep_coherent :
-    ∀ a b : ∀ i, α i, (∀ i, a i ≈ b i) →
-      finRec.indep f a = finRec.indep f b :=
-  fun a b e ↦ PSigma.eta (funext fun i ↦ Quotient.sound (e i)) (h a b e)
-
-private lemma finRec.lift_indep_pr1 (q : ∀ i, Quotient (S i)) :
-    (finLiftOn q (finRec.indep f) (finRec.indep_coherent f h)).1 = q :=
-  fin_ind (fun a ↦ funext fun i ↦ by rw [finLiftOn_mk]) q
-
-end finRec
-
 /-- Recursion principle for quotients indexed by a finite type. -/
 @[elab_as_elim]
-def finRec {C : (∀ i, Quotient (S i)) → Sort _}
+def finHRecOn {C : (∀ i, Quotient (S i)) → Sort _}
+    (q : ∀ i, Quotient (S i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
-    (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
-      Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b)
-    (q : ∀ i, Quotient (S i)) : C q :=
-  Eq.ndrecOn (finRec.lift_indep_pr1 f h q)
-    ((finLiftOn q (finRec.indep f) (finRec.indep_coherent f h)).2)
+    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → HEq (f a) (f b)) :
+    C q :=
+  proj_finChoice q ▸ (finChoice q).hrecOn f h
 
 /-- Recursion principle for quotients indexed by a finite type. -/
 @[elab_as_elim]
@@ -190,38 +173,22 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort _}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finRec f h q
-
-/-- Recursion principle for quotients indexed by a finite type. -/
-@[elab_as_elim]
-def finHRecOn {C : (∀ i, Quotient (S i)) → Sort _}
-    (q : ∀ i, Quotient (S i))
-    (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
-    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → HEq (f a) (f b)) :
-    C q :=
-  finRecOn q f (fun a b p ↦ eq_of_heq ((eq_rec_heq _ (f a)).trans (h a b p)))
-
-@[simp]
-lemma finRec_mk {C : (∀ i, Quotient (S i)) → Sort _}
-    (f h) (a : ∀ i, α i) :
-    finRec (C := C) f h (⟦a ·⟧) = f a := by
-  dsimp [finRecOn]
-  refine eq_of_heq ((eq_rec_heq _ _).trans ?_)
-  rw [finLiftOn_mk a]
-
-@[simp]
-lemma finRecOn_mk {C : (∀ i, Quotient (S i)) → Sort _}
-    (a : ∀ i, α i) :
-    finRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
-  ext f h
-  exact finRec_mk _ _ _
+  finHRecOn q f (heq_of_eq_rec_left _ <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort _}
     (a : ∀ i, α i) :
     finHRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
-  dsimp [finHRecOn]
-  rw [finRecOn_mk]
+  ext f h
+  refine eq_of_heq ((eq_rec_heq _ _).trans ?_)
+  rw [finChoice_eq]
+  rfl
+
+@[simp]
+lemma finRecOn_mk {C : (∀ i, Quotient (S i)) → Sort _}
+    (a : ∀ i, α i) :
+    finRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
+  simp [finRecOn]
 
 end Fintype
 
