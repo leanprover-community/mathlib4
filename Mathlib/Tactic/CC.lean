@@ -9,6 +9,8 @@ Authors: Leonardo de Moura
 ! if you have ported upstream changes.
 -/
 import Mathlib.Init.CCLemmas
+import Mathlib.Data.Option.Defs
+import Mathlib.Init.Data.List.Basic
 
 /-!
 ## Congruence closures
@@ -50,7 +52,7 @@ def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
   if e.isCharLit || e.isStringLit then
     return true
   else if e.isSignedNum then
-    isDefEq e (.const ``Nat []) <||> isDefEq e (.const ``Int [])
+    withNewMCtxDepth <| isDefEq e (.const ``Nat []) <||> isDefEq e (.const ``Int [])
   else
     return false
 
@@ -2999,7 +3001,17 @@ abbrev SymmCongruences := UInt64Map (List (Expr × Name))
 
 abbrev SubsingletonReprs := RBExprMap Expr
 
-abbrev TodoEntry := Expr × Expr × Expr × Bool
+inductive TodoExpr
+  | expr : Expr → TodoExpr
+  /-- dummy congruence proof, it is just a placeholder. -/
+  | congr : TodoExpr
+  /-- dummy eq_true proof, it is just a placeholder -/
+  | eqTrue : TodoExpr
+  /-- dummy refl proof, it is just a placeholder. -/
+  | refl : TodoExpr
+  deriving Inhabited
+
+abbrev TodoEntry := Expr × Expr × TodoExpr × Bool
 
 /-- Congruence closure state.
 This may be considered to be a set of expressions and an equivalence class over this set.
@@ -3045,9 +3057,32 @@ def CCState.mkEntryCore (s : CCState) (e : Expr) (interpreted : Bool) (construct
       generation := gen }
   { s with entries := s.entries.insert e n }
 
+namespace CCState
+
+/-- Get the root representative of the given expression. -/
+def root (s : CCState) (e : Expr) : Expr :=
+  match s.entries.find? e with
+  | some n => n.root
+  | none => e
+#align cc_state.root Mathlib.Tactic.CC.CCState.root
+
+/-- Get the next element in the equivalence class.
+Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
+def next (s : CCState) (e : Expr) : Expr :=
+  match s.entries.find? e with
+  | some n => n.next
+  | none => e
+#align cc_state.next Mathlib.Tactic.CC.CCState.next
+
+end CCState
+
 structure CC where
   state : CCState
   todo : Array TodoEntry := #[]
+  /-- The congruence_closure module (optionally) uses a normalizer.
+      The idea is to use it (if available) to normalize auxiliary expressions
+      produced by internal propagation rules (e.g., subsingleton propagator).  -/
+  normalizer : Option (Expr → TacticM Expr) := none
   /- Porting note: `congruence_closure` in Mathlib3 has more member variables but they're almost
      the copies from `tactic_state`. We translate methods of `congruence_closure` using `TacticM` so
      they are not needed. -/
@@ -3060,8 +3095,20 @@ namespace CCM
 @[inline]
 def run {α : Type} (x : CCM α) (c : CC) : TacticM (α × CC) := StateRefT'.run x c
 
+@[inline]
+def modifyState (f : CCState → CCState) : CCM Unit :=
+  modify fun cc => { cc with state := f cc.state }
+
+@[inline]
+def modifyTodo (f : Array TodoEntry → Array TodoEntry) : CCM Unit :=
+  modify fun cc => { cc with todo := f cc.todo }
+
+@[inline]
+def getState : CCM CCState := do
+  return (← get).state
+
 def getEntry (e : Expr) : CCM (Option Entry) := do
-  return (← get).state.entries.find? e
+  return (← getState).entries.find? e
 
 def getGenerationOf (e : Expr) : CCM Nat := do
   if let some it ← getEntry e then
@@ -3069,46 +3116,36 @@ def getGenerationOf (e : Expr) : CCM Nat := do
   else
     return 0
 
-/-
-```c++
-void congruence_closure::process_subsingleton_elem(expr const & e) {
-    expr type = m_ctx.infer(e);
-    optional<expr> ss = m_ctx.mk_subsingleton_instance(type);
-    if (!ss) return; /* type is not a subsingleton */
-    type = normalize(type);
-    /* Make sure type has been internalized */
-    internalize_core(type, none_expr(), get_generation_of(e));
-    /* Try to find representative */
-    if (auto it = m_state.m_subsingleton_reprs.find(type)) {
-        push_subsingleton_eq(e, *it);
-    } else {
-        m_state.m_subsingleton_reprs.insert(type, e);
-    }
-    expr type_root     = get_root(type);
-    if (type_root == type)
-        return;
-    if (auto it2 = m_state.m_subsingleton_reprs.find(type_root)) {
-        push_subsingleton_eq(e, *it2);
-    } else {
-        m_state.m_subsingleton_reprs.insert(type_root, e);
-    }
-}
-```
--/
+def normalize (e : Expr) : CCM Expr := do
+  if let some normalize := (← get).normalizer then
+    normalize e
+  else
+    return e
 
-def processSubsingletonElem (e : Expr) : CCM Unit := sorry
+def pushTodo (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit :=
+  modifyTodo fun todo => todo.push (lhs, rhs, .expr H, heqProof)
 
-def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
-  if (← getEntry e).isSome then return
-  let constructor := e.isConstructorApp (← getEnv)
-  modify fun cc => { cc with state := cc.state.mkEntryCore e interpreted constructor gen }
-  processSubsingletonElem e
+def pushEq (lhs rhs H : Expr) : CCM Unit :=
+  modifyTodo fun todo => todo.push (lhs, rhs, .expr H, false)
 
-def pushReflEq (lhs rhs : Expr) : CCM Unit := sorry
+def pushHEq (lhs rhs H : Expr) : CCM Unit :=
+  modifyTodo fun todo => todo.push (lhs, rhs, .expr H, true)
 
-def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := sorry
+def pushReflEq (lhs rhs : Expr) : CCM Unit :=
+  modifyTodo fun todo => todo.push (lhs, rhs, .refl, true)
 
-def probagateImpUp (e : Expr) : CCM Unit := sorry
+def getRoot (e : Expr) : CCM Expr := do
+  return (← getState).root e
+
+def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
+  let mut ps : ParentOccSet := ∅
+  let childRoot ← getRoot child
+  if let some oldPS := (← getState).parents.find? childRoot then
+    ps := oldPS
+  ps := ps.insert { expr := parent, symmTable }
+  modifyState fun state => { state with parents := state.parents.insert childRoot ps }
+
+def propagateImpUp (e : Expr) : CCM Unit := sorry
 
 def isSymmRelation (e : Expr) : CCM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
@@ -3122,109 +3159,60 @@ def isSymmRelation (e : Expr) : CCM (Option (Name × Expr × Expr)) := do
       | none => return none
   return none
 
+def addCongruenceTable (e : Expr) : CCM Unit := sorry
+
 def addSymmCongruenceTable (e : Expr) : CCM Unit := sorry
 
 def mkExtCongrTheorem (e : Expr) : CCM (Option ExtCongrTheorem) := sorry
 
-/-
-```c++
-void congruence_closure::internalize_app(expr const & e, unsigned gen) {
-    if (is_interpreted_value(e)) {
-        bool interpreted = true;
-        mk_entry(e, interpreted, gen);
-        if (m_state.m_config.m_values) {
-            /* we treat values as atomic symbols */
-            return;
-        }
-    } else {
-        bool interpreted = false;
-        mk_entry(e, interpreted, gen);
-        if (m_state.m_config.m_values && is_value(e)) {
-            /* we treat values as atomic symbols */
-            return;
-        }
-    }
+def propagateInstImplicit (e : Expr) : CCM Unit := sorry
 
-    expr lhs, rhs;
-    if (is_symm_relation(e, lhs, rhs)) {
-        internalize_core(lhs, some_expr(e), gen);
-        internalize_core(rhs, some_expr(e), gen);
-        bool symm_table = true;
-        add_occurrence(e, lhs, symm_table);
-        add_occurrence(e, rhs, symm_table);
-        add_symm_congruence_table(e);
-    } else if (auto lemma = mk_ext_congr_lemma(e)) {
-        bool symm_table = false;
-        buffer<expr> apps;
-        expr const & fn = get_app_apps(e, apps);
-        lean_assert(apps.size() > 0);
-        lean_assert(apps.back() == e);
-        list<param_info> pinfos;
-        if (m_state.m_config.m_ignore_instances)
-            pinfos = get_fun_info(m_ctx, fn, apps.size()).get_params_info();
-        if (!m_state.m_config.m_all_ho && is_constant(fn) && !m_state.m_ho_fns.contains(const_name(fn))) {
-            for (unsigned i = 0; i < apps.size(); i++) {
-                expr const & arg = app_arg(apps[i]);
-                add_occurrence(e, arg, symm_table);
-                if (pinfos && head(pinfos).is_inst_implicit()) {
-                    /* We do not recurse on instances when m_state.m_config.m_ignore_instances is true. */
-                    bool interpreted = false;
-                    mk_entry(arg, interpreted, gen);
-                    propagate_inst_implicit(arg);
-                } else {
-                    internalize_core(arg, some_expr(e), gen);
-                }
-                if (pinfos) pinfos = tail(pinfos);
-            }
-            internalize_core(fn, some_expr(e), gen);
-            add_occurrence(e, fn, symm_table);
-            set_fo(e);
-            add_congruence_table(e);
-        } else {
-            /* Expensive case where we store a quadratic number of occurrences,
-               as described in the paper "Congruence Closure in Internsional Type Theory" */
-            for (unsigned i = 0; i < apps.size(); i++) {
-                expr const & curr = apps[i];
-                lean_assert(is_app(curr));
-                expr const & curr_arg  = app_arg(curr);
-                expr const & curr_fn   = app_fn(curr);
-                if (i < apps.size() - 1) {
-                    bool interpreted = false;
-                    mk_entry(curr, interpreted, gen);
-                }
-                for (unsigned j = i; j < apps.size(); j++) {
-                    add_occurrence(apps[j], curr_arg, symm_table);
-                    add_occurrence(apps[j], curr_fn, symm_table);
-                }
-                if (pinfos && head(pinfos).is_inst_implicit()) {
-                    /* We do not recurse on instances when m_state.m_config.m_ignore_instances is true. */
-                    bool interpreted = false;
-                    mk_entry(curr_arg, interpreted, gen);
-                    mk_entry(curr_fn, interpreted, gen);
-                    propagate_inst_implicit(curr_arg);
-                } else {
-                    internalize_core(curr_arg, some_expr(e), gen);
-                    bool interpreted = false;
-                    mk_entry(curr_fn, interpreted, gen);
-                }
-                if (pinfos) pinfos = tail(pinfos);
-                add_congruence_table(curr);
-            }
-        }
-    }
-    apply_simple_eqvs(e);
-}
-```
--/
+def setFO (e : Expr) : CCM Unit := do
+  let some d ← getEntry e | failure
+  let d := { d with fo := true }
+  modifyState fun state => { state with entries := state.entries.insert e d }
+
+/--
+This method is invoked during internalization and eagerly apply basic equivalences for term `e`
+Examples:
+- If `e := cast H e'`, then it merges the equivalence classes of `cast H e'` and `e'`
+
+In principle, we could mark theorems such as `cast_eq` as simplification rules, but this creates
+problems with the builtin support for cast-introduction in the ematching module.
+
+Eagerly merging the equivalence classes is also more efficient. -/
+def applySimpleEqvs (e : Expr) : CCM Unit := sorry
+
+/--
+If `asHEq` is `true`, then build a proof for `HEq e₁ e₂`.
+Otherwise, build a proof for `e₁ = e₂`.
+The result is `none` if `e₁` and `e₂` are not in the same equivalence class. -/
+def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr) := sorry
+
+def getEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
+  getEqProofCore e₁ e₂ false
+
+def pushSubsingletonEq (a b : Expr) : CCM Unit := do
+  -- Remark: we must use normalize here because we have use it before
+  -- internalizing the types of `a` and `b`.
+  let A ← normalize (← inferType a)
+  let B ← normalize (← inferType b)
+  if (← withNewMCtxDepth <| withTransparency .default <| isDefEq A B) then
+    let proof ← mkAppM ``Subsingleton.elim #[a, b]
+    pushEq a b proof
+  else
+    let some AEqB ← getEqProof A B | unreachable!
+    let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
+    pushHEq a b proof
 
 mutual
 partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   if ← isInterpretedValue e then
     mkEntry e true gen
-    if (← get).state.config.values then return -- we treat values as atomic symbols
+    if (← getState).config.values then return -- we treat values as atomic symbols
   else
     mkEntry e false gen
-    if (← get).state.config.values && e.isValue then return -- we treat values as atomic symbols
+    if (← getState).config.values && e.isValue then return -- we treat values as atomic symbols
   if let some (_, lhs, rhs) ← isSymmRelation e then
     internalizeCore lhs (some e) gen
     internalizeCore rhs (some e) gen
@@ -3236,13 +3224,54 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
     let apps := e.getAppApps
     assert! apps.size > 0
     assert! apps.back == e
-    sorry
-  sorry
+    let mut pinfo : List ParamInfo := []
+    let config := (← getState).config
+    if config.ignoreInstances then
+      pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
+    if config.hoFns.isSome && fn.isConst && !(config.hoFns.iget.contains fn.constName) then
+      for h : i in [:apps.size] do
+        let arg := (apps[i]'h.2).appArg!
+        addOccurrence e arg false
+        if !pinfo.isEmpty && pinfo.headI.isInstImplicit then
+          -- We do not recurse on instances when `(← getState).config.ignoreInstances` is `true`.
+          mkEntry arg false gen
+          propagateInstImplicit arg
+        else
+          internalizeCore arg (some e) gen
+        unless pinfo.isEmpty do
+          pinfo := pinfo.tail
+      internalizeCore fn (some e) gen
+      addOccurrence e fn false
+      setFO e
+      addCongruenceTable e
+    else
+      -- Expensive case where we store a quadratic number of occurrences,
+      -- as described in the paper "Congruence Closure in Internsional Type Theory"
+      for h : i in [:apps.size] do
+        let curr := apps[i]'h.2
+        let .app currFn currArg := curr | unreachable!
+        if i < apps.size - 1 then
+          mkEntry curr false gen
+        for h : j in [i:apps.size] do
+          addOccurrence (apps[j]'h.2) currArg false
+          addOccurrence (apps[j]'h.2) currFn false
+        if !pinfo.isEmpty && pinfo.headI.isInstImplicit then
+          -- We do not recurse on instances when `(← getState).config.ignoreInstances` is `true`.
+          mkEntry currArg false gen
+          mkEntry currFn false gen
+          propagateInstImplicit currArg
+        else
+          internalizeCore currArg (some e) gen
+          mkEntry currFn false gen
+        unless pinfo.isEmpty do
+          pinfo := pinfo.tail
+        addCongruenceTable curr
+  applySimpleEqvs e
 
 partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit := do
   assert! !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
-  if e.hasExprMVar && !(← get).state.frozePartitions then
+  if e.hasExprMVar && !(← getState).frozePartitions then
     return
   /- Check whether `e` has already been internalized. -/
   if (← getEntry e).isNone then
@@ -3265,17 +3294,50 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
           internalizeCore b e gen
           addOccurrence e t false
           addOccurrence e b false
-          probagateImpUp e
+          propagateImpUp e
       if ← isProp e then
         mkEntry e false gen
     | .app _ _ | .lit _ => internalizeApp e gen
+
+partial def processSubsingletonElem (e : Expr) : CCM Unit := do
+  let type ← inferType e
+  let ss ← synthInstance? (← mkAppM ``Subsingleton #[e])
+  if ss.isNone then return -- type is not a subsingleton
+  let type ← normalize type
+  -- Make sure type has been internalized
+  internalizeCore type none (← getGenerationOf e)
+  -- Try to find representative
+  if let some it := (← getState).subsingletonReprs.find? type then
+    pushSubsingletonEq e it
+  else
+    modifyState fun state =>
+      { state with
+        subsingletonReprs := state.subsingletonReprs.insert type e }
+  let typeRoot ← getRoot type
+  if typeRoot == type then return
+  if let some it2 := (← getState).subsingletonReprs.find? typeRoot then
+    pushSubsingletonEq e it2
+  else
+    modifyState fun state =>
+      { state with
+        subsingletonReprs := state.subsingletonReprs.insert typeRoot e }
+
+partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
+  if (← getEntry e).isSome then return
+  let constructor := e.isConstructorApp (← getEnv)
+  modifyState fun state => state.mkEntryCore e interpreted constructor gen
+  processSubsingletonElem e
 end
 
-def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := sorry
+def processTodo : CCM Unit := sorry
+
+def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
+  pushTodo lhs rhs H heqProof
+  processTodo
 
 def add (type : Expr) (proof : Expr) (gen : Nat) : CCM Unit := do
-  if (← get).state.inconsistent then return
-  modify fun cc => { cc with todo := #[] }
+  if (← getState).inconsistent then return
+  modifyTodo fun _ => #[]
   let (isNeg, p) := type.isNotOrNe
   match p with
   | .app (.app (.app (.const ``Eq _) _) lhs) rhs =>
@@ -3333,19 +3395,10 @@ def mkUsingHsCore (cfg : CCConfig) : TacticM CCState := do
   return c.state
 #align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
-/-- Get the next element in the equivalence class.
-Note that if the given `Expr` `e` is not in the graph then it will just return `e`. -/
-def next : CCState → Expr → Expr := sorry
-#align cc_state.next Mathlib.Tactic.CC.CCState.next
-
 /-- Returns the root expression for each equivalence class in the graph.
 If the `Bool` argument is set to `true` then it only returns roots of non-singleton classes. -/
 def rootsCore : CCState → Bool → List Expr := sorry
 #align cc_state.roots_core Mathlib.Tactic.CC.CCState.rootsCore
-
-/-- Get the root representative of the given expression. -/
-def root : CCState → Expr → Expr := sorry
-#align cc_state.root Mathlib.Tactic.CC.CCState.root
 
 /--
 "Modification Time". The field m_mt is used to implement the mod-time optimization introduce by the
