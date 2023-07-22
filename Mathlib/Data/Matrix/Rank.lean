@@ -298,8 +298,7 @@ lemma rank_IsUnit_mul {m n R: Type} [Fintype m] [Fintype n] [DecidableEq m] [Fie
   rw [← LinearMap.finrank_range_add_finrank_ker ((A⬝B).mulVecLin), h, add_left_inj] at hB
   rw [Matrix.rank, Matrix.rank, hB]
   rw [mulVecLin_mul, LinearMap.ker_comp_of_ker_eq_bot]
-  rw [LinearMap.ker_eq_bot]
-  simp_rw [Function.Injective, mulVecLin_apply]
+  simp_rw [LinearMap.ker_eq_bot, Function.Injective, mulVecLin_apply]
   intros x y h
   apply_fun Matrix.mulVec (A⁻¹) at h
   simpa [mulVec_mulVec, nonsing_inv_mul A hA, one_mulVec] using h
