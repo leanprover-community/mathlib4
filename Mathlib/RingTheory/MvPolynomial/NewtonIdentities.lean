@@ -232,8 +232,9 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
   simp_rw [esymm]
   rw [sum_equiv_k σ R k (fun t ↦ weight σ R k t), sum_congr rfl (esymm_summand_to_weight σ R k),
     mul_comm (k : MvPolynomial σ R) ((-1) ^ k), ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add,
-    ← two_mul]
-  sorry
+    Even.neg_one_pow]
+  simp
+  use k
 
 theorem esymm_mult_psum_summand_to_weight (k i : ℕ) : true := sorry
 
