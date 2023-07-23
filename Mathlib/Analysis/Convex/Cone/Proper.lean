@@ -131,8 +131,7 @@ variable (𝕜 E) [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [OrderClosedTopology E]
 
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
-module.
--/
+module. -/
 def positive : ProperCone 𝕜 E where
   toConvexCone := ConvexCone.positive 𝕜 E
   nonempty' := ⟨0, ConvexCone.pointed_positive _ _⟩
