@@ -95,6 +95,11 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
 theorem card_of_isEmpty [IsEmpty α] : Nat.card α = 0 := by simp
 #align nat.card_of_is_empty Nat.card_of_isEmpty
 
+theorem Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
+  have := Fintype.ofFinite α
+  have := Fintype.ofFinite β
+  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
+
 @[simp]
 theorem card_prod (α β : Type _) : Nat.card (α × β) = Nat.card α * Nat.card β := by
   simp only [Nat.card, mk_prod, toNat_mul, toNat_lift]
