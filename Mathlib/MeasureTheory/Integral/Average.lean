@@ -771,7 +771,6 @@ theorem exists_not_mem_null_lintegral_le (hint : ∫⁻ a, f a ∂μ ≠ ∞) (h
 end ProbabilityMeasure
 end FirstMomentEnnreal
 
-
 /-- If the average of a function `f` along a sequence of sets `aₙ` converges to `c` (more precisely,
 we require that `⨍ y in a i, ‖f y - c‖ ∂μ` tends to `0`), then the integral of `gₙ • f` also tends
 to `c` if `gₙ` is supported in `aₙ`, has integral converging to one and supremum at most `K / μ aₙ`.
@@ -812,7 +811,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
     have mu_ai : μ (a i) < ∞ := by
       rw [lt_top_iff_ne_top]
       intro h
-      simp only [h, ENNReal.top_toReal, div_zero, abs_nonpos_iff] at h'i
+      simp only [h, ENNReal.top_toReal, _root_.div_zero, abs_nonpos_iff] at h'i
       have : ∫ (y : α), g i y ∂μ = ∫ (y : α), 0 ∂μ := by congr; ext y; exact h'i y
       simp [this] at hi_int
     apply (norm_integral_le_integral_norm _).trans
