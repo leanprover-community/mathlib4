@@ -538,6 +538,10 @@ theorem isClosedMap_iff_closure_image [TopologicalSpace α] [TopologicalSpace β
         _ = f '' c := by rw [hc.closure_eq]⟩
 #align is_closed_map_iff_closure_image isClosedMap_iff_closure_image
 
+/-- A map `f : X → Y` is closed if and only if for all sets `s`, any cluster point of `f '' s` is
+the image by `f` of some cluster point of `s`.
+If you require this for all filters instead of just principal filters, and also that `f` is
+continuous, you get the notion of **proper map**. See `isProperMap_iff_clusterPt`. -/
 theorem isClosedMap_iff_clusterPt [TopologicalSpace α] [TopologicalSpace β] {f : α → β} :
     IsClosedMap f ↔ ∀ s y, MapClusterPt y (𝓟 s) f → ∃ x, f x = y ∧ ClusterPt x (𝓟 s) := by
   simp [MapClusterPt, isClosedMap_iff_closure_image, subset_def, mem_closure_iff_clusterPt,
