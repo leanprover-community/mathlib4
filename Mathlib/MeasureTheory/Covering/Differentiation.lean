@@ -920,7 +920,8 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   have := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp hx
   simp only [ENNReal.zero_toReal] at this
   apply Tendsto.congr' _ this
-  filter_upwards [h'x, v.eventually_measure_lt_top x] with a _ h'a
+  filter_upwards [v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
+    with a h'a h''a
   simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
@@ -940,7 +941,8 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E}
   filter_upwards [v.ae_tendsto_average_norm_sub hf, v.ae_eventually_measure_pos] with x hx h'x
   rw [tendsto_iff_norm_tendsto_zero]
   refine' squeeze_zero' (eventually_of_forall fun a => norm_nonneg _) _ hx
-  filter_upwards [h'x, v.eventually_measure_lt_top x] with a ha h'a
+  filter_upwards [h'x, v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
+    with a ha h'a h''a
   nth_rw 1 [← setAverage_const ha.ne' h'a.ne (f x)]
   simp_rw [setAverage_eq']
   rw [← integral_sub]
