@@ -17,6 +17,8 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 ## Main declarations
 
+* `MvPolynomial.psum`
+
 ## Notation
 
 + `psum σ R n`, is the degree-`n` power sum in `MvPolynomial σ R`.
@@ -78,14 +80,12 @@ open Classical Finset Nat
 
 variable (σ : Type) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type) [CommRing R]
   [NoZeroDivisors (MvPolynomial σ R)] [CharZero (MvPolynomial σ R)]
-/--
+/-
   TODO: show that MvPolynomial σ R is an integral domain if R is an integral domain
   TODO: show that MvPolynomial σ R has characteristic zero if R has characteristic zero
 -/
 
-def fintype_card (σ : Type) [Fintype σ] := Finset.card (univ : Finset σ)
-
-/-- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1983) -/
+-- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1983)
 def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
 
 def pairs (σ : Type) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
@@ -121,13 +121,9 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ
         apply h1
       rw [← h2] at h
       exact not_le_of_lt (sub_lt (card_pos.mpr h3) zero_lt_one) h
-  · simp
+  · simp_all
     simp_rw [card_insert_of_not_mem h1]
-    have ht1 := h.2.2
-    contrapose! ht1
-    apply And.intro
-    · exact le_antisymm h.2.1 (le_of_lt_succ ht1)
-    · exact h1
+    exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
 
 theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     T_map_restr σ (T_map_restr σ t h) (T_map_pair σ t h) = t := by
@@ -135,8 +131,8 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
   split_ifs with h1 h2 h3
   · simp at h2
   · simp_rw [insert_erase h1]
-  · simp
-    simp_rw [erase_eq_self.mpr h1]
+  · simp_rw [erase_eq_self.mpr h1]
+    simp_all
   · simp at h3
 
 /-- There surely must be an easier way to show this one... -/
@@ -163,8 +159,7 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
   · rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
   split_ifs with h1
-  · simp
-    simp_rw [card_erase_of_mem h1, ← prod_erase_mul t.fst (fun j ↦ (X j : MvPolynomial σ R)) h1,
+  · simp_rw [card_erase_of_mem h1, ← prod_erase_mul t.fst (fun j ↦ (X j : MvPolynomial σ R)) h1,
       mul_comm, mul_assoc (∏ a in erase t.fst t.snd, X a), ← mul_add]
     nth_rewrite 1 [← pow_one (X t.snd)]
     simp_rw [← pow_add, add_comm]
@@ -178,8 +173,7 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       Nat.sub_add_cancel]
     simp
     exact h3
-  · simp
-    simp_rw [card_insert_of_not_mem h1, prod_insert h1, mul_comm, mul_assoc (∏ a in t.fst, X a),
+  · simp_rw [card_insert_of_not_mem h1, prod_insert h1, mul_comm, mul_assoc (∏ a in t.fst, X a),
       ← mul_add]
     nth_rewrite 2 [← pow_one (X t.snd)]
     have h3 : card t.fst + 1 ≤ k
@@ -202,12 +196,12 @@ theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
   case inr => exact h1 hr
 
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
-    (∑ t in Finset.filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
+    (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
   sorry
 
 theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
-    (∑ t in Finset.filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
+    (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
     ∑ i in range k, (∑ A in powersetLen i univ, (∑ j in univ, f (A, j))) := by
   sorry
 
@@ -234,24 +228,30 @@ theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen
   rw [mem_powerset_len_univ_iff.mp h, mul_assoc]
 
 theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
-    (-1) ^ k * ∑ t in Finset.filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
+    (-1) ^ k * ∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
   simp_rw [esymm]
   rw [sum_equiv_k σ R k (fun t ↦ weight σ R k t), sum_congr rfl (esymm_summand_to_weight σ R k),
-    mul_comm (k : MvPolynomial σ R) ((-1) ^ k)]
+    mul_comm (k : MvPolynomial σ R) ((-1) ^ k), ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add,
+    ← two_mul]
   sorry
 
-theorem psum_to_weight (k i : ℕ) : true := sorry
+theorem esymm_mult_psum_summand_to_weight (k i : ℕ) : true := sorry
+
+theorem esymm_mult_psum_to_weight (k : ℕ) :
+    ∑ i in range k, (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i =
+    (-1) ^ (k - 1) * ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
+  simp_rw [esymm, psum, mul_assoc]
+  sorry
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
   exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
     (T_map_pair σ) (T_map_invol σ)
 
-theorem NewtonIdentityLE (k : ℕ) (h1 : 1 ≤ k) (h2 : k ≤ fintype_card σ) :
+theorem NewtonIdentityLE (k : ℕ) (h1 : 1 ≤ k) (h2 : k ≤ @card σ univ) :
     k * esymm σ R k - ∑ i in range k, (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i = 0 := by
-  simp_rw [fintype_card]
+  simp_rw [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k]
   sorry
 
-theorem NewtonIdentityGT (k : ℕ) (h1 : fintype_card σ ≥ 1) (h2 : k > fintype_card σ) :
-    ∑ i in Icc (k - fintype_card σ) k, (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i = 0 := by
-  simp_rw [fintype_card]
+theorem NewtonIdentityGT (k : ℕ) (h1 : @card σ univ ≥ 1) (h2 : k > @card σ univ) :
+    ∑ i in Icc (k - @card σ univ) k, (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i = 0 := by
   sorry
