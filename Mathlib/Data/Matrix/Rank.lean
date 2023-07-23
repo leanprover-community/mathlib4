@@ -292,7 +292,7 @@ lemma rank_mul_isUnit [DecidableEq n] [CommRing R]
 
 /-- Post (right) multiplying by an invertible matrix does not change the rank -/
 lemma rank_isUnit_mul [DecidableEq m] [Field R]
-    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det):
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (A ⬝ B).rank = B.rank := by
   suffices h: LinearMap.ker ((A⬝B).mulVecLin) = LinearMap.ker (B.mulVecLin)
   · have hB := LinearMap.finrank_range_add_finrank_ker (B.mulVecLin)
