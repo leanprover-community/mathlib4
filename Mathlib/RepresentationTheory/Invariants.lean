@@ -2,14 +2,11 @@
 Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
-
-! This file was ported from Lean 3 source module representation_theory.invariants
-! leanprover-community/mathlib commit 55b3f8206b8596db8bb1804d8a92814a0b6670c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.FdRep
+
+#align_import representation_theory.invariants from "leanprover-community/mathlib"@"55b3f8206b8596db8bb1804d8a92814a0b6670c9"
 
 /-!
 # Subspace of invariants a group representation

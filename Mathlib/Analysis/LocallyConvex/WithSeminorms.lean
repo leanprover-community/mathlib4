@@ -2,17 +2,14 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker
-
-! This file was ported from Lean 3 source module analysis.locally_convex.with_seminorms
-! leanprover-community/mathlib commit b31173ee05c911d61ad6a05bd2196835c932e0ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+#align_import analysis.locally_convex.with_seminorms from "leanprover-community/mathlib"@"b31173ee05c911d61ad6a05bd2196835c932e0ec"
 
 /-!
 # Topology induced by a family of seminorms
@@ -434,8 +431,7 @@ theorem SeminormFamily.withSeminorms_of_hasBasis [TopologicalAddGroup E] (p : Se
 #align seminorm_family.with_seminorms_of_has_basis SeminormFamily.withSeminorms_of_hasBasis
 
 theorem SeminormFamily.withSeminorms_iff_nhds_eq_iInf [TopologicalAddGroup E]
-    (p : SeminormFamily 𝕜 E ι) :
-    WithSeminorms p ↔ (𝓝 (0 : E)) = ⨅ i, (𝓝 0).comap (p i) := by
+    (p : SeminormFamily 𝕜 E ι) : WithSeminorms p ↔ (𝓝 (0 : E)) = ⨅ i, (𝓝 0).comap (p i) := by
   rw [← p.filter_eq_iInf]
   refine' ⟨fun h => _, p.withSeminorms_of_nhds⟩
   rw [h.topology_eq_withSeminorms]
@@ -629,7 +625,7 @@ theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [Topol
 #align seminorm.continuous_iff_continuous_comp Seminorm.continuous_iff_continuous_comp
 
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}
-    [TopologicalSpace E] (hp : WithSeminorms p) [TopologicalSpace F] (hq : WithSeminorms q)
+    {_ : TopologicalSpace E} (hp : WithSeminorms p) {_ : TopologicalSpace F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : Seminorm.IsBounded p q f) : Continuous f := by
   have : TopologicalAddGroup E := hp.topologicalAddGroup
   refine continuous_of_continuous_comp hq _ fun i => ?_
@@ -732,6 +728,68 @@ theorem _root_.WithSeminorms.uniformEquicontinuous_iff_bddAbove_and_continuous_i
   (hq.equicontinuous_TFAE f).out 2 4
 
 end Seminorm
+
+section Congr
+
+namespace WithSeminorms
+
+variable [Nonempty ι] [Nonempty ι']
+variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
+
+/-- Two families of seminorms `p` and `q` on the same space generate the same topology
+if each `p i` is bounded by some `C • Finset.sup s q` and vice-versa.
+
+We formulate these boundedness assumptions as `Seminorm.IsBounded q p LinearMap.id` (and
+vice-versa) to reuse the API. Furthermore, we don't actually state it as an equality of topologies
+but as a way to deduce `WithSeminorms q` from `WithSeminorms p`, since this should be more
+useful in practice. -/
+protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 E ι'}
+    [t : TopologicalSpace E] (hp : WithSeminorms p) (hpq : Seminorm.IsBounded p q LinearMap.id)
+    (hqp : Seminorm.IsBounded q p LinearMap.id) : WithSeminorms q := by
+  constructor
+  rw [hp.topology_eq_withSeminorms]
+  clear hp t
+  refine le_antisymm ?_ ?_ <;>
+  rw [← continuous_id_iff_le] <;>
+  refine continuous_from_bounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
+    LinearMap.id (by assumption)
+
+protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E]
+    (hp : WithSeminorms p) : WithSeminorms (fun s : Finset ι ↦ s.sup p) := by
+  refine hp.congr ?_ ?_
+  · intro s
+    refine ⟨s, 1, ?_⟩
+    rw [one_smul]
+    rfl
+  · intro i
+    refine ⟨{{i}}, 1, ?_⟩
+    rw [Finset.sup_singleton, Finset.sup_singleton, one_smul]
+    rfl
+
+protected theorem partial_sups [Preorder ι] [LocallyFiniteOrderBot ι] {p : SeminormFamily 𝕜 E ι}
+    [TopologicalSpace E] (hp : WithSeminorms p) : WithSeminorms (fun i ↦ (Finset.Iic i).sup p) := by
+  refine hp.congr ?_ ?_
+  · intro i
+    refine ⟨Finset.Iic i, 1, ?_⟩
+    rw [one_smul]
+    rfl
+  · intro i
+    refine ⟨{i}, 1, ?_⟩
+    rw [Finset.sup_singleton, one_smul]
+    exact (Finset.le_sup (Finset.mem_Iic.mpr le_rfl) : p i ≤ (Finset.Iic i).sup p)
+
+protected theorem congr_equiv {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
+    (hp : WithSeminorms p) (e : ι' ≃ ι) : WithSeminorms (p ∘ e) := by
+  refine hp.congr ?_ ?_ <;>
+  intro i <;>
+  [use {e i}, 1; use {e.symm i}, 1] <;>
+  simp
+
+end WithSeminorms
+
+end Congr
 
 end continuous_of_bounded
 

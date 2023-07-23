@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.truncated
-! leanprover-community/mathlib commit acbe099ced8be9c9754d62860110295cde0d7181
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.InitTail
+
+#align_import ring_theory.witt_vector.truncated from "leanprover-community/mathlib"@"acbe099ced8be9c9754d62860110295cde0d7181"
 
 /-!
 

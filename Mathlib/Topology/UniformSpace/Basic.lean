@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.basic
-! leanprover-community/mathlib commit 195fcd60ff2bfe392543bceb0ec2adcdb472db4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.NhdsSet
+
+#align_import topology.uniform_space.basic from "leanprover-community/mathlib"@"195fcd60ff2bfe392543bceb0ec2adcdb472db4c"
 
 /-!
 # Uniform spaces

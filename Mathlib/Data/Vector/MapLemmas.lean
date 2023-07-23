@@ -93,7 +93,7 @@ theorem mapAccumr_mapAccumr₂ (f₁ : γ → σ₁ → σ₁ × ζ) (f₂ : α 
           let r₂ := f₂ x y s.snd
           let r₁ := f₁ r₂.snd s.fst
           ((r₁.fst, r₂.fst), r₁.snd)
-        ) xs ys (s₁, s₂);
+        ) xs ys (s₁, s₂)
       (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
@@ -110,7 +110,7 @@ theorem mapAccumr₂_mapAccumr₂_left_left (f₁ : γ → α → σ₁ → σ�
                 let r₁ := f₁ r₂.snd x s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
               )
-            xs ys (s₁, s₂);
+            xs ys (s₁, s₂)
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
@@ -123,33 +123,31 @@ theorem mapAccumr₂_mapAccumr₂_left_right
                 let r₁ := f₁ r₂.snd y s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
               )
-            xs ys (s₁, s₂);
+            xs ys (s₁, s₂)
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_left  (f₁ : α → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_left (f₁ : α → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ xs (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
                 let r₁ := f₁ x r₂.snd s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
               )
-            xs ys (s₁, s₂);
+            xs ys (s₁, s₂)
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 
 @[simp]
-theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ)
-                                          (f₂ : α → β → σ₂ → σ₂ × γ) :
+theorem mapAccumr₂_mapAccumr₂_right_right (f₁ : β → γ → σ₁ → σ₁ × φ) (f₂ : α → β → σ₂ → σ₂ × γ) :
     (mapAccumr₂ f₁ ys (mapAccumr₂ f₂ xs ys s₂).snd s₁)
     = let m := mapAccumr₂ (fun x y (s₁, s₂) =>
                 let r₂ := f₂ x y s₂
                 let r₁ := f₁ y r₂.snd s₁
                 ((r₁.fst, r₂.fst), r₁.snd)
               )
-            xs ys (s₁, s₂);
+            xs ys (s₁, s₂)
     (m.fst.fst, m.snd) := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s₁ s₂ <;> simp_all
 

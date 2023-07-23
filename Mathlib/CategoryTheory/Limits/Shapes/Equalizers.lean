@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.equalizers
-! leanprover-community/mathlib commit 4698e35ca56a0d4fa53aa5639c3364e0a77f4eba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.HasLimits
+
+#align_import category_theory.limits.shapes.equalizers from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 
 /-!
 # Equalizers and coequalizers
@@ -406,7 +403,7 @@ theorem Fork.equalizer_ext (s : Fork f g) {W : C} {k l : W ⟶ s.pt} (h : k ≫ 
     ∀ j : WalkingParallelPair, k ≫ s.π.app j = l ≫ s.π.app j
   | zero => h
   | one => by
-    have : k ≫ ι s ≫ f = l ≫ ι s ≫  f := by
+    have : k ≫ ι s ≫ f = l ≫ ι s ≫ f := by
       simp only [← Category.assoc]; exact congrArg (· ≫ f) h
     rw [s.app_one_eq_ι_comp_left, this]
 #align category_theory.limits.fork.equalizer_ext CategoryTheory.Limits.Fork.equalizer_ext

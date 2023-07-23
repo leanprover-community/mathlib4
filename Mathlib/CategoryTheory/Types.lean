@@ -2,17 +2,14 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
-
-! This file was ported from Lean 3 source module category_theory.types
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.PPWithUniv
+
+#align_import category_theory.types from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # The category `Type`.
