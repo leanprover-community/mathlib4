@@ -70,7 +70,7 @@ instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]
-instance {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
+instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   [Algebra R A] [Module R M] [Module A M]
   [IsScalarTower R A M] :
   Algebra R (TensorAlgebra A M) :=
@@ -88,12 +88,16 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemi
   IsScalarTower R S (TensorAlgebra A M) :=
 RingQuot.instIsScalarTowerRingQuotInstSMulRingQuotInstSMulRingQuot _
 
-instance : Algebra R (TensorAlgebra R M) := RingQuot.instAlgebraRingQuotInstSemiring _
-
 namespace TensorAlgebra
 
 instance {S : Type _} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
+
+-- verify there is no diamond
+variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
+example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
+
+-- example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 variable {M}
 
