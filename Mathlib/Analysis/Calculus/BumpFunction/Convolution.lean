@@ -5,6 +5,10 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
+import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.MeasureTheory.Covering.Differentiation
+import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+import Mathlib.LinearAlgebra.Finrank
 
 #align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 

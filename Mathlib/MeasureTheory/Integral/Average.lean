@@ -400,7 +400,7 @@ theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (
   simp only [setAverage_eq, integral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
     smul_smul, ← ENNReal.toReal_inv, ← ENNReal.toReal_mul, ENNReal.inv_mul_cancel hs₀ hs,
     ENNReal.one_toReal, one_smul]
-#align measure_theory.set_average_const MeasureTheory.set_average_const
+#align measure_theory.set_average_const MeasureTheory.setAverage_const
 
 -- porting note: was `@[simp]` but `simp` can prove it
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
