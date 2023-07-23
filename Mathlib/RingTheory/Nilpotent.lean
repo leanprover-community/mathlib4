@@ -236,7 +236,8 @@ end CommSemiring
 
 namespace LinearMap
 
-variable (R) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R)
+variable {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
 
 @[simp]
 theorem isNilpotent_mulLeft_iff (a : A) : IsNilpotent (mulLeft R a) ↔ IsNilpotent a := by

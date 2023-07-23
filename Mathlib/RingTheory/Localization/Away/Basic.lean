@@ -95,7 +95,8 @@ noncomputable def awayToAwayRight (y : R) [Algebra R P] [IsLocalization.Away (x 
         rw [mul_mk'_eq_mk'_of_mul, mk'_self]
 #align is_localization.away.away_to_away_right IsLocalization.Away.awayToAwayRight
 
-variable (S) (Q : Type _) [CommSemiring Q] [Algebra P Q]
+variable (S)
+variable (Q : Type _) [CommSemiring Q] [Algebra P Q]
 
 /-- Given a map `f : R →+* S` and an element `r : R`, we may construct a map `Rᵣ →+* Sᵣ`. -/
 noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]

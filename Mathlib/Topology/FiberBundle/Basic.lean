@@ -758,7 +758,8 @@ end FiberBundleCore
 
 /-! ### Prebundle construction for constructing fiber bundles -/
 
-variable (F) (E : B → Type _) [TopologicalSpace B] [TopologicalSpace F]
+variable (F)
+variable (E : B → Type _) [TopologicalSpace B] [TopologicalSpace F]
   [∀ x, TopologicalSpace (E x)]
 
 /-- This structure permits to define a fiber bundle when trivializations are given as local

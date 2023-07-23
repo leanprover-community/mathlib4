@@ -257,7 +257,8 @@ theorem nonempty_of_not_uniform (h : ¬P.IsUniform G ε) : P.parts.Nonempty :=
   nonempty_of_ne_empty fun h₁ => h <| isUniformOfEmpty h₁
 #align finpartition.nonempty_of_not_uniform Finpartition.nonempty_of_not_uniform
 
-variable (P G ε) (s : Finset α)
+variable (P G ε)
+variable (s : Finset α)
 
 /-- A choice of witnesses of non-uniformity among the parts of a finpartition. -/
 noncomputable def nonuniformWitnesses : Finset (Finset α) :=

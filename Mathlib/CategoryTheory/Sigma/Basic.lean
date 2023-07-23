@@ -203,7 +203,8 @@ end
 
 section
 
-variable (C) {J : Type w₂} (g : J → I)
+variable (C)
+variable {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
 def map : (Σj : J, C (g j)) ⥤ Σi : I, C i :=

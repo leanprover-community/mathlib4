@@ -429,7 +429,8 @@ end DProd
 
 section
 
-variable (ι) {R : Type _}
+variable (ι)
+variable {R : Type _}
 
 @[simps one]
 instance One.gOne [Zero ι] [One R] : GradedMonoid.GOne fun _ : ι => R where one := 1

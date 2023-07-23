@@ -215,7 +215,8 @@ theorem torsion.isTorsion : IsTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ =
 #align comm_monoid.torsion.is_torsion CommMonoid.torsion.isTorsion
 #align add_comm_monoid.add_torsion.is_torsion AddCommMonoid.addTorsion.isTorsion
 
-variable (G) (p : ℕ) [hp : Fact p.Prime]
+variable (G)
+variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-primary component is the submonoid of elements with order prime-power of `p`. -/
 @[to_additive (attr := simps)

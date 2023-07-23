@@ -60,7 +60,8 @@ its integral.
 
 namespace MeasureTheory
 section ENNReal
-variable (μ) {f g : α → ℝ≥0∞}
+variable (μ)
+variable {f g : α → ℝ≥0∞}
 
 /-- Average value of an `ℝ≥0∞`-valued function `f` w.r.t. a measure `μ`, notation: `⨍⁻ x, f x ∂μ`.
 It is defined as `μ univ⁻¹ * ∫⁻ x, f x ∂μ`, so it is equal to zero if `μ` is an infinite measure. If

@@ -596,7 +596,8 @@ end InclusionMaps
 
 section LieSpan
 
-variable (R L) (s : Set M)
+variable (R L)
+variable (s : Set M)
 
 /-- The `lieSpan` of a set `s ⊆ M` is the smallest Lie submodule of `M` that contains `s`. -/
 def lieSpan : LieSubmodule R L M :=

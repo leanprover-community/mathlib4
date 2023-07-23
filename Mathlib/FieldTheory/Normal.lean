@@ -127,8 +127,8 @@ theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function
     exact ⟨y, hy⟩⟩
 #align alg_hom.normal_bijective AlgHom.normal_bijective
 
--- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
-variable {F} {E} {E' : Type _} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
+variable {F} {E}
+variables {E' : Type _} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
 
 theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :=
   normal_iff.2 fun x => by

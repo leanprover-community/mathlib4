@@ -803,7 +803,8 @@ variable [CommRing R] [CommRing S] [AddCommGroup M] [Module R M]
 
 section Prime
 
-variable (σ) {r : R}
+variable (σ)
+variable {r : R}
 
 namespace Polynomial
 

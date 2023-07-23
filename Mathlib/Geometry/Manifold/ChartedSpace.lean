@@ -908,7 +908,8 @@ instance hasGroupoid_continuousGroupoid : HasGroupoid M (continuousGroupoid H) :
 
 section MaximalAtlas
 
-variable (M) (G : StructureGroupoid H)
+variable (M)
+variable (G : StructureGroupoid H)
 
 /-- Given a charted space admitting a structure groupoid, the maximal atlas associated to this
 structure groupoid is the set of all local charts that are compatible with the atlas, i.e., such

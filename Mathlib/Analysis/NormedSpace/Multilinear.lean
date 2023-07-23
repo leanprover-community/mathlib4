@@ -1852,7 +1852,8 @@ end
 
 section
 
-variable (𝕜 G G') {k l : ℕ} {s : Finset (Fin n)}
+variable (𝕜 G G')
+variable {k l : ℕ} {s : Finset (Fin n)}
 
 /-- If `s : Finset (Fin n)` is a finite set of cardinality `k` and its complement has cardinality
 `l`, then the space of continuous multilinear maps `G [×n]→L[𝕜] G'` of `n` variables is isomorphic

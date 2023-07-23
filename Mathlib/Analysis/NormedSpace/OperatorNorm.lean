@@ -1092,7 +1092,8 @@ section MultiplicationLinear
 
 section NonUnital
 
-variable (𝕜) (𝕜' : Type _) [NonUnitalSeminormedRing 𝕜']
+variable (𝕜)
+variable (𝕜' : Type _) [NonUnitalSeminormedRing 𝕜']
 
 variable [NormedSpace 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜']
 
@@ -1151,7 +1152,8 @@ end NonUnital
 
 section Unital
 
-variable (𝕜) (𝕜' : Type _) [SeminormedRing 𝕜']
+variable (𝕜)
+variable (𝕜' : Type _) [SeminormedRing 𝕜']
 
 variable [NormedAlgebra 𝕜 𝕜'] [NormOneClass 𝕜']
 
@@ -1182,7 +1184,8 @@ end MultiplicationLinear
 
 section SmulLinear
 
-variable (𝕜) (𝕜' : Type _) [NormedField 𝕜']
+variable (𝕜)
+variable (𝕜' : Type _) [NormedField 𝕜']
 
 variable [NormedAlgebra 𝕜 𝕜'] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
@@ -1236,7 +1239,8 @@ theorem norm_restrictScalars (f : E →L[𝕜] Fₗ) : ‖f.restrictScalars 𝕜
     (op_norm_le_bound _ (norm_nonneg _) fun x => f.le_op_norm x)
 #align continuous_linear_map.norm_restrict_scalars ContinuousLinearMap.norm_restrictScalars
 
-variable (𝕜 E Fₗ 𝕜') (𝕜'' : Type _) [Ring 𝕜'']
+variable (𝕜 E Fₗ 𝕜')
+variable (𝕜'' : Type _) [Ring 𝕜'']
 
 variable [Module 𝕜'' Fₗ] [ContinuousConstSMul 𝕜'' Fₗ]
   [SMulCommClass 𝕜 𝕜'' Fₗ] [SMulCommClass 𝕜' 𝕜'' Fₗ]
@@ -1879,7 +1883,8 @@ theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRight
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
 #align continuous_linear_map.norm_smul_rightL ContinuousLinearMap.norm_smulRightL
 
-variable (𝕜) (𝕜' : Type _)
+variable (𝕜)
+variable (𝕜' : Type _)
 
 section
 

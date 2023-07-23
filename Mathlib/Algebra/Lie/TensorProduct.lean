@@ -177,7 +177,8 @@ namespace LieModule
 
 open scoped TensorProduct
 
-variable (R) (L : Type v) (M : Type w)
+variable (R)
+variable (L : Type v) (M : Type w)
 
 variable [LieRing L] [LieAlgebra R L]
 

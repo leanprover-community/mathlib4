@@ -55,7 +55,8 @@ open scoped Topology Classical Bundle
 
 variable {ι : Type _} {B : Type _} {F : Type _} {E : B → Type _}
 
-variable (F) {Z : Type _} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
+variable (F)
+variable {Z : Type _} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
 below as `Trivialization F proj`) if the total space has not been given a topology, but we

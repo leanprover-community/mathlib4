@@ -29,7 +29,8 @@ open BigOperators Polynomial
 
 section ModuleAndAlgebra
 
-variable (R) (A : Type u) (B M N : Type _)
+variable (R)
+variable (A : Type u) (B M N : Type _)
 
 /-- An algebra over a commutative semiring is of `FiniteType` if it is finitely generated
 over the base ring as algebra. -/

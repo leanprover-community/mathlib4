@@ -161,7 +161,8 @@ theorem smooth_mul_right {a : G} : Smooth I I fun b : G => b * a :=
 
 end
 
-variable (I) (g h : G)
+variable (I)
+variable (g h : G)
 
 /-- Left multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
 Lemmas involving `smoothLeftMul` with the notation `𝑳` usually use `L` instead of `𝑳` in the

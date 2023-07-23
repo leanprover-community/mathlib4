@@ -648,7 +648,8 @@ end Submodule
 
 section Simplex
 
-variable (𝕜) (ι : Type _) [OrderedSemiring 𝕜] [Fintype ι]
+variable (𝕜)
+variable (ι : Type _) [OrderedSemiring 𝕜] [Fintype ι]
 
 /-- The standard simplex in the space of functions `ι → 𝕜` is the set of vectors with non-negative
 coordinates with total sum `1`. This is the free object in the category of convex spaces. -/

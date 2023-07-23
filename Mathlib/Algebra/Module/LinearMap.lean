@@ -352,7 +352,8 @@ section Pointwise
 
 open Pointwise
 
-variable (M M₃ σ) {F : Type _} (h : F)
+variable (M M₃ σ)
+variable {F : Type _} (h : F)
 
 @[simp]
 theorem _root_.image_smul_setₛₗ [SemilinearMapClass F σ M M₃] (c : R) (s : Set M) :

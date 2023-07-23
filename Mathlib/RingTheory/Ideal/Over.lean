@@ -303,7 +303,8 @@ theorem isMaximal_comap_of_isIntegral_of_isMaximal' {R S : Type _} [CommRing R] 
 
 section IsIntegralClosure
 
-variable (S) {A : Type _} [CommRing A]
+variable (S)
+variable {A : Type _} [CommRing A]
 
 variable [Algebra R A] [Algebra A S] [IsScalarTower R A S] [IsIntegralClosure A R S]
 

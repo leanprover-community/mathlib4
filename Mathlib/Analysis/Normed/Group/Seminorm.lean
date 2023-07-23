@@ -241,7 +241,8 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 #align group_seminorm.coe_lt_coe GroupSeminorm.coe_lt_coe
 #align add_group_seminorm.coe_lt_coe AddGroupSeminorm.coe_lt_coe
 
-variable (p q) (f : F →* E)
+variable (p q)
+variable (f : F →* E)
 
 @[to_additive]
 instance : Zero (GroupSeminorm E) :=
@@ -549,7 +550,8 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align nonarch_add_group_seminorm.coe_lt_coe NonarchAddGroupSeminorm.coe_lt_coe
 
-variable (p q) (f : F →+ E)
+variable (p q)
+variable (f : F →+ E)
 
 instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
@@ -800,7 +802,8 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
 #align group_norm.coe_lt_coe GroupNorm.coe_lt_coe
 #align add_group_norm.coe_lt_coe AddGroupNorm.coe_lt_coe
 
-variable (p q) (f : F →* E)
+variable (p q)
+variable (f : F →* E)
 
 @[to_additive]
 instance : Add (GroupNorm E) :=
@@ -942,7 +945,8 @@ theorem coe_lt_coe : (p : E → ℝ) < q ↔ p < q :=
   Iff.rfl
 #align nonarch_add_group_norm.coe_lt_coe NonarchAddGroupNorm.coe_lt_coe
 
-variable (p q) (f : F →+ E)
+variable (p q)
+variable (f : F →+ E)
 
 instance : Sup (NonarchAddGroupNorm E) :=
   ⟨fun p q =>

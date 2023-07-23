@@ -870,7 +870,8 @@ end Isometry
 variable {W₁ W₂ W₃ : Type _} [SeminormedAddCommGroup W₁] [SeminormedAddCommGroup W₂]
   [SeminormedAddCommGroup W₃]
 
-variable (f) (g : NormedAddGroupHom V W)
+variable (f)
+variable (g : NormedAddGroupHom V W)
 
 variable {f₁ g₁ : NormedAddGroupHom V₁ W₁}
 

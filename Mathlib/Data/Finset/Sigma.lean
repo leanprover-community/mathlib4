@@ -94,7 +94,8 @@ theorem sigma_eq_biUnion [DecidableEq (Σi, α i)] (s : Finset ι) (t : ∀ i, F
   simp [and_left_comm]
 #align finset.sigma_eq_bUnion Finset.sigma_eq_biUnion
 
-variable (s t) (f : (Σi, α i) → β)
+variable (s t)
+variable (f : (Σi, α i) → β)
 
 theorem sup_sigma [SemilatticeSup β] [OrderBot β] :
     (s.sigma t).sup f = s.sup fun i => (t i).sup fun b => f ⟨i, b⟩ := by

@@ -491,7 +491,8 @@ end Theory
 
 namespace completeTheory
 
-variable (L) (M : Type w)
+variable (L)
+variable (M : Type w)
 variable [L.Structure M]
 
 theorem isSatisfiable [Nonempty M] : (L.completeTheory M).IsSatisfiable :=

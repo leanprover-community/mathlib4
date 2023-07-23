@@ -44,7 +44,8 @@ variable {𝕜 E F G ι : Type _}
 
 section NontriviallyNormedField
 
-variable (𝕜 E) {s : Set E}
+variable (𝕜 E)
+variable {s : Set E}
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 

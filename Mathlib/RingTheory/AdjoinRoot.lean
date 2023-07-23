@@ -695,7 +695,8 @@ end Equiv'
 
 section Field
 
-variable (K) (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+variable (K)
+variable (L F : Type _) [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
 
 variable (pb : PowerBasis F K)
 

@@ -712,7 +712,8 @@ theorem _root_.affineSpan_le {s : Set P} {Q : AffineSubspace k P} :
   (AffineSubspace.gi k V P).gc _ _
 #align affine_span_le affineSpan_le
 
-variable (k V) {p₁ p₂ : P}
+variable (k V)
+variable {p₁ p₂ : P}
 
 /-- The affine span of a single point, coerced to a set, contains just that point. -/
 @[simp 1001] -- porting note: this needs to take priority over `coe_affineSpan`

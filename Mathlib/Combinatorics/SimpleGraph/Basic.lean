@@ -406,7 +406,8 @@ instance (V : Type u) : Inhabited (SimpleGraph V) :=
 
 section Decidable
 
-variable (V) (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
+variable (V)
+variable (H : SimpleGraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
 
 instance Bot.adjDecidable : DecidableRel (⊥ : SimpleGraph V).Adj :=
   inferInstanceAs <| DecidableRel fun _ _ => False

@@ -1004,7 +1004,8 @@ theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
 
 section LinearAdjoints
 
-variable (B) (F : BilinForm R M)
+variable (B)
+variable (F : BilinForm R M)
 
 variable {M' : Type _} [AddCommMonoid M'] [Module R M']
 
@@ -1075,7 +1076,8 @@ theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f 
   rw [LinearMap.mul_apply, LinearMap.mul_apply, h, h']
 #align bilin_form.is_adjoint_pair.mul BilinForm.IsAdjointPair.mul
 
-variable (B B' B₁ B₂) (F₂ : BilinForm R₂ M₂)
+variable (B B' B₁ B₂)
+variable (F₂ : BilinForm R₂ M₂)
 
 /-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear forms
 on the underlying module. In the case that these two forms are identical, this is the usual concept

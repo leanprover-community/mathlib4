@@ -61,7 +61,8 @@ namespace Sym
 
 section Sym
 
-variable (α) (n : ℕ)
+variable (α)
+variable (n : ℕ)
 
 /-- Over `Fin (n + 1)`, the multisets of size `k + 1` containing `0` are equivalent to those of size
 `k`, as demonstrated by respectively erasing or appending `0`. -/

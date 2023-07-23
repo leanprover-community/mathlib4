@@ -1194,7 +1194,8 @@ theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDiv
   · exact IsLocalization.injective S hM
 #align is_localization.sec_fst_ne_zero IsLocalization.sec_fst_ne_zero
 
-variable (S M) (Q : Type _) [CommRing Q] {g : R →+* P} [Algebra P Q]
+variable (S M)
+variable (Q : Type _) [CommRing Q] {g : R →+* P} [Algebra P Q]
 
 /-- Injectivity of a map descends to the map induced on localizations. -/
 theorem map_injective_of_injective (hg : Function.Injective g)

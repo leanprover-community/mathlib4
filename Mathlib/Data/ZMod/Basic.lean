@@ -1186,7 +1186,8 @@ theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
 
 section lift
 
-variable (n) {A : Type _} [AddGroup A]
+variable (n)
+variable{A : Type _} [AddGroup A]
 
 /-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
 --@[simps] --Porting note: removed, simplified LHS of `lift_coe` to something worse.

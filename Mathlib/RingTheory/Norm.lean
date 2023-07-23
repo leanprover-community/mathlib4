@@ -248,7 +248,8 @@ section EqProdEmbeddings
 
 open IntermediateField IntermediateField.AdjoinSimple Polynomial
 
-variable (F) (E : Type _) [Field E] [Algebra K E]
+variable (F)
+variable (E : Type _) [Field E] [Algebra K E]
 
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :

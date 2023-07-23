@@ -83,7 +83,8 @@ def const (n : ℕ) (A : Type u) : MvPFunctor n :=
 
 section Const
 
-variable (n) {A : Type u} {α β : TypeVec.{u} n}
+variable (n)
+variable {A : Type u} {α β : TypeVec.{u} n}
 
 /-- Constructor for the constant functor -/
 def const.mk (x : A) {α} : (const n A).Obj α :=

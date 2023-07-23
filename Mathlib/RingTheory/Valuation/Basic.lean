@@ -68,7 +68,8 @@ variable {K F R : Type _} [DivisionRing K]
 
 section
 
-variable (F R) (Γ₀ : Type _) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
+variable (F R)
+variable (Γ₀ : Type _) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
 --porting note: removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.

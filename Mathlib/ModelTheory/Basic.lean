@@ -276,7 +276,8 @@ theorem card_mk₂ (c f₁ f₂ : Type u) (r₁ r₂ : Type v) :
   simp [card_eq_card_functions_add_card_relations, add_assoc]
 #align first_order.language.card_mk₂ FirstOrder.Language.card_mk₂
 
-variable (L) (M : Type w)
+variable (L)
+variable (M : Type w)
 
 /-- A first-order structure on a type `M` consists of interpretations of all the symbols in a given
   language. Each function of arity `n` is interpreted as a function sending tuples of length `n`
