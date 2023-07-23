@@ -103,7 +103,7 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
 
-open Metric
+open Metric MeasureTheory.Measure Set
 
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
