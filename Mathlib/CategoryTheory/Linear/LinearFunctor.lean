@@ -83,7 +83,8 @@ instance fullSubcategoryInclusionLinear {C : Type _} [Category C] [Preadditive C
 
 section
 
-variable {R} {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
+variable {R}
+variable {C D : Type _} [Category C] [Category D] [Preadditive C] [Preadditive D] (F : C ⥤ D)
   [Additive F]
 
 instance natLinear : F.Linear ℕ where

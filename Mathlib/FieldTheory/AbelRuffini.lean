@@ -248,7 +248,8 @@ def solvableByRad : IntermediateField F E where
 
 namespace solvableByRad
 
-variable {F} {E} {α : E}
+variable {F} {E}
+variable {α : E}
 
 theorem induction (P : solvableByRad F E → Prop)
     (base : ∀ α : F, P (algebraMap F (solvableByRad F E) α))

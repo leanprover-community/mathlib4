@@ -138,7 +138,8 @@ instance FullSubcategory.faithful : Faithful (fullSubcategoryInclusion Z) :=
   InducedCategory.faithful _
 #align category_theory.full_subcategory.faithful CategoryTheory.FullSubcategory.faithful
 
-variable {Z} {Z' : C → Prop}
+variable {Z}
+variable {Z' : C → Prop}
 
 /-- An implication of predicates `Z → Z'` induces a functor between full subcategories. -/
 @[simps]

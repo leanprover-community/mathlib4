@@ -124,7 +124,8 @@ def comp (P : MvPFunctor.{u} n) (Q : Fin2 n → MvPFunctor.{u} m) : MvPFunctor m
   B a i := Σ(j : _) (b : P.2 a.1 j), (Q j).2 (a.snd j b) i
 #align mvpfunctor.comp MvPFunctor.comp
 
-variable {P} {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
+variable {P}
+variable {Q : Fin2 n → MvPFunctor.{u} m} {α β : TypeVec.{u} m}
 
 /-- Constructor for functor composition -/
 def comp.mk (x : P.Obj fun i => (Q i).Obj α) : (comp P Q).Obj α :=

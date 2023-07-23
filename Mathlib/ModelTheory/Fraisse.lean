@@ -79,7 +79,8 @@ def age (M : Type w) [L.Structure M] : Set (Bundled.{w} L.Structure) :=
   {N | Structure.FG L N ∧ Nonempty (N ↪[L] M)}
 #align first_order.language.age FirstOrder.Language.age
 
-variable {L} (K : Set (Bundled.{w} L.Structure))
+variable {L}
+variable (K : Set (Bundled.{w} L.Structure))
 
 /-- A class `K` has the hereditary property when all finitely-generated structures that embed into
   structures in `K` are also in `K`.  -/
@@ -124,7 +125,8 @@ theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N 
       Nonempty.map fun x => Embedding.comp x h.some.toEmbedding⟩
 #align first_order.language.age.is_equiv_invariant FirstOrder.Language.age.is_equiv_invariant
 
-variable {L} {M} {N : Type w} [Structure L N]
+variable {L} {M}
+variable {N : Type w} [Structure L N]
 
 theorem Embedding.age_subset_age (MN : M ↪[L] N) : L.age M ⊆ L.age N := fun _ =>
   And.imp_right (Nonempty.map MN.comp)

@@ -71,7 +71,8 @@ def StarConvex : Prop :=
   ∀ ⦃y : E⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → a • x + b • y ∈ s
 #align star_convex StarConvex
 
-variable {𝕜 x s} {t : Set E}
+variable {𝕜 x s}
+variable {t : Set E}
 
 theorem starConvex_iff_segment_subset : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s → [x -[𝕜] y] ⊆ s := by
   constructor

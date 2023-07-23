@@ -55,7 +55,8 @@ instance : ∀ n, LocallyFiniteOrderTop (Fin n)
 
 namespace Fin
 
-variable {n} (a b : Fin n)
+variable {n}
+variable (a b : Fin n)
 
 theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n :=
   rfl

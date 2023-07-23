@@ -3600,7 +3600,8 @@ theorem dropWhile_nthLe_zero_not (l : List α) (hl : 0 < (l.dropWhile p).length)
 -- Same question for takeWhile_eq_nil_iff below
 #align list.drop_while_nth_le_zero_not List.dropWhile_nthLe_zero_not
 
-variable {p} {l : List α}
+variable {p}
+variable {l : List α}
 
 @[simp]
 theorem dropWhile_eq_nil_iff : dropWhile p l = [] ↔ ∀ x ∈ l, p x := by

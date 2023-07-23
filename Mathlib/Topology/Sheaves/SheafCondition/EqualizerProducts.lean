@@ -138,7 +138,8 @@ theorem fork_π_app_walkingParallelPair_one :
 set_option linter.uppercaseLean3 false in
 #align Top.presheaf.sheaf_condition_equalizer_products.fork_π_app_walking_parallel_pair_one TopCat.Presheaf.SheafConditionEqualizerProducts.fork_π_app_walkingParallelPair_one
 
-variable {F} {G : Presheaf C X}
+variable {F}
+variable {G : Presheaf C X}
 
 /-- Isomorphic presheaves have isomorphic `piOpens` for any cover `U`. -/
 @[simp]

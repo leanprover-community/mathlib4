@@ -265,7 +265,8 @@ instance normal_iSup {ι : Type _} (t : ι → IntermediateField F K) [h : ∀ i
 #align intermediate_field.normal_supr IntermediateField.normal_iSup
 
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
-variable {F K} {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
+variable {F K}
+variable {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
   [Algebra F K] [IsScalarTower F K L]
 
 @[simp]
@@ -277,7 +278,8 @@ theorem restrictScalars_normal {E : IntermediateField K L} :
 end IntermediateField
 
 -- Porting note `[Field F]` added by hand.
-variable {F} {K} {K₁ K₂ K₃ : Type _} [Field F] [Field K₁] [Field K₂] [Field K₃] [Algebra F K₁]
+variable {F} {K}
+variable {K₁ K₂ K₃ : Type _} [Field F] [Field K₁] [Field K₂] [Field K₃] [Algebra F K₁]
   [Algebra F K₂] [Algebra F K₃] (ϕ : K₁ →ₐ[F] K₂) (χ : K₁ ≃ₐ[F] K₂) (ψ : K₂ →ₐ[F] K₃)
   (ω : K₂ ≃ₐ[F] K₃)
 

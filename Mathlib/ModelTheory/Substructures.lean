@@ -68,7 +68,8 @@ variable (L)
 theorem closedUnder_univ : ClosedUnder f (univ : Set M) := fun _ _ => mem_univ _
 #align first_order.language.closed_under_univ FirstOrder.Language.closedUnder_univ
 
-variable {L f s} {t : Set M}
+variable {L f s}
+variable {t : Set M}
 
 namespace ClosedUnder
 
@@ -255,7 +256,8 @@ def closure : LowerAdjoint ((↑) : L.Substructure M → Set M) :=
     ⟨Set.Subset.trans fun _x hx => mem_sInf.2 fun _S hS => hS hx, fun h => sInf_le h⟩⟩
 #align first_order.language.substructure.closure FirstOrder.Language.Substructure.closure
 
-variable {L} {s : Set M}
+variable {L}
+variable {s : Set M}
 
 theorem mem_closure {x : M} : x ∈ closure L s ↔ ∀ S : L.Substructure M, s ⊆ S → x ∈ S :=
   mem_sInf

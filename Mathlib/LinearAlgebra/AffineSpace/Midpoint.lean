@@ -45,7 +45,8 @@ def midpoint (x y : P) : P :=
   lineMap x y (⅟ 2 : R)
 #align midpoint midpoint
 
-variable {R} {x y z : P}
+variable {R}
+variable {x y z : P}
 
 @[simp]
 theorem AffineMap.map_midpoint (f : P →ᵃ[R] P') (a b : P) :

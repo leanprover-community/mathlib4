@@ -158,7 +158,8 @@ def CliqueFree (n : ℕ) : Prop :=
   ∀ t, ¬G.IsNClique n t
 #align simple_graph.clique_free SimpleGraph.CliqueFree
 
-variable {G H} {s : Finset α}
+variable {G H}
+variable {s : Finset α}
 
 theorem IsNClique.not_cliqueFree (hG : G.IsNClique n s) : ¬G.CliqueFree n :=
   fun h ↦ h _ hG

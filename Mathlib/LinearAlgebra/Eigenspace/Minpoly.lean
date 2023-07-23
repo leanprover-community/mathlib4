@@ -71,7 +71,8 @@ theorem isRoot_of_hasEigenvalue {f : End K V} {μ : K} (h : f.HasEigenvalue μ) 
 
 variable [FiniteDimensional K V] (f : End K V)
 
-variable {f} {μ : K}
+variable {f}
+variable {μ : K}
 
 theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
   cases' dvd_iff_isRoot.2 h with p hp

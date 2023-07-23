@@ -154,7 +154,8 @@ theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
 noncomputable instance : Inhabited (P →A[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
-variable {R P} {W₂ Q₂ : Type _}
+variable {R P}
+variable {W₂ Q₂ : Type _}
 
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 

@@ -463,7 +463,8 @@ def IsImage (s : Set α) (t : Set β) : Prop :=
 
 namespace IsImage
 
-variable {e} {s : Set α} {t : Set β} {x : α} {y : β}
+variable {e}
+variable {s : Set α} {t : Set β} {x : α} {y : β}
 
 theorem toLocalEquiv (h : e.IsImage s t) : e.toLocalEquiv.IsImage s t :=
   h

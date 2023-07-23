@@ -47,7 +47,8 @@ instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype 
 
 section HasForget₂
 
-variable {c hom} {c' : Type u → Type u} {hom' : ∀ ⦃α β⦄, c' α → c' β → (α → β) → Prop}
+variable {c hom}
+variable {c' : Type u → Type u} {hom' : ∀ ⦃α β⦄, c' α → c' β → (α → β) → Prop}
   [𝒞' : UnbundledHom hom']
 
 variable (obj : ∀ ⦃α⦄, c α → c' α)

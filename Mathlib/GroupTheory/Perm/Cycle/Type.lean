@@ -428,7 +428,8 @@ theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G 
   (Fintype.card_congr (equivVector G n)).trans (card_vector (n - 1))
 #align equiv.perm.vectors_prod_eq_one.card Equiv.Perm.VectorsProdEqOne.card
 
-variable {G n} {g : G}
+variable {G n}
+variable {g : G}
 variable (v : vectorsProdEqOne G n) (j k : ℕ)
 
 /-- Rotate a vector whose product is 1. -/

@@ -72,7 +72,8 @@ protected theorem IsExtreme.refl (A : Set E) : IsExtreme 𝕜 A A :=
   ⟨Subset.rfl, fun _ hx₁A _ hx₂A _ _ _ ↦ ⟨hx₁A, hx₂A⟩⟩
 #align is_extreme.refl IsExtreme.refl
 
-variable {𝕜} {A B C : Set E} {x : E}
+variable {𝕜}
+variable {A B C : Set E} {x : E}
 
 protected theorem IsExtreme.rfl : IsExtreme 𝕜 A A :=
   IsExtreme.refl 𝕜 A

@@ -2247,7 +2247,8 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
     exact f.left_inv x
 #align continuous_linear_equiv.automorphism_group ContinuousLinearEquiv.automorphismGroup
 
-variable {M₁} {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
+variable {M₁}
+variable {R₄ : Type _} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
 

@@ -35,7 +35,8 @@ def fold (b : β) (f : α → β) (s : Finset α) : β :=
   (s.1.map f).fold op b
 #align finset.fold Finset.fold
 
-variable {op} {f : α → β} {b : β} {s : Finset α} {a : α}
+variable {op}
+variable {f : α → β} {b : β} {s : Finset α} {a : α}
 
 @[simp]
 theorem fold_empty : (∅ : Finset α).fold op b f = b :=

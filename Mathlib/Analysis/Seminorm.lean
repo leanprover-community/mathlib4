@@ -1384,7 +1384,8 @@ theorem ball_normSeminorm : (normSeminorm 𝕜 E).ball = Metric.ball := by
   simp only [Seminorm.mem_ball, Metric.mem_ball, coe_normSeminorm, dist_eq_norm]
 #align ball_norm_seminorm ball_normSeminorm
 
-variable {𝕜 E} {x : E}
+variable {𝕜 E}
+variable {x : E}
 
 /-- Balls at the origin are absorbent. -/
 theorem absorbent_ball_zero (hr : 0 < r) : Absorbent 𝕜 (Metric.ball (0 : E) r) := by

@@ -61,7 +61,8 @@ def Absorbs (A B : Set E) :=
   ∃ r, 0 < r ∧ ∀ a : 𝕜, r ≤ ‖a‖ → B ⊆ a • A
 #align absorbs Absorbs
 
-variable {𝕜} {s t u v A B : Set E}
+variable {𝕜}
+variable {s t u v A B : Set E}
 
 @[simp]
 theorem absorbs_empty {s : Set E} : Absorbs 𝕜 s (∅ : Set E) :=

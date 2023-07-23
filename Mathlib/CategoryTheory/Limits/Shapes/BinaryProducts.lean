@@ -1249,7 +1249,8 @@ section ProdComparison
 
 universe w
 
-variable {C} {D : Type u₂} [Category.{w} D]
+variable {C}
+variable {D : Type u₂} [Category.{w} D]
 
 variable (F : C ⥤ D) {A A' B B' : C}
 
@@ -1339,7 +1340,8 @@ section CoprodComparison
 
 universe w
 
-variable {C} {D : Type u₂} [Category.{w} D]
+variable {C}
+variable {D : Type u₂} [Category.{w} D]
 
 variable (F : C ⥤ D) {A A' B B' : C}
 

@@ -97,7 +97,8 @@ theorem e_assoc (W X Y Z : C) :
 
 section
 
-variable {V} {W : Type v} [Category.{w} W] [MonoidalCategory W]
+variable {V}
+variable {W : Type v} [Category.{w} W] [MonoidalCategory W]
 
 -- porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.

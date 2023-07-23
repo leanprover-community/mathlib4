@@ -39,7 +39,8 @@ namespace Const
 
 open MvFunctor MvPFunctor
 
-variable {n} {A : Type u} {α β : TypeVec.{u} n} (f : α ⟹ β)
+variable {n}
+variable {A : Type u} {α β : TypeVec.{u} n} (f : α ⟹ β)
 
 /-- Constructor for constant functor -/
 protected def mk (x : A) : (Const n A) α := x
@@ -80,4 +81,3 @@ instance mvqpf : @MvQPF _ (Const n A) MvQPF.Const.MvFunctor where
 end Const
 
 end MvQPF
-

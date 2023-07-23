@@ -75,7 +75,8 @@ variable [CommRing R]
 
 section Transvection
 
-variable {R n} (i j : n)
+variable {R n}
+variable (i j : n)
 
 /-- The transvection matrix `Transvection i j c` is equal to the identity plus `c` at position
 `(i, j)`. Multiplying by it on the left (as in `Transvection i j c ⬝ M`) corresponds to adding
@@ -334,7 +335,8 @@ of the matrices, through a suitable reindexing to identify any fintype with `Fin
 
 namespace Pivot
 
-variable {R} {r : ℕ} (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜)
+variable {R}
+variable {r : ℕ} (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜)
 
 open Sum Unit Fin TransvectionStruct
 

@@ -68,7 +68,8 @@ theorem formPerm_pair (x y : α) : formPerm [x, y] = swap x y :=
   rfl
 #align list.form_perm_pair List.formPerm_pair
 
-variable {l} {x : α}
+variable {l}
+variable {x : α}
 
 theorem formPerm_apply_of_not_mem (x : α) (l : List α) (h : x ∉ l) : formPerm l x = x := by
   cases' l with y l

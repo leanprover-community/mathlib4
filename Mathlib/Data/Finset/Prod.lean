@@ -290,7 +290,8 @@ def offDiag :=
   (s ×ˢ s).filter fun a : α × α => a.fst ≠ a.snd
 #align finset.off_diag Finset.offDiag
 
-variable {s} {x : α × α}
+variable {s}
+variable {x : α × α}
 
 @[simp]
 theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by

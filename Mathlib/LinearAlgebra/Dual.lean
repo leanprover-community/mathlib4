@@ -135,7 +135,8 @@ theorem eval_apply (v : M) (a : Dual R M) : eval R M v a = a v :=
   rfl
 #align module.dual.eval_apply Module.Dual.eval_apply
 
-variable {R M} {M' : Type v'}
+variable {R M}
+variable {M' : Type v'}
 variable [AddCommMonoid M'] [Module R M']
 
 /-- The transposition of linear maps, as a linear map from `M →ₗ[R] M'` to

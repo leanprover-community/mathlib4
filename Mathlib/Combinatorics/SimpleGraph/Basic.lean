@@ -1682,7 +1682,8 @@ infixl:50 " ≃g " => Iso
 
 namespace Hom
 
-variable {G G'} (f : G →g G')
+variable {G G'}
+variable (f : G →g G')
 
 /-- The identity homomorphism from a graph to itself. -/
 abbrev id : G →g G :=
@@ -1769,7 +1770,8 @@ end Hom
 
 namespace Embedding
 
-variable {G G'} (f : G ↪g G')
+variable {G G'}
+variable (f : G ↪g G')
 
 /-- The identity embedding from a graph to itself. -/
 abbrev refl : G ↪g G :=
@@ -1873,7 +1875,8 @@ end Embedding
 
 section InduceHom
 
-variable {G G'} {G'' : SimpleGraph X} {s : Set V} {t : Set W} {r : Set X}
+variable {G G'}
+variable {G'' : SimpleGraph X} {s : Set V} {t : Set W} {r : Set X}
          (φ : G →g G') (φst : Set.MapsTo φ s t) (ψ : G' →g G'') (ψtr : Set.MapsTo ψ t r)
 
 /-- The restriction of a morphism of graphs to induced subgraphs. -/
@@ -1902,7 +1905,8 @@ end InduceHom
 
 namespace Iso
 
-variable {G G'} (f : G ≃g G')
+variable {G G'}
+variable (f : G ≃g G')
 
 /-- The identity isomorphism of a graph with itself. -/
 abbrev refl : G ≃g G :=

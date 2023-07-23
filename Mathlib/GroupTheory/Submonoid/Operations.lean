@@ -1392,7 +1392,8 @@ end Submonoid
 
 namespace MulEquiv
 
-variable {S} {T : Submonoid M}
+variable {S}
+variable {T : Submonoid M}
 
 /-- Makes the identity isomorphism from a proof that two submonoids of a multiplicative
     monoid are equal. -/

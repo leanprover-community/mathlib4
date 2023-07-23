@@ -260,7 +260,8 @@ end Mat_
 
 namespace Functor
 
-variable {C} {D : Type _} [Category.{v₁} D] [Preadditive D]
+variable {C}
+variable {D : Type _} [Category.{v₁} D] [Preadditive D]
 
 attribute [local simp] Mat_.id_apply eqToHom_map
 

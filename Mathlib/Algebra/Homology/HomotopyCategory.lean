@@ -175,7 +175,8 @@ end HomotopyCategory
 
 namespace CategoryTheory
 
-variable {V} {W : Type _} [Category W] [Preadditive W]
+variable {V}
+variable {W : Type _} [Category W] [Preadditive W]
 
 -- porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/

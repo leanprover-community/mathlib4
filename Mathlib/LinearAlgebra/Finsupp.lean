@@ -1102,7 +1102,8 @@ theorem Fintype.range_total :
 
 section SpanRange
 
-variable {v} {x : M}
+variable {v}
+variable {x : M}
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/

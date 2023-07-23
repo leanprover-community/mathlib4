@@ -93,7 +93,8 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
       ℱ.val.map f₁.op (x g₁ hg₁) = ℱ.val.map f₂.op (x g₂ hg₂)
 #align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
 
-variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
+variable {J K}
+variable {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
 
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 

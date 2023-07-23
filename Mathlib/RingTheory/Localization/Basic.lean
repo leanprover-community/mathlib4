@@ -1288,7 +1288,8 @@ theorem Field.localization_map_bijective {K Kₘ : Type _} [Field K] [CommRing K
 -- way round causes issues with defeq of instances, so this is actually easier.
 section Algebra
 
-variable {S} {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ]
+variable {S}
+variable {Rₘ Sₘ : Type _} [CommRing Rₘ] [CommRing Sₘ]
 
 variable [Algebra R Rₘ] [IsLocalization M Rₘ]
 

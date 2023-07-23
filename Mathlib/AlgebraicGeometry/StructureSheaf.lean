@@ -1057,7 +1057,8 @@ theorem stalkSpecializes_stalk_to_fiber {R : Type _} [CommRing R] {x y : PrimeSp
 
 section Comap
 
-variable {R} {S : Type u} [CommRing S] {P : Type u} [CommRing P]
+variable {R}
+variable {S : Type u} [CommRing S] {P : Type u} [CommRing P]
 
 /--
 Given a ring homomorphism `f : R →+* S`, an open set `U` of the prime spectrum of `R` and an open

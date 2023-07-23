@@ -114,7 +114,8 @@ instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R (FullSu
 
 end
 
-variable {P} {P' : C → Prop} [MonoidalPredicate P']
+variable {P}
+variable {P' : C → Prop} [MonoidalPredicate P']
 
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/

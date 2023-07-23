@@ -105,7 +105,8 @@ theorem coordChangeL_prod [e₁.IsLinear 𝕜] [e₁'.IsLinear 𝕜] [e₂.IsLin
 set_option linter.uppercaseLean3 false in
 #align trivialization.coord_changeL_prod Trivialization.coordChangeL_prod
 
-variable {e₁ e₂} [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
+variable {e₁ e₂}
+variable [∀ x : B, TopologicalSpace (E₁ x)] [∀ x : B, TopologicalSpace (E₂ x)]
   [FiberBundle F₁ E₁] [FiberBundle F₂ E₂]
 
 theorem prod_apply [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B} (hx₁ : x ∈ e₁.baseSet)

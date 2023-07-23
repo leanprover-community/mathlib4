@@ -208,7 +208,8 @@ def IsSubordinate (f : SmoothPartitionOfUnity ι I M s) (U : ι → Set M) :=
   ∀ i, tsupport (f i) ⊆ U i
 #align smooth_partition_of_unity.is_subordinate SmoothPartitionOfUnity.IsSubordinate
 
-variable {f} {U : ι → Set M}
+variable {f}
+variable {U : ι → Set M}
 
 @[simp]
 theorem isSubordinate_toPartitionOfUnity :
@@ -590,4 +591,3 @@ theorem Metric.exists_smooth_forall_closedBall_subset {M} [MetricSpace M] [Chart
   rw [← Metric.emetric_closedBall (hδ0 _).le]
   exact hδ i x hx
 #align metric.exists_smooth_forall_closed_ball_subset Metric.exists_smooth_forall_closedBall_subset
-

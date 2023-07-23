@@ -39,7 +39,8 @@ def hasse : SimpleGraph α where
   loopless _a h := h.elim (irrefl _) (irrefl _)
 #align simple_graph.hasse SimpleGraph.hasse
 
-variable {α β} {a b : α}
+variable {α β}
+variable {a b : α}
 
 @[simp]
 theorem hasse_adj : (hasse α).Adj a b ↔ a ⋖ b ∨ b ⋖ a :=

@@ -375,7 +375,8 @@ theorem orderOf_pow_coprime (h : (orderOf y).coprime m) : orderOf (y ^ m) = orde
 
 namespace Commute
 
-variable {x} (h : _root_.Commute x y)
+variable {x}
+variable (h : _root_.Commute x y)
 
 @[to_additive]
 theorem orderOf_mul_dvd_lcm : orderOf (x * y) ∣ Nat.lcm (orderOf x) (orderOf y) := by
@@ -445,7 +446,8 @@ end Commute
 
 section PPrime
 
-variable {a x n} {p : ℕ} [hp : Fact p.Prime]
+variable {a x n}
+variable {p : ℕ} [hp : Fact p.Prime]
 
 @[to_additive]
 theorem orderOf_eq_prime (hg : x ^ p = 1) (hg1 : x ≠ 1) : orderOf x = p :=

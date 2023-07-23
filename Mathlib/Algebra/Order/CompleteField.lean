@@ -210,7 +210,8 @@ theorem inducedMap_zero : inducedMap α β 0 = 0 := by exact_mod_cast inducedMap
 theorem inducedMap_one : inducedMap α β 1 = 1 := by exact_mod_cast inducedMap_rat α β 1
 #align linear_ordered_field.induced_map_one LinearOrderedField.inducedMap_one
 
-variable {α β} {a : α} {b : β} {q : ℚ}
+variable {α β}
+variable {a : α} {b : β} {q : ℚ}
 
 theorem inducedMap_nonneg (ha : 0 ≤ a) : 0 ≤ inducedMap α β a :=
   (inducedMap_zero α _).ge.trans <| inducedMap_mono _ _ ha

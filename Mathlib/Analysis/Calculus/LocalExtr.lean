@@ -306,7 +306,8 @@ theorem exists_deriv_eq_zero (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (hfI
   ⟨c, cmem, hc.deriv_eq_zero⟩
 #align exists_deriv_eq_zero exists_deriv_eq_zero
 
-variable {f f'} {l : ℝ}
+variable {f f'}
+variable {l : ℝ}
 
 /-- **Rolle's Theorem**, a version for a function on an open interval: if `f` has derivative `f'`
 on `(a, b)` and has the same limit `l` at `𝓝[>] a` and `𝓝[<] b`, then `f' c = 0`

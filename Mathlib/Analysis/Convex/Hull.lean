@@ -63,7 +63,8 @@ theorem convexHull_eq_iInter : convexHull 𝕜 s =
   rfl
 #align convex_hull_eq_Inter convexHull_eq_iInter
 
-variable {𝕜 s} {t : Set E} {x y : E}
+variable {𝕜 s}
+variable {t : Set E} {x y : E}
 
 theorem mem_convexHull_iff : x ∈ convexHull 𝕜 s ↔ ∀ t, s ⊆ t → Convex 𝕜 t → x ∈ t := by
   simp_rw [convexHull_eq_iInter, mem_iInter]

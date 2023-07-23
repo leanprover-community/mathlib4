@@ -372,7 +372,8 @@ variable (M : Type u) [CommMonoid M]
 instance : BraidedCategory (Discrete M) where
   braiding X Y := Discrete.eqToIso (mul_comm X.as Y.as)
 
-variable {M} {N : Type u} [CommMonoid N]
+variable {M}
+variable {N : Type u} [CommMonoid N]
 
 /-- A multiplicative morphism between commutative monoids gives a braided functor between
 the corresponding discrete braided monoidal categories.

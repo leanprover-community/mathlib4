@@ -67,7 +67,8 @@ noncomputable def mulAntidiagonal : Finset (α × α) :=
 #align finset.mul_antidiagonal Finset.mulAntidiagonal
 #align finset.add_antidiagonal Finset.addAntidiagonal
 
-variable {hs ht a} {u : Set α} {hu : u.IsPwo} {x : α × α}
+variable {hs ht a}
+variable {u : Set α} {hu : u.IsPwo} {x : α × α}
 
 @[to_additive (attr := simp)]
 theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
@@ -129,4 +130,3 @@ theorem mulAntidiagonal_min_mul_min {α} [LinearOrderedCancelCommMonoid α] {s t
 #align finset.add_antidiagonal_min_add_min Finset.addAntidiagonal_min_add_min
 
 end Finset
-

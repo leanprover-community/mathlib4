@@ -72,7 +72,8 @@ instance : Faithful (inclusion C) where
     intro _ _
     apply Iso.ext
 
-variable {C} {G : Type u₂} [Groupoid.{v₂} G]
+variable {C}
+variable {G : Type u₂} [Groupoid.{v₂} G]
 
 -- Note that this function is not functorial
 -- (consider the two functors from [0] to [1], and the natural transformation between them).

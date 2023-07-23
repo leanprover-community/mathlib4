@@ -80,7 +80,8 @@ theorem commutator_def (H₁ H₂ : Subgroup G) :
   rfl
 #align subgroup.commutator_def Subgroup.commutator_def
 
-variable {g₁ g₂ g₃} {H₁ H₂ H₃ K₁ K₂ : Subgroup G}
+variable {g₁ g₂ g₃}
+variable {H₁ H₂ H₃ K₁ K₂ : Subgroup G}
 
 theorem commutator_mem_commutator (h₁ : g₁ ∈ H₁) (h₂ : g₂ ∈ H₂) : ⁅g₁, g₂⁆ ∈ ⁅H₁, H₂⁆ :=
   subset_closure ⟨g₁, h₁, g₂, h₂, rfl⟩

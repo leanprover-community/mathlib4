@@ -207,7 +207,8 @@ theorem hom_ext {R : Type u₁} [CommSemiring R] [CharP R p] [PerfectRing R p] {
   (lift p R S).symm.injective <| RingHom.ext hfg
 #align perfection.hom_ext Perfection.hom_ext
 
-variable {R} {S : Type u₂} [CommSemiring S] [CharP S p]
+variable {R}
+variable {S : Type u₂} [CommSemiring S] [CharP S p]
 
 /-- A ring homomorphism `R →+* S` induces `Perfection R p →+* Perfection S p`. -/
 @[simps]

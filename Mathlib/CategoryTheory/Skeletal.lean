@@ -353,7 +353,8 @@ open ThinSkeleton
 
 section
 
-variable {C} {α : Type _} [PartialOrder α]
+variable {C}
+variable {α : Type _} [PartialOrder α]
 
 /--
 When `e : C ≌ α` is a categorical equivalence from a thin category `C` to some partial order `α`,

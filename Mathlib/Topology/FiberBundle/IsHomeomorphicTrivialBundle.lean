@@ -32,7 +32,8 @@ def IsHomeomorphicTrivialFiberBundle (proj : Z → B) : Prop :=
 
 namespace IsHomeomorphicTrivialFiberBundle
 
-variable {F} {proj : Z → B}
+variable {F}
+variable {proj : Z → B}
 
 protected theorem proj_eq (h : IsHomeomorphicTrivialFiberBundle F proj) :
     ∃ e : Z ≃ₜ B × F, proj = Prod.fst ∘ e :=

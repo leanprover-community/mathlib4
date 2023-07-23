@@ -265,7 +265,8 @@ noncomputable def nonuniformWitnesses : Finset (Finset α) :=
   (P.parts.filter fun t => s ≠ t ∧ ¬G.IsUniform ε s t).image (G.nonuniformWitness ε s)
 #align finpartition.nonuniform_witnesses Finpartition.nonuniformWitnesses
 
-variable {P G ε s} {t : Finset α}
+variable {P G ε s}
+variable {t : Finset α}
 
 theorem nonuniformWitness_mem_nonuniformWitnesses (h : ¬G.IsUniform ε s t) (ht : t ∈ P.parts)
     (hst : s ≠ t) : G.nonuniformWitness ε s t ∈ P.nonuniformWitnesses G ε s :=

@@ -54,7 +54,8 @@ scoped[FinsetFamily] attribute [instance] Finset.hasSups
 
 open FinsetFamily
 
-variable {s t} {a b c : α}
+variable {s t}
+variable {a b c : α}
 
 @[simp]
 theorem mem_sups : c ∈ s ⊻ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊔ b = c := by simp [(· ⊻ ·)]
@@ -228,7 +229,8 @@ scoped[FinsetFamily] attribute [instance] Finset.hasInfs
 
 open FinsetFamily
 
-variable {s t} {a b c : α}
+variable {s t}
+variable {a b c : α}
 
 @[simp]
 theorem mem_infs : c ∈ s ⊼ t ↔ ∃ a ∈ s, ∃ b ∈ t, a ⊓ b = c := by simp [(· ⊼ ·)]
@@ -428,7 +430,8 @@ scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
 
 open FinsetFamily
 
-variable {s t u} {a b c : α}
+variable {s t u}
+variable {a b c : α}
 
 @[simp]
 theorem mem_disjSups : c ∈ s ○ t ↔ ∃ a ∈ s, ∃ b ∈ t, Disjoint a b ∧ a ⊔ b = c := by

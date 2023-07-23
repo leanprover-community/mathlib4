@@ -67,7 +67,8 @@ theorem eq_zero_of_lt {n ν : ℕ} (h : n < ν) : bernsteinPolynomial R n ν = 0
 
 section
 
-variable {R} {S : Type _} [CommRing S]
+variable {R}
+variable {S : Type _} [CommRing S]
 
 @[simp]
 theorem map (f : R →+* S) (n ν : ℕ) :

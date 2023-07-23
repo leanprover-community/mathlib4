@@ -568,7 +568,8 @@ theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻�
     Subtype.coe_preimage_self, Set.univ_inter]
 #align set.range_restrict_preimage Set.range_restrictPreimage
 
-variable {f} {U : ι → Set β}
+variable {f}
+variable {U : ι → Set β}
 
 lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e

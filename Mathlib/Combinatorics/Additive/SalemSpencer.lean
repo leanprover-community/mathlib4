@@ -344,7 +344,8 @@ theorem mulRothNumber_spec :
 #align mul_roth_number_spec mulRothNumber_spec
 #align add_roth_number_spec addRothNumber_spec
 
-variable {s t} {n : ℕ}
+variable {s t}
+variable {n : ℕ}
 
 @[to_additive]
 theorem MulSalemSpencer.le_mulRothNumber (hs : MulSalemSpencer (s : Set α)) (h : s ⊆ t) :

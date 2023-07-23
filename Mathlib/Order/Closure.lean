@@ -294,7 +294,8 @@ end ClosureOperator
 /-! ### Lower adjoint -/
 
 
-variable {α} {β : Type _}
+variable {α}
+variable {β : Type _}
 
 /-- A lower adjoint of `u` on the preorder `α` is a function `l` such that `l` and `u` form a Galois
 connection. It allows us to define closure operators whose output does not match the input. In

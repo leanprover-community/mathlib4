@@ -42,7 +42,8 @@ class Prestructure (s : Setoid M) where
 #align first_order.language.prestructure.fun_equiv FirstOrder.Language.Prestructure.fun_equiv
 #align first_order.language.prestructure.rel_equiv FirstOrder.Language.Prestructure.rel_equiv
 
-variable {L} {s : Setoid M}
+variable {L}
+variable {s : Setoid M}
 variable [ps : L.Prestructure s]
 
 instance quotientStructure : L.Structure (Quotient s) where

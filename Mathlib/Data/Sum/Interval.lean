@@ -40,7 +40,8 @@ def sumLift₂ : ∀ (_ : Sum α₁ α₂) (_ : Sum β₁ β₂), Finset (Sum γ
   | inr a, inr b => (g a b).map Embedding.inr
 #align finset.sum_lift₂ Finset.sumLift₂
 
-variable {f f₁ g₁ g f₂ g₂} {a : Sum α₁ α₂} {b : Sum β₁ β₂} {c : Sum γ₁ γ₂}
+variable {f f₁ g₁ g f₂ g₂}
+variable {a : Sum α₁ α₂} {b : Sum β₁ β₂} {c : Sum γ₁ γ₂}
 
 theorem mem_sumLift₂ :
     c ∈ sumLift₂ f g a b ↔

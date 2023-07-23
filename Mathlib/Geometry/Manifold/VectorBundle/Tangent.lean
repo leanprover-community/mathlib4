@@ -157,7 +157,8 @@ does not pick wrong instances. In this section, we record the right instances fo
 them, noting in particular that the tangent bundle is a smooth manifold. -/
 section
 
-variable {M} (x : M)
+variable {M}
+variable (x : M)
 
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 
@@ -396,7 +397,8 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
 section inTangentCoordinates
 
 variable (I')
-variable {M H} {N : Type _}
+variable {M H}
+variable {N : Type _}
 
 /-- The map `in_coordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :

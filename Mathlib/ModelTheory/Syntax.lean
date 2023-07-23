@@ -339,7 +339,8 @@ def Theory :=
 set_option linter.uppercaseLean3 false in
 #align first_order.language.Theory FirstOrder.Language.Theory
 
-variable {L} {α} {n : ℕ}
+variable {L} {α}
+variable {n : ℕ}
 
 /-- Applies a relation to terms as a bounded formula. -/
 def Relations.boundedFormula {l : ℕ} (R : L.Relations n) (ts : Fin n → L.Term (Sum α (Fin l))) :

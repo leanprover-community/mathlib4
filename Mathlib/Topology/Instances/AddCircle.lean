@@ -91,7 +91,8 @@ theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x 
       (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
 #align continuous_left_to_Ioc_mod continuous_left_toIocMod
 
-variable {x} (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a)
+variable {x}
+variable (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a)
 
 theorem toIcoMod_eventuallyEq_toIocMod : toIcoMod hp a =ᶠ[𝓝 x] toIocMod hp a :=
   IsOpen.mem_nhds

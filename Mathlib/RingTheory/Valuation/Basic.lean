@@ -638,7 +638,8 @@ def of : AddValuation R Γ₀ where
   map_mul' := hmul
 #align add_valuation.of AddValuation.of
 
-variable {h0} {h1} {hadd} {hmul} {r : R}
+variable {h0} {h1} {hadd} {hmul}
+variable {r : R}
 
 @[simp]
 theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl

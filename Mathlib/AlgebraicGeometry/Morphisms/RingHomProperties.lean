@@ -344,7 +344,8 @@ open AlgebraicGeometry
 
 namespace RingHom.PropertyIsLocal
 
-variable {P} (hP : RingHom.PropertyIsLocal @P)
+variable {P}
+variable (hP : RingHom.PropertyIsLocal @P)
 
 theorem sourceAffineLocally_of_source_openCover {X Y : Scheme} (f : X ⟶ Y) [IsAffine Y]
     (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (H : ∀ i, P (Scheme.Γ.map (𝒰.map i ≫ f).op)) :

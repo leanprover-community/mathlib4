@@ -154,7 +154,8 @@ namespace IntermediateField
 
 open Polynomial
 
-variable {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
+variable {K L}
+variable [Field K] [Field L] [Algebra K L] {p : K[X]}
 
 theorem splits_of_splits {F : IntermediateField K L} (h : p.Splits (algebraMap K L))
     (hF : ∀ x ∈ p.rootSet L, x ∈ F) : p.Splits (algebraMap K F) := by

@@ -51,7 +51,7 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 #align is_simple_module.nontrivial IsSimpleModule.nontrivial
 
-variable {R} {M} -- Porting note: had break line or all hell breaks loose
+variable {R} {M}
 variable {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
 
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=

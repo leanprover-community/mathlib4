@@ -239,7 +239,8 @@ section IsDomain
 
 variable [Ring B] [IsDomain B] [Algebra A B]
 
-variable {A} {x : B}
+variable {A}
+variable {x : B}
 
 /-- A minimal polynomial is prime. -/
 theorem prime (hx : IsIntegral A x) : Prime (minpoly A x) := by
