@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.special_functions.complex.circle
-! leanprover-community/mathlib commit f333194f5ecd1482191452c5ea60b37d4d6afa08
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+
+#align_import analysis.special_functions.complex.circle from "leanprover-community/mathlib"@"f333194f5ecd1482191452c5ea60b37d4d6afa08"
 
 /-!
 # Maps on the unit circle

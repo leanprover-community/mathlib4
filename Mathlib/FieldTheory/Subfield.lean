@@ -2,14 +2,11 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module field_theory.subfield
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Order.Field.InjSurj
+
+#align_import field_theory.subfield from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
 /-!
 # Subfields
@@ -655,7 +652,7 @@ instance : CompleteLattice (Subfield K) :=
     le_top := fun _ _ _ => trivial
     inf := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun  _ _ _ => And.right
+    inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
 /-! # subfield closure of a subset -/

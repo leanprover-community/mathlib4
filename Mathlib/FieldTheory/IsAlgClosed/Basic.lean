@@ -2,15 +2,12 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module field_theory.is_alg_closed.basic
-! leanprover-community/mathlib commit 00f91228655eecdcd3ac97a7fd8dbcb139fe990a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.RingTheory.Localization.Integral
+
+#align_import field_theory.is_alg_closed.basic from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
 # Algebraically Closed Field

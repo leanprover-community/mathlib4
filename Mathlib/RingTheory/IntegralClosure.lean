@@ -2,11 +2,6 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.integral_closure
-! leanprover-community/mathlib commit 641b6a82006416ec431b2987b354af9311fed4f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Expand
 import Mathlib.LinearAlgebra.FiniteDimensional
@@ -16,6 +11,8 @@ import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.TensorProduct
+
+#align_import ring_theory.integral_closure from "leanprover-community/mathlib"@"641b6a82006416ec431b2987b354af9311fed4f2"
 
 /-!
 # Integral closure of a subring.

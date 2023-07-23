@@ -2,14 +2,11 @@
 Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
-
-! This file was ported from Lean 3 source module linear_algebra.free_module.norm
-! leanprover-community/mathlib commit 90b0d53ee6ffa910e5c2a977ce7e2fc704647974
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.Norm
+
+#align_import linear_algebra.free_module.norm from "leanprover-community/mathlib"@"90b0d53ee6ffa910e5c2a977ce7e2fc704647974"
 
 /-!
 # Norms on free modules over principal ideal domains
@@ -63,8 +60,14 @@ instance (b : Basis ι F[X] S) {I : Ideal S} (hI : I ≠ ⊥) (i : ι) :
     FiniteDimensional F (F[X] ⧸ span ({I.smithCoeffs b hI i} : Set F[X])) := by
   -- Porting note: we need to do this proof in two stages otherwise it times out
   -- original proof: (AdjoinRoot.powerBasis <| I.smithCoeffs_ne_zero b hI i).FiniteDimensional
+  -- The first tactic takes over 10 seconds, spending a lot of time in checking
+  -- that instances on the quotient commute.  My guess is that we unfold
+  -- operations to the `Quotient.lift` level and then end up comparing huge
+  -- terms.  We should probably make most of the quotient operations
+  -- irreducible so that they don't expose `Quotient.lift` accidentally.
   refine PowerBasis.finiteDimensional ?_
-  exact AdjoinRoot.powerBasis (I.smithCoeffs_ne_zero b hI i)
+  refine AdjoinRoot.powerBasis ?_
+  refine I.smithCoeffs_ne_zero b hI i
 
 -- Porting note: this proof was already slow in mathlib3 and it is even slower now
 -- See: https://github.com/leanprover-community/mathlib4/issues/5028

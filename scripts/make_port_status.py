@@ -29,6 +29,9 @@ source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
 
+align_import_re = re.compile(
+    r'^#align_import ([^ ]*) from "(leanprover-community/[a-z]*)" ?@ ?"([0-9a-f]*)"')
+
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
     rel = Path(*rel.parts[1:])
@@ -64,6 +67,12 @@ for path in paths:
 def get_mathlib4_module_commit_info(contents):
     module = repo = commit = None
     for line in contents.split('\n'):
+        m = align_import_re.match(line)
+        if m:
+            module = m.group(1)
+            repo = m.group(2)
+            commit = m.group(3)
+            break
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
@@ -71,8 +80,6 @@ def get_mathlib4_module_commit_info(contents):
         if m:
             repo = m.group(1)
             commit = m.group(2)
-        if import_re.match(line):
-            break
     return module, repo, commit
 
 # contains ported files

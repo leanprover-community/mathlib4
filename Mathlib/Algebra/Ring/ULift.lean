@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.ring.ulift
-! leanprover-community/mathlib commit 13e18cfa070ea337ea960176414f5ae3a1534aae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.ring.ulift from "leanprover-community/mathlib"@"13e18cfa070ea337ea960176414f5ae3a1534aae"
 
 /-!
 # `ULift` instances for ring

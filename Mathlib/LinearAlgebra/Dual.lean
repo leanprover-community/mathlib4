@@ -2,17 +2,14 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
-
-! This file was ported from Lean 3 source module linear_algebra.dual
-! leanprover-community/mathlib commit b1c017582e9f18d8494e5c18602a8cb4a6f843ac
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+
+#align_import linear_algebra.dual from "leanprover-community/mathlib"@"b1c017582e9f18d8494e5c18602a8cb4a6f843ac"
 
 /-!
 # Dual vector spaces
