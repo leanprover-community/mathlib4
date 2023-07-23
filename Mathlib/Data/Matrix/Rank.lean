@@ -283,7 +283,7 @@ section MulNonsingInv
 lemma rank_mul_isUnit [DecidableEq n] [CommRing R]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B ⬝ A).rank = B.rank := by
-  rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top, ←Matrix.rank ]
+  rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top, ←Matrix.rank]
   rw [LinearMap.range_eq_top] -- On separate line since implicit rfl works in prev line
   intro x
   use ((A⁻¹).mulVecLin x)
