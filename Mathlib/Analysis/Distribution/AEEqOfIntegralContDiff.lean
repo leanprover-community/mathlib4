@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.PartitionOfUnity
+import Mathlib.Geometry.Manifold.Metrizable
 
 /-!
 # Functions which vanish as distributions vanish as functions
@@ -17,18 +18,27 @@ A version for two functions having the same integral when multiplied by smooth c
 functions is also given in `ae_eq_of_integral_smul_contDiff_eq`.
 -/
 
-open MeasureTheory Filter Metric Function Set
+open MeasureTheory Filter Metric Function Set TopologicalSpace
 
 open scoped Topology
 
-variable {E F : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E] {μ : Measure E} {f f' : E → F}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+open scoped Topology Manifold Classical Filter BigOperators
+
+
+
+variable {ι : Type _} {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [FiniteDimensional ℝ E] {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  {H : Type _}
+  [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type _} [TopologicalSpace M]
+  [ChartedSpace H M] [SmoothManifoldWithCorners I M] [MeasurableSpace M] [BorelSpace M]
+  [SigmaCompactSpace M] [T2Space M]
 
 /-- If a locally integrable function `f` has zero integral when multiplied by any smooth compactly
 supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf : LocallyIntegrable f μ)
-    (h : ∀ (g : E → ℝ), ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
+theorem ae_eq_zero_of_integral_smul_contDiff_eq_zero
+    {f : M → F} {μ : Measure M}
+    (hf : LocallyIntegrable f μ)
+    (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
@@ -37,11 +47,12 @@ theorem ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf : LocallyIntegrable f �
   -- and by dominated convergence these integrals converge to `∫ x in s, f`.
   obtain ⟨u, u_anti, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
     ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ)
-  let v : ℕ → Set E := fun n ↦ thickening (u n) s
+  have : MetrizableSpace M := ManifoldWithCorners.metrizableSpace I M
+  let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
+  let v : ℕ → Set M := fun n ↦ thickening (u n) s
   obtain ⟨K, K_compact, vK⟩ : ∃ K, IsCompact K ∧ ∀ n, v n ⊆ K := by
     refine' ⟨closure (v 0), _, fun n ↦ _⟩
-    · rw [closure_thickening (u_pos 0)]
-      apply isCompact_of_isClosed_bounded isClosed_cthickening hs.bounded.cthickening
+    · apply isCompact_of_isClosed_bounded -- isClosed_cthickening hs.bounded.cthickening
     · apply Set.Subset.trans ?_ (subset_closure)
       exact thickening_mono (u_anti.antitone (zero_le n)) _
   have : ∀ n, ∃ (g : E → ℝ), support g = v n ∧ ContDiff ℝ ⊤ g ∧ Set.range g ⊆ Set.Icc 0 1
