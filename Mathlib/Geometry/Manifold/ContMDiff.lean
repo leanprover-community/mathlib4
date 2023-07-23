@@ -238,33 +238,50 @@ def Smooth (f : M → M') :=
   ContMDiff I I' ⊤ f
 #align smooth Smooth
 
-/-! ### Basic properties of smooth functions between manifolds -/
-
-
 variable {I I'}
+
+/-! ### Deducing smoothness from higher smoothness -/
+
+theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
+    ContMDiffWithinAt I I' m f s x :=
+  ⟨hf.1, hf.2.of_le le⟩
+#align cont_mdiff_within_at.of_le ContMDiffWithinAt.of_le
+
+theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
+  ContMDiffWithinAt.of_le hf le
+#align cont_mdiff_at.of_le ContMDiffAt.of_le
+
+theorem ContMDiffOn.of_le (hf : ContMDiffOn I I' n f s) (le : m ≤ n) : ContMDiffOn I I' m f s :=
+  fun x hx => (hf x hx).of_le le
+#align cont_mdiff_on.of_le ContMDiffOn.of_le
+
+theorem ContMDiff.of_le (hf : ContMDiff I I' n f) (le : m ≤ n) : ContMDiff I I' m f := fun x =>
+  (hf x).of_le le
+#align cont_mdiff.of_le ContMDiff.of_le
+
+/-! ### Basic properties of smooth functions between manifolds -/
 
 theorem ContMDiff.smooth (h : ContMDiff I I' ⊤ f) : Smooth I I' f :=
   h
 #align cont_mdiff.smooth ContMDiff.smooth
 
-theorem Smooth.contMDiff (h : Smooth I I' f) : ContMDiff I I' ⊤ f :=
-  h
-#align smooth.cont_mdiff Smooth.contMDiff
+theorem Smooth.contMDiff (h : Smooth I I' f) : ContMDiff I I' n f :=
+  h.of_le le_top
 
 theorem ContMDiffOn.smoothOn (h : ContMDiffOn I I' ⊤ f s) : SmoothOn I I' f s :=
   h
 #align cont_mdiff_on.smooth_on ContMDiffOn.smoothOn
 
-theorem SmoothOn.contMDiffOn (h : SmoothOn I I' f s) : ContMDiffOn I I' ⊤ f s :=
-  h
+theorem SmoothOn.contMDiffOn (h : SmoothOn I I' f s) : ContMDiffOn I I' n f s :=
+  h.of_le le_top
 #align smooth_on.cont_mdiff_on SmoothOn.contMDiffOn
 
 theorem ContMDiffAt.smoothAt (h : ContMDiffAt I I' ⊤ f x) : SmoothAt I I' f x :=
   h
 #align cont_mdiff_at.smooth_at ContMDiffAt.smoothAt
 
-theorem SmoothAt.contMDiffAt (h : SmoothAt I I' f x) : ContMDiffAt I I' ⊤ f x :=
-  h
+theorem SmoothAt.contMDiffAt (h : SmoothAt I I' f x) : ContMDiffAt I I' n f x :=
+  h.of_le le_top
 #align smooth_at.cont_mdiff_at SmoothAt.contMDiffAt
 
 theorem ContMDiffWithinAt.smoothWithinAt (h : ContMDiffWithinAt I I' ⊤ f s x) :
@@ -273,8 +290,8 @@ theorem ContMDiffWithinAt.smoothWithinAt (h : ContMDiffWithinAt I I' ⊤ f s x) 
 #align cont_mdiff_within_at.smooth_within_at ContMDiffWithinAt.smoothWithinAt
 
 theorem SmoothWithinAt.contMDiffWithinAt (h : SmoothWithinAt I I' f s x) :
-    ContMDiffWithinAt I I' ⊤ f s x :=
-  h
+    ContMDiffWithinAt I I' n f s x :=
+  h.of_le le_top
 #align smooth_within_at.cont_mdiff_within_at SmoothWithinAt.contMDiffWithinAt
 
 theorem ContMDiff.contMDiffAt (h : ContMDiff I I' n f) : ContMDiffAt I I' n f x :=
@@ -628,25 +645,6 @@ theorem smooth_iff_target :
         ∀ y : M', SmoothOn I 𝓘(𝕜, E') (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) :=
   contMDiff_iff_target
 #align smooth_iff_target smooth_iff_target
-
-/-! ### Deducing smoothness from higher smoothness -/
-
-theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
-    ContMDiffWithinAt I I' m f s x :=
-  ⟨hf.1, hf.2.of_le le⟩
-#align cont_mdiff_within_at.of_le ContMDiffWithinAt.of_le
-
-theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
-  ContMDiffWithinAt.of_le hf le
-#align cont_mdiff_at.of_le ContMDiffAt.of_le
-
-theorem ContMDiffOn.of_le (hf : ContMDiffOn I I' n f s) (le : m ≤ n) : ContMDiffOn I I' m f s :=
-  fun x hx => (hf x hx).of_le le
-#align cont_mdiff_on.of_le ContMDiffOn.of_le
-
-theorem ContMDiff.of_le (hf : ContMDiff I I' n f) (le : m ≤ n) : ContMDiff I I' m f := fun x =>
-  (hf x).of_le le
-#align cont_mdiff.of_le ContMDiff.of_le
 
 /-! ### Deducing smoothness from smoothness one step beyond -/
 
@@ -2173,4 +2171,3 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : LocalHomeomorph M M') :
 #align is_local_structomorph_on_cont_diff_groupoid_iff isLocalStructomorphOn_contDiffGroupoid_iff
 
 end
-
