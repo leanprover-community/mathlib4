@@ -218,7 +218,7 @@ theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @Unifo
     @UniformGroup β (sInf us) _ :=
   -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
   @UniformGroup.mk β (_) _ <|
-    uniformContinuous_sInf_rng fun u hu =>
+    uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
 #align uniform_group_Inf uniformGroup_sInf
 #align uniform_add_group_Inf uniformAddGroup_sInf
