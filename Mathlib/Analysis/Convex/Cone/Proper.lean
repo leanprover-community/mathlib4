@@ -21,7 +21,6 @@ linear programs, the results from this file can be used to prove duality theorem
 
 The next steps are:
 - Add convex_cone_class that extends set_like and replace the below instance
-- Define the positive cone as a proper cone.
 - Define primal and dual cone programs and prove weak duality.
 - Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
 - Define linear programs and prove LP duality as a special case of cone duality.
