@@ -8,9 +8,47 @@ import Mathlib.Probability.Kernel.Composition
 /-!
 # Graphs of measurable spaces and kernels on those graphs
 
+The goal of this file is to go around an issue with types of compositions of kernels.
+
+Say that we have 3 kernels, `κ : kernel α β`, `η : kernel (α × β) γ` and
+`ξ : kernel (α × β × γ) δ`. We want to compose them using `ProbabilityTheory.kernel.compProd`:
+we can form `κ ⊗ₖ η : kernel α (β × γ)` and can then compose this with `ξ` to get
+`(κ ⊗ₖ η) ⊗ₖ ξ : kernel α (α × β × γ)`. We may also want to compose them by starting from the right
+and prove that composition of kernels is associative. However, we have two similar problems:
+- we cannot even write `κ ⊗ₖ (η ⊗ₖ ξ)`, since `ξ` has type `kernel (α × (β × γ)) δ` and not
+  `kernel ((α × β) × γ) δ`. We need to insert an equivalence to change the type.
+- the statement `(κ ⊗ₖ η) ⊗ₖ ξ = κ ⊗ₖ (η ⊗ₖ ξ)` does not make sense because the l.h.s. is a
+  `kernel α (α × (β × γ))` and the r.h.s. is a `kernel α ((α × β) × γ)`.
+
+In the study of Markov chains, or in order to prove the Ionescu-Tulcea theorem, we will need to
+perform frequently such compositions that are not quite valid due to types that are equivalent but
+not equal.
+
+Our solution is to introduce two notions: a `MeasurableSpaceGraph` and familes of kernels that we
+call a `Transition` on that graph. We restrict our attention to kernels of a particular form and get
+in return a compostition which is associative and gets rid of the type issues.
+
 ## Main definitions
 
+* `ProbabilityTheory.MeasurableSpaceGraph ι`: a graph of measurable spaces with *nodes* that are
+  types indexed by `ι` and *paths*, types indexed by `ι × ι`, together with measurable functions
+  `el : node i × path i j → node j` and `er : path i j × path j k → path i k` which satisfy some
+  composition properties.
+* `ProbabilityTheory.MeasurableSpaceGraph.compProd`: composition of two kernels on the measurable
+  space graph `M`, denoted by `κ ⊗ₖ[M] η`. For `κ : kernel (M.node i) (M.path i j)` and
+  `η : kernel (M.node j) (M.path j k)`, it has type `kernel (M.node i) (M.path i k)`.
+  This composition is associative.
+* `ProbabilityTheory.Transition M`: a family of kernels `ker i j : kernel (M.node i) (M.path i j)`
+  on a `MeasurableSpaceGraph` `M`, such that `ker i j ⊗ₖ[M] ker j k = ker i k`.
+
+Examples:
+* TODO
+* TODO
+
 ## Main statements
+
+* `ProbabilityTheory.MeasurableSpaceGraph.compProd_assoc`: the composition of kernels in a
+  `MeasurableSpaceGraph` is associative.
 
 ## Notations
 
@@ -19,7 +57,6 @@ import Mathlib.Probability.Kernel.Composition
 -/
 
 open Set ENNReal ProbabilityTheory MeasureTheory
-
 
 namespace ProbabilityTheory
 
@@ -82,18 +119,6 @@ instance (M : MeasurableSpaceGraph ι) (i j : ι) : MeasurableSpace (M.path i j)
 
 def e_path_eq (M : MeasurableSpaceGraph ι) (h : j = k) : M.path i j ≃ᵐ M.path i k :=
   MeasurableEquiv.cast (by rw [h]) (by rw [h])
-
-def markovGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
-  node := α
-  path := fun _ j ↦ α j
-  node_meas := fun _ ↦ inferInstance
-  path_meas := fun _ _ ↦ inferInstance
-  el := fun _ _ _ x ↦ x.2
-  el_meas := fun _ _ _ ↦ measurable_snd
-  er := fun _ _ _ _ _ x ↦ x.2
-  er_meas := fun _ _ _ _ _ ↦ measurable_snd
-  el_assoc := fun _ _ _ _ _ _ _ _ ↦ rfl
-  er_assoc := fun _ _ _ _ _ _ _ _ _ _ ↦ rfl
 
 namespace MeasurableSpaceGraph
 
@@ -229,6 +254,18 @@ instance (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] 
 
 end MeasurableSpaceGraph
 
+def markovGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
+  node := α
+  path := fun _ j ↦ α j
+  node_meas := fun _ ↦ inferInstance
+  path_meas := fun _ _ ↦ inferInstance
+  el := fun _ _ _ x ↦ x.2
+  el_meas := fun _ _ _ ↦ measurable_snd
+  er := fun _ _ _ _ _ x ↦ x.2
+  er_meas := fun _ _ _ _ _ ↦ measurable_snd
+  el_assoc := fun _ _ _ _ _ _ _ _ ↦ rfl
+  er_assoc := fun _ _ _ _ _ _ _ _ _ _ ↦ rfl
+
 section TransitionGraph
 
 variable {ι} [LinearOrder ι] {α : ι → Type _} [∀ i, MeasurableSpace (α i)]
@@ -320,7 +357,7 @@ The intended application is the following: we consider a stochastic process `X :
 kernels from `(x : Ici i) → α x` to `(x : Ioc i j) → α x` describing the laws of the random
 variables `X (i + 1), …, X j` given `X 0, …, X i`. -/
 
-def TransitionGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
+def transitionGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : MeasurableSpaceGraph ι where
   node := fun i ↦ ∀ x : Iic i, α x
   path := fun i j ↦ ∀ x : Ioc i j, α x
   node_meas := fun i ↦ by infer_instance
@@ -332,14 +369,14 @@ def TransitionGraph (α : ι → Type _) [∀ i, MeasurableSpace (α i)] : Measu
   el_assoc := fun i j k hij hjk ↦ el_assoc hij hjk.le
   er_assoc := fun i j k l hij hjk hkl ↦ er_assoc hij hjk hkl.le
 
-local notation "M" => ProbabilityTheory.TransitionGraph
+local notation "M" => ProbabilityTheory.transitionGraph
 
 variable (α)
 
-lemma TransitionGraph.node_eq : (M α).node i = ∀ x : Iic i, α x := rfl
-lemma TransitionGraph.path_eq : (M α).path i j = ∀ x : Ioc i j, α x := rfl
-def TransitionGraph.node_equiv : (M α).node i ≃ᵐ ∀ x : Iic i, α x := MeasurableEquiv.refl _
-def TransitionGraph.path_equiv : (M α).path i j ≃ᵐ ∀ x : Ioc i j, α x := MeasurableEquiv.refl _
+lemma transitionGraph.node_eq : (M α).node i = ∀ x : Iic i, α x := rfl
+lemma transitionGraph.path_eq : (M α).path i j = ∀ x : Ioc i j, α x := rfl
+def transitionGraph.node_equiv : (M α).node i ≃ᵐ ∀ x : Iic i, α x := MeasurableEquiv.refl _
+def transitionGraph.path_equiv : (M α).path i j ≃ᵐ ∀ x : Ioc i j, α x := MeasurableEquiv.refl _
 
 variable {α}
 
@@ -520,10 +557,10 @@ def e_succ_nat {α : ℕ → Type _} [mα : ∀ n, MeasurableSpace (α n)] (j : 
     simp only [eq_mpr_eq_cast, Equiv.coe_fn_symm_mk]
     apply measurable_pi_apply
 
-local notation "M" => ProbabilityTheory.TransitionGraph
+local notation "M" => ProbabilityTheory.transitionGraph
 
 def e_succ (j : ℕ) : α (j + 1) ≃ᵐ (M α).path j (j + 1) :=
-  (e_succ_nat j).trans (TransitionGraph.path_equiv α).symm
+  (e_succ_nat j).trans (transitionGraph.path_equiv α).symm
 
 noncomputable
 def to_M (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) (i : ℕ) :
