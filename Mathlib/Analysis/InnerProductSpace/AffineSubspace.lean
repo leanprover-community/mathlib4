@@ -28,6 +28,7 @@ open AffineEquiv
 /-- Orthogonal complement to an affine subspace passing through a given point. -/
 def orthogonal (s : AffineSubspace 𝕜 P) (b : P) : AffineSubspace 𝕜 P := mk' b s.directionᗮ
 
+/-- When a point is in the orthogonal complement. -/
 lemma mem_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) :
     c ∈ s.orthogonal b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ v (c -ᵥ b) = 0 := by
   apply Iff.intro
@@ -44,10 +45,12 @@ lemma mem_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) :
     · exact h
     · simp
 
+/-- When a point is in the orthogonal complement, with the inner product the other way around. -/
 lemma mem_orthogonal' (s : AffineSubspace 𝕜 P) (b c : P) :
     c ∈ s.orthogonal b ↔ ∀ (v : V), v ∈ s.direction → @inner 𝕜 _ _ (c -ᵥ b) v = 0 := by
   simp_rw [mem_orthogonal, inner_eq_zero_symm]
 
+/-- `orthogonal` reverses the `≤` ordering of two affine subspaces. -/
 lemma orthogonal_le (s t : AffineSubspace 𝕜 P) (b : P) (h : s ≤ t)
     : t.orthogonal b ≤ s.orthogonal b := by
   rw [orthogonal, orthogonal, le_def']
@@ -60,6 +63,7 @@ lemma orthogonal_le (s t : AffineSubspace 𝕜 P) (b : P) (h : s ≤ t)
   · symm
     exact vsub_vadd _ _
 
+/-- Double application of `orthogonal` preserves the `≤` ordering of two affine subspaces. -/
 lemma orthogonal_orthogonal_monotone {s t : AffineSubspace 𝕜 P} (b₁ b₂ c : P) (h : s ≤ t) :
     (s.orthogonal b₁).orthogonal c ≤ (t.orthogonal b₂).orthogonal c := by
   simp [orthogonal, le_def']
@@ -72,6 +76,7 @@ lemma orthogonal_orthogonal_monotone {s t : AffineSubspace 𝕜 P} (b₁ b₂ c 
   · symm
     exact vsub_vadd _ _
 
+/-- `s` is contained in `(s.orthogonal b).orthogonal c` when `c ∈ s`. -/
 lemma le_orthogonal_orthogonal (s : AffineSubspace 𝕜 P) (b c : P) (hc : c ∈ s)
     : s ≤ (s.orthogonal b).orthogonal c := by
   simp [orthogonal, le_def']
@@ -110,6 +115,15 @@ lemma orthogonal_eq_top_iff (s : AffineSubspace 𝕜 P) (b : P) :
     ext x
     exact ⟨by simp, fun _ => ⟨x -ᵥ b, by simp⟩⟩
 
+/-- The orthogonal complements of two parallel affine subspaces through the same point are equal. -/
+lemma orthogonal_of_parallel_eq (s t : AffineSubspace 𝕜 P) (b : P) (h : s ∥ t) :
+    s.orthogonal b = t.orthogonal b := by
+  repeat rw [orthogonal]
+  congr! 2
+  exact h.direction_eq
+
+/-- The orthogonal complements of two parallel subspaces through any two points are also parallel.
+-/
 lemma orthogonal_parallel_of_parallel (s t : AffineSubspace 𝕜 P) (b c : P) :
     s ∥ t → orthogonal s b ∥ orthogonal t c := by
   intro hpar
@@ -133,15 +147,21 @@ lemma orthogonal_parallel_of_parallel (s t : AffineSubspace 𝕜 P) (b c : P) :
     rw [Parallel.direction_eq hpar] at hv
     exact ⟨v, hv, rfl⟩
 
+/-- The orthogonal complements of an affine subspace through any points are parallel. -/
 lemma orthogonal_parallel (s : AffineSubspace 𝕜 P) (b c : P) :
     orthogonal s b ∥ orthogonal s c :=
   orthogonal_parallel_of_parallel s s b c (Parallel.refl s)
 
+/-- The orthogonal complement through a point `c` of the orthogonal complement of an affine subspace
+is equal to the original subspace when `c` is in the original subspace and the `direction` of the
+original subspace is a `CompleteSpace`. -/
 lemma orthogonal_orthogonal (s : AffineSubspace 𝕜 P) [CompleteSpace s.direction] (b c : P) :
     c ∈ s → (s.orthogonal b).orthogonal c = s := by
   intro hc
   simp [orthogonal, hc]
 
+/-- Two affine subspaces with `direction` being `CompleteSpace`s are parallel iff their orthogonal
+completements through two points are parallel. -/
 lemma orthogonal_parallel_iff_parallel (s t : AffineSubspace 𝕜 P) [hs : Nonempty s]
   [ht : Nonempty t] [CompleteSpace s.direction] [CompleteSpace t.direction] (b c : P) :
     s ∥ t ↔ orthogonal s b ∥ orthogonal t c := by
@@ -152,12 +172,6 @@ lemma orthogonal_parallel_iff_parallel (s t : AffineSubspace 𝕜 P) [hs : Nonem
     rcases ht with ⟨c', hc'⟩
     rw [← orthogonal_orthogonal s b b' hb', ← orthogonal_orthogonal t c c' hc']
     exact orthogonal_parallel_of_parallel _ _ _ _ hpar
-
-lemma orthogonal_of_parallel_eq (s t : AffineSubspace 𝕜 P) (b : P) (h : s ∥ t) :
-    s.orthogonal b = t.orthogonal b := by
-  repeat rw [orthogonal]
-  congr! 2
-  exact h.direction_eq
 
 end AffineSubspace
 
