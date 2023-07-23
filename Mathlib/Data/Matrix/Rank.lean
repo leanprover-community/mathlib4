@@ -284,24 +284,24 @@ lemma rank_mul_isUnit [DecidableEq n] [CommRing R]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B ⬝ A).rank = B.rank := by
   rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top, ←Matrix.rank]
-  · rw [LinearMap.range_eq_top] 
+  · rw [LinearMap.range_eq_top]
     intro x
     use ((A⁻¹).mulVecLin x)
     rwa [mulVecLin_apply, mulVecLin_apply, mulVec_mulVec, mul_nonsing_inv, one_mulVec]
 
 /-- Post (right) multiplying by an invertible matrix does not change the rank -/
 lemma rank_isUnit_mul [DecidableEq m] [Field R]
-    (A: Matrix m m R) (B: Matrix m n R) (hA: IsUnit A.det):
+    (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det):
     (A ⬝ B).rank = B.rank := by
   suffices h: LinearMap.ker ((A⬝B).mulVecLin) = LinearMap.ker (B.mulVecLin)
-  have hB := LinearMap.finrank_range_add_finrank_ker (B.mulVecLin)
-  rw [← LinearMap.finrank_range_add_finrank_ker ((A⬝B).mulVecLin), h, add_left_inj] at hB
-  rw [Matrix.rank, Matrix.rank, hB]
-  rw [mulVecLin_mul, LinearMap.ker_comp_of_ker_eq_bot]
-  simp_rw [LinearMap.ker_eq_bot, Function.Injective, mulVecLin_apply]
-  intros x y h
-  apply_fun Matrix.mulVec (A⁻¹) at h
-  simpa [mulVec_mulVec, nonsing_inv_mul A hA, one_mulVec] using h
+  · have hB := LinearMap.finrank_range_add_finrank_ker (B.mulVecLin)
+    rw [← LinearMap.finrank_range_add_finrank_ker ((A⬝B).mulVecLin), h, add_left_inj] at hB
+    rw [Matrix.rank, Matrix.rank, hB]
+  · rw [mulVecLin_mul, LinearMap.ker_comp_of_ker_eq_bot]
+    simp_rw [LinearMap.ker_eq_bot, Function.Injective, mulVecLin_apply]
+    intros x y h
+    apply_fun Matrix.mulVec (A⁻¹) at h
+    simpa [mulVec_mulVec, nonsing_inv_mul A hA, one_mulVec] using h
 
 end MulNonsingInv
 
