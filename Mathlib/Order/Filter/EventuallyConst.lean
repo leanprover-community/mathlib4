@@ -83,28 +83,30 @@ lemma eventuallyConst_iff_tendsto [Nonempty β] :
 
 alias eventuallyConst_iff_tendsto ↔ EventuallyConst.exists_tendsto _
 
+theorem eventuallyConst_iff_exists_eventuallyEq [Nonempty β] :
+    EventuallyConst f l ↔ ∃ c, f =ᶠ[l] fun _ ↦ c :=
+  subsingleton_iff_exists_singleton_mem
+
 theorem eventuallyConst_pred' {p : α → Prop} :
     EventuallyConst p l ↔ (p =ᶠ[l] fun _ ↦ False) ∨ (p =ᶠ[l] fun _ ↦ True) := by
-  simp only [EventuallyConst, Prop.exists_iff]
+  simp only [eventuallyConst_iff_exists_eventuallyEq, Prop.exists_iff]
 
 theorem eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
 theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+    EventuallyConst (· ∈ s) l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
   eventuallyConst_pred'
 
 theorem eventuallyConst_set {s : Set α} :
-    EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
+    EventuallyConst (· ∈ s) l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
 
 namespace EventuallyConst
 
 @[simp] protected lemma bot [Nonempty β] : EventuallyConst f ⊥ := by
   simp [EventuallyConst, EventuallyEq]
-
-protected lemma nonempty (h : EventuallyConst f l) : Nonempty β := nonempty_of_exists h
 
 protected lemma const (c : β) : EventuallyConst (fun _ ↦ c) l :=
   ⟨c, eventually_of_forall fun _ ↦ rfl⟩
