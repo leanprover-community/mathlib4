@@ -91,6 +91,11 @@ def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.f
 def pairs (σ : Type) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (pairs_pred σ k)
 
+def card_eq_if_not_lt (t : Finset σ × σ) (ht : t ∈ pairs σ k) (hnlt : ¬card t.fst < k) :
+    card t.fst = k := by
+  simp_rw [pairs, mem_filter, pairs_pred] at ht
+  exact Or.resolve_right (le_iff_eq_or_lt.mp ht.2.1) hnlt
+
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ (card t.fst) * ((∏ a in t.fst, X a) * (X t.snd) ^ (k - card t.fst) : MvPolynomial σ R)
 
@@ -213,15 +218,14 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
   rw [h2] at h1
   exact lt_irrefl _ h1
 
-theorem lt_k_union_k (k : ℕ) : (filter (fun t ↦ card t.fst < k) (pairs σ k)) ∪
-    (filter (fun t ↦ card t.fst = k) (pairs σ k)) = pairs σ k := by
+theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
+    (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
   simp_rw [← filter_or, Finset.ext_iff]
   intro a
   simp
-  intro ha
-  simp_rw [pairs, mem_filter, pairs_pred] at ha
-  simp_rw [← le_iff_lt_or_eq]
-  exact ha.2.1
+  have h (a : Finset σ × σ) (ha : a ∈ pairs σ k) (hnlt : ¬card a.fst < k) : card a.fst = k :=
+    card_eq_if_not_lt σ a ha hnlt
+  tauto
 
 theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen k univ) :
     ∑ j in A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i in A, X i : MvPolynomial σ R) := by
