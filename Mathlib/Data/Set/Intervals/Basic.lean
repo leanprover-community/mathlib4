@@ -1947,38 +1947,3 @@ instance : NoMaxOrder (Set.Iio x) :=
     exact ⟨⟨b, hb₂⟩, hb₁⟩⟩
 
 end Dense
-
-/-! ### Lemmas about intervals in subtypes
--/
-
-theorem Set.image_subtype_val_Icc_subset [Preorder α] {p : α → Prop} (a b : {x // p x}) :
-    Subtype.val '' Set.Icc a b ⊆ Set.Icc a.val b.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Ico_subset [Preorder α] {p : α → Prop} (a b : {x // p x}) :
-    Subtype.val '' Set.Ico a b ⊆ Set.Ico a.val b.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Ioc_subset [Preorder α] {p : α → Prop} (a b : {x // p x}) :
-    Subtype.val '' Set.Ioc a b ⊆ Set.Ioc a.val b.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Ioo_subset [Preorder α] {p : α → Prop} (a b : {x // p x}) :
-    Subtype.val '' Set.Ioo a b ⊆ Set.Ioo a.val b.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Iic_subset [Preorder α] {p : α → Prop} (a : {x // p x}) :
-    Subtype.val '' Set.Iic a ⊆ Set.Iic a.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Iio_subset [Preorder α] {p : α → Prop} (a : {x // p x}) :
-    Subtype.val '' Set.Iio a ⊆ Set.Iio a.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Ici_subset [Preorder α] {p : α → Prop} (a : {x // p x}) :
-    Subtype.val '' Set.Ici a ⊆ Set.Ici a.val :=
-  image_subset_iff.mpr fun _ m => m
-
-theorem Set.image_subtype_val_Ioi_subset [Preorder α] {p : α → Prop} (a : {x // p x}) :
-    Subtype.val '' Set.Ioi a ⊆ Set.Ioi a.val :=
-  image_subset_iff.mpr fun _ m => m
