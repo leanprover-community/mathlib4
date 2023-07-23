@@ -126,7 +126,8 @@ end SMul
 
 section PositiveCone
 
-variable (𝕜 E) [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable (𝕜 E) 
+variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   [TopologicalSpace E] [OrderClosedTopology E]
 
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
