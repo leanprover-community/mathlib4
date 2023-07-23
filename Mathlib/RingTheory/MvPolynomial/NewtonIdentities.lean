@@ -207,8 +207,12 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     ∑ i in range k, (∑ A in powersetLen i univ, (∑ j in univ, f (A, j))) := by
   sorry
 
-theorem lt_k_union_k (k : ℕ) : (Finset.filter (fun t ↦ card t.fst < k) (pairs σ k)) ∪
-    (Finset.filter (fun t ↦ card t.fst = k) (pairs σ k)) = pairs σ k := by
+theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
+    (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
+  sorry
+
+theorem lt_k_union_k (k : ℕ) : (filter (fun t ↦ card t.fst < k) (pairs σ k)) ∪
+    (filter (fun t ↦ card t.fst = k) (pairs σ k)) = pairs σ k := by
   sorry
 
 theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen k univ) :
