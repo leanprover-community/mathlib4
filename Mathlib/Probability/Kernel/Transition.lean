@@ -193,6 +193,23 @@ lemma compProd_assoc (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.pa
   simp only [kernel.comap_apply, M.el_assoc, mem_preimage, preimage_setOf_eq, mem_setOf_eq,
     M.er_assoc]
 
+noncomputable
+def cast_path {M : MeasurableSpaceGraph ι}
+    (κ : kernel (M.node i) (M.path i j)) (h : j = k) :
+    kernel (M.node i) (M.path i k) :=
+  kernel.map κ (e_path_eq M h) (MeasurableEquiv.measurable _)
+
+lemma cast_path_apply {M : MeasurableSpaceGraph ι}
+    (κ : kernel (M.node i) (M.path i j)) (h : j = k)
+    (a : M.node i) (s : Set (M.path i k)) (hs : MeasurableSet s) :
+    cast_path κ h a s = κ a (e_path_eq M h ⁻¹' s) := by
+  rw [cast_path, kernel.map_apply' _ _ _ hs]
+
+instance {M : MeasurableSpaceGraph ι}
+    (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] :
+    IsSFiniteKernel (cast_path κ h) := by
+  rw [cast_path] ; infer_instance
+
 end MeasurableSpaceGraph
 
 structure Transition (M : MeasurableSpaceGraph ι) :=
@@ -212,6 +229,155 @@ a kernel from `(x : Ici i) → α x` to `(x : Ioc i j) → α x` describes the l
 `X (i + 1), …, X j` given `X 0, …, X i`. -/
 
 variable {α : ℕ → Type _} [∀ i, MeasurableSpace (α i)]
+
+noncomputable
+def kerInterval {M : MeasurableSpaceGraph ℕ}
+    (κ₀ : kernel (M.node i) (M.path i j)) [IsSFiniteKernel κ₀]
+    (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (k : ℕ) :
+    kernel (M.node i) (M.path i k) := by
+  induction k with
+  | zero => exact 0
+  | succ k κ_k => exact if h : j = k + 1 then M.cast_path κ₀ h else (κ_k ⊗[M] (κ k))
+
+@[simp]
+lemma kerInterval_zero {M : MeasurableSpaceGraph ℕ}
+    (κ₀ : kernel (M.node i) (M.path i j)) [IsSFiniteKernel κ₀]
+    (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) :
+    kerInterval κ₀ κ 0 = 0 := rfl
+
+lemma kerInterval_succ {M : MeasurableSpaceGraph ℕ}
+    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+    {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (k : ℕ) :
+    kerInterval κ₀ κ (k + 1)
+      = if h : j = k + 1 then M.cast_path κ₀ h else ((kerInterval κ₀ κ k) ⊗[M] (κ k)) := rfl
+
+lemma kerInterval_succ_of_ne {M : MeasurableSpaceGraph ℕ}
+    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+    {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : j ≠ k + 1) :
+    kerInterval κ₀ κ (k + 1) = (kerInterval κ₀ κ k) ⊗[M] (κ k) := by
+  rw [kerInterval_succ, dif_neg h]
+
+lemma kerInterval_succ_right {M : MeasurableSpaceGraph ℕ}
+    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+    {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : j ≤ k) :
+    kerInterval κ₀ κ (k + 1) = (kerInterval κ₀ κ k) ⊗[M] (κ k) := by
+  rw [kerInterval_succ, dif_neg (by linarith)]
+
+lemma kerInterval_of_lt {M : MeasurableSpaceGraph ℕ}
+    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+    {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : k < j) :
+    kerInterval κ₀ κ k = 0 := by
+  induction k with
+  | zero => rfl
+  | succ n ih =>
+      rw [kerInterval_succ, dif_neg h.ne', ih (by linarith)]
+      simp
+
+lemma kerInterval_of_eq {M : MeasurableSpaceGraph ℕ}
+    (κ₀ : kernel (M.node i) (M.path i j)) [IsSFiniteKernel κ₀]
+    (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (hj : 0 < j) :
+    kerInterval κ₀ κ j = κ₀ := by
+  cases j with
+  | zero => exfalso ; linarith
+  | succ n =>
+    rw [kerInterval_succ, dif_pos rfl]
+    ext a s hs
+    rw [M.cast_path_apply _ _ _ _ hs]
+    rfl
+
+instance {M : MeasurableSpaceGraph ℕ}
+    (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsSFiniteKernel κ₀]
+    (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (k : ℕ) :
+    IsSFiniteKernel (kerInterval κ₀ κ k) := by
+  induction k with
+  | zero => rw [kerInterval_zero] ; infer_instance
+  | succ n _ =>
+      rw [kerInterval_succ]
+      split_ifs with h_eq
+      · infer_instance
+      · infer_instance
+
+section kerNat
+
+variable {M : MeasurableSpaceGraph ℕ}
+
+noncomputable
+def kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) :
+    kernel (M.node i) (M.path i j) :=
+  if i < j then kerInterval (κ i) κ j else 0
+
+lemma kerNat_eq (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) :
+    kerNat κ i j = kerInterval (κ i) κ j :=
+  dif_pos hij
+
+lemma kerNat_of_ge (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (hij : j ≤ i) :
+    kerNat κ i j = 0 :=
+  dif_neg (not_lt.mpr hij)
+
+instance (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) [∀ i, IsSFiniteKernel (κ i)] :
+    IsSFiniteKernel (kerNat κ i j) := by
+  rw [kerNat]; split_ifs <;> infer_instance
+
+lemma kerNat_succ (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (i : ℕ) :
+    kerNat κ i (i + 1) = κ i := by
+  rw [kerNat_eq _ (Nat.lt_succ_self _), kerInterval_of_eq _ _ (by linarith)]
+
+lemma kerNat_succ_right (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i < j) :
+    kerNat κ i (j + 1) = (kerNat κ i j) ⊗[M] (kerNat κ j (j + 1)) := by
+  rw [kerNat_eq _ (hij.trans (Nat.lt_succ_self _)),
+    kerInterval_succ_right (Nat.succ_le_iff.mpr hij)]
+  congr
+  · rw [kerNat_eq _ hij]
+  · rw [kerNat_succ κ j]
+
+lemma kerNat_succ_left (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i + 1 < j) :
+    kerNat κ i j = (kerNat κ i (i + 1)) ⊗[M] (kerNat κ (i + 1) j) := by
+  induction j with
+  | zero =>
+    rw [kerNat_of_ge κ (Nat.zero_le _), kerNat_of_ge κ (Nat.zero_le _)]
+    simp
+  | succ j hj => cases le_or_lt j (i + 1) with
+    | inl h =>
+      have hj_eq : j = i + 1 := le_antisymm h (Nat.succ_lt_succ_iff.mp (by convert hij))
+      rw [kerNat_succ_right]
+      · congr
+      · rw [hj_eq] ; exact Nat.lt_succ_self i
+    | inr h =>
+      rw [kerNat_succ_right _ _ _ (Nat.succ_lt_succ_iff.mp hij), hj h,
+        kerNat_succ_right _ _ j h,
+        MeasurableSpaceGraph.compProd_assoc M (kerNat κ i (i + 1)) (kerNat κ (i + 1) j)
+          (kerNat κ j (j + 1)) (Nat.lt_succ_self i) h (Nat.lt_succ_self j)]
+
+theorem compProd_kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) (hjk : j < k) :
+    ((kerNat κ i j) ⊗[M] (kerNat κ j k)) = kerNat κ i k := by
+  cases k with
+  | zero => exfalso ; linarith
+  | succ k =>
+    refine Nat.decreasingInduction' ?_ (Nat.lt_succ_iff.mp hjk) ?_
+    · intro l hlk hjl h
+      rw [← h, kerNat_succ_left _ l]
+      swap; linarith
+      rw [kerNat_succ_right _ i _ (hij.trans_le hjl),
+        M.compProd_assoc _ _ _ (hij.trans_le hjl) (Nat.lt_succ_self l)]
+      linarith
+    · rw [kerNat_succ_right _ _ _ (hij.trans_le (Nat.lt_succ_iff.mp hjk))]
+
+end kerNat
+
+noncomputable
+def MeasurableSpaceGraph.transition (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
+  [∀ i, IsSFiniteKernel (κ i)] :
+  Transition M :=
+{ ker := kerNat κ,
+  s_finite := fun _ _ ↦ inferInstance,
+  comp := fun _ _ _ ↦ compProd_kerNat κ, }
 
 section equivs
 
@@ -350,156 +516,6 @@ def measurableSpaceGraph_nat.path_equiv : (M α).path i j ≃ᵐ ∀ x : Ioc i j
 
 variable {α}
 
-noncomputable
-def cast_path (κ : kernel ((M α).node i) ((M α).path i j)) (h : j = k) :
-    kernel ((M α).node i) ((M α).path i k) :=
-  kernel.map κ (e_path_eq (M α) h) (MeasurableEquiv.measurable _)
-
-lemma cast_path_apply (κ : kernel ((M α).node i) ((M α).path i j)) (h : j = k)
-    (a : (M α).node i) (s : Set ((M α).path i k)) (hs : MeasurableSet s) :
-    cast_path κ h a s = κ a (e_path_eq (M α) h ⁻¹' s) := by
-  rw [cast_path, kernel.map_apply' _ _ _ hs]
-
-instance (κ : kernel ((M α).node i) ((M α).path i j)) (h : j = k) [IsSFiniteKernel κ] :
-    IsSFiniteKernel (cast_path κ h) := by
-  rw [cast_path] ; infer_instance
-
-noncomputable
-def kerInterval (κ₀ : kernel ((M α).node i) ((M α).path i j)) [IsSFiniteKernel κ₀]
-    (κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))) (k : ℕ) :
-    kernel ((M α).node i) ((M α).path i k) := by
-  induction k with
-  | zero => exact 0
-  | succ k κ_k => exact if h : j = k + 1 then cast_path κ₀ h else (κ_k ⊗[M α] (κ k))
-
-@[simp]
-lemma kerInterval_zero (κ₀ : kernel ((M α).node i) ((M α).path i j)) [IsSFiniteKernel κ₀]
-    (κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))) :
-    kerInterval κ₀ κ 0 = 0 := rfl
-
-lemma kerInterval_succ {κ₀ : kernel ((M α).node i) ((M α).path i j)} [IsSFiniteKernel κ₀]
-    {κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))} (k : ℕ) :
-    kerInterval κ₀ κ (k + 1)
-      = if h : j = k + 1 then cast_path κ₀ h else ((kerInterval κ₀ κ k) ⊗[M α] (κ k)) := rfl
-
-lemma kerInterval_succ_of_ne {κ₀ : kernel ((M α).node i) ((M α).path i j)} [IsSFiniteKernel κ₀]
-    {κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))} (h : j ≠ k + 1) :
-    kerInterval κ₀ κ (k + 1) = (kerInterval κ₀ κ k) ⊗[M α] (κ k) := by
-  rw [kerInterval_succ, dif_neg h]
-
-lemma kerInterval_succ_right {κ₀ : kernel ((M α).node i) ((M α).path i j)} [IsSFiniteKernel κ₀]
-    {κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))} (h : j ≤ k) :
-    kerInterval κ₀ κ (k + 1) = (kerInterval κ₀ κ k) ⊗[M α] (κ k) := by
-  rw [kerInterval_succ, dif_neg (by linarith)]
-
-lemma kerInterval_of_lt {κ₀ : kernel ((M α).node i) ((M α).path i j)} [IsSFiniteKernel κ₀]
-    {κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))} (h : k < j) :
-    kerInterval κ₀ κ k = 0 := by
-  induction k with
-  | zero => rfl
-  | succ n ih =>
-      rw [kerInterval_succ, dif_neg h.ne', ih (by linarith)]
-      simp
-
-lemma kerInterval_of_eq (κ₀ : kernel ((M α).node i) ((M α).path i j)) [IsSFiniteKernel κ₀]
-    (κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1))) (hj : 0 < j) :
-    kerInterval κ₀ κ j = κ₀ := by
-  cases j with
-  | zero => exfalso ; linarith
-  | succ n =>
-    rw [kerInterval_succ, dif_pos rfl]
-    ext a s hs
-    rw [cast_path_apply _ _ _ _ hs]
-    rfl
-
-instance (κ₀ : kernel ((M α).node i) ((M α).path i j)) [h₀ : IsSFiniteKernel κ₀]
-    (κ : ∀ k, kernel ((M α).node k) ((M α).path k (k + 1)))
-    (k : ℕ) :
-    IsSFiniteKernel (kerInterval κ₀ κ k) := by
-  induction k with
-  | zero => rw [kerInterval_zero] ; infer_instance
-  | succ n _ =>
-      rw [kerInterval_succ]
-      split_ifs with h_eq
-      · infer_instance
-      · infer_instance
-
-noncomputable
-def kerNat (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) :
-    kernel ((M α).node i) ((M α).path i j) :=
-  if i < j then kerInterval (κ i) κ j else 0
-
-lemma kerNat_eq (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) :
-    kerNat κ i j = kerInterval (κ i) κ j :=
-  dif_pos hij
-
-lemma kerNat_of_ge (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (hij : j ≤ i) :
-    kerNat κ i j = 0 :=
-  dif_neg (not_lt.mpr hij)
-
-instance (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1))) [∀ i, IsSFiniteKernel (κ i)] :
-    IsSFiniteKernel (kerNat κ i j) := by
-  rw [kerNat]; split_ifs <;> infer_instance
-
-lemma kerNat_succ (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i : ℕ) :
-    kerNat κ i (i + 1) = κ i := by
-  rw [kerNat_eq _ (Nat.lt_succ_self _), kerInterval_of_eq _ _ (by linarith)]
-
-lemma kerNat_succ_right (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i < j) :
-    kerNat κ i (j + 1) = (kerNat κ i j) ⊗[M α] (kerNat κ j (j + 1)) := by
-  rw [kerNat_eq _ (hij.trans (Nat.lt_succ_self _)),
-    kerInterval_succ_right (Nat.succ_le_iff.mpr hij)]
-  congr
-  · rw [kerNat_eq _ hij]
-  · rw [kerNat_succ κ j]
-
-lemma kerNat_succ_left (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i + 1 < j) :
-    kerNat κ i j = (kerNat κ i (i + 1)) ⊗[M α] (kerNat κ (i + 1) j) := by
-  induction j with
-  | zero =>
-    rw [kerNat_of_ge κ (Nat.zero_le _), kerNat_of_ge κ (Nat.zero_le _)]
-    simp
-  | succ j hj => cases le_or_lt j (i + 1) with
-    | inl h =>
-      have hj_eq : j = i + 1 := le_antisymm h (Nat.succ_lt_succ_iff.mp (by convert hij))
-      rw [kerNat_succ_right]
-      · congr
-      · rw [hj_eq] ; exact Nat.lt_succ_self i
-    | inr h =>
-      rw [kerNat_succ_right _ _ _ (Nat.succ_lt_succ_iff.mp hij), hj h,
-        kerNat_succ_right _ _ j h,
-        MeasurableSpaceGraph.compProd_assoc (M α) (kerNat κ i (i + 1)) (kerNat κ (i + 1) j)
-          (kerNat κ j (j + 1)) (Nat.lt_succ_self i) h (Nat.lt_succ_self j)]
-
-theorem compProd_kerNat (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) (hjk : j < k) :
-    ((kerNat κ i j) ⊗[M α] (kerNat κ j k)) = kerNat κ i k := by
-  cases k with
-  | zero => exfalso ; linarith
-  | succ k =>
-    refine Nat.decreasingInduction' ?_ (Nat.lt_succ_iff.mp hjk) ?_
-    · intro l hlk hjl h
-      rw [← h, kerNat_succ_left _ l]
-      swap; linarith
-      rw [kerNat_succ_right _ i _ (hij.trans_le hjl),
-        (M α).compProd_assoc _ _ _ (hij.trans_le hjl) (Nat.lt_succ_self l)]
-      linarith
-    · rw [kerNat_succ_right _ _ _ (hij.trans_le (Nat.lt_succ_iff.mp hjk))]
-
-noncomputable
-def Transition_of_seq (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
-  [∀ i, IsSFiniteKernel (κ i)] :
-  Transition (M α) :=
-{ ker := kerNat κ,
-  s_finite := fun _ _ ↦ inferInstance,
-  comp := fun _ _ _ ↦ compProd_kerNat κ, }
-
 def e_succ (j : ℕ) : α (j + 1) ≃ᵐ (M α).path j (j + 1) :=
   (e_succ_nat j).trans (measurableSpaceGraph_nat.path_equiv α).symm
 
@@ -515,11 +531,9 @@ instance (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) [∀
 
 noncomputable
 def Transition_of_seq_nat (κ : ∀ i, kernel ((j : Iic i) → α ↑j) (α (i + 1)))
-  [∀ i, IsSFiniteKernel (κ i)] :
-  Transition (M α) :=
-{ ker := kerNat (to_M κ),
-  s_finite := fun _ _ ↦ inferInstance,
-  comp := fun _ _ _ ↦ compProd_kerNat (to_M κ), }
+    [∀ i, IsSFiniteKernel (κ i)] :
+    Transition (M α) :=
+  (M α).transition (to_M κ)
 
 end nat
 
@@ -560,11 +574,9 @@ variable {α}
 
 noncomputable
 def Transition_of_markov_seq_nat (κ : ∀ i, kernel (α i) (α (i + 1)))
-  [∀ i, IsSFiniteKernel (κ i)] :
-  Transition (M α) :=
-{ ker := kerNat κ,
-  s_finite := fun _ _ ↦ inferInstance,
-  comp := fun _ _ _ ↦ compProd_kerNat κ, }
+    [∀ i, IsSFiniteKernel (κ i)] :
+    Transition (M α) :=
+  (M α).transition κ
 
 end Markov
 
