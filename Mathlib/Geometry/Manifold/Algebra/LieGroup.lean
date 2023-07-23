@@ -51,6 +51,7 @@ the addition and negation operations are smooth. -/
 class LieAddGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothAdd I G : Prop where
+  /-- Negation is smooth in an additive Lie group. -/
   smooth_neg : Smooth I I fun a : G => -a
 #align lie_add_group LieAddGroup
 
@@ -61,6 +62,7 @@ the multiplication and inverse operations are smooth. -/
 class LieGroup {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [TopologicalSpace H]
     {E : Type _} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H) (G : Type _)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] extends SmoothMul I G : Prop where
+  /-- Inversion is smooth in a Lie group. -/
   smooth_inv : Smooth I I fun a : G => a⁻¹
 #align lie_group LieGroup
 
@@ -311,8 +313,9 @@ variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {H : Type _} [Topologica
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type _} [TopologicalSpace M] [ChartedSpace H' M]
   {f g : M → G}
 
-theorem ContMDiffWithinAt.div₀ (hf : ContMDiffWithinAt I' I n f s a)
-    (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) : ContMDiffWithinAt I' I n (f / g) s a := by
+theorem ContMDiffWithinAt.div₀
+    (hf : ContMDiffWithinAt I' I n f s a) (hg : ContMDiffWithinAt I' I n g s a) (h₀ : g a ≠ 0) :
+    ContMDiffWithinAt I' I n (f / g) s a := by
   simpa [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
 theorem ContMDiffOn.div₀ (hf : ContMDiffOn I' I n f s) (hg : ContMDiffOn I' I n g s)
