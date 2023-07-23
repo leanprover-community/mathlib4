@@ -410,22 +410,22 @@ theorem pairwiseDisjoint_image_left_iff {f : α → β → γ} {s : Set α} {t :
 
 lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
-    ∃ (i j : ι) (_hi : i ∈ s) (_hj : j ∈ s) (_hij : i ≠ j) (x : α), x ∈ f i ∩ f j := by
+    ∃ i ∈ s, ∃ j ∈ s, ∃ (_hij : i ≠ j) (x : α), x ∈ f i ∩ f j := by
   change ¬ ∀ i, i ∈ s → ∀ j, j ∈ s → i ≠ j → ∀ t, t ≤ f i → t ≤ f j → t ≤ ⊥ at h
   simp only [not_forall] at h
   obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
   replace ht : t.Nonempty := by
     rwa [le_bot_iff, bot_eq_empty, ← Ne.def, ← nonempty_iff_ne_empty] at ht
   obtain ⟨x, hx⟩ := ht
-  exact ⟨i, j, hi, hj, h_ne, x, hfi hx, hfj hx⟩
+  exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
 
 lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
-    ∃ (i j : ι) (_hi : i ∈ s) (_hj : j ∈ s) (_hij : i < j) (x : α), x ∈ f i ∩ f j := by
-  obtain ⟨i, j, hi, hj, hne, x, hx₁, hx₂⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
+    ∃ i ∈ s, ∃ j ∈ s, ∃ (_hij : i < j) (x : α), x ∈ f i ∩ f j := by
+  obtain ⟨i, hi, j, hj, hne, x, hx₁, hx₂⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
   cases' lt_or_lt_iff_ne.mpr hne with h_lt h_lt
-  · exact ⟨i, j, hi, hj, h_lt, x, hx₁, hx₂⟩
-  · exact ⟨j, i, hj, hi, h_lt, x, hx₂, hx₁⟩
+  · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
+  · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 
 end Set
 
@@ -433,14 +433,14 @@ lemma exists_ne_mem_inter_of_not_pairwise_disjoint
     {f : ι → Set α} (h : ¬ Pairwise (Disjoint on f)) :
     ∃ (i j : ι) (_hij : i ≠ j) (x : α), x ∈ f i ∩ f j := by
   rw [← pairwise_univ] at h
-  obtain ⟨i, j, _hi, _hj, h⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
+  obtain ⟨i, _hi, j, _hj, h⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
   exact ⟨i, j, h⟩
 
 lemma exists_lt_mem_inter_of_not_pairwise_disjoint [LinearOrder ι]
     {f : ι → Set α} (h : ¬ Pairwise (Disjoint on f)) :
     ∃ (i j : ι) (_ : i < j) (x : α), x ∈ f i ∩ f j := by
   rw [← pairwise_univ] at h
-  obtain ⟨i, j, _hi, _hj, h⟩ := exists_lt_mem_inter_of_not_pairwiseDisjoint h
+  obtain ⟨i, _hi, j, _hj, h⟩ := exists_lt_mem_inter_of_not_pairwiseDisjoint h
   exact ⟨i, j, h⟩
 
 theorem pairwise_disjoint_fiber (f : ι → α) : Pairwise (Disjoint on fun a : α => f ⁻¹' {a}) :=
