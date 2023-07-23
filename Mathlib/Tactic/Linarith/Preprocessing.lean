@@ -6,6 +6,7 @@ Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
+import Mathlib.Tactic.CancelDenoms
 import Mathlib.Lean.Exception
 import Std.Data.RBMap.Basic
 import Mathlib.Data.HashMap
@@ -276,31 +277,39 @@ def compWithZero : Preprocessor where
 
 end compWithZero
 
--- FIXME the `cancelDenoms : Preprocessor` from mathlib3 will need to wait
--- for a port of the `cancel_denoms` tactic.
 section cancelDenoms
--- /--
--- `normalize_denominators_in_lhs h lhs` assumes that `h` is a proof of `lhs R 0`.
--- It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
--- -/
--- meta def normalize_denominators_in_lhs (h lhs : expr) : tactic expr :=
--- do (v, lhs') ← cancel_factors.derive lhs,
---    if v = 1 then return h else do
---    (ih, h'') ← mk_single_comp_zero_pf v h,
---    (_, nep, _) ← infer_type h'' >>= rewrite_core lhs',
---    mk_eq_mp nep h''
 
--- /--
--- `cancel_denoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
--- it tries to scale `t` to cancel out division by numerals.
--- -/
--- meta def cancel_denoms : preprocessor :=
--- { name := "cancel denominators",
---   transform := λ pf,
--- (do some (_, lhs) ← parse_into_comp_and_expr <$> infer_type pf,
---    guardb $ lhs.contains_constant (= `has_div.div),
---    singleton <$> normalize_denominators_in_lhs pf lhs)
--- <|> return [pf] }
+theorem without_one_mul [MulOneClass M] {a b : M} (h : 1 * a = b) : a = b := by rwa [one_mul] at h
+
+/--
+`normalizeDenominatorsLHS h lhs` assumes that `h` is a proof of `lhs R 0`.
+It creates a proof of `lhs' R 0`, where all numeric division in `lhs` has been cancelled.
+-/
+def normalizeDenominatorsLHS (h lhs : Expr) : MetaM Expr := do
+  let mut (v, lhs') ← CancelDenoms.derive lhs
+  if v = 1 then
+    -- `lhs'` has a `1 *` out front, but `mkSingleCompZeroOf` has a special case
+    -- where it does not produce `1 *`. We strip it off here:
+    lhs' ← mkAppM ``without_one_mul #[lhs']
+  let (_, h'') ← mkSingleCompZeroOf v h
+  try
+    h''.rewriteType lhs'
+  catch e =>
+    dbg_trace
+      s!"Error in Linarith.normalizeDenominatorsLHS: {← e.toMessageData.toString}"
+    throw e
+
+/--
+`cancelDenoms pf` assumes `pf` is a proof of `t R 0`. If `t` contains the division symbol `/`,
+it tries to scale `t` to cancel out division by numerals.
+-/
+def cancelDenoms : Preprocessor where
+  name := "cancel denominators"
+  transform := fun pf => (do
+      let (_, lhs) ← parseCompAndExpr (← inferType pf)
+      guard $ lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      pure [← normalizeDenominatorsLHS pf lhs])
+    <|> return [pf]
 end cancelDenoms
 
 section nlinarith
@@ -370,33 +379,33 @@ def nlinarithExtras : GlobalPreprocessor where
 
 end nlinarith
 
--- TODO the `removeNe` preprocesor
 section removeNe
--- /--
--- `remove_ne_aux` case splits on any proof `h : a ≠ b` in the input,
--- turning it into `a < b ∨ a > b`.
--- This produces `2^n` branches when there are `n` such hypotheses in the input.
--- -/
--- meta def remove_ne_aux : list expr → tactic (list branch) :=
--- λ hs,
--- (do e ← hs.mfind (λ e : expr, do e ← infer_type e, guard $ e.is_ne.is_some),
---     [(_, ng1), (_, ng2)] ← to_expr ``(or.elim (lt_or_gt_of_ne %%e)) >>= apply,
---     let do_goal : expr → tactic (list branch) := λ g,
---       do set_goals [g],
---          h ← intro1,
---          ls ← remove_ne_aux $ hs.remove_all [e],
---          return $ ls.map (λ b : branch, (b.1, h::b.2)) in
---     (++) <$> do_goal ng1 <*> do_goal ng2)
--- <|> do g ← get_goal, return [(g, hs)]
+/--
+`removeNe_aux` case splits on any proof `h : a ≠ b` in the input,
+turning it into `a < b ∨ a > b`.
+This produces `2^n` branches when there are `n` such hypotheses in the input.
+-/
+partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
+  let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
+    let some (α, a, b) := (← inferType e).ne? | return none
+    return some (e, α, a, b)) | return [(g, hs)]
+  let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
+      ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
+  let do_goal : MVarId → MetaM (List Branch) := fun g => do
+    let (f, h) ← g.intro1
+    h.withContext do
+      let ls ← removeNe_aux h $ hs.removeAll [e]
+      return ls.map (fun b : Branch => (b.1, (.fvar f)::b.2))
+  return ((← do_goal ng1) ++ (← do_goal ng2))
 
--- /--
--- `remove_ne` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
--- by calling `linarith.remove_ne_aux`.
--- This produces `2^n` branches when there are `n` such hypotheses in the input.
--- -/
--- meta def remove_ne : global_branching_preprocessor :=
--- { name := "remove_ne",
---   transform := remove_ne_aux }
+/--
+`removeNe` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
+by calling `linarith.removeNe_aux`.
+This produces `2^n` branches when there are `n` such hypotheses in the input.
+-/
+def removeNe : GlobalBranchingPreprocessor where
+  name := "removeNe"
+  transform := removeNe_aux
 end removeNe
 
 
@@ -405,7 +414,7 @@ The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
   [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
-    compWithZero/-, cancelDenoms-/]
+    compWithZero, cancelDenoms]
 
 /--
 `preprocess pps l` takes a list `l` of proofs of propositions.

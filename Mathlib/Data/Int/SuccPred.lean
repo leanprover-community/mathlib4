@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.int.succ_pred
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.SuccPred
+
+#align_import data.int.succ_pred from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Successors and predecessors of integers
@@ -50,14 +47,14 @@ theorem pos_iff_one_le {a : ℤ} : 0 < a ↔ 1 ≤ a :=
   Order.succ_le_iff.symm
 #align int.pos_iff_one_le Int.pos_iff_one_le
 
-theorem succ_iterate (a : ℤ) : ∀ n, (succ^[n]) a = a + n
+theorem succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n
   | 0 => (add_zero a).symm
   | n + 1 => by
     rw [Function.iterate_succ', Int.ofNat_succ, ← add_assoc]
     exact congr_arg _ (succ_iterate a n)
 #align int.succ_iterate Int.succ_iterate
 
-theorem pred_iterate (a : ℤ) : ∀ n, (pred^[n]) a = a - n
+theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
   | 0 => (sub_zero a).symm
   | n + 1 => by
     rw [Function.iterate_succ', Int.ofNat_succ, ← sub_sub]
@@ -92,8 +89,7 @@ theorem covby_add_one (z : ℤ) : z ⋖ z + 1 :=
 end Int
 
 @[simp, norm_cast]
-theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b :=
-  by
+theorem Nat.cast_int_covby_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   rw [Nat.covby_iff_succ_eq, Int.covby_iff_succ_eq]
   exact Int.coe_nat_inj'
 #align nat.cast_int_covby_iff Nat.cast_int_covby_iff

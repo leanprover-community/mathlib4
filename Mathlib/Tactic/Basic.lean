@@ -10,7 +10,7 @@ import Mathlib.Tactic.Cases
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
-syntax (name := «variables») "variables" (bracketedBinder)* : command
+syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
 
 @[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
@@ -19,8 +19,8 @@ syntax (name := «variables») "variables" (bracketedBinder)* : command
   | _ => throwUnsupportedSyntax
 
 /-- `lemma` means the same as `theorem`. It is used to denote "less important" theorems -/
-syntax (name := lemma)
-  declModifiers group("lemma" declId declSig declVal Parser.Command.terminationSuffix) : command
+syntax (name := lemma) declModifiers
+  group("lemma " declId ppIndent(declSig) declVal Parser.Command.terminationSuffix) : command
 
 /-- Implementation of the `lemma` command, by macro expansion to `theorem`. -/
 @[macro «lemma»] def expandLemma : Macro := fun stx =>
@@ -99,7 +99,7 @@ def _root_.Lean.MVarId.changeLocalDecl' (mvarId : MVarId) (fvarId : FVarId) (typ
       return ((), fvars.map .some, ← mvarId.replaceTargetDefEq targetNew)
     match ← mvarId.getType with
     | .forallE n d b bi => do check d; finalize (.forallE n typeNew b bi)
-    | .letE n t v b ndep  => do check t; finalize (.letE n typeNew v b ndep)
+    | .letE n t v b ndep => do check t; finalize (.letE n typeNew v b ndep)
     | _ => throwTacticEx `changeLocalDecl mvarId "unexpected auxiliary target"
   return mvarId
 
@@ -134,7 +134,7 @@ elab_rules : tactic
                           (← `(term | show $newType from $(← Term.exprToSyntax mvar))) hTy `change
         liftMetaTactic fun mvarId ↦ do
           return (← mvarId.changeLocalDecl' h (← inferType mvar)) :: mvars)
-      (atTarget := evalTactic <| ← `(tactic| show $newType))
+      (atTarget := evalTactic <| ← `(tactic| refine_lift show $newType from ?_))
       (failed := fun _ ↦ throwError "change tactic failed")
 
 /--
@@ -144,7 +144,7 @@ resulting in two subgoals `h : p ⊢` and `h : ¬ p ⊢`.
 macro "by_cases " e:term : tactic =>
   `(tactic| by_cases $(mkIdent `h) : $e)
 
-syntax "transitivity" (colGt term)? : tactic
+syntax "transitivity" (ppSpace colGt term)? : tactic
 set_option hygiene false in
 macro_rules
   | `(tactic| transitivity) => `(tactic| apply Nat.le_trans)
@@ -186,7 +186,7 @@ h₂ : b = c
 ⊢ a = c
 ```
 -/
-syntax (name := introv) "introv " (colGt binderIdent)* : tactic
+syntax (name := introv) "introv " (ppSpace colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep
@@ -212,7 +212,7 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
-elab "match_target" t:term : tactic  => do
+elab "match_target " t:term : tactic => do
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then
@@ -251,7 +251,7 @@ into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
 
 The order of `n₁ n₂ ...` does not matter, and values will be cleared in reverse order of
 where they appear in the context. -/
-elab (name := clearValue) "clear_value" hs:(colGt term:max)+ : tactic => do
+elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic => do
   let fvarIds ← getFVarIds hs
   let fvarIds ← withMainContext <| sortFVarIds fvarIds
   for fvarId in fvarIds.reverse do

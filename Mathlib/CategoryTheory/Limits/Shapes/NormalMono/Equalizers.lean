@@ -2,14 +2,11 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.normal_mono.equalizers
-! leanprover-community/mathlib commit 3a061790136d13594ec10c7c90d202335ac5d854
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import category_theory.limits.shapes.normal_mono.equalizers from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
 
 /-!
 # Normal mono categories with finite products and kernels have all equalizers.
@@ -88,8 +85,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
           fun s m h₁ _ =>
           (cancel_mono (kernel.ι (prod.lift f g))).1 <|
             calc
-              m ≫ kernel.ι (prod.lift f g) = m ≫ a' ≫ a :=
-                by
+              m ≫ kernel.ι (prod.lift f g) = m ≫ a' ≫ a := by
                 congr
                 exact ha'.symm
               _ = PullbackCone.fst s ≫ a := by rw [← Category.assoc, h₁]
@@ -241,13 +237,13 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
           (fun s =>
             (cancel_epi a).1 <| by
               rw [CokernelCofork.π_ofπ] at ha'
-              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : a ≫ a' ≫ h
+              have reassoced {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : a ≫ a' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker ha']
               simp [reassoced , PushoutCocone.condition s])
           (fun s =>
             (cancel_epi b).1 <| by
               rw [CokernelCofork.π_ofπ] at hb'
-              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶  W) : b ≫ b' ≫ h
+              have reassoced' {W : C} (h : cokernel (coprod.desc f g) ⟶ W) : b ≫ b' ≫ h
                 = cokernel.π (coprod.desc f g) ≫ h := by rw [← Category.assoc, eq_whisker hb']
               simp [reassoced'])
           fun s m h₁ _ =>
@@ -323,11 +319,10 @@ end
 /-- If a zero morphism is a kernel of `f`, then `f` is a monomorphism. -/
 theorem mono_of_zero_kernel {X Y : C} (f : X ⟶ Y) (Z : C)
     (l : IsLimit (KernelFork.ofι (0 : Z ⟶ X) (show 0 ≫ f = 0 by simp))) : Mono f :=
-  ⟨fun u v huv =>
-    by
+  ⟨fun u v huv => by
     obtain ⟨W, w, hw, hl⟩ := normalEpiOfEpi (coequalizer.π u v)
     obtain ⟨m, hm⟩ := coequalizer.desc' f huv
-    have reassoced {W : C} (h : coequalizer u v ⟶  W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by
+    have reassoced {W : C} (h : coequalizer u v ⟶ W) : w ≫ coequalizer.π u v ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hw]
     have hwf : w ≫ f = 0 := by rw [← hm, reassoced, zero_comp]
     obtain ⟨n, hn⟩ := KernelFork.IsLimit.lift' l _ hwf

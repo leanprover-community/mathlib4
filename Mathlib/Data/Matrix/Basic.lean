@@ -2,11 +2,6 @@
 Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
-
-! This file was ported from Lean 3 source module data.matrix.basic
-! leanprover-community/mathlib commit 0e2aab2b0d521f060f62a14d2cf2e2c54e8491d6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.BigOperators.Pi
@@ -19,6 +14,8 @@ import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
 
+#align_import data.matrix.basic from "leanprover-community/mathlib"@"eba5bb3155cab51d80af00e8d7d69fa271b1302b"
+
 /-!
 # Matrices
 
@@ -26,7 +23,7 @@ This file defines basic properties of matrices.
 
 Matrices with rows indexed by `m`, columns indexed by `n`, and entries of type `α` are represented
 with `Matrix m n α`. For the typical approach of counting rows and columns,
-`Matrix (fin m) (fin n) α` can be used.
+`Matrix (Fin m) (Fin n) α` can be used.
 
 ## Notation
 
@@ -106,9 +103,8 @@ The two sides of the equivalence are definitionally equal types. We want to use 
 to distinguish the types because `Matrix` has different instances to pi types (such as `Pi.mul`,
 which performs elementwise multiplication, vs `Matrix.mul`).
 
-If you are defining a matrix, in terms of its entries, use `of (λ i j, _)`. The
-purpose of this approach is to ensure that terms of th
-e form `(λ i j, _) * (λ i j, _)` do not
+If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
+purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
 
 Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
@@ -382,7 +378,7 @@ theorem map_op_smul' [Mul α] [Mul β] (f : α → β) (r : α) (A : Matrix n n 
 
 theorem _root_.IsSMulRegular.matrix [SMul R S] {k : R} (hk : IsSMulRegular S k) :
     IsSMulRegular (Matrix m n S) k :=
-  Pi.IsSMulRegular.pi fun _ => Pi.IsSMulRegular.pi fun _ => hk
+  IsSMulRegular.pi fun _ => IsSMulRegular.pi fun _ => hk
 #align is_smul_regular.matrix IsSMulRegular.matrix
 
 theorem _root_.IsLeftRegular.matrix [Mul α] {k : α} (hk : IsLeftRegular k) :
@@ -729,6 +725,18 @@ theorem dotProduct_pUnit [AddCommMonoid α] [Mul α] (v w : PUnit → α) : v �
   simp [dotProduct]
 #align matrix.dot_product_punit Matrix.dotProduct_pUnit
 
+section MulOneClass
+
+variable [MulOneClass α] [AddCommMonoid α]
+
+theorem dotProduct_one (v : n → α) : v ⬝ᵥ 1 = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+#align matrix.dot_product_one Matrix.dotProduct_one
+
+theorem one_dotProduct (v : n → α) : 1 ⬝ᵥ v = ∑ i, v i := by simp [(· ⬝ᵥ ·)]
+#align matrix.one_dot_product Matrix.one_dotProduct
+
+end MulOneClass
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α] (u v w : m → α) (x y : n → α)
@@ -830,6 +838,17 @@ theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x :=
 #align matrix.dot_product_single Matrix.dotProduct_single
 
 end NonUnitalNonAssocSemiringDecidable
+
+section NonAssocSemiring
+
+variable [NonAssocSemiring α]
+
+@[simp]
+theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
+  simp [dotProduct, Fintype.card]
+#align matrix.one_dot_product_one Matrix.one_dotProduct_one
+
+end NonAssocSemiring
 
 section NonUnitalNonAssocRing
 
@@ -1181,14 +1200,18 @@ instance nonUnitalNonAssocRing : NonUnitalNonAssocRing (Matrix n n α) :=
 
 end NonUnitalNonAssocRing
 
-instance [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
+instance instNonUnitalRing [Fintype n] [NonUnitalRing α] : NonUnitalRing (Matrix n n α) :=
   { Matrix.nonUnitalSemiring, Matrix.addCommGroup with }
+#align matrix.non_unital_ring Matrix.instNonUnitalRing
 
-instance [Fintype n] [DecidableEq n] [NonAssocRing α] : NonAssocRing (Matrix n n α) :=
+instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing α] :
+    NonAssocRing (Matrix n n α) :=
   { Matrix.nonAssocSemiring, Matrix.addCommGroup with }
+#align matrix.non_assoc_ring Matrix.instNonAssocRing
 
-instance [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
+instance instRing [Fintype n] [DecidableEq n] [Ring α] : Ring (Matrix n n α) :=
   { Matrix.semiring, Matrix.addCommGroup with }
+#align matrix.ring Matrix.instRing
 
 section Semiring
 
@@ -1279,12 +1302,13 @@ variable [Fintype n] [DecidableEq n]
 
 variable [CommSemiring R] [Semiring α] [Semiring β] [Algebra R α] [Algebra R β]
 
-instance : Algebra R (Matrix n n α) :=
+instance instAlgebra : Algebra R (Matrix n n α) :=
   { (Matrix.scalar n).comp (algebraMap R α) with
     commutes' := fun r x => by
       ext
       simp [Matrix.scalar, Matrix.mul_apply, Matrix.one_apply, Algebra.commutes, smul_ite]
     smul_def' := fun r x => by ext; simp [Matrix.scalar, Algebra.smul_def r] }
+#align matrix.algebra Matrix.instAlgebra
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
     algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
@@ -1464,8 +1488,8 @@ variable [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [AddCommMonoid γ]
 
 variable [Module R α] [Module R β] [Module R γ]
 
-/-- The `LinearEquiv` between spaces of matrices induced by an `LinearEquiv` between their
-coefficients. This is `Matrix.map` as an `LinearEquiv`. -/
+/-- The `LinearEquiv` between spaces of matrices induced by a `LinearEquiv` between their
+coefficients. This is `Matrix.map` as a `LinearEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₗ[R] β) : Matrix m n α ≃ₗ[R] Matrix m n β :=
   { f.toEquiv.mapMatrix,
@@ -1564,8 +1588,8 @@ variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
 
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
-/-- The `AlgHom` between spaces of square matrices induced by a `AlgHom` between their
-coefficients. This is `Matrix.map` as a `AlgHom`. -/
+/-- The `AlgHom` between spaces of square matrices induced by an `AlgHom` between their
+coefficients. This is `Matrix.map` as an `AlgHom`. -/
 @[simps]
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
@@ -1594,8 +1618,8 @@ variable [CommSemiring R] [Semiring α] [Semiring β] [Semiring γ]
 
 variable [Algebra R α] [Algebra R β] [Algebra R γ]
 
-/-- The `AlgEquiv` between spaces of square matrices induced by a `AlgEquiv` between their
-coefficients. This is `Matrix.map` as a `AlgEquiv`. -/
+/-- The `AlgEquiv` between spaces of square matrices induced by an `AlgEquiv` between their
+coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
   { f.toAlgHom.mapMatrix,
@@ -1840,7 +1864,17 @@ end NonUnitalSemiring
 
 section NonAssocSemiring
 
-variable [Fintype m] [DecidableEq m] [NonAssocSemiring α]
+variable [NonAssocSemiring α]
+
+theorem mulVec_one [Fintype n] (A : Matrix m n α) : mulVec A 1 = fun i => ∑ j, A i j := by
+  ext; simp [mulVec, dotProduct]
+#align matrix.mul_vec_one Matrix.mulVec_one
+
+theorem vec_one_mul [Fintype m] (A : Matrix m n α) : vecMul 1 A = fun j => ∑ i, A i j := by
+  ext; simp [vecMul, dotProduct]
+#align matrix.vec_one_mul Matrix.vec_one_mul
+
+variable [Fintype m] [Fintype n] [DecidableEq m]
 
 @[simp]
 theorem one_mulVec (v : m → α) : mulVec 1 v = v := by
@@ -2338,7 +2372,7 @@ theorem star_mul [Fintype n] [NonUnitalSemiring α] [StarRing α] (M N : Matrix 
 
 end Star
 
-/-- Given maps `(r_reindex : l → m)` and  `(c_reindex : o → n)` reindexing the rows and columns of
+/-- Given maps `(r_reindex : l → m)` and `(c_reindex : o → n)` reindexing the rows and columns of
 a matrix `M : Matrix m n α`, the matrix `M.submatrix r_reindex c_reindex : Matrix l o α` is defined
 by `(M.submatrix r_reindex c_reindex) i j = M (r_reindex i) (c_reindex j)` for `(i,j) : l × o`.
 Note that the total number of row and columns does not have to be preserved. -/
@@ -2482,9 +2516,10 @@ theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemirin
   funext fun _ => Eq.symm (comp_equiv_symm_dotProduct _ _ _)
 #align matrix.submatrix_vec_mul_equiv Matrix.submatrix_vecMul_equiv
 
-theorem mul_submatrix_one [Fintype n] [Fintype o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
+theorem mul_submatrix_one [Fintype n] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : n ≃ o)
     (e₂ : l → o) (M : Matrix m n α) :
     M ⬝ (1 : Matrix o o α).submatrix e₁ e₂ = submatrix M id (e₁.symm ∘ e₂) := by
+  cases nonempty_fintype o
   let A := M.submatrix id e₁.symm
   have : M = A.submatrix id e₁ := by
     simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
@@ -2493,9 +2528,10 @@ theorem mul_submatrix_one [Fintype n] [Fintype o] [NonAssocSemiring α] [Decidab
     Equiv.symm_comp_self]
 #align matrix.mul_submatrix_one Matrix.mul_submatrix_one
 
-theorem one_submatrix_mul [Fintype m] [Fintype o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
+theorem one_submatrix_mul [Fintype m] [Finite o] [NonAssocSemiring α] [DecidableEq o] (e₁ : l → o)
     (e₂ : m ≃ o) (M : Matrix m n α) :
     ((1 : Matrix o o α).submatrix e₁ e₂).mul M = submatrix M (e₂.symm ∘ e₁) id := by
+  cases nonempty_fintype o
   let A := M.submatrix e₂.symm id
   have : M = A.submatrix e₂ id := by
     simp only [submatrix_submatrix, Function.comp.right_id, submatrix_id_id, Equiv.symm_comp_self]
@@ -2553,13 +2589,13 @@ theorem submatrix_mul_transpose_submatrix [Fintype m] [Fintype n] [AddCommMonoid
   rw [submatrix_mul_equiv, submatrix_id_id]
 #align matrix.submatrix_mul_transpose_submatrix Matrix.submatrix_mul_transpose_submatrix
 
-/-- The left `n × l` part of a `n × (l+r)` matrix. -/
+/-- The left `n × l` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subLeft {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin l) α :=
   submatrix A id (Fin.castAdd r)
 #align matrix.sub_left Matrix.subLeft
 
-/-- The right `n × r` part of a `n × (l+r)` matrix. -/
+/-- The right `n × r` part of an `n × (l+r)` matrix. -/
 @[reducible]
 def subRight {m l r : Nat} (A : Matrix (Fin m) (Fin (l + r)) α) : Matrix (Fin m) (Fin r) α :=
   submatrix A id (Fin.natAdd l)
@@ -2839,7 +2875,7 @@ theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : 
 theorem updateRow_submatrix_equiv [DecidableEq l] [DecidableEq m] (A : Matrix m n α) (i : l)
     (r : o → α) (e : l ≃ m) (f : o ≃ n) :
     updateRow (A.submatrix e f) i r = (A.updateRow (e i) fun j => r (f.symm j)).submatrix e f := by
-  ext (i' j)
+  ext i' j
   simp only [submatrix_apply, updateRow_apply, Equiv.apply_eq_iff_eq, Equiv.symm_apply_apply]
 #align matrix.update_row_submatrix_equiv Matrix.updateRow_submatrix_equiv
 

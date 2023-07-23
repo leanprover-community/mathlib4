@@ -2,18 +2,13 @@
 Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
-
-! This file was ported from Lean 3 source module algebra.group.units
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Nontrivial
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Nontriviality
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Lift
+
+#align_import algebra.group.units from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -114,9 +109,9 @@ attribute [instance] AddUnits.instCoeHeadAddUnits
 
 /-- The inverse of a unit in a `Monoid`. -/
 @[to_additive "The additive inverse of an additive unit in an `AddMonoid`."]
-instance : Inv αˣ :=
+instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
-attribute [instance] AddUnits.instNegAddUnits
+attribute [instance] AddUnits.instNeg
 
 /- porting note: the result of these definitions is syntactically equal to `Units.val` and
 `Units.inv` because of the way coercions work in Lean 4, so there is no need for these custom
@@ -134,12 +129,11 @@ theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
 #align add_units.coe_mk AddUnits.val_mk
 
 @[to_additive (attr := ext)]
-theorem ext : Function.Injective (fun (u : αˣ) => (u : α))
+theorem ext : Function.Injective (val : αˣ → α)
   | ⟨v, i₁, vi₁, iv₁⟩, ⟨v', i₂, vi₂, iv₂⟩, e => by
     simp only at e; subst v'; congr;
     simpa only [iv₂, vi₁, one_mul, mul_one] using mul_assoc i₂ v i₁
 #align units.ext Units.ext
-
 #align add_units.ext AddUnits.ext
 
 @[to_additive (attr := norm_cast)]
@@ -164,7 +158,7 @@ attribute [instance] AddUnits.instDecidableEqAddUnits
 theorem mk_val (u : αˣ) (y h₁ h₂) : mk (u : α) y h₁ h₂ = u :=
   ext rfl
 #align units.mk_coe Units.mk_val
-#align add_units.mk_coe Units.mk_val
+#align add_units.mk_coe AddUnits.mk_val
 
 /-- Copy a unit, adjusting definition equalities. -/
 @[to_additive (attr := simps) "Copy an `AddUnit`, adjusting definitional equalities."]
@@ -217,7 +211,7 @@ instance : Inhabited αˣ :=
 attribute [instance] AddUnits.instInhabitedAddUnits
 
 /-- Units of a monoid have a representation of the base value in the `Monoid`. -/
-@[to_additive "Additive units of an addditive monoid have a representation of the base value in
+@[to_additive "Additive units of an additive monoid have a representation of the base value in
 the `AddMonoid`."]
 instance [Repr α] : Repr αˣ :=
   ⟨reprPrec ∘ val⟩
@@ -603,11 +597,9 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
-attribute [nontriviality] isAddUnit_of_subsingleton
-
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
-{ prf := fun _ ↦ id }
+  { prf := fun _ ↦ id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]

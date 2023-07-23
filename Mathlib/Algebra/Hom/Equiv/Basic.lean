@@ -3,16 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.equiv.basic
-! leanprover-community/mathlib commit 67f362670ed961bcb80239dc40ca18bcd4289c77
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Group
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Pi.Algebra
+
+#align_import algebra.hom.equiv.basic from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Multiplicative and additive equivs
@@ -46,7 +43,6 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
       g (x * y) = g (f (g x) * f (g y)) := by rw [h₂ x, h₂ y]
       _ = g (f (g x * g y)) := by rw [f.map_mul]
       _ = g x * g y := h₁ _
-
 #align mul_hom.inverse MulHom.inverse
 #align add_hom.inverse AddHom.inverse
 
@@ -76,7 +72,7 @@ class AddEquivClass (F : Type _) (A B : outParam (Type _)) [Add A] [Add B]
 add_decl_doc AddEquiv.toEquiv
 #align add_equiv.to_equiv AddEquiv.toEquiv
 
-/-- The `AddHom` underlying a `AddEquiv`. -/
+/-- The `AddHom` underlying an `AddEquiv`. -/
 add_decl_doc AddEquiv.toAddHom
 #align add_equiv.to_add_hom AddEquiv.toAddHom
 
@@ -169,7 +165,7 @@ end MulEquivClass
 "Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
 `AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
 def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β :=
-{ (f : α ≃ β), (f : α →ₙ* β) with }
+  { (f : α ≃ β), (f : α →ₙ* β) with }
 
 /-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
 `MulEquivClass.toMulEquiv`. -/
@@ -193,6 +189,10 @@ instance [Mul M] [Mul N] : MulEquivClass (M ≃* N) M N where
     apply Equiv.coe_fn_injective h₁
   map_mul := map_mul'
 
+@[to_additive] -- shortcut instance that doesn't generate any subgoals
+instance [Mul M] [Mul N] : CoeFun (M ≃* N) fun _ => M → N where
+  coe f := f
+
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
 
 @[to_additive (attr := simp)]
@@ -200,6 +200,11 @@ theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 #align mul_equiv.to_equiv_eq_coe MulEquiv.toEquiv_eq_coe
 #align add_equiv.to_equiv_eq_coe AddEquiv.toEquiv_eq_coe
+
+-- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
+@[to_additive (attr := simp)]
+theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
+  rfl
 
 -- Porting note: `to_fun_eq_coe` no longer needed in Lean4
 #noalign mul_equiv.to_fun_eq_coe
@@ -715,7 +720,7 @@ end MulEquiv
 -- here, but it generates simp lemmas which aren't in simp normal form
 -- (they have `toFun` in)
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
-`f.comp g = id`, returns an multiplicative equivalence with `toFun = f` and `invFun = g`. This
+`f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
 @[to_additive
@@ -752,7 +757,7 @@ theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N �
 #align add_hom.to_add_equiv_symm_apply AddHom.toAddEquiv_symm_apply
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
-returns an multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
+returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
 useful if the underlying type(s) have specialized `ext` lemmas for monoid homomorphisms. -/
 @[to_additive (attr := simps (config := { fullyApplied := false }))
   "Given a pair of additive monoid homomorphisms `f`, `g` such that `g.comp f = id`

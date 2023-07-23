@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.ring_quot
-! leanprover-community/mathlib commit e5820f6c8fcf1b75bcd7738ae4da1c5896191f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import algebra.ring_quot from "leanprover-community/mathlib"@"e5820f6c8fcf1b75bcd7738ae4da1c5896191f72"
 
 /-!
 # Quotients of non-commutative rings
@@ -183,7 +180,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
   | ⟨a⟩ =>
     ⟨Quot.lift (fun a ↦ Quot.mk (RingQuot.Rel r) (a ^ n))
         (fun a b (h : Rel r a b) ↦ by
-          -- note we can't define a `rel.pow` as `rel` isn't reflexive so `rel r 1 1` isn't true
+          -- note we can't define a `Rel.pow` as `Rel` isn't reflexive so `Rel r 1 1` isn't true
           dsimp only
           induction n with
           | zero => rw [pow_zero, pow_zero]
@@ -340,7 +337,7 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   __ := instAddCommMonoid r
   __ := instMonoidWithZero r
 
-instance Ring {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
+instance instRing {R : Type u₁} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) :=
   { RingQuot.instSemiring r with
     neg := Neg.neg
     add_left_neg := by
@@ -369,7 +366,7 @@ instance instCommSemiring {R : Type u₁} [CommSemiring R] (r : R → R → Prop
       simp [mul_quot, mul_comm] }
 
 instance {R : Type u₁} [CommRing R] (r : R → R → Prop) : CommRing (RingQuot r) :=
-  { RingQuot.instCommSemiring r, RingQuot.Ring r with }
+  { RingQuot.instCommSemiring r, RingQuot.instRing r with }
 
 instance (r : R → R → Prop) : Inhabited (RingQuot r) :=
   ⟨0⟩
@@ -487,10 +484,10 @@ agrees with the quotient by the appropriate ideal.
 
 variable {B : Type u₁} [CommRing B]
 
-/-- The universal ring homomorphism from `RingQuot r` to `B ⧸ ideal.of_rel r`. -/
+/-- The universal ring homomorphism from `RingQuot r` to `B ⧸ Ideal.ofRel r`. -/
 def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Ideal.ofRel r :=
   lift ⟨Ideal.Quotient.mk (Ideal.ofRel r),
-        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_infₛ.mpr
+        fun x y h ↦ Ideal.Quotient.eq.2 <| Submodule.mem_sInf.mpr
           fun _ w ↦ w ⟨x, y, h, sub_add_cancel x y⟩⟩
 #align ring_quot.ring_quot_to_ideal_quotient RingQuot.ringQuotToIdealQuotient
 
@@ -564,7 +561,6 @@ private irreducible_def star' : RingQuot r → RingQuot r
 
 theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
     (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
-
 #align ring_quot.star'_quot RingQuot.star'_quot
 
 /-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
@@ -592,7 +588,7 @@ variable (S)
 -/
 irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    commutes' := fun _ ↦ by simp [mkRingHom_def] ; rfl }
+    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
 #align ring_quot.mk_alg_hom RingQuot.mkAlgHom
 
 @[simp]
@@ -607,7 +603,7 @@ theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) : mkAlgHom S s
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
   suffices : Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s)
-  · simpa  [mkAlgHom_def, mkRingHom_def]
+  · simpa [mkAlgHom_def, mkRingHom_def]
   rintro ⟨⟨a⟩⟩
   use a
 #align ring_quot.mk_alg_hom_surjective RingQuot.mkAlgHom_surjective
@@ -646,7 +642,7 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
     simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }
 
 /-- Any `S`-algebra homomorphism `f : A →ₐ[S] B` which respects a relation `s : A → A → Prop`
-factors uniquely through a morphism `RingQuot s →ₐ[S]  B`.
+factors uniquely through a morphism `RingQuot s →ₐ[S] B`.
 -/
 irreducible_def liftAlgHom {s : A → A → Prop} :
   { f : A →ₐ[S] B // ∀ ⦃x y⦄, s x y → f x = f y } ≃ (RingQuot s →ₐ[S] B) :=

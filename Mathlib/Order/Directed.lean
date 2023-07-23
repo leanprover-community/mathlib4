@@ -2,15 +2,13 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.directed
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Lattice
 import Mathlib.Order.Max
+import Mathlib.Order.Bounds.Basic
+
+#align_import order.directed from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Directed indexed families and sets
@@ -24,6 +22,11 @@ directed iff each pair of elements has a shared upper bound.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
   unbundled relation classes such as `IsTotal`.
+* `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
+  directed sets.
+
+## References
+* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
 
 
@@ -51,15 +54,22 @@ def DirectedOn (s : Set α) :=
 variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
-  simp [Directed, DirectedOn] ; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+  simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias directedOn_iff_directed ↔ DirectedOn.directed_val _
 #align directed_on.directed_coe DirectedOn.directed_val
 
-theorem directedOn_range {f : β → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
+theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
   simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
 #align directed_on_range directedOn_range
+
+-- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
+alias directedOn_range ↔ Directed.directedOn_range _
+#align directed.directed_on_range Directed.directedOn_range
+
+-- porting note: `attribute [protected]` doesn't work
+-- attribute [protected] Directed.directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
@@ -153,6 +163,10 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
   ⟨a ⊓ b, H ha hb, inf_le_left, inf_le_right⟩
 #align directed_on_of_inf_mem directedOn_of_inf_mem
 
+theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
+  Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
+#align is_total.directed IsTotal.directed
+
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type _) (r : α → α → Prop) : Prop where
@@ -186,8 +200,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
 #align directed_on_univ_iff directedOn_univ_iff
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
-  ⟨fun a b => Or.casesOn (total_of r a b) (fun h => ⟨b, h, refl _⟩) fun h => ⟨a, refl _, h⟩⟩
+instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r := by
+  rw [← directed_id_iff]; exact IsTotal.directed _
 #align is_total.to_is_directed IsTotal.to_isDirected
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
@@ -211,6 +225,36 @@ instance OrderDual.isDirected_ge [LE α] [IsDirected α (· ≤ ·)] : IsDirecte
 instance OrderDual.isDirected_le [LE α] [IsDirected α (· ≥ ·)] : IsDirected αᵒᵈ (· ≤ ·) := by
   assumption
 #align order_dual.is_directed_le OrderDual.isDirected_le
+
+section Reflexive
+
+theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+    (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
+  rintro x (rfl | hx) y (rfl | hy)
+  · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
+  · obtain ⟨w, hws, hwr⟩ := ha y hy
+    exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
+  · obtain ⟨w, hws, hwr⟩ := ha x hx
+    exact ⟨w, Set.mem_insert_of_mem _ hws, hwr.symm⟩
+  · obtain ⟨w, hws, hwr⟩ := hd x hx y hy
+    exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
+#align directed_on.insert DirectedOn.insert
+
+theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
+  fun x hx _ hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
+#align directed_on_singleton directedOn_singleton
+
+theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
+  (directedOn_singleton h _).insert h _ fun c hc => ⟨c, hc, hc.symm ▸ hab, h _⟩
+#align directed_on_pair directedOn_pair
+
+theorem directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
+    DirectedOn r ({b, a} : Set α) := by
+  rw [Set.pair_comm]
+  apply directedOn_pair h hab
+#align directed_on_pair' directedOn_pair'
+
+end Reflexive
 
 section Preorder
 
@@ -257,7 +301,7 @@ variable (β) [PartialOrder β]
 theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
   rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
-  exacts[⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
+  exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
 #align exists_lt_of_directed_ge exists_lt_of_directed_ge
 
 theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : ∃ a b : β, a < b :=
@@ -288,3 +332,40 @@ instance (priority := 100) OrderTop.to_isDirected_le [LE α] [OrderTop α] : IsD
 instance (priority := 100) OrderBot.to_isDirected_ge [LE α] [OrderBot α] : IsDirected α (· ≥ ·) :=
   ⟨fun _ _ => ⟨⊥, bot_le _, bot_le _⟩⟩
 #align order_bot.to_is_directed_ge OrderBot.to_isDirected_ge
+
+section ScottContinuous
+
+variable [Preorder α] {a : α}
+
+/-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
+sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+Scott topology.
+
+The dual notion
+
+```lean
+∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≥ ·) d → ∀ ⦃a⦄, IsGLB d a → IsGLB (f '' d) (f a)
+```
+
+does not appear to play a significant role in the literature, so is omitted here.
+-/
+def ScottContinuous [Preorder β] (f : α → β) : Prop :=
+  ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
+#align scott_continuous ScottContinuous
+
+protected theorem ScottContinuous.monotone [Preorder β] {f : α → β} (h : ScottContinuous f) :
+    Monotone f := by
+  intro a b hab
+  have e1 : IsLUB (f '' {a, b}) (f b) := by
+    apply h
+    · exact Set.insert_nonempty _ _
+    · exact directedOn_pair le_refl hab
+    · rw [IsLUB, upperBounds_insert, upperBounds_singleton,
+        Set.inter_eq_self_of_subset_right (Set.Ici_subset_Ici.mpr hab)]
+      exact isLeast_Ici
+  apply e1.1
+  rw [Set.image_pair]
+  exact Set.mem_insert _ _
+#align scott_continuous.monotone ScottContinuous.monotone
+
+end ScottContinuous

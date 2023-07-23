@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.W.basic
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.List
+
+#align_import data.W.basic from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # W types
@@ -95,8 +92,7 @@ def elim (γ : Type _) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
 
 theorem elim_injective (γ : Type _) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
-  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h =>
-    by
+  | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
     exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x : _)
@@ -137,7 +133,7 @@ theorem depth_pos (t : WType β) : 0 < t.depth := by
 #align W_type.depth_pos WType.depth_pos
 
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
-  Nat.lt_succ_of_le (Finset.le_sup (f:=(depth <| f ·)) (Finset.mem_univ i))
+  Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
 #align W_type.depth_lt_depth_mk WType.depth_lt_depth_mk
 
 /-
@@ -187,7 +183,7 @@ private def encodable_succ (n : Nat) (h : Encodable (WType' β n)) : Encodable (
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by
-  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.recC encodable_zero encodable_succ n
+  haveI h' : ∀ n, Encodable (WType' β n) := fun n => Nat.rec encodable_zero encodable_succ n
   let f : WType β → Σn, WType' β n := fun t => ⟨t.depth, ⟨t, le_rfl⟩⟩
   let finv : (Σn, WType' β n) → WType β := fun p => p.2.1
   have : ∀ t, finv (f t) = t := fun t => rfl

@@ -58,8 +58,8 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 ## Fourier-Motzkin elimination
 
 The oracle implemented to search for certificates uses Fourier-Motzkin variable elimination.
-This technique transorms a set of inequalities in `n` variables to an equisatisfiable set in `n - 1`
-variables. Once all variables have been eliminated, we conclude that the original set was
+This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+`n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
 unsatisfiable iff the comparison `0 < 0` is in the resulting set.
 
 While performing this elimination, we track the history of each derived comparison. This allows us
@@ -202,8 +202,9 @@ prove `false` by calling `linarith` on each list in succession. It will stop at 
 -/
 def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId) (ls : List (List Expr)) :
     MetaM Expr :=
-  ls.firstM (fun L => proveFalseByLinarith cfg g L)
-    <|> throwError "linarith failed to find a contradiction\n{g}"
+  try
+    ls.firstM (fun L => proveFalseByLinarith cfg g L)
+  catch e => throwError "linarith failed to find a contradiction\n{g}\n{e.toMessageData}"
 
 
 /--
@@ -231,8 +232,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
   let preprocessors :=
     (if cfg.splitHypotheses then [Linarith.splitConjunctions.globalize.branching] else []) ++
     cfg.preprocessors.getD defaultPreprocessors
-  -- TODO restore when the `removeNe` preprocessor is implemented
-  -- let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
+  let preprocessors := if cfg.splitNe then Linarith.removeNe::preprocessors else preprocessors
   let branches ← preprocess preprocessors g hyps
   for (g, es) in branches do
     let r ← singleProcess g es
@@ -311,17 +311,17 @@ syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
-Equivalently, it can prove a linear inequality by assuming its negation and proving `false`.
+Equivalently, it can prove a linear inequality by assuming its negation and proving `False`.
 
 In theory, `linarith` should prove any goal that is true in the theory of linear arithmetic over
-the rationals. While there is some special handling for non-dense orders like `nat` and `int`,
+the rationals. While there is some special handling for non-dense orders like `Nat` and `Int`,
 this tactic is not complete for these theories and will not prove every true goal. It will solve
 goals over arbitrary types that instantiate `LinearOrderedCommRing`.
 
 An example:
 ```lean
-example (x y z : ℚ) (h1 : 2*x  < 3*y) (h2 : -4*x + 2*z < 0)
-        (h3 : 12*y - 4* z < 0)  : false :=
+example (x y z : ℚ) (h1 : 2*x < 3*y) (h2 : -4*x + 2*z < 0)
+        (h3 : 12*y - 4* z < 0)  : False :=
 by linarith
 ```
 

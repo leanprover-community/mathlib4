@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.gamma_comp_n
-! leanprover-community/mathlib commit 5f68029a863bdf76029fa0f7a519e6163c14152e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
 import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+
+#align_import algebraic_topology.dold_kan.gamma_comp_n from "leanprover-community/mathlib"@"5f68029a863bdf76029fa0f7a519e6163c14152e"
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
@@ -31,7 +28,7 @@ namespace DoldKan
 
 variable {C : Type _} [Category C] [Preadditive C] [HasFiniteCoproducts C]
 
-/-- The isomorphism  `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
+/-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
   HomologicalComplex.Hom.isoOfComponents (fun n => Iso.refl _)
@@ -58,7 +55,7 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
 
 /-- The natural isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for `K : ChainComplex C ℕ`. -/
 def Γ₀'CompNondegComplexFunctor : Γ₀' ⋙ Split.nondegComplexFunctor ≅ 𝟭 (ChainComplex C ℕ) :=
-  NatIso.ofComponents Γ₀NondegComplexIso (by aesop_cat)
+  NatIso.ofComponents Γ₀NondegComplexIso
 #align algebraic_topology.dold_kan.Γ₀'_comp_nondeg_complex_functor AlgebraicTopology.DoldKan.Γ₀'CompNondegComplexFunctor
 
 /-- The natural isomorphism `Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ)`. -/

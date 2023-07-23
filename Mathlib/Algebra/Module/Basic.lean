@@ -2,11 +2,6 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.basic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
@@ -14,7 +9,8 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
-import Mathlib.Tactic.NthRewrite
+
+#align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Modules over a ring
@@ -29,7 +25,7 @@ In this file we define
 ## Implementation notes
 
 In typical mathematical usage, our definition of `Module` corresponds to "semimodule", and the
-word "module" is reserved for `Module R M` where `R` is a `ring` and `M` an `AddCommGroup`.
+word "module" is reserved for `Module R M` where `R` is a `Ring` and `M` an `AddCommGroup`.
 If `R` is a `Field` and `M` an `AddCommGroup`, `M` would be called an `R`-vector space.
 Since those assumptions can be made by changing the typeclasses applied to `R` and `M`,
 without changing the axioms in `Module`, mathlib calls everything a `Module`.
@@ -281,7 +277,6 @@ theorem Convex.combo_eq_smul_sub_add [Module R M] {x y : M} {a b : R} (h : a + b
   calc
     a • x + b • y = b • y - b • x + (a • x + b • x) := by abel
     _ = b • (y - x) + x := by rw [smul_sub, Convex.combo_self h]
-
 #align convex.combo_eq_smul_sub_add Convex.combo_eq_smul_sub_add
 
 end AddCommGroup
@@ -769,5 +764,4 @@ theorem Int.smul_one_eq_coe {R : Type _} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_coe
 
--- Porting note: `assert_not_exists` not implemented yet
--- assert_not_exists multiset
+assert_not_exists Multiset

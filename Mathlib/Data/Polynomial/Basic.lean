@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.basic
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
+
+#align_import data.polynomial.basic from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
 /-!
 # Theory of univariate polynomials
@@ -31,7 +28,7 @@ There are often two natural variants of lemmas involving sums, depending on whet
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
 the polynomials. For instance,
 * `sum_add_index` states that `(p + q).sum f = p.sum f + q.sum f`;
-* `sum_add` states that `p.sum (λ n x, f n x + g n x) = p.sum f + p.sum g`.
+* `sum_add` states that `p.sum (fun n x ↦ f n x + g n x) = p.sum f + p.sum g`.
 * Notation to refer to `Polynomial R`, as `R[X]` or `R[t]`.
 
 ## Implementation
@@ -298,13 +295,17 @@ instance semiring : Semiring R[X] :=
     toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl
 #align polynomial.semiring Polynomial.semiring
 
+instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
+  Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
+    toFinsupp_smul
+#align polynomial.distrib_smul Polynomial.distribSMul
+
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
   Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_injective toFinsupp_smul
 #align polynomial.distrib_mul_action Polynomial.distribMulAction
 
-instance faithfulSMul {S} [Monoid S] [DistribMulAction S R] [FaithfulSMul S R] :
-    FaithfulSMul S R[X] where
+instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul S R[X] where
   eq_of_smul_eq_smul {_s₁ _s₂} h :=
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
 #align polynomial.has_faithful_smul Polynomial.faithfulSMul
@@ -314,15 +315,15 @@ instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
     toFinsupp_smul
 #align polynomial.module Polynomial.module
 
-instance smulCommClass {S₁ S₂} [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
-    [DistribMulAction S₂ R] [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ R[X] :=
+instance smulCommClass {S₁ S₂} [SMulZeroClass S₁ R] [SMulZeroClass S₂ R] [SMulCommClass S₁ S₂ R] :
+  SMulCommClass S₁ S₂ R[X] :=
   ⟨by
     rintro m n ⟨f⟩
     simp_rw [← ofFinsupp_smul, smul_comm m n f]⟩
 #align polynomial.smul_comm_class Polynomial.smulCommClass
 
-instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [Monoid S₁] [Monoid S₂] [DistribMulAction S₁ R]
-    [DistribMulAction S₂ R] [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
+instance isScalarTower {S₁ S₂} [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
+  [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ R[X] :=
   ⟨by
     rintro _ _ ⟨⟩
     simp_rw [← ofFinsupp_smul, smul_assoc]⟩
@@ -335,8 +336,8 @@ instance isScalarTower_right {α K : Type _} [Semiring K] [DistribSMul α K] [Is
       simp_rw [smul_eq_mul, ← ofFinsupp_smul, ← ofFinsupp_mul, ← ofFinsupp_smul, smul_mul_assoc]⟩
 #align polynomial.is_scalar_tower_right Polynomial.isScalarTower_right
 
-instance isCentralScalar {S} [Monoid S] [DistribMulAction S R] [DistribMulAction Sᵐᵒᵖ R]
-    [IsCentralScalar S R] : IsCentralScalar S R[X] :=
+instance isCentralScalar {S} [SMulZeroClass S R] [SMulZeroClass Sᵐᵒᵖ R] [IsCentralScalar S R] :
+  IsCentralScalar S R[X] :=
   ⟨by
     rintro _ ⟨⟩
     simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
@@ -452,7 +453,7 @@ theorem monomial_pow (n : ℕ) (r : R) (k : ℕ) : monomial n r ^ k = monomial (
   · simp [pow_succ, ih, monomial_mul_monomial, Nat.succ_eq_add_one, mul_add, add_comm]
 #align polynomial.monomial_pow Polynomial.monomial_pow
 
-theorem smul_monomial {S} [Monoid S] [DistribMulAction S R] (a : S) (n : ℕ) (b : R) :
+theorem smul_monomial {S} [SMulZeroClass S R] (a : S) (n : ℕ) (b : R) :
     a • monomial n b = monomial n (a • b) :=
   toFinsupp_injective <| by simp; rw [smul_single]
 #align polynomial.smul_monomial Polynomial.smul_monomial
@@ -508,7 +509,7 @@ theorem C_add : C (a + b) = C a + C b :=
 #align polynomial.C_add Polynomial.C_add
 
 @[simp]
-theorem smul_C {S} [Monoid S] [DistribMulAction S R] (s : S) (r : R) : s • C r = C (s • r) :=
+theorem smul_C {S} [SMulZeroClass S R] (s : S) (r : R) : s • C r = C (s • r) :=
   smul_monomial _ _ r
 #align polynomial.smul_C Polynomial.smul_C
 
@@ -804,8 +805,7 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
 
 theorem addHom_ext {M : Type _} [AddMonoid M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
-  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <|
-    by
+  AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 #align polynomial.add_hom_ext Polynomial.addHom_ext
@@ -1051,8 +1051,7 @@ theorem coeff_erase (p : R[X]) (n i : ℕ) :
 
 @[simp]
 theorem erase_zero (n : ℕ) : (0 : R[X]).erase n = 0 :=
-  -- Porting note: `exact ..` is required.
-  toFinsupp_injective <| by simp; exact Finsupp.erase_zero n
+  toFinsupp_injective <| by simp
 #align polynomial.erase_zero Polynomial.erase_zero
 
 @[simp]
@@ -1177,10 +1176,7 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
 #align polynomial.support_neg Polynomial.support_neg
 
-@[simp]
-theorem C_eq_int_cast (n : ℤ) : C (n : R) = n :=
-  -- Porting note: Eta structure is disabled so the instance should be specified.
-  @map_intCast _ _ _ _ _ (@RingHom.instRingHomClassRingHom R R[X] _ _) C n
+theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
 #align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
 
 end Ring
@@ -1207,6 +1203,16 @@ theorem X_ne_zero : (X : R[X]) ≠ 0 :=
 #align polynomial.X_ne_zero Polynomial.X_ne_zero
 
 end NonzeroSemiring
+
+section DivisionRing
+
+variable [DivisionRing R]
+
+theorem rat_smul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
+  rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
+#align polynomial.rat_smul_eq_C_mul Polynomial.rat_smul_eq_C_mul
+
+end DivisionRing
 
 @[simp]
 theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=

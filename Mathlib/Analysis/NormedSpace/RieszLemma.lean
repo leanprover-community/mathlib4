@@ -2,14 +2,12 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.riesz_lemma
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import analysis.normed_space.riesz_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Applications of the Hausdorff distance in normed spaces
@@ -66,18 +64,17 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
     refine' ⟨x - y₀, x_ne_y₀, fun y hy => le_of_lt _⟩
     have hy₀y : y₀ + y ∈ F := F.add_mem hy₀F hy
     calc
-      r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg _)
+      r * ‖x - y₀‖ ≤ r' * ‖x - y₀‖ := by gcongr; apply le_max_left
       _ < d := by
         rw [← dist_eq_norm]
         exact (lt_div_iff' hlt).1 hxy₀
       _ ≤ dist x (y₀ + y) := (Metric.infDist_le_dist_of_mem hy₀y)
       _ = ‖x - y₀ - y‖ := by rw [sub_sub, dist_eq_norm]
-
 #align riesz_lemma riesz_lemma
 
 /--
 A version of Riesz lemma: given a strict closed subspace `F`, one may find an element of norm `≤ R`
-which is at distance  at least `1` of every element of `F`. Here, `R` is any given constant
+which is at distance at least `1` of every element of `F`. Here, `R` is any given constant
 strictly larger than the norm of an element of norm `> 1`. For a version without an `R`, see
 `riesz_lemma`.
 
@@ -102,18 +99,17 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   have yy' : y = d • y' := by simp [smul_smul, mul_inv_cancel d0]
   calc
     1 = ‖c‖ / R * (R / ‖c‖) := by field_simp [Rpos.ne', (zero_lt_one.trans hc).ne']
-    _ ≤ ‖c‖ / R * ‖d • x‖ := (mul_le_mul_of_nonneg_left ledx (div_nonneg (norm_nonneg _) Rpos.le))
+    _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
       simp [norm_smul]
       ring
-    _ ≤ ‖d‖ * ‖x - y'‖ :=
-      (mul_le_mul_of_nonneg_left (hx y' (by simp [Submodule.smul_mem _ _ hy])) (norm_nonneg _))
+    _ ≤ ‖d‖ * ‖x - y'‖ := by gcongr; exact hx y' (by simp [Submodule.smul_mem _ _ hy])
     _ = ‖d • x - y‖ := by rw [yy', ←smul_sub, norm_smul]
 #align riesz_lemma_of_norm_lt riesz_lemma_of_norm_lt
 
 theorem Metric.closedBall_infDist_compl_subset_closure {x : F} {s : Set F} (hx : x ∈ s) :
-    closedBall x (infDist x (sᶜ)) ⊆ closure s := by
-  cases' eq_or_ne (infDist x (sᶜ)) 0 with h₀ h₀
+    closedBall x (infDist x sᶜ) ⊆ closure s := by
+  cases' eq_or_ne (infDist x sᶜ) 0 with h₀ h₀
   · rw [h₀, closedBall_zero']
     exact closure_mono (singleton_subset_iff.2 hx)
   · rw [← closure_ball x h₀]

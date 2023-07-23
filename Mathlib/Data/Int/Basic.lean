@@ -2,18 +2,14 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.int.basic
-! leanprover-community/mathlib commit 00d163e35035c3577c1c79fa53b68de17781ffc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Convert
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Logic.Nontrivial
+
+#align_import data.int.basic from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
 
 /-!
 # Basic operations on the integers
@@ -82,7 +78,7 @@ protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m 
 
 @[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
 theorem _root_.zpow_coe_nat [DivInvMonoid G] (a : G) (n : ℕ) : a ^ (Nat.cast n : ℤ) = a ^ n :=
-zpow_ofNat ..
+  zpow_ofNat ..
 #align coe_nat_zsmul coe_nat_zsmul
 
 /-! ### Extra instances to short-circuit type class resolution

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.semiring
-! leanprover-community/mathlib commit 62e8311c791f02c47451bf14aa2501048e7c2f33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Data.Set.Pointwise.SMul
+
+#align_import data.set.semiring from "leanprover-community/mathlib"@"62e8311c791f02c47451bf14aa2501048e7c2f33"
 
 /-!
 # Sets as a semiring under union
@@ -187,8 +184,7 @@ section One
 
 variable [One α]
 
--- porting note: noncomputable?
-noncomputable instance : One (SetSemiring α) where one := Set.up (1 : Set α)
+instance : One (SetSemiring α) where one := Set.up (1 : Set α)
 
 theorem one_def : (1 : SetSemiring α) = Set.up 1 :=
   rfl

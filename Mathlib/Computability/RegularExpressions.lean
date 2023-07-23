@@ -2,13 +2,10 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.regular_expressions
-! leanprover-community/mathlib commit 369525b73f229ccd76a6ec0e0e0bf2be57599768
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Language
+
+#align_import computability.regular_expressions from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
 /-!
 # Regular Expressions
@@ -323,7 +320,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             simp only [ne_eq, not_false_iff, true_and, rmatch]
             exact ht
           case tail ht' => exact helem t' ht'
-    · rintro ⟨S, hsum, helem⟩ ; dsimp
+    · rintro ⟨S, hsum, helem⟩; dsimp
       cases' x with a x
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -338,8 +335,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length :=
-              by
+          · have hwf : U.join.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
               simp only [List.length_append, List.length_join, List.length]
               apply A
@@ -351,8 +347,8 @@ theorem star_rmatch_iff (P : RegularExpression α) :
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
-theorem rmatch_iff_matches' (P : RegularExpression α) : ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' :=
-by
+theorem rmatch_iff_matches' (P : RegularExpression α) :
+    ∀ x : List α, P.rmatch x ↔ x ∈ P.matches' := by
   intro x
   induction P generalizing x
   all_goals
@@ -457,9 +453,9 @@ theorem matches'_map (f : α → β) :
   | R * S => by simp only [matches'_map, map, matches'_mul]; rw [map_mul]
   | star R => by
     simp_rw [map, matches', matches'_map]
-    rw [Language.kstar_eq_supᵢ_pow, Language.kstar_eq_supᵢ_pow]
+    rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]
     simp_rw [← map_pow]
-    exact image_unionᵢ.symm
+    exact image_iUnion.symm
 #align regular_expression.matches_map RegularExpression.matches'_map
 
 end RegularExpression

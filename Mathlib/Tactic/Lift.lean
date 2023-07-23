@@ -29,7 +29,7 @@ class CanLift (α β : Sort _) (coe : outParam <| β → α) (cond : outParam <|
 instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
-/-- Enable automatic handling of pi types in `can_lift`. -/
+/-- Enable automatic handling of pi types in `CanLift`. -/
 instance Pi.canLift (ι : Sort _) (α β : ι → Sort _) (coe : ∀ i, β i → α i) (P : ∀ i, α i → Prop)
     [∀ i, CanLift (α i) (β i) (coe i) (P i)] :
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
@@ -104,7 +104,7 @@ propositions concerning `z` will still be over `ℤ`. `zify` changes proposition
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)?
-  (" with " ident (colGt ident)? (colGt ident)?)? : tactic
+  (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic
 
 /-- Generate instance for the `lift` tactic. -/
 def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
@@ -127,7 +127,7 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   let isNewEq := newEqName != `rfl
   let e ← elabTerm e none
   let goal ← getMainGoal
-  if !(← inferType (← goal.getType)).isProp then throwError
+  if !(← inferType (← instantiateMVars (← goal.getType))).isProp then throwError
     "lift tactic failed. Tactic is only applicable when the target is a proposition."
   if newVarName == none ∧ !e.isFVar then throwError
     "lift tactic failed. When lifting an expression, a new variable name must be given"
@@ -135,7 +135,7 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   let prf ← match hUsing with
     | some h => elabTermEnsuringType h (p.betaRev #[e])
     | none => mkFreshExprMVar (some (p.betaRev #[e]))
-  let newVarName ←  match newVarName with
+  let newVarName ← match newVarName with
                  | some v => pure v.getId
                  | none   => e.fvarId!.getUserName
   let prfEx ← mkAppOptM ``CanLift.prf #[none, none, coe, p, inst, e, prf]

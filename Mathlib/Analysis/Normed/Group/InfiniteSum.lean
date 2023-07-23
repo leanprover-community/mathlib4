@@ -2,15 +2,12 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed.group.infinite_sum
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.NNReal
+
+#align_import analysis.normed.group.infinite_sum from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Infinite sums in (semi)normed groups
@@ -68,7 +65,6 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
     ‖∑ i in t, f i‖ ≤ ∑ i in t, g i := norm_sum_le_of_le _ this
     _ ≤ ‖∑ i in t, g i‖ := (le_abs_self _)
     _ < ε := hs _ (ht.mono_right le_sup_left)
-
 #align cauchy_seq_finset_of_norm_bounded_eventually cauchySeq_finset_of_norm_bounded_eventually
 
 theorem cauchySeq_finset_of_norm_bounded {f : ι → E} (g : ι → ℝ) (hg : Summable g)
@@ -84,13 +80,12 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
   refine' Metric.cauchySeq_iff'.2 fun ε hε => _
   refine' (Metric.cauchySeq_iff'.1 hg ε hε).imp fun N hg n hn => _
   specialize hg n hn
-  rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg⊢
+  rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg ⊢
   calc
     ‖∑ k in Ico N n, f k‖ ≤ ∑ k in _, ‖f k‖ := norm_sum_le _ _
     _ ≤ ∑ k in _, g k := (sum_le_sum fun x _ => hf x)
     _ ≤ ‖∑ k in _, g k‖ := (le_abs_self _)
     _ < ε := hg
-
 #align cauchy_seq_range_of_norm_bounded cauchySeq_range_of_norm_bounded
 
 theorem cauchySeq_finset_of_summable_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) :

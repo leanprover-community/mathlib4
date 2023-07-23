@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.prime_fin
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Set.Finite
+
+#align_import data.nat.prime_fin from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Prime numbers
@@ -32,8 +29,8 @@ theorem factors_mul_toFinset {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     List.toFinset_union _ _
 #align nat.factors_mul_to_finset Nat.factors_mul_toFinset
 
-theorem pow_succ_factors_toFinset (n k : ℕ) : (n ^ (k + 1)).factors.toFinset = n.factors.toFinset :=
-  by
+theorem pow_succ_factors_toFinset (n k : ℕ) :
+    (n ^ (k + 1)).factors.toFinset = n.factors.toFinset := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   induction' k with k ih

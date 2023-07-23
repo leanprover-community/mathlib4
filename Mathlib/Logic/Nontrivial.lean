@@ -2,16 +2,14 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module logic.nontrivial
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Unique
+
+#align_import logic.nontrivial from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Nontrivial types
@@ -141,14 +139,14 @@ instance Option.nontrivial [Nonempty α] : Nontrivial (Option α) := by
   inhabit α
   exact ⟨none, some default, fun .⟩
 
-/-- Pushforward a `nontrivial` instance along an injective function. -/
+/-- Pushforward a `Nontrivial` instance along an injective function. -/
 protected theorem Function.Injective.nontrivial [Nontrivial α] {f : α → β}
     (hf : Function.Injective f) : Nontrivial β :=
   let ⟨x, y, h⟩ := exists_pair_ne α
   ⟨⟨f x, f y, hf.ne h⟩⟩
 #align function.injective.nontrivial Function.Injective.nontrivial
 
-/-- Pullback a `nontrivial` instance along a surjective function. -/
+/-- Pullback a `Nontrivial` instance along a surjective function. -/
 protected theorem Function.Surjective.nontrivial [Nontrivial β] {f : α → β}
     (hf : Function.Surjective f) : Nontrivial α := by
   rcases exists_pair_ne β with ⟨x, y, h⟩
@@ -201,6 +199,7 @@ end Pi
 instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α → β) :=
   h.elim fun a ↦ Pi.nontrivial_at a
 
+@[nontriviality]
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)
 #align subsingleton.le Subsingleton.le

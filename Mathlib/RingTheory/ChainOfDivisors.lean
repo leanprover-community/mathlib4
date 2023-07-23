@@ -2,16 +2,13 @@
 Copyright (c) 2021 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
-
-! This file was ported from Lean 3 source module ring_theory.chain_of_divisors
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Squarefree
 import Mathlib.Order.Hom.Bounded
 import Mathlib.Algebra.GCDMonoid.Basic
+
+#align_import ring_theory.chain_of_divisors from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 /-!
 
 # Chains of divisors
@@ -140,8 +137,7 @@ theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
     {c : Fin (n + 1) → Associates M} (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) {m : Finset (Associates M)}
     (hm : ∀ r, r ∈ m → r ≤ q) : m.card ≤ n + 1 := by
   classical
-    have mem_image : ∀ r : Associates M, r ≤ q → r ∈ Finset.univ.image c :=
-      by
+    have mem_image : ∀ r : Associates M, r ≤ q → r ∈ Finset.univ.image c := by
       intro r hr
       obtain ⟨i, hi⟩ := h₂.1 hr
       exact Finset.mem_image.2 ⟨i, Finset.mem_univ _, hi.symm⟩
@@ -156,21 +152,18 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     (hr : r ∣ q) (hq : q ≠ 0) : ∃ i : Fin (n + 1), r = c 1 ^ (i : ℕ) := by
   classical
     let i := Multiset.card (normalizedFactors r)
-    have hi : normalizedFactors r = Multiset.replicate i (c 1) :=
-      by
+    have hi : normalizedFactors r = Multiset.replicate i (c 1) := by
       apply Multiset.eq_replicate_of_mem
       intro b hb
       refine'
         eq_second_of_chain_of_prime_dvd hn h₁ (@fun r' => h₂) (prime_of_normalized_factor b hb) hr
           (dvd_of_mem_normalizedFactors hb)
-    have H : r = c 1 ^ i :=
-      by
+    have H : r = c 1 ^ i := by
       have := UniqueFactorizationMonoid.normalizedFactors_prod (ne_zero_of_dvd_ne_zero hq hr)
       rw [associated_iff_eq, hi, Multiset.prod_replicate] at this
       rw [this]
     refine' ⟨⟨i, _⟩, H⟩
-    have : (Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ)).card = i + 1 :=
-      by
+    have : (Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ)).card = i + 1 := by
       conv_rhs => rw [← Finset.card_fin (i + 1)]
       cases n
       · contradiction
@@ -247,7 +240,7 @@ theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates 
     conv_rhs => rw [← factor_orderIso_map_one_eq_bot d.symm]
     congr, fun hu => by
     simp_rw [hu]
-    conv_rhs =>  rw [← factor_orderIso_map_one_eq_bot d]⟩
+    conv_rhs => rw [← factor_orderIso_map_one_eq_bot d]⟩
 #align coe_factor_order_iso_map_eq_one_iff coe_factor_orderIso_map_eq_one_iff
 
 section
@@ -348,10 +341,8 @@ theorem multiplicity_prime_eq_multiplicity_image_by_factor_orderIso [DecidableEq
     (d : Set.Iic m ≃o Set.Iic n) :
     multiplicity p m = multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
   refine' le_antisymm (multiplicity_prime_le_multiplicity_image_by_factor_orderIso hp d) _
-  suffices
-    multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n ≤
-      multiplicity (↑(d.symm (d ⟨p, dvd_of_mem_normalizedFactors hp⟩))) m
-    by
+  suffices multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n ≤
+      multiplicity (↑(d.symm (d ⟨p, dvd_of_mem_normalizedFactors hp⟩))) m by
     rw [d.symm_apply_apply ⟨p, dvd_of_mem_normalizedFactors hp⟩, Subtype.coe_mk] at this
     exact this
   letI := Classical.decEq (Associates N)
@@ -442,26 +433,17 @@ theorem multiplicity_factor_dvd_iso_eq_multiplicity_of_mem_normalizedFactors {m 
     {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }} (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ l') :
     multiplicity (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : N) n = multiplicity p m := by
   apply Eq.symm
-  suffices
-    multiplicity (Associates.mk p) (Associates.mk m) =
-      multiplicity
-        (Associates.mk
-          ↑(d
-              ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
-                simp [dvd_of_mem_normalizedFactors hp]⟩))
-        (Associates.mk n)
-    by
+  suffices multiplicity (Associates.mk p) (Associates.mk m) = multiplicity (Associates.mk
+    ↑(d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
+      simp [dvd_of_mem_normalizedFactors hp]⟩)) (Associates.mk n) by
     simpa only [multiplicity_mk_eq_multiplicity, associatesEquivOfUniqueUnits_symm_apply,
       associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq] using this
-  have :
-    Associates.mk
-        (d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
-              simp only [dvd_of_mem_normalizedFactors hp, associatesEquivOfUniqueUnits_symm_apply,
-                associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq]⟩ : N) =
-      ↑(mkFactorOrderIsoOfFactorDvdEquiv hd
-          ⟨associatesEquivOfUniqueUnits.symm p, by
-            rw [associatesEquivOfUniqueUnits_symm_apply]
-            exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) :=
+  have : Associates.mk (d ⟨associatesEquivOfUniqueUnits (associatesEquivOfUniqueUnits.symm p), by
+    simp only [dvd_of_mem_normalizedFactors hp, associatesEquivOfUniqueUnits_symm_apply,
+      associatesEquivOfUniqueUnits_apply, out_mk, normalize_eq]⟩ : N) =
+    ↑(mkFactorOrderIsoOfFactorDvdEquiv hd ⟨associatesEquivOfUniqueUnits.symm p, by
+      rw [associatesEquivOfUniqueUnits_symm_apply]
+      exact mk_le_mk_of_dvd (dvd_of_mem_normalizedFactors hp)⟩) :=
     by rw [mkFactorOrderIsoOfFactorDvdEquiv_apply_coe]
   rw [this]
   letI := Classical.decEq (Associates M)

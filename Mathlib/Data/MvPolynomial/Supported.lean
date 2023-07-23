@@ -2,13 +2,10 @@
 Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.mv_polynomial.supported
-! leanprover-community/mathlib commit a26d17fcd679e43d380d0583b33c9eca5359d41e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import data.mv_polynomial.supported from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 # Polynomials supported by a set of variables
@@ -45,8 +42,6 @@ noncomputable def supported (s : Set σ) : Subalgebra R (MvPolynomial σ R) :=
 
 variable {R}
 
-open Classical
-
 open Algebra
 
 theorem supported_eq_range_rename (s : Set σ) : supported R s = (rename ((↑) : s → σ)).range := by
@@ -60,7 +55,7 @@ noncomputable def supportedEquivMvPolynomial (s : Set σ) : supported R s ≃ₐ
     (AlgEquiv.ofInjective (rename ((↑) : s → σ)) (rename_injective _ Subtype.val_injective)).symm
 #align mv_polynomial.supported_equiv_mv_polynomial MvPolynomial.supportedEquivMvPolynomial
 
-@[simp]
+@[simp, nolint simpNF]  -- porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
     (supportedEquivMvPolynomial s).symm (C x) = algebraMap R (supported R s) x := by
   ext1
@@ -68,7 +63,7 @@ theorem supportedEquivMvPolynomial_symm_C (s : Set σ) (x : R) :
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.supported_equiv_mv_polynomial_symm_C MvPolynomial.supportedEquivMvPolynomial_symm_C
 
-@[simp]
+@[simp, nolint simpNF]  -- porting note: the `simpNF` linter complained about this lemma.
 theorem supportedEquivMvPolynomial_symm_X (s : Set σ) (i : s) :
     (↑((supportedEquivMvPolynomial s).symm (X i : MvPolynomial s R)) : MvPolynomial σ R) = X ↑i :=
   by simp [supportedEquivMvPolynomial]
@@ -78,6 +73,7 @@ set_option linter.uppercaseLean3 false in
 variable {s t : Set σ}
 
 theorem mem_supported : p ∈ supported R s ↔ ↑p.vars ⊆ s := by
+  classical
   rw [supported_eq_range_rename, AlgHom.mem_range]
   constructor
   · rintro ⟨p, rfl⟩

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.direct_sum.finsupp
-! leanprover-community/mathlib commit 9b9d125b7be0930f564a68f1d73ace10cf46064d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+
+#align_import linear_algebra.direct_sum.finsupp from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
 
 /-!
 # Results on finitely supported functions.
@@ -36,7 +33,6 @@ open TensorProduct
 
 open TensorProduct Classical
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 
 /-- The tensor product of `ι →₀ M` and `κ →₀ N` is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`. -/
 def finsuppTensorFinsupp (R M N ι κ : Sort _) [CommRing R] [AddCommGroup M] [Module R M]

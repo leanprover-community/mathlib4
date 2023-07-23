@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.sum
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Finset.Card
+
+#align_import data.finset.sum from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Disjoint sum of finsets
@@ -54,8 +51,7 @@ theorem card_disjSum : (s.disjSum t).card = s.card + t.card :=
   Multiset.card_disjSum _ _
 #align finset.card_disj_sum Finset.card_disjSum
 
-theorem disjoint_map_inl_map_inr : Disjoint (s.map Embedding.inl) (t.map Embedding.inr) :=
-  by
+theorem disjoint_map_inl_map_inr : Disjoint (s.map Embedding.inl) (t.map Embedding.inr) := by
   simp_rw [disjoint_left, mem_map]
   rintro x ⟨a, _, rfl⟩ ⟨b, _, ⟨⟩⟩
 #align finset.disjoint_map_inl_map_inr Finset.disjoint_map_inl_map_inr

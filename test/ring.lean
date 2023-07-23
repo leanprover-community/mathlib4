@@ -123,5 +123,25 @@ example (a : Nat) : 1 * f a * 1 = f (a + 0) := by
   rw [ha] -- goal has mdata
   ring1
 
+-- check that mdata is consumed by ring_nf
+example (a b : ℤ) : a+b=0 ↔ b+a=0 := by
+  have : 3 = 3 := rfl
+  ring_nf -- reduced to `True` with mdata
+
 -- Powers in the exponent get evaluated correctly
 example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : CommRing (R a b) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+  ring
+example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+  ring
+
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+  ring_nf
+example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+  ring_nf

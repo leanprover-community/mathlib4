@@ -2,13 +2,10 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.pow
-! leanprover-community/mathlib commit 3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupPower.Order
+
+#align_import data.nat.pow from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
 
 /-! # `Nat.pow`
 
@@ -40,8 +37,8 @@ theorem pow_lt_pow_succ {p : ℕ} (h : 1 < p) (n : ℕ) : p ^ n < p ^ (n + 1) :=
 #align nat.pow_lt_pow_succ Nat.pow_lt_pow_succ
 
 theorem le_self_pow {n : ℕ} (hn : n ≠ 0) : ∀ m : ℕ, m ≤ m ^ n
-| 0 => zero_le _
-| (_ + 1) => _root_.le_self_pow (le_add_left _ _) hn
+  | 0 => zero_le _
+  | (_ + 1) => _root_.le_self_pow (le_add_left _ _) hn
 #align nat.le_self_pow Nat.le_self_pow
 
 theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
@@ -50,7 +47,6 @@ theorem lt_pow_self {p : ℕ} (h : 1 < p) : ∀ n : ℕ, n < p ^ n
     calc
       n + 1 < p ^ n + 1 := Nat.add_lt_add_right (lt_pow_self h _) _
       _ ≤ p ^ (n + 1) := pow_lt_pow_succ h _
-
 #align nat.lt_pow_self Nat.lt_pow_self
 
 theorem lt_two_pow (n : ℕ) : n < 2 ^ n :=

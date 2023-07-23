@@ -10,13 +10,14 @@ def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
 
 Commands:
-  # No priviledge required
+  # No privilege required
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
   get- [ARGS]  Download linked files missing to the local cache, but do no compress
   pack         Compress non-compressed build files into the local cache
   pack!        Compress build files into the local cache (no skipping)
   unpack       Decompress linked already downloaded files
+  unpack!      Decompress linked already downloaded files (no skipping)
   clean        Delete non-linked files
   clean!       Delete everything on the local cache
 
@@ -53,23 +54,31 @@ def toPaths (args : List String) : List FilePath :=
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "commit", "commit!"]
 
+def leanTarArgs : List String :=
+  ["get", "get!", "pack", "pack!", "unpack"]
+
 open Cache IO Hashing Requests in
 def main (args : List String) : IO Unit := do
   let hashMemo ← getHashMemo
   let hashMap := hashMemo.hashMap
-  let goodCurl := !(curlArgs.contains (args.headD "") && !(← validateCurl))
+  let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
+  if leanTarArgs.contains (args.headD "") then validateLeanTar
   match args with
-  | ["get"] => getFiles hashMap false goodCurl true
-  | ["get!"] => getFiles hashMap true goodCurl true
-  | ["get-"] => getFiles hashMap false goodCurl false
-  | "get"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl true
-  | "get!" :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) true goodCurl true
-  | "get-"  :: args => getFiles (← hashMemo.filterByFilePaths (toPaths args)) false goodCurl false
+  | ["get"] => getFiles hashMap false false goodCurl true
+  | ["get!"] => getFiles hashMap true true goodCurl true
+  | ["get-"] => getFiles hashMap false false goodCurl false
+  | "get"  :: args =>
+    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl true
+  | "get!" :: args =>
+    getFiles (← hashMemo.filterByFilePaths (toPaths args)) true true goodCurl true
+  | "get-" :: args =>
+    getFiles (← hashMemo.filterByFilePaths (toPaths args)) false false goodCurl false
   | ["pack"] => discard $ packCache hashMap false
   | ["pack!"] => discard $ packCache hashMap true
-  | ["unpack"] => unpackCache hashMap
+  | ["unpack"] => unpackCache hashMap false
+  | ["unpack!"] => unpackCache hashMap true
   | ["clean"] =>
-    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asTarGz) .empty
+    cleanCache $ hashMap.fold (fun acc _ hash => acc.insert $ CACHEDIR / hash.asLTar) .empty
   | ["clean!"] => cleanCache
   | ["put"] => putFiles (← packCache hashMap false) false (← getToken)
   | ["put!"] => putFiles (← packCache hashMap false) true (← getToken)

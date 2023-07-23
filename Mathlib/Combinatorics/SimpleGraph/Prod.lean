@@ -2,13 +2,10 @@
 Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.prod
-! leanprover-community/mathlib commit 2985fa3c31a27274aed06c433510bc14b73d6488
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
+
+#align_import combinatorics.simple_graph.prod from "leanprover-community/mathlib"@"2985fa3c31a27274aed06c433510bc14b73d6488"
 
 /-!
 # Graph products
@@ -221,9 +218,8 @@ instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
     Fintype ((G □ H).neighborSet x) :=
   Fintype.ofEquiv
-    -- porting note: was `×ˢ`
-    ((G.neighborFinset x.1 ×ᶠ {x.2}).disjUnion ({x.1} ×ᶠ H.neighborFinset x.2) <|
-      Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
+    ((G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2) <|
+        Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
     ((Equiv.refl _).subtypeEquiv fun y => by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
         mem_neighborSet, Equiv.refl_apply, boxProd_adj]
@@ -233,8 +229,7 @@ instance boxProdFintypeNeighborSet (x : α × β)
 theorem boxProd_neighborFinset (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
-      -- porting note: was `×ˢ`
-      (G.neighborFinset x.1 ×ᶠ {x.2}).disjUnion ({x.1} ×ᶠ H.neighborFinset x.2)
+      (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
         (Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _) := by
   -- swap out the fintype instance for the canonical one
   letI : Fintype ((G □ H).neighborSet x) := SimpleGraph.boxProdFintypeNeighborSet _

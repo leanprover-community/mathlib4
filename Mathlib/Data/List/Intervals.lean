@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module data.list.intervals
-! leanprover-community/mathlib commit 7b78d1776212a91ecc94cf601f83bdcc46b04213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
+
+#align_import data.list.intervals from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
 /-!
 # Intervals in ℕ
 
@@ -21,7 +18,7 @@ and strictly less than `n`.
 - Define `Ioo` and `Icc`, state basic lemmas about them.
 - Also do the versions for integers?
 - One could generalise even further, defining 'locally finite partial orders', for which
-  `Set.Ico a b` is `[finite]`, and 'locally finite total orders', for which there is a list model.
+  `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
 - Once the above is done, get rid of `Data.Int.range` (and maybe `List.range'`?).
 -/
 
@@ -98,8 +95,8 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append n (m-n) (l-m) using 2
-  · rw [add_tsub_cancel_of_le hnm]
+  convert range'_append n (m-n) (l-m) 1 using 2
+  · rw [one_mul, add_tsub_cancel_of_le hnm]
   · rw [tsub_add_tsub_cancel hml hnm]
 #align list.Ico.append_consecutive List.Ico.append_consecutive
 
@@ -121,7 +118,7 @@ theorem bagInter_consecutive (n m l : Nat) :  @List.bagInter ℕ instBEq (Ico n 
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
   dsimp [Ico]
-  simp [add_tsub_cancel_left]
+  simp [range', add_tsub_cancel_left]
 #align list.Ico.succ_singleton List.Ico.succ_singleton
 
 theorem succ_top {n m : ℕ} (h : n ≤ m) : Ico n (m + 1) = Ico n m ++ [m] := by
@@ -138,13 +135,14 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   dsimp [Ico]
   rw [tsub_tsub_cancel_of_le (succ_le_of_lt h)]
-  simp
+  simp [← Nat.one_eq_succ_zero]
+
 #align list.Ico.pred_singleton List.Ico.pred_singleton
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   by_cases n < m
   · rw [eq_cons h]
-    exact chain_succ_range' _ _
+    exact chain_succ_range' _ _ 1
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 #align list.Ico.chain'_succ List.Ico.chain'_succ

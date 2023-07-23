@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.uniform
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import combinatorics.simple_graph.regularity.uniform from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Graph uniformity and uniform partitions
@@ -35,6 +32,10 @@ is less than `ε`.
 * `Finpartition.IsUniform`: Uniformity of a partition.
 * `Finpartition.nonuniformWitnesses`: For each non-uniform pair of parts of a partition, pick
   witnesses of non-uniformity and dump them all together.
+
+## References
+
+[Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
 
@@ -61,8 +62,7 @@ variable {G ε}
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
-  refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;>
-    exact mul_le_mul_of_nonneg_left h (Nat.cast_nonneg _)
+  refine' (hε hs' ht' (le_trans _ hs) (le_trans _ ht)).trans_le h <;> gcongr
 #align simple_graph.is_uniform.mono SimpleGraph.IsUniform.mono
 
 theorem IsUniform.symm : Symmetric (IsUniform G ε) := fun s t h t' ht' s' hs' ht hs => by
@@ -168,18 +168,16 @@ theorem nonuniformWitness_subset (h : ¬G.IsUniform ε s t) : G.nonuniformWitnes
   · exact G.right_nonuniformWitnesses_subset fun i => h i.symm
 #align simple_graph.nonuniform_witness_subset SimpleGraph.nonuniformWitness_subset
 
-theorem nonuniformWitness_card_le (h : ¬G.IsUniform ε s t) :
+theorem le_card_nonuniformWitness (h : ¬G.IsUniform ε s t) :
     (s.card : 𝕜) * ε ≤ (G.nonuniformWitness ε s t).card := by
   unfold nonuniformWitness
   split_ifs
   · exact G.left_nonuniformWitnesses_card h
   · exact G.right_nonuniformWitnesses_card fun i => h i.symm
-#align simple_graph.nonuniform_witness_card_le SimpleGraph.nonuniformWitness_card_le
+#align simple_graph.le_card_nonuniform_witness SimpleGraph.le_card_nonuniformWitness
 
-theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) :
-    ε ≤
-      |G.edgeDensity (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| :=
-  by
+theorem nonuniformWitness_spec (h₁ : s ≠ t) (h₂ : ¬G.IsUniform ε s t) : ε ≤ |G.edgeDensity
+    (G.nonuniformWitness ε s t) (G.nonuniformWitness ε t s) - G.edgeDensity s t| := by
   unfold nonuniformWitness
   rcases trichotomous_of WellOrderingRel s t with (lt | rfl | gt)
   · rw [if_pos lt, if_neg (asymm lt)]
@@ -221,7 +219,7 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   rintro ⟨u, v⟩
   simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_,xu⟩  y ⟨_,yv⟩ _
+  rintro x ⟨_,xu⟩ y ⟨_,yv⟩ _
   rw [←xu, ←yv]
   exact G.isUniform_singleton hε
 #align finpartition.non_uniforms_bot Finpartition.nonUniforms_bot
@@ -248,8 +246,7 @@ theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
 variable {P G}
 
 theorem IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
-  ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <|
-    mul_le_mul_of_nonneg_left h <| Nat.cast_nonneg _
+  ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
 #align finpartition.is_uniform.mono Finpartition.IsUniform.mono
 
 theorem isUniformOfEmpty (hP : P.parts = ∅) : P.IsUniform G ε := by

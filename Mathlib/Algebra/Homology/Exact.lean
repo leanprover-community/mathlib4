@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.homology.exact
-! leanprover-community/mathlib commit 3feb151caefe53df080ca6ca67a0c6685cfd1b82
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ImageToKernel
+
+#align_import algebra.homology.exact from "leanprover-community/mathlib"@"3feb151caefe53df080ca6ca67a0c6685cfd1b82"
 
 /-!
 # Exact sequences
@@ -45,9 +42,7 @@ these results are found in `CategoryTheory/Abelian/Exact.lean`.
 
 universe v v₂ u u₂
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits
 
 variable {V : Type u} [Category.{v} V]
 
@@ -56,8 +51,8 @@ variable [HasImages V]
 namespace CategoryTheory
 
 -- One nice feature of this definition is that we have
--- `epi f → exact g h → exact (f ≫ g) h` and `exact f g → mono h → exact f (g ≫ h)`,
--- which do not necessarily hold in a non-abelian category with the usual definition of `exact`.
+-- `Epi f → Exact g h → Exact (f ≫ g) h` and `Exact f g → Mono h → Exact f (g ≫ h)`,
+-- which do not necessarily hold in a non-abelian category with the usual definition of `Exact`.
 /-- Two morphisms `f : A ⟶ B`, `g : B ⟶ C` are called exact if `w : f ≫ g = 0` and the natural map
 `imageToKernel f g w : imageSubobject f ⟶ kernelSubobject g` is an epimorphism.
 
@@ -93,7 +88,8 @@ theorem Preadditive.exact_iff_homology_zero {A B C : V} (f : A ⟶ B) (g : B ⟶
     Exact f g ↔ ∃ w : f ≫ g = 0, Nonempty (homology f g w ≅ 0) :=
   ⟨fun h => ⟨h.w, ⟨by
     haveI := h.epi
-    exact cokernel.ofEpi _⟩⟩, fun h => by
+    exact cokernel.ofEpi _⟩⟩,
+   fun h => by
     obtain ⟨w, ⟨i⟩⟩ := h
     exact ⟨w, Preadditive.epi_of_cokernel_zero ((cancel_mono i.hom).mp (by ext))⟩⟩
 #align category_theory.preadditive.exact_iff_homology_zero CategoryTheory.Preadditive.exact_iff_homology_zero
@@ -240,7 +236,8 @@ instance Exact.epi_factorThruKernelSubobject (h : Exact f g) :
   haveI := h.epi
   apply epi_comp
 
-instance (h : Exact f g) : Epi (kernel.lift g f h.w) := by
+-- porting note: this can no longer be an instance in Lean4
+lemma Exact.epi_kernel_lift (h : Exact f g) : Epi (kernel.lift g f h.w) := by
   rw [← factorThruKernelSubobject_comp_kernelSubobjectIso]
   haveI := h.epi_factorThruKernelSubobject
   apply epi_comp

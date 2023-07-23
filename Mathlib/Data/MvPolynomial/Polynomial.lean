@@ -6,6 +6,8 @@ Authors: Scott Morrison
 import Mathlib.Data.MvPolynomial.Equiv
 import Mathlib.Data.Polynomial.Eval
 
+#align_import data.mv_polynomial.polynomial from "leanprover-community/mathlib"@"0b89934139d3be96f9dab477f10c20f9f93da580"
+
 /-!
 # Some lemmas relating polynomials and multivariable polynomials.
 -/

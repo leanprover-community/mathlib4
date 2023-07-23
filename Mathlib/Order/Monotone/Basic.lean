@@ -2,19 +2,13 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.monotone.basic
-! leanprover-community/mathlib commit ac5a7cec422c3909db52e13dde2e729657d19b0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.Coe
+
+#align_import order.monotone.basic from "leanprover-community/mathlib"@"554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d"
 
 /-!
 # Monotonicity
@@ -28,7 +22,7 @@ to mean "decreasing".
 * `Monotone f`: A function `f` between two preorders is monotone if `a ≤ b` implies `f a ≤ f b`.
 * `Antitone f`: A function `f` between two preorders is antitone if `a ≤ b` implies `f b ≤ f a`.
 * `MonotoneOn f s`: Same as `Monotone f`, but for all `a, b ∈ s`.
-* `AntitoneoN f s`: Same as `Antitone f`, but for all `a, b ∈ s`.
+* `AntitoneOn f s`: Same as `Antitone f`, but for all `a, b ∈ s`.
 * `StrictMono f` : A function `f` between two preorders is strictly monotone if `a < b` implies
   `f a < f b`.
 * `StrictAnti f` : A function `f` between two preorders is strictly antitone if `a < b` implies
@@ -57,7 +51,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20dia
 ## TODO
 
 The above theorems are also true in `ℕ+`, `Fin n`... To make that work, we need `SuccOrder α`
-and `SuccArchmidean α`.
+and `IsSuccArchimedean α`.
 
 ## Tags
 
@@ -70,7 +64,8 @@ open Function OrderDual
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {r : α → α → Prop}
+variable {ι : Type _} {α : Type u} {β : Type v} {γ : Type w} {δ : Type _} {π : ι → Type _}
+  {r : α → α → Prop}
 
 section MonotoneDef
 
@@ -119,6 +114,30 @@ def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
 #align strict_anti_on StrictAntiOn
 
 end MonotoneDef
+
+section Decidable
+
+variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
+
+instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
+instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f a ≤ f b)] :
+    Decidable (MonotoneOn f s) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f b ≤ f a)] :
+    Decidable (AntitoneOn f s) := i
+
+instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
+instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f a < f b)] :
+    Decidable (StrictMonoOn f s) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f b < f a)] :
+    Decidable (StrictAntiOn f s) := i
+
+end Decidable
 
 /-! ### Monotonicity on the dual order
 
@@ -651,7 +670,7 @@ theorem Antitone.comp_monotone (hg : Antitone g) (hf : Monotone f) : Antitone (g
   fun _ _ h ↦ hg (hf h)
 #align antitone.comp_monotone Antitone.comp_monotone
 
-protected theorem Monotone.iterate {f : α → α} (hf : Monotone f) (n : ℕ) : Monotone (f^[n]) :=
+protected theorem Monotone.iterate {f : α → α} (hf : Monotone f) (n : ℕ) : Monotone f^[n] :=
   Nat.recOn n monotone_id fun _ h ↦ h.comp hf
 #align monotone.iterate Monotone.iterate
 
@@ -689,7 +708,7 @@ theorem StrictAnti.comp_strictMono (hg : StrictAnti g) (hf : StrictMono f) : Str
   fun _ _ h ↦ hg (hf h)
 #align strict_anti.comp_strict_mono StrictAnti.comp_strictMono
 
-protected theorem StrictMono.iterate {f : α → α} (hf : StrictMono f) (n : ℕ) : StrictMono (f^[n]) :=
+protected theorem StrictMono.iterate {f : α → α} (hf : StrictMono f) (n : ℕ) : StrictMono f^[n] :=
   Nat.recOn n strictMono_id fun _ h ↦ h.comp hf
 #align strict_mono.iterate StrictMono.iterate
 
@@ -970,7 +989,7 @@ theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans
     (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b < c) :
     r (f b) (f c) := by
   induction' hbc with k b_lt_k r_b_k
-  exacts[h _ hab, _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)]
+  exacts [h _ hab, _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)]
 #align nat.rel_of_forall_rel_succ_of_le_of_lt Nat.rel_of_forall_rel_succ_of_le_of_lt
 
 theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
@@ -1087,7 +1106,6 @@ theorem exists_strictMono : ∃ f : ℤ → α, StrictMono f := by
     rw [hf₀, ← hg₀]
     exact hg Nat.zero_lt_one
   · exact hg (Nat.lt_succ_self _)
-
 #align int.exists_strict_mono Int.exists_strictMono
 
 /-- If `α` is a nonempty preorder with no minimal or maximal elements, then there exists a strictly
@@ -1184,9 +1202,18 @@ theorem StrictAnti.prod_map (hf : StrictAnti f) (hg : StrictAnti g) : StrictAnti
 
 end PartialOrder
 
+/-! ### Pi types -/
+
 namespace Function
 
-variable [Preorder α]
+variable [Preorder α] [DecidableEq ι] [∀ i, Preorder (π i)] {f : ∀ i, π i} {i : ι}
+
+-- porting note: Dot notation breaks in `f.update i`
+theorem update_mono : Monotone (update f i) := fun _ _ => update_le_update_iff'.2
+#align function.update_mono Function.update_mono
+
+theorem update_strictMono : StrictMono (update f i) := fun _ _ => update_lt_update_iff.2
+#align function.update_strict_mono Function.update_strictMono
 
 theorem const_mono : Monotone (const β : α → β → α) := fun _ _ h _ ↦ h
 #align function.const_mono Function.const_mono

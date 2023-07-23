@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.fin.tuple.monotone
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
+
+#align_import data.fin.tuple.monotone from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Monotone finite sequences
@@ -21,22 +18,22 @@ open Set Fin Matrix Function
 
 variable {α : Type _}
 
-theorem lift_fun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
+theorem liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
     ((· < ·) ⇒ r) (vecCons a f) (vecCons a f) ↔ r a (f 0) ∧ ((· < ·) ⇒ r) f f := by
-  simp only [lift_fun_iff_succ r, forall_fin_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
+  simp only [liftFun_iff_succ r, forall_fin_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
     castSucc_zero]
-#align lift_fun_vec_cons lift_fun_vecCons
+#align lift_fun_vec_cons liftFun_vecCons
 
 variable [Preorder α] {n : ℕ} {f : Fin (n + 1) → α} {a : α}
 
 @[simp]
 theorem strictMono_vecCons : StrictMono (vecCons a f) ↔ a < f 0 ∧ StrictMono f :=
-  lift_fun_vecCons (· < ·)
+  liftFun_vecCons (· < ·)
 #align strict_mono_vec_cons strictMono_vecCons
 
 @[simp]
 theorem monotone_vecCons : Monotone (vecCons a f) ↔ a ≤ f 0 ∧ Monotone f := by
-  simpa only [monotone_iff_forall_lt] using @lift_fun_vecCons α n (· ≤ ·) _ f a
+  simpa only [monotone_iff_forall_lt] using @liftFun_vecCons α n (· ≤ ·) _ f a
 #align monotone_vec_cons monotone_vecCons
 
 --Porting note: new lemma, in Lean3 would be proven by `Subsingleton.monotone`
@@ -51,7 +48,7 @@ theorem strictMono_vecEmpty : StrictMono (vecCons a vecEmpty)
 
 @[simp]
 theorem strictAnti_vecCons : StrictAnti (vecCons a f) ↔ f 0 < a ∧ StrictAnti f :=
-  lift_fun_vecCons (· > ·)
+  liftFun_vecCons (· > ·)
 #align strict_anti_vec_cons strictAnti_vecCons
 
 @[simp]

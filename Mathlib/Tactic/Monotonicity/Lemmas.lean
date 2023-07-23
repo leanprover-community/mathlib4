@@ -22,12 +22,12 @@ open Set
 attribute [mono] le_refl -- added for Lean 4 version
 
 attribute [mono] inter_subset_inter union_subset_union
-                 unionₛ_mono unionᵢ₂_mono interₛ_subset_interₛ interᵢ₂_mono
+                 sUnion_mono iUnion₂_mono sInter_subset_sInter iInter₂_mono
                  image_subset preimage_mono prod_mono Monotone.set_prod seq_mono
                  image2_subset OrderEmbedding.monotone
 attribute [mono] upperBounds_mono_set lowerBounds_mono_set
-                 upperBounds_mono_mem  lowerBounds_mono_mem
-                 upperBounds_mono  lowerBounds_mono
+                 upperBounds_mono_mem lowerBounds_mono_mem
+                 upperBounds_mono lowerBounds_mono
                  BddAbove.mono BddBelow.mono
 
 attribute [mono] add_le_add mul_le_mul neg_le_neg

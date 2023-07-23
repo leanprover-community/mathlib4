@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.module.big_operators
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.BigOperators
+
+#align_import algebra.module.big_operators from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Finite sums over modules over a ring
@@ -42,9 +39,8 @@ theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i in s, f i) • x = ∑ i in s, f i • x := ((smulAddHom R M).flip x).map_sum f s
 #align finset.sum_smul Finset.sum_smul
 
--- Porting note: changed `×ˢ` to `xᶠ` in the statement of the theorem to fix ambiguous notation
 theorem Finset.sum_smul_sum {f : α → R} {g : β → M} {s : Finset α} {t : Finset β} :
-    ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ᶠ t, f p.fst • g p.snd := by
+    ((∑ i in s, f i) • ∑ i in t, g i) = ∑ p in s ×ˢ t, f p.fst • g p.snd := by
   rw [Finset.sum_product, Finset.sum_smul, Finset.sum_congr rfl]
   intros
   rw [Finset.smul_sum]

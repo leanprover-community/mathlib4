@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.category.pairwise
-! leanprover-community/mathlib commit d82b87871d9a274884dff5263fa4f5d93bcce1d6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.IsLimit
+
+#align_import category_theory.category.pairwise from "leanprover-community/mathlib"@"d82b87871d9a274884dff5263fa4f5d93bcce1d6"
 
 /-!
 # The category of "pairwise intersections".
@@ -24,7 +21,7 @@ We use this later in describing (one formulation of) the sheaf condition.
 
 Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(opens X)ᵒᵖ`),
 we produce a functor `Pairwise ι ⥤ α` in the obvious way,
-and show that `supr U` provides a colimit cocone over this functor.
+and show that `iSup U` provides a colimit cocone over this functor.
 -/
 
 
@@ -87,27 +84,16 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
 
 section
 
--- porting note: aesop_cat does not support local attributes yet so that
--- proofs had to be provided for the Category structure on `Pairwise ι`
---attribute [local tidy] tactic.case_bash
+open Lean Elab Tactic in
+/-- A helper tactic for `aesop_cat` and `Pairwise`. -/
+def pairwiseCases : TacticM Unit := do
+  evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
 
+attribute [local aesop safe tactic (rule_sets [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
   Hom := Hom
   id := id
   comp f g := comp f g
-  assoc := fun f g h => by
-    cases f
-    . aesop_cat
-    . aesop_cat
-    all_goals {
-      cases g
-      aesop_cat }
-  comp_id := fun f => by
-    cases f
-    all_goals { aesop_cat }
-  id_comp := fun f => by
-    cases f
-    all_goals { aesop_cat }
 
 end
 
@@ -135,7 +121,7 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
 
 -- Porting note: the fields map_id and map_comp were filled by hand, as generating them by `aesop`
 -- causes a PANIC.
-/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `pairwise ι ⥤ α`,
+/-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `Pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/
@@ -145,8 +131,6 @@ and the morphisms to the obvious inequalities.
 def diagram : Pairwise ι ⥤ α where
   obj := diagramObj U
   map := diagramMap U
-  map_id := fun _ => rfl
-  map_comp := fun _ _ => rfl
 #align category_theory.pairwise.diagram CategoryTheory.Pairwise.diagram
 
 end
@@ -158,28 +142,27 @@ section
 variable [CompleteLattice α]
 
 /-- Auxiliary definition for `cocone`. -/
-def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ supᵢ U
-  | single i => homOfLE (le_supᵢ U i)
-  | pair i _ => homOfLE inf_le_left ≫ homOfLE (le_supᵢ U i)
+def coconeιApp : ∀ o : Pairwise ι, diagramObj U o ⟶ iSup U
+  | single i => homOfLE (le_iSup U i)
+  | pair i _ => homOfLE inf_le_left ≫ homOfLE (le_iSup U i)
 #align category_theory.pairwise.cocone_ι_app CategoryTheory.Pairwise.coconeιApp
 
 /-- Given a function `U : ι → α` for `[CompleteLattice α]`,
-`supᵢ U` provides a cocone over `diagram U`.
+`iSup U` provides a cocone over `diagram U`.
 -/
 @[simps]
 def cocone : Cocone (diagram U) where
-  pt := supᵢ U
-  ι :=
-    { app := coconeιApp U }
+  pt := iSup U
+  ι := { app := coconeιApp U }
 #align category_theory.pairwise.cocone CategoryTheory.Pairwise.cocone
 
 /-- Given a function `U : ι → α` for `[CompleteLattice α]`,
-`infᵢ U` provides a limit cone over `diagram U`.
+`iInf U` provides a limit cone over `diagram U`.
 -/
 def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
-      apply CompleteSemilatticeSup.supₛ_le
+      apply CompleteSemilatticeSup.sSup_le
       rintro _ ⟨j, rfl⟩
       exact (s.ι.app (single j)).le)
 #align category_theory.pairwise.cocone_is_colimit CategoryTheory.Pairwise.coconeIsColimit

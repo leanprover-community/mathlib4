@@ -2,17 +2,13 @@
 Copyright (c) 2022 Siddhartha Prasad, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.kleene
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Tactic.ScopedNS  -- Porting note: `scoped[]`
+
+#align_import algebra.order.kleene from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Kleene Algebras
@@ -62,26 +58,23 @@ variable {α β ι : Type _} {π : ι → Type _}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
-  sup := (· + ·)
-  add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
+  protected sup := (· + ·)
+  protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
     rfl
-  bot : α := 0
-  bot_le : ∀ a, bot ≤ a
+  protected bot : α := 0
+  protected bot_le : ∀ a, bot ≤ a
 #align idem_semiring IdemSemiring
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class IdemCommSemiring (α : Type u) extends CommSemiring α, IdemSemiring α
 #align idem_comm_semiring IdemCommSemiring
 
 /-- Notation typeclass for the Kleene star `∗`. -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class KStar (α : Type _) where
-  kstar : α → α
+  protected kstar : α → α
 #align has_kstar KStar
 
 -- mathport name: «expr ∗»
@@ -95,13 +88,12 @@ star) that satisfies the following properties:
 * If `a * c + b ≤ c`, then `a∗ * b ≤ c`
 * If `c * a + b ≤ c`, then `b * a∗ ≤ c`
 -/
--- @[protect_proj] -- Porting note: Not yet implemented
 class KleeneAlgebra (α : Type _) extends IdemSemiring α, KStar α where
-  one_le_kstar : ∀ a : α, 1 ≤ a∗
-  mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
-  kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
-  mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
-  kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
+  protected one_le_kstar : ∀ a : α, 1 ≤ a∗
+  protected mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
+  protected kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
+  protected mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
+  protected kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
 #align kleene_algebra KleeneAlgebra
 
 -- See note [lower instance priority]

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.functor_extension
-! leanprover-community/mathlib commit 5f68029a863bdf76029fa0f7a519e6163c14152e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+#align_import category_theory.idempotents.functor_extension from "leanprover-community/mathlib"@"5f68029a863bdf76029fa0f7a519e6163c14152e"
 
 /-!
 # Extension of functors to the idempotent completion
@@ -84,7 +81,7 @@ def map {F G : C ⥤ Karoubi D} (φ : F ⟶ G) : obj F ⟶ obj G where
     have h := φ.naturality f.f
     have h' := F.congr_map (comp_p f)
     have h'' := F.congr_map (p_comp f)
-    simp only [hom_ext_iff, Functor.map_comp, comp_f] at h h' h''⊢
+    simp only [hom_ext_iff, Functor.map_comp, comp_f] at h h' h'' ⊢
     slice_rhs 2 3 => rw [← h]
     slice_lhs 1 2 => rw [h']
     slice_rhs 1 2 => rw [h'']
@@ -121,8 +118,8 @@ theorem functorExtension₁_comp_whiskeringLeft_toKaroubi :
     refine' Functor.ext _ _
     · intro X
       ext
-      . simp
-      . simp
+      · simp
+      · simp
     · aesop_cat
   · intro F G φ
     aesop_cat
@@ -194,8 +191,8 @@ theorem functorExtension₁_comp (F : C ⥤ Karoubi D) (G : D ⥤ Karoubi E) :
     (functorExtension₁ C E).obj (F ⋙ (functorExtension₁ D E).obj G) =
       (functorExtension₁ C D).obj F ⋙ (functorExtension₁ D E).obj G := by
   refine' Functor.ext _ _
-  . aesop_cat
-  . intro X Y f
+  · aesop_cat
+  · intro X Y f
     ext
     simp only [eqToHom_refl, id_comp, comp_id]
     rfl
@@ -259,7 +256,6 @@ noncomputable def karoubiUniversal : C ⥤ D ≌ Karoubi C ⥤ D :=
   (karoubiUniversal₂ C D).trans (Equivalence.congrRight (toKaroubi D).asEquivalence.symm)
 #align category_theory.idempotents.karoubi_universal CategoryTheory.Idempotents.karoubiUniversal
 
-set_option maxHeartbeats 400000 in
 theorem karoubiUniversal_functor_eq : (karoubiUniversal C D).functor = functorExtension C D :=
   rfl
 #align category_theory.idempotents.karoubi_universal_functor_eq CategoryTheory.Idempotents.karoubiUniversal_functor_eq

@@ -2,16 +2,11 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module data.set.intervals.unordered_interval
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
-import Mathlib.Tactic.ScopedNS
-import Mathlib.Tactic.Tauto
+
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
 
 /-!
 # Intervals without endpoints ordering
@@ -34,7 +29,7 @@ subcube containing both `a` and `b`.
 
 ## Notation
 
-We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `interval` to
+We use the localized notation `[[a, b]]` for `uIcc a b`. One can open the locale `Interval` to
 make the notation available.
 
 -/
@@ -50,7 +45,7 @@ namespace Set
 
 section Lattice
 
-variable [Lattice α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ c x : α}
 
 /-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -143,6 +138,19 @@ lemma bdd_below_bdd_above_iff_subset_uIcc (s : Set α) :
     ⟨fun ⟨a, b, h⟩ => ⟨a, b, fun _ hx => Icc_subset_uIcc (h hx)⟩, fun ⟨_, _, h⟩ => ⟨_, _, h⟩⟩
 #align set.bdd_below_bdd_above_iff_subset_uIcc Set.bdd_below_bdd_above_iff_subset_uIcc
 
+section Prod
+
+@[simp]
+theorem uIcc_prod_uIcc (a₁ a₂ : α) (b₁ b₂ : β) :
+    [[a₁, a₂]] ×ˢ [[b₁, b₂]] = [[(a₁, b₁), (a₂, b₂)]] :=
+  Icc_prod_Icc _ _ _ _
+#align set.uIcc_prod_uIcc Set.uIcc_prod_uIcc
+
+theorem uIcc_prod_eq (a b : α × β) : [[a, b]] = [[a.1, b.1]] ×ˢ [[a.2, b.2]] := by simp
+#align set.uIcc_prod_eq Set.uIcc_prod_eq
+
+end Prod
+
 end Lattice
 
 open Interval
@@ -214,7 +222,7 @@ lemma monotone_or_antitone_iff_uIcc :
     Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   constructor
   · rintro (hf | hf) a b c <;> simp_rw [← Icc_min_max, ← hf.map_min, ← hf.map_max]
-    exacts[fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
+    exacts [fun hc => ⟨hf hc.1, hf hc.2⟩, fun hc => ⟨hf hc.2, hf hc.1⟩]
   contrapose!
   rw [not_monotone_not_antitone_iff_exists_le_le]
   rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩

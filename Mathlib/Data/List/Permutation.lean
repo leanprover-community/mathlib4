@@ -2,13 +2,10 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.permutation
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Join
+
+#align_import data.list.permutation from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Permutations of a list
@@ -93,12 +90,12 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
   induction' ys with ys_hd _ ys_ih generalizing f f'
-  . simp
-  . simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
+  · simp
+  · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih, permutationsAux2_fst]
     refine' ⟨_, rfl⟩
-    . simp only [← map_cons, ← map_append]; apply H
-    . intro a; apply H
+    · simp only [← map_cons, ← map_append]; apply H
+    · intro a; apply H
 #align list.map_permutations_aux2' List.map_permutationsAux2'
 
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/
@@ -132,9 +129,7 @@ theorem map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : Lis
 
 theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
-  induction' ts with a ts ih <;> [rfl,
-    · simp [← ih]
-      rfl]
+  induction' ts with a ts ih <;> [rfl; (simp [← ih]; rfl)]
 #align list.map_map_permutations'_aux List.map_map_permutations'Aux
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
@@ -248,7 +243,7 @@ theorem map_permutations (f : α → β) (ts : List α) :
 
 theorem map_permutations' (f : α → β) (ts : List α) :
     map (map f) (permutations' ts) = permutations' (map f ts) := by
-  induction' ts with t ts ih <;> [rfl, simp [← ih, map_bind, ← map_map_permutations'Aux, bind_map]]
+  induction' ts with t ts ih <;> [rfl; simp [← ih, map_bind, ← map_map_permutations'Aux, bind_map]]
 #align list.map_permutations' List.map_permutations'
 
 theorem permutationsAux_append (is is' ts : List α) :

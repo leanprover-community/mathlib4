@@ -2,13 +2,10 @@
 Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
-
-! This file was ported from Lean 3 source module topology.nhds_set
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Basic
+
+#align_import topology.nhds_set from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Neighborhoods of a set
@@ -36,7 +33,7 @@ variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β] {s t s₁ 
 
 /-- The filter of neighborhoods of a set in a topological space. -/
 def nhdsSet (s : Set α) : Filter α :=
-  supₛ (nhds '' s)
+  sSup (nhds '' s)
 #align nhds_set nhdsSet
 
 @[inherit_doc] scoped[Topology] notation "𝓝ˢ" => nhdsSet
@@ -48,12 +45,12 @@ theorem nhdsSet_diagonal (α) [TopologicalSpace (α × α)] :
 #align nhds_set_diagonal nhdsSet_diagonal
 
 theorem mem_nhdsSet_iff_forall : s ∈ 𝓝ˢ t ↔ ∀ x : α, x ∈ t → s ∈ 𝓝 x := by
-  simp_rw [nhdsSet, Filter.mem_supₛ, ball_image_iff]
+  simp_rw [nhdsSet, Filter.mem_sSup, ball_image_iff]
 #align mem_nhds_set_iff_forall mem_nhdsSet_iff_forall
 
 theorem bUnion_mem_nhdsSet {t : α → Set α} (h : ∀ x ∈ s, t x ∈ 𝓝 x) : (⋃ x ∈ s, t x) ∈ 𝓝ˢ s :=
   mem_nhdsSet_iff_forall.2 fun x hx => mem_of_superset (h x hx) <|
-    subset_unionᵢ₂ (s := fun x _ => t x) x hx -- porting note: fails to find `s`
+    subset_iUnion₂ (s := fun x _ => t x) x hx -- porting note: fails to find `s`
 #align bUnion_mem_nhds_set bUnion_mem_nhdsSet
 
 theorem subset_interior_iff_mem_nhdsSet : s ⊆ interior t ↔ t ∈ 𝓝ˢ s := by
@@ -120,19 +117,19 @@ theorem nhdsSet_univ : 𝓝ˢ (univ : Set α) = ⊤ := by rw [isOpen_univ.nhdsSe
 
 @[mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
-  supₛ_le_supₛ <| image_subset _ h
+  sSup_le_sSup <| image_subset _ h
 #align nhds_set_mono nhdsSet_mono
 
 theorem monotone_nhdsSet : Monotone (𝓝ˢ : Set α → Filter α) := fun _ _ => nhdsSet_mono
 #align monotone_nhds_set monotone_nhdsSet
 
 theorem nhds_le_nhdsSet (h : x ∈ s) : 𝓝 x ≤ 𝓝ˢ s :=
-  le_supₛ <| mem_image_of_mem _ h
+  le_sSup <| mem_image_of_mem _ h
 #align nhds_le_nhds_set nhds_le_nhdsSet
 
 @[simp]
 theorem nhdsSet_union (s t : Set α) : 𝓝ˢ (s ∪ t) = 𝓝ˢ s ⊔ 𝓝ˢ t := by
-  simp only [nhdsSet, image_union, supₛ_union]
+  simp only [nhdsSet, image_union, sSup_union]
 #align nhds_set_union nhdsSet_union
 
 theorem union_mem_nhdsSet (h₁ : s₁ ∈ 𝓝ˢ t₁) (h₂ : s₂ ∈ 𝓝ˢ t₂) : s₁ ∪ s₂ ∈ 𝓝ˢ (t₁ ∪ t₂) := by
@@ -147,4 +144,3 @@ theorem Continuous.tendsto_nhdsSet {f : α → β} {t : Set β} (hf : Continuous
   ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU =>
     ⟨f ⁻¹' U, ⟨hU.1.preimage hf, hst.mono Subset.rfl hU.2⟩, fun _ => id⟩
 #align continuous.tendsto_nhds_set Continuous.tendsto_nhdsSet
-

@@ -2,15 +2,12 @@
 Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module data.set.functor
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Init.Set
 import Mathlib.Control.Basic
+
+#align_import data.set.functor from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Functoriality of `Set`
@@ -62,9 +59,9 @@ theorem image2_def {α β γ : Type _} (f : α → β → γ) (s : Set α) (t : 
 
 instance : LawfulMonad Set := LawfulMonad.mk'
   (id_map := image_id)
-  (pure_bind := bunionᵢ_singleton)
-  (bind_assoc := fun _ _ _ => by simp only [bind_def, bunionᵢ_unionᵢ])
-  (bind_pure_comp := fun _ _ => (image_eq_unionᵢ _ _).symm)
+  (pure_bind := biUnion_singleton)
+  (bind_assoc := fun _ _ _ => by simp only [bind_def, biUnion_iUnion])
+  (bind_pure_comp := fun _ _ => (image_eq_iUnion _ _).symm)
   (bind_map := fun _ _ => seq_def.symm)
 
 instance : CommApplicative (Set : Type u → Type u) :=

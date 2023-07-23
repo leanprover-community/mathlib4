@@ -2,16 +2,14 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.group.defs
-! leanprover-community/mathlib commit 2e0975f6a25dd3fbfb9e41556a77f075f6269748
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.Common
+
+#align_import algebra.group.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -88,16 +86,16 @@ infixl:65 " -ᵥ " => VSub.vsub
 infixr:73 " • " => HSMul.hSMul
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1) SMul] Pow
-attribute [to_additive (reorder := 1)] HPow
-attribute [to_additive existing (reorder := 1 5) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 4) smul] Pow.pow
+attribute [to_additive (reorder := 1 2) SMul] Pow
+attribute [to_additive (reorder := 1 2)] HPow
+attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
+attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
 
 @[to_additive (attr := default_instance)]
 instance instHSMul [SMul α β] : HSMul α β β where
   hSMul := SMul.smul
 
-attribute [to_additive existing (reorder := 1)] instHPow
+attribute [to_additive existing (reorder := 1 2)] instHPow
 
 universe u
 
@@ -113,23 +111,18 @@ class Inv (α : Type u) where
 @[inherit_doc]
 postfix:max "⁻¹" => Inv.inv
 
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
-
 section Mul
 
 variable [Mul G]
 
 /-- `leftMul g` denotes left multiplication by `g` -/
-@[to_additive "`left_add g` denotes left addition by `g`"]
+@[to_additive "`leftAdd g` denotes left addition by `g`"]
 def leftMul : G → G → G := fun g : G ↦ fun x : G ↦ g * x
 #align left_mul leftMul
 #align left_add leftAdd
 
 /-- `rightMul g` denotes right multiplication by `g` -/
-@[to_additive "`right_add g` denotes right addition by `g`"]
+@[to_additive "`rightAdd g` denotes right addition by `g`"]
 def rightMul : G → G → G := fun g : G ↦ fun x : G ↦ x * g
 #align right_mul rightMul
 #align right_add rightAdd
@@ -473,7 +466,7 @@ variable {M : Type u}
 -- use `x * npowRec n x` and not `npowRec n x * x` in the definition to make sure that
 -- definitional unfolding of `npowRec` is blocked, to avoid deep recursion issues.
 /-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
-Use instead `a ^ n`,  which has better definitional behavior. -/
+Use instead `a ^ n`, which has better definitional behavior. -/
 def npowRec [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
   | n + 1, a => a * npowRec n a
@@ -582,6 +575,9 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
 #align add_monoid AddMonoid
+
+attribute [instance 150] AddSemigroup.toAdd
+attribute [instance 50] AddZeroClass.toAdd
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
@@ -741,7 +737,7 @@ instance (priority := 100) CancelMonoid.toIsCancelMul (M : Type u) [CancelMonoid
 end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
-Use instead `a ^ n`,  which has better definitional behavior. -/
+Use instead `a ^ n`, which has better definitional behavior. -/
 def zpowRec {M : Type _} [One M] [Mul M] [Inv M] : ℤ → M → M
   | Int.ofNat n, a => npowRec n a
   | Int.negSucc n, a => (npowRec n.succ a)⁻¹
@@ -790,7 +786,7 @@ Those two pairs of made-up classes fulfill slightly different roles.
 `ℤ` action (`zpow` or `zsmul`). Further, it provides a `div` field, matching the forgetful
 inheritance pattern. This is useful to shorten extension clauses of stronger structures (`Group`,
 `GroupWithZero`, `DivisionRing`, `Field`) and for a few structures with a rather weak
-pseudo-inverse (`matrix`).
+pseudo-inverse (`Matrix`).
 
 `DivisionMonoid`/`SubtractionMonoid` is targeted at structures with stronger pseudo-inverses. It
 is an ad hoc collection of axioms that are mainly respected by three things:
@@ -803,7 +799,7 @@ multiplication, except for the fact that it might not be a true inverse (`a / a 
 The axioms are pretty arbitrary (many other combinations are equivalent to it), but they are
 independent:
 * Without `DivisionMonoid.div_eq_mul_inv`, you can define `/` arbitrarily.
-* Without `DivisionMonoid.inv_inv`, you can consider `WithTop unit` with `a⁻¹ = ⊤` for all `a`.
+* Without `DivisionMonoid.inv_inv`, you can consider `WithTop Unit` with `a⁻¹ = ⊤` for all `a`.
 * Without `DivisionMonoid.mul_inv_rev`, you can consider `WithTop α` with `a⁻¹ = a` for all `a`
   where `α` non commutative.
 * Without `DivisionMonoid.inv_eq_of_mul`, you can consider any `CommMonoid` with `a⁻¹ = a` for all

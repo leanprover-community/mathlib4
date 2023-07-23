@@ -2,17 +2,13 @@
 Copyright (c) 2014 Robert Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.field.defs
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
 import Std.Data.Rat
 import Mathlib.Data.Rat.Init
+
+#align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
 
 /-!
 # Division (semi)rings and (semi)fields
@@ -152,6 +148,11 @@ theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x :=
   DivisionRing.qsmul_eq_mul' a x
 #align rat.smul_def Rat.smul_def
 
+@[simp]
+theorem smul_one_eq_coe (A : Type _) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
+  rw [Rat.smul_def, mul_one]
+#align rat.smul_one_eq_coe Rat.smul_one_eq_coe
+
 end Rat
 
 end DivisionRing
@@ -180,7 +181,7 @@ section IsField
 
 This is mainly useful because such a predicate does not contain data,
 and can therefore be easily transported along ring isomorphisms.
-Additionaly, this is useful when trying to prove that
+Additionally, this is useful when trying to prove that
 a particular ring structure extends to a (semi)field. -/
 structure IsField (R : Type u) [Semiring R] : Prop where
   /-- For a semiring to be a field, it must have two distinct elements. -/
@@ -240,13 +241,11 @@ theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
   intro x hx
   apply exists_unique_of_exists_of_unique
   · exact hf.mul_inv_cancel hx
-
   · intro y z hxy hxz
     calc
       y = y * (x * z) := by rw [hxz, mul_one]
       _ = x * y * z := by rw [← mul_assoc, hf.mul_comm y x]
       _ = z := by rw [hxy, one_mul]
-
 #align uniq_inv_of_is_field uniq_inv_of_isField
 
 end IsField

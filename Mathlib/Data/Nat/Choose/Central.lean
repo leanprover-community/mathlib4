@@ -3,19 +3,16 @@ Copyright (c) 2021 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Thomas Browning
 Ported by: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module data.nat.choose.central
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
 
+#align_import data.nat.choose.central from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
+
 /-!
 # Central binomial coefficients
 
-This file proves properties of the central binomial coefficients (that is, `nat.choose (2 * n) n`).
+This file proves properties of the central binomial coefficients (that is, `Nat.choose (2 * n) n`).
 
 ## Main definition and results
 
@@ -60,7 +57,6 @@ theorem choose_le_centralBinom (r n : ℕ) : choose (2 * n) r ≤ centralBinom n
   calc
     (2 * n).choose r ≤ (2 * n).choose (2 * n / 2) := choose_le_middle r (2 * n)
     _ = (2 * n).choose n := by rw [Nat.mul_div_cancel_left n zero_lt_two]
-
 #align nat.choose_le_central_binom Nat.choose_le_centralBinom
 
 theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
@@ -68,7 +64,6 @@ theorem two_le_centralBinom (n : ℕ) (n_pos : 0 < n) : 2 ≤ centralBinom n :=
     2 ≤ 2 * n := le_mul_of_pos_right n_pos
     _ = (2 * n).choose 1 := (choose_one_right (2 * n)).symm
     _ ≤ centralBinom n := choose_le_centralBinom 1 n
-
 #align nat.two_le_central_binom Nat.two_le_centralBinom
 
 /-- An inductive property of the central binomial coefficient.
@@ -83,7 +78,6 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
                                                                Nat.add_sub_cancel_left]
     _ = 2 * ((2 * n).choose n * (2 * n + 1)) := by rw [choose_mul_succ_eq]
     _ = 2 * (2 * n + 1) * (2 * n).choose n := by rw [mul_assoc, mul_comm (2 * n + 1)]
-
 #align nat.succ_mul_central_binom_succ Nat.succ_mul_centralBinom_succ
 
 /-- An exponential lower bound on the central binomial coefficient.
@@ -101,7 +95,6 @@ theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * c
       (mul_lt_mul_left <| zero_lt_four' ℕ).mpr (IH n n.lt_succ_self (Nat.le_of_lt_succ hn))
     _ ≤ 2 * (2 * n + 1) * centralBinom n := by rw [← mul_assoc]; linarith
     _ = (n + 1) * centralBinom (n + 1) := (succ_mul_centralBinom_succ n).symm
-
 #align nat.four_pow_lt_mul_central_binom Nat.four_pow_lt_mul_centralBinom
 
 /-- An exponential lower bound on the central binomial coefficient.
@@ -117,8 +110,8 @@ theorem four_pow_le_two_mul_self_mul_centralBinom :
   | n + 4, _ =>
     calc
       4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le
-      _ ≤ 2 * (n+4) * centralBinom (n+4) := by rw [mul_assoc];
-                                               refine' le_mul_of_pos_left zero_lt_two
+      _ ≤ 2 * (n+4) * centralBinom (n+4) := by
+        rw [mul_assoc]; refine' le_mul_of_pos_left zero_lt_two
 #align nat.four_pow_le_two_mul_self_mul_central_binom Nat.four_pow_le_two_mul_self_mul_centralBinom
 
 theorem two_dvd_centralBinom_succ (n : ℕ) : 2 ∣ centralBinom (n + 1) := by

@@ -2,16 +2,13 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.submodule.basic
-! leanprover-community/mathlib commit 155d5519569cecf21f48c534da8b729890e20ce6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.LinearMap
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Submonoid.Membership
+
+#align_import algebra.module.submodule.basic from "leanprover-community/mathlib"@"8130e5155d637db35907c272de9aec9dc851c03a"
 
 /-!
 
@@ -38,15 +35,6 @@ universe u'' u' u v w
 
 variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
-/--
-`SubmoduleClass S R M` says `S` is a type of submodules `s ≤ M`.
-
-Note that only `R` is marked as `outParam` since `M` is already supplied by the `SetLike` class.
--/
-class SubmoduleClass (S : Type _) (R : outParam <| Type _) (M : Type _) [AddZeroClass M] [SMul R M]
-  [SetLike S M] [AddSubmonoidClass S M] extends SMulMemClass S R M
-#align submodule_class SubmoduleClass
-
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
@@ -58,7 +46,7 @@ structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Mo
 add_decl_doc Submodule.toAddSubmonoid
 #align submodule.to_add_submonoid Submodule.toAddSubmonoid
 
-/-- Reinterpret a `Submodule` as an `SubMulAction`. -/
+/-- Reinterpret a `Submodule` as a `SubMulAction`. -/
 add_decl_doc Submodule.toSubMulAction
 #align submodule.to_sub_mul_action Submodule.toSubMulAction
 
@@ -76,9 +64,9 @@ instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   add_mem := AddSubsemigroup.add_mem' _
 #align submodule.add_submonoid_class Submodule.addSubmonoidClass
 
-instance submoduleClass : SubmoduleClass (Submodule R M) R M where
+instance smulMemClass : SMulMemClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
-#align submodule.submodule_class Submodule.submoduleClass
+#align submodule.smul_mem_class Submodule.smulMemClass
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
@@ -96,6 +84,9 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 #align submodule.coe_set_mk Submodule.coe_set_mk
+
+@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+  rfl
 
 -- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
@@ -185,30 +176,39 @@ theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p 
 
 end Submodule
 
-namespace SubmoduleClass
+namespace SMulMemClass
 
 variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type _} [SetLike A M]
-  [AddSubmonoidClass A M] [SubmoduleClass A R M] (S' : A)
+  [AddSubmonoidClass A M] [SMulMemClass A R M] (S' : A)
 
--- Prefer subclasses of `Module` over `SubmoduleClass`.
+-- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`.  -/
 instance (priority := 75) toModule : Module R S' :=
   Subtype.coe_injective.module R (AddSubmonoidClass.Subtype S') (SetLike.val_smul S')
-#align submodule_class.to_module SubmoduleClass.toModule
+#align submodule_class.to_module SMulMemClass.toModule
+
+/-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
+this to manually derive `Module` on specific types. -/
+def toModule' (S R' R A : Type _) [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
+    [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
+    Module R' s :=
+  haveI : SMulMemClass S R' A := SMulMemClass.ofIsScalarTower S R' R A
+  SMulMemClass.toModule s
 
 /-- The natural `R`-linear map from a submodule of an `R`-module `M` to `M`. -/
 protected def subtype : S' →ₗ[R] M where
   toFun := Subtype.val
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-#align submodule_class.subtype SubmoduleClass.subtype
+#align submodule_class.subtype SMulMemClass.subtype
 
 @[simp]
-protected theorem coeSubtype : (SubmoduleClass.subtype S' : S' → M) = Subtype.val :=
+protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
-#align submodule_class.coe_subtype SubmoduleClass.coeSubtype
+#align submodule_class.coe_subtype SMulMemClass.coeSubtype
 
-end SubmoduleClass
+end SMulMemClass
 
 namespace Submodule
 
@@ -352,12 +352,10 @@ instance addCommMonoid : AddCommMonoid p :=
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul := (· • ·)
-    -- Porting note: this used to be `ext <;> simp [add_smul, smul_add]` but `simp` tries
-    -- to prove it for the un-coerced version
-    smul_zero := fun a => Subtype.ext (smul_zero a)
-    zero_smul := fun a => Subtype.ext (zero_smul S (a : M))
-    add_smul := fun a b x => Subtype.ext (add_smul a b (x : M))
-    smul_add := fun a x y => Subtype.ext (smul_add a (x : M) (y : M)) }
+    smul_zero := fun a => by ext; simp
+    zero_smul := fun a => by ext; simp
+    add_smul := fun a b x => by ext; simp [add_smul]
+    smul_add := fun a x y => by ext; simp [smul_add] }
 #align submodule.module' Submodule.module'
 
 instance module : Module R p :=
@@ -388,16 +386,16 @@ theorem injective_subtype : Injective p.subtype :=
 #align submodule.injective_subtype Submodule.injective_subtype
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- porting note: removing the `@[simp]` attribute since it's lterally `AddSubmonoid.coe_finset_sum`
+-- porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i in s, x i) = ∑ i in s, (x i : M) :=
   map_sum p.subtype _ _
 #align submodule.coe_sum Submodule.coe_sum
 
 section AddAction
 
-/-! ### Additive actions by `submodule`s
+/-! ### Additive actions by `Submodule`s
 These instances transfer the action by an element `m : M` of a `R`-module `M` written as `m +ᵥ a`
-onto the action by an element `s : S` of a submodule `S : submodule R M` such that
+onto the action by an element `s : S` of a submodule `S : Submodule R M` such that
 `s +ᵥ a = (s : M) +ᵥ a`.
 These instances work particularly well in conjunction with `add_group.to_add_action`, enabling
 `s +ᵥ m` as an alias for `↑s + m`.
@@ -650,8 +648,7 @@ instance toLinearOrderedCancelAddCommMonoid {M} [LinearOrderedCancelAddCommMonoi
     (S : Submodule R M) : LinearOrderedCancelAddCommMonoid S :=
   Subtype.coe_injective.linearOrderedCancelAddCommMonoid Subtype.val rfl (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align submodule.to_linear_ordered_cancel_add_comm_monoid
-  Submodule.toLinearOrderedCancelAddCommMonoid
+#align submodule.to_linear_ordered_cancel_add_comm_monoid Submodule.toLinearOrderedCancelAddCommMonoid
 
 end OrderedMonoid
 
@@ -680,7 +677,7 @@ end Submodule
 
 namespace Submodule
 
-variable [DivisionRing S] [Semiring R] [AddCommMonoid M] [Module R M]
+variable [DivisionSemiring S] [Semiring R] [AddCommMonoid M] [Module R M]
 
 variable [SMul S R] [Module S M] [IsScalarTower S R M]
 

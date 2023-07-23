@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.basic
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.ULift
@@ -17,6 +12,8 @@ import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.LinearAlgebra.Basic
 import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
 /-!
 # Algebras over commutative semirings
@@ -344,10 +341,8 @@ instance (priority := 200) toModule : Module R A where
   zero_smul := by simp [smul_def']
 #align algebra.to_module Algebra.toModule
 
--- From now on, we don't want to use the following instance anymore.
--- Unfortunately, leaving it in place caused deterministic timeouts later in mathlib3.
--- porting note: todo: is it still required in Mathlib 4?
-attribute [instance 0] Algebra.toSMul
+-- porting note: this caused deterministic timeouts later in mathlib3 but not in mathlib 4.
+-- attribute [instance 0] Algebra.toSMul
 
 theorem smul_def (r : R) (x : A) : r • x = algebraMap R A r * x :=
   Algebra.smul_def' r x
@@ -357,7 +352,6 @@ theorem algebraMap_eq_smul_one (r : R) : algebraMap R A r = r • (1 : A) :=
   calc
     algebraMap R A r = algebraMap R A r * 1 := (mul_one _).symm
     _ = r • (1 : A) := (Algebra.smul_def r 1).symm
-
 #align algebra.algebra_map_eq_smul_one Algebra.algebraMap_eq_smul_one
 
 theorem algebraMap_eq_smul_one' : ⇑(algebraMap R A) = fun r => r • (1 : A) :=
@@ -605,7 +599,7 @@ instance : Algebra R Aᵐᵒᵖ where
   toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
-      Algebra.smul_def, Algebra.commutes, op_unop]
+      Algebra.smul_def, Algebra.commutes, op_unop, unop_op]
   commutes' r := MulOpposite.rec' fun x => by
     simp only [RingHom.toOpposite_apply, Function.comp_apply, ← op_mul, Algebra.commutes]
 
@@ -706,12 +700,6 @@ theorem map_mul_algebraMap (f : A →ₗ[R] B) (a : A) (r : R) :
 #align linear_map.map_mul_algebra_map LinearMap.map_mul_algebraMap
 
 end LinearMap
-
-@[simp]
-theorem Rat.smul_one_eq_coe {A : Type _} [DivisionRing A] [Algebra ℚ A] (m : ℚ) :
-    @SMul.smul _ _ Algebra.toSMul m (1 : A) = ↑m :=
-  (Algebra.algebraMap_eq_smul_one m).symm.trans <| @eq_ratCast (ℚ →+* A) A _ _ (algebraMap ℚ A) _
-#align rat.smul_one_eq_coe Rat.smul_one_eq_coe
 
 section Nat
 
@@ -913,6 +901,12 @@ instance (priority := 100) IsScalarTower.to_smulCommClass' : SMulCommClass A R M
   SMulCommClass.symm _ _ _
 #align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_smulCommClass'
 
+-- see Note [lower instance priority]
+instance (priority := 200) Algebra.to_smulCommClass {R A} [CommSemiring R] [Semiring A]
+    [Algebra R A] : SMulCommClass R A A :=
+  IsScalarTower.to_smulCommClass
+#align algebra.to_smul_comm_class Algebra.to_smulCommClass
+
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
 #align smul_algebra_smul_comm smul_algebra_smul_comm
@@ -925,7 +919,7 @@ variable (R)
 #align linear_map.coe_coe_is_scalar_tower LinearMap.coe_restrictScalars
 
 -- porting note: todo: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce a `R`-linear map from `M` to `A` to a function, given an algebra `A` over
+/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
     [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where

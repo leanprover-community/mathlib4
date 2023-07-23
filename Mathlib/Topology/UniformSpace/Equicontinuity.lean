@@ -2,13 +2,10 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.equicontinuity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+
+#align_import topology.uniform_space.equicontinuity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Equicontinuity of a family of functions
@@ -371,7 +368,7 @@ theorem UniformInducing.uniformEquicontinuous_iff {F : ι → β → α} {u : α
 
 /-- A version of `EquicontinuousAt.closure` applicable to subsets of types which embed continuously
 into `X → α` with the product topology. It turns out we don't need any other condition on the
-embedding than continuity, but in practice this will mostly be applied to `fun_like` types where
+embedding than continuity, but in practice this will mostly be applied to `FunLike` types where
 the coercion is injective. -/
 theorem EquicontinuousAt.closure' {A : Set Y} {u : Y → X → α} {x₀ : X}
     (hA : EquicontinuousAt (u ∘ (↑) : A → X → α) x₀) (hu : Continuous u) :

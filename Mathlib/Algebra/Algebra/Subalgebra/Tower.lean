@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.algebra.subalgebra.tower
-! leanprover-community/mathlib commit a35ddf20601f85f78cd57e7f5b09ed528d71b7af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
+
+#align_import algebra.algebra.subalgebra.tower from "leanprover-community/mathlib"@"a35ddf20601f85f78cd57e7f5b09ed528d71b7af"
 
 /-!
 # Subalgebras in towers of algebras
@@ -46,8 +43,7 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
 
 variable {A}
 
-theorem lmul_algebraMap (x : R) :
-    LinearMap.Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R A x :=
+theorem lmul_algebraMap (x : R) : Algebra.lmul R A (algebraMap R A x) = Algebra.lsmul R A x :=
   Eq.symm <| LinearMap.ext <| smul_def x
 #align algebra.lmul_algebra_map Algebra.lmul_algebraMap
 

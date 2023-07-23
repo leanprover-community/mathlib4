@@ -2,13 +2,10 @@
 Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
-
-! This file was ported from Lean 3 source module data.matrix.block
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Basic
+
+#align_import data.matrix.block from "leanprover-community/mathlib"@"c060baa79af5ca092c54b8bf04f0f10592f59489"
 
 /-!
 # Block Matrices
@@ -31,9 +28,14 @@ variable {l m n o p q : Type _} {m' n' p' : o → Type _}
 
 variable {R : Type _} {S : Type _} {α : Type _} {β : Type _}
 
-open Matrix
+open BigOperators Matrix
 
 namespace Matrix
+
+theorem dotProduct_block [Fintype m] [Fintype n] [Mul α] [AddCommMonoid α] (v w : Sum m n → α) :
+    v ⬝ᵥ w = v ∘ Sum.inl ⬝ᵥ w ∘ Sum.inl + v ∘ Sum.inr ⬝ᵥ w ∘ Sum.inr :=
+  Fintype.sum_sum_type _
+#align matrix.dot_product_block Matrix.dotProduct_block
 
 section BlockMatrices
 
@@ -123,9 +125,25 @@ theorem toBlocks_fromBlocks₂₂ (A : Matrix n l α) (B : Matrix n m α) (C : M
   rfl
 #align matrix.to_blocks_from_blocks₂₂ Matrix.toBlocks_fromBlocks₂₂
 
+/-- Two block matrices are equal if their blocks are equal. -/
+theorem ext_iff_blocks {A B : Matrix (Sum n o) (Sum l m) α} :
+    A = B ↔
+      A.toBlocks₁₁ = B.toBlocks₁₁ ∧
+        A.toBlocks₁₂ = B.toBlocks₁₂ ∧ A.toBlocks₂₁ = B.toBlocks₂₁ ∧ A.toBlocks₂₂ = B.toBlocks₂₂ :=
+  ⟨fun h => h ▸ ⟨rfl, rfl, rfl, rfl⟩, fun ⟨h₁₁, h₁₂, h₂₁, h₂₂⟩ => by
+    rw [← fromBlocks_toBlocks A, ← fromBlocks_toBlocks B, h₁₁, h₁₂, h₂₁, h₂₂]⟩
+#align matrix.ext_iff_blocks Matrix.ext_iff_blocks
+
+@[simp]
+theorem fromBlocks_inj {A : Matrix n l α} {B : Matrix n m α} {C : Matrix o l α} {D : Matrix o m α}
+    {A' : Matrix n l α} {B' : Matrix n m α} {C' : Matrix o l α} {D' : Matrix o m α} :
+    fromBlocks A B C D = fromBlocks A' B' C' D' ↔ A = A' ∧ B = B' ∧ C = C' ∧ D = D' :=
+  ext_iff_blocks
+#align matrix.from_blocks_inj Matrix.fromBlocks_inj
+
 theorem fromBlocks_map (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α)
     (f : α → β) : (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
-  by ext (i j); rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
+  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
 #align matrix.from_blocks_map Matrix.fromBlocks_map
 
 theorem fromBlocks_transpose (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -143,7 +161,7 @@ theorem fromBlocks_conjTranspose [Star α] (A : Matrix n l α) (B : Matrix n m �
 theorem fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (f : p → Sum l m) :
     (fromBlocks A B C D).submatrix Sum.swap f = (fromBlocks C D A B).submatrix id f := by
-  ext (i j)
+  ext i j
   cases i <;> dsimp <;> cases f j <;> rfl
 #align matrix.from_blocks_submatrix_sum_swap_left Matrix.fromBlocks_submatrix_sum_swap_left
 
@@ -151,7 +169,7 @@ theorem fromBlocks_submatrix_sum_swap_left (A : Matrix n l α) (B : Matrix n m �
 theorem fromBlocks_submatrix_sum_swap_right (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (f : p → Sum n o) :
     (fromBlocks A B C D).submatrix f Sum.swap = (fromBlocks B A D C).submatrix f id := by
-  ext (i j)
+  ext i j
   cases j <;> dsimp <;> cases f i <;> rfl
 #align matrix.from_blocks_submatrix_sum_swap_right Matrix.fromBlocks_submatrix_sum_swap_right
 
@@ -204,7 +222,7 @@ theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
 
 theorem fromBlocks_smul [SMul R α] (x : R) (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : x • fromBlocks A B C D = fromBlocks (x • A) (x • B) (x • C) (x • D) := by
-  ext (i j); rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
+  ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
 #align matrix.from_blocks_smul Matrix.fromBlocks_smul
 
 theorem fromBlocks_neg [Neg R] (A : Matrix n l R) (B : Matrix n m R) (C : Matrix o l R)
@@ -213,11 +231,17 @@ theorem fromBlocks_neg [Neg R] (A : Matrix n l R) (B : Matrix n m R) (C : Matrix
   cases i <;> cases j <;> simp [fromBlocks]
 #align matrix.from_blocks_neg Matrix.fromBlocks_neg
 
+@[simp]
+theorem fromBlocks_zero [Zero α] : fromBlocks (0 : Matrix n l α) 0 0 (0 : Matrix o m α) = 0 := by
+  ext i j
+  rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+#align matrix.from_blocks_zero Matrix.fromBlocks_zero
+
 theorem fromBlocks_add [Add α] (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) (A' : Matrix n l α) (B' : Matrix n m α) (C' : Matrix o l α)
     (D' : Matrix o m α) :
     fromBlocks A B C D + fromBlocks A' B' C' D' = fromBlocks (A + A') (B + B') (C + C') (D + D') :=
-  by ext (i j); rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
+  by ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> rfl
 #align matrix.from_blocks_add Matrix.fromBlocks_add
 
 theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α] (A : Matrix n l α)
@@ -256,7 +280,7 @@ variable [Zero α]
 
 theorem toBlock_diagonal_self (d : m → α) (p : m → Prop) :
     Matrix.toBlock (diagonal d) p p = diagonal fun i : Subtype p => d ↑i := by
-  ext (i j)
+  ext i j
   by_cases i = j
   · simp [h]
   · simp [One.one, h, Subtype.val_injective.ne h]
@@ -264,7 +288,7 @@ theorem toBlock_diagonal_self (d : m → α) (p : m → Prop) :
 
 theorem toBlock_diagonal_disjoint (d : m → α) {p q : m → Prop} (hpq : Disjoint p q) :
     Matrix.toBlock (diagonal d) p q = 0 := by
-  ext (⟨i, hi⟩⟨j, hj⟩)
+  ext ⟨i, hi⟩ ⟨j, hj⟩
   have : i ≠ j := fun heq => hpq.le_bot i ⟨hi, heq.symm ▸ hj⟩
   simp [diagonal_apply_ne d this]
 #align matrix.to_block_diagonal_disjoint Matrix.toBlock_diagonal_disjoint
@@ -284,7 +308,7 @@ variable [Zero α] [One α]
 
 @[simp]
 theorem fromBlocks_one : fromBlocks (1 : Matrix l l α) 0 0 (1 : Matrix m m α) = 1 := by
-  ext (i j)
+  ext i j
   rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [one_apply]
 #align matrix.from_blocks_one Matrix.fromBlocks_one
 
@@ -311,7 +335,7 @@ section Zero
 variable [Zero α] [Zero β]
 
 /-- `Matrix.blockDiagonal M` turns a homogenously-indexed collection of matrices
-`M : o → matrix m n α'` into a `m × o`-by-`n × o` block matrix which has the entries of `M` along
+`M : o → Matrix m n α'` into an `m × o`-by-`n × o` block matrix which has the entries of `M` along
 the diagonal and zero elsewhere.
 
 See also `Matrix.blockDiagonal'` if the matrices may not have the same size everywhere.
@@ -377,7 +401,7 @@ theorem blockDiagonal_zero : blockDiagonal (0 : o → Matrix m n α) = 0 := by
 @[simp]
 theorem blockDiagonal_diagonal [DecidableEq m] (d : o → m → α) :
     (blockDiagonal fun k => diagonal (d k)) = diagonal fun ik => d ik.2 ik.1 := by
-  ext (⟨i, k⟩⟨j, k'⟩)
+  ext ⟨i, k⟩ ⟨j, k'⟩
   simp only [blockDiagonal_apply, diagonal_apply, Prod.mk.inj_iff, ← ite_and]
   congr 1
   rw [and_comm]
@@ -430,7 +454,7 @@ theorem blockDiagonal_sub [AddGroup α] (M N : o → Matrix m n α) :
 theorem blockDiagonal_mul [Fintype n] [Fintype o] [NonUnitalNonAssocSemiring α]
     (M : o → Matrix m n α) (N : o → Matrix n p α) :
     (blockDiagonal fun k => M k ⬝ N k) = blockDiagonal M ⬝ blockDiagonal N := by
-  ext (⟨i, k⟩ ⟨j, k'⟩)
+  ext ⟨i, k⟩ ⟨j, k'⟩
   simp only [blockDiagonal_apply, mul_apply, ← Finset.univ_product_univ, Finset.sum_product]
   split_ifs with h <;> simp [h]
 #align matrix.block_diagonal_mul Matrix.blockDiagonal_mul
@@ -523,6 +547,17 @@ theorem blockDiag_blockDiagonal [DecidableEq o] (M : o → Matrix m n α) :
     blockDiag (blockDiagonal M) = M :=
   funext fun _ => ext fun i j => blockDiagonal_apply_eq M i j _
 #align matrix.block_diag_block_diagonal Matrix.blockDiag_blockDiagonal
+
+theorem blockDiagonal_injective [DecidableEq o] :
+    Function.Injective (blockDiagonal : (o → Matrix m n α) → Matrix _ _ α) :=
+  Function.LeftInverse.injective blockDiag_blockDiagonal
+#align matrix.block_diagonal_injective Matrix.blockDiagonal_injective
+
+@[simp]
+theorem blockDiagonal_inj [DecidableEq o] {M N : o → Matrix m n α} :
+    blockDiagonal M = blockDiagonal N ↔ M = N :=
+  blockDiagonal_injective.eq_iff
+#align matrix.block_diagonal_inj Matrix.blockDiagonal_inj
 
 @[simp]
 theorem blockDiag_one [DecidableEq o] [DecidableEq m] [One α] :
@@ -637,7 +672,7 @@ theorem blockDiagonal'_map (M : ∀ i, Matrix (m' i) (n' i) α) (f : α → β) 
 @[simp]
 theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
-  ext (⟨ii, ix⟩⟨ji, jx⟩)
+  ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
   split_ifs with h -- Porting note: was split_ifs <;> cc
   · subst h; rfl
@@ -662,7 +697,7 @@ theorem blockDiagonal'_zero : blockDiagonal' (0 : ∀ i, Matrix (m' i) (n' i) α
 @[simp]
 theorem blockDiagonal'_diagonal [∀ i, DecidableEq (m' i)] (d : ∀ i, m' i → α) :
     (blockDiagonal' fun k => diagonal (d k)) = diagonal fun ik => d ik.1 ik.2 := by
-  ext (⟨i, k⟩⟨j, k'⟩)
+  ext ⟨i, k⟩ ⟨j, k'⟩
   simp only [blockDiagonal'_apply, diagonal]
   obtain rfl | hij := Decidable.eq_or_ne i j
   · simp
@@ -717,7 +752,7 @@ theorem blockDiagonal'_sub [AddGroup α] (M N : ∀ i, Matrix (m' i) (n' i) α) 
 theorem blockDiagonal'_mul [NonUnitalNonAssocSemiring α] [∀ i, Fintype (n' i)] [Fintype o]
     (M : ∀ i, Matrix (m' i) (n' i) α) (N : ∀ i, Matrix (n' i) (p' i) α) :
     (blockDiagonal' fun k => M k ⬝ N k) = blockDiagonal' M ⬝ blockDiagonal' N := by
-  ext (⟨k, i⟩⟨k', j⟩)
+  ext ⟨k, i⟩ ⟨k', j⟩
   simp only [blockDiagonal'_apply, mul_apply, ← Finset.univ_sigma_univ, Finset.sum_sigma]
   rw [Fintype.sum_eq_single k]
   · simp only [if_pos, dif_pos] -- porting note: added
@@ -816,6 +851,17 @@ theorem blockDiag'_blockDiagonal' [DecidableEq o] (M : ∀ i, Matrix (m' i) (n' 
   funext fun _ => ext fun _ _ => blockDiagonal'_apply_eq M _ _ _
 #align matrix.block_diag'_block_diagonal' Matrix.blockDiag'_blockDiagonal'
 
+theorem blockDiagonal'_injective [DecidableEq o] :
+    Function.Injective (blockDiagonal' : (∀ i, Matrix (m' i) (n' i) α) → Matrix _ _ α) :=
+  Function.LeftInverse.injective blockDiag'_blockDiagonal'
+#align matrix.block_diagonal'_injective Matrix.blockDiagonal'_injective
+
+@[simp]
+theorem blockDiagonal'_inj [DecidableEq o] {M N : ∀ i, Matrix (m' i) (n' i) α} :
+    blockDiagonal' M = blockDiagonal' N ↔ M = N :=
+  blockDiagonal'_injective.eq_iff
+#align matrix.block_diagonal'_inj Matrix.blockDiagonal'_inj
+
 @[simp]
 theorem blockDiag'_one [DecidableEq o] [∀ i, DecidableEq (m' i)] [One α] :
     blockDiag' (1 : Matrix (Σi, m' i) (Σi, m' i) α) = 1 :=
@@ -872,7 +918,7 @@ variable [CommRing R]
 theorem toBlock_mul_eq_mul {m n k : Type _} [Fintype n] (p : m → Prop) (q : k → Prop)
     (A : Matrix m n R) (B : Matrix n k R) :
     (A ⬝ B).toBlock p q = A.toBlock p ⊤ ⬝ B.toBlock ⊤ q := by
-  ext (i k)
+  ext i k
   simp only [toBlock_apply, mul_apply]
   rw [Finset.sum_subtype]
   simp [Pi.top_apply, Prop.top_eq_true]
@@ -882,7 +928,7 @@ theorem toBlock_mul_eq_add {m n k : Type _} [Fintype n] (p : m → Prop) (q : n 
     [DecidablePred q] (r : k → Prop) (A : Matrix m n R) (B : Matrix n k R) : (A ⬝ B).toBlock p r =
     A.toBlock p q ⬝ B.toBlock q r + (A.toBlock p fun i => ¬q i) ⬝ B.toBlock (fun i => ¬q i) r := by
   classical
-    ext (i k)
+    ext i k
     simp only [toBlock_apply, mul_apply, Pi.add_apply]
     exact (Fintype.sum_subtype_add_sum_subtype q fun x => A (↑i) x * B x ↑k).symm
 #align matrix.to_block_mul_eq_add Matrix.toBlock_mul_eq_add

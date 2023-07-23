@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.closeds
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.Sets.Compacts
+
+#align_import topology.metric_space.closeds from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Closed subsets
@@ -75,15 +72,15 @@ set_option linter.uppercaseLean3 false in
 theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
   refine' isClosed_of_closure_subset fun t ht x hx => _
-  -- t : closeds α,  ht : t ∈ closure {t : closeds α | t ⊆ s},
-  -- x : α,  hx : x ∈ t
+  -- t : Closeds α, ht : t ∈ closure {t : Closeds α | t ⊆ s},
+  -- x : α, hx : x ∈ t
   -- goal : x ∈ s
   have : x ∈ closure s := by
     refine' mem_closure_iff.2 fun ε εpos => _
     rcases mem_closure_iff.1 ht ε εpos with ⟨u, hu, Dtu⟩
-    -- u : closeds α,  hu : u ∈ {t : closeds α | t ⊆ s},  hu' : edist t u < ε
+    -- u : Closeds α, hu : u ∈ {t : Closeds α | t ⊆ s}, hu' : edist t u < ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dtu with ⟨y, hy, Dxy⟩
-    -- y : α,  hy : y ∈ u, Dxy : edist x y < ε
+    -- y : α, hy : y ∈ u, Dxy : edist x y < ε
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
 #align emetric.is_closed_subsets_of_is_closed EMetric.isClosed_subsets_of_isClosed
@@ -110,7 +107,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     standard criterion. -/
   refine' complete_of_convergent_controlled_sequences B B_pos fun s hs => _
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
-  let t : Closeds α := ⟨t0, isClosed_interᵢ fun _ => isClosed_closure⟩
+  let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
   -- The inequality is written this way to agree with `edist_le_of_edist_le_geometric_of_tendsto₀`
   have I1 : ∀ n, ∀ x ∈ s n, ∃ y ∈ t0, edist x y ≤ 2 * B n := by
@@ -145,11 +142,11 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     -- the limit point `y` will be the desired point, in `t0` and close to our initial point `x`.
     -- First, we check it belongs to `t0`.
     have : y ∈ t0 :=
-      mem_interᵢ.2 fun k =>
+      mem_iInter.2 fun k =>
         mem_closure_of_tendsto y_lim
           (by
-            simp only [exists_prop, Set.mem_unionᵢ, Filter.eventually_atTop, Set.mem_preimage,
-              Set.preimage_unionᵢ]
+            simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop, Set.mem_preimage,
+              Set.preimage_iUnion]
             exact ⟨k, fun m hm => ⟨n + m, zero_add k ▸ add_le_add (zero_le n) hm, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
@@ -164,15 +161,15 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
             `s n` are close, this point is itself well approximated by a point `y` in `s n`,
             as required. -/
     intro n x xt0
-    have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_interᵢ.1 xt0 n
+    have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_iInter.1 xt0 n
     rcases mem_closure_iff.1 this (B n) (B_pos n) with ⟨z, hz, Dxz⟩
-    -- z : α,  Dxz : edist x z < B n,
-    simp only [exists_prop, Set.mem_unionᵢ] at hz
+    -- z : α, Dxz : edist x z < B n,
+    simp only [exists_prop, Set.mem_iUnion] at hz
     rcases hz with ⟨m, ⟨m_ge_n, hm⟩⟩
     -- m : ℕ, m_ge_n : m ≥ n, hm : z ∈ s m
     have : hausdorffEdist (s m : Set α) (s n) < B n := hs n m n m_ge_n (le_refl n)
     rcases exists_edist_lt_of_hausdorffEdist_lt hm this with ⟨y, hy, Dzy⟩
-    -- y : α,  hy : y ∈ s n,  Dzy : edist z y < B n
+    -- y : α, hy : y ∈ s n, Dzy : edist z y < B n
     exact
       ⟨y, hy,
         calc
@@ -189,8 +186,8 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     ENNReal.Tendsto.const_mul
       (ENNReal.tendsto_pow_atTop_nhds_0_of_lt_1 <| by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)
   rw [MulZeroClass.mul_zero] at this
-  obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b
-  exact ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
+  obtain ⟨N, hN⟩ : ∃ N, ∀ b ≥ N, ε > 2 * B b :=
+    ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 #align emetric.closeds.complete_space EMetric.Closeds.completeSpace
 
@@ -208,16 +205,16 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
     rcases EMetric.totallyBounded_iff.1
         (isCompact_iff_totallyBounded_isComplete.1 (@isCompact_univ α _ _)).1 δ δpos with
       ⟨s, fs, hs⟩
-    -- s : set α,  fs : s.finite,  hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
+    -- s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ (y : α) (H : y ∈ s), eball y δ
     -- we first show that any set is well approximated by a subset of `s`.
-    have main : ∀ u : Set α, ∃ (v : _)(_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
+    have main : ∀ u : Set α, ∃ (v : _) (_ : v ⊆ s), hausdorffEdist u v ≤ δ := by
       intro u
       let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
       exists v, (fun x hx => hx.1 : v ⊆ s)
       refine' hausdorffEdist_le_of_mem_edist _ _
       · intro x hx
         have : x ∈ ⋃ y ∈ s, ball y δ := hs (by simp)
-        rcases mem_unionᵢ₂.1 this with ⟨y, ys, dy⟩
+        rcases mem_iUnion₂.1 this with ⟨y, ys, dy⟩
         have : edist y x < δ := by simp at dy; rwa [edist_comm] at dy
         exact ⟨y, ⟨ys, ⟨x, hx, this⟩⟩, le_of_lt dy⟩
       · rintro x ⟨_, ⟨y, yu, hy⟩⟩
@@ -239,7 +236,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       let t : Closeds α := ⟨t0, this⟩
       have : t ∈ F := t0s
       have : edist u t < ε := lt_of_le_of_lt Dut0 δlt
-      apply mem_unionᵢ₂.2
+      apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
 #align emetric.closeds.compact_space EMetric.Closeds.compactSpace
 
@@ -288,16 +285,16 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
         (ENNReal.half_pos εpos.ne') with
       ⟨u, fu, ut⟩
     refine' ⟨u, ⟨fu, fun x hx => _⟩⟩
-    -- u : set α,  fu : u.finite,  ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
+    -- u : set α, fu : u.finite, ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
     -- then s is covered by the union of the balls centered at u of radius ε
     rcases exists_edist_lt_of_hausdorffEdist_lt hx Dst with ⟨z, hz, Dxz⟩
-    rcases mem_unionᵢ₂.1 (ut hz) with ⟨y, hy, Dzy⟩
+    rcases mem_iUnion₂.1 (ut hz) with ⟨y, hy, Dzy⟩
     have : edist x y < ε :=
       calc
         edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
         _ < ε / 2 + ε / 2 := (ENNReal.add_lt_add Dxz Dzy)
         _ = ε := ENNReal.add_halves _
-    exact mem_bunionᵢ hy this
+    exact mem_biUnion hy this
 #align emetric.nonempty_compacts.is_closed_in_closeds EMetric.NonemptyCompacts.isClosed_in_closeds
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
@@ -347,13 +344,13 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
       rcases totallyBounded_iff.1 this (δ / 2) δpos' with ⟨a, af, ta⟩
-      -- a : set α,  af : a.finite,  ta : t ⊆ ⋃ (y : α) (H : y ∈ a), eball y (δ / 2)
+      -- a : set α, af : a.finite, ta : t ⊆ ⋃ (y : α) (H : y ∈ a), eball y (δ / 2)
       -- replace each center by a nearby approximation in `s`, giving a new set `b`
       let b := F '' a
       have : b.Finite := af.image _
       have tb : ∀ x ∈ t, ∃ y ∈ b, edist x y < δ := by
         intro x hx
-        rcases mem_unionᵢ₂.1 (ta hx) with ⟨z, za, Dxz⟩
+        rcases mem_iUnion₂.1 (ta hx) with ⟨z, za, Dxz⟩
         exists F z, mem_image_of_mem _ za
         calc
           edist x (F z) ≤ edist x z + edist z (F z) := edist_triangle _ _ _
@@ -431,7 +428,7 @@ theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α =>
   convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
     (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
     (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
-  norm_cast
+  norm_num
 #align metric.lipschitz_inf_dist Metric.lipschitz_infDist
 
 theorem uniformContinuous_infDist_Hausdorff_dist :

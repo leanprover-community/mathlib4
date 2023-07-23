@@ -2,11 +2,6 @@
 Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module group_theory.double_coset
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
@@ -14,18 +9,20 @@ import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.Data.Set.Basic
 
+#align_import group_theory.double_coset from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
+
 /-!
 # Double cosets
 
 This file defines double cosets for two subgroups `H K` of a group `G` and the quotient of `G` by
-the double coset relation, i.e. `H \ G / K`. We also prove that `G` can be writen as a disjoint
+the double coset relation, i.e. `H \ G / K`. We also prove that `G` can be written as a disjoint
 union of the double cosets and that if one of `H` or `K` is the trivial group (i.e. `⊥` ) then
 this is the usual left or right quotient of a group by a subgroup.
 
 ## Main definitions
 
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
-* `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, ``H \ G / K`.
+* `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
 -- porting note: removed import
 -- import Mathlib.Tactic.Group
@@ -93,7 +90,7 @@ theorem rel_iff {H K : Subgroup G} {x y : G} :
 
 theorem bot_rel_eq_leftRel (H : Subgroup G) :
     (setoid ↑(⊥ : Subgroup G) ↑H).Rel = (QuotientGroup.leftRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.leftRel_apply]
   constructor
   · rintro ⟨a, rfl : a = 1, b, hb, rfl⟩
@@ -105,7 +102,7 @@ theorem bot_rel_eq_leftRel (H : Subgroup G) :
 
 theorem rel_bot_eq_right_group_rel (H : Subgroup G) :
     (setoid ↑H ↑(⊥ : Subgroup G)).Rel = (QuotientGroup.rightRel H).Rel := by
-  ext (a b)
+  ext a b
   rw [rel_iff, Setoid.Rel, QuotientGroup.rightRel_apply]
   constructor
   · rintro ⟨b, hb, a, rfl : a = 1, rfl⟩
@@ -128,8 +125,8 @@ abbrev mk (H K : Subgroup G) (a : G) : Quotient (H : Set G) K :=
 instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
   ⟨mk H K (1 : G)⟩
 
-theorem eq (H K : Subgroup G) (a b : G) : mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k :=
-  by
+theorem eq (H K : Subgroup G) (a b : G) :
+    mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
   rw [Quotient.eq'']
   apply rel_iff
 #align doset.eq Doset.eq
@@ -160,9 +157,9 @@ theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
   simpa [out_eq'] using mk_eq_of_doset_eq (eq_of_not_disjoint h)
 #align doset.disjoint_out' Doset.disjoint_out'
 
-theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.univ := by
+theorem union_quotToDoset (H K : Subgroup G) : ⋃ q, quotToDoset H K q = Set.univ := by
   ext x
-  simp only [Set.mem_unionᵢ, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
+  simp only [Set.mem_iUnion, quotToDoset, mem_doset, SetLike.mem_coe, exists_prop, Set.mem_univ,
     iff_true_iff]
   use mk H K x
   obtain ⟨h, k, h3, h4, h5⟩ := mk_out'_eq_mul H K x
@@ -171,9 +168,9 @@ theorem union_quotToDoset (H K : Subgroup G) : (⋃ q, quotToDoset H K q) = Set.
 #align doset.union_quot_to_doset Doset.union_quotToDoset
 
 theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
-    (⋃ k : K, rightCoset (↑H) (a * k)) = doset a H K := by
+    ⋃ k : K, rightCoset (↑H) (a * k) = doset a H K := by
   ext x
-  simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_unionᵢ, mem_doset,
+  simp only [mem_rightCoset_iff, exists_prop, mul_inv_rev, Set.mem_iUnion, mem_doset,
     Subgroup.mem_carrier, SetLike.mem_coe]
   constructor
   · rintro ⟨y, h_h⟩
@@ -185,9 +182,9 @@ theorem doset_union_rightCoset (H K : Subgroup G) (a : G) :
 #align doset.doset_union_right_coset Doset.doset_union_rightCoset
 
 theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
-    (⋃ h : H, leftCoset (h * a : G) K) = doset a H K := by
+    ⋃ h : H, leftCoset (h * a : G) K = doset a H K := by
   ext x
-  simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_unionᵢ, mem_doset]
+  simp only [mem_leftCoset_iff, mul_inv_rev, Set.mem_iUnion, mem_doset]
   constructor
   · rintro ⟨y, h_h⟩
     refine' ⟨y, y.2, a⁻¹ * y⁻¹ * x, h_h, _⟩
@@ -197,8 +194,8 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, mul_left_inv, Subgroup.coe_mk, inv_mul_cancel_right]
 #align doset.doset_union_left_coset Doset.doset_union_leftCoset
 
-theorem left_bot_eq_left_quot (H : Subgroup G) : Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H):=
-  by
+theorem left_bot_eq_left_quot (H : Subgroup G) :
+    Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
   ext

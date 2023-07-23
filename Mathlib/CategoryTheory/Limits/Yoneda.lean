@@ -2,13 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.yoneda
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.Util.AssertExists
+
+#align_import category_theory.limits.yoneda from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -19,13 +17,7 @@ We calculate the colimit of `Y ↦ (X ⟶ Y)`, which is just `PUnit`.
 We also show the (co)yoneda embeddings preserve limits and jointly reflect them.
 -/
 
--- import Mathlib.Tactic.AssertExists -- Porting note: see end of file
-
-open Opposite
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open Opposite CategoryTheory Limits
 
 universe w v u
 
@@ -35,13 +27,12 @@ namespace Coyoneda
 
 variable {C : Type v} [SmallCategory C]
 
-/-- The colimit cocone over `coyoneda.obj X`, with cocone point `punit`.
+/-- The colimit cocone over `coyoneda.obj X`, with cocone point `PUnit`.
 -/
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app := by aesop_cat
-         naturality := by aesop_cat }
+  ι := { app := by aesop_cat }
 #align category_theory.coyoneda.colimit_cocone CategoryTheory.Coyoneda.colimitCocone
 
 /-- The proposed colimit cocone over `coyoneda.obj X` is a colimit cocone.
@@ -67,7 +58,7 @@ instance (X : Cᵒᵖ) : HasColimit (coyoneda.obj X) :=
     { cocone := _
       isColimit := colimitCoconeIsColimit X }
 
-/-- The colimit of `coyoneda.obj X` is isomorphic to `punit`.
+/-- The colimit of `coyoneda.obj X` is isomorphic to `PUnit`.
 -/
 noncomputable def colimitCoyonedaIso (X : Cᵒᵖ) : colimit (coyoneda.obj X) ≅ PUnit := by
   apply colimit.isoColimitCocone
@@ -106,8 +97,7 @@ instance coyonedaPreservesLimits (X : Cᵒᵖ) : PreservesLimits (coyoneda.obj X
         { preserves := fun {c} t =>
             { lift := fun s x =>
                 t.lift
-                  ⟨unop X, fun j => s.π.app j x, fun j₁ j₂ α =>
-                    by
+                  ⟨unop X, fun j => s.π.app j x, fun j₁ j₂ α => by
                     dsimp
                     simp [← s.w α]⟩
               -- See library note [dsimp, simp]
@@ -177,9 +167,7 @@ instance coyonedaFunctorReflectsLimits : ReflectsLimits (@coyoneda D _) :=
 
 end CategoryTheory
 
--- Porting note: assert_not_exists doesn't exist in Lean 4 now. Is there value in keeping this?
--- We don't need to have developed any algebra or set theory to reach (at least) this point
--- in the category theory hierarchy.
--- assert_not_exists Set.range
+assert_not_exists Set.range
 
+-- Porting note: after the port see if this import can be removed
 -- assert_not_exists AddCommMonoid

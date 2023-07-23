@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.reflects_isomorphisms
-! leanprover-community/mathlib commit 73dd4b5411ec8fafb18a9d77c9c826907730af80
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+
+#align_import category_theory.concrete_category.reflects_isomorphisms from "leanprover-community/mathlib"@"73dd4b5411ec8fafb18a9d77c9c826907730af80"
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
@@ -37,8 +34,7 @@ theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [ReflectsIsomorphisms 
   { reflects := fun X Y f {i} => by
       skip
       haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
-      haveI : IsIso ((forget C).map f) :=
-        by
+      haveI : IsIso ((forget C).map f) := by
         have := @HasForget₂.forget_comp C D
         rw [← this]
         exact i'

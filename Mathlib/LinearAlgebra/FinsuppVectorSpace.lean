@@ -2,13 +2,10 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module linear_algebra.finsupp_vector_space
-! leanprover-community/mathlib commit 59628387770d82eb6f6dd7b7107308aa2509ec95
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.StdBasis
+
+#align_import linear_algebra.finsupp_vector_space from "leanprover-community/mathlib"@"59628387770d82eb6f6dd7b7107308aa2509ec95"
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -37,11 +34,10 @@ variable {R : Type _} {M : Type _} {ι : Type _}
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
-set_option maxHeartbeats 300000 in
 theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
     (hf : ∀ i, LinearIndependent R (f i)) :
     LinearIndependent R fun ix : Σi, φ i => single ix.1 (f ix.1 ix.2) := by
-  apply @linearIndependent_unionᵢ_finite R _ _ _ _ ι φ fun i x => single i (f i x)
+  apply @linearIndependent_iUnion_finite R _ _ _ _ ι φ fun i x => single i (f i x)
   · intro i
     have h_disjoint : Disjoint (span R (range (f i))) (ker (lsingle i)) := by
       rw [ker_lsingle]
@@ -50,10 +46,10 @@ theorem linearIndependent_single {φ : ι → Type _} {f : ∀ ι, φ ι → M}
   · intro i t _ hit
     refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
     · rw [span_le]
-      simp only [supᵢ_singleton]
+      simp only [iSup_singleton]
       rw [range_coe]
       apply range_comp_subset_range _ (lsingle i)
-    · refine' supᵢ₂_mono fun i hi => _
+    · refine' iSup₂_mono fun i hi => _
       rw [span_le, range_coe]
       apply range_comp_subset_range _ (lsingle i)
 #align finsupp.linear_independent_single Finsupp.linearIndependent_single
@@ -125,7 +121,7 @@ theorem coe_basis {φ : ι → Type _} (b : ∀ i, Basis (φ i) R M) :
         zero_apply]
 #align finsupp.coe_basis Finsupp.coe_basis
 
-/-- The basis on `ι →₀ M` with basis vectors `λ i, single i 1`. -/
+/-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
@@ -177,7 +173,6 @@ theorem _root_.Finset.sum_univ_ite (b : n → M) (i : n) :
 theorem equivFun_symm_stdBasis (b : Basis n R M) (i : n) :
     b.equivFun.symm (LinearMap.stdBasis R (fun _ => R) i 1) = b i := by
   simp
-
 #align basis.equiv_fun_symm_std_basis Basis.equivFun_symm_stdBasis
 
 end Basis

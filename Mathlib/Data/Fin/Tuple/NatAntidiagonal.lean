@@ -2,16 +2,13 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.fin.tuple.nat_antidiagonal
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Equiv.Fin
+
+#align_import data.fin.tuple.nat_antidiagonal from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Collections of tuples of naturals with the same sum
@@ -36,7 +33,7 @@ the sequence of elements `x : Fin k → ℕ` such that `n = ∑ i, x i`.
 
 ## Implementation notes
 
-While we could implement this by filtering `(Fintype.PiFinset $ λ _, range (n + 1))` or similar,
+While we could implement this by filtering `(Fintype.PiFinset $ fun _ ↦ range (n + 1))` or similar,
 this implementation would be much slower.
 
 In the future, we could consider generalizing `Finset.Nat.antidiagonalTuple` further to
@@ -82,7 +79,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = [] 
 #align list.nat.antidiagonal_tuple_zero_succ List.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n := by
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n := by
   induction x using Fin.consInduction generalizing n with
   | h0 =>
     cases n
@@ -126,8 +123,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | 0 => (congr_arg fun x => [x]) <| Subsingleton.elim _ _
-  | k + 1 =>
-    by
+  | k + 1 => by
     rw [antidiagonalTuple, antidiagonal_zero, List.bind_singleton, antidiagonalTuple_zero_right k,
       List.map_singleton]
     exact congr_arg (fun x => [x]) Matrix.cons_zero_zero
@@ -136,8 +132,7 @@ theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
 @[simp]
 theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
   simp_rw [antidiagonalTuple, antidiagonal, List.range_succ, List.map_append, List.map_singleton,
-    tsub_self, List.bind_append, List.bind_singleton, antidiagonalTuple_zero_zero,
-    List.map_singleton, List.map_bind]
+    tsub_self, List.bind_append, List.bind_singleton, List.map_bind]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
   simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
@@ -158,8 +153,7 @@ theorem antidiagonalTuple_pairwise_pi_lex :
     ∀ k n, (antidiagonalTuple k n).Pairwise (Pi.Lex (· < ·) @fun _ => (· < ·))
   | 0, 0 => List.pairwise_singleton _ _
   | 0, _ + 1 => List.Pairwise.nil
-  | k + 1, n =>
-    by
+  | k + 1, n => by
     simp_rw [antidiagonalTuple, List.pairwise_bind, List.pairwise_map, List.mem_map,
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     simp only [mem_antidiagonal, Prod.forall, and_imp, forall_apply_eq_imp_iff₂]
@@ -202,7 +196,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = 0 :
 #align multiset.nat.antidiagonal_tuple_zero_succ Multiset.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n :=
   List.Nat.mem_antidiagonalTuple
 #align multiset.nat.mem_antidiagonal_tuple Multiset.Nat.mem_antidiagonalTuple
 
@@ -247,7 +241,7 @@ theorem antidiagonalTuple_zero_succ (n : ℕ) : antidiagonalTuple 0 n.succ = ∅
 #align finset.nat.antidiagonal_tuple_zero_succ Finset.Nat.antidiagonalTuple_zero_succ
 
 theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
-    x ∈ antidiagonalTuple k n ↔ (∑ i, x i) = n :=
+    x ∈ antidiagonalTuple k n ↔ ∑ i, x i = n :=
   List.Nat.mem_antidiagonalTuple
 #align finset.nat.mem_antidiagonal_tuple Finset.Nat.mem_antidiagonalTuple
 

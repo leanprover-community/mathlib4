@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.module.pi
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+
+#align_import algebra.module.pi from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
 
 /-!
 # Pi instances for modules
@@ -32,10 +29,10 @@ variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 
-theorem IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
+theorem _root_.IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
   funext fun i => hk i (congr_fun h i : _)
-#align is_smul_regular.pi Pi.IsSMulRegular.pi
+#align is_smul_regular.pi IsSMulRegular.pi
 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=

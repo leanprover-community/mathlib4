@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.instances.real_vector_space
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Instances.Rat
+
+#align_import topology.instances.real_vector_space from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Continuous additive maps are `ℝ`-linear
@@ -54,7 +51,6 @@ def AddEquiv.toRealLinearEquiv (e : E ≃+ F) (h₁ : Continuous e) (h₂ : Cont
   { e, e.toAddMonoidHom.toRealLinearMap h₁ with }
 #align add_equiv.to_real_linear_equiv AddEquiv.toRealLinearEquiv
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- A topological group carries at most one structure of a topological `ℝ`-module, so for any
 topological `ℝ`-algebra `A` (e.g. `A = ℂ`) and any topological group that is both a topological
 `ℝ`-module and a topological `A`-module, these structures agree. -/

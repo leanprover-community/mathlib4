@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.specific_limits.basic
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Algebra.Algebra
+
+#align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # A collection of specific limit computations
@@ -56,7 +53,6 @@ theorem tendsto_one_div_add_atTop_nhds_0_nat :
   (tendsto_add_atTop_iff_nat 1).2 (_root_.tendsto_const_div_atTop_nhds_0_nat 1)
 #align tendsto_one_div_add_at_top_nhds_0_nat tendsto_one_div_add_atTop_nhds_0_nat
 
-set_option synthInstance.etaExperiment true in -- porting note: gets around lean4#2074
 /-- The limit of `n / (n + x)` is 1, for any constant `x` (valid in `ℝ` or any topological division
 algebra over `ℝ`, e.g., `ℂ`).
 
@@ -75,7 +71,7 @@ theorem tendsto_coe_nat_div_add_atTop {𝕜 : Type _} [DivisionRing 𝕜] [Topol
     simp_rw [div_eq_mul_inv]
     refine' tendsto_const_nhds.mul _
     have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_0_nat
-    rw [map_zero, tendsto_atTop'] at this
+    rw [map_zero, Filter.tendsto_atTop'] at this
     refine' Iff.mpr tendsto_atTop' _
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
@@ -110,6 +106,22 @@ theorem tendsto_pow_atTop_nhds_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField �
       have := one_lt_inv hr h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n => by simp)
 #align tendsto_pow_at_top_nhds_0_of_lt_1 tendsto_pow_atTop_nhds_0_of_lt_1
+
+@[simp] theorem tendsto_pow_atTop_nhds_0_iff {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
+    [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
+    Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
+  rw [tendsto_zero_iff_abs_tendsto_zero]
+  refine ⟨fun h ↦ by_contra (fun hr_le ↦ ?_), fun h ↦ ?_⟩
+  · by_cases hr : 1 = |r|
+    · replace h : Tendsto (fun n : ℕ ↦ |r|^n) atTop (𝓝 0) := by simpa only [← abs_pow, h]
+      simp only [hr.symm, one_pow] at h
+      exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
+    · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
+      refine (pow_strictMono_right $ lt_of_le_of_ne (le_of_not_lt hr_le)
+        hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
+      obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
+      exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
+  · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_0_of_lt_1 (abs_nonneg r)) h
 
 theorem tendsto_pow_atTop_nhdsWithin_0_of_lt_1 {𝕜 : Type _} [LinearOrderedField 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
@@ -194,7 +206,7 @@ theorem summable_geometric_of_lt_1 {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
   ⟨_, hasSum_geometric_of_lt_1 h₁ h₂⟩
 #align summable_geometric_of_lt_1 summable_geometric_of_lt_1
 
-theorem tsum_geometric_of_lt_1 {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ :=
+theorem tsum_geometric_of_lt_1 {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (hasSum_geometric_of_lt_1 h₁ h₂).tsum_eq
 #align tsum_geometric_of_lt_1 tsum_geometric_of_lt_1
 
@@ -255,7 +267,7 @@ theorem summable_geometric_two' (a : ℝ) : Summable fun n : ℕ => a / 2 / 2 ^ 
   ⟨a, hasSum_geometric_two' a⟩
 #align summable_geometric_two' summable_geometric_two'
 
-theorem tsum_geometric_two' (a : ℝ) : (∑' n : ℕ, a / 2 / 2 ^ n) = a :=
+theorem tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
   (hasSum_geometric_two' a).tsum_eq
 #align tsum_geometric_two' tsum_geometric_two'
 
@@ -271,26 +283,25 @@ theorem NNReal.summable_geometric {r : ℝ≥0} (hr : r < 1) : Summable fun n : 
   ⟨_, NNReal.hasSum_geometric hr⟩
 #align nnreal.summable_geometric NNReal.summable_geometric
 
-theorem tsum_geometric_nNReal {r : ℝ≥0} (hr : r < 1) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ :=
+theorem tsum_geometric_nNReal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   (NNReal.hasSum_geometric hr).tsum_eq
 #align tsum_geometric_nnreal tsum_geometric_nNReal
 
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/
 @[simp]
-theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : (∑' n : ℕ, r ^ n) = (1 - r)⁻¹ := by
+theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
   cases' lt_or_le r 1 with hr hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
     convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
     rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
-  · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_supᵢ_nat, supᵢ_eq_top]
+  · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_iSup_nat, iSup_eq_top]
     refine' fun a ha =>
       (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn => lt_of_lt_of_le hn _
     calc
       (n : ℝ≥0∞) = ∑ i in range n, 1 := by rw [sum_const, nsmul_one, card_range]
-      _ ≤ ∑ i in range n, r ^ i := sum_le_sum fun k _ => one_le_pow_of_one_le' hr k
-
+      _ ≤ ∑ i in range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
 #align ennreal.tsum_geometric ENNReal.tsum_geometric
 
 end Geometric
@@ -478,7 +489,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type _} {s : Set ι} (hs : s.Co
 
 theorem Set.Countable.exists_pos_forall_sum_le {ι : Type _} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
-    (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → (∑ i in t, ε' i) ≤ ε := by
+    (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i in t, ε' i ≤ ε := by
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
   refine' ⟨ε', hpos, fun t ht => _⟩
   rw [← sum_subtype_of_mem _ ht]
@@ -512,7 +523,7 @@ theorem exists_pos_sum_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Cou
 #align ennreal.exists_pos_sum_of_countable ENNReal.exists_pos_sum_of_countable
 
 theorem exists_pos_sum_of_countable' {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Countable ι] :
-    ∃ ε' : ι → ℝ≥0∞, (∀ i, 0 < ε' i) ∧ (∑' i, ε' i) < ε :=
+    ∃ ε' : ι → ℝ≥0∞, (∀ i, 0 < ε' i) ∧ ∑' i, ε' i < ε :=
   let ⟨δ, δpos, hδ⟩ := exists_pos_sum_of_countable hε ι
   ⟨fun i => δ i, fun i => ENNReal.coe_pos.2 (δpos i), hδ⟩
 #align ennreal.exists_pos_sum_of_countable' ENNReal.exists_pos_sum_of_countable'

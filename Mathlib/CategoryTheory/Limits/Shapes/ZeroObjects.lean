@@ -2,14 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.zero_objects
-! leanprover-community/mathlib commit 74333bd53d25b6809203a2bfae80eea5fc1fc076
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Tactic.ScopedNS
+
+#align_import category_theory.limits.shapes.zero_objects from "leanprover-community/mathlib"@"74333bd53d25b6809203a2bfae80eea5fc1fc076"
 
 /-!
 # Zero objects

@@ -56,26 +56,41 @@ example [LinearOrderedCommRing α] (A B : α) (h : 0 < A * B) : 0 < 8*A*B := by
 
 example (s : Set ℕ) (_h : s = ∅) : 0 ≤ 1 := by linarith
 
--- Needs the `cancel_denoms` preprocessor, which in turn needs the `cancel_denoms` tactic ported.
 section cancel_denoms
--- example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
---   linarith
 
--- example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
---   linarith
+example (A B : Rat) (h : 0 < A * B) : 0 < A*B/8 := by
+  linarith
 
--- example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
---  by linarith
+example (A B : Rat) (h : 0 < A * B) : 0 < A/8*B := by
+  linarith
 
--- example (x y z : Rat) (h1 : 2*x  < 3*y) (h2 : -4*x + z/2 < 0)
---         (h3 : 12*y - z < 0)  : False :=
--- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 + ε / 3 + ε / 7 < ε :=
+ by linarith
 
--- example (ε : Rat) (h1 : ε > 0) : ε / 2 < ε :=
--- by linarith
+example (x y z : Rat) (h1 : 2*x < 3*y) (h2 : -4*x + z/2 < 0)
+        (h3 : 12*y - z < 0)  : False :=
+by linarith
 
--- example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
--- by linarith
+example (ε : Rat) (h1 : ε > 0) : ε / 2 < ε :=
+by linarith
+
+example (ε : Rat) (h1 : ε > 0) : ε / 3 + ε / 3 + ε / 3 = ε :=
+by linarith
+
+-- Make sure special case for division by 1 is handled:
+example (x : Rat) (h : 0 < x) : 0 < x/1 := by linarith
+
+-- Make sure can divide by -1
+example (x : Rat) (h : x < 0) : 0 < x/(-1) := by linarith
+
+example (x : Rat) (h : x < 0) : 0 < x/(-2) := by linarith
+
+example (x : Rat) (h : x < 0) : 0 < x/(-4/5) := by linarith
+
+example (x : Rat) (h : 0 < x) : 0 < x/2/3 := by linarith
+
+example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
+
 end cancel_denoms
 
 example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
@@ -161,6 +176,9 @@ example (x : Rat) (hx : x > 0) (h : x.num < 0) : False := by
 
 end term_arguments
 
+example (i n : ℕ) (h : (2:ℤ) ^ i ≤ 2 ^ n) : (0:ℤ) ≤ 2 ^ n - 2 ^ i := by
+  linarith
+
 -- Check we use `exfalso` on non-comparison goals.
 example (a b c : Rat) (h2 : b > 0) (h3 : b < 0) : Nat.prime 10 := by
   linarith
@@ -170,8 +188,7 @@ by linarith (config := {exfalso := false})
 
 -- Verify that we split conjunctions in hypotheses.
 example (x y : Rat)
-    (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False :=
-by
+    (h : 6 + ((x + 4) * x + (6 + 3 * y) * y) = 3 ∧ (x + 4) * x ≥ 0 ∧ (6 + 3 * y) * y ≥ 0) : False := by
   fail_if_success
     linarith (config := {split_hypotheses := false})
   linarith
@@ -225,26 +242,26 @@ example (mess : ℕ → ℕ) (S n : ℕ) :
 example (p n p' n' : ℕ) (h : p + n' = p' + n) : n + p' = n' + p := by
   linarith
 
--- example (a b c : ℚ) (h1 : 1 / a < b) (h2 : b < c) : 1 / a < c := by
---   linarith
+example (a b c : ℚ) (h1 : 1 / a < b) (h2 : b < c) : 1 / a < c := by
+  linarith
 
 example (N : ℕ) (n : ℕ) (Hirrelevant : n > N) (A : Rat) (l : Rat) (h : A - l ≤ -(A - l))
     (h_1 : ¬A ≤ -A) (h_2 : ¬l ≤ -l) (h_3 : -(A - l) < 1) :  A < l + 1 := by
   linarith
 
--- example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
---     d ≤ ((q : Rat) - 1)*n := by
---   linarith
+example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
+    d ≤ ((q : Rat) - 1)*n := by
+  linarith
 
--- example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
---     ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1)*n) := by
---   linarith
+example (d : Rat) (q n : ℕ) (h1 : ((q : Rat) - 1)*n ≥ 0) (h2 : d = 2/3*(((q : Rat) - 1)*n)) :
+    ((q : Rat) - 1)*n - d = 1/3 * (((q : Rat) - 1)*n) := by
+  linarith
 
--- example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34*y) : false :=
--- by linarith only [hx, hx2]
+example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z > 34*y) : false :=
+by linarith only [hx, hx2]
 
--- example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 :=
--- by linarith only [hx]
+example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 :=
+by linarith only [hx]
 
 example (u v x y A B : ℚ)
 (a : 0 < A)
@@ -379,10 +396,9 @@ example (u v x y A B : Rat)
   intros
   linarith
 
--- TODO this needs the `cancelDenoms` preprocessor.
--- example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) := by
---   intros
---   nlinarith
+example (A B : ℚ) : (0 < A) → (1 ≤ B) → (0 < A / 8 * B) := by
+  intros
+  nlinarith
 
 example (x y : ℚ) : 0 ≤ x ^2 + y ^2 := by
   nlinarith
@@ -414,68 +430,59 @@ variable {E : Type _} [AddGroup E]
 example (f : ℤ → E) (h : 0 = f 0) : 1 ≤ 2 := by nlinarith
 example (a : E) (h : a = a) : 1 ≤ 2  := by nlinarith
 
--- -- test that the apply bug doesn't affect linarith preprocessing
-
--- constant α : Type
--- variable [fact false] -- we work in an inconsistent context below
--- def leα : α → α → Prop := λ a b, ∀ c : α, true
-
--- noncomputable instance : linear_ordered_field α :=
--- by refine_struct { le := leα }; exact (fact.out false).elim
-
--- example (a : α) (ha : a < 2) : a ≤ a :=
--- by linarith
-
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
   p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) :=
 by nlinarith
 
--- -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
--- -- do not cause an exception
--- variables {R : Type _} [Ring R] (abs : R → ℚ)
+-- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
+-- do not cause an exception
+variable {R : Type _} [Ring R] (abs : R → ℚ)
 
--- lemma abs_nonneg' : ∀ r, 0 ≤ abs r := (fact.out false).elim
+axiom abs_nonneg' : ∀ r, 0 ≤ abs r
 
--- example (t : R) (a b : ℚ) (h : a ≤ b) : abs (t^2) * a ≤ abs (t^2) * b :=
--- by nlinarith [abs_nonneg' abs (t^2)]
+example (t : R) (a b : ℚ) (h : a ≤ b) : abs (t^2) * a ≤ abs (t^2) * b :=
+by nlinarith [abs_nonneg' abs (t^2)]
 
--- example (t : R)  (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
--- by linarith [abs_nonneg' abs (t^2)]
+example (t : R) (a b : ℚ) (h : a ≤ b) : a ≤ abs (t^2) + b :=
+by linarith [abs_nonneg' abs (t^2)]
 
--- example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b :=
--- by nlinarith [abs_nonneg' abs t]
+example (t : R) (a b : ℚ) (h : a ≤ b) : abs t * a ≤ abs t * b :=
+by nlinarith [abs_nonneg' abs t]
 
--- constant T : Type
+axiom T : Type
 
--- attribute [instance]
--- constant T_zero : ordered_ring T
+@[instance] axiom T_zero : OrderedRing T
 
--- namespace T
+namespace T
 
--- lemma zero_lt_one : (0 : T) < 1 := (fact.out false).elim
+axiom zero_lt_one : (0 : T) < 1
 
--- lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false :=
--- begin
---   linarith,
--- end
+lemma works {a b : ℕ} (hab : a ≤ b) (h : b < a) : false := by
+  linarith
 
--- end T
+end T
 
--- example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h3 : b ≠ c) (h2 : a ≥ b) : b ≠ c :=
+by linarith (config := {splitNe := true})
 
--- example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
--- by linarith {split_ne := tt}
+example (a b c : ℚ) (h : a ≠ b) (h2 : a ≥ b) (h3 : b ≠ c) : a > b :=
+by linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : b ≤ a) : b < a :=
+by linarith (config := {splitNe := true})
+
+example (a b : ℕ) (h1 : b ≠ a) (h2 : ¬a < b) : b < a :=
+by linarith (config := {splitNe := true})
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith
 
 axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
-lemma bar (x y: Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
+lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
 
 -- -- issue #9822
--- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j:= by linarith
+-- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
 example [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
   cases' h with x h
@@ -496,4 +503,11 @@ example (n : Nat) (h1 : ¬n = 1) (h2 : n ≥ 1) : n ≥ 2 := by
   have h4 : n ≥ 1 := h2
   by_contra h3
   suffices n = 1 by exact h1 this
+  linarith
+
+-- simulate the type of MvPolynomial
+def P : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : LinearOrderedField (P c d) := sorry
+
+example (p : P PUnit.{u+1} PUnit.{v+1}) (h : 0 < p) : 0 < 2 * p := by
   linarith

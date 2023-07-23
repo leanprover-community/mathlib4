@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.mv_polynomial.division
-! leanprover-community/mathlib commit 72c366d0475675f1309d3027d3d7d47ee4423951
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Data.MvPolynomial.Basic
+
+#align_import data.mv_polynomial.division from "leanprover-community/mathlib"@"72c366d0475675f1309d3027d3d7d47ee4423951"
 
 /-!
 # Division of `MvPolynomial` by monomials
@@ -230,8 +227,8 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     have hi := hx i
     classical
       simp_rw [coeff_monomial, if_pos] at hj hi
-      simp_rw [coeff_monomial_mul', if_pos] at hi hj
-      split_ifs  at hi hj with hi hi
+      simp_rw [coeff_monomial_mul'] at hi hj
+      split_ifs at hi hj with hi hi
       · exact ⟨Or.inr hi, _, hj⟩
       · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
     -- Porting note: two goals remain at this point in Lean 4
@@ -254,8 +251,8 @@ theorem monomial_one_dvd_monomial_one [Nontrivial R] {i j : σ →₀ ℕ} :
 theorem X_dvd_X [Nontrivial R] {i j : σ} :
     (X i : MvPolynomial σ R) ∣ (X j : MvPolynomial σ R) ↔ i = j := by
   refine' monomial_one_dvd_monomial_one.trans _
-  simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero, Ne.def,
-    one_ne_zero, not_false_iff, and_true_iff]
+  simp_rw [Finsupp.single_le_iff, Nat.one_le_iff_ne_zero, Finsupp.single_apply_ne_zero,
+    and_true_iff]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.X_dvd_X MvPolynomial.X_dvd_X
 

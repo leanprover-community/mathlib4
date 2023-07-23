@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.strict
-! leanprover-community/mathlib commit 84dc0bd6619acaea625086d6f53cb35cdd554219
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Topology.Algebra.Order.Group
+
+#align_import analysis.convex.strict from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 
 /-!
 # Strictly convex sets
@@ -84,21 +81,21 @@ protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht 
   exact ⟨hs hx.1 hy.1 hxy ha hb hab, ht hx.2 hy.2 hxy ha hb hab⟩
 #align strict_convex.inter StrictConvex.inter
 
-theorem Directed.strictConvex_unionᵢ {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
+theorem Directed.strictConvex_iUnion {ι : Sort _} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
     (hs : ∀ ⦃i : ι⦄, StrictConvex 𝕜 (s i)) : StrictConvex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy hxy a b ha hb hab
-  rw [mem_unionᵢ] at hx hy
+  rw [mem_iUnion] at hx hy
   obtain ⟨i, hx⟩ := hx
   obtain ⟨j, hy⟩ := hy
   obtain ⟨k, hik, hjk⟩ := hdir i j
-  exact interior_mono (subset_unionᵢ s k) (hs (hik hx) (hjk hy) hxy ha hb hab)
-#align directed.strict_convex_Union Directed.strictConvex_unionᵢ
+  exact interior_mono (subset_iUnion s k) (hs (hik hx) (hjk hy) hxy ha hb hab)
+#align directed.strict_convex_Union Directed.strictConvex_iUnion
 
-theorem DirectedOn.strictConvex_unionₛ {S : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) S)
+theorem DirectedOn.strictConvex_sUnion {S : Set (Set E)} (hdir : DirectedOn (· ⊆ ·) S)
     (hS : ∀ s ∈ S, StrictConvex 𝕜 s) : StrictConvex 𝕜 (⋃₀ S) := by
-  rw [unionₛ_eq_unionᵢ]
-  exact (directedOn_iff_directed.1 hdir).strictConvex_unionᵢ fun s => hS _ s.2
-#align directed_on.strict_convex_sUnion DirectedOn.strictConvex_unionₛ
+  rw [sUnion_eq_iUnion]
+  exact (directedOn_iff_directed.1 hdir).strictConvex_iUnion fun s => hS _ s.2
+#align directed_on.strict_convex_sUnion DirectedOn.strictConvex_sUnion
 
 end SMul
 
@@ -163,7 +160,7 @@ variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopol
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
   refine' strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => _
-  cases' hxy.lt_or_lt with hlt hlt <;> [skip, rw [openSegment_symm]] <;>
+  cases' hxy.lt_or_lt with hlt hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
         (isOpen_Ioo.subset_interior_iff.2 <| Ioo_subset_Icc_self.trans <| hs.out ‹_› ‹_›)
@@ -244,8 +241,8 @@ section continuous_add
 
 variable [ContinuousAdd E] {s t : Set E}
 
-theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) : StrictConvex 𝕜 (s + t) :=
-  by
+theorem StrictConvex.add (hs : StrictConvex 𝕜 s) (ht : StrictConvex 𝕜 t) :
+    StrictConvex 𝕜 (s + t) := by
   rintro _ ⟨v, w, hv, hw, rfl⟩ _ ⟨x, y, hx, hy, rfl⟩ h a b ha hb hab
   rw [smul_add, smul_add, add_add_add_comm]
   obtain rfl | hvx := eq_or_ne v x

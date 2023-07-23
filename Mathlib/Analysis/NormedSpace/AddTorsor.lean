@@ -2,17 +2,14 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed_space.add_torsor
-! leanprover-community/mathlib commit 78261225eb5cedc61c5c74ecb44e5b385d13b733
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Topology.Instances.RealVectorSpace
+
+#align_import analysis.normed_space.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
 /-!
 # Torsors of normed space actions.
@@ -44,7 +41,6 @@ theorem AffineSubspace.isClosed_direction_iff (s : AffineSubspace 𝕜 Q) :
   rfl
 #align affine_subspace.is_closed_direction_iff AffineSubspace.isClosed_direction_iff
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₁ (homothety p₁ c p₂) = ‖c‖ * dist p₁ p₂ := by
@@ -53,11 +49,22 @@ theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
   simp [norm_smul, ← dist_eq_norm_vsub V, dist_comm]
 #align dist_center_homothety dist_center_homothety
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+@[simp]
+theorem nndist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
+    nndist p₁ (homothety p₁ c p₂) = ‖c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_center_homothety _ _ _
+#align nndist_center_homothety nndist_center_homothety
+
 @[simp]
 theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₁ = ‖c‖ * dist p₁ p₂ := by rw [dist_comm, dist_center_homothety]
 #align dist_homothety_center dist_homothety_center
+
+@[simp]
+theorem nndist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
+    nndist (homothety p₁ c p₂) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_homothety_center _ _ _
+#align nndist_homothety_center nndist_homothety_center
 
 @[simp]
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
@@ -68,6 +75,12 @@ theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
   rw [lineMap_apply, lineMap_apply, dist_eq_norm_vsub V, vadd_vsub_vadd_cancel_right,
     ← sub_smul, norm_smul, ← vsub_eq_sub, ← dist_eq_norm_vsub V, ← dist_eq_norm_vsub 𝕜]
 #align dist_line_map_line_map dist_lineMap_lineMap
+
+@[simp]
+theorem nndist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
+    nndist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = nndist c₁ c₂ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_lineMap_lineMap _ _ _ _
+#align nndist_line_map_line_map nndist_lineMap_lineMap
 
 theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
   LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
@@ -82,9 +95,21 @@ theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c
 #align dist_line_map_left dist_lineMap_left
 
 @[simp]
+theorem nndist_lineMap_left (p₁ p₂ : P) (c : 𝕜) :
+    nndist (lineMap p₁ p₂ c) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_lineMap_left _ _ _
+#align nndist_line_map_left nndist_lineMap_left
+
+@[simp]
 theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p₂ c) = ‖c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_left _ _ _)
 #align dist_left_line_map dist_left_lineMap
+
+@[simp]
+theorem nndist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
+    nndist p₁ (lineMap p₁ p₂ c) = ‖c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_left_lineMap _ _ _
+#align nndist_left_line_map nndist_left_lineMap
 
 @[simp]
 theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
@@ -95,22 +120,44 @@ theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
 #align dist_line_map_right dist_lineMap_right
 
 @[simp]
+theorem nndist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
+    nndist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_lineMap_right _ _ _
+#align nndist_line_map_right nndist_lineMap_right
+
+@[simp]
 theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
 #align dist_right_line_map dist_right_lineMap
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+@[simp]
+theorem nndist_right_lineMap (p₁ p₂ : P) (c : 𝕜) :
+    nndist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_right_lineMap _ _ _
+#align nndist_right_line_map nndist_right_lineMap
+
 @[simp]
 theorem dist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₂ = ‖1 - c‖ * dist p₁ p₂ := by
   rw [homothety_eq_lineMap, dist_lineMap_right]
 #align dist_homothety_self dist_homothety_self
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
+@[simp]
+theorem nndist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
+    nndist (homothety p₁ c p₂) p₂ = ‖1 - c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_homothety_self _ _ _
+#align nndist_homothety_self nndist_homothety_self
+
 @[simp]
 theorem dist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₂ (homothety p₁ c p₂) = ‖1 - c‖ * dist p₁ p₂ := by rw [dist_comm, dist_homothety_self]
 #align dist_self_homothety dist_self_homothety
+
+@[simp]
+theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
+    nndist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_self_homothety _ _ _
+#align nndist_self_homothety nndist_self_homothety
 
 section invertibleTwo
 
@@ -122,9 +169,21 @@ theorem dist_left_midpoint (p₁ p₂ : P) : dist p₁ (midpoint 𝕜 p₁ p₂)
 #align dist_left_midpoint dist_left_midpoint
 
 @[simp]
+theorem nndist_left_midpoint (p₁ p₂ : P) :
+    nndist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_left_midpoint _ _
+#align nndist_left_midpoint nndist_left_midpoint
+
+@[simp]
 theorem dist_midpoint_left (p₁ p₂ : P) : dist (midpoint 𝕜 p₁ p₂) p₁ = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
   rw [dist_comm, dist_left_midpoint]
 #align dist_midpoint_left dist_midpoint_left
+
+@[simp]
+theorem nndist_midpoint_left (p₁ p₂ : P) :
+    nndist (midpoint 𝕜 p₁ p₂) p₁ = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_midpoint_left _ _
+#align nndist_midpoint_left nndist_midpoint_left
 
 @[simp]
 theorem dist_midpoint_right (p₁ p₂ : P) :
@@ -133,10 +192,22 @@ theorem dist_midpoint_right (p₁ p₂ : P) :
 #align dist_midpoint_right dist_midpoint_right
 
 @[simp]
+theorem nndist_midpoint_right (p₁ p₂ : P) :
+    nndist (midpoint 𝕜 p₁ p₂) p₂ = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_midpoint_right _ _
+#align nndist_midpoint_right nndist_midpoint_right
+
+@[simp]
 theorem dist_right_midpoint (p₁ p₂ : P) :
     dist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
   rw [dist_comm, dist_midpoint_right]
 #align dist_right_midpoint dist_right_midpoint
+
+@[simp]
+theorem nndist_right_midpoint (p₁ p₂ : P) :
+    nndist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+  NNReal.eq <| dist_right_midpoint _ _
+#align nndist_right_midpoint nndist_right_midpoint
 
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by
@@ -146,7 +217,29 @@ theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
   exact div_le_div_of_le_of_nonneg (norm_add_le _ _) (norm_nonneg _)
 #align dist_midpoint_midpoint_le' dist_midpoint_midpoint_le'
 
+theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
+    nndist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (nndist p₁ p₃ + nndist p₂ p₄) / ‖(2 : 𝕜)‖₊ :=
+  dist_midpoint_midpoint_le' _ _ _ _
+#align nndist_midpoint_midpoint_le' nndist_midpoint_midpoint_le'
+
 end invertibleTwo
+
+@[simp] theorem dist_pointReflection_left (p q : P) :
+    dist (Equiv.pointReflection p q) p = dist p q := by
+  simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_left (G := V)]
+
+@[simp] theorem dist_left_pointReflection (p q : P) :
+    dist p (Equiv.pointReflection p q) = dist p q :=
+  (dist_comm _ _).trans (dist_pointReflection_left _ _)
+
+@[simp] theorem dist_pointReflection_right (p q : P) :
+    dist (Equiv.pointReflection p q) q = ‖(2 : 𝕜)‖ * dist p q := by
+  simp [dist_eq_norm_vsub V, Equiv.pointReflection_vsub_right (G := V),
+    nsmul_eq_smul_cast 𝕜, norm_smul]
+
+@[simp] theorem dist_right_pointReflection (p q : P) :
+    dist q (Equiv.pointReflection p q) = ‖(2 : 𝕜)‖ * dist p q :=
+  (dist_comm _ _).trans (dist_pointReflection_right _ _)
 
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
     AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
@@ -157,7 +250,6 @@ theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
 
 variable (𝕜)
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy : y ∈ interior s) :
     ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s := by
   rw [(NormedAddCommGroup.nhds_basis_norm_lt (1 : 𝕜)).eventually_iff]
@@ -172,7 +264,6 @@ theorem eventually_homothety_mem_of_mem_interior (x : Q) {s : Set Q} {y : Q} (hy
   rwa [homothety_apply, Metric.mem_ball, dist_eq_norm_vsub W, vadd_vsub_eq_sub_vsub]
 #align eventually_homothety_mem_of_mem_interior eventually_homothety_mem_of_mem_interior
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem eventually_homothety_image_subset_of_finite_subset_interior (x : Q) {s : Set Q} {t : Set Q}
     (ht : t.Finite) (h : t ⊆ interior s) : ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ '' t ⊆ s := by
   suffices ∀ y ∈ t, ∀ᶠ δ in 𝓝 (1 : 𝕜), homothety x δ y ∈ s by
@@ -193,6 +284,11 @@ theorem dist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
   rw [Real.norm_eq_abs, abs_two] at this
   exact this
 #align dist_midpoint_midpoint_le dist_midpoint_midpoint_le
+
+theorem nndist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
+    nndist (midpoint ℝ p₁ p₂) (midpoint ℝ p₃ p₄) ≤ (nndist p₁ p₃ + nndist p₂ p₄) / 2 :=
+  dist_midpoint_midpoint_le _ _ _ _
+#align nndist_midpoint_midpoint_le nndist_midpoint_midpoint_le
 
 /-- A continuous map between two normed affine spaces is an affine map provided that
 it sends midpoints to midpoints. -/

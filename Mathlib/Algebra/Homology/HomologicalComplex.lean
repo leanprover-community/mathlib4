@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.homological_complex
-! leanprover-community/mathlib commit 88bca0ce5d22ebfd9e73e682e51d60ea13b48347
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.GradedObject
+
+#align_import algebra.homology.homological_complex from "leanprover-community/mathlib"@"88bca0ce5d22ebfd9e73e682e51d60ea13b48347"
 
 /-!
 # Homological complexes.
@@ -75,7 +72,7 @@ theorem d_comp_d (C : HomologicalComplex V c) (i j k : ι) : C.d i j ≫ C.d j k
   by_cases hij : c.Rel i j
   · by_cases hjk : c.Rel j k
     · exact C.d_comp_d' i j k hij hjk
-    . rw [C.shape j k hjk, comp_zero]
+    · rw [C.shape j k hjk, comp_zero]
   · rw [C.shape i j hij, zero_comp]
 #align homological_complex.d_comp_d HomologicalComplex.d_comp_d
 
@@ -91,8 +88,8 @@ theorem ext {C₁ C₂ : HomologicalComplex V c} (h_X : C₁.X = C₂.X)
   simp only [mk.injEq, heq_eq_eq, true_and]
   ext i j
   by_cases hij: c.Rel i j
-  . simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
-  . rw [s₁ i j hij, s₂ i j hij]
+  · simpa only [comp_id, id_comp, eqToHom_refl] using h_d i j hij
+  · rw [s₁ i j hij, s₂ i j hij]
 #align homological_complex.ext HomologicalComplex.ext
 
 end HomologicalComplex
@@ -188,7 +185,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
     f.f i ≫ B.d i j = A.d i j ≫ f.f j := by
   by_cases hij : c.Rel i j
   · exact f.comm' i j hij
-  . rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
+  · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 #align homological_complex.hom.comm HomologicalComplex.Hom.comm
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
@@ -246,7 +243,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 #align homological_complex.hom_f_injective HomologicalComplex.hom_f_injective
 
-instance (X Y : HomologicalComplex V c) : Zero (X ⟶  Y) :=
+instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
   ⟨{ f := fun i => 0}⟩
 
 @[simp]
@@ -305,7 +302,7 @@ def forget : HomologicalComplex V c ⥤ GradedObject ι V where
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
-  NatIso.ofComponents (fun X => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents fun X => Iso.refl _
 #align homological_complex.forget_eval HomologicalComplex.forgetEval
 
 end
@@ -484,7 +481,8 @@ def isoApp (f : C₁ ≅ C₂) (i : ι) : C₁.X i ≅ C₂.X i :=
 which commute with the differentials. -/
 @[simps]
 def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
-    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom) : C₁ ≅ C₂ where
+    (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by aesop_cat) :
+    C₁ ≅ C₂ where
   hom :=
     { f := fun i => (f i).hom
       comm' := hf }
@@ -512,8 +510,7 @@ theorem isoOfComponents_app (f : ∀ i, C₁.X i ≅ C₂.X i)
 #align homological_complex.hom.iso_of_components_app HomologicalComplex.Hom.isoOfComponents_app
 
 theorem isIso_of_components (f : C₁ ⟶ C₂) [∀ n : ι, IsIso (f.f n)] : IsIso f :=
-  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents (fun n => asIso (f.f n))
-    (by aesop_cat))
+  IsIso.of_iso (HomologicalComplex.Hom.isoOfComponents fun n => asIso (f.f n))
 #align homological_complex.hom.is_iso_of_components HomologicalComplex.Hom.isIso_of_components
 
 /-! Lemmas relating chain maps and `dTo`/`dFrom`. -/
@@ -541,15 +538,21 @@ theorem next_eq (f : Hom C₁ C₂) {i j : ι} (w : c.Rel i j) :
   simp only [xNextIso, eqToIso_refl, Iso.refl_hom, Iso.refl_inv, comp_id, id_comp]
 #align homological_complex.hom.next_eq HomologicalComplex.Hom.next_eq
 
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem comm_from (f : Hom C₁ C₂) (i : ι) : f.f i ≫ C₂.dFrom i = C₁.dFrom i ≫ f.next i :=
   f.comm _ _
 #align homological_complex.hom.comm_from HomologicalComplex.Hom.comm_from
 
-@[reassoc (attr := simp 1100), elementwise (attr := simp)]
+attribute [simp 1100] comm_from_assoc
+attribute [simp] comm_from_apply
+
+@[reassoc, elementwise] -- @[simp] -- Porting note: simp can prove this
 theorem comm_to (f : Hom C₁ C₂) (j : ι) : f.prev j ≫ C₂.dTo j = C₁.dTo j ≫ f.f j :=
   f.comm _ _
 #align homological_complex.hom.comm_to HomologicalComplex.Hom.comm_to
+
+attribute [simp 1100] comm_to_assoc
+attribute [simp] comm_to_apply
 
 /-- A morphism of chain complexes
 induces a morphism of arrows of the differentials out of each object.
@@ -684,14 +687,15 @@ structure MkStruct where
 variable {V}
 
 /-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) : Σ'(X₀ X₁ X₂ : V)(d₀ : X₁ ⟶ X₀)(d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
+def MkStruct.flat (t : MkStruct V) :
+    Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0 :=
   ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
 #align chain_complex.mk_struct.flat ChainComplex.MkStruct.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁) (s : d₁ ≫ d₀ = 0)
   (succ :
-    ∀ t : Σ'(X₀ X₁ X₂ : V)(d₀ : X₁ ⟶ X₀)(d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0,
-      Σ'(X₃ : V)(d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
+    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₁ ⟶ X₀) (d₁ : X₂ ⟶ X₁), d₁ ≫ d₀ = 0,
+      Σ' (X₃ : V) (d₂ : X₃ ⟶ t.2.2.1), d₂ ≫ t.2.2.2.2.1 = 0)
 
 /-- Auxiliary definition for `mk`. -/
 def mkAux : ∀ _ : ℕ, MkStruct V
@@ -701,11 +705,11 @@ def mkAux : ∀ _ : ℕ, MkStruct V
     ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
 #align chain_complex.mk_aux ChainComplex.mkAux
 
-/-- A inductive constructor for `ℕ`-indexed chain complexes.
+/-- An inductive constructor for `ℕ`-indexed chain complexes.
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropiately to zero.
+and returns the next object, its differential, and the fact it composes appropriately to zero.
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
@@ -752,13 +756,13 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₁ ⟶ X₀)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ'(X₂ : V)(d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0) :
+    (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0) :
     ChainComplex V ℕ :=
   mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
     succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
 #align chain_complex.mk' ChainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ'(X₂ : V)(d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0)
+variable (succ' : ∀ t : ΣX₀ X₁ : V, X₁ ⟶ X₀, Σ' (X₂ : V) (d : X₂ ⟶ t.2.1), d ≫ t.2.2 = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
@@ -772,13 +776,33 @@ theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
 set_option linter.uppercaseLean3 false in
 #align chain_complex.mk'_X_1 ChainComplex.mk'_X_1
 
+
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
   change ite (1 = 0 + 1) (𝟙 X₁ ≫ d₀) 0 = d₀
   rw [if_pos rfl, Category.id_comp]
 #align chain_complex.mk'_d_1_0 ChainComplex.mk'_d_1_0
 
--- TODO simp lemmas for the inductive steps? It's not entirely clear that they are needed.
+/- Porting note:
+Downstream constructions using `mk'` (e.g. in `CategoryTheory.Abelian.Projective`)
+have very slow proofs, because of bad simp lemmas.
+It would be better to write good lemmas here if possible, such as
+
+```
+theorem mk'_X_succ (j : ℕ) :
+    (mk' X₀ X₁ d₀ succ').X (j + 2) = (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).1 := by
+  sorry
+
+theorem mk'_d_succ {i j : ℕ} :
+    (mk' X₀ X₁ d₀ succ').d (j + 2) (j + 1) =
+      eqToHom (mk'_X_succ X₀ X₁ d₀ succ' j) ≫
+      (succ' ⟨_, _, (mk' X₀ X₁ d₀ succ').d (j + 1) j⟩).2.1 :=
+  sorry
+```
+
+These are already tricky, and it may be better to write analogous lemmas for `mk` first.
+-/
+
 end Mk
 
 section MkHom
@@ -789,7 +813,7 @@ variable (P Q : ChainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.
   (succ :
     ∀ (n : ℕ)
       (p :
-        Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+        Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f),
       Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), f'' ≫ Q.d (n + 2) (n + 1) = P.d (n + 2) (n + 1) ≫ p.2.1)
 
@@ -802,7 +826,7 @@ in `mkHom`.
 -/
 def mkHomAux :
     ∀ n,
-      Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+      Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
         f' ≫ Q.d (n + 1) n = P.d (n + 1) n ≫ f
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
@@ -842,7 +866,6 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm (n + 1) n⟩).1 := by
   dsimp [mkHom, mkHomAux]
-  induction n <;> congr
 #align chain_complex.mk_hom_f_succ_succ ChainComplex.mkHom_f_succ_succ
 
 end MkHom
@@ -936,14 +959,15 @@ structure MkStruct where
 variable {V}
 
 /-- Flatten to a tuple. -/
-def MkStruct.flat (t : MkStruct V) : Σ'(X₀ X₁ X₂ : V)(d₀ : X₀ ⟶ X₁)(d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0 :=
+def MkStruct.flat (t : MkStruct V) :
+    Σ' (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0 :=
   ⟨t.X₀, t.X₁, t.X₂, t.d₀, t.d₁, t.s⟩
 #align cochain_complex.mk_struct.flat CochainComplex.MkStruct.flat
 
 variable (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂) (s : d₀ ≫ d₁ = 0)
   (succ :
-    ∀ t : Σ'(X₀ X₁ X₂ : V)(d₀ : X₀ ⟶ X₁)(d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0,
-      Σ'(X₃ : V)(d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
+    ∀ t : Σ' (X₀ X₁ X₂ : V) (d₀ : X₀ ⟶ X₁) (d₁ : X₁ ⟶ X₂), d₀ ≫ d₁ = 0,
+      Σ' (X₃ : V) (d₂ : t.2.2.1 ⟶ X₃), t.2.2.2.2.1 ≫ d₂ = 0)
 
 /-- Auxiliary definition for `mk`. -/
 def mkAux : ∀ _ : ℕ, MkStruct V
@@ -953,11 +977,11 @@ def mkAux : ∀ _ : ℕ, MkStruct V
     ⟨p.X₁, p.X₂, (succ p.flat).1, p.d₁, (succ p.flat).2.1, (succ p.flat).2.2⟩
 #align cochain_complex.mk_aux CochainComplex.mkAux
 
-/-- A inductive constructor for `ℕ`-indexed cochain complexes.
+/-- An inductive constructor for `ℕ`-indexed cochain complexes.
 
 You provide explicitly the first two differentials,
 then a function which takes two differentials and the fact they compose to zero,
-and returns the next object, its differential, and the fact it composes appropiately to zero.
+and returns the next object, its differential, and the fact it composes appropriately to zero.
 
 See also `mk'`, which only sees the previous differential in the inductive step.
 -/
@@ -1004,13 +1028,13 @@ then a function which takes a differential,
 and returns the next object, its differential, and the fact it composes appropriately to zero.
 -/
 def mk' (X₀ X₁ : V) (d : X₀ ⟶ X₁)
-    (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ'(X₂ : V)(d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
+    (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0) :
     CochainComplex V ℕ :=
   mk X₀ X₁ (succ' ⟨X₀, X₁, d⟩).1 d (succ' ⟨X₀, X₁, d⟩).2.1 (succ' ⟨X₀, X₁, d⟩).2.2 fun t =>
     succ' ⟨t.2.1, t.2.2.1, t.2.2.2.2.1⟩
 #align cochain_complex.mk' CochainComplex.mk'
 
-variable (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ'(X₂ : V)(d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0)
+variable (succ' : ∀ t : ΣX₀ X₁ : V, X₀ ⟶ X₁, Σ' (X₂ : V) (d : t.2.1 ⟶ X₂), t.2.2 ≫ d = 0)
 
 @[simp]
 theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
@@ -1038,9 +1062,9 @@ section MkHom
 variable {V}
 variable (P Q : CochainComplex V ℕ) (zero : P.X 0 ⟶ Q.X 0) (one : P.X 1 ⟶ Q.X 1)
   (one_zero_comm : zero ≫ Q.d 0 1 = P.d 0 1 ≫ one)
-  (succ : ∀ (n : ℕ) (p : Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+  (succ : ∀ (n : ℕ) (p : Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
           f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'),
-      Σ'f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
+      Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 2), p.2.1 ≫ Q.d (n + 1) (n + 2) = P.d (n + 1) (n + 2) ≫ f'')
 
 /-- An auxiliary construction for `mkHom`.
 
@@ -1051,7 +1075,7 @@ in `mkHom`.
 -/
 def mkHomAux :
     ∀ n,
-      Σ'(f : P.X n ⟶ Q.X n)(f' : P.X (n + 1) ⟶ Q.X (n + 1)),
+      Σ' (f : P.X n ⟶ Q.X n) (f' : P.X (n + 1) ⟶ Q.X (n + 1)),
         f ≫ Q.d n (n + 1) = P.d n (n + 1) ≫ f'
   | 0 => ⟨zero, one, one_zero_comm⟩
   | n + 1 => ⟨(mkHomAux n).2.1, (succ n (mkHomAux n)).1, (succ n (mkHomAux n)).2⟩
@@ -1091,7 +1115,6 @@ theorem mkHom_f_succ_succ (n : ℕ) :
             (mkHom P Q zero one one_zero_comm succ).f (n + 1),
             (mkHom P Q zero one one_zero_comm succ).comm n (n + 1)⟩).1 := by
   dsimp [mkHom, mkHomAux]
-  induction n <;> congr
 #align cochain_complex.mk_hom_f_succ_succ CochainComplex.mkHom_f_succ_succ
 
 end MkHom

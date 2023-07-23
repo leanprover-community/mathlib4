@@ -2,15 +2,12 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
-
-! This file was ported from Lean 3 source module analysis.locally_convex.polar
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakDual
+
+#align_import analysis.locally_convex.polar from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Polar set
@@ -26,7 +23,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 ## Main statements
 
-* `LinearMap.polar_eq_interᵢ`: The polar as an intersection.
+* `LinearMap.polar_eq_iInter`: The polar as an intersection.
 * `LinearMap.subset_bipolar`: The polar is a subset of the bipolar.
 * `LinearMap.polar_weak_closed`: The polar is closed in the weak topology induced by `B.flip`.
 
@@ -52,11 +49,10 @@ variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-set_option synthInstance.etaExperiment true -- Porting note: lean4#2074
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-/-- The (absolute) polar of `s : set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
+/-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
 for all `x ∈ s`.-/
 def polar (s : Set E) : Set F :=
   { y : F | ∀ x ∈ s, ‖B x y‖ ≤ 1 }
@@ -75,13 +71,13 @@ theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
 #align linear_map.zero_mem_polar LinearMap.zero_mem_polar
 
-theorem polar_eq_interᵢ {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
+theorem polar_eq_iInter {s : Set E} : B.polar s = ⋂ x ∈ s, { y : F | ‖B x y‖ ≤ 1 } := by
   ext
-  simp only [polar_mem_iff, Set.mem_interᵢ, Set.mem_setOf_eq]
-#align linear_map.polar_eq_Inter LinearMap.polar_eq_interᵢ
+  simp only [polar_mem_iff, Set.mem_iInter, Set.mem_setOf_eq]
+#align linear_map.polar_eq_Inter LinearMap.polar_eq_iInter
 
-/-- The map `B.polar : set E → set F` forms an order-reversing Galois connection with
-`B.flip.polar : set F → set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
+/-- The map `B.polar : Set E → Set F` forms an order-reversing Galois connection with
+`B.flip.polar : Set F → Set E`. We use `OrderDual.toDual` and `OrderDual.ofDual` to express
 that `polar` is order-reversing. -/
 theorem polar_gc :
     GaloisConnection (OrderDual.toDual ∘ B.polar) (B.flip.polar ∘ OrderDual.ofDual) := fun _ _ =>
@@ -89,9 +85,9 @@ theorem polar_gc :
 #align linear_map.polar_gc LinearMap.polar_gc
 
 @[simp]
-theorem polar_unionᵢ {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
-  B.polar_gc.l_supᵢ
-#align linear_map.polar_Union LinearMap.polar_unionᵢ
+theorem polar_iUnion {ι} {s : ι → Set E} : B.polar (⋃ i, s i) = ⋂ i, B.polar (s i) :=
+  B.polar_gc.l_iSup
+#align linear_map.polar_Union LinearMap.polar_iUnion
 
 @[simp]
 theorem polar_union {s t : Set E} : B.polar (s ∪ t) = B.polar s ∩ B.polar t :=
@@ -127,8 +123,8 @@ theorem tripolar_eq_polar (s : Set E) : B.polar (B.flip.polar (B.polar s)) = B.p
 /-- The polar set is closed in the weak topology induced by `B.flip`. -/
 theorem polar_weak_closed (s : Set E) : IsClosed[WeakBilin.instTopologicalSpace B.flip]
     (B.polar s) := by
-  rw [polar_eq_interᵢ]
-  refine' isClosed_interᵢ fun x => isClosed_interᵢ fun _ => _
+  rw [polar_eq_iInter]
+  refine' isClosed_iInter fun x => isClosed_iInter fun _ => _
   exact isClosed_le (WeakBilin.eval_continuous B.flip x).norm continuous_const
 #align linear_map.polar_weak_closed LinearMap.polar_weak_closed
 
@@ -140,7 +136,6 @@ variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-set_option synthInstance.etaExperiment true -- Porting note: lean4#2074
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
@@ -153,7 +148,7 @@ theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by
       rw [B.map_smul, LinearMap.smul_apply, Algebra.id.smul_eq_mul, norm_mul, norm_inv,
         mul_inv_cancel_left₀ hc.ne']
-    _ ≤ ε * 1 := (mul_le_mul hcε.le (hy _ trivial) (norm_nonneg _) hε.le)
+    _ ≤ ε * 1 := by gcongr; exact hy _ trivial
     _ = ε := mul_one _
 #align linear_map.polar_univ LinearMap.polar_univ
 

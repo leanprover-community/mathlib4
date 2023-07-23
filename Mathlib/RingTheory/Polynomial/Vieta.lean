@@ -2,14 +2,11 @@
 Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.vieta
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Splits
 import Mathlib.RingTheory.MvPolynomial.Symmetric
+
+#align_import ring_theory.polynomial.vieta from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Vieta's Formula
@@ -83,7 +80,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem _root_.Finset.prod_X_add_C_coeff {σ} (s : Finset σ) (r : σ → R) {k : ℕ} (h : k ≤ s.card) :
     (∏ i in s, (X + C (r i))).coeff k = ∑ t in s.powersetLen (s.card - k), ∏ i in t, r i := by
-  rw [Finset.prod, prod_X_add_C_coeff' _ r h, Multiset.Finset.esymm_map_val]
+  rw [Finset.prod, prod_X_add_C_coeff' _ r h, Finset.esymm_map_val]
   rfl
 set_option linter.uppercaseLean3 false in
 #align finset.prod_X_add_C_coeff Finset.prod_X_add_C_coeff

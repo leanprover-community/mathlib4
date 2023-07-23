@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.algebra.monoid
-! leanprover-community/mathlib commit 6efec6bb9fcaed3cf1baaddb2eaadd8a2a06679c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
 /-!
 # Theory of topological monoids
@@ -266,39 +263,39 @@ open Function
 
 @[to_additive]
 theorem ContinuousMul.of_nhds_one {M : Type u} [Monoid M] [TopologicalSpace M]
-    (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ᶠ 𝓝 1) <| 𝓝 1)
+    (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) <| 𝓝 1)
     (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1))
     (hright : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x * x₀) (𝓝 1)) : ContinuousMul M :=
   ⟨by
     rw [continuous_iff_continuousAt]
     rintro ⟨x₀, y₀⟩
-    have key :
-      (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) =
-        ((fun x => x₀ * x) ∘ fun x => x * y₀) ∘ uncurry (· * ·) :=
-      by
+    have key : (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) =
+        ((fun x => x₀ * x) ∘ fun x => x * y₀) ∘ uncurry (· * ·) := by
       ext p
       simp [uncurry, mul_assoc]
-    have key₂ : ((fun x => x₀ * x) ∘ fun x => y₀ * x) = fun x => x₀ * y₀ * x :=
-      by
+    have key₂ : ((fun x => x₀ * x) ∘ fun x => y₀ * x) = fun x => x₀ * y₀ * x := by
       ext x
       simp [mul_assoc]
     calc
-      map (uncurry (· * ·)) (𝓝 (x₀, y₀)) = map (uncurry (· * ·)) (𝓝 x₀ ×ᶠ 𝓝 y₀) :=
+      map (uncurry (· * ·)) (𝓝 (x₀, y₀)) = map (uncurry (· * ·)) (𝓝 x₀ ×ˢ 𝓝 y₀) :=
         by rw [nhds_prod_eq]
-      _ = map (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) (𝓝 1 ×ᶠ 𝓝 1) :=
-        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
+      _ = map (fun p : M × M => x₀ * p.1 * (p.2 * y₀)) (𝓝 1 ×ˢ 𝓝 1) :=
         -- Porting note: `rw` was able to prove this
-      _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ᶠ 𝓝 1)) :=
+        -- Now it fails with `failed to rewrite using equation theorems for 'Function.uncurry'`
+        -- and `failed to rewrite using equation theorems for 'Function.comp'`.
+        -- Removing those two lemmas, the `rw` would succeed, but then needs a `rfl`.
+        by simp_rw [uncurry, hleft x₀, hright y₀, prod_map_map_eq, Filter.map_map, Function.comp]
+      _ = map ((fun x => x₀ * x) ∘ fun x => x * y₀) (map (uncurry (· * ·)) (𝓝 1 ×ˢ 𝓝 1)) :=
         by rw [key, ← Filter.map_map]
       _ ≤ map ((fun x : M => x₀ * x) ∘ fun x => x * y₀) (𝓝 1) := map_mono hmul
-      _ = 𝓝 (x₀ * y₀) := by rw [← Filter.map_map, ← hright, hleft y₀, Filter.map_map, key₂, ← hleft]
-      ⟩
+      _ = 𝓝 (x₀ * y₀) := by
+        rw [← Filter.map_map, ← hright, hleft y₀, Filter.map_map, key₂, ← hleft]⟩
 #align has_continuous_mul.of_nhds_one ContinuousMul.of_nhds_one
 #align has_continuous_add.of_nhds_zero ContinuousAdd.of_nhds_zero
 
 @[to_additive]
 theorem continuousMul_of_comm_of_nhds_one (M : Type u) [CommMonoid M] [TopologicalSpace M]
-    (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ᶠ 𝓝 1) (𝓝 1))
+    (hmul : Tendsto (uncurry ((· * ·) : M → M → M)) (𝓝 1 ×ˢ 𝓝 1) (𝓝 1))
     (hleft : ∀ x₀ : M, 𝓝 x₀ = map (fun x => x₀ * x) (𝓝 1)) : ContinuousMul M := by
   apply ContinuousMul.of_nhds_one hmul hleft
   intro x₀
@@ -323,8 +320,8 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
   simp only [setOf_forall]
   exact
-    isClosed_interᵢ fun x =>
-      isClosed_interᵢ fun y =>
+    isClosed_iInter fun x =>
+      isClosed_iInter fun y =>
         isClosed_eq (continuous_apply _)
           -- Porting note: proof was:
           -- `((continuous_apply _).mul (continuous_apply _))`
@@ -344,7 +341,7 @@ homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
 @[to_additive (attr := simps (config := .asFn))
   "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
-type of bundled homomorphisms that has a `add_monoid_hom_class` instance) to `M₁ → M₂`."]
+type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
 def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (range fun (f : F) (x : M₁) => f x)) : M₁ →* M₂
     where
@@ -506,7 +503,7 @@ theorem exists_nhds_one_split4 {u : Set M} (hu : u ∈ 𝓝 (1 : M)) :
 
 /-- Given a neighborhood `U` of `1` there is an open neighborhood `V` of `1`
 such that `VV ⊆ U`. -/
-@[to_additive "Given a open neighborhood `U` of `0` there is a open neighborhood `V` of `0`
+@[to_additive "Given an open neighborhood `U` of `0` there is an open neighborhood `V` of `0`
   such that `V + V ⊆ U`."]
 theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
@@ -548,8 +545,8 @@ theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l
 
 @[to_additive]
 theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
-    (h : ∀ i ∈ l, ContinuousOn (f i) t) : ContinuousOn (fun a => (l.map fun i => f i a).prod) t :=
-  by
+    (h : ∀ i ∈ l, ContinuousOn (f i) t) :
+    ContinuousOn (fun a => (l.map fun i => f i a).prod) t := by
   intro x hx
   rw [continuousWithinAt_iff_continuousAt_restrict _ hx]
   refine' tendsto_list_prod _ fun i hi => _
@@ -778,7 +775,7 @@ theorem continuousOn_finset_prod {f : ι → X → M} (s : Finset ι) {t : Set X
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type _} [CommMonoid M] {s : Finset ι} {l : Filter X}
-    {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : (∏ i in s, f i) =ᶠ[l] ∏ i in s, g i := by
+    {f g : ι → X → M} (hs : ∀ i ∈ s, f i =ᶠ[l] g i) : ∏ i in s, f i =ᶠ[l] ∏ i in s, g i := by
   replace hs : ∀ᶠ x in l, ∀ i ∈ s, f i x = g i x
   · rwa [eventually_all_finset]
   filter_upwards [hs]with x hx
@@ -802,7 +799,7 @@ theorem LocallyFinite.exists_finset_mulSupport {M : Type _} [CommMonoid M] {f : 
 @[to_additive]
 theorem finprod_eventually_eq_prod {M : Type _} [CommMonoid M] {f : ι → X → M}
     (hf : LocallyFinite fun i => mulSupport (f i)) (x : X) :
-    ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, (∏ᶠ i, f i y) = ∏ i in s, f i y :=
+    ∃ s : Finset ι, ∀ᶠ y in 𝓝 x, ∏ᶠ i, f i y = ∏ i in s, f i y :=
   let ⟨I, hI⟩ := hf.exists_finset_mulSupport x
   ⟨I, hI.mono fun _ hy => finprod_eq_prod_of_mulSupport_subset _ fun _ hi => hy hi⟩
 #align finprod_eventually_eq_prod finprod_eventually_eq_prod
@@ -820,8 +817,8 @@ theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
 
 @[to_additive]
 theorem continuous_finprod_cond {f : ι → X → M} {p : ι → Prop} (hc : ∀ i, p i → Continuous (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ (i) (_h : p i), f i x :=
-  by
+    (hf : LocallyFinite fun i => mulSupport (f i)) :
+    Continuous fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact continuous_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 #align continuous_finprod_cond continuous_finprod_cond
@@ -840,28 +837,28 @@ section LatticeOps
 variable {ι' : Sort _} [Mul M]
 
 @[to_additive]
-theorem continuousMul_infₛ {ts : Set (TopologicalSpace M)}
-    (h : ∀ t ∈ ts, @ContinuousMul M t _) : @ContinuousMul M (infₛ ts) _ :=
-  letI := infₛ ts
+theorem continuousMul_sInf {ts : Set (TopologicalSpace M)}
+    (h : ∀ t ∈ ts, @ContinuousMul M t _) : @ContinuousMul M (sInf ts) _ :=
+  letI := sInf ts
   { continuous_mul :=
-      continuous_infₛ_rng.2 fun t ht =>
-        continuous_infₛ_dom₂ ht ht (@ContinuousMul.continuous_mul M t _ (h t ht)) }
-#align has_continuous_mul_Inf continuousMul_infₛ
-#align has_continuous_add_Inf continuousAdd_infₛ
+      continuous_sInf_rng.2 fun t ht =>
+        continuous_sInf_dom₂ ht ht (@ContinuousMul.continuous_mul M t _ (h t ht)) }
+#align has_continuous_mul_Inf continuousMul_sInf
+#align has_continuous_add_Inf continuousAdd_sInf
 
 @[to_additive]
-theorem continuousMul_infᵢ {ts : ι' → TopologicalSpace M}
+theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
     (h' : ∀ i, @ContinuousMul M (ts i) _) : @ContinuousMul M (⨅ i, ts i) _ := by
-  rw [← infₛ_range]
-  exact continuousMul_infₛ (Set.forall_range_iff.mpr h')
-#align has_continuous_mul_infi continuousMul_infᵢ
-#align has_continuous_add_infi continuousAdd_infᵢ
+  rw [← sInf_range]
+  exact continuousMul_sInf (Set.forall_range_iff.mpr h')
+#align has_continuous_mul_infi continuousMul_iInf
+#align has_continuous_add_infi continuousAdd_iInf
 
 @[to_additive]
 theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMul M t₁ _)
     (h₂ : @ContinuousMul M t₂ _) : @ContinuousMul M (t₁ ⊓ t₂) _ := by
-  rw [inf_eq_infᵢ]
-  refine' continuousMul_infᵢ fun b => _
+  rw [inf_eq_iInf]
+  refine' continuousMul_iInf fun b => _
   cases b <;> assumption
 #align has_continuous_mul_inf continuousMul_inf
 #align has_continuous_add_inf continuousAdd_inf
@@ -873,26 +870,26 @@ namespace ContinuousMap
 variable [Mul X] [ContinuousMul X]
 
 /-- The continuous map `fun y => y * x` -/
-@[to_additive "The continuous map `fun y => y + x"]
+@[to_additive "The continuous map `fun y => y + x`"]
 protected def mulRight (x : X) : C(X, X) :=
   mk _ (continuous_mul_right x)
 #align continuous_map.mul_right ContinuousMap.mulRight
 #align continuous_map.add_right ContinuousMap.addRight
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 #align continuous_map.coe_mul_right ContinuousMap.coe_mulRight
 #align continuous_map.coe_add_right ContinuousMap.coe_addRight
 
 /-- The continuous map `fun y => x * y` -/
-@[to_additive "The continuous map `fun y => x + y"]
+@[to_additive "The continuous map `fun y => x + y`"]
 protected def mulLeft (x : X) : C(X, X) :=
   mk _ (continuous_mul_left x)
 #align continuous_map.mul_left ContinuousMap.mulLeft
 #align continuous_map.add_left ContinuousMap.addLeft
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
 #align continuous_map.coe_mul_left ContinuousMap.coe_mulLeft

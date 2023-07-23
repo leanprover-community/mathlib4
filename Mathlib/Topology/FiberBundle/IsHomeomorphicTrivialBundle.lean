@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.fiber_bundle.is_homeomorphic_trivial_bundle
-! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.fiber_bundle.is_homeomorphic_trivial_bundle from "leanprover-community/mathlib"@"be2c24f56783935652cefffb4bfca7e4b25d167e"
 
 /-!
 # Maps equivariantly-homeomorphic to projection in a product
@@ -28,7 +25,7 @@ variable {B : Type _} (F : Type _) {Z : Type _} [TopologicalSpace B] [Topologica
 
 /-- A trivial fiber bundle with fiber `F` over a base `B` is a space `Z`
 projecting on `B` for which there exists a homeomorphism to `B × F` that sends `proj`
-to `prod.fst`. -/
+to `Prod.fst`. -/
 def IsHomeomorphicTrivialFiberBundle (proj : Z → B) : Prop :=
   ∃ e : Z ≃ₜ B × F, ∀ x, (e x).1 = proj x
 #align is_homeomorphic_trivial_fiber_bundle IsHomeomorphicTrivialFiberBundle

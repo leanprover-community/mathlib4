@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.intersecting
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Order.UpperLower.Basic
+
+#align_import combinatorics.set_family.intersecting from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Intersecting families
@@ -206,7 +203,7 @@ theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :
   rintro s ih _hcard hs
   by_cases h : ∀ t : Finset α, (t : Set α).Intersecting → s ⊆ t → s = t
   · exact ⟨s, Subset.rfl, hs.is_max_iff_card_eq.1 h, hs⟩
-  push_neg  at h
+  push_neg at h
   obtain ⟨t, ht, hst⟩ := h
   refine' (ih _ (_root_.ssubset_iff_subset_ne.2 hst) ht).imp fun u => And.imp_left hst.1.trans
   rw [Nat.le_div_iff_mul_le' two_pos, mul_comm]

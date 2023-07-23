@@ -2,15 +2,12 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
-
-! This file was ported from Lean 3 source module analysis.special_functions.polynomials
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Data.Polynomial.RingDivision
+
+#align_import analysis.special_functions.polynomials from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Limits related to polynomial and rational functions
@@ -34,7 +31,6 @@ namespace Polynomial
 
 variable {𝕜 : Type _} [NormedLinearOrderedField 𝕜] (P Q : 𝕜[X])
 
-set_option synthInstance.etaExperiment true in -- Porting note: needed to synthesize `IsDomain 𝕜`
 theorem eventually_no_roots (hP : P ≠ 0) : ∀ᶠ x in atTop, ¬P.IsRoot x :=
   atTop_le_cofinite <| (finite_setOf_isRoot hP).compl_mem_cofinite
 #align polynomial.eventually_no_roots Polynomial.eventually_no_roots

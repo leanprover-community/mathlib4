@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
-
-! This file was ported from Lean 3 source module linear_algebra.quotient_pi
-! leanprover-community/mathlib commit 398f60f60b43ef42154bd2bdadf5133daf1577a4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient
+
+#align_import linear_algebra.quotient_pi from "leanprover-community/mathlib"@"398f60f60b43ef42154bd2bdadf5133daf1577a4"
 
 /-!
 # Submodule quotients and direct sums
@@ -37,9 +34,6 @@ variable {Ms : ι → Type _} [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms 
 variable {N : Type _} [AddCommGroup N] [Module R N]
 
 variable {Ns : ι → Type _} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i)]
-
--- Porting note: TODO remove after https://github.com/leanprover/lean4/issues/2074 fixed
-attribute [-instance] Ring.toNonAssocRing
 
 /-- Lift a family of maps to the direct sum of quotients. -/
 def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i)) (q : Submodule R N)

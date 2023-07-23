@@ -2,14 +2,11 @@
 Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.small_sets
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.AtTopBot
+
+#align_import order.filter.small_sets from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # The filter of small sets
@@ -20,7 +17,7 @@ containing all powersets of members of `f`.
 `g` converges to `f.smallSets` if for all `s ∈ f`, eventually we have `g x ⊆ s`.
 
 An example usage is that if `f : ι → E → ℝ` is a family of nonnegative functions with integral 1,
-then saying that `λ i, support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
+then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
 `f` tends to the Dirac delta distribution.
 -/
 
@@ -41,7 +38,7 @@ def smallSets (l : Filter α) : Filter (Set α) :=
 #align filter.small_sets Filter.smallSets
 
 theorem smallSets_eq_generate {f : Filter α} : f.smallSets = generate (powerset '' f.sets) := by
-  simp_rw [generate_eq_binfᵢ, smallSets, infᵢ_image]
+  simp_rw [generate_eq_biInf, smallSets, iInf_image]
   rfl
 #align filter.small_sets_eq_generate Filter.smallSets_eq_generate
 
@@ -120,9 +117,9 @@ theorem comap_smallSets (l : Filter β) (f : α → Set β) :
   comap_lift'_eq
 #align filter.comap_small_sets Filter.comap_smallSets
 
-theorem smallSets_infᵢ {f : ι → Filter α} : (infᵢ f).smallSets = ⨅ i, (f i).smallSets :=
-  lift'_infᵢ_of_map_univ (powerset_inter _ _) powerset_univ
-#align filter.small_sets_infi Filter.smallSets_infᵢ
+theorem smallSets_iInf {f : ι → Filter α} : (iInf f).smallSets = ⨅ i, (f i).smallSets :=
+  lift'_iInf_of_map_univ (powerset_inter _ _) powerset_univ
+#align filter.small_sets_infi Filter.smallSets_iInf
 
 theorem smallSets_inf (l₁ l₂ : Filter α) : (l₁ ⊓ l₂).smallSets = l₁.smallSets ⊓ l₂.smallSets :=
   lift'_inf _ _ powerset_inter
@@ -159,7 +156,6 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
       eventually_small_sets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
-
 #align filter.eventually_small_sets_eventually Filter.eventually_smallSets_eventually
 
 @[simp]

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.normed.group.hom_completion
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.Completion
+
+#align_import analysis.normed.group.hom_completion from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Completion of normed group homs
@@ -187,12 +184,12 @@ theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
   refine ⟨_, ⟨⟨g - g', mem_ker⟩, rfl⟩, ?_⟩
   have : ‖f g‖ ≤ ‖f‖ * δ
   calc ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
-    _ ≤ ‖f‖ * δ := mul_le_mul_of_nonneg_left hg.le (norm_nonneg f)
+    _ ≤ ‖f‖ * δ := by gcongr
   calc ‖hatg - ↑(g - g')‖ = ‖hatg - g + g'‖ := by rw [Completion.coe_sub, sub_add]
     _ ≤ ‖hatg - g‖ + ‖(g' : Completion G)‖ := norm_add_le _ _
     _ = ‖hatg - g‖ + ‖g'‖ := by rw [Completion.norm_coe]
     _ < δ + C' * ‖f g‖ := add_lt_add_of_lt_of_le hg hfg
-    _ ≤ δ + C' * (‖f‖ * δ) := add_le_add_left (mul_le_mul_of_nonneg_left this C'_pos.le) _
+    _ ≤ δ + C' * (‖f‖ * δ) := by gcongr
     _ < ε := by simpa only [add_mul, one_mul, mul_assoc] using hδ
 #align normed_add_group_hom.ker_completion NormedAddGroupHom.ker_completion
 

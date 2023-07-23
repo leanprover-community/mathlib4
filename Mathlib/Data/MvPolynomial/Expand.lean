@@ -2,18 +2,15 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.mv_polynomial.expand
-! leanprover-community/mathlib commit 5da451b4c96b4c2e122c0325a7fce17d62ee46c6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Monad
+
+#align_import data.mv_polynomial.expand from "leanprover-community/mathlib"@"5da451b4c96b4c2e122c0325a7fce17d62ee46c6"
 
 /-!
 ## Expand multivariate polynomials
 
-Given a multivariate polynomial `φ`, one may replace every occurence of `X i` by `X i ^ n`,
+Given a multivariate polynomial `φ`, one may replace every occurrence of `X i` by `X i ^ n`,
 for some natural number `n`.
 This operation is called `MvPolynomial.expand` and it is an algebra homomorphism.
 

@@ -2,11 +2,6 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.encodable.basic
-! leanprover-community/mathlib commit 7c523cb78f4153682c2929e3006c863bfef463d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Data.PNat.Basic
@@ -14,6 +9,8 @@ import Mathlib.Order.Directed
 import Mathlib.Data.Countable.Defs
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Fin.Basic
+
+#align_import logic.encodable.basic from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
 
 /-!
 # Encodable types
@@ -30,8 +27,8 @@ The difference with `Denumerable` is that finite types are encodable. For infini
   partial inverse `decode : ℕ → Option α`.
 * `decode₂`: Version of `decode` that is equal to `none` outside of the range of `encode`. Useful as
   we do not require this in the definition of `decode`.
-* `ulower α`: Any encodable type has an equivalent type living in the lowest universe, namely a
-  subtype of `ℕ`. `ulower α` finds it.
+* `ULower α`: Any encodable type has an equivalent type living in the lowest universe, namely a
+  subtype of `ℕ`. `ULower α` finds it.
 
 ## Implementation notes
 
@@ -120,9 +117,9 @@ theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
   by rw [Option.map_eq_bind]
 #align encodable.decode_of_equiv Encodable.decode_ofEquiv
 
-instance Nat.encodable : Encodable ℕ :=
+instance _root_.Nat.encodable : Encodable ℕ :=
   ⟨id, some, fun _ => rfl⟩
-#align nat.encodable Encodable.Nat.encodable
+#align nat.encodable Nat.encodable
 
 @[simp]
 theorem encode_nat (n : ℕ) : encode n = n :=
@@ -134,13 +131,13 @@ theorem decode_nat (n : ℕ) : decode n = some n :=
   rfl
 #align encodable.decode_nat Encodable.decode_nat
 
-instance (priority := 100) IsEmpty.toEncodable [IsEmpty α] : Encodable α :=
+instance (priority := 100) _root_.IsEmpty.toEncodable [IsEmpty α] : Encodable α :=
   ⟨isEmptyElim, fun _ => none, isEmptyElim⟩
-#align is_empty.to_encodable Encodable.IsEmpty.toEncodable
+#align is_empty.to_encodable IsEmpty.toEncodable
 
-instance PUnit.encodable : Encodable PUnit :=
+instance _root_.PUnit.encodable : Encodable PUnit :=
   ⟨fun _ => 0, fun n => Nat.casesOn n (some PUnit.unit) fun _ => none, fun _ => by simp⟩
-#align punit.encodable Encodable.PUnit.encodable
+#align punit.encodable PUnit.encodable
 
 @[simp]
 theorem encode_star : encode PUnit.unit = 0 :=
@@ -161,7 +158,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 instance _root_.Option.encodable {α : Type _} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
-    cases o <;> dsimp ; simp [encodek, Nat.succ_ne_zero]⟩
+    cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
 #align option.encodable Option.encodable
 
 @[simp]
@@ -194,7 +191,7 @@ def decode₂ (α) [Encodable α] (n : ℕ) : Option α :=
 
 theorem mem_decode₂' [Encodable α] {n : ℕ} {a : α} :
     a ∈ decode₂ α n ↔ a ∈ decode n ∧ encode a = n := by
-  simp [decode₂] ; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
+  simp [decode₂]; exact ⟨fun ⟨_, h₁, rfl, h₂⟩ => ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨_, h₁, rfl, h₂⟩⟩
 #align encodable.mem_decode₂' Encodable.mem_decode₂'
 
 theorem mem_decode₂ [Encodable α] {n : ℕ} {a : α} : a ∈ decode₂ α n ↔ encode a = n :=
@@ -206,8 +203,7 @@ theorem decode₂_eq_some [Encodable α] {n : ℕ} {a : α} : decode₂ α n = s
 #align encodable.decode₂_eq_some Encodable.decode₂_eq_some
 
 @[simp]
-theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a :=
-  by
+theorem decode₂_encode [Encodable α] (a : α) : decode₂ α (encode a) = some a := by
   ext
   simp [mem_decode₂, eq_comm, decode₂_eq_some]
 #align encodable.decode₂_encode Encodable.decode₂_encode
@@ -236,7 +232,7 @@ def decidableRangeEncode (α : Type _) [Encodable α] : DecidablePred (· ∈ Se
   fun x =>
   decidable_of_iff (Option.isSome (decode₂ α x))
     ⟨fun h => ⟨Option.get _ h, by rw [← decode₂_is_partial_inv (Option.get _ h), Option.some_get]⟩,
-      fun ⟨n, hn⟩ => by rw [← hn, encodek₂] ; exact rfl⟩
+      fun ⟨n, hn⟩ => by rw [← hn, encodek₂]; exact rfl⟩
 #align encodable.decidable_range_encode Encodable.decidableRangeEncode
 
 /-- An encodable type is equivalent to the range of its encoding function. -/
@@ -245,8 +241,8 @@ def equivRangeEncode (α : Type _) [Encodable α] : α ≃ Set.range (@encode α
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by cases' n.2 with x hx ; rw [← hx, encodek₂] ; exact rfl)
-  left_inv a := by dsimp ; rw [← Option.some_inj, Option.some_get, encodek₂]
+      (show isSome (decode₂ α n.1) by cases' n.2 with x hx; rw [← hx, encodek₂]; exact rfl)
+  left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
     apply Subtype.eq
     dsimp
@@ -257,9 +253,9 @@ def equivRangeEncode (α : Type _) [Encodable α] : α ≃ Set.range (@encode α
 #align encodable.equiv_range_encode Encodable.equivRangeEncode
 
 /-- A type with unique element is encodable. This is not an instance to avoid diamonds. -/
-def Unique.encodable [Unique α] : Encodable α :=
+def _root_.Unique.encodable [Unique α] : Encodable α :=
   ⟨fun _ => 0, fun _ => some default, Unique.forall_iff.2 rfl⟩
-#align unique.encodable Encodable.Unique.encodable
+#align unique.encodable Unique.encodable
 
 section Sum
 
@@ -280,9 +276,9 @@ def decodeSum (n : ℕ) : Option (Sum α β) :=
 #align encodable.decode_sum Encodable.decodeSum
 
 /-- If `α` and `β` are encodable, then so is their sum. -/
-instance Sum.encodable : Encodable (Sum α β) :=
+instance _root_.Sum.encodable : Encodable (Sum α β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
-#align sum.encodable Encodable.Sum.encodable
+#align sum.encodable Sum.encodable
 
 --Porting note: removing bit0 and bit1 from statement
 @[simp]
@@ -303,9 +299,9 @@ theorem decode_sum_val (n : ℕ) : (decode n : Option (Sum α β)) = decodeSum n
 
 end Sum
 
-instance Bool.encodable : Encodable Bool :=
+instance _root_.Bool.encodable : Encodable Bool :=
   ofEquiv (Sum Unit Unit) Equiv.boolEquivPUnitSumPUnit
-#align bool.encodable Encodable.Bool.encodable
+#align bool.encodable Bool.encodable
 
 @[simp]
 theorem encode_true : encode true = 1 :=
@@ -323,26 +319,25 @@ theorem decode_zero : (decode 0 : Option Bool) = some false :=
 #align encodable.decode_zero Encodable.decode_zero
 
 @[simp]
-theorem decode_one : (decode 1: Option Bool) = some true :=
+theorem decode_one : (decode 1 : Option Bool) = some true :=
   rfl
 #align encodable.decode_one Encodable.decode_one
 
-theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none :=
-  by
+theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   suffices decodeSum n = none by
     change (decodeSum n).bind _ = none
     rw [this]
     rfl
   have : 1 ≤ n / 2 := by
     rw [Nat.le_div_iff_mul_le]
-    exacts[h, by decide]
+    exacts [h, by decide]
   cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
   simp [decodeSum, div2_val]; cases bodd n <;> simp [e]
 #align encodable.decode_ge_two Encodable.decode_ge_two
 
-noncomputable instance Prop.encodable : Encodable Prop :=
+noncomputable instance _root_.Prop.encodable : Encodable Prop :=
   ofEquiv Bool Equiv.propEquivBool
-#align Prop.encodable Encodable.Prop.encodable
+#align Prop.encodable Prop.encodable
 
 section Sigma
 
@@ -359,10 +354,10 @@ def decodeSigma (n : ℕ) : Option (Sigma γ) :=
   (decode n₁).bind fun a => (decode n₂).map <| Sigma.mk a
 #align encodable.decode_sigma Encodable.decodeSigma
 
-instance Sigma.encodable : Encodable (Sigma γ) :=
+instance _root_.Sigma.encodable : Encodable (Sigma γ) :=
   ⟨encodeSigma, decodeSigma, fun ⟨a, b⟩ => by
     simp [encodeSigma, decodeSigma, unpair_pair, encodek]⟩
-#align sigma.encodable Encodable.Sigma.encodable
+#align sigma.encodable Sigma.encodable
 
 @[simp]
 theorem decode_sigma_val (n : ℕ) :
@@ -423,36 +418,36 @@ def decodeSubtype (v : ℕ) : Option { a : α // P a } :=
 #align encodable.decode_subtype Encodable.decodeSubtype
 
 /-- A decidable subtype of an encodable type is encodable. -/
-instance Subtype.encodable : Encodable { a : α // P a } :=
+instance _root_.Subtype.encodable : Encodable { a : α // P a } :=
   ⟨encodeSubtype, decodeSubtype, fun ⟨v, h⟩ => by simp [encodeSubtype, decodeSubtype, encodek, h]⟩
-#align subtype.encodable Encodable.Subtype.encodable
+#align subtype.encodable Subtype.encodable
 
-theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a ; rfl
+theorem Subtype.encode_eq (a : Subtype P) : encode a = encode a.val := by cases a; rfl
 #align encodable.subtype.encode_eq Encodable.Subtype.encode_eq
 
 end Subtype
 
-instance Fin.encodable (n) : Encodable (Fin n) :=
+instance _root_.Fin.encodable (n) : Encodable (Fin n) :=
   ofEquiv _ Fin.equivSubtype
-#align fin.encodable Encodable.Fin.encodable
+#align fin.encodable Fin.encodable
 
-instance Int.encodable : Encodable ℤ :=
+instance _root_.Int.encodable : Encodable ℤ :=
   ofEquiv _ Equiv.intEquivNat
-#align int.encodable Encodable.Int.encodable
+#align int.encodable Int.encodable
 
-instance PNat.encodable : Encodable ℕ+ :=
+instance _root_.PNat.encodable : Encodable ℕ+ :=
   ofEquiv _ Equiv.pnatEquivNat
-#align pnat.encodable Encodable.PNat.encodable
+#align pnat.encodable PNat.encodable
 
-/-- The lift of an encodable type is encodable. -/
-instance ULift.encodable [Encodable α] : Encodable (ULift α) :=
+/-- The lift of an encodable type is encodable -/
+instance _root_.ULift.encodable [Encodable α] : Encodable (ULift α) :=
   ofEquiv _ Equiv.ulift
-#align ulift.encodable Encodable.ULift.encodable
+#align ulift.encodable ULift.encodable
 
 /-- The lift of an encodable type is encodable. -/
-instance PLift.encodable [Encodable α] : Encodable (PLift α) :=
+instance _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
   ofEquiv _ Equiv.plift
-#align plift.encodable Encodable.PLift.encodable
+#align plift.encodable PLift.encodable
 
 /-- If `β` is encodable and there is an injection `f : α → β`, then `α` is encodable as well. -/
 noncomputable def ofInj [Encodable β] (f : α → β) (hf : Injective f) : Encodable α :=
@@ -481,73 +476,73 @@ theorem nonempty_encodable (α : Type _) [Countable α] : Nonempty (Encodable α
 instance : Countable ℕ+ := by delta PNat; infer_instance
 
 -- short-circuit instance search
-section Ulower
+section ULower
 
 attribute [local instance] Encodable.decidableRangeEncode
 
 /-- `ULower α : Type` is an equivalent type in the lowest universe, given `Encodable α`. -/
-def Ulower (α : Type _) [Encodable α] : Type :=
+def ULower (α : Type _) [Encodable α] : Type :=
   Set.range (Encodable.encode : α → ℕ)
-#align ulower Ulower
+#align ulower ULower
 
-instance {α : Type _} [Encodable α] : DecidableEq (Ulower α) :=
-  by delta Ulower; exact Encodable.decidableEqOfEncodable _
+instance {α : Type _} [Encodable α] : DecidableEq (ULower α) :=
+  by delta ULower; exact Encodable.decidableEqOfEncodable _
 
-instance {α : Type _} [Encodable α] : Encodable (Ulower α) :=
-  by delta Ulower; infer_instance
+instance {α : Type _} [Encodable α] : Encodable (ULower α) :=
+  by delta ULower; infer_instance
 
-end Ulower
+end ULower
 
-namespace Ulower
+namespace ULower
 
 variable (α : Type _) [Encodable α]
 
-/-- The equivalence between the encodable type `α` and `Ulower α : Type`. -/
-def equiv : α ≃ Ulower α :=
+/-- The equivalence between the encodable type `α` and `ULower α : Type`. -/
+def equiv : α ≃ ULower α :=
   Encodable.equivRangeEncode α
-#align ulower.equiv Ulower.equiv
+#align ulower.equiv ULower.equiv
 
 variable {α}
 
-/-- Lowers an `a : α` into `Ulower α`. -/
-def down (a : α) : Ulower α :=
+/-- Lowers an `a : α` into `ULower α`. -/
+def down (a : α) : ULower α :=
   equiv α a
-#align ulower.down Ulower.down
+#align ulower.down ULower.down
 
-instance [Inhabited α] : Inhabited (Ulower α) :=
+instance [Inhabited α] : Inhabited (ULower α) :=
   ⟨down default⟩
 
-/-- Lifts an `a : Ulower α` into `α`. -/
-def up (a : Ulower α) : α :=
+/-- Lifts an `a : ULower α` into `α`. -/
+def up (a : ULower α) : α :=
   (equiv α).symm a
-#align ulower.up Ulower.up
+#align ulower.up ULower.up
 
 @[simp]
-theorem down_up {a : Ulower α} : down a.up = a :=
+theorem down_up {a : ULower α} : down a.up = a :=
   Equiv.right_inv _ _
-#align ulower.down_up Ulower.down_up
+#align ulower.down_up ULower.down_up
 
 @[simp]
 theorem up_down {a : α} : (down a).up = a := by
   simp [up, down,Equiv.left_inv _ _, Equiv.symm_apply_apply]
-#align ulower.up_down Ulower.up_down
+#align ulower.up_down ULower.up_down
 
 @[simp]
-theorem up_eq_up {a b : Ulower α} : a.up = b.up ↔ a = b :=
+theorem up_eq_up {a b : ULower α} : a.up = b.up ↔ a = b :=
   Equiv.apply_eq_iff_eq _
-#align ulower.up_eq_up Ulower.up_eq_up
+#align ulower.up_eq_up ULower.up_eq_up
 
 @[simp]
 theorem down_eq_down {a b : α} : down a = down b ↔ a = b :=
   Equiv.apply_eq_iff_eq _
-#align ulower.down_eq_down Ulower.down_eq_down
+#align ulower.down_eq_down ULower.down_eq_down
 
 @[ext]
-protected theorem ext {a b : Ulower α} : a.up = b.up → a = b :=
+protected theorem ext {a b : ULower α} : a.up = b.up → a = b :=
   up_eq_up.1
-#align ulower.ext Ulower.ext
+#align ulower.ext ULower.ext
 
-end Ulower
+end ULower
 
 /-
 Choice function for encodable types and decidable predicates.
@@ -646,10 +641,9 @@ protected noncomputable def sequence {r : β → β → Prop} (f : α → β) (h
 #align directed.sequence Directed.sequence
 
 theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directed r f) (n : ℕ) :
-    r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) :=
-  by
+    r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
-  generalize eq : hf.sequence f n = p
+  generalize hf.sequence f n = p
   cases' h : (decode n: Option α) with a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
@@ -679,7 +673,7 @@ open Encodable Quotient
 
 variable {α : Type _} {s : Setoid α} [@DecidableRel α (· ≈ ·)] [Encodable α]
 
-/-- Representative of an equivalence class. This is a computable version of `quot.out` for a setoid
+/-- Representative of an equivalence class. This is a computable version of `Quot.out` for a setoid
 on an encodable type. -/
 def Quotient.rep (q : Quotient s) : α :=
   choose (exists_rep q)
@@ -692,7 +686,7 @@ theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
-    rintro ⟨l⟩ ; dsimp ; rw [encodek] ; exact congr_arg some ⟦l⟧.rep_spec⟩
+    rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩
 #align encodable_quotient encodableQuotient
 
 end Quotient

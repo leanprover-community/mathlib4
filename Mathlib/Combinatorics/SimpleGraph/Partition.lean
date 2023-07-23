@@ -2,13 +2,10 @@
 Copyright (c) 2021 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.partition
-! leanprover-community/mathlib commit 2303b3e299f1c75b07bceaaac130ce23044d1386
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
+
+#align_import combinatorics.simple_graph.partition from "leanprover-community/mathlib"@"2303b3e299f1c75b07bceaaac130ce23044d1386"
 
 /-!
 # Graph partitions
@@ -108,8 +105,7 @@ theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ 
 /-- Create a coloring using the parts themselves as the colors.
 Each vertex is colored by the part it's contained in. -/
 def toColoring : G.Coloring P.parts :=
-  Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦
-    by
+  Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦ by
     rw [Ne.def, Subtype.mk_eq_mk]
     exact P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring SimpleGraph.Partition.toColoring

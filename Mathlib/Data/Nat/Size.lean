@@ -2,14 +2,11 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.size
-! leanprover-community/mathlib commit 18a5306c091183ac90884daa9373fa3b178e8607
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Nat.Bits
+
+#align_import data.nat.size from "leanprover-community/mathlib"@"18a5306c091183ac90884daa9373fa3b178e8607"
 
 /-! Lemmas about `size`. -/
 
@@ -107,10 +104,10 @@ end
 
 @[simp]
 theorem size_shiftl' {b m n} (h : shiftl' b m n ≠ 0) : size (shiftl' b m n) = size m + n := by
-  induction' n with n IH <;> simp [shiftl'] at h⊢
+  induction' n with n IH <;> simp [shiftl'] at h ⊢
   rw [size_bit h, Nat.add_succ]
-  by_cases s0 : shiftl' b m n = 0 <;> [skip, rw [IH s0]]
-  rw [s0] at h⊢
+  by_cases s0 : shiftl' b m n = 0 <;> [skip; rw [IH s0]]
+  rw [s0] at h ⊢
   cases b; · exact absurd rfl h
   have : shiftl' true m n + 1 = 1 := congr_arg (· + 1) s0
   rw [shiftl'_tt_eq_mul_pow] at this

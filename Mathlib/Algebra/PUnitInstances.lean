@@ -2,17 +2,14 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.punit_instances
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Order.CompleteBooleanAlgebra
+
+#align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Instances on PUnit
@@ -36,6 +33,12 @@ instance commGroup: CommGroup PUnit where
   mul_one := by intros; rfl
   mul_left_inv := by intros; rfl
   mul_comm := by intros; rfl
+
+-- shortcut instances
+@[to_additive] instance : One PUnit where one := ()
+@[to_additive] instance : Mul PUnit where mul _ _ := ()
+@[to_additive] instance : Div PUnit where div _ _ := ()
+@[to_additive] instance : Inv PUnit where inv _ := ()
 
 @[to_additive (attr := simp)]
 theorem one_eq : (1 : PUnit) = unit :=
@@ -102,7 +105,7 @@ theorem lcm_eq : lcm x y = unit :=
 #align punit.lcm_eq PUnit.lcm_eq
 
 @[simp]
-theorem norm_unit_eq {x: PUnit} : normUnit x = 1 :=
+theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
   rfl
 #align punit.norm_unit_eq PUnit.norm_unit_eq
 

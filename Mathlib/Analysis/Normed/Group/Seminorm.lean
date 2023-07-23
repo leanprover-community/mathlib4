@@ -2,14 +2,12 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.group.seminorm
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Real.NNReal
+import Mathlib.Tactic.GCongr
+
+#align_import analysis.normed.group.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Group seminorms
@@ -398,7 +396,7 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩ -- porting note: was `positivity`
+    positivity⟩
 #align group_seminorm.mul_bdd_below_range_add GroupSeminorm.mul_bddBelow_range_add
 #align add_group_seminorm.add_bdd_below_range_add AddGroupSeminorm.add_bddBelow_range_add
 
@@ -407,18 +405,17 @@ noncomputable instance : Inf (GroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
-        cinfᵢ_eq_of_forall_ge_of_forall_gt_exists_lt
+        ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
           -- porting note: replace `add_nonneg` with `positivity` once we have the extension
           (fun x => add_nonneg (map_nonneg _ _) (map_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
-        le_cinfᵢ_add_cinfᵢ fun u v =>
-          by
-          refine' cinfᵢ_le_of_le mul_bddBelow_range_add (u * v) _
+        le_ciInf_add_ciInf fun u v => by
+          refine' ciInf_le_of_le mul_bddBelow_range_add (u * v) _
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
       inv' := fun x =>
-        (inv_surjective.infᵢ_comp _).symm.trans <| by
+        (inv_surjective.iInf_comp _).symm.trans <| by
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp)]
@@ -432,12 +429,12 @@ noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with
     inf := (· ⊓ ·)
     inf_le_left := fun p q x =>
-      cinfᵢ_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
+      ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
     inf_le_right := fun p q x =>
-      cinfᵢ_le_of_le mul_bddBelow_range_add (1 : E) <| by
+      ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
     le_inf := fun a b c hb hc x =>
-      le_cinfᵢ fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
+      le_ciInf fun u => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup
 
@@ -472,12 +469,10 @@ instance toSMul : SMul R (AddGroupSeminorm E) :=
     { toFun := fun x => r • p x
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero, mul_zero]
-      add_le' := fun _ _ =>
-        by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        exact
-          (mul_le_mul_of_nonneg_left (map_add_le_add _ _ _) <| NNReal.coe_nonneg _).trans_eq
-            (mul_add _ _ _)
+      add_le' := fun _ _ => by
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
+        gcongr
+        apply map_add_le_add
       neg' := fun x => by simp_rw [map_neg_eq_map] }⟩
 
 @[simp, norm_cast]
@@ -495,14 +490,10 @@ instance isScalarTower [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0
   ⟨fun r a p => ext fun x => smul_assoc r a (p x)⟩
 
 theorem smul_sup (r : R) (p q : AddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    -- porting note: This appears to be due to lean4#2074 that we need this
-    have max_eq_max : @max ℝ LinearOrderedSemiring.toMax = @max ℝ LinearOrderedRing.toMax := rfl
-    simpa only [←smul_eq_mul, max_eq_max, ←NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg (a := (r • (1 : ℝ≥0) : ℝ)) x y (r • (1 : ℝ≥0)).zero_le_coe
-    -- porting note: for `ℝ≥0` it is important to use `.zero_le_coe` instead of `.prop` so that
-    -- the coercion function which appears is `NNReal.toReal` instead of `Subtype.val`
-  ext fun x => real.smul_max _ _
+  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
+    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
+  ext fun x => Real.smul_max _ _
 #align add_group_seminorm.smul_sup AddGroupSeminorm.smul_sup
 
 end AddGroupSeminorm
@@ -588,7 +579,7 @@ instance : Sup (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun x y =>
         sup_le ((map_add_le_max p x y).trans <| max_le_max le_sup_left le_sup_left)
           ((map_add_le_max q x y).trans <| max_le_max le_sup_right le_sup_right)
-      neg' := fun x => by simp_rw [Pi.sup_apply, Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
+      neg' := fun x => by simp_rw [Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
 
 @[simp, norm_cast]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
@@ -614,8 +605,7 @@ theorem add_bddBelow_range_add {p q : NonarchAddGroupSeminorm E} {x : E} :
   ⟨0, by
     rintro _ ⟨x, rfl⟩
     dsimp
-    exact add_nonneg (map_nonneg _ _) (map_nonneg _ _)⟩
-    -- porting note: was `positivity`
+    positivity⟩
 #align nonarch_add_group_seminorm.add_bdd_below_range_add NonarchAddGroupSeminorm.add_bddBelow_range_add
 
 end AddCommGroup
@@ -652,12 +642,10 @@ instance : SMul R (GroupSeminorm E) :=
       map_one' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
           mul_zero]
-      mul_le' := fun _ _ =>
-        by
-        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
-        exact
-          (mul_le_mul_of_nonneg_left (map_mul_le_add p _ _) <| NNReal.coe_nonneg _).trans_eq
-            (mul_add _ _ _)
+      mul_le' := fun _ _ => by
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←mul_add]
+        gcongr
+        apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
 @[to_additive existing AddGroupSeminorm.isScalarTower]
@@ -677,14 +665,10 @@ theorem smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p
 
 @[to_additive existing AddGroupSeminorm.smul_sup]
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    -- porting note: This appears to be due to lean4#2074 that we need this
-    have max_eq_max : @max ℝ LinearOrderedSemiring.toMax = @max ℝ LinearOrderedRing.toMax := rfl
-    simpa only [←smul_eq_mul, max_eq_max, ←NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg (a := (r • (1 : ℝ≥0) : ℝ)) x y (r • (1 : ℝ≥0)).zero_le_coe
-    -- porting note: for `ℝ≥0` it is important to use `.zero_le_coe` instead of `.prop` so that
-    -- the coercion function which appears is `NNReal.toReal` instead of `Subtype.val`
-  ext fun x => real.smul_max _ _
+  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
+    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
+  ext fun x => Real.smul_max _ _
 #align group_seminorm.smul_sup GroupSeminorm.smul_sup
 
 end GroupSeminorm
@@ -717,11 +701,11 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero p,
           mul_zero]
-      add_le_max' := fun x y =>
-        by
+      add_le_max' := fun x y => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←
           mul_max_of_nonneg _ _ NNReal.zero_le_coe]
-        exact mul_le_mul_of_nonneg_left (map_add_le_max p _ _) NNReal.zero_le_coe
+        gcongr
+        apply map_add_le_max
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
@@ -739,14 +723,10 @@ theorem smul_apply (r : R) (p : NonarchAddGroupSeminorm E) (x : E) : (r • p) x
 #align nonarch_add_group_seminorm.smul_apply NonarchAddGroupSeminorm.smul_apply
 
 theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
-  have real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
-    -- porting note: This appears to be due to lean4#2074 that we need this
-    have max_eq_max : @max ℝ LinearOrderedSemiring.toMax = @max ℝ LinearOrderedRing.toMax := rfl
-    simpa only [←smul_eq_mul, max_eq_max, ←NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
-      mul_max_of_nonneg (a := (r • (1 : ℝ≥0) : ℝ)) x y (r • (1 : ℝ≥0)).zero_le_coe
-    -- porting note: for `ℝ≥0` it is important to use `.zero_le_coe` instead of `.prop` so that
-    -- the coercion function which appears is `NNReal.toReal` instead of `Subtype.val`
-  ext fun x => real.smul_max _ _
+  have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
+    simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
+      mul_max_of_nonneg x y (r • (1 : ℝ≥0) : ℝ≥0).coe_nonneg
+  ext fun x => Real.smul_max _ _
 #align nonarch_add_group_seminorm.smul_sup NonarchAddGroupSeminorm.smul_sup
 
 end NonarchAddGroupSeminorm

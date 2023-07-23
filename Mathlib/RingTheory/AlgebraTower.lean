@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.algebra_tower
-! leanprover-community/mathlib commit 94825b2b0b982306be14d891c4f063a1eca4f370
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis
+
+#align_import ring_theory.algebra_tower from "leanprover-community/mathlib"@"94825b2b0b982306be14d891c4f063a1eca4f370"
 
 /-!
 # Towers of algebras
@@ -25,7 +22,7 @@ In `FieldTheory/Tower.lean` we use this to prove the tower law for finite extens
 that if `R` and `S` are both fields, then `[A:R] = [A:S] [S:A]`.
 
 In this file we prepare the main lemma:
-if `{bi | i ∈ I}` is an `R`-basis of `S` and `{cj | j ∈ J}` is a `S`-basis
+if `{bi | i ∈ I}` is an `R`-basis of `S` and `{cj | j ∈ J}` is an `S`-basis
 of `A`, then `{bi cj | i ∈ I, j ∈ J}` is an `R`-basis of `A`. This statement does not require the
 base rings to be a field, so we also generalize the lemma to rings in this file.
 -/
@@ -121,8 +118,7 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : (∑ i in s.image Prod.fst ×ᶠ s.image Prod.snd, g i • b i.1 • c i.2) = 0 :=
-      by
+  · have h1 : ∑ i in s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>
@@ -232,8 +228,7 @@ def algHomEquivSigma : (C →ₐ[A] D) ≃ Σf : B →ₐ[A] D, @AlgHom B C D _ 
     rfl
   right_inv := by
     rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, ⟨⟨⟨⟨g, _⟩, _⟩, _⟩, hg⟩⟩
-    obtain rfl : f = fun x => g (algebraMap B C x) :=
-      by
+    obtain rfl : f = fun x => g (algebraMap B C x) := by
       ext x
       exact (hg x).symm
     rfl

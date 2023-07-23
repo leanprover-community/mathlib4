@@ -2,17 +2,13 @@
 Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module algebra.quandle
-! leanprover-community/mathlib commit 28aa996fc6fb4317f0083c4e6daf79878d81be33
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Algebra.Hom.Aut
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.ScopedNS
 import Mathlib.Tactic.Ring
+
+#align_import algebra.quandle from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 /-!
 # Racks and Quandles
 
@@ -267,7 +263,7 @@ instance oppositeRack : Rack Rᵐᵒᵖ
     induction x using MulOpposite.rec'
     induction y using MulOpposite.rec'
     induction z using MulOpposite.rec'
-    simp only [op.injEq]
+    simp only [op_inj, unop_op, op_unop]
     rw [self_distrib_inv]
   invAct x y := op (Shelf.act (unop x) (unop y))
   left_inv := MulOpposite.rec' fun x => MulOpposite.rec' fun y => by simp
@@ -569,7 +565,7 @@ group `EnvelGroup`.
 For a homomorphism `f : R →◃ Conj G`, how does
 `EnvelGroup.map f : EnvelGroup R →* G` work?  Let's think of `G` as
 being a 2-category with one object, a 1-morphism per element of `G`,
-and a single 2-morphism called `eq.refl` for each 1-morphism.  We
+and a single 2-morphism called `Eq.refl` for each 1-morphism.  We
 define the map using a "higher `Quotient.lift`" -- not only do we
 evaluate elements of `PreEnvelGroup` as expressions in `G` (this is
 `toEnvelGroup.mapAux`), but we evaluate elements of
@@ -761,7 +757,7 @@ def toEnvelGroup.map {R : Type _} [Rack R] {G : Type _} [Group G] :
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)
-  left_inv f := by ext ; rfl
+  left_inv f := by ext; rfl
   right_inv F :=
     MonoidHom.ext fun x =>
       Quotient.inductionOn x fun x => by

@@ -116,7 +116,7 @@ that a specific definition is in fact being called. Or a specific definition may
 name altogether because the existing name is already taken in lean 4 for something else. For
 these reasons, you should use `#align` on any theorem that needs to be renamed from the default.
 -/
-syntax (name := align) "#align " ident ident : command
+syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
 def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
@@ -134,7 +134,7 @@ def suspiciousLean3Name (s : String) : Bool := Id.run do
   let allowed : List String :=
     ["Prop", "Type", "Pi", "Exists", "End",
      "Inf", "Sup", "Union", "Inter",
-     "Hausdorff",
+     "Hausdorff", "is_R_or_C",
      "Ioo", "Ico", "Iio", "Icc", "Iic", "Ioc", "Ici", "Ioi", "Ixx"]
   let mut s := s
   for a in allowed do
@@ -204,4 +204,24 @@ syntax (name := lookup3) "#lookup3 " ident : command
           match m.toLean3.find? n4 with
           | none | some (_, []) => msg
           | some (n, l) => m!"{msg} (aliases {n :: l})"
+  | _ => throwUnsupportedSyntax
+
+open Lean Lean.Parser Lean.PrettyPrinter
+
+/-- Declare the corresponding mathlib3 module for the current mathlib4 module. -/
+syntax (name := alignImport) "#align_import " ident " from " str "@" str : command
+
+/-- Elaborate a `#align_import` command.
+
+TODO: do something with this information beyond ignore it. -/
+@[command_elab alignImport] def elabAlignImport : CommandElab
+  | `(#align_import $f3:ident from $_repo:str @ $sha:str ) => do
+    if !sha.getString.all ("abcdef0123456789".contains) then
+      throwErrorAt sha "not a valid hex sha, bad digits"
+    else if sha.getString.length ≠ 40 then
+      throwErrorAt sha "must be a full sha"
+    else
+      let _f3 : Name := f3.getId
+      let _f4 := (← getEnv).mainModule
+      pure ()
   | _ => throwUnsupportedSyntax

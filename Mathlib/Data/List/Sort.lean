@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.list.sort
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Sorting algorithms on lists
@@ -51,7 +48,7 @@ protected theorem Sorted.le_of_lt [Preorder α] {l : List α} (h : l.Sorted (· 
 
 protected theorem Sorted.lt_of_le [PartialOrder α] {l : List α} (h₁ : l.Sorted (· ≤ ·))
     (h₂ : l.Nodup) : l.Sorted (· < ·) :=
-  h₁.imp₂ (fun _ _ => lt_of_le_of_ne)  h₂
+  h₁.imp₂ (fun _ _ => lt_of_le_of_ne) h₂
 
 @[simp]
 theorem sorted_nil : Sorted r [] :=
@@ -145,8 +142,8 @@ section Monotone
 variable {n : ℕ} {α : Type uu} [Preorder α] {f : Fin n → α}
 
 theorem sorted_ofFn_iff {r : α → α → Prop} : (ofFn f).Sorted r ↔ ((· < ·) ⇒ r) f f := by
-  simp_rw [Sorted, pairwise_iff_get, length_ofFn, get_ofFn, Relator.LiftFun]
-  exact Iff.symm (Fin.cast _).surjective.forall₂
+  simp_rw [Sorted, pairwise_iff_get, get_ofFn, Relator.LiftFun]
+  exact Iff.symm (Fin.castIso _).surjective.forall₂
 
 /-- The list `List.ofFn f` is strictly sorted with respect to `(· ≤ ·)` if and only if `f` is
 strictly monotone. -/
@@ -255,7 +252,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α} (_ : Sorted r l), insertionS
   | [a], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts[rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
 #align list.sorted.insertion_sort_eq List.Sorted.insertionSort_eq
 
 section TotalAndTransitive
@@ -435,7 +432,6 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
       · exact _root_.trans ba (rel_of_sorted_cons h₁ _ bl)
       · exact rel_of_sorted_cons h₂ _ bl'
   termination_by Sorted.merge l₁ l₂ _ _ => length l₁ + length l₂
-
 #align list.sorted.merge List.Sorted.merge
 
 variable (r)

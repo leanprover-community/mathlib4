@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.adjoin.basic
-! leanprover-community/mathlib commit a35ddf20601f85f78cd57e7f5b09ed528d71b7af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Finsupp
+
+#align_import ring_theory.adjoin.basic from "leanprover-community/mathlib"@"a35ddf20601f85f78cd57e7f5b09ed528d71b7af"
 
 /-!
 # Adjoining elements to form subalgebras
@@ -50,9 +47,9 @@ theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
 #align algebra.adjoin_le Algebra.adjoin_le
 
-theorem adjoin_eq_infₛ : adjoin R s = infₛ { p : Subalgebra R A | s ⊆ p } :=
-  le_antisymm (le_infₛ fun _ h => adjoin_le h) (infₛ_le subset_adjoin)
-#align algebra.adjoin_eq_Inf Algebra.adjoin_eq_infₛ
+theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
+  le_antisymm (le_sInf fun _ h => adjoin_le h) (sInf_le subset_adjoin)
+#align algebra.adjoin_eq_Inf Algebra.adjoin_eq_sInf
 
 theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
@@ -70,14 +67,14 @@ theorem adjoin_eq (S : Subalgebra R A) : adjoin R ↑S = S :=
   adjoin_eq_of_le _ (Set.Subset.refl _) subset_adjoin
 #align algebra.adjoin_eq Algebra.adjoin_eq
 
-theorem adjoin_unionᵢ {α : Type _} (s : α → Set A) :
-    adjoin R (Set.unionᵢ s) = ⨆ i : α, adjoin R (s i) :=
-  (@Algebra.gc R A _ _ _).l_supᵢ
-#align algebra.adjoin_Union Algebra.adjoin_unionᵢ
+theorem adjoin_iUnion {α : Type _} (s : α → Set A) :
+    adjoin R (Set.iUnion s) = ⨆ i : α, adjoin R (s i) :=
+  (@Algebra.gc R A _ _ _).l_iSup
+#align algebra.adjoin_Union Algebra.adjoin_iUnion
 
-theorem adjoin_attach_bunionᵢ [DecidableEq A] {α : Type _} {s : Finset α} (f : s → Finset A) :
-    adjoin R (s.attach.bunionᵢ f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_unionᵢ]
-#align algebra.adjoin_attach_bUnion Algebra.adjoin_attach_bunionᵢ
+theorem adjoin_attach_biUnion [DecidableEq A] {α : Type _} {s : Finset α} (f : s → Finset A) :
+    adjoin R (s.attach.biUnion f : Set A) = ⨆ x, adjoin R (f x) := by simp [adjoin_iUnion]
+#align algebra.adjoin_attach_bUnion Algebra.adjoin_attach_biUnion
 
 @[elab_as_elim]
 theorem adjoin_induction {p : A → Prop} {x : A} (h : x ∈ adjoin R s) (Hs : ∀ x ∈ s, p x)
@@ -113,6 +110,7 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
 #align algebra.adjoin_induction₂ Algebra.adjoin_induction₂
 
 /-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
+@[elab_as_elim]
 theorem adjoin_induction' {p : adjoin R s → Prop} (Hs : ∀ (x) (h : x ∈ s), p ⟨x, subset_adjoin h⟩)
     (Halg : ∀ r, p (algebraMap R _ r)) (Hadd : ∀ x y, p x → p y → p (x + y))
     (Hmul : ∀ x y, p x → p y → p (x * y)) (x : adjoin R s) : p x :=
@@ -225,7 +223,7 @@ theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjo
 theorem adjoin_insert_adjoin (x : A) : adjoin R (insert x ↑(adjoin R s)) = adjoin R (insert x s) :=
   le_antisymm
     (adjoin_le
-      (Set.insert_subset.mpr
+      (Set.insert_subset_iff.mpr
         ⟨subset_adjoin (Set.mem_insert _ _), adjoin_mono (Set.subset_insert _ _)⟩))
     (Algebra.adjoin_mono (Set.insert_subset_insert Algebra.subset_adjoin))
 #align algebra.adjoin_insert_adjoin Algebra.adjoin_insert_adjoin
@@ -253,8 +251,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     adjoin R (LinearMap.inl R A B '' (s ∪ {1}) ∪ LinearMap.inr R A B '' (t ∪ {1})) =
       (adjoin R s).prod (adjoin R t) := by
   apply le_antisymm
-  ·
-    simp only [adjoin_le_iff, Set.insert_subset, Subalgebra.zero_mem, Subalgebra.one_mem,
+  · simp only [adjoin_le_iff, Set.insert_subset_iff, Subalgebra.zero_mem, Subalgebra.one_mem,
       subset_adjoin,-- the rest comes from `squeeze_simp`
       Set.union_subset_iff,
       LinearMap.coe_inl, Set.mk_preimage_prod_right, Set.image_subset_iff, SetLike.mem_coe,

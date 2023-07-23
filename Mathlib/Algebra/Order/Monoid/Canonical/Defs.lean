@@ -2,16 +2,13 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.canonical.defs
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.BoundedOrder
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.Monoid.Defs
+
+#align_import algebra.order.monoid.canonical.defs from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Canonically ordered monoids
@@ -22,7 +19,7 @@ universe u
 
 variable {α : Type u}
 
-/-- An `OrderCommMonoid` with one-sided 'division' in the sense that
+/-- An `OrderedCommMonoid` with one-sided 'division' in the sense that
 if `a ≤ b`, there is some `c` for which `a * c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedMonoid`. -/
 class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
@@ -30,7 +27,7 @@ class ExistsMulOfLE (α : Type u) [Mul α] [LE α] : Prop where
   exists_mul_of_le : ∀ {a b : α}, a ≤ b → ∃ c : α, b = a * c
 #align has_exists_mul_of_le ExistsMulOfLE
 
-/-- An `OrderAddCommMonoid` with one-sided 'subtraction' in the sense that
+/-- An `OrderedAddCommMonoid` with one-sided 'subtraction' in the sense that
 if `a ≤ b`, then there is some `c` for which `a + c = b`. This is a weaker version
 of the condition on canonical orderings defined by `CanonicallyOrderedAddMonoid`. -/
 class ExistsAddOfLE (α : Type u) [Add α] [LE α] : Prop where
@@ -273,7 +270,6 @@ theorem le_mul_left (h : a ≤ c) : a ≤ b * c :=
   calc
     a = 1 * a := by simp
     _ ≤ b * c := mul_le_mul' (one_le _) h
-
 #align le_mul_left le_mul_left
 #align le_add_left le_add_left
 
@@ -282,7 +278,6 @@ theorem le_mul_right (h : a ≤ b) : a ≤ b * c :=
   calc
     a = a * 1 := by simp
     _ ≤ b * c := mul_le_mul' h (one_le _)
-
 #align le_mul_right le_mul_right
 #align le_add_right le_add_right
 
@@ -300,7 +295,6 @@ theorem lt_iff_exists_mul [CovariantClass α α (· * ·) (· < ·)] : a < b ↔
     rw [mul_one]
   · rw [← (self_le_mul_right a c).lt_iff_ne]
     apply lt_mul_of_one_lt_right'
-
 #align lt_iff_exists_mul lt_iff_exists_mul
 #align lt_iff_exists_add lt_iff_exists_add
 

@@ -3,11 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
@@ -17,10 +12,8 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.Lift
+
+#align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-!
 # Equivalence between types
@@ -66,7 +59,7 @@ def pprodEquivProd : PProd α β ≃ α × β where
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
--- porting note: in Lean 3 this had @[congr]`
+-- porting note: in Lean 3 this had `@[congr]`
 @[simps apply]
 def pprodCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : PProd α γ ≃ PProd β δ where
   toFun x := ⟨e₁ x.1, e₂ x.2⟩
@@ -147,6 +140,21 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 #align equiv.prod_assoc_symm_apply Equiv.prodAssoc_symm_apply
 #align equiv.prod_assoc_apply Equiv.prodAssoc_apply
 
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm (α β γ δ : Type _) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
+  toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
+  invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
+  left_inv := fun ⟨⟨_a, _b⟩, ⟨_c, _d⟩⟩ => rfl
+  right_inv := fun ⟨⟨_a, _c⟩, ⟨_b, _d⟩⟩ => rfl
+#align equiv.prod_prod_prod_comm Equiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm (α β γ δ : Type _) :
+    (prodProdProdComm α β γ δ).symm = prodProdProdComm α γ β δ :=
+  rfl
+#align equiv.prod_prod_prod_comm_symm Equiv.prodProdProdComm_symm
+
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
 @[simps (config := { fullyApplied := false })]
 def curry (α β γ) : (α × β → γ) ≃ (α → β → γ) where
@@ -177,6 +185,11 @@ def punitProd (α) : PUnit × α ≃ α :=
 #align equiv.punit_prod Equiv.punitProd
 #align equiv.punit_prod_symm_apply Equiv.punitProd_symm_apply
 #align equiv.punit_prod_apply Equiv.punitProd_apply
+
+/-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
+@[simps]
+def sigmaPUnit (α) : (_ : α) × PUnit ≃ α :=
+  ⟨fun p => p.1, fun a => ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
 
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
@@ -217,6 +230,25 @@ theorem uniqueProd_symm_apply [Unique β] (x : α) :
     (uniqueProd α β).symm x = (default, x) :=
   rfl
 #align equiv.unique_prod_symm_apply Equiv.uniqueProd_symm_apply
+
+/-- Any family of `Unique` types is a right identity for dependent type product up to
+equivalence. -/
+def sigmaUnique (α) (β : α → Type _) [∀ a, Unique (β a)] : (a : α) × (β a) ≃ α :=
+  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
+
+@[simp]
+theorem coe_sigmaUnique {β : α → Type _} [∀ a, Unique (β a)] :
+    (⇑(sigmaUnique α β) : (a : α) × (β a) → α) = Sigma.fst :=
+  rfl
+
+theorem sigmaUnique_apply {β : α → Type _} [∀ a, Unique (β a)] (x : (a : α) × β a) :
+    sigmaUnique α β x = x.1 :=
+  rfl
+
+@[simp]
+theorem sigmaUnique_symm_apply {β : α → Type _} [∀ a, Unique (β a)] (x : α) :
+    (sigmaUnique α β).symm x = ⟨x, default⟩ :=
+  rfl
 
 /-- `Empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α) : α × Empty ≃ Empty :=
@@ -417,7 +449,7 @@ theorem emptySum_apply_inr [IsEmpty α] (b : β) : emptySum α β (Sum.inr b) = 
   rfl
 #align equiv.empty_sum_apply_inr Equiv.emptySum_apply_inr
 
-/-- `Option α` is equivalent to `α ⊕ punit` -/
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def optionEquivSumPUnit (α) : Option α ≃ Sum α PUnit :=
   ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
     fun o => by cases o <;> rfl,
@@ -475,7 +507,7 @@ def piOptionEquivProd {β : Option α → Type _} :
 
 /-- `α ⊕ β` is equivalent to a `Sigma`-type over `Bool`. Note that this definition assumes `α` and
 `β` to be types from the same universe, so it cannot by used directly to transfer theorems about
-sigma types to theorems about sum types. In many cases one can use `ulift` to work around this
+sigma types to theorems about sum types. In many cases one can use `ULift` to work around this
 difficulty. -/
 def sumEquivSigmaBool (α β : Type u) : Sum α β ≃ Σ b : Bool, cond b α β :=
   ⟨fun s => s.elim (fun x => ⟨true, x⟩) fun x => ⟨false, x⟩, fun s =>
@@ -511,9 +543,9 @@ def sumCompl {α : Type _} (p : α → Prop) [DecidablePred p] :
   toFun := Sum.elim Subtype.val Subtype.val
   invFun a := if h : p a then Sum.inl ⟨a, h⟩ else Sum.inr ⟨a, h⟩
   left_inv := by
-    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp;
-    { rw [dif_pos] }
-    { rw [dif_neg] }
+    rintro (⟨x, hx⟩ | ⟨x, hx⟩) <;> dsimp
+    · rw [dif_pos]
+    · rw [dif_neg]
   right_inv a := by
     dsimp
     split_ifs <;> rfl
@@ -598,10 +630,8 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
   by_cases h:p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
 #align equiv.perm.subtype_congr.symm Equiv.Perm.subtypeCongr.symm
 
 @[simp]
@@ -612,10 +642,8 @@ theorem Perm.subtypeCongr.trans :
   by_cases h:p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
     simp [Perm.subtypeCongr.apply, h, this]
-
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
-
 #align equiv.perm.subtype_congr.trans Equiv.Perm.subtypeCongr.trans
 
 end sumCompl
@@ -1036,7 +1064,7 @@ def natEquivNatSumPUnit : ℕ ≃ Sum ℕ PUnit where
   right_inv := by rintro (_ | _) <;> rfl
 #align equiv.nat_equiv_nat_sum_punit Equiv.natEquivNatSumPUnit
 
-/-- `ℕ ⊕ Punit` is equivalent to `ℕ`. -/
+/-- `ℕ ⊕ PUnit` is equivalent to `ℕ`. -/
 def natSumPUnitEquivNat : Sum ℕ PUnit ≃ ℕ :=
   natEquivNatSumPUnit.symm
 #align equiv.nat_sum_punit_equiv_nat Equiv.natSumPUnitEquivNat
@@ -1323,7 +1351,7 @@ def piSplitAt {α : Type _} [DecidableEq α] (i : α) (β : α → Type _) :
   invFun f j := if h : j = i then h.symm.rec f.1 else f.2 ⟨j, h⟩
   right_inv f := by
     ext x
-    exacts[dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
+    exacts [dif_pos rfl, (dif_neg x.2).trans (by cases x; rfl)]
   left_inv f := by
     ext x
     dsimp only
@@ -1438,7 +1466,7 @@ where `p : β → Prop`, permuting only the `b : β` that satisfy `p b`.
 This can be used to extend the domain across a function `f : α → β`,
 keeping everything outside of `Set.range f` fixed. For this use-case `Equiv` given by `f` can
 be constructed by `Equiv.of_leftInverse'` or `Equiv.of_leftInverse` when there is a known
-inverse, or `Equiv.ofInjective` in the general case.`.
+inverse, or `Equiv.ofInjective` in the general case.
 -/
 def Perm.extendDomain : Perm β' :=
   (permCongr f e).subtypeCongr (Equiv.refl _)
@@ -1673,9 +1701,7 @@ theorem sumCongr_swap_refl {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inl, comp_apply,
       swap_apply_def, Sum.inl.injEq]
     split_ifs <;> rfl
-
   · simp [Sum.map, swap_apply_of_ne_of_ne]
-
 #align equiv.perm.sum_congr_swap_refl Equiv.Perm.sumCongr_swap_refl
 
 @[simp]
@@ -1688,7 +1714,6 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp.right_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
-
 #align equiv.perm.sum_congr_refl_swap Equiv.Perm.sumCongr_refl_swap
 
 end Perm
@@ -1740,11 +1765,8 @@ theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α �
   conv_rhs => rw [Equiv.swap_apply_def]
   split_ifs with h₁ h₂
   · rw [hf h₁, Equiv.swap_apply_left]
-
   · rw [hf h₂, Equiv.swap_apply_right]
-
   · rw [Equiv.swap_apply_of_ne_of_ne (mt (congr_arg f) h₁) (mt (congr_arg f) h₂)]
-
 #align function.injective.map_swap Function.Injective.map_swap
 
 namespace Equiv
@@ -1955,7 +1977,6 @@ theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort _
       in the `simp` should too:
     have := (EmbeddingLike.apply_eq_iff_eq e).mp h' -/
     cases e.symm.injective h' |> h
-
 #align function.Pi_congr_left'_update Function.piCongrLeft'_update
 
 theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → Sort _) (e : α ≃ β)

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.extend_from
-! leanprover-community/mathlib commit b363547b3113d350d053abdf2884e9850a56b205
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.extend_from from "leanprover-community/mathlib"@"b363547b3113d350d053abdf2884e9850a56b205"
 
 /-!
 # Extending a function from a subset
@@ -17,7 +14,7 @@ The main definition of this file is `extendFrom A f` where `f : X → Y`
 and `A : Set X`. This defines a new function `g : X → Y` which maps any
 `x₀ : X` to the limit of `f` as `x` tends to `x₀`, if such a limit exists.
 
-This is analoguous to the way `DenseInducing.extend` "extends" a function
+This is analogous to the way `DenseInducing.extend` "extends" a function
 `f : X → Z` to a function `g : Y → Z` along a dense inducing `i : X → Y`.
 
 The main theorem we prove about this definition is `continuousOn_extendFrom`

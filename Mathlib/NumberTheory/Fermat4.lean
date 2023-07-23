@@ -2,15 +2,12 @@
 Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
-
-! This file was ported from Lean 3 source module number_theory.fermat4
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.LinearCombination
+
+#align_import number_theory.fermat4 from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # Fermat's Last Theorem for the case n = 4
@@ -161,8 +158,8 @@ theorem Int.coprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
 #align int.coprime_of_sq_sum Int.coprime_of_sq_sum
 
-theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) : IsCoprime (r ^ 2 + s ^ 2) (r * s) :=
-  by
+theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
+    IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.coprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.coprime_of_sq_sum h
 #align int.coprime_of_sq_sum' Int.coprime_of_sq_sum'

@@ -13,7 +13,7 @@ open Qq
 
 -- TODO: uncomment above imports when they are ported
 
-variables {α β : Type} [Semiring α] [Ring β]
+variable {α β : Type} [Semiring α] [Ring β]
 
 namespace Matrix
 
@@ -39,38 +39,6 @@ elab "dims% " e:term : term => do
   let m ← instantiateMVars m
   let n ← instantiateMVars n
   mkAppM ``Prod.mk #[m, n]
-
-/-- Check equality of two expressions.
-* `#guard_expr e = e'` checks that `e` and `e'` are defeq at reducible transparency.
-* `#guard_expr e =~ e'` checks that `e` and `e'` are defeq at default transparency.
-* `#guard_expr e =ₛ e'` checks that `e` and `e'` are syntactically equal.
-* `#guard_expr e =ₐ e'` checks that `e` and `e'` are alpha-equivalent.
-
-This is similar to the `guard_expr` tactic but also uses default instances and instantiates
-metavariables. -/
-syntax (name := guardExprCmd) "#guard_expr " term:51 Std.Tactic.GuardExpr.equal term : command
-
-elab_rules (kind := guardExprCmd) : command
-  | `(command| #guard_expr $r $eq:equal $p) => liftTermElabM do
-    let some mk := Std.Tactic.GuardExpr.equal.toMatchKind eq | throwUnsupportedSyntax
-    let r ← Term.elabTerm r none
-    let p ← Term.elabTerm p none
-    Term.synthesizeSyntheticMVarsUsingDefault
-    let r ← instantiateMVars r
-    let p ← instantiateMVars p
-    unless ← mk.isEq r p do
-      throwError "expression{indentExpr r}\nis not {eq} to{indentExpr p}"
-
-/-- `#guard e` checks that the expression `e` evaluates to `true`. -/
-elab "#guard " e:term : command => liftTermElabM do
-  let e ← Term.elabTermEnsuringType e (mkConst ``Bool)
-  Term.synthesizeSyntheticMVarsUsingDefault
-  let e ← instantiateMVars e
-  if e.hasMVar then
-    throwError "expression{indentExpr e}\nhas metavariables"
-  let v ← unsafe (evalExpr Bool (mkConst ``Bool) e)
-  unless v do
-    throwError "expression{indentExpr e}\ndid not evaluate to `true`"
 
 end elaborators
 
@@ -176,7 +144,7 @@ example {α : Type _} [CommRing α] {a b c d : α} :
   /-
   Try this: simp only [det_succ_row_zero, Fin.sum_univ_succ, neg_mul, mul_one,
   Fin.default_eq_zero, Fin.coe_zero, one_mul, cons_val_one, Fin.coe_succ, univ_unique,
-  submatrix_apply, pow_one, Fin.zero_succ_above, Fin.succ_succ_above_zero,  finset.sum_singleton,
+  submatrix_apply, pow_one, Fin.zero_succ_above, Fin.succ_succ_above_zero, finset.sum_singleton,
   cons_val_zero, cons_val_succ, det_fin_zero, pow_zero]
   -/
   ring

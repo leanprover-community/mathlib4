@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.option.defs
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Algebra.Classes
+
+#align_import data.option.defs from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Extra definitions on `Option`
@@ -25,25 +22,25 @@ namespace Option
 /-- Lifts a relation `α → β → Prop` to a relation `Option α → Option β → Prop` by just adding
 `none ~ none`. -/
 inductive rel (r : α → β → Prop) : Option α → Option β → Prop
-| /-- If `a ~ b`, then `some a ~ some b` -/
-  some {a b} : r a b → rel r (some a) (some b)
-| /-- `none ~ none` -/
-  none : rel r none none
+  | /-- If `a ~ b`, then `some a ~ some b` -/
+    some {a b} : r a b → rel r (some a) (some b)
+  | /-- `none ~ none` -/
+    none : rel r none none
 #align option.rel Option.rel
 
 /-- Traverse an object of `Option α` with a function `f : α → F β` for an applicative `F`. -/
 protected def traverse.{u, v} {F : Type u → Type v} [Applicative F] {α β : Type _} (f : α → F β) :
-  Option α → F (Option β)
-| none => pure none
-| some x => some <$> f x
+    Option α → F (Option β)
+  | none => pure none
+  | some x => some <$> f x
 #align option.traverse Option.traverse
 
 /-- If you maybe have a monadic computation in a `[Monad m]` which produces a term of type `α`,
 then there is a naturally associated way to always perform a computation in `m` which maybe
 produces a result. -/
 def maybe.{u, v} {m : Type u → Type v} [Monad m] {α : Type u} : Option (m α) → m (Option α)
-| none => pure none
-| some fn => some <$> fn
+  | none => pure none
+  | some fn => some <$> fn
 #align option.maybe Option.maybe
 
 #align option.mmap Option.mapM
@@ -60,12 +57,22 @@ variable {α : Type _} {β : Type _}
 -- attribute [inline] Option.isSome Option.isNone
 
 /-- An elimination principle for `Option`. It is a nondependent version of `Option.rec`. -/
-@[simp]
 protected def elim' (b : β) (f : α → β) : Option α → β
   | some a => f a
   | none => b
-
 #align option.elim Option.elim'
+
+@[simp]
+theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
+@[simp]
+theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+
+-- porting note: this lemma was introduced because it is necessary
+-- in `CategoryTheory.Category.PartialFun`
+lemma elim'_eq_elim {α β : Type _} (b : β) (f : α → β) (a : Option α) :
+    Option.elim' b f a = Option.elim a b f := by
+  cases a <;> rfl
+
 
 theorem mem_some_iff {α : Type _} {a b : α} : a ∈ some b ↔ b = a := by simp
 #align option.mem_some_iff Option.mem_some_iff
@@ -105,7 +112,6 @@ theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
 @[simp]
 theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
   cases o <;> simp [toList, eq_comm]
-
 #align option.mem_to_list Option.mem_toList
 
 instance liftOrGet_isCommutative (f : α → α → α) [IsCommutative α f] :

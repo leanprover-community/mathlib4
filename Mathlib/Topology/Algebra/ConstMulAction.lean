@@ -2,17 +2,14 @@
 Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
-
-! This file was ported from Lean 3 source module topology.algebra.const_mul_action
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Homeomorph
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Support
+
+#align_import topology.algebra.const_mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Monoid actions continuous in the second variable
@@ -185,7 +182,7 @@ theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
   simp only [Set.setOf_forall]
-  exact isClosed_interᵢ fun c => isClosed_interᵢ fun x =>
+  exact isClosed_iInter fun c => isClosed_iInter fun x =>
     isClosed_eq (continuous_apply _) ((continuous_apply _).const_smul _)
 #align is_closed_set_of_map_smul isClosed_setOf_map_smulₓ
 
@@ -322,9 +319,15 @@ theorem continuous_const_smul_iff₀ (hc : c ≠ 0) : (Continuous fun x => c •
 
 /-- Scalar multiplication by a non-zero element of a group with zero acting on `α` is a
 homeomorphism from `α` onto itself. -/
+@[simps! (config := .asFn) apply]
 protected def Homeomorph.smulOfNeZero (c : G₀) (hc : c ≠ 0) : α ≃ₜ α :=
   Homeomorph.smul (Units.mk0 c hc)
 #align homeomorph.smul_of_ne_zero Homeomorph.smulOfNeZero
+
+@[simp]
+theorem Homeomorph.smulOfNeZero_symm_apply {c : G₀} (hc : c ≠ 0) :
+    ⇑(Homeomorph.smulOfNeZero c hc).symm = (c⁻¹ • · : α → α) :=
+  rfl
 
 theorem isOpenMap_smul₀ {c : G₀} (hc : c ≠ 0) : IsOpenMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isOpenMap
@@ -451,7 +454,7 @@ class ProperlyDiscontinuousSMul (Γ : Type _) (T : Type _) [TopologicalSpace T] 
     Prop where
   /-- Given two compact sets `K` and `L`, `γ • K ∩ L` is nonempty for finitely many `γ`. -/
   finite_disjoint_inter_image :
-    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·)  '' K ∩ L ≠ ∅ }
+    ∀ {K L : Set T}, IsCompact K → IsCompact L → Set.Finite { γ : Γ | (γ • ·) '' K ∩ L ≠ ∅ }
 #align properly_discontinuous_smul ProperlyDiscontinuousSMul
 
 /-- Class `ProperlyDiscontinuousVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
@@ -487,7 +490,7 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
     letI := MulAction.orbitRel Γ T
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
-  exact isOpen_unionᵢ fun γ => isOpenMap_smul γ U hU
+  exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 #align is_open_map_quotient_mk_mul isOpenMap_quotient_mk'_mul
 #align is_open_map_quotient_mk_add isOpenMap_quotient_mk'_add
 
@@ -515,14 +518,14 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   let V₀₀ := ⋂ γ ∈ bad_Γ_set, v γ
   let V₀ := V₀₀ ∩ L₀
   have U_nhds : f '' U₀ ∈ 𝓝 (f x₀) := by
-    refine f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
+    refine f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => ?_) K₀_in)
     exact (continuous_const_smul _).continuousAt (hu γ)
   have V_nhds : f '' V₀ ∈ 𝓝 (f y₀) :=
-    f_op.image_mem_nhds (inter_mem ((binterᵢ_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
+    f_op.image_mem_nhds (inter_mem ((biInter_mem bad_Γ_finite).mpr fun γ _ => hv γ) L₀_in)
   refine' ⟨f '' U₀, U_nhds, f '' V₀, V_nhds, MulAction.disjoint_image_image_iff.2 _⟩
   rintro x ⟨x_in_U₀₀, x_in_K₀⟩ γ
   by_cases H : γ ∈ bad_Γ_set
-  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_interᵢ₂.mp x_in_U₀₀ γ H, mem_interᵢ₂.mp h.1 γ H⟩
+  · exact fun h => (u_v_disjoint γ).le_bot ⟨mem_iInter₂.mp x_in_U₀₀ γ H, mem_iInter₂.mp h.1 γ H⟩
   · rintro ⟨-, h'⟩
     simp only [image_smul, Classical.not_not, mem_setOf_eq, Ne.def] at H
     exact eq_empty_iff_forall_not_mem.mp H (γ • x) ⟨mem_image_of_mem _ x_in_K₀, h'⟩

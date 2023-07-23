@@ -2,14 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.finite
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.FinCategory
+
+#align_import category_theory.limits.preserves.finite from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
 /-!
 # Preservation of finite (co)limits.
@@ -60,18 +57,29 @@ noncomputable instance (priority := 100) preservesLimitsOfShapeOfPreservesFinite
   apply preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_limits_of_shape_of_preserves_finite_limits CategoryTheory.Limits.preservesLimitsOfShapeOfPreservesFiniteLimits
 
-noncomputable instance (priority := 100) PreservesLimits.preservesFiniteLimitsOfSize (F : C ⥤ D)
+-- This is a dangerous instance as it has unbound universe variables.
+/-- If we preserve limits of some arbitrary size, then we preserve all finite limits. -/
+noncomputable def PreservesLimitsOfSize.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimitsOfSize.{w, w₂} F] : PreservesFiniteLimits F where
   preservesFiniteLimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestLimitsOfPreservesLimits F
     exact preservesLimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
-#align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimits.preservesFiniteLimitsOfSize
+#align category_theory.limits.preserves_limits.preserves_finite_limits_of_size CategoryTheory.Limits.PreservesLimitsOfSize.preservesFiniteLimits
 
+-- Added as a specialization of the dangerous instance above, for limits indexed in Type 0.
+noncomputable instance (priority := 120) PreservesLimitsOfSize0.preservesFiniteLimits
+    (F : C ⥤ D) [PreservesLimitsOfSize.{0, 0} F] : PreservesFiniteLimits F :=
+  PreservesLimitsOfSize.preservesFiniteLimits F
+#align preserves_limits_of_size.zero.preserves_finite_limits CategoryTheory.Limits.PreservesLimitsOfSize0.preservesFiniteLimits
+
+-- An alternative specialization of the dangerous instance for small limits.
 noncomputable instance (priority := 120) PreservesLimits.preservesFiniteLimits (F : C ⥤ D)
     [PreservesLimits F] : PreservesFiniteLimits F :=
-  PreservesLimits.preservesFiniteLimitsOfSize F
+  PreservesLimitsOfSize.preservesFiniteLimits F
 #align category_theory.limits.preserves_limits.preserves_finite_limits CategoryTheory.Limits.PreservesLimits.preservesFiniteLimits
 
+-- Porting note: is this unnecessary given the instance
+-- `PreservesLimitsOfSize0.preservesFiniteLimits`?
 /-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
 arbitrary universe. -/
 def preservesFiniteLimitsOfPreservesFiniteLimitsOfSize (F : C ⥤ D)
@@ -98,7 +106,7 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteProducts (F : C ⥤  D) where
+class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
@@ -120,15 +128,31 @@ noncomputable instance (priority := 100) preservesColimitsOfShapeOfPreservesFini
   apply preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J)
 #align category_theory.limits.preserves_colimits_of_shape_of_preserves_finite_colimits CategoryTheory.Limits.preservesColimitsOfShapeOfPreservesFiniteColimits
 
-noncomputable instance (priority := 100) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
+-- This is a dangerous instance as it has unbound universe variables.
+/-- If we preserve colimits of some arbitrary size, then we preserve all finite colimits. -/
+noncomputable def PreservesColimitsOfSize.preservesFiniteColimits (F : C ⥤ D)
     [PreservesColimitsOfSize.{w, w₂} F] : PreservesFiniteColimits F where
   preservesFiniteColimits J (sJ : SmallCategory J) fJ := by
     haveI := preservesSmallestColimitsOfPreservesColimits F
     exact preservesColimitsOfShapeOfEquiv (FinCategory.equivAsType J) F
+#align category_theory.limits.preserves_colimits_of_size.preserves_finite_colimits CategoryTheory.Limits.PreservesColimitsOfSize.preservesFiniteColimits
+
+-- Added as a specialization of the dangerous instance above, for colimits indexed in Type 0.
+noncomputable instance (priority := 120) PreservesColimitsOfSize0.preservesFiniteColimits
+    (F : C ⥤ D) [PreservesColimitsOfSize.{0, 0} F] : PreservesFiniteColimits F :=
+  PreservesColimitsOfSize.preservesFiniteColimits F
+#align preserves_colimits_of_size.zero.preserves_finite_colimits CategoryTheory.Limits.PreservesColimitsOfSize0.preservesFiniteColimits
+
+-- An alternative specialization of the dangerous instance for small colimits.
+noncomputable instance (priority := 120) PreservesColimits.preservesFiniteColimits (F : C ⥤ D)
+    [PreservesColimits F] : PreservesFiniteColimits F :=
+  PreservesColimitsOfSize.preservesFiniteColimits F
 #align category_theory.limits.preserves_colimits.preserves_finite_colimits CategoryTheory.Limits.PreservesColimits.preservesFiniteColimits
 
-/-- We can always derive `PreservesFiniteLimits C` by showing that we are preserving limits at an
-arbitrary universe. -/
+-- Porting note: is this unnecessary given the instance
+-- `PreservesColimitsOfSize0.preservesFiniteColimits`?
+/-- We can always derive `PreservesFiniteColimits C`
+by showing that we are preserving colimits at an arbitrary universe. -/
 def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
     (h :
       ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), PreservesColimitsOfShape J F) :
@@ -156,7 +180,7 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
 for `Fintype J` -/
-class PreservesFiniteCoproducts (F : C ⥤  D) where
+class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 end CategoryTheory.Limits

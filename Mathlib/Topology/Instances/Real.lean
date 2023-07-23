@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.instances.real
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Algebra.UniformGroup
@@ -20,6 +15,8 @@ import Mathlib.GroupTheory.Archimedean
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
+
+#align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Topological properties of ℝ
@@ -67,14 +64,14 @@ instance : ProperSpace ℝ where
 instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
-    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_h : a < b), {Ioo (a : ℝ) b}) :=
+    @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
   isTopologicalBasis_of_open_of_nhds (by simp (config := { contextual := true }) [isOpen_Ioo])
     fun a v hav hv =>
     let ⟨l, u, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
     let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
     let ⟨p, hap, hpu⟩ := exists_rat_btwn hu
     ⟨Ioo q p, by
-      simp only [mem_unionᵢ]
+      simp only [mem_iUnion]
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun a' ⟨hqa', ha'p⟩ =>
       h ⟨hlq.trans hqa', ha'p.trans hpu⟩⟩
 #align real.is_topological_basis_Ioo_rat Real.isTopologicalBasis_Ioo_rat
@@ -86,7 +83,7 @@ theorem Real.cocompact_eq : cocompact ℝ = atBot ⊔ atTop := by
 #align real.cocompact_eq Real.cocompact_eq
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
-lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (λp:ℚ, p + r) :=
+lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
 _
 
 lemma uniform_embedding_mul_rat {q : ℚ} (hq : q ≠ 0) : uniform_embedding ((*) q) :=
@@ -171,12 +168,13 @@ theorem closure_of_rat_image_lt {q : ℚ} :
 #align closure_of_rat_image_lt closure_of_rat_image_lt
 
 /- TODO(Mario): Put these back only if needed later
-lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe:ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
-_
+lemma closure_of_rat_image_le_eq {q : ℚ} : closure ((coe : ℚ → ℝ) '' {x | q ≤ x}) = {r | ↑q ≤ r} :=
+  _
 
 lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
-  closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
-_-/
+    closure (of_rat '' {q:ℚ | a ≤ q ∧ q ≤ b}) = {r:ℝ | of_rat a ≤ r ∧ r ≤ of_rat b} :=
+  _
+-/
 theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelow s ∧ BddAbove s :=
   ⟨by
     intro bdd
@@ -188,11 +186,11 @@ theorem Real.bounded_iff_bddBelow_bddAbove {s : Set ℝ} : Bounded s ↔ BddBelo
     fun h => bounded_of_bddAbove_of_bddBelow h.2 h.1⟩
 #align real.bounded_iff_bdd_below_bdd_above Real.bounded_iff_bddBelow_bddAbove
 
-theorem Real.subset_Icc_infₛ_supₛ_of_bounded {s : Set ℝ} (h : Bounded s) :
-    s ⊆ Icc (infₛ s) (supₛ s) :=
-  subset_Icc_cinfₛ_csupₛ (Real.bounded_iff_bddBelow_bddAbove.1 h).1
+theorem Real.subset_Icc_sInf_sSup_of_bounded {s : Set ℝ} (h : Bounded s) :
+    s ⊆ Icc (sInf s) (sSup s) :=
+  subset_Icc_csInf_csSup (Real.bounded_iff_bddBelow_bddAbove.1 h).1
     (Real.bounded_iff_bddBelow_bddAbove.1 h).2
-#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_infₛ_supₛ_of_bounded
+#align real.subset_Icc_Inf_Sup_of_bounded Real.subset_Icc_sInf_sSup_of_bounded
 
 end
 
@@ -237,7 +235,7 @@ theorem tendsto_coe_cofinite : Tendsto ((↑) : ℤ → ℝ) cofinite (cocompact
   simp [Real.ball_eq_Ioo, Set.finite_Ioo]
 #align int.tendsto_coe_cofinite Int.tendsto_coe_cofinite
 
-/-- For nonzero `a`, the "multiples of `a`" map `zmultiples_hom` from `ℤ` to `ℝ` is discrete, i.e.
+/-- For nonzero `a`, the "multiples of `a`" map `zmultiplesHom` from `ℤ` to `ℝ` is discrete, i.e.
 inverse images of compact sets are finite. -/
 theorem tendsto_zmultiplesHom_cofinite {a : ℝ} (ha : a ≠ 0) :
     Tendsto (zmultiplesHom ℝ a) cofinite (cocompact ℝ) := by
@@ -266,4 +264,3 @@ theorem tendsto_zmultiples_subtype_cofinite (a : ℝ) :
 end AddSubgroup
 
 end Subgroups
-

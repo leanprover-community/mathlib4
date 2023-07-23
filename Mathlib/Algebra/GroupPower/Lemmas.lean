@@ -2,11 +2,6 @@
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module algebra.group_power.lemmas
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Invertible
 import Mathlib.Data.Nat.Cast.Basic
@@ -14,6 +9,8 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Data.Nat.Pow
 import Mathlib.Data.Int.Cast.Lemmas
+
+#align_import algebra.group_power.lemmas from "leanprover-community/mathlib"@"a07d750983b94c530ab69a726862c2ab6802b38c"
 
 /-!
 # Lemmas about power operations on monoids and groups
@@ -71,7 +68,6 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
     (by rwa [← _root_.pow_succ, Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 #align units.of_pow Units.ofPow
-#align units.of_nsmul AddUnits.ofNSMul
 #align add_units.of_nsmul AddUnits.ofNSMul
 
 @[to_additive (attr := simp)]
@@ -210,7 +206,6 @@ theorem zpow_sub_one (a : G) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
   calc
     a ^ (n - 1) = a ^ (n - 1) * a * a⁻¹ := (mul_inv_cancel_right _ _).symm
     _ = a ^ n * a⁻¹ := by rw [← zpow_add_one, sub_add_cancel]
-
 #align zpow_sub_one zpow_sub_one
 #align sub_one_zsmul sub_one_zsmul
 
@@ -334,7 +329,6 @@ theorem zpow_strictMono_right (ha : 1 < a) : StrictMono fun n : ℤ => a ^ n := 
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| sub_pos_of_lt h) _
     _ = a ^ n := by rw [← zpow_add]; simp
-
 #align zpow_strict_mono_right zpow_strictMono_right
 #align zsmul_strict_mono_left zsmul_strictMono_left
 
@@ -344,7 +338,6 @@ theorem zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ => a ^ n := fun m 
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ ≤ a ^ m * a ^ (n - m) := mul_le_mul_left' (one_le_zpow ha <| sub_nonneg_of_le h) _
     _ = a ^ n := by rw [← zpow_add]; simp
-
 #align zpow_mono_right zpow_mono_right
 #align zsmul_mono_left zsmul_mono_left
 
@@ -505,7 +498,7 @@ theorem WithBot.coe_nsmul [AddMonoid A] (a : A) (n : ℕ) : ↑(n • a) = n •
 #align with_bot.coe_nsmul WithBot.coe_nsmul
 
 theorem nsmul_eq_mul' [NonAssocSemiring R] (a : R) (n : ℕ) : n • a = a * n := by
-  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero],
+  induction' n with n ih <;> [rw [zero_nsmul, Nat.cast_zero, mul_zero];
     rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]]
 #align nsmul_eq_mul' nsmul_eq_mul'ₓ
 -- typeclasses do not match up exactly.
@@ -552,7 +545,7 @@ theorem Int.coe_nat_pow (n m : ℕ) : ((n ^ m : ℕ) : ℤ) = (n : ℤ) ^ m := b
 #align int.coe_nat_pow Int.coe_nat_pow
 
 theorem Int.natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction' k with k ih <;> [rfl, rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
+  induction' k with k ih <;> [rfl; rw [pow_succ', Int.natAbs_mul, pow_succ', ih]]
 #align int.nat_abs_pow Int.natAbs_pow
 
 section bit0_bit1
@@ -582,6 +575,14 @@ theorem mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n)
 #align mul_bit1 mul_bit1
 
 end bit0_bit1
+
+/-- Note this holds in marginally more generality than `Int.cast_mul` -/
+theorem Int.cast_mul_eq_zsmul_cast [AddCommGroupWithOne α] :
+    ∀ m n, ((m * n : ℤ) : α) = m • (n : α) :=
+  fun m =>
+  Int.inductionOn' m 0 (by simp) (fun k _ ih n => by simp [add_mul, add_zsmul, ih]) fun k _ ih n =>
+    by simp [sub_mul, sub_zsmul, ih, ← sub_eq_add_neg]
+#align int.cast_mul_eq_zsmul_cast Int.cast_mul_eq_zsmul_cast
 
 @[simp]
 theorem zsmul_eq_mul [Ring R] (a : R) : ∀ n : ℤ, n • a = n * a
@@ -654,7 +655,6 @@ theorem one_add_mul_le_pow' (Hsq : 0 ≤ a * a) (Hsq' : 0 ≤ (1 + a) * (1 + a))
       _ ≤ (1 + a) * (1 + a) * (1 + a) ^ n :=
         mul_le_mul_of_nonneg_left (one_add_mul_le_pow' Hsq Hsq' H _) Hsq'
       _ = (1 + a) ^ (n + 2) := by simp only [pow_succ, mul_assoc]
-
 #align one_add_mul_le_pow' one_add_mul_le_pow'
 
 theorem pow_le_pow_of_le_one_aux (h : 0 ≤ a) (ha : a ≤ 1) (i : ℕ) :
@@ -842,7 +842,7 @@ attribute [to_additive existing zmultiplesHom] zpowersHom
 variable {M G A}
 
 theorem powersHom_apply [Monoid M] (x : M) (n : Multiplicative ℕ) :
-    powersHom M x n = x ^ (Multiplicative.toAdd n):=
+    powersHom M x n = x ^ (Multiplicative.toAdd n) :=
   rfl
 #align powers_hom_apply powersHom_apply
 
@@ -919,53 +919,24 @@ theorem AddMonoidHom.apply_int [AddGroup M] (f : ℤ →+ M) (n : ℤ) : f n = n
 /-! `AddMonoidHom.ext_int` is defined in `Data.Int.Cast` -/
 
 variable (M G A)
--- Porting note: `simp` was broken during the port.
 /-- If `M` is commutative, `powersHom` is a multiplicative equivalence. -/
 def powersMulHom [CommMonoid M] : M ≃* (Multiplicative ℕ →* M) :=
-  { powersHom M with map_mul' := fun a b => MonoidHom.ext (
-    by
-      intro n
-      let n' : ℕ := Multiplicative.toAdd n
-      show (a*b) ^ n' = a ^ n' * b ^ n'
-      simp [mul_pow]
-    ) }
+  { powersHom M with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_pow] }
 #align powers_mul_hom powersMulHom
 
--- Porting note: `simp` was broken during the port.
 /-- If `M` is commutative, `zpowersHom` is a multiplicative equivalence. -/
 def zpowersMulHom [CommGroup G] : G ≃* (Multiplicative ℤ →* G) :=
-  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext (
-    by
-      intro n
-      let n' : ℤ := Multiplicative.toAdd n
-      show (a*b) ^ n' = a ^ n' * b ^ n'
-      simp [mul_zpow]
-    )
-  -- <| by simp [mul_zpow]
-  }
+  { zpowersHom G with map_mul' := fun a b => MonoidHom.ext fun n => by simp [mul_zpow] }
 #align zpowers_mul_hom zpowersMulHom
 
--- Porting note: `simp` was multiplesHom during the port.
 /-- If `M` is commutative, `multiplesHom` is an additive equivalence. -/
 def multiplesAddHom [AddCommMonoid A] : A ≃+ (ℕ →+ A) :=
-  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
-    by
-      intro n
-      show n • (a+b) = n • a + n • b
-      simp [nsmul_add]
-  ) }
+  { multiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [nsmul_add] }
 #align multiples_add_hom multiplesAddHom
 
 /-- If `M` is commutative, `zmultiplesHom` is an additive equivalence. -/
 def zmultiplesAddHom [AddCommGroup A] : A ≃+ (ℤ →+ A) :=
-  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext (
-    by
-      intro n
-      show n • (a+b) = n • a + n • b
-      simp [zsmul_add]
-  )
-  -- <| by simp [zsmul_add]
-  }
+  { zmultiplesHom A with map_add' := fun a b => AddMonoidHom.ext fun n => by simp [zsmul_add] }
 #align zmultiples_add_hom zmultiplesAddHom
 
 variable {M G A}

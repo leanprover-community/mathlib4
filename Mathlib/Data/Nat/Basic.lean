@@ -2,18 +2,12 @@
 Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.basic
-! leanprover-community/mathlib commit bd835ef554f37ef9b804f0903089211f89cb370b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
+
+#align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
 /-!
 # Basic operations on the natural numbers
@@ -143,7 +137,7 @@ theorem and_forall_succ {p : ℕ → Prop} : (p 0 ∧ ∀ n, p (n + 1)) ↔ ∀ 
 theorem or_exists_succ {p : ℕ → Prop} : (p 0 ∨ ∃ n, p (n + 1)) ↔ ∃ n, p n :=
   ⟨fun h => h.elim (fun h0 => ⟨0, h0⟩) fun ⟨n, hn⟩ => ⟨n + 1, hn⟩, by
     rintro ⟨_ | n, hn⟩
-    exacts[Or.inl hn, Or.inr ⟨n, hn⟩]⟩
+    exacts [Or.inl hn, Or.inr ⟨n, hn⟩]⟩
 #align nat.or_exists_succ Nat.or_exists_succ
 
 /-! ### `succ` -/
@@ -201,7 +195,6 @@ theorem max_succ_succ {m n : ℕ} : max (succ m) (succ n) = succ (max m n) := by
   · rw [not_le] at h1
     have h2 := le_of_lt h1
     rw [max_eq_left h2, max_eq_left (succ_le_succ h2)]
-
 #align nat.max_succ_succ Nat.max_succ_succ
 
 theorem not_succ_lt_self {n : ℕ} : ¬succ n < n :=
@@ -374,16 +367,18 @@ This section is here due to dependencies -- the lemmas here require some of the 
 proved above, and some of the results in later sections depend on the definitions in this section.
 -/
 
+-- Porting note: The type ascriptions of these two theorems need to be changed,
+-- as mathport wrote a lambda that wasn't there in mathlib3, that prevents `simp` applying them.
 
 @[simp]
 theorem rec_zero {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
-    (Nat.rec h0 h : ∀ n, C n) 0 = h0 :=
+    Nat.rec h0 h 0 = h0 :=
   rfl
 #align nat.rec_zero Nat.rec_zero
 
 @[simp]
 theorem rec_add_one {C : ℕ → Sort u} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
-    (Nat.rec h0 h : ∀ n, C n) (n + 1) = h n ((Nat.rec h0 h : ∀ n, C n) n) :=
+    Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) :=
   rfl
 #align nat.rec_add_one Nat.rec_add_one
 
@@ -595,7 +590,6 @@ def decreasingInduction' {P : ℕ → Sort _} {m n : ℕ} (h : ∀ k < n, m ≤ 
     · exact h n (lt_succ_self n) mn hP
   · intro _ hP
     exact hP
-
 #align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-! ### `div` -/
@@ -823,10 +817,8 @@ theorem find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < 
   constructor
   · rintro rfl
     exact ⟨Nat.find_spec h, fun _ => Nat.find_min h⟩
-
   · rintro ⟨hm, hlt⟩
     exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
-
 #align nat.find_eq_iff Nat.find_eq_iff
 
 @[simp]
@@ -867,7 +859,7 @@ theorem find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬p 0
     Nat.find h₁ = Nat.find h₂ + 1 := by
   refine' (find_eq_iff _).2 ⟨Nat.find_spec h₂, fun n hn => _⟩
   cases' n with n
-  exacts[h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
+  exacts [h0, @Nat.find_min (fun n => p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 #align nat.find_comp_succ Nat.find_comp_succ
 
 end Find
@@ -927,7 +919,6 @@ instance decidableBallLT :
           match k, e, h' with
           | _, rfl, _ => p
   · exact isFalse (mt (fun hn => hn _ _) p)
-
 #align nat.decidable_ball_lt Nat.decidableBallLT
 
 instance decidableForallFin {n : ℕ} (P : Fin n → Prop) [DecidablePred P] :

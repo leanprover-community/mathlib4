@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module dynamics.circle.rotation_number.translation_number
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Analysis.SpecificLimits.Basic
@@ -14,6 +9,8 @@ import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Topology.Algebra.Order.MonotoneContinuity
+
+#align_import dynamics.circle.rotation_number.translation_number from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`
@@ -25,8 +22,8 @@ $$
 exists and does not depend on `x`. This number is called the *translation number* of `f`.
 Different authors use different notation for this number: `τ`, `ρ`, `rot`, etc
 
-In this file we define a structure `circle_deg1_lift` for bundled maps with these properties, define
-translation number of `f : circle_deg1_lift`, prove some estimates relating `f^n(x)-x` to `τ(f)`. In
+In this file we define a structure `CircleDeg1Lift` for bundled maps with these properties, define
+translation number of `f : CircleDeg1Lift`, prove some estimates relating `f^n(x)-x` to `τ(f)`. In
 case of a continuous map `f` we also prove that `f` admits a point `x` such that `f^n(x)=x+m` if and
 only if `τ(f)=m/n`.
 
@@ -41,50 +38,50 @@ It does not depend on the choice of `a`.
 
 ## Main definitions
 
-* `circle_deg1_lift`: a monotone map `f : ℝ → ℝ` such that `f (x + 1) = f x + 1` for all `x`;
-  the type `circle_deg1_lift` is equipped with `lattice` and `monoid` structures; the
+* `CircleDeg1Lift`: a monotone map `f : ℝ → ℝ` such that `f (x + 1) = f x + 1` for all `x`;
+  the type `CircleDeg1Lift` is equipped with `Lattice` and `Monoid` structures; the
   multiplication is given by composition: `(f * g) x = f (g x)`.
-* `circle_deg1_lift.translation_number`: translation number of `f : circle_deg1_lift`.
+* `CircleDeg1Lift.translationNumber`: translation number of `f : CircleDeg1Lift`.
 
 ## Main statements
 
-We prove the following properties of `circle_deg1_lift.translation_number`.
+We prove the following properties of `CircleDeg1Lift.translationNumber`.
 
-* `circle_deg1_lift.translation_number_eq_of_dist_bounded`: if the distance between `(f^n) 0`
+* `CircleDeg1Lift.translationNumber_eq_of_dist_bounded`: if the distance between `(f^n) 0`
   and `(g^n) 0` is bounded from above uniformly in `n : ℕ`, then `f` and `g` have equal
   translation numbers.
 
-* `circle_deg1_lift.translation_number_eq_of_semiconj_by`: if two `circle_deg1_lift` maps `f`, `g`
-  are semiconjugate by a `circle_deg1_lift` map, then `τ f = τ g`.
+* `CircleDeg1Lift.translationNumber_eq_of_semiconjBy`: if two `CircleDeg1Lift` maps `f`, `g`
+  are semiconjugate by a `CircleDeg1Lift` map, then `τ f = τ g`.
 
-* `circle_deg1_lift.translation_number_units_inv`: if `f` is an invertible `circle_deg1_lift` map
+* `CircleDeg1Lift.translationNumber_units_inv`: if `f` is an invertible `CircleDeg1Lift` map
   (equivalently, `f` is a lift of an orientation-preserving circle homeomorphism), then
   the translation number of `f⁻¹` is the negative of the translation number of `f`.
 
-* `circle_deg1_lift.translation_number_mul_of_commute`: if `f` and `g` commute, then
+* `CircleDeg1Lift.translationNumber_mul_of_commute`: if `f` and `g` commute, then
   `τ (f * g) = τ f + τ g`.
 
-* `circle_deg1_lift.translation_number_eq_rat_iff`: the translation number of `f` is equal to
+* `CircleDeg1Lift.translationNumber_eq_rat_iff`: the translation number of `f` is equal to
   a rational number `m / n` if and only if `(f^n) x = x + m` for some `x`.
 
-* `circle_deg1_lift.semiconj_of_bijective_of_translation_number_eq`: if `f` and `g` are two
-  bijective `circle_deg1_lift` maps and their translation numbers are equal, then these
+* `CircleDeg1Lift.semiconj_of_bijective_of_translationNumber_eq`: if `f` and `g` are two
+  bijective `CircleDeg1Lift` maps and their translation numbers are equal, then these
   maps are semiconjugate to each other.
 
-* `circle_deg1_lift.semiconj_of_group_action_of_forall_translation_number_eq`: let `f₁` and `f₂` be
+* `CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq`: let `f₁` and `f₂` be
   two actions of a group `G` on the circle by degree 1 maps (formally, `f₁` and `f₂` are two
-  homomorphisms from `G →* circle_deg1_lift`). If the translation numbers of `f₁ g` and `f₂ g` are
-  equal to each other for all `g : G`, then these two actions are semiconjugate by some `F :
-  circle_deg1_lift`. This is a version of Proposition 5.4 from [Étienne Ghys, Groupes
+  homomorphisms from `G →* CircleDeg1Lift`). If the translation numbers of `f₁ g` and `f₂ g` are
+  equal to each other for all `g : G`, then these two actions are semiconjugate by some
+  `F : CircleDeg1Lift`. This is a version of Proposition 5.4 from [Étienne Ghys, Groupes
   d'homeomorphismes du cercle et cohomologie bornee][ghys87:groupes].
 
 ## Notation
 
-We use a local notation `τ` for the translation number of `f : circle_deg1_lift`.
+We use a local notation `τ` for the translation number of `f : CircleDeg1Lift`.
 
 ## Implementation notes
 
-We define the translation number of `f : circle_deg1_lift` to be the limit of the sequence
+We define the translation number of `f : CircleDeg1Lift` to be the limit of the sequence
 `(f ^ (2 ^ n)) 0 / (2 ^ n)`, then prove that `((f ^ n) x - x) / n` tends to this number for any `x`.
 This way it is much easier to prove that the limit exists and basic properties of the limit.
 
@@ -104,17 +101,17 @@ preserving circle homeomorphisms for two reasons:
 
 Here are some short-term goals.
 
-* Introduce a structure or a typeclass for lifts of circle homeomorphisms. We use `units
-  circle_deg1_lift` for now, but it's better to have a dedicated type (or a typeclass?).
+* Introduce a structure or a typeclass for lifts of circle homeomorphisms. We use
+  `Units CircleDeg1Lift` for now, but it's better to have a dedicated type (or a typeclass?).
 
-* Prove that the `semiconj_by` relation on circle homeomorphisms is an equivalence relation.
+* Prove that the `SemiconjBy` relation on circle homeomorphisms is an equivalence relation.
 
-* Introduce `conditionally_complete_lattice` structure, use it in the proof of
-  `circle_deg1_lift.semiconj_of_group_action_of_forall_translation_number_eq`.
+* Introduce `ConditionallyCompleteLattice` structure, use it in the proof of
+  `CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq`.
 
 * Prove that the orbits of the irrational rotation are dense in the circle. Deduce that a
   homeomorphism with an irrational rotation is semiconjugate to the corresponding irrational
-  translation by a continuous `circle_deg1_lift`.
+  translation by a continuous `CircleDeg1Lift`.
 
 ## Tags
 
@@ -283,9 +280,9 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 -/
 
 
-/-- The map `y ↦ x + y` as a `circle_deg1_lift`. More precisely, we define a homomorphism from
-`multiplicative ℝ` to `circle_deg1_liftˣ`, so the translation by `x` is
-`translation (multiplicative.of_add x)`. -/
+/-- The map `y ↦ x + y` as a `CircleDeg1Lift`. More precisely, we define a homomorphism from
+`Multiplicative ℝ` to `CircleDeg1Liftˣ`, so the translation by `x` is
+`translation (Multiplicative.ofAdd x)`. -/
 def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
   { toFun := fun x =>
       ⟨⟨fun y => Multiplicative.toAdd x + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
@@ -318,7 +315,7 @@ theorem translate_pow (x : ℝ) (n : ℕ) :
 
 @[simp]
 theorem translate_iterate (x : ℝ) (n : ℕ) :
-    translate (Multiplicative.ofAdd x)^[n] = translate (Multiplicative.ofAdd <| ↑n * x) := by
+    (translate (Multiplicative.ofAdd x))^[n] = translate (Multiplicative.ofAdd <| ↑n * x) := by
   rw [← coe_pow, ← Units.val_pow_eq_pow_val, translate_pow]
 #align circle_deg1_lift.translate_iterate CircleDeg1Lift.translate_iterate
 
@@ -327,7 +324,7 @@ theorem translate_iterate (x : ℝ) (n : ℕ) :
 
 In this section we prove that `f` commutes with translations by an integer number.
 First we formulate these statements (for a natural or an integer number,
-addition on the left or on the right, addition or subtraction) using `function.commute`,
+addition on the left or on the right, addition or subtraction) using `Function.Commute`,
 then reformulate as `simp` lemmas `map_int_add` etc.
 -/
 
@@ -406,7 +403,7 @@ noncomputable instance : Lattice CircleDeg1Lift where
   sup f g :=
     { toFun := fun x => max (f x) (g x)
       monotone' := fun x y h => max_le_max (f.mono h) (g.mono h)
-      -- TODO: generalize to `monotone.max`
+      -- TODO: generalize to `Monotone.max`
       map_add_one' := fun x => by simp [max_add_add_right] }
   le f g := ∀ x, f x ≤ g x
   le_refl f x := le_refl (f x)
@@ -569,51 +566,51 @@ work for `n = 0`. For `<` and `>` we formulate only `iff` versions.
 
 
 theorem iterate_le_of_map_le_add_int {x : ℝ} {m : ℤ} (h : f x ≤ x + m) (n : ℕ) :
-    (f^[n]) x ≤ x + n * m := by
+    f^[n] x ≤ x + n * m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_le_of_map_le f.monotone (monotone_id.add_const (m : ℝ)) h n
 #align circle_deg1_lift.iterate_le_of_map_le_add_int CircleDeg1Lift.iterate_le_of_map_le_add_int
 
 theorem le_iterate_of_add_int_le_map {x : ℝ} {m : ℤ} (h : x + m ≤ f x) (n : ℕ) :
-    x + n * m ≤ (f^[n]) x := by
+    x + n * m ≤ f^[n] x := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).symm.iterate_le_of_map_le (monotone_id.add_const (m : ℝ)) f.monotone h n
 #align circle_deg1_lift.le_iterate_of_add_int_le_map CircleDeg1Lift.le_iterate_of_add_int_le_map
 
 theorem iterate_eq_of_map_eq_add_int {x : ℝ} {m : ℤ} (h : f x = x + m) (n : ℕ) :
-    (f^[n]) x = x + n * m := by
+    f^[n] x = x + n * m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using (f.commute_add_int m).iterate_eq_of_map_eq n h
 #align circle_deg1_lift.iterate_eq_of_map_eq_add_int CircleDeg1Lift.iterate_eq_of_map_eq_add_int
 
 theorem iterate_pos_le_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    (f^[n]) x ≤ x + n * m ↔ f x ≤ x + m := by
+    f^[n] x ≤ x + n * m ↔ f x ≤ x + m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_pos_le_iff_map_le f.monotone (strictMono_id.add_const (m : ℝ)) hn
 #align circle_deg1_lift.iterate_pos_le_iff CircleDeg1Lift.iterate_pos_le_iff
 
 theorem iterate_pos_lt_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    (f^[n]) x < x + n * m ↔ f x < x + m := by
+    f^[n] x < x + n * m ↔ f x < x + m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_pos_lt_iff_map_lt f.monotone (strictMono_id.add_const (m : ℝ)) hn
 #align circle_deg1_lift.iterate_pos_lt_iff CircleDeg1Lift.iterate_pos_lt_iff
 
 theorem iterate_pos_eq_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    (f^[n]) x = x + n * m ↔ f x = x + m := by
+    f^[n] x = x + n * m ↔ f x = x + m := by
   simpa only [nsmul_eq_mul, add_right_iterate] using
     (f.commute_add_int m).iterate_pos_eq_iff_map_eq f.monotone (strictMono_id.add_const (m : ℝ)) hn
 #align circle_deg1_lift.iterate_pos_eq_iff CircleDeg1Lift.iterate_pos_eq_iff
 
 theorem le_iterate_pos_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    x + n * m ≤ (f^[n]) x ↔ x + m ≤ f x := by
+    x + n * m ≤ f^[n] x ↔ x + m ≤ f x := by
   simpa only [not_lt] using not_congr (f.iterate_pos_lt_iff hn)
 #align circle_deg1_lift.le_iterate_pos_iff CircleDeg1Lift.le_iterate_pos_iff
 
 theorem lt_iterate_pos_iff {x : ℝ} {m : ℤ} {n : ℕ} (hn : 0 < n) :
-    x + n * m < (f^[n]) x ↔ x + m < f x := by
+    x + n * m < f^[n] x ↔ x + m < f x := by
   simpa only [not_le] using not_congr (f.iterate_pos_le_iff hn)
 #align circle_deg1_lift.lt_iterate_pos_iff CircleDeg1Lift.lt_iterate_pos_iff
 
-theorem mul_floor_map_zero_le_floor_iterate_zero (n : ℕ) : ↑n * ⌊f 0⌋ ≤ ⌊(f^[n]) 0⌋ := by
+theorem mul_floor_map_zero_le_floor_iterate_zero (n : ℕ) : ↑n * ⌊f 0⌋ ≤ ⌊f^[n] 0⌋ := by
   rw [le_floor, Int.cast_mul, Int.cast_ofNat, ← zero_add ((n : ℝ) * _)]
   apply le_iterate_of_add_int_le_map
   simp [floor_le]
@@ -630,7 +627,7 @@ def transnumAuxSeq (n : ℕ) : ℝ :=
   (f ^ (2 ^ n : ℕ)) 0 / 2 ^ n
 #align circle_deg1_lift.transnum_aux_seq CircleDeg1Lift.transnumAuxSeq
 
-/-- The translation number of a `circle_deg1_lift`, $τ(f)=\lim_{n→∞}\frac{f^n(x)-x}{n}$. We use
+/-- The translation number of a `CircleDeg1Lift`, $τ(f)=\lim_{n→∞}\frac{f^n(x)-x}{n}$. We use
 an auxiliary sequence `\frac{f^{2^n}(0)}{2^n}` to define `τ(f)` because some proofs are simpler
 this way. -/
 def translationNumber : ℝ :=
@@ -640,7 +637,7 @@ def translationNumber : ℝ :=
 end
 
 -- mathport name: exprτ
--- TODO: choose two different symbols for `circle_deg1_lift.translation_number` and the future
+-- TODO: choose two different symbols for `CircleDeg1Lift.translationNumber` and the future
 -- `circle_mono_homeo.rotation_number`, then make them `localized notation`s
 local notation "τ" => translationNumber
 
@@ -654,14 +651,14 @@ theorem translationNumber_eq_of_tendsto_aux {τ' : ℝ} (h : Tendsto f.transnumA
 #align circle_deg1_lift.translation_number_eq_of_tendsto_aux CircleDeg1Lift.translationNumber_eq_of_tendsto_aux
 
 theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => (f^[n]) 0 / n) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n] 0 / n) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto_aux <| by
     simpa [(· ∘ ·), transnumAuxSeq_def, coe_pow] using
       h.comp (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀ CircleDeg1Lift.translationNumber_eq_of_tendsto₀
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
-    (h : Tendsto (fun n : ℕ => (f^[n + 1]) 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
+    (h : Tendsto (fun n : ℕ => f^[n + 1] 0 / (n + 1)) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto₀ <| (tendsto_add_atTop_iff_nat 1).1 (by exact_mod_cast h)
 #align circle_deg1_lift.translation_number_eq_of_tendsto₀' CircleDeg1Lift.translationNumber_eq_of_tendsto₀'
 
@@ -876,8 +873,7 @@ theorem map_lt_add_floor_translationNumber_add_one (x : ℝ) : f x < x + ⌊τ f
 theorem map_lt_add_translationNumber_add_one (x : ℝ) : f x < x + τ f + 1 :=
   calc
     f x < x + ⌊τ f⌋ + 1 := f.map_lt_add_floor_translationNumber_add_one x
-    _ ≤ x + τ f + 1 := add_le_add_right (add_le_add_left (floor_le _) _) _
-    -- porting note: this ^ used to be `by mono; apply floor_le`
+    _ ≤ x + τ f + 1 := by gcongr; apply floor_le
 #align circle_deg1_lift.map_lt_add_translation_number_add_one CircleDeg1Lift.map_lt_add_translationNumber_add_one
 
 theorem lt_map_of_int_lt_translationNumber {n : ℤ} (h : ↑n < τ f) (x : ℝ) : x + n < f x :=
@@ -956,13 +952,13 @@ theorem continuous_pow (hf : Continuous f) (n : ℕ) : Continuous (f ^ n : Circl
 
 theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn : 0 < n) :
     τ f = m / n ↔ ∃ x, (f ^ n) x = x + m := by
-  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip, exact ne_of_gt (Nat.cast_pos.2 hn)]
+  rw [eq_div_iff, mul_comm, ← translationNumber_pow] <;> [skip; exact ne_of_gt (Nat.cast_pos.2 hn)]
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 #align circle_deg1_lift.translation_number_eq_rat_iff CircleDeg1Lift.translationNumber_eq_rat_iff
 
-/-- Consider two actions `f₁ f₂ : G →* circle_deg1_lift` of a group on the real line by lifts of
+/-- Consider two actions `f₁ f₂ : G →* CircleDeg1Lift` of a group on the real line by lifts of
 orientation preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
-`f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : circle_deg1_lift`  such that
+`f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homeomorphismes du cercle et
@@ -985,24 +981,24 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type _} [Gr
       _ ≤ x + τ (f₂ g) + τ (f₂ g⁻¹) + 1 + 1 :=
         add_le_add_right (map_lt_add_translationNumber_add_one _ _).le _
       _ = x + 2 := by simp [this, add_assoc, one_add_one_eq_two]
-  -- We have a theorem about actions by `order_iso`, so we introduce auxiliary maps
+  -- We have a theorem about actions by `OrderIso`, so we introduce auxiliary maps
   -- to `ℝ ≃o ℝ`.
   set F₁ := toOrderIso.comp f₁.toHomUnits
   set F₂ := toOrderIso.comp f₂.toHomUnits
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
-  -- Now we apply `cSup_div_semiconj` and go back to `f₁` and `f₂`.
-  refine' ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csupₛ_div_semiconj F₂ F₁ fun x => _⟩ <;>
+  -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
+  refine' ⟨⟨⟨_, fun x y hxy => _⟩, fun x => _⟩, csSup_div_semiconj F₂ F₁ fun x => _⟩ <;>
     simp only [hF₁, hF₂, ← map_inv, coe_mk]
-  · exact csupᵢ_mono (this y) fun g => mono _ (mono _ hxy)
+  · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
-    exact (Monotone.map_csupr_of_continuousAt (continuousAt_id.add continuousAt_const)
+    exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
       (monotone_id.add_const (1 : ℝ)) (this x)).symm
   · exact this x
 #align circle_deg1_lift.semiconj_of_group_action_of_forall_translation_number_eq CircleDeg1Lift.semiconj_of_group_action_of_forall_translationNumber_eq
 
 /-- If two lifts of circle homeomorphisms have the same translation number, then they are
-semiconjugate by a `circle_deg1_lift`. This version uses arguments `f₁ f₂ : circle_deg1_liftˣ`
+semiconjugate by a `CircleDeg1Lift`. This version uses arguments `f₁ f₂ : CircleDeg1Liftˣ`
 to assume that `f₁` and `f₂` are homeomorphisms. -/
 theorem units_semiconj_of_translationNumber_eq {f₁ f₂ : CircleDeg1Liftˣ} (h : τ f₁ = τ f₂) :
     ∃ F : CircleDeg1Lift, Semiconj F f₁ f₂ :=
@@ -1015,7 +1011,7 @@ theorem units_semiconj_of_translationNumber_eq {f₁ f₂ : CircleDeg1Liftˣ} (h
 #align circle_deg1_lift.units_semiconj_of_translation_number_eq CircleDeg1Lift.units_semiconj_of_translationNumber_eq
 
 /-- If two lifts of circle homeomorphisms have the same translation number, then they are
-semiconjugate by a `circle_deg1_lift`. This version uses assumptions `is_unit f₁` and `is_unit f₂`
+semiconjugate by a `CircleDeg1Lift`. This version uses assumptions `IsUnit f₁` and `IsUnit f₂`
 to assume that `f₁` and `f₂` are homeomorphisms. -/
 theorem semiconj_of_isUnit_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lift} (h₁ : IsUnit f₁)
     (h₂ : IsUnit f₂) (h : τ f₁ = τ f₂) : ∃ F : CircleDeg1Lift, Semiconj F f₁ f₂ := by
@@ -1024,7 +1020,7 @@ theorem semiconj_of_isUnit_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lift} 
 #align circle_deg1_lift.semiconj_of_is_unit_of_translation_number_eq CircleDeg1Lift.semiconj_of_isUnit_of_translationNumber_eq
 
 /-- If two lifts of circle homeomorphisms have the same translation number, then they are
-semiconjugate by a `circle_deg1_lift`. This version uses assumptions `bijective f₁` and
+semiconjugate by a `CircleDeg1Lift`. This version uses assumptions `bijective f₁` and
 `bijective f₂` to assume that `f₁` and `f₂` are homeomorphisms. -/
 theorem semiconj_of_bijective_of_translationNumber_eq {f₁ f₂ : CircleDeg1Lift} (h₁ : Bijective f₁)
     (h₂ : Bijective f₂) (h : τ f₁ = τ f₂) : ∃ F : CircleDeg1Lift, Semiconj F f₁ f₂ :=

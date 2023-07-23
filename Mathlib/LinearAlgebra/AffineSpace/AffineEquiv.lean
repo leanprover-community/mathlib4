@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.affine_equiv
-! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Invertible
+
+#align_import linear_algebra.affine_space.affine_equiv from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
 /-!
 # Affine equivalences
@@ -40,9 +37,6 @@ affine space, affine equivalence
 open Function Set
 
 open Affine
-
--- Porting note: this is needed because of lean4#2074
-attribute [-instance] Ring.toNonAssocRing
 
 /-- An affine equivalence is an equivalence between affine spaces such that both forward
 and inverse maps are affine.

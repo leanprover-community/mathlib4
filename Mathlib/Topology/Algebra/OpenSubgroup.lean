@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johan Commelin All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module topology.algebra.open_subgroup
-! leanprover-community/mathlib commit 83f81aea33931a1edb94ce0f32b9a5d484de6978
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.algebra.open_subgroup from "leanprover-community/mathlib"@"83f81aea33931a1edb94ce0f32b9a5d484de6978"
 
 /-!
 # Open subgroups of a topological groups
@@ -198,7 +195,8 @@ def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
 #align open_add_subgroup.sum OpenAddSubgroup.sum
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) : (U.prod V : Set (G × H)) = U ×ˢ V :=
+theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
+    (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 #align open_subgroup.coe_prod OpenSubgroup.coe_prod
 #align open_add_subgroup.coe_sum OpenAddSubgroup.coe_sum

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudriashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.hull
-! leanprover-community/mathlib commit a50170a88a47570ed186b809ca754110590f9476
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Order.Closure
+
+#align_import analysis.convex.hull from "leanprover-community/mathlib"@"92bd7b1ffeb306a89f450bee126ddd8a284c259d"
 
 /-!
 # Convex hull
@@ -44,11 +41,11 @@ variable [AddCommMonoid E] [AddCommMonoid F] [Module 𝕜 E] [Module 𝕜 F]
 
 /-- The convex hull of a set `s` is the minimal convex set that includes `s`. -/
 def convexHull : ClosureOperator (Set E) :=
-  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t) (Convex 𝕜)
+  ClosureOperator.mk₃ (fun s => ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t) (Convex 𝕜)
     (fun _ =>
-      Set.subset_interᵢ fun _ => Set.subset_interᵢ fun hst => Set.subset_interᵢ fun _ => hst)
-    (fun _ => convex_interᵢ fun _ => convex_interᵢ fun _ => convex_interᵢ id) fun _ t hst ht =>
-    Set.interᵢ_subset_of_subset t <| Set.interᵢ_subset_of_subset hst <| Set.interᵢ_subset _ ht
+      Set.subset_iInter fun _ => Set.subset_iInter fun hst => Set.subset_iInter fun _ => hst)
+    (fun _ => convex_iInter fun _ => convex_iInter fun _ => convex_iInter id) fun _ t hst ht =>
+    Set.iInter_subset_of_subset t <| Set.iInter_subset_of_subset hst <| Set.iInter_subset _ ht
 #align convex_hull convexHull
 
 variable (s : Set E)
@@ -61,15 +58,15 @@ theorem convex_convexHull : Convex 𝕜 (convexHull 𝕜 s) :=
   ClosureOperator.closure_mem_mk₃ s
 #align convex_convex_hull convex_convexHull
 
-theorem convexHull_eq_interᵢ : convexHull 𝕜 s =
-    ⋂ (t : Set E) (_hst : s ⊆ t) (_ht : Convex 𝕜 t), t :=
+theorem convexHull_eq_iInter : convexHull 𝕜 s =
+    ⋂ (t : Set E) (_ : s ⊆ t) (_ : Convex 𝕜 t), t :=
   rfl
-#align convex_hull_eq_Inter convexHull_eq_interᵢ
+#align convex_hull_eq_Inter convexHull_eq_iInter
 
 variable {𝕜 s} {t : Set E} {x y : E}
 
 theorem mem_convexHull_iff : x ∈ convexHull 𝕜 s ↔ ∀ t, s ⊆ t → Convex 𝕜 t → x ∈ t := by
-  simp_rw [convexHull_eq_interᵢ, mem_interᵢ]
+  simp_rw [convexHull_eq_iInter, mem_iInter]
 #align mem_convex_hull_iff mem_convexHull_iff
 
 theorem convexHull_min (hst : s ⊆ t) (ht : Convex 𝕜 t) : convexHull 𝕜 s ⊆ t :=
@@ -132,11 +129,15 @@ theorem convexHull_singleton (x : E) : convexHull 𝕜 ({x} : Set E) = {x} :=
 #align convex_hull_singleton convexHull_singleton
 
 @[simp]
+theorem convexHull_zero : convexHull 𝕜 (0 : Set E) = 0 :=
+  convexHull_singleton 0
+#align convex_hull_zero convexHull_zero
+
+@[simp]
 theorem convexHull_pair (x y : E) : convexHull 𝕜 {x, y} = segment 𝕜 x y := by
-  refine'
-    (convexHull_min _ <| convex_segment _ _).antisymm
-      (segment_subset_convexHull (mem_insert _ _) <| mem_insert_of_mem _ <| mem_singleton _)
-  rw [insert_subset, singleton_subset_iff]
+  refine (convexHull_min ?_ <| convex_segment _ _).antisymm
+    (segment_subset_convexHull (mem_insert _ _) <| subset_insert _ _ <| mem_singleton _)
+  rw [insert_subset_iff, singleton_subset_iff]
   exact ⟨left_mem_segment _ _ _, right_mem_segment _ _ _⟩
 #align convex_hull_pair convexHull_pair
 
@@ -204,17 +205,15 @@ section AddCommGroup
 
 variable [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F] (s : Set E)
 
-theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) : f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) :=
-  by
+theorem AffineMap.image_convexHull (f : E →ᵃ[𝕜] F) :
+    f '' convexHull 𝕜 s = convexHull 𝕜 (f '' s) := by
   apply Set.Subset.antisymm
   · rw [Set.image_subset_iff]
     refine' convexHull_min _ ((convex_convexHull 𝕜 (f '' s)).affine_preimage f)
     rw [← Set.image_subset_iff]
     exact subset_convexHull 𝕜 (f '' s)
-  ·
-    exact
-      convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
-        ((convex_convexHull 𝕜 s).affine_image f)
+  · exact convexHull_min (Set.image_subset _ (subset_convexHull 𝕜 s))
+      ((convex_convexHull 𝕜 s).affine_image f)
 #align affine_map.image_convex_hull AffineMap.image_convexHull
 
 theorem convexHull_subset_affineSpan : convexHull 𝕜 s ⊆ (affineSpan 𝕜 s : Set E) :=

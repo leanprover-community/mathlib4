@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.terminal
-! leanprover-community/mathlib commit bbe25d4d92565a5fd773e52e041a90387eee3c93
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.terminal from "leanprover-community/mathlib"@"bbe25d4d92565a5fd773e52e041a90387eee3c93"
 
 /-!
 # Preserving terminal object
@@ -161,7 +158,7 @@ def preservesColimitsOfShapePemptyOfPreservesInitial [PreservesColimit (Functor.
 
 variable [HasInitial C]
 
-/-- If `G` preserves the initial object and `C` has a initial object, then the image of the initial
+/-- If `G` preserves the initial object and `C` has an initial object, then the image of the initial
 object is initial.
 -/
 def isColimitOfHasInitialOfPreservesColimit [PreservesColimit (Functor.empty.{0} C) G] :
@@ -169,7 +166,7 @@ def isColimitOfHasInitialOfPreservesColimit [PreservesColimit (Functor.empty.{0}
   initialIsInitial.isInitialObj G (⊥_ C)
 #align category_theory.limits.is_colimit_of_has_initial_of_preserves_colimit CategoryTheory.Limits.isColimitOfHasInitialOfPreservesColimit
 
-/-- If `C` has a initial object and `G` preserves initial objects, then `D` has a initial object
+/-- If `C` has an initial object and `G` preserves initial objects, then `D` has an initial object
 also.
 Note this property is somewhat unique to colimits of the empty diagram: for general `J`, if `C`
 has colimits of shape `J` and `G` preserves them, then `D` does not necessarily have colimits of

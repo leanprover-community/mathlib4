@@ -2,15 +2,12 @@
 Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.chebyshev
-! leanprover-community/mathlib commit b7399344324326918d65d0c74e9571e3a8cb9199
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
+
+#align_import algebra.order.chebyshev from "leanprover-community/mathlib"@"b7399344324326918d65d0c74e9571e3a8cb9199"
 
 /-!
 # Chebyshev's sum inequality
@@ -106,7 +103,6 @@ section Mul
 
 variable [LinearOrderedRing α] {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
@@ -116,7 +112,6 @@ theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
   exact hfg.sum_smul_sum_le_card_smul_sum
 #align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
 other is antitone), the product of their sum is greater than the size of the set times their scalar
 product. -/

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
-
-! This file was ported from Lean 3 source module topology.homeomorph
-! leanprover-community/mathlib commit 3b267e70a936eebb21ab546f49a8df34dd300b25
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.DenseEmbedding
 import Mathlib.Topology.Support
+
+#align_import topology.homeomorph from "leanprover-community/mathlib"@"4c3e1721c58ef9087bbc2c8c38b540f70eda2e53"
 
 /-!
 # Homeomorphisms
@@ -123,6 +120,9 @@ protected def trans (h₁ : α ≃ₜ β) (h₂ : β ≃ₜ γ) : α ≃ₜ γ w
 theorem trans_apply (h₁ : α ≃ₜ β) (h₂ : β ≃ₜ γ) (a : α) : h₁.trans h₂ a = h₂ (h₁ a) :=
   rfl
 #align homeomorph.trans_apply Homeomorph.trans_apply
+
+@[simp] theorem symm_trans_apply (f : α ≃ₜ β) (g : β ≃ₜ γ) (a : γ) :
+    (f.trans g).symm a = f.symm (g.symm a) := rfl
 
 @[simp]
 theorem homeomorph_mk_coe_symm (a : Equiv α β) (b c) :
@@ -267,6 +267,28 @@ theorem isCompact_preimage {s : Set β} (h : α ≃ₜ β) : IsCompact (h ⁻¹'
 #align homeomorph.is_compact_preimage Homeomorph.isCompact_preimage
 
 @[simp]
+theorem isPreconnected_image {s : Set α} (h : α ≃ₜ β) :
+    IsPreconnected (h '' s) ↔ IsPreconnected s :=
+  ⟨fun hs ↦ by simpa only [image_symm, preimage_image]
+    using hs.image _ h.symm.continuous.continuousOn,
+    fun hs ↦ hs.image _ h.continuous.continuousOn⟩
+
+@[simp]
+theorem isPreconnected_preimage {s : Set β} (h : α ≃ₜ β) :
+    IsPreconnected (h ⁻¹' s) ↔ IsPreconnected s := by
+  rw [← image_symm, isPreconnected_image]
+
+@[simp]
+theorem isConnected_image {s : Set α} (h : α ≃ₜ β) :
+    IsConnected (h '' s) ↔ IsConnected s :=
+  nonempty_image_iff.and h.isPreconnected_image
+
+@[simp]
+theorem isConnected_preimage {s : Set β} (h : α ≃ₜ β) :
+    IsConnected (h ⁻¹' s) ↔ IsConnected s := by
+  rw [← image_symm, isConnected_image]
+
+@[simp]
 theorem comap_cocompact (h : α ≃ₜ β) : comap h (cocompact β) = cocompact α :=
   (comap_cocompact_le h.continuous).antisymm <|
     (hasBasis_cocompact.le_basis_iff (hasBasis_cocompact.comap h)).2 fun K hK =>
@@ -389,7 +411,18 @@ theorem comap_nhds_eq (h : α ≃ₜ β) (y : β) : comap h (𝓝 y) = 𝓝 (h.s
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 #align homeomorph.comap_nhds_eq Homeomorph.comap_nhds_eq
 
-/-- If an bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
+/-- If the codomain of a homeomorphism is a locally connected space, then the domain is also
+a locally connected space. -/
+theorem locallyConnectedSpace [i : LocallyConnectedSpace β] (h : α ≃ₜ β) :
+    LocallyConnectedSpace α := by
+  have : ∀ x, (𝓝 x).HasBasis (fun s ↦ IsOpen s ∧ h x ∈ s ∧ IsConnected s)
+      (h.symm '' ·) := fun x ↦ by
+    rw [← h.symm_map_nhds_eq]
+    exact (i.1 _).map _
+  refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
+  exact hs.2.2.2.image _ h.symm.continuous.continuousOn
+
+/-- If a bijective map `e : α ≃ β` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : α ≃ β) (h₁ : Continuous e) (h₂ : IsOpenMap e) : α ≃ₜ β where
   continuous_toFun := h₁
   continuous_invFun := by
@@ -671,6 +704,8 @@ def piSplitAt (β : ι → Type _) [∀ j, TopologicalSpace (β j)] :
       subst h
       exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
+
+variable (β)
 
 /-- A product of copies of a topological space can be split as the binary product of one copy and
   the product of all the remaining copies. -/

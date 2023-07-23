@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module group_theory.specific_groups.alternating
-! leanprover-community/mathlib commit 0f6670b8af2dff699de1c0b4b49039b31bc13c46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.Tactic.IntervalCases
+
+#align_import group_theory.specific_groups.alternating from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
 /-!
 # Alternating Groups
@@ -262,8 +259,8 @@ theorem normalClosure_swap_mul_swap_five :
       ⊤ := by
   let g1 := (⟨swap 0 2 * swap 0 1, mem_alternatingGroup.2 (by decide)⟩ : alternatingGroup (Fin 5))
   let g2 := (⟨swap 0 4 * swap 1 3, mem_alternatingGroup.2 (by decide)⟩ : alternatingGroup (Fin 5))
-  have h5 : g1 * g2 * g1⁻¹ * g2⁻¹ = ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ :=
-    by
+  have h5 : g1 * g2 * g1⁻¹ * g2⁻¹ =
+      ⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ := by
     rw [Subtype.ext_iff]
     simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
   rw [eq_top_iff, ← normalClosure_finRotate_five]

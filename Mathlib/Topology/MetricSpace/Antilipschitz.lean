@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.antilipschitz
-! leanprover-community/mathlib commit 97f079b7e89566de3a1143f887713667328c38ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.UniformSpace.CompleteSeparated
+
+#align_import topology.metric_space.antilipschitz from "leanprover-community/mathlib"@"97f079b7e89566de3a1143f887713667328c38ba"
 
 /-!
 # Antilipschitz functions
@@ -20,7 +17,7 @@ For a metric space, the latter inequality is equivalent to `dist x y ≤ K * dis
 
 ## Implementation notes
 
-The parameter `K` has type `ℝ≥0`. This way we avoid conjuction in the definition and have
+The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the definition and have
 coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the definition, mostly because
 we do not have a `posreal` type.
 -/
@@ -228,7 +225,7 @@ theorem bounded_preimage (hf : AntilipschitzWith K f) {s : Set β} (hs : Bounded
   Exists.intro (K * diam s) fun x hx y hy =>
     calc
       dist x y ≤ K * dist (f x) (f y) := hf.le_mul_dist x y
-      _ ≤ K * diam s := mul_le_mul_of_nonneg_left (dist_le_diam_of_mem hs hx hy) K.2
+      _ ≤ K * diam s := by gcongr; exact dist_le_diam_of_mem hs hx hy
 #align antilipschitz_with.bounded_preimage AntilipschitzWith.bounded_preimage
 
 theorem tendsto_cobounded (hf : AntilipschitzWith K f) : Tendsto f (cobounded α) (cobounded β) :=

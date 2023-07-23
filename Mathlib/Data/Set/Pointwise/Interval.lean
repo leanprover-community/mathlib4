@@ -2,17 +2,14 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
-
-! This file was ported from Lean 3 source module data.set.pointwise.interval
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.UnorderedInterval
 import Mathlib.Data.Set.Intervals.Monoid
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
+
+#align_import data.set.pointwise.interval from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # (Pre)images of intervals
@@ -714,7 +711,6 @@ theorem image_mul_const_uIcc (a b c : α) : (fun x => x * a) '' [[b, c]] = [[b *
       (Units.mk0 a ha).mulRight.image_eq_preimage _
     _ = (fun x => x / a) ⁻¹' [[b, c]] := by simp only [div_eq_mul_inv]
     _ = [[b * a, c * a]] := preimage_div_const_uIcc ha _ _
-
 #align set.image_mul_const_uIcc Set.image_mul_const_uIcc
 
 @[simp]

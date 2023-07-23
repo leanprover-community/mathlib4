@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.pairwise
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Lex
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
+
+#align_import data.list.pairwise from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Pairwise relations on a list
@@ -104,7 +101,7 @@ theorem Pairwise.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l 
 #align list.pairwise.iff List.Pairwise.iff
 
 theorem pairwise_of_forall {l : List α} (H : ∀ x y, R x y) : Pairwise R l := by
-  induction l <;> [exact Pairwise.nil, simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
+  induction l <;> [exact Pairwise.nil; simp only [*, pairwise_cons, forall₂_true_iff, and_true_iff]]
 #align list.pairwise_of_forall List.pairwise_of_forall
 
 theorem Pairwise.and_mem {l : List α} :
@@ -143,9 +140,9 @@ theorem Pairwise.forall_of_forall (H : Symmetric R) (H₁ : ∀ x ∈ l, R x x) 
 theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
     ∀ ⦃a⦄, a ∈ l → ∀ ⦃b⦄, b ∈ l → a ≠ b → R a b := by
   apply Pairwise.forall_of_forall
-  . exact fun a b h hne => hR (h hne.symm)
-  . exact fun _ _ hx => (hx rfl).elim
-  . exact hl.imp (@fun a b h _ => by exact h)
+  · exact fun a b h hne => hR (h hne.symm)
+  · exact fun _ _ hx => (hx rfl).elim
+  · exact hl.imp (@fun a b h _ => by exact h)
 #align list.pairwise.forall List.Pairwise.forall
 
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
@@ -247,7 +244,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
     (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
     Pairwise S (l.pmap f h) := by
   refine' (pairwise_pmap h).2 (Pairwise.imp_of_mem _ hl)
-  intros ; apply hS; assumption
+  intros; apply hS; assumption
 #align list.pairwise.pmap List.Pairwise.pmap
 
 theorem pairwise_join {L : List (List α)} :
@@ -329,7 +326,7 @@ theorem pairwise_iff_get : ∀ {l : List α}, Pairwise R l ↔
       have := H ⟨0, show 0 < (a::l).length from Nat.succ_pos _⟩ ⟨n.succ, Nat.succ_lt_succ n.2⟩
         (Nat.succ_pos n)
       simpa
-    . simpa using H i.succ j.succ (show i.1.succ < j.1.succ from Nat.succ_lt_succ hij)
+    · simpa using H i.succ j.succ (show i.1.succ < j.1.succ from Nat.succ_lt_succ hij)
 
 set_option linter.deprecated false in
 @[deprecated pairwise_iff_get]
@@ -373,13 +370,11 @@ theorem pwFilter_map (f : β → α) :
     ∀ l : List β, pwFilter R (map f l) = map f (pwFilter (fun x y => R (f x) (f y)) l)
   | [] => rfl
   | x :: xs =>
-    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then
-      by
+    if h : ∀ b ∈ pwFilter R (map f xs), R (f x) b then by
       have h' : ∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun b hb => h _ (by rw [pwFilter_map f xs]; apply mem_map_of_mem _ hb)
       rw [map, pwFilter_cons_of_pos h, pwFilter_cons_of_pos h', pwFilter_map f xs, map]
-    else
-      by
+    else by
       have h' : ¬∀ b : β, b ∈ pwFilter (fun x y : β => R (f x) (f y)) xs → R (f x) (f b) :=
         fun hh =>
         h fun a ha => by
@@ -415,8 +410,7 @@ theorem pairwise_pwFilter : ∀ l : List α, Pairwise R (pwFilter R l)
 #align list.pairwise_pw_filter List.pairwise_pwFilter
 
 theorem pwFilter_eq_self {l : List α} : pwFilter R l = l ↔ Pairwise R l :=
-  ⟨fun e => e ▸ pairwise_pwFilter l, fun p =>
-    by
+  ⟨fun e => e ▸ pairwise_pwFilter l, fun p => by
     induction' l with x l IH; · rfl
     cases' pairwise_cons.1 p with al p
     rw [pwFilter_cons_of_pos (BAll.imp_left (pwFilter_subset l) al), IH p]⟩

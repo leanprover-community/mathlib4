@@ -2,14 +2,10 @@
 Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module order.well_founded
-! leanprover-community/mathlib commit 210657c4ea4a4a7b234392f70a3a2a83346dfa90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.ByContra
 import Mathlib.Data.Set.Image
+
+#align_import order.well_founded from "leanprover-community/mathlib"@"2c84c2c5496117349007d97104e7bbb471381592"
 
 /-!
 # Well-founded relations
@@ -24,25 +20,33 @@ and an induction principle `WellFounded.induction_bot`.
 -/
 
 
-variable {α : Type _}
+variable {α β γ : Type _}
 
 namespace WellFounded
 
+variable {r r' : α → α → Prop}
+
 #align well_founded_relation.r WellFoundedRelation.rel
 
-protected theorem isAsymm {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsAsymm α r :=
-  ⟨h.asymmetric⟩
+protected theorem isAsymm (h : WellFounded r) : IsAsymm α r := ⟨h.asymmetric⟩
 #align well_founded.is_asymm WellFounded.isAsymm
 
-instance {α : Sort _} [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
-  WellFoundedRelation.wf.isAsymm
-
-protected theorem isIrrefl {α : Sort _} {r : α → α → Prop} (h : WellFounded r) : IsIrrefl α r :=
-  @IsAsymm.isIrrefl α r h.isAsymm
+protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @IsAsymm.isIrrefl α r h.isAsymm
 #align well_founded.is_irrefl WellFounded.isIrrefl
 
-instance {α : Sort _} [WellFoundedRelation α] : IsIrrefl α WellFoundedRelation.rel :=
-  IsAsymm.isIrrefl
+instance [WellFoundedRelation α] : IsAsymm α WellFoundedRelation.rel :=
+  WellFoundedRelation.wf.isAsymm
+
+instance : IsIrrefl α WellFoundedRelation.rel := IsAsymm.isIrrefl
+
+theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
+  Subrelation.wf (h _ _) hr
+#align well_founded.mono WellFounded.mono
+
+theorem onFun {α β : Sort _} {r : β → β → Prop} {f : α → β} :
+    WellFounded r → WellFounded (r on f) :=
+  InvImage.wf _
+#align well_founded.on_fun WellFounded.onFun
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
@@ -136,8 +140,7 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
 
 section LinearOrder
 
-variable {β : Type _} [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop)) {γ : Type _}
-  [PartialOrder γ]
+variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop)) [PartialOrder γ]
 
 theorem min_le {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
@@ -179,7 +182,7 @@ end WellFounded
 
 namespace Function
 
-variable {β : Type _} (f : α → β)
+variable (f : α → β)
 
 section LT
 
@@ -259,7 +262,7 @@ theorem Acc.induction_bot {α} {r : α → α → Prop} {a bot : α} (ha : Acc r
 #align acc.induction_bot Acc.induction_bot
 
 /-- Let `r` be a well-founded relation on `α`, let `f : α → β` be a function,
-let `C : β → Prop`, and  let `bot : α`.
+let `C : β → Prop`, and let `bot : α`.
 This induction principle shows that `C (f bot)` holds, given that
 * some `a` satisfies `C (f a)`, and
 * for each `b` such that `f b ≠ f bot` and `C (f b)` holds, there is `c`

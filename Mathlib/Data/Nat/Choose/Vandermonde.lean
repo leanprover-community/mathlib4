@@ -2,20 +2,17 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.nat.choose.vandermonde
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Coeff
 import Mathlib.Data.Nat.Choose.Basic
+
+#align_import data.nat.choose.vandermonde from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 
 # Vandermonde's identity
 
-In this file we prove Vandermonde's identity (`nat.add_choose_eq`):
+In this file we prove Vandermonde's identity (`Nat.add_choose_eq`):
 `(m + n).choose k = ∑ (ij : ℕ × ℕ) in antidiagonal k, m.choose ij.1 * n.choose ij.2`
 
 We follow the algebraic proof from

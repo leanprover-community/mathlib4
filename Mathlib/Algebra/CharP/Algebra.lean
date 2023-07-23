@@ -2,15 +2,12 @@
 Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.char_p.algebra
-! leanprover-community/mathlib commit 96782a2d6dcded92116d8ac9ae48efb41d46a27c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Algebra.FreeAlgebra
+
+#align_import algebra.char_p.algebra from "leanprover-community/mathlib"@"96782a2d6dcded92116d8ac9ae48efb41d46a27c"
 
 /-!
 # Characteristics of algebras
@@ -65,7 +62,7 @@ As an application, a `ℚ`-algebra has characteristic zero.
 
 
 -- `CharP.charP_to_charZero A _ (charP_of_injective_algebraMap h 0)` does not work
--- here as it would require `ring A`.
+-- here as it would require `Ring A`.
 section QAlgebra
 
 variable (R : Type _) [Nontrivial R]

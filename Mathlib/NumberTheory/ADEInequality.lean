@@ -2,11 +2,6 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module number_theory.ADE_inequality
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Interval
@@ -14,6 +9,8 @@ import Mathlib.Data.Rat.Order
 import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
+
+#align_import number_theory.ADE_inequality from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
@@ -47,14 +44,14 @@ open Multiset
 -- porting note: ADE is a special name, exceptionally in upper case in Lean3
 set_option linter.uppercaseLean3 false
 
-/-- `A' q r := {1,q,r}` is a `multiset ℕ+`
+/-- `A' q r := {1,q,r}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`. -/
 def A' (q r : ℕ+) : Multiset ℕ+ :=
   {1, q, r}
 #align ADE_inequality.A' ADEInequality.A'
 
-/-- `A r := {1,1,r}` is a `multiset ℕ+`
+/-- `A r := {1,1,r}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
@@ -63,7 +60,7 @@ def A (r : ℕ+) : Multiset ℕ+ :=
   A' 1 r
 #align ADE_inequality.A ADEInequality.A
 
-/-- `D' r := {2,2,r}` is a `multiset ℕ+`
+/-- `D' r := {2,2,r}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
@@ -72,7 +69,7 @@ def D' (r : ℕ+) : Multiset ℕ+ :=
   {2, 2, r}
 #align ADE_inequality.D' ADEInequality.D'
 
-/-- `E' r := {2,3,r}` is a `multiset ℕ+`.
+/-- `E' r := {2,3,r}` is a `Multiset ℕ+`.
 For `r ∈ {3,4,5}` is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
@@ -81,7 +78,7 @@ def E' (r : ℕ+) : Multiset ℕ+ :=
   {2, 3, r}
 #align ADE_inequality.E' ADEInequality.E'
 
-/-- `E6 := {2,3,3}` is a `multiset ℕ+`
+/-- `E6 := {2,3,3}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
@@ -90,7 +87,7 @@ def E6 : Multiset ℕ+ :=
   E' 3
 #align ADE_inequality.E6 ADEInequality.E6
 
-/-- `E7 := {2,3,4}` is a `multiset ℕ+`
+/-- `E7 := {2,3,4}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
@@ -99,7 +96,7 @@ def E7 : Multiset ℕ+ :=
   E' 4
 #align ADE_inequality.E7 ADEInequality.E7
 
-/-- `E8 := {2,3,5}` is a `multiset ℕ+`
+/-- `E8 := {2,3,5}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
@@ -108,7 +105,7 @@ def E8 : Multiset ℕ+ :=
   E' 5
 #align ADE_inequality.E8 ADEInequality.E8
 
-/-- `sum_inv pqr` for a `pqr : multiset ℕ+` is the sum of the inverses
+/-- `sum_inv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
 of the elements of `pqr`, as rational number.
 
 The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
@@ -171,16 +168,14 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
   all_goals
     rw [← H, E', sumInv_pqr]
     conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
-
 #align ADE_inequality.admissible.one_lt_sum_inv ADEInequality.Admissible.one_lt_sumInv
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
   have h3 : (0 : ℚ) < 3 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
-  have h3q := (not_lt.mp H).trans hpq
+  have h3q := H.trans hpq
   have h3r := h3q.trans hqr
-  simp at H
   have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
     assumption_mod_cast
@@ -202,7 +197,7 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   have h4 : (0 : ℚ) < 4 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
-  have h4r := (not_lt.mp H).trans hqr
+  have h4r := H.trans hqr
   simp at H
   have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
@@ -256,8 +251,7 @@ theorem admissible_of_one_lt_sumInv_aux' {p q r : ℕ+} (hpq : p ≤ q) (hqr : q
 theorem admissible_of_one_lt_sumInv_aux :
     ∀ {pqr : List ℕ+} (_ : pqr.Sorted (· ≤ ·)) (_ : pqr.length = 3) (_ : 1 < sumInv pqr),
       Admissible pqr
-  | [p, q, r], hs, _, H =>
-    by
+  | [p, q, r], hs, _, H => by
     obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r
     simpa using hs
     exact admissible_of_one_lt_sumInv_aux' hpq hqr H

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module order.partial_sups
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+#align_import order.partial_sups from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -22,7 +19,7 @@ the sequence `f 0 `, `f 0 ⊔ f 1`, `f 0 ⊔ f 1 ⊔ f 2`, ... The point of this
 * it doesn't need a `⊥`, as opposed to `(Finset.range (n + 1)).sup f`.
 * it avoids needing to prove that `Finset.range (n + 1)` is nonempty to use `Finset.sup'`.
 
-Equivalence with those definitions is shown by `partialSups_eq_bsupᵢ`, `partialSups_eq_sup_range`,
+Equivalence with those definitions is shown by `partialSups_eq_biSup`, `partialSups_eq_sup_range`,
 and `partialSups_eq_sup'_range` respectively.
 
 ## Notes
@@ -123,7 +120,7 @@ theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
     partialSups f n = (Finset.range (n + 1)).sup' ⟨n, Finset.self_mem_range_succ n⟩ f := by
   induction' n with n ih
   · simp
-  · dsimp [partialSups] at ih⊢
+  · dsimp [partialSups] at ih ⊢
     simp_rw [@Finset.range_succ n.succ]
     rw [ih, Finset.sup'_insert, sup_comm]
 #align partial_sups_eq_sup'_range partialSups_eq_sup'_range
@@ -134,7 +131,7 @@ theorem partialSups_eq_sup_range [SemilatticeSup α] [OrderBot α] (f : ℕ → 
     partialSups f n = (Finset.range (n + 1)).sup f := by
   induction' n with n ih
   · simp
-  · dsimp [partialSups] at ih⊢
+  · dsimp [partialSups] at ih ⊢
     rw [Finset.range_succ, Finset.sup_insert, sup_comm, ih]
 #align partial_sups_eq_sup_range partialSups_eq_sup_range
 
@@ -152,20 +149,20 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α]
 
-theorem partialSups_eq_csupᵢ_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
+theorem partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i : Set.Iic n, f i := by
   have : Set.Iio (n + 1) = Set.Iic n := Set.ext fun _ => Nat.lt_succ_iff
-  rw [partialSups_eq_sup'_range, Finset.sup'_eq_csupₛ_image, Finset.coe_range, supᵢ, this]
+  rw [partialSups_eq_sup'_range, Finset.sup'_eq_csSup_image, Finset.coe_range, iSup, this]
   simp only [Set.range, Subtype.exists, Set.mem_Iic, exists_prop, (· '' ·)]
-#align partial_sups_eq_csupr_Iic partialSups_eq_csupᵢ_Iic
+#align partial_sups_eq_csupr_Iic partialSups_eq_ciSup_Iic
 
 @[simp]
-theorem csupᵢ_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
-    (⨆ n, partialSups f n) = ⨆ n, f n := by
-  refine' (csupᵢ_le fun n => _).antisymm (csupᵢ_mono _ <| le_partialSups f)
-  · rw [partialSups_eq_csupᵢ_Iic]
-    exact csupᵢ_le fun i => le_csupᵢ h _
+theorem ciSup_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
+    ⨆ n, partialSups f n = ⨆ n, f n := by
+  refine' (ciSup_le fun n => _).antisymm (ciSup_mono _ <| le_partialSups f)
+  · rw [partialSups_eq_ciSup_Iic]
+    exact ciSup_le fun i => le_ciSup h _
   · rwa [bddAbove_range_partialSups]
-#align csupr_partial_sups_eq csupᵢ_partialSups_eq
+#align csupr_partial_sups_eq ciSup_partialSups_eq
 
 end ConditionallyCompleteLattice
 
@@ -173,24 +170,24 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-theorem partialSups_eq_bsupᵢ (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
-  simpa only [supᵢ_subtype] using partialSups_eq_csupᵢ_Iic f n
-#align partial_sups_eq_bsupr partialSups_eq_bsupᵢ
+theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
+  simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
+#align partial_sups_eq_bsupr partialSups_eq_biSup
 
 -- Porting note: simp can prove this @[simp]
-theorem supᵢ_partialSups_eq (f : ℕ → α) : (⨆ n, partialSups f n) = ⨆ n, f n :=
-  csupᵢ_partialSups_eq <| OrderTop.bddAbove _
-#align supr_partial_sups_eq supᵢ_partialSups_eq
+theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
+  ciSup_partialSups_eq <| OrderTop.bddAbove _
+#align supr_partial_sups_eq iSup_partialSups_eq
 
-theorem supᵢ_le_supᵢ_of_partialSups_le_partialSups {f g : ℕ → α}
-    (h : partialSups f ≤ partialSups g) : (⨆ n, f n) ≤ ⨆ n, g n := by
-  rw [← supᵢ_partialSups_eq f, ← supᵢ_partialSups_eq g]
-  exact supᵢ_mono h
-#align supr_le_supr_of_partial_sups_le_partial_sups supᵢ_le_supᵢ_of_partialSups_le_partialSups
+theorem iSup_le_iSup_of_partialSups_le_partialSups {f g : ℕ → α}
+    (h : partialSups f ≤ partialSups g) : ⨆ n, f n ≤ ⨆ n, g n := by
+  rw [← iSup_partialSups_eq f, ← iSup_partialSups_eq g]
+  exact iSup_mono h
+#align supr_le_supr_of_partial_sups_le_partial_sups iSup_le_iSup_of_partialSups_le_partialSups
 
-theorem supᵢ_eq_supᵢ_of_partialSups_eq_partialSups {f g : ℕ → α}
-    (h : partialSups f = partialSups g) : (⨆ n, f n) = ⨆ n, g n := by
-  simp_rw [← supᵢ_partialSups_eq f, ← supᵢ_partialSups_eq g, h]
-#align supr_eq_supr_of_partial_sups_eq_partial_sups supᵢ_eq_supᵢ_of_partialSups_eq_partialSups
+theorem iSup_eq_iSup_of_partialSups_eq_partialSups {f g : ℕ → α}
+    (h : partialSups f = partialSups g) : ⨆ n, f n = ⨆ n, g n := by
+  simp_rw [← iSup_partialSups_eq f, ← iSup_partialSups_eq g, h]
+#align supr_eq_supr_of_partial_sups_eq_partial_sups iSup_eq_iSup_of_partialSups_eq_partialSups
 
 end CompleteLattice

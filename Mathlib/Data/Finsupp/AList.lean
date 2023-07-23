@@ -2,14 +2,11 @@
 Copyright (c) 2022 Violeta Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández
-
-! This file was ported from Lean 3 source module data.finsupp.alist
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.List.AList
+
+#align_import data.finsupp.alist from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Connections between `Finsupp` and `AList`
@@ -32,17 +29,17 @@ variable {α M : Type _} [Zero M]
 noncomputable def toAList (f : α →₀ M) : AList fun _x : α => M :=
   ⟨f.graph.toList.map Prod.toSigma,
     by
-    rw [List.NodupKeys, List.keys, List.map_map, Prod.fst_comp_toSigma, List.nodup_map_iff_inj_on]
-    · rintro ⟨b, m⟩ hb ⟨c, n⟩ hc (rfl : b = c)
-      rw [Finset.mem_toList, Finsupp.mem_graph_iff] at hb hc
-      dsimp at hb hc
-      rw [← hc.1, hb.1]
-    · apply Finset.nodup_toList⟩
+      rw [List.NodupKeys, List.keys, List.map_map, Prod.fst_comp_toSigma, List.nodup_map_iff_inj_on]
+      · rintro ⟨b, m⟩ hb ⟨c, n⟩ hc (rfl : b = c)
+        rw [Finset.mem_toList, Finsupp.mem_graph_iff] at hb hc
+        dsimp at hb hc
+        rw [← hc.1, hb.1]
+      · apply Finset.nodup_toList⟩
 #align finsupp.to_alist Finsupp.toAList
 
 @[simp]
-theorem toAList_keys_toFinset [DecidableEq α] (f : α →₀ M) : f.toAList.keys.toFinset = f.support :=
-  by
+theorem toAList_keys_toFinset [DecidableEq α] (f : α →₀ M) :
+    f.toAList.keys.toFinset = f.support := by
   ext
   simp [toAList, AList.mem_keys, AList.keys, List.keys]
 #align finsupp.to_alist_keys_to_finset Finsupp.toAList_keys_toFinset
@@ -65,8 +62,8 @@ absent keys to zero. -/
 noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M
     where
   support := by
-    haveI := Classical.decEq α ; haveI := Classical.decEq M ;
-      exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
+    haveI := Classical.decEq α; haveI := Classical.decEq M
+    exact (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset
   toFun a :=
     haveI := Classical.decEq α
     (l.lookup a).getD 0
@@ -88,8 +85,8 @@ theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x
     l.lookupFinsupp.support = (l.1.filter fun x => Sigma.snd x ≠ 0).keys.toFinset := by
     -- porting note: was `convert rfl`
      simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]; congr
-     . apply Subsingleton.elim
-     . funext ; congr
+     · apply Subsingleton.elim
+     · funext; congr
 #align alist.lookup_finsupp_support AList.lookupFinsupp_support
 
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}

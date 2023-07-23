@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.interval
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.LocallyFinite
+
+#align_import data.finset.interval from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Intervals of finsets as finsets
@@ -77,7 +74,7 @@ variable {s t}
 
 theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image ((· ∪ ·) s) := by
   ext u
-  simp_rw [mem_Icc, mem_image, exists_prop, mem_powerset]
+  simp_rw [mem_Icc, mem_image, mem_powerset]
   constructor
   · rintro ⟨hs, ht⟩
     exact ⟨u \ s, sdiff_le_sdiff_right ht, sup_sdiff_cancel_right hs⟩
@@ -87,7 +84,7 @@ theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (
 
 theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image ((· ∪ ·) s) := by
   ext u
-  simp_rw [mem_Ico, mem_image, exists_prop, mem_ssubsets]
+  simp_rw [mem_Ico, mem_image, mem_ssubsets]
   constructor
   · rintro ⟨hs, ht⟩
     exact ⟨u \ s, sdiff_lt_sdiff_right ht hs, sup_sdiff_cancel_right hs⟩

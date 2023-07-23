@@ -72,10 +72,9 @@ Has a similar effect as `SplitIf.splitIfTarget?` or `SplitIf.splitIfLocalDecl?` 
 core Lean 4. We opt not to use those library functions so that we can better mimic
 the behavior of mathlib3's `split_ifs`.
 -/
-private def splitIf1 (cond: Expr) (hName : Name) (loc : Location) : TacticM Unit := do
-  let splitCases := liftMetaTactic fun mvarId ↦ do
-    let (s1, s2) ← mvarId.byCases cond hName
-    pure [s1.mvarId, s2.mvarId]
+private def splitIf1 (cond : Expr) (hName : Name) (loc : Location) : TacticM Unit := do
+  let splitCases :=
+    evalTactic (← `(tactic| by_cases $(mkIdent hName) : $(← Elab.Term.exprToSyntax cond)))
   andThenOnSubgoals splitCases (reduceIfsAt loc)
 
 /-- Pops off the front of the list of names, or generates a fresh name if the
@@ -128,7 +127,7 @@ ite-expression.
 `split_ifs at *` splits all ite-expressions in all hypotheses as well as the goal.
 `split_ifs with h₁ h₂ h₃` overrides the default names for the hypotheses.
 -/
-syntax (name := splitIfs) "split_ifs" (ppSpace location)? (" with " (colGt binderIdent)+)? : tactic
+syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
 
 elab_rules : tactic
 | `(tactic| split_ifs $[$loc:location]? $[with $withArg*]?) =>

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module linear_algebra.smodeq
-! leanprover-community/mathlib commit 146d3d1fa59c091fedaad8a4afa09d6802886d24
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import linear_algebra.smodeq from "leanprover-community/mathlib"@"146d3d1fa59c091fedaad8a4afa09d6802886d24"
 
 /-!
 # modular equivalence for submodule
@@ -86,33 +83,30 @@ nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z
 #align smodeq.trans SModEq.trans
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
-  rw [SModEq.def] at hxy₁ hxy₂⊢
+  rw [SModEq.def] at hxy₁ hxy₂ ⊢
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]
 #align smodeq.add SModEq.add
 
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
-  rw [SModEq.def] at hxy⊢
+  rw [SModEq.def] at hxy ⊢
   simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul SModEq.smul
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero
 
-set_option synthInstance.etaExperiment true in  -- porting note: workaround for lean4#2074
 theorem map (hxy : x ≡ y [SMOD U]) (f : M →ₗ[R] N) : f x ≡ f y [SMOD U.map f] :=
   (Submodule.Quotient.eq _).2 <| f.map_sub x y ▸ mem_map_of_mem <| (Submodule.Quotient.eq _).1 hxy
 #align smodeq.map SModEq.map
 
-set_option synthInstance.etaExperiment true in
 theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V.comap f] :=
   (Submodule.Quotient.eq _).2 <|
     show f (x - y) ∈ V from (f.map_sub x y).symm ▸ (Submodule.Quotient.eq _).1 hxy
 #align smodeq.comap SModEq.comap
 
-set_option synthInstance.etaExperiment true in
 theorem eval {R : Type _} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
-  rw [SModEq.def] at h⊢
+  rw [SModEq.def] at h ⊢
   show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)
   replace h : Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := h
   rw [← Polynomial.eval₂_at_apply, ← Polynomial.eval₂_at_apply, h]

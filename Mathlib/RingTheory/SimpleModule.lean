@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.simple_module
-! leanprover-community/mathlib commit cce7f68a7eaadadf74c82bbac20721cdc03a1cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Order.JordanHolder
+
+#align_import ring_theory.simple_module from "leanprover-community/mathlib"@"cce7f68a7eaadadf74c82bbac20721cdc03a1cc1"
 
 /-!
 # Simple Modules
@@ -50,13 +47,6 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
   ⟨⟨0, by
       have h : (⊥ : Submodule R M) ≠ ⊤ := bot_ne_top
       contrapose! h
-      -- Porting note: push_neg at h not giving fun y => 0 = y
-      have h : ∀ (y : M), 0 = y := by
-        intro y
-        have em := Classical.em (0 = y)
-        match em with
-        | .inl h' => exact h'
-        | .inr h' => apply False.elim <| h ⟨y,h'⟩
       ext x
       simp [Submodule.mem_bot, Submodule.mem_top, h x]⟩⟩
 #align is_simple_module.nontrivial IsSimpleModule.nontrivial
@@ -64,8 +54,6 @@ theorem IsSimpleModule.nontrivial [IsSimpleModule R M] : Nontrivial M :=
 variable {R} {M} -- Porting note: had break line or all hell breaks loose
 variable {m : Submodule R M} {N : Type _} [AddCommGroup N] [Module R N]
 
--- Porting note: cannot synth RingInvHomPair
-set_option synthInstance.etaExperiment true in
 theorem IsSimpleModule.congr (l : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimpleModule R M :=
   (Submodule.orderIsoMapComap l).isSimpleOrder
 #align is_simple_module.congr IsSimpleModule.congr
@@ -101,19 +89,19 @@ theorem isAtom : IsAtom m :=
 
 end IsSimpleModule
 
-theorem is_semisimple_of_supₛ_simples_eq_top
-    (h : supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
-  complementedLattice_of_supₛ_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
-#align is_semisimple_of_Sup_simples_eq_top is_semisimple_of_supₛ_simples_eq_top
+theorem is_semisimple_of_sSup_simples_eq_top
+    (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M :=
+  complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
+#align is_semisimple_of_Sup_simples_eq_top is_semisimple_of_sSup_simples_eq_top
 
 namespace IsSemisimpleModule
 
 variable [IsSemisimpleModule R M]
 
-theorem supₛ_simples_eq_top : supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
+theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simp_rw [isSimpleModule_iff_isAtom]
-  exact supₛ_atoms_eq_top
-#align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.supₛ_simples_eq_top
+  exact sSup_atoms_eq_top
+#align is_semisimple_module.Sup_simples_eq_top IsSemisimpleModule.sSup_simples_eq_top
 
 instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
   haveI f : Submodule R m ≃o Set.Iic m := Submodule.MapSubtype.relIso m
@@ -122,47 +110,37 @@ instance is_semisimple_submodule {m : Submodule R M} : IsSemisimpleModule R m :=
 
 end IsSemisimpleModule
 
-theorem is_semisimple_iff_top_eq_supₛ_simples :
-    supₛ { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
-  ⟨is_semisimple_of_supₛ_simples_eq_top, by
+theorem is_semisimple_iff_top_eq_sSup_simples :
+    sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
+  ⟨is_semisimple_of_sSup_simples_eq_top, by
     intro
-    exact IsSemisimpleModule.supₛ_simples_eq_top⟩
-#align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_supₛ_simples
+    exact IsSemisimpleModule.sSup_simples_eq_top⟩
+#align is_semisimple_iff_top_eq_Sup_simples is_semisimple_iff_top_eq_sSup_simples
 
 namespace LinearMap
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
-theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) : Function.Injective f ∨ f = 0 :=
-  by
+theorem injective_or_eq_zero [IsSimpleModule R M] (f : M →ₗ[R] N) :
+    Function.Injective f ∨ f = 0 := by
   rw [← ker_eq_bot, ← ker_eq_top]
   apply eq_bot_or_eq_top
 #align linear_map.injective_or_eq_zero LinearMap.injective_or_eq_zero
 
--- Porting note: cannot coerce to function
-set_option synthInstance.etaExperiment true in
 theorem injective_of_ne_zero [IsSimpleModule R M] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Injective f :=
   f.injective_or_eq_zero.resolve_right h
 #align linear_map.injective_of_ne_zero LinearMap.injective_of_ne_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem surjective_or_eq_zero [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Surjective f ∨ f = 0 := by
   rw [← range_eq_top, ← range_eq_bot, or_comm]
   apply eq_bot_or_eq_top
 #align linear_map.surjective_or_eq_zero LinearMap.surjective_or_eq_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem surjective_of_ne_zero [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Surjective f :=
   f.surjective_or_eq_zero.resolve_right h
 #align linear_map.surjective_of_ne_zero LinearMap.surjective_of_ne_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 /-- **Schur's Lemma** for linear maps between (possibly distinct) simple modules -/
 theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M →ₗ[R] N) :
     Function.Bijective f ∨ f = 0 := by
@@ -172,15 +150,11 @@ theorem bijective_or_eq_zero [IsSimpleModule R M] [IsSimpleModule R N] (f : M �
   exact Or.intro_left _ ⟨injective_of_ne_zero h, surjective_of_ne_zero h⟩
 #align linear_map.bijective_or_eq_zero LinearMap.bijective_or_eq_zero
 
--- Porting note: cannot coerce to function or synth OfNat
-set_option synthInstance.etaExperiment true in
 theorem bijective_of_ne_zero [IsSimpleModule R M] [IsSimpleModule R N] {f : M →ₗ[R] N} (h : f ≠ 0) :
     Function.Bijective f :=
   f.bijective_or_eq_zero.resolve_right h
 #align linear_map.bijective_of_ne_zero LinearMap.bijective_of_ne_zero
 
--- Porting note: cannot coerce to function
-set_option synthInstance.etaExperiment true in
 theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
     (hf : Function.Surjective f) : IsCoatom (LinearMap.ker f) := by
   rw [← isSimpleModule_iff_isCoatom]
@@ -206,7 +180,6 @@ noncomputable instance _root_.Module.End.divisionRing
         haveI := IsSimpleModule.nontrivial R M
         have h := exists_pair_ne M
         contrapose! h
-        push_neg at h -- Porting note: needed to hit this again here. regression?
         intro x y
         simp_rw [ext_iff, one_apply, zero_apply] at h
         rw [← h x, h y]⟩
@@ -226,8 +199,6 @@ namespace JordanHolderModule
 
 -- Porting note: jordanHolderModule was timing out so outlining the fields
 
--- Porting note: cannot synth RingHomInvPair
-set_option synthInstance.etaExperiment true in
 /-- An isomorphism `X₂ / X₁ ∩ X₂ ≅ Y₂ / Y₁ ∩ Y₂` of modules for pairs
 `(X₁,X₂) (Y₁,Y₂) : Submodule R M` -/
 def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
@@ -236,8 +207,6 @@ def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
 theorem iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
   fun ⟨f⟩ => ⟨f.symm⟩
 
--- Porting note: cannot synth RingHomCompClass
-set_option synthInstance.etaExperiment true in
 theorem iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
   fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
 
@@ -249,8 +218,6 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
   dsimp
   exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
--- Porting note: cannot synth RingHomInvPair
-set_option synthInstance.etaExperiment true in
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := Covby.lt

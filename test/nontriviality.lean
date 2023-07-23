@@ -40,7 +40,7 @@ example {R : Type} [OrderedRing R] {a : R} (h : 0 < a) : 2 ∣ 4 := by
   rename_i inst; guard_hyp inst : Nontrivial R
   decide
 
-/-! Test using `@[nontriviality]` lemmas in `nontriviality and custom `simp` lemmas -/
+/-! Test using `@[nontriviality]` lemmas in `nontriviality` and custom `simp` lemmas -/
 
 
 def EmptyOrUniv {α : Type _} (s : Set α) : Prop :=
@@ -90,3 +90,11 @@ class Foo (α : Type) : Prop
 instance : Foo α := {}
 
 example (α : Type) : Foo α := by nontriviality α; infer_instance
+
+-- simulate the type of MvPolynomial
+def R : Type u → Type v → Sort (max (u+1) (v+1)) := sorry
+instance : CommRing (R c d) := sorry
+
+example (p : R PUnit.{u+1} PUnit.{v+1}) : p = p := by
+  nontriviality
+  sorry

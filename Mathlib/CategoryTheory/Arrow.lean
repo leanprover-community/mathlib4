@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.arrow
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Comma
+
+#align_import category_theory.arrow from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # The category of arrows
@@ -91,8 +88,8 @@ theorem mk_eq (f : Arrow T) : Arrow.mk f.hom = f := by
   rfl
 #align category_theory.arrow.mk_eq CategoryTheory.Arrow.mk_eq
 
-theorem mk_injective (A B : T) : Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h =>
-  by
+theorem mk_injective (A B : T) :
+    Function.Injective (Arrow.mk : (A ⟶ B) → Arrow T) := fun f g h => by
   cases h
   rfl
 #align category_theory.arrow.mk_injective CategoryTheory.Arrow.mk_injective
@@ -151,14 +148,14 @@ by providing isomorphisms between the domains and codomains,
 and a proof that the square commutes. -/
 @[simps!]
 def isoMk {f g : Arrow T} (l : f.left ≅ g.left) (r : f.right ≅ g.right)
-    (h : l.hom ≫ g.hom = f.hom ≫ r.hom) : f ≅ g :=
+    (h : l.hom ≫ g.hom = f.hom ≫ r.hom := by aesop_cat) : f ≅ g :=
   Comma.isoMk l r h
 #align category_theory.arrow.iso_mk CategoryTheory.Arrow.isoMk
 
 /-- A variant of `Arrow.isoMk` that creates an iso between two `Arrow.mk`s with a better type
 signature. -/
 abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ : X ≅ Z)
-    (h : e₁.hom ≫ g = f ≫ e₂.hom) : Arrow.mk f ≅ Arrow.mk g :=
+    (h : e₁.hom ≫ g = f ≫ e₂.hom := by aesop_cat) : Arrow.mk f ≅ Arrow.mk g :=
   Arrow.isoMk e₁ e₂ h
 #align category_theory.arrow.iso_mk' CategoryTheory.Arrow.isoMk'
 
@@ -332,7 +329,7 @@ end Functor
 isomorphic arrows in `D`. -/
 def Arrow.isoOfNatIso {C D : Type _} [Category C] [Category D] {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
-  Arrow.isoMk (e.app f.left) (e.app f.right) (by simp)
+  Arrow.isoMk (e.app f.left) (e.app f.right)
 #align category_theory.arrow.iso_of_nat_iso CategoryTheory.Arrow.isoOfNatIso
 
 end CategoryTheory

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.functor_n
-! leanprover-community/mathlib commit 1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.PInfty
+
+#align_import algebraic_topology.dold_kan.functor_n from "leanprover-community/mathlib"@"1995c7bbdbb0adb1b6d5acdc654f6cf46ed96cfa"
 
 /-!
 
@@ -55,8 +52,7 @@ def N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ) where
       p := PInfty
       idem := PInfty_idem }
   map f :=
-    { f := PInfty ≫ AlternatingFaceMapComplex.map f
-      comm := by aesop_cat }
+    { f := PInfty ≫ AlternatingFaceMapComplex.map f }
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₁ AlgebraicTopology.DoldKan.N₁
 
@@ -66,6 +62,10 @@ def N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ) :=
   (functorExtension₁ _ _).obj N₁
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.N₂ AlgebraicTopology.DoldKan.N₂
+
+-- porting note: added to ease the port of `AlgebraicTopology.DoldKan.NCompGamma`
+lemma compatibility_N₁_N₂ : toKaroubi (SimplicialObject C) ⋙ N₂ = N₁ :=
+  Functor.congr_obj (functorExtension₁_comp_whiskeringLeft_toKaroubi _ _) N₁
 
 end DoldKan
 

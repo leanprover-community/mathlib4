@@ -2,19 +2,16 @@
 Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Eric Wieser, Joachim Breitner
-
-! This file was ported from Lean 3 source module group_theory.is_free_group
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.FreeGroup
+
+#align_import group_theory.is_free_group from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Free groups structures on arbitrary types
 
 This file defines a type class for type that are free groups, together with the usual operations.
-The type class can be instantiated by providing an isomorphim to the canonical free group, or by
+The type class can be instantiated by providing an isomorphism to the canonical free group, or by
 proving that the universal property holds.
 
 For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
@@ -145,7 +142,7 @@ def ofLift {G : Type u} [Group G] (X : Type u) (of : X → G)
           lift_of])
       (by
         let lift_symm_of : ∀ {H : Type u} [Group H], ∀ (f : G →* H) (a), lift.symm f a = f (of a) :=
-          by intro H _ f a ; simp [← lift_of (lift.symm f)]
+          by intro H _ f a; simp [← lift_of (lift.symm f)]
         apply lift.symm.injective; ext x
         simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.id_apply, FreeGroup.lift.of,
           lift_of, lift_symm_of])

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.pochhammer
-! leanprover-community/mathlib commit 53b216bcc1146df1c4a0a86877890ea9f1f01589
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Abel
 import Mathlib.Data.Polynomial.Eval
+
+#align_import ring_theory.polynomial.pochhammer from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
 /-!
 # The Pochhammer polynomials
@@ -96,8 +93,8 @@ theorem pochhammer_ne_zero_eval_zero {n : ℕ} (h : n ≠ 0) : (pochhammer S n).
   simp [pochhammer_eval_zero, h]
 #align pochhammer_ne_zero_eval_zero pochhammer_ne_zero_eval_zero
 
-theorem pochhammer_succ_right (n : ℕ) : pochhammer S (n + 1) = pochhammer S n * (X + (n : S[X])) :=
-  by
+theorem pochhammer_succ_right (n : ℕ) :
+    pochhammer S (n + 1) = pochhammer S n * (X + (n : S[X])) := by
   suffices h : pochhammer ℕ (n + 1) = pochhammer ℕ n * (X + (n : ℕ[X]))
   · apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [pochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
@@ -143,7 +140,7 @@ theorem pochhammer_mul (n m : ℕ) :
       Nat.succ_eq_add_one, ← add_assoc, pochhammer_succ_right, Nat.cast_add, add_assoc]
 #align pochhammer_mul pochhammer_mul
 
-theorem pochhammer_nat_eq_ascFactorial (n : ℕ):
+theorem pochhammer_nat_eq_ascFactorial (n : ℕ) :
     ∀ k, (pochhammer ℕ k).eval (n + 1) = n.ascFactorial k
   | 0 => by rw [pochhammer_zero, eval_one, Nat.ascFactorial_zero]
   | t + 1 => by

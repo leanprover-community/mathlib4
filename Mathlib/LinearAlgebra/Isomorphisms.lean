@@ -2,13 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.isomorphisms
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Quotient
+
+#align_import linear_algebra.isomorphisms from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # Isomorphism theorems for modules.
@@ -18,9 +15,6 @@ import Mathlib.LinearAlgebra.Quotient
   `Submodule.quotientQuotientEquivQuotient`.
 
 -/
-
--- Porting note: TODO Erase this line. Needed because we don't have η for classes. (lean4#2074)
-attribute [-instance] Ring.toNonAssocRing
 
 universe u v
 
@@ -111,53 +105,42 @@ noncomputable def quotientInfEquivSupQuotient (p p' : Submodule R M) :
     ⟨quotientInfEquivSupQuotient_injective p p', quotientInfEquivSupQuotient_surjective p p'⟩
 #align linear_map.quotient_inf_equiv_sup_quotient LinearMap.quotientInfEquivSupQuotient
 
--- Porting note: wrapper to help with tc synthesis timing out
-/-- These should be removed -/
-abbrev asFun (f : M ≃ₗ[R] M₂) : M → M₂ := f
-theorem asFun_coe (f : M ≃ₗ[R] M₂) : asFun f = f := rfl
-
 -- @[simp]
 -- Porting note: `simp` affects the type arguments of `FunLike.coe`, so this theorem can't be
 --               a simp theorem anymore, even if it has high priority.
 theorem coe_quotientInfToSupQuotient (p p' : Submodule R M) :
-    ⇑(quotientInfToSupQuotient p p') = asFun (quotientInfEquivSupQuotient p p') :=
+    ⇑(quotientInfToSupQuotient p p') = quotientInfEquivSupQuotient p p' :=
   rfl
 #align linear_map.coe_quotient_inf_to_sup_quotient LinearMap.coe_quotientInfToSupQuotient
 
--- Porting note: cannot synth semilinearmapclass. Needs help with Submodule.Quotient.mk
--- Porting note: using asFun to avoid timing out
-set_option synthInstance.etaExperiment true in
-@[simp, nolint simpNF] -- Porting note: The linter timeouts.
+@[simp]
 theorem quotientInfEquivSupQuotient_apply_mk (p p' : Submodule R M) (x : p) :
     let map := ofLe (le_sup_left : p ≤ p ⊔ p')
-    asFun (quotientInfEquivSupQuotient p p') (Submodule.Quotient.mk x) =
+    quotientInfEquivSupQuotient p p' (Submodule.Quotient.mk x) =
       @Submodule.Quotient.mk R (p ⊔ p' : Submodule R M) _ _ _ (comap (p ⊔ p').subtype p') (map x) :=
   rfl
 #align linear_map.quotient_inf_equiv_sup_quotient_apply_mk LinearMap.quotientInfEquivSupQuotient_apply_mk
 
--- Porting note: using asFun to avoid timing out
 theorem quotientInfEquivSupQuotient_symm_apply_left (p p' : Submodule R M) (x : ↥(p ⊔ p'))
     (hx : (x : M) ∈ p) :
-    asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) =
+    (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨x, hx⟩ :=
   (LinearEquiv.symm_apply_eq _).2 <| by
     -- Porting note: Was `simp`.
-    rw [← asFun_coe, quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
+    rw [quotientInfEquivSupQuotient_apply_mk, ofLe_apply]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_left LinearMap.quotientInfEquivSupQuotient_symm_apply_left
 
 
--- Porting note: using asFun to avoid timing out
 -- @[simp] -- Porting note: simp can prove this
 theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M} {x : ↥(p ⊔ p')} :
-    asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
+    (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by
     -- Porting note: Was `simp`.
     rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_eq_zero_iff LinearMap.quotientInfEquivSupQuotient_symm_apply_eq_zero_iff
 
--- Porting note: using asFun to avoid timing out
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
-    (hx : (x : M) ∈ p') : asFun ((quotientInfEquivSupQuotient p p').symm) (Submodule.Quotient.mk x)
+    (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)
     = 0 :=
   quotientInfEquivSupQuotient_symm_apply_eq_zero_iff.2 hx
 #align linear_map.quotient_inf_equiv_sup_quotient_symm_apply_right LinearMap.quotientInfEquivSupQuotient_symm_apply_right

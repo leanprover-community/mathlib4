@@ -2,15 +2,13 @@
 Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
-
-! This file was ported from Lean 3 source module combinatorics.additive.pluennecke_ruzsa
-! leanprover-community/mathlib commit 4aab2abced69a9e579b1e6dc2856ed3db48e2cbd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.DoubleCounting
 import Mathlib.Data.Finset.Pointwise
 import Mathlib.Data.Rat.NNRat
+import Mathlib.Tactic.GCongr
+
+#align_import combinatorics.additive.pluennecke_ruzsa from "leanprover-community/mathlib"@"4aab2abced69a9e579b1e6dc2856ed3db48e2cbd"
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -45,7 +43,7 @@ variable {α : Type _} [CommGroup α] [DecidableEq α] {A B C : Finset α}
       "**Ruzsa's triangle inequality**. Subtraction version."]
 theorem card_div_mul_le_card_div_mul_card_div (A B C : Finset α) :
     (A / C).card * B.card ≤ (A / B).card * (B / C).card := by
-  rw [← card_product (A / B), ← mul_one (Finset.product _ _).card]
+  rw [← card_product (A / B), ← mul_one ((A / B) ×ˢ (B / C)).card]
   refine' card_mul_le_card_mul (fun b ac ↦ ac.1 * ac.2 = b) (fun x hx ↦ _)
     fun x _ ↦ card_le_one_iff.2 fun hu hv ↦
       ((mem_bipartiteBelow _).1 hu).2.symm.trans ((mem_bipartiteBelow _).1 hv).2
@@ -193,7 +191,7 @@ theorem card_add_nsmul_le {α : Type _} [AddCommGroup α] [DecidableEq α] {A B 
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| add_pluennecke_petridis _ hAB).trans _
   rw [cast_mul]
-  exact mul_le_mul_of_nonneg_left ih (zero_le _)
+  gcongr
 #align finset.card_add_nsmul_le Finset.card_add_nsmul_le
 
 @[to_additive existing]
@@ -208,7 +206,7 @@ theorem card_mul_pow_le (hAB : ∀ (A') (_ : A' ⊆ A), (A * B).card * A'.card �
   swap; exact cast_pos.2 hA.card_pos
   refine' (cast_le.2 <| mul_pluennecke_petridis _ hAB).trans _
   rw [cast_mul]
-  exact mul_le_mul_of_nonneg_left ih (zero_le _)
+  gcongr
 #align finset.card_mul_pow_le Finset.card_mul_pow_le
 
 /-- The **Plünnecke-Ruzsa inequality**. Multiplication version. Note that this is genuinely harder
@@ -229,9 +227,9 @@ theorem card_pow_div_pow_le (hA : A.Nonempty) (B : Finset α) (m n : ℕ) :
   refine' (mul_le_mul (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _)
     (card_mul_pow_le (mul_aux hC.1 hC.2 hCA) _) (zero_le _) (zero_le _)).trans _
   rw [mul_mul_mul_comm, ← pow_add, ← mul_assoc]
-  refine' mul_le_mul_of_nonneg_right _ (zero_le _)
-  refine' mul_le_mul _ (cast_le.2 <| card_le_of_subset hC.2) (zero_le _) (zero_le _)
-  exact pow_le_pow_of_le_left (_root_.zero_le _) (hCA _ hA') _
+  gcongr ((?_ ^ _) * Nat.cast ?_) * _
+  · exact hCA _ hA'
+  · exact card_le_of_subset hC.2
 #align finset.card_pow_div_pow_le Finset.card_pow_div_pow_le
 #align finset.card_nsmul_sub_nsmul_le Finset.card_nsmul_sub_nsmul_le
 

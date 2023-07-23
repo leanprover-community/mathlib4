@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.equiv
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Hom
+
+#align_import algebra.algebra.equiv from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -485,7 +482,7 @@ theorem arrowCongr_symm {A₁' A₂' : Type _} [Semiring A₁'] [Semiring A₂']
   rfl
 #align alg_equiv.arrow_congr_symm AlgEquiv.arrowCongr_symm
 
-/-- If an algebra morphism has an inverse, it is a algebra isomorphism. -/
+/-- If an algebra morphism has an inverse, it is an algebra isomorphism. -/
 def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp g = AlgHom.id R A₂)
     (h₂ : g.comp f = AlgHom.id R A₁) : A₁ ≃ₐ[R] A₂ :=
   { f with
@@ -660,10 +657,10 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul_left_inv ϕ := ext <| symm_apply_apply ϕ
 #align alg_equiv.aut AlgEquiv.aut
 
-theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁): ϕ * ψ = ψ.trans ϕ :=
+theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
   rfl
 
-theorem aut_one : 1 = AlgEquiv.refl (R:= R) (A₁ := A₁) :=
+theorem aut_one : 1 = AlgEquiv.refl (R := R) (A₁ := A₁) :=
   rfl
 
 @[simp]
@@ -794,7 +791,7 @@ section
 
 variable [Group G] [MulSemiringAction G A] [SMulCommClass G R A]
 
-/-- Each element of the group defines a algebra equivalence.
+/-- Each element of the group defines an algebra equivalence.
 
 This is a stronger version of `MulSemiringAction.toRingEquiv` and
 `DistribMulAction.toLinearEquiv`. -/

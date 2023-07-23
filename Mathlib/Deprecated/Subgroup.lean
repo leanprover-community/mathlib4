@@ -3,14 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
-
-! This file was ported from Lean 3 source module deprecated.subgroup
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Deprecated.Submonoid
+
+#align_import deprecated.subgroup from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Unbundled subgroups (deprecated)
@@ -113,24 +110,24 @@ theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : 
 #align is_add_subgroup.inter IsAddSubgroup.inter
 
 @[to_additive]
-theorem IsSubgroup.interᵢ {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
-    IsSubgroup (Set.interᵢ s) :=
-  { IsSubmonoid.interᵢ fun y => (hs y).toIsSubmonoid with
+theorem IsSubgroup.iInter {ι : Sort _} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
+    IsSubgroup (Set.iInter s) :=
+  { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
     inv_mem := fun h =>
-      Set.mem_interᵢ.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_interᵢ.1 h y) }
-#align is_subgroup.Inter IsSubgroup.interᵢ
-#align is_add_subgroup.Inter IsAddSubgroup.interᵢ
+      Set.mem_iInter.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
+#align is_subgroup.Inter IsSubgroup.iInter
+#align is_add_subgroup.Inter IsAddSubgroup.iInter
 
 @[to_additive]
-theorem isSubgroup_unionᵢ_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
+theorem isSubgroup_iUnion_of_directed {ι : Type _} [Nonempty ι] {s : ι → Set G}
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
   { inv_mem := fun ha =>
-      let ⟨i, hi⟩ := Set.mem_unionᵢ.1 ha
-      Set.mem_unionᵢ.2 ⟨i, (hs i).inv_mem hi⟩
-    toIsSubmonoid := isSubmonoid_unionᵢ_of_directed (fun i => (hs i).toIsSubmonoid) directed }
-#align is_subgroup_Union_of_directed isSubgroup_unionᵢ_of_directed
-#align is_add_subgroup_Union_of_directed isAddSubgroup_unionᵢ_of_directed
+      let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
+      Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
+    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i => (hs i).toIsSubmonoid) directed }
+#align is_subgroup_Union_of_directed isSubgroup_iUnion_of_directed
+#align is_add_subgroup_Union_of_directed isAddSubgroup_iUnion_of_directed
 
 end Group
 
@@ -327,7 +324,7 @@ namespace IsGroupHom
 
 open IsSubmonoid IsSubgroup
 
-/-- `ker f : set G` is the underlying subset of the kernel of a map `G → H`. -/
+/-- `ker f : Set G` is the underlying subset of the kernel of a map `G → H`. -/
 @[to_additive "`ker f : set A` is the underlying subset of the kernel of a map `A → B`"]
 def ker [Group H] (f : G → H) : Set G :=
   preimage f (trivial H)
@@ -343,16 +340,16 @@ theorem mem_ker [Group H] (f : G → H) {x : G} : x ∈ ker f ↔ f x = 1 :=
 variable [Group G] [Group H]
 
 @[to_additive]
-theorem one_ker_inv {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a * b⁻¹) = 1) : f a = f b :=
-  by
+theorem one_ker_inv {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a * b⁻¹) = 1) :
+    f a = f b := by
   rw [hf.map_mul, hf.map_inv] at h
   rw [← inv_inv (f b), eq_inv_of_mul_eq_one_left h]
 #align is_group_hom.one_ker_inv IsGroupHom.one_ker_inv
 #align is_add_group_hom.zero_ker_neg IsAddGroupHom.zero_ker_neg
 
 @[to_additive]
-theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ * b) = 1) : f a = f b :=
-  by
+theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ * b) = 1) :
+    f a = f b := by
   rw [hf.map_mul, hf.map_inv] at h
   apply inv_injective
   rw [eq_inv_of_mul_eq_one_left h]
@@ -360,16 +357,16 @@ theorem one_ker_inv' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f (a⁻¹ 
 #align is_add_group_hom.zero_ker_neg' IsAddGroupHom.zero_ker_neg'
 
 @[to_additive]
-theorem inv_ker_one {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) : f (a * b⁻¹) = 1 :=
-  by
+theorem inv_ker_one {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) :
+    f (a * b⁻¹) = 1 := by
   have : f a * (f b)⁻¹ = 1 := by rw [h, mul_right_inv]
   rwa [← hf.map_inv, ← hf.map_mul] at this
 #align is_group_hom.inv_ker_one IsGroupHom.inv_ker_one
 #align is_add_group_hom.neg_ker_zero IsAddGroupHom.neg_ker_zero
 
 @[to_additive]
-theorem inv_ker_one' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) : f (a⁻¹ * b) = 1 :=
-  by
+theorem inv_ker_one' {f : G → H} (hf : IsGroupHom f) {a b : G} (h : f a = f b) :
+    f (a⁻¹ * b) = 1 := by
   have : (f a)⁻¹ * f b = 1 := by rw [h, mul_left_inv]
   rwa [← hf.map_inv, ← hf.map_mul] at this
 #align is_group_hom.inv_ker_one' IsGroupHom.inv_ker_one'
@@ -516,7 +513,8 @@ inductive InClosure (s : Set G) : G → Prop
   | mul {a b : G} : InClosure s a → InClosure s b → InClosure s (a * b)
 #align group.in_closure Group.InClosure
 
-/-- `Group.closure s` is the subgroup generated by `s`, i.e. the smallest subgroup containg `s`. -/
+/-- `Group.closure s` is the subgroup generated by `s`, i.e. the smallest subgroup containing `s`.
+-/
 @[to_additive
   "`AddGroup.closure s` is the additive subgroup generated by `s`, i.e., the
   smallest additive subgroup containing `s`."]
@@ -648,8 +646,7 @@ theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.
 
 @[to_additive]
 theorem mem_closure_union_iff {G : Type _} [CommGroup G] {s t : Set G} {x : G} :
-    x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x :=
-  by
+    x ∈ closure (s ∪ t) ↔ ∃ y ∈ closure s, ∃ z ∈ closure t, y * z = x := by
   simp only [closure_eq_mclosure, Monoid.mem_closure_union_iff, exists_prop, preimage_union];
   constructor
   · rintro ⟨_, ⟨ys, hys, yt, hyt, rfl⟩, _, ⟨zs, hzs, zt, hzt, rfl⟩, rfl⟩
@@ -683,8 +680,7 @@ namespace Group
 variable {s : Set G} [Group G]
 
 theorem conjugatesOf_subset {t : Set G} (ht : IsNormalSubgroup t) {a : G} (h : a ∈ t) :
-    conjugatesOf a ⊆ t := fun x hc =>
-  by
+    conjugatesOf a ⊆ t := fun x hc => by
   obtain ⟨c, w⟩ := isConj_iff.1 hc
   have H := IsNormalSubgroup.normal ht a h c
   rwa [← w]
@@ -692,7 +688,7 @@ theorem conjugatesOf_subset {t : Set G} (ht : IsNormalSubgroup t) {a : G} (h : a
 
 theorem conjugatesOfSet_subset' {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
     conjugatesOfSet s ⊆ t :=
-  Set.unionᵢ₂_subset fun _ H => conjugatesOf_subset ht (h H)
+  Set.iUnion₂_subset fun _ H => conjugatesOf_subset ht (h H)
 #align group.conjugates_of_set_subset' Group.conjugatesOfSet_subset'
 
 /-- The normal closure of a set s is the subgroup closure of all the conjugates of
@@ -729,8 +725,7 @@ theorem normalClosure.is_normal : IsNormalSubgroup (normalClosure s) :=
 
 /-- The normal closure of s is the smallest normal subgroup containing s. -/
 theorem normalClosure_subset {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
-    normalClosure s ⊆ t := fun a w =>
-  by
+    normalClosure s ⊆ t := fun a w => by
   induction' w with x hx x _ ihx x y _ _ ihx ihy
   · exact conjugatesOfSet_subset' ht h <| hx
   · exact ht.toIsSubgroup.toIsSubmonoid.one_mem

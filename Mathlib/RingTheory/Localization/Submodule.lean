@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.submodule
-! leanprover-community/mathlib commit 1ebb20602a8caef435ce47f6373e1aa40851a177
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import ring_theory.localization.submodule from "leanprover-community/mathlib"@"1ebb20602a8caef435ce47f6373e1aa40851a177"
 
 /-!
 # Submodules in localizations of commutative rings
@@ -31,7 +28,6 @@ variable [Algebra R S] {P : Type _} [CommRing P]
 
 namespace IsLocalization
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 -- This was previously a `hasCoe` instance, but if `S = R` then this will loop.
 -- It could be a `hasCoeT` instance, but we keep it explicit here to avoid slowing down
 -- the rest of the library.
@@ -45,31 +41,26 @@ theorem mem_coeSubmodule (I : Ideal R) {x : S} :
   Iff.rfl
 #align is_localization.mem_coe_submodule IsLocalization.mem_coeSubmodule
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 theorem coeSubmodule_mono {I J : Ideal R} (h : I ≤ J) : coeSubmodule S I ≤ coeSubmodule S J :=
   Submodule.map_mono h
 #align is_localization.coe_submodule_mono IsLocalization.coeSubmodule_mono
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_bot : coeSubmodule S (⊥ : Ideal R) = ⊥ := by
   rw [coeSubmodule, Submodule.map_bot]
 #align is_localization.coe_submodule_bot IsLocalization.coeSubmodule_bot
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_top : coeSubmodule S (⊤ : Ideal R) = 1 := by
   rw [coeSubmodule, Submodule.map_top, Submodule.one_eq_range]
 #align is_localization.coe_submodule_top IsLocalization.coeSubmodule_top
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_sup (I J : Ideal R) :
     coeSubmodule S (I ⊔ J) = coeSubmodule S I ⊔ coeSubmodule S J :=
   Submodule.map_sup _ _ _
 #align is_localization.coe_submodule_sup IsLocalization.coeSubmodule_sup
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[simp]
 theorem coeSubmodule_mul (I J : Ideal R) :
     coeSubmodule S (I * J) = coeSubmodule S I * coeSubmodule S J :=
@@ -77,8 +68,8 @@ theorem coeSubmodule_mul (I J : Ideal R) :
 #align is_localization.coe_submodule_mul IsLocalization.coeSubmodule_mul
 
 theorem coeSubmodule_fg (hS : Function.Injective (algebraMap R S)) (I : Ideal R) :
-    Submodule.Fg (coeSubmodule S I) ↔ Submodule.Fg I :=
-  ⟨Submodule.fg_of_fg_map _ (LinearMap.ker_eq_bot.mpr hS), Submodule.Fg.map _⟩
+    Submodule.FG (coeSubmodule S I) ↔ Submodule.FG I :=
+  ⟨Submodule.fg_of_fg_map _ (LinearMap.ker_eq_bot.mpr hS), Submodule.FG.map _⟩
 #align is_localization.coe_submodule_fg IsLocalization.coeSubmodule_fg
 
 @[simp]
@@ -105,7 +96,7 @@ variable [IsLocalization M S]
 section
 
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h⊢
+  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
 #align is_localization.is_noetherian_ring IsLocalization.isNoetherianRing
 
@@ -113,12 +104,12 @@ end
 
 variable {S M}
 
-set_option synthInstance.etaExperiment true in -- Porting note: gets around lean4#2074
 @[mono]
 theorem coeSubmodule_le_coeSubmodule (h : M ≤ nonZeroDivisors R) {I J : Ideal R} :
     coeSubmodule S I ≤ coeSubmodule S J ↔ I ≤ J :=
   Submodule.map_le_map_iff_of_injective (IsLocalization.injective _ h) _ _
 #align is_localization.coe_submodule_le_coe_submodule IsLocalization.coeSubmodule_le_coeSubmodule
+
 
 @[mono]
 theorem coeSubmodule_strictMono (h : M ≤ nonZeroDivisors R) :

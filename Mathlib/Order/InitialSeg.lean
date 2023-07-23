@@ -2,14 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module order.initial_seg
-! leanprover-community/mathlib commit 1a313d8bba1bad05faba71a4a4e9742ab5bd9efd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
+
+#align_import order.initial_seg from "leanprover-community/mathlib"@"8ea5598db6caeddde6cb734aa179cc2408dbd345"
 /-!
 # Initial and principal segments
 
@@ -116,7 +114,7 @@ instance (r : α → α → Prop) : Inhabited (r ≼i r) :=
 @[trans]
 protected def trans (f : r ≼i s) (g : s ≼i t) : r ≼i t :=
   ⟨f.1.trans g.1, fun a c h => by
-    simp at h⊢
+    simp at h ⊢
     rcases g.2 _ _ h with ⟨b, rfl⟩; have h := g.map_rel_iff.1 h
     rcases f.2 _ _ h with ⟨a', rfl⟩; exact ⟨a', rfl⟩⟩
 #align initial_seg.trans InitialSeg.trans
@@ -131,21 +129,18 @@ theorem trans_apply (f : r ≼i s) (g : s ≼i t) (a : α) : (f.trans g) a = g (
   rfl
 #align initial_seg.trans_apply InitialSeg.trans_apply
 
-theorem unique_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s] :
-    WellFounded r → Subsingleton (r ≼i s)
-  | ⟨h⟩ =>
-    ⟨fun f g => by
-      ext a
-      induction' h a with a _ IH
-      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
-      simp only [f.init_iff, g.init_iff]
-      exact exists_congr fun y => and_congr_left fun h => IH _ h ▸ Iff.rfl⟩
-#align initial_seg.unique_of_trichotomous_of_irrefl InitialSeg.unique_of_trichotomous_of_irrefl
+instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl β s]
+    [IsWellFounded α r] : Subsingleton (r ≼i s) :=
+  ⟨fun f g => by
+    ext a
+    refine' IsWellFounded.induction r a fun b IH =>
+      extensional_of_trichotomous_of_irrefl s fun x => _
+    rw [f.init_iff, g.init_iff]
+    exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
+#align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
 
 instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
-  ⟨fun a =>
-    @Subsingleton.elim _
-      (unique_of_trichotomous_of_irrefl (@RelEmbedding.wellFounded _ _ r s a IsWellFounded.wf)) a⟩
+  ⟨fun a => by let _ := a.isWellFounded; exact Subsingleton.elim a⟩
 
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
@@ -207,7 +202,7 @@ def ofIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] : r
 /-- Initial segment embedding of an order `r` into the disjoint union of `r` and `s`. -/
 def leAdd (r : α → α → Prop) (s : β → β → Prop) : r ≼i Sum.Lex r s :=
   ⟨⟨⟨Sum.inl, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩, fun a b => by
-    cases b <;> [exact fun _ => ⟨_, rfl⟩, exact False.elim ∘ Sum.lex_inr_inl]⟩
+    cases b <;> [exact fun _ => ⟨_, rfl⟩; exact False.elim ∘ Sum.lex_inr_inl]⟩
 #align initial_seg.le_add InitialSeg.leAdd
 
 @[simp]
@@ -395,6 +390,24 @@ theorem ofElement_top {α : Type _} (r : α → α → Prop) (a : α) : (ofEleme
   rfl
 #align principal_seg.of_element_top PrincipalSeg.ofElement_top
 
+/-- For any principal segment `r ≺i s`, there is a `Subrel` of `s` order isomorphic to `r`. -/
+@[simps! symm_apply]
+noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
+  RelIso.symm
+  { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
+      (funext fun _ ↦ propext f.down.symm))),
+    map_rel_iff' := f.map_rel_iff }
+
+@[simp]
+theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
+    f (f.subrelIso b) = b :=
+  Equiv.apply_ofInjective_symm f.injective _
+
+@[simp]
+theorem subrelIso_apply (f : r ≺i s) (a : α) :
+    f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
+  Equiv.ofInjective_symm_apply f.injective _
+
 /-- Restrict the codomain of a principal segment -/
 def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
   ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ =>
@@ -425,7 +438,7 @@ theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b'
   rfl
 #align principal_seg.of_is_empty_top PrincipalSeg.ofIsEmpty_top
 
-/-- Principal segment from the empty relation on `pempty` to the empty relation on `punit`. -/
+/-- Principal segment from the empty relation on `PEmpty` to the empty relation on `PUnit`. -/
 @[reducible]
 def pemptyToPunit : @EmptyRelation PEmpty ≺i @EmptyRelation PUnit :=
   (@ofIsEmpty _ _ EmptyRelation _ _ PUnit.unit) fun _ => not_false

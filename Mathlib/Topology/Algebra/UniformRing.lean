@@ -2,15 +2,12 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.algebra.uniform_ring
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
+
+#align_import topology.algebra.uniform_ring from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Completion of topological rings:
@@ -166,7 +163,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
           ((continuous_extension.comp continuous_fst).add
             (continuous_extension.comp continuous_snd)))
         fun a b => by
-        simp_rw [← coe_add, extension_coe hf, extension_coe hf, extension_coe hf, f.map_add]
+        simp_rw [← coe_add, extension_coe hf, f.map_add]
     map_one' := by rw [← coe_one, extension_coe hf, f.map_one]
     map_mul' := fun a b =>
       Completion.induction_on₂ a b
@@ -174,7 +171,7 @@ def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β
           ((continuous_extension.comp continuous_fst).mul
             (continuous_extension.comp continuous_snd)))
         fun a b => by
-        simp_rw [← coe_mul, extension_coe hf, extension_coe hf, extension_coe hf, f.map_mul] }
+        simp_rw [← coe_mul, extension_coe hf, f.map_mul] }
 #align uniform_space.completion.extension_hom UniformSpace.Completion.extensionHom
 
 instance topologicalRing : TopologicalRing (Completion α) where
@@ -291,7 +288,7 @@ noncomputable def DenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ
   toFun := (ue.denseInducing dr).extend f
   map_one' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 1
-    exacts[i.map_one.symm, f.map_one.symm]
+    exacts [i.map_one.symm, f.map_one.symm]
   map_zero' := by
     convert DenseInducing.extend_eq (ue.denseInducing dr) hf.continuous 0 <;>
     simp only [map_zero]

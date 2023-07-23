@@ -2,18 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.bounded_order
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
-import Mathlib.Tactic.Classical
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.SimpRw
+
+#align_import order.bounded_order from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -90,11 +83,9 @@ section OrderTop
 noncomputable def topOrderOrNoTopOrder (α : Type _) [LE α] : PSum (OrderTop α) (NoTopOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬b ≤ a
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Top α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align top_order_or_no_top_order topOrderOrNoTopOrder
 
 section LE
@@ -258,11 +249,9 @@ section OrderBot
 noncomputable def botOrderOrNoBotOrder (α : Type _) [LE α] : PSum (OrderBot α) (NoBotOrder α) := by
   by_cases H : ∀ a : α, ∃ b, ¬a ≤ b
   · exact PSum.inr ⟨H⟩
-
   · push_neg at H
     letI : Bot α := ⟨Classical.choose H⟩
     exact PSum.inl ⟨Classical.choose_spec H⟩
-
 #align bot_order_or_no_bot_order botOrderOrNoBotOrder
 
 section LE
@@ -819,6 +808,11 @@ instance top [Top α] [Top β] : Top (α × β) :=
 
 instance bot [Bot α] [Bot β] : Bot (α × β) :=
   ⟨⟨⊥, ⊥⟩⟩
+
+theorem fst_top [Top α] [Top β] : (⊤ : α × β).fst = ⊤ := rfl
+theorem snd_top [Top α] [Top β] : (⊤ : α × β).snd = ⊤ := rfl
+theorem fst_bot [Bot α] [Bot β] : (⊥ : α × β).fst = ⊥ := rfl
+theorem snd_bot [Bot α] [Bot β] : (⊥ : α × β).snd = ⊥ := rfl
 
 instance orderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
   __ := inferInstanceAs (Top (α × β))

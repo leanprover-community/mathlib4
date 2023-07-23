@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.double_counting
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Order
+
+#align_import combinatorics.double_counting from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Double countings
@@ -96,7 +93,6 @@ theorem card_mul_le_card_mul [∀ a b, Decidable (r a b)]
     _ = ∑ b in t, (s.bipartiteBelow r b).card :=
       sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow _
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
-
 #align finset.card_mul_le_card_mul Finset.card_mul_le_card_mul
 
 theorem card_mul_le_card_mul' [∀ a b, Decidable (r a b)]

@@ -2,18 +2,15 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.perm.option
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Perm
 import Mathlib.GroupTheory.Perm.Sign
 import Mathlib.Logic.Equiv.Option
 
+#align_import group_theory.perm.option from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
+
 /-!
-# Permutations of `option α`
+# Permutations of `Option α`
 -/
 
 
@@ -47,8 +44,7 @@ theorem Equiv.optionCongr_sign {α : Type _} [DecidableEq α] [Fintype α] (e : 
 theorem map_equiv_removeNone {α : Type _} [DecidableEq α] (σ : Perm (Option α)) :
     (removeNone σ).optionCongr = swap none (σ none) * σ := by
   ext1 x
-  have : Option.map (⇑(removeNone σ)) x = (swap none (σ none)) (σ x) :=
-    by
+  have : Option.map (⇑(removeNone σ)) x = (swap none (σ none)) (σ x) := by
     cases' x with x
     · simp
     · cases h : σ (some _)
@@ -68,8 +64,7 @@ def Equiv.Perm.decomposeOption {α : Type _} [DecidableEq α] : Perm (Option α)
   toFun σ := (σ none, removeNone σ)
   invFun i := swap none i.1 * i.2.optionCongr
   left_inv σ := by simp
-  right_inv := fun ⟨x, σ⟩ =>
-    by
+  right_inv := fun ⟨x, σ⟩ => by
     have : removeNone (swap none x * σ.optionCongr) = σ :=
       Equiv.optionCongr_injective (by simp [← mul_assoc])
     simp [← Perm.eq_inv_iff_eq, this]

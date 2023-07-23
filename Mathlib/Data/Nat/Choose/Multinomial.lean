@@ -2,11 +2,6 @@
 Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
-
-! This file was ported from Lean 3 source module data.nat.choose.multinomial
-! leanprover-community/mathlib commit 2738d2ca56cbc63be80c3bd48e9ed90ad94e947d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Nat.Choose.Sum
@@ -14,6 +9,8 @@ import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
+
+#align_import data.nat.choose.multinomial from "leanprover-community/mathlib"@"2738d2ca56cbc63be80c3bd48e9ed90ad94e947d"
 
 /-!
 # Multinomial
@@ -252,15 +249,10 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-      simp only [zero_eq, Sym.val_eq_coe]
-      unfold Multiset.multinomial
-      unfold Finsupp.multinomial
-      unfold Finsupp.prod
-      simp only [factorial, prod_const_one, zero_lt_one, Nat.div_self]
     · rw [_root_.pow_succ, zero_mul]
       -- Porting note : Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) (succ n)) :=
-      -- Porting note : slightly unusual indendation to fit within the line length limit
+      -- Porting note : slightly unusual indentation to fit within the line length limit
       Finset.instIsEmptySubtypeMemFinsetInstMembershipFinsetEmptyCollectionInstEmptyCollectionFinset
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)

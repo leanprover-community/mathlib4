@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
-
-! This file was ported from Lean 3 source module analysis.normed_space.continuous_linear_map
-! leanprover-community/mathlib commit e0e2f10d64d8a5fd11140de398eaa1322eb46c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.continuous_linear_map from "leanprover-community/mathlib"@"41bef4ae1254365bc190aee63b947674d2977f01"
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
@@ -30,7 +27,6 @@ This file is meant to be lightweight (it is imported by much of the analysis lib
 before adding imports!
 -/
 
-set_option synthInstance.etaExperiment true -- Porting note: gets around lean4#2074
 open Metric ContinuousLinearMap
 
 open Set Real
@@ -143,7 +139,7 @@ theorem antilipschitz_of_bound (f : E →SL[σ] F) {K : ℝ≥0} (h : ∀ x, ‖
 
 theorem bound_of_antilipschitz (f : E →SL[σ] F) {K : ℝ≥0} (h : AntilipschitzWith K f) (x) :
     ‖x‖ ≤ K * ‖f x‖ :=
-  AddMonoidHomClass.bound_of_antilipschitz _ h x
+  ZeroHomClass.bound_of_antilipschitz _ h x
 #align continuous_linear_map.bound_of_antilipschitz ContinuousLinearMap.bound_of_antilipschitz
 
 end ContinuousLinearMap
@@ -174,8 +170,7 @@ variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 theorem ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
     UniformEmbedding f :=
   (AddMonoidHomClass.antilipschitz_of_bound f hf).uniformEmbedding f.uniformContinuous
-#align continuous_linear_map.uniform_embedding_of_bound
-  ContinuousLinearMap.uniformEmbedding_of_bound
+#align continuous_linear_map.uniform_embedding_of_bound ContinuousLinearMap.uniformEmbedding_of_bound
 
 end Normed
 
@@ -237,33 +232,6 @@ theorem toSpanSingleton_homothety (x : E) (c : 𝕜) :
   rw [mul_comm]
   exact norm_smul _ _
 #align continuous_linear_map.to_span_singleton_homothety ContinuousLinearMap.toSpanSingleton_homothety
-
-/-- Given an element `x` of a normed space `E` over a field `𝕜`, the natural continuous
-    linear map from `𝕜` to `E` by taking multiples of `x`.-/
-def toSpanSingleton (x : E) : 𝕜 →L[𝕜] E :=
-  ofHomothety (LinearMap.toSpanSingleton 𝕜 E x) ‖x‖ (toSpanSingleton_homothety 𝕜 x)
-#align continuous_linear_map.to_span_singleton ContinuousLinearMap.toSpanSingleton
-
-theorem toSpanSingleton_apply (x : E) (r : 𝕜) : toSpanSingleton 𝕜 x r = r • x := by
-  simp [toSpanSingleton, ofHomothety, LinearMap.toSpanSingleton]
-#align continuous_linear_map.to_span_singleton_apply ContinuousLinearMap.toSpanSingleton_apply
-
-theorem toSpanSingleton_add (x y : E) :
-    toSpanSingleton 𝕜 (x + y) = toSpanSingleton 𝕜 x + toSpanSingleton 𝕜 y := by
-  ext1
-  simp [toSpanSingleton_apply]
-#align continuous_linear_map.to_span_singleton_add ContinuousLinearMap.toSpanSingleton_add
-
-theorem toSpanSingleton_smul' (𝕜') [NormedField 𝕜'] [NormedSpace 𝕜' E] [SMulCommClass 𝕜 𝕜' E]
-    (c : 𝕜') (x : E) : toSpanSingleton 𝕜 (c • x) = c • toSpanSingleton 𝕜 x := by
-  ext1
-  rw [toSpanSingleton_apply, smul_apply, toSpanSingleton_apply, smul_comm]
-#align continuous_linear_map.to_span_singleton_smul' ContinuousLinearMap.toSpanSingleton_smul'
-
-theorem toSpanSingleton_smul (c : 𝕜) (x : E) :
-    toSpanSingleton 𝕜 (c • x) = c • toSpanSingleton 𝕜 x :=
-  toSpanSingleton_smul' 𝕜 𝕜 c x
-#align continuous_linear_map.to_span_singleton_smul ContinuousLinearMap.toSpanSingleton_smul
 
 end ContinuousLinearMap
 

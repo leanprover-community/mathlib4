@@ -3,15 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.uniform_space.equiv
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
+
+#align_import topology.uniform_space.equiv from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Uniform isomorphisms
@@ -346,7 +343,7 @@ theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=
   rfl
 #align uniform_equiv.coe_punit_prod UniformEquiv.coe_punitProd
 
-/-- Uniform equivalence between `ulift α` and `α`. -/
+/-- Uniform equivalence between `ULift α` and `α`. -/
 def ulift : ULift.{v, u} α ≃ᵤ α :=
   { Equiv.ulift with
     uniformContinuous_toFun := uniformContinuous_comap
@@ -367,7 +364,7 @@ def funUnique (ι α : Type _) [Unique ι] [UniformSpace α] : (ι → α) ≃�
   uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
 #align uniform_equiv.fun_unique UniformEquiv.funUnique
 
-/-- Uniform isomorphism between dependent functions `Π i : fin 2, α i` and `α 0 × α 1`. -/
+/-- Uniform isomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
 @[simps! (config := { fullyApplied := false })]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1
     where
@@ -377,10 +374,10 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 #align uniform_equiv.pi_fin_two UniformEquiv.piFinTwo
 
-/-- Uniform isomorphism between `α² = fin 2 → α` and `α × α`. -/
+/-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
 -- Porting note: made `α` explicit
 @[simps! (config := { fullyApplied := false })]
-def finTwoArrow (α : Type _) [UniformSpace α]: (Fin 2 → α) ≃ᵤ α × α :=
+def finTwoArrow (α : Type _) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 #align uniform_equiv.fin_two_arrow UniformEquiv.finTwoArrow
 

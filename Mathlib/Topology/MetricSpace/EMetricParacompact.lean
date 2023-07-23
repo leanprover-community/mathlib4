@@ -2,16 +2,13 @@
 Copyright (c) 202 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.metric_space.emetric_paracompact
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.GCongr
 import Mathlib.Topology.MetricSpace.EMetricSpace
 import Mathlib.Topology.Paracompact
+
+#align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -51,9 +48,9 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
     simp [pow_succ, ← mul_assoc, ENNReal.mul_inv_cancel]
   -- Consider an open covering `S : Set (Set α)`
   refine' ⟨fun ι s ho hcov => _⟩
-  simp only [unionᵢ_eq_univ_iff] at hcov
+  simp only [iUnion_eq_univ_iff] at hcov
   -- choose a well founded order on `S`
-  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι
+  -- porting note: todo: add lemma that claims `∃ i : LinearOrder ι, WellFoundedLT ι`
   let _ : LinearOrder ι := by classical exact linearOrderOfSTO WellOrderingRel
   have wf : WellFounded ((· < ·) : ι → ι → Prop) := @IsWellFounded.wf ι WellOrderingRel _
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
@@ -83,7 +80,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         (∀ m < n, ∀ (j : ι), x ∉ D m j) ∧ edist y x < 2⁻¹ ^ n := by
     intro n i y
     rw [Dn n i]
-    simp only [mem_unionᵢ, mem_ball, exists_prop]
+    simp only [mem_iUnion, mem_ball, exists_prop]
   -- The sets `D n i` cover the whole space. Indeed, for each `x` we can choose `n` such that
   -- `ball x (3 / 2 ^ n) ⊆ s (ind x)`, then either `x ∈ D n i`, or `x ∈ D m i` for some `m < n`.
   have Dcov : ∀ x, ∃ n i, x ∈ D n i := fun x => by
@@ -100,7 +97,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   -- Each `D n i` is a union of open balls, hence it is an open set
   have Dopen : ∀ n i, IsOpen (D n i) := fun n i => by
     rw [Dn]
-    iterate 4 refine' isOpen_unionᵢ fun _ => _
+    iterate 4 refine' isOpen_iUnion fun _ => _
     exact isOpen_ball
   -- the covering `D n i` is a refinement of the original covering: `D n i ⊆ s i`
   have HDS : ∀ n i, D n i ⊆ s i := fun n i x => by
@@ -112,7 +109,7 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
   -- by a single parameter, we use `ℕ × ι` as the domain.
   refine' ⟨ℕ × ι, fun ni => D ni.1 ni.2, fun _ => Dopen _ _, _, _, fun ni => ⟨ni.2, HDS _ _⟩⟩
   -- The sets `D n i` cover the whole space as we proved earlier
-  · refine' unionᵢ_eq_univ_iff.2 fun x => _
+  · refine' iUnion_eq_univ_iff.2 fun x => _
     rcases Dcov x with ⟨n, i, h⟩
     exact ⟨⟨n, i⟩, h⟩
   /- Let us prove that the covering `D n i` is locally finite. Take a point `x` and choose
@@ -155,16 +152,16 @@ instance (priority := 100) [PseudoEMetricSpace α] : ParacompactSpace α := by
         _ < 2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1) + (2⁻¹ ^ (n + k + 1) + 2⁻¹ ^ m) := by
           apply_rules [ENNReal.add_lt_add]
         _ = 2 * (2⁻¹ ^ m + 2⁻¹ ^ (n + k + 1)) := by simp only [two_mul, add_comm]
-        _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) :=
-          (mul_le_mul' le_rfl <| add_le_add le_rfl <| hpow_le (add_le_add hm le_rfl))
+        _ ≤ 2 * (2⁻¹ ^ m + 2⁻¹ ^ (m + 1)) := by
+          gcongr 2 * (_ + ?_); exact hpow_le (add_le_add hm le_rfl)
         _ = 3 * 2⁻¹ ^ m := by
           rw [mul_add, h2pow, ← two_add_one_eq_three, add_mul, one_mul]
     -- Finally, we glue `Hgt` and `Hle`
     have : (⋃ (m ≤ n + k) (i ∈ { i : ι | (D m i ∩ B).Nonempty }), {(m, i)}).Finite :=
-      (finite_le_nat _).bunionᵢ' fun i hi =>
-        (Hle i hi).finite.bunionᵢ' fun _ _ => finite_singleton _
+      (finite_le_nat _).biUnion' fun i hi =>
+        (Hle i hi).finite.biUnion' fun _ _ => finite_singleton _
     refine' this.subset fun I hI => _
-    simp only [mem_unionᵢ]
+    simp only [mem_iUnion]
     refine' ⟨I.1, _, I.2, hI, Prod.mk.eta.symm⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 

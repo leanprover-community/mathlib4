@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.concept
-! leanprover-community/mathlib commit 1e05171a5e8cf18d98d9cf7b207540acb044acae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
+
+#align_import order.concept from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
 
 /-!
 # Formal concept analysis
@@ -105,25 +102,25 @@ theorem extentClosure_union (t₁ t₂ : Set β) :
 #align extent_closure_union extentClosure_union
 
 @[simp]
-theorem intentClosure_unionᵢ (f : ι → Set α) :
+theorem intentClosure_iUnion (f : ι → Set α) :
     intentClosure r (⋃ i, f i) = ⋂ i, intentClosure r (f i) :=
-  (gc_intentClosure_extentClosure r).l_supᵢ
-#align intent_closure_Union intentClosure_unionᵢ
+  (gc_intentClosure_extentClosure r).l_iSup
+#align intent_closure_Union intentClosure_iUnion
 
 @[simp]
-theorem extentClosure_unionᵢ (f : ι → Set β) :
+theorem extentClosure_iUnion (f : ι → Set β) :
     extentClosure r (⋃ i, f i) = ⋂ i, extentClosure r (f i) :=
-  intentClosure_unionᵢ _ _
-#align extent_closure_Union extentClosure_unionᵢ
+  intentClosure_iUnion _ _
+#align extent_closure_Union extentClosure_iUnion
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- Porting note: Can be proved by simp. so not marked as @[simp]
 -- @[simp]
-theorem intentClosure_unionᵢ₂ (f : ∀ i, κ i → Set α) :
+theorem intentClosure_iUnion₂ (f : ∀ i, κ i → Set α) :
     intentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), intentClosure r (f i j) :=
-  (gc_intentClosure_extentClosure r).l_supᵢ₂
-#align intent_closure_Union₂ intentClosure_unionᵢ₂
+  (gc_intentClosure_extentClosure r).l_iSup₂
+#align intent_closure_Union₂ intentClosure_iUnion₂
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -131,7 +128,7 @@ theorem intentClosure_unionᵢ₂ (f : ∀ i, κ i → Set α) :
 -- @[simp]
 theorem extentClosure_Union₂ (f : ∀ i, κ i → Set β) :
     extentClosure r (⋃ (i) (j), f i j) = ⋂ (i) (j), extentClosure r (f i j) :=
-  intentClosure_unionᵢ₂ _ _
+  intentClosure_iUnion₂ _ _
 #align extent_closure_Union₂ extentClosure_Union₂
 
 theorem subset_extentClosure_intentClosure (s : Set α) :
@@ -283,7 +280,7 @@ instance : SupSet (Concept α β r) :=
     { fst := extentClosure r (⋂ c ∈ S, (c : Concept _ _ _).snd)
       snd := ⋂ c ∈ S, (c : Concept _ _ _).snd
       closure_fst := by
-        simp_rw [← closure_fst, ← intentClosure_unionᵢ₂,
+        simp_rw [← closure_fst, ← intentClosure_iUnion₂,
           intentClosure_extentClosure_intentClosure]
       closure_snd := rfl }⟩
 
@@ -300,12 +297,12 @@ instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConceptToLEToPreorderToPartialOrderInstSemilatticeInfConcept with
     sup := Concept.instSupConcept.sup
-    le_supₛ := fun _ _ hc => snd_subset_snd_iff.1 <| binterᵢ_subset_of_mem hc
-    supₛ_le := fun _ _ hc =>
-      snd_subset_snd_iff.1 <| subset_interᵢ₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
+    le_sSup := fun _ _ hc => snd_subset_snd_iff.1 <| biInter_subset_of_mem hc
+    sSup_le := fun _ _ hc =>
+      snd_subset_snd_iff.1 <| subset_iInter₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
     inf := Concept.instInfConcept.inf
-    infₛ_le := fun _ _ => binterᵢ_subset_of_mem
-    le_infₛ := fun _ _ => subset_interᵢ₂ }
+    sInf_le := fun _ _ => biInter_subset_of_mem
+    le_sInf := fun _ _ => subset_iInter₂ }
 
 @[simp]
 theorem top_fst : (⊤ : Concept α β r).fst = univ :=
@@ -348,26 +345,26 @@ theorem inf_snd (c d : Concept α β r) : (c ⊓ d).snd = intentClosure r (c.fst
 #align concept.inf_snd Concept.inf_snd
 
 @[simp]
-theorem supₛ_fst (S : Set (Concept α β r)) :
-    (supₛ S).fst = extentClosure r (⋂ c ∈ S, (c : Concept _ _ _).snd) :=
+theorem sSup_fst (S : Set (Concept α β r)) :
+    (sSup S).fst = extentClosure r (⋂ c ∈ S, (c : Concept _ _ _).snd) :=
   rfl
-#align concept.Sup_fst Concept.supₛ_fst
+#align concept.Sup_fst Concept.sSup_fst
 
 @[simp]
-theorem supₛ_snd (S : Set (Concept α β r)) : (supₛ S).snd = ⋂ c ∈ S, (c : Concept _ _ _).snd :=
+theorem sSup_snd (S : Set (Concept α β r)) : (sSup S).snd = ⋂ c ∈ S, (c : Concept _ _ _).snd :=
   rfl
-#align concept.Sup_snd Concept.supₛ_snd
+#align concept.Sup_snd Concept.sSup_snd
 
 @[simp]
-theorem infₛ_fst (S : Set (Concept α β r)) : (infₛ S).fst = ⋂ c ∈ S, (c : Concept _ _ _).fst :=
+theorem sInf_fst (S : Set (Concept α β r)) : (sInf S).fst = ⋂ c ∈ S, (c : Concept _ _ _).fst :=
   rfl
-#align concept.Inf_fst Concept.infₛ_fst
+#align concept.Inf_fst Concept.sInf_fst
 
 @[simp]
-theorem infₛ_snd (S : Set (Concept α β r)) :
-    (infₛ S).snd = intentClosure r (⋂ c ∈ S, (c : Concept _ _ _).fst) :=
+theorem sInf_snd (S : Set (Concept α β r)) :
+    (sInf S).snd = intentClosure r (⋂ c ∈ S, (c : Concept _ _ _).fst) :=
   rfl
-#align concept.Inf_snd Concept.infₛ_snd
+#align concept.Inf_snd Concept.sInf_snd
 
 instance : Inhabited (Concept α β r) :=
   ⟨⊥⟩

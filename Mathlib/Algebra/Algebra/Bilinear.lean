@@ -2,16 +2,13 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.bilinear
-! leanprover-community/mathlib commit 657df4339ae6ceada048c8a2980fb10e393143ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Algebra.Hom.NonUnitalAlg
 import Mathlib.LinearAlgebra.TensorProduct
+
+#align_import algebra.algebra.bilinear from "leanprover-community/mathlib"@"657df4339ae6ceada048c8a2980fb10e393143ec"
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -117,7 +114,7 @@ variable (R A : Type _) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [SMu
 /-- The multiplication in a non-unital algebra is a bilinear map.
 
 A weaker version of this for non-unital non-associative algebras exists as `LinearMap.mul`. -/
-def NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
+def _root_.NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
   { mul R A with
     map_mul' := by
       intro a b
@@ -126,14 +123,14 @@ def NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A :=
     map_zero' := by
       ext a
       exact zero_mul a }
-#align non_unital_alg_hom.lmul LinearMap.NonUnitalAlgHom.lmul
+#align non_unital_alg_hom.lmul NonUnitalAlgHom.lmul
 
 variable {R A}
 
 @[simp]
-theorem NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
+theorem _root_.NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
   rfl
-#align non_unital_alg_hom.coe_lmul_eq_mul LinearMap.NonUnitalAlgHom.coe_lmul_eq_mul
+#align non_unital_alg_hom.coe_lmul_eq_mul NonUnitalAlgHom.coe_lmul_eq_mul
 
 theorem commute_mulLeft_right (a b : A) : Commute (mulLeft R a) (mulRight R b) := by
   ext c
@@ -162,7 +159,7 @@ variable (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R A]
 the algebra.
 
 A weaker version of this for non-unital algebras exists as `NonUnitalAlgHom.mul`. -/
-def Algebra.lmul : A →ₐ[R] End R A :=
+def _root_.Algebra.lmul : A →ₐ[R] End R A :=
   { LinearMap.mul R A with
     map_one' := by
       ext a
@@ -178,14 +175,14 @@ def Algebra.lmul : A →ₐ[R] End R A :=
       intro r
       ext a
       exact (Algebra.smul_def r a).symm }
-#align algebra.lmul LinearMap.Algebra.lmul
+#align algebra.lmul Algebra.lmul
 
 variable {R A}
 
 @[simp]
-theorem Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
+theorem _root_.Algebra.coe_lmul_eq_mul : ⇑(Algebra.lmul R A) = mul R A :=
   rfl
-#align algebra.coe_lmul_eq_mul LinearMap.Algebra.coe_lmul_eq_mul
+#align algebra.coe_lmul_eq_mul Algebra.coe_lmul_eq_mul
 
 @[simp]
 theorem mulLeft_eq_zero_iff (a : A) : mulLeft R a = 0 ↔ a = 0 := by
@@ -234,12 +231,6 @@ end Semiring
 section Ring
 
 variable {R A : Type _} [CommSemiring R] [Ring A] [Algebra R A]
-
-/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
-local instance : Module R A := Algebra.toModule
-
-/-- This instance should not be necessary. porting note: drop after lean4#2074 resolved? -/
-local instance : Module A A := Semiring.toModule
 
 theorem mulLeft_injective [NoZeroDivisors A] {x : A} (hx : x ≠ 0) :
     Function.Injective (mulLeft R x) := by

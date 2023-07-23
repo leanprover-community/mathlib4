@@ -2,15 +2,13 @@
 Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
-
-! This file was ported from Lean 3 source module ring_theory.ore_localization.basic
-! leanprover-community/mathlib commit 861a26926586cd46ff80264d121cdb6fa0e35cc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.NonZeroDivisors
 import Mathlib.RingTheory.OreLocalization.OreSet
+import Mathlib.Tactic.NoncommRing
+
+#align_import ring_theory.ore_localization.basic from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
 
 /-!
 
@@ -25,7 +23,7 @@ localization at `R - {0}` results in a division ring.
 ## Notations
 
 Introduces the notation `R[S⁻¹]` for the Ore localization of a monoid `R` at a right Ore
-subset `S`. Also defines a new heterogeneos division notation `r /ₒ s` for a numerator `r : R` and
+subset `S`. Also defines a new heterogeneous division notation `r /ₒ s` for a numerator `r : R` and
 a denominator `s : S`.
 
 ## References
@@ -85,9 +83,9 @@ variable {R : Type _} [Monoid R] {S : Submonoid R}
 
 variable (R S) [OreSet S]
 
--- mathport name: «expr [ ⁻¹]»
 @[inherit_doc OreLocalization]
-notation:1075 R "[" S "⁻¹]" => OreLocalization R S
+scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term
+macro_rules | `($R[$S⁻¹]) => ``(OreLocalization $R $S)
 
 attribute [local instance] oreEqv
 
@@ -110,7 +108,7 @@ protected theorem ind {β : R[S⁻¹] → Prop} (c : ∀ (r : R) (s : S), β (r 
 #align ore_localization.ind OreLocalization.ind
 
 theorem oreDiv_eq_iff {r₁ r₂ : R} {s₁ s₂ : S} :
-    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S)(v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
+    r₁ /ₒ s₁ = r₂ /ₒ s₂ ↔ ∃ (u : S) (v : R), r₂ * u = r₁ * v ∧ (s₂ : R) * u = s₁ * v :=
   Quotient.eq''
 #align ore_localization.ore_div_eq_iff OreLocalization.oreDiv_eq_iff
 
@@ -121,7 +119,7 @@ protected theorem expand (r : R) (s : S) (t : R) (hst : (s : R) * t ∈ S) :
   refine' ⟨s, t * s, _, _⟩ <;> dsimp <;> rw [mul_assoc]
 #align ore_localization.expand OreLocalization.expand
 
-/-- A fraction is equal to its expansion by an factor from s. -/
+/-- A fraction is equal to its expansion by a factor from s. -/
 protected theorem expand' (r : R) (s s' : S) : r /ₒ s = r * s' /ₒ (s * s') :=
   OreLocalization.expand r s s' (by norm_cast; apply SetLike.coe_mem)
 #align ore_localization.expand' OreLocalization.expand'
@@ -142,7 +140,6 @@ protected theorem eq_of_num_factor_eq {r r' r₁ r₂ : R} {s t : S} (h : r * t 
     _ = r₁ * r' * (r₂ * t') /ₒ (s * t') := by rw [hr₂]
     _ = r₁ * r' * r₂ * t' /ₒ (s * t') := by simp [← mul_assoc]
     _ = r₁ * r' * r₂ /ₒ s := (OreLocalization.expand _ _ _ _).symm
-
 #align ore_localization.eq_of_num_factor_eq OreLocalization.eq_of_num_factor_eq
 
 /-- A function or predicate over `R` and `S` can be lifted to `R[S⁻¹]` if it is invariant
@@ -168,7 +165,7 @@ theorem liftExpand_of {C : Sort _} {P : R → S → C}
 #align ore_localization.lift_expand_of OreLocalization.liftExpand_of
 
 /-- A version of `liftExpand` used to simultaneously lift functions with two arguments
-in ``R[S⁻¹]`.-/
+in `R[S⁻¹]`. -/
 def lift₂Expand {C : Sort _} (P : R → S → R → S → C)
     (hP :
       ∀ (r₁ t₁ : R) (s₁ : S) (ht₁ : (s₁ : R) * t₁ ∈ S) (r₂ t₂ : R) (s₂ : S)
@@ -227,18 +224,15 @@ protected def mul : R[S⁻¹] → R[S⁻¹] → R[S⁻¹] :=
     dsimp at h₂
     rcases oreCondition r (s₂' * s_star) with ⟨p_flat, s_flat, h₃⟩
     simp only [S.coe_mul] at h₃
-    have : r₁ * r * s_flat = s₂ * p * (p' * p_flat) :=
-      by
+    have : r₁ * r * s_flat = s₂ * p * (p' * p_flat) := by
       rw [← mul_assoc, ← h₂, ← h₁, mul_assoc, h₃]
       simp only [mul_assoc]
     rw [mul'_char (r₂ * p) (r₁ * r) ⟨↑s₂ * p, hp⟩ ⟨↑s₁ * r, hr⟩ _ _ this]
     clear this
-    have hsssp : ↑s₁ * ↑s₂' * ↑s_star * p_flat ∈ S :=
-      by
+    have hsssp : ↑s₁ * ↑s₂' * ↑s_star * p_flat ∈ S := by
       rw [mul_assoc, mul_assoc, ← mul_assoc (s₂' : R), ← h₃, ← mul_assoc]
       exact S.mul_mem hr (SetLike.coe_mem s_flat)
-    have : (⟨↑s₁ * r, hr⟩ : S) * s_flat = ⟨s₁ * s₂' * s_star * p_flat, hsssp⟩ :=
-      by
+    have : (⟨↑s₁ * r, hr⟩ : S) * s_flat = ⟨s₁ * s₂' * s_star * p_flat, hsssp⟩ := by
       ext
       simp only [Submonoid.coe_mul]
       rw [mul_assoc, h₃, ← mul_assoc, ← mul_assoc]
@@ -525,11 +519,11 @@ private theorem add''_char (r₁ : R) (s₁ : S) (r₂ : R) (s₂ : S) (rb : R) 
   use sc * sd
   use rc * sd
   constructor <;> simp only [Submonoid.coe_mul]
-  · simp only [right_distrib, mul_assoc]
+  · noncomm_ring
     rw [← mul_assoc (a := rb), hd, ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
   · rw [mul_assoc (a := (s₁ : R)), ← mul_assoc (a := (sa : R)), hc]
-    simp only [mul_assoc]
+    noncomm_ring
 
 attribute [local instance] OreLocalization.oreEqv
 
@@ -714,8 +708,7 @@ protected theorem left_distrib (x y z : R[S⁻¹]) : x * (y + z) = x * y + x * z
   rcases oreDivMulChar' r₁ (r₂ * sa) s₁ (s₂ * sa) with ⟨rb, sb, hb, q⟩
   rw [q]
   clear q
-  have hs₃rasb : ↑s₃ * (ra * sb) ∈ S :=
-    by
+  have hs₃rasb : ↑s₃ * (ra * sb) ∈ S := by
     rw [← mul_assoc, ← ha]
     norm_cast
     apply SetLike.coe_mem
@@ -739,7 +732,7 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z := by
   induction' x using OreLocalization.ind with r₁ s₁
   induction' y using OreLocalization.ind with r₂ s₂
   induction' z using OreLocalization.ind with r₃ s₃
-  rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast  at ha
+  rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'; norm_cast at ha
   rw [OreLocalization.expand' r₁ s₁ sa]
   rw [OreLocalization.expand r₂ s₂ ra (by rw [← ha]; apply SetLike.coe_mem)]
   rw [← Subtype.coe_eq_of_eq_mk ha]
@@ -791,7 +784,7 @@ def universalHom : R[S⁻¹] →+* T :=
       congr 1
       rw [mul_assoc]
       congr 1
-      norm_cast  at h₃
+      norm_cast at h₃
       have h₃' := Subtype.coe_eq_of_eq_mk h₃
       rw [← Units.val_mul, ← mul_inv_rev, ← fS.map_mul, h₃']
       have hs₂r₃ : ↑s₂ * r₃ ∈ S := by

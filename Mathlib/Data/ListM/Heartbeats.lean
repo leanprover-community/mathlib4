@@ -15,8 +15,10 @@ open Lean.Core (CoreM)
 /-- Take an initial segment of a `MetaM` lazy list,
 trying to leave at least `percent` of the remaining allowed heartbeats. -/
 def ListM.whileAtLeastHeartbeatsPercent [Monad m] [MonadLiftT CoreM m]
-    (L : ListM m α) (percent : Nat) : ListM m α :=
+    (L : ListM m α) (percent : Nat := 10) : ListM m α :=
 ListM.squash do
+  if (← getMaxHeartbeats) = 0 then do
+    return L
   let initialHeartbeats ← getRemainingHeartbeats
   pure <| L.takeWhileM fun _ => do
     return .up <| (← getRemainingHeartbeats) * 100 / initialHeartbeats > percent

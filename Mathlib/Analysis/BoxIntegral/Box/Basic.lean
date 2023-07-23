@@ -2,16 +2,14 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.box.basic
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import analysis.box_integral.box.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -70,7 +68,7 @@ variable {ι : Type _}
 -/
 
 
-/-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Repesents the product
+/-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
 structure Box (ι : Type _) where
   (lower upper : ι → ℝ)
@@ -177,7 +175,7 @@ theorem injective_coe : Injective ((↑) : Box ι → Set (ι → ℝ)) := by
   rintro ⟨l₁, u₁, h₁⟩ ⟨l₂, u₂, h₂⟩ h
   simp only [Subset.antisymm_iff, coe_subset_coe, le_iff_bounds] at h
   congr
-  exacts[le_antisymm h.2.1 h.1.1, le_antisymm h.1.2 h.2.2]
+  exacts [le_antisymm h.2.1 h.1.1, le_antisymm h.1.2 h.2.2]
 #align box_integral.box.injective_coe BoxIntegral.Box.injective_coe
 
 @[simp, norm_cast]
@@ -290,10 +288,10 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
     simp [I.nonempty_coe]
 #align box_integral.box.is_some_iff BoxIntegral.Box.isSome_iff
 
-theorem bunionᵢ_coe_eq_coe (I : WithBot (Box ι)) :
-    (⋃ (J : Box ι) (_hJ : ↑J = I), (J : Set (ι → ℝ))) = I := by
+theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
+    ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
   induction I using WithBot.recBotCoe <;> simp [WithBot.coe_eq_coe]
-#align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.bunionᵢ_coe_eq_coe
+#align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.biUnion_coe_eq_coe
 
 @[simp, norm_cast]
 theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := by
@@ -454,22 +452,22 @@ protected theorem Ioo_subset_Icc (I : Box ι) : Box.Ioo I ⊆ Box.Icc I :=
   I.Ioo_subset_coe.trans coe_subset_Icc
 #align box_integral.box.Ioo_subset_Icc BoxIntegral.Box.Ioo_subset_Icc
 
-theorem unionᵢ_Ioo_of_tendsto [Finite ι] {I : Box ι} {J : ℕ → Box ι} (hJ : Monotone J)
+theorem iUnion_Ioo_of_tendsto [Finite ι] {I : Box ι} {J : ℕ → Box ι} (hJ : Monotone J)
     (hl : Tendsto (lower ∘ J) atTop (𝓝 I.lower)) (hu : Tendsto (upper ∘ J) atTop (𝓝 I.upper)) :
-    (⋃ n, Box.Ioo (J n)) = Box.Ioo I :=
+    ⋃ n, Box.Ioo (J n) = Box.Ioo I :=
   have hl' : ∀ i, Antitone fun n ↦ (J n).lower i :=
     fun i ↦ (monotone_eval i).comp_antitone (antitone_lower.comp_monotone hJ)
   have hu' : ∀ i, Monotone fun n ↦ (J n).upper i :=
     fun i ↦ (monotone_eval i).comp (monotone_upper.comp hJ)
   calc
-    (⋃ n, Box.Ioo (J n)) = pi univ fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
-      unionᵢ_univ_pi_of_monotone fun i ↦ (hl' i).Ioo (hu' i)
+    ⋃ n, Box.Ioo (J n) = pi univ fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
+      iUnion_univ_pi_of_monotone fun i ↦ (hl' i).Ioo (hu' i)
     _ = Box.Ioo I :=
       pi_congr rfl fun i _ ↦
-        unionᵢ_Ioo_of_mono_of_isGLB_of_isLUB (hl' i) (hu' i)
+        iUnion_Ioo_of_mono_of_isGLB_of_isLUB (hl' i) (hu' i)
           (isGLB_of_tendsto_atTop (hl' i) (tendsto_pi_nhds.1 hl _))
           (isLUB_of_tendsto_atTop (hu' i) (tendsto_pi_nhds.1 hu _))
-#align box_integral.box.Union_Ioo_of_tendsto BoxIntegral.Box.unionᵢ_Ioo_of_tendsto
+#align box_integral.box.Union_Ioo_of_tendsto BoxIntegral.Box.iUnion_Ioo_of_tendsto
 
 theorem exists_seq_mono_tendsto (I : Box ι) :
     ∃ J : ℕ →o Box ι,
@@ -496,8 +494,8 @@ def distortion (I : Box ι) : ℝ≥0 :=
 #align box_integral.box.distortion BoxIntegral.Box.distortion
 
 theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
-    (h : ∀ i, I.upper i - I.lower i = (J.upper i - J.lower i) / r) : distortion I = distortion J :=
-  by
+    (h : ∀ i, I.upper i - I.lower i = (J.upper i - J.lower i) / r) :
+    distortion I = distortion J := by
   simp only [distortion, nndist_pi_def, Real.nndist_eq', h, map_div₀]
   congr 1 with i
   have : 0 < r := by
@@ -535,8 +533,7 @@ theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.
     calc
       dist x y ≤ dist I.lower I.upper := Real.dist_le_of_mem_pi_Icc hx hy
       _ ≤ I.distortion * (I.upper i - I.lower i) := (I.dist_le_distortion_mul i)
-      _ ≤ c * (I.upper i - I.lower i) :=
-        mul_le_mul_of_nonneg_right h (sub_nonneg.2 (I.lower_le_upper i))
+      _ ≤ c * (I.upper i - I.lower i) := by gcongr; exact sub_nonneg.2 (I.lower_le_upper i)
 #align box_integral.box.diam_Icc_le_of_distortion_le BoxIntegral.Box.diam_Icc_le_of_distortion_le
 
 end Distortion

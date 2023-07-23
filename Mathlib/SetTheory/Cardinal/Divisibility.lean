@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module set_theory.cardinal.divisibility
-! leanprover-community/mathlib commit ea050b44c0f9aba9d16a948c7cc7d2e7c8493567
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.Tactic.WLOG
+
+#align_import set_theory.cardinal.divisibility from "leanprover-community/mathlib"@"ea050b44c0f9aba9d16a948c7cc7d2e7c8493567"
 
 /-!
 # Cardinal Divisibility
@@ -83,7 +80,7 @@ theorem prime_of_aleph0_le (ha : ℵ₀ ≤ a) : Prime a := by
   cases' eq_or_ne (b * c) 0 with hz hz
   · rcases mul_eq_zero.mp hz with (rfl | rfl) <;> simp
   wlog h : c ≤ b
-  · cases le_total c b <;> [skip, rw [or_comm]] <;> apply_assumption
+  · cases le_total c b <;> [skip; rw [or_comm]] <;> apply_assumption
     assumption'
     all_goals rwa [mul_comm]
   left

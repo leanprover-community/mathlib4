@@ -2,19 +2,16 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
-
-! This file was ported from Lean 3 source module combinatorics.quiver.push
-! leanprover-community/mathlib commit 2258b40dacd2942571c8ce136215350c702dc78f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.Quiver.Basic
+
+#align_import combinatorics.quiver.push from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
 
 /-!
 
 # Pushing a quiver structure along a map
 
-Given a map `σ : V → W` and a `Quiver` instance on `V`, this files defines a `quiver` instance
+Given a map `σ : V → W` and a `Quiver` instance on `V`, this files defines a `Quiver` instance
 on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` in `W`.
 
 -/

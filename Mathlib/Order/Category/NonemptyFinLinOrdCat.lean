@@ -2,23 +2,24 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module order.category.NonemptyFinLinOrd
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
+import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrdCat
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+
+#align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
 /-!
 # Nonempty finite linear orders
 
 This defines `NonemptyFinLinOrdCat`, the category of nonempty finite linear
 orders with monotone maps. This is the index category for simplicial objects.
+
+Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its morphisms do not
+preserve `⊥` and `⊤`.
 -/
 
 
@@ -65,6 +66,7 @@ instance : BundledHom.ParentProjection @NonemptyFinLinOrd.toLinearOrder :=
 
 deriving instance LargeCategory for NonemptyFinLinOrdCat
 
+-- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : ConcreteCategory NonemptyFinLinOrdCat :=
   BundledHom.concreteCategory _
 
@@ -94,6 +96,13 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrdCat LinOrdCat :=
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.has_forget_to_LinOrd NonemptyFinLinOrdCat.hasForgetToLinOrd
 
+instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrdCat FinPartOrd
+    where forget₂ :=
+    { obj := fun X => FinPartOrd.of X
+      map := @fun X Y => id }
+set_option linter.uppercaseLean3 false in
+#align NonemptyFinLinOrd.has_forget_to_FinPartOrd NonemptyFinLinOrdCat.hasForgetToFinPartOrd
+
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
 between them. -/
 @[simps]
@@ -117,13 +126,13 @@ def dual : NonemptyFinLinOrdCat ⥤ NonemptyFinLinOrdCat where
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual NonemptyFinLinOrdCat.dual
 
-/-- The equivalence between `FinPartOrdCat` and itself induced by `OrderDual` both ways. -/
+/-- The equivalence between `NonemptyFinLinOrdCat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : NonemptyFinLinOrdCat ≌ NonemptyFinLinOrdCat where
   functor := dual
   inverse := dual
-  unitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
-  counitIso := NatIso.ofComponents (fun X => Iso.mk <| OrderIso.dualDual X) (fun _ => rfl)
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd.dual_equiv NonemptyFinLinOrdCat.dualEquiv
 
@@ -141,8 +150,8 @@ theorem mono_iff_injective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
   intro
   intro a₁ a₂ h
   let X := NonemptyFinLinOrdCat.of (ULift (Fin 1))
-  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _  _ => by rfl⟩
-  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _  _ => by rfl⟩
+  let g₁ : X ⟶ A := ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
+  let g₂ : X ⟶ A := ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
   change g₁ (ULift.up (0 : Fin 1)) = g₂ (ULift.up (0 : Fin 1))
   have eq : g₁ ≫ f = g₂ ≫ f := by
     ext
@@ -184,8 +193,8 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrdCat.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a
-      simp only [forget_obj_eq_coe, coe_of, FunctorToTypes.map_comp_apply]
-      simp only [forget_map_apply]
+      simp only [coe_of, comp_apply]
+      change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
       · exfalso
@@ -213,7 +222,7 @@ instance : SplitEpiCategory NonemptyFinLinOrdCat.{u} :=
     · intro a b
       contrapose
       intro h
-      simp only [not_le] at h⊢
+      simp only [not_le] at h ⊢
       suffices b ≤ a by
         apply lt_of_le_of_ne this
         rintro rfl
@@ -244,3 +253,13 @@ theorem nonemptyFinLinOrdCat_dual_comp_forget_to_linOrdCat :
   rfl
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd_dual_comp_forget_to_LinOrd nonemptyFinLinOrdCat_dual_comp_forget_to_linOrdCat
+
+/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `order_dual` commute. -/
+def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
+    NonemptyFinLinOrdCat.dual ⋙ forget₂ NonemptyFinLinOrdCat FinPartOrd ≅
+      forget₂ NonemptyFinLinOrdCat FinPartOrd ⋙ FinPartOrd.dual
+    where
+  hom := { app := fun X => OrderHom.id }
+  inv := { app := fun X => OrderHom.id }
+set_option linter.uppercaseLean3 false in
+#align NonemptyFinLinOrd_dual_comp_forget_to_FinPartOrd nonemptyFinLinOrdDualCompForgetToFinPartOrd

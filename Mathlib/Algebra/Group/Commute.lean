@@ -2,14 +2,10 @@
 Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.group.commute
-! leanprover-community/mathlib commit 05101c3df9d9cfe9430edc205860c79b6d660102
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Semiconj
-import Mathlib.Tactic.SimpRw
+
+#align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
 /-!
 # Commuting pairs of elements in monoids

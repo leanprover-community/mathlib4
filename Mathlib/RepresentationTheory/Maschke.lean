@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.maschke
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.LinearAlgebra.Basis
+
+#align_import representation_theory.maschke from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Maschke's theorem
@@ -20,7 +17,7 @@ in the formulation that every submodule of a `k[G]` module has a complement,
 when `k` is a field with `Invertible (Fintype.card G : k)`.
 
 We do the core computation in greater generality.
-For any `[CommRing k]` in which  `[Invertible (Fintype.card G : k)]`,
+For any `[CommRing k]` in which `[Invertible (Fintype.card G : k)]`,
 and a `k[G]`-linear map `i : V → W` which admits a `k`-linear retraction `π`,
 we produce a `k[G]`-linear retraction by
 taking the average over `G` of the conjugates of `π`.
@@ -58,7 +55,6 @@ $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 
 namespace LinearMap
 
-set_option synthInstance.etaExperiment true
 
 -- At first we work with any `[CommRing k]`, and add the assumption that
 -- `[Invertible (Fintype.card G : k)]` when it is required.

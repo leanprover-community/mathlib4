@@ -2,16 +2,13 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.over
-! leanprover-community/mathlib commit 8a318021995877a44630c898d0b2bc376fceef3b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.StructuredArrow
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.over from "leanprover-community/mathlib"@"8a318021995877a44630c898d0b2bc376fceef3b"
 
 /-!
 # Over and under categories
@@ -64,7 +61,6 @@ theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.
   let ⟨_,e,_⟩ := g
   congr
   simp only [eq_iff_true_of_subsingleton]
-
 #align category_theory.over.over_morphism.ext CategoryTheory.Over.OverMorphism.ext
 
 -- @[simp] : Porting note : simp can prove this
@@ -189,19 +185,19 @@ theorem map_map_left : ((map f).map g).left = g.left :=
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_id CategoryTheory.Over.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map f ⋙ map g :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.over.map_comp CategoryTheory.Over.mapComp
 
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g :Z ⟶  Y := Over.homMk (inv ((forget X).map f))
+    let g : Z ⟶ Y := Over.homMk (inv ((forget X).map f))
       ((asIso ((forget X).map f)).inv_comp_eq.2 (Over.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
@@ -242,7 +238,7 @@ instance mono_left_of_mono {f g : Over X} (k : f ⟶ g) [Mono k] : Mono k.left :
   refine' ⟨fun { Y : T } l m a => _⟩
   let l' : mk (m ≫ f.hom) ⟶ f := homMk l (by
         dsimp; rw [← Over.w k, ←Category.assoc, congrArg (· ≫ g.hom) a, Category.assoc])
-  suffices l' = (homMk m : mk (m ≫ f.hom) ⟶  f) by apply congrArg CommaMorphism.left this
+  suffices l' = (homMk m : mk (m ≫ f.hom) ⟶ f) by apply congrArg CommaMorphism.left this
   rw [← cancel_mono k]
   ext
   apply a
@@ -274,12 +270,8 @@ def iteratedSliceEquiv : Over f ≌ Over f.left
     where
   functor := iteratedSliceForward f
   inverse := iteratedSliceBackward f
-  unitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)
-      (by aesop_cat)) (by aesop_cat)) fun g => by ext; dsimp; simp
-  counitIso :=
-    NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _) (by aesop_cat)) fun g =>
-      by ext; dsimp; simp
+  unitIso := NatIso.ofComponents (fun g => Over.isoMk (Over.isoMk (Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun g => Over.isoMk (Iso.refl _))
 #align category_theory.over.iterated_slice_equiv CategoryTheory.Over.iteratedSliceEquiv
 
 theorem iteratedSliceForward_forget :
@@ -331,8 +323,8 @@ namespace Under
 variable {X : T}
 
 @[ext]
-theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) : f = g :=
-  by
+theorem UnderMorphism.ext {X : T} {U V : Under X} {f g : U ⟶ V} (h : f.right = g.right) :
+    f = g := by
   let ⟨_,b,_⟩ := f; let ⟨_,e,_⟩ := g
   congr; simp only [eq_iff_true_of_subsingleton]
 #align category_theory.under.under_morphism.ext CategoryTheory.Under.UnderMorphism.ext
@@ -374,7 +366,8 @@ attribute [-simp, nolint simpNF] homMk_left_down_down
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
-def isoMk {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom ≫ hr.hom = g.hom) : f ≅ g :=
+def isoMk {f g : Under X} (hr : f.right ≅ g.right)
+    (hw : f.hom ≫ hr.hom = g.hom := by aesop_cat) : f ≅ g :=
   StructuredArrow.isoMk hr hw
 #align category_theory.under.iso_mk CategoryTheory.Under.isoMk
 
@@ -444,19 +437,19 @@ theorem map_map_right : ((map f).map g).right = g.right :=
 
 /-- Mapping by the identity morphism is just the identity functor. -/
 def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_id CategoryTheory.Under.mapId
 
 /-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
 def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
-  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (by aesop_cat)) (by aesop_cat)
+  NatIso.ofComponents fun X => isoMk (Iso.refl _)
 #align category_theory.under.map_comp CategoryTheory.Under.mapComp
 
 end
 
 instance forget_reflects_iso : ReflectsIsomorphisms (forget X) where
   reflects {Y Z} f t := by
-    let g : Z ⟶  Y := Under.homMk (inv ((Under.forget X).map f))
+    let g : Z ⟶ Y := Under.homMk (inv ((Under.forget X).map f))
       ((IsIso.comp_inv_eq _).2 (Under.w f).symm)
     dsimp [forget] at t
     refine ⟨⟨g, ⟨?_,?_⟩⟩⟩
@@ -477,8 +470,8 @@ theorem mono_of_mono_right {f g : Under X} (k : f ⟶ g) [hk : Mono k.right] : M
 #align category_theory.under.mono_of_mono_right CategoryTheory.Under.mono_of_mono_right
 
 /--
-If `k.right` is a epimorphism, then `k` is a epimorphism. In other words, `Under.forget X` reflects
-epimorphisms.
+If `k.right` is an epimorphism, then `k` is an epimorphism. In other words, `Under.forget X`
+reflects epimorphisms.
 The converse of `CategoryTheory.Under.epi_right_of_epi`.
 
 This lemma is not an instance, to avoid loops in type class inference.
@@ -488,8 +481,8 @@ theorem epi_of_epi_right {f g : Under X} (k : f ⟶ g) [hk : Epi k.right] : Epi 
 #align category_theory.under.epi_of_epi_right CategoryTheory.Under.epi_of_epi_right
 
 /--
-If `k` is a epimorphism, then `k.right` is a epimorphism. In other words, `Under.forget X` preserves
-epimorphisms.
+If `k` is an epimorphism, then `k.right` is an epimorphism. In other words, `Under.forget X`
+preserves epimorphisms.
 The converse of `CategoryTheory.under.epi_of_epi_right`.
 -/
 instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right := by
@@ -497,7 +490,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
   -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m  : g ⟶  mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m  : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 #align category_theory.under.epi_right_of_epi CategoryTheory.Under.epi_right_of_epi
 

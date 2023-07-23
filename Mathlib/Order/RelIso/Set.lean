@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module order.rel_iso.set
-! leanprover-community/mathlib commit ee0c179cd3c8a45aa5bffbf1b41d8dbede452865
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Logic.Embedding.Set
+
+#align_import order.rel_iso.set from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # Interactions between relation homomorphisms and sets
@@ -53,7 +50,7 @@ theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
 
 end RelIso
 
-/-- `subrel r p` is the inherited relation on a subset. -/
+/-- `Subrel r p` is the inherited relation on a subset. -/
 def Subrel (r : α → α → Prop) (p : Set α) : p → p → Prop :=
   (Subtype.val : p → α) ⁻¹'o r
 #align subrel Subrel

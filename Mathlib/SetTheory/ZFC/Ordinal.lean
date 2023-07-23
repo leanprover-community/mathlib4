@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.zfc.ordinal
-! leanprover-community/mathlib commit 98bbc3526516bca903bff09ea10c4206bf079e6b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.ZFC.Basic
+
+#align_import set_theory.zfc.ordinal from "leanprover-community/mathlib"@"98bbc3526516bca903bff09ea10c4206bf079e6b"
 
 /-!
 # Von Neumann ordinals
@@ -61,26 +58,26 @@ alias isTransitive_iff_mem_trans ↔ IsTransitive.mem_trans _
 
 protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∩ y).IsTransitive := fun z hz w hw => by
-  rw [mem_inter] at hz⊢
+  rw [mem_inter] at hz ⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 #align Set.is_transitive.inter ZFSet.IsTransitive.inter
 
-protected theorem IsTransitive.unionₛ (h : x.IsTransitive) :
+protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
-  rcases mem_unionₛ.1 hy with ⟨w, hw, hw'⟩
-  exact mem_unionₛ_of_mem hz (h.mem_trans hw' hw)
-#align Set.is_transitive.sUnion ZFSet.IsTransitive.unionₛ
+  rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
+  exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
+#align Set.is_transitive.sUnion ZFSet.IsTransitive.sUnion
 
-theorem IsTransitive.unionₛ' (H : ∀ y ∈ x, IsTransitive y) :
+theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
-  rcases mem_unionₛ.1 hy with ⟨w, hw, hw'⟩
-  exact mem_unionₛ_of_mem ((H w hw).mem_trans hz hw') hw
-#align Set.is_transitive.sUnion' ZFSet.IsTransitive.unionₛ'
+  rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
+  exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
+#align Set.is_transitive.sUnion' ZFSet.IsTransitive.sUnion'
 
 protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
-  rw [← unionₛ_pair]
-  apply IsTransitive.unionₛ' fun z => _
+  rw [← sUnion_pair]
+  apply IsTransitive.sUnion' fun z => _
   intro
   rw [mem_pair]
   rintro (rfl | rfl)
@@ -89,18 +86,18 @@ protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive)
 
 protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
   fun y hy z hz => by
-  rw [mem_powerset] at hy⊢
+  rw [mem_powerset] at hy ⊢
   exact h.subset_of_mem (hy hz)
 #align Set.is_transitive.powerset ZFSet.IsTransitive.powerset
 
-theorem isTransitive_iff_unionₛ_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) ⊆ x :=
+theorem isTransitive_iff_sUnion_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) ⊆ x :=
   ⟨fun h y hy => by
-    rcases mem_unionₛ.1 hy with ⟨z, hz, hz'⟩
-    exact h.mem_trans hz' hz, fun H y hy z hz => H <| mem_unionₛ_of_mem hz hy⟩
-#align Set.is_transitive_iff_sUnion_subset ZFSet.isTransitive_iff_unionₛ_subset
+    rcases mem_sUnion.1 hy with ⟨z, hz, hz'⟩
+    exact h.mem_trans hz' hz, fun H y hy z hz => H <| mem_sUnion_of_mem hz hy⟩
+#align Set.is_transitive_iff_sUnion_subset ZFSet.isTransitive_iff_sUnion_subset
 
-alias isTransitive_iff_unionₛ_subset ↔ IsTransitive.unionₛ_subset _
-#align Set.is_transitive.sUnion_subset ZFSet.IsTransitive.unionₛ_subset
+alias isTransitive_iff_sUnion_subset ↔ IsTransitive.sUnion_subset _
+#align Set.is_transitive.sUnion_subset ZFSet.IsTransitive.sUnion_subset
 
 theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :=
   ⟨fun h _ hy => mem_powerset.2 <| h.subset_of_mem hy, fun H _ hy _ hz => mem_powerset.1 (H hy) hz⟩

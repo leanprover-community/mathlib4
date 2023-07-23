@@ -2,13 +2,10 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.count
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
+
+#align_import data.list.count from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # Counting in lists
@@ -51,7 +48,6 @@ theorem countp_cons_of_pos {a : α} (l) (pa : p a) : countp p (a :: l) = countp 
     rfl
   unfold countp
   rw [this, add_comm, List.countp_go_eq_add]
-
 #align list.countp_cons_of_pos List.countp_cons_of_pos
 
 @[simp]
@@ -327,7 +323,6 @@ theorem count_bind {α β} [DecidableEq β] (l : List α) (f : α → List β) (
 theorem count_map_of_injective {α β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
     (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
   simp only [count, countp_map, (· ∘ ·), hf.beq_eq]
-
 #align list.count_map_of_injective List.count_map_of_injective
 
 theorem count_le_count_map [DecidableEq β] (l : List α) (f : α → β) (x : α) :

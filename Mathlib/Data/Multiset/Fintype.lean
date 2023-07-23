@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.multiset.fintype
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Prod.Lex
+
+#align_import data.multiset.fintype from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Multiset coercion to type
@@ -42,7 +39,7 @@ open BigOperators
 variable {α : Type _} [DecidableEq α] {m : Multiset α}
 
 /-- Auxiliary definition for the `hasCoeToSort` instance. This prevents the `hasCoe m α`
-instance from inadverently applying to other sigma types. One should not use this definition
+instance from inadvertently applying to other sigma types. One should not use this definition
 directly. -/
 -- Porting note: @[nolint has_nonempty_instance]
 def Multiset.ToType (m : Multiset α) : Type _ :=
@@ -100,16 +97,16 @@ protected theorem Multiset.forall_coe (p : m → Prop) :
 
 @[simp]
 protected theorem Multiset.exists_coe (p : m → Prop) :
-    (∃ x : m, p x) ↔ ∃ (x : α)(i : Fin (m.count x)), p ⟨x, i⟩ :=
+    (∃ x : m, p x) ↔ ∃ (x : α) (i : Fin (m.count x)), p ⟨x, i⟩ :=
   Sigma.exists
 #align multiset.exists_coe Multiset.exists_coe
 
 instance : Fintype { p : α × ℕ | p.2 < m.count p.1 } :=
   Fintype.ofFinset
-    (m.toFinset.bunionᵢ fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
+    (m.toFinset.biUnion fun x ↦ (Finset.range (m.count x)).map ⟨Prod.mk x, Prod.mk.inj_left x⟩)
     (by
       rintro ⟨x, i⟩
-      simp only [Finset.mem_bunionᵢ, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
+      simp only [Finset.mem_biUnion, Multiset.mem_toFinset, Finset.mem_map, Finset.mem_range,
         Function.Embedding.coeFn_mk, Prod.mk.inj_iff, Set.mem_setOf_eq]
       simp only [←and_assoc, exists_eq_right, and_iff_right_iff_imp]
       exact fun h ↦ Multiset.count_pos.mp (pos_of_gt h))
@@ -147,8 +144,7 @@ theorem Multiset.toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
   intro x
   by_cases hx : x ∈ m₁
   · apply Nat.le_of_pred_lt
-    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset :=
-      by
+    have : (x, m₁.count x - 1) ∈ m₁.toEnumFinset := by
       rw [Multiset.mem_toEnumFinset]
       exact Nat.pred_lt (ne_of_gt (Multiset.count_pos.mpr hx))
     simpa only [Multiset.mem_toEnumFinset] using h this
@@ -278,7 +274,7 @@ theorem Multiset.prod_eq_prod_toEnumFinset [CommMonoid α] (m : Multiset α) :
 
 @[to_additive]
 theorem Multiset.prod_toEnumFinset {β : Type _} [CommMonoid β] (m : Multiset α) (f : α → ℕ → β) :
-    (∏ x in m.toEnumFinset, f x.1 x.2) = ∏ x : m, f x x.2 := by
+    ∏ x in m.toEnumFinset, f x.1 x.2 = ∏ x : m, f x x.2 := by
   rw [Fintype.prod_equiv m.coeEquiv (fun x ↦ f x x.2) fun x ↦ f x.1.1 x.1.2]
   · rw [← m.toEnumFinset.prod_coe_sort fun x ↦ f x.1 x.2]
   · intro x

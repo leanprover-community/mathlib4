@@ -3,14 +3,10 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 Ported by: Rémy Degenne
-
-! This file was ported from Lean 3 source module data.nat.log
-! leanprover-community/mathlib commit 3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pow
-import Mathlib.Tactic.ByContra
+
+#align_import data.nat.log from "leanprover-community/mathlib"@"3e00d81bdcbf77c8188bbd18f5524ddc3ed8cac6"
 
 /-!
 # Natural number logarithms
@@ -117,7 +113,7 @@ theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ 
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts[(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
+  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (pow_pos (zero_lt_one.trans hb) _)).elim]
 #align nat.le_log_of_pow_le Nat.le_log_of_pow_le
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
@@ -202,7 +198,6 @@ theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ lo
   calc
     c ^ log b n ≤ b ^ log b n := pow_le_pow_of_le_left' hb _
     _ ≤ n := pow_log_le_self _ hn
-
 #align nat.log_anti_left Nat.log_anti_left
 
 theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) := fun _ hc _ _ hb =>
@@ -347,7 +342,6 @@ theorem clog_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : clog b n ≤ 
   calc
     n ≤ c ^ clog c n := le_pow_clog hc _
     _ ≤ b ^ clog c n := pow_le_pow_of_le_left hb _
-
 #align nat.clog_anti_left Nat.clog_anti_left
 
 theorem clog_monotone (b : ℕ) : Monotone (clog b) := fun _ _ => clog_mono_right _

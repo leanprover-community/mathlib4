@@ -3,14 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 Ported by: Winston Yin, Arien Malec
-
-! This file was ported from Lean 3 source module data.set.intervals.basic
-! leanprover-community/mathlib commit 198161d833f2c01498c39c266b0b3dbe2c7a8c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Prod
+
+#align_import data.set.intervals.basic from "leanprover-community/mathlib"@"4367b192b58a665b6f18773f73eb492eb4df7990"
 
 /-!
 # Intervals
@@ -22,7 +19,7 @@ closed) using the following naming conventions:
 - `c`: closed
 
 Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the inverval `(a, b]`.
+`Ioc a b` denotes the interval `(a, b]`.
 
 This file contains these definitions, and basic facts on inclusion, intersection, difference of
 intervals (where the precise statements may depend on the properties of the order, in particular
@@ -715,6 +712,40 @@ theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
 #align set.Iic_inter_Ioc_of_le Set.Iic_inter_Ioc_of_le
 
+theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
+#align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
+
+theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
+#align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
+
+theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
+#align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
+
+theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
+#align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
+
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
+#align set.not_mem_Ioi_self Set.not_mem_Ioi_self
+
+-- Porting note: `simp` can prove this
+-- @[simp]
+theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
+#align set.not_mem_Iio_self Set.not_mem_Iio_self
+
+theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+#align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
+
+theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+#align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
+
+theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+#align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
+
+theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+#align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
+
 end Preorder
 
 section PartialOrder
@@ -795,7 +826,7 @@ theorem Icc_diff_Ioc_same (h : a ≤ b) : Icc a b \ Ioc a b = {a} := by
 @[simp]
 theorem Icc_diff_Ioo_same (h : a ≤ b) : Icc a b \ Ioo a b = {a, b} := by
   rw [← Icc_diff_both, diff_diff_cancel_left]
-  simp [insert_subset, h]
+  simp [insert_subset_iff, h]
 #align set.Icc_diff_Ioo_same Set.Icc_diff_Ioo_same
 
 @[simp]
@@ -1014,22 +1045,6 @@ theorem not_mem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
 #align set.not_mem_Iic Set.not_mem_Iic
 
-theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b :=
-  not_mem_subset Icc_subset_Ici_self <| not_mem_Ici.mpr ha
-#align set.not_mem_Icc_of_lt Set.not_mem_Icc_of_lt
-
-theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b :=
-  not_mem_subset Icc_subset_Iic_self <| not_mem_Iic.mpr hb
-#align set.not_mem_Icc_of_gt Set.not_mem_Icc_of_gt
-
-theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b :=
-  not_mem_subset Ico_subset_Ici_self <| not_mem_Ici.mpr ha
-#align set.not_mem_Ico_of_lt Set.not_mem_Ico_of_lt
-
-theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b :=
-  not_mem_subset Ioc_subset_Iic_self <| not_mem_Iic.mpr hb
-#align set.not_mem_Ioc_of_gt Set.not_mem_Ioc_of_gt
-
 theorem not_mem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 #align set.not_mem_Ioi Set.not_mem_Ioi
@@ -1038,51 +1053,23 @@ theorem not_mem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
 #align set.not_mem_Iio Set.not_mem_Iio
 
--- Porting note: `simp` can prove this
--- @[simp]
-theorem not_mem_Ioi_self : a ∉ Ioi a :=
-  lt_irrefl _
-#align set.not_mem_Ioi_self Set.not_mem_Ioi_self
-
--- Porting note: `simp` can prove this
--- @[simp]
-theorem not_mem_Iio_self : b ∉ Iio b :=
-  lt_irrefl _
-#align set.not_mem_Iio_self Set.not_mem_Iio_self
-
-theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b :=
-  not_mem_subset Ioc_subset_Ioi_self <| not_mem_Ioi.mpr ha
-#align set.not_mem_Ioc_of_le Set.not_mem_Ioc_of_le
-
-theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b :=
-  not_mem_subset Ico_subset_Iio_self <| not_mem_Iio.mpr hb
-#align set.not_mem_Ico_of_ge Set.not_mem_Ico_of_ge
-
-theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b :=
-  not_mem_subset Ioo_subset_Ioi_self <| not_mem_Ioi.mpr ha
-#align set.not_mem_Ioo_of_le Set.not_mem_Ioo_of_le
-
-theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b :=
-  not_mem_subset Ioo_subset_Iio_self <| not_mem_Iio.mpr hb
-#align set.not_mem_Ioo_of_ge Set.not_mem_Ioo_of_ge
-
 @[simp]
-theorem compl_Iic : Iic aᶜ = Ioi a :=
+theorem compl_Iic : (Iic a)ᶜ = Ioi a :=
   ext fun _ => not_le
 #align set.compl_Iic Set.compl_Iic
 
 @[simp]
-theorem compl_Ici : Ici aᶜ = Iio a :=
+theorem compl_Ici : (Ici a)ᶜ = Iio a :=
   ext fun _ => not_le
 #align set.compl_Ici Set.compl_Ici
 
 @[simp]
-theorem compl_Iio : Iio aᶜ = Ici a :=
+theorem compl_Iio : (Iio a)ᶜ = Ici a :=
   ext fun _ => not_lt
 #align set.compl_Iio Set.compl_Iio
 
 @[simp]
-theorem compl_Ioi : Ioi aᶜ = Iic a :=
+theorem compl_Ioi : (Ioi a)ᶜ = Iic a :=
   ext fun _ => not_lt
 #align set.compl_Ioi Set.compl_Ioi
 
@@ -1167,10 +1154,10 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp [le_antisymm_iff]
       cases' h with h h <;>
       simp [Ico_subset_Ico_iff h] at e <;>
-      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩, rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
+      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩, exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
+      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 #align set.Ico_eq_Ico_iff Set.Ico_eq_Ico_iff
 
@@ -1867,7 +1854,7 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
   rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
-  -- Porting note: mathlib3 proof finished from here as folllows:
+  -- Porting note: mathlib3 proof finished from here as follows:
   -- (It can probably be restored after https://github.com/leanprover-community/mathlib4/pull/856)
   -- ac_rfl
   -- all_goals
@@ -1875,7 +1862,6 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   --     le_max_of_le_left, le_max_of_le_right, le_refl]
   simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
     min_assoc, max_comm]
-
 #align set.Ioc_union_Ioc_union_Ioc_cycle Set.Ioc_union_Ioc_union_Ioc_cycle
 
 end LinearOrder

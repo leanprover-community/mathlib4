@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.triv_sq_zero_ext
-! leanprover-community/mathlib commit ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.LinearAlgebra.Prod
+
+#align_import algebra.triv_sq_zero_ext from "leanprover-community/mathlib"@"ce7e9d53d4bbc38065db3b595cd5bd73c323bc1d"
 
 /-!
 # Trivial Square-Zero Extension
@@ -837,7 +834,7 @@ theorem liftAux_inrHom : liftAux (inrHom R' M) (inr_mul_inr R') = AlgHom.id R' (
 `TrivSqZeroExt R M →ₐ[R] A` for every linear map `M →ₗ[R] A` whose range has no non-zero
 products.
 
-This isomorphism is named to match the very similar `complex.lift`. -/
+This isomorphism is named to match the very similar `Complex.lift`. -/
 @[simps]
 def lift : { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) where
   toFun f := liftAux f f.prop

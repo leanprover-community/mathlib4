@@ -2,17 +2,13 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.group_with_zero.basic
-! leanprover-community/mathlib commit e8638a0fcaf73e4500469f368ef9494e495099b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Group.OrderSynonym
-import Mathlib.Tactic.SimpRw
+
+#align_import algebra.group_with_zero.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
 
 /-!
 # Groups with an adjoined zero element
@@ -178,12 +174,12 @@ theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
 
 @[simp]
 theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
-  by_cases hc : c = 0 <;> [simp [hc], simp [mul_left_inj', hc]]
+  by_cases hc : c = 0 <;> [simp [hc]; simp [mul_left_inj', hc]]
 #align mul_eq_mul_right_iff mul_eq_mul_right_iff
 
 @[simp]
 theorem mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
-  by_cases ha : a = 0 <;> [simp [ha], simp [mul_right_inj', ha]]
+  by_cases ha : a = 0 <;> [simp [ha]; simp [mul_right_inj', ha]]
 #align mul_eq_mul_left_iff mul_eq_mul_left_iff
 
 theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=

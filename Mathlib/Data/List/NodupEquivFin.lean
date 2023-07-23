@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module data.list.nodup_equiv_fin
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+
+#align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Equivalence between `Fin (length l)` and elements of a list
@@ -176,8 +173,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
   rw [sublist_iff_exists_orderEmbedding_get?_eq]
   constructor
   · rintro ⟨f, hf⟩
-    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length :=
-      by
+    have h : ∀ {i : ℕ} (_ : i < l.length), f i < l'.length := by
       intro i hi
       specialize hf i
       rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
@@ -208,9 +204,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       · rw [get?_eq_none.mpr, get?_eq_none.mpr]
         · simp
         · simpa using hi
-#align
-  list.sublist_iff_exists_fin_order_embedding_nth_le_eq
-  List.sublist_iff_exists_fin_orderEmbedding_get_eq
+#align list.sublist_iff_exists_fin_order_embedding_nth_le_eq List.sublist_iff_exists_fin_orderEmbedding_get_eq
 
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.

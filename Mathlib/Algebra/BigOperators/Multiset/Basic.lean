@@ -2,14 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.big_operators.multiset.basic
-! leanprover-community/mathlib commit 6c5f73fd6f6cc83122788a80a27cdd54663609f4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.BigOperators.Basic
 import Mathlib.Data.Multiset.Basic
+
+#align_import algebra.big_operators.multiset.basic from "leanprover-community/mathlib"@"6c5f73fd6f6cc83122788a80a27cdd54663609f4"
 
 /-!
 # Sums and products over multisets
@@ -70,8 +67,7 @@ theorem coe_prod (l : List α) : prod ↑l = l.prod :=
 #align multiset.coe_sum Multiset.coe_sum
 
 @[to_additive (attr := simp)]
-theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod :=
-  by
+theorem prod_toList (s : Multiset α) : s.toList.prod = s.prod := by
   conv_rhs => rw [← coe_toList s]
   rw [coe_prod]
 #align multiset.prod_to_list Multiset.prod_toList
@@ -136,8 +132,7 @@ theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
 
 @[to_additive]
 theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
-    (hf : ∀ (i') (_ : i' ≠ i), i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i :=
-  by
+    (hf : ∀ (i') (_ : i' ≠ i), i' ∈ m → f i' = 1) : (m.map f).prod = f i ^ m.count i := by
   induction' m using Quotient.inductionOn with l
   simp [List.prod_map_eq_pow_single i f hf]
 #align multiset.prod_map_eq_pow_single Multiset.prod_map_eq_pow_single
@@ -145,8 +140,7 @@ theorem prod_map_eq_pow_single [DecidableEq ι] (i : ι)
 
 @[to_additive]
 theorem prod_eq_pow_single [DecidableEq α] (a : α) (h : ∀ (a') (_ : a' ≠ a), a' ∈ s → a' = 1) :
-    s.prod = a ^ s.count a :=
-  by
+    s.prod = a ^ s.count a := by
   induction' s using Quotient.inductionOn with l
   simp [List.prod_eq_pow_single a h]
 #align multiset.prod_eq_pow_single Multiset.prod_eq_pow_single
@@ -167,8 +161,7 @@ theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type _} [MonoidHomClass 
 
 @[to_additive]
 theorem prod_hom' [CommMonoid β] (s : Multiset ι) {F : Type _} [MonoidHomClass F α β] (f : F)
-    (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod :=
-  by
+    (g : ι → α) : (s.map fun i => f <| g i).prod = f (s.map g).prod := by
   convert (s.map g).prod_hom f
   exact (map_map _ _ _).symm
 #align multiset.prod_hom' Multiset.prod_hom'
@@ -226,8 +219,7 @@ theorem prod_map_prod_map (m : Multiset β) (n : Multiset γ) {f : β → γ →
 
 @[to_additive]
 theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a → p b → p (a * b))
-    (p_one : p 1) (p_s : ∀ a ∈ s, p a) : p s.prod :=
-  by
+    (p_one : p 1) (p_s : ∀ a ∈ s, p a) : p s.prod := by
   rw [prod_eq_foldr]
   exact foldr_induction (· * ·) (fun x y z => by simp [mul_left_comm]) 1 p s p_mul p_one p_s
 #align multiset.prod_induction Multiset.prod_induction
@@ -255,8 +247,7 @@ theorem prod_dvd_prod_of_le (h : s ≤ t) : s.prod ∣ t.prod := by
 end CommMonoid
 
 theorem prod_dvd_prod_of_dvd [CommMonoid β] {S : Multiset α} (g1 g2 : α → β)
-    (h : ∀ a ∈ S, g1 a ∣ g2 a) : (Multiset.map g1 S).prod ∣ (Multiset.map g2 S).prod :=
-  by
+    (h : ∀ a ∈ S, g1 a ∣ g2 a) : (Multiset.map g1 S).prod ∣ (Multiset.map g2 S).prod := by
   apply Multiset.induction_on' S
   · simp
   intro a T haS _ IH
@@ -286,8 +277,7 @@ section CommMonoidWithZero
 
 variable [CommMonoidWithZero α]
 
-theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 :=
-  by
+theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 := by
   rcases Multiset.exists_cons_of_mem h with ⟨s', hs'⟩
   simp [hs', Multiset.prod_cons]
 #align multiset.prod_eq_zero Multiset.prod_eq_zero
@@ -295,8 +285,7 @@ theorem prod_eq_zero {s : Multiset α} (h : (0 : α) ∈ s) : s.prod = 0 :=
 variable [NoZeroDivisors α] [Nontrivial α] {s : Multiset α}
 
 theorem prod_eq_zero_iff : s.prod = 0 ↔ (0 : α) ∈ s :=
-  Quotient.inductionOn s fun l =>
-    by
+  Quotient.inductionOn s fun l => by
     rw [quot_mk_to_coe, coe_prod]
     exact List.prod_eq_zero_iff
 #align multiset.prod_eq_zero_iff Multiset.prod_eq_zero_iff
@@ -358,8 +347,7 @@ section Semiring
 variable [Semiring α]
 
 theorem dvd_sum {a : α} {s : Multiset α} : (∀ x ∈ s, a ∣ x) → a ∣ s.sum :=
-  Multiset.induction_on s (fun _ => dvd_zero _) fun x s ih h =>
-    by
+  Multiset.induction_on s (fun _ => dvd_zero _) fun x s ih h => by
     rw [sum_cons]
     exact dvd_add (h _ (mem_cons_self _ _)) (ih fun y hy => h _ <| mem_cons.2 <| Or.inr hy)
 #align multiset.dvd_sum Multiset.dvd_sum
@@ -386,8 +374,7 @@ theorem single_le_prod : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.
 #align multiset.single_le_sum Multiset.single_le_sum
 
 @[to_additive sum_le_card_nsmul]
-theorem prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s :=
-  by
+theorem prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
   simpa using List.prod_le_pow_card _ _ h
 #align multiset.prod_le_pow_card Multiset.prod_le_pow_card
@@ -431,8 +418,7 @@ theorem prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.
 #align multiset.sum_le_sum_map Multiset.sum_le_sum_map
 
 @[to_additive card_nsmul_le_sum]
-theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod :=
-  by
+theorem pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
   rw [← Multiset.prod_replicate, ← Multiset.map_const]
   exact prod_map_le_prod _ h
 #align multiset.pow_card_le_prod Multiset.pow_card_le_prod
@@ -474,8 +460,7 @@ theorem le_prod_of_mem [CanonicallyOrderedMonoid α] {m : Multiset α} {a : α} 
 theorem le_prod_of_submultiplicative_on_pred [CommMonoid α] [OrderedCommMonoid β] (f : α → β)
     (p : α → Prop) (h_one : f 1 = 1) (hp_one : p 1)
     (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
-    (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod :=
-  by
+    (s : Multiset α) (hps : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
   refine' Multiset.induction _ _
   · simp [le_of_eq h_one]
@@ -500,8 +485,7 @@ theorem le_prod_of_submultiplicative [CommMonoid α] [OrderedCommMonoid β] (f :
 theorem le_prod_nonempty_of_submultiplicative_on_pred [CommMonoid α] [OrderedCommMonoid β]
     (f : α → β) (p : α → Prop) (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b)
     (hp_mul : ∀ a b, p a → p b → p (a * b)) (s : Multiset α) (hs_nonempty : s ≠ ∅)
-    (hs : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod :=
-  by
+    (hs : ∀ a, a ∈ s → p a) : f s.prod ≤ (s.map f).prod := by
   revert s
   refine' Multiset.induction _ _
   · intro h

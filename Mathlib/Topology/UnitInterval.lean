@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison
-
-! This file was ported from Lean 3 source module topology.unit_interval
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Data.Set.Intervals.ProjIcc
 import Mathlib.Data.Set.Intervals.Instances
+
+#align_import topology.unit_interval from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # The unit interval, as a topological space
@@ -129,7 +126,7 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
 -- Porting note: Proof used to be `by continuity!`
 @[continuity]
 theorem continuous_symm : Continuous σ :=
-(continuous_const.add continuous_induced_dom.neg).subtype_mk _
+  (continuous_const.add continuous_induced_dom.neg).subtype_mk _
 #align unit_interval.continuous_symm unitInterval.continuous_symm
 
 instance : ConnectedSpace I :=
@@ -175,14 +172,7 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 #align unit_interval.mul_pos_mem_iff unitInterval.mul_pos_mem_iff
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
--- Porting note: used to be
--- constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
-letI : NeZero 1 := inferInstance
-constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> try {linarith}
-· rw [← (mul_le_mul_left (zero_lt_two))]
-  simp [le_of_sub_nonneg h₁]
-· rw [sub_nonneg]
-  exact (div_le_iff' (zero_lt_two)).1 h₁
+  constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 #align unit_interval.two_mul_sub_one_mem_iff unitInterval.two_mul_sub_one_mem_iff
 
 end unitInterval
@@ -201,7 +191,7 @@ namespace Tactic.Interactive
 
 -- Porting note: This replaces an unsafe def tactic
 /-- A tactic that solves `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for `x : I`. -/
-macro "unit_interval ": tactic =>
+macro "unit_interval" : tactic =>
   `(tactic| (first
   | apply unitInterval.nonneg
   | apply unitInterval.one_minus_nonneg

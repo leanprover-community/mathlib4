@@ -3,18 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
 Yuyang Zhao
-
-! This file was ported from Lean 3 source module algebra.order.monoid.lemmas
-! leanprover-community/mathlib commit 2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CovariantAndContravariant
 import Mathlib.Init.Data.Ordering.Basic
 import Mathlib.Order.MinMax
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.PushNeg
-import Mathlib.Tactic.Use
+
+#align_import algebra.order.monoid.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
 /-!
 # Ordered monoids
@@ -1199,7 +1193,7 @@ theorem exists_square_le [CovariantClass α α (· * ·) (· < ·)] (a : α) : �
     rw [mul_one] at this
     exact le_of_lt this
   · use 1
-    push_neg  at h
+    push_neg at h
     rwa [mul_one]
 #align exists_square_le exists_square_le
 
@@ -1492,8 +1486,8 @@ theorem MonotoneOn.mul_strictMono' [CovariantClass α α (· * ·) (· < ·)]
 #align monotone_on.mul_strict_mono' MonotoneOn.mul_strictMono'
 #align monotone_on.add_strict_mono MonotoneOn.add_strictMono
 
-/-- The product of a antitone function and a strictly antitone function is strictly antitone. -/
-@[to_additive add_strictAnti "The sum of a antitone function and a strictly antitone function is
+/-- The product of an antitone function and a strictly antitone function is strictly antitone. -/
+@[to_additive add_strictAnti "The sum of an antitone function and a strictly antitone function is
 strictly antitone."]
 theorem Antitone.mul_strictAnti' [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {f g : β → α} (hf : Antitone f)
@@ -1503,8 +1497,8 @@ theorem Antitone.mul_strictAnti' [CovariantClass α α (· * ·) (· < ·)]
 #align antitone.mul_strict_anti' Antitone.mul_strictAnti'
 #align antitone.add_strict_anti Antitone.add_strictAnti
 
-/-- The product of a antitone function and a strictly antitone function is strictly antitone. -/
-@[to_additive add_strictAnti "The sum of a antitone function and a strictly antitone function is
+/-- The product of an antitone function and a strictly antitone function is strictly antitone. -/
+@[to_additive add_strictAnti "The sum of an antitone function and a strictly antitone function is
 strictly antitone."]
 theorem AntitoneOn.mul_strictAnti' [CovariantClass α α (· * ·) (· < ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {f g : β → α} (hf : AntitoneOn f s)
@@ -1534,8 +1528,8 @@ theorem StrictMonoOn.mul_monotone' (hf : StrictMonoOn f s) (hg : MonotoneOn g s)
 #align strict_mono_on.mul_monotone' StrictMonoOn.mul_monotone'
 #align strict_mono_on.add_monotone StrictMonoOn.add_monotone
 
-/-- The product of a strictly antitone function and a antitone function is strictly antitone. -/
-@[to_additive add_antitone "The sum of a strictly antitone function and a antitone function is
+/-- The product of a strictly antitone function and an antitone function is strictly antitone. -/
+@[to_additive add_antitone "The sum of a strictly antitone function and an antitone function is
 strictly antitone."]
 theorem StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
     StrictAnti fun x => f x * g x :=
@@ -1543,8 +1537,8 @@ theorem StrictAnti.mul_antitone' (hf : StrictAnti f) (hg : Antitone g) :
 #align strict_anti.mul_antitone' StrictAnti.mul_antitone'
 #align strict_anti.add_antitone StrictAnti.add_antitone
 
-/-- The product of a strictly antitone function and a antitone function is strictly antitone. -/
-@[to_additive add_antitone "The sum of a strictly antitone function and a antitone function is
+/-- The product of a strictly antitone function and an antitone function is strictly antitone. -/
+@[to_additive add_antitone "The sum of a strictly antitone function and an antitone function is
 strictly antitone."]
 theorem StrictAntiOn.mul_antitone' (hf : StrictAntiOn f s) (hg : AntitoneOn g s) :
     StrictAntiOn (fun x => f x * g x) s :=

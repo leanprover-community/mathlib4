@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module group_theory.perm.basic
-! leanprover-community/mathlib commit b86832321b586c6ac23ef8cdef6a7a27e42b13bd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Iterate
 import Mathlib.Logic.Equiv.Set
+
+#align_import group_theory.perm.basic from "leanprover-community/mathlib"@"b86832321b586c6ac23ef8cdef6a7a27e42b13bd"
 
 /-!
 # The group of permutations (self-equivalences) of a type `α`
@@ -58,8 +55,8 @@ def equivUnitsEnd : Perm α ≃* Units (Function.End α) where
 #align equiv.perm.equiv_units_End_symm_apply_apply Equiv.Perm.equivUnitsEnd_symm_apply_apply
 #align equiv.perm.equiv_units_End_symm_apply_symm_apply Equiv.Perm.equivUnitsEnd_symm_apply_symm_apply
 
-/-- Lift a monoid homomorphism `f : G →* function.End α` to a monoid homomorphism
-`f : G →* equiv.perm α`. -/
+/-- Lift a monoid homomorphism `f : G →* Function.End α` to a monoid homomorphism
+`f : G →* Equiv.Perm α`. -/
 @[simps!]
 def _root_.MonoidHom.toHomPerm {G : Type _} [Group G] (f : G →* Function.End α) : G →* Perm α :=
   equivUnitsEnd.symm.toMonoidHom.comp f.toHomUnits
@@ -123,7 +120,7 @@ theorem zpow_apply_comm {α : Type _} (σ : Perm α) (m n : ℤ) {x : α} :
 @[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
 #align equiv.perm.image_inv Equiv.Perm.image_inv
 @[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
-(f.image_eq_preimage _).symm
+  (f.image_eq_preimage _).symm
 #align equiv.perm.preimage_inv Equiv.Perm.preimage_inv
 
 /-! Lemmas about mixing `Perm` with `Equiv`. Because we have multiple ways to express
@@ -270,7 +267,7 @@ def sigmaCongrRightHom {α : Type _} (β : α → Type _) : (∀ a, Perm (β a))
 theorem sigmaCongrRightHom_injective {α : Type _} {β : α → Type _} :
     Function.Injective (sigmaCongrRightHom β) := by
   intro x y h
-  ext (a b)
+  ext a b
   simpa using Equiv.congr_fun h ⟨a, b⟩
 #align equiv.perm.sigma_congr_right_hom_injective Equiv.Perm.sigmaCongrRightHom_injective
 
@@ -343,11 +340,11 @@ theorem extendDomain_eq_one_iff {e : Perm α} {f : α ≃ Subtype p} : e.extendD
 
 @[simp]
 lemma extendDomain_pow (n : ℕ) : (e ^ n).extendDomain f = e.extendDomain f ^ n :=
-map_pow (extendDomainHom f) _ _
+  map_pow (extendDomainHom f) _ _
 
 @[simp]
 lemma extendDomain_zpow (n : ℤ) : (e ^ n).extendDomain f = e.extendDomain f ^ n :=
-map_zpow (extendDomainHom f) _ _
+  map_zpow (extendDomainHom f) _ _
 
 end ExtendDomain
 
@@ -601,38 +598,40 @@ section AddGroup
 variable [AddGroup α] (a b : α)
 
 @[simp] lemma addLeft_zero : Equiv.addLeft (0 : α) = 1 := ext zero_add
-@[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
-#align equiv.add_right_zero Equiv.addRight_zero
 #align equiv.add_left_zero Equiv.addLeft_zero
 
+@[simp] lemma addRight_zero : Equiv.addRight (0 : α) = 1 := ext add_zero
+#align equiv.add_right_zero Equiv.addRight_zero
+
 @[simp] lemma addLeft_add : Equiv.addLeft (a + b) = Equiv.addLeft a * Equiv.addLeft b :=
-ext $ add_assoc _ _
+  ext $ add_assoc _ _
 #align equiv.add_left_add Equiv.addLeft_add
 
 @[simp] lemma addRight_add : Equiv.addRight (a + b) = Equiv.addRight b * Equiv.addRight a :=
-ext $ fun _ ↦ (add_assoc _ _ _).symm
+  ext $ fun _ ↦ (add_assoc _ _ _).symm
 #align equiv.add_right_add Equiv.addRight_add
 
 @[simp] lemma inv_addLeft : (Equiv.addLeft a)⁻¹ = Equiv.addLeft (-a) := Equiv.coe_inj.1 rfl
-@[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
-#align equiv.inv_add_right Equiv.inv_addRight
 #align equiv.inv_add_left Equiv.inv_addLeft
 
-@[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
-by ext; simp [Perm.coe_pow]
+@[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
+#align equiv.inv_add_right Equiv.inv_addRight
+
+@[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
+  ext; simp [Perm.coe_pow]
 #align equiv.pow_add_left Equiv.pow_addLeft
 
-@[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) :=
-by ext; simp [Perm.coe_pow]
+@[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
+  ext; simp [Perm.coe_pow]
 #align equiv.pow_add_right Equiv.pow_addRight
 
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
-(map_zsmul (⟨⟨Equiv.addLeft, addLeft_zero⟩, addLeft_add⟩ : α →+ Additive (Perm α)) _ _).symm
+  (map_zsmul (⟨⟨Equiv.addLeft, addLeft_zero⟩, addLeft_add⟩ : α →+ Additive (Perm α)) _ _).symm
 #align equiv.zpow_add_left Equiv.zpow_addLeft
 
 @[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
-| (Int.ofNat n) => by simp
-| (Int.negSucc n) => by simp
+  | (Int.ofNat n) => by simp
+  | (Int.negSucc n) => by simp
 #align equiv.zpow_add_right Equiv.zpow_addRight
 
 end AddGroup
@@ -642,10 +641,11 @@ variable [Group α] (a b : α)
 
 @[to_additive existing (attr := simp)]
 lemma mulLeft_one : Equiv.mulLeft (1 : α) = 1 := ext one_mul
+#align equiv.mul_left_one Equiv.mulLeft_one
+
 @[to_additive existing (attr := simp)]
 lemma mulRight_one : Equiv.mulRight (1 : α) = 1 := ext mul_one
 #align equiv.mul_right_one Equiv.mulRight_one
-#align equiv.mul_left_one Equiv.mulLeft_one
 
 @[to_additive existing (attr := simp)] lemma mulLeft_mul :
   Equiv.mulLeft (a * b) = Equiv.mulLeft a * Equiv.mulLeft b :=
@@ -659,30 +659,31 @@ ext $ fun _ ↦ (mul_assoc _ _ _).symm
 
 @[to_additive existing (attr := simp) inv_addLeft]
 lemma inv_mulLeft : (Equiv.mulLeft a)⁻¹ = Equiv.mulLeft a⁻¹ := Equiv.coe_inj.1 rfl
+#align equiv.inv_mul_left Equiv.inv_mulLeft
+
 @[to_additive existing (attr := simp) inv_addRight]
 lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 #align equiv.inv_mul_right Equiv.inv_mulRight
-#align equiv.inv_mul_left Equiv.inv_mulLeft
 
 @[to_additive existing (attr := simp) pow_addLeft]
-lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
-by ext; simp [Perm.coe_pow]
+lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
+  ext; simp [Perm.coe_pow]
 #align equiv.pow_mul_left Equiv.pow_mulLeft
 
 @[to_additive existing (attr := simp) pow_addRight]
-lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) :=
-by ext; simp [Perm.coe_pow]
+lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
+  ext; simp [Perm.coe_pow]
 #align equiv.pow_mul_right Equiv.pow_mulRight
 
 @[to_additive existing (attr := simp) zpow_addLeft]
 lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
-(map_zpow (⟨⟨Equiv.mulLeft, mulLeft_one⟩, mulLeft_mul⟩ : α →* Perm α) _ _).symm
+  (map_zpow (⟨⟨Equiv.mulLeft, mulLeft_one⟩, mulLeft_mul⟩ : α →* Perm α) _ _).symm
 #align equiv.zpow_mul_left Equiv.zpow_mulLeft
 
 @[to_additive existing (attr := simp) zpow_addRight]
 lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
-| (Int.ofNat n) => by simp
-| (Int.negSucc n) => by simp
+  | (Int.ofNat n) => by simp
+  | (Int.negSucc n) => by simp
 #align equiv.zpow_mul_right Equiv.zpow_mulRight
 
 end Group
@@ -707,8 +708,8 @@ lemma BijOn.perm_pow : BijOn f s s → ∀ n : ℕ, BijOn (f ^ n) s s := by
 #align set.bij_on.perm_pow Set.BijOn.perm_pow
 
 lemma BijOn.perm_zpow (hf : BijOn f s s) : ∀ n : ℤ, BijOn (f ^ n) s s
-| (Int.ofNat _) => hf.perm_pow _
-| (Int.negSucc _) => (hf.perm_pow _).perm_inv
+  | (Int.ofNat _) => hf.perm_pow _
+  | (Int.negSucc _) => (hf.perm_pow _).perm_inv
 #align set.bij_on.perm_zpow Set.BijOn.perm_zpow
 
 end Set

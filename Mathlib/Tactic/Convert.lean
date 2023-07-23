@@ -33,6 +33,8 @@ def Lean.MVarId.convert (e : Expr) (sym : Bool)
   try m.congrN! depth config patterns
   catch _ => return [m]
 
+namespace Mathlib.Tactic
+
 /--
 The `exact e` and `refine e` tactics require a term `e` whose type is
 definitionally equal to the goal. `convert e` is similar to `refine e`,
@@ -43,8 +45,8 @@ For example, in the proof state
 
 ```lean
 n : ℕ,
-e : prime (2 * n + 1)
-⊢ prime (n + n + 1)
+e : Prime (2 * n + 1)
+⊢ Prime (n + n + 1)
 ```
 
 the tactic `convert e using 2` will change the goal to
@@ -95,8 +97,8 @@ convert (config := {transparency := .default}) h
 ```
 These are passed to `congr!`. See `Congr!.Config` for options.
 -/
-syntax (name := convert) "convert" (Parser.Tactic.config)? "← "? term (" using " num)?
-  ("with" (ppSpace colGt rintroPat)*)? : tactic
+syntax (name := convert) "convert" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
@@ -126,11 +128,13 @@ That is, `convert_to g using n` is equivalent to `convert (?_ : g) using n`.
 The syntax for `convert_to` is the same as for `convert`, and it has variations such as
 `convert_to ← g` and `convert_to (config := {transparency := .default}) g`.
 -/
-syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? "← "? term (" using " num)?
-  ("with" (ppSpace colGt rintroPat)*)?: tactic
+syntax (name := convertTo) "convert_to" (Parser.Tactic.config)? " ←"? ppSpace term (" using " num)?
+  (" with" (ppSpace colGt rintroPat)*)? : tactic
 
 macro_rules
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using 1 $[with $ps?*]?)
 | `(tactic| convert_to $[$cfg]? $[←%$sym]? $term using $n $[with $ps?*]?) =>
   `(tactic| convert $[$cfg]? $[←%$sym]? (?_ : $term) using $n $[with $ps?*]?)
+
+end Mathlib.Tactic

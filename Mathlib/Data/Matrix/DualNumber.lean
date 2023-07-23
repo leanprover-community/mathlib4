@@ -2,14 +2,11 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.dual_number
-! leanprover-community/mathlib commit eb0cb4511aaef0da2462207b67358a0e1fe1e2ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.Data.Matrix.Basic
+
+#align_import data.matrix.dual_number from "leanprover-community/mathlib"@"eb0cb4511aaef0da2462207b67358a0e1fe1e2ee"
 
 /-!
 # Matrices of dual numbers are isomorphic to dual numbers over matrices
@@ -33,9 +30,9 @@ def Matrix.dualNumberEquiv : Matrix n n (DualNumber R) ≃ₐ[R] DualNumber (Mat
   map_mul' A B := by
     ext
     · dsimp [mul_apply]
-      simp_rw [fst_sum, fst_mul]
+      simp_rw [fst_sum]
       rfl
-    · simp_rw [snd_sum, snd_mul, smul_eq_mul, op_smul_eq_mul, Finset.sum_add_distrib]
+    · simp_rw [snd_mul, smul_eq_mul, op_smul_eq_mul]
       simp [mul_apply, snd_sum, snd_mul]
       rw [← Finset.sum_add_distrib]
   map_add' A B := TrivSqZeroExt.ext rfl rfl

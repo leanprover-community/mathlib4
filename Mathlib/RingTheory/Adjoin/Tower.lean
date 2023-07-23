@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.adjoin.tower
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.RingTheory.Adjoin.Fg
+import Mathlib.RingTheory.Adjoin.FG
+
+#align_import ring_theory.adjoin.tower from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower
@@ -75,8 +72,8 @@ section
 open Classical
 
 theorem Algebra.fg_trans' {R S A : Type _} [CommSemiring R] [CommSemiring S] [CommSemiring A]
-    [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).Fg)
-    (hSA : (⊤ : Subalgebra S A).Fg) : (⊤ : Subalgebra R A).Fg :=
+    [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
+    (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG :=
   let ⟨s, hs⟩ := hRS
   let ⟨t, ht⟩ := hSA
   ⟨s.image (algebraMap S A) ∪ t, by
@@ -101,8 +98,8 @@ open Finset Submodule
 
 open Classical
 
-theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).Fg) (hBC : (⊤ : Submodule B C).Fg) :
-    ∃ B₀ : Subalgebra A B, B₀.Fg ∧ (⊤ : Submodule B₀ C).Fg := by
+theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
+    ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
   cases' hAC with x hx
   cases' hBC with y hy
   have := hy
@@ -155,16 +152,14 @@ variable [CommRing A] [CommRing B] [CommRing C]
 
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
--- Porting note: failed to synthesize Noetherian instance on submodule
-set_option synthInstance.etaExperiment true in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
 
 References: Atiyah--Macdonald Proposition 7.8; Stacks 00IS; Altman--Kleiman 16.17. -/
-theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).Fg)
-    (hBC : (⊤ : Submodule B C).Fg) (hBCi : Function.Injective (algebraMap B C)) :
-    (⊤ : Subalgebra A B).Fg :=
+theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).FG)
+    (hBC : (⊤ : Submodule B C).FG) (hBCi : Function.Injective (algebraMap B C)) :
+    (⊤ : Subalgebra A B).FG :=
   let ⟨B₀, hAB₀, hB₀C⟩ := exists_subalgebra_of_fg A B C hAC hBC
   Algebra.fg_trans' (B₀.fg_top.2 hAB₀) <|
     Subalgebra.fg_of_submodule_fg <|
@@ -176,4 +171,3 @@ theorem fg_of_fg_of_fg [IsNoetherianRing A] (hAC : (⊤ : Subalgebra A C).Fg)
 end Ring
 
 end ArtinTate
-

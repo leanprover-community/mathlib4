@@ -2,14 +2,11 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.strict_initial
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+
+#align_import category_theory.limits.shapes.strict_initial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Strict initial objects
@@ -33,7 +30,7 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 
 ## TODO
 
-* Construct examples of this: `Type*`, `Top`, `Groupoid`, simplicial types, posets.
+* Construct examples of this: `Type _`, `TopCat`, `Groupoid`, simplicial types, posets.
 * Construct the bottom element of the subobject lattice given strict initials.
 * Show cartesian closed categories have strict initials
 
@@ -131,7 +128,7 @@ theorem initial.subsingleton_to {A : C} : Subsingleton (A ⟶ ⊥_ C) :=
 
 /-- The product of `X` with an initial object in a category with strict initial objects is itself
 initial.
-This is the generalisation of the fact that `X × empty ≃ empty` for types (or `n * 0 = 0`).
+This is the generalisation of the fact that `X × Empty ≃ Empty` for types (or `n * 0 = 0`).
 -/
 @[simps! hom]
 noncomputable def mulInitial (X : C) [HasBinaryProduct X (⊥_ C)] : X ⨯ ⊥_ C ≅ ⊥_ C :=
@@ -145,7 +142,7 @@ theorem mulInitial_inv (X : C) [HasBinaryProduct X (⊥_ C)] : (mulInitial X).in
 
 /-- The product of `X` with an initial object in a category with strict initial objects is itself
 initial.
-This is the generalisation of the fact that `empty × X ≃ empty` for types (or `0 * n = 0`).
+This is the generalisation of the fact that `Empty × X ≃ Empty` for types (or `0 * n = 0`).
 -/
 @[simps! hom]
 noncomputable def initialMul (X : C) [HasBinaryProduct (⊥_ C) X] : (⊥_ C) ⨯ X ≅ ⊥_ C :=
@@ -204,7 +201,7 @@ theorem IsTerminal.subsingleton_to (hI : IsTerminal I) {A : C} : Subsingleton (I
 
 variable {J : Type v} [SmallCategory J]
 
-/-- If all but one object in a diagram is strict terminal, the the limit is isomorphic to the
+/-- If all but one object in a diagram is strict terminal, then the limit is isomorphic to the
 said object via `limit.π`. -/
 theorem limit_π_isIso_of_is_strict_terminal (F : J ⥤ C) [HasLimit F] (i : J)
     (H : ∀ (j) (_ : j ≠ i), IsTerminal (F.obj j)) [Subsingleton (i ⟶ i)] : IsIso (limit.π F i) := by

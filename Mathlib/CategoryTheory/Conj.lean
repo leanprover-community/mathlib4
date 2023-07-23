@@ -2,14 +2,11 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.conj
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.Equiv.Units.Basic
 import Mathlib.CategoryTheory.Endomorphism
+
+#align_import category_theory.conj from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Conjugate morphisms by isomorphisms
@@ -128,11 +125,7 @@ def conjAut : Aut X ≃* Aut Y :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut CategoryTheory.Iso.conjAut
 
-theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by
-  aesop_cat_nonterminal
-  apply CategoryTheory.Iso.ext
-  simp only [conjAut, Aut.unitsEndEquivAut, conj]
-  rfl
+theorem conjAut_apply (f : Aut X) : α.conjAut f = α.symm ≪≫ f ≪≫ α := by aesop_cat
 set_option linter.uppercaseLean3 false in
 #align category_theory.iso.conj_Aut_apply CategoryTheory.Iso.conjAut_apply
 

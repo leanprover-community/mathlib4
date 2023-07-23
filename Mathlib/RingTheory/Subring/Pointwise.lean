@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.subring.pointwise
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import ring_theory.subring.pointwise from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-! # Pointwise instances on `Subring`s
 
@@ -68,7 +65,6 @@ theorem pointwise_smul_toAddSubgroup (m : M) (S : Subring R) :
   rfl
 #align subring.pointwise_smul_to_add_subgroup Subring.pointwise_smul_toAddSubgroup
 
-set_option synthInstance.etaExperiment true in
 @[simp]
 theorem pointwise_smul_toSubsemiring (m : M) (S : Subring R) :
     (m • S).toSubsemiring = m • S.toSubsemiring :=

@@ -3,13 +3,10 @@ Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
 Ported by: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.isomorphism
-! leanprover-community/mathlib commit 8350c34a64b9bc3fc64335df8006bffcadc7baa6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Tactic.Reassoc
+import Mathlib.Tactic.CategoryTheory.Reassoc
+
+#align_import category_theory.isomorphism from "leanprover-community/mathlib"@"8350c34a64b9bc3fc64335df8006bffcadc7baa6"
 
 /-!
 # Isomorphisms
@@ -72,6 +69,9 @@ attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
 #align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
 
+-- Pretty printer support for additional arguments when in a concrete category
+attribute [pp_dot] Iso.hom Iso.inv
+
 /-- Notation for an isomorphism in a category. -/
 infixr:10 " ≅ " => Iso -- type as \cong or \iso
 
@@ -91,11 +91,10 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
     α.inv = α.inv ≫ β.hom ≫ β.inv   := by rw [Iso.hom_inv_id, Category.comp_id]
     _     = (α.inv ≫ α.hom) ≫ β.inv := by rw [Category.assoc, ← w]
     _     = β.inv                   := by rw [Iso.inv_hom_id, Category.id_comp]
-
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
-@[symm]
+@[symm, pp_dot]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -310,13 +309,19 @@ noncomputable def asIso (f : X ⟶ Y) [IsIso f] : X ≅ Y :=
   ⟨f, inv f, hom_inv_id f, inv_hom_id f⟩
 #align category_theory.as_iso CategoryTheory.asIso
 
+-- Porting note: the `IsIso f` argument had been instance implicit,
+-- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_hom (f : X ⟶ Y) [IsIso f] : (asIso f).hom = f :=
+theorem asIso_hom (f : X ⟶ Y) {_ : IsIso f} : (asIso f).hom = f :=
   rfl
 #align category_theory.as_iso_hom CategoryTheory.asIso_hom
 
+-- Porting note: the `IsIso f` argument had been instance implicit,
+-- but we've changed it to implicit as a `rw` in `Mathlib.CategoryTheory.Closed.Functor`
+-- was failing to generate it by typeclass search.
 @[simp]
-theorem asIso_inv (f : X ⟶ Y) [IsIso f] : (asIso f).inv = inv f :=
+theorem asIso_inv (f : X ⟶ Y) {_ : IsIso f} : (asIso f).inv = inv f :=
   rfl
 #align category_theory.as_iso_inv CategoryTheory.asIso_inv
 
@@ -379,7 +384,7 @@ instance inv_isIso [IsIso f] : IsIso (inv f) :=
 /- The following instance has lower priority for the following reason:
 Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
 Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
-because `f.hom` is defeq to `(λ x, x) ≫ f.hom`, triggering a loop. -/
+because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
   IsIso.of_iso <| asIso f ≪≫ asIso h
 #align category_theory.is_iso.comp_is_iso CategoryTheory.IsIso.comp_isIso
@@ -581,7 +586,7 @@ variable {D : Type u₂}
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps]
+@[simps, pp_dot]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv

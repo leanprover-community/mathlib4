@@ -2,13 +2,10 @@
 Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.alist
-! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Sigma
+
+#align_import data.list.alist from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 
 /-!
 # Association Lists
@@ -54,7 +51,7 @@ structure AList (β : α → Type v) : Type max u v where
   nodupKeys : entries.NodupKeys
 #align alist AList
 
-/-- Given `l : List (sigma β)`, create a term of type `alist β` by removing
+/-- Given `l : List (Sigma β)`, create a term of type `AList β` by removing
 entries with duplicate keys. -/
 def List.toAList [DecidableEq α] {β : α → Type v} (l : List (Sigma β)) : AList β where
   entries := _
@@ -317,15 +314,15 @@ theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlook
 #align alist.lookup_to_alist AList.lookup_to_alist
 
 @[simp]
-theorem insert_insert {a} {b b' : β a} (s : AList β) : (s.insert a b).insert a b' = s.insert a b' :=
-  by
-  ext : 1 ; simp only [AList.insert_entries, List.kerase_cons_eq]
+theorem insert_insert {a} {b b' : β a} (s : AList β) :
+    (s.insert a b).insert a b' = s.insert a b' := by
+  ext : 1; simp only [AList.insert_entries, List.kerase_cons_eq]
 #align alist.insert_insert AList.insert_insert
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a ≠ a') :
     ((s.insert a b).insert a' b').entries ~ ((s.insert a' b').insert a b).entries := by
   simp only [insert_entries]; rw [kerase_cons_ne, kerase_cons_ne, kerase_comm] <;>
-    [apply Perm.swap, exact h, exact h.symm]
+    [apply Perm.swap; exact h; exact h.symm]
 #align alist.insert_insert_of_ne AList.insert_insert_of_ne
 
 @[simp]
@@ -350,7 +347,7 @@ theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).Nod
   simpa [insert] using (kerase_of_not_mem_keys <| not_mem_keys_of_nodupKeys_cons h).symm
 #align alist.mk_cons_eq_insert AList.mk_cons_eq_insert
 
-/-- Recursion on an `alist`, using `insert`. Use as `induction l using alist.insert_rec`. -/
+/-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
 @[elab_as_elim]
 def insertRec {C : AList β → Sort _} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
@@ -378,10 +375,8 @@ theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
   cases' l with l hl
-  suffices
-    HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
-      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩))
-    by
+  suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
+      (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
     cases c
     apply eq_of_heq
     convert this <;> rw [insert_of_neg h]
@@ -506,9 +501,9 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (s₁ ∪ s₂).entries ~ (s₂ ∪ s₁).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
-      intros ; simp
+      intros; simp
       constructor <;> intro h'
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           apply h
@@ -516,7 +511,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           exact rfl
         · left
           rw [h'.2]
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           intro h''

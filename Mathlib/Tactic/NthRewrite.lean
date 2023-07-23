@@ -47,7 +47,7 @@ to be rewritten.
 
 Note: The occurrences are counted beginning with `1` and not `0`, this is different than in
 mathlib3. The translation will be handled by mathport. -/
-syntax (name := nthRewriteSeq) "nth_rewrite " (config)? num rwRuleSeq (ppSpace location)? : tactic
+syntax (name := nthRewriteSeq) "nth_rewrite" (config)? ppSpace num rwRuleSeq (location)? : tactic
 
 @[inherit_doc nthRewriteSeq, tactic nthRewriteSeq] def evalNthRewriteSeq : Tactic := fun stx => do
   match stx with
@@ -67,7 +67,7 @@ syntax (name := nthRewriteSeq) "nth_rewrite " (config)? num rwRuleSeq (ppSpace l
 /--
 `nth_rw` is like `nth_rewrite`, but also tries to close the goal by trying `rfl` afterwards.
 -/
-macro (name := nthRwSeq) "nth_rw" c:(config)? n:num s:rwRuleSeq l:(location)? : tactic =>
+macro (name := nthRwSeq) "nth_rw" c:(config)? ppSpace n:num s:rwRuleSeq l:(location)? : tactic =>
   -- Note: This is a direct copy of `nth_rw` from core.
   match s with
   | `(rwRuleSeq| [$rs,*]%$rbrak) =>

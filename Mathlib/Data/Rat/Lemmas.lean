@@ -2,17 +2,13 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.lemmas
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Div
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Tactic.NthRewrite
+
+#align_import data.rat.lemmas from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Further lemmas for the Rational Numbers
@@ -66,7 +62,6 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rw [←Int.div_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd, -Nat.cast_succ,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
-
 #align rat.num_mk Rat.num_mk
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
@@ -190,7 +185,7 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 @[simp]
 theorem mul_den_eq_num {q : ℚ} : q * q.den = q.num := by
   suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1)q ; (rw [← @num_den q])
+    conv => pattern (occs := 1)q; (rw [← @num_den q])
     simp only [coe_int_eq_divInt, coe_nat_eq_divInt, num_den] at this ⊢; assumption
   have : (q.den : ℤ) ≠ 0 := ne_of_gt (by exact_mod_cast q.pos)
   rw [Rat.mul_def' this one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
@@ -204,7 +199,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     -- Porting note: was `lift (m : ℚ) / n to ℤ using h with k hk`
     use ((m : ℚ) / n).num
     have hk := Rat.coe_int_num_of_den_eq_one h
-    simp_rw [eq_div_iff_mul_eq hn, ofInt_eq_cast, ← Int.cast_mul] at hk
+    simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
     rw [Int.cast_mul, mul_comm, mul_div_cancel _ hn, Rat.coe_int_den]

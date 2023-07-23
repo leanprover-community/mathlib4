@@ -2,14 +2,11 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module data.matrix.dmatrix
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Data.Fintype.Basic
+
+#align_import data.matrix.dmatrix from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Matrices
@@ -72,12 +69,12 @@ def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j
 @[inherit_doc]
 scoped postfix:1024 "ᵀ" => DMatrix.transpose
 
-/-- `dmatrix.col u` is the column matrix whose entries are given by `u`. -/
+/-- `DMatrix.col u` is the column matrix whose entries are given by `u`. -/
 def col {α : m → Type v} (w : ∀ i, α i) : DMatrix m Unit fun i _j => α i
   | x, _y => w x
 #align dmatrix.col DMatrix.col
 
-/-- `dmatrix.row u` is the row matrix whose entries are given by `u`. -/
+/-- `DMatrix.row u` is the row matrix whose entries are given by `u`. -/
 def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
   | _x, y => v y
 #align dmatrix.row DMatrix.row
@@ -166,10 +163,7 @@ instance subsingleton_of_empty_left [IsEmpty m] : Subsingleton (DMatrix m n α) 
 #align dmatrix.subsingleton_of_empty_left DMatrix.subsingleton_of_empty_left
 
 instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (DMatrix m n α) :=
-  ⟨fun M N => by
-    ext i
-    intro j
-    exact isEmptyElim j⟩
+  ⟨fun M N => by ext i j; exact isEmptyElim j⟩
 #align dmatrix.subsingleton_of_empty_right DMatrix.subsingleton_of_empty_right
 
 end DMatrix
@@ -189,4 +183,3 @@ theorem AddMonoidHom.mapDMatrix_apply [∀ i j, AddMonoid (α i j)] {β : m → 
     [∀ i j, AddMonoid (β i j)] (f : ∀ ⦃i j⦄, α i j →+ β i j) (M : DMatrix m n α) :
     AddMonoidHom.mapDMatrix f M = M.map fun i j => @f i j := rfl
 #align add_monoid_hom.map_dmatrix_apply AddMonoidHom.mapDMatrix_apply
-

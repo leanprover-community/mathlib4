@@ -2,13 +2,10 @@
 Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
-
-! This file was ported from Lean 3 source module algebra.cubic_discriminant
-! leanprover-community/mathlib commit 930133160e24036d5242039fe4972407cd4f1222
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Splits
+
+#align_import algebra.cubic_discriminant from "leanprover-community/mathlib"@"930133160e24036d5242039fe4972407cd4f1222"
 
 /-!
 # Cubics and discriminants
@@ -531,8 +528,6 @@ theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z})
   rw [prod_cons, prod_cons, prod_singleton, mul_assoc, mul_assoc]
 #align cubic.eq_prod_three_roots Cubic.eq_prod_three_roots
 
--- Porting note: Increased heartbeat limit for `C_mul_prod_X_sub_C_eq`
-set_option maxHeartbeats 500000 in
 theorem eq_sum_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     map φ P =
       ⟨φ P.a, φ P.a * -(x + y + z), φ P.a * (x * y + x * z + y * z), φ P.a * -(x * y * z)⟩ := by

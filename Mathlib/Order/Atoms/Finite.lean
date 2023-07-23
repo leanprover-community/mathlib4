@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module order.atoms.finite
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Atoms
+
+#align_import order.atoms.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -63,8 +60,7 @@ end Fintype
 namespace Bool
 
 instance : IsSimpleOrder Bool :=
-  ⟨fun a =>
-    by
+  ⟨fun a => by
     rw [← Finset.mem_singleton, Or.comm, ← Finset.mem_insert, top_eq_true, bot_eq_false, ←
       Fintype.univ_bool]
     apply Finset.mem_univ⟩

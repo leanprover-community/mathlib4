@@ -3,18 +3,15 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 Ported by: Anatole Dedecker
-
-! This file was ported from Lean 3 source module logic.equiv.nat
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Pairing
+
+#align_import logic.equiv.nat from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Equivalences involving `ℕ`
 
-This file defines some additional constructive equivalences using `encodable` and the pairing
+This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
 

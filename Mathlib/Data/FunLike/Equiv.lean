@@ -2,13 +2,10 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.fun_like.equiv
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Embedding
+
+#align_import data.fun_like.equiv from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ≃ B`
@@ -29,11 +26,11 @@ variables (A B : Type _) [MyClass A] [MyClass B]
 
 -- This instance is optional if you follow the "Isomorphism class" design below:
 instance : EquivLike (MyIso A B) A (λ _, B) :=
-{ coe := MyIso.toEquiv.toFun,
-  inv := MyIso.toEquiv.invFun,
-  left_inv := MyIso.toEquiv.left_inv,
-  right_inv := MyIso.toEquiv.right_inv,
-  coe_injective' := λ f g h, by cases f; cases g; congr' }
+  { coe := MyIso.toEquiv.toFun,
+    inv := MyIso.toEquiv.invFun,
+    left_inv := MyIso.toEquiv.left_inv,
+    right_inv := MyIso.toEquiv.right_inv,
+    coe_injective' := λ f g h, by cases f; cases g; congr' }
 
 /-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
 instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
@@ -43,11 +40,11 @@ instance : CoeFun (MyIso A B) := FunLike.instCoeFunForAll
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
 protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A) (h : f' = ⇑f) : MyIso A B :=
-{ toFun := f',
-  invFun := f_inv,
-  left_inv := h.symm ▸ f.left_inv,
-  right_inv := h.symm ▸ f.right_inv,
-  map_op' := h.symm ▸ f.map_op' }
+  { toFun := f',
+    invFun := f_inv,
+    left_inv := h.symm ▸ f.left_inv,
+    right_inv := h.symm ▸ f.right_inv,
+    map_op' := h.symm ▸ f.map_op' }
 
 end MyIso
 ```
@@ -73,12 +70,12 @@ end
 
 -- You can replace `MyIso.EquivLike` with the below instance:
 instance : MyIsoClass (MyIso A B) A B :=
-{ coe := MyIso.toFun,
-  inv := MyIso.invFun,
-  left_inv := MyIso.left_inv,
-  right_inv := MyIso.right_inv,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := MyIso.map_op' }
+  { coe := MyIso.toFun,
+    inv := MyIso.invFun,
+    left_inv := MyIso.left_inv,
+    right_inv := MyIso.right_inv,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := MyIso.map_op' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -105,10 +102,10 @@ end
 CoolerIsoClass.map_cool
 
 instance : CoolerIsoClass (CoolerIso A B) A B :=
-{ coe := CoolerIso.toFun,
-  coe_injective' := λ f g h, by cases f; cases g; congr',
-  map_op := CoolerIso.map_op',
-  map_cool := CoolerIso.map_cool' }
+  { coe := CoolerIso.toFun,
+    coe_injective' := λ f g h, by cases f; cases g; congr',
+    map_op := CoolerIso.map_op',
+    map_cool := CoolerIso.map_cool' }
 
 -- [Insert `CoeFun`, `ext` and `copy` here]
 ```
@@ -142,7 +139,7 @@ class EquivLike (E : Sort _) (α β : outParam (Sort _)) where
   left_inv : ∀ e, Function.LeftInverse (inv e) (coe e)
   /-- The coercions are right inverses. -/
   right_inv : ∀ e, Function.RightInverse (inv e) (coe e)
-  /-- If two coercions to functions are jointly injective. -/
+  /-- The two coercions to functions are jointly injective. -/
   coe_injective' : ∀ e g, coe e = coe g → inv e = inv g → e = g
   -- This is mathematically equivalent to either of the coercions to functions being injective, but
   -- the `inv` hypothesis makes this easier to prove with `congr'`
@@ -231,7 +228,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search.-/
 lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
-⟨fun f g ↦ FunLike.ext f g $ fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
+  ⟨fun f g ↦ FunLike.ext f g $ fun _ ↦ (right_inv f).injective $ Subsingleton.elim _ _⟩
 #align equiv_like.subsingleton_dom EquivLike.subsingleton_dom
 
 end EquivLike

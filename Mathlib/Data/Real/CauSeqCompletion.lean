@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.real.cau_seq_completion
-! leanprover-community/mathlib commit cf4c49c445991489058260d75dae0ff2b1abca28
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.CauSeq
+
+#align_import data.real.cau_seq_completion from "leanprover-community/mathlib"@"cf4c49c445991489058260d75dae0ff2b1abca28"
 
 /-!
 # Cauchy completion
@@ -28,7 +25,7 @@ variable {α : Type _} [LinearOrderedField α]
 
 variable {β : Type _} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 
--- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Caucy`.
+-- TODO: rename this to `CauSeq.Completion` instead of `CauSeq.Completion.Cauchy`.
 /-- The Cauchy completion of a ring with absolute value. -/
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
@@ -219,8 +216,7 @@ theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
 
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
-    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg =>
-      by
+    (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by
       have := limZero_congr fg
       by_cases hf : LimZero f
       · simp [hf, this.1 hf, Setoid.refl]
@@ -235,7 +231,7 @@ noncomputable instance : Inv (Cauchy abv) :=
 -- porting note: simp can prove this
 -- @[simp]
 theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
-  congr_arg mk <| by rw [dif_pos] <;> [rfl, exact zero_limZero]
+  congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 #align cau_seq.completion.inv_zero CauSeq.Completion.inv_zero
 
 @[simp]
@@ -267,7 +263,7 @@ protected theorem mul_inv_cancel {x : (Cauchy abv)} : x ≠ 0 → x * x⁻¹ = 1
 #align cau_seq.completion.mul_inv_cancel CauSeq.Completion.mul_inv_cancel
 
 theorem ofRat_inv (x : β) : ofRat x⁻¹ = ((ofRat x)⁻¹ : (Cauchy abv)) :=
-  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h], rfl]
+  congr_arg mk <| by split_ifs with h <;> [simp [const_limZero.1 h]; rfl]
 #align cau_seq.completion.of_rat_inv CauSeq.Completion.ofRat_inv
 
 /- porting note: This takes a long time to compile.
@@ -286,7 +282,7 @@ theorem ofRat_div (x y : β) : ofRat (x / y) = (ofRat x / ofRat y : Cauchy abv) 
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
 
-The representative chosen is the one passed in the VM to `quot.mk`, so two cauchy sequences
+The representative chosen is the one passed in the VM to `Quot.mk`, so two cauchy sequences
 converging to the same number may be printed differently.
 -/
 unsafe instance [Repr β] : Repr (Cauchy abv) where

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.opposites
-! leanprover-community/mathlib commit 63417e01fbc711beaf25fa73b6edb395c0cfddd0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Degree.Definitions
+
+#align_import ring_theory.polynomial.opposites from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
 /-!  #  Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
@@ -41,7 +38,7 @@ def opRingEquiv (R : Type _) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
   simp only [opRingEquiv, RingEquiv.coe_trans, Function.comp_apply,
-    AddMonoidAlgebra.opRingEquiv_apply, RingEquiv.op_apply_apply_unop, toFinsuppIso_apply,
+    AddMonoidAlgebra.opRingEquiv_apply, RingEquiv.op_apply_apply, toFinsuppIso_apply, unop_op,
     toFinsupp_monomial, Finsupp.mapRange_single, toFinsuppIso_symm_apply, ofFinsupp_single]
 #align polynomial.op_ring_equiv_op_monomial Polynomial.opRingEquiv_op_monomial
 

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.degeneracies
-! leanprover-community/mathlib commit ec1c7d810034d4202b0dd239112d1792be9f6fdc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 import Mathlib.Tactic.FinCases
+
+#align_import algebraic_topology.dold_kan.degeneracies from "leanprover-community/mathlib"@"ec1c7d810034d4202b0dd239112d1792be9f6fdc"
 
 /-!
 
@@ -47,10 +44,10 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
   fun j hj => by
   rw [assoc, SimplicialObject.δ_comp_σ_of_gt', Fin.pred_succ, v.comp_δ_eq_zero_assoc _ _ hj,
     zero_comp]
-  . dsimp
+  · dsimp
     rw [Fin.lt_iff_val_lt_val, Fin.val_succ]
     linarith
-  . intro hj'
+  · intro hj'
     simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
       nonpos_iff_eq_zero, add_eq_zero, false_and] at hj
 #align algebraic_topology.dold_kan.higher_faces_vanish.comp_σ AlgebraicTopology.DoldKan.HigherFacesVanish.comp_σ
@@ -59,19 +56,19 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   revert i hi
   induction' q with q hq
-  . intro i (hi : n + 1 ≤ i)
+  · intro i (hi : n + 1 ≤ i)
     exfalso
     linarith [Fin.is_lt i]
   · intro i (hi : n + 1 ≤ i + q + 1)
     by_cases n + 1 ≤ (i : ℕ) + q
-    . rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
-    . replace hi : n = i + q := by
+    · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
+    · replace hi : n = i + q := by
         obtain ⟨j, hj⟩ := le_iff_exists_add.mp hi
         rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, hj, not_lt, add_le_iff_nonpos_right,
           nonpos_iff_eq_zero] at h
         rw [← add_left_inj 1, hj, self_eq_add_right, h]
       rcases n with _|n
-      . fin_cases i
+      · fin_cases i
         dsimp at h hi
         rw [show q = 0 by linarith]
         change X.σ 0 ≫ (P 1).f 1 = 0
@@ -106,13 +103,13 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         have hi' : i = Fin.castSucc ⟨i, by linarith⟩ := by
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
-        have eq := hq j.rev.succ (by
-          simp only [← hk, Fin.rev_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
+        have eq := hq j.revPerm.succ (by
+          simp only [← hk, Fin.revPerm_eq j hk.symm, Nat.succ_eq_add_one, Fin.succ_mk, Fin.val_mk]
           linarith)
         rw [HomologicalComplex.comp_f, assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
-        simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
+        simp only [Fin.revPerm_eq j hk.symm, Fin.le_iff_val_le_val, Fin.val_mk]
         linarith
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.σ_comp_P_eq_zero AlgebraicTopology.DoldKan.σ_comp_P_eq_zero
@@ -130,13 +127,13 @@ theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : Simplex
     (θ : ([n] : SimplexCategory) ⟶ Δ') (hθ : ¬Mono θ) : X.map θ.op ≫ PInfty.f n = 0 := by
   rw [SimplexCategory.mono_iff_injective] at hθ
   cases n
-  . exfalso
+  · exfalso
     apply hθ
     intro x y h
     fin_cases x
     fin_cases y
     rfl
-  . obtain ⟨i, α, h⟩ := SimplexCategory.eq_σ_comp_of_not_injective θ hθ
+  · obtain ⟨i, α, h⟩ := SimplexCategory.eq_σ_comp_of_not_injective θ hθ
     rw [h, op_comp, X.map_comp, assoc, show X.map (SimplexCategory.σ i).op = X.σ i by rfl,
       σ_comp_PInfty, comp_zero]
 set_option linter.uppercaseLean3 false in

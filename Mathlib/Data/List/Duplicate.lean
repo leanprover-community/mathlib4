@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Chris Hughes
-
-! This file was ported from Lean 3 source module data.list.duplicate
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Nodup
+
+#align_import data.list.duplicate from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # List duplicates
@@ -28,7 +25,7 @@ variable {α : Type _}
 
 namespace List
 
-/-- Property that an element `x : α` of `l : list α` can be found in the list more than once. -/
+/-- Property that an element `x : α` of `l : List α` can be found in the list more than once. -/
 inductive Duplicate (x : α) : List α → Prop
   | cons_mem {l : List α} : x ∈ l → Duplicate x (x :: l)
   | cons_duplicate {y : α} {l : List α} : Duplicate x l → Duplicate x (y :: l)
@@ -111,7 +108,7 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
   induction' h with l₁ l₂ y _ IH l₁ l₂ y h IH
   · exact hx
   · exact (IH hx).duplicate_cons _
-  · rw [duplicate_cons_iff] at hx⊢
+  · rw [duplicate_cons_iff] at hx ⊢
     rcases hx with (⟨rfl, hx⟩ | hx)
     · simp [h.subset hx]
     · simp [IH hx]

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.group_action.sub_mul_action
-! leanprover-community/mathlib commit feb99064803fd3108e37c18b0f77d0a8344677a3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
+
+#align_import group_theory.group_action.sub_mul_action from "leanprover-community/mathlib"@"feb99064803fd3108e37c18b0f77d0a8344677a3"
 
 /-!
 
@@ -77,6 +74,13 @@ instance (priority := 900) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 #align set_like.has_smul SetLike.smul
 #align set_like.has_vadd SetLike.vadd
+
+/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
+this to manually derive `SMulMemClass` on specific types. -/
+def _root_.SMulMemClass.ofIsScalarTower (S M N α : Type _) [SetLike S α] [SMul M N]
+  [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+  SMulMemClass S M α :=
+{ smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 -- Porting note: TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf

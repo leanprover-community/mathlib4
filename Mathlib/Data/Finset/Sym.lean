@@ -3,17 +3,14 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 
-! This file was ported from Lean 3 source module data.finset.sym
-! leanprover-community/mathlib commit 02ba8949f486ebecf93fe7460f1ed0564b5e442c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
-
 [`data.finset.sym`@`98e83c3d541c77cdb7da20d79611a780ff8e7d90`..`02ba8949f486ebecf93fe7460f1ed0564b5e442c`](https://leanprover-community.github.io/mathlib-port-status/file/data/finset/sym?range=98e83c3d541c77cdb7da20d79611a780ff8e7d90..02ba8949f486ebecf93fe7460f1ed0564b5e442c)
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Vector
 import Mathlib.Data.Sym.Sym2
+
+#align_import data.finset.sym from "leanprover-community/mathlib"@"02ba8949f486ebecf93fe7460f1ed0564b5e442c"
 
 /-!
 # Symmetric powers of a finset
@@ -51,10 +48,7 @@ section Sym2
 variable {m : Sym2 α}
 
 /-- Lifts a finset to `Sym2 α`. `s.sym2` is the finset of all pairs with elements in `s`. -/
--- Porting note: changed ×ˢ to xᶠ
-protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ᶠ s).image Quotient.mk'
-
-
+protected def sym2 (s : Finset α) : Finset (Sym2 α) := (s ×ˢ s).image Quotient.mk'
 #align finset.sym2 Finset.sym2
 
 @[simp]
@@ -187,7 +181,7 @@ theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replic
 #align finset.sym_singleton Finset.sym_singleton
 
 theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
-  rw [← not_nonempty_iff_eq_empty] at h⊢
+  rw [← not_nonempty_iff_eq_empty] at h ⊢
   exact fun hs ↦ h (hs.sym _)
 #align finset.eq_empty_of_sym_eq_empty Finset.eq_empty_of_sym_eq_empty
 
@@ -249,14 +243,13 @@ def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.s
   toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a
-  right_inv := fun ⟨i, m, hm⟩ ↦
-    by
-      refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
-      exact fun i ↦ Sym α (n - i)
-      swap; exact Subtype.coe_injective
-      refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
-      exacts[rfl, h ∘ mem_sym_iff.1 hm a]
- #align finset.sym_insert_equiv Finset.symInsertEquiv
+  right_inv := fun ⟨i, m, hm⟩ ↦ by
+    refine' Function.Injective.sigma_map (Function.injective_id) (fun i ↦ _) _
+    exact fun i ↦ Sym α (n - i)
+    swap; exact Subtype.coe_injective
+    refine Eq.trans ?_ (Sym.filter_ne_fill a _ ?_)
+    exacts [rfl, h ∘ mem_sym_iff.1 hm a]
+#align finset.sym_insert_equiv Finset.symInsertEquiv
 
 end Sym
 

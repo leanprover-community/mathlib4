@@ -2,13 +2,10 @@
 Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
-
-! This file was ported from Lean 3 source module set_theory.ordinal.principal
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Ordinal.FixedPoint
+
+#align_import set_theory.ordinal.principal from "leanprover-community/mathlib"@"31b269b60935483943542d547a6dd83a66b37dc7"
 
 /-!
 ### Principal ordinals
@@ -26,7 +23,7 @@ We define principal or indecomposable ordinals, and we prove the standard proper
 
 ### Todo
 * Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
-  of `λ x, ω ^ x`.
+  of `fun x ↦ ω ^ x`.
 -/
 
 universe u v w
@@ -70,7 +67,7 @@ theorem principal_one_iff {op : Ordinal → Ordinal → Ordinal} : Principal op 
 #align ordinal.principal_one_iff Ordinal.principal_one_iff
 
 theorem Principal.iterate_lt {op : Ordinal → Ordinal → Ordinal} {a o : Ordinal} (hao : a < o)
-    (ho : Principal op o) (n : ℕ) : (op a^[n]) a < o := by
+    (ho : Principal op o) (n : ℕ) : (op a)^[n] a < o := by
   induction' n with n hn
   · rwa [Function.iterate_zero]
   · rw [Function.iterate_succ']
@@ -91,35 +88,21 @@ theorem nfp_le_of_principal {op : Ordinal → Ordinal → Ordinal} {a o : Ordina
 
 /-! ### Principal ordinals are unbounded -/
 
-
-/-- The least strict upper bound of `op` applied to all pairs of ordinals less than `o`. This is
-essentially a two-argument version of `Ordinal.blsub`. -/
-def blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Ordinal :=
-  lsub fun x : o.out.α × o.out.α => op (typein LT.lt x.1) (typein LT.lt x.2)
-#align ordinal.blsub₂ Ordinal.blsub₂
-
-theorem lt_blsub₂ (op : Ordinal.{u} → Ordinal.{u} → Ordinal.{max u v})
-  {o a b : Ordinal.{u}} (ha : a < o)
-    (hb : b < o) : op a b < blsub₂.{u, v} op o := by
-  convert lt_lsub.{v, u}
-      (fun x : (Quotient.out.{u+2} o).α × (Quotient.out.{u+2} o).α =>
-        op (typein.{u} LT.lt x.fst) (typein.{u} LT.lt x.snd))
-      (Prod.mk.{u, u} (enum.{u} LT.lt a (by rwa [type_lt])) (enum.{u} LT.lt b (by rwa [type_lt])))
-  <;> simp only [typein_enum]
-#align ordinal.lt_blsub₂ Ordinal.lt_blsub₂
-
 theorem principal_nfp_blsub₂ (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
-    Principal op (nfp (blsub₂.{u, u} op) o) := fun a b ha hb => by
+    Principal op (nfp (fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b)) o) :=
+  fun a b ha hb => by
   rw [lt_nfp] at *
   cases' ha with m hm
   cases' hb with n hn
-  cases' le_total ((blsub₂.{u, u} op^[m]) o) ((blsub₂.{u, u} op^[n]) o) with h h
+  cases' le_total
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[m] o)
+    ((fun o' => blsub₂.{u, u, u} o' o' (@fun a _ b _ => op a b))^[n] o) with h h
   · use n + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ op (hm.trans_le h) hn
+    exact lt_blsub₂ (@fun a _ b _ => op a b) (hm.trans_le h) hn
   · use m + 1
     rw [Function.iterate_succ']
-    exact lt_blsub₂ op hm (hn.trans_le h)
+    exact lt_blsub₂ (@fun a _ b _ => op a b) hm (hn.trans_le h)
 #align ordinal.principal_nfp_blsub₂ Ordinal.principal_nfp_blsub₂
 
 theorem unbounded_principal (op : Ordinal → Ordinal → Ordinal) :
@@ -140,8 +123,8 @@ theorem principal_add_of_le_one {o : Ordinal} (ho : o ≤ 1) : Principal (· + �
   · exact principal_add_one
 #align ordinal.principal_add_of_le_one Ordinal.principal_add_of_le_one
 
-theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) : o.IsLimit :=
-  by
+theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· + ·) o) :
+    o.IsLimit := by
   refine' ⟨fun ho₀ => _, fun a hao => _⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
@@ -166,9 +149,9 @@ theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
 #align ordinal.principal_add_iff_add_left_eq_self Ordinal.principal_add_iff_add_left_eq_self
 
 theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
-    ∃ (b c : _) (_ : b < a)(_ : c < a), b + c = a := by
+    ∃ (b c : _) (_ : b < a) (_ : c < a), b + c = a := by
   unfold Principal at ha
-  push_neg  at ha
+  push_neg at ha
   rcases ha with ⟨b, c, hb, hc, H⟩
   refine'
     ⟨b, _, hb, lt_of_le_of_ne (sub_le_self a b) fun hab => _, Ordinal.add_sub_cancel_of_le hb.le⟩
@@ -178,8 +161,7 @@ theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
 
 theorem principal_add_iff_add_lt_ne_self {a} :
     Principal (· + ·) a ↔ ∀ ⦃b c⦄, b < a → c < a → b + c ≠ a :=
-  ⟨fun ha b c hb hc => (ha hb hc).ne, fun H =>
-    by
+  ⟨fun ha b c hb hc => (ha hb hc).ne, fun H => by
     by_contra' ha
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, c, hb, hc, rfl⟩
     exact (H hb hc).irrefl⟩
@@ -367,7 +349,7 @@ theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < (omega^c)) (h
 theorem mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < (omega^omega^b)) :
     a * (omega^omega^b) = (omega^omega^b) := by
   by_cases b0 : b = 0;
-  · rw [b0, opow_zero, opow_one] at h⊢
+  · rw [b0, opow_zero, opow_one] at h ⊢
     exact mul_omega a0 h
   refine'
     le_antisymm _

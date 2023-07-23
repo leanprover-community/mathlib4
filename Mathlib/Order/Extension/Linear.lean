@@ -2,14 +2,10 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module order.extension.linear
-! leanprover-community/mathlib commit 9830a300340708eaa85d477c3fb96dd25f9468a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Zorn
-import Mathlib.Tactic.ByContra
+
+#align_import order.extension.linear from "leanprover-community/mathlib"@"9830a300340708eaa85d477c3fb96dd25f9468a5"
 
 /-!
 # Extend a partial order to a linear order
@@ -33,12 +29,12 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
     haveI := (hc₁ hs).1
-    refine' ⟨supₛ c, _, fun z hz => le_supₛ hz⟩
+    refine' ⟨sSup c, _, fun z hz => le_sSup hz⟩
     refine'
         { refl := _
           trans := _
           antisymm := _ } <;>
-      simp_rw [binary_relation_supₛ_iff]
+      simp_rw [binary_relation_sSup_iff]
     · intro x
       exact ⟨s, hs, refl x⟩
     · rintro x y z ⟨s₁, h₁s₁, h₂s₁⟩ ⟨s₂, h₁s₂, h₂s₂⟩
@@ -88,7 +84,7 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
   le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.1.2.1
   le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.1.2.1
   le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.choose.2.1
-  decidable_le := Classical.decRel _
+  decidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as a relation homomorphism. -/
 def toLinearExtension {α : Type u} [PartialOrder α] :

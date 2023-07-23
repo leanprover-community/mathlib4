@@ -2,22 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.defs
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Init.Data.Bool.Lemmas
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
-import Mathlib.Tactic.Relation.Trans
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Substs
+
+#align_import logic.equiv.defs from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Equivalence between types
@@ -47,7 +38,7 @@ Then we define
   instances from right to left.
 
   - `Equiv.inhabited` takes `e : α ≃ β` and `[Inhabited β]` and returns `Inhabited α`;
-  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `unique α`;
+  - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `Unique α`;
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
@@ -80,7 +71,7 @@ infixl:25 " ≃ " => Equiv
 /-- Turn an element of a type `F` satisfying `EquivLike F α β` into an actual
 `Equiv`. This is declared as the default coercion from `F` to `α ≃ β`. -/
 @[coe]
-def EquivLike.toEquiv {F} [EquivLike F α β] (f :F) : α ≃ β where
+def EquivLike.toEquiv {F} [EquivLike F α β] (f : F) : α ≃ β where
   toFun := f
   invFun := EquivLike.inv f
   left_inv := EquivLike.left_inv f
@@ -111,7 +102,7 @@ instance : FunLike (α ≃ β) α (fun _ => β) :=
   EmbeddingLike.toFunLike
 
 @[simp] theorem coe_fn_mk (f : α → β) (g l r) : (Equiv.mk f g l r : α → β) = f :=
-rfl
+  rfl
 #align equiv.coe_fn_mk Equiv.coe_fn_mk
 
 /-- The map `(r ≃ s) → (r → s)` is injective. -/
@@ -158,7 +149,7 @@ theorem Perm.ext_iff {σ τ : Equiv.Perm α} : σ = τ ↔ ∀ x, σ x = τ x :=
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
-@[symm]
+@[symm, pp_dot]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
 #align equiv.symm Equiv.symm
 
@@ -176,7 +167,7 @@ theorem left_inv' (e : α ≃ β) : Function.LeftInverse e.symm e := e.left_inv
 theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_inv
 
 /-- Composition of equivalences `e₁ : α ≃ β` and `e₂ : β ≃ γ`. -/
-@[trans]
+@[trans, pp_dot]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
 #align equiv.trans Equiv.trans
@@ -187,7 +178,7 @@ instance : Trans Equiv Equiv Equiv where
 
 -- porting note: this is not a syntactic tautology any more because
 -- the coercion from `e` to a function is now `FunLike.coe` not `e.toFun`
-@[simp] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
+@[simp, mfld_simps] theorem toFun_as_coe (e : α ≃ β) : e.toFun = e := rfl
 #align equiv.to_fun_as_coe Equiv.toFun_as_coe
 
 -- porting note: `simp` should prove this using `toFun_as_coe`, but it doesn't.
@@ -196,7 +187,7 @@ instance : Trans Equiv Equiv Equiv where
 -- this theorem can be deleted hopefully without breaking any `simp` proofs.
 @[simp] theorem toFun_as_coe_apply (e : α ≃ β) (x : α) : e.toFun x = e x := rfl
 
-@[simp] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
+@[simp, mfld_simps] theorem invFun_as_coe (e : α ≃ β) : e.invFun = e.symm := rfl
 #align equiv.inv_fun_as_coe Equiv.invFun_as_coe
 
 protected theorem injective (e : α ≃ β) : Injective e := EquivLike.injective e
@@ -264,7 +255,7 @@ protected def cast {α β : Sort _} (h : α = β) : α ≃ β :=
 #align equiv.coe_refl Equiv.coe_refl
 
 /-- This cannot be a `simp` lemmas as it incorrectly matches against `e : α ≃ synonym α`, when
-`synonym α` is semireducible. This makes a mess of `multiplicative.of_add` etc. -/
+`synonym α` is semireducible. This makes a mess of `Multiplicative.ofAdd` etc. -/
 theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e : α → α) = id := by
   rw [Perm.subsingleton_eq_refl e, coe_refl]
 #align equiv.perm.coe_subsingleton Equiv.Perm.coe_subsingleton
@@ -299,7 +290,7 @@ theorem Perm.coe_subsingleton {α : Type _} [Subsingleton α] (e : Perm α) : (e
 #align equiv.symm_trans_apply Equiv.symm_trans_apply
 
 -- The `simp` attribute is needed to make this a `dsimp` lemma.
--- `simp` will always rewrite with `equiv.symm_symm` before this has a chance to fire.
+-- `simp` will always rewrite with `Equiv.symm_symm` before this has a chance to fire.
 @[simp, nolint simpNF] theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
 #align equiv.symm_symm_apply Equiv.symm_symm_apply
 
@@ -583,7 +574,7 @@ def arrowCongr' {α₁ β₁ α₂ β₂ : Type _} (hα : α₁ ≃ α₂) (hβ 
 
 -- This should not be a simp lemma as long as `(∘)` is reducible:
 -- when `(∘)` is reducible, Lean can unify `f₁ ∘ f₂` with any `g` using
--- `f₁ := g` and `f₂ := λ x, x`.  This causes nontermination.
+-- `f₁ := g` and `f₂ := fun x ↦ x`. This causes nontermination.
 theorem conj_comp (e : α ≃ β) (f₁ f₂ : α → α) : e.conj (f₁ ∘ f₂) = e.conj f₁ ∘ e.conj f₂ := by
   apply arrowCongr_comp
 #align equiv.conj_comp Equiv.conj_comp
@@ -765,7 +756,7 @@ def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i))
     (psigmaCongrRight fun _ => Equiv.plift)).trans (psigmaEquivSubtype P)
 #align equiv.sigma_plift_equiv_subtype Equiv.sigmaPLiftEquivSubtype
 
-/-- A `Sigma` with `λ i, ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
+/-- A `Sigma` with `fun i ↦ ULift (PLift (P i))` fibers is equivalent to `{ x // P x }`.
 Variant of `sigmaPLiftEquivSubtype`.
 -/
 def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
@@ -775,7 +766,7 @@ def sigmaULiftPLiftEquivSubtype {α : Type v} (P : α → Prop) :
 
 namespace Perm
 
-/-- A family of permutations `Π a, Perm (β a)` generates a permuation `Perm (Σ a, β₁ a)`. -/
+/-- A family of permutations `Π a, Perm (β a)` generates a permutation `Perm (Σ a, β₁ a)`. -/
 @[reducible] def sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm (Σ a, β a) :=
   Equiv.sigmaCongrRight F
 #align equiv.perm.sigma_congr_right Equiv.Perm.sigmaCongrRight
@@ -828,7 +819,8 @@ def sigmaCongr {α₁ α₂} {β₁ : α₁ → Sort _} {β₂ : α₂ → Sort 
 #align equiv.sigma_congr Equiv.sigmaCongr
 
 /-- `Sigma` type with a constant fiber is equivalent to the product. -/
-@[simps apply symm_apply] def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
+@[simps (config := { attrs := [`mfld_simps] }) apply symm_apply]
+def sigmaEquivProd (α β : Type _) : (Σ _ : α, β) ≃ α × β :=
   ⟨fun a => ⟨a.1, a.2⟩, fun a => ⟨a.1, a.2⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 #align equiv.sigma_equiv_prod_apply Equiv.sigmaEquivProd_apply
 #align equiv.sigma_equiv_prod_symm_apply Equiv.sigmaEquivProd_symm_apply
@@ -871,7 +863,7 @@ protected theorem exists_unique_congr_left {p : β → Prop} (f : α ≃ β) :
 protected theorem forall_congr {p : α → Prop} {q : β → Prop} (f : α ≃ β)
     (h : ∀ {x}, p x ↔ q (f x)) : (∀ x, p x) ↔ (∀ y, q y) := by
   constructor <;> intro h₂ x
-  . rw [← f.right_inv x]; apply h.mp; apply h₂
+  · rw [← f.right_inv x]; apply h.mp; apply h₂
   · apply h.mpr; apply h₂
 #align equiv.forall_congr Equiv.forall_congr
 
@@ -928,7 +920,7 @@ end Equiv
 namespace Quot
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
-if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
+if `ra a₁ a₂ ↔ rb (e a₁) (e a₂)`. -/
 protected def congr {ra : α → α → Prop} {rb : β → β → Prop} (e : α ≃ β)
     (eq : ∀ a₁ a₂, ra a₁ a₂ ↔ rb (e a₁) (e a₂)) : Quot ra ≃ Quot rb where
   toFun := Quot.map e fun a₁ a₂ => (eq a₁ a₂).1
@@ -962,7 +954,7 @@ end Quot
 namespace Quotient
 
 /-- An equivalence `e : α ≃ β` generates an equivalence between quotient spaces,
-if `ra a₁ a₂ ↔ rb (e a₁) (e a₂). -/
+if `ra a₁ a₂ ↔ rb (e a₁) (e a₂)`. -/
 protected def congr {ra : Setoid α} {rb : Setoid β} (e : α ≃ β)
     (eq : ∀ a₁ a₂, @Setoid.r α ra a₁ a₂ ↔ @Setoid.r β rb (e a₁) (e a₂)) :
     Quotient ra ≃ Quotient rb := Quot.congr e eq

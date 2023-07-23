@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.uniform_filter_basis
-! leanprover-community/mathlib commit 531db2ef0fdddf8b3c8dcdcd87138fe969e1a81a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.UniformGroup
+
+#align_import topology.algebra.uniform_filter_basis from "leanprover-community/mathlib"@"531db2ef0fdddf8b3c8dcdcd87138fe969e1a81a"
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra
@@ -47,8 +44,8 @@ theorem cauchy_iff {F : Filter G} :
       F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U := by
   letI := B.uniformSpace
   haveI := B.uniformAddGroup
-  suffices F ×ᶠ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
-    constructor <;> rintro ⟨h', h⟩ <;> refine' ⟨h', _⟩ <;> [rwa [← this], rwa [this]]
+  suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ (x) (_ : x ∈ M) (y) (_ : y ∈ M), y - x ∈ U by
+    constructor <;> rintro ⟨h', h⟩ <;> refine' ⟨h', _⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]
   change Tendsto _ _ _ ↔ _
   simp [(basis_sets F).prod_self.tendsto_iff B.nhds_zero_hasBasis, @forall_swap (_ ∈ _) G]

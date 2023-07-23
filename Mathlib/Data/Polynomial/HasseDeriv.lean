@@ -2,17 +2,14 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module data.polynomial.hasse_deriv
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Data.Nat.Choose.Cast
 import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Tactic.FieldSimp
+
+#align_import data.polynomial.hasse_deriv from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Hasse derivative of polynomials
@@ -69,8 +66,8 @@ theorem hasseDeriv_apply :
   apply nsmul_eq_mul
 #align polynomial.hasse_deriv_apply Polynomial.hasseDeriv_apply
 
-theorem hasseDeriv_coeff (n : ℕ) : (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) :=
-  by
+theorem hasseDeriv_coeff (n : ℕ) :
+    (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
   · simp only [if_true, add_tsub_cancel_right, eq_self_iff_true]
   · intro i _hi hink
@@ -125,7 +122,7 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
     by_cases hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
       rw [if_neg hnik]
-    · push_neg  at hkn
+    · push_neg at hkn
       rw [Nat.choose_eq_zero_of_lt hkn, Nat.cast_zero, MulZeroClass.zero_mul, ite_self]
 #align polynomial.hasse_deriv_monomial Polynomial.hasseDeriv_monomial
 
@@ -145,10 +142,10 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
 set_option linter.uppercaseLean3 false in
 #align polynomial.hasse_deriv_X Polynomial.hasseDeriv_X
 
-theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = @derivative R _^[k] := by
+theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction' k with k ih
   · rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
-  ext (f n) : 2
+  ext f n : 2
   rw [iterate_succ_apply', ← ih]
   simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
     hasseDeriv_coeff, ← @choose_symm_add _ k]
@@ -196,8 +193,8 @@ theorem hasseDeriv_comp (k l : ℕ) :
   ring
 #align polynomial.hasse_deriv_comp Polynomial.hasseDeriv_comp
 
-theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) : natDegree (hasseDeriv n p) ≤ natDegree p - n :=
-  by
+theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
+    natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical
     rw [hasseDeriv_apply, sum_def]
     refine' (natDegree_sum_le _ _).trans _
@@ -242,7 +239,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
   simp only [← finset_sum_apply]
   congr 2
   clear f g
-  ext (m r n s) : 4
+  ext m r n s : 4
   simp only [finset_sum_apply, coe_mulLeft, coe_comp, flip_apply, Function.comp_apply,
              hasseDeriv_monomial, LinearMap.toAddMonoidHom_coe, compHom_apply_apply,
              coe_mul, monomial_mul_monomial]
@@ -250,8 +247,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     ∀ x : ℕ × ℕ,
       x ∈ antidiagonal k →
         monomial (m - x.1 + (n - x.2)) (↑(m.choose x.1) * r * (↑(n.choose x.2) * s)) =
-          monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) :=
-    by
+          monomial (m + n - k) (↑(m.choose x.1) * ↑(n.choose x.2) * (r * s)) := by
     intro x hx
     rw [Finset.Nat.mem_antidiagonal] at hx
     subst hx
