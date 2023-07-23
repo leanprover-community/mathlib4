@@ -58,14 +58,23 @@ Test that the discharger can clear nontrivial denominators in ℚ.
 -/
 example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
-  field_simp
+  field_simp [Nat.zero_lt_one,Nat.zero_ne_one]
   ring
 
 example {x y z w : ℚ} (h : x / y = z / w) (hy : y ≠ 0) (hw : w ≠ 0) : x * w = z * y := by
   field_simp at h
   assumption
 
-/-- Test that the discharger can handle some casting -/
+example (q : ℚ) (h : q ≠ -1) : 1 / (q + 1) * (q + 1) = 1 := by
+  field_simp [(show q + 1 ≠ 0 by sorry)]
+
+
+
+example (n : ℕ) : 1 / (n + 1 : ℝ) * (n + 1) = 1 := by
+  norm_cast
+  field_simp [Nat.succ_ne_zero]
+
+/- Test that the discharger can handle some casting -/
 example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
   field_simp
 

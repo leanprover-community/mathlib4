@@ -128,6 +128,7 @@ theorem num_lt_succ_floor_mul_den (q : ℚ) : q.num < (⌊q⌋ + 1) * q.den := b
   exact mul_pos this (by exact_mod_cast q.pos)
 #align rat.num_lt_succ_floor_mul_denom Rat.num_lt_succ_floor_mul_den
 
+-- set_option trace.Meta.Tactic.simp true in
 theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).num < q.num := by
   -- we know that the numerator must be positive
   have q_num_pos : 0 < q.num := Rat.num_pos_iff_pos.mpr q_pos

@@ -146,8 +146,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k in range n, (n.choose k : ℚ) * berno
   simp_rw [mul_sum, ← mul_assoc]
   refine' sum_congr rfl fun k hk => _
   congr
-  have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero _
-  field_simp [← cast_sub (mem_range.1 hk).le, mul_comm]
+  field_simp [succ_ne_zero _, ← cast_sub (mem_range.1 hk).le, mul_comm]
   rw_mod_cast [tsub_add_eq_add_tsub (mem_range.1 hk).le, choose_mul_succ_eq]
 #align sum_bernoulli' sum_bernoulli'
 
@@ -174,8 +173,8 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   rintro ⟨i, j⟩ rfl
   have := factorial_mul_factorial_dvd_factorial_add i j
   field_simp [mul_comm _ (bernoulli' i), mul_assoc, add_choose]
-  norm_cast
-  rw [mul_comm (j + 1), mul_div_assoc, ← mul_assoc]
+  congr 2
+  rw [mul_comm]
 #align bernoulli'_power_series_mul_exp_sub_one bernoulli'PowerSeries_mul_exp_sub_one
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
@@ -266,7 +265,7 @@ theorem bernoulli_spec' (n : ℕ) :
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
   · field_simp [h₃]
-    norm_num
+    ring
 #align bernoulli_spec' bernoulli_spec'
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli n`. -/
@@ -372,8 +371,7 @@ theorem sum_range_pow (n p : ℕ) :
 
   -- massage `hps` into our goal
   rw [hps, sum_mul]
-  refine' sum_congr rfl fun x _ => _
-  field_simp [mul_right_comm _ ↑p !, ← mul_assoc _ _ ↑p !, cast_add_one_ne_zero, hne]
+  field_simp [mul_right_comm _ p !, ← mul_assoc _ _ p !, cast_add_one_ne_zero, hne]
   ring
 #align sum_range_pow sum_range_pow
 

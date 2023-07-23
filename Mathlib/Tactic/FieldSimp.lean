@@ -31,8 +31,12 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 
 /-- Discharge strategy for the field_simp tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) := do
+  logInfo m!"Currently discharging: {prop}"
   /- Try to cast all hypotheses (that are proofs) and `prop` into normal form before checking -/
   let r'' ← Tactic.NormCast.derive prop
+  let ncProp := r''.expr
+  logInfo m!"After norm_cast: {ncProp}"
+  let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
   let hyps ← (← getLocalHyps).filterM fun hyp => isProof hyp
   for hyp in hyps do
   /- If can be discharged quickly using an assumption do it -/
@@ -45,7 +49,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) := do
       let m ← mkFreshMVarId
       let r ← applySimpResultToProp m hyp ty r'
       if let some p := r then
-        let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
+        -- let rsymm ← Lean.Meta.Simp.mkEqSymm prop r''
         return some (← Lean.Meta.Simp.mkCast rsymm p.1)
 
   /- Next try to use normNum to discharge goals of the for `a ≠ 0` for `a` a "number", eg `2` -/
@@ -71,12 +75,33 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) := do
   --   1) Lean 3 simp dischargers automatically call `simp` recursively. (Do they?),
   --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
   --   3) some other reason?
+  -- let ⟨simpResult, usedTheorems'⟩ ←
+  --   simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
+  -- set {(← get) with usedTheorems := usedTheorems'}
+  -- if simpResult.expr.isConstOf ``True then
+  --   try
+  --     logInfo m!"{← mkOfEqTrue (← simpResult.getProof)}"
+  --     return some (← mkOfEqTrue (← simpResult.getProof))
+  --   catch _ =>
+  --     return none
+  -- else
+  --   return none
+
   let ⟨simpResult, usedTheorems'⟩ ←
-    simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
+    simp ncProp { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
   set {(← get) with usedTheorems := usedTheorems'}
   if simpResult.expr.isConstOf ``True then
     try
-      return some (← mkOfEqTrue (← simpResult.getProof))
+      -- let pf₁ ← mkOfEqTrue (← simpResult.getProof)
+      -- logInfo m!"{← inferType (← simpResult.getProof)}"
+      -- logInfo m!"{pf₁}"
+      -- logInfo m!"{← inferType pf₁}"
+      -- logInfo m!"{← r''.getProof}"
+      -- logInfo m!"{← inferType (← r''.getProof)}"
+      let pf ← mkEqTrans (← r''.getProof) (← simpResult.getProof)
+      -- logInfo m!"{pf}"
+      -- logInfo m!"{← inferType pf}"
+      return some (← mkOfEqTrue pf)
     catch _ =>
       return none
   else
@@ -175,10 +200,11 @@ elab_rules : tactic
   let thms ← ext.getTheorems
 
   let ctx : Simp.Context := {
-     simpTheorems := #[thms, thms0]
+     simpTheorems := #[thms,thms0]
      congrTheorems := (← getSimpCongrTheorems)
      config := cfg
   }
+
   let r ← elabSimpArgs (sa.getD ⟨.missing⟩) ctx (eraseLocal := false) .simp
 
   _ ← simpLocation r.ctx dis loc
