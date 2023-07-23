@@ -182,8 +182,8 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
   convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
-  · simp [h.regular.degree_eq]
-  · simp [h.compl.regular.degree_eq]
+  · simp [h.regular v]
+  · simp [h.compl.regular v]
   · intro w hw
     rw [mem_neighborFinset] at hw
     simp_rw [bipartiteAbove, show G.Adj w = fun a => G.Adj w a by rfl, ← mem_neighborFinset,
