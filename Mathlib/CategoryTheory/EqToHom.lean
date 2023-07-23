@@ -2,13 +2,10 @@
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.eq_to_hom
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Opposites
+
+#align_import category_theory.eq_to_hom from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Morphisms from equations between objects.
@@ -76,8 +73,8 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
 in `congrArg_mrp_hom_left`. It has been no-linted. -/
 /-- Reducible form of congrArg_mpr_hom_left -/
 @[simp, nolint simpNF]
-theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶  Z) :
-    cast (congrArg (fun W : C => W ⟶  Z) p.symm) q = eqToHom p ≫ q := by
+theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
+    cast (congrArg (fun W : C => W ⟶ Z) p.symm) q = eqToHom p ≫ q := by
   cases p
   simp
 
@@ -99,7 +96,7 @@ in `congrArg_mrp_hom_right`. It has been no-linted. -/
 /-- Reducible form of `congrArg_mpr_hom_right` -/
 @[simp, nolint simpNF]
 theorem congrArg_cast_hom_right {X Y Z : C} (p : X ⟶ Y) (q : Z = Y) :
-    cast (congrArg (fun W : C => X ⟶  W) q.symm) p = p ≫ eqToHom q.symm := by
+    cast (congrArg (fun W : C => X ⟶ W) q.symm) p = p ≫ eqToHom q.symm := by
   cases q
   simp
 

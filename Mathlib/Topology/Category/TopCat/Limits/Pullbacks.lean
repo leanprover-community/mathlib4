@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.pullbacks
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Products
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import topology.category.Top.limits.pullbacks from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces
@@ -241,11 +238,11 @@ theorem pullback_snd_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are embeddings,
 then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an embedding.
 
-  W  ⟶  Y
+  W ⟶ Y
     ↘      ↘
-      S  ⟶  T
+      S ⟶ T
     ↗      ↗
-  X  ⟶  Z
+  X ⟶ Z
 -/
 theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f₂ : X ⟶ S)
     (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : Embedding i₁) (H₂ : Embedding i₂)
@@ -265,11 +262,11 @@ theorem pullback_map_embedding_of_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : 
 
 /-- If there is a diagram where the morphisms `W ⟶ Y` and `X ⟶ Z` are open embeddings, and `S ⟶ T`
 is mono, then the induced morphism `W ×ₛ X ⟶ Y ×ₜ Z` is also an open embedding.
-  W  ⟶  Y
+  W ⟶ Y
     ↘      ↘
-      S  ⟶  T
+      S ⟶ T
     ↗       ↗
-  X  ⟶  Z
+  X ⟶ Z
 -/
 theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     (f₂ : X ⟶ S) (g₁ : Y ⟶ T) (g₂ : Z ⟶ T) {i₁ : W ⟶ Y} {i₂ : X ⟶ Z} (H₁ : OpenEmbedding i₁)
@@ -287,8 +284,8 @@ theorem pullback_map_openEmbedding_of_open_embeddings {W X Y Z S T : TopCat.{u}}
 #align Top.pullback_map_open_embedding_of_open_embeddings TopCat.pullback_map_openEmbedding_of_open_embeddings
 
 theorem snd_embedding_of_left_embedding {X Y S : TopCat} {f : X ⟶ S} (H : Embedding f) (g : Y ⟶ S) :
-    Embedding <| ⇑(pullback.snd : pullback f g ⟶  Y) := by
-  convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶  _))).embedding.comp
+    Embedding <| ⇑(pullback.snd : pullback f g ⟶ Y) := by
+  convert (homeoOfIso (asIso (pullback.snd : pullback (𝟙 S) g ⟶ _))).embedding.comp
       (pullback_map_embedding_of_embeddings (i₂ := 𝟙 Y)
         f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).embedding (𝟙 _) rfl (by simp))
   erw [← coe_comp]

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.part
-! leanprover-community/mathlib commit 80c43012d26f63026d362c3aba28f3c3bafb07e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Logic.Equiv.Defs
+
+#align_import data.part from "leanprover-community/mathlib"@"80c43012d26f63026d362c3aba28f3c3bafb07e6"
 
 /-!
 # Partial values of a type
@@ -542,10 +539,9 @@ theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
     (f.bind g).bind k = f.bind fun x => (g x).bind k :=
   ext fun a => by
-    simp;
-      exact
-        ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩, fun ⟨_, h₁, _, h₂, h₃⟩ =>
-          ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
+    simp
+    exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,
+           fun ⟨_, h₁, _, h₂, h₃⟩ => ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
 #align part.bind_assoc Part.bind_assoc
 
 @[simp]

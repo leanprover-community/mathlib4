@@ -2,15 +2,12 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.kaehler
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3 TODO
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.IsTensorProduct
+
+#align_import ring_theory.kaehler from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3" -- TODO
 
 /-!
 # The module of kaehler differentials
@@ -176,6 +173,7 @@ instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type _} [CommRi
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ (Ω[S⁄R]) :=
   Submodule.Quotient.isScalarTower _ _
+
 #align kaehler_differential.is_scalar_tower_of_tower KaehlerDifferential.isScalarTower_of_tower
 
 instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) (Ω[S⁄R]) :=
@@ -273,7 +271,7 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
     refine Submodule.smul_induction_on hx ?_ ?_
     · rintro x (hx : _ = _) y -
       dsimp
-      rw [show ↑(x • y) = x * ↑y  by rfl, Derivation.tensorProductTo_mul, hx, y.prop, zero_smul,
+      rw [show ↑(x • y) = x * ↑y by rfl, Derivation.tensorProductTo_mul, hx, y.prop, zero_smul,
         zero_smul, zero_add]
     · intro x y ex ey; rw [map_add, ex, ey, zero_add]
 #align derivation.lift_kaehler_differential Derivation.liftKaehlerDifferential

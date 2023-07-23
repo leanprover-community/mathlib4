@@ -2,15 +2,12 @@
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.gamma.basic
-! leanprover-community/mathlib commit cca40788df1b8755d5baf17ab2f27dacc2e17acb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.ExpDecay
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.MellinTransform
+
+#align_import analysis.special_functions.gamma.basic from "leanprover-community/mathlib"@"cca40788df1b8755d5baf17ab2f27dacc2e17acb"
 
 /-!
 # The Gamma function

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module analysis.normed_space.add_torsor_bases
-! leanprover-community/mathlib commit 2f4cdce0c2f2f3b8cd58f05d556d03b468e1eb2e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.FiniteDimension
 import Mathlib.Analysis.Calculus.AffineMap
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+
+#align_import analysis.normed_space.add_torsor_bases from "leanprover-community/mathlib"@"2f4cdce0c2f2f3b8cd58f05d556d03b468e1eb2e"
 
 /-!
 # Bases in normed affine spaces.
