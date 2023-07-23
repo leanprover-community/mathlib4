@@ -284,8 +284,6 @@ instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond
--- variable (S : Type) [CommSemiring S] in
--- example : (algebraNat : Algebra ℕ (FreeAlgebra R X)) = instAlgebra _ _ := rfl
 variable (S : Type) [CommRing S] in
 example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
