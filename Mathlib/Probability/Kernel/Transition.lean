@@ -1,4 +1,22 @@
+/-
+Copyright (c) 2023 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
 import Mathlib.Probability.Kernel.Composition
+
+/-!
+# Graphs of measurable spaces and kernels on those graphs
+
+## Main definitions
+
+## Main statements
+
+## Notations
+
+* `κ ⊗[M] η`
+
+-/
 
 open Set ENNReal ProbabilityTheory MeasureTheory
 
@@ -184,7 +202,18 @@ structure Transition (M : MeasurableSpaceGraph ι) :=
 
 section nat
 
+/-! ### MeasurableSpaceGraph on ℕ
+
+We descibe the `MeasurableSpaceGraph` indexed by `ℕ` with nodes `(x : Ici i) → α x` and
+paths `(x : Ioc i j) → α x`.
+
+The intended application is the following: we consider a stochastic process `X : (i : ℕ) → α i` and
+a kernel from `(x : Ici i) → α x` to `(x : Ioc i j) → α x` describes the law of the random variables
+`X (i + 1), …, X j` given `X 0, …, X i`. -/
+
 variable {α : ℕ → Type _} [∀ i, MeasurableSpace (α i)]
+
+section equivs
 
 def el (i j : ℕ) (hij : i < j) :
     (∀ x : Iic i, α x) × (∀ x : Ioc i j, α x) ≃ᵐ ∀ x : Iic j, α x where
@@ -293,6 +322,8 @@ lemma er_assoc {i j k l : ℕ} (hij : i < j) (hjk : j < k) (hkl : k < l)
   · rfl
   · rfl
 
+end equivs
+
 def measurableSpaceGraph_nat (α : ℕ → Type _) [∀ i, MeasurableSpace (α i)] :
     MeasurableSpaceGraph ℕ where
   node := fun i ↦ ∀ x : Iic i, α x
@@ -318,9 +349,6 @@ def measurableSpaceGraph_nat.path_equiv : (M α).path i j ≃ᵐ ∀ x : Ioc i j
   MeasurableEquiv.refl _
 
 variable {α}
-
-def e_succ (j : ℕ) : α (j + 1) ≃ᵐ (M α).path j (j + 1) :=
-  (e_succ_nat j).trans (measurableSpaceGraph_nat.path_equiv α).symm
 
 noncomputable
 def cast_path (κ : kernel ((M α).node i) ((M α).path i j)) (h : j = k) :
@@ -397,41 +425,31 @@ instance (κ₀ : kernel ((M α).node i) ((M α).path i j)) [h₀ : IsSFiniteKer
       · infer_instance
 
 noncomputable
-def to_M (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) (i : ℕ) :
-    kernel ((M α).node i) ((M α).path i (i + 1)) :=
-  kernel.map (κ i) (e_succ i) (MeasurableEquiv.measurable _)
-
-instance (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) [∀ i, IsSFiniteKernel (κ i)]
-    (i : ℕ) :
-    IsSFiniteKernel (to_M κ i) := by
-  rw [to_M]; infer_instance
-
-noncomputable
-def kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) [∀ i, IsSFiniteKernel (κ i)]
-    (i j : ℕ) :
+def kerNat (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) :
     kernel ((M α).node i) ((M α).path i j) :=
-  if i < j then kerInterval (to_M κ i) (to_M κ) j else 0
+  if i < j then kerInterval (κ i) κ j else 0
 
-lemma kerNat_eq (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) [∀ i, IsSFiniteKernel (κ i)]
-    (hij : i < j) :
-    kerNat κ i j = kerInterval (to_M κ i) (to_M κ) j :=
+lemma kerNat_eq (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
+    [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) :
+    kerNat κ i j = kerInterval (κ i) κ j :=
   dif_pos hij
 
-lemma kerNat_of_ge (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1)))
+lemma kerNat_of_ge (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
     [∀ i, IsSFiniteKernel (κ i)] (hij : j ≤ i) :
     kerNat κ i j = 0 :=
   dif_neg (not_lt.mpr hij)
 
-instance (κ : (k : ℕ) → kernel ((M α).node k) (α (k + 1))) [∀ i, IsSFiniteKernel (κ i)] :
+instance (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1))) [∀ i, IsSFiniteKernel (κ i)] :
     IsSFiniteKernel (kerNat κ i j) := by
   rw [kerNat]; split_ifs <;> infer_instance
 
-lemma kerNat_succ (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1)))
+lemma kerNat_succ (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
     [∀ i, IsSFiniteKernel (κ i)] (i : ℕ) :
-    kerNat κ i (i + 1) = to_M κ i := by
+    kerNat κ i (i + 1) = κ i := by
   rw [kerNat_eq _ (Nat.lt_succ_self _), kerInterval_of_eq _ _ (by linarith)]
 
-lemma kerNat_succ_right (κ : (k : ℕ) → kernel ((x : Iic k) → α x) (α (k + 1)))
+lemma kerNat_succ_right (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
     [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i < j) :
     kerNat κ i (j + 1) = (kerNat κ i j) ⊗[M α] (kerNat κ j (j + 1)) := by
   rw [kerNat_eq _ (hij.trans (Nat.lt_succ_self _)),
@@ -440,7 +458,7 @@ lemma kerNat_succ_right (κ : (k : ℕ) → kernel ((x : Iic k) → α x) (α (k
   · rw [kerNat_eq _ hij]
   · rw [kerNat_succ κ j]
 
-lemma kerNat_succ_left (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1)))
+lemma kerNat_succ_left (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
     [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i + 1 < j) :
     kerNat κ i j = (kerNat κ i (i + 1)) ⊗[M α] (kerNat κ (i + 1) j) := by
   induction j with
@@ -459,7 +477,7 @@ lemma kerNat_succ_left (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α 
         MeasurableSpaceGraph.compProd_assoc (M α) (kerNat κ i (i + 1)) (kerNat κ (i + 1) j)
           (kerNat κ j (j + 1)) (Nat.lt_succ_self i) h (Nat.lt_succ_self j)]
 
-theorem compProd_kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1)))
+theorem compProd_kerNat (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
     [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) (hjk : j < k) :
     ((kerNat κ i j) ⊗[M α] (kerNat κ j k)) = kerNat κ i k := by
   cases k with
@@ -475,16 +493,44 @@ theorem compProd_kerNat (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α
     · rw [kerNat_succ_right _ _ _ (hij.trans_le (Nat.lt_succ_iff.mp hjk))]
 
 noncomputable
-def Transition_of_seq (κ : ∀ i, kernel ((j : Iic i) → α ↑j) (α (i + 1)))
+def Transition_of_seq (κ : (k : ℕ) → kernel ((M α).node k) ((M α).path k (k + 1)))
   [∀ i, IsSFiniteKernel (κ i)] :
   Transition (M α) :=
 { ker := kerNat κ,
   s_finite := fun _ _ ↦ inferInstance,
   comp := fun _ _ _ ↦ compProd_kerNat κ, }
 
+def e_succ (j : ℕ) : α (j + 1) ≃ᵐ (M α).path j (j + 1) :=
+  (e_succ_nat j).trans (measurableSpaceGraph_nat.path_equiv α).symm
+
+noncomputable
+def to_M (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) (i : ℕ) :
+    kernel ((M α).node i) ((M α).path i (i + 1)) :=
+  kernel.map (κ i) (e_succ i) (MeasurableEquiv.measurable _)
+
+instance (κ : (k : ℕ) → kernel ((x : Iic k) → α ↑x) (α (k + 1))) [∀ i, IsSFiniteKernel (κ i)]
+    (i : ℕ) :
+    IsSFiniteKernel (to_M κ i) := by
+  rw [to_M]; infer_instance
+
+noncomputable
+def Transition_of_seq_nat (κ : ∀ i, kernel ((j : Iic i) → α ↑j) (α (i + 1)))
+  [∀ i, IsSFiniteKernel (κ i)] :
+  Transition (M α) :=
+{ ker := kerNat (to_M κ),
+  s_finite := fun _ _ ↦ inferInstance,
+  comp := fun _ _ _ ↦ compProd_kerNat (to_M κ), }
+
 end nat
 
 section Markov
+
+/-! ### Markov MeasurableSpaceGraph on ℕ
+
+We descibe the `MeasurableSpaceGraph` indexed by `ℕ` with nodes `i ↦ α i` and paths `i j ↦ α j`.
+
+The intended application is the following: we consider a Markov process `X : (i : ℕ) → α i` and
+a kernel from `α i` to `α j` describes the law of the random variables `X j` given `X i`. -/
 
 variable {α : ℕ → Type _} [∀ i, MeasurableSpace (α i)]
 
@@ -501,7 +547,24 @@ def measurableSpaceGraph_markov_nat (α : ℕ → Type _) [∀ i, MeasurableSpac
   el_assoc := fun i j k hij hjk a b c ↦ rfl
   er_assoc := fun i j k l hij hjk hkl b c d ↦ rfl
 
-local notation "M" => measurableSpaceGraph_nat
+local notation "M" => measurableSpaceGraph_markov_nat
+
+variable (α)
+
+lemma measurableSpaceGraph_markov_nat.node_eq : (M α).node i = α i := rfl
+lemma measurableSpaceGraph_markov_nat.path_eq : (M α).path i j = α j := rfl
+def measurableSpaceGraph_markov_nat.node_equiv : (M α).node i ≃ᵐ α i := MeasurableEquiv.refl _
+def measurableSpaceGraph_markov_nat.path_equiv : (M α).path i j ≃ᵐ α j := MeasurableEquiv.refl _
+
+variable {α}
+
+noncomputable
+def Transition_of_markov_seq_nat (κ : ∀ i, kernel (α i) (α (i + 1)))
+  [∀ i, IsSFiniteKernel (κ i)] :
+  Transition (M α) :=
+{ ker := kerNat κ,
+  s_finite := fun _ _ ↦ inferInstance,
+  comp := fun _ _ _ ↦ compProd_kerNat κ, }
 
 end Markov
 
