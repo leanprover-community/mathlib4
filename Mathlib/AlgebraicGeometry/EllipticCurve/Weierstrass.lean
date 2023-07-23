@@ -1015,13 +1015,13 @@ variable {F : Type u} [Field F] (j : F)
 private lemma two_or_three_ne_zero : (2 : F) ≠ 0 ∨ (3 : F) ≠ 0 :=
   ne_zero_or_ne_zero_of_nat_gcd_eq_one (show Nat.gcd 2 3 = 1 from by norm_num1)
 
-open scoped Classical
+variable [DecidableEq F]
 
 /-- For any element $j$ of a field $F$, there exists an elliptic curve over $F$
 with $j$-invariant equal to $j$ (see `EllipticCurve.ofJ_j`).
 Its coefficients are given explicitly (see `EllipticCurve.ofJ0`, `EllipticCurve.ofJ1728`
 and `EllipticCurve.ofJ'`). -/
-noncomputable def ofJ : EllipticCurve F :=
+def ofJ : EllipticCurve F :=
   if h0 : j = 0 then
     if h3 : (3 : F) = 0 then @ofJ1728 _ _ <| invertibleOfNonzero <|
       two_or_three_ne_zero.neg_resolve_right h3
@@ -1078,7 +1078,7 @@ lemma ofJ_j : (ofJ j).j = j := by
     · rw [ofJ_ne_0_ne_1728 j h0 h1728,
         @ofJ'_j _ _ _ (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)]
 
-noncomputable instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
+instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
   ⟨ofJ 42⟩
 #align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 
