@@ -608,7 +608,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
 #align add_subgroup.is_closed_of_discrete AddSubgroup.isClosed_of_discrete
 
 @[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
+lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [DiscreteTopology H] :
     Tendsto ((↑) : H → G) cofinite (cocompact _) :=
   IsClosed.tendsto_coe_cofinite_of_discreteTopology inferInstance inferInstance
 
@@ -617,7 +617,7 @@ lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type _} [Group
     (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
     Tendsto f cofinite (cocompact _) := by
   replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact (f.range.tendsto_coe_cofinite_of_discrete).comp hf.tendsto_cofinite
+  exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
 
 @[to_additive]
 theorem TopologicalGroup.tendstoUniformly_iff {ι α : Type _} (F : ι → α → G) (f : α → G)
