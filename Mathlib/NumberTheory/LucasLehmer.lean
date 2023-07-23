@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
-
-! This file was ported from Lean 3 source module number_theory.lucas_lehmer
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.PNat.Interval
@@ -14,6 +9,8 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
+
+#align_import number_theory.lucas_lehmer from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes.
@@ -596,8 +593,7 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
 def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let ⟨ep, hp⟩ ← deriveNat p
+  let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!
   unless 1 < np do
     failure

@@ -2,11 +2,6 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.basic
-! leanprover-community/mathlib commit aa6669832974f87406a3d9d70fc5707a60546207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.NormedSpace.Basic
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Topology.Algebra.Module.Star
+
+#align_import analysis.normed_space.star.basic from "leanprover-community/mathlib"@"aa6669832974f87406a3d9d70fc5707a60546207"
 
 /-!
 # Normed star rings and algebras

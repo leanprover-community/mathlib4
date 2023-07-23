@@ -2,16 +2,13 @@
 Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.pell
-! leanprover-community/mathlib commit 7ad820c4997738e2f542f8a20f32911f52020e26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.DiophantineApproximation
 import Mathlib.NumberTheory.Zsqrtd.Basic
+
+#align_import number_theory.pell from "leanprover-community/mathlib"@"7ad820c4997738e2f542f8a20f32911f52020e26"
 
 /-!
 # Pell's Equation
@@ -456,7 +453,7 @@ to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_nontrivial_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ a : Solution₁ d, a ≠ 1 ∧ a ≠ -1 := by
   obtain ⟨x, y, prop, hy⟩ := exists_of_not_isSquare h₀ hd
-  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H  <;>
+  refine' ⟨mk x y prop, fun H => _, fun H => _⟩ <;> apply_fun Solution₁.y at H <;>
     simp [hy] at H
 #align pell.solution₁.exists_nontrivial_of_not_is_square Pell.Solution₁.exists_nontrivial_of_not_isSquare
 
