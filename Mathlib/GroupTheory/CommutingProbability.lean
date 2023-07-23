@@ -90,7 +90,9 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
 #align comm_prob_def' commProb_def'
 
 -- porting note: inserted [Group G]
-variable {G} [Group G] (H : Subgroup G)
+variable {G}
+
+variable [Group G] (H : Subgroup G)
 
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many

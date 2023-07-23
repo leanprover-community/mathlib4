@@ -133,7 +133,8 @@ The Jordan axioms can be expressed in terms of commuting multiplication operator
 
 section Commute
 
-variable {A} [NonUnitalNonAssocRing A] [IsJordan A]
+variable {A}
+variable [NonUnitalNonAssocRing A] [IsJordan A]
 
 @[simp]
 theorem commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
@@ -162,7 +163,8 @@ theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
 
 end Commute
 
-variable {A} [NonUnitalNonAssocRing A] [IsCommJordan A]
+variable {A}
+variable [NonUnitalNonAssocRing A] [IsCommJordan A]
 
 /-!
 The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this may be equipped

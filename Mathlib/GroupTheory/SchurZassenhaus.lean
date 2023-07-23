@@ -69,7 +69,9 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc]
 #align subgroup.smul_diff_smul' Subgroup.smul_diff_smul'
 
-variable {H} [Normal H]
+variable {H}
+
+variable [Normal H]
 
 noncomputable instance : MulAction G H.QuotientDiff where
   smul g :=

@@ -146,7 +146,9 @@ class MulAction.IsPretransitive (M α : Type _) [SMul M α] : Prop where
 
 namespace MulAction
 
-variable (M) [SMul M α] [IsPretransitive M α]
+variable (M)
+
+variable [SMul M α] [IsPretransitive M α]
 
 @[to_additive]
 theorem exists_smul_eq (x y : α) : ∃ m : M, m • x = y :=

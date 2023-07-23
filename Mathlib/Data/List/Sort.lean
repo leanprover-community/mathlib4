@@ -403,7 +403,9 @@ theorem length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
 
 section TotalAndTransitive
 
-variable {r} [IsTotal α r] [IsTrans α r]
+variable {r}
+
+variable [IsTotal α r] [IsTrans α r]
 
 theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge r l l')
   | [], [], _, _ => by simp [List.merge]

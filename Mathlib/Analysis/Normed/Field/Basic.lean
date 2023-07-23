@@ -717,7 +717,9 @@ namespace NormedField
 
 section Nontrivially
 
-variable (α) [NontriviallyNormedField α]
+variable (α)
+
+variable [NontriviallyNormedField α]
 
 theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
   ‹NontriviallyNormedField α›.non_trivial
@@ -758,7 +760,9 @@ end Nontrivially
 
 section Densely
 
-variable (α) [DenselyNormedField α]
+variable (α)
+
+variable [DenselyNormedField α]
 
 theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖ ∧ ‖x‖ < r₂ :=
   DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h

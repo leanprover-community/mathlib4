@@ -1342,7 +1342,9 @@ We define `G.neighborFinset v` to be the `Finset` version of `G.neighborSet v`.
 Use `neighborFinset_eq_filter` to rewrite this definition as a `Finset.filter` expression.
 -/
 
-variable (v) [Fintype (G.neighborSet v)]
+variable (v)
+
+variable [Fintype (G.neighborSet v)]
 
 /-- `G.neighbors v` is the `Finset` version of `G.Adj v` in case `G` is
 locally finite at `v`. -/

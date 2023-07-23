@@ -201,7 +201,9 @@ section CommRing
 
 variable [CommRing L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
 
-variable {K} [Field K] [Algebra K L]
+variable {K}
+
+variable [Field K] [Algebra K L]
 
 /-- This mathematically trivial result is complementary to `norm_eq_one` below. -/
 theorem norm_eq_neg_one_pow (hζ : IsPrimitiveRoot ζ 2) [IsDomain L] :
@@ -251,7 +253,9 @@ section Field
 
 variable [Field L] {ζ : L} (hζ : IsPrimitiveRoot ζ n)
 
-variable {K} [Field K] [Algebra K L]
+variable {K}
+
+variable [Field K] [Algebra K L]
 
 /-- If `Irreducible (cyclotomic n K)` (in particular for `K = ℚ`), then the norm of
 `ζ - 1` is `eval 1 (cyclotomic n ℤ)`. -/

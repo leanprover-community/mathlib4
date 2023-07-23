@@ -2272,7 +2272,9 @@ end AddCommGroup
 
 section Neg
 
-variable (R) [Semiring R] [AddCommGroup M] [Module R M]
+variable (R)
+
+variable [Semiring R] [AddCommGroup M] [Module R M]
 
 /-- `x ↦ -x` as a `LinearEquiv` -/
 def neg : M ≃ₗ[R] M :=

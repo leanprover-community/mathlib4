@@ -50,7 +50,9 @@ namespace LeftOrdContinuous
 
 section Preorder
 
-variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
+variable (α)
+
+variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
 protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
   simpa only [image_id] using h
@@ -162,7 +164,9 @@ namespace RightOrdContinuous
 
 section Preorder
 
-variable (α) [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
+variable (α)
+
+variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β}
 
 protected theorem id : RightOrdContinuous (id : α → α) := fun s x h => by
   simpa only [image_id] using h

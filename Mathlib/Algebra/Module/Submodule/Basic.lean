@@ -428,7 +428,9 @@ end AddAction
 
 section RestrictScalars
 
-variable (S) [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
+variable (S)
+
+variable [Semiring S] [Module S M] [Module R M] [SMul S R] [IsScalarTower S R M]
 
 /-- `V.restrict_scalars S` is the `S`-submodule of the `S`-module given by restriction of scalars,
 corresponding to `V`, an `R`-submodule of the original `R`-module.

@@ -284,7 +284,9 @@ end InnerProductSpace
 
 section NoInnerProduct
 
-variable (f) [AddCommGroup V] [TopologicalSpace V] [TopologicalAddGroup V] [T2Space V]
+variable (f)
+
+variable [AddCommGroup V] [TopologicalSpace V] [TopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
   [CompleteSpace E]
 

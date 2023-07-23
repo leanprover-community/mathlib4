@@ -83,7 +83,9 @@ theorem nonempty_two_pointing_iff : Nonempty (TwoPointing α) ↔ Nontrivial α 
 
 section Pi
 
-variable (α) [Nonempty α]
+variable (α)
+
+variable [Nonempty α]
 
 /-- The two-pointing of constant functions. -/
 def pi : TwoPointing (α → β) where

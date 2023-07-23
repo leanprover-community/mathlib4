@@ -300,7 +300,9 @@ alias cliqueFinset_eq_empty_iff ↔ _ CliqueFree.cliqueFinset
 
 --attribute [protected] CliqueFree.cliqueFinset -- porting note: removed
 
-variable {G} [DecidableRel H.Adj]
+variable {G}
+
+variable [DecidableRel H.Adj]
 
 @[mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=

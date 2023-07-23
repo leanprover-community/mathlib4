@@ -296,7 +296,9 @@ theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 #align is_top_iff_is_max isTop_iff_isMax
 
-variable (β) [PartialOrder β]
+variable (β)
+
+variable [PartialOrder β]
 
 theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩

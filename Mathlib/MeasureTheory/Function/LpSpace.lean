@@ -1807,7 +1807,9 @@ theorem hasSum_of_hasSum_Lp {β : Type _} [μ.IsOpenPosMeasure] [NormedField �
   exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSum <| Summable.hasSum hg))
 #align continuous_map.has_sum_of_has_sum_Lp ContinuousMap.hasSum_of_hasSum_Lp
 
-variable (μ) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
+variable (μ)
+
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
 theorem toLp_norm_eq_toLp_norm_coe :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ =

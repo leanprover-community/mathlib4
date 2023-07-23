@@ -105,7 +105,8 @@ theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val ⬝ B.val
 
 section ElementaryBasis
 
-variable {n} [Fintype n] (i j : n)
+variable {n}
+variable [Fintype n] (i j : n)
 
 /-- When j ≠ i, the elementary matrices are elements of sl n R, in fact they are part of a natural
 basis of `sl n R`. -/

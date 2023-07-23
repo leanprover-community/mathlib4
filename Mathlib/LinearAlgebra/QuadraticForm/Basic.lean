@@ -746,7 +746,9 @@ section AssociatedHom
 
 variable [Ring R] [CommRing R₁] [AddCommGroup M] [Module R M] [Module R₁ M]
 
-variable (S) [CommSemiring S] [Algebra S R]
+variable (S)
+
+variable [CommSemiring S] [Algebra S R]
 
 variable [Invertible (2 : R)] {B₁ : BilinForm R M}
 

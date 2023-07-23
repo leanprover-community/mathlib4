@@ -50,7 +50,9 @@ variable {𝕜 E ι : Type _}
 
 section OrderedSemiring
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
+variable (𝕜)
+
+variable [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E}
 
 /-- An indexed family is said to be convex independent if every point only belongs to convex hulls
 of sets containing it. -/

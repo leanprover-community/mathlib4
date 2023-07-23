@@ -1467,7 +1467,9 @@ section FilterMul
 
 section
 
-variable (G) [TopologicalSpace G] [Group G] [ContinuousMul G]
+variable (G)
+
+variable [TopologicalSpace G] [Group G] [ContinuousMul G]
 
 @[to_additive]
 theorem TopologicalGroup.t1Space (h : @IsClosed G _ {1}) : T1Space G :=
@@ -1481,7 +1483,9 @@ end
 
 section
 
-variable (G) [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable (G)
+
+variable [TopologicalSpace G] [Group G] [TopologicalGroup G]
 
 @[to_additive]
 instance (priority := 100) TopologicalGroup.regularSpace : RegularSpace G := by

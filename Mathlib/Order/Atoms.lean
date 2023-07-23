@@ -387,7 +387,9 @@ end Atomic
 
 section Atomistic
 
-variable (α) [CompleteLattice α]
+variable (α)
+
+variable [CompleteLattice α]
 
 /-- A lattice is atomistic iff every element is a `sSup` of a set of atoms. -/
 class IsAtomistic : Prop where

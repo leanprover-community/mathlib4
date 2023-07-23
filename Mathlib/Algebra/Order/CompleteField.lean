@@ -96,7 +96,9 @@ variable [LinearOrderedField α]
 
 section DivisionRing
 
-variable (β) [DivisionRing β] {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β)
+
+variable [DivisionRing β] {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 /-- The lower cut of rationals inside a linear ordered field that are less than a given element of
 another linear ordered field. -/
@@ -129,7 +131,9 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 
 end DivisionRing
 
-variable (β) [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β)
+
+variable [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]

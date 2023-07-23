@@ -782,7 +782,9 @@ namespace Equiv
 
 section InvolutiveInv
 
-variable (G) [InvolutiveInv G]
+variable (G)
+
+variable [InvolutiveInv G]
 
 /-- Inversion on a `Group` or `GroupWithZero` is a permutation of the underlying type. -/
 @[to_additive (attr := simps! (config := { fullyApplied := false }) apply)

@@ -388,7 +388,9 @@ protected def unop {α β} [Add α] [Mul α] [Add β] [Mul β] : αᵐᵒᵖ ≃
 
 section NonUnitalCommSemiring
 
-variable (R) [NonUnitalCommSemiring R]
+variable (R)
+
+variable [NonUnitalCommSemiring R]
 
 /-- A non-unital commutative ring is isomorphic to its opposite. -/
 def toOpposite : R ≃+* Rᵐᵒᵖ :=

@@ -225,7 +225,9 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 #align continuous_linear_map.has_basis_nhds_zero ContinuousLinearMap.hasBasis_nhds_zero
 
-variable (G) [TopologicalSpace F] [TopologicalSpace G]
+variable (G)
+
+variable [TopologicalSpace F] [TopologicalSpace G]
 
 /-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
 Note that in non-normed space it is not always true that composition is continuous

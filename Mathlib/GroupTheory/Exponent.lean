@@ -50,7 +50,9 @@ namespace Monoid
 
 section Monoid
 
-variable (G) [Monoid G]
+variable (G)
+
+variable [Monoid G]
 
 /-- A predicate on a monoid saying that there is a positive integer `n` such that `g ^ n = 1`
   for all `g`.-/
@@ -359,7 +361,9 @@ open Subgroup
 
 open BigOperators
 
-variable (G) [CommGroup G] [Group.FG G]
+variable (G)
+
+variable [CommGroup G] [Group.FG G]
 
 @[to_additive]
 theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
@@ -386,4 +390,3 @@ theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
 #align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
 
 end CommGroup
-

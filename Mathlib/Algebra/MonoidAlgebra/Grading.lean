@@ -41,7 +41,9 @@ variable {M : Type _} {ι : Type _} {R : Type _} [DecidableEq M]
 
 section
 
-variable (R) [CommSemiring R]
+variable (R)
+
+variable [CommSemiring R]
 
 /-- The submodule corresponding to each grade given by the degree function `f`. -/
 abbrev gradeBy (f : M → ι) (i : ι) : Submodule R (AddMonoidAlgebra R M) where

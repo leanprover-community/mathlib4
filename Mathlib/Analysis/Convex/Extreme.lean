@@ -51,7 +51,9 @@ variable {𝕜 E F ι : Type _} {π : ι → Type _}
 
 section SMul
 
-variable (𝕜) [OrderedSemiring 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
+variable (𝕜)
+
+variable [OrderedSemiring 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
 
 /-- A set `B` is an extreme subset of `A` if `B ⊆ A` and all points of `B` only belong to open
 segments whose ends are in `B`. -/

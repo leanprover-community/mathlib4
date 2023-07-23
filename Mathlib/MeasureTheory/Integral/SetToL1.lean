@@ -1006,7 +1006,9 @@ attribute [local instance] Lp.simpleFunc.module
 
 attribute [local instance] Lp.simpleFunc.normedSpace
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
+variable (𝕜)
+
+variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
   {T T' T'' : Set α → E →L[ℝ] F} {C C' C'' : ℝ}
 
 /-- Extend `set α → (E →L[ℝ] F)` to `(α →₁[μ] E) →L[𝕜] F`. -/

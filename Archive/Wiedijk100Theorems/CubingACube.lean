@@ -534,7 +534,9 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     exact b_ne_xm (cs i) hi'
 #align theorems_100.«82».valley_mi Theorems100.«82».valley_mi
 
-variable (h) [Nontrivial ι]
+variable (h)
+
+variable [Nontrivial ι]
 
 /-- We get a sequence of cubes whose size is decreasing -/
 noncomputable def sequenceOfCubes : ℕ → { i : ι // Valley cs (cs i).shiftUp }

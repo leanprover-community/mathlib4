@@ -48,7 +48,9 @@ variable {E : Type _}
 
 section SeminormedAddCommGroup
 
-variable (E) [SeminormedAddCommGroup E] [UniformConvexSpace E] {ε : ℝ}
+variable (E)
+
+variable [SeminormedAddCommGroup E] [UniformConvexSpace E] {ε : ℝ}
 
 theorem exists_forall_sphere_dist_add_le_two_sub (hε : 0 < ε) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ :=

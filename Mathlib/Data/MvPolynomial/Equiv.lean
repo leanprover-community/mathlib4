@@ -56,7 +56,9 @@ variable {σ : Type _} {a a' a₁ a₂ : R} {e : ℕ} {s : σ →₀ ℕ}
 
 section Equiv
 
-variable (R) [CommSemiring R]
+variable (R)
+
+variable [CommSemiring R]
 
 /-- The ring isomorphism between multivariable polynomials in a single variable and
 polynomials over the ground ring.

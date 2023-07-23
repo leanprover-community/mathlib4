@@ -48,7 +48,9 @@ variable {G H : Type _}
 
 namespace Monoid
 
-variable (G) [Monoid G]
+variable (G)
+
+variable [Monoid G]
 
 /-- A predicate on a monoid saying that all elements are of finite order. -/
 @[to_additive "A predicate on an additive monoid saying that all elements are of finite order."]
@@ -180,7 +182,9 @@ end Module
 
 section CommMonoid
 
-variable (G) [CommMonoid G]
+variable (G)
+
+variable [CommMonoid G]
 
 namespace CommMonoid
 
@@ -303,7 +307,9 @@ end CommMonoid
 
 section CommGroup
 
-variable (G) [CommGroup G]
+variable (G)
+
+variable [CommGroup G]
 
 namespace CommGroup
 
@@ -349,7 +355,9 @@ end CommGroup
 
 namespace Monoid
 
-variable (G) [Monoid G]
+variable (G)
+
+variable [Monoid G]
 
 /-- A predicate on a monoid saying that only 1 is of finite order. -/
 @[to_additive "A predicate on an additive monoid saying that only 0 is of finite order."]
@@ -421,7 +429,9 @@ open Monoid (IsTorsionFree)
 
 open CommGroup (torsion)
 
-variable (G) [CommGroup G]
+variable (G)
+
+variable [CommGroup G]
 
 /-- Quotienting a group by its torsion subgroup yields a torsion free group. -/
 @[to_additive AddIsTorsionFree.quotient_torsion
@@ -438,4 +448,3 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
 #align add_is_torsion_free.quotient_torsion AddIsTorsionFree.quotient_torsion
 
 end CommGroup
-

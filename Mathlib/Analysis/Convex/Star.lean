@@ -61,7 +61,9 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
+variable (𝕜)
+
+variable [SMul 𝕜 E] [SMul 𝕜 F] (x : E) (s : Set E)
 
 /-- Star-convexity of sets. `s` is star-convex at `x` if every segment from `x` to a point in `s` is
 contained in `s`. -/

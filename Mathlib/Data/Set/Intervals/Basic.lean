@@ -1911,7 +1911,9 @@ end Set
 
 section Dense
 
-variable (α) [Preorder α] [DenselyOrdered α] {x y : α}
+variable (α)
+
+variable [Preorder α] [DenselyOrdered α] {x y : α}
 
 instance : NoMinOrder (Set.Ioo x y) :=
   ⟨fun ⟨a, ha₁, ha₂⟩ => by

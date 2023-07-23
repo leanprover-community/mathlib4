@@ -434,7 +434,9 @@ theorem cancel_left {g : SupHom β γ} {f₁ f₂ : SupHom α β} (hg : Injectiv
 
 end Sup
 
-variable (α) [SemilatticeSup β]
+variable (α)
+
+variable [SemilatticeSup β]
 
 /-- The constant function as a `SupHom`. -/
 def const (b : β) : SupHom α β :=
@@ -620,7 +622,9 @@ theorem cancel_left {g : InfHom β γ} {f₁ f₂ : InfHom α β} (hg : Injectiv
 
 end Inf
 
-variable (α) [SemilatticeInf β]
+variable (α)
+
+variable [SemilatticeInf β]
 
 /-- The constant function as an `InfHom`. -/
 def const (b : β) : InfHom α β :=

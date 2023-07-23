@@ -571,7 +571,8 @@ end Ring
 
 section CharOne
 
-variable {R} [NonAssocSemiring R]
+variable {R}
+variable [NonAssocSemiring R]
 
 -- see Note [lower instance priority]
 instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=

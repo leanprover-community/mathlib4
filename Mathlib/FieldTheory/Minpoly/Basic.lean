@@ -23,7 +23,9 @@ variable {A B B' : Type _}
 
 section MinPolyDef
 
-variable (A) [CommRing A] [Ring B] [Algebra A B]
+variable (A)
+
+variable [CommRing A] [Ring B] [Algebra A B]
 
 /-- Suppose `x : B`, where `B` is an `A`-algebra.
 

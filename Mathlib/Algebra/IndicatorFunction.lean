@@ -747,7 +747,9 @@ theorem indicator_prod_one {s : Set α} {t : Set β} {x : α} {y : β} :
   split_ifs with h₀ <;> simp only [Pi.one_apply, mul_one, mul_zero] <;> tauto
 #align set.indicator_prod_one Set.indicator_prod_one
 
-variable (M) [Nontrivial M]
+variable (M)
+
+variable [Nontrivial M]
 
 theorem indicator_eq_zero_iff_not_mem {U : Set α} {x : α} : indicator U 1 x = (0 : M) ↔ x ∉ U := by
   classical simp [indicator_apply, imp_false]

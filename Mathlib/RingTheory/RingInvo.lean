@@ -57,7 +57,9 @@ def RingInvoClass.toRingInvo {R} [Semiring R] [RingInvoClass F R] (f : F) :
 
 namespace RingInvo
 
-variable {R} [Semiring R]
+variable {R}
+
+variable [Semiring R]
 
 /-- Any type satisfying `RingInvoClass` can be cast into `RingInvo` via
 `RingInvoClass.toRingInvo`. -/

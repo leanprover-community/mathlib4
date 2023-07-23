@@ -620,7 +620,9 @@ end MiscTheorems
 
 section NonUnitalNonAssocAlgebra
 
-variable (k) [Semiring k] [DistribSMul R k] [Mul G]
+variable (k)
+
+variable [Semiring k] [DistribSMul R k] [Mul G]
 
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
@@ -1739,7 +1741,9 @@ variable {k G}
 
 section NonUnitalNonAssocAlgebra
 
-variable (k) [Semiring k] [DistribSMul R k] [Add G]
+variable (k)
+
+variable [Semiring k] [DistribSMul R k] [Add G]
 
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (AddMonoidAlgebra k G) (AddMonoidAlgebra k G) :=

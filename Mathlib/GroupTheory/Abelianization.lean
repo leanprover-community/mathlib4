@@ -203,7 +203,9 @@ end Abelianization
 section AbelianizationCongr
 
 -- Porting note: `[Group G]` should not be necessary here
-variable {G} [Group G] {H : Type v} [Group H] (e : G ≃* H)
+variable {G}
+
+variable [Group G] {H : Type v} [Group H] (e : G ≃* H)
 
 /-- Equivalent groups have equivalent abelianizations -/
 def MulEquiv.abelianizationCongr : Abelianization G ≃* Abelianization H where

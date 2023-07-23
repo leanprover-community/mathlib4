@@ -321,7 +321,9 @@ noncomputable abbrev widePushout (B : C) (objs : J → C) (arrows : ∀ j : J, B
 
 namespace WidePullback
 
-variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, objs j ⟶ B)
+variable {D}
+
+variable [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, objs j ⟶ B)
 
 variable [HasWidePullback B objs arrows]
 
@@ -397,7 +399,9 @@ end WidePullback
 
 namespace WidePushout
 
-variable {D} [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, B ⟶ objs j)
+variable {D}
+
+variable [Category.{v₂} D] {B : D} {objs : J → D} (arrows : ∀ j : J, B ⟶ objs j)
 
 variable [HasWidePushout B objs arrows]
 

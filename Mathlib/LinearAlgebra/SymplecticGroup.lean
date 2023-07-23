@@ -29,7 +29,9 @@ variable {l R : Type _}
 
 namespace Matrix
 
-variable (l) [DecidableEq l] (R) [CommRing R]
+variable (l)
+
+variable [DecidableEq l] (R) [CommRing R]
 
 section JMatrixLemmas
 

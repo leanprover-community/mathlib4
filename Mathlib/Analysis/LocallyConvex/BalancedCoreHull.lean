@@ -51,7 +51,9 @@ variable [SeminormedRing 𝕜]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E] {s t : Set E} {x : E}
+variable (𝕜)
+
+variable [SMul 𝕜 E] {s t : Set E} {x : E}
 
 /-- The largest balanced subset of `s`.-/
 def balancedCore (s : Set E) :=

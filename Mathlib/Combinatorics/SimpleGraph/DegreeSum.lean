@@ -78,7 +78,9 @@ theorem dart_card_eq_sum_degrees : Fintype.card G.Dart = ∑ v, G.degree v := by
   exact card_eq_sum_card_fiberwise (by simp)
 #align simple_graph.dart_card_eq_sum_degrees SimpleGraph.dart_card_eq_sum_degrees
 
-variable {G} [DecidableEq V]
+variable {G}
+
+variable [DecidableEq V]
 
 theorem Dart.edge_fiber (d : G.Dart) :
     (univ.filter fun d' : G.Dart => d'.edge = d.edge) = {d, d.symm} :=

@@ -51,7 +51,9 @@ variable [SeminormedRing 𝕜]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E]
+variable (𝕜)
+
+variable [SMul 𝕜 E]
 
 /-- A set `A` absorbs another set `B` if `B` is contained in all scalings of `A` by elements of
 sufficiently large norm. -/

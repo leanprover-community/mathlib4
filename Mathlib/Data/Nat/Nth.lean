@@ -293,7 +293,9 @@ theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a
 
 section Count
 
-variable (p) [DecidablePred p]
+variable (p)
+
+variable [DecidablePred p]
 
 @[simp]
 theorem count_nth_zero : count p (nth p 0) = 0 := by

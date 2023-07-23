@@ -70,7 +70,9 @@ theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f =
 
 end LocallyDiscrete
 
-variable (C) [Category.{v} C]
+variable (C)
+
+variable [Category.{v} C]
 
 /-- The locally discrete bicategory on a category is a bicategory in which the objects and the
 1-morphisms are the same as those in the underlying category, and the 2-morphisms are the

@@ -1632,7 +1632,9 @@ instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃]
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 #align continuous_linear_map.is_central_scalar ContinuousLinearMap.isCentralScalar
 
-variable (S) [ContinuousAdd N₃]
+variable (S)
+
+variable [ContinuousAdd N₃]
 
 /-- `ContinuousLinearMap.prod` as a `LinearEquiv`. -/
 @[simps apply]
@@ -2399,7 +2401,9 @@ end
 
 section
 
-variable (R) [TopologicalSpace R]
+variable (R)
+
+variable [TopologicalSpace R]
 variable [ContinuousMul R]
 
 /-- Continuous linear equivalences `R ≃L[R] R` are enumerated by `Rˣ`. -/

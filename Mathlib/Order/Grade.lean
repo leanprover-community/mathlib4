@@ -97,7 +97,9 @@ section Preorder -- graded order
 variable [Preorder α]
 
 section GradeOrder
-variable (𝕆) [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
+variable (𝕆)
+
+variable [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
 
 /-- The grade of an element in a graded order. Morally, this is the number of elements you need to
 go down by to get to `⊥`. -/
@@ -124,7 +126,9 @@ end GradeOrder
 
 section GradeMinOrder
 
-variable (𝕆) [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
+variable (𝕆)
+
+variable [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
 
 protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
   GradeMinOrder.is_min_grade h
@@ -141,7 +145,9 @@ end GradeMinOrder
 
 section GradeMaxOrder
 
-variable (𝕆) [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
+variable (𝕆)
+
+variable [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
 
 protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
   GradeMaxOrder.is_max_grade h

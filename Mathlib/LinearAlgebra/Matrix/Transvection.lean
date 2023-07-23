@@ -693,7 +693,9 @@ end Pivot
 
 open Pivot TransvectionStruct
 
-variable {n} [Fintype n]
+variable {n}
+
+variable [Fintype n]
 
 /-- Induction principle for matrices based on transvections: if a property is true for all diagonal
 matrices, all transvections, and is stable under product, then it is true for all matrices. This is

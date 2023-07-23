@@ -462,7 +462,9 @@ theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
 /-! ### `stdSimplex` -/
 
 
-variable (ι) [Fintype ι] {f : ι → R}
+variable (ι)
+
+variable [Fintype ι] {f : ι → R}
 
 /-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
 theorem convexHull_basis_eq_stdSimplex :

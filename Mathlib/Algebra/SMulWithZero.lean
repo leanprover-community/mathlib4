@@ -64,14 +64,16 @@ instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass R] : SMulWithZero R�
   zero_smul := mul_zero
 #align mul_zero_class.to_opposite_smul_with_zero MulZeroClass.toOppositeSMulWithZero
 
-variable {M} [Zero R] [Zero M] [SMulWithZero R M]
+variable {M}
+variable [Zero R] [Zero M] [SMulWithZero R M]
 
 @[simp]
 theorem zero_smul (m : M) : (0 : R) • m = 0 :=
   SMulWithZero.zero_smul m
 #align zero_smul zero_smul
 
-variable {R} {a : R} {b : M}
+variable {R}
+variable {a : R} {b : M}
 
 lemma smul_eq_zero_of_left (h : a = 0) (b : M) : a • b = 0 := h.symm ▸ zero_smul _ b
 #align smul_eq_zero_of_left smul_eq_zero_of_left

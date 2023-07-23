@@ -139,7 +139,9 @@ instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
-variable (F) [EssSurj F]
+variable (F)
+
+variable [EssSurj F]
 
 /-- Given an essentially surjective functor, we can find a preimage for every object `Y` in the
     codomain. Applying the functor to this preimage will yield an object isomorphic to `Y`, see

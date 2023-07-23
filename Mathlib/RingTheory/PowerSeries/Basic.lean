@@ -114,7 +114,9 @@ instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module 
 
 section Semiring
 
-variable (R) [Semiring R]
+variable (R)
+
+variable [Semiring R]
 
 /-- The `n`th monomial with coefficient `a` as multivariate formal power series.-/
 def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
@@ -1299,7 +1301,9 @@ end
 
 section Semiring
 
-variable (R) [Semiring R]
+variable (R)
+
+variable [Semiring R]
 
 /-- The `n`th coefficient of a formal power series.-/
 def coeff (n : ℕ) : PowerSeries R →ₗ[R] R :=

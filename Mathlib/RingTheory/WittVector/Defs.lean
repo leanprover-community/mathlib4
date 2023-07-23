@@ -181,7 +181,9 @@ def eval {k : ℕ} (φ : ℕ → MvPolynomial (Fin k × ℕ) ℤ) (x : Fin k →
   mk p fun n => peval (φ n) fun i => (x i).coeff
 #align witt_vector.eval WittVector.eval
 
-variable (R) [Fact p.Prime]
+variable (R)
+
+variable [Fact p.Prime]
 
 instance : Zero (𝕎 R) :=
   ⟨eval (wittZero p) ![]⟩

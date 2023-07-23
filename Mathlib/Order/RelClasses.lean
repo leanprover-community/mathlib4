@@ -297,7 +297,9 @@ lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (
 
 namespace IsWellFounded
 
-variable (r) [IsWellFounded α r]
+variable (r)
+
+variable [IsWellFounded α r]
 
 /-- Induction on a well-founded relation. -/
 theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, r y x → C y) → C x) → C a :=

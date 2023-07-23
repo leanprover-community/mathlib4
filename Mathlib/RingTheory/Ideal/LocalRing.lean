@@ -343,7 +343,9 @@ theorem surjective_units_map_of_local_ringHom [CommRing R] [CommRing S] (f : R â
 
 section
 
-variable (R) [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
+variable (R)
+
+variable [CommRing R] [LocalRing R] [CommRing S] [LocalRing S] [CommRing T] [LocalRing T]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
 def ResidueField :=
@@ -515,7 +517,9 @@ end LocalRing
 
 namespace Field
 
-variable (K) [Field K]
+variable (K)
+
+variable [Field K]
 
 open Classical
 

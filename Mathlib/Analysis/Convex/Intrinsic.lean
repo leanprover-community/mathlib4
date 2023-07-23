@@ -54,7 +54,9 @@ variable {𝕜 V W Q P : Type _}
 
 section AddTorsor
 
-variable (𝕜) [Ring 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace P] [AddTorsor V P]
+variable (𝕜)
+
+variable [Ring 𝕜] [AddCommGroup V] [Module 𝕜 V] [TopologicalSpace P] [AddTorsor V P]
   {s t : Set P} {x : P}
 
 /-- The intrinsic interior of a set is its interior considered as a set in its affine span. -/
@@ -295,7 +297,9 @@ end AffineIsometry
 
 section NormedAddTorsor
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable (𝕜)
+
+variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
   [FiniteDimensional 𝕜 V] [MetricSpace P] [NormedAddTorsor V P] (s : Set P)
 
 @[simp]

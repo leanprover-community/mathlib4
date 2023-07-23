@@ -172,7 +172,9 @@ open TopologicalSpace Filter Set Bundle Topology
 
 section FiberBundle
 
-variable (F) [TopologicalSpace B] [TopologicalSpace F] (E : B → Type _)
+variable (F)
+
+variable [TopologicalSpace B] [TopologicalSpace F] (E : B → Type _)
   [TopologicalSpace (TotalSpace F E)] [∀ b, TopologicalSpace (E b)]
 
 /-- A (topological) fiber bundle with fiber `F` over a base `B` is a space projecting on `B`

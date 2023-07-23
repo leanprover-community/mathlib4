@@ -45,7 +45,9 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section SMul
 
-variable (𝕜) [SMul 𝕜 E] [SMul 𝕜 F] (s : Set E) {x : E}
+variable (𝕜)
+
+variable [SMul 𝕜 E] [SMul 𝕜 F] (s : Set E) {x : E}
 
 /-- Convexity of sets. -/
 def Convex : Prop :=

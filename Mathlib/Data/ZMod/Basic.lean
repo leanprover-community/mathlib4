@@ -231,7 +231,9 @@ theorem cast_id' : (ZMod.cast : ZMod n → ZMod n) = id :=
   funext (cast_id n)
 #align zmod.cast_id' ZMod.cast_id'
 
-variable (R) [Ring R]
+variable (R)
+
+variable [Ring R]
 
 /-- The coercions are respectively `Nat.cast` and `ZMod.cast`. -/
 @[simp]

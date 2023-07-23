@@ -593,7 +593,9 @@ end Valuation
 
 section AddMonoid
 
-variable (R) [Ring R] (Γ₀ : Type _) [LinearOrderedAddCommMonoidWithTop Γ₀]
+variable (R)
+
+variable [Ring R] (Γ₀ : Type _) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
 -- porting note: removed @[nolint has_nonempty_instance]

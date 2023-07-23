@@ -38,7 +38,9 @@ section QuotientAction
 
 open Subgroup MulOpposite QuotientGroup
 
-variable (β) [Monoid β] [MulAction β α] (H : Subgroup α)
+variable (β)
+
+variable [Monoid β] [MulAction β α] (H : Subgroup α)
 
 /-- A typeclass for when a `MulAction β α` descends to the quotient `α ⧸ H`. -/
 class QuotientAction : Prop where
@@ -146,7 +148,9 @@ instance mulLeftCosetsCompSubtypeVal (H I : Subgroup α) : MulAction I (α ⧸ H
 #align add_action.add_left_cosets_comp_subtype_val AddAction.addLeftCosetsCompSubtypeVal
 
 -- Porting note: Needed to insert [Group α] here
-variable (α) [Group α] [MulAction α β] (x : β)
+variable (α)
+
+variable [Group α] [MulAction α β] (x : β)
 
 /-- The canonical map from the quotient of the stabilizer to the set. -/
 @[to_additive "The canonical map from the quotient of the stabilizer to the set. "]

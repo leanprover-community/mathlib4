@@ -393,7 +393,9 @@ theorem BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SigmaFinite μ] {x₀
     exact map_mono restrict_le_self (measurable_const.sub measurable_id')
 #align bdd_above.convolution_exists_at BddAbove.convolutionExistsAt
 
-variable {L} [MeasurableAdd G] [IsNegInvariant μ]
+variable {L}
+
+variable [MeasurableAdd G] [IsNegInvariant μ]
 
 theorem convolutionExistsAt_flip :
     ConvolutionExistsAt g f x L.flip μ ↔ ConvolutionExistsAt f g x L μ := by
@@ -475,7 +477,9 @@ theorem convolution_mul [Sub G] [NormedSpace ℝ 𝕜] {f : G → 𝕜} {g : G �
 
 section Group
 
-variable {L} [AddGroup G]
+variable {L}
+
+variable [AddGroup G]
 
 theorem smul_convolution [SMulCommClass ℝ 𝕜 F] {y : 𝕜} : y • f ⋆[L, μ] g = y • (f ⋆[L, μ] g) := by
   ext; simp only [Pi.smul_apply, convolution_def, ← integral_smul, L.map_smul₂]

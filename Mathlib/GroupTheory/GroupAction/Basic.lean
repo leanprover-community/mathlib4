@@ -39,7 +39,9 @@ open Function
 
 namespace MulAction
 
-variable (α) [Monoid α] [MulAction α β]
+variable (α)
+
+variable [Monoid α] [MulAction α β]
 
 /-- The orbit of an element under an action. -/
 @[to_additive "The orbit of an element under an action."]
