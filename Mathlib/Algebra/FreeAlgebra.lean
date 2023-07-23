@@ -160,6 +160,9 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSmul
 
+instance {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+  smul r := Quot.map (algebraMap R A r * ·) fun _ _ ↦ Rel.mul_compat_right
+
 instance : Semiring (FreeAlgebra R X) where
   add := Quot.map₂ (· + ·) (fun _ _ _ ↦ Rel.add_compat_right) fun _ _ _ ↦ Rel.add_compat_left
   add_assoc := by
@@ -199,12 +202,23 @@ instance : Semiring (FreeAlgebra R X) where
   mul_zero := by
     rintro ⟨⟩
     exact Quot.sound Rel.MulZeroClass.mul_zero
+  nsmul := (· • ·)
+  nsmul_zero := by
+    rintro ⟨⟩
+    change Quot.mk _ (_ * _) = _
+    rw [map_zero]
+    exact Quot.sound Rel.MulZeroClass.zero_mul
+  nsmul_succ n := by
+    rintro ⟨⟩
+    change Quot.mk _ (_ * _) = Quot.mk _ _
+    rw [map_add, map_one]
+    sorry
+  natCast n := Quot.mk _ (n : R)
+  natCast_zero := sorry
+  natCast_succ n := sorry
 
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
-
-instance {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
-  smul r := Quot.map (algebraMap R A r * ·) fun _ _ ↦ Rel.mul_compat_right
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   toRingHom := ({
@@ -238,6 +252,8 @@ instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond
+variable (S : Type) [CommSemiring S] in
+example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 variable (S : Type) [CommRing S] in
 example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
