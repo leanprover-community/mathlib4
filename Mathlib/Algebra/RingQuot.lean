@@ -155,7 +155,8 @@ namespace RingQuot
 
 variable (r : R → R → Prop)
 
-private irreducible_def natCast (n : ℕ) : RingQuot r :=
+-- can't be irreducible, causes diamonds in ℤ-algebras
+private def natCast (n : ℕ) : RingQuot r :=
   ⟨Quot.mk _ n⟩
 
 private irreducible_def zero : RingQuot r :=
@@ -199,6 +200,9 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
 -- note: this cannot be irreducible, as otherwise diamonds don't commute.
 private def smul [Algebra S R] (n : S) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ n • a) (Rel.smul n) a⟩
+
+instance : NatCast (RingQuot r) :=
+  ⟨natCast r⟩
 
 instance : Zero (RingQuot r) :=
   ⟨zero r⟩
@@ -328,8 +332,8 @@ instance instMonoidWithZero (r : R → R → Prop) : MonoidWithZero (RingQuot r)
 
 instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
   natCast := natCast r
-  natCast_zero := by simp [Nat.cast, natCast_def, ← zero_quot]
-  natCast_succ := by simp [Nat.cast, natCast_def, ← one_quot, add_quot]
+  natCast_zero := by simp [Nat.cast, natCast, ← zero_quot]
+  natCast_succ := by simp [Nat.cast, natCast, ← one_quot, add_quot]
   left_distrib := by
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp only [mul_quot, add_quot, left_distrib]
@@ -373,10 +377,9 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp [smul_quot, neg_quot, add_mul]
     intCast := intCast r
     intCast_ofNat := fun n => congrArg RingQuot.mk <| by
-      rw [natCast_def]
       exact congrArg (Quot.mk _) (Int.cast_ofNat _)
     intCast_negSucc := fun n => congrArg RingQuot.mk <| by
-      simp_rw [neg_def, natCast_def]
+      simp_rw [neg_def]
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :

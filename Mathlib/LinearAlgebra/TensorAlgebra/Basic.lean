@@ -76,6 +76,9 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   Algebra R (TensorAlgebra A M) :=
 RingQuot.instAlgebraRingQuotInstSemiring _
 
+-- verify there is no diamond
+example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
+
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
   [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
   [IsScalarTower R A M] [IsScalarTower S A M] [SMulCommClass R S A] :
@@ -96,8 +99,6 @@ instance {S : Type _} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
 -- verify there is no diamond
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
 example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
-
--- example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 variable {M}
 
