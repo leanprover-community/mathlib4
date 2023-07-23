@@ -273,7 +273,7 @@ instance [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R] [IsScalarTower 
     IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_assoc]⟩
 
-instance [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
+instance [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => Quot.inductionOn a <| fun a' => by simp only [RingQuot.smul_quot, smul_comm]⟩
 
