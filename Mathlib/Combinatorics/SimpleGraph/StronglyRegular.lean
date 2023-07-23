@@ -180,7 +180,7 @@ set_option linter.uppercaseLean3 false in
 theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
     k * (k - ℓ - 1) = (n - k - 1) * μ := by
   rw [← h.card, Fintype.card_pos_iff] at hn
-  have v := Classical.choice hn
+  obtain ⟨v⟩ := hn
   convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
   · simp [h.regular.degree_eq]
   · simp [h.compl.regular.degree_eq]
