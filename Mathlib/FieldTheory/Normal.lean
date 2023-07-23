@@ -269,7 +269,9 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by intro i; cases i <;> infer_instance)
 
-variable [Field L] [Algebra F L] [Algebra K L] [IsScalarTower F K L]
+-- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
+variable {F K} {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
+  [Algebra F K] [IsScalarTower F K L]
 
 @[simp]
 theorem restrictScalars_normal {E : IntermediateField K L} :
