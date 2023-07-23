@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.identities
-! leanprover-community/mathlib commit 4e1eeebe63ac6d44585297e89c6e7ee5cbda487a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Derivative
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
+
+#align_import data.polynomial.identities from "leanprover-community/mathlib"@"4e1eeebe63ac6d44585297e89c6e7ee5cbda487a"
 
 /-!
 # Theory of univariate polynomials
@@ -106,7 +103,7 @@ for some `z` in the ring.
 -/
 def evalSubFactor (f : R[X]) (x y : R) : { z : R // f.eval x - f.eval y = z * (x - y) } := by
   refine' ⟨f.sum fun i r => r * (powSubPowFactor x y i).val, _⟩
-  delta eval;  rw [eval₂_eq_sum, eval₂_eq_sum];
+  delta eval; rw [eval₂_eq_sum, eval₂_eq_sum];
   simp only [sum, ← Finset.sum_sub_distrib, Finset.sum_mul]
   dsimp
   congr with i

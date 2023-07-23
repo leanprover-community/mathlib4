@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.locally_finite
-! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.LocallyFinite
 import Mathlib.Data.Set.Intervals.Monoid
+
+#align_import data.finset.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Intervals as finsets

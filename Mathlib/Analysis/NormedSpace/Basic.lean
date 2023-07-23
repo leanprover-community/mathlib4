@@ -2,11 +2,6 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module analysis.normed_space.basic
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.RestrictScalars
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.MulAction
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import analysis.normed_space.basic from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Normed spaces
@@ -189,7 +186,7 @@ In many cases the actual implementation is not important, so we don't mark the p
 
 See also `contDiff_homeomorphUnitBall` and `contDiffOn_homeomorphUnitBall_symm` for
 smoothness properties that hold when `E` is an inner-product space. -/
-@[simps (config := { attrs := [] })]
+@[simps (config := { isSimp := false })]
 noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E) 1 where
   toFun x :=
     ⟨(1 + ‖x‖ ^ 2).sqrt⁻¹ • x, by
@@ -222,9 +219,9 @@ noncomputable def homeomorphUnitBall [NormedSpace ℝ E] : E ≃ₜ ball (0 : E)
     nlinarith [norm_nonneg (y : E), (mem_ball_zero_iff.1 y.2 : ‖(y : E)‖ < 1)]
 #align homeomorph_unit_ball homeomorphUnitBall
 
--- Porting note: simp can prove this; removed simp
+@[simp]
 theorem coe_homeomorphUnitBall_apply_zero [NormedSpace ℝ E] :
-    (homeomorphUnitBall (0 : E) : E) = 0 := by simp
+    (homeomorphUnitBall (0 : E) : E) = 0 := by simp [homeomorphUnitBall_apply_coe]
 #align coe_homeomorph_unit_ball_apply_zero coe_homeomorphUnitBall_apply_zero
 
 open NormedField

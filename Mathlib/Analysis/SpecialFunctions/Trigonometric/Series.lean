@@ -2,13 +2,10 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.series
-! leanprover-community/mathlib commit ccf84e0d918668460a34aa19d02fe2e0e2286da0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exponential
+
+#align_import analysis.special_functions.trigonometric.series from "leanprover-community/mathlib"@"ccf84e0d918668460a34aa19d02fe2e0e2286da0"
 
 /-!
 # Trigonometric functions as sums of infinite series

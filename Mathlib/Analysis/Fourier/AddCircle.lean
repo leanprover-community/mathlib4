@@ -2,11 +2,6 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.fourier.add_circle
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
@@ -17,6 +12,8 @@ import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
+
+#align_import analysis.fourier.add_circle from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 

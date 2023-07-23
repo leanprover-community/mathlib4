@@ -2,15 +2,12 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.ring.opposite
-! leanprover-community/mathlib commit 76de8ae01554c3b37d66544866659ff174e66e1f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Hom.Ring
+
+#align_import algebra.ring.opposite from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
 /-!
 # Ring structures on the multiplicative opposite

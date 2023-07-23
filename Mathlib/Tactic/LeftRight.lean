@@ -10,7 +10,7 @@ open Lean Meta Elab Tactic
 def leftRightMeta (name : Name) (idx max : Nat) (goal : MVarId) : MetaM (List MVarId) := do
   goal.withContext do
     goal.checkNotAssigned name
-    let target ←  goal.getType'
+    let target ← goal.getType'
     matchConstInduct target.getAppFn
       (fun _ ↦ throwTacticEx `constructor goal "target is not an inductive datatype")
       fun ival us ↦ do
