@@ -106,8 +106,7 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
-  rw [pairs, mem_filter, pairs_pred]
-  rw [pairs, mem_filter, pairs_pred] at h
+  rw [pairs, mem_filter, pairs_pred] at *
   simp_rw [T_map_restr, T_map]
   split_ifs with h1
   · simp_all
@@ -198,12 +197,53 @@ theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
-  sorry
+  apply sum_finset_product
+  simp_all
+  intro p b
+  apply Iff.intro
+  · intro hpl
+    simp_rw [pairs, mem_filter, pairs_pred] at hpl
+    simp_all
+    exact mem_powerset_len_univ_iff.mpr hpl.2
+  · intro hpr
+    simp_rw [pairs, mem_filter, pairs_pred]
+    simp_all
+    apply And.intro
+    · simp_rw [le_iff_lt_or_eq]
+      right
+      exact mem_powerset_len_univ_iff.mp hpr.1
+    · exact mem_powerset_len_univ_iff.mp hpr.1
+
+theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ → MvPolynomial σ R) :
+    (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
+    ∑ A in powersetLen i univ, (∑ j in univ, f (A, j)) := by
+  apply sum_finset_product
+  simp_all
+  intro p b
+  apply Iff.intro
+  · intro hpl
+    exact mem_powerset_len_univ_iff.mpr hpl.2
+  · intro hpr
+    simp_rw [pairs, mem_filter, pairs_pred]
+    simp_all
+    apply And.intro
+    · apply And.intro
+      · simp_rw [mem_powerset_len_univ_iff.mp hpr, le_iff_lt_or_eq]
+        left
+        exact hi
+      · intro cardpk
+        have cardpi := mem_powerset_len_univ_iff.mp hpr
+        rw [cardpi] at cardpk
+        rw [cardpk] at hi
+        exact ((lt_irrefl _) hi).elim
+    · exact mem_powerset_len_univ_iff.mp hpr
 
 theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
-    ∑ i in range k, (∑ A in powersetLen i univ, (∑ j in univ, f (A, j))) := by
-  sorry
+    ∑ i in range k, ∑ A in powersetLen i univ, (∑ j in univ, f (A, j)) := by
+    have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
+    simp_rw [← sum_congr rfl equiv_i]
+    sorry
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
@@ -236,12 +276,17 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
   simp
   use k
 
-theorem esymm_mult_psum_summand_to_weight (k i : ℕ) : true := sorry
+theorem esymm_mult_psum_summand_to_weight (k i : ℕ) (h : i ≤ k) :
+    ∑ A in powersetLen (k - i) univ, ∑ j in univ, weight σ R k (A, j) =
+    (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i := by
+  simp_rw [esymm, psum, weight, ← mul_assoc, ← mul_sum]
+  have hcard (A : Finset σ) (hA : A ∈ powersetLen (k - i) univ) := mem_powerset_len_univ_iff.mp hA
+  sorry
 
 theorem esymm_mult_psum_to_weight (k : ℕ) :
     ∑ i in range k, (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i =
     (-1) ^ (k - 1) * ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
-  simp_rw [esymm, psum, mul_assoc]
+  simp_rw [esymm_mult_psum_summand_to_weight σ R k]
   sorry
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
@@ -255,4 +300,5 @@ theorem NewtonIdentityLE (k : ℕ) (h1 : 1 ≤ k) (h2 : k ≤ @card σ univ) :
 
 theorem NewtonIdentityGT (k : ℕ) (h1 : @card σ univ ≥ 1) (h2 : k > @card σ univ) :
     ∑ i in Icc (k - @card σ univ) k, (-1) ^ (i - 1) * esymm σ R (k - i) * psum σ R i = 0 := by
+  simp_rw [esymm, psum]
   sorry
