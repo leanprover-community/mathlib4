@@ -87,7 +87,7 @@ lemma transpose_fromColumns_eq_fromRows_transpose (A₁ : Matrix M N₁ R) (A₂
 
 /- A row partioned matrix when transposed gives a column partioned matrix with rows of the initial
 matrix tranposed to become columns. -/
-lemma transpose_fromRows_eq_fromColumns_transpose (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R):
+lemma transpose_fromRows_eq_fromColumns_transpose (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R) :
     transpose (fromRows A₁ A₂) = fromColumns (transpose A₁) (transpose A₂) := by
   rw [fromColumns, fromRows]
   funext i j
@@ -175,8 +175,8 @@ variable [CommRing R]
 /- Given that the index set N and the direct sum of the index sets N₁ and N₂ are in bijection then
 the matrix A : N × (N₁ ⊕ N₂) := Cols[A₁ A₂] is actually a "square". Hence, if its product with
 another matrix B : (N₁ ⊕ N₂) × N := Rows[B₁ B₂] matrix is one, the other matrix must be its inverse
-Mulitplication of a matrix by its inverse is commutative. This is column partioned matrix form of
-`mul_eq_one_comm` -/
+Mulitplication of a matrix by its inverse is commutative. This is column(row) partioned matrix form
+of `mul_eq_one_comm` -/
 lemma fromColumns_mul_fromRows_eq_one_comm (e : N ≃ N₁ ⊕ N₂)
     (A₁ : Matrix N N₁ R) (A₂ : Matrix N N₂ R) (B₁ : Matrix N₁ N R) (B₂ : Matrix N₂ N R) :
     fromColumns A₁ A₂ ⬝ fromRows B₁ B₂ = 1 ↔ fromRows B₁ B₂ ⬝ fromColumns A₁ A₂ = 1 := by
