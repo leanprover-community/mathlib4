@@ -24,8 +24,8 @@ column matrices, row matrices, column row block matrices
 
 namespace Matrix
 
-variable {R: Type}
-variable {M M₁ M₂ N N₁ N₂: Type}
+variable {R: Type _}
+variable {M M₁ M₂ N N₁ N₂: Type _}
 variable [Fintype M][Fintype M₁][Fintype M₂]
 variable [Fintype N][Fintype N₁][Fintype N₂]
 variable [DecidableEq M][DecidableEq M₁][DecidableEq M₂]
@@ -203,7 +203,7 @@ lemma equiv_compl_fromColumns_mul_fromRows_eq_one_comm (p : N → Prop)[Decidabl
 end CommRing
 
 section Star
-variable {R : Type _}[Star R]
+variable [Star R]
 /- A column partioned matrix in a Star ring when conjugate transposed gives a row partitioned matrix
 with the columns of the initial matrix conjugate transposed to become rows. -/
 lemma conjTranspose_fromColumns_eq_fromRows_conjTranspose (A₁ : Matrix M N₁ R)
