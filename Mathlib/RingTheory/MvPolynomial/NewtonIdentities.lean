@@ -209,7 +209,13 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
-  sorry
+  rw [disjoint_iff_ne]
+  intro a ha b hb
+  rw [mem_filter] at ha hb
+  by_contra hab
+  have h1 := ha.2
+  rw [← hb.2, ← hab] at h1
+  exact lt_irrefl _ h1
 
 theorem lt_k_union_k (k : ℕ) : (filter (fun t ↦ card t.fst < k) (pairs σ k)) ∪
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) = pairs σ k := by
@@ -224,8 +230,8 @@ theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen
 theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t in Finset.filter (fun t ↦ card t.fst = k) (pairs σ k), weight σ R k t := by
   simp_rw [esymm]
-  rw [sum_equiv_k σ R k (fun t ↦ weight σ R k t)]
-  rw [sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1 : MvPolynomial σ R)^k)]
+  rw [sum_equiv_k σ R k (fun t ↦ weight σ R k t), sum_congr rfl (esymm_summand_to_weight σ R k),
+    mul_comm (k : MvPolynomial σ R) ((-1) ^ k)]
   sorry
 
 theorem psum_to_weight (k i : ℕ) : true := sorry
