@@ -114,7 +114,8 @@ class IsFraisse : Prop where
   Amalgamation : Amalgamation K
 #align first_order.language.is_fraisse FirstOrder.Language.IsFraisse
 
-variable {K} (L) (M : Type w) [Structure L M]
+variable {K} (L)
+variable (M : Type w) [Structure L M]
 
 theorem age.is_equiv_invariant (N P : Bundled.{w} L.Structure) (h : Nonempty (N ≃[L] P)) :
     N ∈ L.age M ↔ P ∈ L.age M :=
