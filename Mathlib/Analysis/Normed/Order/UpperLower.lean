@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.normed.order.upper_lower
-! leanprover-community/mathlib commit 992efbda6f85a5c9074375d3c7cb9764c64d8f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.UpperLower
+
+#align_import analysis.normed.order.upper_lower from "leanprover-community/mathlib"@"992efbda6f85a5c9074375d3c7cb9764c64d8f72"
 
 /-!
 # Upper/lower/order-connected sets in normed groups

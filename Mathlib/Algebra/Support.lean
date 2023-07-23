@@ -2,11 +2,6 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.support
-! leanprover-community/mathlib commit 29cb56a7b35f72758b05a30490e1f10bd62c35c1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Data.Set.Finite
@@ -15,6 +10,8 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Module.Basic
 import Mathlib.GroupTheory.GroupAction.Pi
+
+#align_import algebra.support from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
 
 /-!
 # Support of a function
@@ -218,10 +215,10 @@ theorem mulSupport_comp_eq (g : M → N) (hg : ∀ {x}, g x = 1 ↔ x = 1) (f : 
 #align function.support_comp_eq Function.support_comp_eq
 
 @[to_additive]
-theorem mulSupport_comp_eq_of_range_subset (g : M → N) (s : Set M)
-    (hg : ∀ {x}, x ∈ s → (g x = 1 ↔ x = 1)) (f : α → M) (hf : range f ⊆ s) :
+theorem mulSupport_comp_eq_of_range_subset {g : M → N} {f : α → M}
+    (hg : ∀ {x}, x ∈ range f → (g x = 1 ↔ x = 1)) :
     mulSupport (g ∘ f) = mulSupport f :=
-  Set.ext fun x ↦ not_congr <| by rw [Function.comp, hg (hf (mem_range_self x))]
+  Set.ext fun x ↦ not_congr <| by rw [Function.comp, hg (mem_range_self x)]
 
 @[to_additive]
 theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :

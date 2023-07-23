@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module ring_theory.localization.cardinality
-! leanprover-community/mathlib commit 3b09a2601bb7690643936643e99bba0fedfbf6ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.RingTheory.Artinian
+
+#align_import ring_theory.localization.cardinality from "leanprover-community/mathlib"@"3b09a2601bb7690643936643e99bba0fedfbf6ed"
 
 /-!
 # Cardinality of localizations

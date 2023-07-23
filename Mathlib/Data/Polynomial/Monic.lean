@@ -2,14 +2,11 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.monic
-! leanprover-community/mathlib commit cbdf7b565832144d024caa5a550117c6df0204a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.Reverse
 import Mathlib.Algebra.Regular.SMul
+
+#align_import data.polynomial.monic from "leanprover-community/mathlib"@"cbdf7b565832144d024caa5a550117c6df0204a5"
 
 /-!
 # Theory of monic polynomials

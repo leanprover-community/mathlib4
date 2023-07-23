@@ -2,11 +2,6 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.differentiation
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Covering.VitaliFamily
 import Mathlib.MeasureTheory.Measure.Regular
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
+
+#align_import measure_theory.covering.differentiation from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Differentiation of measures
@@ -923,9 +920,8 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : LocallyIntegrable f μ)
   have := (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp hx
   simp only [ENNReal.zero_toReal] at this
   apply Tendsto.congr' _ this
-  filter_upwards [v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
-    with a h'a h''a
-  simp only [Function.comp_apply, ENNReal.toReal_div, set_average_eq, div_eq_inv_mul]
+  filter_upwards [h'x, v.eventually_measure_lt_top x] with a _ h'a
+  simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (h''a.sub (integrableOn_const.2 (Or.inr h'a))).norm
@@ -944,10 +940,9 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E}
   filter_upwards [v.ae_tendsto_average_norm_sub hf, v.ae_eventually_measure_pos] with x hx h'x
   rw [tendsto_iff_norm_tendsto_zero]
   refine' squeeze_zero' (eventually_of_forall fun a => norm_nonneg _) _ hx
-  filter_upwards [h'x, v.eventually_measure_lt_top x, v.eventually_filterAt_integrableOn x hf]
-    with a ha h'a h''a
-  nth_rw 1 [← set_average_const ha.ne' h'a.ne (f x)]
-  simp_rw [set_average_eq']
+  filter_upwards [h'x, v.eventually_measure_lt_top x] with a ha h'a
+  nth_rw 1 [← setAverage_const ha.ne' h'a.ne (f x)]
+  simp_rw [setAverage_eq']
   rw [← integral_sub]
   · exact norm_integral_le_integral_norm _
   · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 h''a
