@@ -10,6 +10,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Intervals.UnorderedInterval
+import Mathlib.Data.Set.Intervals.Image
 
 /-!
 # Locally finite orders
