@@ -244,6 +244,11 @@ protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α)
   | Option.some _, hb => some_le_some.2 <| h <| some_le_some.1 hb
 #align is_max.with_bot IsMax.withBot
 
+theorem le_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
+    a ≤ unbot b h ↔ (a : WithBot α) ≤ b := by
+  match b, h with
+  | some _, _ => simp only [unbot_coe, coe_le_coe]
+
 end LE
 
 section LT
@@ -860,6 +865,10 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
   rw [← toDual_le_toDual_iff] at hb
   simpa [toDual_le_iff] using (IsMax.withBot h : IsMax (toDual a : WithBot αᵒᵈ)) hb
 #align is_min.with_top IsMin.withTop
+
+theorem untop_le_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
+    untop a h ≤ b ↔ a ≤ (b : WithTop α) :=
+  @WithBot.le_unbot_iff αᵒᵈ _ _ _ _
 
 end LE
 
