@@ -2,16 +2,13 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module phillips
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.ContinuousFunction.Bounded
+
+#align_import phillips from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
 
 /-!
 # A counterexample on Pettis integrability

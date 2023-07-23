@@ -2,17 +2,14 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
-
-! This file was ported from Lean 3 source module number_theory.function_field
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.Topology.Algebra.ValuedField
+
+#align_import number_theory.function_field from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Function fields

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yaël Dillies, Moritz Doll
-
-! This file was ported from Lean 3 source module analysis.seminorm
-! leanprover-community/mathlib commit 09079525fd01b3dda35e96adaa08d2f943e1648c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
+
+#align_import analysis.seminorm from "leanprover-community/mathlib"@"09079525fd01b3dda35e96adaa08d2f943e1648c"
 
 /-!
 # Seminorms
@@ -1232,16 +1229,16 @@ protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [Contin
 /-- A seminorm is uniformly continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.uniformContinuous'`. -/
-protected theorem uniform_continuous_of_forall' [UniformSpace E] [UniformAddGroup E]
+protected theorem uniformContinuous_of_forall' [UniformSpace E] [UniformAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
-protected theorem uniform_continuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+protected theorem uniformContinuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
-#align seminorm.uniform_continuous' Seminorm.uniform_continuous'
+#align seminorm.uniform_continuous' Seminorm.uniformContinuous'
 
 /-- A seminorm is continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true

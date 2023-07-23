@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
-
-! This file was ported from Lean 3 source module group_theory.divisible
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Algebra.Group.Pi
+
+#align_import group_theory.divisible from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Divisible Group and rootable group

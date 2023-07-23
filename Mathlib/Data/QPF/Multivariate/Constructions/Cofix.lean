@@ -2,16 +2,13 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.constructions.cofix
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Functor.Multivariate
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Multivariate.M
 import Mathlib.Data.QPF.Multivariate.Basic
+
+#align_import data.qpf.multivariate.constructions.cofix from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.

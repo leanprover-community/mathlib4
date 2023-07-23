@@ -2,14 +2,11 @@
 Copyright (c) 2021 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.strongly_regular
-! leanprover-community/mathlib commit 2b35fc7bea4640cb75e477e83f32fbd538920822
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Set.Finite
+
+#align_import combinatorics.simple_graph.strongly_regular from "leanprover-community/mathlib"@"2b35fc7bea4640cb75e477e83f32fbd538920822"
 
 /-!
 # Strongly regular graphs

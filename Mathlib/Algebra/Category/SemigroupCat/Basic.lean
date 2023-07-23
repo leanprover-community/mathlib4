@@ -2,17 +2,14 @@
 Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
-
-! This file was ported from Lean 3 source module algebra.category.Semigroup.basic
-! leanprover-community/mathlib commit 47b51515e69f59bca5cf34ef456e6000fe205a69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Elementwise
+
+#align_import algebra.category.Semigroup.basic from "leanprover-community/mathlib"@"47b51515e69f59bca5cf34ef456e6000fe205a69"
 
 /-!
 # Category instances for has_mul, has_add, semigroup and add_semigroup
