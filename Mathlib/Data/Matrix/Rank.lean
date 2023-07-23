@@ -284,10 +284,10 @@ lemma rank_mul_isUnit [DecidableEq n] [CommRing R]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B ⬝ A).rank = B.rank := by
   rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top, ←Matrix.rank]
-  rw [LinearMap.range_eq_top] -- On separate line since implicit rfl works in prev line
-  intro x
-  use ((A⁻¹).mulVecLin x)
-  rwa [mulVecLin_apply, mulVecLin_apply, mulVec_mulVec, mul_nonsing_inv, one_mulVec]
+  · rw [LinearMap.range_eq_top] 
+    intro x
+    use ((A⁻¹).mulVecLin x)
+    rwa [mulVecLin_apply, mulVecLin_apply, mulVec_mulVec, mul_nonsing_inv, one_mulVec]
 
 /-- Post (right) multiplying by an invertible matrix does not change the rank -/
 lemma rank_isUnit_mul [DecidableEq m] [Field R]
