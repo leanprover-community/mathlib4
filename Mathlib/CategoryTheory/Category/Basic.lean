@@ -119,6 +119,13 @@ macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
   (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
+We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
+-/
+macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
+`(tactic|
+  aesop? $c* (options := { introsTransparency? := some .default, terminal := true })
+  (rule_sets [$(Lean.mkIdent `CategoryTheory):ident]))
+/--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
 nonterminal `simp`.
