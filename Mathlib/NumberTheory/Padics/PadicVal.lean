@@ -39,7 +39,7 @@ quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b`
 greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
 language of prime multiplicity.
 
-* padicValNat_factorial'`: Legendre's Theorem.  Taking (`p - 1`) times the `p`-adic valuation
+* `padicValNat_factorial'`: Legendre's Theorem.  Taking (`p - 1`) times the `p`-adic valuation
 of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
