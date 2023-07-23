@@ -403,14 +403,9 @@ end CommutingProbability
 
 instance compositum_normal {F E : Type _} [Field F] [Field E] [Algebra F E]
     (K L : IntermediateField F E) [Normal F K] [Normal F L] :
-    Normal F (K ⊔ L : IntermediateField F E) := by
-  let ϕ : Bool → IntermediateField F E := Bool.rec L K
-  have : ∀ i, Normal F (↥(ϕ i : IntermediateField F E)) :=
-    fun i => match i with
-    | true => inferInstance
-    | false => inferInstance
-  have h := IntermediateField.normal_iSup F E ϕ
-  rwa [iSup_bool_eq] at h
+    Normal F (K ⊔ L : IntermediateField F E) :=
+iSup_bool_eq (f := Bool.rec L K) ▸ IntermediateField.normal_iSup
+  (h := by intro i; cases i <;> infer_instance)
 
 open FiniteDimensional
 
