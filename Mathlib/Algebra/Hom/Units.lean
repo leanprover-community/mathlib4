@@ -543,7 +543,7 @@ theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit
 #align is_unit_of_map_unit IsUnit.of_map
 
 theorem isLocalRingHom_of_leftInverse [MonoidHomClass G S R]
-  {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f
-where map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
+    {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f where
+  map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 
 end IsLocalRingHom
