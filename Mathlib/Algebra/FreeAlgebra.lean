@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Adam Topaz
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Free
 
@@ -202,22 +203,43 @@ instance : Semiring (FreeAlgebra R X) where
 instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
-instance : SMul R (FreeAlgebra R X) where
-  smul r := Quot.map ((· * ·) ↑r) fun _ _ ↦ Rel.mul_compat_right
+instance {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
+  smul r := Quot.map (algebraMap R A r * ·) fun _ _ ↦ Rel.mul_compat_right
 
-instance : Algebra R (FreeAlgebra R X) where
-  toFun r := Quot.mk _ r
-  map_one' := rfl
-  map_mul' _ _ := Quot.sound Rel.mul_scalar
-  map_zero' := rfl
-  map_add' _ _ := Quot.sound Rel.add_scalar
+instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
+  toRingHom := ({
+      toFun := fun r => Quot.mk _ r
+      map_one' := rfl
+      map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
+      map_zero' := rfl
+      map_add' := fun _ _ => Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
+      (algebraMap R A)
   commutes' _ := by
     rintro ⟨⟩
     exact Quot.sound Rel.central_scalar
   smul_def' _ _ := rfl
 
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+    [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
+    IsScalarTower R S (FreeAlgebra A X) where
+  smul_assoc r s x := by
+    change algebraMap S A (r • s) • x = algebraMap R A _ • (algebraMap S A _ • x)
+    rw [←smul_assoc]
+    congr
+    simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
+    rw [smul_assoc, ←smul_one_mul]
+
+instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
+    [Algebra R A] [Algebra S A] [SMulCommClass R S A] :
+    SMulCommClass R S (FreeAlgebra A X) where
+  smul_comm r s x := smul_comm (algebraMap R A r) (algebraMap S A s) x
+
 instance {S : Type _} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
+
+-- verify there is no diamond
+variable (S : Type) [CommRing S] in
+example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 
