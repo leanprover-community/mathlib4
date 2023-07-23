@@ -3469,7 +3469,8 @@ def mt : CCState → Expr → Nat := sorry
 #align cc_state.mt Mathlib.Tactic.CC.CCState.mt
 
 /-- Increment the Global Modification time. -/
-def incGMT : CCState → CCState := sorry
+def incGMT (ccs : CCState) : CCState :=
+  { ccs with gmt := ccs.gmt + 1 }
 #align cc_state.inc_gmt Mathlib.Tactic.CC.CCState.incGMT
 
 /-- Check if `e` is the root of the congruence class. -/
@@ -3490,13 +3491,18 @@ def internalize : CCState → Expr → TacticM CCState := sorry
 #align cc_state.internalize Mathlib.Tactic.CC.CCState.internalize
 
 /-- Add the given proof term as a new rule.
-The proof term p must be an `Eq _ _`, `HEq _ _`, `Iff _ _`, or a negation of these. -/
-def add : CCState → Expr → TacticM CCState := sorry
+The proof term `H` must be an `Eq _ _`, `HEq _ _`, `Iff _ _`, or a negation of these. -/
+def add (ccs : CCState) (H : Expr) : TacticM CCState := do
+  let type ← inferType H
+  unless ← isProp type do
+    throwError "CCState.add failed, given expression is not a proof term"
+  let (_, c) ← CCM.run (CCM.add type H 0) { state := ccs }
+  return c.state
 #align cc_state.add Mathlib.Tactic.CC.CCState.add
 
 /-- Check whether two expressions are in the same equivalence class. -/
-def isEqv (state : CCState) (e₁ e₂ : Expr) : TacticM Bool := do
-  let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { state }
+def isEqv (ccs : CCState) (e₁ e₂ : Expr) : TacticM Bool := do
+  let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { state := ccs }
   return b
 #align cc_state.is_eqv Mathlib.Tactic.CC.CCState.isEqv
 
@@ -3504,17 +3510,26 @@ def isEqv (state : CCState) (e₁ e₂ : Expr) : TacticM Bool := do
 def isNotEqv : CCState → Expr → Expr → TacticM Bool := sorry
 #align cc_state.is_not_eqv Mathlib.Tactic.CC.CCState.isNotEqv
 
-/-- Returns a proof term that the given terms are equivalent in the given CCState-/
-def eqvProof : CCState → Expr → Expr → TacticM Expr := sorry
+/-- Returns a proof term that the given terms are equivalent in the given `CCState` -/
+def eqvProof (ccs : CCState) (e₁ e₂ : Expr) : TacticM Expr := do
+  let (some r, _) ← CCM.run (CCM.getEqProof e₁ e₂) { state := ccs }
+    | throwError "CCState.eqvProof failed to build proof"
+  return r
 #align cc_state.eqv_proof Mathlib.Tactic.CC.CCState.eqvProof
 
 /-- `proofFor cc e` constructs a proof for e if it is equivalent to true in `CCState` -/
-def proofFor : CCState → Expr → TacticM Expr := sorry
+def proofFor (ccs : CCState) (e : Expr) : TacticM Expr := do
+  let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``True [])) { state := ccs }
+    | throwError "CCState.proofFor failed to build proof"
+  mkAppM ``of_eq_true #[r]
 #align cc_state.proof_for Mathlib.Tactic.CC.CCState.proofFor
 
 /-- `refutationFor cc e` constructs a proof for `Not e` if it is equivalent to `False` in `CCState`
 -/
-def refutationFor : CCState → Expr → TacticM Expr := sorry
+def refutationFor (ccs : CCState) (e : Expr) : TacticM Expr := do
+  let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { state := ccs }
+    | throwError "CCState.refutationFor failed to build proof"
+  mkAppM ``not_of_eq_false #[r]
 #align cc_state.refutation_for Mathlib.Tactic.CC.CCState.refutationFor
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
