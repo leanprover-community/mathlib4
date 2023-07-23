@@ -87,3 +87,29 @@ def AddMathJaxCHTML : Component NoProps where
       (include_str ".." / ".." / ".." / "mathjax" / "es5" / "tex-chtml.js") ++ "
     }"
 
+/- ## Rendering
+
+There are three ways to render typesetting in MathJax: with `MathJax.typeset()`, `MathJax.typesetPromise()`, and by producing HTMLElements with converters.
+
+-/
+
+/- ### Using converters
+
+There are probably better ways to use an HTMLElement than via `dangerouslySetInnerHTML`, but it at least lets us see some math! I'm going to look into using a ref next.
+-/
+
+/- __SVG via dangerouslySetInnerHTML__
+Hacky but works just fine in this limited context. Proof-of-concept.
+-/
+@[widget_module]
+def DangerousMathJaxSVG : Component TeXProps where
+  javascript := "
+    import * as React from 'react'
+    export default function(props) {
+      if (typeof window?.MathJax !== 'undefined') {
+        const html = window.MathJax.tex2svg(props.text, {display:props.display}).outerHTML
+        return React.createElement('span', {dangerouslySetInnerHTML:{__html:html}}) }}"
+
+#html <AddMathJaxSVG /> -- evaluate first
+#html <DangerousMathJaxSVG text="\\int_0^\\infty t^{z-1}e^{-t}\\;dt" display={true} />
+
