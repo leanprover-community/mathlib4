@@ -56,8 +56,8 @@ variable [Preorder ι]
 -- For IT: `node i = (x : Iic i) → α x`, `path i j = (x : Ioc i j) → α x`
 -- TODO: for markov chains on `(i : ℕ) → α i`, `node i = α i`, `path i j = α j`
 structure MeasurableSpaceGraph (ι : Type _) [Preorder ι] :=
-  (node : ι → Type _)
-  (path : ι → ι → Type _)
+  (node : ι → Type u)
+  (path : ι → ι → Type u)
   (node_meas : ∀ i, MeasurableSpace (node i))
   (path_meas : ∀ i j, MeasurableSpace (path i j))
   (el : ∀ i j, i < j → node i × path i j → node j)
@@ -127,7 +127,9 @@ instance (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.path i j))
 
 notation κ " ⊗[" M "] " η => MeasurableSpaceGraph.compProd M κ η
 
-lemma compProd_apply' (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.path i j))
+variable {M : MeasurableSpaceGraph ι}
+
+lemma compProd_apply' (κ : kernel (M.node i) (M.path i j))
     (η : kernel (M.node j) (M.path j k)) [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (hij : i < j) (hjk : j < k) (a : node M i) {s : Set (path M i k)} (hs : MeasurableSet s) :
     (κ ⊗[M] η) a s
@@ -137,8 +139,7 @@ lemma compProd_apply' (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.p
   simp_rw [split, kernel.comap_apply]
 
 @[simp]
-lemma compProd_zero_right (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.path i j))
-    (k : ι) :
+lemma compProd_zero_right (κ : kernel (M.node i) (M.path i j)) (k : ι) :
     (κ ⊗[M] (0 : kernel (M.node j) (M.path j k))) = 0 := by
   rw [compProd]
   split_ifs
@@ -146,27 +147,27 @@ lemma compProd_zero_right (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) 
   · rfl
 
 @[simp]
-lemma compProd_zero_left (M : MeasurableSpaceGraph ι) (i : ι) (κ : kernel (M.node j) (M.path j k)) :
+lemma compProd_zero_left (i : ι) (κ : kernel (M.node j) (M.path j k)) :
     ((0 : kernel (M.node i) (M.path i j)) ⊗[M] κ) = 0 := by
   rw [compProd]
   split_ifs
   · simp only [kernel.compProd_zero_left, kernel.map_zero_left]
   · rfl
 
-lemma compProd_undef_left (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.path i j))
+lemma compProd_undef_left (κ : kernel (M.node i) (M.path i j))
     (η : kernel (M.node j) (M.path j k)) (hij : i < j) (hjk : j < k) (h : ¬ IsSFiniteKernel κ) :
     (κ ⊗[M] η) = 0 := by
   rw [compProd_eq _ _ _ hij hjk, kernel.compProd_undef_left _ _ h]
   simp
 
-lemma compProd_assoc (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.path i j))
+lemma compProd_assoc (κ : kernel (M.node i) (M.path i j))
     (η : kernel (M.node j) (M.path j k)) (ξ : kernel (M.node k) (M.path k l))
     [IsSFiniteKernel η] [IsSFiniteKernel ξ]
     (hij : i < j) (hjk : j < k) (hkl : k < l) :
     (κ ⊗[M] (η ⊗[M] ξ)) = (κ ⊗[M] η) ⊗[M] ξ := by
   by_cases hκ : IsSFiniteKernel κ
   swap
-  · rw [compProd_undef_left _ _ _ hij (hjk.trans hkl) hκ, compProd_undef_left _ _ _ hij hjk hκ]
+  · rw [compProd_undef_left _ _ hij (hjk.trans hkl) hκ, compProd_undef_left _ _ hij hjk hκ]
     simp
   ext a s hs
   have h_comp_det : ∀ b, ξ (M.el i k (hij.trans hjk) (a, b))
@@ -178,8 +179,8 @@ lemma compProd_assoc (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.pa
       ξ (el M i k (hij.trans hjk) (a, b)) {c | (b, c) ∈ er M i k l (hij.trans hjk) hkl ⁻¹' s} := by
     simp_rw [h_comp_det]
     exact kernel.measurable_kernel_prod_mk_left' (M.er_meas _ _ _ _ _ hs) a
-  rw [compProd_apply' _ _ _ hij (hjk.trans hkl) _ hs,
-    compProd_apply' _ _ _ (hij.trans hjk) hkl _ hs, compProd_eq _ _ _ hjk hkl,
+  rw [compProd_apply' _ _ hij (hjk.trans hkl) _ hs,
+    compProd_apply' _ _ (hij.trans hjk) hkl _ hs, compProd_eq _ _ _ hjk hkl,
     compProd_eq _ _ _ hij hjk, kernel.map_apply, lintegral_map h_meas_comp (M.er_meas _ _ _ _ _)]
   have : ∀ b, MeasurableSet {c | (b, c) ∈ er M i j l hij (hjk.trans hkl) ⁻¹' s} :=
     fun b ↦ (@measurable_prod_mk_left _ _ inferInstance _ b) (M.er_meas _ _ _ _ _ hs)
@@ -194,19 +195,16 @@ lemma compProd_assoc (M : MeasurableSpaceGraph ι) (κ : kernel (M.node i) (M.pa
     M.er_assoc]
 
 noncomputable
-def cast_path {M : MeasurableSpaceGraph ι}
-    (κ : kernel (M.node i) (M.path i j)) (h : j = k) :
+def cast_path (κ : kernel (M.node i) (M.path i j)) (h : j = k) :
     kernel (M.node i) (M.path i k) :=
   kernel.map κ (e_path_eq M h) (MeasurableEquiv.measurable _)
 
-lemma cast_path_apply {M : MeasurableSpaceGraph ι}
-    (κ : kernel (M.node i) (M.path i j)) (h : j = k)
+lemma cast_path_apply (κ : kernel (M.node i) (M.path i j)) (h : j = k)
     (a : M.node i) (s : Set (M.path i k)) (hs : MeasurableSet s) :
     cast_path κ h a s = κ a (e_path_eq M h ⁻¹' s) := by
   rw [cast_path, kernel.map_apply' _ _ _ hs]
 
-instance {M : MeasurableSpaceGraph ι}
-    (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] :
+instance (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] :
     IsSFiniteKernel (cast_path κ h) := by
   rw [cast_path] ; infer_instance
 
@@ -219,20 +217,14 @@ structure Transition (M : MeasurableSpaceGraph ι) :=
 
 section nat
 
-/-! ### MeasurableSpaceGraph on ℕ
-
-We descibe the `MeasurableSpaceGraph` indexed by `ℕ` with nodes `(x : Ici i) → α x` and
-paths `(x : Ioc i j) → α x`.
-
-The intended application is the following: we consider a stochastic process `X : (i : ℕ) → α i` and
-a kernel from `(x : Ici i) → α x` to `(x : Ioc i j) → α x` describes the law of the random variables
-`X (i + 1), …, X j` given `X 0, …, X i`. -/
-
 variable {α : ℕ → Type _} [∀ i, MeasurableSpace (α i)]
 
+section kerNat
+
+variable {M : MeasurableSpaceGraph ℕ}
+
 noncomputable
-def kerInterval {M : MeasurableSpaceGraph ℕ}
-    (κ₀ : kernel (M.node i) (M.path i j)) [IsSFiniteKernel κ₀]
+def kerInterval (κ₀ : kernel (M.node i) (M.path i j))
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (k : ℕ) :
     kernel (M.node i) (M.path i k) := by
   induction k with
@@ -240,31 +232,26 @@ def kerInterval {M : MeasurableSpaceGraph ℕ}
   | succ k κ_k => exact if h : j = k + 1 then M.cast_path κ₀ h else (κ_k ⊗[M] (κ k))
 
 @[simp]
-lemma kerInterval_zero {M : MeasurableSpaceGraph ℕ}
-    (κ₀ : kernel (M.node i) (M.path i j)) [IsSFiniteKernel κ₀]
+lemma kerInterval_zero (κ₀ : kernel (M.node i) (M.path i j))
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) :
     kerInterval κ₀ κ 0 = 0 := rfl
 
-lemma kerInterval_succ {M : MeasurableSpaceGraph ℕ}
-    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+lemma kerInterval_succ {κ₀ : kernel (M.node i) (M.path i j)}
     {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (k : ℕ) :
     kerInterval κ₀ κ (k + 1)
       = if h : j = k + 1 then M.cast_path κ₀ h else ((kerInterval κ₀ κ k) ⊗[M] (κ k)) := rfl
 
-lemma kerInterval_succ_of_ne {M : MeasurableSpaceGraph ℕ}
-    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+lemma kerInterval_succ_of_ne {κ₀ : kernel (M.node i) (M.path i j)}
     {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : j ≠ k + 1) :
     kerInterval κ₀ κ (k + 1) = (kerInterval κ₀ κ k) ⊗[M] (κ k) := by
   rw [kerInterval_succ, dif_neg h]
 
-lemma kerInterval_succ_right {M : MeasurableSpaceGraph ℕ}
-    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+lemma kerInterval_succ_right {κ₀ : kernel (M.node i) (M.path i j)}
     {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : j ≤ k) :
     kerInterval κ₀ κ (k + 1) = (kerInterval κ₀ κ k) ⊗[M] (κ k) := by
   rw [kerInterval_succ, dif_neg (by linarith)]
 
-lemma kerInterval_of_lt {M : MeasurableSpaceGraph ℕ}
-    {κ₀ : kernel (M.node i) (M.path i j)} [IsSFiniteKernel κ₀]
+lemma kerInterval_of_lt {κ₀ : kernel (M.node i) (M.path i j)}
     {κ : ∀ k, kernel (M.node k) (M.path k (k + 1))} (h : k < j) :
     kerInterval κ₀ κ k = 0 := by
   induction k with
@@ -273,8 +260,7 @@ lemma kerInterval_of_lt {M : MeasurableSpaceGraph ℕ}
       rw [kerInterval_succ, dif_neg h.ne', ih (by linarith)]
       simp
 
-lemma kerInterval_of_eq {M : MeasurableSpaceGraph ℕ}
-    (κ₀ : kernel (M.node i) (M.path i j)) [IsSFiniteKernel κ₀]
+lemma kerInterval_of_eq (κ₀ : kernel (M.node i) (M.path i j))
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (hj : 0 < j) :
     kerInterval κ₀ κ j = κ₀ := by
   cases j with
@@ -285,8 +271,7 @@ lemma kerInterval_of_eq {M : MeasurableSpaceGraph ℕ}
     rw [M.cast_path_apply _ _ _ _ hs]
     rfl
 
-instance {M : MeasurableSpaceGraph ℕ}
-    (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsSFiniteKernel κ₀]
+instance (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsSFiniteKernel κ₀]
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (k : ℕ) :
     IsSFiniteKernel (kerInterval κ₀ κ k) := by
   induction k with
@@ -297,23 +282,16 @@ instance {M : MeasurableSpaceGraph ℕ}
       · infer_instance
       · infer_instance
 
-section kerNat
-
-variable {M : MeasurableSpaceGraph ℕ}
-
 noncomputable
-def kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) :
+def kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (i j : ℕ) :
     kernel (M.node i) (M.path i j) :=
   if i < j then kerInterval (κ i) κ j else 0
 
-lemma kerNat_eq (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) :
+lemma kerNat_eq (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (hij : i < j) :
     kerNat κ i j = kerInterval (κ i) κ j :=
   dif_pos hij
 
-lemma kerNat_of_ge (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (hij : j ≤ i) :
+lemma kerNat_of_ge (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (hij : j ≤ i) :
     kerNat κ i j = 0 :=
   dif_neg (not_lt.mpr hij)
 
@@ -321,13 +299,12 @@ instance (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) [∀ i, IsSFi
     IsSFiniteKernel (kerNat κ i j) := by
   rw [kerNat]; split_ifs <;> infer_instance
 
-lemma kerNat_succ (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i : ℕ) :
+lemma kerNat_succ (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))) (i : ℕ) :
     kerNat κ i (i + 1) = κ i := by
   rw [kerNat_eq _ (Nat.lt_succ_self _), kerInterval_of_eq _ _ (by linarith)]
 
 lemma kerNat_succ_right (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
-    [∀ i, IsSFiniteKernel (κ i)] (i j : ℕ) (hij : i < j) :
+    (i j : ℕ) (hij : i < j) :
     kerNat κ i (j + 1) = (kerNat κ i j) ⊗[M] (kerNat κ j (j + 1)) := by
   rw [kerNat_eq _ (hij.trans (Nat.lt_succ_self _)),
     kerInterval_succ_right (Nat.succ_le_iff.mpr hij)]
@@ -351,7 +328,7 @@ lemma kerNat_succ_left (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
     | inr h =>
       rw [kerNat_succ_right _ _ _ (Nat.succ_lt_succ_iff.mp hij), hj h,
         kerNat_succ_right _ _ j h,
-        MeasurableSpaceGraph.compProd_assoc M (kerNat κ i (i + 1)) (kerNat κ (i + 1) j)
+        MeasurableSpaceGraph.compProd_assoc (kerNat κ i (i + 1)) (kerNat κ (i + 1) j)
           (kerNat κ j (j + 1)) (Nat.lt_succ_self i) h (Nat.lt_succ_self j)]
 
 theorem compProd_kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
@@ -379,12 +356,21 @@ def MeasurableSpaceGraph.transition (κ : (k : ℕ) → kernel (M.node k) (M.pat
   s_finite := fun _ _ ↦ inferInstance,
   comp := fun _ _ _ ↦ compProd_kerNat κ, }
 
+/-! ### MeasurableSpaceGraph on ℕ associated to stochastic processes
+
+We descibe the `MeasurableSpaceGraph` indexed by `ℕ` with nodes `(x : Ici i) → α x` and
+paths `(x : Ioc i j) → α x`.
+
+The intended application is the following: we consider a stochastic process `X : (i : ℕ) → α i` and
+kernels from `(x : Ici i) → α x` to `(x : Ioc i j) → α x` describe the laws of the random variables
+`X (i + 1), …, X j` given `X 0, …, X i`. -/
+
 section equivs
 
-def el (i j : ℕ) (hij : i < j) :
+def el (i j : ℕ) (hij : i ≤ j) :
     (∀ x : Iic i, α x) × (∀ x : Ioc i j, α x) ≃ᵐ ∀ x : Iic j, α x where
   toFun := fun p x ↦ if h : x ≤ i then p.1 ⟨x, h⟩ else p.2 ⟨x, ⟨not_le.mp h, x.2⟩⟩
-  invFun := fun p ↦ ⟨fun x ↦ p ⟨x, (mem_Iic.mp x.2).trans hij.le⟩,
+  invFun := fun p ↦ ⟨fun x ↦ p ⟨x, (mem_Iic.mp x.2).trans hij⟩,
     fun x ↦ p ⟨x, (mem_Ioc.mp x.2).2⟩⟩
   left_inv := fun p ↦ by
     ext x
@@ -406,10 +392,10 @@ def el (i j : ℕ) (hij : i < j) :
   measurable_invFun := by
     refine Measurable.prod_mk ?_ ?_ <;> exact measurable_pi_lambda _ (fun a ↦ measurable_id.eval)
 
-def er (i j k : ℕ) (hij : i < j) (hjk : j < k) :
+def er (i j k : ℕ) (hij : i < j) (hjk : j ≤ k) :
     (∀ x : Ioc i j, α x) × (∀ x : Ioc j k, α x) ≃ᵐ ∀ x : Ioc i k, α x where
   toFun := fun p x ↦ if h : x ≤ j then p.1 ⟨x, ⟨x.2.1, h⟩⟩ else p.2 ⟨x, ⟨not_le.mp h, x.2.2⟩⟩
-  invFun := fun p ↦ ⟨fun x ↦ p ⟨x, ⟨x.2.1, x.2.2.trans hjk.le⟩⟩,
+  invFun := fun p ↦ ⟨fun x ↦ p ⟨x, ⟨x.2.1, x.2.2.trans hjk⟩⟩,
     fun x ↦ p ⟨x, ⟨hij.trans x.2.1, x.2.2⟩⟩⟩
   left_inv := fun p ↦ by
     ext x
@@ -438,8 +424,7 @@ lemma measurable_cast {α β} [mα : MeasurableSpace α] [mβ : MeasurableSpace 
   subst hm
   exact measurable_id
 
-def e_succ_nat {α : ℕ → Type _} [mα : ∀ n, MeasurableSpace (α n)]
-    (j : ℕ) :
+def e_succ_nat {α : ℕ → Type _} [mα : ∀ n, MeasurableSpace (α n)] (j : ℕ) :
     α (j + 1) ≃ᵐ ((k : Ioc j (j + 1)) → α ↑k) where
   toFun := fun a x ↦ by
     rw [le_antisymm x.2.2 (Nat.succ_le_iff.mpr x.2.1)]
@@ -465,9 +450,10 @@ def e_succ_nat {α : ℕ → Type _} [mα : ∀ n, MeasurableSpace (α n)]
     simp only [eq_mpr_eq_cast, Equiv.coe_fn_symm_mk]
     apply measurable_pi_apply
 
-lemma el_assoc {i j k : ℕ} (hij : i < j) (hjk : j < k) (a : (x : Iic i) → α ↑x)
+lemma el_assoc {i j k : ℕ} (hij : i < j) (hjk : j ≤ k) (a : (x : Iic i) → α ↑x)
     (b : (x : Ioc i j) → α ↑x) (c : (x : Ioc j k) → α ↑x) :
-    el j k hjk (el i j hij (a, b), c) = el i k (hij.trans hjk) (a, er i j k hij hjk (b, c)) := by
+    el j k hjk (el i j hij.le (a, b), c)
+      = el i k (hij.le.trans hjk) (a, er i j k hij hjk (b, c)) := by
   ext x
   simp only [el, MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, er]
   split_ifs
@@ -476,10 +462,10 @@ lemma el_assoc {i j k : ℕ} (hij : i < j) (hjk : j < k) (a : (x : Iic i) → α
   · exfalso ; linarith
   · rfl
 
-lemma er_assoc {i j k l : ℕ} (hij : i < j) (hjk : j < k) (hkl : k < l)
+lemma er_assoc {i j k l : ℕ} (hij : i < j) (hjk : j < k) (hkl : k ≤ l)
     (b : (x : Ioc i j) → α ↑x) (c : (x : Ioc j k) → α ↑x) (d : (x : Ioc k l) → α ↑x) :
-    er i j l hij (hjk.trans hkl) (b, er j k l hjk hkl (c, d))
-      = er i k l (hij.trans hjk) hkl (er i j k hij hjk (b, c), d) := by
+    er i j l hij (hjk.le.trans hkl) (b, er j k l hjk hkl (c, d))
+      = er i k l (hij.trans hjk) hkl (er i j k hij hjk.le (b, c), d) := by
   ext x
   simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, er]
   split_ifs
@@ -496,12 +482,12 @@ def measurableSpaceGraph_nat (α : ℕ → Type _) [∀ i, MeasurableSpace (α i
   path := fun i j ↦ ∀ x : Ioc i j, α x
   node_meas := fun i ↦ by infer_instance
   path_meas := fun i j ↦ by infer_instance
-  el := fun i j hij x ↦ el i j hij x
-  el_meas := fun i j hij ↦ MeasurableEquiv.measurable (el i j hij)
-  er := fun i j k hij hjk x ↦ er i j k hij hjk x
-  er_meas := fun i j k hij hjk ↦ MeasurableEquiv.measurable (er i j k hij hjk)
-  el_assoc := fun i j k ↦ el_assoc
-  er_assoc := fun i j k l ↦ er_assoc
+  el := fun i j hij x ↦ el i j hij.le x
+  el_meas := fun i j hij ↦ MeasurableEquiv.measurable (el i j hij.le)
+  er := fun i j k hij hjk x ↦ er i j k hij hjk.le x
+  er_meas := fun i j k hij hjk ↦ MeasurableEquiv.measurable (er i j k hij hjk.le)
+  el_assoc := fun i j k hij hjk ↦ el_assoc hij hjk.le
+  er_assoc := fun i j k l hij hjk hkl ↦ er_assoc hij hjk hkl.le
 
 local notation "M" => ProbabilityTheory.measurableSpaceGraph_nat
 
@@ -552,14 +538,14 @@ def measurableSpaceGraph_markov_nat (α : ℕ → Type _) [∀ i, MeasurableSpac
     MeasurableSpaceGraph ℕ where
   node := fun i ↦ α i
   path := fun _ j ↦ α j
-  node_meas := fun i ↦ by infer_instance
-  path_meas := fun i j ↦ by infer_instance
-  el := fun i j _ x ↦ x.2
-  el_meas := fun i j _ ↦ measurable_snd
-  er := fun i j k _ _ x ↦ x.2
-  er_meas := fun i j k _ _ ↦ measurable_snd
-  el_assoc := fun i j k hij hjk a b c ↦ rfl
-  er_assoc := fun i j k l hij hjk hkl b c d ↦ rfl
+  node_meas := fun _ ↦ inferInstance
+  path_meas := fun _ _  ↦ inferInstance
+  el := fun _ _  _ x ↦ x.2
+  el_meas := fun _ _  _ ↦ measurable_snd
+  er := fun _ _ _  _ _ x ↦ x.2
+  er_meas := fun _ _ _  _ _ ↦ measurable_snd
+  el_assoc := fun _ _ _ _ _ _ _ _ ↦ rfl
+  er_assoc := fun _ _ _ _ _ _ _ _ _ _ ↦ rfl
 
 local notation "M" => measurableSpaceGraph_markov_nat
 
