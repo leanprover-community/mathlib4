@@ -2,15 +2,12 @@
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.polynomial_galois_group
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.FieldTheory.Galois
 import Mathlib.GroupTheory.Perm.Cycle.Type
+
+#align_import field_theory.polynomial_galois_group from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Galois Groups of Polynomials
@@ -376,7 +373,7 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   --    fun _ _ _ h => key2 (key1 h)
   induction p using WfDvdMonoid.induction_on_irreducible with
   | h0 => exact splits_zero _
-  | hu u hu =>  exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
+  | hu u hu => exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
   -- Porting note: using `exact` instead of `apply` times out
   | hi p₁ p₂ _ hp₂ hp₁ => apply key2 (key1 hp₂) hp₁
 #align polynomial.gal.splits_in_splitting_field_of_comp Polynomial.Gal.splits_in_splittingField_of_comp

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison
-
-! This file was ported from Lean 3 source module set_theory.surreal.basic
-! leanprover-community/mathlib commit ee02a30e209a2a77b93eac1254e8c66e76192f54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
+
+#align_import set_theory.surreal.basic from "leanprover-community/mathlib"@"ee02a30e209a2a77b93eac1254e8c66e76192f54"
 
 /-!
 # Surreal numbers

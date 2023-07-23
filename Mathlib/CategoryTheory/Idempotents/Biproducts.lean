@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.biproducts
-! leanprover-community/mathlib commit 362c2263e25ed3b9ed693773f32f91243612e1da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+#align_import category_theory.idempotents.biproducts from "leanprover-community/mathlib"@"362c2263e25ed3b9ed693773f32f91243612e1da"
 
 /-!
 
@@ -69,7 +66,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_eq, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [hom_ext_iff, biproduct.ι_map, biproduct.map_π, comp_f, assoc, ne_eq,
-        biproduct.ι_π_ne_assoc  _ h, comp_zero, zero_comp]
+        biproduct.ι_π_ne_assoc _ h, comp_zero, zero_comp]
 #align category_theory.idempotents.karoubi.biproducts.bicone CategoryTheory.Idempotents.Karoubi.Biproducts.bicone
 
 end Biproducts

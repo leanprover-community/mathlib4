@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.simplex_category
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrdCat
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+
+#align_import algebraic_topology.simplex_category from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-! # The simplex category
 
@@ -386,7 +383,7 @@ instance : Faithful skeletalFunctor.{v} where
   map_injective {_ _ f g} h := by
     ext x : 3
     apply ULift.up_injective.{v}
-    change (skeletalFunctor.{v}.map f) ⟨x⟩  = (skeletalFunctor.map g) ⟨x⟩
+    change (skeletalFunctor.{v}.map f) ⟨x⟩ = (skeletalFunctor.map g) ⟨x⟩
     rw [h]
 
 instance : EssSurj skeletalFunctor.{v} where

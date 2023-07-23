@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Yaël Dillies
-
-! This file was ported from Lean 3 source module measure_theory.integral.average
-! leanprover-community/mathlib commit c14c8fcde993801fca8946b0d80131a1a81d1520
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import measure_theory.integral.average from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
 /-!
 # Integral average of a function
@@ -200,11 +197,9 @@ theorem laverage_mem_openSegment_compl_self [IsFiniteMeasure μ] (hs : NullMeasu
 #align measure_theory.laverage_mem_open_segment_compl_self MeasureTheory.laverage_mem_openSegment_compl_self
 
 @[simp]
-theorem laverage_const (μ : Measure α) [IsFiniteMeasure μ] [h : μ.ae.NeBot] (c : ℝ≥0∞) :
+theorem laverage_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : ℝ≥0∞) :
     ⨍⁻ _x, c ∂μ = c := by
-  simp only [laverage_eq, lintegral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
-    div_eq_mul_inv, mul_assoc, ENNReal.mul_inv_cancel, mul_one, measure_ne_top μ univ, Ne.def,
-    measure_univ_ne_zero, ae_neBot.1 h, not_false_iff]
+  simp only [laverage, lintegral_const, measure_univ, mul_one]
 #align measure_theory.laverage_const MeasureTheory.laverage_const
 
 theorem setLaverage_const (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : ℝ≥0∞) : ⨍⁻ _x in s, c ∂μ = c := by
@@ -212,7 +207,7 @@ theorem setLaverage_const (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : ℝ≥0�
     univ_inter, div_eq_mul_inv, mul_assoc, ENNReal.mul_inv_cancel hs₀ hs, mul_one]
 #align measure_theory.set_laverage_const MeasureTheory.setLaverage_const
 
-theorem laverage_one [IsFiniteMeasure μ] [μ.ae.NeBot] : ⨍⁻ _x, (1 : ℝ≥0∞) ∂μ = 1 :=
+theorem laverage_one [IsFiniteMeasure μ] [NeZero μ] : ⨍⁻ _x, (1 : ℝ≥0∞) ∂μ = 1 :=
   laverage_const _ _
 #align measure_theory.laverage_one MeasureTheory.laverage_one
 
@@ -390,19 +385,14 @@ theorem average_mem_openSegment_compl_self [IsFiniteMeasure μ] {f : α → E} {
 #align measure_theory.average_mem_open_segment_compl_self MeasureTheory.average_mem_openSegment_compl_self
 
 @[simp]
-theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : μ.ae.NeBot] (c : E) :
+theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : E) :
     ⨍ _x, c ∂μ = c := by
-  simp only [average_eq, integral_const, Measure.restrict_apply, MeasurableSet.univ, one_smul,
-    univ_inter, smul_smul, ← ENNReal.toReal_inv, ← ENNReal.toReal_mul, ENNReal.inv_mul_cancel,
-    measure_ne_top μ univ, Ne.def, measure_univ_eq_zero, ae_neBot.1 h, not_false_iff,
-    ENNReal.one_toReal]
+  rw [average, integral_const, measure_univ, ENNReal.one_toReal, one_smul]
 #align measure_theory.average_const MeasureTheory.average_const
 
 theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : E) :
-    ⨍ _ in s, c ∂μ = c := by
-  simp only [setAverage_eq, integral_const, Measure.restrict_apply, MeasurableSet.univ, univ_inter,
-    smul_smul, ← ENNReal.toReal_inv, ← ENNReal.toReal_mul, ENNReal.inv_mul_cancel hs₀ hs,
-    ENNReal.one_toReal, one_smul]
+    ⨍ _ in s, c ∂μ = c :=
+  have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 #align measure_theory.set_average_const MeasureTheory.setAverage_const
 
 -- porting note: was `@[simp]` but `simp` can prove it
