@@ -195,8 +195,8 @@ theorem IsSRGWith.param_eq (h : G.IsSRGWith n k ℓ μ) (hn : 0 < n) :
       card_singleton, ← sdiff_inter_self_left, card_sdiff (by apply inter_subset_left)]
     congr
     · simp [h.regular w]
-    · simp_rw [neighborFinset_def, ← Set.toFinset_inter, ← h.of_adj v w hw, ← Set.toFinset_card,
-        Set.inter_comm]
+    · simp_rw [inter_comm, neighborFinset_def, ← Set.toFinset_inter, ← h.of_adj v w hw,
+        ← Set.toFinset_card]
       congr!
   · intro w hw
     simp_rw [neighborFinset_compl, mem_sdiff, mem_compl, mem_singleton, mem_neighborFinset,
