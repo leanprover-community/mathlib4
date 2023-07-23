@@ -53,3 +53,37 @@ cd ..
 See [https://docs.mathjax.org/en/latest/web/hosting.html].
 
 -/
+
+/- ## Setting up
+
+Here, we simply run the bundled js to get the relevant MathJax object loaded.
+
+There are two output types we try: SVG and CommonHTML. CommonHTML fails due to access issues when looking for the fonts.
+
+We need to check if the MathJax object already exists and, since we want to easily switch between SVG MathJax and CHTML MathJax, delete it if it does—if we try to run the bundled JS when MathJax already exists, bad things (illegal setting operations) start to happen. (In the real world we could simply not do anything instead of deleting then reloading.)
+
+We'd presumably *not* have this as a separate component in the real worls either, but it's useful for experimenting so that the javascript of subsequent components is easier to read.
+-/
+
+/- ### SVG -/
+@[widget_module]
+def AddMathJaxSVG : Component NoProps where
+  javascript := "
+    export default function (){
+      if (typeof window?.MathJax !== 'undefined') {
+        delete window['MathJax']
+      }" ++
+      (include_str ".." / ".." / ".." / "mathjax" / "es5" / "tex-svg.js") ++ "
+    }"
+
+/- ### CommonHTML -/
+@[widget_module]
+def AddMathJaxCHTML : Component NoProps where
+  javascript := "
+    export default function (){
+      if (typeof window?.MathJax !== 'undefined') {
+        delete window['MathJax']
+      }" ++
+      (include_str ".." / ".." / ".." / "mathjax" / "es5" / "tex-chtml.js") ++ "
+    }"
+
