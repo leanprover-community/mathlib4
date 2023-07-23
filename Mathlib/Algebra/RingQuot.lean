@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.ring_quot
-! leanprover-community/mathlib commit e5820f6c8fcf1b75bcd7738ae4da1c5896191f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import algebra.ring_quot from "leanprover-community/mathlib"@"e5820f6c8fcf1b75bcd7738ae4da1c5896191f72"
 
 /-!
 # Quotients of non-commutative rings
@@ -591,7 +588,7 @@ variable (S)
 -/
 irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    commutes' := fun _ ↦ by simp [mkRingHom_def] ; rfl }
+    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
 #align ring_quot.mk_alg_hom RingQuot.mkAlgHom
 
 @[simp]
@@ -606,7 +603,7 @@ theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) : mkAlgHom S s
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
   suffices : Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s)
-  · simpa  [mkAlgHom_def, mkRingHom_def]
+  · simpa [mkAlgHom_def, mkRingHom_def]
   rintro ⟨⟨a⟩⟩
   use a
 #align ring_quot.mk_alg_hom_surjective RingQuot.mkAlgHom_surjective
@@ -645,7 +642,7 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} { f : A →ₐ[S] B }
     simp [← one_quot, smul_quot, Algebra.algebraMap_eq_smul_one] }
 
 /-- Any `S`-algebra homomorphism `f : A →ₐ[S] B` which respects a relation `s : A → A → Prop`
-factors uniquely through a morphism `RingQuot s →ₐ[S]  B`.
+factors uniquely through a morphism `RingQuot s →ₐ[S] B`.
 -/
 irreducible_def liftAlgHom {s : A → A → Prop} :
   { f : A →ₐ[S] B // ∀ ⦃x y⦄, s x y → f x = f y } ≃ (RingQuot s →ₐ[S] B) :=

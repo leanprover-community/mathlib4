@@ -2,14 +2,11 @@
 Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.finset
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Fold
 import Mathlib.Algebra.GCDMonoid.Multiset
+
+#align_import algebra.gcd_monoid.finset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # GCD and LCM operations on finsets
@@ -168,8 +165,7 @@ theorem dvd_gcd {a : α} : (∀ b ∈ s, a ∣ f b) → a ∣ s.gcd f :=
 theorem gcd_insert [DecidableEq β] {b : β} :
     (insert b s : Finset β).gcd f = GCDMonoid.gcd (f b) (s.gcd f) := by
   by_cases h : b ∈ s
-  ·
-    rw [insert_eq_of_mem h,
+  · rw [insert_eq_of_mem h,
       (gcd_eq_right_iff (f b) (s.gcd f) (Multiset.normalize_gcd (s.1.map f))).2 (gcd_dvd h)]
   apply fold_insert h
 #align finset.gcd_insert Finset.gcd_insert

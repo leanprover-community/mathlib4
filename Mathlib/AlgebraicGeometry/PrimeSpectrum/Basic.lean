@@ -2,11 +2,6 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebraic_geometry.prime_spectrum.basic
-! leanprover-community/mathlib commit a7c017d750512a352b623b1824d75da5998457d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Over
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
+
+#align_import algebraic_geometry.prime_spectrum.basic from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
 /-!
 # Prime spectrum of a commutative ring
@@ -398,7 +395,7 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
 
 theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
-  rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff] ; rfl
+  rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 #align prime_spectrum.mem_compl_zero_locus_iff_not_mem PrimeSpectrum.mem_compl_zeroLocus_iff_not_mem
 
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
@@ -415,7 +412,7 @@ instance zariskiTopology : TopologicalSpace (PrimeSpectrum R) :=
 #align prime_spectrum.zariski_topology PrimeSpectrum.zariskiTopology
 
 theorem isOpen_iff (U : Set (PrimeSpectrum R)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus s := by
-  simp only [@eq_comm _ Uᶜ] ; rfl
+  simp only [@eq_comm _ Uᶜ]; rfl
 #align prime_spectrum.is_open_iff PrimeSpectrum.isOpen_iff
 
 theorem isClosed_iff_zeroLocus (Z : Set (PrimeSpectrum R)) : IsClosed Z ↔ ∃ s, Z = zeroLocus s := by
@@ -639,7 +636,7 @@ theorem comap_singleton_isClosed_of_isIntegral (f : R →+* S) (hf : f.IsIntegra
     (x : PrimeSpectrum S) (hx : IsClosed ({x} : Set (PrimeSpectrum S))) :
     IsClosed ({comap f x} : Set (PrimeSpectrum R)) :=
   (isClosed_singleton_iff_isMaximal _).2
-    (Ideal.isMaximal_comap_of_isIntegral_of_is_maximal' f hf x.asIdeal <|
+    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal' f hf x.asIdeal <|
       (isClosed_singleton_iff_isMaximal x).1 hx)
 #align prime_spectrum.comap_singleton_is_closed_of_is_integral PrimeSpectrum.comap_singleton_isClosed_of_isIntegral
 

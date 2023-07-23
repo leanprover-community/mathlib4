@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.topological_simplex
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Instances.NNReal
+
+#align_import algebraic_topology.topological_simplex from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Topological simplices
@@ -25,7 +22,7 @@ noncomputable section
 
 namespace SimplexCategory
 
-open Simplicial NNReal BigOperators Classical
+open Simplicial NNReal BigOperators Classical CategoryTheory
 
 attribute [local instance]
   CategoryTheory.ConcreteCategory.hasCoeToSort CategoryTheory.ConcreteCategory.funLike
@@ -60,7 +57,7 @@ def toTopMap {x y : SimplexCategory} (f : x ⟶ y) : x.toTopObj → y.toTopObj :
     dsimp [toTopObj] at hg
     convert hg
     · simp [Finset.eq_univ_iff_forall]
-    . intro i _ j _ h
+    · intro i _ j _ h
       rw [Function.onFun, disjoint_iff_inf_le]
       intro e he
       simp only [Finset.bot_eq_empty, Finset.not_mem_empty]
@@ -107,10 +104,10 @@ def toTop : SimplexCategory ⥤ TopCat where
     rw [CategoryTheory.comp_apply, ContinuousMap.coe_mk, ContinuousMap.coe_mk, ContinuousMap.coe_mk]
     simp only [coe_toTopMap]
     erw [← Finset.sum_biUnion]
-    . apply Finset.sum_congr
-      . exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
-      . tauto
-    . intro j _ k _ h
+    · apply Finset.sum_congr
+      · exact Finset.ext (fun j => ⟨fun hj => by simpa using hj, fun hj => by simpa using hj⟩)
+      · tauto
+    · intro j _ k _ h
       rw [Function.onFun, disjoint_iff_inf_le]
       intro e he
       simp only [Finset.bot_eq_empty, Finset.not_mem_empty]

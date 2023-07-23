@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.Rep
-! leanprover-community/mathlib commit cec81510e48e579bde6acd8568c06a87af045b63
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Action
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+
+#align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
@@ -453,7 +450,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep.ihom_ev_app_hom Rep.ihom_ev_app_hom
 
 /- Porting note: needs extra heartbeats. -/
-set_option maxHeartbeats 230000 in
+set_option maxHeartbeats 240000 in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.coev A).app B) = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl

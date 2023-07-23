@@ -2,13 +2,10 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.types
-! leanprover-community/mathlib commit 98bd247d933fb581ff37244a5998bd33d81dd46d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Satisfiability
+
+#align_import model_theory.types from "leanprover-community/mathlib"@"98bd247d933fb581ff37244a5998bd33d81dd46d"
 
 /-!
 # Type Spaces
@@ -158,8 +155,8 @@ instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
 #align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 
 theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
-    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) =
-      { p : T.CompleteType α | (⋃ i : ι, S i) ⊆ p } := by
+    ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
+      { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext
   simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 #align first_order.language.Theory.complete_type.Inter_set_of_subset FirstOrder.Language.Theory.CompleteType.iInter_setOf_subset

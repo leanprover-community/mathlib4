@@ -3,17 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.module.linear_map
-! leanprover-community/mathlib commit cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Ring.CompTypeclasses
+
+#align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
 
 /-!
 # (Semi)linear maps
@@ -373,8 +370,7 @@ theorem _root_.preimage_smul_setₛₗ [SemilinearMapClass F σ M M₃] {c : R} 
   apply Set.Subset.antisymm
   · rintro x ⟨y, ys, hy⟩
     refine' ⟨(hc.unit.inv : R) • x, _, _⟩
-    ·
-      simp only [← hy, smul_smul, Set.mem_preimage, Units.inv_eq_val_inv, map_smulₛₗ h, ← map_mul,
+    · simp only [← hy, smul_smul, Set.mem_preimage, Units.inv_eq_val_inv, map_smulₛₗ h, ← map_mul,
         IsUnit.val_inv_mul, one_smul, map_one, ys]
     · simp only [smul_smul, IsUnit.mul_val_inv, one_smul, Units.inv_eq_val_inv]
   · rintro x ⟨y, hy, rfl⟩
@@ -403,7 +399,7 @@ we can also add an instance for `AddCommGroup.intModule`, allowing `z •` to be
 `R` does not support negation.
 -/
 class CompatibleSMul (R S : Type _) [Semiring S] [SMul R M] [Module S M] [SMul R M₂]
-  [Module S M₂] where
+  [Module S M₂] : Prop where
   /-- Scalar multiplication by `R` of `M` can be moved through linear maps. -/
   map_smul : ∀ (fₗ : M →ₗ[S] M₂) (c : R) (x : M), fₗ (c • x) = c • fₗ x
 #align linear_map.compatible_smul LinearMap.CompatibleSMul
@@ -580,7 +576,7 @@ def inverse [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R} [Rin
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
   exact
     { toFun := g
-      map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)] ; simp [h₂]
+      map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
       map_smul' := fun a b ↦ by
         dsimp only
         rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]
@@ -738,7 +734,7 @@ abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Modu
   M →ₗ[R] M
 #align module.End Module.End
 
-/-- Reinterpret an additive homomorphism as a `ℕ`-linear map. -/
+/-- Reinterpret an additive homomorphism as an `ℕ`-linear map. -/
 def AddMonoidHom.toNatLinearMap [AddCommMonoid M] [AddCommMonoid M₂] (f : M →+ M₂) : M →ₗ[ℕ] M₂
     where
   toFun := f

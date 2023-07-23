@@ -85,7 +85,7 @@ lemma ιFun_injective : (ιFun π).Injective := by
   rintro ⟨⟨a,x⟩⟩ ⟨⟨b,y⟩⟩ (h : π _ _ = π _ _)
   apply Quotient.sound'
   refine ⟨pullback (π a) (π b), ⟨⟨x,y⟩,h⟩, pullback.fst _ _, pullback.snd _ _, ?_, rfl, rfl⟩
-  ext ⟨_, h⟩ ; exact h
+  ext ⟨_, h⟩; exact h
 
 /--
 Implementation: The quotient of `relation π`, considered as an object of `CompHaus`.
@@ -127,7 +127,7 @@ Implementation: The family of morphisms `X a ⟶ QB` is an effective epi.
 def structAux : EffectiveEpiFamilyStruct X (π' π) where
   desc := fun {W} e h => {
     toFun := Quotient.lift (fun ⟨a,x⟩ => e a x) <| by
-      rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,hh,hx,hy⟩ ; dsimp at *
+      rintro ⟨a,x⟩ ⟨b,y⟩ ⟨Z,z,fst,snd,hh,hx,hy⟩; dsimp at *
       rw [← hx, ← hy]
       specialize h _ _ fst snd ?_
       · ext z
@@ -141,7 +141,7 @@ def structAux : EffectiveEpiFamilyStruct X (π' π) where
       apply continuous_sigma
       intro a
       exact (e a).continuous }
-  fac := by intro Z e h a ; ext ; rfl
+  fac := by intro Z e h a; ext; rfl
   uniq := by
     intro Z e h m hm
     ext ⟨⟨a,x⟩⟩
@@ -150,10 +150,10 @@ def structAux : EffectiveEpiFamilyStruct X (π' π) where
     exact hm
 
 @[reassoc]
-lemma π'_comp_ι_hom (a : α) : π' π a ≫ (ι _ surj).hom = π a := by ext ; rfl
+lemma π'_comp_ι_hom (a : α) : π' π a ≫ (ι _ surj).hom = π a := by ext; rfl
 
 @[reassoc]
-lemma π_comp_ι_inv (a : α) : π a ≫ (ι _ surj).inv = π' π a :=  by
+lemma π_comp_ι_inv (a : α) : π a ≫ (ι _ surj).inv = π' π a := by
   rw [Iso.comp_inv_eq]
   exact π'_comp_ι_hom _ surj _
 
@@ -200,26 +200,26 @@ theorem effectiveEpiFamily_tfae
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
   tfae_have 1 → 2
-  · intro ; infer_instance
+  · intro; infer_instance
   tfae_have 2 → 3
-  · intro e ; rw [epi_iff_surjective] at e
+  · intro e; rw [epi_iff_surjective] at e
     let i : ∐ X ≅ finiteCoproduct X :=
       (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
     intro b
     obtain ⟨t,rfl⟩ := e b
     let q := i.hom t
     refine ⟨q.1,q.2,?_⟩
-    have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id] ; rfl
+    have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
     rw [this]
     show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
     suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
-      rw [this] ; rfl
+      rw [this]; rfl
     rw [Iso.inv_comp_eq]
     apply colimit.hom_ext
     rintro ⟨a⟩
     simp only [Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
       colimit.comp_coconePointUniqueUpToIso_hom_assoc]
-    ext ; rfl
+    ext; rfl
   tfae_have 3 → 1
   · apply effectiveEpiFamily_of_jointly_surjective
   tfae_finish
@@ -229,9 +229,9 @@ instance precoherent : Precoherent CompHaus.{u} := by
   intro B₁ B₂ f α _ X₁ π₁ h₁
   refine ⟨α, inferInstance, fun a => pullback f (π₁ a), fun a => pullback.fst _ _, ?_,
     id, fun a => pullback.snd _ _, ?_⟩
-  · have := (effectiveEpiFamily_tfae _ π₁).out 0 2 ; rw [this] at h₁ ; clear this
+  · have := (effectiveEpiFamily_tfae _ π₁).out 0 2; rw [this] at h₁; clear this
     have := (effectiveEpiFamily_tfae _ (fun a => pullback.fst f (π₁ a))).out 0 2
-    rw [this] ; clear this
+    rw [this]; clear this
     intro b₂
     obtain ⟨a,x,h⟩ := h₁ (f b₂)
     refine ⟨a, ⟨⟨b₂, x⟩, h.symm⟩, rfl⟩

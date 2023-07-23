@@ -2,15 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.array
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Equiv.List
 import Mathlib.Control.Traversable.Equiv
+
+#align_import logic.equiv.array from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Equivalences involving `Array`
@@ -56,7 +53,7 @@ def arrayEquivList (α : Type _) : Array α ≃ List α :=
 end Equiv
 
 /- Porting note: removed instances for what would be ported as `Traversable (Array α)` and
-`IsLawfulTraversable (Array α)`. These would
+`LawfulTraversable (Array α)`. These would
 
 1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
@@ -73,7 +70,7 @@ instance for `array` was)
 -- instance : Traversable (Array' n) :=
 --   @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
 
--- instance : IsLawfulTraversable (Array' n) :=
+-- instance : LawfulTraversable (Array' n) :=
 --   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
 
 -- end Array'

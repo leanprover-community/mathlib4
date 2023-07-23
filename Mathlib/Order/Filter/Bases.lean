@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
-
-! This file was ported from Lean 3 source module order.filter.bases
-! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
 import Mathlib.Order.Filter.Prod
+
+#align_import order.filter.bases from "leanprover-community/mathlib"@"996b0ff959da753a555053a480f36e5f264d4207"
 
 /-!
 # Filter bases
@@ -812,7 +809,7 @@ theorem HasBasis.forall_mem_mem (h : HasBasis l p s) {x : α} :
 #align filter.has_basis.forall_mem_mem Filter.HasBasis.forall_mem_mem
 
 protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h : HasBasis l p s)
-    (hf : Monotone f) : (⨅ t ∈ l, f t) = ⨅ (i) (_ : p i), f (s i) :=
+    (hf : Monotone f) : ⨅ t ∈ l, f t = ⨅ (i) (_ : p i), f (s i) :=
   le_antisymm (le_iInf₂ fun i hi => iInf₂_le (s i) (h.mem_of_mem hi)) <|
     le_iInf₂ fun _t ht =>
       let ⟨i, hpi, hi⟩ := h.mem_iff.1 ht
@@ -820,7 +817,7 @@ protected theorem HasBasis.biInf_mem [CompleteLattice β] {f : Set α → β} (h
 #align filter.has_basis.binfi_mem Filter.HasBasis.biInf_mem
 
 protected theorem HasBasis.biInter_mem {f : Set α → Set β} (h : HasBasis l p s) (hf : Monotone f) :
-    (⋂ t ∈ l, f t) = ⋂ (i) (_ : p i), f (s i) :=
+    ⋂ t ∈ l, f t = ⋂ (i) (_ : p i), f (s i) :=
   h.biInf_mem hf
 #align filter.has_basis.bInter_mem Filter.HasBasis.biInter_mem
 
@@ -1014,7 +1011,7 @@ theorem HasCountableBasis.isCountablyGenerated {f : Filter α} {p : ι → Prop}
 #align filter.has_countable_basis.is_countably_generated Filter.HasCountableBasis.isCountablyGenerated
 
 theorem antitone_seq_of_seq (s : ℕ → Set α) :
-    ∃ t : ℕ → Set α, Antitone t ∧ (⨅ i, 𝓟 <| s i) = ⨅ i, 𝓟 (t i) := by
+    ∃ t : ℕ → Set α, Antitone t ∧ ⨅ i, 𝓟 (s i) = ⨅ i, 𝓟 (t i) := by
   use fun n => ⋂ m ≤ n, s m; constructor
   · exact fun i j hij => biInter_mono (Iic_subset_Iic.2 hij) fun n _ => Subset.rfl
   apply le_antisymm <;> rw [le_iInf_iff] <;> intro i
@@ -1026,13 +1023,13 @@ theorem antitone_seq_of_seq (s : ℕ → Set α) :
 #align filter.antitone_seq_of_seq Filter.antitone_seq_of_seq
 
 theorem countable_biInf_eq_iInf_seq [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
-    (Bne : B.Nonempty) (f : ι → α) : ∃ x : ℕ → ι, (⨅ t ∈ B, f t) = ⨅ i, f (x i) :=
+    (Bne : B.Nonempty) (f : ι → α) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) :=
   let ⟨g, hg⟩ := Bcbl.exists_eq_range Bne
   ⟨g, hg.symm ▸ iInf_range⟩
 #align filter.countable_binfi_eq_infi_seq Filter.countable_biInf_eq_iInf_seq
 
 theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B.Countable)
-    (f : ι → α) {i₀ : ι} (h : f i₀ = ⊤) : ∃ x : ℕ → ι, (⨅ t ∈ B, f t) = ⨅ i, f (x i) := by
+    (f : ι → α) {i₀ : ι} (h : f i₀ = ⊤) : ∃ x : ℕ → ι, ⨅ t ∈ B, f t = ⨅ i, f (x i) := by
   cases' B.eq_empty_or_nonempty with hB Bnonempty
   · rw [hB, iInf_emptyset]
     use fun _ => i₀
@@ -1041,7 +1038,7 @@ theorem countable_biInf_eq_iInf_seq' [CompleteLattice α] {B : Set ι} (Bcbl : B
 #align filter.countable_binfi_eq_infi_seq' Filter.countable_biInf_eq_iInf_seq'
 
 theorem countable_biInf_principal_eq_seq_iInf {B : Set (Set α)} (Bcbl : B.Countable) :
-    ∃ x : ℕ → Set α, (⨅ t ∈ B, 𝓟 t) = ⨅ i, 𝓟 (x i) :=
+    ∃ x : ℕ → Set α, ⨅ t ∈ B, 𝓟 t = ⨅ i, 𝓟 (x i) :=
   countable_biInf_eq_iInf_seq' Bcbl 𝓟 principal_univ
 #align filter.countable_binfi_principal_eq_seq_infi Filter.countable_biInf_principal_eq_seq_iInf
 
@@ -1146,12 +1143,12 @@ instance coprod.isCountablyGenerated (la : Filter α) (lb : Filter β) [IsCounta
 end IsCountablyGenerated
 
 theorem isCountablyGenerated_seq [Countable β] (x : β → Set α) :
-    IsCountablyGenerated (⨅ i, 𝓟 <| x i) := by
+    IsCountablyGenerated (⨅ i, 𝓟 (x i)) := by
   use range x, countable_range x
   rw [generate_eq_biInf, iInf_range]
 #align filter.is_countably_generated_seq Filter.isCountablyGenerated_seq
 
-theorem isCountablyGenerated_of_seq {f : Filter α} (h : ∃ x : ℕ → Set α, f = ⨅ i, 𝓟 <| x i) :
+theorem isCountablyGenerated_of_seq {f : Filter α} (h : ∃ x : ℕ → Set α, f = ⨅ i, 𝓟 (x i)) :
     f.IsCountablyGenerated := by
   rcases h with ⟨x, rfl⟩
   apply isCountablyGenerated_seq

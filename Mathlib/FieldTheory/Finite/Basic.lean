@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
-
-! This file was ported from Lean 3 source module field_theory.finite.basic
-! leanprover-community/mathlib commit 12a85fac627bea918960da036049d611b1a3ee43
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.Tactic.ApplyFun
+
+#align_import field_theory.finite.basic from "leanprover-community/mathlib"@"12a85fac627bea918960da036049d611b1a3ee43"
 
 /-!
 # Finite fields
@@ -105,7 +102,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
 end Polynomial
 
 theorem prod_univ_units_id_eq_neg_one [CommRing K] [IsDomain K] [Fintype Kˣ] :
-    (∏ x : Kˣ, x) = (-1 : Kˣ) := by
+    ∏ x : Kˣ, x = (-1 : Kˣ) := by
   classical
     have : (∏ x in (@univ Kˣ _).erase (-1), x) = 1 :=
       prod_involution (fun x _ => x⁻¹) (by simp)
@@ -184,12 +181,12 @@ theorem forall_pow_eq_one_iff (i : ℕ) : (∀ x : Kˣ, x ^ i = 1) ↔ q - 1 ∣
 
 /-- The sum of `x ^ i` as `x` ranges over the units of a finite field of cardinality `q`
 is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
-theorem sum_pow_units [Fintype Kˣ] (i : ℕ) :
+theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
     { toFun := fun x => x ^ i
       map_one' := by simp
-      map_mul' := by intros ; simp [mul_pow] }
+      map_mul' := by intros; simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance
   calc (∑ x : Kˣ, φ x) = if φ = 1 then Fintype.card Kˣ else 0 := sum_hom_units φ
       _ = if q - 1 ∣ i then -1 else 0 := by
@@ -206,7 +203,7 @@ theorem sum_pow_units [Fintype Kˣ] (i : ℕ) :
 
 /-- The sum of `x ^ i` as `x` ranges over a finite field of cardinality `q`
 is equal to `0` if `i < q - 1`. -/
-theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : (∑ x : K, x ^ i) = 0 := by
+theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0 := by
   by_cases hi : i = 0
   · simp only [hi, nsmul_one, sum_const, pow_zero, card_univ, cast_card_eq_zero]
   classical
@@ -217,7 +214,7 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : (∑ x : K, x ^ i) =
       simp only [true_and_iff, Function.Embedding.coeFn_mk, mem_sdiff, Units.exists_iff_ne_zero,
         mem_univ, mem_map, exists_prop_of_true, mem_singleton]
     calc
-      (∑ x : K, x ^ i) = ∑ x in univ \ {(0 : K)}, x ^ i := by
+      ∑ x : K, x ^ i = ∑ x in univ \ {(0 : K)}, x ^ i := by
         rw [← sum_sdiff ({0} : Finset K).subset_univ, sum_singleton,
           zero_pow (Nat.pos_of_ne_zero hi), add_zero]
       _ = ∑ x : Kˣ, (x ^ i : K) := by simp [← this, univ.sum_map φ]

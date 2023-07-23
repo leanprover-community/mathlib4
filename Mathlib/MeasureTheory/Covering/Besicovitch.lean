@@ -2,11 +2,6 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.besicovitch
-! leanprover-community/mathlib commit 5f6e827d81dfbeb6151d7016586ceeb0099b9655
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Covering.Differentiation
 import Mathlib.MeasureTheory.Covering.VitaliFamily
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import measure_theory.covering.besicovitch from "leanprover-community/mathlib"@"5f6e827d81dfbeb6151d7016586ceeb0099b9655"
 
 /-!
 # Besicovitch covering theorems
@@ -384,7 +381,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     simpa only [exists_prop, mem_iUnion, mem_singleton_iff, mem_closedBall, Subtype.exists,
       Subtype.coe_mk]
   choose! g hg using this
-  -- Choose for each `k < N` an ordinal `G k < i`  giving a ball of color `k` intersecting
+  -- Choose for each `k < N` an ordinal `G k < i` giving a ball of color `k` intersecting
   -- the last ball.
   let G : ℕ → Ordinal := fun n => if n = N then i else g n
   have color_G : ∀ n, n ≤ N → p.color (G n) = n := by
@@ -596,9 +593,9 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     refine' mem_iUnion.2 ⟨i, ⟨hx, _⟩⟩
     simp only [exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk]
     exact ⟨y, ⟨y.2, by simpa only [Subtype.coe_eta]⟩, ball_subset_closedBall h'⟩
-  have S : (∑ _i : Fin N, μ s / N) ≤ ∑ i, μ (s ∩ v i) :=
+  have S : ∑ _i : Fin N, μ s / N ≤ ∑ i, μ (s ∩ v i) :=
     calc
-      (∑ _i : Fin N, μ s / N) = μ s := by
+      ∑ _i : Fin N, μ s / N = μ s := by
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
         rw [ENNReal.mul_div_cancel']
         · simp only [Npos, Ne.def, Nat.cast_eq_zero, not_false_iff]
@@ -669,7 +666,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hk
     obtain ⟨l', _, rfl⟩ : ∃ l' : u i, l' ∈ w ∧ ↑l' = l := by
       simpa only [mem_image, Finset.mem_coe, Finset.coe_image] using hl
-    have k'nel' : (k' : s) ≠ l' := by intro h; rw [h] at hkl ; exact hkl rfl
+    have k'nel' : (k' : s) ≠ l' := by intro h; rw [h] at hkl; exact hkl rfl
     exact hu i k'.2 l'.2 k'nel'
 #align besicovitch.exist_finset_disjoint_balls_large_measure Besicovitch.exist_finset_disjoint_balls_large_measure
 
@@ -903,7 +900,7 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SigmaFinite μ
     rcases (mem_image _ _ _).1 hx with ⟨⟨p, q⟩, _, rfl⟩
     exact vg _ (hr _ hx)
   · have :
-      (⋃ (x : α) (_ : x ∈ t), closedBall x (r x)) =
+      ⋃ (x : α) (_ : x ∈ t), closedBall x (r x) =
         ⋃ (p : α × ℝ) (_ : p ∈ (fun x => (x, r x)) '' t), closedBall p.1 p.2 :=
       by conv_rhs => rw [biUnion_image]
     rw [this, im_t]

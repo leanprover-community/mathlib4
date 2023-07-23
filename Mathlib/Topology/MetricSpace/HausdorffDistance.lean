@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.hausdorff_distance
-! leanprover-community/mathlib commit bc91ed7093bf098d253401e69df601fc33dde156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Instances.ENNReal
+
+#align_import topology.metric_space.hausdorff_distance from "leanprover-community/mathlib"@"bc91ed7093bf098d253401e69df601fc33dde156"
 
 /-!
 # Hausdorff distance
@@ -106,7 +103,7 @@ theorem infEdist_lt_iff {r : ℝ≥0∞} : infEdist x s < r ↔ ∃ y ∈ s, edi
 the edist from `x` to `y` -/
 theorem infEdist_le_infEdist_add_edist : infEdist x s ≤ infEdist y s + edist x y :=
   calc
-    (⨅ z ∈ s, edist x z) ≤ ⨅ z ∈ s, edist y z + edist x y :=
+    ⨅ z ∈ s, edist x z ≤ ⨅ z ∈ s, edist y z + edist x y :=
       iInf₂_mono fun z _ => (edist_triangle _ _ _).trans_eq (add_comm _ _)
     _ = (⨅ z ∈ s, edist y z) + edist x y := by simp only [ENNReal.iInf_add]
 #align emetric.inf_edist_le_inf_edist_add_edist EMetric.infEdist_le_infEdist_add_edist
@@ -139,9 +136,9 @@ theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
   have : infEdist x (closure s) < infEdist x (closure s) + ε / 2 :=
     ENNReal.lt_add_right h.ne ε0.ne'
   rcases infEdist_lt_iff.mp this with ⟨y, ycs, hy⟩
-  -- y : α,  ycs : y ∈ closure s,  hy : edist x y < infEdist x (closure s) + ↑ε / 2
+  -- y : α, ycs : y ∈ closure s, hy : edist x y < infEdist x (closure s) + ↑ε / 2
   rcases EMetric.mem_closure_iff.1 ycs (ε / 2) ε0 with ⟨z, zs, dyz⟩
-  -- z : α,  zs : z ∈ s,  dyz : edist y z < ↑ε / 2
+  -- z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2
   calc
     infEdist x s ≤ edist x z := infEdist_le_edist_of_mem zs
     _ ≤ edist x y + edist y z := (edist_triangle _ _ _)
@@ -205,7 +202,7 @@ theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s :
 #align emetric.inf_edist_vadd EMetric.infEdist_vadd
 
 theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
-    ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ (⋃ n, F n) = U ∧ Monotone F := by
+    ∃ F : ℕ → Set α, (∀ n, IsClosed (F n)) ∧ (∀ n, F n ⊆ U) ∧ ⋃ n, F n = U ∧ Monotone F := by
   obtain ⟨a, a_pos, a_lt_one⟩ : ∃ a : ℝ≥0∞, 0 < a ∧ a < 1 := exists_between zero_lt_one
   let F := fun n : ℕ => (fun x => infEdist x Uᶜ) ⁻¹' Ici (a ^ n)
   have F_subset : ∀ n, F n ⊆ U := fun n x hx ↦ by
@@ -213,7 +210,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
     have : infEdist x Uᶜ ≠ 0 := ((ENNReal.pow_pos a_pos _).trans_le hx).ne'
     exact this (infEdist_zero_of_mem h)
   refine ⟨F, fun n => IsClosed.preimage continuous_infEdist isClosed_Ici, F_subset, ?_, ?_⟩
-  show (⋃ n, F n) = U
+  show ⋃ n, F n = U
   · refine' Subset.antisymm (by simp only [iUnion_subset_iff, F_subset, forall_const]) fun x hx => _
     have : ¬x ∈ Uᶜ := by simpa using hx
     rw [mem_iff_infEdist_zero_of_closed hU.isClosed_compl] at this
@@ -323,11 +320,11 @@ theorem infEdist_le_infEdist_add_hausdorffEdist :
     have : infEdist x s < infEdist x s + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).1.ne ε0
     rcases infEdist_lt_iff.mp this with ⟨y, ys, dxy⟩
-    -- y : α,  ys : y ∈ s,  dxy : edist x y < infEdist x s + ↑ε / 2
+    -- y : α, ys : y ∈ s, dxy : edist x y < infEdist x s + ↑ε / 2
     have : hausdorffEdist s t < hausdorffEdist s t + ε / 2 :=
       ENNReal.lt_add_right (ENNReal.add_lt_top.1 h).2.ne ε0
     rcases exists_edist_lt_of_hausdorffEdist_lt ys this with ⟨z, zt, dyz⟩
-    -- z : α,  zt : z ∈ t,  dyz : edist y z < Hausdorff_edist s t + ↑ε / 2
+    -- z : α, zt : z ∈ t, dyz : edist y z < Hausdorff_edist s t + ↑ε / 2
     calc
       infEdist x t ≤ edist x z := infEdist_le_edist_of_mem zt
       _ ≤ edist x y + edist y z := (edist_triangle _ _ _)
