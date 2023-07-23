@@ -320,9 +320,10 @@ theorem coeFn_sum {ι : Type _} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂
              map_add' := fun _ _ => rfl }) _ _
 #align linear_map.coe_fn_sum LinearMap.coeFn_sum
 
-@[simp]
-theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m :=
-  congr_fun (hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _) m
+theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+#align linear_map.coe_pow LinearMap.coe_pow
+
+theorem pow_apply (f : M →ₗ[R] M) (n : ℕ) (m : M) : (f ^ n) m = f^[n] m := congr_fun (coe_pow f n) m
 #align linear_map.pow_apply LinearMap.pow_apply
 
 theorem pow_map_zero_of_le {f : Module.End R M} {m : M} {k l : ℕ} (hk : k ≤ l)
@@ -347,11 +348,6 @@ theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End
     rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
 #align linear_map.submodule_pow_eq_zero_of_pow_eq_zero LinearMap.submodule_pow_eq_zero_of_pow_eq_zero
-
-theorem coe_pow (f : M →ₗ[R] M) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
-  ext m
-  apply pow_apply
-#align linear_map.coe_pow LinearMap.coe_pow
 
 @[simp]
 theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
