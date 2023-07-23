@@ -2,16 +2,13 @@
 Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker
-
-! This file was ported from Lean 3 source module analysis.locally_convex.with_seminorms
-! leanprover-community/mathlib commit b31173ee05c911d61ad6a05bd2196835c932e0ec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+
+#align_import analysis.locally_convex.with_seminorms from "leanprover-community/mathlib"@"b31173ee05c911d61ad6a05bd2196835c932e0ec"
 
 /-!
 # Topology induced by a family of seminorms

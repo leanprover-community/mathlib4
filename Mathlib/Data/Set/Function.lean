@@ -2,14 +2,11 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.set.function
-! leanprover-community/mathlib commit 996b0ff959da753a555053a480f36e5f264d4207
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Function.Conjugate
+
+#align_import data.set.function from "leanprover-community/mathlib"@"996b0ff959da753a555053a480f36e5f264d4207"
 
 /-!
 # Functions over sets
@@ -357,6 +354,10 @@ and the codomain to `t`. Same as `Subtype.map`. -/
 def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) : s → t :=
   Subtype.map f h
 #align set.maps_to.restrict Set.MapsTo.restrict
+
+theorem MapsTo.restrict_commutes (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
+    Subtype.val ∘ h.restrict f s t = f ∘ Subtype.val :=
+  rfl
 
 @[simp]
 theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t x : β) = f x :=

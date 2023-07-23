@@ -3,11 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit d2d8742b0c21426362a9dacebc6005db895ca963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
@@ -17,6 +12,8 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
+
+#align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-!
 # Equivalence between types
@@ -142,6 +139,21 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 #align equiv.prod_assoc Equiv.prodAssoc
 #align equiv.prod_assoc_symm_apply Equiv.prodAssoc_symm_apply
 #align equiv.prod_assoc_apply Equiv.prodAssoc_apply
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+@[simps apply]
+def prodProdProdComm (α β γ δ : Type _) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
+  toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
+  invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
+  left_inv := fun ⟨⟨_a, _b⟩, ⟨_c, _d⟩⟩ => rfl
+  right_inv := fun ⟨⟨_a, _c⟩, ⟨_b, _d⟩⟩ => rfl
+#align equiv.prod_prod_prod_comm Equiv.prodProdProdComm
+
+@[simp]
+theorem prodProdProdComm_symm (α β γ δ : Type _) :
+    (prodProdProdComm α β γ δ).symm = prodProdProdComm α γ β δ :=
+  rfl
+#align equiv.prod_prod_prod_comm_symm Equiv.prodProdProdComm_symm
 
 /-- `γ`-valued functions on `α × β` are equivalent to functions `α → β → γ`. -/
 @[simps (config := { fullyApplied := false })]

@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.constructions.borel_space.basic
-! leanprover-community/mathlib commit 9f55d0d4363ae59948c33864cbc52e0b12e0e8ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
@@ -19,6 +14,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+
+#align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
 /-!
 # Borel (measurable) space
@@ -1112,10 +1109,8 @@ private theorem AEMeasurable.is_lub_of_nonempty {ι} (hι : Nonempty ι) {μ : M
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :
     AEMeasurable g μ := by
-  by_cases hμ : μ = 0
-  · rw [hμ]
-    exact aemeasurable_zero_measure
-  have : μ.ae.NeBot := by simpa [neBot_iff]
+  rcases eq_zero_or_neZero μ with rfl | hμ
+  · exact aemeasurable_zero_measure
   by_cases hι : Nonempty ι
   · exact AEMeasurable.is_lub_of_nonempty hι hf hg
   suffices ∃ x, g =ᵐ[μ] fun _ => g x by
