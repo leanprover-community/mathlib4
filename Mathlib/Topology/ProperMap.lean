@@ -15,7 +15,7 @@ import Mathlib.Order.Filter.Cofinite
 This file develops the basic theory of proper maps between topological spaces. A map `f : X → Y`
 between two topological spaces is said to be **proper** if it is continuous and satisfies one of
 the following equivalent conditions:
-1. `f` is closed and has compact fibers
+1. `f` is closed and has compact fibers.
 2. `f` is **universally closed**, in the sense that for any topological space `Z`, the map
   `Prod.map f id : X × Z → Y × Z` is closed.
 3. For any `ℱ : Filter X`, all cluster points of `map f ℱ` are images by `f` of some cluster point
