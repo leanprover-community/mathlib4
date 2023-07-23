@@ -945,12 +945,6 @@ add_decl_doc Δ'
 /-- The discriminant of `E` is equal to the discriminant of `E` as a Weierstrass curve. -/
 add_decl_doc coe_Δ'
 
-instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve ℚ :=
-  ⟨⟨⟨0, 0, 1, -1, 0⟩, ⟨37, 37⁻¹, by norm_num1, by norm_num1⟩,
-    by simp only [WeierstrassCurve.b₂, WeierstrassCurve.b₄, WeierstrassCurve.b₆,
-      WeierstrassCurve.b₈, WeierstrassCurve.Δ]; ring1⟩⟩
-#align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
-
 variable [CommRing R] (E : EllipticCurve R)
 
 -- porting note: removed `@[simp]` to avoid a `simpNF` linter error
@@ -1083,6 +1077,10 @@ lemma ofJ_j : (ofJ j).j = j := by
       rw [h1728, ofJ_1728_of_two_ne_zero h2, @ofJ1728_j _ _ <| invertibleOfNonzero h2]
     · rw [ofJ_ne_0_ne_1728 j h0 h1728,
         @ofJ'_j _ _ _ (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)]
+
+noncomputable instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
+  ⟨ofJ 42⟩
+#align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 
 end ModelsWithJ
 
