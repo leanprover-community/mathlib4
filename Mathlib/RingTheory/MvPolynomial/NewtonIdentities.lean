@@ -78,7 +78,7 @@ open Classical Finset Nat
 
 variable (σ : Type) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type) [CommRing R]
   [NoZeroDivisors (MvPolynomial σ R)] [CharZero (MvPolynomial σ R)]
-/-
+/--
   TODO: show that MvPolynomial σ R is an integral domain if R is an integral domain
   TODO: show that MvPolynomial σ R has characteristic zero if R has characteristic zero
 -/
@@ -86,8 +86,7 @@ variable (σ : Type) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type) [Comm
 def fintype_card (σ : Type) [Fintype σ] := Finset.card (univ : Finset σ)
 
 /-- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1983) -/
-def j_in_A_pred (t : Finset σ × σ) := t.snd ∈ t.fst
-def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.fst = k → j_in_A_pred σ t)
+def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
 
 def pairs (σ : Type) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (pairs_pred σ k)
@@ -102,8 +101,8 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
-  rw [pairs, mem_filter, pairs_pred, j_in_A_pred]
-  rw [pairs, mem_filter, pairs_pred, j_in_A_pred] at h
+  rw [pairs, mem_filter, pairs_pred]
+  rw [pairs, mem_filter, pairs_pred] at h
   simp_rw [T_map_restr, T_map]
   split_ifs with h1
   · simp_all
@@ -136,7 +135,7 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
   · simp at h3
 
 /-- There surely must be an easier way to show this one... -/
-theorem sub_lemma {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) : c - b + a = c - (b - a) := by
+theorem Nat.sub_add {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) : c - b + a = c - (b - a) := by
   have h1 (n : ℕ) := sub_succ c (c - (b - n))
   have h2 (n : ℕ) := Nat.sub_sub_self (le_trans (sub_le b n) hbc)
   have h3 (m n : ℕ) (h : succ m ≤ n) : (m < n) := Nat.lt_of_lt_of_le (lt_succ.mpr (le_refl m)) h
@@ -155,7 +154,7 @@ theorem sub_lemma {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) : c - b + a = c 
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
   simp_rw [T_map_restr, T_map, weight]
-  simp_rw [pairs, mem_filter, pairs_pred, j_in_A_pred] at h
+  simp_rw [pairs, mem_filter, pairs_pred] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
   · rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
   split_ifs with h1
@@ -169,7 +168,7 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       · use t.snd
         apply h1
       exact lt_iff_add_one_le.mp (card_pos.mpr h4)
-    rw [sub_lemma h3 h.2.1,
+    rw [Nat.sub_add h3 h.2.1,
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
       Nat.sub_add_cancel]
     simp
@@ -209,17 +208,20 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
-  rw [disjoint_iff_ne]
-  intro a ha b hb
-  rw [mem_filter] at ha hb
-  by_contra hab
-  have h1 := ha.2
-  rw [← hb.2, ← hab] at h1
+  rw [disjoint_filter]
+  intro _ _ h1 h2
+  rw [h2] at h1
   exact lt_irrefl _ h1
 
 theorem lt_k_union_k (k : ℕ) : (filter (fun t ↦ card t.fst < k) (pairs σ k)) ∪
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) = pairs σ k := by
-  sorry
+  simp_rw [← filter_or, Finset.ext_iff]
+  intro a
+  simp
+  intro ha
+  simp_rw [pairs, mem_filter, pairs_pred] at ha
+  simp_rw [← le_iff_lt_or_eq]
+  exact ha.2.1
 
 theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen k univ) :
     ∑ j in A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i in A, X i : MvPolynomial σ R) := by
