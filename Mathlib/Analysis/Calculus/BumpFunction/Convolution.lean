@@ -29,6 +29,9 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   If `(φ i).rOut` tends to zero along a filter `l`,
   then `((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀` tends to `g x₀` along the same filter.
 - `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
+- `ContDiffBump.ae_convolution_tendsto_right_of_locally_integrable`: let `g` be a locally
+  integrable function. Then the convolution of `g` with a family of bump functions converges
+  almost everywhere to `g`.
 
 ## Keywords
 
@@ -37,7 +40,7 @@ convolution, smooth function, bump function
 
 universe uG uE'
 
-open ContinuousLinearMap Metric MeasureTheory Filter Function
+open ContinuousLinearMap Metric MeasureTheory Filter Function Measure Set
 open scoped Convolution Topology
 
 namespace ContDiffBump
@@ -102,9 +105,6 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
 
-
-open Metric MeasureTheory.Measure Set
-
 local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 /-- If a function `g` is locally integrable, then the convolution `φ i * g` converges almost
@@ -137,6 +137,6 @@ theorem ae_convolution_tendsto_right_of_locally_integrable
     simpa [dist_eq_norm_sub'] using hx.le
   · filter_upwards [h'φ] with i hi x
     rw [abs_of_nonneg (nonneg_normed _ _), addHaar_closedBall_center]
-    exact (φ i).normed_le_div_measure_closedBall_rOut _ hi _
+    exact (φ i).normed_le_div_measure_closedBall_rOut _ _ hi _
 
 end ContDiffBump
