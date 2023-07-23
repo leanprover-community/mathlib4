@@ -113,3 +113,23 @@ def DangerousMathJaxSVG : Component TeXProps where
 #html <AddMathJaxSVG /> -- evaluate first
 #html <DangerousMathJaxSVG text="\\int_0^\\infty t^{z-1}e^{-t}\\;dt" display={true} />
 
+/- __CHTML via dangerouslySetInnerHTML__
+Fails! Can't get the fonts; from the webview inspector:
+```
+GET vscode-webview://../es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff net::ERR_ACCESS_DENIED
+```
+This seems related to (this vscode issue)[https://github.com/microsoft/vscode/issues/102959].
+This suggests we could use `panel.webview.asWebviewUri(vscode.Uri.file(...))` in front of(?) the value of `fontURL` in `./mathjax/components/src/output/chtml/fonts/tex/tex.js`, but I couldn't get the `vscode` npm dependency to work.
+-/
+@[widget_module]
+def DangerousMathJaxCHTML : Component TeXProps where
+  javascript := "
+    import * as React from 'react'
+    export default function(props) {
+      if (typeof window?.MathJax !== 'undefined') {
+        const html = window.MathJax.tex2chtml(props.text, {display:props.display}).outerHTML
+        return React.createElement('span', {dangerouslySetInnerHTML:{__html:html}}) }}"
+
+#html <AddMathJaxCHTML /> -- evaluate first
+-- fails; no fonts. (Blank.)
+#html <DangerousMathJaxCHTML text="\\int_0^\\infty t^{z-1}e^{-t}\\;dt" display={true} />
