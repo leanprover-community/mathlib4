@@ -80,17 +80,19 @@ instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited
 instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 #align clifford_algebra.ring CliffordAlgebra.instRing
 
-
-instance instAlgebra {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
+instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
   RingQuot.instAlgebraRingQuotInstSemiring _
-#align clifford_algebra.algebra CliffordAlgebra.instAlgebra
 
 -- verify there are no diamonds
-example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra _ := rfl
-example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra _ := rfl
+example : (algebraNat : Algebra ℕ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+example : (algebraInt _ : Algebra ℤ (CliffordAlgebra Q)) = instAlgebra' _ := rfl
+
+-- shortcut instance, as the other instance is slow
+instance instAlgebra : Algebra R (CliffordAlgebra Q) := instAlgebra' _
+#align clifford_algebra.algebra CliffordAlgebra.instAlgebra
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M] (Q : QuadraticForm A M)
