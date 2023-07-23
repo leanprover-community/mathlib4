@@ -16,3 +16,18 @@ We've got two ways to render math available to us:
 We put the local copies of MathJax and KaTeX at the top level. (This is not how we'd want to actually do things! Quick access for demo purposes only.)
 -/
 
+open ProofWidgets Jsx
+
+/- Basic props -/
+
+structure NoProps
+#mkrpcenc NoProps
+
+structure TextProps where
+  text : String
+#mkrpcenc TextProps
+
+structure TeXProps extends TextProps where
+  display : Bool := false
+#mkrpcenc TeXProps
+
