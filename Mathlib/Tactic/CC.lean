@@ -27,6 +27,20 @@ def Lean.Expr.isNum : Expr → Bool
   | .lit (.natVal _) => true
   | _ => false
 
+def Lean.Expr.toNat : Expr → Option Nat
+  | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal n))) _ => some n
+  | .lit (.natVal n) => some n
+  | _ => none
+
+def Lean.Expr.toInt : Expr → Option Int
+  | .app (.app (.app (.const ``OfNat.ofNat _) _) (.lit (.natVal n))) _ => some n
+  | .lit (.natVal n) => some n
+  | .app (.app (.app (.const ``Neg.neg _) _) _) r =>
+    match r.toNat with
+    | some n => some (-n)
+    | none => none
+  | _ => none
+
 def Lean.Expr.isSignedNum (e : Expr) : Bool :=
   if e.isNum then true
   else if let .app (.app (.app (.const ``Neg.neg _) _) _) r := e then r.isNum
@@ -62,6 +76,8 @@ def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
 
 abbrev RBExprMap (α : Type u) := Std.RBMap Expr α Expr.quickCmp
 
+abbrev RBExprSet := Std.RBSet Expr Expr.quickCmp
+
 structure Lean.Meta.ExtCongrTheorem where
   /-- The basic `CongrTheorem` object defined at `Lean.Meta.CongrTheorems` -/
   congrTheorem : CongrTheorem
@@ -85,7 +101,7 @@ def Lean.Expr.isNotOrNe : Expr → Bool × Expr
 
 namespace Mathlib.Tactic.CC
 
-initialize registerTraceClass `Meta.Tactic.cc
+initialize registerTraceClass `Debug.Meta.Tactic.cc
 
 abbrev UInt64Map (α : Type u) := Std.RBMap UInt64 α compare
 
@@ -2949,6 +2965,16 @@ void finalize_congruence_tactics() {
 ```
 -/
 
+inductive EntryExpr
+  | expr : Expr → EntryExpr
+  /-- dummy congruence proof, it is just a placeholder. -/
+  | congr : EntryExpr
+  /-- dummy eq_true proof, it is just a placeholder -/
+  | eqTrue : EntryExpr
+  /-- dummy refl proof, it is just a placeholder. -/
+  | refl : EntryExpr
+  deriving Inhabited
+
 /-- Equivalence class data associated with an expression `e` -/
 structure Entry where
   /-- next element in the equivalence class. -/
@@ -2962,7 +2988,7 @@ structure Entry where
   target : Option Expr := none
   /-- When `e` was added to this equivalence class because of an equality `(H : e = tgt)`, then
       we store `tgt` at `target`, and `H` at `proof`. Both fields are none if `e == root` -/
-  proof : Option Expr := none
+  proof : Option EntryExpr := none
   /-- proof has been flipped -/
   flipped : Bool
   /-- `true` if the node should be viewed as an abstract value -/
@@ -3006,17 +3032,7 @@ abbrev SymmCongruences := UInt64Map (List (Expr × Name))
 
 abbrev SubsingletonReprs := RBExprMap Expr
 
-inductive TodoExpr
-  | expr : Expr → TodoExpr
-  /-- dummy congruence proof, it is just a placeholder. -/
-  | congr : TodoExpr
-  /-- dummy eq_true proof, it is just a placeholder -/
-  | eqTrue : TodoExpr
-  /-- dummy refl proof, it is just a placeholder. -/
-  | refl : TodoExpr
-  deriving Inhabited
-
-abbrev TodoEntry := Expr × Expr × TodoExpr × Bool
+abbrev TodoEntry := Expr × Expr × EntryExpr × Bool
 
 /-- Congruence closure state.
 This may be considered to be a set of expressions and an equivalence class over this set.
@@ -3112,6 +3128,10 @@ def modifyTodo (f : Array TodoEntry → Array TodoEntry) : CCM Unit :=
 def getState : CCM CCState := do
   return (← get).state
 
+@[inline]
+def getTodo : CCM (Array TodoEntry) := do
+  return (← get).todo
+
 def getEntry (e : Expr) : CCM (Option Entry) := do
   return (← getState).entries.find? e
 
@@ -3148,7 +3168,7 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   if let some oldPS := (← getState).parents.find? childRoot then
     ps := oldPS
   ps := ps.insert { expr := parent, symmTable }
-  modifyState fun state => { state with parents := state.parents.insert childRoot ps }
+  modifyState fun ccs => { ccs with parents := ccs.parents.insert childRoot ps }
 
 def isSymmRelation (e : Expr) : CCM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
@@ -3173,7 +3193,7 @@ def propagateInstImplicit (e : Expr) : CCM Unit := sorry
 def setFO (e : Expr) : CCM Unit := do
   let some d ← getEntry e | failure
   let d := { d with fo := true }
-  modifyState fun state => { state with entries := state.entries.insert e d }
+  modifyState fun ccs => { ccs with entries := ccs.entries.insert e d }
 
 /--
 This method is invoked during internalization and eagerly apply basic equivalences for term `e`
@@ -3204,7 +3224,7 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
     let proof ← mkAppM ``Subsingleton.elim #[a, b]
     pushEq a b proof
   else
-    let some AEqB ← getEqProof A B | unreachable!
+    let some AEqB ← getEqProof A B | failure
     let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
     pushHEq a b proof
 
@@ -3220,18 +3240,18 @@ def isEqFalse (e : Expr) : CCM Bool :=
   isEqv e (.const ``False [])
 
 def getEqTrueProof (e : Expr) : CCM Expr := do
-  assert! ← isEqTrue e
-  let some p ← getEqProof e (.const ``True []) | unreachable!
+  guard (← isEqTrue e)
+  let some p ← getEqProof e (.const ``True []) | failure
   return p
 
 def getEqFalseProof (e : Expr) : CCM Expr := do
-  assert! ← isEqFalse e
-  let some p ← getEqProof e (.const ``False []) | unreachable!
+  guard (← isEqFalse e)
+  let some p ← getEqProof e (.const ``False []) | failure
   return p
 
 def getPropEqProof (a b : Expr) : CCM Expr := do
-  assert! ← isEqv a b
-  let some p ← getEqProof a b | unreachable!
+  guard (← isEqv a b)
+  let some p ← getEqProof a b | failure
   return p
 
 mutual
@@ -3251,8 +3271,8 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   else if (← mkExtCongrTheorem e).isSome then
     let fn := e.getAppFn
     let apps := e.getAppApps
-    assert! apps.size > 0
-    assert! apps.back == e
+    guard (apps.size > 0)
+    guard (apps.back == e)
     let mut pinfo : List ParamInfo := []
     let config := (← getState).config
     if config.ignoreInstances then
@@ -3298,7 +3318,7 @@ partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
   applySimpleEqvs e
 
 partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM Unit := do
-  assert! !e.hasLooseBVars
+  guard !e.hasLooseBVars
   /- We allow metavariables after partitions have been frozen. -/
   if e.hasExprMVar && !(← getState).frozePartitions then
     return
@@ -3329,7 +3349,7 @@ partial def internalizeCore (e : Expr) (_parent : Option Expr) (gen : Nat) : CCM
     | .app _ _ | .lit _ => internalizeApp e gen
 
 partial def propagateImpUp (e : Expr) : CCM Unit := do
-  assert! e.isArrow
+  guard e.isArrow
   let .forallE _ a b _ := e | unreachable!
   if ← isEqTrue a then
     -- `a = True  → (a → b) = b`
@@ -3369,26 +3389,281 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   if let some it := (← getState).subsingletonReprs.find? type then
     pushSubsingletonEq e it
   else
-    modifyState fun state =>
-      { state with
-        subsingletonReprs := state.subsingletonReprs.insert type e }
+    modifyState fun ccs =>
+      { ccs with
+        subsingletonReprs := ccs.subsingletonReprs.insert type e }
   let typeRoot ← getRoot type
   if typeRoot == type then return
   if let some it2 := (← getState).subsingletonReprs.find? typeRoot then
     pushSubsingletonEq e it2
   else
-    modifyState fun state =>
-      { state with
-        subsingletonReprs := state.subsingletonReprs.insert typeRoot e }
+    modifyState fun ccs =>
+      { ccs with
+        subsingletonReprs := ccs.subsingletonReprs.insert typeRoot e }
 
 partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
   if (← getEntry e).isSome then return
   let constructor := e.isConstructorApp (← getEnv)
-  modifyState fun state => state.mkEntryCore e interpreted constructor gen
+  modifyState fun ccs => ccs.mkEntryCore e interpreted constructor gen
   processSubsingletonElem e
 end
 
-def processTodo : CCM Unit := sorry
+def removeParents (e : Expr) : CCM (Array Expr) := sorry
+
+/--
+The fields `target` and `proof` in `e`'s entry are encoding a transitivity proof
+Let `e.rootTarget` and `e.rootProof` denote these fields.
+```lean
+e = e.rootTarget            := e.rootProof
+_ = e.rootTarget.rootTarget := e.rootTarget.rootProof
+ ...
+_ = e.root                  := ...
+```
+The transitivity proof eventually reaches the root of the equivalence class.
+This method "inverts" the proof. That is, the `target` goes from `e.root` to e after
+we execute it.
+-/
+partial def invertTransAux (e : Expr) (newFlipped : Bool) (newTarget : Option Expr)
+    (newProof : Option EntryExpr) : CCM Unit := do
+  let some n ← getEntry e | failure
+  if let some t := n.target then
+    invertTransAux t (!n.flipped) (some e) n.proof
+  let newN : Entry :=
+    { n with
+      flipped := newFlipped
+      target := newTarget
+      proof := newProof }
+  modifyState fun ccs => { ccs with entries := ccs.entries.insert e newN }
+
+@[inline, inherit_doc invertTransAux]
+def invertTrans (e : Expr) : CCM Unit :=
+  invertTransAux e false none none
+
+def getEqcLambdas (e : Expr) : CCM (Array Expr) := do
+  guard ((← getRoot e) == e)
+  let mut r := #[]
+  let some ee ← getEntry e | failure
+  unless ee.hasLambdas do return r
+  let mut it := e
+  repeat
+    if it.isLambda then
+      r := r.push it
+    let some itN ← getEntry it | failure
+    it := itN.next
+  until it != e
+  return r
+
+/-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
+def collectFnRoots (root : Expr) : CCM (Array Expr) := do
+  guard ((← getRoot root) == root)
+  let mut fnRoots : Array Expr := #[]
+  let mut visited : RBExprSet := ∅
+  let mut it := root
+  repeat
+    let fnRoot ← getRoot (it.getAppFn)
+    if !visited.contains fnRoot then
+      visited := visited.insert fnRoot
+      fnRoots := fnRoots.push fnRoot
+    let some itN ← getEntry it | failure
+    it := itN.next
+  until it != root
+  return fnRoots
+
+def reinsertParents (e : Expr) : CCM Unit := do
+  let some ps := (← getState).parents.find? e | return
+  for p in ps do
+    trace[Debug.Meta.Tactic.cc] "reinsert parent: {p.expr}"
+    if p.expr.isApp then
+      if p.symmTable then
+        addSymmCongruenceTable p.expr
+      else
+        addCongruenceTable p.expr
+
+def checkInvariant : CCM Bool := sorry
+
+def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
+  let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
+  let some n₂ ← getEntry e₂ | return -- `e₂` have not been internalized
+  if n₁.root == n₂.root then return -- they are already in the same equivalence class.
+  let some r₁ ← getEntry n₁.root | failure
+  let some r₂ ← getEntry n₂.root | failure
+
+  -- We want `r₂` to be the root of the combined class.
+
+  /-
+    We swap `(e₁,n₁,r₁)` with `(e₂,n₂,r₂)` when
+    1- `r₁.interpreted && !r₂.interpreted`.
+      Reason: to decide when to propagate we check whether the root of the equivalence class
+      is `True`/`False`. So, this condition is to make sure if `True`/`False` is in an equivalence
+      class, then one of them is the root. If both are, it doesn't matter, since the state is
+      inconsistent anyway.
+    2- `r₁.constructor && !r₂.interpreted && !r₂.constructor`
+      Reason: we want constructors to be the representative of their equivalence classes.
+    3- `r₁.size > r₂.size && !r₂.interpreted && !r₂.constructor`
+      Reason: performance.
+  -/
+  if (r₁.interpreted && !r₂.interpreted) ||
+      (r₁.constructor && !r₂.interpreted && !r₂.constructor) ||
+      (Nat.blt r₂.size r₁.size && !r₂.interpreted && !r₂.constructor) then
+    go e₂ e₁ n₂ n₁ r₂ r₁ true H heqProof
+  else
+    go e₁ e₂ n₁ n₂ r₁ r₂ false H heqProof
+where
+  go (e₁ e₂: Expr) (n₁ n₂ r₁ r₂ : Entry) (flipped : Bool) (H : EntryExpr) (heqProof : Bool) :
+      CCM Unit := do
+    let valueInconsistency :=
+      if r₁.interpreted && r₂.interpreted then
+        if n₁.root == .const ``True [] || n₂.root == .const ``True [] then
+          true
+        else if n₁.root.isNum && n₂.root.isNum then
+          n₁.root.toInt != n₂.root.toInt
+        else
+          true
+      else
+        false
+
+    let constructorEq := r₁.constructor && r₂.constructor
+    let e₁Root := n₁.root
+    let e₂Root := n₂.root
+    trace[Debug.Tactic.cc] "merging\n{e₁} ==> {e₁Root}\nwith\n{e₂Root} <== {e₂}"
+
+    /-
+    Following target/proof we have
+    `e₁ -> ... -> r₁`
+    `e₂ -> ... -> r₂`
+    We want
+    `r₁ -> ... -> e₁ -> e₂ -> ... -> r₂`
+    -/
+    invertTrans e₁
+    let newN₁ : Entry :=
+      { n₁ with
+        target := e₂
+        proof := H
+        flipped }
+    modifyState fun ccs => { ccs with entries := ccs.entries.insert e₁ newN₁ }
+
+    -- The hash code for the parents is going to change
+    let parentsToPropagate ← removeParents e₁Root
+
+    let lambdas₁ ← getEqcLambdas e₁Root
+    let lambdas₂ ← getEqcLambdas e₂Root
+    let fnRoots₂ ← if !lambdas₁.isEmpty then collectFnRoots e₂Root else pure #[]
+    let fnRoots₁ ← if !lambdas₂.isEmpty then collectFnRoots e₁Root else pure #[]
+
+    -- force all `root` fields in `e₁` equivalence class to point to `e₂Root`
+    let propagate := e₂Root == .const ``True [] || e₂Root == .const ``False []
+    let mut toPropagate : Array Expr := #[]
+    let mut it := e₁
+    repeat
+      let some itN ← getEntry it | failure
+      if propagate then
+        toPropagate := toPropagate.push it
+      let newItN : Entry := { itN with root := e₂Root }
+      modifyState fun ccs => { ccs with entries := ccs.entries.insert it newItN }
+      it := newItN.next
+    until it != e₁
+
+    reinsertParents e₁Root
+
+    -- update next of `e₁Root` and `e₂Root`, ac representative, and size of `e₂Root`
+    let some r₁ ← getEntry e₁Root | failure
+    let some r₂ ← getEntry e₂Root | failure
+    guard (r₁.root == e₂Root)
+
+    let newR₁ : Entry :=
+      { r₁ with
+        next := r₂.next }
+    let newR₂ : Entry :=
+      { r₂ with
+        next := r₁.next
+        size := r₂.size + r₁.size
+        hasLambdas := r₂.hasLambdas || r₁.hasLambdas
+        heqProofs := r₂.heqProofs || heqProof }
+    modifyState fun ccs =>
+      { ccs with
+        entries := ccs.entries.insert e₁Root newR₁ |>.insert e₂Root newR₂ }
+    guard (← checkInvariant)
+
+    /-
+    ```c++
+    buffer<expr> lambda_apps_to_internalize;
+    propagate_beta_to_eqc(fn_roots2, lambdas1, lambda_apps_to_internalize);
+    propagate_beta_to_eqc(fn_roots1, lambdas2, lambda_apps_to_internalize);
+
+    // copy e1_root parents to e2_root
+    auto ps1 = m_state.m_parents.find(e1_root);
+    if (ps1) {
+        parent_occ_set ps2;
+        if (auto it = m_state.m_parents.find(e2_root))
+            ps2 = *it;
+        ps1->for_each([&](parent_occ const & p) {
+                if (!is_app(p.m_expr) || is_congr_root(p.m_expr)) {
+                    if (!constructor_eq && r2->m_constructor)  {
+                        propagate_projection_constructor(p.m_expr, e2_root);
+                    }
+                    ps2.insert(p);
+                }
+            });
+        m_state.m_parents.erase(e1_root);
+        m_state.m_parents.insert(e2_root, ps2);
+    }
+
+    if (!m_state.m_inconsistent && ac_var1 && ac_var2)
+        m_ac.add_eq(*ac_var1, *ac_var2);
+
+    if (!m_state.m_inconsistent && constructor_eq)
+        propagate_constructor_eq(e1_root, e2_root);
+
+    if (!m_state.m_inconsistent && value_inconsistency)
+        propagate_value_inconsistency(e1_root, e2_root);
+
+    if (!m_state.m_inconsistent) {
+        update_mt(e2_root);
+        check_new_subsingleton_eq(e1_root, e2_root);
+    }
+
+    if (!m_state.m_inconsistent) {
+        for (expr const & p : parents_to_propagate)
+            propagate_up(p);
+    }
+
+    if (!m_state.m_inconsistent && !to_propagate.empty()) {
+        for (expr const & e : to_propagate)
+            propagate_down(e);
+        if (m_phandler)
+            m_phandler->propagated(to_propagate);
+    }
+
+    if (!m_state.m_inconsistent) {
+        for (expr const & e : lambda_apps_to_internalize) {
+            internalize_core(e, none_expr(), get_generation_of(e));
+        }
+    }
+
+    lean_trace(name({"cc", "merge"}), scope_trace_env scope(m_ctx.env(), m_ctx);
+            tout() << e1_root << " = " << e2_root << "\n";);
+    lean_trace(name({"debug", "cc"}), scope_trace_env scope(m_ctx.env(), m_ctx);
+            auto out = tout();
+            auto fmt = out.get_formatter();
+            out << "merged: " << e1_root << " = " << e2_root << "\n";
+            out << m_state.pp_eqcs(fmt) << "\n";
+            if (is_trace_class_enabled(name{"debug", "cc", "parent_occs"}))
+                out << m_state.pp_parent_occs(fmt) << "\n";
+            out << "--------\n";);
+    ```
+    -/
+    sorry
+
+def processTodo : CCM Unit := do
+  repeat
+    let todo ← getTodo
+    if todo.isEmpty then return
+    if (← getState).inconsistent then
+      modifyTodo fun _ => #[]
+      return
+    let (lhs, rhs, H, heqProof) := todo.back
+    modifyTodo Array.pop
+    addEqvStep lhs rhs H heqProof
 
 def addEqvCore (lhs rhs H : Expr) (heqProof : Bool) : CCM Unit := do
   pushTodo lhs rhs H heqProof
