@@ -36,14 +36,10 @@ structure TeXProps extends TextProps where
 
 We switch between MathJax for SVG and MathJax for CHTML for demo purposes. That means you may need to "click to reload" at certain points—a misclick can get the webview stuck in an errored state if it tries to e.g. find a function that doesn't exist on the current MathJax object.
 
-We use the whole MathJax *source* directory, in case we want to try to modify it to get fonts to work.
+We have the whole MathJax *source* directory here in addition to the prebuilt MathJax, in case we want to try to modify it to get fonts to work.
 
-The `mathjax/` directory here was obtained with
+To build the source in the `./mathjax` directory, run
 ```
-# clone source; would otherwise use https://github.com/mathjax/MathJax.git
-git clone https://github.com/mathjax/MathJax-src.git mathjax
-
-# build
 cd mathjax
 npm install
 npm run compile
@@ -73,7 +69,7 @@ def AddMathJaxSVG : Component NoProps where
       if (typeof window?.MathJax !== 'undefined') {
         delete window['MathJax']
       }" ++
-      (include_str ".." / ".." / ".." / "mathjax" / "es5" / "tex-svg.js") ++ "
+      (include_str ".." / ".." / ".." / "mathjax-prebuilt" / "es5" / "tex-svg.js") ++ "
     }"
 
 /- ### CommonHTML -/
@@ -84,7 +80,7 @@ def AddMathJaxCHTML : Component NoProps where
       if (typeof window?.MathJax !== 'undefined') {
         delete window['MathJax']
       }" ++
-      (include_str ".." / ".." / ".." / "mathjax" / "es5" / "tex-chtml.js") ++ "
+      (include_str ".." / ".." / ".." / "mathjax-prebuilt" / "es5" / "tex-chtml.js") ++ "
     }"
 
 /- ## Rendering
