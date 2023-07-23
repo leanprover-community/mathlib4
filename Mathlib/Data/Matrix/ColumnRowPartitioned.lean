@@ -43,10 +43,13 @@ def fromColumns (B₁ : Matrix M N₁ R) (B₂ : Matrix M N₂ R) : Matrix M (N�
 
 /-- Given a column partitioned matrix extract the first column -/
 def toColumns₁ (A : Matrix M (N₁ ⊕ N₂) R) : Matrix M N₁ R :=  of fun i j => (A i (Sum.inl j))
+
 /-- Given a column partitioned matrix extract the second column -/
 def toColumns₂ (A : Matrix M (N₁ ⊕ N₂) R) : Matrix M N₂ R :=  of fun i j => (A i (Sum.inr j))
+
 /-- Given a row partitioned matrix extract the first row -/
 def toRows₁ (A : Matrix (M₁ ⊕ M₂) N R) : Matrix M₁ N R :=  of fun i j => (A (Sum.inl i) j)
+
 /-- Given a row partitioned matrix extract the second row -/
 def toRows₂ (A : Matrix (M₁ ⊕ M₂) N R) : Matrix M₂ N R :=  of fun i j => (A (Sum.inr i) j)
 
@@ -69,10 +72,13 @@ lemma fromRows_toRows (A : Matrix (M₁ ⊕ M₂) N R) : A = fromRows A.toRows�
   cases' i
   all_goals (simp only [of_apply, Sum.elim_inl, Sum.elim_inr])
 
+lemma fromRows_ext_iff (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R) (B₁ : Matrix M₁ N R)
+    (B₂ : Matrix M₂ N R) : fromRows A₁ A₂ = fromRows B₁ B₂ ↔ A₁ = B₁ ∧ A₂ = B₂ := by
+  simp_rw [fromRows, ← Matrix.ext_iff, of_apply, Sum.forall, Sum.elim_inl, Sum.elim_inr]
+
 /- A column partioned matrix when transposed gives a row partioned matrix with columns of the
 initial matrix tranposed to become rows. -/
-lemma transpose_fromColumns_eq_fromRows_transpose
-    (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R) :
+lemma transpose_fromColumns_eq_fromRows_transpose (A₁ : Matrix M N₁ R) (A₂ : Matrix M N₂ R) :
     transpose (fromColumns A₁ A₂) = fromRows (transpose A₁) (transpose A₂) := by
   rw [fromColumns, fromRows]
   funext i j
@@ -81,8 +87,7 @@ lemma transpose_fromColumns_eq_fromRows_transpose
 
 /- A row partioned matrix when transposed gives a column partioned matrix with rows of the initial
 matrix tranposed to become columns. -/
-lemma transpose_fromRows_eq_fromColumns_transpose
-    (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R):
+lemma transpose_fromRows_eq_fromColumns_transpose (A₁ : Matrix M₁ N R) (A₂ : Matrix M₂ N R):
     transpose (fromRows A₁ A₂) = fromColumns (transpose A₁) (transpose A₂) := by
   rw [fromColumns, fromRows]
   funext i j
