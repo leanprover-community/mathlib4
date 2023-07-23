@@ -57,9 +57,9 @@ def Chain.to_DirectedSet [PartialOrder α] (c : Chain α) : DirectedSet α := {
         rw [← cn, ← cm]
         apply (c.monotone' (Nat.le_of_lt hmn)) }
 
-def Set.ToDirectedSet [SemilatticeSup α] [DecidableEq α] (s : Set α) : DirectedSet α := {
+def Set.ToDirectedSet [SemilatticeSup α] (s : Set α) : DirectedSet α := {
   set := { a | ∃ F : Finset α, ∃ H : F.Nonempty, ↑F ⊆ s ∧  a = F.sup' H id   },
-  directed := by
+  directed := by classical
     intros a ha b hb
     simp at ha hb
     obtain ⟨Fa,hFa⟩ := ha
@@ -67,7 +67,7 @@ def Set.ToDirectedSet [SemilatticeSup α] [DecidableEq α] (s : Set α) : Direct
     use a⊔b
     constructor
     · simp
-      use (Fa ∪ Fb)
+      use (Fa ⊔ Fb)
       simp
       simp at hFa
       constructor
@@ -103,7 +103,7 @@ def Set.ToDirectedSet [SemilatticeSup α] [DecidableEq α] (s : Set α) : Direct
 
 lemma Chain_Set [PartialOrder α] (c : Chain α) : (Chain.to_DirectedSet c).set = Set.range c := rfl
 
-lemma Set_subseteq_DirectedSet [SemilatticeSup α] [DecidableEq α] {s : Set α} :
+lemma Set_subseteq_DirectedSet [SemilatticeSup α] {s : Set α} :
     s ⊆ (Set.ToDirectedSet s).set := by
   intro a ha
   rw [Set.ToDirectedSet]
@@ -114,7 +114,7 @@ lemma Set_subseteq_DirectedSet [SemilatticeSup α] [DecidableEq α] {s : Set α}
   · use (Finset.singleton_nonempty a)
     rfl
 
-lemma Set_DirectedSet_upperBounds [SemilatticeSup α] [DecidableEq α] {s : Set α} :
+lemma Set_DirectedSet_upperBounds [SemilatticeSup α] {s : Set α} :
     upperBounds (Set.ToDirectedSet s).set = upperBounds s := by
   rw [subset_antisymm_iff]
   constructor
@@ -127,7 +127,7 @@ lemma Set_DirectedSet_upperBounds [SemilatticeSup α] [DecidableEq α] {s : Set 
     intro c hc
     exact hu (hFb.1 hc)
 
-lemma Set_DirectedSet_LUB [SemilatticeSup α] [DecidableEq α] {s : Set α} {u : α} : IsLUB s u ↔
+lemma Set_DirectedSet_LUB [SemilatticeSup α] {s : Set α} {u : α} : IsLUB s u ↔
     IsLUB (Set.ToDirectedSet s).set u := by
   constructor
   · intro hsu
@@ -162,7 +162,7 @@ instance [CompletePartialOrder α] : OmegaCompletePartialOrder α where
     rw [← hi]
     exact h i
 
-instance [SemilatticeSup α] [DecidableEq α] (dSup : DirectedSet α → α)
+instance [SemilatticeSup α] (dSup : DirectedSet α → α)
     (h : ∀ (d : DirectedSet α), IsLUB d.set (dSup d)) : CompleteSemilatticeSup α where
   sSup := fun s => dSup (Set.ToDirectedSet s)
   le_sSup := by
