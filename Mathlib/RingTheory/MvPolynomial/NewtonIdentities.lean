@@ -320,3 +320,5 @@ theorem esymm_recurrence (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
   simp_all [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k, ← mul_assoc, ← pow_add,
     Even.neg_one_pow]
   rw [add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k), lt_k_disjunion_k σ k, weight_sum σ R k]
+
+end Newton
