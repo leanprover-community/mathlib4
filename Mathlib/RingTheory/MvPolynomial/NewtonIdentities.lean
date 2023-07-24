@@ -20,7 +20,7 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 * `MvPolynomial.psum`
 
-* `MvPolynomial.NewtonIdentity`
+* `MvPolynomial.esymm_recurrence` encapsulating the primary result
 
 ## Notation
 
