@@ -821,7 +821,7 @@ noncomputable def directProductOfNormal [Fintype G]
         exact @card_eq_multiplicity _ _ _ p ⟨Nat.prime_of_mem_factorization hp⟩ (P p)
       _ = ∏ p in ps, p ^ (card G).factorization p :=
         (Finset.prod_finset_coe (fun p => p ^ (card G).factorization p) _)
-      _ = (card G).factorization.prod (. ^ .) := rfl
+      _ = (card G).factorization.prod (· ^ ·) := rfl
       _ = card G := Nat.factorization_prod_pow_eq_self Fintype.card_ne_zero
 
 #align sylow.direct_product_of_normal Sylow.directProductOfNormal
