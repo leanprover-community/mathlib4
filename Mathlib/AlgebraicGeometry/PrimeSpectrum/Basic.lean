@@ -655,7 +655,7 @@ theorem localization_comap_inducing [Algebra R S] (M : Submonoid R) [IsLocalizat
     refine ⟨_, ⟨algebraMap R S ⁻¹' Ideal.span s, rfl⟩, ?_⟩
     rw [preimage_comap_zeroLocus, ← zeroLocus_span, ← zeroLocus_span s]
     congr 2
-    exact congr_arg (zeroLocus .) <| Submodule.carrier_inj.mpr
+    exact congr_arg (zeroLocus ·) <| Submodule.carrier_inj.mpr
       (IsLocalization.map_comap M S (Ideal.span s))
   · rintro ⟨_, ⟨t, rfl⟩, rfl⟩
     rw [preimage_comap_zeroLocus]
