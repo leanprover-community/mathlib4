@@ -231,49 +231,49 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
 theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
     ∑ i in range k, ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
-    have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
-    simp_rw [← sum_congr rfl equiv_i]
-    have pdisj : Set.PairwiseDisjoint (range k)
-        (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
-      simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred]
-      simp
-      intro x _ y _ xny
-      by_contra neg
-      simp at neg
-      cases neg with
-      | intro sneg hsneg =>
-        simp_rw [subset_empty] at hsneg
-        have sneg_ne := nonempty_iff_ne_empty.mpr hsneg.right.right
-        rw [Finset.Nonempty] at sneg_ne
-        cases sneg_ne with
-        | intro s hs =>
-          have hs1 := hsneg.left hs
-          have hs2 := hsneg.right.left hs
-          simp_rw [and_assoc, ← filter_filter, mem_filter] at hs1 hs2
-          rw [← hs1.right, ← hs2.right] at xny
-          exact xny rfl
-    have hdisj := @sum_disjiUnion _ _ _ f _ (range k)
-      (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) pdisj
-    have disj_equiv : disjiUnion (range k) (fun i ↦ filter (fun t ↦ card t.fst = i) (pairs σ k))
-        pdisj = filter (fun t ↦ card t.fst < k) (pairs σ k) := by
-      apply Finset.ext
-      intro a
-      rw [mem_disjiUnion, mem_filter]
-      apply Iff.intro
-      · intro had
-        cases had with
-        | intro a1 ha1 =>
-          rw [mem_filter] at ha1
-          apply And.intro
-          · exact ha1.right.left
-          · rw [ha1.right.right]
-            exact mem_range.mp ha1.left
-      · intro haf
-        use (card a.fst)
+  have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
+  simp_rw [← sum_congr rfl equiv_i]
+  have pdisj : Set.PairwiseDisjoint (range k)
+      (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
+    simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred]
+    simp
+    intro x _ y _ xny
+    by_contra neg
+    simp at neg
+    cases neg with
+    | intro sneg hsneg =>
+      simp_rw [subset_empty] at hsneg
+      have sneg_ne := nonempty_iff_ne_empty.mpr hsneg.right.right
+      rw [Finset.Nonempty] at sneg_ne
+      cases sneg_ne with
+      | intro s hs =>
+        have hs1 := hsneg.left hs
+        have hs2 := hsneg.right.left hs
+        simp_rw [and_assoc, ← filter_filter, mem_filter] at hs1 hs2
+        rw [← hs1.right, ← hs2.right] at xny
+        exact xny rfl
+  have hdisj := @sum_disjiUnion _ _ _ f _ (range k)
+    (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) pdisj
+  have disj_equiv : disjiUnion (range k) (fun i ↦ filter (fun t ↦ card t.fst = i) (pairs σ k))
+      pdisj = filter (fun t ↦ card t.fst < k) (pairs σ k) := by
+    apply Finset.ext
+    intro a
+    rw [mem_disjiUnion, mem_filter]
+    apply Iff.intro
+    · intro had
+      cases had with
+      | intro a1 ha1 =>
+        rw [mem_filter] at ha1
         apply And.intro
-        · exact mem_range.mpr haf.right
-        · simp_all [mem_filter]
-    simp_rw [← hdisj, disj_equiv]
+        · exact ha1.right.left
+        · rw [ha1.right.right]
+          exact mem_range.mp ha1.left
+    · intro haf
+      use (card a.fst)
+      apply And.intro
+      · exact mem_range.mpr haf.right
+      · simp_all [mem_filter]
+  simp_rw [← hdisj, disj_equiv]
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
