@@ -400,6 +400,18 @@ theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := b
   | cons h t ih =>
     simp [List.minimum_cons, ih]
 
+theorem maximum_ne_bot_of_ne_nil {l : List α} (h : l ≠ []) : l.maximum ≠ ⊥ :=
+  match l, h with | _ :: _, _ => by simp [List.maximum_cons]
+
+theorem minimum_ne_top_of_ne_nil {l : List α} (h : l ≠ []) : l.minimum ≠ ⊤ :=
+  @List.maximum_ne_bot_of_ne_nil αᵒᵈ _ _ h
+
+theorem maximum_ne_bot_of_length_pos {l : List α} (h : 0 < l.length) : l.maximum ≠ ⊥ :=
+  match l, h with | _ :: _, _ => by simp [List.maximum_cons]
+
+theorem minimum_ne_top_of_length_pos {l : List α} (h : 0 < l.length) : l.minimum ≠ ⊤ :=
+  @List.maximum_ne_bot_of_length_pos αᵒᵈ _ _ h
+
 end LinearOrder
 
 end MaximumMinimum
