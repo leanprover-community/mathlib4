@@ -42,6 +42,7 @@ function `condCdf ρ a` (the conditional cumulative distribution function).
   `kernel.const γ ρ = (kernel.const γ ρ.fst) ⊗ₖ (kernel.prodMkLeft γ ρ.condKernel)`
 * `ProbabilityTheory.measure_eq_compProd`:
   `ρ = ((kernel.const Unit ρ.fst) ⊗ₖ (kernel.prodMkLeft Unit ρ.condKernel)) ()`
+* `ProbabilityTheory.eq_condKernel_of_measure_eq_compProd`: a.e. uniqueness of `condKernel`
 
 -/
 
