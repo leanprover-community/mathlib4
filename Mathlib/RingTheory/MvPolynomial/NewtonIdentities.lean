@@ -38,6 +38,9 @@ As in other polynomial files, we typically use the notation:
 
 + `φ ψ : MvPolynomial σ R`
 
+## References
+
+See [zeilberger1984] for the combinatorial proof of Newton's identities.
 -/
 
 open Equiv (Perm)
@@ -88,7 +91,7 @@ variable (σ : Type) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type) [Comm
   TODO: show that MvPolynomial σ R has characteristic zero if R has characteristic zero
 -/
 
--- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1983)
+-- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
 def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
 
 def pairs (σ : Type) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
