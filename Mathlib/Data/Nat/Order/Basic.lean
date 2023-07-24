@@ -173,8 +173,8 @@ theorem add_pos_iff_pos_or_pos (m n : ℕ) : 0 < m + n ↔ 0 < m ∨ 0 < n :=
       exact Or.inl (succ_pos _))
     (by
       intro h; cases' h with mpos npos
-      · apply add_pos_left mpos
-      apply add_pos_right _ npos)
+      · apply Nat.add_pos_left mpos
+      apply Nat.add_pos_right _ npos)
 #align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
 
 theorem add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
