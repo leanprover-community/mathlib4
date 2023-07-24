@@ -3408,7 +3408,7 @@ partial def mkEntry (e : Expr) (interpreted : Bool) (gen : Nat) : CCM Unit := do
   processSubsingletonElem e
 end
 
-def removeParents (e : Expr) : CCM (Array Expr) := sorry
+def removeParents (e : Expr) (parentsToPropagate : Array Expr) : CCM (Array Expr) := sorry
 
 /--
 The fields `target` and `proof` in `e`'s entry are encoding a transitivity proof
@@ -3439,9 +3439,9 @@ partial def invertTransAux (e : Expr) (newFlipped : Bool) (newTarget : Option Ex
 def invertTrans (e : Expr) : CCM Unit :=
   invertTransAux e false none none
 
-def getEqcLambdas (e : Expr) : CCM (Array Expr) := do
+def getEqcLambdas (e : Expr) (r : Array Expr) : CCM (Array Expr) := do
   guard ((← getRoot e) == e)
-  let mut r := #[]
+  let mut r := r
   let some ee ← getEntry e | failure
   unless ee.hasLambdas do return r
   let mut it := e
@@ -3454,9 +3454,9 @@ def getEqcLambdas (e : Expr) : CCM (Array Expr) := do
   return r
 
 /-- Traverse the `root`'s equivalence class, and collect the function's equivalence class roots. -/
-def collectFnRoots (root : Expr) : CCM (Array Expr) := do
+def collectFnRoots (root : Expr) (fnRoots : Array Expr) : CCM (Array Expr) := do
   guard ((← getRoot root) == root)
-  let mut fnRoots : Array Expr := #[]
+  let mut fnRoots : Array Expr := fnRoots
   let mut visited : RBExprSet := ∅
   let mut it := root
   repeat
@@ -3480,6 +3480,58 @@ def reinsertParents (e : Expr) : CCM Unit := do
         addCongruenceTable p.expr
 
 def checkInvariant : CCM Bool := sorry
+
+def propagateBeta (fn : Expr) (revArgs : Array Expr) (lambdas newLambdaApps : Array Expr) :
+    CCM (Array Expr) := do
+  let mut newLambdaApps := newLambdaApps
+  for lambda in lambdas do
+    guard lambda.isLambda
+    if fn != lambda then
+      if (← withNewMCtxDepth <| withTransparency .default <|
+          isDefEq (← inferType fn) (← inferType lambda)) then
+        let newApp := mkAppRev lambda revArgs
+        newLambdaApps := newLambdaApps.push newApp
+  return newLambdaApps
+
+/--
+For each `fnRoot` in `fnRoots` traverse its parents, and look for a parent prefix that is
+in the same equivalence class of the given lambdas.
+
+remark All expressions in lambdas are in the same equivalence class
+-/
+def propagateBetaToEqc (fnRoots lambdas newLambdaApps : Array Expr) : CCM (Array Expr) := do
+  if lambdas.isEmpty then return newLambdaApps
+  let mut newLambdaApps := newLambdaApps
+  let lambdaRoot ← getRoot lambdas.back
+  /-
+  ```c++
+  lean_assert(std::all_of(lambdas.begin(), lambdas.end(), [&](expr const & l) {
+              return is_lambda(l) && get_root(l) == lambda_root;
+          }));
+  for (expr const & fn_root : fn_roots) {
+      if (auto ps = m_state.m_parents.find(fn_root)) {
+          ps->for_each([&](parent_occ const & p_occ) {
+                  expr const & p = p_occ.m_expr;
+                  /* Look for a prefix of p which is in the same equivalence class of lambda_root */
+                  buffer<expr> rev_args;
+                  expr it2 = p;
+                  while (is_app(it2)) {
+                      expr const & fn = app_fn(it2);
+                      rev_args.push_back(app_arg(it2));
+                      if (get_root(fn) == lambda_root) {
+                          /* found it */
+                          propagate_beta(fn, rev_args, lambdas, new_lambda_apps);
+                          break;
+                      }
+                      it2 = app_fn(it2);
+                  }
+              });
+      }
+  }
+  ```
+  -/
+  sorry
+  return newLambdaApps
 
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
@@ -3543,12 +3595,12 @@ where
     modifyState fun ccs => { ccs with entries := ccs.entries.insert e₁ newN₁ }
 
     -- The hash code for the parents is going to change
-    let parentsToPropagate ← removeParents e₁Root
+    let parentsToPropagate ← removeParents e₁Root #[]
 
-    let lambdas₁ ← getEqcLambdas e₁Root
-    let lambdas₂ ← getEqcLambdas e₂Root
-    let fnRoots₂ ← if !lambdas₁.isEmpty then collectFnRoots e₂Root else pure #[]
-    let fnRoots₁ ← if !lambdas₂.isEmpty then collectFnRoots e₁Root else pure #[]
+    let lambdas₁ ← getEqcLambdas e₁Root #[]
+    let lambdas₂ ← getEqcLambdas e₂Root #[]
+    let fnRoots₂ ← if !lambdas₁.isEmpty then collectFnRoots e₂Root #[] else pure #[]
+    let fnRoots₁ ← if !lambdas₂.isEmpty then collectFnRoots e₁Root #[] else pure #[]
 
     -- force all `root` fields in `e₁` equivalence class to point to `e₂Root`
     let propagate := e₂Root == .const ``True [] || e₂Root == .const ``False []
