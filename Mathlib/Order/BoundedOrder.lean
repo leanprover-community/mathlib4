@@ -123,6 +123,10 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
 
 alias ne_top_of_lt ← LT.lt.ne_top
 
+instance instOrderTopOfUnique [Unique α] : OrderTop α where
+  top := default
+  le_top a := by aesop
+
 end Preorder
 
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
@@ -328,6 +332,10 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
 #align ne_bot_of_gt ne_bot_of_gt
 
 alias ne_bot_of_gt ← LT.lt.ne_bot
+
+instance instOrderBotOfUnique [Unique α] : OrderBot α where
+  bot := default
+  bot_le a := by aesop
 
 end Preorder
 
