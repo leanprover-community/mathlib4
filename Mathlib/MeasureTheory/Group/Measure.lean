@@ -259,10 +259,9 @@ theorem isMulLeftInvariant_rmul [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) := by
   refine' ⟨fun h => _⟩
   rw [map_map (measurable_const_mul _) (measurable_mul_const _)]
-  conv_rhs => rw [← map_mul_left_eq_self μ h]
-  rw [map_map (measurable_mul_const _) (measurable_const_mul _)]
-  congr 2
-  ext y
+  conv_rhs =>
+    rw [← map_mul_left_eq_self μ h, map_map (measurable_mul_const _) (measurable_const_mul _)]
+  congr 2 with y
   simp only [comp_apply, mul_assoc h y g]
 
 end Monoid
