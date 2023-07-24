@@ -22,8 +22,7 @@ universe u
 
 namespace Thunk
 
--- Porting note: `Thunk.pure` appears to do the same thing.
-#align thunk.mk Thunk.pure
+#align thunk.mk Thunk.mk
 
 -- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
 @[ext]
