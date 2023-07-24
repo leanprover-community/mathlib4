@@ -3,7 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Tactic.Backtracking
+import Mathlib.Tactic.Backtrack
 import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!

@@ -31,7 +31,7 @@ we can perform backtracking search based on applying a list of lemmas.
 ``applyTactics (trace := `name)`` will construct trace nodes for ``name` indicating which
 calls to `apply` succeeded or failed.
 -/
-unsafe def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
+def applyTactics (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
     (lemmas : List Expr) :
     MVarId → Nondet MetaM (List MVarId) :=
   fun g => Nondet.ofListM <|
@@ -54,7 +54,7 @@ We use this in `apply_rules` and `apply_assumption` where backtracking is not ne
 def applyFirst (cfg : ApplyConfig := {}) (transparency : TransparencyMode := .default)
     (lemmas : List Expr) : MVarId → MetaM (List MVarId) :=
   fun g => do
-    (← applyTactics cfg transparency lemmas g).firstM (fun t => t)
+    (applyTactics cfg transparency lemmas g).firstM (fun t => pure (some t))
 
 /--
 Configuration structure to control the behaviour of `solve_by_elim`:
@@ -186,7 +186,7 @@ def elabContextLemmas (g : MVarId) (lemmas : List (TermElabM Expr)) (ctx : TermE
   g.withContext (Elab.Term.TermElabM.run' do pure ((← ctx) ++ (← lemmas.mapM id)))
 
 /-- Returns the list of tactics corresponding to applying the available lemmas to the goal. -/
-unsafe def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
+def applyLemmas (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
     (g : MVarId) : Nondet MetaM (List MVarId) := Nondet.squash do
   let es ← elabContextLemmas g lemmas ctx
   return applyTactics cfg.toApplyConfig cfg.transparency es g
@@ -214,7 +214,7 @@ and so the returned list is always empty.
 Custom wrappers (e.g. `apply_assumption` and `apply_rules`) may modify this behaviour.
 -/
 def solveByElim (cfg : Config) (lemmas : List (TermElabM Expr)) (ctx : TermElabM (List Expr))
-    (goals : List MVarId) : MetaM (List MVarId) := unsafe do
+    (goals : List MVarId) : MetaM (List MVarId) := do
   -- We handle `cfg.symm` by saturating hypotheses of all goals using `symm`.
   -- Implementation note:
   -- (We used to apply `symm` all throughout the `solve_by_elim` stage.)

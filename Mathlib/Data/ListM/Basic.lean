@@ -285,7 +285,7 @@ partial def append (xs ys : ListM m α) : ListM m α :=
 #align tactic.mllist.append ListM.append
 
 /-- Concatenate monadic lazy lists and a thunk producing a monadic lazy list. -/
-unsafe def orElse {α : Type u} (L : ListM m α) (M : Unit → ListM m α): ListM m α :=
+partial def orElse {α : Type u} (L : ListM m α) (M : Unit → ListM m α): ListM m α :=
   cons do match ← uncons L with
   | none => return (none, M ())
   | some (x, xs) => return (some x, orElse xs M)
@@ -354,7 +354,7 @@ partial def bind (xs : ListM m α) (f : α → ListM m β) : ListM m β :=
 #align tactic.mllist.bind_ ListM.bind
 
 /-- If `L` is empty, return a default value `M`, otherwise bind a function `f` over each element. -/
-unsafe def bindOrElse [Monad m] (L : ListM m α) (f : α → ListM m β) (M : ListM m β) :
+def bindOrElse [Monad m] (L : ListM m α) (f : α → ListM m β) (M : ListM m β) :
     ListM m β :=
   squash do match ← uncons L with
   | none => return M
@@ -421,7 +421,7 @@ partial def foldM (f : β → α → m β) (init : β) (L : ListM m α) : m β :
 
 /-- Folds a binary function across a monadic lazy list, from an initial starting value.
 This will run forever if the list is infinite. -/
-unsafe def fold (f : β → α → β) (init : β) (L : ListM m α) : m β :=
+def fold (f : β → α → β) (init : β) (L : ListM m α) : m β :=
   L.foldM (fun b a => pure (f b a)) init
 
 section Alternative

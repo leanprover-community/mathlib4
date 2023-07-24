@@ -49,7 +49,7 @@ Given any tactic that takes a goal, and returns a sequence of alternative outcom
 (each outcome consisting of a list of new subgoals),
 we can perform backtracking search by repeatedly applying the tactic.
 -/
-unsafe def firstContinuation (results : MVarId → Nondet MetaM (List MVarId))
+def firstContinuation (results : MVarId → Nondet MetaM (List MVarId))
     (cont : List MVarId → MetaM α) (g : MVarId) : MetaM α := do
   (results g).firstM fun r => try? do cont r
 
@@ -102,7 +102,7 @@ while the innermost list is the subgoals generated in that outcome.
 
 Further flow control options are available via the `Config` argument.
 -/
-def backtrack (cfg : BacktrackConfig := {}) (trace : Name := .anonymous)
+partial def backtrack (cfg : BacktrackConfig := {}) (trace : Name := .anonymous)
     (alternatives : MVarId → Nondet MetaM (List MVarId))
     (goals : List MVarId) : MetaM (List MVarId) := do
   processIndependentGoals goals goals
