@@ -331,5 +331,6 @@ theorem NewtonIdentity (k : ℕ) : k * esymm σ R k -
     ∑ i in range k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i = 0 := by
   simp_rw [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k, pow_add]
   simp
-  simp_rw [← mul_add]
-  sorry
+  rw [← mul_add, add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k),
+    lt_k_disjunion_k σ k, weight_sum σ R k]
+  simp
