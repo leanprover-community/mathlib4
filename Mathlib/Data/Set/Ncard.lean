@@ -19,17 +19,17 @@ in terms of `PartENat.card` (which takes a type as its argument); this file can 
 for the same function in the special case where the type is a coercion of a `Set`, allowing for
 smoother interactions with the `Set` API.
 
-`encard` never takes junk values, so is more mathematically natural than `ncard`, even though it
-takes values in a less convenient type. It is probably the right choice in settings where one is
-concerned with the cardinalities of sets that may or may not be infinite.
+`Set.encard` never takes junk values, so is more mathematically natural than `Set.ncard`, even
+though it takes values in a less convenient type. It is probably the right choice in settings where
+one is concerned with the cardinalities of sets that may or may not be infinite.
 
-`ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to make
-sure its values are meaningful.  More generally, `ncard` is intended to be used over the obvious
-alternative `Finset.card` when finiteness is 'propositional' rather than  'structural'. When working
-with sets that are finite by virtue of their definition, then `Finset.card` probably makes more
-sense. One setting where `ncard` works nicely is in a type `α` with `[Finite α]`, where every set is
-automatically finite. In this setting, we use default arguments and a simple tactic so that
-finiteness goals are discharged automatically in `ncard` theorems.
+`Set.ncard` has a nicer codomain, but when using it, `Set.Finite` hypotheses are normally needed to
+make sure its values are meaningful.  More generally, `Set.ncard` is intended to be used over the
+obvious alternative `Finset.card` when finiteness is 'propositional' rather than  'structural'.
+When working with sets that are finite by virtue of their definition, then `Finset.card` probably
+makes more sense. One setting where `Set.ncard` works nicely is in a type `α` with `[Finite α]`,
+where every set is automatically finite. In this setting, we use default arguments and a simple
+tactic so that finiteness goals are discharged automatically in `Set.ncard` theorems.
 
 ## Main Definitions
 
@@ -43,14 +43,15 @@ finiteness goals are discharged automatically in `ncard` theorems.
 ## Implementation Notes
 
 The theorems in this file are very similar to those in `Data.Finset.Card`, but with `Set` operations
-instead of `Finset`. We first prove all the theorems for `encard`, and then derive most of the
-`ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API for
-theorems about infinite sets, and to allow for a refactor that removes or modifies `ncard` in the
-future.
+instead of `Finset`. We first prove all the theorems for `Set.encard`, and then derive most of the
+`Set.ncard` results as a consequence. Things are done this way to avoid reliance on the `Finset` API
+for theorems about infinite sets, and to allow for a refactor that removes or modifies `Set.ncard`
+in the future.
 
-Nearly all the theorems for `ncard` require finiteness of one or more of their arguments. We provide
-this assumption with a default argument of the form `(hs : s.Finite := by toFinite_tac)`, where
-`toFinite_tac` will find an `s.Finite` term in the cases where `s` is a set in a `Finite` type.
+Nearly all the theorems for `Set.ncard` require finiteness of one or more of their arguments. We
+provide this assumption with a default argument of the form `(hs : s.Finite := by toFinite_tac)`,
+where `toFinite_tac` will find an `s.Finite` term in the cases where `s` is a set in a `Finite`
+type.
 
 Often, where there are two set arguments `s` and `t`, the finiteness of one follows from the other
 in the context of the theorem, in which case we only include the ones that are needed, and derive
@@ -168,6 +169,21 @@ theorem encard_union_add_encard_inter (s t : Set α) :
     (s ∪ t).encard + (s ∩ t).encard = s.encard + t.encard :=
 by rw [←diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
   encard_diff_add_encard_inter]
+
+theorem encard_eq_encard_iff_encard_diff_eq_encard_diff (h : (s ∩ t).Finite) :
+    s.encard = t.encard ↔ (s \ t).encard = (t \ s).encard := by
+  rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
+    WithTop.add_right_cancel_iff h.encard_lt_top.ne]
+
+theorem encard_le_encard_iff_encard_diff_le_encard_diff (h : (s ∩ t).Finite) :
+    s.encard ≤ t.encard ↔ (s \ t).encard ≤ (t \ s).encard := by
+  rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
+    WithTop.add_le_add_iff_right h.encard_lt_top.ne]
+
+theorem encard_lt_encard_iff_encard_diff_lt_encard_diff (h : (s ∩ t).Finite) :
+    s.encard < t.encard ↔ (s \ t).encard < (t \ s).encard := by
+  rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
+    WithTop.add_lt_add_iff_right h.encard_lt_top.ne]
 
 theorem encard_union_le (s t : Set α) : (s ∪ t).encard ≤ s.encard + t.encard := by
   rw [←encard_union_add_encard_inter]; exact le_self_add
@@ -378,29 +394,29 @@ theorem encard_le_of_embedding (e : s ↪ t) : s.encard ≤ t.encard := by
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [←encard_image_of_injOn (invFunOn_injOn_image f s)]
+  rw [←encard_image_of_injOn (f.invFunOn_injOn_image s)]
   apply encard_le_of_subset
-  exact invFunOn_image_image_subset f s
+  exact f.invFunOn_image_image_subset s
 
 theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s.encard) :
     InjOn f s := by
   obtain (h' | hne) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [←encard_image_of_injOn (invFunOn_injOn_image f s)] at h
+  rw [←encard_image_of_injOn (f.invFunOn_injOn_image s)] at h
   rw [injOn_iff_invFunOn_image_image_eq_self]
-  exact hs.eq_of_subset_of_encard_le (invFunOn_image_image_subset f s) h.symm.le
+  exact hs.eq_of_subset_of_encard_le (f.invFunOn_image_image_subset s) h.symm.le
 
 theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
     (f ⁻¹' t).encard = t.encard := by
   rw [←encard_image_of_injective hf, image_preimage_eq_inter_range,
     inter_eq_self_of_subset_left ht]
 
-theorem encard_le_encard_of_injOn (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s) :
+theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
     s.encard ≤ t.encard := by
   rw [←encard_image_of_injOn f_inj]
   apply encard_le_of_subset
   rintro _ ⟨x, hx, rfl⟩
-  exact hf _ hx
+  exact hf hx
 
 theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β} (hs : s.Finite)
     (hle : s.encard ≤ t.encard) : ∃ (f : α → β), s ⊆ f ⁻¹' t ∧ InjOn f s := by
@@ -459,6 +475,7 @@ macro_rules
 /-- The cardinality of `s : Set α` . Has the junk value `0` if `s` is infinite -/
 noncomputable def ncard (s : Set α) :=
   ENat.toNat s.encard
+#align set.ncard Set.ncard
 
 theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 
@@ -472,6 +489,7 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
       toFinite_toFinset, toFinset_card, ENat.toNat_coe]
   have := infinite_coe_iff.2 h
   rw [ncard, h.encard_eq, Nat.card_eq_zero_of_infinite, ENat.toNat_top]
+#align set.nat.card_coe_set_eq Set.Nat.card_coe_set_eq
 
 theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
     s.ncard = hs.toFinset.card := by
@@ -620,8 +638,8 @@ theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 �
   rw [hs.ncard]
 #align set.pred_ncard_le_ncard_diff_singleton Set.pred_ncard_le_ncard_diff_singleton
 
-theorem ncard_exchange (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard := by
-  rw [ncard_def, encard_exchange ha hb, ←ncard_def]
+theorem ncard_exchange (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).ncard = s.ncard :=
+  congr_arg ENat.toNat <| encard_exchange ha hb
 #align set.ncard_exchange Set.ncard_exchange
 
 theorem ncard_exchange' (ha : a ∉ s) (hb : b ∈ s) : (insert a s \ {b}).ncard = s.ncard := by
@@ -635,8 +653,8 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
   to_encard_tac; rw [hs.cast_ncard_eq, (hs.image _).cast_ncard_eq]; apply encard_image_le
 #align set.ncard_image_le Set.ncard_image_le
 
-theorem ncard_image_of_injOn (H : Set.InjOn f s) : (f '' s).ncard = s.ncard := by
-  rw [ncard_def, encard_image_of_injOn H, ←ncard_def]
+theorem ncard_image_of_injOn (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
+  congr_arg ENat.toNat <| encard_image_of_injOn H
 #align set.ncard_image_of_inj_on Set.ncard_image_of_injOn
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
@@ -888,8 +906,7 @@ theorem exists_mem_not_mem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
 #align set.exists_mem_not_mem_of_ncard_lt_ncard Set.exists_mem_not_mem_of_ncard_lt_ncard
 
 @[simp] theorem ncard_inter_add_ncard_diff_eq_ncard (s t : Set α)
-    (hs : s.Finite := by toFinite_tac) :
-    (s ∩ t).ncard + (s \ t).ncard = s.ncard := by
+    (hs : s.Finite := by toFinite_tac) : (s ∩ t).ncard + (s \ t).ncard = s.ncard := by
   rw [←ncard_union_eq (disjoint_of_subset_left (inter_subset_right _ _) disjoint_sdiff_right)
     (hs.inter_of_left _) (hs.diff _), union_comm, diff_union_inter]
 #align set.ncard_inter_add_ncard_diff_eq_ncard Set.ncard_inter_add_ncard_diff_eq_ncard
