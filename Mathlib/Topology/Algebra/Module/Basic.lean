@@ -860,6 +860,9 @@ instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
   mul_assoc _ _ _ := ext fun _ => rfl
 #align continuous_linear_map.monoid_with_zero ContinuousLinearMap.monoidWithZero
 
+theorem coe_pow (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
+  hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
+
 instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) :=
   { ContinuousLinearMap.monoidWithZero,
     ContinuousLinearMap.addCommMonoid with

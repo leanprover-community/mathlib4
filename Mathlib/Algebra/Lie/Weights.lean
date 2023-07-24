@@ -81,7 +81,7 @@ def preWeightSpace (χ : L → R) : Submodule R M :=
 theorem mem_preWeightSpace (χ : L → R) (m : M) :
     m ∈ preWeightSpace M χ ↔
     ∀ x, ∃ k : ℕ, ((toEndomorphism R L M x - χ x • ↑1) ^ k) m = 0 := by
-  simp [preWeightSpace, -LinearMap.pow_apply]
+  simp [preWeightSpace]
 #align lie_module.mem_pre_weight_space LieModule.mem_preWeightSpace
 
 variable (R)
