@@ -109,7 +109,7 @@ theorem recBotCoe_coe {C : WithBot α → Sort _} (d : C ⊥) (f : ∀ a : α, C
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-/-- Specialization of `Option.get_or_else` to values in `WithBot α` that respects API boundaries.
+/-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
@@ -684,7 +684,7 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-/-- Specialization of `Option.get_or_else` to values in `WithTop α` that respects API boundaries.
+/-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
 -/
 def untop' (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
