@@ -220,6 +220,14 @@ alias lt_of_eq_of_lt ← Eq.trans_lt
 alias lt_of_eq_of_lt' ← Eq.trans_gt
 #align eq.trans_gt Eq.trans_gt
 
+@[simp] lemma le_of_subsingleton [Subsingleton α] (a b : α) : a ≤ b ↔ True := by
+  cases Subsingleton.elim a b
+  simp
+
+@[simp] lemma not_lt_of_subsingleton [Subsingleton α] (a b : α) : a < b ↔ False := by
+  cases Subsingleton.elim a b
+  simp
+
 end
 
 namespace Eq
@@ -724,8 +732,7 @@ instance linearOrder (α : Type _) [LinearOrder α] : LinearOrder αᵒᵈ where
   decidableLT := (inferInstance : DecidableRel (λ a b : α => b < a))
 #align order_dual.linear_order OrderDual.linearOrder
 
-instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x: Inhabited α] => x
-
+instance : ∀ [Inhabited α], Inhabited αᵒᵈ := λ [x : Inhabited α] => x
 
 theorem Preorder.dual_dual (α : Type _) [H : Preorder α] : OrderDual.preorder αᵒᵈ = H :=
   Preorder.ext fun _ _ ↦ Iff.rfl
