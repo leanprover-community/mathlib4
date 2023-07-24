@@ -813,10 +813,14 @@ theorem le_div_two_iff_lt_neg (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {x : ZMo
         Nat.mod_eq_of_lt hxn, tsub_le_tsub_iff_left x.val_le]
 #align zmod.le_div_two_iff_lt_neg ZMod.le_div_two_iff_lt_neg
 
-theorem ne_neg_self (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {a : ZMod n} (ha : a ≠ 0) : a ≠ -a :=
-  fun h => by
-  have : a.val ≤ n / 2 ↔ (n : ℕ) / 2 < (-a).val := le_div_two_iff_lt_neg n ha
-  rwa [← h, ← not_lt, ← not_iff, iff_self, not_true] at this
+@[simp]
+theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : ¬ 2 ∣ n) {a : ZMod n} :
+    a + a = 0 ↔ a = 0 := by
+  rw [←mul_two, ←@Nat.cast_two (ZMod n),
+      ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), Units.mul_left_eq_zero]
+
+theorem ne_neg_self (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {a : ZMod n} (ha : a ≠ 0) : a ≠ -a := by
+  rwa [Ne, eq_neg_iff_add_eq_zero, add_self_eq_zero_iff_eq_zero (Nat.two_dvd_ne_zero.mpr hn.out)]
 #align zmod.ne_neg_self ZMod.ne_neg_self
 
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
