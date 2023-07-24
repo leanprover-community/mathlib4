@@ -2687,15 +2687,6 @@ theorem IsClosed.sInf_mem {α : Type u} [TopologicalSpace α] [CompleteLinearOrd
   (isGLB_sInf s).mem_of_isClosed hs hc
 #align is_closed.Inf_mem IsClosed.sInf_mem
 
-/-
-/-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
-the supremum of the image of this set. -/
-theorem Monotone.map_sSup_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
-    (Mf : Monotone f) (hs : s.Nonempty) : f (sSup s) = sSup (f '' s) :=
-  Mf.map_sSup_of_continuousAt'' Cf hs -- The more general lemma works out of the box.
-#align monotone.map_Sup_of_continuous_at' Monotone.map_sSup_of_continuousAt'
- -/
-
 /-- A monotone function `f` sending `bot` to `bot` and continuous at the supremum of a set sends
 this supremum to the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
@@ -2705,15 +2696,6 @@ theorem Monotone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : Con
   · exact Mf.map_sSup_of_continuousAt' Cf h
 #align monotone.map_Sup_of_continuous_at Monotone.map_sSup_of_continuousAt
 
-/-
-/-- A monotone function continuous at the indexed supremum over a nonempty `Sort` sends this indexed
-supremum to the indexed supremum of the composition. -/
-theorem Monotone.map_iSup_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
-    (Cf : ContinuousAt f (iSup g)) (Mf : Monotone f) : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [iSup, Mf.map_sSup_of_continuousAt' Cf (range_nonempty g), ← range_comp, iSup]; rfl
-#align monotone.map_supr_of_continuous_at' Monotone.map_iSup_of_continuousAt'
- -/
-
 /-- If a monotone function sending `bot` to `bot` is continuous at the indexed supremum over
 a `Sort`, then it sends this indexed supremum to the indexed supremum of the composition. -/
 theorem Monotone.map_iSup_of_continuousAt {ι : Sort _} {f : α → β} {g : ι → α}
@@ -2722,30 +2704,12 @@ theorem Monotone.map_iSup_of_continuousAt {ι : Sort _} {f : α → β} {g : ι 
   rw [iSup, Mf.map_sSup_of_continuousAt Cf fbot, ← range_comp, iSup]; rfl
 #align monotone.map_supr_of_continuous_at Monotone.map_iSup_of_continuousAt
 
-/-
-/-- A monotone function continuous at the infimum of a nonempty set sends this infimum to
-the infimum of the image of this set. -/
-theorem Monotone.map_sInf_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sInf s))
-    (Mf : Monotone f) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
-  @Monotone.map_sSup_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual hs
-#align monotone.map_Inf_of_continuous_at' Monotone.map_sInf_of_continuousAt'
- -/
-
 /-- A monotone function `f` sending `top` to `top` and continuous at the infimum of a set sends
 this infimum to the infimum of the image of this set. -/
 theorem Monotone.map_sInf_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sInf s))
     (Mf : Monotone f) (ftop : f ⊤ = ⊤) : f (sInf s) = sInf (f '' s) :=
   @Monotone.map_sSup_of_continuousAt αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual ftop
 #align monotone.map_Inf_of_continuous_at Monotone.map_sInf_of_continuousAt
-
-/-
-/-- A monotone function continuous at the indexed infimum over a nonempty `Sort` sends this indexed
-infimum to the indexed infimum of the composition. -/
-theorem Monotone.map_iInf_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
-    (Cf : ContinuousAt f (iInf g)) (Mf : Monotone f) : f (⨅ i, g i) = ⨅ i, f (g i) :=
-  @Monotone.map_iSup_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ ι _ f g Cf Mf.dual
-#align monotone.map_infi_of_continuous_at' Monotone.map_iInf_of_continuousAt'
- -/
 
 /-- If a monotone function sending `top` to `top` is continuous at the indexed infimum over
 a `Sort`, then it sends this indexed infimum to the indexed infimum of the composition. -/
@@ -2754,15 +2718,6 @@ theorem Monotone.map_iInf_of_continuousAt {ι : Sort _} {f : α → β} {g : ι 
   @Monotone.map_iSup_of_continuousAt αᵒᵈ βᵒᵈ _ _ _ _ _ _ ι f g Cf Mf.dual ftop
 #align monotone.map_infi_of_continuous_at Monotone.map_iInf_of_continuousAt
 
-/-
-/-- An antitone function continuous at the supremum of a nonempty set sends this supremum to
-the infimum of the image of this set. -/
-theorem Antitone.map_sSup_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
-    (Af : Antitone f) (hs : s.Nonempty) : f (sSup s) = sInf (f '' s) :=
-  Af.map_sSup_of_continuousAt'' Cf hs -- The more general lemma works out of the box.
-#align antitone.map_Sup_of_continuous_at' Antitone.map_sSup_of_continuousAt'
- -/
-
 /-- An antitone function `f` sending `bot` to `top` and continuous at the supremum of a set sends
 this supremum to the infimum of the image of this set. -/
 theorem Antitone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
@@ -2770,15 +2725,6 @@ theorem Antitone.map_sSup_of_continuousAt {f : α → β} {s : Set α} (Cf : Con
   Monotone.map_sSup_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (sSup s) from Cf) Af
     fbot
 #align antitone.map_Sup_of_continuous_at Antitone.map_sSup_of_continuousAt
-
-/-
-/-- An antitone function continuous at the indexed supremum over a nonempty `Sort` sends this
-indexed supremum to the indexed infimum of the composition. -/
-theorem Antitone.map_iSup_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
-    (Cf : ContinuousAt f (iSup g)) (Af : Antitone f) : f (⨆ i, g i) = ⨅ i, f (g i) :=
-  Monotone.map_iSup_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (iSup g) from Cf) Af
-#align antitone.map_supr_of_continuous_at' Antitone.map_iSup_of_continuousAt'
- -/
 
 /-- An antitone function sending `bot` to `top` is continuous at the indexed supremum over
 a `Sort`, then it sends this indexed supremum to the indexed supremum of the composition. -/
@@ -2789,16 +2735,6 @@ theorem Antitone.map_iSup_of_continuousAt {ι : Sort _} {f : α → β} {g : ι 
     fbot
 #align antitone.map_supr_of_continuous_at Antitone.map_iSup_of_continuousAt
 
-/-
-/-- An antitone function continuous at the infimum of a nonempty set sends this infimum to
-the supremum of the image of this set. -/
-theorem Antitone.map_sInf_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sInf s))
-    (Af : Antitone f) (hs : s.Nonempty) : f (sInf s) = sSup (f '' s) :=
-  Monotone.map_sInf_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (sInf s) from Cf) Af
-    hs
-#align antitone.map_Inf_of_continuous_at' Antitone.map_sInf_of_continuousAt'
- -/
-
 /-- An antitone function `f` sending `top` to `bot` and continuous at the infimum of a set sends
 this infimum to the supremum of the image of this set. -/
 theorem Antitone.map_sInf_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sInf s))
@@ -2806,15 +2742,6 @@ theorem Antitone.map_sInf_of_continuousAt {f : α → β} {s : Set α} (Cf : Con
   Monotone.map_sInf_of_continuousAt (show ContinuousAt (OrderDual.toDual ∘ f) (sInf s) from Cf) Af
     ftop
 #align antitone.map_Inf_of_continuous_at Antitone.map_sInf_of_continuousAt
-
-/-
-/-- An antitone function continuous at the indexed infimum over a nonempty `Sort` sends this indexed
-infimum to the indexed supremum of the composition. -/
-theorem Antitone.map_iInf_of_continuousAt' {ι : Sort _} [Nonempty ι] {f : α → β} {g : ι → α}
-    (Cf : ContinuousAt f (iInf g)) (Af : Antitone f) : f (⨅ i, g i) = ⨆ i, f (g i) :=
-  Monotone.map_iInf_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (iInf g) from Cf) Af
-#align antitone.map_infi_of_continuous_at' Antitone.map_iInf_of_continuousAt'
- -/
 
 /-- If an antitone function sending `top` to `bot` is continuous at the indexed infimum over
 a `Sort`, then it sends this indexed infimum to the indexed supremum of the composition. -/
