@@ -141,7 +141,7 @@ To view elements as a linear combination of the form `s • D s'`, use
 We also provide the notation `Ω[S⁄R]` for `KaehlerDifferential R S`.
 Note that the slash is `\textfractionsolidus`.
 -/
-def KaehlerDifferential : Type _ :=
+abbrev KaehlerDifferential : Type _ :=
   (KaehlerDifferential.ideal R S).Cotangent
 #align kaehler_differential KaehlerDifferential
 
