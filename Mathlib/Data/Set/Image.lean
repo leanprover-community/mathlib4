@@ -183,6 +183,7 @@ theorem preimage_subtype_coe_eq_compl {α : Type _} {s u v : Set α} (hsuv : s �
   · intro x_in_u x_in_v
     exact eq_empty_iff_forall_not_mem.mp H x ⟨x_in_s, ⟨x_in_u, x_in_v⟩⟩
   · intro hx
+
     exact Or.elim (hsuv x_in_s) id fun hx' => hx.elim hx'
 #align set.preimage_subtype_coe_eq_compl Set.preimage_subtype_coe_eq_compl
 
@@ -507,7 +508,6 @@ theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
   · calc
       f '' (s ∩ f ⁻¹' t) ⊆ f '' s ∩ f '' (f ⁻¹' t) := image_inter_subset _ _ _
       _ ⊆ f '' s ∩ t := inter_subset_inter_right _ (image_preimage_subset f t)
-
   · rintro _ ⟨⟨x, h', rfl⟩, h⟩
     exact ⟨x, ⟨h', h⟩, rfl⟩
 #align set.image_inter_preimage Set.image_inter_preimage
