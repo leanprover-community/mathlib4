@@ -437,14 +437,13 @@ theorem snormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x 
 
 theorem snorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     snorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  haveI : μ.ae.NeBot := ae_neBot.mpr hμ
+  rcases eq_zero_or_neZero μ with rfl | hμ
+  · simp
   by_cases hp : p = 0
   · simp [hp]
   have : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖(C : ℝ)‖₊ := hfC.mono fun x hx => hx.trans_eq C.nnnorm_eq.symm
   refine' (snorm_mono_ae this).trans_eq _
-  rw [snorm_const _ hp hμ, C.nnnorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
+  rw [snorm_const _ hp (NeZero.ne μ), C.nnnorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
 #align measure_theory.snorm_le_of_ae_nnnorm_bound MeasureTheory.snorm_le_of_ae_nnnorm_bound
 
 theorem snorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
