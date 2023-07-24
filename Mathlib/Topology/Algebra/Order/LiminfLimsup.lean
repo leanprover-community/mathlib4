@@ -300,6 +300,114 @@ end CompleteLinearOrder
 
 end LiminfLimsup
 
+section Monotone'
+
+-- Q: Should the following lemmas be avoided altogether? If not, what is the right place for them?
+
+lemma Monotone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
+    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) := by
+  apply Filter.IsBounded.isCobounded_flip
+  obtain ⟨b, hb⟩ := bdd
+  refine ⟨f b, ?_⟩
+  simp only [eventually_map, Function.comp_apply] at hb ⊢
+  filter_upwards [hb] with i hi using hf hi
+
+lemma Monotone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
+    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
+  @Monotone.isCoboundedUnder_ge Xᵒᵈ Yᵒᵈ ι _ _ f hf.dual u F _ bdd
+
+lemma Antitone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
+    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
+  @Monotone.isCoboundedUnder_ge X Yᵒᵈ ι _ _ f hf u F _ bdd
+
+lemma Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
+    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) :=
+  @Monotone.isCoboundedUnder_le X Yᵒᵈ ι _ _ f hf u F _ bdd
+
+variable {ι R S : Type _} {F : Filter ι} [NeBot F]
+  [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+  [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
+
+-- Q: Was there a way to "automatically specialize" these kinds of lemmas from
+-- conditionally complete linear orders to complete linear orders so that the then
+-- trivial boundedness assumptions (such as `F.IsBounded (· ≤ ·)`, `F.IsBounded (· ≥ ·)`)
+-- don't need to be provided by the user?
+--
+-- That would allow to use the new `Antitone.map_limsSup_of_continuousAt'` (with prime) and friends
+-- as strictly more general direct replacements of `Antitone.map_limsSup_of_continuousAt` (no
+-- prime) and friends.
+
+theorem Antitone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
+    (bdd_above : F.IsBounded (· ≤ ·)) (bdd_below : F.IsBounded (· ≥ ·))
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.liminf f := by
+  have cobdd : F.IsCobounded (· ≤ ·) := bdd_below.isCobounded_flip
+  apply le_antisymm
+  · rw [limsSup, f_decr.map_sInf_of_continuousAt'' f_cont bdd_above cobdd]
+    apply le_of_forall_lt
+    intro c hc
+    simp only [liminf, limsInf, eventually_map] at hc ⊢
+    obtain ⟨d, hd, h'd⟩ := exists_lt_of_lt_csSup ((@Set.nonempty_image_iff R S f _).mpr bdd_above) hc
+    apply lt_csSup_of_lt ?_ ?_ h'd
+    · exact f_decr.isCoboundedUnder_ge F bdd_below
+    · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
+      filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
+  · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
+    · rcases h' with ⟨c, c_lt, hc⟩
+      have B : ∃ᶠ n in F, F.limsSup ≤ n := by
+        apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
+        intro x hx
+        by_contra'
+        have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
+        simp only [hc, Set.not_nonempty_empty] at this
+      apply @liminf_le_of_frequently_le R S _ F f (f (limsSup F)) (B.mono fun x hx ↦ f_decr hx) ?_
+      obtain ⟨b, hb⟩ := bdd_above
+      use f b
+      simp only [ge_iff_le, eventually_map]
+      filter_upwards [hb] with t ht using f_decr ht
+    simp only [gt_iff_lt, not_lt, ge_iff_le, not_exists, not_and] at h'
+    by_contra' H
+    obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
+    · apply exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H)
+      by_contra con
+      simp only [not_exists, not_lt] at con
+      simpa only [lt_self_iff_false] using lt_of_le_of_lt
+        (@liminf_le_of_frequently_le R S _ F f (f (limsSup F))
+          (frequently_of_forall (fun r ↦ f_decr (con r))) (bdd_above.isBoundedUnder f_decr)) H
+    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
+      contrapose! h'
+      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
+    have B : F.liminf f ≤ f m := by
+      apply @liminf_le_of_frequently_le R S _ F f (f m)
+      · apply (frequently_lt_of_lt_limsSup cobdd m_lt).mono
+        exact fun x hx ↦ f_decr hx.le
+      · exact IsBounded.isBoundedUnder f_decr bdd_above
+    have I : f m < F.liminf f := h'l ⟨l_m, m_lt.le⟩
+    exact lt_irrefl _ (B.trans_lt I)
+
+theorem Antitone.map_limsInf_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) id) (bdd_below : F.IsBoundedUnder (· ≥ ·) id)
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf) : f F.limsInf = F.limsup f :=
+  @Antitone.map_limsSup_of_continuousAt' Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ F _ f
+    bdd_below bdd_above f_decr.dual f_cont
+
+theorem Monotone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) id) (bdd_below : F.IsBoundedUnder (· ≥ ·) id)
+    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.limsup f :=
+  @Antitone.map_limsSup_of_continuousAt' R Sᵒᵈ _ _ _ _ _ _ F _ f
+    bdd_above bdd_below f_incr f_cont
+
+theorem Monotone.map_limsInf_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
+    (bdd_above : F.IsBoundedUnder (· ≤ ·) id) (bdd_below : F.IsBoundedUnder (· ≥ ·) id)
+    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf) : f F.limsInf = F.liminf f :=
+  @Antitone.map_limsSup_of_continuousAt' Rᵒᵈ S _ _ _ _ _ _ F _ f
+    bdd_below bdd_above f_incr.dual f_cont
+
+end Monotone'
+
 section Monotone
 
 variable {ι R S : Type _} {F : Filter ι} [NeBot F] [CompleteLinearOrder R] [TopologicalSpace R]
@@ -308,46 +416,8 @@ variable {ι R S : Type _} {F : Filter ι} [NeBot F] [CompleteLinearOrder R] [To
 /-- An antitone function between complete linear ordered spaces sends a `Filter.limsSup`
 to the `Filter.liminf` of the image if it is continuous at the `limsSup`. -/
 theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.liminf f := by
-  apply le_antisymm
-  · have A : { a : R | ∀ᶠ n : R in F, n ≤ a }.Nonempty := ⟨⊤, by simp⟩
-    rw [limsSup, f_decr.map_sInf_of_continuousAt' f_cont A]
-    apply le_of_forall_lt
-    intro c hc
-    simp only [liminf, limsInf, lt_sSup_iff, eventually_map, Set.mem_setOf_eq, exists_prop,
-      Set.mem_image, exists_exists_and_eq_and] at hc ⊢
-    rcases hc with ⟨d, hd, h'd⟩
-    refine' ⟨f d, _, h'd⟩
-    filter_upwards [hd]with x hx using f_decr hx
-  · rcases eq_or_lt_of_le (bot_le : ⊥ ≤ F.limsSup) with (h | limsSup_ne_bot)
-    · rw [← h]
-      apply liminf_le_of_frequently_le _
-      apply frequently_of_forall
-      intro x
-      exact f_decr bot_le
-    by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
-    · rcases h' with ⟨c, c_lt, hc⟩
-      have B : ∃ᶠ n in F, F.limsSup ≤ n := by
-        apply (frequently_lt_of_lt_limsSup (by isBoundedDefault) c_lt).mono
-        intro x hx
-        by_contra'
-        have : (Set.Ioo c F.limsSup).Nonempty := ⟨x, ⟨hx, this⟩⟩
-        simp only [hc, Set.not_nonempty_empty] at this
-      apply liminf_le_of_frequently_le _
-      exact B.mono fun x hx ↦ f_decr hx
-    by_contra' H
-    obtain ⟨l, l_lt, h'l⟩ : ∃ l < F.limsSup, Set.Ioc l F.limsSup ⊆ { x : R | f x < F.liminf f }
-    exact exists_Ioc_subset_of_mem_nhds ((tendsto_order.1 f_cont.tendsto).2 _ H) ⟨⊥, limsSup_ne_bot⟩
-    obtain ⟨m, l_m, m_lt⟩ : (Set.Ioo l F.limsSup).Nonempty := by
-      contrapose! h'
-      refine' ⟨l, l_lt, by rwa [Set.not_nonempty_iff_eq_empty] at h'⟩
-    have B : F.liminf f ≤ f m := by
-      apply liminf_le_of_frequently_le _
-      apply (frequently_lt_of_lt_limsSup (by isBoundedDefault) m_lt).mono
-      intro x hx
-      exact f_decr hx.le
-    have I : f m < F.liminf f := h'l ⟨l_m, m_lt.le⟩
-    exact lt_irrefl _ (B.trans_lt I)
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.liminf f :=
+  Antitone.map_limsSup_of_continuousAt' isBounded_le_of_top isBounded_ge_of_bot f_decr f_cont
 set_option linter.uppercaseLean3 false in
 #align antitone.map_Limsup_of_continuous_at Antitone.map_limsSup_of_continuousAt
 
