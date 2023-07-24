@@ -266,6 +266,7 @@ lemma commProb_DihedralGroup_Odd (n : ℕ) (hn : ¬ 2 ∣ n) :
   have : 2 ∣ n + 3 := by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, hn]; rfl
   qify [this]; field_simp [hn']; left; ring
 
+/- https://randompermutations.com/2015/02/06/commuting-probability-of-compact-groups/ -/
 theorem commProb_ReciprocalGroup_reciprocalFactors (n : ℕ) :
     commProb (ReciprocalGroup (reciprocalFactors n)) = 1 / n := by
   rw [commProb_ReciprocalGroup]
