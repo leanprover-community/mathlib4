@@ -222,7 +222,9 @@ alias lt_of_eq_of_lt' ← Eq.trans_gt
 
 @[simp] lemma le_of_subsingleton [Subsingleton α] (a b : α) : a ≤ b := (Subsingleton.elim a b).le
 
-@[simp] lemma not_lt_of_subsingleton [Subsingleton α] (a b : α) : ¬a < b := (Subsingleton.elim a b).not_lt
+@[simp] lemma not_lt_of_subsingleton [Subsingleton α] (a b : α) : ¬a < b := by
+  cases Subsingleton.elim a b
+  simp
 
 end
 
