@@ -309,8 +309,8 @@ theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u 
 
 /-- Filters are automatically bounded or cobounded in complete lattices. To use the same statements
 in complete and conditionally complete lattices but let automation fill automatically the
-boundedness proofs in complete lattices, we use the tactic `isBounded_default` in the statements,
-in the form `(hf : f.IsBounded (≥) . isBoundedDefault)`. -/
+boundedness proofs in complete lattices, we use the tactic `isBoundedDefault` in the statements,
+in the form `(hf : f.IsBounded (≥) := isBoundedDefault)`. -/
 
 macro "isBoundedDefault" : tactic =>
   `(tactic| first
