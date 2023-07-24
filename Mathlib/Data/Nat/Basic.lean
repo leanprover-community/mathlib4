@@ -380,8 +380,8 @@ lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
     · simp at h
     · exact (Nat.mul_le_mul h'.1 h'.2).not_lt h
   · obtain hm | hn := h.2.2
-    · exact Nat.mul_lt_mul hm h.2.1 Nat.zero_lt_one
-    · exact Nat.mul_lt_mul' h.1 hn h.1
+    · exact Nat.mul_lt_mul_of_lt_of_le hm h.2.1 h.2.1
+    · exact Nat.mul_lt_mul_of_le_of_lt h.1 hn h.1
 
 /-!
 ### Recursion and induction principles
