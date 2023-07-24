@@ -20,9 +20,11 @@ This file defines `MvPolynomial` power sums as a means of implementing Newton's 
 
 * `MvPolynomial.psum`
 
+* `MvPolynomial.NewtonIdentity`
+
 ## Notation
 
-+ `psum σ R n`, is the degree-`n` power sum in `MvPolynomial σ R`.
++ `psum σ R n` is the degree-`n` power sum in `MvPolynomial σ R`.
 
 As in other polynomial files, we typically use the notation:
 
