@@ -167,7 +167,7 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       · use t.snd
         apply h1
       exact lt_iff_add_one_le.mp (card_pos.mpr h4)
-    rw [Nat.sub_add h3 h.2.1,
+    rw [Nat.sub_add h3 h.right.left,
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
       Nat.sub_add_cancel]
     simp
@@ -176,10 +176,10 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       ← mul_add]
     nth_rewrite 2 [← pow_one (X t.snd)]
     have h3 : card t.fst + 1 ≤ k
-    · have ht1 := h.2.2
+    · have ht1 := h.right.right
       contrapose! ht1
       apply And.intro
-      · exact le_antisymm h.2.1 (le_of_lt_succ ht1)
+      · exact le_antisymm h.right.left (le_of_lt_succ ht1)
       · exact h1
     simp_rw [← pow_add, ← Nat.add_sub_assoc h3, add_comm, add_tsub_add_eq_tsub_right]
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
@@ -243,7 +243,31 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     ∑ i in range k, ∑ A in powersetLen i univ, (∑ j in univ, f (A, j)) := by
     have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
     simp_rw [← sum_congr rfl equiv_i]
-    sorry
+    have pdisj : Set.PairwiseDisjoint (range k)
+        (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
+      simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, pairs_pred]
+      simp
+      intro x hx y hy xny
+      by_contra neg
+      simp at neg
+      cases neg with
+      | intro sneg hsneg =>
+        simp_rw [subset_empty] at hsneg
+        have sneg_ne := nonempty_iff_ne_empty.mpr hsneg.right.right
+        rw [Finset.Nonempty] at sneg_ne
+        cases sneg_ne with
+        | intro s hs =>
+          have hs1 := hsneg.left hs
+          have hs2 := hsneg.right.left hs
+          simp_rw [and_assoc, ← filter_filter, mem_filter] at hs1 hs2
+          rw [← hs1.right, ← hs2.right] at xny
+          exact xny rfl
+    have hdisj := @sum_disjiUnion _ _ _ f _ (range k)
+      (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) pdisj
+    have disj_equiv : disjiUnion (range k) (fun i ↦ filter (fun t ↦ card t.fst = i) (pairs σ k))
+        pdisj = filter (fun t ↦ card t.fst < k) (pairs σ k) := by
+      sorry
+    simp_rw [← hdisj, disj_equiv]
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
