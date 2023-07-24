@@ -107,8 +107,8 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 /-- Needed for `Finset.sum_involution` -/
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
-open Classical in
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
+  classical
   rw [pairs, mem_filter, PairsPred] at *
   simp_rw [T_map_restr, T_map]
   split_ifs with h1
@@ -135,9 +135,9 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     simp_all
   · simp at h3
 
-open Classical in
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
+  classical
   simp_rw [T_map_restr, T_map, weight]
   simp_rw [pairs, mem_filter, PairsPred] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
@@ -182,10 +182,10 @@ theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
   sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
     (T_map_pair σ) (T_map_invol σ)
 
-open Classical in
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
+  classical
   apply sum_finset_product
   simp_all
   intro p b
@@ -200,10 +200,10 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     have cardpk := mem_powerset_len_univ_iff.mp hpr.1
     exact And.intro (le_of_eq cardpk) cardpk
 
-open Classical in
 theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
     ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
+  classical
   apply sum_finset_product
   simp_all
   intro p b
@@ -277,9 +277,9 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
   rw [h2] at h1
   exact lt_irrefl _ h1
 
-open Classical in
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
+  classical
   simp_all [← filter_or, Finset.ext_iff, pairs, PairsPred]
   intro a b ab _
   exact lt_or_eq_of_le ab
