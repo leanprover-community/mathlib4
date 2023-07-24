@@ -25,6 +25,10 @@ open scoped Topology
 open scoped Topology Manifold Classical Filter BigOperators
 
 
+lemma zoug {α : Type _} [MetricSpace α] [LocallyCompactSpace α] {s : Set α} (hs : IsCompact α) :
+    ∃ δ > 0, IsCompact (cthickening δ s) := by
+
+
 
 variable {ι : Type _} {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [FiniteDimensional ℝ E] {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
