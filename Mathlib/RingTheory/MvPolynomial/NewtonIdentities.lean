@@ -290,8 +290,8 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
   use k
 
 theorem esymm_mult_psum_summand_to_weight (k i : ℕ) (h : i ∈ range k) :
-    (-1) ^ (k + 1) * ∑ A in powersetLen (k - i) univ, ∑ j in univ, weight σ R k (A, j) =
-    (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i := by
+    ∑ A in powersetLen i univ, ∑ j in univ, weight σ R k (A, j) =
+    (-1) ^ i * esymm σ R i * psum σ R (k - i) := by
   simp_rw [esymm, psum, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
   refine sum_congr rfl ?_
@@ -299,38 +299,15 @@ theorem esymm_mult_psum_summand_to_weight (k i : ℕ) (h : i ∈ range k) :
   rw [sum_mul]
   refine sum_congr rfl ?_
   intro x1 hx1
-  simp_rw [mem_powerset_len_univ_iff.mp hx1, Nat.sub_sub_self (mem_range_le h), ← mul_assoc,
-    ← pow_add, ← Nat.add_sub_assoc (mem_range.mp h) (k + 1), add_comm, ← add_assoc,
-    tsub_add_eq_add_tsub (mem_range_le h)]
-  have parity_eq : Even (i + 1) ↔ Even (k + k - i + 1) := by
-    suffices sum_even : Even (i + 1 + (k + k - i + 1)) from even_add.mp sum_even
-    rw [Even]
-    use (k + 1)
-    nth_rewrite 1 [add_comm]
-    simp_rw [add_assoc, add_comm 1 (i + 1), ← add_assoc, add_assoc k 1 k, add_comm 1 k, ← add_assoc,
-      Nat.add_sub_assoc (mem_range_le h) k, add_assoc k (k - i) i,
-      Nat.sub_add_cancel (mem_range_le h)]
-  have neg_one_pow_eq : (-1 : MvPolynomial σ R) ^ (i + 1) =
-      (-1 : MvPolynomial σ R) ^ (k + k - i + 1) := by
-    have const_poly : -((C 1) : MvPolynomial σ R) = (-1 : MvPolynomial σ R) := by rfl
-    simp_rw [← const_poly, ← C_neg σ (1 : R), ← C_pow]
-    by_cases (Even (i + 1))
-    · rw [Even.neg_one_pow h, Even.neg_one_pow (parity_eq.mp h)]
-    · rw [Odd.neg_one_pow (odd_iff_not_even.mpr h),
-        Odd.neg_one_pow (odd_iff_not_even.mpr (parity_eq.not.mp h))]
-  rw [neg_one_pow_eq]
+  simp_rw [mem_powerset_len_univ_iff.mp hx1]
 
 theorem esymm_mult_psum_to_weight (k : ℕ) :
-    ∑ i in range k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i =
-    (-1) ^ (k + 1) * ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
-  simp_rw [← sum_congr rfl (esymm_mult_psum_summand_to_weight σ R k), sum_equiv_lt_k σ R k,
-    ← mul_sum]
-  sorry
+    ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) =
+    ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
+  simp_rw [← sum_congr rfl (esymm_mult_psum_summand_to_weight σ R k), sum_equiv_lt_k σ R k]
 
-theorem NewtonIdentity (k : ℕ) : k * esymm σ R k -
-    ∑ i in range k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i = 0 := by
-  simp_rw [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k, pow_add]
-  simp
-  rw [← mul_add, add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k),
-    lt_k_disjunion_k σ k, weight_sum σ R k]
-  simp
+theorem NewtonIdentity (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
+    ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0 := by
+  simp_all [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k, ← mul_assoc, ← pow_add,
+    Even.neg_one_pow]
+  rw [add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k), lt_k_disjunion_k σ k, weight_sum σ R k]
