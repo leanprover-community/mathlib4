@@ -11,7 +11,6 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.GroupTheory.MonoidLocalization
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.LinearAlgebra.TensorProduct
 import Mathlib.RingTheory.IsTensorProduct
 
 /-!
