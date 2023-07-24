@@ -547,7 +547,7 @@ def Subtype.val (p : α → Prop) : Subtype p →o α :=
 
 /-- `Subtype.impBedding` as an order embedding. -/
 @[simps!]
-def Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) : {x // p x} ↪o {x // q x} :=
+def _root_.Subtype.orderEmbedding {p q : α → Prop} (h : ∀ a, p a → q a) : {x // p x} ↪o {x // q x} :=
   { Subtype.impEmbedding _ _ h with
     map_rel_iff' := by aesop }
 
