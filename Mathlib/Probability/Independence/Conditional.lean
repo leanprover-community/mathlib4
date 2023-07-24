@@ -7,62 +7,47 @@ import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Kernel.Condexp
 
 /-!
-# Independence of sets of sets and measure spaces (σ-algebras)
+# Conditional Independence
 
-* A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if for
-  any finite set of indices `s = {i_1, ..., i_n}`, for any sets `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`,
-  `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. It will be used for families of π-systems.
-* A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
-  measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
-  define is independent. I.e., `m : ι → MeasurableSpace Ω` is independent with respect to a
-  measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
-  `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i)`.
-* Independence of sets (or events in probabilistic parlance) is defined as independence of the
-  measurable space structures they generate: a set `s` generates the measurable space structure with
-  measurable sets `∅, s, sᶜ, univ`.
-* Independence of functions (or random variables) is also defined as independence of the measurable
-  space structures they generate: a function `f` for which we have a measurable space `m` on the
-  codomain generates `MeasurableSpace.comap f m`.
+We define conditional independence of sets/σ-algebras/functions with respect to a σ-algebra.
 
-## Main statements
+Two σ-algebras `m₁` and `m₂` are conditionally independent given a third σ-algebra `m'` if for all
+`m₁`-measurable sets `t₁` and `m₂`-measurable sets `t₂`,
+`μ⟦t₁ ∩ t₂ | m'⟧ =ᵐ[μ] μ⟦t₁ | m'⟧ * μ⟦t₂ | m'⟧`.
 
-* `iIndepSets.iIndep`: if π-systems are independent as sets of sets, then the
-  measurable space structures they generate are independent.
-* `IndepSets.indep`: variant with two π-systems.
+On standard Borel spaces, the conditional expectation with respect to `m'` defines a kernel
+`ProbabilityTheory.condexpKernel`, and the definition above is equivalent to
+`∀ᵐ ω ∂μ, condexpKernel μ m' ω (t₁ ∩ t₂) = condexpKernel μ m' ω t₁ * condexpKernel μ m' ω t₂`.
+We use this property as the definition of conditional independence.
 
-## Implementation notes
+## Main definitions
 
-The definitions of independence in this file are a particular case of independence with respect to a
-kernel and a measure, as defined in the file `Kernel.lean`.
-
-We provide four definitions of independence:
-* `iIndepSets`: independence of a family of sets of sets `pi : ι → Set (Set Ω)`. This is meant to
-  be used with π-systems.
-* `iIndep`: independence of a family of measurable space structures `m : ι → MeasurableSpace Ω`,
-* `iIndepSet`: independence of a family of sets `s : ι → Set Ω`,
-* `iIndepFun`: independence of a family of functions. For measurable spaces
+We provide four definitions of conditional independence:
+* `iCondIndepSets`: conditional independence of a family of sets of sets `pi : ι → Set (Set Ω)`.
+  This is meant to be used with π-systems.
+* `iCondIndep`: conditional independence of a family of measurable space structures
+  `m : ι → MeasurableSpace Ω`,
+* `iCondIndepSet`: conditional independence of a family of sets `s : ι → Set Ω`,
+* `iCondIndepFun`: conditional independence of a family of functions. For measurable spaces
   `m : Π (i : ι), MeasurableSpace (β i)`, we consider functions `f : Π (i : ι), Ω → β i`.
 
 Additionally, we provide four corresponding statements for two measurable space structures (resp.
 sets of sets, sets, functions) instead of a family. These properties are denoted by the same names
-as for a family, but without the starting `i`, for example `IndepFun` is the version of `iIndepFun`
-for two functions.
+as for a family, but without the starting `i`, for example `CondIndepFun` is the version of
+`iCondIndepFun` for two functions.
 
-The definition of independence for `iIndepSets` uses finite sets (`Finset`). See
-`ProbabilityTheory.iIndepSetsₖ`. An alternative and equivalent way of defining independence would
-have been to use countable sets.
+## Main statements
 
-Most of the definitions and lemmas in this file list all variables instead of using the `variable`
-keyword at the beginning of a section, for example
-`lemma Indep.symm {Ω} {m₁ m₂ : MeasurableSpace Ω} [MeasurableSpace Ω] {μ : measure Ω} ...` .
-This is intentional, to be able to control the order of the `MeasurableSpace` variables. Indeed
-when defining `μ` in the example above, the measurable space used is the last one defined, here
-`[MeasurableSpace Ω]`, and not `m₁` or `m₂`.
+* `ProbabilityTheory.iCondIndepSets.iCondIndep`: if π-systems are conditionally independent as sets
+  of sets, then the measurable space structures they generate are conditionally independent.
+* `ProbabilityTheory.condIndepSets.condIndep`: variant with two π-systems.
 
-## References
+## Implementation notes
 
-* Williams, David. Probability with martingales. Cambridge university press, 1991.
-Part A, Chapter 4.
+The definitions of conditional independence in this file are a particular case of independence with
+respect to a kernel and a measure, as defined in the file `Probability/Independence/Kernel.lean`.
+The kernel used is `ProbabilityTheory.condexpKernel`.
+
 -/
 
 open MeasureTheory MeasurableSpace
@@ -81,34 +66,39 @@ variable (m' : MeasurableSpace Ω)
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   (hm' : m' ≤ mΩ)
 
-/-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if
-for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
-`f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `.
+/-- A family of sets of sets `π : ι → Set (Set Ω)` is conditionally independent given `m'` with
+respect to a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
+`f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ⟦⋂ i in s, f i | m'⟧ =ᵐ[μ] ∏ i in s, μ⟦f i | m'⟧`.
+See `ProbabilityTheory.iCondIndepSets_iff`.
 It will be used for families of pi_systems. -/
 def iCondIndepSets (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
   iIndepSetsₖ π (condexpKernel μ m') (μ.trim hm')
 
-/-- Two sets of sets `s₁, s₂` are independent with respect to a measure `μ` if for any sets
-`t₁ ∈ p₁, t₂ ∈ s₂`, then `μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
+/-- Two sets of sets `s₁, s₂` are conditionally independent given `m'` with respect to a measure
+`μ` if for any sets `t₁ ∈ p₁, t₂ ∈ s₂`, then `μ⟦t₁ ∩ t₂ | m'⟧ =ᵐ[μ] μ⟦t₁ | m'⟧ * μ⟦t₂ | m'⟧`.
+See `ProbabilityTheory.condIndepSets_iff`. -/
 def CondIndepSets (s1 s2 : Set (Set Ω)) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
   IndepSetsₖ s1 s2 (condexpKernel μ m') (μ.trim hm')
 
-/-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
-measure `μ` (typically defined on a finer σ-algebra) if the family of sets of measurable sets they
-define is independent. `m : ι → MeasurableSpace Ω` is independent with respect to measure `μ` if
-for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
-`f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then `μ (⋂ i in s, f i) = ∏ i in s, μ (f i) `. -/
+/-- A family of measurable space structures (i.e. of σ-algebras) is conditionally independent given
+`m'` with respect to a measure `μ` (typically defined on a finer σ-algebra) if the family of sets of
+measurable sets they define is independent. `m : ι → MeasurableSpace Ω` is conditionally independent
+given `m'` with respect to measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for
+any sets `f i_1 ∈ m i_1, ..., f i_n ∈ m i_n`, then
+`μ⟦⋂ i in s, f i | m'⟧ =ᵐ[μ] ∏ i in s, μ⟦f i | m'⟧ `.
+See `ProbabilityTheory.iCondIndep_iff`. -/
 def iCondIndep (m : ι → MeasurableSpace Ω) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] :
     Prop :=
   iIndepₖ m (condexpKernel μ m') (μ.trim hm')
 
 end
 
-/-- Two measurable space structures (or σ-algebras) `m₁, m₂` are independent with respect to a
-measure `μ` (defined on a third σ-algebra) if for any sets `t₁ ∈ m₁, t₂ ∈ m₂`,
-`μ (t₁ ∩ t₂) = μ (t₁) * μ (t₂)` -/
+/-- Two measurable space structures (or σ-algebras) `m₁, m₂` are conditionally independent given
+`m'` with respect to a measure `μ` (defined on a third σ-algebra) if for any sets
+`t₁ ∈ m₁, t₂ ∈ m₂`, `μ⟦t₁ ∩ t₂ | m'⟧ =ᵐ[μ] μ⟦t₁ | m'⟧ * μ⟦t₂ | m'⟧`.
+See `ProbabilityTheory.condIndep_iff`. -/
 def CondIndep (m' m₁ m₂ : MeasurableSpace Ω)
     [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
     (hm' : m' ≤ mΩ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
@@ -120,27 +110,34 @@ variable (m' : MeasurableSpace Ω)
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
   (hm' : m' ≤ mΩ)
 
-/-- A family of sets is independent if the family of measurable space structures they generate is
-independent. For a set `s`, the generated measurable space has measurable sets `∅, s, sᶜ, univ`. -/
+/-- A family of sets is conditionally independent if the family of measurable space structures they
+generate is conditionally independent. For a set `s`, the generated measurable space has measurable
+sets `∅, s, sᶜ, univ`.
+See `ProbabilityTheory.iCondIndepSet_iff`. -/
 def iCondIndepSet (s : ι → Set Ω) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   iIndepSetₖ s (condexpKernel μ m') (μ.trim hm')
 
-/-- Two sets are independent if the two measurable space structures they generate are independent.
-For a set `s`, the generated measurable space structure has measurable sets `∅, s, sᶜ, univ`. -/
+/-- Two sets are conditionally independent if the two measurable space structures they generate are
+conditionally independent. For a set `s`, the generated measurable space structure has measurable
+sets `∅, s, sᶜ, univ`.
+See `ProbabilityTheory.condIndepSet_iff`. -/
 def CondIndepSet (s t : Set Ω) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   IndepSetₖ s t (condexpKernel μ m') (μ.trim hm')
 
 /-- A family of functions defined on the same space `Ω` and taking values in possibly different
-spaces, each with a measurable space structure, is independent if the family of measurable space
-structures they generate on `Ω` is independent. For a function `g` with codomain having measurable
-space structure `m`, the generated measurable space structure is `MeasurableSpace.comap g m`. -/
+spaces, each with a measurable space structure, is conditionally independent if the family of
+measurable space structures they generate on `Ω` is conditionally independent. For a function `g`
+with codomain having measurable space structure `m`, the generated measurable space structure is
+`m.comap g`.
+See `ProbabilityTheory.iCondIndepFun_iff`. -/
 def iCondIndepFun {β : ι → Type _} (m : ∀ x : ι, MeasurableSpace (β x))
     (f : ∀ x : ι, Ω → β x) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   iIndepFunₖ m f (condexpKernel μ m') (μ.trim hm')
 
-/-- Two functions are independent if the two measurable space structures they generate are
-independent. For a function `f` with codomain having measurable space structure `m`, the generated
-measurable space structure is `MeasurableSpace.comap f m`. -/
+/-- Two functions are conditionally independent if the two measurable space structures they generate
+are conditionally independent. For a function `f` with codomain having measurable space structure
+`m`, the generated measurable space structure is `m.comap f`.
+See `ProbabilityTheory.condIndepFun_iff`. -/
 def CondIndepFun [MeasurableSpace β] [MeasurableSpace γ]
     (f : Ω → β) (g : Ω → γ) (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   IndepFunₖ f g (condexpKernel μ m') (μ.trim hm')
@@ -452,7 +449,7 @@ theorem condIndep_of_condIndep_of_le_right
 
 end CondIndep
 
-/-! ### Deducing `Indep` from `iIndep` -/
+/-! ### Deducing `CondIndep` from `iCondIndep` -/
 
 
 section FromIndepToIndep
@@ -482,13 +479,15 @@ end FromIndepToIndep
 /-!
 ## π-system lemma
 
-Independence of measurable spaces is equivalent to independence of generating π-systems.
+Conditional independence of measurable spaces is equivalent to conditional independence of
+generating π-systems.
 -/
 
 
 section FromMeasurableSpacesToSetsOfSets
 
-/-! ### Independence of measurable space structures implies independence of generating π-systems -/
+/-! ### Conditional independence of σ-algebras implies conditional independence of
+  generating π-systems -/
 
 variable {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
@@ -509,7 +508,8 @@ end FromMeasurableSpacesToSetsOfSets
 
 section FromPiSystemsToMeasurableSpaces
 
-/-! ### Independence of generating π-systems implies independence of measurable space structures -/
+/-! ### Conditional independence of generating π-systems implies conditional independence of
+  σ-algebras -/
 
 variable {m' : MeasurableSpace Ω}
   [mΩ : MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [PolishSpace Ω] [Nonempty Ω]
@@ -583,7 +583,8 @@ theorem iCondIndepSets.piiUnionInter_of_not_mem {π : ι → Set (Set Ω)} {a : 
     CondIndepSets m' hm' (piiUnionInter π S) (π a) μ :=
   iIndepSetsₖ.piiUnionInter_of_not_mem hp_ind haS
 
-/-- The measurable space structures generated by independent pi-systems are independent. -/
+/-- The σ-algebras generated by conditionally independent pi-systems are conditionally independent.
+-/
 theorem iCondIndepSets.iCondIndep (m : ι → MeasurableSpace Ω)
     (h_le : ∀ i, m i ≤ mΩ) (π : ι → Set (Set Ω)) (h_pi : ∀ n, IsPiSystem (π n))
     (h_generate : ∀ i, m i = generateFrom (π i)) (h_ind : iCondIndepSets m' hm' π μ) :
@@ -594,11 +595,11 @@ end FromPiSystemsToMeasurableSpaces
 
 section IndepSet
 
-/-! ### Independence of measurable sets
+/-! ### Conditional independence of measurable sets
 
-We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
-* `IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t`,
-* `IndepSet s t μ ↔ IndepSets {s} {t} μ`.
+We prove the following equivalences on `CondIndepSet`, for measurable sets `s, t`.
+* `CondIndepSet m' hm s t μ ↔ μ⟦s ∩ t | m'⟧ = μ⟦s | m'⟧ * μ⟦t | m'⟧`,
+* `CondIndepSet m' hm s t μ ↔ IndepSets m' hm {s} {t} μ`.
 -/
 
 variable {m' : MeasurableSpace Ω}
@@ -638,7 +639,7 @@ end IndepSet
 
 section IndepFun
 
-/-! ### Independence of random variables
+/-! ### Conditional independence of random variables
 
 -/
 
@@ -698,9 +699,9 @@ theorem CondIndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace �
     CondIndepFun m' hm' (φ ∘ f) (ψ ∘ g) μ :=
   IndepFunₖ.comp hfg hφ hψ
 
-/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
-two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
-tuple `(f i)_i` for `i ∈ T`. -/
+/-- If `f` is a family of mutually conditionally independent random variables
+(`iCondIndepFun m' hm' m f μ`) and `S, T` are two disjoint finite index sets, then the tuple formed
+by `f i` for `i ∈ S` is conditionally independent of the tuple `(f i)_i` for `i ∈ T`. -/
 theorem iCondIndepFun.condIndepFun_finset {β : ι → Type _}
     {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i} (S T : Finset ι) (hST : Disjoint S T)
     (hf_Indep : iCondIndepFun m' hm' m f μ) (hf_meas : ∀ i, Measurable (f i)) :
