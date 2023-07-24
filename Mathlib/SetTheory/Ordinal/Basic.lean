@@ -1116,7 +1116,8 @@ instance uniqueOutOne : Unique (1 : Ordinal).out.α
     apply typein_lt_self
 #align ordinal.unique_out_one Ordinal.uniqueOutOne
 
-theorem one_out_eq (x : (1 : Ordinal).out.α) : x = enum (· < ·) 0 (by simp) :=
+theorem one_out_eq (x : (1 : Ordinal).out.α) :
+    x = enum (· < ·) 0 (by simp only [type_lt, zero_lt_one]) :=
   Unique.eq_default x
 #align ordinal.one_out_eq Ordinal.one_out_eq
 
