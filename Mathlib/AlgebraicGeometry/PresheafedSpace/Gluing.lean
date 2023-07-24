@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.presheafed_space.gluing
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Gluing
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace.HasColimits
+
+#align_import algebraic_geometry.presheafed_space.gluing from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Gluing Structured spaces
@@ -23,19 +20,19 @@ provided.
 
 ## Main definitions
 
-* `algebraic_geometry.PresheafedSpace.glue_data`: A structure containing the family of gluing data.
-* `Category_theory.glue_data.glued`: The glued presheafed space.
+* `AlgebraicGeometry.PresheafedSpace.GlueData`: A structure containing the family of gluing data.
+* `CategoryTheory.GlueData.glued`: The glued presheafed space.
     This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
     can be used.
-* `Category_theory.glue_data.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
+* `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 
 ## Main results
 
-* `algebraic_geometry.PresheafedSpace.glue_data.ι_IsOpenImmersion`: The map `ι i : U i ⟶ glued`
+* `AlgebraicGeometry.PresheafedSpace.GlueData.ιIsOpenImmersion`: The map `ι i : U i ⟶ glued`
   is an open immersion for each `i : J`.
-* `algebraic_geometry.PresheafedSpace.glue_data.ι_jointly_surjective` : The underlying maps of
+* `AlgebraicGeometry.PresheafedSpace.GlueData.ι_jointly_surjective` : The underlying maps of
   `ι i : U i ⟶ glued` are jointly surjective.
-* `algebraic_geometry.PresheafedSpace.glue_data.V_pullback_cone_is_limit` : `V i j` is the pullback
+* `AlgebraicGeometry.PresheafedSpace.GlueData.vPullbackConeIsLimit` : `V i j` is the pullback
   (intersection) of `U i` and `U j` over the glued space.
 
 Analogous results are also provided for `SheafedSpace` and `LocallyRingedSpace`.
@@ -43,8 +40,8 @@ Analogous results are also provided for `SheafedSpace` and `LocallyRingedSpace`.
 ## Implementation details
 
 Almost the whole file is dedicated to showing tht `ι i` is an open immersion. The fact that
-this is an open embedding of topological spaces follows from `topology.gluing.lean`, and it remains
-to construct `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, ι i '' U)` for each `U ⊆ U i`.
+this is an open embedding of topological spaces follows from `Mathlib/Topology/Gluing.lean`, and it
+remains to construct `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, ι i '' U)` for each `U ⊆ U i`.
 Since `Γ(𝒪_X, ι i '' U)` is the the limit of `diagram_over_open`, the components of the structure
 sheafs of the spaces in the gluing diagram, we need to construct a map
 `ιInvApp_π_app : Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing diagram.
@@ -195,15 +192,15 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     congr
     have := (𝖣.t_fac k i j).symm
     rw [←IsIso.inv_comp_eq] at this
-    replace this := (congr_arg ((PresheafedSpace.Hom.base .)) this).symm
-    replace this := congr_arg (ContinuousMap.toFun .) this
+    replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
+    replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
     rw [coe_comp, coe_comp] at this
     rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
       rw [←comp_apply, ←comp_base, D.t_inv, id_base, id_apply]
-    refine congr_arg (_ '' .) ?_
+    refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
@@ -261,7 +258,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   · refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
     dsimp
     rw [coe_comp, Set.image_comp]
-    refine congr_arg (_ '' .) ?_
+    refine congr_arg (_ '' ·) ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
     · apply CategoryTheory.ConcreteCategory.bijective_of_isIso
@@ -318,7 +315,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
         (π₂⁻¹ j, i, k) (unop _) ≫
           (D.V (j, k)).presheaf.map
             (eqToHom (opensImagePreimageMap_app' D i j k U).choose) ≫ f' := by
-  simpa only [Category.assoc] using congr_arg (. ≫ f') (opensImagePreimageMap_app D i j k U)
+  simpa only [Category.assoc] using congr_arg (· ≫ f') (opensImagePreimageMap_app D i j k U)
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app_assoc AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app_assoc
 
 /-- (Implementation) Given an open subset of one of the spaces `U ⊆ Uᵢ`, the sheaf component of
@@ -348,15 +345,15 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note : used to be `congr 3`
-    refine congr_arg (. ⁻¹' _) ?_
-    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) .) ?_
-    refine congr_arg (PresheafedSpace.Hom.base (C := C) .) ?_
+    refine congr_arg (· ⁻¹' _) ?_
+    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
+    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπApp
 
 -- Porting note : time out started in `erw [... congr_app (pullbackSymmetry_hom_comp_snd _ _)]` and
--- the last congr has a very difficult `rfl : eqToHom _ ≫  eqToHom _ ≫ ... = eqToHom ... `
+-- the last congr has a very difficult `rfl : eqToHom _ ≫ eqToHom _ ≫ ... = eqToHom ... `
 set_option maxHeartbeats 600000 in
 /-- (Implementation) The natural map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_X, 𝖣.ι i '' U)`.
 This forms the inverse of `(𝖣.ι i).c.app (op U)`. -/
@@ -409,7 +406,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
             repeat' erw [← (D.V (j, k)).presheaf.map_comp]
             -- Porting note : was just `congr`
-            exact congr_arg ((D.V (j, k)).presheaf.map .) rfl } }
+            exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvApp
 
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/

@@ -2,11 +2,6 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.class_number.finite
-! leanprover-community/mathlib commit ea0bcd84221246c801a6f8fbe8a4372f6d04b176
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.LinearAlgebra.FreeModule.PID
@@ -16,13 +11,15 @@ import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.Norm
 
+#align_import number_theory.class_number.finite from "leanprover-community/mathlib"@"ea0bcd84221246c801a6f8fbe8a4372f6d04b176"
+
 /-!
 # Class numbers of global fields
 In this file, we use the notion of "admissible absolute value" to prove
-finiteness of the class group for number fields and function fields,
-and define `class_number` as the order of this group.
+finiteness of the class group for number fields and function fields.
+
 ## Main definitions
- - `class_group.fintype_of_admissible`: if `R` has an admissible absolute value,
+ - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
    its integral closure has a finite class group
 -/
 
@@ -56,7 +53,7 @@ variable (abv : AbsoluteValue R ℤ)
 
 variable {ι : Type _} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
-/-- If `b` is an `R`-basis of `S` of cardinality `n`, then `norm_bound abv b` is an integer
+/-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
 we have algebra.norm a ≤ norm_bound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
 noncomputable def normBound : ℤ :=
@@ -87,7 +84,7 @@ theorem normBound_pos : 0 < normBound abv bS := by
 #align class_group.norm_bound_pos ClassGroup.normBound_pos
 
 /-- If the `R`-integral element `a : S` has coordinates `≤ y` with respect to some basis `b`,
-its norm is less than `norm_bound abv b * y ^ dim S`. -/
+its norm is less than `normBound abv b * y ^ dim S`. -/
 theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
     abv (Algebra.norm R a) ≤ normBound abv bS * y ^ Fintype.card ι := by
   conv_lhs => rw [← bS.sum_repr a]
@@ -102,7 +99,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
   --   exact finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
   rw [← LinearMap.det_toMatrix bS]
   convert Matrix.det_sum_smul_le (n := ι) Finset.univ _ hy using 3
-  . simp; rfl
+  · simp; rfl
   · rw [Finset.card_univ, smul_mul_assoc, mul_comm]
   · intro i j k
     apply Finset.le_max'
@@ -110,7 +107,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 #align class_group.norm_le ClassGroup.norm_le
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
-its norm is strictly less than `norm_bound abv b * y ^ dim S`. -/
+its norm is strictly less than `normBound abv b * y ^ dim S`. -/
 theorem norm_lt {T : Type _} [LinearOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
@@ -185,8 +182,8 @@ noncomputable def distinctElems : Fin (cardM bS adm).succ ↪ R :=
 
 variable [DecidableEq R]
 
-/-- `finset_approx` is a finite set such that each fractional ideal in the integral closure
-contains an element close to `finset_approx`. -/
+/-- `finsetApprox` is a finite set such that each fractional ideal in the integral closure
+contains an element close to `finsetApprox`. -/
 noncomputable def finsetApprox : Finset R :=
   (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
@@ -249,7 +246,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [← bS.sum_repr a]
     simp only [Finset.smul_sum, ← Finset.sum_add_distrib]
     refine'
-      Finset.sum_congr rfl fun i _ =>  _
+      Finset.sum_congr rfl fun i _ => _
 -- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
     rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i
@@ -309,7 +306,7 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
 #align class_group.ne_bot_of_prod_finset_approx_mem ClassGroup.ne_bot_of_prod_finsetApprox_mem
 
 /-- Each class in the class group contains an ideal `J`
-such that `M := Π m ∈ finset_approx` is in `J`. -/
+such that `M := Π m ∈ finsetApprox` is in `J`. -/
 theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I : (Ideal S)⁰) :
     ∃ J : (Ideal S)⁰,
       ClassGroup.mk0 I = ClassGroup.mk0 J ∧
@@ -346,7 +343,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I 
 #align class_group.exists_mk0_eq_mk0 ClassGroup.exists_mk0_eq_mk0
 
 /-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)
-ideals that contain `M := ∏ m in finset_approx L f abs, m`.
+ideals that contain `M := ∏ m in finsetApprox L f abs, m`.
 By showing this function is surjective, we prove that the class group is finite. -/
 noncomputable def mkMMem [IsDedekindDomain S]
     (J : { J : Ideal S // algebraMap _ _ (∏ m in finsetApprox bS adm, m) ∈ J }) : ClassGroup S :=

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.sublists
-! leanprover-community/mathlib commit ccad6d5093bd2f5c6ca621fc74674cce51355af6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sublists from "leanprover-community/mathlib"@"ccad6d5093bd2f5c6ca621fc74674cce51355af6"
 
 /-! # sublists
 
@@ -65,8 +62,8 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
   simp only [sublists', sublists'Aux_eq_array_foldl]
   dsimp only
   rw [← List.foldr_hom Array.toList]
-  . rfl
-  . intros _ _; congr <;> simp
+  · rfl
+  · intros _ _; congr <;> simp
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
@@ -143,8 +140,8 @@ theorem sublists_eq_sublistsAux (l : List α) :
     sublists l = l.foldr sublistsAux [[]] := by
   simp only [sublists, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_data]
   rw [← foldr_hom Array.toList]
-  . rfl
-  . intros _ _; congr <;> simp
+  · rfl
+  · intros _ _; congr <;> simp
 
 #noalign list.sublists_aux₁_eq_sublists_aux
 #noalign list.sublists_aux_cons_eq_sublists_aux₁
@@ -157,11 +154,11 @@ theorem sublists_eq_sublistsAux (l : List α) :
 #noalign list.sublists_aux_cons_append
 
 theorem sublists_append (l₁ l₂ : List α) :
-    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (. ++ x)) := by
+    sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by
   simp only [sublists_eq_sublistsAux, foldr_append, sublistsAux_eq_bind]
   induction l₁
-  . case nil => simp
-  . case cons a l₁ ih =>
+  · case nil => simp
+  · case cons a l₁ ih =>
       rw [foldr_cons, ih]
       simp [List.bind, join_join, Function.comp]
 #align list.sublists_append List.sublists_append
@@ -392,7 +389,7 @@ alias nodup_sublists' ↔ nodup.of_sublists' nodup.sublists'
 --attribute [protected] nodup.sublists nodup.sublists'
 
 theorem nodup_sublistsLen (n : ℕ) {l : List α} (h : Nodup l) : (sublistsLen n l).Nodup := by
-  have : Pairwise (. ≠ .) l.sublists' := Pairwise.imp
+  have : Pairwise (· ≠ ·) l.sublists' := Pairwise.imp
     (fun h => Lex.to_ne (by convert h using 3; simp [swap, eq_comm])) h.sublists'
   exact this.sublist (sublistsLen_sublist_sublists' _ _)
 #align list.nodup_sublists_len List.nodup_sublistsLen
@@ -430,10 +427,10 @@ theorem sublists_cons_perm_append (a : α) (l : List α) :
 theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l.sublists → l₁ ++ l₂ ~ l := by
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
-  . intro l₁ l₂ h
+  · intro l₁ l₂ h
     simp at h
     simp [h]
-  . intro l₁ l₂ h
+  · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,
       zip_map_left] at * <;> [skip; simp]
     simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h

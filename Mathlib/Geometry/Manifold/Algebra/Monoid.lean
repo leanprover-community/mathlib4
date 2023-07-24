@@ -2,13 +2,10 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
-
-! This file was ported from Lean 3 source module geometry.manifold.algebra.monoid
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
+
+#align_import geometry.manifold.algebra.monoid from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
 /-!
 # Smooth monoid
@@ -32,7 +29,7 @@ mathematically interesting monoid on a topological manifold such that (a) the sp
 `SmoothManifoldWithCorners`; (b) the multiplication is smooth at `(a, b)` in the charts
 `extChartAt I a`, `extChartAt I b`, `extChartAt I (a * b)`.
 
-2. Because of `ModelProd` we can't assume, e.g., that a `lie_group` is modelled on `𝓘(𝕜, E)`. So,
+2. Because of `ModelProd` we can't assume, e.g., that a `LieGroup` is modelled on `𝓘(𝕜, E)`. So,
 we formulate the definitions and lemmas for any model.
 
 3. While smoothness of an operation implies its continuity, lemmas like

@@ -2,17 +2,14 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module lean_core.data.vector
-! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+
+#align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 The type `Vector` represents lists with fixed length.
@@ -92,7 +89,7 @@ def toList (v : Vector α n) : List α :=
 -- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
 def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
+  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
@@ -137,6 +134,7 @@ theorem map_nil (f : α → β) : map f nil = nil :=
 #align vector.map_nil Vector.map_nil
 
 /-- `map` is natural with respect to `cons`. -/
+@[simp]
 theorem map_cons (f : α → β) (a : α) : ∀ v : Vector α n, map f (cons a v) = cons (f a) (map f v)
   | ⟨_, _⟩ => rfl
 #align vector.map_cons Vector.map_cons
@@ -163,7 +161,7 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p] ; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
 #align vector.remove_nth Vector.removeNth
 
 /-- Vector of length `n` from a function on `Fin n`. -/
@@ -232,7 +230,7 @@ theorem toList_length (v : Vector α n) : (toList v).length = n :=
 the `cons` of the list obtained by `toList` and the element -/
 @[simp]
 theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
-  cases v ; rfl
+  cases v; rfl
 #align vector.to_list_cons Vector.toList_cons
 
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
@@ -257,5 +255,8 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
   cases v
   rfl
 #align vector.to_list_take Vector.toList_take
+
+instance : GetElem (Vector α n) Nat α fun _ i => i < n where
+  getElem := fun x i h => get x ⟨i, h⟩
 
 end Vector

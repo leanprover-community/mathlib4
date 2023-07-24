@@ -2,15 +2,12 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.substructures
-! leanprover-community/mathlib commit 0602c59878ff3d5f71dea69c2d32ccf2e93e5398
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Closure
 import Mathlib.ModelTheory.Semantics
 import Mathlib.ModelTheory.Encoding
+
+#align_import model_theory.substructures from "leanprover-community/mathlib"@"0602c59878ff3d5f71dea69c2d32ccf2e93e5398"
 
 /-!
 # First-Order Substructures
@@ -320,15 +317,15 @@ theorem mem_closure_iff_exists_term {x : M} :
   rw [← SetLike.mem_coe, coe_closure_eq_range_term_realize, mem_range]
 #align first_order.language.substructure.mem_closure_iff_exists_term FirstOrder.Language.Substructure.mem_closure_iff_exists_term
 
-theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} (#closure L s) ≤ (#L.Term s) := by
+theorem lift_card_closure_le_card_term : Cardinal.lift.{max u w} #(closure L s) ≤ #(L.Term s) := by
   rw [← SetLike.coe_sort_coe, coe_closure_eq_range_term_realize]
-  rw [← Cardinal.lift_id'.{w, max u w} (#L.Term s)]
+  rw [← Cardinal.lift_id'.{w, max u w} #(L.Term s)]
   exact Cardinal.mk_range_le_lift
 #align first_order.language.substructure.lift_card_closure_le_card_term FirstOrder.Language.Substructure.lift_card_closure_le_card_term
 
 theorem lift_card_closure_le :
-    Cardinal.lift.{u, w} (#closure L s) ≤
-      max ℵ₀ (Cardinal.lift.{u, w} (#s) + Cardinal.lift.{w, u} (#Σi, L.Functions i)) := by
+    Cardinal.lift.{u, w} #(closure L s) ≤
+      max ℵ₀ (Cardinal.lift.{u, w} #s + Cardinal.lift.{w, u} #(Σi, L.Functions i)) := by
   rw [← lift_umax]
   refine' lift_card_closure_le_card_term.trans (Term.card_le.trans _)
   rw [mk_sum, lift_umax.{w, u}]
