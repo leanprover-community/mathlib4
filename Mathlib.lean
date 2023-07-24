@@ -431,6 +431,7 @@ import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.LocallyRingedSpace.HasColimits
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
+import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
