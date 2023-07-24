@@ -78,12 +78,6 @@ open Polynomial
 
 section prereqs
 
--- wtf? why is this not ported?
-theorem Set.eqOn_singleton {α β : Type _} {f₁ f₂ : α → β} {a : α} :
-    Set.EqOn f₁ f₂ {a} ↔ f₁ a = f₂ a := by
-  simp [Set.EqOn]
-#align set.eq_on_singleton Set.eqOn_singleton
-
 /-- `Complex.re` as a bundled continuous map. -/
 @[simps]
 def ContinuousMap.complexRe : C(ℂ, ℝ) :=
@@ -156,6 +150,20 @@ theorem Polynomial.X_toContinuousMap (R : Type _) [Semiring R] [TopologicalSpace
 set_option linter.uppercaseLean3 false in
 #align X_to_continuous_map Polynomial.X_toContinuousMap
 
+-- these aliases should exist but don't
+alias spectrum.zero_mem_iff ↔ spectrum.not_isUnit_of_zero_mem spectrum.zero_mem
+alias spectrum.zero_not_mem_iff ↔ spectrum.isUnit_of_zero_not_mem spectrum.zero_not_mem
+
+lemma spectrum.subset_singleton_zero_compl (R : Type _) {A : Type _} [CommSemiring R] [Ring A]
+    [Algebra R A] {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
+  Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
+
+/-- `x ↦ x⁻¹` bundled as a continuous map whose domain is a set not containing zero. -/
+@[simps]
+def ContinuousMap.inv₀On {G : Type _} [Zero G] [Inv G] [TopologicalSpace G] [HasContinuousInv₀ G]
+    {s : Set G} (hs : 0 ∉ s) : C(s, G) :=
+  ⟨(·⁻¹), (continuousOn_inv₀.mono <| Set.subset_compl_singleton_iff.mpr hs).restrict⟩
+
 end prereqs
 
 /-!
@@ -199,6 +207,15 @@ instance (priority := 100) CFCClass.toCFCCoreClass {R A : Type _} [CommSemiring 
   { (‹_› : CFCClass R a) with
     hom_continuous := (‹_› : CFCClass R a).hom_closedEmbedding.continuous }
 #align cfc_class.to_cfc_core_class CFCClass.toCFCCoreClass
+
+-- see note [lower instance priority]
+instance (priority := 100) CFCClass.subsingleton {R A : Type _} [CommSemiring R] [StarRing R]
+    [TopologicalSpace R] [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
+    [TopologicalSpace A] [Algebra R A] (a : A) [CFCClass R a] [Subsingleton (CFCCoreClass R a)] :
+    Subsingleton (CFCClass R a) :=
+  have : Function.Injective (@CFCClass.toCFCCoreClass R _ _ _ _ _ _ _ _ _ _ a ·) :=
+    fun _ _ h => CFCClass.ext _ _ <| (CFCCoreClass.ext_iff _ _).mp h
+  this.subsingleton
 
 section generic
 
@@ -522,6 +539,51 @@ lemma cfc₁_algebraMap_comm (f : C(F, F)) (x : F) :
 lemma cfc₂_algebraMap_comm (f : C(F, F)) (x : F) :
     cfc₂ F a (f.comp (algebraMap F C(F, F) x)) = algebraMap F A (f x) :=
   cfc₁_algebraMap_comm a f x
+
+variable [HasContinuousInv₀ F]
+
+#check continuousOn_inv₀
+
+lemma cfc₁_inv₀On (ha : IsUnit a) :
+    cfc₁ F a (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha) = Ring.inverse a := by
+  refine Eq.trans (Units.eq_inv_of_mul_eq_one_left ?_) <| (Ring.inverse_unit ha.unit).symm
+  simp only [IsUnit.unit_spec]
+  nth_rewrite 1 [←cfc₁_map_id F a, ←map_mul]
+  convert map_one (cfc₁ F a)
+  ext x
+  exact mul_inv_cancel fun hx => spectrum.zero_not_mem F ha (hx ▸ x.property)
+
+lemma cfc₁_inv₀On_eq_inv (a : Aˣ) [CFCClass F (a : A)] :
+    cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit) = a⁻¹ := by
+  simpa only [Units.isUnit, not_true, Ring.inverse_unit] using cfc₁_inv₀On (F := F) (a : A) a.isUnit
+
+
+lemma cfc₁_ring_inverse_comm {a : A} (ha : IsUnit a) [CFCClass F (a : A)]
+    [h : CFCClass F (Ring.inverse a)] [h' : Subsingleton (CFCCoreClass F (Ring.inverse a))]
+    (f : C(F, F)) :
+    cfc₁ F (a : A) (f.comp (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha)) =
+      cfc₂ F (Ring.inverse a : A) f := by
+  have key := cfc₁_inv₀On (F := F) a ha
+  have foo : CFCClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha)) := by
+    convert h
+  have : Subsingleton (CFCCoreClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha))) := by
+    convert h'
+  convert cfc₁₂_comp (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F ha) f
+  exact key.symm
+
+lemma cfc₁_inv_comm (a : Aˣ) [CFCClass F (a : A)] [h : CFCClass F (↑a⁻¹ : A)]
+    [h' : Subsingleton (CFCCoreClass F (↑a⁻¹ : A))] (f : C(F, F)) :
+    cfc₁ F (a : A) (f.comp (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit)) =
+      cfc₂ F (↑a⁻¹ : A) f := by
+  have key := cfc₁_inv₀On_eq_inv (F := F) a
+  have foo : CFCClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit)) := by
+    convert h
+  have : Subsingleton (CFCCoreClass F (cfc₁ F (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit))) := by
+    convert h'
+  convert cfc₁₂_comp (a : A) (ContinuousMap.inv₀On <| spectrum.zero_not_mem F a.isUnit) f
+  exact key.symm
+
+#exit
 
 end Field
 
