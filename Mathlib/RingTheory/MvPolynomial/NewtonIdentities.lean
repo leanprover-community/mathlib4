@@ -98,12 +98,6 @@ open Classical in
 def pairs (σ : Type _) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (PairsPred σ k)
 
-open Classical in
-def card_eq_if_not_lt (t : Finset σ × σ) (ht : t ∈ pairs σ k) (hnlt : ¬card t.fst < k) :
-    card t.fst = k := by
-  simp_rw [pairs, mem_filter, PairsPred] at ht
-  exact Or.resolve_right (le_iff_eq_or_lt.mp ht.2.1) hnlt
-
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ (card t.fst) * ((∏ a in t.fst, X a) * (X t.snd) ^ (k - card t.fst) : MvPolynomial σ R)
 
