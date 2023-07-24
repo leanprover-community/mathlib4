@@ -2573,6 +2573,46 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
 
 end DenselyOrdered
 
+section ConditionallyCompleteLinearOrder
+
+variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
+
+-- Q: Was there a way to "automatically specialize" these kinds of lemmas from
+-- conditionally complete linear orders to complete linear orders so that the then
+-- trivial boundedness assumptions (such as `BddAbove A`, `BddBelow A`) don't need
+-- to be provided by the user?
+--
+-- That would allow to use the new `Monotone.map_sSup_of_continuousAt''` (two primes) and friends
+-- as strictly more general direct replacements of `Monotone.map_sSup_of_continuousAt'` (just one
+-- prime) and friends.
+
+theorem Monotone.map_sSup_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
+    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
+    f (sSup A) = sSup (f '' A) := by
+  --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
+  refine ((@IsLUB.isLUB_of_tendsto α β _ _ _ _ _ _ f A (sSup A) (f (sSup A))
+          (Mf.monotoneOn _) ?_ A_nonemp ?_).csSup_eq (Set.nonempty_image_iff.mpr A_nonemp)).symm
+  · exact isLUB_csSup A_nonemp A_bdd
+  · exact tendsto_nhdsWithin_of_tendsto_nhds Cf
+
+theorem Monotone.map_sInf_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
+    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
+    f (sInf A) = sInf (f '' A) :=
+  @Monotone.map_sSup_of_continuousAt'' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
+
+theorem Antitone.map_sInf_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
+    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
+    f (sInf A) = sSup (f '' A) :=
+  @Monotone.map_sInf_of_continuousAt'' α βᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+
+theorem Antitone.map_sSup_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
+    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
+    f (sSup A) = sInf (f '' A) :=
+  @Monotone.map_sSup_of_continuousAt'' α βᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+
+end ConditionallyCompleteLinearOrder
+
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] [CompleteLinearOrder β]
