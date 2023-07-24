@@ -25,9 +25,9 @@ instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
   infer_instance
 
 /-- The product of two thunks. -/
-def Thunk.prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (a.get, b.get)
+def prod (a : Thunk α) (b : Thunk β) : Thunk (α × β) := Thunk.mk fun _ => (a.get, b.get)
 
-@[simp] theorem Thunk.prod_get_fst : (Thunk.prod a b).get.1 = a.get := rfl
-@[simp] theorem Thunk.prod_get_snd : (Thunk.prod a b).get.2 = b.get := rfl
+@[simp] theorem prod_get_fst : (prod a b).get.1 = a.get := rfl
+@[simp] theorem prod_get_snd : (prod a b).get.2 = b.get := rfl
 
 end Thunk
