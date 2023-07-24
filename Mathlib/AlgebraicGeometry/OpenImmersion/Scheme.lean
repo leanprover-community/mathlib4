@@ -2,15 +2,12 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebraic_geometry.open_immersion.Scheme
-! leanprover-community/mathlib commit 533f62f4dd62a5aad24a04326e6e787c8f7e98b1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion.Basic
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
+
+#align_import algebraic_geometry.open_immersion.Scheme from "leanprover-community/mathlib"@"533f62f4dd62a5aad24a04326e6e787c8f7e98b1"
 
 /-!
 # Open immersions of schemes
@@ -258,7 +255,7 @@ theorem affineBasisCover_map_range (X : Scheme) (x : X)
       (X.affineCover.map x).1.base '' (PrimeSpectrum.basicOpen r).1 := by
   erw [coe_comp, Set.range_comp]
   -- Porting note : `congr` fails to see the goal is comparing image of the same function
-  refine congr_arg (_ '' .) ?_
+  refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
 #align algebraic_geometry.Scheme.affine_basis_cover_map_range AlgebraicGeometry.Scheme.affineBasisCover_map_range
 
@@ -1105,7 +1102,7 @@ def morphismRestrictRestrict {X Y : Scheme} (f : X ⟶ Y) (U : Opens Y) (V : Ope
   ext1
   dsimp
   rw [coe_comp, Set.range_comp]
-  apply congr_arg (U.inclusion '' .)
+  apply congr_arg (U.inclusion '' ·)
   exact Subtype.range_val
 #align algebraic_geometry.morphism_restrict_restrict AlgebraicGeometry.morphismRestrictRestrict
 

@@ -61,7 +61,7 @@ avoiding duplication up to equality or isomorphism,
 use Brendan McKay's method of "generation by canonical construction path".
 -/
 -- TODO can you make this work in `List` and `ListM m` simultaneously, by being tricky with monads?
-unsafe def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
+def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → ListM m α) (a : α) (maxDepth : Option Nat := none) : ListM m α :=
 let f' : α → ListM (StateT.{u} (HashSet α) m) α := fun a =>
   (f a).liftM >>= fun b => do
@@ -79,5 +79,5 @@ This version describes the graph using `α → List α`, and returns the list of
 -/
 def depthFirstRemovingDuplicates' [BEq α] [Hashable α]
     (f : α → List α) (a : α) (maxDepth : Option Nat := none) : List α :=
-unsafe depthFirstRemovingDuplicates
+depthFirstRemovingDuplicates
   (fun a => (.ofList (f a) : ListM Option α)) a maxDepth |>.force |>.get!

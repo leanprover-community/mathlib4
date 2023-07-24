@@ -2,16 +2,13 @@
 Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.hom.ring
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.order.hom.ring from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Ordered ring homomorphisms
@@ -110,7 +107,7 @@ instance (priority := 100) OrderRingHomClass.toOrderMonoidWithZeroHomClass [NonA
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderRingIsoClass.toOrderIsoClass [Mul α] [Add α] [LE α]
-  [Mul β] [Add β]  [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
+  [Mul β] [Add β] [LE β] [OrderRingIsoClass F α β] : OrderIsoClass F α β :=
   { ‹OrderRingIsoClass F α β› with }
 #align order_ring_iso_class.to_order_iso_class OrderRingIsoClass.toOrderIsoClass
 
@@ -129,7 +126,7 @@ instance (priority := 100) OrderRingIsoClass.toOrderRingHomClass [NonAssocSemiri
 `OrderRingHom`. This is declared as the default coercion from `F` to `α →+*o β`. -/
 @[coe]
 def OrderRingHomClass.toOrderRingHom [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
-    [Preorder β] [OrderRingHomClass F α β]  (f : F) : α →+*o β :=
+    [Preorder β] [OrderRingHomClass F α β] (f : F) : α →+*o β :=
 { (f : α →+* β) with monotone' := monotone f}
 
 /-- Any type satisfying `OrderRingHomClass` can be cast into `OrderRingHom` via

@@ -2,16 +2,13 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.perm
-! leanprover-community/mathlib commit 47adfab39a11a072db552f47594bf8ed2cf8a722
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Permutation
 import Mathlib.Data.List.Range
 import Mathlib.Data.Nat.Factorial.Basic
+
+#align_import data.list.perm from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
 
 /-!
 # List Permutations
@@ -1158,7 +1155,7 @@ theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
 theorem Perm.take_inter {α : Type _} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
-  exact Perm.trans (show xs.take n ~ xs.filter (. ∈ xs.take n) by
+  exact Perm.trans (show xs.take n ~ xs.filter (· ∈ xs.take n) by
       conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
     (Perm.filter _ h)
 #align list.perm.take_inter List.Perm.take_inter

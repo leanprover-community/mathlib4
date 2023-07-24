@@ -2,22 +2,19 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module logic.equiv.local_equiv
-! leanprover-community/mathlib commit 48fb5b5280e7c81672afc9524185ae994553ebf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Core
+
+#align_import logic.equiv.local_equiv from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Local equivalences
 
 This files defines equivalences between subsets of given types.
 An element `e` of `LocalEquiv α β` is made of two maps `e.toFun` and `e.invFun` respectively
-from α to β and from  β to α (just like equivs), which are inverse to each other on the subsets
+from α to β and from β to α (just like equivs), which are inverse to each other on the subsets
 `e.source` and `e.target` of respectively α and β.
 
 They are designed in particular to define charts on manifolds.
@@ -657,6 +654,7 @@ theorem ofSet_symm (s : Set α) : (LocalEquiv.ofSet s).symm = LocalEquiv.ofSet s
 
 /-- Composing two local equivs if the target of the first coincides with the source of the
 second. -/
+@[simps]
 protected def trans' (e' : LocalEquiv β γ) (h : e.target = e'.source) : LocalEquiv α γ where
   toFun := e' ∘ e
   invFun := e.symm ∘ e'.symm
@@ -1023,11 +1021,11 @@ theorem disjointUnion_eq_piecewise (e e' : LocalEquiv α β) (hs : Disjoint e.so
 
 section Pi
 
-variable {ι : Type _} {αi βi : ι → Type _} (ei : ∀ i, LocalEquiv (αi i) (βi i))
+variable {ι : Type _} {αi βi γi : ι → Type _}
 
 /-- The product of a family of local equivs, as a local equiv on the pi type. -/
-@[simps (config := mfld_cfg)]
-protected def pi : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
+@[simps (config := mfld_cfg) apply source target]
+protected def pi (ei : ∀ i, LocalEquiv (αi i) (βi i)) : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
   toFun f i := ei i (f i)
   invFun f i := (ei i).symm (f i)
   source := pi univ fun i => (ei i).source
@@ -1037,10 +1035,28 @@ protected def pi : LocalEquiv (∀ i, αi i) (∀ i, βi i) where
   left_inv' _ hf := funext fun i => (ei i).left_inv (hf i trivial)
   right_inv' _ hf := funext fun i => (ei i).right_inv (hf i trivial)
 #align local_equiv.pi LocalEquiv.pi
-#align local_equiv.pi_symm_apply LocalEquiv.pi_symm_apply
 #align local_equiv.pi_source LocalEquiv.pi_source
 #align local_equiv.pi_apply LocalEquiv.pi_apply
 #align local_equiv.pi_target LocalEquiv.pi_target
+
+@[simp, mfld_simps]
+theorem pi_symm (ei : ∀ i, LocalEquiv (αi i) (βi i)) :
+    (LocalEquiv.pi ei).symm = .pi fun i ↦ (ei i).symm :=
+  rfl
+
+theorem pi_symm_apply (ei : ∀ i, LocalEquiv (αi i) (βi i)) :
+    ⇑(LocalEquiv.pi ei).symm = fun f i ↦ (ei i).symm (f i) :=
+  rfl
+#align local_equiv.pi_symm_apply LocalEquiv.pi_symm_apply
+
+@[simp, mfld_simps]
+theorem pi_refl : (LocalEquiv.pi fun i ↦ LocalEquiv.refl (αi i)) = .refl (∀ i, αi i) := by
+  ext <;> simp
+
+@[simp, mfld_simps]
+theorem pi_trans (ei : ∀ i, LocalEquiv (αi i) (βi i)) (ei' : ∀ i, LocalEquiv (βi i) (γi i)) :
+    (LocalEquiv.pi ei).trans (LocalEquiv.pi ei') = .pi fun i ↦ (ei i).trans (ei' i) := by
+  ext <;> simp [forall_and]
 
 end Pi
 
