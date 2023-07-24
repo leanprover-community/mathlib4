@@ -1441,7 +1441,6 @@ import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Int.Order.ULift
 import Mathlib.Data.Int.Order.Units
 import Mathlib.Data.Int.Parity
 import Mathlib.Data.Int.Range
@@ -2629,6 +2628,7 @@ import Mathlib.Order.SuccPred.Relation
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
