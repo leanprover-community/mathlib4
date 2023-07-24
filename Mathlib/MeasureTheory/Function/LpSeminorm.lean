@@ -437,13 +437,14 @@ theorem snormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x 
 
 theorem snorm_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     snorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
-  rcases eq_zero_or_neZero μ with rfl | hμ
-  · simp
+  by_cases hμ : μ = 0
+  · simp [hμ]
+  haveI : μ.ae.NeBot := ae_neBot.mpr hμ
   by_cases hp : p = 0
   · simp [hp]
   have : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ ‖(C : ℝ)‖₊ := hfC.mono fun x hx => hx.trans_eq C.nnnorm_eq.symm
   refine' (snorm_mono_ae this).trans_eq _
-  rw [snorm_const _ hp (NeZero.ne μ), C.nnnorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
+  rw [snorm_const _ hp hμ, C.nnnorm_eq, one_div, ENNReal.smul_def, smul_eq_mul]
 #align measure_theory.snorm_le_of_ae_nnnorm_bound MeasureTheory.snorm_le_of_ae_nnnorm_bound
 
 theorem snorm_le_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) :
@@ -1689,6 +1690,15 @@ theorem ae_bdd_liminf_atTop_of_snorm_bdd {p : ℝ≥0∞} (hp : p ≠ 0) {f : �
 #align measure_theory.ae_bdd_liminf_at_top_of_snorm_bdd MeasureTheory.ae_bdd_liminf_atTop_of_snorm_bdd
 
 end Liminf
+
+/-- A continuous function with compact support belongs to `L^∞`. -/
+theorem _root_.Continuous.memℒp_top_of_hasCompactSupport
+    {X : Type _} [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) (μ : Measure X) : Memℒp f ⊤ μ := by
+  borelize E
+  rcases hf.bounded_above_of_compact_support h'f with ⟨C, hC⟩
+  apply memℒp_top_of_bound ?_ C (Filter.eventually_of_forall hC)
+  exact (hf.stronglyMeasurable_of_hasCompactSupport h'f).aestronglyMeasurable
 
 end ℒp
 
