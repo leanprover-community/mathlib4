@@ -111,8 +111,7 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ
   split_ifs with h1
   · simp_all
     apply And.intro
-    · simp
-      exact le_trans h (le_succ k)
+    · exact le_step h
     · by_contra h2
       have h3 : t.fst.Nonempty
       · use t.snd
@@ -260,7 +259,12 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
           · rw [ha1.right.right]
             exact mem_range.mp ha1.left
       · intro haf
-        sorry
+        use (card a.fst)
+        apply And.intro
+        · exact mem_range.mpr haf.right
+        · simp_rw [mem_filter]
+          simp
+          exact haf.left
     simp_rw [← hdisj, disj_equiv]
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
