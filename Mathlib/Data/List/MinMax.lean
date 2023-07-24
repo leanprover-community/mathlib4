@@ -394,11 +394,8 @@ theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := b
   | cons h t ih =>
     simp [maximum_cons, ih]
 
-theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
-  induction l with
-  | nil => simp
-  | cons h t ih =>
-    simp [minimum_cons, ih]
+theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
+  @coe_le_maximum_iff αᵒᵈ _ _ _
 
 theorem maximum_ne_bot_of_ne_nil {l : List α} (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
