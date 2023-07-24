@@ -345,8 +345,10 @@ variable {ι R S : Type _} {F : Filter ι} [NeBot F]
 `Filter.limsSup` to the `Filter.liminf` of the image if the function is continuous at the `limsSup`
 and the filter is bounded from above and below. -/
 theorem Antitone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBounded (· ≤ ·)) (bdd_below : F.IsBounded (· ≥ ·))
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.liminf f := by
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) :
+    f F.limsSup = F.liminf f := by
   have cobdd : F.IsCobounded (· ≤ ·) := bdd_below.isCobounded_flip
   apply le_antisymm
   · rw [limsSup, f_decr.map_sInf_of_continuousAt'' f_cont bdd_above cobdd]
@@ -396,28 +398,31 @@ theorem Antitone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R �
 `Filter.limsInf` to the `Filter.limsup` of the image if the function is continuous at the `limsInf`
 and the filter is bounded from above and below. -/
 theorem Antitone.map_limsInf_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBounded (· ≤ ·)) (bdd_below : F.IsBounded (· ≥ ·))
-    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf) : f F.limsInf = F.limsup f :=
+    (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsInf)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.limsup f :=
   @Antitone.map_limsSup_of_continuousAt' Rᵒᵈ Sᵒᵈ _ _ _ _ _ _ F _ f
-    bdd_below bdd_above f_decr.dual f_cont
+    f_decr.dual f_cont bdd_below bdd_above
 
 /-- A monotone function between conditionally complete linear ordered spaces sends a
 `Filter.limsSup` to the `Filter.limsup` of the image if the function is continuous at the `limsSup`
 and the filter is bounded from above and below. -/
 theorem Monotone.map_limsSup_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBounded (· ≤ ·)) (bdd_below : F.IsBounded (· ≥ ·))
-    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.limsup f :=
+    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsSup)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsSup = F.limsup f :=
   @Antitone.map_limsSup_of_continuousAt' R Sᵒᵈ _ _ _ _ _ _ F _ f
-    bdd_above bdd_below f_incr f_cont
+    f_incr f_cont bdd_above bdd_below
 
 /-- A monotone function between conditionally complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.liminf` of the image if the function is continuous at the `limsInf`
 and the filter is bounded from above and below. -/
 theorem Monotone.map_limsInf_of_continuousAt' {F : Filter R} [NeBot F] {f : R → S}
-    (bdd_above : F.IsBounded (· ≤ ·)) (bdd_below : F.IsBounded (· ≥ ·))
-    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf) : f F.limsInf = F.liminf f :=
+    (f_incr : Monotone f) (f_cont : ContinuousAt f F.limsInf)
+    (bdd_above : F.IsBounded (· ≤ ·) := by isBoundedDefault)
+    (bdd_below : F.IsBounded (· ≥ ·) := by isBoundedDefault) : f F.limsInf = F.liminf f :=
   @Antitone.map_limsSup_of_continuousAt' Rᵒᵈ S _ _ _ _ _ _ F _ f
-    bdd_below bdd_above f_incr.dual f_cont
+    f_incr.dual f_cont bdd_below bdd_above
 
 end Monotone'
 
@@ -426,11 +431,17 @@ section Monotone
 variable {ι R S : Type _} {F : Filter ι} [NeBot F] [CompleteLinearOrder R] [TopologicalSpace R]
   [OrderTopology R] [CompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
 
+-- Seems like these can be removed now, because the new version is more general
+-- (with automatic inference of boundedness properties). I will still make sure
+-- by renaming and seeing if Mathlib compiles with the new lemmas.
+--
+-- Q: What should be done with the aligns, if more general versions replace the old ones?
+
 /-- An antitone function between complete linear ordered spaces sends a `Filter.limsSup`
 to the `Filter.liminf` of the image if it is continuous at the `limsSup`. -/
 theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R → S}
     (f_decr : Antitone f) (f_cont : ContinuousAt f F.limsSup) : f F.limsSup = F.liminf f :=
-  Antitone.map_limsSup_of_continuousAt' isBounded_le_of_top isBounded_ge_of_bot f_decr f_cont
+  Antitone.map_limsSup_of_continuousAt' f_decr f_cont
 set_option linter.uppercaseLean3 false in
 #align antitone.map_Limsup_of_continuous_at Antitone.map_limsSup_of_continuousAt
 
