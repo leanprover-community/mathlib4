@@ -108,7 +108,7 @@ def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
 def T_map (t : Finset σ × σ) : Finset σ × σ :=
   if t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (insert t.snd t.fst, t.snd)
 
-/-- Needed for Finset.sum_involution -/
+/-- Needed for `Finset.sum_involution` -/
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
