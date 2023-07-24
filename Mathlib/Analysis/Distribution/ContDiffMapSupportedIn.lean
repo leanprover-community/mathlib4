@@ -10,7 +10,7 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.Sets.Compacts
 
 open TopologicalSpace SeminormFamily Set Function Seminorm
-open scoped BoundedContinuousFunction Topology
+open scoped BoundedContinuousFunction Topology NNReal
 
 -- Think `𝕜 = ℝ` or `𝕜 = ℂ`
 variable (𝕜 E F : Type _) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -235,6 +235,8 @@ noncomputable def iteratedFDeriv_to_bcfₗ (i : ℕ) :
 
 section Topology
 
+set_option profiler true in
+set_option trace.Meta.synthInstance true in
 instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
   ⨅ (i : ℕ), induced (iteratedFDeriv_to_bcfₗ ℝ i) inferInstance
 
@@ -297,7 +299,7 @@ protected theorem seminorm_eq_bot {i : ℕ} (hin : n < i) :
       iteratedFDeriv_of_gt hin]
   exact norm_zero
 
-noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
+noncomputable def to_bcfL' : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
   { to_bcfₗ 𝕜 with
     cont := show Continuous (to_bcfₗ 𝕜) by
       refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
@@ -310,6 +312,37 @@ noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
           BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
           iteratedFDeriv_apply_of_le, norm_iteratedFDeriv_zero]
       positivity }
+
+set_option profiler true in
+set_option trace.Meta.synthInstance true in
+lemma test (f : 𝓓^{n}_{K}(E, F)) : ‖iteratedFDeriv_to_bcfₗ 𝕜 0 f‖ = 0 :=
+  sorry
+
+#exit
+
+
+noncomputable def to_bcfL : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
+  { to_bcfₗ 𝕜 with
+    cont := show Continuous (to_bcfₗ 𝕜) by
+      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+        (norm_withSeminorms 𝕜 _) _
+        (fun _ ↦ ⟨{0}, 1, fun f ↦ BoundedContinuousFunction.norm_le_of_nonempty.mpr fun x ↦ ?_⟩)
+      calc  ‖to_bcfₗ 𝕜 f x‖
+        _ = ‖f x‖ := by rw [coe_to_bcfₗ, BoundedContinuousMapClass.coe_toBoundedContinuousFunction]
+        _ = ‖iteratedFDeriv ℝ 0 f x‖ := sorry
+        _ ≤ ‖iteratedFDeriv_to_bcfₗ 𝕜 0 f‖ := sorry
+        _ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := sorry
+        _ = ((1 : ℝ≥0) • (Finset.sup {0} <| ContDiffMapSupportedIn.seminorm 𝕜 E F n K)) f := sorry }
+      --rw [Seminorm.comp_apply, coe_normSeminorm, coe_to_bcfₗ, one_smul, Finset.sup_singleton,
+      --    ContDiffMapSupportedIn.seminorm_apply,
+      --    BoundedContinuousFunction.norm_le_of_nonempty]
+      --refine fun x ↦ le_trans ?_ (BoundedContinuousFunction.norm_coe_le_norm _ x)
+      --rw [BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
+      --    BoundedContinuousMapClass.coe_toBoundedContinuousFunction,
+      --    iteratedFDeriv_apply_of_le, norm_iteratedFDeriv_zero]
+      --positivity }
+
+#exit
 
 @[simps!]
 noncomputable def iteratedFDerivL (i : ℕ) :
