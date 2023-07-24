@@ -327,14 +327,9 @@ theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
   exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
     (T_map_pair σ) (T_map_invol σ)
 
-theorem NewtonIdentityLE (k : ℕ) (h1 : 1 ≤ k) (h2 : k ≤ @card σ univ) :
-    k * esymm σ R k - ∑ i in range k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i = 0 := by
+theorem NewtonIdentity (k : ℕ) : k * esymm σ R k -
+    ∑ i in range k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i = 0 := by
   simp_rw [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k, pow_add]
   simp
   simp_rw [← mul_add]
-  sorry
-
-theorem NewtonIdentityGT (k : ℕ) (h1 : @card σ univ ≥ 1) (h2 : k > @card σ univ) :
-    ∑ i in Icc (k - @card σ univ) k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i = 0 := by
-  simp_rw [← sum_congr rfl (esymm_mult_psum_summand_to_weight σ R k)]
   sorry
