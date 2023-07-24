@@ -2,17 +2,14 @@
 Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
-
-! This file was ported from Lean 3 source module number_theory.number_field.canonical_embedding
-! leanprover-community/mathlib commit 60da01b41bbe4206f05d34fd70c8dd7498717a30
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Zlattice
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.Discriminant
+
+#align_import number_theory.number_field.canonical_embedding from "leanprover-community/mathlib"@"60da01b41bbe4206f05d34fd70c8dd7498717a30"
 
 /-!
 # Canonical embedding of a number field

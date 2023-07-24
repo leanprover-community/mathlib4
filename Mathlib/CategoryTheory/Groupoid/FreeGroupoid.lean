@@ -2,11 +2,6 @@
 Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
-
-! This file was ported from Lean 3 source module category_theory.groupoid.free_groupoid
-! leanprover-community/mathlib commit 706d88f2b8fdfeb0b22796433d7a6c1a010af9f2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.CategoryTheory.Functor.Basic
@@ -15,6 +10,8 @@ import Mathlib.Tactic.NthRewrite
 import Mathlib.CategoryTheory.PathCategory
 import Mathlib.CategoryTheory.Quotient
 import Mathlib.Combinatorics.Quiver.Symmetric
+
+#align_import category_theory.groupoid.free_groupoid from "leanprover-community/mathlib"@"706d88f2b8fdfeb0b22796433d7a6c1a010af9f2"
 
 /-!
 # Free groupoid on a quiver
