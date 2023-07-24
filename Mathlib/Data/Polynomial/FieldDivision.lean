@@ -175,7 +175,7 @@ def mod (p q : R[X]) :=
 
 private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + mod p q = p := by
   by_cases h : q = 0
-  · simp only [h, MulZeroClass.zero_mul, mod, modByMonic_zero, zero_add]
+  · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
   · conv =>
       rhs
       rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
