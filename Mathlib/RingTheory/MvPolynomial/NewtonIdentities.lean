@@ -174,6 +174,10 @@ theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
   case inl => exact two_ne_zero hl
   case inr => exact h1 hr
 
+theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
+  exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
+    (T_map_pair σ) (T_map_invol σ)
+
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
@@ -322,10 +326,6 @@ theorem esymm_mult_psum_to_weight (k : ℕ) :
   simp_rw [← sum_congr rfl (esymm_mult_psum_summand_to_weight σ R k), sum_equiv_lt_k σ R k,
     ← mul_sum]
   sorry
-
-theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
-  exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
-    (T_map_pair σ) (T_map_invol σ)
 
 theorem NewtonIdentity (k : ℕ) : k * esymm σ R k -
     ∑ i in range k, (-1) ^ (i + 1) * esymm σ R (k - i) * psum σ R i = 0 := by
