@@ -179,15 +179,17 @@ lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α 
   have := Fintype.ofFinite β
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
 
+-- PRed
 @[simp]
-lemma ZMod.eq_neg_self_iff_eq_zero (n : ℕ) [Fact (n % 2 = 1)] {a : ZMod n} :
-    a = -a ↔ a = 0 :=
-  ⟨(ZMod.ne_neg_self n).mtr, fun h ↦ h ▸ neg_zero.symm⟩
+theorem ZMod.add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : ¬ 2 ∣ n) {a : ZMod n} :
+    a + a = 0 ↔ a = 0 := by
+  rw [←mul_two, ←@Nat.cast_two (ZMod n),
+      ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn), Units.mul_left_eq_zero]
 
 def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // p.1 * p.2 = p.2 * p.1 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n where
   toFun p :=
-    match h1 : p.1.1, h2 : p.1.2 with
+    match p.1.1, p.1.2 with
     | sr i, r _ => Sum.inl i
     | r _, sr j => Sum.inr (Sum.inl j)
     | sr i, sr j => Sum.inr (Sum.inr (Sum.inl (i + j)))
@@ -200,26 +202,19 @@ def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup
     | Sum.inr (Sum.inr (Sum.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
     | Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
   left_inv := by
-    have : Fact (n % 2 = 1) := ⟨Nat.two_dvd_ne_zero.mp hn⟩
     rintro ⟨⟨i | i, j | j⟩, h⟩
     . rfl
-    . replace h := sr.inj h.symm
-      rw [sub_eq_add_neg, add_right_inj, ZMod.eq_neg_self_iff_eq_zero] at h
-      simp only [h]
-    . replace h := sr.inj h
-      rw [sub_eq_add_neg, add_right_inj, ZMod.eq_neg_self_iff_eq_zero] at h
-      simp only [h]
+    . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hn, eq_comm] using h
+    . simpa [sub_eq_add_neg, eq_neg_iff_add_eq_zero, hn, eq_comm] using h
     . replace h := r.inj h
-      rw [←neg_sub, eq_comm, ZMod.eq_neg_self_iff_eq_zero, sub_eq_zero] at h
-      simp_rw [h, ←two_mul, ←@Nat.cast_two (ZMod n),
-        ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
-        Units.inv_mul_cancel_left]
+      rw [←neg_sub, neg_eq_iff_add_eq_zero, ZMod.add_self_eq_zero_iff_eq_zero hn, sub_eq_zero] at h
+      rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, ←two_mul, and_self]
+      apply (ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn)).inv_mul_cancel_left
   right_inv := by
     rintro (a | b | c | d)
     any_goals rfl
-    rw [Sum.inr.injEq, ←two_mul, ←@Nat.cast_two (ZMod n),
-        ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
-        Units.mul_inv_cancel_left]
+    rw [Sum.inr.injEq, Sum.inr.injEq, Sum.inl.injEq, ←two_mul]
+    apply (ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn)).mul_inv_cancel_left
 
 lemma card_conjClasses_dihedralGroup_odd {n : ℕ} (hn : ¬ 2 ∣ n) :
     Nat.card (ConjClasses (DihedralGroup n)) = (n + 3) / 2 := by
