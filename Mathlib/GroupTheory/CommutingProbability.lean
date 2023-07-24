@@ -204,20 +204,20 @@ lemma ZMod.eq_neg_self_iff_eq_zero (n : ℕ) [Fact (n % 2 = 1)] {a : ZMod n} :
   ⟨(ZMod.ne_neg_self n).mtr, fun h ↦ h ▸ neg_zero.symm⟩
 
 def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // p.1 * p.2 = p.2 * p.1 } ≃
-    ZMod n × ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n where
+    ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n where
   toFun p :=
     match h1 : p.1.1, h2 : p.1.2 with
-    | r i, r j => Sum.inl ⟨i, j⟩
-    | sr i, r _ => Sum.inr (Sum.inr (Sum.inl i))
+    | sr i, r _ => Sum.inl i
     | r _, sr j => Sum.inr (Sum.inl j)
-    | sr i, sr j => Sum.inr (Sum.inr (Sum.inr (i + j)))
+    | sr i, sr j => Sum.inr (Sum.inr (Sum.inl (i + j)))
+    | r i, r j => Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩))
   invFun p :=
     let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn)
     match p with
-    | Sum.inl ⟨i, j⟩ => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
-    | Sum.inr (Sum.inr (Sum.inl i)) => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
+    | Sum.inl i => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
     | Sum.inr (Sum.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
-    | Sum.inr (Sum.inr (Sum.inr k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k) ⟩, rfl⟩
+    | Sum.inr (Sum.inr (Sum.inl k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k)⟩, rfl⟩
+    | Sum.inr (Sum.inr (Sum.inr ⟨i, j⟩)) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
   left_inv := by
     have : Fact (n % 2 = 1) := ⟨Nat.two_dvd_ne_zero.mp hn⟩
     rintro ⟨⟨i | i, j | j⟩, h⟩
