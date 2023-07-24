@@ -332,15 +332,6 @@ variable {ι R S : Type _} {F : Filter ι} [NeBot F]
   [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
   [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]
 
--- Q: Was there a way to "automatically specialize" these kinds of lemmas from
--- conditionally complete linear orders to complete linear orders so that the then
--- trivial boundedness assumptions (such as `F.IsBounded (· ≤ ·)`, `F.IsBounded (· ≥ ·)`)
--- don't need to be provided by the user?
---
--- That would allow to use the new `Antitone.map_limsSup_of_continuousAt'` (with prime) and friends
--- as strictly more general direct replacements of `Antitone.map_limsSup_of_continuousAt` (no
--- prime) and friends.
-
 /-- An antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsSup` to the `Filter.liminf` of the image if the function is continuous at the `limsSup`
 (and the filter is bounded from above and below). -/
