@@ -168,14 +168,15 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
     simp
 
-theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h1 : weight σ R k t ≠ 0) : T_map_restr σ t h ≠ t := by
-  by_contra h2
+theorem weight_zero_for_fixed_by_T' (t : Finset σ × σ) (h : t ∈ pairs σ k)
+    (h2 : T_map_restr σ t h = t) : weight σ R k t = 0 := by
   have h3 := weight_compose_T σ R t h
   rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
-  cases' h3 with hl hr
-  case inl => exact two_ne_zero hl
-  case inr => exact h1 hr
+  exact h3.resolve_left two_ne_zero
+
+theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
+    (h1 : weight σ R k t ≠ 0) : T_map_restr σ t h ≠ t :=
+  mt (weight_zero_for_fixed_by_T' σ R t h) h1
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
   exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
