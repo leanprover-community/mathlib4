@@ -5,6 +5,10 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.Convolution
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
+import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.MeasureTheory.Covering.Differentiation
+import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+import Mathlib.LinearAlgebra.Finrank
 
 #align_import analysis.convolution from "leanprover-community/mathlib"@"8905e5ed90859939681a725b00f6063e65096d95"
 
@@ -25,6 +29,9 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
   If `(φ i).rOut` tends to zero along a filter `l`,
   then `((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀` tends to `g x₀` along the same filter.
 - `ContDiffBump.convolution_tendsto_right`: generalization of the above lemma.
+- `ContDiffBump.ae_convolution_tendsto_right_of_locally_integrable`: let `g` be a locally
+  integrable function. Then the convolution of `g` with a family of bump functions converges
+  almost everywhere to `g`.
 
 ## Keywords
 
@@ -33,7 +40,7 @@ convolution, smooth function, bump function
 
 universe uG uE'
 
-open ContinuousLinearMap Metric MeasureTheory Filter Function
+open ContinuousLinearMap Metric MeasureTheory Filter Function Measure Set
 open scoped Convolution Topology
 
 namespace ContDiffBump
@@ -97,5 +104,39 @@ theorem convolution_tendsto_right_of_continuous {ι} {φ : ι → ContDiffBump (
   convolution_tendsto_right hφ (eventually_of_forall fun _ => hg.aestronglyMeasurable)
     ((hg.tendsto x₀).comp tendsto_snd) tendsto_const_nhds
 #align cont_diff_bump.convolution_tendsto_right_of_continuous ContDiffBump.convolution_tendsto_right_of_continuous
+
+local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
+
+/-- If a function `g` is locally integrable, then the convolution `φ i * g` converges almost
+everywhere to `g` if `φ i` is a sequence of bump functions with support tending to `0`, provided
+that the ratio between the inner and outer radii of `φ i` remains bounded. -/
+theorem ae_convolution_tendsto_right_of_locally_integrable
+    {ι} {φ : ι → ContDiffBump (0 : G)} {l : Filter ι} {K : ℝ}
+    (hφ : Tendsto (fun i ↦ (φ i).rOut) l (𝓝 0))
+    (h'φ : ∀ᶠ i in l, (φ i).rOut ≤ K * (φ i).rIn) (hg : LocallyIntegrable g μ) : ∀ᵐ x₀ ∂μ,
+    Tendsto (fun i ↦ ((φ i).normed μ ⋆[lsmul ℝ ℝ, μ] g) x₀) l (𝓝 (g x₀)) := by
+  have : IsAddHaarMeasure μ := ⟨⟩
+  filter_upwards [(Besicovitch.vitaliFamily μ).ae_tendsto_average_norm_sub hg] with x₀ h₀
+  simp only [convolution_eq_swap, lsmul_apply]
+  have hφ' : Tendsto (fun i ↦ (φ i).rOut) l (𝓝[>] 0) :=
+    tendsto_nhdsWithin_iff.2 ⟨hφ, eventually_of_forall (fun i ↦ (φ i).rOut_pos)⟩
+  have := (h₀.comp (Besicovitch.tendsto_filterAt μ x₀)).comp hφ'
+  simp only [Function.comp] at this
+  apply tendsto_integral_smul_of_tendsto_average_norm_sub (K ^ (FiniteDimensional.finrank ℝ G)) this
+  · apply eventually_of_forall (fun i ↦ ?_)
+    apply hg.integrableOn_isCompact
+    exact isCompact_closedBall _ _
+  · apply tendsto_const_nhds.congr (fun i ↦ ?_)
+    rw [← integral_neg_eq_self]
+    simp only [sub_neg_eq_add, integral_add_left_eq_self, integral_normed]
+  · apply eventually_of_forall (fun i ↦ ?_)
+    change support ((ContDiffBump.normed (φ i) μ) ∘ (fun y ↦ x₀ - y)) ⊆ closedBall x₀ (φ i).rOut
+    simp only [support_comp_eq_preimage, support_normed_eq]
+    intro x hx
+    simp only [mem_preimage, mem_ball, dist_zero_right] at hx
+    simpa [dist_eq_norm_sub'] using hx.le
+  · filter_upwards [h'φ] with i hi x
+    rw [abs_of_nonneg (nonneg_normed _ _), addHaar_closedBall_center]
+    exact (φ i).normed_le_div_measure_closedBall_rOut _ _ hi _
 
 end ContDiffBump
