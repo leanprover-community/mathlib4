@@ -65,14 +65,14 @@ open Finset
 variable (σ R) [CommSemiring R] [Fintype σ] [Fintype τ]
 
 /-- The degree-`n` power sum -/
-def psum (n : ℕ) : MvPolynomial σ R := ∑ i in univ, (X i) ^ n
+def psum (n : ℕ) : MvPolynomial σ R := ∑ i, (X i) ^ n
 
 theorem rename_psum (n : ℕ) (e : σ ≃ τ) : rename e (psum σ R n) = psum τ R n := by
   calc
-    rename e (psum σ R n) = ∑ i in univ, (X (e i)) ^ n := by
+    rename e (psum σ R n) = ∑ i, (X (e i)) ^ n := by
       simp_rw [psum, map_sum, map_pow, rename_X]
     _ = ∑ i in univ.map e.toEmbedding, (X i) ^ n := by simp [-map_univ_equiv]
-    _ = ∑ i in univ, (X i) ^ n := by rw [map_univ_equiv]
+    _ = ∑ i, (X i) ^ n := by rw [map_univ_equiv]
 
 theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := by
   intro
@@ -84,7 +84,7 @@ section Newton
 
 open Classical Finset Nat
 
-variable (σ : Type) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type) [CommRing R]
+variable (σ : Type _) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type _) [CommRing R]
   [NoZeroDivisors (MvPolynomial σ R)] [CharZero (MvPolynomial σ R)]
 /-
   TODO: show that MvPolynomial σ R is an integral domain if R is an integral domain
@@ -94,7 +94,7 @@ variable (σ : Type) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type) [Comm
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
 def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
 
-def pairs (σ : Type) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
+def pairs (σ : Type _) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (pairs_pred σ k)
 
 def card_eq_if_not_lt (t : Finset σ × σ) (ht : t ∈ pairs σ k) (hnlt : ¬card t.fst < k) :
@@ -202,7 +202,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
 
 theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
-    ∑ A in powersetLen i univ, (∑ j in univ, f (A, j)) := by
+    ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
   apply sum_finset_product
   simp_all
   intro p b
@@ -224,7 +224,7 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
 
 theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
-    ∑ i in range k, ∑ A in powersetLen i univ, (∑ j in univ, f (A, j)) := by
+    ∑ i in range k, ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
     have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
     simp_rw [← sum_congr rfl equiv_i]
     have pdisj : Set.PairwiseDisjoint (range k)
@@ -295,7 +295,7 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
   use k
 
 theorem esymm_mult_psum_summand_to_weight (k i : ℕ) (_ : i ∈ range k) :
-    ∑ A in powersetLen i univ, ∑ j in univ, weight σ R k (A, j) =
+    ∑ A in powersetLen i univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ i * esymm σ R i * psum σ R (k - i) := by
   simp_rw [esymm, psum, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
