@@ -2,14 +2,11 @@
 Copyright (c) 2023 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
-
-! This file was ported from Lean 3 source module geometry.manifold.vector_bundle.pullback
-! leanprover-community/mathlib commit be2c24f56783935652cefffb4bfca7e4b25d167e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
+
+#align_import geometry.manifold.vector_bundle.pullback from "leanprover-community/mathlib"@"e473c3198bb41f68560cab68a0529c854b618833"
 
 /-! # Pullbacks of smooth vector bundles
 
@@ -28,7 +25,7 @@ open scoped Manifold
 variable {𝕜 B B' M : Type _} (F : Type _) (E : B → Type _)
 
 variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace E)]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] {EB : Type _} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
   {HB : Type _} [TopologicalSpace HB] (IB : ModelWithCorners 𝕜 EB HB) [TopologicalSpace B]
   [ChartedSpace HB B] [SmoothManifoldWithCorners IB B] {EB' : Type _} [NormedAddCommGroup EB']
@@ -39,9 +36,9 @@ variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
 /-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the pullback
 vector bundle `f *ᵖ E` is a smooth vector bundle. -/
 instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB' where
-  smoothOn_coordChange := by
+  smoothOn_coordChangeL := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩; skip
-    refine' ((smoothOn_coordChange e e').comp f.smooth.smoothOn fun b hb => hb).congr _
+    refine' ((smoothOn_coordChangeL _ e e').comp f.smooth.smoothOn fun b hb => hb).congr _
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]

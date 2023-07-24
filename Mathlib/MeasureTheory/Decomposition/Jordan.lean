@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.jordan
-! leanprover-community/mathlib commit 70a4f2197832bceab57d7f41379b2592d1110570
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedHahn
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+
+#align_import measure_theory.decomposition.jordan from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 
 /-!
 # Jordan decomposition
@@ -201,7 +198,7 @@ theorem exists_compl_positive_negative :
     ∃ S : Set α,
       MeasurableSet S ∧
         j.toSignedMeasure ≤[S] 0 ∧
-          0 ≤[Sᶜ] j.toSignedMeasure ∧ j.posPart S = 0 ∧ j.negPart (Sᶜ) = 0 := by
+          0 ≤[Sᶜ] j.toSignedMeasure ∧ j.posPart S = 0 ∧ j.negPart Sᶜ = 0 := by
   obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutuallySingular
   refine' ⟨S, hS₁, _, _, hS₂, hS₃⟩
   · refine' restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => _
@@ -232,7 +229,7 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
   let i := choose s.exists_compl_positive_negative
   let hi := choose_spec s.exists_compl_positive_negative
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
-    negPart := s.toMeasureOfLEZero (iᶜ) hi.1.compl hi.2.2
+    negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance
     negPart_finite := inferInstance
     mutuallySingular := by
@@ -245,7 +242,7 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
 theorem toJordanDecomposition_spec (s : SignedMeasure α) :
     ∃ (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) (hi₃ : s ≤[iᶜ] 0),
       s.toJordanDecomposition.posPart = s.toMeasureOfZeroLE i hi₁ hi₂ ∧
-        s.toJordanDecomposition.negPart = s.toMeasureOfLEZero (iᶜ) hi₁.compl hi₃ := by
+        s.toJordanDecomposition.negPart = s.toMeasureOfLEZero iᶜ hi₁.compl hi₃ := by
   set i := choose s.exists_compl_positive_negative
   obtain ⟨hi₁, hi₂, hi₃⟩ := choose_spec s.exists_compl_positive_negative
   exact ⟨i, hi₁, hi₂, hi₃, rfl, rfl⟩
@@ -269,7 +266,7 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
     toMeasureOfLEZero_apply _ hi₃ hi₁.compl hk]
   simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
-    Set.inter_comm i, Set.inter_comm (iᶜ), Set.inter_union_compl _ _]
+    Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]
   exact (disjoint_compl_right.inf_left _).inf_right _
 #align measure_theory.signed_measure.to_signed_measure_to_jordan_decomposition MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition
 

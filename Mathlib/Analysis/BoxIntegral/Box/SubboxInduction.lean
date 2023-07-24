@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.box.subbox_induction
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
+
+#align_import analysis.box_integral.box.subbox_induction from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Induction on subboxes
@@ -95,7 +92,7 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 #align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
-theorem iUnion_coe_splitCenterBox (I : Box ι) : (⋃ s, (I.splitCenterBox s : Set (ι → ℝ))) = I := by
+theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
   ext x
   simp
 #align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
@@ -132,7 +129,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   replace H_ind := fun J hJ ↦ not_imp_not.2 (H_ind J hJ)
   simp only [exists_imp, not_forall] at H_ind
   choose! s hs using H_ind
-  set J : ℕ → Box ι := fun m ↦ ((fun J ↦ splitCenterBox J (s J))^[m]) I
+  set J : ℕ → Box ι := fun m ↦ (fun J ↦ splitCenterBox J (s J))^[m] I
   have J_succ : ∀ m, J (m + 1) = splitCenterBox (J m) (s <| J m) :=
     fun m ↦ iterate_succ_apply' _ _ _
   -- Now we prove some properties of `J`

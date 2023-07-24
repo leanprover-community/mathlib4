@@ -2,13 +2,10 @@
 Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johanes Hölzl, Patrick Massot, Yury Kudryashov, Kevin Wilson, Heather Macbeth
-
-! This file was ported from Lean 3 source module order.filter.prod
-! leanprover-community/mathlib commit d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Basic
+
+#align_import order.filter.prod from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
 
 /-!
 # Product and coproduct filters
@@ -515,7 +512,7 @@ theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
 #align filter.coprod_ne_bot_right Filter.coprod_neBot_right
 
 theorem principal_coprod_principal (s : Set α) (t : Set β) :
-    (𝓟 s).coprod (𝓟 t) = 𝓟 ((sᶜ ×ˢ tᶜ)ᶜ) := by
+    (𝓟 s).coprod (𝓟 t) = 𝓟 (sᶜ ×ˢ tᶜ)ᶜ := by
   rw [Filter.coprod, comap_principal, comap_principal, sup_principal, Set.prod_eq, compl_inter,
     preimage_compl, preimage_compl, compl_compl, compl_compl]
 #align filter.principal_coprod_principal Filter.principal_coprod_principal

@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.opposites
-! leanprover-community/mathlib commit dde670c9a3f503647fd5bfdf1037bad526d3397a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Equivalence
+
+#align_import category_theory.opposites from "leanprover-community/mathlib"@"dde670c9a3f503647fd5bfdf1037bad526d3397a"
 
 /-!
 # Opposite categories
@@ -181,16 +178,13 @@ variable {D : Type u₂} [Category.{v₂} D]
 -- variable {C D}
 
 /-- The opposite of a functor, i.e. considering a functor `F : C ⥤ D` as a functor `Cᵒᵖ ⥤ Dᵒᵖ`.
-In informal mathematics no distinction is made between these.
--/
-@[simps]
+In informal mathematics no distinction is made between these. -/
+@[simps, pp_dot]
 protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ
     where
   obj X := op (F.obj (unop X))
   map := @fun X Y f => (F.map f.unop).op
 #align category_theory.functor.op CategoryTheory.Functor.op
-
-pp_extended_field_notation op
 
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
@@ -243,27 +237,23 @@ variable {C D}
 Another variant of the opposite of functor, turning a functor `C ⥤ Dᵒᵖ` into a functor `Cᵒᵖ ⥤ D`.
 In informal mathematics no distinction is made.
 -/
-@[simps]
+@[simps, pp_dot]
 protected def leftOp (F : C ⥤ Dᵒᵖ) : Cᵒᵖ ⥤ D
     where
   obj X := unop (F.obj (unop X))
   map := @fun X Y f => (F.map f.unop).unop
 #align category_theory.functor.left_op CategoryTheory.Functor.leftOp
 
-pp_extended_field_notation Functor.leftOp
-
 /--
 Another variant of the opposite of functor, turning a functor `Cᵒᵖ ⥤ D` into a functor `C ⥤ Dᵒᵖ`.
 In informal mathematics no distinction is made.
 -/
-@[simps]
+@[simps, pp_dot]
 protected def rightOp (F : Cᵒᵖ ⥤ D) : C ⥤ Dᵒᵖ
     where
   obj X := op (F.obj (op X))
   map := @fun X Y f => (F.map f.op).op
 #align category_theory.functor.right_op CategoryTheory.Functor.rightOp
-
-pp_extended_field_notation Functor.rightOp
 
 instance {F : C ⥤ D} [Full F] : Full F.op where preimage := @fun X Y f => (F.preimage f.unop).op
 
@@ -653,7 +643,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ
     where
   functor :=
     { obj := fun F => F.unop.rightOp
-      map := fun η => NatTrans.rightOp η.unop  }
+      map := fun η => NatTrans.rightOp η.unop }
   inverse :=
     { obj := fun F => op F.leftOp
       map := fun η => η.leftOp.op }

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.subgroup.pointwise
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.MulOpposite
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
+
+#align_import group_theory.subgroup.pointwise from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -162,7 +159,7 @@ theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
   ext x
   refine (exists_congr fun y => ?_).trans exists_swap
   simp only [exists_and_left, @and_left_comm _ (y ∈ s), ← eq_inv_mul_iff_mul_eq (b := y),
-    ← eq_mul_inv_iff_mul_eq  (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
+    ← eq_mul_inv_iff_mul_eq (c := y), exists_eq_right, SetLike.mem_coe, hN.mem_comm_iff]
 
 /-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)

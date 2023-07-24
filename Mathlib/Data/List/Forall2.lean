@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.list.forall2
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Infix
+
+#align_import data.list.forall2 from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Double universal quantification on a list
@@ -202,8 +199,8 @@ theorem forall₂_iff_zip {l₁ l₂} :
     · cases length_eq_zero.1 h₁.symm
       constructor
     · cases' l₂ with b l₂
-      . simp at h₁
-      . simp only [length_cons, succ.injEq] at h₁
+      · simp at h₁
+      · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ <| fun h => h₂ <| by
             simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right

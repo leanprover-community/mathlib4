@@ -2,11 +2,6 @@
 Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.differentiation
-! leanprover-community/mathlib commit 57ac39bd365c2f80589a700f9fbb664d3a1a30c2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Covering.VitaliFamily
 import Mathlib.MeasureTheory.Measure.Regular
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Function.AEMeasurableOrder
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.MeasureTheory.Integral.Average
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
+
+#align_import measure_theory.covering.differentiation from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
 /-!
 # Differentiation of measures
@@ -171,13 +168,13 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
     intro ε εpos
     set s := {x | ¬∀ᶠ a in v.filterAt x, ρ a < ε * μ a} with hs
     change μ s = 0
-    obtain ⟨o, _, ρo, μo⟩ : ∃ o : Set α, MeasurableSet o ∧ ρ o = 0 ∧ μ (oᶜ) = 0 := hρ
+    obtain ⟨o, _, ρo, μo⟩ : ∃ o : Set α, MeasurableSet o ∧ ρ o = 0 ∧ μ oᶜ = 0 := hρ
     apply le_antisymm _ bot_le
     calc
       μ s ≤ μ (s ∩ o ∪ oᶜ) := by
         conv_lhs => rw [← inter_union_compl s o]
         exact measure_mono (union_subset_union_right _ (inter_subset_right _ _))
-      _ ≤ μ (s ∩ o) + μ (oᶜ) := (measure_union_le _ _)
+      _ ≤ μ (s ∩ o) + μ oᶜ := (measure_union_le _ _)
       _ = μ (s ∩ o) := by rw [μo, add_zero]
       _ = (ε : ℝ≥0∞)⁻¹ * (ε • μ) (s ∩ o) := by
         simp only [coe_nnreal_smul_apply, ← mul_assoc, mul_comm _ (ε : ℝ≥0∞)]
@@ -304,8 +301,8 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
   -- a finite measure part `o n`, taking a measurable superset here, and then taking the union over
   -- `n`.
   refine'
-    ⟨toMeasurable μ (sᶜ) ∪ ⋃ n, toMeasurable (ρ + μ) (u n),
-      toMeasurable μ (sᶜ) ∪ ⋃ n, toMeasurable (ρ + μ) (w n), _, _, _, _, _⟩
+    ⟨toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (u n),
+      toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n), _, _, _, _, _⟩
   -- check that these sets are measurable supersets as required
   · exact
       (measurableSet_toMeasurable _ _).union
@@ -317,19 +314,19 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
     by_cases h : x ∈ s
     · refine' Or.inr (mem_iUnion.2 ⟨spanningSetsIndex (ρ + μ) x, _⟩)
       exact subset_toMeasurable _ _ ⟨⟨h, hx⟩, mem_spanningSetsIndex _ _⟩
-    · exact Or.inl (subset_toMeasurable μ (sᶜ) h)
+    · exact Or.inl (subset_toMeasurable μ sᶜ h)
   · intro x hx
     by_cases h : x ∈ s
     · refine' Or.inr (mem_iUnion.2 ⟨spanningSetsIndex (ρ + μ) x, _⟩)
       exact subset_toMeasurable _ _ ⟨⟨h, hx⟩, mem_spanningSetsIndex _ _⟩
-    · exact Or.inl (subset_toMeasurable μ (sᶜ) h)
+    · exact Or.inl (subset_toMeasurable μ sᶜ h)
   -- it remains to check the nontrivial part that these sets have zero measure intersection.
   -- it suffices to do it for fixed `m` and `n`, as one is taking countable unions.
   suffices H : ∀ m n : ℕ, μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) = 0
   · have A :
-      (toMeasurable μ (sᶜ) ∪ ⋃ n, toMeasurable (ρ + μ) (u n)) ∩
-          (toMeasurable μ (sᶜ) ∪ ⋃ n, toMeasurable (ρ + μ) (w n)) ⊆
-        toMeasurable μ (sᶜ) ∪
+      (toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (u n)) ∩
+          (toMeasurable μ sᶜ ∪ ⋃ n, toMeasurable (ρ + μ) (w n)) ⊆
+        toMeasurable μ sᶜ ∪
           ⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n) := by
       simp only [inter_distrib_left, inter_distrib_right, true_and_iff, subset_union_left,
         union_subset_iff, inter_self]
@@ -339,13 +336,13 @@ theorem exists_measurable_supersets_limRatio {p q : ℝ≥0} (hpq : p < q) :
       · simp_rw [iUnion_inter, inter_iUnion]; exact subset_union_right _ _
     refine' le_antisymm ((measure_mono A).trans _) bot_le
     calc
-      μ (toMeasurable μ (sᶜ) ∪
+      μ (toMeasurable μ sᶜ ∪
         ⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) ≤
-          μ (toMeasurable μ (sᶜ)) +
+          μ (toMeasurable μ sᶜ) +
             μ (⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
         measure_union_le _ _
       _ = μ (⋃ (m) (n), toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) := by
-        have : μ (sᶜ) = 0 := v.ae_tendsto_div hρ; rw [measure_toMeasurable, this, zero_add]
+        have : μ sᶜ = 0 := v.ae_tendsto_div hρ; rw [measure_toMeasurable, this, zero_add]
       _ ≤ ∑' (m) (n), μ (toMeasurable (ρ + μ) (u m) ∩ toMeasurable (ρ + μ) (w n)) :=
         ((measure_iUnion_le _).trans (ENNReal.tsum_le_tsum fun m => measure_iUnion_le _))
       _ = 0 := by simp only [H, tsum_zero]
@@ -448,7 +445,7 @@ proved in `measure_le_of_frequently_le`. Since `ρ a / μ a` tends almost everyw
 theorem measure_le_mul_of_subset_limRatioMeas_lt {p : ℝ≥0} {s : Set α}
     (h : s ⊆ {x | v.limRatioMeas hρ x < p}) : ρ s ≤ p * μ s := by
   let t := {x : α | Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatioMeas hρ x))}
-  have A : μ (tᶜ) = 0 := v.ae_tendsto_limRatioMeas hρ
+  have A : μ tᶜ = 0 := v.ae_tendsto_limRatioMeas hρ
   suffices H : ρ (s ∩ t) ≤ (p • μ) (s ∩ t);
   exact
     calc
@@ -472,13 +469,13 @@ proved in `measure_le_of_frequently_le`. Since `ρ a / μ a` tends almost everyw
 theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
     (h : s ⊆ {x | (q : ℝ≥0∞) < v.limRatioMeas hρ x}) : (q : ℝ≥0∞) * μ s ≤ ρ s := by
   let t := {x : α | Tendsto (fun a => ρ a / μ a) (v.filterAt x) (𝓝 (v.limRatioMeas hρ x))}
-  have A : μ (tᶜ) = 0 := v.ae_tendsto_limRatioMeas hρ
+  have A : μ tᶜ = 0 := v.ae_tendsto_limRatioMeas hρ
   suffices H : (q • μ) (s ∩ t) ≤ ρ (s ∩ t);
   exact
     calc
       (q • μ) s = (q • μ) (s ∩ t ∪ s ∩ tᶜ) := by rw [inter_union_compl]
       _ ≤ (q • μ) (s ∩ t) + (q • μ) (s ∩ tᶜ) := (measure_union_le _ _)
-      _ ≤ ρ (s ∩ t) + q * μ (tᶜ) := by
+      _ ≤ ρ (s ∩ t) + q * μ tᶜ := by
         apply add_le_add H
         rw [coe_nnreal_smul_apply]
         exact mul_le_mul_left' (measure_mono (inter_subset_right _ _)) _
@@ -902,7 +899,7 @@ theorem ae_tendsto_average_norm_sub {f : α → E} (hf : Integrable f μ) :
   simp only [ENNReal.zero_toReal] at this
   apply Tendsto.congr' _ this
   filter_upwards [h'x, v.eventually_measure_lt_top x] with a _ h'a
-  simp only [Function.comp_apply, ENNReal.toReal_div, set_average_eq, div_eq_inv_mul]
+  simp only [Function.comp_apply, ENNReal.toReal_div, setAverage_eq, div_eq_inv_mul]
   have A : IntegrableOn (fun y => (‖f y - f x‖₊ : ℝ)) a μ := by
     simp_rw [coe_nnnorm]
     exact (hf.integrableOn.sub (integrableOn_const.2 (Or.inr h'a))).norm
@@ -922,8 +919,8 @@ theorem ae_tendsto_average [NormedSpace ℝ E] [CompleteSpace E] {f : α → E} 
   rw [tendsto_iff_norm_tendsto_zero]
   refine' squeeze_zero' (eventually_of_forall fun a => norm_nonneg _) _ hx
   filter_upwards [h'x, v.eventually_measure_lt_top x] with a ha h'a
-  nth_rw 1 [← set_average_const ha.ne' h'a.ne (f x)]
-  simp_rw [set_average_eq']
+  nth_rw 1 [← setAverage_const ha.ne' h'a.ne (f x)]
+  simp_rw [setAverage_eq']
   rw [← integral_sub]
   · exact norm_integral_le_integral_norm _
   · exact (integrable_inv_smul_measure ha.ne' h'a.ne).2 hf.integrableOn

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Mon.colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Mon.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of monoids has all colimits.
@@ -227,17 +224,17 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
   · intro x y r
     induction' r with _ _ _ _ h _ _ _ _ _ h₁ h₂ _ _ f x _ _ _ _ _ _ _ _ h _ _ _ _ h <;> try simp
     -- symm
-    . exact h.symm
+    · exact h.symm
     -- trans
-    . exact h₁.trans h₂
+    · exact h₁.trans h₂
     -- map
-    . exact s.w_apply f x
+    · exact s.w_apply f x
     -- mul_1
-    . rw [h]
+    · rw [h]
     -- mul_2
-    . rw [h]
+    · rw [h]
     -- mul_assoc
-    . rw [mul_assoc]
+    · rw [mul_assoc]
 set_option linter.uppercaseLean3 false in
 #align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
@@ -261,12 +258,12 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     ext x
     induction' x using Quot.inductionOn with x
     induction' x with j x x y hx hy
-    . change _ = s.ι.app j _
+    · change _ = s.ι.app j _
       rw [← w j]
       rfl
-    . rw [quot_one, map_one]
+    · rw [quot_one, map_one]
       rfl
-    . rw [quot_mul, map_mul, hx, hy]
+    · rw [quot_mul, map_mul, hx, hy]
       dsimp [descMorphism, FunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
 set_option linter.uppercaseLean3 false in

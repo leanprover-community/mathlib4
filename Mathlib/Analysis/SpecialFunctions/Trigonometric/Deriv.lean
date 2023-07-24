@@ -2,15 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.deriv
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+
+#align_import analysis.special_functions.trigonometric.deriv from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-!
 # Differentiability of trigonometric functions
@@ -717,13 +714,13 @@ theorem sinh_neg_iff : sinh x < 0 ↔ x < 0 := by simpa only [sinh_zero] using @
 theorem sinh_nonneg_iff : 0 ≤ sinh x ↔ 0 ≤ x := by simpa only [sinh_zero] using @sinh_le_sinh 0 x
 #align real.sinh_nonneg_iff Real.sinh_nonneg_iff
 
-theorem abs_sinh (x : ℝ) : |sinh x| = sinh (|x|) := by
+theorem abs_sinh (x : ℝ) : |sinh x| = sinh |x| := by
   cases le_total x 0 <;> simp [abs_of_nonneg, abs_of_nonpos, *]
 #align real.abs_sinh Real.abs_sinh
 
 theorem cosh_strictMonoOn : StrictMonoOn cosh (Ici 0) :=
   (convex_Ici _).strictMonoOn_of_deriv_pos continuous_cosh.continuousOn fun x hx => by
-    rw [interior_Ici, mem_Ioi] at hx ; rwa [deriv_cosh, sinh_pos_iff]
+    rw [interior_Ici, mem_Ioi] at hx; rwa [deriv_cosh, sinh_pos_iff]
 #align real.cosh_strict_mono_on Real.cosh_strictMonoOn
 
 @[simp]

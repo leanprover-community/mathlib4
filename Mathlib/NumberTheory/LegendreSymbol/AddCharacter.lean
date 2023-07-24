@@ -2,14 +2,11 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.add_character
-! leanprover-community/mathlib commit 0723536a0522d24fc2f159a096fb3304bef77472
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Trace
+
+#align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
 /-!
 # Additive characters of finite rings and fields
@@ -310,7 +307,7 @@ theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R']
 
 variable {C : Type v} [CommRing C]
 
-section ZmodCharDef
+section ZModCharDef
 
 open Multiplicative
 
@@ -335,7 +332,7 @@ theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ)
   rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_nat_cast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
 
-end ZmodCharDef
+end ZModCharDef
 
 /-- An additive character on `ZMod n` is nontrivial iff it takes a value `≠ 1` on `1`. -/
 theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :

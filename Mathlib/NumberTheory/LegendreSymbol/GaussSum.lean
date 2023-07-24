@@ -2,15 +2,12 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module number_theory.legendre_symbol.gauss_sum
-! leanprover-community/mathlib commit e3f4be1fcb5376c4948d7f095bec45350bfb9d1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 import Mathlib.Algebra.CharP.CharAndCard
+
+#align_import number_theory.legendre_symbol.gauss_sum from "leanprover-community/mathlib"@"e3f4be1fcb5376c4948d7f095bec45350bfb9d1a"
 
 /-!
 # Gauss sums
@@ -38,9 +35,9 @@ Some important results are as follows.
   the Gauss sum to the `p`th power (where `p` is the characteristic of
   the target ring `R'`) multiplies it by `χ p`.
 * `Char.card_pow_card`: When `F` and `F'` are finite fields and `χ : F → F'`
-  is a nontrivial quadratic character, then `(χ (-1) * #F)^(#F'/2) = χ (#F')`.
+  is a nontrivial quadratic character, then `(χ (-1) * #F)^(#F'/2) = χ #F'`.
 * `FiniteField.two_pow_card`: For every finite field `F` of odd characteristic,
-  we have `2^(#F/2) = χ₈(#F)` in `F`.
+  we have `2^(#F/2) = χ₈#F` in `F`.
 
 This machinery can be used to derive (a generalization of) the Law of
 Quadratic Reciprocity.
@@ -163,7 +160,7 @@ theorem gaussSum_frob (χ : MulChar R R') (ψ : AddChar R R') :
 /-- For a quadratic character `χ` and when the characteristic `p` of the target ring
 is a unit in the source ring, the `p`th power of the Gauss sum of`χ` and `ψ` is
 `χ p` times the original Gauss sum. -/
--- Porting note: TODO
+-- Porting note: Added `nonrec` to avoid error `failed to prove termination`
 nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : MulChar R R'}
     (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p = χ p * gaussSum χ ψ := by
   rw [gaussSum_frob, pow_mulShift, hχ.pow_char p, ← gaussSum_mulShift χ ψ hp.unit, ← mul_assoc,
@@ -175,11 +172,12 @@ nonrec theorem MulChar.IsQuadratic.gaussSum_frob (hp : IsUnit (p : R)) {χ : Mul
 is a unit in the source ring and `n` is a natural number, the `p^n`th power of the Gauss
 sum of`χ` and `ψ` is `χ (p^n)` times the original Gauss sum. -/
 theorem MulChar.IsQuadratic.gaussSum_frob_iter (n : ℕ) (hp : IsUnit (p : R)) {χ : MulChar R R'}
-    (hχ : IsQuadratic χ) (ψ : AddChar R R') : gaussSum χ ψ ^ p ^ n = χ (p ^ n) * gaussSum χ ψ := by
+    (hχ : IsQuadratic χ) (ψ : AddChar R R') :
+    gaussSum χ ψ ^ p ^ n = χ ((p : R) ^ n) * gaussSum χ ψ := by
   induction' n with n ih
-  · rw [pow_zero, pow_one, Nat.cast_one, MulChar.map_one, one_mul]
-  · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc,
-      ← pow_apply' χ fp.1.pos (p ^ n), hχ.pow_char p, ← map_mul, Nat.cast_mul]
+  · rw [pow_zero, pow_one, pow_zero, MulChar.map_one, one_mul]
+  · rw [pow_succ, mul_comm p, pow_mul, ih, mul_pow, hχ.gaussSum_frob _ hp, ← mul_assoc, pow_succ,
+      mul_comm (p : R), map_mul, ← pow_apply' χ fp.1.pos ((p : R) ^ n), hχ.pow_char p]
 #align mul_char.is_quadratic.gauss_sum_frob_iter MulChar.IsQuadratic.gaussSum_frob_iter
 
 end gaussSum_frob
@@ -200,7 +198,7 @@ This version can be used when `R` is not a field, e.g., `ℤ/8ℤ`. -/
 theorem Char.card_pow_char_pow {χ : MulChar R R'} (hχ : IsQuadratic χ) (ψ : AddChar R R') (p n : ℕ)
     [fp : Fact p.Prime] [hch : CharP R' p] (hp : IsUnit (p : R)) (hp' : p ≠ 2)
     (hg : gaussSum χ ψ ^ 2 = χ (-1) * Fintype.card R) :
-    (χ (-1) * Fintype.card R) ^ (p ^ n / 2) = χ (p ^ n) := by
+    (χ (-1) * Fintype.card R) ^ (p ^ n / 2) = χ ((p : R) ^ n) := by
   have : gaussSum χ ψ ≠ 0 := by
     intro hf; rw [hf, zero_pow (by norm_num : 0 < 2), eq_comm, mul_eq_zero] at hg
     exact not_isUnit_prime_of_dvd_card p
@@ -232,12 +230,12 @@ theorem Char.card_pow_card {F : Type _} [Field F] [Fintype F] {F' : Type _} [Fie
   rw [Ne, ← Nat.prime_dvd_prime_iff_eq hp' hp, ← isUnit_iff_not_dvd_char, hchar] at hch₁
   -- Porting note: original proof is below and, as noted above, `FF'` needs to
   -- be replaced by its definition before unification to avoid time out
-  --  exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
+  -- exact Char.card_pow_char_pow (hχ₂.comp _) ψ.char (ringChar FF') n' hch₁ (hchar ▸ hch₂)
   --      (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
   have := Char.card_pow_char_pow (hχ₂.comp (algebraMap F' FF')) ψ.char
     (ringChar FF') n' hch₁ (hchar ▸ hch₂)
     (gaussSum_sq (hχ₁.comp <| RingHom.injective _) (hχ₂.comp _) ψ.prim)
-  simp_rw [FF'_def, Nat.cast_pow] at this
+  simp_rw [FF'_def] at this
   exact this
 #align char.card_pow_card Char.card_pow_card
 
@@ -250,9 +248,9 @@ section GaussSumTwo
 
 This section proves the following result.
 
-For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈(#F)` in `F`.
+For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`.
 This can be used to show that the quadratic character of `F` takes the value
-`χ₈(#F)` at `2`.
+`χ₈#F` at `2`.
 
 The proof uses the Gauss sum of `χ₈` and a primitive additive character on `ℤ/8ℤ`;
 in this way, the result is reduced to `card_pow_char_pow`.
@@ -262,16 +260,21 @@ in this way, the result is reduced to `card_pow_char_pow`.
 open ZMod
 
 -- Porting note: This proof is _really_ slow, maybe it should be broken into several lemmas
--- See  https://github.com/leanprover-community/mathlib4/issues/5028
-set_option maxHeartbeats 1800000 in
-/-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈(#F)` in `F`. -/
+-- See https://github.com/leanprover-community/mathlib4/issues/5028
+set_option maxHeartbeats 800000 in
+/-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈#F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by
   have hp2 : ∀ n : ℕ, (2 ^ n : F) ≠ 0 := fun n => pow_ne_zero n (Ring.two_ne_zero hF)
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
 
   -- we work in `FF`, the eighth cyclotomic field extension of `F`
-  let FF := (Polynomial.cyclotomic 8 F).SplittingField
+  -- Porting note: was
+  -- let FF := (Polynomial.cyclotomic 8 F).SplittingField
+  -- but we want to unify with `CyclotomicField` below.
+  let FF := CyclotomicField 8 F
+  haveI : Polynomial.IsSplittingField F FF (Polynomial.cyclotomic 8 F) :=
+    Polynomial.IsSplittingField.splittingField _
   haveI : FiniteDimensional F FF :=
     Polynomial.IsSplittingField.finiteDimensional FF (Polynomial.cyclotomic 8 F)
   haveI : Fintype FF := FiniteDimensional.fintypeOfFintype F FF
@@ -288,13 +291,17 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
 
   -- there is a primitive additive character `ℤ/8ℤ → FF`, sending `a + 8ℤ ↦ τ^a`
   -- with a primitive eighth root of unity `τ`
-  let ψ₈ := primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
-  let τ : FF := ψ₈.char 1
+  -- Porting note: The type is actually `PrimitiveAddChar (ZMod (8 : ℕ+)) F`, but this seems faster.
+  let ψ₈ : PrimitiveAddChar (ZMod 8) F :=
+    primitiveZModChar 8 F (by convert hp2 3 using 1; norm_cast)
+  -- Porting note: unifying this is very slow, so only do it once.
+  let ψ₈char : AddChar (ZMod 8) FF := ψ₈.char
+  let τ : FF := ψ₈char 1
   have τ_spec : τ ^ 4 = -1 := by
     refine (sq_eq_one_iff.1 ?_).resolve_left ?_
-    · rw [← pow_mul, ← map_nsmul_pow ψ₈.char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← pow_mul, ← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
       decide
-    · rw [← map_nsmul_pow ψ₈.char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
+    · rw [← map_nsmul_pow ψ₈char, AddChar.IsPrimitive.zmod_char_eq_one_iff 8 ψ₈.prim]
       decide
 
   -- we consider `χ₈` as a multiplicative character `ℤ/8ℤ → FF`
@@ -303,12 +310,12 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
   have hq : IsQuadratic χ := isQuadratic_χ₈.comp _
 
   -- we now show that the Gauss sum of `χ` and `ψ₈` has the relevant property
-  have hg : gaussSum χ ψ₈.char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
+  have hg : gaussSum χ ψ₈char ^ 2 = χ (-1) * Fintype.card (ZMod 8) := by
     have _ := congr_arg (· ^ 2) (Fin.sum_univ_eight fun x => (χ₈ x : FF) * τ ^ x.1)
-    have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈.char a)) := by
+    have h₁ : (fun i : Fin 8 => ↑(χ₈ i) * τ ^ i.val) = (fun a : ZMod 8 => χ a * ↑(ψ₈char a)) := by
       -- Porting note: original proof
       -- ext; congr; apply pow_one
-      ext (x : Fin 8); rw [← map_nsmul_pow ψ₈.char]; congr 2;
+      ext (x : Fin 8); rw [← map_nsmul_pow ψ₈char]; congr 2;
       rw [Nat.smul_one_eq_coe, Fin.cast_val_eq_self x]
     have h₂ : (0 + 1 * τ ^ 1 + 0 + -1 * τ ^ 3 + 0 + -1 * τ ^ 5 + 0 + 1 * τ ^ 7) ^ 2 =
         8 + (τ ^ 4 + 1) * (τ ^ 10 - 2 * τ ^ 8 - 2 * τ ^ 6 + 6 * τ ^ 4 + τ ^ 2 - 8) := by ring
@@ -358,8 +365,8 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
     rfl
 
   -- this allows us to apply `card_pow_char_pow` to our situation
-  have h := Char.card_pow_char_pow hq ψ₈.char (ringChar FF) n hu hFF hg
-  rw [ZMod.card, ← hchar, hχ, one_mul, ← hc] at h
+  have h := Char.card_pow_char_pow (R := ZMod 8) hq ψ₈char (ringChar FF) n hu hFF hg
+  rw [ZMod.card, ← hchar, hχ, one_mul, ← hc, ← Nat.cast_pow (ringChar F), ← hc] at h
 
   -- finally, we change `2` to `8` on the left hand side
   convert_to (8 : F) ^ (Fintype.card F / 2) = _
@@ -367,6 +374,7 @@ theorem FiniteField.two_pow_card {F : Type _} [Fintype F] [Field F] (hF : ringCh
       (FiniteField.isSquare_iff hF <| hp2 2).mp ⟨2, pow_two 2⟩, one_mul]
   apply (algebraMap F FF).injective
   simp only [map_pow, map_ofNat, map_intCast]
+  simp only [Nat.cast_ofNat, ringHomComp_apply, eq_intCast] at h
   exact h
 #align finite_field.two_pow_card FiniteField.two_pow_card
 

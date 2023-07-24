@@ -2,11 +2,6 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module representation_theory.Rep
-! leanprover-community/mathlib commit cec81510e48e579bde6acd8568c06a87af045b63
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Action
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+
+#align_import representation_theory.Rep from "leanprover-community/mathlib"@"cec81510e48e579bde6acd8568c06a87af045b63"
 
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
@@ -453,7 +450,7 @@ set_option linter.uppercaseLean3 false in
 #align Rep.ihom_ev_app_hom Rep.ihom_ev_app_hom
 
 /- Porting note: needs extra heartbeats. -/
-set_option maxHeartbeats 230000 in
+set_option maxHeartbeats 240000 in
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.coev A).app B) = (TensorProduct.mk k _ _).flip :=
   LinearMap.ext fun _ => LinearMap.ext fun _ => rfl
@@ -554,7 +551,7 @@ example : MonoidalLinear k (Rep k G) := by infer_instance
 
 noncomputable section
 
-/-- Auxiliary lemma for `to_Module_monoid_algebra`. -/
+/-- Auxiliary lemma for `toModuleMonoidAlgebra`. -/
 theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (V W : Type _)
     [AddCommGroup V] [AddCommGroup W] [Module k V] [Module k W] (ρ : G →* V →ₗ[k] V)
     (σ : G →* W →ₗ[k] W) (f : V →ₗ[k] W) (w : ∀ g : G, f.comp (ρ g) = (σ g).comp f)
@@ -571,7 +568,7 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type _} [CommRing k] [Monoid G] (
 set_option linter.uppercaseLean3 false in
 #align Rep.to_Module_monoid_algebra_map_aux Rep.to_Module_monoidAlgebra_map_aux
 
-/-- Auxiliary definition for `to_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `toModuleMonoidAlgebra`. -/
 def toModuleMonoidAlgebraMap {V W : Rep k G} (f : V ⟶ W) :
     ModuleCat.of (MonoidAlgebra k G) V.ρ.asModule ⟶ ModuleCat.of (MonoidAlgebra k G) W.ρ.asModule :=
   { f.hom with
@@ -607,7 +604,7 @@ theorem ofModuleMonoidAlgebra_obj_ρ (M : ModuleCat.{u} (MonoidAlgebra k G)) :
 set_option linter.uppercaseLean3 false in
 #align Rep.of_Module_monoid_algebra_obj_ρ Rep.ofModuleMonoidAlgebra_obj_ρ
 
-/-- Auxiliary definition for `equivalence_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≃+ M := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
@@ -616,7 +613,7 @@ def counitIsoAddEquiv {M : ModuleCat.{u} (MonoidAlgebra k G)} :
 set_option linter.uppercaseLean3 false in
 #align Rep.counit_iso_add_equiv Rep.counitIsoAddEquiv
 
-/-- Auxiliary definition for `equivalence_Module_monoid_algebra`. -/
+/-- Auxiliary definition for `equivalenceModuleMonoidAlgebra`. -/
 def unitIsoAddEquiv {V : Rep k G} : V ≃+ (toModuleMonoidAlgebra ⋙ ofModuleMonoidAlgebra).obj V := by
   dsimp [ofModuleMonoidAlgebra, toModuleMonoidAlgebra]
   refine' V.ρ.asModuleEquiv.symm.trans _

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.convex.specific_functions.deriv
-! leanprover-community/mathlib commit a16665637b378379689c566204817ae792ac8b39
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.ZPow
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+
+#align_import analysis.convex.specific_functions.deriv from "leanprover-community/mathlib"@"a16665637b378379689c566204817ae792ac8b39"
 
 /-!
 # Collection of convex functions
@@ -139,7 +136,7 @@ theorem deriv_sqrt_mul_log' :
 #align deriv_sqrt_mul_log' deriv_sqrt_mul_log'
 
 theorem deriv2_sqrt_mul_log (x : ℝ) :
-    (deriv^[2]) (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
+    deriv^[2] (fun x => sqrt x * log x) x = -log x / (4 * sqrt x ^ 3) := by
   simp only [Nat.iterate, deriv_sqrt_mul_log']
   cases' le_or_lt x 0 with hx hx
   · rw [sqrt_eq_zero_of_nonpos hx, zero_pow zero_lt_three, MulZeroClass.mul_zero, div_zero]

@@ -2,14 +2,11 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.products
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+#align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Products and coproducts in the category of topological spaces
@@ -178,7 +175,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   lift := fun S : BinaryFan X Y => {
     toFun := fun s => (S.fst s, S.snd s)
     -- Porting note: continuity failed again here. Lean cannot infer
-    -- ContinuousMapClass (X ⟶  Y) X Y for X Y : TopCat which may be one of the problems
+    -- ContinuousMapClass (X ⟶ Y) X Y for X Y : TopCat which may be one of the problems
     continuous_toFun := (Continuous.prod_mk)
       (BinaryFan.fst S).continuous_toFun (BinaryFan.snd S).continuous_toFun }
   fac := by
@@ -361,7 +358,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
             have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
-              rintro a (h : a ∈ Set.range c.inlᶜ)
+              rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
                 (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
@@ -373,7 +370,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               · continuity
               · rw [embedding_subtype_val.toInducing.continuous_iff]
                 exact continuous_subtype_val
-          · change IsOpen (Set.range c.inlᶜ)
+          · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.open_range
       · intro T f g

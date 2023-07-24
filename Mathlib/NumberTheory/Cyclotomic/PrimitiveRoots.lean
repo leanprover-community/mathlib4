@@ -2,11 +2,6 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Best, Riccardo Brasca, Eric Rodriguez
-
-! This file was ported from Lean 3 source module number_theory.cyclotomic.primitive_roots
-! leanprover-community/mathlib commit 5bfbcca0a7ffdd21cf1682e59106d6c942434a32
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PNat.Prime
 import Mathlib.Algebra.IsPrimePow
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.Adjoin.PowerBasis
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Norm
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+
+#align_import number_theory.cyclotomic.primitive_roots from "leanprover-community/mathlib"@"5bfbcca0a7ffdd21cf1682e59106d6c942434a32"
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -81,7 +78,7 @@ namespace IsCyclotomicExtension
 
 variable (n)
 
-/-- If `B` is a `n`-th cyclotomic extension of `A`, then `zeta n A B` is a primitive root of
+/-- If `B` is an `n`-th cyclotomic extension of `A`, then `zeta n A B` is a primitive root of
 unity in `B`. -/
 noncomputable def zeta : B :=
   (exists_prim_root A <| Set.mem_singleton n : ∃ r : B, IsPrimitiveRoot r n).choose

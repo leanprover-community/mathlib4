@@ -2,15 +2,12 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.satisfiability
-! leanprover-community/mathlib commit d565b3df44619c1498326936be16f1a935df0728
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Skolem
+
+#align_import model_theory.satisfiability from "leanprover-community/mathlib"@"d565b3df44619c1498326936be16f1a935df0728"
 
 /-!
 # First-Order Satisfiability
@@ -140,7 +137,7 @@ theorem isSatisfiable_directed_union_iff {ι : Type _} [Nonempty ι] {T : ι →
 
 theorem isSatisfiable_union_distinctConstantsTheory_of_card_le (T : L.Theory) (s : Set α)
     (M : Type w') [Nonempty M] [L.Structure M] [M ⊨ T]
-    (h : Cardinal.lift.{w'} (#s) ≤ Cardinal.lift.{w} (#M)) :
+    (h : Cardinal.lift.{w'} #s ≤ Cardinal.lift.{w} #M) :
     ((L.lhomWithConstants α).onTheory T ∪ L.distinctConstantsTheory s).IsSatisfiable := by
   haveI : Inhabited M := Classical.inhabited_of_nonempty inferInstance
   rw [Cardinal.lift_mk_le'] at h
@@ -176,7 +173,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (
 /-- Any theory with an infinite model has arbitrarily large models. -/
 theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) (M : Type w')
     [L.Structure M] [M ⊨ T] [Infinite M] :
-    ∃ N : ModelType.{_, _, max u v w} T, Cardinal.lift.{max u v w} κ ≤ (#N) := by
+    ∃ N : ModelType.{_, _, max u v w} T, Cardinal.lift.{max u v w} κ ≤ #N := by
   obtain ⟨N⟩ :=
     isSatisfiable_union_distinctConstantsTheory_of_infinite T (Set.univ : Set κ.out) M
   refine' ⟨(N.is_model.mono (Set.subset_union_left _ _)).bundled.reduct _, _⟩
@@ -214,8 +211,8 @@ of the cardinal `κ`.
  -/
 theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [Nonempty M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
-    (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} (#M)) :
-    ∃ N : Bundled L.Structure, Nonempty (N ↪ₑ[L] M) ∧ (#N) = κ := by
+    (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} #M) :
+    ∃ N : Bundled L.Structure, Nonempty (N ↪ₑ[L] M) ∧ #N = κ := by
   obtain ⟨S, _, hS⟩ := exists_elementarySubstructure_card_eq L ∅ κ h1 (by simp) h2 h3
   have : Small.{w} S := by
     rw [← lift_inj.{_, w + 1}, lift_lift, lift_lift] at hS
@@ -235,8 +232,8 @@ attribute [-instance] FirstOrder.Language.withConstants_expansion
 and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
-    (h2 : Cardinal.lift.{w} (#M) ≤ Cardinal.lift.{w'} κ) :
-    ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ (#N) = κ := by
+    (h2 : Cardinal.lift.{w} #M ≤ Cardinal.lift.{w'} κ) :
+    ∃ N : Bundled L.Structure, Nonempty (M ↪ₑ[L] N) ∧ #N = κ := by
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
   rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
@@ -262,8 +259,8 @@ and an infinite `L`-structure `M`, then there is an elementary embedding in the 
 direction between then `M` and a structure of cardinality `κ`. -/
 theorem exists_elementaryEmbedding_card_eq (M : Type w') [L.Structure M] [iM : Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
-    ∃ N : Bundled L.Structure, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ (#N) = κ := by
-  cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} (#M))
+    ∃ N : Bundled L.Structure, (Nonempty (N ↪ₑ[L] M) ∨ Nonempty (M ↪ₑ[L] N)) ∧ #N = κ := by
+  cases le_or_gt (lift.{w'} κ) (Cardinal.lift.{w} #M)
   case inl h =>
     obtain ⟨N, hN1, hN2⟩ := exists_elementaryEmbedding_card_eq_of_le L M κ h1 h2 h
     exact ⟨N, Or.inl hN1, hN2⟩
@@ -277,7 +274,7 @@ cardinalities of `L` and an infinite `L`-structure `M`, then there is a structur
 elementarily equivalent to `M`. -/
 theorem exists_elementarilyEquivalent_card_eq (M : Type w') [L.Structure M] [Infinite M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
-    ∃ N : CategoryTheory.Bundled L.Structure, (M ≅[L] N) ∧ (#N) = κ := by
+    ∃ N : CategoryTheory.Bundled L.Structure, (M ≅[L] N) ∧ #N = κ := by
   obtain ⟨N, NM | MN, hNκ⟩ := exists_elementaryEmbedding_card_eq L M κ h1 h2
   · exact ⟨N, NM.some.elementarilyEquivalent.symm, hNκ⟩
   · exact ⟨N, MN.some.elementarilyEquivalent, hNκ⟩
@@ -289,7 +286,7 @@ namespace Theory
 
 theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite M) (κ : Cardinal.{w})
     (h1 : ℵ₀ ≤ κ) (h2 : Cardinal.lift.{w} L.card ≤ Cardinal.lift.{max u v} κ) :
-    ∃ N : ModelType.{u, v, w} T, (#N) = κ := by
+    ∃ N : ModelType.{u, v, w} T, #N = κ := by
   cases h with
   | intro M MI =>
     haveI := MI
@@ -649,7 +646,7 @@ variable {L : Language.{u, v}} (κ : Cardinal.{w}) (T : L.Theory)
 
 /-- A theory is `κ`-categorical if all models of size `κ` are isomorphic. -/
 def Categorical : Prop :=
-  ∀ M N : T.ModelType, (#M) = κ → (#N) = κ → Nonempty (M ≃[L] N)
+  ∀ M N : T.ModelType, #M = κ → #N = κ → Nonempty (M ≃[L] N)
 #align cardinal.categorical Cardinal.Categorical
 
 /-- The Łoś–Vaught Test : a criterion for categorical theories to be complete. -/

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
-
-! This file was ported from Lean 3 source module group_theory.transfer
-! leanprover-community/mathlib commit 56489b558d42c30f6aac5947cafc9a594f60813b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
+
+#align_import group_theory.transfer from "leanprover-community/mathlib"@"56489b558d42c30f6aac5947cafc9a594f60813b"
 
 /-!
 # The Transfer Homomorphism
@@ -144,8 +141,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         · intro k hk
           simp only [if_neg hk, inv_mul_self]
           exact map_one ϕ
-#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot
-  MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
+#align monoid_hom.transfer_eq_prod_quotient_orbit_rel_zpowers_quot MonoidHom.transfer_eq_prod_quotient_orbitRel_zpowers_quot
 
 /-- Auxiliary lemma in order to state `transfer_eq_pow`. -/
 theorem transfer_eq_pow_aux (g : G)

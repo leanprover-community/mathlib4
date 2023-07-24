@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.real.basic
-! leanprover-community/mathlib commit cb42593171ba005beaaf4549fcfe0dece9ada4c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Bounds
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.CauSeqCompletion
+
+#align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
 /-!
 # Real numbers from Cauchy sequences
@@ -381,7 +378,7 @@ instance partialOrder : PartialOrder ℝ where
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa using lt_iff_le_not_le
-  le_refl a :=  by
+  le_refl a := by
     induction' a using Real.ind_mk with a
     rw [mk_le]
   le_trans a b c := by
@@ -799,7 +796,7 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 #align real.Sup_empty Real.sSup_empty
 
-theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) = 0 := by
+theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
   rw [Set.range_eq_empty_iff]
@@ -807,7 +804,7 @@ theorem ciSup_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨆ i, f i) =
 #align real.csupr_empty Real.ciSup_empty
 
 @[simp]
-theorem ciSup_const_zero {α : Sort _} : (⨆ _ : α, (0 : ℝ)) = 0 := by
+theorem ciSup_const_zero {α : Sort _} : ⨆ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciSup_empty _
   · exact ciSup_const
@@ -818,7 +815,7 @@ theorem sSup_of_not_bddAbove {s : Set ℝ} (hs : ¬BddAbove s) : sSup s = 0 :=
 #align real.Sup_of_not_bdd_above Real.sSup_of_not_bddAbove
 
 theorem iSup_of_not_bddAbove {α : Sort _} {f : α → ℝ} (hf : ¬BddAbove (Set.range f)) :
-    (⨆ i, f i) = 0 :=
+    ⨆ i, f i = 0 :=
   sSup_of_not_bddAbove hf
 #align real.supr_of_not_bdd_above Real.iSup_of_not_bddAbove
 
@@ -830,12 +827,12 @@ theorem sSup_univ : sSup (@Set.univ ℝ) = 0 :=
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 #align real.Inf_empty Real.sInf_empty
 
-theorem ciInf_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : (⨅ i, f i) = 0 := by
+theorem ciInf_empty {α : Sort _} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
   rw [iInf_of_empty', sInf_empty]
 #align real.cinfi_empty Real.ciInf_empty
 
 @[simp]
-theorem ciInf_const_zero {α : Sort _} : (⨅ _ : α, (0 : ℝ)) = 0 := by
+theorem ciInf_const_zero {α : Sort _} : ⨅ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
   · exact Real.ciInf_empty _
   · exact ciInf_const
@@ -846,7 +843,7 @@ theorem sInf_of_not_bddBelow {s : Set ℝ} (hs : ¬BddBelow s) : sInf s = 0 :=
 #align real.Inf_of_not_bdd_below Real.sInf_of_not_bddBelow
 
 theorem iInf_of_not_bddBelow {α : Sort _} {f : α → ℝ} (hf : ¬BddBelow (Set.range f)) :
-    (⨅ i, f i) = 0 :=
+    ⨅ i, f i = 0 :=
   sInf_of_not_bddBelow hf
 #align real.infi_of_not_bdd_below Real.iInf_of_not_bddBelow
 
@@ -879,7 +876,7 @@ protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (h
 #align real.Sup_le Real.sSup_le
 
 protected theorem iSup_le {ι : Sort _} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
-    (⨆ i, f i) ≤ a :=
+    ⨆ i, f i ≤ a :=
   Real.sSup_le (Set.forall_range_iff.2 hS) ha
 #align real.supr_le Real.iSup_le
 

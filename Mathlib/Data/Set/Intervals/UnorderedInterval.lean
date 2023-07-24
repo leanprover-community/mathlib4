@@ -2,14 +2,11 @@
 Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
-
-! This file was ported from Lean 3 source module data.set.intervals.unordered_interval
-! leanprover-community/mathlib commit 4020ddee5b4580a409bfda7d2f42726ce86ae674
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Data.Set.Intervals.Basic
+
+#align_import data.set.intervals.unordered_interval from "leanprover-community/mathlib"@"4020ddee5b4580a409bfda7d2f42726ce86ae674"
 
 /-!
 # Intervals without endpoints ordering

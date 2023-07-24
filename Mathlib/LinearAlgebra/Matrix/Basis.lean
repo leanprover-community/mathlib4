@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.basis
-! leanprover-community/mathlib commit 6c263e4bfc2e6714de30f22178b4d0ca4d149a76
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+#align_import linear_algebra.matrix.basis from "leanprover-community/mathlib"@"6c263e4bfc2e6714de30f22178b4d0ca4d149a76"
 
 /-!
 # Bases and matrices
@@ -117,7 +114,7 @@ theorem toMatrix_isUnitSMul [DecidableEq ι] (e : Basis ι R₂ M₂) {w : ι �
 #align basis.to_matrix_is_unit_smul Basis.toMatrix_isUnitSMul
 
 @[simp]
-theorem sum_toMatrix_smul_self [Fintype ι] : (∑ i : ι, e.toMatrix v i j • e i) = v j := by
+theorem sum_toMatrix_smul_self [Fintype ι] : ∑ i : ι, e.toMatrix v i j • e i = v j := by
   simp_rw [e.toMatrix_apply, e.sum_repr]
 #align basis.sum_to_matrix_smul_self Basis.sum_toMatrix_smul_self
 

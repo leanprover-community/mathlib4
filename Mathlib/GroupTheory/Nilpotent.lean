@@ -2,11 +2,6 @@
 Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
-
-! This file was ported from Lean 3 source module group_theory.nilpotent
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.GroupTheory.Solvable
@@ -14,6 +9,8 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.TFAE
+
+#align_import group_theory.nilpotent from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 
@@ -712,8 +709,7 @@ theorem lowerCentralSeries_prod (n : ℕ) :
     lowerCentralSeries (G₁ × G₂) n = (lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n) := by
   induction' n with n ih
   · simp
-  ·
-    calc
+  · calc
       lowerCentralSeries (G₁ × G₂) n.succ = ⁅lowerCentralSeries (G₁ × G₂) n, ⊤⁆ := rfl
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), ⊤⁆ := by rw [ih]
       _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ :=
@@ -755,8 +751,7 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
-  ·
-    calc
+  · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := (commutator_mono ih (le_refl _))
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]
@@ -790,8 +785,7 @@ theorem lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction' n with n ih
   · simp [pi_top]
-  ·
-    calc
+  · calc
       lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
       _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi_top]

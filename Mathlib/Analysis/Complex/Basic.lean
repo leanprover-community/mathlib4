@@ -2,17 +2,14 @@
 Copyright (c) Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.complex.basic
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Complex.Module
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.IsROrC.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
+
+#align_import analysis.complex.basic from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Normed space structure on `ℂ`.

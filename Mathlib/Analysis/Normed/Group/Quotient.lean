@@ -2,16 +2,13 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Riccardo Brasca
-
-! This file was ported from Lean 3 source module analysis.normed.group.quotient
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+
+#align_import analysis.normed.group.quotient from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # Quotients of seminormed groups
@@ -349,7 +346,7 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
   protected norm : ∀ x, ‖f x‖ = sInf ((fun m => ‖x + m‖) '' f.ker)
 #align normed_add_group_hom.is_quotient NormedAddGroupHom.IsQuotient
 
-/-- Given  `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
+/-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ S`, where,
 `S : AddSubgroup M` is closed, the induced morphism `NormedAddGroupHom (M ⧸ S) N`. -/
 noncomputable def lift {N : Type _} [SeminormedAddCommGroup N] (S : AddSubgroup M)
     (f : NormedAddGroupHom M N) (hf : ∀ s ∈ S, f s = 0) : NormedAddGroupHom (M ⧸ S) N :=

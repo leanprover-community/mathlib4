@@ -2,14 +2,11 @@
 Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
-
-! This file was ported from Lean 3 source module data.set.ncard
-! leanprover-community/mathlib commit 74c2af38a828107941029b03839882c5c6f87a04
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finite.Card
 import Mathlib.Algebra.BigOperators.Finprod
+
+#align_import data.set.ncard from "leanprover-community/mathlib"@"74c2af38a828107941029b03839882c5c6f87a04"
 
 /-!
 # Noncomputable Set Cardinality
@@ -361,10 +358,8 @@ theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
 #align set.ncard_eq_of_bijective Set.ncard_eq_of_bijective
 
 theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
-    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b)
-    (hs : s.Finite := by toFinite_tac) :
+    (h₂ : ∀ a b ha hb, f a ha = f b hb → a = b) (h₃ : ∀ b ∈ t, ∃ a ha, f a ha = b) :
     s.ncard = t.ncard := by
-  classical
   set f' : s → t := fun x ↦ ⟨f x.1 x.2, h₁ _ _⟩
   have hbij : f'.Bijective := by
     constructor
@@ -375,11 +370,7 @@ theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha 
     obtain ⟨a, ha, rfl⟩ := h₃ y hy
     simp only [Subtype.mk.injEq, Subtype.exists]
     exact ⟨_, ha, rfl⟩
-  haveI := hs.to_subtype
-  haveI := @Fintype.ofFinite _ (Finite.ofBijective hbij)
-  haveI := Fintype.ofFinite s
-  convert Fintype.card_of_bijective hbij
-  <;> rw [ncard_def, Nat.card_eq_fintype_card]
+  exact Nat.card_congr (Equiv.ofBijective f' hbij)
 #align set.ncard_congr Set.ncard_congr
 
 theorem ncard_le_ncard_of_injOn {t : Set β} (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj : InjOn f s)
@@ -548,8 +539,7 @@ theorem ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff (hs : s.Finite := by toFinit
     (ht : t.Finite := by toFinite_tac) : s.ncard = t.ncard ↔ (s \ t).ncard = (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_diff_eq_ncard s t hs, ← ncard_inter_add_ncard_diff_eq_ncard t s ht,
     inter_comm, add_right_inj]
-#align set.ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff
-  Set.ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff
+#align set.ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff Set.ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff
 
 theorem ncard_le_ncard_iff_ncard_diff_le_ncard_diff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : s.ncard ≤ t.ncard ↔ (s \ t).ncard ≤ (t \ s).ncard := by
@@ -562,8 +552,7 @@ theorem ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff (hs : s.Finite := by toFinit
     (ht : t.Finite := by toFinite_tac) : s.ncard < t.ncard ↔ (s \ t).ncard < (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_diff_eq_ncard s t hs, ← ncard_inter_add_ncard_diff_eq_ncard t s ht,
     inter_comm, add_lt_add_iff_left]
-#align set.ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff
-  Set.ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff
+#align set.ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff Set.ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff
 
 theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
     (hsc : sᶜ.Finite := by toFinite_tac) : s.ncard + sᶜ.ncard = Nat.card α := by
@@ -650,7 +639,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   cases' t.finite_or_infinite with ht ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ←@Finite.toFinset_subset_toFinset _ _ _ hs ht, ←Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2 ; simp
+    convert Iff.rfl using 2; simp
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
   simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]

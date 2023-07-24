@@ -2,11 +2,6 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, David Loeffler
-
-! This file was ported from Lean 3 source module analysis.fourier.add_circle
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
@@ -17,6 +12,8 @@ import Mathlib.MeasureTheory.Group.Integration
 import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
+
+#align_import analysis.fourier.add_circle from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 
@@ -469,7 +466,7 @@ set_option linter.uppercaseLean3 false in
 /-- **Parseval's identity**: for an `L²` function `f` on `AddCircle T`, the sum of the squared
 norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    (∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2) = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
+    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
   simp_rw [← fourierBasis_repr]
   have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
     apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)

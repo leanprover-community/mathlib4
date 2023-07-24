@@ -69,6 +69,35 @@ example (p q r : Prop) (h : ¬ p = q) (h' : r = q) : p ↔ ¬ r := by tauto
 example (p : Prop) : p → ¬ (p → ¬ p) := by tauto
 example (p : Prop) (em : p ∨ ¬ p) : ¬ (p ↔ ¬ p) := by tauto
 
+-- reported at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20tactic.20bug/near/370505747
+open Classical in
+example (hp : p) (hq : q) : (if p ∧ q then 1 else 0) = 1 := by
+  -- split_ifs creates a hypothesis with a type that's a metavariable
+  split_ifs
+  · rfl
+  · tauto
+
+example (hp : p) (hq : q) (h : ¬ (p ∧ q)) : False := by
+  -- causes `h'` to have a type that's a metavariable:
+  have h' := h
+  clear h
+  tauto
+
+example (p : Prop) (h : False) : p := by
+  -- causes `h'` to have a type that's a metavariable:
+  have h' := h
+  clear h
+  tauto
+
+example (hp : p) (hq : q) : p ∧ q := by
+  -- causes goal to have a type that's a metavariable:
+  suffices h : ?foo by exact h
+  tauto
+
+-- Checking `tauto` can deal with annotations:
+example (hp : ¬ p) (hq : ¬ (q ↔ p) := by sorry) : q := by
+  tauto
+
 example (P : Nat → Prop) (n : Nat) : P n → n = 7 ∨ n = 0 ∨ ¬ (n = 7 ∨ n = 0) ∧ P n :=
 by tauto
 

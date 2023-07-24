@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module order.omega_complete_partial_order
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Hom.Order
 import Mathlib.Data.Nat.Order.Basic
+
+#align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Omega Complete Partial Orders
@@ -316,8 +313,8 @@ theorem eq_of_chain {c : Chain (Part α)} {a b : α} (ha : some a ∈ c) (hb : s
   cases' hb with j hb; replace hb := hb.symm
   rw [eq_some_iff] at ha hb
   cases' le_total i j with hij hji
-  . have := c.monotone hij _ ha; apply mem_unique this hb
-  . have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
+  · have := c.monotone hij _ ha; apply mem_unique this hb
+  · have := c.monotone hji _ hb; apply Eq.symm; apply mem_unique this ha
   --Porting note: Old proof
   -- wlog h : i ≤ j := le_total i j using a b i j, b a j i
   -- rw [eq_some_iff] at ha hb
