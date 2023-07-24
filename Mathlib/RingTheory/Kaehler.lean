@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.IsTensorProduct
 
-#align_import ring_theory.kaehler from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3" -- TODO
+#align_import ring_theory.kaehler from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
 /-!
 # The module of kaehler differentials

@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Ideal.LocalRing
 
-#align_import ring_theory.ideal.cotangent from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a" -- TODO
+#align_import ring_theory.ideal.cotangent from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
 /-!
 # The module `I ⧸ I ^ 2`
