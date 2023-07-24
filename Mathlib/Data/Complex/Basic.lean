@@ -2,13 +2,10 @@
 Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.complex.basic
-! leanprover-community/mathlib commit 31c24aa72e7b3e5ed97a8412470e904f82b81004
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Sqrt
+
+#align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
 /-!
 # The complex numbers
@@ -232,7 +229,7 @@ theorem ofReal_bit0 (r : ℝ) : ((bit0 r : ℝ) : ℂ) = bit0 (r : ℂ)  :=
   ext_iff.2 <| by simp [bit0]
 #align complex.of_real_bit0 Complex.ofReal_bit0
 
-@[simp,  norm_cast]
+@[simp, norm_cast]
 theorem ofReal_bit1 (r : ℝ) : ((bit1 r : ℝ) : ℂ) = bit1 (r : ℂ) :=
   ext_iff.2 <| by simp [bit1]
 #align complex.of_real_bit1 Complex.ofReal_bit1
@@ -919,7 +916,7 @@ example : (Complex.instSMulComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ 
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
-  have : (↑(↑2 : ℝ) : ℂ)  = (2 : ℂ) := by rfl
+  have : (↑(↑2 : ℝ) : ℂ) = (2 : ℂ) := by rfl
   simp only [add_conj, ofReal_mul, ofReal_one, ofReal_bit0, this,
     mul_div_cancel_left (z.re : ℂ) two_ne_zero]
 #align complex.re_eq_add_conj Complex.re_eq_add_conj

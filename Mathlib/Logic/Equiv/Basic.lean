@@ -3,11 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 Ported by: Kevin Buzzard, Ruben Vorster, Scott Morrison, Eric Rodriguez
-
-! This file was ported from Lean 3 source module logic.equiv.basic
-! leanprover-community/mathlib commit cd391184c85986113f8c00844cfe6dda1d34be3d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Prod.Basic
@@ -17,6 +12,8 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
+
+#align_import logic.equiv.basic from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
 
 /-!
 # Equivalence between types
@@ -189,6 +186,11 @@ def punitProd (α) : PUnit × α ≃ α :=
 #align equiv.punit_prod_symm_apply Equiv.punitProd_symm_apply
 #align equiv.punit_prod_apply Equiv.punitProd_apply
 
+/-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
+@[simps]
+def sigmaPUnit (α) : (_ : α) × PUnit ≃ α :=
+  ⟨fun p => p.1, fun a => ⟨a, PUnit.unit⟩, fun ⟨_, PUnit.unit⟩ => rfl, fun _ => rfl⟩
+
 /-- Any `Unique` type is a right identity for type product up to equivalence. -/
 def prodUnique (α β) [Unique β] : α × β ≃ α :=
   ((Equiv.refl α).prodCongr <| equivPUnit.{_,1} β).trans <| prodPUnit α
@@ -228,6 +230,25 @@ theorem uniqueProd_symm_apply [Unique β] (x : α) :
     (uniqueProd α β).symm x = (default, x) :=
   rfl
 #align equiv.unique_prod_symm_apply Equiv.uniqueProd_symm_apply
+
+/-- Any family of `Unique` types is a right identity for dependent type product up to
+equivalence. -/
+def sigmaUnique (α) (β : α → Type _) [∀ a, Unique (β a)] : (a : α) × (β a) ≃ α :=
+  (Equiv.sigmaCongrRight fun a ↦ equivPUnit.{_,1} (β a)).trans <| sigmaPUnit α
+
+@[simp]
+theorem coe_sigmaUnique {β : α → Type _} [∀ a, Unique (β a)] :
+    (⇑(sigmaUnique α β) : (a : α) × (β a) → α) = Sigma.fst :=
+  rfl
+
+theorem sigmaUnique_apply {β : α → Type _} [∀ a, Unique (β a)] (x : (a : α) × β a) :
+    sigmaUnique α β x = x.1 :=
+  rfl
+
+@[simp]
+theorem sigmaUnique_symm_apply {β : α → Type _} [∀ a, Unique (β a)] (x : α) :
+    (sigmaUnique α β).symm x = ⟨x, default⟩ :=
+  rfl
 
 /-- `Empty` type is a right absorbing element for type product up to an equivalence. -/
 def prodEmpty (α) : α × Empty ≃ Empty :=

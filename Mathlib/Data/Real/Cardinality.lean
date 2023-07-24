@@ -2,16 +2,13 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module data.real.cardinality
-! leanprover-community/mathlib commit 7e7aaccf9b0182576cabdde36cf1b5ad3585b70d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.Rat.Denumerable
 import Mathlib.Data.Set.Pointwise.Interval
 import Mathlib.SetTheory.Cardinal.Continuum
+
+#align_import data.real.cardinality from "leanprover-community/mathlib"@"7e7aaccf9b0182576cabdde36cf1b5ad3585b70d"
 
 /-!
 # The cardinality of the reals

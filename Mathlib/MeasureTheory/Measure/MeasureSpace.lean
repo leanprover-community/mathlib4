@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module measure_theory.measure.measure_space
-! leanprover-community/mathlib commit 343e80208d29d2d15f8050b929aa50fe4ce71b55
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.NullMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
+
+#align_import measure_theory.measure.measure_space from "leanprover-community/mathlib"@"343e80208d29d2d15f8050b929aa50fe4ce71b55"
 
 /-!
 # Measure spaces
@@ -91,7 +88,6 @@ The measure is denoted `volume`.
 
 measure, almost everywhere, measure space, completion, null set, null measurable set
 -/
-
 
 noncomputable section
 
@@ -1101,6 +1097,8 @@ theorem measure_univ_ne_zero : μ univ ≠ 0 ↔ μ ≠ 0 :=
   measure_univ_eq_zero.not
 #align measure_theory.measure.measure_univ_ne_zero MeasureTheory.Measure.measure_univ_ne_zero
 
+instance [NeZero μ] : NeZero (μ univ) := ⟨measure_univ_ne_zero.2 <| NeZero.ne μ⟩
+
 @[simp]
 theorem measure_univ_pos : 0 < μ univ ↔ μ ≠ 0 :=
   pos_iff_ne_zero.trans measure_univ_ne_zero
@@ -1676,6 +1674,10 @@ theorem restrict_apply_eq_zero' (hs : MeasurableSet s) : μ.restrict s t = 0 ↔
 theorem restrict_eq_zero : μ.restrict s = 0 ↔ μ s = 0 := by
   rw [← measure_univ_eq_zero, restrict_apply_univ]
 #align measure_theory.measure.restrict_eq_zero MeasureTheory.Measure.restrict_eq_zero
+
+/-- If `μ s ≠ 0`, then `μ.restrict s ≠ 0`, in terms of `NeZero` instances. -/
+instance restrict.neZero [NeZero (μ s)] : NeZero (μ.restrict s) :=
+  ⟨mt restrict_eq_zero.mp <| NeZero.ne _⟩
 
 theorem restrict_zero_set {s : Set α} (h : μ s = 0) : μ.restrict s = 0 :=
   restrict_eq_zero.2 h
@@ -2684,6 +2686,8 @@ theorem ae_neBot : μ.ae.NeBot ↔ μ ≠ 0 :=
   neBot_iff.trans (not_congr ae_eq_bot)
 #align measure_theory.ae_ne_bot MeasureTheory.ae_neBot
 
+instance Measure.ae.neBot [NeZero μ] : μ.ae.NeBot := ae_neBot.2 <| NeZero.ne μ
+
 @[simp]
 theorem ae_zero {_m0 : MeasurableSpace α} : (0 : Measure α).ae = ⊥ :=
   ae_eq_bot.2 rfl
@@ -2911,9 +2915,8 @@ theorem ae_restrict_eq_bot {s} : (μ.restrict s).ae = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero
 #align measure_theory.ae_restrict_eq_bot MeasureTheory.ae_restrict_eq_bot
 
-@[simp default+1] -- Porting note: The priority should be higher than `ae_neBot`.
-theorem ae_restrict_neBot {s} : (μ.restrict s).ae.NeBot ↔ 0 < μ s :=
-  neBot_iff.trans <| (not_congr ae_restrict_eq_bot).trans pos_iff_ne_zero.symm
+theorem ae_restrict_neBot {s} : (μ.restrict s).ae.NeBot ↔ μ s ≠ 0 :=
+  neBot_iff.trans ae_restrict_eq_bot.not
 #align measure_theory.ae_restrict_ne_bot MeasureTheory.ae_restrict_neBot
 
 theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ (μ.restrict s).ae := by
@@ -3213,8 +3216,11 @@ theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ]
   mt measure_univ_eq_zero.2 <| by simp [measure_univ]
 #align measure_theory.is_probability_measure.ne_zero MeasureTheory.IsProbabilityMeasure.ne_zero
 
-instance (priority := 200) IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot μ.ae :=
-  MeasureTheory.ae_neBot.2 (IsProbabilityMeasure.ne_zero μ)
+instance (priority := 100) IsProbabilityMeasure.neZero (μ : Measure α) [IsProbabilityMeasure μ] :
+    NeZero μ := ⟨IsProbabilityMeasure.ne_zero μ⟩
+
+-- Porting note: no longer an `instance` because `inferInstance` can find it now
+theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot μ.ae := inferInstance
 #align measure_theory.is_probability_measure.ae_ne_bot MeasureTheory.IsProbabilityMeasure.ae_neBot
 
 instance Measure.dirac.isProbabilityMeasure [MeasurableSpace α] {x : α} :
@@ -3230,13 +3236,11 @@ theorem prob_le_one [IsProbabilityMeasure μ] : μ s ≤ 1 :=
   (measure_mono <| Set.subset_univ _).trans_eq measure_univ
 #align measure_theory.prob_le_one MeasureTheory.prob_le_one
 
-theorem isProbabilityMeasureSmul [IsFiniteMeasure μ] (h : μ ≠ 0) :
-    IsProbabilityMeasure ((μ univ)⁻¹ • μ) := by
-  constructor
-  rw [smul_apply, smul_eq_mul, ENNReal.inv_mul_cancel]
-  · rwa [Ne, measure_univ_eq_zero]
-  · exact measure_ne_top _ _
-#align measure_theory.is_probability_measure_smul MeasureTheory.isProbabilityMeasureSmul
+-- porting note: made an `instance`, using `NeZero`
+instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
+    IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
+  ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
+#align measure_theory.is_probability_measure_smul MeasureTheory.isProbabilityMeasureSMulₓ
 
 theorem isProbabilityMeasure_map [IsProbabilityMeasure μ] {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=

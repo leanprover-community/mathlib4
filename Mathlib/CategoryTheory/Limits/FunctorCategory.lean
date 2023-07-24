@@ -2,13 +2,10 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.functor_category
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
+
+#align_import category_theory.limits.functor_category from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # (Co)limits in functor categories.
@@ -109,7 +106,7 @@ it suffices to show that each evaluation cocone is a colimit. In other words, to
 colimiting you can show it's pointwise colimiting.
 -/
 def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
-    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone  c)) : IsColimit c
+    (t : ∀ k : K, IsColimit (((evaluation K C).obj k).mapCocone c)) : IsColimit c
     where
   desc s :=
     { app := fun k => (t k).desc ⟨s.pt.obj k, whiskerRight s.ι ((evaluation K C).obj k)⟩
@@ -152,7 +149,7 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
 
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
-    ((evaluation K C).obj k).mapCocone  (combineCocones F c) ≅ (c k).cocone :=
+    ((evaluation K C).obj k).mapCocone (combineCocones F c) ≅ (c k).cocone :=
   Cocones.ext (Iso.refl _)
 #align category_theory.limits.evaluate_combined_cocones CategoryTheory.Limits.evaluateCombinedCocones
 
@@ -196,7 +193,7 @@ instance evaluationPreservesLimitsOfShape [HasLimitsOfShape J C] (k : K) :
     PreservesLimitsOfShape J ((evaluation K C).obj k) where
   preservesLimit {F} := by
     -- Porting note: added a let because X was not inferred
-    let X : (k:K)  → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
+    let X : (k:K) → LimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
       fun k => getLimitCone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     exact preservesLimitOfPreservesLimitCone (combinedIsLimit _ _) <|
       IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
@@ -259,7 +256,7 @@ instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     PreservesColimitsOfShape J ((evaluation K C).obj k) where
   preservesColimit {F} := by
     -- Porting note: added a let because X was not inferred
-    let X : (k:K)  → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
+    let X : (k:K) → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
     refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
@@ -333,7 +330,7 @@ def preservesLimitOfEvaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     apply evaluationJointlyReflectsLimits
     intro X
     haveI := H X
-    change IsLimit ((F ⋙  (evaluation K C).obj X).mapCone c)
+    change IsLimit ((F ⋙ (evaluation K C).obj X).mapCone c)
     exact PreservesLimit.preserves hc⟩
 #align category_theory.limits.preserves_limit_of_evaluation CategoryTheory.Limits.preservesLimitOfEvaluation
 

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module wiedijk_100_theorems.cubing_a_cube
-! leanprover-community/mathlib commit 5563b1b49e86e135e8c7b556da5ad2f5ff881cad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Intervals.Disjoint
+
+#align_import wiedijk_100_theorems.cubing_a_cube from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 Proof that a cube (in dimension n ≥ 3) cannot be cubed:
