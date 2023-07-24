@@ -110,7 +110,6 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ
   simp_rw [T_map_restr, T_map]
   split_ifs with h1
   · simp_all
-    simp_rw [card_erase_of_mem h1]
     apply And.intro
     · simp
       exact le_trans h (le_succ k)
@@ -134,23 +133,6 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     simp_all
   · simp at h3
 
-/-- There surely must be an easier way to show this one... -/
-theorem Nat.sub_add {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) : c - b + a = c - (b - a) := by
-  have h1 (n : ℕ) := sub_succ c (c - (b - n))
-  have h2 (n : ℕ) := Nat.sub_sub_self (le_trans (sub_le b n) hbc)
-  have h3 (m n : ℕ) (h : succ m ≤ n) : (m < n) := Nat.lt_of_lt_of_le (lt_succ.mpr (le_refl m)) h
-  have h4 (m n : ℕ) (hm : m > 0) (hn : n > 0) : succ (n - m) ≤ n := Nat.sub_lt_sub_left hn hm
-  have h5 (m n : ℕ) (hmn : succ m ≤ n) := Nat.sub_pos_of_lt (h3 m n hmn)
-  have h6 (l m n : ℕ) (hlm : succ l ≤ m) (hmn : m ≤ n) :=
-    Nat.sub_sub_self (le_trans (h4 (m - l) n (h5 l m hlm)
-      (Nat.lt_of_lt_of_le succ_pos' (le_trans hlm hmn))) (le_refl n))
-  induction a with
-  | zero => simp
-  | succ a ih =>
-    have h := h1 a
-    rw [h2 a] at h
-    rw [add_succ, sub_succ, ← h, h6 a b c hab hbc, ih (le_trans (le_succ a) hab)]
-
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
   simp_rw [T_map_restr, T_map, weight]
@@ -167,7 +149,7 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       · use t.snd
         apply h1
       exact lt_iff_add_one_le.mp (card_pos.mpr h4)
-    rw [Nat.sub_add h3 h.right.left,
+    rw [← tsub_tsub_assoc h.right.left h3,
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
       Nat.sub_add_cancel]
     simp
@@ -209,8 +191,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     simp_rw [pairs, mem_filter, pairs_pred]
     simp_all
     apply And.intro
-    · simp_rw [le_iff_lt_or_eq]
-      right
+    · refine le_of_eq ?h.mpr.left.p
       exact mem_powerset_len_univ_iff.mp hpr.1
     · exact mem_powerset_len_univ_iff.mp hpr.1
 
@@ -247,7 +228,7 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
         (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
       simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, pairs_pred]
       simp
-      intro x hx y hy xny
+      intro x _ y _ xny
       by_contra neg
       simp at neg
       cases neg with
@@ -266,7 +247,20 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) pdisj
     have disj_equiv : disjiUnion (range k) (fun i ↦ filter (fun t ↦ card t.fst = i) (pairs σ k))
         pdisj = filter (fun t ↦ card t.fst < k) (pairs σ k) := by
-      sorry
+      apply Finset.ext
+      intro a
+      rw [mem_disjiUnion, mem_filter]
+      apply Iff.intro
+      · intro had
+        cases had with
+        | intro a1 ha1 =>
+          rw [mem_filter] at ha1
+          apply And.intro
+          · exact ha1.right.left
+          · rw [ha1.right.right]
+            exact mem_range.mp ha1.left
+      · intro haf
+        sorry
     simp_rw [← hdisj, disj_equiv]
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
