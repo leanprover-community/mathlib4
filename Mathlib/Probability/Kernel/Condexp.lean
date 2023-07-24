@@ -71,7 +71,6 @@ end AuxLemmas
 
 variable {Ω F : Type _} [TopologicalSpace Ω] {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
   [PolishSpace Ω] [BorelSpace Ω] [Nonempty Ω] {μ : Measure Ω} [IsFiniteMeasure μ]
-  [NormedAddCommGroup F] {f : Ω → F}
 
 /-- Kernel associated with the conditional expectation with respect to a σ-algebra. It satisfies
 `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condexpKernel μ m ω)`.
@@ -82,12 +81,20 @@ noncomputable irreducible_def condexpKernel (μ : Measure Ω) [IsFiniteMeasure �
   @condDistrib Ω Ω Ω _ mΩ _ _ _ mΩ m id id μ _
 #align probability_theory.condexp_kernel ProbabilityTheory.condexpKernel
 
+instance : IsMarkovKernel (condexpKernel μ m) := by simp only [condexpKernel]; infer_instance
+
 section Measurability
+
+variable [NormedAddCommGroup F] {f : Ω → F}
 
 theorem measurable_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
     Measurable[m] fun ω => condexpKernel μ m ω s := by
   rw [condexpKernel]; convert measurable_condDistrib (μ := μ) hs; rw [MeasurableSpace.comap_id]
 #align probability_theory.measurable_condexp_kernel ProbabilityTheory.measurable_condexpKernel
+
+theorem stronglyMeasurable_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
+    StronglyMeasurable[m] fun ω => condexpKernel μ m ω s :=
+  Measurable.stronglyMeasurable (measurable_condexpKernel hs)
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel [NormedSpace ℝ F]
     [CompleteSpace F] (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
@@ -109,6 +116,8 @@ theorem aestronglyMeasurable'_integral_condexpKernel [NormedSpace ℝ F] [Comple
 end Measurability
 
 section Integrability
+
+variable [NormedAddCommGroup F] {f : Ω → F}
 
 theorem _root_.MeasureTheory.Integrable.condexpKernel_ae (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
     ∀ᵐ ω ∂μ, Integrable f (condexpKernel μ m ω) := by
@@ -148,9 +157,24 @@ theorem integrable_toReal_condexpKernel (hm : m ≤ mΩ) {s : Set Ω} (hs : Meas
 
 end Integrability
 
+lemma condexpKernel_ae_eq_condexp [IsFiniteMeasure μ]
+    (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
+    (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m⟧ := by
+  have h := condDistrib_ae_eq_condexp (μ := μ) (measurable_id'' hm) measurable_id hs
+  simpa only [condexpKernel, preimage_id_eq, id_eq, MeasurableSpace.comap_id] using h
+
+lemma condexpKernel_ae_eq_trim_condexp [IsFiniteMeasure μ]
+    (hm : m ≤ mΩ) {s : Set Ω} (hs : MeasurableSet s) :
+    (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ.trim hm] μ⟦s | m⟧ := by
+  rw [ae_eq_trim_iff hm _ stronglyMeasurable_condexp]
+  · exact condexpKernel_ae_eq_condexp hm hs
+  · refine Measurable.stronglyMeasurable ?_
+    exact @Measurable.ennreal_toReal _ m _ (measurable_condexpKernel hs)
+
 /-- The conditional expectation of `f` with respect to a σ-algebra `m` is almost everywhere equal to
 the integral `∫ y, f y ∂(condexpKernel μ m ω)`. -/
-theorem condexp_ae_eq_integral_condexpKernel [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ)
+theorem condexp_ae_eq_integral_condexpKernel [NormedAddCommGroup F] {f : Ω → F}
+    [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ)
     (hf_int : Integrable f μ) : μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condexpKernel μ m ω := by
   have hX : @Measurable Ω Ω mΩ m id := measurable_id.mono le_rfl hm
   rw [condexpKernel]
