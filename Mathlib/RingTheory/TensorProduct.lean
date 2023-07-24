@@ -7,7 +7,7 @@ import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
-#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"69b2e97a276619372b19cf80fc1e91b05ae2baa4"
+#align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
 /-!
 # The tensor product of R-algebras
@@ -413,7 +413,7 @@ theorem mul_assoc' (mul : A ⊗[R] B →ₗ[R] A ⊗[R] B →ₗ[R] A ⊗[R] B)
     simp only [LinearMap.map_add, *, LinearMap.add_apply]
 #align algebra.tensor_product.mul_assoc' Algebra.TensorProduct.mul_assoc'
 
-nonrec theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
+protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) :=
   mul_assoc' mul
     (by
       intros
@@ -421,11 +421,11 @@ nonrec theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z
     x y z
 #align algebra.tensor_product.mul_assoc Algebra.TensorProduct.mul_assoc
 
-theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
+protected theorem one_mul (x : A ⊗[R] B) : mul (1 ⊗ₜ 1) x = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.one_mul Algebra.TensorProduct.one_mul
 
-theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
+protected theorem mul_one (x : A ⊗[R] B) : mul x (1 ⊗ₜ 1) = x := by
   refine TensorProduct.induction_on x ?_ ?_ ?_ <;> simp (config := { contextual := true })
 #align algebra.tensor_product.mul_one Algebra.TensorProduct.mul_one
 
@@ -443,9 +443,9 @@ instance : Semiring (A ⊗[R] B) :=
     add := (· + ·)
     one := 1
     mul := fun a b => mul a b
-    one_mul := one_mul
-    mul_one := mul_one
-    mul_assoc := mul_assoc
+    one_mul := Algebra.TensorProduct.one_mul
+    mul_one := Algebra.TensorProduct.mul_one
+    mul_assoc := Algebra.TensorProduct.mul_assoc
     add_assoc := add_assoc
     zero_add := zero_add
     add_zero := add_zero
@@ -486,31 +486,52 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
   map_mul' := by simp
 #align algebra.tensor_product.include_left_ring_hom Algebra.TensorProduct.includeLeftRingHom
 
-variable {S : Type _} [CommSemiring S] [Algebra S A]
+variable {S : Type _}
+
+-- we want `isScalarTower_right` to take priority since it's better for unification elsewhere
+instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
+    [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
+  smul_assoc r x y := by
+    change r • x * y = r • (x * y)
+    apply TensorProduct.induction_on y
+    · simp [smul_zero]
+    · apply TensorProduct.induction_on x
+      · simp [smul_zero]
+      · intro a b a' b'
+        dsimp
+        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
+      · intros; simp [smul_add, add_mul, *]
+    · intros; simp [smul_add, mul_add, *]
+#align algebra.tensor_product.is_scalar_tower_right Algebra.TensorProduct.isScalarTower_right
+
+-- we want `Algebra.to_smulCommClass` to take priority since it's better for unification elsewhere
+instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
+    [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
+  smul_comm r x y := by
+    change r • (x * y) = x * r • y
+    apply TensorProduct.induction_on y
+    · simp [smul_zero]
+    · apply TensorProduct.induction_on x
+      · simp [smul_zero]
+      · intro a b a' b'
+        dsimp
+        rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
+      · intros; simp [smul_add, add_mul, *]
+    · intros; simp [smul_add, mul_add, *]
+#align algebra.tensor_product.smul_comm_class_right Algebra.TensorProduct.sMulCommClass_right
+
+variable [CommSemiring S] [Algebra S A]
 
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { TensorProduct.includeLeftRingHom.comp (algebraMap S A),
     (by infer_instance : Module S (A ⊗[R] B)) with
     commutes' := fun r x => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp
-      · intro a b
-        dsimp
-        rw [Algebra.commutes, _root_.mul_one, _root_.one_mul]
-      · intro y y' h h'
-        dsimp at h h' ⊢
-        rw [mul_add, add_mul,h, h'] -- porting note: was `simp [mul_add...]` but this
-        -- no longer works for some reason
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, include_left_ring_hom_apply]
+      rw [algebra_map_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
+        one_mul]
     smul_def' := fun r x => by
-      refine TensorProduct.induction_on x ?_ ?_ ?_
-      · simp [smul_zero]
-      · intro a b
-        dsimp
-        rw [TensorProduct.smul_tmul', Algebra.smul_def r a, _root_.one_mul]
-      · intros
-        dsimp
-        rw [smul_add, mul_add] -- porting note: these were in the `simp` call in lean 3
-        simp [*] }
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, include_left_ring_hom_apply]
+      rw [algebra_map_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul] }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
 
 -- This is for the `undergrad.yaml` list.
