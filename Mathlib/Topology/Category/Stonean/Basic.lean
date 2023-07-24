@@ -15,7 +15,8 @@ This file develops some of the basic theory of extremally disconnected sets.
 ## Overview
 
 This file defines the type `Stonean` of all extremally (note: not "extremely"!)
-disconnected compact Hausdorff spaces, and gives it the structure of a large category.
+disconnected compact Hausdorff spaces, gives it the structure of a large category,
+and proves some basic observations about this category and various functors from it.
 
 The Lean implementation: a term of type `Stonean` is a pair, considering of
 a term of type `CompHaus` (i.e. a compact Hausdorff topological space) plus
@@ -23,10 +24,6 @@ a proof that the space is extremally disconnected.
 This is equivalent to the assertion that the term is projective in `CompHaus`,
 in the sense of category theory (i.e., such that morphisms out of the object
 can be lifted along epimorphisms).
-
-This file defines the type of all Stonean spaces, gives it the
-structure of a large category, and proves some basic observations about this
-category and various functors from it.
 
 ## Main definitions
 
@@ -49,31 +46,32 @@ structure Stonean where
 
 namespace CompHaus
 
+/-- `Projective` implies `ExtremallyDisconnected`. -/
+instance (X : CompHaus.{u}) [Projective X] : ExtremallyDisconnected X := by
+  apply CompactT2.Projective.extremallyDisconnected
+  intro A B _ _ _ _ _ _ f g hf hg hsurj
+  have : CompactSpace (TopCat.of A) := by assumption
+  have : T2Space (TopCat.of A) := by assumption
+  have : CompactSpace (TopCat.of B) := by assumption
+  have : T2Space (TopCat.of B) := by assumption
+  let A' : CompHaus := ⟨TopCat.of A⟩
+  let B' : CompHaus := ⟨TopCat.of B⟩
+  let f' : X ⟶ B' := ⟨f, hf⟩
+  let g' : A' ⟶ B' := ⟨g,hg⟩
+  have : Epi g' := by
+    rw [CompHaus.epi_iff_surjective]
+    assumption
+  obtain ⟨h,hh⟩ := Projective.factors f' g'
+  refine ⟨h,h.2,?_⟩
+  ext t
+  apply_fun (fun e => e t) at hh
+  exact hh
+
 /-- `Projective` implies `Stonean`. -/
 @[simps!]
 def toStonean (X : CompHaus.{u}) [Projective X] :
     Stonean where
   compHaus := X
-  extrDisc := by
-    apply CompactT2.Projective.extremallyDisconnected
-    intro A B _ _ _ _ _ _ f g hf hg hsurj
-    have : CompactSpace (TopCat.of A) := by assumption
-    have : T2Space (TopCat.of A) := by assumption
-    have : CompactSpace (TopCat.of B) := by assumption
-    have : T2Space (TopCat.of B) := by assumption
-    let A' : CompHaus := ⟨TopCat.of A⟩
-    let B' : CompHaus := ⟨TopCat.of B⟩
-    let f' : X ⟶ B' := ⟨f, hf⟩
-    let g' : A' ⟶ B' := ⟨g,hg⟩
-    have : Epi g' := by
-      rw [CompHaus.epi_iff_surjective]
-      assumption
-    obtain ⟨h,hh⟩ := Projective.factors f' g'
-    refine ⟨h,h.2,?_⟩
-    ext t
-    apply_fun (fun e => e t) at hh
-    exact hh
-
 
 end CompHaus
 
