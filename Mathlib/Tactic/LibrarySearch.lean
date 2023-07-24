@@ -137,7 +137,7 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     | .none => pure lem
     | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
-    let newGoals ← goal.apply lem
+    let newGoals ← goal.apply lem { allowSynthFailures := true }
     try
       let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
       pure (← getMCtx, subgoals)
