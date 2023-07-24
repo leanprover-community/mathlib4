@@ -92,14 +92,14 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type _) [
 -/
 
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
-def pairs_pred (k : ℕ) (t : Finset σ × σ) := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
+def PairsPred (k : ℕ) (t : Finset σ × σ) : Prop := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
 
 def pairs (σ : Type _) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
-  Finset.univ.filter (pairs_pred σ k)
+  Finset.univ.filter (PairsPred σ k)
 
 def card_eq_if_not_lt (t : Finset σ × σ) (ht : t ∈ pairs σ k) (hnlt : ¬card t.fst < k) :
     card t.fst = k := by
-  simp_rw [pairs, mem_filter, pairs_pred] at ht
+  simp_rw [pairs, mem_filter, PairsPred] at ht
   exact Or.resolve_right (le_iff_eq_or_lt.mp ht.2.1) hnlt
 
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
@@ -112,7 +112,7 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
-  rw [pairs, mem_filter, pairs_pred] at *
+  rw [pairs, mem_filter, PairsPred] at *
   simp_rw [T_map_restr, T_map]
   split_ifs with h1
   · simp_all
@@ -141,7 +141,7 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
   simp_rw [T_map_restr, T_map, weight]
-  simp_rw [pairs, mem_filter, pairs_pred] at h
+  simp_rw [pairs, mem_filter, PairsPred] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
   · rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
   split_ifs with h1
@@ -189,7 +189,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
   apply sum_finset_product
   simp_all
   intro p b
-  simp_rw [pairs, mem_filter, pairs_pred]
+  simp_rw [pairs, mem_filter, PairsPred]
   simp_all
   apply Iff.intro
   · intro hpl
@@ -210,7 +210,7 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
   · intro hpl
     exact mem_powerset_len_univ_iff.mpr hpl.2
   · intro hpr
-    simp_rw [pairs, mem_filter, pairs_pred]
+    simp_rw [pairs, mem_filter, PairsPred]
     simp_all
     apply And.intro
     · apply And.intro
@@ -229,7 +229,7 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     simp_rw [← sum_congr rfl equiv_i]
     have pdisj : Set.PairwiseDisjoint (range k)
         (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
-      simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, pairs_pred]
+      simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred]
       simp
       intro x _ y _ xny
       by_contra neg
@@ -278,7 +278,7 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
 
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
-  simp_all [← filter_or, Finset.ext_iff, pairs, pairs_pred]
+  simp_all [← filter_or, Finset.ext_iff, pairs, PairsPred]
   intro a b ab _
   exact lt_or_eq_of_le ab
 
