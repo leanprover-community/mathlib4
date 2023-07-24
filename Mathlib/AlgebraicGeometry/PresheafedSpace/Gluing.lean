@@ -192,15 +192,15 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     congr
     have := (𝖣.t_fac k i j).symm
     rw [←IsIso.inv_comp_eq] at this
-    replace this := (congr_arg ((PresheafedSpace.Hom.base .)) this).symm
-    replace this := congr_arg (ContinuousMap.toFun .) this
+    replace this := (congr_arg ((PresheafedSpace.Hom.base ·)) this).symm
+    replace this := congr_arg (ContinuousMap.toFun ·) this
     dsimp at this
     rw [coe_comp, coe_comp] at this
     rw [this, Set.image_comp, Set.image_comp, Set.preimage_image_eq]
     swap
     · refine Function.HasLeftInverse.injective ⟨(D.t i k).base, fun x => ?_⟩
       rw [←comp_apply, ←comp_base, D.t_inv, id_base, id_apply]
-    refine congr_arg (_ '' .) ?_
+    refine congr_arg (_ '' ·) ?_
     refine congr_fun ?_ _
     refine Set.image_eq_preimage_of_inverse ?_ ?_
     · intro x
@@ -258,7 +258,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   · refine' Eq.trans (D.toTopGlueData.preimage_image_eq_image' _ _ _) _
     dsimp
     rw [coe_comp, Set.image_comp]
-    refine congr_arg (_ '' .) ?_
+    refine congr_arg (_ '' ·) ?_
     rw [Set.eq_preimage_iff_image_eq, ← Set.image_comp]
     swap
     · apply CategoryTheory.ConcreteCategory.bijective_of_isIso
@@ -315,7 +315,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
         (π₂⁻¹ j, i, k) (unop _) ≫
           (D.V (j, k)).presheaf.map
             (eqToHom (opensImagePreimageMap_app' D i j k U).choose) ≫ f' := by
-  simpa only [Category.assoc] using congr_arg (. ≫ f') (opensImagePreimageMap_app D i j k U)
+  simpa only [Category.assoc] using congr_arg (· ≫ f') (opensImagePreimageMap_app D i j k U)
 #align algebraic_geometry.PresheafedSpace.glue_data.opens_image_preimage_map_app_assoc AlgebraicGeometry.PresheafedSpace.GlueData.opensImagePreimageMap_app_assoc
 
 /-- (Implementation) Given an open subset of one of the spaces `U ⊆ Uᵢ`, the sheaf component of
@@ -345,9 +345,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note : used to be `congr 3`
-    refine congr_arg (. ⁻¹' _) ?_
-    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) .) ?_
-    refine congr_arg (PresheafedSpace.Hom.base (C := C) .) ?_
+    refine congr_arg (· ⁻¹' _) ?_
+    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
+    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app_π_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvAppπApp
@@ -406,7 +406,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
             repeat' erw [← (D.V (j, k)).presheaf.map_comp]
             -- Porting note : was just `congr`
-            exact congr_arg ((D.V (j, k)).presheaf.map .) rfl } }
+            exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
 #align algebraic_geometry.PresheafedSpace.glue_data.ι_inv_app AlgebraicGeometry.PresheafedSpace.GlueData.ιInvApp
 
 /-- `ιInvApp` is the left inverse of `D.ι i` on `U`. -/
