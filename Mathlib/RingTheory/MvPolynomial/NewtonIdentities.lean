@@ -178,8 +178,8 @@ theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
     (h1 : weight σ R k t ≠ 0) : T_map_restr σ t h ≠ t :=
   mt (weight_zero_for_fixed_by_T' σ R t h) h1
 
-theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
-  exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
+theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
+  sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
     (T_map_pair σ) (T_map_invol σ)
 
 open Classical in
