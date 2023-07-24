@@ -56,7 +56,11 @@ theorem commProb_pi (i : α → Type _) [Fintype α] [∀ a, Mul (i a)] :
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
-instance [Infinite M] : Infinite { p : M × M // p.1 * p.2 = p.2 * p.1 } :=
+theorem commProb_function [Fintype α] [Mul β] :
+    commProb (α → β) = (commProb β) ^ Fintype.card α := by
+  rw [commProb_pi, Finset.prod_const, Finset.card_univ]
+
+instance commProbInfinite [Infinite M] : Infinite { p : M × M // p.1 * p.2 = p.2 * p.1 } :=
   Infinite.of_injective (fun m => ⟨⟨m, m⟩, rfl⟩) (by intro; simp)
 
 theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
