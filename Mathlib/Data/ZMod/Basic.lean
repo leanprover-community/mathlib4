@@ -788,31 +788,6 @@ instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
 #align zmod.subsingleton_units ZMod.subsingleton_units
 
-theorem le_div_two_iff_lt_neg (n : ℕ) [hn : Fact ((n : ℕ) % 2 = 1)] {x : ZMod n} (hx0 : x ≠ 0) :
-    x.val ≤ (n / 2 : ℕ) ↔ (n / 2 : ℕ) < (-x).val := by
-  haveI npos : NeZero n :=
-    ⟨by
-      rintro rfl
-      simp [fact_iff] at hn⟩
-  have _hn2 : (n : ℕ) / 2 < n :=
-    Nat.div_lt_of_lt_mul ((lt_mul_iff_one_lt_left <| NeZero.pos n).2 (by decide))
-  have hn2' : (n : ℕ) - n / 2 = n / 2 + 1 := by
-    conv =>
-      lhs
-      congr
-      rw [← Nat.succ_sub_one n, Nat.succ_sub <| NeZero.pos n]
-    rw [← Nat.two_mul_odd_div_two hn.1, two_mul, ← Nat.succ_add, add_tsub_cancel_right]
-  have hxn : (n : ℕ) - x.val < n := by
-    rw [tsub_lt_iff_tsub_lt x.val_le le_rfl, tsub_self]
-    rw [← ZMod.nat_cast_zmod_val x] at hx0
-    exact Nat.pos_of_ne_zero fun h => by simp [h] at hx0
-  · conv =>
-      rhs
-      rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← hn2', ← zero_add (-x), ← ZMod.nat_cast_self, ←
-        sub_eq_add_neg, ← ZMod.nat_cast_zmod_val x, ← Nat.cast_sub x.val_le, ZMod.val_nat_cast,
-        Nat.mod_eq_of_lt hxn, tsub_le_tsub_iff_left x.val_le]
-#align zmod.le_div_two_iff_lt_neg ZMod.le_div_two_iff_lt_neg
-
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : ¬ 2 ∣ n) {a : ZMod n} :
     a + a = 0 ↔ a = 0 := by
