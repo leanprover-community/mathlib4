@@ -311,6 +311,8 @@ theorem esymm_mult_psum_to_weight (k : ℕ) :
     ∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), weight σ R k t := by
   simp_rw [← sum_congr rfl (esymm_mult_psum_summand_to_weight σ R k), sum_equiv_lt_k σ R k]
 
+/-- Newton's identities give a recurrence relation for the kth elementary symmetric polynomial
+in terms of lower degree elementary symmetric polynomials and power sums. -/
 theorem NewtonIdentity (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
     ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0 := by
   simp_all [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k, ← mul_assoc, ← pow_add,
