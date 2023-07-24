@@ -24,49 +24,43 @@ open scoped Topology
 
 open scoped Topology Manifold Classical Filter BigOperators
 
-
-lemma zoug {α : Type _} [MetricSpace α] [LocallyCompactSpace α] {s : Set α} (hs : IsCompact α) :
-    ∃ δ > 0, IsCompact (cthickening δ s) := by
-
-
-
 variable {ι : Type _} {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [FiniteDimensional ℝ E] {F : Type _} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {H : Type _}
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type _} [TopologicalSpace M]
   [ChartedSpace H M] [SmoothManifoldWithCorners I M] [MeasurableSpace M] [BorelSpace M]
-  [SigmaCompactSpace M] [T2Space M]
+  [SigmaCompactSpace M] [T2Space M] {f f' : M → F} {μ : Measure M}
 
 /-- If a locally integrable function `f` has zero integral when multiplied by any smooth compactly
 supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_smul_contDiff_eq_zero
-    {f : M → F} {μ : Measure M}
-    (hf : LocallyIntegrable f μ)
+theorem ae_eq_zero_of_integral_smul_smooth_eq_zero (hf : LocallyIntegrable f μ)
     (h : ∀ (g : M → ℝ), Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
   -- it suffices to show that the integral of the function vanishes on any compact set `s`
   apply ae_eq_zero_of_forall_set_integral_isCompact_eq_zero' hf (fun s hs ↦ Eq.symm ?_)
+  have := I.locally_compact
+  have := ChartedSpace.locallyCompact H M
+  have := I.secondCountableTopology
+  have := ChartedSpace.secondCountable_of_sigma_compact H M
+  have : MetrizableSpace M := ManifoldWithCorners.metrizableSpace I M
+  let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ IsCompact (cthickening δ s) := hs.exists_isCompact_cthickening
   -- choose a sequence of smooth functions `g n` equal to `1` on `s` and vanishing outside of the
   -- `u n`-neighborhood of `s`, where `u n` tends to zero. Then each integral `∫ gₙ f` vanishes,
   -- and by dominated convergence these integrals converge to `∫ x in s, f`.
-  obtain ⟨u, u_anti, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
-    ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ)
-  have : MetrizableSpace M := ManifoldWithCorners.metrizableSpace I M
-  let _ : MetricSpace M := TopologicalSpace.metrizableSpaceMetric M
+  obtain ⟨u, u_anti, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), u n ∈ Ioo 0 δ)
+    ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto' δpos
   let v : ℕ → Set M := fun n ↦ thickening (u n) s
-  obtain ⟨K, K_compact, vK⟩ : ∃ K, IsCompact K ∧ ∀ n, v n ⊆ K := by
-    refine' ⟨closure (v 0), _, fun n ↦ _⟩
-    · apply isCompact_of_isClosed_bounded -- isClosed_cthickening hs.bounded.cthickening
-    · apply Set.Subset.trans ?_ (subset_closure)
-      exact thickening_mono (u_anti.antitone (zero_le n)) _
-  have : ∀ n, ∃ (g : E → ℝ), support g = v n ∧ ContDiff ℝ ⊤ g ∧ Set.range g ⊆ Set.Icc 0 1
-          ∧ ∀ x ∈ s, g x = 1 := fun n ↦ isOpen_thickening.exists_smooth_support_eq_eq_one
+  obtain ⟨K, K_compact, vK⟩ : ∃ K, IsCompact K ∧ ∀ n, v n ⊆ K :=
+    ⟨_, hδ, fun n ↦ thickening_subset_cthickening_of_le (u_pos n).2.le _⟩
+  have : ∀ n, ∃ (g : M → ℝ), support g = v n ∧ Smooth I 𝓘(ℝ) g ∧ Set.range g ⊆ Set.Icc 0 1
+          ∧ ∀ x ∈ s, g x = 1 := sorry -- fun n ↦ isOpen_thickening.exists_smooth_support_eq_eq_one
     hs.isClosed (self_subset_thickening (u_pos n) s)
   choose g g_supp g_diff g_range hg using this
   -- main fact: the integral of `∫ gₙ f` tends to `∫ x in s, f`.
   have L : Tendsto (fun n ↦ ∫ x, g n x • f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) := by
     rw [← integral_indicator hs.measurableSet]
-    let bound : E → ℝ := K.indicator (fun x ↦ ‖f x‖)
+    let bound : M → ℝ := K.indicator (fun x ↦ ‖f x‖)
     have A : ∀ n, AEStronglyMeasurable (fun x ↦ g n x • f x) μ :=
       fun n ↦ (g_diff n).continuous.aestronglyMeasurable.smul hf.aestronglyMeasurable
     have B : Integrable bound μ := by
@@ -111,11 +105,11 @@ theorem ae_eq_zero_of_integral_smul_contDiff_eq_zero
 /-- If two locally integrable functions have the same integral when multiplied by any
 smooth compactly supported function, then they coincide almost everywhere. -/
 theorem ae_eq_of_integral_smul_contDiff_eq
-    (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : E → ℝ),
-      ContDiff ℝ ⊤ g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
+    (hf : LocallyIntegrable f μ) (hf' : LocallyIntegrable f' μ) (h : ∀ (g : M → ℝ),
+      Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = ∫ x, g x • f' x ∂μ) :
     ∀ᵐ x ∂μ, f x = f' x := by
   have : ∀ᵐ x ∂μ, (f - f') x = 0 := by
-    apply ae_eq_zero_of_integral_smul_contDiff_eq_zero (hf.sub hf')
+    apply ae_eq_zero_of_integral_smul_smooth_eq_zero I (hf.sub hf')
     intro g g_diff g_supp
     simp only [Pi.sub_apply, smul_sub]
     rw [integral_sub, sub_eq_zero]
