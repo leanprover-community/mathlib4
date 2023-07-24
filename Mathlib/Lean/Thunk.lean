@@ -6,6 +6,10 @@ Authors: Simon Hudon
 import Mathlib.Mathport.Rename
 import Std.Tactic.Ext
 
+/-!
+# Basic facts about `Thunk`.
+-/
+
 namespace Thunk
 
 #align thunk.mk Thunk.mk
