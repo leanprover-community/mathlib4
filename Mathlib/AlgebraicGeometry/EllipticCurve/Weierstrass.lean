@@ -1079,7 +1079,7 @@ lemma ofJ_j : (ofJ j).j = j := by
         @ofJ'_j _ _ _ (invertibleOfNonzero h0) (invertibleOfNonzero <| sub_ne_zero_of_ne h1728)]
 
 instance instInhabitedEllipticCurve : Inhabited <| EllipticCurve F :=
-  ⟨ofJ 42⟩
+  ⟨ofJ 37⟩
 #align elliptic_curve.inhabited EllipticCurve.instInhabitedEllipticCurve
 
 end ModelsWithJ
