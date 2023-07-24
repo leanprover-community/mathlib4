@@ -291,7 +291,7 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
   simp
   use k
 
-theorem esymm_mult_psum_summand_to_weight (k i : ℕ) (h : i ∈ range k) :
+theorem esymm_mult_psum_summand_to_weight (k i : ℕ) (_ : i ∈ range k) :
     ∑ A in powersetLen i univ, ∑ j in univ, weight σ R k (A, j) =
     (-1) ^ i * esymm σ R i * psum σ R (k - i) := by
   simp_rw [esymm, psum, weight, ← mul_assoc, mul_sum]
