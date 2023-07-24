@@ -41,6 +41,27 @@ theorem commProb_def :
   rfl
 #align comm_prob_def commProb_def
 
+theorem commProb_prod (M' : Type _) [Mul M'] : commProb (M × M') = commProb M * commProb M' := by
+  simp_rw [commProb_def, div_mul_div_comm, Nat.card_prod, Nat.cast_mul, mul_pow, ←Nat.cast_mul,
+    ←Nat.card_prod, Prod.ext_iff]
+  congr 2
+  exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
+    fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
+
+theorem commProb_pi (i : α → Type _) [Fintype α] [∀ a, Mul (i a)] :
+    commProb (∀ a, i a) = ∏ a, commProb (i a) := by
+  simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ←Nat.cast_prod,
+    ←Nat.card_pi, Function.funext_iff]
+  congr 2
+  exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
+    fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
+
+instance [Infinite M] : Infinite { p : M × M // p.1 * p.2 = p.2 * p.1 } :=
+  Infinite.of_injective (fun m => ⟨⟨m, m⟩, rfl⟩) (by intro; simp)
+
+theorem commProb_eq_zero_of_infinite [Infinite M] : commProb M = 0 :=
+  div_eq_zero_iff.2 (Or.inl (Nat.cast_eq_zero.2 Nat.card_eq_zero_of_infinite))
+
 variable [Finite M]
 
 theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
