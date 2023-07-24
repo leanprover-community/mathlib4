@@ -80,9 +80,9 @@ theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := by
 
 end PowerSum
 
-section Newton
+namespace Newton
 
-open Classical Finset Nat
+open Finset Nat
 
 variable (σ : Type _) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type _) [CommRing R]
   [NoZeroDivisors (MvPolynomial σ R)] [CharZero (MvPolynomial σ R)]
@@ -94,9 +94,11 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type _) [
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
 def PairsPred (k : ℕ) (t : Finset σ × σ) : Prop := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
 
+open Classical in
 def pairs (σ : Type _) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (PairsPred σ k)
 
+open Classical in
 def card_eq_if_not_lt (t : Finset σ × σ) (ht : t ∈ pairs σ k) (hnlt : ¬card t.fst < k) :
     card t.fst = k := by
   simp_rw [pairs, mem_filter, PairsPred] at ht
@@ -111,6 +113,7 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 /-- Needed for `Finset.sum_involution` -/
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
+open Classical in
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
   rw [pairs, mem_filter, PairsPred] at *
   simp_rw [T_map_restr, T_map]
@@ -138,6 +141,7 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     simp_all
   · simp at h3
 
+open Classical in
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
   simp_rw [T_map_restr, T_map, weight]
@@ -183,6 +187,7 @@ theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 := by
   exact sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
     (T_map_pair σ) (T_map_invol σ)
 
+open Classical in
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
@@ -200,6 +205,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     have cardpk := mem_powerset_len_univ_iff.mp hpr.1
     exact And.intro (le_of_eq cardpk) cardpk
 
+open Classical in
 theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
     ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
@@ -276,6 +282,7 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
   rw [h2] at h1
   exact lt_irrefl _ h1
 
+open Classical in
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
   simp_all [← filter_or, Finset.ext_iff, pairs, PairsPred]
@@ -313,7 +320,7 @@ theorem esymm_mult_psum_to_weight (k : ℕ) :
 
 /-- Newton's identities give a recurrence relation for the kth elementary symmetric polynomial
 in terms of lower degree elementary symmetric polynomials and power sums. -/
-theorem NewtonIdentity (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
+theorem esymm_recurrence (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
     ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0 := by
   simp_all [esymm_to_weight σ R k, esymm_mult_psum_to_weight σ R k, ← mul_assoc, ← pow_add,
     Even.neg_one_pow]
