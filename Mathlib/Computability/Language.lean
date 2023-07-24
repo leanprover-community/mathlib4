@@ -51,7 +51,7 @@ instance : Zero (Language α) :=
 instance : One (Language α) :=
   ⟨{[]}⟩
 
-instance : Inhabited (Language α) := ⟨0⟩
+instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
