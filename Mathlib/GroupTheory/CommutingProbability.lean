@@ -170,29 +170,10 @@ lemma aux2 : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
 
 namespace DihedralGroup
 
-def fintypeHelper {n : ℕ} : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
-  invFun i := match i with
-    | DihedralGroup.r j => Sum.inl j
-    | DihedralGroup.sr j => Sum.inr j
-  toFun i := match i with
-    | Sum.inl j => DihedralGroup.r j
-    | Sum.inr j => DihedralGroup.sr j
-  left_inv := by rintro (x | x) <;> rfl
-  right_inv := by rintro (x | x) <;> rfl
+-- PRed
+instance : Infinite (DihedralGroup 0) := sorry
 
-instance : Infinite (DihedralGroup 0) :=
-  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
-
-def mydef {p : α ⊕ β → Prop} : {c // p c} ≃ {a // p (Sum.inl a)} ⊕ {b // p (Sum.inr b)} where
-  toFun c := match h : c.1 with
-    | Sum.inl a => Sum.inl ⟨a, h ▸ c.2⟩
-    | Sum.inr b => Sum.inr ⟨b, h ▸ c.2⟩
-  invFun c := match c with
-    | Sum.inl a => ⟨Sum.inl a, a.2⟩
-    | Sum.inr b => ⟨Sum.inr b, b.2⟩
-  left_inv := by rintro ⟨a | b, h⟩ <;> rfl
-  right_inv := by rintro (a | b) <;> rfl
-
+-- PRed
 lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
   have := Fintype.ofFinite α
   have := Fintype.ofFinite β
