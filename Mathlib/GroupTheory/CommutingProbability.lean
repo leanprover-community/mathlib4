@@ -198,38 +198,43 @@ lemma Nat.card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α 
   have := Fintype.ofFinite β
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sum]
 
+@[simp]
+lemma ZMod.eq_neg_self_iff_eq_zero (n : ℕ) [Fact (n % 2 = 1)] {a : ZMod n} :
+    a = -a ↔ a = 0 :=
+  ⟨(ZMod.ne_neg_self n).mtr, fun h ↦ h ▸ neg_zero.symm⟩
+
 def myEquiv {n : ℕ} (hn : ¬ 2 ∣ n) : { p : DihedralGroup n × DihedralGroup n // p.1 * p.2 = p.2 * p.1 } ≃
-    (ZMod n × ZMod n ⊕ ZMod n) ⊕ (ZMod n ⊕ ZMod n) where
+    ZMod n × ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n where
   toFun p :=
     match h1 : p.1.1, h2 : p.1.2 with
-    | r i, r j => Sum.inl (Sum.inl ⟨i, j⟩)
-    | sr i, r _ => Sum.inr (Sum.inl i)
-    | r _, sr j => Sum.inl (Sum.inr j)
-    | sr i, sr j => Sum.inr (Sum.inr (i + j))
+    | r i, r j => Sum.inl ⟨i, j⟩
+    | sr i, r _ => Sum.inr (Sum.inr (Sum.inl i))
+    | r _, sr j => Sum.inr (Sum.inl j)
+    | sr i, sr j => Sum.inr (Sum.inr (Sum.inr (i + j)))
   invFun p :=
     let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn)
     match p with
-    | Sum.inl (Sum.inl ⟨i, j⟩) => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
-    | Sum.inr (Sum.inl i) => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
-    | Sum.inl (Sum.inr j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
-    | Sum.inr (Sum.inr k) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k) ⟩, rfl⟩
+    | Sum.inl ⟨i, j⟩ => ⟨⟨r i, r j⟩, congrArg r (add_comm i j)⟩
+    | Sum.inr (Sum.inr (Sum.inl i)) => ⟨⟨sr i, r 0⟩, congrArg sr ((add_zero i).trans (sub_zero i).symm)⟩
+    | Sum.inr (Sum.inl j) => ⟨⟨r 0, sr j⟩, congrArg sr ((sub_zero j).trans (add_zero j).symm)⟩
+    | Sum.inr (Sum.inr (Sum.inr k)) => ⟨⟨sr (u⁻¹ * k), sr (u⁻¹ * k) ⟩, rfl⟩
   left_inv := by
     have : Fact (n % 2 = 1) := ⟨Nat.two_dvd_ne_zero.mp hn⟩
     rintro ⟨⟨i | i, j | j⟩, h⟩
     . rfl
-    . replace h : i = -i := add_left_cancel ((sr.inj h.symm).trans (sub_eq_add_neg j i))
-      replace h : i = 0 := not_imp_not.mp (ZMod.ne_neg_self n) h
+    . replace h := sr.inj h.symm
+      rw [sub_eq_add_neg, add_right_inj, ZMod.eq_neg_self_iff_eq_zero] at h
       simp only [h]
-    . replace h : j = -j := add_left_cancel ((sr.inj h).trans (sub_eq_add_neg i j))
-      replace h : j = 0 := not_imp_not.mp (ZMod.ne_neg_self n) h
+    . replace h := sr.inj h
+      rw [sub_eq_add_neg, add_right_inj, ZMod.eq_neg_self_iff_eq_zero] at h
       simp only [h]
-    . replace h : j - i = -(j - i) := (r.inj h).trans (neg_sub j i).symm
-      replace h : j = i := sub_eq_zero.mp (not_imp_not.mp (ZMod.ne_neg_self n) h)
-      rw [Subtype.ext_iff, Prod.ext_iff, sr.injEq, sr.injEq, h, ←two_mul, ←@Nat.cast_two (ZMod n),
-          ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
-          Units.inv_mul_cancel_left, and_self]
+    . replace h := r.inj h
+      rw [←neg_sub, eq_comm, ZMod.eq_neg_self_iff_eq_zero, sub_eq_zero] at h
+      simp_rw [h, ←two_mul, ←@Nat.cast_two (ZMod n),
+        ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
+        Units.inv_mul_cancel_left]
   right_inv := by
-    rintro ((a | b) | (c | d))
+    rintro (a | b | c | d)
     any_goals rfl
     rw [Sum.inr.injEq, ←two_mul, ←@Nat.cast_two (ZMod n),
         ←ZMod.coe_unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn),
