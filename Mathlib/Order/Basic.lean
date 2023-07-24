@@ -220,12 +220,6 @@ alias lt_of_eq_of_lt ← Eq.trans_lt
 alias lt_of_eq_of_lt' ← Eq.trans_gt
 #align eq.trans_gt Eq.trans_gt
 
-@[simp] lemma le_of_subsingleton [Subsingleton α] (a b : α) : a ≤ b := (Subsingleton.elim a b).le
-
-@[simp] lemma not_lt_of_subsingleton [Subsingleton α] (a b : α) : ¬a < b := by
-  cases Subsingleton.elim a b
-  simp
-
 end
 
 namespace Eq
@@ -246,6 +240,17 @@ theorem not_gt (h : x = y) : ¬y < x :=
 #align eq.not_gt Eq.not_gt
 
 end Eq
+
+
+section
+
+variable [Preorder α] {a b : α}
+
+@[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
+
+@[simp] lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
+
+end
 
 namespace LE.le
 
