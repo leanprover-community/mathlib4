@@ -1289,7 +1289,7 @@ instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     · simp
     · simp
     · simp
-    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. < .) _ a b⟩
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· < ·) _ a b⟩
 #align with_top.trichotomous.lt WithTop.trichotomous.lt
 
 instance IsWellOrder.lt [Preorder α] [h : IsWellOrder α (· < ·)] :
@@ -1303,7 +1303,7 @@ instance trichotomous.gt [Preorder α] [IsTrichotomous α (· > ·)] :
     · simp
     · simp
     · simp
-    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (. > .) _ a b⟩
+    · simpa [some_eq_coe, IsTrichotomous, coe_eq_coe] using @trichotomous α (· > ·) _ a b⟩
 #align with_top.trichotomous.gt WithTop.trichotomous.gt
 
 instance IsWellOrder.gt [Preorder α] [h : IsWellOrder α (· > ·)] :

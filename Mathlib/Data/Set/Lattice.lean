@@ -878,7 +878,7 @@ theorem mem_biInter {s : Set α} {t : α → Set β} {y : β} (h : ∀ x ∈ s, 
 theorem subset_biUnion_of_mem {s : Set α} {u : α → Set β} {x : α} (xs : x ∈ s) :
     u x ⊆ ⋃ x ∈ s, u x :=
 --Porting note: Why is this not just `subset_iUnion₂ x xs`?
-  @subset_iUnion₂ β α (. ∈ s) (fun i _ => u i) x xs
+  @subset_iUnion₂ β α (· ∈ s) (fun i _ => u i) x xs
 #align set.subset_bUnion_of_mem Set.subset_biUnion_of_mem
 
 /-- A specialization of `iInter₂_subset`. -/
