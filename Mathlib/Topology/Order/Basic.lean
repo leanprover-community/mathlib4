@@ -2578,38 +2578,51 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
   [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] [Nonempty γ]
 
--- Q: Was there a way to "automatically specialize" these kinds of lemmas from
--- conditionally complete linear orders to complete linear orders so that the then
--- trivial boundedness assumptions (such as `BddAbove A`, `BddBelow A`) don't need
--- to be provided by the user?
---
--- That would allow to use the new `Monotone.map_sSup_of_continuousAt''` (two primes) and friends
--- as strictly more general direct replacements of `Monotone.map_sSup_of_continuousAt'` (just one
--- prime) and friends.
+/-- Sets are automatically bounded or cobounded in complete lattices. To use the same statements
+in complete and conditionally complete lattices but let automation fill automatically the
+boundedness proofs in complete lattices, we use the tactic `setIsBddDefault` in the statements,
+in the form `(hA : BddAbove A := by setIsBddDefault)`. -/
 
-theorem Monotone.map_sSup_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
-    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
+macro "setIsBddDefault" : tactic =>
+  `(tactic| first
+    | apply OrderTop.bddAbove
+    | apply OrderBot.bddBelow)
+
+/-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
+the supremum of the image of this set. -/
+theorem Monotone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
+    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by setIsBddDefault) :
     f (sSup A) = sSup (f '' A) := by
   --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
   refine ((@IsLUB.isLUB_of_tendsto α β _ _ _ _ _ _ f A (sSup A) (f (sSup A))
           (Mf.monotoneOn _) ?_ A_nonemp ?_).csSup_eq (Set.nonempty_image_iff.mpr A_nonemp)).symm
   · exact isLUB_csSup A_nonemp A_bdd
   · exact tendsto_nhdsWithin_of_tendsto_nhds Cf
+#align monotone.map_Sup_of_continuous_at' Monotone.map_sSup_of_continuousAt'
 
-theorem Monotone.map_sInf_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
-    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
+/-- A monotone function continuous at the infimum of a nonempty set sends this infimum to
+the infimum of the image of this set. -/
+theorem Monotone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
+    (Mf : Monotone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by setIsBddDefault) :
     f (sInf A) = sInf (f '' A) :=
-  @Monotone.map_sSup_of_continuousAt'' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
+  @Monotone.map_sSup_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f A Cf Mf.dual A_nonemp A_bdd
+#align monotone.map_Inf_of_continuous_at' Monotone.map_sInf_of_continuousAt'
 
-theorem Antitone.map_sInf_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
-    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A) :
+/-- An antitone function continuous at the infimum of a nonempty set sends this infimum to
+the supremum of the image of this set. -/
+theorem Antitone.map_sInf_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sInf A))
+    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddBelow A := by setIsBddDefault) :
     f (sInf A) = sSup (f '' A) :=
-  @Monotone.map_sInf_of_continuousAt'' α βᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+  @Monotone.map_sInf_of_continuousAt' α βᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+#align antitone.map_Inf_of_continuous_at' Antitone.map_sInf_of_continuousAt'
 
-theorem Antitone.map_sSup_of_continuousAt'' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
-    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A) :
+/-- An antitone function continuous at the supremum of a nonempty set sends this supremum to
+the infimum of the image of this set. -/
+theorem Antitone.map_sSup_of_continuousAt' {f : α → β} {A : Set α} (Cf : ContinuousAt f (sSup A))
+    (Af : Antitone f) (A_nonemp : A.Nonempty) (A_bdd : BddAbove A := by setIsBddDefault) :
     f (sSup A) = sInf (f '' A) :=
-  @Monotone.map_sSup_of_continuousAt'' α βᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+  @Monotone.map_sSup_of_continuousAt' α βᵒᵈ _ _ _ _ _ _ f A Cf Af.dual_right A_nonemp A_bdd
+#align antitone.map_Sup_of_continuous_at' Antitone.map_sSup_of_continuousAt'
 
 end ConditionallyCompleteLinearOrder
 
@@ -2638,14 +2651,14 @@ theorem IsClosed.sInf_mem {α : Type u} [TopologicalSpace α] [CompleteLinearOrd
   (isGLB_sInf s).mem_of_isClosed hs hc
 #align is_closed.Inf_mem IsClosed.sInf_mem
 
+/-
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
 theorem Monotone.map_sSup_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (hs : s.Nonempty) : f (sSup s) = sSup (f '' s) :=
-  --This is a particular case of the more general `IsLUB.isLUB_of_tendsto`
-  ((isLUB_sSup _).isLUB_of_tendsto (fun _ _ _ _ xy => Mf xy) hs <|
-    Cf.mono_left inf_le_left).sSup_eq.symm
+  Mf.map_sSup_of_continuousAt'' Cf hs -- The more general lemma works out of the box.
 #align monotone.map_Sup_of_continuous_at' Monotone.map_sSup_of_continuousAt'
+ -/
 
 /-- A monotone function `f` sending `bot` to `bot` and continuous at the supremum of a set sends
 this supremum to the supremum of the image of this set. -/
@@ -2671,12 +2684,14 @@ theorem Monotone.map_iSup_of_continuousAt {ι : Sort _} {f : α → β} {g : ι 
   rw [iSup, Mf.map_sSup_of_continuousAt Cf fbot, ← range_comp, iSup]; rfl
 #align monotone.map_supr_of_continuous_at Monotone.map_iSup_of_continuousAt
 
+/-
 /-- A monotone function continuous at the infimum of a nonempty set sends this infimum to
 the infimum of the image of this set. -/
 theorem Monotone.map_sInf_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sInf s))
     (Mf : Monotone f) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
   @Monotone.map_sSup_of_continuousAt' αᵒᵈ βᵒᵈ _ _ _ _ _ _ f s Cf Mf.dual hs
 #align monotone.map_Inf_of_continuous_at' Monotone.map_sInf_of_continuousAt'
+ -/
 
 /-- A monotone function `f` sending `top` to `top` and continuous at the infimum of a set sends
 this infimum to the infimum of the image of this set. -/
@@ -2699,13 +2714,14 @@ theorem Monotone.map_iInf_of_continuousAt {ι : Sort _} {f : α → β} {g : ι 
   @Monotone.map_iSup_of_continuousAt αᵒᵈ βᵒᵈ _ _ _ _ _ _ ι f g Cf Mf.dual ftop
 #align monotone.map_infi_of_continuous_at Monotone.map_iInf_of_continuousAt
 
+/-
 /-- An antitone function continuous at the supremum of a nonempty set sends this supremum to
 the infimum of the image of this set. -/
 theorem Antitone.map_sSup_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Af : Antitone f) (hs : s.Nonempty) : f (sSup s) = sInf (f '' s) :=
-  Monotone.map_sSup_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (sSup s) from Cf) Af
-    hs
+  Af.map_sSup_of_continuousAt'' Cf hs -- The more general lemma works out of the box.
 #align antitone.map_Sup_of_continuous_at' Antitone.map_sSup_of_continuousAt'
+ -/
 
 /-- An antitone function `f` sending `bot` to `top` and continuous at the supremum of a set sends
 this supremum to the infimum of the image of this set. -/
@@ -2731,6 +2747,7 @@ theorem Antitone.map_iSup_of_continuousAt {ι : Sort _} {f : α → β} {g : ι 
     fbot
 #align antitone.map_supr_of_continuous_at Antitone.map_iSup_of_continuousAt
 
+/-
 /-- An antitone function continuous at the infimum of a nonempty set sends this infimum to
 the supremum of the image of this set. -/
 theorem Antitone.map_sInf_of_continuousAt' {f : α → β} {s : Set α} (Cf : ContinuousAt f (sInf s))
@@ -2738,6 +2755,7 @@ theorem Antitone.map_sInf_of_continuousAt' {f : α → β} {s : Set α} (Cf : Co
   Monotone.map_sInf_of_continuousAt' (show ContinuousAt (OrderDual.toDual ∘ f) (sInf s) from Cf) Af
     hs
 #align antitone.map_Inf_of_continuous_at' Antitone.map_sInf_of_continuousAt'
+ -/
 
 /-- An antitone function `f` sending `top` to `bot` and continuous at the infimum of a set sends
 this infimum to the supremum of the image of this set. -/
