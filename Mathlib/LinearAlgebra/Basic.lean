@@ -405,11 +405,9 @@ theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :
     --Porting note: ugly `HPow.hPow` instead of `^` notation
     HPow.hPow (f'.restrict h) n = (HPow.hPow f' n).restrict h' := by
-  dsimp [optParam] at h'
-  induction' n with n ih <;> ext
-  · simp [restrict_apply]
-  · rw [restrict_apply, LinearMap.iterate_succ, ih (pow_apply_mem_of_forall_mem n h)]
-    simp
+  ext x
+  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ rfl
+  simp [coe_pow, this.iterate_right _ _]
 #align linear_map.pow_restrict LinearMap.pow_restrict
 
 end
