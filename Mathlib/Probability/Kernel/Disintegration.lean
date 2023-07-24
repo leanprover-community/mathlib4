@@ -489,7 +489,8 @@ This section will prove that the conditional kernel is unique almost everywhere.
 everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
 
 This theorem in the case of finite kernels is weaker than `eq_condKernel_of_measure_eq_compProd`
-which asserts that the kernels are equal almost everywhere and not just on a given measurable set. -/
+which asserts that the kernels are equal almost everywhere and not just on a given measurable
+set. -/
 theorem eq_condKernel_of_measure_eq_compProd' (κ : kernel α Ω) [IsSFiniteKernel κ]
   (hκ : ρ = (kernel.const Unit ρ.fst ⊗ₖ kernel.prodMkLeft Unit κ) ())
   {s : Set Ω} (hs : MeasurableSet s) :
