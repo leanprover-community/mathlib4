@@ -493,15 +493,15 @@ instance (priority := 100) isScalarTower_right [Monoid S] [DistribMulAction S A]
     [IsScalarTower S A A] [SMulCommClass R S A] : IsScalarTower S (A ⊗[R] B) (A ⊗[R] B) where
   smul_assoc r x y := by
     change r • x * y = r • (x * y)
-    apply TensorProduct.induction_on y
-    · simp [smul_zero]
-    · apply TensorProduct.induction_on x
-      · simp [smul_zero]
-      · intro a b a' b'
+    induction y using TensorProduct.induction_on with
+    | C0 => simp [smul_zero]
+    | C1 a b => induction x using TensorProduct.induction_on with
+      | C0 => simp [smul_zero]
+      | C1 a' b' =>
         dsimp
         rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, smul_mul_assoc]
-      · intros; simp [smul_add, add_mul, *]
-    · intros; simp [smul_add, mul_add, *]
+      | Cp x y hx hy => simp [smul_add, add_mul _, *]
+    | Cp x y hx hy => simp [smul_add, mul_add _, *]
 #align algebra.tensor_product.is_scalar_tower_right Algebra.TensorProduct.isScalarTower_right
 
 -- we want `Algebra.to_smulCommClass` to take priority since it's better for unification elsewhere
@@ -509,29 +509,28 @@ instance (priority := 100) sMulCommClass_right [Monoid S] [DistribMulAction S A]
     [SMulCommClass S A A] [SMulCommClass R S A] : SMulCommClass S (A ⊗[R] B) (A ⊗[R] B) where
   smul_comm r x y := by
     change r • (x * y) = x * r • y
-    apply TensorProduct.induction_on y
-    · simp [smul_zero]
-    · apply TensorProduct.induction_on x
-      · simp [smul_zero]
-      · intro a b a' b'
+    induction y using TensorProduct.induction_on with
+    | C0 => simp [smul_zero]
+    | C1 a b => induction x using TensorProduct.induction_on with
+      | C0 => simp [smul_zero]
+      | C1 a' b' =>
         dsimp
         rw [TensorProduct.smul_tmul', TensorProduct.smul_tmul', tmul_mul_tmul, mul_smul_comm]
-      · intros; simp [smul_add, add_mul, *]
-    · intros; simp [smul_add, mul_add, *]
+      | Cp x y hx hy => simp [smul_add, add_mul _, *]
+    | Cp x y hx hy => simp [smul_add, mul_add _, *]
 #align algebra.tensor_product.smul_comm_class_right Algebra.TensorProduct.sMulCommClass_right
 
 variable [CommSemiring S] [Algebra S A]
 
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
-  { TensorProduct.includeLeftRingHom.comp (algebraMap S A),
-    (by infer_instance : Module S (A ⊗[R] B)) with
-    commutes' := fun r x => by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, include_left_ring_hom_apply]
-      rw [algebra_map_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
+  { commutes' := fun r x => by
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
+      rw [algebraMap_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
         one_mul]
     smul_def' := fun r x => by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, include_left_ring_hom_apply]
-      rw [algebra_map_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul] }
+      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
+      rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
+    toRingHom := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 #align algebra.tensor_product.left_algebra Algebra.TensorProduct.leftAlgebra
 
 -- This is for the `undergrad.yaml` list.
