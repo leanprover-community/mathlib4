@@ -609,19 +609,21 @@ theorem deriv_rpow_const (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0 ∨ 1 �
   (hf.hasDerivAt.rpow_const hx).deriv
 #align deriv_rpow_const deriv_rpow_const
 
+lemma isTheta_deriv_rpow_const_atTop {p : ℝ} (hp : p ≠ 0) :
+    deriv (fun (x:ℝ) => x ^ p) =Θ[atTop] fun x => x ^ (p-1) := by
+  calc deriv (fun (x:ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1)
+          := by filter_upwards [eventually_ne_atTop 0] with x hx
+                rw [Real.deriv_rpow_const (Or.inl hx)]
+       _ =Θ[atTop] fun x => x ^ (p-1)
+          := Asymptotics.IsTheta.const_mul_left hp Asymptotics.isTheta_rfl
+
 lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
     deriv (fun (x:ℝ) => x ^ p) =O[atTop] fun x => x ^ (p-1) := by
-  by_cases hp : p = 0
-  case pos =>
-    simp [hp, zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
-  case neg =>
-    push_neg at hp
-    calc deriv (fun (x:ℝ) => x ^ p) =ᶠ[atTop] fun x => p * x ^ (p - 1)
-            := by filter_upwards [eventually_ne_atTop 0] with x hx
-                  rw [Real.deriv_rpow_const (Or.inl hx)]
-         _ =O[atTop] fun x => x ^ (p-1)
-            := by rw [Asymptotics.isBigO_iff]
-                  exact ⟨‖p‖, eventually_of_forall (fun x => by rw [norm_mul])⟩
+  rcases eq_or_ne p 0 with rfl | hp
+  case inl =>
+    simp [zero_sub, Real.rpow_neg_one, Real.rpow_zero, deriv_const', Asymptotics.isBigO_zero]
+  case inr =>
+    exact (isTheta_deriv_rpow_const_atTop hp).1
 
 end deriv
 
