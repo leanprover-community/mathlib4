@@ -248,7 +248,7 @@ theorem basis_of_full_unique [Full G] : ∃! b, b ∈ G.base := by
     . simp [base]
       exact Full.full
 
-theorem bases_of_full_card [Full G] : G.base.card = 1 := by
+theorem bases_of_full_card_eq_one [Full G] : G.base.card = 1 := by
   let ⟨_, _⟩ := (Finset.singleton_iff_unique_mem (G.base)).mpr basis_of_full_unique
   simp_all
 
@@ -281,19 +281,19 @@ open Nat List Finset Greedoid
 
 theorem rank_eq_bases_card
   {b : Finset α} (hb : b ∈ G.bases s) :
-    b.card = G.rank s := by
+    G.rank s = b.card := by
   apply Eq.symm (Nat.le_antisymm _ _)
+  . simp only [rank, WithBot.le_unbot_iff, Finset.le_max_of_eq]
+    apply Finset.le_max
+    simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
+    exists b
+    simp only [basis_mem_feasible hb, basis_subseteq hb]
   . simp [rank, unbot_le_iff]
     apply Finset.max_le
     rintro n hn
     simp at *
     let ⟨_, hs'⟩ := hn
     exact hs'.2 ▸ basis_max_card_of_feasible hb hs'.1.1 hs'.1.2
-  . simp only [rank, WithBot.le_unbot_iff, Finset.le_max_of_eq]
-    apply Finset.le_max
-    simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
-    exists b
-    simp only [basis_mem_feasible hb, basis_subseteq hb]
 
 @[simp]
 theorem rank_empty : G.rank ∅ = 0 := by
@@ -301,7 +301,10 @@ theorem rank_empty : G.rank ∅ = 0 := by
   simp only [G.containsEmpty]
   simp only [ite_true, image_singleton, card_empty, max_singleton, WithBot.unbot_coe]
 
-theorem rank_singleton_le_one {a : α} : G.rank {a} ≤ 1 := sorry
+theorem rank_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
+  have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  rw [rank_eq_bases_card h]
+  apply (bases_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
 
 theorem rank_le_card : G.rank s ≤ s.card := sorry
 
