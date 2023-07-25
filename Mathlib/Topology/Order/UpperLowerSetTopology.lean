@@ -273,6 +273,12 @@ lemma topology_eq : ‹_› = upperSetTopology' α := topology_eq_upperSetTopolo
 
 variable {α}
 
+instance instLowerSetTopologyDual [Preorder α] [TopologicalSpace α] [UpperSetTopology α] :
+    LowerSetTopology (αᵒᵈ) where
+  topology_eq_lowerSetTopology := by
+    refine topologicalSpace_eq ?_
+    rw [(UpperSetTopology.topology_eq (α))]
+
 /-- If `α` is equipped with the upper set topology, then it is homeomorphic to
 `WithUpperSetTopology α`.
 -/
@@ -375,7 +381,8 @@ lemma topology_eq : ‹_› = lowerSetTopology' α := topology_eq_lowerSetTopolo
 
 variable {α}
 
-instance  [Preorder α] [TopologicalSpace α] [LowerSetTopology α] : UpperSetTopology (αᵒᵈ) where
+instance instUpperSetTopologyDual [Preorder α] [TopologicalSpace α] [LowerSetTopology α] :
+    UpperSetTopology (αᵒᵈ) where
   topology_eq_upperSetTopology := by
     refine topologicalSpace_eq ?_
     rw [(LowerSetTopology.topology_eq (α))]
@@ -454,3 +461,15 @@ lemma LowerSetLELower {t₁ : TopologicalSpace α} [@LowerSetTopology α t₁ _]
 end maps
 
 end LowerSetTopology
+
+lemma UpperSetDual_iff_LowerSet [Preorder α] [TopologicalSpace α] :
+    UpperSetTopology αᵒᵈ ↔ LowerSetTopology α := by
+  constructor
+  · apply UpperSetTopology.instLowerSetTopologyDual
+  · apply LowerSetTopology.instUpperSetTopologyDual
+
+lemma LowerSetDual_iff_UpperSet [Preorder α] [TopologicalSpace α] :
+    LowerSetTopology αᵒᵈ ↔ UpperSetTopology α := by
+  constructor
+  · apply LowerSetTopology.instUpperSetTopologyDual
+  · apply UpperSetTopology.instLowerSetTopologyDual
