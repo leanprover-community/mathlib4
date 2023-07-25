@@ -86,8 +86,8 @@ namespace Newton
 
 open Finset Nat
 
-variable (σ : Type _) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type _) [CommRing R]
-  [NoZeroDivisors R] [CharZero R]
+variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [NoZeroDivisors R]
+  [CharZero R]
 
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
 def PairsPred (k : ℕ) (t : Finset σ × σ) : Prop := card t.fst ≤ k ∧
