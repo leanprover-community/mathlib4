@@ -236,11 +236,14 @@ theorem DiscreteValuationRing.TFAE [IsNoetherianRing R] [LocalRing R] [IsDomain 
     intro H
     constructor
     intro I J
-    -- FIXME: by_cases gives an error "could not synthesize `Ideal R → Ideal R → LinearOrder (Ideal R)`"???
-    cases' eq_or_ne I ⊥ with hI hI
-    · subst hI; left; exact bot_le
-    cases' eq_or_ne J ⊥ with hJ hJ
-    · subst hJ; right; exact bot_le
+    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
+    -- however the `tfae` hypotheses trigger a looping instance search.
+    -- See also:
+    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
+    -- As a workaround, add the desired instance ourselves.
+    let _ := Classical.decEq (Ideal R)
+    by_cases hI : I = ⊥; · subst hI; left; exact bot_le
+    by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
     cases' le_total m n with h' h'
