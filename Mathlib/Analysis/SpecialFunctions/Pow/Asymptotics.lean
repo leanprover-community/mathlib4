@@ -51,7 +51,8 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 #align tendsto_rpow_neg_at_top tendsto_rpow_neg_atTop
 
-lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
+lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : 
+    Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atTop (nhds 0)
   simp_rw [Real.rpow_def_of_pos hb₀]
   have h₁ : log b < 0 := by rw [log_neg_iff hb₀]; exact hb₁
@@ -60,7 +61,8 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1
   show atTop ≤ atTop    -- come on...
   rfl
 
-lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) : 
+    Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atBot (nhds 0)
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine Tendsto.exp_atBot ?_
@@ -69,7 +71,8 @@ lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b
   show atBot ≤ atBot
   rfl
 
-lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : Tendsto (rpow b) atBot atTop := by
+lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : 
+    Tendsto (rpow b) atBot atTop := by
   show Tendsto (fun z => b^z) atBot atTop
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine Tendsto.exp_atTop ?_
