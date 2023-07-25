@@ -846,9 +846,7 @@ theorem fst_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX
-      have : Measurable (fun (p : β × γ) ↦ p.1) := measurable_fst
-      exact this.comp_aemeasurable hX
+      contrapose! hX; exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 #align measure_theory.measure.fst_map_prod_mk₀ MeasureTheory.Measure.fst_map_prod_mk₀
 
@@ -887,17 +885,22 @@ lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by
   ext1 s hs
   rw [snd_apply hs, ← univ_prod, prod_prod, measure_univ, one_mul]
 
-theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ)
-    (hY : AEMeasurable Y μ) : (μ.map fun a => (X a, Y a)).snd = μ.map Y := by
-  ext1 s hs
-  rw [Measure.snd_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_snd hs),
-    Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
-    univ_inter]
+theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX : AEMeasurable X μ) :
+    (μ.map fun a => (X a, Y a)).snd = μ.map Y := by
+  by_cases hY : AEMeasurable Y μ
+  · ext1 s hs
+    rw [Measure.snd_apply hs, Measure.map_apply_of_aemeasurable (hX.prod_mk hY) (measurable_snd hs),
+      Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
+      univ_inter]
+  · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
+      contrapose! hY; exact measurable_snd.comp_aemeasurable hY
+    simp [map_of_not_aemeasurable, hY, this]
+
 #align measure_theory.measure.snd_map_prod_mk₀ MeasureTheory.Measure.snd_map_prod_mk₀
 
-theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X)
-    (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
-  snd_map_prod_mk₀ hX.aemeasurable hY.aemeasurable
+theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
+    (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
+  snd_map_prod_mk₀ hX.aemeasurable
 #align measure_theory.measure.snd_map_prod_mk MeasureTheory.Measure.snd_map_prod_mk
 
 end Measure
