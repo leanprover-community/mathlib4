@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sites.spaces
-! leanprover-community/mathlib commit b6fa3beb29f035598cf0434d919694c5e98091eb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.Pretopology
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.Topology.Sets.Opens
+
+#align_import category_theory.sites.spaces from "leanprover-community/mathlib"@"b6fa3beb29f035598cf0434d919694c5e98091eb"
 
 /-!
 # Grothendieck topology on a topological space

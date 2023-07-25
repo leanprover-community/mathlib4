@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.at_prime
-! leanprover-community/mathlib commit b86c528d08a52a1fdb50d999232408e1c7e85d7d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Localization.Ideal
+
+#align_import ring_theory.localization.at_prime from "leanprover-community/mathlib"@"b86c528d08a52a1fdb50d999232408e1c7e85d7d"
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -27,7 +24,7 @@ import Mathlib.RingTheory.Localization.Ideal
 
 ## Implementation notes
 
-See `src/ring_theory/Localization/basic.lean` for a design overview.
+See `RingTheory.Localization.Basic` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,

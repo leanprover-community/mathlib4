@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.subset_properties
-! leanprover-community/mathlib commit 3efd324a3a31eaa40c9d5bfc669c4fafee5f9423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Pi
 import Mathlib.Topology.Bases
@@ -16,6 +11,8 @@ import Mathlib.Data.Set.BoolIndicator
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Order.Minimal
+
+#align_import topology.subset_properties from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Properties of subsets of topological spaces
@@ -747,7 +744,7 @@ theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsC
   isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
-/-- `α` is a noncompact topological space if it not a compact space. -/
+/-- `α` is a noncompact topological space if it is not a compact space. -/
 class NoncompactSpace (α : Type _) [TopologicalSpace α] : Prop where
   /-- In a noncompact space, `Set.univ` is not a compact set. -/
   noncompact_univ : ¬IsCompact (univ : Set α)
@@ -1820,7 +1817,7 @@ theorem isIrreducible_irreducibleComponent {x : α} : IsIrreducible (irreducible
   ⟨⟨x, mem_irreducibleComponent⟩, (irreducibleComponent_property x).1⟩
 #align is_irreducible_irreducible_component isIrreducible_irreducibleComponent
 
-theorem eq_irreducibleComponent {x : α}  {s : Set α} :
+theorem eq_irreducibleComponent {x : α} {s : Set α} :
     IsPreirreducible s → irreducibleComponent x ⊆ s → s = irreducibleComponent x :=
   (irreducibleComponent_property x).2.2 _
 #align eq_irreducible_component eq_irreducibleComponent
