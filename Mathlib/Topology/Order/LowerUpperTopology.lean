@@ -269,6 +269,10 @@ theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (
   rw [topology_eq α]; rfl
 #align lower_topology.is_open_iff_generate_Ici_compl LowerTopology.isOpen_iff_generate_Ici_compl
 
+instance instUpperTopologyDual [Preorder α] [TopologicalSpace α] [LowerTopology α] :
+    UpperTopology (αᵒᵈ) where
+  topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
+
 /-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
 theorem isClosed_Ici (a : α) : IsClosed (Ici a) :=
   isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩
@@ -372,7 +376,8 @@ def withUpperTopologyHomeomorph : WithUpperTopology α ≃ₜ α :=
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
 
-instance [Preorder α] [TopologicalSpace α] [UpperTopology α] : LowerTopology (αᵒᵈ) where
+instance instLowerTopologyDual [Preorder α] [TopologicalSpace α] [UpperTopology α] :
+    LowerTopology (αᵒᵈ) where
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
 /-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
@@ -483,3 +488,15 @@ instance (priority := 90) UpperTopology.continuousInf : ContinuousSup α :=
   ⟨(supsSupHom : sSupHom (α × α) α).continuous⟩
 
 end CompleteLattice_UpperTopology
+
+lemma UpperDual_iff_Lower [Preorder α] [TopologicalSpace α] :
+    UpperTopology αᵒᵈ ↔ LowerTopology α := by
+  constructor
+  · apply UpperTopology.instLowerTopologyDual
+  · apply LowerTopology.instUpperTopologyDual
+
+lemma LowerDual_iff_Upper [Preorder α] [TopologicalSpace α] :
+    LowerTopology αᵒᵈ ↔ UpperTopology α := by
+  constructor
+  · apply LowerTopology.instUpperTopologyDual
+  · apply UpperTopology.instLowerTopologyDual
