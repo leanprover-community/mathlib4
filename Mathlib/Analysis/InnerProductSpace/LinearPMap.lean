@@ -255,9 +255,13 @@ instance instStar : Star (E →ₗ.[𝕜] E) where
 
 variable {A : E →ₗ.[𝕜] E}
 
-theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := by
-  rfl
+theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
 
+/-- Every self-adjoint `LinearPMap` has dense domain.
+
+This is not true by definition since we define the adjoint without the assumption that the
+domain is dense, but the choice of the junk value implies that a `LinearPMap` cannot be self-adjoint
+if it does not have dense domain. -/
 theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.domain : Set E) := by
   by_contra h
   rw [isSelfAdjoint_def] at hA
