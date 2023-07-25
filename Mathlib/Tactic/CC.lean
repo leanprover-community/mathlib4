@@ -11,6 +11,7 @@ Authors: Leonardo de Moura
 import Mathlib.Init.CCLemmas
 import Mathlib.Data.Option.Defs
 import Mathlib.Init.Data.List.Basic
+import Mathlib.Init.Propext
 
 /-!
 ## Congruence closures
@@ -3623,28 +3624,129 @@ def propagateIffUp (e : Expr) : CCM Unit := do
     -- `a = b     → (Iff a b) = True`
     pushEq e (.const ``True []) (mkApp3 (.const ``iff_eq_true_of_eq []) a b (← getPropEqProof a b))
 
+def propagateAndUp (e : Expr) : CCM Unit := do
+  let some (a, b) := e.and? | failure
+  if ← isEqTrue a then
+    -- `a = True  → (And a b) = b`
+    pushEq e b (mkApp3 (.const ``and_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (And a b) = a`
+    pushEq e a (mkApp3 (.const ``and_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqFalse a then
+    -- `a = False → (And a b) = False`
+    pushEq e (.const ``False [])
+      (mkApp3 (.const ``and_eq_of_eq_false_left []) a b (← getEqFalseProof a))
+  else if ← isEqFalse b then
+    -- `b = False → (And a b) = False`
+    pushEq e (.const ``False [])
+      (mkApp3 (.const ``and_eq_of_eq_false_right []) a b (← getEqFalseProof b))
+  else if ← isEqv a b then
+    -- `a = b     → (And a b) = a`
+    pushEq e a (mkApp3 (.const ``and_eq_of_eq []) a b (← getPropEqProof a b))
+  -- We may also add `a = Not b -> (And a b) = False`
+
+def propagateOrUp (e : Expr) : CCM Unit := do
+  let some (a, b) := e.app2? ``Or | failure
+  if ← isEqTrue a then
+    -- `a = True  → (Or a b) = True`
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``or_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (Or a b) = True`
+    pushEq e (.const ``True [])
+      (mkApp3 (.const ``or_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqFalse a then
+    -- `a = False → (Or a b) = b`
+    pushEq e b (mkApp3 (.const ``or_eq_of_eq_false_left []) a b (← getEqFalseProof a))
+  else if ← isEqFalse b then
+    -- `b = False → (Or a b) = a`
+    pushEq e a (mkApp3 (.const ``or_eq_of_eq_false_right []) a b (← getEqFalseProof b))
+  else if ← isEqv a b then
+    -- `a = b     → (Or a b) = a`
+    pushEq e a (mkApp3 (.const ``or_eq_of_eq []) a b (← getPropEqProof a b))
+  -- We may also add `a = Not b -> (Or a b) = True`
+
+def propagateNotUp (e : Expr) : CCM Unit := do
+  let some a := e.not? | failure
+  if ← isEqTrue a then
+    -- `a = True  → Not a = False`
+    pushEq e (.const ``False []) (mkApp2 (.const ``not_eq_of_eq_true []) a (← getEqTrueProof a))
+  else if ← isEqFalse a then
+    -- `a = False → Not a = True`
+    pushEq e (.const ``True []) (mkApp2 (.const ``not_eq_of_eq_false []) a (← getEqFalseProof a))
+  else if ← isEqv a e then
+    let falsePr := mkApp2 (.const ``false_of_a_eq_not_a []) a (← getPropEqProof a e)
+    let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
+    pushEq (.const ``True []) (.const ``False []) H
+
+def propagateITEUp (e : Expr) : CCM Unit := do
+  let .app (.app (.app (.app (.app (.const ``ite [lvl]) A) c) d) a) b := e | failure
+  if ← isEqTrue c then
+    -- `c = True  → (ite c a b) = a`
+    pushEq e a (mkApp6 (.const ``if_eq_of_eq_true [lvl]) c d A a b (← getEqTrueProof c))
+  else if ← isEqFalse c then
+    -- `c = False → (ite c a b) = b`
+    pushEq e b (mkApp6 (.const ``if_eq_of_eq_false [lvl]) c d A a b (← getEqFalseProof c))
+  else if ← isEqv a b then
+    -- `a = b     → (ite c a b) = a`
+    pushEq e a (mkApp6 (.const ``if_eq_of_eq [lvl]) c d A a b (← getPropEqProof a b))
+
+def mkNeOfEqOfNe (a a₁ a₁NeB : Expr) : CCM (Option Expr) := do
+  guard (← isEqv a a₁)
+  if a == a₁ then
+    return some a₁NeB
+  let aEqA₁ ← getEqProof a a₁
+  match aEqA₁ with
+  | none => return none -- failed to build proof
+  | some aEqA₁ => mkAppM ``ne_of_eq_of_ne #[aEqA₁, a₁NeB]
+
+def mkNeOfNeOfEq (aNeB₁ b₁ b : Expr) : CCM (Option Expr) := do
+  guard (← isEqv b b₁)
+  if b == b₁ then
+    return some aNeB₁
+  let b₁EqB ← getEqProof b b₁
+  match b₁EqB with
+  | none => return none -- failed to build proof
+  | some b₁EqB => mkAppM ``ne_of_ne_of_eq #[aNeB₁, b₁EqB]
+
+def propagateEqUp (e : Expr) : CCM Unit := do
+  -- Remark: the positive case is implemented at `checkEqTrue` for any reflexive relation.
+  let some (_, a, b) := e.eq? | failure
+  let ra ← getRoot a
+  let rb ← getRoot b
+  if ra != rb then
+    let mut raNeRb : Option Expr := none
+    if ← isInterpretedValue ra <&&> isInterpretedValue rb then
+      raNeRb := some
+        (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
+    else
+      let env ← getEnv
+      if let some c₁ := ra.isConstructorApp? env then
+      if let some c₂ := rb.isConstructorApp? env then
+      if c₁.name != c₂.name then
+        raNeRb ← withLocalDeclD `h (← mkEq ra rb) fun h => do
+          mkLambdaFVars #[h] (← mkNoConfusion (.const ``False []) h)
+    if let some raNeRb' := raNeRb then
+    if let some aNeRb ← mkNeOfEqOfNe a ra raNeRb' then
+    if let some aNeB ← mkNeOfNeOfEq aNeRb rb b then
+      pushEq e (.const ``False []) (← mkAppM ``eq_false_intro #[aNeB])
+
 def propagateUp (e : Expr) : CCM Unit := do
   if (← getState).inconsistent then return
-  /-
-  ```c++
-  if (is_iff(e)) {
-      propagate_iff_up(e);
-  } else if (is_and(e)) {
-      propagate_and_up(e);
-  } else if (is_or(e)) {
-      propagate_or_up(e);
-  } else if (is_not(e)) {
-      propagate_not_up(e);
-  } else if (is_arrow(e)) {
-      propagate_imp_up(e);
-  } else if (is_ite(e)) {
-      propagate_ite_up(e);
-  } else if (is_eq(e)) {
-      propagate_eq_up(e);
-  }
-  ```
-  -/
-  sorry
+  if e.isAppOfArity ``Iff 2 then
+    propagateIffUp e
+  else if e.isAppOfArity ``And 2 then
+    propagateAndUp e
+  else if e.isAppOfArity ``Or 2 then
+    propagateOrUp e
+  else if e.isAppOf ``Not then
+    propagateNotUp e
+  else if e.isArrow then
+    propagateImpUp e
+  else if e.isIte then
+    propagateITEUp e
+  else if e.isEq then
+    propagateEqUp e
 
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
@@ -3776,13 +3878,12 @@ where
       updateMT e₂Root
       checkNewSubsingletonEq e₁Root e₂Root
 
+    if !(← getState).inconsistent then
+      for p in parentsToPropagate do
+        propagateUp p
+
     /-
     ```c++
-    if (!m_state.m_inconsistent) {
-        for (expr const & p : parents_to_propagate)
-            propagate_up(p);
-    }
-
     if (!m_state.m_inconsistent && !to_propagate.empty()) {
         for (expr const & e : to_propagate)
             propagate_down(e);
