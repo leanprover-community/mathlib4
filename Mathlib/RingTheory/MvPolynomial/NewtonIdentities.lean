@@ -161,11 +161,9 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
   · simp only [card_insert_of_not_mem h1, prod_insert h1, mul_comm, mul_assoc (∏ a in t.fst, X a),
       ← mul_add]
     nth_rewrite 2 [← pow_one (X t.snd)]
-    have h3 : card t.fst + 1 ≤ k
-    · have ht1 := h.right.right
-      contrapose! ht1
-      exact And.intro (le_antisymm h.right.left (le_of_lt_succ ht1)) h1
-    simp only [← pow_add, ← Nat.add_sub_assoc h3, add_comm, add_tsub_add_eq_tsub_right]
+    simp only [← pow_add,
+      ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.right.left (mt h.right.right h1)),
+      add_comm, add_tsub_add_eq_tsub_right]
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
     simp
 
@@ -201,19 +199,18 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
     ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
   apply sum_finset_product
-  simp_all
+  simp only [Prod.forall, pairs, PairsPred, mem_filter, mem_univ, true_and, and_true]
+  rw [mem_range] at hi
   intro p b
   apply Iff.intro
   · intro hpl
     exact mem_powerset_len_univ_iff.mpr hpl.2
   · intro hpr
-    simp_rw [pairs, mem_filter, PairsPred]
-    simp_all
+    simp only [pairs, mem_filter, PairsPred]
     apply And.intro
     · apply And.intro
-      · simp_rw [mem_powerset_len_univ_iff.mp hpr, le_iff_lt_or_eq]
-        left
-        exact hi
+      · exact Eq.subst (motive := fun n => n ≤ k)
+          (mem_powerset_len_univ_iff.mp hpr).symm (Nat.le_of_lt hi)
       · intro cardpk
         rw [← cardpk, mem_powerset_len_univ_iff.mp hpr] at hi
         exact ((lt_irrefl _) hi).elim
@@ -226,11 +223,11 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
   simp only [← sum_congr rfl equiv_i]
   have pdisj : Set.PairwiseDisjoint (range k)
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
-    simp only [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred]
-    simp
+    simp only [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred,
+      coe_range, Set.mem_Iio, ne_eq, le_eq_subset, bot_eq_empty]
     intro x _ y _ xny
     by_contra neg
-    simp at neg
+    simp only [not_forall, exists_prop, exists_and_left] at neg
     cases neg with
     | intro sneg hsneg =>
       rw [subset_empty] at hsneg
@@ -264,7 +261,7 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
       apply And.intro
       · exact mem_range.mpr haf.right
       · simp_all [mem_filter]
-  simp_rw [← hdisj, disj_equiv]
+  simp only [← hdisj, disj_equiv]
 
 theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) := by
@@ -275,9 +272,17 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
 
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
-  simp_all [← filter_or, Finset.ext_iff, pairs, PairsPred]
-  intro a b ab _
-  exact lt_or_eq_of_le ab
+  rw [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, filter_filter]
+  intro a
+  rw [← filter_or]
+  apply Iff.intro
+  · intro ha
+    rw [mem_filter] at *
+    tauto
+  · intro ha
+    rw [mem_filter, PairsPred] at *
+    have hacard := le_iff_lt_or_eq.mp ha.right.left
+    tauto
 
 theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ powersetLen k univ) :
     ∑ j in A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i in A, X i : MvPolynomial σ R) := by
@@ -288,13 +293,13 @@ theorem esymm_to_weight (k : ℕ) : k * esymm σ R k =
   rw [esymm, sum_equiv_k σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
     ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow]
-  simp
-  use k
+  · simp
+  · use k
 
 theorem esymm_mul_psum_summand_to_weight (k i : ℕ) (_ : i ∈ range k) :
     ∑ A in powersetLen i univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ i * esymm σ R i * psum σ R (k - i) := by
-  simp_rw [esymm, psum, weight, ← mul_assoc, mul_sum]
+  simp only [esymm, psum, weight, ← mul_assoc, mul_sum]
   rw [sum_comm]
   refine sum_congr rfl ?_
   intro x _
@@ -312,8 +317,9 @@ theorem esymm_mul_psum_to_weight (k : ℕ) :
 in terms of lower degree elementary symmetric polynomials and power sums. -/
 theorem esymm_recurrence (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
     ∑ i in range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0 := by
-  simp_all [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k, ← mul_assoc, ← pow_add,
-    Even.neg_one_pow]
-  rw [add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k), lt_k_disjunion_k σ k, weight_sum σ R k]
+  simp only [esymm_to_weight σ R k, esymm_mul_psum_to_weight σ R k, ← mul_assoc, ← pow_add]
+  rw [Even.neg_one_pow, one_mul, add_comm, ← sum_disjUnion (lt_k_disjoint_k σ k),
+    lt_k_disjunion_k σ k, weight_sum σ R k]
+  use k
 
 end Newton
