@@ -515,7 +515,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
-instance : Algebra R (A ⊗[R] B) :=
+instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
