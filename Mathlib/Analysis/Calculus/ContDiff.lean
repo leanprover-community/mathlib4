@@ -1034,7 +1034,7 @@ theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x�
     contDiffWithinAt_id hs hmn hx₀s (by rw [preimage_id'])
 #align cont_diff_within_at.fderiv_within_right ContDiffWithinAt.fderivWithin_right
 
--- TODO: can we make a version of `fderivWithin` for iterated derivatives?
+-- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
 theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
