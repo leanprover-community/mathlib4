@@ -53,8 +53,8 @@ theorem birkhoffSum_add (f : α → α) (g : α → M) (m n : ℕ) (x : α) :
     birkhoffSum f g (m + n) x = birkhoffSum f g m x + birkhoffSum f g n (f^[m] x) := by
   simp_rw [birkhoffSum, sum_range_add, add_comm m, iterate_add_apply]
 
-theorem IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedPt f x) (g : α → M) (n : ℕ) :
-    birkhoffSum f g n x = n • g x := by
+theorem Function.IsFixedPt.birkhoffSum_eq {f : α → α} {x : α} (h : IsFixedPt f x) (g : α → M)
+    (n : ℕ) : birkhoffSum f g n x = n • g x := by
   simp [birkhoffSum, (h.iterate _).eq]
 
 theorem map_birkhoffSum {F N : Type _} [AddCommMonoid N] [AddMonoidHomClass F M N]
@@ -68,7 +68,7 @@ section AddCommGroup
 
 variable {α G : Type _} [AddCommGroup G]
 
-/-- Birkhofff sum is "almost invariant" under `f`:
+/-- Birkhoff sum is "almost invariant" under `f`:
 the difference between `birkhoffSum f g n (f x)` and `birkhoffSum f g n x`
 is equal to `g (f^[n] x) - g x`. -/
 theorem birkhoffSum_apply_sub_birkhoffSum (f : α → α) (g : α → G) (n : ℕ) (x : α) :
