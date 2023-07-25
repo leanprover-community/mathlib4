@@ -437,8 +437,8 @@ instance commMonoid [CommMonoid M] : CommMonoid (Germ l M) :=
 instance [NatCast M] : NatCast (Germ l M) where
   natCast n := (n : α → M)
 
-@[simp, norm_cast]
-theorem coe_nat [NatCast M] (n : ℕ) : ((n : α → M) : Germ l M) = n := rfl
+@[simp]
+theorem coe_nat [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
@@ -456,8 +456,8 @@ theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
 instance [IntCast M] : IntCast (Germ l M) where
   intCast n := (n : α → M)
 
-@[simp, norm_cast]
-theorem coe_int [IntCast M] (n : ℤ) : ((n : α → M) : Germ l M) = n := rfl
+@[simp]
+theorem coe_int [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
 
 instance addMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) :=
   Function.Surjective.addMonoidWithOne ofFun (surjective_quot_mk _) rfl rfl (fun _ _ ↦ rfl)
