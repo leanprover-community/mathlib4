@@ -374,13 +374,50 @@ theorem rank_le_of_subset (hs : s ⊆ t) : G.rank s ≤ G.rank t := by
   exists x
   simp only [hx₁, h, subset_trans hx₂ hs]
 
+theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card := by
+  sorry
+
+theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
+  apply lt_of_le_of_ne rank_le_card
+  intro h
+  apply hs; clear hs
+  simp only [rank, system_feasible_set_mem_mem] at h
+  sorry
+
+@[simp]
+theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
+  apply Iff.intro _ (fun h => rank_of_feasible h)
+  intro h
+  have := mt (@rank_of_infeasible _ _ _ G s)
+  simp only [not_lt, not_not] at this
+  apply this
+  simp only [h, le_refl]
+
+theorem rank_insert_eq_append_basis (ht : t ∈ G.bases s) :
+    G.rank (insert x t) = G.rank (insert x s) := by
+  sorry
+
 theorem local_submodularity
   (h₁ : G.rank s = G.rank (insert x s))
   (h₂ : G.rank s = G.rank (insert y s)) :
     G.rank (insert x (insert y s)) = G.rank s := by
-  have h₃ : G.rank s ≤ G.rank (insert x (insert y s)) :=
-    rank_le_of_subset (Finset.Subset.trans (Finset.subset_insert _ _) (Finset.subset_insert _ _))
-  sorry
+  by_contra' h'
+  have h₃ := Nat.lt_of_le_of_ne
+    (rank_le_of_subset (Finset.Subset.trans (Finset.subset_insert y s) (Finset.subset_insert x _)))
+    h'.symm
+  have ⟨bs, hbs⟩ : Nonempty (G.bases s) := G.bases_nonempty
+  have ⟨bt, hbt⟩ : Nonempty (G.bases (insert x (insert y s))) := G.bases_nonempty
+  have hbs' := rank_eq_bases_card hbs
+  have h : bs.card < bt.card := hbs' ▸ (rank_eq_bases_card hbt) ▸ h₃
+  have ⟨z, hz₁, hz₂⟩ := G.exchangeProperty (basis_mem_feasible hbt) (basis_mem_feasible hbs) h
+  simp only [mem_sdiff, system_feasible_set_mem_mem] at hz₁ hz₂
+  have hzbr : G.rank (insert z bs) = G.rank s + 1 := by
+    rw [rank_of_feasible hz₂]
+    simp only [hz₁, card_insert_of_not_mem, hbs']
+  have hzr : G.rank (insert z bs) = G.rank (insert z s) := rank_insert_eq_append_basis hbs
+  have hzxy : z = x ∨ z = y := by
+    sorry
+  apply hzxy.elim <;> intro hzxy <;> simp_all only [mem_insert, ne_eq, add_right_eq_self, h₂]
 
 theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
@@ -398,19 +435,6 @@ theorem rank_lt_succ_lt
   (hs₁ : G.rank s < G.rank (s ∪ {x}))
   (hs₂ : G.rank s < G.rank (s ∪ {y})) :
     G.rank s + 1 < G.rank (s ∪ {x, y}) := sorry
-
-theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card := sorry
-
-theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := sorry
-
-@[simp]
-theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
-  apply Iff.intro _ (fun h => rank_of_feasible h)
-  intro h
-  have := mt (@rank_of_infeasible _ _ _ G s)
-  simp only [not_lt, not_not] at this
-  apply this
-  simp only [h, le_refl]
 
 theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := sorry
 
