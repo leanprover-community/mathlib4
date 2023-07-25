@@ -96,7 +96,7 @@ $\frac{\partial f}{\partial \bar z}$ over the interior of this box. In particula
 differentiable function, the latter derivative is zero, hence the integral over the boundary of a
 rectangle is zero. Thus we get the Cauchy-Goursat theorem for a rectangle in `ℂ`.
 
-Next, we apply the this theorem to the function $F(z)=f(c+e^{z})$ on the rectangle
+Next, we apply this theorem to the function $F(z)=f(c+e^{z})$ on the rectangle
 $[\ln r, \ln R]\times [0, 2\pi]$ to prove that
 $$
   \oint_{|z-c|=r}\frac{f(z)\,dz}{z-c}=\oint_{|z-c|=R}\frac{f(z)\,dz}{z-c}
