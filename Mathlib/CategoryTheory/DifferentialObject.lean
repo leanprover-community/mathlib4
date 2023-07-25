@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.differential_object
-! leanprover-community/mathlib commit 6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.differential_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
 /-!
 # Differential objects in a category.
@@ -48,8 +45,10 @@ structure DifferentialObject where
   /-- The differential `d` satisfies that `d² = 0`. -/
   d_squared : d ≫ d⟦(1 : ℤ)⟧' = 0 := by aesop_cat
 #align category_theory.differential_object CategoryTheory.DifferentialObject
+set_option linter.uppercaseLean3 false in
+#align category_theory.differential_object.X CategoryTheory.DifferentialObject.obj
 
-attribute [simp] DifferentialObject.d_squared
+attribute [reassoc (attr := simp)] DifferentialObject.d_squared
 
 variable {C}
 

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.Module
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Homology.Homotopy
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
+
+#align_import algebra.homology.Module from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Complexes of modules
@@ -95,6 +92,7 @@ theorem homology_ext' {M : ModuleCat R} (i : ι) {h k : C.homology i ⟶ M}
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology_ext'
 
+set_option maxHeartbeats 400000 in
 -- porting note: `erw` had to be used instead of `simp`
 -- see https://github.com/leanprover-community/mathlib4/issues/5026
 /-- We give an alternative proof of `homology_map_eq_of_homotopy`,
@@ -117,7 +115,8 @@ example (f g : C ⟶ D) (h : Homotopy f g) (i : ι) :
     ModuleCat.toKernelSubobject_arrow, imageToKernel_arrow_apply, imageSubobject_arrow_comp_apply]
   rw [Hom.sqFrom_left, Hom.sqFrom_left, h.comm i, LinearMap.add_apply,
     LinearMap.add_apply, prevD_eq_toPrev_dTo, dNext_eq_dFrom_fromNext, comp_apply, comp_apply,
-    x.2, map_zero, zero_add]
+    x.2, map_zero]
+  dsimp
   abel
 
 end ModuleCat

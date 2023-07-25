@@ -2,15 +2,12 @@
 Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
-
-! This file was ported from Lean 3 source module field_theory.minpoly.is_integrally_closed
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.Polynomial.GaussLemma
+
+#align_import field_theory.minpoly.is_integrally_closed from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -127,7 +124,7 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
 is equal to the minimal polynomial of `x`. See also `minpoly.unique` which relaxes the
 assumptions on `S` in exchange for stronger assumptions on `R`. -/
-theorem IsIntegrallyClosed.Minpoly.unique {s : S} {P : R[X]} (hmo : P.Monic)
+theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Monic)
     (hP : Polynomial.aeval s P = 0)
     (Pmin : ∀ Q : R[X], Q.Monic → Polynomial.aeval s Q = 0 → degree P ≤ degree Q) :
     P = minpoly R s := by
@@ -139,14 +136,12 @@ theorem IsIntegrallyClosed.Minpoly.unique {s : S} {P : R[X]} (hmo : P.Monic)
   refine' degree_sub_lt _ (ne_zero hs) _
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
-#align minpoly.is_integrally_closed.minpoly.unique minpoly.IsIntegrallyClosed.Minpoly.unique
+#align minpoly.is_integrally_closed.minpoly.unique IsIntegrallyClosed.minpoly.unique
 
 theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpoly R x) := by
   refine'
     ⟨(minpoly.monic hx).ne_zero,
-      ⟨by
-        by_contra h_contra
-        exact (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
+      ⟨fun h_contra => (ne_of_lt (minpoly.degree_pos hx)) (degree_eq_zero_of_isUnit h_contra).symm,
         fun a b h => or_iff_not_imp_left.mpr fun h' => _⟩⟩
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h

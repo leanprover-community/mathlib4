@@ -2,15 +2,12 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
-
-! This file was ported from Lean 3 source module probability.variance
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Notation
 import Mathlib.Probability.Integration
 import Mathlib.MeasureTheory.Function.L2Space
+
+#align_import probability.variance from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Variance of random variables
@@ -20,7 +17,7 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 
 ## Main definitions
 
-* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as a extended
+* `ProbabilityTheory.evariance`: the variance of a real-valued random variable as an extended
   non-negative real.
 * `ProbabilityTheory.variance`: the variance of a real-valued random variable as a real number.
 
@@ -123,8 +120,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq_of_integral_eq_zero (hX : Mem�
     simp_rw [hXint, sub_zero]
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
-  · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
-    rename_i ω
+  · convert hX.integrable_norm_rpow two_ne_zero ENNReal.two_ne_top with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
@@ -137,7 +133,7 @@ theorem _root_.MeasureTheory.Memℒp.variance_eq [IsFiniteMeasure μ] (hX : Mem�
   · rfl
   · exact integral_nonneg fun ω => pow_two_nonneg _
   · convert (hX.sub <| memℒp_const (μ[X])).integrable_norm_rpow two_ne_zero ENNReal.two_ne_top
-    rename_i ω
+      with ω
     simp only [Pi.sub_apply, Real.norm_eq_abs, coe_two, ENNReal.one_toReal,
       Real.rpow_two, sq_abs, abs_pow]
   · exact ae_of_all _ fun ω => pow_two_nonneg _
@@ -215,11 +211,8 @@ theorem variance_def' [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ} (hX : Me
   · apply hX.integrable_sq.add
     convert @integrable_const Ω ℝ (_) ℙ _ _ (𝔼[X] ^ 2)
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp [integral_mul_right]
-  have : ∀ (a : Ω), @OfNat.ofNat (Ω → ℝ) 2 instOfNat a = (2 : ℝ) := fun a => rfl
-  conv_lhs => enter [2, 1, 2, a]; rw [this]
-  simp only [integral_mul_left (2 : ℝ)]
-  ring_nf
+  simp [integral_mul_right, integral_mul_left]
+  ring
 #align probability_theory.variance_def' ProbabilityTheory.variance_def'
 
 theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → ℝ}

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module algebra.category.Module.abelian
-! leanprover-community/mathlib commit 09f981f72d43749f1fa072deade828d9c1e185bb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Abelian.Exact
+
+#align_import algebra.category.Module.abelian from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 
 /-!
 # The category of left R-modules is abelian.
@@ -51,7 +48,7 @@ def normalMono (hf : Mono f) : NormalMono f where
           (LinearEquiv.toModuleIso'
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
               (LinearMap.quotKerEquivRange f ≪≫ₗ
-              LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext ; rfl
+              LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.normal_mono ModuleCat.normalMono
 
@@ -73,7 +70,7 @@ def normalEpi (hf : Epi f) : NormalEpi f where
           (LinearEquiv.toModuleIso'
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
                 LinearMap.quotKerEquivRange f ≪≫ₗ
-              LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext ; rfl
+              LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
 set_option linter.uppercaseLean3 false in
 #align Module.normal_epi ModuleCat.normalEpi
 

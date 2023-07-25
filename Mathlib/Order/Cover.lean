@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
-
-! This file was ported from Lean 3 source module order.cover
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.OrdConnected
 import Mathlib.Order.Antisymmetrization
+
+#align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # The covering relation
@@ -473,7 +470,7 @@ namespace Set
 theorem wcovby_insert (x : α) (s : Set α) : s ⩿ insert x s := by
   refine' wcovby_of_eq_or_eq (subset_insert x s) fun t hst h2t => _
   by_cases h : x ∈ t
-  · exact Or.inr (subset_antisymm h2t <| insert_subset.mpr ⟨h, hst⟩)
+  · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
   · refine' Or.inl (subset_antisymm _ hst)
     rwa [← diff_singleton_eq_self h, diff_singleton_subset_iff]
 #align set.wcovby_insert Set.wcovby_insert

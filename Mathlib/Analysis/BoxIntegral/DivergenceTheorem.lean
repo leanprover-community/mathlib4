@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.divergence_theorem
-! leanprover-community/mathlib commit e3fb84046afd187b710170887195d50bada934ee
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Basic
 import Mathlib.Analysis.BoxIntegral.Partition.Additive
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+
+#align_import analysis.box_integral.divergence_theorem from "leanprover-community/mathlib"@"e3fb84046afd187b710170887195d50bada934ee"
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral
@@ -102,7 +99,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
           (f (e (I.upper i) y) - f (e (I.lower i) y))‖ ≤
         2 * ε * diam (Box.Icc I) := fun y hy ↦ by
     set g := fun y => f y - a - f' (y - x) with hg
-    change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε 
+    change ∀ y ∈ (Box.Icc I), ‖g y‖ ≤ ε * ‖y - x‖ at hε
     clear_value g; obtain rfl : f = fun y => a + f' (y - x) + g y := by simp [hg]
     convert_to ‖g (e (I.lower i) y) - g (e (I.upper i) y)‖ ≤ _
     · congr 1
@@ -173,7 +170,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     integral.{0, u, u} J GP (fun x => f (i.insertNth y x)) BoxAdditiveMap.volume
   set fb : Icc (I.lower i) (I.upper i) → Fin n →ᵇᵃ[↑(I.face i)] E := fun x =>
     (integrable_of_continuousOn GP (Box.continuousOn_face_Icc Hc x.2) volume).toBoxAdditive
-  set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x hx J => rfl
+  set F : Fin (n + 1) →ᵇᵃ[I] E := BoxAdditiveMap.upperSubLower I i fI fb fun x _ J => rfl
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
   refine' HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le _ _ _ s hs _ _
@@ -229,7 +226,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ ≤ δ + δ := (add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc))
           _ = 2 * δ := (two_mul δ).symm
       calc
-        (∏ j, |J.upper j - J.lower j|) ≤ ∏ j : Fin (n + 1), 2 * δ :=
+        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
           prod_le_prod (fun _ _ => abs_nonneg _) fun j _ => this j
         _ = (2 * δ) ^ (n + 1) := by simp
     · refine' (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
@@ -283,10 +280,9 @@ theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
           integral.{0, u, u} (I.face i) GP (fun x => f (i.insertNth (I.lower i) x) i)
             BoxAdditiveMap.volume)) := by
   refine HasIntegral.sum fun i _ => ?_
-  simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs 
+  simp only [hasFDerivWithinAt_pi', continuousWithinAt_pi] at Hd Hs
   exact hasIntegral_GP_pderiv I _ _ s hs (fun x hx => Hs x hx i) (fun x hx => Hd x hx i) i
 set_option linter.uppercaseLean3 false in
 #align box_integral.has_integral_GP_divergence_of_forall_has_deriv_within_at BoxIntegral.hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
 
 end BoxIntegral
-

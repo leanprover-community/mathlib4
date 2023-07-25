@@ -2,13 +2,10 @@
 Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
-
-! This file was ported from Lean 3 source module topology.metric_space.infsep
-! leanprover-community/mathlib commit 5316314b553dcf8c6716541851517c1a9715e22b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
+
+#align_import topology.metric_space.infsep from "leanprover-community/mathlib"@"5316314b553dcf8c6716541851517c1a9715e22b"
 
 /-!
 # Infimum separation
@@ -159,7 +156,7 @@ theorem einfsep_pair_le_left (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edi
 #align set.einfsep_pair_le_left Set.einfsep_pair_le_left
 
 theorem einfsep_pair_le_right (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ edist y x := by
-  rw [pair_comm] ; exact einfsep_pair_le_left hxy.symm
+  rw [pair_comm]; exact einfsep_pair_le_left hxy.symm
 #align set.einfsep_pair_le_right Set.einfsep_pair_le_right
 
 theorem einfsep_pair_eq_inf (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y ⊓ edist y x :=

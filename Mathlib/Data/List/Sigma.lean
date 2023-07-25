@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
-
-! This file was ported from Lean 3 source module data.list.sigma
-! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Perm
+
+#align_import data.list.sigma from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 
 /-!
 # Utilities for lists of sigmas
@@ -285,8 +282,8 @@ theorem head?_lookupAll (a : α) : ∀ l : List (Sigma β), head? (lookupAll a l
   | [] => by simp
   | ⟨a', b⟩ :: l => by
     by_cases h : a = a'
-    . subst h; simp
-    . rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
+    · subst h; simp
+    · rw [lookupAll_cons_ne, dlookup_cons_ne, head?_lookupAll a l] <;> assumption
 #align list.head_lookup_all List.head?_lookupAll
 
 theorem mem_lookupAll {a : α} {b : β a} :
@@ -296,7 +293,7 @@ theorem mem_lookupAll {a : α} {b : β a} :
     by_cases h : a = a'
     · subst h
       simp [*, mem_lookupAll]
-    . simp [*, mem_lookupAll]
+    · simp [*, mem_lookupAll]
 #align list.mem_lookup_all List.mem_lookupAll
 
 theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).map (Sigma.mk a) <+ l
@@ -348,7 +345,7 @@ theorem kreplace_of_forall_not (a : α) (b : β a) {l : List (Sigma β)}
     rintro ⟨a', b'⟩ h; dsimp; split_ifs
     · subst a'
       exact H _ h
-    . rfl
+    · rfl
 #align list.kreplace_of_forall_not List.kreplace_of_forall_not
 
 theorem kreplace_self {a : α} {b : β a} {l : List (Sigma β)} (nd : NodupKeys l)

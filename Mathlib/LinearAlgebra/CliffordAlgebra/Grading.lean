@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.clifford_algebra.grading
-! leanprover-community/mathlib commit 34020e531ebc4e8aac6d449d9eecbcd1508ea8d0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import linear_algebra.clifford_algebra.grading from "leanprover-community/mathlib"@"34020e531ebc4e8aac6d449d9eecbcd1508ea8d0"
 
 /-!
 # Results about the grading structure of the clifford algebra
@@ -31,7 +28,7 @@ open scoped DirectSum
 variable (Q)
 
 /-- The even or odd submodule, defined as the supremum of the even or odd powers of
-`(ι Q).range`. `even_odd 0` is the even submodule, and `even_odd 1` is the odd submodule. -/
+`(ι Q).range`. `evenOdd 0` is the even submodule, and `evenOdd 1` is the odd submodule. -/
 def evenOdd (i : ZMod 2) : Submodule R (CliffordAlgebra Q) :=
   ⨆ j : { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (j : ℕ)
 #align clifford_algebra.even_odd CliffordAlgebra.evenOdd
@@ -121,7 +118,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   | h0 =>
     rw [AlgHom.map_zero]
     apply Eq.symm
-    apply Dfinsupp.single_eq_zero.mpr; rfl
+    apply DFinsupp.single_eq_zero.mpr; rfl
   | hadd x y hx hy ihx ihy =>
     rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
 #align clifford_algebra.graded_algebra.lift_ι_eq CliffordAlgebra.GradedAlgebra.lift_ι_eq
@@ -133,7 +130,7 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
     -- while not necessary, the `by apply` makes this elaborate faster
     (lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩)
     -- the proof from here onward is mostly similar to the `TensorAlgebra` case, with some extra
-    -- handling for the `iSup` in `even_odd`.
+    -- handling for the `iSup` in `evenOdd`.
     (by
       ext m
       dsimp only [LinearMap.comp_apply, AlgHom.toLinearMap_apply, AlgHom.comp_apply,
@@ -143,12 +140,12 @@ instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=
 #align clifford_algebra.graded_algebra CliffordAlgebra.gradedAlgebra
 
 set_option maxHeartbeats 300000 in
-theorem iSup_ι_range_eq_top : (⨆ i : ℕ, LinearMap.range (ι Q) ^ i) = ⊤ := by
+theorem iSup_ι_range_eq_top : ⨆ i : ℕ, LinearMap.range (ι Q) ^ i = ⊤ := by
   rw [← (DirectSum.Decomposition.isInternal (evenOdd Q)).submodule_iSup_eq_top, eq_comm]
   calc
     -- porting note: needs extra annotations, no longer unifies against the goal in the face of
     -- ambiguity
-    (⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ)) =
+    ⨆ (i : ZMod 2) (j : { n : ℕ // ↑n = i }), LinearMap.range (ι Q) ^ (j : ℕ) =
         ⨆ i : Σ i : ZMod 2, { n : ℕ // ↑n = i }, LinearMap.range (ι Q) ^ (i.2 : ℕ) :=
       by rw [iSup_sigma]
     _ = ⨆ i : ℕ, LinearMap.range (ι Q) ^ i :=

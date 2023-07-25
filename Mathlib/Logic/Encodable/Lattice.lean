@@ -2,14 +2,11 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module logic.encodable.lattice
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Pairwise
+
+#align_import logic.encodable.lattice from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Lattice operations on encodable types
@@ -30,12 +27,12 @@ namespace Encodable
 variable {α : Type _} {β : Type _} [Encodable β]
 
 theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
-    (⨆ (i : ℕ) (b ∈ decode₂ β i), f b) = (⨆ b, f b) := by
+    ⨆ (i : ℕ) (b ∈ decode₂ β i), f b = (⨆ b, f b) := by
   rw [iSup_comm]
   simp only [mem_decode₂, iSup_iSup_eq_right]
 #align encodable.supr_decode₂ Encodable.iSup_decode₂
 
-theorem iUnion_decode₂ (f : β → Set α) : (⋃ (i : ℕ) (b ∈ decode₂ β i), f b) = ⋃ b, f b :=
+theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
 #align encodable.Union_decode₂ Encodable.iUnion_decode₂
 

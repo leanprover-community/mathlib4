@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.paracompact
-! leanprover-community/mathlib commit 2705404e701abc6b3127da906f40bae062a169c9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homeomorph
 import Mathlib.Data.Option.Basic
+
+#align_import topology.paracompact from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
 
 /-!
 # Paracompact topological spaces
@@ -64,8 +61,8 @@ finite refinement `t : α → Set X` indexed on the same type such that each `�
 class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
   /-- Every open cover of a paracompact space assumes a locally finite refinement. -/
   locallyFinite_refinement :
-    ∀ (α : Type v) (s : α → Set X) (_ : ∀ a, IsOpen (s a)) (_ : (⋃ a, s a) = univ),
-      ∃ (β : Type v) (t : β → Set X) (_ : ∀ b, IsOpen (t b)) (_ : (⋃ b, t b) = univ),
+    ∀ (α : Type v) (s : α → Set X) (_ : ∀ a, IsOpen (s a)) (_ : ⋃ a, s a = univ),
+      ∃ (β : Type v) (t : β → Set X) (_ : ∀ b, IsOpen (t b)) (_ : ⋃ b, t b = univ),
         LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a
 #align paracompact_space ParacompactSpace
 
@@ -74,7 +71,7 @@ variable {ι : Type u} {X : Type v} {Y : Type w} [TopologicalSpace X] [Topologic
 /-- Any open cover of a paracompact space has a locally finite *precise* refinement, that is,
 one indexed on the same type with each open set contained in the corresponding original one. -/
 theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, IsOpen (u a))
-    (uc : (⋃ i, u i) = univ) : ∃ v : ι → Set X, (∀ a, IsOpen (v a)) ∧ (⋃ i, v i) = univ ∧
+    (uc : ⋃ i, u i = univ) : ∃ v : ι → Set X, (∀ a, IsOpen (v a)) ∧ ⋃ i, v i = univ ∧
     LocallyFinite v ∧ ∀ a, v a ⊆ u a := by
   -- Apply definition to `range u`, then turn existence quantifiers into functions using `choose`
   have := ParacompactSpace.locallyFinite_refinement (range u) (fun r ↦ (r : Set X))
@@ -103,11 +100,11 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
   -- Porting note: Added proof of uc
-  have uc : (iUnion fun i => Option.elim' (sᶜ) u i) = univ := by
+  have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
     · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
-      apply union_subset_union_right (sᶜ) us
-  rcases precise_refinement (Option.elim' (sᶜ) u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
+      apply union_subset_union_right sᶜ us
+  rcases precise_refinement (Option.elim' sᶜ u) (Option.forall.2 ⟨isOpen_compl_iff.2 hs, uo⟩)
       uc with
     ⟨v, vo, vc, vf, vu⟩
   refine' ⟨v ∘ some, fun i ↦ vo _, _, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
@@ -216,7 +213,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
       fun n ↦ ((K.isCompact _).diff isOpen_interior).inter_right hs
     -- Next we choose a finite covering `B (c n i) (r n i)` of each
     -- `Kdiff (n + 1) ∩ s` such that `B (c n i) (r n i) ∩ s` is disjoint with `K n`
-    have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), K nᶜ ∈ 𝓝 (x : X) :=
+    have : ∀ (n) (x : ↑(Kdiff (n + 1) ∩ s)), (K n)ᶜ ∈ 𝓝 (x : X) :=
       fun n x ↦ IsOpen.mem_nhds (K.isClosed n).isOpen_compl
         fun hx' ↦ x.2.1.2 <| K.subset_interior_succ _ hx'
     -- Porting note: Commented out `haveI` for now.
@@ -237,7 +234,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [LocallyComp
       refine'
         ⟨interior (K (K'.find x + 3)),
           IsOpen.mem_nhds isOpen_interior (K.subset_interior_succ _ (hKcov x).1), _⟩
-      have : (⋃ k ≤ K'.find x + 2, range <| Sigma.mk k : Set (Σn, T' n)).Finite :=
+      have : (⋃ k ≤ K'.find x + 2, range (Sigma.mk k) : Set (Σn, T' n)).Finite :=
         (finite_le_nat _).biUnion fun k _ ↦ finite_range _
       apply this.subset
       rintro ⟨k, c, hc⟩
@@ -272,7 +269,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [LocallyCompactS
     [SigmaCompactSpace X] [T2Space X] {ι : X → Type u} {p : ∀ x, ι x → Prop} {B : ∀ x, ι x → Set X}
     (hB : ∀ x, (𝓝 x).HasBasis (p x) (B x)) :
     ∃ (α : Type v) (c : α → X) (r : ∀ a, ι (c a)),
-      (∀ a, p (c a) (r a)) ∧ (⋃ a, B (c a) (r a)) = univ ∧ LocallyFinite fun a ↦ B (c a) (r a) :=
+      (∀ a, p (c a) (r a)) ∧ ⋃ a, B (c a) (r a) = univ ∧ LocallyFinite fun a ↦ B (c a) (r a) :=
   let ⟨α, c, r, hp, hU, hfin⟩ :=
     refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set isClosed_univ fun x _ ↦ hB x
   ⟨α, c, r, fun a ↦ (hp a).2, univ_subset_iff.1 hU, hfin⟩
@@ -306,7 +303,7 @@ theorem normal_of_paracompact_t2 [T2Space X] [ParacompactSpace X] : NormalSpace 
     choose u v hu hv hxu htv huv using SetCoe.forall'.1 H
     rcases precise_refinement_set hs u hu fun x hx ↦ mem_iUnion.2 ⟨⟨x, hx⟩, hxu _⟩ with
       ⟨u', hu'o, hcov', hu'fin, hsub⟩
-    refine' ⟨⋃ i, u' i, closure (⋃ i, u' i)ᶜ, isOpen_iUnion hu'o, isClosed_closure.isOpen_compl,
+    refine' ⟨⋃ i, u' i, (closure (⋃ i, u' i))ᶜ, isOpen_iUnion hu'o, isClosed_closure.isOpen_compl,
       hcov', _, disjoint_compl_right.mono le_rfl (compl_le_compl subset_closure)⟩
     rw [hu'fin.closure_iUnion, compl_iUnion, subset_iInter_iff]
     refine' fun i x hxt hxu ↦

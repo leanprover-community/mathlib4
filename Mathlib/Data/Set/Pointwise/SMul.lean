@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
-
-! This file was ported from Lean 3 source module data.set.pointwise.smul
-! leanprover-community/mathlib commit 5e526d18cea33550268dcbbddcb822d5cde40654
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import data.set.pointwise.smul from "leanprover-community/mathlib"@"5e526d18cea33550268dcbbddcb822d5cde40654"
 
 /-!
 # Pointwise operations of sets
@@ -57,7 +54,7 @@ section SMul
       "The translation of set `x +ᵥ s` is defined as `{x +ᵥ y | y ∈ s}` in
       locale `Pointwise`."]
 protected def smulSet [SMul α β] : SMul α (Set β) :=
-  ⟨fun a ↦ image (a • .)⟩
+  ⟨fun a ↦ image (a • ·)⟩
 #align set.has_smul_set Set.smulSet
 #align set.has_vadd_set Set.vaddSet
 
@@ -67,7 +64,7 @@ locale `Pointwise`. -/
       "The pointwise scalar addition of sets `s +ᵥ t` is defined as
       `{x +ᵥ y | x ∈ s, y ∈ t}` in locale `Pointwise`."]
 protected def smul [SMul α β] : SMul (Set α) (Set β) :=
-  ⟨image2 (. • .)⟩
+  ⟨image2 (· • ·)⟩
 #align set.has_smul Set.smul
 #align set.has_vadd Set.vadd
 
@@ -228,13 +225,13 @@ theorem union_smul_inter_subset_union : (s₁ ∪ s₂) • (t₁ ∩ t₂) ⊆ 
 #align set.union_vadd_inter_subset_union Set.union_vadd_inter_subset_union
 
 @[to_additive]
-theorem iUnion_smul_left_image : (⋃ a ∈ s, a • t) = s • t :=
+theorem iUnion_smul_left_image : ⋃ a ∈ s, a • t = s • t :=
   iUnion_image_left _
 #align set.Union_smul_left_image Set.iUnion_smul_left_image
 #align set.Union_vadd_left_image Set.iUnion_vadd_left_image
 
 @[to_additive]
-theorem iUnion_smul_right_image : (⋃ a ∈ t, (· • a) '' s) = s • t :=
+theorem iUnion_smul_right_image : ⋃ a ∈ t, (· • a) '' s = s • t :=
   iUnion_image_right _
 #align set.Union_smul_right_image Set.iUnion_smul_right_image
 #align set.Union_vadd_right_image Set.iUnion_vadd_right_image
@@ -298,7 +295,7 @@ theorem smul_set_subset_smul {s : Set α} : a ∈ s → a • t ⊆ s • t :=
 #align set.vadd_set_subset_vadd Set.vadd_set_subset_vadd
 
 @[to_additive (attr := simp)]
-theorem iUnion_smul_set (s : Set α) (t : Set β) : (⋃ a ∈ s, a • t) = s • t :=
+theorem iUnion_smul_set (s : Set α) (t : Set β) : ⋃ a ∈ s, a • t = s • t :=
   iUnion_image_left _
 #align set.bUnion_smul_set Set.iUnion_smul_set
 #align set.bUnion_vadd_set Set.iUnion_vadd_set
@@ -421,8 +418,13 @@ theorem op_smul_set_subset_mul : a ∈ t → op a • s ⊆ s * t :=
 #align set.op_smul_set_subset_mul Set.op_smul_set_subset_mul
 #align set.op_vadd_set_subset_add Set.op_vadd_set_subset_add
 
+@[to_additive]
+theorem image_op_smul : (op '' s) • t = t * s := by
+  rw [← image2_smul, ← image2_mul, image2_image_left, image2_swap]
+  rfl
+
 @[to_additive (attr := simp)]
-theorem iUnion_op_smul_set (s t : Set α) : (⋃ a ∈ t, MulOpposite.op a • s) = s * t :=
+theorem iUnion_op_smul_set (s t : Set α) : ⋃ a ∈ t, MulOpposite.op a • s = s * t :=
   iUnion_image_right _
 #align set.bUnion_op_smul_set Set.iUnion_op_smul_set
 #align set.bUnion_op_vadd_set Set.iUnion_op_vadd_set
@@ -705,11 +707,11 @@ theorem union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s�
   image2_union_inter_subset_union
 #align set.union_vsub_inter_subset_union Set.union_vsub_inter_subset_union
 
-theorem iUnion_vsub_left_image : (⋃ a ∈ s, (· -ᵥ ·) a '' t) = s -ᵥ t :=
+theorem iUnion_vsub_left_image : ⋃ a ∈ s, (· -ᵥ ·) a '' t = s -ᵥ t :=
   iUnion_image_left _
 #align set.Union_vsub_left_image Set.iUnion_vsub_left_image
 
-theorem iUnion_vsub_right_image : (⋃ a ∈ t, (· -ᵥ a) '' s) = s -ᵥ t :=
+theorem iUnion_vsub_right_image : ⋃ a ∈ t, (· -ᵥ a) '' s = s -ᵥ t :=
   iUnion_image_right _
 #align set.Union_vsub_right_image Set.iUnion_vsub_right_image
 
@@ -992,13 +994,13 @@ theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
 #align set.op_vadd_inter_ne_empty_iff Set.op_vadd_inter_ne_empty_iff
 
 @[to_additive (attr := simp)]
-theorem iUnion_inv_smul : (⋃ g : α, g⁻¹ • s) = ⋃ g : α, g • s :=
+theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
   (Function.Surjective.iSup_congr _ inv_surjective) fun _ ↦ rfl
 #align set.Union_inv_smul Set.iUnion_inv_smul
 #align set.Union_neg_vadd Set.iUnion_neg_vadd
 
 @[to_additive]
-theorem iUnion_smul_eq_setOf_exists {s : Set β} : (⋃ g : α, g • s) = { a | ∃ g : α, g • a ∈ s } :=
+theorem iUnion_smul_eq_setOf_exists {s : Set β} : ⋃ g : α, g • s = { a | ∃ g : α, g • a ∈ s } :=
   by simp_rw [← iUnion_setOf, ← iUnion_inv_smul, ← preimage_smul, preimage]
 #align set.Union_smul_eq_set_of_exists Set.iUnion_smul_eq_setOf_exists
 #align set.Union_vadd_eq_set_of_exists Set.iUnion_vadd_eq_setOf_exists

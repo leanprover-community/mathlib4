@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
-
-! This file was ported from Lean 3 source module data.list.prime
-! leanprover-community/mathlib commit ccad6d5093bd2f5c6ca621fc74674cce51355af6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Perm
+
+#align_import data.list.prime from "leanprover-community/mathlib"@"ccad6d5093bd2f5c6ca621fc74674cce51355af6"
 
 /-!
 # Products of lists of prime elements.
@@ -73,7 +70,7 @@ theorem perm_of_prod_eq_prod :
       have hl₂' : ∀ p ∈ (b :: l₂).erase a, Prime p := fun p hp => hl₂ p (mem_of_mem_erase hp)
       have ha : a ∈ b :: l₂ :=
         mem_list_primes_of_dvd_prod (hl₁ a (mem_cons_self _ _)) hl₂
-          (h ▸ by rw [prod_cons] ; exact dvd_mul_right _ _)
+          (h ▸ by rw [prod_cons]; exact dvd_mul_right _ _)
       have hb : b :: l₂ ~ a :: (b :: l₂).erase a := perm_cons_erase ha
       have hl : prod l₁ = prod ((b :: l₂).erase a) :=
         (mul_right_inj' (hl₁ a (mem_cons_self _ _)).ne_zero).1 <| by

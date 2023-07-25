@@ -2,14 +2,11 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module geometry.manifold.smooth_manifold_with_corners
-! leanprover-community/mathlib commit ddec54a71a0dd025c05445d467f1a2b7d586a3ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.ContDiff
 import Mathlib.Geometry.Manifold.ChartedSpace
+
+#align_import geometry.manifold.smooth_manifold_with_corners from "leanprover-community/mathlib"@"ddec54a71a0dd025c05445d467f1a2b7d586a3ba"
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -345,7 +342,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this 
     rwa [Function.comp.assoc, I.symm_comp_self] at this 
-  · rw [← I.left_inv x] at h ; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
+  · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm (inter_subset_left _ _)
 #align model_with_corners.symm_continuous_within_at_comp_right_iff ModelWithCorners.symm_continuousWithinAt_comp_right_iff
 
 protected theorem locally_compact [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
@@ -481,6 +478,20 @@ class ModelWithCorners.Boundaryless {𝕜 : Type _} [NontriviallyNormedField �
     (I : ModelWithCorners 𝕜 E H) : Prop where
   range_eq_univ : range I = univ
 #align model_with_corners.boundaryless ModelWithCorners.Boundaryless
+
+theorem ModelWithCorners.range_eq_univ {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
+    range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
+
+/-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
+@[simps (config := {simpRhs := true})]
+def ModelWithCorners.toHomeomorph {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type _} [TopologicalSpace H]
+    (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] : H ≃ₜ E where
+  __ := I
+  left_inv := I.left_inv
+  right_inv _ := I.right_inv <| I.range_eq_univ.symm ▸ mem_univ _
 
 /-- The trivial model with corners has no boundary -/
 instance modelWithCornersSelf_boundaryless (𝕜 : Type _) [NontriviallyNormedField 𝕜] (E : Type _)
@@ -1091,10 +1102,21 @@ theorem mem_extChartAt_source : x ∈ (extChartAt I x).source := by
   simp only [extChartAt_source, mem_chart_source]
 #align mem_ext_chart_source mem_extChartAt_source
 
+theorem mem_extChartAt_target : extChartAt I x x ∈ (extChartAt I x).target :=
+  (extChartAt I x).map_source <| mem_extChartAt_source _ _
+
 theorem extChartAt_target (x : M) :
     (extChartAt I x).target = I.symm ⁻¹' (chartAt H x).target ∩ range I :=
   extend_target _ _
 #align ext_chart_at_target extChartAt_target
+
+theorem uniqueDiffOn_extChartAt_target (x : M) : UniqueDiffOn 𝕜 (extChartAt I x).target := by
+  rw [extChartAt_target]
+  exact I.unique_diff_preimage (chartAt H x).open_target
+
+theorem uniqueDiffWithinAt_extChartAt_target (x : M) :
+    UniqueDiffWithinAt 𝕜 (extChartAt I x).target (extChartAt I x x) :=
+  uniqueDiffOn_extChartAt_target I x _ <| mem_extChartAt_target I x
 
 theorem extChartAt_to_inv : (extChartAt I x).symm ((extChartAt I x) x) = x :=
   (extChartAt I x).left_inv (mem_extChartAt_source I x)
@@ -1316,6 +1338,21 @@ def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 #align written_in_ext_chart_at writtenInExtChartAt
 
+theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
+  simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
+  simp_all only [mfld_simps]
+
+theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
+    writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
+  simp_all only [mfld_simps]
+
 variable (𝕜)
 
 theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
@@ -1345,6 +1382,24 @@ theorem extChartAt_prod (x : M × M') :
   -- synonym
   rw [LocalEquiv.prod_trans]
 #align ext_chart_at_prod extChartAt_prod
+
+theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
+    (letI := ChartedSpace.comp H H' M'; extChartAt I x) =
+      (chartAt H' x).toLocalEquiv ≫ extChartAt I (chartAt H' x x) :=
+  LocalEquiv.trans_assoc ..
+
+theorem writtenInExtChartAt_chartAt_comp [ChartedSpace H H'] (x : M') {y}
+    (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
+    (letI := ChartedSpace.comp H H' M'; writtenInExtChartAt I I x (chartAt H' x) y) = y := by
+  letI := ChartedSpace.comp H H' M'
+  simp_all only [mfld_simps, chartAt_comp]
+
+theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
+    (hy : y ∈ letI := ChartedSpace.comp H H' M'; (extChartAt I x).target) :
+    ( letI := ChartedSpace.comp H H' M'
+      writtenInExtChartAt I I (chartAt H' x x) (chartAt H' x).symm y) = y := by
+  letI := ChartedSpace.comp H H' M'
+  simp_all only [mfld_simps, chartAt_comp]
 
 end ExtendedCharts
 

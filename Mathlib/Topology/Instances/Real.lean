@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.instances.real
-! leanprover-community/mathlib commit 9a59dcb7a2d06bf55da57b9030169219980660cd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Basic
 import Mathlib.Topology.Algebra.UniformGroup
@@ -20,6 +15,8 @@ import Mathlib.GroupTheory.Archimedean
 import Mathlib.Algebra.Order.Group.Bounds
 import Mathlib.Algebra.Periodic
 import Mathlib.Topology.Instances.Int
+
+#align_import topology.instances.real from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 # Topological properties of ℝ

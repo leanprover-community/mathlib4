@@ -2,16 +2,13 @@
 Copyright (c) 2015 Joe Hendrix. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joe Hendrix, Sebastian Ullrich
-
-! This file was ported from Lean 3 source module data.bitvec.core
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Pow
 import Init.Data.Format.Basic
 import Mathlib.Init.Data.Nat.Lemmas
+
+#align_import data.bitvec.core from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 /-!
 # Basic operations on bitvectors
 
@@ -152,16 +149,6 @@ section Arith
 
 variable {n : ℕ}
 
-/-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
-protected def xor3 (x y c : Bool) :=
-  xor (xor x y) c
-#align bitvec.xor3 Bitvec.xor3
-
-/-- `carry x y c` is `x && y || x && c || y && c`. -/
-protected def carry (x y c : Bool) :=
-  x && y || x && c || y && c
-#align bitvec.carry Bitvec.carry
-
 /-- `neg x` is the two's complement of `x`. -/
 protected def neg (x : Bitvec n) : Bitvec n :=
   let f y c := (y || c, xor y c)
@@ -170,7 +157,7 @@ protected def neg (x : Bitvec n) : Bitvec n :=
 
 /-- Add with carry (no overflow) -/
 def adc (x y : Bitvec n) (c : Bool) : Bitvec (n + 1) :=
-  let f x y c := (Bitvec.carry x y c, Bitvec.xor3 x y c)
+  let f x y c := (Bool.carry x y c, Bool.xor3 x y c)
   let ⟨c, z⟩ := Vector.mapAccumr₂ f x y c
   c ::ᵥ z
 #align bitvec.adc Bitvec.adc
@@ -182,7 +169,7 @@ protected def add (x y : Bitvec n) : Bitvec n :=
 
 /-- Subtract with borrow -/
 def sbb (x y : Bitvec n) (b : Bool) : Bool × Bitvec n :=
-  let f x y c := (Bitvec.carry (not x) y c, Bitvec.xor3 x y c)
+  let f x y c := (Bool.carry (not x) y c, Bool.xor3 x y c)
   Vector.mapAccumr₂ f x y b
 #align bitvec.sbb Bitvec.sbb
 
