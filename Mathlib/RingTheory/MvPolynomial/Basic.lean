@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Variables
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 
@@ -57,14 +58,7 @@ end CharP
 
 section CharZero
 
-instance [CharZero R] : CharZero (MvPolynomial σ R) where
-  cast_injective := by
-    refine injective_of_lt_imp_ne ?h
-    intro x y xlty
-    rw [← C_eq_coe_nat, ← C_eq_coe_nat]
-    by_contra cxy
-    rw [C_inj] at cxy
-    exact (ne_of_lt xlty) (@CharZero.cast_injective R _ _ x y cxy)
+instance [CharZero R] : CharZero (MvPolynomial σ R) := CharP.charP_to_charZero (MvPolynomial σ R)
 
 end CharZero
 
