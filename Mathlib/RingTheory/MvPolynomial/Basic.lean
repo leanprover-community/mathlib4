@@ -55,6 +55,19 @@ instance [CharP R p] : CharP (MvPolynomial σ R) p where
 
 end CharP
 
+section CharZero
+
+instance [CharZero R] : CharZero (MvPolynomial σ R) where
+  cast_injective := by
+    refine injective_of_lt_imp_ne ?h
+    intro x y xlty
+    rw [← C_eq_coe_nat, ← C_eq_coe_nat]
+    by_contra cxy
+    rw [C_inj] at cxy
+    exact (ne_of_lt xlty) (@CharZero.cast_injective R _ _ x y cxy)
+
+end CharZero
+
 section Homomorphism
 
 theorem mapRange_eq_map {R S : Type _} [CommRing R] [CommRing S] (p : MvPolynomial σ R)
