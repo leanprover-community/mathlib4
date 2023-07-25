@@ -2,7 +2,6 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
-Ported by: Winston Yin
 -/
 import Mathlib.Data.Set.Basic
 
@@ -984,6 +983,9 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 #align set.range_quotient_mk' Set.range_quotient_mk'
+
+@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+  range_quotient_mk
 
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
