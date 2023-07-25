@@ -101,12 +101,8 @@ def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
 def T_map (t : Finset σ × σ) : Finset σ × σ :=
   if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (cons t.snd t.fst h, t.snd)
 
-/-- Needed for `Finset.sum_involution` -/
-def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
-
-theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
-  rw [pairs, mem_filter] at *
-  rw [T_map_restr, T_map]
+theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map σ t ∈ pairs σ k := by
+  rw [pairs, mem_filter, T_map] at *
   simp only [mem_univ, true_and] at h
   split_ifs with h1
   · simp only [h1, implies_true, true_and, and_true] at h
@@ -124,9 +120,8 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ
     simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
 
-theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
-    T_map_restr σ (T_map_restr σ t h) (T_map_pair σ t h) = t := by
-  rw [T_map_restr, T_map_restr, T_map, T_map]
+theorem T_map_invol (t : Finset σ × σ) : T_map σ (T_map σ t) = t := by
+  rw [T_map, T_map]
   split_ifs with h1 h2 h3
   · simp at h2
   · simp [insert_erase h1]
@@ -134,8 +129,8 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
   · simp at h3
 
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
-    (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
-  rw [T_map_restr, T_map, weight, weight]
+    (weight σ R k t) + weight σ R k (T_map σ t) = 0 := by
+  rw [T_map, weight, weight]
   rw [pairs, mem_filter] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
   · rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
@@ -163,18 +158,18 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     simp
 
 theorem weight_zero_for_fixed_by_T' (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h2 : T_map_restr σ t h = t) : weight σ R k t = 0 := by
+    (h2 : T_map σ t = t) : weight σ R k t = 0 := by
   have h3 := weight_compose_T σ R t h
   rw [h2, ← two_mul, _root_.mul_eq_zero] at h3
   exact h3.resolve_left two_ne_zero
 
 theorem weight_zero_for_fixed_by_T (t : Finset σ × σ) (h : t ∈ pairs σ k)
-    (h1 : weight σ R k t ≠ 0) : T_map_restr σ t h ≠ t :=
+    (h1 : weight σ R k t ≠ 0) : T_map σ t ≠ t :=
   mt (weight_zero_for_fixed_by_T' σ R t h) h1
 
 theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
-  sum_involution (T_map_restr σ) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
-    (T_map_pair σ) (T_map_invol σ)
+  sum_involution (fun t _ => T_map σ t) (weight_compose_T σ R) (weight_zero_for_fixed_by_T σ R)
+    (T_map_pair σ) (fun t _ => T_map_invol σ t)
 
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
