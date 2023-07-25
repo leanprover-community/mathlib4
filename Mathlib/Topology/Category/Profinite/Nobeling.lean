@@ -4902,67 +4902,8 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by -- (basisAux
     intro i hi
     simp only [Set.mem_empty_iff_false, false_and, exists_false, Set.setOf_false] at hi
 
-  -- · dsimp [P']
-  --   intro C _ hsC
-  --   dsimp [Support] at hsC
-  --   have : C ⊆ {(fun _ ↦ false)}
-  --   · intro c hc
-  --     simp
-  --     ext x
-  --     simp at hsC
-  --     specialize hsC x c hc
-  --     rw [Bool.eq_false_iff]
-  --     intro ht
-  --     apply Ordinal.not_lt_zero (ord I x)
-  --     exact hsC ht
-  --   rw [Set.subset_singleton_iff_eq] at this
-  --   rcases this
-  --   · subst C
-  --     exact linearIndependentEmpty
-  --   · subst C
-  --     exact linearIndependentSingleton
-  -- · intro o h
-  --   dsimp [P'] at *
-  --   intro C hC hsC
-  --   by_cases hnC : Nonempty C
-  --   · by_cases ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)
-  --     · rw [linearIndependent_iff_sum C o hsC]
-  --       suffices : LinearIndependent ℤ (u C o)
-  --       · exact this
-  --       refine' ModuleCat.linearIndependent_leftExact _ _ _
-  --           (LocallyConstant.LeftExact C hC hsC ho) (huv C o) (huw C hsC ho)
-  --       · exact h (Res C o) (isClosed_Res C o hC) (support_Res_le_o C o)
-  --       · have h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o))) := h_one _ hC ho
-  --         rw [← hw C hC hsC ho h₁]
-  --         exact h (C' C ho) (isClosed_C' C hC ho) (support_C' C ho)
-  --       · exact injective_u C o hsC
-  --     · have hsC' : Support C ⊆ {j | ord I j < o}
-  --       · dsimp [Support]
-  --         simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp]
-  --         intro _ _ _ _
-  --         simp only [not_lt] at ho
-  --         refine' lt_of_lt_of_le _ ho
-  --         dsimp [ord]
-  --         exact Ordinal.typein_lt_type _ _
-  --       exact h C hC hsC'
-  --   · rw [Set.nonempty_coe_sort, Set.not_nonempty_iff_eq_empty] at hnC
-  --     subst hnC
-  --     specialize h ∅ hC
-  --     apply h
-  --     dsimp [Support]
-  --     intro i hi
-  --     simp only [Set.mem_empty_iff_false, false_and, exists_false, Set.setOf_false] at hi
-  -- · intro o ho h
-  --   dsimp [P'] at *
-  --   intro C hC hsC
-  --   rw [ModProducts.linear_independent_iff C ho hsC]
-  --   refine' linearIndependent_iUnion_of_directed (DirectedS C o) _
-  --   rintro ⟨o', ho'⟩
-  --   specialize h o' ho' (Res C o') (isClosed_Res C o' hC) (support_Res_le_o C o')
-  --   rw [ModProducts.smaller_linear_independent_iff] at h
-  --   exact h
-
 #print axioms GoodProducts.linearIndependentAux
+
 
 variable {C₁ : Set (I → Bool)}
 
@@ -4985,21 +4926,25 @@ lemma supportTop (C₁ : Set (I → Bool)) : Support ((r I) '' C₁) ⊆ {j | j 
     rw [← WithTop.none_eq_top]
     exact WithTop.some_lt_none _
 
-lemma GoodProducts.linearIndependent (hC₁ : IsClosed C₁) :
+lemma GoodProducts.linearIndependent (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
   LinearIndependent ℤ (GoodProducts.eval ((r I) '' C₁)) :=
-GoodProducts.linearIndependentAux ⊤ ((r I) '' C₁) (isClosedInWithTop hC₁) (supportTop C₁)
+GoodProducts.linearIndependentAux ⊤ ((r I) '' C₁) hT (isClosedInWithTop hC₁) (supportTop C₁)
 
-lemma GoodProducts.span (hC₁ : IsClosed C₁) :
-  ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval ((r I) '' C₁))) :=
-GoodProducts.spanAux ⊤ ((r I) '' C₁) (isClosedInWithTop hC₁) (supportTop C₁)
+#print axioms GoodProducts.linearIndependent
+
+lemma GoodProducts.span (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+    ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval ((r I) '' C₁))) :=
+hT (r I '' C₁) (subset_refl _) (isClosedInWithTop hC₁) (r I '' C₁) id continuous_id
+  Function.surjective_id (isClosedInWithTop hC₁)
 
 noncomputable
-def GoodProducts.Basis (hC₁ : IsClosed C₁) : Basis (GoodProducts ((r I) '' C₁)) ℤ
-  (LocallyConstant {i // i ∈ ((r I) '' C₁)} ℤ) :=
-Basis.mk (GoodProducts.linearIndependent hC₁) (GoodProducts.span hC₁)
+def GoodProducts.Basis (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+    Basis (GoodProducts ((r I) '' C₁)) ℤ (LocallyConstant {i // i ∈ ((r I) '' C₁)} ℤ) :=
+Basis.mk (GoodProducts.linearIndependent hC₁ hT) (GoodProducts.span hC₁ hT)
 
-lemma closedFree (hC₁ : IsClosed C₁) : Module.Free ℤ (LocallyConstant {i // i ∈ ((r I) '' C₁)} ℤ) :=
-Module.Free.of_basis $ GoodProducts.Basis hC₁
+lemma closedFree (hC₁ : IsClosed C₁) (hT : T (r I '' C₁)) :
+    Module.Free ℤ (LocallyConstant {i // i ∈ ((r I) '' C₁)} ℤ) :=
+Module.Free.of_basis $ GoodProducts.Basis hC₁ hT
 
 variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
 
@@ -5035,26 +4980,26 @@ def locConstIso (hι : ClosedEmbedding ι) :
   (LocallyConstant S ℤ) ≃ₗ[ℤ] (LocallyConstant { i // i ∈ r I '' Set.range ι } ℤ) :=
 LocallyConstant.equivLinear (homeoClosed hι)
 
-lemma Nobeling : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
-  (closedFree hι.closed_range) (locConstIso hι).symm
+lemma Nobeling (hT : T (r I '' Set.range ι)) : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
+  (closedFree hι.closed_range hT) (locConstIso hι).symm
 
 end NobelingProof
 
-variable (S : Profinite)
+variable (S : Profinite.{u})
 
 open Classical
 
 noncomputable
-def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
+def Nobeling.ι' : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decide (s ∈ C.1)
 
 instance totally_separated_of_totally_disconnected_compact_hausdorff (α : Type _)
     [TopologicalSpace α] [CompactSpace α] [TotallyDisconnectedSpace α] [T2Space α] :
     TotallySeparatedSpace α := by
   rwa [← compact_t2_tot_disc_iff_tot_sep]
 
-lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
+lemma Nobeling.embedding' : ClosedEmbedding (Nobeling.ι' S) := by
   apply Continuous.closedEmbedding
-  · dsimp [ι]
+  · dsimp [ι']
     refine' continuous_pi _
     intro C
     rw [← IsLocallyConstant.iff_continuous]
@@ -5079,13 +5024,22 @@ lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     have h' := exists_clopen_of_totally_separated hnab
     obtain ⟨C, hC, h₁⟩ := h'
     apply h₁.2
-    have ha : ι S a ⟨C, hC⟩ = decide (a ∈ C) := rfl
-    have hb : ι S b ⟨C, hC⟩ = decide (b ∈ C) := rfl
+    have ha : ι' S a ⟨C, hC⟩ = decide (a ∈ C) := rfl
+    have hb : ι' S b ⟨C, hC⟩ = decide (b ∈ C) := rfl
     apply of_decide_eq_true
     rw [← hb, ← hab, ha]
     apply decide_eq_true
     exact h₁.1
 
+def Nobeling.I (S : Profinite.{u}) : Type u := sorry
+
+def Nobeling.ι : S → ((I S) → Bool) := sorry
+
+lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := sorry
+
+lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingRel)
+  ((NobelingProof.r (I S) '' Set.range (ι S))) := sorry
+
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
-@NobelingProof.Nobeling {C : Set S // IsClopen C} (IsWellOrder.linearOrder WellOrderingRel)
-  WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S)
+@NobelingProof.Nobeling (Nobeling.I S) (IsWellOrder.linearOrder WellOrderingRel)
+  WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S) (Nobeling.T.{u} S)
