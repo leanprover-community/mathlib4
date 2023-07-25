@@ -2,15 +2,12 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module topology.uniform_space.cauchy
-! leanprover-community/mathlib commit 22131150f88a2d125713ffa0f4693e3355b1eb49
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
 import Mathlib.Topology.UniformSpace.Basic
+
+#align_import topology.uniform_space.cauchy from "leanprover-community/mathlib"@"22131150f88a2d125713ffa0f4693e3355b1eb49"
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.

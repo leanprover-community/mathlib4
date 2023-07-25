@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.set.pairwise.lattice
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Pairwise.Basic
+
+#align_import data.set.pairwise.lattice from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
 /-!
 # Relations holding pairwise
@@ -18,17 +15,16 @@ In this file we prove many facts about `Pairwise` and the set lattice.
 -/
 
 
-open Set Function
+open Function Set Order
 
-variable {α β γ ι ι' : Type _} {r p q : α → α → Prop}
-
+variable {α β γ ι ι' : Type _} {κ : Sort _} {r p q : α → α → Prop}
 section Pairwise
 
 variable {f g : ι → α} {s t u : Set α} {a b : α}
 
 namespace Set
 
-theorem pairwise_iUnion {f : ι → Set α} (h : Directed (· ⊆ ·) f) :
+theorem pairwise_iUnion {f : κ → Set α} (h : Directed (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
   · intro H n
@@ -69,8 +65,7 @@ end PartialOrderBot
 
 section CompleteLattice
 
-variable [CompleteLattice α]
-
+variable [CompleteLattice α] {s : Set ι} {t : Set ι'}
 
 /-- Bind operation for `Set.PairwiseDisjoint`. If you want to only consider finsets of indices, you
 can use `Set.PairwiseDisjoint.biUnion_finset`. -/
@@ -89,7 +84,42 @@ theorem PairwiseDisjoint.biUnion {s : Set ι'} {g : ι' → Set ι} {f : ι → 
       (le_iSup₂ (f := fun i (_ : i ∈ g d) => f i) b hb)
 #align set.pairwise_disjoint.bUnion Set.PairwiseDisjoint.biUnion
 
+/-- If the suprema of columns are pairwise disjoint and suprema of rows as well, then everything is
+pairwise disjoint. Not to be confused with `Set.PairwiseDisjoint.prod`. -/
+theorem PairwiseDisjoint.prod_left {f : ι × ι' → α}
+    (hs : s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i'))
+    (ht : t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i')) :
+    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f := by
+  rintro ⟨i, i'⟩ hi ⟨j, j'⟩ hj h
+  rw [mem_prod] at hi hj
+  obtain rfl | hij := eq_or_ne i j
+  · refine' (ht hi.2 hj.2 <| (Prod.mk.inj_left _).ne_iff.1 h).mono _ _
+    · convert le_iSup₂ (α := α) i hi.1; rfl
+    · convert le_iSup₂ (α := α) i hj.1; rfl
+  · refine' (hs hi.1 hj.1 hij).mono _ _
+    · convert le_iSup₂ (α := α) i' hi.2; rfl
+    · convert le_iSup₂ (α := α) j' hj.2; rfl
+#align set.pairwise_disjoint.prod_left Set.PairwiseDisjoint.prod_left
+
 end CompleteLattice
+
+section Frame
+
+variable [Frame α]
+
+theorem pairwiseDisjoint_prod_left {s : Set ι} {t : Set ι'} {f : ι × ι' → α} :
+    (s ×ˢ t : Set (ι × ι')).PairwiseDisjoint f ↔
+      (s.PairwiseDisjoint fun i => ⨆ i' ∈ t, f (i, i')) ∧
+        t.PairwiseDisjoint fun i' => ⨆ i ∈ s, f (i, i') := by
+  refine'
+        ⟨fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩, fun h => h.1.prod_left h.2⟩ <;>
+      simp_rw [Function.onFun, iSup_disjoint_iff, disjoint_iSup_iff] <;>
+    intro i' hi' j' hj'
+  · exact h (mk_mem_prod hi hi') (mk_mem_prod hj hj') (ne_of_apply_ne Prod.fst hij)
+  · exact h (mk_mem_prod hi' hi) (mk_mem_prod hj' hj) (ne_of_apply_ne Prod.snd hij)
+#align set.pairwise_disjoint_prod_left Set.pairwiseDisjoint_prod_left
+
+end Frame
 
 theorem biUnion_diff_biUnion_eq {s t : Set ι} {f : ι → Set α} (h : (s ∪ t).PairwiseDisjoint f) :
     ((⋃ i ∈ s, f i) \ ⋃ i ∈ t, f i) = ⋃ i ∈ s \ t, f i := by
@@ -115,7 +145,7 @@ section
 variable {f : ι → Set α} {s t : Set ι}
 
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)
-    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
+    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
   rintro i hi
   obtain ⟨a, hai⟩ := h₁ i hi
   obtain ⟨j, hj, haj⟩ := mem_iUnion₂.1 (h <| mem_iUnion₂_of_mem hi hai)
@@ -124,7 +154,7 @@ theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).
 #align set.pairwise_disjoint.subset_of_bUnion_subset_bUnion Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion
 
 theorem Pairwise.subset_of_biUnion_subset_biUnion (h₀ : Pairwise (Disjoint on f))
-    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t :=
+    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t :=
   Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀.set_pairwise _) h₁ h
 #align pairwise.subset_of_bUnion_subset_bUnion Pairwise.subset_of_biUnion_subset_biUnion
 

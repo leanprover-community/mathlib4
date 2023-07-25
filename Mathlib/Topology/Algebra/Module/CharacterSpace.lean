@@ -2,15 +2,12 @@
 Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
-
-! This file was ported from Lean 3 source module topology.algebra.module.character_space
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
+
+#align_import topology.algebra.module.character_space from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Character space of a topological algebra
@@ -25,10 +22,10 @@ C⋆-algebras.
 ## Implementation notes
 
 We define `WeakDual.characterSpace 𝕜 A` as a subset of the weak dual, which automatically puts the
-correct topology on the space. We then define `to_alg_hom` which provides the algebra homomorphism
-corresponding to any element. We also provide `to_clm` which provides the element as a
-continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of `A →L[𝕜] 𝕜`, this is
-often more convenient.)
+correct topology on the space. We then define `WeakDual.CharacterSpace.toAlgHom` which provides the
+algebra homomorphism corresponding to any element. We also provide `WeakDual.CharacterSpace.toClm`
+which provides the element as a continuous linear map. (Even though `WeakDual 𝕜 A` is a type copy of
+`A →L[𝕜] 𝕜`, this is often more convenient.)
 
 ## Tags
 
@@ -94,7 +91,7 @@ instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A)
     map_zero := fun φ => map_zero φ
     map_mul := fun φ => φ.prop.2 }
 
-/-- An element of the character space, as an non-unital algebra homomorphism. -/
+/-- An element of the character space, as a non-unital algebra homomorphism. -/
 def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
   toFun := (φ : A → 𝕜)
   map_mul' := map_mul φ
@@ -109,7 +106,7 @@ theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgH
 #align weak_dual.character_space.coe_to_non_unital_alg_hom WeakDual.CharacterSpace.coe_toNonUnitalAlgHom
 
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
-  ⟨fun φ =>  φ.prop.1 <|
+  ⟨fun φ => φ.prop.1 <|
     ContinuousLinearMap.ext fun x => by
       rw [show x = 0 from Subsingleton.elim x 0, map_zero, map_zero] ⟩
 
@@ -200,7 +197,7 @@ theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ke
   ext x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
     simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)
-  · rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
+  rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
 #align weak_dual.character_space.ext_ker WeakDual.CharacterSpace.ext_ker
 
 end Ring

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv.prod
-! leanprover-community/mathlib commit e354e865255654389cc46e6032160238df2e0f40
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+
+#align_import analysis.calculus.fderiv.prod from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"
 
 /-!
 # Derivative of the cartesian product of functions
@@ -364,10 +361,10 @@ In this section we formulate `has_*fderiv*_pi` theorems as `iff`s, and provide t
 theorem:
 
 * the version without `'` deals with `φ : Π i, E → F' i` and `φ' : Π i, E →L[𝕜] F' i`
-  and is designed to deduce differentiability of `λ x i, φ i x` from differentiability
+  and is designed to deduce differentiability of `fun x i ↦ φ i x` from differentiability
   of each `φ i`;
 * the version with `'` deals with `Φ : E → Π i, F' i` and `Φ' : E →L[𝕜] Π i, F' i`
-  and is designed to deduce differentiability of the components `λ x, Φ x i` from
+  and is designed to deduce differentiability of the components `fun x ↦ Φ x i` from
   differentiability of `Φ`.
 -/
 

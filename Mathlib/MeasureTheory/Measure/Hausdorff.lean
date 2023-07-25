@@ -2,11 +2,6 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.hausdorff
-! leanprover-community/mathlib commit 3d5c4a7a5fb0d982f97ed953161264f1dbd90ead
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
@@ -14,6 +9,8 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.MetricSeparated
+
+#align_import measure_theory.measure.hausdorff from "leanprover-community/mathlib"@"3d5c4a7a5fb0d982f97ed953161264f1dbd90ead"
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -177,7 +174,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ <| (Ssep' n).symm
       _ ≤ μ (s ∩ t ∪ s \ t) := μ.mono <| union_subset_union_right _ <| S_sub n
       _ = μ s := by rw [inter_union_diff]
-  have iUnion_S : (⋃ n, S n) = s \ t := by
+  have iUnion_S : ⋃ n, S n = s \ t := by
     refine' Subset.antisymm (iUnion_subset S_sub) _
     rintro x ⟨hxs, hxt⟩
     rw [mem_iff_infEdist_zero_of_closed ht] at hxt
@@ -523,7 +520,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     congr 1 with n : 1
     simp only [iInf_eq_if, htr n, id, if_true, iSup_and']
   · rw [iInf_eq_if, if_neg htr]
-    push_neg at htr ; rcases htr with ⟨n, hn⟩
+    push_neg at htr; rcases htr with ⟨n, hn⟩
     refine' ENNReal.tsum_eq_top_of_eq_top ⟨n, _⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     exact hn.not_le
@@ -882,7 +879,7 @@ variable {f : X → Y} {d : ℝ}
 theorem hausdorffMeasure_image (hf : Isometry f) (hd : 0 ≤ d ∨ Surjective f) (s : Set X) :
     μH[d] (f '' s) = μH[d] s := by
   simp only [hausdorffMeasure, ← OuterMeasure.coe_mkMetric, ← OuterMeasure.comap_apply]
-  -- porting note: this proof was slighlty nicer before the port
+  -- porting note: this proof was slightly nicer before the port
   simp only [mkMetric_toOuterMeasure]
   have : 0 ≤ d → Monotone fun r ↦ @HPow.hPow ℝ≥0∞ ℝ ℝ≥0∞ instHPow r d := by
     exact fun hd x y hxy => ENNReal.rpow_le_rpow hxy hd

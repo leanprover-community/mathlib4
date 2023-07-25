@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.exposed
-! leanprover-community/mathlib commit 48024901a8e2a462363650c50d62248a77cbcab3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Order.Basic
+
+#align_import analysis.convex.exposed from "leanprover-community/mathlib"@"48024901a8e2a462363650c50d62248a77cbcab3"
 
 /-!
 # Exposed sets
@@ -197,7 +194,7 @@ end IsExposed
 
 variable (𝕜)
 
-/-- A point is exposed with respect to `A` iff there exists an hyperplane whose intersection with
+/-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }

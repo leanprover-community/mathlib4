@@ -2,14 +2,11 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.definability
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
 import Mathlib.ModelTheory.Semantics
+
+#align_import model_theory.definability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Definable Sets
@@ -138,7 +135,7 @@ theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
 #align set.definable_finset_bUnion Set.definable_finset_biUnion
 
 @[simp]
-theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
+theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
   ext v
@@ -178,7 +175,7 @@ theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → 
   refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
   ext x
   simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
-    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.cast_refl]
+    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.castIso_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact
@@ -196,7 +193,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
       (congr rfl (ext fun x => _)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
-                (Fintype.equivFin (↥((range f)ᶜ))).symm)).image_comp_sum_inl_fin
+                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
     refine' exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => _)

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.localization.predicate
-! leanprover-community/mathlib commit 8efef279998820353694feb6ff5631ed0d309ecc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Localization.Construction
+
+#align_import category_theory.localization.predicate from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
 
 /-!
 
@@ -232,12 +229,11 @@ instance : IsEquivalence (whiskeringLeftFunctor L W E) := by
             change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ F = L ⋙ F
             rw [Construction.fac]))
       fun τ => by
-        apply NatTrans.ext
         ext
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
         erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
           eqToHom_refl, comp_id, id_comp]
-        . rfl
+        · rfl
         all_goals
           change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ _ = L ⋙ _
           rw [Construction.fac]

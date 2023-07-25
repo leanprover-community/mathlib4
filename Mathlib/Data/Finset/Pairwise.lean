@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.pairwise
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
+
+#align_import data.finset.pairwise from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
 /-!
 # Relations holding pairwise on finite sets
@@ -40,12 +37,23 @@ theorem PairwiseDisjoint.elim_finset {s : Set ι} {f : ι → Finset α} (hs : s
   hs.elim hi hj (Finset.not_disjoint_iff.2 ⟨a, hai, haj⟩)
 #align set.pairwise_disjoint.elim_finset Set.PairwiseDisjoint.elim_finset
 
-theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] [SemilatticeInf α] [OrderBot α]
-    {s : Finset ι} {f : ι → α} (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι}
-    (hf : ∀ a, f (g a) ≤ f a) : (s.image g : Set ι).PairwiseDisjoint f := by
+section SemilatticeInf
+
+variable [SemilatticeInf α] [OrderBot α] {s : Finset ι} {f : ι → α}
+
+theorem PairwiseDisjoint.image_finset_of_le [DecidableEq ι] {s : Finset ι} {f : ι → α}
+    (hs : (s : Set ι).PairwiseDisjoint f) {g : ι → ι} (hf : ∀ a, f (g a) ≤ f a) :
+    (s.image g : Set ι).PairwiseDisjoint f := by
   rw [coe_image]
   exact hs.image_of_le hf
 #align set.pairwise_disjoint.image_finset_of_le Set.PairwiseDisjoint.image_finset_of_le
+
+theorem PairwiseDisjoint.attach (hs : (s : Set ι).PairwiseDisjoint f) :
+    (s.attach : Set { x // x ∈ s }).PairwiseDisjoint (f ∘ Subtype.val) := fun i _ j _ hij =>
+  hs i.2 j.2 <| mt Subtype.ext_val hij
+#align set.pairwise_disjoint.attach Set.PairwiseDisjoint.attach
+
+end SemilatticeInf
 
 variable [Lattice α] [OrderBot α]
 

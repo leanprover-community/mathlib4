@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 
 import Std.Data.RBMap.Basic
@@ -87,7 +86,7 @@ def Sum.one : Sum := RBMap.empty.insert Monom.one 1
 def Sum.scaleByMonom (s : Sum) (m : Monom) : Sum :=
   s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
 
-/-- `sum.mul s1 s2` distributes the multiplication of two sums.` -/
+/-- `sum.mul s1 s2` distributes the multiplication of two sums. -/
 def Sum.mul (s1 s2 : Sum) : Sum :=
   s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff)))
     RBMap.empty

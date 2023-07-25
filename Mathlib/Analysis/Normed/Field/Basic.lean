@@ -2,15 +2,12 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
-
-! This file was ported from Lean 3 source module analysis.normed.field.basic
-! leanprover-community/mathlib commit f06058e64b7e8397234455038f3f8aec83aaba5a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Topology.Instances.ENNReal
+
+#align_import analysis.normed.field.basic from "leanprover-community/mathlib"@"f06058e64b7e8397234455038f3f8aec83aaba5a"
 
 /-!
 # Normed fields
@@ -906,7 +903,7 @@ section Induced
 
 variable {F : Type _} (R S : Type _)
 
-/-- A non-unital ring homomorphism from an `NonUnitalRing` to a `NonUnitalSeminormedRing`
+/-- A non-unital ring homomorphism from a `NonUnitalRing` to a `NonUnitalSeminormedRing`
 induces a `NonUnitalSeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
@@ -919,7 +916,7 @@ def NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S
       exact (map_mul f x y).symm ▸ norm_mul_le (f x) (f y) }
 #align non_unital_semi_normed_ring.induced NonUnitalSeminormedRing.induced
 
-/-- An injective non-unital ring homomorphism from an `NonUnitalRing` to a
+/-- An injective non-unital ring homomorphism from a `NonUnitalRing` to a
 `NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
@@ -929,7 +926,7 @@ def NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align non_unital_normed_ring.induced NonUnitalNormedRing.induced
 
-/-- A non-unital ring homomorphism from an `Ring` to a `SeminormedRing` induces a
+/-- A non-unital ring homomorphism from a `Ring` to a `SeminormedRing` induces a
 `SeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
@@ -939,7 +936,7 @@ def SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F 
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹Ring R› with }
 #align semi_normed_ring.induced SeminormedRing.induced
 
-/-- An injective non-unital ring homomorphism from an `Ring` to a `NormedRing` induces a
+/-- An injective non-unital ring homomorphism from a `Ring` to a `NormedRing` induces a
 `NormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
@@ -959,7 +956,7 @@ def SeminormedCommRing.induced [CommRing R] [SeminormedRing S] [NonUnitalRingHom
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹CommRing R› with }
 #align semi_normed_comm_ring.induced SeminormedCommRing.induced
 
-/-- An injective non-unital ring homomorphism from an `CommRing` to a `NormedRing` induces a
+/-- An injective non-unital ring homomorphism from a `CommRing` to a `NormedRing` induces a
 `NormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
@@ -969,7 +966,7 @@ def NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass F 
   { SeminormedCommRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align normed_comm_ring.induced NormedCommRing.induced
 
-/-- An injective non-unital ring homomorphism from an `DivisionRing` to a `NormedRing` induces a
+/-- An injective non-unital ring homomorphism from a `DivisionRing` to a `NormedRing` induces a
 `NormedDivisionRing` structure on the domain.
 
 See note [reducible non-instances] -/
@@ -982,7 +979,7 @@ def NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S] [NonUnita
       exact (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
 #align normed_division_ring.induced NormedDivisionRing.induced
 
-/-- An injective non-unital ring homomorphism from an `Field` to a `NormedRing` induces a
+/-- An injective non-unital ring homomorphism from a `Field` to a `NormedRing` induces a
 `NormedField` structure on the domain.
 
 See note [reducible non-instances] -/

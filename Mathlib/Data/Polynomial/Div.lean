@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
-
-! This file was ported from Lean 3 source module data.polynomial.div
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Data.Polynomial.Monic
 import Mathlib.RingTheory.Multiplicity
+
+#align_import data.polynomial.div from "leanprover-community/mathlib"@"e1e7190efdcefc925cb36f257a8362ef22944204"
 
 /-!
 # Division of univariate polynomials
@@ -321,7 +318,7 @@ theorem natDegree_divByMonic {R : Type u} [CommRing R] (f : R[X]) {g : R[X]} (hg
     rw [tsub_eq_zero_iff_le.mpr (natDegree_le_natDegree <| le_of_lt hfg)]
   have hgf := hfg
   rw [divByMonic_eq_zero_iff hg] at hgf
-  push_neg  at hgf
+  push_neg at hgf
   have := degree_add_divByMonic hg hgf
   have hf : f ≠ 0 := by
     intro hf
@@ -453,6 +450,23 @@ theorem dvd_iff_isRoot : X - C a ∣ p ↔ IsRoot p a :=
       C_inj] at h,
     fun h => ⟨p /ₘ (X - C a), by rw [mul_divByMonic_eq_iff_isRoot.2 h]⟩⟩
 #align polynomial.dvd_iff_is_root Polynomial.dvd_iff_isRoot
+
+theorem X_sub_C_dvd_sub_C_eval : X - C a ∣ p - C (p.eval a) := by
+  rw [dvd_iff_isRoot, IsRoot, eval_sub, eval_C, sub_self]
+set_option linter.uppercaseLean3 false in
+#align polynomial.X_sub_C_dvd_sub_C_eval Polynomial.X_sub_C_dvd_sub_C_eval
+
+theorem mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero {b : R[X]} {P : R[X][X]} :
+    P ∈ Ideal.span {C (X - C a), X - C b} ↔ (P.eval b).eval a = 0 := by
+  rw [Ideal.mem_span_pair]
+  constructor <;> intro h
+  · rcases h with ⟨_, _, rfl⟩
+    simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul, add_zero, mul_zero, sub_self]
+  · rcases dvd_iff_isRoot.mpr h with ⟨p, hp⟩
+    rcases @X_sub_C_dvd_sub_C_eval _ b _ P with ⟨q, hq⟩
+    exact ⟨C p, q, by rw [mul_comm, mul_comm q, eq_add_of_sub_eq' hq, hp, C_mul]⟩
+set_option linter.uppercaseLean3 false in
+#align polynomial.mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero Polynomial.mem_span_C_X_sub_C_X_sub_C_iff_eval_eval_eq_zero
 
 theorem modByMonic_X (p : R[X]) : p %ₘ X = C (p.eval 0) := by
   rw [← modByMonic_X_sub_C_eq_C_eval, C_0, sub_zero]

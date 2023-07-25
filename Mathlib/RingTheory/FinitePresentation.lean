@@ -2,15 +2,12 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.finite_presentation
-! leanprover-community/mathlib commit da420a8c6dd5bdfb85c4ced85c34388f633bc6ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.finite_presentation from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -518,7 +515,7 @@ theorem comp_surjective {f : A →ₐ[R] B} {g : B →ₐ[R] C} (hf : f.FinitePr
 
 theorem of_surjective (f : A →ₐ[R] B) (hf : Surjective f) (hker : f.toRingHom.ker.FG) :
     f.FinitePresentation := by
-  -- Porting note: added `convert
+  -- Porting note: added `convert`
   convert RingHom.FinitePresentation.of_surjective f hf hker
 #align alg_hom.finite_presentation.of_surjective AlgHom.FinitePresentation.of_surjective
 

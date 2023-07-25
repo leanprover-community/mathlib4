@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.terminal
-! leanprover-community/mathlib commit 239d882c4fb58361ee8b3b39fb2091320edef10a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Category.Preorder
+
+#align_import category_theory.limits.shapes.terminal from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
 /-!
 # Initial and terminal objects in a category.
@@ -30,8 +27,6 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
-attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
 
 /-- Construct a cone for the empty diagram given an object. -/
 @[simps]
@@ -464,8 +459,7 @@ def limitConstTerminal {J : Type _} [Category J] {C : Type _} [Category C] [HasT
 theorem limitConstTerminal_inv_π {J : Type _} [Category J] {C : Type _} [Category C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
-      terminal.from _ := by
-  apply Limits.limit.hom_ext; aesop_cat
+      terminal.from _ := by aesop_cat
 #align category_theory.limits.limit_const_terminal_inv_π CategoryTheory.Limits.limitConstTerminal_inv_π
 
 instance {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C] :
@@ -491,10 +485,10 @@ def colimitConstInitial {J : Type _} [Category J] {C : Type _} [Category C] [Has
 theorem ι_colimitConstInitial_hom {J : Type _} [Category J] {C : Type _} [Category C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
-      initial.to _ := by apply Limits.colimit.hom_ext; aesop_cat
+      initial.to _ := by aesop_cat
 #align category_theory.limits.ι_colimit_const_initial_hom CategoryTheory.Limits.ι_colimitConstInitial_hom
 
-/-- A category is a `InitialMonoClass` if the canonical morphism of an initial object is a
+/-- A category is an `InitialMonoClass` if the canonical morphism of an initial object is a
 monomorphism.  In practice, this is most useful when given an arbitrary morphism out of the chosen
 initial object, see `initial.mono_from`.
 Given a terminal object, this is equivalent to the assumption that the unique morphism from initial
@@ -519,7 +513,7 @@ instance (priority := 100) initial.mono_from [HasInitial C] [InitialMonoClass C]
   initialIsInitial.mono_from f
 #align category_theory.limits.initial.mono_from CategoryTheory.Limits.initial.mono_from
 
-/-- To show a category is a `InitialMonoClass` it suffices to give an initial object such that
+/-- To show a category is an `InitialMonoClass` it suffices to give an initial object such that
 every morphism out of it is a monomorphism. -/
 theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mono (hI.to X)) :
     InitialMonoClass C where
@@ -529,21 +523,21 @@ theorem InitialMonoClass.of_isInitial {I : C} (hI : IsInitial I) (h : ∀ X, Mon
     apply mono_comp
 #align category_theory.limits.initial_mono_class.of_is_initial CategoryTheory.Limits.InitialMonoClass.of_isInitial
 
-/-- To show a category is a `InitialMonoClass` it suffices to show every morphism out of the
+/-- To show a category is an `InitialMonoClass` it suffices to show every morphism out of the
 initial object is a monomorphism. -/
 theorem InitialMonoClass.of_initial [HasInitial C] (h : ∀ X : C, Mono (initial.to X)) :
     InitialMonoClass C :=
   InitialMonoClass.of_isInitial initialIsInitial h
 #align category_theory.limits.initial_mono_class.of_initial CategoryTheory.Limits.InitialMonoClass.of_initial
 
-/-- To show a category is a `InitialMonoClass` it suffices to show the unique morphism from an
+/-- To show a category is an `InitialMonoClass` it suffices to show the unique morphism from an
 initial object to a terminal object is a monomorphism. -/
 theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerminal T)
     (_ : Mono (hI.to T)) : InitialMonoClass C :=
   InitialMonoClass.of_isInitial hI fun X => mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
 #align category_theory.limits.initial_mono_class.of_is_terminal CategoryTheory.Limits.InitialMonoClass.of_isTerminal
 
-/-- To show a category is a `InitialMonoClass` it suffices to show the unique morphism from the
+/-- To show a category is an `InitialMonoClass` it suffices to show the unique morphism from the
 initial object to a terminal object is a monomorphism. -/
 theorem InitialMonoClass.of_terminal [HasInitial C] [HasTerminal C] (h : Mono (initial.to (⊤_ C))) :
     InitialMonoClass C :=

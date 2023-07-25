@@ -9,7 +9,6 @@ import Lean.Meta.Tactic.Simp.Main
 import Std.Lean.Parser
 import Mathlib.Algebra.Group.Units
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.Set
 import Qq
 
 /-!
@@ -59,7 +58,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     --   2) mathlib3 norm_num1 is able to handle any needed discharging, or
     --   3) some other reason?
     let ⟨simpResult, usedTheorems'⟩ ←
-      simp prop { ctx with dischargeDepth := ctx.dischargeDepth  + 1} discharge usedTheorems
+      simp prop { ctx with dischargeDepth := ctx.dischargeDepth + 1} discharge usedTheorems
     set {(← get) with usedTheorems := usedTheorems'}
     if simpResult.expr.isConstOf ``True then
       try
@@ -119,7 +118,7 @@ example (a b c d x y : ℂ) (hx : x ≠ 0) (hy : y ≠ 0) :
 Moreover, the `field_simp` tactic can also take care of inverses of units in
 a general (commutative) monoid/ring and partial division `/ₚ`, see `Algebra.Group.Units`
 for the definition. Analogue to the case above, the lemma `one_divp` is removed from the simpset
-as this works against the algorithm. If you have objects with a `IsUnit x` instance like
+as this works against the algorithm. If you have objects with an `IsUnit x` instance like
 `(x : R) (hx : IsUnit x)`, you should lift them with
 `lift x to Rˣ using id hx, rw [IsUnit.unit_of_val_units] clear hx`
 before using `field_simp`.

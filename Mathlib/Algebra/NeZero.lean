@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module algebra.ne_zero
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Logic.Basic
 import Mathlib.Init.ZeroOne
 import Mathlib.Init.Algebra.Order
+
+#align_import algebra.ne_zero from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # `NeZero` typeclass
@@ -52,32 +49,42 @@ section
 variable {α : Type _} [Zero α]
 
 @[simp] lemma zero_ne_one [One α] [NeZero (1 : α)] : (0 : α) ≠ 1 := NeZero.ne' (1 : α)
+#align zero_ne_one zero_ne_one
+
 @[simp] lemma one_ne_zero [One α] [NeZero (1 : α)] : (1 : α) ≠ 0 := NeZero.ne (1 : α)
 #align one_ne_zero one_ne_zero
-#align zero_ne_one zero_ne_one
 
 lemma ne_zero_of_eq_one [One α] [NeZero (1 : α)] {a : α} (h : a = 1) : a ≠ 0 := h ▸ one_ne_zero
 #align ne_zero_of_eq_one ne_zero_of_eq_one
 
+@[field_simps]
 lemma two_ne_zero [OfNat α 2] [NeZero (2 : α)] : (2 : α) ≠ 0 := NeZero.ne (2 : α)
+#align two_ne_zero two_ne_zero
+
+@[field_simps]
 lemma three_ne_zero [OfNat α 3] [NeZero (3 : α)] : (3 : α) ≠ 0 := NeZero.ne (3 : α)
+#align three_ne_zero three_ne_zero
+
+@[field_simps]
 lemma four_ne_zero [OfNat α 4] [NeZero (4 : α)] : (4 : α) ≠ 0 := NeZero.ne (4 : α)
 #align four_ne_zero four_ne_zero
-#align three_ne_zero three_ne_zero
-#align two_ne_zero two_ne_zero
 
 variable (α)
 
 lemma zero_ne_one' [One α] [NeZero (1 : α)] : (0 : α) ≠ 1 := zero_ne_one
+#align zero_ne_one' zero_ne_one'
+
 lemma one_ne_zero' [One α] [NeZero (1 : α)] : (1 : α) ≠ 0 := one_ne_zero
+#align one_ne_zero' one_ne_zero'
+
 lemma two_ne_zero' [OfNat α 2] [NeZero (2 : α)] : (2 : α) ≠ 0 := two_ne_zero
+#align two_ne_zero' two_ne_zero'
+
 lemma three_ne_zero' [OfNat α 3] [NeZero (3 : α)] : (3 : α) ≠ 0 := three_ne_zero
+#align three_ne_zero' three_ne_zero'
+
 lemma four_ne_zero' [OfNat α 4] [NeZero (4 : α)] : (4 : α) ≠ 0 := four_ne_zero
 #align four_ne_zero' four_ne_zero'
-#align three_ne_zero' three_ne_zero'
-#align two_ne_zero' two_ne_zero'
-#align one_ne_zero' one_ne_zero'
-#align zero_ne_one' zero_ne_one'
 
 end
 

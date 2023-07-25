@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.braided
-! leanprover-community/mathlib commit 2efd2423f8d25fa57cf7a179f5d8652ab4d0df44
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Discrete
+
+#align_import category_theory.monoidal.braided from "leanprover-community/mathlib"@"2efd2423f8d25fa57cf7a179f5d8652ab4d0df44"
 
 /-!
 # Braided and symmetric monoidal categories
@@ -273,6 +270,11 @@ instance categoryLaxBraidedFunctor : Category (LaxBraidedFunctor C D) :=
   InducedCategory.category LaxBraidedFunctor.toLaxMonoidalFunctor
 #align category_theory.lax_braided_functor.category_lax_braided_functor CategoryTheory.LaxBraidedFunctor.categoryLaxBraidedFunctor
 
+-- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
+@[ext]
+lemma ext' {F G : LaxBraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
+  MonoidalNatTrans.ext _ _ (funext w)
+
 @[simp]
 theorem comp_toNatTrans {F G H : LaxBraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :
     (α ≫ β).toNatTrans = @CategoryStruct.comp (C ⥤ D) _ _ _ _ α.toNatTrans β.toNatTrans :=
@@ -341,6 +343,11 @@ def comp (F : BraidedFunctor C D) (G : BraidedFunctor D E) : BraidedFunctor C E 
 instance categoryBraidedFunctor : Category (BraidedFunctor C D) :=
   InducedCategory.category BraidedFunctor.toMonoidalFunctor
 #align category_theory.braided_functor.category_braided_functor CategoryTheory.BraidedFunctor.categoryBraidedFunctor
+
+-- Porting note: added, as `MonoidalNatTrans.ext` does not apply to morphisms.
+@[ext]
+lemma ext' {F G : BraidedFunctor C D} {α β : F ⟶ G} (w : ∀ X : C, α.app X = β.app X) : α = β :=
+  MonoidalNatTrans.ext _ _ (funext w)
 
 @[simp]
 theorem comp_toNatTrans {F G H : BraidedFunctor C D} {α : F ⟶ G} {β : G ⟶ H} :

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.path_connected
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Order.ProjIcc
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UnitInterval
+
+#align_import topology.path_connected from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Path connectedness
@@ -591,7 +588,7 @@ theorem pi_coe (γ : ∀ i, Path (as i) (bs i)) : ⇑(Path.pi γ) = fun t i => �
 /-- Path composition commutes with products -/
 theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i, Path (bs i) (cs i)) :
     (Path.pi γ₀).trans (Path.pi γ₁) = Path.pi fun i => (γ₀ i).trans (γ₁ i) := by
-  ext (t i)
+  ext t i
   unfold Path.trans
   simp only [Path.coe_mk_mk, Function.comp_apply, pi_coe]
   split_ifs <;> rfl
@@ -924,7 +921,7 @@ theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = path
     rw [pathComponent_symm]
     exact (h.trans h').symm
   · intro h'
-    rw [pathComponent_symm] at h'⊢
+    rw [pathComponent_symm] at h' ⊢
     exact h'.trans h
 #align path_component_congr pathComponent_congr
 
@@ -1144,6 +1141,29 @@ theorem pathConnectedSpace_iff_univ : PathConnectedSpace X ↔ IsPathConnected (
     cases' h with x h
     exact ⟨⟨x⟩, by simpa using h'⟩
 #align path_connected_space_iff_univ pathConnectedSpace_iff_univ
+
+theorem isPathConnected_univ [PathConnectedSpace X] : IsPathConnected (univ : Set X) :=
+  pathConnectedSpace_iff_univ.mp inferInstance
+
+theorem isPathConnected_range [PathConnectedSpace X] {f : X → Y} (hf : Continuous f) :
+    IsPathConnected (range f) := by
+  rw [← image_univ]
+  exact isPathConnected_univ.image hf
+
+theorem Function.Surjective.pathConnectedSpace [PathConnectedSpace X]
+  {f : X → Y} (hf : Surjective f) (hf' : Continuous f) : PathConnectedSpace Y := by
+  rw [pathConnectedSpace_iff_univ, ← hf.range_eq]
+  exact isPathConnected_range hf'
+
+instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
+    PathConnectedSpace (Quotient s) :=
+  (surjective_quotient_mk X).pathConnectedSpace continuous_coinduced_rng
+
+/-- This is a special case of `NormedSpace.path_connected` (and
+`TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
+instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
+  Nonempty := inferInstance
+  Joined := fun x y ↦ ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by
   simp [pathConnectedSpace_iff_univ, isPathConnected_iff_eq]

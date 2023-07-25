@@ -2,22 +2,19 @@
 Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin H. Wilson
-
-! This file was ported from Lean 3 source module analysis.calculus.uniform_limits_deriv
-! leanprover-community/mathlib commit 3f655f5297b030a87d641ad4e825af8d9679eb0b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.NormedSpace.IsROrC
 import Mathlib.Order.Filter.Curry
+
+#align_import analysis.calculus.uniform_limits_deriv from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
 /-!
 # Swapping limits and derivatives via uniform convergence
 
 The purpose of this file is to prove that the derivative of the pointwise limit of a sequence of
 functions is the pointwise limit of the functions' derivatives when the derivatives converge
-_uniformly_. The formal statement appears as `has_fderiv_at_of_tendsto_locally_uniformly_at`.
+_uniformly_. The formal statement appears as `hasFDerivAt_of_tendstoLocallyUniformlyOn`.
 
 ## Main statements
 
@@ -62,7 +59,7 @@ tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)
 There are two ways we might introduce `n`. We could do:
 
 ```lean
-∀ᶠ (n : ℕ) in at_top, tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)
+∀ᶠ (n : ℕ) in atTop, Tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (𝓝 x) (𝓝 0)
 ```
 
 but this is equivalent to the quantifier order `∃ N, ∀ n ≥ N, ∀ ε > 0, ∃ δ > 0, ∀ y ∈ B_δ(x)`,
@@ -70,7 +67,7 @@ which _implies_ our desired `∀ ∃ ∀ ∃ ∀` but is _not_ equivalent to it.
 try
 
 ```lean
-tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (at_top ×ˢ 𝓝 x) (𝓝 0)
+Tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (atTop ×ˢ 𝓝 x) (𝓝 0)
 ```
 
 but this is equivalent to the quantifier order `∀ ε > 0, ∃ N, ∃ δ > 0, ∀ n ≥ N, ∀ y ∈ B_δ(x)`, which
@@ -80,7 +77,7 @@ So to get the quantifier order we want, we need to introduce a new filter constr
 call a "curried filter"
 
 ```lean
-tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (at_top.curry (𝓝 x)) (𝓝 0)
+Tendsto (|y - x|⁻¹ * |(g y - g x) - g' x (y - x)|) (atTop.curry (𝓝 x)) (𝓝 0)
 ```
 
 Then the above implications are `Filter.Tendsto.curry` and
@@ -450,8 +447,6 @@ section deriv
 /-! ### `deriv` versions of above theorems
 
 In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the previous section.
-The protected function `promote_deriv` provides the translation between derivatives and Fréchet
-derivatives
 -/
 
 

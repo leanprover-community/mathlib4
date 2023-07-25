@@ -2,16 +2,13 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.category.Frm
-! leanprover-community/mathlib commit e8ac6315bcfcbaf2d19a046719c3b553206dac75
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Category.LatCat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Sets.Opens
+
+#align_import order.category.Frm from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 
 /-!
 # The category of frames
@@ -69,6 +66,7 @@ instance bundledHom : BundledHom Hom where
 #align Frm.bundled_hom FrmCat.bundledHom
 
 -- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for FrmCat`
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory, Category for FrmCat
 
 instance : ConcreteCategory FrmCat := by

@@ -2,13 +2,10 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module analysis.calculus.extend_deriv
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
+
+#align_import analysis.calculus.extend_deriv from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Extending differentiability to the boundary
@@ -46,8 +43,8 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
     -- statement is empty otherwise
     by_cases hx : x ∉ closure s
-    · rw [← closure_closure] at hx ; exact hasFDerivWithinAt_of_not_mem_closure hx
-    push_neg  at hx
+    · rw [← closure_closure] at hx; exact hasFDerivWithinAt_of_not_mem_closure hx
+    push_neg at hx
     rw [HasFDerivWithinAt, HasFDerivAtFilter, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
       `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it

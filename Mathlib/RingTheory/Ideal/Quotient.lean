@@ -2,11 +2,6 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.ideal.quotient
-! leanprover-community/mathlib commit 949dc57e616a621462062668c9f39e4e17b64b69
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Prod
@@ -14,6 +9,8 @@ import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Tactic.FinCases
+
+#align_import ring_theory.ideal.quotient from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
 /-!
 # Ideal quotients
@@ -68,7 +65,7 @@ instance one (I : Ideal R) : One (R ⧸ I) :=
 protected def ringCon (I : Ideal R) : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
-      rw [Submodule.quotientRel_r_def] at h₁ h₂⊢
+      rw [Submodule.quotientRel_r_def] at h₁ h₂ ⊢
       have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
       have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
         rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
@@ -194,7 +191,7 @@ theorem isDomain_iff_prime (I : Ideal R) : IsDomain (R ⧸ I) ↔ I.IsPrime := b
   refine' ⟨fun H => ⟨zero_ne_one_iff.1 _, fun {x y} h => _⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
     exact zero_ne_one
-  · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h⊢
+  · simp only [← eq_zero_iff_mem, (mk I).map_mul] at h ⊢
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 #align ideal.quotient.is_domain_iff_prime Ideal.Quotient.isDomain_iff_prime

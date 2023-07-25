@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.cartan_matrix
-! leanprover-community/mathlib commit 65ec59902eb17e4ab7da8d7e3d0bd9774d1b8b99
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Free
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Data.Matrix.Notation
+
+#align_import algebra.lie.cartan_matrix from "leanprover-community/mathlib"@"65ec59902eb17e4ab7da8d7e3d0bd9774d1b8b99"
 
 /-!
 # Lie algebras from Cartan matrices

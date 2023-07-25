@@ -2,16 +2,13 @@
 Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
-
-! This file was ported from Lean 3 source module order.monotone.basic
-! leanprover-community/mathlib commit 90df25ded755a2cf9651ea850d1abe429b1e4eb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Data.Int.Order
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
+
+#align_import order.monotone.basic from "leanprover-community/mathlib"@"554bb38de8ded0dafe93b7f18f0bfee6ef77dc5d"
 
 /-!
 # Monotonicity
@@ -54,7 +51,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20dia
 ## TODO
 
 The above theorems are also true in `ℕ+`, `Fin n`... To make that work, we need `SuccOrder α`
-and `SuccArchmidean α`.
+and `IsSuccArchimedean α`.
 
 ## Tags
 
@@ -117,6 +114,30 @@ def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
 #align strict_anti_on StrictAntiOn
 
 end MonotoneDef
+
+section Decidable
+
+variable [Preorder α] [Preorder β] {f : α → β} {s : Set α}
+
+instance [i : Decidable (∀ a b, a ≤ b → f a ≤ f b)] : Decidable (Monotone f) := i
+instance [i : Decidable (∀ a b, a ≤ b → f b ≤ f a)] : Decidable (Antitone f) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f a ≤ f b)] :
+    Decidable (MonotoneOn f s) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a ≤ b → f b ≤ f a)] :
+    Decidable (AntitoneOn f s) := i
+
+instance [i : Decidable (∀ a b, a < b → f a < f b)] : Decidable (StrictMono f) := i
+instance [i : Decidable (∀ a b, a < b → f b < f a)] : Decidable (StrictAnti f) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f a < f b)] :
+    Decidable (StrictMonoOn f s) := i
+
+instance [i : Decidable (∀ (a) (_ : a ∈ s) (b) (_ : b ∈ s), a < b → f b < f a)] :
+    Decidable (StrictAntiOn f s) := i
+
+end Decidable
 
 /-! ### Monotonicity on the dual order
 
@@ -649,7 +670,7 @@ theorem Antitone.comp_monotone (hg : Antitone g) (hf : Monotone f) : Antitone (g
   fun _ _ h ↦ hg (hf h)
 #align antitone.comp_monotone Antitone.comp_monotone
 
-protected theorem Monotone.iterate {f : α → α} (hf : Monotone f) (n : ℕ) : Monotone (f^[n]) :=
+protected theorem Monotone.iterate {f : α → α} (hf : Monotone f) (n : ℕ) : Monotone f^[n] :=
   Nat.recOn n monotone_id fun _ h ↦ h.comp hf
 #align monotone.iterate Monotone.iterate
 
@@ -687,7 +708,7 @@ theorem StrictAnti.comp_strictMono (hg : StrictAnti g) (hf : StrictMono f) : Str
   fun _ _ h ↦ hg (hf h)
 #align strict_anti.comp_strict_mono StrictAnti.comp_strictMono
 
-protected theorem StrictMono.iterate {f : α → α} (hf : StrictMono f) (n : ℕ) : StrictMono (f^[n]) :=
+protected theorem StrictMono.iterate {f : α → α} (hf : StrictMono f) (n : ℕ) : StrictMono f^[n] :=
   Nat.recOn n strictMono_id fun _ h ↦ h.comp hf
 #align strict_mono.iterate StrictMono.iterate
 

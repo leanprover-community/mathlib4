@@ -2,16 +2,13 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.biproducts
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.Algebra.Homology.ShortExact.Abelian
+
+#align_import algebra.category.Module.biproducts from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # The category of `R`-modules has finite biproducts
@@ -96,7 +93,7 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
-/-- The map from an arbitrary cone over a indexed family of abelian groups
+/-- The map from an arbitrary cone over an indexed family of abelian groups
 to the cartesian product of those groups.
 -/
 @[simps]

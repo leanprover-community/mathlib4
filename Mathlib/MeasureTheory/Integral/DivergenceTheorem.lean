@@ -2,17 +2,14 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.integral.divergence_theorem
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
 import Mathlib.Analysis.BoxIntegral.Integrability
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
+
+#align_import measure_theory.integral.divergence_theorem from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Divergence theorem for Bochner integral
@@ -39,8 +36,8 @@ Porting note (Yury Kudryashov): I disabled some of these notations because I fai
 work with Lean 4.
 
 * `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
-* `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely `[a ∘
-  Fin.succAbove i, b ∘ Fin.succAbove i]`;
+* `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely
+  `[a ∘ Fin.succAbove i, b ∘ Fin.succAbove i]`;
 * `e i` : `i`-th basis vector `Pi.single i 1`;
 * `frontFace i`, `backFace i`: embeddings `ℝⁿ → ℝⁿ⁺¹` corresponding to the front face
   `{x | x i = b i}` and back face `{x | x i = a i}` of the box `[a, b]`, respectively.
@@ -255,7 +252,7 @@ local notation:max "backFace " i:arg => Fin.insertNth i (a i)
 
 /-- **Divergence theorem** for Bochner integral. If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is continuous on a rectangular
 box `[a, b] : Set ℝⁿ⁺¹`, `a ≤ b`, is differentiable on its interior with derivative
-`f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `λ x, ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
+`f' : ℝⁿ⁺¹ → ℝⁿ⁺¹ →L[ℝ] Eⁿ⁺¹` and the divergence `fun x ↦ ∑ i, f' x eᵢ i` is integrable on `[a, b]`,
 where `eᵢ = Pi.single i 1` is the `i`-th basis vector, then its integral is equal to the sum of
 integrals of `f` over the faces of `[a, b]`, taken with appropriate signs.
 
@@ -327,7 +324,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Typ
     (Hc : ∀ i, ContinuousOn (f i) (Icc a b))
     (Hd : ∀ x ∈ interior (Icc a b) \ s, ∀ (i), HasFDerivAt (f i) (f' i x) x) (DF : F → E)
     (hDF : ∀ x, DF x = ∑ i, f' i x (eL.symm <| e i)) (Hi : IntegrableOn DF (Icc a b)) :
-    (∫ x in Icc a b, DF x) =
+    ∫ x in Icc a b, DF x =
       ∑ i : Fin (n + 1),
         ((∫ x in Icc (eL a ∘ i.succAbove) (eL b ∘ i.succAbove),
             f i (eL.symm <| i.insertNth (eL b i) x)) -
@@ -338,7 +335,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Typ
     ext1 x; simp only [Set.mem_preimage, Set.mem_Icc, he_ord]
   have hIcc' : Icc (eL a) (eL b) = eL.symm ⁻¹' Icc a b := by rw [← hIcc, eL.symm_preimage_preimage]
   calc
-    (∫ x in Icc a b, DF x) = ∫ x in Icc a b, ∑ i, f' i x (eL.symm <| e i) := by simp only [hDF]
+    ∫ x in Icc a b, DF x = ∫ x in Icc a b, ∑ i, f' i x (eL.symm <| e i) := by simp only [hDF]
     _ = ∫ x in Icc (eL a) (eL b), ∑ i, f' i (eL.symm x) (eL.symm <| e i) := by
       rw [← he_vol.set_integral_preimage_emb he_emb]
       simp only [hIcc, eL.symm_apply_apply]
@@ -384,13 +381,13 @@ differentiability of `f`;
 theorem integral_eq_of_hasDerivWithinAt_off_countable_of_le (f f' : ℝ → E) {a b : ℝ}
     (hle : a ≤ b) {s : Set ℝ} (hs : s.Countable) (Hc : ContinuousOn f (Icc a b))
     (Hd : ∀ x ∈ Ioo a b \ s, HasDerivAt f (f' x) x) (Hi : IntervalIntegrable f' volume a b) :
-    (∫ x in a..b, f' x) = f b - f a := by
+    ∫ x in a..b, f' x = f b - f a := by
   set e : ℝ ≃L[ℝ] ℝ¹ := (ContinuousLinearEquiv.funUnique (Fin 1) ℝ ℝ).symm
   have e_symm : ∀ x, e.symm x = x 0 := fun x => rfl
   set F' : ℝ → ℝ →L[ℝ] E := fun x => smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
   have hF' : ∀ x y, F' x y = y • f' x := fun x y => rfl
   calc
-    (∫ x in a..b, f' x) = ∫ x in Icc a b, f' x := by
+    ∫ x in a..b, f' x = ∫ x in Icc a b, f' x := by
       rw [intervalIntegral.integral_of_le hle, set_integral_congr_set_ae Ioc_ae_eq_Icc]
     _ = ∑ i : Fin 1,
           ((∫ x in Icc (e a ∘ i.succAbove) (e b ∘ i.succAbove),
@@ -421,7 +418,7 @@ only assumes right differentiability of `f`.
 theorem integral_eq_of_has_deriv_within_at_off_countable (f f' : ℝ → E) {a b : ℝ} {s : Set ℝ}
     (hs : s.Countable) (Hc : ContinuousOn f [[a, b]])
     (Hd : ∀ x ∈ Ioo (min a b) (max a b) \ s, HasDerivAt f (f' x) x)
-    (Hi : IntervalIntegrable f' volume a b) : (∫ x in a..b, f' x) = f b - f a := by
+    (Hi : IntervalIntegrable f' volume a b) : ∫ x in a..b, f' x = f b - f a := by
   cases' le_total a b with hab hab
   · simp only [uIcc_of_le hab, min_eq_left hab, max_eq_right hab] at *
     exact integral_eq_of_hasDerivWithinAt_off_countable_of_le f f' hab hs Hc Hd Hi
@@ -469,7 +466,7 @@ theorem integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le (f
     _ = ((∫ y in Icc a.2 b.2, f (b.1, y)) - ∫ y in Icc a.2 b.2, f (a.1, y)) +
           ((∫ x in Icc a.1 b.1, g (x, b.2)) - ∫ x in Icc a.1 b.1, g (x, a.2)) := by
       have : ∀ (a b : ℝ¹) (f : ℝ¹ → E),
-          (∫ x in Icc a b, f x) = ∫ x in Icc (a 0) (b 0), f fun _ => x := fun a b f ↦ by
+          ∫ x in Icc a b, f x = ∫ x in Icc (a 0) (b 0), f fun _ => x := fun a b f ↦ by
         convert (((volume_preserving_funUnique (Fin 1) ℝ).symm _).set_integral_preimage_emb
           (MeasurableEquiv.measurableEmbedding _) f _).symm
         exact ((OrderIso.funUnique (Fin 1) ℝ).symm.preimage_Icc a b).symm

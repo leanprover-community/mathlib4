@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.radon_nikodym
-! leanprover-community/mathlib commit fc75855907eaa8ff39791039710f567f37d4556f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
+
+#align_import measure_theory.decomposition.radon_nikodym from "leanprover-community/mathlib"@"fc75855907eaa8ff39791039710f567f37d4556f"
 
 /-!
 # Radon-Nikodym theorem
@@ -55,7 +52,7 @@ theorem withDensity_rnDeriv_eq (μ ν : Measure α) [HaveLebesgueDecomposition �
       rw [Measure.coe_zero, Pi.zero_apply, ← this]
       exact measure_mono (Set.subset_univ _)
     rw [← measure_add_measure_compl hE₁, hE₂, zero_add]
-    have : (singularPart μ ν + ν.withDensity (rnDeriv μ ν)) (Eᶜ) = μ (Eᶜ) := by rw [← hadd]
+    have : (singularPart μ ν + ν.withDensity (rnDeriv μ ν)) Eᶜ = μ Eᶜ := by rw [← hadd]
     rw [Measure.coe_add, Pi.add_apply, h hE₃] at this
     exact (add_eq_zero_iff.1 this).1
   rw [this, zero_add] at hadd

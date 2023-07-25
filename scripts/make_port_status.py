@@ -22,44 +22,57 @@ if not os.path.exists('port-repos/mathlib'):
 GITHUB_TOKEN_FILE = 'port-repos/github-token'
 github_token = open(GITHUB_TOKEN_FILE).read().strip()
 
-mathlib3_root = 'port-repos/mathlib/src'
+mathlib3_root = 'port-repos/mathlib'
 mathlib4_root = './'
 
 source_module_re = re.compile(r"^! .*source module (.*)$")
 commit_re = re.compile(r"^! (leanprover-community/[a-z]*) commit ([0-9a-f]*)")
 import_re = re.compile(r"^import ([^ ]*)")
 
+align_import_re = re.compile(
+    r'^#align_import ([^ ]*) from "(leanprover-community/[a-z]*)" ?@ ?"([0-9a-f]*)"')
+
 def mk_label(path: Path) -> str:
     rel = path.relative_to(Path(mathlib3_root))
+    rel = Path(*rel.parts[1:])
     return str(rel.with_suffix('')).replace(os.sep, '.')
 
-graph = nx.DiGraph()
-
+paths = []
 for path in Path(mathlib3_root).glob('**/*.lean'):
-    if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
+    if path.relative_to(mathlib3_root).parts[0] not in ['src', 'archive', 'counterexamples']:
         continue
+    if path.relative_to(mathlib3_root).parts[1] in ['tactic', 'meta']:
+        continue
+    paths.append(path)
+
+graph = nx.DiGraph()
+for path in paths:
     graph.add_node(mk_label(path))
 
-for path in Path(mathlib3_root).glob('**/*.lean'):
-    if path.relative_to(mathlib3_root).parts[0] in ['tactic', 'meta']:
-        continue
+for path in paths:
     label = mk_label(path)
     for line in path.read_text().split('\n'):
         m = import_re.match(line)
         if m:
             imported = m.group(1)
-            if imported.startswith('tactic.') or imported.startswith('meta.'):
+            if imported.startswith('tactic.') or imported.startswith('meta.') or imported.startswith('.'):
                 continue
             if imported not in graph.nodes:
                 if imported + '.default' in graph.nodes:
                     imported = imported + '.default'
                 else:
-                    imported = 'lean_core.' + imported
+                    imported = imported
             graph.add_edge(imported, label)
 
 def get_mathlib4_module_commit_info(contents):
     module = repo = commit = None
     for line in contents.split('\n'):
+        m = align_import_re.match(line)
+        if m:
+            module = m.group(1)
+            repo = m.group(2)
+            commit = m.group(3)
+            break
         m = source_module_re.match(line)
         if m:
             module = m.group(1)
@@ -67,8 +80,6 @@ def get_mathlib4_module_commit_info(contents):
         if m:
             repo = m.group(1)
             commit = m.group(2)
-        if import_re.match(line):
-            break
     return module, repo, commit
 
 # contains ported files
@@ -100,6 +111,8 @@ for path4 in Path(mathlib4_root).glob('**/*.lean'):
         'mathlib4_pr': mathlib4_pr,
         'source': dict(repo=repo, commit=commit)
     }
+
+    graph.add_node(module)
 
 prs = {}
 fetch_args = ['git', 'fetch', 'origin']

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebraic_geometry.locally_ringed_space
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.RingedSpace
 import Mathlib.AlgebraicGeometry.Stalks
+
+#align_import algebraic_geometry.locally_ringed_space from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # The category of locally ringed spaces
@@ -18,9 +15,6 @@ We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
 `is_local_ring_hom` on the stalk maps).
 -/
-
-
-universe v u
 
 open CategoryTheory
 
@@ -65,8 +59,8 @@ def toTopCat : TopCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.to_Top AlgebraicGeometry.LocallyRingedSpace.toTopCat
 
-instance : CoeSort LocallyRingedSpace (Type u) :=
-  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type u)⟩
+instance : CoeSort LocallyRingedSpace (Type _) :=
+  ⟨fun X : LocallyRingedSpace => (X.toTopCat : Type _)⟩
 
 instance (x : X) : LocalRing (X.stalk x) :=
   X.localRing x
@@ -82,7 +76,7 @@ set_option linter.uppercaseLean3 false in
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
  such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
-structure Hom (X Y : LocallyRingedSpace.{u}) : Type u where
+structure Hom (X Y : LocallyRingedSpace) : Type _ where
   /-- the underlying morphism between ringed spaces -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
@@ -92,6 +86,9 @@ set_option linter.uppercaseLean3 false in
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
+
+@[ext] lemma Hom.ext' (X Y : LocallyRingedSpace) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
+Hom.ext _ _ h
 
 -- TODO perhaps we should make a bundled `LocalRing` and return one here?
 -- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
@@ -177,7 +174,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note : complains that `(f ≫ g).val.c` can be further simplified
 -- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
-theorem comp_val_c {X Y Z : LocallyRingedSpace.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+theorem comp_val_c {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f.1 ≫ g.1).c = g.val.c ≫ (Presheaf.pushforward _ g.val.base).map f.val.c :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -302,19 +299,12 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace} (f : X ⟶ Y) {U : Opens Y
   ext x
   constructor
   · rintro ⟨⟨y, hyU⟩, hy : IsUnit _, rfl : y = _⟩
-    erw [RingedSpace.mem_basicOpen _ _ ⟨x, show x ∈ (Opens.map f.1.base).obj U from hyU⟩]
-    have eq1 := PresheafedSpace.stalkMap_germ_apply _ _
-      ⟨x, show x ∈ (Opens.map f.1.base).obj U from hyU⟩
-    dsimp at eq1
-    -- Porting note : `rw` and `erw` can't rewrite `stalkMap_germ_apply`
-    rw [← eq1]
+    erw [RingedSpace.mem_basicOpen _ _ ⟨x, show x ∈ (Opens.map f.1.base).obj U from hyU⟩,
+      ← PresheafedSpace.stalkMap_germ_apply]
     exact (PresheafedSpace.stalkMap f.1 _).isUnit_map hy
   · rintro ⟨y, hy : IsUnit _, rfl⟩
     erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
-    have eq1 := PresheafedSpace.stalkMap_germ_apply _ _ y
-    dsimp at eq1
-    -- Porting note : `rw` and `erw` can't rewrite `stalkMap_germ_apply`
-    rw [← eq1] at hy
+    erw [← PresheafedSpace.stalkMap_germ_apply] at hy
     exact (isUnit_map_iff (PresheafedSpace.stalkMap f.1 _) _).mp hy
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.preimage_basic_open AlgebraicGeometry.LocallyRingedSpace.preimage_basicOpen

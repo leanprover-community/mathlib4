@@ -2,15 +2,12 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
-
-! This file was ported from Lean 3 source module field_theory.minpoly.field
-! leanprover-community/mathlib commit cbdf7b565832144d024caa5a550117c6df0204a5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Algebraic
+
+#align_import field_theory.minpoly.field from "leanprover-community/mathlib"@"cbdf7b565832144d024caa5a550117c6df0204a5"
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -187,7 +184,7 @@ def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
 
 theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   intro f g h
-  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this⊢
+  suffices (f : E →ₗ[F] K) = g by rwa [FunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
   exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)

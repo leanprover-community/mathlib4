@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.bundled_hom
-! leanprover-community/mathlib commit 77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+
+#align_import category_theory.concrete_category.bundled_hom from "leanprover-community/mathlib"@"77ca1ed347337ecbafa9d9f4a55e330e44e9f9f8"
 
 /-!
 # Category instances for algebraic structures that use bundled homs.
@@ -89,7 +86,7 @@ instance concreteCategory : ConcreteCategory.{u} (Bundled c)
 
 variable {hom}
 
-attribute [local instance] ConcreteCategory.hasCoeToFun
+attribute [local instance] ConcreteCategory.funLike
 
 /-- A version of `HasForget₂.mk'` for categories defined using `@BundledHom`. -/
 def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ : d α) (_ : d β), Type u}
@@ -99,7 +96,7 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
     intros X Y f
-    rw [heq_eq_eq, h_map])
+    rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
 #align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}

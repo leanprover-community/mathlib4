@@ -2,11 +2,6 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module algebra.category.Ring.constructions
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.RingTheory.TensorProduct
@@ -14,6 +9,8 @@ import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebra.category.Ring.constructions from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -159,11 +156,11 @@ instance commRingCat_hasStrictTerminalObjects : HasStrictTerminalObjects CommRin
   apply hasStrictTerminalObjects_of_terminal_is_strict (CommRingCat.of PUnit)
   intro X f
   refine ⟨⟨⟨1, rfl, fun _ _ => rfl⟩, by ext; rfl, ?_⟩⟩
-  ext (x : X)
+  ext x
   have e : (0 : X) = 1 := by
     rw [← f.map_one, ← f.map_zero]
     congr
-  replace e : 0 * x = 1 * x := congr_arg (. * x) e
+  replace e : 0 * x = 1 * x := congr_arg (· * x) e
   rw [one_mul, MulZeroClass.zero_mul, ← f.map_zero] at e
   exact e
 set_option linter.uppercaseLean3 false in
@@ -204,8 +201,7 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
       FunctorToTypes.map_comp_apply, forget_map, coe_of, RingHom.prod_apply] <;>
     rfl
   uniq s m h := by
-    dsimp
-    ext (x : s.pt)
+    ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 := congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 := congr_hom (h ⟨WalkingPair.right⟩) x

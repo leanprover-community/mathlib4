@@ -2,11 +2,6 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.spectrum
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Complex.Polynomial
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
+
+#align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -330,7 +327,7 @@ theorem differentiableOn_inverse_one_sub_smul [CompleteSpace A] {a : A} {r : ℝ
     simpa only [norm_toNNReal, Real.toNNReal_coe] using
       Real.toNNReal_mono (mem_closedBall_zero_iff.mp z_mem)
   have H₁ : Differentiable 𝕜 fun w : 𝕜 => 1 - w • a := (differentiable_id.smul_const a).const_sub 1
-  exact DifferentiableAt.comp z (differentiableAt_inverse hu.unit) H₁.differentiableAt
+  exact DifferentiableAt.comp z (differentiableAt_inverse hu) H₁.differentiableAt
 #align spectrum.differentiable_on_inverse_one_sub_smul spectrum.differentiableOn_inverse_one_sub_smul
 
 end OneSubSmul
@@ -398,7 +395,7 @@ protected theorem nonempty : (spectrum ℂ a).Nonempty := by
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
     (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
-  /- The norm of the resolvent is small for all sufficently large `z`, and by compactness and
+  /- The norm of the resolvent is small for all sufficiently large `z`, and by compactness and
     continuity it is bounded on the complement of a large ball, thus uniformly bounded on `ℂ`.
     By Liouville's theorem `fun z ↦ resolvent a z` is constant. -/
   have H₂ := norm_resolvent_le_forall (𝕜 := ℂ) a
@@ -413,7 +410,7 @@ protected theorem nonempty : (spectrum ℂ a).Nonempty := by
     refine' Or.elim (em (‖w‖ ≤ R)) (fun hw => _) fun hw => _
     · exact (hC w (mem_closedBall_zero_iff.mpr hw)).trans (le_max_left _ _)
     · exact (hR w (not_le.mp hw).le).trans (le_max_right _ _)
-  -- `resolvent a 0 = 0`, which is a contradition because it isn't a unit.
+  -- `resolvent a 0 = 0`, which is a contradiction because it isn't a unit.
   have H₅ : resolvent a (0 : ℂ) = 0 := by
     refine' norm_eq_zero.mp (le_antisymm (le_of_forall_pos_le_add fun ε hε => _) (norm_nonneg _))
     rcases H₂ ε hε with ⟨R, _, hR⟩

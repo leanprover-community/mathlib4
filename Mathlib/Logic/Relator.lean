@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module logic.relator
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.Logic.Basic
+
+#align_import logic.relator from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Relator for functions, pairs, sums, and lists.
@@ -32,7 +29,7 @@ variable {α : Sort u₁} {β : Sort u₂} {γ : Sort v₁} {δ : Sort v₂}
 variable (R : α → β → Prop) (S : γ → δ → Prop)
 
 /-- The binary relations `R : α → β → Prop` and `S : γ → δ → Prop` induce a binary
-    relation on functions `LiftFun : (f : α → γ) (g : β → δ) : Prop'. -/
+    relation on functions `LiftFun : (α → γ) → (β → δ) → Prop`. -/
 def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀⦃a b⦄, R a b → S (f a) (g b)
 #align relator.lift_fun Relator.LiftFun

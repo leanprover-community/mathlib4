@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.is_connected
-! leanprover-community/mathlib commit 024a4231815538ac739f52d08dd20a55da0d6b23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Category.ULift
+
+#align_import category_theory.is_connected from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 
 /-!
 # Connected category
@@ -108,7 +105,7 @@ The converse of `any_functor_const_on_obj`.
 -/
 theorem IsConnected.of_any_functor_const_on_obj [Nonempty J]
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') : IsConnected J :=
-  { iso_constant := fun  F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩ }
+  { iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩ }
 #align category_theory.is_connected.of_any_functor_const_on_obj CategoryTheory.IsConnected.of_any_functor_const_on_obj
 
 /-- If `J` is connected, then given any function `F` such that the presence of a
@@ -152,7 +149,7 @@ The converse is given in `IsConnected.of_induct`.
 -/
 theorem induct_on_objects [IsPreconnected J] (p : Set J) {j₀ : J} (h0 : j₀ ∈ p)
     (h1 : ∀ {j₁ j₂ : J} (_ : j₁ ⟶ j₂), j₁ ∈ p ↔ j₂ ∈ p) (j : J) : j ∈ p := by
-  let aux (j₁ j₂ : J) (f : j₁ ⟶  j₂) := congrArg ULift.up <| (h1 f).to_eq
+  let aux (j₁ j₂ : J) (f : j₁ ⟶ j₂) := congrArg ULift.up <| (h1 f).to_eq
   injection constant_of_preserves_morphisms (fun k => ULift.up (k ∈ p)) aux j j₀ with i
   rwa [i]
 #align category_theory.induct_on_objects CategoryTheory.induct_on_objects
@@ -306,13 +303,13 @@ theorem equiv_relation [IsConnected J] (r : J → J → Prop) (hr : _root_.Equiv
   apply hr.3 (hr.2 (z _)) (z _)
 #align category_theory.equiv_relation CategoryTheory.equiv_relation
 
-/-- In a connected category, any two objects are related by `zigzag`. -/
+/-- In a connected category, any two objects are related by `Zigzag`. -/
 theorem isConnected_zigzag [IsConnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
     (@fun _ _ f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 #align category_theory.is_connected_zigzag CategoryTheory.isConnected_zigzag
 
-/-- If any two objects in a nonempty category are related by `zigzag`, the category is connected.
+/-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.
 -/
 theorem zigzag_isConnected [Nonempty J] (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsConnected J := by
   apply IsConnected.of_induct
@@ -348,13 +345,13 @@ theorem isConnected_of_zigzag [Nonempty J] (h : ∀ j₁ j₂ : J, ∃ l,
 #align category_theory.is_connected_of_zigzag CategoryTheory.isConnected_of_zigzag
 
 /-- If `Discrete α` is connected, then `α` is (type-)equivalent to `PUnit`. -/
-def discreteIsConnectedEquivPunit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
+def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] : α ≃ PUnit :=
   Discrete.equivOfEquivalence.{u₁, u₁}
     { functor := Functor.star (Discrete α)
       inverse := Discrete.functor fun _ => Classical.arbitrary _
       unitIso := isoConstant _ (Classical.arbitrary _)
-      counitIso := Functor.pUnitExt _ _ }
-#align category_theory.discrete_is_connected_equiv_punit CategoryTheory.discreteIsConnectedEquivPunit
+      counitIso := Functor.punitExt _ _ }
+#align category_theory.discrete_is_connected_equiv_punit CategoryTheory.discreteIsConnectedEquivPUnit
 
 variable {C : Type u₂} [Category.{u₁} C]
 

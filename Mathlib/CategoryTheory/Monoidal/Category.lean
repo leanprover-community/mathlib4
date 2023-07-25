@@ -2,13 +2,10 @@
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
-
-! This file was ported from Lean 3 source module category_theory.monoidal.category
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.monoidal.category from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Monoidal categories
@@ -445,13 +442,13 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = 
   rfl
 #align category_theory.monoidal_category.right_assoc_tensor_map CategoryTheory.MonoidalCategory.rightAssocTensor_map
 
-/-- The functor `λ X, 𝟙_ C ⊗ X`. -/
+/-- The functor `fun X ↦ 𝟙_ C ⊗ X`. -/
 def tensorUnitLeft : C ⥤ C where
   obj X := 𝟙_ C ⊗ X
   map {X Y : C} (f : X ⟶ Y) := 𝟙 (𝟙_ C) ⊗ f
 #align category_theory.monoidal_category.tensor_unit_left CategoryTheory.MonoidalCategory.tensorUnitLeft
 
-/-- The functor `λ X, X ⊗ 𝟙_ C`. -/
+/-- The functor `fun X ↦ X ⊗ 𝟙_ C`. -/
 def tensorUnitRight : C ⥤ C where
   obj X := X ⊗ 𝟙_ C
   map {X Y : C} (f : X ⟶ Y) := f ⊗ 𝟙 (𝟙_ C)
@@ -543,7 +540,7 @@ variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
 
 /-- Tensoring on the left, as a functor from `C` into endofunctors of `C`.
 
-TODO: show this is a op-monoidal functor.
+TODO: show this is an op-monoidal functor.
 -/
 @[simps]
 def tensoringLeft : C ⥤ C ⥤ C where

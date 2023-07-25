@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module data.mv_polynomial.monad
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.MvPolynomial.Variables
+
+#align_import data.mv_polynomial.monad from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
 /-!
 
@@ -43,7 +40,7 @@ whereas `MvPolynomial.map` is the "map" operation for the other pair.
 
 ## Implementation notes
 
-We add an `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
+We add a `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
 The second pair cannot be instantiated as a `Monad`,
 since it is not a monad in `Type` but in `CommRing` (or rather `CommSemiRing`).
 

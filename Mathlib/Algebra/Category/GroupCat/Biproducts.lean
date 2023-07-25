@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.biproducts
-! leanprover-community/mathlib commit 234ddfeaa5572bc13716dd215c6444410a679a8e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Pi
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Limits
+
+#align_import algebra.category.Group.biproducts from "leanprover-community/mathlib"@"234ddfeaa5572bc13716dd215c6444410a679a8e"
 
 /-!
 # The category of abelian groups has finite biproducts
@@ -95,7 +92,7 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → AddCommGroupCat.{max w u})
 
-/-- The map from an arbitrary cone over a indexed family of abelian groups
+/-- The map from an arbitrary cone over an indexed family of abelian groups
 to the cartesian product of those groups.
 -/
 @[simps]

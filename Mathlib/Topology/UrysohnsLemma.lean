@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.urysohns_lemma
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 import Mathlib.Topology.ContinuousFunction.Basic
+
+#align_import topology.urysohns_lemma from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Urysohn's lemma
@@ -98,7 +95,7 @@ variable [NormalSpace X]
 namespace CU
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
-such chat `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
+such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.left` is the pair `(c.C, u)`. -/
 @[simps C]
 def left (c : CU X) : CU X where
   C := c.C
@@ -109,7 +106,7 @@ def left (c : CU X) : CU X where
 #align urysohns.CU.left Urysohns.CU.left
 
 /-- Due to `normal_exists_closure_subset`, for each `c : CU X` there exists an open set `u`
-such chat `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
+such that `c.C ⊆ u` and `closure u ⊆ c.U`. `c.right` is the pair `(closure u, c.U)`. -/
 @[simps U]
 def right (c : CU X) : CU X where
   C := closure (normal_exists_closure_subset c.closed_C c.open_U c.subset).choose
@@ -134,7 +131,7 @@ theorem subset_right_C (c : CU X) : c.C ⊆ c.right.C :=
 /-- `n`-th approximation to a continuous function `f : X → ℝ` such that `f = 0` on `c.C` and `f = 1`
 outside of `c.U`. -/
 noncomputable def approx : ℕ → CU X → X → ℝ
-  | 0, c, x => indicator (c.Uᶜ) 1 x
+  | 0, c, x => indicator c.Uᶜ 1 x
   | n + 1, c, x => midpoint ℝ (approx n c.left x) (approx n c.right x)
 #align urysohns.CU.approx Urysohns.CU.approx
 

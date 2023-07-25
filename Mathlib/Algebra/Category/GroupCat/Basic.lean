@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module algebra.category.Group.basic
-! leanprover-community/mathlib commit 524793de15bc4c52ee32d254e7d7867c7176b3af
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Endomorphism
+
+#align_import algebra.category.Group.basic from "leanprover-community/mathlib"@"524793de15bc4c52ee32d254e7d7867c7176b3af"
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
@@ -140,7 +137,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddGroup.of_hom AddGroupCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddGroup`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddGroup`. -/
 add_decl_doc AddGroupCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -311,7 +308,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.of_hom AddCommGroupCat.ofHom
 
-/-- Typecheck a `AddMonoidHom` as a morphism in `AddCommGroup`. -/
+/-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGroup`. -/
 add_decl_doc AddCommGroupCat.ofHom
 
 @[to_additive (attr := simp)]
@@ -363,9 +360,7 @@ set_option linter.uppercaseLean3 false in
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGroupCat.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by
-    apply int_hom_ext
-    simpa using h
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 set_option linter.uppercaseLean3 false in
@@ -397,7 +392,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv.to_AddCommGroup_iso AddEquiv.toAddCommGroupCatIso
 
-/-- Build an isomorphism in the category `AddCommGroupCat` from a `AddEquiv`
+/-- Build an isomorphism in the category `AddCommGroupCat` from an `AddEquiv`
 between `AddCommGroup`s. -/
 add_decl_doc AddEquiv.toAddCommGroupCatIso
 

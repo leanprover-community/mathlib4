@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.schur
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+
+#align_import category_theory.preadditive.schur from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Schur's lemma
@@ -58,7 +55,8 @@ theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
   ⟨fun I => by
     intro h
     apply id_nonzero X
-    simp only [← IsIso.hom_inv_id f, h, zero_comp], fun w => isIso_of_hom_simple w⟩
+    simp only [← IsIso.hom_inv_id f, h, zero_comp],
+   fun w => isIso_of_hom_simple w⟩
 #align category_theory.is_iso_iff_nonzero CategoryTheory.isIso_iff_nonzero
 
 /-- In any preadditive category with kernels,
@@ -123,14 +121,14 @@ theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X
     [I : FiniteDimensional 𝕜 (X ⟶ X)] : finrank 𝕜 (X ⟶ X) = 1 := by
   have id_nonzero := (isIso_iff_nonzero (𝟙 X)).mp (by infer_instance)
   refine' finrank_eq_one (𝟙 X) id_nonzero _
-  · intro f
-    have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
-    have : FiniteDimensional 𝕜 (End X) := I
-    obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
-    use c
-    rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne.def,
-      Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
-    exact nu.symm
+  intro f
+  have : Nontrivial (End X) := nontrivial_of_ne _ _ id_nonzero
+  have : FiniteDimensional 𝕜 (End X) := I
+  obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
+  use c
+  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne.def,
+    Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
+  exact nu.symm
 #align category_theory.finrank_endomorphism_eq_one CategoryTheory.finrank_endomorphism_eq_one
 
 variable [HasKernels C]
@@ -172,8 +170,7 @@ for the refinements when we know whether or not the simples are isomorphic.
 theorem finrank_hom_simple_simple_le_one (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)] [Simple X]
     [Simple Y] : finrank 𝕜 (X ⟶ Y) ≤ 1 := by
   obtain (h|h) := subsingleton_or_nontrivial (X ⟶ Y)
-  · skip
-    rw [finrank_zero_of_subsingleton]
+  · rw [finrank_zero_of_subsingleton]
     exact zero_le_one
   · obtain ⟨f, nz⟩ := (nontrivial_iff_exists_ne 0).mp h
     haveI fi := (isIso_iff_nonzero f).mpr nz
@@ -206,7 +203,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
   refine' ⟨fun h => by rw [h]; simp, fun h => _⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
   interval_cases finrank 𝕜 (X ⟶ Y)
-  . rfl
+  · rfl
   · exact False.elim (h rfl)
 #align category_theory.finrank_hom_simple_simple_eq_zero_iff CategoryTheory.finrank_hom_simple_simple_eq_zero_iff
 

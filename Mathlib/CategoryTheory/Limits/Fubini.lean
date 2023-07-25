@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.fubini
-! leanprover-community/mathlib commit 59382264386afdbaf1727e617f5fdda511992eb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Functor.Currying
+
+#align_import category_theory.limits.fubini from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
 /-!
 # A Fubini theorem for categorical limits
@@ -321,7 +318,7 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_hom_π,
     Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
   erw [NatTrans.id_app]
-  -- Why can't `simp` do this`?
+  -- Why can't `simp` do this?
   dsimp
   -- porting note: the original proof only had `simp`.
   -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`

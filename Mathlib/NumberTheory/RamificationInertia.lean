@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module number_theory.ramification_inertia
-! leanprover-community/mathlib commit 039a089d2a4b93c761b234f3e5f5aeb752bac60f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Rank
 import Mathlib.RingTheory.DedekindDomain.Ideal
+
+#align_import number_theory.ramification_inertia from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
 /-!
 # Ramification index and inertia degree
@@ -87,7 +84,7 @@ theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n
 
 theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx f p P = n := by
-  let Q : ℕ → Prop := fun m =>  ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
+  let Q : ℕ → Prop := fun m => ∀ k : ℕ, map f p ≤ P ^ k → k ≤ m
   have : Q n := by
     intro k hk
     refine le_of_not_lt fun hnk => ?_
@@ -219,7 +216,7 @@ theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
   refine' Algebra.algebra_ext _ _ fun x' => Quotient.inductionOn' x' fun x => _
   change Ideal.Quotient.lift p _ _ (Ideal.Quotient.mk p x) = algebraMap _ _ (Ideal.Quotient.mk p x)
   rw [Ideal.Quotient.lift_mk, ← Ideal.Quotient.algebraMap_eq P, ← IsScalarTower.algebraMap_eq,
-    ← Ideal.Quotient.algebraMap_eq,  ← IsScalarTower.algebraMap_apply]
+    ← Ideal.Quotient.algebraMap_eq, ← IsScalarTower.algebraMap_apply]
 #align ideal.inertia_deg_algebra_map Ideal.inertiaDeg_algebraMap
 
 end DecEq
@@ -322,7 +319,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
         rw [Submodule.map_smul'', Submodule.map_top, M.range_mkQ]
       _ = ⊤ := by rw [Ideal.smul_top_eq_map, (Submodule.map_mkQ_eq_top M _).mpr hb']
   -- we can write the elements of `a` as `p`-linear combinations of other elements of `a`.
-  have exists_sum : ∀ x : S ⧸ M, ∃ a' : Fin n → R, (∀ i, a' i ∈ p) ∧ (∑ i, a' i • a i) = x := by
+  have exists_sum : ∀ x : S ⧸ M, ∃ a' : Fin n → R, (∀ i, a' i ∈ p) ∧ ∑ i, a' i • a i = x := by
     intro x
     obtain ⟨a'', ha'', hx⟩ := (Submodule.mem_ideal_smul_span_iff_exists_sum p a x).1
       (by { rw [ha, smul_top_eq]; exact Submodule.mem_top } :
@@ -334,7 +331,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   -- This gives us a(n invertible) matrix `A` such that `det A ∈ (M = span R b)`,
   let A : Matrix (Fin n) (Fin n) R := Matrix.of A' - 1
   let B := A.adjugate
-  have A_smul : ∀ i, (∑ j, A i j • a j) = 0 := by
+  have A_smul : ∀ i, ∑ j, A i j • a j = 0 := by
     intros
     simp only [Matrix.sub_apply, Matrix.of_apply, ne_eq, Matrix.one_apply, sub_smul,
       Finset.sum_sub_distrib, hA', Finset.sum_univ_ite, sub_self]

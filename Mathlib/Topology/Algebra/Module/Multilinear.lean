@@ -2,14 +2,11 @@
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.algebra.module.multilinear
-! leanprover-community/mathlib commit 284fdd2962e67d2932fa3a79ce19fcf92d38e228
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basic
+
+#align_import topology.algebra.module.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
 /-!
 # Continuous multilinear maps
@@ -270,6 +267,15 @@ theorem pi_apply {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' 
   rfl
 #align continuous_multilinear_map.pi_apply ContinuousMultilinearMap.pi_apply
 
+/-- Restrict the codomain of a continuous multilinear map to a submodule. -/
+@[simps! toMultilinearMap apply_coe]
+def codRestrict (f : ContinuousMultilinearMap R M₁ M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p) :
+    ContinuousMultilinearMap R M₁ p :=
+  ⟨f.1.codRestrict p h, f.cont.subtype_mk _⟩
+#align continuous_multilinear_map.cod_restrict ContinuousMultilinearMap.codRestrict
+#align continuous_multilinear_map.cod_restrict_to_multilinear_map ContinuousMultilinearMap.codRestrict_toMultilinearMap
+#align continuous_multilinear_map.cod_restrict_apply_coe ContinuousMultilinearMap.codRestrict_apply_coe
+
 section
 
 variable (R M₂)
@@ -340,6 +346,33 @@ def piEquiv {ι' : Type _} {M' : ι' → Type _} [∀ i, AddCommMonoid (M' i)]
     rfl
 #align continuous_multilinear_map.pi_equiv ContinuousMultilinearMap.piEquiv
 
+/-- An equivalence of the index set defines an equivalence between the spaces of continuous
+multilinear maps. This is the forward map of this equivalence. -/
+@[simps! toMultilinearMap apply]
+nonrec def domDomCongr {ι' : Type _} (e : ι ≃ ι')
+    (f : ContinuousMultilinearMap R (fun _ : ι => M₂) M₃) :
+    ContinuousMultilinearMap R (fun _ : ι' => M₂) M₃ where
+  toMultilinearMap := f.domDomCongr e
+  cont := f.cont.comp <| continuous_pi fun _ => continuous_apply _
+#align continuous_multilinear_map.dom_dom_congr ContinuousMultilinearMap.domDomCongr
+#align continuous_multilinear_map.dom_dom_congr_to_multilinear_map ContinuousMultilinearMap.domDomCongr_toMultilinearMap
+#align continuous_multilinear_map.dom_dom_congr_apply ContinuousMultilinearMap.domDomCongr_apply
+
+/-- An equivalence of the index set defines an equivalence between the spaces of continuous
+multilinear maps. In case of normed spaces, this is a linear isometric equivalence, see
+`ContinuousMultilinearMap.domDomCongrₗᵢ`. -/
+@[simps]
+def domDomCongrEquiv {ι' : Type _} (e : ι ≃ ι') :
+    ContinuousMultilinearMap R (fun _ : ι => M₂) M₃ ≃
+      ContinuousMultilinearMap R (fun _ : ι' => M₂) M₃ where
+  toFun := domDomCongr e
+  invFun := domDomCongr e.symm
+  left_inv _ := ext fun _ => by simp
+  right_inv _ := ext fun _ => by simp
+#align continuous_multilinear_map.dom_dom_congr_equiv ContinuousMultilinearMap.domDomCongrEquiv
+#align continuous_multilinear_map.dom_dom_congr_equiv_apply ContinuousMultilinearMap.domDomCongrEquiv_apply
+#align continuous_multilinear_map.dom_dom_congr_equiv_symm_apply ContinuousMultilinearMap.domDomCongrEquiv_symm_apply
+
 /-- In the specific case of continuous multilinear maps on spaces indexed by `Fin (n+1)`, where one
 can build an element of `(i : Fin (n+1)) → M i` using `cons`, one can express directly the
 additivity of a multilinear map along the first variable. -/
@@ -362,7 +395,7 @@ theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι
 #align continuous_multilinear_map.map_piecewise_add ContinuousMultilinearMap.map_piecewise_add
 
 /-- Additivity of a continuous multilinear map along all coordinates at the same time,
-writing `f (m + m')` as the sum  of `f (s.piecewise m m')` over all sets `s`. -/
+writing `f (m + m')` as the sum of `f (s.piecewise m m')` over all sets `s`. -/
 theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ∀ i, M₁ i) :
     f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
   f.toMultilinearMap.map_add_univ _ _
@@ -466,7 +499,7 @@ theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (
 #align continuous_multilinear_map.map_piecewise_smul ContinuousMultilinearMap.map_piecewise_smul
 
 /-- Multiplicativity of a continuous multilinear map along all coordinates at the same time,
-writing `f (λ i, c i • m i)` as `(∏ i, c i) • f m`. -/
+writing `f (fun i ↦ c i • m i)` as `(∏ i, c i) • f m`. -/
 theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ∀ i, M₁ i) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes
-
-! This file was ported from Lean 3 source module algebra.direct_limit
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import algebra.direct_limit from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Direct limit of modules, abelian groups, rings, and fields.
@@ -71,14 +68,14 @@ variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
 variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) :
     f i i h x = x :=
   DirectedSystem.map_self (fun i j h => f i j h) i x h
 #align module.directed_system.map_self Module.DirectedSystem.map_self
 
 /-- A copy of `DirectedSystem.map_map` specialized to linear maps, as otherwise the
-`λ i j h, f i j h` can confuse the simplifier. -/
+`fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
   DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
@@ -204,8 +201,8 @@ theorem toModule_totalize_of_le {x : DirectSum ι G} {i j : ι} (hij : i ≤ j)
     (hx : ∀ k ∈ x.support, k ≤ i) :
     DirectSum.toModule R ι (G j) (fun k => totalize G f k j) x =
       f i j hij (DirectSum.toModule R ι (G i) (fun k => totalize G f k i) x) := by
-  rw [← @Dfinsupp.sum_single ι G _ _ _ x]
-  unfold Dfinsupp.sum
+  rw [← @DFinsupp.sum_single ι G _ _ _ x]
+  unfold DFinsupp.sum
   simp only [LinearMap.map_sum]
   refine' Finset.sum_congr rfl fun k hk => _
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
@@ -225,9 +222,9 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
           subst hxy
           constructor
           · intro i0 hi0
-            rw [Dfinsupp.mem_support_iff, DirectSum.sub_apply, ← DirectSum.single_eq_lof, ←
-              DirectSum.single_eq_lof, Dfinsupp.single_apply, Dfinsupp.single_apply] at hi0
-            split_ifs  at hi0 with hi hj hj
+            rw [DFinsupp.mem_support_iff, DirectSum.sub_apply, ← DirectSum.single_eq_lof, ←
+              DirectSum.single_eq_lof, DFinsupp.single_apply, DFinsupp.single_apply] at hi0
+            split_ifs at hi0 with hi hj hj
             · rwa [hi] at hik
             · rwa [hi] at hik
             · rwa [hj] at hjk
@@ -240,7 +237,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : DirectS
       (fun x y ⟨i, hi, hxi⟩ ⟨j, hj, hyj⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
         ⟨k, fun l hl =>
-          (Finset.mem_union.1 (Dfinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
+          (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
           -- Porting note: this had been
           -- simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
@@ -436,7 +433,7 @@ theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f
           rfl⟩)
         fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ =>
         let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy] ; rfl⟩
+        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy]; rfl⟩
 #align ring.direct_limit.exists_of Ring.DirectLimit.exists_of
 
 section
@@ -489,8 +486,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} (hxs : IsSupporte
     f' j k hjk (lift (fun ix : s => f' ix.1.1 j (hj ix ix.2) ix.1.2) (restriction s x)) =
       lift (fun ix : t => f' ix.1.1 k (hk ix ix.2) ix.1.2) (restriction t x) := by
   refine' Subring.InClosure.recOn hxs _ _ _ _
-  ·
-    rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
+  · rw [(restriction _).map_one, (FreeCommRing.lift _).map_one, (f' j k hjk).map_one,
       (restriction _).map_one, (FreeCommRing.lift _).map_one]
   · -- porting note: Lean 3 had `(FreeCommRing.lift _).map_neg` but I needed to replace it with
   -- `RingHom.map_neg` to get the rewrite to compile

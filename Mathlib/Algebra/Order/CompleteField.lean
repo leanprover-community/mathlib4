@@ -2,23 +2,20 @@
 Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.order.complete_field
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Order.Pointwise
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+
+#align_import algebra.order.complete_field from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Conditionally complete linear ordered fields
 
 This file shows that the reals are unique, or, more formally, given a type satisfying the common
 axioms of the reals (field, conditionally complete, linearly ordered) that there is an isomorphism
-preserving these properties to the reals. This is `rat.induced_order_ring_iso`. Moreover this
-isomorphism is unique.
+preserving these properties to the reals. This is `LinearOrderedField.inducedOrderRingIso` for `ℚ`.
+Moreover this isomorphism is unique.
 
 We introduce definitions of conditionally complete linear ordered fields, and show all such are
 archimedean. We also construct the natural map from a `LinearOrderedField` to such a field.
@@ -79,7 +76,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
 
 /-- The reals are a conditionally complete linearly ordered field. -/
 instance : ConditionallyCompleteLinearOrderedField ℝ :=
-  { (inferInstance : LinearOrderedField  ℝ),
+  { (inferInstance : LinearOrderedField ℝ),
     (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
 
 namespace LinearOrderedField
@@ -186,7 +183,7 @@ def inducedMap (x : α) : β :=
 
 variable [Archimedean α]
 
-theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _  h =>
+theorem inducedMap_mono : Monotone (inducedMap α β) := fun _ _ h =>
   csSup_le_csSup (cutMap_bddAbove β _) (cutMap_nonempty β _) (cutMap_mono β h)
 #align linear_ordered_field.induced_map_mono LinearOrderedField.inducedMap_mono
 
@@ -290,8 +287,8 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
 variable (α β)
 
 /-- `inducedMap` as an additive homomorphism. -/
-def inducedAddHom : α →+ β := by
-  refine ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
+def inducedAddHom : α →+ β :=
+  ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
 #align linear_ordered_field.induced_add_hom LinearOrderedField.inducedAddHom
 
 /-- `inducedMap` as an `OrderRingHom`. -/

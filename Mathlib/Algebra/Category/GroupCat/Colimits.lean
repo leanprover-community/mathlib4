@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Group.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of additive commutative groups has all colimits.
@@ -271,7 +268,7 @@ def descMorphism (s : Cocone F) : colimit.{v} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
   -- Porting note : in `mathlib3`, nothing needs to be done after `induction`
-  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp [(. + .)]; rw [←quot_add F]; rfl
+  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp [(· + ·)]; rw [←quot_add F]; rfl
 #align AddCommGroup.colimits.desc_morphism AddCommGroupCat.Colimits.descMorphism
 
 /-- Evidence that the proposed colimit is the colimit. -/
@@ -327,7 +324,7 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
     simp only [coequalizer_as_cokernel, cokernel.π_desc_assoc, Category.comp_id]
     rfl
   inv_hom_id := by
-    ext x : 2
+    ext x
     exact QuotientAddGroup.induction_on x <| cokernel.π_desc_apply f _ _
 #align AddCommGroup.cokernel_iso_quotient AddCommGroupCat.cokernelIsoQuotient
 

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.gromov_hausdorff_realized
-! leanprover-community/mathlib commit 0c1f285a9f6e608ae2bdffa3f993eafb01eba829
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.Topology.ContinuousFunction.Bounded
+
+#align_import topology.metric_space.gromov_hausdorff_realized from "leanprover-community/mathlib"@"0c1f285a9f6e608ae2bdffa3f993eafb01eba829"
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -304,7 +301,7 @@ private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2 with ⟨Cf, hCf⟩
   refine' ⟨Cf + C, forall_range_iff.2 fun x => _⟩
   calc
-    (⨅ y, f (inl x, inr y) + C) ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
+    ⨅ y, f (inl x, inr y) + C ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
 
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
@@ -318,7 +315,7 @@ private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
   rcases (Real.bounded_iff_bddBelow_bddAbove.1 f.bounded_range).2 with ⟨Cf, hCf⟩
   refine' ⟨Cf + C, forall_range_iff.2 fun y => _⟩
   calc
-    (⨅ x, f (inl x, inr y) + C) ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
+    ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
     _ ≤ Cf + C := add_le_add ((fun x => hCf (mem_range_self x)) _) le_rfl
 
 /-- Explicit bound on `HD (dist)`. This means that when looking for minimizers it will
@@ -326,7 +323,7 @@ be sufficient to look for functions with `HD(f)` bounded by this bound. -/
 theorem HD_candidatesBDist_le :
     HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
   refine' max_le (ciSup_le fun x => _) (ciSup_le fun y => _)
-  · have A : (⨅ y, candidatesBDist X Y (inl x, inr y)) ≤ candidatesBDist X Y (inl x, inr default) :=
+  · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
       ciInf_le (by simpa using HD_below_aux1 0) default
     have B : dist (inl x) (inr default) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
       calc
@@ -335,7 +332,7 @@ theorem HD_candidatesBDist_le :
           gcongr <;>
             exact dist_le_diam_of_mem bounded_of_compactSpace (mem_univ _) (mem_univ _)
     exact le_trans A B
-  · have A : (⨅ x, candidatesBDist X Y (inl x, inr y)) ≤ candidatesBDist X Y (inl default, inr y) :=
+  · have A : ⨅ x, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl default, inr y) :=
       ciInf_le (by simpa using HD_below_aux2 0) default
     have B : dist (inl default) (inr y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) :=
       calc
@@ -504,9 +501,9 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     have I1 : (⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y)) < r :=
       lt_of_le_of_lt (le_max_left _ _) hr
     have I2 :
-        (⨅ y, optimalGHDist X Y (inl z, inr y)) ≤ ⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y) :=
+        ⨅ y, optimalGHDist X Y (inl z, inr y) ≤ ⨆ x, ⨅ y, optimalGHDist X Y (inl x, inr y) :=
       le_csSup (by simpa using HD_bound_aux1 _ 0) (mem_range_self _)
-    have I : (⨅ y, optimalGHDist X Y (inl z, inr y)) < r := lt_of_le_of_lt I2 I1
+    have I : ⨅ y, optimalGHDist X Y (inl z, inr y) < r := lt_of_le_of_lt I2 I1
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     exact ⟨optimalGHInjr X Y z', mem_range_self _, le_of_lt hr'⟩
   refine' hausdorffDist_le_of_mem_dist _ A _
@@ -517,9 +514,9 @@ theorem hausdorffDist_optimal_le_HD {f} (h : f ∈ candidatesB X Y) :
     have I1 : (⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y)) < r :=
       lt_of_le_of_lt (le_max_right _ _) hr
     have I2 :
-        (⨅ x, optimalGHDist X Y (inl x, inr z)) ≤ ⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y) :=
+        ⨅ x, optimalGHDist X Y (inl x, inr z) ≤ ⨆ y, ⨅ x, optimalGHDist X Y (inl x, inr y) :=
       le_csSup (by simpa using HD_bound_aux2 _ 0) (mem_range_self _)
-    have I : (⨅ x, optimalGHDist X Y (inl x, inr z)) < r := lt_of_le_of_lt I2 I1
+    have I : ⨅ x, optimalGHDist X Y (inl x, inr z) < r := lt_of_le_of_lt I2 I1
     rcases exists_lt_of_csInf_lt (range_nonempty _) I with ⟨r', ⟨z', rfl⟩, hr'⟩
     refine' ⟨optimalGHInjl X Y z', mem_range_self _, le_of_lt _⟩
     rwa [dist_comm]

@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.log.deriv
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+
+#align_import analysis.special_functions.log.deriv from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Derivative and series expansion of real logarithm
@@ -58,7 +55,7 @@ theorem differentiableAt_log (hx : x ≠ 0) : DifferentiableAt ℝ log x :=
   (hasDerivAt_log hx).differentiableAt
 #align real.differentiable_at_log Real.differentiableAt_log
 
-theorem differentiableOn_log : DifferentiableOn ℝ log ({0}ᶜ) := fun _x hx =>
+theorem differentiableOn_log : DifferentiableOn ℝ log {0}ᶜ := fun _x hx =>
   (differentiableAt_log hx).differentiableWithinAt
 #align real.differentiable_on_log Real.differentiableOn_log
 
@@ -78,8 +75,8 @@ theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 #align real.deriv_log' Real.deriv_log'
 
-theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log ({0}ᶜ) := by
-  suffices : ContDiffOn ℝ ⊤ log ({0}ᶜ); exact this.of_le le_top
+theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+  suffices : ContDiffOn ℝ ⊤ log {0}ᶜ; exact this.of_le le_top
   refine' (contDiffOn_top_iff_deriv_of_open isOpen_compl_singleton).2 _
   simp [differentiableOn_log, contDiffOn_inv]
 #align real.cont_diff_on_log Real.contDiffOn_log
@@ -223,7 +220,7 @@ open scoped BigOperators
 
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
-expansion of the logarithm, in `has_sum_pow_div_log_of_abs_lt_1`.
+expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
 Porting note: TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
@@ -249,7 +246,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
         congr with i
         rw [Nat.cast_succ, mul_div_cancel_left _ (Nat.cast_add_one_pos i).ne']
   -- second step: show that the derivative of `F` is small
-  have B : ∀ y ∈ Icc (-|x|) (|x|), |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
+  have B : ∀ y ∈ Icc (-|x|) |x|, |F' y| ≤ |x| ^ n / (1 - |x|) := fun y hy ↦
     calc
       |F' y| = |y| ^ n / |1 - y| := by simp [abs_div]
       _ ≤ |x| ^ n / (1 - |x|) := by

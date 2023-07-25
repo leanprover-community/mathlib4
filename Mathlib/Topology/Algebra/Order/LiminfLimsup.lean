@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.order.liminf_limsup
-! leanprover-community/mathlib commit 52932b3a083d4142e78a15dc928084a22fea9ba0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Order
@@ -15,6 +10,8 @@ import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Order.Basic
+
+#align_import topology.algebra.order.liminf_limsup from "leanprover-community/mathlib"@"52932b3a083d4142e78a15dc928084a22fea9ba0"
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -236,10 +233,8 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
     (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
     ∃ c : α, Tendsto u f (𝓝 c) := by
-  by_cases hbot : f = ⊥;
-  · rw [hbot]
-    exact ⟨sInf ∅, tendsto_bot⟩
-  haveI : NeBot f := ⟨hbot⟩
+  rcases f.eq_or_neBot with rfl | hbot
+  · exact ⟨sInf ∅, tendsto_bot⟩
   refine' ⟨limsup u f, _⟩
   apply tendsto_of_le_liminf_of_limsup_le _ le_rfl h h'
   by_contra' hlt
@@ -320,7 +315,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
     apply le_of_forall_lt
     intro c hc
     simp only [liminf, limsInf, lt_sSup_iff, eventually_map, Set.mem_setOf_eq, exists_prop,
-      Set.mem_image, exists_exists_and_eq_and] at hc⊢
+      Set.mem_image, exists_exists_and_eq_and] at hc ⊢
     rcases hc with ⟨d, hd, h'd⟩
     refine' ⟨f d, _, h'd⟩
     filter_upwards [hd]with x hx using f_decr hx
@@ -420,19 +415,19 @@ open Filter Set
 variable {ι : Type _} {R : Type _} [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 theorem iInf_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x ≤ as i) {F : Filter ι}
-    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : (⨅ i, as i) = x := by
+    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨅ i, as i = x := by
   refine' iInf_eq_of_forall_ge_of_forall_gt_exists_lt (fun i ↦ x_le i) _
   apply fun w x_lt_w ↦ ‹Filter.NeBot F›.nonempty_of_mem (eventually_lt_of_tendsto_lt x_lt_w as_lim)
 #align infi_eq_of_forall_le_of_tendsto iInf_eq_of_forall_le_of_tendsto
 
 theorem iSup_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (le_x : ∀ i, as i ≤ x) {F : Filter ι}
-    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : (⨆ i, as i) = x :=
+    [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨆ i, as i = x :=
   @iInf_eq_of_forall_le_of_tendsto ι (OrderDual R) _ _ _ x as le_x F _ as_lim
 #align supr_eq_of_forall_le_of_tendsto iSup_eq_of_forall_le_of_tendsto
 
 theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R} (x_lt : ∀ i, x < as i)
     {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
-    (⋃ i : ι, Ici (as i)) = Ioi x := by
+    ⋃ i : ι, Ici (as i) = Ioi x := by
   have obs : x ∉ range as := by
     intro maybe_x_is
     rcases mem_range.mp maybe_x_is with ⟨i, hi⟩
@@ -446,7 +441,7 @@ theorem iUnion_Ici_eq_Ioi_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R}
 
 theorem iUnion_Iic_eq_Iio_of_lt_of_tendsto {ι : Type _} (x : R) {as : ι → R} (lt_x : ∀ i, as i < x)
     {F : Filter ι} [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) :
-    (⋃ i : ι, Iic (as i)) = Iio x :=
+    ⋃ i : ι, Iic (as i) = Iio x :=
   @iUnion_Ici_eq_Ioi_of_lt_of_tendsto (OrderDual R) _ _ _ ι x as lt_x F _ as_lim
 #align Union_Iic_eq_Iio_of_lt_of_tendsto iUnion_Iic_eq_Iio_of_lt_of_tendsto
 
@@ -477,7 +472,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       rw [Nat.sub_add_cancel hj₁, Set.indicator_of_mem hj₂]
       exact zero_lt_one
     · rw [imp_false] at hk
-      push_neg  at hk
+      push_neg at hk
       obtain ⟨i, hi⟩ := hk
       obtain ⟨j, hj₁, hj₂⟩ := hω (i + 1)
       replace hi : (∑ k in Finset.range i, (s (k + 1)).indicator 1 ω) = k + 1 :=
@@ -495,7 +490,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
   · rintro hω i
     rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω
     by_contra hcon
-    push_neg  at hcon
+    push_neg at hcon
     obtain ⟨j, h⟩ := hω (i + 1)
     have : (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
       have hle : ∀ j ≤ i, (∑ k in Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by

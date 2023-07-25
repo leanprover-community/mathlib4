@@ -2,13 +2,10 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.quadratic_form.isometry
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+
+#align_import linear_algebra.quadratic_form.isometry from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Isometries with respect to quadratic forms
@@ -165,7 +162,7 @@ theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
     (hQ : (associated (R₁ := K) Q).Nondegenerate) :
     ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
-  obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm _ Q)
+  obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_nondegenerate hQ
   simp_rw [IsOrtho, associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryWeightedSumSquares v hv₁⟩⟩

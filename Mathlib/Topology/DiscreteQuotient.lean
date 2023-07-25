@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
-
-! This file was ported from Lean 3 source module topology.discrete_quotient
-! leanprover-community/mathlib commit d101e93197bb5f6ea89bd7ba386b7f7dff1f3903
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
 import Mathlib.Topology.SubsetProperties
 import Mathlib.Topology.LocallyConstant.Basic
+
+#align_import topology.discrete_quotient from "leanprover-community/mathlib"@"d101e93197bb5f6ea89bd7ba386b7f7dff1f3903"
 
 /-!
 
@@ -38,13 +35,13 @@ The top element `⊤` is the trivial quotient, meaning that every element of `X`
 to a point. Given `h : A ≤ B`, the map `A → B` is `DiscreteQuotient.ofLE h`.
 
 Whenever `X` is a locally connected space, the type `DiscreteQuotient X` is also endowed with an
-instance of a `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
+instance of an `OrderBot`, where the bot element `⊥` is given by the `connectedComponentSetoid`,
 i.e., `x ~ y` means that `x` and `y` belong to the same connected component. In particular, if `X`
 is a discrete topological space, then `x ~ y` is equivalent (propositionally, not definitionally) to
 `x = y`.
 
-Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for `A :
-DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`.  If
+Given `f : C(X, Y)`, we define a predicate `DiscreteQuotient.LEComap f A B` for
+`A : DiscreteQuotient X` and `B : DiscreteQuotient Y`, asserting that `f` descends to `A → B`. If
 `cond : DiscreteQuotient.LEComap h A B`, the function `A → B` is obtained by
 `DiscreteQuotient.map f cond`.
 
@@ -87,7 +84,7 @@ lemma toSetoid_injective : Function.Injective (@toSetoid X _)
 
 /-- Construct a discrete quotient from a clopen set. -/
 def ofClopen {A : Set X} (h : IsClopen A) : DiscreteQuotient X where
-  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl,  Iff.symm,  Iff.trans⟩
+  toSetoid := ⟨fun x y => x ∈ A ↔ y ∈ A, fun _ => Iff.rfl, Iff.symm, Iff.trans⟩
   isOpen_setOf_rel x := by by_cases hx : x ∈ A <;> simp [Setoid.Rel, hx, h.1, h.2, ← compl_setOf]
 #align discrete_quotient.of_clopen DiscreteQuotient.ofClopen
 

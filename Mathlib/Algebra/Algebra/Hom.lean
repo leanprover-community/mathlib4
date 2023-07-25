@@ -2,13 +2,10 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.algebra.hom
-! leanprover-community/mathlib commit e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Basic
+
+#align_import algebra.algebra.hom from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -570,7 +567,7 @@ variable {M G : Type _} (R A : Type _) [CommSemiring R] [Semiring A] [Algebra R 
 
 variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 
-/-- Each element of the monoid defines a algebra homomorphism.
+/-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
 `DistribMulAction.toLinearMap`. -/

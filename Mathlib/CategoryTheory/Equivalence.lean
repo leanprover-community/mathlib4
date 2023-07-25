@@ -2,23 +2,20 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
-
-! This file was ported from Lean 3 source module category_theory.equivalence
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.Tactic.CategoryTheory.Slice
+
+#align_import category_theory.equivalence from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
 /-!
 # Equivalence of categories
 
 An equivalence of categories `C` and `D` is a pair of functors `F : C ⥤ D` and `G : D ⥤ C` such
 that `η : 𝟭 C ≅ F ⋙ G` and `ε : G ⋙ F ≅ 𝟭 D`. In many situations, equivalences are a better
-notion of "sameness" of categories than the stricter isomorphims of categories.
+notion of "sameness" of categories than the stricter isomorphism of categories.
 
 Recall that one way to express that two functors `F : C ⥤ D` and `G : D ⥤ C` are adjoint is using
 two natural transformations `η : 𝟭 C ⟶ F ⋙ G` and `ε : G ⋙ F ⟶ 𝟭 D`, called the unit and the
@@ -476,7 +473,7 @@ end Equivalence
 class IsEquivalence (F : C ⥤ D) where mk' ::
   /-- The inverse functor to `F` -/
   inverse : D ⥤ C
-  /-- Composition `F ⋙  inverse` is isomorphic to the identity. -/
+  /-- Composition `F ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ F ⋙ inverse
   /-- Composition `inverse ⋙ F` is isomorphic to the identity. =-/
   counitIso : inverse ⋙ F ≅ 𝟭 D

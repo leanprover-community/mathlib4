@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebraic_geometry.stalks
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicGeometry.PresheafedSpace
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.Topology.Sheaves.Stalks
+
+#align_import algebraic_geometry.stalks from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Stalks for presheaved spaces
@@ -31,7 +28,7 @@ open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor Cate
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
 -- Porting note : no tidy tactic
--- attribute [local tidy] tactic.op_induction' tactic.auto_cases_opens
+-- attribute [local tidy] tactic.auto_cases_opens
 -- this could be replaced by
 -- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Opens
 -- but it doesn't appear to be needed here.
@@ -104,6 +101,7 @@ set_option linter.uppercaseLean3 false in
 theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : OpenEmbedding f) (x : U) :
     (X.restrictStalkIso h x).inv = stalkMap (X.ofRestrict h) x := by
+  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun V => ?_
   induction V with | h V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
@@ -135,7 +133,7 @@ theorem id (X : PresheafedSpace.{_, _, v} C) (x : X) :
   simp only [stalkPushforward.id]
   erw [← map_comp]
   convert (stalkFunctor C x).map_id X.presheaf
-  refine NatTrans.ext _ _ <| funext fun x => ?_
+  ext
   simp only [id_c, id_comp, Pushforward.id_hom_app, op_obj, eqToHom_refl, map_id]
   rfl
 set_option linter.uppercaseLean3 false in
@@ -147,6 +145,7 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
       (stalkMap β (α.base x) : Z.stalk (β.base (α.base x)) ⟶ Y.stalk (α.base x)) ≫
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalkMap, stalkFunctor, stalkPushforward]
+  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun U => ?_
   induction U with | h U => ?_
   cases U
@@ -165,8 +164,10 @@ either side of the equality.
 theorem congr {X Y : PresheafedSpace.{_, _, v} C} (α β : X ⟶ Y)
     (h₁ : α = β) (x x' : X) (h₂ : x = x') :
     stalkMap α x ≫ eqToHom (show X.stalk x = X.stalk x' by rw [h₂]) =
-      eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x') by rw [h₁, h₂]) ≫ stalkMap β x' :=
-  stalk_hom_ext _ fun U hx => by subst h₁; subst h₂; simp
+      eqToHom (show Y.stalk (α.base x) = Y.stalk (β.base x') by rw [h₁, h₂]) ≫ stalkMap β x' := by
+  ext
+  substs h₁ h₂
+  simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.congr AlgebraicGeometry.PresheafedSpace.stalkMap.congr
 
@@ -225,6 +226,7 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- Porting note : the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
+  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun j => ?_
   induction j with | h j => ?_
   dsimp

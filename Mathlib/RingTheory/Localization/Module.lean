@@ -2,15 +2,12 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.localization.module
-! leanprover-community/mathlib commit 2e59a6de168f95d16b16d217b808a36290398c0a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
+
+#align_import ring_theory.localization.module from "leanprover-community/mathlib"@"2e59a6de168f95d16b16d217b808a36290398c0a"
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -46,7 +43,7 @@ variable {M : Type _} [AddCommMonoid M] [Module R M] [Module Rₛ M] [IsScalarTo
 
 theorem LinearIndependent.localization {ι : Type _} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
-  rw [linearIndependent_iff'] at hli⊢
+  rw [linearIndependent_iff'] at hli ⊢
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   specialize hli s g' _ i hi
@@ -75,11 +72,11 @@ open Submodule
 
 theorem LinearIndependent.localization_localization {ι : Type _} {v : ι → A}
     (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) := by
-  rw [linearIndependent_iff'] at hv⊢
+  rw [linearIndependent_iff'] at hv ⊢
   intro s g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S s g
   have h0 : algebraMap A Aₛ (∑ i in s, g' i • v i) = 0 := by
-    apply_fun (· • ·) (a : R)  at hg
+    apply_fun (· • ·) (a : R) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]
     refine' Finset.sum_congr rfl fun i hi => _

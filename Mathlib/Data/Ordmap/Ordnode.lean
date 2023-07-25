@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.ordmap.ordnode
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
 import Mathlib.Init.Data.Nat.Bitwise
+
+#align_import data.ordmap.ordnode from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Ordered sets
@@ -179,7 +176,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α]  (o : Ordnode α) (n : ℕ) : Std.Format :=
+def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
@@ -208,8 +205,7 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         · exact node 3 (ι lx) lrx ι x
       · cases' id lr with lrs lrl lrx lrr
         · exact node 3 ll lx ι x
-        ·
-          exact
+        · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
@@ -245,8 +241,7 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         · exact node 3 (ι x) rlx ι rx
       · cases' id rl with rls rll rlx rlr
         · exact node 3 (ι x) rx rr
-        ·
-          exact
+        · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
@@ -327,8 +322,8 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 
 /-- O(n). Does every element of the map satisfy property `P`?
 
-     All (λ x, x < 5) {1, 2, 3} = true
-     All (λ x, x < 5) {1, 2, 3, 5} = false -/
+     All (fun x ↦ x < 5) {1, 2, 3} = True
+     All (fun x ↦ x < 5) {1, 2, 3, 5} = False -/
 def All (P : α → Prop) : Ordnode α → Prop
   | nil => True
   | node _ l x r => All P l ∧ P x ∧ All P r
@@ -344,8 +339,8 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
-     Any (λ x, x < 2) {1, 2, 3} = true
-     Any (λ x, x < 2) {2, 3, 5} = false -/
+     Any (fun x ↦ x < 2) {1, 2, 3} = True
+     Any (fun x ↦ x < 2) {2, 3, 5} = False -/
 def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
@@ -569,8 +564,8 @@ def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
 
 /-- O(n). Filter the elements of a tree satisfying a predicate.
 
-     filter (λ x, x < 3) {1, 2, 4} = {1, 2}
-     filter (λ x, x > 5) {1, 2, 4} = ∅ -/
+     filter (fun x ↦ x < 3) {1, 2, 4} = {1, 2}
+     filter (fun x ↦ x > 5) {1, 2, 4} = ∅ -/
 def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then
@@ -580,7 +575,7 @@ def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 
 /-- O(n). Split the elements of a tree into those satisfying, and not satisfying, a predicate.
 
-     partition (λ x, x < 3) {1, 2, 4} = ({1, 2}, {3}) -/
+     partition (fun x ↦ x < 3) {1, 2, 4} = ({1, 2}, {3}) -/
 def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
   | node _ l x r =>
@@ -598,7 +593,7 @@ Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.ma
 /-- O(n). Map a function across a tree, without changing the structure. Only valid when
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
-     partition (λ x, x + 2) {1, 2, 4} = {2, 3, 6}
+     partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
      partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
@@ -725,7 +720,7 @@ def pmap {P : α → Prop} {β} (f : ∀ a, P a → β) : ∀ t : Ordnode α, Al
 /-- O(n). "Attach" the information that every element of `t` satisfies property
 P to these elements inside the set, producing a set in the subtype.
 
-    attach' (λ x, x < 4) {1, 2} H = ({1, 2} : ordnode {x // x<4}) -/
+    attach' (fun x ↦ x < 4) {1, 2} H = ({1, 2} : Ordnode {x // x<4}) -/
 def attach' {P : α → Prop} : ∀ t, All P t → Ordnode { a // P a } :=
   pmap Subtype.mk
 #align ordnode.attach' Ordnode.attach'
@@ -835,8 +830,8 @@ def splitAt (i : ℕ) (t : Ordnode α) : Ordnode α × Ordnode α :=
 /-- O(log n). Get an initial segment of the set that satisfies the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
 
-    takeWhile (λ x, x < 4) {1, 2, 3, 4, 5} = {1, 2, 3}
-    takeWhile (λ x, x > 4) {1, 2, 3, 4, 5} = precondition violation -/
+    takeWhile (fun x ↦ x < 4) {1, 2, 3, 4, 5} = {1, 2, 3}
+    takeWhile (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
 def takeWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then link l x (takeWhile p r) else takeWhile p l
@@ -845,8 +840,8 @@ def takeWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 /-- O(log n). Remove an initial segment of the set that satisfies the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
 
-    dropWhile (λ x, x < 4) {1, 2, 3, 4, 5} = {4, 5}
-    dropWhile (λ x, x > 4) {1, 2, 3, 4, 5} = precondition violation -/
+    dropWhile (fun x ↦ x < 4) {1, 2, 3, 4, 5} = {4, 5}
+    dropWhile (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
 def dropWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then dropWhile p r else link (dropWhile p l) x r
@@ -855,8 +850,8 @@ def dropWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 /-- O(log n). Split the set into those satisfying and not satisfying the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
 
-    span (λ x, x < 4) {1, 2, 3, 4, 5} = ({1, 2, 3}, {4, 5})
-    span (λ x, x > 4) {1, 2, 3, 4, 5} = precondition violation -/
+    span (fun x ↦ x < 4) {1, 2, 3, 4, 5} = ({1, 2, 3}, {4, 5})
+    span (fun x ↦ x > 4) {1, 2, 3, 4, 5} = precondition violation -/
 def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordnode α
   | nil => (nil, nil)
   | node _ l x r =>
@@ -1351,7 +1346,7 @@ def ofList' : List α → Ordnode α
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.
 Equivalent elements are selected with a preference for smaller source elements.
 
-    image (λ x, x + 2) {1, 2, 4} = {3, 4, 6}
+    image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
     image (λ x : ℕ, x - 2) {1, 2, 4} = {0, 2} -/
 def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)

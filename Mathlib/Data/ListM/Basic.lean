@@ -2,14 +2,11 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Keeley Hoek, Simon Hudon, Scott Morrison
-
-! This file was ported from Lean 3 source module data.mllist
-! leanprover-community/mathlib commit 8f6fd1b69096c6a587f745d354306c0d46396915
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Basic
+
+#align_import data.mllist from "leanprover-community/mathlib"@"8f6fd1b69096c6a587f745d354306c0d46396915"
 
 /-! # Monadic lazy lists.
 
@@ -110,10 +107,17 @@ private local instance [Monad n] : Inhabited (δ → (α → δ → n (ForInStep
 instance [Monad m] [MonadLiftT m n] : ForIn n (ListM m α) α where
   forIn := ListM.forIn
 
-/-- Construct a `ListM` recursively. -/
-partial def fix [Monad m] [Alternative m] (f : α → m α) (x : α) : ListM m α :=
-  cons' x <| squash <| (fix f <$> f x) <|> pure nil
+/-- Construct a `ListM` recursively. Failures from `f` will result in `uncons` failing.  -/
+partial def fix [Monad m] (f : α → m α) (x : α) : ListM m α :=
+  cons' x <| squash <| fix f <$> f x
 #align tactic.mllist.fix ListM.fix
+
+/-- Construct a `ListM` recursively. If `f` returns `none` the list will terminate. -/
+partial def fix? [Monad m] (f : α → m (Option α)) (x : α) : ListM m α :=
+  cons' x <| squash <| do
+    match ← f x with
+    | none => return .nil
+    | some x' => return fix? f x'
 
 variable [Monad m]
 
@@ -125,19 +129,18 @@ partial def iterate (f : m α) : ListM m α :=
 accumulating the elements of the resulting `List β` as a single monadic lazy list.
 
 (This variant allows starting with a specified `List β` of elements, as well. )-/
-partial def fixl_with [Alternative m] (f : α → m (α × List β)) : α → List β → ListM m β
+partial def fixl_with (f : α → m (α × List β)) : α → List β → ListM m β
   | s, b :: rest => cons' b (fixl_with f s rest)
-  | s, [] => cons <| (do
+  | s, [] => cons <| do
     let (s', l) ← f s
     match l with
       | b :: rest => pure (some b, fixl_with f s' rest)
-      | [] => pure (none, fixl_with f s' [])) <|>
-    pure (none, nil)
+      | [] => pure (none, fixl_with f s' [])
 #align tactic.mllist.fixl_with ListM.fixl_with
 
 /-- Repeatedly apply a function `f : α → m (α × List β)` to an initial `a : α`,
 accumulating the elements of the resulting `List β` as a single monadic lazy list. -/
-def fixl [Alternative m] (f : α → m (α × List β)) (s : α) : ListM m β :=
+def fixl (f : α → m (α × List β)) (s : α) : ListM m β :=
   fixl_with f s []
 #align tactic.mllist.fixl ListM.fixl
 
@@ -198,17 +201,32 @@ def folds (f : β → α → β) (init : β) (L : ListM m α) : ListM m β :=
   L.foldsM (fun b a => pure (f b a)) init
 
 /-- Take the first `n` elements, as a list inside the monad. -/
-partial def takeAsList (xs : ListM m α) : Nat → m (List α)
-  | 0 => pure []
-  | n+1 => do match ← xs.uncons with
-    | none => pure []
-    | some (x, xs) => return x :: (← xs.takeAsList n)
+partial def takeAsList (xs : ListM m α) (n : Nat) : m (List α) :=
+  go n [] xs
+where
+  go (r : Nat) (acc : List α) (xs : ListM m α) : m (List α) :=
+    match r with
+    | 0 => pure acc.reverse
+    | r+1 => do match ← xs.uncons with
+      | none => pure acc.reverse
+      | some (x, xs) => go r (x :: acc) xs
 #align tactic.mllist.take ListM.takeAsList
+
+/-- Take the first `n` elements, as an array inside the monad. -/
+partial def takeAsArray (xs : ListM m α) (n : Nat) : m (Array α) :=
+  go n #[] xs
+where
+  go (r : Nat) (acc : Array α) (xs : ListM m α) : m (Array α) :=
+    match r with
+    | 0 => pure acc
+    | r+1 => do match ← xs.uncons with
+      | none => pure acc
+      | some (x, xs) => go r (acc.push x) xs
 
 /-- Take the first `n` elements. -/
 partial def take (xs : ListM m α) : Nat → ListM m α
   | 0 => empty
-  | n+1 => xs.cases' {} fun _ l => l.take n
+  | n+1 => xs.cases' {} fun h l => cons do pure (h, l.take n)
 
 /-- Drop the first `n` elements. -/
 def drop (xs : ListM m α) : Nat → ListM m α
@@ -278,9 +296,31 @@ def enum : ListM m α → ListM m (Nat × α) :=
 #align tactic.mllist.enum ListM.enum
 
 /-- The infinite monadic lazy list of natural numbers.-/
-def range {m : Type → Type} [Monad m] [Alternative m] : ListM m Nat :=
+def range {m : Type → Type} [Monad m] : ListM m Nat :=
   ListM.fix (fun n => pure (n + 1)) 0
 #align tactic.mllist.range ListM.range
+
+/-- Iterate through the elements of `Fin n`. -/
+def fin {m : Type → Type} [Monad m] (n : Nat) : ListM m (Fin n) :=
+  match n with
+  | 0 => .nil
+  | n+1 => fix? (fun i => if i < n then return some (i+1) else return none) 0
+
+/-- Convert an array to a monadic lazy list. -/
+def ofArray {m : Type → Type} [Monad m] {α : Type} (L : Array α) : ListM m α :=
+  fin L.size |>.map L.get
+
+/-- Group the elements of a lazy list into chunks of a given size.
+If the lazy list is finite, the last chunk may be smaller (possibly even length 0). -/
+partial def chunk (L : ListM m α) (n : Nat) : ListM m (Array α) :=
+  go n #[] L
+where
+  go (r : Nat) (acc : Array α) (M : ListM m α) : ListM m (Array α) :=
+    match r with
+    | 0 => cons (pure (some acc, go n #[] M))
+    | r+1 => squash do match ← M.uncons with
+      | none => return cons (pure (some acc, .nil))
+      | some (a, M') => return go r (acc.push a) M'
 
 /-- Add one element to the end of a monadic lazy list. -/
 def concat : ListM m α → α → ListM m α
@@ -305,7 +345,7 @@ def monadLift (x : m α) : ListM m α :=
 #align tactic.mllist.monad_lift ListM.monadLift
 
 /-- Lift the monad of a lazy list. -/
-partial def liftM [Monad n] [MonadLift m n] (L : ListM m α) : ListM n α :=
+partial def liftM [Monad n] [MonadLiftT m n] (L : ListM m α) : ListM n α :=
   squash do return match ← (uncons L : m _) with
     | none => {}
     | some (a, L') => cons' a L'.liftM

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.measure.complex
-! leanprover-community/mathlib commit 17b3357baa47f48697ca9c243e300eb8cdd16a15
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+
+#align_import measure_theory.measure.complex from "leanprover-community/mathlib"@"17b3357baa47f48697ca9c243e300eb8cdd16a15"
 
 /-!
 # Complex measure
@@ -17,7 +14,8 @@ This file proves some elementary results about complex measures. In particular, 
 a complex measure is always in the form `s + it` where `s` and `t` are signed measures.
 
 The complex measure is defined to be vector measure over `ℂ`, this definition can be found
-in `measure_theory.measure.vector_measure` and is known as `MeasureTheory.ComplexMeasure`.
+in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
+`MeasureTheory.ComplexMeasure`.
 
 ## Main definitions
 
@@ -66,7 +64,7 @@ def _root_.MeasureTheory.SignedMeasure.toComplexMeasure (s t : SignedMeasure α)
     ComplexMeasure α where
   measureOf' i := ⟨s i, t i⟩
   empty' := by dsimp only; rw [s.empty, t.empty]; rfl
-  not_measurable' i hi := by dsimp only ; rw [s.not_measurable hi, t.not_measurable hi]; rfl
+  not_measurable' i hi := by dsimp only; rw [s.not_measurable hi, t.not_measurable hi]; rfl
   m_iUnion' f hf hfdisj := (Complex.hasSum_iff _ _).2 ⟨s.m_iUnion hf hfdisj, t.m_iUnion hf hfdisj⟩
 #align measure_theory.signed_measure.to_complex_measure MeasureTheory.SignedMeasure.toComplexMeasure
 
@@ -101,7 +99,7 @@ variable {R : Type _} [Semiring R] [Module R ℝ]
 
 variable [ContinuousConstSMul R ℝ] [ContinuousConstSMul R ℂ]
 
-/-- The complex measures form an linear isomorphism to the type of pairs of signed measures. -/
+/-- The complex measures form a linear isomorphism to the type of pairs of signed measures. -/
 @[simps]
 def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
   { equivSignedMeasure with
@@ -116,14 +114,14 @@ def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × Sign
 
 end
 
-theorem absolutelyContinuous_eNNReal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
+theorem absolutelyContinuous_ennreal_iff (c : ComplexMeasure α) (μ : VectorMeasure α ℝ≥0∞) :
     c ≪ᵥ μ ↔ ComplexMeasure.re c ≪ᵥ μ ∧ ComplexMeasure.im c ≪ᵥ μ := by
   constructor <;> intro h
   · constructor <;> · intro i hi; simp [h hi]
   · intro i hi
     rw [← Complex.re_add_im (c i), (_ : (c i).re = 0), (_ : (c i).im = 0)]
     exacts [by simp, h.2 hi, h.1 hi]
-#align measure_theory.complex_measure.absolutely_continuous_ennreal_iff MeasureTheory.ComplexMeasure.absolutelyContinuous_eNNReal_iff
+#align measure_theory.complex_measure.absolutely_continuous_ennreal_iff MeasureTheory.ComplexMeasure.absolutelyContinuous_ennreal_iff
 
 end ComplexMeasure
 

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.zorn_atoms
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Zorn
 import Mathlib.Order.Atoms
+
+#align_import order.zorn_atoms from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
 
 /-!
 # Zorn lemma for (co)atoms
@@ -39,7 +36,7 @@ theorem IsCoatomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderTop 
   exact hyz.ne' (hy' z ⟨hxy.trans hyz.le, hz⟩ hyz.le)
 #align is_coatomic.of_is_chain_bounded IsCoatomic.of_isChain_bounded
 
-/-- **Zorn's lemma**: A partial order is atomic if every nonempty chain `c`, `⊥ ∉ c`, has an lower
+/-- **Zorn's lemma**: A partial order is atomic if every nonempty chain `c`, `⊥ ∉ c`, has a lower
 bound not equal to `⊥`. -/
 theorem IsAtomic.of_isChain_bounded {α : Type _} [PartialOrder α] [OrderBot α]
     (h :

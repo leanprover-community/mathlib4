@@ -2,11 +2,6 @@
 Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.affine_isometry
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.NormedSpace.LinearIsometry
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
 import Mathlib.Tactic.FailIfNoProgress
+
+#align_import analysis.normed_space.affine_isometry from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Affine isometries
@@ -48,7 +45,7 @@ variable (𝕜 : Type _) {V V₁ V₂ V₃ V₄ : Type _} {P₁ : Type _} (P P�
   [PseudoMetricSpace P₂] [PseudoMetricSpace P₃] [PseudoMetricSpace P₄] [NormedAddTorsor V P]
   [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂] [NormedAddTorsor V₃ P₃] [NormedAddTorsor V₄ P₄]
 
-/-- An `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
+/-- A `𝕜`-affine isometric embedding of one normed add-torsor over a normed `𝕜`-space into
 another. -/
 structure AffineIsometry extends P →ᵃ[𝕜] P₂ where
   norm_map : ∀ x : V, ‖linear x‖ = ‖x‖
@@ -308,7 +305,7 @@ end AffineSubspace
 
 variable (𝕜 P P₂)
 
-/-- A affine isometric equivalence between two normed vector spaces. -/
+/-- An affine isometric equivalence between two normed vector spaces. -/
 structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
   norm_map : ∀ x, ‖linear x‖ = ‖x‖
 #align affine_isometry_equiv AffineIsometryEquiv
@@ -333,7 +330,7 @@ theorem linear_eq_linear_isometry : e.linear = e.linearIsometryEquiv.toLinearEqu
   rfl
 #align affine_isometry_equiv.linear_eq_linear_isometry AffineIsometryEquiv.linear_eq_linear_isometry
 
-instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P  P₂ :=
+instance : EquivLike (P ≃ᵃⁱ[𝕜] P₂) P P₂ :=
   { coe := fun f => f.toFun
     inv := fun f => f.invFun
     left_inv := fun f => f.left_inv
@@ -363,7 +360,7 @@ theorem ext {e e' : P ≃ᵃⁱ[𝕜] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   toAffineEquiv_injective <| AffineEquiv.ext h
 #align affine_isometry_equiv.ext AffineIsometryEquiv.ext
 
-/-- Reinterpret a `AffineIsometryEquiv` as a `AffineIsometry`. -/
+/-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
   ⟨e.1.toAffineMap, e.2⟩
 #align affine_isometry_equiv.to_affine_isometry AffineIsometryEquiv.toAffineIsometry
@@ -441,7 +438,7 @@ protected theorem isometry : Isometry e :=
   e.toAffineIsometry.isometry
 #align affine_isometry_equiv.isometry AffineIsometryEquiv.isometry
 
-/-- Reinterpret a `AffineIsometryEquiv` as an `IsometryEquiv`. -/
+/-- Reinterpret an `AffineIsometryEquiv` as an `IsometryEquiv`. -/
 def toIsometryEquiv : P ≃ᵢ P₂ :=
   ⟨e.toAffineEquiv.toEquiv, e.isometry⟩
 #align affine_isometry_equiv.to_isometry_equiv AffineIsometryEquiv.toIsometryEquiv
@@ -456,7 +453,7 @@ theorem range_eq_univ (e : P ≃ᵃⁱ[𝕜] P₂) : Set.range e = Set.univ := b
   exact IsometryEquiv.range_eq_univ _
 #align affine_isometry_equiv.range_eq_univ AffineIsometryEquiv.range_eq_univ
 
-/-- Reinterpret a `AffineIsometryEquiv` as an `Homeomorph`. -/
+/-- Reinterpret an `AffineIsometryEquiv` as a `Homeomorph`. -/
 def toHomeomorph : P ≃ₜ P₂ :=
   e.toIsometryEquiv.toHomeomorph
 #align affine_isometry_equiv.to_homeomorph AffineIsometryEquiv.toHomeomorph
@@ -484,7 +481,7 @@ protected theorem continuousWithinAt {s x} : ContinuousWithinAt e s x :=
 
 variable (𝕜 P)
 
-/-- Identity map as a `AffineIsometryEquiv`. -/
+/-- Identity map as an `AffineIsometryEquiv`. -/
 def refl : P ≃ᵃⁱ[𝕜] P :=
   ⟨AffineEquiv.refl 𝕜 P, fun _ => rfl⟩
 #align affine_isometry_equiv.refl AffineIsometryEquiv.refl
@@ -549,7 +546,7 @@ theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
   rfl
 #align affine_isometry_equiv.to_homeomorph_symm AffineIsometryEquiv.toHomeomorph_symm
 
-/-- Composition of `AffineIsometryEquiv`s as a `AffineIsometryEquiv`. -/
+/-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
 def trans (e' : P₂ ≃ᵃⁱ[𝕜] P₃) : P ≃ᵃⁱ[𝕜] P₃ :=
   ⟨e.toAffineEquiv.trans e'.toAffineEquiv, fun _ => (e'.norm_map _).trans (e.norm_map _)⟩
 #align affine_isometry_equiv.trans AffineIsometryEquiv.trans

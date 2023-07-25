@@ -2,17 +2,14 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.mv_polynomial.basic
-! leanprover-community/mathlib commit 2f5b500a507264de86d666a5f87ddb976e2d8de4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
+
+#align_import data.mv_polynomial.basic from "leanprover-community/mathlib"@"c8734e8953e4b439147bd6f75c2163f6d27cdce6"
 
 /-!
 # Multivariate polynomials
@@ -61,7 +58,7 @@ In the definitions below, we use the following notation:
 
 Recall that if `Y` has a zero, then `X →₀ Y` is the type of functions from `X` to `Y` with finite
 support, i.e. such that only finitely many elements of `X` get sent to non-zero terms in `Y`.
-The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R` ; here `σ →₀ ℕ` denotes the space of all
+The definition of `MvPolynomial σ R` is `(σ →₀ ℕ) →₀ R`; here `σ →₀ ℕ` denotes the space of all
 monomials in the variables, and the function to `R` sends a monomial to its coefficient in
 the polynomial being represented.
 
@@ -144,11 +141,15 @@ instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
     Algebra R (MvPolynomial σ S₁) :=
   AddMonoidAlgebra.algebra
 
--- Register with high priority to avoid timeout in `Data.MvPolynomial.PDeriv`
-instance isScalarTower' [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
+instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
     IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  IsScalarTower.right
-#align mv_polynomial.is_scalar_tower' MvPolynomial.isScalarTower'
+  AddMonoidAlgebra.isScalarTower_self _
+#align mv_polynomial.is_scalar_tower_right MvPolynomial.isScalarTower_right
+
+instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
+    SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
+  AddMonoidAlgebra.smulCommClass_self _
+#align mv_polynomial.smul_comm_class_right MvPolynomial.smulCommClass_right
 
 /-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
 instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
@@ -1153,6 +1154,15 @@ theorem smul_eval (x) (p : MvPolynomial σ R) (s) : eval x (s • p) = s * eval 
   rw [smul_eq_C_mul, (eval x).map_mul, eval_C]
 #align mv_polynomial.smul_eval MvPolynomial.smul_eval
 
+theorem eval_add : eval f (p + q) = eval f p + eval f q :=
+  eval₂_add _ _
+
+theorem eval_mul : eval f (p * q) = eval f p * eval f q :=
+  eval₂_mul _ _
+
+theorem eval_pow : ∀ n, eval f (p ^ n) = eval f p ^ n :=
+  fun _ => eval₂_pow _ _
+
 theorem eval_sum {ι : Type _} (s : Finset ι) (f : ι → MvPolynomial σ R) (g : σ → R) :
     eval g (∑ i in s, f i) = ∑ i in s, eval g (f i) :=
   (eval g).map_sum _ _
@@ -1289,7 +1299,7 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, coeff m (map 
 theorem map_injective (hf : Function.Injective f) :
     Function.Injective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := by
   intro p q h
-  simp only [ext_iff, coeff_map] at h⊢
+  simp only [ext_iff, coeff_map] at h ⊢
   intro m
   exact hf (h m)
 #align mv_polynomial.map_injective MvPolynomial.map_injective

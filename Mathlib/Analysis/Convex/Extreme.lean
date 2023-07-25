@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.extreme
-! leanprover-community/mathlib commit c5773405394e073885e2a144c9ca14637e8eb963
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Hull
+
+#align_import analysis.convex.extreme from "leanprover-community/mathlib"@"c5773405394e073885e2a144c9ca14637e8eb963"
 
 /-!
 # Extreme sets
@@ -114,7 +111,7 @@ theorem isExtreme_iInter {ι : Sort _} [Nonempty ι] {F : ι → Set E}
     (hAF : ∀ i : ι, IsExtreme 𝕜 A (F i)) : IsExtreme 𝕜 A (⋂ i : ι, F i) := by
   obtain i := Classical.arbitrary ι
   refine' ⟨iInter_subset_of_subset i (hAF i).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
-  simp_rw [mem_iInter] at hxF⊢
+  simp_rw [mem_iInter] at hxF ⊢
   have h := fun i ↦ (hAF i).2 hx₁A hx₂A (hxF i) hx
   exact ⟨fun i ↦ (h i).1, fun i ↦ (h i).2⟩
 #align is_extreme_Inter isExtreme_iInter
@@ -129,7 +126,7 @@ theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F,
     IsExtreme 𝕜 A (⋂₀ F) := by
   obtain ⟨B, hB⟩ := hF
   refine' ⟨(sInter_subset_of_mem hB).trans (hAF B hB).1, fun x₁ hx₁A x₂ hx₂A x hxF hx ↦ _⟩
-  simp_rw [mem_sInter] at hxF⊢
+  simp_rw [mem_sInter] at hxF ⊢
   have h := fun B hB ↦ (hAF B hB).2 hx₁A hx₂A (hxF B hB) hx
   exact ⟨fun B hB ↦ (h B hB).1, fun B hB ↦ (h B hB).2⟩
 #align is_extreme_sInter isExtreme_sInter

@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.basic
-! leanprover-community/mathlib commit 3a061790136d13594ec10c7c90d202335ac5d854
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
+
+#align_import category_theory.idempotents.basic from "leanprover-community/mathlib"@"3a061790136d13594ec10c7c90d202335ac5d854"
 
 /-!
 # Idempotent complete categories
@@ -89,7 +86,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     haveI : HasEqualizer (𝟙 X) p := h X p hp
     refine' ⟨equalizer (𝟙 X) p, equalizer.ι (𝟙 X) p,
       equalizer.lift p (show p ≫ 𝟙 X = p ≫ p by rw [hp, comp_id]), _, equalizer.lift_ι _ _⟩
-    apply equalizer.hom_ext
+    ext
     simp only [assoc, limit.lift_π, Eq.ndrec, id_eq, eq_mpr_eq_cast, Fork.ofι_pt,
       Fork.ofι_π_app, id_comp]
     rw [← equalizer.condition, comp_id]
@@ -131,7 +128,7 @@ instance (priority := 100) isIdempotentComplete_of_abelian (D : Type _) [Categor
 variable {C}
 
 theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
-    (hpp' : p ≫ φ.hom = φ.hom ≫ p') 
+    (hpp' : p ≫ φ.hom = φ.hom ≫ p')
     (h : ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p) :
     ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   rcases h with ⟨Y, i, e, ⟨h₁, h₂⟩⟩

@@ -1,12 +1,7 @@
 /-
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
-Reeased under Apache 2.0 license as described in the file LICENSE.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.gelfand_duality
-! leanprover-community/mathlib commit e65771194f9e923a70dfb49b6ca7be6e400d8b6f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Star.Spectrum
 import Mathlib.Analysis.Normed.Group.Quotient
@@ -15,6 +10,8 @@ import Mathlib.Topology.ContinuousFunction.Units
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+
+#align_import analysis.normed_space.star.gelfand_duality from "leanprover-community/mathlib"@"e65771194f9e923a70dfb49b6ca7be6e400d8b6f"
 
 /-!
 # Gelfand Duality
@@ -52,7 +49,7 @@ and even an equivalence between C⋆-algebras.
 * Conclude using the previous fact that the functors `C(⬝, ℂ)` and `characterSpace ℂ ⬝` along with
   the canonical homeomorphisms described above constitute a natural contravariant equivalence of
   the categories of compact Hausdorff spaces (with continuous maps) and commutative unital
-  C⋆-algebras (with unital ⋆-algebra homomoprhisms); this is known as **Gelfand duality**.
+  C⋆-algebras (with unital ⋆-algebra homomorphisms); this is known as **Gelfand duality**.
 
 ## Tags
 
@@ -91,7 +88,7 @@ theorem Ideal.toCharacterSpace_apply_eq_zero_of_mem {a : A} (ha : a ∈ I) :
   exact Set.eq_of_mem_singleton (Set.singleton_nonempty (0 : ℂ)).some_mem
 #align ideal.to_character_space_apply_eq_zero_of_mem Ideal.toCharacterSpace_apply_eq_zero_of_mem
 
-/-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivlaent
+/-- If `a : A` is not a unit, then some character takes the value zero at `a`. This is equivalent
 to `gelfandTransform ℂ A a` takes the value zero at some character. -/
 theorem WeakDual.CharacterSpace.exists_apply_eq_zero {a : A} (ha : ¬IsUnit a) :
     ∃ f : characterSpace ℂ A, f a = 0 := by

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
-
-! This file was ported from Lean 3 source module algebraic_topology.fundamental_groupoid.punit
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+
+#align_import algebraic_topology.fundamental_groupoid.punit from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Fundamental groupoid of punit
@@ -42,7 +39,7 @@ def punitEquivDiscretePUnit : FundamentalGroupoid PUnit.{u + 1} ≌ Discrete PUn
   CategoryTheory.Equivalence.mk (Functor.star _) ((CategoryTheory.Functor.const _).obj PUnit.unit)
     -- Porting note: was `by decide`
     (NatIso.ofComponents fun _ => eqToIso (by simp))
-    (Functor.pUnitExt _ _)
+    (Functor.punitExt _ _)
 #align fundamental_groupoid.punit_equiv_discrete_punit FundamentalGroupoid.punitEquivDiscretePUnit
 
 end FundamentalGroupoid

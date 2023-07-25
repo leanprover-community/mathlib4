@@ -2,15 +2,12 @@
 Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
-
-! This file was ported from Lean 3 source module data.real.ereal
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.ENNReal
 import Mathlib.Data.Sign
+
+#align_import data.real.ereal from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 # The extended reals [-∞, ∞].
@@ -80,7 +77,7 @@ instance : DenselyOrdered EReal :=
 
 namespace EReal
 
--- things unify with `WithBot.decidableLT` later if we we don't provide this explicitly.
+-- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
 instance decidableLt : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
 #align ereal.decidable_lt EReal.decidableLt
@@ -1050,7 +1047,7 @@ a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
   | ⊥ => ⊤
   | ⊤ => ⊤
-  | (x : ℝ) => ENNReal.ofReal (|x|)
+  | (x : ℝ) => ENNReal.ofReal |x|
 #align ereal.abs EReal.abs
 
 @[simp] theorem abs_top : (⊤ : EReal).abs = ⊤ := rfl
@@ -1059,7 +1056,7 @@ protected def abs : EReal → ℝ≥0∞
 @[simp] theorem abs_bot : (⊥ : EReal).abs = ⊤ := rfl
 #align ereal.abs_bot EReal.abs_bot
 
-theorem abs_def (x : ℝ) : (x : EReal).abs = ENNReal.ofReal (|x|) := rfl
+theorem abs_def (x : ℝ) : (x : EReal).abs = ENNReal.ofReal |x| := rfl
 #align ereal.abs_def EReal.abs_def
 
 theorem abs_coe_lt_top (x : ℝ) : (x : EReal).abs < ⊤ :=

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.homology.image_to_kernel
-! leanprover-community/mathlib commit 618ea3d5c99240cd7000d8376924906a148bf9ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Subobject.Limits
+
+#align_import algebra.homology.image_to_kernel from "leanprover-community/mathlib"@"618ea3d5c99240cd7000d8376924906a148bf9ff"
 
 /-!
 # Image-to-kernel comparison maps
@@ -60,12 +57,22 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
   rfl
 #align subobject_of_le_as_image_to_kernel subobject_ofLE_as_imageToKernel
 
+attribute [local instance] ConcreteCategory.funLike
+
 -- porting note: removed elementwise attribute which does not seem to be helpful here
+-- a more suitable lemma is added below
 @[reassoc (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
 #align image_to_kernel_arrow imageToKernel_arrow
+
+@[simp]
+lemma imageToKernel_arrow_apply [ConcreteCategory V] (w : f ≫ g = 0)
+    (x : (forget V).obj (Subobject.underlying.obj (imageSubobject f))) :
+    (kernelSubobject g).arrow (imageToKernel f g w x) =
+      (imageSubobject f).arrow x := by
+  rw [← comp_apply, imageToKernel_arrow]
 
 -- This is less useful as a `simp` lemma than it initially appears,
 -- as it "loses" the information the morphism factors through the image.
@@ -264,11 +271,8 @@ theorem imageSubobjectMap_comp_imageToKernel (p : α.right = β.left) :
 #align image_subobject_map_comp_image_to_kernel imageSubobjectMap_comp_imageToKernel
 
 variable [HasCokernel (imageToKernel f g w)] [HasCokernel (imageToKernel f' g' w')]
-
 variable [HasCokernel (imageToKernel f₁ g₁ w₁)]
-
 variable [HasCokernel (imageToKernel f₂ g₂ w₂)]
-
 variable [HasCokernel (imageToKernel f₃ g₃ w₃)]
 
 /-- Given compatible commutative squares between
@@ -276,31 +280,46 @@ a pair `f g` and a pair `f' g'` satisfying `f ≫ g = 0` and `f' ≫ g' = 0`,
 we get a morphism on homology.
 -/
 def homology.map (p : α.right = β.left) : homology f g w ⟶ homology f' g' w' :=
-  cokernel.desc _ (kernelSubobjectMap β ≫ cokernel.π _)
-    (by
-      rw [imageSubobjectMap_comp_imageToKernel_assoc w w' α β p]
-      simp only [cokernel.condition, comp_zero])
+  cokernel.desc _ (kernelSubobjectMap β ≫ cokernel.π _) <| by
+    rw [imageSubobjectMap_comp_imageToKernel_assoc w w' α β p]
+    simp only [cokernel.condition, comp_zero]
 #align homology.map homology.map
 
--- porting note: removed elementwise attribute which does not seem to be helpful here
+-- porting note: removed elementwise attribute which does not seem to be helpful here,
+-- the correct lemma is stated below
 @[reassoc (attr := simp)]
 theorem homology.π_map (p : α.right = β.left) :
     homology.π f g w ≫ homology.map w w' α β p = kernelSubobjectMap β ≫ homology.π f' g' w' := by
   simp only [homology.π, homology.map, cokernel.π_desc]
 #align homology.π_map homology.π_map
 
+section
+
+attribute [local instance] ConcreteCategory.funLike
+
+@[simp]
+lemma homology.π_map_apply [ConcreteCategory.{w} V] (p : α.right = β.left)
+    (x : (forget V).obj (Subobject.underlying.obj (kernelSubobject g))) :
+    homology.map w w' α β p (homology.π f g w x) =
+      homology.π f' g' w' (kernelSubobjectMap β x) := by
+  simp only [← comp_apply, homology.π_map w w' α β p]
+
+end
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem homology.map_desc (p : α.right = β.left) {D : V} (k : (kernelSubobject g' : V) ⟶ D)
     (z : imageToKernel f' g' w' ≫ k = 0) :
     homology.map w w' α β p ≫ homology.desc f' g' w' k z =
       homology.desc f g w (kernelSubobjectMap β ≫ k)
-        (by simp only [imageSubobjectMap_comp_imageToKernel_assoc w w' α β p, z, comp_zero]) :=
-  by ext ; simp only [homology.π_desc, homology.π_map_assoc]
+        (by simp only [imageSubobjectMap_comp_imageToKernel_assoc w w' α β p, z, comp_zero]) := by
+  ext
+  simp only [homology.π_desc, homology.π_map_assoc]
 #align homology.map_desc homology.map_desc
 
 @[simp]
 theorem homology.map_id : homology.map w w (𝟙 _) (𝟙 _) rfl = 𝟙 _ := by
-  ext ; simp only [homology.π_map, kernelSubobjectMap_id, Category.id_comp, Category.comp_id]
+  ext
+  simp only [homology.π_map, kernelSubobjectMap_id, Category.id_comp, Category.comp_id]
 #align homology.map_id homology.map_id
 
 /-- Auxiliary lemma for homology computations. -/
@@ -316,7 +335,8 @@ theorem homology.comp_right_eq_comp_left {V : Type _} [Category V] {A₁ B₁ C�
 theorem homology.map_comp (p₁ : α₁.right = β₁.left) (p₂ : α₂.right = β₂.left) :
     homology.map w₁ w₂ α₁ β₁ p₁ ≫ homology.map w₂ w₃ α₂ β₂ p₂ =
       homology.map w₁ w₃ (α₁ ≫ α₂) (β₁ ≫ β₂) (homology.comp_right_eq_comp_left p₁ p₂) := by
-  ext ; simp only [kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map, Category.assoc]
+  ext
+  simp only [kernelSubobjectMap_comp, homology.π_map_assoc, homology.π_map, Category.assoc]
 #align homology.map_comp homology.map_comp
 
 /-- An isomorphism between two three-term complexes induces an isomorphism on homology. -/
@@ -390,17 +410,16 @@ this variant provides a morphism
 which is sometimes more convenient.
 -/
 def imageToKernel' (w : f ≫ g = 0) : image f ⟶ kernel g :=
-  kernel.lift g (image.ι f)
-    (by
-      ext
-      simpa using w)
+  kernel.lift g (image.ι f) <| by
+    ext
+    simpa using w
 #align image_to_kernel' imageToKernel'
 
 @[simp]
 theorem imageSubobjectIso_imageToKernel' (w : f ≫ g = 0) :
     (imageSubobjectIso f).hom ≫ imageToKernel' f g w =
       imageToKernel f g w ≫ (kernelSubobjectIso g).hom := by
-  apply equalizer.hom_ext
+  ext
   simp [imageToKernel']
 #align image_subobject_iso_image_to_kernel' imageSubobjectIso_imageToKernel'
 
@@ -423,12 +442,15 @@ def homologyIsoCokernelImageToKernel' (w : f ≫ g = 0) :
   inv := cokernel.map _ _ (imageSubobjectIso f).inv (kernelSubobjectIso g).inv
       (by simp only [imageToKernel'_kernelSubobjectIso])
   hom_inv_id := by
+    -- Just calling `ext` here uses the higher priority `homology.ext`,
+    -- which precomposes with `homology.π`.
+    -- As we are trying to work in terms of `cokernel`, it is better to use `coequalizer.hom_ext`.
     apply coequalizer.hom_ext
     simp only [Iso.hom_inv_id_assoc, cokernel.π_desc, cokernel.π_desc_assoc, Category.assoc,
       coequalizer_as_cokernel]
     exact (Category.comp_id _).symm
   inv_hom_id := by
-    apply coequalizer.hom_ext
+    ext
     simp only [Iso.inv_hom_id_assoc, cokernel.π_desc, Category.comp_id, cokernel.π_desc_assoc,
       Category.assoc]
 #align homology_iso_cokernel_image_to_kernel' homologyIsoCokernelImageToKernel'
@@ -440,7 +462,7 @@ variable [HasEqualizers V]
 def homologyIsoCokernelLift (w : f ≫ g = 0) : homology f g w ≅ cokernel (kernel.lift g f w) := by
   refine' homologyIsoCokernelImageToKernel' f g w ≪≫ _
   have p : factorThruImage f ≫ imageToKernel' f g w = kernel.lift g f w := by
-    apply equalizer.hom_ext
+    ext
     simp [imageToKernel']
   exact (cokernelEpiComp _ _).symm ≪≫ cokernelIsoOfEq p
 #align homology_iso_cokernel_lift homologyIsoCokernelLift

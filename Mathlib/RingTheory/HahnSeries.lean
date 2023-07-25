@@ -2,11 +2,6 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.hahn_series
-! leanprover-community/mathlib commit a484a7d0eade4e1268f4fb402859b6686037f965
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Algebra.BigOperators.Finprod
@@ -15,6 +10,8 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Finsupp.Pwo
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Algebra.Order.Group.WithTop
+
+#align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
 /-!
 # Hahn Series
@@ -391,7 +388,7 @@ theorem min_order_le_order_add {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x y :
   by_cases hy : y = 0; · simp [hy]
   rw [order_of_ne hx, order_of_ne hy, order_of_ne hxy]
   refine' le_of_eq_of_le _ (Set.IsWf.min_le_min_of_subset (support_add_subset (x := x) (y := y)))
-  . exact (Set.IsWf.min_union _ _ _ _).symm
+  · exact (Set.IsWf.min_union _ _ _ _).symm
 #align hahn_series.min_order_le_order_add HahnSeries.min_order_le_order_add
 
 /-- `single` as an additive monoid/group homomorphism -/
@@ -789,7 +786,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
   refine' sum_bij_ne_zero (fun a _ _ => ⟨⟨a.2.1, a.2.2 + a.1.2⟩, ⟨a.2.2, a.1.2⟩⟩) _ _ _ _
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
     simp only [and_true_iff, Set.image2_add, eq_self_iff_true, mem_addAntidiagonal, Ne.def,
-      Set.image_prod, mem_sigma, Set.mem_setOf_eq] at H1 H2⊢
+      Set.image_prod, mem_sigma, Set.mem_setOf_eq] at H1 H2 ⊢
     obtain ⟨⟨H3, nz, rfl⟩, nx, ny, rfl⟩ := H1
     exact ⟨⟨nx, Set.add_mem_add ny nz, (add_assoc _ _ _).symm⟩, ny, nz⟩
   · rintro ⟨⟨i1, j1⟩, k1, l1⟩ ⟨⟨i2, j2⟩, k2, l2⟩ H1 H2 H3 H4 H5
@@ -800,7 +797,7 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     simp only [and_true_iff, Prod.mk.inj_iff, eq_self_iff_true, heq_iff_eq, ← H1.2.2.2, ← H3.2.2.2]
   · rintro ⟨⟨i, j⟩, ⟨k, l⟩⟩ H1 H2
     simp only [exists_prop, Set.image2_add, Prod.mk.inj_iff, mem_addAntidiagonal, Sigma.exists,
-      Ne.def, Set.image_prod, mem_sigma, Set.mem_setOf_eq, heq_iff_eq, Prod.exists] at H1 H2⊢
+      Ne.def, Set.image_prod, mem_sigma, Set.mem_setOf_eq, heq_iff_eq, Prod.exists] at H1 H2 ⊢
     obtain ⟨⟨nx, H, rfl⟩, ny, nz, rfl⟩ := H1
     exact
       ⟨i + k, l, i, k, ⟨⟨Set.add_mem_add nx ny, nz, add_assoc _ _ _⟩ , nx, ny, rfl⟩,
@@ -1161,7 +1158,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
 
 variable (Γ R) [StrictOrderedSemiring Γ]
 
-/-- Casts a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`. -/
+/-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
   (HahnSeries.embDomainRingHom (Nat.castAddMonoidHom Γ) Nat.strictMono_cast.injective fun _ _ =>
         Nat.cast_le).comp
@@ -1226,7 +1223,7 @@ theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
   induction' n with n ih
   · simp
     rfl
-  . rw [pow_succ, pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
+  · rw [pow_succ, pow_succ, ih, ofPowerSeries_X, mul_comm, single_mul_single, one_mul,
       Nat.cast_succ, add_comm]
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 
@@ -1297,7 +1294,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
 
 variable (Γ) [StrictOrderedSemiring Γ]
 
-/-- Casting a power series as a Hahn series with coefficients from an `StrictOrderedSemiring`
+/-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/
 @[simps!]
 def ofPowerSeriesAlg : PowerSeries A →ₐ[R] HahnSeries Γ A :=

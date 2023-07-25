@@ -2,14 +2,11 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.calculus.parametric_integral
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.MeasureTheory.Integral.SetIntegral
+
+#align_import analysis.calculus.parametric_integral from "leanprover-community/mathlib"@"8f9fea08977f7e450770933ee6abb20733b47c92"
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -17,8 +14,8 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 A parametric integral is a function with shape `f = λ x : H, ∫ a : α, F x a ∂μ` for some
 `F : H → α → E`, where `H` and `E` are normed spaces and `α` is a measured space with measure `μ`.
 
-We already know from `continuous_of_dominated` in `measure_theory.integral.bochner` how to
-guarantee that `f` is continuous using the dominated convergence theorem. In this file,
+We already know from `continuous_of_dominated` in `Mathlib/MeasureTheory/Integral/Bochner.lean` how
+to guarantee that `f` is continuous using the dominated convergence theorem. In this file,
 we want to express the derivative of `f` as the integral of the derivative of `F` with respect
 to `x`.
 
@@ -33,14 +30,14 @@ variable.
 * `hasFDerivAt_integral_of_dominated_loc_of_lip`: this version assumes that
   - `F x` is ae-measurable for x near `x₀`,
   - `F x₀` is integrable,
-  - `λ x, F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
+  - `fun x ↦ F x a` has derivative `F' a : H →L[ℝ] E` at `x₀` which is ae-measurable,
   - `λ x, F x a` is locally Lipschitz near `x₀` for almost every `a`, with a Lipschitz bound which
     is integrable with respect to `a`.
 
   A subtle point is that the "near x₀" in the last condition has to be uniform in `a`. This is
   controlled by a positive number `ε`.
 
-* `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assume `λ x, F x a` has
+* `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assume `fun x ↦ F x a` has
    derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
    from `x` near `x₀`.
 
@@ -92,7 +89,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
       simp only [norm_sub_rev (F x₀ _)]
       refine' h_lipsch.mono fun a ha => (ha x x_in).trans _
       rw [mul_comm ε]
-      rw [mem_ball, dist_eq_norm] at x_in 
+      rw [mem_ball, dist_eq_norm] at x_in
       exact mul_le_mul_of_nonneg_left x_in.le (b_nonneg _)
     exact integrable_of_norm_sub_le (hF_meas x x_in) hF_int
       (bound_integrable.norm.const_mul ε) this
@@ -144,7 +141,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F : H → α → E} {F' :
         ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ := by
       ext x
       rw [norm_smul_of_nonneg (nneg _)]
-    rwa [hasFDerivAt_iff_tendsto, this] at ha 
+    rwa [hasFDerivAt_iff_tendsto, this] at ha
 #align has_fderiv_at_integral_of_dominated_loc_of_lip' hasFDerivAt_integral_of_dominated_loc_of_lip'
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
@@ -215,7 +212,7 @@ theorem hasDerivAt_integral_of_dominated_loc_of_lip {F : 𝕜 → α → E} {F' 
       h_diff with
     hF'_int key
   replace hF'_int : Integrable F' μ
-  · rw [← integrable_norm_iff hm] at hF'_int 
+  · rw [← integrable_norm_iff hm] at hF'_int
     simpa only [(· ∘ ·), integrable_norm_iff, hF'_meas, one_mul, norm_one,
       ContinuousLinearMap.comp_apply, ContinuousLinearMap.coe_restrict_scalarsL',
       ContinuousLinearMap.norm_restrictScalars, ContinuousLinearMap.norm_smulRightL_apply] using
@@ -249,4 +246,3 @@ theorem hasDerivAt_integral_of_dominated_loc_of_deriv_le {F : 𝕜 → α → E}
     hasDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas this bound_integrable
       diff_x₀
 #align has_deriv_at_integral_of_dominated_loc_of_deriv_le hasDerivAt_integral_of_dominated_loc_of_deriv_le
-

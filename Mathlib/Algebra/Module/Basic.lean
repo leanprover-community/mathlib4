@@ -2,11 +2,6 @@
 Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.module.basic
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Field.Defs
@@ -14,6 +9,8 @@ import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Rat.Basic
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.Tactic.Abel
+
+#align_import algebra.module.basic from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Modules over a ring
@@ -212,22 +209,6 @@ theorem smul_add_one_sub_smul {R : Type _} [Ring R] [Module R M] {r : R} {m : M}
 
 end AddCommMonoid
 
-variable (R)
-
-/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
-structure.
-See note [reducible non-instances]. -/
-@[reducible]
-def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
-  { (inferInstance : AddCommMonoid M) with
-    neg := fun a => (-1 : R) • a
-    add_left_neg := fun a =>
-      show (-1 : R) • a + a = 0 by
-        nth_rw 2 [← one_smul R a]
-        rw [← add_smul, add_left_neg, zero_smul] }
-#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
-
-variable {R}
 
 section AddCommGroup
 
@@ -324,6 +305,27 @@ theorem sub_smul (r s : R) (y : M) : (r - s) • y = r • y - s • y := by
 #align sub_smul sub_smul
 
 end Module
+
+variable (R)
+
+/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
+structure.
+See note [reducible non-instances]. -/
+@[reducible]
+def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
+  { (inferInstance : AddCommMonoid M) with
+    neg := fun a => (-1 : R) • a
+    add_left_neg := fun a =>
+      show (-1 : R) • a + a = 0 by
+        nth_rw 2 [← one_smul R a]
+        rw [← add_smul, add_left_neg, zero_smul]
+    zsmul := fun z a => (z : R) • a
+    zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
+    zsmul_succ' := fun z a => by simp [add_comm, add_smul]
+    zsmul_neg' := fun z a => by simp [←smul_assoc, neg_one_smul] }
+#align module.add_comm_monoid_to_add_comm_group Module.addCommMonoidToAddCommGroup
+
+variable {R}
 
 /-- A module over a `Subsingleton` semiring is a `Subsingleton`. We cannot register this
 as an instance because Lean has no way to guess `R`. -/
@@ -575,7 +577,7 @@ for the vanishing of elements (especially in modules over division rings).
 
 
 /-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
-This a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
+This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
 
 The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
 is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.

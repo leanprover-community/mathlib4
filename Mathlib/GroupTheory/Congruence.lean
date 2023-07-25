@@ -2,16 +2,13 @@
 Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
-
-! This file was ported from Lean 3 source module group_theory.congruence
-! leanprover-community/mathlib commit 6cb77a8eaff0ddd100e87b1591c6d3ad319514ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Hom.Equiv.Basic
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Submonoid.Operations
+
+#align_import group_theory.congruence from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
 /-!
 # Congruence relations
@@ -257,7 +254,7 @@ variable (c)
 @[to_additive "Defining the quotient by an additive congruence relation of a type with
 an addition."]
 protected def Quotient :=
-  Quotient <| c.toSetoid
+  Quotient c.toSetoid
 #align con.quotient Con.Quotient
 #align add_con.quotient AddCon.Quotient
 
@@ -512,11 +509,11 @@ theorem conGen_eq (r : M → M → Prop) : conGen r = sInf { s : Con M | ∀ x y
     (le_sInf (fun s hs x y (hxy : (conGen r).r x y) =>
       show s.r x y by
         apply ConGen.Rel.recOn (motive := fun x y _ => s.r x y) hxy
-        . exact fun x y h => hs x y h
-        . exact s.refl'
-        . exact fun _ => s.symm'
-        . exact fun _ _ => s.trans'
-        . exact fun _ _ => s.mul))
+        · exact fun x y h => hs x y h
+        · exact s.refl'
+        · exact fun _ => s.symm'
+        · exact fun _ _ => s.trans'
+        · exact fun _ _ => s.mul))
     (sInf_le ConGen.Rel.of)
 #align con.con_gen_eq Con.conGen_eq
 #align add_con.add_con_gen_eq AddCon.addConGen_eq
@@ -716,10 +713,10 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient
           Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
   map_rel_iff' := @fun s t => by
     constructor
-    . intros h x y hs
+    · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
       exact t.1.trans (t.1.symm <| t.2 <| eq_rel.1 hx) (t.1.trans ht (t.2 <| eq_rel.1 hy))
-    . intros h _ _ hs
+    · intros h _ _ hs
       rcases hs with ⟨a, b, hx, hy, Hs⟩
       exact ⟨a, b, hx, hy, h Hs⟩
 #align con.correspondence Con.correspondence
@@ -959,7 +956,7 @@ theorem lift_apply_mk' (f : c.Quotient →* P) :
 
 /-- Homomorphisms on the quotient of a monoid by a congruence relation are equal if they
     are equal on elements that are coercions from the monoid. -/
-@[to_additive "Homomorphisms on the quotient of an AddMonoid` by an additive congruence relation
+@[to_additive "Homomorphisms on the quotient of an `AddMonoid` by an additive congruence relation
 are equal if they are equal on elements that are coercions from the `AddMonoid`."]
 theorem lift_funext (f g : c.Quotient →* P) (h : ∀ a : M, f a = g a) : f = g := by
   rw [← lift_apply_mk' f, ← lift_apply_mk' g]
@@ -1241,10 +1238,10 @@ protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
 #align con.zpow Con.zpow
 #align add_con.zsmul AddCon.zsmul
 
-/-- The inversion induced on the quotient by a congruence relation on a type with a
+/-- The inversion induced on the quotient by a congruence relation on a type with an
     inversion. -/
 @[to_additive "The negation induced on the quotient by an additive congruence relation on a type
-with an negation."]
+with a negation."]
 instance hasInv : Inv c.Quotient :=
   ⟨(Quotient.map' Inv.inv) fun _ _ => c.inv⟩
 #align con.has_inv Con.hasInv
@@ -1305,10 +1302,10 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
       (fun x y x' y' hx hy => _) u.3 u.4
   refine' Function.hfunext _ _
   rw [c.eq.2 hx, c.eq.2 hy]
-  . rintro Hxy Hxy' -
+  · rintro Hxy Hxy' -
     refine' Function.hfunext _ _
     · rw [c.eq.2 hx, c.eq.2 hy]
-    . rintro Hyx Hyx' -
+    · rintro Hyx Hyx' -
       exact heq_of_eq (Hf _ _ _ _ _ _ _ _ hx hy)
 #align con.lift_on_units Con.liftOnUnits
 #align add_con.lift_on_add_units AddCon.liftOnAddUnits

@@ -2,16 +2,13 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module ring_theory.polynomial_algebra
-! leanprover-community/mathlib commit 565eb991e264d0db702722b4bde52ee5173c9950
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.Data.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
+
+#align_import ring_theory.polynomial_algebra from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -283,7 +280,7 @@ theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ
 
 theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
-  ext (m i j)
+  ext m i j
   simp only [coeff_map, one_apply, algebraMap_matrix_apply, mul_boole, Pi.smul_apply,
     matPolyEquiv_coeff_apply]
   split_ifs <;> simp <;> rename_i h <;> simp [h]

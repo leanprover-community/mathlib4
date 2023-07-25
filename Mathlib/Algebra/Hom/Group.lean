@@ -3,18 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
-Ported by: Winston Yin
-
-! This file was ported from Lean 3 source module algebra.hom.group
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Init.CcLemmas
+import Mathlib.Init.CCLemmas
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.FunLike.Basic
+
+#align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Monoid and group homomorphisms
@@ -23,7 +19,7 @@ This file defines the bundled structures for monoid and group homomorphisms. Nam
 `MonoidHom` (resp., `AddMonoidHom`) to be bundled homomorphisms between multiplicative (resp.,
 additive) monoids or groups.
 
-We also define coercion to a function, and  usual operations: composition, identity homomorphism,
+We also define coercion to a function, and usual operations: composition, identity homomorphism,
 pointwise multiplication and pointwise inversion.
 
 This file also defines the lesser-used (and notation-less) homomorphism types which are used as
@@ -1032,10 +1028,10 @@ def MonoidWithZeroHom.id (M : Type _) [MulZeroOneClass M] : M →*₀ M where
 #align monoid_with_zero_hom.id MonoidWithZeroHom.id
 #align monoid_with_zero_hom.id_apply MonoidWithZeroHom.id_apply
 
-/-- The identity map from an type with zero to itself. -/
+/-- The identity map from a type with zero to itself. -/
 add_decl_doc ZeroHom.id
 
-/-- The identity map from an type with addition to itself. -/
+/-- The identity map from a type with addition to itself. -/
 add_decl_doc AddHom.id
 
 /-- The identity map from an additive monoid to itself. -/
@@ -1079,7 +1075,7 @@ def MonoidWithZeroHom.comp [MulZeroOneClass M] [MulZeroOneClass N] [MulZeroOneCl
 /-- Composition of `ZeroHom`s as a `ZeroHom`. -/
 add_decl_doc ZeroHom.comp
 
-/-- Composition of `AddHom`s as a `AddHom`. -/
+/-- Composition of `AddHom`s as an `AddHom`. -/
 add_decl_doc AddHom.comp
 
 /-- Composition of additive monoid morphisms as an additive monoid morphism. -/

@@ -2,15 +2,12 @@
 Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module measure_theory.constructions.pi
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.Topology.Constructions
+
+#align_import measure_theory.constructions.pi from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Product measures
@@ -75,7 +72,7 @@ variable {ι ι' : Type _} {α : ι → Type _}
 theorem IsPiSystem.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i)) :
     IsPiSystem (pi univ '' pi univ C) := by
   rintro _ ⟨s₁, hs₁, rfl⟩ _ ⟨s₂, hs₂, rfl⟩ hst
-  rw [← pi_inter_distrib] at hst⊢; rw [univ_pi_nonempty_iff] at hst
+  rw [← pi_inter_distrib] at hst ⊢; rw [univ_pi_nonempty_iff] at hst
   exact mem_image_of_mem _ fun i _ => hC i _ (hs₁ i (mem_univ i)) _ (hs₂ i (mem_univ i)) (hst i)
 #align is_pi_system.pi IsPiSystem.pi
 
@@ -117,7 +114,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
         Set.pi univ fun k => ⋃ j : ℕ,
         @update ι (fun i' => Set (α i')) _ (fun i' => t i' j) i s k := by
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
-      by_cases i' = i
+      by_cases h : i' = i
       · subst h; simp
       · rw [← Ne.def] at h; simp [h]
     rw [this, ← iUnion_univ_pi]
@@ -185,7 +182,7 @@ theorem piPremeasure_pi_mono {s t : Set (∀ i, α i)} (h : s ⊆ t) :
 
 theorem piPremeasure_pi_eval {s : Set (∀ i, α i)} :
     piPremeasure m (pi univ fun i => eval i '' s) = piPremeasure m s := by
-  simp [piPremeasure_pi']; rfl
+  simp only [eval, piPremeasure_pi']; rfl
 #align measure_theory.pi_premeasure_pi_eval MeasureTheory.piPremeasure_pi_eval
 
 namespace OuterMeasure

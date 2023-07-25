@@ -2,17 +2,14 @@
 Copyright (c) 2022 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
-
-! This file was ported from Lean 3 source module group_theory.noncomm_pi_coprod
-! leanprover-community/mathlib commit 6f9f36364eae3f42368b04858fd66d6d9ae730d8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Order.SupIndep
+
+#align_import group_theory.noncomm_pi_coprod from "leanprover-community/mathlib"@"6f9f36364eae3f42368b04858fd66d6d9ae730d8"
 
 /-!
 # Canonical homomorphism from a finite family of monoids
@@ -281,7 +278,7 @@ end FamilyOfGroups
 
 namespace Subgroup
 
--- We have an family of subgroups
+-- We have a family of subgroups
 variable {G : Type _} [Group G]
 
 variable {ι : Type _} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
