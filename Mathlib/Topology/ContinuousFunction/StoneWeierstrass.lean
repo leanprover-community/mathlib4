@@ -337,6 +337,14 @@ variable {𝕜 : Type _} {X : Type _} [IsROrC 𝕜] [TopologicalSpace X]
 
 open ContinuousMap
 
+/- a post-port refactor eliminated `conjInvariantSubalgebra`, which was only used to
+state and prove the Stone-Weierstrass theorem, in favor of using `StarSubalgebra`s,
+which didn't exist at the time Stone-Weierstrass was written. -/
+#noalign continuous_map.conj_invariant_subalgebra
+#noalign continuous_map.mem_conj_invariant_subalgebra
+#noalign continuous_map.subalgebra_conj_invariant
+
+
 /-- If a star subalgebra of `C(X, 𝕜)` separates points, then the real subalgebra
 of its purely real-valued elements also separates points. -/
 theorem Subalgebra.SeparatesPoints.isROrC_to_real {A : StarSubalgebra 𝕜 C(X, 𝕜)}
