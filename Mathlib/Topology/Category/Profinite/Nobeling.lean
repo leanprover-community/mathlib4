@@ -5031,15 +5031,104 @@ lemma Nobeling.embedding' : ClosedEmbedding (Nobeling.ι' S) := by
     apply decide_eq_true
     exact h₁.1
 
-def Nobeling.I (S : Profinite.{u}) : Type u := sorry
+def Nobeling.I₁ (T : Profinite.{u}) : Type u :=
+  {C : Set T // IsClopen C}
 
-def Nobeling.ι : S → ((I S) → Bool) := sorry
+def Nobeling.I₂ (T : Profinite.{u}) (f : S ⟶ T) (_ : Function.Surjective f) : Type u :=
+  {C : Set T // IsClopen C}
 
-lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := sorry
+def Nobeling.I : Type (u + 1) := Σ (T : Profinite.{u}), I₁ T
 
-lemma Nobeling.T : @NobelingProof.T (I S) (IsWellOrder.linearOrder WellOrderingRel)
-  ((NobelingProof.r (I S) '' Set.range (ι S))) := sorry
+def Nobeling.setι : {C : Set S // IsClopen C} → I := fun C ↦ ⟨S, ⟨C.val, C.prop⟩⟩
+
+noncomputable
+def Nobeling.ι₂ : ({C : Set S // IsClopen C} → Bool) → (I → Bool) := by
+  intro f i
+  exact if h : i.fst = S then by subst h ; exact f ⟨i.snd.val, i.snd.prop⟩ else false
+
+noncomputable
+def Nobeling.ι : S → (I → Bool) := Nobeling.ι₂ S ∘ Nobeling.ι' S
+
+lemma Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
+  refine' ClosedEmbedding.comp _ (embedding' S)
+  apply Continuous.closedEmbedding
+  · apply continuous_pi
+    intro i
+    dsimp [ι₂]
+    split_ifs with h
+    · continuity
+    · exact continuous_const
+  · intro a b h
+    dsimp [ι₂] at h
+    ext x
+    have hh := congrFun h (setι S x)
+    split_ifs at hh with h'
+    · exact hh
+    · dsimp [setι] at h'
+      exfalso
+      exact h' rfl
+
+lemma FibresClopen (T : Profinite) (f : LocallyConstant T ℤ) (n : ℤ) : IsClopen (f ⁻¹' {n}) := by
+  sorry
+
+def Fibres (T : Profinite) (f : LocallyConstant T ℤ) : Set {C : Set T // IsClopen C} :=
+  Set.range (fun (n : Set.range f) ↦ ⟨f ⁻¹' {n.val}, FibresClopen T f n⟩)
+
+instance (T : Profinite) (f : LocallyConstant T ℤ) : Fintype (Fibres T f) := sorry
+
+def ClopenFibres (T : Profinite) (f : LocallyConstant T ℤ) : Finset {C : Set T // IsClopen C} :=
+  (Fibres T f).toFinset
+
+def Coeffs (T : Profinite) (f : LocallyConstant T ℤ) : ClopenFibres T f → ℤ := by
+  rintro ⟨⟨C, hC⟩,h⟩
+  simp only [ClopenFibres, Set.mem_toFinset] at h
+  sorry
+
+lemma Coeffs_val (T : Profinite) (f : LocallyConstant T ℤ) :
+    ∀ (C : ClopenFibres T f) (x : T), x ∈ C.val.val → f x = Coeffs T f C := sorry
+
+noncomputable
+instance : LinearOrder Nobeling.I := IsWellOrder.linearOrder WellOrderingRel
+
+noncomputable
+def Nobeling.ClopenFibresProducts (T : Profinite) (f : LocallyConstant T ℤ) :
+    Finset (NobelingProof.Products (WithTop I)) :=
+  Finset.image (fun x ↦ ⟨[(setι T x)], List.chain'_singleton _⟩) (ClopenFibres T f)
+
+noncomputable
+def Nobeling.CoeffsFinsuppAux (T : Profinite) (f : LocallyConstant T ℤ) :
+    {C : Set T // IsClopen C} →₀ ℤ where
+  support := ClopenFibres T f
+  toFun := fun C ↦ if h : C ∈ ClopenFibres T f then Coeffs T f ⟨C, h⟩ else 0
+  mem_support_toFun := by
+    sorry
+
+noncomputable
+def Nobeling.CoeffsFinsupp (T : Profinite) (f : LocallyConstant T ℤ) :
+    NobelingProof.Products (WithTop I) →₀ ℤ :=
+  (CoeffsFinsuppAux T f).mapDomain (fun x ↦ ⟨[(setι T x)], List.chain'_singleton _⟩)
+  --   where
+  -- support := ClopenFibresProducts T f
+  -- toFun := fun l ↦ if (h : l ∈ ClopenFibresProducts T f) then
+  -- mem_support_toFun := sorry
+
+open NobelingProof GoodProducts in
+lemma Nobeling.T : @NobelingProof.T I (IsWellOrder.linearOrder WellOrderingRel)
+    ((NobelingProof.r I '' Set.range (ι S))) :=
+  letI : LinearOrder I := IsWellOrder.linearOrder WellOrderingRel
+    by
+  intro V hsV hCV W π hcπ hsπ hW
+  rw [span_iff_products]
+  intro f _
+  haveI : CompactSpace W := sorry
+  let T : Profinite := Profinite.of W
+  let g : T → W := fun t ↦ t
+  have hg : Continuous g := continuous_id'
+  let f' : LocallyConstant T ℤ := f.comap g
+  rw [Finsupp.mem_span_range_iff_exists_finsupp]
+  sorry
+  -- use CoeffsFinsupp T f' --  universe issues...?
 
 theorem Nobeling : Module.Free ℤ (LocallyConstant S ℤ) :=
-@NobelingProof.Nobeling (Nobeling.I S) (IsWellOrder.linearOrder WellOrderingRel)
+@NobelingProof.Nobeling Nobeling.I (IsWellOrder.linearOrder WellOrderingRel)
   WellOrderingRel.isWellOrder S (Nobeling.ι S) (Nobeling.embedding S) (Nobeling.T.{u} S)
