@@ -234,7 +234,7 @@ lemma compProd_assoc (κ : kernel (M.node i) (M.path i j))
     fun b ↦ M.er_meas _ _ _ _ _ (this b)
   simp_rw [kernel.compProd_apply _ _ _ (this _), split, kernel.comap_apply]
   rw [kernel.lintegral_compProd]
-  swap ; exact h_meas_comp.comp (M.er_meas i j k hij hjk)
+  swap; exact h_meas_comp.comp (M.er_meas i j k hij hjk)
   simp only [kernel.comap_apply, M.el_assoc, mem_preimage, preimage_setOf_eq, mem_setOf_eq,
     M.er_assoc]
 
@@ -250,7 +250,7 @@ lemma cast_path_apply (κ : kernel (M.node i) (M.path i j)) (h : j = k)
 
 instance (κ : kernel (M.node i) (M.path i j)) (h : j = k) [IsSFiniteKernel κ] :
     IsSFiniteKernel (cast_path κ h) := by
-  rw [cast_path] ; infer_instance
+  rw [cast_path]; infer_instance
 
 end MeasurableSpaceGraph
 
@@ -331,7 +331,7 @@ lemma el_assoc {i j k : ι} (hij : i < j) (hjk : j ≤ k) (a : (x : Iic i) → �
   split_ifs with h h2 h3
   · rfl
   · rfl
-  · exfalso ; exact h (h3.trans hij.le)
+  · exfalso; exact h (h3.trans hij.le)
   · rfl
 
 lemma er_assoc {i j k l : ι} (hij : i < j) (hjk : j < k) (hkl : k ≤ l)
@@ -342,7 +342,7 @@ lemma er_assoc {i j k l : ι} (hij : i < j) (hjk : j < k) (hkl : k ≤ l)
   simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, er]
   split_ifs with h h2
   · rfl
-  · exfalso ; exact h2 (h.trans hjk.le)
+  · exfalso; exact h2 (h.trans hjk.le)
   · rfl
   · rfl
 
@@ -439,7 +439,7 @@ lemma kerInterval_of_eq (κ₀ : kernel (M.node i) (M.path i j))
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (hj : 0 < j) :
     kerInterval κ₀ κ j = κ₀ := by
   cases j with
-  | zero => exfalso ; linarith
+  | zero => exfalso; linarith
   | succ n =>
     rw [kerInterval_succ, dif_pos rfl]
     ext a s hs
@@ -450,7 +450,7 @@ instance (κ₀ : kernel (M.node i) (M.path i j)) [h₀ : IsSFiniteKernel κ₀]
     (κ : ∀ k, kernel (M.node k) (M.path k (k + 1))) (k : ℕ) :
     IsSFiniteKernel (kerInterval κ₀ κ k) := by
   induction k with
-  | zero => rw [kerInterval_zero] ; infer_instance
+  | zero => rw [kerInterval_zero]; infer_instance
   | succ n _ =>
       rw [kerInterval_succ]
       split_ifs with h_eq
@@ -499,7 +499,7 @@ lemma kerNat_succ_left (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1)))
       have hj_eq : j = i + 1 := le_antisymm h (Nat.succ_lt_succ_iff.mp (by convert hij))
       rw [kerNat_succ_right]
       · congr
-      · rw [hj_eq] ; exact Nat.lt_succ_self i
+      · rw [hj_eq]; exact Nat.lt_succ_self i
     | inr h =>
       rw [kerNat_succ_right _ _ _ (Nat.succ_lt_succ_iff.mp hij), hj h,
         kerNat_succ_right _ _ j h,
@@ -510,7 +510,7 @@ theorem compProd_kerNat (κ : (k : ℕ) → kernel (M.node k) (M.path k (k + 1))
     [∀ i, IsSFiniteKernel (κ i)] (hij : i < j) (hjk : j < k) :
     ((kerNat κ i j) ⊗ₖ[M] (kerNat κ j k)) = kerNat κ i k := by
   cases k with
-  | zero => exfalso ; linarith
+  | zero => exfalso; linarith
   | succ k =>
     refine Nat.decreasingInduction' ?_ (Nat.lt_succ_iff.mp hjk) ?_
     · intro l hlk hjl h
