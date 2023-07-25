@@ -82,7 +82,9 @@ theorem psum_isSymmetric (n : ℕ) : IsSymmetric (psum σ R n) := by
 
 end PowerSum
 
-namespace Newton
+namespace MvPolynomial
+
+namespace NewtonIdentities
 
 open Finset Nat
 
@@ -312,4 +314,6 @@ theorem esymm_recurrence (k : ℕ) : (-1) ^ k * (k * esymm σ R k) +
     lt_k_disjunion_k σ k, weight_sum σ R k]
   use k
 
-end Newton
+end NewtonIdentities
+
+end MvPolynomial
