@@ -455,7 +455,6 @@ instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) := {
 instance instSemiring : Semiring (A ⊗[R] B) :=
   { one_mul := one_mul
     mul_one := mul_one
-    natCast_succ := AddMonoidWithOne.natCast_succ
   }
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
