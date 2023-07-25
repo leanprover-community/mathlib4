@@ -1084,22 +1084,23 @@ theorem mkOfAlgebra {R S S' : Type _} [CommRing R] [CommRing S] [CommRing S'] [A
 
 end Algebra
 
-variable [Module (Localization S) M'] [IsScalarTower R (Localization S) M']
+variable { A } [CommRing A] [Algebra R A] [Module A M'] [IsScalarTower R A M'] [IsLocalization S A]
+
 
 /-- If `(f : M →ₗ[R] M')` is a localization of modules, then the map
 `(localization S) × M → N, (s, m) ↦ s • f m` is the tensor product (insomuch as it is the universal
 bilinear map).
-In particular, there is an isomorphism between `localized_module S M` and `(localization S) ⊗[R] M`
+In particular, there is an isomorphism between `LocalizedModule S M` and `(Localization S) ⊗[R] M`
 given by `m/s ↦ (1/s) ⊗ₜ m`.
 --/
-theorem isBaseChange : IsBaseChange (Localization S) f := by
+theorem isBaseChange : IsBaseChange A f := by
   apply IsBaseChange.of_lift_unique
   intros Q _ _ _ _ g
   have := IsLocalizedModule.is_universal S f g <| by
       intro s
       rw [Module.End_isUnit_iff, Function.bijective_iff_existsUnique]
       intro q
-      use Localization.mk 1 s • q
+      use (IsLocalization.mk' _ 1 s : A) • q
       dsimp only
       constructor
       on_goal 1 => rw [Module.algebraMap_end_apply]
@@ -1108,28 +1109,26 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
         rw [Module.algebraMap_end_apply] at h
         rw [← h, smul_comm]
       all_goals
-        rw [← smul_assoc, Localization.smul_mk, smul_eq_mul, mul_one, Localization.mk_self,
-          one_smul]
+        rw [← smul_assoc, Algebra.smul_def, mul_comm, IsLocalization.mk'_spec, map_one, one_smul]
   rcases this with ⟨ℓ, h₁, h₂⟩
   -- Should this be refactored into a `linear_map.extend_scalars` lemma? If so, what would the
   -- predicate have to be? Just `map_smul'`?
-  let g' : M' →ₗ[Localization S] Q :=
+  let g' : M' →ₗ[A] Q :=
     { toFun := ℓ.toFun
       map_add' := ℓ.map_add'
       map_smul' := by
         intros r x
         rw [RingHom.id_apply]
-        induction' r using Localization.induction_on with data
-        rcases data with ⟨r, s⟩
+        rcases IsLocalization.mk'_surjective S r with ⟨r,s,rfl⟩
         conv_lhs =>
-          rw [← one_smul (Localization S) (ℓ.toFun _), ← Localization.mk_self s, ← mul_one r, ←
-            @mul_one R _ ↑s]
-          conv in (occs := 1 2) Localization.mk _ s =>
-            all_goals
-            rw [← smul_eq_mul R, ← Localization.smul_mk]
-          conv in (r • _) • _ =>
-            rw [smul_assoc]
-          rw [ℓ.map_smul', RingHom.id_apply]
+          dsimp
+          rw [← one_smul A (ℓ _), ← IsLocalization.mk'_self' _ (x := s),  ← mul_one r,
+            ← mul_one (↑s : R)]
+          conv =>
+            -- 'repeat' appears to discharge goals
+            -- https://github.com/leanprover/lean4/pull/2357
+            repeat rw [← IsLocalization.smul_mk' ]
+          rw [smul_assoc r, ℓ.map_smul]
           conv in (↑s • _) • _ =>
             rw [smul_comm]
           conv in (↑s • _) • _ =>
@@ -1139,8 +1138,8 @@ theorem isBaseChange : IsBaseChange (Localization S) f := by
           conv in (occs := 1) _ • _ • _ =>
             rw [← smul_assoc]
           arg 2; rw [← smul_assoc]
-        iterate 2 rw [Localization.smul_mk, smul_eq_mul, mul_one]
-        rw [Localization.mk_self, one_smul]; rfl }
+        iterate 2 rw [IsLocalization.smul_mk', mul_one]
+        rw [IsLocalization.mk'_self, one_smul]; rfl }
   use g'
   have g'_extends_scalars : LinearMap.restrictScalars R g' = ℓ := by
     ext
