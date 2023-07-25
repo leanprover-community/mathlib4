@@ -10,6 +10,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.WLOG
+import Mathlib.Order.WithBot
 
 /-- The exchange property of greedoid. -/
 def exchangeProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) :=
@@ -247,6 +248,11 @@ theorem bases_of_full_card [Full G] : G.base.card = 1 := by
   let ⟨_, _⟩ := (Finset.singleton_iff_unique_mem (G.base)).mpr basis_of_full_unique
   simp_all
 
+theorem basis_max_card_of_feasible {s' : Finset α} (hs'₁ : s' ∈ G) (hs'₂ : s' ⊆ s) :
+    s'.card ≤ b.card :=
+  have ⟨_, h₁, h₂⟩ := exists_basis_containing_feasible_set hs'₁ hs'₂
+  bases_card_eq hb h₁ ▸ card_le_of_subset h₂
+
 end Bases
 
 /-- A cardinality of largest feasible subset of `s` in `G`. -/
@@ -254,7 +260,7 @@ def rank (G : Greedoid α) (s : Finset α) :=
   ((G.feasibleSet.filter (fun s' => s' ⊆ s)).image (fun t => t.card)).max.unbot (by
     intro h
     simp [Finset.max_eq_bot, filter_eq_empty_iff] at h
-    exact h _ G.containsEmpty (by simp only [empty_subset]))
+    exact h _ G.containsEmpty (empty_subset _))
 
 section rank
 
@@ -265,10 +271,8 @@ open Nat List Finset Greedoid
 theorem rank_eq_bases_card
   {b : Finset α} (hb : b ∈ G.bases s) :
     b.card = G.rank s := by
-  by_contra' h'
-  apply (ne_iff_lt_or_gt.mp h').elim <;> intro h' <;> simp only [rank] at h'
-  .
-    sorry
+  apply Eq.symm (Nat.le_antisymm _ _)
+  . sorry
   . sorry
 
 @[simp]
@@ -278,7 +282,6 @@ theorem rank_empty : G.rank ∅ = 0 := by
   simp only [ite_true, image_singleton, card_empty, max_singleton, WithBot.unbot_coe]
 
 theorem rank_singleton_le {a : α} : G.rank {a} ≤ 1 := by
-  simp only [rank, Finset.subset_singleton_iff, system_feasible_set_mem_mem]
   sorry
 
 theorem rank_le_card : G.rank s ≤ s.card := sorry
@@ -307,12 +310,12 @@ theorem rank_lt_succ_lt
   (hs₂ : G.rank s < G.rank (s ∪ {y})) :
     G.rank s + 1 < G.rank (s ∪ {x, y}) := sorry
 
-theorem rank_of_feasible (hs : s ∈ₛ G) : G.rank s = s.card := sorry
+theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card := sorry
 
-theorem rank_of_infeasible (hs : s ∉ₛ G) : G.rank s < s.card := sorry
+theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := sorry
 
 @[simp]
-theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ₛ G := by
+theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
   apply Iff.intro _ (fun h => rank_of_feasible h)
   intro h
   have := mt (@rank_of_infeasible _ _ _ G s)
@@ -320,7 +323,7 @@ theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ₛ G := by
   apply this
   simp only [h, le_refl]
 
-theorem ssubset_of_feasible_rank (hs : s ∈ₛ G) (h : t ⊂ s) : G.rank t < G.rank s := sorry
+theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := sorry
 
 /-- List of axioms for rank of greedoid. -/
 def greedoidRankAxioms (r : Finset α → ℕ) :=
