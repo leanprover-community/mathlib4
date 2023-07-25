@@ -3546,37 +3546,39 @@ c a₁ ... aₙ = c b₁ ... bₙ => a₁ = b₁, ..., aₙ = bₙ
 c₁ ... = c₂ ... => False
 ```
 where `c`, `c₁` and `c₂` are constructors -/
-def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
+partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
   let env ← getEnv
   let some c₁ := e₁.isConstructorApp? env | failure
   let some c₂ := e₂.isConstructorApp? env | failure
   if ← withNewMCtxDepth <| isDefEq (← inferType e₁) (← inferType e₂) then
     -- The implications above only hold if the types are equal.
     return
-  /-
-  ```c++
-  expr type       = mk_eq(m_ctx, e1, e2);
-  expr h          = *get_eq_proof(e1, e2);
-  if (*c1 == *c2) {
-      buffer<std::tuple<expr, expr, expr>> implied_eqs;
-      mk_constructor_eq_constructor_implied_eqs(m_ctx, e1, e2, h, implied_eqs);
-      for (std::tuple<expr, expr, expr> const & t : implied_eqs) {
-          expr lhs, rhs, H;
-          std::tie(lhs, rhs, H) = t;
-          if (is_def_eq(m_ctx.infer(lhs), m_ctx.infer(rhs)))
-              push_eq(lhs, rhs, H);
-          else
-              push_heq(lhs, rhs, H);
-      }
-  } else {
-      if (optional<expr> false_pr = mk_constructor_eq_constructor_inconsistency_proof(m_ctx, e1, e2, h)) {
-          expr H        = mk_app(mk_constant(get_true_eq_false_of_false_name()), *false_pr);
-          push_eq(mk_true(), mk_false(), H);
-      }
-  }
-  ```
-  -/
-  sorry
+  let some h ← getEqProof e₁ e₂ | failure
+  if c₁.name == c₂.name then
+    if Nat.blt 0 c₁.numFields then
+      let name := mkInjectiveTheoremNameFor c₁.name
+      if (← getEnv).contains name then
+        let rec go (type val : Expr) : CCM Unit := do
+          let push (type val : Expr) : CCM Unit :=
+            match type.eq? with
+            | some (_, lhs, rhs) => pushEq lhs rhs val
+            | none =>
+              match type.heq? with
+              | some (_, _, lhs, rhs) => pushHEq lhs rhs val
+              | none => failure
+          match type.and? with
+          | some (l, r) =>
+            push l (.proj ``And 0 val)
+            go r (.proj ``And 1 val)
+          | none =>
+            push type val
+        let val ← mkAppM name #[h]
+        let type ← inferType val
+        go type val
+  else
+    let falsePr ← mkNoConfusion (.const ``False []) h
+    let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
+    pushEq (.const ``True []) (.const ``False []) H
 
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
@@ -3610,7 +3612,7 @@ where
       CCM Unit := do
     let valueInconsistency :=
       if r₁.interpreted && r₂.interpreted then
-        if n₁.root == .const ``True [] || n₂.root == .const ``True [] then
+        if n₁.root.isConstOf ``True || n₂.root.isConstOf ``True then
           true
         else if n₁.root.isNum && n₂.root.isNum then
           n₁.root.toInt != n₂.root.toInt
@@ -3648,7 +3650,7 @@ where
     let fnRoots₁ ← if !lambdas₂.isEmpty then collectFnRoots e₁Root #[] else pure #[]
 
     -- force all `root` fields in `e₁` equivalence class to point to `e₂Root`
-    let propagate := e₂Root == .const ``True [] || e₂Root == .const ``False []
+    let propagate := e₂Root.isConstOf ``True || e₂Root.isConstOf ``False
     let mut toPropagate : Array Expr := #[]
     let mut it := e₁
     repeat
@@ -3698,11 +3700,11 @@ where
         { ccs with
           parents := ccs.parents.erase e₁Root |>.insert e₂Root ps₂ }
 
+    if !(← getState).inconsistent && constructorEq then
+      propagateConstructorEq e₁Root e₂Root
+
     /-
     ```c++
-    if (!m_state.m_inconsistent && constructor_eq)
-        propagate_constructor_eq(e1_root, e2_root);
-
     if (!m_state.m_inconsistent && value_inconsistency)
         propagate_value_inconsistency(e1_root, e2_root);
 
