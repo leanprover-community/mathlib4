@@ -5034,6 +5034,12 @@ lemma Nobeling.embedding' : ClosedEmbedding (Nobeling.ι' S) := by
 def Nobeling.I₁ (T : Profinite.{u}) : Type u :=
   {C : Set T // IsClopen C}
 
+def Nobeling.index₁ : Type u := {C : Set S // IsClosed C}
+
+def Nobeling.index₂ : Type u := S → S → Prop
+
+-- TODO: define I by this instead.
+
 def Nobeling.I₂ (T : Profinite.{u}) (f : S ⟶ T) (_ : Function.Surjective f) : Type u :=
   {C : Set T // IsClopen C}
 
