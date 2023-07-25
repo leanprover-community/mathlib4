@@ -69,7 +69,7 @@ theorem birkhoffAverage_congr_ring' (S : Type _) [DivisionSemiring S] [Module S 
 
 end birkhoffAverage
 
-/-- Birkhofff average is "almost invariant" under `f`:
+/-- Birkhoff average is "almost invariant" under `f`:
 the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
 is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
 theorem birkhoffAverage_apply_sub_birkhoffAverage (R : Type _) [DivisionRing R]

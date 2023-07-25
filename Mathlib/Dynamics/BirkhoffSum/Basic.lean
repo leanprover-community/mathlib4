@@ -7,14 +7,14 @@ import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
-# Birkhoff sum and Birkhoff average
+# Birkhoff sums
 
 In this file we define `birkhoffSum f g n x` to be the sum `∑ k in Finset.range n, g (f^[k] x)`.
 This sum (more precisely, the corresponding average `n⁻¹ • birkhoffSum f g n x`)
 appears in various ergodic theorems
 saying that these averages converge to the "space average" `⨍ x, g x ∂μ` in some sense.
 
-See also `birkhoffAverage` defined elsewhere.
+See also `birkhoffAverage` defined in `Dynamics/BirkhoffSum/Average`.
 -/
 
 open Finset Function
