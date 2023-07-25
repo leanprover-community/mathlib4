@@ -238,13 +238,17 @@ theorem bases_empty_iff :
     ∅ ∈ G.bases s ↔ G.bases s = {∅} :=
   ⟨bases_empty, by simp_all⟩
 
-theorem bases_singleton {a : α} (hb : b ∈ G.bases {a}) :
+theorem bases_empty_card (h : ∅ ∈ G.bases s) :
+    (G.bases s).card = 1 :=
+  bases_empty_iff.mp h ▸ card_singleton _
+
+theorem bases_of_singleton {a : α} (hb : b ∈ G.bases {a}) :
     b = ∅ ∨ b = {a} :=
   subset_singleton_iff.mp (basis_subseteq hb)
 
 theorem bases_singleton_of_feasible {a : α} (ha : {a} ∈ G) (hb : b ∈ G.bases {a}) :
     b = {a} := by
-  apply (bases_singleton hb).elim _ (fun h => h)
+  apply (bases_of_singleton hb).elim _ (fun h => h)
   intro h
   rw [h] at hb; rw [h]
   simp [bases] at hb
@@ -323,17 +327,25 @@ theorem rank_of_empty : G.rank ∅ = 0 := by
 theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
   rw [rank_eq_bases_card h]
-  apply (bases_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
+  apply (bases_of_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
 
 theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
   apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim _ (fun h => h)
   intro h
-  have ⟨b, hb⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
-  rw [rank_eq_bases_card hb]
-  rw [lt_one_iff] at h
+  exfalso
+  have ⟨_, h'⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  rw [rank_eq_bases_card h'] at h
+  simp only [lt_one_iff, card_eq_zero] at h
+  simp only [h, bases_empty_iff] at h'
   sorry
 
 theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} = 0 := by
+  apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim
+    (fun h => lt_one_iff.mp h)
+  intro h
+  simp only [h, one_ne_zero]
+  apply ha
+  simp? [rank] at h
   sorry
 
 theorem rank_le_card : G.rank s ≤ s.card := sorry
