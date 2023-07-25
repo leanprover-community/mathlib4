@@ -215,10 +215,6 @@ theorem bases_nonempty :
     exists_basis_containing_feasible_set G.containsEmpty (empty_subset s)
   exists b; tauto
 
-theorem bases_singleton {a : α} (hb : b ∈ G.bases {a}) :
-    b = ∅ ∨ b = {a} :=
-  subset_singleton_iff.mp (basis_subseteq hb)
-
 theorem bases_card_eq
   {b₁ : Finset α} (hb₁ : b₁ ∈ G.bases s)
   {b₂ : Finset α} (hb₂ : b₂ ∈ G.bases s) :
@@ -231,6 +227,29 @@ theorem bases_card_eq
   . let ⟨x, hx₁, hx₂⟩ := G.exchangeProperty hb₁.1 hb₂.1 h'
     simp only [mem_sdiff] at hx₁
     exact hx₁.2 (hb₂.2.2 (hb₁.2.1 hx₁.1) hx₂)
+
+theorem bases_empty (h : ∅ ∈ G.bases s) :
+    G.bases s = {∅} := by
+  ext t; constructor <;> intro h₁ <;> simp_all
+  exact card_eq_zero.mp (bases_card_eq h h₁).symm
+
+@[simp]
+theorem bases_empty_iff :
+    ∅ ∈ G.bases s ↔ G.bases s = {∅} :=
+  ⟨bases_empty, by simp_all⟩
+
+theorem bases_singleton {a : α} (hb : b ∈ G.bases {a}) :
+    b = ∅ ∨ b = {a} :=
+  subset_singleton_iff.mp (basis_subseteq hb)
+
+theorem bases_singleton_of_feasible {a : α} (ha : {a} ∈ G) (hb : b ∈ G.bases {a}) :
+    b = {a} := by
+  apply (bases_singleton hb).elim _ (fun h => h)
+  intro h
+  rw [h] at hb; rw [h]
+  simp [bases] at hb
+  exfalso
+  exact hb.2 ha
 
 theorem basis_def {s b : Finset α} :
     b ∈ G.bases s ↔ (b ∈ G ∧ b ⊆ s ∧ (∀ a ∈ s, insert a b ∈ G → a ∈ b)) := by
@@ -305,6 +324,12 @@ theorem rank_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
   rw [rank_eq_bases_card h]
   apply (bases_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
+
+theorem rank_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
+  sorry
+
+theorem rank_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} = 0 := by
+  sorry
 
 theorem rank_le_card : G.rank s ≤ s.card := sorry
 
