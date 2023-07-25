@@ -837,7 +837,9 @@ lemma GoodProducts.linear_independent_iff : LinearIndependent ℤ (GoodProducts.
 
 def Support : Set (WithTop I) := {i : WithTop I | ∃ f ∈ C, f i}
 
-def T : Prop := ∀ V, V ⊆ C → IsClosed V → ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval V))
+def T : Prop := ∀ V, V ⊆ C → IsClosed V → ∀ (W : Set ((WithTop I) → Bool)) (π : V → W)
+  (_ : Continuous π) (_ : π.Surjective), IsClosed W →
+  ⊤ ≤ Submodule.span ℤ (Set.range (GoodProducts.eval W))
 
 def P (i : WithTop I) : Prop :=
 ∀ C, T C → IsClosed C → Support C ⊆ {j | j < i} → LinearIndependent ℤ (GoodProducts.eval C)
@@ -4775,34 +4777,42 @@ lemma GoodProducts.span_iff_products : ⊤ ≤ Submodule.span ℤ (Set.range (ev
     rw [← hl]
     exact Ll C l
 
-lemma GoodProducts.h_one' {o : Ordinal} (hS : T C)
-    (hC : IsClosed C) (ho : o < Ordinal.type (·<· : WithTop I → WithTop I → Prop)) :
+lemma GoodProducts.h_one' {o : Ordinal} (hS : T C) (hC : IsClosed C) :
     T (Res C o) := by
-  intro V' hsV hV
-  set V := (ProjOrd o ⁻¹' V') ∩ C with hV'
+  intro V' hsV hV W π hcπ hsπ hW
+  set V := (ProjOrd o ⁻¹' V') ∩ C
   have hCV : IsClosed V
   · refine' IsClosed.inter _ hC
     refine' IsClosed.preimage _ hV
     exact continuous_ProjOrd o
-  specialize hS V (fun _ hx ↦ hx.2) hCV
   have hVV : V' = Res V o
   · dsimp [Res]
     rw [Set.image_preimage_inter]
     apply Eq.symm
     simp only [Set.inter_eq_left_iff_subset]
     exact hsV
-  rw [hVV]
-  intro f _
-  rw [← Submodule.apply_mem_span_image_iff_mem_span (f := (Linear_ResC V o))
-    (LocallyConstant.comap_injective (ResOnSubset V o)
-    (continuous_ResOnSubset V o) (surjective_ResOnSubset V o))]
-  specialize hS (by trivial : (Linear_ResC V o f) ∈ ⊤)
-  have : Linear_ResC V o '' (Set.range (eval (Res V o))) =
-    Set.range ((Linear_ResC V o) ∘ (eval (Res V o))) := sorry
-  rw [this]
-  rw [Finsupp.mem_span_range_iff_exists_finsupp] at hS ⊢
-  obtain ⟨c, h⟩ := hS
-  sorry
+  let e : V' ≃ₜ Res V o := by
+    rw [hVV]
+    exact Homeomorph.refl _
+  let π' : V → W := π ∘ e.symm ∘ (ResOnSubset V o)
+  have hcπ' : Continuous π'
+  · refine' Continuous.comp hcπ _
+    exact Continuous.comp (Homeomorph.continuous _) (continuous_ResOnSubset V o)
+  have hsπ' : π'.Surjective
+  · refine' Function.Surjective.comp hsπ _
+    exact Function.Surjective.comp (Homeomorph.surjective _) (surjective_ResOnSubset V o)
+  exact hS V (fun _ hx ↦ hx.2) hCV W π' hcπ' hsπ' hW
+  -- intro f _
+  -- rw [← Submodule.apply_mem_span_image_iff_mem_span (f := (Linear_ResC V o))
+  --   (LocallyConstant.comap_injective (ResOnSubset V o)
+  --   (continuous_ResOnSubset V o) (surjective_ResOnSubset V o))]
+  -- specialize hS (by trivial : (Linear_ResC V o f) ∈ ⊤)
+  -- have : Linear_ResC V o '' (Set.range (eval (Res V o))) =
+  --   Set.range ((Linear_ResC V o) ∘ (eval (Res V o))) := sorry
+  -- rw [this]
+  -- rw [Finsupp.mem_span_range_iff_exists_finsupp] at hS ⊢
+  -- obtain ⟨c, h⟩ := hS
+  -- sorry
   -- have hgood : ∀ l : GoodProducts (Res V o), l.val.isGood V
   -- · sorry
   -- refine' ⟨c.comapDomain (fun (l : GoodProducts (Res V o)) ↦ ⟨l.val, hgood l⟩) _ ,_⟩
@@ -4841,8 +4851,8 @@ lemma GoodProducts.h_one'' {o : Ordinal} (hS : T C)
   have hVC : V ⊆ C := subset_trans hsV (fun _ hx ↦ hx.1.1)
   exact hS _ hVC hV
 
-lemma GoodProducts.Tlimit (o : Ordinal) (ho : o.IsLimit) (hT : T (Res C o)) :
-  ∀ o', o' < o → T (Res C o') := sorry
+-- lemma GoodProducts.Tlimit (o : Ordinal) (ho : o.IsLimit) (hT : T (Res C o)) :
+--   ∀ o', o' < o → T (Res C o') := sorry
 
 lemma GoodProducts.Plimit :
     ∀ (o : Ordinal), Ordinal.IsLimit o → (∀ (o' : Ordinal), o' < o → P' I o') → P' I o := by
@@ -4854,10 +4864,7 @@ lemma GoodProducts.Plimit :
   rintro ⟨o', ho'⟩
   have hho' : o' < Ordinal.type (·<· : WithTop I → WithTop I → Prop) :=
     lt_of_lt_of_le ho' hho
-  -- specialize h o' ho' (le_of_lt hho') (Res C o') (h_one' C hS hC hho')
-  --   (isClosed_Res C o' hC) (support_Res_le_o C o')
-  rw [supportResEq C o hsC] at hS
-  specialize h o' ho' (le_of_lt hho') (Res C o') (Tlimit C o ho hS o' ho')
+  specialize h o' ho' (le_of_lt hho') (Res C o') (h_one' C hS hC)
     (isClosed_Res C o' hC) (support_Res_le_o C o')
   rw [ModProducts.smaller_linear_independent_iff] at h
   exact h
@@ -4878,9 +4885,10 @@ lemma GoodProducts.linearIndependentAux (i : WithTop I) : P i := by -- (basisAux
     refine' ModuleCat.linearIndependent_leftExact _ _ _
         (LocallyConstant.LeftExact C hC hsC ho') (huv C o) (huw C hsC ho')
     · refine h (le_of_lt ho') (Res C o) ?_ (isClosed_Res C o hC) (support_Res_le_o C o)
-      exact h_one' C hS hC ho'
+      exact h_one' C hS hC
     · have h₁: ⊤ ≤ Submodule.span ℤ (Set.range (eval (Res C o))) :=
-        h_one' C hS hC ho' (Res C o) subset_rfl (isClosed_Res C o hC)
+        h_one' C hS hC (Res C o) subset_rfl (isClosed_Res C o hC) (Res C o) id continuous_id
+        Function.surjective_id (isClosed_Res C o hC)
       apply (hhw C hC hsC ho' h₁)
       -- rw [← hw C hC hsC ho' h₁]
       refine h (le_of_lt ho') (C' C ho') ?_ (isClosed_C' C hC ho') (support_C' C ho')
