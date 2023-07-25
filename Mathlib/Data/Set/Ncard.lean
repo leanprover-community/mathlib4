@@ -13,11 +13,11 @@ import Mathlib.Data.Finite.Card
 /-!
 # Noncomputable Set Cardinality
 
-We define the cardinality of set `s` as a term `s.encard : ℕ∞` and a term `s.ncard : ℕ`. The latter
-takes the junk value of zero if `s` is infinite. Both functions are noncomputable, and are defined
-in terms of `PartENat.card` (which takes a type as its argument); this file can be seen as an API
-for the same function in the special case where the type is a coercion of a `Set`, allowing for
-smoother interactions with the `Set` API.
+We define the cardinality of set `s` as a term `Set.encard a : ℕ∞` and a term `Set.ncard a : ℕ`.
+The latter takes the junk value of zero if `s` is infinite. Both functions are noncomputable, and
+are defined in terms of `PartENat.card` (which takes a type as its argument); this file can be seen
+as an API for the same function in the special case where the type is a coercion of a `Set`,
+allowing for smoother interactions with the `Set` API.
 
 `Set.encard` never takes junk values, so is more mathematically natural than `Set.ncard`, even
 though it takes values in a less convenient type. It is probably the right choice in settings where
@@ -77,9 +77,12 @@ theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinse
   rw [encard, PartENat.card_eq_coe_fintype_card,
     PartENat.withTopEquiv_natCast, toFinite_toFinset, toFinset_card]
 
-theorem encard_eq_toFinset_card {s : Set α} [Fintype s] : encard s = s.toFinset.card := by
+theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFinset.card := by
   have h := toFinite s
   rw [h.encard_eq_coe_toFinset_card, toFinite_toFinset, toFinset_card]
+
+theorem encard_coe_eq_coe_finsetCard (s : Finset α) : encard (s : Set α) = s.card := by
+  rw [Finite.encard_eq_coe_toFinset_card (Finset.finite_toSet s)]; simp
 
 theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
   have := h.to_subtype
@@ -130,17 +133,17 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
 @[simp] theorem encard_lt_top_iff : s.encard < ⊤ ↔ s.Finite :=
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
-theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
-  rw [←WithTop.lt_top_iff_ne_top, encard_lt_top_iff]
-
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [←not_iff_not, ←Ne.def, encard_ne_top_iff, not_infinite]
+  rw [←not_iff_not, ←Ne.def, ←lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
-theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite := by
-  rw [←encard_ne_top_iff, h]; exact WithTop.coe_ne_top
+theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
+  simp
 
 theorem finite_of_encard_le_coe {k : ℕ} (h : s.encard ≤ k) : s.Finite := by
   rw [←encard_lt_top_iff]; exact h.trans_lt (WithTop.coe_lt_top _)
+
+theorem finite_of_encard_eq_coe {k : ℕ} (h : s.encard = k) : s.Finite :=
+  finite_of_encard_le_coe h.le
 
 theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ : ℕ), s.encard = n₀ ∧ n₀ ≤ k :=
   ⟨fun h ↦ ⟨finite_of_encard_le_coe h, by rwa [ENat.le_coe_iff] at h⟩,
@@ -333,12 +336,9 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
   rw [hs, encard_insert_of_not_mem, encard_insert_of_not_mem, encard_singleton] <;> aesop
 
 theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
-  induction' k with k hk
-  · simp
-  rw [coe_setOf, Nat.cast_succ, ←hk, ←encard_singleton k, ←encard_union_eq (by simp)]
-  convert rfl using 2
-  ext x
-  simp [Nat.lt_succ_iff, le_iff_eq_or_lt]
+  convert encard_coe_eq_coe_finsetCard (Finset.range k) using 1
+  · rw [Finset.coe_range, Iio_def]
+  rw [Finset.card_range]
 
 end SmallSets
 
@@ -377,24 +377,24 @@ section Function
 
 variable {s : Set α} {t : Set β} {f : α → β}
 
-theorem encard_image_of_injOn (h : InjOn f s) : (f '' s).encard = s.encard := by
+theorem InjOn.encard_image (h : InjOn f s) : (f '' s).encard = s.encard := by
   rw [encard, PartENat.card_image_of_injOn h, encard]
 
 theorem encard_congr (e : s ≃ t) : s.encard = t.encard := by
   rw [←encard_univ_coe, ←encard_univ_coe t, encard_univ, encard_univ, PartENat.card_congr e]
 
-theorem encard_image_of_injective (hf : f.Injective) (s : Set α) : (f '' s).encard = s.encard :=
-  encard_image_of_injOn (hf.injOn s)
+theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
+    (f '' s).encard = s.encard :=
+  (hf.injOn s).encard_image
 
-theorem encard_le_of_embedding (e : s ↪ t) : s.encard ≤ t.encard := by
-  rw [←encard_univ_coe, ←encard_image_of_injective e.injective univ,
-    ←encard_image_of_injective Subtype.coe_injective]
+theorem _root_.Function.Embedding.enccard_le (e : s ↪ t) : s.encard ≤ t.encard := by
+  rw [←encard_univ_coe, ←(e.injective).encard_image, ←(Subtype.coe_injective).encard_image]
   exact encard_mono (by simp)
 
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [←encard_image_of_injOn (f.invFunOn_injOn_image s)]
+  rw [←(f.invFunOn_injOn_image s).encard_image]
   apply encard_le_of_subset
   exact f.invFunOn_image_image_subset s
 
@@ -402,21 +402,17 @@ theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s
     InjOn f s := by
   obtain (h' | hne) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [←encard_image_of_injOn (f.invFunOn_injOn_image s)] at h
+  rw [←(f.invFunOn_injOn_image s).encard_image] at h
   rw [injOn_iff_invFunOn_image_image_eq_self]
   exact hs.eq_of_subset_of_encard_le (f.invFunOn_image_image_subset s) h.symm.le
 
 theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
     (f ⁻¹' t).encard = t.encard := by
-  rw [←encard_image_of_injective hf, image_preimage_eq_inter_range,
-    inter_eq_self_of_subset_left ht]
+  rw [←hf.encard_image, image_preimage_eq_inter_range, inter_eq_self_of_subset_left ht]
 
 theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
     s.encard ≤ t.encard := by
-  rw [←encard_image_of_injOn f_inj]
-  apply encard_le_of_subset
-  rintro _ ⟨x, hx, rfl⟩
-  exact hf hx
+  rw [←f_inj.encard_image]; apply encard_le_of_subset; rintro _ ⟨x, hx, rfl⟩; exact hf hx
 
 theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β} (hs : s.Finite)
     (hle : s.encard ≤ t.encard) : ∃ (f : α → β), s ⊆ f ⁻¹' t ∧ InjOn f s := by
@@ -448,7 +444,7 @@ theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.en
   obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
   convert hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le' (image_subset_iff.mpr hf)
-    (h.symm.trans (encard_image_of_injOn hinj).symm).le]
+    (h.symm.trans (hinj.encard_image).symm).le]
 
 end Function
 
@@ -654,7 +650,7 @@ theorem ncard_image_le (hs : s.Finite := by toFinite_tac) : (f '' s).ncard ≤ s
 #align set.ncard_image_le Set.ncard_image_le
 
 theorem ncard_image_of_injOn (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
-  congr_arg ENat.toNat <| encard_image_of_injOn H
+  congr_arg ENat.toNat <| H.encard_image
 #align set.ncard_image_of_inj_on Set.ncard_image_of_injOn
 
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
@@ -1123,3 +1119,4 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 #align set.ncard_eq_three Set.ncard_eq_three
 
 end ncard
+#lint
