@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Hom.GroupAction
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
@@ -247,24 +248,26 @@ end MeasurableMul
 
 end Mul
 
-section Monoid
+section Semigroup
 
-variable [Monoid G] [MeasurableMul G]
+variable [Semigroup G] [MeasurableMul G]
 
 /-- The image of a left invariant measure under right multiplication is left invariant.
 -/
-@[to_additive isAddLeftInvariant_radd
-"The image of a left invariant measure under right addition is left invariant."]
 theorem isMulLeftInvariant_rmul [IsMulLeftInvariant μ] (g : G) :
     IsMulLeftInvariant (map (· * g) μ) := by
-  refine' ⟨fun h => _⟩
-  rw [map_map (measurable_const_mul _) (measurable_mul_const _)]
-  conv_rhs =>
-    rw [← map_mul_left_eq_self μ h, map_map (measurable_mul_const _) (measurable_const_mul _)]
-  congr 2 with y
-  simp only [comp_apply, mul_assoc h y g]
+      let rmul_g := SMulCommClass.toMulActionHom G G (MulOpposite.op g)
+      have rmul_g_eq : ↑rmul_g = (· * g)
+      · ext x
+        simp only [SMulCommClass.toMulActionHom_apply, MulOpposite.smul_eq_mul_unop,
+          MulOpposite.unop_op]
+      have smul_inv := SMulInvariantMeasure_map μ rmul_g (measurable_mul_const g)
+      rw [rmul_g_eq] at smul_inv
+      rw [←forall_measure_preimage_mul_iff]
+      intro h s hS
+      exact smul_inv.measure_preimage_smul h hS
 
-end Monoid
+end Semigroup
 
 section DivInvMonoid
 
@@ -783,8 +786,6 @@ theorem isHaarMeasure_map [BorelSpace G] [TopologicalGroup G] {H : Type _} [Grou
 
 /-- The image of a Haar measure under right multiplication is again
 a Haar measure. -/
-@[to_additive isAddHaarMeasure_radd
-"The image of a Haar measure under right addition is again a Haar measure"]
 theorem isHaarMeasure_rmul [BorelSpace G] [TopologicalGroup G] [T2Space G] (g : G)
   : IsHaarMeasure (Measure.map (· * g) μ) :=
 {

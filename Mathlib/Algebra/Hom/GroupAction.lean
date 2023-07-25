@@ -118,6 +118,10 @@ protected theorem map_smul (f : X →[M'] Y) (m : M') (x : X) : f (m • x) = m 
   map_smul f m x
 #align mul_action_hom.map_smul MulActionHom.map_smul
 
+theorem comp_smul {f : X →[M'] Y} {m : M'} : f ∘ (m • ·) = (m • ·) ∘ f := by
+  ext
+  simp only [Function.comp_apply, map_smul]
+
 @[ext]
 theorem ext {f g : X →[M'] Y} : (∀ x, f x = g x) → f = g :=
   FunLike.ext f g
@@ -193,6 +197,18 @@ def SMulCommClass.toMulActionHom {M} (N α : Type _) [SMul M α] [SMul N α] [SM
     (c : M) : α →[N] α where
   toFun := (c • ·)
   map_smul' := smul_comm _
+
+namespace SMulCommClass
+
+variable {M} (N α : Type _) [SMul M α] [SMul N α] [SMulCommClass M N α]
+
+@[simp]
+theorem toMulActionHom_coe (c : M) : ⇑(toMulActionHom N α c) = (c • ·) := rfl
+
+@[simp]
+theorem toMulActionHom_apply (c : M) (a : α) : toMulActionHom N α c a = c • a := rfl
+
+end SMulCommClass
 
 /-- Equivariant additive monoid homomorphisms. -/
 structure DistribMulActionHom extends A →[M] B, A →+ B

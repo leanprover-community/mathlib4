@@ -7,6 +7,7 @@ import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Dynamics.Minimal
+import Mathlib.Algebra.Hom.GroupAction
 
 #align_import measure_theory.group.action from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -102,6 +103,26 @@ theorem map_smul : map (c • ·) μ = μ :=
 #align measure_theory.map_vadd MeasureTheory.map_vadd
 
 end MeasurableSMul
+
+section SMulActionHom
+
+variable {M : Type u} {α : Type v} {β : Type w}
+  [MeasurableSpace M] [MeasurableSpace α] [MeasurableSpace β]
+
+theorem SMulInvariantMeasure_map [SMul M α] [SMul M β] [MeasurableSMul M α] [MeasurableSMul M β]
+  (μ : Measure α) [SMulInvariantMeasure M α μ] (f : α →[M] β)
+  (hf: Measurable f)  : SMulInvariantMeasure M β (map f μ) := by
+  refine' ⟨fun m S hS => _⟩
+  calc
+    map f μ ((m • ·) ⁻¹' S) = μ (f ⁻¹' ((m • ·) ⁻¹' S)) := map_apply hf (MeasurableSet.preimage
+      hS (measurable_const_smul _))
+    _ = μ (((m • ·) ∘ f)⁻¹' S) := by rw [←preimage_comp]
+    _ = μ ((f ∘ (m • ·)) ⁻¹' S) := by rw [←MulActionHom.comp_smul]
+    _ = μ ((m • ·) ⁻¹' (f ⁻¹' S)) := by rw [preimage_comp]
+    _ = μ (f ⁻¹' S) := by rw [SMulInvariantMeasure.measure_preimage_smul m (hS.preimage hf)]
+    _ = (map f μ) S  := by rw [←map_apply hf hS]
+
+end SMulActionHom
 
 variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpace G]
   [MeasurableSMul G α] (c : G) (μ : Measure α)
