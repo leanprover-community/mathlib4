@@ -307,13 +307,14 @@ instance {n : ℕ} [NeZero n] : One (Fin n) := ⟨ofNat'' 1⟩
 
 #align fin.coe_zero Fin.val_zero
 
-@[simp]
 /--
 The `Fin.val_zero` in `Std` only applies in `Fin (n+1)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
 -/
+@[simp]
 theorem val_zero' (n : ℕ) [NeZero n] : ((0 : Fin n) : ℕ) = 0 :=
   rfl
+
 #align fin.val_zero' Fin.val_zero'
 #align fin.mk_zero Fin.mk_zero
 #align fin.zero_le Fin.zero_le
