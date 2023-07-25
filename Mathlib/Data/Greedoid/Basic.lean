@@ -262,6 +262,13 @@ def rank (G : Greedoid α) (s : Finset α) :=
     simp [Finset.max_eq_bot, filter_eq_empty_iff] at h
     exact h _ G.containsEmpty (empty_subset _))
 
+-- TODO: move to somewhere else like `Mathlib.Order.WithBot`
+theorem unbot_le_iff [LE α] {a : α} {b : WithBot α} (h : b ≠ ⊥) :
+    WithBot.unbot b h ≤ a ↔ b ≤ (a : WithBot α) := by
+  lift b to α
+  . exact h
+  . simp only [WithBot.unbot_coe, WithBot.coe_le_coe]
+
 section rank
 
 variable {s t : Finset α} {x y : α}
@@ -272,8 +279,17 @@ theorem rank_eq_bases_card
   {b : Finset α} (hb : b ∈ G.bases s) :
     b.card = G.rank s := by
   apply Eq.symm (Nat.le_antisymm _ _)
-  . sorry
-  . sorry
+  . simp [rank, unbot_le_iff]
+    apply Finset.max_le
+    rintro n hn
+    simp at *
+    let ⟨_, hs'⟩ := hn
+    exact hs'.2 ▸ basis_max_card_of_feasible hb hs'.1.1 hs'.1.2
+  . simp only [rank, WithBot.le_unbot_iff, Finset.le_max_of_eq]
+    apply Finset.le_max
+    simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
+    exists b
+    simp only [basis_mem_feasible hb, basis_subseteq hb]
 
 @[simp]
 theorem rank_empty : G.rank ∅ = 0 := by
