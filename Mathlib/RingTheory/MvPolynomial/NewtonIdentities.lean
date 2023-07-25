@@ -90,13 +90,8 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
   [CharZero R]
 
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
-def PairsPred (k : ℕ) (t : Finset σ × σ) : Prop := card t.fst ≤ k ∧
-  ((card t.fst = k) → t.snd ∈ t.fst)
-
-instance : DecidablePred (PairsPred σ k) := Classical.decPred (PairsPred σ k)
-
-def pairs (σ : Type _) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
-  Finset.univ.filter (PairsPred σ k)
+def pairs (σ : Type _) [Fintype σ] [DecidableEq σ] (k : ℕ) : Finset (Finset σ × σ) :=
+  Finset.univ.filter (fun t => card t.fst ≤ k ∧ ((card t.fst = k) → t.snd ∈ t.fst))
 
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ (card t.fst) * ((∏ a in t.fst, X a) * (X t.snd) ^ (k - card t.fst) : MvPolynomial σ R)
@@ -108,7 +103,7 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
-  rw [pairs, mem_filter, PairsPred] at *
+  rw [pairs, mem_filter] at *
   rw [T_map_restr, T_map]
   simp only [mem_univ, true_and] at h
   split_ifs with h1
@@ -139,7 +134,7 @@ theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
   rw [T_map_restr, T_map, weight, weight]
-  rw [pairs, mem_filter, PairsPred] at h
+  rw [pairs, mem_filter] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
   · rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
   split_ifs with h1
@@ -183,7 +178,7 @@ theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
   apply sum_finset_product
-  simp only [Prod.forall, pairs, PairsPred, mem_filter, mem_univ, true_and]
+  simp only [Prod.forall, pairs, mem_filter, mem_univ, true_and]
   intro p b
   apply Iff.intro
   · intro hpl
@@ -197,14 +192,13 @@ theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ �
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
     ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
   apply sum_finset_product
-  simp only [Prod.forall, pairs, PairsPred, mem_filter, mem_univ, true_and, and_true]
+  simp only [Prod.forall, pairs, mem_filter, mem_univ, true_and, and_true]
   rw [mem_range] at hi
   intro p b
   apply Iff.intro
   · intro hpl
     exact mem_powerset_len_univ_iff.mpr hpl.2
   · intro hpr
-    simp only [pairs, mem_filter, PairsPred]
     apply And.intro
     · apply And.intro
       · exact Eq.subst (motive := fun n => n ≤ k)
@@ -221,8 +215,8 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
   simp only [← sum_congr rfl equiv_i]
   have pdisj : Set.PairwiseDisjoint (range k)
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
-    simp only [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred,
-      coe_range, Set.mem_Iio, ne_eq, le_eq_subset, bot_eq_empty]
+    simp only [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, coe_range,
+      Set.mem_Iio, ne_eq, le_eq_subset, bot_eq_empty]
     intro x _ y _ xny
     by_contra neg
     simp only [not_forall, exists_prop, exists_and_left] at neg
@@ -270,15 +264,13 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
 
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
-  rw [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, filter_filter]
+  simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
   intro a
-  rw [← filter_or]
+  rw [← filter_or, mem_filter]
   apply Iff.intro
   · intro ha
-    rw [mem_filter] at *
     tauto
   · intro ha
-    rw [mem_filter, PairsPred] at *
     have hacard := le_iff_lt_or_eq.mp ha.right.left
     tauto
 
