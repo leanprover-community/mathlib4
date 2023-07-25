@@ -315,20 +315,25 @@ theorem rank_eq_bases_card
     exact hs'.2 ▸ basis_max_card_of_feasible hb hs'.1.1 hs'.1.2
 
 @[simp]
-theorem rank_empty : G.rank ∅ = 0 := by
+theorem rank_of_empty : G.rank ∅ = 0 := by
   simp only [rank, subset_empty, system_feasible_set_mem_mem, Finset.filter_eq']
   simp only [G.containsEmpty]
   simp only [ite_true, image_singleton, card_empty, max_singleton, WithBot.unbot_coe]
 
-theorem rank_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
+theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   have ⟨_, h⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
   rw [rank_eq_bases_card h]
   apply (bases_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
 
-theorem rank_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
+theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
+  apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim _ (fun h => h)
+  intro h
+  have ⟨b, hb⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  rw [rank_eq_bases_card hb]
+  rw [lt_one_iff] at h
   sorry
 
-theorem rank_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} = 0 := by
+theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} = 0 := by
   sorry
 
 theorem rank_le_card : G.rank s ≤ s.card := sorry
