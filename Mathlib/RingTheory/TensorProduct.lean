@@ -583,7 +583,7 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
 instance instRing : Ring (A ⊗[R] B) :=
-  { (by infer_instance : Semiring (A ⊗[R] B)) with
+  { toSemiring := inferInstance
     add_left_neg := add_left_neg }
 
 end Ring
