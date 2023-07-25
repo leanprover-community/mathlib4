@@ -880,6 +880,7 @@ theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
 #align add_con.mrange_mk' AddCon.mrange_mk'
 
 -- Porting note: used to abuse defeq between sets and predicates
+@[to_additive]
 theorem ker_apply {f : M →* P} {x y} : ker f x y ↔ f x = f y := Iff.rfl
 #noalign con.ker_apply_eq_preimage
 #noalign add_con.ker_apply_eq_preimage
