@@ -3205,6 +3205,17 @@ def setFO (e : Expr) : CCM Unit := do
   let d := { d with fo := true }
   modifyState fun ccs => { ccs with entries := ccs.entries.insert e d }
 
+partial def updateMT (e : Expr) : CCM Unit := do
+  let r ← getRoot e
+  let some ps := (← getState).parents.find? r | return
+  for p in ps do
+    let some it ← getEntry p.expr | failure
+    let gmt := (← getState).gmt
+    if it.mt < gmt then
+      let newIt := { it with mt := gmt }
+      modifyState fun ccs => { ccs with entries := ccs.entries.insert p.expr newIt }
+      updateMT p.expr
+
 /--
 This method is invoked during internalization and eagerly apply basic equivalences for term `e`
 Examples:
@@ -3224,19 +3235,6 @@ def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr) := sorr
 
 def getEqProof (e₁ e₂ : Expr) : CCM (Option Expr) :=
   getEqProofCore e₁ e₂ false
-
-def pushSubsingletonEq (a b : Expr) : CCM Unit := do
-  -- Remark: we must use normalize here because we have use it before
-  -- internalizing the types of `a` and `b`.
-  let A ← normalize (← inferType a)
-  let B ← normalize (← inferType b)
-  if (← withNewMCtxDepth <| withTransparency .default <| isDefEq A B) then
-    let proof ← mkAppM ``Subsingleton.elim #[a, b]
-    pushEq a b proof
-  else
-    let some AEqB ← getEqProof A B | failure
-    let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
-    pushHEq a b proof
 
 def isEqv (e₁ e₂ : Expr) : CCM Bool := do
   let some n₁ ← getEntry e₁ | return false
@@ -3263,6 +3261,29 @@ def getPropEqProof (a b : Expr) : CCM Expr := do
   guard (← isEqv a b)
   let some p ← getEqProof a b | failure
   return p
+
+def pushSubsingletonEq (a b : Expr) : CCM Unit := do
+  -- Remark: we must use normalize here because we have use it before
+  -- internalizing the types of `a` and `b`.
+  let A ← normalize (← inferType a)
+  let B ← normalize (← inferType b)
+  if (← withNewMCtxDepth <| withTransparency .default <| isDefEq A B) then
+    let proof ← mkAppM ``Subsingleton.elim #[a, b]
+    pushEq a b proof
+  else
+    let some AEqB ← getEqProof A B | failure
+    let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
+    pushHEq a b proof
+
+def checkNewSubsingletonEq (oldRoot newRoot : Expr) : CCM Unit := do
+  guard (← isEqv oldRoot newRoot)
+  guard ((← getRoot oldRoot) == newRoot)
+  let some it₁ := (← getState).subsingletonReprs.find? oldRoot | return
+  if let some it₂ := (← getState).subsingletonReprs.find? newRoot then
+    pushSubsingletonEq it₁ it₂
+  else
+    modifyState fun ccs =>
+      { ccs with subsingletonReprs := ccs.subsingletonReprs.insert newRoot it₁ }
 
 mutual
 partial def internalizeApp (e : Expr) (gen : Nat) : CCM Unit := do
@@ -3555,7 +3576,7 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
     return
   let some h ← getEqProof e₁ e₂ | failure
   if c₁.name == c₂.name then
-    if Nat.blt 0 c₁.numFields then
+    if 0 < c₁.numFields then
       let name := mkInjectiveTheoremNameFor c₁.name
       if (← getEnv).contains name then
         let rec go (type val : Expr) : CCM Unit := do
@@ -3580,6 +3601,51 @@ partial def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
     let H := Expr.app (.const ``true_eq_false_of_false []) falsePr
     pushEq (.const ``True []) (.const ``False []) H
 
+def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
+  guard (← isInterpretedValue e₁)
+  guard (← isInterpretedValue e₂)
+  let neProof :=
+    Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[e₁, e₂])) (← mkEqRefl (.const ``true []))
+  let some eqProof ← getEqProof e₁ e₂ | failure
+  let trueEqFalse ← mkEq (.const ``True []) (.const ``False [])
+  let H ← mkAbsurd trueEqFalse eqProof neProof
+  pushEq (.const ``True []) (.const ``False []) H
+
+def propagateIffUp (e : Expr) : CCM Unit := do
+  let some (a, b) := e.iff? | failure
+  if ← isEqTrue a then
+    -- `a = True  → (Iff a b) = b`
+    pushEq e b (mkApp3 (.const ``iff_eq_of_eq_true_left []) a b (← getEqTrueProof a))
+  else if ← isEqTrue b then
+    -- `b = True  → (Iff a b) = a`
+    pushEq e a (mkApp3 (.const ``iff_eq_of_eq_true_right []) a b (← getEqTrueProof b))
+  else if ← isEqv a b then
+    -- `a = b     → (Iff a b) = True`
+    pushEq e (.const ``True []) (mkApp3 (.const ``iff_eq_true_of_eq []) a b (← getPropEqProof a b))
+
+def propagateUp (e : Expr) : CCM Unit := do
+  if (← getState).inconsistent then return
+  /-
+  ```c++
+  if (is_iff(e)) {
+      propagate_iff_up(e);
+  } else if (is_and(e)) {
+      propagate_and_up(e);
+  } else if (is_or(e)) {
+      propagate_or_up(e);
+  } else if (is_not(e)) {
+      propagate_not_up(e);
+  } else if (is_arrow(e)) {
+      propagate_imp_up(e);
+  } else if (is_ite(e)) {
+      propagate_ite_up(e);
+  } else if (is_eq(e)) {
+      propagate_eq_up(e);
+  }
+  ```
+  -/
+  sorry
+
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
   let some n₂ ← getEntry e₂ | return -- `e₂` have not been internalized
@@ -3603,7 +3669,7 @@ def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit :
   -/
   if (r₁.interpreted && !r₂.interpreted) ||
       (r₁.constructor && !r₂.interpreted && !r₂.constructor) ||
-      (Nat.blt r₂.size r₁.size && !r₂.interpreted && !r₂.constructor) then
+      (decide (r₁.size > r₂.size) && !r₂.interpreted && !r₂.constructor) then
     go e₂ e₁ n₂ n₁ r₂ r₁ true H heqProof
   else
     go e₁ e₂ n₁ n₂ r₁ r₂ false H heqProof
@@ -3628,10 +3694,10 @@ where
 
     /-
     Following target/proof we have
-    `e₁ -> ... -> r₁`
-    `e₂ -> ... -> r₂`
+    `e₁ → ... → r₁`
+    `e₂ → ... → r₂`
     We want
-    `r₁ -> ... -> e₁ -> e₂ -> ... -> r₂`
+    `r₁ → ... → e₁ → e₂ → ... → r₂`
     -/
     invertTrans e₁
     let newN₁ : Entry :=
@@ -3703,16 +3769,15 @@ where
     if !(← getState).inconsistent && constructorEq then
       propagateConstructorEq e₁Root e₂Root
 
+    if !(← getState).inconsistent && valueInconsistency then
+      propagateValueInconsistency e₁Root e₂Root
+
+    if !(← getState).inconsistent then
+      updateMT e₂Root
+      checkNewSubsingletonEq e₁Root e₂Root
+
     /-
     ```c++
-    if (!m_state.m_inconsistent && value_inconsistency)
-        propagate_value_inconsistency(e1_root, e2_root);
-
-    if (!m_state.m_inconsistent) {
-        update_mt(e2_root);
-        check_new_subsingleton_eq(e1_root, e2_root);
-    }
-
     if (!m_state.m_inconsistent) {
         for (expr const & p : parents_to_propagate)
             propagate_up(p);
