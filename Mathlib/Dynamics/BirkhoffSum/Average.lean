@@ -67,6 +67,11 @@ theorem birkhoffAverage_congr_ring' (S : Type _) [DivisionSemiring S] [Module S 
     birkhoffAverage (α := α) (M := M) R = birkhoffAverage S := by
   ext; apply birkhoffAverage_congr_ring
 
+theorem Function.IsFixedPt.birkhoffAverage_eq [CharZero R] {f : α → α} {x : α} (h : IsFixedPt f x)
+    (g : α → M) {n : ℕ} (hn : n ≠ 0) : birkhoffAverage R f g n x = g x := by
+  rw [birkhoffAverage, h.birkhoffSum_eq, nsmul_eq_smul_cast R, inv_smul_smul₀]
+  rwa [Nat.cast_ne_zero]
+
 end birkhoffAverage
 
 /-- Birkhofff average is "almost invariant" under `f`:

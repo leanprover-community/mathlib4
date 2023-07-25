@@ -1,4 +1,22 @@
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Dynamics.BirkhoffSum.Average
+
+/-!
+# Mean Ergodic Theorem in a Hilbert Space
+
+In this file we prove the von Neumann Mean Ergodic Theorem for an operator in a Hilbert space.
+It says that for a linear isometry `f : E →ₗᵢ[𝕜] E` of a Hilbert space,
+the Birkhoff averages
+```
+birkhoffAverage 𝕜 f id N x = (N : 𝕜)⁻¹ • ∑ n in Finset.range N, f^[n] x
+```
+converge to the orthogonal projection of `x` to the subspace of fixed points of `f`.
+-/
 
 open Filter Finset Function
 open scoped BigOperators Topology
@@ -8,7 +26,16 @@ variable {𝕜 E : Type _} [IsROrC 𝕜] [NormedAddCommGroup E] [InnerProductSpa
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
-theorem LinearIsometry.tendsto_inv_smul_sum_range_pow_apply_orthogonalProjection
+theorem LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection (f : E →ₗᵢ[𝕜] E) (x : E) :
+    Tendsto (fun N ↦ birkhoffAverage 𝕜 f _root_.id N x) atTop
+      (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
+  set S := LinearMap.eqLocus f 1
+  set P := orthogonalProjection S
+  set g := f.toContinuousLinearMap
+  
+  
+
+theorem LinearIsometry.tendsto_inv_smul_sum_range_pow_apply_orthogonalProjection'
     (f : E →ₗᵢ[𝕜] E) (x : E) :
     Tendsto (fun N : ℕ ↦ (N : 𝕜)⁻¹ • ∑ n in range N, (f ^ n) x) atTop
       (𝓝 <| orthogonalProjection (LinearMap.eqLocus f 1) x) := by
