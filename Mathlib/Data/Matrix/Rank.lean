@@ -279,8 +279,8 @@ section MulNonsingInv
 
 /-! ### Lemmas about pre or post multiplying by an invertible matrix. -/
 
-/-- Pre (Left) multiplying by an invertible matrix does not change the rank -/
-lemma rank_mul_isUnit [DecidableEq n] [CommRing R]
+/-- Right multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_left_of_isUnit  [DecidableEq n] [CommRing R]
     (A: Matrix n n R) (B: Matrix m n R) (hA: IsUnit A.det) :
     (B ⬝ A).rank = B.rank := by
   rw [Matrix.rank, mulVecLin_mul, LinearMap.range_comp_of_range_eq_top, ←Matrix.rank ]
@@ -289,8 +289,8 @@ lemma rank_mul_isUnit [DecidableEq n] [CommRing R]
   use ((A⁻¹).mulVecLin x)
   rwa [mulVecLin_apply, mulVecLin_apply, mulVec_mulVec, mul_nonsing_inv, one_mulVec]
 
-/-- Post (right) multiplying by an invertible matrix does not change the rank -/
-lemma rank_isUnit_mul [DecidableEq m] [Field R]
+/-- Left multiplying by an invertible matrix does not change the rank -/
+lemma rank_mul_eq_right_of_isUnit  [DecidableEq m] [Field R]
     (A: Matrix m m R) (B: Matrix m n R) (hA: IsUnit A.det):
     (A ⬝ B).rank = B.rank := by
   suffices h: LinearMap.ker ((A⬝B).mulVecLin) = LinearMap.ker (B.mulVecLin)
