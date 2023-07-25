@@ -63,7 +63,9 @@ instance : EstimatorData (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
         bound := _
         bound_eq := rfl }
 
-instance estimator' : Estimator (Thunk.mk fun _ => (levenshtein C xs ys, ys.length)) (LevenshteinEstimator' C xs ys) where
+instance estimator' :
+    Estimator (Thunk.mk fun _ => (levenshtein C xs ys, ys.length))
+      (LevenshteinEstimator' C xs ys) where
   bound_le e := match e.pre_rev, e.split, e.bound_eq with
   | [], split, eq => by
     simp only [List.reverse_nil, List.nil_append] at split

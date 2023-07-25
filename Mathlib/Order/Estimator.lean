@@ -45,7 +45,8 @@ class EstimatorData (a : Thunk α) (ε : Type _) where
 /--
 Given `[Estimator a ε]`
 * we have `bound a e ≤ a.get`, and
-* `improve a e` returns none iff `bound a e = a.get`, and otherwise it returns a strictly better bound.
+* `improve a e` returns none iff `bound a e = a.get`,
+  and otherwise it returns a strictly better bound.
 -/
 class Estimator [Preorder α] (a : Thunk α) (ε : Type _) extends EstimatorData a ε where
   bound_le e : bound e ≤ a.get
@@ -145,7 +146,8 @@ instance [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β] {a 
   bound e := (bound (a.prod b) e.inner).1
   improve e :=
     let bd := (bound (a.prod b) e.inner).1
-    Estimator.improveUntil (a.prod b) (fun p => bd < p.1) e.inner |>.toOption |>.map Estimator.fst.mk
+    Estimator.improveUntil (a.prod b) (fun p => bd < p.1) e.inner
+      |>.toOption |>.map Estimator.fst.mk
 
 instance instEstimatorFst [PartialOrder α] [DecidableRel ((· : α) < ·)] [PartialOrder β]
     [∀ (p : α × β), WellFoundedGT { q // q ≤ p }]
