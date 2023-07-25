@@ -43,7 +43,7 @@ We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
    `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
    is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
  * `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
-   for the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
+   the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
    `addWellApproximable 𝕊 δ` is almost empty or almost full.
 
 ## TODO:
