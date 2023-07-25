@@ -90,7 +90,7 @@ variable (σ : Type _) [Fintype σ] [DecidableEq σ] (R : Type _) [CommRing R] [
   [CharZero R]
 
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
-def pairs (σ : Type _) [Fintype σ] [DecidableEq σ] (k : ℕ) : Finset (Finset σ × σ) :=
+def pairs (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (fun t => card t.fst ≤ k ∧ ((card t.fst = k) → t.snd ∈ t.fst))
 
 def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
