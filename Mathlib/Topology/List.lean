@@ -2,14 +2,11 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module topology.list
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.Algebra.Monoid
+
+#align_import topology.list from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Topology on lists and vectors
@@ -40,7 +37,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
     clear as hs
     have : ∃ v : List (Set α), l.Forall₂ (fun a s => IsOpen s ∧ a ∈ s) v ∧ sequence v ⊆ s
     induction hu generalizing s
-    case nil _hs  =>
+    case nil _hs =>
       exists []
       simp only [List.forall₂_nil_left_iff, exists_eq_left]
       exact ⟨trivial, hus⟩
@@ -109,7 +106,7 @@ theorem tendsto_nhds {β : Type _} {f : List α → β} {r : List α → Filter 
     ∀ l, Tendsto f (𝓝 l) (r l)
   | [] => by rwa [nhds_nil]
   | a::l => by
-    rw [tendsto_cons_iff];  exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
+    rw [tendsto_cons_iff]; exact h_cons l a (@tendsto_nhds _ _ _ h_nil h_cons l)
 #align list.tendsto_nhds List.tendsto_nhds
 
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by

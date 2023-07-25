@@ -2,13 +2,10 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.monoidal.End
-! leanprover-community/mathlib commit 85075bccb68ab7fa49fb05db816233fb790e4fe9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.monoidal.End from "leanprover-community/mathlib"@"85075bccb68ab7fa49fb05db816233fb790e4fe9"
 
 /-!
 # Endofunctors as a monoidal category.
@@ -89,7 +86,7 @@ attribute [local instance] endofunctorMonoidalCategory
 def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C) :=
   { tensoringRight C with
     ε := (rightUnitorNatIso C).inv
-    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom  }
+    μ := fun X Y => { app := fun Z => (α_ Z X Y).hom }
     μ_natural := fun f g => by
       ext Z
       dsimp

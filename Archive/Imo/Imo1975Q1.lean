@@ -2,16 +2,13 @@
 Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
-
-! This file was ported from Lean 3 source module imo.imo1975_q1
-! leanprover-community/mathlib commit 308826471968962c6b59c7ff82a22757386603e3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Algebra.BigOperators.Ring
+
+#align_import imo.imo1975_q1 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1975 Q1

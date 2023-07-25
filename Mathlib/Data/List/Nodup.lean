@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
-
-! This file was ported from Lean 3 source module data.list.nodup
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.Set.Pairwise.Basic
+
+#align_import data.list.nodup from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
 # Lists with no duplicates
@@ -451,7 +448,7 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
 
 --Porting note: new theorem
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
-    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (. ∈ l.take n)
+    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (· ∈ l.take n)
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
   | b::l, n+1, hl => by

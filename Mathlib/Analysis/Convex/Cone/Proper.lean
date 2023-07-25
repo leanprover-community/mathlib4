@@ -2,14 +2,11 @@
 Copyright (c) 2022 Apurva Nakade All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
-
-! This file was ported from Lean 3 source module analysis.convex.cone.proper
-! leanprover-community/mathlib commit 147b294346843885f952c5171e9606616a8fd869
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Cone.Dual
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+
+#align_import analysis.convex.cone.proper from "leanprover-community/mathlib"@"147b294346843885f952c5171e9606616a8fd869"
 
 /-!
 # Proper cones
@@ -24,7 +21,6 @@ linear programs, the results from this file can be used to prove duality theorem
 
 The next steps are:
 - Add convex_cone_class that extends set_like and replace the below instance
-- Define the positive cone as a proper cone.
 - Define primal and dual cone programs and prove weak duality.
 - Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
 - Define linear programs and prove LP duality as a special case of cone duality.
@@ -127,6 +123,29 @@ protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
 #align proper_cone.is_closed ProperCone.isClosed
 
 end SMul
+
+section PositiveCone
+
+variable (𝕜 E) 
+variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+  [TopologicalSpace E] [OrderClosedTopology E]
+
+/-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
+module. -/
+def positive : ProperCone 𝕜 E where
+  toConvexCone := ConvexCone.positive 𝕜 E
+  nonempty' := ⟨0, ConvexCone.pointed_positive _ _⟩
+  is_closed' := isClosed_Ici
+
+@[simp]
+theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
+  Iff.rfl
+
+@[simp]
+theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
+  rfl
+
+end PositiveCone
 
 section Module
 

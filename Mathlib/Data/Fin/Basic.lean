@@ -2,17 +2,14 @@
 Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
-
-! This file was ported from Lean 3 source module data.fin.basic
-! leanprover-community/mathlib commit 3a2b5524a138b5d0b818b858b516d4ac8a484b03
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Order.WithZero
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Data.Nat.Order.Basic
 import Mathlib.Order.Hom.Set
+
+#align_import data.fin.basic from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
 
 /-!
 # The finite type with `n` elements
@@ -25,7 +22,7 @@ This file expands on the development in the core library.
 ### Induction principles
 
 * `finZeroElim` : Elimination principle for the empty set `Fin 0`, generalizes `Fin.elim0`.
-* `Fin.succRec` : Define `C n i` by induction on  `i : Fin n` interpreted
+* `Fin.succRec` : Define `C n i` by induction on `i : Fin n` interpreted
   as `(0 : Fin (n - i)).succ.succ…`. This function has two arguments: `H0 n` defines
   `0`-th element `C (n+1) 0` of an `(n+1)`-tuple, and `Hs n i` defines `(i+1)`-st element
   of `(n+1)`-tuple based on `n`, `i`, and `i`-th element of `n`-tuple.
@@ -1172,7 +1169,7 @@ theorem castLT_castAdd (m : ℕ) (i : Fin n) : castLT (castAdd m i) (castAdd_lt 
 
 /-- For rewriting in the reverse direction, see `Fin.castIso_castAdd_left`. -/
 theorem castAdd_castIso {n n' : ℕ} (m : ℕ) (i : Fin n') (h : n' = n) :
-    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (. + m) h) (castAdd m i) :=
+    castAdd m (Fin.castIso h i) = Fin.castIso (congr_arg (· + m) h) (castAdd m i) :=
   ext rfl
 #align fin.cast_add_cast Fin.castAdd_castIso
 
@@ -1392,7 +1389,7 @@ theorem castIso_addNat_zero {n n' : ℕ} (i : Fin n) (h : n + 0 = n') :
 
 /-- For rewriting in the reverse direction, see `Fin.castIso_addNat_left`. -/
 theorem addNat_castIso {n n' m : ℕ} (i : Fin n') (h : n' = n) :
-    addNat (castIso h i) m = castIso (congr_arg (. + m) h) (addNat i m) :=
+    addNat (castIso h i) m = castIso (congr_arg (· + m) h) (addNat i m) :=
   ext rfl
 #align fin.add_nat_cast Fin.addNat_castIso
 

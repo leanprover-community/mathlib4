@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.locally_finite
-! leanprover-community/mathlib commit 1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Set.Intervals.UnorderedInterval
+
+#align_import order.locally_finite from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Locally finite orders
@@ -110,8 +107,9 @@ as `Icc (-1) 1` is infinite.
 
 open Finset Function
 
-/-- A locally finite order is an order where bounded intervals are finite. When you don't care too
-much about definitional equality, you can use `LocallyFiniteOrder.ofIcc` or
+/-- This is a mixin class describing a locally finite order,
+that is, is an order where bounded intervals are finite.
+When you don't care too much about definitional equality, you can use `LocallyFiniteOrder.ofIcc` or
 `LocallyFiniteOrder.ofFiniteIcc` to build a locally finite order from just `Finset.Icc`. -/
 class LocallyFiniteOrder (α : Type _) [Preorder α] where
   /-- Left-closed right-closed interval -/
@@ -132,7 +130,7 @@ class LocallyFiniteOrder (α : Type _) [Preorder α] where
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 #align locally_finite_order LocallyFiniteOrder
 
-/-- A locally finite order top is an order where all intervals bounded above are finite. This is
+/-- This mixin class describes an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
 class LocallyFiniteOrderTop (α : Type _) [Preorder α] where
   /-- Left-open right-infinite interval -/
@@ -145,7 +143,7 @@ class LocallyFiniteOrderTop (α : Type _) [Preorder α] where
   finset_mem_Ioi : ∀ a x : α, x ∈ finsetIoi a ↔ a < x
 #align locally_finite_order_top LocallyFiniteOrderTop
 
-/-- A locally finite order bot is an order where all intervals bounded below are finite. This is
+/-- This mixin class describes an order where all intervals bounded above are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderBot` as it allows empty types. -/
 class LocallyFiniteOrderBot (α : Type _) [Preorder α] where
   /-- Left-infinite right-open interval -/
