@@ -76,6 +76,7 @@ import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Lint
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MkIffOfInductiveProp
