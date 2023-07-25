@@ -51,6 +51,41 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 #align tendsto_rpow_neg_at_top tendsto_rpow_neg_atTop
 
+lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
+  show Tendsto (fun z => b^z) atTop (nhds 0)
+  simp_rw [Real.rpow_def_of_pos hb₀]
+  have h₁ : log b < 0 := by rw [log_neg_iff hb₀]; exact hb₁
+  refine Tendsto.exp_atBot ?_
+  rw [tendsto_const_mul_atBot_of_neg h₁]
+  show atTop ≤ atTop    -- come on...
+  rfl
+
+lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 (0:ℝ)) := by
+  show Tendsto (fun z => b^z) atBot (nhds 0)
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine Tendsto.exp_atBot ?_
+  have h₁ : 0 < log b := by rw [log_pos_iff (by positivity)]; aesop
+  rw [tendsto_const_mul_atBot_of_pos h₁]
+  show atBot ≤ atBot
+  rfl
+
+lemma tendsto_rpow_atBot_of_base_lt_one (b : ℝ) (hb₀ : 0 < b) (hb₁ : b < 1) : Tendsto (rpow b) atBot atTop := by
+  show Tendsto (fun z => b^z) atBot atTop
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine Tendsto.exp_atTop ?_
+  have h₁ : log b < 0 := by rw [log_neg_iff hb₀]; exact hb₁
+  rw [tendsto_const_mul_atTop_iff_neg (by show atBot ≤ atBot; simp)]
+  exact h₁
+
+lemma tendsto_rpow_atBot_of_base_gt_one (b : ℝ) (hb : 1 < b) : Tendsto (rpow b) atBot (𝓝 0) := by
+  show Tendsto (fun z => b^z) atBot (𝓝 0)
+  simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
+  refine Tendsto.exp_atBot ?_
+  have h₁ : 0 < log b := by rw [log_pos_iff (by positivity)]; aesop
+  rw [tendsto_const_mul_atBot_iff_pos (by show atBot ≤ atBot; simp)]
+  exact h₁
+
+
 /-- The function `x ^ (a / (b * x + c))` tends to `1` at `+∞`, for any real numbers `a`, `b`, and
 `c` such that `b` is nonzero. -/
 theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :

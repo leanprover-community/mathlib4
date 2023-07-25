@@ -177,6 +177,11 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
   exact tendsto_atTop_mono' atTop B A
 #align real.tendsto_exp_at_top Real.tendsto_exp_atTop
 
+lemma _root_.Filter.Tendsto.exp_atTop {f : α → ℝ} (hf : Tendsto f l atTop) :
+    Tendsto (fun x => Real.exp (f x)) l atTop := by
+  show Tendsto (Real.exp ∘ f) l atTop
+  exact Tendsto.comp (y := atTop) Real.tendsto_exp_atTop hf
+
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_0 : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
@@ -193,6 +198,11 @@ theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_0.comp tendsto_neg_atBot_atTop).congr fun x =>
     congr_arg exp <| neg_neg x
 #align real.tendsto_exp_at_bot Real.tendsto_exp_atBot
+
+lemma _root_.Filter.Tendsto.exp_atBot {f : α → ℝ} (hf : Tendsto f l atBot) :
+    Tendsto (fun x => Real.exp (f x)) l (𝓝 0) := by
+  show Tendsto (Real.exp ∘ f) l (𝓝 0)
+  exact Tendsto.comp (y := atBot) Real.tendsto_exp_atBot hf
 
 theorem tendsto_exp_atBot_nhdsWithin : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| eventually_of_forall exp_pos⟩
