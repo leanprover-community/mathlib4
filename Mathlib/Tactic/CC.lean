@@ -3095,6 +3095,13 @@ def next (s : CCState) (e : Expr) : Expr :=
   | none => e
 #align cc_state.next Mathlib.Tactic.CC.CCState.next
 
+/-- Check if `e` is the root of the congruence class. -/
+def isCgRoot (s : CCState) (e : Expr) : Bool :=
+  match s.entries.find? e with
+  | some n => e == n.cgRoot
+  | none => true
+#align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
+
 end CCState
 
 structure CC where
@@ -3161,6 +3168,9 @@ def pushReflEq (lhs rhs : Expr) : CCM Unit :=
 
 def getRoot (e : Expr) : CCM Expr := do
   return (← getState).root e
+
+def isCgRoot (e : Expr) : CCM Bool := do
+  return (← getState).isCgRoot e
 
 def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   let mut ps : ParentOccSet := ∅
@@ -3503,35 +3513,70 @@ def propagateBetaToEqc (fnRoots lambdas newLambdaApps : Array Expr) : CCM (Array
   if lambdas.isEmpty then return newLambdaApps
   let mut newLambdaApps := newLambdaApps
   let lambdaRoot ← getRoot lambdas.back
+  guard (← lambdas.allM fun l => pure l.isLambda <&&> (· == lambdaRoot) <$> getRoot l)
+  for fnRoot in fnRoots do
+    if let some ps := (← getState).parents.find? fnRoot then
+      for { expr := p,.. } in ps do
+        let mut revArgs : Array Expr := #[]
+        let mut it₂ := p
+        while it₂.isApp do
+          let fn := it₂.appFn!
+          revArgs := revArgs.push it₂.appArg!
+          if (← getRoot fn) == lambdaRoot then
+            -- found it
+            newLambdaApps ← propagateBeta fn revArgs lambdas newLambdaApps
+            break
+          it₂ := it₂.appFn!
+  return newLambdaApps
+
+/--
+Given `c` a constructor application, if `p` is a projection application such that major premise is
+equal to `c`, then propagate new equality.
+
+Example: if `p` is of the form `b.1`, `c` is of the form `(x, y)`, and `b = c`, we add the
+equality `(x, y).1 = x` -/
+def propagateProjectionConstructor (p c : Expr) : CCM Unit := sorry
+
+/--
+Given a new equality `e₁ = e₂`, where `e₁` and `e₂` are constructor applications.
+Implement the following implications:
+```lean
+c a₁ ... aₙ = c b₁ ... bₙ => a₁ = b₁, ..., aₙ = bₙ
+
+c₁ ... = c₂ ... => False
+```
+where `c`, `c₁` and `c₂` are constructors -/
+def propagateConstructorEq (e₁ e₂ : Expr) : CCM Unit := do
+  let env ← getEnv
+  let some c₁ := e₁.isConstructorApp? env | failure
+  let some c₂ := e₂.isConstructorApp? env | failure
+  if ← withNewMCtxDepth <| isDefEq (← inferType e₁) (← inferType e₂) then
+    -- The implications above only hold if the types are equal.
+    return
   /-
   ```c++
-  lean_assert(std::all_of(lambdas.begin(), lambdas.end(), [&](expr const & l) {
-              return is_lambda(l) && get_root(l) == lambda_root;
-          }));
-  for (expr const & fn_root : fn_roots) {
-      if (auto ps = m_state.m_parents.find(fn_root)) {
-          ps->for_each([&](parent_occ const & p_occ) {
-                  expr const & p = p_occ.m_expr;
-                  /* Look for a prefix of p which is in the same equivalence class of lambda_root */
-                  buffer<expr> rev_args;
-                  expr it2 = p;
-                  while (is_app(it2)) {
-                      expr const & fn = app_fn(it2);
-                      rev_args.push_back(app_arg(it2));
-                      if (get_root(fn) == lambda_root) {
-                          /* found it */
-                          propagate_beta(fn, rev_args, lambdas, new_lambda_apps);
-                          break;
-                      }
-                      it2 = app_fn(it2);
-                  }
-              });
+  expr type       = mk_eq(m_ctx, e1, e2);
+  expr h          = *get_eq_proof(e1, e2);
+  if (*c1 == *c2) {
+      buffer<std::tuple<expr, expr, expr>> implied_eqs;
+      mk_constructor_eq_constructor_implied_eqs(m_ctx, e1, e2, h, implied_eqs);
+      for (std::tuple<expr, expr, expr> const & t : implied_eqs) {
+          expr lhs, rhs, H;
+          std::tie(lhs, rhs, H) = t;
+          if (is_def_eq(m_ctx.infer(lhs), m_ctx.infer(rhs)))
+              push_eq(lhs, rhs, H);
+          else
+              push_heq(lhs, rhs, H);
+      }
+  } else {
+      if (optional<expr> false_pr = mk_constructor_eq_constructor_inconsistency_proof(m_ctx, e1, e2, h)) {
+          expr H        = mk_app(mk_constant(get_true_eq_false_of_false_name()), *false_pr);
+          push_eq(mk_true(), mk_false(), H);
       }
   }
   ```
   -/
   sorry
-  return newLambdaApps
 
 def addEqvStep (e₁ e₂ : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   let some n₁ ← getEntry e₁ | return -- `e₁` have not been internalized
@@ -3636,33 +3681,25 @@ where
         entries := ccs.entries.insert e₁Root newR₁ |>.insert e₂Root newR₂ }
     guard (← checkInvariant)
 
+    let lambdaAppsToInternalize ← propagateBetaToEqc fnRoots₂ lambdas₁ #[]
+    let lambdaAppsToInternalize ← propagateBetaToEqc fnRoots₁ lambdas₂ lambdaAppsToInternalize
+
+    -- copy `e₁Root` parents to `e₂Root`
+    if let some ps₁ := (← getState).parents.find? e₁Root then
+      let mut ps₂ : ParentOccSet := ∅
+      if let some it' := (← getState).parents.find? e₂Root then
+        ps₂ := it'
+      for p in ps₁ do
+        if p.expr.isApp || (← isCgRoot p.expr) then
+          if !constructorEq && r₂.constructor then
+            propagateProjectionConstructor p.expr e₂Root
+          ps₂ := ps₂.insert p
+      modifyState fun ccs =>
+        { ccs with
+          parents := ccs.parents.erase e₁Root |>.insert e₂Root ps₂ }
+
     /-
     ```c++
-    buffer<expr> lambda_apps_to_internalize;
-    propagate_beta_to_eqc(fn_roots2, lambdas1, lambda_apps_to_internalize);
-    propagate_beta_to_eqc(fn_roots1, lambdas2, lambda_apps_to_internalize);
-
-    // copy e1_root parents to e2_root
-    auto ps1 = m_state.m_parents.find(e1_root);
-    if (ps1) {
-        parent_occ_set ps2;
-        if (auto it = m_state.m_parents.find(e2_root))
-            ps2 = *it;
-        ps1->for_each([&](parent_occ const & p) {
-                if (!is_app(p.m_expr) || is_congr_root(p.m_expr)) {
-                    if (!constructor_eq && r2->m_constructor)  {
-                        propagate_projection_constructor(p.m_expr, e2_root);
-                    }
-                    ps2.insert(p);
-                }
-            });
-        m_state.m_parents.erase(e1_root);
-        m_state.m_parents.insert(e2_root, ps2);
-    }
-
-    if (!m_state.m_inconsistent && ac_var1 && ac_var2)
-        m_ac.add_eq(*ac_var1, *ac_var2);
-
     if (!m_state.m_inconsistent && constructor_eq)
         propagate_constructor_eq(e1_root, e2_root);
 
@@ -3799,10 +3836,6 @@ def mt : CCState → Expr → Nat := sorry
 def incGMT (ccs : CCState) : CCState :=
   { ccs with gmt := ccs.gmt + 1 }
 #align cc_state.inc_gmt Mathlib.Tactic.CC.CCState.incGMT
-
-/-- Check if `e` is the root of the congruence class. -/
-def isCgRoot : CCState → Expr → Bool := sorry
-#align cc_state.is_cg_root Mathlib.Tactic.CC.CCState.isCgRoot
 
 /-- Pretty print the entry associated with the given expression. -/
 def ppEqc : CCState → Expr → MessageData := sorry
