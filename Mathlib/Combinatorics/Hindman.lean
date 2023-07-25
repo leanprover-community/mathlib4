@@ -244,7 +244,7 @@ set_option linter.uppercaseLean3 false in
 theorem FP_drop_subset_FP {M} [Semigroup M] (a : Stream' M) (n : ℕ) : FP (a.drop n) ⊆ FP a := by
   induction' n with n ih
   · rfl
-  rw [Nat.succ_eq_one_add, ← Stream'.drop_drop]
+  rw [← Nat.one_add, ← Stream'.drop_drop]
   exact _root_.trans (FP.tail _) ih
 set_option linter.uppercaseLean3 false in
 #align hindman.FP_drop_subset_FP Hindman.FP_drop_subset_FP

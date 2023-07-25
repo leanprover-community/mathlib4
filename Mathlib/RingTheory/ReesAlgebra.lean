@@ -88,7 +88,7 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
       -- Porting note: did not need help with motive previously
       (p := fun r => (monomial (Nat.succ n)) r ∈ Algebra.adjoin R (Submodule.map (monomial 1) I)) hr
     · intro r hr s hs
-      rw [Nat.succ_eq_one_add, smul_eq_mul, ← monomial_mul_monomial]
+      rw [← Nat.one_add, smul_eq_mul, ← monomial_mul_monomial]
       exact Subalgebra.mul_mem _ (Algebra.subset_adjoin (Set.mem_image_of_mem _ hr)) (hn hs)
     · intro x y hx hy
       rw [monomial_add]

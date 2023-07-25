@@ -242,7 +242,7 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   intro n
   induction' n with n hn
   · refine' (F.antitone _).trans e; simp
-  · rw [Nat.succ_eq_one_add, add_assoc, add_comm, add_comm 1 n, ← hF]
+  · rw [← Nat.one_add, add_assoc, add_comm, add_comm 1 n, ← hF]
     exact (Submodule.smul_mono_right hn).trans (F'.smul_le _)
     simp
 #align ideal.filtration.stable.exists_forall_le Ideal.Filtration.Stable.exists_forall_le
@@ -452,7 +452,7 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
     intro i
     induction' i with i hi
     · simp
-    · rw [Nat.succ_eq_one_add, pow_add, ← smul_smul, pow_one, ← eq]
+    · rw [← Nat.one_add, pow_add, ← smul_smul, pow_one, ← eq]
       exact Submodule.smul_mem_smul r.prop hi
 #align ideal.mem_infi_smul_pow_eq_bot_iff Ideal.mem_iInf_smul_pow_eq_bot_iff
 

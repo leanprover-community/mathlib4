@@ -410,7 +410,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
       length_reverse, Nat.mod_eq_of_lt (tsub_lt_self lpos Nat.succ_pos'),
       tsub_tsub_cancel_of_le (Nat.succ_le_of_lt lpos)]
     rw [← nthLe_reverse]
-    · simp [tsub_tsub_cancel_of_le (Nat.le_pred_of_lt hk)]
+    · simp [tsub_tsub_cancel_of_le (Nat.le_sub_one_of_lt hk)]
     · simpa using (Nat.sub_le _ _).trans_lt (tsub_lt_self lpos Nat.succ_pos')
     · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
@@ -923,7 +923,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
         · cases' l with c s
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
-          · rw [Nat.succ_eq_one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero,
+          · rw [← Nat.one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero,
               cons_append] at hn
             rw [← hd c _ _ _ hn]
             simp [and_comm]

@@ -567,7 +567,7 @@ theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
   congr; funext n
   induction' n with n hn
   · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
-  · nth_rw 2 [Nat.succ_eq_one_add]
+  · nth_rw 2 [← Nat.one_add]
     rw [Nat.cast_add, Nat.cast_one, mul_one_add, iterate_succ_apply', hn]
 #align ordinal.nfp_add_zero Ordinal.nfp_add_zero
 
@@ -617,7 +617,7 @@ theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := b
     funext n
     induction' n with n hn
     · rw [Nat.cast_zero, opow_zero, iterate_zero_apply]
-    nth_rw 2 [Nat.succ_eq_one_add]
+    nth_rw 2 [← Nat.one_add]
     rw [Nat.cast_add, Nat.cast_one, opow_add, opow_one, iterate_succ_apply', hn]
   · exact ha
 #align ordinal.nfp_mul_one Ordinal.nfp_mul_one
