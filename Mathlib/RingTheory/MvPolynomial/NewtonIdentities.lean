@@ -9,7 +9,9 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Data.MvPolynomial.Rename
 import Mathlib.Data.Nat.Parity
+import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Symmetric
+import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Newton's Identities
@@ -85,16 +87,14 @@ namespace Newton
 open Finset Nat
 
 variable (σ : Type _) [Fintype σ] [DecidableEq σ] [Fintype τ] (R : Type _) [CommRing R]
-  [NoZeroDivisors (MvPolynomial σ R)] [CharZero (MvPolynomial σ R)]
-/-
-  TODO: show that MvPolynomial σ R is an integral domain if R is an integral domain
-  TODO: show that MvPolynomial σ R has characteristic zero if R has characteristic zero
--/
+  [NoZeroDivisors R] [CharZero R]
 
 -- The following proof is from Zeilberger, "A combinatorial proof of Newton's identities" (1984)
-def PairsPred (k : ℕ) (t : Finset σ × σ) : Prop := card t.fst ≤ k ∧ (card t.fst = k → t.snd ∈ t.fst)
+def PairsPred (k : ℕ) (t : Finset σ × σ) : Prop := card t.fst ≤ k ∧
+  ((card t.fst = k) → t.snd ∈ t.fst)
 
-open Classical in
+instance : DecidablePred (PairsPred σ k) := Classical.decPred (PairsPred σ k)
+
 def pairs (σ : Type _) [Fintype σ] (k : ℕ) : Finset (Finset σ × σ) :=
   Finset.univ.filter (PairsPred σ k)
 
@@ -108,11 +108,13 @@ def T_map (t : Finset σ × σ) : Finset σ × σ :=
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
 
 theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ t h ∈ pairs σ k := by
-  classical
   rw [pairs, mem_filter, PairsPred] at *
-  simp_rw [T_map_restr, T_map]
+  rw [T_map_restr, T_map]
+  simp only [mem_univ, true_and] at h
   split_ifs with h1
-  · simp_all
+  · simp only [h1, implies_true, true_and, and_true] at h
+    simp only [mem_univ, true_and, card_erase_of_mem h1, tsub_le_iff_right, mem_erase, ne_eq,
+      eq_self, h1]
     apply And.intro
     · exact le_step h
     · by_contra h2
@@ -121,32 +123,31 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ
         apply h1
       rw [← h2] at h
       exact not_le_of_lt (sub_lt (card_pos.mpr h3) zero_lt_one) h
-  · simp_all
-    simp_rw [card_insert_of_not_mem h1]
+  · simp only [h1] at h
+    simp only [mem_univ, true_and, card_insert_of_not_mem h1, mem_insert, true_or, implies_true,
+      and_true]
     exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
 
 theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     T_map_restr σ (T_map_restr σ t h) (T_map_pair σ t h) = t := by
-  simp_rw [T_map_restr, T_map]
+  rw [T_map_restr, T_map_restr, T_map, T_map]
   split_ifs with h1 h2 h3
   · simp at h2
-  · simp_rw [insert_erase h1]
-  · simp_rw [erase_eq_self.mpr h1]
-    simp_all
+  · simp [insert_erase h1]
+  · simp_all
   · simp at h3
 
 theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     (weight σ R k t) + weight σ R k (T_map_restr σ t h) = 0 := by
-  classical
-  simp_rw [T_map_restr, T_map, weight]
-  simp_rw [pairs, mem_filter, PairsPred] at h
+  rw [T_map_restr, T_map, weight, weight]
+  rw [pairs, mem_filter, PairsPred] at h
   have h2 (n : ℕ) : -(-1 : MvPolynomial σ R) ^ n = (-1) ^ (n + 1)
   · rw [← neg_one_mul ((-1 : MvPolynomial σ R) ^ n), pow_add, pow_one, mul_comm]
   split_ifs with h1
-  · simp_rw [card_erase_of_mem h1, ← prod_erase_mul t.fst (fun j ↦ (X j : MvPolynomial σ R)) h1,
+  · simp only [card_erase_of_mem h1, ← prod_erase_mul t.fst (fun j ↦ (X j : MvPolynomial σ R)) h1,
       mul_comm, mul_assoc (∏ a in erase t.fst t.snd, X a), ← mul_add]
     nth_rewrite 1 [← pow_one (X t.snd)]
-    simp_rw [← pow_add, add_comm]
+    simp only [← pow_add, add_comm]
     have h3 : card t.fst ≥ 1
     · have h4 : t.fst.Nonempty
       · use t.snd
@@ -155,16 +156,16 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
     rw [← tsub_tsub_assoc h.right.left h3,
       ← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst - 1)), h2 (card t.fst - 1),
       Nat.sub_add_cancel]
-    simp
-    exact h3
-  · simp_rw [card_insert_of_not_mem h1, prod_insert h1, mul_comm, mul_assoc (∏ a in t.fst, X a),
+    · simp
+    · exact h3
+  · simp only [card_insert_of_not_mem h1, prod_insert h1, mul_comm, mul_assoc (∏ a in t.fst, X a),
       ← mul_add]
     nth_rewrite 2 [← pow_one (X t.snd)]
     have h3 : card t.fst + 1 ≤ k
     · have ht1 := h.right.right
       contrapose! ht1
       exact And.intro (le_antisymm h.right.left (le_of_lt_succ ht1)) h1
-    simp_rw [← pow_add, ← Nat.add_sub_assoc h3, add_comm, add_tsub_add_eq_tsub_right]
+    simp only [← pow_add, ← Nat.add_sub_assoc h3, add_comm, add_tsub_add_eq_tsub_right]
     rw [← neg_neg ((-1 : MvPolynomial σ R) ^ (card t.fst)), h2]
     simp
 
@@ -185,25 +186,20 @@ theorem weight_sum (k : ℕ) : ∑ t in pairs σ k, weight σ R k t = 0 :=
 theorem sum_equiv_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = k) (pairs σ k), f t) =
     ∑ A in powersetLen k univ, (∑ j in A, f (A, j)) := by
-  classical
   apply sum_finset_product
-  simp_all
+  simp only [Prod.forall, pairs, PairsPred, mem_filter, mem_univ, true_and]
   intro p b
-  simp_rw [pairs, mem_filter, PairsPred]
-  simp_all
   apply Iff.intro
   · intro hpl
-    simp_all
-    exact mem_powerset_len_univ_iff.mpr hpl.2
+    exact And.intro (mem_powerset_len_univ_iff.mpr hpl.right) (hpl.left.right hpl.right)
   · intro hpr
-    simp_all
+    simp only [hpr, implies_true, and_true]
     have cardpk := mem_powerset_len_univ_iff.mp hpr.1
     exact And.intro (le_of_eq cardpk) cardpk
 
 theorem sum_equiv_i_lt_k (k i : ℕ) (hi : i ∈ range k) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst = i) (pairs σ k), f t) =
     ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
-  classical
   apply sum_finset_product
   simp_all
   intro p b
@@ -227,25 +223,25 @@ theorem sum_equiv_lt_k (k : ℕ) (f : Finset σ × σ → MvPolynomial σ R) :
     (∑ t in filter (fun t ↦ card t.fst < k) (pairs σ k), f t) =
     ∑ i in range k, ∑ A in powersetLen i univ, (∑ j, f (A, j)) := by
   have equiv_i (i : ℕ) (hi : i ∈ range k) := sum_equiv_i_lt_k σ R k i hi f
-  simp_rw [← sum_congr rfl equiv_i]
+  simp only [← sum_congr rfl equiv_i]
   have pdisj : Set.PairwiseDisjoint (range k)
       (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) := by
-    simp_rw [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred]
+    simp only [Set.PairwiseDisjoint, Set.Pairwise, Disjoint, pairs, filter_filter, PairsPred]
     simp
     intro x _ y _ xny
     by_contra neg
     simp at neg
     cases neg with
     | intro sneg hsneg =>
-      simp_rw [subset_empty] at hsneg
+      rw [subset_empty] at hsneg
       have sneg_ne := nonempty_iff_ne_empty.mpr hsneg.right.right
       rw [Finset.Nonempty] at sneg_ne
       cases sneg_ne with
       | intro s hs =>
         have hs1 := hsneg.left hs
         have hs2 := hsneg.right.left hs
-        simp_rw [and_assoc, ← filter_filter, mem_filter] at hs1 hs2
-        rw [← hs1.right, ← hs2.right] at xny
+        simp only [and_assoc, ← filter_filter, mem_filter] at hs1 hs2
+        rw [← hs1.right.right.right, ← hs2.right.right.right] at xny
         exact xny rfl
   have hdisj := @sum_disjiUnion _ _ _ f _ (range k)
     (fun (i : ℕ) ↦ (filter (fun t ↦ card t.fst = i) (pairs σ k))) pdisj
@@ -279,7 +275,6 @@ theorem lt_k_disjoint_k (k : ℕ) : Disjoint (filter (fun t ↦ card t.fst < k) 
 
 theorem lt_k_disjunion_k (k : ℕ) : disjUnion (filter (fun t ↦ card t.fst < k) (pairs σ k))
     (filter (fun t ↦ card t.fst = k) (pairs σ k)) (lt_k_disjoint_k σ k) = pairs σ k := by
-  classical
   simp_all [← filter_or, Finset.ext_iff, pairs, PairsPred]
   intro a b ab _
   exact lt_or_eq_of_le ab
