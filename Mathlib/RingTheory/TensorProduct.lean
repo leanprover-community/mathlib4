@@ -436,9 +436,8 @@ instance : AddMonoidWithOne (A ⊗[R] B) :=
 
 instance : AddCommMonoid (A ⊗[R] B) := by infer_instance
 
-instance instMul : Mul (A ⊗[R] B) := ⟨fun a b ↦ mul a b⟩
-
-instance : NonUnitalNonAssocSemiring (A ⊗[R] B) where
+-- note: we deliberately do not provide any fields that overlap with base class fields
+instance instSemiring : Semiring (A ⊗[R] B) where
   -- porting note : `left_distrib` and `right_distrib` are proved by `simp` in mathlib3
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
   -- Probably because `mul` is defined to be bi-R-linear and then coerced to function?
@@ -446,13 +445,10 @@ instance : NonUnitalNonAssocSemiring (A ⊗[R] B) where
   right_distrib a b c := show mul (a + b) c = mul a c + mul b c by simp
   zero_mul a := show mul 0 a = 0 by simp
   mul_zero a := show mul a 0 = 0 by simp
-
-instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := mul_assoc
-
-instance instSemiring : Semiring (A ⊗[R] B) where
   one_mul := one_mul
   mul_one := mul_one
+  mul := fun a b ↦ mul a b
 
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
