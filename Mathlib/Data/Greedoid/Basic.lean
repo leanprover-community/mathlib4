@@ -32,11 +32,38 @@ instance {α : Type _} [DecidableEq α] : @DecidablePred (Finset (Finset α)) ex
       have ⟨a, ha⟩ := h _ hs₁ _ hs₂ hs
       exists a; simp only [Finset.mem_sdiff, ha, not_false_eq_true, and_self])
 
+/-- The accessible property of greedoid -/
+def accessibleProperty {α : Type _} [DecidableEq α] (Sys : Finset (Finset α)) : Prop :=
+  {s : Finset α} → s ∈ Sys → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ Sys
+
+theorem induction_on_accessible {α : Type _} [DecidableEq α]
+  {Sys : Finset (Finset α)} (hSys : accessibleProperty Sys)
+  {s : Finset α} (hs₀ : s ∈ Sys)
+  {p : Finset α → Prop}
+  (empty : p ∅)
+  (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → s ∈ Sys → Insert.insert a s ∈ Sys → p s →
+    p (Insert.insert a s)) :
+    p s := by
+  by_cases h : s = ∅ <;> try exact h ▸ empty
+  have ⟨x, hx₁, hx₂⟩ := hSys hs₀ h
+  have h' := Finset.sdiff_insert_insert_of_mem_of_not_mem hx₁ (Finset.not_mem_empty x)
+  simp only [insert_emptyc_eq, Finset.mem_sdiff, Finset.mem_singleton, Finset.sdiff_empty] at h'
+  have : p (Insert.insert x (s \ {x})) := insert (by
+      simp only [Finset.mem_sdiff, Finset.mem_singleton, and_false] : x ∉ s \ {x}) hx₂ (by
+      simp only [Finset.mem_sdiff, Finset.mem_singleton, h', hs₀])
+    (induction_on_accessible hSys hx₂ empty insert)
+  exact h' ▸ this
+termination_by induction_on_accessible => s.card
+decreasing_by
+  simp_wf
+  rw [Finset.card_sdiff (Finset.singleton_subset_iff.mpr hx₁), Finset.card_singleton]
+  simp only [Nat.sub_lt (Finset.card_pos.mpr ⟨x, hx₁⟩)]
+
 structure Greedoid (α : Type _) [DecidableEq α] [Fintype α] where
   feasibleSet : Finset (Finset α)
   containsEmpty : ∅ ∈ feasibleSet
-  accessible : {s : Finset α} → s ∈ feasibleSet → s ≠ ∅ → ∃ x ∈ s, s \ {x} ∈ feasibleSet
-  exchangeProperty : _root_.exchangeProperty feasibleSet
+  accessibleProperty : accessibleProperty feasibleSet
+  exchangeProperty : exchangeProperty feasibleSet
 
 section Greedoid
 
@@ -86,7 +113,8 @@ instance : Fintype (Greedoid α) where
       let ⟨val, prop⟩ := Sys; simp only; simp at prop a b; exact prop.2.2 a b c⟩,
     fun S₁ S₂ hS => by simp only [Greedoid.mk.injEq] at hS; exact Subtype.ext hS⟩
   complete G := by
-    simp; exists G.feasibleSet; simp; exact ⟨G.containsEmpty, G.accessible, G.exchangeProperty⟩
+    simp; exists G.feasibleSet; simp only [exists_prop, and_true]
+    exact ⟨G.containsEmpty, G.accessibleProperty, G.exchangeProperty⟩
 
 section Membership
 
@@ -95,10 +123,9 @@ theorem system_feasible_set_mem_mem {s : Finset α} : s ∈ G.feasibleSet ↔ s 
 
 theorem emptyset_mem : ∅ ∈ G := G.containsEmpty
 
-theorem mem_accessible
-  {s : Finset α} (hs₁ : s ∈ G.feasibleSet) (hs₂ : s ≠ ∅) :
+theorem mem_accessible {s : Finset α} (hs₁ : s ∈ G.feasibleSet) (hs₂ : s ≠ ∅) :
     ∃ x ∈ s, s \ {x} ∈ G.feasibleSet :=
-  G.accessible hs₁ hs₂
+  G.accessibleProperty hs₁ hs₂
 
 theorem mem_exchangeAxiom
   {s₁ : Finset α} (hs₁ : s₁ ∈ G) {s₂ : Finset α} (hs₂ : s₂ ∈ G) (hs : s₂.card < s₁.card) :
@@ -127,7 +154,7 @@ class IntervalProperty (G : Greedoid α) where
                      {B : Finset α} → B ∈ G →
                      {C : Finset α} → C ∈ G →
                      A ⊆ B → B ⊆ C → {x : α} → x ∉ C →
-                     A ∪ {x} ∈ G → C ∪ {x} ∈ G → B ∪ {x} ∈ G
+                     insert x A ∈ G → insert x C ∈ G → insert x B ∈ G
 
 /-- Matroid is an interval greedoid without lower bound. -/
 class IntervalPropertyWithoutLowerBound (G : Greedoid α) where
@@ -137,7 +164,7 @@ class IntervalPropertyWithoutLowerBound (G : Greedoid α) where
   intervalPropertyWOLowerBound : {A : Finset α} → A ∈ G →
                                  {B : Finset α} → B ∈ G → A ⊆ B →
                                  {x : α} → x ∉ B →
-                                 B ∪ {x} ∈ G → A ∪ {x} ∈ G
+                                 insert x B ∈ G → insert x A ∈ G
 
 instance [IntervalPropertyWithoutLowerBound G] : IntervalProperty G where
   intervalProperty := by
@@ -152,7 +179,7 @@ class IntervalPropertyWithoutUpperBound (G : Greedoid α) where
   intervalPropertyWOUpperBound : {A : Finset α} → A ∈ G →
                                  {B : Finset α} → B ∈ G → B ⊆ A →
                                  {x : α} → x ∉ A →
-                                 B ∪ {x} ∈ G → A ∪ {x} ∈ G
+                                 insert x B ∈ G → insert x A ∈ G
 
 instance [IntervalPropertyWithoutUpperBound G] : IntervalProperty G where
   intervalProperty := by
@@ -283,6 +310,12 @@ theorem basis_max_card_of_feasible {s' : Finset α} (hs'₁ : s' ∈ G) (hs'₂ 
   have ⟨_, h₁, h₂⟩ := exists_basis_containing_feasible_set hs'₁ hs'₂
   bases_card_eq hb h₁ ▸ card_le_of_subset h₂
 
+theorem mem_bases_self_iff : s ∈ G ↔ s ∈ G.bases s := by
+  apply Iff.intro _ (fun h => basis_mem_feasible h)
+  intro h
+  simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter, Finset.Subset.refl, true_and, h]
+  intro _ h _; exact h
+
 end Bases
 
 /-- A cardinality of largest feasible subset of `s` in `G`. -/
@@ -332,6 +365,7 @@ theorem rank_of_singleton_le_one {a : α} : G.rank {a} ≤ 1 := by
   rw [rank_eq_bases_card h]
   apply (bases_of_singleton h).elim <;> intro h <;> simp only [h, card_empty, card_singleton]
 
+@[simp]
 theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1 := by
   apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim _ (fun h => h)
   intro h
@@ -345,6 +379,7 @@ theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1
   have : a ∈ (∅ : Finset α) := by simp only [this, Finset.mem_singleton]
   contradiction
 
+@[simp]
 theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} = 0 := by
   apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim
     (fun h => lt_one_iff.mp h)
@@ -374,8 +409,14 @@ theorem rank_le_of_subset (hs : s ⊆ t) : G.rank s ≤ G.rank t := by
   exists x
   simp only [hx₁, h, subset_trans hx₂ hs]
 
-theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card := by
-  sorry
+@[simp]
+theorem rank_of_feasible (hs : s ∈ G) : G.rank s = s.card :=
+  @induction_on_accessible α _ _ G.accessibleProperty _ hs (fun x => G.rank x = x.card)
+    rank_of_empty (by
+      simp only [system_feasible_set_mem_mem]
+      intro _ _ h₁ _ h₂ _
+      rw [card_insert_of_not_mem h₁]
+      simp only [h₁, rank_eq_bases_card (mem_bases_self_iff.mp h₂), card_insert_of_not_mem])
 
 theorem rank_of_infeasible (hs : s ∉ G) : G.rank s < s.card := by
   apply lt_of_le_of_ne rank_le_card
@@ -432,16 +473,16 @@ theorem stronger_local_submodularity_right
 
 -- TODO: Looking for better name
 theorem rank_lt_succ_lt
-  (hs₁ : G.rank s < G.rank (s ∪ {x}))
-  (hs₂ : G.rank s < G.rank (s ∪ {y})) :
-    G.rank s + 1 < G.rank (s ∪ {x, y}) := sorry
+  (hs₁ : G.rank s < G.rank (insert x s))
+  (hs₂ : G.rank s < G.rank (insert y s)) :
+    G.rank s + 1 < G.rank (insert x (insert y s)) := sorry
 
 theorem ssubset_of_feasible_rank (hs : s ∈ G) (h : t ⊂ s) : G.rank t < G.rank s := sorry
 
 /-- List of axioms for rank of greedoid. -/
 def greedoidRankAxioms (r : Finset α → ℕ) :=
   (r ∅ = 0) ∧ (∀ s, r s ≤ s.card) ∧ (∀ s t, s ⊆ t → r s ≤ r t) ∧
-  (∀ s x y, r s = r (s ∪ {x}) → r s = r (s ∪ {y}) → r s = r (s ∪ {x, y}))
+  (∀ s x y, r s = r (insert x s) → r s = r (insert y s) → r s = r (insert x (insert y s)))
 
 theorem greedoidRankAxioms_unique_greedoid {r : Finset α → ℕ} (hr : greedoidRankAxioms r) :
     ∃! G : Greedoid α, G.rank = r := sorry
