@@ -97,7 +97,7 @@ General algebra:
     associative algebra over a commutative ring: 'Algebra'
     the category of algebras over a ring: 'AlgebraCat'
     free algebra of a commutative ring: 'FreeAlgebra'
-    tensor product of algebras: 'Algebra.TensorProduct.instAlgebraTensorProductToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToModuleToModuleInstSemiringTensorProductToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToModuleToModule'
+    tensor product of algebras: 'Algebra.TensorProduct.instAlgebraTensorProductToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToAddCommMonoidToNonUnitalNonAssocSemiringToNonAssocSemiringToModuleToModuleInstSemiring'
     tensor algebra of a commutative ring: 'TensorAlgebra'
     Lie algebra: 'LieAlgebra'
     exterior algebra: 'ExteriorAlgebra'
