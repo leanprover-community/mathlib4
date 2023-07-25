@@ -29,7 +29,7 @@ open LinearMap QuotientAddGroup
 
 /-- The equivalence relation associated to a submodule `p`, defined by `x ≈ y` iff `-x + y ∈ p`.
 
-Note this is equivalent to `y - x ∈ p`, but defined this way to be be defeq to the `AddSubgroup`
+Note this is equivalent to `y - x ∈ p`, but defined this way to be defeq to the `AddSubgroup`
 version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup

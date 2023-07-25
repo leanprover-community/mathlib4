@@ -439,7 +439,6 @@ theorem mul_def (f g : E →ₗᵢ[R] E) : (f * g : E →ₗᵢ[R] E) = f.comp g
   rfl
 #align linear_isometry.mul_def LinearIsometry.mul_def
 
-@[simp]
 theorem coe_pow (f : E →ₗᵢ[R] E) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 

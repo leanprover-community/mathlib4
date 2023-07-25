@@ -1450,7 +1450,7 @@ theorem exists_open_superset_and_isCompact_closure [LocallyCompactSpace α] [T2S
     ⟨interior K', isOpen_interior, hKK', isCompact_closure_of_subset_compact hK' interior_subset⟩
 #align exists_open_superset_and_is_compact_closure exists_open_superset_and_isCompact_closure
 
-/-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find a
+/-- In a locally compact T₂ space, given a compact set `K` inside an open set `U`, we can find an
 open set `V` between these sets with compact closure: `K ⊆ V` and the closure of `V` is inside `U`.
 -/
 theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace α] [T2Space α] {K U : Set α}
