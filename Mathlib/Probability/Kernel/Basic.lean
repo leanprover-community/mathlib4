@@ -214,7 +214,7 @@ protected theorem measurable_coe (κ : kernel α β) {s : Set β} (hs : Measurab
 #align probability_theory.kernel.measurable_coe ProbabilityTheory.kernel.measurable_coe
 
 lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
-  (κ : kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
+    (κ : kernel α β) [IsFiniteKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ := by
   refine' Integrable.mono' (integrable_const (IsFiniteKernel.bound κ).toReal)
     ((kernel.measurable_coe κ hs).ennreal_toReal.aestronglyMeasurable)
@@ -224,7 +224,7 @@ lemma IsFiniteKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
   exact kernel.measure_le_bound _ _ _
 
 lemma IsMarkovKernel.integrable (μ : Measure α) [IsFiniteMeasure μ]
-  (κ : kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
+    (κ : kernel α β) [IsMarkovKernel κ] {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x => (κ x s).toReal) μ :=
   IsFiniteKernel.integrable μ κ hs
 
