@@ -39,6 +39,70 @@ open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal
 
+section SigmaFiniteSmul
+
+--move to `Mathlib.Data.Set.Lattice`
+
+theorem Set.iUnion_equiv {α ι ι' : Type _} (f : ι → Set α) (g : Equiv ι' ι) :
+  (⋃ i, (f ∘ g) i) = ⋃ i, f i := Equiv.iSup_congr g (congrFun rfl)
+
+-- move
+theorem Set.iUnion_inter_iUnion {α ι ι' : Type _} (A : ι → Set α) (B : ι' → Set α) :
+    (⋃ (i : ι) (j : ι'), A i ∩ B j) = (⋃ (i : ι), A i) ∩ (⋃ (j : ι'), B j) := by
+  rw [Set.iUnion_inter]
+  apply Set.iUnion_congr
+  intro i
+  rw [Set.inter_iUnion]
+
+--- move same place
+theorem Set.iUnion_prod_dom {α ι ι' : Type _} (f : ι × ι' → Set α) :
+    (⋃ (x : ι × ι'), f x) = (⋃ (i : ι) (j : ι'), f (i, j)) := iSup_prod (f := f)
+
+theorem MeasureTheory.SigmaFinite.smul {α : Type u_1} {m0 : MeasurableSpace α}
+    {μ : MeasureTheory.Measure α} (hμ : MeasureTheory.SigmaFinite μ) (c : ℝ≥0) :
+    MeasureTheory.SigmaFinite (c • μ) where
+  out' := ⟨{
+    set := hμ.out'.some.set
+    set_mem := hμ.out'.some.set_mem
+    finite := by
+      intro i
+      simp only [smul_toOuterMeasure, OuterMeasure.coe_smul, Pi.smul_apply,
+        nnreal_smul_coe_apply]
+      refine Iff.mpr ENNReal.mul_lt_top_iff ?_
+      left
+      exact ⟨ENNReal.coe_lt_top, hμ.out'.some.finite i⟩
+    spanning := hμ.out'.some.spanning
+  } ⟩
+
+theorem MeasureTheory.SigmaFinite.add {α : Type u_1} {m0 : MeasurableSpace α}
+    {μ ν : MeasureTheory.Measure α} (hμ : MeasureTheory.SigmaFinite μ)
+    (hν : MeasureTheory.SigmaFinite ν) : MeasureTheory.SigmaFinite (μ + ν) := by
+  let μ_map := hμ.out'.some.set
+  let ν_map := hν.out'.some.set
+  let F : ℕ × ℕ → Set α := fun p ↦ (μ_map p.1) ∩ (ν_map p.2)
+  let f := F ∘ Nat.pairEquiv.symm
+  exact ⟨ ⟨{
+    set := f
+    set_mem := fun i ↦ trivial
+    finite := by
+      intro i
+      change _ + _ < ⊤
+      rw [ENNReal.add_lt_top]
+      constructor
+      · calc _ ≤ _ := measure_mono (inter_subset_left _ _)
+             _ < ⊤ := hμ.out'.some.finite (Nat.unpair i).1
+      · calc _ ≤ _ := measure_mono (inter_subset_right _ _)
+             _ < ⊤ := hν.out'.some.finite (Nat.unpair i).2
+    spanning := by
+      rw [Set.iUnion_equiv]
+      simp [Set.iUnion_prod_dom, Set.iUnion_inter_iUnion, hμ.out'.some.spanning,
+        hν.out'.some.spanning]
+    } ⟩ ⟩
+
+end SigmaFiniteSmul
+
+#exit
+
 section
 
 variable {G : Type _} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
