@@ -12,6 +12,7 @@ import Std.Tactic.Ext
 
 namespace Thunk
 
+#align thunk Thunk
 #align thunk.mk Thunk.mk
 
 -- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
