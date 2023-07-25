@@ -204,6 +204,46 @@ theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
     (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y := rfl
 #align linear_map.dom_restrict₁₂_apply LinearMap.domRestrict₁₂_apply
 
+section restrictScalars
+
+variable (R' S' : Type _)
+
+variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
+
+variable [SMulCommClass S' R' Pₗ] [SMulCommClass S R' Pₗ]
+
+variable [CompatibleSMul M (N →ₗ[S] Pₗ) R' R]
+
+variable [CompatibleSMul N Pₗ S' S]
+
+/-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
+then the restriction of scalars is a `R'`-`S'` bilinear map.
+
+In the case that `R = S` and `R' = S'` the compatibility condition can be easily deduced from
+the scalar tower assumptions
+`[Module R' R] [IsScalarTower R' R M] [IsScalarTower R' R N] [IsScalarTower R' R Pₗ]`. -/
+def restrictScalars₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ := LinearMap.mk₂' R' S'
+  (fun x y ↦ B x y)
+  (by intros; simp only [map_add, LinearMap.add_apply])
+  (by intros; simp only [LinearMap.map_smul_of_tower, LinearMap.smul_apply])
+  (fun x ↦ map_add (B x))
+  (fun _ x ↦ (B x).map_smul_of_tower _)
+
+@[simp]
+theorem restrictScalars₂_apply (B : M →ₗ[R] N →ₗ[S] Pₗ) (x : M) (y : N) :
+  B.restrictScalars₂ R' S' x y = B x y := rfl
+
+theorem restrictScalars₂_injective : Function.Injective
+    (LinearMap.restrictScalars₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
+  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+
+@[simp]
+theorem restrictScalars₂_inj (B B' : M →ₗ[R] N →ₗ[S] Pₗ) :
+    B.restrictScalars₂ R' S' = B'.restrictScalars₂ R' S' ↔ B = B' :=
+  (restrictScalars₂_injective R' S').eq_iff
+
+end restrictScalars
+
 end Semiring
 
 section CommSemiring
