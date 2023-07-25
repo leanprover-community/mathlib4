@@ -459,6 +459,8 @@ instance instSemiring : Semiring (A ⊗[R] B) :=
     right_distrib := fun a b c => show mul (a + b) c = mul a c + mul b c
       by rw [map_add, LinearMap.add_apply] }
 
+--set_option pp.all true in
+#print instSemiring
 theorem one_def : (1 : A ⊗[R] B) = (1 : A) ⊗ₜ (1 : B) :=
   rfl
 #align algebra.tensor_product.one_def Algebra.TensorProduct.one_def
@@ -582,7 +584,7 @@ variable {A : Type v₁} [Ring A] [Algebra R A]
 
 variable {B : Type v₂} [Ring B] [Algebra R B]
 
-instance : Ring (A ⊗[R] B) :=
+instance instRing : Ring (A ⊗[R] B) :=
   { (by infer_instance : Semiring (A ⊗[R] B)) with
     add_left_neg := add_left_neg }
 
@@ -612,7 +614,8 @@ instance instCommRing : CommRing (A ⊗[R] B) :=
       · intro x₁ x₂ h₁ h₂
         -- porting note: was `simp` not `rw`
         rw [mul_add, add_mul, h₁, h₂] }
-
+set_option pp.all true in
+#print instCommRing
 section RightAlgebra
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
