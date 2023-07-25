@@ -102,7 +102,7 @@ def weight (k : ℕ) (t : Finset σ × σ) : MvPolynomial σ R :=
   (-1) ^ (card t.fst) * ((∏ a in t.fst, X a) * (X t.snd) ^ (k - card t.fst) : MvPolynomial σ R)
 
 def T_map (t : Finset σ × σ) : Finset σ × σ :=
-  if t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (insert t.snd t.fst, t.snd)
+  if h : t.snd ∈ t.fst then (t.fst.erase t.snd, t.snd) else (cons t.snd t.fst h, t.snd)
 
 /-- Needed for `Finset.sum_involution` -/
 def T_map_restr (t : Finset σ × σ) (_ : t ∈ pairs σ k) := T_map σ t
@@ -124,8 +124,7 @@ theorem T_map_pair (t : Finset σ × σ) (h : t ∈ pairs σ k) : T_map_restr σ
       rw [← h2] at h
       exact not_le_of_lt (sub_lt (card_pos.mpr h3) zero_lt_one) h
   · simp only [h1] at h
-    simp only [mem_univ, true_and, card_insert_of_not_mem h1, mem_insert, true_or, implies_true,
-      and_true]
+    simp only [mem_univ, true_and, card_cons, mem_cons, true_or, implies_true, and_true]
     exact Or.resolve_left (le_iff_eq_or_lt.mp h.1) h.2
 
 theorem T_map_invol (t : Finset σ × σ) (h : t ∈ pairs σ k) :
@@ -158,8 +157,7 @@ theorem weight_compose_T (t : Finset σ × σ) (h : t ∈ pairs σ k) :
       Nat.sub_add_cancel]
     · simp
     · exact h3
-  · simp only [card_insert_of_not_mem h1, prod_insert h1, mul_comm, mul_assoc (∏ a in t.fst, X a),
-      ← mul_add]
+  · simp only [card_cons, prod_cons, mul_comm, mul_assoc (∏ a in t.fst, X a), ← mul_add]
     nth_rewrite 2 [← pow_one (X t.snd)]
     simp only [← pow_add,
       ← Nat.add_sub_assoc (Nat.lt_of_le_of_ne h.right.left (mt h.right.right h1)),
