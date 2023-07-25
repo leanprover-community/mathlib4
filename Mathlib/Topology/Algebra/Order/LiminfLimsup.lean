@@ -302,32 +302,6 @@ end LiminfLimsup
 
 section Monotone
 
--- Q: Should the following lemmas be avoided altogether? If not, what is the right place for them?
-
-lemma Monotone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f)
-    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
-    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) := by
-  apply Filter.IsBounded.isCobounded_flip
-  obtain ⟨b, hb⟩ := bdd
-  refine ⟨f b, ?_⟩
-  simp only [eventually_map, Function.comp_apply] at hb ⊢
-  filter_upwards [hb] with i hi using hf hi
-
-lemma Monotone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f)
-    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
-    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
-  @Monotone.isCoboundedUnder_ge Xᵒᵈ Yᵒᵈ ι _ _ f hf.dual u F _ bdd
-
-lemma Antitone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f)
-    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
-    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
-  @Monotone.isCoboundedUnder_ge X Yᵒᵈ ι _ _ f hf u F _ bdd
-
-lemma Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f)
-    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
-    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) :=
-  @Monotone.isCoboundedUnder_le X Yᵒᵈ ι _ _ f hf u F _ bdd
-
 variable {ι R S : Type _} {F : Filter ι} [NeBot F]
   [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
   [ConditionallyCompleteLinearOrder S] [TopologicalSpace S] [OrderTopology S]

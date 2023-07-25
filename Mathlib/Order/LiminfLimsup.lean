@@ -226,6 +226,30 @@ theorem IsCobounded.mono (h : f ≤ g) : f.IsCobounded r → g.IsCobounded r
   | ⟨b, hb⟩ => ⟨b, fun a ha => hb a (h ha)⟩
 #align filter.is_cobounded.mono Filter.IsCobounded.mono
 
+lemma _root_.Monotone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
+    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) := by
+  apply Filter.IsBounded.isCobounded_flip
+  obtain ⟨b, hb⟩ := bdd
+  refine ⟨f b, ?_⟩
+  simp only [eventually_map, Function.comp_apply] at hb ⊢
+  filter_upwards [hb] with i hi using hf hi
+
+lemma _root_.Monotone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Monotone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
+    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
+  @Monotone.isCoboundedUnder_ge ι Xᵒᵈ Yᵒᵈ _ _ f hf.dual u F _ bdd
+
+lemma _root_.Antitone.isCoboundedUnder_le [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≤ ·) u) :
+    F.IsCoboundedUnder (· ≤ ·) (f ∘ u) :=
+  @Monotone.isCoboundedUnder_ge ι X Yᵒᵈ _ _ f hf u F _ bdd
+
+lemma _root_.Antitone.isCoboundedUnder_ge [Preorder X] [Preorder Y] {f : X → Y} (hf : Antitone f)
+    {u : ι → X} (F : Filter ι) [NeBot F] (bdd : F.IsBoundedUnder (· ≥ ·) u) :
+    F.IsCoboundedUnder (· ≥ ·) (f ∘ u) :=
+  @Monotone.isCoboundedUnder_le ι X Yᵒᵈ _ _ f hf u F _ bdd
+
 end Relation
 
 theorem isCobounded_le_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
