@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2023 Amelia Livingston,Jonas van der Schaaf. All rights
+reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Amelia Livingston, Jonas van der Schaaf
+-/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Spec
@@ -21,6 +27,7 @@ class Scheme.IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop where
 
 example {X : Scheme} : Scheme.IsClosedImmersion (𝟙 X) := by
   constructor
+
   . rw [Scheme.id_val_base]
     apply closedEmbedding_id
 
@@ -37,6 +44,7 @@ lemma isClosedImmersion_stableUnderComposition :
   MorphismProperty.StableUnderComposition @Scheme.IsClosedImmersion := by
     rintro X Y Z f g ⟨hf_closed, hf_surj⟩ ⟨hg_closed, hg_surj⟩
     constructor
+
     . exact hg_closed.comp hf_closed
 
     . intro x
@@ -50,6 +58,7 @@ lemma isClosedImmersion_stableUnderComposition :
 lemma iso_is_closed_immersion {X Y : Scheme} {f: X ⟶ Y} [hf: IsIso f] :
     Scheme.IsClosedImmersion f := by
   constructor
+
   . have := PresheafedSpace.base_isIso_of_iso f.val
     let f_top_iso := TopCat.homeoOfIso (asIso f.val.base)
     exact Homeomorph.closedEmbedding f_top_iso
