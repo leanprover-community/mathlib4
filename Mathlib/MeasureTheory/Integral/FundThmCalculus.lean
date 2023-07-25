@@ -1404,7 +1404,7 @@ theorem integral_comp_smul_deriv'' {f f' : ℝ → ℝ} {g : ℝ → E} (hf : Co
   exact hg.integrableOn_Icc
 #align interval_integral.integral_comp_smul_deriv'' intervalIntegral.integral_comp_smul_deriv''
 
-/-- Change of variables. If `f` is has continuous derivative `f'` on `[a, b]`,
+/-- Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 Compared to `intervalIntegral.integral_comp_smul_deriv` we only require that `g` is continuous on
@@ -1418,7 +1418,7 @@ theorem integral_comp_smul_deriv' {f f' : ℝ → ℝ} {g : ℝ → E}
     (fun x hx => (h x <| Ioo_subset_Icc_self hx).hasDerivWithinAt) h' hg
 #align interval_integral.integral_comp_smul_deriv' intervalIntegral.integral_comp_smul_deriv'
 
-/-- Change of variables, most common version. If `f` is has continuous derivative `f'` on `[a, b]`,
+/-- Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, f' x • (g ∘ f) x = ∫ u in f a..f b, g u`.
 -/
@@ -1477,7 +1477,7 @@ theorem integral_comp_mul_deriv'' {f f' g : ℝ → ℝ} (hf : ContinuousOn f [[
   simpa [mul_comm] using integral_comp_smul_deriv'' hf hff' hf' hg
 #align interval_integral.integral_comp_mul_deriv'' intervalIntegral.integral_comp_mul_deriv''
 
-/-- Change of variables. If `f` is has continuous derivative `f'` on `[a, b]`,
+/-- Change of variables. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous on `f '' [a, b]`, then we can substitute `u = f x` to get
 `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`.
 Compared to `intervalIntegral.integral_comp_mul_deriv` we only require that `g` is continuous on
@@ -1489,7 +1489,7 @@ theorem integral_comp_mul_deriv' {f f' g : ℝ → ℝ} (h : ∀ x ∈ uIcc a b,
   simpa [mul_comm] using integral_comp_smul_deriv' h h' hg
 #align interval_integral.integral_comp_mul_deriv' intervalIntegral.integral_comp_mul_deriv'
 
-/-- Change of variables, most common version. If `f` is has continuous derivative `f'` on `[a, b]`,
+/-- Change of variables, most common version. If `f` has continuous derivative `f'` on `[a, b]`,
 and `g` is continuous, then we can substitute `u = f x` to get
 `∫ x in a..b, (g ∘ f) x * f' x = ∫ u in f a..f b, g u`.
 -/

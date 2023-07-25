@@ -78,7 +78,7 @@ theorem hasFiniteLimits_of_hasFiniteLimits_of_size
       (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) l) _
     /- Porting note: tried to factor out (@instCategoryULiftHom (ULift J) (@uliftCategory J hJ)
     but when doing that would then find the instance and say it was not definitionally equal to
-    to the provide one (the same thing factored out) -/
+    the provided one (the same thing factored out) -/
 #align category_theory.limits.has_finite_limits_of_has_finite_limits_of_size CategoryTheory.Limits.hasFiniteLimits_of_hasFiniteLimits_of_size
 
 /-- A category has all finite colimits if every functor `J ⥤ C` with a `FinCategory J`

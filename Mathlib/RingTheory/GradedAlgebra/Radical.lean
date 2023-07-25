@@ -20,8 +20,8 @@ This file contains a proof that the radical of any homogeneous ideal is a homoge
   `I.homogeneous_core 𝒜` (i.e. the largest homogeneous ideal contained in `I`) is also prime.
 * `Ideal.IsHomogeneous.radical`: for any `I : Ideal A`, if `I` is homogeneous, then the
   radical of `I` is homogeneous as well.
-* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the the
-  radical of `I` as a `HomogeneousIdeal 𝒜`
+* `HomogeneousIdeal.radical`: for any `I : HomogeneousIdeal 𝒜`, `I.radical` is the
+  radical of `I` as a `HomogeneousIdeal 𝒜`.
 
 ## Implementation details
 

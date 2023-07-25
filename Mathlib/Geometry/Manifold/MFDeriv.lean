@@ -1577,7 +1577,7 @@ section Arithmetic
 
 /-! #### Arithmetic
 
-Note that in the in `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
+Note that in the `HasMFDerivAt` lemmas there is an abuse of the defeq between `E'` and
 `TangentSpace 𝓘(𝕜, E') (f z)` (similarly for `g',F',p',q'`). In general this defeq is not
 canonical, but in this case (the tangent space of a vector space) it is canonical.
  -/

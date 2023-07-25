@@ -1646,7 +1646,7 @@ variable (R)
 open Submodule
 
 /-- Let `b` be an `S`-basis of `M`. Let `R` be a CommRing such that `Algebra R S` has no zero smul
-divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as a `R`-basis. -/
+divisors, then the submodule of `M` spanned by `b` over `R` admits `b` as an `R`-basis. -/
 noncomputable def Basis.restrictScalars : Basis ι R (span R (Set.range b)) :=
   Basis.span (b.linearIndependent.restrict_scalars (smul_left_injective R one_ne_zero))
 #align basis.restrict_scalars Basis.restrictScalars

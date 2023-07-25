@@ -3454,7 +3454,7 @@ def subgroupCongr (h : H = K) : H ≃* K :=
 /-- A subgroup is isomorphic to its image under an isomorphism. If you only have an injective map,
 use `Subgroup.equiv_map_of_injective`. -/
 @[to_additive
-      "An additive subgroup is isomorphic to its image under an an isomorphism. If you only
+      "An additive subgroup is isomorphic to its image under an isomorphism. If you only
       have an injective map, use `AddSubgroup.equiv_map_of_injective`."]
 def subgroupMap (e : G ≃* G') (H : Subgroup G) : H ≃* H.map (e : G →* G') :=
   MulEquiv.submonoidMap (e : G ≃* G') H.toSubmonoid

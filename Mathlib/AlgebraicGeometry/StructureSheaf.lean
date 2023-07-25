@@ -1183,7 +1183,7 @@ theorem comap_id_eq_map (U V : Opens (PrimeSpectrum.Top R)) (iVU : V ⟶ U) :
 
 /--
 The comap of the identity is the identity. In this variant of the lemma, two open subsets `U` and
-`V` are given as arguments, together with a proof that `U = V`. This is be useful when `U` and `V`
+`V` are given as arguments, together with a proof that `U = V`. This is useful when `U` and `V`
 are not definitionally equal.
 -/
 theorem comap_id (U V : Opens (PrimeSpectrum.Top R)) (hUV : U = V) :

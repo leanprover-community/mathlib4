@@ -744,7 +744,7 @@ theorem IsClosed.isCompact [CompactSpace α] {s : Set α} (h : IsClosed s) : IsC
   isCompact_of_isClosed_subset isCompact_univ h (subset_univ _)
 #align is_closed.is_compact IsClosed.isCompact
 
-/-- `α` is a noncompact topological space if it not a compact space. -/
+/-- `α` is a noncompact topological space if it is not a compact space. -/
 class NoncompactSpace (α : Type _) [TopologicalSpace α] : Prop where
   /-- In a noncompact space, `Set.univ` is not a compact set. -/
   noncompact_univ : ¬IsCompact (univ : Set α)

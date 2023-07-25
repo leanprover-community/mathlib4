@@ -471,7 +471,7 @@ theorem quotientMapSubgroupOfOfLe_mk {A' A B' B : Subgroup G} [_hAN : (A'.subgro
 If `A' = B'` and `A = B`, then the quotients `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic.
 
 Applying this equiv is nicer than rewriting along the equalities, since the type of
-`(A'.subgroupOf A : Subgroup A)` depends on on `A`.
+`(A'.subgroupOf A : Subgroup A)` depends on `A`.
 -/
 @[to_additive "Let `A', A, B', B` be subgroups of `G`. If `A' = B'` and `A = B`, then the quotients
 `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic. Applying this equiv is nicer than rewriting along

@@ -66,7 +66,7 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
 
 /--
 Attempts to find lemmas which use all of the `required` expressions as arguments, and
-can by unified with the given `type` (which may contain metavariables, which we avoid assigning).
+can be unified with the given `type` (which may contain metavariables, which we avoid assigning).
 We look up candidate lemmas from a discrimination tree using the first such expression.
 
 Returns an array of pairs, containing the names of found lemmas and the resulting application.

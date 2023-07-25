@@ -177,7 +177,7 @@ open Prod
 variable {σ : Type}
 
 /-- Runs a function over a vector returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
@@ -186,7 +186,7 @@ def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n

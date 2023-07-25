@@ -14,8 +14,7 @@ import Mathlib.Data.List.TFAE
 # A collection of specific limit computations
 
 This file contains important specific limit computations in (semi-)normed groups/rings/spaces, as
-as well as such computations in `ℝ` when the natural proof passes through a fact about normed
-spaces.
+well as such computations in `ℝ` when the natural proof passes through a fact about normed spaces.
 
 -/
 

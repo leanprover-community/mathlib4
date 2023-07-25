@@ -27,7 +27,7 @@ each `u : E`, the point `reflection K u` to satisfy
 Basic API for `orthogonalProjection` and `reflection` is developed.
 
 Next, the orthogonal projection is used to prove a series of more subtle lemmas about the
-the orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
+orthogonal complement of complete subspaces of `E` (the orthogonal complement itself was
 defined in `Analysis.InnerProductSpace.Orthogonal`); the lemma
 `Submodule.sup_orthogonal_of_completeSpace`, stating that for a complete subspace `K` of `E` we have
 `K ⊔ Kᗮ = ⊤`, is a typical example.

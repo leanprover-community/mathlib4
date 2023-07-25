@@ -1252,7 +1252,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
 
 variable {A}
 
-/-- The localization at of an integral domain to a set of non-zero elements is an integral domain.
+/-- The localization of an integral domain to a set of non-zero elements is an integral domain.
 See note [reducible non-instances]. -/
 @[reducible]
 theorem isDomain_localization {M : Submonoid A} (hM : M ≤ nonZeroDivisors A) :
