@@ -177,7 +177,7 @@ theorem base_bases_eq : G.base = G.bases univ := by ext s; simp [bases, base]
 
 theorem basis_mem_feasible : b ∈ G := by simp only [bases, Finset.mem_filter] at hb; exact hb.1
 
-theorem basis_subseteq : b ⊆ s := by simp only [bases, Finset.mem_filter] at hb; exact hb.2.1
+theorem basis_subset : b ⊆ s := by simp only [bases, Finset.mem_filter] at hb; exact hb.2.1
 
 theorem basis_maximal {a : α} (ha₁ : a ∈ s) (ha₂ : insert a b ∈ G) :
     a ∈ b := by
@@ -244,7 +244,7 @@ theorem bases_empty_card (h : ∅ ∈ G.bases s) :
 
 theorem bases_of_singleton {a : α} (hb : b ∈ G.bases {a}) :
     b = ∅ ∨ b = {a} :=
-  subset_singleton_iff.mp (basis_subseteq hb)
+  subset_singleton_iff.mp (basis_subset hb)
 
 theorem bases_singleton_of_feasible {a : α} (ha : {a} ∈ G) (hb : b ∈ G.bases {a}) :
     b = {a} := by
@@ -257,23 +257,26 @@ theorem bases_singleton_of_feasible {a : α} (ha : {a} ∈ G) (hb : b ∈ G.base
 
 theorem basis_def {s b : Finset α} :
     b ∈ G.bases s ↔ (b ∈ G ∧ b ⊆ s ∧ (∀ a ∈ s, insert a b ∈ G → a ∈ b)) := by
-  constructor <;> intro h <;> simp [bases] at * <;> exact h
+  constructor <;> intro h <;>
+    simp only [bases, system_feasible_set_mem_mem, Finset.mem_filter] at * <;> exact h
 
 theorem basis_of_full_unique [Full G] : ∃! b, b ∈ G.base := by
   exists univ
   simp only; constructor
-  . simp [base]
+  . simp only [base, system_feasible_set_mem_mem, Finset.mem_filter, mem_univ,
+      insert_eq_of_mem, implies_true, and_true]
     exact Full.full
   . intro s hs
     apply eq_univ_of_card
     apply @bases_card_eq _ _ _ G univ <;> rw [← base_bases_eq]
     . exact hs
-    . simp [base]
+    . simp only [base, system_feasible_set_mem_mem, Finset.mem_filter, mem_univ,
+        insert_eq_of_mem, implies_true, and_true]
       exact Full.full
 
 theorem bases_of_full_card_eq_one [Full G] : G.base.card = 1 := by
   let ⟨_, _⟩ := (Finset.singleton_iff_unique_mem (G.base)).mpr basis_of_full_unique
-  simp_all
+  simp_all only [card_singleton]
 
 theorem basis_max_card_of_feasible {s' : Finset α} (hs'₁ : s' ∈ G) (hs'₂ : s' ⊆ s) :
     s'.card ≤ b.card :=
@@ -310,7 +313,7 @@ theorem rank_eq_bases_card
     apply Finset.le_max
     simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
     exists b
-    simp only [basis_mem_feasible hb, basis_subseteq hb]
+    simp only [basis_mem_feasible hb, basis_subset hb]
   . simp [rank, unbot_le_iff]
     apply Finset.max_le
     rintro n hn
@@ -337,7 +340,10 @@ theorem rank_of_singleton_of_feasible {a : α} (ha : {a} ∈ G) : G.rank {a} = 1
   rw [rank_eq_bases_card h'] at h
   simp only [lt_one_iff, card_eq_zero] at h
   simp only [h, bases_empty_iff] at h'
-  sorry
+  have := bases_singleton_of_feasible ha
+    (by simp only [h', Finset.mem_singleton] : ∅ ∈ G.bases {a})
+  have : a ∈ (∅ : Finset α) := by simp only [this, Finset.mem_singleton]
+  contradiction
 
 theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} = 0 := by
   apply (le_iff_lt_or_eq.mp (rank_of_singleton_le_one : G.rank {a} ≤ 1)).elim
@@ -345,17 +351,36 @@ theorem rank_of_singleton_of_infeasible {a : α} (ha : {a} ∉ G) : G.rank {a} =
   intro h
   simp only [h, one_ne_zero]
   apply ha
-  simp? [rank] at h
-  sorry
+  have ⟨_, h'⟩ : Nonempty (G.bases {a}) := G.bases_nonempty
+  rw [rank_eq_bases_card h'] at h
+  exact basis_mem_feasible (eq_of_subset_of_card_le (basis_subset h') (by simp [h]) ▸ h')
 
-theorem rank_le_card : G.rank s ≤ s.card := sorry
+theorem rank_le_card : G.rank s ≤ s.card := by
+  simp only [rank, system_feasible_set_mem_mem, WithBot.unbot_le_iff]
+  apply Finset.max_le
+  simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter, WithBot.coe_le_coe,
+    forall_exists_index, and_imp]
+  intro _ _ _ h h'
+  exact h' ▸ card_le_of_subset h
 
-theorem subset_then_rank_le (hs : s ⊆ t) : G.rank s ≤ G.rank t := sorry
+theorem rank_le_of_subset (hs : s ⊆ t) : G.rank s ≤ G.rank t := by
+  simp only [rank, system_feasible_set_mem_mem, WithBot.le_unbot_iff, WithBot.coe_unbot]
+  apply Finset.max_le
+  simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter, forall_exists_index,
+    and_imp]
+  intro _ x hx₁ hx₂ h
+  apply Finset.le_max
+  simp only [system_feasible_set_mem_mem, mem_image, Finset.mem_filter]
+  exists x
+  simp only [hx₁, h, subset_trans hx₂ hs]
 
 theorem local_submodularity
-  (h₁ : G.rank s = G.rank (s ∪ {x}))
-  (h₂ : G.rank s = G.rank (s ∪ {y})) :
-    G.rank (s ∪ {x, y}) = G.rank s := sorry
+  (h₁ : G.rank s = G.rank (insert x s))
+  (h₂ : G.rank s = G.rank (insert y s)) :
+    G.rank (insert x (insert y s)) = G.rank s := by
+  have h₃ : G.rank s ≤ G.rank (insert x (insert y s)) :=
+    rank_le_of_subset (Finset.Subset.trans (Finset.subset_insert _ _) (Finset.subset_insert _ _))
+  sorry
 
 theorem stronger_local_submodularity_left
   (h₁ : G.rank s = G.rank (s ∩ t))
@@ -366,7 +391,7 @@ theorem stronger_local_submodularity_right
   (h₁ : G.rank s = G.rank (s ∩ t))
   (h₂ : G.rank t = G.rank (s ∩ t)) :
     G.rank t = G.rank (s ∪ t) := by
-  simp [h₂, ← h₁, stronger_local_submodularity_left h₁ h₂]
+  simp only [h₂, ← h₁, stronger_local_submodularity_left h₁ h₂]
 
 -- TODO: Looking for better name
 theorem rank_lt_succ_lt
@@ -383,7 +408,7 @@ theorem rank_eq_card_iff_feasible : G.rank s = s.card ↔ s ∈ G := by
   apply Iff.intro _ (fun h => rank_of_feasible h)
   intro h
   have := mt (@rank_of_infeasible _ _ _ G s)
-  simp at this
+  simp only [not_lt, not_not] at this
   apply this
   simp only [h, le_refl]
 
