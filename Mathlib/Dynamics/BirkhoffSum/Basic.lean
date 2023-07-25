@@ -13,6 +13,8 @@ In this file we define `birkhoffSum f g n x` to be the sum `∑ k in Finset.rang
 This sum (more precisely, the corresponding average `n⁻¹ • birkhoffSum f g n x`)
 appears in various ergodic theorems
 saying that these averages converge to the "space average" `⨍ x, g x ∂μ` in some sense.
+
+See also `birkhoffAverage` defined elsewhere.
 -/
 
 open Finset Function

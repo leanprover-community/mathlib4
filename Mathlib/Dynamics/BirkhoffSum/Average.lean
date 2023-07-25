@@ -1,5 +1,27 @@
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Algebra.Module.Basic
+
+/-!
+# Birkhoff average
+
+In this file we define `birkhoffAverage f g n x` to be
+$$
+\frac{1}{n}\sum_{k=0}^{n-1}g(f^{[k]}(x)),
+$$
+where `f : α → α` is a self-map on some type `α`,
+`g : α → M` is a function from `α` to a module over a division semiring `R`,
+and `R` is used to formalize division by `n` as `(n : R)⁻¹ • _`.
+
+While we need an auxiliary division semiring `R` to define `birkhoffAverage`,
+the definition does not depend on the choice of `R`,
+see `birkhoffAverage_congr_ring`.
+
+-/
 
 section birkhoffAverage
 
@@ -46,3 +68,12 @@ theorem birkhoffAverage_congr_ring' (S : Type _) [DivisionSemiring S] [Module S 
   ext; apply birkhoffAverage_congr_ring
 
 end birkhoffAverage
+
+/-- Birkhofff average is "almost invariant" under `f`:
+the difference between `birkhoffAverage R f g n (f x)` and `birkhoffAverage R f g n x`
+is equal to `(n : R)⁻¹ • (g (f^[n] x) - g x)`. -/
+theorem birkhoffAverage_apply_sub_birkhoffAverage (R : Type _) [DivisionRing R]
+    [AddCommGroup M] [Module R M] (f : α → α) (g : α → M) (n : ℕ) (x : α) :
+    birkhoffAverage R f g n (f x) - birkhoffAverage R f g n x =
+      (n : R)⁻¹ • (g (f^[n] x) - g x) := by
+  simp only [birkhoffAverage, birkhoffSum_apply_sub_birkhoffSum, ← smul_sub]
