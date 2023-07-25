@@ -215,6 +215,10 @@ theorem bases_nonempty :
     exists_basis_containing_feasible_set G.containsEmpty (empty_subset s)
   exists b; tauto
 
+theorem bases_singleton {a : α} (hb : b ∈ G.bases {a}) :
+    b = ∅ ∨ b = {a} :=
+  subset_singleton_iff.mp (basis_subseteq hb)
+
 theorem bases_card_eq
   {b₁ : Finset α} (hb₁ : b₁ ∈ G.bases s)
   {b₂ : Finset α} (hb₂ : b₂ ∈ G.bases s) :
@@ -297,8 +301,7 @@ theorem rank_empty : G.rank ∅ = 0 := by
   simp only [G.containsEmpty]
   simp only [ite_true, image_singleton, card_empty, max_singleton, WithBot.unbot_coe]
 
-theorem rank_singleton_le {a : α} : G.rank {a} ≤ 1 := by
-  sorry
+theorem rank_singleton_le_one {a : α} : G.rank {a} ≤ 1 := sorry
 
 theorem rank_le_card : G.rank s ≤ s.card := sorry
 
