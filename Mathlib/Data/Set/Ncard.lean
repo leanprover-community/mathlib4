@@ -63,6 +63,7 @@ namespace Set
 
 variable {s t : Set α}
 
+/-- The cardinality of a set as a term in `ℕ∞` -/
 noncomputable def encard (s : Set α) := PartENat.withTopEquiv (PartENat.card s)
 
 @[simp] theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by
@@ -452,17 +453,16 @@ section ncard
 
 open Nat
 
-/-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a
-  `Set.Finite` term. -/
+/-- A tactic (for use in default params) that applies `Set.toFinite` to synthesize a `Set.Finite`
+  term. -/
 syntax "toFinite_tac" : tactic
 
 macro_rules
   | `(tactic| toFinite_tac) => `(tactic| apply Set.toFinite)
 
+/-- A tactic useful for transferring proofs for `encard` to their corresponding `card` statements -/
 syntax "to_encard_tac" : tactic
 
-/-- A tactic useful for transferring proofs for `encard` to their corresponding `card`
-  statements -/
 macro_rules
   | `(tactic| to_encard_tac) => `(tactic|
       simp only [←Nat.cast_le (α := ℕ∞), ←Nat.cast_inj (R := ℕ∞), Nat.cast_add, Nat.cast_one])
@@ -1119,4 +1119,3 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 #align set.ncard_eq_three Set.ncard_eq_three
 
 end ncard
-#lint
