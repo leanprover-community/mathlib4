@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
+import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.FinCategory
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -486,6 +487,118 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
 #align category_theory.is_filtered.tulip CategoryTheory.IsFiltered.tulip
 
 end SpecialShapes
+
+section
+variable {C}
+variable [IsFilteredOrEmpty C]
+variable {α : Type w} (f : α → C)
+
+-- mutual
+
+--   inductive filteredClosure (f : α → C) : Type (max v w)
+--     | base : α → filteredClosure f
+--     | max : filteredClosure f → filteredClosure f → filteredClosure f
+--     | coeq : filteredClosure f → filteredClosure f
+
+--   noncomputable def filteredClosureRealization : filteredClosure C f → C
+--     | filteredClosure.base x => f x
+--     | filteredClosure.max u v => IsFiltered.max (filteredClosureRealization u) (filteredClosureRealization v)
+--     | filteredClosure.coeq u => filteredClosureRealization u
+
+-- end
+  --| coeq : fi
+
+inductive filteredClosure : C → Prop
+  | base : ∀ (x : α), filteredClosure (f x)
+  | max : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j'), filteredClosure (max j j')
+  | coeq : ∀ {j j' : C} (_ : filteredClosure j) (_ : filteredClosure j') (f f' : j ⟶ j'), filteredClosure (coeq f f')
+
+instance : IsFilteredOrEmpty (FullSubcategory (filteredClosure f)) where
+  cocone_objs j j' := ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+  cocone_maps {j j'} f f' := ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f',
+    coeq_condition _ _⟩
+
+inductive nextStep (X : Σ t : Type (max v w), t → C) : Type (max v w)
+  | base : X.1 → nextStep X
+  | max : X.1 → X.1 → nextStep X
+  | coeq : (j : X.1) → (j' : X.1) → (X.2 j ⟶ X.2 j') → (X.2 j ⟶ X.2 j') → nextStep X
+
+noncomputable def mapNextStep (X : Σ t : Type (max v w), t → C) : nextStep.{w} X → C
+  | (nextStep.base x) => X.2 x
+  | (nextStep.max x y) => max (X.2 x) (X.2 y)
+  | (nextStep.coeq _ _ f g) => coeq f g
+
+noncomputable def allSteps : ℕ → Σ t : Type (max v w), t → C
+  | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
+  | (n + 1) => ⟨nextStep.{w} (allSteps n), mapNextStep.{w} (allSteps n)⟩
+
+noncomputable def modelFilteredClosure : Type (max v w) :=
+  Σ n, (allSteps f n).1
+
+noncomputable def modelFilteredClosureInclusion : modelFilteredClosure f → C :=
+  fun x => (allSteps f x.1).2 x.2
+
+theorem small_of_injective_of_exists {α : Type w} [Small.{v} α] {β : Type u} {γ : Type u₁}
+    (f : α → β) {g : γ → β} (hg : Function.Injective g) (h : ∀ c : γ, ∃ a : α, f a = g c) :
+    Small.{v} γ := by
+  by_cases hγ : _root_.Nonempty γ
+  · refine' small_of_surjective (f := invFun g ∘ f) (fun c => _)
+    obtain ⟨a, ha⟩ := h c
+    exact ⟨a, by rw [Function.comp_apply, ha, leftInverse_invFun hg]⟩
+  · simp only [not_nonempty_iff] at hγ
+    infer_instance
+
+theorem exists_of_le (x : modelFilteredClosure f) (m : ℕ) (hm : x.1 ≤ m) : ∃ y : (allSteps f m).1,
+  modelFilteredClosureInclusion f ⟨m, y⟩ = modelFilteredClosureInclusion f x := by
+  induction hm with
+  | refl => exact ⟨x.2, rfl⟩
+  | step _ ih =>
+    rcases ih with ⟨y', hy'⟩
+    refine' ⟨nextStep.base y', _⟩
+    rw [← hy']
+    rfl
+
+#check Nat.strongRec'
+
+theorem surjective_aux (j : C) (h : filteredClosure f j) : ∃ (x : modelFilteredClosure f),
+  modelFilteredClosureInclusion f x = j := by
+  induction h with
+  | base x => exact ⟨⟨0, ⟨x⟩⟩, rfl⟩
+  | max hj₁ hj₂ ih ih' =>
+    rcases ih with ⟨x, rfl⟩
+    rcases ih' with ⟨x', rfl⟩
+    obtain ⟨xl, hxl⟩ := exists_of_le f x (Max.max x.1 x'.1) (Nat.le_max_left _ _)
+    obtain ⟨xl', hxl'⟩ := exists_of_le f x' (Max.max x.1 x'.1) (Nat.le_max_right _ _)
+    rw [← hxl, ← hxl']
+    exact ⟨⟨Nat.succ (Max.max x.1 x'.1), nextStep.max xl xl'⟩, rfl⟩
+  | coeq hj₁ hj₂ g g' ih ih' =>
+    rcases ih with ⟨⟨x, a⟩, rfl⟩
+    rcases ih' with ⟨⟨y, b⟩, rfl⟩
+    -- cases le_or_lt x y with
+    -- | inl h =>
+    --   induction h with
+    --   | refl => exact ⟨⟨Nat.succ x, nextStep.coeq _ _ g g'⟩, rfl⟩
+    --   | step hm ih =>
+
+    --     sorry
+    -- | inr h => sorry
+    obtain ⟨xl, hxl⟩ := exists_of_le f ⟨x, a⟩ (Max.max x y) (Nat.le_max_left _ _)
+    obtain ⟨xl', hxl'⟩ := exists_of_le f ⟨y, b⟩ (Max.max x y) (Nat.le_max_right _ _)
+    sorry
+
+
+
+
+theorem small_subtype_filteredClosure : Small.{max v w} (Subtype (filteredClosure f)) :=
+  small_of_injective_of_exists (modelFilteredClosureInclusion f) (Subtype.coe_injective)
+    (fun x => surjective_aux f x.1 x.2)
+
+end
+
+--variable [IsFiltered C] {D : Type u₁} [SmallCategory D] (F : D ⥤ C)
+
+
+
 
 end IsFiltered
 
