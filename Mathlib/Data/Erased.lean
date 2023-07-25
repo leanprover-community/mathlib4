@@ -2,13 +2,10 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.erased
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.Defs
+
+#align_import data.erased from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # A type for VM-erased data
@@ -65,7 +62,7 @@ theorem out_mk {α} (a : α) : (mk a).out = a := by
 
 @[simp]
 theorem mk_out {α} : ∀ a : Erased α, mk (out a) = a
-  | ⟨s, h⟩ => by simp [mk] ; congr ; exact Classical.choose_spec h
+  | ⟨s, h⟩ => by simp [mk]; congr; exact Classical.choose_spec h
 #align erased.mk_out Erased.mk_out
 
 @[ext]
@@ -159,14 +156,14 @@ theorem map_def {α β} : ((· <$> ·) : (α → β) → Erased α → Erased β
 --Porting note: Old proof `by refine' { .. } <;> intros <;> ext <;> simp`
 protected instance LawfulMonad : LawfulMonad Erased :=
   { Erased.Monad with
-    id_map := by intros ; ext ; simp
-    map_const := by intros ; ext ; simp [Functor.mapConst]
-    pure_bind := by intros ; ext ; simp
-    bind_assoc := by intros ; ext ; simp
-    bind_pure_comp := by intros ; ext ; simp
-    bind_map := by intros ; ext ; simp [Seq.seq]
-    seqLeft_eq := by intros ; ext ; simp [Seq.seq, Functor.mapConst, SeqLeft.seqLeft]
-    seqRight_eq := by intros ; ext ; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight]
-    pure_seq := by intros ; ext ; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight] }
+    id_map := by intros; ext; simp
+    map_const := by intros; ext; simp [Functor.mapConst]
+    pure_bind := by intros; ext; simp
+    bind_assoc := by intros; ext; simp
+    bind_pure_comp := by intros; ext; simp
+    bind_map := by intros; ext; simp [Seq.seq]
+    seqLeft_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqLeft.seqLeft]
+    seqRight_eq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight]
+    pure_seq := by intros; ext; simp [Seq.seq, Functor.mapConst, SeqRight.seqRight] }
 
 end Erased

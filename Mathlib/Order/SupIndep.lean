@@ -2,16 +2,13 @@
 Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
-
-! This file was ported from Lean 3 source module order.sup_indep
-! leanprover-community/mathlib commit c4c2ed622f43768eff32608d4a0f8a6cec1c047d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
+
+#align_import order.sup_indep from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
 /-!
 # Supremum independence
@@ -214,7 +211,7 @@ alias supIndep_iff_pairwiseDisjoint ↔
 theorem SupIndep.sup [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset ι} {f : ι → α}
     (hs : s.SupIndep fun i => (g i).sup f) (hg : ∀ i' ∈ s, (g i').SupIndep f) :
     (s.sup g).SupIndep f := by
-  simp_rw [supIndep_iff_pairwiseDisjoint] at hs hg⊢
+  simp_rw [supIndep_iff_pairwiseDisjoint] at hs hg ⊢
   rw [sup_eq_biUnion, coe_biUnion]
   exact hs.biUnion_finset hg
 #align finset.sup_indep.sup Finset.SupIndep.sup
@@ -227,7 +224,7 @@ theorem SupIndep.biUnion [DecidableEq ι] {s : Finset ι'} {g : ι' → Finset �
   exact hs.sup hg
 #align finset.sup_indep.bUnion Finset.SupIndep.biUnion
 
-/-- Bind operation for `sup_indep`. -/
+/-- Bind operation for `SupIndep`. -/
 theorem SupIndep.sigma {β : ι → Type _} {s : Finset ι} {g : ∀ i, Finset (β i)} {f : Sigma β → α}
     (hs : s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
     (hg : ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩) : (s.sigma g).SupIndep f := by
@@ -325,7 +322,7 @@ theorem setIndependent_pair {a b : α} (hab : a ≠ b) :
 subset of the rest. -/
 theorem SetIndependent.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆ s) (hxy : x ∉ y) :
     Disjoint x (sSup y) := by
-  have := (hs.mono <| insert_subset.mpr ⟨hx, hy⟩) (mem_insert x _)
+  have := (hs.mono <| insert_subset_iff.mpr ⟨hx, hy⟩) (mem_insert x _)
   rw [insert_diff_of_mem _ (mem_singleton _), diff_singleton_eq_self hxy] at this
   exact this
 #align complete_lattice.set_independent.disjoint_Sup CompleteLattice.SetIndependent.disjoint_sSup

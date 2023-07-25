@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.morphism_property
-! leanprover-community/mathlib commit 7f963633766aaa3ebc8253100a5229dd463040c7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.Arrow
 import Mathlib.CategoryTheory.Limits.Shapes.CommSq
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+
+#align_import category_theory.morphism_property from "leanprover-community/mathlib"@"7f963633766aaa3ebc8253100a5229dd463040c7"
 
 /-!
 # Properties of morphisms
@@ -283,11 +280,11 @@ theorem StableUnderCobaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : Stable
 #align category_theory.morphism_property.stable_under_cobase_change.unop CategoryTheory.MorphismProperty.StableUnderCobaseChange.unop
 
 theorem StableUnderBaseChange.op {P : MorphismProperty C} (hP : StableUnderBaseChange P) :
-    StableUnderCobaseChange P.op := fun _ _ _ _ _ _ _ _  sq hf => hP sq.unop hf
+    StableUnderCobaseChange P.op := fun _ _ _ _ _ _ _ _ sq hf => hP sq.unop hf
 #align category_theory.morphism_property.stable_under_base_change.op CategoryTheory.MorphismProperty.StableUnderBaseChange.op
 
 theorem StableUnderBaseChange.unop {P : MorphismProperty Cᵒᵖ} (hP : StableUnderBaseChange P) :
-    StableUnderCobaseChange P.unop := fun _ _ _ _ _ _ _ _  sq hf => hP sq.op hf
+    StableUnderCobaseChange P.unop := fun _ _ _ _ _ _ _ _ sq hf => hP sq.op hf
 #align category_theory.morphism_property.stable_under_base_change.unop CategoryTheory.MorphismProperty.StableUnderBaseChange.unop
 
 /-- If `P : MorphismProperty C` and `F : C ⥤ D`, then
@@ -349,7 +346,7 @@ namespace naturalityProperty
 
 theorem stableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
     (naturalityProperty app).StableUnderComposition := fun X Y Z f g hf hg => by
-  simp only [naturalityProperty] at hf hg⊢
+  simp only [naturalityProperty] at hf hg ⊢
   simp only [Functor.map_comp, Category.assoc, hg]
   slice_lhs 1 2 => rw [hf]
   rw [Category.assoc]
@@ -357,7 +354,7 @@ theorem stableUnderComposition {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X �
 
 theorem stableUnderInverse {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
     (naturalityProperty app).StableUnderInverse := fun X Y e he => by
-  simp only [naturalityProperty] at he⊢
+  simp only [naturalityProperty] at he ⊢
   rw [← cancel_epi (F₁.map e.hom)]
   slice_rhs 1 2 => rw [he]
   simp only [Category.assoc, ← F₁.map_comp_assoc, ← F₂.map_comp, e.hom_inv_id, Functor.map_id,
@@ -452,7 +449,7 @@ theorem RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
 
 theorem StableUnderComposition.isomorphisms : StableUnderComposition (isomorphisms C) :=
   fun X Y Z f g hf hg => by
-  rw [isomorphisms.iff] at hf hg⊢
+  rw [isomorphisms.iff] at hf hg ⊢
   haveI := hf
   haveI := hg
   infer_instance
@@ -460,7 +457,7 @@ theorem StableUnderComposition.isomorphisms : StableUnderComposition (isomorphis
 
 theorem StableUnderComposition.monomorphisms : StableUnderComposition (monomorphisms C) :=
   fun X Y Z f g hf hg => by
-  rw [monomorphisms.iff] at hf hg⊢
+  rw [monomorphisms.iff] at hf hg ⊢
   haveI := hf
   haveI := hg
   apply mono_comp
@@ -468,7 +465,7 @@ theorem StableUnderComposition.monomorphisms : StableUnderComposition (monomorph
 
 theorem StableUnderComposition.epimorphisms : StableUnderComposition (epimorphisms C) :=
   fun X Y Z f g hf hg => by
-  rw [epimorphisms.iff] at hf hg⊢
+  rw [epimorphisms.iff] at hf hg ⊢
   haveI := hf
   haveI := hg
   apply epi_comp
@@ -596,7 +593,7 @@ theorem StableUnderComposition.universally [HasPullbacks C] {P : MorphismPropert
     (hP : P.StableUnderComposition) : P.universally.StableUnderComposition := by
   intro X Y Z f g hf hg X' Z' i₁ i₂ f' H
   have := pullback.lift_fst _ _ (H.w.trans (Category.assoc _ _ _).symm)
-  rw [← this] at H⊢
+  rw [← this] at H ⊢
   apply hP _ _ _ (hg _ _ _ <| IsPullback.of_hasPullback _ _)
   exact hf _ _ _ (H.of_right (pullback.lift_snd _ _ _) (IsPullback.of_hasPullback i₂ g))
 #align category_theory.morphism_property.stable_under_composition.universally CategoryTheory.MorphismProperty.StableUnderComposition.universally

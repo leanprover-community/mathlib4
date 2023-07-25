@@ -2,11 +2,6 @@
 Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison, Adam Topaz
-
-! This file was ported from Lean 3 source module algebraic_topology.simplicial_set
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
@@ -14,6 +9,8 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+
+#align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 A simplicial set is just a simplicial object in `Type`,
@@ -124,7 +121,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
   map {m₁ m₂} f α :=
     ⟨f.unop ≫ (α : Δ[n].obj m₁), by
       intro h; apply α.property
-      rw [Set.eq_univ_iff_forall] at h⊢; intro j
+      rw [Set.eq_univ_iff_forall] at h ⊢; intro j
       apply Or.imp _ id (h j)
       intro hj
       exact Set.range_comp_subset_range _ _ hj⟩

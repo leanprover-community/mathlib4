@@ -2,20 +2,17 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module examples.prop_encodable
-! leanprover-community/mathlib commit 328375597f2c0dd00522d9c2e5a33b6a6128feeb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.W.Basic
 import Mathlib.Data.Fin.VecNotation
 
+#align_import examples.prop_encodable from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
+
 /-!
 # W types
 
-The file `data/W.lean` shows that if `α` is an an encodable fintype and for every `a : α`,
-`β a` is encodable, then `W β` is encodable.
+The file `Mathlib/Data/W/Basic.lean` shows that if `α` is an an encodable fintype and for every
+`a : α`, `β a` is encodable, then `W β` is encodable.
 
 As an example of how this can be used, we show that the type of propositional formulas with
 variables labeled from an encodable type is encodable.
@@ -42,7 +39,7 @@ inductive PropForm (α : Type _)
 
 /-!
 The next three functions make it easier to construct functions from a small
-`fin`.
+`Fin`.
 -/
 
 -- porting note: using `![_, _]` notation instead

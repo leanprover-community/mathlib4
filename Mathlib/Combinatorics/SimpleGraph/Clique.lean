@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.clique
-! leanprover-community/mathlib commit cd7f0626a0b04be1dda223a26123313514a55fb4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Finset.Pairwise
+
+#align_import combinatorics.simple_graph.clique from "leanprover-community/mathlib"@"cd7f0626a0b04be1dda223a26123313514a55fb4"
 
 /-!
 # Graph cliques
@@ -20,7 +17,7 @@ adjacent.
 ## Main declarations
 
 * `SimpleGraph.IsClique`: Predicate for a set of vertices to be a clique.
-* `SimpleGraph.IsNClique`: Predicate for a set of vertices to be a `n`-clique.
+* `SimpleGraph.IsNClique`: Predicate for a set of vertices to be an `n`-clique.
 * `SimpleGraph.cliqueFinset`: Finset of `n`-cliques of a graph.
 * `SimpleGraph.CliqueFree`: Predicate for a graph to have no `n`-cliques.
 
@@ -100,7 +97,7 @@ section NClique
 
 variable {n : ℕ} {s : Finset α}
 
-/-- A `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
+/-- An `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
 structure IsNClique (n : ℕ) (s : Finset α) : Prop where
   clique : G.IsClique s
   card_eq : s.card = n

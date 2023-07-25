@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.antichain
-! leanprover-community/mathlib commit c227d107bbada5d0d9d20287e3282c0a7f1651a0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Hom.Set
+
+#align_import order.antichain from "leanprover-community/mathlib"@"c227d107bbada5d0d9d20287e3282c0a7f1651a0"
 
 /-!
 # Antichains
@@ -35,13 +32,13 @@ section General
 
 variable {α β : Type _} {r r₁ r₂ : α → α → Prop} {r' : β → β → Prop} {s t : Set α} {a b : α}
 
-protected theorem Symmetric.compl (h : Symmetric r) : Symmetric (rᶜ) := fun _ _ hr hr' =>
+protected theorem Symmetric.compl (h : Symmetric r) : Symmetric rᶜ := fun _ _ hr hr' =>
   hr <| h hr'
 #align symmetric.compl Symmetric.compl
 
 /-- An antichain is a set such that no two distinct elements are related. -/
 def IsAntichain (r : α → α → Prop) (s : Set α) : Prop :=
-  s.Pairwise (rᶜ)
+  s.Pairwise rᶜ
 #align is_antichain IsAntichain
 
 namespace IsAntichain

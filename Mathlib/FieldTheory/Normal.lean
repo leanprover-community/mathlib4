@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module field_theory.normal
-! leanprover-community/mathlib commit 9fb8964792b4237dac6200193a0d533f1b3f7423
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Adjoin
 import Mathlib.FieldTheory.Tower
 import Mathlib.GroupTheory.Solvable
 import Mathlib.RingTheory.PowerBasis
+
+#align_import field_theory.normal from "leanprover-community/mathlib"@"9fb8964792b4237dac6200193a0d533f1b3f7423"
 
 /-!
 # Normal field extensions
@@ -39,18 +36,18 @@ variable (F K : Type _) [Field F] [Field K] [Algebra F K]
 /-- Typeclass for normal field extension: `K` is a normal extension of `F` iff the minimal
 polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`. -/
 class Normal : Prop where
-  is_algebraic' : Algebra.IsAlgebraic F K
+  isAlgebraic' : Algebra.IsAlgebraic F K
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 #align normal Normal
 
 variable {F K}
 
 theorem Normal.isAlgebraic (_ : Normal F K) (x : K) : IsAlgebraic F x :=
-  Normal.is_algebraic' x
+  Normal.isAlgebraic' x
 #align normal.is_algebraic Normal.isAlgebraic
 
 theorem Normal.isIntegral (h : Normal F K) (x : K) : IsIntegral F x :=
-  isAlgebraic_iff_isIntegral.mp (h.is_algebraic' x)
+  isAlgebraic_iff_isIntegral.mp (h.isAlgebraic' x)
 #align normal.is_integral Normal.isIntegral
 
 theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
@@ -89,8 +86,7 @@ theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] 
       (Multiset.mem_toFinset.mpr <|
         (mem_roots <|
               mt (Polynomial.map_eq_zero <| algebraMap F K).1 <|
-                Finset.prod_ne_zero_iff.2 fun x _ => _).2
-          _)
+                Finset.prod_ne_zero_iff.2 fun x _ => _).2 _)
   · exact minpoly.ne_zero (h.isIntegral (s x))
   rw [IsRoot.def, eval_map, ← aeval_def, AlgHom.map_prod]
   exact Finset.prod_eq_zero (Finset.mem_univ _) (minpoly.aeval _ _)
@@ -267,6 +263,11 @@ instance normal_iSup {ι : Type _} (t : ι → IntermediateField F K) [h : ∀ i
   rw [minpoly_eq, Subtype.coe_mk, ← minpoly_eq] at this
   exact Polynomial.splits_comp_of_splits _ (inclusion hE).toRingHom this
 #align intermediate_field.normal_supr IntermediateField.normal_iSup
+
+instance normal_sup
+    (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
+    Normal F (E ⊔ E' : IntermediateField F K) :=
+  iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by intro i; cases i <;> infer_instance)
 
 -- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
 variable {F K} {L : Type _} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
@@ -522,7 +523,7 @@ theorem restrictScalars_eq_iSup_adjoin [h : Normal F L] :
     apply PowerBasis.lift_gen
     change aeval y (minpoly F (AdjoinSimple.gen F x)) = 0
     suffices : minpoly F (AdjoinSimple.gen F x) = minpoly F x
-    . exact this ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
+    · exact this ▸ aeval_eq_zero_of_mem_rootSet (Multiset.mem_toFinset.mpr hy)
     exact minpoly_gen ((isIntegral_algebraMap_iff (algebraMap K L).injective).mp
       (h.isIntegral (algebraMap K L x)))
 

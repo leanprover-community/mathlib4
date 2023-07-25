@@ -2,16 +2,13 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.mul_action
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.AddTorsor
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.GroupTheory.GroupAction.Prod
 import Mathlib.Topology.Algebra.ConstMulAction
+
+#align_import topology.algebra.mul_action from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Continuous monoid action
@@ -158,6 +155,20 @@ instance Units.continuousSMul : ContinuousSMul Mˣ X
 #align add_units.has_continuous_vadd AddUnits.continuousVAdd
 
 end Monoid
+
+section Group
+
+variable [Group M] [MulAction M X] [ContinuousSMul M X]
+
+@[to_additive]
+instance Submonoid.continuousSMul {S : Submonoid M} : ContinuousSMul S X where
+  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
+
+@[to_additive]
+instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X where
+  continuous_smul := (continuous_subtype_val.comp continuous_fst).smul continuous_snd
+
+end Group
 
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :

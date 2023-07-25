@@ -2,11 +2,6 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.order.basic
-! leanprover-community/mathlib commit c985ae9840e06836a71db38de372f20acb49b790
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Pi
 import Mathlib.Data.Set.Pointwise.Interval
@@ -14,6 +9,8 @@ import Mathlib.Order.Filter.Interval
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Support
 import Mathlib.Topology.Algebra.Order.LeftRight
+
+#align_import topology.order.basic from "leanprover-community/mathlib"@"3efd324a3a31eaa40c9d5bfc669c4fafee5f9423"
 
 /-!
 # Theory of topology on ordered spaces
@@ -801,51 +798,6 @@ theorem Dense.Iio_eq_biUnion [DenselyOrdered α] {s : Set α} (hs : Dense s) (x 
     Iio x = ⋃ y ∈ s ∩ Iio x, Iio y :=
   Dense.Ioi_eq_biUnion (α := αᵒᵈ) hs x
 
-variable [Nonempty α] [TopologicalSpace β]
-
-/-- A compact set is bounded below -/
-theorem IsCompact.bddBelow {s : Set α} (hs : IsCompact s) : BddBelow s := by
-  cases' botOrderOrNoBotOrder α with h h; exact OrderBot.bddBelow s
-  have : s ⊆ ⋃ a : α, Ioi a := (@iUnion_Ioi α _ (NoBotOrder.to_noMinOrder α)).symm ▸ subset_univ s
-  rcases hs.elim_finite_subcover _ (fun _ => isOpen_Ioi) this with ⟨t, ht⟩
-  refine t.bddBelow.imp fun C hC y hy => ?_
-  rcases mem_iUnion₂.1 (ht hy) with ⟨a, ha, hay⟩
-  exact (hC ha).trans (le_of_lt hay)
-#align is_compact.bdd_below IsCompact.bddBelow
-
-/-- A compact set is bounded above -/
-theorem IsCompact.bddAbove {s : Set α} (hs : IsCompact s) : BddAbove s :=
-  @IsCompact.bddBelow αᵒᵈ _ _ _ _ _ hs
-#align is_compact.bdd_above IsCompact.bddAbove
-
-/-- A continuous function is bounded below on a compact set. -/
-theorem IsCompact.bddBelow_image {f : β → α} {K : Set β} (hK : IsCompact K)
-    (hf : ContinuousOn f K) : BddBelow (f '' K) :=
-  (hK.image_of_continuousOn hf).bddBelow
-#align is_compact.bdd_below_image IsCompact.bddBelow_image
-
-/-- A continuous function is bounded above on a compact set. -/
-theorem IsCompact.bddAbove_image {f : β → α} {K : Set β} (hK : IsCompact K)
-    (hf : ContinuousOn f K) : BddAbove (f '' K) :=
-  @IsCompact.bddBelow_image αᵒᵈ _ _ _ _ _ _ _ _ hK hf
-#align is_compact.bdd_above_image IsCompact.bddAbove_image
-
-/-- A continuous function with compact support is bounded below. -/
-@[to_additive " A continuous function with compact support is bounded below. "]
-theorem Continuous.bddBelow_range_of_hasCompactMulSupport [One α] {f : β → α} (hf : Continuous f)
-    (h : HasCompactMulSupport f) : BddBelow (range f) :=
-  (h.isCompact_range hf).bddBelow
-#align continuous.bdd_below_range_of_has_compact_mul_support Continuous.bddBelow_range_of_hasCompactMulSupport
-#align continuous.bdd_below_range_of_has_compact_support Continuous.bddBelow_range_of_hasCompactSupport
-
-/-- A continuous function with compact support is bounded above. -/
-@[to_additive " A continuous function with compact support is bounded above. "]
-theorem Continuous.bddAbove_range_of_hasCompactMulSupport [One α] {f : β → α} (hf : Continuous f)
-    (h : HasCompactMulSupport f) : BddAbove (range f) :=
-  @Continuous.bddBelow_range_of_hasCompactMulSupport αᵒᵈ _ _ _ _ _ _ _ _ hf h
-#align continuous.bdd_above_range_of_has_compact_mul_support Continuous.bddAbove_range_of_hasCompactMulSupport
-#align continuous.bdd_above_range_of_has_compact_support Continuous.bddAbove_range_of_hasCompactSupport
-
 end LinearOrder
 
 end OrderClosedTopology
@@ -1066,7 +1018,7 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type _} [LinearO
     exact ⟨y, hf.lt_iff_lt.1 h₁, le_rfl⟩
 
 /-- A strictly monotone function between linear orders with order topology is a topological
-embedding provided that the range of `f` is  order-connected. -/
+embedding provided that the range of `f` is order-connected. -/
 theorem StrictMono.embedding_of_ordConnected {α β : Type _} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
     (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
@@ -1399,11 +1351,11 @@ theorem countable_setOf_covby_right [SecondCountableTopology α] :
     · refine' disjoint_left.2 fun u ux ux' => xt.2.2.1 _
       refine' h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), _⟩
       by_contra' H
-      exact False.elim (lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h'))
+      exact lt_irrefl _ ((Hy _ _ xt.1 H).trans_lt h')
     · refine' disjoint_left.2 fun u ux ux' => x't.2.2.1 _
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
       by_contra' H
-      exact False.elim (lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h'))
+      exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
   refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x)
   · rw [H]
@@ -2118,7 +2070,7 @@ theorem IsLUB.exists_seq_strictMono_tendsto_of_not_mem {t : Set α} {x : α}
   have hvx' : ∀ {n}, v n < x := (htx.1 (hvt _)).lt_of_ne (ne_of_mem_of_not_mem (hvt _) not_mem)
   have : ∀ k, ∀ᶠ l in atTop, v k < v l := fun k => hvx.eventually (lt_mem_nhds hvx')
   choose N hN hvN using fun k => ((eventually_gt_atTop k).and (this k)).exists
-  refine ⟨fun k => v ((N^[k]) 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
+  refine ⟨fun k => v (N^[k] 0), strictMono_nat_of_lt_succ fun _ => ?_, fun _ => hvx',
     hvx.comp (strictMono_nat_of_lt_succ fun _ => ?_).tendsto_atTop, fun _ => hvt _⟩
   · rw [iterate_succ_apply']; exact hvN _
   · rw [iterate_succ_apply']; exact hN _
@@ -2251,7 +2203,7 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
   · cases' hab.lt_or_lt with hab hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
-      simp only [insert_subset, singleton_subset_iff]
+      simp only [insert_subset_iff, singleton_subset_iff]
       exact ⟨(isGLB_Ioo hab).mem_closure hab', (isLUB_Ioo hab).mem_closure hab'⟩
     · rw [Icc_eq_empty_of_lt hab]
       exact empty_subset _

@@ -2,17 +2,14 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module analysis.convex.between
-! leanprover-community/mathlib commit 571e13cacbed7bf042fd3058ce27157101433842
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Set.Intervals.Group
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.Tactic.FieldSimp
+
+#align_import analysis.convex.between from "leanprover-community/mathlib"@"571e13cacbed7bf042fd3058ce27157101433842"
 
 /-!
 # Betweenness in affine spaces
@@ -526,7 +523,7 @@ theorem Sbtw.trans_wbtw_right_ne [NoZeroSMulDivisors R V] {w x y z : P} (h₁ : 
 
 theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZeroSMulDivisors R V]
     {ι : Type _} {p : ι → P} (ha : AffineIndependent R p) {w w₁ w₂ : ι → R} {s : Finset ι}
-    (hw : (∑ i in s, w i) = 1) (hw₁ : (∑ i in s, w₁ i) = 1) (hw₂ : (∑ i in s, w₂ i) = 1)
+    (hw : ∑ i in s, w i = 1) (hw₁ : ∑ i in s, w₁ i = 1) (hw₂ : ∑ i in s, w₂ i = 1)
     (h : s.affineCombination R p w ∈
       line[R, s.affineCombination R p w₁, s.affineCombination R p w₂])
     {i : ι} (his : i ∈ s) (hs : Sbtw R (w₁ i) (w i) (w₂ i)) :
@@ -617,7 +614,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
       refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
       have hle : line[R, t.points i₂, t.points i₃] ≤ affineSpan R (Set.range t.points) := by
         refine' affineSpan_mono R _
-        simp [Set.insert_subset]
+        simp [Set.insert_subset_iff]
       rw [AffineSubspace.le_def'] at hle
       exact hle _ h₁.wbtw.mem_affineSpan
     rw [AffineSubspace.le_def'] at hle
@@ -638,7 +635,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
-      (Finset.mem_univ _)] at h₁'⊢
+      (Finset.mem_univ _)] at h₁' ⊢
   refine'
     Sbtw.affineCombination_of_mem_affineSpan_pair t.Independent hw
       (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
-
-! This file was ported from Lean 3 source module analysis.asymptotics.superpolynomial_decay
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Data.Polynomial.Eval
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
+
+#align_import analysis.asymptotics.superpolynomial_decay from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Super-Polynomial Function Decay
@@ -179,7 +176,7 @@ variable {l k f}
 
 theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay l k f)
     (hfg : abs ∘ g ≤ᶠ[l] abs ∘ f) : SuperpolynomialDecay l k g := by
-  rw [superpolynomialDecay_iff_abs_tendsto_zero] at hf⊢
+  rw [superpolynomialDecay_iff_abs_tendsto_zero] at hf ⊢
   refine' fun z =>
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds (hf z)
       (eventually_of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => _)
@@ -259,7 +256,7 @@ variable {f}
 theorem SuperpolynomialDecay.param_zpow_mul (hk : Tendsto k l atTop)
     (hf : SuperpolynomialDecay l k f) (z : ℤ) :
     SuperpolynomialDecay l k fun a => k a ^ z * f a := by
-  rw [superpolynomialDecay_iff_zpow_tendsto_zero _ hk] at hf⊢
+  rw [superpolynomialDecay_iff_zpow_tendsto_zero _ hk] at hf ⊢
   refine' fun z' => (hf <| z' + z).congr' ((hk.eventually_ne_atTop 0).mono fun x hx => _)
   simp [zpow_add₀ hx, mul_assoc, Pi.mul_apply]
 #align asymptotics.superpolynomial_decay.param_zpow_mul Asymptotics.SuperpolynomialDecay.param_zpow_mul

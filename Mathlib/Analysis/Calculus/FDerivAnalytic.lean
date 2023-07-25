@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.fderiv_analytic
-! leanprover-community/mathlib commit 3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiffDef
+
+#align_import analysis.calculus.fderiv_analytic from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
 
 /-!
 # Frechet derivatives of analytic functions.
@@ -161,6 +158,11 @@ theorem AnalyticOn.contDiffOn [CompleteSpace F] (h : AnalyticOn 𝕜 f s) {n : �
     exact iteratedFDerivWithin_of_isOpen _ t_open hx
 #align analytic_on.cont_diff_on AnalyticOn.contDiffOn
 
+theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+    ContDiffAt 𝕜 n f x := by
+  obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOn
+  exact hf.contDiffOn.contDiffAt hs
+
 end fderiv
 
 section deriv
@@ -191,7 +193,7 @@ theorem AnalyticOn.deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) : AnalyticO
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOn.iterated_deriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 ((_root_.deriv^[n]) f) s := by
+    AnalyticOn 𝕜 (_root_.deriv^[n] f) s := by
   induction' n with n IH
   · exact h
   · simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
