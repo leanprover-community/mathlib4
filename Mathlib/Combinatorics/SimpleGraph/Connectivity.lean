@@ -1481,7 +1481,7 @@ theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
 #align simple_graph.walk.map_map SimpleGraph.Walk.map_map
 
 /-- Unlike categories, for graphs vertex equality is an important notion, so needing to be able to
-to work with equality of graph homomorphisms is a necessary evil. -/
+work with equality of graph homomorphisms is a necessary evil. -/
 theorem map_eq_of_eq {f : G →g G'} (f' : G →g G') (h : f = f') :
     p.map f = (p.map f').copy (h ▸ rfl) (h ▸ rfl) := by
   subst_vars
