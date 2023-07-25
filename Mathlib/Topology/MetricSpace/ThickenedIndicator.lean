@@ -254,9 +254,10 @@ section indicator
 
 variable {α : Type _} [PseudoEMetricSpace α] {β : Type _} [One β]
 
-/-- Pointwise, the (mul)indicators of δ-thickenings of a set eventually coincide with the
-(mul)indicator of the set as δ>0 tends to zero. -/
-@[to_additive]
+/-- Pointwise, the multiplicative indicators of δ-thickenings of a set eventually coincide 
+with the multiplicative indicator of the set as δ>0 tends to zero. -/
+@[to_additive "Pointwise, the indicators of δ-thickenings of a set eventually coincide 
+with the indicator of the set as δ>0 tends to zero."]
 lemma mulIndicator_thickening_eventually_eq_mulIndicator_closure (f : α → β) (E : Set α) (x : α) :
     ∀ᶠ δ in 𝓝[>] (0 : ℝ),
       (Metric.thickening δ E).mulIndicator f x = (closure E).mulIndicator f x := by
