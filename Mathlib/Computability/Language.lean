@@ -45,14 +45,13 @@ variable {l m : Language α} {a b x : List α}
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
-  ⟨fun _ => False⟩
+  ⟨(∅ : Set _)⟩
 
 /-- `1 : Language α` contains only one element `[]`. -/
 instance : One (Language α) :=
-  ⟨fun l => l = []⟩
+  ⟨{[]}⟩
 
-instance : Inhabited (Language α) :=
-  ⟨fun _ => False⟩
+instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 
 /-- The sum of two languages is their union. -/
 instance : Add (Language α) :=
