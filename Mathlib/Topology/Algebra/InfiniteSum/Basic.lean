@@ -1287,9 +1287,64 @@ theorem Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i => b •
   (hf.hasSum.const_smul _).summable
 #align summable.const_smul Summable.const_smul
 
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
+  requiring a summability hypothesis. -/
 theorem tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) : ∑' i, b • f i = b • ∑' i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
 #align tsum_const_smul tsum_const_smul
+
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
+  not requiring any summability hypothesis. -/
+lemma tsum_const_smul' {γ : Type _} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
+    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+  by_cases hf : Summable f
+  · exact tsum_const_smul g hf
+  rw [tsum_eq_zero_of_not_summable hf]
+  simp only [smul_zero]
+  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv α g
+  apply tsum_eq_zero_of_not_summable
+  change ¬ Summable (mul_g ∘ f)
+  rwa [Summable.map_iff_of_equiv mul_g]
+  · apply continuous_const_smul
+  · apply continuous_const_smul
+
+/-- Infinite sums commute with scalar multiplication. Version for scalars living in a
+  `DivisionRing`; no summability hypothesis. This could be made to work for a
+  `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
+lemma tsum_const_smul'' {γ : Type _} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
+    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+  by_cases hf : Summable f
+  · exact tsum_const_smul g hf
+  rw [tsum_eq_zero_of_not_summable hf]
+  simp only [smul_zero]
+  by_cases hg : g = 0
+  · simp [hg]
+  let mul_g : α ≃+ α := DistribMulAction.toAddEquiv₀ α g hg
+  apply tsum_eq_zero_of_not_summable
+  sorry
+  -- convert (not_iff_not.mpr (@Summable.map_iff_of_equiv α β α _ _ f _ _ ?_ ?_ ?_ ?_ ?_)).mpr hf
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
+  -- · sorry
+
+
+
+--  change ¬ Summable (mul_g ∘ f)
+--  have := @Summable.map_iff_of_equiv (f := f) (g := g) α _ _ _ _ ?_ ?_ ?_
+  --change ¬ Summable (mul_g ∘ f)
+  --rwa [Summable.map_iff_of_equiv _]
+
+
+
+
+--   change ¬ summable (mul_g ∘ f),
+--   rwa summable.map_iff_of_equiv mul_g; apply continuous_const_smul,
+
+
+#exit
 
 end ConstSmul
 
