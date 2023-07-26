@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Util.Imports
+import Mathlib.Lean.Data.NameMap
 import Mathlib.Lean.IO.Process
+import Mathlib.Lean.Name
 import Cli
 
 /-!
@@ -47,20 +49,23 @@ instance : ParseableType Name where
     else
       String.toName s
 
-open IO.FS IO.Process in
+open IO.FS IO.Process Name in
 /-- Implementation of the import graph command line program. -/
 def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
   let to := match args.flag? "to" with
   | some to => to.as! Name
   | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
   let from? := match args.flag? "from" with
-  | some to => some <| to.as! Name
+  | some fr => some <| fr.as! Name
   | none => none
   searchPathRef.set compileTimeSearchPath
   let dotFile ← unsafe withImportModules [{module := to}] {} (trustLevel := 1024) fun env => do
     let mut graph := env.importGraph
     if let .some f := from? then
       graph := graph.dependenciesOf (NameSet.empty.insert f)
+    if args.hasFlag "noDep" then
+      let p := getModule to
+      graph := graph.filter (isPrefixOf p) (.filter (isPrefixOf p))
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -83,6 +88,7 @@ def graph : Cmd := `[Cli|
     reduce;         "Remove transitively redundant edges."
     to : Name;      "Only show the upstream imports of the specified module."
     "from" : Name;  "Only show the downstream dependencies of the specified module."
+    noDep; "Do not include any imports from other packages."
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++
