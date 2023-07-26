@@ -66,6 +66,12 @@ def importGraphCLI (args : Cli.Parsed) : IO UInt32 := do
     if args.hasFlag "noDep" then
       let p := getModule to
       graph := graph.filter (isPrefixOf p) (.filter (isPrefixOf p))
+    if args.hasFlag "excludeMeta" then
+      let filterNoTactics : Name → Bool := fun n => (not <|
+        isPrefixOf `Mathlib.Tactic n ∨
+        isPrefixOf `Mathlib.Lean n ∨
+        isPrefixOf `Mathlib.Util n)
+      graph := graph.filter filterNoTactics (.filter filterNoTactics)
     if args.hasFlag "reduce" then
       graph := graph.transitiveReduction
     return asDotGraph graph
@@ -89,6 +95,7 @@ def graph : Cmd := `[Cli|
     to : Name;      "Only show the upstream imports of the specified module."
     "from" : Name;  "Only show the downstream dependencies of the specified module."
     noDep; "Do not include any imports from other packages."
+    excludeMeta; "Exclude any files starting with `Mathlib.[Tactic|Lean|Util]`."
 
   ARGS:
     ...outputs : String;  "Filename(s) for the output. " ++
