@@ -369,7 +369,7 @@ protected theorem Nodup.concat (h : a ∉ l) (h' : l.Nodup) : (l.concat a).Nodup
   rw [concat_eq_append]; exact h'.append (nodup_singleton _) (disjoint_singleton.2 h)
 #align list.nodup.concat List.Nodup.concat
 
-theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
+protected theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nodup :=
   if h' : a ∈ l then by rw [insert_of_mem h']; exact h
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 #align list.nodup.insert List.Nodup.insert
@@ -448,7 +448,7 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup)
 
 --Porting note: new theorem
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
-    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (. ∈ l.take n)
+    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (· ∈ l.take n)
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
   | b::l, n+1, hl => by

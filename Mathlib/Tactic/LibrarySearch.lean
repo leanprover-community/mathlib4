@@ -137,7 +137,7 @@ def librarySearchLemma (lem : Name) (mod : DeclMod) (required : List Expr) (solv
     | .none => pure lem
     | .mp => mapForallTelescope (fun e => mkAppM ``Iff.mp #[e]) lem
     | .mpr => mapForallTelescope (fun e => mkAppM ``Iff.mpr #[e]) lem
-    let newGoals ← goal.apply lem
+    let newGoals ← goal.apply lem { allowSynthFailures := true }
     try
       let subgoals ← solveByElim newGoals required (exfalso := false) (depth := solveByElimDepth)
       pure (← getMCtx, subgoals)
@@ -271,7 +271,7 @@ def exact? (tk : Syntax) (required : Option (Array (TSyntax `term))) (requireClo
       for suggestion in suggestions do
         withMCtx suggestion.1 do
           addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta (addSubgoalsMsg := true)
-      if suggestions.isEmpty then logError "exact? didn't find any relevant lemmas"
+      if suggestions.isEmpty then logError "apply? didn't find any relevant lemmas"
       admitGoal goal
     else
       addExactSuggestion tk (← instantiateMVars (mkMVar mvar)).headBeta

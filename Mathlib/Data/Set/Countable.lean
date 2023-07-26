@@ -228,7 +228,7 @@ theorem countable_insert {s : Set α} {a : α} : (insert a s).Countable ↔ s.Co
   simp only [insert_eq, countable_union, countable_singleton, true_and_iff]
 #align set.countable_insert Set.countable_insert
 
-theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (insert a s).Countable :=
+protected theorem Countable.insert {s : Set α} (a : α) (h : s.Countable) : (insert a s).Countable :=
   countable_insert.2 h
 #align set.countable.insert Set.Countable.insert
 
