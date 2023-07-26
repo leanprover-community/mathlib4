@@ -75,39 +75,6 @@ def Lean.Meta.isInterpretedValue (e : Expr) : MetaM Bool := do
 def Lean.Expr.quickCmp (a b : Expr) : Ordering :=
   if Expr.quickLt a b then .lt else if a.eqv b then .eq else .gt
 
-/-
-```c++
-/** Given (h_not_ex : not ex) where ex is of the form (exists x, p x),
-    return a (forall x, not p x) and a proof for it.
-
-    This function handles nested existentials. */
-expr_pair congruence_closure::to_forall_not(expr const & ex, expr const & h_not_ex) {
-    lean_assert(is_exists(ex));
-    expr A, p;
-    lean_verify(is_exists(ex, A, p));
-    type_context_old::tmp_locals locals(m_ctx);
-    level lvl         = get_level(m_ctx, A);
-    expr x            = locals.push_local("_x", A);
-    expr px           = head_beta_reduce(mk_app(p, x));
-    expr not_px       = mk_not(px);
-    expr h_all_not_px = mk_app({mk_constant(get_forall_not_of_not_exists_name(), {lvl}), A, p, h_not_ex});
-    if (is_exists(px)) {
-        expr h_not_px = locals.push_local("_h", not_px);
-        auto p               = to_forall_not(px, h_not_px);
-        expr qx              = p.first;
-        expr all_qx          = m_ctx.mk_pi(x, qx);
-        expr h_qx            = p.second;
-        expr h_not_px_imp_qx = m_ctx.mk_lambda(h_not_px, h_qx);
-        expr h_all_qx        = m_ctx.mk_lambda({x}, mk_app(h_not_px_imp_qx, mk_app(h_all_not_px, x)));
-        return mk_pair(all_qx, h_all_qx);
-    } else {
-        expr all_not_px      = m_ctx.mk_pi(x, not_px);
-        return mk_pair(all_not_px, h_all_not_px);
-    }
-}
-```
--/
-
 /-- Given `(hNotEx : Not (@Exists.{lvl} A p))`,
     return a `forall x, Not (p x)` and a proof for it.
 
